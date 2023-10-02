@@ -4,11 +4,12 @@ import enum
 import typing
 
 import flask
+import pydantic.v1 as pydantic_v1
+from pydantic.v1 import ConstrainedStr
 from pydantic.v1 import EmailStr
 from pydantic.v1 import Field
 from pydantic.v1 import root_validator
 from pydantic.v1 import validator
-from pydantic.v1.types import constr
 
 from pcapi.core.categories.subcategories import SubcategoryIdEnum
 from pcapi.core.educational.models import CollectiveBooking
@@ -247,6 +248,10 @@ class CollectiveOfferOfferVenueResponseModel(BaseModel):
     venueId: int | None
 
 
+class PriceDetail(ConstrainedStr):
+    max_length: int = 1_000
+
+
 class GetCollectiveOfferCollectiveStockResponseModel(BaseModel):
     id: int
     isSoldOut: bool = Field(alias="isBooked")
@@ -255,7 +260,7 @@ class GetCollectiveOfferCollectiveStockResponseModel(BaseModel):
     bookingLimitDatetime: datetime | None
     price: float
     numberOfTickets: int | None
-    priceDetail: str | None = Field(alias="educationalPriceDetail")
+    priceDetail: PriceDetail | None = Field(alias="educationalPriceDetail")
     isEditable: bool = Field(alias="isEducationalStockEditable")
 
     class Config:
@@ -297,7 +302,7 @@ class GetCollectiveOfferBaseResponseModel(BaseModel, AccessibilityComplianceMixi
 
 
 class GetCollectiveOfferTemplateResponseModel(GetCollectiveOfferBaseResponseModel):
-    priceDetail: str | None = Field(alias="educationalPriceDetail")
+    priceDetail: PriceDetail | None = Field(alias="educationalPriceDetail")
 
     class Config:
         orm_mode = True
@@ -464,10 +469,7 @@ class PostCollectiveOfferBodyModel(BaseModel):
 
 
 class PostCollectiveOfferTemplateBodyModel(PostCollectiveOfferBodyModel):
-    if typing.TYPE_CHECKING:
-        price_detail: str | None
-    else:
-        price_detail: constr(max_length=1000) | None
+    price_detail: PriceDetail | None
 
     class Config:
         alias_generator = to_camel
@@ -475,13 +477,7 @@ class PostCollectiveOfferTemplateBodyModel(PostCollectiveOfferBodyModel):
 
 
 class CollectiveOfferTemplateBodyModel(BaseModel):
-    price_detail: str | None = Field(alias="educationalPriceDetail")
-
-    @validator("price_detail")
-    def validate_price_detail(cls, price_detail: str | None) -> str | None:
-        if price_detail and len(price_detail) > 1000:
-            raise ValueError("Le détail du prix ne doit pas excéder 1000 caractères.")
-        return price_detail
+    price_detail: PriceDetail | None = Field(alias="educationalPriceDetail")
 
     class Config:
         alias_generator = to_camel
@@ -577,14 +573,8 @@ class PatchCollectiveOfferBodyModel(BaseModel, AccessibilityComplianceMixin):
 
 
 class PatchCollectiveOfferTemplateBodyModel(PatchCollectiveOfferBodyModel):
-    priceDetail: str | None
+    priceDetail: PriceDetail | None
     domains: list[int] | None
-
-    @validator("priceDetail")
-    def validate_price_detail(cls, price_detail: str | None) -> str | None:
-        if price_detail and len(price_detail) > 1000:
-            raise ValueError("Le détail du prix ne doit pas excéder 1000 caractères.")
-        return price_detail
 
     @validator("domains")
     def validate_domains_collective_offer_template_edition(
