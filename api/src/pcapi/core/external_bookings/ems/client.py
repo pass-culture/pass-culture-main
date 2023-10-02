@@ -5,6 +5,7 @@ from pcapi.connectors.serialization import ems_serializers
 from pcapi.core.bookings import models as booking_models
 from pcapi.core.bookings import repository as bookings_repository
 from pcapi.core.external_bookings import models as external_bookings_models
+from pcapi.core.external_bookings.exceptions import ExternalBookingSoldOutError
 from pcapi.core.users import models as users_models
 
 
@@ -71,7 +72,12 @@ class EMSClientAPI(external_bookings_models.ExternalBookingsClientAPI):
     def get_film_showtimes_stocks(self, film_id: str) -> dict[int, int]:
         payload = ems_serializers.AvailableShowsRequest(num_cine=self.cinema_id, id_film=film_id)
         response = self.connector.do_request(self.connector.shows_availability_endpoint, payload.dict())
-        self.connector.raise_for_status(response)
+        try:
+            self.connector.raise_for_status(response)
+        except ExternalBookingSoldOutError:
+            # Showtimes stocks are sold out, Stock.quantity will be updated to dnBookedQuantity
+            # in `update_stock_quantity_to_match_cinema_venue_provider_remaining_places`
+            return {}
 
         available_shows = ems_serializers.AvailableShowsResponse(**response.json())
 

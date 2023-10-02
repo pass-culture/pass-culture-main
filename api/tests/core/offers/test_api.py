@@ -1983,21 +1983,46 @@ class UpdateStockQuantityToMatchCinemaVenueProviderRemainingPlacesTest:
             mocked_async_index_offer_ids.assert_not_called()
 
     @override_features(ENABLE_EMS_INTEGRATION=True)
-    @pytest.mark.parametrize(
-        "show_id, show_beginning_datetime, api_return_value, expected_remaining_quantity",
-        [
-            (888, DATETIME_10_DAYS_AFTER, [888], 10),
-            (888, DATETIME_10_DAYS_AFTER, [], 0),
-        ],
-    )
     @patch("pcapi.core.search.async_index_offer_ids")
     def test_ems(
         self,
         mocked_async_index_offer_ids,
-        show_id,
-        show_beginning_datetime,
-        api_return_value,
-        expected_remaining_quantity,
+        requests_mock,
+    ):
+        expected_remaining_quantity = 10
+        api_return_value = [888]
+        ems_provider = providers_repository.get_provider_by_local_class("EMSStocks")
+        venue_provider = providers_factories.VenueProviderFactory(provider=ems_provider)
+        providers_factories.CinemaProviderPivotFactory(
+            venue=venue_provider.venue,
+            provider=venue_provider.provider,
+            idAtProvider=venue_provider.venueIdAtOfferProvider,
+        )
+        movie_id = "52F3G"
+        offer_id_at_provider = f"{movie_id}%{venue_provider.venueId}%EMS"
+        offer = factories.EventOfferFactory(
+            venue=venue_provider.venue, idAtProvider=offer_id_at_provider, lastProviderId=ems_provider.id
+        )
+        stock = factories.EventStockFactory(
+            offer=offer,
+            quantity=10,
+            idAtProviders=f"{offer_id_at_provider}#{888}",
+            beginningDatetime=self.DATETIME_10_DAYS_AFTER,
+        )
+        response_json = {"statut": 1, "seances": api_return_value}
+        url_matcher = re.compile("https://fake_url.com/SEANCE/*")
+        requests_mock.post(url=url_matcher, json=response_json)
+
+        api.update_stock_quantity_to_match_cinema_venue_provider_remaining_places(offer)
+
+        assert stock.remainingQuantity == expected_remaining_quantity
+        mocked_async_index_offer_ids.assert_not_called()
+
+    @override_features(ENABLE_EMS_INTEGRATION=True)
+    @patch("pcapi.core.search.async_index_offer_ids")
+    def test_ems_no_remaining_places_case(
+        self,
+        mocked_async_index_offer_ids,
         requests_mock,
     ):
         ems_provider = providers_repository.get_provider_by_local_class("EMSStocks")
@@ -2015,20 +2040,24 @@ class UpdateStockQuantityToMatchCinemaVenueProviderRemainingPlacesTest:
         stock = factories.EventStockFactory(
             offer=offer,
             quantity=10,
-            idAtProviders=f"{offer_id_at_provider}#{show_id}",
-            beginningDatetime=show_beginning_datetime,
+            idAtProviders=f"{offer_id_at_provider}#{888}",
+            beginningDatetime=self.DATETIME_10_DAYS_AFTER,
         )
-        response_json = {"statut": 1, "seances": api_return_value}
         url_matcher = re.compile("https://fake_url.com/SEANCE/*")
-        requests_mock.post(url=url_matcher, json=response_json)
+        expected_data = {
+            "statut": 0,
+            "code_erreur": 104,
+            "message_erreur": "Il n'y a plus de séance disponible pour ce film",
+        }
+
+        requests_mock.post(url_matcher, json=expected_data)
 
         api.update_stock_quantity_to_match_cinema_venue_provider_remaining_places(offer)
 
-        assert stock.remainingQuantity == expected_remaining_quantity
-        if expected_remaining_quantity == 0:
-            mocked_async_index_offer_ids.assert_called_once_with([offer.id])
-        else:
-            mocked_async_index_offer_ids.assert_not_called()
+        assert stock.remainingQuantity == 0
+        assert stock.quantity == stock.dnBookedQuantity
+
+        mocked_async_index_offer_ids.assert_called_once_with([offer.id])
 
     @override_features(ENABLE_BOOST_API_INTEGRATION=True)
     @patch("pcapi.core.search.async_index_offer_ids")
