@@ -60,7 +60,8 @@
 
     .h-card-header-row {
       display: flex;
-      flex-direction: row;
+      flex-wrap: wrap;
+      gap: rem.torem(12px);
       justify-content: space-between;
     }
 
@@ -147,9 +148,12 @@
 
     .h-section-row {
       display: flex;
-      flex-direction: row;
+      flex-flow: row wrap;
       justify-content: space-between;
       margin-top: rem.torem(16px);
+      gap: rem.torem(
+        24px
+      ); // in case it's inside a section-row with multiple cards
 
       &:first-child {
         margin-top: 0;
@@ -157,14 +161,7 @@
 
       .h-card {
         flex: 1 1;
-        margin-left:
-          rem.torem(
-            24px
-          ); // in case it's inside a section-row with multiple cards
-
-        &:first-child {
-          margin-left: 0;
-        }
+        min-width: rem.torem(236px);
       }
     }
 
@@ -184,18 +181,16 @@
 
     .actions-container {
       display: flex;
+      flex-wrap: wrap;
       justify-content: center;
       margin-top: rem.torem(24px);
       text-align: center;
+      gap: rem.torem(16px);
 
       a {
         flex: 1;
-        margin-left: rem.torem(16px);
         max-width: rem.torem(240px);
-
-        &:first-child {
-          margin-left: 0;
-        }
+        white-space: nowrap;
       }
     }
   }
@@ -218,10 +213,9 @@
     }
 
     .h-card-inner {
-      padding-bottom:
-        rem.torem(
-          16px
-        ); // FIXME: remove this fix when venue list card get content.
+      padding-bottom: rem.torem(
+        16px
+      ); // FIXME: remove this fix when venue list card get content.
     }
   }
 }
