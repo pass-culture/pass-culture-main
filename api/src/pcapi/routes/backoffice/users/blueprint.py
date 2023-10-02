@@ -41,10 +41,13 @@ def _redirect_to_user_page(user: users_models.User) -> utils.BackofficeResponse:
 
 
 def _check_user_role_vs_backoffice_permission(user: users_models.User, unsuspend: bool = False) -> None:
-    if user.has_pro_role or user.has_non_attached_pro_role:
+    if user.has_admin_role:
+        if not utils.has_current_user_permission(perm_models.Permissions.MANAGE_ADMIN_ACCOUNTS):
+            raise Forbidden()
+    elif user.has_pro_role or user.has_non_attached_pro_role:
         if not utils.has_current_user_permission(perm_models.Permissions.PRO_FRAUD_ACTIONS):
             raise Forbidden()
-    else:  # not pro
+    else:  # not pro, not admin
         if unsuspend:
             if not utils.has_current_user_permission(perm_models.Permissions.UNSUSPEND_USER):
                 raise Forbidden()
@@ -54,7 +57,13 @@ def _check_user_role_vs_backoffice_permission(user: users_models.User, unsuspend
 
 
 @users_blueprint.route("/<int:user_id>/suspend", methods=["POST"])
-@utils.permission_required_in([perm_models.Permissions.SUSPEND_USER, perm_models.Permissions.PRO_FRAUD_ACTIONS])
+@utils.permission_required_in(
+    [
+        perm_models.Permissions.SUSPEND_USER,
+        perm_models.Permissions.PRO_FRAUD_ACTIONS,
+        perm_models.Permissions.MANAGE_ADMIN_ACCOUNTS,
+    ]
+)
 def suspend_user(user_id: int) -> utils.BackofficeResponse:
     user = users_models.User.query.get_or_404(user_id)
     _check_user_role_vs_backoffice_permission(user)
@@ -72,7 +81,13 @@ def suspend_user(user_id: int) -> utils.BackofficeResponse:
 
 
 @users_blueprint.route("/<int:user_id>/unsuspend", methods=["POST"])
-@utils.permission_required_in([perm_models.Permissions.UNSUSPEND_USER, perm_models.Permissions.PRO_FRAUD_ACTIONS])
+@utils.permission_required_in(
+    [
+        perm_models.Permissions.UNSUSPEND_USER,
+        perm_models.Permissions.PRO_FRAUD_ACTIONS,
+        perm_models.Permissions.MANAGE_ADMIN_ACCOUNTS,
+    ]
+)
 def unsuspend_user(user_id: int) -> utils.BackofficeResponse:
     user = users_models.User.query.get_or_404(user_id)
     _check_user_role_vs_backoffice_permission(user, unsuspend=True)

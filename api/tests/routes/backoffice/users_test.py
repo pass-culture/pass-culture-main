@@ -72,7 +72,11 @@ def super_admin_fixture(roles_with_permissions: None) -> users_models.User:
 class SuspendUserTest(PostEndpointHelper):
     endpoint = "backoffice_web.users.suspend_user"
     endpoint_kwargs = {"user_id": 1}
-    needed_permission = {perm_models.Permissions.SUSPEND_USER, perm_models.Permissions.PRO_FRAUD_ACTIONS}
+    needed_permission = {
+        perm_models.Permissions.SUSPEND_USER,
+        perm_models.Permissions.PRO_FRAUD_ACTIONS,
+        perm_models.Permissions.MANAGE_ADMIN_ACCOUNTS,
+    }
 
     def test_suspend_beneficiary_user(self, client, beneficiary_fraud_admin):
         user = users_factories.BeneficiaryGrant18Factory()
@@ -200,13 +204,53 @@ class SuspendUserTest(PostEndpointHelper):
         assert user.isActive
         assert len(user.action_history) == 0
 
-    # FIXME (prouzet, 2023-09-27): only super_admin should suspend admin user - ticket coming soon
-    def test_suspend_admin_user(self, client, roles_with_permissions, beneficiary_fraud_admin, super_admin):
+    def test_suspend_admin_user(self, client, roles_with_permissions, super_admin):
         user = users_factories.AdminFactory(
             backoffice_profile__roles=[
                 role
                 for role in roles_with_permissions
                 if role.name in (perm_models.Roles.SUPPORT_PRO.value, perm_models.Roles.SUPPORT_PRO_N2.value)
+            ]
+        )
+
+        referer = url_for("backoffice_web.bo_users.get_bo_user", user_id=user.id, _external=True)
+
+        response = self.post_to_endpoint(
+            client.with_bo_session_auth(super_admin),
+            user_id=user.id,
+            form={
+                "reason": users_constants.SuspensionReason.END_OF_CONTRACT.name,
+                "comment": "",  # optional, keep empty
+            },
+            headers={"referer": referer},
+        )
+
+        assert response.status_code == 303
+        assert response.location == referer
+
+        db.session.refresh(user)
+        assert not user.isActive
+        assert user.backoffice_profile
+        assert not user.backoffice_profile.roles
+
+        assert len(user.action_history) == 1
+        assert user.action_history[0].actionType == history_models.ActionType.USER_SUSPENDED
+        assert user.action_history[0].authorUser == super_admin
+        assert user.action_history[0].user == user
+        assert user.action_history[0].offererId is None
+        assert user.action_history[0].venueId is None
+        assert user.action_history[0].extraData["reason"] == users_constants.SuspensionReason.END_OF_CONTRACT.value
+        assert user.action_history[0].comment is None
+
+        # ensure that admin page still does not crash
+        assert client.with_bo_session_auth(super_admin).get(response.location).status_code == 200
+
+    def test_suspend_admin_user_as_beneficiary_fraud_admin(
+        self, client, roles_with_permissions, beneficiary_fraud_admin
+    ):
+        user = users_factories.AdminFactory(
+            backoffice_profile__roles=[
+                role for role in roles_with_permissions if role.name in (perm_models.Roles.FRAUDE_JEUNES.value,)
             ]
         )
 
@@ -222,29 +266,23 @@ class SuspendUserTest(PostEndpointHelper):
             headers={"referer": referer},
         )
 
-        assert response.status_code == 303
-        assert response.location == referer
+        assert response.status_code == 403
 
-        assert not user.isActive
-        assert not user.backoffice_profile
-
-        assert len(user.action_history) == 1
-        assert user.action_history[0].actionType == history_models.ActionType.USER_SUSPENDED
-        assert user.action_history[0].authorUser == beneficiary_fraud_admin
-        assert user.action_history[0].user == user
-        assert user.action_history[0].offererId is None
-        assert user.action_history[0].venueId is None
-        assert user.action_history[0].extraData["reason"] == users_constants.SuspensionReason.END_OF_CONTRACT.value
-        assert user.action_history[0].comment is None
-
-        # ensure that admin page still does not crash
-        assert client.with_bo_session_auth(super_admin).get(response.location).status_code == 200
+        db.session.refresh(user)
+        assert user.isActive
+        assert user.backoffice_profile
+        assert user.backoffice_profile.roles
+        assert len(user.action_history) == 0
 
 
 class UnsuspendUserTest(PostEndpointHelper):
     endpoint = "backoffice_web.users.unsuspend_user"
     endpoint_kwargs = {"user_id": 1}
-    needed_permission = {perm_models.Permissions.UNSUSPEND_USER, perm_models.Permissions.PRO_FRAUD_ACTIONS}
+    needed_permission = {
+        perm_models.Permissions.UNSUSPEND_USER,
+        perm_models.Permissions.PRO_FRAUD_ACTIONS,
+        perm_models.Permissions.MANAGE_ADMIN_ACCOUNTS,
+    }
 
     def test_unsuspend_beneficiary_user(self, authenticated_client, legit_user):
         user = users_factories.BeneficiaryGrant18Factory(isActive=False)
