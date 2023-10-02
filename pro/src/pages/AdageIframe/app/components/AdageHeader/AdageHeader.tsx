@@ -54,10 +54,12 @@ export const AdageHeaderComponent = ({ hits }: HitsProvided<ResultType>) => {
             viewBox="0 0 71 24"
           />
         </div>
+
         <AdageHeaderMenu
           adageUser={adageUser}
           institutionsOfferCount={hits.length}
-        ></AdageHeaderMenu>
+        />
+
         {!isLoading && (
           <div className={styles['adage-header-nav-menu-budget']}>
             <div className={styles['adage-header-separator']}></div>
