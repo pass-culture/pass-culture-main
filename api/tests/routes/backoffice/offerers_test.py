@@ -1919,6 +1919,12 @@ class ListUserOffererToValidateTest(GetEndpointHelper):
     endpoint = "backoffice_web.validation.list_offerers_attachments_to_validate"
     needed_permission = perm_models.Permissions.VALIDATE_OFFERER
 
+    # - session + authenticated user (2 queries)
+    # - offerer tags filter (1 query)
+    # - get results (1 query)
+    # - get results count (1 query)
+    expected_num_queries = 5
+
     @pytest.mark.parametrize(
         "row_key,sort,order",
         [
@@ -1942,7 +1948,7 @@ class ListUserOffererToValidateTest(GetEndpointHelper):
             to_be_validated.append(pending_user_offerer)
 
         # when
-        with assert_no_duplicated_queries():
+        with assert_num_queries(self.expected_num_queries):
             response = authenticated_client.get(url_for(self.endpoint, order=order, sort=sort))
 
         # then
@@ -1964,10 +1970,11 @@ class ListUserOffererToValidateTest(GetEndpointHelper):
             (ValidationStatus.PENDING, "En attente"),
         ],
     )
-    def test_payload_content(self, authenticated_client, validation_status, expected_status):
+    def test_payload_content(self, authenticated_client, validation_status, expected_status, offerer_tags):
         # given
         owner_user_offerer = offerers_factories.UserOffererFactory(
             offerer__dateCreated=datetime.datetime(2022, 11, 2, 11, 30),
+            offerer__tags=[offerer_tags[1]],
             dateCreated=datetime.datetime(2022, 11, 2, 11, 59),
         )
         new_user_offerer = offerers_factories.NotValidatedUserOffererFactory(
@@ -2004,7 +2011,7 @@ class ListUserOffererToValidateTest(GetEndpointHelper):
             )
 
         # when
-        with assert_no_duplicated_queries():
+        with assert_num_queries(self.expected_num_queries):
             response = authenticated_client.get(url_for(self.endpoint))
 
         # then
@@ -2015,18 +2022,18 @@ class ListUserOffererToValidateTest(GetEndpointHelper):
         assert rows[0]["Email Compte pro"] == new_user_offerer.user.email
         assert rows[0]["Nom Compte pro"] == new_user_offerer.user.full_name
         assert rows[0]["État"] == expected_status
+        assert rows[0]["Tags Structure"] == offerer_tags[1].label
         assert rows[0]["Date de la demande"] == "03/11/2022"
-        assert rows[0]["Dernier commentaire"] == "Bla blabla"
-        assert rows[0]["Tél Compte pro"] == new_user_offerer.user.phoneNumber
         assert rows[0]["Nom Structure"] == owner_user_offerer.offerer.name
-        assert rows[0]["Date de création Structure"] == "02/11/2022"
         assert rows[0]["Email Responsable"] == owner_user_offerer.user.email
-        assert rows[0]["SIREN"] == owner_user_offerer.offerer.siren
+        assert rows[0]["Dernier commentaire"] == "Bla blabla"
 
-    def test_payload_content_no_action(self, authenticated_client):
+    def test_payload_content_no_action(self, authenticated_client, offerer_tags):
         # given
         owner_user_offerer = offerers_factories.UserOffererFactory(
-            offerer__dateCreated=datetime.datetime(2022, 11, 3), dateCreated=datetime.datetime(2022, 11, 24)
+            offerer__dateCreated=datetime.datetime(2022, 11, 3),
+            offerer__tags=[offerer_tags[2]],
+            dateCreated=datetime.datetime(2022, 11, 24),
         )
         offerers_factories.UserOffererFactory(offerer=owner_user_offerer.offerer)  # other validated, not owner
         new_user_offerer = offerers_factories.NotValidatedUserOffererFactory(
@@ -2034,7 +2041,7 @@ class ListUserOffererToValidateTest(GetEndpointHelper):
         )
 
         # when
-        with assert_no_duplicated_queries():
+        with assert_num_queries(self.expected_num_queries):
             response = authenticated_client.get(url_for(self.endpoint))
 
         # then
@@ -2045,13 +2052,11 @@ class ListUserOffererToValidateTest(GetEndpointHelper):
         assert rows[0]["Email Compte pro"] == new_user_offerer.user.email
         assert rows[0]["Nom Compte pro"] == new_user_offerer.user.full_name
         assert rows[0]["État"] == "Nouveau"
+        assert rows[0]["Tags Structure"] == offerer_tags[2].label
         assert rows[0]["Date de la demande"] == "25/11/2022"
-        assert rows[0]["Dernier commentaire"] == ""
-        assert rows[0]["Tél Compte pro"] == ""
         assert rows[0]["Nom Structure"] == owner_user_offerer.offerer.name
-        assert rows[0]["Date de création Structure"] == "03/11/2022"
         assert rows[0]["Email Responsable"] == owner_user_offerer.user.email
-        assert rows[0]["SIREN"] == owner_user_offerer.offerer.siren
+        assert rows[0]["Dernier commentaire"] == ""
 
     @pytest.mark.parametrize(
         "total_items, pagination_config, expected_total_pages, expected_page, expected_items",
@@ -2075,7 +2080,8 @@ class ListUserOffererToValidateTest(GetEndpointHelper):
             offerers_factories.NotValidatedUserOffererFactory()
 
         # when
-        response = authenticated_client.get(url_for(self.endpoint, **pagination_config))
+        with assert_num_queries(self.expected_num_queries):
+            response = authenticated_client.get(url_for(self.endpoint, **pagination_config))
 
         # then
         assert response.status_code == 200
@@ -2177,7 +2183,7 @@ class ListUserOffererToValidateTest(GetEndpointHelper):
         self, authenticated_client, region_filter, expected_users_emails, user_offerer_to_be_validated
     ):
         # when
-        with assert_no_duplicated_queries():
+        with assert_num_queries(self.expected_num_queries):
             response = authenticated_client.get(url_for(self.endpoint, regions=region_filter))
 
         # then
@@ -2206,7 +2212,7 @@ class ListUserOffererToValidateTest(GetEndpointHelper):
         tags_ids = [_id for _id, in tags]
 
         # when
-        with assert_no_duplicated_queries():
+        with assert_num_queries(self.expected_num_queries):
             response = authenticated_client.get(url_for(self.endpoint, tags=tags_ids))
 
         # then
@@ -2230,7 +2236,7 @@ class ListUserOffererToValidateTest(GetEndpointHelper):
         offerers_factories.NotValidatedUserOffererFactory(dateCreated=datetime.datetime(2022, 11, 25, 23, 30))
 
         # when
-        with assert_no_duplicated_queries():
+        with assert_num_queries(self.expected_num_queries):
             response = authenticated_client.get(
                 url_for(
                     self.endpoint,
@@ -2247,7 +2253,7 @@ class ListUserOffererToValidateTest(GetEndpointHelper):
     @pytest.mark.parametrize("postal_code", ["97100", "97 100"])
     def test_list_search_by_postal_code(self, authenticated_client, user_offerer_to_be_validated, postal_code):
         # when
-        with assert_no_duplicated_queries():
+        with assert_num_queries(self.expected_num_queries):
             response = authenticated_client.get(url_for(self.endpoint, q=postal_code))
 
         # then
@@ -2257,7 +2263,7 @@ class ListUserOffererToValidateTest(GetEndpointHelper):
 
     def test_list_search_by_department_code(self, authenticated_client, user_offerer_to_be_validated):
         # when
-        with assert_no_duplicated_queries():
+        with assert_num_queries(self.expected_num_queries):
             response = authenticated_client.get(url_for(self.endpoint, q="972"))
 
         # then
@@ -2267,7 +2273,7 @@ class ListUserOffererToValidateTest(GetEndpointHelper):
 
     def test_list_search_by_city(self, authenticated_client, user_offerer_to_be_validated):
         # when
-        with assert_no_duplicated_queries():
+        with assert_num_queries(self.expected_num_queries):
             response = authenticated_client.get(url_for(self.endpoint, q="Fort-De-France"))
 
         # then
@@ -2277,7 +2283,7 @@ class ListUserOffererToValidateTest(GetEndpointHelper):
 
     def test_list_search_by_email(self, authenticated_client, user_offerer_to_be_validated):
         # when
-        with assert_no_duplicated_queries():
+        with assert_num_queries(self.expected_num_queries):
             response = authenticated_client.get(url_for(self.endpoint, q="b@example.com"))
 
         # then
