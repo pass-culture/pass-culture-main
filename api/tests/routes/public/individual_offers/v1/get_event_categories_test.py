@@ -9,7 +9,7 @@ from . import utils
 pytestmark = pytest.mark.usefixtures("db_session")
 
 
-def test_returns_all_categories(client):
+def test_returns_all_selectable_categories(client):
     utils.create_offerer_provider_linked_to_venue()
 
     response = client.with_explicit_token(offerers_factories.DEFAULT_CLEAR_API_KEY).get(
@@ -17,7 +17,11 @@ def test_returns_all_categories(client):
     )
 
     assert response.status_code == 200
-    assert set(subcategory["id"] for subcategory in response.json) == set(subcategories.EVENT_SUBCATEGORIES)
+    assert set(subcategory["id"] for subcategory in response.json) == set(
+        subcategory_id
+        for subcategory_id, subcategory in subcategories.EVENT_SUBCATEGORIES.items()
+        if subcategory.is_selectable
+    )
 
 
 def test_category_serialization(client):
