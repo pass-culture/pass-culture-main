@@ -9,6 +9,7 @@ from pcapi.core.offers import api as offers_api
 from pcapi.core.offers import exceptions as offers_exceptions
 from pcapi.core.offers import models as offers_models
 from pcapi.core.offers.validation import check_for_duplicated_price_categories
+from pcapi.domain import show_types
 from pcapi.models import api_errors
 from pcapi.models import db
 from pcapi.models import feature
@@ -164,7 +165,7 @@ def get_event(event_id: int) -> serialization.EventOfferResponse:
                     None,
                     "The venue could not be found.",
                 ),
-                "HTTP_200": (serialization.EventOffersResponse, "The event offers has been returned"),
+                "HTTP_200": (serialization.EventOffersResponse, "The event offers have been returned"),
             }
         )
     ),
@@ -391,7 +392,7 @@ def patch_event_price_categories(
                     None,
                     "The request is invalid. The response body contains a list of errors.",
                 ),
-                "HTTP_200": (serialization.PostDatesResponse, "The event dates has been created successfully"),
+                "HTTP_200": (serialization.PostDatesResponse, "The event dates have been created successfully"),
             }
         )
     ),
@@ -457,7 +458,7 @@ def post_event_dates(event_id: int, body: serialization.DatesCreation) -> serial
                     None,
                     "The request is invalid. The response body contains a list of errors.",
                 ),
-                "HTTP_200": (serialization.GetDatesResponse, "The event dates has been returned"),
+                "HTTP_200": (serialization.GetDatesResponse, "The event dates have been returned"),
             }
         )
     ),
@@ -622,7 +623,7 @@ def patch_event_date(
         **(
             constants.BASE_CODE_DESCRIPTIONS
             | {
-                "HTTP_200": (serialization.GetEventCategoriesResponse, "The event categories has been returned"),
+                "HTTP_200": (serialization.GetEventCategoriesResponse, "The event categories have been returned"),
             }
         )
     ),
@@ -640,3 +641,33 @@ def get_event_categories() -> serialization.GetEventCategoriesResponse:
         for subcategory in subcategories.EVENT_SUBCATEGORIES.values()
     ]
     return serialization.GetEventCategoriesResponse(__root__=event_categories_response)
+
+
+@blueprint.v1_blueprint.route("/events/show_types", methods=["GET"])
+@spectree_serialize(
+    api=blueprint.v1_event_schema,
+    tags=[constants.EVENT_OFFER_INFO_TAG],
+    response_model=serialization.GetShowTypesResponse,
+    resp=SpectreeResponse(
+        **(
+            constants.BASE_CODE_DESCRIPTIONS
+            | {
+                "HTTP_200": (serialization.GetShowTypesResponse, "The show types have been returned"),
+            }
+        )
+    ),
+)
+@api_key_required
+@rate_limiting.api_key_high_rate_limiter()
+def get_show_types() -> serialization.GetShowTypesResponse:
+    """
+    Get all the show types.
+    """
+    # Individual offers API only relies on show subtypes, not show types.
+    # To make it simpler for the provider using this API, we only expose show subtypes and call them show types.
+    return serialization.GetShowTypesResponse(
+        __root__=[
+            serialization.ShowTypeResponse(id=show_type_slug, label=show_type.label)
+            for show_type_slug, show_type in show_types.SHOW_SUB_TYPES_BY_SLUG.items()
+        ]
+    )
