@@ -29,8 +29,9 @@ class TiteliveSearch(abc.ABC, typing.Generic[TiteliveSearchResultType]):
         if from_date is None:
             from_date = self.get_last_sync_date()
 
-        start_sync_event = self.log_sync_status(providers_models.LocalProviderEventType.SyncStart)
-        db.session.add(start_sync_event)
+        with repository.transaction():
+            start_sync_event = self.log_sync_status(providers_models.LocalProviderEventType.SyncStart)
+            db.session.add(start_sync_event)
 
         products_to_update_pages = self.get_updated_titelive_pages(from_date)
         for titelive_page in products_to_update_pages:
@@ -38,11 +39,13 @@ class TiteliveSearch(abc.ABC, typing.Generic[TiteliveSearchResultType]):
                 updated_products = self.upsert_titelive_page(titelive_page)
                 db.session.add_all(updated_products)
 
-            updated_thumb_products = update_product_thumbnails(updated_products, titelive_page)
-            db.session.add_all(updated_thumb_products)
+            with repository.transaction():
+                updated_thumb_products = update_product_thumbnails(updated_products, titelive_page)
+                db.session.add_all(updated_thumb_products)
 
-        stop_sync_event = self.log_sync_status(providers_models.LocalProviderEventType.SyncEnd)
-        db.session.add(stop_sync_event)
+        with repository.transaction():
+            stop_sync_event = self.log_sync_status(providers_models.LocalProviderEventType.SyncEnd)
+            db.session.add(stop_sync_event)
 
     def get_last_sync_date(self) -> datetime.date:
         last_sync_event = (
