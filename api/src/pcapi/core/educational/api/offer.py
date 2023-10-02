@@ -240,6 +240,9 @@ def create_collective_offer_template(
         visualDisabilityCompliant=offer_data.visual_disability_compliant,
         interventionArea=offer_data.intervention_area or [],
         priceDetail=offer_data.price_detail,
+        startEndDates=[
+            educational_models.TemplateStartEndDates(start=date.start, end=date.end) for date in offer_data.dates
+        ],
     )
 
     collective_offer_template.bookingEmails = offer_data.booking_emails

@@ -195,3 +195,7 @@ class NoAdageInstitution(Exception):
 
 class MissingAdageInstitution(Exception):
     pass
+
+
+class TemplateStartEndDatesLimitReached(Exception):
+    pass

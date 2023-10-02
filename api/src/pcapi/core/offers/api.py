@@ -374,6 +374,11 @@ def update_collective_offer_template(offer_id: int, new_values: dict) -> None:
     nationalProgramId = new_values.pop("nationalProgramId", None)
     national_program_api.link_or_unlink_offer_to_program(nationalProgramId, offer_to_update)
 
+    offer_to_update.startEndDates = [
+        educational_models.TemplateStartEndDates(start=date["start"], end=date.get("end"))
+        for date in new_values.pop("dates", [])
+    ]
+
     _update_collective_offer(offer=offer_to_update, new_values=new_values)
     search.async_index_collective_offer_template_ids([offer_to_update.id])
 
