@@ -1,38 +1,91 @@
 @use "styles/variables/_colors.scss" as colors;
 @use "styles/mixins/_rem.scss" as rem;
 @use "styles/mixins/_fonts.scss" as fonts;
+@use "styles/variables/_size.scss" as size;
 
 .venue-stats {
-  display: flex;
-  align-items: center;
-  margin-bottom: rem.torem(35px);
+  display: grid;
   padding-top: rem.torem(24px);
+  grid-template-columns: repeat(1, 1fr);
+  grid-template-rows: repeat(5, 1fr);
 
   .separator {
     background-color: colors.$grey-medium;
   }
 
   .h-card-col {
+    padding: rem.torem(12px);
     flex: 0 0 20%;
-    padding: 0 rem.torem(24px);
     display: flex;
     align-items: center;
     flex-direction: column;
-    height: rem.torem(110px);
     justify-content: space-between;
     text-align: center;
-    border-right: solid rem.torem(1px) colors.$grey-medium;
-
-    &:last-child {
-      border-right: none;
-    }
+    width: 100%;
 
     &.v-add-offer-link {
       justify-content: center;
+
+      a {
+        display: flex;
+        align-items: center;
+        flex-direction: column;
+        gap: rem.torem(8px);
+
+        svg {
+          margin-right: 0;
+        }
+      }
+    }
+
+    &:not(:last-child) {
+      border-bottom: solid rem.torem(1px) colors.$grey-medium;
     }
 
     .venue-stat-count {
       @include fonts.title3;
+    }
+  }
+}
+
+@media (min-width: size.$mobile) {
+  .venue-stats {
+    grid-template-columns: repeat(2, 1fr);
+    grid-template-rows: repeat(2, 1fr);
+
+    .h-card-col:nth-child(odd):not(:last-child) {
+      border-right: solid rem.torem(1px) colors.$grey-medium;
+    }
+
+    .h-card-col:not(:last-child) {
+      border-bottom: none;
+    }
+
+    .h-card-col:nth-child(1),
+    .h-card-col:nth-child(2) {
+      border-bottom: solid rem.torem(1px) colors.$grey-medium;
+    }
+
+    .v-add-offer-link {
+      grid-column: 1 / 3;
+    }
+  }
+}
+
+@media (min-width: size.$tablet) {
+  .venue-stats {
+    grid-template-columns: repeat(5, 1fr);
+    grid-template-rows: repeat(1, 1fr);
+    margin-bottom: rem.torem(35px);
+
+    .v-add-offer-link {
+      grid-column-start: unset;
+      grid-column-end: unset;
+    }
+
+    .h-card-col:not(:last-child) {
+      border-bottom: none;
+      border-right: solid rem.torem(1px) colors.$grey-medium;
     }
   }
 }
