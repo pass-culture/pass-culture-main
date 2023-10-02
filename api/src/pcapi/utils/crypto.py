@@ -1,6 +1,7 @@
 from hashlib import md5
 
 import bcrypt
+from cryptography.fernet import Fernet
 
 from pcapi import settings
 
@@ -40,3 +41,15 @@ def check_password(clear_text: str, hashed: bytes) -> bool:
     else:
         checker = _check_password_with_bcrypt
     return checker(clear_text, hashed)
+
+
+def encrypt(clear_text: str) -> str:
+    fernet = Fernet(settings.SECRET_ENCRYPTION_KEY)
+    encrypted_text = fernet.encrypt(clear_text.encode())
+    return encrypted_text.decode()
+
+
+def decrypt(encrypted_text: str) -> str:
+    fernet = Fernet(settings.SECRET_ENCRYPTION_KEY)
+    clear_text = fernet.decrypt(encrypted_text.encode())
+    return clear_text.decode()
