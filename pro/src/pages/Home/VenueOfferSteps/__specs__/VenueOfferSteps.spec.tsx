@@ -249,12 +249,11 @@ describe('VenueOfferSteps', () => {
     }
 
     renderVenueOfferSteps(props)
-
-    const eacInformationsLink = screen.getByRole('link', {
-      name: 'Renseigner mes informations à destination des enseignants',
-    })
-    expect(eacInformationsLink).toBeInTheDocument()
-    expect(eacInformationsLink).toHaveAttribute('aria-disabled')
+    expect(
+      screen.getByRole('link', {
+        name: 'Renseigner mes informations à destination des enseignants Action non disponible',
+      })
+    ).toBeInTheDocument()
   })
 
   it('should not display dms link if condition to display it is false', () => {

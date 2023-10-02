@@ -72,9 +72,10 @@ describe('OffererDetails', () => {
   it('should not allow user to update offerer informations when user attachment to offerer is not yet validated', () => {
     renderOffererDetails({ isUserOffererValidated: false })
 
-    const offererUpdateButton = screen.getByText('Modifier')
+    const [offererUpdateButton] = screen.getAllByRole('link', {
+      name: 'Modifier Action non disponible',
+    })
     expect(offererUpdateButton).toBeInTheDocument()
-    expect(offererUpdateButton).toHaveAttribute('aria-disabled')
   })
 
   it('should redirect to offerer creation page when selecting "add offerer" option"', async () => {
