@@ -19,6 +19,7 @@ from pcapi.core.educational.models import CollectiveOfferDisplayedStatus
 from pcapi.core.educational.models import CollectiveOfferTemplate
 from pcapi.core.educational.models import CollectiveStock
 from pcapi.core.educational.models import StudentLevels
+from pcapi.core.educational.models import TemplateStartEndDates
 from pcapi.core.offerers.models import Venue
 from pcapi.core.offers import validation as offers_validation
 from pcapi.core.offers.serialize import CollectiveOfferType
@@ -470,7 +471,47 @@ class PostCollectiveOfferBodyModel(BaseModel):
         extra = "forbid"
 
 
-class PostCollectiveOfferTemplateBodyModel(PostCollectiveOfferBodyModel):
+class TemplateStartEndDatesModel(pydantic_v1.BaseModel):
+    start: datetime
+    end: datetime | None
+
+    @root_validator
+    def validate_start_end_dates(cls, values: dict) -> dict:
+        start = values.get("start")
+        if not start:
+            raise ValueError("La date de début est obligatoire")
+
+        if start < datetime.utcnow():
+            raise ValueError("La date de début ne peut pas être dans le passé")
+
+        end = values.get("end")
+        if not end:
+            return values
+
+        if start >= end:
+            raise ValueError("La date de début doit antérieure à celle de fin")
+
+        return values
+
+
+class TemplateStartEndDatesMixin(pydantic_v1.BaseModel):
+    dates: typing.Sequence[TemplateStartEndDatesModel] | None
+
+    @validator("dates")
+    def validate_dates(
+        cls, dates: typing.Sequence[TemplateStartEndDatesModel] | None
+    ) -> typing.Sequence[TemplateStartEndDatesModel] | None:
+        if not dates:
+            return dates
+
+        limit = TemplateStartEndDates.MAX_DATES_PER_TEMPLATE
+        if len(dates) > limit:
+            raise ValueError(f"Une offre vitrine ne peut avoir plus de {limit} dates")
+
+        return dates
+
+
+class PostCollectiveOfferTemplateBodyModel(PostCollectiveOfferBodyModel, TemplateStartEndDatesMixin):
     price_detail: PriceDetail | None
 
     class Config:
@@ -574,7 +615,7 @@ class PatchCollectiveOfferBodyModel(BaseModel, AccessibilityComplianceMixin):
         extra = "forbid"
 
 
-class PatchCollectiveOfferTemplateBodyModel(PatchCollectiveOfferBodyModel):
+class PatchCollectiveOfferTemplateBodyModel(PatchCollectiveOfferBodyModel, TemplateStartEndDatesMixin):
     priceDetail: PriceDetail | None
     domains: list[int] | None
 

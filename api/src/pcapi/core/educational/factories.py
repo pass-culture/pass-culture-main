@@ -316,3 +316,12 @@ class EducationalRedactorWithFavoriteCollectiveOffer(EducationalRedactorFactory)
 
 class EducationalRedactorWithFavoriteCollectiveOfferTemplate(EducationalRedactorFactory):
     favoriteCollectiveOfferTemplates = factory.List([factory.SubFactory(CollectiveOfferTemplateFactory)])
+
+
+class TemplateStartEndDatesFactory(BaseFactory):
+    class Meta:
+        model = models.TemplateStartEndDates
+
+    start = factory.LazyFunction(lambda: datetime.datetime.utcnow() + datetime.timedelta(days=1))
+    end = factory.LazyFunction(lambda: datetime.datetime.utcnow() + datetime.timedelta(days=100))
+    template = factory.SubFactory(CollectiveOfferTemplateFactory)

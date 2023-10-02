@@ -242,6 +242,11 @@ def create_collective_offer_template(
         priceDetail=offer_data.price_detail,
     )
 
+    if offer_data.dates:
+        collective_offer_template.startEndDates = [
+            educational_models.TemplateStartEndDates(start=date.start, end=date.end) for date in offer_data.dates
+        ]
+
     collective_offer_template.bookingEmails = offer_data.booking_emails
     db.session.add(collective_offer_template)
     db.session.commit()
