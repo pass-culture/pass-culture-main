@@ -1,19 +1,34 @@
 @use "styles/mixins/_rem.scss" as rem;
+@use "styles/variables/_colors.scss" as colors;
+@use "styles/variables/_z-index.scss" as zIndex;
 
 .newsletter-container {
   display: flex;
   min-height: rem.torem(53px);
+  background: linear-gradient(colors.$primary, colors.$secondary);
+  border-radius: 6px;
+  padding: 1px;
 
   .newsletter-img {
     position: absolute;
     width: 100%;
+    z-index: zIndex.$newsletter-img;
   }
 
   .newsletter-link {
+    background: colors.$white;
+    width: 100%;
+    border-radius: 5px;
     position: relative;
     display: flex;
-    justify-content: center;
     align-items: center;
+    justify-content: flex-start;
     padding-left: rem.torem(16px);
+    padding-right: rem.torem(105px);
+    min-height: rem.torem(53px);
+
+    // We use "em" here because em is based on element font-size
+    // and we want line-height to grow together with font-size
+    line-height: 1.25em;
   }
 }
