@@ -638,5 +638,6 @@ def get_event_categories() -> serialization.GetEventCategoriesResponse:
     event_categories_response = [
         serialization.EventCategoryResponse.build_category(subcategory)
         for subcategory in subcategories.EVENT_SUBCATEGORIES.values()
+        if subcategory.is_selectable
     ]
     return serialization.GetEventCategoriesResponse(__root__=event_categories_response)
