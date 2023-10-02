@@ -471,4 +471,43 @@ describe('SignIn', () => {
       expect(await screen.findByText('Erreur invalide')).toBeInTheDocument()
     })
   })
+
+  describe('tracking', () => {
+    beforeEach(() => {
+      vi.spyOn(useAnalytics, 'default').mockImplementation(() => ({
+        logEvent: mockLogEvent,
+        setLogEvent: null,
+      }))
+    })
+
+    it('should trigger a tracking event', async () => {
+      renderSignIn({ user: { initialized: true, currentUser: null } })
+      await userEvent.click(
+        screen.getByRole('link', {
+          name: 'Créer un compte',
+        })
+      )
+      expect(mockLogEvent).toHaveBeenCalledTimes(1)
+      expect(mockLogEvent).toHaveBeenNthCalledWith(
+        1,
+        Events.CLICKED_CREATE_ACCOUNT,
+        { from: '/connexion' }
+      )
+    })
+
+    it('should trigger a tracking event when user clicks forgotten password"', async () => {
+      renderSignIn({ user: { initialized: true, currentUser: null } })
+      await userEvent.click(
+        screen.getByRole('link', {
+          name: 'Mot de passe oublié ?',
+        })
+      )
+      expect(mockLogEvent).toHaveBeenCalledTimes(1)
+      expect(mockLogEvent).toHaveBeenNthCalledWith(
+        1,
+        Events.CLICKED_FORGOTTEN_PASSWORD,
+        { from: '/connexion' }
+      )
+    })
+  })
 })
