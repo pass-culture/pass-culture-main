@@ -42,6 +42,7 @@ from pcapi.models import feature
 from pcapi.models.api_errors import ApiErrors
 from pcapi.models.validation_status_mixin import ValidationStatus
 from pcapi.repository import repository
+from pcapi.repository import transaction
 from pcapi.routes.serialization.users import ImportUserFromCsvModel
 from pcapi.routes.serialization.users import ProUserCreationBodyV2Model
 from pcapi.tasks import batch_tasks
@@ -379,24 +380,26 @@ def suspend_account(
     """
     import pcapi.core.bookings.api as bookings_api  # avoid import loop
 
-    user.isActive = False
-    user.remove_admin_role()
-    action = history_api.log_action(
-        history_models.ActionType.USER_SUSPENDED,
-        author=actor,
-        user=user,
-        reason=reason.value,
-        comment=comment,
-        save=False,
-    )
+    with transaction():
+        user.isActive = False
+        user.remove_admin_role()
+        db.session.add(user)
+        db.session.add(
+            history_api.log_action(
+                history_models.ActionType.USER_SUSPENDED,
+                author=actor,
+                user=user,
+                reason=reason.value,
+                comment=comment,
+                save=False,
+            )
+        )
 
-    repository.save(user, action)
+        for session in models.UserSession.query.filter_by(userId=user.id):
+            db.session.delete(session)
 
-    sessions = models.UserSession.query.filter_by(userId=user.id)
-    repository.delete(*sessions)
-
-    bo_profile = perm_models.BackOfficeUserProfile.query.filter_by(userId=user.id)
-    repository.delete(*bo_profile)
+        if user.backoffice_profile:
+            user.backoffice_profile.roles = []
 
     n_bookings = 0
 
