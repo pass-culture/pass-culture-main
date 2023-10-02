@@ -634,11 +634,6 @@ class OfferIsActivableTest:
         rejected_offer = factories.OfferFactory(validation=models.OfferValidationStatus.REJECTED)
         assert not rejected_offer.isActivable
 
-    def test_not_activable_if_not_bookable(self):
-        offer = factories.OfferFactory()
-        factories.StockFactory(offer=offer, quantity=0)
-        assert not offer.isActivable
-
     def test_not_activable_if_no_venue_provider(self):
         inactive_providers = providers_factories.ProviderFactory(isActive=False)
         offer_from_inactive_provider = factories.OfferFactory(
@@ -665,6 +660,20 @@ class OfferIsActivableTest:
         )
         offer_from_active_venue_provider = factories.OfferFactory(
             validation=models.OfferValidationStatus.APPROVED,
+            lastProvider=active_provider,
+            venue=active_venue_provider.venue,
+        )
+        factories.StockFactory(offer=offer_from_active_venue_provider)
+        assert offer_from_active_venue_provider.isActivable
+
+    def test_can_activate_inactive_offer_if_venue_is_active_and_provider_is_not_null(self):
+        active_provider = providers_factories.ProviderFactory()
+        active_venue_provider = providers_factories.VenueProviderFactory(
+            provider=active_provider,
+        )
+        offer_from_active_venue_provider = factories.OfferFactory(
+            validation=models.OfferValidationStatus.APPROVED,
+            isActive=False,
             lastProvider=active_provider,
             venue=active_venue_provider.venue,
         )
