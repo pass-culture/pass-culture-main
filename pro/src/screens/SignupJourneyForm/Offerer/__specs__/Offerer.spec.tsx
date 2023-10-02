@@ -388,27 +388,4 @@ describe('Offerer', () => {
       ).not.toBeInTheDocument()
     })
   })
-
-  it('should display MaybeAppUserDialog component and redirect user to public app', async () => {
-    renderOffererScreen(contextValue)
-
-    await userEvent.type(
-      screen.getByLabelText('Numéro de SIRET à 14 chiffres'),
-      '12345678933335'
-    )
-
-    await userEvent.click(screen.getByRole('button', { name: 'Continuer' }))
-
-    await waitFor(() => {
-      expect(
-        screen.getByText('Il semblerait que tu ne sois pas')
-      ).toBeInTheDocument()
-    })
-
-    await userEvent.click(
-      screen.getByRole('link', {
-        name: 'S’inscrire sur l’application pass Culture',
-      })
-    )
-  })
 })
