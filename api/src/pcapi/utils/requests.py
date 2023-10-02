@@ -76,8 +76,10 @@ def get(url: str, disable_synchronous_retry: bool = False, **kwargs: Any) -> Res
         return session.request(method="GET", url=url, **kwargs)
 
 
-def post(url: str, disable_synchronous_retry: bool = False, **kwargs: Any) -> Response:
+def post(url: str, hmac: str | None = None, disable_synchronous_retry: bool = False, **kwargs: Any) -> Response:
     with Session(disable_synchronous_retry=disable_synchronous_retry) as session:
+        if hmac:
+            kwargs.setdefault("headers", {}).update({"PassCulture-Signature": hmac})
         return session.request(method="POST", url=url, **kwargs)
 
 
