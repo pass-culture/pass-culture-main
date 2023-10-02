@@ -8,7 +8,7 @@ import { SummarySubSection } from 'components/SummaryLayout/SummarySubSection'
 import { CollectiveOffer, CollectiveOfferTemplate } from 'core/OfferEducational'
 import { useGetVenue } from 'core/Venue/adapters/getVenueAdapter'
 import useNotification from 'hooks/useNotification'
-import { getInterventionAreaLabels } from 'pages/Offerers/Offerer/VenueV1/VenueEdition/EACInformation/utils/getInterventionAreaLabels'
+import { getInterventionAreaLabels } from 'pages/AdageIframe/app/components/OffersInstantSearch/OffersSearch/Offers/OfferDetails/OfferInterventionArea/OfferInterventionArea'
 import Spinner from 'ui-kit/Spinner/Spinner'
 
 import { formatOfferEventAddress } from '../utils/formatOfferEventAddress'

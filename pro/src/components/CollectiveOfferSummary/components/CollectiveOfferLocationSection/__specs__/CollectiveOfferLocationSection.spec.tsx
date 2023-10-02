@@ -3,7 +3,7 @@ import React from 'react'
 
 import { api } from 'apiClient/api'
 import { GetVenueResponseModel, OfferAddressType } from 'apiClient/v1'
-import * as getInterventionAreaLabels from 'pages/Offerers/Offerer/VenueV1/VenueEdition/EACInformation/utils/getInterventionAreaLabels'
+import * as getInterventionAreaLabels from 'pages/AdageIframe/app/components/OffersInstantSearch/OffersSearch/Offers/OfferDetails/OfferInterventionArea/OfferInterventionArea'
 import { collectiveOfferTemplateFactory } from 'utils/collectiveApiFactories'
 import { renderWithProviders } from 'utils/renderWithProviders'
 

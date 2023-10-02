@@ -20,9 +20,9 @@ import useNotification from 'hooks/useNotification'
 import { PartnerPageCollectiveSection } from 'pages/Home/Offerers/PartnerPageCollectiveSection'
 import Spinner from 'ui-kit/Spinner/Spinner'
 import { sendSentryCustomError } from 'utils/sendSentryCustomError'
+import { venueHasCollectiveInformation } from 'utils/venueHasCollectiveInformation'
 
 import { getCulturalPartnersAdapter } from '../adapters'
-import { venueHasCollectiveInformation } from '../EACInformation/utils/venueHasCollectiveInformation'
 
 import { getVenueEducationalStatusesAdapter } from './adapters'
 import getVenueCollectiveDataAdapter from './adapters/getVenueCollectiveDataAdapter'
