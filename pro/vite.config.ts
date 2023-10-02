@@ -29,7 +29,7 @@ export default defineConfig(({ mode }) => {
     preview: { port: 3001 },
     test: {
       globals: true,
-      environment: 'jsdom',
+      environment: 'happy-dom',
       setupFiles: './vitest.setup.ts',
       deps: { inline: ['vitest-canvas-mock'] },
       clearMocks: true,
