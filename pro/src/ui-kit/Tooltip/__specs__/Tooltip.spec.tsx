@@ -6,7 +6,7 @@ import Tooltip from '../Tooltip'
 describe('Tooltip', () => {
   it('should render without error', () => {
     render(
-      <Tooltip id="someid" content="Contenu du tooltip">
+      <Tooltip visuallyHidden={false} content="Contenu du tooltip">
         Enfant
       </Tooltip>
     )
