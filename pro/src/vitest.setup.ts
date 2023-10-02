@@ -31,20 +31,6 @@ fetchMock.mockResponse(req => {
 // DO NOT ADD ERRORS TO THIS LIST!
 // We should remove it progressively
 const acceptableErrors = [
-  // This error exists in the following test:
-  // src/pages/IndividualOfferWizard/Confirmation/__specs__/Confirmation.spec.tsx
-  // It exists because we click on an anchor tag (<a>) and assert that the tracking
-  // is called.
-  // However Jest DOM doesn't support navigation changes and we shouldn't click on links in tests
-  // Furthermore, we shouldn't have to manually track page changes as Google Analytics
-  // should do this out of the box. So the real good solution here is:
-  // - check why we manually track page changes with the data team
-  // - remove all trackers used to track page changes
-  // - remove the offending test
-  {
-    error: 'Error: Not implemented: navigation (except hash changes)',
-    files: [''],
-  },
   // This is added because `orejim` uses React 17 internally.
   // We'll wait for the library update to remove this.
   {
