@@ -834,3 +834,12 @@ class EventCategoryResponse(serialization.ConfiguredBaseModel):
 
 class GetEventCategoriesResponse(serialization.ConfiguredBaseModel):
     __root__: list[EventCategoryResponse]
+
+
+class ShowTypeResponse(serialization.ConfiguredBaseModel):
+    id: ShowTypeEnum  # type: ignore [valid-type]
+    label: str
+
+
+class GetShowTypesResponse(serialization.ConfiguredBaseModel):
+    __root__: list[ShowTypeResponse]
