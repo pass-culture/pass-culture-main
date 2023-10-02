@@ -719,7 +719,7 @@ class Offer(PcObject, Base, Model, DeactivableMixin, ValidationMixin, Accessibil
 
     @property
     def isActivable(self) -> bool:
-        if self.status == OfferStatus.REJECTED or not self.isBookable:
+        if self.status == OfferStatus.REJECTED:
             return False
         if (
             self.lastProviderId
