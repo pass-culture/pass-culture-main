@@ -24,3 +24,12 @@ class ProdEnvironmentPasswordHasherTest:
         hashed = crypto.hash_password("secret")
         assert not crypto.check_password("wrong", hashed)
         assert crypto.check_password("secret", hashed)
+
+
+class EncryptDataTest:
+    def test_we_can_cipher_sensitive_data(self):
+        sensitive_data = "ultra_sensitive_data"
+        encrypted_text = crypto.encrypt(sensitive_data)
+        assert sensitive_data != encrypted_text
+        decrypted_text = crypto.decrypt(encrypted_text)
+        assert sensitive_data == decrypted_text
