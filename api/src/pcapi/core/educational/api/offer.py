@@ -3,6 +3,7 @@ import logging
 import typing
 
 from flask_sqlalchemy import BaseQuery
+from psycopg2.extras import DateTimeRange
 
 from pcapi import settings
 from pcapi.core import search
@@ -241,6 +242,9 @@ def create_collective_offer_template(
         interventionArea=offer_data.intervention_area or [],
         priceDetail=offer_data.price_detail,
     )
+
+    if offer_data.dates:
+        collective_offer_template.dateRange = DateTimeRange(offer_data.dates.start, offer_data.dates.end)
 
     collective_offer_template.bookingEmails = offer_data.booking_emails
     db.session.add(collective_offer_template)

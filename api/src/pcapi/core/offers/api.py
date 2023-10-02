@@ -7,6 +7,7 @@ import typing
 from flask_sqlalchemy import BaseQuery
 from psycopg2.errorcodes import CHECK_VIOLATION
 from psycopg2.errorcodes import UNIQUE_VIOLATION
+from psycopg2.extras import DateTimeRange
 import sentry_sdk
 import sqlalchemy as sa
 import sqlalchemy.exc as sqla_exc
@@ -368,7 +369,17 @@ def update_collective_offer_template(offer_id: int, new_values: dict) -> None:
     nationalProgramId = new_values.pop("nationalProgramId", None)
     national_program_api.link_or_unlink_offer_to_program(nationalProgramId, offer_to_update)
 
+    if new_values.get("dates"):
+        start = new_values["dates"]["start"]
+        end = new_values["dates"]["end"]
+
+        if start <= offer_to_update.dateCreated:
+            raise educational_exceptions.StartsBeforeOfferCreation()
+
+        offer_to_update.dateRange = DateTimeRange(start, end)
+
     _update_collective_offer(offer=offer_to_update, new_values=new_values)
+
     search.async_index_collective_offer_template_ids([offer_to_update.id])
 
 

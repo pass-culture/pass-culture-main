@@ -195,3 +195,13 @@ class NoAdageInstitution(Exception):
 
 class MissingAdageInstitution(Exception):
     pass
+
+
+class UpdateCollectiveOfferTemplateError(Exception):
+    field = "global"
+    msg = ""
+
+
+class StartsBeforeOfferCreation(UpdateCollectiveOfferTemplateError):
+    field = "dates.start"
+    msg = "Can't start before template creation date"
