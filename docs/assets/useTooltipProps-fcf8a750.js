@@ -1,0 +1,2 @@
+import{r as l}from"./index-76fb7be0.js";const m=({onMouseOver:p,onMouseOut:i,onFocus:r,onBlur:s,onKeyDown:f})=>{const[d,a]=l.useState(!1);return{isTooltipHidden:d,onMouseOver:t=>{a(!1),p==null||p(t)},onMouseOut:t=>{a(!0),i==null||i(t)},onFocus:t=>{a(!1),r==null||r(t)},onBlur:t=>{a(!0),s==null||s(t)},onKeyDown:t=>{t.key==="Escape"&&!d&&(a(!0),t.stopPropagation()),f==null||f(t)}}};export{m as u};
+//# sourceMappingURL=useTooltipProps-fcf8a750.js.map
