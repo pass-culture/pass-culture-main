@@ -226,6 +226,10 @@ class CollectiveOfferResponseModel(BaseModel, common_models.AccessibilityComplia
         extra = "forbid"
 
 
+class ListCollectiveOffersResponseModel(BaseModel):
+    collectiveOffers: list[CollectiveOfferResponseModel]
+
+
 class TemplateDatesModel(BaseModel):
     start: datetime
     end: datetime

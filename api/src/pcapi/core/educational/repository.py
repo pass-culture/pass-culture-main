@@ -1076,6 +1076,40 @@ def get_educational_institution_public(
     ).one_or_none()
 
 
+def get_all_collective_offers_by_institutionUAI(uai: str) -> list[educational_models.CollectiveOffer]:
+    query = (
+        educational_models.CollectiveOffer.query.join(
+            educational_models.EducationalInstitution, educational_models.CollectiveOffer.institution
+        )
+        .options(
+            sa_orm.joinedload(educational_models.CollectiveOffer.collectiveStock).joinedload(
+                educational_models.CollectiveStock.collectiveBookings
+            ),
+        )
+        .options(
+            sa_orm.joinedload(educational_models.CollectiveOffer.nationalProgram),
+        )
+        .options(
+            sa_orm.joinedload(educational_models.CollectiveOffer.domains),
+        )
+        .options(
+            sa_orm.joinedload(educational_models.CollectiveOffer.teacher),
+        )
+        .options(
+            sa_orm.joinedload(educational_models.CollectiveOffer.venue)
+            .joinedload(offerers_models.Venue.managingOfferer)
+            .load_only(
+                offerers_models.Offerer.name,
+                offerers_models.Offerer.isActive,
+                offerers_models.Offerer.validationStatus,
+            ),
+        )
+        .filter(educational_models.EducationalInstitution.institutionId == uai)
+    )
+
+    return query.all()
+
+
 def get_all_offer_by_redactor_id(redactor_id: int) -> list[educational_models.CollectiveOffer]:
     return (
         educational_models.CollectiveOffer.query.join(
@@ -1122,3 +1156,17 @@ def get_all_offer_template_by_redactor_id(redactor_id: int) -> list[educational_
         .filter(educational_models.EducationalRedactor.id == redactor_id)
         .all()
     )
+
+
+def get_user_favorite_offers_from_uai(redactor_id: int | None, uai: str) -> set[int]:
+    if not redactor_id:
+        return set()
+    query = (
+        educational_models.CollectiveOffer.query.join(
+            educational_models.EducationalInstitution, educational_models.CollectiveOffer.institution
+        )
+        .filter(educational_models.EducationalInstitution.institutionId == uai)
+        .join(educational_models.EducationalRedactor, educational_models.CollectiveOffer.educationalRedactorsFavorite)
+        .filter(educational_models.EducationalRedactor.id == redactor_id)
+    )
+    return {offer.id for offer in query}

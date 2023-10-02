@@ -33,6 +33,7 @@ export type { EducationalRedactorResponseModel } from './models/EducationalRedac
 export type { FavoritesResponseModel } from './models/FavoritesResponseModel';
 export type { FeatureResponseModel } from './models/FeatureResponseModel';
 export type { GetRelativeVenuesQueryModel } from './models/GetRelativeVenuesQueryModel';
+export type { ListCollectiveOffersResponseModel } from './models/ListCollectiveOffersResponseModel';
 export type { ListFeatureResponseModel } from './models/ListFeatureResponseModel';
 export type { NationalProgramModel } from './models/NationalProgramModel';
 export { OfferAddressType } from './models/OfferAddressType';

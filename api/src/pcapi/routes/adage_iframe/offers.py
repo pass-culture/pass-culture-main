@@ -22,6 +22,7 @@ from pcapi.routes.adage_iframe.serialization.adage_authentication import (
 )
 from pcapi.routes.adage_iframe.serialization.adage_authentication import AdageFrontRoles
 from pcapi.routes.adage_iframe.serialization.adage_authentication import AuthenticatedInformation
+from pcapi.routes.adage_iframe.serialization.favorites import serialize_collective_offer
 from pcapi.serialization.decorator import spectree_serialize
 
 
@@ -45,6 +46,34 @@ def get_educational_offers_categories(
             for subcategory in educational_categories["subcategories"]
         ],
     )
+
+
+@blueprint.adage_iframe.route("/collective/all-offers", methods=["GET"])
+@spectree_serialize(response_model=serializers.ListCollectiveOffersResponseModel, api=blueprint.api)
+@adage_jwt_required
+def get_educational_eligible_offers_by_uai(
+    authenticated_information: AuthenticatedInformation,
+) -> serializers.ListCollectiveOffersResponseModel:
+    if authenticated_information.uai is None:
+        raise ApiErrors({"institutionId": "institutionId is required"}, status_code=400)
+
+    list_offers_by_uai = educational_repository.get_all_collective_offers_by_institutionUAI(
+        uai=authenticated_information.uai
+    )
+
+    redactor = _get_redactor(authenticated_information)
+
+    current_user_favorite_offers = educational_repository.get_user_favorite_offers_from_uai(
+        redactor_id=redactor.id if redactor else None, uai=authenticated_information.uai
+    )
+
+    serialized_favorite_offers = [
+        serialize_collective_offer(offer=offer, is_favorite=offer.id in current_user_favorite_offers)
+        for offer in list_offers_by_uai
+        if offer.is_eligible_for_search
+    ]
+
+    return serializers.ListCollectiveOffersResponseModel(collectiveOffers=serialized_favorite_offers)
 
 
 @blueprint.adage_iframe.route("/collective/offers/<int:offer_id>", methods=["GET"])
