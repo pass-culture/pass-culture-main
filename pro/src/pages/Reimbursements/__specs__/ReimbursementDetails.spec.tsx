@@ -71,10 +71,7 @@ describe('reimbursementsWithFilters', () => {
         name: /Télécharger/i,
       })
     ).toBeEnabled()
-    expect(screen.getByText(/Afficher/)).not.toHaveAttribute(
-      'aria-disabled',
-      'true'
-    )
+    expect(screen.getByRole('link', { name: 'Afficher' })).toBeInTheDocument()
   })
 
   it('should disable buttons if user is admin and no venue filter is selected', async () => {
@@ -90,10 +87,9 @@ describe('reimbursementsWithFilters', () => {
         name: /Télécharger/i,
       })
     ).toBeDisabled()
-    expect(screen.getByText(/Afficher/)).toHaveAttribute(
-      'aria-disabled',
-      'true'
-    )
+    expect(
+      screen.getByRole('link', { name: 'Afficher Action non disponible' })
+    ).toBeInTheDocument()
   })
 
   it('should enable buttons when admin user selects a venue', async () => {

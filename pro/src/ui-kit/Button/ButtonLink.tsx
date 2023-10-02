@@ -91,11 +91,11 @@ const ButtonLink = ({
   const callback: MouseEventHandler<HTMLAnchorElement> = (e) =>
     isDisabled ? e.preventDefault() : onClick?.(e)
 
-  const disabled = isDisabled
-    ? {
-        'aria-disabled': true,
-      }
-    : {}
+  const disabled = isDisabled ? (
+    <span className="visually-hidden">Action non disponible</span>
+  ) : (
+    <></>
+  )
 
   body = isExternal ? (
     <a
@@ -104,10 +104,10 @@ const ButtonLink = ({
       onClick={callback}
       onBlur={(e) => onBlur?.(e)}
       rel="noopener noreferrer"
-      {...disabled}
       {...linkProps}
     >
       {body}
+      {disabled}
     </a>
   ) : (
     /* istanbul ignore next: graphic variation */ <Link
@@ -115,11 +115,11 @@ const ButtonLink = ({
       onClick={callback}
       onBlur={(e) => onBlur?.(e)}
       to={absoluteUrl}
-      {...disabled}
       aria-label={linkProps['aria-label']}
       aria-current={linkProps['aria-current'] ?? false}
     >
       {body}
+      {disabled}
     </Link>
   )
 

@@ -22,6 +22,7 @@ describe('ButtonLink', () => {
     await userEvent.click(button)
 
     expect(onClick).toHaveBeenCalledTimes(1)
+    expect(screen.queryByText('Action non disponible')).not.toBeInTheDocument()
   })
 
   it('should call callback action onblur when clicking outside the button', async () => {
@@ -81,10 +82,11 @@ describe('ButtonLink', () => {
       </ButtonLink>
     )
 
-    const button = screen.getByRole('link', { name: 'test' })
+    const button = screen.getByRole('link', { name: /test/ })
     await userEvent.click(button)
 
     expect(onClick).not.toHaveBeenCalled()
+    expect(screen.getByText('Action non disponible')).toBeInTheDocument()
   })
 
   it('should not be considered the current page if not specified', () => {
