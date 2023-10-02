@@ -97,7 +97,9 @@ describe('ButtonLink', () => {
     )
 
     expect(
-      screen.getByRole('link', { name: 'test' }).getAttribute('aria-current')
+      screen
+        .getByRole('link', { name: 'test Action non disponible' })
+        .getAttribute('aria-current')
     ).toEqual('false')
   })
 })

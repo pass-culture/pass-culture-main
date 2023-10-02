@@ -56,8 +56,8 @@ vi.mock('core/shared/interventionOptions', async () => {
     mainlandOptions: mockedMainlandOptions,
     venueInterventionOptions: [
       {
-        value: originalModule.CULTURAL_PARTNER_OPTION_VALUE,
-        label: originalModule.CULTURAL_PARTNER_OPTION_LABEL,
+        value: 'culturalPartner',
+        label: 'Dans mon lieu',
       },
       originalModule.mainlandInterventionOption,
       ...mockedMainlandOptions,
