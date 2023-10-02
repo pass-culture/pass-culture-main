@@ -1,5 +1,4 @@
 import { screen } from '@testing-library/react'
-import { userEvent } from '@testing-library/user-event'
 import React from 'react'
 import { Route, Routes } from 'react-router-dom'
 
@@ -135,37 +134,5 @@ describe('Confirmation', () => {
       'href',
       `/offre/creation?structure=${offererId}&lieu=${venueId}`
     )
-  })
-
-  describe('trackers', () => {
-    it('should track when clicking on see offer', async () => {
-      renderOffer(contextOverride, store)
-
-      await userEvent.click(
-        screen.getByText('Visualiser l’offre dans l’application', {
-          selector: 'a',
-        })
-      )
-    })
-
-    it('should track when clicking on create new offer', async () => {
-      renderOffer(contextOverride, store)
-
-      await userEvent.click(
-        screen.getByText('Créer une nouvelle offre', {
-          selector: 'a',
-        })
-      )
-    })
-
-    it('should track when clicking on see offers list', async () => {
-      renderOffer(contextOverride, store)
-
-      await userEvent.click(
-        screen.getByText('Voir la liste des offres', {
-          selector: 'a',
-        })
-      )
-    })
   })
 })
