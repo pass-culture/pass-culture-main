@@ -6,6 +6,7 @@ import enum
 import random
 import typing
 
+import psycopg2.extras
 import sqlalchemy as sa
 from sqlalchemy import UniqueConstraint
 from sqlalchemy.dialects import postgresql
@@ -621,6 +622,28 @@ class CollectiveOfferTemplate(
         secondary="collective_offer_template_educational_redactor",
         back_populates="favoriteCollectiveOfferTemplates",
     )
+
+    dateRange: psycopg2.extras.DateTimeRange = sa.Column(postgresql.TSRANGE)
+
+    __table_args__ = (
+        sa.UniqueConstraint("dateRange", "id", name="collective_offer_template_unique_daterange"),
+        sa.CheckConstraint(
+            '"dateRange" is NULL OR ('
+            'NOT isempty("dateRange") '
+            'AND lower("dateRange") is NOT NULL '
+            'AND upper("dateRange") IS NOT NULL '
+            'AND lower("dateRange") >= "dateCreated")',
+            name="template_dates_non_empty_daterange",
+        ),
+    )
+
+    @property
+    def start(self) -> datetime:
+        return self.dateRange.lower
+
+    @property
+    def end(self) -> datetime:
+        return self.dateRange.upper
 
     @property
     def isEducational(self) -> bool:
