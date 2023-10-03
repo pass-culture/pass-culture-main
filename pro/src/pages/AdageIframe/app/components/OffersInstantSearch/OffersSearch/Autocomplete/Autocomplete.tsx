@@ -42,6 +42,7 @@ import {
 import { removeParamsFromUrl } from 'utils/removeParamsFromUrl'
 
 import styles from './Autocomplete.module.scss'
+import { Highlight } from './Highlight'
 
 type AutocompleteProps = {
   initialQuery: string
@@ -49,7 +50,7 @@ type AutocompleteProps = {
   setCurrentSearch: (search: string) => void
 }
 
-type SuggestionItem = AutocompleteQuerySuggestionsHit & {
+export type SuggestionItem = AutocompleteQuerySuggestionsHit & {
   label: string
   venue: {
     name: string
@@ -535,7 +536,16 @@ export const Autocomplete = ({
                               styles['dialog-panel-autocomplete-item-icon']
                             }
                           />
-                          {item.venue.publicName || item.venue.name}
+                          <div>
+                            <Highlight
+                              hit={item}
+                              attribute={[
+                                'venue',
+                                item.venue.publicName ? 'publicName' : 'name',
+                              ]}
+                              tagName="strong"
+                            />
+                          </div>
                         </li>
                       ))}
                     </ul>
@@ -573,17 +583,24 @@ export const Autocomplete = ({
                                 styles['dialog-panel-autocomplete-item-icon']
                               }
                             />
-                            {item.query} {shouldDisplayCategory && 'dans '}
-                            <span
-                              className={
-                                styles['dialog-panel-autocomplete-category']
-                              }
-                            >
-                              {shouldDisplayCategory &&
-                                getCategoriesFromSubcategory(
-                                  item['offer.subcategoryId'][0]
-                                ).label}
-                            </span>
+                            <div>
+                              <Highlight
+                                hit={item}
+                                attribute={['query']}
+                                tagName="strong"
+                              />
+                              {shouldDisplayCategory && ' dans '}
+                              <span
+                                className={
+                                  styles['dialog-panel-autocomplete-category']
+                                }
+                              >
+                                {shouldDisplayCategory &&
+                                  getCategoriesFromSubcategory(
+                                    item['offer.subcategoryId'][0]
+                                  ).label}
+                              </span>
+                            </div>
                           </li>
                         )
                       })}
