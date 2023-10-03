@@ -13,6 +13,7 @@ import pcapi.core.bookings.models as bookings_models
 import pcapi.core.external_bookings.models as external_bookings_models
 from pcapi.core.providers.repository import get_cgr_cinema_details
 import pcapi.core.users.models as users_models
+from pcapi.utils.decorators import retry
 from pcapi.utils.queue import add_to_queue
 
 
@@ -50,7 +51,9 @@ class CGRClientAPI(external_bookings_models.ExternalBookingsClientAPI):
         try:
             response = reservation_pass_culture(self.cgr_cinema_details, book_show_body)
         except ReadTimeout as exc:
-            annulation_pass_culture(self.cgr_cinema_details, token=booking.token)
+            decorator = retry(exception=ReadTimeout, max_attempts=2)
+            annulation_with_retry_on_timeout = decorator(annulation_pass_culture)
+            annulation_with_retry_on_timeout(self.cgr_cinema_details, token=booking.token)
             logger.info(
                 "ReadTimeout on CGR side while booking an offer, token has been sent to prevent booking creation on their side",
                 extra={"booking_token": booking.token},
