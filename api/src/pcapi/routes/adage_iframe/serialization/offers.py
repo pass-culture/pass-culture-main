@@ -226,6 +226,16 @@ class CollectiveOfferResponseModel(BaseModel, common_models.AccessibilityComplia
         extra = "forbid"
 
 
+class StartEndDatesModel(BaseModel):
+    id: int
+    start: datetime
+    end: datetime
+
+    class Config:
+        alias_generator = to_camel
+        orm_mode = True
+
+
 class CollectiveOfferTemplateResponseModel(BaseModel, common_models.AccessibilityComplianceMixin):
     id: int
     subcategoryLabel: str
@@ -247,6 +257,7 @@ class CollectiveOfferTemplateResponseModel(BaseModel, common_models.Accessibilit
     imageUrl: str | None
     nationalProgram: NationalProgramModel | None
     isFavorite: bool | None
+    startEndDates: list[StartEndDatesModel] | None
 
     @classmethod
     def build(
@@ -287,6 +298,7 @@ class CollectiveOfferTemplateResponseModel(BaseModel, common_models.Accessibilit
             mentalDisabilityCompliant=offer.mentalDisabilityCompliant,
             motorDisabilityCompliant=offer.motorDisabilityCompliant,
             visualDisabilityCompliant=offer.visualDisabilityCompliant,
+            startEndDates=offer.startEndDates,
         )
 
     class Config:
