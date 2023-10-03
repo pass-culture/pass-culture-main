@@ -60,7 +60,7 @@ class PatchPriceCategoryTest:
             json={"price": 2500, "label": "carre or", "unrecognized_key": True},
         )
         assert response.status_code == 400
-        assert response.json == {"unrecognized_key": ["Vous ne pouvez pas changer cette information"]}
+        assert response.json == {"unrecognized_key": ["extra fields not permitted"]}
 
     def test_stock_price_update(self, client):
         venue, api_key = utils.create_offerer_provider_linked_to_venue()
