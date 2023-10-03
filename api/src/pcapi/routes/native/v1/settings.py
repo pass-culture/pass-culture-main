@@ -42,6 +42,5 @@ def get_settings() -> serializers.SettingsResponse:
         id_check_address_autocompletion=features[FeatureToggle.ID_CHECK_ADDRESS_AUTOCOMPLETION],
         is_recaptcha_enabled=features[FeatureToggle.ENABLE_NATIVE_APP_RECAPTCHA],
         object_storage_url=OBJECT_STORAGE_URL,
-        pro_disable_events_qrcode=True,  # FIXME (ogeber, 2023-09-19): We can't remove this one until the mobile app doesn't remove this field
         account_unsuspension_limit=constants.ACCOUNT_UNSUSPENSION_DELAY,
     )
