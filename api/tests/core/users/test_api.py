@@ -179,11 +179,7 @@ class DeleteExpiredTokensTest:
 class DeleteUserTokenTest:
     def test_delete_user_token(self):
         user = users_factories.UserFactory()
-        token_utils.Token.create(
-            token_utils.TokenType.RESET_PASSWORD,
-            users_constants.RESET_PASSWORD_TOKEN_LIFE_TIME,
-            user.id,
-        )
+        users_factories.PasswordResetTokenFactory(user=user)
         users_factories.EmailValidationTokenFactory(user=user)
 
         other_user = users_factories.BeneficiaryGrant18Factory()
@@ -192,7 +188,6 @@ class DeleteUserTokenTest:
         users_api.delete_all_users_tokens(user)
 
         assert users_models.Token.query.one_or_none() == other_token
-        assert not token_utils.Token.token_exists(token_utils.TokenType.RESET_PASSWORD, user.id)
 
 
 def _datetime_within_last_5sec(when: datetime.datetime) -> bool:

@@ -20,7 +20,6 @@ from pcapi.core.subscription import api as subscription_api
 from pcapi.core.testing import override_features
 from pcapi.core.testing import override_settings
 from pcapi.core.users import constants as users_constants
-from pcapi.core.users import exceptions as users_exceptions
 from pcapi.core.users import factories as users_factories
 from pcapi.core.users import testing as sendinblue_testing
 from pcapi.core.users.models import AccountState
@@ -489,7 +488,8 @@ def test_request_reset_password_with_recaptcha_ok(
     mock_check_native_app_recaptcha_token.assert_called_once()
     assert response.status_code == 204
 
-    assert token_utils.Token.token_exists(token_utils.TokenType.RESET_PASSWORD, user.id)
+    saved_token = Token.query.filter_by(user=user).first()
+    assert saved_token.type.value == "reset-password"
 
     assert len(mails_testing.outbox) == 1
     assert mails_testing.outbox[0].sent_data["params"]["RESET_PASSWORD_LINK"]
@@ -507,7 +507,8 @@ def test_request_reset_password_for_existing_email(client):
 
     assert response.status_code == 204
 
-    assert token_utils.Token.token_exists(token_utils.TokenType.RESET_PASSWORD, user.id)
+    saved_token = Token.query.filter_by(user=user).first()
+    assert saved_token.type.value == "reset-password"
     assert len(mails_testing.outbox) == 1
     assert mails_testing.outbox[0].sent_data["params"]["RESET_PASSWORD_LINK"]
 
@@ -541,7 +542,8 @@ class InactiveAccountRequestResetPasswordTest:
     def assert_email_is_sent(self, response, user):
         assert response.status_code == 204
 
-        assert token_utils.Token.token_exists(token_utils.TokenType.RESET_PASSWORD, user.id)
+        saved_token = Token.query.filter_by(user=user).one()
+        assert saved_token.type.value == "reset-password"
         assert len(mails_testing.outbox) == 1
         assert mails_testing.outbox[0].sent_data["params"]["RESET_PASSWORD_LINK"]
 
@@ -576,19 +578,18 @@ def test_reset_password_success(client):
     new_password = "New_password1998!"
 
     user = users_factories.UserFactory()
-    token = token_utils.Token.create(
-        token_utils.TokenType.RESET_PASSWORD, users_constants.RESET_PASSWORD_TOKEN_LIFE_TIME, user_id=user.id
-    )
+    token = users_factories.PasswordResetTokenFactory(user=user)
 
-    data = {"reset_password_token": token.encoded_token, "new_password": new_password}
+    data = {"reset_password_token": token.value, "new_password": new_password}
     response = client.post("/native/v1/reset_password", json=data)
 
     assert response.status_code == 200
     db.session.refresh(user)
     assert user.password == crypto.hash_password(new_password)
 
-    with pytest.raises(users_exceptions.InvalidToken):
-        token.check(token_utils.TokenType.RESET_PASSWORD)
+    token = Token.query.get(token.id)
+    assert token.isUsed
+
     # Ensure the access token is valid
     access_token = response.json["accessToken"]
     client.auth_header = {"Authorization": f"Bearer {access_token}"}
@@ -607,11 +608,9 @@ def test_reset_password_for_unvalidated_email(try_dms_orphan_adoption_mock, clie
     new_password = "New_password1998!"
 
     user = users_factories.UserFactory(isEmailValidated=False)
-    token = token_utils.Token.create(
-        token_utils.TokenType.RESET_PASSWORD, users_constants.RESET_PASSWORD_TOKEN_LIFE_TIME, user_id=user.id
-    )
+    token = users_factories.PasswordResetTokenFactory(user=user)
 
-    data = {"reset_password_token": token.encoded_token, "new_password": new_password}
+    data = {"reset_password_token": token.value, "new_password": new_password}
     response = client.post("/native/v1/reset_password", json=data)
 
     assert response.status_code == 200
@@ -635,22 +634,19 @@ def test_reset_password_for_unvalidated_email(try_dms_orphan_adoption_mock, clie
 
 def test_reset_password_fail_for_password_strength(client):
     user = users_factories.UserFactory()
-    token = token_utils.Token.create(
-        token_utils.TokenType.RESET_PASSWORD, users_constants.RESET_PASSWORD_TOKEN_LIFE_TIME, user_id=user.id
-    )
+    token = users_factories.PasswordResetTokenFactory(user=user)
 
     old_password = user.password
     new_password = "weak_password"
 
-    data = {"reset_password_token": token.encoded_token, "new_password": new_password}
+    data = {"reset_password_token": token.value, "new_password": new_password}
 
     response = client.post("/native/v1/reset_password", json=data)
 
     assert response.status_code == 400
     db.session.refresh(user)
     assert user.password == old_password
-    # should note raise
-    token.check(token_utils.TokenType.RESET_PASSWORD)
+    assert Token.query.get(token.id)
 
 
 def test_change_password_success(client):
