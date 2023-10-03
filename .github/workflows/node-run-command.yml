@@ -36,7 +36,7 @@ jobs:
           service_account: ${{ secrets.GCP_EHP_SERVICE_ACCOUNT }}
       - name: Cache the node_modules
         id: yarn-modules-cache
-        uses: mansagroup/gcs-cache-action@867797f1a78d69e008ad0a321c1459ddd619e9fd
+        uses: kopax-polyconseil/gcs-cache-action@989d1c719834a9d4eec2535c02779eb5699f554a
         with:
           bucket: ${{ env.CACHE_BUCKET_NAME }}
           path: |
