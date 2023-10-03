@@ -136,7 +136,7 @@ def build_music_extra_data(
     gtl_id = common_article_fields["genre"].code if common_article_fields["genre"] else None
     music_type, music_subtype = parse_titelive_music_genre(gtl_id)
 
-    return offers_models.OfferExtraData(
+    extra_data = offers_models.OfferExtraData(
         artist=common_article_fields["artiste"],
         author=article.compositeur,
         comment=article.commentaire,
@@ -152,7 +152,10 @@ def build_music_extra_data(
         music_label=common_article_fields["label"],
         nb_galettes=article.nb_galettes,
         performer=article.interprete,
-        prix_musique=str(article.prix),
+        prix_musique=str(article.prix) if article.prix is not None else None,
+    )
+    return typing.cast(
+        offers_models.OfferExtraData, {key: value for key, value in extra_data.items() if value is not None}
     )
 
 
