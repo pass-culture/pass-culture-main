@@ -68,13 +68,13 @@ class CDSStocks(LocalProvider):
 
         # The Product ID must be unique
         provider_movie_unique_id = _build_movie_uuid(self.movie_information.id, self.venue)
-        product_providable_info = self.create_providable_info(
-            pc_object=offers_models.Product,
-            id_at_providers=provider_movie_unique_id,
-            date_modified_at_provider=datetime.utcnow(),
-            new_id_at_provider=provider_movie_unique_id,
-        )
-        providable_information_list.append(product_providable_info)
+        # product_providable_info = self.create_providable_info(
+        #     pc_object=offers_models.Product,
+        #     id_at_providers=provider_movie_unique_id,
+        #     date_modified_at_provider=datetime.utcnow(),
+        #     new_id_at_provider=provider_movie_unique_id,
+        # )
+        # providable_information_list.append(product_providable_info)
 
         venue_movie_unique_id = _build_movie_uuid(self.movie_information.id, self.venue)
         offer_providable_info = self.create_providable_info(
@@ -94,8 +94,8 @@ class CDSStocks(LocalProvider):
         return providable_information_list
 
     def fill_object_attributes(self, pc_object: Model) -> None:
-        if isinstance(pc_object, offers_models.Product):
-            self.fill_product_attributes(pc_object)
+        # if isinstance(pc_object, offers_models.Product):
+        #     self.fill_product_attributes(pc_object)
 
         if isinstance(pc_object, offers_models.Offer):
             self.fill_offer_attributes(pc_object)
@@ -103,17 +103,17 @@ class CDSStocks(LocalProvider):
         if isinstance(pc_object, offers_models.Stock):
             self.fill_stock_attributes(pc_object)
 
-    def fill_product_attributes(self, cds_product: offers_models.Product) -> None:
-        cds_product.name = self.movie_information.title
-        cds_product.subcategoryId = subcategories.SEANCE_CINE.id
+    # def fill_product_attributes(self, cds_product: offers_models.Product) -> None:
+    #     cds_product.name = self.movie_information.title
+    #     cds_product.subcategoryId = subcategories.SEANCE_CINE.id
 
-        self.update_from_movie_information(cds_product, self.movie_information)
+    #     self.update_from_movie_information(cds_product, self.movie_information)
 
-        is_new_product_to_insert = cds_product.id is None
-        if is_new_product_to_insert:
-            cds_product.id = get_next_product_id_from_database()
+    #     is_new_product_to_insert = cds_product.id is None
+    #     if is_new_product_to_insert:
+    #         cds_product.id = get_next_product_id_from_database()
 
-        self.last_product = cds_product
+    #     self.last_product = cds_product
 
     def fill_offer_attributes(self, cds_offer: offers_models.Offer) -> None:
         cds_offer.venueId = self.venue.id
@@ -127,7 +127,7 @@ class CDSStocks(LocalProvider):
 
         cds_offer.name = self.movie_information.title
         cds_offer.subcategoryId = subcategories.SEANCE_CINE.id
-        cds_offer.product = self.last_product
+        # cds_offer.product = self.last_product
 
         is_new_offer_to_insert = cds_offer.id is None
         if is_new_offer_to_insert:

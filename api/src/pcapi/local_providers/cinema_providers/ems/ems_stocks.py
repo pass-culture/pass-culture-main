@@ -41,7 +41,7 @@ class EMSStocks:
         self.venue = venue_provider.venue
         self.provider = venue_provider.provider
         self.poster_urls_map: dict[str, str | None] = {}
-        self.created_products: set[offers_models.Product] = set()
+        # self.created_products: set[offers_models.Product] = set()
         self.created_offers: set[offers_models.Offer] = set()
         self.price_category_labels: list[
             offers_models.PriceCategoryLabel
@@ -49,19 +49,19 @@ class EMSStocks:
 
     def synchronize(self) -> None:
         for event in self.site.events:
-            product = self.get_or_create_product(event, self.provider.id)
-            product = self.fill_product_attribut(product, event)
-            errors = entity_validator.validate(product)
-            if errors and len(errors.errors) > 0:
-                self.created_objects -= 1
-                self.errored_objects += 1
-                continue
-            db.session.add(product)
+            # product = self.get_or_create_product(event, self.provider.id)
+            # product = self.fill_product_attribut(product, event)
+            # errors = entity_validator.validate(product)
+            # if errors and len(errors.errors) > 0:
+            #     self.created_objects -= 1
+            #     self.errored_objects += 1
+            #     continue
+            # db.session.add(product)
 
             self.poster_urls_map.update({event.id: event.bill_url})
 
             offer = self.get_or_create_offer(event, self.provider.id, self.venue)
-            offer.product = product
+            # offer.product = product
             offer = self.fill_offer_attribut(offer, event)
             errors = entity_validator.validate(offer)
             if errors and len(errors.errors) > 0:
@@ -81,7 +81,7 @@ class EMSStocks:
                     continue
                 db.session.add(stock)
 
-            self.created_products.add(product)
+            # self.created_products.add(product)
             self.created_offers.add(offer)
 
         self.venue_provider.lastSyncDate = datetime.datetime.utcnow()
@@ -89,16 +89,18 @@ class EMSStocks:
 
         db.session.commit()
 
-        for product in self.created_products:
-            assert product.idAtProviders  # helps mypy
-            movie_id = _get_movie_id_from_id_at_provider(product.idAtProviders)
-            poster_url = self.poster_urls_map.get(movie_id)
-            if not poster_url:
-                continue
-            thumb = self.connector.get_movie_poster_from_api(poster_url.replace("/120/", "/600/"))
-            if not thumb:
-                continue
-            create_thumb(model_with_thumb=product, image_as_bytes=thumb, storage_id_suffix_str="", keep_ratio=True)
+        # We should maybe save the image at the offer level.
+        # Once we have a unique database they won't be duplicated anymore
+        # for product in self.created_products:
+        #     assert product.idAtProviders  # helps mypy
+        #     movie_id = _get_movie_id_from_id_at_provider(product.idAtProviders)
+        #     poster_url = self.poster_urls_map.get(movie_id)
+        #     if not poster_url:
+        #         continue
+        #     thumb = self.connector.get_movie_poster_from_api(poster_url.replace("/120/", "/600/"))
+        #     if not thumb:
+        #         continue
+        #     create_thumb(model_with_thumb=offer, image_as_bytes=thumb, storage_id_suffix_str="", keep_ratio=True)
 
         offer_ids = set()
         for offer in self.created_offers:

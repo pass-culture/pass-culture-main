@@ -61,13 +61,13 @@ class BoostStocks(LocalProvider):
         providable_information_list = []
         # The Product ID must be unique
         provider_movie_unique_id = _build_movie_uuid(self.showtime_details.film.id, self.venue)
-        product_providable_info = self.create_providable_info(
-            pc_object=offers_models.Product,
-            id_at_providers=provider_movie_unique_id,
-            date_modified_at_provider=datetime.utcnow(),
-            new_id_at_provider=provider_movie_unique_id,
-        )
-        providable_information_list.append(product_providable_info)
+        # product_providable_info = self.create_providable_info(
+        #     pc_object=offers_models.Product,
+        #     id_at_providers=provider_movie_unique_id,
+        #     date_modified_at_provider=datetime.utcnow(),
+        #     new_id_at_provider=provider_movie_unique_id,
+        # )
+        # providable_information_list.append(product_providable_info)
 
         offer_providable_info = self.create_providable_info(
             offers_models.Offer, provider_movie_unique_id, datetime.utcnow(), provider_movie_unique_id
@@ -83,8 +83,8 @@ class BoostStocks(LocalProvider):
         return providable_information_list
 
     def fill_object_attributes(self, pc_object: Model) -> None:
-        if isinstance(pc_object, offers_models.Product):
-            self.fill_product_attributes(pc_object)
+        # if isinstance(pc_object, offers_models.Product):
+        #     self.fill_product_attributes(pc_object)
 
         if isinstance(pc_object, offers_models.Offer):
             self.fill_offer_attributes(pc_object)
@@ -92,17 +92,17 @@ class BoostStocks(LocalProvider):
         if isinstance(pc_object, offers_models.Stock):
             self.fill_stock_attributes(pc_object)
 
-    def fill_product_attributes(self, product: offers_models.Product) -> None:
-        product.name = self.showtime_details.film.titleCnc
-        product.subcategoryId = subcategories.SEANCE_CINE.id
+    # def fill_product_attributes(self, product: offers_models.Product) -> None:
+    #     product.name = self.showtime_details.film.titleCnc
+    #     product.subcategoryId = subcategories.SEANCE_CINE.id
 
-        self.update_from_movie_information(product, self.showtime_details.film.to_generic_movie())
+    #     self.update_from_movie_information(product, self.showtime_details.film.to_generic_movie())
 
-        is_new_product_to_insert = product.id is None
-        if is_new_product_to_insert:
-            product.id = offers_repository.get_next_product_id_from_database()
+    #     is_new_product_to_insert = product.id is None
+    #     if is_new_product_to_insert:
+    #         product.id = offers_repository.get_next_product_id_from_database()
 
-        self.last_product = product
+    #     self.last_product = product
 
     def fill_offer_attributes(self, offer: offers_models.Offer) -> None:
         offer.venueId = self.venue.id
@@ -113,7 +113,7 @@ class BoostStocks(LocalProvider):
 
         offer.name = self.showtime_details.film.titleCnc
         offer.subcategoryId = subcategories.SEANCE_CINE.id
-        offer.product = self.last_product
+        # offer.product = self.last_product
 
         is_new_offer_to_insert = offer.id is None
         if is_new_offer_to_insert:
