@@ -213,7 +213,12 @@ export const Autocomplete = ({
           const itemId = items.findIndex(elm => elm.objectID === item.objectID)
 
           // if the id is less than 3, the category is displayed and must be pre-selected in the filters.
-          if (itemId >= 0 && itemId < 3) {
+          if (
+            itemId >= 0 &&
+            itemId < 3 &&
+            item['offer.subcategoryId'] &&
+            item['offer.subcategoryId'].length > 0
+          ) {
             const result = getCategoriesFromSubcategory(
               item['offer.subcategoryId'][0]
             )
@@ -505,36 +510,42 @@ export const Autocomplete = ({
                       className={styles['dialog-panel-autocomplete-list']}
                       {...autocomplete.getListProps()}
                     >
-                      {keywordSuggestionsItems.map((item, index) => (
-                        <li
-                          key={`item-keyword-${index}`}
-                          className={styles['dialog-panel-autocomplete-item']}
-                          {...autocomplete.getItemProps({
-                            item,
-                            source: keywordSuggestionsSource,
-                            id: `keyword-${index}`,
-                          })}
-                        >
-                          <SvgIcon
-                            src={strokeSearchIcon}
-                            alt=""
-                            className={
-                              styles['dialog-panel-autocomplete-item-icon']
-                            }
-                          />
-                          {item.query} {index <= 2 && 'dans '}
-                          <span
-                            className={
-                              styles['dialog-panel-autocomplete-category']
-                            }
+                      {keywordSuggestionsItems.map((item, index) => {
+                        const shouldDisplayCategory =
+                          index <= 2 &&
+                          item['offer.subcategoryId'] &&
+                          item['offer.subcategoryId'].length > 0
+                        return (
+                          <li
+                            key={`item-keyword-${index}`}
+                            className={styles['dialog-panel-autocomplete-item']}
+                            {...autocomplete.getItemProps({
+                              item,
+                              source: keywordSuggestionsSource,
+                              id: `keyword-${index}`,
+                            })}
                           >
-                            {index <= 2 &&
-                              getCategoriesFromSubcategory(
-                                item['offer.subcategoryId'][0]
-                              ).label}
-                          </span>
-                        </li>
-                      ))}
+                            <SvgIcon
+                              src={strokeSearchIcon}
+                              alt=""
+                              className={
+                                styles['dialog-panel-autocomplete-item-icon']
+                              }
+                            />
+                            {item.query} {shouldDisplayCategory && 'dans '}
+                            <span
+                              className={
+                                styles['dialog-panel-autocomplete-category']
+                              }
+                            >
+                              {shouldDisplayCategory &&
+                                getCategoriesFromSubcategory(
+                                  item['offer.subcategoryId'][0]
+                                ).label}
+                            </span>
+                          </li>
+                        )
+                      })}
                     </ul>
                   </div>
                 )}

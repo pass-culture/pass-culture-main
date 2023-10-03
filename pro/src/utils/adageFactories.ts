@@ -1,6 +1,7 @@
 import {
   AdageFrontRoles,
   AuthenticatedResponse,
+  CategoriesResponseModel,
   CollectiveOfferTemplateResponseModel,
   EducationalInstitutionWithBudgetResponseModel,
   OfferAddressType,
@@ -100,4 +101,18 @@ export const defaultUseInfiniteHitsReturn = {
   sendEvent: vi.fn(),
   bindEvent: vi.fn(),
   currentPageHits: [hit],
+}
+
+export const defaultCategories: CategoriesResponseModel = {
+  categories: [{ id: 'CINEMA', proLabel: 'Cinéma' }],
+  subcategories: [
+    {
+      id: 'CINE_PLEIN_AIR',
+      categoryId: 'CINEMA',
+    },
+    {
+      id: 'EVENEMENT_CINE',
+      categoryId: 'CINEMA',
+    },
+  ],
 }
