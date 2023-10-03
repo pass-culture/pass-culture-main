@@ -1339,7 +1339,6 @@ def test_public_api(client):
                         "idCheckAddressAutocompletion": {"title": "Idcheckaddressautocompletion", "type": "boolean"},
                         "isRecaptchaEnabled": {"title": "Isrecaptchaenabled", "type": "boolean"},
                         "objectStorageUrl": {"title": "Objectstorageurl", "type": "string"},
-                        "proDisableEventsQrcode": {"title": "Prodisableeventsqrcode", "type": "boolean"},
                     },
                     "required": [
                         "accountCreationMinimumAge",
@@ -1352,7 +1351,6 @@ def test_public_api(client):
                         "idCheckAddressAutocompletion",
                         "isRecaptchaEnabled",
                         "objectStorageUrl",
-                        "proDisableEventsQrcode",
                         "accountUnsuspensionLimit",
                     ],
                     "title": "SettingsResponse",
