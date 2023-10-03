@@ -54,6 +54,27 @@ def before_handler(
         raise api_errors
 
 
+def public_api_before_handler(
+    _request: flask.Request,
+    _response: flask.Response,
+    pydantic_error: pydantic_v1.ValidationError | None,
+    _: typing.Any,
+) -> None:
+    """Raises an ``ApiErrors` exception if input validation fails.
+
+    This handler is automatically called through the ``spectree_serialize()`` decorator.
+    This decorator doesn't translate errors to french since it is used for public APIs.
+    """
+
+    if pydantic_error and pydantic_error.errors():
+        api_errors = ApiErrors()
+        for error in pydantic_error.errors():
+            message = error["msg"]
+            location = ".".join(str(loc) for loc in error["loc"])
+            api_errors.add_error(location, message)
+        raise api_errors
+
+
 def check_string_is_not_empty(string: str) -> str:
     if not string or string.isspace():
         raise pydantic_v1.MissingError()

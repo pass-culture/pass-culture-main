@@ -185,7 +185,7 @@ class PatchDateTest:
             },
         )
         assert response.status_code == 400
-        assert response.json == {"testForbidField": ["Vous ne pouvez pas changer cette information"]}
+        assert response.json == {"testForbidField": ["extra fields not permitted"]}
 
     @freezegun.freeze_time("2022-01-01 12:00:00")
     def test_update_stock_with_existing_booking(self, client):
