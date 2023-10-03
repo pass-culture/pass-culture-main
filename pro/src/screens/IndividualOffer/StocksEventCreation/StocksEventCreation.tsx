@@ -107,10 +107,25 @@ export const StocksEventCreation = ({
       })
     )
   }
+
   const stocksToCreate = stocks
     .filter(stock => stock.id === undefined)
-    // eslint-disable-next-line @typescript-eslint/no-unused-vars
-    .map(({ uuid, ...rest }) => rest)
+    // uuid & bookingsQuantity are not sent to backend
+    .map(
+      ({
+        id,
+        beginningDatetime,
+        bookingLimitDatetime,
+        priceCategoryId,
+        quantity,
+      }) => ({
+        id,
+        beginningDatetime,
+        bookingLimitDatetime,
+        priceCategoryId,
+        quantity,
+      })
+    )
   const stocksToDelete = offer.stocks.filter(
     s =>
       !stocks.find(stock => stock.id === (s?.id ? s.id.toString() : undefined))
