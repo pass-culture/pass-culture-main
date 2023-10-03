@@ -3,27 +3,45 @@ interface Coordinates {
   longitude: number
 }
 
-enum DistanceUnitCoef {
-  Meters = 1,
-  Kilometers = 1000,
+const EARTH_RADIUS_KM = 6378.137
+
+export const getHumanizeRelativeDistance = (
+  from: Coordinates,
+  to: Coordinates
+): string => {
+  const distanceInMeters = computeDistanceInMeters(from, to)
+  return humanizeDistance(distanceInMeters).replace('.', ',')
 }
 
-const EARTH_RADIUS = 6378137 // meters
+const computeDistanceInMeters = (from: Coordinates, to: Coordinates) => {
+  const newLat = (to.latitude * Math.PI) / 180 - (from.latitude * Math.PI) / 180
+  const newLng =
+    (to.longitude * Math.PI) / 180 - (from.longitude * Math.PI) / 180
+  const a =
+    Math.sin(newLat / 2) * Math.sin(newLat / 2) +
+    Math.cos((from.latitude * Math.PI) / 180) *
+      Math.cos((to.latitude * Math.PI) / 180) *
+      Math.sin(newLng / 2) *
+      Math.sin(newLng / 2)
 
-const toRad = (value: number) => (value * Math.PI) / 180
+  const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a))
+  return EARTH_RADIUS_KM * c * 1000
+}
 
-export const getDistance = (
-  from: Coordinates,
-  to: Coordinates,
-  unitCoef: DistanceUnitCoef = DistanceUnitCoef.Kilometers
-) => {
-  const distanceInMeters =
-    Math.acos(
-      Math.sin(toRad(to.latitude)) * Math.sin(toRad(from.latitude)) +
-        Math.cos(toRad(to.latitude)) *
-          Math.cos(toRad(from.latitude)) *
-          Math.cos(toRad(from.longitude) - toRad(to.longitude))
-    ) * EARTH_RADIUS
+const humanizeDistance = (distance: number) => {
+  if (distance < 30) {
+    return `${Math.round(distance)} m`
+  }
+  if (distance < 100) {
+    return `${Math.round(distance / 5) * 5} m`
+  }
+  if (distance < 1000) {
+    return `${Math.round(distance / 10) * 10} m`
+  }
+  if (distance < 5000) {
+    return `${Math.round(distance / 100) / 10} km`
+  }
 
-  return Math.round(distanceInMeters / unitCoef)
+  const distanceKm = Math.round(distance / 1000)
+  return `${distanceKm > 900 ? '900+' : distanceKm} km`
 }

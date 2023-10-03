@@ -17,7 +17,7 @@ import {
 import { Tag } from 'ui-kit'
 import { SvgIcon } from 'ui-kit/SvgIcon/SvgIcon'
 import { LOGS_DATA } from 'utils/config'
-import { getDistance } from 'utils/getDistance'
+import { getHumanizeRelativeDistance } from 'utils/getDistance'
 import { removeParamsFromUrl } from 'utils/removeParamsFromUrl'
 
 import ContactButton from './ContactButton'
@@ -82,7 +82,7 @@ const Offer = ({
             />
             <div>
               basé à{' '}
-              {getDistance(
+              {getHumanizeRelativeDistance(
                 {
                   latitude: offer.venue.coordinates.latitude,
                   longitude: offer.venue.coordinates.longitude,
@@ -92,7 +92,7 @@ const Offer = ({
                   longitude: adageUser.lon,
                 }
               )}{' '}
-              km de votre établissement
+              de votre établissement
             </div>
             {offer.offerVenue.addressType !== OfferAddressType.OFFERER_VENUE &&
               adageUser.departmentCode &&
