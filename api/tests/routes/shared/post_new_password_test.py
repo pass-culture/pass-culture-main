@@ -28,7 +28,7 @@ def test_change_password(client):
 
 @pytest.mark.usefixtures("db_session")
 def test_change_password_validates_email(client):
-    user = users_factories.UserFactory(isEmailValidated=False)
+    user = users_factories.UserFactory(isEmailValidated=False, validationToken="AZERTY123456")
     token = users_factories.TokenFactory(user=user, type=TokenType.RESET_PASSWORD)
     data = {"token": token.value, "newPassword": "N3W_p4ssw0rd"}
 
@@ -45,6 +45,7 @@ def test_change_password_validates_email(client):
     assert len(users_testing.sendinblue_requests) == 1
     sendinblue_data = users_testing.sendinblue_requests[0]
     assert sendinblue_data["attributes"]["IS_EMAIL_VALIDATED"]
+    assert not user.validationToken
 
 
 @pytest.mark.usefixtures("db_session")
