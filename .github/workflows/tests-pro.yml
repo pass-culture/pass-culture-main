@@ -186,9 +186,6 @@ jobs:
       # Doc : https://github.com/cypress-io/github-action
       - name: Cypress run
         uses: cypress-io/github-action@v5
-        # E2E tests are not stable enough for now.
-        # Once they are reliable, we can remove the following line.
-        continue-on-error: true
         with:
           build: yarn build:development
           start: yarn serve
