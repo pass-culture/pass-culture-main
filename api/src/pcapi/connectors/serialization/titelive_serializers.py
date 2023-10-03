@@ -45,7 +45,7 @@ class TiteliveArticle(BaseModel):
     image: str
     imagesUrl: TiteliveImage
     dispo: str
-    prix: decimal.Decimal
+    prix: decimal.Decimal | None
     resume: str | None
 
     _convert_dateparution = pydantic_v1.validator("dateparution", pre=True, allow_reuse=True)(
