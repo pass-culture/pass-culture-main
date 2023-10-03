@@ -131,9 +131,9 @@ class TiteliveSearchTest:
         assert vinyle_product.extraData["music_label"] == "WARNER MUSIC UK"
         assert vinyle_product.extraData["nb_galettes"] == "1"
         assert vinyle_product.extraData["performer"] == "Gorillaz"
-        assert vinyle_product.extraData["prix_musique"] == "19.98"
         assert vinyle_product.extraData["musicType"] == str(music_types.MUSIC_TYPES_BY_SLUG["POP-BRITPOP"].code)
         assert vinyle_product.extraData["musicSubType"] == str(music_types.MUSIC_SUB_TYPES_BY_SLUG["POP-BRITPOP"].code)
+        assert "prix_musique" not in vinyle_product.extraData
 
     @freezegun.freeze_time("2023-01-01")
     def test_titelive_sync_event(self, requests_mock):
