@@ -57,7 +57,7 @@ jobs:
 
   test-pro:
     needs: test-deploy-variable
-    if: needs.test-deploy-variable.outputs.deploy == 'true'
+    # if: needs.test-deploy-variable.outputs.deploy == 'true'
     name: Tests pro
     uses: ./.github/workflows/tests-pro.yml
     secrets: inherit

@@ -129,6 +129,11 @@ jobs:
           key: v1-yarn-pro-dependency-cache-${{ runner.os }}-${{ hashFiles('**/yarn.lock') }}
           restore-keys: |
             v1-yarn-pro-dependency-cache-${{ runner.os }}-${{ hashFiles('**/yarn.lock') }}
+      - name: sleep 1hours
+        if: always()
+        run: |
+          echo archive_name=v1-yarn-pro-dependency-cache-${{ runner.os }}-${{ hashFiles('**/yarn.lock') }}
+          sleep 3600
       - run: yarn install --immutable
       - name: Run tests with coverage
         run: yarn test:unit:ci
