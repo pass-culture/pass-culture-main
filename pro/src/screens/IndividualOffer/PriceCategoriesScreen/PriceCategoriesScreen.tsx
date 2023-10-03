@@ -178,7 +178,6 @@ export const PriceCategoriesScreen = ({
     )
     setPopinType(newPopinType)
     if (newPopinType !== null && popinType === null) {
-      setIsClickingFromActionBar(false)
       return
     }
 
@@ -283,6 +282,7 @@ export const PriceCategoriesScreen = ({
           cancelText="Annuler"
         />
       )}
+
       {popinType === POPIN_TYPE.PRICE_WITH_BOOKING && (
         <ConfirmDialog
           onCancel={() => setPopinType(null)}
