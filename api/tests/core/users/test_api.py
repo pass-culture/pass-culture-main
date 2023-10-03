@@ -184,19 +184,14 @@ class DeleteUserTokenTest:
             users_constants.RESET_PASSWORD_TOKEN_LIFE_TIME,
             user.id,
         )
-        token_utils.Token.create(
-            token_utils.TokenType.EMAIL_VALIDATION, users_constants.EMAIL_VALIDATION_TOKEN_LIFE_TIME, user.id
-        )
+        users_factories.EmailValidationTokenFactory(user=user)
 
         other_user = users_factories.BeneficiaryGrant18Factory()
-        token_utils.Token.create(
-            token_utils.TokenType.EMAIL_VALIDATION, users_constants.EMAIL_VALIDATION_TOKEN_LIFE_TIME, other_user.id
-        )
+        other_token = users_factories.EmailValidationTokenFactory(user=other_user)
 
         users_api.delete_all_users_tokens(user)
 
-        assert not token_utils.Token.token_exists(token_utils.TokenType.EMAIL_VALIDATION, user.id)
-        assert token_utils.Token.token_exists(token_utils.TokenType.EMAIL_VALIDATION, other_user.id)
+        assert users_models.Token.query.one_or_none() == other_token
         assert not token_utils.Token.token_exists(token_utils.TokenType.RESET_PASSWORD, user.id)
 
 
