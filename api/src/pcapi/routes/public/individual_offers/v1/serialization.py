@@ -50,6 +50,11 @@ EventCategoryEnum = StrEnum(  # type:ignore [call-overload]
     "CategoryEnum", {subcategory_id: subcategory_id for subcategory_id in subcategories.EVENT_SUBCATEGORIES}
 )
 
+if typing.TYPE_CHECKING:
+    offer_price_model = pydantic_v1.StrictInt
+else:
+    offer_price_model = pydantic_v1.conint(strict=True, ge=0, lt=30000)  # 300 euros
+
 
 class Accessibility(serialization.ConfiguredBaseModel):
     """Accessibility for people with disabilities."""
@@ -358,7 +363,7 @@ def deserialize_quantity(quantity: int | UNLIMITED_LITERAL | None) -> int | None
 
 
 class StockCreation(BaseStockCreation):
-    price: pydantic_v1.StrictInt = PRICE_FIELD
+    price: offer_price_model = PRICE_FIELD
     booking_limit_datetime: datetime.datetime | None = BOOKING_LIMIT_DATETIME_FIELD
 
     _validate_booking_limit_datetime = serialization_utils.validate_datetime("booking_limit_datetime")
@@ -389,13 +394,7 @@ class BaseStockEdition(serialization.ConfiguredBaseModel):
 
 
 class StockEdition(BaseStockEdition):
-    price: pydantic_v1.StrictInt | None = PRICE_FIELD
-
-    @pydantic_v1.validator("price")
-    def price_must_be_positive(cls, value: int | None) -> int | None:
-        if value and value < 0:
-            raise ValueError("Value must be positive")
-        return value
+    price: offer_price_model | None = PRICE_FIELD
 
 
 class InAppDetails(serialization.ConfiguredBaseModel):
@@ -454,13 +453,7 @@ class PriceCategoryCreation(serialization.ConfiguredBaseModel):
         label: str = PRICE_CATEGORY_LABEL_FIELD
     else:
         label: pydantic_v1.constr(min_length=1, max_length=50) = PRICE_CATEGORY_LABEL_FIELD
-    price: pydantic_v1.StrictInt = PRICE_FIELD
-
-    @pydantic_v1.validator("price")
-    def price_must_be_positive(cls, value: int) -> int:
-        if value < 0:
-            raise ValueError("Value must be positive")
-        return value
+    price: offer_price_model = PRICE_FIELD
 
     class Config:
         getter_dict = DecimalPriceGetterDict
@@ -563,7 +556,7 @@ class PriceCategoryEdition(serialization.ConfiguredBaseModel):
         label: str = PRICE_CATEGORY_LABEL_FIELD
     else:
         label: pydantic_v1.constr(min_length=1, max_length=50) | None = PRICE_CATEGORY_LABEL_FIELD
-    price: pydantic_v1.StrictInt | None = PRICE_FIELD
+    price: offer_price_model | None = PRICE_FIELD
 
     @pydantic_v1.validator("price")
     def price_must_be_positive(cls, value: int | None) -> int | None:
@@ -703,7 +696,7 @@ class OfferResponse(serialization.ConfiguredBaseModel):
 
 
 class ProductStockResponse(BaseStockResponse):
-    price: pydantic_v1.StrictInt = PRICE_FIELD
+    price: offer_price_model = PRICE_FIELD
 
     @classmethod
     def build_product_stock(cls, stock: offers_models.Stock) -> "ProductStockResponse":

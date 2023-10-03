@@ -295,6 +295,30 @@ class PostProductByEanTest:
         assert response.status_code == 400
         assert response.json == {"products.0.ean": ["ensure this value has at least 13 characters"]}
 
+    def test_400_when_price_too_high(self, client):
+        venue, _ = utils.create_offerer_provider_linked_to_venue()
+        product = offers_factories.ProductFactory(
+            subcategoryId=subcategories.SUPPORT_PHYSIQUE_MUSIQUE_CD.id, extraData={"ean": "1234567890123"}
+        )
+
+        response = client.with_explicit_token(offerers_factories.DEFAULT_CLEAR_API_KEY).post(
+            "/public/offers/v1/products/ean",
+            json={
+                "products": [
+                    {
+                        "ean": product.extraData["ean"],
+                        "stock": {
+                            "price": 300000,
+                            "quantity": 3,
+                        },
+                    }
+                ],
+                "location": {"type": "physical", "venueId": venue.id},
+            },
+        )
+
+        assert response.status_code == 400
+
     def test_update_offer_when_ean_already_exists(self, client):
         venue, _ = utils.create_offerer_provider_linked_to_venue()
         product = offers_factories.ProductFactory(

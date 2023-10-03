@@ -425,7 +425,7 @@ class PostProductTest:
         )
 
         assert response.status_code == 400
-        assert response.json == {"productOffers.0.stock.price": ["Value must be positive"]}
+        assert response.json == {"productOffers.0.stock.price": ["Saisissez un nombre supérieur ou égal à 0"]}
 
     @pytest.mark.usefixtures("db_session")
     def test_quantity_must_be_positive(self, client):
