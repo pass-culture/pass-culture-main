@@ -19,6 +19,8 @@ import React, {
 } from 'react'
 import { useSearchBox } from 'react-instantsearch'
 
+import { SuggestionType } from 'apiClient/adage'
+import { apiAdage } from 'apiClient/api'
 import useActiveFeature from 'hooks/useActiveFeature'
 import useNotification from 'hooks/useNotification'
 import fullClearIcon from 'icons/full-clear.svg'
@@ -37,6 +39,7 @@ import {
   ALGOLIA_COLLECTIVE_OFFERS_INDEX,
   ALGOLIA_COLLECTIVE_OFFERS_SUGGESTIONS_INDEX,
 } from 'utils/config'
+import { removeParamsFromUrl } from 'utils/removeParamsFromUrl'
 
 import styles from './Autocomplete.module.scss'
 
@@ -129,6 +132,17 @@ export const Autocomplete = ({
     enableAutocompleteAdage && loadData()
   }, [])
 
+  const logAutocompleteSuggestionClick = (
+    suggestionType: SuggestionType,
+    suggestionValue: string
+  ) => {
+    apiAdage.logTrackingAutocompleteSuggestionClick({
+      iframeFrom: removeParamsFromUrl(location.pathname),
+      suggestionType,
+      suggestionValue,
+    })
+  }
+
   // retrieves recent searches made in the search input
   const recentSearchesPlugin = createLocalStorageRecentSearchesPlugin({
     key: 'RECENT_SEARCH',
@@ -183,6 +197,10 @@ export const Autocomplete = ({
           autocomplete.setQuery(venueDisplayName)
           refine(venueDisplayName)
           addSuggestionToHistory(venueDisplayName)
+          logAutocompleteSuggestionClick(
+            SuggestionType.VENUE,
+            item.venue.publicName || item.venue.name
+          )
         },
         getItems(params) {
           if (!params.state.query) {
@@ -248,6 +266,10 @@ export const Autocomplete = ({
           refine(item.query)
           formik.submitForm()
           addSuggestionToHistory(item.query)
+          logAutocompleteSuggestionClick(
+            itemId <= 2 ? SuggestionType.OFFER_CATEGORY : SuggestionType.OFFER,
+            item.query
+          )
         },
       }
     },
