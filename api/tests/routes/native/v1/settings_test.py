@@ -34,7 +34,6 @@ class SettingsTest:
             "idCheckAddressAutocompletion": True,
             "isRecaptchaEnabled": True,
             "objectStorageUrl": "http://localhost/storage",
-            "proDisableEventsQrcode": True,
             "accountUnsuspensionLimit": 60,
         }
 
@@ -63,6 +62,5 @@ class SettingsTest:
             "idCheckAddressAutocompletion": False,
             "isRecaptchaEnabled": False,
             "objectStorageUrl": "http://localhost/storage",
-            "proDisableEventsQrcode": True,
             "accountUnsuspensionLimit": 60,
         }
