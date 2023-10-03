@@ -522,7 +522,6 @@ MUSIC_SEARCH_FIXTURE = {
                     "editeur": "WARNER MUSIC UK",
                     "distributeur": "Warner Music France",
                     "code_distributeur": "WAR",
-                    "prix": 19.98,
                     "codeprix": "461",
                     "prixpays": {
                         "fr": {"value": 19.98, "devise": "&euro;"},
