@@ -765,7 +765,7 @@ class GetBookingsByOfferReturns400Test:
         )
 
         assert response.status_code == 400
-        assert response.json == {"offerId": ["Ce champ est obligatoire"]}
+        assert response.json == {"offerId": ["field required"]}
 
 
 class GetBookingsByOfferReturns404Test:
