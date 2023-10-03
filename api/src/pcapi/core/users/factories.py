@@ -871,6 +871,11 @@ class TokenFactory(BaseFactory):
     value = factory.Sequence("XYZ{0}".format)
 
 
+class PasswordResetTokenFactory(TokenFactory):
+    type = models.TokenType.RESET_PASSWORD
+    expirationDate = factory.LazyFunction(lambda: datetime.utcnow() + constants.RESET_PASSWORD_TOKEN_LIFE_TIME)
+
+
 class EmailValidationTokenFactory(TokenFactory):
     type = models.TokenType.EMAIL_VALIDATION
     expirationDate = factory.LazyFunction(lambda: datetime.utcnow() + constants.EMAIL_VALIDATION_TOKEN_LIFE_TIME)
