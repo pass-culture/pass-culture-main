@@ -512,7 +512,7 @@ class AccountCreationEmailExistsTest:
             TransactionalEmail.EMAIL_ALREADY_EXISTS.value
         )
 
-        assert token_utils.Token.token_exists(token_utils.TokenType.RESET_PASSWORD, user.id)
+        assert users_models.Token.query.filter_by(type=users_models.TokenType.RESET_PASSWORD, userId=user.id).one()
 
     def test_active_account(self, client):
         user = users_factories.UserFactory(email=self.identifier)
