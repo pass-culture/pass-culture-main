@@ -18,7 +18,7 @@
     "filterOnly(offer.interventionArea)",
     "filterOnly(offer.schoolInterventionArea)",
     "filterOnly(offer.students)",
-    "filterOnly(offer.subcategoryId)",
+    "searchable(offer.subcategoryId)",
     "filterOnly(venue.departmentCode)",
     "filterOnly(venue.id)",
     "filterOnly(venue.academy)"

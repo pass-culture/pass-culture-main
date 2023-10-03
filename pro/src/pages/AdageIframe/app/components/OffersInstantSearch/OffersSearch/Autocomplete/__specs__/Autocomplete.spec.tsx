@@ -3,7 +3,7 @@ import { userEvent } from '@testing-library/user-event'
 import React from 'react'
 
 import { AdageUserContext } from 'pages/AdageIframe/app/providers/AdageUserContext'
-import { defaultAdageUser } from 'utils/adageFactories'
+import { defaultAdageUser, defaultCategories } from 'utils/adageFactories'
 import { renderWithProviders } from 'utils/renderWithProviders'
 
 import { Autocomplete } from '../Autocomplete'
@@ -53,7 +53,7 @@ const mockKeywordSuggestions = [
     query: 'mock keyword 1',
     popularity: 1,
     nb_words: 1,
-    'offer.subcategoryId': ['FESTIVAL_SPECTACLE'],
+    'offer.subcategoryId': ['CINE_PLEIN_AIR'],
     querySuggestionName: {
       exact_nb_hits: 10,
     },
@@ -68,7 +68,22 @@ const mockKeywordSuggestions = [
       exact_nb_hits: 5,
     },
   },
+  {
+    objectID: 'mock keyword 3',
+    query: 'mock keyword 3',
+    popularity: 3,
+    nb_words: 1,
+    querySuggestionName: {
+      exact_nb_hits: 5,
+    },
+  },
 ]
+
+vi.mock('apiClient/api', () => ({
+  apiAdage: {
+    getEducationalOffersCategories: vi.fn(() => defaultCategories),
+  },
+}))
 
 let mockGetItems = vi.fn((): Array<getItems> => mockVenueSuggestions)
 let mockSourceId = 'VenueSuggestionsSource'
