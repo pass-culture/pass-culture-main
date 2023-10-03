@@ -7,7 +7,7 @@ from werkzeug.exceptions import BadRequest
 from pcapi.models import api_errors
 from pcapi.models import feature
 from pcapi.serialization.spec_tree import ExtendedSpecTree
-from pcapi.serialization.utils import before_handler
+from pcapi.serialization.utils import public_api_before_handler
 from pcapi.validation.routes import users_authentifications
 
 
@@ -28,7 +28,7 @@ class IndividualApiSpectree(ExtendedSpecTree):
             "flask",
             title=title,
             MODE="strict",
-            before=before_handler,
+            before=public_api_before_handler,
             security_schemes=[
                 SecurityScheme(
                     name=users_authentifications.API_KEY_AUTH_NAME,

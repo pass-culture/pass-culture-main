@@ -396,7 +396,7 @@ class PostProductTest:
         )
 
         assert response.status_code == 400
-        assert response.json == {"productOffers.0.stock.price": ["Saisissez un nombre valide"]}
+        assert response.json == {"productOffers.0.stock.price": ["value is not a valid integer"]}
 
     @pytest.mark.usefixtures("db_session")
     def test_price_must_be_positive(self, client):
@@ -425,7 +425,7 @@ class PostProductTest:
         )
 
         assert response.status_code == 400
-        assert response.json == {"productOffers.0.stock.price": ["Saisissez un nombre supérieur ou égal à 0"]}
+        assert response.json == {"productOffers.0.stock.price": ["ensure this value is greater than or equal to 0"]}
 
     @pytest.mark.usefixtures("db_session")
     def test_quantity_must_be_positive(self, client):

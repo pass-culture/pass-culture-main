@@ -204,7 +204,7 @@ class GetProductByEanTest:
         )
 
         assert response.status_code == 400
-        assert response.json == {"venueId": ["Ce champ est obligatoire"]}
+        assert response.json == {"venueId": ["field required"]}
 
     def test_no_404_when_ean_not_found(self, client):
         venue, _ = utils.create_offerer_provider_linked_to_venue()
