@@ -1,4 +1,5 @@
 from datetime import datetime
+from datetime import timedelta
 
 from flask import url_for
 from freezegun.api import freeze_time
@@ -9,6 +10,7 @@ from pcapi.core.educational.models import StudentLevels
 from pcapi.core.offerers import factories as offerers_factories
 from pcapi.core.testing import assert_num_queries
 from pcapi.models import offer_mixin
+from pcapi.utils.date import format_into_utc_date
 
 
 pytestmark = pytest.mark.usefixtures("db_session")
@@ -33,6 +35,8 @@ def redactor_fixture():
 @freeze_time("2020-11-17 15:00:00")
 class CollectiveOfferTemplateTest:
     def test_get_collective_offer_template(self, eac_client, redactor):
+        template_start = datetime.utcnow() + timedelta(days=1)
+        template_end = datetime.utcnow() + timedelta(days=100)
         venue = offerers_factories.VenueFactory()
         offer = educational_factories.CollectiveOfferTemplateFactory(
             name="offer name",
@@ -45,6 +49,7 @@ class CollectiveOfferTemplateTest:
                 "otherAddress": "",
             },
             nationalProgramId=educational_factories.NationalProgramFactory().id,
+            startEndDates=[educational_factories.TemplateStartEndDatesFactory()],
         )
 
         url = url_for("adage_iframe.get_collective_offer_template", offer_id=offer.id)
@@ -53,7 +58,8 @@ class CollectiveOfferTemplateTest:
         # 2. fetch collective offer and related data
         # 3. fetch the offerVenue's details (Venue)
         # 4. find out if its a redactor's favorite
-        with assert_num_queries(4):
+        # 5. find out startEndDates
+        with assert_num_queries(5):
             response = eac_client.get(url)
 
         assert response.status_code == 200
@@ -100,7 +106,20 @@ class CollectiveOfferTemplateTest:
             "imageCredit": None,
             "nationalProgram": {"id": offer.nationalProgramId, "name": offer.nationalProgram.name},
             "isFavorite": False,
+            "startEndDates": [
+                {
+                    "end": format_into_utc_date(offer.startEndDates[0].end),
+                    "id": offer.startEndDates[0].id,
+                    "start": format_into_utc_date(offer.startEndDates[0].start),
+                }
+            ],
         }
+        assert offer.startEndDates
+        start_end_dates = offer.startEndDates
+
+        assert len(start_end_dates) == 1
+        assert start_end_dates[0].start == template_start
+        assert start_end_dates[0].end == template_end
 
     def test_is_a_redactors_favorite(self, eac_client):
         """Ensure that the isFavorite field is true only if the
@@ -114,7 +133,8 @@ class CollectiveOfferTemplateTest:
         # 1. fetch redactor
         # 2. fetch collective offer template and related data
         # 3. find out if its a redactor's favorite
-        with assert_num_queries(3):
+        # 4. find out startEndDates
+        with assert_num_queries(4):
             response = eac_client.get(dst)
 
         assert response.status_code == 200
@@ -146,7 +166,8 @@ class CollectiveOfferTemplateTest:
 
         # 1. fetch redactor
         # 2. fetch collective offer and related data
-        with assert_num_queries(2):
+        # 3. find out startEndDates
+        with assert_num_queries(3):
             response = eac_client.get(dst)
 
         assert response.status_code == 200

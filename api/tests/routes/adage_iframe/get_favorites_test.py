@@ -39,7 +39,7 @@ class GetFavoriteOfferTest:
         )
 
         # when
-        with assert_num_queries(3):
+        with assert_num_queries(4):
             response = test_client.get(
                 "/adage-iframe/collective/favorites",
             )
@@ -124,6 +124,7 @@ class GetFavoriteOfferTest:
                     "mentalDisabilityCompliant": False,
                     "motorDisabilityCompliant": False,
                     "visualDisabilityCompliant": False,
+                    "startEndDates": None,
                     "id": collective_offer_template.id,
                     "subcategoryLabel": collective_offer_template.subcategory.app_label,
                     "description": collective_offer_template.description,
@@ -215,7 +216,7 @@ class GetFavoriteOfferTest:
         )
 
         # when
-        with assert_num_queries(3):
+        with assert_num_queries(4):
             response = test_client.get(
                 "/adage-iframe/collective/favorites",
             )

@@ -621,7 +621,7 @@ class CollectiveOfferTemplate(
         back_populates="favoriteCollectiveOfferTemplates",
     )
 
-    startEndDates: typing.Collection["TemplateStartEndDates"] = relationship(
+    startEndDates: sa.orm.Mapped["TemplateStartEndDates"] = relationship(
         "TemplateStartEndDates", back_populates="template"
     )
 
