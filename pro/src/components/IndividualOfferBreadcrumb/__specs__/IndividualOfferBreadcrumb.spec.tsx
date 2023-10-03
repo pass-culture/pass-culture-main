@@ -312,6 +312,7 @@ describe('test IndividualOfferBreadcrumb', () => {
       expect(screen.getByText('Stock & Prix')).toBeInTheDocument()
       expect(screen.queryByText('Récapitulatif')).not.toBeInTheDocument()
       expect(screen.queryByText('Confirmation')).not.toBeInTheDocument()
+      expect(screen.queryByText('Réservations')).toBeInTheDocument()
 
       expect(screen.getByText('Informations screen')).toBeInTheDocument()
     })
@@ -338,6 +339,7 @@ describe('test IndividualOfferBreadcrumb', () => {
       expect(screen.getByText('Stock & Prix')).toBeInTheDocument()
       expect(screen.queryByText('Récapitulatif')).not.toBeInTheDocument()
       expect(screen.queryByText('Confirmation')).not.toBeInTheDocument()
+      expect(screen.queryByText('Réservations')).toBeInTheDocument()
 
       expect(screen.getByText('Stocks screen')).toBeInTheDocument()
     })

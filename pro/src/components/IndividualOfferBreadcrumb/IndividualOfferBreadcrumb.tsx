@@ -116,13 +116,16 @@ export const IndividualOfferBreadcrumb = () => {
     )
   }
 
-  if (mode === OFFER_WIZARD_MODE.READ_ONLY) {
+  if (
+    mode === OFFER_WIZARD_MODE.READ_ONLY ||
+    mode === OFFER_WIZARD_MODE.EDITION
+  ) {
     steps.push({
       id: OFFER_WIZARD_STEP_IDS.BOOKINGS,
       label: 'Réservations',
       path: getIndividualOfferPath({
         step: OFFER_WIZARD_STEP_IDS.BOOKINGS,
-        mode,
+        mode: OFFER_WIZARD_MODE.READ_ONLY,
       }),
       isActive: true,
     })
