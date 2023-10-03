@@ -7,7 +7,7 @@ export const useTooltipProps = ({
   onBlur,
   onKeyDown,
 }: Partial<React.HTMLProps<HTMLButtonElement | HTMLAnchorElement>>) => {
-  const [isTooltipHidden, setIsTooltipHidden] = useState(false)
+  const [isTooltipHidden, setIsTooltipHidden] = useState(true)
 
   return {
     isTooltipHidden,
