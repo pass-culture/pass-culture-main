@@ -7,6 +7,7 @@ from typing import Any
 from pydantic.v1 import EmailStr
 from pydantic.v1 import Field
 from pydantic.v1 import HttpUrl
+from pydantic.v1 import conlist
 from pydantic.v1 import constr
 from pydantic.v1 import validator
 from pydantic.v1.utils import GetterDict
@@ -370,6 +371,13 @@ class StocksQueryModel(BaseModel):
     price_category_id: int | None
     order_by: offers_repository.StocksOrderedBy = offers_repository.StocksOrderedBy.BEGINNING_DATETIME
     order_by_desc: bool = False
+
+
+class DeleteStockListBody(BaseModel):
+    if typing.TYPE_CHECKING:
+        ids_to_delete: list[int]
+    else:
+        ids_to_delete: conlist(int, max_items=offers_repository.STOCK_LIMIT_TO_DELETE)
 
 
 class ImageBodyModel(BaseModel):

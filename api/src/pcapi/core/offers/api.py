@@ -62,6 +62,7 @@ logger = logging.getLogger(__name__)
 AnyOffer = educational_models.CollectiveOffer | educational_models.CollectiveOfferTemplate | models.Offer
 
 OFFERS_RECAP_LIMIT = 501
+STOCK_LIMIT_TO_DELETE = 50
 
 
 OFFER_LIKE_MODELS = {
@@ -694,9 +695,7 @@ def _invalidate_bookings(bookings: list[bookings_models.Booking]) -> list[bookin
     return bookings
 
 
-def delete_stock(stock: models.Stock) -> None:
-    validation.check_stock_is_deletable(stock)
-
+def _delete_stock(stock: models.Stock) -> None:
     stock.isSoftDeleted = True
     repository.save(stock)
 
@@ -721,6 +720,11 @@ def delete_stock(stock: models.Stock) -> None:
             )
 
         push_notification_job.send_cancel_booking_notification.delay([booking.id for booking in cancelled_bookings])
+
+
+def delete_stock(stock: models.Stock) -> None:
+    validation.check_stock_is_deletable(stock)
+    _delete_stock(stock)
 
 
 def create_mediation(
@@ -1215,6 +1219,15 @@ def batch_delete_draft_offers(query: BaseQuery) -> None:
     )
     models.Offer.query.filter(*filters).delete(synchronize_session=False)
     db.session.commit()
+
+
+def batch_delete_stocks(stocks_to_delete: list[models.Stock]) -> None:
+    # We want to check that all stocks can be deleted first
+    for stock in stocks_to_delete:
+        validation.check_stock_is_deletable(stock)
+
+    for stock in stocks_to_delete:
+        _delete_stock(stock)
 
 
 def get_or_create_label(label: str, venue: offerers_models.Venue) -> models.PriceCategoryLabel:
