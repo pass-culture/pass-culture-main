@@ -27,6 +27,7 @@ from pcapi.models.beneficiary_import_status import ImportStatus
 from pcapi.repository import repository
 from pcapi.utils import crypto
 
+from . import constants
 from . import models
 
 
@@ -827,9 +828,14 @@ class TokenFactory(BaseFactory):
     class Meta:
         model = models.Token
 
-    type = models.TokenType.RESET_PASSWORD
+    type = models.TokenType.EMAIL_VALIDATION
     user = factory.SubFactory(UserFactory)
     value = factory.Sequence("XYZ{0}".format)
+
+
+class EmailValidationTokenFactory(TokenFactory):
+    type = models.TokenType.EMAIL_VALIDATION
+    expirationDate = factory.LazyFunction(lambda: datetime.utcnow() + constants.EMAIL_VALIDATION_TOKEN_LIFE_TIME)
 
 
 class UserSessionFactory(BaseFactory):
