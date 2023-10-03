@@ -106,6 +106,28 @@ def get_stocks(offer_id: int, query: offers_serialize.StocksQueryModel) -> offer
     return offers_serialize.StockResponseModel(stocks=filtered_stock_list, stock_count=len(filtered_stock_list))
 
 
+@private_api.route("/offers/<int:offer_id>/stocks/delete", methods=["POST"])
+@login_required
+@spectree_serialize(
+    on_success_status=204,
+    api=blueprint.pro_private_schema,
+)
+def delete_stocks(offer_id: int, body: offers_serialize.DeleteStockListBody) -> None:
+    try:
+        offer = offers_repository.get_offer_by_id(offer_id)
+    except exceptions.OfferNotFound:
+        raise api_errors.ApiErrors(
+            errors={
+                "global": ["Aucun objet ne correspond à cet identifiant dans notre base de données"],
+            },
+            status_code=404,
+        )
+
+    rest.check_user_has_access_to_offerer(current_user, offer.venue.managingOffererId)
+    stocks_to_delete = [stock for stock in offer.stocks if stock.id in body.ids_to_delete]
+    offers_api.batch_delete_stocks(stocks_to_delete)
+
+
 @private_api.route("/offers/delete-draft", methods=["POST"])
 @login_required
 @spectree_serialize(

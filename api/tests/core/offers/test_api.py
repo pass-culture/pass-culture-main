@@ -1812,6 +1812,14 @@ class DeleteDraftOffersTest:
         assert models.ActivationCode.query.count() == 0
 
 
+@pytest.mark.usefixtures("db_session")
+class DeleteStocksTest:
+    def test_delete_batch_stocks(self, client):
+        stocks = factories.StockFactory.create_batch(3)
+        api.batch_delete_stocks(stocks)
+        assert all(stock.isSoftDeleted for stock in stocks)
+
+
 class FormatExtraDataTest:
     def test_format_extra_data(self):
         extra_data = {
