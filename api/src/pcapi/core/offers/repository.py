@@ -33,6 +33,7 @@ IMPORTED_CREATION_MODE = "imported"
 MANUAL_CREATION_MODE = "manual"
 
 LIMIT_STOCKS_PER_PAGE = 20
+STOCK_LIMIT_TO_DELETE = 50
 
 
 class StocksOrderedBy(str, enum.Enum):
