@@ -23,7 +23,6 @@ class SettingsResponse(BaseModel):
     id_check_address_autocompletion: bool
     is_recaptcha_enabled: bool
     object_storage_url: str
-    pro_disable_events_qrcode: bool
     account_unsuspension_limit: int
 
     class Config:
