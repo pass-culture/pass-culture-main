@@ -96,7 +96,9 @@ class CGRStocks(LocalProvider):
                 image_url = self.film_infos.Affiche
                 image = get_movie_poster_from_api(image_url)
                 offers_api.create_mediation(
+                    user=None,
                     offer=offer,
+                    credit=None,
                     image_as_bytes=image,
                 )
 
