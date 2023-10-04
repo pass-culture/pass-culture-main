@@ -6,12 +6,9 @@
 import type { WithdrawalTypeEnum } from './WithdrawalTypeEnum';
 
 export type PatchOfferBodyModel = {
-  ageMax?: number | null;
-  ageMin?: number | null;
   audioDisabilityCompliant?: boolean | null;
   bookingContact?: string | null;
   bookingEmail?: string | null;
-  conditions?: string | null;
   description?: string | null;
   durationMinutes?: number | null;
   externalTicketOfficeUrl?: string | null;
@@ -19,7 +16,6 @@ export type PatchOfferBodyModel = {
   isActive?: boolean | null;
   isDuo?: boolean | null;
   isNational?: boolean | null;
-  mediaUrls?: Array<string> | null;
   mentalDisabilityCompliant?: boolean | null;
   motorDisabilityCompliant?: boolean | null;
   name?: string | null;
