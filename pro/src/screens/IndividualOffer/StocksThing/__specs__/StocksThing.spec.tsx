@@ -206,7 +206,9 @@ describe('screens:StocksThing', () => {
       stocks: [{ id: 1 } as StockResponseModel],
     })
     renderStockThingScreen(props, contextValue)
-    const nextButton = screen.getByRole('button', { name: 'Étape suivante' })
+    const nextButton = screen.getByRole('button', {
+      name: 'Enregistrer et continuer',
+    })
     const draftButton = screen.getByRole('button', {
       name: 'Sauvegarder le brouillon',
     })
@@ -229,12 +231,14 @@ describe('screens:StocksThing', () => {
     expect(api.getOffer).toHaveBeenCalledWith(offer.id)
   })
 
-  it('should submit stock form when click on "Étape suivante"', async () => {
+  it('should submit stock form when click on "Enregistrer et continuer"', async () => {
     vi.spyOn(api, 'upsertStocks').mockResolvedValue({
       stocks: [{ id: 1 } as StockResponseModel],
     })
     renderStockThingScreen(props, contextValue)
-    const nextButton = screen.getByRole('button', { name: 'Étape suivante' })
+    const nextButton = screen.getByRole('button', {
+      name: 'Enregistrer et continuer',
+    })
     const draftButton = screen.getByRole('button', {
       name: 'Sauvegarder le brouillon',
     })
@@ -258,12 +262,14 @@ describe('screens:StocksThing', () => {
     expect(api.getOffer).toHaveBeenCalledWith(offer.id)
   })
 
-  it('should submit stock form with duo informations when clicking on on "Étape suivante"', async () => {
+  it('should submit stock form with duo informations when clicking on on "Enregistrer et continuer"', async () => {
     vi.spyOn(api, 'upsertStocks').mockResolvedValue({
       stocks: [{ id: 1 } as StockResponseModel],
     })
     renderStockThingScreen(props, contextValue)
-    const nextButton = screen.getByRole('button', { name: 'Étape suivante' })
+    const nextButton = screen.getByRole('button', {
+      name: 'Enregistrer et continuer',
+    })
     await userEvent.type(screen.getByLabelText('Prix'), '20')
     await userEvent.click(
       screen.getByLabelText('Accepter les réservations “Duo“')
@@ -280,16 +286,14 @@ describe('screens:StocksThing', () => {
     expect(api.getOffer).toHaveBeenCalledWith(offer.id)
   })
 
-  it('should not submit stock form when click on "Étape précédente"', async () => {
+  it('should not submit stock form when click on "Retour"', async () => {
     vi.spyOn(api, 'upsertStocks').mockResolvedValue({
       stocks: [{ id: 1 } as StockResponseModel],
     })
 
     renderStockThingScreen(props, contextValue)
 
-    await userEvent.click(
-      screen.getByRole('button', { name: 'Étape précédente' })
-    )
+    await userEvent.click(screen.getByRole('button', { name: 'Retour' }))
     expect(api.upsertStocks).not.toHaveBeenCalled()
     expect(
       screen.queryByText('Brouillon sauvegardé dans la liste des offres')
@@ -317,7 +321,7 @@ describe('screens:StocksThing', () => {
 
     await userEvent.type(screen.getByLabelText('Prix'), '20')
     await userEvent.click(
-      screen.getByRole('button', { name: 'Étape suivante' })
+      screen.getByRole('button', { name: 'Enregistrer et continuer' })
     )
 
     await waitFor(() => {
@@ -386,7 +390,7 @@ describe('screens:StocksThing', () => {
       const date = new Date()
       date.setUTCHours(22, 59, 59, 999)
       expect(expirationInput).toHaveValue(today)
-      await userEvent.click(screen.getByText('Étape suivante'))
+      await userEvent.click(screen.getByText('Enregistrer et continuer'))
       expect(api.upsertStocks).toHaveBeenCalledWith({
         offerId: offer.id,
         stocks: [
