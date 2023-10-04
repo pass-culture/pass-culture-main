@@ -258,7 +258,7 @@ describe('Summary', () => {
         )
 
         // then
-        expect(screen.getByText('Étape précédente')).toBeInTheDocument()
+        expect(screen.getByText('Retour')).toBeInTheDocument()
         expect(
           screen.getByText('Sauvegarder le brouillon et quitter')
         ).toBeInTheDocument()

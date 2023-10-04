@@ -253,7 +253,7 @@ describe('screens:IndividualOffer::Informations:draft', () => {
 
   it('should submit minimal physical offer', async () => {
     renderInformationsScreen(props, contextOverride)
-    await userEvent.click(await screen.findByText('Étape suivante'))
+    await userEvent.click(await screen.findByText('Enregistrer et continuer'))
 
     expect(api.patchOffer).toHaveBeenCalledTimes(1)
     expect(api.getOffer).toHaveBeenCalledTimes(1)
@@ -280,7 +280,7 @@ describe('screens:IndividualOffer::Informations:draft', () => {
     }
 
     renderInformationsScreen(props, contextOverride)
-    await userEvent.click(await screen.findByText('Étape suivante'))
+    await userEvent.click(await screen.findByText('Enregistrer et continuer'))
 
     expect(api.patchOffer).toHaveBeenCalledTimes(1)
     expect(api.getOffer).toHaveBeenCalledTimes(1)
@@ -292,9 +292,9 @@ describe('screens:IndividualOffer::Informations:draft', () => {
     expect(api.postOffer).not.toHaveBeenCalled()
   })
 
-  it('should track when creating draft offer using Étape suivante', async () => {
+  it('should track when creating draft offer using Enregistrer et continuer', async () => {
     renderInformationsScreen(props, contextOverride)
-    await userEvent.click(await screen.findByText('Étape suivante'))
+    await userEvent.click(await screen.findByText('Enregistrer et continuer'))
 
     expect(mockLogEvent).toHaveBeenCalledTimes(1)
     expect(mockLogEvent).toHaveBeenNthCalledWith(

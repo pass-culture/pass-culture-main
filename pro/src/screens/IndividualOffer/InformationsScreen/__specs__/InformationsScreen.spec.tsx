@@ -211,7 +211,7 @@ describe('screens:IndividualOffer::Informations', () => {
     const categorySelect = await screen.findByLabelText('Catégorie')
     await userEvent.selectOptions(categorySelect, 'A')
 
-    await userEvent.click(await screen.findByText('Étape suivante'))
+    await userEvent.click(await screen.findByText('Enregistrer et continuer'))
 
     expect(scrollIntoViewMock).toHaveBeenCalledTimes(1)
     expect(scrollIntoViewMock).toHaveBeenCalledWith({

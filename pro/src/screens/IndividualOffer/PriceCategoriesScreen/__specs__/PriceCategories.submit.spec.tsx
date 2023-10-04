@@ -62,7 +62,7 @@ describe('PriceCategories', () => {
     )
   })
 
-  it('should notify and submit when clicking on Etape suivante in creation', async () => {
+  it('should notify and submit when clicking on Enregistrer et continuer in creation', async () => {
     renderPriceCategories({ offer: individualOfferFactory() })
     await userEvent.type(
       screen.getByLabelText('Intitulé du tarif'),
@@ -70,7 +70,7 @@ describe('PriceCategories', () => {
     )
     await userEvent.type(screen.getByLabelText('Prix par personne'), '20')
 
-    await userEvent.click(screen.getByText('Étape suivante'))
+    await userEvent.click(screen.getByText('Enregistrer et continuer'))
 
     await waitFor(() => {
       expect(api.patchOffer).toHaveBeenCalled()
@@ -120,7 +120,7 @@ describe('PriceCategories', () => {
     )
     await userEvent.type(screen.getByLabelText('Prix par personne'), '20')
 
-    await userEvent.click(screen.getByText('Étape suivante'))
+    await userEvent.click(screen.getByText('Enregistrer et continuer'))
 
     await waitFor(() => {
       expect(api.patchOffer).toHaveBeenCalled()
@@ -178,7 +178,7 @@ describe('PriceCategories', () => {
     )
     await userEvent.type(screen.getByLabelText('Prix par personne'), '20')
 
-    await userEvent.click(screen.getByText('Étape suivante'))
+    await userEvent.click(screen.getByText('Enregistrer et continuer'))
 
     expect(
       await screen.findByText(
@@ -223,7 +223,7 @@ describe('PriceCategories', () => {
     )
     await userEvent.type(screen.getByLabelText('Prix par personne'), '20')
 
-    await userEvent.click(screen.getByText('Étape suivante'))
+    await userEvent.click(screen.getByText('Enregistrer et continuer'))
 
     expect(
       await screen.findByText(
