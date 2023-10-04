@@ -540,3 +540,7 @@ ACCESLIBRE_API_URL = "https://acceslibre.beta.gouv.fr/api/erps/"
 RECOMMENDATION_BACKEND = os.environ.get("RECOMMENDATION_BACKEND", "pcapi.connectors.recommendation.TestingBackend")
 RECOMMENDATION_API_AUTHENTICATION_TOKEN = os.environ.get("RECOMMENDATION_API_AUTHENTICATION_TOKEN", "")
 RECOMMENDATION_API_URL = os.environ.get("RECOMMENDATION_API_URL", "")
+
+# PRO TESTS
+MAKE_PROS_BENEFICIARIES_IN_APP = bool(int(os.environ.get("MAKE_PROS_BENEFICIARIES_IN_APP", 0)))
+SKIP_OFFER_VALIDATION = bool(int(os.environ.get("SKIP_OFFER_VALIDATION", 0)))

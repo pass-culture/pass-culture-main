@@ -790,7 +790,7 @@ def create_pro_user(pro_user: ProUserCreationBodyV2Model) -> models.User:
     if hasattr(pro_user, "postal_code") and pro_user.postal_code:
         new_pro_user.departementCode = postal_code_utils.PostalCode(pro_user.postal_code).get_departement_code()
 
-    if settings.IS_INTEGRATION:
+    if settings.MAKE_PROS_BENEFICIARIES_IN_APP:
         new_pro_user.add_beneficiary_role()
         eighteen_years_ago = datetime.datetime.utcnow() - datetime.timedelta(days=366 * 18)
         new_pro_user.dateOfBirth = eighteen_years_ago
