@@ -27,7 +27,7 @@ def validate_offer_venue(offer_venue: "OfferVenueModel | None") -> None:
                 f"'{collective_offers_serialize.OfferAddressType.OFFERER_VENUE.value}'"
             )
     elif offer_venue.venueId is not None:
-        raise ValueError(
+        errors["offerVenue.venueId"] = (
             "Ce champ est interdit si 'addressType' ne vaut pas "
             f"'{collective_offers_serialize.OfferAddressType.OFFERER_VENUE.value}'"
         )
