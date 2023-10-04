@@ -1,8 +1,6 @@
 import decimal
-from functools import partial
 import typing
 
-from flask import url_for
 from flask_wtf import FlaskForm
 import wtforms
 
@@ -11,6 +9,7 @@ from pcapi.models.offer_mixin import OfferValidationStatus
 from pcapi.routes.backoffice import filters
 from pcapi.routes.backoffice.forms import fields
 from pcapi.routes.backoffice.forms import utils
+from pcapi.routes.backoffice.offers.forms import GetOffersBaseFields
 
 
 class EditCollectiveOfferPrice(FlaskForm):
@@ -39,19 +38,13 @@ class EditCollectiveOfferPrice(FlaskForm):
         return price
 
 
-class GetCollectiveOffersListForm(utils.PCForm):
+class GetCollectiveOffersListForm(GetOffersBaseFields):
     class Meta:
         csrf = False
 
     from_date = fields.PCDateField("Créées à partir du", validators=(wtforms.validators.Optional(),))
     to_date = fields.PCDateField("Jusqu'au", validators=(wtforms.validators.Optional(),))
     only_validated_offerers = fields.PCSwitchBooleanField("Uniquement les offres des structures validées")
-    sort = wtforms.HiddenField(
-        "sort", validators=(wtforms.validators.Optional(), wtforms.validators.AnyOf(("id", "dateCreated")))
-    )
-    order = wtforms.HiddenField(
-        "order", validators=(wtforms.validators.Optional(), wtforms.validators.AnyOf(("asc", "desc")))
-    )
     q = fields.PCOptSearchField("ID, nom de l'offre")
     category = fields.PCSelectMultipleField(
         "Catégories", choices=utils.choices_from_enum(categories.CategoryIdLabelEnum)
@@ -77,9 +70,6 @@ class GetCollectiveOffersListForm(utils.PCForm):
         coerce=int,
         validators=(wtforms.validators.Optional(),),
     )
-    order = wtforms.HiddenField(
-        "order", default="asc", validators=(wtforms.validators.Optional(), wtforms.validators.AnyOf(("asc", "desc")))
-    )
 
     def __init__(self, *args: typing.Any, **kwargs: typing.Any) -> None:
         super().__init__(*args, **kwargs)
@@ -97,10 +87,4 @@ class GetCollectiveOffersListForm(utils.PCForm):
                 self.to_date.data,
                 self.q.data,
             )
-        )
-
-    def get_sort_link(self, endpoint: str) -> str:
-        form_url = partial(url_for, endpoint, **self.raw_data)
-        return form_url(
-            sort="dateCreated", order="asc" if self.sort.data == "dateCreated" and self.order.data == "desc" else "desc"
         )
