@@ -880,9 +880,7 @@ def _price_event(event: models.FinanceEvent) -> models.Pricing:
             for original_line in original_pricing.lines
         ]
     elif is_incident_event:
-        amount = -utils.to_eurocents(
-            rule.apply(booking, event.bookingFinanceIncident.newTotalAmount)
-        )  # outgoing, thus negative
+        amount = -rule.apply(booking, event.bookingFinanceIncident.newTotalAmount)  # outgoing, thus negative
         lines = [
             models.PricingLine(
                 amount=-amount,
@@ -891,7 +889,7 @@ def _price_event(event: models.FinanceEvent) -> models.Pricing:
         ]
     else:
         is_booking_collective = isinstance(booking, educational_models.CollectiveBooking)
-        amount = -utils.to_eurocents(rule.apply(booking))  # outgoing, thus negative
+        amount = -rule.apply(booking)  # outgoing, thus negative
         lines = [
             models.PricingLine(
                 amount=-utils.to_eurocents(
@@ -935,7 +933,7 @@ def _price_booking(
         new_revenue += utils.to_eurocents(booking.total_amount)
     rule_finder = reimbursement.CustomRuleFinder()
     rule = reimbursement.get_reimbursement_rule(booking, rule_finder, new_revenue)
-    amount = -utils.to_eurocents(rule.apply(booking))  # outgoing, thus negative
+    amount = -rule.apply(booking)  # outgoing, thus negative
     # `Pricing.amount` equals the sum of the amount of all lines.
     lines = [
         models.PricingLine(

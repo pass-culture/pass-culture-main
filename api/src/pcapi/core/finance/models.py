@@ -19,13 +19,13 @@ import sqlalchemy.ext.mutable as sqla_mutable
 import sqlalchemy.orm as sqla_orm
 
 from pcapi import settings
-from pcapi.core.finance import utils as finance_utils
 from pcapi.models import Base
 from pcapi.models import Model
 from pcapi.models.deactivable_mixin import DeactivableMixin
 from pcapi.models.pc_object import PcObject
 import pcapi.utils.db as db_utils
 
+from . import utils
 from .enum import DepositType
 
 
@@ -499,9 +499,13 @@ class ReimbursementRule:
     def matches(self, booking: "bookings_models.Booking", cumulative_revenue: int) -> bool:
         return self.is_active(booking) and self.is_relevant(booking, cumulative_revenue)
 
-    def apply(self, booking: "bookings_models.Booking", custom_total_amount: int | None = None) -> decimal.Decimal:
-        custom_total_amount_euros = finance_utils.to_euros(custom_total_amount or 0)
-        return decimal.Decimal((custom_total_amount_euros or booking.total_amount) * self.rate)  # type: ignore [attr-defined]
+    def apply(
+        self,
+        booking: "bookings_models.Booking",
+        custom_total_amount: int | None = None,
+    ) -> int:
+        base = custom_total_amount or utils.to_eurocents(booking.total_amount)
+        return utils.round_to_integer(base * self.rate)  # type: ignore [attr-defined]
 
     @property
     def group(self) -> RuleGroup:
@@ -588,9 +592,9 @@ class CustomReimbursementRule(ReimbursementRule, Base, Model):
         self,
         booking: "bookings_models.Booking",
         custom_total_amount: int | None = None,
-    ) -> decimal.Decimal:
+    ) -> int:
         if self.amount is not None:
-            return booking.quantity * self.amount
+            return utils.to_eurocents(booking.quantity * self.amount)
         return super().apply(booking, custom_total_amount)
 
     @property
@@ -923,7 +927,7 @@ class FinanceIncident(Base, Model):
         Returns the amount we want to retrieve from the offerer for this incident.
         """
         return sum(
-            finance_utils.to_eurocents((booking_incident.booking or booking_incident.collectiveBooking).total_amount)
+            utils.to_eurocents((booking_incident.booking or booking_incident.collectiveBooking).total_amount)
             - booking_incident.newTotalAmount
             for booking_incident in self.booking_finance_incidents
         )

@@ -87,19 +87,41 @@ class CustomReimbursementRuleTest:
 
     def test_apply_with_amount(self):
         rule = factories.CustomReimbursementRuleFactory(amount=10)
-        single = bookings_factories.BookingFactory(quantity=1)
-        double = bookings_factories.BookingFactory(quantity=2)
+        single = bookings_factories.BookingFactory(quantity=1, amount=12)
+        double = bookings_factories.BookingFactory(quantity=2, amount=12)
 
-        assert rule.apply(single) == 10
-        assert rule.apply(double) == 20
+        assert rule.apply(single) == 1000
+        assert rule.apply(double) == 2000
 
     def test_apply_with_rate(self):
         rule = factories.CustomReimbursementRuleFactory(rate=0.8)
         single = bookings_factories.BookingFactory(quantity=1, amount=10.10)
         double = bookings_factories.BookingFactory(quantity=2, amount=10.10)
 
-        assert rule.apply(single) == Decimal("8.08")
-        assert rule.apply(double) == Decimal("16.16")
+        assert rule.apply(single) == 808
+        assert rule.apply(double) == 1616
+
+    def test_apply_with_rate_with_rounding(self):
+        # Rounding down: 0.1 -> 0
+        rule = factories.CustomReimbursementRuleFactory(rate=0.91)
+        single = bookings_factories.BookingFactory(quantity=1, amount=10.10)
+        double = bookings_factories.BookingFactory(quantity=2, amount=10.10)
+        assert rule.apply(single) == 919  # 919.1 rounded
+        assert rule.apply(double) == 1838  # 1838.2 rounded
+
+        # Rounding up: 0.8 -> 1
+        rule = factories.CustomReimbursementRuleFactory(rate=0.98)
+        single = bookings_factories.BookingFactory(quantity=1, amount=10.10)
+        double = bookings_factories.BookingFactory(quantity=2, amount=10.10)
+        assert rule.apply(single) == 990  # 989.8 rounded
+        assert rule.apply(double) == 1980  # 1979.6 rounded
+
+        # Rounding up (special case): 0.5 -> 1
+        rule = factories.CustomReimbursementRuleFactory(rate=0.95)
+        single = bookings_factories.BookingFactory(quantity=1, amount=81.30)
+        double = bookings_factories.BookingFactory(quantity=2, amount=40.65)
+        assert rule.apply(single) == 7724  # 7723.5 rounded
+        assert rule.apply(double) == 7724  # 7723.5 rounded
 
 
 class DepositSpecificCapsTest:
