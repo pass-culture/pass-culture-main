@@ -57,7 +57,7 @@ class Template:
 
     @property
     def id(self) -> int:
-        return self.id_prod if settings.IS_PROD else self.id_not_prod
+        return self.id_prod if settings.SENDINBLUE_IN_PROD else self.id_not_prod
 
 
 @dataclasses.dataclass
