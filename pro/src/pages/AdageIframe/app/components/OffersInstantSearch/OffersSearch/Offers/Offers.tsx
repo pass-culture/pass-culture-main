@@ -150,7 +150,7 @@ export const Offers = ({
             {index === 0 && showDiffuseHelp && (
               <DiffuseHelp
                 description={
-                  "Le pass Culture peut prendre en charge les coûts accessoires nécessaires à la réalisation d'activités d'éducation artistique et culturelle menées en classe ou hors les murs. Cela inclut par exemple les frais de transport d'un intervenant, les matériaux consommables d'un atelier artistique, les supports de visite d'un lieu de patrimoine..."
+                  "Pour certaines offres, le pass Culture peut prendre en charge certains coûts accessoires nécessaires à la réalisation d'activités d'éducation artistique et culturelle menées en classe ou hors les murs. Cela peut inclure par exemple les frais de transport d'un intervenant ou le matériel consommable d'un atelier artistique. Cette prise en charge doit bien sûr faire l'objet d'un accord entre vous et le partenaire qui porte le projet. Il n'est en revanche pas possible d'acheter des livres ou des équipements pérennes avec les crédits pass Culture ou de financer le transport des élèves."
                 }
               />
             )}
