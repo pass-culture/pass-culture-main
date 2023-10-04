@@ -25,8 +25,6 @@ from pcapi.routes.backoffice.bookings import form as booking_forms
 from pcapi.routes.backoffice.bookings import helpers as booking_helpers
 from pcapi.routes.backoffice.forms import empty as empty_forms
 
-from . import form as collective_booking_forms
-
 
 collective_bookings_blueprint = utils.child_backoffice_blueprint(
     "collective_bookings",
@@ -37,7 +35,7 @@ collective_bookings_blueprint = utils.child_backoffice_blueprint(
 
 
 def _get_collective_bookings(
-    form: collective_booking_forms.GetCollectiveBookingListForm,
+    form: booking_forms.GetCollectiveBookingListForm,
 ) -> list[educational_models.CollectiveBooking]:
     base_query = (
         educational_models.CollectiveBooking.query.outerjoin(educational_models.CollectiveStock)
@@ -111,7 +109,7 @@ def _get_collective_bookings(
 
 @collective_bookings_blueprint.route("", methods=["GET"])
 def list_collective_bookings() -> utils.BackofficeResponse:
-    form = collective_booking_forms.GetCollectiveBookingListForm(formdata=utils.get_query_params())
+    form = booking_forms.GetCollectiveBookingListForm(formdata=utils.get_query_params())
     if not form.validate():
         return render_template("collective_bookings/list.html", isEAC=True, rows=[], form=form), 400
 
