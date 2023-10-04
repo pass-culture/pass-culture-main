@@ -120,7 +120,7 @@ def get_ubble_fraud_check(identification_id: str) -> fraud_models.BeneficiaryFra
 
 def does_match_ubble_test_email(email: str) -> re.Match | None:
     # This function MUST ALWAYS return None in production environment
-    if settings.IS_PROD:
+    if not settings.UBBLE_TEST_EMAIL_ENABLED:
         return None
 
     return UBBLE_TEST_EMAIL_RE.match(email)
