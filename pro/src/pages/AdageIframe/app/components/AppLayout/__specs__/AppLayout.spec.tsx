@@ -8,15 +8,35 @@ import {
 import { AdageUserContextProvider } from 'pages/AdageIframe/app/providers/AdageUserContext'
 import {
   defaultAdageUser,
+  defaultCategories,
   defaultUseInfiniteHitsReturn,
 } from 'utils/adageFactories'
 import { renderWithProviders } from 'utils/renderWithProviders'
 
 import { AppLayout } from '../AppLayout'
 
+vi.mock(
+  '../../OffersInstantSearch/OffersSearch/Autocomplete/Autocomplete',
+  () => {
+    return {
+      Autocomplete: ({ initialQuery }: { initialQuery: string }) => (
+        <div>
+          <label htmlFor="autocomplete">Autocomplete</label>
+          <input
+            id="autocomplete"
+            value={initialQuery}
+            onChange={() => vi.fn()}
+          />
+          <button onClick={() => vi.fn()}>Rechercher</button>
+        </div>
+      ),
+    }
+  }
+)
+
 vi.mock('apiClient/api', () => ({
   apiAdage: {
-    getEducationalOffersCategories: vi.fn(),
+    getEducationalOffersCategories: vi.fn(() => defaultCategories),
     getVenueById: vi.fn(),
     authenticate: vi.fn(),
     getVenueBySiret: vi.fn(),
@@ -68,9 +88,19 @@ const renderAppLayout = (initialRoute = '/') => {
 }
 
 describe('AppLayout', () => {
+  beforeEach(() => {
+    window.IntersectionObserver = vi.fn().mockImplementation(() => ({
+      observe: vi.fn(),
+      unobserve: vi.fn(),
+      disconnect: vi.fn(),
+    }))
+  })
+
   it('should render new header if FF is active', async () => {
     renderAppLayout()
     waitForElementToBeRemoved(() => screen.getByTestId('spinner'))
+
+    screen.debug()
 
     expect(screen.getByRole('link', { name: 'Rechercher' })).toBeInTheDocument()
     expect(

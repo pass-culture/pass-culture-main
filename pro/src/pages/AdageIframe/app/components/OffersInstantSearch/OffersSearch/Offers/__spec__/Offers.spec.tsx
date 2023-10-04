@@ -279,7 +279,6 @@ describe('offers', () => {
     }
 
     offersProps = {
-      handleResetFiltersAndLaunchSearch: vi.fn(),
       submitCount: 0,
     }
   })
@@ -653,12 +652,7 @@ describe('offers', () => {
 
       renderOffers(
         { ...offersProps, logFiltersOnSearch: mockLogTrackingFilter },
-        adageUser,
-        {
-          features: {
-            list: [{ isActive: true, nameKey: 'WIP_ENABLE_NEW_ADAGE_FILTERS' }],
-          },
-        }
+        adageUser
       )
       expect(mockLogTrackingFilter).toHaveBeenCalledWith(2, 'queryId')
     })

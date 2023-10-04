@@ -14,7 +14,7 @@ const analyticsContextInitialValues: AnalyticsContextType = {
   setFiltersKeys: () => null,
 }
 
-export const AnalyticsContext = createContext<AnalyticsContextType>(
+const AnalyticsContext = createContext<AnalyticsContextType>(
   analyticsContextInitialValues
 )
 

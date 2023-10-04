@@ -20,13 +20,11 @@ import { DiffuseHelp } from '../../../DiffuseHelp/DiffuseHelp'
 import { SurveySatisfaction } from '../../../SurveySatisfaction/SurveySatisfaction'
 
 import { NoResultsPage } from './NoResultsPage/NoResultsPage'
-import { OldNoResultsPage } from './NoResultsPage/OldNoResultsPage'
 import Offer from './Offer'
 import styles from './Offers.module.scss'
 import { extractOfferIdFromObjectId, offerIsBookable } from './utils'
 
 export interface OffersProps {
-  handleResetFiltersAndLaunchSearch?: () => void
   displayStats?: boolean
   resetForm?: () => void
   logFiltersOnSearch?: (nbHits: number, queryId?: string) => void
@@ -40,7 +38,6 @@ type OfferMap = Map<
 >
 
 export const Offers = ({
-  handleResetFiltersAndLaunchSearch,
   displayStats = true,
   resetForm,
   logFiltersOnSearch,
@@ -57,8 +54,6 @@ export const Offers = ({
   )
   const isDiffuseHelpActive = useActiveFeature('WIP_ENABLE_DIFFUSE_HELP')
 
-  const newAdageFilters = useActiveFeature('WIP_ENABLE_NEW_ADAGE_FILTERS')
-
   const showDiffuseHelp = isDiffuseHelpActive && (submitCount ?? 0) > 0
 
   const { adageUser } = useAdageUser()
@@ -70,7 +65,7 @@ export const Offers = ({
 
   useEffect(() => {
     setQueriesAreLoading(true)
-    if (newAdageFilters && logFiltersOnSearch) {
+    if (logFiltersOnSearch) {
       logFiltersOnSearch(nbHits, results?.queryID)
     }
 
@@ -121,15 +116,7 @@ export const Offers = ({
   }
 
   if (hits?.length === 0 || offers.length === 0) {
-    if (newAdageFilters) {
-      return <NoResultsPage resetForm={resetForm} />
-    }
-
-    return (
-      <OldNoResultsPage
-        handleResetFiltersAndLaunchSearch={handleResetFiltersAndLaunchSearch}
-      />
-    )
+    return <NoResultsPage resetForm={resetForm} />
   }
 
   return (

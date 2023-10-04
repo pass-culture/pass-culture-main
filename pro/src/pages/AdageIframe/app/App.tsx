@@ -40,33 +40,40 @@ export const App = (): JSX.Element => {
     apiAdage
       .authenticate()
       .then(user => setUser(user))
-      .then(() => {
+      .then(async () => {
         if (siret) {
-          return apiAdage
-            .getVenueBySiret(siret, getRelativeOffers)
-            .then(venueFilter => setVenueFilter(venueFilter))
-            .catch(() =>
-              setNotification(
-                new Notification(
-                  NotificationType.error,
-                  'Lieu inconnu. Tous les résultats sont affichés.'
-                )
+          try {
+            const result = await apiAdage.getVenueBySiret(
+              siret,
+              getRelativeOffers
+            )
+            return setVenueFilter(result)
+          } catch {
+            return setNotification(
+              new Notification(
+                NotificationType.error,
+                'Lieu inconnu. Tous les résultats sont affichés.'
               )
             )
+          }
         }
 
         if (venueId && !Number.isNaN(venueId)) {
-          return apiAdage
-            .getVenueById(venueId, getRelativeOffers)
-            .then(venueFilter => setVenueFilter(venueFilter))
-            .catch(() =>
-              setNotification(
-                new Notification(
-                  NotificationType.error,
-                  'Lieu inconnu. Tous les résultats sont affichés.'
-                )
+          try {
+            const result = await apiAdage.getVenueById(
+              venueId,
+              getRelativeOffers
+            )
+
+            return setVenueFilter(result)
+          } catch {
+            return setNotification(
+              new Notification(
+                NotificationType.error,
+                'Lieu inconnu. Tous les résultats sont affichés.'
               )
             )
+          }
         }
         return null
       })
