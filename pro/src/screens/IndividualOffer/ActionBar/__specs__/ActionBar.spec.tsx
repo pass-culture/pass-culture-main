@@ -52,11 +52,11 @@ describe('IndividualOffer::ActionBar', () => {
 
       renderActionBar({ props })
 
-      expect(screen.getByText('Étape précédente')).toBeInTheDocument()
+      expect(screen.getByText('Retour')).toBeInTheDocument()
       const buttonSaveDraft = screen.getByText('Sauvegarder le brouillon')
       await userEvent.click(buttonSaveDraft)
       expect(onClickSaveDraftMock).toHaveBeenCalled()
-      const buttonNextStep = screen.getByText('Étape suivante')
+      const buttonNextStep = screen.getByText('Enregistrer et continuer')
       await userEvent.click(buttonNextStep)
       expect(onClickNextMock).toHaveBeenCalled()
     })
@@ -66,13 +66,13 @@ describe('IndividualOffer::ActionBar', () => {
 
       renderActionBar({ props })
 
-      const buttonPreviousStep = screen.getByText('Étape précédente')
+      const buttonPreviousStep = screen.getByText('Retour')
       await userEvent.click(buttonPreviousStep)
       expect(onClickPreviousMock).toHaveBeenCalled()
       const buttonSaveDraft = screen.getByText('Sauvegarder le brouillon')
       await userEvent.click(buttonSaveDraft)
       expect(onClickSaveDraftMock).toHaveBeenCalled()
-      const buttonNextStep = screen.getByText('Étape suivante')
+      const buttonNextStep = screen.getByText('Enregistrer et continuer')
       await userEvent.click(buttonNextStep)
       expect(onClickNextMock).toHaveBeenCalled()
     })
@@ -82,7 +82,7 @@ describe('IndividualOffer::ActionBar', () => {
 
       renderActionBar({ props })
 
-      const buttonPreviousStep = screen.getByText('Étape précédente')
+      const buttonPreviousStep = screen.getByText('Retour')
       await userEvent.click(buttonPreviousStep)
       expect(onClickPreviousMock).toHaveBeenCalled()
       const buttonSaveDraft = screen.getByText(
@@ -105,7 +105,7 @@ describe('IndividualOffer::ActionBar', () => {
       const buttonSaveDraft = screen.getByText('Sauvegarder le brouillon')
       await userEvent.click(buttonSaveDraft)
       expect(onClickSaveDraftMock).toHaveBeenCalled()
-      const buttonNextStep = screen.getByText('Étape suivante')
+      const buttonNextStep = screen.getByText('Enregistrer et continuer')
       await userEvent.click(buttonNextStep)
       expect(onClickNextMock).toHaveBeenCalled()
     })

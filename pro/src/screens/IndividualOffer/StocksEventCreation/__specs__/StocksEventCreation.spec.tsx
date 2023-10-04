@@ -101,10 +101,10 @@ describe('StocksEventCreation', () => {
     expect(screen.getByText('Comment faire ?')).toBeInTheDocument()
   })
 
-  it('should notify when clicking on Étape suivante without stock', async () => {
+  it('should notify when clicking on Enregistrer et continuer without stock', async () => {
     renderStockEventCreation({ offer: individualOfferFactory({ stocks: [] }) })
 
-    await userEvent.click(screen.getByText('Étape suivante'))
+    await userEvent.click(screen.getByText('Enregistrer et continuer'))
 
     expect(
       screen.getByText('Veuillez renseigner au moins une date')
@@ -234,18 +234,18 @@ describe('navigation and submit', () => {
     }))
   })
 
-  it('should redirect to previous page on click to Étape précédente', async () => {
+  it('should redirect to previous page on click to Retour', async () => {
     const offer = individualOfferFactory({
       stocks: [],
     })
     renderStockEventCreation({ offer })
 
-    await userEvent.click(screen.getByText('Étape précédente'))
+    await userEvent.click(screen.getByText('Retour'))
 
     expect(screen.getByText('Previous page')).toBeInTheDocument()
   })
 
-  it('should submit and redirect to next page on Étape suivante click', async () => {
+  it('should submit and redirect to next page on Enregistrer et continuer click', async () => {
     const offer = individualOfferFactory({
       stocks: [
         individualStockFactory({
@@ -256,7 +256,7 @@ describe('navigation and submit', () => {
     })
     renderStockEventCreation({ offer })
 
-    await userEvent.click(screen.getByText('Étape suivante'))
+    await userEvent.click(screen.getByText('Enregistrer et continuer'))
 
     await waitFor(() => {
       expect(screen.getByText('Next page')).toBeInTheDocument()
@@ -279,7 +279,7 @@ describe('navigation and submit', () => {
     })
     renderStockEventCreation({ offer })
 
-    await userEvent.click(screen.getByText('Étape suivante'))
+    await userEvent.click(screen.getByText('Enregistrer et continuer'))
 
     // when not in test 1 is replaced by MAX_STOCKS_PER_OFFER
     expect(
@@ -322,7 +322,7 @@ describe('navigation and submit', () => {
     })
     renderStockEventCreation({ offer })
 
-    await userEvent.click(screen.getByText('Étape suivante'))
+    await userEvent.click(screen.getByText('Enregistrer et continuer'))
 
     expect(
       screen.getByText(
