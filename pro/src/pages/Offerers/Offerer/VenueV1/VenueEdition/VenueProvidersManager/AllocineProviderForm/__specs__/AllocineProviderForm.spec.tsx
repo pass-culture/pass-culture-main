@@ -87,7 +87,7 @@ describe('AllocineProviderForm', () => {
     await renderAllocineProviderForm(props)
 
     const offerImportButton = screen.getByRole('button', {
-      name: 'Importer les offres',
+      name: 'Lancer la synchronisation',
     })
     expect(offerImportButton).toBeInTheDocument()
     expect(offerImportButton).toBeDisabled()
@@ -97,7 +97,7 @@ describe('AllocineProviderForm', () => {
     await renderAllocineProviderForm(props)
 
     const offerImportButton = screen.getByRole('button', {
-      name: 'Importer les offres',
+      name: 'Lancer la synchronisation',
     })
     const priceField = screen.getByLabelText('Prix de vente/place', {
       exact: false,
@@ -123,7 +123,7 @@ describe('AllocineProviderForm', () => {
   it('should be able to submit when price field is filled to 0 on creation', async () => {
     await renderAllocineProviderForm(props)
     const offerImportButton = screen.getByRole('button', {
-      name: 'Importer les offres',
+      name: 'Lancer la synchronisation',
     })
     const priceField = screen.getByLabelText('Prix de vente/place', {
       exact: false,
@@ -145,7 +145,7 @@ describe('AllocineProviderForm', () => {
   it('should be able to submit when price field is filled with a decimal on creation', async () => {
     await renderAllocineProviderForm(props)
     const offerImportButton = screen.getByRole('button', {
-      name: 'Importer les offres',
+      name: 'Lancer la synchronisation',
     })
     const priceField = screen.getByLabelText('Prix de vente/place', {
       exact: false,
@@ -172,7 +172,7 @@ describe('AllocineProviderForm', () => {
     await userEvent.type(priceField, '10')
 
     const offerImportButton = screen.getByRole('button', {
-      name: 'Importer les offres',
+      name: 'Lancer la synchronisation',
     })
     await userEvent.click(offerImportButton)
 

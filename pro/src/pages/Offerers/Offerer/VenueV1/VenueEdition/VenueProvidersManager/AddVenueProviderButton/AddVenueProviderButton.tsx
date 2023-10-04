@@ -60,26 +60,25 @@ const AddVenueProviderButton = ({
   }
 
   const AddButton = (
-    <div className="has-text-centered">
-      <Button
-        onClick={setCreationMode}
-        variant={ButtonVariant.SECONDARY}
-        icon={fullMoreIcon}
-      >
-        Synchroniser des offres
-      </Button>
-    </div>
+    <Button
+      onClick={setCreationMode}
+      variant={ButtonVariant.SECONDARY}
+      icon={fullMoreIcon}
+    >
+      Sélectionner un logiciel
+    </Button>
   )
 
   const VenueProviderSelection = (
     <>
-      <FieldLayout label="Source" name="provider">
+      <FieldLayout label="Logiciel" name="provider">
         <SelectInput
           defaultOption={DEFAULT_PROVIDER_OPTION}
           onChange={event => setSelectedProviderId(event.target.value)}
           name="provider"
           options={providersOptions}
           value={String(selectedProviderId)}
+          placeholder="Choix du logiciel"
         />
       </FieldLayout>
 
