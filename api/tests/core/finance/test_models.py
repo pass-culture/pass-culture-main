@@ -95,8 +95,8 @@ class CustomReimbursementRuleTest:
 
     def test_apply_with_rate(self):
         rule = factories.CustomReimbursementRuleFactory(rate=0.8)
-        single = bookings_factories.BookingFactory(quantity=1)
-        double = bookings_factories.BookingFactory(quantity=2)
+        single = bookings_factories.BookingFactory(quantity=1, amount=10.10)
+        double = bookings_factories.BookingFactory(quantity=2, amount=10.10)
 
         assert rule.apply(single) == Decimal("8.08")
         assert rule.apply(double) == Decimal("16.16")
