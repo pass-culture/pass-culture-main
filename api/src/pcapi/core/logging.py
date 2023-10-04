@@ -253,7 +253,7 @@ def install_logging() -> None:
     # this. If so, we log twice: on the standard output of the Python
     # process (so that the developer sees logs), and on the standard
     # output of the master process (for log gathering).
-    if any((settings.IS_TESTING, settings.IS_STAGING, settings.IS_PROD)) and sys.stdout.isatty():
+    if settings.RUNS_ON_KUBERNETES and sys.stdout.isatty():
         # pylint: disable=consider-using-with
         handler2 = logging.StreamHandler(stream=open("/proc/1/fd/1", "w", encoding="utf-8"))
         handler2.setFormatter(JsonFormatter())
