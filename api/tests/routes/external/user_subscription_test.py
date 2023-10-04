@@ -1430,8 +1430,8 @@ class UbbleWebhookTest:
         assert user.has_beneficiary_role is False
         assert fraud_check.status == fraud_models.FraudCheckStatus.KO
 
-    @testing.override_settings(IS_PROD=True)
-    def test_ubble_test_emails_not_actives_on_production(self, client, ubble_mocker):
+    @testing.override_settings(ENABLE_UBBLE_TEST_EMAIL=False)
+    def test_ubble_test_emails_not_actives_on_production(self, client, ubble_mocker, mocker):
         email = "whatever+ubble_test@example.com"
         subscription_birth_date = datetime.datetime.combine(
             datetime.date.today(), datetime.time(0, 0)
