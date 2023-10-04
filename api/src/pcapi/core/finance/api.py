@@ -2459,6 +2459,7 @@ def _create_reimbursement_rule(
         subcategories=subcategories,
         rate=rate,  # only for offerers
         amount=amount,  # only for offers
+        amountInEuroCents=utils.to_eurocents(amount) if amount is not None else None,
         timespan=(start_date, end_date),
     )
     validation.validate_reimbursement_rule(rule)

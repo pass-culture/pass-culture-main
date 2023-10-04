@@ -539,6 +539,7 @@ class CustomReimbursementRule(ReimbursementRule, Base, Model):
     # eurocents like other models do.
     # Contrary to other models, this amount is in euros, not eurocents.
     amount: decimal.Decimal = sqla.Column(sqla.Numeric(10, 2), nullable=True)
+    amountInEuroCents: int = sqla.Column(sqla.Integer, nullable=True)
 
     # rate is between 0 and 1 (included), or NULL if `amount` is set.
     rate: decimal.Decimal = sqla.Column(sqla.Numeric(5, 4), nullable=True)
