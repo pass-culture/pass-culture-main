@@ -78,6 +78,9 @@ REMOVE_LOGGER_HANDLER = bool(int(os.environ.get("REMOVE_LOGGER_HANDLER", "1")))
 SESSION_COOKIE_SAMESITE = os.environ.get("SESSION_COOKIE_SAMESITE", "Lax")
 WATCH_SCSS_CHANGE = bool(int(os.environ.get("WATCH_SCSS_CHANGE", "0")))
 
+# LOGGING
+LOG_TO_PYTHON_STDOUT = bool(int(os.environ.get("LOG_TO_PYTHON_STDOUT", 0)))
+
 # NATIVE APP SPECIFIC SETTINGS
 NATIVE_APP_MINIMAL_CLIENT_VERSION = semver.VersionInfo.parse(
     os.environ.get("NATIVE_APP_MINIMAL_CLIENT_VERSION", "1.132.1")
