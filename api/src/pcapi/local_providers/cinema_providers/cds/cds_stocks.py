@@ -8,14 +8,16 @@ from pcapi.core.categories import subcategories_v2 as subcategories
 from pcapi.core.external_bookings.cds.client import CineDigitalServiceAPI
 from pcapi.core.external_bookings.models import Movie
 from pcapi.core.offerers.models import Venue
+import pcapi.core.offers.api as offers_api
 import pcapi.core.offers.models as offers_models
-from pcapi.core.offers.repository import get_next_product_id_from_database
+import pcapi.core.offers.repository as offers_repository
 from pcapi.core.providers.models import VenueProvider
 from pcapi.core.providers.repository import get_cds_cinema_details
 from pcapi.local_providers.cinema_providers.constants import ShowtimeFeatures
 from pcapi.local_providers.local_provider import LocalProvider
 from pcapi.local_providers.providable_info import ProvidableInfo
 from pcapi.models import Model
+from pcapi.repository.providable_queries import get_last_update_for_provider
 import pcapi.utils.date as utils_date
 
 
@@ -67,15 +69,6 @@ class CDSStocks(LocalProvider):
         providable_information_list = []
 
         # The Product ID must be unique
-        provider_movie_unique_id = _build_movie_uuid(self.movie_information.id, self.venue)
-        product_providable_info = self.create_providable_info(
-            pc_object=offers_models.Product,
-            id_at_providers=provider_movie_unique_id,
-            date_modified_at_provider=datetime.utcnow(),
-            new_id_at_provider=provider_movie_unique_id,
-        )
-        providable_information_list.append(product_providable_info)
-
         venue_movie_unique_id = _build_movie_uuid(self.movie_information.id, self.venue)
         offer_providable_info = self.create_providable_info(
             offers_models.Offer, venue_movie_unique_id, datetime.utcnow(), venue_movie_unique_id
@@ -94,26 +87,11 @@ class CDSStocks(LocalProvider):
         return providable_information_list
 
     def fill_object_attributes(self, pc_object: Model) -> None:
-        if isinstance(pc_object, offers_models.Product):
-            self.fill_product_attributes(pc_object)
-
         if isinstance(pc_object, offers_models.Offer):
             self.fill_offer_attributes(pc_object)
 
         if isinstance(pc_object, offers_models.Stock):
             self.fill_stock_attributes(pc_object)
-
-    def fill_product_attributes(self, cds_product: offers_models.Product) -> None:
-        cds_product.name = self.movie_information.title
-        cds_product.subcategoryId = subcategories.SEANCE_CINE.id
-
-        self.update_from_movie_information(cds_product, self.movie_information)
-
-        is_new_product_to_insert = cds_product.id is None
-        if is_new_product_to_insert:
-            cds_product.id = get_next_product_id_from_database()
-
-        self.last_product = cds_product
 
     def fill_offer_attributes(self, cds_offer: offers_models.Offer) -> None:
         cds_offer.venueId = self.venue.id
@@ -127,11 +105,20 @@ class CDSStocks(LocalProvider):
 
         cds_offer.name = self.movie_information.title
         cds_offer.subcategoryId = subcategories.SEANCE_CINE.id
-        cds_offer.product = self.last_product
 
         is_new_offer_to_insert = cds_offer.id is None
         if is_new_offer_to_insert:
             cds_offer.isDuo = self.isDuo
+            cds_offer.id = offers_repository.get_next_offer_id_from_database()
+        last_update_for_current_provider = get_last_update_for_provider(self.provider.id, cds_offer)
+
+        if not last_update_for_current_provider or last_update_for_current_provider.date() != datetime.today().date():
+            if self.movie_information.posterpath:
+                image_url = self.movie_information.posterpath
+                image = self.client_cds.get_movie_poster(image_url)
+                offers_api.create_mediation(
+                    user=None, offer=cds_offer, credit=None, image_as_bytes=image, keep_ratio=True
+                )
 
         self.last_offer = cds_offer
 
@@ -209,9 +196,7 @@ class CDSStocks(LocalProvider):
 
         return price_category_label
 
-    def update_from_movie_information(
-        self, obj: offers_models.Offer | offers_models.Product, movie_information: Movie
-    ) -> None:
+    def update_from_movie_information(self, obj: offers_models.Offer, movie_information: Movie) -> None:
         if movie_information.description:
             obj.description = movie_information.description
         if self.movie_information.duration:

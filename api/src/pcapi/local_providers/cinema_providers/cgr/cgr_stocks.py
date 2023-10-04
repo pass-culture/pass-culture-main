@@ -15,6 +15,7 @@ from pcapi.local_providers.cinema_providers.constants import ShowtimeFeatures
 from pcapi.local_providers.local_provider import LocalProvider
 from pcapi.local_providers.providable_info import ProvidableInfo
 from pcapi.models import Model
+from pcapi.repository.providable_queries import get_last_update_for_provider
 from pcapi.utils.date import get_department_timezone
 from pcapi.utils.date import local_datetime_to_default_timezone
 
@@ -92,6 +93,12 @@ class CGRStocks(LocalProvider):
         if is_new_offer_to_insert:
             offer.isDuo = self.isDuo
             offer.id = offers_repository.get_next_offer_id_from_database()
+
+        last_update_for_current_provider = get_last_update_for_provider(self.provider.id, offer)
+        if (
+            not last_update_for_current_provider
+            or last_update_for_current_provider.date() != datetime.datetime.today().date()
+        ):
             if self.film_infos.Affiche:
                 image_url = self.film_infos.Affiche
                 image = get_movie_poster_from_api(image_url)
@@ -100,6 +107,7 @@ class CGRStocks(LocalProvider):
                     offer=offer,
                     credit=None,
                     image_as_bytes=image,
+                    keep_ratio=True,
                 )
 
         self.last_offer = offer
