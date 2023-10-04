@@ -9,7 +9,6 @@ from sqlalchemy.orm import scoped_session
 from sqlalchemy.orm import sessionmaker
 
 from pcapi.core.offers.models import Offer
-from pcapi.core.offers.models import Product
 from pcapi.core.offers.models import Stock
 from pcapi.core.offers.models import VenueProvider
 from pcapi.core.providers.factories import CDSCinemaDetailsFactory
@@ -59,8 +58,6 @@ class BookingRaceConditionTest:
     def assert_synchronization(self, cds_stocks):
         created_offers = Offer.query.order_by(Offer.id).all()
         assert len(created_offers) == 1
-        created_products = Product.query.order_by(Product.id).all()
-        assert len(created_products) == 1
         created_stocks = Stock.query.order_by(Stock.id).all()
         assert len(created_stocks) == 1
 

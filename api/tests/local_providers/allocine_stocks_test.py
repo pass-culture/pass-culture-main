@@ -145,16 +145,10 @@ class AllocineStocksTest:
             allocine_providable_infos = next(allocine_stocks_provider)
 
             # Then
-            assert len(allocine_providable_infos) == 3
+            assert len(allocine_providable_infos) == 2
 
-            product_providable_info = allocine_providable_infos[0]
-            offer_providable_info = allocine_providable_infos[1]
-            stock_providable_info = allocine_providable_infos[2]
-
-            assert product_providable_info.type == offers_models.Product
-            assert product_providable_info.id_at_providers == "TW92aWU6Mzc4MzI="
-            assert product_providable_info.new_id_at_provider == "TW92aWU6Mzc4MzI="
-            assert product_providable_info.date_modified_at_provider == datetime(year=2019, month=10, day=15, hour=9)
+            offer_providable_info = allocine_providable_infos[0]
+            stock_providable_info = allocine_providable_infos[1]
 
             assert offer_providable_info.type == offers_models.Offer
             assert offer_providable_info.id_at_providers == "TW92aWU6Mzc4MzI=%77567146400110-VF"
@@ -174,9 +168,7 @@ class UpdateObjectsTest:
     @patch("pcapi.local_providers.allocine.allocine_stocks.get_movies_showtimes")
     @patch("pcapi.settings.ALLOCINE_API_KEY", "token")
     @pytest.mark.usefixtures("db_session")
-    def test_should_create_one_product_and_one_local_version_offer_with_movie_info(
-        self, mock_call_allocine_api, mock_api_poster
-    ):
+    def test_should_create_one_local_version_offer_with_movie_info(self, mock_call_allocine_api, mock_api_poster):
         # Given
         mock_call_allocine_api.return_value = iter(
             [
@@ -195,6 +187,7 @@ class UpdateObjectsTest:
                 }
             ]
         )
+        mock_api_poster.return_value = bytes()
 
         venue = offerers_factories.VenueFactory(
             managingOfferer__siren="775671464",
@@ -216,7 +209,6 @@ class UpdateObjectsTest:
 
         # Then
         created_offer = offers_models.Offer.query.one()
-        created_product = offers_models.Product.query.one()
 
         assert created_offer.bookingEmail == "toto@example.com"
         assert (
@@ -242,37 +234,14 @@ class UpdateObjectsTest:
 
         assert not created_offer.isDuo
         assert created_offer.name == "Les Contes de la mère poule - VF"
-        assert created_offer.product == created_product
         assert created_offer.subcategoryId == subcategories.SEANCE_CINE.id
         assert created_offer.withdrawalDetails == venue.withdrawalDetails
-
-        assert (
-            created_product.description == "synopsis du film\nTous les détails du film sur AlloCiné:"
-            " http://www.allocine.fr/film/fichefilm_gen_cfilm=37832.html"
-        )
-        assert created_product.durationMinutes == 46
-        assert created_product.extraData == {
-            "visa": "2009993528",
-            "stageDirector": "Farkhondeh Torabi",
-            "genres": ["ANIMATION", "FAMILY"],
-            "type": "FEATURE_FILM",
-            "companies": [
-                {"activity": "Distribution", "company": {"name": "Warner Bros. France"}},
-                {"activity": "Production", "company": {"name": "The Story Company"}},
-            ],
-            "releaseDate": "2001-10-03",
-            "countries": ["Iran"],
-            "cast": ["Chloë Grace Moretz", "Michael Peña"],
-        }
-
-        assert created_product.name == "Les Contes de la mère poule"
-        assert created_offer.subcategoryId == subcategories.SEANCE_CINE.id
 
     @patch("pcapi.local_providers.allocine.allocine_stocks.get_movie_poster")
     @patch("pcapi.local_providers.allocine.allocine_stocks.get_movies_showtimes")
     @patch("pcapi.settings.ALLOCINE_API_KEY", "token")
     @pytest.mark.usefixtures("db_session")
-    def test_should_create_one_product_and_one_original_version_offer_and_one_dubbed_version_offer_with_movie_info(
+    def test_should_create_one_original_version_offer_and_one_dubbed_version_offer_with_movie_info(
         self, mock_call_allocine_api, mock_api_poster
     ):
         # Given
@@ -311,6 +280,7 @@ class UpdateObjectsTest:
                 }
             ]
         )
+        mock_api_poster.return_value = bytes()
 
         venue = offerers_factories.VenueFactory(
             managingOfferer__siren="775671464",
@@ -329,10 +299,8 @@ class UpdateObjectsTest:
 
         # Then
         created_offers = offers_models.Offer.query.order_by("id").all()
-        created_products = offers_models.Product.query.order_by("id").all()
 
         assert len(created_offers) == 2
-        assert len(created_products) == 1
 
         original_version_offer = created_offers[0]
         assert original_version_offer.bookingEmail == "toto@example.com"
@@ -346,7 +314,6 @@ class UpdateObjectsTest:
         assert original_version_offer.extraData["diffusionVersion"] == "VO"
         assert not original_version_offer.isDuo
         assert original_version_offer.name == "Les Contes de la mère poule - VO"
-        assert original_version_offer.product == created_products[0]
         assert original_version_offer.subcategoryId == subcategories.SEANCE_CINE.id
 
         dubbed_version_offer = created_offers[1]
@@ -361,7 +328,6 @@ class UpdateObjectsTest:
         assert dubbed_version_offer.extraData["diffusionVersion"] == "VF"
         assert not dubbed_version_offer.isDuo
         assert dubbed_version_offer.name == "Les Contes de la mère poule - VF"
-        assert dubbed_version_offer.product == created_products[0]
         assert dubbed_version_offer.subcategoryId == subcategories.SEANCE_CINE.id
 
     @patch("pcapi.local_providers.allocine.allocine_stocks.get_movie_poster")
@@ -395,6 +361,7 @@ class UpdateObjectsTest:
                 }
             ]
         )
+        mock_api_poster.return_value = bytes()
 
         venue = offerers_factories.VenueFactory(
             managingOfferer__siren="775671464",
@@ -413,18 +380,14 @@ class UpdateObjectsTest:
 
         # Then
         created_offers = offers_models.Offer.query.all()
-        created_products = offers_models.Product.query.all()
 
         assert len(created_offers) == 1
-        assert len(created_products) == 1
 
     @patch("pcapi.local_providers.allocine.allocine_stocks.get_movie_poster")
     @patch("pcapi.local_providers.allocine.allocine_stocks.get_movies_showtimes")
     @patch("pcapi.settings.ALLOCINE_API_KEY", "token")
     @pytest.mark.usefixtures("db_session")
-    def test_should_update_existing_product_duration_and_update_matching_offers(
-        self, mock_call_allocine_api, mock_api_poster
-    ):
+    def test_should_update_existing_offers(self, mock_call_allocine_api, mock_api_poster):
         # Given
         mock_call_allocine_api.return_value = iter(
             [
@@ -449,13 +412,7 @@ class UpdateObjectsTest:
                 }
             ]
         )
-
-        product = offers_factories.ProductFactory(
-            name="Test event",
-            subcategoryId=subcategories.SEANCE_CINE.id,
-            durationMinutes=60,
-            idAtProviders="TW92aWU6Mzc4MzI=",
-        )
+        mock_api_poster.return_value = bytes()
 
         venue = offerers_factories.VenueFactory(
             managingOfferer__siren="775671464",
@@ -466,7 +423,6 @@ class UpdateObjectsTest:
 
         # offer VO
         offers_factories.OfferFactory(
-            product=product,
             name="Test event",
             subcategoryId=subcategories.SEANCE_CINE.id,
             durationMinutes=60,
@@ -476,7 +432,6 @@ class UpdateObjectsTest:
 
         # offer VF
         offers_factories.OfferFactory(
-            product=product,
             name="Test event",
             subcategoryId=subcategories.SEANCE_CINE.id,
             durationMinutes=60,
@@ -494,20 +449,16 @@ class UpdateObjectsTest:
 
         # Then
         existing_offers = offers_models.Offer.query.order_by("id").all()
-        existing_product = offers_models.Product.query.one()
 
         assert len(existing_offers) == 2
         assert existing_offers[0].durationMinutes == 46
         assert existing_offers[1].durationMinutes == 46
-        assert existing_product.durationMinutes == 46
 
     @patch("pcapi.local_providers.allocine.allocine_stocks.get_movie_poster")
     @patch("pcapi.local_providers.allocine.allocine_stocks.get_movies_showtimes")
     @patch("pcapi.settings.ALLOCINE_API_KEY", "token")
     @pytest.mark.usefixtures("db_session")
-    def test_should_update_existing_product_duration_and_create_new_offer_when_no_offer_exists(
-        self, mock_call_allocine_api, mock_api_poster
-    ):
+    def test_should_create_new_offer_when_no_offer_exists(self, mock_call_allocine_api, mock_api_poster):
         # Given
         mock_call_allocine_api.return_value = iter(
             [
@@ -526,13 +477,7 @@ class UpdateObjectsTest:
                 }
             ]
         )
-
-        offers_factories.ProductFactory(
-            name="Test event",
-            subcategoryId=subcategories.SEANCE_CINE.id,
-            durationMinutes=60,
-            idAtProviders="TW92aWU6Mzc4MzI=",
-        )
+        mock_api_poster.return_value = bytes()
 
         venue = offerers_factories.VenueFactory(
             managingOfferer__siren="775671464",
@@ -551,18 +496,15 @@ class UpdateObjectsTest:
 
         # Then
         created_offer = offers_models.Offer.query.one()
-        existing_product = offers_models.Product.query.one()
 
-        assert existing_product.durationMinutes == 46
+        assert created_offer.durationMinutes == 46
         assert created_offer.name == "Les Contes de la mère poule - VF"
 
     @patch("pcapi.local_providers.allocine.allocine_stocks.get_movie_poster")
     @patch("pcapi.local_providers.allocine.allocine_stocks.get_movies_showtimes")
     @patch("pcapi.settings.ALLOCINE_API_KEY", "token")
     @pytest.mark.usefixtures("db_session")
-    def test_should_create_product_and_new_offer_with_missing_visa_and_stage_director(
-        self, mock_call_allocine_api, mock_api_poster
-    ):
+    def test_should_create_offer_with_missing_visa_and_stage_director(self, mock_call_allocine_api, mock_api_poster):
         # Given
         mock_call_allocine_api.return_value = iter(
             [
@@ -581,6 +523,7 @@ class UpdateObjectsTest:
                 }
             ]
         )
+        mock_api_poster.return_value = bytes()
 
         venue = offerers_factories.VenueFactory(
             managingOfferer__siren="775671464",
@@ -599,22 +542,8 @@ class UpdateObjectsTest:
 
         # Then
         created_offer = offers_models.Offer.query.one()
-        created_product = offers_models.Product.query.one()
 
-        assert created_product.durationMinutes == 46
-        assert created_product.extraData == {
-            "visa": "2009993528",
-            "stageDirector": "Farkhondeh Torabi",
-            "genres": ["ANIMATION", "FAMILY"],
-            "type": "FEATURE_FILM",
-            "companies": [
-                {"activity": "Distribution", "company": {"name": "Warner Bros. France"}},
-                {"activity": "Production", "company": {"name": "The Story Company"}},
-            ],
-            "releaseDate": "2001-10-03",
-            "countries": ["Iran"],
-            "cast": ["Chloë Grace Moretz", "Michael Peña"],
-        }
+        assert created_offer.durationMinutes == 46
         assert created_offer.extraData == {
             "diffusionVersion": "VF",
             "visa": "2009993528",
@@ -638,7 +567,7 @@ class UpdateObjectsTest:
     @patch("pcapi.local_providers.allocine.allocine_stocks.get_movies_showtimes")
     @patch("pcapi.settings.ALLOCINE_API_KEY", "token")
     @pytest.mark.usefixtures("db_session")
-    def test_should_not_create_product_and_offer_when_missing_required_information_in_api_response(
+    def test_should_not_create_offer_when_missing_required_information_in_api_response(
         self, mock_call_allocine_api, mock_api_poster
     ):
         # Given
@@ -675,14 +604,13 @@ class UpdateObjectsTest:
 
         # Then
         assert offers_models.Offer.query.count() == 0
-        assert offers_models.Product.query.count() == 0
 
     @patch("pcapi.local_providers.allocine.allocine_stocks.get_movie_poster")
     @patch("pcapi.local_providers.allocine.allocine_stocks.get_movies_showtimes")
     @patch("pcapi.local_providers.allocine.allocine_stocks.AllocineStocks.get_object_thumb")
     @patch("pcapi.settings.ALLOCINE_API_KEY", "token")
     @pytest.mark.usefixtures("db_session")
-    def test_should_create_product_with_correct_thumb_and_increase_thumbCount_by_1(
+    def test_should_create_offer_with_correct_thumb_and_increase_thumbCount_by_1(
         self, mock_get_object_thumb, mock_call_allocine_api, mock_api_poster
     ):
         # Given
@@ -707,14 +635,6 @@ class UpdateObjectsTest:
         with open(file_path, "rb") as thumb_file:
             mock_get_object_thumb.return_value = thumb_file.read()
 
-        offers_factories.ProductFactory(
-            name="Test event",
-            subcategoryId=subcategories.SEANCE_CINE.id,
-            durationMinutes=60,
-            idAtProviders="TW92aWU6Mzc4MzI=",
-            thumbCount=0,
-        )
-
         venue = offerers_factories.VenueFactory(
             managingOfferer__siren="775671464",
             name="Cinema Allocine",
@@ -731,78 +651,70 @@ class UpdateObjectsTest:
         allocine_stocks_provider.updateObjects()
 
         # Then
-        existing_product = offers_models.Product.query.one()
+        existing_offer = offers_models.Offer.query.one()
 
-        assert existing_product.thumbUrl == f"http://localhost/storage/thumbs/products/{humanize(existing_product.id)}"
-        assert existing_product.thumbCount == 1
-
-    @patch("pcapi.local_providers.allocine.allocine_stocks.get_movie_poster")
-    @patch("pcapi.local_providers.allocine.allocine_stocks.get_movies_showtimes")
-    @patch("pcapi.local_providers.allocine.allocine_stocks.AllocineStocks.get_object_thumb")
-    @patch("pcapi.settings.ALLOCINE_API_KEY", "token")
-    @pytest.mark.usefixtures("db_session")
-    def test_should_add_product_thumb_when_product_has_already_one_thumb(
-        self, mock_get_object_thumb, mock_call_allocine_api, mock_api_poster
-    ):
-        # Given
-        mock_call_allocine_api.return_value = iter(
-            [
-                {
-                    "node": {
-                        "movie": MOVIE_INFO,
-                        "showtimes": [
-                            {
-                                "startsAt": "2019-10-29T10:30:00",
-                                "diffusionVersion": "DUBBED",
-                                "projection": ["DIGITAL"],
-                                "experience": None,
-                            }
-                        ],
-                    }
-                }
-            ]
-        )
-        file_path = Path(tests.__path__[0]) / "files" / "mouette_portrait.jpg"
-        with open(file_path, "rb") as thumb_file:
-            mock_get_object_thumb.return_value = thumb_file.read()
-
-        offers_factories.ProductFactory(
-            name="Test event",
-            subcategoryId=subcategories.SEANCE_CINE.id,
-            durationMinutes=60,
-            idAtProviders="TW92aWU6Mzc4MzI=",
-            thumbCount=1,
-        )
-
-        venue = offerers_factories.VenueFactory(
-            managingOfferer__siren="775671464",
-            name="Cinema Allocine",
-            siret="77567146400110",
-            bookingEmail="toto@example.com",
-        )
-
-        allocine_venue_provider = providers_factories.AllocineVenueProviderFactory(venue=venue)
-        providers_factories.AllocineVenueProviderPriceRuleFactory(allocineVenueProvider=allocine_venue_provider)
-
-        allocine_stocks_provider = AllocineStocks(allocine_venue_provider)
-
-        # When
-        allocine_stocks_provider.updateObjects()
-
-        # Then
-        existing_product = offers_models.Product.query.one()
         assert (
-            existing_product.thumbUrl == f"http://localhost/storage/thumbs/products/{humanize(existing_product.id)}_1"
+            existing_offer.image.url
+            == f"http://localhost/storage/thumbs/mediations/{humanize(existing_offer.activeMediation.id)}"
         )
-        assert existing_product.thumbCount == 2
+        assert existing_offer.activeMediation.thumbCount == 1
+
+    @patch("pcapi.local_providers.allocine.allocine_stocks.get_movie_poster")
+    @patch("pcapi.local_providers.allocine.allocine_stocks.get_movies_showtimes")
+    @patch("pcapi.local_providers.allocine.allocine_stocks.AllocineStocks.get_object_thumb")
+    @patch("pcapi.settings.ALLOCINE_API_KEY", "token")
+    @pytest.mark.usefixtures("db_session")
+    def test_should_add_offer_thumb(self, mock_get_object_thumb, mock_call_allocine_api, mock_api_poster):
+        # Given
+        mock_call_allocine_api.return_value = iter(
+            [
+                {
+                    "node": {
+                        "movie": MOVIE_INFO,
+                        "showtimes": [
+                            {
+                                "startsAt": "2019-10-29T10:30:00",
+                                "diffusionVersion": "DUBBED",
+                                "projection": ["DIGITAL"],
+                                "experience": None,
+                            }
+                        ],
+                    }
+                }
+            ]
+        )
+        file_path = Path(tests.__path__[0]) / "files" / "mouette_portrait.jpg"
+        with open(file_path, "rb") as thumb_file:
+            mock_get_object_thumb.return_value = thumb_file.read()
+
+        venue = offerers_factories.VenueFactory(
+            managingOfferer__siren="775671464",
+            name="Cinema Allocine",
+            siret="77567146400110",
+            bookingEmail="toto@example.com",
+        )
+
+        allocine_venue_provider = providers_factories.AllocineVenueProviderFactory(venue=venue)
+        providers_factories.AllocineVenueProviderPriceRuleFactory(allocineVenueProvider=allocine_venue_provider)
+
+        allocine_stocks_provider = AllocineStocks(allocine_venue_provider)
+
+        # When
+        allocine_stocks_provider.updateObjects()
+
+        # Then
+        existing_offer = offers_models.Offer.query.one()
+        assert (
+            existing_offer.image.url
+            == f"http://localhost/storage/thumbs/mediations/{humanize(existing_offer.activeMediation.id)}"
+        )
+        assert existing_offer.activeMediation.thumbCount == 1
 
     @patch("pcapi.local_providers.allocine.allocine_stocks.get_movies_showtimes")
     @patch("pcapi.local_providers.allocine.allocine_stocks.get_movie_poster")
     @patch("pcapi.settings.ALLOCINE_API_KEY", "token")
     @pytest.mark.usefixtures("db_session")
-    def test_should_create_one_product_and_one_offer_and_associated_stocks(
-        self, mock_api_poster, mock_call_allocine_api
-    ):
+    def test_should_one_offer_and_associated_stocks(self, mock_api_poster, mock_call_allocine_api):
         # Given
         mock_api_poster.return_value = bytes()
         mock_call_allocine_api.return_value = iter(
@@ -853,7 +765,6 @@ class UpdateObjectsTest:
         allocine_stocks_provider.updateObjects()
 
         # Then
-        created_product = offers_models.Product.query.all()
         created_offer = offers_models.Offer.query.all()
         created_stock = offers_models.Stock.query.order_by("id").all()
         created_price_category = offers_models.PriceCategory.query.one()
@@ -862,7 +773,6 @@ class UpdateObjectsTest:
         first_stock = created_stock[0]
         second_stock = created_stock[1]
 
-        assert len(created_product) == 1
         assert len(created_offer) == 1
         assert len(created_stock) == 2
 
@@ -899,9 +809,7 @@ class UpdateObjectsTest:
     @patch("pcapi.local_providers.allocine.allocine_stocks.get_movie_poster")
     @patch("pcapi.settings.ALLOCINE_API_KEY", "token")
     @pytest.mark.usefixtures("db_session")
-    def test_should_create_one_product_and_two_offers_and_associated_stocks(
-        self, mock_poster_get_allocine, mock_call_allocine_api
-    ):
+    def test_should_create_two_offers_and_associated_stocks(self, mock_poster_get_allocine, mock_call_allocine_api):
         # Given
         mock_poster_get_allocine.return_value = bytes()
         mock_call_allocine_api.return_value = iter(
@@ -964,7 +872,6 @@ class UpdateObjectsTest:
         allocine_stocks_provider.updateObjects()
 
         # Then
-        created_product = offers_models.Product.query.all()
         created_offer = offers_models.Offer.query.order_by("name").all()
         created_stock = offers_models.Stock.query.order_by("beginningDatetime").all()
         created_price_category = offers_models.PriceCategory.query.all()
@@ -980,7 +887,6 @@ class UpdateObjectsTest:
         first_price_category = created_price_category[0]
         second_price_category = created_price_category[1]
 
-        assert len(created_product) == 1
         assert len(created_offer) == 2
         assert len(created_stock) == 3
 
@@ -1165,14 +1071,12 @@ class UpdateObjectsTest:
             allocine_stocks_provider2.updateObjects()
 
             # Then
-            created_product = offers_models.Product.query.all()
             created_offer = offers_models.Offer.query.all()
             created_stock = offers_models.Stock.query.all()
             created_price_categories = offers_models.PriceCategory.query.all()
             created_price_categories_labels = offers_models.PriceCategoryLabel.query.all()
 
-            assert mock_poster_get_allocine.call_count == 1
-            assert len(created_product) == 1
+            assert mock_poster_get_allocine.call_count == 2
             assert len(created_offer) == 2
             assert len(created_price_categories) == 2
             assert len(created_price_categories_labels) == 2
@@ -1733,17 +1637,23 @@ class UpdateObjectsTest:
 
         allocine_stocks_provider.updateObjects()
 
-        created_product = offers_models.Product.query.one()
+        created_offer = offers_models.Offer.query.one()
 
-        assert created_product.thumbUrl == f"http://localhost/storage/thumbs/products/{humanize(created_product.id)}"
-        assert created_product.thumbCount == 1
+        assert (
+            created_offer.thumbUrl
+            == f"http://localhost/storage/thumbs/mediations/{humanize(created_offer.activeMediation.id)}"
+        )
+        assert created_offer.activeMediation.thumbCount == 1
         assert mock_get_object_thumb.call_count == 1
 
         allocine_stocks_provider.updateObjects()
-        created_product = offers_models.Product.query.one()
+        created_offer = offers_models.Offer.query.one()
 
-        assert created_product.thumbUrl == f"http://localhost/storage/thumbs/products/{humanize(created_product.id)}"
-        assert created_product.thumbCount == 1
+        assert (
+            created_offer.thumbUrl
+            == f"http://localhost/storage/thumbs/mediations/{humanize(created_offer.activeMediation.id)}"
+        )
+        assert created_offer.activeMediation.thumbCount == 1
         assert mock_get_object_thumb.call_count == 1
 
 

@@ -4,10 +4,10 @@ import logging
 
 from pcapi.connectors.ems import EMSScheduleConnector
 from pcapi.connectors.serialization import ems_serializers
-from pcapi.connectors.thumb_storage import create_thumb
 from pcapi.core import search
 from pcapi.core.categories import subcategories_v2 as subcategories
 from pcapi.core.offerers import models as offerers_models
+from pcapi.core.offers import api as offers_api
 from pcapi.core.offers import models as offers_models
 from pcapi.core.providers import models as providers_models
 from pcapi.local_providers.cinema_providers.constants import ShowtimeFeatures
@@ -41,7 +41,6 @@ class EMSStocks:
         self.venue = venue_provider.venue
         self.provider = venue_provider.provider
         self.poster_urls_map: dict[str, str | None] = {}
-        self.created_products: set[offers_models.Product] = set()
         self.created_offers: set[offers_models.Offer] = set()
         self.price_category_labels: list[
             offers_models.PriceCategoryLabel
@@ -49,19 +48,9 @@ class EMSStocks:
 
     def synchronize(self) -> None:
         for event in self.site.events:
-            product = self.get_or_create_product(event, self.provider.id)
-            product = self.fill_product_attribut(product, event)
-            errors = entity_validator.validate(product)
-            if errors and len(errors.errors) > 0:
-                self.created_objects -= 1
-                self.errored_objects += 1
-                continue
-            db.session.add(product)
-
             self.poster_urls_map.update({event.id: event.bill_url})
 
             offer = self.get_or_create_offer(event, self.provider.id, self.venue)
-            offer.product = product
             offer = self.fill_offer_attribut(offer, event)
             errors = entity_validator.validate(offer)
             if errors and len(errors.errors) > 0:
@@ -81,7 +70,6 @@ class EMSStocks:
                     continue
                 db.session.add(stock)
 
-            self.created_products.add(product)
             self.created_offers.add(offer)
 
         self.venue_provider.lastSyncDate = datetime.datetime.utcnow()
@@ -89,16 +77,18 @@ class EMSStocks:
 
         db.session.commit()
 
-        for product in self.created_products:
-            assert product.idAtProviders  # helps mypy
-            movie_id = _get_movie_id_from_id_at_provider(product.idAtProviders)
+        for offer in self.created_offers:
+            assert offer.idAtProvider  # helps mypy
+            movie_id = _get_movie_id_from_id_at_provider(offer.idAtProvider)
             poster_url = self.poster_urls_map.get(movie_id)
             if not poster_url:
                 continue
             thumb = self.connector.get_movie_poster_from_api(poster_url.replace("/120/", "/600/"))
             if not thumb:
                 continue
-            create_thumb(model_with_thumb=product, image_as_bytes=thumb, storage_id_suffix_str="", keep_ratio=True)
+            offers_api.create_mediation(
+                user=None, offer=offer, credit=None, image_as_bytes=thumb, keep_ratio=True, check_image_validity=False
+            )
 
         offer_ids = set()
         for offer in self.created_offers:
@@ -112,30 +102,6 @@ class EMSStocks:
             self.updated_objects,
             self.errored_objects,
         )
-
-    def get_or_create_product(self, event: ems_serializers.Event, provider_id: int) -> offers_models.Product:
-        movie_product_uuid = _build_movie_uuid_for_product(event.id)
-        product = offers_models.Product.query.filter_by(idAtProviders=movie_product_uuid).one_or_none()
-        if product:
-            return product
-        product = offers_models.Product()
-        product.idAtProviders = movie_product_uuid
-        product.lastProviderId = provider_id
-        product.subcategoryId = subcategories.SEANCE_CINE.id
-        self.created_objects += 1
-        return product
-
-    def fill_product_attribut(
-        self, product: offers_models.Product, event: ems_serializers.Event
-    ) -> offers_models.Product:
-        if event.title:
-            product.name = event.title
-        if event.synopsis:
-            product.description = event.synopsis
-        if event.duration:
-            product.durationMinutes = event.duration
-        product.dateModifiedAtLastProvider = datetime.datetime.utcnow()
-        return product
 
     def get_or_create_offer(
         self, event: ems_serializers.Event, provider_id: int, venue: offerers_models.Venue
@@ -237,10 +203,6 @@ def _build_session_uuid_for_stock(movie_id: str, venue_id: int, session_id: str)
 
 def _build_movie_uuid_for_offer(movie_id: str, venue_id: int) -> str:
     return f"{movie_id}%{venue_id}%EMS"
-
-
-def _build_movie_uuid_for_product(movie_id: str) -> str:
-    return f"{movie_id}%EMS"
 
 
 def _get_movie_id_from_id_at_provider(id_at_provider: str) -> str:

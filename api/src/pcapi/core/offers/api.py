@@ -734,11 +734,13 @@ def create_mediation(
     max_width: int | None = None,
     max_height: int | None = None,
     aspect_ratio: image_conversion.ImageRatio = image_conversion.ImageRatio.PORTRAIT,
+    check_image_validity: bool = True,
 ) -> models.Mediation:
     # checks image type, min dimensions
-    validation.check_image(
-        image_as_bytes, min_width=min_width, min_height=min_height, max_width=max_width, max_height=max_height
-    )
+    if check_image_validity:
+        validation.check_image(
+            image_as_bytes, min_width=min_width, min_height=min_height, max_width=max_width, max_height=max_height
+        )
 
     mediation = models.Mediation(author=user, offer=offer, credit=credit)
 

@@ -713,7 +713,7 @@ class CreateOfferTest:
         assert offer.name == "A pretty good offer"
         assert offer.venue == venue
         assert offer.subcategoryId == subcategories.SEANCE_CINE.id
-        assert offer.product == None
+        assert not offer.product
         assert offer.externalTicketOfficeUrl == "http://example.net"
         assert offer.audioDisabilityCompliant
         assert offer.mentalDisabilityCompliant

@@ -25,7 +25,6 @@ class Returns200Test:
         offer = offers_factories.OfferFactory(
             subcategoryId=subcategories.ABO_PLATEFORME_VIDEO.id,
             venue=venue,
-            product=None,  # FIXME (mageoffray, 19-09-2023) : remove this line when offerFactory doesn't create a product
             name="New name",
             url="test@test.com",
             description="description",
@@ -49,16 +48,13 @@ class Returns200Test:
         assert updated_offer.externalTicketOfficeUrl == "http://example.net"
         assert updated_offer.mentalDisabilityCompliant
         assert updated_offer.subcategoryId == subcategories.ABO_PLATEFORME_VIDEO.id
-        assert updated_offer.product == None
+        assert not updated_offer.product
 
     def test_withdrawal_can_be_updated(self, client):
         offer = offers_factories.OfferFactory(
             subcategoryId=subcategories.CONCERT.id,
             bookingContact="booking@conta.ct",
-            product=None,  # FIXME (mageoffray, 19-09-2023) : remove this line when offerFactory doesn't create a product
             name="New name",
-            url="",
-            description="description",
         )
         offerers_factories.UserOffererFactory(user__email="user@example.com", offerer=offer.venue.managingOfferer)
 
@@ -78,10 +74,7 @@ class Returns200Test:
         offer = offers_factories.OfferFactory(
             subcategoryId=subcategories.CONCERT.id,
             bookingContact="booking@conta.ct",
-            product=None,  # FIXME (mageoffray, 19-09-2023) : remove this line when offerFactory doesn't create a product
             name="New name",
-            url="",
-            description="description",
         )
         offerers_factories.UserOffererFactory(user__email="user@example.com", offerer=offer.venue.managingOfferer)
         stock = offers_factories.StockFactory(offer=offer)
@@ -123,10 +116,7 @@ class Returns200Test:
         offer = offers_factories.OfferFactory(
             subcategoryId=subcategories.CONCERT.id,
             bookingContact="booking@conta.ct",
-            product=None,  # FIXME (mageoffray, 19-09-2023) : remove this line when offerFactory doesn't create a product
             name="New name",
-            url="",
-            description="description",
         )
         offerers_factories.UserOffererFactory(user__email="user@example.com", offerer=offer.venue.managingOfferer)
         stock = offers_factories.StockFactory(offer=offer)
@@ -150,7 +140,6 @@ class Returns400Test:
     def when_trying_to_patch_forbidden_attributes(self, app, client):
         # Given
         offer = offers_factories.OfferFactory(
-            product=None,  # FIXME (mageoffray, 19-09-2023) : remove this line when offerFactory doesn't create a product
             subcategoryId=subcategories.CARTE_MUSEE.id,
             name="New name",
             url="test@test.com",
@@ -195,7 +184,6 @@ class Returns400Test:
         virtual_venue = offerers_factories.VirtualVenueFactory()
         offer = offers_factories.OfferFactory(
             venue=virtual_venue,
-            product=None,  # FIXME (mageoffray, 19-09-2023) : remove this line when offerFactory doesn't create a product
             subcategoryId=subcategories.CARTE_MUSEE.id,
             name="New name",
             url="test@test.com",
@@ -222,7 +210,6 @@ class Returns400Test:
         virtual_venue = offerers_factories.VirtualVenueFactory()
         offer = offers_factories.OfferFactory(
             venue=virtual_venue,
-            product=None,  # FIXME (mageoffray, 19-09-2023) : remove this line when offerFactory doesn't create a product
             subcategoryId=subcategories.CARTE_MUSEE.id,
             name="New name",
             url="test@test.com",
@@ -249,7 +236,6 @@ class Returns400Test:
         virtual_venue = offerers_factories.VirtualVenueFactory()
         offer = offers_factories.OfferFactory(
             venue=virtual_venue,
-            product=None,  # FIXME (mageoffray, 19-09-2023) : remove this line when offerFactory doesn't create a product
             name="New name",
             subcategoryId=subcategories.CARTE_MUSEE.id,
             url="test@test.com",
@@ -276,7 +262,6 @@ class Returns400Test:
         virtual_venue = offerers_factories.VirtualVenueFactory()
         offer = offers_factories.OfferFactory(
             venue=virtual_venue,
-            product=None,  # FIXME (mageoffray, 19-09-2023) : remove this line when offerFactory doesn't create a product
             name="New name",
             subcategoryId=subcategories.CARTE_MUSEE.id,
             url="test@test.com",
@@ -301,7 +286,6 @@ class Returns400Test:
     def test_patch_non_approved_offer_fails(self, app, client):
         offer = offers_factories.OfferFactory(
             validation=OfferValidationStatus.PENDING,
-            product=None,  # FIXME (mageoffray, 19-09-2023) : remove this line when offerFactory doesn't create a product
             name="New name",
             subcategoryId=subcategories.CARTE_MUSEE.id,
             url="test@test.com",
@@ -326,7 +310,6 @@ class Returns400Test:
             withdrawalType=WithdrawalTypeEnum.BY_EMAIL,
             withdrawalDelay=60 * 15,
             bookingContact="booking@conta.ct",
-            product=None,  # FIXME (mageoffray, 19-09-2023) : remove this line when offerFactory doesn't create a product
             name="New name",
             url="test@test.com",
             description="description",
@@ -349,7 +332,6 @@ class Returns400Test:
             withdrawalType=WithdrawalTypeEnum.BY_EMAIL,
             withdrawalDelay=60 * 15,
             bookingContact="booking@conta.ct",
-            product=None,  # FIXME (mageoffray, 19-09-2023) : remove this line when offerFactory doesn't create a product
             name="New name",
             url="test@test.com",
             description="description",
@@ -370,7 +352,6 @@ class Returns403Test:
         # Given
         offer = offers_factories.OfferFactory(
             name="Old name",
-            product=None,  # FIXME (mageoffray, 19-09-2023) : remove this line when offerFactory doesn't create a product
             subcategoryId=subcategories.CARTE_MUSEE.id,
             url="test@test.com",
             description="description",
