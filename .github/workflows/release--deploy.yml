@@ -12,7 +12,6 @@ on:
         options:
           - staging
           - production
-          - integration
           - testing
 
 jobs:
@@ -47,13 +46,12 @@ jobs:
           echo APP_VERSION="$(cat ./api/version.txt)" >> $GITHUB_OUTPUT
 
   deploy-ehp:
-    if: github.event.inputs.target_environment != 'production'
     needs:
       - version
     name: "Deploy on EHP environnement"
     uses: ./.github/workflows/deploy.yml
     with:
-      environment: ${{ github.event.inputs.target_environment }}
+      environment: ${{ github.event.inputs.target_environment == 'production' && 'integration' || github.event.inputs.target_environment }}
       app_version: ${{ needs.version.outputs.APP_VERSION }}
       teleport_version: 11.1.1
       teleport_proxy: teleport.ehp.passculture.team:443
