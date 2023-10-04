@@ -89,7 +89,10 @@ class OffererValidationListForm(utils.PCForm):
         get_label=lambda tag: tag.label or tag.name,
     )
     status = fields.PCSelectMultipleField(
-        "États", choices=utils.choices_from_enum(ValidationStatus, filters.format_validation_status)
+        "États",
+        choices=utils.choices_from_enum(
+            ValidationStatus, formatter=filters.format_validation_status, exclude_opts=(ValidationStatus.DELETED,)
+        ),
     )
     dms_adage_status = fields.PCSelectMultipleField(
         "États du dossier DMS Adage",
