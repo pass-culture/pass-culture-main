@@ -228,3 +228,28 @@ class CollectiveOffersPublicGetOfferTest:
         response = api_client.get(f"/v2/collective/offers/{offer.id}")
 
         assert response.status_code == 403
+
+    def test_offer_venue_has_an_empty_string_venue_id(self, client):
+        # TODO(jeremieb): remove this test once there is no empty
+        # string stored as a venueId
+        venue_provider = provider_factories.VenueProviderFactory()
+        offerers_factories.ApiKeyFactory(provider=venue_provider.provider)
+
+        offer = educational_factories.CollectiveStockFactory(
+            collectiveOffer__provider=venue_provider.provider,
+            collectiveOffer__offerVenue={"venueId": "", "addressType": "offererVenue", "otherAddress": ""},
+        ).collectiveOffer
+
+        # 1. fetch api key
+        # 2. fetch data
+        with assert_num_queries(2):
+            response = client.with_explicit_token(offerers_factories.DEFAULT_CLEAR_API_KEY).get(
+                f"/v2/collective/offers/{offer.id}"
+            )
+
+        assert response.status_code == 200
+        assert response.json["offerVenue"] == {
+            "venueId": None,
+            "addressType": "offererVenue",
+            "otherAddress": None,
+        }
