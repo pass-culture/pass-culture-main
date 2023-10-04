@@ -5,12 +5,14 @@
 
 import type { CollectiveOfferVenueBodyModel } from './CollectiveOfferVenueBodyModel';
 import type { StudentLevels } from './StudentLevels';
+import type { TemplateStartEndDatesModel } from './TemplateStartEndDatesModel';
 
 export type PostCollectiveOfferTemplateBodyModel = {
   audioDisabilityCompliant?: boolean;
   bookingEmails: Array<string>;
   contactEmail: string;
   contactPhone?: string | null;
+  dates?: Array<TemplateStartEndDatesModel> | null;
   description: string;
   domains?: Array<number> | null;
   durationMinutes?: number | null;

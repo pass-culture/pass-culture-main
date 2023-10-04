@@ -189,6 +189,7 @@ export { StudentLevels } from './models/StudentLevels';
 export { SubcategoryIdEnum } from './models/SubcategoryIdEnum';
 export type { SubcategoryResponseModel } from './models/SubcategoryResponseModel';
 export { Target } from './models/Target';
+export type { TemplateStartEndDatesModel } from './models/TemplateStartEndDatesModel';
 export type { UserEmailValidationResponseModel } from './models/UserEmailValidationResponseModel';
 export type { UserHasBookingResponse } from './models/UserHasBookingResponse';
 export type { UserIdentityBodyModel } from './models/UserIdentityBodyModel';

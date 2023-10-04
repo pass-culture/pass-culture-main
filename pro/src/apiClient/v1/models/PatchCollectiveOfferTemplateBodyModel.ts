@@ -6,12 +6,14 @@
 import type { CollectiveOfferVenueBodyModel } from './CollectiveOfferVenueBodyModel';
 import type { StudentLevels } from './StudentLevels';
 import type { SubcategoryIdEnum } from './SubcategoryIdEnum';
+import type { TemplateStartEndDatesModel } from './TemplateStartEndDatesModel';
 
 export type PatchCollectiveOfferTemplateBodyModel = {
   audioDisabilityCompliant?: boolean | null;
   bookingEmails?: Array<string> | null;
   contactEmail?: string | null;
   contactPhone?: string | null;
+  dates?: Array<TemplateStartEndDatesModel> | null;
   description?: string | null;
   domains?: Array<number> | null;
   durationMinutes?: number | null;
