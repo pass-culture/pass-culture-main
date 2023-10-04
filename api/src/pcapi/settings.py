@@ -163,8 +163,12 @@ ALGOLIA_OFFERS_BY_VENUE_CHUNK_SIZE = int(os.environ.get("ALGOLIA_OFFERS_BY_VENUE
 ALGOLIA_LAST_30_DAYS_BOOKINGS_RANGE_THRESHOLDS = [
     int(value) for value in secrets_utils.get("ALGOLIA_LAST_30_DAYS_BOOKINGS_RANGE_THRESHOLDS", "1,2,3,4").split(",")
 ]
+<<<<<<< HEAD
 ALGOLIA_RAISE_WHILE_INDEXING = bool(int(os.environ.get("ALGOLIA_RAISE_WHILE_INDEXING", 0)))
 ALGOLIA_ENABLE_UNINDEXING_ALL = bool(int(os.environ.get("ALGOLIA_ENABLE_UNINDEXING_ALL", 1)))
+=======
+ENABLE_INDEXING_EXCEPTIONS = bool(int(os.environ.get("ENABLE_INDEXING_EXCEPTIONS", 0)))
+>>>>>>> 23cdcfd117 ((PC-26116)[API] refactor: Add env var to raise or not exceptions while (un)indexing)
 
 # BATCH
 BATCH_ANDROID_API_KEY = os.environ.get("BATCH_ANDROID_API_KEY", "")
