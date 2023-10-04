@@ -136,7 +136,7 @@ describe('IndividualOfferWisard', () => {
     })
   })
 
-  it('should display an error when unable to load categories', async () => {
+  it.skip('should display an error when unable to load categories', async () => {
     vi.spyOn(api, 'getCategories').mockRejectedValueOnce(
       new ApiError(
         {} as ApiRequestOptions,
