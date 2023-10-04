@@ -7,6 +7,7 @@ from pcapi.connectors.serialization import cgr_serializers
 from pcapi.core.categories import subcategories_v2 as subcategories
 from pcapi.core.external_bookings.cgr.client import CGRClientAPI
 import pcapi.core.offerers.models as offerers_models
+import pcapi.core.offers.api as offers_api
 import pcapi.core.offers.models as offers_models
 import pcapi.core.offers.repository as offers_repository
 import pcapi.core.providers.models as providers_models
@@ -33,7 +34,6 @@ class CGRStocks(LocalProvider):
         self.cgr_client_api = CGRClientAPI(self.cinema_id)
         self.isDuo = bool(venue_provider.isDuoOffers)
         self.films: Iterator[cgr_serializers.Film] = iter(self.cgr_client_api.get_films())
-        self.last_product: offers_models.Product | None = None
         self.last_offer: offers_models.Offer | None = None
         self.price_category_labels: list[
             offers_models.PriceCategoryLabel
@@ -45,15 +45,7 @@ class CGRStocks(LocalProvider):
 
         providable_information_list = []
         # The Product ID must be unique
-        provider_product_unique_id = _build_movie_uuid_for_product(self.film_infos.IDFilmAlloCine)
         provider_offer_unique_id = _build_movie_uuid_for_offer(self.film_infos.IDFilmAlloCine, self.venue)
-        product_providable_info = self.create_providable_info(
-            pc_object=offers_models.Product,
-            id_at_providers=provider_product_unique_id,
-            date_modified_at_provider=datetime.datetime.utcnow(),
-            new_id_at_provider=provider_product_unique_id,
-        )
-        providable_information_list.append(product_providable_info)
 
         offer_providable_info = self.create_providable_info(
             pc_object=offers_models.Offer,
@@ -76,30 +68,11 @@ class CGRStocks(LocalProvider):
         return providable_information_list
 
     def fill_object_attributes(self, pc_object: Model) -> None:
-        if isinstance(pc_object, offers_models.Product):
-            self.fill_product_attributes(pc_object)
-
         if isinstance(pc_object, offers_models.Offer):
             self.fill_offer_attributes(pc_object)
 
         if isinstance(pc_object, offers_models.Stock):
             self.fill_stock_attributes(pc_object)
-
-    def fill_product_attributes(self, product: offers_models.Product) -> None:
-        product.name = self.film_infos.Titre
-        product.subcategoryId = subcategories.SEANCE_CINE.id
-        product.description = self.film_infos.Synopsis
-        product.durationMinutes = self.film_infos.Duree
-        if product.extraData is None:
-            product.extraData = {}
-        if self.film_infos.NumVisa:
-            product.extraData["visa"] = str(self.film_infos.NumVisa)  # type: ignore [index]
-
-        is_new_product_to_insert = product.id is None
-
-        if is_new_product_to_insert:
-            product.id = offers_repository.get_next_product_id_from_database()
-        self.last_product = product
 
     def fill_offer_attributes(self, offer: offers_models.Offer) -> None:
         offer.venueId = self.venue.id
@@ -113,13 +86,19 @@ class CGRStocks(LocalProvider):
             offer.extraData = {}
         if self.film_infos.NumVisa:
             offer.extraData["visa"] = str(self.film_infos.NumVisa)  # type: ignore [index]
-        assert self.last_product
-        offer.product = self.last_product
 
         is_new_offer_to_insert = offer.id is None
 
         if is_new_offer_to_insert:
             offer.isDuo = self.isDuo
+            offer.id = offers_repository.get_next_offer_id_from_database()
+            if self.film_infos.Affiche:
+                image_url = self.film_infos.Affiche
+                image = get_movie_poster_from_api(image_url)
+                offers_api.create_mediation(
+                    offer=offer,
+                    image_as_bytes=image,
+                )
 
         self.last_offer = offer
 
@@ -213,10 +192,6 @@ class CGRStocks(LocalProvider):
 
     def get_keep_poster_ratio(self) -> bool:
         return True
-
-
-def _build_movie_uuid_for_product(allocine_film_id: int) -> str:
-    return f"{allocine_film_id}%CGR"
 
 
 def _build_movie_uuid_for_offer(allocine_film_id: int, venue: offerers_models.Venue) -> str:
