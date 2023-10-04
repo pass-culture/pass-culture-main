@@ -564,7 +564,7 @@ def unindex_offer_ids(offer_ids: Iterable[int]) -> None:
 
 
 def unindex_all_offers() -> None:
-    if not settings.ALGOLIA_ENABLE_UNINDEXING_ALL:
+    if not settings.ENABLE_UNINDEXING_ALL:
         raise ValueError("It is forbidden to unindex all offers on this environment")
     backend = _get_backend()
     try:
@@ -624,7 +624,7 @@ def unindex_venue_ids(venue_ids: Iterable[int]) -> None:
 
 
 def unindex_all_collective_offer_templates() -> None:
-    if not settings.ALGOLIA_ENABLE_UNINDEXING_ALL:
+    if not settings.ENABLE_UNINDEXING_ALL:
         raise ValueError("It is forbidden to unindex all collective offer templates on this environment")
 
     backend = _get_backend()
@@ -652,7 +652,7 @@ def unindex_collective_offer_template_ids(collective_offer_template_ids: Iterabl
 
 
 def unindex_all_venues() -> None:
-    if not settings.ALGOLIA_ENABLE_UNINDEXING_ALL:
+    if not settings.ENABLE_UNINDEXING_ALL:
         raise ValueError("It is forbidden to unindex all venues on this environment")
     backend = _get_backend()
     try:
