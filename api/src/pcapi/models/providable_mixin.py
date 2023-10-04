@@ -19,7 +19,7 @@ class ProvidableMixin:
     def lastProviderId(cls) -> Mapped[int | None]:  # pylint: disable=no-self-argument
         return Column(BigInteger, ForeignKey("provider.id"), nullable=True)
 
-    @declared_attr  # type: ignore [misc]
+    @declared_attr  # type: ignore[misc]
     def lastProvider(cls):  # pylint: disable=no-self-argument
         return relationship("Provider", foreign_keys=[cls.lastProviderId])
 

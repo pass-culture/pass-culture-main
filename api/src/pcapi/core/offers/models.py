@@ -456,11 +456,11 @@ class Offer(PcObject, Base, Model, DeactivableMixin, ValidationMixin, Accessibil
     def isEducational(self) -> bool:
         return False
 
-    @sa.ext.declarative.declared_attr  # type: ignore [misc]
-    def lastProviderId(cls):  # pylint: disable=no-self-argument
+    @sa.ext.declarative.declared_attr  # type: ignore[misc]
+    def lastProviderId(cls) -> sa.Column:  # pylint: disable=no-self-argument
         return sa.Column(sa.BigInteger, sa.ForeignKey("provider.id"), nullable=True)
 
-    @sa.ext.declarative.declared_attr  # type: ignore [misc]
+    @sa.ext.declarative.declared_attr  # type: ignore[misc]
     def lastProvider(cls):  # pylint: disable=no-self-argument
         return sa.orm.relationship("Provider", foreign_keys=[cls.lastProviderId])
 
