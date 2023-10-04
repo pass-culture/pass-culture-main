@@ -31,7 +31,6 @@ export default defineConfig(({ mode }) => {
       globals: true,
       environment: 'jsdom',
       setupFiles: './vitest.setup.ts',
-      deps: { inline: ['vitest-canvas-mock'] },
       clearMocks: true,
       restoreMocks: true,
       cache: { dir: '../.vitest_cache' },
