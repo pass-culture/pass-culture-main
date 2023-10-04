@@ -247,12 +247,9 @@ def patch_offer(
         with repository.transaction():
             offer = offers_api.update_offer(
                 offer,
-                ageMax=update_body.get("ageMax", offers_api.UNCHANGED),
-                ageMin=update_body.get("ageMin", offers_api.UNCHANGED),
                 audioDisabilityCompliant=update_body.get("audioDisabilityCompliant", offers_api.UNCHANGED),
                 bookingContact=update_body.get("bookingContact", offers_api.UNCHANGED),
                 bookingEmail=update_body.get("bookingEmail", offers_api.UNCHANGED),
-                conditions=update_body.get("conditions", offers_api.UNCHANGED),
                 description=update_body.get("description", offers_api.UNCHANGED),
                 durationMinutes=update_body.get("durationMinutes", offers_api.UNCHANGED),
                 externalTicketOfficeUrl=update_body.get("externalTicketOfficeUrl", offers_api.UNCHANGED),
@@ -260,7 +257,6 @@ def patch_offer(
                 isActive=update_body.get("isActive", offers_api.UNCHANGED),
                 isDuo=update_body.get("isDuo", offers_api.UNCHANGED),
                 isNational=update_body.get("isNational", offers_api.UNCHANGED),
-                mediaUrls=update_body.get("mediaUrls", offers_api.UNCHANGED),
                 mentalDisabilityCompliant=update_body.get("mentalDisabilityCompliant", offers_api.UNCHANGED),
                 motorDisabilityCompliant=update_body.get("motorDisabilityCompliant", offers_api.UNCHANGED),
                 name=update_body.get("name", offers_api.UNCHANGED),

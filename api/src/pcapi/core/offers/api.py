@@ -182,12 +182,9 @@ def create_offer(
     )
 
     offer = models.Offer(
-        ageMin=product.ageMin,
-        ageMax=product.ageMax,
         audioDisabilityCompliant=audio_disability_compliant,
         bookingContact=booking_contact,
         bookingEmail=booking_email,
-        conditions=product.conditions,
         description=product.description or description,
         durationMinutes=duration_minutes,
         externalTicketOfficeUrl=external_ticket_office_url,
@@ -225,12 +222,9 @@ def create_offer(
 
 def update_offer(
     offer: models.Offer,
-    ageMax: int | None | T_UNCHANGED = UNCHANGED,
-    ageMin: int | None | T_UNCHANGED = UNCHANGED,
     audioDisabilityCompliant: bool | T_UNCHANGED = UNCHANGED,
     bookingContact: str | None | T_UNCHANGED = UNCHANGED,
     bookingEmail: str | None | T_UNCHANGED = UNCHANGED,
-    conditions: str | None | T_UNCHANGED = UNCHANGED,
     description: str | None | T_UNCHANGED = UNCHANGED,
     durationMinutes: int | None | T_UNCHANGED = UNCHANGED,
     externalTicketOfficeUrl: str | None | T_UNCHANGED = UNCHANGED,
@@ -238,7 +232,6 @@ def update_offer(
     isActive: bool | T_UNCHANGED = UNCHANGED,
     isDuo: bool | T_UNCHANGED = UNCHANGED,
     isNational: bool | T_UNCHANGED = UNCHANGED,
-    mediaUrls: list[str] | None | T_UNCHANGED = UNCHANGED,
     mentalDisabilityCompliant: bool | T_UNCHANGED = UNCHANGED,
     motorDisabilityCompliant: bool | T_UNCHANGED = UNCHANGED,
     name: str | T_UNCHANGED = UNCHANGED,

@@ -126,10 +126,6 @@ class PatchOfferBodyModel(BaseModel, AccessibilityComplianceMixin):
     isActive: bool | None
     isDuo: bool | None
     durationMinutes: int | None
-    mediaUrls: list[str] | None
-    ageMin: int | None
-    ageMax: int | None
-    conditions: str | None
     shouldSendMail: bool | None
 
     @validator("name", pre=True, allow_reuse=True)
