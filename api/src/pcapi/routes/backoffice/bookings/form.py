@@ -1,11 +1,16 @@
 import datetime
+import typing
 
 from flask_wtf import FlaskForm
 import wtforms
 
+from pcapi.core.bookings.models import BookingStatus
 from pcapi.core.categories import categories
+from pcapi.core.educational.models import CollectiveBookingStatus
+from pcapi.routes.backoffice import filters
 from pcapi.routes.backoffice.forms import fields
 from pcapi.routes.backoffice.forms import utils
+from pcapi.routes.backoffice.forms.empty import BatchForm
 
 
 class BaseBookingListForm(FlaskForm):
@@ -101,3 +106,21 @@ class GetDownloadBookingsForm(FlaskForm):
         max_date=datetime.date.today(),
         reset_to_blank=True,
     )
+
+
+class GetCollectiveBookingListForm(BaseBookingListForm):
+    def __init__(self, *args: typing.Any, **kwargs: typing.Any) -> None:
+        super().__init__(*args, **kwargs)
+        self.q.label.text = "ID réservation collective, ID offre, Nom ou ID de l'établissement"
+        self.status.choices = utils.choices_from_enum(CollectiveBookingStatus, formatter=filters.format_booking_status)
+
+
+class GetIndividualBookingListForm(BaseBookingListForm):
+    def __init__(self, *args: typing.Any, **kwargs: typing.Any) -> None:
+        super().__init__(*args, **kwargs)
+        self.q.label.text = "Code contremarque, Nom, email ou ID (offre, bénéficiaire ou résa)"
+        self.status.choices = utils.choices_from_enum(BookingStatus, formatter=filters.format_booking_status)
+
+
+class BatchCancelBookingForm(BatchForm):
+    pass

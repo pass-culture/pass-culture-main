@@ -29,8 +29,6 @@ from pcapi.routes.backoffice.bookings import helpers as booking_helpers
 from pcapi.routes.backoffice.forms import empty as empty_forms
 from pcapi.routes.serialization.bookings_recap_serialize import OfferType
 
-from . import form as individual_booking_forms
-
 
 individual_bookings_blueprint = utils.child_backoffice_blueprint(
     "individual_bookings",
@@ -45,7 +43,7 @@ NO_DIGIT_RE = re.compile(r"[^\d]+$")
 
 
 def _get_individual_bookings(
-    form: individual_booking_forms.GetIndividualBookingListForm,
+    form: booking_forms.GetIndividualBookingListForm,
 ) -> list[bookings_models.Booking]:
     base_query = (
         bookings_models.Booking.query.outerjoin(offers_models.Stock)
@@ -130,7 +128,7 @@ def _get_individual_bookings(
 
 @individual_bookings_blueprint.route("", methods=["GET"])
 def list_individual_bookings() -> utils.BackofficeResponse:
-    form = individual_booking_forms.GetIndividualBookingListForm(formdata=utils.get_query_params())
+    form = booking_forms.GetIndividualBookingListForm(formdata=utils.get_query_params())
     if not form.validate():
         return render_template("individual_bookings/list.html", rows=[], form=form), 400
 
@@ -272,7 +270,7 @@ def batch_validate_individual_bookings() -> utils.BackofficeResponse:
 @individual_bookings_blueprint.route("/batch-cancel", methods=["GET"])
 @utils.permission_required(perm_models.Permissions.MANAGE_BOOKINGS)
 def get_batch_cancel_individual_bookings_form() -> utils.BackofficeResponse:
-    form = individual_booking_forms.BatchCancelBookingForm()
+    form = booking_forms.BatchCancelBookingForm()
     return render_template(
         "components/turbo/modal_form.html",
         form=form,
@@ -286,7 +284,7 @@ def get_batch_cancel_individual_bookings_form() -> utils.BackofficeResponse:
 @individual_bookings_blueprint.route("/batch-cancel", methods=["POST"])
 @utils.permission_required(perm_models.Permissions.MANAGE_BOOKINGS)
 def batch_cancel_individual_bookings() -> utils.BackofficeResponse:
-    form = individual_booking_forms.BatchCancelBookingForm()
+    form = booking_forms.BatchCancelBookingForm()
     if not form.validate():
         flash(utils.build_form_error_msg(form), "warning")
         return _redirect_after_individual_booking_action()
