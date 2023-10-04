@@ -726,3 +726,45 @@ class CollectiveOffersPublicPostOfferTest:
 
         # Then
         assert response.status_code == 404
+
+    def test_invalid_offer_venue(self, client):
+        # Given
+        venue_provider = provider_factories.VenueProviderFactory()
+        offerers_factories.ApiKeyFactory(provider=venue_provider.provider)
+        domain = educational_factories.EducationalDomainFactory()
+        educational_institution = educational_factories.EducationalInstitutionFactory(institutionId="UAI123")
+
+        venue = venue_provider.venue
+        payload = {
+            "venueId": venue.id,
+            "name": "Un nom en français ævœc des diàcrtîtïqués",
+            "description": "une description d'offre",
+            "subcategoryId": "EVENEMENT_CINE",
+            "bookingEmails": ["offerer-email@example.com", "offerer-email2@example.com"],
+            "contactEmail": "offerer-contact@example.com",
+            "contactPhone": "+33100992798",
+            "domains": [domain.id],
+            "students": [educational_models.StudentLevels.COLLEGE4.name],
+            "offerVenue": {
+                "venueId": venue.id,
+                "addressType": "other",
+                "otherAddress": "",
+            },
+            "isActive": True,
+            # stock part
+            "beginningDatetime": "2022-09-25T11:00",
+            "bookingLimitDatetime": "2022-09-15T11:00",
+            "totalPrice": 35621,
+            "numberOfTickets": 30,
+            "educationalInstitutionId": educational_institution.id,
+        }
+
+        # When
+        with patch("pcapi.core.offerers.api.can_venue_create_educational_offer"):
+            response = client.with_explicit_token(offerers_factories.DEFAULT_CLEAR_API_KEY).post(
+                "/v2/collective/offers/", json=payload
+            )
+
+        # Then
+        assert response.status_code == 404
+        assert "offerVenue.otherAddress" in response.json
