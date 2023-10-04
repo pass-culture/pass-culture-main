@@ -22,7 +22,6 @@ import { ButtonVariant } from 'ui-kit/Button/types'
 import ActionBar from '../ActionBar/ActionBar'
 import { MAX_STOCKS_PER_OFFER } from '../constants'
 import upsertStocksEventAdapter from '../StocksEventEdition/adapters/upsertStocksEventAdapter'
-import { getSuccessMessage } from '../utils/getSuccessMessage'
 
 import { HelpSection } from './HelpSection/HelpSection'
 import { RecurrenceForm } from './RecurrenceForm'
@@ -131,70 +130,58 @@ export const StocksEventCreation = ({
       !stocks.find(stock => stock.id === (s?.id ? s.id.toString() : undefined))
   )
 
-  const handleNextStep =
-    ({ saveDraft = false } = {}) =>
-    async () => {
-      setIsSubmitting(true)
-      setIsClickingFromActionBar(true)
-      if (stocksToDelete.length > 0) {
-        await Promise.all(stocksToDelete.map(s => api.deleteStock(s.id)))
-      }
+  const handleNextStep = async () => {
+    setIsSubmitting(true)
+    setIsClickingFromActionBar(true)
+    if (stocksToDelete.length > 0) {
+      await Promise.all(stocksToDelete.map(s => api.deleteStock(s.id)))
+    }
 
-      // Check that there is at least one stock left
-      if (stocks.length < 1) {
-        if (saveDraft) {
-          notify.success('Brouillon sauvegardé dans la liste des offres')
-        } else {
-          notify.error('Veuillez renseigner au moins une date')
-        }
-        setIsSubmitting(false)
-        return
-      }
-      if (stocks.length > MAX_STOCKS_PER_OFFER) {
-        notify.error(
-          `Veuillez créer moins de ${MAX_STOCKS_PER_OFFER} occurrences par offre.`
-        )
-        setIsSubmitting(false)
-        return
-      }
-
-      // Upsert stocks if there are stocks to upsert
-      if (stocksToCreate.length > 0) {
-        const { isOk } = await upsertStocksEventAdapter({
-          offerId: offer.id,
-          stocks: stocksToCreate,
-        })
-        setIsSubmitting(false)
-
-        if (isOk) {
-          const response = await getIndividualOfferAdapter(offer.id)
-          if (response.isOk) {
-            const updatedOffer = response.payload
-            setOffer && setOffer(updatedOffer)
-          }
-        } else {
-          notify.error(
-            "Une erreur est survenue lors de l'enregistrement de vos stocks."
-          )
-          return
-        }
-      }
-
-      navigate(
-        getIndividualOfferUrl({
-          offerId: offer.id,
-          step: saveDraft
-            ? OFFER_WIZARD_STEP_IDS.STOCKS
-            : OFFER_WIZARD_STEP_IDS.SUMMARY,
-          mode,
-        })
+    // Check that there is at least one stock left
+    if (stocks.length < 1) {
+      notify.error('Veuillez renseigner au moins une date')
+      setIsSubmitting(false)
+      return
+    }
+    if (stocks.length > MAX_STOCKS_PER_OFFER) {
+      notify.error(
+        `Veuillez créer moins de ${MAX_STOCKS_PER_OFFER} occurrences par offre.`
       )
-      setIsClickingFromActionBar(false)
+      setIsSubmitting(false)
+      return
+    }
 
-      if (saveDraft) {
-        notify.success(getSuccessMessage(mode))
+    // Upsert stocks if there are stocks to upsert
+    if (stocksToCreate.length > 0) {
+      const { isOk } = await upsertStocksEventAdapter({
+        offerId: offer.id,
+        stocks: stocksToCreate,
+      })
+      setIsSubmitting(false)
+
+      if (isOk) {
+        const response = await getIndividualOfferAdapter(offer.id)
+        if (response.isOk) {
+          const updatedOffer = response.payload
+          setOffer && setOffer(updatedOffer)
+        }
+      } else {
+        notify.error(
+          "Une erreur est survenue lors de l'enregistrement de vos stocks."
+        )
+        return
       }
     }
+
+    navigate(
+      getIndividualOfferUrl({
+        offerId: offer.id,
+        step: OFFER_WIZARD_STEP_IDS.SUMMARY,
+        mode,
+      })
+    )
+    setIsClickingFromActionBar(false)
+  }
 
   const hasUnsavedStocks =
     stocksToCreate.length > 0 || stocksToDelete.length > 0
@@ -243,9 +230,8 @@ export const StocksEventCreation = ({
 
       <ActionBar
         isDisabled={isOfferDisabled(offer.status) || isSubmitting}
-        onClickNext={handleNextStep()}
         onClickPrevious={handlePreviousStep}
-        onClickSaveDraft={handleNextStep({ saveDraft: true })}
+        onClickNext={handleNextStep}
         step={OFFER_WIZARD_STEP_IDS.STOCKS}
       />
 
