@@ -1,6 +1,4 @@
-"""
-Add hmac key column to provider table
-This key will be used to sign the payload send to providers in charlie api
+"""Add `provider.hmacKey` column
 """
 from alembic import op
 import sqlalchemy as sa
