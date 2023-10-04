@@ -2,10 +2,10 @@ import cn from 'classnames'
 import React, { useEffect, useState } from 'react'
 
 import fullClear from 'icons/full-clear.svg'
+import helpIcon from 'icons/shadow-tips-help.svg'
 import { SvgIcon } from 'ui-kit/SvgIcon/SvgIcon'
 
 import styles from './DiffuseHelp.module.scss'
-
 const LOCAL_STORAGE_HAS_SEEN_DIFFUSE_HELP_KEY = 'DIFFUSE_HELP_ADAGE_SEEN'
 
 export const DiffuseHelp = ({
@@ -39,7 +39,10 @@ export const DiffuseHelp = ({
     >
       <div className={styles['diffuse-help-infos']}>
         <div className={styles['diffuse-help-container']}>
-          <div className={styles['diffuse-help-title']}>Le saviez-vous ?</div>
+          <div className={styles['diffuse-help-header']}>
+            <SvgIcon src={helpIcon} alt="help" width="32" />
+            <div className={styles['diffuse-help-title']}>Le saviez-vous ?</div>
+          </div>
           <div
             className={styles['diffuse-help-close']}
             onClick={onCloseDiffuseHelp}
