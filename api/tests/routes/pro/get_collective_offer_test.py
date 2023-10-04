@@ -182,6 +182,25 @@ class Returns200Test:
         assert response.json["status"] == "INACTIVE"
         assert response.json["isActive"] is False
 
+    def test_offer_venue_has_an_empty_string_venue_id(self, client):
+        # TODO(jeremieb): remove this test once there is no empty
+        # string stored as a venueId
+        offer = educational_factories.CollectiveOfferFactory(
+            offerVenue={"venueId": "", "addressType": "offererVenue", "otherAddress": "some address"}
+        )
+
+        offerers_factories.UserOffererFactory(user__email="user@example.com", offerer=offer.venue.managingOfferer)
+
+        client = client.with_session_auth(email="user@example.com")
+        response = client.get(f"/collective/offers/{offer.id}")
+
+        assert response.status_code == 200
+        assert response.json["offerVenue"] == {
+            "venueId": None,
+            "addressType": "offererVenue",
+            "otherAddress": "some address",
+        }
+
 
 @pytest.mark.usefixtures("db_session")
 class Returns403Test:
