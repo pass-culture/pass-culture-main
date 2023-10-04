@@ -311,24 +311,4 @@ describe('screens:IndividualOffer::Informations:draft', () => {
       }
     )
   })
-
-  it('should track when creating draft offer using Sauvegarder le brouillon', async () => {
-    renderInformationsScreen(props, contextOverride)
-    await userEvent.click(await screen.findByText('Sauvegarder le brouillon'))
-
-    expect(mockLogEvent).toHaveBeenCalledTimes(1)
-    expect(mockLogEvent).toHaveBeenNthCalledWith(
-      1,
-      Events.CLICKED_OFFER_FORM_NAVIGATION,
-      {
-        from: 'informations',
-        isDraft: true,
-        isEdition: true,
-        offerId: offerId,
-        subcategoryId: 'SCID physical',
-        to: 'informations',
-        used: 'DraftButtons',
-      }
-    )
-  })
 })
