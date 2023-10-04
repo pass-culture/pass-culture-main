@@ -47,6 +47,11 @@ const Offer = ({
   const isGeolocationActive = useActiveFeature('WIP_ENABLE_ADAGE_GEO_LOCATION')
   const { adageUser } = useAdageUser()
 
+  const canAddOfferToFavorites =
+    isLikeActive &&
+    offer.isTemplate &&
+    adageUser.role !== AdageFrontRoles.READONLY
+
   const openOfferDetails = (
     offer: HydratedCollectiveOffer | HydratedCollectiveOfferTemplate
   ) => {
@@ -161,7 +166,7 @@ const Offer = ({
                 </ul>
               </div>
               <div className={style['offer-details-actions']}>
-                {isLikeActive && (
+                {canAddOfferToFavorites && (
                   <OfferFavoriteButton
                     offer={offer}
                     afterFavoriteChange={afterFavoriteChange}
