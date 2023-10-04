@@ -246,6 +246,8 @@ class CollectiveOfferOfferVenueResponseModel(BaseModel):
     otherAddress: str
     venueId: int | None
 
+    _validated_venue_id = validator("venueId", pre=True, allow_reuse=True)(validate_venue_id)
+
 
 class GetCollectiveOfferCollectiveStockResponseModel(BaseModel):
     id: int
