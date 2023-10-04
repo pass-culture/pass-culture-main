@@ -584,11 +584,14 @@ class CustomReimbursementRule(ReimbursementRule, Base, Model):
             return True
         return False
 
-    def apply(self, booking: "bookings_models.Booking", custom_total_amount: int | None = None) -> decimal.Decimal:
+    def apply(
+        self,
+        booking: "bookings_models.Booking",
+        custom_total_amount: int | None = None,
+    ) -> decimal.Decimal:
         if self.amount is not None:
             return booking.quantity * self.amount
-        custom_total_amount_euros = finance_utils.to_euros(custom_total_amount or 0)
-        return (custom_total_amount_euros or booking.total_amount) * self.rate
+        return super().apply(booking, custom_total_amount)
 
     @property
     def description(self) -> str:
