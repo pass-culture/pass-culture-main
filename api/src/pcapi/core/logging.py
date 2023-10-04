@@ -234,7 +234,7 @@ def install_logging() -> None:
 
     monkey_patch_logger_makeRecord()
     monkey_patch_logger_log()
-    if settings.IS_DEV and not settings.IS_RUNNING_TESTS:
+    if settings.LOG_PLAIN_TEXT:
         # JSON is hard to read, keep the default plain text logger.
         logging.basicConfig(level=settings.LOG_LEVEL)
         _silence_noisy_loggers()
