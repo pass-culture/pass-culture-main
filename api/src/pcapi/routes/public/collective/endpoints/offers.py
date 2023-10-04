@@ -102,13 +102,9 @@ def get_collective_offer_public(
             status_code=404,
         )
 
-    if offer.provider.id != current_api_key.providerId:
-        raise ApiErrors(
-            errors={
-                "global": ["Vous n'avez pas les droits d'accès suffisants pour accéder à cette information."],
-            },
-            status_code=403,
-        )
+    if offer.providerId != current_api_key.providerId:
+        msg = "Vous n'avez pas le droit d'accéder à une ressource que vous n'avez pas créée via cette API"
+        raise ApiErrors(errors={"global": [msg]}, status_code=403)
 
     return offers_serialization.GetPublicCollectiveOfferResponseModel.from_orm(offer)
 
