@@ -1,6 +1,7 @@
 name: Test main
 run-name: Test main${{ github.ref == 'refs/heads/master' && ' and deploy to testing' || '' }}
 on:
+  workflow_dispatch:
   push:
     branches:
       - master
