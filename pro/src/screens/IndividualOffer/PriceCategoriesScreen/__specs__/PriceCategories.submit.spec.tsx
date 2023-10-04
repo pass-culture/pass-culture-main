@@ -78,32 +78,7 @@ describe('PriceCategories', () => {
     expect(api.postPriceCategories).toHaveBeenCalled()
   })
 
-  it('should notify and submit when clicking on Sauvegarder le brouillon in creation', async () => {
-    const priceCategory = priceCategoryFactory()
-    renderPriceCategories({
-      offer: individualOfferFactory({
-        priceCategories: [priceCategory],
-      }),
-    })
-
-    await userEvent.clear(screen.getByLabelText('Prix par personne'))
-    await userEvent.type(screen.getByLabelText('Prix par personne'), '20')
-
-    await userEvent.click(screen.getByText('Sauvegarder le brouillon'))
-
-    expect(
-      await screen.findByText('Brouillon sauvegardé dans la liste des offres')
-    ).toBeInTheDocument()
-    expect(api.patchOffer).toHaveBeenCalled()
-    expect(api.postPriceCategories).toHaveBeenCalledWith(expect.any(Number), {
-      priceCategories: [
-        { id: priceCategory.id, label: 'mon label', price: 20 },
-      ],
-    })
-    expect(api.getOffer).toHaveBeenCalled()
-  })
-
-  it('should notify and submit when clicking on Etape suivante in draft', async () => {
+  it('should notify and submit when clicking on Enregister et continuer in draft', async () => {
     renderPriceCategories(
       { offer: individualOfferFactory() },
       generatePath(
@@ -125,32 +100,6 @@ describe('PriceCategories', () => {
     await waitFor(() => {
       expect(api.patchOffer).toHaveBeenCalled()
     })
-    expect(api.postPriceCategories).toHaveBeenCalled()
-  })
-
-  it('should notify and submit when clicking on Sauvegarder le brouillon in draft', async () => {
-    renderPriceCategories(
-      { offer: individualOfferFactory() },
-      generatePath(
-        getIndividualOfferPath({
-          step: OFFER_WIZARD_STEP_IDS.TARIFS,
-          mode: OFFER_WIZARD_MODE.DRAFT,
-        }),
-        { offerId: 'AA' }
-      )
-    )
-    await userEvent.type(
-      screen.getByLabelText('Intitulé du tarif'),
-      'Mon tarif'
-    )
-    await userEvent.type(screen.getByLabelText('Prix par personne'), '20')
-
-    await userEvent.click(screen.getByText('Sauvegarder le brouillon'))
-
-    expect(
-      await screen.findByText('Brouillon sauvegardé dans la liste des offres')
-    ).toBeInTheDocument()
-    expect(api.patchOffer).toHaveBeenCalled()
     expect(api.postPriceCategories).toHaveBeenCalled()
   })
 

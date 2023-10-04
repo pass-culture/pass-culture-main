@@ -242,7 +242,6 @@ describe('screens:IndividualOffer::Informations::creation', () => {
       )
     )
     const nextButton = screen.getByText('Enregistrer et continuer')
-    const draftButton = screen.getByText('Sauvegarder le brouillon')
 
     await userEvent.click(screen.getByText('Enregistrer et continuer'))
 
@@ -255,7 +254,6 @@ describe('screens:IndividualOffer::Informations::creation', () => {
     expect(await screen.findByText('api wrong name')).toBeInTheDocument()
     expect(screen.getByText('api wrong venue')).toBeInTheDocument()
     expect(nextButton).not.toBeDisabled()
-    expect(draftButton).not.toBeDisabled()
   })
 
   it('should submit minimal virtual offer', async () => {
@@ -305,46 +303,6 @@ describe('screens:IndividualOffer::Informations::creation', () => {
     ).toBeInTheDocument()
     expect(pcapi.postThumbnail).not.toHaveBeenCalled()
   })
-  it('should leave the user to creation page on draft save', async () => {
-    renderInformationsScreen(props, contextOverride)
-
-    const categorySelect = await screen.findByLabelText('Catégorie')
-    await userEvent.selectOptions(categorySelect, 'A')
-    const subCategorySelect = screen.getByLabelText('Sous-catégorie')
-    await userEvent.selectOptions(subCategorySelect, 'physical')
-    const nameField = screen.getByLabelText('Titre de l’offre')
-    await userEvent.type(nameField, 'Le nom de mon offre')
-
-    await userEvent.click(await screen.findByText('Sauvegarder le brouillon'))
-
-    expect(api.postOffer).toHaveBeenCalledTimes(1)
-    expect(api.postOffer).toHaveBeenCalledWith({
-      audioDisabilityCompliant: true,
-      bookingEmail: null,
-      bookingContact: null,
-      description: null,
-      durationMinutes: null,
-      externalTicketOfficeUrl: null,
-      extraData: {},
-      isDuo: true,
-      isNational: false,
-      mentalDisabilityCompliant: true,
-      motorDisabilityCompliant: true,
-      name: 'Le nom de mon offre',
-      subcategoryId: 'physical',
-      url: null,
-      venueId: 1,
-      visualDisabilityCompliant: true,
-      withdrawalDelay: null,
-      withdrawalDetails: null,
-      withdrawalType: null,
-    })
-    expect(
-      screen.getByText(
-        'Tous les champs sont obligatoires sauf mention contraire.'
-      )
-    ).toBeInTheDocument()
-  })
 
   it('should track when submitting offer', async () => {
     renderInformationsScreen(props, contextOverride)
@@ -370,34 +328,6 @@ describe('screens:IndividualOffer::Informations::creation', () => {
         subcategoryId: 'physical',
         to: 'stocks',
         used: 'StickyButtons',
-      }
-    )
-  })
-
-  it('should track when creating draft offer', async () => {
-    renderInformationsScreen(props, contextOverride)
-
-    const categorySelect = await screen.findByLabelText('Catégorie')
-    await userEvent.selectOptions(categorySelect, 'A')
-    const subCategorySelect = screen.getByLabelText('Sous-catégorie')
-    await userEvent.selectOptions(subCategorySelect, 'physical')
-    const nameField = screen.getByLabelText('Titre de l’offre')
-    await userEvent.type(nameField, 'Le nom de mon offre')
-
-    await userEvent.click(await screen.findByText('Sauvegarder le brouillon'))
-
-    expect(mockLogEvent).toHaveBeenCalledTimes(1)
-    expect(mockLogEvent).toHaveBeenNthCalledWith(
-      1,
-      Events.CLICKED_OFFER_FORM_NAVIGATION,
-      {
-        from: 'informations',
-        isDraft: true,
-        isEdition: false,
-        offerId: offerId,
-        subcategoryId: 'physical',
-        to: 'informations',
-        used: 'DraftButtons',
       }
     )
   })
