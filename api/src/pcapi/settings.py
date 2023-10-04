@@ -80,6 +80,7 @@ SESSION_COOKIE_SAMESITE = os.environ.get("SESSION_COOKIE_SAMESITE", "Lax")
 
 # LOGGING
 LOG_TO_PYTHON_STDOUT = bool(int(os.environ.get("LOG_TO_PYTHON_STDOUT", 0)))
+LOG_PLAIN_TEXT = bool(int(os.environ.get("LOG_PLAIN_TEXT", 0)))
 
 # NATIVE APP SPECIFIC SETTINGS
 NATIVE_APP_MINIMAL_CLIENT_VERSION = semver.VersionInfo.parse(
