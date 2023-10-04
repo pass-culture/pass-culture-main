@@ -42,7 +42,7 @@ export const OFFER_WITHDRAWAL_TYPE_LABELS = {
   [WithdrawalTypeEnum.ON_SITE]: 'Retrait sur place (guichet, comptoir...)',
   [WithdrawalTypeEnum.NO_TICKET]: 'Aucun billet n’est nécessaire',
   [WithdrawalTypeEnum.BY_EMAIL]: 'Les billets seront envoyés par email',
-  [WithdrawalTypeEnum.IN_APP]: 'Les billets seront dans l’application',
+  [WithdrawalTypeEnum.IN_APP]: 'Les billets seront affichés dans l’application',
 }
 
 export const OFFER_STATUS_ACTIVE = OfferStatus.ACTIVE
