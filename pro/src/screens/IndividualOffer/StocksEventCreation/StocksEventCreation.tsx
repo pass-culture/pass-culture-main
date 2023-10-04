@@ -251,7 +251,6 @@ export const StocksEventCreation = ({
 
       <RouteLeavingGuardIndividualOffer
         when={hasUnsavedStocks && !isClickingFromActionBar}
-        isEdition={false}
       />
     </div>
   )

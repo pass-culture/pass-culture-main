@@ -317,7 +317,6 @@ export const PriceCategoriesScreen = ({
 
       <RouteLeavingGuardIndividualOffer
         when={formik.dirty && !isClickingFromActionBar}
-        isEdition={mode === OFFER_WIZARD_MODE.EDITION}
       />
     </FormikProvider>
   )

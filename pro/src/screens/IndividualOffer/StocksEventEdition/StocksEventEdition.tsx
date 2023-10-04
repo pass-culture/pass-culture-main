@@ -480,7 +480,6 @@ const StocksEventEdition = ({
 
       <RouteLeavingGuardIndividualOffer
         when={areStocksChanged && !isClickingFromActionBar}
-        isEdition
       />
     </FormikProvider>
   )

@@ -34,13 +34,11 @@ describe('IndividualOffer::ActionBar', () => {
   let props: ActionBarProps
   const onClickPreviousMock = vi.fn()
   const onClickNextMock = vi.fn()
-  const onClickSaveDraftMock = vi.fn()
 
   beforeEach(() => {
     props = {
       onClickPrevious: onClickPreviousMock,
       onClickNext: onClickNextMock,
-      onClickSaveDraft: onClickSaveDraftMock,
       step: OFFER_WIZARD_STEP_IDS.INFORMATIONS,
       isDisabled: false,
     }
@@ -53,9 +51,6 @@ describe('IndividualOffer::ActionBar', () => {
       renderActionBar({ props })
 
       expect(screen.getByText('Retour')).toBeInTheDocument()
-      const buttonSaveDraft = screen.getByText('Sauvegarder le brouillon')
-      await userEvent.click(buttonSaveDraft)
-      expect(onClickSaveDraftMock).toHaveBeenCalled()
       const buttonNextStep = screen.getByText('Enregistrer et continuer')
       await userEvent.click(buttonNextStep)
       expect(onClickNextMock).toHaveBeenCalled()
@@ -69,9 +64,6 @@ describe('IndividualOffer::ActionBar', () => {
       const buttonPreviousStep = screen.getByText('Retour')
       await userEvent.click(buttonPreviousStep)
       expect(onClickPreviousMock).toHaveBeenCalled()
-      const buttonSaveDraft = screen.getByText('Sauvegarder le brouillon')
-      await userEvent.click(buttonSaveDraft)
-      expect(onClickSaveDraftMock).toHaveBeenCalled()
       const buttonNextStep = screen.getByText('Enregistrer et continuer')
       await userEvent.click(buttonNextStep)
       expect(onClickNextMock).toHaveBeenCalled()
@@ -102,9 +94,6 @@ describe('IndividualOffer::ActionBar', () => {
       renderActionBar({ props, url: '/brouillon/url' })
 
       expect(screen.getByText('Annuler et quitter')).toBeInTheDocument()
-      const buttonSaveDraft = screen.getByText('Sauvegarder le brouillon')
-      await userEvent.click(buttonSaveDraft)
-      expect(onClickSaveDraftMock).toHaveBeenCalled()
       const buttonNextStep = screen.getByText('Enregistrer et continuer')
       await userEvent.click(buttonNextStep)
       expect(onClickNextMock).toHaveBeenCalled()
