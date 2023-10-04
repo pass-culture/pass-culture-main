@@ -2759,6 +2759,7 @@ class CreateOfferReimbursementRuleTest:
         db.session.refresh(rule)
         assert rule.offer == offer
         assert rule.amount == Decimal("12.34")
+        assert rule.amountInEuroCents == 1234
         assert rule.timespan.lower == datetime.datetime(2021, 10, 2, 0, 0)
         assert rule.timespan.upper == datetime.datetime(2021, 10, 3, 0, 0)
 
