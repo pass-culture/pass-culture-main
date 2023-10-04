@@ -81,7 +81,6 @@ const InformationsScreen = ({
     'WIP_MANDATORY_BOOKING_CONTACT'
   )
 
-  const [isSubmittingDraft, setIsSubmittingDraft] = useState<boolean>(false)
   const [isClickingFromActionBar, setIsClickingFromActionBar] =
     useState<boolean>(false)
 
@@ -175,7 +174,7 @@ const InformationsScreen = ({
   }
 
   const handleNextStep =
-    ({ saveDraft = false, sendMail = false } = {}) =>
+    ({ sendMail = false } = {}) =>
     async () => {
       setIsClickingFromActionBar(true)
 
@@ -183,20 +182,13 @@ const InformationsScreen = ({
         await handleSendMail(sendMail)
       }
 
-      setIsSubmittingDraft(saveDraft)
       if (Object.keys(formik.errors).length !== 0) {
         /* istanbul ignore next: DEBT, TO FIX */
         setIsClickingFromActionBar(false)
         /* istanbul ignore next: DEBT, TO FIX */
-        if (saveDraft) {
-          notify.error(
-            'Des informations sont nécessaires pour sauvegarder le brouillon'
-          )
-        } else {
-          notify.error(FORM_ERROR_MESSAGE)
-        }
+        notify.error(FORM_ERROR_MESSAGE)
       }
-      if (saveDraft) {
+      if (isWithdrawalDialogOpen) {
         await formik.submitForm()
       }
     }
@@ -220,7 +212,6 @@ const InformationsScreen = ({
 
     const nextStep = computeNextStep(
       mode,
-      isSubmittingDraft,
       Boolean(
         subCategories.find(
           subcategory => subcategory.id === formik.values.subcategoryId
@@ -261,9 +252,7 @@ const InformationsScreen = ({
       logEvent?.(Events.CLICKED_OFFER_FORM_NAVIGATION, {
         from: OFFER_WIZARD_STEP_IDS.INFORMATIONS,
         to: nextStep,
-        used: isSubmittingDraft
-          ? OFFER_FORM_NAVIGATION_MEDIUM.DRAFT_BUTTONS
-          : OFFER_FORM_NAVIGATION_MEDIUM.STICKY_BUTTONS,
+        used: OFFER_FORM_NAVIGATION_MEDIUM.STICKY_BUTTONS,
         isEdition: mode !== OFFER_WIZARD_MODE.CREATION,
         isDraft:
           mode === OFFER_WIZARD_MODE.CREATION ||
@@ -272,9 +261,7 @@ const InformationsScreen = ({
         subcategoryId: formik.values.subcategoryId,
       })
 
-      if (isSubmittingDraft) {
-        notify.success('Brouillon sauvegardé dans la liste des offres')
-      } else if (mode === OFFER_WIZARD_MODE.EDITION) {
+      if (mode === OFFER_WIZARD_MODE.EDITION) {
         notify.success('Vos modifications ont bien été enregistrées')
       }
     } else {
@@ -329,7 +316,6 @@ const InformationsScreen = ({
           <ActionBar
             onClickPrevious={handlePreviousStep}
             onClickNext={handleNextStep()}
-            onClickSaveDraft={handleNextStep({ saveDraft: true })}
             step={OFFER_WIZARD_STEP_IDS.INFORMATIONS}
             isDisabled={
               formik.isSubmitting ||
@@ -343,15 +329,12 @@ const InformationsScreen = ({
         <ConfirmDialog
           cancelText="Ne pas envoyer"
           confirmText="Envoyer un email"
-          leftButtonAction={handleNextStep({ saveDraft: true })}
+          leftButtonAction={handleNextStep()}
           onCancel={() => {
             setIsWithdrawalDialogOpen(false)
             setIsClickingFromActionBar(false)
           }}
-          onConfirm={handleNextStep({
-            saveDraft: true,
-            sendMail: true,
-          })}
+          onConfirm={handleNextStep({ sendMail: true })}
           icon={strokeMailIcon}
           title="Souhaitez-vous prévenir les bénéficiaires de la modification des modalités de retrait ?"
         />

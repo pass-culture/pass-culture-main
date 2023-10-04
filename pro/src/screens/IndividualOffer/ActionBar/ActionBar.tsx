@@ -16,7 +16,6 @@ import { ButtonVariant, IconPositionEnum } from 'ui-kit/Button/types'
 export interface ActionBarProps {
   onClickNext?: () => void
   onClickPrevious?: () => void
-  onClickSaveDraft?: () => void
   isDisabled: boolean
   step: OFFER_WIZARD_STEP_IDS
   submitAsButton?: boolean

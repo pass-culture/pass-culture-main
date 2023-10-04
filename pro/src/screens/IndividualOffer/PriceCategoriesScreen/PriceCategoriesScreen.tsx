@@ -156,7 +156,6 @@ export const PriceCategoriesScreen = ({
     useState<boolean>(false)
   const navigate = useNavigate()
   const mode = useOfferWizardMode()
-  const [isClickingDraft, setIsClickingDraft] = useState<boolean>(false)
   const notify = useNotification()
   const [popinType, setPopinType] = useState<POPIN_TYPE | null>(null)
 
@@ -196,17 +195,16 @@ export const PriceCategoriesScreen = ({
     const afterSubmitUrl = getIndividualOfferUrl({
       offerId: offer.id,
       step:
-        isClickingDraft || mode === OFFER_WIZARD_MODE.EDITION
+        mode === OFFER_WIZARD_MODE.EDITION
           ? OFFER_WIZARD_STEP_IDS.TARIFS
           : OFFER_WIZARD_STEP_IDS.STOCKS,
       mode:
         mode === OFFER_WIZARD_MODE.EDITION ? OFFER_WIZARD_MODE.READ_ONLY : mode,
     })
     navigate(afterSubmitUrl)
-    if (isClickingDraft || mode === OFFER_WIZARD_MODE.EDITION) {
+    if (mode === OFFER_WIZARD_MODE.EDITION) {
       notify.success(getSuccessMessage(mode))
     }
-    setIsClickingDraft(false)
   }
 
   const initialValues = computeInitialValues(offer)
@@ -227,49 +225,33 @@ export const PriceCategoriesScreen = ({
     )
   }
 
-  const handleNextStep =
-    ({ saveDraft = false } = {}) =>
-    async () => {
-      setIsClickingFromActionBar(true)
-      if (saveDraft) {
-        // pass value to submit function
-        setIsClickingDraft(true)
-      }
+  const handleNextStep = async () => {
+    setIsClickingFromActionBar(true)
 
-      const isFormEmpty = formik.values === formik.initialValues
+    const isFormEmpty = formik.values === formik.initialValues
 
-      // When saving draft with an empty form
-      /* istanbul ignore next: DEBT, TO FIX when we have notification*/
-      if ((saveDraft || mode === OFFER_WIZARD_MODE.EDITION) && isFormEmpty) {
-        setIsClickingDraft(true)
-        setIsClickingFromActionBar(false)
-        if (saveDraft) {
-          notify.success(getSuccessMessage(OFFER_WIZARD_MODE.DRAFT))
-          return
-        } else {
-          navigate(
-            getIndividualOfferUrl({
-              offerId: offer.id,
-              step: OFFER_WIZARD_STEP_IDS.SUMMARY,
-              mode:
-                mode === OFFER_WIZARD_MODE.EDITION
-                  ? OFFER_WIZARD_MODE.READ_ONLY
-                  : mode,
-            })
-          )
-          notify.success(getSuccessMessage(OFFER_WIZARD_MODE.EDITION))
-        }
-      }
-
-      /* istanbul ignore next: DEBT, TO FIX */
-      if (Object.keys(formik.errors).length !== 0) {
-        setIsClickingFromActionBar(false)
-      }
-
-      if (saveDraft) {
-        await formik.submitForm()
-      }
+    // When saving draft with an empty form
+    /* istanbul ignore next: DEBT, TO FIX when we have notification*/
+    if (mode === OFFER_WIZARD_MODE.EDITION && isFormEmpty) {
+      setIsClickingFromActionBar(false)
+      navigate(
+        getIndividualOfferUrl({
+          offerId: offer.id,
+          step: OFFER_WIZARD_STEP_IDS.SUMMARY,
+          mode:
+            mode === OFFER_WIZARD_MODE.EDITION
+              ? OFFER_WIZARD_MODE.READ_ONLY
+              : mode,
+        })
+      )
+      notify.success(getSuccessMessage(OFFER_WIZARD_MODE.EDITION))
     }
+
+    /* istanbul ignore next: DEBT, TO FIX */
+    if (Object.keys(formik.errors).length !== 0) {
+      setIsClickingFromActionBar(false)
+    }
+  }
 
   return (
     <FormikProvider value={formik}>
@@ -308,8 +290,7 @@ export const PriceCategoriesScreen = ({
 
         <ActionBar
           onClickPrevious={handlePreviousStep}
-          onClickNext={handleNextStep()}
-          onClickSaveDraft={handleNextStep({ saveDraft: true })}
+          onClickNext={handleNextStep}
           step={OFFER_WIZARD_STEP_IDS.TARIFS}
           isDisabled={formik.isSubmitting}
         />

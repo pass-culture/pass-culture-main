@@ -64,7 +64,6 @@ const StocksThing = ({ offer }: StocksThingProps): JSX.Element => {
   )
   const [isClickingFromActionBar, setIsClickingFromActionBar] =
     useState<boolean>(false)
-  const [isSubmittingDraft, setIsSubmittingDraft] = useState<boolean>(false)
   const navigate = useNavigate()
   const notify = useNotification()
   const { setOffer, subCategories } = useIndividualOfferContext()
@@ -109,7 +108,7 @@ const StocksThing = ({ offer }: StocksThingProps): JSX.Element => {
         formik.resetForm({ values: buildInitialValues(response.payload) })
       }
       navigate(afterSubmitUrl)
-      if (isSubmittingDraft || mode === OFFER_WIZARD_MODE.EDITION) {
+      if (mode === OFFER_WIZARD_MODE.EDITION) {
         notify.success(message)
       }
     } else {
@@ -146,59 +145,40 @@ const StocksThing = ({ offer }: StocksThingProps): JSX.Element => {
     errors: formik.errors,
   })
 
-  const handleNextStep =
-    ({ saveDraft = false } = {}) =>
-    async () => {
-      setIsClickingFromActionBar(true)
-      /* istanbul ignore next: DEBT, TO FIX */
-      if (Object.keys(formik.errors).length !== 0) {
-        setIsClickingFromActionBar(false)
-      }
+  const handleNextStep = async () => {
+    setIsClickingFromActionBar(true)
+    /* istanbul ignore next: DEBT, TO FIX */
+    if (Object.keys(formik.errors).length !== 0) {
+      setIsClickingFromActionBar(false)
+    }
 
-      const nextStepUrl = getIndividualOfferUrl({
-        offerId: offer.id,
-        step:
-          saveDraft || mode === OFFER_WIZARD_MODE.EDITION
-            ? OFFER_WIZARD_STEP_IDS.STOCKS
-            : OFFER_WIZARD_STEP_IDS.SUMMARY,
-        mode:
-          mode === OFFER_WIZARD_MODE.EDITION
-            ? OFFER_WIZARD_MODE.READ_ONLY
-            : mode,
-      })
+    const nextStepUrl = getIndividualOfferUrl({
+      offerId: offer.id,
+      step:
+        mode === OFFER_WIZARD_MODE.EDITION
+          ? OFFER_WIZARD_STEP_IDS.STOCKS
+          : OFFER_WIZARD_STEP_IDS.SUMMARY,
+      mode:
+        mode === OFFER_WIZARD_MODE.EDITION ? OFFER_WIZARD_MODE.READ_ONLY : mode,
+    })
 
-      // When saving draft with an empty form or in edition mode
-      // we display a success notification even if nothing is done
-      if (isFormEmpty() && (saveDraft || mode === OFFER_WIZARD_MODE.EDITION)) {
-        setIsClickingFromActionBar(false)
-        if (saveDraft) {
-          notify.success('Brouillon sauvegardé dans la liste des offres')
-          return
-        } else {
-          navigate(nextStepUrl)
-          if (mode === OFFER_WIZARD_MODE.EDITION) {
-            notify.success(getSuccessMessage(mode))
-          }
-        }
-      }
-      // tested but coverage don't see it.
-      /* istanbul ignore next */
-      setIsSubmittingDraft(saveDraft)
-      setAfterSubmitUrl(nextStepUrl)
-      const hasSavedStock = formik.values.stockId !== undefined
-      if (hasSavedStock && !formik.dirty) {
-        if (!saveDraft) {
-          navigate(nextStepUrl)
-        } else {
-          notify.success(getSuccessMessage(mode))
-        }
-        setIsClickingFromActionBar(false)
-      } else {
-        if (saveDraft) {
-          await formik.submitForm()
-        }
+    // When saving draft with an empty form or in edition mode
+    // we display a success notification even if nothing is done
+    if (isFormEmpty() && mode === OFFER_WIZARD_MODE.EDITION) {
+      setIsClickingFromActionBar(false)
+      navigate(nextStepUrl)
+      if (mode === OFFER_WIZARD_MODE.EDITION) {
+        notify.success(getSuccessMessage(mode))
       }
     }
+
+    setAfterSubmitUrl(nextStepUrl)
+    const hasSavedStock = formik.values.stockId !== undefined
+    if (hasSavedStock && !formik.dirty) {
+      navigate(nextStepUrl)
+      setIsClickingFromActionBar(false)
+    }
+  }
 
   useEffect(() => {
     if (!formik.isValid) {
@@ -465,9 +445,8 @@ const StocksThing = ({ offer }: StocksThingProps): JSX.Element => {
             </div>
 
             <ActionBar
-              onClickNext={handleNextStep()}
               onClickPrevious={handlePreviousStep}
-              onClickSaveDraft={handleNextStep({ saveDraft: true })}
+              onClickNext={handleNextStep}
               step={OFFER_WIZARD_STEP_IDS.STOCKS}
               isDisabled={formik.isSubmitting || isDisabled}
               submitAsButton={isFormEmpty()}
