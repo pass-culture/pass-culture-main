@@ -42,10 +42,11 @@ const user: AuthenticatedResponse = {
 
 const renderOffers = (
   props: OfferProps,
-  featuresOverride?: { nameKey: string; isActive: boolean }[]
+  featuresOverride?: { nameKey: string; isActive: boolean }[],
+  adageUser: AuthenticatedResponse | null = user
 ) => {
   renderWithProviders(
-    <AdageUserContextProvider adageUser={user}>
+    <AdageUserContextProvider adageUser={adageUser}>
       <Offer {...props} />
     </AdageUserContextProvider>,
     {
@@ -368,6 +369,7 @@ describe('offer', () => {
     renderOffers(
       {
         ...offerProps,
+        offer: { ...defaultCollectiveTemplateOffer, isTemplate: true },
       },
       [{ nameKey: 'WIP_ENABLE_LIKE_IN_ADAGE', isActive: true }]
     )
@@ -379,7 +381,11 @@ describe('offer', () => {
     renderOffers(
       {
         ...offerProps,
-        offer: { ...offerInParis, isFavorite: true } as HydratedCollectiveOffer,
+        offer: {
+          ...defaultCollectiveTemplateOffer,
+          isFavorite: true,
+          isTemplate: true,
+        },
       },
       [{ nameKey: 'WIP_ENABLE_LIKE_IN_ADAGE', isActive: true }]
     )
@@ -394,6 +400,7 @@ describe('offer', () => {
     renderOffers(
       {
         ...offerProps,
+        offer: { ...defaultCollectiveTemplateOffer, isTemplate: true },
       },
       [{ nameKey: 'WIP_ENABLE_LIKE_IN_ADAGE', isActive: true }]
     )
@@ -449,11 +456,17 @@ describe('offer', () => {
   })
 
   it('should not change favorite status when set to favorite request fails', async () => {
-    vi.spyOn(apiAdage, 'postCollectiveOfferFavorites').mockRejectedValue(null)
+    vi.spyOn(apiAdage, 'postCollectiveTemplateFavorites').mockRejectedValue(
+      null
+    )
 
     renderOffers(
       {
         ...offerProps,
+        offer: {
+          ...defaultCollectiveTemplateOffer,
+          isTemplate: true,
+        },
       },
       [{ nameKey: 'WIP_ENABLE_LIKE_IN_ADAGE', isActive: true }]
     )
@@ -468,17 +481,19 @@ describe('offer', () => {
   })
 
   it('should not change favorite status when set to favorite request fails', async () => {
-    vi.spyOn(apiAdage, 'deleteFavoriteForCollectiveOffer').mockRejectedValue(
-      null
-    )
+    vi.spyOn(
+      apiAdage,
+      'deleteFavoriteForCollectiveOfferTemplate'
+    ).mockRejectedValue(null)
 
     renderOffers(
       {
         ...offerProps,
         offer: {
-          ...offerProps.offer,
+          ...defaultCollectiveTemplateOffer,
           isFavorite: true,
-        } as HydratedCollectiveOffer & { isFavorite: boolean },
+          isTemplate: true,
+        },
       },
       [{ nameKey: 'WIP_ENABLE_LIKE_IN_ADAGE', isActive: true }]
     )
@@ -490,5 +505,32 @@ describe('offer', () => {
     await userEvent.click(toFavoriteButton)
 
     expect(screen.getByText('Supprimer des favoris')).toBeInTheDocument()
+  })
+
+  it('should not display favorite button when adage user is admin', async () => {
+    renderOffers(
+      {
+        ...offerProps,
+        offer: {
+          ...defaultCollectiveTemplateOffer,
+          isTemplate: true,
+        },
+      },
+      [{ nameKey: 'WIP_ENABLE_LIKE_IN_ADAGE', isActive: true }],
+      { ...user, role: AdageFrontRoles.READONLY }
+    )
+
+    expect(screen.queryByText('Enregistrer en favoris')).not.toBeInTheDocument()
+  })
+
+  it('should not display favorite button when offer is bookable', async () => {
+    renderOffers(
+      {
+        ...offerProps,
+      },
+      [{ nameKey: 'WIP_ENABLE_LIKE_IN_ADAGE', isActive: true }]
+    )
+
+    expect(screen.queryByText('Enregistrer en favoris')).not.toBeInTheDocument()
   })
 })
