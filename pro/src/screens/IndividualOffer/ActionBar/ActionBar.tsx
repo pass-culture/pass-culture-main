@@ -25,7 +25,6 @@ export interface ActionBarProps {
 const ActionBar = ({
   onClickNext,
   onClickPrevious,
-  onClickSaveDraft,
   isDisabled,
   step,
   submitAsButton = false,
@@ -135,23 +134,14 @@ const ActionBar = ({
               </Button>
             </>
           ) : (
-            <>
-              <Button
-                onClick={onClickSaveDraft}
-                disabled={isDisabled}
-                variant={ButtonVariant.SECONDARY}
-              >
-                Sauvegarder le brouillon
-              </Button>
-              <SubmitButton
-                icon={fullRightIcon}
-                iconPosition={IconPositionEnum.RIGHT}
-                disabled={isDisabled}
-                onClick={onClickNext}
-              >
-                Enregistrer et continuer
-              </SubmitButton>
-            </>
+            <SubmitButton
+              icon={fullRightIcon}
+              iconPosition={IconPositionEnum.RIGHT}
+              disabled={isDisabled}
+              onClick={onClickNext}
+            >
+              Enregistrer et continuer
+            </SubmitButton>
           )}
         </>
       )

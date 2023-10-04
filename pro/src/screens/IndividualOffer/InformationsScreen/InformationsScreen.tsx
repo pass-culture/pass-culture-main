@@ -366,7 +366,6 @@ const InformationsScreen = ({
       )}
       <RouteLeavingGuardIndividualOffer
         when={formik.dirty && !isClickingFromActionBar}
-        isEdition={mode === OFFER_WIZARD_MODE.EDITION}
       />
     </FormikProvider>
   )

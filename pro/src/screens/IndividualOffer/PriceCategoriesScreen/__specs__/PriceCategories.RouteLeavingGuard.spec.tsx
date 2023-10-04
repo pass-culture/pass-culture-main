@@ -164,28 +164,6 @@ describe('PriceCategories', () => {
     ).toBeInTheDocument()
   })
 
-  it('should stay on the same page when clicking on "Sauvegarder le brouillon" in draft', async () => {
-    renderPriceCategories(
-      { offer: individualOfferFactory() },
-      generatePath(
-        getIndividualOfferPath({
-          step: OFFER_WIZARD_STEP_IDS.TARIFS,
-          mode: OFFER_WIZARD_MODE.DRAFT,
-        }),
-        { offerId: 'AA' }
-      )
-    )
-    await userEvent.type(
-      screen.getByLabelText('Intitulé du tarif'),
-      'Mon tarif'
-    )
-    await userEvent.type(screen.getByLabelText('Prix par personne'), '20')
-
-    await userEvent.click(screen.getByText('Sauvegarder le brouillon'))
-
-    expect(screen.getByText('Intitulé du tarif')).toBeInTheDocument()
-  })
-
   it('should let going to recap when form has been filled in edition', async () => {
     renderPriceCategories(
       { offer: individualOfferFactory() },
