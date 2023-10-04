@@ -41,7 +41,7 @@ def update_ubble_workflow(fraud_check: fraud_models.BeneficiaryFraudCheck) -> No
     content = ubble.get_content(fraud_check.thirdPartyId)
     status = content.status
 
-    if not settings.IS_PROD and ubble_fraud_api.does_match_ubble_test_email(fraud_check.user.email):
+    if settings.ENABLE_UBBLE_TEST_EMAIL and ubble_fraud_api.does_match_ubble_test_email(fraud_check.user.email):
         content.birth_date = fraud_check.user.birth_date
 
     fraud_check.resultContent = content
