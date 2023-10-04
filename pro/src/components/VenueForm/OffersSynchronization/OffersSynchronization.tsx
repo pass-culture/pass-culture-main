@@ -46,7 +46,10 @@ const OffersSynchronization = ({
     setVenueProviders(newVenueProviders)
   }
   return (
-    <FormLayout.Section title="Synchronisation des offres">
+    <FormLayout.Section
+      title="Gestion des synchronisations"
+      description="Vous pouvez synchroniser votre lieu avec un logiciel tiers afin de faciliter la gestion de vos offres et de vos réservations."
+    >
       <FormLayout.Row>
         {isLoading && <Spinner />}
         {venueProviders.length > 0 ? (

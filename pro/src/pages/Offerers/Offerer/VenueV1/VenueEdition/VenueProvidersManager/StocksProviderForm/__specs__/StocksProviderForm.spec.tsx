@@ -42,7 +42,7 @@ describe('StocksProviderForm', () => {
     renderStocksProviderForm(props)
 
     expect(
-      screen.queryByRole('button', { name: 'Importer les offres' })
+      screen.queryByRole('button', { name: 'Lancer la synchronisation' })
     ).toBeInTheDocument()
   })
 
@@ -50,13 +50,15 @@ describe('StocksProviderForm', () => {
     it('should display the spinner while waiting for server response', async () => {
       renderStocksProviderForm(props)
       const submitButton = screen.getByRole('button', {
-        name: 'Importer les offres',
+        name: 'Lancer la synchronisation',
       })
 
       await userEvent.click(submitButton)
 
       expect(
-        screen.getByText('Certaines offres ne seront pas synchronisées')
+        screen.getByText(
+          'Demander la synchronisation par API avec un logiciel tiers ?'
+        )
       ).toBeInTheDocument()
 
       const confirmImportButton = screen.getByRole('button', {
@@ -78,7 +80,7 @@ describe('StocksProviderForm', () => {
       renderStocksProviderForm(props)
 
       const submitButton = screen.getByRole('button', {
-        name: 'Importer les offres',
+        name: 'Lancer la synchronisation',
       })
       await userEvent.click(submitButton)
 
