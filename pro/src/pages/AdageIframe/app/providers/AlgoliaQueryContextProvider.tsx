@@ -18,7 +18,7 @@ const alogliaQueryContextInitialValues: AlgoliaQueryContextType = {
   removeQuery: () => null,
 }
 
-export const AlgoliaQueryContext = createContext<AlgoliaQueryContextType>(
+const AlgoliaQueryContext = createContext<AlgoliaQueryContextType>(
   alogliaQueryContextInitialValues
 )
 

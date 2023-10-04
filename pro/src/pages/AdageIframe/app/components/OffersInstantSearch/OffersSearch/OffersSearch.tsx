@@ -1,10 +1,9 @@
-import './OldOffersSearch.scss'
-
 import { FormikContext, useFormik } from 'formik'
 import { useContext, useEffect, useRef, useState } from 'react'
 
 import { VenueResponse } from 'apiClient/adage'
 import { apiAdage } from 'apiClient/api'
+import { GET_DATA_ERROR_MESSAGE } from 'core/shared'
 import useIsElementVisible from 'hooks/useIsElementVisible'
 import useAdageUser from 'pages/AdageIframe/app/hooks/useAdageUser'
 import { FacetFiltersContext } from 'pages/AdageIframe/app/providers'
@@ -16,6 +15,11 @@ import {
 import { removeParamsFromUrl } from 'utils/removeParamsFromUrl'
 
 import {
+  Notification,
+  NotificationComponent,
+  NotificationType,
+} from '../../Layout/Notification/Notification'
+import {
   ADAGE_FILTERS_DEFAULT_VALUES,
   adageFiltersToFacetFilters,
   computeFiltersInitialValues,
@@ -24,6 +28,7 @@ import {
 import { Autocomplete } from './Autocomplete/Autocomplete'
 import { OfferFilters } from './OfferFilters/OfferFilters'
 import { Offers } from './Offers/Offers'
+import styles from './OffersSearch.module.scss'
 
 export enum LocalisationFilterStates {
   DEPARTMENTS = 'departments',
@@ -56,11 +61,21 @@ export const OffersSearch = ({
   const [categoriesOptions, setCategoriesOptions] = useState<
     Option<string[]>[]
   >([])
+  const [notification, setNotification] = useState<Notification | null>(null)
 
   useEffect(() => {
-    apiAdage.getEducationalOffersCategories().then(categories => {
-      setCategoriesOptions(filterEducationalSubCategories(categories))
-    })
+    const getAllCategories = async () => {
+      try {
+        const result = await apiAdage.getEducationalOffersCategories()
+
+        return setCategoriesOptions(filterEducationalSubCategories(result))
+      } catch {
+        return setNotification(
+          new Notification(NotificationType.error, GET_DATA_ERROR_MESSAGE)
+        )
+      }
+    }
+    getAllCategories()
   }, [])
 
   const handleSubmit = () => {
@@ -134,6 +149,7 @@ export const OffersSearch = ({
   const isOfferFiltersVisible = useIsElementVisible(offerFilterRef)
   return (
     <>
+      {notification && <NotificationComponent notification={notification} />}
       <FormikContext.Provider value={formik}>
         <Autocomplete
           initialQuery={venueFilter?.publicName || venueFilter?.name || ''}
@@ -144,7 +160,7 @@ export const OffersSearch = ({
         />
         <div ref={offerFilterRef}>
           <OfferFilters
-            className="search-filters"
+            className={styles['search-filters']}
             localisationFilterState={localisationFilterState}
             setLocalisationFilterState={setlocalisationFilterState}
             resetForm={resetForm}
