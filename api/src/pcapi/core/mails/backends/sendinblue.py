@@ -174,7 +174,9 @@ class ToDevSendinblueBackend(SendinblueBackend):
                 and recipient.startswith(end_to_end_tests_email_address_arr[0])
                 and recipient.endswith(f"@{end_to_end_tests_email_address_arr[1]}")
             )
-            staging_whitelisted_email_recipients = settings.IS_STAGING and recipient.endswith("@yeswehack.ninja")
+            staging_whitelisted_email_recipients = settings.WHITELISTED_EMAIL_RECIPIENTS_ENABLED and recipient.endswith(
+                "@yeswehack.ninja"
+            )
             # Only for e2e, when IS_RUNNING_TESTS is true and EMAIL_BACKEND is pcapi.core.mails.backends.sendinblue.ToDevSendinblueBackend
             # This override can be seen in pass-culture-app-native/.github/workflows/e2e-*.yml
             e2e_whitelisted_email_recipients = settings.IS_E2E_TESTS and is_e2e_recipient
