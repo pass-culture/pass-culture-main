@@ -10,7 +10,7 @@
 
   - Exemple:
     ```python
-    ageMin = sa.Column(sa.Integer, nullable=True) # ageMin est de type int | None
+    quantity = sa.Column(sa.Integer, nullable=True) # quantity est de type int | None
     ```
 
 - Cas 2 : le cas des colonnes non nullables

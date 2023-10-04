@@ -115,17 +115,12 @@ class OfferExtraData(typing.TypedDict, total=False):
 
 
 class Product(PcObject, Base, Model, HasThumbMixin, ProvidableMixin):
-    ageMin = sa.Column(sa.Integer, nullable=True)
-    ageMax = sa.Column(sa.Integer, nullable=True)
-    conditions = sa.Column(sa.String(120), nullable=True)
     description = sa.Column(sa.Text, nullable=True)
     durationMinutes = sa.Column(sa.Integer, nullable=True)
     extraData: OfferExtraData | None = sa.Column("jsonData", sa_mutable.MutableDict.as_mutable(postgresql.JSONB))
     isGcuCompatible: bool = sa.Column(sa.Boolean, default=True, server_default=sa.true(), nullable=False)
     isNational: bool = sa.Column(sa.Boolean, server_default=sa.false(), default=False, nullable=False)
     isSynchronizationCompatible: bool = sa.Column(sa.Boolean, default=True, server_default=sa.true(), nullable=False)
-    # FIXME (cgaunet, 2022-08-02): this field seems to be unused
-    mediaUrls: list[str] = sa.Column(postgresql.ARRAY(sa.String(220)), nullable=False, default=[])
     name: str = sa.Column(sa.String(140), nullable=False)
     owningOfferer: sa_orm.Mapped["Offerer | None"] = sa_orm.relationship("Offerer", backref="events")
     owningOffererId = sa.Column(sa.BigInteger, sa.ForeignKey("offerer.id"), nullable=True)
@@ -393,13 +388,10 @@ class Offer(PcObject, Base, Model, DeactivableMixin, ValidationMixin, Accessibil
 
     MAX_STOCKS_PER_OFFER = 2_500
 
-    ageMin = sa.Column(sa.Integer, nullable=True)
-    ageMax = sa.Column(sa.Integer, nullable=True)
     author: sa_orm.Mapped["User"] | None = relationship("User", backref="offers", uselist=False)
     authorId = sa.Column(sa.BigInteger, sa.ForeignKey("user.id"), nullable=True)
     bookingContact = sa.Column(sa.String(120), nullable=True)
     bookingEmail = sa.Column(sa.String(120), nullable=True)
-    conditions = sa.Column(sa.String(120), nullable=True)
     criteria: sa_orm.Mapped["Criterion"] = sa.orm.relationship(
         "Criterion", backref=db.backref("criteria", lazy="dynamic"), secondary="offer_criterion"
     )
@@ -430,8 +422,6 @@ class Offer(PcObject, Base, Model, DeactivableMixin, ValidationMixin, Accessibil
     isDuo: bool = sa.Column(sa.Boolean, server_default=sa.false(), default=False, nullable=False)
     isNational: bool = sa.Column(sa.Boolean, default=False, nullable=False)
     name: str = sa.Column(sa.String(140), nullable=False)
-    # FIXME (cgaunet, 2022-08-02): this field seems to be unused
-    mediaUrls: list[str] = sa.Column(postgresql.ARRAY(sa.String(220)), nullable=False, default=[])
     priceCategories: sa_orm.Mapped[list["PriceCategory"]] = sa.orm.relationship("PriceCategory", back_populates="offer")
     product: Product = sa.orm.relationship(Product, backref="offers")
     productId: int = sa.Column(sa.BigInteger, sa.ForeignKey("product.id"), index=True, nullable=False)
