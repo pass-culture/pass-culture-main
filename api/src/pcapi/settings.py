@@ -31,6 +31,8 @@ IS_PERFORMANCE_TESTS = bool(int(os.environ.get("IS_PERFORMANCE_TESTS", "0")))
 IS_E2E_TESTS = bool(int(os.environ.get("IS_E2E_TESTS", "0")))
 assert not (IS_PROD and IS_PERFORMANCE_TESTS)
 
+RUNS_ON_KUBERNETES = IS_TESTING or IS_STAGING or IS_PROD or IS_INTEGRATION
+
 # Load configuration files
 env_path = Path(f"./.env.{ENV}")
 load_dotenv(dotenv_path=env_path)
