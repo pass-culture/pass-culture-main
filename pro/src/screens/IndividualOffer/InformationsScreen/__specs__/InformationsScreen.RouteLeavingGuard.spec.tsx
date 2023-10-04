@@ -16,7 +16,6 @@ import {
   IndividualOfferContextValues,
 } from 'context/IndividualOfferContext'
 import { REIMBURSEMENT_RULES } from 'core/Finances'
-import { Events } from 'core/FirebaseEvents/constants'
 import { CATEGORY_STATUS, OFFER_WIZARD_MODE } from 'core/Offers/constants'
 import { IndividualOffer, OfferSubCategory } from 'core/Offers/types'
 import { getIndividualOfferPath } from 'core/Offers/utils/getIndividualOfferUrl'
@@ -294,9 +293,7 @@ describe('screens:IndividualOffer::Informations::creation', () => {
     await userEvent.click(screen.getByText('Go outside !'))
 
     expect(
-      screen.getByText(
-        'Restez sur la page et cliquez sur “Sauvegarder le brouillon” pour ne rien perdre de vos modifications.'
-      )
+      screen.getByText('Les informations non sauvegardées seront perdues')
     ).toBeInTheDocument()
   })
 
@@ -315,57 +312,5 @@ describe('screens:IndividualOffer::Informations::creation', () => {
     expect(
       await screen.findByText('There is the stock route content')
     ).toBeInTheDocument()
-  })
-
-  it('should not block the user when saving draft from action bar', async () => {
-    // FIX ME: at first I wanna tested that user could aftewards go outside
-    // but I'm not able to do it, in test the form remain dirty
-    // I don't figure why, maybe because of api mocks
-    renderInformationsScreen(props, contextOverride)
-
-    const categorySelect = screen.getByLabelText('Catégorie')
-    await userEvent.selectOptions(categorySelect, 'A')
-    const subCategorySelect = screen.getByLabelText('Sous-catégorie')
-    await userEvent.selectOptions(subCategorySelect, 'physical')
-    const nameField = screen.getByLabelText('Titre de l’offre')
-    await userEvent.type(nameField, 'Le nom de mon offre')
-
-    await userEvent.click(screen.getByText('Sauvegarder le brouillon'))
-
-    expect(api.postOffer).toHaveBeenCalledTimes(1)
-    expect(
-      screen.getByText(
-        'Tous les champs sont obligatoires sauf mention contraire.'
-      )
-    ).toBeInTheDocument()
-  })
-
-  it('should track with offerId when offer has been created', async () => {
-    contextOverride.offer = offer
-    renderInformationsScreen(props, contextOverride)
-
-    const categorySelect = screen.getByLabelText('Catégorie')
-    await userEvent.selectOptions(categorySelect, 'A')
-    const subCategorySelect = screen.getByLabelText('Sous-catégorie')
-    await userEvent.selectOptions(subCategorySelect, 'physical')
-    const nameField = screen.getByLabelText('Titre de l’offre')
-    await userEvent.type(nameField, 'Le nom de mon offre')
-
-    await userEvent.click(screen.getByText('Sauvegarder le brouillon'))
-    // FIX ME: this test seems strange why is patched called and not post ?
-    expect(api.patchOffer).toHaveBeenCalledTimes(1)
-    expect(mockLogEvent).toHaveBeenNthCalledWith(
-      1,
-      Events.CLICKED_OFFER_FORM_NAVIGATION,
-      {
-        from: 'informations',
-        isDraft: true,
-        isEdition: false,
-        offerId: offerId,
-        subcategoryId: 'physical',
-        to: 'informations',
-        used: 'DraftButtons',
-      }
-    )
   })
 })

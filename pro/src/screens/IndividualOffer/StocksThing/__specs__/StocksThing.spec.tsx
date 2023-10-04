@@ -201,36 +201,6 @@ describe('screens:StocksThing', () => {
     ).not.toBeInTheDocument()
   })
 
-  it('should submit stock and stay in creation mode when click on "Sauvegarder le brouillon"', async () => {
-    vi.spyOn(api, 'upsertStocks').mockResolvedValue({
-      stocks: [{ id: 1 } as StockResponseModel],
-    })
-    renderStockThingScreen(props, contextValue)
-    const nextButton = screen.getByRole('button', {
-      name: 'Enregistrer et continuer',
-    })
-    const draftButton = screen.getByRole('button', {
-      name: 'Sauvegarder le brouillon',
-    })
-    await userEvent.type(screen.getByLabelText('Prix'), '20')
-    expect(nextButton).not.toBeDisabled()
-    expect(draftButton).not.toBeDisabled()
-    await userEvent.click(draftButton)
-
-    await waitFor(() => {
-      expect(
-        screen.getByText('Brouillon sauvegardé dans la liste des offres')
-      ).toBeInTheDocument()
-    })
-    expect(api.upsertStocks).toHaveBeenCalledTimes(1)
-    expect(
-      screen.getByText(
-        /Les bénéficiaires ont 30 jours pour faire valider leur contremarque/
-      )
-    ).toBeInTheDocument()
-    expect(api.getOffer).toHaveBeenCalledWith(offer.id)
-  })
-
   it('should submit stock form when click on "Enregistrer et continuer"', async () => {
     vi.spyOn(api, 'upsertStocks').mockResolvedValue({
       stocks: [{ id: 1 } as StockResponseModel],
@@ -239,12 +209,8 @@ describe('screens:StocksThing', () => {
     const nextButton = screen.getByRole('button', {
       name: 'Enregistrer et continuer',
     })
-    const draftButton = screen.getByRole('button', {
-      name: 'Sauvegarder le brouillon',
-    })
     await userEvent.type(screen.getByLabelText('Prix'), '20')
     await userEvent.click(nextButton)
-    expect(draftButton).toBeDisabled()
 
     await waitFor(() => {
       expect(api.upsertStocks).toHaveBeenCalledWith({
@@ -465,16 +431,6 @@ describe('screens:StocksThing', () => {
       expect(expirationInput).toBeDisabled()
       expect(expirationInput).toHaveValue('2020-12-15')
     })
-
-    it('should show a success notification if nothing has been touched', async () => {
-      renderStockThingScreen(props, contextValue)
-      await userEvent.click(
-        screen.getByRole('button', { name: 'Sauvegarder le brouillon' })
-      )
-      expect(
-        screen.getByText('Brouillon sauvegardé dans la liste des offres')
-      ).toBeInTheDocument()
-    })
   })
 
   const setNumberPriceValue = [
@@ -516,17 +472,4 @@ describe('screens:StocksThing', () => {
       expect(quantityInput).toHaveValue(expectedNumber)
     }
   )
-  it('should display success message on save draft button when stock form is empty', async () => {
-    renderStockThingScreen(props, contextValue)
-
-    await expect(screen.getByTestId('stock-thing-form')).toBeInTheDocument()
-
-    await userEvent.click(
-      screen.getByRole('button', { name: 'Sauvegarder le brouillon' })
-    )
-    expect(
-      screen.getByText('Brouillon sauvegardé dans la liste des offres')
-    ).toBeInTheDocument()
-    expect(screen.getByTestId('stock-thing-form')).toBeInTheDocument()
-  })
 })

@@ -511,7 +511,6 @@ const StocksThing = ({ offer }: StocksThingProps): JSX.Element => {
       )}
       <RouteLeavingGuardIndividualOffer
         when={formik.dirty && !isClickingFromActionBar}
-        isEdition={mode === OFFER_WIZARD_MODE.EDITION}
       />
     </FormikProvider>
   )

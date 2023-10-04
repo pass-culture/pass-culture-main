@@ -111,16 +111,6 @@ describe('StocksEventCreation', () => {
     ).toBeInTheDocument()
   })
 
-  it('should notify when clicking on Sauvegarder le brouillon without stock', async () => {
-    renderStockEventCreation({ offer: individualOfferFactory({ stocks: [] }) })
-
-    await userEvent.click(screen.getByText('Sauvegarder le brouillon'))
-
-    expect(
-      screen.getByText('Brouillon sauvegardé dans la liste des offres')
-    ).toBeInTheDocument()
-  })
-
   it('should not show help section if there are stocks already and show table', () => {
     renderWithProviders(
       <StocksEventCreation
@@ -287,28 +277,6 @@ describe('navigation and submit', () => {
     ).toBeInTheDocument()
   })
 
-  it('should submit and stay on stocks page on Sauvegarder le brouillon click', async () => {
-    const offer = individualOfferFactory({
-      stocks: [
-        individualStockFactory({
-          id: undefined,
-          priceCategoryId: 1,
-        }),
-      ],
-    })
-    renderStockEventCreation({ offer })
-
-    await userEvent.click(screen.getByText('Sauvegarder le brouillon'))
-
-    expect(
-      await screen.findByText('Brouillon sauvegardé dans la liste des offres')
-    ).toBeInTheDocument()
-    expect(
-      screen.getByText('Ajouter une ou plusieurs dates')
-    ).toBeInTheDocument()
-    expect(api.upsertStocks).toHaveBeenCalledTimes(1)
-  })
-
   it('should notify when an error occur', async () => {
     vi.spyOn(api, 'upsertStocks').mockRejectedValue({})
 
@@ -389,11 +357,8 @@ describe('deletion', () => {
 
     // stock line is not here anymore
     expect(screen.queryByText('Date')).not.toBeInTheDocument()
-    await userEvent.click(screen.getByText('Sauvegarder le brouillon'))
+    await userEvent.click(screen.getByText('Enregistrer et continuer'))
 
-    expect(
-      await screen.findByText('Brouillon sauvegardé dans la liste des offres')
-    ).toBeInTheDocument()
     expect(api.deleteStock).toHaveBeenCalledTimes(0)
   })
 
@@ -407,11 +372,8 @@ describe('deletion', () => {
     await userEvent.click(
       screen.getAllByRole('button', { name: 'Supprimer' })[0]
     )
-    await userEvent.click(screen.getByText('Sauvegarder le brouillon'))
+    await userEvent.click(screen.getByText('Enregistrer et continuer'))
 
     expect(api.deleteStock).toHaveBeenCalledTimes(1)
-    expect(
-      await screen.findByText('Brouillon sauvegardé dans la liste des offres')
-    ).toBeInTheDocument()
   })
 })
