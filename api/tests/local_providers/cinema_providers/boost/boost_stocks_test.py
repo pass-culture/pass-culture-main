@@ -10,7 +10,6 @@ from pcapi.core.external_bookings.boost import constants as boost_constants
 from pcapi.core.offers.models import Offer
 from pcapi.core.offers.models import PriceCategory
 from pcapi.core.offers.models import PriceCategoryLabel
-from pcapi.core.offers.models import Product
 from pcapi.core.offers.models import Stock
 from pcapi.core.providers.factories import BoostCinemaDetailsFactory
 from pcapi.core.providers.factories import BoostCinemaProviderPivotFactory
@@ -69,14 +68,9 @@ class BoostStocksTest:
         boost_stocks = BoostStocks(venue_provider=venue_provider)
         providable_infos = next(boost_stocks)
 
-        assert len(providable_infos) == 3
-        product_providable_info = providable_infos[0]
-        offer_providable_info = providable_infos[1]
-        stock_providable_info = providable_infos[2]
-
-        assert product_providable_info.type == Product
-        assert product_providable_info.id_at_providers == f"207%{venue_provider.venue.id}%Boost"
-        assert product_providable_info.new_id_at_provider == f"207%{venue_provider.venue.id}%Boost"
+        assert len(providable_infos) == 2
+        offer_providable_info = providable_infos[0]
+        stock_providable_info = providable_infos[1]
 
         assert offer_providable_info.type == Offer
         assert offer_providable_info.id_at_providers == f"207%{venue_provider.venue.id}%Boost"
@@ -113,14 +107,9 @@ class BoostStocksTest:
         boost_stocks = BoostStocks(venue_provider=venue_provider)
         providable_infos = next(boost_stocks)
 
-        assert len(providable_infos) == 3
-        product_providable_info = providable_infos[0]
-        offer_providable_info = providable_infos[1]
-        stock_providable_info = providable_infos[2]
-
-        assert product_providable_info.type == Product
-        assert product_providable_info.id_at_providers == f"161%{venue_provider.venue.id}%Boost"
-        assert product_providable_info.new_id_at_provider == f"161%{venue_provider.venue.id}%Boost"
+        assert len(providable_infos) == 2
+        offer_providable_info = providable_infos[0]
+        stock_providable_info = providable_infos[1]
 
         assert offer_providable_info.type == Offer
         assert offer_providable_info.id_at_providers == f"161%{venue_provider.venue.id}%Boost"
@@ -132,7 +121,7 @@ class BoostStocksTest:
 
         assert get_cinema_attr_adapter.call_count == 1
 
-    def should_fill_offer_and_product_and_stock_informations_for_each_movie(self, requests_mock):
+    def should_fill_offer_and_and_stock_informations_for_each_movie(self, requests_mock):
         boost_provider = get_provider_by_local_class("BoostStocks")
         venue_provider = VenueProviderFactory(provider=boost_provider, isDuoOffers=True)
         cinema_provider_pivot = BoostCinemaProviderPivotFactory(
@@ -169,27 +158,21 @@ class BoostStocksTest:
         boost_stocks.updateObjects()
 
         created_offers = Offer.query.order_by(Offer.id).all()
-        created_products = Product.query.order_by(Product.id).all()
         created_stocks = Stock.query.order_by(Stock.id).all()
         created_price_categories = PriceCategory.query.order_by(PriceCategory.id).all()
         created_price_category_label = PriceCategoryLabel.query.one()
-        assert len(created_offers) == len(created_products) == 2
+        assert len(created_offers) == 2
         assert len(created_stocks) == 2
         assert len(created_price_categories) == 2
 
         assert created_offers[0].name == "BLACK PANTHER : WAKANDA FOREVER"
-        assert created_offers[0].product == created_products[0]
+        assert not created_offers[0].product
         assert created_offers[0].venue == venue_provider.venue
         assert not created_offers[0].description  # FIXME
         assert created_offers[0].durationMinutes == 162
         assert created_offers[0].isDuo
         assert created_offers[0].subcategoryId == subcategories.SEANCE_CINE.id
         assert created_offers[0].extraData == {"visa": "158026"}
-
-        assert created_products[0].name == "BLACK PANTHER : WAKANDA FOREVER"
-        assert not created_products[0].description  # FIXME
-        assert created_products[0].durationMinutes == 162
-        assert created_products[0].extraData == {"visa": "158026"}
 
         assert created_stocks[0].quantity == 96
         assert created_stocks[0].price == decimal.Decimal("6.9")
@@ -201,18 +184,13 @@ class BoostStocksTest:
         assert created_stocks[0].features == ["VF", "ICE"]
 
         assert created_offers[1].name == "CHARLOTTE"
-        assert created_offers[1].product == created_products[1]
+        assert not created_offers[1].product
         assert created_offers[1].venue == venue_provider.venue
         assert not created_offers[1].description  # FIXME
         assert created_offers[1].durationMinutes == 92
         assert created_offers[1].isDuo
         assert created_offers[1].subcategoryId == subcategories.SEANCE_CINE.id
         assert created_offers[1].extraData == {"visa": "149489"}
-
-        assert created_products[1].name == "CHARLOTTE"
-        assert not created_products[1].description  # FIXME
-        assert created_products[1].durationMinutes == 92
-        assert created_products[1].extraData == {"visa": "149489"}
 
         assert created_stocks[1].quantity == 177
         assert created_stocks[1].price == decimal.Decimal("6.9")
@@ -235,7 +213,7 @@ class BoostStocksTest:
         assert get_cinema_attr_adapter.call_count == 1
 
     @override_features(WIP_ENABLE_BOOST_SHOWTIMES_FILTER=True)
-    def should_fill_offer_and_product_and_stock_informations_for_each_movie_with_enabled_filter_ff(self, requests_mock):
+    def should_fill_offer_and_stock_informations_for_each_movie_with_enabled_filter_ff(self, requests_mock):
         boost_provider = get_provider_by_local_class("BoostStocks")
         venue_provider = VenueProviderFactory(provider=boost_provider, isDuoOffers=True)
         cinema_provider_pivot = BoostCinemaProviderPivotFactory(
@@ -260,27 +238,21 @@ class BoostStocksTest:
         boost_stocks.updateObjects()
 
         created_offers = Offer.query.order_by(Offer.id).all()
-        created_products = Product.query.order_by(Product.id).all()
         created_stocks = Stock.query.order_by(Stock.id).all()
         created_price_categories = PriceCategory.query.order_by(PriceCategory.id).all()
         created_price_category_label = PriceCategoryLabel.query.one()
-        assert len(created_offers) == len(created_products) == 2
+        assert len(created_offers) == 2
         assert len(created_stocks) == 3
         assert len(created_price_categories) == 3
 
         assert created_offers[0].name == "MISSION IMPOSSIBLE DEAD RECKONING PARTIE 1"
-        assert created_offers[0].product == created_products[0]
+        assert not created_offers[0].product
         assert created_offers[0].venue == venue_provider.venue
         assert not created_offers[0].description  # FIXME
         assert created_offers[0].durationMinutes == 163
         assert created_offers[0].isDuo
         assert created_offers[0].subcategoryId == subcategories.SEANCE_CINE.id
         assert created_offers[0].extraData == {"visa": "159673"}
-
-        assert created_products[0].name == "MISSION IMPOSSIBLE DEAD RECKONING PARTIE 1"
-        assert not created_products[0].description  # FIXME
-        assert created_products[0].durationMinutes == 163
-        assert created_products[0].extraData == {"visa": "159673"}
 
         assert created_stocks[0].quantity == 147
         assert created_stocks[0].price == decimal.Decimal("12.00")
@@ -292,18 +264,13 @@ class BoostStocksTest:
         assert created_stocks[0].features == ["VF", "ICE"]
 
         assert created_offers[1].name == "SPIDER-MAN ACROSS THE SPIDER-VERSE"
-        assert created_offers[1].product == created_products[1]
+        assert not created_offers[1].product
         assert created_offers[1].venue == venue_provider.venue
         assert not created_offers[1].description  # FIXME
         assert created_offers[1].durationMinutes == 140
         assert created_offers[1].isDuo
         assert created_offers[1].subcategoryId == subcategories.SEANCE_CINE.id
         assert created_offers[1].extraData == {"visa": "159570"}
-
-        assert created_products[1].name == "SPIDER-MAN ACROSS THE SPIDER-VERSE"
-        assert not created_products[1].description  # FIXME
-        assert created_products[1].durationMinutes == 140
-        assert created_products[1].extraData == {"visa": "159570"}
 
         assert created_stocks[1].quantity == 452
         assert created_stocks[1].price == decimal.Decimal("6.00")
@@ -339,7 +306,7 @@ class BoostStocksTest:
 
         assert get_cinema_attr_adapter.call_count == 1
 
-    def should_fill_offer_and_product_and_stocks_and_price_categories(self, requests_mock):
+    def should_fill_offer_and_stocks_and_price_categories(self, requests_mock):
         boost_provider = get_provider_by_local_class("BoostStocks")
         venue_provider = VenueProviderFactory(provider=boost_provider, isDuoOffers=True)
         cinema_provider_pivot = BoostCinemaProviderPivotFactory(
@@ -368,7 +335,6 @@ class BoostStocksTest:
         boost_stocks.updateObjects()
 
         created_offer = Offer.query.order_by(Offer.id).one()
-        created_product = Product.query.order_by(Product.id).one()
         created_stocks = Stock.query.order_by(Stock.id).all()
         created_price_categories = PriceCategory.query.order_by(PriceCategory.id).all()
         created_price_category_labels = PriceCategoryLabel.query.order_by(PriceCategoryLabel.label).all()
@@ -376,18 +342,13 @@ class BoostStocksTest:
         assert len(created_price_category_labels) == 2
 
         assert created_offer.name == "BLACK PANTHER : WAKANDA FOREVER"
-        assert created_offer.product == created_product
+        assert not created_offer.product
         assert created_offer.venue == venue_provider.venue
         assert not created_offer.description  # FIXME
         assert created_offer.durationMinutes == 162
         assert created_offer.isDuo
         assert created_offer.subcategoryId == subcategories.SEANCE_CINE.id
         assert created_offer.extraData == {"visa": "158026"}
-
-        assert created_product.name == "BLACK PANTHER : WAKANDA FOREVER"
-        assert not created_product.description  # FIXME
-        assert created_product.durationMinutes == 162
-        assert created_product.extraData == {"visa": "158026"}
 
         assert created_stocks[0].quantity == 96
         assert created_stocks[0].price == decimal.Decimal("6.9")
@@ -473,10 +434,8 @@ class BoostStocksTest:
         boost_stocks.updateObjects()
 
         created_offers = Offer.query.order_by(Offer.id).all()
-        created_products = Product.query.order_by(Product.id).all()
         created_stocks = Stock.query.order_by(Stock.id).all()
 
-        assert len(created_products) == 0
         assert len(created_offers) == 0
         assert len(created_stocks) == 0
 
@@ -502,6 +461,7 @@ class BoostStocksTest:
             "https://cinema-0.example.com/api/showtimes/36683",
             json=fixtures.ShowtimeDetailsEndpointResponse.THREE_PRICINGS_SHOWTIME_36683_DATA,
         )
+        requests_mock.get("http://example.com/images/158026.jpg", content=bytes())
         boost_stocks = BoostStocks(venue_provider=venue_provider)
         boost_stocks.updateObjects()
         created_stock = Stock.query.one()
@@ -530,7 +490,7 @@ class BoostStocksTest:
 
         assert get_cinema_attr_adapter.call_count == 2
 
-    def should_create_product_with_correct_thumb(self, requests_mock):
+    def should_create_offer_with_correct_thumb(self, requests_mock):
         boost_provider = get_provider_by_local_class("BoostStocks")
         venue_provider = VenueProviderFactory(provider=boost_provider, isDuoOffers=True)
         cinema_provider_pivot = BoostCinemaProviderPivotFactory(
@@ -559,13 +519,12 @@ class BoostStocksTest:
         boost_stocks = BoostStocks(venue_provider=venue_provider)
         boost_stocks.updateObjects()
 
-        created_products = Product.query.order_by(Product.id).all()
-        assert len(created_products) == 1
+        created_offer = Offer.query.one()
         assert (
-            created_products[0].thumbUrl
-            == f"http://localhost/storage/thumbs/products/{humanize(created_products[0].id)}"
+            created_offer.thumbUrl
+            == f"http://localhost/storage/thumbs/mediations/{humanize(created_offer.activeMediation.id)}"
         )
-        assert created_products[0].thumbCount == 1
+        assert created_offer.activeMediation.thumbCount == 1
 
         assert boost_stocks.erroredThumbs == 0
 

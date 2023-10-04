@@ -822,6 +822,11 @@ def get_next_product_id_from_database() -> int:
     return db.session.execute(sequence)
 
 
+def get_next_offer_id_from_database() -> int:
+    sequence: sa.Sequence = sa.Sequence("offer_id_seq")
+    return db.session.execute(sequence)
+
+
 def has_active_offer_with_ean(ean: str | None, venue: offerers_models.Venue) -> bool:
     if not ean:
         # We should never be there (an ean or an ean must be given), in case we are alert sentry.

@@ -33,7 +33,7 @@ class Returns200Test:
         assert response_dict["venue"]["id"] == offer.venue.id
         assert response_dict["name"] == "Celeste"
         assert response_dict["id"] == offer.id
-        assert offer.product == None
+        assert not offer.product
 
     def test_create_event_offer(self, client):
         # Given
