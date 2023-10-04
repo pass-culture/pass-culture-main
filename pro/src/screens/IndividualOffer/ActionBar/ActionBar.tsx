@@ -52,7 +52,7 @@ const ActionBar = ({
           variant={ButtonVariant.SECONDARY}
           disabled={isDisabled}
         >
-          Étape précédente
+          Retour
         </Button>
       )
     } else if (mode === OFFER_WIZARD_MODE.DRAFT) {
@@ -72,7 +72,7 @@ const ActionBar = ({
               variant={ButtonVariant.SECONDARY}
               disabled={isDisabled}
             >
-              Étape précédente
+              Retour
             </Button>
           )}
         </>
@@ -149,7 +149,7 @@ const ActionBar = ({
                 disabled={isDisabled}
                 onClick={onClickNext}
               >
-                Étape suivante
+                Enregistrer et continuer
               </SubmitButton>
             </>
           )}

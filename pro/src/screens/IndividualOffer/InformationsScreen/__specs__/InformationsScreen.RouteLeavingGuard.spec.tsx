@@ -310,7 +310,7 @@ describe('screens:IndividualOffer::Informations::creation', () => {
     const nameField = screen.getByLabelText('Titre de l’offre')
     await userEvent.type(nameField, 'Le nom de mon offre')
 
-    await userEvent.click(screen.getByText('Étape suivante'))
+    await userEvent.click(screen.getByText('Enregistrer et continuer'))
 
     expect(
       await screen.findByText('There is the stock route content')

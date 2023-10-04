@@ -117,7 +117,7 @@ describe('PriceCategories', () => {
   it('should let going to information when clicking on previous step in creation', async () => {
     renderPriceCategories({ offer: individualOfferFactory() })
 
-    await userEvent.click(screen.getByText('Étape précédente'))
+    await userEvent.click(screen.getByText('Retour'))
 
     expect(
       screen.getByText('There is the informations route content')
@@ -132,7 +132,7 @@ describe('PriceCategories', () => {
     )
     await userEvent.type(screen.getByLabelText('Prix par personne'), '20')
 
-    await userEvent.click(screen.getByText('Étape suivante'))
+    await userEvent.click(screen.getByText('Enregistrer et continuer'))
 
     expect(
       screen.getByText('There is the stock create route content')
@@ -157,7 +157,7 @@ describe('PriceCategories', () => {
     )
     await userEvent.type(screen.getByLabelText('Prix par personne'), '20')
 
-    await userEvent.click(screen.getByText('Étape suivante'))
+    await userEvent.click(screen.getByText('Enregistrer et continuer'))
 
     expect(
       screen.getByText('There is the stock route content')

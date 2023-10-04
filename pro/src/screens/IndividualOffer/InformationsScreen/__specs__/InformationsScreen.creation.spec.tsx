@@ -187,7 +187,7 @@ describe('screens:IndividualOffer::Informations::creation', () => {
     const nameField = screen.getByLabelText('Titre de l’offre')
     await userEvent.type(nameField, 'Le nom de mon offre')
 
-    await userEvent.click(await screen.findByText('Étape suivante'))
+    await userEvent.click(await screen.findByText('Enregistrer et continuer'))
 
     expect(api.postOffer).toHaveBeenCalledTimes(1)
     expect(api.postOffer).toHaveBeenCalledWith({
@@ -241,10 +241,10 @@ describe('screens:IndividualOffer::Informations::creation', () => {
         ''
       )
     )
-    const nextButton = screen.getByText('Étape suivante')
+    const nextButton = screen.getByText('Enregistrer et continuer')
     const draftButton = screen.getByText('Sauvegarder le brouillon')
 
-    await userEvent.click(screen.getByText('Étape suivante'))
+    await userEvent.click(screen.getByText('Enregistrer et continuer'))
 
     await waitFor(() => {
       expect(api.postOffer).toHaveBeenCalledTimes(1)
@@ -275,7 +275,7 @@ describe('screens:IndividualOffer::Informations::creation', () => {
 
     await userEvent.type(urlField, 'https://example.com/')
 
-    await userEvent.click(await screen.findByText('Étape suivante'))
+    await userEvent.click(await screen.findByText('Enregistrer et continuer'))
 
     expect(api.postOffer).toHaveBeenCalledTimes(1)
     expect(api.postOffer).toHaveBeenCalledWith({
@@ -356,7 +356,7 @@ describe('screens:IndividualOffer::Informations::creation', () => {
     const nameField = screen.getByLabelText('Titre de l’offre')
     await userEvent.type(nameField, 'Le nom de mon offre')
 
-    await userEvent.click(await screen.findByText('Étape suivante'))
+    await userEvent.click(await screen.findByText('Enregistrer et continuer'))
 
     expect(mockLogEvent).toHaveBeenCalledTimes(1)
     expect(mockLogEvent).toHaveBeenNthCalledWith(
