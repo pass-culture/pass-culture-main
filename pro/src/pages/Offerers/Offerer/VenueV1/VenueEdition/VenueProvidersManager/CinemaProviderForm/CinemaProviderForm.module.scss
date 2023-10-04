@@ -1,0 +1,6 @@
+@use "styles/mixins/_rem.scss" as rem;
+
+.cinema-provider-form {
+  margin-bottom: 0;
+  margin-top: rem.torem(32px);
+}

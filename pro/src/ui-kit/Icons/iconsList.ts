@@ -57,6 +57,7 @@ import strokeCheckIcon from 'icons/stroke-check.svg'
 import strokeClockIcon from 'icons/stroke-clock.svg'
 import strokeCloseIcon from 'icons/stroke-close.svg'
 import strokeCodeIcon from 'icons/stroke-code.svg'
+import strokeConnectIcon from 'icons/stroke-connect.svg'
 import strokeDateIcon from 'icons/stroke-date.svg'
 import strokeDeskIcon from 'icons/stroke-desk.svg'
 import strokeDoubleCheckIcon from 'icons/stroke-double-check.svg'
@@ -181,6 +182,7 @@ export const strokeIcons: IconListItem[] = [
   { src: strokeVirtualThingIcon },
   { src: strokeTemplateOfferIcon },
   { src: strokeBookedIcon },
+  { src: strokeConnectIcon },
   { src: strokeMailIcon },
   { src: strokePhoneIcon },
   { src: strokeNearIcon },

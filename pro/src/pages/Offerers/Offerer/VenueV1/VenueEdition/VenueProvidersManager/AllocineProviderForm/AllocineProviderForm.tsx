@@ -169,7 +169,7 @@ const AllocineProviderForm = ({
                   !formik.isValid || typeof formik.values.price !== 'number'
                 }
               >
-                {isCreatedEntity ? 'Importer les offres' : 'Modifier'}
+                {isCreatedEntity ? 'Lancer la synchronisation' : 'Modifier'}
               </Button>
             </FormLayout.Actions>
           </>

@@ -58,7 +58,7 @@ describe('CinemaProviderForm', () => {
       await renderCinemaProviderForm(props)
 
       const offerImportButton = screen.getByRole('button', {
-        name: 'Importer les offres',
+        name: 'Lancer la synchronisation',
       })
       expect(offerImportButton).toBeInTheDocument()
     })
@@ -66,7 +66,7 @@ describe('CinemaProviderForm', () => {
     it('should track on import', async () => {
       await renderCinemaProviderForm(props)
       const offersImportButton = screen.getByRole('button', {
-        name: 'Importer les offres',
+        name: 'Lancer la synchronisation',
       })
 
       await userEvent.click(offersImportButton)
