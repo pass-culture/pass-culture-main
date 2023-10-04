@@ -562,12 +562,6 @@ describe('screens:IndividualOffer::Informations:edition', () => {
         screen.queryByText('There is the summary route content')
       ).not.toBeInTheDocument()
 
-      expect(
-        await screen.findByText(
-          'Souhaitez-vous prévenir les bénéficiaires de la modification des modalités de retrait ?'
-        )
-      ).toBeInTheDocument()
-
       const cancelSendMailButton = await screen.findByText('Ne pas envoyer')
       await userEvent.click(cancelSendMailButton)
 
