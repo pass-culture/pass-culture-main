@@ -117,6 +117,7 @@ COMPLIANCE_EMAIL_ADDRESS = secrets_utils.get("COMPLIANCE_EMAIL_ADDRESS", "")
 FRAUD_EMAIL_ADDRESS = secrets_utils.get("FRAUD_EMAIL_ADDRESS", "")
 DEV_EMAIL_ADDRESS = secrets_utils.get("DEV_EMAIL_ADDRESS")
 END_TO_END_TESTS_EMAIL_ADDRESS = os.environ.get("END_TO_END_TESTS_EMAIL_ADDRESS", "")
+DO_NOT_SEND_TRANSACTIONNAL_EMAIL = bool(int(os.environ.get("SEND_TRANSACTIONNAL_EMAIL", 0)))
 
 # When load testing, override `EMAIL_BACKEND` to avoid going over SendinBlue quota:
 # EMAIL_BACKEND="pcapi.core.mails.backends.logger.LoggerBackend"

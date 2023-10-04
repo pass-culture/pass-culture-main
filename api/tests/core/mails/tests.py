@@ -177,7 +177,7 @@ class ToDevSendinblueBackendTest(SendinblueBackendTest):
 
 
 class SendTest:
-    @override_settings(IS_TESTING=True)
+    @override_settings(DO_NOT_SEND_TRANSACTIONNAL_EMAIL=True)
     @override_settings(EMAIL_BACKEND="pcapi.core.mails.backends.sendinblue.ToDevSendinblueBackend")
     @patch("pcapi.core.mails.backends.sendinblue.send_transactional_email_secondary_task.delay")
     def test_send_to_ehp_false_in_testing(self, mock_send_transactional_email_secondary_task, caplog):
@@ -200,7 +200,7 @@ class SendTest:
             "'reply_to': {'email': 'reply_to@example.com', 'name': 'Tom S.'}, 'params': {}}"
         )
 
-    @override_settings(IS_TESTING=True)
+    @override_settings(DO_NOT_SEND_TRANSACTIONNAL_EMAIL=True)
     @override_settings(EMAIL_BACKEND="pcapi.core.mails.backends.sendinblue.ToDevSendinblueBackend")
     @patch("pcapi.core.mails.backends.sendinblue.send_transactional_email_secondary_task.delay")
     def test_send_to_ehp_true_in_testing(self, mock_send_transactional_email_secondary_task, caplog):
