@@ -789,7 +789,7 @@ def create_pro_user(pro_user: ImportUserFromCsvModel | ProUserCreationBodyV2Mode
     if hasattr(pro_user, "postal_code") and pro_user.postal_code:
         new_pro_user.departementCode = postal_code_utils.PostalCode(pro_user.postal_code).get_departement_code()
 
-    if settings.IS_INTEGRATION:
+    if settings.MAKE_PROS_BENEFICIARIES_IN_APP:
         new_pro_user.add_beneficiary_role()
         new_pro_user.validatedBirthDate = new_pro_user.dateOfBirth
         deposit = finance_api.create_deposit(new_pro_user, "integration_signup", models.EligibilityType.AGE18)
@@ -807,7 +807,7 @@ def _generate_offerer(data: dict) -> offerers_models.Offerer:
     # So in any case, creation date is now:
     offerer.dateCreated = datetime.datetime.utcnow()
 
-    if not settings.IS_INTEGRATION:
+    if not settings.SKIP_OFFER_VALIDATION:
         offerer.validationStatus = ValidationStatus.NEW
     else:
         offerer.validationStatus = ValidationStatus.VALIDATED
