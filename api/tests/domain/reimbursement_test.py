@@ -78,9 +78,9 @@ class DigitalThingsReimbursementTest:
 @pytest.mark.usefixtures("db_session")
 class EducationalOffersReimbursementTest:
     def test_apply(self):
-        booking = educational_factories.CollectiveBookingFactory(collectiveStock__price=3000)
+        booking = educational_factories.CollectiveBookingFactory(collectiveStock__price=1234)
         rule = reimbursement.EducationalOffersReimbursement()
-        assert rule.apply(booking) == 3000
+        assert rule.apply(booking) == 123400  # eurocents
 
     def test_relevancy(self):
         rule = reimbursement.EducationalOffersReimbursement()
@@ -96,7 +96,7 @@ class PhysicalOffersReimbursementTest:
     def test_apply(self):
         booking = create_non_digital_thing_booking(price=10, quantity=2)
         rule = reimbursement.PhysicalOffersReimbursement()
-        assert rule.apply(booking) == 10 * 2
+        assert rule.apply(booking) == 2000  # eurocents
 
     def test_relevancy(self):
         rule = reimbursement.PhysicalOffersReimbursement()
@@ -116,7 +116,7 @@ class LegacyPreSeptember2021ReimbursementRateByVenueBetween20000And40000Test:
 
     def test_apply(self):
         booking = create_event_booking(price=40, quantity=2)
-        assert self.rule.apply(booking) == Decimal("0.95") * 40 * 2
+        assert self.rule.apply(booking) == 7600  # 0.95 * 40 * 2 * 100 (eurocents)
 
     def test_relevancy_depending_on_revenue(self):
         booking = create_event_booking()
@@ -139,7 +139,7 @@ class LegacyPreSeptember2021ReimbursementRateByVenueBetween40000And150000Test:
 
     def test_apply(self):
         booking = create_event_booking(price=40, quantity=2)
-        assert self.rule.apply(booking) == Decimal("0.85") * 40 * 2
+        assert self.rule.apply(booking) == 6800  # 0.85 * 40 * 2 * 100 (eurocents)
 
     def test_relevancy_depending_on_revenue(self):
         booking = create_event_booking()
@@ -162,7 +162,7 @@ class LegacyPreSeptember2021ReimbursementRateByVenueAbove150000Test:
 
     def test_apply(self):
         booking = create_event_booking(price=40, quantity=2)
-        assert self.rule.apply(booking) == Decimal("0.7") * 40 * 2
+        assert self.rule.apply(booking) == 5600  # 0.7 * 40 * 2 * 100 (eurocents)
 
     def test_relevancy_depending_on_revenue(self):
         booking = create_event_booking()
@@ -183,7 +183,7 @@ class ReimbursementRateByVenueBetween20000And40000Test:
 
     def test_apply(self):
         booking = create_event_booking(price=40, quantity=2)
-        assert self.rule.apply(booking) == Decimal("0.95") * 40 * 2
+        assert self.rule.apply(booking) == 7600  # 0.95 * 40 * 2 * 100 (eurocents)
 
     def test_relevancy_depending_on_revenue(self):
         booking = create_event_booking()
@@ -206,7 +206,7 @@ class ReimbursementRateByVenueBetween40000And150000Test:
 
     def test_apply(self):
         booking = create_event_booking(price=40, quantity=2)
-        assert self.rule.apply(booking) == Decimal("0.92") * 40 * 2
+        assert self.rule.apply(booking) == 7360  # 0.92 * 40 * 2 * 100 (eurocents)
 
     def test_relevancy_depending_on_revenue(self):
         booking = create_event_booking()
@@ -229,7 +229,7 @@ class ReimbursementRateByVenueAbove150000Test:
 
     def test_apply(self):
         booking = create_event_booking(price=40, quantity=2)
-        assert self.rule.apply(booking) == Decimal("0.90") * 40 * 2
+        assert self.rule.apply(booking) == 7200  # 0.90 * 40 * 2 * 100 (eurocents)
 
     def test_relevancy_depending_on_revenue(self):
         booking = create_event_booking()
@@ -255,7 +255,7 @@ class ReimbursementRateForBookBelow20000Test:
         )
 
     def test_apply(self):
-        assert self.rule.apply(self.book_booking) == Decimal(1) * 40 * 2
+        assert self.rule.apply(self.book_booking) == 8000  # 1 * 40 * 2 * 100 (eurocents)
 
     def test_relevancy_depending_on_revenue(self):
         assert self.rule.is_relevant(self.book_booking, 20_000)
@@ -283,7 +283,7 @@ class ReimbursementRateForBookAbove20000Test:
         )
 
     def test_apply(self):
-        assert self.rule.apply(self.book_booking) == Decimal("0.95") * 40 * 2
+        assert self.rule.apply(self.book_booking) == 7600  # 0.95 * 40 * 2 * 100 (eurocents)
 
     def test_relevancy_depending_on_revenue(self):
         assert not self.rule.is_relevant(self.book_booking, 20_000 * 100)
