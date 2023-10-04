@@ -40,7 +40,7 @@ class EMSStocksTest:
         credentials = history_api_call.headers["Authorization"].split("Basic ")[1]
         assert b64decode(credentials).decode() == f"{settings.EMS_API_USER}:{settings.EMS_API_PASSWORD}"
 
-    def should_fill_and_create_offer_and_product_and_stock_information_for_each_movie(self, requests_mock):
+    def should_fill_and_create_offer_and_stock_information_for_each_movie(self, requests_mock):
         requests_mock.get("https://fake_url.com?version=0", json=fixtures.DATA_VERSION_0)
         requests_mock.get("https://example.com/FR/poster/5F988F1C/600/SHJRH.jpg", content=bytes())
         requests_mock.get("https://example.com/FR/poster/D7C57D16/600/FGMSE.jpg", content=bytes())
@@ -88,7 +88,7 @@ class EMSStocksTest:
         created_price_category = offers_models.PriceCategory.query.all()
         assert len(created_price_category) == 2
 
-    def should_create_product_with_correct_thumb(self, requests_mock):
+    def should_create_offer_with_correct_thumb(self, requests_mock):
         connector = EMSScheduleConnector()
         requests_mock.get("https://fake_url.com?version=0", json=fixtures.DATA_VERSION_0)
 
@@ -106,9 +106,12 @@ class EMSStocksTest:
         )
         ems_stocks.synchronize()
 
-        created_product = offers_models.Product.query.one()
-        assert created_product.thumbUrl == f"http://localhost/storage/thumbs/products/{humanize(created_product.id)}"
-        assert created_product.thumbCount == 1
+        created_offer = offers_models.Offer.query.one()
+        assert (
+            created_offer.image.url
+            == f"http://localhost/storage/thumbs/mediations/{humanize(created_offer.activeMediation.id)}"
+        )
+        assert len(created_offer.mediations) == 1
 
     def test_successive_version_syncs(self, requests_mock):
         requests_mock.get("https://fake_url.com?version=0", json=fixtures.DATA_VERSION_0)
@@ -189,9 +192,6 @@ class EMSStocksTest:
         version: int,
     ):
         created_offers = offers_models.Offer.query.filter_by(venueId=venue.id).order_by(offers_models.Offer.id).all()
-        created_products = (
-            offers_models.Product.query.filter_by(idAtProviders="CDFG5%EMS").order_by(offers_models.Product.id).all()
-        )
         created_stocks = (
             offers_models.Stock.query.filter(offers_models.Stock.offerId.in_(offer.id for offer in created_offers))
             .order_by(offers_models.Stock.id)
@@ -211,13 +211,11 @@ class EMSStocksTest:
         )
 
         assert len(created_offers) == 1
-        assert len(created_products) == 1
         assert len(created_stocks) == 1
         assert len(created_price_categories) == 1
         assert len(created_price_categories_labels) == 1
 
         assert created_offers[0].name == "Mon voisin Totoro"
-        assert created_offers[0].product == created_products[0]
         assert created_offers[0].venue == venue_provider.venue
         assert (
             created_offers[0].description
@@ -228,14 +226,6 @@ class EMSStocksTest:
         assert created_offers[0].subcategoryId == subcategories.SEANCE_CINE.id
         assert created_offers[0].bookingEmail == "ormeaux-booking@example.com"
         assert created_offers[0].withdrawalDetails == "Modalité de retrait"
-
-        assert created_products[0].name == "Mon voisin Totoro"
-        assert (
-            created_products[0].description
-            == "Mei, 4 ans, et Satsuki, 10 ans, s’installent à la campagne avec leur père pour se rapprocher de l’hôpital où séjourne leur mère. Elles découvrent la nature tout autour de la maison et, surtout, l’existence d’animaux étranges et merveilleux, les Totoros, avec qui elles deviennent très amies. Un jour, alors que Satsuki et Mei attendent le retour de leur mère, elles apprennent que sa sortie de l’hôpital a été repoussée. Mei décide alors d’aller lui rendre visite seule. Satsuki et les gens du village la recherchent en vain. Désespérée, Satsuki va finalement demander de l’aide à son voisin Totoro."
-        )
-        assert created_products[0].durationMinutes == 87
-        assert created_products[0].subcategoryId == subcategories.SEANCE_CINE.id
 
         assert not created_stocks[0].quantity
         assert created_stocks[0].price == Decimal("7.00")
@@ -257,11 +247,6 @@ class EMSStocksTest:
         version: int,
     ):
         created_offers = offers_models.Offer.query.filter_by(venueId=venue.id).order_by(offers_models.Offer.id).all()
-        created_products = (
-            offers_models.Product.query.filter(offers_models.Product.idAtProviders.in_(["FGMSE%EMS", "SHJRH%EMS"]))
-            .order_by(offers_models.Product.id)
-            .all()
-        )
         created_stocks = (
             offers_models.Stock.query.filter(offers_models.Stock.offerId.in_(offer.id for offer in created_offers))
             .order_by(offers_models.Stock.id)
@@ -281,13 +266,11 @@ class EMSStocksTest:
         )
 
         assert len(created_offers) == 2
-        assert len(created_products) == 2
         assert len(created_stocks) == 3
         assert len(created_price_categories) == 2
         assert len(created_price_categories_labels) == 2
 
         assert created_offers[0].name == "Spider-Man : Across the Spider-Verse"
-        assert created_offers[0].product == created_products[0]
         assert created_offers[0].venue == venue_provider.venue
         assert (
             created_offers[0].description
@@ -298,14 +281,6 @@ class EMSStocksTest:
         assert created_offers[0].subcategoryId == subcategories.SEANCE_CINE.id
         assert created_offers[0].bookingEmail == "seyne-sur-mer-booking@example.com"
         assert created_offers[0].withdrawalDetails == "Modalité de retrait"
-
-        assert created_products[0].name == "Spider-Man : Across the Spider-Verse"
-        assert (
-            created_products[0].description
-            == "Après avoir retrouvé Gwen Stacy, Spider-Man, le sympathique héros originaire de Brooklyn, est catapulté à travers le Multivers, où il rencontre une équipe de Spider-Héros chargée d'en protéger l'existence. Mais lorsque les héros s'opposent sur la façon de gérer une nouvelle menace, Miles se retrouve confronté à eux et doit redéfinir ce que signifie être un héros afin de sauver les personnes qu'il aime le plus."
-        )
-        assert created_products[0].durationMinutes == 141
-        assert created_products[0].subcategoryId == subcategories.SEANCE_CINE.id
 
         assert not created_stocks[0].quantity
         assert created_stocks[0].price == Decimal("7.15")
@@ -326,7 +301,6 @@ class EMSStocksTest:
         assert created_stocks[1].features == ["VF", "3D"]
 
         assert created_offers[1].name == "Transformers : Rise of the Beasts"
-        assert created_offers[1].product == created_products[1]
         assert created_offers[1].venue == venue_provider.venue
         assert (
             created_offers[1].description
@@ -337,14 +311,6 @@ class EMSStocksTest:
         assert created_offers[1].subcategoryId == subcategories.SEANCE_CINE.id
         assert created_offers[1].bookingEmail == "seyne-sur-mer-booking@example.com"
         assert created_offers[1].withdrawalDetails == "Modalité de retrait"
-
-        assert created_products[1].name == "Transformers : Rise of the Beasts"
-        assert (
-            created_products[1].description
-            == "Renouant avec l'action et le grand spectacle qui ont fait des premiers Transformers un phénomène mondial il y a 14 ans, Transformers : Rise of The Beasts transportera le public dans une aventure aux quatre coins du monde au coeur des années 1990. On y découvrira pour la première fois les Maximals, Predacons et Terrorcons rejoignant l'éternel combat entre les Autobots et les Decepticons."
-        )
-        assert created_products[1].durationMinutes == 127
-        assert created_products[1].subcategoryId == subcategories.SEANCE_CINE.id
 
         assert not created_stocks[2].quantity
         assert created_stocks[2].price == Decimal("5.15")
@@ -366,11 +332,6 @@ class EMSStocksTest:
         version: int,
     ):
         created_offers = offers_models.Offer.query.filter_by(venueId=venue.id).order_by(offers_models.Offer.id).all()
-        created_products = (
-            offers_models.Product.query.filter(offers_models.Product.idAtProviders.in_(["CDFG5%EMS", "HIJIC%EMS"]))
-            .order_by(offers_models.Product.id)
-            .all()
-        )
         created_stocks = (
             offers_models.Stock.query.filter(offers_models.Stock.offerId.in_(offer.id for offer in created_offers))
             .order_by(offers_models.Stock.id)
@@ -390,13 +351,11 @@ class EMSStocksTest:
         )
 
         assert len(created_offers) == 2
-        assert len(created_products) == 2
         assert len(created_stocks) == 2
         assert len(created_price_categories) == 2
         assert len(created_price_categories_labels) == 1
 
         assert created_offers[0].name == "Mon voisin Totoro"
-        assert created_offers[0].product == created_products[0]
         assert created_offers[0].venue == venue_provider.venue
         assert (
             created_offers[0].description
@@ -407,14 +366,6 @@ class EMSStocksTest:
         assert created_offers[0].subcategoryId == subcategories.SEANCE_CINE.id
         assert created_offers[0].bookingEmail == "ormeaux-booking@example.com"
         assert created_offers[0].withdrawalDetails == "Modalité de retrait"
-
-        assert created_products[0].name == "Mon voisin Totoro"
-        assert (
-            created_products[0].description
-            == "Mei, 4 ans, et Satsuki, 10 ans, s’installent à la campagne avec leur père pour se rapprocher de l’hôpital où séjourne leur mère. Elles découvrent la nature tout autour de la maison et, surtout, l’existence d’animaux étranges et merveilleux, les Totoros, avec qui elles deviennent très amies. Un jour, alors que Satsuki et Mei attendent le retour de leur mère, elles apprennent que sa sortie de l’hôpital a été repoussée. Mei décide alors d’aller lui rendre visite seule. Satsuki et les gens du village la recherchent en vain. Désespérée, Satsuki va finalement demander de l’aide à son voisin Totoro."
-        )
-        assert created_products[0].durationMinutes == 87
-        assert created_products[0].subcategoryId == subcategories.SEANCE_CINE.id
 
         assert not created_stocks[0].quantity
         assert created_stocks[0].price == Decimal("7.00")
@@ -435,7 +386,6 @@ class EMSStocksTest:
         assert created_stocks[1].features == ["VO"]
 
         assert created_offers[1].name == "Joker"
-        assert created_offers[1].product == created_products[1]
         assert created_offers[1].venue == venue_provider.venue
         assert (
             created_offers[1].description
@@ -446,14 +396,6 @@ class EMSStocksTest:
         assert created_offers[1].subcategoryId == subcategories.SEANCE_CINE.id
         assert created_offers[1].bookingEmail == "ormeaux-booking@example.com"
         assert created_offers[1].withdrawalDetails == "Modalité de retrait"
-
-        assert created_products[1].name == "Joker"
-        assert (
-            created_products[1].description
-            == "Dans les années 1980, à Gotham City, Arthur Fleck, un humoriste de stand‐up raté, bascule dans la folie et devient le Joker."
-        )
-        assert created_products[1].durationMinutes == 122
-        assert created_products[1].subcategoryId == subcategories.SEANCE_CINE.id
 
         # Ensuring we are keeping tracks of current version of our stocks
         assert cinema_detail.lastVersion == version

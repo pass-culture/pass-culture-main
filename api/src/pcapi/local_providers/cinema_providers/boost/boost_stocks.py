@@ -8,6 +8,7 @@ from pcapi.core.external_bookings.boost.client import BoostClientAPI
 from pcapi.core.external_bookings.boost.client import get_pcu_pricing_if_exists
 from pcapi.core.external_bookings.models import Movie
 from pcapi.core.offerers.models import Venue
+from pcapi.core.offers import api as offers_api
 from pcapi.core.offers import models as offers_models
 from pcapi.core.offers import repository as offers_repository
 from pcapi.core.providers.models import VenueProvider
@@ -16,6 +17,7 @@ from pcapi.local_providers.local_provider import LocalProvider
 from pcapi.local_providers.providable_info import ProvidableInfo
 from pcapi.models import Model
 from pcapi.models.feature import FeatureToggle
+from pcapi.repository.providable_queries import get_last_update_for_provider
 
 
 ACCEPTED_VERSIONS_MAPPING = {
@@ -59,16 +61,8 @@ class BoostStocks(LocalProvider):
             return []
 
         providable_information_list = []
-        # The Product ID must be unique
-        provider_movie_unique_id = _build_movie_uuid(self.showtime_details.film.id, self.venue)
-        product_providable_info = self.create_providable_info(
-            pc_object=offers_models.Product,
-            id_at_providers=provider_movie_unique_id,
-            date_modified_at_provider=datetime.utcnow(),
-            new_id_at_provider=provider_movie_unique_id,
-        )
-        providable_information_list.append(product_providable_info)
 
+        provider_movie_unique_id = _build_movie_uuid(self.showtime_details.film.id, self.venue)
         offer_providable_info = self.create_providable_info(
             offers_models.Offer, provider_movie_unique_id, datetime.utcnow(), provider_movie_unique_id
         )
@@ -83,26 +77,11 @@ class BoostStocks(LocalProvider):
         return providable_information_list
 
     def fill_object_attributes(self, pc_object: Model) -> None:
-        if isinstance(pc_object, offers_models.Product):
-            self.fill_product_attributes(pc_object)
-
         if isinstance(pc_object, offers_models.Offer):
             self.fill_offer_attributes(pc_object)
 
         if isinstance(pc_object, offers_models.Stock):
             self.fill_stock_attributes(pc_object)
-
-    def fill_product_attributes(self, product: offers_models.Product) -> None:
-        product.name = self.showtime_details.film.titleCnc
-        product.subcategoryId = subcategories.SEANCE_CINE.id
-
-        self.update_from_movie_information(product, self.showtime_details.film.to_generic_movie())
-
-        is_new_product_to_insert = product.id is None
-        if is_new_product_to_insert:
-            product.id = offers_repository.get_next_product_id_from_database()
-
-        self.last_product = product
 
     def fill_offer_attributes(self, offer: offers_models.Offer) -> None:
         offer.venueId = self.venue.id
@@ -113,12 +92,26 @@ class BoostStocks(LocalProvider):
 
         offer.name = self.showtime_details.film.titleCnc
         offer.subcategoryId = subcategories.SEANCE_CINE.id
-        offer.product = self.last_product
 
         is_new_offer_to_insert = offer.id is None
         if is_new_offer_to_insert:
             offer.isDuo = self.isDuo
+            offer.id = offers_repository.get_next_offer_id_from_database()
 
+        last_update_for_current_provider = get_last_update_for_provider(self.provider.id, offer)
+
+        if not last_update_for_current_provider or last_update_for_current_provider.date() != datetime.today().date():
+            if self.showtime_details.film.posterUrl:
+                if image := self._get_boost_movie_poster(self.showtime_details.film.posterUrl):
+                    offers_api.create_mediation(
+                        user=None,
+                        offer=offer,
+                        credit=None,
+                        image_as_bytes=image,
+                        keep_ratio=True,
+                        check_image_validity=False,
+                    )
+                    self.createdThumbs += 1
         self.last_offer = offer
 
     def fill_stock_attributes(self, stock: offers_models.Stock) -> None:
@@ -193,9 +186,7 @@ class BoostStocks(LocalProvider):
 
         return price_category_label
 
-    def update_from_movie_information(
-        self, obj: offers_models.Offer | offers_models.Product, movie_information: Movie
-    ) -> None:
+    def update_from_movie_information(self, obj: offers_models.Offer, movie_information: Movie) -> None:
         if movie_information.description:
             obj.description = movie_information.description
         if movie_information.duration:

@@ -38,14 +38,9 @@ class CGRStocksTest:
         cgr_stocks = CGRStocks(venue_provider=venue_provider)
         providable_infos = next(cgr_stocks)
 
-        assert len(providable_infos) == 3
-        product_providable_info = providable_infos[0]
-        offer_providable_info = providable_infos[1]
-        stock_providable_info = providable_infos[2]
-
-        assert product_providable_info.type == offers_models.Product
-        assert product_providable_info.id_at_providers == "138473%CGR"
-        assert product_providable_info.new_id_at_provider == "138473%CGR"
+        assert len(providable_infos) == 2
+        offer_providable_info = providable_infos[0]
+        stock_providable_info = providable_infos[1]
 
         assert offer_providable_info.type == offers_models.Offer
         assert offer_providable_info.id_at_providers == f"138473%{venue_provider.venue.id}%CGR"
@@ -55,7 +50,7 @@ class CGRStocksTest:
         assert stock_providable_info.id_at_providers == f"138473%{venue_provider.venue.id}%CGR#177182"
         assert stock_providable_info.new_id_at_provider == f"138473%{venue_provider.venue.id}%CGR#177182"
 
-    def should_fill_offer_and_product_and_stock_informations_for_each_movie(self, requests_mock):
+    def should_fill_offer_and_stock_informations_for_each_movie(self, requests_mock):
         requests_mock.get("https://example.com/149341.jpg", content=bytes())
         requests_mock.get("https://example.com/82382.jpg", content=bytes())
         requests_mock.get("https://cgr-cinema-0.example.com/web_service", text=soap_definitions.WEB_SERVICE_DEFINITION)
@@ -77,20 +72,17 @@ class CGRStocksTest:
         cgr_stocks.updateObjects()
 
         created_offers = offers_models.Offer.query.order_by(offers_models.Offer.id).all()
-        created_products = offers_models.Product.query.order_by(offers_models.Product.id).all()
         created_stocks = offers_models.Stock.query.order_by(offers_models.Stock.id).all()
         created_price_categories = offers_models.PriceCategory.query.order_by(offers_models.PriceCategory.id).all()
         created_price_categories_labels = offers_models.PriceCategoryLabel.query.order_by(
             offers_models.PriceCategoryLabel.id
         ).all()
         assert len(created_offers) == 2
-        assert len(created_products) == 2
         assert len(created_stocks) == 2
         assert len(created_price_categories) == 2
         assert len(created_price_categories_labels) == 2
 
         assert created_offers[0].name == "Venom"
-        assert created_offers[0].product == created_products[0]
         assert created_offers[0].venue == venue_provider.venue
         assert (
             created_offers[0].description
@@ -100,15 +92,6 @@ class CGRStocksTest:
         assert created_offers[0].isDuo
         assert created_offers[0].subcategoryId == subcategories.SEANCE_CINE.id
         assert created_offers[0].extraData == {"visa": "149341"}
-
-        assert created_products[0].name == "Venom"
-        assert (
-            created_products[0].description
-            == "Possédé par un symbiote qui agit de manière autonome, le journaliste Eddie Brock devient le protecteur létal Venom."
-        )
-        assert created_products[0].durationMinutes == 112
-        assert created_products[0].subcategoryId == subcategories.SEANCE_CINE.id
-        assert created_products[0].extraData == {"visa": "149341"}
 
         assert created_stocks[0].quantity == 99
         assert created_stocks[0].price == Decimal("6.9")
@@ -121,19 +104,12 @@ class CGRStocksTest:
         assert created_stocks[0].features == ["VF", "ICE"]
 
         assert created_offers[1].name == "Super Mario Bros, Le Film"
-        assert created_offers[1].product == created_products[1]
         assert created_offers[1].venue == venue_provider.venue
         assert created_offers[1].description == "Un film basé sur l'univers du célèbre jeu : Super Mario Bros."
         assert created_offers[1].durationMinutes == 92
         assert created_offers[1].isDuo
         assert created_offers[1].subcategoryId == subcategories.SEANCE_CINE.id
         assert created_offers[1].extraData == {"visa": "82382"}
-
-        assert created_products[1].name == "Super Mario Bros, Le Film"
-        assert created_products[1].description == "Un film basé sur l'univers du célèbre jeu : Super Mario Bros."
-        assert created_products[1].durationMinutes == 92
-        assert created_products[1].subcategoryId == subcategories.SEANCE_CINE.id
-        assert created_products[1].extraData == {"visa": "82382"}
 
         assert created_stocks[1].quantity == 168
         assert created_stocks[1].price == Decimal(11.00)
@@ -147,6 +123,7 @@ class CGRStocksTest:
 
     def should_fill_stocks_and_price_categories_for_a_movie(self, requests_mock):
         requests_mock.get("https://cgr-cinema-0.example.com/web_service", text=soap_definitions.WEB_SERVICE_DEFINITION)
+        requests_mock.get("https://example.com/82382.jpg", content=bytes())
 
         cgr_provider = get_provider_by_local_class("CGRStocks")
         venue_provider = providers_factories.VenueProviderFactory(provider=cgr_provider, isDuoOffers=True)
@@ -166,7 +143,6 @@ class CGRStocksTest:
         cgr_stocks.updateObjects()
 
         created_offer = offers_models.Offer.query.one()
-        created_product = offers_models.Product.query.one()
         created_stocks = offers_models.Stock.query.order_by(offers_models.Stock.id).all()
         created_price_categories = offers_models.PriceCategory.query.order_by(offers_models.PriceCategory.id).all()
         created_price_category_labels = offers_models.PriceCategoryLabel.query.order_by(
@@ -178,17 +154,11 @@ class CGRStocksTest:
         assert len(created_price_category_labels) == 3
 
         assert created_offer.name == "Super Mario Bros, Le Film"
-        assert created_offer.product == created_product
         assert created_offer.venue == venue_provider.venue
         assert created_offer.description == "Un film basé sur l'univers du célèbre jeu : Super Mario Bros."
         assert created_offer.durationMinutes == 92
         assert created_offer.isDuo
         assert created_offer.subcategoryId == subcategories.SEANCE_CINE.id
-
-        assert created_product.name == "Super Mario Bros, Le Film"
-        assert created_product.description == "Un film basé sur l'univers du célèbre jeu : Super Mario Bros."
-        assert created_product.durationMinutes == 92
-        assert created_product.extraData == {"visa": "82382"}
 
         assert created_stocks[0].quantity == 168
         assert created_stocks[0].price == 11.0
@@ -225,6 +195,7 @@ class CGRStocksTest:
 
     def should_reuse_price_category(self, requests_mock):
         requests_mock.get("https://cgr-cinema-0.example.com/web_service", text=soap_definitions.WEB_SERVICE_DEFINITION)
+        requests_mock.get("https://example.com/149341.jpg", content=bytes())
 
         cgr_provider = get_provider_by_local_class("CGRStocks")
         venue_provider = providers_factories.VenueProviderFactory(provider=cgr_provider, isDuoOffers=True)
@@ -311,13 +282,12 @@ class CGRStocksTest:
         cgr_stocks = CGRStocks(venue_provider=venue_provider)
         cgr_stocks.updateObjects()
 
-        created_products = offers_models.Product.query.order_by(offers_models.Product.id).all()
-        assert len(created_products) == 1
+        created_offer = offers_models.Offer.query.one()
         assert (
-            created_products[0].thumbUrl
-            == f"http://localhost/storage/thumbs/products/{humanize(created_products[0].id)}"
+            created_offer.image.url
+            == f"http://localhost/storage/thumbs/mediations/{humanize(created_offer.activeMediation.id)}"
         )
-        assert created_products[0].thumbCount == 1
+        assert created_offer.activeMediation.thumbCount == 1
 
     def should_not_update_thumbnail_more_then_once_a_day(self, requests_mock):
         requests_mock.get("https://cgr-cinema-0.example.com/web_service", text=soap_definitions.WEB_SERVICE_DEFINITION)

@@ -79,7 +79,7 @@ def _create_bookings_for_other_beneficiaries(
             "has-booked-activation" in user.email or "has-confirmed-activation" in user.email
         )
 
-        is_activation_offer = offer.product.subcategoryId in (
+        is_activation_offer = offer.subcategoryId in (
             subcategories.ACTIVATION_EVENT.id,
             subcategories.ACTIVATION_THING.id,
         )

@@ -9,7 +9,6 @@ from pcapi.core.categories import subcategories_v2 as subcategories
 from pcapi.core.offerers.models import Venue
 from pcapi.core.offers import api as offers_api
 from pcapi.core.offers import models as offers_models
-from pcapi.core.offers import repository as offers_repository
 import pcapi.core.providers.models as providers_models
 from pcapi.domain.allocine import get_movie_poster
 from pcapi.domain.allocine import get_movies_showtimes
@@ -18,6 +17,7 @@ from pcapi.domain.price_rule import PriceRule
 from pcapi.local_providers.local_provider import LocalProvider
 from pcapi.local_providers.providable_info import ProvidableInfo
 from pcapi.models import Model
+from pcapi.repository.providable_queries import get_last_update_for_provider
 from pcapi.utils.date import get_department_timezone
 from pcapi.utils.date import local_datetime_to_default_timezone
 
@@ -77,11 +77,7 @@ class AllocineStocks(LocalProvider):
             return []
 
         showtimes_number = len(self.filtered_movie_showtimes)
-        providable_information_list = [
-            self.create_providable_info(
-                offers_models.Product, self.movie_information["id"], datetime.utcnow(), self.movie_information["id"]
-            )
-        ]
+        providable_information_list = []
 
         if _has_original_version_product(self.filtered_movie_showtimes):
             venue_movie_original_version_unique_id = _build_original_movie_uuid(self.movie_information, self.venue)
@@ -116,24 +112,19 @@ class AllocineStocks(LocalProvider):
         return providable_information_list
 
     def fill_object_attributes(self, pc_object: Model) -> None:
-        if isinstance(pc_object, offers_models.Product):
-            self.fill_product_attributes(pc_object)
-
         if isinstance(pc_object, offers_models.Offer):
             self.fill_offer_attributes(pc_object)
 
         if isinstance(pc_object, offers_models.Stock):
             self.fill_stock_attributes(pc_object)
 
-    def update_from_movie_information(
-        self, obj: offers_models.Offer | offers_models.Product, movie_information: dict
-    ) -> None:
+    def update_from_movie_information(self, offer: offers_models.Offer, movie_information: dict) -> None:
         if self.movie_information and "description" in self.movie_information:
-            obj.description = movie_information["description"]
+            offer.description = movie_information["description"]
         if self.movie_information and "duration" in self.movie_information:
-            obj.durationMinutes = movie_information["duration"]
-        if not obj.extraData:
-            obj.extraData = {}
+            offer.durationMinutes = movie_information["duration"]
+        if not offer.extraData:
+            offer.extraData = {}
         for field in (
             "visa",
             "stageDirector",
@@ -146,19 +137,7 @@ class AllocineStocks(LocalProvider):
         ):
             if field in movie_information:
                 # FIXME (2023-03-16): Currently not supported by mypy https://github.com/python/mypy/issues/7178
-                obj.extraData[field] = movie_information[field]  # type: ignore [literal-required, index]
-
-    def fill_product_attributes(self, allocine_product: offers_models.Product) -> None:
-        allocine_product.name = self.movie_information["title"]  # type: ignore [index]
-        allocine_product.subcategoryId = subcategories.SEANCE_CINE.id
-
-        self.update_from_movie_information(allocine_product, self.movie_information)  # type: ignore [arg-type]
-
-        is_new_product_to_insert = allocine_product.id is None
-        if is_new_product_to_insert:
-            allocine_product.id = offers_repository.get_next_product_id_from_database()
-
-        self.last_product = allocine_product
+                offer.extraData[field] = movie_information[field]  # type: ignore [literal-required, index]
 
     def fill_offer_attributes(self, allocine_offer: offers_models.Offer) -> None:
         allocine_offer.venueId = self.venue.id
@@ -187,12 +166,24 @@ class AllocineStocks(LocalProvider):
 
         allocine_offer.name = f"{self.movie_information['title']} - {movie_version}"  # type: ignore [index]
         allocine_offer.subcategoryId = subcategories.SEANCE_CINE.id
-        allocine_offer.product = self.last_product
         allocine_offer.extraData["diffusionVersion"] = movie_version  # type: ignore [index]
 
         is_new_offer_to_insert = allocine_offer.id is None
         if is_new_offer_to_insert:
             allocine_offer.isDuo = self.isDuo
+
+        last_update_for_current_provider = get_last_update_for_provider(self.provider.id, allocine_offer)
+        if not last_update_for_current_provider or last_update_for_current_provider.date() != datetime.today().date():
+            if image := self.get_object_thumb():
+                offers_api.create_mediation(
+                    user=None,
+                    offer=allocine_offer,
+                    credit=None,
+                    image_as_bytes=image,
+                    keep_ratio=True,
+                    check_image_validity=False,
+                )
+                self.createdThumbs += 1
 
         if movie_version == ORIGINAL_VERSION_SUFFIX:
             self.last_vo_offer = allocine_offer
