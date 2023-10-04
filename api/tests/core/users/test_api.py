@@ -777,7 +777,7 @@ class CreateProUserTest:
         assert not pro_user.has_beneficiary_role
         assert not pro_user.deposits
 
-    @override_settings(IS_INTEGRATION=True)
+    @override_settings(MAKE_PROS_BENEFICIARIES_IN_APP=True)
     def test_create_pro_user_in_integration(self):
         pro_user_creation_body = ProUserCreationBodyV2Model(**self.data)
 
