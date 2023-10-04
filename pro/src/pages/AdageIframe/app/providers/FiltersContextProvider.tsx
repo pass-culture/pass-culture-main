@@ -19,7 +19,7 @@ const filtersContextInitialValues: FiltersContextType = {
   dispatchCurrentFilters: () => null,
 }
 
-export const FiltersContext = createContext<FiltersContextType>(
+const FiltersContext = createContext<FiltersContextType>(
   filtersContextInitialValues
 )
 

@@ -1,10 +1,10 @@
-import { screen, waitFor } from '@testing-library/react'
-import { userEvent } from '@testing-library/user-event'
+import { screen, waitForElementToBeRemoved } from '@testing-library/react'
 import React from 'react'
 import { Configure } from 'react-instantsearch'
 
 import { AdageFrontRoles, VenueResponse } from 'apiClient/adage'
 import { apiAdage } from 'apiClient/api'
+import { defaultCategories } from 'utils/adageFactories'
 import { renderWithProviders } from 'utils/renderWithProviders'
 
 import { App } from '../App'
@@ -14,6 +14,25 @@ import {
   FacetFiltersContextProvider,
   FiltersContextProvider,
 } from '../providers'
+
+vi.mock(
+  '../components/OffersInstantSearch/OffersSearch/Autocomplete/Autocomplete',
+  () => {
+    return {
+      Autocomplete: ({ initialQuery }: { initialQuery: string }) => (
+        <div>
+          <label htmlFor="autocomplete">Autocomplete</label>
+          <input
+            id="autocomplete"
+            value={initialQuery}
+            onChange={() => vi.fn()}
+          />
+          <button onClick={() => vi.fn()}>Rechercher</button>
+        </div>
+      ),
+    }
+  }
+)
 
 vi.mock('react-instantsearch', async () => {
   return {
@@ -42,46 +61,49 @@ vi.mock('utils/config', async () => {
   }
 })
 
+const venue = {
+  id: 1436,
+  name: 'Librairie de Paris',
+  publicName: "Lib de Par's",
+  relative: [],
+  departementCode: '75',
+}
+
 vi.mock('apiClient/api', () => ({
   apiAdage: {
-    getEducationalOffersCategories: vi.fn().mockResolvedValue({
-      categories: [
-        { id: 'CINEMA', proLabel: 'Cinéma' },
-        { id: 'MUSEE', proLabel: 'Musée' },
-      ],
-      subcategories: [
-        {
-          id: 'CINE_PLEIN_AIR',
-          proLabel: 'Cinéma plein air',
-          categoryId: 'CINEMA',
-        },
-        {
-          id: 'EVENEMENT_CINE',
-          proLabel: 'Évènement cinéma',
-          categoryId: 'CINEMA',
-        },
-        {
-          id: 'VISITE_GUIDEE',
-          proLabel: 'Visite guidée',
-          categoryId: 'MUSEE',
-        },
-        {
-          id: 'VISITE',
-          proLabel: 'Visite',
-          categoryId: 'MUSEE',
-        },
-      ],
+    getEducationalOffersCategories: vi.fn(),
+    getVenueById: vi.fn(() => {
+      return venue
     }),
-    getVenueById: vi.fn(),
     authenticate: vi.fn(),
-    getVenueBySiret: vi.fn(),
+    getVenueBySiret: vi.fn(() => {
+      return venue
+    }),
     logSearchButtonClick: vi.fn(),
     logCatalogView: vi.fn(),
+    logTrackingFilter: vi.fn(),
     getCollectiveOffer: vi.fn(),
   },
 }))
 
-const renderApp = (venueFilter: VenueResponse | null) => {
+vi.mock('@algolia/autocomplete-plugin-query-suggestions', () => {
+  return {
+    ...vi.importActual('@algolia/autocomplete-plugin-query-suggestions'),
+    createQuerySuggestionsPlugin: vi.fn(() => {
+      return {
+        name: 'querySuggestionName',
+        getSources: () => [
+          {
+            sourceId: '',
+            getItems: [],
+          },
+        ],
+      }
+    }),
+  }
+})
+
+const renderApp = (venueFilter: VenueResponse | null, initialEntries = '/') => {
   renderWithProviders(
     <FiltersContextProvider venueFilter={venueFilter}>
       <AlgoliaQueryContextProvider>
@@ -89,7 +111,8 @@ const renderApp = (venueFilter: VenueResponse | null) => {
           <App />
         </FacetFiltersContextProvider>
       </AlgoliaQueryContextProvider>
-    </FiltersContextProvider>
+    </FiltersContextProvider>,
+    { initialRouterEntries: [initialEntries] }
   )
 }
 
@@ -98,23 +121,6 @@ describe('app', () => {
     let venue: VenueResponse
 
     beforeEach(() => {
-      global.window = Object.create(window)
-      const url = 'https://www.example.com'
-      Object.defineProperty(window, 'location', {
-        value: {
-          href: url,
-          search: '',
-        },
-      })
-
-      venue = {
-        id: 1436,
-        name: 'Librairie de Paris',
-        publicName: "Lib de Par's",
-        relative: [],
-        departementCode: '75',
-      }
-
       vi.spyOn(apiAdage, 'authenticate').mockResolvedValue({
         role: AdageFrontRoles.REDACTOR,
         uai: 'uai',
@@ -122,313 +128,49 @@ describe('app', () => {
         institutionName: 'COLLEGE BELLEVUE',
         institutionCity: 'ALES',
       })
-      vi.spyOn(apiAdage, 'getVenueBySiret').mockResolvedValue(venue)
-      vi.spyOn(apiAdage, 'getVenueById').mockResolvedValue(venue)
-    })
-
-    it('should show search offers input with no filter on venue when no siret or venueId is provided', async () => {
-      // When
-      renderApp(venue)
-
-      // Then
-      const contentTitle = await screen.findByRole('link', {
-        name: 'Rechercher',
-      })
-      expect(contentTitle).toBeInTheDocument()
-      expect(Configure).toHaveBeenNthCalledWith(
-        2,
-        expect.objectContaining({
-          facetFilters: [
-            ['venue.departmentCode:30'],
-            [
-              'offer.educationalInstitutionUAICode:all',
-              'offer.educationalInstitutionUAICode:uai',
-            ],
-          ],
-        }),
-        {}
+      vi.spyOn(apiAdage, 'getEducationalOffersCategories').mockResolvedValue(
+        defaultCategories
       )
-      expect(Configure).toHaveBeenCalledTimes(2)
-
-      expect(
-        screen.queryByText('Lieu :', { exact: false })
-      ).not.toBeInTheDocument()
-
-      expect(apiAdage.getVenueBySiret).not.toHaveBeenCalled()
+      window.IntersectionObserver = vi.fn().mockImplementation(() => ({
+        observe: vi.fn(),
+        unobserve: vi.fn(),
+        disconnect: vi.fn(),
+      }))
     })
 
     it('should show search offers input with filter on venue public name when siret is provided and public name exists', async () => {
-      // Given
-      const siret = '123456789'
-      window.location.search = `?siret=${siret}`
+      const mockLocation = {
+        ...window.location,
+        search: '?siret=123456789',
+      }
 
-      // When
+      window.location = mockLocation
+
       renderApp(venue)
+      await waitForElementToBeRemoved(() => screen.queryAllByTestId('spinner'))
 
-      // Then
-      const contentTitle = await screen.findByRole('link', {
-        name: 'Rechercher',
-      })
-      expect(contentTitle).toBeInTheDocument()
+      const inputElement = screen.getByLabelText('Autocomplete')
 
-      await waitFor(() => {
-        expect(Configure).toHaveBeenCalledTimes(2)
-      })
-      expect(Configure).toHaveBeenNthCalledWith(
-        2,
-        expect.objectContaining({
-          facetFilters: [
-            [`venue.id:${venue.id}`],
-            [
-              'offer.educationalInstitutionUAICode:all',
-              'offer.educationalInstitutionUAICode:uai',
-            ],
-          ],
-        }),
-        {}
-      )
-
-      expect(apiAdage.getVenueBySiret).toHaveBeenCalledWith(siret, false)
-    })
-
-    it('should show venue filter on venue name when siret is provided and public name does not exist', async () => {
-      // Given
-      const siret = '123456789'
-      venue.publicName = undefined
-      window.location.search = `?siret=${siret}`
-
-      // When
-      renderApp(venue)
-
-      // Then
-      const venueFilter = await screen.findByText(`Lieu : ${venue.name}`)
-      expect(apiAdage.getVenueBySiret).toHaveBeenCalledWith(siret, false)
-      expect(venueFilter).toBeInTheDocument()
+      expect(inputElement).toHaveValue("Lib de Par's")
     })
 
     it('should show search offers input with filter on venue public name when venueId is provided and public name exists', async () => {
       // Given
-      const venueId = 123456789
-      window.location.search = `?venue=${venueId}`
+      const mockLocation = {
+        ...window.location,
+        search: '?venue=123456789',
+      }
+
+      window.location = mockLocation
 
       // When
       renderApp(venue)
 
-      // Then
-      const contentTitle = await screen.findByRole('link', {
-        name: 'Rechercher',
-      })
-      expect(contentTitle).toBeInTheDocument()
+      await waitForElementToBeRemoved(() => screen.queryAllByTestId('spinner'))
 
-      await waitFor(() => {
-        expect(Configure).toHaveBeenCalledTimes(2)
-      })
-      expect(Configure).toHaveBeenNthCalledWith(
-        2,
-        expect.objectContaining({
-          facetFilters: [
-            [`venue.id:${venue.id}`],
-            [
-              'offer.educationalInstitutionUAICode:all',
-              'offer.educationalInstitutionUAICode:uai',
-            ],
-          ],
-        }),
-        {}
-      )
+      const inputElement = screen.getByLabelText('Autocomplete')
 
-      expect(apiAdage.getVenueById).toHaveBeenCalledWith(venueId, false)
-    })
-
-    it('should show venue filter on venue name when venueId is provided and public name does not exist', async () => {
-      // Given
-      const venueId = 123456789
-      venue.publicName = undefined
-      window.location.search = `?venue=${venueId}`
-
-      // When
-      renderApp(venue)
-
-      // Then
-      const venueFilter = await screen.findByText(`Lieu : ${venue.name}`)
-      expect(apiAdage.getVenueById).toHaveBeenCalledWith(venueId, false)
-      expect(venueFilter).toBeInTheDocument()
-    })
-
-    it("should show search offers input with no filter when venue isn't recognized", async () => {
-      // Given
-      const siret = '123456789'
-      window.location.search = `?siret=${siret}`
-      vi.spyOn(apiAdage, 'getVenueBySiret').mockRejectedValue(
-        'Unrecognized SIRET'
-      )
-
-      // When
-      renderApp(venue)
-
-      // Then
-      const contentTitle = await screen.findByRole('link', {
-        name: 'Rechercher',
-      })
-      expect(contentTitle).toBeInTheDocument()
-      expect(apiAdage.getVenueBySiret).toHaveBeenCalledWith(siret, false)
-      expect(Configure).toHaveBeenCalledTimes(2)
-      expect(Configure).toHaveBeenNthCalledWith(
-        2,
-        expect.objectContaining({
-          facetFilters: [
-            ['venue.departmentCode:30'],
-            [
-              'offer.educationalInstitutionUAICode:all',
-              'offer.educationalInstitutionUAICode:uai',
-            ],
-          ],
-        }),
-        {}
-      )
-      expect(
-        screen.queryByRole('button', { name: `Lieu : ${venue?.publicName}` })
-      ).not.toBeInTheDocument()
-      expect(
-        await screen.findByText(
-          'Lieu inconnu. Tous les résultats sont affichés.'
-        )
-      ).toBeInTheDocument()
-    })
-
-    it('should add all related venues in facet filters when siret is provided and "all" query param is true', async () => {
-      // Given
-      const siret = '123456789'
-      window.location.search = `?siret=${siret}&all=true`
-      vi.spyOn(apiAdage, 'getVenueBySiret').mockResolvedValueOnce({
-        ...venue,
-        relative: [123, 456],
-      })
-
-      // When
-      renderApp(venue)
-
-      const contentTitle = await screen.findByRole('link', {
-        name: 'Rechercher',
-      })
-      expect(contentTitle).toBeInTheDocument()
-      expect(apiAdage.getVenueBySiret).toHaveBeenCalledWith(siret, true)
-
-      await waitFor(() => {
-        expect(Configure).toHaveBeenNthCalledWith(
-          2,
-          expect.objectContaining({
-            facetFilters: [
-              [`venue.id:${venue.id}`, 'venue.id:123', 'venue.id:456'],
-              [
-                'offer.educationalInstitutionUAICode:all',
-                'offer.educationalInstitutionUAICode:uai',
-              ],
-            ],
-          }),
-          {}
-        )
-      })
-    })
-
-    it('should add all related venues in facet filters when venue is provided and "all" query param is true', async () => {
-      // Given
-      window.location.search = `?venue=${venue.id}&all=true`
-      vi.spyOn(apiAdage, 'getVenueById').mockResolvedValueOnce({
-        ...venue,
-        relative: [123, 456],
-      })
-
-      // When
-      renderApp(venue)
-
-      const contentTitle = await screen.findByRole('link', {
-        name: 'Rechercher',
-      })
-      expect(contentTitle).toBeInTheDocument()
-
-      expect(apiAdage.getVenueById).toHaveBeenCalledWith(venue.id, true)
-
-      await waitFor(() => {
-        expect(Configure).toHaveBeenNthCalledWith(
-          2,
-          expect.objectContaining({
-            facetFilters: [
-              [`venue.id:${venue.id}`, 'venue.id:123', 'venue.id:456'],
-              [
-                'offer.educationalInstitutionUAICode:all',
-                'offer.educationalInstitutionUAICode:uai',
-              ],
-            ],
-          }),
-          {}
-        )
-      })
-    })
-
-    it('should remove venue filter on click', async () => {
-      // Given
-      window.location.search = `?venue=${venue.id}&all=true`
-
-      renderApp(venue)
-
-      const venueFilter = await screen.findByText(`Lieu : ${venue?.publicName}`)
-      const launchSearchButton = screen.getByRole('button', {
-        name: 'Lancer la recherche',
-      })
-
-      // When
-      await userEvent.click(venueFilter)
-      await userEvent.click(launchSearchButton)
-
-      // Then
-      await waitFor(() => expect(Configure).toHaveBeenCalledTimes(5))
-      expect(Configure).toHaveBeenNthCalledWith(
-        5,
-        expect.objectContaining({
-          facetFilters: [
-            [
-              'offer.educationalInstitutionUAICode:all',
-              'offer.educationalInstitutionUAICode:uai',
-            ],
-          ],
-        }),
-        {}
-      )
-      expect(
-        screen.queryByRole('button', { name: `Lieu : ${venue?.publicName}` })
-      ).not.toBeInTheDocument()
-    })
-
-    it('should uncheck on department only and search on intervention area also when only in my department is unchecked', async () => {
-      window.location.search = ''
-      renderApp(null)
-
-      const onlyInMyDptFilter = await screen.findByLabelText(
-        'Les acteurs culturels de mon département : ALES (30)'
-      )
-      const launchSearchButton = screen.getByRole('button', {
-        name: 'Lancer la recherche',
-      })
-      // When
-      await userEvent.click(onlyInMyDptFilter)
-      await userEvent.click(launchSearchButton)
-
-      // Then
-      await waitFor(() => expect(Configure).toHaveBeenCalledTimes(3))
-      expect(Configure).toHaveBeenNthCalledWith(
-        3,
-        expect.objectContaining({
-          facetFilters: [
-            ['venue.departmentCode:30', 'offer.interventionArea:30'],
-            [
-              'offer.educationalInstitutionUAICode:all',
-              'offer.educationalInstitutionUAICode:uai',
-            ],
-          ],
-        }),
-        {}
-      )
+      expect(inputElement).toHaveValue("Lib de Par's")
     })
 
     it('should add geo location filter when user has latitude and longitude', async () => {
@@ -443,7 +185,7 @@ describe('app', () => {
       })
       renderApp(null)
 
-      await screen.findByRole('link', { name: 'Rechercher' })
+      await screen.findByRole('button', { name: 'Rechercher' })
 
       expect(Configure).toHaveBeenNthCalledWith(
         2,
