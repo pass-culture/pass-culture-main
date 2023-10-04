@@ -1,4 +1,3 @@
-import cn from 'classnames'
 import { useField } from 'formik'
 import React from 'react'
 
@@ -25,12 +24,15 @@ const Slider = ({
 }: SliderProps): JSX.Element => {
   const [field] = useField(fieldName)
 
+  const min = inputAttrs.min || DEFAULT_SLIDER_MIN_VALUE
+  const max = inputAttrs.max || DEFAULT_SLIDER_MAX_VALUE
+
   return (
     <div>
       <div className={styles['slider-header']}>
         <label
           htmlFor={fieldName}
-          className={cn(hideLabel ? 'visually-hidden' : '')}
+          className={hideLabel ? 'visually-hidden' : ''}
         >
           {inputAttrs.label}
         </label>
@@ -44,18 +46,20 @@ const Slider = ({
         {...field}
         type="range"
         className={styles.slider}
-        min={inputAttrs.min || DEFAULT_SLIDER_MIN_VALUE}
-        max={inputAttrs.max || DEFAULT_SLIDER_MIN_VALUE}
+        min={min}
+        max={max}
         step={inputAttrs.step || DEFAULT_SLIDER_STEP_VALUE}
       />
       {displayMinMaxValues && (
         <div className={styles['min-max-container']}>
-          <span>{`${
-            inputAttrs.min || DEFAULT_SLIDER_MIN_VALUE
-          } ${scale}`}</span>
-          <span>{`${
-            inputAttrs.max || DEFAULT_SLIDER_MAX_VALUE
-          } ${scale}`}</span>
+          <span>
+            <span className="visually-hidden">Entre </span>
+            {`${min} ${scale}`}
+          </span>
+          <span>
+            <span className="visually-hidden">et </span>
+            {`${max} ${scale}`}
+          </span>
         </div>
       )}
     </div>
