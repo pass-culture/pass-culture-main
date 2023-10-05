@@ -34,6 +34,7 @@ export const createOfferFromBookableOffer = async (
   const initialValues = computeInitialValuesFromOffer(
     categories,
     offerers,
+    false,
     offerResponse.payload
   )
 

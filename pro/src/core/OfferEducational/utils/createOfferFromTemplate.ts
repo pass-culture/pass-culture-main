@@ -36,6 +36,7 @@ export const createOfferFromTemplate = async (
   const initialValues = computeInitialValuesFromOffer(
     categories,
     offerers,
+    false,
     offerTemplateResponse.payload
   )
 

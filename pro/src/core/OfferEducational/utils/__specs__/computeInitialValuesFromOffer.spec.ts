@@ -8,7 +8,8 @@ describe('computeInitialValuesFromOffer', () => {
     expect(
       computeInitialValuesFromOffer(
         { educationalCategories: [], educationalSubCategories: [] },
-        []
+        [],
+        false
       )
     ).toEqual(DEFAULT_EAC_FORM_VALUES)
   })
@@ -18,6 +19,7 @@ describe('computeInitialValuesFromOffer', () => {
       computeInitialValuesFromOffer(
         { educationalCategories: [], educationalSubCategories: [] },
         [],
+        false,
         collectiveOfferFactory({
           contactEmail: 'someemail@example.com',
           bookingEmails: undefined,

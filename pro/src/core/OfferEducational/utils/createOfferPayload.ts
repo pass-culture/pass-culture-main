@@ -1,7 +1,13 @@
 import {
+  DateRangeOnCreateModel,
   OfferAddressType,
   PostCollectiveOfferTemplateBodyModel,
 } from 'apiClient/v1'
+import { buildDateTime } from 'screens/IndividualOffer/StocksEventEdition/adapters/serializers'
+import {
+  formatBrowserTimezonedDateAsUTC,
+  toISOStringWithoutMilliseconds,
+} from 'utils/date'
 
 import { OfferEducationalFormValues } from '../types'
 
@@ -22,6 +28,27 @@ const disabilityCompliances = (
   motorDisabilityCompliant: accessibility.motor,
   visualDisabilityCompliant: accessibility.visual,
 })
+
+export const serializeDates = (
+  beginningDatetime: string,
+  endingDatetime: string,
+  hour?: string
+): DateRangeOnCreateModel => {
+  const beginningDateTimeInUserTimezone = buildDateTime(
+    beginningDatetime,
+    hour || '00:00'
+  )
+  const startDateWithoutTz = new Date(
+    formatBrowserTimezonedDateAsUTC(beginningDateTimeInUserTimezone)
+  )
+  const endDateWithoutTz = new Date(
+    formatBrowserTimezonedDateAsUTC(buildDateTime(endingDatetime, '23:59'))
+  )
+  return {
+    start: toISOStringWithoutMilliseconds(startDateWithoutTz),
+    end: toISOStringWithoutMilliseconds(endDateWithoutTz),
+  }
+}
 
 export const createCollectiveOfferPayload = (
   offer: OfferEducationalFormValues,
@@ -50,4 +77,8 @@ export const createCollectiveOfferPayload = (
   templateId: offerTemplateId,
   priceDetail: isTemplate ? offer.priceDetail : undefined,
   nationalProgramId: Number(offer.nationalProgramId),
+  dates:
+    offer.begginningDate && offer.endingDate
+      ? serializeDates(offer.begginningDate, offer.endingDate, offer.hour)
+      : undefined,
 })

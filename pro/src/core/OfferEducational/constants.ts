@@ -43,6 +43,10 @@ export const DEFAULT_EAC_FORM_VALUES: OfferEducationalFormValues = {
   imageUrl: '',
   imageCredit: '',
   nationalProgramId: '',
+  isTemplate: false,
+  begginningDate: '',
+  endingDate: '',
+  hour: '',
 }
 
 export const DEFAULT_EAC_STOCK_FORM_VALUES: OfferEducationalStockFormValues = {

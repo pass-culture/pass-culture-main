@@ -25,6 +25,7 @@ import { OfferEducationalProps } from '../OfferEducational'
 
 import FormAccessibility from './FormAccessibility'
 import FormContact from './FormContact'
+import FormDates from './FormDates/FormDates'
 import FormImageUploader from './FormImageUploader'
 import { ImageUploaderOfferProps } from './FormImageUploader/FormImageUploader'
 import FormNotifications from './FormNotifications'
@@ -186,6 +187,12 @@ const OfferEducationalForm = ({
             onImageUpload={onImageUpload}
             imageOffer={imageOffer}
           />
+          {isTemplate && isDatesForTemplateOffer && (
+            <FormDates
+              disableForm={mode === Mode.READ_ONLY}
+              dateCreated={offer?.dateCreated}
+            />
+          )}
           <FormPracticalInformation
             currentOfferer={currentOfferer}
             venuesOptions={venuesOptions}
