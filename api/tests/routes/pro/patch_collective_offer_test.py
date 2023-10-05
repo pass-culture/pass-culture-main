@@ -19,7 +19,6 @@ import pcapi.core.educational.testing as adage_api_testing
 import pcapi.core.offerers.factories as offerers_factories
 from pcapi.core.offers.models import OfferValidationStatus
 import pcapi.core.providers.factories as providers_factories
-from pcapi.core.testing import override_features
 from pcapi.core.testing import override_settings
 import pcapi.core.users.factories as users_factories
 from pcapi.routes.adage.v1.serialization.prebooking import EducationalBookingEdition
@@ -151,7 +150,6 @@ class Returns200Test:
         assert len(adage_api_testing.adage_requests) == 0
 
     @override_settings(ADAGE_API_URL="https://adage_base_url")
-    @override_features(WIP_ADD_CLG_6_5_COLLECTIVE_OFFER=True)
     def test_patch_collective_offer_add_college_5_college_6_too_early(
         self,
         client,
@@ -231,7 +229,6 @@ class Returns200Test:
         assert template.domains == [domain]
         assert template.interventionArea == ["01", "2A"]
 
-    @override_features(WIP_ADD_CLG_6_5_COLLECTIVE_OFFER=True)
     def test_patch_collective_offer_update_student_level_college_6(self, client):
         # Given
         offer = CollectiveOfferFactory()
@@ -252,28 +249,6 @@ class Returns200Test:
         assert response.status_code == 200
         assert len(offer.students) == 1
         assert offer.students[0].value == "Collège - 6e"
-
-    @override_features(WIP_ADD_CLG_6_5_COLLECTIVE_OFFER=False)
-    def test_patch_collective_offer_update_student_level_college_6_no_ff(self, client):
-        # Given
-        offer = CollectiveOfferFactory()
-        offerers_factories.UserOffererFactory(
-            user__email="user@example.com",
-            offerer=offer.venue.managingOfferer,
-        )
-        data = {"students": ["Collège - 6e", "Collège - 4e"]}
-
-        # WHEN
-        client = client.with_session_auth("user@example.com")
-        with patch(
-            "pcapi.routes.pro.collective_offers.offerers_api.can_offerer_create_educational_offer",
-        ):
-            response = client.patch(f"/collective/offers/{offer.id}", json=data)
-
-        # Then
-        assert response.status_code == 200
-        assert len(offer.students) == 1
-        assert offer.students[0].value == "Collège - 4e"
 
 
 class Returns400Test:
@@ -650,7 +625,6 @@ class Returns403Test:
         assert offer1.isActive is False
 
     @override_settings(ADAGE_API_URL="https://adage_base_url")
-    @override_features(WIP_ADD_CLG_6_5_COLLECTIVE_OFFER=True)
     def test_patch_collective_offer_add_college_5_college_6_only_too_early(
         self,
         client,

@@ -21,7 +21,6 @@ from pcapi.core.educational.models import StudentLevels
 from pcapi.core.offerers.models import Venue
 from pcapi.core.offers import validation as offers_validation
 from pcapi.core.offers.serialize import CollectiveOfferType
-from pcapi.models.feature import FeatureToggle
 from pcapi.models.offer_mixin import OfferStatus
 from pcapi.routes.native.v1.serialization.common_models import AccessibilityComplianceMixin
 from pcapi.routes.serialization import BaseModel
@@ -418,20 +417,6 @@ class PostCollectiveOfferBodyModel(BaseModel):
         check_collective_offer_name_length_is_valid(name)
         return name
 
-    @validator("students")
-    def validate_students(cls, students: list[StudentLevels]) -> list[StudentLevels]:
-        # FIXME (rpa - 06/02/23) remove this validator when removing the Feature Flag
-        if not FeatureToggle.WIP_ADD_CLG_6_5_COLLECTIVE_OFFER.is_active():
-            results = []
-            for student in students:
-                if student in (StudentLevels.COLLEGE5, StudentLevels.COLLEGE6):
-                    continue
-                results.append(student)
-            if not results:
-                raise ValueError("Les offres EAC ne sont pas encore ouvertes aux 6eme et 5eme.")
-            return results
-        return students
-
     @root_validator
     def validate_domains(cls, values: dict) -> dict:
         domains = values.get("domains")
@@ -519,20 +504,6 @@ class PatchCollectiveOfferBodyModel(BaseModel, AccessibilityComplianceMixin):
         assert name is not None and name.strip() != ""
         check_collective_offer_name_length_is_valid(name)
         return name
-
-    @validator("students")
-    def validate_students(cls, students: list[StudentLevels]) -> list[StudentLevels]:
-        # FIXME (rpa - 06/02/23) remove this validator when removing the Feature Flag
-        if students and not FeatureToggle.WIP_ADD_CLG_6_5_COLLECTIVE_OFFER.is_active():
-            results = []
-            for student in students:
-                if student in (StudentLevels.COLLEGE5, StudentLevels.COLLEGE6):
-                    continue
-                results.append(student)
-            if not results:
-                raise ValueError("Les offres EAC ne sont pas encore ouvertes aux 6eme et 5eme.")
-            return results
-        return students
 
     @validator("description", allow_reuse=True)
     def validate_description(cls, description: str | None) -> str | None:

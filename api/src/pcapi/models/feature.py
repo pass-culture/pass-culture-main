@@ -102,7 +102,6 @@ class FeatureToggle(enum.Enum):
     ENABLE_CGR_INTEGRATION = "Active la synchonisation de stocks et la réservation via CGR"
     # For features under construction, a temporary feature flag must be named with the `WIP_` prefix
     WIP_ENABLE_OFFER_CREATION_API_V1 = "Active la création d'offres via l'API v1"
-    WIP_ADD_CLG_6_5_COLLECTIVE_OFFER = "Ouverture des offres collectives au 6ème et 5ème"
     WIP_ENABLE_LIKE_IN_ADAGE = "Active la possibilité de liker une offre sur adage"
     WIP_ENABLE_REMINDER_MARKETING_MAIL_METADATA_DISPLAY = "Changer le template d'email de confirmation de réservation"
     WIP_ENABLE_TRUSTED_DEVICE = "Active la fonctionnalité d'appareil de confiance"
@@ -183,7 +182,6 @@ FEATURES_DISABLED_BY_DEFAULT: tuple[FeatureToggle, ...] = (
     FeatureToggle.ID_CHECK_ADDRESS_AUTOCOMPLETION,
     FeatureToggle.PRICE_FINANCE_EVENTS,
     FeatureToggle.SYNCHRONIZE_TITELIVE_API_MUSIC_PRODUCTS,
-    FeatureToggle.WIP_ADD_CLG_6_5_COLLECTIVE_OFFER,
     FeatureToggle.WIP_BACKOFFICE_ENABLE_REDIRECT_SINGLE_RESULT,
     FeatureToggle.WIP_CATEGORY_SELECTION,
     FeatureToggle.WIP_EAC_ENABLE_NEW_AUTHENTICATION_PUBLIC_API,

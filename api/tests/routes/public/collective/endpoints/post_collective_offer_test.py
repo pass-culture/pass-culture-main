@@ -10,7 +10,6 @@ from pcapi.core.educational import factories as educational_factories
 from pcapi.core.educational import models as educational_models
 from pcapi.core.offerers import factories as offerers_factories
 from pcapi.core.providers import factories as provider_factories
-from pcapi.core.testing import override_features
 
 import tests
 from tests.routes import image_data
@@ -103,7 +102,6 @@ class CollectiveOffersPublicPostOfferTest:
         assert offer.nationalProgramId == national_program.id
         assert (UPLOAD_FOLDER / offer._get_image_storage_id()).exists()
 
-    @override_features(WIP_ADD_CLG_6_5_COLLECTIVE_OFFER=True)
     def test_post_offers_6_5_only(self, client):
         # Given
 
