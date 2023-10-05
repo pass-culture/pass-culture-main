@@ -85,6 +85,7 @@ const StocksThing = ({ offer }: StocksThingProps): JSX.Element => {
     const isStockAlreadySaved = formik.values.stockId !== undefined
     if (isStockAlreadySaved && !formik.dirty) {
       navigate(nextStepUrl)
+      notify.success(getSuccessMessage(mode))
       return
     }
 

@@ -27,7 +27,7 @@ describe('Create an individual offer', () => {
 
     cy.intercept({ method: 'POST', url: '/offers' }).as('postOffer')
     cy.intercept({ method: 'GET', url: '/offers/*' }).as('getOffer')
-    cy.contains('Étape suivante').click()
+    cy.contains('Enregistrer et continuer').click()
     cy.wait(['@postOffer', '@getOffer'])
 
     // Fill in second step: price categories
@@ -41,7 +41,7 @@ describe('Create an individual offer', () => {
     cy.get('[name="priceCategories[2].free"]').click()
 
     cy.intercept({ method: 'PATCH', url: '/offers/*' }).as('patchOffer')
-    cy.contains('Étape suivante').click()
+    cy.contains('Enregistrer et continuer').click()
     cy.wait(['@patchOffer', '@getOffer'])
 
     // Fill in third step: recurrence
@@ -72,7 +72,7 @@ describe('Create an individual offer', () => {
     cy.contains('Valider').click()
 
     cy.intercept({ method: 'POST', url: '/stocks/bulk' }).as('postStocks')
-    cy.contains('Étape suivante').click()
+    cy.contains('Enregistrer et continuer').click()
     cy.wait(['@postStocks', '@getOffer'])
 
     // Publish offer

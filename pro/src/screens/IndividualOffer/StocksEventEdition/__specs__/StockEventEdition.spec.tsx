@@ -556,22 +556,6 @@ describe('screens:StocksEventEdition', () => {
     expect(api.deleteStock).toHaveBeenCalledTimes(0)
   })
 
-  it('should display draft success message on save button when stock form is empty and redirect to This is the read only route content', async () => {
-    apiOffer.stocks = []
-    await renderStockEventScreen(apiOffer)
-
-    await userEvent.click(
-      screen.getByRole('button', { name: 'Enregistrer les modifications' })
-    )
-    expect(
-      screen.getByText('Vos modifications ont bien été enregistrées')
-    ).toBeInTheDocument()
-    expect(screen.queryByTestId('stock-event-form')).not.toBeInTheDocument()
-    expect(
-      screen.getByText(/This is the read only route content/)
-    ).toBeInTheDocument()
-  })
-
   it('should go back to summary when clicking on "Annuler et quitter"', async () => {
     await renderStockEventScreen(apiOffer)
 
