@@ -26,7 +26,6 @@ import { extractOfferIdFromObjectId, offerIsBookable } from './utils'
 
 export interface OffersProps {
   displayStats?: boolean
-  resetForm?: () => void
   logFiltersOnSearch?: (nbHits: number, queryId?: string) => void
   submitCount?: number
   isBackToTopVisibile?: boolean
@@ -38,7 +37,6 @@ type OfferMap = Map<string, HydratedOffer>
 
 export const Offers = ({
   displayStats = true,
-  resetForm,
   logFiltersOnSearch,
   submitCount,
   isBackToTopVisibile = false,
@@ -117,7 +115,7 @@ export const Offers = ({
   }
 
   if (hits?.length === 0 || offers.length === 0) {
-    return <NoResultsPage resetForm={resetForm} />
+    return <NoResultsPage query={results?.query} />
   }
 
   return (
