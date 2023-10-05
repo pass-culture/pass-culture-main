@@ -152,8 +152,6 @@ export const PriceCategoriesScreen = ({
   offer,
 }: PriceCategoriesScreenProps): JSX.Element => {
   const { setOffer, subCategories } = useIndividualOfferContext()
-  const [isClickingFromActionBar, setIsClickingFromActionBar] =
-    useState<boolean>(false)
   const navigate = useNavigate()
   const mode = useOfferWizardMode()
   const notify = useNotification()
@@ -170,14 +168,11 @@ export const PriceCategoriesScreen = ({
   )?.canBeDuo
 
   const onSubmitWithCallback = async (values: PriceCategoriesFormValues) => {
-    setIsClickingFromActionBar(true)
-
     const isFormEmpty = formik.values === formik.initialValues
 
     // When saving draft with an empty form
     /* istanbul ignore next: DEBT, TO FIX when we have notification*/
     if (mode === OFFER_WIZARD_MODE.EDITION && isFormEmpty) {
-      setIsClickingFromActionBar(false)
       navigate(
         getIndividualOfferUrl({
           offerId: offer.id,
@@ -189,11 +184,6 @@ export const PriceCategoriesScreen = ({
         })
       )
       notify.success(getSuccessMessage(OFFER_WIZARD_MODE.EDITION))
-    }
-
-    /* istanbul ignore next: DEBT, TO FIX */
-    if (Object.keys(formik.errors).length !== 0) {
-      setIsClickingFromActionBar(false)
     }
 
     const newPopinType = getPopinType(
@@ -300,7 +290,7 @@ export const PriceCategoriesScreen = ({
       </form>
 
       <RouteLeavingGuardIndividualOffer
-        when={formik.dirty && !isClickingFromActionBar}
+        when={formik.dirty && !formik.isSubmitting}
       />
     </FormikProvider>
   )
