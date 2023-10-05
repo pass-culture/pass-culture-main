@@ -12,12 +12,22 @@ logger = logging.getLogger(__name__)
 PROVIDER_API_ERRORS_DATABASE_ID = "e7bd2f6ddedf43f7a7bc87849caaa3ed"
 
 
-def add_to_synchronization_error_database(exception: Exception, venue_provider: providers_models.VenueProvider) -> None:
+def add_venue_provider_error_to_notion_database(
+    exception: Exception, venue_provider: providers_models.VenueProvider
+) -> None:
+    add_to_provider_error_database(
+        exception,
+        provider_name=venue_provider.provider.name,
+        venue_id=str(venue_provider.venueId),
+        venue_id_at_offer_provider=venue_provider.venueIdAtOfferProvider,
+    )
+
+
+def add_to_provider_error_database(
+    exception: Exception, provider_name: str = "", venue_id: str = "", venue_id_at_offer_provider: str = ""
+) -> None:
     if not settings.SEND_SYNCHRONIZATION_ERRORS_TO_NOTION:
         return
-    provider_name = venue_provider.provider.name
-    venue_id = venue_provider.venueId
-    venue_id_at_offer_provider = venue_provider.venueIdAtOfferProvider
     try:
         notion = Client(auth=settings.NOTION_TOKEN)
         notion.pages.create(
