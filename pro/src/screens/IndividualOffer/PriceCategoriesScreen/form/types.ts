@@ -1,3 +1,5 @@
+import { useFormik } from 'formik'
+
 import { hasProperties } from 'utils/types'
 
 export type PriceCategoryForm = {
@@ -21,3 +23,7 @@ export const isPriceCategoriesFormValues = (
   hasProperties(value, ['priceCategories', 'isDuo']) &&
   Array.isArray(value.priceCategories) &&
   value.priceCategories.every(isPriceCategoriesForm)
+
+export type PriceCategoryFormik = ReturnType<
+  typeof useFormik<PriceCategoriesFormValues>
+>
