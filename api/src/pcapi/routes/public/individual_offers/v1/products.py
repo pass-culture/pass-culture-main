@@ -15,6 +15,7 @@ from pcapi.core.offers import exceptions as offers_exceptions
 from pcapi.core.offers import models as offers_models
 from pcapi.core.offers import validation as offers_validation
 from pcapi.core.providers import models as providers_models
+from pcapi.domain import show_types
 from pcapi.models import api_errors
 from pcapi.models import db
 from pcapi.models.offer_mixin import OfferValidationType
@@ -62,14 +63,33 @@ def get_offerer_venues(
     return venues_serialization.GetOfferersVenuesResponse.serialize_offerers_venues(rows)
 
 
-def _retrieve_offer_by_eans_query(eans: list[str], venueId: int) -> sqla.orm.Query:
-    return (
-        utils._retrieve_offer_tied_to_user_query()
-        .filter(
-            offers_models.Offer.extraData["ean"].astext.in_(eans),
-            offers_models.Offer.venueId == venueId,
+@blueprint.v1_blueprint.route("/show_types", methods=["GET"])
+@spectree_serialize(
+    api=blueprint.v1_event_schema,
+    tags=[constants.OFFER_ATTRIBUTES],
+    response_model=serialization.GetShowTypesResponse,
+    resp=SpectreeResponse(
+        **(
+            constants.BASE_CODE_DESCRIPTIONS
+            | {
+                "HTTP_200": (serialization.GetShowTypesResponse, "The show types have been returned"),
+            }
         )
-        .order_by(offers_models.Offer.id.desc())
+    ),
+)
+@api_key_required
+@rate_limiting.api_key_high_rate_limiter()
+def get_show_types() -> serialization.GetShowTypesResponse:
+    """
+    Get all the show types.
+    """
+    # Individual offers API only relies on show subtypes, not show types.
+    # To make it simpler for the provider using this API, we only expose show subtypes and call them show types.
+    return serialization.GetShowTypesResponse(
+        __root__=[
+            serialization.ShowTypeResponse(id=show_type_slug, label=show_type.label)
+            for show_type_slug, show_type in show_types.SHOW_SUB_TYPES_BY_SLUG.items()
+        ]
     )
 
 
@@ -413,6 +433,17 @@ def get_product_by_ean(
 
     return serialization.ProductOffersByEanResponse(
         products=[serialization.ProductOfferResponse.build_product_offer(offer) for offer in offers]
+    )
+
+
+def _retrieve_offer_by_eans_query(eans: list[str], venueId: int) -> sqla.orm.Query:
+    return (
+        utils._retrieve_offer_tied_to_user_query()
+        .filter(
+            offers_models.Offer.extraData["ean"].astext.in_(eans),
+            offers_models.Offer.venueId == venueId,
+        )
+        .order_by(offers_models.Offer.id.desc())
     )
 
 

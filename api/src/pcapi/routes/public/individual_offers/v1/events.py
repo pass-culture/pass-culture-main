@@ -9,7 +9,6 @@ from pcapi.core.offers import api as offers_api
 from pcapi.core.offers import exceptions as offers_exceptions
 from pcapi.core.offers import models as offers_models
 from pcapi.core.offers.validation import check_for_duplicated_price_categories
-from pcapi.domain import show_types
 from pcapi.models import api_errors
 from pcapi.models import db
 from pcapi.models import feature
@@ -617,7 +616,7 @@ def patch_event_date(
 @blueprint.v1_blueprint.route("/events/categories", methods=["GET"])
 @spectree_serialize(
     api=blueprint.v1_event_schema,
-    tags=[constants.EVENT_OFFER_INFO_TAG],
+    tags=[constants.OFFER_ATTRIBUTES],
     response_model=serialization.GetEventCategoriesResponse,
     resp=SpectreeResponse(
         **(
@@ -642,33 +641,3 @@ def get_event_categories() -> serialization.GetEventCategoriesResponse:
         if subcategory.is_selectable
     ]
     return serialization.GetEventCategoriesResponse(__root__=event_categories_response)
-
-
-@blueprint.v1_blueprint.route("/events/show_types", methods=["GET"])
-@spectree_serialize(
-    api=blueprint.v1_event_schema,
-    tags=[constants.EVENT_OFFER_INFO_TAG],
-    response_model=serialization.GetShowTypesResponse,
-    resp=SpectreeResponse(
-        **(
-            constants.BASE_CODE_DESCRIPTIONS
-            | {
-                "HTTP_200": (serialization.GetShowTypesResponse, "The show types have been returned"),
-            }
-        )
-    ),
-)
-@api_key_required
-@rate_limiting.api_key_high_rate_limiter()
-def get_show_types() -> serialization.GetShowTypesResponse:
-    """
-    Get all the show types.
-    """
-    # Individual offers API only relies on show subtypes, not show types.
-    # To make it simpler for the provider using this API, we only expose show subtypes and call them show types.
-    return serialization.GetShowTypesResponse(
-        __root__=[
-            serialization.ShowTypeResponse(id=show_type_slug, label=show_type.label)
-            for show_type_slug, show_type in show_types.SHOW_SUB_TYPES_BY_SLUG.items()
-        ]
-    )

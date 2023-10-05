@@ -12,20 +12,16 @@ pytestmark = pytest.mark.usefixtures("db_session")
 def test_returns_all_show_types(client):
     utils.create_offerer_provider_linked_to_venue()
 
-    response = client.with_explicit_token(offerers_factories.DEFAULT_CLEAR_API_KEY).get(
-        "/public/offers/v1/events/show_types"
-    )
+    response = client.with_explicit_token(offerers_factories.DEFAULT_CLEAR_API_KEY).get("/public/offers/v1/show_types")
 
     assert response.status_code == 200
     assert set(show_type["id"] for show_type in response.json) == set(show_types.SHOW_SUB_TYPES_BY_SLUG)
 
 
-def test_category_serialization(client):
+def test_show_type_serialization(client):
     utils.create_offerer_provider_linked_to_venue()
 
-    response = client.with_explicit_token(offerers_factories.DEFAULT_CLEAR_API_KEY).get(
-        "/public/offers/v1/events/show_types"
-    )
+    response = client.with_explicit_token(offerers_factories.DEFAULT_CLEAR_API_KEY).get("/public/offers/v1/show_types")
 
     assert response.status_code == 200
     assert all({"id", "label"} == set(show_type_response.keys()) for show_type_response in response.json)
