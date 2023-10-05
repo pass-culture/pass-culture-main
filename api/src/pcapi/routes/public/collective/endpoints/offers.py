@@ -328,8 +328,8 @@ def patch_collective_offer_public(
                 },
                 status_code=400,
             )
-    if new_values.get("educationalPriceDetail", None):
-        new_values["priceDetail"] = new_values.pop("educationalPriceDetail")
+
+    new_values["priceDetail"] = new_values.pop("educationalPriceDetail", None)
 
     # access control
     try:
