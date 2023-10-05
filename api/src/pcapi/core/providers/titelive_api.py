@@ -1,11 +1,13 @@
 import abc
 import datetime
+import functools
 import logging
 import typing
 
 from pcapi import repository
 from pcapi.connectors import thumb_storage
 from pcapi.connectors import titelive
+import pcapi.connectors.notion as notion_connector
 from pcapi.connectors.serialization.titelive_serializers import TiteliveProductSearchResponse
 from pcapi.connectors.serialization.titelive_serializers import TiteliveSearchResultType
 from pcapi.core.offers import models as offers_models
@@ -19,12 +21,33 @@ from pcapi.utils import requests
 logger = logging.getLogger(__name__)
 
 
+def log_exceptions_to_notion(method: typing.Callable) -> typing.Callable:
+    @functools.wraps(method)
+    def method_with_notion_log(self: "TiteliveSearch", *args: typing.Any, **kwargs: typing.Any) -> typing.Any:
+        try:
+            return method(self, *args, **kwargs)
+        except Exception as e:
+            notion_connector.add_to_provider_error_database(
+                e, provider_name=f"{providers_constants.TITELIVE_EPAGINE_PROVIDER_NAME} {self.titelive_base.value}"
+            )
+            with repository.transaction():
+                sync_error_event = self.log_sync_status(
+                    providers_models.LocalProviderEventType.SyncError, e.__class__.__name__
+                )
+                db.session.add(sync_error_event)
+
+            raise
+
+    return method_with_notion_log
+
+
 class TiteliveSearch(abc.ABC, typing.Generic[TiteliveSearchResultType]):
     titelive_base: titelive.TiteliveBase
 
     def __init__(self) -> None:
         self.provider = providers_repository.get_provider_by_name(providers_constants.TITELIVE_EPAGINE_PROVIDER_NAME)
 
+    @log_exceptions_to_notion
     def synchronize_products(self, from_date: datetime.date | None = None) -> None:
         if from_date is None:
             from_date = self.get_last_sync_date()
@@ -62,11 +85,12 @@ class TiteliveSearch(abc.ABC, typing.Generic[TiteliveSearchResultType]):
         return last_sync_event.date.date()
 
     def log_sync_status(
-        self, provider_event_type: providers_models.LocalProviderEventType
+        self, provider_event_type: providers_models.LocalProviderEventType, message: str | None = None
     ) -> providers_models.LocalProviderEvent:
+        message = f"{self.titelive_base.value} : {message}" if message else self.titelive_base.value
         return providers_models.LocalProviderEvent(
             date=datetime.datetime.utcnow(),
-            payload=self.titelive_base.value,
+            payload=message,
             provider=self.provider,
             type=provider_event_type,
         )
