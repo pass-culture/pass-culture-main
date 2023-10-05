@@ -10,7 +10,6 @@ import FormLayout from 'components/FormLayout'
 import {
   DEFAULT_EAC_FORM_VALUES,
   OfferEducationalFormValues,
-  MAX_DETAILS_LENGTH,
 } from 'core/OfferEducational'
 import { handleAllFranceDepartmentOptions } from 'core/shared'
 import { offerInterventionOptions } from 'core/shared/interventionOptions'
@@ -32,7 +31,6 @@ import {
   EVENT_ADDRESS_SCHOOL_LABEL,
   INTERVENTION_AREA_LABEL,
   INTERVENTION_AREA_PLURAL_LABEL,
-  PRICE_INFORMATION,
 } from '../../constants/labels'
 import styles from '../OfferEducationalForm.module.scss'
 
@@ -40,7 +38,6 @@ export interface FormPracticalInformationProps {
   venuesOptions: SelectOption[]
   currentOfferer: GetEducationalOffererResponseModel | null
   disableForm: boolean
-  isTemplate: boolean
 }
 
 const adressTypeRadios = [
@@ -62,7 +59,6 @@ const FormPracticalInformation = ({
   venuesOptions,
   currentOfferer,
   disableForm,
-  isTemplate,
 }: FormPracticalInformationProps): JSX.Element => {
   const { values, setFieldValue } =
     useFormikContext<OfferEducationalFormValues>()
@@ -151,10 +147,7 @@ const FormPracticalInformation = ({
   }, [values.interventionArea])
 
   return (
-    <FormLayout.Section
-      description="Ces informations sont visibles par les enseignants et les chefs d’établissement."
-      title="Informations pratiques"
-    >
+    <FormLayout.Section title="Lieu de l’évènement">
       <FormLayout.Row>
         <RadioGroup
           group={adressTypeRadios}
@@ -215,21 +208,6 @@ const FormPracticalInformation = ({
             maxLength={200}
             name="eventAddress.otherAddress"
             disabled={disableForm}
-          />
-        </FormLayout.Row>
-      )}
-
-      {isTemplate && (
-        <FormLayout.Row>
-          <TextArea
-            className={styles['price-details']}
-            countCharacters
-            disabled={disableForm}
-            isOptional
-            label={PRICE_INFORMATION}
-            maxLength={MAX_DETAILS_LENGTH}
-            name="priceDetail"
-            placeholder="Par exemple : tarif par élève ou par groupe scolaire, politique tarifaire REP/REP+ et accompagnateurs... "
           />
         </FormLayout.Row>
       )}
