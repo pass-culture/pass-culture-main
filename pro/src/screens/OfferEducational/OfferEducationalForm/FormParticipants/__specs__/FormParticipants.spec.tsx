@@ -3,52 +3,21 @@ import { userEvent } from '@testing-library/user-event'
 import { Formik } from 'formik'
 import React from 'react'
 
-import {
-  FeatureResponseModel,
-  GetCollectiveOfferCollectiveStockResponseModel,
-  StudentLevels,
-} from 'apiClient/v1'
+import { StudentLevels } from 'apiClient/v1'
 import { buildStudentLevelsMapWithDefaultValue } from 'core/OfferEducational/utils/buildStudentLevelsMapWithDefaultValue'
-import { RootState } from 'store/reducers'
-import { collectiveStockFactory } from 'utils/collectiveApiFactories'
 import { renderWithProviders } from 'utils/renderWithProviders'
 
 import FormParticipants from '../FormParticipants'
 import { ALL_STUDENTS_LABEL } from '../useParticipantsOptions'
 
-const filteredParticipants = Object.values(StudentLevels).filter(
-  studentLevel =>
-    studentLevel !== StudentLevels.COLL_GE_6E &&
-    studentLevel !== StudentLevels.COLL_GE_5E
-)
-
 const renderFormParticipants = (
   participants: Record<string, boolean>,
-  storeOverride?: Partial<RootState>,
-  offerStock?: GetCollectiveOfferCollectiveStockResponseModel | null,
   isTemplate: boolean = true
 ) => {
-  const storeOverrides = {
-    features: {
-      initialized: true,
-      list: [
-        {
-          isActive: false,
-          nameKey: 'WIP_ADD_CLG_6_5_COLLECTIVE_OFFER',
-        },
-      ],
-    },
-    ...storeOverride,
-  }
   return renderWithProviders(
     <Formik initialValues={{ participants }} onSubmit={() => {}}>
-      <FormParticipants
-        disableForm={false}
-        offerStock={offerStock}
-        isTemplate={isTemplate}
-      />
-    </Formik>,
-    { storeOverrides }
+      <FormParticipants disableForm={false} isTemplate={isTemplate} />
+    </Formik>
   )
 }
 
@@ -60,7 +29,7 @@ describe('FormParticipants', () => {
   }
   it('should render all options with default value', async () => {
     renderFormParticipants(participants)
-    expect(await screen.findAllByRole('checkbox')).toHaveLength(8)
+    expect(await screen.findAllByRole('checkbox')).toHaveLength(10)
     expect(
       screen.getByRole('checkbox', { name: StudentLevels.LYC_E_PREMI_RE })
     ).toBeChecked()
@@ -81,7 +50,7 @@ describe('FormParticipants', () => {
       await waitFor(() =>
         expect(screen.getByLabelText(ALL_STUDENTS_LABEL)).toBeChecked()
       )
-      filteredParticipants.forEach(studentLevel => {
+      Object.values(StudentLevels).forEach(studentLevel => {
         const studentLevelCheckbox = screen.getByRole('checkbox', {
           name: studentLevel,
         })
@@ -103,7 +72,7 @@ describe('FormParticipants', () => {
       await waitFor(() =>
         expect(screen.getByLabelText(ALL_STUDENTS_LABEL)).not.toBeChecked()
       )
-      filteredParticipants.forEach(studentLevel => {
+      Object.values(StudentLevels).forEach(studentLevel => {
         const studentLevelCheckbox = screen.getByRole('checkbox', {
           name: studentLevel,
         })
@@ -127,7 +96,7 @@ describe('FormParticipants', () => {
       await waitFor(() =>
         expect(screen.getByLabelText(ALL_STUDENTS_LABEL)).toBeChecked()
       )
-      filteredParticipants.forEach(studentLevel => {
+      Object.values(StudentLevels).forEach(studentLevel => {
         const studentLevelCheckbox = screen.getByRole('checkbox', {
           name: studentLevel,
         })
@@ -152,7 +121,7 @@ describe('FormParticipants', () => {
           screen.getByLabelText(StudentLevels.COLL_GE_4E)
         ).not.toBeChecked()
       )
-      filteredParticipants
+      Object.values(StudentLevels)
         .filter(studentLevel => studentLevel !== StudentLevels.COLL_GE_4E)
         .forEach(studentLevel => {
           const studentLevelCheckbox = screen.getByRole('checkbox', {
@@ -185,71 +154,10 @@ describe('FormParticipants', () => {
       ).not.toBeChecked()
       expect(screen.getByLabelText(ALL_STUDENTS_LABEL)).not.toBeChecked()
     })
-
-    it('should display clg 6 & 5 if ff active', () => {
-      const storeOverride = {
-        features: {
-          initialized: true,
-          list: [
-            {
-              isActive: true,
-              nameKey: 'WIP_ADD_CLG_6_5_COLLECTIVE_OFFER',
-            } as FeatureResponseModel,
-          ],
-        },
-      }
-      renderFormParticipants(participants, storeOverride)
-
-      expect(
-        screen.getByLabelText(
-          `${StudentLevels.COLL_GE_6E} : à partir de septembre 2023`
-        )
-      ).toBeInTheDocument()
-      expect(
-        screen.getByLabelText(
-          `${StudentLevels.COLL_GE_5E} : à partir de septembre 2023`
-        )
-      ).toBeInTheDocument()
-    })
-
-    it('should not display clg 6 & 5 if stock exist before 1st september', () => {
-      const storeOverride = {
-        features: {
-          initialized: true,
-          list: [
-            {
-              isActive: true,
-              nameKey: 'WIP_ADD_CLG_6_5_COLLECTIVE_OFFER',
-            } as FeatureResponseModel,
-          ],
-        },
-      }
-      const offerStock = collectiveStockFactory()
-      renderFormParticipants(participants, storeOverride, offerStock)
-
-      expect(
-        screen.queryByLabelText(StudentLevels.COLL_GE_6E)
-      ).not.toBeInTheDocument()
-      expect(
-        screen.queryByLabelText(StudentLevels.COLL_GE_5E)
-      ).not.toBeInTheDocument()
-    })
   })
 
   it('should not display the all participants option when the collective offer is bookable', () => {
-    const storeOverride = {
-      features: {
-        initialized: true,
-        list: [
-          {
-            isActive: true,
-            nameKey: 'WIP_ADD_CLG_6_5_COLLECTIVE_OFFER',
-          } as FeatureResponseModel,
-        ],
-      },
-    }
-    const offerStock = collectiveStockFactory()
-    renderFormParticipants(participants, storeOverride, offerStock, false)
+    renderFormParticipants(participants, false)
 
     expect(screen.queryByLabelText(ALL_STUDENTS_LABEL)).not.toBeInTheDocument()
   })

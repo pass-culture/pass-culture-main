@@ -9,7 +9,6 @@ import {
 import { CollectiveBookingCancellationReasons } from 'apiClient/v1/models/CollectiveBookingCancellationReasons'
 import { BOOKING_STATUS } from 'core/Bookings/constants'
 import { CollectiveBookingsEvents } from 'core/FirebaseEvents/constants'
-import useActiveFeature from 'hooks/useActiveFeature'
 import useAnalytics from 'hooks/useAnalytics'
 import fullEditIcon from 'icons/full-edit.svg'
 import fullLinkIcon from 'icons/full-link.svg'
@@ -84,8 +83,6 @@ const CollectiveTimeLine = ({
       from: location.pathname,
     })
   }
-
-  const isCLG6Active = useActiveFeature('WIP_ADD_CLG_6_5_COLLECTIVE_OFFER')
 
   const pendingStep = {
     type: TimelineStepType.SUCCESS,
@@ -206,15 +203,6 @@ const CollectiveTimeLine = ({
             </span>
             , autrement celle-ci sera automatiquement annulée.
           </div>
-          {isCLG6Active && (
-            <div className={styles['timeline-infobox-text']}>
-              Si votre offre concerne les classes de 6eme et 5eme, le chef
-              d'établissement pourra confirmer la réservation{' '}
-              <span className={styles['timeline-infobox-accent']}>
-                seulement à partir du 1er septembre 2023.
-              </span>
-            </div>
-          )}
           <ButtonLink
             variant={ButtonVariant.TERNARY}
             link={{

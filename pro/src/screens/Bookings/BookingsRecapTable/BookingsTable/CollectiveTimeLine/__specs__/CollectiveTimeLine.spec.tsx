@@ -214,35 +214,6 @@ describe('collective timeline', () => {
         '/structures/1/lieux/1?modification#reimbursement-section'
       )
     })
-
-    it('should display special message for pending booking if clg 6e 5e ff is active', () => {
-      const storeOverrides = {
-        features: {
-          list: [
-            { isActive: true, nameKey: 'WIP_ADD_CLG_6_5_COLLECTIVE_OFFER' },
-          ],
-        },
-      }
-      const bookingRecap = collectiveBookingRecapFactory({
-        bookingStatus: BOOKING_STATUS.PENDING,
-        stock: {
-          bookingLimitDatetime: new Date().toISOString(),
-          eventBeginningDatetime: addDays(new Date(), -1).toISOString(),
-          numberOfTickets: 1,
-          offerId: 1,
-          offerIsEducational: true,
-          offerIsbn: null,
-          offerName: 'ma super offre collective',
-        },
-      })
-      renderCollectiveTimeLine(bookingRecap, bookingDetails, storeOverrides)
-
-      expect(
-        screen.getByText(
-          /Si votre offre concerne les classes de 6eme et 5eme, le chef d'établissement pourra confirmer la réservation/
-        )
-      )
-    })
   })
 
   describe('confirmed booking', () => {

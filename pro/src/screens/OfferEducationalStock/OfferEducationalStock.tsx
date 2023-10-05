@@ -3,15 +3,13 @@
 import { addDays, isAfter, isBefore } from 'date-fns'
 import { FormikProvider, useFormik } from 'formik'
 import React, { useEffect, useState } from 'react'
-import { useNavigate } from 'react-router-dom'
 import * as yup from 'yup'
 
-import { CollectiveBookingStatus, StudentLevels } from 'apiClient/v1'
+import { CollectiveBookingStatus } from 'apiClient/v1'
 import ActionsBarSticky from 'components/ActionsBarSticky'
 import BannerPublicApi from 'components/Banner/BannerPublicApi'
 import FormLayout from 'components/FormLayout'
 import OfferEducationalActions from 'components/OfferEducationalActions'
-import { Events } from 'core/FirebaseEvents/constants'
 import {
   CollectiveOffer,
   CollectiveOfferTemplate,
@@ -20,13 +18,10 @@ import {
   MAX_DETAILS_LENGTH,
   Mode,
   OfferEducationalStockFormValues,
-  OPENING_DATE_FOR_6E_AND_5E,
 } from 'core/OfferEducational'
 import { isOfferDisabled } from 'core/Offers/utils'
-import useAnalytics from 'hooks/useAnalytics'
 import { Banner, ButtonLink, SubmitButton, TextArea } from 'ui-kit'
 import { ButtonVariant } from 'ui-kit/Button/types'
-import { isDateValid } from 'utils/date'
 
 import { DETAILS_PRICE_LABEL } from './constants/labels'
 import FormStock from './FormStock'
@@ -36,7 +31,6 @@ import {
   generateValidationSchema,
   showcaseOfferValidationSchema,
 } from './validationSchema'
-import WrongStudentsModal from './WrongStudentsModal/WrongStudentsModal'
 
 export interface OfferEducationalStockProps<
   T = CollectiveOffer | CollectiveOfferTemplate,
@@ -61,9 +55,6 @@ const OfferEducationalStock = <
 }: OfferEducationalStockProps<T>): JSX.Element => {
   const offerIsDisabled = isOfferDisabled(offer.status)
   const [isLoading, setIsLoading] = useState(false)
-  const [isWrongStudentsModalVisible, setIsWrongStudentsModalVisible] =
-    useState(false)
-  const navigate = useNavigate()
   const beginningDatetime =
     isCollectiveOffer(offer) && offer.collectiveStock?.beginningDatetime
 
@@ -74,8 +65,6 @@ const OfferEducationalStock = <
           beginningDatetime &&
           isBefore(new Date(), addDays(new Date(beginningDatetime), 2))))
   )
-
-  const { logEvent } = useAnalytics()
 
   const disablePriceAndParticipantInputs =
     isCollectiveOffer(offer) &&
@@ -93,33 +82,9 @@ const OfferEducationalStock = <
     setIsLoading(false)
   }
 
-  const hasOnly6eAnd5eStudents = offer.students.every(
-    student =>
-      student == StudentLevels.COLL_GE_6E || student == StudentLevels.COLL_GE_5E
-  )
-
-  const submitForm = async (values: OfferEducationalStockFormValues) => {
-    const isEventBeforeOpeningDate =
-      !isDateValid(values.eventDate) ||
-      new Date(values.eventDate) < OPENING_DATE_FOR_6E_AND_5E
-    if (
-      isEventBeforeOpeningDate &&
-      (offer.students.includes(StudentLevels.COLL_GE_6E) ||
-        offer.students.includes(StudentLevels.COLL_GE_5E))
-    ) {
-      setIsWrongStudentsModalVisible(true)
-      logEvent?.(Events.EAC_WRONG_STUDENTS_MODAL_OPEN, {
-        from: location.pathname,
-        hasOnly6eAnd5eStudents: hasOnly6eAnd5eStudents,
-      })
-      return
-    }
-    postForm(values)
-  }
-
   const { resetForm, ...formik } = useFormik({
     initialValues,
-    onSubmit: submitForm,
+    onSubmit: postForm,
     validationSchema: yup.lazy((values: OfferEducationalStockFormValues) => {
       const isShowcase =
         values.educationalOfferType === EducationalOfferType.SHOWCASE
@@ -212,20 +177,6 @@ const OfferEducationalStock = <
                 />
               </FormLayout.Row>
             </FormLayout.Section>
-            {isWrongStudentsModalVisible && (
-              <WrongStudentsModal
-                closeModal={() => setIsWrongStudentsModalVisible(false)}
-                postForm={() => postForm(formik.values)}
-                modifyStudents={() =>
-                  navigate(
-                    `/offre/collectif/${offer.id}/${
-                      mode == Mode.EDITION ? 'edition' : 'creation'
-                    }`
-                  )
-                }
-                hasOnlyWrongStudents={hasOnly6eAnd5eStudents}
-              />
-            )}
             <ActionsBarSticky>
               <ActionsBarSticky.Left>
                 <ButtonLink
