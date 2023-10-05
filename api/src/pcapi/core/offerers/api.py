@@ -1905,7 +1905,17 @@ def invite_member(offerer: models.Offerer, email: str, current_user: users_model
         new_user_offerer = models.UserOfferer(
             offerer=offerer, user=existing_user, validationStatus=ValidationStatus.NEW
         )
-        db.session.add_all([offerer_invitation, new_user_offerer])
+        log_action = history_api.log_action(
+            history_models.ActionType.USER_OFFERER_NEW,
+            current_user,
+            user=existing_user,
+            offerer=offerer_invitation.offerer,
+            save=False,
+            comment="Rattachement créé par invitation",
+            inviter_user_id=current_user.id,
+            offerer_invitation_id=offerer_invitation.id,
+        )
+        db.session.add_all([offerer_invitation, new_user_offerer, log_action])
         db.session.commit()
         logger.info(
             "Existing user invited to join offerer",
@@ -1965,8 +1975,18 @@ def accept_offerer_invitation_if_exists(user: users_models.User) -> None:
         user_offerer = models.UserOfferer(
             offerer=offerer_invitation.offerer, user=user, validationStatus=ValidationStatus.NEW
         )
+        log_action = history_api.log_action(
+            history_models.ActionType.USER_OFFERER_NEW,
+            user,
+            user=user,
+            offerer=offerer_invitation.offerer,
+            save=False,
+            comment="Rattachement créé par invitation",
+            inviter_user_id=inviter_user.id,
+            offerer_invitation_id=offerer_invitation.id,
+        )
         offerer_invitation.status = offerers_models.InvitationStatus.ACCEPTED
-        db.session.add_all([user_offerer, offerer_invitation])
+        db.session.add_all([user_offerer, offerer_invitation, log_action])
         db.session.commit()
         external_attributes_api.update_external_pro(user.email)
         zendesk_sell.create_offerer(user_offerer.offerer)
