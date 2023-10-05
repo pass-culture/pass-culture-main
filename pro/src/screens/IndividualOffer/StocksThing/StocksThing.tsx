@@ -10,11 +10,7 @@ import { RouteLeavingGuardIndividualOffer } from 'components/RouteLeavingGuardIn
 import { StockFormActions } from 'components/StockFormActions'
 import { StockFormRowAction } from 'components/StockFormActions/types'
 import { useIndividualOfferContext } from 'context/IndividualOfferContext'
-import {
-  getIndividualOfferAdapter,
-  updateIndividualOffer,
-} from 'core/Offers/adapters'
-import { serializePatchOffer } from 'core/Offers/adapters/updateIndividualOffer/serializers'
+import { getIndividualOfferAdapter } from 'core/Offers/adapters'
 import {
   LIVRE_PAPIER_SUBCATEGORY_ID,
   OFFER_WIZARD_MODE,
@@ -37,9 +33,9 @@ import useNotifyFormError from '../hooks/useNotifyFormError'
 import { getSuccessMessage } from '../utils/getSuccessMessage'
 
 import ActivationCodeFormDialog from './ActivationCodeFormDialog/ActivationCodeFormDialog'
-import upsertStocksThingAdapter from './adapters/upsertStocksThingAdapter'
 import { STOCK_THING_FORM_DEFAULT_VALUES } from './constants'
 import styles from './StockThing.module.scss'
+import { submitToApi } from './submitToApi'
 import { StockThingFormValues } from './types'
 import buildInitialValues from './utils/buildInitialValues'
 import setFormReadOnlyFields from './utils/setFormReadOnlyFields'
@@ -51,17 +47,6 @@ export interface StocksThingProps {
 
 const StocksThing = ({ offer }: StocksThingProps): JSX.Element => {
   const mode = useOfferWizardMode()
-  const [afterSubmitUrl, setAfterSubmitUrl] = useState<string>(
-    getIndividualOfferUrl({
-      offerId: offer.id,
-      step:
-        mode === OFFER_WIZARD_MODE.EDITION
-          ? OFFER_WIZARD_STEP_IDS.STOCKS
-          : OFFER_WIZARD_STEP_IDS.SUMMARY,
-      mode:
-        mode === OFFER_WIZARD_MODE.EDITION ? OFFER_WIZARD_MODE.READ_ONLY : mode,
-    })
-  )
   const navigate = useNavigate()
   const notify = useNotification()
   const { setOffer, subCategories } = useIndividualOfferContext()
@@ -77,7 +62,7 @@ const StocksThing = ({ offer }: StocksThingProps): JSX.Element => {
   /* istanbul ignore next: DEBT, TO FIX */
   const isDisabled = isOfferDisabled(offer.status)
 
-  const onSubmit = async (formValues: StockThingFormValues) => {
+  const onSubmit = async (values: StockThingFormValues) => {
     const nextStepUrl = getIndividualOfferUrl({
       offerId: offer.id,
       step:
@@ -88,55 +73,40 @@ const StocksThing = ({ offer }: StocksThingProps): JSX.Element => {
         mode === OFFER_WIZARD_MODE.EDITION ? OFFER_WIZARD_MODE.READ_ONLY : mode,
     })
 
-    // When saving draft with an empty form or in edition mode
-    // we display a success notification even if nothing is done
-    if (isFormEmpty() && mode === OFFER_WIZARD_MODE.EDITION) {
+    // Return when saving in edition with an empty form
+    const isFormEmpty = formik.values === STOCK_THING_FORM_DEFAULT_VALUES
+    if (isFormEmpty && mode === OFFER_WIZARD_MODE.EDITION) {
       navigate(nextStepUrl)
-      if (mode === OFFER_WIZARD_MODE.EDITION) {
-        notify.success(getSuccessMessage(mode))
-      }
+      notify.success(getSuccessMessage(mode))
+      return
     }
 
-    setAfterSubmitUrl(nextStepUrl)
-    const hasSavedStock = formik.values.stockId !== undefined
-    if (hasSavedStock && !formik.dirty) {
+    // Return when there is nothing to save
+    const isStockAlreadySaved = formik.values.stockId !== undefined
+    if (isStockAlreadySaved && !formik.dirty) {
       navigate(nextStepUrl)
+      return
     }
 
-    const serializedOffer = serializePatchOffer({
-      offer: offer,
-      formValues: { isDuo: formValues.isDuo },
-    })
-    const { isOk: isOfferOk, message: offerMessage } =
-      await updateIndividualOffer({
-        offerId: offer.id,
-        serializedOffer: serializedOffer,
-      })
-    if (!isOfferOk) {
-      throw new Error(offerMessage)
+    // Submit
+    try {
+      await submitToApi(
+        values,
+        offer,
+        setOffer,
+        formik.resetForm,
+        formik.setErrors
+      )
+    } catch (error) {
+      if (error instanceof Error) {
+        notify.error(error?.message)
+      }
+      return
     }
 
-    const { isOk, payload, message } = await upsertStocksThingAdapter({
-      offerId: offer.id,
-      formValues,
-      departementCode: offer.venue.departmentCode,
-      mode,
-    })
-
-    /* istanbul ignore next: DEBT, TO FIX */
-    if (isOk) {
-      const response = await getIndividualOfferAdapter(offer.id)
-      if (response.isOk) {
-        setOffer && setOffer(response.payload)
-        formik.resetForm({ values: buildInitialValues(response.payload) })
-      }
-      navigate(afterSubmitUrl)
-      if (mode === OFFER_WIZARD_MODE.EDITION) {
-        notify.success(message)
-      }
-    } else {
-      /* istanbul ignore next: DEBT, TO FIX */
-      formik.setErrors(payload.errors)
+    navigate(nextStepUrl)
+    if (mode === OFFER_WIZARD_MODE.EDITION) {
+      notify.success(getSuccessMessage(mode))
     }
   }
 
@@ -157,10 +127,6 @@ const StocksThing = ({ offer }: StocksThingProps): JSX.Element => {
     onSubmit,
     validationSchema: getValidationSchema(minQuantity),
   })
-
-  const isFormEmpty = () => {
-    return formik.values === STOCK_THING_FORM_DEFAULT_VALUES
-  }
 
   useNotifyFormError({
     isSubmitting: formik.isSubmitting,
@@ -437,7 +403,6 @@ const StocksThing = ({ offer }: StocksThingProps): JSX.Element => {
               onClickPrevious={handlePreviousStepOrBackToReadOnly}
               step={OFFER_WIZARD_STEP_IDS.STOCKS}
               isDisabled={formik.isSubmitting || isDisabled}
-              submitAsButton={isFormEmpty()}
             />
           </form>
         </div>
