@@ -83,6 +83,24 @@ class SubscribeOrUnsubscribeUserTestHelper:
         # Then
         assert response.status_code == 400
 
+    def test_webhook_multiple_ips(self, app):
+        # Given
+        existing_user = UserFactory(
+            email="lucy.ellingson@kennet.ca",
+            notificationSubscriptions={"marketing_push": True, "marketing_email": self.initial_marketing_email},
+        )
+        headers = {"X-Forwarded-For": "185.107.232.1, 1.2.3.4, 4.3.2.1"}
+        data = {"email": "lucy.ellingson@kennet.ca"}
+        assert existing_user.notificationSubscriptions["marketing_email"] is self.initial_marketing_email
+
+        # When
+        response = TestClient(app.test_client()).post(self.endpoint, json=data, headers=headers)
+
+        # Then
+        assert response.status_code == 204
+        db.session.refresh(existing_user)
+        assert existing_user.notificationSubscriptions["marketing_email"] is self.expected_marketing_email
+
 
 @pytest.mark.usefixtures("db_session")
 class UnsubscribeUserTest(SubscribeOrUnsubscribeUserTestHelper):
