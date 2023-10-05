@@ -211,6 +211,46 @@ const StocksEventEdition = ({
   const hiddenStocksRef = useRef<StockEventFormValues[]>([])
 
   const onSubmit = async (formValues: { stocks: StockEventFormValues[] }) => {
+    setIsClickingFromActionBar(true)
+    if (Object.keys(formik.errors).length !== 0) {
+      /* istanbul ignore next: DEBT, TO FIX */
+      setIsClickingFromActionBar(false)
+    }
+
+    const nextStepUrl = getIndividualOfferUrl({
+      offerId: offer.id,
+      step:
+        mode === OFFER_WIZARD_MODE.EDITION
+          ? OFFER_WIZARD_STEP_IDS.STOCKS
+          : OFFER_WIZARD_STEP_IDS.SUMMARY,
+      mode:
+        mode === OFFER_WIZARD_MODE.EDITION ? OFFER_WIZARD_MODE.READ_ONLY : mode,
+    })
+
+    // When saving draft with an empty form
+    // we display a success notification even if nothing is done
+    if (isFormEmpty()) {
+      setIsClickingFromActionBar(false)
+      navigate(nextStepUrl)
+      notify.success(getSuccessMessage(mode))
+    }
+    // tested but coverage don't see it.
+    /* istanbul ignore next */
+    setAfterSubmitUrl(nextStepUrl)
+
+    const allStockValues = [...formik.values.stocks, ...hiddenStocksRef.current]
+    const hasSavedStock = allStockValues.some(
+      stock => stock.stockId !== undefined
+    )
+
+    /* istanbul ignore next: DEBT, TO FIX */
+    if (hasSavedStock && !formik.dirty) {
+      setIsClickingFromActionBar(false)
+      navigate(nextStepUrl)
+      notify.success(getSuccessMessage(mode))
+      setIsClickingFromActionBar(false)
+    }
+
     const allStocks = [...formValues.stocks, ...hiddenStocksRef.current]
     const changesOnStockWithBookings = hasChangesOnStockWithBookings(
       allStocks,
@@ -346,48 +386,6 @@ const StocksEventEdition = ({
     isSubmitting: formik.isSubmitting,
     errors: formik.errors,
   })
-
-  const handleNextStep = async () => {
-    setIsClickingFromActionBar(true)
-    if (Object.keys(formik.errors).length !== 0) {
-      /* istanbul ignore next: DEBT, TO FIX */
-      setIsClickingFromActionBar(false)
-    }
-
-    const nextStepUrl = getIndividualOfferUrl({
-      offerId: offer.id,
-      step:
-        mode === OFFER_WIZARD_MODE.EDITION
-          ? OFFER_WIZARD_STEP_IDS.STOCKS
-          : OFFER_WIZARD_STEP_IDS.SUMMARY,
-      mode:
-        mode === OFFER_WIZARD_MODE.EDITION ? OFFER_WIZARD_MODE.READ_ONLY : mode,
-    })
-
-    // When saving draft with an empty form
-    // we display a success notification even if nothing is done
-    if (isFormEmpty()) {
-      setIsClickingFromActionBar(false)
-      navigate(nextStepUrl)
-      notify.success(getSuccessMessage(mode))
-    }
-    // tested but coverage don't see it.
-    /* istanbul ignore next */
-    setAfterSubmitUrl(nextStepUrl)
-
-    const allStockValues = [...formik.values.stocks, ...hiddenStocksRef.current]
-    const hasSavedStock = allStockValues.some(
-      stock => stock.stockId !== undefined
-    )
-
-    /* istanbul ignore next: DEBT, TO FIX */
-    if (hasSavedStock && !formik.dirty) {
-      setIsClickingFromActionBar(false)
-      navigate(nextStepUrl)
-      notify.success(getSuccessMessage(mode))
-      setIsClickingFromActionBar(false)
-    }
-  }
 
   useEffect(() => {
     if (!formik.isValid) {
