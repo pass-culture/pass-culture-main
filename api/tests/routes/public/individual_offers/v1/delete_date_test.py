@@ -2,6 +2,7 @@ import pytest
 
 from pcapi.core.offerers import factories as offerers_factories
 from pcapi.core.offers import factories as offers_factories
+from pcapi.core.offers.models import WithdrawalTypeEnum
 
 from . import utils
 
@@ -23,6 +24,26 @@ class DeleteDateTest:
         assert response.status_code == 204
         assert response.json is None
         assert to_delete_stock.isSoftDeleted is True
+
+    def test_400_if_delete_date_with_stock_from_charlie_api(self, client):
+        venue, api_key = utils.create_offerer_provider_linked_to_venue(with_charlie=True)
+        event_offer = offers_factories.EventOfferFactory(
+            venue=venue,
+            lastProvider=api_key.provider,
+            withdrawalType=WithdrawalTypeEnum.IN_APP,
+        )
+        to_delete_stock = offers_factories.EventStockFactory(offer=event_offer)
+
+        response = client.with_explicit_token(offerers_factories.DEFAULT_CLEAR_API_KEY).delete(
+            f"/public/offers/v1/events/{event_offer.id}/dates/{to_delete_stock.id}",
+        )
+
+        assert response.status_code == 400
+        assert response.json == {
+            "code": "STOCK_FROM_CHARLIE_API_CANNOT_BE_DELETED",
+            "global": ["You can't delete a stock where bookings have tickets"],
+        }
+        assert to_delete_stock.isSoftDeleted is False
 
     def test_404_if_already_soft_deleted(self, client):
         venue, api_key = utils.create_offerer_provider_linked_to_venue()
