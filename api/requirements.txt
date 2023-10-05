@@ -28,6 +28,8 @@ google-api-python-client==2.41.0
 google-cloud-storage==2.2.1
 google-cloud-tasks==2.8.1
 google-cloud-bigquery==3.4.2
+GeoAlchemy2
+geopandas
 gql[requests]
 gunicorn==20.0.4
 ipaddress
@@ -43,6 +45,7 @@ phonenumberslite==8.12.*
 Pillow>=8.1.1
 prometheus-flask-exporter
 psycopg2
+py7zr
 pydantic[email]==2.*
 PyJWT[crypto]==2.6.0
 pylint==2.17.7
