@@ -120,7 +120,6 @@ jobs:
           certificate-ttl: 1h
           kubernetes-cluster: ${{ inputs.teleport_kubernetes_cluster }}
       - name: Play pre-migrations
-        continue-on-error: true
         run: |
           curl -LO "https://dl.k8s.io/release/$(curl -L -s https://dl.k8s.io/release/stable.txt)/bin/linux/amd64/kubectl"
           chmod +x kubectl
@@ -138,7 +137,6 @@ jobs:
           PCAPI_SECRETS_FILE=<(echo '${{ needs.generate-pcapi-helm-secrets-file.outputs.pcapi_helm_secrets_file_base64 }}' | base64 -d) \
           helmfile -e ${{ inputs.environment }} sync --set image.tag=${{ inputs.app_version }}
       - name: Play post-migrations
-        continue-on-error: true
         run: |
           POD_NAME=$(./kubectl -n ${{ inputs.environment }} get po -l role=api -o jsonpath='{.items[0].metadata.name}')
           ./kubectl exec -it -n ${{ inputs.environment }} ${POD_NAME} -- bash <<EOF
