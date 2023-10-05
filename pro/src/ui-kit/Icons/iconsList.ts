@@ -87,6 +87,7 @@ import strokeNearIcon from 'icons/stroke-near.svg'
 import strokeNewOfferIcon from 'icons/stroke-new-offer.svg'
 import strokeNewIcon from 'icons/stroke-new.svg'
 import strokeNoBookingIcon from 'icons/stroke-no-booking.svg'
+import strokeNoResultIcon from 'icons/stroke-no-result.svg'
 import strokeOfferIcon from 'icons/stroke-offer.svg'
 import strokeOffersIcon from 'icons/stroke-offers.svg'
 import strokePartyIcon from 'icons/stroke-party.svg'
@@ -222,6 +223,7 @@ export const strokeIcons: IconListItem[] = [
   { src: strokeLibraryIcon },
   { src: strokeVenueIcon },
   { src: strokeBookmarkIcon },
+  { src: strokeNoResultIcon },
   { src: strokeWipIcon, viewBox: '0 0 200 156' }, // TODO standardize viewbox
   { src: strokeNoBookingIcon, viewBox: '0 0 200 156' }, // TODO standardize viewbox
   { src: strokeBookingHold, viewBox: '0 0 200 156' }, // TODO standardize viewbox
