@@ -2,6 +2,7 @@ from flask_wtf import FlaskForm
 import wtforms
 
 from pcapi.routes.backoffice.forms import fields
+from pcapi.routes.backoffice.forms import utils
 
 
 class EditCriterionForm(FlaskForm):
@@ -39,11 +40,19 @@ class CreateCriterionCategoryForm(FlaskForm):
     )
 
 
-class SearchTagForm(FlaskForm):
+class SearchTagForm(utils.PCForm):
     class Meta:
         csrf = False
 
     q = fields.PCOptSearchField("Tags offres et lieux")
+
+    page = wtforms.HiddenField("page", default="1", validators=(wtforms.validators.Optional(),))
+    per_page = fields.PCSelectField(
+        "Par page",
+        choices=(("10", "10"), ("25", "25"), ("50", "50"), ("100", "100")),
+        default="100",
+        validators=(wtforms.validators.Optional(),),
+    )
 
     def is_empty(self) -> bool:
         return not any((self.q.data,))
