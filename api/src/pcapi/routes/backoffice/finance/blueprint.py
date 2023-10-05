@@ -29,7 +29,6 @@ from pcapi.routes.backoffice import filters
 from pcapi.routes.backoffice import utils
 from pcapi.routes.backoffice.finance import forms
 from pcapi.routes.backoffice.finance import validation
-from pcapi.routes.backoffice.forms import empty as empty_forms
 from pcapi.routes.backoffice.offerers import forms as offerer_forms
 from pcapi.utils.human_ids import humanize
 
@@ -476,7 +475,7 @@ def get_finance_incident_validation_form(finance_incident_id: int) -> utils.Back
 
     return render_template(
         "components/turbo/modal_form.html",
-        form=empty_forms.EmptyForm(),
+        form=forms.IncidentValidationForm(),
         dst=url_for(
             "backoffice_web.finance_incident.validate_finance_incident", finance_incident_id=finance_incident_id
         ),
@@ -492,6 +491,11 @@ def get_finance_incident_validation_form(finance_incident_id: int) -> utils.Back
 @utils.permission_required(perm_models.Permissions.MANAGE_INCIDENTS)
 def validate_finance_incident(finance_incident_id: int) -> utils.BackofficeResponse:
     finance_incident = _get_incident(finance_incident_id)
+    form = forms.IncidentValidationForm()
+
+    if not form.validate():
+        flash("Les données envoyées comportent des erreurs", "warning")
+        return render_finance_incident(finance_incident)
 
     if finance_incident.status != finance_models.IncidentStatus.CREATED:
         flash("L'incident ne peut être validé que s'il est au statut 'créé'.", "warning")
@@ -501,7 +505,9 @@ def validate_finance_incident(finance_incident_id: int) -> utils.BackofficeRespo
             303,
         )
 
-    _validate_finance_incident(finance_incident)
+    _validate_finance_incident(
+        finance_incident, form.compensation_mode.data == forms.IncidentCompensationModes.FORCE_DEBIT_NOTE.name
+    )
 
     flash("L'incident a été validé avec succès.", "success")
     return render_finance_incident(finance_incident)
@@ -552,7 +558,7 @@ def _create_finance_events_from_incident(
     return finance_events
 
 
-def _validate_finance_incident(finance_incident: finance_models.FinanceIncident) -> None:
+def _validate_finance_incident(finance_incident: finance_models.FinanceIncident, force_debit_note: bool) -> None:
     # TODO (cmorel): send mail to beneficiary / educational redactor
     incident_validation_date = datetime.utcnow()
     finance_events = []
@@ -590,12 +596,14 @@ def _validate_finance_incident(finance_incident: finance_models.FinanceIncident)
             )
 
     finance_incident.status = finance_models.IncidentStatus.VALIDATED
+    finance_incident.forceDebitNote = force_debit_note
 
     validation_action = history_api.log_action(
         history_models.ActionType.FINANCE_INCIDENT_VALIDATED,
         author=current_user,
         venue=finance_incident.venue,
         finance_incident=finance_incident,
+        comment="Génération d'une note de débit à la prochaine échéance." if force_debit_note else None,
         save=False,
         linked_incident_id=finance_incident.id,
     )
