@@ -17,7 +17,7 @@ import ActionBar from '../ActionBar/ActionBar'
 import { getSuccessMessage } from '../utils/getSuccessMessage'
 
 import { computeInitialValues } from './form/computeInitialValues'
-import { onSubmit } from './form/onSubmit'
+import { submitToApi } from './form/submitToApi'
 import { PriceCategoriesFormValues, PriceCategoryForm } from './form/types'
 import { validationSchema } from './form/validationSchema'
 import { PriceCategoriesForm } from './PriceCategoriesForm'
@@ -167,45 +167,8 @@ export const PriceCategoriesScreen = ({
     subCategory => subCategory.id === offer.subcategoryId
   )?.canBeDuo
 
-  const onSubmitWithCallback = async (values: PriceCategoriesFormValues) => {
-    const isFormEmpty = formik.values === formik.initialValues
-
-    // When saving draft with an empty form
-    /* istanbul ignore next: DEBT, TO FIX when we have notification*/
-    if (mode === OFFER_WIZARD_MODE.EDITION && isFormEmpty) {
-      navigate(
-        getIndividualOfferUrl({
-          offerId: offer.id,
-          step: OFFER_WIZARD_STEP_IDS.SUMMARY,
-          mode:
-            mode === OFFER_WIZARD_MODE.EDITION
-              ? OFFER_WIZARD_MODE.READ_ONLY
-              : mode,
-        })
-      )
-      notify.success(getSuccessMessage(OFFER_WIZARD_MODE.EDITION))
-    }
-
-    const newPopinType = getPopinType(
-      offer.stocks,
-      formik.initialValues,
-      values
-    )
-    setPopinType(newPopinType)
-    if (newPopinType !== null && popinType === null) {
-      return
-    }
-
-    try {
-      await onSubmit(values, offer, setOffer, formik.resetForm)
-    } catch (error) {
-      if (error instanceof Error) {
-        notify.error(error?.message)
-      }
-      return
-    }
-
-    const afterSubmitUrl = getIndividualOfferUrl({
+  const onSubmit = async (values: PriceCategoriesFormValues) => {
+    const nextStepUrl = getIndividualOfferUrl({
       offerId: offer.id,
       step:
         mode === OFFER_WIZARD_MODE.EDITION
@@ -214,7 +177,37 @@ export const PriceCategoriesScreen = ({
       mode:
         mode === OFFER_WIZARD_MODE.EDITION ? OFFER_WIZARD_MODE.READ_ONLY : mode,
     })
-    navigate(afterSubmitUrl)
+
+    // Return when saving in edition with an empty form
+    const isFormEmpty = formik.values === formik.initialValues
+    if (isFormEmpty && mode === OFFER_WIZARD_MODE.EDITION) {
+      navigate(nextStepUrl)
+      notify.success(getSuccessMessage(mode))
+      return
+    }
+
+    // Show popin if necessary
+    const newPopinType = getPopinType(
+      offer.stocks,
+      formik.initialValues,
+      values
+    )
+    setPopinType(newPopinType)
+    if (popinType === null && newPopinType !== null) {
+      return
+    }
+
+    // Submit
+    try {
+      await submitToApi(values, offer, setOffer, formik.resetForm)
+    } catch (error) {
+      if (error instanceof Error) {
+        notify.error(error?.message)
+      }
+      return
+    }
+
+    navigate(nextStepUrl)
     if (mode === OFFER_WIZARD_MODE.EDITION) {
       notify.success(getSuccessMessage(mode))
     }
@@ -226,7 +219,7 @@ export const PriceCategoriesScreen = ({
   const formik = useFormik<PriceCategoriesFormValues>({
     initialValues,
     validationSchema,
-    onSubmit: onSubmitWithCallback,
+    onSubmit,
   })
 
   const handlePreviousStep = () => {

@@ -1,5 +1,3 @@
-import type { FormikState } from 'formik'
-
 import {
   getIndividualOfferAdapter,
   updateIndividualOffer,
@@ -11,15 +9,13 @@ import postPriceCategoriesAdapter from '../adapters/postPriceCategoriesAdapter'
 import { serializePriceCategories } from '../adapters/serializePriceCategories'
 
 import { computeInitialValues } from './computeInitialValues'
-import { PriceCategoriesFormValues } from './types'
+import { PriceCategoriesFormValues, PriceCategoryFormik } from './types'
 
-export const onSubmit = async (
+export const submitToApi = async (
   values: PriceCategoriesFormValues,
   offer: IndividualOffer,
   setOffer: ((offer: IndividualOffer | null) => void) | null,
-  resetForm: (
-    nextState?: Partial<FormikState<PriceCategoriesFormValues>> | undefined
-  ) => void
+  resetForm: PriceCategoryFormik['resetForm']
 ) => {
   const serializedOffer = serializePatchOffer({
     offer: offer,
