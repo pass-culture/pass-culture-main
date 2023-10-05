@@ -15,6 +15,7 @@ from pcapi.core.offers import exceptions as offers_exceptions
 from pcapi.core.offers import models as offers_models
 from pcapi.core.offers import validation as offers_validation
 from pcapi.core.providers import models as providers_models
+from pcapi.domain import music_types
 from pcapi.domain import show_types
 from pcapi.models import api_errors
 from pcapi.models import db
@@ -89,6 +90,36 @@ def get_show_types() -> serialization.GetShowTypesResponse:
         __root__=[
             serialization.ShowTypeResponse(id=show_type_slug, label=show_type.label)
             for show_type_slug, show_type in show_types.SHOW_SUB_TYPES_BY_SLUG.items()
+        ]
+    )
+
+
+@blueprint.v1_blueprint.route("/music_types", methods=["GET"])
+@spectree_serialize(
+    api=blueprint.v1_event_schema,
+    tags=[constants.OFFER_ATTRIBUTES],
+    response_model=serialization.GetMusicTypesResponse,
+    resp=SpectreeResponse(
+        **(
+            constants.BASE_CODE_DESCRIPTIONS
+            | {
+                "HTTP_200": (serialization.GetMusicTypesResponse, "The music types have been returned"),
+            }
+        )
+    ),
+)
+@api_key_required
+@rate_limiting.api_key_high_rate_limiter()
+def get_music_types() -> serialization.GetMusicTypesResponse:
+    """
+    Get all the music types.
+    """
+    # Individual offers API only relies on music subtypes, not music types.
+    # To make it simpler for the provider using this API, we only expose music subtypes and call them music types.
+    return serialization.GetMusicTypesResponse(
+        __root__=[
+            serialization.MusicTypeResponse(id=music_type_slug, label=music_type.label)
+            for music_type_slug, music_type in music_types.MUSIC_SUB_TYPES_BY_SLUG.items()
         ]
     )
 
