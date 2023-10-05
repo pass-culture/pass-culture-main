@@ -47,7 +47,7 @@ const ImageUploader = ({
                 onImageUpload={onImageUpload}
                 onClickButtonImage={onClickButtonImageAdd}
               />
-              {mode != UploaderModeEnum.OFFER_COLLECTIVE && (
+              {mode !== UploaderModeEnum.OFFER_COLLECTIVE && (
                 <ButtonAppPreview imageUrl={imageUrl} mode={mode} />
               )}
               <ButtonImageDelete onImageDelete={onImageDelete} />

@@ -1,8 +1,7 @@
-import { FormikProvider, useFormik } from 'formik'
-import React, { useCallback, useRef } from 'react'
+import { Form, FormikProvider, useFormik } from 'formik'
+import React, { useRef } from 'react'
 import AvatarEditor, { CroppedRect, Position } from 'react-avatar-editor'
 
-import { CreditInput } from 'components/CreditInput/CreditInput'
 import ImageEditor, {
   ImageEditorConfig,
 } from 'components/ImageEditor/ImageEditor'
@@ -12,7 +11,7 @@ import { UploaderModeEnum } from 'components/ImageUploader/types'
 import { useGetImageBitmap } from 'hooks/useGetBitmap'
 import useNotification from 'hooks/useNotification'
 import fullDownloadIcon from 'icons/full-download.svg'
-import { Button, Divider, SubmitButton } from 'ui-kit'
+import { Button, Divider, SubmitButton, TextInput } from 'ui-kit'
 import { ButtonVariant } from 'ui-kit/Button/types'
 
 import style from './ModalImageCrop.module.scss'
@@ -98,7 +97,7 @@ const ModalImageCrop = ({
   }[mode]
 
   /* istanbul ignore next: DEBT, TO FIX */
-  const handleNext = useCallback(() => {
+  const handleNext = (values: ImageEditorFormValues) => {
     try {
       if (editorRef.current) {
         const canvas = editorRef.current.getImage()
@@ -110,15 +109,16 @@ const ModalImageCrop = ({
         })
         onEditedImageSave(canvas.toDataURL(), croppingRect)
       }
+      onSetCredit(values.credit)
     } catch {
       notification.error(
         'Une erreur est survenue. Merci de réessayer plus tard'
       )
     }
-  }, [onEditedImageSave, saveInitialPosition, notification])
+  }
 
   const initialValues = {
-    credit: '',
+    credit: credit || '',
     scale: initialScale || 1,
   }
 
@@ -130,7 +130,7 @@ const ModalImageCrop = ({
   return (
     <section className={style['modal-image-crop']}>
       <FormikProvider value={formik}>
-        <form action="#" onSubmit={formik.handleSubmit}>
+        <Form onSubmit={formik.handleSubmit}>
           <div className={style['modal-image-crop-form']}>
             <header>
               <h1 className={style['modal-image-crop-header']}>
@@ -148,10 +148,15 @@ const ModalImageCrop = ({
               initialPosition={initialPosition}
               ref={editorRef}
             />
-            <CreditInput
-              credit={credit}
-              extraClassName={style['modal-image-crop-credit']}
-              updateCredit={onSetCredit}
+            <TextInput
+              countCharacters
+              className={style['modal-image-crop-credit']}
+              label="Crédit image"
+              maxLength={255}
+              name="credit"
+              placeholder="Photographe..."
+              required={false}
+              type="text"
             />
           </div>
           <Divider />
@@ -163,9 +168,9 @@ const ModalImageCrop = ({
             >
               Remplacer l’image
             </Button>
-            <SubmitButton onClick={handleNext}>{submitButtonText}</SubmitButton>
+            <SubmitButton>{submitButtonText}</SubmitButton>
           </footer>
-        </form>
+        </Form>
       </FormikProvider>
     </section>
   )

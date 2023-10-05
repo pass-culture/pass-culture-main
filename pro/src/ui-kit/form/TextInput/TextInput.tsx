@@ -99,7 +99,7 @@ const TextInput = ({
           ref={refForInput}
           rightIcon={rightIcon}
           leftIcon={leftIcon}
-          onKeyPress={event => {
+          onKeyDown={event => {
             if (type === 'number') {
               const testInput = hasDecimal
                 ? !regexHasDecimal.test(event.key)

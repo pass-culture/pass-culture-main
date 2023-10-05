@@ -1,4 +1,4 @@
-import React, { useCallback, useEffect, useState } from 'react'
+import React, { useEffect, useState } from 'react'
 import { CroppedRect } from 'react-avatar-editor'
 
 import { getFileFromURL } from 'apiClient/helpers'
@@ -50,12 +50,14 @@ const ModalImageEdit = ({
   useEffect(() => {
     async function setImageFromUrl(url: string) {
       setImage(await getFileFromURL(url))
-      setIsReady(true)
     }
     const imageUrl = initialOriginalImageUrl
       ? initialOriginalImageUrl
       : initialImageUrl
-    imageUrl ? setImageFromUrl(imageUrl) : setIsReady(true)
+    if (imageUrl) {
+      setImageFromUrl(imageUrl)
+    }
+    setIsReady(true)
   }, [])
 
   const [credit, setCredit] = useState(initialCredit || '')
@@ -82,17 +84,17 @@ const ModalImageEdit = ({
         : 0.5,
   })
 
-  const navigateFromPreviewToEdit = useCallback(() => {
+  const navigateFromPreviewToEdit = () => {
     setEditedImageDataUrl('')
-  }, [])
+  }
 
   const onImageClientUpload = (values: ImageUploadBrowserFormValues) => {
     setImage(values.image || undefined)
   }
 
-  const onReplaceImage = useCallback(() => {
+  const onReplaceImage = () => {
     setImage(undefined)
-  }, [setImage])
+  }
 
   const handleOnUpload = async (
     croppedRect?: CroppedRect,
@@ -115,23 +117,14 @@ const ModalImageEdit = ({
 
   const showPreviewInModal = mode !== UploaderModeEnum.OFFER_COLLECTIVE
 
-  const onEditedImageSave = useCallback(
-    (dataUrl: string, croppedRect: CroppedRect) => {
-      setCroppingRect(croppedRect)
-      setEditedImageDataUrl(dataUrl)
+  const onEditedImageSave = (dataUrl: string, croppedRect: CroppedRect) => {
+    setCroppingRect(croppedRect)
+    setEditedImageDataUrl(dataUrl)
 
-      if (!showPreviewInModal) {
-        handleOnUpload(croppedRect, image, dataUrl)
-      }
-    },
-    [
-      setEditedImageDataUrl,
-      setCroppingRect,
-      showPreviewInModal,
-      handleOnUpload,
-      image,
-    ]
-  )
+    if (!showPreviewInModal) {
+      handleOnUpload(croppedRect, image, dataUrl)
+    }
+  }
 
   if (!isReady) {
     return null
