@@ -203,13 +203,16 @@ jobs:
           kubernetes-cluster: ${{ inputs.teleport_kubernetes_cluster }}
       - id: set_algolia_settings
         name: "Configure algolia"
-        run: |
-          curl -LO "https://dl.k8s.io/release/$(curl -L -s https://dl.k8s.io/release/stable.txt)/bin/linux/amd64/kubectl"
-          chmod +x kubectl
-          POD_NAME=$(./kubectl -n ${{ inputs.environment }} get po -l role=api -o jsonpath='{.items[0].metadata.name}')
-          ./kubectl exec -it -n ${{ inputs.environment }} ${POD_NAME} -- flask set_algolia_settings offers --dry-run=false
-          ./kubectl exec -it -n ${{ inputs.environment }} ${POD_NAME} -- flask set_algolia_settings collective_offers --dry-run=false
-          ./kubectl exec -it -n ${{ inputs.environment }} ${POD_NAME} -- flask set_algolia_settings venues --dry-run=false
+        uses: nick-fields/retry@v2
+        with:
+          timeout_minutes: 30
+          max_attempts: 3
+          command: |
+            POD_NAME=$(./kubectl -n ${{ inputs.environment }} get po -l role=api -o json |jq -r '.items[] | select(.spec.containers[0].image | contains("${{ inputs.app_version }}")) | "\(.metadata.name)"'|head -n 1)
+            echo "flask commands runs on ${POD_NAME}"
+            ./kubectl exec -it -n ${{ inputs.environment }} ${POD_NAME} -- flask set_algolia_settings offers --dry-run=false
+            ./kubectl exec -it -n ${{ inputs.environment }} ${POD_NAME} -- flask set_algolia_settings collective_offers --dry-run=false
+            ./kubectl exec -it -n ${{ inputs.environment }} ${POD_NAME} -- flask set_algolia_settings venues --dry-run=false
 
   deploy-image-resizing:
     name: "Deploy image-resizing"
