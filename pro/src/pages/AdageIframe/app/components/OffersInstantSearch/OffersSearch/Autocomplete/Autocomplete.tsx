@@ -16,6 +16,8 @@ import React, {
   useEffect,
   useRef,
   useContext,
+  Dispatch,
+  SetStateAction,
 } from 'react'
 import { useSearchBox } from 'react-instantsearch'
 
@@ -47,7 +49,7 @@ import { Highlight } from './Highlight'
 type AutocompleteProps = {
   initialQuery: string
   placeholder: string
-  setCurrentSearch: (search: string) => void
+  setCurrentSearch: Dispatch<SetStateAction<string | null>>
 }
 
 export type SuggestionItem = AutocompleteQuerySuggestionsHit & {

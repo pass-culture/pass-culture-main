@@ -88,10 +88,10 @@ export const OffersSearch = ({
     formik.setValues(ADAGE_FILTERS_DEFAULT_VALUES)
     formik.handleSubmit()
   }
-  const [currentSearch, setCurrentSearch] = useState('')
+  const [currentSearch, setCurrentSearch] = useState<string | null>(null)
   const logFiltersOnSearch = (nbHits: number, queryId?: string) => {
     /* istanbul ignore next: TO FIX the current structure make it hard to test, we probably should not mock Offers in OfferSearch tests */
-    if (formik.submitCount > 0 || currentSearch != '') {
+    if (formik.submitCount > 0 || currentSearch !== null) {
       apiAdage.logTrackingFilter({
         iframeFrom: removeParamsFromUrl(location.pathname),
         resultNumber: nbHits,
