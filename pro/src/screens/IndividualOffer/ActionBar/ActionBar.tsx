@@ -92,11 +92,8 @@ const ActionBar = ({
               >
                 Annuler et quitter
               </Button>
-              <SubmitButton
-                onClick={onClickNext}
-                disabled={isDisabled}
-                type="submit"
-              >
+
+              <SubmitButton onClick={onClickNext} disabled={isDisabled}>
                 Enregistrer les modifications
               </SubmitButton>
             </>
