@@ -29,21 +29,13 @@ logger = logging.getLogger(__name__)
 
 MusicTypeEnum = StrEnum(  # type: ignore [call-overload]
     "MusicTypeEnum",
-    {
-        music_sub_type.slug: music_sub_type.slug
-        for music_type in music_types.music_types
-        for music_sub_type in music_type.children
-    },
+    {music_sub_type_slug: music_sub_type_slug for music_sub_type_slug in music_types.MUSIC_SUB_TYPES_BY_SLUG},
 )
 
 
 ShowTypeEnum = StrEnum(  # type: ignore [call-overload]
     "ShowTypeEnum",
-    {
-        show_sub_type.slug: show_sub_type.slug
-        for show_type in show_types.show_types
-        for show_sub_type in show_type.children
-    },
+    {show_sub_type_slug: show_sub_type_slug for show_sub_type_slug in show_types.SHOW_SUB_TYPES_BY_SLUG},
 )
 
 EventCategoryEnum = StrEnum(  # type:ignore [call-overload]
