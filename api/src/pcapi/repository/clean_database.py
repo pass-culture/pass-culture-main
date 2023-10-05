@@ -5,6 +5,7 @@ import pcapi.core.educational.models as educational_models
 import pcapi.core.finance.models as finance_models
 from pcapi.core.finance.models import BankInformation
 import pcapi.core.fraud.models as fraud_models
+import pcapi.core.geography.models as geography_models
 import pcapi.core.history.models as history_models
 import pcapi.core.offerers.models as offerers_models
 import pcapi.core.offers.models as offers_models
@@ -23,6 +24,7 @@ def clean_all_database(*args, **kwargs):  # type: ignore [no-untyped-def]
     """Order of deletions matters because of foreign key constraints"""
     if settings.ENV not in ("development", "testing"):
         raise ValueError(f"You cannot do this on this environment: '{settings.ENV}'")
+    geography_models.IrisFrance.query.delete()
     providers_models.LocalProviderEvent.query.delete()
     offers_models.ActivationCode.query.delete()
     providers_models.AllocineVenueProviderPriceRule.query.delete()
