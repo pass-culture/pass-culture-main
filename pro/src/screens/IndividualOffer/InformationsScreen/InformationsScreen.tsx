@@ -119,16 +119,14 @@ const InformationsScreen = ({
         )
       : setInitialFormValues(offer, subCategories, isBookingContactEnabled)
 
-  const [isWithdrawalDialogOpen, setIsWithdrawalDialogOpen] =
+  const [isWithdrawalMailDialogOpen, setIsWithdrawalMailDialogOpen] =
     useState<boolean>(false)
 
   const [sendWithdrawalMail, setSendWithdrawalMail] = useState<boolean>(false)
 
-  const handleSendMail = async () => {
-    if (!offer?.isActive) {
-      return
-    }
-
+  const onSubmitOffer = async (
+    formValues: IndividualOfferFormValues
+  ): Promise<void> => {
     const hasWithdrawalInformationsChanged = [
       'withdrawalDetails',
       'withdrawalDelay',
@@ -137,33 +135,18 @@ const InformationsScreen = ({
       const fieldMeta = formik.getFieldMeta(field)
       return fieldMeta?.touched && fieldMeta?.value !== fieldMeta?.initialValue
     })
+    const totalBookingsQuantity =
+      offer?.stocks.reduce((acc, stock) => acc + stock.bookingsQuantity, 0) ?? 0
 
-    const totalBookingsQuantity = offer?.stocks.reduce(
-      (acc, stock) => acc + stock.bookingsQuantity,
-      0
-    )
-    if (totalBookingsQuantity > 0 && hasWithdrawalInformationsChanged) {
-      setIsWithdrawalDialogOpen(!isWithdrawalDialogOpen)
-
-      return
-    }
-  }
-
-  const handleNextStep = async () => {
+    const showWithdrawalMailDialog =
+      offer?.isActive &&
+      totalBookingsQuantity > 0 &&
+      hasWithdrawalInformationsChanged
     if (mode === OFFER_WIZARD_MODE.EDITION) {
-      await handleSendMail()
-    }
-
-    if (isWithdrawalDialogOpen) {
-      await formik.submitForm()
-    }
-  }
-
-  const onSubmitOffer = async (
-    formValues: IndividualOfferFormValues
-  ): Promise<void> => {
-    if (isWithdrawalDialogOpen) {
-      return
+      if (showWithdrawalMailDialog && !isWithdrawalMailDialogOpen) {
+        setIsWithdrawalMailDialogOpen(true)
+        return
+      }
     }
     const { isOk, payload } = !offer
       ? await createIndividualOffer(formValues)
@@ -280,30 +263,29 @@ const InformationsScreen = ({
 
           <ActionBar
             onClickPrevious={handlePreviousStep}
-            onClickNext={() => handleNextStep()}
             step={OFFER_WIZARD_STEP_IDS.INFORMATIONS}
             isDisabled={
               formik.isSubmitting ||
               Boolean(offer && isOfferDisabled(offer.status)) ||
-              isWithdrawalDialogOpen
+              isWithdrawalMailDialogOpen
             }
           />
         </form>
       </FormLayout>
 
-      {isWithdrawalDialogOpen && (
+      {isWithdrawalMailDialogOpen && (
         <ConfirmDialog
           cancelText="Ne pas envoyer"
           confirmText="Envoyer un email"
           onCancel={() => {
-            setIsWithdrawalDialogOpen(false)
+            setIsWithdrawalMailDialogOpen(false)
           }}
-          leftButtonAction={() => {
-            handleNextStep()
+          leftButtonAction={async () => {
+            await formik.submitForm()
           }}
-          onConfirm={() => {
+          onConfirm={async () => {
             setSendWithdrawalMail(true)
-            handleNextStep()
+            await formik.submitForm()
           }}
           icon={strokeMailIcon}
           title="Souhaitez-vous prévenir les bénéficiaires de la modification des modalités de retrait ?"
