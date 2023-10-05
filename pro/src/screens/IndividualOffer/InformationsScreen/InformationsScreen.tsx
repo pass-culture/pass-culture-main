@@ -20,10 +20,6 @@ import {
 import { RouteLeavingGuardIndividualOffer } from 'components/RouteLeavingGuardIndividualOffer'
 import { useIndividualOfferContext } from 'context/IndividualOfferContext'
 import {
-  Events,
-  OFFER_FORM_NAVIGATION_MEDIUM,
-} from 'core/FirebaseEvents/constants'
-import {
   createIndividualOffer,
   getIndividualOfferAdapter,
   updateIndividualOffer,
@@ -34,7 +30,6 @@ import { isOfferDisabled } from 'core/Offers/utils'
 import { getIndividualOfferUrl } from 'core/Offers/utils/getIndividualOfferUrl'
 import { useOfferWizardMode } from 'hooks'
 import useActiveFeature from 'hooks/useActiveFeature'
-import useAnalytics from 'hooks/useAnalytics'
 import useCurrentUser from 'hooks/useCurrentUser'
 import useNotification from 'hooks/useNotification'
 import strokeMailIcon from 'icons/stroke-mail.svg'
@@ -42,7 +37,6 @@ import strokeMailIcon from 'icons/stroke-mail.svg'
 import ActionBar from '../ActionBar/ActionBar'
 import { useIndividualOfferImageUpload } from '../hooks/useIndividualOfferImageUpload'
 
-import { computeNextStep } from './utils/computeNextStep'
 import {
   filterCategories,
   getCategoryStatusFromOfferSubtype,
@@ -64,7 +58,6 @@ const InformationsScreen = ({
   const { currentUser } = useCurrentUser()
   const navigate = useNavigate()
   const mode = useOfferWizardMode()
-  const { logEvent } = useAnalytics()
   const {
     offer,
     categories,
@@ -124,30 +117,35 @@ const InformationsScreen = ({
 
   const [sendWithdrawalMail, setSendWithdrawalMail] = useState<boolean>(false)
 
-  const onSubmitOffer = async (
+  const onSubmit = async (
     formValues: IndividualOfferFormValues
   ): Promise<void> => {
-    const hasWithdrawalInformationsChanged = [
-      'withdrawalDetails',
-      'withdrawalDelay',
-      'withdrawalType',
-    ].some(field => {
-      const fieldMeta = formik.getFieldMeta(field)
-      return fieldMeta?.touched && fieldMeta?.value !== fieldMeta?.initialValue
-    })
-    const totalBookingsQuantity =
-      offer?.stocks.reduce((acc, stock) => acc + stock.bookingsQuantity, 0) ?? 0
-
-    const showWithdrawalMailDialog =
-      offer?.isActive &&
-      totalBookingsQuantity > 0 &&
-      hasWithdrawalInformationsChanged
     if (mode === OFFER_WIZARD_MODE.EDITION) {
+      const hasWithdrawalInformationsChanged = [
+        'withdrawalDetails',
+        'withdrawalDelay',
+        'withdrawalType',
+      ].some(field => {
+        const fieldMeta = formik.getFieldMeta(field)
+        return (
+          fieldMeta?.touched && fieldMeta?.value !== fieldMeta?.initialValue
+        )
+      })
+      const totalBookingsQuantity =
+        offer?.stocks.reduce((acc, stock) => acc + stock.bookingsQuantity, 0) ??
+        0
+
+      const showWithdrawalMailDialog =
+        offer?.isActive &&
+        totalBookingsQuantity > 0 &&
+        hasWithdrawalInformationsChanged
       if (showWithdrawalMailDialog && !isWithdrawalMailDialogOpen) {
         setIsWithdrawalMailDialogOpen(true)
         return
       }
     }
+
+    // Submit
     const { isOk, payload } = !offer
       ? await createIndividualOffer(formValues)
       : await updateIndividualOffer({
@@ -159,71 +157,59 @@ const InformationsScreen = ({
           offerId: offer.id,
         })
 
-    const nextStep = computeNextStep(
-      mode,
-      Boolean(
-        subCategories.find(
-          subcategory => subcategory.id === formik.values.subcategoryId
-        )?.isEvent
-      )
-    )
-    if (isOk) {
-      const receivedOfferId = payload.id
-      await handleImageOnSubmit(receivedOfferId)
-
-      const response = await getIndividualOfferAdapter(receivedOfferId)
-      // This do not trigger a visal change, it's complicated to test
-      /* istanbul ignore next: DEBT, TO FIX */
-      if (response.isOk) {
-        setOffer && setOffer(response.payload)
-      }
-      // replace url to fix back button
-      navigate(
-        getIndividualOfferUrl({
-          step: OFFER_WIZARD_STEP_IDS.INFORMATIONS,
-          offerId: receivedOfferId,
-          mode,
-        }),
-        { replace: true }
-      )
-
-      navigate(
-        getIndividualOfferUrl({
-          offerId: receivedOfferId,
-          step: nextStep,
-          mode:
-            mode === OFFER_WIZARD_MODE.EDITION
-              ? OFFER_WIZARD_MODE.READ_ONLY
-              : mode,
-        })
-      )
-      // TODO Should create dedicated event for subcategory, this is not a navigation event
-      logEvent?.(Events.CLICKED_OFFER_FORM_NAVIGATION, {
-        from: OFFER_WIZARD_STEP_IDS.INFORMATIONS,
-        to: nextStep,
-        used: OFFER_FORM_NAVIGATION_MEDIUM.STICKY_BUTTONS,
-        isEdition: mode !== OFFER_WIZARD_MODE.CREATION,
-        isDraft:
-          mode === OFFER_WIZARD_MODE.CREATION ||
-          mode === OFFER_WIZARD_MODE.DRAFT,
-        offerId: receivedOfferId,
-        subcategoryId: formik.values.subcategoryId,
-      })
-
-      if (mode === OFFER_WIZARD_MODE.EDITION) {
-        notify.success('Vos modifications ont bien été enregistrées')
-      }
-    } else {
+    if (!isOk) {
       formik.setErrors(payload.errors)
       // This is used from scroll to error
       formik.setStatus('apiError')
+      return
+    }
+
+    const receivedOfferId = payload.id
+    await handleImageOnSubmit(receivedOfferId)
+
+    const response = await getIndividualOfferAdapter(receivedOfferId)
+    if (response.isOk) {
+      setOffer && setOffer(response.payload)
+    }
+
+    // replace url to fix back button
+    navigate(
+      getIndividualOfferUrl({
+        step: OFFER_WIZARD_STEP_IDS.INFORMATIONS,
+        offerId: receivedOfferId,
+        mode,
+      }),
+      { replace: true }
+    )
+
+    const isEvent = subCategories.find(
+      subcategory => subcategory.id === formik.values.subcategoryId
+    )?.isEvent
+    navigate(
+      getIndividualOfferUrl({
+        offerId: receivedOfferId,
+        step:
+          mode === OFFER_WIZARD_MODE.EDITION
+            ? OFFER_WIZARD_STEP_IDS.SUMMARY
+            : isEvent
+            ? OFFER_WIZARD_STEP_IDS.TARIFS
+            : OFFER_WIZARD_STEP_IDS.STOCKS,
+        mode:
+          mode === OFFER_WIZARD_MODE.EDITION
+            ? OFFER_WIZARD_MODE.READ_ONLY
+            : mode,
+      })
+    )
+
+    if (mode === OFFER_WIZARD_MODE.EDITION) {
+      notify.success('Vos modifications ont bien été enregistrées')
     }
   }
 
   const readOnlyFields = setFormReadOnlyFields(offer, currentUser.isAdmin)
   const formik = useFormik({
     initialValues,
-    onSubmit: onSubmitOffer,
+    onSubmit,
     validationSchema,
     // enableReinitialize is needed to reset dirty after submit (and not block after saving a draft)
     enableReinitialize: true,
@@ -233,6 +219,7 @@ const InformationsScreen = ({
     const queryParams = new URLSearchParams(location.search)
     const queryOffererId = queryParams.get('structure')
     const queryVenueId = queryParams.get('lieu')
+
     /* istanbul ignore next: DEBT, TO FIX */
     mode === OFFER_WIZARD_MODE.EDITION
       ? navigate(
