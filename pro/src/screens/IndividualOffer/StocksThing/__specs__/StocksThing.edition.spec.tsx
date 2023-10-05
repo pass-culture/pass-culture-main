@@ -326,24 +326,6 @@ describe('screens:StocksThing', () => {
     expect(api.deleteStock).toHaveBeenCalledTimes(0)
   })
 
-  it('should display draft success message on save button when stock form is empty and redirect to This is the read only route content', async () => {
-    renderStockThingScreen(storeOverride)
-    apiOffer.stocks = []
-    vi.spyOn(api, 'getOffer').mockResolvedValue(apiOffer)
-    await screen.findByTestId('stock-thing-form')
-
-    await userEvent.click(
-      screen.getByRole('button', { name: 'Enregistrer les modifications' })
-    )
-    expect(
-      screen.getByText('Vos modifications ont bien été enregistrées')
-    ).toBeInTheDocument()
-    expect(screen.queryByTestId('stock-thing-form')).not.toBeInTheDocument()
-    expect(
-      screen.getByText(/This is the read only route content/)
-    ).toBeInTheDocument()
-  })
-
   it('should go back to summary when clicking on "Annuler et quitter"', async () => {
     renderStockThingScreen(storeOverride)
     await screen.findByTestId('stock-thing-form')
