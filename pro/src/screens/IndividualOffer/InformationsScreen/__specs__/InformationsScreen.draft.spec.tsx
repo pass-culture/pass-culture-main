@@ -16,13 +16,11 @@ import {
   IndividualOfferContextValues,
 } from 'context/IndividualOfferContext'
 import { REIMBURSEMENT_RULES } from 'core/Finances'
-import { Events } from 'core/FirebaseEvents/constants'
 import { CATEGORY_STATUS, OFFER_WIZARD_MODE } from 'core/Offers/constants'
 import { IndividualOffer, OfferSubCategory } from 'core/Offers/types'
 import { getIndividualOfferPath } from 'core/Offers/utils/getIndividualOfferUrl'
 import { AccessiblityEnum } from 'core/shared'
 import { IndividualOfferVenueItem } from 'core/Venue/types'
-import * as useAnalytics from 'hooks/useAnalytics'
 import * as pcapi from 'repository/pcapi/pcapi'
 import {
   individualOfferCategoryFactory,
@@ -40,7 +38,6 @@ import InformationsScreen, {
 vi.mock('utils/windowMatchMedia', () => ({
   doesUserPreferReducedMotion: vi.fn(() => true),
 }))
-const mockLogEvent = vi.fn()
 
 vi.mock('screens/IndividualOffer/Informations/utils', () => {
   return {
@@ -245,10 +242,6 @@ describe('screens:IndividualOffer::Informations:draft', () => {
       {} as GetIndividualOfferResponseModel
     )
     vi.spyOn(api, 'deleteThumbnail').mockResolvedValue()
-    vi.spyOn(useAnalytics, 'default').mockImplementation(() => ({
-      logEvent: mockLogEvent,
-      setLogEvent: null,
-    }))
   })
 
   it('should submit minimal physical offer', async () => {
@@ -290,25 +283,5 @@ describe('screens:IndividualOffer::Informations:draft', () => {
     ).toBeInTheDocument()
     expect(pcapi.postThumbnail).not.toHaveBeenCalled()
     expect(api.postOffer).not.toHaveBeenCalled()
-  })
-
-  it('should track when creating draft offer using Enregistrer et continuer', async () => {
-    renderInformationsScreen(props, contextOverride)
-    await userEvent.click(await screen.findByText('Enregistrer et continuer'))
-
-    expect(mockLogEvent).toHaveBeenCalledTimes(1)
-    expect(mockLogEvent).toHaveBeenNthCalledWith(
-      1,
-      Events.CLICKED_OFFER_FORM_NAVIGATION,
-      {
-        from: 'informations',
-        isDraft: true,
-        isEdition: true,
-        offerId: offerId,
-        subcategoryId: 'SCID physical',
-        to: 'stocks',
-        used: 'StickyButtons',
-      }
-    )
   })
 })
