@@ -18,7 +18,6 @@ export interface ActionBarProps {
   onClickPrevious?: () => void
   isDisabled: boolean
   step: OFFER_WIZARD_STEP_IDS
-  submitAsButton?: boolean
 }
 
 const ActionBar = ({
@@ -26,7 +25,6 @@ const ActionBar = ({
   onClickPrevious,
   isDisabled,
   step,
-  submitAsButton = false,
 }: ActionBarProps) => {
   const offersSearchFilters = useSelector(
     (state: RootState) => state.offers.searchFilters
@@ -97,7 +95,7 @@ const ActionBar = ({
               <SubmitButton
                 onClick={onClickNext}
                 disabled={isDisabled}
-                type={submitAsButton ? 'button' : 'submit'}
+                type="submit"
               >
                 Enregistrer les modifications
               </SubmitButton>

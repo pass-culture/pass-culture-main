@@ -221,7 +221,11 @@ const StocksEventEdition = ({
 
     // When saving draft with an empty form
     // we display a success notification even if nothing is done
-    if (isFormEmpty()) {
+    const allStockValues = [...formik.values.stocks, ...hiddenStocksRef.current]
+    const isFormEmpty = allStockValues.every(val =>
+      isEqual(val, STOCK_EVENT_FORM_DEFAULT_VALUES)
+    )
+    if (isFormEmpty) {
       navigate(nextStepUrl)
       notify.success(getSuccessMessage(mode))
     }
@@ -229,7 +233,6 @@ const StocksEventEdition = ({
     /* istanbul ignore next */
     setAfterSubmitUrl(nextStepUrl)
 
-    const allStockValues = [...formik.values.stocks, ...hiddenStocksRef.current]
     const hasSavedStock = allStockValues.some(
       stock => stock.stockId !== undefined
     )
@@ -363,13 +366,6 @@ const StocksEventEdition = ({
     formik.initialValues.stocks
   )
 
-  const isFormEmpty = () => {
-    const allStockValues = [...formik.values.stocks, ...hiddenStocksRef.current]
-    return allStockValues.every(val =>
-      isEqual(val, STOCK_EVENT_FORM_DEFAULT_VALUES)
-    )
-  }
-
   useNotifyFormError({
     isSubmitting: formik.isSubmitting,
     errors: formik.errors,
@@ -448,7 +444,6 @@ const StocksEventEdition = ({
               isDisabled={formik.isSubmitting || isOfferDisabled(offer.status)}
               onClickPrevious={handlePreviousStepOrBackToReadOnly}
               step={OFFER_WIZARD_STEP_IDS.STOCKS}
-              submitAsButton={isFormEmpty()}
             />
           </form>
         </div>

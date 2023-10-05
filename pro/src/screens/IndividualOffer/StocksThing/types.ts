@@ -1,3 +1,5 @@
+import { useFormik } from 'formik'
+
 export interface StockThingFormValues {
   stockId?: number
   remainingQuantity: string
@@ -9,3 +11,7 @@ export interface StockThingFormValues {
   activationCodesExpirationDatetime: string
   isDuo: boolean | undefined
 }
+
+export type StockThingFormik = ReturnType<
+  typeof useFormik<StockThingFormValues>
+>
