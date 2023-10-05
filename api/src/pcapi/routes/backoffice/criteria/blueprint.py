@@ -1,3 +1,5 @@
+from functools import partial
+
 from flask import escape
 from flask import flash
 from flask import redirect
@@ -9,6 +11,7 @@ import sqlalchemy as sa
 import pcapi.core.criteria.models as criteria_models
 import pcapi.core.permissions.models as perm_models
 from pcapi.models import db
+from pcapi.routes.backoffice import search_utils
 from pcapi.routes.backoffice import utils
 from pcapi.routes.backoffice.forms import empty as empty_forms
 from pcapi.utils.clean_accents import clean_accents
@@ -37,30 +40,38 @@ def list_tags() -> utils.BackofficeResponse:
         else None
     )
 
-    base_query = criteria_models.Criterion.query
+    query = criteria_models.Criterion.query.options(sa.orm.joinedload(criteria_models.Criterion.categories))
 
     if not form.validate():
-        tags = base_query.all()
         code = 400
     else:
-        if form.is_empty():
-            tags = base_query.all()
-        else:
-            query = clean_accents(form.q.data.replace(" ", "%").replace("-", "%"))
-            tags = base_query.filter(
+        if form.q.data:
+            search_query = clean_accents(form.q.data.replace(" ", "%").replace("-", "%"))
+            query = query.filter(
                 sa.or_(
-                    sa.func.unaccent(criteria_models.Criterion.name).ilike(f"%{query}%"),
-                    sa.func.unaccent(criteria_models.Criterion.description).ilike(f"%{query}%"),
+                    sa.func.unaccent(criteria_models.Criterion.name).ilike(f"%{search_query}%"),
+                    sa.func.unaccent(criteria_models.Criterion.description).ilike(f"%{search_query}%"),
                 )
-            ).distinct()
+            )
         code = 200
+
+    paginated_tags = query.order_by(criteria_models.Criterion.name).paginate(
+        page=int(form.page.data),
+        per_page=int(form.per_page.data),
+    )
+
+    form_url = partial(url_for, ".list_tags", **form.raw_data)
+    next_pages_urls = search_utils.pagination_links(form_url, int(form.page.data), paginated_tags.pages)
+
+    form.page.data = 1  # Reset to first page when form is submitted ("Appliquer" clicked)
 
     return (
         render_template(
             "tags/list_tags.html",
-            rows=tags,
+            rows=paginated_tags,
             form=form,
             dst=url_for(".list_tags"),
+            next_pages_urls=next_pages_urls,
             category_rows=get_tags_categories(),
             create_category_form=create_category_form,
             active_tab=request.args.get("active_tab", "tags"),
