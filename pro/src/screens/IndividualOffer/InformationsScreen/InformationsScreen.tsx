@@ -325,6 +325,7 @@ const InformationsScreen = ({
           />
         </form>
       </FormLayout>
+
       {isWithdrawalDialogOpen && (
         <ConfirmDialog
           cancelText="Ne pas envoyer"

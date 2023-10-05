@@ -170,62 +170,6 @@ export const PriceCategoriesScreen = ({
   )?.canBeDuo
 
   const onSubmitWithCallback = async (values: PriceCategoriesFormValues) => {
-    const newPopinType = getPopinType(
-      offer.stocks,
-      formik.initialValues,
-      values
-    )
-    setPopinType(newPopinType)
-    if (newPopinType !== null && popinType === null) {
-      return
-    }
-
-    try {
-      await onSubmit(values, offer, setOffer, formik.resetForm)
-      afterSubmitCallback()
-      setPopinType(null)
-    } catch (error) {
-      if (error instanceof Error) {
-        notify.error(error?.message)
-      }
-    }
-  }
-
-  const afterSubmitCallback = () => {
-    const afterSubmitUrl = getIndividualOfferUrl({
-      offerId: offer.id,
-      step:
-        mode === OFFER_WIZARD_MODE.EDITION
-          ? OFFER_WIZARD_STEP_IDS.TARIFS
-          : OFFER_WIZARD_STEP_IDS.STOCKS,
-      mode:
-        mode === OFFER_WIZARD_MODE.EDITION ? OFFER_WIZARD_MODE.READ_ONLY : mode,
-    })
-    navigate(afterSubmitUrl)
-    if (mode === OFFER_WIZARD_MODE.EDITION) {
-      notify.success(getSuccessMessage(mode))
-    }
-  }
-
-  const initialValues = computeInitialValues(offer)
-
-  const formik = useFormik<PriceCategoriesFormValues>({
-    initialValues,
-    validationSchema,
-    onSubmit: onSubmitWithCallback,
-  })
-
-  const handlePreviousStep = () => {
-    navigate(
-      getIndividualOfferUrl({
-        offerId: offer.id,
-        step: OFFER_WIZARD_STEP_IDS.INFORMATIONS,
-        mode,
-      })
-    )
-  }
-
-  const handleNextStep = async () => {
     setIsClickingFromActionBar(true)
 
     const isFormEmpty = formik.values === formik.initialValues
@@ -251,6 +195,58 @@ export const PriceCategoriesScreen = ({
     if (Object.keys(formik.errors).length !== 0) {
       setIsClickingFromActionBar(false)
     }
+
+    const newPopinType = getPopinType(
+      offer.stocks,
+      formik.initialValues,
+      values
+    )
+    setPopinType(newPopinType)
+    if (newPopinType !== null && popinType === null) {
+      return
+    }
+
+    try {
+      await onSubmit(values, offer, setOffer, formik.resetForm)
+    } catch (error) {
+      if (error instanceof Error) {
+        notify.error(error?.message)
+      }
+      return
+    }
+
+    const afterSubmitUrl = getIndividualOfferUrl({
+      offerId: offer.id,
+      step:
+        mode === OFFER_WIZARD_MODE.EDITION
+          ? OFFER_WIZARD_STEP_IDS.TARIFS
+          : OFFER_WIZARD_STEP_IDS.STOCKS,
+      mode:
+        mode === OFFER_WIZARD_MODE.EDITION ? OFFER_WIZARD_MODE.READ_ONLY : mode,
+    })
+    navigate(afterSubmitUrl)
+    if (mode === OFFER_WIZARD_MODE.EDITION) {
+      notify.success(getSuccessMessage(mode))
+    }
+    setPopinType(null)
+  }
+
+  const initialValues = computeInitialValues(offer)
+
+  const formik = useFormik<PriceCategoriesFormValues>({
+    initialValues,
+    validationSchema,
+    onSubmit: onSubmitWithCallback,
+  })
+
+  const handlePreviousStep = () => {
+    navigate(
+      getIndividualOfferUrl({
+        offerId: offer.id,
+        step: OFFER_WIZARD_STEP_IDS.INFORMATIONS,
+        mode,
+      })
+    )
   }
 
   return (
@@ -290,7 +286,6 @@ export const PriceCategoriesScreen = ({
 
         <ActionBar
           onClickPrevious={handlePreviousStep}
-          onClickNext={handleNextStep}
           step={OFFER_WIZARD_STEP_IDS.TARIFS}
           isDisabled={formik.isSubmitting}
         />

@@ -80,6 +80,39 @@ const StocksThing = ({ offer }: StocksThingProps): JSX.Element => {
   const isDisabled = isOfferDisabled(offer.status)
 
   const onSubmit = async (formValues: StockThingFormValues) => {
+    setIsClickingFromActionBar(true)
+    /* istanbul ignore next: DEBT, TO FIX */
+    if (Object.keys(formik.errors).length !== 0) {
+      setIsClickingFromActionBar(false)
+    }
+
+    const nextStepUrl = getIndividualOfferUrl({
+      offerId: offer.id,
+      step:
+        mode === OFFER_WIZARD_MODE.EDITION
+          ? OFFER_WIZARD_STEP_IDS.STOCKS
+          : OFFER_WIZARD_STEP_IDS.SUMMARY,
+      mode:
+        mode === OFFER_WIZARD_MODE.EDITION ? OFFER_WIZARD_MODE.READ_ONLY : mode,
+    })
+
+    // When saving draft with an empty form or in edition mode
+    // we display a success notification even if nothing is done
+    if (isFormEmpty() && mode === OFFER_WIZARD_MODE.EDITION) {
+      setIsClickingFromActionBar(false)
+      navigate(nextStepUrl)
+      if (mode === OFFER_WIZARD_MODE.EDITION) {
+        notify.success(getSuccessMessage(mode))
+      }
+    }
+
+    setAfterSubmitUrl(nextStepUrl)
+    const hasSavedStock = formik.values.stockId !== undefined
+    if (hasSavedStock && !formik.dirty) {
+      navigate(nextStepUrl)
+      setIsClickingFromActionBar(false)
+    }
+
     const serializedOffer = serializePatchOffer({
       offer: offer,
       formValues: { isDuo: formValues.isDuo },
@@ -144,41 +177,6 @@ const StocksThing = ({ offer }: StocksThingProps): JSX.Element => {
     isSubmitting: formik.isSubmitting,
     errors: formik.errors,
   })
-
-  const handleNextStep = async () => {
-    setIsClickingFromActionBar(true)
-    /* istanbul ignore next: DEBT, TO FIX */
-    if (Object.keys(formik.errors).length !== 0) {
-      setIsClickingFromActionBar(false)
-    }
-
-    const nextStepUrl = getIndividualOfferUrl({
-      offerId: offer.id,
-      step:
-        mode === OFFER_WIZARD_MODE.EDITION
-          ? OFFER_WIZARD_STEP_IDS.STOCKS
-          : OFFER_WIZARD_STEP_IDS.SUMMARY,
-      mode:
-        mode === OFFER_WIZARD_MODE.EDITION ? OFFER_WIZARD_MODE.READ_ONLY : mode,
-    })
-
-    // When saving draft with an empty form or in edition mode
-    // we display a success notification even if nothing is done
-    if (isFormEmpty() && mode === OFFER_WIZARD_MODE.EDITION) {
-      setIsClickingFromActionBar(false)
-      navigate(nextStepUrl)
-      if (mode === OFFER_WIZARD_MODE.EDITION) {
-        notify.success(getSuccessMessage(mode))
-      }
-    }
-
-    setAfterSubmitUrl(nextStepUrl)
-    const hasSavedStock = formik.values.stockId !== undefined
-    if (hasSavedStock && !formik.dirty) {
-      navigate(nextStepUrl)
-      setIsClickingFromActionBar(false)
-    }
-  }
 
   useEffect(() => {
     if (!formik.isValid) {
@@ -446,7 +444,6 @@ const StocksThing = ({ offer }: StocksThingProps): JSX.Element => {
 
             <ActionBar
               onClickPrevious={handlePreviousStep}
-              onClickNext={handleNextStep}
               step={OFFER_WIZARD_STEP_IDS.STOCKS}
               isDisabled={formik.isSubmitting || isDisabled}
               submitAsButton={isFormEmpty()}
