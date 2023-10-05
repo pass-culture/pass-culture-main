@@ -26,7 +26,9 @@ describe('setFormReadOnlyFields', () => {
         status,
       } as IndividualOffer
       const readOnlyFields = setFormReadOnlyFields(offer)
-      expect(readOnlyFields).toStrictEqual(Object.keys(FORM_DEFAULT_VALUES))
+      expect(readOnlyFields.sort()).toStrictEqual(
+        Object.keys(FORM_DEFAULT_VALUES).sort()
+      )
     }
   )
   const blockedStatus = [
@@ -63,7 +65,7 @@ describe('setFormReadOnlyFields', () => {
       },
     } as IndividualOffer
     const readOnlyFields = setFormReadOnlyFields(offer)
-    expect(readOnlyFields).toStrictEqual(expectedReadOnlyFields)
+    expect(readOnlyFields.sort()).toStrictEqual(expectedReadOnlyFields.sort())
   })
 
   it('should allow edition of "accessibility" and "externalTicketOfficeUrl" for other sychronised offers', () => {
@@ -77,6 +79,6 @@ describe('setFormReadOnlyFields', () => {
       },
     } as IndividualOffer
     const readOnlyFields = setFormReadOnlyFields(offer)
-    expect(readOnlyFields).toStrictEqual(expectedReadOnlyFields)
+    expect(readOnlyFields.sort()).toStrictEqual(expectedReadOnlyFields.sort())
   })
 })

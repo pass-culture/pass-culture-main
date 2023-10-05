@@ -8,11 +8,24 @@ import { isAllocineProvider } from 'core/Providers'
 
 import { FORM_DEFAULT_VALUES } from '../constants'
 
+const setFormReadOnlyFieldsForSynchronizedOffer = (
+  offer: IndividualOffer
+): string[] => {
+  const editableFields: string[] = ['accessibility', 'externalTicketOfficeUrl']
+  if (isAllocineProvider(offer.lastProvider)) {
+    editableFields.push('isDuo')
+  }
+
+  return Object.keys(FORM_DEFAULT_VALUES).filter(
+    (field: string) => !editableFields.includes(field)
+  )
+}
+
 const setFormReadOnlyFields = (
   offer: IndividualOffer | null,
   isAdmin?: boolean
 ): string[] => {
-  let readOnlyField: string[] = []
+  const readOnlyField: string[] = []
 
   if (isAdmin === true) {
     readOnlyField.push('offererId')
@@ -23,29 +36,14 @@ const setFormReadOnlyFields = (
   }
 
   if ([OFFER_STATUS_REJECTED, OFFER_STATUS_PENDING].includes(offer.status)) {
-    readOnlyField = [...readOnlyField, ...Object.keys(FORM_DEFAULT_VALUES)]
+    return Object.keys(FORM_DEFAULT_VALUES)
   }
 
   if (isOfferSynchronized(offer)) {
-    let editableFields: string[] = []
-    if (isAllocineProvider(offer.lastProvider)) {
-      editableFields = ['isDuo', 'accessibility', 'externalTicketOfficeUrl']
-    } else {
-      editableFields = ['accessibility', 'externalTicketOfficeUrl']
-    }
-    readOnlyField = [
-      ...readOnlyField,
-      ...Object.keys(FORM_DEFAULT_VALUES).filter(
-        (field: string) => !editableFields.includes(field)
-      ),
-    ]
-  } else {
-    readOnlyField = [
-      ...readOnlyField,
-      ...['categoryId', 'subcategoryId', 'offererId', 'venueId'],
-    ]
+    return setFormReadOnlyFieldsForSynchronizedOffer(offer)
   }
 
+  readOnlyField.push('categoryId', 'subcategoryId', 'offererId', 'venueId')
   return [...new Set(readOnlyField)]
 }
 
