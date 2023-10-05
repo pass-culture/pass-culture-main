@@ -70,12 +70,72 @@
 
     &:disabled {
       box-shadow: inset 0 0 0 rem.torem(2px) colors.$white;
-      background-color: forms.$input-border-color-disabled;
+      border-color: forms.$input-border-color-disabled;
+      background: radial-gradient(
+        forms.$input-border-color-disabled 0%,
+        forms.$input-border-color-disabled 40%,
+        transparent 50%,
+        transparent
+      );
     }
 
     &.has-error {
       box-shadow: inset 0 0 0 rem.torem(2px) colors.$white;
-      background-color: forms.$input-border-color-error;
+      border-color: forms.$input-border-color-error;
+      background: radial-gradient(
+        forms.$input-border-color-error 0%,
+        forms.$input-border-color-error 40%,
+        transparent 50%,
+        transparent
+      );
+    }
+  }
+}
+
+.base-radio-secondary-input {
+  &:hover,
+  &:focus-visible {
+    border-color: forms.$input-border-color-focus;
+  }
+
+  &:disabled {
+    cursor: default;
+    border-color: forms.$input-border-color-disabled;
+  }
+
+  &.has-error {
+    border-color: forms.$input-border-color-error;
+  }
+
+  &:checked {
+    border-color: colors.$tertiary;
+    background: radial-gradient(
+      colors.$tertiary 0%,
+      colors.$tertiary 40%,
+      transparent 50%,
+      transparent
+    );
+
+    &:disabled {
+      box-shadow: inset 0 0 0 rem.torem(2px) colors.$white;
+      border-color: forms.$input-border-color-disabled;
+      background: radial-gradient(
+        forms.$input-border-color-disabled 0%,
+        forms.$input-border-color-disabled 40%,
+        transparent 50%,
+        transparent
+      );
+    }
+
+    &.has-error {
+      box-shadow: inset 0 0 0 rem.torem(2px) colors.$white;
+      border-color: forms.$input-border-color-error;
+      background: radial-gradient(
+        forms.$input-border-color-error 0%,
+        forms.$input-border-color-error 40%,
+        transparent 50%,
+        transparent
+      );
     }
   }
 }
@@ -92,36 +152,6 @@
   &-checked {
     border: rem.torem(1px) solid colors.$primary;
     color: colors.$primary;
-  }
-}
-
-.base-radio-secondary-input {
-  border: rem.torem(2px) solid colors.$grey-dark;
-  width: rem.torem(16px);
-  height: rem.torem(16px);
-
-  &:checked,
-  &:hover:checked,
-  &:focus-visible:checked {
-    border-color: colors.$tertiary;
-    background: radial-gradient(
-      colors.$tertiary 0%,
-      colors.$tertiary 40%,
-      transparent 50%,
-      transparent
-    );
-  }
-
-  &:hover:not(:checked, :disabled),
-  &:focus-visible:not(:checked, :disabled),
-  &:hover,
-  &:focus-visible {
-    border-color: colors.$grey-dark;
-  }
-
-  &:checked:disabled {
-    box-shadow: inset 0 0 0 rem.torem(2px) colors.$white;
-    background-color: transparent;
   }
 }
 
