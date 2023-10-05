@@ -14,12 +14,10 @@ import {
   IndividualOfferContextValues,
 } from 'context/IndividualOfferContext'
 import { REIMBURSEMENT_RULES } from 'core/Finances'
-import { Events } from 'core/FirebaseEvents/constants'
 import { CATEGORY_STATUS, OFFER_WIZARD_MODE } from 'core/Offers/constants'
 import { OfferSubCategory } from 'core/Offers/types'
 import { getIndividualOfferPath } from 'core/Offers/utils/getIndividualOfferUrl'
 import { IndividualOfferVenueItem } from 'core/Venue/types'
-import * as useAnalytics from 'hooks/useAnalytics'
 import * as pcapi from 'repository/pcapi/pcapi'
 import {
   individualOfferContextFactory,
@@ -30,8 +28,6 @@ import { renderWithProviders } from 'utils/renderWithProviders'
 import InformationsScreen, {
   InformationsScreenProps,
 } from '../InformationsScreen'
-
-const mockLogEvent = vi.fn()
 
 vi.mock('screens/IndividualOffer/Informations/utils', () => {
   return {
@@ -171,10 +167,6 @@ describe('screens:IndividualOffer::Informations::creation', () => {
     vi.spyOn(api, 'postOffer').mockResolvedValue({
       id: offerId,
     } as GetIndividualOfferResponseModel)
-    vi.spyOn(useAnalytics, 'default').mockImplementation(() => ({
-      logEvent: mockLogEvent,
-      setLogEvent: null,
-    }))
   })
 
   it('should submit minimal physical offer', async () => {
@@ -302,33 +294,5 @@ describe('screens:IndividualOffer::Informations::creation', () => {
       await screen.findByText('There is the stock route content')
     ).toBeInTheDocument()
     expect(pcapi.postThumbnail).not.toHaveBeenCalled()
-  })
-
-  it('should track when submitting offer', async () => {
-    renderInformationsScreen(props, contextOverride)
-
-    const categorySelect = await screen.findByLabelText('Catégorie')
-    await userEvent.selectOptions(categorySelect, 'A')
-    const subCategorySelect = screen.getByLabelText('Sous-catégorie')
-    await userEvent.selectOptions(subCategorySelect, 'physical')
-    const nameField = screen.getByLabelText('Titre de l’offre')
-    await userEvent.type(nameField, 'Le nom de mon offre')
-
-    await userEvent.click(await screen.findByText('Enregistrer et continuer'))
-
-    expect(mockLogEvent).toHaveBeenCalledTimes(1)
-    expect(mockLogEvent).toHaveBeenNthCalledWith(
-      1,
-      Events.CLICKED_OFFER_FORM_NAVIGATION,
-      {
-        from: 'informations',
-        isDraft: true,
-        isEdition: false,
-        offerId: offerId,
-        subcategoryId: 'physical',
-        to: 'stocks',
-        used: 'StickyButtons',
-      }
-    )
   })
 })

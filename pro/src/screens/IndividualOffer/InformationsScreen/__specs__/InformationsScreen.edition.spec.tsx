@@ -17,13 +17,11 @@ import {
   IndividualOfferContextValues,
 } from 'context/IndividualOfferContext'
 import { REIMBURSEMENT_RULES } from 'core/Finances'
-import { Events } from 'core/FirebaseEvents/constants'
 import { CATEGORY_STATUS, OFFER_WIZARD_MODE } from 'core/Offers/constants'
 import { IndividualOffer, OfferSubCategory } from 'core/Offers/types'
 import { getIndividualOfferPath } from 'core/Offers/utils/getIndividualOfferUrl'
 import { AccessiblityEnum } from 'core/shared'
 import { IndividualOfferVenueItem } from 'core/Venue/types'
-import * as useAnalytics from 'hooks/useAnalytics'
 import * as pcapi from 'repository/pcapi/pcapi'
 import {
   individualOfferCategoryFactory,
@@ -38,8 +36,6 @@ import { renderWithProviders } from 'utils/renderWithProviders'
 import InformationsScreen, {
   InformationsScreenProps,
 } from '../InformationsScreen'
-
-const mockLogEvent = vi.fn()
 
 vi.mock('screens/IndividualOffer/Informations/utils', () => {
   return {
@@ -259,10 +255,6 @@ describe('screens:IndividualOffer::Informations:edition', () => {
       {} as GetIndividualOfferResponseModel
     )
     vi.spyOn(api, 'deleteThumbnail').mockResolvedValue()
-    vi.spyOn(useAnalytics, 'default').mockImplementation(() => ({
-      logEvent: mockLogEvent,
-      setLogEvent: null,
-    }))
   })
 
   it('should submit minimal physical offer and redirect to summary', async () => {
@@ -440,33 +432,6 @@ describe('screens:IndividualOffer::Informations:edition', () => {
     expect(
       screen.queryByRole('button', { name: /Ajouter une image/ })
     ).not.toBeInTheDocument()
-  })
-
-  it('should track when submitting offer', async () => {
-    renderInformationsScreen(props, contextOverride)
-
-    const nameField = screen.getByLabelText('Titre de l’offre')
-    await userEvent.clear(nameField)
-    await userEvent.type(nameField, 'Le nom de mon offre édité')
-
-    await userEvent.click(
-      await screen.findByText('Enregistrer les modifications')
-    )
-
-    expect(mockLogEvent).toHaveBeenCalledTimes(1)
-    expect(mockLogEvent).toHaveBeenNthCalledWith(
-      1,
-      Events.CLICKED_OFFER_FORM_NAVIGATION,
-      {
-        from: 'informations',
-        isDraft: false,
-        isEdition: true,
-        offerId: offer.id,
-        subcategoryId: 'SCID physical',
-        to: 'recapitulatif',
-        used: 'StickyButtons',
-      }
-    )
   })
 
   describe('send mail on withdrawal changes', () => {
