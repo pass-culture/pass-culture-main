@@ -186,7 +186,6 @@ const OfferEducationalForm = ({
           />
           <FormParticipants
             disableForm={mode === Mode.READ_ONLY}
-            offerStock={isCollectiveOffer(offer) ? offer.collectiveStock : null}
             isTemplate={isTemplate}
           />
           <FormAccessibility disableForm={mode === Mode.READ_ONLY} />
