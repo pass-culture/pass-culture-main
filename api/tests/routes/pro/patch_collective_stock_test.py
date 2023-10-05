@@ -8,7 +8,6 @@ import pcapi.core.educational.factories as educational_factories
 from pcapi.core.educational.models import CollectiveBooking
 from pcapi.core.educational.models import CollectiveBookingStatus
 from pcapi.core.educational.models import CollectiveStock
-from pcapi.core.educational.models import StudentLevels
 import pcapi.core.educational.testing as adage_api_testing
 import pcapi.core.offerers.factories as offerers_factories
 import pcapi.core.providers.factories as providers_factories
@@ -104,32 +103,6 @@ class Return200Test:
             "isEducationalStockEditable": True,
             "educationalPriceDetail": "Détail du prix",
         }
-
-    def test_edit_collective_stock_6_5_too_early(self, client):
-        # Given
-        stock = educational_factories.CollectiveStockFactory(
-            beginningDatetime=datetime(2024, 1, 1),
-            collectiveOffer__students=[StudentLevels.COLLEGE5, StudentLevels.COLLEGE6, StudentLevels.COLLEGE4],
-        )
-        offerers_factories.UserOffererFactory(
-            user__email="user@example.com",
-            offerer=stock.collectiveOffer.venue.managingOfferer,
-        )
-
-        # When
-        stock_edition_payload = {
-            "beginningDatetime": "2021-12-18T00:00:00Z",
-            "bookingLimitDatetime": "2021-11-18T00:00:00Z",
-        }
-
-        client.with_session_auth("user@example.com")
-        response = client.patch(f"/collective/stocks/{stock.id}", json=stock_edition_payload)
-
-        # Then
-        assert response.status_code == 200
-        edited_stock = CollectiveStock.query.get(stock.id)
-        assert edited_stock.beginningDatetime == datetime(2021, 12, 18, 00)
-        assert edited_stock.collectiveOffer.students == [StudentLevels.COLLEGE4]
 
     def test_edit_collective_stock_partially(self, client):
         # Given
@@ -319,29 +292,6 @@ class Return403Test:
         # Then
         assert response.status_code == 403
         assert response.json == {"global": ["Les stocks créés par l'api publique ne sont pas editables."]}
-
-    def test_edit_collective_stock_6_5_only_too_early(self, client):
-        # Given
-        stock = educational_factories.CollectiveStockFactory(
-            beginningDatetime=datetime(2024, 1, 1),
-            collectiveOffer__students=[StudentLevels.COLLEGE5, StudentLevels.COLLEGE6],
-        )
-        offerers_factories.UserOffererFactory(
-            user__email="user@example.com",
-            offerer=stock.collectiveOffer.venue.managingOfferer,
-        )
-
-        # When
-        stock_edition_payload = {
-            "beginningDatetime": "2021-12-18T00:00:00Z",
-            "bookingLimitDatetime": "2021-11-18T00:00:00Z",
-        }
-
-        client.with_session_auth("user@example.com")
-        response = client.patch(f"/collective/stocks/{stock.id}", json=stock_edition_payload)
-
-        # Then
-        assert response.status_code == 403
 
 
 @freeze_time("2020-11-17 15:00:00")

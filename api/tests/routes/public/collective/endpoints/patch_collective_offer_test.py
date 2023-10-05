@@ -11,7 +11,6 @@ from pcapi.core.educational import factories as educational_factories
 from pcapi.core.educational import models as educational_models
 from pcapi.core.offerers import factories as offerers_factories
 from pcapi.core.providers import factories as provider_factories
-from pcapi.core.testing import override_features
 from pcapi.models.offer_mixin import OfferValidationStatus
 
 import tests
@@ -152,7 +151,6 @@ class CollectiveOffersPublicPatchOfferTest:
         # Then
         assert response.status_code == 403
 
-    @override_features(WIP_ADD_CLG_6_5_COLLECTIVE_OFFER=True)
     def test_patch_offer_6_5_only_too_early(self, client):
         # Given
         venue_provider = provider_factories.VenueProviderFactory()
