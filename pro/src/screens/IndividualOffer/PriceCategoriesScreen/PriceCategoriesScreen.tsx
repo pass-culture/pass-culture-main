@@ -170,6 +170,32 @@ export const PriceCategoriesScreen = ({
   )?.canBeDuo
 
   const onSubmitWithCallback = async (values: PriceCategoriesFormValues) => {
+    setIsClickingFromActionBar(true)
+
+    const isFormEmpty = formik.values === formik.initialValues
+
+    // When saving draft with an empty form
+    /* istanbul ignore next: DEBT, TO FIX when we have notification*/
+    if (mode === OFFER_WIZARD_MODE.EDITION && isFormEmpty) {
+      setIsClickingFromActionBar(false)
+      navigate(
+        getIndividualOfferUrl({
+          offerId: offer.id,
+          step: OFFER_WIZARD_STEP_IDS.SUMMARY,
+          mode:
+            mode === OFFER_WIZARD_MODE.EDITION
+              ? OFFER_WIZARD_MODE.READ_ONLY
+              : mode,
+        })
+      )
+      notify.success(getSuccessMessage(OFFER_WIZARD_MODE.EDITION))
+    }
+
+    /* istanbul ignore next: DEBT, TO FIX */
+    if (Object.keys(formik.errors).length !== 0) {
+      setIsClickingFromActionBar(false)
+    }
+
     const newPopinType = getPopinType(
       offer.stocks,
       formik.initialValues,
@@ -182,16 +208,13 @@ export const PriceCategoriesScreen = ({
 
     try {
       await onSubmit(values, offer, setOffer, formik.resetForm)
-      afterSubmitCallback()
-      setPopinType(null)
     } catch (error) {
       if (error instanceof Error) {
         notify.error(error?.message)
       }
+      return
     }
-  }
 
-  const afterSubmitCallback = () => {
     const afterSubmitUrl = getIndividualOfferUrl({
       offerId: offer.id,
       step:
@@ -205,6 +228,7 @@ export const PriceCategoriesScreen = ({
     if (mode === OFFER_WIZARD_MODE.EDITION) {
       notify.success(getSuccessMessage(mode))
     }
+    setPopinType(null)
   }
 
   const initialValues = computeInitialValues(offer)
@@ -231,34 +255,6 @@ export const PriceCategoriesScreen = ({
             mode,
           })
         )
-  }
-
-  const handleNextStep = async () => {
-    setIsClickingFromActionBar(true)
-
-    const isFormEmpty = formik.values === formik.initialValues
-
-    // When saving draft with an empty form
-    /* istanbul ignore next: DEBT, TO FIX when we have notification*/
-    if (mode === OFFER_WIZARD_MODE.EDITION && isFormEmpty) {
-      setIsClickingFromActionBar(false)
-      navigate(
-        getIndividualOfferUrl({
-          offerId: offer.id,
-          step: OFFER_WIZARD_STEP_IDS.SUMMARY,
-          mode:
-            mode === OFFER_WIZARD_MODE.EDITION
-              ? OFFER_WIZARD_MODE.READ_ONLY
-              : mode,
-        })
-      )
-      notify.success(getSuccessMessage(OFFER_WIZARD_MODE.EDITION))
-    }
-
-    /* istanbul ignore next: DEBT, TO FIX */
-    if (Object.keys(formik.errors).length !== 0) {
-      setIsClickingFromActionBar(false)
-    }
   }
 
   return (
