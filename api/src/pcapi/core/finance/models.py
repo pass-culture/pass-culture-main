@@ -908,6 +908,8 @@ class FinanceIncident(Base, Model):
         sqla_mutable.MutableDict.as_mutable(sqla_psql.JSONB), nullable=False, default={}, server_default="{}"
     )
 
+    forceDebitNote: bool = sqla.Column(sqla.Boolean, nullable=False, server_default="false", default=False)
+
     @property
     def relates_to_collective_bookings(self) -> bool:
         return any(booking_incident.collectiveBooking for booking_incident in self.booking_finance_incidents)

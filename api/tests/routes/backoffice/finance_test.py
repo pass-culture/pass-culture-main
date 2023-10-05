@@ -18,6 +18,7 @@ from pcapi.core.testing import assert_num_queries
 from pcapi.routes.backoffice import filters
 from pcapi.routes.backoffice.filters import format_booking_status
 from pcapi.routes.backoffice.filters import format_date_time
+from pcapi.routes.backoffice.finance import forms as finance_forms
 from pcapi.routes.backoffice.finance.blueprint import _cancel_finance_incident
 from pcapi.routes.backoffice.finance.blueprint import _create_finance_events_from_incident
 
@@ -155,7 +156,8 @@ class ValidateIncidentTest(PostEndpointHelper):
     endpoint_kwargs = {"finance_incident_id": 1}
     needed_permission = perm_models.Permissions.MANAGE_INCIDENTS
 
-    def test_validate_incident(self, authenticated_client):
+    @pytest.mark.parametrize("force_debit_note", [True, False])
+    def test_validate_incident(self, authenticated_client, force_debit_note):
         booking_incident = finance_factories.IndividualBookingFinanceIncidentFactory(
             booking__pricings=[
                 finance_factories.PricingFactory(status=finance_models.PricingStatus.INVOICED, amount=-1000)
@@ -164,7 +166,15 @@ class ValidateIncidentTest(PostEndpointHelper):
             newTotalAmount=0,
         )
 
-        response = self.post_to_endpoint(authenticated_client, finance_incident_id=booking_incident.incident.id)
+        response = self.post_to_endpoint(
+            authenticated_client,
+            finance_incident_id=booking_incident.incident.id,
+            form={
+                "compensation_mode": finance_forms.IncidentCompensationModes.FORCE_DEBIT_NOTE.name
+                if force_debit_note
+                else finance_forms.IncidentCompensationModes.COMPENSATE_ON_BOOKINGS.name
+            },
+        )
 
         assert response.status_code == 200
 
@@ -173,6 +183,7 @@ class ValidateIncidentTest(PostEndpointHelper):
 
         updated_incident = finance_models.FinanceIncident.query.get(booking_incident.incidentId)
         assert updated_incident.status == finance_models.IncidentStatus.VALIDATED
+        assert updated_incident.forceDebitNote == force_debit_note
 
         beneficiary_action = history_models.ActionHistory.query.filter(
             history_models.ActionHistory.user == booking_incident.beneficiary
@@ -181,9 +192,11 @@ class ValidateIncidentTest(PostEndpointHelper):
             history_models.ActionHistory.financeIncident == updated_incident
         ).first()
 
-        assert (
-            validation_action and validation_action.actionType == history_models.ActionType.FINANCE_INCIDENT_VALIDATED
-        )
+        assert validation_action
+        assert validation_action.actionType == history_models.ActionType.FINANCE_INCIDENT_VALIDATED
+        if force_debit_note:
+            assert validation_action.comment == "Génération d'une note de débit à la prochaine échéance."
+
         assert (
             beneficiary_action
             and beneficiary_action.actionType == history_models.ActionType.FINANCE_INCIDENT_USER_RECREDIT
@@ -199,7 +212,11 @@ class ValidateIncidentTest(PostEndpointHelper):
     def test_not_validate_incident(self, authenticated_client, initial_status):
         finance_incident = finance_factories.FinanceIncidentFactory(status=initial_status)
 
-        response = self.post_to_endpoint(authenticated_client, finance_incident_id=finance_incident.id)
+        response = self.post_to_endpoint(
+            authenticated_client,
+            finance_incident_id=finance_incident.id,
+            form={"compensation_mode": finance_forms.IncidentCompensationModes.COMPENSATE_ON_BOOKINGS.name},
+        )
 
         assert response.status_code == 303
         assert (
