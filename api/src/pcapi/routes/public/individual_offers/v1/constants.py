@@ -11,6 +11,7 @@ EVENT_OFFER_DATES_TAG = "Event offer dates"
 PRODUCT_OFFER_TAG = "Product offer"
 PRODUCT_EAN_OFFER_TAG = "Bulk product offer operation"
 OFFERER_VENUES_TAG = "Offerer and Venues"
+OFFER_ATTRIBUTES = "Offer attributes"
 
 # Booking API tags
 BOOKING_TAG = "Booking"
