@@ -129,6 +129,7 @@ class FeatureToggle(enum.Enum):
     WIP_ENABLE_MOCK_UBBLE = "Utiliser le mock Ubble à la place du vrai Ubble"
     WIP_PRO_STOCK_PAGINATION = "Active la pagination pour les stocks"
     WIP_ENABLE_BOOST_SHOWTIMES_FILTER = "Activer le filtre pour les requêtes showtimes Boost"
+    WIP_ENABLE_DATES_OFFER_TEMPLATE = "Active la possibilité d'ajouter des dates pour les offres vitrines"
 
     def is_active(self) -> bool:
         if flask.has_request_context():
@@ -205,6 +206,7 @@ FEATURES_DISABLED_BY_DEFAULT: tuple[FeatureToggle, ...] = (
     FeatureToggle.WIP_OFFER_TO_INSTITUTION,
     FeatureToggle.WIP_PRO_STOCK_PAGINATION,
     FeatureToggle.WIP_ENABLE_BOOST_SHOWTIMES_FILTER,
+    FeatureToggle.WIP_ENABLE_DATES_OFFER_TEMPLATE,
 )
 
 if settings.IS_PROD or settings.IS_STAGING:
