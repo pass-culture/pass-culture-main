@@ -35,15 +35,17 @@ import useNotifyFormError from '../hooks/useNotifyFormError'
 import { RecurrenceForm } from '../StocksEventCreation/RecurrenceForm'
 import { getSuccessMessage } from '../utils/getSuccessMessage'
 
-import { serializeStockEventEdition } from './adapters/serializers'
-import upsertStocksEventAdapter from './adapters/upsertStocksEventAdapter'
 import { EventCancellationBanner } from './EventCancellationBanner'
 import { STOCK_EVENT_FORM_DEFAULT_VALUES } from './StockFormList/constants'
 import StockFormList from './StockFormList/StockFormList'
-import { StockEventFormValues } from './StockFormList/types'
+import {
+  StockEventFormValues,
+  StocksEventFormValues,
+} from './StockFormList/types'
 import { buildInitialValues } from './StockFormList/utils'
 import { getValidationSchema } from './StockFormList/validationSchema'
 import styles from './StocksEventEdition.module.scss'
+import { submitToApi } from './submitToApi'
 
 export const hasChangesOnStockWithBookings = (
   submittedStocks: StockEventFormValues[],
@@ -133,17 +135,6 @@ const StocksEventEdition = ({
   offer,
 }: StocksEventEditionProps): JSX.Element => {
   const mode = useOfferWizardMode()
-  const [afterSubmitUrl, setAfterSubmitUrl] = useState<string>(
-    getIndividualOfferUrl({
-      offerId: offer.id,
-      step:
-        mode === OFFER_WIZARD_MODE.EDITION
-          ? OFFER_WIZARD_STEP_IDS.STOCKS
-          : OFFER_WIZARD_STEP_IDS.SUMMARY,
-      mode:
-        mode === OFFER_WIZARD_MODE.EDITION ? OFFER_WIZARD_MODE.READ_ONLY : mode,
-    })
-  )
   const navigate = useNavigate()
   const notify = useNotification()
   const { setOffer } = useIndividualOfferContext()
@@ -208,7 +199,7 @@ const StocksEventEdition = ({
   // We use a ref to prevent re-renreders and we forward it to the StockFormList component
   const hiddenStocksRef = useRef<StockEventFormValues[]>([])
 
-  const onSubmit = async (formValues: { stocks: StockEventFormValues[] }) => {
+  const onSubmit = async (values: StocksEventFormValues) => {
     const nextStepUrl = getIndividualOfferUrl({
       offerId: offer.id,
       step:
@@ -219,78 +210,64 @@ const StocksEventEdition = ({
         mode === OFFER_WIZARD_MODE.EDITION ? OFFER_WIZARD_MODE.READ_ONLY : mode,
     })
 
-    // When saving draft with an empty form
-    // we display a success notification even if nothing is done
-    const allStockValues = [...formik.values.stocks, ...hiddenStocksRef.current]
+    // Return when saving in edition with an empty form
+    const allStockValues = [...values.stocks, ...hiddenStocksRef.current]
     const isFormEmpty = allStockValues.every(val =>
       isEqual(val, STOCK_EVENT_FORM_DEFAULT_VALUES)
     )
     if (isFormEmpty) {
       navigate(nextStepUrl)
       notify.success(getSuccessMessage(mode))
+      return
     }
-    // tested but coverage don't see it.
-    /* istanbul ignore next */
-    setAfterSubmitUrl(nextStepUrl)
 
-    const hasSavedStock = allStockValues.some(
+    // Return when there is nothing to save
+    const hasUnsavedStocks = allStockValues.some(
       stock => stock.stockId !== undefined
     )
-
-    /* istanbul ignore next: DEBT, TO FIX */
-    if (hasSavedStock && !formik.dirty) {
+    if (hasUnsavedStocks && !formik.dirty) {
       navigate(nextStepUrl)
       notify.success(getSuccessMessage(mode))
+      return
     }
 
-    const allStocks = [...formValues.stocks, ...hiddenStocksRef.current]
+    // Show modal if relevant
     const changesOnStockWithBookings = hasChangesOnStockWithBookings(
-      allStocks,
+      allStockValues,
       formik.initialValues.stocks
     )
-
     if (!showStocksEventConfirmModal && changesOnStockWithBookings) {
       setShowStocksEventConfirmModal(true)
       return
-    } else {
-      setShowStocksEventConfirmModal(false)
     }
 
-    if (allStocks.length > MAX_STOCKS_PER_OFFER) {
+    // Error if max number of stocks
+    if (allStockValues.length > MAX_STOCKS_PER_OFFER) {
       notify.error(
         `Veuillez créer moins de ${MAX_STOCKS_PER_OFFER} occurrences par offre.`
       )
       return
     }
 
-    const { isOk, payload } = await upsertStocksEventAdapter({
-      offerId: offer.id,
-      stocks: serializeStockEventEdition(allStocks, offer.venue.departmentCode),
-    })
-
-    /* istanbul ignore next: DEBT, TO FIX */
-    if (isOk) {
-      const response = await getIndividualOfferAdapter(offer.id)
-      if (response.isOk) {
-        const updatedOffer = response.payload
-        setOffer && setOffer(updatedOffer)
-        formik.resetForm({
-          values: buildInitialValues({
-            departmentCode: updatedOffer.venue.departmentCode,
-            offerStocks: updatedOffer.stocks,
-            today,
-            lastProviderName: updatedOffer.lastProviderName,
-            offerStatus: updatedOffer.status,
-            priceCategoriesOptions,
-          }),
-        })
+    // Submit
+    try {
+      await submitToApi(
+        allStockValues,
+        offer,
+        setOffer,
+        formik.resetForm,
+        formik.setErrors
+      )
+    } catch (error) {
+      if (error instanceof Error) {
+        notify.error(error?.message)
       }
-      navigate(afterSubmitUrl)
-      notify.success(getSuccessMessage(mode))
-    } else {
-      /* istanbul ignore next: DEBT, TO FIX */
-      formik.setErrors({ stocks: payload.errors })
+      return
     }
+
+    navigate(nextStepUrl)
+    notify.success(getSuccessMessage(mode))
+    setShowStocksEventConfirmModal(false)
   }
 
   const onDeleteStock = async (
@@ -354,7 +331,7 @@ const StocksEventEdition = ({
     priceCategoriesOptions,
   })
 
-  const formik = useFormik<{ stocks: StockEventFormValues[] }>({
+  const formik = useFormik<StocksEventFormValues>({
     initialValues,
     onSubmit,
     validationSchema: getValidationSchema(priceCategoriesOptions),
