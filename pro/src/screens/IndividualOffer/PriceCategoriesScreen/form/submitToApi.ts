@@ -35,7 +35,6 @@ export const submitToApi = async (
       offerId: offer.id,
       requestBody: serializePriceCategories(values),
     })
-
   if (!isPriceCategoriesOk) {
     throw new Error(priceCategoriesMessage)
   }
