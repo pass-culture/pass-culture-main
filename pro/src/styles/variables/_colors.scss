@@ -2,8 +2,10 @@
 $white: #fff;
 $grey-very-light: #ecf0f1;
 $grey-light: #f1f1f4;
+$grey: #cbcdd2;
 $grey-medium: #c7c7cc;
 $grey-dark: #696a6f;
+$grey-darker: #696a6f;
 $grey-semi-dark: #90949d;
 $grey-medium-shadow: rgb(103 104 107 / 16%);
 $black: #151515;
@@ -41,7 +43,7 @@ $booking-pending-status: $alert-color;
 $input-text-color: #161617;
 $input-text-color-semi-dark: #90949d;
 $light-lavender: #f6f1ff;
-$border-grey-color: #cbcdd2;
+$border-grey-color: $grey;
 $logo-purple: #7b1e82; // Maybe should be deleted
 
 $callout-default-border: $tertiary;
