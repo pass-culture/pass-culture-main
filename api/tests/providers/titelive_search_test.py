@@ -3,6 +3,7 @@ import datetime
 import html
 import pathlib
 import re
+from unittest.mock import patch
 
 import freezegun
 import pytest
@@ -165,7 +166,8 @@ class TiteliveSearchTest:
         assert stop_event.type == providers_models.LocalProviderEventType.SyncEnd
         assert start_event.type == providers_models.LocalProviderEventType.SyncStart
 
-    def test_titelive_sync_event_on_failure(self, requests_mock):
+    @patch("pcapi.connectors.notion.add_to_provider_error_database")
+    def test_titelive_sync_failure_event(self, mock_add_to_provider_error_database, requests_mock):
         self._configure_login_and_images(requests_mock)
         requests_mock.get("https://catsearch.epagine.fr/v1/search", exc=requests.exceptions.RequestException)
         titelive_epagine_provider = providers_repository.get_provider_by_name(
@@ -192,7 +194,14 @@ class TiteliveSearchTest:
             providers_models.LocalProviderEvent.type == providers_models.LocalProviderEventType.SyncEnd,
             providers_models.LocalProviderEvent.payload == titelive.TiteliveBase.MUSIC.value,
         )
-        assert end_sync_events_query.count() == 1
+        assert end_sync_events_query.count() == 1  # no new end sync event
+
+        error_sync_events_query = providers_models.LocalProviderEvent.query.filter(
+            providers_models.LocalProviderEvent.provider == titelive_epagine_provider,
+            providers_models.LocalProviderEvent.type == providers_models.LocalProviderEventType.SyncError,
+        )
+        assert error_sync_events_query.count() == 1
+        assert mock_add_to_provider_error_database.call_count == 1
 
     def test_sync_skips_products_already_synced_by_other_provider(self, requests_mock):
         self._configure_login_and_images(requests_mock)
