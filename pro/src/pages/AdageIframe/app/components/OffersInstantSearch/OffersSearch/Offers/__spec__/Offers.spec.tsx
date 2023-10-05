@@ -594,7 +594,7 @@ describe('offers', () => {
 
       // Then
       const errorMessage = await screen.findByText(
-        'Aucun résultat trouvé pour cette recherche.'
+        'Votre recherche semble trop ciblée... Réessayez en supprimant un ou plusieurs filtres.'
       )
       expect(errorMessage).toBeInTheDocument()
       const listItemsInOffer = screen.queryAllByTestId('offer-listitem')
@@ -616,7 +616,7 @@ describe('offers', () => {
 
       // Then
       const errorMessage = await screen.findByText(
-        'Aucun résultat trouvé pour cette recherche.'
+        'Votre recherche semble trop ciblée... Réessayez en supprimant un ou plusieurs filtres.'
       )
       expect(errorMessage).toBeInTheDocument()
       const listItemsInOffer = screen.queryAllByTestId('offer-listitem')
@@ -637,7 +637,7 @@ describe('offers', () => {
 
       // Then
       const errorMessage = await screen.findByText(
-        'Aucun résultat trouvé pour cette recherche.'
+        'Votre recherche semble trop ciblée... Réessayez en supprimant un ou plusieurs filtres.'
       )
       expect(errorMessage).toBeInTheDocument()
       const listItemsInOffer = screen.queryAllByTestId('offer-listitem')

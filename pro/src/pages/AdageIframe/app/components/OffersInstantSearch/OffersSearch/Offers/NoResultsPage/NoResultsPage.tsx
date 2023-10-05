@@ -1,44 +1,42 @@
-import './NoResultsPage.scss'
-import React, { useContext } from 'react'
+import React from 'react'
 
-import fullRefreshIcon from 'icons/full-refresh.svg'
-import strokeSearchIcon from 'icons/stroke-search.svg'
-import { FacetFiltersContext } from 'pages/AdageIframe/app/providers'
-import { Button } from 'ui-kit'
-import { ButtonVariant } from 'ui-kit/Button/types'
+import strokeNoResultIcon from 'icons/stroke-no-result.svg'
 import { SvgIcon } from 'ui-kit/SvgIcon/SvgIcon'
 
+import styles from './NoResultsPage.module.scss'
+
 interface NoResultsPageProps {
-  resetForm?: () => void
+  query?: string
 }
 
-export const NoResultsPage = ({
-  resetForm,
-}: NoResultsPageProps): JSX.Element => {
-  const { facetFilters } = useContext(FacetFiltersContext)
+export const NoResultsPage = ({ query }: NoResultsPageProps): JSX.Element => {
+  const noResultText = !query ? (
+    "Nous n'avons trouvé aucun résultat"
+  ) : (
+    <>
+      Nous n’avons trouvé aucun résultat pour :
+      <span className={styles['no-results-text-query-container']}>
+        “<span className={styles['no-results-text-query']}>{query}</span>”
+      </span>
+    </>
+  )
+
+  const noResultSuggestionText = !query
+    ? 'Votre recherche semble trop ciblée... Réessayez en supprimant un ou plusieurs filtres.'
+    : 'Vérifiez l’orthographe des termes, essayez d’autres mot-clés, ou modifiez les filtres pour trouver des résultats.'
 
   return (
-    <div className="no-results">
+    <div className={styles['no-results']}>
       <SvgIcon
-        src={strokeSearchIcon}
+        src={strokeNoResultIcon}
         alt=""
-        className="no-results-icon"
-        width="124"
+        className={styles['no-results-icon']}
+        width="156"
       />
-      <p className="no-results-text">
-        Aucun résultat trouvé pour cette recherche.
+      <p className={styles['no-results-text']}>{noResultText}</p>
+      <p className={styles['no-results-suggestion-text']}>
+        {noResultSuggestionText}
       </p>
-      {resetForm &&
-        facetFilters.length > 1 && ( // la longueur de facetFilters doit être > 1 car il y aura toujours [offer.isEducational:true] dans les facetFilters
-          <Button
-            icon={fullRefreshIcon}
-            className="no-results-button"
-            onClick={resetForm}
-            variant={ButtonVariant.SECONDARY}
-          >
-            Réinitialiser les filtres
-          </Button>
-        )}
     </div>
   )
 }

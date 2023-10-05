@@ -170,7 +170,6 @@ export const OffersSearch = ({
       </FormikContext.Provider>
       <div className="search-results">
         <Offers
-          resetForm={resetForm}
           logFiltersOnSearch={logFiltersOnSearch}
           submitCount={formik.submitCount}
           isBackToTopVisibile={!isOfferFiltersVisible}
