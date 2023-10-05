@@ -31,10 +31,11 @@ import FormNotifications from './FormNotifications'
 import FormOfferType from './FormOfferType'
 import FormParticipants from './FormParticipants'
 import FormPracticalInformation from './FormPracticalInformation'
+import FormPriceDetails from './FormPriceDetails/FormPriceDetails'
 import FormVenue from './FormVenue'
 import styles from './OfferEducationalForm.module.scss'
 
-type OfferEducationalFormProps = Omit<
+export type OfferEducationalFormProps = Omit<
   OfferEducationalProps,
   | 'offer'
   | 'setOffer'
@@ -142,7 +143,6 @@ const OfferEducationalForm = ({
     // eslint-disable-next-line @typescript-eslint/no-floating-promises
     onOffererChange(values.offererId)
   }, [])
-
   return (
     <FormLayout className={styles['educational-form']} small>
       {isCollectiveOffer(offer) && offer.isPublicApi && (
@@ -190,8 +190,10 @@ const OfferEducationalForm = ({
             currentOfferer={currentOfferer}
             venuesOptions={venuesOptions}
             disableForm={mode === Mode.READ_ONLY}
-            isTemplate={isTemplate}
           />
+          {isTemplate && (
+            <FormPriceDetails disableForm={mode === Mode.READ_ONLY} />
+          )}
           <FormParticipants
             disableForm={mode === Mode.READ_ONLY}
             isTemplate={isTemplate}

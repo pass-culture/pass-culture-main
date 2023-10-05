@@ -7,7 +7,6 @@ import { OfferEducationalFormValues } from 'core/OfferEducational'
 import {
   EVENT_ADDRESS_OTHER_ADDRESS_LABEL,
   INTERVENTION_AREA_LABEL,
-  PRICE_INFORMATION,
 } from 'screens/OfferEducational/constants/labels'
 import { offerVenueFactory, offererFactory } from 'utils/apiFactories'
 
@@ -42,7 +41,6 @@ describe('FormPracticalInformation', () => {
 
   beforeAll(() => {
     props = {
-      isTemplate: false,
       venuesOptions: [
         { label: 'VENUE_1', value: 'V1' },
         { label: 'VENUE_2', value: 'V2' },
@@ -79,27 +77,6 @@ describe('FormPracticalInformation', () => {
       'search-domains': '',
       'search-interventionArea': '',
     }
-  })
-
-  describe('price detail', () => {
-    it('should render price detail when offer is template', () => {
-      renderFormPracticalInformation(
-        { ...props, isTemplate: true },
-        initialValues
-      )
-
-      expect(
-        screen.getByLabelText(PRICE_INFORMATION, { exact: false })
-      ).toBeInTheDocument()
-    })
-
-    it('should not render price detail when offer is not template', () => {
-      renderFormPracticalInformation(props, initialValues)
-
-      expect(
-        screen.queryByLabelText(PRICE_INFORMATION, { exact: false })
-      ).not.toBeInTheDocument()
-    })
   })
 
   describe('eventAddress conditionnal render', () => {
