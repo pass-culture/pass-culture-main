@@ -55,7 +55,7 @@ describe('CollectiveOfferFromRequest', () => {
 
     vi.spyOn(api, 'getCollectiveOfferTemplate').mockResolvedValue({
       ...defaultCollectifOfferResponseModel,
-      dates: { end: '', start: '' },
+      dates: { end: new Date().toISOString(), start: new Date().toISOString() },
     })
     vi.spyOn(api, 'getCategories').mockResolvedValue({
       categories: [],

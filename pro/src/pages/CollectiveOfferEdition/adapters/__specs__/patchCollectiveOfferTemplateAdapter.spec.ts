@@ -51,6 +51,10 @@ describe('patchCollectiveOfferTemplateAdapter', () => {
         email: 'collectiveofferfactory+contact@example.com',
         notificationEmails: ['collectiveofferfactory+booking@example.com'],
         domains: [],
+        isTemplate: true,
+        begginningDate: '2021-09-01',
+        endingDate: '2021-09-30',
+        hour: '10:00',
       },
       initialValues: {
         category: 'PRATIQUE_ART',
@@ -78,6 +82,10 @@ describe('patchCollectiveOfferTemplateAdapter', () => {
         email: 'collectiveofferfactory+contact@example.com',
         notificationEmails: ['collectiveofferfactory+booking@example.com'],
         domains: [],
+        isTemplate: true,
+        begginningDate: '2021-09-01',
+        endingDate: '2021-09-30',
+        hour: '10:00',
       },
     }
   })

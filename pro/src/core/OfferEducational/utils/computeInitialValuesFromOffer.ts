@@ -1,8 +1,15 @@
+import { format } from 'date-fns'
+
 import {
   SubcategoryIdEnum,
   StudentLevels,
   GetEducationalOffererResponseModel,
 } from 'apiClient/v1'
+import {
+  FORMAT_HH_mm,
+  FORMAT_ISO_DATE_ONLY,
+  toDateStrippedOfTimezone,
+} from 'utils/date'
 
 import { DEFAULT_EAC_FORM_VALUES } from '../constants'
 import {
@@ -12,6 +19,7 @@ import {
   OfferEducationalFormValues,
   EducationalCategory,
   EducationalSubCategory,
+  isCollectiveOfferTemplate,
 } from '../types'
 
 import { buildStudentLevelsMapWithDefaultValue } from './buildStudentLevelsMapWithDefaultValue'
@@ -103,6 +111,7 @@ const getInitialVenueId = (
 export const computeInitialValuesFromOffer = (
   categories: EducationalCategories,
   offerers: GetEducationalOffererResponseModel[],
+  isTemplate: boolean,
   offer?: CollectiveOffer | CollectiveOfferTemplate,
   offererIdQueryParam?: string | null,
   venueIdQueryParam?: string | null
@@ -124,6 +133,7 @@ export const computeInitialValuesFromOffer = (
       ...DEFAULT_EAC_FORM_VALUES,
       offererId: initialOffererId,
       venueId: initialVenueId,
+      isTemplate,
     }
   }
 
@@ -184,5 +194,18 @@ export const computeInitialValuesFromOffer = (
     'search-domains': '',
     'search-interventionArea': '',
     nationalProgramId: offer.nationalProgram?.id?.toString() || '',
+    isTemplate: offer.isTemplate,
+    begginningDate:
+      isCollectiveOfferTemplate(offer) && offer.dates
+        ? format(new Date(offer.dates.start), FORMAT_ISO_DATE_ONLY)
+        : DEFAULT_EAC_FORM_VALUES.begginningDate,
+    endingDate:
+      isCollectiveOfferTemplate(offer) && offer.dates
+        ? format(new Date(offer.dates.end), FORMAT_ISO_DATE_ONLY)
+        : DEFAULT_EAC_FORM_VALUES.endingDate,
+    hour:
+      isCollectiveOfferTemplate(offer) && offer.dates
+        ? format(toDateStrippedOfTimezone(offer.dates.start), FORMAT_HH_mm)
+        : DEFAULT_EAC_FORM_VALUES.hour,
   }
 }

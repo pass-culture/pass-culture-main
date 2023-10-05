@@ -74,6 +74,7 @@ const OfferEducational = ({
   const baseInitialValues = computeInitialValuesFromOffer(
     categories,
     userOfferers,
+    isTemplate,
     offer,
     offererId,
     venueId

@@ -8,7 +8,20 @@ import { renderWithProviders } from 'utils/renderWithProviders'
 import OfferEducationalForm from '..'
 import { OfferEducationalFormProps } from '../OfferEducationalForm'
 
-const renderOfferEducationalForm = (props: OfferEducationalFormProps) => {
+const renderOfferEducationalForm = (
+  props: OfferEducationalFormProps,
+  features?: { list: { isActive: true; nameKey: string }[] }
+) => {
+  const storeOverrides = {
+    user: {
+      initialized: true,
+      currentUser: {
+        isAdmin: false,
+        email: 'email@example.com',
+      },
+    },
+    features: features,
+  }
   renderWithProviders(
     <Formik
       initialValues={{
@@ -19,7 +32,8 @@ const renderOfferEducationalForm = (props: OfferEducationalFormProps) => {
       onSubmit={() => {}}
     >
       <OfferEducationalForm {...props} />
-    </Formik>
+    </Formik>,
+    { storeOverrides }
   )
 }
 
@@ -47,5 +61,19 @@ describe('OfferEducationalForm', () => {
     expect(
       screen.queryByRole('heading', { name: 'Prix' })
     ).not.toBeInTheDocument()
+  })
+  it('should render dates if offer is template and dates for template ff is active', () => {
+    renderOfferEducationalForm(
+      {
+        ...defaultProps,
+        isTemplate: true,
+      },
+      {
+        list: [{ isActive: true, nameKey: 'WIP_ENABLE_DATES_OFFER_TEMPLATE' }],
+      }
+    )
+    expect(
+      screen.getByRole('heading', { name: 'Date et heure' })
+    ).toBeInTheDocument()
   })
 })

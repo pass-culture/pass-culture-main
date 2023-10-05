@@ -1,8 +1,12 @@
+import { addYears, isBefore } from 'date-fns'
 import { parsePhoneNumberFromString } from 'libphonenumber-js'
 import * as yup from 'yup'
 
 import { OfferAddressType } from 'apiClient/v1'
 import { MAX_DETAILS_LENGTH } from 'core/OfferEducational'
+import { toDateStrippedOfTimezone } from 'utils/date'
+
+const threeYearsFromNow = addYears(new Date(), 3)
 
 const isOneTrue = (values: Record<string, boolean>): boolean =>
   Object.values(values).includes(true)
@@ -132,4 +136,24 @@ export const validationSchema = yup.object().shape({
       then: (schema) => schema.required(),
     }),
   priceDetail: yup.string().max(MAX_DETAILS_LENGTH),
+  begginningDate: yup.string().when('isTemplate', {
+    is: true,
+    then: (schema) => schema.required('Veuillez renseigner une date de début'),
+  }),
+  endingDate: yup.string().when('isTemplate', {
+    is: true,
+    then: (schema) =>
+      schema
+        .required('Veuillez renseigner une date de fin')
+        .test(
+          'endDateNoTooFar',
+          'La date de fin que vous avez choisie est trop éloignée',
+          (endDate) => {
+            return isBefore(
+              toDateStrippedOfTimezone(endDate),
+              threeYearsFromNow
+            )
+          }
+        ),
+  }),
 })

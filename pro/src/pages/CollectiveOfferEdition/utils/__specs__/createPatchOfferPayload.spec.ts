@@ -3,7 +3,10 @@ import { OfferAddressType } from 'apiClient/v2'
 import { OfferEducationalFormValues } from 'core/OfferEducational'
 import { buildStudentLevelsMapWithDefaultValue } from 'core/OfferEducational/utils/buildStudentLevelsMapWithDefaultValue'
 
-import { createPatchOfferPayload } from '../createPatchOfferPayload'
+import {
+  createPatchOfferPayload,
+  createPatchOfferTemplatePayload,
+} from '../createPatchOfferPayload'
 
 describe('createPatchOfferPayload', () => {
   const offerId = '17'
@@ -37,6 +40,10 @@ describe('createPatchOfferPayload', () => {
     email: 'test@email.com',
     domains: [],
     interventionArea: ['2A'],
+    begginningDate: '2021-09-01',
+    endingDate: '2021-09-30',
+    hour: '10:00',
+    isTemplate: false,
   }
   const offer: OfferEducationalFormValues = {
     title: 'Test Offer update',
@@ -68,6 +75,10 @@ describe('createPatchOfferPayload', () => {
     domains: ['123'],
     interventionArea: ['2B'],
     nationalProgramId: '1',
+    begginningDate: '2021-09-01',
+    endingDate: '2021-09-30',
+    hour: '10:00',
+    isTemplate: false,
   }
 
   const patchOfferPayload: PatchCollectiveOfferBodyModel = {
@@ -95,7 +106,7 @@ describe('createPatchOfferPayload', () => {
   }
 
   it('should return the correct patch offer payload for a non-template offer', () => {
-    const payload = createPatchOfferPayload({ ...offer }, initialValues, false)
+    const payload = createPatchOfferPayload({ ...offer }, initialValues)
 
     expect(payload).toMatchObject({
       ...patchOfferPayload,
@@ -104,15 +115,26 @@ describe('createPatchOfferPayload', () => {
   })
 
   it('should return the correct patch offer payload for a template offer', () => {
-    const payload = createPatchOfferPayload(
-      { ...offer, priceDetail: '123' },
-      initialValues,
-      true
+    const payload = createPatchOfferTemplatePayload(
+      { ...offer, priceDetail: '123', isTemplate: true },
+      initialValues
     )
 
     expect(payload).toMatchObject({
       venueId: venueId.toString(),
       priceDetail: '123',
+    })
+  })
+  it('should return the correct patch offer payload for a template offer when dates are empty', () => {
+    const payload = createPatchOfferTemplatePayload(
+      { ...offer, priceDetail: '123', isTemplate: true, begginningDate: '' },
+      initialValues
+    )
+
+    expect(payload).toMatchObject({
+      venueId: venueId.toString(),
+      priceDetail: '123',
+      dates: undefined,
     })
   })
 })

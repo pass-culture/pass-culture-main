@@ -4,7 +4,7 @@ import {
   OfferEducationalFormValues,
 } from 'core/OfferEducational'
 
-import { createPatchOfferPayload } from '../utils/createPatchOfferPayload'
+import { createPatchOfferTemplatePayload } from '../utils/createPatchOfferPayload'
 
 export type Params = {
   offerId: number
@@ -25,7 +25,8 @@ export const patchCollectiveOfferTemplateAdapter: patchCollectiveOfferTemplateAd
       if (!offerId) {
         throw new Error('L’identifiant de l’offre n’est pas valide.')
       }
-      const payload = createPatchOfferPayload(offer, initialValues, true)
+      const payload = createPatchOfferTemplatePayload(offer, initialValues)
+
       const updatedOffer = await api.editCollectiveOfferTemplate(
         offerId,
         payload

@@ -1,11 +1,15 @@
 import isEqual from 'lodash.isequal'
 
-import { PatchCollectiveOfferBodyModel } from 'apiClient/v1'
+import {
+  PatchCollectiveOfferBodyModel,
+  PatchCollectiveOfferTemplateBodyModel,
+} from 'apiClient/v1'
 import {
   OfferEducationalFormValues,
   parseDuration,
   serializeParticipants,
 } from 'core/OfferEducational'
+import { serializeDates } from 'core/OfferEducational/utils/createOfferPayload'
 
 const serializer = {
   title: (
@@ -142,31 +146,67 @@ const templateSerializer = {
 
 export const createPatchOfferPayload = (
   offer: OfferEducationalFormValues,
-  initialValues: OfferEducationalFormValues,
-  isTemplate: boolean
+  initialValues: OfferEducationalFormValues
 ): PatchCollectiveOfferBodyModel => {
   let changedValues: PatchCollectiveOfferBodyModel = {}
 
   const offerKeys = Object.keys(offer) as (keyof OfferEducationalFormValues)[]
 
-  const offerSerializer = isTemplate ? templateSerializer : serializer
-
+  const keysToOmmit = ['imageUrl', 'imageCredit', 'isTemplate']
   offerKeys.forEach((key) => {
     if (
       !isEqual(offer[key], initialValues[key]) &&
       !key.startsWith('search-') &&
-      key !== 'imageUrl' &&
-      key !== 'imageCredit'
+      !keysToOmmit.includes(key)
     ) {
       // This is because startsWith eliminates the two keys that are not defined in the collectiveOfferSerializer
       // @ts-expect-error (7053) Element implicitly has an 'any' type because expression of type 'keyof IOfferEducationalFormValues' can't be used to index type
 
-      changedValues = offerSerializer[key](changedValues, offer)
+      changedValues = serializer[key](changedValues, offer)
     }
   })
   // We use this to patch field when user want to make it empty
   changedValues.contactPhone = offer.phone || null
   changedValues.nationalProgramId = Number(offer.nationalProgramId) || null
+
+  return changedValues
+}
+
+export const createPatchOfferTemplatePayload = (
+  offer: OfferEducationalFormValues,
+  initialValues: OfferEducationalFormValues
+): PatchCollectiveOfferTemplateBodyModel => {
+  const keysToOmmit = [
+    'imageUrl',
+    'imageCredit',
+    'begginningDate',
+    'endingDate',
+    'hour',
+    'isTemplate',
+  ]
+  let changedValues: PatchCollectiveOfferTemplateBodyModel = {}
+
+  const offerKeys = Object.keys(offer) as (keyof OfferEducationalFormValues)[]
+
+  offerKeys.forEach((key) => {
+    if (
+      !keysToOmmit.includes(key) &&
+      !isEqual(offer[key], initialValues[key]) &&
+      !key.startsWith('search-')
+    ) {
+      // This is because startsWith eliminates the two keys that are not defined in the collectiveOfferSerializer
+      // @ts-expect-error (7053) Element implicitly has an 'any' type because expression of type 'keyof IOfferEducationalFormValues' can't be used to index type
+
+      changedValues = templateSerializer[key](changedValues, offer)
+    }
+  })
+  // We use this to patch field when user want to make it empty
+  changedValues.contactPhone = offer.phone || null
+  changedValues.nationalProgramId = Number(offer.nationalProgramId) || null
+  changedValues.dates =
+    offer.begginningDate && offer.endingDate
+      ? serializeDates(offer.begginningDate, offer.endingDate, offer.hour)
+      : undefined
 
   return changedValues
 }
