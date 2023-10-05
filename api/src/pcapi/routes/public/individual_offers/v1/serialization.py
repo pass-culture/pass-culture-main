@@ -836,3 +836,12 @@ class ShowTypeResponse(serialization.ConfiguredBaseModel):
 
 class GetShowTypesResponse(serialization.ConfiguredBaseModel):
     __root__: list[ShowTypeResponse]
+
+
+class MusicTypeResponse(serialization.ConfiguredBaseModel):
+    id: MusicTypeEnum  # type: ignore [valid-type]
+    label: str
+
+
+class GetMusicTypesResponse(serialization.ConfiguredBaseModel):
+    __root__: list[MusicTypeResponse]
