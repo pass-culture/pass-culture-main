@@ -32,7 +32,6 @@ import { serializePatchOffer } from 'core/Offers/adapters/updateIndividualOffer/
 import { OFFER_WIZARD_MODE } from 'core/Offers/constants'
 import { isOfferDisabled } from 'core/Offers/utils'
 import { getIndividualOfferUrl } from 'core/Offers/utils/getIndividualOfferUrl'
-import { FORM_ERROR_MESSAGE } from 'core/shared'
 import { useOfferWizardMode } from 'hooks'
 import useActiveFeature from 'hooks/useActiveFeature'
 import useAnalytics from 'hooks/useAnalytics'
@@ -81,9 +80,6 @@ const InformationsScreen = ({
     'WIP_MANDATORY_BOOKING_CONTACT'
   )
 
-  const [isClickingFromActionBar, setIsClickingFromActionBar] =
-    useState<boolean>(false)
-
   const queryParams = new URLSearchParams(location.search)
   const querySubcategoryId = queryParams.get('sous-categorie')
   const queryOfferType = queryParams.get('offer-type')
@@ -126,72 +122,42 @@ const InformationsScreen = ({
   const [isWithdrawalDialogOpen, setIsWithdrawalDialogOpen] =
     useState<boolean>(false)
 
-  const [shouldSendMail, setShouldSendMail] = useState<boolean>(false)
+  const [sendWithdrawalMail, setSendWithdrawalMail] = useState<boolean>(false)
 
-  const widthdrawalHasChanged = () => {
-    const withdrawalToCheck = [
-      'withdrawalDetails',
-      'withdrawalDelay',
-      'withdrawalType',
-    ]
-
-    return withdrawalToCheck.some(value => {
-      const valueMeta = formik.getFieldMeta(value)
-      if (
-        valueMeta &&
-        valueMeta.touched &&
-        valueMeta.value !== valueMeta.initialValue
-      ) {
-        return true
-      }
-      return false
-    })
-  }
-
-  const handleSendMail = async (sendMail: boolean) => {
+  const handleSendMail = async () => {
     if (!offer?.isActive) {
       return
     }
+
+    const hasWithdrawalInformationsChanged = [
+      'withdrawalDetails',
+      'withdrawalDelay',
+      'withdrawalType',
+    ].some(field => {
+      const fieldMeta = formik.getFieldMeta(field)
+      return fieldMeta?.touched && fieldMeta?.value !== fieldMeta?.initialValue
+    })
 
     const totalBookingsQuantity = offer?.stocks.reduce(
       (acc, stock) => acc + stock.bookingsQuantity,
       0
     )
-
-    const hasWithdrawalDialogAction =
-      (!isWithdrawalDialogOpen && widthdrawalHasChanged()) ||
-      isWithdrawalDialogOpen
-
-    if (
-      totalBookingsQuantity &&
-      totalBookingsQuantity > 0 &&
-      hasWithdrawalDialogAction
-    ) {
+    if (totalBookingsQuantity > 0 && hasWithdrawalInformationsChanged) {
       setIsWithdrawalDialogOpen(!isWithdrawalDialogOpen)
-      setShouldSendMail(sendMail)
+
       return
     }
   }
 
-  const handleNextStep =
-    ({ sendMail = false } = {}) =>
-    async () => {
-      setIsClickingFromActionBar(true)
-
-      if (mode === OFFER_WIZARD_MODE.EDITION) {
-        await handleSendMail(sendMail)
-      }
-
-      if (Object.keys(formik.errors).length !== 0) {
-        /* istanbul ignore next: DEBT, TO FIX */
-        setIsClickingFromActionBar(false)
-        /* istanbul ignore next: DEBT, TO FIX */
-        notify.error(FORM_ERROR_MESSAGE)
-      }
-      if (isWithdrawalDialogOpen) {
-        await formik.submitForm()
-      }
+  const handleNextStep = async () => {
+    if (mode === OFFER_WIZARD_MODE.EDITION) {
+      await handleSendMail()
     }
+
+    if (isWithdrawalDialogOpen) {
+      await formik.submitForm()
+    }
+  }
 
   const onSubmitOffer = async (
     formValues: IndividualOfferFormValues
@@ -205,7 +171,7 @@ const InformationsScreen = ({
           serializedOffer: serializePatchOffer({
             offer,
             formValues,
-            shouldSendMail,
+            shouldSendMail: sendWithdrawalMail,
           }),
           offerId: offer.id,
         })
@@ -269,7 +235,6 @@ const InformationsScreen = ({
       // This is used from scroll to error
       formik.setStatus('apiError')
     }
-    setIsClickingFromActionBar(false)
   }
 
   const readOnlyFields = setFormReadOnlyFields(offer, currentUser.isAdmin)
@@ -323,7 +288,6 @@ const InformationsScreen = ({
 
           <ActionBar
             onClickPrevious={handlePreviousStepOrBackToReadOnly}
-            onClickNext={handleNextStep()}
             step={OFFER_WIZARD_STEP_IDS.INFORMATIONS}
             isDisabled={
               formik.isSubmitting ||
@@ -338,18 +302,22 @@ const InformationsScreen = ({
         <ConfirmDialog
           cancelText="Ne pas envoyer"
           confirmText="Envoyer un email"
-          leftButtonAction={handleNextStep()}
           onCancel={() => {
             setIsWithdrawalDialogOpen(false)
-            setIsClickingFromActionBar(false)
           }}
-          onConfirm={handleNextStep({ sendMail: true })}
+          leftButtonAction={() => {
+            handleNextStep()
+          }}
+          onConfirm={() => {
+            setSendWithdrawalMail(true)
+            handleNextStep()
+          }}
           icon={strokeMailIcon}
           title="Souhaitez-vous prévenir les bénéficiaires de la modification des modalités de retrait ?"
         />
       )}
       <RouteLeavingGuardIndividualOffer
-        when={formik.dirty && !isClickingFromActionBar}
+        when={formik.dirty && !formik.isSubmitting}
       />
     </FormikProvider>
   )
