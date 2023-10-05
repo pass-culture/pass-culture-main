@@ -1,7 +1,7 @@
 import { format } from 'date-fns'
 import { FormikProvider, useFormik } from 'formik'
 import isEqual from 'lodash/isEqual'
-import React, { useEffect, useRef, useState } from 'react'
+import React, { useRef, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 
 import { api } from 'apiClient/api'
@@ -144,8 +144,6 @@ const StocksEventEdition = ({
         mode === OFFER_WIZARD_MODE.EDITION ? OFFER_WIZARD_MODE.READ_ONLY : mode,
     })
   )
-  const [isClickingFromActionBar, setIsClickingFromActionBar] =
-    useState<boolean>(false)
   const navigate = useNavigate()
   const notify = useNotification()
   const { setOffer } = useIndividualOfferContext()
@@ -211,12 +209,6 @@ const StocksEventEdition = ({
   const hiddenStocksRef = useRef<StockEventFormValues[]>([])
 
   const onSubmit = async (formValues: { stocks: StockEventFormValues[] }) => {
-    setIsClickingFromActionBar(true)
-    if (Object.keys(formik.errors).length !== 0) {
-      /* istanbul ignore next: DEBT, TO FIX */
-      setIsClickingFromActionBar(false)
-    }
-
     const nextStepUrl = getIndividualOfferUrl({
       offerId: offer.id,
       step:
@@ -230,7 +222,6 @@ const StocksEventEdition = ({
     // When saving draft with an empty form
     // we display a success notification even if nothing is done
     if (isFormEmpty()) {
-      setIsClickingFromActionBar(false)
       navigate(nextStepUrl)
       notify.success(getSuccessMessage(mode))
     }
@@ -245,10 +236,8 @@ const StocksEventEdition = ({
 
     /* istanbul ignore next: DEBT, TO FIX */
     if (hasSavedStock && !formik.dirty) {
-      setIsClickingFromActionBar(false)
       navigate(nextStepUrl)
       notify.success(getSuccessMessage(mode))
-      setIsClickingFromActionBar(false)
     }
 
     const allStocks = [...formValues.stocks, ...hiddenStocksRef.current]
@@ -299,7 +288,6 @@ const StocksEventEdition = ({
       /* istanbul ignore next: DEBT, TO FIX */
       formik.setErrors({ stocks: payload.errors })
     }
-    setIsClickingFromActionBar(false)
   }
 
   const onDeleteStock = async (
@@ -387,12 +375,6 @@ const StocksEventEdition = ({
     errors: formik.errors,
   })
 
-  useEffect(() => {
-    if (!formik.isValid) {
-      setIsClickingFromActionBar(false)
-    }
-  }, [formik.isValid])
-
   const handlePreviousStepOrBackToReadOnly = () => {
     /* istanbul ignore next: DEBT, TO FIX */
     mode === OFFER_WIZARD_MODE.EDITION
@@ -473,7 +455,7 @@ const StocksEventEdition = ({
       </FormLayout>
 
       <RouteLeavingGuardIndividualOffer
-        when={areStocksChanged && !isClickingFromActionBar}
+        when={areStocksChanged && !formik.isSubmitting}
       />
     </FormikProvider>
   )

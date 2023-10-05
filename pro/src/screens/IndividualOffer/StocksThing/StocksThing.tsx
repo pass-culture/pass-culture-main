@@ -1,6 +1,6 @@
 import cn from 'classnames'
 import { FormikProvider, useFormik } from 'formik'
-import React, { useEffect, useState } from 'react'
+import React, { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 
 import { api } from 'apiClient/api'
@@ -62,8 +62,6 @@ const StocksThing = ({ offer }: StocksThingProps): JSX.Element => {
         mode === OFFER_WIZARD_MODE.EDITION ? OFFER_WIZARD_MODE.READ_ONLY : mode,
     })
   )
-  const [isClickingFromActionBar, setIsClickingFromActionBar] =
-    useState<boolean>(false)
   const navigate = useNavigate()
   const notify = useNotification()
   const { setOffer, subCategories } = useIndividualOfferContext()
@@ -80,12 +78,6 @@ const StocksThing = ({ offer }: StocksThingProps): JSX.Element => {
   const isDisabled = isOfferDisabled(offer.status)
 
   const onSubmit = async (formValues: StockThingFormValues) => {
-    setIsClickingFromActionBar(true)
-    /* istanbul ignore next: DEBT, TO FIX */
-    if (Object.keys(formik.errors).length !== 0) {
-      setIsClickingFromActionBar(false)
-    }
-
     const nextStepUrl = getIndividualOfferUrl({
       offerId: offer.id,
       step:
@@ -99,7 +91,6 @@ const StocksThing = ({ offer }: StocksThingProps): JSX.Element => {
     // When saving draft with an empty form or in edition mode
     // we display a success notification even if nothing is done
     if (isFormEmpty() && mode === OFFER_WIZARD_MODE.EDITION) {
-      setIsClickingFromActionBar(false)
       navigate(nextStepUrl)
       if (mode === OFFER_WIZARD_MODE.EDITION) {
         notify.success(getSuccessMessage(mode))
@@ -110,7 +101,6 @@ const StocksThing = ({ offer }: StocksThingProps): JSX.Element => {
     const hasSavedStock = formik.values.stockId !== undefined
     if (hasSavedStock && !formik.dirty) {
       navigate(nextStepUrl)
-      setIsClickingFromActionBar(false)
     }
 
     const serializedOffer = serializePatchOffer({
@@ -148,7 +138,6 @@ const StocksThing = ({ offer }: StocksThingProps): JSX.Element => {
       /* istanbul ignore next: DEBT, TO FIX */
       formik.setErrors(payload.errors)
     }
-    setIsClickingFromActionBar(false)
   }
 
   let minQuantity = null
@@ -177,12 +166,6 @@ const StocksThing = ({ offer }: StocksThingProps): JSX.Element => {
     isSubmitting: formik.isSubmitting,
     errors: formik.errors,
   })
-
-  useEffect(() => {
-    if (!formik.isValid) {
-      setIsClickingFromActionBar(false)
-    }
-  }, [formik.isValid])
 
   const handlePreviousStepOrBackToReadOnly = () => {
     /* istanbul ignore next: DEBT, TO FIX */
@@ -486,7 +469,7 @@ const StocksThing = ({ offer }: StocksThingProps): JSX.Element => {
         </FormLayout>
       )}
       <RouteLeavingGuardIndividualOffer
-        when={formik.dirty && !isClickingFromActionBar}
+        when={formik.dirty && !formik.isSubmitting}
       />
     </FormikProvider>
   )
