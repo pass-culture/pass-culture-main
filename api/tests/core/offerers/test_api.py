@@ -2393,6 +2393,8 @@ class InviteMembersTest:
             == TransactionalEmail.OFFERER_ATTACHMENT_INVITATION_NEW_USER.value.id
         )
 
+        assert history_models.ActionHistory.query.count() == 0
+
     def test_offerer_invitation_created_when_user_exists_and_email_not_validated(self):
         pro_user = users_factories.ProFactory(email="pro.user@example.com")
         offerer = offerers_factories.OffererFactory()
@@ -2412,6 +2414,8 @@ class InviteMembersTest:
             == TransactionalEmail.OFFERER_ATTACHMENT_INVITATION_EXISTING_NOT_VALIDATED_USER_EMAIL.value.id
         )
 
+        assert history_models.ActionHistory.query.count() == 0
+
     def test_raise_and_not_create_offerer_invitation_when_invitation_already_exists(self):
         pro_user = users_factories.ProFactory(email="pro.user@example.com")
         offerer = offerers_factories.OffererFactory()
@@ -2427,6 +2431,8 @@ class InviteMembersTest:
         offerer_invitations = offerers_models.OffererInvitation.query.all()
         assert len(offerer_invitations) == 1
         assert len(mails_testing.outbox) == 0
+
+        assert history_models.ActionHistory.query.count() == 0
 
     def test_raise_error_not_create_offerer_invitation_when_user_already_attached_to_offerer(self):
         pro_user = users_factories.ProFactory(email="pro.user@example.com")
@@ -2444,6 +2450,8 @@ class InviteMembersTest:
         offerer_invitations = offerers_models.OffererInvitation.query.all()
         assert len(offerer_invitations) == 0
         assert len(mails_testing.outbox) == 0
+
+        assert history_models.ActionHistory.query.count() == 0
 
     def test_user_offerer_created_when_user_exists_and_attached_to_another_offerer(self):
         pro_user = users_factories.ProFactory(email="pro.user@example.com")
@@ -2469,6 +2477,18 @@ class InviteMembersTest:
         assert offerer_invitation.offererId == offerer.id
         assert offerer_invitation.status == offerers_models.InvitationStatus.ACCEPTED
 
+        actions_list = history_models.ActionHistory.query.all()
+        assert len(actions_list) == 1
+        assert actions_list[0].actionType == history_models.ActionType.USER_OFFERER_NEW
+        assert actions_list[0].authorUser == pro_user
+        assert actions_list[0].user == attached_to_other_offerer_user
+        assert actions_list[0].comment == "Rattachement créé par invitation"
+        assert actions_list[0].offerer == offerer
+        assert actions_list[0].extraData == {
+            "inviter_user_id": pro_user.id,
+            "offerer_invitation_id": offerer_invitation.id,
+        }
+
 
 class AcceptOffererInvitationTest:
     def test_accept_offerer_invitation_when_invitation_exist(self):
@@ -2486,6 +2506,18 @@ class AcceptOffererInvitationTest:
         assert new_user_offerer.offererId == offerer.id
         assert new_user_offerer.userId == user.id
         assert offerer_invitation.status == offerers_models.InvitationStatus.ACCEPTED
+
+        actions_list = history_models.ActionHistory.query.all()
+        assert len(actions_list) == 1
+        assert actions_list[0].actionType == history_models.ActionType.USER_OFFERER_NEW
+        assert actions_list[0].authorUser == user
+        assert actions_list[0].user == user
+        assert actions_list[0].comment == "Rattachement créé par invitation"
+        assert actions_list[0].offerer == offerer
+        assert actions_list[0].extraData == {
+            "inviter_user_id": pro_user.id,
+            "offerer_invitation_id": offerer_invitation.id,
+        }
 
     def test_do_not_recreate_new_user_offerer_if_invitation_already_accepted(self):
         pro_user = users_factories.ProFactory(email="pro.user@example.com")
@@ -2505,3 +2537,4 @@ class AcceptOffererInvitationTest:
         user_offerers = offerers_models.UserOfferer.query.all()
 
         assert len(user_offerers) == 2
+        assert history_models.ActionHistory.query.count() == 0
