@@ -20,6 +20,7 @@ from pcapi.sandboxes.scripts.creators.industrial.create_industrial_individual_of
     create_industrial_individual_offerers,
 )
 from pcapi.sandboxes.scripts.creators.industrial.create_industrial_invoices import *
+from pcapi.sandboxes.scripts.creators.industrial.create_industrial_iris import create_iris
 from pcapi.sandboxes.scripts.creators.industrial.create_industrial_mediations import *
 from pcapi.sandboxes.scripts.creators.industrial.create_industrial_offer_validation_rules import *
 from pcapi.sandboxes.scripts.creators.industrial.create_industrial_offerer_tags import create_industrial_offerer_tags
@@ -61,6 +62,7 @@ from pcapi.scripts.venue.venue_label.create_venue_labels import create_venue_lab
 
 
 def save_industrial_sandbox() -> None:
+    create_iris()
     (offerers_by_name, pro_users_by_name) = create_industrial_offerers_with_pro_users()
 
     admin_users_by_name = create_industrial_admin_users()
