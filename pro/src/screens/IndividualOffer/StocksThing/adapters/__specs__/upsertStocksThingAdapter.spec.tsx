@@ -2,7 +2,6 @@ import { api } from 'apiClient/api'
 import { ApiError, StockResponseModel } from 'apiClient/v1'
 import { ApiRequestOptions } from 'apiClient/v1/core/ApiRequestOptions'
 import { ApiResult } from 'apiClient/v1/core/ApiResult'
-import { OFFER_WIZARD_MODE } from 'core/Offers/constants'
 
 import { STOCK_THING_FORM_DEFAULT_VALUES } from '../../constants'
 import upsertStocksThingAdapter from '../upsertStocksThingAdapter'
@@ -14,7 +13,7 @@ describe('upsertStocksThingAdapter', () => {
     })
     upsertStocksThingAdapter({
       offerId: 1,
-      formValues: {
+      values: {
         activationCodesExpirationDatetime: '',
         activationCodes: [],
         remainingQuantity: STOCK_THING_FORM_DEFAULT_VALUES.remainingQuantity,
@@ -25,7 +24,6 @@ describe('upsertStocksThingAdapter', () => {
         isDuo: undefined,
       },
       departementCode: '75',
-      mode: OFFER_WIZARD_MODE.CREATION,
     })
     expect(api.upsertStocks).toHaveBeenCalledWith({
       offerId: 1,
@@ -38,13 +36,14 @@ describe('upsertStocksThingAdapter', () => {
       ],
     })
   })
+
   it('should send StockEditionBodyModel to api', async () => {
     vi.spyOn(api, 'upsertStocks').mockResolvedValue({
       stocks: [{ id: 1 } as StockResponseModel],
     })
     upsertStocksThingAdapter({
       offerId: 1,
-      formValues: {
+      values: {
         activationCodesExpirationDatetime: '',
         activationCodes: [],
         stockId: 1,
@@ -56,7 +55,6 @@ describe('upsertStocksThingAdapter', () => {
         isDuo: undefined,
       },
       departementCode: '75',
-      mode: OFFER_WIZARD_MODE.CREATION,
     })
     expect(api.upsertStocks).toHaveBeenCalledWith({
       offerId: 1,
@@ -88,7 +86,7 @@ describe('upsertStocksThingAdapter', () => {
     )
     const reponse = await upsertStocksThingAdapter({
       offerId: 1,
-      formValues: {
+      values: {
         stockId: 12,
         activationCodesExpirationDatetime: '',
         activationCodes: [],
@@ -99,7 +97,6 @@ describe('upsertStocksThingAdapter', () => {
         price: 10,
         isDuo: undefined,
       },
-      mode: OFFER_WIZARD_MODE.CREATION,
       departementCode: '75',
     })
 
