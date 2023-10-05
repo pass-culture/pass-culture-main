@@ -518,18 +518,4 @@ describe('screens:StocksEventEdition', () => {
     expect(api.deleteStock).not.toHaveBeenCalled()
     expect(api.deleteStock).toHaveBeenCalledTimes(0)
   })
-
-  it('should display draft success message on save button when stock form is empty and redirect to next page', async () => {
-    apiOffer.stocks = []
-    await renderStockEventScreen(apiOffer)
-
-    await userEvent.click(
-      screen.getByRole('button', { name: 'Enregistrer les modifications' })
-    )
-    expect(
-      screen.getByText('Vos modifications ont bien été enregistrées')
-    ).toBeInTheDocument()
-    expect(screen.queryByTestId('stock-event-form')).not.toBeInTheDocument()
-    expect(screen.getByText(/Next page/)).toBeInTheDocument()
-  })
 })

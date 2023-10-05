@@ -20,6 +20,10 @@ import {
 import { RouteLeavingGuardIndividualOffer } from 'components/RouteLeavingGuardIndividualOffer'
 import { useIndividualOfferContext } from 'context/IndividualOfferContext'
 import {
+  Events,
+  OFFER_FORM_NAVIGATION_MEDIUM,
+} from 'core/FirebaseEvents/constants'
+import {
   createIndividualOffer,
   getIndividualOfferAdapter,
   updateIndividualOffer,
@@ -30,6 +34,7 @@ import { isOfferDisabled } from 'core/Offers/utils'
 import { getIndividualOfferUrl } from 'core/Offers/utils/getIndividualOfferUrl'
 import { useOfferWizardMode } from 'hooks'
 import useActiveFeature from 'hooks/useActiveFeature'
+import useAnalytics from 'hooks/useAnalytics'
 import useCurrentUser from 'hooks/useCurrentUser'
 import useNotification from 'hooks/useNotification'
 import strokeMailIcon from 'icons/stroke-mail.svg'
@@ -54,6 +59,7 @@ const InformationsScreen = ({
   venueId,
 }: InformationsScreenProps): JSX.Element => {
   const notify = useNotification()
+  const { logEvent } = useAnalytics()
   const location = useLocation()
   const { currentUser } = useCurrentUser()
   const navigate = useNavigate()
@@ -185,15 +191,28 @@ const InformationsScreen = ({
     const isEvent = subCategories.find(
       subcategory => subcategory.id === formik.values.subcategoryId
     )?.isEvent
+    const nextStep =
+      mode === OFFER_WIZARD_MODE.EDITION
+        ? OFFER_WIZARD_STEP_IDS.SUMMARY
+        : isEvent
+        ? OFFER_WIZARD_STEP_IDS.TARIFS
+        : OFFER_WIZARD_STEP_IDS.STOCKS
+
+    logEvent?.(Events.CLICKED_OFFER_FORM_NAVIGATION, {
+      from: OFFER_WIZARD_STEP_IDS.INFORMATIONS,
+      to: nextStep,
+      used: OFFER_FORM_NAVIGATION_MEDIUM.STICKY_BUTTONS,
+      isEdition: mode !== OFFER_WIZARD_MODE.CREATION,
+      isDraft:
+        mode === OFFER_WIZARD_MODE.CREATION || mode === OFFER_WIZARD_MODE.DRAFT,
+      offerId: receivedOfferId,
+      subcategoryId: formik.values.subcategoryId,
+    })
+
     navigate(
       getIndividualOfferUrl({
         offerId: receivedOfferId,
-        step:
-          mode === OFFER_WIZARD_MODE.EDITION
-            ? OFFER_WIZARD_STEP_IDS.SUMMARY
-            : isEvent
-            ? OFFER_WIZARD_STEP_IDS.TARIFS
-            : OFFER_WIZARD_STEP_IDS.STOCKS,
+        step: nextStep,
         mode:
           mode === OFFER_WIZARD_MODE.EDITION
             ? OFFER_WIZARD_MODE.READ_ONLY

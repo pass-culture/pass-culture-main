@@ -221,10 +221,14 @@ const StocksEventEdition = ({
     }
 
     // Return when there is nothing to save
-    const hasUnsavedStocks = allStockValues.some(
+    const hasSavedStock = allStockValues.some(
       stock => stock.stockId !== undefined
     )
-    if (hasUnsavedStocks && !formik.dirty) {
+    const dirty = hasStocksChanged(
+      formik.values.stocks,
+      formik.initialValues.stocks
+    )
+    if (hasSavedStock && !dirty) {
       navigate(nextStepUrl)
       notify.success(getSuccessMessage(mode))
       return
