@@ -1,8 +1,6 @@
 import { api } from 'apiClient/api'
 import { isErrorAPIError, serializeApiErrors } from 'apiClient/helpers'
 import { StockResponseModel } from 'apiClient/v1'
-import { OFFER_WIZARD_MODE } from 'core/Offers/constants'
-import { getSuccessMessage } from 'screens/IndividualOffer/utils/getSuccessMessage'
 
 import { StockThingFormValues } from '../types'
 
@@ -13,9 +11,8 @@ type FailurePayload = { errors: Record<string, string> }
 type UpdateStocksAdapter = Adapter<
   {
     offerId: number
-    formValues: StockThingFormValues
+    values: StockThingFormValues
     departementCode: string
-    mode: OFFER_WIZARD_MODE
   },
   SuccessPayload,
   FailurePayload
@@ -23,18 +20,17 @@ type UpdateStocksAdapter = Adapter<
 
 const upsertStocksThingAdapter: UpdateStocksAdapter = async ({
   offerId,
-  formValues,
+  values,
   departementCode,
-  mode,
 }) => {
   try {
     const response = await api.upsertStocks({
       offerId: offerId,
-      stocks: serializeStockThingList(formValues, departementCode),
+      stocks: serializeStockThingList(values, departementCode),
     })
     return {
       isOk: true,
-      message: getSuccessMessage(mode),
+      message: 'OK',
       payload: {
         stockIds: response.stocks.map((stock: StockResponseModel) => stock.id),
       },
