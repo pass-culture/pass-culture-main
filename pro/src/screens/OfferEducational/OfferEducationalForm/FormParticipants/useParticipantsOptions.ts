@@ -4,15 +4,6 @@ import { buildStudentLevelsMapWithDefaultValue } from 'core/OfferEducational/uti
 
 export const ALL_STUDENTS_LABEL = 'Tout sélectionner'
 
-const getStudentLevelLabel = (studentLevel: StudentLevels) => {
-  switch (studentLevel) {
-    case StudentLevels.COLL_GE_6E:
-    case StudentLevels.COLL_GE_5E:
-      return `${studentLevel} : à partir de septembre 2023`
-    default:
-      return studentLevel
-  }
-}
 const useParticipantsOptions = (
   values: OfferEducationalFormValues['participants'],
   setFieldValue: (
@@ -58,7 +49,7 @@ const useParticipantsOptions = (
         ]
       : []),
     ...Object.values(StudentLevels).map(studentLevel => ({
-      label: getStudentLevelLabel(studentLevel),
+      label: studentLevel,
       name: `participants.${studentLevel}`,
       onChange: handleParticipantsChange,
     })),
