@@ -58,8 +58,6 @@ export const getInitialStocks = (offer: IndividualOffer) =>
 export const StocksEventCreation = ({
   offer,
 }: StocksEventCreationProps): JSX.Element => {
-  const [isClickingFromActionBar, setIsClickingFromActionBar] =
-    useState<boolean>(false)
   const [stocks, setStocks] = useState<StocksEvent[]>(getInitialStocks(offer))
   const navigate = useNavigate()
   const mode = useOfferWizardMode()
@@ -132,7 +130,6 @@ export const StocksEventCreation = ({
 
   const handleNextStep = async () => {
     setIsSubmitting(true)
-    setIsClickingFromActionBar(true)
     if (stocksToDelete.length > 0) {
       await Promise.all(stocksToDelete.map(s => api.deleteStock(s.id)))
     }
@@ -143,6 +140,7 @@ export const StocksEventCreation = ({
       setIsSubmitting(false)
       return
     }
+
     if (stocks.length > MAX_STOCKS_PER_OFFER) {
       notify.error(
         `Veuillez créer moins de ${MAX_STOCKS_PER_OFFER} occurrences par offre.`
@@ -157,7 +155,6 @@ export const StocksEventCreation = ({
         offerId: offer.id,
         stocks: stocksToCreate,
       })
-      setIsSubmitting(false)
 
       if (isOk) {
         const response = await getIndividualOfferAdapter(offer.id)
@@ -173,6 +170,7 @@ export const StocksEventCreation = ({
       }
     }
 
+    setIsSubmitting(false)
     navigate(
       getIndividualOfferUrl({
         offerId: offer.id,
@@ -180,7 +178,6 @@ export const StocksEventCreation = ({
         mode,
       })
     )
-    setIsClickingFromActionBar(false)
   }
 
   const hasUnsavedStocks =
@@ -233,10 +230,11 @@ export const StocksEventCreation = ({
         onClickPrevious={handlePreviousStep}
         onClickNext={handleNextStep}
         step={OFFER_WIZARD_STEP_IDS.STOCKS}
+        dirtyForm={hasUnsavedStocks}
       />
 
       <RouteLeavingGuardIndividualOffer
-        when={hasUnsavedStocks && !isClickingFromActionBar}
+        when={hasUnsavedStocks && !isSubmitting}
       />
     </div>
   )
