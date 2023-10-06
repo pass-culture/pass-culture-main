@@ -97,7 +97,7 @@ jobs:
         with:
           version: ${{ inputs.teleport_version }}
       - name: "Teleport Authentication"
-        uses: teleport-actions/auth-k8s@v2
+        uses: teleport-actions/auth-k8s@v1
         with:
           proxy: ${{ inputs.teleport_proxy }}
           token: github-token
@@ -113,7 +113,7 @@ jobs:
           version: ${{ inputs.teleport_version }}
       - id: teleport-auth
         name: "Teleport Authentication"
-        uses: teleport-actions/auth-k8s@v2
+        uses: teleport-actions/auth-k8s@v1
         with:
           proxy: ${{ inputs.teleport_proxy }}
           token: github-token
@@ -199,7 +199,7 @@ jobs:
           version: ${{ inputs.teleport_version }}
       - id: teleport-auth
         name: "Teleport Authentication"
-        uses: teleport-actions/auth-k8s@v2
+        uses: teleport-actions/auth-k8s@v1
         with:
           proxy: ${{ inputs.teleport_proxy }}
           token: github-token
