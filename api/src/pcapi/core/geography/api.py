@@ -52,34 +52,23 @@ def import_iris_from_shp_file(path: str):
 # If this function ever gets too complex, we could use the `geomet`
 # Python package instead.
 def _to_wkt(geometry: fiona.Geometry, transformer: pyproj.Transformer) -> str:
-    if geometry.type == "Polygon":
-        s = "("
-        for ring in geometry.coordinates:
+    def _polygon(rings):
+        s = ""
+        for ring in rings:
             s += "("
             for point in ring:
                 lat, lon = transformer.transform(*point)
                 # /!\ Order must the same as in `get_iris_from_coordinates()`.
-                s += f"{lon} {lat},"
-            s = s.rstrip(",")
-            s += "),"
-        s = s.rstrip(",")
-        s += ")"
-        return f"POLYGON {s}"
+                s += f"{lon} {lat}, "
+            s = s.rstrip(", ")
+            s += "), "
+        s = s.rstrip(", ")
+        return s
+
+    if geometry.type == "Polygon":
+        return "POLYGON (%s)" % _polygon(geometry.coordinates)
     if geometry.type == "MultiPolygon":
-        s = "("
-        for polygon in geometry.coordinates:
-            s += "("
-            for ring in polygon:
-                s += "("
-                for point in ring:
-                    lat, lon = transformer.transform(*point)
-                    s += f"{lon} {lat},"
-                s = s.rstrip(",")
-                s += "),"
-            s = s.rstrip(",")
-            s += "),"
-        s = s.rstrip(",")
-        s += ")"
-        return f"MULTIPOLYGON {s}"
+        s = ", ".join(["(%s)" % _polygon(polygon) for polygon in geometry.coordinates])
+        return f"MULTIPOLYGON ({s})"
     else:
         raise ValueError(f"Unsupported type of geometry: {geometry.type}")
