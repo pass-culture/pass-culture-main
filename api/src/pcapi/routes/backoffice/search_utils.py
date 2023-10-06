@@ -1,3 +1,4 @@
+import re
 import typing
 
 from flask_sqlalchemy import BaseQuery
@@ -37,3 +38,7 @@ def pagination_links(partial_func: UrlForPartial, current_page: int, pages_total
         start_page = max(start_page - distance, 1)
 
     return [(page, partial_func(page=page)) for page in range(start_page, end_page + 1)]
+
+
+def split_terms(search_query: str) -> list[str]:
+    return re.split(r"[,;\s]+", search_query)

@@ -118,7 +118,7 @@ class GetCollectiveBookingListForm(BaseBookingListForm):
 class GetIndividualBookingListForm(BaseBookingListForm):
     def __init__(self, *args: typing.Any, **kwargs: typing.Any) -> None:
         super().__init__(*args, **kwargs)
-        self.q.label.text = "Code contremarque, Nom, email ou ID (offre, bénéficiaire ou résa)"
+        self.q.label.text = "Code contremarque ou liste, Nom, email ou ID (offre, bénéficiaire ou résa)"
         self.status.choices = utils.choices_from_enum(BookingStatus, formatter=filters.format_booking_status)
 
 
