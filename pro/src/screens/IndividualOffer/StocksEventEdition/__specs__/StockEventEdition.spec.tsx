@@ -467,7 +467,7 @@ describe('screens:StocksEventEdition', () => {
       screen.getByRole('button', { name: 'Enregistrer les modifications' })
     )
     expect(
-      await screen.getByText('This is the read only route content')
+      screen.getByText('This is the read only route content')
     ).toBeInTheDocument()
     expect(api.upsertStocks).toHaveBeenCalledTimes(1)
   })

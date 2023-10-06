@@ -97,7 +97,7 @@ describe('screens:SignupJourney::ActivityForm', () => {
       contextValue,
     })
     expect(await screen.findByText('Activité')).toBeInTheDocument()
-    expect(await screen.getByLabelText('Activité principale')).toHaveValue('')
+    expect(screen.getByLabelText('Activité principale')).toHaveValue('')
     expect(
       await screen.getAllByText('Site internet, réseau social')
     ).toHaveLength(1)
@@ -128,7 +128,7 @@ describe('screens:SignupJourney::ActivityForm', () => {
       contextValue,
     })
     expect(
-      await screen.getByText('Cours et pratique artistiques')
+      screen.getByText('Cours et pratique artistiques')
     ).toBeInTheDocument()
     expect(
       await screen.getAllByText('Site internet, réseau social')
@@ -248,11 +248,11 @@ describe('screens:SignupJourney::ActivityForm', () => {
       contextValue,
     })
 
-    const venueTypeSelect = await screen.getByLabelText('Activité principale')
+    const venueTypeSelect = screen.getByLabelText('Activité principale')
     expect(venueTypeSelect).toHaveValue('')
 
     await userEvent.click(await venueTypeSelect)
-    await userEvent.click(await screen.getByText('Culture scientifique'))
+    await userEvent.click(screen.getByText('Culture scientifique'))
     await waitFor(() => {
       expect(screen.getByText('Culture scientifique')).toBeInTheDocument()
     })
