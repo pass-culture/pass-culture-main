@@ -27,6 +27,7 @@ class PostEventTest:
                 "accessibility": utils.ACCESSIBILITY_FIELDS,
                 "location": {"type": "physical", "venueId": venue.id},
                 "name": "Le champ des possibles",
+                "hasTicket": False,
             },
         )
 
@@ -83,8 +84,8 @@ class PostEventTest:
                 "itemCollectionDetails": "A retirer au 6ème sous-sol du parking de la gare entre minuit et 2",
                 "location": {"type": "physical", "venueId": venue.id},
                 "name": "Nicolas Jaar dans ton salon",
-                "ticketCollection": {"way": "in_app"},
                 "priceCategories": [{"price": 30000, "label": "triangle or"}],
+                "hasTicket": True,
             },
         )
 
@@ -153,8 +154,8 @@ class PostEventTest:
             "location": {"type": "physical", "venueId": venue.id},
             "name": "Nicolas Jaar dans ton salon",
             "status": "SOLD_OUT",
-            "ticketCollection": {"way": "in_app"},
             "priceCategories": [{"id": created_price_category.id, "price": 30000, "label": "triangle or"}],
+            "hasTicket": True,
         }
 
     @pytest.mark.usefixtures("db_session")
@@ -168,6 +169,7 @@ class PostEventTest:
                 "accessibility": utils.ACCESSIBILITY_FIELDS,
                 "location": {"type": "physical", "venueId": venue.id},
                 "name": "Le champ des possibles",
+                "hasTicket": False,
                 "bookingContact": "booking@conta.ct",
             },
         )
@@ -193,7 +195,7 @@ class PostEventTest:
                 "accessibility": utils.ACCESSIBILITY_FIELDS,
                 "location": {"type": "physical", "venueId": venue.id},
                 "name": "Le champ des possibles",
-                "ticketCollection": None,
+                "hasTicket": False,
                 "bookingContact": "booking@conta.ct",
             },
         )
@@ -201,23 +203,6 @@ class PostEventTest:
         assert response.status_code == 200
         created_offer = offers_models.Offer.query.one()
         assert created_offer.withdrawalType == offers_models.WithdrawalTypeEnum.NO_TICKET
-
-    def test_event_with_email_ticket(self, client):
-        venue, _ = utils.create_offerer_provider_linked_to_venue()
-
-        response = client.with_explicit_token(offerers_factories.DEFAULT_CLEAR_API_KEY).post(
-            "/public/offers/v1/events",
-            json={
-                "categoryRelatedFields": {"category": "FESTIVAL_ART_VISUEL"},
-                "accessibility": utils.ACCESSIBILITY_FIELDS,
-                "location": {"type": "physical", "venueId": venue.id},
-                "name": "Le champ des possibles",
-                "ticketCollection": {"way": "by_email", "daysBeforeEvent": 3},
-                "bookingContact": "booking@conta.ct",
-            },
-        )
-
-        assert response.status_code == 400
 
     @override_features(WIP_ENABLE_EVENTS_WITH_TICKETS_FOR_PUBLIC_API=True)
     def test_event_with_in_app_ticket(self, client):
@@ -230,30 +215,13 @@ class PostEventTest:
                 "accessibility": utils.ACCESSIBILITY_FIELDS,
                 "location": {"type": "physical", "venueId": venue.id},
                 "name": "Le champ des possibles",
-                "ticketCollection": {"way": "in_app"},
+                "hasTicket": True,
                 "bookingContact": "booking@conta.ct",
             },
         )
         assert response.status_code == 200
         created_offer = offers_models.Offer.query.one()
         assert created_offer.withdrawalType == offers_models.WithdrawalTypeEnum.IN_APP
-
-    def test_event_error_with_on_site_ticket(self, client):
-        venue, _ = utils.create_offerer_provider_linked_to_venue()
-
-        response = client.with_explicit_token(offerers_factories.DEFAULT_CLEAR_API_KEY).post(
-            "/public/offers/v1/events",
-            json={
-                "categoryRelatedFields": {"category": "FESTIVAL_ART_VISUEL"},
-                "accessibility": utils.ACCESSIBILITY_FIELDS,
-                "location": {"type": "physical", "venueId": venue.id},
-                "name": "Le champ des possibles",
-                "ticketCollection": {"way": "on_site", "minutesBeforeEvent": 30},
-                "bookingContact": "booking@conta.ct",
-            },
-        )
-
-        assert response.status_code == 400
 
     @override_features(WIP_ENABLE_EVENTS_WITH_TICKETS_FOR_PUBLIC_API=True)
     def test_error_when_withdrawable_event_but_no_booking_contact(self, client):
@@ -266,7 +234,7 @@ class PostEventTest:
                 "accessibility": utils.ACCESSIBILITY_FIELDS,
                 "location": {"type": "physical", "venueId": venue.id},
                 "name": "Le champ des possibles",
-                "ticketCollection": {"way": "in_app"},
+                "hasTicket": True,
             },
         )
 
@@ -295,6 +263,7 @@ class PostEventTest:
                     "performer": "Nicolas Jaar",
                     "stageDirector": "Alfred",  # field not applicable
                 },
+                "hasTicket": True,
                 "priceCategories": [
                     {"price": 2500, "label": "triangle or"},
                     {"price": 12, "label": "triangle argent"},
@@ -318,7 +287,7 @@ class PostEventTest:
                 "accessibility": utils.ACCESSIBILITY_FIELDS,
                 "location": {"type": "physical", "venueId": venue.id},
                 "name": "Le champ des possibles",
-                "ticketCollection": {"way": "in_app"},
+                "hasTicket": True,
             },
         )
 
@@ -338,7 +307,7 @@ class PostEventTest:
                 "accessibility": utils.ACCESSIBILITY_FIELDS,
                 "location": {"type": "physical", "venueId": venue.id},
                 "name": "Le champ des possibles",
-                "ticketCollection": None,
+                "hasTicket": False,
             },
         )
 
