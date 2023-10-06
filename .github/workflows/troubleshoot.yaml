@@ -1,0 +1,49 @@
+name: Build release
+
+on:
+  push:
+    inputs:
+      environment:
+        type: string
+        default: testing
+      app_version:
+        type: string
+        default: dad5251901199683fe15150933c1eb4310ecfcad
+      teleport_version:
+        type: string
+        default: 11.1.1
+
+env:
+  PROJECT_ID: passculture-infra-prod
+  REGION: europe-west1
+  REPOSITORY: pass-culture-artifact-registry
+
+jobs:
+  troubleshoot:
+    name: troubleshoot
+    environment: testing
+    permissions:
+      id-token: write
+      contents: read
+    runs-on: [self-hosted, linux, x64]
+    steps:
+      - name: Install Teleport
+        uses: teleport-actions/setup@v1
+        with:
+          version: 11.1.1
+      - id: teleport-auth
+        name: "Teleport Authentication"
+        uses: teleport-actions/auth-k8s@v2
+        with:
+          proxy: teleport.ehp.passculture.team:443
+          token: github-token
+          certificate-ttl: 1h
+          kubernetes-cluster: passculture-metier-ehp
+      - id: set_algolia_settings
+        name: "Configure algolia"
+        uses: nick-fields/retry@v2
+        with:
+          timeout_minutes: 30
+          max_attempts: 3
+          command: |
+            kubectl -n ${{ inputs.environment }} get po -l role=api -o json |jq -r '.items[] | select(.spec.containers[0].image | contains("${{ inputs.app_version }}")) | "\(.metadata.name)"'|head -n 1
