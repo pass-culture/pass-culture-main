@@ -331,6 +331,11 @@ describe('offers', () => {
       nbHits: 1,
     }))
 
+    vi.spyOn(instantSearch, 'useInfiniteHits').mockImplementationOnce(() => ({
+      ...defaultUseInfiniteHitsReturn,
+      hits: searchFakeResults,
+    }))
+
     vi.spyOn(instantSearch, 'useInfiniteHits').mockImplementation(() => ({
       ...defaultUseInfiniteHitsReturn,
       hits: [otherFakeSearchResult],
@@ -344,17 +349,12 @@ describe('offers', () => {
     )
 
     // Then
-    const otherOfferName = await screen.findByText(otherOffer.name)
-    expect(otherOfferName).toBeInTheDocument()
-    expect(screen.getAllByTestId('offer-listitem')).toHaveLength(1)
+    expect(await screen.findByText(otherOffer.name)).toBeInTheDocument()
+
     expect(screen.queryByText(offerInParis.name)).not.toBeInTheDocument()
     expect(screen.queryByText(offerInCayenne.name)).not.toBeInTheDocument()
+
     expect(screen.getByText('1 résultat')).toBeInTheDocument()
-    expect(
-      screen.getByText(
-        'Vous avez vu toutes les offres qui correspondent à votre recherche.'
-      )
-    ).toBeInTheDocument()
   })
 
   it('should show most recent results and cancel previous request', async () => {

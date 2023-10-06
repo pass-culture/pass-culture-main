@@ -34,10 +34,9 @@ export interface OffersProps {
   isBackToTopVisibile?: boolean
 }
 
-type OfferMap = Map<
-  string,
-  HydratedCollectiveOffer | HydratedCollectiveOfferTemplate
->
+type HydratedOffer = HydratedCollectiveOffer | HydratedCollectiveOfferTemplate
+
+type OfferMap = Map<string, HydratedOffer>
 
 export const Offers = ({
   handleResetFiltersAndLaunchSearch,
@@ -110,7 +109,9 @@ export const Offers = ({
       })
   }, [results?.queryID])
 
-  const offers = [...fetchedOffers.values()]
+  const offers = hits
+    .map(hit => fetchedOffers.get(hit.objectID))
+    .filter((offer): offer is HydratedOffer => !!offer)
 
   if (queriesAreLoading && offers.length === 0) {
     return (
