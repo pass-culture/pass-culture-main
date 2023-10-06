@@ -7,6 +7,7 @@
 {% from "components/presentation/details/tabs.html" import build_details_tab_content %}
 {% from "components/presentation/details/tabs.html" import build_details_tabs_content_wrapper %}
 {% from "components/turbo/spinner.html" import build_loading_spinner with context %}
+{% import "components/clipboard.html" as clipboard %}
 {% extends "layouts/pro.html" %}
 {% set edit_offerer_aria_described_by_id = random_hash() %}
 {% set delete_offerer_aria_described_by_id = random_hash() %}
@@ -103,7 +104,12 @@
             </div>
           </div>
           <p class="card-subtitle text-muted mb-3 h5">Offerer ID : {{ offerer.id }}</p>
-          <p class="card-subtitle text-muted mb-3 h5">SIREN : {{ links.build_siren_to_external_link(offerer) }}</p>
+          <p class="card-subtitle text-muted mb-3 h5">
+            SIREN : {{ links.build_siren_to_external_link(offerer) }}
+            {% if offerer.siren %}
+              <span class="ms-1 link-primary">{{ clipboard.copy_to_clipboard(offerer.siren, "Copier le SIREN de la structure") }}</span>
+            {% endif %}
+          </p>
           <div class="row pt-3">
             <div class="col-4">
               <div class="fs-6">
