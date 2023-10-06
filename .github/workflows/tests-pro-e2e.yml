@@ -1,0 +1,56 @@
+name: Tests E2E pro
+on:
+  workflow_call:
+    inputs:
+      CACHE_BUCKET_NAME:
+        type: string
+        required: true
+
+defaults:
+  run:
+    working-directory: pro
+
+permissions:
+  contents: "read"
+  id-token: "write"
+
+jobs:
+  tests-pro-e2e-tests:
+    name: "E2E tests"
+    runs-on: [self-hosted, linux, x64]
+    steps:
+      - uses: actions/checkout@v3
+      - uses: actions/setup-node@v3
+        with:
+          node-version-file: "pro/.nvmrc"
+      - name: Run API server
+        run: docker-compose -f ../docker-compose-backend.yml up --build -d
+      - name: Wait for migrations to be run
+        uses: iFaxity/wait-on-action@v1
+        with:
+          resource: http://localhost/health/api
+      - name: Load sandbox
+        run: ../pc sandbox -n industrial
+      # Doc : https://github.com/cypress-io/github-action
+      - name: Cypress run
+        uses: cypress-io/github-action@v5
+        with:
+          build: yarn build:development
+          start: yarn serve
+          config: baseUrl=http://localhost:3001
+          browser: chrome
+          wait-on: "http://localhost:3001,http://localhost/health/api,http://localhost/health/database"
+          wait-on-timeout: 600
+          working-directory: pro
+      - name: "OpenID Connect Authentication"
+        if: always()
+        uses: "google-github-actions/auth@v1"
+        with:
+          workload_identity_provider: ${{ secrets.GCP_EHP_WORKLOAD_IDENTITY_PROVIDER }}
+          service_account: ${{ secrets.GCP_EHP_SERVICE_ACCOUNT }}
+      - name: Archive E2E results
+        if: always()
+        uses: google-github-actions/upload-cloud-storage@v1
+        with:
+          path: "pro/cypress/videos"
+          destination: "${{ inputs.CACHE_BUCKET_NAME }}/pro/cypress/videos/e2e-artifacts"
