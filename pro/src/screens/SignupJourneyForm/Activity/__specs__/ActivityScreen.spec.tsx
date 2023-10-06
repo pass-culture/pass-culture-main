@@ -73,11 +73,11 @@ describe('screens:SignupJourney::Activity', () => {
     renderActivityScreen(contextValue)
     expect(await screen.findByText('Activité')).toBeInTheDocument()
     expect(
-      await screen.getByText(
+      screen.getByText(
         'Tous les champs sont obligatoires sauf mention contraire.'
       )
     ).toBeInTheDocument()
-    expect(await screen.getByLabelText('Activité principale')).toHaveValue('')
+    expect(screen.getByLabelText('Activité principale')).toHaveValue('')
     expect(
       await screen.getAllByText('Site internet, réseau social')
     ).toHaveLength(1)

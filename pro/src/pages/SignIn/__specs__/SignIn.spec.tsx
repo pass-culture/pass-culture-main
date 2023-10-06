@@ -125,7 +125,7 @@ describe('SignIn', () => {
       // Then
       await userEvent.click(eyePasswordButton)
 
-      expect(await screen.getByLabelText('Mot de passe')).toHaveAttribute(
+      expect(screen.getByLabelText('Mot de passe')).toHaveAttribute(
         'type',
         'text'
       )
@@ -143,7 +143,7 @@ describe('SignIn', () => {
       await userEvent.click(eyePasswordButton)
 
       //then
-      expect(await screen.getByLabelText('Mot de passe')).toHaveAttribute(
+      expect(screen.getByLabelText('Mot de passe')).toHaveAttribute(
         'type',
         'password'
       )

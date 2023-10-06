@@ -531,7 +531,7 @@ describe('screens:IndividualOffer::Informations:edition', () => {
       await userEvent.clear(nameField)
       await userEvent.type(nameField, 'Le nom de mon offre édité')
 
-      const withdrawalDetailsField = await screen.getByDisplayValue(
+      const withdrawalDetailsField = screen.getByDisplayValue(
         'Offer withdrawalDetails'
       )
       await userEvent.click(withdrawalDetailsField)
@@ -605,7 +605,7 @@ describe('screens:IndividualOffer::Informations:edition', () => {
       await userEvent.clear(nameField)
       await userEvent.type(nameField, 'Le nom de mon offre édité')
 
-      const withdrawalDetailsField = await screen.getByDisplayValue(
+      const withdrawalDetailsField = screen.getByDisplayValue(
         'Offer withdrawalDetails'
       )
       await userEvent.click(withdrawalDetailsField)
@@ -631,7 +631,7 @@ describe('screens:IndividualOffer::Informations:edition', () => {
         )
       ).toBeInTheDocument()
 
-      const closewithdrawalDialogButton = await screen.getByRole('button', {
+      const closewithdrawalDialogButton = screen.getByRole('button', {
         name: 'Fermer la modale',
       })
       await userEvent.click(closewithdrawalDialogButton)
@@ -694,7 +694,7 @@ describe('screens:IndividualOffer::Informations:edition', () => {
         await userEvent.type(nameField, 'Le nom de mon offre édité')
 
         if (condition.modifyWithdrawailDetails) {
-          const withdrawalDetailsField = await screen.getByDisplayValue(
+          const withdrawalDetailsField = screen.getByDisplayValue(
             'Offer withdrawalDetails'
           )
           await userEvent.click(withdrawalDetailsField)
@@ -757,7 +757,7 @@ describe('screens:IndividualOffer::Informations:edition', () => {
       await userEvent.clear(nameField)
       await userEvent.type(nameField, 'Le nom de mon offre édité')
 
-      const withdrawalDetailsField = await screen.getByDisplayValue(
+      const withdrawalDetailsField = screen.getByDisplayValue(
         'Offer withdrawalDetails'
       )
       await userEvent.click(withdrawalDetailsField)
@@ -843,7 +843,7 @@ describe('screens:IndividualOffer::Informations:edition', () => {
         await userEvent.type(nameField, 'Le nom de mon offre édité')
 
         if (withdrawalInformations.withdrawalDetails) {
-          const withdrawalDetailsField = await screen.getByDisplayValue(
+          const withdrawalDetailsField = screen.getByDisplayValue(
             'Offer withdrawalDetails'
           )
           await userEvent.click(withdrawalDetailsField)

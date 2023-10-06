@@ -125,14 +125,14 @@ describe('screens:SignupJourney::OffererForm', () => {
     ).toBeInTheDocument()
 
     expect(
-      await screen.getByText(
+      screen.getByText(
         'Tous les champs sont obligatoires sauf mention contraire.'
       )
     ).toBeInTheDocument()
 
-    expect(
-      await screen.getByLabelText('Numéro de SIRET à 14 chiffres')
-    ).toHaveValue('')
+    expect(screen.getByLabelText('Numéro de SIRET à 14 chiffres')).toHaveValue(
+      ''
+    )
   })
 
   it('should render offerer form with initialValues', async () => {
@@ -143,9 +143,9 @@ describe('screens:SignupJourney::OffererForm', () => {
       initialValues: initialValues,
       contextValue,
     })
-    expect(
-      await screen.getByLabelText('Numéro de SIRET à 14 chiffres')
-    ).toHaveValue('123456789333')
+    expect(screen.getByLabelText('Numéro de SIRET à 14 chiffres')).toHaveValue(
+      '123456789333'
+    )
   })
 
   it('should fill siret field only with numbers', async () => {

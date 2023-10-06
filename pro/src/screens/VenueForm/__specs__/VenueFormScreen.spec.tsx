@@ -950,7 +950,7 @@ describe('VenueFormScreen', () => {
         )
       ).toBeInTheDocument()
 
-      const closeWithdrawalDialogButton = await screen.getByRole('button', {
+      const closeWithdrawalDialogButton = screen.getByRole('button', {
         name: 'Fermer la modale',
       })
       await userEvent.click(closeWithdrawalDialogButton)
