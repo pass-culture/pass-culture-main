@@ -9,6 +9,7 @@ import pytest
 from pcapi.core.bookings.factories import BookingFactory
 from pcapi.core.bookings.factories import CancelledBookingFactory
 from pcapi.core.categories import subcategories
+from pcapi.core.history import models as history_models
 import pcapi.core.mails.testing as mails_testing
 from pcapi.core.mails.transactional.sendinblue_template_ids import TransactionalEmail
 from pcapi.core.offerers import models as offerers_models
@@ -22,6 +23,7 @@ from pcapi.core.providers import api
 from pcapi.core.providers import models as providers_models
 from pcapi.core.providers.exceptions import ProviderNotFound
 import pcapi.core.providers.factories as providers_factories
+from pcapi.core.users import factories as users_factories
 from pcapi.local_providers.provider_api import synchronize_provider_api
 from pcapi.routes.serialization.venue_provider_serialize import PostVenueProviderBody
 
@@ -378,10 +380,12 @@ class DeleteVenueProviderTest:
     @pytest.mark.usefixtures("db_session")
     @mock.patch("pcapi.core.providers.api.update_venue_synchronized_offers_active_status_job.delay")
     def test_delete_venue_provider(self, mocked_update_all_offers_active_status_job):
+        user = users_factories.UserFactory()
         venue_provider = providers_factories.VenueProviderFactory()
         venue = venue_provider.venue
+        provider = venue_provider.provider
 
-        api.delete_venue_provider(venue_provider)
+        api.delete_venue_provider(venue_provider, author=user)
 
         assert len(mails_testing.outbox) == 1
         assert mails_testing.outbox[0].sent_data["To"] == venue.bookingEmail
@@ -389,6 +393,13 @@ class DeleteVenueProviderTest:
 
         assert not venue.venueProviders
         mocked_update_all_offers_active_status_job.assert_called_once_with(venue.id, venue_provider.providerId, False)
+
+        action = history_models.ActionHistory.query.one()
+        assert action.actionType == history_models.ActionType.LINK_VENUE_PROVIDER_DELETED
+        assert action.authorUserId == user.id
+        assert action.venueId == venue.id
+        assert action.extraData["provider_id"] == provider.id
+        assert action.extraData["provider_name"] == provider.name
 
 
 class DisableVenueProviderTest:

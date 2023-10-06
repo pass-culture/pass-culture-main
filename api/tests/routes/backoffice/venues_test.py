@@ -1859,18 +1859,26 @@ class PostDeleteVenueProviderTest(PostEndpointHelper):
     endpoint_kwargs = {"venue_id": 1, "provider_id": 1}
     needed_permission = perm_models.Permissions.ADVANCED_PRO_SUPPORT
 
-    def test_delete_venue_provider(self, authenticated_client):
-        venue_provider = providers_factories.VenueProviderFactory()
+    def test_delete_venue_provider(self, authenticated_client, legit_user):
+        venue_provider = providers_factories.VenueProviderFactory(provider__name="Test provider")
+        venue_id = venue_provider.venue.id
+        provider_id = venue_provider.provider.id
 
         response = self.post_to_endpoint(
             authenticated_client,
-            venue_id=venue_provider.venue.id,
-            provider_id=venue_provider.provider.id,
+            venue_id=venue_id,
+            provider_id=provider_id,
         )
         assert response.status_code == 303
         assert not providers_models.VenueProvider.query.filter(
             providers_models.VenueProvider.id == venue_provider.id
         ).all()
+        action = history_models.ActionHistory.query.one()
+        assert action.actionType == history_models.ActionType.LINK_VENUE_PROVIDER_DELETED
+        assert action.authorUserId == legit_user.id
+        assert action.venueId == venue_id
+        assert action.extraData["provider_id"] == provider_id
+        assert action.extraData["provider_name"] == "Test provider"
         assert response.location == url_for(
             "backoffice_web.venue.get", venue_id=venue_provider.venue.id, _external=True
         )
@@ -1886,17 +1894,12 @@ class PostDeleteVenueProviderTest(PostEndpointHelper):
             venue_id=venue_provider.venue.id,
             provider_id=0,
         )
-        assert response.status_code == 303
-        assert providers_models.VenueProvider.query.filter(providers_models.VenueProvider.id == venue_provider.id).all()
-        assert response.location == url_for(
-            "backoffice_web.venue.get", venue_id=venue_provider.venue.id, _external=True
-        )
-
-        response = authenticated_client.get(response.location)
+        assert response.status_code == 404
         assert (
-            "Impossible d'effacer le lien entre le lieu et le provider. Aucun lien trouvé."
-            in html_parser.extract_alert(response.data)
+            providers_models.VenueProvider.query.filter(providers_models.VenueProvider.id == venue_provider.id).count()
+            == 1
         )
+        assert history_models.ActionHistory.query.count() == 0
 
     def test_delete_venue_allocine_provider(self, authenticated_client):
         venue_provider = providers_factories.AllocineVenueProviderFactory()
@@ -1907,7 +1910,11 @@ class PostDeleteVenueProviderTest(PostEndpointHelper):
             provider_id=venue_provider.provider.id,
         )
         assert response.status_code == 303
-        assert providers_models.VenueProvider.query.filter(providers_models.VenueProvider.id == venue_provider.id).all()
+        assert (
+            providers_models.VenueProvider.query.filter(providers_models.VenueProvider.id == venue_provider.id).count()
+            == 1
+        )
+        assert history_models.ActionHistory.query.count() == 0
         assert response.location == url_for(
             "backoffice_web.venue.get", venue_id=venue_provider.venue.id, _external=True
         )
