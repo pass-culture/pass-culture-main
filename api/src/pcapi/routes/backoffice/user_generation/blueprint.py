@@ -25,15 +25,20 @@ def get_generated_user() -> utils.BackofficeResponse:
     user = _get_user_if_exists(utils.get_query_params().get("userId"))
     token = utils.get_query_params().get("accessToken")
     link_to_app = None
+    link_to_ubble_mock = None
     if token:
         path = "signup-confirmation"
         universal_link_url = f"{settings.WEBAPP_V2_URL}/{path}"
         params = {"token": token}
         link_to_app = universal_link_url + f"?{urlencode(params)}"
 
+    if user and settings.UBBLE_MOCK_CONFIG_URL:
+        link_to_ubble_mock = settings.UBBLE_MOCK_CONFIG_URL + f"?{urlencode({'userId': user.id})}"
+
     return render_template(
         "admin/users_generator.html",
         link_to_app=link_to_app,
+        link_to_ubble_mock=link_to_ubble_mock,
         user=user,
         form=form,
         dst=url_for("backoffice_web.generate_user"),
