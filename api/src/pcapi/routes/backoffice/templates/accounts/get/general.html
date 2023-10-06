@@ -56,7 +56,9 @@
             {% endif %}
           </div>
         </div>
-        <h6 class="card-subtitle text-muted">User ID : {{ user.id }}</h6>
+        <h6 class="card-subtitle text-muted">
+          User ID : {{ user.id }} <span class="ms-1">{{ clipboard.copy_to_clipboard(user.id, "Copier l'id du jeune") }}</span>
+        </h6>
         <div class="d-flex justify-content-start">
           <div class="d-flex flex-column pe-5">
             {% if show_personal_info %}
