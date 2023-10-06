@@ -117,6 +117,8 @@ const StocksProviderForm = ({
             link={{
               isExternal: true,
               to: 'https://aide.passculture.app/hc/fr/articles/10616916478236',
+              target: '_blank',
+              'aria-label': 'Nouvelle fenêtre',
             }}
             variant={ButtonVariant.QUATERNARY}
           >
