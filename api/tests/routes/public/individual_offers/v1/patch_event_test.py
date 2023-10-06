@@ -132,7 +132,6 @@ class PatchEventTest:
         response = client.with_explicit_token(offerers_factories.DEFAULT_CLEAR_API_KEY).patch(
             f"/public/offers/v1/events/{event_offer.id}",
             json={
-                "ticketCollection": None,  # This should not change
                 "bookingContact": "test@myemail.com",
                 "bookingEmail": "test@myemail.com",
                 "eventDuration": 40,
@@ -168,12 +167,12 @@ class PatchEventTest:
         response = client.with_explicit_token(offerers_factories.DEFAULT_CLEAR_API_KEY).patch(
             f"/public/offers/v1/events/{event_offer.id}",
             json={
-                "ticketCollection": {"way": "on_site", "minutesBeforeEvent": 60},
                 "bookingContact": "test@myemail.com",
                 "bookingEmail": "test@myemail.com",
                 "eventDuration": 40,
                 "enableDoubleBookings": "true",
                 "itemCollectionDetails": "Here !",
+                "hasTicket": True,
             },
         )
         assert response.status_code == 400
