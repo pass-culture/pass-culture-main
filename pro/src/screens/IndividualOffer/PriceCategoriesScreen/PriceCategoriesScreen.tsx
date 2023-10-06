@@ -279,6 +279,7 @@ export const PriceCategoriesScreen = ({
           onClickPrevious={handlePreviousStepOrBackToReadOnly}
           step={OFFER_WIZARD_STEP_IDS.TARIFS}
           isDisabled={formik.isSubmitting}
+          dirtyForm={formik.dirty}
         />
       </form>
 
