@@ -88,13 +88,6 @@ const renderInformationsScreen = (
         />
         <Route
           path={getIndividualOfferPath({
-            step: OFFER_WIZARD_STEP_IDS.STOCKS,
-            mode: OFFER_WIZARD_MODE.EDITION,
-          })}
-          element={<div>There is the stock route content</div>}
-        />
-        <Route
-          path={getIndividualOfferPath({
             step: OFFER_WIZARD_STEP_IDS.SUMMARY,
             mode: OFFER_WIZARD_MODE.READ_ONLY,
           })}
@@ -467,6 +460,16 @@ describe('screens:IndividualOffer::Informations:edition', () => {
         used: 'StickyButtons',
       }
     )
+  })
+
+  it('should go back to summary when clicking on "Annuler et quitter"', async () => {
+    renderInformationsScreen(props, contextOverride)
+
+    await userEvent.click(screen.getByText('Annuler et quitter'))
+
+    expect(
+      screen.getByText('There is the summary route content')
+    ).toBeInTheDocument()
   })
 
   describe('send mail on withdrawal changes', () => {

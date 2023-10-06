@@ -217,14 +217,22 @@ export const PriceCategoriesScreen = ({
     onSubmit: onSubmitWithCallback,
   })
 
-  const handlePreviousStep = () => {
-    navigate(
-      getIndividualOfferUrl({
-        offerId: offer.id,
-        step: OFFER_WIZARD_STEP_IDS.INFORMATIONS,
-        mode,
-      })
-    )
+  const handlePreviousStepOrBackToReadOnly = () => {
+    mode === OFFER_WIZARD_MODE.EDITION
+      ? navigate(
+          getIndividualOfferUrl({
+            offerId: offer.id,
+            step: OFFER_WIZARD_STEP_IDS.TARIFS,
+            mode: OFFER_WIZARD_MODE.READ_ONLY,
+          })
+        )
+      : navigate(
+          getIndividualOfferUrl({
+            offerId: offer.id,
+            step: OFFER_WIZARD_STEP_IDS.INFORMATIONS,
+            mode,
+          })
+        )
   }
 
   const handleNextStep =
@@ -307,7 +315,7 @@ export const PriceCategoriesScreen = ({
         />
 
         <ActionBar
-          onClickPrevious={handlePreviousStep}
+          onClickPrevious={handlePreviousStepOrBackToReadOnly}
           onClickNext={handleNextStep()}
           onClickSaveDraft={handleNextStep({ saveDraft: true })}
           step={OFFER_WIZARD_STEP_IDS.TARIFS}

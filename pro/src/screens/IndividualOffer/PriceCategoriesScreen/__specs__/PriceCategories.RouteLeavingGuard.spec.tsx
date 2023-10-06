@@ -95,7 +95,7 @@ const renderPriceCategories = (
           step: OFFER_WIZARD_STEP_IDS.TARIFS,
           mode: OFFER_WIZARD_MODE.READ_ONLY,
         })}
-        element={<div>There is the summary route content</div>}
+        element={<div>This is the summary route content</div>}
       />
     </Routes>,
     { initialRouterEntries: [url] }
@@ -206,7 +206,26 @@ describe('PriceCategories', () => {
     await userEvent.click(screen.getByText('Enregistrer les modifications'))
 
     expect(
-      screen.getByText('There is the summary route content')
+      screen.getByText('This is the summary route content')
+    ).toBeInTheDocument()
+  })
+
+  it('should go back to summary when clicking on "Annuler et quitter" in Edition', async () => {
+    renderPriceCategories(
+      { offer: individualOfferFactory() },
+      generatePath(
+        getIndividualOfferPath({
+          step: OFFER_WIZARD_STEP_IDS.TARIFS,
+          mode: OFFER_WIZARD_MODE.EDITION,
+        }),
+        { offerId: 'AA' }
+      )
+    )
+
+    await userEvent.click(screen.getByText('Annuler et quitter'))
+
+    expect(
+      screen.getByText('This is the summary route content')
     ).toBeInTheDocument()
   })
 })
