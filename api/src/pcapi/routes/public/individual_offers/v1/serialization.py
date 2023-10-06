@@ -138,10 +138,10 @@ LOCATION_FIELD = pydantic_v1.Field(
 )
 NAME_FIELD = pydantic_v1.Field(description="Offer title", example="Le Petit Prince", max_length=90)
 DURATION_MINUTES_FIELD = pydantic_v1.Field(description="Event duration in minutes", example=60, alias="eventDuration")
-TICKET_COLLECTION_FIELD = pydantic_v1.Field(
-    None,
-    description="How the ticket will be collected. Leave empty if there is no ticket. To use 'in_app' you must have developed the pass culture ticketing interface.",
-    example=None,
+
+HAS_TICKET_FIELD = pydantic_v1.Field(
+    description="Indicates whether the offer has an associated ticket. True if a ticket is available, False otherwise. To create an offer with tickets you must have developed the pass culture ticketing interface.",
+    example=False,
 )
 PRICE_CATEGORY_LABEL_FIELD = pydantic_v1.Field(description="Price category label", example="Carré or")
 PRICE_CATEGORIES_FIELD = pydantic_v1.Field(description="Available price categories for dates of this offer")
@@ -483,7 +483,7 @@ class EventOfferCreation(OfferCreationBase):
     category_related_fields: event_category_creation_fields
     duration_minutes: int | None = DURATION_MINUTES_FIELD
     location: PhysicalLocation | DigitalLocation = LOCATION_FIELD
-    ticket_collection: InAppDetails | None = TICKET_COLLECTION_FIELD
+    has_ticket: bool = HAS_TICKET_FIELD
     price_categories: typing.List[PriceCategoryCreation] | None = PRICE_CATEGORIES_FIELD
 
     @pydantic_v1.validator("price_categories")
@@ -580,7 +580,6 @@ class EventOfferEdition(OfferEditionBase):
         description="To override category related fields, the category must be specified, even if it cannot be changed. Other category related fields may be left undefined to keep their current value.",
     )
     duration_minutes: int | None = DURATION_MINUTES_FIELD
-    ticket_collection: None = TICKET_COLLECTION_FIELD
 
 
 class DateCreation(BaseStockCreation):
@@ -728,21 +727,21 @@ class BatchProductOfferResponse(serialization.ConfiguredBaseModel):
         return cls(product_offers=[ProductOfferResponse.build_product_offer(offer) for offer in offers])
 
 
-def _serialize_ticket_collection(
+def _serialize_has_ticket(
     offer: offers_models.Offer,
-) -> InAppDetails | None:
+) -> bool:
     if offer.withdrawalType is None or offer.withdrawalType == offers_models.WithdrawalTypeEnum.NO_TICKET:
-        return None
+        return False
     if offer.withdrawalType == offers_models.WithdrawalTypeEnum.IN_APP:
-        return InAppDetails()
+        return True
     logger.error("Unknown withdrawal type %s for offer %s", offer.withdrawalType, offer.id)
-    return None
+    return False
 
 
 class EventOfferResponse(OfferResponse, PriceCategoriesResponse):
     category_related_fields: event_category_reading_fields
     duration_minutes: int | None = DURATION_MINUTES_FIELD
-    ticket_collection: InAppDetails | None = TICKET_COLLECTION_FIELD
+    has_ticket: bool = HAS_TICKET_FIELD
 
     @classmethod
     def build_event_offer(cls, offer: offers_models.Offer) -> "EventOfferResponse":
@@ -751,7 +750,7 @@ class EventOfferResponse(OfferResponse, PriceCategoriesResponse):
         return cls(
             category_related_fields=serialize_extra_data(offer),
             duration_minutes=offer.durationMinutes,
-            ticket_collection=_serialize_ticket_collection(offer),
+            has_ticket=_serialize_has_ticket(offer),
             price_categories=[
                 PriceCategoryResponse.from_orm(price_category) for price_category in offer.priceCategories
             ],

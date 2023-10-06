@@ -24,14 +24,14 @@ from . import serialization
 from . import utils
 
 
-def _deserialize_ticket_collection(
-    ticket_collection: serialization.InAppDetails | None,
+def _deserialize_has_ticket(
+    has_ticket: bool,
     subcategory_id: str,
-) -> tuple[offers_models.WithdrawalTypeEnum | None, int | None]:
-    if not ticket_collection:
+) -> offers_models.WithdrawalTypeEnum | None:
+    if not has_ticket:
         if subcategories.ALL_SUBCATEGORIES_DICT[subcategory_id].can_be_withdrawable:
-            return offers_models.WithdrawalTypeEnum.NO_TICKET, None
-        return None, None
+            return offers_models.WithdrawalTypeEnum.NO_TICKET
+        return None
 
     if not feature.FeatureToggle.WIP_ENABLE_EVENTS_WITH_TICKETS_FOR_PUBLIC_API.is_active():
         raise api_errors.ApiErrors(
@@ -43,7 +43,7 @@ def _deserialize_ticket_collection(
             {"global": "You must support the pass culture ticketting interface to use the in_app value."},
             status_code=400,
         )
-    return offers_models.WithdrawalTypeEnum.IN_APP, None
+    return offers_models.WithdrawalTypeEnum.IN_APP
 
 
 @blueprint.v1_blueprint.route("/events", methods=["POST"])
@@ -71,9 +71,7 @@ def post_event_offer(body: serialization.EventOfferCreation) -> serialization.Ev
     Post an event offer.
     """
     venue = utils.retrieve_venue_from_location(body.location)
-    withdrawal_type, withdrawal_delay = _deserialize_ticket_collection(
-        body.ticket_collection, body.category_related_fields.subcategory_id
-    )
+    withdrawal_type = _deserialize_has_ticket(body.has_ticket, body.category_related_fields.subcategory_id)
     try:
         with repository.transaction():
             created_offer = offers_api.create_offer(
@@ -93,7 +91,6 @@ def post_event_offer(body: serialization.EventOfferCreation) -> serialization.Ev
                 url=body.location.url if isinstance(body.location, serialization.DigitalLocation) else None,
                 venue=venue,
                 visual_disability_compliant=body.accessibility.visual_disability_compliant,
-                withdrawal_delay=withdrawal_delay,
                 withdrawal_details=body.withdrawal_details,
                 withdrawal_type=withdrawal_type,
             )
@@ -227,12 +224,6 @@ def edit_event(event_id: int, body: serialization.EventOfferEdition) -> serializ
 
     update_body = body.dict(exclude_unset=True)
 
-    withdrawal_type, withdrawal_delay = (
-        _deserialize_ticket_collection(body.ticket_collection, offer.subcategoryId)
-        if update_body.get("ticket_collection")
-        else (offers_api.UNCHANGED, offers_api.UNCHANGED)
-    )
-
     try:
         with repository.transaction():
             offer = offers_api.update_offer(
@@ -248,8 +239,6 @@ def edit_event(event_id: int, body: serialization.EventOfferEdition) -> serializ
                 isActive=update_body.get("is_active", offers_api.UNCHANGED),
                 isDuo=update_body.get("is_duo", offers_api.UNCHANGED),
                 withdrawalDetails=update_body.get("withdrawal_details", offers_api.UNCHANGED),
-                withdrawalType=withdrawal_type,
-                withdrawalDelay=withdrawal_delay,
                 **utils.compute_accessibility_edition_fields(update_body.get("accessibility")),
             )
     except offers_exceptions.OfferCreationBaseException as error:

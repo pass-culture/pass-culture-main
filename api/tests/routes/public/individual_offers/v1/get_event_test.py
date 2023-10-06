@@ -68,7 +68,7 @@ class GetEventTest:
             "location": {"type": "physical", "venueId": event_offer.venueId},
             "name": "Vieux motard que jamais",
             "status": "SOLD_OUT",
-            "ticketCollection": None,
+            "hasTicket": False,
             "priceCategories": [],
         }
 
@@ -135,7 +135,7 @@ class GetEventTest:
         )
 
         assert response.status_code == 200
-        assert response.json["ticketCollection"] == {"way": "in_app"}
+        assert response.json["hasTicket"] == True
 
     def test_ticket_collection_no_ticket(self, client):
         venue, _ = utils.create_offerer_provider_linked_to_venue()
@@ -149,7 +149,7 @@ class GetEventTest:
         )
 
         assert response.status_code == 200
-        assert response.json["ticketCollection"] is None
+        assert response.json["hasTicket"] == False
 
     def test_404_inactive_venue_provider(self, client):
         venue, _ = utils.create_offerer_provider_linked_to_venue(is_venue_provider_active=False)
