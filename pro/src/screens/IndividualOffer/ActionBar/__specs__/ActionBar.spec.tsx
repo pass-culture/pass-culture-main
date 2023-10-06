@@ -117,11 +117,9 @@ describe('IndividualOffer::ActionBar', () => {
 
       renderActionBar({ props, url: '/edition/url' })
 
-      const buttonCancel = screen.getByText('Annuler et quitter')
-      expect(buttonCancel).toHaveAttribute(
-        'href',
-        '/offres?page=3&filter=my_filter&other_filter=my_other_filter'
-      )
+      await userEvent.click(screen.getByText('Annuler et quitter'))
+      expect(onClickPreviousMock).toHaveBeenCalled()
+
       const buttonSave = screen.getByText('Enregistrer les modifications')
       await userEvent.click(buttonSave)
       expect(onClickNextMock).toHaveBeenCalled()
@@ -132,11 +130,9 @@ describe('IndividualOffer::ActionBar', () => {
 
       renderActionBar({ props, url: '/edition/url' })
 
-      const buttonCancel = screen.getByText('Annuler et quitter')
-      expect(buttonCancel).toHaveAttribute(
-        'href',
-        '/offres?page=3&filter=my_filter&other_filter=my_other_filter'
-      )
+      await userEvent.click(screen.getByText('Annuler et quitter'))
+      expect(onClickPreviousMock).toHaveBeenCalled()
+
       const buttonSave = screen.getByText('Enregistrer les modifications')
       await userEvent.click(buttonSave)
       expect(onClickNextMock).toHaveBeenCalled()

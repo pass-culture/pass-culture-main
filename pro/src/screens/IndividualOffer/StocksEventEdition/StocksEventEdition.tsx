@@ -415,15 +415,23 @@ const StocksEventEdition = ({
     }
   }, [formik.isValid])
 
-  const handlePreviousStep = () => {
+  const handlePreviousStepOrBackToReadOnly = () => {
     /* istanbul ignore next: DEBT, TO FIX */
-    navigate(
-      getIndividualOfferUrl({
-        offerId: offer.id,
-        step: OFFER_WIZARD_STEP_IDS.TARIFS,
-        mode,
-      })
-    )
+    mode === OFFER_WIZARD_MODE.EDITION
+      ? navigate(
+          getIndividualOfferUrl({
+            offerId: offer.id,
+            step: OFFER_WIZARD_STEP_IDS.STOCKS,
+            mode: OFFER_WIZARD_MODE.READ_ONLY,
+          })
+        )
+      : navigate(
+          getIndividualOfferUrl({
+            offerId: offer.id,
+            step: OFFER_WIZARD_STEP_IDS.TARIFS,
+            mode,
+          })
+        )
   }
 
   const isDisabled = offer.status ? isOfferDisabled(offer.status) : false
@@ -479,7 +487,7 @@ const StocksEventEdition = ({
             <ActionBar
               isDisabled={formik.isSubmitting || isOfferDisabled(offer.status)}
               onClickNext={handleNextStep()}
-              onClickPrevious={handlePreviousStep}
+              onClickPrevious={handlePreviousStepOrBackToReadOnly}
               onClickSaveDraft={handleNextStep({ saveDraft: true })}
               step={OFFER_WIZARD_STEP_IDS.STOCKS}
               submitAsButton={isFormEmpty()}

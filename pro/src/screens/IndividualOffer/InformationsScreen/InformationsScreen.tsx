@@ -294,20 +294,28 @@ const InformationsScreen = ({
     enableReinitialize: true,
   })
 
-  const handlePreviousStep = () => {
+  const handlePreviousStepOrBackToReadOnly = () => {
     const queryParams = new URLSearchParams(location.search)
     const queryOffererId = queryParams.get('structure')
     const queryVenueId = queryParams.get('lieu')
     /* istanbul ignore next: DEBT, TO FIX */
-    navigate({
-      pathname: '/offre/creation',
-      search:
-        queryOffererId && queryVenueId
-          ? `lieu=${queryVenueId}&structure=${queryOffererId}`
-          : queryOffererId && !queryVenueId
-          ? `structure=${queryOffererId}`
-          : '',
-    })
+    mode === OFFER_WIZARD_MODE.EDITION
+      ? navigate(
+          getIndividualOfferUrl({
+            offerId: offer?.id,
+            step: OFFER_WIZARD_STEP_IDS.SUMMARY,
+            mode: OFFER_WIZARD_MODE.READ_ONLY,
+          })
+        )
+      : navigate({
+          pathname: '/offre/creation',
+          search:
+            queryOffererId && queryVenueId
+              ? `lieu=${queryVenueId}&structure=${queryOffererId}`
+              : queryOffererId && !queryVenueId
+              ? `structure=${queryOffererId}`
+              : '',
+        })
   }
 
   return (
@@ -327,7 +335,7 @@ const InformationsScreen = ({
           />
 
           <ActionBar
-            onClickPrevious={handlePreviousStep}
+            onClickPrevious={handlePreviousStepOrBackToReadOnly}
             onClickNext={handleNextStep()}
             onClickSaveDraft={handleNextStep({ saveDraft: true })}
             step={OFFER_WIZARD_STEP_IDS.INFORMATIONS}
