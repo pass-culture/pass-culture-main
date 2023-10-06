@@ -34,7 +34,7 @@ const UsefulInformations = ({
   readOnlyFields = [],
 }: UsefulInformationsProps): JSX.Element => {
   const {
-    values: { subCategoryFields },
+    values: { subCategoryFields, withdrawalType },
   } = useFormikContext<IndividualOfferFormValues>()
   const isBookingContactEnabled = useActiveFeature(
     'WIP_MANDATORY_BOOKING_CONTACT'
@@ -68,7 +68,8 @@ const UsefulInformations = ({
         </FormLayout.Row>
       )}
 
-      {subCategoryFields.includes('withdrawalType') && (
+      {(subCategoryFields.includes('withdrawalType') ||
+        Boolean(withdrawalType)) && (
         <TicketWithdrawal readOnlyFields={readOnlyFields} />
       )}
 
