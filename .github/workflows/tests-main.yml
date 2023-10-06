@@ -61,6 +61,17 @@ jobs:
     name: Tests pro
     uses: ./.github/workflows/tests-pro.yml
     secrets: inherit
+    with:
+      CACHE_BUCKET_NAME: passculture-infra-prod-github-runner-cache
+
+  test-pro-e2e:
+    needs: test-deploy-variable
+    if: needs.test-deploy-variable.outputs.deploy == 'true'
+    name: Tests pro E2E
+    uses: ./.github/workflows/tests-pro-e2e.yml
+    secrets: inherit
+    with:
+      CACHE_BUCKET_NAME: passculture-infra-prod-github-runner-cache
 
   dependabot-auto-merge:
     needs:
