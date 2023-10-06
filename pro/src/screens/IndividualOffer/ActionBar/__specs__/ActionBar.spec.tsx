@@ -85,6 +85,24 @@ describe('IndividualOffer::ActionBar', () => {
       await userEvent.click(buttonPublishOffer)
       expect(onClickNextMock).toHaveBeenCalled()
     })
+
+    it('should show draft saved indicator', async () => {
+      props.dirtyForm = false
+
+      renderActionBar({ props })
+      expect(screen.getByText('Brouillon enregistré')).toBeInTheDocument()
+      expect(
+        screen.queryByText('Brouillon non enregistré')
+      ).not.toBeInTheDocument()
+    })
+
+    it('should show draft not saved indicator', async () => {
+      props.dirtyForm = true
+
+      renderActionBar({ props })
+      expect(screen.queryByText('Brouillon enregistré')).not.toBeInTheDocument()
+      expect(screen.getByText('Brouillon non enregistré')).toBeInTheDocument()
+    })
   })
 
   describe('on draft', () => {

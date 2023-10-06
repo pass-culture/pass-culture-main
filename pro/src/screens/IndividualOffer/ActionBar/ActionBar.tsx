@@ -9,15 +9,20 @@ import { useOfferWizardMode } from 'hooks'
 import useNotification from 'hooks/useNotification'
 import fullLeftIcon from 'icons/full-left.svg'
 import fullRightIcon from 'icons/full-right.svg'
+import fullValidateIcon from 'icons/full-validate.svg'
 import { RootState } from 'store/reducers'
 import { Button, ButtonLink, SubmitButton } from 'ui-kit'
 import { ButtonVariant, IconPositionEnum } from 'ui-kit/Button/types'
+import { SvgIcon } from 'ui-kit/SvgIcon/SvgIcon'
+
+import styles from './ActionBar.module.scss'
 
 export interface ActionBarProps {
   onClickNext?: () => void
   onClickPrevious?: () => void
   isDisabled: boolean
   step: OFFER_WIZARD_STEP_IDS
+  dirtyForm?: boolean
 }
 
 const ActionBar = ({
@@ -25,6 +30,7 @@ const ActionBar = ({
   onClickPrevious,
   isDisabled,
   step,
+  dirtyForm,
 }: ActionBarProps) => {
   const offersSearchFilters = useSelector(
     (state: RootState) => state.offers.searchFilters
@@ -51,56 +57,47 @@ const ActionBar = ({
           Retour
         </Button>
       )
-    } else if (mode === OFFER_WIZARD_MODE.DRAFT) {
-      return (
-        <>
-          {step === OFFER_WIZARD_STEP_IDS.INFORMATIONS ? (
-            <ButtonLink
-              link={{ to: '/offres', isExternal: false }}
-              variant={ButtonVariant.SECONDARY}
-            >
-              Annuler et quitter
-            </ButtonLink>
-          ) : (
-            <Button
-              icon={fullLeftIcon}
-              onClick={onClickPrevious}
-              variant={ButtonVariant.SECONDARY}
-              disabled={isDisabled}
-            >
-              Retour
-            </Button>
-          )}
-        </>
-      )
-    } else {
-      // mode === OFFER_WIZARD_MODE.EDITION
-      return (
-        <>
-          {step === OFFER_WIZARD_STEP_IDS.SUMMARY ? (
-            <ButtonLink
-              link={{ to: backOfferUrl, isExternal: false }}
-              variant={ButtonVariant.PRIMARY}
-            >
-              Retour à la liste des offres
-            </ButtonLink>
-          ) : (
-            <>
-              <Button
-                onClick={onClickPrevious}
-                variant={ButtonVariant.SECONDARY}
-              >
-                Annuler et quitter
-              </Button>
+    }
 
-              <SubmitButton onClick={onClickNext} disabled={isDisabled}>
-                Enregistrer les modifications
-              </SubmitButton>
-            </>
-          )}
-        </>
+    if (mode === OFFER_WIZARD_MODE.DRAFT) {
+      return step === OFFER_WIZARD_STEP_IDS.INFORMATIONS ? (
+        <ButtonLink
+          link={{ to: '/offres', isExternal: false }}
+          variant={ButtonVariant.SECONDARY}
+        >
+          Annuler et quitter
+        </ButtonLink>
+      ) : (
+        <Button
+          icon={fullLeftIcon}
+          onClick={onClickPrevious}
+          variant={ButtonVariant.SECONDARY}
+          disabled={isDisabled}
+        >
+          Retour
+        </Button>
       )
     }
+
+    // mode === OFFER_WIZARD_MODE.EDITION
+    return step === OFFER_WIZARD_STEP_IDS.SUMMARY ? (
+      <ButtonLink
+        link={{ to: backOfferUrl, isExternal: false }}
+        variant={ButtonVariant.PRIMARY}
+      >
+        Retour à la liste des offres
+      </ButtonLink>
+    ) : (
+      <>
+        <Button onClick={onClickPrevious} variant={ButtonVariant.SECONDARY}>
+          Annuler et quitter
+        </Button>
+
+        <SubmitButton onClick={onClickNext} disabled={isDisabled}>
+          Enregistrer les modifications
+        </SubmitButton>
+      </>
+    )
   }
 
   const Right = (): JSX.Element | null => {
@@ -110,6 +107,23 @@ const ActionBar = ({
     ) {
       return (
         <>
+          {dirtyForm === false && (
+            <span className={styles['draft-indicator']}>
+              <SvgIcon
+                src={fullValidateIcon}
+                alt=""
+                width="16"
+                className={styles['draft-saved-icon']}
+              />
+              Brouillon enregistré
+            </span>
+          )}
+          {dirtyForm === true && (
+            <span className={styles['draft-indicator']}>
+              <div className={styles['draft-not-saved-icon']} />
+              Brouillon non enregistré
+            </span>
+          )}
           {step === OFFER_WIZARD_STEP_IDS.SUMMARY ? (
             <>
               <ButtonLink
@@ -140,6 +154,7 @@ const ActionBar = ({
         </>
       )
     }
+
     return null
   }
 
