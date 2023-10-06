@@ -332,6 +332,46 @@ describe('screens:StocksEventEdition', () => {
     expect(api.deleteStock).toHaveBeenCalledTimes(1)
   })
 
+  it('should allow user to delete stock from an offer created from charlie api', async () => {
+    apiOffer.lastProvider = {
+      ...apiOffer.lastProvider,
+      name: 'Provider',
+    }
+    await renderStockEventScreen(apiOffer)
+    vi.spyOn(api, 'deleteStock').mockRejectedValueOnce(
+      new ApiError(
+        {} as ApiRequestOptions,
+        {
+          body: { code: 'STOCK_FROM_CHARLIE_API_CANNOT_BE_DELETED' },
+          status: 400,
+        } as ApiResult,
+        ''
+      )
+    )
+
+    await userEvent.click(
+      screen.getAllByTestId('stock-form-actions-button-open')[1]
+    )
+    await userEvent.click(
+      screen.getAllByTestId('stock-form-actions-button-open')[0]
+    )
+    await userEvent.dblClick(screen.getAllByText('Supprimer le stock')[0])
+    expect(
+      screen.getByText('Voulez-vous supprimer cette occurrence ?')
+    ).toBeInTheDocument()
+    await userEvent.click(
+      screen.getByText('Confirmer la suppression', { selector: 'button' })
+    )
+
+    expect(
+      await screen.findByText(
+        'La suppression des stocks de cette offre n’est possible que depuis le logiciel synchronisé.'
+      )
+    ).toBeInTheDocument()
+    expect(api.deleteStock).toHaveBeenCalledWith(stockToDelete.id)
+    expect(api.deleteStock).toHaveBeenCalledTimes(1)
+  })
+
   it('should display new stocks banner for several stocks', async () => {
     await renderStockEventScreen(apiOffer)
 
