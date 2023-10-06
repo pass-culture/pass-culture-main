@@ -26,5 +26,5 @@ def downgrade() -> None:
     op.add_column("offer", sa.Column("ageMax", sa.INTEGER(), autoincrement=False, nullable=True))
     op.add_column("offer", sa.Column("ageMin", sa.INTEGER(), autoincrement=False, nullable=True))
     op.add_column(
-        "offer", sa.Column("mediaUrls", postgresql.ARRAY(sa.VARCHAR(length=220)), autoincrement=False, nullable=False)
+        "offer", sa.Column("mediaUrls", postgresql.ARRAY(sa.VARCHAR(length=220)), autoincrement=False, nullable=True)
     )
