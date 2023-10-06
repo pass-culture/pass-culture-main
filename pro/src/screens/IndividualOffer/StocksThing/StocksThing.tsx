@@ -404,6 +404,7 @@ const StocksThing = ({ offer }: StocksThingProps): JSX.Element => {
               onClickPrevious={handlePreviousStepOrBackToReadOnly}
               step={OFFER_WIZARD_STEP_IDS.STOCKS}
               isDisabled={formik.isSubmitting || isDisabled}
+              dirtyForm={formik.dirty}
             />
           </form>
         </div>
