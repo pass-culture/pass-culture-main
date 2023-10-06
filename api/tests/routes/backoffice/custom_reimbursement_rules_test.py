@@ -40,7 +40,7 @@ class ListCustomReimbursementRulesTest(GetEndpointHelper):
     def test_list_custom_reimbursement_rules(self, authenticated_client):
         start = datetime.datetime.utcnow() - datetime.timedelta(days=365)
         end = datetime.datetime.utcnow() + datetime.timedelta(days=365)
-        offer_rule = finance_factories.CustomReimbursementRuleFactory(amount=27, timespan=(start, None))
+        offer_rule = finance_factories.CustomReimbursementRuleFactory(amountInEuroCents=2700, timespan=(start, None))
         offerer = offerers_factories.OffererFactory()
         offerer_rule = finance_factories.CustomReimbursementRuleFactory(
             offerer=offerer, rate=0.5, subcategories=["FESTIVAL_LIVRE"]

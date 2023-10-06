@@ -593,8 +593,8 @@ class CustomReimbursementRule(ReimbursementRule, Base, Model):
         booking: "bookings_models.Booking",
         custom_total_amount: int | None = None,
     ) -> int:
-        if self.amount is not None:
-            return utils.to_eurocents(booking.quantity * self.amount)
+        if self.amountInEuroCents is not None:
+            return booking.quantity * self.amountInEuroCents
         return super().apply(booking, custom_total_amount)
 
     @property

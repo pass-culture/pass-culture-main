@@ -185,6 +185,7 @@ class CustomReimbursementRuleFactory(BaseFactory):
         ]
     )
     amount = 5
+    amountInEuroCents = 500
 
     @classmethod
     def _create(
@@ -195,6 +196,7 @@ class CustomReimbursementRuleFactory(BaseFactory):
     ) -> models.CustomReimbursementRule:
         if "rate" in kwargs:
             kwargs["amount"] = None
+            kwargs["amountInEuroCents"] = None
         if "offerer" in kwargs:
             kwargs["offer"] = None
         return super()._create(model_class, *args, **kwargs)
