@@ -134,7 +134,7 @@ def delete_venue_provider(venue_provider_id: int) -> None:
 
     check_user_can_alter_venue(current_user, venue_provider.venueId)
 
-    api.delete_venue_provider(venue_provider)
+    api.delete_venue_provider(venue_provider, author=current_user)
 
 
 def _allocine_venue_provider_price(venue_provider: AllocineVenueProvider) -> float | None:
