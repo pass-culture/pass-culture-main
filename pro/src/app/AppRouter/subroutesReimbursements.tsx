@@ -19,7 +19,8 @@ export const oldRoutesReimbursements: RouteConfig[] = [
   {
     element: <ReimbursementsDetails />,
     parentPath: '/remboursements',
-    path: 'Détails des remboursements',
+    path: '/details',
+    title: 'Détails des remboursements',
   },
 ]
 

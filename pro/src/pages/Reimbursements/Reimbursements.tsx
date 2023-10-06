@@ -59,14 +59,17 @@ const Reimbursements = (): JSX.Element => {
     <>
       <Titles title="Remboursements" />
       <>
-        {/* TODO: displaying condition when offerer is available here. (Done in another branch)*/}
-        <AddBankAccountCallout titleOnly={true} />
-        {/* TODO: displaying condition when offerer is available here. (Done in another branch)*/}
-        <LinkVenueCallout titleOnly={true} />
-        {/* TODO: displaying condition when offerer is available here. (Done in another branch)*/}
-        <PendingBankAccountCallout titleOnly={true} />
-
-        {!isNewBankDetailsJourneyEnable && <BannerReimbursementsInfo />}
+        {!isNewBankDetailsJourneyEnable && (
+          <>
+            {/* TODO: displaying condition when offerer is available here. (Done in another branch)*/}
+            <AddBankAccountCallout titleOnly={true} />
+            {/* TODO: displaying condition when offerer is available here. (Done in another branch)*/}
+            <LinkVenueCallout titleOnly={true} />
+            {/* TODO: displaying condition when offerer is available here. (Done in another branch)*/}
+            <PendingBankAccountCallout titleOnly={true} />
+            <BannerReimbursementsInfo />
+          </>
+        )}
 
         <ReimbursementsBreadcrumb />
         <Routes>
