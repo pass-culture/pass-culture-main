@@ -1,5 +1,6 @@
 from datetime import datetime
 import logging
+import re
 
 from pcapi import settings
 from pcapi.connectors.dms import api as api_dms
@@ -11,13 +12,12 @@ from pcapi.domain.bank_information import CannotRegisterBankInformation
 
 logger = logging.getLogger(__name__)
 
-# These base64 str are the field ids received from DMS. They are NOT unique across procedures, beware !
-ID_TO_NAME_MAPPING = {
-    "Q2hhbXAtNDA3ODg5": "firstname",
-    "Q2hhbXAtNDA3ODkw": "lastname",
-    "Q2hhbXAtNDA3ODky": "phone_number",
-    "Q2hhbXAtMzUyNzIy": "iban",
-    "Q2hhbXAtMzUyNzI3": "bic",
+FIELD_NAME_TO_INTERNAL_NAME_MAPPING = {
+    r".*[P|p]rénom": "firstname",
+    r".*[N|n]om": "lastname",
+    r"Mon numéro de téléphone": "phone_number",
+    r"IBAN": "iban",
+    r"BIC": "bic",
 }
 DMS_TOKEN_ID = "Q2hhbXAtMjY3NDMyMQ=="
 ACCEPTED_DMS_STATUS = (dms_models.DmsApplicationStates.closed,)
@@ -69,13 +69,14 @@ def parse_raw_bank_info_data(data: dict, procedure_version: int) -> dict:
         "dossier_id": data["dossier"]["id"],
     }
     for field in data["dossier"]["champs"]:
-        if field["id"] in ID_TO_NAME_MAPPING:
-            result[ID_TO_NAME_MAPPING[field["id"]]] = field["value"]
-        elif field["id"] == DMS_TOKEN_ID:
-            result["dms_token"] = _remove_dms_pro_prefix(field["value"].strip("  "))
-        elif field["id"] == "Q2hhbXAtNzgyODAw" and procedure_version in (2, 3):
-            result["siret"] = field["etablissement"]["siret"]
-            result["siren"] = field["etablissement"]["siret"][:9]
+        for mapped_field, internal_field in FIELD_NAME_TO_INTERNAL_NAME_MAPPING.items():
+            if re.match(mapped_field, field["label"]):
+                result[internal_field] = field["value"]
+            elif field["id"] == DMS_TOKEN_ID:
+                result["dms_token"] = _remove_dms_pro_prefix(field["value"].strip("  "))
+            elif field["id"] == "Q2hhbXAtNzgyODAw" and procedure_version in (2, 3):
+                result["siret"] = field["etablissement"]["siret"]
+                result["siren"] = field["etablissement"]["siret"][:9]
 
     result["error_annotation_id"] = None
     result["venue_url_annotation_id"] = None
