@@ -14,10 +14,12 @@ class PcForm extends PcAddOn {
 
   bindEvents = () => {
     EventHandler.on(document.body, 'submit', PcForm.FORM_SELECTORS, this.#submit)
+    addEventListener("pagehide", this.#unlockAll)
   }
 
   unbindEvents = () => {
     EventHandler.off(document.body, 'submit', PcForm.FORM_SELECTORS, this.#submit)
+    removeEventListener("pagehide", this.#unlockAll)
   }
 
   #submit = (event) => {
@@ -28,12 +30,31 @@ class PcForm extends PcAddOn {
         event.preventDefault()
       }
       else{
-        classList.add(PcForm.FORM_ALREADY_VALIDATED)
-        const $submitButtons = event.target.querySelectorAll(PcForm.FORM_SUBMIT_BUTTON)
-        $submitButtons.forEach(($button) => {
-          $button.disabled = true
-        })
+        this.#lock(event.target)
       }
     }
+  }
+
+  #lock = ($target) => {
+    $target.classList.add(PcForm.FORM_ALREADY_VALIDATED)
+    const $submitButtons = $target.querySelectorAll(PcForm.FORM_SUBMIT_BUTTON)
+    $submitButtons.forEach(($button) => {
+      $button.disabled = true
+    })
+  }
+
+  #unlock = ($target) => {
+    $target.classList.remove(PcForm.FORM_ALREADY_VALIDATED)
+    const $submitButtons = $target.querySelectorAll(PcForm.FORM_SUBMIT_BUTTON)
+    $submitButtons.forEach(($button) => {
+      $button.disabled = false
+    })
+  }
+
+  #unlockAll = () => {
+    const $lockedForms = document.querySelectorAll('.' + PcForm.FORM_ALREADY_VALIDATED)
+    $lockedForms.forEach(($lockedForm) => {
+      this.#unlock($lockedForm)
+    })
   }
 }
