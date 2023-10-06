@@ -32,8 +32,8 @@ from pcapi.core.offerers import exceptions as offerers_exceptions
 from pcapi.core.offerers import models as offerers_models
 from pcapi.core.offerers import repository as offerers_repository
 import pcapi.core.permissions.models as perm_models
+from pcapi.core.providers import api as providers_api
 from pcapi.core.providers import models as providers_models
-from pcapi.models import db
 from pcapi.models.api_errors import ApiErrors
 from pcapi.repository import repository
 from pcapi.routes.backoffice import autocomplete
@@ -374,22 +374,28 @@ def get_stats(venue_id: int) -> utils.BackofficeResponse:
 @venue_blueprint.route("/<int:venue_id>/provider/<int:provider_id>/delete", methods=["POST"])
 @utils.permission_required(perm_models.Permissions.ADVANCED_PRO_SUPPORT)
 def delete_venue_provider(venue_id: int, provider_id: int) -> utils.BackofficeResponse:
-    provider = providers_models.Provider.query.filter_by(id=provider_id).one_or_none()
+    venue_provider = (
+        providers_models.VenueProvider.query.filter(
+            providers_models.VenueProvider.providerId == provider_id,
+            providers_models.VenueProvider.venueId == venue_id,
+        )
+        .options(
+            sa.orm.joinedload(providers_models.VenueProvider.venue).load_only(offerers_models.Venue.id),
+            sa.orm.joinedload(providers_models.VenueProvider.provider).load_only(providers_models.Provider.localClass),
+        )
+        .one_or_none()
+    )
 
-    if provider and provider.localClass == "AllocineStocks":
+    if not venue_provider:
+        raise NotFound()
+
+    if venue_provider.isFromAllocineProvider:
         flash("Impossible d'effacer le lien entre le lieu et Allociné.", "warning")
         return redirect(url_for("backoffice_web.venue.get", venue_id=venue_id), code=303)
 
-    result = providers_models.VenueProvider.query.filter(
-        providers_models.VenueProvider.providerId == provider_id,
-        providers_models.VenueProvider.venueId == venue_id,
-    ).delete()
+    providers_api.delete_venue_provider(venue_provider, author=current_user, send_email=False)
+    flash("Le lien entre le lieu et le provider a bien été effacé.", "info")
 
-    if result:
-        db.session.commit()
-        flash("Le lien entre le lieu et le provider a bien été effacé.", "info")
-    else:
-        flash("Impossible d'effacer le lien entre le lieu et le provider. Aucun lien trouvé.", "warning")
     return redirect(url_for("backoffice_web.venue.get", venue_id=venue_id), code=303)
 
 

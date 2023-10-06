@@ -5,6 +5,8 @@ import logging
 from typing import Iterable
 
 from pcapi.core import search
+from pcapi.core.history import api as history_api
+from pcapi.core.history import models as history_models
 from pcapi.core.logging import log_elapsed
 from pcapi.core.mails.transactional import send_venue_provider_deleted_email
 from pcapi.core.mails.transactional import send_venue_provider_disabled_email
@@ -17,6 +19,7 @@ import pcapi.core.providers.constants as providers_constants
 import pcapi.core.providers.exceptions as providers_exceptions
 import pcapi.core.providers.models as providers_models
 import pcapi.core.providers.repository as providers_repository
+from pcapi.core.users import models as users_models
 from pcapi.domain.price_rule import PriceRule
 from pcapi.models import db
 from pcapi.repository import repository
@@ -84,9 +87,11 @@ def reset_stock_quantity(venue: offerers_models.Venue) -> None:
     db.session.commit()
 
 
-def delete_venue_provider(venue_provider: providers_models.VenueProvider) -> None:
+def delete_venue_provider(
+    venue_provider: providers_models.VenueProvider, author: users_models.User, send_email: bool = True
+) -> None:
     update_venue_synchronized_offers_active_status_job.delay(venue_provider.venueId, venue_provider.providerId, False)
-    if venue_provider.venue.bookingEmail:
+    if send_email and venue_provider.venue.bookingEmail:
         send_venue_provider_deleted_email(venue_provider.venue.bookingEmail)
 
     if venue_provider.isFromAllocineProvider:
@@ -96,7 +101,18 @@ def delete_venue_provider(venue_provider: providers_models.VenueProvider) -> Non
     # Save data now: it won't be available after we have deleted the object.
     venue_id = venue_provider.venueId
     provider_name = venue_provider.provider.name
-    repository.delete(venue_provider)
+    db.session.add(
+        history_api.log_action(
+            history_models.ActionType.LINK_VENUE_PROVIDER_DELETED,
+            author,
+            venue=venue_provider.venue,
+            save=False,
+            provider_id=venue_provider.providerId,
+            provider_name=venue_provider.provider.name,
+        )
+    )
+    db.session.delete(venue_provider)
+    db.session.commit()
     logger.info(
         "Deleted VenueProvider for venue %d",
         venue_id,

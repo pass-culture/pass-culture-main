@@ -51,6 +51,8 @@ class ActionType(enum.Enum):
     # Bank accounts changes:
     LINK_VENUE_BANK_ACCOUNT_DEPRECATED = "Lieu dissocié d'un compte bancaire"
     LINK_VENUE_BANK_ACCOUNT_CREATED = "Lieu associé à un compte bancaire"
+    # Venue provider changes:
+    LINK_VENUE_PROVIDER_DELETED = "Suppression du lien avec le provider"
 
 
 ACTION_HISTORY_ORDER_BY = "ActionHistory.actionDate.asc().nulls_first()"
