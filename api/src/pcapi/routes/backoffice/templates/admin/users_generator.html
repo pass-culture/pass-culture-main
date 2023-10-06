@@ -75,7 +75,7 @@
                 </p>
                 <div class="mb-1">
                   <span class="fw-bold">Adresse</span>
-                  <p class="mb-0">{{ user.address }}</p>
+                  <p class="mb-0">{{ user.address | empty_string_if_null }}</p>
                   <p>
                     {{ user.postalCode | empty_string_if_null }}&nbsp;{{ user.city |
                     empty_string_if_null }}
