@@ -129,6 +129,17 @@ class ListIndividualBookingsTest(GetEndpointHelper):
 
         assert html_parser.extract_pagination_info(response.data) == (1, 1, 1)
 
+    def test_list_bookings_by_list_of_tokens(self, authenticated_client, bookings):
+        # when
+        with assert_num_queries(self.expected_num_queries):
+            response = authenticated_client.get(url_for(self.endpoint, q="WTRL00 ELBEIT\tREIMB3\n"))
+
+        # then
+        assert response.status_code == 200
+        rows = html_parser.extract_table_rows(response.data)
+        assert len(rows) == 3
+        assert set(row["Contremarque"] for row in rows) == {"WTRL00", "ELBEIT", "REIMB3"}
+
     @pytest.mark.parametrize(
         "incident_status, display_alert",
         [

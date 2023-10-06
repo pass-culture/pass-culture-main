@@ -23,6 +23,7 @@ from pcapi.core.offers import models as offers_models
 from pcapi.core.permissions import models as perm_models
 from pcapi.core.users import models as users_models
 from pcapi.routes.backoffice import autocomplete
+from pcapi.routes.backoffice import search_utils
 from pcapi.routes.backoffice import utils
 from pcapi.routes.backoffice.bookings import form as booking_forms
 from pcapi.routes.backoffice.bookings import helpers as booking_helpers
@@ -95,10 +96,11 @@ def _get_individual_bookings(
     if form.q.data:
         search_query = form.q.data
 
-        if BOOKING_TOKEN_RE.match(search_query):
-            or_filters.append(bookings_models.Booking.token == search_query.upper())
+        terms = search_utils.split_terms(search_query)
+        if all(BOOKING_TOKEN_RE.match(term) for term in terms):
+            or_filters += [bookings_models.Booking.token == term.upper() for term in terms]
 
-            if NO_DIGIT_RE.match(search_query):
+            if all(NO_DIGIT_RE.match(term) for term in terms):
                 flash(
                     f"Le critère de recherche « {search_query} » peut correspondre à un nom. Cependant, la recherche "
                     "n'a porté que sur les codes contremarques afin de répondre rapidement. Veuillez inclure prénom et "

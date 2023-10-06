@@ -1,7 +1,6 @@
 import datetime
 from functools import partial
 from functools import reduce
-import re
 import typing
 
 from flask import flash
@@ -23,6 +22,7 @@ from pcapi.core.permissions import models as perm_models
 from pcapi.core.users import models as users_models
 from pcapi.models.offer_mixin import OfferValidationType
 from pcapi.repository import repository
+from pcapi.routes.backoffice import search_utils
 from pcapi.routes.backoffice import utils
 from pcapi.routes.backoffice.forms import empty as empty_forms
 from pcapi.routes.backoffice.offers import forms
@@ -237,7 +237,7 @@ def _get_offers(form: forms.InternalSearchForm) -> list[offers_models.Offer]:
             if search_query.isnumeric():
                 or_filters.append(offers_models.Offer.id == int(search_query))
             else:
-                terms = re.split(r"[,;\s]+", search_query)
+                terms = search_utils.split_terms(search_query)
                 if all(term.isnumeric() for term in terms):
                     or_filters.append(offers_models.Offer.id.in_([int(term) for term in terms]))
 
