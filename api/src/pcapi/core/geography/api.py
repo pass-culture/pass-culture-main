@@ -1,16 +1,16 @@
 import logging
-import os
 import os.path
 import pathlib
 import tempfile
 
-from geoalchemy2.shape import from_shape
-import geopandas as gpd
-from py7zr import unpack_7zarchive
+import fiona
+import py7zr
+import pyproj
 
-from pcapi.core.geography import models as geography_models
-from pcapi.core.geography.constants import WGS_SPATIAL_REFERENCE_IDENTIFIER
 from pcapi.models import db
+
+from . import constants
+from . import models
 
 
 logger = logging.getLogger(__name__)
@@ -24,7 +24,7 @@ def import_iris_from_7z(path: str) -> None:
 
     with tempfile.TemporaryDirectory(prefix="import_iris_from_7z") as unpack_directory:
         imported = 0
-        unpack_7zarchive(archive=path, path=unpack_directory)
+        py7zr.unpack_7zarchive(archive=path, path=unpack_directory)
         shp_files = pathlib.Path(unpack_directory).glob("**/*.shp")
         for shp_file in shp_files:
             imported += import_iris_from_shp_file(shp_file)
@@ -32,16 +32,54 @@ def import_iris_from_7z(path: str) -> None:
         logger.info("successfuly imported %s iris", imported)
 
 
-def import_iris_from_shp_file(path_obj: pathlib.Path) -> int:
-    iris_data = gpd.read_file(path_obj)
-    filtered_iris_data = iris_data[["CODE_IRIS", "geometry"]]
-    count = 0
-    for iris_row in filtered_iris_data.to_crs(WGS_SPATIAL_REFERENCE_IDENTIFIER).iterrows():
-        count += 1
-        iris = geography_models.IrisFrance(
-            code=iris_row[1]["CODE_IRIS"],
-            shape=from_shape(iris_row[1]["geometry"], srid=WGS_SPATIAL_REFERENCE_IDENTIFIER),
+def import_iris_from_shp_file(path: str):
+    with fiona.open(path) as shapefile:
+        count = 0
+        transformer = pyproj.Transformer.from_crs(
+            shapefile.crs,
+            constants.WGS_SPATIAL_REFERENCE_IDENTIFIER,
         )
-        db.session.add(iris)
-    logger.info("imported %s iris", count)
+        for feature in shapefile.values():
+            iris = models.IrisFrance(
+                code=feature.properties["CODE_IRIS"],
+                shape=_to_wkt(feature.geometry, transformer),
+            )
+            db.session.add(iris)
+            count += 1
     return count
+
+
+# If this function ever gets too complex, we could use the `geomet`
+# Python package instead.
+def _to_wkt(geometry: fiona.Geometry, transformer: pyproj.Transformer) -> str:
+    if geometry.type == "Polygon":
+        s = "("
+        for ring in geometry.coordinates:
+            s += "("
+            for point in ring:
+                lat, lon = transformer.transform(*point)
+                # /!\ Order must the same as in `get_iris_from_coordinates()`.
+                s += f"{lon} {lat},"
+            s = s.rstrip(",")
+            s += "),"
+        s = s.rstrip(",")
+        s += ")"
+        return f"POLYGON {s}"
+    if geometry.type == "MultiPolygon":
+        s = "("
+        for polygon in geometry.coordinates:
+            s += "("
+            for ring in polygon:
+                s += "("
+                for point in ring:
+                    lat, lon = transformer.transform(*point)
+                    s += f"{lon} {lat},"
+                s = s.rstrip(",")
+                s += "),"
+            s = s.rstrip(",")
+            s += "),"
+        s = s.rstrip(",")
+        s += ")"
+        return f"MULTIPOLYGON {s}"
+    else:
+        raise ValueError(f"Unsupported type of geometry: {geometry.type}")
