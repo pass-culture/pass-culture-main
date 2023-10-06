@@ -217,6 +217,21 @@ describe('IndividualOffer section: UsefulInformations', () => {
     ).toBeInTheDocument()
   })
 
+  it('should contain withdrawal ticket informations when offer contain withrawalType informations', async () => {
+    // such a case is possible for all event public api/providers offers creation
+    // even if they are not "canBeWithrawable"
+    initialValues.withdrawalType = WithdrawalTypeEnum.NO_TICKET
+    await renderUsefulInformations({
+      initialValues,
+      onSubmit,
+      props,
+    })
+
+    expect(
+      screen.getByText('Précisez la façon dont vous distribuerez les billets :')
+    ).toBeInTheDocument()
+  })
+
   it('should not contain withdrawal ticket informations when subcategory is not from specific subCategory', async () => {
     initialValues.subcategoryId = 'ANOTHER_SUB_CATEGORY'
     await renderUsefulInformations({
