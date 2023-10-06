@@ -139,7 +139,7 @@ describe('screens:SignupJourney::OffererAuthentication', () => {
     ).toBeInTheDocument()
 
     expect(
-      await screen.getByRole('heading', { level: 2, name: 'Identification' })
+      screen.getByRole('heading', { level: 2, name: 'Identification' })
     ).toBeInTheDocument()
 
     const siretField = screen.getByLabelText('Numéro de SIRET')

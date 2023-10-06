@@ -92,7 +92,7 @@ describe('offersSearch component', () => {
 
   it('should uncheck checkbox when user remove department tag', async () => {
     renderOffersSearchComponent(props, user)
-    const checkbox = await screen.getByLabelText(
+    const checkbox = screen.getByLabelText(
       'Les acteurs qui se déplacent dans mon établissement',
       { exact: false }
     )
@@ -151,7 +151,7 @@ describe('offersSearch component', () => {
     await userEvent.click(checkbox)
 
     expect(
-      await screen.getByRole('button', { name: '30 - Gard' })
+      screen.getByRole('button', { name: '30 - Gard' })
     ).toBeInTheDocument()
   })
 

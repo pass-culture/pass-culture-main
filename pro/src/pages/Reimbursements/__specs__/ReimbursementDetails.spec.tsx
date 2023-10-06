@@ -110,7 +110,7 @@ describe('reimbursementsWithFilters', () => {
     )
 
     expect(
-      await screen.getByRole('button', {
+      screen.getByRole('button', {
         name: /Télécharger/i,
       })
     ).toBeEnabled()

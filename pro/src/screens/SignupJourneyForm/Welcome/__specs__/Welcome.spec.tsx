@@ -36,9 +36,7 @@ describe('screens:SignupJourney::Welcome', () => {
   it('should render component', async () => {
     renderWelcomeScreen()
 
-    expect(
-      await screen.getByText('Finalisez votre inscription')
-    ).toBeInTheDocument()
+    expect(screen.getByText('Finalisez votre inscription')).toBeInTheDocument()
   })
 
   it('should redirect user on offerer page on continue button click', async () => {

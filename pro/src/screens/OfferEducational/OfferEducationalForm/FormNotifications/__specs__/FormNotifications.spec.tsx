@@ -82,7 +82,7 @@ describe('FormNotifications', () => {
     let mailInputs = await screen.getAllByRole('textbox', {
       name: 'Email auquel envoyer les notifications',
     })
-    const removeInputIcon = await screen.getByRole('button', {
+    const removeInputIcon = screen.getByRole('button', {
       name: "Supprimer l'email",
     })
     expect(mailInputs.length).toEqual(2)

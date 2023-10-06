@@ -50,9 +50,7 @@ describe('src | components | OffererCreation', () => {
     renderOffererCreation(store)
 
     expect(
-      await screen.getByText(
-        'Impossibilité de créer une structure actuellement.'
-      )
+      screen.getByText('Impossibilité de créer une structure actuellement.')
     ).toBeInTheDocument()
   })
 
@@ -68,7 +66,7 @@ describe('src | components | OffererCreation', () => {
   it('should not be clickable when form is invalid', async () => {
     renderOffererCreation({})
 
-    await userEvent.type(await screen.getByLabelText('SIREN'), '123456')
+    await userEvent.type(screen.getByLabelText('SIREN'), '123456')
     await userEvent.tab()
 
     await userEvent.click(screen.getByText('Créer'))
@@ -95,7 +93,7 @@ describe('src | components | OffererCreation', () => {
 
     renderOffererCreation({})
 
-    await userEvent.type(await screen.getByLabelText('SIREN'), '881457238')
+    await userEvent.type(screen.getByLabelText('SIREN'), '881457238')
     await userEvent.tab()
 
     expect(api.getSirenInfo).toHaveBeenCalledTimes(1)
@@ -138,7 +136,7 @@ describe('src | components | OffererCreation', () => {
 
     renderOffererCreation({})
 
-    await userEvent.type(await screen.getByLabelText('SIREN'), '881457238')
+    await userEvent.type(screen.getByLabelText('SIREN'), '881457238')
     await userEvent.tab()
 
     await userEvent.click(screen.getByText('Créer'))
@@ -162,7 +160,7 @@ describe('src | components | OffererCreation', () => {
 
     renderOffererCreation({})
 
-    await userEvent.type(await screen.getByLabelText('SIREN'), '881457239')
+    await userEvent.type(screen.getByLabelText('SIREN'), '881457239')
     await userEvent.tab()
 
     await userEvent.click(screen.getByText('Créer'))

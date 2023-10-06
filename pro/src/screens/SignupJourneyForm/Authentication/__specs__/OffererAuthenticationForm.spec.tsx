@@ -161,7 +161,7 @@ describe('OffererAuthenticationForm', () => {
       contextValue: contextValue,
     })
 
-    const publicNameField = await screen.getByLabelText('Nom public', {
+    const publicNameField = screen.getByLabelText('Nom public', {
       exact: false,
     })
     await userEvent.type(publicNameField, 'Public name')
