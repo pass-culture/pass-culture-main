@@ -105,14 +105,7 @@ const renderStockEventScreen = async (
             step: OFFER_WIZARD_STEP_IDS.STOCKS,
             mode: OFFER_WIZARD_MODE.READ_ONLY,
           })}
-          element={<div>Next page</div>}
-        />
-        <Route
-          path={getIndividualOfferPath({
-            step: OFFER_WIZARD_STEP_IDS.INFORMATIONS,
-            mode: OFFER_WIZARD_MODE.EDITION,
-          })}
-          element={<div>Previous page</div>}
+          element={<div>This is the read only route content</div>}
         />
       </Routes>
       <Notification />
@@ -433,7 +426,9 @@ describe('screens:StocksEventEdition', () => {
     await userEvent.click(
       screen.getByRole('button', { name: 'Enregistrer les modifications' })
     )
-    expect(await screen.getByText('Next page')).toBeInTheDocument()
+    expect(
+      await screen.getByText('This is the read only route content')
+    ).toBeInTheDocument()
     expect(api.upsertStocks).toHaveBeenCalledTimes(1)
   })
 
@@ -497,7 +492,9 @@ describe('screens:StocksEventEdition', () => {
       screen.getByText('Vos modifications ont bien été enregistrées')
     ).toBeInTheDocument()
     expect(screen.queryByTestId('stock-event-form')).not.toBeInTheDocument()
-    expect(screen.getByText(/Next page/)).toBeInTheDocument()
+    expect(
+      screen.getByText(/This is the read only route content/)
+    ).toBeInTheDocument()
   })
 
   it('should not display any message when user delete empty stock', async () => {
@@ -519,7 +516,7 @@ describe('screens:StocksEventEdition', () => {
     expect(api.deleteStock).toHaveBeenCalledTimes(0)
   })
 
-  it('should display draft success message on save button when stock form is empty and redirect to next page', async () => {
+  it('should display draft success message on save button when stock form is empty and redirect to This is the read only route content', async () => {
     apiOffer.stocks = []
     await renderStockEventScreen(apiOffer)
 
@@ -530,6 +527,18 @@ describe('screens:StocksEventEdition', () => {
       screen.getByText('Vos modifications ont bien été enregistrées')
     ).toBeInTheDocument()
     expect(screen.queryByTestId('stock-event-form')).not.toBeInTheDocument()
-    expect(screen.getByText(/Next page/)).toBeInTheDocument()
+    expect(
+      screen.getByText(/This is the read only route content/)
+    ).toBeInTheDocument()
+  })
+
+  it('should go back to summary when clicking on "Annuler et quitter"', async () => {
+    await renderStockEventScreen(apiOffer)
+
+    await userEvent.click(screen.getByText('Annuler et quitter'))
+
+    expect(
+      screen.getByText('This is the read only route content')
+    ).toBeInTheDocument()
   })
 })

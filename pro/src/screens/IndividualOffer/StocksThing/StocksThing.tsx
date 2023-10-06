@@ -206,15 +206,23 @@ const StocksThing = ({ offer }: StocksThingProps): JSX.Element => {
     }
   }, [formik.isValid])
 
-  const handlePreviousStep = () => {
+  const handlePreviousStepOrBackToReadOnly = () => {
     /* istanbul ignore next: DEBT, TO FIX */
-    navigate(
-      getIndividualOfferUrl({
-        offerId: offer.id,
-        step: OFFER_WIZARD_STEP_IDS.INFORMATIONS,
-        mode,
-      })
-    )
+    mode === OFFER_WIZARD_MODE.EDITION
+      ? navigate(
+          getIndividualOfferUrl({
+            offerId: offer.id,
+            step: OFFER_WIZARD_STEP_IDS.STOCKS,
+            mode: OFFER_WIZARD_MODE.READ_ONLY,
+          })
+        )
+      : navigate(
+          getIndividualOfferUrl({
+            offerId: offer.id,
+            step: OFFER_WIZARD_STEP_IDS.INFORMATIONS,
+            mode,
+          })
+        )
   }
 
   const onConfirmDeleteStock = async () => {
@@ -466,7 +474,7 @@ const StocksThing = ({ offer }: StocksThingProps): JSX.Element => {
 
             <ActionBar
               onClickNext={handleNextStep()}
-              onClickPrevious={handlePreviousStep}
+              onClickPrevious={handlePreviousStepOrBackToReadOnly}
               onClickSaveDraft={handleNextStep({ saveDraft: true })}
               step={OFFER_WIZARD_STEP_IDS.STOCKS}
               isDisabled={formik.isSubmitting || isDisabled}

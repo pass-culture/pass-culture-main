@@ -90,12 +90,12 @@ const ActionBar = ({
             </ButtonLink>
           ) : (
             <>
-              <ButtonLink
-                link={{ to: backOfferUrl, isExternal: false }}
+              <Button
+                onClick={onClickPrevious}
                 variant={ButtonVariant.SECONDARY}
               >
                 Annuler et quitter
-              </ButtonLink>
+              </Button>
               <SubmitButton
                 onClick={onClickNext}
                 disabled={isDisabled}
