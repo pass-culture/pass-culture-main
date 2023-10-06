@@ -24,6 +24,7 @@ import fullMoreIcon from 'icons/full-more.svg'
 import { Button } from 'ui-kit'
 import { ButtonVariant } from 'ui-kit/Button/types'
 import { FORMAT_HH_mm, FORMAT_ISO_DATE_ONLY, getToday } from 'utils/date'
+import { hasErrorCode } from 'utils/error'
 import { formatPrice } from 'utils/formatPrice'
 import { getLocalDepartementDateTimeFromUtc } from 'utils/timezone'
 
@@ -294,8 +295,17 @@ const StocksEventEdition = ({
       formStocks.splice(stockIndex, 1)
       formik.setValues({ stocks: formStocks })
       notify.success('Le stock a été supprimé.')
-    } catch {
-      notify.error('Une erreur est survenue lors de la suppression du stock.')
+    } catch (error) {
+      if (
+        hasErrorCode(error) &&
+        error.body.code === 'STOCK_FROM_CHARLIE_API_CANNOT_BE_DELETED'
+      ) {
+        notify.error(
+          'La suppression des stocks de cette offre n’est possible que depuis le logiciel synchronisé.'
+        )
+      } else {
+        notify.error('Une erreur est survenue lors de la suppression du stock.')
+      }
     }
   }
 
