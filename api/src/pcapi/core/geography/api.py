@@ -32,7 +32,7 @@ def import_iris_from_7z(path: str) -> None:
         logger.info("successfuly imported %s iris", imported)
 
 
-def import_iris_from_shp_file(path: str):
+def import_iris_from_shp_file(path: pathlib.Path) -> int:
     with fiona.open(path) as shapefile:
         count = 0
         transformer = pyproj.Transformer.from_crs(
@@ -52,7 +52,7 @@ def import_iris_from_shp_file(path: str):
 # If this function ever gets too complex, we could use the `geomet`
 # Python package instead.
 def _to_wkt(geometry: fiona.Geometry, transformer: pyproj.Transformer) -> str:
-    def _polygon(rings):
+    def _polygon(rings: list) -> str:
         s = ""
         for ring in rings:
             s += "("
@@ -70,5 +70,4 @@ def _to_wkt(geometry: fiona.Geometry, transformer: pyproj.Transformer) -> str:
     if geometry.type == "MultiPolygon":
         s = ", ".join(["(%s)" % _polygon(polygon) for polygon in geometry.coordinates])
         return f"MULTIPOLYGON ({s})"
-    else:
-        raise ValueError(f"Unsupported type of geometry: {geometry.type}")
+    raise ValueError(f"Unsupported type of geometry: {geometry.type}")
