@@ -232,26 +232,13 @@ def _reindex_all_venues(algolia_batch_size: int, max_venues: int) -> None:
         logger.info("Reindex %d eligible venues from page %d", len(venue_ids), page)
 
 
-@blueprint.cli.command("reindex_offers_if_ean_booked_recently")
-@click.option("--since", help="Number of hours since last booking to reindex", type=int, default=24)
-@click.option("--batch-size", help="Batch size (Algolia)", type=int, default=10_000)
-@click.option("--max-offers", help="Max number of offers (total)", type=int, default=10_000)
-def reindex_offers_if_ean_booked_recently(since: int, batch_size: int, max_offers: int) -> None:
+@blueprint.cli.command("update_products_booking_count_and_reindex_offers")
+@click.option("--since", help="the number of days to consider in the booking count", type=int, default=30)
+def update_products_booking_count_and_reindex_offers(since: int) -> None:
     """
-    Reindex offers that have been booked recently (24 hours by default, because this
-    command is run by a cron every day).
+    update last 30 days booking count for all products,
+    if the value changes for the product reindex all associated offers.
 
-    This command is needed to reindex offers that have the same EAN than every offer
-    that has been booked in the last 24 hours, so that each of them have an up-to-date
-    total number of bookings (per EAN) in the last 30 days (see `last30DaysBookings`
-    in Algolia serialization).
+    This command is needed to have to have last30daysBookings count by EAN in Algolia.
     """
-    _partially_index(
-        what="offers",
-        getter=offers_repository.get_paginated_active_offer_ids,
-        indexation_callback=search.reindex_offers_if_ean_booked_since,
-        batch_size=batch_size,
-        starting_page=1,
-        last_page=max_offers // batch_size,
-        indexation_callback_kwargs={"since": datetime.datetime.utcnow() - datetime.timedelta(hours=since)},
-    )
+    search.update_products_booking_count(datetime.datetime.utcnow() - datetime.timedelta(days=since))
