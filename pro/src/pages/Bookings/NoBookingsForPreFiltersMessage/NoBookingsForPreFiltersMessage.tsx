@@ -29,7 +29,7 @@ const NoBookingsForPreFiltersMessage = ({
       Vous pouvez modifier vos filtres et lancer une nouvelle recherche ou
     </p>
     <Button
-      className="reset-filters-link"
+      className={styles['reset-filters-link']}
       onClick={resetPreFilters}
       type="button"
       variant={ButtonVariant.TERNARYPINK}
