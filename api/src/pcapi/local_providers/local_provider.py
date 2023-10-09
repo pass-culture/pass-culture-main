@@ -40,6 +40,8 @@ class LocalProvider(Iterator):
         self.erroredThumbs = 0
         self.provider = get_provider_by_local_class(self.__class__.__name__)
 
+        self.logger = logger
+
     @property
     @abstractmethod
     def can_create(self):  # type: ignore [no-untyped-def]

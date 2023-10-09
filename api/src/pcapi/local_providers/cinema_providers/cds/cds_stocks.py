@@ -136,6 +136,16 @@ class CDSStocks(LocalProvider):
         self.last_offer = cds_offer
 
     def fill_stock_attributes(self, cds_stock: offers_models.Stock):  # type: ignore [no-untyped-def]
+        self.logger.info(
+            "Starting filling stock attributes in CDSStocks",
+            extra={
+                "stock_id": cds_stock.id,
+                "stock_quantity": cds_stock.quantity,
+                "stock_dnBookedQuantity": cds_stock.dnBookedQuantity,
+                "offer_id": cds_stock.offerId,
+            },
+        )
+
         cds_stock.offer = self.last_offer
 
         showtime_uuid = _get_showtimes_uuid_by_idAtProvider(cds_stock.idAtProviders)  # type: ignore [arg-type]
@@ -178,6 +188,16 @@ class CDSStocks(LocalProvider):
             cds_stock.price = show_price
             price_category = self.get_or_create_price_category(show_price, price_label)
             cds_stock.priceCategory = price_category
+
+        self.logger.info(
+            "Ending filling stock attributes in CDSStocks",
+            extra={
+                "stock_id": cds_stock.id,
+                "stock_quantity": cds_stock.quantity,
+                "stock_dnBookedQuantity": cds_stock.dnBookedQuantity,
+                "offer_id": cds_stock.offerId,
+            },
+        )
 
     def get_or_create_price_category(self, price: decimal.Decimal, price_label: str) -> offers_models.PriceCategory:
         if self.last_offer not in self.price_category_lists_by_offer:

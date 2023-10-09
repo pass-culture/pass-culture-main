@@ -124,6 +124,16 @@ class CGRStocks(LocalProvider):
         self.last_offer = offer
 
     def fill_stock_attributes(self, stock: offers_models.Stock) -> None:
+        self.logger.info(
+            "Starting filling stock attributes in CGRStocks",
+            extra={
+                "stock_id": stock.id,
+                "stock_quantity": stock.quantity,
+                "stock_dnBookedQuantity": stock.dnBookedQuantity,
+                "offer_id": stock.offerId,
+            },
+        )
+
         assert self.last_offer
         stock.offer = self.last_offer
 
@@ -170,6 +180,16 @@ class CGRStocks(LocalProvider):
             price_category = self.get_or_create_price_category(show_price, price_label)
 
             stock.priceCategory = price_category
+
+        self.logger.info(
+            "Ending filling stock attributes in CGRStocks",
+            extra={
+                "stock_id": stock.id,
+                "stock_quantity": stock.quantity,
+                "stock_dnBookedQuantity": stock.dnBookedQuantity,
+                "offer_id": stock.offerId,
+            },
+        )
 
     def get_or_create_price_category(self, price: decimal.Decimal, price_label: str) -> offers_models.PriceCategory:
         assert self.last_offer

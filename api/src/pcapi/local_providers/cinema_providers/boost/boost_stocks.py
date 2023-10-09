@@ -122,6 +122,16 @@ class BoostStocks(LocalProvider):
         self.last_offer = offer
 
     def fill_stock_attributes(self, stock: offers_models.Stock) -> None:
+        self.logger.info(
+            "Starting filling stock attributes in BoostStocks",
+            extra={
+                "stock_id": stock.id,
+                "stock_quantity": stock.quantity,
+                "stock_dnBookedQuantity": stock.dnBookedQuantity,
+                "offer_id": stock.offerId,
+            },
+        )
+
         stock.offer = self.last_offer
         # a pydantic validator has already converted the showDate to a UTC datetime
         stock.beginningDatetime = self.showtime_details.showDate
@@ -162,6 +172,16 @@ class BoostStocks(LocalProvider):
             price_label = self.pcu_pricing.title
             price_category = self.get_or_create_price_category(price, price_label)
             stock.priceCategory = price_category
+
+        self.logger.info(
+            "Ending filling stock attributes in BoostStocks",
+            extra={
+                "stock_id": stock.id,
+                "stock_quantity": stock.quantity,
+                "stock_dnBookedQuantity": stock.dnBookedQuantity,
+                "offer_id": stock.offerId,
+            },
+        )
 
     def get_or_create_price_category(self, price: decimal.Decimal, price_label: str) -> offers_models.PriceCategory:
         if self.last_offer not in self.price_category_lists_by_offer:
