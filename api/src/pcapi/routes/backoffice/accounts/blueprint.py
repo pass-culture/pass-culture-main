@@ -904,6 +904,24 @@ def review_public_account(user_id: int) -> utils.BackofficeResponse:
         flash("Les données envoyées comportent des erreurs", "warning")
         return redirect(url_for("backoffice_web.public_accounts.get_public_account", user_id=user_id), code=303)
 
+    if form.status.data == fraud_models.FraudReviewStatus.OK.value:
+        eligibility = users_models.EligibilityType[form.eligibility.data]
+        if eligibility == users_models.EligibilityType.AGE18:
+            if users_models.UserRole.UNDERAGE_BENEFICIARY in user.roles:
+                flash(
+                    "Le compte est déjà bénéficiaire (15-17) il ne peut pas aussi être bénéficiaire (18+)",
+                    "warning",
+                )
+                return redirect(get_public_account_link(user_id), code=303)
+
+        if eligibility == users_models.EligibilityType.UNDERAGE:
+            if users_models.UserRole.BENEFICIARY in user.roles:
+                flash(
+                    "Le compte est déjà bénéficiaire (18+) il ne peut pas aussi être bénéficiaire (15-17)",
+                    "warning",
+                )
+                return redirect(get_public_account_link(user_id), code=303)
+
     try:
         fraud_api.validate_beneficiary(
             user=user,
