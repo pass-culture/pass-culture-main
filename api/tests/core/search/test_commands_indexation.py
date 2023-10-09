@@ -1,3 +1,7 @@
+import datetime
+
+from freezegun import freeze_time
+
 import pcapi.core.bookings.factories as bookings_factories
 import pcapi.core.educational.factories as educational_factories
 import pcapi.core.offerers.factories as offerers_factories
@@ -41,7 +45,7 @@ def test_partially_index_offers(app):
 
 
 @clean_database
-def test_reindex_offers_if_ean_booked_recently(app):
+def test_update_products_booking_count_and_reindex_offers(app):
     product = offers_factories.ProductFactory(extraData={"ean": "1234567890123"})
     offer_with_ean = offers_factories.OfferFactory(extraData={"ean": "1234567890123"}, product=product)
     offer_with_no_ean = offers_factories.OfferFactory(extraData={})
@@ -50,16 +54,16 @@ def test_reindex_offers_if_ean_booked_recently(app):
     bookings_factories.BookingFactory(stock=offers_factories.StockFactory(offer=offer_with_no_ean))
 
     expected_to_be_reindexed = {
-        offer_with_ean.id,
+        str(offer_with_ean.id),
     }
 
-    run_command(app, "reindex_offers_if_ean_booked_recently")
+    run_command(app, "update_products_booking_count_and_reindex_offers")
 
-    assert set(search_testing.search_store["offers"].keys()) == expected_to_be_reindexed
+    assert app.redis_client.smembers("search:algolia:offer_ids") == expected_to_be_reindexed
 
 
 @clean_database
-def test_reindex_offers_if_same_ean_booked_recently(app):
+def test_update_products_booking_count_and_reindex_offers_if_same_ean(app):
     ean_1 = "1234567890123"
     ean_2 = "9876543219876"
     product1 = offers_factories.ProductFactory(extraData={"ean": ean_1})
@@ -76,18 +80,45 @@ def test_reindex_offers_if_same_ean_booked_recently(app):
     offers_factories.StockFactory(offer=offer_with_different_ean)
 
     expected_to_be_reindexed = {
-        offer_with_ean.id,
-        offer_not_booked_with_same_ean_in_offer.id,
+        str(offer_with_ean.id),
+        str(offer_not_booked_with_same_ean_in_offer.id),
     }
 
     # fmt: off
     run_command(
         app,
-        "reindex_offers_if_ean_booked_recently",
+        "update_products_booking_count_and_reindex_offers",
     )
     # fmt: on
 
-    assert set(search_testing.search_store["offers"].keys()) == expected_to_be_reindexed
+    assert app.redis_client.smembers("search:algolia:offer_ids") == expected_to_be_reindexed
+
+
+@clean_database
+def test_reindex_offers_if_last_30_days_booking_changed_but_no_recent_booking(app):
+    with freeze_time("2023-01-01") as freezed_time:
+        ean_1 = "1234567890123"
+        product1 = offers_factories.ProductFactory(extraData={"ean": ean_1})
+        offer_with_ean = offers_factories.OfferFactory(product=product1, extraData={"ean": ean_1})
+        bookings_factories.BookingFactory(
+            stock=offers_factories.StockFactory(offer=offer_with_ean),
+            dateCreated=datetime.datetime.utcnow(),
+        )
+        expected_to_be_reindexed = {
+            str(offer_with_ean.id),
+        }
+        run_command(
+            app,
+            "update_products_booking_count_and_reindex_offers",
+        )
+        search_testing.search_store["offers"] = dict()
+        freezed_time.tick(delta=datetime.timedelta(days=31, hours=1))
+
+        run_command(
+            app,
+            "reindex_offers_if_ean_booked_recently",
+        )
+        assert app.redis_client.smembers("search:algolia:offer_ids") == expected_to_be_reindexed
 
 
 @clean_database

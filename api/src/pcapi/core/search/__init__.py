@@ -2,6 +2,7 @@ from collections.abc import Collection
 import dataclasses
 import datetime
 import logging
+import typing
 from typing import Iterable
 
 from flask_sqlalchemy import BaseQuery
@@ -16,6 +17,7 @@ import pcapi.core.offers.repository as offers_repository
 from pcapi.core.search.backends import base
 from pcapi.models import db
 from pcapi.models.feature import FeatureToggle
+from pcapi.repository import repository
 from pcapi.utils.module_loading import import_string
 
 
@@ -656,34 +658,41 @@ def unindex_all_venues() -> None:
         logger.exception("Could not unindex all venues")
 
 
-def reindex_offers_if_ean_booked_since(offer_ids: list, since: datetime.datetime) -> None:
-    """
-    This function loads all offers booked the last x hours and
-    if they have an ean, it will reindex all related offers with the same ean
-    """
-
-    last_x_hours_bookings_with_ean = (
-        bookings_models.Booking.query.filter(
+def get_last_x_days_bookings_for_eans(eans: list[str], since: datetime.datetime) -> dict[str, int]:
+    result = (
+        bookings_models.Booking.query.join(offers_models.Stock)
+        .join(offers_models.Offer)
+        .join(offers_models.Offer.product)
+        .filter(
             bookings_models.Booking.dateCreated >= since,
             bookings_models.Booking.status != bookings_models.BookingStatus.CANCELLED,
+            offers_models.Offer.isActive.is_(True),
+            offers_models.Product.extraData["ean"].astext.in_(eans),
         )
-        .join(bookings_models.Booking.stock)
-        .join(offers_models.Stock.offer)
-        .join(offers_models.Offer.product)
-        .filter(sa.or_(offers_models.Offer.extraData["ean"].is_not(None)))
-        .with_entities(offers_models.Offer.extraData["ean"].label("ean"))
+        .group_by(offers_models.Product.extraData["ean"])
+        .with_entities(offers_models.Product.extraData["ean"], sa.func.count(bookings_models.Booking.id))
     )
 
-    eans = {booking.ean for booking in last_x_hours_bookings_with_ean}
+    return dict(result)
 
-    if not eans:
+
+def update_products_booking_count(since: datetime.datetime) -> None:
+    updated_products = update_product_last_30_days_bookings(since)
+    if not updated_products:
         return
 
     # We reindex all offers with the same ean
     offer_ids_to_reindex_query = (
         offers_models.Offer.query.join(offers_models.Offer.product)
-        .filter(offers_models.Offer.id.in_(offer_ids))
-        .filter(offers_models.Offer.extraData["ean"].astext.in_(list(eans)))
+        .filter(
+            offers_models.Product.extraData["ean"].astext.in_(
+                list(
+                    product.extraData.get("ean")
+                    for product in updated_products
+                    if product.extraData and product.extraData.get("ean")
+                )
+            )
+        )
         .with_entities(offers_models.Offer.id)
     )
     offer_ids_to_reindex = [offer_id for offer_id, in offer_ids_to_reindex_query]
@@ -691,4 +700,29 @@ def reindex_offers_if_ean_booked_since(offer_ids: list, since: datetime.datetime
     logger.info(
         "Starting to reindex offers with ean booked recently", extra={"offers_count": len(offer_ids_to_reindex)}
     )
-    reindex_offer_ids(offer_ids_to_reindex, use_national_booking_count=True)
+    async_index_offer_ids(offer_ids_to_reindex)
+
+
+def update_product_last_30_days_bookings(since: datetime.datetime) -> list[offers_models.Product]:
+    eans = offers_models.Product.query.with_entities(offers_models.Product.extraData["ean"].astext).distinct().all()
+    booking_count_by_ean = get_last_x_days_bookings_for_eans([ean for ean, in eans], since)
+    updated_products = []
+    for product in db.session.query(offers_models.Product):
+        ean = (product.extraData or {}).get("ean")
+        if ean:
+            old_last_x_days_booking = product.last_30_days_booking
+            if ean not in booking_count_by_ean:
+                updated_last_x_days_booking: int | None = 0
+            else:
+                updated_last_x_days_booking = booking_count_by_ean.get(ean)
+
+            if updated_last_x_days_booking is None:
+                continue
+
+            if old_last_x_days_booking != updated_last_x_days_booking:
+                product.last_30_days_booking = updated_last_x_days_booking
+                if not (old_last_x_days_booking is None and updated_last_x_days_booking == 0):
+                    updated_products.append(product)
+
+    repository.save(*updated_products)
+    return updated_products
