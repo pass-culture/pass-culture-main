@@ -116,7 +116,6 @@ class Returns200Test:
         now = datetime.utcnow()
         user_offerer = offerers_factories.UserOffererFactory(
             offerer__dateCreated=now,
-            offerer__dateModifiedAtLastProvider=now,
             offerer__siren="123456789",
             offerer__name="Test Offerer",
         )

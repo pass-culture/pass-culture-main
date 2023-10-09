@@ -39,7 +39,6 @@ describe('useGetVenue', () => {
       managingOfferer: {
         city: 'Paris',
         dateCreated: '2022-07-29T12:18:43.087097Z',
-        fieldsUpdated: [],
         id: 1,
         isValidated: true,
         name: 'Test structure name',
@@ -124,7 +123,6 @@ describe('useGetVenue', () => {
       managingOfferer: {
         city: 'Paris',
         dateCreated: '2022-07-29T12:18:43.087097Z',
-        fieldsUpdated: [],
         id: 1,
         isValidated: true,
         name: 'Test structure name',
