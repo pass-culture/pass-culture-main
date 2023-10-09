@@ -93,14 +93,9 @@ def full_index_offers(start: int, end: int) -> None:
             )
             .order_by(offers_models.Offer.id)
         )
-        last_x_days_bookings_count = search.get_last_x_days_bookings_count(offers)
-        last_x_days_bookings_count_by_offer = {}
-
+        last_x_days_bookings_count_by_offer = search.get_last_x_days_booking_count_by_offer(offers)
         for offer in offers:
             if offer.is_eligible_for_search:
-                last_x_days_bookings_count_by_offer[offer.id] = search.get_offer_bookings_count(
-                    offer, last_x_days_bookings_count
-                )
                 enqueue_or_index(queue, offer, last_x_days_bookings_count_by_offer)
         elapsed_per_batch.append(int(time.perf_counter() - start_time))
         start = start + BATCH_SIZE
