@@ -203,8 +203,7 @@ const InformationsScreen = ({
       to: nextStep,
       used: OFFER_FORM_NAVIGATION_MEDIUM.STICKY_BUTTONS,
       isEdition: mode !== OFFER_WIZARD_MODE.CREATION,
-      isDraft:
-        mode === OFFER_WIZARD_MODE.CREATION || mode === OFFER_WIZARD_MODE.DRAFT,
+      isDraft: mode === OFFER_WIZARD_MODE.CREATION,
       offerId: receivedOfferId,
       subcategoryId: formik.values.subcategoryId,
     })

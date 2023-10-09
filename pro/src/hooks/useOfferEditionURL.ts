@@ -16,7 +16,7 @@ export const useOfferEditionURL = (
   if (status && status == OFFER_STATUS_DRAFT) {
     return getIndividualOfferUrl({
       offerId,
-      mode: OFFER_WIZARD_MODE.DRAFT,
+      mode: OFFER_WIZARD_MODE.CREATION,
       step: OFFER_WIZARD_STEP_IDS.INFORMATIONS,
     })
   }

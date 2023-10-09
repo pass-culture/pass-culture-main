@@ -78,49 +78,15 @@ describe('PriceCategories', () => {
     expect(api.postPriceCategories).toHaveBeenCalled()
   })
 
-  it('should notify and submit when clicking on Enregister et continuer in draft', async () => {
-    renderPriceCategories(
-      { offer: individualOfferFactory() },
-      generatePath(
-        getIndividualOfferPath({
-          step: OFFER_WIZARD_STEP_IDS.TARIFS,
-          mode: OFFER_WIZARD_MODE.DRAFT,
-        }),
-        { offerId: 'AA' }
-      )
-    )
-    await userEvent.type(
-      screen.getByLabelText('Intitulé du tarif'),
-      'Mon tarif'
-    )
-    await userEvent.type(screen.getByLabelText('Prix par personne'), '20')
-
-    await userEvent.click(screen.getByText('Enregistrer et continuer'))
-
-    await waitFor(() => {
-      expect(api.patchOffer).toHaveBeenCalled()
-    })
-    expect(api.postPriceCategories).toHaveBeenCalled()
-  })
-
   it('should display price modification popin', async () => {
-    renderPriceCategories(
-      {
-        offer: individualOfferFactory(
-          undefined,
-          individualStockFactory({ priceCategoryId: 666, bookingsQuantity: 0 }),
-          undefined,
-          priceCategoryFactory({ id: 666 })
-        ),
-      },
-      generatePath(
-        getIndividualOfferPath({
-          step: OFFER_WIZARD_STEP_IDS.TARIFS,
-          mode: OFFER_WIZARD_MODE.DRAFT,
-        }),
-        { offerId: 'AA' }
-      )
-    )
+    renderPriceCategories({
+      offer: individualOfferFactory(
+        undefined,
+        individualStockFactory({ priceCategoryId: 666, bookingsQuantity: 0 }),
+        undefined,
+        priceCategoryFactory({ id: 666 })
+      ),
+    })
     await userEvent.type(
       screen.getByLabelText('Intitulé du tarif'),
       'Mon tarif'
@@ -146,26 +112,17 @@ describe('PriceCategories', () => {
   })
 
   it('should display price modification popin with booking', async () => {
-    renderPriceCategories(
-      {
-        offer: individualOfferFactory(
-          undefined,
-          individualStockFactory({
-            priceCategoryId: 666,
-            bookingsQuantity: 17,
-          }),
-          undefined,
-          priceCategoryFactory({ id: 666 })
-        ),
-      },
-      generatePath(
-        getIndividualOfferPath({
-          step: OFFER_WIZARD_STEP_IDS.TARIFS,
-          mode: OFFER_WIZARD_MODE.DRAFT,
+    renderPriceCategories({
+      offer: individualOfferFactory(
+        undefined,
+        individualStockFactory({
+          priceCategoryId: 666,
+          bookingsQuantity: 17,
         }),
-        { offerId: 'AA' }
-      )
-    )
+        undefined,
+        priceCategoryFactory({ id: 666 })
+      ),
+    })
     await userEvent.type(
       screen.getByLabelText('Intitulé du tarif'),
       'Mon tarif'

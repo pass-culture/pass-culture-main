@@ -82,20 +82,6 @@ const renderSummary = (
           />
           <Route
             path={getIndividualOfferPath({
-              step: OFFER_WIZARD_STEP_IDS.SUMMARY,
-              mode: OFFER_WIZARD_MODE.DRAFT,
-            })}
-            element={<SummaryScreen />}
-          />
-          <Route
-            path={getIndividualOfferPath({
-              step: OFFER_WIZARD_STEP_IDS.CONFIRMATION,
-              mode: OFFER_WIZARD_MODE.DRAFT,
-            })}
-            element={<div>Confirmation page: draft</div>}
-          />
-          <Route
-            path={getIndividualOfferPath({
               step: OFFER_WIZARD_STEP_IDS.CONFIRMATION,
               mode: OFFER_WIZARD_MODE.CREATION,
             })}
@@ -403,34 +389,20 @@ describe('Summary', () => {
   })
 
   describe('banners', () => {
-    const urlList = [
-      generatePath(
+    it('should display pre publishing banner in creation', () => {
+      const url = generatePath(
         getIndividualOfferPath({
           step: OFFER_WIZARD_STEP_IDS.SUMMARY,
           mode: OFFER_WIZARD_MODE.CREATION,
         }),
         { offerId: 'AA' }
-      ),
-      generatePath(
-        getIndividualOfferPath({
-          step: OFFER_WIZARD_STEP_IDS.SUMMARY,
-          mode: OFFER_WIZARD_MODE.DRAFT,
-        }),
-        { offerId: 'AA' }
-      ),
-    ]
-    it.each(urlList)(
-      'should display pre publishing banner in creation',
-      url => {
-        renderSummary(customContext, url)
+      )
+      renderSummary(customContext, url)
 
-        // then
-        expect(screen.getByText('Vous y êtes presque !')).toBeInTheDocument()
-      }
-    )
+      expect(screen.getByText('Vous y êtes presque !')).toBeInTheDocument()
+    })
 
     it('should display a notification when saving as draft', async () => {
-      // when
       renderSummary(
         customContext,
         generatePath(
@@ -448,8 +420,8 @@ describe('Summary', () => {
         screen.getByText('Brouillon sauvegardé dans la liste des offres')
       ).toBeInTheDocument()
     })
+
     it('should not display pre publishing banner in edition mode', () => {
-      // when
       renderSummary(
         customContext,
         generatePath(
@@ -461,7 +433,6 @@ describe('Summary', () => {
         )
       )
 
-      // then
       expect(
         screen.queryByText('Vous y êtes presque !')
       ).not.toBeInTheDocument()

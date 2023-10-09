@@ -43,13 +43,6 @@ const renderStockSection = (
       />
       <Route
         path={getIndividualOfferPath({
-          step: OFFER_WIZARD_STEP_IDS.SUMMARY,
-          mode: OFFER_WIZARD_MODE.DRAFT,
-        })}
-        element={<StockSection {...props} />}
-      />
-      <Route
-        path={getIndividualOfferPath({
           step: OFFER_WIZARD_STEP_IDS.STOCKS,
           mode: OFFER_WIZARD_MODE.CREATION,
         })}
@@ -61,13 +54,6 @@ const renderStockSection = (
           mode: OFFER_WIZARD_MODE.EDITION,
         })}
         element={<div>Offer V3 edition: page stocks</div>}
-      />
-      <Route
-        path={getIndividualOfferPath({
-          step: OFFER_WIZARD_STEP_IDS.STOCKS,
-          mode: OFFER_WIZARD_MODE.DRAFT,
-        })}
-        element={<div>Offer V3 brouillon: page stocks</div>}
       />
     </Routes>,
     { initialRouterEntries: [url] }
@@ -308,27 +294,6 @@ describe('Summary stock section', () => {
       await userEvent.click(screen.getByRole('link', { name: /Modifier/ }))
       expect(
         screen.getByText(/Offer V3 creation: page stocks/)
-      ).toBeInTheDocument()
-    })
-
-    it('should render brouillon summary (v3)', async () => {
-      renderStockSection(
-        props,
-        generatePath(
-          getIndividualOfferPath({
-            step: OFFER_WIZARD_STEP_IDS.SUMMARY,
-            mode: OFFER_WIZARD_MODE.DRAFT,
-          }),
-          { offerId: 'AA' }
-        )
-      )
-      expect(
-        screen.getByRole('heading', { name: /Dates et capacité/ })
-      ).toBeInTheDocument()
-
-      await userEvent.click(screen.getByRole('link', { name: /Modifier/ }))
-      expect(
-        screen.getByText(/Offer V3 brouillon: page stocks/)
       ).toBeInTheDocument()
     })
 
