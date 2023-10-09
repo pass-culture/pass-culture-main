@@ -144,7 +144,6 @@ export const OfferFilters = ({
       value: OfferAddressType.SCHOOL,
     },
   ]
-
   return (
     <FormikProvider value={formik}>
       <Form onSubmit={formik.handleSubmit} className={className}>

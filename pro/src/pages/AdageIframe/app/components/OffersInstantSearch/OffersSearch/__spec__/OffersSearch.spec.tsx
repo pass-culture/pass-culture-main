@@ -87,15 +87,6 @@ vi.mock('apiClient/api', () => ({
   },
 }))
 
-jest.mock('pages/AdageIframe/repository/pcapi/pcapi', () => ({
-  getEducationalDomains: vi.fn(),
-}))
-
-jest.mock('hooks/useActiveFeature', () => ({
-  __esModule: true,
-  default: vi.fn().mockReturnValue(true),
-}))
-
 const isGeolocationActive = {
   features: {
     list: [
