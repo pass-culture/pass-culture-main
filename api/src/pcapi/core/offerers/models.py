@@ -808,9 +808,7 @@ class Offerer(
     PcObject,
     Base,
     Model,
-    HasThumbMixin,
     HasAddressMixin,
-    ProvidableMixin,
     ValidationStatusMixin,
     DeactivableMixin,
 ):
