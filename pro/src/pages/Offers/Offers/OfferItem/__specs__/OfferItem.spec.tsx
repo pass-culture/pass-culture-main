@@ -503,7 +503,7 @@ describe('src | components | pages | Offers | OfferItem', () => {
       const links = screen.getAllByRole('link')
       expect(links[links.length - 1]).toHaveAttribute(
         'href',
-        `/offre/individuelle/${eventOffer.id}/brouillon/informations`
+        `/offre/individuelle/${eventOffer.id}/creation/informations`
       )
     })
 

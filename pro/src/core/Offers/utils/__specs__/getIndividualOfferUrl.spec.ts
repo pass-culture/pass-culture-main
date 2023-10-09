@@ -56,48 +56,6 @@ describe('getIndividualOfferUrl', () => {
       },
       expectedUrl: '/offre/individuelle/42/creation/tarifs',
     },
-    // when brouillon mode
-    {
-      props: {
-        offerId: offerId,
-        mode: OFFER_WIZARD_MODE.DRAFT,
-        step: OFFER_WIZARD_STEP_IDS.INFORMATIONS,
-      },
-      expectedUrl: '/offre/individuelle/42/brouillon/informations',
-    },
-    {
-      props: {
-        offerId: offerId,
-        mode: OFFER_WIZARD_MODE.DRAFT,
-        step: OFFER_WIZARD_STEP_IDS.STOCKS,
-      },
-      expectedUrl: '/offre/individuelle/42/brouillon/stocks',
-    },
-    {
-      props: {
-        offerId: offerId,
-        mode: OFFER_WIZARD_MODE.DRAFT,
-        step: OFFER_WIZARD_STEP_IDS.SUMMARY,
-      },
-      expectedUrl: '/offre/individuelle/42/brouillon/recapitulatif',
-    },
-    {
-      props: {
-        offerId: offerId,
-        mode: OFFER_WIZARD_MODE.DRAFT,
-        step: OFFER_WIZARD_STEP_IDS.CONFIRMATION,
-      },
-      expectedUrl: '/offre/individuelle/42/brouillon/confirmation',
-    },
-
-    {
-      props: {
-        offerId: offerId,
-        mode: OFFER_WIZARD_MODE.DRAFT,
-        step: OFFER_WIZARD_STEP_IDS.TARIFS,
-      },
-      expectedUrl: '/offre/individuelle/42/brouillon/tarifs',
-    },
     // when edition mode
     {
       props: {
