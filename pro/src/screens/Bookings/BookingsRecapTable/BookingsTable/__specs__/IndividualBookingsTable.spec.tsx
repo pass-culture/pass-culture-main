@@ -24,7 +24,7 @@ describe('CollectiveTableRow', () => {
         bookingRecapFactory({}, offer),
       ],
       bookingStatuses: [],
-      updateGlobalFilters: jest.fn(),
+      updateGlobalFilters: vi.fn(),
     }
 
     renderIndividualBookingTable(props)
@@ -38,7 +38,7 @@ describe('CollectiveTableRow', () => {
     const props: IndividualBookingsTableProps = {
       bookings: [],
       bookingStatuses: [],
-      updateGlobalFilters: jest.fn(),
+      updateGlobalFilters: vi.fn(),
     }
 
     renderIndividualBookingTable(props)
