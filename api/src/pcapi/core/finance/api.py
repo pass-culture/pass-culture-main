@@ -437,7 +437,7 @@ def price_events(
         loops -= 1
         # Keep last event in the session, we'll need it when calling
         # `_get_loop_query()` for the next loop.
-        with log_elapsed(logger, "Expunged priced bookings from session"):
+        with log_elapsed(logger, "Expunged priced events from session"):
             for event in events:
                 if event != last_event:
                     db.session.expunge(event)
