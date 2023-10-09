@@ -46,17 +46,22 @@ class UnsuspendUserForm(FlaskForm):
     comment = fields.PCOptCommentField("Commentaire interne optionnel")
 
 
-def get_toggle_suspension_args(user: users_models.User, suspension_type: SuspensionUserType | None = None) -> dict:
+def get_toggle_suspension_args(
+    user: users_models.User,
+    *,
+    suspension_type: SuspensionUserType | None = None,
+    required_permission: perm_models.Permissions | None = None,
+) -> dict:
     """
     Additional arguments which must be passed to render_template when the page may show suspend/unsuspend button.
     """
 
-    if user.isActive and has_current_user_permission(perm_models.Permissions.SUSPEND_USER):
+    if user.isActive and has_current_user_permission(required_permission or perm_models.Permissions.SUSPEND_USER):
         return {
             "suspension_form": SuspendUserForm(suspension_type=suspension_type),
             "suspension_dst": url_for("backoffice_web.users.suspend_user", user_id=user.id),
         }
-    if not user.isActive and has_current_user_permission(perm_models.Permissions.UNSUSPEND_USER):
+    if not user.isActive and has_current_user_permission(required_permission or perm_models.Permissions.UNSUSPEND_USER):
         return {
             "suspension_form": UnsuspendUserForm(),
             "suspension_dst": url_for("backoffice_web.users.unsuspend_user", user_id=user.id),

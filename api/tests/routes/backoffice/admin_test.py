@@ -14,6 +14,7 @@ from pcapi.core.users import models as users_models
 from pcapi.models import db
 from pcapi.models import feature as feature_models
 
+from .helpers import button as button_helpers
 from .helpers import html_parser
 from .helpers.get import GetEndpointHelper
 from .helpers.post import PostEndpointHelper
@@ -348,6 +349,26 @@ class GetBoUserTest(GetEndpointHelper):
             perm_models.Roles.SUPPORT_N2.value,
             perm_models.Roles.SUPPORT_PRO.value,
         ]
+
+
+class SuspendButtonTest(button_helpers.ButtonHelper):
+    needed_permission = perm_models.Permissions.MANAGE_ADMIN_ACCOUNTS
+    button_label = "Suspendre le compte"
+
+    @property
+    def path(self):
+        user = users_factories.AdminFactory()
+        return url_for("backoffice_web.bo_users.get_bo_user", user_id=user.id)
+
+
+class UnsuspendButtonTest(button_helpers.ButtonHelper):
+    needed_permission = perm_models.Permissions.MANAGE_ADMIN_ACCOUNTS
+    button_label = "Réactiver le compte"
+
+    @property
+    def path(self):
+        user = users_factories.AdminFactory(isActive=False)
+        return url_for("backoffice_web.bo_users.get_bo_user", user_id=user.id)
 
 
 class UpdateBoUserTest(PostEndpointHelper):
