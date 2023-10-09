@@ -36,7 +36,7 @@ const renderPriceCategoriesForm = (
     <Formik initialValues={values} onSubmit={vi.fn()}>
       <PriceCategoriesForm
         offerId={42}
-        mode={OFFER_WIZARD_MODE.DRAFT}
+        mode={OFFER_WIZARD_MODE.CREATION}
         stocks={[individualStockFactory({ priceCategoryId: 144 })]}
         setOffer={vi.fn()}
         isDisabled={false}

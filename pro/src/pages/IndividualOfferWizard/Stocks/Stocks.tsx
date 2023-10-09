@@ -31,8 +31,7 @@ const Stocks = (): JSX.Element | null => {
       mode={mode}
     >
       {offer.isEvent ? (
-        mode === OFFER_WIZARD_MODE.CREATION ||
-        mode === OFFER_WIZARD_MODE.DRAFT ? (
+        mode === OFFER_WIZARD_MODE.CREATION ? (
           <StocksEventCreation offer={offer} />
         ) : (
           <StocksEventEdition offer={offer} />

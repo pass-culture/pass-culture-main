@@ -21,7 +21,6 @@ import {
   individualOfferContextFactory,
   individualOfferFactory,
   individualOfferVenueFactory,
-  individualStockFactory,
 } from 'utils/individualApiFactories'
 import { renderWithProviders } from 'utils/renderWithProviders'
 
@@ -84,13 +83,6 @@ const renderStockThingScreen = (
           mode: OFFER_WIZARD_MODE.CREATION,
         })}
         element={<div>Next page</div>}
-      />
-      <Route
-        path={getIndividualOfferPath({
-          step: OFFER_WIZARD_STEP_IDS.SUMMARY,
-          mode: OFFER_WIZARD_MODE.DRAFT,
-        })}
-        element={<div>Next page draft</div>}
       />
       <Route
         path={getIndividualOfferPath({
@@ -185,55 +177,5 @@ describe('screens:StocksThing', () => {
     await userEvent.click(screen.getByText('Go outside !'))
 
     await userEvent.click(screen.getByText('Quitter la page'))
-  })
-
-  it('should be able to submit from Action Bar without Guard after changing price in draft', async () => {
-    vi.spyOn(api, 'upsertStocks').mockResolvedValue({
-      stocks: [{ id: 1 } as StockResponseModel],
-    })
-    const stock = individualStockFactory({
-      id: 1,
-      quantity: 10,
-      price: 17.11,
-      remainingQuantity: 6,
-      bookingsQuantity: 0,
-      hasActivationCode: false,
-      activationCodesExpirationDatetime: null,
-      activationCodes: [],
-      beginningDatetime: null,
-      bookingLimitDatetime: null,
-      isSoftDeleted: false,
-      isEventExpired: false,
-      isEventDeletable: false,
-      dateCreated: new Date(),
-    })
-
-    offer = individualOfferFactory({
-      id: offerId,
-      venue: individualOfferVenueFactory({
-        departmentCode: '75',
-      }),
-      stocks: [stock],
-    })
-
-    props.offer = offer
-    contextValue.offer = offer
-    renderStockThingScreen(
-      props,
-      contextValue,
-      generatePath(
-        getIndividualOfferPath({
-          step: OFFER_WIZARD_STEP_IDS.STOCKS,
-          mode: OFFER_WIZARD_MODE.DRAFT,
-        }),
-        { offerId: 'AA' }
-      )
-    )
-    await userEvent.type(screen.getByLabelText('Prix'), '20')
-
-    await userEvent.click(screen.getByText('Enregistrer et continuer'))
-    expect(api.upsertStocks).toHaveBeenCalledTimes(1)
-
-    expect(screen.getByText('Next page draft')).toBeInTheDocument()
   })
 })

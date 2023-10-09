@@ -96,8 +96,8 @@ export const IndividualOfferBreadcrumb = () => {
     })
   }
 
-  // Summary/confirmation steps on creation/draft
-  if (mode === OFFER_WIZARD_MODE.CREATION || mode === OFFER_WIZARD_MODE.DRAFT) {
+  // Summary/confirmation steps on creation
+  if (mode === OFFER_WIZARD_MODE.CREATION) {
     steps.push(
       {
         id: OFFER_WIZARD_STEP_IDS.SUMMARY,
@@ -149,14 +149,12 @@ export const IndividualOfferBreadcrumb = () => {
       activeStep={activeStep}
       steps={stepList}
       styleType={
-        mode === OFFER_WIZARD_MODE.CREATION || mode === OFFER_WIZARD_MODE.DRAFT
+        mode === OFFER_WIZARD_MODE.CREATION
           ? BreadcrumbStyle.STEPPER
           : BreadcrumbStyle.TAB
       }
       className={cn(styles['stepper'], {
-        [styles['stepper-creation']]:
-          mode === OFFER_WIZARD_MODE.CREATION ||
-          mode === OFFER_WIZARD_MODE.DRAFT,
+        [styles['stepper-creation']]: mode === OFFER_WIZARD_MODE.CREATION,
         [styles['stepper-readonly']]: mode === OFFER_WIZARD_MODE.READ_ONLY,
       })}
     />

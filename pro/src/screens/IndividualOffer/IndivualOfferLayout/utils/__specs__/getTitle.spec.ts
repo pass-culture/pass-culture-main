@@ -5,7 +5,6 @@ import { getTitle } from '../getTitle'
 describe('getTitle', () => {
   const testCases = [
     { mode: OFFER_WIZARD_MODE.CREATION, expected: 'Créer une offre' },
-    { mode: OFFER_WIZARD_MODE.DRAFT, expected: 'Compléter l’offre' },
     { mode: OFFER_WIZARD_MODE.READ_ONLY, expected: 'Consulter l’offre' },
     { mode: OFFER_WIZARD_MODE.EDITION, expected: 'Modifier l’offre' },
   ]

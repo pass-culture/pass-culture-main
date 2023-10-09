@@ -199,8 +199,7 @@ export const PriceCategoriesForm = ({
                       onChange={onChangeFree(index)}
                       disabled={isDisabled}
                     />
-                    {(mode === OFFER_WIZARD_MODE.CREATION ||
-                      mode === OFFER_WIZARD_MODE.DRAFT) && (
+                    {mode === OFFER_WIZARD_MODE.CREATION && (
                       <Button
                         className={styles['delete-icon']}
                         data-testid={'delete-button'}
