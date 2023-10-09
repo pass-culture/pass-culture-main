@@ -20,7 +20,7 @@ jobs:
         with:
           fetch-depth: 0
       - id: folder-check-changed-files
-        uses: tj-actions/changed-files@v35
+        uses: tj-actions/changed-files@v39
         with:
           files: |
             ${{ inputs.folder }}/**
