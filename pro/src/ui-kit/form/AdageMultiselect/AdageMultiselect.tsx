@@ -17,6 +17,7 @@ interface AdageMultiselectProps {
   name: string
   label: string
   isOpen: boolean
+  filterMaxLength?: number
   sortOptions?: (
     items: ItemProps[],
     selectedItems: ItemProps['value'][]
@@ -73,6 +74,7 @@ const AdageMultiselect = ({
   label,
   isOpen,
   sortOptions,
+  filterMaxLength = 255,
 }: AdageMultiselectProps) => {
   // We need to maintain the input value in state so that we can use it in itemToString
   const [inputValue, setInputValue] = useState('')
@@ -149,6 +151,7 @@ const AdageMultiselect = ({
         name="search"
         className={styles['search-input']}
         placeholder={placeholder}
+        maxLength={filterMaxLength}
         value={inputValue}
         {...getInputProps()}
       />

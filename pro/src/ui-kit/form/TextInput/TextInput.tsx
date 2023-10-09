@@ -18,6 +18,7 @@ export type TextInputProps = React.InputHTMLAttributes<HTMLInputElement> &
     hasDecimal?: boolean
     refForInput?: ForwardedRef<HTMLInputElement>
     ErrorDetails?: React.ReactNode
+    maxLength?: number
   }
 
 const TextInput = ({
@@ -33,7 +34,7 @@ const TextInput = ({
   isLabelHidden = false,
   placeholder,
   countCharacters,
-  maxLength,
+  maxLength = 255,
   smallLabel,
   isOptional = false,
   refForInput,
