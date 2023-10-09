@@ -61,6 +61,7 @@ export type { CreateThumbnailBodyModel } from './models/CreateThumbnailBodyModel
 export type { CreateThumbnailResponseModel } from './models/CreateThumbnailResponseModel';
 export type { CropParams } from './models/CropParams';
 export type { CulturalPartner } from './models/CulturalPartner';
+export type { DeleteFilteredStockListBody } from './models/DeleteFilteredStockListBody';
 export type { DeleteOfferRequestBody } from './models/DeleteOfferRequestBody';
 export type { DeleteStockListBody } from './models/DeleteStockListBody';
 export type { DMSApplicationForEAC } from './models/DMSApplicationForEAC';

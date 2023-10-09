@@ -26,6 +26,7 @@ from pcapi.core.offers import api
 from pcapi.core.offers import exceptions
 from pcapi.core.offers import factories
 from pcapi.core.offers import models
+from pcapi.core.offers import repository as offers_repository
 from pcapi.core.offers.exceptions import NotUpdateProductOrOffers
 from pcapi.core.offers.exceptions import ProductNotFound
 import pcapi.core.providers.factories as providers_factories
@@ -1818,6 +1819,66 @@ class DeleteStocksTest:
         stocks = factories.StockFactory.create_batch(3)
         api.batch_delete_stocks(stocks)
         assert all(stock.isSoftDeleted for stock in stocks)
+
+    @freeze_time("2020-10-15 00:00:00")
+    def test_delete_batch_stocks_filtered_by_date(self):
+        # Given
+        beginning_datetime = datetime.utcnow()
+        offer = factories.OfferFactory()
+        stock_1 = factories.EventStockFactory(offer=offer, beginningDatetime=beginning_datetime)
+        stock_2 = factories.EventStockFactory(offer=offer, beginningDatetime=beginning_datetime + timedelta(days=1))
+
+        # When
+        stocks = offers_repository.get_filtered_stocks(
+            offer_id=offer.id,
+            date=beginning_datetime.date(),
+        )
+        api.batch_delete_stocks(stocks)
+
+        # Then
+        assert stock_1.isSoftDeleted
+        assert not stock_2.isSoftDeleted
+
+    @freeze_time("2020-10-15 00:00:00")
+    def test_delete_batch_stocks_filtered_by_time(self):
+        # Given
+        beginning_datetime = datetime.utcnow()
+        offer = factories.OfferFactory()
+        stock_1 = factories.EventStockFactory(offer=offer, beginningDatetime=beginning_datetime + timedelta(seconds=15))
+        stock_2 = factories.EventStockFactory(offer=offer, beginningDatetime=beginning_datetime + timedelta(hours=1))
+
+        # When
+        stocks = offers_repository.get_filtered_stocks(
+            offer_id=offer.id,
+            time=beginning_datetime.time(),
+        )
+        api.batch_delete_stocks(stocks)
+
+        # Then
+        assert stock_1.isSoftDeleted
+        assert not stock_2.isSoftDeleted
+
+    def test_delete_batch_stocks_filtered_by_price_cat(self):
+        # Given
+
+        offer = factories.OfferFactory()
+        price_category_1 = api.create_price_category(offer=offer, label="p_cat_1", price=10)
+        price_category_2 = api.create_price_category(offer=offer, label="p_cat_2", price=20)
+        stock_1 = factories.EventStockFactory(offer=offer, priceCategory=price_category_1)
+        stock_2 = factories.EventStockFactory(offer=offer, priceCategory=price_category_2)
+        stock_3 = factories.EventStockFactory(offer=offer, priceCategory=price_category_1)
+
+        # When
+        stocks = offers_repository.get_filtered_stocks(
+            offer_id=offer.id,
+            price_category_id=stock_1.priceCategoryId,
+        )
+        api.batch_delete_stocks(stocks)
+
+        # Then
+        assert stock_1.isSoftDeleted
+        assert not stock_2.isSoftDeleted
+        assert stock_3.isSoftDeleted
 
 
 class FormatExtraDataTest:

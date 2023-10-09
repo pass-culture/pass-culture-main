@@ -25,6 +25,7 @@ import type { CookieConsentRequest } from '../models/CookieConsentRequest';
 import type { CreateOffererQueryModel } from '../models/CreateOffererQueryModel';
 import type { CreateThumbnailBodyModel } from '../models/CreateThumbnailBodyModel';
 import type { CreateThumbnailResponseModel } from '../models/CreateThumbnailResponseModel';
+import type { DeleteFilteredStockListBody } from '../models/DeleteFilteredStockListBody';
 import type { DeleteOfferRequestBody } from '../models/DeleteOfferRequestBody';
 import type { DeleteStockListBody } from '../models/DeleteStockListBody';
 import type { EditVenueBodyModel } from '../models/EditVenueBodyModel';
@@ -1668,6 +1669,32 @@ export class DefaultService {
         'order_by': orderBy,
         'order_by_desc': orderByDesc,
       },
+      errors: {
+        403: `Forbidden`,
+        422: `Unprocessable Entity`,
+      },
+    });
+  }
+
+  /**
+   * delete_all_filtered_stocks <POST>
+   * @param offerId
+   * @param requestBody
+   * @returns void
+   * @throws ApiError
+   */
+  public deleteAllFilteredStocks(
+    offerId: number,
+    requestBody?: DeleteFilteredStockListBody,
+  ): CancelablePromise<void> {
+    return this.httpRequest.request({
+      method: 'POST',
+      url: '/offers/{offer_id}/stocks/all-delete',
+      path: {
+        'offer_id': offerId,
+      },
+      body: requestBody,
+      mediaType: 'application/json',
       errors: {
         403: `Forbidden`,
         422: `Unprocessable Entity`,
