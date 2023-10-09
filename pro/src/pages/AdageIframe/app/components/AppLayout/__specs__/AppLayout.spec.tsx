@@ -100,8 +100,6 @@ describe('AppLayout', () => {
     renderAppLayout()
     waitForElementToBeRemoved(() => screen.getByTestId('spinner'))
 
-    screen.debug()
-
     expect(screen.getByRole('link', { name: 'Rechercher' })).toBeInTheDocument()
     expect(
       screen.getByRole('link', { name: 'Pour mon établissement 1' })

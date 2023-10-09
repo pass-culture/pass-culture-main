@@ -16,15 +16,6 @@ const handleSubmit = vi.fn()
 const resetFormMock = vi.fn()
 const mockSetLocalisationFilterState = vi.fn()
 
-jest.mock('apiClient/api', () => ({
-  apiAdage: {
-    getAcademies: jest.fn(),
-  },
-}))
-jest.mock('pages/AdageIframe/repository/pcapi/pcapi', () => ({
-  getEducationalDomains: jest.fn(),
-}))
-
 const isGeolocationActive = {
   features: {
     list: [
