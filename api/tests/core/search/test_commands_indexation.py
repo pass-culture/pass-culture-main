@@ -42,7 +42,8 @@ def test_partially_index_offers(app):
 
 @clean_database
 def test_reindex_offers_if_ean_booked_recently(app):
-    offer_with_ean = offers_factories.OfferFactory(extraData={"ean": "1234567890123"})
+    product = offers_factories.ProductFactory(extraData={"ean": "1234567890123"})
+    offer_with_ean = offers_factories.OfferFactory(extraData={"ean": "1234567890123"}, product=product)
     offer_with_no_ean = offers_factories.OfferFactory(extraData={})
 
     bookings_factories.BookingFactory(stock=offers_factories.StockFactory(offer=offer_with_ean))
@@ -61,9 +62,11 @@ def test_reindex_offers_if_ean_booked_recently(app):
 def test_reindex_offers_if_same_ean_booked_recently(app):
     ean_1 = "1234567890123"
     ean_2 = "9876543219876"
-    offer_with_ean = offers_factories.OfferFactory(extraData={"ean": ean_1})
-    offer_not_booked_with_same_ean_in_offer = offers_factories.OfferFactory(extraData={"ean": ean_1})
-    offer_with_different_ean = offers_factories.OfferFactory(extraData={"ean": ean_2})
+    product1 = offers_factories.ProductFactory(extraData={"ean": ean_1})
+    product2 = offers_factories.ProductFactory(extraData={"ean": ean_2})
+    offer_with_ean = offers_factories.OfferFactory(product=product1, extraData={"ean": ean_1})
+    offer_not_booked_with_same_ean_in_offer = offers_factories.OfferFactory(extraData={"ean": ean_1}, product=product1)
+    offer_with_different_ean = offers_factories.OfferFactory(extraData={"ean": ean_2}, product=product2)
 
     # 2 offers are booked
     bookings_factories.BookingFactory(stock=offers_factories.StockFactory(offer=offer_with_ean))
