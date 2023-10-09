@@ -24,6 +24,7 @@ export type MultiSelectAutocompleteProps = FieldLayoutBaseProps & {
   pluralLabel?: string
   disabled?: boolean
   placeholder?: string
+  filterMaxLength?: number
 }
 
 const MultiSelectAutocomplete = ({
@@ -42,6 +43,7 @@ const MultiSelectAutocomplete = ({
   disabled = false,
   placeholder,
   inline,
+  filterMaxLength = 255,
 }: MultiSelectAutocompleteProps): JSX.Element => {
   const { setFieldValue, handleChange, setFieldTouched } =
     useFormikContext<any>()
@@ -145,6 +147,7 @@ const MultiSelectAutocomplete = ({
           type="text"
           disabled={disabled}
           {...searchField}
+          maxLength={filterMaxLength}
         />
         <AutocompleteList
           disabled={disabled}

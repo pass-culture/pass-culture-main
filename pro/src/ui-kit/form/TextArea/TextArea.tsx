@@ -12,6 +12,7 @@ type TextAreaProps = React.InputHTMLAttributes<HTMLTextAreaElement> &
   FieldLayoutBaseProps & {
     rows?: number
     countCharacters?: boolean
+    maxLength?: number
   }
 
 const TextArea = ({
@@ -20,7 +21,7 @@ const TextArea = ({
   disabled,
   placeholder,
   label,
-  maxLength,
+  maxLength = 1000,
   countCharacters,
   isOptional,
   smallLabel,
