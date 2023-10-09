@@ -2,8 +2,8 @@ import React from 'react'
 
 import { useIndividualOfferContext } from 'context/IndividualOfferContext'
 import { useOfferWizardMode } from 'hooks'
-import IndivualOfferLayout from 'screens/IndividualOffer/IndivualOfferLayout/IndivualOfferLayout'
-import { getTitle } from 'screens/IndividualOffer/IndivualOfferLayout/utils/getTitle'
+import IndividualOfferLayout from 'screens/IndividualOffer/IndividualOfferLayout/IndividualOfferLayout'
+import { getTitle } from 'screens/IndividualOffer/IndividualOfferLayout/utils/getTitle'
 import IndividualOfferConfirmationScreen from 'screens/IndividualOfferConfirmationScreen/IndividualOfferConfirmationScreen'
 import Spinner from 'ui-kit/Spinner/Spinner'
 
@@ -16,7 +16,7 @@ const Confirmation = (): JSX.Element => {
   }
 
   return (
-    <IndivualOfferLayout
+    <IndividualOfferLayout
       withStepper={false}
       offer={offer}
       setOffer={setOffer}
@@ -24,7 +24,7 @@ const Confirmation = (): JSX.Element => {
       mode={mode}
     >
       <IndividualOfferConfirmationScreen offer={offer} />
-    </IndivualOfferLayout>
+    </IndividualOfferLayout>
   )
 }
 

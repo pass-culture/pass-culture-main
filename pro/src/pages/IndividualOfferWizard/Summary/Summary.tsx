@@ -4,8 +4,8 @@ import React from 'react'
 import { useIndividualOfferContext } from 'context/IndividualOfferContext'
 import { OFFER_WIZARD_MODE } from 'core/Offers/constants'
 import { useOfferWizardMode } from 'hooks'
-import IndivualOfferLayout from 'screens/IndividualOffer/IndivualOfferLayout/IndivualOfferLayout'
-import { getTitle } from 'screens/IndividualOffer/IndivualOfferLayout/utils/getTitle'
+import IndividualOfferLayout from 'screens/IndividualOffer/IndividualOfferLayout/IndividualOfferLayout'
+import { getTitle } from 'screens/IndividualOffer/IndividualOfferLayout/utils/getTitle'
 import SummaryScreen from 'screens/IndividualOffer/SummaryScreen/SummaryScreen'
 import Spinner from 'ui-kit/Spinner/Spinner'
 
@@ -28,13 +28,13 @@ export const Summary = (): JSX.Element | null => {
   }
 
   return (
-    <IndivualOfferLayout
+    <IndividualOfferLayout
       title={title}
       offer={offer}
       setOffer={setOffer}
       mode={mode}
     >
       <SummaryScreen />
-    </IndivualOfferLayout>
+    </IndividualOfferLayout>
   )
 }

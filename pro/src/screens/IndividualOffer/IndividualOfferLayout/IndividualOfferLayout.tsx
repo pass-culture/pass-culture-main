@@ -8,10 +8,10 @@ import { IndividualOffer } from 'core/Offers/types'
 import Status from '../Status/Status'
 import SynchronizedProviderInformation from '../SynchronisedProviderInfos/SynchronizedProviderInformation'
 
-import styles from './IndivualOfferLayout.module.scss'
+import styles from './IndividualOfferLayout.module.scss'
 import OfferStatusBanner from './OfferStatusBanner/OfferStatusBanner'
 
-export interface IndivualOfferLayoutProps {
+export interface IndividualOfferLayoutProps {
   title: string
   withStepper?: boolean
   children: JSX.Element | JSX.Element[]
@@ -20,14 +20,14 @@ export interface IndivualOfferLayoutProps {
   mode: OFFER_WIZARD_MODE
 }
 
-const IndivualOfferLayout = ({
+const IndividualOfferLayout = ({
   title,
   children,
   withStepper = true,
   offer,
   setOffer,
   mode,
-}: IndivualOfferLayoutProps) => {
+}: IndividualOfferLayoutProps) => {
   const shouldDisplayActionOnStatus =
     mode !== OFFER_WIZARD_MODE.CREATION && offer && withStepper
 
@@ -72,4 +72,4 @@ const IndivualOfferLayout = ({
   )
 }
 
-export default IndivualOfferLayout
+export default IndividualOfferLayout

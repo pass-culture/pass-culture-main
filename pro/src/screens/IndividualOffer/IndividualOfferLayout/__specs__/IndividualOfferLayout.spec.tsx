@@ -6,20 +6,20 @@ import { OFFER_WIZARD_MODE } from 'core/Offers/constants'
 import { individualOfferFactory } from 'utils/individualApiFactories'
 import { renderWithProviders } from 'utils/renderWithProviders'
 
-import IndivualOfferLayout, {
-  IndivualOfferLayoutProps,
-} from '../IndivualOfferLayout'
+import IndividualOfferLayout, {
+  IndividualOfferLayoutProps,
+} from '../IndividualOfferLayout'
 
-const renderIndivualOfferLayout = ({
+const renderIndividualOfferLayout = ({
   title = 'layout title',
   withStepper = true,
   offer = individualOfferFactory(),
   setOffer = vi.fn(),
   mode = OFFER_WIZARD_MODE.EDITION,
   children = <div>Template child</div>,
-}: Partial<IndivualOfferLayoutProps>) => {
+}: Partial<IndividualOfferLayoutProps>) => {
   renderWithProviders(
-    <IndivualOfferLayout
+    <IndividualOfferLayout
       title={title}
       withStepper={withStepper}
       offer={offer}
@@ -27,13 +27,13 @@ const renderIndivualOfferLayout = ({
       mode={mode}
     >
       {children}
-    </IndivualOfferLayout>
+    </IndividualOfferLayout>
   )
 }
 
-describe('IndivualOfferLayout', () => {
+describe('IndividualOfferLayout', () => {
   it('should render when no offer is given', () => {
-    renderIndivualOfferLayout({ offer: null })
+    renderIndividualOfferLayout({ offer: null })
 
     expect(screen.getByText('Template child')).toBeInTheDocument()
     expect(screen.getByText('Détails de l’offre')).toBeInTheDocument()
@@ -45,7 +45,7 @@ describe('IndivualOfferLayout', () => {
       name: 'offer name',
     })
 
-    renderIndivualOfferLayout({
+    renderIndividualOfferLayout({
       offer,
     })
 
@@ -67,7 +67,7 @@ describe('IndivualOfferLayout', () => {
       status: OfferStatus.ACTIVE,
     })
 
-    renderIndivualOfferLayout({
+    renderIndividualOfferLayout({
       offer,
       withStepper: false,
     })
@@ -83,7 +83,7 @@ describe('IndivualOfferLayout', () => {
       status: OfferStatus.ACTIVE,
     })
 
-    renderIndivualOfferLayout({
+    renderIndividualOfferLayout({
       offer,
     })
 
@@ -99,7 +99,7 @@ describe('IndivualOfferLayout', () => {
       isActivable: false,
     })
 
-    renderIndivualOfferLayout({
+    renderIndividualOfferLayout({
       offer,
     })
 
@@ -113,7 +113,7 @@ describe('IndivualOfferLayout', () => {
       status: OfferStatus.DRAFT,
     })
 
-    renderIndivualOfferLayout({
+    renderIndividualOfferLayout({
       offer,
       mode: OFFER_WIZARD_MODE.CREATION,
     })
@@ -127,7 +127,7 @@ describe('IndivualOfferLayout', () => {
       lastProviderName: 'boost',
     })
 
-    renderIndivualOfferLayout({
+    renderIndividualOfferLayout({
       offer,
     })
 
@@ -141,7 +141,7 @@ describe('IndivualOfferLayout', () => {
       lastProviderName: '',
     })
 
-    renderIndivualOfferLayout({
+    renderIndividualOfferLayout({
       offer,
     })
 

@@ -4,7 +4,7 @@ import React from 'react'
 import { useIndividualOfferContext } from 'context/IndividualOfferContext'
 import useOfferWizardMode from 'hooks/useOfferWizardMode'
 import { BookingsSummaryScreen } from 'screens/IndividualOffer/BookingsSummary/BookingsSummary'
-import IndivualOfferLayout from 'screens/IndividualOffer/IndivualOfferLayout/IndivualOfferLayout'
+import IndividualOfferLayout from 'screens/IndividualOffer/IndividualOfferLayout/IndividualOfferLayout'
 import Spinner from 'ui-kit/Spinner/Spinner'
 
 export const BookingsSummary = (): JSX.Element | null => {
@@ -16,13 +16,13 @@ export const BookingsSummary = (): JSX.Element | null => {
   }
 
   return (
-    <IndivualOfferLayout
+    <IndividualOfferLayout
       title="Récapitulatif"
       offer={offer}
       setOffer={setOffer}
       mode={mode}
     >
       <BookingsSummaryScreen offer={offer} />
-    </IndivualOfferLayout>
+    </IndividualOfferLayout>
   )
 }

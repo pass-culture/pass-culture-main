@@ -2,8 +2,8 @@ import React from 'react'
 
 import { useIndividualOfferContext } from 'context/IndividualOfferContext'
 import useOfferWizardMode from 'hooks/useOfferWizardMode'
-import IndivualOfferLayout from 'screens/IndividualOffer/IndivualOfferLayout/IndivualOfferLayout'
-import { getTitle } from 'screens/IndividualOffer/IndivualOfferLayout/utils/getTitle'
+import IndividualOfferLayout from 'screens/IndividualOffer/IndividualOfferLayout/IndividualOfferLayout'
+import { getTitle } from 'screens/IndividualOffer/IndividualOfferLayout/utils/getTitle'
 import { PriceCategoriesScreen } from 'screens/IndividualOffer/PriceCategoriesScreen/PriceCategoriesScreen'
 import Spinner from 'ui-kit/Spinner/Spinner'
 
@@ -20,13 +20,13 @@ export const PriceCategories = (): JSX.Element | null => {
   }
 
   return (
-    <IndivualOfferLayout
+    <IndividualOfferLayout
       offer={offer}
       setOffer={setOffer}
       title={getTitle(mode)}
       mode={mode}
     >
       <PriceCategoriesScreen offer={offer} />
-    </IndivualOfferLayout>
+    </IndividualOfferLayout>
   )
 }

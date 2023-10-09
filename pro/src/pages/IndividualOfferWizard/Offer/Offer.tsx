@@ -6,8 +6,8 @@ import { useIndividualOfferContext } from 'context/IndividualOfferContext'
 import { OFFER_WIZARD_MODE } from 'core/Offers/constants'
 import { useOfferWizardMode } from 'hooks'
 import useCurrentUser from 'hooks/useCurrentUser'
-import IndivualOfferLayout from 'screens/IndividualOffer/IndivualOfferLayout/IndivualOfferLayout'
-import { getTitle } from 'screens/IndividualOffer/IndivualOfferLayout/utils/getTitle'
+import IndividualOfferLayout from 'screens/IndividualOffer/IndividualOfferLayout/IndividualOfferLayout'
+import { getTitle } from 'screens/IndividualOffer/IndividualOfferLayout/utils/getTitle'
 import InformationsScreen from 'screens/IndividualOffer/InformationsScreen/InformationsScreen'
 import { parse } from 'utils/query-string'
 
@@ -25,7 +25,7 @@ const Offer = (): JSX.Element | null => {
     !(offererId || offer)
 
   return (
-    <IndivualOfferLayout
+    <IndividualOfferLayout
       offer={offer}
       setOffer={setOffer}
       title={getTitle(mode)}
@@ -36,7 +36,7 @@ const Offer = (): JSX.Element | null => {
       ) : (
         <InformationsScreen offererId={offererId} venueId={venueId} />
       )}
-    </IndivualOfferLayout>
+    </IndividualOfferLayout>
   )
 }
 

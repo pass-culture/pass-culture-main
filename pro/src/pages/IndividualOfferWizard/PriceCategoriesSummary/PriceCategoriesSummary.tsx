@@ -2,7 +2,7 @@ import React from 'react'
 
 import { useIndividualOfferContext } from 'context/IndividualOfferContext'
 import useOfferWizardMode from 'hooks/useOfferWizardMode'
-import IndivualOfferLayout from 'screens/IndividualOffer/IndivualOfferLayout/IndivualOfferLayout'
+import IndividualOfferLayout from 'screens/IndividualOffer/IndividualOfferLayout/IndividualOfferLayout'
 import { PriceCategoriesSection } from 'screens/IndividualOffer/SummaryScreen/PriceCategoriesSection/PriceCategoriesSection'
 import Spinner from 'ui-kit/Spinner/Spinner'
 
@@ -19,13 +19,13 @@ export const PriceCategoriesSummary = (): JSX.Element | null => {
   )?.canBeDuo
 
   return (
-    <IndivualOfferLayout
+    <IndividualOfferLayout
       title="Récapitulatif"
       offer={offer}
       setOffer={setOffer}
       mode={mode}
     >
       <PriceCategoriesSection offer={offer} canBeDuo={canBeDuo} />
-    </IndivualOfferLayout>
+    </IndividualOfferLayout>
   )
 }

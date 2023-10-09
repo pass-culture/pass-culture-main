@@ -3,8 +3,8 @@ import React from 'react'
 import { useIndividualOfferContext } from 'context/IndividualOfferContext'
 import { OFFER_WIZARD_MODE } from 'core/Offers/constants'
 import { useOfferWizardMode } from 'hooks'
-import IndivualOfferLayout from 'screens/IndividualOffer/IndivualOfferLayout/IndivualOfferLayout'
-import { getTitle } from 'screens/IndividualOffer/IndivualOfferLayout/utils/getTitle'
+import IndividualOfferLayout from 'screens/IndividualOffer/IndividualOfferLayout/IndividualOfferLayout'
+import { getTitle } from 'screens/IndividualOffer/IndividualOfferLayout/utils/getTitle'
 import { StocksEventCreation } from 'screens/IndividualOffer/StocksEventCreation/StocksEventCreation'
 import StocksEventEdition from 'screens/IndividualOffer/StocksEventEdition/StocksEventEdition'
 import StocksThing from 'screens/IndividualOffer/StocksThing/StocksThing'
@@ -24,7 +24,7 @@ const Stocks = (): JSX.Element | null => {
   }
 
   return (
-    <IndivualOfferLayout
+    <IndividualOfferLayout
       offer={offer}
       setOffer={setOffer}
       title={getTitle(mode)}
@@ -39,7 +39,7 @@ const Stocks = (): JSX.Element | null => {
       ) : (
         <StocksThing offer={offer} />
       )}
-    </IndivualOfferLayout>
+    </IndividualOfferLayout>
   )
 }
 

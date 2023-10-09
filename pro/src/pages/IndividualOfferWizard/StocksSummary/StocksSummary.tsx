@@ -3,7 +3,7 @@ import React from 'react'
 
 import { useIndividualOfferContext } from 'context/IndividualOfferContext'
 import { useOfferWizardMode } from 'hooks'
-import IndivualOfferLayout from 'screens/IndividualOffer/IndivualOfferLayout/IndivualOfferLayout'
+import IndividualOfferLayout from 'screens/IndividualOffer/IndividualOfferLayout/IndividualOfferLayout'
 import { StocksSummaryScreen } from 'screens/IndividualOffer/StocksSummaryScreen/StocksSummaryScreen'
 import Spinner from 'ui-kit/Spinner/Spinner'
 
@@ -16,13 +16,13 @@ export const StocksSummary = (): JSX.Element | null => {
   }
 
   return (
-    <IndivualOfferLayout
+    <IndividualOfferLayout
       title="Récapitulatif"
       offer={offer}
       setOffer={setOffer}
       mode={mode}
     >
       <StocksSummaryScreen />
-    </IndivualOfferLayout>
+    </IndividualOfferLayout>
   )
 }
