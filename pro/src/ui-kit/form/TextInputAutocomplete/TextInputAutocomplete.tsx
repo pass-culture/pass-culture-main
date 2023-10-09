@@ -29,6 +29,7 @@ export type TextInputAutocompleteProps = FieldLayoutBaseProps & {
   placeholder?: string
   hideArrow?: boolean
   useDebounce?: boolean
+  filterMaxLength?: number
 }
 
 const AutocompleteTextInput = ({
@@ -44,6 +45,7 @@ const AutocompleteTextInput = ({
   smallLabel = false,
   placeholder,
   useDebounce = false,
+  filterMaxLength = 255,
 }: TextInputAutocompleteProps): JSX.Element => {
   const [suggestions, setSuggestions] = useState<SelectOption[]>([])
   const [isOpen, setIsOpen] = useState(false)
@@ -181,6 +183,7 @@ const AutocompleteTextInput = ({
           className={styles['select-autocomplete-input']}
           autoComplete="off"
           {...searchField}
+          maxLength={filterMaxLength}
           onChange={e => handleSearchChange(e.target.value)}
         />
         <AutocompleteList
