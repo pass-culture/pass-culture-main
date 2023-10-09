@@ -1298,6 +1298,54 @@ class UpdatePublicAccountReviewTest(PostEndpointHelper):
         user = users_models.User.query.get(user.id)
         assert not user.deposits
 
+    def test_accepte_beneficiary_already_underage(self, authenticated_client, legit_user):
+        user = users_factories.UnderageBeneficiaryFactory()
+
+        base_form = {
+            "status": fraud_models.FraudReviewStatus.OK.name,
+            "eligibility": users_models.EligibilityType.AGE18.name,
+            "reason": "test",
+        }
+
+        response = self.post_to_endpoint(authenticated_client, user_id=user.id, form=base_form)
+        assert response.status_code == 303
+        expected_url = url_for("backoffice_web.public_accounts.get_public_account", user_id=user.id, _external=True)
+        assert response.location == expected_url
+
+        user = users_models.User.query.get(user.id)
+        assert len(user.beneficiaryFraudReviews) == 0
+        assert user.roles == [users_models.UserRole.UNDERAGE_BENEFICIARY]
+
+        response = authenticated_client.get(response.location)
+        assert (
+            "Le compte est déjà bénéficiaire (15-17) il ne peut pas aussi être bénéficiaire (18+)"
+            in html_parser.extract_alert(response.data)
+        )
+
+    def test_accepte_underage_beneficiary_already_beneficiary(self, authenticated_client, legit_user):
+        user = users_factories.BeneficiaryFactory()
+
+        base_form = {
+            "status": fraud_models.FraudReviewStatus.OK.name,
+            "eligibility": users_models.EligibilityType.UNDERAGE.name,
+            "reason": "test",
+        }
+
+        response = self.post_to_endpoint(authenticated_client, user_id=user.id, form=base_form)
+        assert response.status_code == 303
+        expected_url = url_for("backoffice_web.public_accounts.get_public_account", user_id=user.id, _external=True)
+        assert response.location == expected_url
+
+        user = users_models.User.query.get(user.id)
+        assert len(user.beneficiaryFraudReviews) == 0
+        assert user.roles == [users_models.UserRole.BENEFICIARY]
+
+        response = authenticated_client.get(response.location)
+        assert (
+            "Le compte est déjà bénéficiaire (18+) il ne peut pas aussi être bénéficiaire (15-17)"
+            in html_parser.extract_alert(response.data)
+        )
+
 
 class GetPublicAccountHistoryTest:
     def test_history_contains_creation_date(self):
