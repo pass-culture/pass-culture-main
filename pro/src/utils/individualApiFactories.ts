@@ -183,7 +183,6 @@ export const individualOfferVenueResponseModelFactory = (
     managingOfferer: {
       city: 'Paris',
       dateCreated: '2021-10-15T12:00:00Z',
-      fieldsUpdated: [],
       id: 1,
       isValidated: true,
       name: 'managingOffererName',

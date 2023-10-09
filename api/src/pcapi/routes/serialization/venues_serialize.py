@@ -135,13 +135,9 @@ class GetVenueManagingOffererResponseModel(BaseModel):
     address: str | None
     city: str
     dateCreated: datetime
-    dateModifiedAtLastProvider: datetime | None
     demarchesSimplifieesApplicationId: str | None
-    fieldsUpdated: list[str]
     id: int
-    idAtProviders: str | None
     isValidated: bool
-    lastProviderId: str | None
     name: str
     postalCode: str
     # FIXME (dbaty, 2020-11-09): optional until we populate the database (PC-5693)
