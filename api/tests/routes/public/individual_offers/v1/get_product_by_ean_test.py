@@ -280,3 +280,27 @@ class GetProductByEanTest:
                 }
             ]
         }
+
+    def test_200_when_none_disabilities(self, client):
+        venue, _ = utils.create_offerer_provider_linked_to_venue()
+
+        product_offer = offers_factories.ThingOfferFactory(
+            venue=venue,
+            audioDisabilityCompliant=None,
+            mentalDisabilityCompliant=None,
+            motorDisabilityCompliant=None,
+            visualDisabilityCompliant=None,
+            extraData={"ean": "1234567890123"},
+        )
+
+        response = client.with_explicit_token(offerers_factories.DEFAULT_CLEAR_API_KEY).get(
+            f"/public/offers/v1/products/ean?eans={product_offer.extraData['ean']}&venueId={venue.id}"
+        )
+
+        assert response.status_code == 200
+        assert response.json["products"][0]["accessibility"] == {
+            "audioDisabilityCompliant": None,
+            "mentalDisabilityCompliant": None,
+            "motorDisabilityCompliant": None,
+            "visualDisabilityCompliant": None,
+        }
