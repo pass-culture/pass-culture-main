@@ -12,6 +12,7 @@ import {
   COLLECTIVE_OFFER_SUBTYPE_DUPLICATE,
   DEFAULT_SEARCH_FILTERS,
 } from 'core/Offers/constants'
+import useActiveFeature from 'hooks/useActiveFeature'
 import useNotification from 'hooks/useNotification'
 import strokeBookedIcon from 'icons/stroke-booked.svg'
 import duplicateOfferIcon from 'icons/stroke-duplicate-offer.svg'
@@ -50,6 +51,9 @@ const CollectiveOfferType = ({
   const [lastDmsApplication, setLastDmsApplication] = useState<
     DMSApplicationForEAC | null | undefined
   >(null)
+  const isDatesForTemplateOffer = useActiveFeature(
+    'WIP_ENABLE_DATES_OFFER_TEMPLATE'
+  )
 
   useEffect(() => {
     const getTemplateCollectiveOffers = async () => {
@@ -145,7 +149,9 @@ const CollectiveOfferType = ({
                 COLLECTIVE_OFFER_SUBTYPE.TEMPLATE
               }
               label="Une offre vitrine"
-              description="Cette offre n’est pas réservable. Elle n’a ni date, ni prix et permet aux enseignants de vous contacter pour co-construire une offre adaptée. Vous pourrez facilement la dupliquer pour chaque enseignant intéressé."
+              description={`Cette offre n’est pas réservable. Elle ${
+                !isDatesForTemplateOffer ? 'n’a ni date, ni prix et' : ''
+              } permet aux enseignants de vous contacter pour co-construire une offre adaptée. Vous pourrez facilement la dupliquer pour chaque enseignant intéressé.`}
               onChange={handleChange}
               value={COLLECTIVE_OFFER_SUBTYPE.TEMPLATE}
             />
