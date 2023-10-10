@@ -6,6 +6,7 @@ RUN apt-get update \
 	&& apt-get -y install \
 		gcc \
 		g++ \
+		libgdal-dev \
 		libpq-dev  && \
         apt-get clean && \
         rm -rf /var/lib/apt/lists*
@@ -73,7 +74,7 @@ FROM lib AS api-flask
 USER root
 
 RUN apt-get update && \
-    apt-get --no-install-recommends -y install curl postgresql-client  && \
+    apt-get --no-install-recommends -y install curl postgresql-client libgdal-dev && \
     apt-get clean && \
     rm -rf /var/lib/apt/lists*
 
