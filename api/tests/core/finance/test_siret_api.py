@@ -17,7 +17,10 @@ class DeleteSiretTest:
         dependent_venue = offerers_factories.VenueFactory(pricing_point=venue)
         initial_statuses = set(models.PricingStatus) - {models.PricingStatus.PENDING}
         for status in initial_statuses:
-            factories.PricingFactory(pricingPoint=venue, status=status)
+            finance_event = factories.FinanceEventFactory(venue=venue)
+            factories.PricingFactory(
+                booking=finance_event.booking, pricingPoint=venue, status=status, event=finance_event
+            )
         assert models.Pricing.query.count() == 5
 
         siret_api.remove_siret(venue, comment="no SIRET because reasons", apply_changes=True)
