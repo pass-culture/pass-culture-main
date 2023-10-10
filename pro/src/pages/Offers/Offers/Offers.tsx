@@ -135,7 +135,6 @@ const Offers = ({
               affiner votre recherche.
             </Banner>
           )}
-
           {hasOffers && (
             <div className={styles['offers-count']}>
               {`${getOffersCountToDisplay(offersCount)} ${
@@ -143,29 +142,29 @@ const Offers = ({
               }`}
             </div>
           )}
-
-          <table>
-            <OffersTableHead
-              applyFilters={applyFilters}
-              areAllOffersSelected={areAllOffersSelected}
-              areOffersPresent={hasOffers}
-              filters={searchFilters}
-              isAdminForbidden={isAdminForbidden}
-              selectAllOffers={selectAllOffers}
-              updateStatusFilter={updateStatusFilter}
-              audience={audience}
-              isAtLeastOneOfferChecked={isAtLeastOneOfferChecked}
-            />
-            <OffersTableBody
-              areAllOffersSelected={areAllOffersSelected}
-              offers={currentPageOffersSubset}
-              selectOffer={selectOffer}
-              selectedOfferIds={selectedOfferIds}
-              audience={audience}
-              refreshOffers={refreshOffers}
-            />
-          </table>
-
+          {hasOffers && (
+            <table>
+              <OffersTableHead
+                applyFilters={applyFilters}
+                areAllOffersSelected={areAllOffersSelected}
+                areOffersPresent={hasOffers}
+                filters={searchFilters}
+                isAdminForbidden={isAdminForbidden}
+                selectAllOffers={selectAllOffers}
+                updateStatusFilter={updateStatusFilter}
+                audience={audience}
+                isAtLeastOneOfferChecked={isAtLeastOneOfferChecked}
+              />
+              <OffersTableBody
+                areAllOffersSelected={areAllOffersSelected}
+                offers={currentPageOffersSubset}
+                selectOffer={selectOffer}
+                selectedOfferIds={selectedOfferIds}
+                audience={audience}
+                refreshOffers={refreshOffers}
+              />
+            </table>
+          )}
           {hasOffers && (
             <div className={styles['offers-pagination']}>
               <Pagination
@@ -176,7 +175,6 @@ const Offers = ({
               />
             </div>
           )}
-
           {!hasOffers && hasSearchFilters(urlSearchFilters) && (
             <NoResults resetFilters={resetFilters} />
           )}

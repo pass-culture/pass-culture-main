@@ -152,7 +152,7 @@ const CollectiveOfferSelectionDuplication = (): JSX.Element => {
               <div className={styles['search-no-results']}>
                 <SvgIcon
                   src={strokeSearchIcon}
-                  alt="Illustration de recherche"
+                  alt=""
                   className={styles['search-no-results-icon']}
                   width="124"
                 />
