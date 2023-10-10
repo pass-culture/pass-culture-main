@@ -1,4 +1,4 @@
-import { screen, waitFor } from '@testing-library/react'
+import { screen } from '@testing-library/react'
 import { userEvent } from '@testing-library/user-event'
 
 import { AdageFrontRoles, AuthenticatedResponse } from 'apiClient/adage'
@@ -144,7 +144,11 @@ describe('offersSearch component', () => {
       venueFilter: null,
       setGeoRadius: setGeoRadiusMock,
     }
-    vi.spyOn(pcapi, 'getEducationalDomains').mockResolvedValue([])
+    vi.spyOn(pcapi, 'getEducationalDomains').mockResolvedValue([
+      { id: 1, name: 'Danse' },
+      { id: 2, name: 'Architecture' },
+      { id: 3, name: 'Arts' },
+    ])
     vi.spyOn(apiAdage, 'getEducationalOffersCategories').mockResolvedValue({
       categories: [],
       subcategories: [],
@@ -198,9 +202,6 @@ describe('offersSearch component', () => {
   it('should display localisation filter with default state by default', async () => {
     // Given
     renderOffersSearchComponent(props, { ...user, departmentCode: null })
-    await waitFor(() => {
-      expect(pcapi.getEducationalDomains).toHaveBeenCalled()
-    })
 
     // When
     const localisationFilter = screen.getByRole('button', {
@@ -216,9 +217,6 @@ describe('offersSearch component', () => {
   it('should display localisation filter with departments options if user has selected departement filter', async () => {
     // Given
     renderOffersSearchComponent(props, { ...user, departmentCode: null })
-    await waitFor(() => {
-      expect(pcapi.getEducationalDomains).toHaveBeenCalled()
-    })
 
     await userEvent.click(
       screen.getByRole('button', {
@@ -251,9 +249,6 @@ describe('offersSearch component', () => {
   it('should display academies filter with departments options if user has selected academy filter', async () => {
     // Given
     renderOffersSearchComponent(props, { ...user, departmentCode: null })
-    await waitFor(() => {
-      expect(pcapi.getEducationalDomains).toHaveBeenCalled()
-    })
 
     await userEvent.click(
       screen.getByRole('button', {
@@ -288,9 +283,6 @@ describe('offersSearch component', () => {
       { ...user, departmentCode: null },
       isGeolocationActive
     )
-    await waitFor(() => {
-      expect(pcapi.getEducationalDomains).toHaveBeenCalled()
-    })
 
     await userEvent.click(
       screen.getByRole('button', {
@@ -316,10 +308,6 @@ describe('offersSearch component', () => {
       { ...user, departmentCode: null, lat: 0, lon: null },
       isGeolocationActive
     )
-    await waitFor(() => {
-      expect(pcapi.getEducationalDomains).toHaveBeenCalled()
-    })
-
     await userEvent.click(
       screen.getByRole('button', {
         name: 'Localisation des partenaires',
