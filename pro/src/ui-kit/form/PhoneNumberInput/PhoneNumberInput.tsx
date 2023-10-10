@@ -136,7 +136,6 @@ const PhoneNumberInput = ({
         className={styles['phone-number-input']}
         onBlur={onPhoneNumberBlur}
         autoComplete="tel-national"
-        id="phone"
         maxLength={maxLength}
       />
       <div className={styles['phone-number-input-footer']}>
