@@ -2,16 +2,13 @@ import { FormikContext, useFormik } from 'formik'
 import { useContext, useEffect, useRef, useState } from 'react'
 
 import { VenueResponse } from 'apiClient/adage'
-import { apiAdage } from 'apiClient/api'
+import { api, apiAdage } from 'apiClient/api'
 import { GET_DATA_ERROR_MESSAGE } from 'core/shared'
 import useIsElementVisible from 'hooks/useIsElementVisible'
 import useAdageUser from 'pages/AdageIframe/app/hooks/useAdageUser'
 import { FacetFiltersContext } from 'pages/AdageIframe/app/providers'
 import { Option } from 'pages/AdageIframe/app/types'
-import {
-  filterEducationalSubCategories,
-  inferCategoryLabelsFromSubcategories,
-} from 'utils/collectiveCategories'
+import { filterEducationalSubCategories } from 'utils/collectiveCategories'
 import { removeParamsFromUrl } from 'utils/removeParamsFromUrl'
 
 import {
@@ -23,6 +20,7 @@ import {
   ADAGE_FILTERS_DEFAULT_VALUES,
   adageFiltersToFacetFilters,
   computeFiltersInitialValues,
+  serializeFiltersForData,
 } from '../utils'
 
 import { Autocomplete } from './Autocomplete/Autocomplete'
@@ -61,6 +59,8 @@ export const OffersSearch = ({
   const [categoriesOptions, setCategoriesOptions] = useState<
     Option<string[]>[]
   >([])
+
+  const [domainsOptions, setDomainsOptions] = useState<Option<number>[]>([])
   const [notification, setNotification] = useState<Notification | null>(null)
 
   useEffect(() => {
@@ -75,7 +75,21 @@ export const OffersSearch = ({
         )
       }
     }
+    const getAllDomains = async () => {
+      try {
+        const result = await api.listEducationalDomains()
+
+        return setDomainsOptions(
+          result.map(({ id, name }) => ({ value: id, label: name }))
+        )
+      } catch {
+        return setNotification(
+          new Notification(NotificationType.error, GET_DATA_ERROR_MESSAGE)
+        )
+      }
+    }
     getAllCategories()
+    getAllDomains()
   }, [])
 
   const handleSubmit = () => {
@@ -112,14 +126,12 @@ export const OffersSearch = ({
         resultNumber: nbHits,
         queryId: queryId ?? null,
         filterValues: formik
-          ? {
-              ...formik.values,
-              query: currentSearch,
-              categories: inferCategoryLabelsFromSubcategories(
-                formik.values.categories,
-                categoriesOptions
-              ),
-            }
+          ? serializeFiltersForData(
+              formik.values,
+              currentSearch,
+              categoriesOptions,
+              domainsOptions
+            )
           : {},
       })
     }
@@ -165,6 +177,7 @@ export const OffersSearch = ({
             setLocalisationFilterState={setlocalisationFilterState}
             resetForm={resetForm}
             categoriesOptions={categoriesOptions}
+            domainsOptions={domainsOptions}
           />
         </div>
       </FormikContext.Provider>

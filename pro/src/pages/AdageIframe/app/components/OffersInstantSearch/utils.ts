@@ -1,6 +1,7 @@
 import { VenueResponse } from 'apiClient/adage'
 import { OfferAddressType } from 'apiClient/v1'
-import { Facets } from 'pages/AdageIframe/app/types'
+import { Facets, Option } from 'pages/AdageIframe/app/types'
+import { inferCategoryLabelsFromSubcategories } from 'utils/collectiveCategories'
 
 import { SearchFormValues } from './OffersSearch/OffersSearch'
 
@@ -131,5 +132,25 @@ export const adageFiltersToFacetFilters = ({
   return {
     queryFilters: updatedFilters,
     filtersKeys: filtersKeys,
+  }
+}
+
+export const serializeFiltersForData = (
+  filters: SearchFormValues,
+  currentSearch: string | null,
+  categoriesOptions: Option<string[]>[],
+  domainsOptions: Option<number>[]
+) => {
+  return {
+    ...filters,
+    query: currentSearch,
+    categories: inferCategoryLabelsFromSubcategories(
+      filters.categories,
+      categoriesOptions
+    ),
+    domains: filters.domains.map(
+      domainId =>
+        domainsOptions.find(option => option.value === Number(domainId))?.label
+    ),
   }
 }

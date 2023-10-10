@@ -11,7 +11,6 @@ import strokeBuildingIcon from 'icons/stroke-building.svg'
 import strokeFranceIcon from 'icons/stroke-france.svg'
 import strokeNearIcon from 'icons/stroke-near.svg'
 import { getAcademiesOptionsAdapter } from 'pages/AdageIframe/app/adapters/getAcademiesOptionsAdapter'
-import { getEducationalDomainsOptionsAdapter } from 'pages/AdageIframe/app/adapters/getEducationalDomainsOptionsAdapter'
 import { departmentOptions } from 'pages/AdageIframe/app/constants/departmentOptions'
 import useAdageUser from 'pages/AdageIframe/app/hooks/useAdageUser'
 import { Option } from 'pages/AdageIframe/app/types'
@@ -33,6 +32,7 @@ interface OfferFiltersProps {
   setLocalisationFilterState: (state: LocalisationFilterStates) => void
   resetForm: () => void
   categoriesOptions: Option<string[]>[]
+  domainsOptions: Option<number>[]
 }
 
 export const OfferFilters = ({
@@ -41,6 +41,7 @@ export const OfferFilters = ({
   setLocalisationFilterState,
   resetForm,
   categoriesOptions,
+  domainsOptions,
 }: OfferFiltersProps): JSX.Element => {
   const [modalOpenStatus, setModalOpenStatus] = useState<{
     [key: string]: boolean
@@ -82,7 +83,6 @@ export const OfferFilters = ({
 
   const activeLocalisationFilterCount = getActiveLocalisationFilterCount()
 
-  const [domainsOptions, setDomainsOptions] = useState<Option<number>[]>([])
   const [academiesOptions, setAcademieOptions] = useState<Option<string>[]>([])
 
   const onReset = (
@@ -108,12 +108,8 @@ export const OfferFilters = ({
   }
   useEffect(() => {
     const loadFiltersOptions = async () => {
-      const domainsResponse = await getEducationalDomainsOptionsAdapter()
       const academiesResponse = await getAcademiesOptionsAdapter()
 
-      if (domainsResponse.isOk) {
-        setDomainsOptions(domainsResponse.payload)
-      }
       if (academiesResponse.isOk) {
         setAcademieOptions(academiesResponse.payload)
       }
