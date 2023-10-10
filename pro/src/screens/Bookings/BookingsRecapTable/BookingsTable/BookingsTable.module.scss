@@ -110,14 +110,3 @@
 .loader {
   margin: auto;
 }
-
-.no-data {
-  text-align: center;
-
-  &-icon {
-    color: colors.$grey-medium;
-    width: rem.torem(128px);
-    height: rem.torem(100px);
-    margin-bottom: rem.torem(16px);
-  }
-}

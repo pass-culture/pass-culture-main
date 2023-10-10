@@ -17,6 +17,7 @@ import {
 import { Pagination } from 'ui-kit/Pagination'
 
 import { FilterByBookingStatus } from '../Filters'
+import { NoFilteredBookings } from '../NoFilteredBookings/NoFilteredBookings'
 
 import styles from './BookingsTable.module.scss'
 import { CollectiveTableRow } from './CollectiveTableRow'
@@ -58,6 +59,7 @@ interface CollectiveBookingsTableProps {
   updateGlobalFilters: (updatedFilters: Partial<BookingsFilters>) => void
   reloadBookings: () => void
   defaultOpenedBookingId: string
+  resetFilters: () => void
 }
 
 export const CollectiveBookingsTable = ({
@@ -66,6 +68,7 @@ export const CollectiveBookingsTable = ({
   updateGlobalFilters,
   reloadBookings,
   defaultOpenedBookingId,
+  resetFilters,
 }: CollectiveBookingsTableProps): JSX.Element => {
   const { currentSortingColumn, currentSortingMode, onColumnHeaderClick } =
     useColumnSorting<CollectiveBookingsSortingColumn>()
@@ -191,6 +194,10 @@ export const CollectiveBookingsTable = ({
           ))}
         </tbody>
       </table>
+
+      {currentPageItems.length === 0 && (
+        <NoFilteredBookings resetFilters={resetFilters} />
+      )}
 
       <Pagination
         currentPage={page}
