@@ -47,4 +47,23 @@ describe('BookingsSummary', () => {
       3
     )
   })
+
+  it('should render a message when no bookings', async () => {
+    const offer = individualOfferFactory({ name: 'Offre de test' })
+
+    vi.spyOn(api, 'getBookingsPro').mockResolvedValue({
+      bookingsRecap: [],
+      page: 1,
+      pages: 1,
+      total: 0,
+    })
+
+    render(offer)
+
+    await waitForElementToBeRemoved(() => screen.queryAllByTestId('spinner'))
+
+    expect(
+      screen.getByText('Vous n’avez pas encore de réservations')
+    ).toBeInTheDocument()
+  })
 })

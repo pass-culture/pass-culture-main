@@ -8,7 +8,6 @@ import { Audience } from 'core/shared'
 import useAnalytics from 'hooks/useAnalytics'
 import { SortingMode, useColumnSorting } from 'hooks/useColumnSorting'
 import { usePagination } from 'hooks/usePagination'
-import strokeBookingHold from 'icons/stroke-booking-hold.svg'
 import { BookingsFilters } from 'screens/Bookings/BookingsRecapTable/types'
 import {
   sortByBeneficiaryName,
@@ -16,9 +15,9 @@ import {
   sortByOfferName,
 } from 'screens/Bookings/BookingsRecapTable/utils/sortingFunctions'
 import { Pagination } from 'ui-kit/Pagination'
-import { SvgIcon } from 'ui-kit/SvgIcon/SvgIcon'
 
 import { FilterByBookingStatus } from '../Filters'
+import { NoFilteredBookings } from '../NoFilteredBookings/NoFilteredBookings'
 
 import styles from './BookingsTable.module.scss'
 import {
@@ -70,12 +69,14 @@ export interface IndividualBookingsTableProps {
   bookings: BookingRecapResponseModel[]
   bookingStatuses: string[]
   updateGlobalFilters: (updatedFilters: Partial<BookingsFilters>) => void
+  resetFilters: () => void
 }
 
 export const IndividualBookingsTable = ({
   bookings,
   bookingStatuses,
   updateGlobalFilters,
+  resetFilters,
 }: IndividualBookingsTableProps): JSX.Element => {
   const { currentSortingColumn, currentSortingMode, onColumnHeaderClick } =
     useColumnSorting<IndividualBookingsSortingColumn>()
@@ -93,22 +94,6 @@ export const IndividualBookingsTable = ({
   }, [bookings, setPage])
 
   const { logEvent } = useAnalytics()
-
-  if (bookings.length === 0) {
-    return (
-      <div className={styles['no-data']}>
-        <SvgIcon
-          className={styles['no-data-icon']}
-          src={strokeBookingHold}
-          alt=""
-          width="128"
-          viewBox="0 0 200 156"
-        />
-
-        <div>Vous n’avez pas encore de réservations</div>
-      </div>
-    )
-  }
 
   return (
     <div className={styles['table-wrapper']}>
@@ -287,6 +272,10 @@ export const IndividualBookingsTable = ({
           ))}
         </tbody>
       </table>
+
+      {currentPageItems.length === 0 && (
+        <NoFilteredBookings resetFilters={resetFilters} />
+      )}
 
       <Pagination
         currentPage={page}
