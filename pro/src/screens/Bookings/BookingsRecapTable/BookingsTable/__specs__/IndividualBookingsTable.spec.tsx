@@ -25,6 +25,7 @@ describe('CollectiveTableRow', () => {
       ],
       bookingStatuses: [],
       updateGlobalFilters: vi.fn(),
+      resetFilters: vi.fn(),
     }
 
     renderIndividualBookingTable(props)
@@ -34,17 +35,18 @@ describe('CollectiveTableRow', () => {
     )
   })
 
-  it('should render empty state when no bookings', async () => {
+  it('should render message to empty the filters when no bookings', async () => {
     const props: IndividualBookingsTableProps = {
       bookings: [],
       bookingStatuses: [],
       updateGlobalFilters: vi.fn(),
+      resetFilters: vi.fn(),
     }
 
     renderIndividualBookingTable(props)
 
     expect(
-      screen.queryByText('Vous n’avez pas encore de réservations')
+      screen.queryByText('Aucune réservation trouvée pour votre recherche')
     ).toBeInTheDocument()
   })
 })
