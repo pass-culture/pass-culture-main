@@ -3,6 +3,7 @@ import { OfferAddressType } from 'apiClient/v1'
 import { Facets, Option } from 'pages/AdageIframe/app/types'
 import { inferCategoryLabelsFromSubcategories } from 'utils/collectiveCategories'
 
+import { studentsForData } from './OffersSearch/OfferFilters/studentsOptions'
 import { SearchFormValues } from './OffersSearch/OffersSearch'
 
 export const ADAGE_FILTERS_DEFAULT_VALUES: SearchFormValues = {
@@ -151,6 +152,9 @@ export const serializeFiltersForData = (
     domains: filters.domains.map(
       domainId =>
         domainsOptions.find(option => option.value === Number(domainId))?.label
+    ),
+    students: filters.students.map(
+      student => studentsForData.find(s => s.label === student)?.valueForData
     ),
   }
 }
