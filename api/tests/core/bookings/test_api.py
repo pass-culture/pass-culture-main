@@ -3,6 +3,7 @@ from datetime import datetime
 from datetime import timedelta
 import logging
 import re
+import threading
 from unittest import mock
 from unittest.mock import patch
 
@@ -12,6 +13,8 @@ import pytest
 import requests
 from sqlalchemy import create_engine
 import sqlalchemy.exc
+from sqlalchemy.orm import scoped_session
+from sqlalchemy.orm import sessionmaker
 from sqlalchemy.sql import text
 
 from pcapi.analytics.amplitude.backends.amplitude_connector import AmplitudeEventType
@@ -42,12 +45,21 @@ from pcapi.core.mails.transactional.sendinblue_template_ids import Transactional
 from pcapi.core.offerers import factories as offerer_factories
 import pcapi.core.offers.factories as offers_factories
 import pcapi.core.offers.models as offers_models
+from pcapi.core.offers.models import Offer
+from pcapi.core.offers.models import Product
+from pcapi.core.offers.models import Stock
+from pcapi.core.offers.models import VenueProvider
 import pcapi.core.providers.factories as providers_factories
+from pcapi.core.providers.factories import CDSCinemaDetailsFactory
+from pcapi.core.providers.factories import CDSCinemaProviderPivotFactory
+from pcapi.core.providers.factories import VenueProviderFactory
+from pcapi.core.providers.models import Provider
 from pcapi.core.providers.repository import get_provider_by_local_class
 from pcapi.core.testing import assert_no_duplicated_queries
 from pcapi.core.testing import assert_num_queries
 from pcapi.core.testing import override_features
 import pcapi.core.users.factories as users_factories
+from pcapi.local_providers.cinema_providers.cds.cds_stocks import CDSStocks
 from pcapi.models import api_errors
 from pcapi.models import db
 from pcapi.models import feature
@@ -57,7 +69,11 @@ from pcapi.utils import queue
 
 from tests.conftest import clean_database
 from tests.connectors.cgr import soap_definitions
+import tests.local_providers.cinema_providers.cds.fixtures as cds_fixtures
 import tests.local_providers.cinema_providers.cgr.fixtures as cgr_fixtures
+
+
+logger = logging.getLogger(__name__)
 
 
 class BookOfferConcurrencyTest:
@@ -140,7 +156,6 @@ class BookOfferConcurrencyTest:
 
         assert models.Booking.query.filter().count() == 4
         assert models.Booking.query.filter(models.Booking.status == BookingStatus.CANCELLED).count() == 1
-
 
 @pytest.mark.usefixtures("db_session")
 class BookOfferTest:

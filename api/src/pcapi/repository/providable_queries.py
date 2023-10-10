@@ -1,10 +1,14 @@
 import datetime
+import logging
 import typing
 
 import pcapi.core.offers.models as offers_models
 from pcapi.models import Base
 from pcapi.models import Model
 from pcapi.models import db
+
+
+logger = logging.getLogger(__name__)
 
 
 def insert_chunk(chunk_to_insert: dict[str, Model]) -> None:
@@ -49,9 +53,9 @@ def get_existing_object(
     # exception to the ProvidableMixin because Offer no longer extends this class
     # idAtProviders has been replaced by idAtProvider property
     if model_type == offers_models.Offer:
-        return model_type.query.filter_by(idAtProvider=id_at_providers).one_or_none()
+        return model_type.query.filter_by(idAtProvider=id_at_providers).with_for_update().one_or_none()
 
-    return model_type.query.filter_by(idAtProviders=id_at_providers).one_or_none()
+    return model_type.query.filter_by(idAtProviders=id_at_providers).with_for_update().one_or_none()
 
 
 def get_last_update_for_provider(
