@@ -43,8 +43,15 @@ def link_or_unlink_offer_to_program(program_id: int | None, offer: AnyCollective
         _unlink_offer(offer, commit)
         return
 
-    program = models.NationalProgram.query.get(program_id)
+    program = get_national_program(program_id)
     if not program:
         raise exceptions.NationalProgramNotFound()
 
     _link_offer(program, offer, commit)
+
+
+def get_national_program(program_id: int | None) -> models.NationalProgram | None:
+    if not program_id:
+        return None
+
+    return models.NationalProgram.query.get(program_id)
