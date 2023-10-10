@@ -43,6 +43,7 @@ import pcapi.core.users.models as users_models
 from pcapi.domain.pro_offers.offers_recap import OffersRecap
 from pcapi.models import db
 from pcapi.models import feature
+from pcapi.models.api_errors import ApiErrors
 from pcapi.models.feature import FeatureToggle
 from pcapi.models.offer_mixin import OfferValidationType
 from pcapi.repository import repository
@@ -55,6 +56,7 @@ from pcapi.workers import push_notification_job
 from . import exceptions
 from . import models
 from . import repository as offers_repository
+from . import serialize as offers_serialize
 from . import validation
 
 
@@ -1349,3 +1351,29 @@ def approves_provider_product_and_rejected_offers(ean: str) -> None:
             extra={"ean": ean, "product": product.id, "offers": offer_ids, "exc": str(exception)},
         )
         raise exceptions.NotUpdateProductOrOffers(exception)
+
+
+def get_stocks_stats(offer_id: int) -> offers_serialize.StocksStats:
+    data = (
+        models.Stock.query.with_entities(
+            sa.func.min(models.Stock.beginningDatetime),
+            sa.func.max(models.Stock.beginningDatetime),
+            sa.func.count(models.Stock.id),
+            sa.case(
+                (models.Stock.query.filter(models.Stock.remainingQuantity == None).exists(), None),
+                else_=sa.cast(sa.func.sum(models.Stock.remainingQuantity), sa.Integer),
+            ),
+        )
+        .filter(models.Stock.offerId == offer_id)
+        .group_by(models.Stock.offerId)
+        .one_or_none()
+    )
+    try:
+        return offers_serialize.StocksStats(*data)
+    except TypeError:
+        raise ApiErrors(
+            errors={
+                "global": ["L'offre en cours de création ne possède aucun Stock"],
+            },
+            status_code=404,
+        )

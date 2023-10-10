@@ -2347,3 +2347,47 @@ class ApproveProductAndRejectedOffersTest:
         with pytest.raises(NotUpdateProductOrOffers):
             with patch("pcapi.models.db.session.commit", side_effect=Exception):
                 api.approves_provider_product_and_rejected_offers(ean)
+
+
+@pytest.mark.usefixtures("db_session")
+class GetStocksStatsTest:
+    def test_get_stocks_stats(self):
+        offer = factories.OfferFactory()
+        now = datetime.utcnow()
+        factories.StockFactory(offer=offer, quantity=10, dnBookedQuantity=5, beginningDatetime=now)
+        factories.StockFactory(offer=offer, quantity=20, dnBookedQuantity=5, beginningDatetime=now + timedelta(hours=1))
+        stats = api.get_stocks_stats(offer_id=offer.id)
+
+        assert stats.stock_count == 2
+        assert stats.remaining_quantity == 20
+        assert stats.oldest_stock == now
+        assert stats.newest_stock == now + timedelta(hours=1)
+
+    def test_get_stocks_stats_when_stock_has_unlimited_quantity(self):
+        offer = factories.OfferFactory()
+        factories.StockFactory(offer=offer, quantity=None)
+        stats = api.get_stocks_stats(offer_id=offer.id)
+
+        assert stats.stock_count == 1
+        assert stats.remaining_quantity == None
+
+    def test_get_stocks_stats_when_one_stock_has_unlimited_quantity(self):
+        offer = factories.OfferFactory()
+        price_category_1 = api.create_price_category(offer=offer, label="1", price=10)
+        price_category_2 = api.create_price_category(offer=offer, label="2", price=20)
+
+        factories.StockFactory(offer=offer, priceCategory=price_category_1, quantity=None)
+        factories.StockFactory(offer=offer, priceCategory=price_category_2, quantity=5)
+        stats = api.get_stocks_stats(offer_id=offer.id)
+
+        assert stats.stock_count == 2
+        assert stats.remaining_quantity == None
+
+    def test_get_stocks_stats_with_no_stock(self):
+        offer = factories.OfferFactory()
+        with pytest.raises(api_errors.ApiErrors) as error:
+            api.get_stocks_stats(offer_id=offer.id)
+
+        assert error.value.errors == {
+            "global": ["L'offre en cours de création ne possède aucun Stock"],
+        }
