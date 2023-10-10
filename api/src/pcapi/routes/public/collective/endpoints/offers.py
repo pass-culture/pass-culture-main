@@ -1,6 +1,7 @@
 from pcapi.core.educational import exceptions as educational_exceptions
 from pcapi.core.educational import repository as educational_repository
 from pcapi.core.educational import validation as educational_validation
+from pcapi.core.educational.api import national_program as np_api
 from pcapi.core.educational.api import offer as educational_api_offer
 from pcapi.core.offerers import exceptions as offerers_exceptions
 from pcapi.core.offerers import repository as offerers_repository
@@ -466,6 +467,9 @@ def patch_collective_offer_public(
                     status_code=400,
                 )
         image_file = new_values.pop("imageFile")
+
+    if "nationalProgramId" in new_values and not np_api.get_national_program(new_values["nationalProgramId"]):
+        raise ApiErrors(errors={"nationalProgramId": ["Dispositif inconnu"]}, status_code=400)
 
     # real edition
     try:

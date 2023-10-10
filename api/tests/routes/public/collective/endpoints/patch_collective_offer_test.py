@@ -791,3 +791,67 @@ class CollectiveOffersPublicPatchOfferTest:
         offer = educational_models.CollectiveOffer.query.filter_by(id=stock.collectiveOffer.id).one()
 
         assert offer.subcategoryId == "OLD_SUBCATEGORY"
+
+    def test_unknown_national_program(self, client):
+        # Given
+        venue_provider = provider_factories.VenueProviderFactory()
+        venue = offerers_factories.VenueFactory(venueProviders=[venue_provider])
+        venue2 = offerers_factories.VenueFactory(venueProviders=[venue_provider])
+
+        offerers_factories.ApiKeyFactory(provider=venue_provider.provider)
+
+        domain = educational_factories.EducationalDomainFactory()
+        educational_institution = educational_factories.EducationalInstitutionFactory()
+        offer = educational_factories.CollectiveOfferFactory(
+            imageCredit="pouet",
+            imageId="123456789",
+            venue=venue,
+            provider=venue_provider.provider,
+            nationalProgramId=None,
+        )
+        stock = educational_factories.CollectiveStockFactory(
+            collectiveOffer=offer,
+        )
+
+        payload = {
+            "name": "Un nom en français ævœc des diàcrtîtïqués",
+            "description": "une description d'offre",
+            "subcategoryId": "EVENEMENT_CINE",
+            "venueId": venue2.id,
+            "bookingEmails": ["offerer-email@example.com", "offerer-email2@example.com"],
+            "contactEmail": "offerer-contact@example.com",
+            "contactPhone": "01 00 99 27.98",
+            "audioDisabilityCompliant": True,
+            "mentalDisabilityCompliant": True,
+            "motorDisabilityCompliant": True,
+            "visualDisabilityCompliant": True,
+            "domains": [domain.id],
+            "durationMinutes": 183,
+            "students": [educational_models.StudentLevels.COLLEGE4.name],
+            "offerVenue": {
+                "venueId": None,
+                "addressType": "school",
+                "otherAddress": None,
+            },
+            "isActive": False,
+            "imageCredit": "a great artist",
+            # stock part
+            "beginningDatetime": "2022-09-25T11:00",
+            "bookingLimitDatetime": "2022-09-15T11:00",
+            "totalPrice": 96.25,
+            "numberOfTickets": 30,
+            "educationalPriceDetail": "Justification du prix",
+            # link to educational institution
+            "educationalInstitutionId": educational_institution.id,
+            "nationalProgramId": 0,
+        }
+
+        # When
+        with patch("pcapi.core.offerers.api.can_venue_create_educational_offer"):
+            response = client.with_explicit_token(offerers_factories.DEFAULT_CLEAR_API_KEY).patch(
+                f"/v2/collective/offers/{stock.collectiveOffer.id}", json=payload
+            )
+
+        # Then
+        assert response.status_code == 400
+        assert "nationalProgramId" in response.json
