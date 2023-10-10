@@ -15,6 +15,7 @@ import {
 import { computeOffersUrl } from 'core/Offers/utils'
 import { SelectOption } from 'custom_types/form'
 import { useScrollToFirstErrorAfterSubmit } from 'hooks'
+import useActiveFeature from 'hooks/useActiveFeature'
 import useNotification from 'hooks/useNotification'
 import { Banner, ButtonLink, SubmitButton } from 'ui-kit'
 import { ButtonVariant } from 'ui-kit/Button/types'
@@ -75,6 +76,10 @@ const OfferEducationalForm = ({
 
   const { values, setFieldValue, initialValues } =
     useFormikContext<OfferEducationalFormValues>()
+
+  const isDatesForTemplateOffer = useActiveFeature(
+    'WIP_ENABLE_DATES_OFFER_TEMPLATE'
+  )
 
   useScrollToFirstErrorAfterSubmit()
 
@@ -146,13 +151,15 @@ const OfferEducationalForm = ({
       )}
       <FormLayout.MandatoryInfo />
 
-      <Banner
-        className={styles['educational-form-banner']}
-        type="notification-info"
-      >
-        Pour proposer plusieurs dates, heures ou prix, il vous sera nécessaire
-        de <b>créer plusieurs offres</b>
-      </Banner>
+      {!isDatesForTemplateOffer && (
+        <Banner
+          className={styles['educational-form-banner']}
+          type="notification-info"
+        >
+          Pour proposer plusieurs dates, heures ou prix, il vous sera nécessaire
+          de <b>créer plusieurs offres</b>
+        </Banner>
+      )}
 
       <FormVenue
         isEligible={isEligible}
