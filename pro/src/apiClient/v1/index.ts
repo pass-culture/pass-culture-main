@@ -189,6 +189,7 @@ export type { StockResponseModel } from './models/StockResponseModel';
 export { StocksOrderedBy } from './models/StocksOrderedBy';
 export type { StocksQueryModel } from './models/StocksQueryModel';
 export type { StocksResponseModel } from './models/StocksResponseModel';
+export type { StockStatsResponseModel } from './models/StockStatsResponseModel';
 export type { StocksUpsertBodyModel } from './models/StocksUpsertBodyModel';
 export { StudentLevels } from './models/StudentLevels';
 export { SubcategoryIdEnum } from './models/SubcategoryIdEnum';
