@@ -93,6 +93,7 @@ import type { SiretInfo } from '../models/SiretInfo';
 import type { StockIdResponseModel } from '../models/StockIdResponseModel';
 import type { StocksOrderedBy } from '../models/StocksOrderedBy';
 import type { StocksResponseModel } from '../models/StocksResponseModel';
+import type { StockStatsResponseModel } from '../models/StockStatsResponseModel';
 import type { StocksUpsertBodyModel } from '../models/StocksUpsertBodyModel';
 import type { UserEmailValidationResponseModel } from '../models/UserEmailValidationResponseModel';
 import type { UserHasBookingResponse } from '../models/UserHasBookingResponse';
@@ -1629,6 +1630,28 @@ export class DefaultService {
       path: {
         'offer_id': offerId,
         'price_category_id': priceCategoryId,
+      },
+      errors: {
+        403: `Forbidden`,
+        422: `Unprocessable Entity`,
+      },
+    });
+  }
+
+  /**
+   * get_stocks_stats <GET>
+   * @param offerId
+   * @returns StockStatsResponseModel OK
+   * @throws ApiError
+   */
+  public getStocksStats(
+    offerId: number,
+  ): CancelablePromise<StockStatsResponseModel> {
+    return this.httpRequest.request({
+      method: 'GET',
+      url: '/offers/{offer_id}/stocks-stats',
+      path: {
+        'offer_id': offerId,
       },
       errors: {
         403: `Forbidden`,

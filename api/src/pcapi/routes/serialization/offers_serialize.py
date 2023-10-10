@@ -365,6 +365,13 @@ class GetStocksResponseModel(BaseModel):
     stock_count: int
 
 
+class StockStatsResponseModel(BaseModel):
+    oldest_stock: datetime.datetime | None
+    newest_stock: datetime.datetime | None
+    stock_count: int | None
+    remaining_quantity: int | None
+
+
 class StocksQueryModel(BaseModel):
     date: datetime.date | None
     time: datetime.time | None
