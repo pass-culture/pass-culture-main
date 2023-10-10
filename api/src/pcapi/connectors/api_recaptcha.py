@@ -22,8 +22,12 @@ class InvalidRecaptchaTokenException(ApiErrors):
 
 def get_token_validation_and_score(token: str, secret: str) -> dict:
     params = {"secret": secret, "response": token}
-    api_response = requests.post(settings.RECAPTCHA_API_URL, data=params)
-    json_response = api_response.json()
+    try:
+        api_response = requests.post(settings.RECAPTCHA_API_URL, data=params)
+        api_response.raise_for_status()
+        json_response = api_response.json()
+    except requests.exceptions.RequestException as exc:
+        raise ReCaptchaException() from exc
 
     return {
         "success": json_response.get("success"),

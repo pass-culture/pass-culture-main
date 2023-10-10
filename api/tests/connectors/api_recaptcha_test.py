@@ -213,3 +213,11 @@ class CheckRecaptchaTokenIsValidTest:
             check_recaptcha_token_is_valid(token, secret=settings.RECAPTCHA_SECRET, version=ReCaptchaVersion.V2)
 
         assert str(exception.value) == "Encountered the following error(s): ['first-error', 'second-error']"
+
+    def test_should_raise_upon_recaptcha_api_error(self, requests_mock):
+        requests_mock.post(
+            settings.RECAPTCHA_API_URL,
+            status_code=502,
+        )
+        with pytest.raises(ReCaptchaException):
+            check_recaptcha_token_is_valid("token", "secret", ReCaptchaVersion.V2)
