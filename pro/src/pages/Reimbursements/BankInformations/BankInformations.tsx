@@ -31,9 +31,17 @@ const BankInformations = (): JSX.Element => {
     useState<GetOffererBankAccountsResponseModel | null>(null)
   const [searchParams, setSearchParams] = useSearchParams()
   const [isOffererLoading, setIsOffererLoading] = useState<boolean>(false)
-
   const { structure: offererId } = Object.fromEntries(searchParams)
-  const [offererOptions, setOffererOptions] = useState<SelectOption[]>([])
+
+  const offererOptions: SelectOption[] =
+    offerers && offerers.length > 1
+      ? sortByLabel(
+          offerers.map(item => ({
+            value: item['id'].toString(),
+            label: item['name'],
+          }))
+        )
+      : []
 
   const updateOfferer = async (newOffererId: string) => {
     if (newOffererId !== '') {
@@ -53,18 +61,6 @@ const BankInformations = (): JSX.Element => {
       setSearchParams(searchParams)
     }
   }, [])
-
-  useEffect(() => {
-    if (offerers && offerers.length > 1) {
-      const initialOffererOptions = sortByLabel(
-        offerers.map(item => ({
-          value: item['id'].toString(),
-          label: item['name'],
-        }))
-      )
-      setOffererOptions(initialOffererOptions)
-    }
-  }, [offerers])
 
   useEffect(() => {
     const getSelectedOffererBankAccounts = async (
