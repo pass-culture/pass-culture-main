@@ -93,6 +93,19 @@ class UsedBookingFinanceEventFactory(_BaseFinanceEventFactory):
     valueDate = factory.LazyAttribute(lambda event: (event.booking or event.collectiveBooking).dateUsed)
 
 
+class FinanceEventFactory(BaseFactory):
+    class Meta:
+        model = models.FinanceEvent
+
+    valueDate = factory.LazyAttribute(lambda o: (o.booking or o.collectiveBooking).dateUsed)
+    pricingOrderingDate = factory.LazyFunction(datetime.datetime.utcnow)
+    status = models.FinanceEventStatus.PRICED
+    motive = models.FinanceEventMotive.BOOKING_USED
+    booking = factory.SubFactory(bookings_factories.UsedBookingFactory)
+    venue = factory.LazyAttribute(lambda o: o.venue)
+    pricingPoint = factory.LazyAttribute(lambda o: o.venue.current_pricing_point)
+
+
 class _BasePricingFactory(BaseFactory):
     class Meta:
         model = models.Pricing

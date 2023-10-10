@@ -182,6 +182,7 @@ def _delete_ongoing_pricings(venue: offerers_models.Venue) -> None:
         update finance_event
         set
           "pricingPointId" = NULL,
+          "pricingOrderingDate" = NULL,
           status = :pending_finance_event_status
         where
           "pricingPointId" = :venue_id
