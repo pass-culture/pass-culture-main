@@ -1,4 +1,5 @@
-import { adageFiltersToFacetFilters } from '../utils'
+import { SearchFormValues } from '../OffersSearch/OffersSearch'
+import { adageFiltersToFacetFilters, serializeFiltersForData } from '../utils'
 
 describe('adageFiltersToFacetFilters', () => {
   const domains: string[] = ['1']
@@ -133,6 +134,42 @@ describe('adageFiltersToFacetFilters', () => {
         'academies',
         'categories',
       ],
+    })
+  })
+})
+
+describe('serializeFiltersForData', () => {
+  const domainsOptions = [{ value: 1, label: 'domaine1' }]
+  const categoriesOptions = [
+    { label: 'Category 1', value: ['subcat1', 'subcat2'] },
+    { label: 'Category 2', value: ['subcat2', 'subcat3'] },
+  ]
+  it('should return serialized filters', () => {
+    const filters: SearchFormValues = {
+      domains: ['1'],
+      students: ['Collège - 4e'],
+      eventAddressType: 'school',
+      departments: ['01'],
+      academies: ['Paris'],
+      categories: [['subcat1', 'subcat3']],
+      geolocRadius: 10,
+    }
+    const result = serializeFiltersForData(
+      filters,
+      'test',
+      categoriesOptions,
+      domainsOptions
+    )
+
+    expect(result).toStrictEqual({
+      domains: ['domaine1'],
+      query: 'test',
+      students: ['Collège - 4e'],
+      eventAddressType: 'school',
+      departments: ['01'],
+      academies: ['Paris'],
+      categories: ['Category 1', 'Category 2'],
+      geolocRadius: 10,
     })
   })
 })

@@ -5,7 +5,6 @@ import React from 'react'
 
 import { AuthenticatedResponse } from 'apiClient/adage'
 import { AdageUserContextProvider } from 'pages/AdageIframe/app/providers/AdageUserContext'
-import * as pcapi from 'pages/AdageIframe/repository/pcapi/pcapi'
 import { defaultAdageUser } from 'utils/adageFactories'
 import { renderWithProviders } from 'utils/renderWithProviders'
 
@@ -47,6 +46,11 @@ const renderOfferFilters = ({
           setLocalisationFilterState={mockSetLocalisationFilterState}
           resetForm={resetFormMock}
           categoriesOptions={[{ label: 'Cinéma', value: ['CINE_PLEIN_AIR'] }]}
+          domainsOptions={[
+            { value: 1, label: 'Danse' },
+            { value: 2, label: 'Architecture' },
+            { value: 3, label: 'Arts' },
+          ]}
         />
       </Formik>
     </AdageUserContextProvider>,
@@ -173,12 +177,6 @@ describe('OfferFilters', () => {
   })
 
   it('should return domains options when the api call was successful', async () => {
-    vi.spyOn(pcapi, 'getEducationalDomains').mockResolvedValueOnce([
-      { id: 1, name: 'Danse' },
-      { id: 2, name: 'Architecture' },
-      { id: 3, name: 'Arts' },
-    ])
-
     renderOfferFilters({
       initialValues: initialValues,
     })
