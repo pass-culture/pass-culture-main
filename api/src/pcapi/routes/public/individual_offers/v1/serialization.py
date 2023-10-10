@@ -57,6 +57,15 @@ class Accessibility(serialization.ConfiguredBaseModel):
     visual_disability_compliant: bool
 
 
+class AccessibilityResponse(serialization.ConfiguredBaseModel):
+    """Accessibility for people with disabilities."""
+
+    audio_disability_compliant: bool | None
+    mental_disability_compliant: bool | None
+    motor_disability_compliant: bool | None
+    visual_disability_compliant: bool | None
+
+
 class PhysicalLocation(serialization.ConfiguredBaseModel):
     type: typing.Literal["physical"] = "physical"
     venue_id: int = pydantic_v1.Field(..., example=1, description="List of venues is available at GET /offerer_venues")
@@ -644,7 +653,7 @@ class PostDatesResponse(serialization.ConfiguredBaseModel):
 
 class OfferResponse(serialization.ConfiguredBaseModel):
     id: int
-    accessibility: Accessibility
+    accessibility: AccessibilityResponse
     booking_contact: pydantic_v1.EmailStr | None = BOOKING_CONTACT_FIELD
     booking_email: pydantic_v1.EmailStr | None = BOOKING_EMAIL_FIELD
     description: str | None = DESCRIPTION_FIELD
@@ -676,7 +685,7 @@ class OfferResponse(serialization.ConfiguredBaseModel):
             booking_contact=offer.bookingContact,  # type: ignore [arg-type]
             booking_email=offer.bookingEmail,  # type: ignore [arg-type]
             description=offer.description,
-            accessibility=Accessibility.from_orm(offer),
+            accessibility=AccessibilityResponse.from_orm(offer),
             external_ticket_office_url=offer.externalTicketOfficeUrl,  # type: ignore [arg-type]
             image=offer.image,  # type: ignore [arg-type]
             is_duo=offer.isDuo,
