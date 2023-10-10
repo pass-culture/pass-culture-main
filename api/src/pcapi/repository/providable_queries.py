@@ -7,6 +7,7 @@ from pcapi.models import Model
 from pcapi.models import db
 
 
+
 def insert_chunk(chunk_to_insert: dict[str, Model]) -> None:
     db.session.add_all(chunk_to_insert.values())
     db.session.commit()
@@ -49,9 +50,9 @@ def get_existing_object(
     # exception to the ProvidableMixin because Offer no longer extends this class
     # idAtProviders has been replaced by idAtProvider property
     if model_type == offers_models.Offer:
-        return model_type.query.filter_by(idAtProvider=id_at_providers).one_or_none()
+        return model_type.query.filter_by(idAtProvider=id_at_providers).with_for_update().one_or_none()
 
-    return model_type.query.filter_by(idAtProviders=id_at_providers).one_or_none()
+    return model_type.query.filter_by(idAtProviders=id_at_providers).with_for_update().one_or_none()
 
 
 def get_last_update_for_provider(
