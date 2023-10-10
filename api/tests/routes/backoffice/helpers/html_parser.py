@@ -157,3 +157,12 @@ def extract_select_options(html_content: str, name: str) -> str:
     options = select.find_all("option")
 
     return {option["value"]: _filter_whitespaces(option.text) for option in options if option["value"]}
+
+
+def extract_input_value(html_content: str, name: str) -> str:
+    soup = get_soup(html_content)
+
+    input_field = soup.find("input", attrs={"name": name})
+    assert input_field is not None
+
+    return input_field["value"]

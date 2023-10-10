@@ -211,11 +211,7 @@ def get_incident_creation_form() -> utils.BackofficeResponse:
                 correspondant au même lieu peuvent faire l'objet d'un incident</div>"""
             )
 
-        form.total_amount.data = -finance_utils.to_euros(
-            bookings[0].pricing.amount
-            if len(bookings) == 1 and bookings[0].pricing
-            else sum(booking.pricing.amount for booking in bookings if booking.pricing)
-        )
+        form.total_amount.data = sum(booking.total_amount for booking in bookings)
 
         additional_data = _initialize_additional_data(bookings)
         if len(bookings) > 1:

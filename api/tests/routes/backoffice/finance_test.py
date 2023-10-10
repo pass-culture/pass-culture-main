@@ -34,7 +34,7 @@ pytestmark = [
 
 @pytest.fixture(scope="function", name="invoiced_pricing")
 def invoiced_pricing_fixture() -> list:
-    return finance_factories.PricingFactory(status=finance_models.PricingStatus.INVOICED)
+    return finance_factories.PricingFactory(status=finance_models.PricingStatus.INVOICED, amount=-1000)
 
 
 @pytest.fixture(scope="function", name="invoiced_collective_pricing")
@@ -447,6 +447,9 @@ class GetIncidentCreationFormTest(PostEndpointHelper):
             f"Montant remboursé à l'acteur : {filters.format_amount(finance_utils.to_euros(-invoiced_pricing.amount))}"
             in additional_data_text
         )
+
+        default_amount = html_parser.extract_input_value(response.data, "total_amount")
+        assert default_amount == str(booking.total_amount)
 
     def test_get_incident_creation_for_multiple_bookings_form(self, authenticated_client):
         venue = offerers_factories.VenueFactory()
