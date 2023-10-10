@@ -164,7 +164,7 @@ describe('serializeFiltersForData', () => {
     expect(result).toStrictEqual({
       domains: ['domaine1'],
       query: 'test',
-      students: ['Collège - 4e'],
+      students: ['Collège quatrième'],
       eventAddressType: 'school',
       departments: ['01'],
       academies: ['Paris'],
