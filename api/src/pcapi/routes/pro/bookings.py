@@ -1,7 +1,5 @@
-from datetime import datetime
 from typing import cast
 
-from dateutil import parser
 from flask_login import current_user
 from flask_login import login_required
 
@@ -23,13 +21,13 @@ def get_bookings_pro(query: ListBookingsQueryModel) -> ListBookingsResponseModel
     page = query.page
     venue_id = query.venue_id
     offer_id = query.offer_id
-    event_date = parser.parse(query.event_date) if query.event_date else None
+    event_date = query.event_date
     booking_status = query.booking_status_filter
     booking_period = None
     if query.booking_period_beginning_date and query.booking_period_ending_date:
         booking_period = (
-            datetime.fromisoformat(query.booking_period_beginning_date).date(),
-            datetime.fromisoformat(query.booking_period_ending_date).date(),
+            query.booking_period_beginning_date,
+            query.booking_period_ending_date,
         )
     offer_type = query.offer_type
 
@@ -94,12 +92,12 @@ def get_bookings_excel(query: ListBookingsQueryModel) -> bytes:
 
 def _create_booking_export_file(query: ListBookingsQueryModel, export_type: BookingExportType) -> bytes:
     venue_id = query.venue_id
-    event_date = parser.parse(query.event_date) if query.event_date else None
+    event_date = query.event_date
     booking_period = None
     if query.booking_period_beginning_date and query.booking_period_ending_date:
         booking_period = (
-            datetime.fromisoformat(query.booking_period_beginning_date).date(),
-            datetime.fromisoformat(query.booking_period_ending_date).date(),
+            query.booking_period_beginning_date,
+            query.booking_period_ending_date,
         )
     booking_status = query.booking_status_filter
     offer_type = query.offer_type

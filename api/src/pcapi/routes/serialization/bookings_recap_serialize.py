@@ -1,3 +1,4 @@
+from datetime import date
 from datetime import datetime
 from enum import Enum
 
@@ -161,10 +162,10 @@ class ListBookingsQueryModel(BaseModel):
     page: int = 1
     venue_id: int | None
     offer_id: int | None
-    event_date: str | None
+    event_date: datetime | None
     booking_status_filter: BookingStatusFilter | None
-    booking_period_beginning_date: str | None
-    booking_period_ending_date: str | None
+    booking_period_beginning_date: date | None
+    booking_period_ending_date: date | None
     offer_type: OfferType | None
     export_type: BookingExportType | None
 
