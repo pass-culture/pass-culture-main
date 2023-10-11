@@ -5,6 +5,7 @@ from flask_login import login_required
 import pydantic.v1 as pydantic_v1
 import sqlalchemy.orm as sqla_orm
 
+from pcapi.connectors import sirene
 from pcapi.core.offerers import api as offerers_api
 from pcapi.core.offerers import exceptions
 from pcapi.core.offerers import models
@@ -93,6 +94,12 @@ def get_venues(query: venues_serialize.VenueListQueryModel) -> venues_serialize.
 )
 def post_create_venue(body: venues_serialize.PostVenueBodyModel) -> venues_serialize.VenueResponseModel:
     check_user_has_access_to_offerer(current_user, body.managingOffererId)
+
+    if body.siret:
+        siret_info = sirene.get_siret(body.siret)
+        if not siret_info.active:
+            raise ApiErrors(errors={"siret": ["SIRET is no longer active"]})
+        body.name = siret_info.name  # type: ignore [assignment]
     venue = offerers_api.create_venue(body)
 
     return venues_serialize.VenueResponseModel.from_orm(venue)
@@ -105,6 +112,9 @@ def edit_venue(venue_id: int, body: venues_serialize.EditVenueBodyModel) -> venu
     venue = Venue.query.get_or_404(venue_id)
 
     check_user_has_access_to_offerer(current_user, venue.managingOffererId)
+    if body.siret and not sirene.siret_is_active(body.siret):
+        raise ApiErrors(errors={"siret": ["SIRET is no longer active"]})
+
     not_venue_fields = {
         "isAccessibilityAppliedOnAllOffers",
         "isEmailAppliedOnAllOffers",
