@@ -1,3 +1,4 @@
+import contextlib
 import typing
 from typing import Iterable
 
@@ -39,10 +40,10 @@ class SearchBackend:
     def enqueue_venue_ids_for_offers(self, venue_ids: Iterable[int]) -> None:
         raise NotImplementedError()
 
-    def pop_offer_ids_from_queue(self, count: int, from_error_queue: bool = False) -> set[int]:
+    def pop_offer_ids_from_queue(self, count: int, from_error_queue: bool = False) -> contextlib.AbstractContextManager:
         raise NotImplementedError()
 
-    def pop_venue_ids_for_offers_from_queue(self, count: int) -> set[int]:
+    def pop_venue_ids_for_offers_from_queue(self, count: int) -> contextlib.AbstractContextManager:
         raise NotImplementedError()
 
     def count_offers_to_index_from_queue(self, from_error_queue: bool = False) -> int:
@@ -86,21 +87,25 @@ class SearchBackend:
     def unindex_all_venues(self) -> None:
         raise NotImplementedError()
 
-    def pop_venue_ids_from_queue(self, count: int, from_error_queue: bool = False) -> set[int]:
+    def pop_venue_ids_from_queue(
+        self,
+        count: int,
+        from_error_queue: bool = False,
+    ) -> contextlib.AbstractContextManager:
         raise NotImplementedError()
 
     def pop_collective_offer_ids_from_queue(
         self,
         count: int,
         from_error_queue: bool = False,
-    ) -> set[int]:
+    ) -> contextlib.AbstractContextManager:
         raise NotImplementedError()
 
     def pop_collective_offer_template_ids_from_queue(
         self,
         count: int,
         from_error_queue: bool = False,
-    ) -> set[int]:
+    ) -> contextlib.AbstractContextManager:
         raise NotImplementedError()
 
     @classmethod
@@ -109,4 +114,7 @@ class SearchBackend:
 
     @classmethod
     def serialize_venue(cls, venue: "offerers_models.Venue") -> dict:
+        raise NotImplementedError()
+
+    def clean_processing_queues(self) -> None:
         raise NotImplementedError()

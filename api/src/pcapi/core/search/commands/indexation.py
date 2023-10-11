@@ -262,3 +262,8 @@ def index_offers_staging(
         search.unindex_all_offers()
     offer_ids_to_reindex = staging_indexation.get_relevant_offers_to_index()
     search.reindex_offer_ids(offer_ids_to_reindex)
+
+
+@blueprint.cli.command("clean_indexation_processing_queues")
+def clean_indexation_processing_queues() -> None:
+    search.clean_processing_queues()

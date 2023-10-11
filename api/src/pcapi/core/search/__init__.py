@@ -254,36 +254,31 @@ def index_offers_in_queue(stop_only_when_empty: bool = False, from_error_queue: 
     """
     backend = _get_backend()
     while True:
-        # We must pop and not get-and-delete. Otherwise two concurrent
-        # cron jobs could delete the wrong offers from the queue:
-        # 1. Cron job 1 gets the first 1.000 offers from the queue.
-        # 2. Cron job 2 gets the same 1.000 offers from the queue.
-        # 3. Cron job 1 finishes processing the batch and deletes the
-        #    first 1.000 offers from the queue. OK.
-        # 4. Cron job 2 finishes processing the batch and also deletes
-        #    the first 1.000 offers from the queue. Not OK, these are
-        #    not the same offers it just processed!
-        offer_ids = backend.pop_offer_ids_from_queue(
-            count=settings.REDIS_OFFER_IDS_CHUNK_SIZE, from_error_queue=from_error_queue
-        )
-        if not offer_ids:
-            break
+        with backend.pop_offer_ids_from_queue(
+            count=settings.REDIS_OFFER_IDS_CHUNK_SIZE,
+            from_error_queue=from_error_queue,
+        ) as offer_ids:
+            if not offer_ids:
+                break
 
-        logger.info("Fetched offers from indexation queue", extra={"count": len(offer_ids)})
-        try:
-            reindex_offer_ids(offer_ids)
-        except Exception as exc:  # pylint: disable=broad-except
-            if settings.IS_RUNNING_TESTS:
-                raise
-            logger.exception(
-                "Exception while reindexing offers, must fix manually",
-                extra={"exc": str(exc), "offers": offer_ids},
-            )
-        else:
             logger.info(
-                "Reindexed offers from queue",
-                extra={"count": len(offer_ids), "from_error_queue": from_error_queue},
+                "Fetched offers from indexation queue",
+                extra={"count": len(offer_ids)},
             )
+            try:
+                reindex_offer_ids(offer_ids)
+            except Exception as exc:  # pylint: disable=broad-except
+                if settings.IS_RUNNING_TESTS:
+                    raise
+                logger.exception(
+                    "Exception while reindexing offers, must fix manually",
+                    extra={"exc": str(exc), "offers": offer_ids},
+                )
+            else:
+                logger.info(
+                    "Reindexed offers from queue",
+                    extra={"count": len(offer_ids), "from_error_queue": from_error_queue},
+                )
 
         left_to_process = backend.count_offers_to_index_from_queue(from_error_queue=from_error_queue)
         if not stop_only_when_empty and left_to_process < settings.REDIS_OFFER_IDS_CHUNK_SIZE:
@@ -295,15 +290,13 @@ def index_collective_offers_in_queue(from_error_queue: bool = False) -> None:
     backend = _get_backend()
     try:
         chunk_size = settings.REDIS_COLLECTIVE_OFFER_IDS_CHUNK_SIZE
-        collective_offer_ids = backend.pop_collective_offer_ids_from_queue(
+        with backend.pop_collective_offer_ids_from_queue(
             count=chunk_size,
             from_error_queue=from_error_queue,
-        )
-
-        if not collective_offer_ids:
-            return
-
-        _reindex_collective_offer_ids(backend, collective_offer_ids, from_error_queue)
+        ) as collective_offer_ids:
+            if not collective_offer_ids:
+                return
+            _reindex_collective_offer_ids(backend, collective_offer_ids, from_error_queue)
 
     except Exception as exc:  # pylint: disable=broad-except
         if settings.IS_RUNNING_TESTS:
@@ -338,14 +331,13 @@ def index_collective_offers_templates_in_queue(from_error_queue: bool = False) -
     backend = _get_backend()
     try:
         chunk_size = settings.REDIS_COLLECTIVE_OFFER_TEMPLATE_IDS_CHUNK_SIZE
-        collective_offer_template_ids = backend.pop_collective_offer_template_ids_from_queue(
-            count=chunk_size, from_error_queue=from_error_queue
-        )
-
-        if not collective_offer_template_ids:
-            return
-
-        _reindex_collective_offer_template_ids(backend, collective_offer_template_ids, from_error_queue)
+        with backend.pop_collective_offer_template_ids_from_queue(
+            count=chunk_size,
+            from_error_queue=from_error_queue,
+        ) as collective_offer_template_ids:
+            if not collective_offer_template_ids:
+                return
+            _reindex_collective_offer_template_ids(backend, collective_offer_template_ids, from_error_queue)
 
     except Exception as exc:  # pylint: disable=broad-except
         if settings.IS_RUNNING_TESTS:
@@ -358,12 +350,13 @@ def index_venues_in_queue(from_error_queue: bool = False) -> None:
     backend = _get_backend()
     try:
         chunk_size = settings.REDIS_VENUE_IDS_CHUNK_SIZE
-        venue_ids = backend.pop_venue_ids_from_queue(count=chunk_size, from_error_queue=from_error_queue)
-
-        if not venue_ids:
-            return
-
-        _reindex_venue_ids(backend, venue_ids, from_error_queue)
+        with backend.pop_venue_ids_from_queue(
+            count=chunk_size,
+            from_error_queue=from_error_queue,
+        ) as venue_ids:
+            if not venue_ids:
+                return
+            _reindex_venue_ids(backend, venue_ids, from_error_queue)
 
     except Exception as exc:  # pylint: disable=broad-except
         if settings.IS_RUNNING_TESTS:
@@ -502,19 +495,23 @@ def index_offers_of_venues_in_queue() -> None:
     """Pop venues from indexation queue and reindex their offers."""
     backend = _get_backend()
     try:
-        venue_ids = backend.pop_venue_ids_for_offers_from_queue(count=settings.REDIS_VENUE_IDS_FOR_OFFERS_CHUNK_SIZE)
-        for venue_id in venue_ids:
-            page = 0
-            logger.info("Starting to index offers of venue", extra={"venue": venue_id})
-            while True:
-                offer_ids = offers_repository.get_paginated_offer_ids_by_venue_id(
-                    limit=settings.ALGOLIA_OFFERS_BY_VENUE_CHUNK_SIZE, page=page, venue_id=venue_id
-                )
-                if not offer_ids:
-                    break
-                reindex_offer_ids(offer_ids)
-                page += 1
-            logger.info("Finished indexing offers of venue", extra={"venue": venue_id})
+        with backend.pop_venue_ids_for_offers_from_queue(
+            count=settings.REDIS_VENUE_IDS_FOR_OFFERS_CHUNK_SIZE,
+        ) as venue_ids:
+            for venue_id in venue_ids:
+                page = 0
+                logger.info("Starting to index offers of venue", extra={"venue": venue_id})
+                while True:
+                    offer_ids = offers_repository.get_paginated_offer_ids_by_venue_id(
+                        limit=settings.ALGOLIA_OFFERS_BY_VENUE_CHUNK_SIZE,
+                        page=page,
+                        venue_id=venue_id,
+                    )
+                    if not offer_ids:
+                        break
+                    reindex_offer_ids(offer_ids)
+                    page += 1
+                logger.info("Finished indexing offers of venue", extra={"venue": venue_id})
     except Exception:  # pylint: disable=broad-except
         if settings.IS_RUNNING_TESTS:
             raise
@@ -844,3 +841,8 @@ def update_product_last_30_days_bookings() -> list[offers_models.Product]:
         current_product_batch = []
 
     return updated_eans
+
+
+def clean_processing_queues() -> None:
+    backend = _get_backend()
+    backend.clean_processing_queues()
