@@ -125,9 +125,7 @@ const Homepage = (): JSX.Element => {
             }
           />
         )}
-        {selectedOfferer?.hasPendingBankAccount && (
-          <PendingBankAccountCallout />
-        )}
+        <PendingBankAccountCallout offerer={selectedOfferer} />
         <HomepageBreadcrumb
           activeStep={STEP_ID_OFFERERS}
           isOffererStatsActive={isOffererStatsActive}
