@@ -1668,6 +1668,8 @@ export class DefaultService {
    * @param priceCategoryId
    * @param orderBy
    * @param orderByDesc
+   * @param page
+   * @param stocksLimitPerPage
    * @returns GetStocksResponseModel OK
    * @throws ApiError
    */
@@ -1678,6 +1680,8 @@ export class DefaultService {
     priceCategoryId?: number | null,
     orderBy?: StocksOrderedBy,
     orderByDesc: boolean = false,
+    page: number = 1,
+    stocksLimitPerPage: number = 20,
   ): CancelablePromise<GetStocksResponseModel> {
     return this.httpRequest.request({
       method: 'GET',
@@ -1691,6 +1695,8 @@ export class DefaultService {
         'price_category_id': priceCategoryId,
         'order_by': orderBy,
         'order_by_desc': orderByDesc,
+        'page': page,
+        'stocks_limit_per_page': stocksLimitPerPage,
       },
       errors: {
         403: `Forbidden`,
