@@ -10,7 +10,7 @@ import pcapi.core.bookings.repository as booking_repository
 from pcapi.routes.serialization.bookings_recap_serialize import ListBookingsQueryModel
 from pcapi.routes.serialization.bookings_recap_serialize import ListBookingsResponseModel
 from pcapi.routes.serialization.bookings_recap_serialize import UserHasBookingResponse
-from pcapi.routes.serialization.bookings_recap_serialize import _serialize_booking_recap
+from pcapi.routes.serialization.bookings_recap_serialize import serialize_booking_recap
 from pcapi.serialization.decorator import spectree_serialize
 
 from . import blueprint
@@ -50,7 +50,7 @@ def get_bookings_pro(query: ListBookingsQueryModel) -> ListBookingsResponseModel
 
     return ListBookingsResponseModel(
         bookingsRecap=[
-            _serialize_booking_recap(booking_recap) for booking_recap in bookings_recap_paginated.bookings_recap
+            serialize_booking_recap(booking_recap) for booking_recap in bookings_recap_paginated.bookings_recap
         ],
         page=bookings_recap_paginated.page,
         pages=bookings_recap_paginated.pages,

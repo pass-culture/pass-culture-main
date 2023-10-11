@@ -6,15 +6,20 @@ import {
   FORMAT_HH_mm,
   toDateStrippedOfTimezone,
 } from 'utils/date'
+import { formatPrice } from 'utils/formatPrice'
 
 import styles from './BookingDateCell.module.scss'
 
 export interface BookingDateCellProps {
   bookingDateTimeIsoString: string
+  amount: number
+  priceCategoryLabel?: string | null
 }
 
 export const BookingDateCell = ({
   bookingDateTimeIsoString,
+  amount,
+  priceCategoryLabel,
 }: BookingDateCellProps) => {
   const bookingDate = toDateStrippedOfTimezone(bookingDateTimeIsoString)
   const bookingDateDay = format(bookingDate, FORMAT_DD_MM_YYYY)
@@ -22,9 +27,16 @@ export const BookingDateCell = ({
 
   return (
     <div>
-      <span>{bookingDateDay}</span>
-      <br />
-      <span className={styles['booking-date-subtitle']}>{bookingDateHour}</span>
+      <div>{bookingDateDay}</div>
+      <div className={styles['booking-date-subtitle']}>{bookingDateHour}</div>
+      {priceCategoryLabel && (
+        <div className={styles['price-category-label']}>
+          {priceCategoryLabel}
+        </div>
+      )}
+      <div className={styles['booking-date-subtitle']}>
+        {formatPrice(amount)}
+      </div>
     </div>
   )
 }

@@ -163,6 +163,7 @@ class Returns200Test:
                     booking.dateCreated.astimezone(tz.gettz("Europe/Paris")),
                 ),
                 "bookingAmount": 10.1,
+                "bookingPriceCategoryLabel": None,
                 "bookingToken": "ABCDEF",
                 "bookingStatus": "validated",
                 "bookingIsDuo": False,
