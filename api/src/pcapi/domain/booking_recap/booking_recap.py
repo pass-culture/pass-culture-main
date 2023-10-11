@@ -38,6 +38,7 @@ class BookingRecap:
         booking_confirmation_date: datetime | None,
         booking_is_external: bool,
         booking_amount: float,
+        booking_price_category_label: str | None,
         cancellation_date: datetime | None,
         cancellation_limit_date: datetime | None,
         payment_date: datetime | None,
@@ -63,6 +64,7 @@ class BookingRecap:
         self.booking_is_cancelled = booking_is_cancelled
         self.booking_is_reimbursed = booking_is_reimbursed
         self.booking_is_confirmed = booking_is_confirmed
+        self.booking_price_category_label = booking_price_category_label
         self.booking_raw_status = booking_raw_status
         self.booking_confirmation_date = booking_confirmation_date
         self.booking_is_external = booking_is_external
