@@ -10,7 +10,7 @@ from pydantic.v1 import root_validator
 from pydantic.v1 import validator
 from pydantic.v1.types import constr
 
-from pcapi.core.categories.subcategories import SubcategoryIdEnum
+from pcapi.core.categories.subcategories_v2 import SubcategoryIdEnum
 from pcapi.core.educational.models import CollectiveBooking
 from pcapi.core.educational.models import CollectiveBookingStatus
 from pcapi.core.educational.models import CollectiveOffer
