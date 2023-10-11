@@ -9,7 +9,7 @@ from flask_wtf import FlaskForm
 import wtforms
 
 from pcapi.core.categories import categories
-from pcapi.core.categories import subcategories
+from pcapi.core.categories import subcategories_v2 as subcategories
 from pcapi.models.offer_mixin import OfferStatus
 from pcapi.models.offer_mixin import OfferValidationStatus
 from pcapi.routes.backoffice import autocomplete
@@ -173,7 +173,7 @@ class OfferAdvancedSearchSubForm(utils.PCForm):
     )
     subcategory = fields.PCSelectMultipleField(
         "Sous-catégories",
-        choices=utils.choices_from_enum(subcategories.SubcategoryIdLabelEnum),
+        choices=utils.choices_from_enum(subcategories.SubcategoryProLabelEnumv2),
         search_inline=True,
     )
     criteria = fields.PCTomSelectField(
