@@ -21,128 +21,104 @@ class FakeOffer:
     id: int
 
 
-def test_enqueue_offer_ids(app):
+@pytest.mark.parametrize(
+    "enqueue_function_name, queue",
+    [
+        ("enqueue_offer_ids", algolia.REDIS_OFFER_IDS_NAME),
+        ("enqueue_offer_ids_in_error", algolia.REDIS_OFFER_IDS_IN_ERROR_NAME),
+        ("enqueue_collective_offer_ids", algolia.REDIS_COLLECTIVE_OFFER_IDS_TO_INDEX),
+        (
+            "enqueue_collective_offer_ids_in_error",
+            algolia.REDIS_COLLECTIVE_OFFER_IDS_IN_ERROR_TO_INDEX,
+        ),
+        (
+            "enqueue_collective_offer_template_ids",
+            algolia.REDIS_COLLECTIVE_OFFER_TEMPLATE_IDS_TO_INDEX,
+        ),
+        (
+            "enqueue_collective_offer_template_ids_in_error",
+            algolia.REDIS_COLLECTIVE_OFFER_TEMPLATE_IDS_IN_ERROR_TO_INDEX,
+        ),
+        ("enqueue_venue_ids_for_offers", algolia.REDIS_VENUE_IDS_FOR_OFFERS_NAME),
+        ("enqueue_venue_ids", algolia.REDIS_VENUE_IDS_TO_INDEX),
+        ("enqueue_venue_ids_in_error", algolia.REDIS_VENUE_IDS_IN_ERROR_TO_INDEX),
+    ],
+)
+def test_enqueue_functions(enqueue_function_name, queue):
     backend = get_backend()
-    backend.enqueue_offer_ids([1])
-    backend.enqueue_offer_ids({2, 3})
-    backend.enqueue_offer_ids([])
-    assert app.redis_client.smembers("search:algolia:offer_ids") == {"1", "2", "3"}
+    enqueue = getattr(backend, enqueue_function_name)
+    enqueue([1])
+    enqueue({2, 3})
+    enqueue([])
+    assert set(backend.redis_client.smembers(queue)) == {"1", "2", "3"}
 
 
-def test_enqueue_offer_ids_in_error(app):
+@pytest.mark.parametrize(
+    "pop_function_name, from_error_queue, queue",
+    [
+        ("pop_offer_ids_from_queue", False, algolia.REDIS_OFFER_IDS_NAME),
+        ("pop_offer_ids_from_queue", True, algolia.REDIS_OFFER_IDS_IN_ERROR_NAME),
+        ("pop_collective_offer_ids_from_queue", False, algolia.REDIS_COLLECTIVE_OFFER_IDS_TO_INDEX),
+        (
+            "pop_collective_offer_ids_from_queue",
+            True,
+            algolia.REDIS_COLLECTIVE_OFFER_IDS_IN_ERROR_TO_INDEX,
+        ),
+        (
+            "pop_collective_offer_template_ids_from_queue",
+            False,
+            algolia.REDIS_COLLECTIVE_OFFER_TEMPLATE_IDS_TO_INDEX,
+        ),
+        (
+            "pop_collective_offer_template_ids_from_queue",
+            True,
+            algolia.REDIS_COLLECTIVE_OFFER_TEMPLATE_IDS_IN_ERROR_TO_INDEX,
+        ),
+        (
+            "pop_venue_ids_from_queue",
+            False,
+            algolia.REDIS_VENUE_IDS_TO_INDEX,
+        ),
+        (
+            "pop_venue_ids_from_queue",
+            True,
+            algolia.REDIS_VENUE_IDS_IN_ERROR_TO_INDEX,
+        ),
+        (
+            "pop_venue_ids_for_offers_from_queue",
+            None,
+            algolia.REDIS_VENUE_IDS_FOR_OFFERS_NAME,
+        ),
+    ],
+)
+def test_pop_functions(pop_function_name, from_error_queue, queue):
+    # Handle `pop_venue_ids_for_offers_from_queue` that does not
+    # have any error queue.
+    if from_error_queue is None:
+        kwargs = {}
+    else:
+        kwargs = {"from_error_queue": from_error_queue}
+
     backend = get_backend()
-    backend.enqueue_offer_ids_in_error([1])
-    backend.enqueue_offer_ids_in_error({2, 3})
-    backend.enqueue_offer_ids_in_error([])
-    assert app.redis_client.smembers("search:algolia:offer_ids_in_error") == {"1", "2", "3"}
-
-
-def test_enqueue_collective_offer_ids(app):
-    backend = get_backend()
-    backend.enqueue_collective_offer_ids([1])
-    backend.enqueue_collective_offer_ids({2, 3})
-    backend.enqueue_collective_offer_ids([])
-    assert app.redis_client.smembers("search:algolia:collective-offer-ids-to-index") == {"1", "2", "3"}
-
-
-def test_enqueue_collective_offer_ids_in_error(app):
-    backend = get_backend()
-    backend.enqueue_collective_offer_ids_in_error([1])
-    backend.enqueue_collective_offer_ids_in_error({2, 3})
-    backend.enqueue_collective_offer_ids_in_error([])
-    assert app.redis_client.smembers("search:algolia:collective-offer-ids-in-error-to-index") == {
-        "1",
-        "2",
-        "3",
-    }
-
-
-def test_enqueue_collective_offer_template_ids(app):
-    backend = get_backend()
-    backend.enqueue_collective_offer_template_ids([1])
-    backend.enqueue_collective_offer_template_ids({2, 3})
-    backend.enqueue_collective_offer_template_ids([])
-    assert app.redis_client.smembers("search:algolia:collective-offer-template-ids-to-index") == {
-        "1",
-        "2",
-        "3",
-    }
-
-
-def test_enqueue_collective_offer_template_ids_in_error(app):
-    backend = get_backend()
-    backend.enqueue_collective_offer_template_ids_in_error([1])
-    backend.enqueue_collective_offer_template_ids_in_error({2, 3})
-    backend.enqueue_collective_offer_template_ids_in_error([])
-    assert app.redis_client.smembers("search:algolia:collective-offer-template-ids-in-error-to-index") == {
-        "1",
-        "2",
-        "3",
-    }
-
-
-def test_enqueue_venue_ids_for_offers(app):
-    backend = get_backend()
-    backend.enqueue_venue_ids_for_offers([1])
-    backend.enqueue_venue_ids_for_offers({2, 3})
-    backend.enqueue_venue_ids_for_offers([])
-    assert app.redis_client.smembers("search:algolia:venue_ids_for_offers") == {"1", "2", "3"}
-
-
-def test_pop_offer_ids_from_queue(app):
-    backend = get_backend()
-    app.redis_client.sadd("search:algolia:offer_ids", 1, 2, 3)
+    backend.redis_client.sadd(queue, 1, 2, 3)
+    pop = getattr(backend, pop_function_name)
 
     popped = set()
-    offer_ids = backend.pop_offer_ids_from_queue(count=2)
-    popped |= offer_ids
-    assert len(offer_ids) == 2
-    assert offer_ids.issubset({1, 2, 3})
+    ids = pop(count=2, **kwargs)
+    popped |= ids
+    assert len(ids) == 2
+    assert ids.issubset({1, 2, 3})
 
-    offer_ids = backend.pop_offer_ids_from_queue(count=2)
-    popped |= offer_ids
-    assert len(offer_ids) == 1
-    assert offer_ids.issubset({1, 2, 3})
+    ids = pop(count=2, **kwargs)
+    popped |= ids
+    assert len(ids) == 1
+    assert ids.issubset({1, 2, 3})
     assert popped == {1, 2, 3}
 
-    offer_ids = backend.pop_offer_ids_from_queue(count=2)
-    assert offer_ids == set()
+    ids = pop(count=2, **kwargs)
+    assert ids == set()
 
-
-def test_pop_offer_ids_from_error_queue(app):
-    base_ids = {1, 2, 3}
-
-    backend = get_backend()
-    app.redis_client.sadd("search:algolia:offer_ids_in_error", *base_ids)
-
-    offer_ids = backend.pop_offer_ids_from_queue(count=2, from_error_queue=True)
-    assert len(offer_ids) == 2
-    assert offer_ids <= base_ids
-
-    offer_ids = backend.pop_offer_ids_from_queue(count=2, from_error_queue=True)
-    assert len(offer_ids) == 1
-    assert offer_ids <= base_ids
-
-    offer_ids = backend.pop_offer_ids_from_queue(count=2, from_error_queue=True)
-    assert not offer_ids
-
-
-def test_get_venue_ids_for_offers_from_queue(app):
-    base_ids = {1, 2, 3}
-
-    backend = get_backend()
-    app.redis_client.sadd("search:algolia:venue_ids_for_offers", *base_ids)
-
-    venue_ids = backend.pop_venue_ids_for_offers_from_queue(count=2)
-    assert len(venue_ids) == 2
-    assert venue_ids <= base_ids
-
-    venue_ids = backend.pop_venue_ids_for_offers_from_queue(count=1)
-    assert len(venue_ids) == 1
-    assert venue_ids <= base_ids
-
-    # Make sure we did pop values off the list.
-    assert not app.redis_client.smembers("search:algolia:venue_ids_for_offers")
+    assert backend.redis_client.scard(queue) == 0
 
 
 def test_count_offers_to_index_from_queue(app):
@@ -166,144 +142,6 @@ def test_check_offer_is_indexed(app):
     app.redis_client.hset("indexed_offers", "1", "")
     assert backend.check_offer_is_indexed(FakeOffer(id=1))
     assert not backend.check_offer_is_indexed(FakeOffer(id=2))
-
-
-def test_enqueue_venue_ids(app):
-    backend = get_backend()
-
-    backend.enqueue_venue_ids([1])
-    backend.enqueue_venue_ids({2, 3})
-    backend.enqueue_venue_ids([])
-    assert app.redis_client.smembers("search:algolia:venue-ids-to-index") == {"1", "2", "3"}
-
-
-def test_enqueue_venue_ids_in_error(app):
-    backend = get_backend()
-
-    backend.enqueue_venue_ids_in_error([1])
-    backend.enqueue_venue_ids_in_error({2, 3})
-    backend.enqueue_venue_ids_in_error([])
-    assert app.redis_client.smembers("search:algolia:venue-ids-in-error-to-index") == {"1", "2", "3"}
-
-
-def test_pop_venue_ids_from_queue(app):
-    backend = get_backend()
-    app.redis_client.sadd("search:algolia:venue-ids-to-index", 1, 2, 3)
-
-    popped = set()
-    venue_ids = backend.pop_venue_ids_from_queue(count=2)
-    popped |= venue_ids
-    assert len(venue_ids) == 2
-    assert venue_ids.issubset({1, 2, 3})
-
-    venue_ids = backend.pop_venue_ids_from_queue(count=2)
-    popped |= venue_ids
-    assert len(venue_ids) == 1
-    assert venue_ids.issubset({1, 2, 3})
-    assert popped == {1, 2, 3}
-
-    venue_ids = backend.pop_venue_ids_from_queue(count=2)
-    assert venue_ids == set()
-
-
-def test_pop_venue_ids_from_error_queue(app):
-    backend = get_backend()
-    app.redis_client.sadd("search:algolia:venue-ids-in-error-to-index", 1, 2, 3)
-
-    popped = set()
-    venue_ids = backend.pop_venue_ids_from_queue(count=2, from_error_queue=True)
-    popped |= venue_ids
-    assert len(venue_ids) == 2
-    assert venue_ids.issubset({1, 2, 3})
-
-    venue_ids = backend.pop_venue_ids_from_queue(count=2, from_error_queue=True)
-    popped |= venue_ids
-    assert len(venue_ids) == 1
-    assert venue_ids.issubset({1, 2, 3})
-    assert popped == {1, 2, 3}
-
-    venue_ids = backend.pop_venue_ids_from_queue(count=2, from_error_queue=True)
-    assert venue_ids == set()
-
-
-def test_pop_collective_offer_ids_from_queue(app):
-    backend = get_backend()
-    app.redis_client.sadd("search:algolia:collective-offer-ids-to-index", 1, 2, 3)
-
-    popped = set()
-    collective_offer_ids = backend.pop_collective_offer_ids_from_queue(count=2)
-    popped |= collective_offer_ids
-    assert len(collective_offer_ids) == 2
-    assert collective_offer_ids.issubset({1, 2, 3})
-
-    collective_offer_ids = backend.pop_collective_offer_ids_from_queue(count=2)
-    popped |= collective_offer_ids
-    assert len(collective_offer_ids) == 1
-    assert collective_offer_ids.issubset({1, 2, 3})
-    assert popped == {1, 2, 3}
-
-    collective_offer_ids = backend.pop_collective_offer_ids_from_queue(count=2)
-    assert collective_offer_ids == set()
-
-
-def test_pop_collective_offer_ids_from_error_queue(app):
-    backend = get_backend()
-    app.redis_client.sadd("search:algolia:collective-offer-ids-in-error-to-index", 1, 2, 3)
-
-    popped = set()
-    collective_offer_ids = backend.pop_collective_offer_ids_from_queue(count=2, from_error_queue=True)
-    popped |= collective_offer_ids
-    assert len(collective_offer_ids) == 2
-    assert collective_offer_ids.issubset({1, 2, 3})
-
-    collective_offer_ids = backend.pop_collective_offer_ids_from_queue(count=2, from_error_queue=True)
-    popped |= collective_offer_ids
-    assert len(collective_offer_ids) == 1
-    assert collective_offer_ids.issubset({1, 2, 3})
-    assert popped == {1, 2, 3}
-
-    collective_offer_ids = backend.pop_collective_offer_ids_from_queue(count=2, from_error_queue=True)
-    assert collective_offer_ids == set()
-
-
-def test_pop_collective_offer_template_ids_from_queue(app):
-    backend = get_backend()
-    app.redis_client.sadd("search:algolia:collective-offer-template-ids-to-index", 1, 2, 3)
-
-    popped = set()
-    collective_offer_template_ids = backend.pop_collective_offer_template_ids_from_queue(count=2)
-    popped |= collective_offer_template_ids
-    assert len(collective_offer_template_ids) == 2
-    assert collective_offer_template_ids.issubset({1, 2, 3})
-
-    collective_offer_template_ids = backend.pop_collective_offer_template_ids_from_queue(count=2)
-    popped |= collective_offer_template_ids
-    assert len(collective_offer_template_ids) == 1
-    assert collective_offer_template_ids.issubset({1, 2, 3})
-    assert popped == {1, 2, 3}
-
-    collective_offer_template_ids = backend.pop_collective_offer_template_ids_from_queue(count=2)
-    assert collective_offer_template_ids == set()
-
-
-def test_pop_collective_offer_template_ids_from_error_queue(app):
-    backend = get_backend()
-    app.redis_client.sadd("search:algolia:collective-offer-template-ids-in-error-to-index", 1, 2, 3)
-
-    popped = set()
-    collective_offer_template_ids = backend.pop_collective_offer_template_ids_from_queue(count=2, from_error_queue=True)
-    popped |= collective_offer_template_ids
-    assert len(collective_offer_template_ids) == 2
-    assert collective_offer_template_ids.issubset({1, 2, 3})
-
-    collective_offer_template_ids = backend.pop_collective_offer_template_ids_from_queue(count=2, from_error_queue=True)
-    popped |= collective_offer_template_ids
-    assert len(collective_offer_template_ids) == 1
-    assert collective_offer_template_ids.issubset({1, 2, 3})
-    assert popped == {1, 2, 3}
-
-    collective_offer_template_ids = backend.pop_collective_offer_template_ids_from_queue(count=2, from_error_queue=True)
-    assert collective_offer_template_ids == set()
 
 
 @pytest.mark.usefixtures("db_session")
