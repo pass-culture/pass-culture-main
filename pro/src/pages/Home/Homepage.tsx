@@ -35,7 +35,6 @@ const Homepage = (): JSX.Element => {
   const [hasNoVenueVisible, setHasNoVenueVisible] = useState(false)
   const [isUserOffererValidated, setIsUserOffererValidated] = useState(false)
   const [venues, setVenues] = useState(INITIAL_OFFERER_VENUES)
-  const [displayLinkVenueBanner, setDisplayLinkVenueBanner] = useState(false)
   const { remoteConfigData } = useRemoteConfig()
 
   useEffect(() => {
@@ -55,11 +54,6 @@ const Homepage = (): JSX.Element => {
         })
         setSelectedOfferer(receivedOfferer)
         setIsUserOffererValidated(true)
-        setDisplayLinkVenueBanner(
-          receivedOfferer.hasValidBankAccount &&
-            receivedOfferer.venuesWithNonFreeOffersWithoutBankAccounts.length >
-              0
-        )
       } catch (error) {
         /* istanbul ignore next: DEBT, TO FIX */
         if (hasStatusCode(error) && error.status === HTTP_STATUS.FORBIDDEN) {
@@ -115,16 +109,7 @@ const Homepage = (): JSX.Element => {
         <h1>Bienvenue dans l’espace acteurs culturels</h1>
 
         <AddBankAccountCallout offerer={selectedOfferer} />
-        {displayLinkVenueBanner && (
-          <LinkVenueCallout
-            hasMultipleVenuesToLink={
-              selectedOfferer
-                ? selectedOfferer?.venuesWithNonFreeOffersWithoutBankAccounts
-                    .length > 1
-                : false
-            }
-          />
-        )}
+        <LinkVenueCallout offerer={selectedOfferer} />
         <PendingBankAccountCallout offerer={selectedOfferer} />
         <HomepageBreadcrumb
           activeStep={STEP_ID_OFFERERS}

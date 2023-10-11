@@ -29,6 +29,7 @@ const PendingBankAccountCallout = ({
           href: '/remboursements/informations-bancaires',
           linkTitle: 'Suivre mon dossier de compte bancaire',
           targetLink: '',
+          isExternal: false,
         },
       ]}
       type={CalloutVariant.INFO}

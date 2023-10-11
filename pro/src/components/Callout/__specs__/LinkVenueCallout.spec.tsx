@@ -4,6 +4,7 @@ import React from 'react'
 import LinkVenueCallout, {
   LinkVenueCalloutProps,
 } from 'components/Callout/LinkVenueCallout'
+import { defautGetOffererResponseModel } from 'utils/apiFactories'
 import { renderWithProviders } from 'utils/renderWithProviders'
 
 describe('LinkVenueCallout', () => {
@@ -37,7 +38,46 @@ describe('LinkVenueCallout', () => {
       },
     }
 
+    it.each([
+      {
+        ...defautGetOffererResponseModel,
+        hasValidBankAccount: true,
+        venuesWithNonFreeOffersWithoutBankAccounts: [],
+      },
+      {
+        ...defautGetOffererResponseModel,
+        id: 2,
+        hasValidBankAccount: false,
+        venuesWithNonFreeOffersWithoutBankAccounts: [1],
+      },
+    ])(
+      'should not render the add link venue banner if the offerer  hasValidBankAccount = $hasValidBankAccount and venuesWithNonFreeOffersWithoutBankAccounts = $venuesWithNonFreeOffersWithoutBankAccounts',
+      async ({
+        hasValidBankAccount,
+        venuesWithNonFreeOffersWithoutBankAccounts,
+        ...rest
+      }) => {
+        props.offerer = {
+          ...rest,
+          hasValidBankAccount,
+          venuesWithNonFreeOffersWithoutBankAccounts,
+        }
+        renderWithProviders(<LinkVenueCallout {...props} />, {
+          storeOverrides,
+        })
+
+        expect(
+          screen.queryByText(/Dernière étape pour vous faire rembourser/)
+        ).not.toBeInTheDocument()
+      }
+    )
+
     it('should render LinkVenueCallout', () => {
+      props.offerer = {
+        ...defautGetOffererResponseModel,
+        hasValidBankAccount: true,
+        venuesWithNonFreeOffersWithoutBankAccounts: [1],
+      }
       renderWithProviders(<LinkVenueCallout {...props} />, {
         storeOverrides,
       })
@@ -59,6 +99,11 @@ describe('LinkVenueCallout', () => {
 
     it('should render LinkVenueCallout with singular wording', () => {
       props.titleOnly = false
+      props.offerer = {
+        ...defautGetOffererResponseModel,
+        hasValidBankAccount: true,
+        venuesWithNonFreeOffersWithoutBankAccounts: [1],
+      }
       renderWithProviders(<LinkVenueCallout {...props} />, {
         storeOverrides,
       })
@@ -78,7 +123,11 @@ describe('LinkVenueCallout', () => {
     it('should render LinkVenueCallout with singular plural', () => {
       props = {
         titleOnly: false,
-        hasMultipleVenuesToLink: true,
+      }
+      props.offerer = {
+        ...defautGetOffererResponseModel,
+        hasValidBankAccount: true,
+        venuesWithNonFreeOffersWithoutBankAccounts: [1, 2],
       }
       renderWithProviders(<LinkVenueCallout {...props} />, {
         storeOverrides,
