@@ -5,7 +5,7 @@ import re
 
 from pcapi.connectors.ftp_titelive import connect_to_titelive_ftp
 from pcapi.connectors.ftp_titelive import get_files_to_process_from_titelive_ftp
-from pcapi.core.categories import subcategories
+from pcapi.core.categories import subcategories_v2 as subcategories
 import pcapi.core.fraud.models as fraud_models
 import pcapi.core.offers.api as offers_api
 from pcapi.core.offers.api import deactivate_permanently_unavailable_products

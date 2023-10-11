@@ -7,7 +7,7 @@ import sqlalchemy as sqla
 
 from pcapi import repository
 from pcapi.core.categories import categories
-from pcapi.core.categories import subcategories
+from pcapi.core.categories import subcategories_v2 as subcategories
 from pcapi.core.offerers import exceptions as offerers_exceptions
 from pcapi.core.offerers import models as offerers_models
 from pcapi.core.offerers import repository as offerers_repository

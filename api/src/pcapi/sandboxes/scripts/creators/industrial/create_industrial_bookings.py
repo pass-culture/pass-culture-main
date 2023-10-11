@@ -7,7 +7,7 @@ from random import choice
 from pcapi.core.bookings.factories import BookingFactory
 from pcapi.core.bookings.models import Booking
 from pcapi.core.bookings.models import BookingStatus
-from pcapi.core.categories import subcategories
+from pcapi.core.categories import subcategories_v2 as subcategories
 from pcapi.core.finance import api as finance_api
 import pcapi.core.finance.factories as finance_factories
 from pcapi.core.offers.models import Offer

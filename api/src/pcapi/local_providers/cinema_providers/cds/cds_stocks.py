@@ -4,7 +4,7 @@ from typing import Iterator
 
 from pcapi import settings
 from pcapi.connectors.serialization.cine_digital_service_serializers import ShowCDS
-from pcapi.core.categories import subcategories
+from pcapi.core.categories import subcategories_v2 as subcategories
 from pcapi.core.external_bookings.cds.client import CineDigitalServiceAPI
 from pcapi.core.external_bookings.models import Movie
 from pcapi.core.offerers.models import Venue

@@ -9,7 +9,7 @@ from flask_login import current_user
 import sqlalchemy as sa
 
 from pcapi.core import search
-from pcapi.core.categories import subcategories
+from pcapi.core.categories import subcategories_v2 as subcategories
 from pcapi.core.educational import models as educational_models
 from pcapi.core.mails import transactional as transactional_mails
 from pcapi.core.offerers import models as offerers_models

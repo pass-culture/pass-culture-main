@@ -25,7 +25,7 @@ from sqlalchemy.sql.sqltypes import Numeric
 from pcapi import settings
 from pcapi.core.bookings import exceptions as booking_exceptions
 from pcapi.core.categories import categories
-from pcapi.core.categories import subcategories
+from pcapi.core.categories import subcategories_v2 as subcategories
 import pcapi.core.finance.models as finance_models
 from pcapi.core.object_storage import delete_public_object
 from pcapi.core.object_storage import store_public_object

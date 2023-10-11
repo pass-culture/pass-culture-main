@@ -4,7 +4,7 @@ from typing import Iterator
 
 from pcapi.connectors.cgr.cgr import get_movie_poster_from_api
 from pcapi.connectors.serialization import cgr_serializers
-from pcapi.core.categories import subcategories
+from pcapi.core.categories import subcategories_v2 as subcategories
 from pcapi.core.external_bookings.cgr.client import CGRClientAPI
 import pcapi.core.offerers.models as offerers_models
 import pcapi.core.offers.models as offers_models
