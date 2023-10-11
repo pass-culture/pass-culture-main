@@ -806,45 +806,6 @@ class ReportedOffersTest:
 
 
 class SubcategoriesTest:
-    def test_get_subcategories(self, app):
-        with assert_num_queries(0):
-            response = TestClient(app.test_client()).get("/native/v1/subcategories")
-
-        assert response.status_code == 200
-        assert list(response.json.keys()) == ["subcategories", "searchGroups", "homepageLabels"]
-        assert len(response.json["subcategories"]) == len(subcategories.ALL_SUBCATEGORIES)
-        assert len(response.json["searchGroups"]) == len(subcategories.SearchGroups)
-        assert len(response.json["homepageLabels"]) == len(subcategories.HomepageLabels)
-        assert all(
-            list(subcategory_dict.keys())
-            == [
-                "id",
-                "categoryId",
-                "appLabel",
-                "searchGroupName",
-                "homepageLabelName",
-                "isEvent",
-                "onlineOfflinePlatform",
-            ]
-            for subcategory_dict in response.json["subcategories"]
-        )
-        assert all(
-            list(search_group_dict.keys())
-            == [
-                "name",
-                "value",
-            ]
-            for search_group_dict in response.json["searchGroups"]
-        )
-        assert all(
-            list(homepage_label_dict.keys())
-            == [
-                "name",
-                "value",
-            ]
-            for homepage_label_dict in response.json["homepageLabels"]
-        )
-
     def test_get_subcategories_v2(self, client):
         with assert_num_queries(0):
             response = client.get("/native/v1/subcategories/v2")

@@ -1,6 +1,5 @@
 from sqlalchemy.orm import joinedload
 
-from pcapi.core.categories import subcategories
 from pcapi.core.categories import subcategories_v2
 import pcapi.core.mails.transactional as transactional_mails
 from pcapi.core.offerers.models import Offerer
@@ -104,25 +103,6 @@ def send_offer_link_by_push(user: User, offer_id: int) -> None:
     if offer.validation != OfferValidationStatus.APPROVED:
         raise ResourceNotFoundError()
     push_notification_job.send_offer_link_by_push_job.delay(user.id, offer_id)
-
-
-@blueprint.native_v1.route("/subcategories", methods=["GET"])
-@spectree_serialize(api=blueprint.api, response_model=serializers.SubcategoriesResponseModel)
-def get_subcategories() -> serializers.SubcategoriesResponseModel:
-    return serializers.SubcategoriesResponseModel(
-        subcategories=[
-            serializers.SubcategoryResponseModel.from_orm(subcategory)
-            for subcategory in subcategories.ALL_SUBCATEGORIES
-        ],
-        searchGroups=[
-            serializers.SearchGroupResponseModel.from_orm(search_group_name)
-            for search_group_name in subcategories.SearchGroups
-        ],
-        homepageLabels=[
-            serializers.HomepageLabelResponseModel.from_orm(homepage_label_name)
-            for homepage_label_name in subcategories.HomepageLabels
-        ],
-    )
 
 
 @blueprint.native_v1.route("/subcategories/v2", methods=["GET"])
