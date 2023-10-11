@@ -259,6 +259,9 @@ class LocalProvider(Iterator):
             self.venue_provider.lastSyncDate = datetime.utcnow()
             repository.save(self.venue_provider)
 
+    def postTreatment(self) -> None:
+        pass
+
 
 def _upload_thumb(
     pc_object: HasThumbMixin,

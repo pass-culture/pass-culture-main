@@ -9,6 +9,8 @@ from pcapi.core.categories import subcategories
 import pcapi.core.fraud.models as fraud_models
 import pcapi.core.offers.api as offers_api
 from pcapi.core.offers.api import deactivate_permanently_unavailable_products
+from pcapi.core.offers.exceptions import NotUpdateProductOrOffers
+from pcapi.core.offers.exceptions import ProductNotFound
 import pcapi.core.offers.models as offers_models
 import pcapi.core.providers.models as providers_models
 import pcapi.core.providers.repository as providers_repository
@@ -220,6 +222,7 @@ class TiteLiveThings(LocalProvider):
 
         self.data_lines = None
         self.products_file = None
+        self.product_approved_eans = []
         self.product_extra_data = offers_models.OfferExtraData()
         self.product_whitelist_eans = {
             ean for ean, in fraud_models.ProductWhitelist.query.with_entities(fraud_models.ProductWhitelist.ean).all()
@@ -373,6 +376,9 @@ class TiteLiveThings(LocalProvider):
         extra_data = self.product_extra_data | get_extra_data_from_infos(self.product_infos)
         product.extraData = extra_data
 
+        if not product.isGcuCompatible and product.extraData:
+            self.product_approved_eans.append(product.extraData.get("ean"))
+
     def open_next_file(self):  # type: ignore [no-untyped-def]
         if self.products_file:
             file_date = get_date_from_filename(self.products_file, DATE_REGEXP)
@@ -400,6 +406,16 @@ class TiteLiveThings(LocalProvider):
                 )
                 return iter(ordered_thing_files_from_date)
         return iter([])
+
+    def postTreatment(self) -> None:
+        # If the product is updated to eligible, it is because the offers must be approved to become ineligible due to gcu
+        for ean in self.product_approved_eans:
+            try:
+                offers_api.approves_provider_product_and_rejected_offers(ean)
+            except ProductNotFound as exception:
+                logger.error("Imported product with ean %s not found", extra={"ean": ean, "exc": str(exception)})
+            except NotUpdateProductOrOffers as exception:
+                logger.error("Product with ean %s cannot be approved", extra={"ean": ean, "exc": str(exception)})
 
 
 def get_lines_from_thing_file(thing_file: str):  # type: ignore [no-untyped-def]
