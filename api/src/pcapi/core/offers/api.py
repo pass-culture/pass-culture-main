@@ -1266,3 +1266,58 @@ def delete_price_category(offer: models.Offer, price_category: models.PriceCateg
     validation.check_price_categories_deletable(offer)
     db.session.delete(price_category)
     db.session.commit()
+
+
+def approves_provider_product_and_rejected_offers(ean: str) -> None:
+    product = models.Product.query.filter(
+        models.Product.isGcuCompatible.is_(False),
+        models.Product.extraData["ean"].astext == ean,
+        models.Product.idAtProviders.is_not(None),
+    ).one_or_none()
+
+    if not product:
+        raise exceptions.ProductNotFound()
+
+    try:
+        with transaction():
+            product.isGcuCompatible = True
+            db.session.add(product)
+
+            offers_query = models.Offer.query.filter(
+                models.Offer.productId == product.id,
+                models.Offer.validation == models.OfferValidationStatus.REJECTED,
+                models.Offer.lastValidationType == OfferValidationType.CGU_INCOMPATIBLE_PRODUCT,
+            ).options(sa.orm.load_only(models.Offer.id))
+
+            offers = offers_query.all()
+
+            offer_updated_counts = offers_query.update(
+                values={
+                    "validation": models.OfferValidationStatus.APPROVED,
+                    "lastValidationDate": datetime.datetime.utcnow(),
+                    "lastValidationType": OfferValidationType.AUTO,
+                },
+                synchronize_session=False,
+            )
+
+            offer_ids = [offer.id for offer in offers]
+
+            logger.info(
+                "Approve product and rejected offers",
+                extra={
+                    "ean": ean,
+                    "product": product.id,
+                    "offers": offer_ids,
+                    "offer_updated_counts": offer_updated_counts,
+                },
+            )
+
+        if offer_ids:
+            search.async_index_offer_ids(set(offer_ids))
+
+    except Exception as exception:
+        logger.exception(
+            "Could not approve product and rejected offers: %s",
+            extra={"ean": ean, "product": product.id, "offers": offer_ids, "exc": str(exception)},
+        )
+        raise exceptions.NotUpdateProductOrOffers(exception)
