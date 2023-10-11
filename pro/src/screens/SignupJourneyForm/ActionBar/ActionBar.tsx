@@ -21,7 +21,7 @@ export interface ActionBarProps {
   previousTo?: SIGNUP_JOURNEY_STEP_IDS
   hideRightButton?: boolean
   withRightIcon?: boolean
-  logEvent: logEventType | null
+  logEvent?: logEventType
   legalCategoryCode?: string
 }
 

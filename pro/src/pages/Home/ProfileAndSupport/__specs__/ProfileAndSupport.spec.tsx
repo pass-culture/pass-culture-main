@@ -36,7 +36,6 @@ describe('ProfileAndSupport', () => {
     // When
     vi.spyOn(useAnalytics, 'default').mockImplementation(() => ({
       logEvent: mockLogEvent,
-      setLogEvent: null,
     }))
     renderProfileAndSupport()
     const editButton = screen.getByRole('link', { name: 'Modifier' })

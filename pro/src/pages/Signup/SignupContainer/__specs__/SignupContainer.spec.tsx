@@ -54,7 +54,6 @@ describe('Signup', () => {
     vi.spyOn(api, 'signupProV2').mockResolvedValue()
     vi.spyOn(useAnalytics, 'default').mockImplementation(() => ({
       logEvent: mockLogEvent,
-      setLogEvent: null,
     }))
 
     vi.spyOn(api, 'listOfferersNames').mockResolvedValue({

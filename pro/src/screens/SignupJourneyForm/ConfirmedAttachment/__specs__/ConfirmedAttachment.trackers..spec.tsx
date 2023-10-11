@@ -55,7 +55,6 @@ describe('ConfirmedAttachment trackers', () => {
     }
     vi.spyOn(useAnalytics, 'default').mockImplementation(() => ({
       logEvent: mockLogEvent,
-      setLogEvent: null,
     }))
   })
   it('should redirect user on offerer page on continue button click', async () => {

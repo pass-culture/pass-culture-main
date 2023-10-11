@@ -156,7 +156,6 @@ describe('venue form trackers', () => {
   beforeEach(() => {
     vi.spyOn(useAnalytics, 'default').mockImplementation(() => ({
       logEvent: mockLogEvent,
-      setLogEvent: null,
     }))
   })
 

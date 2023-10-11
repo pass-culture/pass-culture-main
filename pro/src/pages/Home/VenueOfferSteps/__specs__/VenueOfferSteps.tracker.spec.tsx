@@ -48,7 +48,6 @@ describe('VenueOfferSteps', () => {
   beforeEach(() => {
     vi.spyOn(useAnalytics, 'default').mockImplementation(() => ({
       logEvent: mockLogEvent,
-      setLogEvent: null,
     }))
   })
   it('should track creation venue', async () => {

@@ -62,7 +62,6 @@ describe('ImageUploaderOffer::tracker', () => {
 
     vi.spyOn(useAnalytics, 'default').mockImplementation(() => ({
       logEvent: mockLogEvent,
-      setLogEvent: null,
     }))
   })
 
