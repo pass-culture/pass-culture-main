@@ -12,7 +12,7 @@ from pydantic.v1 import constr
 from pydantic.v1 import validator
 from pydantic.v1.utils import GetterDict
 
-from pcapi.core.categories.subcategories import SubcategoryIdEnum
+from pcapi.core.categories.subcategories_v2 import SubcategoryIdEnum
 from pcapi.core.educational.models import CollectiveOfferDisplayedStatus
 from pcapi.core.offers import models as offers_models
 from pcapi.core.offers import repository as offers_repository
