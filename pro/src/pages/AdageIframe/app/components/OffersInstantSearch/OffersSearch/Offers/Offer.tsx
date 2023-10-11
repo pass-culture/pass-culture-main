@@ -170,6 +170,7 @@ const Offer = ({
                   <OfferFavoriteButton
                     offer={offer}
                     afterFavoriteChange={afterFavoriteChange}
+                    queryId={queryId}
                   ></OfferFavoriteButton>
                 )}
                 {offer.isTemplate ? (
