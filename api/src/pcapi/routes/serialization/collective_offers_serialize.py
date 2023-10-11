@@ -142,7 +142,7 @@ def _serialize_offer_paginated(offer: CollectiveOffer | CollectiveOfferTemplate)
     templateId = getattr(offer, "templateId", None)
 
     return CollectiveOfferResponseModel(  # type: ignore [call-arg]
-        hasBookingLimitDatetimesPassed=offer.hasBookingLimitDatetimesPassed if not is_offer_template else False,  # type: ignore [arg-type]
+        hasBookingLimitDatetimesPassed=offer.hasBookingLimitDatetimesPassed if not is_offer_template else False,
         id=offer.id,
         isActive=False if offer.status == OfferStatus.INACTIVE else offer.isActive,
         isEditable=offer.isEditable,
@@ -153,7 +153,7 @@ def _serialize_offer_paginated(offer: CollectiveOffer | CollectiveOfferTemplate)
         thumbUrl=None,
         subcategoryId=offer.subcategoryId,  # type: ignore [arg-type]
         venue=_serialize_venue(offer.venue),  # type: ignore [arg-type]
-        status=offer.status.name,  # type: ignore [attr-defined]
+        status=offer.status.name,
         isShowcase=is_offer_template,
         educationalInstitution=EducationalInstitutionResponseModel.from_orm(institution) if institution else None,
         interventionArea=offer.interventionArea,

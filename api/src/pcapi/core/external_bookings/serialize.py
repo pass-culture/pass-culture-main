@@ -48,11 +48,11 @@ class ExternalEventBookingRequest(pydantic_v1.BaseModel):
             price_category_id=stock.priceCategoryId,  # type: ignore [arg-type]
             price_category_label=stock.priceCategory.label,  # type: ignore [arg-type]
             stock_id=booking.stockId,
-            user_birth_date=user.birth_date,  # type: ignore [arg-type]
+            user_birth_date=user.birth_date,
             user_email=user.email,
             user_first_name=user.firstName,  # type: ignore [arg-type]
             user_last_name=user.lastName,  # type: ignore [arg-type]
-            user_phone=user.phoneNumber,  # type: ignore [arg-type]
+            user_phone=user.phoneNumber,
             venue_address=stock.offer.venue.address,
             venue_department_code=stock.offer.venue.departementCode,
             venue_id=stock.offer.venue.id,

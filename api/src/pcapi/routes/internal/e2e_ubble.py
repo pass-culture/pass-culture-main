@@ -53,7 +53,7 @@ def make_identification_response(user: users_models.User, errors: list[UbbleErro
     return fraud_factories.UbbleContentFactory(
         first_name=user.firstName,
         last_name=user.lastName,
-        birth_date=user.birth_date.isoformat(),  # type: ignore [attr-defined]
+        birth_date=user.birth_date.isoformat(),
         identification_id=identification_id,
         identification_url=identification_url,
         id_document_number="123456789012",

@@ -375,7 +375,9 @@ class ZendeskSellBackend(ZendeskSellReadOnlyBackend):
                     % (datetime.date.today().strftime("%d/%m/%Y"),),
                     ZendeskCustomFieldsNames.JURIDIC_NAME.value: offerer.name,
                     ZendeskCustomFieldsNames.PRODUCT_OFFERER_ID.value: offerer.id,
-                    ZendeskCustomFieldsNames.REGION.value: get_region_name_from_department(offerer.departementCode).upper(),  # type: ignore [arg-type]
+                    ZendeskCustomFieldsNames.REGION.value: get_region_name_from_department(
+                        offerer.departementCode
+                    ).upper(),
                     ZendeskCustomFieldsNames.SIREN.value: offerer.siren,
                     ZendeskCustomFieldsNames.TYPAGE.value: ["Structure"],
                     ZendeskCustomFieldsNames.BACKOFFICE_LINK.value: self._build_backoffice_offerer_link(offerer),

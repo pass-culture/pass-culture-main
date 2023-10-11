@@ -286,7 +286,7 @@ def get_user_attributes(user: users_models.User) -> models.UserAttributes:
     from pcapi.core.fraud import api as fraud_api
     from pcapi.core.users.api import get_domains_credit
 
-    is_pro_user: bool = user.has_pro_role or user.has_non_attached_pro_role  # type: ignore [assignment]
+    is_pro_user: bool = user.has_pro_role or user.has_non_attached_pro_role
 
     if is_pro_user:
         user_bookings: List[bookings_models.Booking] = []
@@ -316,7 +316,7 @@ def get_user_attributes(user: users_models.User) -> models.UserAttributes:
     is_former_beneficiary = (user.has_beneficiary_role and not has_remaining_credit) or (
         user.has_underage_beneficiary_role and user.eligibility is None
     )
-    user_birth_date = datetime.combine(user.birth_date, datetime.min.time()) if user.birth_date else None  # type: ignore [arg-type]
+    user_birth_date = datetime.combine(user.birth_date, datetime.min.time()) if user.birth_date else None
 
     return models.UserAttributes(
         booking_categories=bookings_attributes.booking_categories,
@@ -336,12 +336,12 @@ def get_user_attributes(user: users_models.User) -> models.UserAttributes:
         has_completed_id_check=fraud_api.has_user_performed_identity_check(user),
         user_id=user.id,
         is_active=user.isActive,
-        is_beneficiary=user.is_beneficiary,  # type: ignore [arg-type]
+        is_beneficiary=user.is_beneficiary,
         is_current_beneficiary=user.is_beneficiary and has_remaining_credit,
         is_former_beneficiary=is_former_beneficiary,
         is_eligible=user.is_eligible,
         is_email_validated=user.isEmailValidated,
-        is_phone_validated=user.is_phone_validated,  # type: ignore [arg-type]
+        is_phone_validated=user.is_phone_validated,
         is_pro=is_pro_user,
         last_booking_date=user_bookings[0].dateCreated if user_bookings else None,
         last_favorite_creation_date=last_favorite.dateCreated if last_favorite else None,
@@ -353,7 +353,7 @@ def get_user_attributes(user: users_models.User) -> models.UserAttributes:
         most_booked_movie_genre=bookings_attributes.most_booked_movie_genre,
         most_booked_music_type=bookings_attributes.most_booked_music_type,
         most_favorite_offer_subcategories=most_favorite_offer_subcategories,
-        phone_number=user.phoneNumber,  # type: ignore [arg-type]
+        phone_number=user.phoneNumber,
         postal_code=user.postalCode,
         products_use_date={
             f"product_{TRACKED_PRODUCT_IDS[booking.stock.offer.productId]}_use": booking.dateUsed

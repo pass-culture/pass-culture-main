@@ -174,7 +174,7 @@ class BeneficiaryFraudCheckFactory(testing.BaseFactory):
         if user.lastName:
             kwargs.update(last_name=user.lastName)
         if user.birth_date:
-            kwargs.update(birth_date=user.birth_date.isoformat())  # type: ignore [attr-defined]
+            kwargs.update(birth_date=user.birth_date.isoformat())
         return factory_class(**kwargs).dict(by_alias=True)
 
     @classmethod

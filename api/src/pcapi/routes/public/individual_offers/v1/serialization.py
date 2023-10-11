@@ -682,7 +682,7 @@ class OfferResponse(serialization.ConfiguredBaseModel):
             is_duo=offer.isDuo,
             location=DigitalLocation.from_orm(offer) if offer.isDigital else PhysicalLocation.from_orm(offer),
             name=offer.name,
-            status=offer.status,  # type: ignore [arg-type]
+            status=offer.status,
             withdrawal_details=offer.withdrawalDetails,
         )
 

@@ -573,7 +573,7 @@ def update_user_info(
         user_phone_number = typing.cast(str, user.phoneNumber)
         if user_phone_number != phone_number:
             snapshot.set("phoneNumber", old=user_phone_number, new=phone_number)
-        user.phoneNumber = phone_number  # type: ignore [assignment]
+        user.phoneNumber = phone_number  # type: ignore [method-assign]
     if address is not UNCHANGED:
         if address != user.address:
             snapshot.set("address", old=user.address, new=address)
@@ -619,7 +619,7 @@ def _update_underage_beneficiary_deposit_expiration_date(user: users_models.User
         raise ValueError("Trying to update underage beneficiary deposit expiration date but user has no deposit")
 
     current_deposit_expiration_datetime = user.deposit.expirationDate
-    new_deposit_expiration_datetime = finance_api.compute_underage_deposit_expiration_datetime(user.birth_date)  # type: ignore [arg-type]
+    new_deposit_expiration_datetime = finance_api.compute_underage_deposit_expiration_datetime(user.birth_date)
 
     if current_deposit_expiration_datetime == new_deposit_expiration_datetime:
         return

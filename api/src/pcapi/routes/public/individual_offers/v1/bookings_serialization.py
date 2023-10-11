@@ -49,7 +49,7 @@ class GetBookingResponse(serialization.ConfiguredBaseModel):
     @classmethod
     def build_booking(cls, booking: booking_models.Booking) -> "GetBookingResponse":
         extra_data = booking.stock.offer.extraData or {}
-        birth_date = date_utils.isoformat(booking.user.birth_date) if booking.user.birth_date else None  # type: ignore [arg-type]
+        birth_date = date_utils.isoformat(booking.user.birth_date) if booking.user.birth_date else None
         return cls(
             id=booking.id,
             creation_date=date_utils.format_into_utc_date(booking.dateCreated),
@@ -73,7 +73,7 @@ class GetBookingResponse(serialization.ConfiguredBaseModel):
             user_birth_date=birth_date,
             user_first_name=booking.user.firstName,
             user_last_name=booking.user.lastName,
-            user_phone_number=booking.user.phoneNumber,  # type: ignore [arg-type]
+            user_phone_number=booking.user.phoneNumber,
             user_postal_code=booking.user.postalCode,
         )
 

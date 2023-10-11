@@ -57,7 +57,7 @@ def _get_event_metadata_from_offer(offer: offers_models.Offer) -> Metadata:
     }
 
     if offer.firstBeginningDatetime:
-        firstBeginningDatetime: datetime.datetime = offer.firstBeginningDatetime  # type: ignore [assignment]
+        firstBeginningDatetime: datetime.datetime = offer.firstBeginningDatetime
         event_metadata["startDate"] = firstBeginningDatetime.isoformat(timespec="minutes")
 
     return common_metadata | event_metadata

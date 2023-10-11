@@ -274,7 +274,7 @@ def _get_remaining_stock(offer: offers_models.Offer) -> int | str:
     if "unlimited" in remaining_quantities:
         return "Illimité"
     # only integers in remaining_quantities
-    return sum(remaining_quantities)  # type: ignore [arg-type]
+    return sum(remaining_quantities)
 
 
 @list_offers_blueprint.route("", methods=["GET"])

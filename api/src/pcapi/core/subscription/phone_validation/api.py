@@ -152,7 +152,7 @@ def send_phone_validation_code(
         _check_sms_sending_is_allowed(user)
     _ensure_phone_number_unicity(user, phone_data.phone_number, change_owner=False)
 
-    user.phoneNumber = phone_data.phone_number  # type: ignore [assignment]
+    user.phoneNumber = phone_data.phone_number  # type: ignore [method-assign]
     repository.save(user)
 
     phone_validation_token = users_api.create_phone_validation_token(
