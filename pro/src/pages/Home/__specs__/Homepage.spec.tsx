@@ -72,23 +72,6 @@ describe('homepage', () => {
       id: 2,
       hasValidBankAccount: true,
     },
-    {
-      ...defautGetOffererResponseModel,
-      id: 3,
-      hasValidBankAccount: false,
-      venuesWithNonFreeOffersWithoutBankAccounts: [1],
-    },
-    {
-      ...defautGetOffererResponseModel,
-      id: 4,
-      hasValidBankAccount: true,
-      venuesWithNonFreeOffersWithoutBankAccounts: [2],
-    },
-    {
-      ...defautGetOffererResponseModel,
-      id: 5,
-      hasPendingBankAccount: true,
-    },
   ]
 
   const baseOfferersNames = baseOfferers.map(offerer => ({
@@ -270,51 +253,6 @@ describe('homepage', () => {
           })
         })
       })
-    })
-  })
-
-  describe('bank accounts', () => {
-    beforeEach(() => {
-      store.features = {
-        list: [
-          { isActive: true, nameKey: 'WIP_ENABLE_NEW_BANK_DETAILS_JOURNEY' },
-        ],
-      }
-    })
-
-    it.each([baseOfferers[0], baseOfferers[1], baseOfferers[2]])(
-      'should not render the add link venue banner if the offerer  hasValidBankAccount = $hasValidBankAccount and venuesWithNonFreeOffersWithoutBankAccounts = $venuesWithNonFreeOffersWithoutBankAccounts',
-      async (
-        // utilisés dans le message du test
-        // eslint-disable-next-line
-        { hasValidBankAccount, venuesWithNonFreeOffersWithoutBankAccounts }
-      ) => {
-        vi.spyOn(api, 'listOfferersNames').mockResolvedValue({
-          offerersNames: [baseOfferersNames[0]],
-        })
-        vi.spyOn(api, 'getOfferer').mockResolvedValue(baseOfferers[0])
-
-        renderHomePage(store)
-        await waitForElementToBeRemoved(() => screen.queryByTestId('spinner'))
-
-        expect(
-          screen.queryByText(/Dernière étape pour vous faire rembourser/)
-        ).not.toBeInTheDocument()
-      }
-    )
-
-    it('should render the link venue banner if the offerer has no valid bank account and some unlinked venues', async () => {
-      vi.spyOn(api, 'listOfferersNames').mockResolvedValue({
-        offerersNames: [baseOfferersNames[3]],
-      })
-      vi.spyOn(api, 'getOfferer').mockResolvedValue(baseOfferers[3])
-
-      renderHomePage(store)
-      await waitForElementToBeRemoved(() => screen.queryByTestId('spinner'))
-
-      expect(
-        screen.getByText(/Dernière étape pour vous faire rembourser/)
-      ).toBeInTheDocument()
     })
   })
 })

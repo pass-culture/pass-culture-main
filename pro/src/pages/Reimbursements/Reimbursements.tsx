@@ -63,14 +63,7 @@ const Reimbursements = (): JSX.Element => {
         {!isNewBankDetailsJourneyEnabled && <BannerReimbursementsInfo />}
         <AddBankAccountCallout titleOnly={true} offerer={selectedOfferer} />
         <PendingBankAccountCallout titleOnly={true} offerer={selectedOfferer} />
-
-        {isNewBankDetailsJourneyEnabled && (
-          <>
-            {/* TODO: displaying condition when offerer is available here. (Done in another branch)*/}
-            <LinkVenueCallout titleOnly={true} />
-          </>
-        )}
-
+        <LinkVenueCallout titleOnly={true} offerer={selectedOfferer} />
         <ReimbursementsBreadcrumb />
         <Routes>
           {routes.map(({ path, element }) => (

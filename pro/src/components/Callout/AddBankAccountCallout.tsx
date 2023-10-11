@@ -34,6 +34,7 @@ const AddBankAccountCallout = ({
           href: '/remboursements/informations-bancaires',
           linkTitle: 'Ajouter un compte bancaire',
           targetLink: '',
+          isExternal: false,
         },
       ]}
       type={CalloutVariant.ERROR}
