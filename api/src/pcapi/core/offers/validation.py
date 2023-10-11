@@ -7,7 +7,7 @@ from PIL import Image
 from PIL import UnidentifiedImageError
 import sqlalchemy as sqla
 
-from pcapi.core.categories import subcategories
+from pcapi.core.categories import subcategories_v2 as subcategories
 from pcapi.core.categories.subcategories_v2 import ExtraDataFieldEnum
 from pcapi.core.educational import models as educational_models
 from pcapi.core.finance import repository as finance_repository

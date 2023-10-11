@@ -8,7 +8,7 @@ from flask_sqlalchemy import BaseQuery
 from sqlalchemy import func
 import sqlalchemy.orm as sqla_orm
 
-from pcapi.core.categories import subcategories
+from pcapi.core.categories import subcategories_v2 as subcategories
 from pcapi.core.offerers.models import Venue
 import pcapi.core.offers.models as offers_models
 from pcapi.models import db

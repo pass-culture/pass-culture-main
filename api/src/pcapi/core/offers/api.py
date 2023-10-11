@@ -21,7 +21,7 @@ import pcapi.core.bookings.api as bookings_api
 import pcapi.core.bookings.models as bookings_models
 from pcapi.core.bookings.models import BookingCancellationReasons
 import pcapi.core.bookings.repository as bookings_repository
-from pcapi.core.categories import subcategories
+from pcapi.core.categories import subcategories_v2 as subcategories
 import pcapi.core.criteria.models as criteria_models
 from pcapi.core.educational import exceptions as educational_exceptions
 from pcapi.core.educational import models as educational_models

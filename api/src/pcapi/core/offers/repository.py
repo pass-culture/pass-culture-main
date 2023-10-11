@@ -9,7 +9,7 @@ import sqlalchemy as sa
 import sqlalchemy.orm as sa_orm
 
 from pcapi.core.bookings import models as bookings_models
-from pcapi.core.categories import subcategories
+from pcapi.core.categories import subcategories_v2 as subcategories
 from pcapi.core.educational import models as educational_models
 from pcapi.core.offerers import models as offerers_models
 from pcapi.core.providers import constants as providers_constants

@@ -11,7 +11,7 @@ import sqlalchemy as sa
 
 from pcapi.core import search
 from pcapi.core.bookings import constants as bookings_constants
-from pcapi.core.categories import subcategories
+from pcapi.core.categories import subcategories_v2 as subcategories
 from pcapi.core.educational import adage_backends as adage_client
 from pcapi.core.educational import models as educational_models
 from pcapi.core.educational.adage_backends.serialize import serialize_collective_offer

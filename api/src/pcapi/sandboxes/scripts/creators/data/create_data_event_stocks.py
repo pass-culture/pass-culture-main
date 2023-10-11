@@ -1,7 +1,7 @@
 from decimal import Decimal
 import logging
 
-from pcapi.core.categories import subcategories
+from pcapi.core.categories import subcategories_v2 as subcategories
 import pcapi.core.offers.factories as offers_factories
 from pcapi.repository import repository
 from pcapi.sandboxes.scripts.creators.data.create_data_event_occurrences import EventOccurrence
