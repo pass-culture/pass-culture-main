@@ -17,7 +17,7 @@ import {
   getFilteredVenueListByCategoryStatus,
   getFilteredVenueListBySubcategory,
 } from 'components/IndividualOfferForm/utils/getFilteredVenueList'
-import { RouteLeavingGuardIndividualOffer } from 'components/RouteLeavingGuardIndividualOffer'
+import { RouteLeavingGuardIndividualOffer } from 'components/RouteLeavingGuardIndividualOffer/RouteLeavingGuardIndividualOffer'
 import { useIndividualOfferContext } from 'context/IndividualOfferContext'
 import {
   Events,

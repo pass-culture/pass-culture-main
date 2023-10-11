@@ -293,7 +293,7 @@ describe('screens:IndividualOffer::Informations::creation', () => {
     await userEvent.click(screen.getByText('Go outside !'))
 
     expect(
-      screen.getByText('Les informations non sauvegardées seront perdues')
+      screen.getByText('Les informations non enregistrées seront perdues')
     ).toBeInTheDocument()
   })
 

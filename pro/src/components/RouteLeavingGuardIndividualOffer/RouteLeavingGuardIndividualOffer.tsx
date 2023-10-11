@@ -8,7 +8,7 @@ interface RouteLeavingGuardIndividualOffer {
   when: boolean
 }
 
-const RouteLeavingGuardIndividualOffer = ({
+export const RouteLeavingGuardIndividualOffer = ({
   when,
 }: RouteLeavingGuardIndividualOffer): JSX.Element => {
   const shouldBlockNavigation: BlockerFunction = () => when
@@ -16,12 +16,10 @@ const RouteLeavingGuardIndividualOffer = ({
   return (
     <RouteLeavingGuard
       shouldBlockNavigation={shouldBlockNavigation}
-      dialogTitle="Les informations non sauvegardées seront perdues"
+      dialogTitle="Les informations non enregistrées seront perdues"
       leftButton="Quitter la page"
       rightButton="Rester sur la page"
       closeModalOnRightButton
     />
   )
 }
-
-export default RouteLeavingGuardIndividualOffer
