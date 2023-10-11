@@ -1,6 +1,5 @@
 import copy
 import datetime
-import html
 import pathlib
 import re
 from unittest.mock import patch
@@ -10,8 +9,7 @@ import pytest
 import requests
 
 from pcapi.connectors import titelive
-from pcapi.connectors.titelive import GtlIdError
-from pcapi.core.categories import subcategories
+from pcapi.core.categories import subcategories_v2 as subcategories
 from pcapi.core.offers import factories as offers_factories
 from pcapi.core.offers import models as offers_models
 import pcapi.core.providers.constants as providers_constants
@@ -21,7 +19,6 @@ import pcapi.core.providers.repository as providers_repository
 from pcapi.core.providers.titelive_music_search import TiteliveMusicSearch
 from pcapi.core.testing import override_settings
 from pcapi.domain import music_types
-from pcapi.domain.titelive import read_things_date
 from pcapi.utils.requests import ExternalAPIException
 
 import tests
