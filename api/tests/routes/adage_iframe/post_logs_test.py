@@ -181,7 +181,7 @@ class LogsTest:
         with caplog.at_level(logging.INFO):
             response = client.post(
                 "/adage-iframe/logs/fav-offer",
-                json={"offerId": 1, "iframeFrom": "for_my_institution"},
+                json={"offerId": 1, "iframeFrom": "for_my_institution", "isFavorite": True},
             )
 
         # then
@@ -191,6 +191,7 @@ class LogsTest:
             "analyticsSource": "adage",
             "offerId": 1,
             "queryId": None,
+            "isFavorite": True,
             "from": "for_my_institution",
             "userId": "f0e2a21bcf499cbc713c47d8f034d66e90a99f9ffcfe96466c9971dfdc5c9816",
             "uai": "EAU123",
