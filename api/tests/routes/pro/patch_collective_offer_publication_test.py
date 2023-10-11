@@ -25,6 +25,9 @@ class Returns204Test:
         assert response.status_code == 200
         assert response.json["status"] == OfferStatus.ACTIVE.value
 
+        offer = educational_models.CollectiveOffer.query.filter_by(id=offer.id).one()
+        assert not offer.lastValidationAuthor
+
     def expect_offer_to_be_pending(self, client):
         stock = educational_factories.CollectiveStockFactory()
         offer = educational_factories.CollectiveOfferFactory(
@@ -49,6 +52,9 @@ class Returns204Test:
         assert response.json["status"] == OfferStatus.PENDING.value
         assert not response.json["isActive"]
 
+        offer = educational_models.CollectiveOffer.query.filter_by(id=offer.id).one()
+        assert not offer.lastValidationAuthor
+
 
 @pytest.mark.usefixtures("db_session")
 class Returns403Test:
@@ -63,6 +69,7 @@ class Returns403Test:
         assert response.status_code == 403
         offer = educational_models.CollectiveOffer.query.filter_by(id=offer.id).one()
         assert offer.validation == OfferValidationStatus.DRAFT
+        assert not offer.lastValidationAuthor
 
 
 @pytest.mark.usefixtures("db_session")
@@ -77,3 +84,4 @@ class Returns401Test:
         assert response.status_code == 401
         offer = educational_models.CollectiveOffer.query.filter_by(id=offer.id).one()
         assert offer.validation == OfferValidationStatus.DRAFT
+        assert not offer.lastValidationAuthor

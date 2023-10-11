@@ -5,6 +5,7 @@ from flask import redirect
 from flask import render_template
 from flask import request
 from flask import url_for
+from flask_login import current_user
 import sqlalchemy as sa
 
 from pcapi.core import search
@@ -81,7 +82,7 @@ def _get_collective_offer_templates(
         )
 
     if form.status.data:
-        base_query = base_query.filter(educational_models.CollectiveOfferTemplate.validation.in_(form.status.data))
+        base_query = base_query.filter(educational_models.CollectiveOfferTemplate.validation.in_(form.status.data))  # type: ignore [attr-defined]
 
     if form.only_validated_offerers.data:
         base_query = (
@@ -222,6 +223,7 @@ def _batch_validate_or_reject_collective_offer_templates(
         collective_offer_template.validation = new_validation_status
         collective_offer_template.lastValidationDate = datetime.datetime.utcnow()
         collective_offer_template.lastValidationType = OfferValidationType.MANUAL
+        collective_offer_template.lastValidationAuthorUserId = current_user.id
         if validation is OfferValidationStatus.APPROVED:
             collective_offer_template.isActive = True
 

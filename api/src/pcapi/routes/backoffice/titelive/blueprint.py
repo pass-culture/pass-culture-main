@@ -135,6 +135,7 @@ def add_product_whitelist(ean: str, title: str) -> utils.BackofficeResponse:
                             "validation": offers_models.OfferValidationStatus.APPROVED,
                             "lastValidationDate": datetime.datetime.utcnow(),
                             "lastValidationType": OfferValidationType.MANUAL,
+                            "lastValidationAuthorUserId": current_user.id,
                         },
                         synchronize_session=False,
                     )

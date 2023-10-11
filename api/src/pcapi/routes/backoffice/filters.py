@@ -833,6 +833,12 @@ def format_finance_incident_type(incident_kind: finance_models.IncidentType) -> 
             return incident_kind.value
 
 
+def format_stock_quantity(quantity: int | None) -> str:
+    if quantity is None:
+        return "Illimité"
+    return str(quantity)
+
+
 def install_template_filters(app: Flask) -> None:
     app.jinja_env.trim_blocks = True
     app.jinja_env.lstrip_blocks = True
@@ -903,3 +909,4 @@ def install_template_filters(app: Flask) -> None:
     app.jinja_env.filters["format_finance_incident_status"] = format_finance_incident_status
     app.jinja_env.filters["format_finance_incident_type"] = format_finance_incident_type
     app.jinja_env.filters["format_finance_incident_type_str"] = format_finance_incident_type_str
+    app.jinja_env.filters["format_stock_quantity"] = format_stock_quantity

@@ -1199,13 +1199,14 @@ class RejectInappropriateProductTest:
             factories.OfferFactory(product=product1),
             factories.OfferFactory(product=product2),
         }
+        user = users_factories.UserFactory()
 
         for offer in offers:
             users_factories.FavoriteFactory(offer=offer)
             bookings_factories.BookingFactory(stock__offer=offer)
 
         # When
-        api.reject_inappropriate_product("ean-de-test", send_booking_cancellation_emails=False)
+        api.reject_inappropriate_product("ean-de-test", user, send_booking_cancellation_emails=False)
 
         # Then
         offers = models.Offer.query.all()
@@ -1220,9 +1221,12 @@ class RejectInappropriateProductTest:
         assert all(
             offer.validation == OfferValidationStatus.REJECTED for offer in offers if offer.product.id == product1.id
         )
+        assert all(offer.lastValidationAuthorUserId == user.id for offer in offers if offer.product.id == product1.id)
+
         assert all(
-            offer.validation == OfferValidationStatus.APPROVED for offer in offers if offer.product.id != product1.id
+            offer.validation == OfferValidationStatus.APPROVED for offer in offers if offer.product.id == product2.id
         )
+
         mocked_async_index_offer_ids.assert_called()
         assert set(mocked_async_index_offer_ids.call_args[0][0]) == {
             o.id for o in offers if o.product.id == product1.id
@@ -1248,6 +1252,7 @@ class RejectInappropriateProductTest:
             factories.OfferFactory(product=product1),
             factories.OfferFactory(product=product2),
         }
+        user = users_factories.UserFactory()
 
         for offer in offers:
             users_factories.FavoriteFactory(offer=offer)
@@ -1257,7 +1262,7 @@ class RejectInappropriateProductTest:
         assert bookings_models.Booking.query.count() == len(offers)
 
         # When
-        api.reject_inappropriate_product("ean-de-test", send_booking_cancellation_emails=True)
+        api.reject_inappropriate_product("ean-de-test", user, send_booking_cancellation_emails=True)
 
         # Then
         mocked_send_booking_cancellation_emails_to_user_and_offerer.assert_called()

@@ -47,6 +47,7 @@ if typing.TYPE_CHECKING:
     from pcapi.core.offerers.models import Venue
     from pcapi.core.offers.models import OfferValidationRule
     from pcapi.core.providers.models import Provider
+    from pcapi.core.users.models import User
 
 
 class StudentLevels(enum.Enum):

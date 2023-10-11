@@ -23,6 +23,7 @@ from pcapi.core.testing import assert_num_queries
 from pcapi.models import db
 from pcapi.models.offer_mixin import OfferValidationStatus
 from pcapi.models.offer_mixin import OfferValidationType
+from pcapi.routes.backoffice.filters import format_date
 
 from .helpers import html_parser
 from .helpers.get import GetEndpointHelper
@@ -473,6 +474,7 @@ class BatchCollectiveOffersRejectTest(PostEndpointHelper):
             assert collective_offer.isActive is False
             assert collective_offer.lastValidationType is OfferValidationType.MANUAL
             assert collective_offer.validation is OfferValidationStatus.REJECTED
+            assert collective_offer.lastValidationAuthor == legit_user
 
         assert len(mails_testing.outbox) == 3
 
@@ -547,6 +549,8 @@ class GetCollectiveOfferDetailTest(GetEndpointHelper):
         assert "Ajuster le prix de l'offre" in content_as_text
         assert "Statut : Expirée" in content_as_text
         assert "État : Validée" in content_as_text
+        assert "Utilisateur de la dernière validation" not in content_as_text
+        assert "Date de dernière validation de l’offre" not in content_as_text
 
     def test_processed_pricing(self, legit_user, authenticated_client):
         # when
@@ -589,6 +593,46 @@ class GetCollectiveOfferDetailTest(GetEndpointHelper):
         # then
         assert response.status_code == 200
         assert "Ajuster le prix de l'offre" not in response.data.decode()
+
+    def test_get_validated_offer(self, legit_user, authenticated_client):
+        # when
+        event_date = datetime.datetime.utcnow() - datetime.timedelta(days=1)
+        validation_date = datetime.datetime.utcnow()
+        collective_booking = educational_factories.CollectiveBookingFactory(
+            collectiveStock__beginningDatetime=event_date,
+            collectiveStock__collectiveOffer__lastValidationDate=validation_date,
+            collectiveStock__collectiveOffer__validation=offers_models.OfferValidationStatus.APPROVED,
+            collectiveStock__collectiveOffer__lastValidationAuthor=legit_user,
+        )
+        url = url_for(self.endpoint, collective_offer_id=collective_booking.collectiveStock.collectiveOffer.id)
+        with assert_num_queries(4):  # session + user + offer + pricing + loaded data
+            response = authenticated_client.get(url)
+
+        # then
+        content_as_text = html_parser.content_as_text(response.data)
+        assert response.status_code == 200
+        assert f"Utilisateur de la dernière validation : {legit_user.full_name}" in content_as_text
+        assert f"Date de dernière validation : {format_date(validation_date, '%d/%m/%Y à %Hh%M')}" in content_as_text
+
+    def test_get_rejected_offer(self, legit_user, authenticated_client):
+        # when
+        event_date = datetime.datetime.utcnow() - datetime.timedelta(days=1)
+        validation_date = datetime.datetime.utcnow()
+        collective_booking = educational_factories.CollectiveBookingFactory(
+            collectiveStock__beginningDatetime=event_date,
+            collectiveStock__collectiveOffer__lastValidationDate=validation_date,
+            collectiveStock__collectiveOffer__validation=offers_models.OfferValidationStatus.REJECTED,
+            collectiveStock__collectiveOffer__lastValidationAuthor=legit_user,
+        )
+        url = url_for(self.endpoint, collective_offer_id=collective_booking.collectiveStock.collectiveOffer.id)
+        with assert_num_queries(4):  # session + user + offer + pricing + loaded data
+            response = authenticated_client.get(url)
+
+        # then
+        content_as_text = html_parser.content_as_text(response.data)
+        assert response.status_code == 200
+        assert f"Utilisateur de la dernière validation : {legit_user.full_name}" in content_as_text
+        assert f"Date de dernière validation : {format_date(validation_date, '%d/%m/%Y à %Hh%M')}" in content_as_text
 
 
 class GetCollectiveOfferPriceFormTest(GetEndpointHelper):

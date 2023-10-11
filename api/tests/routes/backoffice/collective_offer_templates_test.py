@@ -442,6 +442,7 @@ class BatchCollectiveOfferTemplatesValidateTest(PostEndpointHelper):
             assert collective_offer_template.isActive is True
             assert collective_offer_template.lastValidationType is OfferValidationType.MANUAL
             assert collective_offer_template.validation is OfferValidationStatus.APPROVED
+            assert collective_offer_template.lastValidationAuthor == legit_user
 
         received_dict = {email.sent_data["To"]: email.sent_data["template"] for email in mails_testing.outbox}
         expected_dict = {

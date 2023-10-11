@@ -267,6 +267,39 @@ class AddProductWhitelistTest(PostEndpointHelper):
 
         assert "n'existe pas chez Titelive" in alert
 
+    @patch("pcapi.core.search.async_index_offer_ids")
+    @patch("pcapi.routes.backoffice.titelive.blueprint.get_by_ean13")
+    @patch("pcapi.routes.backoffice.titelive.blueprint.whitelist_product")
+    def test_add_product_to_whitelist_should_set_validation_author(
+        self, mock_whitelist_product, mock_get_by_ean13, mocked_async_index_offer_ids, authenticated_client, legit_user
+    ):
+        thing_product = offers_factories.ThingProductFactory(
+            extraData={"ean": BOOK_BY_EAN_FIXTURE["ean"]},
+            description="Tome 1",
+            idAtProviders=str(BOOK_BY_EAN_FIXTURE["ean"]),
+            name="Immortelle randonnée ; Compostelle malgré moi",
+            subcategoryId="LIVRE_PAPIER",
+        )
+        mock_get_by_ean13.return_value = BOOK_BY_EAN_FIXTURE
+        mock_whitelist_product.return_value = thing_product
+
+        offer = offers_factories.ThingOfferFactory(
+            idAtProvider=BOOK_BY_EAN_FIXTURE["ean"],
+            product=thing_product,
+            validation=offers_models.OfferValidationStatus.REJECTED,
+            lastValidationType=OfferValidationType.CGU_INCOMPATIBLE_PRODUCT,
+            lastValidationDate=datetime.date.today() - datetime.timedelta(days=2),
+        )
+
+        self.post_to_endpoint(authenticated_client, form=self.form_data, **self.endpoint_kwargs)
+
+        offer = offers_models.Offer.query.get_or_404(offer.id)
+        assert offer.validation == offers_models.OfferValidationStatus.APPROVED
+        assert offer.lastValidationDate.strftime("%d/%m/%Y") == datetime.date.today().strftime("%d/%m/%Y")
+        assert offer.lastValidationType == OfferValidationType.MANUAL
+        assert offer.lastValidationAuthor == legit_user
+        mocked_async_index_offer_ids.assert_called_once_with([offer.id])
+
 
 class DeleteProductWhitelistTest(GetEndpointHelper):
     endpoint = "backoffice_web.titelive.delete_product_whitelist"
