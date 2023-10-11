@@ -1,3 +1,6 @@
+import collections.abc
+import contextlib
+import datetime
 import decimal
 import enum
 import logging
@@ -33,17 +36,30 @@ logger = logging.getLogger(__name__)
 Numeric = float | decimal.Decimal
 
 
-REDIS_OFFER_IDS_NAME = "search:algolia:offer_ids"
-REDIS_OFFER_IDS_IN_ERROR_NAME = "search:algolia:offer_ids_in_error"
-REDIS_VENUE_IDS_FOR_OFFERS_NAME = "search:algolia:venue_ids_for_offers"
+REDIS_OFFER_IDS_NAME = "search:algolia:offer-ids:list"
+REDIS_OFFER_IDS_IN_ERROR_NAME = "search:algolia:offer-ids-in-error:list"
+REDIS_VENUE_IDS_FOR_OFFERS_NAME = "search:algolia:venue-ids-for-offers:list"
 
-REDIS_VENUE_IDS_TO_INDEX = "search:algolia:venue-ids-to-index"
-REDIS_VENUE_IDS_IN_ERROR_TO_INDEX = "search:algolia:venue-ids-in-error-to-index"
+REDIS_VENUE_IDS_TO_INDEX = "search:algolia:venue-ids-to-index:list"
+REDIS_VENUE_IDS_IN_ERROR_TO_INDEX = "search:algolia:venue-ids-in-error-to-index:list"
 
-REDIS_COLLECTIVE_OFFER_IDS_TO_INDEX = "search:algolia:collective-offer-ids-to-index"
-REDIS_COLLECTIVE_OFFER_TEMPLATE_IDS_TO_INDEX = "search:algolia:collective-offer-template-ids-to-index"
-REDIS_COLLECTIVE_OFFER_IDS_IN_ERROR_TO_INDEX = "search:algolia:collective-offer-ids-in-error-to-index"
-REDIS_COLLECTIVE_OFFER_TEMPLATE_IDS_IN_ERROR_TO_INDEX = "search:algolia:collective-offer-template-ids-in-error-to-index"
+REDIS_COLLECTIVE_OFFER_IDS_TO_INDEX = "search:algolia:collective-offer-ids-to-index:list"
+REDIS_COLLECTIVE_OFFER_TEMPLATE_IDS_TO_INDEX = "search:algolia:collective-offer-template-ids-to-index:list"
+REDIS_COLLECTIVE_OFFER_IDS_IN_ERROR_TO_INDEX = "search:algolia:collective-offer-ids-in-error-to-index:list"
+REDIS_COLLECTIVE_OFFER_TEMPLATE_IDS_IN_ERROR_TO_INDEX = (
+    "search:algolia:collective-offer-template-ids-in-error-to-index:list"
+)
+QUEUES = (
+    REDIS_OFFER_IDS_NAME,
+    REDIS_OFFER_IDS_IN_ERROR_NAME,
+    REDIS_VENUE_IDS_FOR_OFFERS_NAME,
+    REDIS_VENUE_IDS_TO_INDEX,
+    REDIS_VENUE_IDS_IN_ERROR_TO_INDEX,
+    REDIS_COLLECTIVE_OFFER_IDS_TO_INDEX,
+    REDIS_COLLECTIVE_OFFER_TEMPLATE_IDS_TO_INDEX,
+    REDIS_COLLECTIVE_OFFER_IDS_IN_ERROR_TO_INDEX,
+    REDIS_COLLECTIVE_OFFER_TEMPLATE_IDS_IN_ERROR_TO_INDEX,
+)
 REDIS_HASHMAP_INDEXED_OFFERS_NAME = "indexed_offers"
 
 
@@ -189,51 +205,111 @@ class AlgoliaBackend(base.SearchBackend):
             return
 
         try:
-            self.redis_client.sadd(queue, *ids)
+            self.redis_client.lpush(queue, *ids)
         except redis.exceptions.RedisError:
             logger.exception("Could not add ids to indexation queue", extra={"ids": ids, "queue": queue})
 
-    def pop_offer_ids_from_queue(self, count: int, from_error_queue: bool = False) -> set[int]:
+    def pop_offer_ids_from_queue(
+        self,
+        count: int,
+        from_error_queue: bool = False,
+    ) -> contextlib.AbstractContextManager:
         if from_error_queue:
             queue = REDIS_OFFER_IDS_IN_ERROR_NAME
         else:
             queue = REDIS_OFFER_IDS_NAME
         return self._pop_ids_from_queue(queue, count)
 
-    def pop_venue_ids_from_queue(self, count: int, from_error_queue: bool = False) -> set[int]:
+    def pop_venue_ids_from_queue(
+        self,
+        count: int,
+        from_error_queue: bool = False,
+    ) -> contextlib.AbstractContextManager:
         if from_error_queue:
             queue = REDIS_VENUE_IDS_IN_ERROR_TO_INDEX
         else:
             queue = REDIS_VENUE_IDS_TO_INDEX
         return self._pop_ids_from_queue(queue, count)
 
-    def pop_collective_offer_ids_from_queue(self, count: int, from_error_queue: bool = False) -> set[int]:
+    def pop_collective_offer_ids_from_queue(
+        self,
+        count: int,
+        from_error_queue: bool = False,
+    ) -> contextlib.AbstractContextManager:
         if from_error_queue:
             queue = REDIS_COLLECTIVE_OFFER_IDS_IN_ERROR_TO_INDEX
         else:
             queue = REDIS_COLLECTIVE_OFFER_IDS_TO_INDEX
         return self._pop_ids_from_queue(queue, count)
 
-    def pop_collective_offer_template_ids_from_queue(self, count: int, from_error_queue: bool = False) -> set[int]:
+    def pop_collective_offer_template_ids_from_queue(
+        self,
+        count: int,
+        from_error_queue: bool = False,
+    ) -> contextlib.AbstractContextManager:
         if from_error_queue:
             queue = REDIS_COLLECTIVE_OFFER_TEMPLATE_IDS_IN_ERROR_TO_INDEX
         else:
             queue = REDIS_COLLECTIVE_OFFER_TEMPLATE_IDS_TO_INDEX
         return self._pop_ids_from_queue(queue, count)
 
-    def pop_venue_ids_for_offers_from_queue(self, count: int) -> set[int]:
+    def pop_venue_ids_for_offers_from_queue(
+        self,
+        count: int,
+    ) -> contextlib.AbstractContextManager:
         return self._pop_ids_from_queue(REDIS_VENUE_IDS_FOR_OFFERS_NAME, count)
 
-    def _pop_ids_from_queue(self, queue: str, count: int) -> set[int]:
+    @contextlib.contextmanager
+    def _pop_ids_from_queue(
+        self,
+        queue: str,
+        count: int,
+    ) -> collections.abc.Generator[set[int], None, None]:
+        """Return a set of int identifiers from the queue, as a
+        context manager.
+
+        Processing these identifiers must be done within the returned
+        context context. It guarantees that there is no data loss if
+        an error (or a complete crash) occurs while processing the
+        identifiers.
+        """
+        # We must pop and not get-and-delete. Otherwise two concurrent
+        # cron jobs could delete the wrong offers from the queue:
+        # 1. Cron job 1 gets the first 1.000 offers from the queue.
+        # 2. Cron job 2 gets the same 1.000 offers from the queue.
+        # 3. Cron job 1 finishes processing the batch and deletes the
+        #    first 1.000 offers from the queue. OK.
+        # 4. Cron job 2 finishes processing the batch and also deletes
+        #    the first 1.000 offers from the queue. Not OK, these are
+        #    not the same offers it just processed!
+        #
+        # Also, we cannot "just" use pop. If the Python process
+        # crashes between popping and processing ids, we will lose the
+        # ids. Possible cause of crash: pod is OOMKilled or recycled,
+        # for example. To work around that, items to be processed are
+        # moved to a specific queue. This queue is deleted once all
+        # items are processed. If a crash happens, the queue is still
+        # there. A separate cron job looks for these (specially-named)
+        # queues and adds back their items to the originating queue
+        # (see `clean_processing_queues`).
+        timestamp = datetime.datetime.utcnow().timestamp()
+        processing_queue = f"{queue}:processing:{timestamp}"
         try:
-            ids = self.redis_client.spop(queue, count)
-            return {int(object_id) for object_id in ids}  # str -> int
+            with self.redis_client.pipeline(transaction=True) as pipeline:
+                for _ in range(count):
+                    # Google Cloud has Redis 5.0. When it's migrated to 6.2 or
+                    # newer, we can use `lmove` or `smove` instead.
+                    pipeline.rpoplpush(queue, processing_queue)
+                results = pipeline.execute()
+                # `results` may contain `None` if there were less than {count} items.
+                yield {int(id_) for id_ in results if id_ is not None}  # str -> int
+                self.redis_client.delete(processing_queue)
         except redis.exceptions.RedisError:
             logger.exception(
                 "Could not pop object ids to index from queue",
-                extra={"queue": queue},
+                extra={"originating_queue": queue, "processing_queue": processing_queue},
             )
-            return set()
+            yield set()
 
     def count_offers_to_index_from_queue(self, from_error_queue: bool = False) -> int:
         if from_error_queue:
@@ -242,7 +318,7 @@ class AlgoliaBackend(base.SearchBackend):
             queue = REDIS_OFFER_IDS_NAME
 
         try:
-            return self.redis_client.scard(queue)
+            return self.redis_client.llen(queue)
         except redis.exceptions.RedisError:
             if settings.IS_RUNNING_TESTS:
                 raise
@@ -610,6 +686,44 @@ class AlgoliaBackend(base.SearchBackend):
             "isTemplate": True,
             "formats": formats,
         }
+
+    def clean_processing_queues(self) -> None:
+        """Move items from the processing queue back to the initial queue,
+        once a delay has passed and we are reasonably sure that the job
+        has crashed (and that the items must be processed again).
+        """
+        redis_client = current_app.redis_client  # type: ignore [attr-defined]
+        for originating_queue in QUEUES:
+            # There a very few queues, no need to paginate with `_cursor`.
+            _cursor, processing_queues = redis_client.scan(0, f"{originating_queue}:processing:*")
+            for processing_queue in processing_queues:
+                timestamp = float(processing_queue.rsplit(":")[-1])
+                if timestamp > datetime.datetime.utcnow().timestamp() - 60 * 60:
+                    continue  # less than 1 hour ago, too recent, could still be processing
+                with redis_client.pipeline(transaction=True) as pipeline:
+                    try:
+                        count = redis_client.llen(processing_queue)
+                        for _i in range(count):
+                            # Google Cloud has Redis 5.0. When it's migrated to 6.2 or
+                            # newer, we can use `lmove` or `smove` instead.
+                            pipeline.rpoplpush(processing_queue, originating_queue)
+                            pipeline.execute()
+                    except Exception:  # pylint: disable=broad-exception-caught
+                        # That's not critical: the processing queue will
+                        # still be here, and can be handled in the next run
+                        # of this function. But we raise a warning because
+                        # it may denote a problem with our code or with
+                        # Redis.
+                        logger.exception(
+                            "Failed to handle indexation processing queue: %s (will try again)",
+                            processing_queue,
+                            exc_info=True,
+                        )
+                    else:
+                        logger.info(
+                            "Found old processing queue, moved back items to originating queue",
+                            extra={"queue": originating_queue, "processing_queue": processing_queue},
+                        )
 
 
 def position(venue: offerers_models.Venue) -> dict[str, float]:

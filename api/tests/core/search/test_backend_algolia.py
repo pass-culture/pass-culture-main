@@ -1,5 +1,7 @@
 import dataclasses
+import datetime
 
+import freezegun
 import pytest
 import requests_mock
 
@@ -50,7 +52,7 @@ def test_enqueue_functions(enqueue_function_name, queue):
     enqueue([1])
     enqueue({2, 3})
     enqueue([])
-    assert set(backend.redis_client.smembers(queue)) == {"1", "2", "3"}
+    assert set(backend.redis_client.lrange(queue, 0, -1)) == {"1", "2", "3"}
 
 
 @pytest.mark.parametrize(
@@ -100,32 +102,26 @@ def test_pop_functions(pop_function_name, from_error_queue, queue):
         kwargs = {"from_error_queue": from_error_queue}
 
     backend = get_backend()
-    backend.redis_client.sadd(queue, 1, 2, 3)
+    backend.redis_client.lpush(queue, 1, 2, 3)
     pop = getattr(backend, pop_function_name)
 
-    popped = set()
-    ids = pop(count=2, **kwargs)
-    popped |= ids
-    assert len(ids) == 2
-    assert ids.issubset({1, 2, 3})
+    with pop(count=2, **kwargs) as ids:
+        assert ids == {1, 2}
 
-    ids = pop(count=2, **kwargs)
-    popped |= ids
-    assert len(ids) == 1
-    assert ids.issubset({1, 2, 3})
-    assert popped == {1, 2, 3}
+    with pop(count=2, **kwargs) as ids:
+        assert ids == {3}
 
-    ids = pop(count=2, **kwargs)
-    assert ids == set()
+    with pop(count=2, **kwargs) as ids:
+        assert ids == set()
 
-    assert backend.redis_client.scard(queue) == 0
+    assert backend.redis_client.llen(queue) == 0
 
 
 def test_count_offers_to_index_from_queue(app):
     backend = get_backend()
     assert backend.count_offers_to_index_from_queue() == 0
 
-    app.redis_client.sadd("search:algolia:offer_ids", 1, 2, 3)
+    app.redis_client.lpush(algolia.REDIS_OFFER_IDS_NAME, 1, 2, 3)
     assert backend.count_offers_to_index_from_queue() == 3
 
 
@@ -133,7 +129,7 @@ def test_count_offers_to_index_from_error_queue(app):
     backend = get_backend()
     assert backend.count_offers_to_index_from_queue(from_error_queue=True) == 0
 
-    app.redis_client.sadd("search:algolia:offer_ids_in_error", 1, 2, 3)
+    app.redis_client.lpush(algolia.REDIS_OFFER_IDS_IN_ERROR_NAME, 1, 2, 3)
     assert backend.count_offers_to_index_from_queue(from_error_queue=True) == 3
 
 
@@ -305,3 +301,61 @@ def test_remove_stopwords():
     description = "Il était une fois, dans la ville de Foix. Voilà Foix !"
     expected = "fois ville foix voilà foix"
     assert algolia.remove_stopwords(description) == expected
+
+
+class ProcessingQueueTest:
+    class CustomError(Exception):  # an error that only our tests can raise
+        pass
+
+    def test_processing_queue_is_deleted_if_no_error(self):
+        backend = get_backend()
+        redis = backend.redis_client
+        queue = algolia.REDIS_OFFER_IDS_NAME
+        redis.lpush(queue, "1", "2", "3")
+
+        with backend.pop_offer_ids_from_queue(10):
+            pass  # no error during processing
+
+        # The main queue is empty (and has been deleted) and the
+        # processing queue has been deleted, too.
+        assert redis.keys() == []
+
+    @freezegun.freeze_time()
+    def test_processing_queue_is_kept_upon_error(self):
+        backend = get_backend()
+        redis = backend.redis_client
+        queue = algolia.REDIS_OFFER_IDS_NAME
+        redis.lpush(queue, "1", "2", "3")
+
+        try:
+            with backend.pop_offer_ids_from_queue(10):
+                raise self.CustomError()
+        except self.CustomError:
+            pass
+
+        assert redis.llen(queue) == 0
+        timestamp = datetime.datetime.utcnow().timestamp()
+        processing_queue = f"{queue}:processing:{timestamp}"
+        assert redis.lrange(processing_queue, 0, -1) == ["3", "2", "1"]
+
+    def test_clean_processing_queues(self):
+        backend = get_backend()
+        redis = backend.redis_client
+        main_queue = algolia.REDIS_OFFER_IDS_NAME
+        now = datetime.datetime.utcnow()
+        timestamp_old_enough = (now - datetime.timedelta(hours=1)).timestamp()
+        processing_old_enough = f"{main_queue}:processing:{timestamp_old_enough}"
+        redis.lpush(processing_old_enough, "1", "2", "3")
+        timestamp_too_recent = (now - datetime.timedelta(seconds=1)).timestamp()
+        processing_too_recent = f"{main_queue}:processing:{timestamp_too_recent}"
+        redis.lpush(processing_too_recent, "4", "5", "6")
+
+        assert redis.llen(main_queue) == 0
+        backend.clean_processing_queues()
+
+        # Items of the old processing queue have been moved to the
+        # main queue. The recent processing queue has been left
+        # intact.
+        assert set(redis.keys()) == {main_queue, processing_too_recent}
+        assert redis.lrange(main_queue, 0, -1) == ["3", "2", "1"]
+        assert redis.lrange(processing_too_recent, 0, -1) == ["6", "5", "4"]

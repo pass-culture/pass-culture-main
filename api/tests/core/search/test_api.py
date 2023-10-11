@@ -58,12 +58,14 @@ def fail(*args, **kwargs):
 
 def test_async_index_offer_ids(app):
     search.async_index_offer_ids({1, 2}, reason=search.IndexationReason.OFFER_UPDATE)
-    assert app.redis_client.smembers("search:algolia:offer_ids") == {"1", "2"}
+    queue = algolia.REDIS_OFFER_IDS_NAME
+    assert set(app.redis_client.lrange(queue, 0, -1)) == {"1", "2"}
 
 
 def test_async_index_offers_of_venue_ids(app):
     search.async_index_offers_of_venue_ids({1, 2}, reason=search.IndexationReason.VENUE_UPDATE)
-    assert app.redis_client.smembers("search:algolia:venue_ids_for_offers") == {"1", "2"}
+    queue = algolia.REDIS_VENUE_IDS_FOR_OFFERS_NAME
+    assert set(app.redis_client.lrange(queue, 0, -1)) == {"1", "2"}
 
 
 def test_async_index_venue_ids(app):
@@ -79,7 +81,8 @@ def test_async_index_venue_ids(app):
         search.IndexationReason.VENUE_CREATION,
     )
 
-    enqueued_ids = app.redis_client.smembers("search:algolia:venue-ids-to-index")
+    queue = algolia.REDIS_VENUE_IDS_TO_INDEX
+    enqueued_ids = app.redis_client.lrange(queue, 0, -1)
     enqueued_ids = {int(venue_id) for venue_id in enqueued_ids}
     assert enqueued_ids == {permanent_venue.id, other_venue.id}
 
@@ -90,16 +93,16 @@ def test_index_offers_of_venues_in_queue(app):
     venue1 = bookable_offer.venue
     unbookable_offer = make_unbookable_offer()
     venue2 = unbookable_offer.venue
-    queue = "search:algolia:venue_ids_for_offers"
-    app.redis_client.sadd(queue, venue1.id, venue2.id)
+    queue = algolia.REDIS_VENUE_IDS_FOR_OFFERS_NAME
+    app.redis_client.lpush(queue, venue1.id, venue2.id)
 
     # `index_offers_of_venues_in_queue` pops 1 venue from the queue
     # (REDIS_VENUE_IDS_FOR_OFFERS_CHUNK_SIZE).
     search.index_offers_of_venues_in_queue()
-    assert app.redis_client.scard(queue) == 1
+    assert app.redis_client.llen(queue) == 1
 
     search.index_offers_of_venues_in_queue()
-    assert app.redis_client.scard(queue) == 0
+    assert app.redis_client.llen(queue) == 0
 
     assert bookable_offer.id in search_testing.search_store["offers"]
     assert unbookable_offer.id not in search_testing.search_store["offers"]
@@ -109,15 +112,15 @@ def test_index_offers_of_venues_in_queue(app):
 def test_index_venues_in_queue(app):
     venue1 = offerers_factories.VenueFactory()
     venue2 = offerers_factories.VenueFactory()
-    queue = "search:algolia:venue-ids-to-index"
-    app.redis_client.sadd(queue, venue1.id, venue2.id)
+    queue = algolia.REDIS_VENUE_IDS_TO_INDEX
+    app.redis_client.lpush(queue, venue1.id, venue2.id)
 
     # `index_venues_in_queue` pops 1 venue from the queue (REDIS_VENUE_IDS_CHUNK_SIZE).
     search.index_venues_in_queue()
-    assert app.redis_client.scard(queue) == 1
+    assert app.redis_client.llen(queue) == 1
 
     search.index_venues_in_queue()
-    assert app.redis_client.scard(queue) == 0
+    assert app.redis_client.llen(queue) == 0
 
 
 class ReindexOfferIdsTest:
@@ -137,7 +140,7 @@ class ReindexOfferIdsTest:
         # given
         offer = make_unbookable_offer()
         search_testing.search_store["offers"][offer.id] = "dummy"
-        app.redis_client.hset("indexed_offers", offer.id, "")
+        app.redis_client.hset(algolia.REDIS_HASHMAP_INDEXED_OFFERS_NAME, offer.id, "")
 
         # when
         search.reindex_offer_ids([offer.id])
@@ -154,18 +157,20 @@ class ReindexOfferIdsTest:
             search.reindex_offer_ids([offer.id])
 
         assert offer.id not in search_testing.search_store["offers"]
-        assert app.redis_client.smembers("search:algolia:offer_ids_in_error") == {str(offer.id)}
+        error_queue = algolia.REDIS_OFFER_IDS_IN_ERROR_NAME
+        assert app.redis_client.lrange(error_queue, 0, -1) == [str(offer.id)]
 
     @mock.patch("pcapi.core.search.backends.testing.FakeClient.delete_objects", fail)
     def test_handle_unindexation_error(self, app):
         offer = make_unbookable_offer()
         search_testing.search_store["offers"][offer.id] = "dummy"
-        app.redis_client.hset("indexed_offers", offer.id, "")
+        app.redis_client.hset(algolia.REDIS_HASHMAP_INDEXED_OFFERS_NAME, offer.id, "")
         with override_settings(IS_RUNNING_TESTS=False):  # as on prod: don't catch errors
             search.reindex_offer_ids([offer.id])
 
         assert offer.id in search_testing.search_store["offers"]
-        assert app.redis_client.smembers("search:algolia:offer_ids_in_error") == {str(offer.id)}
+        error_queue = algolia.REDIS_OFFER_IDS_IN_ERROR_NAME
+        assert app.redis_client.lrange(error_queue, 0, -1) == [str(offer.id)]
 
     @override_features(ENABLE_VENUE_STRICT_SEARCH=True)
     def test_reindex_venues_after_reindexing_offers(self, app):
@@ -175,9 +180,10 @@ class ReindexOfferIdsTest:
         search.reindex_offer_ids([offer.id])
         assert offer.id in search_testing.search_store["offers"]
 
-        venue_ids = app.redis_client.smembers("search:algolia:venue-ids-to-index")
-        venue_ids = {int(venue_id) for venue_id in venue_ids}
-        assert venue_ids == {offer.venueId}
+        venue_queue = algolia.REDIS_VENUE_IDS_TO_INDEX
+        venue_ids = app.redis_client.lrange(venue_queue, 0, -1)
+        venue_ids = [int(venue_id) for venue_id in venue_ids]
+        assert venue_ids == [offer.venueId]
 
     @override_features(ALGOLIA_BOOKINGS_NUMBER_COMPUTATION=True)
     @override_settings(ALGOLIA_LAST_30_DAYS_BOOKINGS_RANGE_THRESHOLDS=[3, 6, 9, 12])
@@ -250,31 +256,32 @@ class ReindexVenueIdsTest:
 @mock.patch("pcapi.core.search.reindex_offer_ids")
 class IndexOffersInQueueTest:
     def test_cron_behaviour(self, mocked_reindex_offer_ids, app):
+        queue = algolia.REDIS_OFFER_IDS_NAME
         offer_ids = list(range(1, 9))
-        app.redis_client.sadd("search:algolia:offer_ids", *offer_ids)
+        app.redis_client.lpush(queue, *offer_ids)
 
         search.index_offers_in_queue()
 
-        # First run pops and indexes 3 items. Second run pops and
-        # indexes another set of 3 items. And stops because there are
-        # less than REDIS_OFFER_IDS_CHUNK_SIZE items left in the
-        # queue.
+        # First run pops and indexes 1, 2, 3. Second run pops and
+        # indexes 4, 5, 6. And stops because there are less than
+        # REDIS_OFFER_IDS_CHUNK_SIZE items left in the queue.
         assert mocked_reindex_offer_ids.call_count == 2
 
-        assert app.redis_client.scard("search:algolia:offer_ids") == 2
-        assert app.redis_client.smembers("search:algolia:offer_ids") <= {str(offer_id) for offer_id in offer_ids}
+        assert app.redis_client.llen(queue) == 2
+        assert app.redis_client.lrange(queue, 0, -1) == ["8", "7"]
 
     def test_command_behaviour(self, mocked_reindex_offer_ids, app):
+        queue = algolia.REDIS_OFFER_IDS_NAME
         items = list(range(1, 9))
-        app.redis_client.sadd("search:algolia:offer_ids", *items)
+        app.redis_client.lpush(queue, *items)
 
         search.index_offers_in_queue(stop_only_when_empty=True)
 
-        # First run pops and indexes 8, 7, 6. Second run pops and
-        # indexes 5, 4, 3. Third run pops 2, 1 and stops because the
+        # First run pops and indexes 1, 2, 3. Second run pops and
+        # indexes 4, 5, 6. Third run pops 7, 8 and stops because the
         # queue is empty.
         assert mocked_reindex_offer_ids.call_count == 3
-        assert app.redis_client.scard("search:algolia:offer_ids") == 0
+        assert app.redis_client.llen(queue) == 0
 
 
 @override_features(ENABLE_VENUE_STRICT_SEARCH=True)
@@ -288,7 +295,7 @@ def test_unindex_offer_ids(app):
     search.unindex_offer_ids([offer1.id, offer2.id])
     assert search_testing.search_store["offers"] == {}
 
-    venue_ids = app.redis_client.smembers("search:algolia:venue-ids-to-index")
+    venue_ids = app.redis_client.lrange(algolia.REDIS_VENUE_IDS_TO_INDEX, 0, -1)
     venue_ids = {int(venue_id) for venue_id in venue_ids}
     assert venue_ids == {offer1.venueId, offer2.venueId}
 
