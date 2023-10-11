@@ -25,7 +25,8 @@ const Reimbursements = (): JSX.Element => {
 
   const [isOfferersLoading, setIsOfferersLoading] = useState<boolean>(false)
 
-  const { setOfferers, setSelectedOfferer } = useReimbursementContext()
+  const { setOfferers, setSelectedOfferer, selectedOfferer } =
+    useReimbursementContext()
 
   const routes = isNewBankDetailsJourneyEnabled
     ? routesReimbursements
@@ -59,15 +60,14 @@ const Reimbursements = (): JSX.Element => {
     <>
       <Titles title="Remboursements" />
       <>
-        {!isNewBankDetailsJourneyEnabled && (
+        {!isNewBankDetailsJourneyEnabled && <BannerReimbursementsInfo />}
+        <AddBankAccountCallout titleOnly={true} offerer={selectedOfferer} />
+        {isNewBankDetailsJourneyEnabled && (
           <>
-            {/* TODO: displaying condition when offerer is available here. (Done in another branch)*/}
-            <AddBankAccountCallout titleOnly={true} />
             {/* TODO: displaying condition when offerer is available here. (Done in another branch)*/}
             <LinkVenueCallout titleOnly={true} />
             {/* TODO: displaying condition when offerer is available here. (Done in another branch)*/}
             <PendingBankAccountCallout titleOnly={true} />
-            <BannerReimbursementsInfo />
           </>
         )}
 
