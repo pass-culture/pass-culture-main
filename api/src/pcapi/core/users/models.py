@@ -561,7 +561,7 @@ class User(PcObject, Base, Model, NeedsValidationMixin, DeactivableMixin):
             cls.roles.contains([UserRole.BENEFICIARY]), cls.roles.contains([UserRole.UNDERAGE_BENEFICIARY])
         )
 
-    @hybrid_property
+    @property
     def has_remaining_credit(self) -> bool:
         today = datetime.combine(date.today(), datetime.min.time())
         return (
