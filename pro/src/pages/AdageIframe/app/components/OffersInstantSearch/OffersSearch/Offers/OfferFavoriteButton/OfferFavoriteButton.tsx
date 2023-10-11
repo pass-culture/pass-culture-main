@@ -12,16 +12,21 @@ import {
 } from 'pages/AdageIframe/app/types/offers'
 import { Button } from 'ui-kit'
 import { ButtonVariant } from 'ui-kit/Button/types'
+import { removeParamsFromUrl } from 'utils/removeParamsFromUrl'
 
 import styles from './OfferFavoriteButton.module.scss'
 
+export interface OfferFavoriteButtonProps {
+  offer: HydratedCollectiveOffer | HydratedCollectiveOfferTemplate
+  queryId: string
+  afterFavoriteChange?: (isFavorite: boolean) => void
+}
+
 const OfferFavoriteButton = ({
   offer,
+  queryId,
   afterFavoriteChange,
-}: {
-  offer: HydratedCollectiveOffer | HydratedCollectiveOfferTemplate
-  afterFavoriteChange?: (isFavorite: boolean) => void
-}): JSX.Element => {
+}: OfferFavoriteButtonProps): JSX.Element => {
   const [isFavorite, setIsFavorite] = useState(offer.isFavorite)
   const [isLoading, setIsLoading] = useState(false)
   const { setFavoriteCount } = useAdageUser()
@@ -38,6 +43,12 @@ const OfferFavoriteButton = ({
       setFavoriteCount?.(count => count - 1)
 
       notify.success('Supprimé de vos favoris')
+      apiAdage.logFavOfferButtonClick({
+        offerId: offer.id,
+        queryId: queryId,
+        iframeFrom: removeParamsFromUrl(location.pathname),
+        isFavorite: false,
+      })
 
       afterFavoriteChange?.(false)
     } catch (error) {
@@ -57,6 +68,12 @@ const OfferFavoriteButton = ({
       setFavoriteCount?.(count => count + 1)
 
       notify.success('Ajouté à vos favoris')
+      apiAdage.logFavOfferButtonClick({
+        offerId: offer.id,
+        queryId: queryId,
+        iframeFrom: removeParamsFromUrl(location.pathname),
+        isFavorite: true,
+      })
 
       afterFavoriteChange?.(true)
     } catch (error) {
