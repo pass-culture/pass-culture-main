@@ -22,7 +22,6 @@ from sqlalchemy.sql.elements import UnaryExpression
 
 import pcapi.core.bookings.constants as bookings_constants
 from pcapi.core.categories import categories
-from pcapi.core.categories import subcategories
 from pcapi.core.categories import subcategories_v2
 from pcapi.core.providers.models import VenueProvider
 from pcapi.models import Base
@@ -624,13 +623,7 @@ class Offer(PcObject, Base, Model, DeactivableMixin, ValidationMixin, Accessibil
         return all(stock.is_forbidden_to_underage for stock in self.bookableStocks)
 
     @property
-    def subcategory(self) -> subcategories.Subcategory:
-        if self.subcategoryId not in subcategories.ALL_SUBCATEGORIES_DICT:
-            raise ValueError(f"Unexpected subcategoryId '{self.subcategoryId}' for offer {self.id}")
-        return subcategories.ALL_SUBCATEGORIES_DICT[self.subcategoryId]
-
-    @property
-    def subcategory_v2(self) -> subcategories_v2.Subcategory:
+    def subcategory(self) -> subcategories_v2.Subcategory:
         if self.subcategoryId not in subcategories_v2.ALL_SUBCATEGORIES_DICT:
             raise ValueError(f"Unexpected subcategoryId (v2) '{self.subcategoryId}' for offer {self.id}")
         return subcategories_v2.ALL_SUBCATEGORIES_DICT[self.subcategoryId]
