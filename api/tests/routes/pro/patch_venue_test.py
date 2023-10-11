@@ -352,3 +352,15 @@ class Returns400Test:
 
         assert response.status_code == 400
         assert response.json["venueTypeCode"] == ["(: invalide"]
+
+    @patch("pcapi.connectors.sirene.siret_is_active", return_value=False)
+    def test_with_inactive_siret(self, mocked_siret_is_active, client):
+        venue = offerers_factories.VenueFactory()
+        user_offerer = offerers_factories.UserOffererFactory(offerer=venue.managingOfferer)
+
+        venue_data = populate_missing_data_from_venue({"bookingEmail": "new.email@example.com"}, venue)
+
+        response = client.with_session_auth(email=user_offerer.user.email).patch(f"/venues/{venue.id}", json=venue_data)
+
+        assert response.status_code == 400
+        assert response.json["siret"] == ["SIRET is no longer active"]

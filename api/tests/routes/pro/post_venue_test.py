@@ -5,10 +5,12 @@ import pytest
 from pcapi.core import testing
 import pcapi.core.offerers.factories as offerers_factories
 from pcapi.core.offerers.models import Venue
+from pcapi.core.testing import override_settings
 from pcapi.core.users import testing as external_testing
 from pcapi.core.users.factories import ProFactory
 
 import tests
+from tests.connectors import sirene_test_data
 
 
 pytestmark = pytest.mark.usefixtures("db_session")
@@ -23,7 +25,7 @@ def create_valid_venue_data(user=None):
     venue_label = offerers_factories.VenueLabelFactory(label="CAC - Centre d'art contemporain d'intérêt national")
 
     return {
-        "name": "Ma venue",
+        "name": "MINISTERE DE LA CULTURE",
         "siret": f"{user_offerer.offerer.siren}10045",
         "address": "75 Rue Charles Fourier, 75013 Paris",
         "postalCode": "75200",
@@ -88,6 +90,18 @@ class Returns201Test:
         assert external_testing.zendesk_sell_requests == [
             {"action": "create", "type": "Venue", "id": response.json["id"]}
         ]
+
+    def test_use_venue_name_retrieved_from_sirene_api(self, client):
+        user = ProFactory()
+        client = client.with_session_auth(email=user.email)
+        venue_data = create_valid_venue_data(user)
+        venue_data = {**venue_data, "name": "edited venue name"}
+
+        response = client.post("/venues", json=venue_data)
+
+        assert response.status_code == 201
+        venue = Venue.query.filter_by(id=response.json["id"]).one()
+        assert venue.name == "MINISTERE DE LA CULTURE"
 
 
 class Returns400Test:
@@ -194,6 +208,23 @@ class Returns400Test:
 
         assert response.status_code == 400
         assert response.json["withdrawalDetails"] == ["ensure this value has at most 500 characters"]
+
+    @override_settings(SIRENE_BACKEND="pcapi.connectors.sirene.InseeBackend")
+    def test_with_inactive_siret(self, requests_mock, client):
+        siret = "30255917810045"
+        requests_mock.get(
+            f"https://api.insee.fr/entreprises/sirene/V3/siret/{siret}",
+            json=sirene_test_data.RESPONSE_SIRET_INACTIVE_COMPANY,
+        )
+
+        user = ProFactory()
+        client = client.with_session_auth(email=user.email)
+        venue_data = create_valid_venue_data(user)
+
+        response = client.post("/venues", json=venue_data)
+
+        assert response.status_code == 400
+        assert response.json["siret"] == ["SIRET is no longer active"]
 
 
 class Returns403Test:
