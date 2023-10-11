@@ -6,7 +6,7 @@ from unittest.mock import patch
 import pytest
 
 import pcapi.core.bookings.factories as bookings_factories
-from pcapi.core.categories import subcategories
+from pcapi.core.categories import subcategories_v2 as subcategories
 from pcapi.core.offers.models import Offer
 from pcapi.core.offers.models import PriceCategory
 from pcapi.core.offers.models import PriceCategoryLabel

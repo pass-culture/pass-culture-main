@@ -7,7 +7,7 @@ import pytest
 
 from pcapi.core.bookings.factories import BookingFactory
 from pcapi.core.bookings.factories import UsedBookingFactory
-from pcapi.core.categories import subcategories
+from pcapi.core.categories import subcategories_v2 as subcategories
 import pcapi.core.criteria.factories as criteria_factories
 from pcapi.core.mails import models
 import pcapi.core.mails.testing as mails_testing

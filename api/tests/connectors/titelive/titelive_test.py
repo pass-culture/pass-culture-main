@@ -5,7 +5,7 @@ import pytest
 
 from pcapi.connectors import titelive
 from pcapi.connectors.titelive import GtlIdError
-from pcapi.core.categories import subcategories
+from pcapi.core.categories import subcategories_v2 as subcategories
 from pcapi.core.testing import override_settings
 from pcapi.domain.titelive import read_things_date
 

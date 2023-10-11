@@ -7,7 +7,7 @@ from unittest.mock import patch
 from freezegun import freeze_time
 import pytest
 
-from pcapi.core.categories import subcategories
+from pcapi.core.categories import subcategories_v2 as subcategories
 import pcapi.core.offerers.factories as offerers_factories
 import pcapi.core.offers.factories as offers_factories
 import pcapi.core.offers.models as offers_models

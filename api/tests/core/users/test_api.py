@@ -13,7 +13,6 @@ from pcapi import settings
 from pcapi.core import token as token_utils
 from pcapi.core.bookings import factories as bookings_factories
 from pcapi.core.bookings.models import BookingStatus
-from pcapi.core.categories import subcategories
 from pcapi.core.categories import subcategories_v2
 import pcapi.core.finance.conf as finance_conf
 import pcapi.core.fraud.factories as fraud_factories
@@ -735,19 +734,19 @@ class DomainsCreditTest:
         bookings_factories.BookingFactory(
             user=user,
             amount=50,
-            stock__offer__subcategoryId=subcategories.SEANCE_CINE.id,
+            stock__offer__subcategoryId=subcategories_v2.SEANCE_CINE.id,
         )
         bookings_factories.BookingFactory(
             user=user,
             amount=5,
-            stock__offer__subcategoryId=subcategories.SEANCE_CINE.id,
+            stock__offer__subcategoryId=subcategories_v2.SEANCE_CINE.id,
         )
 
         # booking in digital domain
         bookings_factories.BookingFactory(
             user=user,
             amount=80,
-            stock__offer__subcategoryId=subcategories.JEU_EN_LIGNE.id,
+            stock__offer__subcategoryId=subcategories_v2.JEU_EN_LIGNE.id,
             stock__offer__url="http://on.line",
         )
 
@@ -755,14 +754,14 @@ class DomainsCreditTest:
         bookings_factories.BookingFactory(
             user=user,
             amount=150,
-            stock__offer__subcategoryId=subcategories.JEU_SUPPORT_PHYSIQUE.id,
+            stock__offer__subcategoryId=subcategories_v2.JEU_SUPPORT_PHYSIQUE.id,
         )
 
         # cancelled booking
         bookings_factories.CancelledBookingFactory(
             user=user,
             amount=150,
-            stock__offer__subcategoryId=subcategories.JEU_SUPPORT_PHYSIQUE.id,
+            stock__offer__subcategoryId=subcategories_v2.JEU_SUPPORT_PHYSIQUE.id,
         )
 
         assert users_api.get_domains_credit(user) == users_models.DomainsCredit(
@@ -778,7 +777,7 @@ class DomainsCreditTest:
         bookings_factories.BookingFactory(
             user=user,
             amount=250,
-            stock__offer__subcategoryId=subcategories.JEU_SUPPORT_PHYSIQUE.id,
+            stock__offer__subcategoryId=subcategories_v2.JEU_SUPPORT_PHYSIQUE.id,
         )
 
         assert users_api.get_domains_credit(user) == users_models.DomainsCredit(
@@ -792,7 +791,7 @@ class DomainsCreditTest:
         bookings_factories.BookingFactory(
             user=user,
             amount=250,
-            stock__offer__subcategoryId=subcategories.JEU_SUPPORT_PHYSIQUE.id,
+            stock__offer__subcategoryId=subcategories_v2.JEU_SUPPORT_PHYSIQUE.id,
         )
 
         with freeze_time(

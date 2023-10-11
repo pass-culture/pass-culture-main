@@ -734,15 +734,6 @@ def test_public_api(client):
                     "title": "GenreTypeModel",
                     "type": "object",
                 },
-                "HomepageLabelResponseModel": {
-                    "properties": {
-                        "name": {"$ref": "#/components/schemas/_HomepageLabelNameEnum"},
-                        "value": {"nullable": True, "title": "Value", "type": "string"},
-                    },
-                    "required": ["name"],
-                    "title": "HomepageLabelResponseModel",
-                    "type": "object",
-                },
                 "HomepageLabelResponseModelv2": {
                     "properties": {
                         "name": {"$ref": "#/components/schemas/_HomepageLabelNameEnumv2"},
@@ -1071,11 +1062,6 @@ def test_public_api(client):
                     "title": "OfferVenueResponse",
                     "type": "object",
                 },
-                "OnlineOfflinePlatformChoicesEnum": {
-                    "description": "An enumeration.",
-                    "enum": ["OFFLINE", "ONLINE", "ONLINE_OR_OFFLINE"],
-                    "title": "OnlineOfflinePlatformChoicesEnum",
-                },
                 "OnlineOfflinePlatformChoicesEnumv2": {
                     "description": "An enumeration.",
                     "enum": ["OFFLINE", "ONLINE", "ONLINE_OR_OFFLINE"],
@@ -1253,26 +1239,6 @@ def test_public_api(client):
                     ],
                     "title": "SchoolTypesIdEnum",
                 },
-                "SearchGroupNameEnum": {
-                    "description": "An enumeration.",
-                    "enum": [
-                        "FILM",
-                        "CINEMA",
-                        "CONFERENCE",
-                        "JEU",
-                        "LIVRE",
-                        "VISITE",
-                        "MUSIQUE",
-                        "COURS",
-                        "PRESSE",
-                        "SPECTACLE",
-                        "INSTRUMENT",
-                        "MATERIEL",
-                        "CARTE_JEUNES",
-                        "NONE",
-                    ],
-                    "title": "SearchGroupNameEnum",
-                },
                 "SearchGroupNameEnumv2": {
                     "description": "An enumeration.",
                     "enum": [
@@ -1293,15 +1259,6 @@ def test_public_api(client):
                         "SPECTACLES",
                     ],
                     "title": "SearchGroupNameEnumv2",
-                },
-                "SearchGroupResponseModel": {
-                    "properties": {
-                        "name": {"$ref": "#/components/schemas/SearchGroupNameEnum"},
-                        "value": {"nullable": True, "title": "Value", "type": "string"},
-                    },
-                    "required": ["name"],
-                    "title": "SearchGroupResponseModel",
-                    "type": "object",
                 },
                 "SearchGroupResponseModelv2": {
                     "properties": {
@@ -1379,28 +1336,6 @@ def test_public_api(client):
                     },
                     "required": ["refreshToken", "accessToken", "accountState"],
                     "title": "SigninResponse",
-                    "type": "object",
-                },
-                "SubcategoriesResponseModel": {
-                    "properties": {
-                        "homepageLabels": {
-                            "items": {"$ref": "#/components/schemas/HomepageLabelResponseModel"},
-                            "title": "Homepagelabels",
-                            "type": "array",
-                        },
-                        "searchGroups": {
-                            "items": {"$ref": "#/components/schemas/SearchGroupResponseModel"},
-                            "title": "Searchgroups",
-                            "type": "array",
-                        },
-                        "subcategories": {
-                            "items": {"$ref": "#/components/schemas/SubcategoryResponseModel"},
-                            "title": "Subcategories",
-                            "type": "array",
-                        },
-                    },
-                    "required": ["subcategories", "searchGroups", "homepageLabels"],
-                    "title": "SubcategoriesResponseModel",
                     "type": "object",
                 },
                 "SubcategoriesResponseModelv2": {
@@ -1594,28 +1529,6 @@ def test_public_api(client):
                         "VOD",
                     ],
                     "title": "SubcategoryIdEnumv2",
-                },
-                "SubcategoryResponseModel": {
-                    "properties": {
-                        "appLabel": {"title": "Applabel", "type": "string"},
-                        "categoryId": {"$ref": "#/components/schemas/CategoryIdEnum"},
-                        "homepageLabelName": {"$ref": "#/components/schemas/_HomepageLabelNameEnum"},
-                        "id": {"$ref": "#/components/schemas/SubcategoryIdEnum"},
-                        "isEvent": {"title": "Isevent", "type": "boolean"},
-                        "onlineOfflinePlatform": {"$ref": "#/components/schemas/OnlineOfflinePlatformChoicesEnum"},
-                        "searchGroupName": {"$ref": "#/components/schemas/SearchGroupNameEnum"},
-                    },
-                    "required": [
-                        "id",
-                        "categoryId",
-                        "appLabel",
-                        "searchGroupName",
-                        "homepageLabelName",
-                        "isEvent",
-                        "onlineOfflinePlatform",
-                    ],
-                    "title": "SubcategoryResponseModel",
-                    "type": "object",
                 },
                 "SubcategoryResponseModelv2": {
                     "properties": {
@@ -2026,25 +1939,6 @@ def test_public_api(client):
                     "description": "An enumeration.",
                     "enum": ["eligible", "non_eligible", "beneficiary", "ex_beneficiary", "suspended"],
                     "title": "YoungStatusType",
-                },
-                "_HomepageLabelNameEnum": {
-                    "description": "An enumeration.",
-                    "enum": [
-                        "FILM",
-                        "CINEMA",
-                        "CONFERENCE",
-                        "JEU",
-                        "LIVRE",
-                        "VISITE",
-                        "MUSIQUE",
-                        "COURS",
-                        "PRESSE",
-                        "SPECTACLE",
-                        "MATERIEL",
-                        "CARTE_JEUNES",
-                        "NONE",
-                    ],
-                    "title": "(HomepageLabelNameEnum",
                 },
                 "_HomepageLabelNameEnumv2": {
                     "description": "An enumeration.",
@@ -3266,32 +3160,6 @@ def test_public_api(client):
                     "tags": [],
                 }
             },
-            "/native/v1/subcategories": {
-                "get": {
-                    "description": "",
-                    "operationId": "get__native_v1_subcategories",
-                    "parameters": [],
-                    "responses": {
-                        "200": {
-                            "content": {
-                                "application/json": {
-                                    "schema": {"$ref": "#/components/schemas/SubcategoriesResponseModel"}
-                                }
-                            },
-                            "description": "OK",
-                        },
-                        "403": {"description": "Forbidden"},
-                        "422": {
-                            "content": {
-                                "application/json": {"schema": {"$ref": "#/components/schemas/ValidationError"}}
-                            },
-                            "description": "Unprocessable Entity",
-                        },
-                    },
-                    "summary": "get_subcategories <GET>",
-                    "tags": [],
-                }
-            },
             "/native/v1/subcategories/v2": {
                 "get": {
                     "description": "",
@@ -3315,6 +3183,31 @@ def test_public_api(client):
                         },
                     },
                     "summary": "get_subcategories_v2 <GET>",
+                    "tags": [],
+                }
+            },
+            "/native/v1/subscription/activity_types": {
+                "get": {
+                    "description": "",
+                    "operationId": "get__native_v1_subscription_activity_types",
+                    "parameters": [],
+                    "responses": {
+                        "200": {
+                            "content": {
+                                "application/json": {"schema": {"$ref": "#/components/schemas/ActivityTypesResponse"}}
+                            },
+                            "description": "OK",
+                        },
+                        "403": {"description": "Forbidden"},
+                        "422": {
+                            "content": {
+                                "application/json": {"schema": {"$ref": "#/components/schemas/ValidationError"}}
+                            },
+                            "description": "Unprocessable Entity",
+                        },
+                    },
+                    "security": [{"JWTAuth": []}],
+                    "summary": "get_activity_types <GET>",
                     "tags": [],
                 }
             },
@@ -3430,31 +3323,6 @@ def test_public_api(client):
                         },
                     },
                     "summary": "get_profile_options <GET>",
-                    "tags": [],
-                }
-            },
-            "/native/v1/subscription/activity_types": {
-                "get": {
-                    "description": "",
-                    "operationId": "get__native_v1_subscription_activity_types",
-                    "parameters": [],
-                    "responses": {
-                        "200": {
-                            "content": {
-                                "application/json": {"schema": {"$ref": "#/components/schemas/ActivityTypesResponse"}}
-                            },
-                            "description": "OK",
-                        },
-                        "403": {"description": "Forbidden"},
-                        "422": {
-                            "content": {
-                                "application/json": {"schema": {"$ref": "#/components/schemas/ValidationError"}}
-                            },
-                            "description": "Unprocessable Entity",
-                        },
-                    },
-                    "security": [{"JWTAuth": []}],
-                    "summary": "get_activity_types <GET>",
                     "tags": [],
                 }
             },

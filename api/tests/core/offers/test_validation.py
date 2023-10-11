@@ -3,7 +3,7 @@ import pathlib
 
 import pytest
 
-from pcapi.core.categories import subcategories
+from pcapi.core.categories import subcategories_v2 as subcategories
 from pcapi.core.offerers import factories as offerers_factories
 from pcapi.core.offers import exceptions
 from pcapi.core.offers import factories as offers_factories

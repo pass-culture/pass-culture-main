@@ -15,7 +15,7 @@ import pytz
 import pcapi.core.bookings.api as bookings_api
 import pcapi.core.bookings.factories as bookings_factories
 import pcapi.core.bookings.models as bookings_models
-from pcapi.core.categories import subcategories
+from pcapi.core.categories import subcategories_v2 as subcategories
 import pcapi.core.educational.factories as educational_factories
 from pcapi.core.educational.factories import CollectiveBookingFactory
 from pcapi.core.educational.factories import EducationalDepositFactory

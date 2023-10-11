@@ -3,7 +3,7 @@ from datetime import datetime
 import pytest
 
 import pcapi.core.bookings.factories as bookings_factories
-from pcapi.core.categories import subcategories
+from pcapi.core.categories import subcategories_v2 as subcategories
 import pcapi.core.mails.testing as mails_testing
 import pcapi.core.offerers.factories as offerers_factories
 import pcapi.core.offers.factories as offers_factories
