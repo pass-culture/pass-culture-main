@@ -132,10 +132,10 @@ class Product(PcObject, Base, Model, HasThumbMixin, ProvidableMixin):
     sa.Index("product_ean_idx", extraData["ean"].astext)
 
     @property
-    def subcategory(self) -> subcategories.Subcategory:
-        if self.subcategoryId not in subcategories.ALL_SUBCATEGORIES_DICT:
+    def subcategory(self) -> subcategories_v2.Subcategory:
+        if self.subcategoryId not in subcategories_v2.ALL_SUBCATEGORIES_DICT:
             raise ValueError(f"Unexpected subcategoryId '{self.subcategoryId}' for product {self.id}")
-        return subcategories.ALL_SUBCATEGORIES_DICT[self.subcategoryId]
+        return subcategories_v2.ALL_SUBCATEGORIES_DICT[self.subcategoryId]
 
     @property
     def isDigital(self) -> bool:
@@ -226,10 +226,10 @@ class Stock(PcObject, Base, Model, ProvidableMixin, SoftDeletableMixin):
         return sa.case([(cls.quantity.is_(None), None)], else_=(cls.quantity - cls.dnBookedQuantity))
 
     AUTOMATICALLY_USED_SUBCATEGORIES = [
-        subcategories.ABO_MUSEE.id,
-        subcategories.CARTE_MUSEE.id,
-        subcategories.ABO_BIBLIOTHEQUE.id,
-        subcategories.ABO_MEDIATHEQUE.id,
+        subcategories_v2.ABO_MUSEE.id,
+        subcategories_v2.CARTE_MUSEE.id,
+        subcategories_v2.ABO_BIBLIOTHEQUE.id,
+        subcategories_v2.ABO_MEDIATHEQUE.id,
     ]
 
     @property
@@ -499,11 +499,11 @@ class Offer(PcObject, Base, Model, DeactivableMixin, ValidationMixin, Accessibil
 
     @hybrid_property
     def canExpire(self) -> bool:
-        return self.subcategoryId in subcategories.EXPIRABLE_SUBCATEGORIES
+        return self.subcategoryId in subcategories_v2.EXPIRABLE_SUBCATEGORIES
 
     @canExpire.expression  # type: ignore [no-redef]
     def canExpire(cls) -> bool:  # pylint: disable=no-self-argument
-        return cls.subcategoryId.in_(subcategories.EXPIRABLE_SUBCATEGORIES)
+        return cls.subcategoryId.in_(subcategories_v2.EXPIRABLE_SUBCATEGORIES)
 
     @property
     def isReleased(self) -> bool:
@@ -520,11 +520,11 @@ class Offer(PcObject, Base, Model, DeactivableMixin, ValidationMixin, Accessibil
 
     @hybrid_property
     def isPermanent(self) -> bool:
-        return self.subcategoryId in subcategories.PERMANENT_SUBCATEGORIES
+        return self.subcategoryId in subcategories_v2.PERMANENT_SUBCATEGORIES
 
     @isPermanent.expression  # type: ignore [no-redef]
     def isPermanent(cls) -> bool:  # pylint: disable=no-self-argument
-        return cls.subcategoryId.in_(subcategories.PERMANENT_SUBCATEGORIES)
+        return cls.subcategoryId.in_(subcategories_v2.PERMANENT_SUBCATEGORIES)
 
     @hybrid_property
     def isEvent(self) -> bool:
@@ -532,7 +532,7 @@ class Offer(PcObject, Base, Model, DeactivableMixin, ValidationMixin, Accessibil
 
     @isEvent.expression  # type: ignore [no-redef]
     def isEvent(cls) -> bool:  # pylint: disable=no-self-argument
-        return cls.subcategoryId.in_(subcategories.EVENT_SUBCATEGORIES)
+        return cls.subcategoryId.in_(subcategories_v2.EVENT_SUBCATEGORIES)
 
     @property
     def isThing(self) -> bool:

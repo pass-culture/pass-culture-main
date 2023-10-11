@@ -6,7 +6,7 @@ from pcapi.connectors.ems import EMSScheduleConnector
 from pcapi.connectors.serialization import ems_serializers
 from pcapi.connectors.thumb_storage import create_thumb
 from pcapi.core import search
-from pcapi.core.categories import subcategories
+from pcapi.core.categories import subcategories_v2 as subcategories
 from pcapi.core.offerers import models as offerers_models
 from pcapi.core.offers import models as offers_models
 from pcapi.core.providers import models as providers_models
