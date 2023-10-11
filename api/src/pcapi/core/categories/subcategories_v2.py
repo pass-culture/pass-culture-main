@@ -1943,3 +1943,8 @@ NativeCategoryIdEnumv2 = Enum(  # type: ignore [misc]
     "NativeCategoryIdEnumv2",
     {native_category.name: native_category.name for native_category in NativeCategory},
 )
+
+# Support for old enum names serializers
+# TODO: remove when old enum names are not used in the app anymore, and after a forced update
+# Jira: https://passculture.atlassian.net/browse/PC-25049
+SubcategoryIdEnum = Enum("SubcategoryIdEnum", {subcategory.id: subcategory.id for subcategory in ALL_SUBCATEGORIES})  # type: ignore [misc]

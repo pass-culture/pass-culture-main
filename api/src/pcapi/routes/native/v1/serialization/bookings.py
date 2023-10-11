@@ -4,7 +4,7 @@ from typing import Any
 from pydantic.v1.class_validators import validator
 
 from pcapi.core.bookings import models as bookings_models
-from pcapi.core.categories.subcategories import SubcategoryIdEnum
+from pcapi.core.categories.subcategories_v2 import SubcategoryIdEnum
 from pcapi.core.offerers.models import Venue
 from pcapi.core.offers.models import Stock
 from pcapi.core.offers.models import WithdrawalTypeEnum
