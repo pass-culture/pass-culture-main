@@ -27,6 +27,7 @@ def synchronize_data_for_provider(provider_name: str, limit: int | None = None) 
     try:
         provider = provider_class()
         provider.updateObjects(limit)
+        provider.postTreatment()
     except Exception:  # pylint: disable=broad-except
         logger.exception(build_cron_log_message(name=provider_name, status=CronStatus.FAILED))
 

@@ -32,6 +32,8 @@ from pcapi.local_providers.titelive_things.titelive_things import OBJECT_SUPPORT
 from pcapi.local_providers.titelive_things.titelive_things import PAPER_CONSUMABLE_SUPPORT_CODE
 from pcapi.local_providers.titelive_things.titelive_things import POSTER_SUPPORT_CODE
 from pcapi.models import offer_mixin
+from pcapi.models.offer_mixin import OfferValidationStatus
+from pcapi.models.offer_mixin import OfferValidationType
 from pcapi.utils.csr import get_closest_csr
 
 
@@ -792,3 +794,83 @@ class TiteliveThingsTest:
         assert refreshed_product.name == "xxx"
         assert refreshed_offer.isActive is False
         assert refreshed_offer.name == "xxx"
+
+    @pytest.mark.usefixtures("db_session")
+    @patch("pcapi.local_providers.titelive_things.titelive_things.get_files_to_process_from_titelive_ftp")
+    @patch("pcapi.local_providers.titelive_things.titelive_things.get_lines_from_thing_file")
+    def test_approve_product_from_inappropriate_thing(
+        self, get_lines_from_thing_file, get_files_to_process_from_titelive_ftp, app
+    ):
+        # Given
+        get_files_to_process_from_titelive_ftp.return_value = ["Quotidien30.tit"]
+
+        data_line = "~".join(BASE_DATA_LINE_PARTS)
+        get_lines_from_thing_file.return_value = iter([data_line])
+
+        titelive_things_provider = get_provider_by_local_class("TiteLiveThings")
+
+        offers_factories.ProductFactory(
+            name="Old name",
+            idAtProviders=EAN_TEST,
+            dateModifiedAtLastProvider=datetime(2001, 1, 1),
+            lastProviderId=titelive_things_provider.id,
+            isGcuCompatible=False,
+            extraData={
+                "ean": EAN_TEST,
+            },
+        )
+        titelive_things = TiteLiveThings()
+
+        # When
+        titelive_things.updateObjects()
+        titelive_things.postTreatment()
+
+        # Then
+        updated_product = offers_models.Product.query.first()
+        assert updated_product.name == EAN_TEST_TITLE
+        assert updated_product.isGcuCompatible
+
+    @pytest.mark.usefixtures("db_session")
+    @patch("pcapi.local_providers.titelive_things.titelive_things.get_files_to_process_from_titelive_ftp")
+    @patch("pcapi.local_providers.titelive_things.titelive_things.get_lines_from_thing_file")
+    def test_approve_product_and_offers_from_inappropriate_thing(
+        self, get_lines_from_thing_file, get_files_to_process_from_titelive_ftp, app
+    ):
+        # Given
+        get_files_to_process_from_titelive_ftp.return_value = ["Quotidien30.tit"]
+
+        data_line = "~".join(BASE_DATA_LINE_PARTS)
+        get_lines_from_thing_file.return_value = iter([data_line])
+
+        titelive_things_provider = get_provider_by_local_class("TiteLiveThings")
+
+        product = offers_factories.ProductFactory(
+            name="Old name",
+            idAtProviders=EAN_TEST,
+            dateModifiedAtLastProvider=datetime(2001, 1, 1),
+            lastProviderId=titelive_things_provider.id,
+            isGcuCompatible=False,
+            extraData={
+                "ean": EAN_TEST,
+            },
+        )
+
+        offers_factories.OfferFactory(
+            product=product,
+            validation=OfferValidationStatus.REJECTED,
+            lastValidationType=OfferValidationType.CGU_INCOMPATIBLE_PRODUCT,
+        )
+
+        titelive_things = TiteLiveThings()
+
+        # When
+        titelive_things.updateObjects()
+        titelive_things.postTreatment()
+
+        # Then
+        updated_product = offers_models.Product.query.first()
+        assert updated_product.name == EAN_TEST_TITLE
+        assert updated_product.isGcuCompatible
+
+        offers = offers_models.Offer.query.all()
+        assert all(offer.validation == OfferValidationStatus.APPROVED for offer in offers)

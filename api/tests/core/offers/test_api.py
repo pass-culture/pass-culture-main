@@ -26,6 +26,8 @@ from pcapi.core.offers import api
 from pcapi.core.offers import exceptions
 from pcapi.core.offers import factories
 from pcapi.core.offers import models
+from pcapi.core.offers.exceptions import NotUpdateProductOrOffers
+from pcapi.core.offers.exceptions import ProductNotFound
 import pcapi.core.providers.factories as providers_factories
 import pcapi.core.providers.repository as providers_repository
 from pcapi.core.testing import override_features
@@ -35,6 +37,7 @@ import pcapi.core.users.models as users_models
 from pcapi.models import api_errors
 from pcapi.models import db
 from pcapi.models.offer_mixin import OfferValidationStatus
+from pcapi.models.offer_mixin import OfferValidationType
 from pcapi.notifications.push import testing as push_testing
 from pcapi.utils.human_ids import humanize
 
@@ -2089,3 +2092,184 @@ class UpdateStockQuantityToMatchCinemaVenueProviderRemainingPlacesTest:
 
         assert stock.remainingQuantity == 0
         mocked_async_index_offer_ids.assert_called_once_with([offer.id])
+
+
+@pytest.mark.usefixtures("db_session")
+class ApproveProductAndRejectedOffersTest:
+    @mock.patch("pcapi.core.search.async_index_offer_ids")
+    def test_should_no_approve_product_and_offers_with_unknown_product(self, mocked_async_index_offer_ids):
+        # Given
+        ean = "ean-de-test"
+
+        # When
+        with pytest.raises(ProductNotFound):
+            api.approves_provider_product_and_rejected_offers(ean)
+
+        # Then
+        mocked_async_index_offer_ids.assert_not_called()
+
+    @mock.patch("pcapi.core.search.async_index_offer_ids")
+    def test_should_approve_product_and_offers_with_no_offers(self, mocked_async_index_offer_ids):
+        # Given
+        provider = providers_factories.APIProviderFactory()
+        ean = "ean-de-test"
+        factories.ThingProductFactory(
+            subcategoryId=subcategories.LIVRE_PAPIER.id,
+            extraData={"ean": ean},
+            lastProvider=provider,
+            idAtProviders=ean,
+            isGcuCompatible=False,
+        )
+
+        # When
+        api.approves_provider_product_and_rejected_offers(ean)
+
+        # Then
+        product = models.Product.query.filter(models.Product.extraData["ean"].astext == ean).one()
+        assert product.isGcuCompatible
+
+        mocked_async_index_offer_ids.assert_not_called()
+
+    @mock.patch("pcapi.core.search.async_index_offer_ids")
+    def test_should_approve_product_and_offers_on_approved_offers(self, mocked_async_index_offer_ids):
+        # Given
+        provider = providers_factories.APIProviderFactory()
+        ean = "ean-de-test"
+        product = factories.ThingProductFactory(
+            subcategoryId=subcategories.LIVRE_PAPIER.id,
+            extraData={"ean": ean},
+            lastProvider=provider,
+            idAtProviders=ean,
+            isGcuCompatible=False,
+        )
+
+        factories.OfferFactory(product=product)
+        factories.OfferFactory(product=product)
+
+        # When
+        api.approves_provider_product_and_rejected_offers(ean)
+
+        # Then
+        product = models.Product.query.filter(models.Product.extraData["ean"].astext == ean).one()
+        assert product.isGcuCompatible
+
+        assert models.Offer.query.filter(models.Offer.validation == OfferValidationStatus.APPROVED).count() == 2
+
+        mocked_async_index_offer_ids.assert_not_called()
+
+    @mock.patch("pcapi.core.search.async_index_offer_ids")
+    def test_should_approve_product_and_offers_with_one_rejected_offer_for_cgu_inappropriate(
+        self, mocked_async_index_offer_ids
+    ):
+        # Given
+        provider = providers_factories.APIProviderFactory()
+        ean = "ean-de-test"
+        product = factories.ThingProductFactory(
+            subcategoryId=subcategories.LIVRE_PAPIER.id,
+            extraData={"ean": ean},
+            lastProvider=provider,
+            idAtProviders=ean,
+            isGcuCompatible=False,
+        )
+
+        offert_to_approve = factories.OfferFactory(
+            product=product,
+            validation=OfferValidationStatus.REJECTED,
+            lastValidationType=OfferValidationType.CGU_INCOMPATIBLE_PRODUCT,
+        )
+        factories.OfferFactory(product=product, lastValidationType=OfferValidationType.MANUAL)
+
+        # When
+        api.approves_provider_product_and_rejected_offers(ean)
+
+        # Then
+        product = models.Product.query.filter(models.Product.extraData["ean"].astext == ean).one()
+        assert product.isGcuCompatible
+
+        assert models.Offer.query.filter(models.Offer.validation == OfferValidationStatus.APPROVED).count() == 2
+        assert (
+            models.Offer.query.filter(
+                models.Offer.id == offert_to_approve.id, models.Offer.lastValidationType == OfferValidationType.AUTO
+            ).count()
+            == 1
+        )
+
+        mocked_async_index_offer_ids.assert_called()
+        assert set(mocked_async_index_offer_ids.call_args[0][0]) == set([offert_to_approve.id])
+
+    @mock.patch("pcapi.core.search.async_index_offer_ids")
+    def test_should_approve_product_and_offers_with_one_offer_manually_rejected(self, mocked_async_index_offer_ids):
+        # Given
+        provider = providers_factories.APIProviderFactory()
+        ean = "ean-de-test"
+        product = factories.ThingProductFactory(
+            subcategoryId=subcategories.LIVRE_PAPIER.id,
+            extraData={"ean": ean},
+            lastProvider=provider,
+            idAtProviders=ean,
+            isGcuCompatible=False,
+        )
+
+        factories.OfferFactory(
+            product=product, validation=OfferValidationStatus.REJECTED, lastValidationType=OfferValidationType.MANUAL
+        )
+
+        # When
+        api.approves_provider_product_and_rejected_offers(ean)
+
+        # Then
+        product = models.Product.query.filter(models.Product.extraData["ean"].astext == ean).one()
+        assert product.isGcuCompatible
+
+        assert models.Offer.query.filter(models.Offer.validation == OfferValidationStatus.REJECTED).count() == 1
+        mocked_async_index_offer_ids.assert_not_called()
+
+    @mock.patch("pcapi.core.search.async_index_offer_ids")
+    def test_should_approve_product_and_offers_with_one_offer_auto_rejected(self, mocked_async_index_offer_ids):
+        # Given
+        provider = providers_factories.APIProviderFactory()
+        ean = "ean-de-test"
+        product = factories.ThingProductFactory(
+            subcategoryId=subcategories.LIVRE_PAPIER.id,
+            extraData={"ean": ean},
+            lastProvider=provider,
+            idAtProviders=ean,
+            isGcuCompatible=False,
+        )
+
+        factories.OfferFactory(
+            product=product, validation=OfferValidationStatus.REJECTED, lastValidationType=OfferValidationType.AUTO
+        )
+
+        # When
+        api.approves_provider_product_and_rejected_offers(ean)
+
+        # Then
+        product = models.Product.query.filter(models.Product.extraData["ean"].astext == ean).one()
+        assert product.isGcuCompatible
+
+        assert models.Offer.query.filter(models.Offer.validation == OfferValidationStatus.REJECTED).count() == 1
+        mocked_async_index_offer_ids.assert_not_called()
+
+    def test_should_approve_product_and_offers_with_update_exception(self):
+        # Given
+        provider = providers_factories.APIProviderFactory()
+        ean = "ean-de-test"
+        product = factories.ThingProductFactory(
+            subcategoryId=subcategories.LIVRE_PAPIER.id,
+            extraData={"ean": ean},
+            lastProvider=provider,
+            idAtProviders=ean,
+            isGcuCompatible=False,
+        )
+
+        factories.OfferFactory(
+            product=product,
+            validation=OfferValidationStatus.REJECTED,
+            lastValidationType=OfferValidationType.CGU_INCOMPATIBLE_PRODUCT,
+        )
+
+        # When
+        with pytest.raises(NotUpdateProductOrOffers):
+            with patch("pcapi.models.db.session.commit", side_effect=Exception):
+                api.approves_provider_product_and_rejected_offers(ean)
