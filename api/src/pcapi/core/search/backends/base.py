@@ -1,3 +1,4 @@
+import collections.abc
 import typing
 from typing import Iterable
 
@@ -39,10 +40,12 @@ class SearchBackend:
     def enqueue_venue_ids_for_offers(self, venue_ids: Iterable[int]) -> None:
         raise NotImplementedError()
 
-    def pop_offer_ids_from_queue(self, count: int, from_error_queue: bool = False) -> set[int]:
+    def pop_offer_ids_from_queue(
+        self, count: int, from_error_queue: bool = False
+    ) -> collections.abc.Generator[set[int], None, None]:
         raise NotImplementedError()
 
-    def pop_venue_ids_for_offers_from_queue(self, count: int) -> set[int]:
+    def pop_venue_ids_for_offers_from_queue(self, count: int) -> collections.abc.Generator[set[int], None, None]:
         raise NotImplementedError()
 
     def count_offers_to_index_from_queue(self, from_error_queue: bool = False) -> int:
@@ -86,21 +89,23 @@ class SearchBackend:
     def unindex_all_venues(self) -> None:
         raise NotImplementedError()
 
-    def pop_venue_ids_from_queue(self, count: int, from_error_queue: bool = False) -> set[int]:
+    def pop_venue_ids_from_queue(
+        self, count: int, from_error_queue: bool = False
+    ) -> collections.abc.Generator[set[int], None, None]:
         raise NotImplementedError()
 
     def pop_collective_offer_ids_from_queue(
         self,
         count: int,
         from_error_queue: bool = False,
-    ) -> set[int]:
+    ) -> collections.abc.Generator[set[int], None, None]:
         raise NotImplementedError()
 
     def pop_collective_offer_template_ids_from_queue(
         self,
         count: int,
         from_error_queue: bool = False,
-    ) -> set[int]:
+    ) -> collections.abc.Generator[set[int], None, None]:
         raise NotImplementedError()
 
     @classmethod
