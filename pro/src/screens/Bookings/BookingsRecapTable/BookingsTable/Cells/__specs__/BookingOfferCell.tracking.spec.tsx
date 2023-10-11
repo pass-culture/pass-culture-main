@@ -19,7 +19,6 @@ describe('BookingOfferCell', () => {
     // Given
     vi.spyOn(useAnalytics, 'default').mockImplementation(() => ({
       logEvent: mockLogEvent,
-      setLogEvent: null,
     }))
     const props: BookingOfferCellProps = {
       booking: collectiveBookingRecapFactory({

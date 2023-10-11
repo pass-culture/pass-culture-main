@@ -40,7 +40,6 @@ describe('screens:SignupJourney::ActionBar', () => {
   beforeEach(() => {
     vi.spyOn(useAnalytics, 'default').mockImplementation(() => ({
       logEvent: mockLogEvent,
-      setLogEvent: null,
     }))
     vi.spyOn(api, 'getVenueTypes').mockResolvedValue([])
   })
@@ -51,7 +50,6 @@ describe('screens:SignupJourney::ActionBar', () => {
       nextStepTitle: 'NEXT',
       isDisabled: false,
       nextTo: SIGNUP_JOURNEY_STEP_IDS.VALIDATION,
-      logEvent: null,
     }
     renderActionBar(props)
 
@@ -76,7 +74,6 @@ describe('screens:SignupJourney::ActionBar', () => {
       nextStepTitle: 'NEXT',
       isDisabled: true,
       nextTo: SIGNUP_JOURNEY_STEP_IDS.VALIDATION,
-      logEvent: null,
     }
     renderActionBar(props)
 
@@ -94,7 +91,6 @@ describe('screens:SignupJourney::ActionBar', () => {
       isDisabled: false,
       nextTo: SIGNUP_JOURNEY_STEP_IDS.VALIDATION,
       previousTo: SIGNUP_JOURNEY_STEP_IDS.AUTHENTICATION,
-      logEvent: null,
       legalCategoryCode: '1000',
     }
     renderActionBar(props)

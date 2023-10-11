@@ -35,7 +35,6 @@ describe('tutorial modal', () => {
   it('should trigger an event when the user arrive on /accueil for the first time', async () => {
     vi.spyOn(useAnalytics, 'default').mockImplementation(() => ({
       logEvent: mockLogEvent,
-      setLogEvent: null,
     }))
     storeOverrides = {
       user: {

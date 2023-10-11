@@ -87,7 +87,6 @@ describe('CollectiveOfferSummary', () => {
 
     vi.spyOn(useAnalytics, 'default').mockImplementation(() => ({
       logEvent: mockLogEvent,
-      setLogEvent: null,
     }))
 
     vi.spyOn(api, 'getVenue').mockResolvedValue(defaultVenueResponseModel)

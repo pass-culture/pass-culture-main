@@ -133,7 +133,6 @@ describe('trackers creationLinks', () => {
     vi.spyOn(api, 'postProFlags').mockResolvedValue()
     vi.spyOn(useAnalytics, 'default').mockImplementation(() => ({
       logEvent: mockLogEvent,
-      setLogEvent: null,
     }))
   })
 

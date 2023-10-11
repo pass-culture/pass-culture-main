@@ -99,7 +99,6 @@ describe('OfferType', () => {
 
     vi.spyOn(useAnalytics, 'default').mockImplementation(() => ({
       logEvent: mockLogEvent,
-      setLogEvent: null,
     }))
   })
 

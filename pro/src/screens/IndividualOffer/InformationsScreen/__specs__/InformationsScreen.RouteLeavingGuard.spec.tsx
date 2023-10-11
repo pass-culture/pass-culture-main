@@ -216,7 +216,6 @@ describe('screens:IndividualOffer::Informations::creation', () => {
     } as GetIndividualOfferResponseModel)
     vi.spyOn(useAnalytics, 'default').mockImplementation(() => ({
       logEvent: mockLogEvent,
-      setLogEvent: null,
     }))
   })
 

@@ -22,7 +22,6 @@ describe('OffererStats', () => {
       // When
       vi.spyOn(useAnalytics, 'default').mockImplementation(() => ({
         logEvent: mockLogEvent,
-        setLogEvent: null,
       }))
       renderOffererStats()
       const viewStatsButton = screen.getAllByRole('link', {
@@ -41,7 +40,6 @@ describe('OffererStats', () => {
       // When
       vi.spyOn(useAnalytics, 'default').mockImplementation(() => ({
         logEvent: mockLogEvent,
-        setLogEvent: null,
       }))
       renderOffererStats()
       const viewAllStatsButton = screen.getByRole('link', {

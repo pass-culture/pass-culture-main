@@ -220,7 +220,6 @@ describe('navigation and submit', () => {
     )
     vi.spyOn(useAnalytics, 'default').mockImplementation(() => ({
       logEvent: mockLogEvent,
-      setLogEvent: null,
     }))
   })
 
