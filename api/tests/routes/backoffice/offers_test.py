@@ -113,7 +113,7 @@ class ListOffersTest(GetEndpointHelper):
         assert rows[0]["ID"] == searched_id
         assert rows[0]["Nom de l'offre"] == offers[0].name
         assert rows[0]["Catégorie"] == offers[0].category.pro_label
-        assert rows[0]["Sous-catégorie"] == offers[0].subcategory_v2.pro_label
+        assert rows[0]["Sous-catégorie"] == offers[0].subcategory.pro_label
         assert rows[0]["Stock restant"] == "Illimité / Illimité"
         assert rows[0]["Tag"] == offers[0].criteria[0].name
         assert rows[0]["Pond."] == ""
@@ -146,7 +146,7 @@ class ListOffersTest(GetEndpointHelper):
         assert rows[0]["ID"] == str(offers[1].id)
         assert rows[0]["Nom de l'offre"] == offers[1].name
         assert rows[0]["Catégorie"] == offers[1].category.pro_label
-        assert rows[0]["Sous-catégorie"] == offers[1].subcategory_v2.pro_label
+        assert rows[0]["Sous-catégorie"] == offers[1].subcategory.pro_label
         assert rows[0]["Stock restant"] == "15 / 20"
         assert rows[0]["Tag"] == ""
         assert rows[0]["Pond."] == ""
