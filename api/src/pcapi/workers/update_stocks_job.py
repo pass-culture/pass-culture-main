@@ -12,5 +12,4 @@ def batch_delete_filtered_stocks_job(filters: dict) -> None:
         time=filters["time"],
         price_category_id=filters["price_category_id"],
     )
-
-    offers_api.batch_delete_stocks(stocks)
+    offers_api.batch_delete_stocks(stocks.all())

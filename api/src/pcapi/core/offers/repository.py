@@ -730,14 +730,12 @@ def _order_stocks_by(
 
 def get_filtered_stocks(
     offer_id: int,
-    stocks_limit_per_page: int = LIMIT_STOCKS_PER_PAGE,
     date: datetime.date | None = None,
     time: datetime.time | None = None,
     price_category_id: int | None = None,
     order_by: StocksOrderedBy = StocksOrderedBy.BEGINNING_DATETIME,
     order_by_desc: bool = False,
-    page: int = 1,
-) -> list[models.Stock]:
+) -> flask_sqlalchemy.BaseQuery:
     query = models.Stock.query.filter(
         models.Stock.offerId == offer_id,
         models.Stock.isSoftDeleted == False,
@@ -751,10 +749,17 @@ def get_filtered_stocks(
             sa.cast(models.Stock.beginningDatetime, sa.Time) >= time.replace(second=0),
             sa.cast(models.Stock.beginningDatetime, sa.Time) <= time.replace(second=59),
         )
-    query = _order_stocks_by(query, order_by, order_by_desc)
-    if FeatureToggle.WIP_PRO_STOCK_PAGINATION.is_active():
-        query = query.offset((page - 1) * stocks_limit_per_page).limit(stocks_limit_per_page)
-    return query.all()
+    return _order_stocks_by(query, order_by, order_by_desc)
+
+
+def get_paginated_stocks(
+    stocks_query: flask_sqlalchemy.BaseQuery,
+    stocks_limit_per_page: int = LIMIT_STOCKS_PER_PAGE,
+    page: int = 1,
+) -> flask_sqlalchemy.BaseQuery:
+    if not FeatureToggle.WIP_PRO_STOCK_PAGINATION.is_active():
+        return stocks_query
+    return stocks_query.offset((page - 1) * stocks_limit_per_page).limit(stocks_limit_per_page)
 
 
 def get_synchronized_offers_with_provider_for_venue(venue_id: int, provider_id: int) -> flask_sqlalchemy.BaseQuery:

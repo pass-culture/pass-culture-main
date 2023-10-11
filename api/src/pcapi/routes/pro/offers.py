@@ -103,8 +103,14 @@ def get_stocks(offer_id: int, query: offers_serialize.StocksQueryModel) -> offer
         order_by=query.order_by,
         order_by_desc=query.order_by_desc,
     )
-    filtered_stock_list = [offers_serialize.GetOfferStockResponseModel.from_orm(stock) for stock in stocks]
-    return offers_serialize.GetStocksResponseModel(stocks=filtered_stock_list, stock_count=len(filtered_stock_list))
+    stocks_count = stocks.count()
+    stocks = offers_repository.get_paginated_stocks(
+        stocks_query=stocks,
+        page=query.page,
+        stocks_limit_per_page=query.stocks_limit_per_page,
+    )
+    stock_list = [offers_serialize.GetOfferStockResponseModel.from_orm(stock) for stock in stocks.all()]
+    return offers_serialize.GetStocksResponseModel(stocks=stock_list, stock_count=stocks_count)
 
 
 @private_api.route("/offers/<int:offer_id>/stocks/delete", methods=["POST"])
@@ -150,7 +156,7 @@ def delete_all_filtered_stocks(offer_id: int, body: offers_serialize.DeleteFilte
     filters = {
         "offer_id": offer_id,
         "date": body.date,
-        "time": body.price_category_id,
+        "time": body.time,
         "price_category_id": body.price_category_id,
     }
     batch_delete_filtered_stocks_job.delay(filters)
