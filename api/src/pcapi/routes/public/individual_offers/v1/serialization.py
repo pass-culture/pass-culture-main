@@ -45,7 +45,7 @@ EventCategoryEnum = StrEnum(  # type:ignore [call-overload]
 if typing.TYPE_CHECKING:
     offer_price_model = pydantic_v1.StrictInt
 else:
-    offer_price_model = pydantic_v1.conint(strict=True, ge=0, lt=30000)  # 300 euros
+    offer_price_model = pydantic_v1.conint(strict=True, ge=0, le=30000)  # 300 euros
 
 
 class Accessibility(serialization.ConfiguredBaseModel):
