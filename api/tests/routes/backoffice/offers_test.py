@@ -19,6 +19,7 @@ from pcapi.core.testing import assert_num_queries
 import pcapi.core.users.factories as users_factories
 from pcapi.models import db
 from pcapi.models.offer_mixin import OfferValidationType
+from pcapi.routes.backoffice.filters import format_date
 
 from .helpers import html_parser
 from .helpers.get import GetEndpointHelper
@@ -882,6 +883,7 @@ class BatchOfferValidateTest(PostEndpointHelper):
             assert offer.isActive is True
             assert offer.lastValidationType is OfferValidationType.MANUAL
             assert offer.validation is offers_models.OfferValidationStatus.APPROVED
+            assert offer.lastValidationAuthor == legit_user
 
 
 class BatchOfferRejectTest(PostEndpointHelper):
@@ -908,3 +910,167 @@ class BatchOfferRejectTest(PostEndpointHelper):
             assert offer.isActive is False
             assert offer.lastValidationType is OfferValidationType.MANUAL
             assert offer.validation is offers_models.OfferValidationStatus.REJECTED
+            assert offer.lastValidationAuthor == legit_user
+
+
+class GetOfferDetailsTest(GetEndpointHelper):
+    endpoint = "backoffice_web.offer.get_offer_details"
+    endpoint_kwargs = {"offer_id": 1}
+    needed_permission = perm_models.Permissions.READ_OFFERS
+
+    def test_get_detail_offer(self, legit_user, authenticated_client):
+        offer = offers_factories.OfferFactory()
+
+        form_url = url_for(self.endpoint, offer_id=offer.id, _external=True)
+
+        with assert_num_queries(3):  # session + user + offer
+            response = authenticated_client.get(form_url)
+            assert response.status_code == 200
+
+        cards_text = html_parser.extract_cards_text(response.data)
+        assert len(cards_text) == 1
+        card_text = cards_text[0]
+        assert f"Offer ID : {offer.id}" in card_text
+        assert "Catégorie : Films, vidéos" in card_text
+        assert "Sous-catégorie : Support physique (DVD, Blu-ray...)" in card_text
+        assert "Statut : Épuisée" in card_text
+        assert "État : Validée" in card_text
+        assert "Structure : Le Petit Rintintin Management" in card_text
+        assert "Lieu : Le Petit Rintintin" in card_text
+        assert "Utilisateur de la dernière validation" not in card_text
+        assert "Date de dernière validation" not in card_text
+
+        assert html_parser.count_table_rows(response.data) == 0
+
+    def test_get_detail_validated_offer(self, legit_user, authenticated_client):
+        validation_date = datetime.datetime.utcnow()
+        offer = offers_factories.OfferFactory(
+            lastValidationDate=validation_date,
+            validation=offers_models.OfferValidationStatus.APPROVED,
+            lastValidationAuthor=legit_user,
+        )
+
+        form_url = url_for(self.endpoint, offer_id=offer.id, _external=True)
+
+        with assert_num_queries(3):  # session + user + offer + loaded data
+            response = authenticated_client.get(form_url)
+            assert response.status_code == 200
+
+        cards_text = html_parser.extract_cards_text(response.data)
+        assert len(cards_text) == 1
+        card_text = cards_text[0]
+        assert f"Utilisateur de la dernière validation : {legit_user.full_name}" in card_text
+        assert f"Date de dernière validation : {format_date(validation_date, '%d/%m/%Y à %Hh%M')}" in card_text
+
+    def test_get_detail_rejected_offer(self, legit_user, authenticated_client):
+        validation_date = datetime.datetime.utcnow()
+        offer = offers_factories.OfferFactory(
+            lastValidationDate=validation_date,
+            validation=offers_models.OfferValidationStatus.REJECTED,
+            lastValidationAuthor=legit_user,
+        )
+
+        form_url = url_for(self.endpoint, offer_id=offer.id, _external=True)
+
+        with assert_num_queries(3):  # session + user + offer + loaded data
+            response = authenticated_client.get(form_url)
+            assert response.status_code == 200
+
+        cards_text = html_parser.extract_cards_text(response.data)
+        assert len(cards_text) == 1
+        card_text = cards_text[0]
+        assert f"Utilisateur de la dernière validation : {legit_user.full_name}" in card_text
+        assert f"Date de dernière validation : {format_date(validation_date, '%d/%m/%Y à %Hh%M')}" in card_text
+
+    def test_get_offer_details_with_one_stock_no_bookable(self, legit_user, authenticated_client):
+        offer = offers_factories.OfferFactory()
+
+        expired_stock = offers_factories.EventStockFactory(
+            offer=offer, beginningDatetime=datetime.datetime.utcnow() - datetime.timedelta(hours=1), price=6.66
+        )
+
+        form_url = url_for(self.endpoint, offer_id=offer.id, _external=True)
+        with assert_num_queries(3):  # session + user + offer
+            response = authenticated_client.get(form_url)
+            assert response.status_code == 200
+
+        stocks_rows = html_parser.extract_table_rows(response.data)
+        assert len(stocks_rows) == 1
+        assert stocks_rows[0]["Stock ID"] == str(expired_stock.id)
+        assert stocks_rows[0]["Nombre de stock initial / restant"] == "0 / 0"
+        assert stocks_rows[0]["Prix"] == "6,66 €"
+        assert stocks_rows[0]["Date / Heure"] == format_date(expired_stock.beginningDatetime, "%d/%m/%Y à %Hh%M")
+
+    def test_get_offer_details_with_two_stocks_no_bookable(self, legit_user, authenticated_client):
+        offer = offers_factories.OfferFactory()
+
+        expired_stocks = offers_factories.EventStockFactory.create_batch(
+            2,
+            offer=offer,
+            beginningDatetime=datetime.datetime.utcnow() - datetime.timedelta(hours=1),
+        )
+
+        form_url = url_for(self.endpoint, offer_id=offer.id, _external=True)
+        with assert_num_queries(3):  # session + user + offer
+            response = authenticated_client.get(form_url)
+            assert response.status_code == 200
+
+        stocks_rows = html_parser.extract_table_rows(response.data)
+        assert len(stocks_rows) == 2
+        assert stocks_rows[0]["Stock ID"] == str(expired_stocks[0].id)
+        assert stocks_rows[0]["Nombre de stock initial / restant"] == "0 / 0"
+        assert stocks_rows[0]["Prix"] == "10,10 €"
+        assert stocks_rows[0]["Date / Heure"] == format_date(expired_stocks[0].beginningDatetime, "%d/%m/%Y à %Hh%M")
+
+        assert stocks_rows[1]["Stock ID"] == str(expired_stocks[1].id)
+        assert stocks_rows[1]["Nombre de stock initial / restant"] == "0 / 0"
+        assert stocks_rows[1]["Prix"] == "10,10 €"
+        assert stocks_rows[1]["Date / Heure"] == format_date(expired_stocks[1].beginningDatetime, "%d/%m/%Y à %Hh%M")
+
+    def test_get_offer_details_with_one_bookable_stock(self, legit_user, authenticated_client):
+        offer = offers_factories.OfferFactory()
+
+        stock = offers_factories.EventStockFactory(offer=offer)
+
+        form_url = url_for(self.endpoint, offer_id=offer.id, _external=True)
+        response = authenticated_client.get(form_url)
+        assert response.status_code == 200
+
+        stocks_rows = html_parser.extract_table_rows(response.data)
+        assert len(stocks_rows) == 1
+        assert stocks_rows[0]["Stock ID"] == str(stock.id)
+        assert stocks_rows[0]["Nombre de stock initial / restant"] == "1000 / 1000"
+        assert stocks_rows[0]["Prix"] == "10,10 €"
+        assert stocks_rows[0]["Date / Heure"] == format_date(stock.beginningDatetime, "%d/%m/%Y à %Hh%M")
+
+    def test_get_offer_details_with_one_bookable_stock_with_unlimited_quantity(self, legit_user, authenticated_client):
+        offer = offers_factories.OfferFactory()
+
+        stock = offers_factories.EventStockFactory(offer=offer, quantity=None)
+
+        form_url = url_for(self.endpoint, offer_id=offer.id, _external=True)
+        response = authenticated_client.get(form_url)
+        assert response.status_code == 200
+
+        stocks_rows = html_parser.extract_table_rows(response.data)
+        assert len(stocks_rows) == 1
+        assert stocks_rows[0]["Stock ID"] == str(stock.id)
+        assert stocks_rows[0]["Nombre de stock initial / restant"] == "Illimité / Illimité"
+        assert stocks_rows[0]["Prix"] == "10,10 €"
+        assert stocks_rows[0]["Date / Heure"] == format_date(stock.beginningDatetime, "%d/%m/%Y à %Hh%M")
+
+    def test_get_offer_details_with_one_bookable_stock_but_no_remaining_stock(self, legit_user, authenticated_client):
+        offer = offers_factories.OfferFactory()
+
+        stock = offers_factories.EventStockFactory(offer=offer, dnBookedQuantity=50)
+
+        form_url = url_for(self.endpoint, offer_id=offer.id, _external=True)
+        response = authenticated_client.get(form_url)
+        assert response.status_code == 200
+
+        stocks_rows = html_parser.extract_table_rows(response.data)
+        assert len(stocks_rows) == 1
+        assert stocks_rows[0]["Stock ID"] == str(stock.id)
+        assert stocks_rows[0]["Nombre de stock initial / restant"] == "950 / 1000"
+        assert stocks_rows[0]["Prix"] == "10,10 €"
+        assert stocks_rows[0]["Date / Heure"] == format_date(stock.beginningDatetime, "%d/%m/%Y à %Hh%M")

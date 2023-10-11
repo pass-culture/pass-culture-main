@@ -8,6 +8,7 @@ from flask import redirect
 from flask import render_template
 from flask import request
 from flask import url_for
+from flask_login import current_user
 import sqlalchemy as sa
 from werkzeug.exceptions import NotFound
 
@@ -459,7 +460,9 @@ def batch_edit_offer() -> utils.BackofficeResponse:
     offers = offers_models.Offer.query.filter(offers_models.Offer.id.in_(form.object_ids_list)).all()
     criteria = criteria_models.Criterion.query.filter(criteria_models.Criterion.id.in_(form.criteria.data)).all()
 
-    previous_criteria = list(reduce(set.intersection, [set(offer.criteria) for offer in offers]))  # type: ignore [arg-type]
+    previous_criteria = list(
+        reduce(set.intersection, [set(offer.criteria) for offer in offers])  # type: ignore [arg-type]
+    )
     deleted_criteria = list(set(previous_criteria).difference(criteria))
 
     for offer in offers:
@@ -574,6 +577,7 @@ def _batch_validate_offers(offer_ids: list[int]) -> None:
             offer.validation = new_validation
             offer.lastValidationDate = datetime.datetime.utcnow()
             offer.lastValidationType = OfferValidationType.MANUAL
+            offer.lastValidationAuthorUserId = current_user.id
             offer.isActive = True
 
             repository.save(offer)
@@ -600,6 +604,7 @@ def _batch_reject_offers(offer_ids: list[int]) -> None:
             offer.validation = new_validation
             offer.lastValidationDate = datetime.datetime.utcnow()
             offer.lastValidationType = OfferValidationType.MANUAL
+            offer.lastValidationAuthorUserId = current_user.id
             offer.isActive = False
 
             # cancel_bookings_from_rejected_offer can raise handled exceptions that drop the
@@ -631,3 +636,29 @@ def _batch_reject_offers(offer_ids: list[int]) -> None:
         favorites = users_models.Favorite.query.filter(users_models.Favorite.offerId.in_(offer_ids)).all()
         repository.delete(*favorites)
         search.async_index_offer_ids(offer_ids)
+
+
+@list_offers_blueprint.route("/<int:offer_id>/details", methods=["GET"])
+@utils.permission_required(perm_models.Permissions.READ_OFFERS)
+def get_offer_details(offer_id: int) -> utils.BackofficeResponse:
+    offer_query = offers_models.Offer.query.filter(offers_models.Offer.id == offer_id).options(
+        sa.orm.joinedload(offers_models.Offer.venue)
+        .load_only(
+            offerers_models.Venue.id,
+            offerers_models.Venue.name,
+        )
+        .joinedload(offerers_models.Venue.managingOfferer)
+        .load_only(
+            offerers_models.Offerer.id,
+            offerers_models.Offerer.name,
+        ),
+        sa.orm.joinedload(offers_models.Offer.stocks),
+        sa.orm.joinedload(offers_models.Offer.lastValidationAuthor).load_only(
+            users_models.User.firstName, users_models.User.lastName
+        ),
+    )
+    offer = offer_query.one_or_none()
+    if not offer:
+        raise NotFound()
+
+    return render_template("offer/details.html", offer=offer, active_tab=request.args.get("active_tab", "stock"))

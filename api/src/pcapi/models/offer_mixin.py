@@ -1,7 +1,14 @@
 import enum
+from typing import TYPE_CHECKING
 
 import sqlalchemy as sa
+from sqlalchemy.ext.declarative import declared_attr
+from sqlalchemy.orm import Mapped
 from sqlalchemy.orm import declarative_mixin
+
+
+if TYPE_CHECKING:
+    from pcapi.core.users.models import User
 
 
 class OfferStatus(str, enum.Enum):
@@ -49,3 +56,11 @@ class ValidationMixin:
     @property
     def isApproved(self) -> bool:
         return self.validation == OfferValidationStatus.APPROVED
+
+    @declared_attr
+    def lastValidationAuthorUserId(self) -> Mapped[int | None]:
+        return sa.Column(sa.BigInteger, sa.ForeignKey("user.id", ondelete="SET NULL"), nullable=True)
+
+    @declared_attr
+    def lastValidationAuthor(self) -> Mapped["User | None"]:
+        return sa.orm.relationship("User", foreign_keys=[self.lastValidationAuthorUserId])

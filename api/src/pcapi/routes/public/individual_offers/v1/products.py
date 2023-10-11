@@ -385,6 +385,7 @@ def _create_offer_from_product(
     offer.isActive = True
     offer.lastValidationDate = datetime.datetime.utcnow()
     offer.lastValidationType = OfferValidationType.AUTO
+    offer.lastValidationAuthorUserId = None
 
     logger.info(
         "models.Offer has been created",

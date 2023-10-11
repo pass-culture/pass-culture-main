@@ -39,6 +39,7 @@ def reject_offers(product_id: int, dry_run: bool = True) -> int:
                 "validation": OfferValidationStatus.REJECTED,
                 "lastValidationDate": datetime.utcnow(),
                 "lastValidationType": OfferValidationType.CGU_INCOMPATIBLE_PRODUCT,
+                "lastValidationAuthorUserId": None,
             },
             synchronize_session="fetch",
         )

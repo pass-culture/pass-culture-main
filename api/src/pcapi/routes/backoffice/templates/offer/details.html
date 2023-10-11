@@ -1,0 +1,101 @@
+{% import "components/links.html" as links %}
+{% from "components/presentation/details/tabs.html" import build_details_tab %}
+{% from "components/presentation/details/tabs.html" import build_details_tabs_wrapper %}
+{% from "components/presentation/details/tabs.html" import build_details_tab_content %}
+{% from "components/presentation/details/tabs.html" import build_details_tabs_content_wrapper %}
+{% from "components/turbo/spinner.html" import build_loading_spinner with context %}
+{% extends "layouts/standard.html" %}
+{% from "components/turbo/lazy_modal.html" import build_lazy_modal with context %}
+{% block main_content %}
+  <div class="row row-cols-1 g-4 py-3">
+    <div class="col">
+      <div class="card shadow">
+        <div class="card-body">
+          <div class="row justify-content-start align-items-center">
+            <div class="col d-flex align-items-center justify-content-start">
+              <h2 class="card-title mb-3 text-primary">{{ links.build_offer_name_to_pc_pro_link(offer) }}</h2>
+            </div>
+            <div class="col-2"></div>
+          </div>
+          <p class="card-subtitle text-muted mb-3 h5">Offer ID : {{ offer.id }}</p>
+          <div class="row pt-3">
+            <div class="col-4">
+              <div class="fs-6">
+                <p class="mb-1">
+                  <span class="fw-bold">Catégorie :</span> {{ offer.category.pro_label }}
+                </p>
+                <p class="mb-1">
+                  <span class="fw-bold">Sous-catégorie :</span> {{ offer.subcategory.pro_label }}
+                </p>
+                <p class="mb-1">
+                  <span class="fw-bold">Date de création :</span> {{ offer.dateCreated | format_date }}
+                </p>
+              </div>
+            </div>
+            <div class="col-4">
+              <div class="fs-6">
+                <p class="mb-1">
+                  <span class="fw-bold">Statut :</span> {{ offer.status | format_offer_status }}
+                </p>
+                <p class="mb-1">
+                  <span class="fw-bold">État :</span> {{ offer.validation | format_offer_validation_status }}
+                </p>
+                {% if offer.lastValidationDate %}
+                  <p class="mb-1">
+                    <span class="fw-bold">Date de dernière validation :</span> {{ offer.lastValidationDate | format_date_time }}
+                  </p>
+                {% endif %}
+                {% if offer.lastValidationAuthor %}
+                  <p class="mb-1">
+                    <span class="fw-bold">Utilisateur de la dernière validation :</span> {{ offer.lastValidationAuthor.full_name }}
+                  </p>
+                {% endif %}
+              </div>
+            </div>
+            <div class="col-4">
+              <div class="fs-6">
+                <p class="mb-1">
+                  <span class="fw-bold">Structure :</span> {{ links.build_offerer_name_to_details_link(offer.venue.managingOfferer) }}
+                </p>
+              </div>
+              <div class="fs-6">
+                <p class="mb-1">
+                  <span class="fw-bold">Lieu :</span> {{ links.build_venue_name_to_details_link(offer.venue) }}
+                </p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="mt-4">
+        {% call build_details_tabs_wrapper() %}
+          {{ build_details_tab("stock", "Stocks", active_tab == 'stock') }}
+        {% endcall %}
+        {% call build_details_tabs_content_wrapper() %}
+          {% call build_details_tab_content("stock", active_tab == 'stock') %}
+            <table class="table mb-4 my-4">
+              <thead>
+                <tr>
+                  <th scope="col-1">Stock ID</th>
+                  <th scope="col-5" class="col-4">Nombre de stock initial / restant</th>
+                  <th scope="col-3" class="col-2">Prix</th>
+                  <th scope="col-3" class="col-4">Date / Heure</th>
+                </tr>
+              </thead>
+              <tbody>
+                {% for stock in offer.stocks | sort(attribute='id') %}
+                  <tr>
+                    <td>{{ stock.id }}</td>
+                    <td>{{ stock.remainingStock | format_stock_quantity }} / {{ stock.initialStock | format_stock_quantity }}</td>
+                    <td>{{ stock.price | format_amount }}</td>
+                    <td>{{ stock.beginningDatetime | format_date_time }}</td>
+                  </tr>
+                {% endfor %}
+              </tbody>
+            </table>
+          {% endcall %}
+        {% endcall %}
+      </div>
+    </div>
+  </div>
+{% endblock main_content %}
