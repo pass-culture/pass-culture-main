@@ -1,10 +1,12 @@
 import React from 'react'
 
-import './NoBookingsForPreFiltersMessage.scss'
+import fullRefresh from 'icons/full-refresh.svg'
 import strokeSearchIcon from 'icons/stroke-search.svg'
 import { Button } from 'ui-kit'
 import { ButtonVariant } from 'ui-kit/Button/types'
 import { SvgIcon } from 'ui-kit/SvgIcon/SvgIcon'
+
+import styles from './NoBookingsForPreFiltersMessage.module.scss'
 
 interface NoBookingsForPreFiltersMessageProps {
   resetPreFilters: () => void
@@ -12,26 +14,27 @@ interface NoBookingsForPreFiltersMessageProps {
 
 const NoBookingsForPreFiltersMessage = ({
   resetPreFilters,
-}: NoBookingsForPreFiltersMessageProps) => (
-  <div className="br-warning no-bookings-for-pre-filters">
+}: NoBookingsForPreFiltersMessageProps): JSX.Element => (
+  <div className={styles['search-no-results']}>
     <SvgIcon
       src={strokeSearchIcon}
       alt=""
+      className={styles['search-no-results-icon']}
       width="124"
-      className="stroke-search-icon"
     />
-    <p>Aucune réservation trouvée pour votre recherche</p>
-    <p>
-      {'Vous pouvez modifier vos filtres et lancer une nouvelle recherche ou '}
-      <Button
-        className="reset-filters-link"
-        onClick={resetPreFilters}
-        type="button"
-        variant={ButtonVariant.TERNARYPINK}
-      >
-        réinitialiser les filtres
-      </Button>
+    <p className={styles['search-no-results-title4']}>
+      Aucune réservation trouvée pour votre recherche
     </p>
+    <p className={styles['search-no-results-text']}>
+      Vous pouvez modifier vos filtres et lancer une nouvelle recherche ou
+    </p>
+    <Button
+      variant={ButtonVariant.TERNARYPINK}
+      icon={fullRefresh}
+      onClick={resetPreFilters}
+    >
+      Réinitialiser les filtres
+    </Button>
   </div>
 )
 

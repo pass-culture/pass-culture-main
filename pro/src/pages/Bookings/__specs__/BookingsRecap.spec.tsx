@@ -211,7 +211,9 @@ describe('components | BookingsRecap | Pro user', () => {
     await submitFilters()
 
     // When
-    const resetButton = screen.getByText('réinitialiser les filtres')
+    const resetButton = screen.getByText('Réinitialiser les filtres', {
+      selector: '.button-ternary-pink',
+    })
     await userEvent.click(resetButton)
 
     // Then
