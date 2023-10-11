@@ -150,7 +150,8 @@ const BankInformations = (): JSX.Element => {
         className={styles['add-bank-account-button']}
         variant={
           /* istanbul ignore next : graphic changes */ selectedOfferer &&
-          selectedOfferer?.venuesWithNonFreeOffersWithoutBankAccounts.length > 0
+          (selectedOfferer?.hasPendingBankAccount ||
+            selectedOfferer?.hasValidBankAccount)
             ? ButtonVariant.SECONDARY
             : ButtonVariant.PRIMARY
         }
