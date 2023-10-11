@@ -4,7 +4,7 @@ import { useNavigate } from 'react-router-dom'
 
 import ConfirmDialog from 'components/Dialog/ConfirmDialog'
 import { OFFER_WIZARD_STEP_IDS } from 'components/IndividualOfferBreadcrumb/constants'
-import { RouteLeavingGuardIndividualOffer } from 'components/RouteLeavingGuardIndividualOffer'
+import { RouteLeavingGuardIndividualOffer } from 'components/RouteLeavingGuardIndividualOffer/RouteLeavingGuardIndividualOffer'
 import { useIndividualOfferContext } from 'context/IndividualOfferContext'
 import { OFFER_WIZARD_MODE } from 'core/Offers/constants'
 import { IndividualOffer, IndividualOfferStock } from 'core/Offers/types'

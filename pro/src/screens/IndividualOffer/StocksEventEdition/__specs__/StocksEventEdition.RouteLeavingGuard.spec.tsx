@@ -164,7 +164,7 @@ describe('screens:StocksEventEdition', () => {
 
     await userEvent.click(screen.getByText('Go outside !'))
     expect(
-      screen.getByText('Les informations non sauvegardées seront perdues')
+      screen.getByText('Les informations non enregistrées seront perdues')
     ).toBeInTheDocument()
     await userEvent.click(screen.getByText('Quitter la page'))
 
