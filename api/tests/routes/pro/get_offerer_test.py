@@ -270,12 +270,17 @@ class GetOffererTest:
         venue_linked = offerers_factories.VenueFactory(managingOfferer=offerer)
         old_linked_venue = offerers_factories.VenueFactory(managingOfferer=offerer)
         non_linked_venue = offerers_factories.VenueFactory(managingOfferer=offerer)
+        non_linked_venue_with_free_collective_offer = offerers_factories.VenueFactory(managingOfferer=offerer)
         venue_linked_offer = offers_factories.OfferFactory(venue=venue_linked)
         old_linked_venue_offer = offers_factories.OfferFactory(venue=old_linked_venue)
         non_linked_venue_offer = offers_factories.OfferFactory(venue=non_linked_venue)
+        free_collective_offer = collective_factories.CollectiveOfferFactory(
+            venue=non_linked_venue_with_free_collective_offer
+        )
         offers_factories.StockFactory(offer=venue_linked_offer)
         offers_factories.StockFactory(offer=non_linked_venue_offer)
         offers_factories.StockFactory(offer=old_linked_venue_offer)
+        collective_factories.CollectiveStockFactory(collectiveOffer=free_collective_offer, price=0)
         expected_bank_account = finance_factories.BankAccountFactory(offerer=offerer)
         _up_to_date_link = offerers_factories.VenueBankAccountLinkFactory(
             venueId=venue_linked.id,
@@ -337,3 +342,43 @@ class GetOffererTest:
         assert offerer["hasValidBankAccount"] is False
         assert offerer["hasPendingBankAccount"] is True
         assert offerer["venuesWithNonFreeOffersWithoutBankAccounts"] == []
+
+    @pytest.mark.usefixtures("db_session")
+    def test_client_can_know_which_venues_have_non_free_offers_without_bank_accounts_taking_collective_offer_into_account(
+        self, client
+    ):
+        # Given
+        pro_user = users_factories.ProFactory()
+        offerer = offerers_factories.OffererFactory()
+        offerers_factories.UserOffererFactory(user=pro_user, offerer=offerer)
+        expected_venue = offerers_factories.VenueFactory(managingOfferer=offerer)
+        venue_linked = offerers_factories.VenueFactory(managingOfferer=offerer)
+        non_linked_venue_with_collective_offer = offerers_factories.VenueFactory(managingOfferer=offerer)
+        venue_linked_offer = offers_factories.OfferFactory(venue=venue_linked)
+        collective_offer = collective_factories.CollectiveOfferFactory(venue=non_linked_venue_with_collective_offer)
+        offers_factories.StockFactory(offer=venue_linked_offer)
+        collective_factories.CollectiveStockFactory(collectiveOffer=collective_offer)
+        expected_bank_account = finance_factories.BankAccountFactory(offerer=offerer)
+        _up_to_date_link = offerers_factories.VenueBankAccountLinkFactory(
+            venueId=venue_linked.id,
+            bankAccountId=expected_bank_account.id,
+            timespan=(datetime.datetime.utcnow(), None),
+        )
+        offerers_factories.VenueBankAccountLinkFactory(
+            venueId=expected_venue.id, bankAccountId=expected_bank_account.id, timespan=(datetime.datetime.utcnow(),)
+        )
+
+        # When
+        http_client = client.with_session_auth(pro_user.email)
+
+        response = http_client.get(f"/offerers/{offerer.id}")
+
+        # Then
+        assert response.status_code == 200
+        offerer = response.json
+
+        assert offerer["hasValidBankAccount"] is True
+        assert offerer["hasPendingBankAccount"] is False
+        assert sorted(offerer["venuesWithNonFreeOffersWithoutBankAccounts"]) == [
+            non_linked_venue_with_collective_offer.id,
+        ]
