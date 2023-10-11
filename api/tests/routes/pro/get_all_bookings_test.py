@@ -265,6 +265,15 @@ class Returns400Test:
         assert response.status_code == 400
         assert response.json["page"] == ["Saisissez un nombre valide"]
 
+    def when_date_format_incorrect(self, client: Any):
+        pro = users_factories.ProFactory()
+
+        response = client.with_session_auth(pro.email).get(
+            "/bookings/pro?bookingPeriodBeginningDate=20234-08-10&bookingPeriodEndingDate=2020-08-12"
+        )
+
+        assert response.status_code == 400
+
     def when_booking_period_and_event_date_is_not_given(self, client: Any):
         pro = users_factories.ProFactory()
 
