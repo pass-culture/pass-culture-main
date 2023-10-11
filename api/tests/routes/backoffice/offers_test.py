@@ -1,5 +1,6 @@
 import datetime
 from operator import itemgetter
+from unittest import mock
 from unittest.mock import patch
 
 from flask import g
@@ -21,6 +22,7 @@ from pcapi.models import db
 from pcapi.models.offer_mixin import OfferValidationType
 from pcapi.routes.backoffice.filters import format_date
 
+from .helpers import button as button_helpers
 from .helpers import html_parser
 from .helpers.get import GetEndpointHelper
 from .helpers.post import PostEndpointHelper
@@ -939,6 +941,7 @@ class GetOfferDetailsTest(GetEndpointHelper):
         assert "Lieu : Le Petit Rintintin" in card_text
         assert "Utilisateur de la dernière validation" not in card_text
         assert "Date de dernière validation" not in card_text
+        assert "Resynchroniser l'offre dans Algolia" in card_text
 
         assert html_parser.count_table_rows(response.data) == 0
 
@@ -1074,3 +1077,31 @@ class GetOfferDetailsTest(GetEndpointHelper):
         assert stocks_rows[0]["Nombre de stock initial / restant"] == "950 / 1000"
         assert stocks_rows[0]["Prix"] == "10,10 €"
         assert stocks_rows[0]["Date / Heure"] == format_date(stock.beginningDatetime, "%d/%m/%Y à %Hh%M")
+
+    class IndexOfferButtonTest(button_helpers.ButtonHelper):
+        needed_permission = perm_models.Permissions.ADVANCED_PRO_SUPPORT
+        button_label = "Resynchroniser l'offre dans Algolia"
+
+        @property
+        def path(self):
+            offer = offers_factories.OfferFactory()
+            return url_for("backoffice_web.offer.get_offer_details", offer_id=offer.id)
+
+
+class IndexOfferTest(PostEndpointHelper):
+    endpoint = "backoffice_web.offer.reindex"
+    endpoint_kwargs = {"offer_id": 1}
+    needed_permission = perm_models.Permissions.ADVANCED_PRO_SUPPORT
+
+    @mock.patch("pcapi.core.search.async_index_offer_ids")
+    def test_index_offer(self, mocked_async_index_offer_ids, authenticated_client):
+        offer = offers_factories.OfferFactory()
+
+        response = self.post_to_endpoint(authenticated_client, offer_id=offer.id)
+        assert response.status_code == 302
+
+        redirected_response = authenticated_client.get(response.headers["location"])
+        assert "La resynchronisation de l'offre a été demandée." in html_parser.extract_alert(redirected_response.data)
+
+        mocked_async_index_offer_ids.assert_called()
+        assert set(mocked_async_index_offer_ids.call_args[0][0]) == {offer.id}

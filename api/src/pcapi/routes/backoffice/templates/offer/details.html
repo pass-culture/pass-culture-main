@@ -30,6 +30,14 @@
                 <p class="mb-1">
                   <span class="fw-bold">Date de création :</span> {{ offer.dateCreated | format_date }}
                 </p>
+                {% if has_permission("ADVANCED_PRO_SUPPORT") and reindex_offer_form %}
+                  <form action="{{ url_for('.reindex', offer_id=offer.id) }}"
+                        name="{{ url_for('.reindex', offer_id=offer.id) | action_to_name }}"
+                        method="post">
+                    {{ reindex_offer_form.csrf_token }}
+                    <button class="btn btn-outline-primary btn-sm fw-bold mt-1">Resynchroniser l'offre dans Algolia</button>
+                  </form>
+                {% endif %}
               </div>
             </div>
             <div class="col-4">
