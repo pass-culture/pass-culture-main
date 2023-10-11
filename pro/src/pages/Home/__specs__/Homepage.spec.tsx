@@ -282,45 +282,6 @@ describe('homepage', () => {
       }
     })
 
-    it.each([baseOfferers[0], baseOfferers[1]])(
-      'should not render the add bank account banner if the offerer  hasValidBankAccount = $hasValidBankAccount and venuesWithNonFreeOffersWithoutBankAccounts = $venuesWithNonFreeOffersWithoutBankAccounts',
-      async (
-        // utilisés dans le message du test
-        // eslint-disable-next-line
-        { hasValidBankAccount, venuesWithNonFreeOffersWithoutBankAccounts }
-      ) => {
-        vi.spyOn(api, 'listOfferersNames').mockResolvedValue({
-          offerersNames: [baseOfferersNames[0]],
-        })
-        vi.spyOn(api, 'getOfferer').mockResolvedValue(baseOfferers[0])
-
-        renderHomePage(store)
-        await waitForElementToBeRemoved(() => screen.queryByTestId('spinner'))
-
-        expect(
-          screen.queryByText(
-            'Ajoutez un compte bancaire pour percevoir vos remboursements'
-          )
-        ).not.toBeInTheDocument()
-      }
-    )
-
-    it('should render the add bank account banner if the offerer has no valid bank account and some unlinked venues', async () => {
-      vi.spyOn(api, 'listOfferersNames').mockResolvedValue({
-        offerersNames: [baseOfferersNames[2]],
-      })
-      vi.spyOn(api, 'getOfferer').mockResolvedValue(baseOfferers[2])
-
-      renderHomePage(store)
-      await waitForElementToBeRemoved(() => screen.queryByTestId('spinner'))
-
-      expect(
-        screen.getByText(
-          'Ajoutez un compte bancaire pour percevoir vos remboursements'
-        )
-      ).toBeInTheDocument()
-    })
-
     it.each([baseOfferers[0], baseOfferers[1], baseOfferers[2]])(
       'should not render the add link venue banner if the offerer  hasValidBankAccount = $hasValidBankAccount and venuesWithNonFreeOffersWithoutBankAccounts = $venuesWithNonFreeOffersWithoutBankAccounts',
       async (
