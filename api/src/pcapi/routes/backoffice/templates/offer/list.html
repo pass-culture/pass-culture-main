@@ -139,7 +139,7 @@
                 <td>{{ links.build_offer_details_link(offer) }}</td>
                 <td>{{ links.build_offer_name_to_pc_pro_link(offer) }}</td>
                 <td>{{ offer.category.pro_label }}</td>
-                <td>{{ offer.subcategory_v2.pro_label }}</td>
+                <td>{{ offer.subcategory.pro_label }}</td>
                 <td class="text-nowrap">{{ get_remaining_stock(offer) }} / {{ get_initial_stock(offer) }}</td>
                 {% if has_permission("PRO_FRAUD_ACTIONS") %}
                   <td>{{ offer.flaggingValidationRules | format_offer_validation_rule_list | safe }}</td>
