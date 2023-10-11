@@ -661,4 +661,22 @@ def get_offer_details(offer_id: int) -> utils.BackofficeResponse:
     if not offer:
         raise NotFound()
 
-    return render_template("offer/details.html", offer=offer, active_tab=request.args.get("active_tab", "stock"))
+    return render_template(
+        "offer/details.html",
+        offer=offer,
+        active_tab=request.args.get("active_tab", "stock"),
+        reindex_offer_form=empty_forms.EmptyForm(),
+    )
+
+
+@list_offers_blueprint.route("/<int:offer_id>/reindex", methods=["POST"])
+@utils.permission_required(perm_models.Permissions.ADVANCED_PRO_SUPPORT)
+def reindex(offer_id: int) -> utils.BackofficeResponse:
+    search.async_index_offer_ids({offer_id})
+
+    flash("La resynchronisation de l'offre a été demandée.", "success")
+
+    if request.referrer:
+        return redirect(request.referrer)
+
+    return redirect(url_for("backoffice_web.offer.get_offer_details", offer_id=offer_id))
