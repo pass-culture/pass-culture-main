@@ -13,18 +13,20 @@ interface RenderWithProvidersOptions {
 
 const createRouterFromOverrides = (
   component: ReactNode,
-  overrides?: RenderWithProvidersOptions
+  overrides?: RenderWithProvidersOptions,
+  initialPath: string = '*'
 ) =>
-  createMemoryRouter([{ path: '*', element: component }], {
+  createMemoryRouter([{ path: initialPath, element: component }], {
     initialEntries: overrides?.initialRouterEntries,
   })
 
 export const renderWithProviders = (
   component: ReactNode,
-  overrides?: RenderWithProvidersOptions
+  overrides?: RenderWithProvidersOptions,
+  initialPath?: string
 ) => {
   const store = configureTestStore(overrides?.storeOverrides)
-  const router = createRouterFromOverrides(component, overrides)
+  const router = createRouterFromOverrides(component, overrides, initialPath)
 
   const { rerender, ...otherRenderResult } = render(
     <Provider store={store}>
