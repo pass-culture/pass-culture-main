@@ -184,7 +184,7 @@ class UserProfileResponse(BaseModel):
     @staticmethod
     def _show_eligible_card(user: users_models.User) -> bool:
         return (
-            relativedelta(user.dateCreated, user.birth_date).years < users_constants.ELIGIBILITY_AGE_18  # type: ignore [arg-type]
+            relativedelta(user.dateCreated, user.birth_date).years < users_constants.ELIGIBILITY_AGE_18
             and user.has_beneficiary_role is False
             and user.eligibility == users_models.EligibilityType.AGE18
         )
@@ -211,8 +211,8 @@ class UserProfileResponse(BaseModel):
         user.domains_credit = users_api.get_domains_credit(user)
         user.booked_offers = cls._get_booked_offers(user)
         user.isEligibleForBeneficiaryUpgrade = users_api.is_eligible_for_beneficiary_upgrade(user, user.eligibility)
-        user.eligibility_end_datetime = users_api.get_eligibility_end_datetime(user.birth_date)  # type: ignore [arg-type]
-        user.eligibility_start_datetime = users_api.get_eligibility_start_datetime(user.birth_date)  # type: ignore [arg-type]
+        user.eligibility_end_datetime = users_api.get_eligibility_end_datetime(user.birth_date)
+        user.eligibility_start_datetime = users_api.get_eligibility_start_datetime(user.birth_date)
         user.isBeneficiary = user.is_beneficiary
         user.subscriptionMessage = user_subscription_state.subscription_message
         user.status = user_subscription_state.young_status

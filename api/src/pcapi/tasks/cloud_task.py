@@ -7,7 +7,7 @@ from dateutil.relativedelta import relativedelta
 from google.api_core import retry
 from google.api_core.exceptions import AlreadyExists
 from google.cloud import tasks_v2
-from google.protobuf import duration_pb2  # type: ignore [import]
+from google.protobuf import duration_pb2  # type: ignore [import-untyped]
 from google.protobuf import timestamp_pb2
 
 from pcapi import settings

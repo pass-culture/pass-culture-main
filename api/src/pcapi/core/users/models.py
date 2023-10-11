@@ -320,7 +320,7 @@ class User(PcObject, Base, Model, NeedsValidationMixin, DeactivableMixin):
     def is_super_admin(self) -> bool:
         if settings.IS_PROD:
             return self.email in settings.SUPER_ADMIN_EMAIL_ADDRESSES
-        return self.has_admin_role  # type: ignore [return-value]
+        return self.has_admin_role
 
     def populate_from_dict(self, data: dict, skipped_keys: typing.Iterable[str] = ()) -> None:
         super().populate_from_dict(data, skipped_keys=skipped_keys)
@@ -353,7 +353,7 @@ class User(PcObject, Base, Model, NeedsValidationMixin, DeactivableMixin):
 
     @property
     def age(self) -> int | None:
-        return users_utils.get_age_from_birth_date(self.birth_date) if self.birth_date else None  # type: ignore [arg-type]
+        return users_utils.get_age_from_birth_date(self.birth_date) if self.birth_date else None
 
     @hybrid_property
     def birth_date(self) -> date | None:
@@ -411,7 +411,7 @@ class User(PcObject, Base, Model, NeedsValidationMixin, DeactivableMixin):
     def eligibility(self) -> EligibilityType | None:
         from pcapi.core.fraud import api as fraud_api
 
-        return fraud_api.decide_eligibility(self, self.birth_date, datetime.utcnow())  # type: ignore [arg-type]
+        return fraud_api.decide_eligibility(self, self.birth_date, datetime.utcnow())
 
     @hybrid_property
     def full_name(self) -> str:
@@ -453,7 +453,7 @@ class User(PcObject, Base, Model, NeedsValidationMixin, DeactivableMixin):
 
     @property
     def latest_birthday(self) -> date | None:
-        return _get_latest_birthday(self.birth_date)  # type: ignore [arg-type]
+        return _get_latest_birthday(self.birth_date)
 
     @property
     def wallet_balance(self) -> Decimal:

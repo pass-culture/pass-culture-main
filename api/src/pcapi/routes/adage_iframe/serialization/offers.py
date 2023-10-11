@@ -184,7 +184,7 @@ class CollectiveOfferResponseModel(BaseModel, common_models.AccessibilityComplia
             id=offer.id,
             subcategoryLabel=offer.subcategory.app_label,
             description=offer.description,
-            isExpired=offer.hasBookingLimitDatetimesPassed,  # type: ignore[arg-type]
+            isExpired=offer.hasBookingLimitDatetimesPassed,
             isSoldOut=offer.collectiveStock.isSoldOut,
             name=offer.name,
             collectiveStock=offer.collectiveStock,  # type: ignore[call-arg]
@@ -259,7 +259,7 @@ class CollectiveOfferTemplateResponseModel(BaseModel, common_models.Accessibilit
             id=offer.id,
             subcategoryLabel=offer.subcategory.app_label,
             description=offer.description,
-            isExpired=offer.hasBookingLimitDatetimesPassed,  # type: ignore[arg-type]
+            isExpired=offer.hasBookingLimitDatetimesPassed,
             isSoldOut=False,
             name=offer.name,
             venue=offer.venue,

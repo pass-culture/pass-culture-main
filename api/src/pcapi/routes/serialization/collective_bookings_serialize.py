@@ -309,7 +309,7 @@ def serialize_collective_booking(collective_booking: models.CollectiveBooking) -
             confirmation_date=convert_real_booking_dates_utc_to_venue_timezone(
                 collective_booking.confirmationDate, collective_booking
             ),
-            is_confirmed=collective_booking.isConfirmed,  # type: ignore[arg-type]
+            is_confirmed=collective_booking.isConfirmed,
         ),
         bookingCancellationReason=collective_booking.cancellationReason,
     )

@@ -188,7 +188,7 @@ def get_available_reimbursement_points(
         __root__=[
             offerers_serialize.OffererReimbursementPointResponseModel(  # type: ignore [call-arg]
                 venueId=reimbursement_point.id,
-                venueName=reimbursement_point.common_name,  # type: ignore [arg-type]
+                venueName=reimbursement_point.common_name,
                 siret=reimbursement_point.siret,
                 iban=reimbursement_point.iban,  # type: ignore [arg-type]
                 bic=reimbursement_point.bic,

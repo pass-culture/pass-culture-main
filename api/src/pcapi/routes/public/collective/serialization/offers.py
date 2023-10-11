@@ -218,7 +218,7 @@ class CollectiveOffersResponseModel(BaseModel):
         return cls(
             id=offer.id,
             beginningDatetime=offer.collectiveStock.beginningDatetime.replace(microsecond=0).isoformat(),
-            status=offer.status.value,  # type: ignore [attr-defined]
+            status=offer.status.value,
             venueId=offer.venueId,
             bookings=bookings,
         )
@@ -311,7 +311,7 @@ class GetPublicCollectiveOfferResponseModel(BaseModel):
         ]
         return cls(
             id=offer.id,
-            status=offer.status.name,  # type: ignore [attr-defined]
+            status=offer.status.name,
             name=offer.name,
             description=offer.description,
             subcategoryId=offer.subcategoryId,
@@ -323,9 +323,9 @@ class GetPublicCollectiveOfferResponseModel(BaseModel):
             interventionArea=offer.interventionArea,
             students=[student.name for student in offer.students],
             dateCreated=offer.dateCreated.replace(microsecond=0).isoformat(),
-            hasBookingLimitDatetimesPassed=offer.hasBookingLimitDatetimesPassed,  # type: ignore [arg-type]
+            hasBookingLimitDatetimesPassed=offer.hasBookingLimitDatetimesPassed,
             isActive=offer.isActive,
-            isSoldOut=offer.isSoldOut,  # type: ignore [arg-type]
+            isSoldOut=offer.isSoldOut,
             venueId=offer.venueId,
             audioDisabilityCompliant=offer.audioDisabilityCompliant,
             mentalDisabilityCompliant=offer.mentalDisabilityCompliant,

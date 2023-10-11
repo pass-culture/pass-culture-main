@@ -57,7 +57,7 @@ def check_stock_is_bookable(stock: Stock, quantity: int) -> None:
     # The first part already checks that the stock is not sold out,
     # but we need to make sure that we can book `quantity` (which
     # could be 2), hence the second part of the check).
-    if not stock.isBookable or (stock.quantity is not None and stock.remainingQuantity < quantity):  # type: ignore [operator]
+    if not stock.isBookable or (stock.quantity is not None and stock.remainingQuantity < quantity):
         raise exceptions.StockIsNotBookable()
 
 

@@ -64,6 +64,7 @@ def update_contact_attributes(
     if user and not email:
         email = user.email
 
+    attributes: attributes_models.UserAttributes | attributes_models.ProAttributes | None = None
     if user and not user.has_pro_role:
         attributes = attributes_api.get_user_attributes(user)
     elif email:
@@ -74,6 +75,7 @@ def update_contact_attributes(
     else:
         return  # not found
 
+    assert email is not None  # helps mypy
     _send_contact_attributes(zendesk_user_id, email, attributes)
     if is_new_ticket:
         _add_internal_note(ticket_id, zendesk_user_id, email, attributes)

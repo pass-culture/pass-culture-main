@@ -439,7 +439,7 @@ class CollectiveOffer(
     @property
     def hasBookingLimitDatetimePassed(self) -> bool:
         if self.collectiveStock:
-            return self.collectiveStock.hasBookingLimitDatetimePassed  # type: ignore[return-value]
+            return self.collectiveStock.hasBookingLimitDatetimePassed
         return False
 
     @hybrid_property
@@ -808,7 +808,7 @@ class CollectiveStock(PcObject, Base, Model):
 
     @property
     def isExpired(self) -> bool:
-        return self.isEventExpired or self.hasBookingLimitDatetimePassed  # type: ignore[return-value]
+        return self.isEventExpired or self.hasBookingLimitDatetimePassed
 
     @property
     def isEventDeletable(self) -> bool:
