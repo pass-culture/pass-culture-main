@@ -72,7 +72,6 @@ describe('test SignupBreadcrumb', () => {
   beforeEach(() => {
     vi.spyOn(useAnalytics, 'default').mockImplementation(() => ({
       logEvent: mockLogEvent,
-      setLogEvent: null,
     }))
     contextValue = {
       activity: DEFAULT_ACTIVITY_VALUES,

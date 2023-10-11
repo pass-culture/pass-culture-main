@@ -42,7 +42,6 @@ describe('SignupJourneyRoutes::trackers', () => {
   beforeEach(() => {
     vi.spyOn(useAnalytics, 'default').mockImplementation(() => ({
       logEvent: mockLogEvent,
-      setLogEvent: null,
     }))
   })
   it('should render log logout event', async () => {

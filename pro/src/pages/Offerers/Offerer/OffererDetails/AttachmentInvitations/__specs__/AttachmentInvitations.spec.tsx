@@ -38,7 +38,6 @@ describe('AttachmentInvitations', () => {
 
     vi.spyOn(useAnalytics, 'default').mockImplementation(() => ({
       logEvent: mockLogEvent,
-      setLogEvent: null,
     }))
   })
 

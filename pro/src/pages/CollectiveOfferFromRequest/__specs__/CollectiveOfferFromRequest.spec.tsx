@@ -129,7 +129,6 @@ describe('CollectiveOfferFromRequest', () => {
   it('should create offer on button click', async () => {
     vi.spyOn(useAnalytics, 'default').mockImplementation(() => ({
       logEvent: mockLogEvent,
-      setLogEvent: null,
     }))
 
     vi.spyOn(api, 'getCollectiveOfferRequest').mockResolvedValueOnce({

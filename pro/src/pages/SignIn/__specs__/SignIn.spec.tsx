@@ -187,7 +187,6 @@ describe('SignIn', () => {
     it('should trigger a tracking event', async () => {
       vi.spyOn(useAnalytics, 'default').mockImplementation(() => ({
         logEvent: mockLogEvent,
-        setLogEvent: null,
       }))
 
       renderSignIn({ user: { initialized: true, currentUser: null } })
@@ -476,7 +475,6 @@ describe('SignIn', () => {
     beforeEach(() => {
       vi.spyOn(useAnalytics, 'default').mockImplementation(() => ({
         logEvent: mockLogEvent,
-        setLogEvent: null,
       }))
     })
 

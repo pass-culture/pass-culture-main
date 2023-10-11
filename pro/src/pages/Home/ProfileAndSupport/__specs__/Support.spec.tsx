@@ -50,7 +50,6 @@ describe('homepage: ProfileAndSupport: Support', () => {
     it('should trigger events when clicking on link', async () => {
       vi.spyOn(useAnalytics, 'default').mockImplementation(() => ({
         logEvent: mockLogEvent,
-        setLogEvent: null,
       }))
       renderSupport()
       const contactLink = screen.getByText(

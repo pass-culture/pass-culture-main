@@ -109,7 +109,6 @@ describe('homepage', () => {
     vi.spyOn(api, 'postProFlags').mockResolvedValue()
     vi.spyOn(useAnalytics, 'default').mockImplementation(() => ({
       logEvent: mockLogEvent,
-      setLogEvent: null,
     }))
   })
 
