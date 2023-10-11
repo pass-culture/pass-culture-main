@@ -167,7 +167,7 @@ class Stock(PcObject, Base, Model, ProvidableMixin, SoftDeletableMixin):
     MAX_STOCK_QUANTITY = 1_000_000
 
     activationCodes: sa_orm.Mapped["ActivationCode"] = sa.orm.relationship("ActivationCode", back_populates="stock")
-    beginningDatetime = sa.Column(sa.DateTime, index=True, nullable=True)
+    beginningDatetime = sa.Column(sa.DateTime, nullable=True)
     bookingLimitDatetime = sa.Column(sa.DateTime, nullable=True)
     dateCreated: datetime.datetime = sa.Column(
         sa.DateTime, nullable=False, default=datetime.datetime.utcnow, server_default=sa.func.now()
@@ -188,6 +188,17 @@ class Stock(PcObject, Base, Model, ProvidableMixin, SoftDeletableMixin):
     quantity: int | None = sa.Column(sa.Integer, nullable=True)
     rawProviderQuantity = sa.Column(sa.Integer, nullable=True)
     features: list[str] = sa.Column(postgresql.ARRAY(sa.Text), nullable=False, server_default=sa.text("'{}'::text[]"))
+
+    __table_args__ = (
+        sa.Index(
+            "ix_stock_beginningDatetime_partial", beginningDatetime, postgresql_where=beginningDatetime.is_not(None)
+        ),
+        sa.Index(
+            "ix_stock_bookingLimitDatetime_partial",
+            bookingLimitDatetime,
+            postgresql_where=bookingLimitDatetime.is_not(None),
+        ),
+    )
 
     @property
     def isBookable(self) -> bool:
