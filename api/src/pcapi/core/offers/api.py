@@ -671,6 +671,7 @@ def update_offer_fraud_information(offer: AnyOffer, user: users_models.User | No
         offer.author = user
     offer.lastValidationDate = datetime.datetime.utcnow()
     offer.lastValidationType = OfferValidationType.AUTO
+    offer.lastValidationAuthorUserId = None
 
     if offer.validation in (models.OfferValidationStatus.PENDING, models.OfferValidationStatus.REJECTED):
         offer.isActive = False
@@ -867,7 +868,9 @@ def add_criteria_to_offers(
     return True
 
 
-def reject_inappropriate_product(ean: str, send_booking_cancellation_emails: bool = True) -> bool:
+def reject_inappropriate_product(
+    ean: str, author: users_models.User | None, send_booking_cancellation_emails: bool = True
+) -> bool:
     product = models.Product.query.filter(
         models.Product.extraData["ean"].astext == ean, models.Product.idAtProviders.is_not(None)
     ).one_or_none()
@@ -887,6 +890,7 @@ def reject_inappropriate_product(ean: str, send_booking_cancellation_emails: boo
             "validation": models.OfferValidationStatus.REJECTED,
             "lastValidationDate": datetime.datetime.utcnow(),
             "lastValidationType": OfferValidationType.CGU_INCOMPATIBLE_PRODUCT,
+            "lastValidationAuthorUserId": author.id if author else None,
         },
         synchronize_session=False,
     )

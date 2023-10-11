@@ -1,3 +1,4 @@
+import datetime
 from pathlib import Path
 from unittest import mock
 
@@ -8,8 +9,11 @@ from pcapi.core.educational import models as educational_models
 from pcapi.core.educational.exceptions import CantGetImageFromUrl
 import pcapi.core.educational.factories as educational_factories
 import pcapi.core.offerers.factories as offerers_factories
+from pcapi.core.offers import models as offers_models
+from pcapi.core.users import factories as user_factories
 from pcapi.models import offer_mixin
 from pcapi.models import validation_status_mixin
+from pcapi.models.offer_mixin import OfferValidationType
 from pcapi.utils.date import format_into_utc_date
 
 import tests
@@ -208,3 +212,35 @@ class Returns200Test:
 
         # Then
         assert response.status_code == 404
+
+    def test_duplicate_collective_offer_validation_informations(self, client):
+        # Given
+        offerer = offerers_factories.OffererFactory()
+        offerers_factories.UserOffererFactory(offerer=offerer, user__email="user@example.com")
+        venue = offerers_factories.VenueFactory(managingOfferer=offerer)
+        institution = educational_factories.EducationalInstitutionFactory()
+        national_program = educational_factories.NationalProgramFactory()
+        user = user_factories.BaseUserFactory()
+        lastValidationDate = datetime.date.today() - datetime.timedelta(days=2)
+        offer = educational_factories.CollectiveOfferFactory(
+            venue=venue,
+            institution=institution,
+            nationalProgram=national_program,
+            validation=offers_models.OfferValidationStatus.APPROVED,
+            lastValidationType=OfferValidationType.MANUAL,
+            lastValidationDate=lastValidationDate,
+            lastValidationAuthorUserId=user.id,
+        )
+        offer_id = offer.id
+        educational_factories.CollectiveStockFactory(collectiveOffer=offer)
+
+        # When
+        response = client.with_session_auth("user@example.com").post(f"/collective/offers/{offer_id}/duplicate")
+
+        # Then
+        assert response.status_code == 201
+        duplicate = educational_models.CollectiveOffer.query.filter_by(id=response.json["id"]).one()
+        assert duplicate.lastValidationDate.date() == lastValidationDate
+        assert duplicate.validation == offers_models.OfferValidationStatus.DRAFT
+        assert duplicate.lastValidationType == OfferValidationType.MANUAL
+        assert not duplicate.lastValidationAuthorUserId

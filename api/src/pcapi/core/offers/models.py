@@ -185,7 +185,7 @@ class Stock(PcObject, Base, Model, ProvidableMixin, SoftDeletableMixin):
         sa.BigInteger, sa.ForeignKey("price_category.id"), index=True, nullable=True
     )
     priceCategory: sa_orm.Mapped["PriceCategory | None"] = sa.orm.relationship("PriceCategory", back_populates="stocks")
-    quantity = sa.Column(sa.Integer, nullable=True)
+    quantity: int | None = sa.Column(sa.Integer, nullable=True)
     rawProviderQuantity = sa.Column(sa.Integer, nullable=True)
     features: list[str] = sa.Column(postgresql.ARRAY(sa.Text), nullable=False, server_default=sa.text("'{}'::text[]"))
 
@@ -299,6 +299,19 @@ class Stock(PcObject, Base, Model, ProvidableMixin, SoftDeletableMixin):
     def canHaveActivationCodes(self) -> bool:
         return self.offer.isDigital
 
+    @hybrid_property
+    def initialStock(self) -> int | None:
+        if self.isBookable:
+            return self.quantity
+        return 0
+
+    @hybrid_property
+    def remainingStock(self) -> int | None:
+        if self.isBookable:
+            # pylint: disable=comparison-with-callable
+            return None if self.remainingQuantity == "unlimited" else self.remainingQuantity
+        return 0
+
 
 @sa.event.listens_for(Stock, "before_insert")
 def before_insert(mapper, configuration, self):  # type: ignore [no-untyped-def]
@@ -388,8 +401,10 @@ class Offer(PcObject, Base, Model, DeactivableMixin, ValidationMixin, Accessibil
 
     MAX_STOCKS_PER_OFFER = 2_500
 
-    author: sa_orm.Mapped["User"] | None = relationship("User", backref="offers", uselist=False)
     authorId = sa.Column(sa.BigInteger, sa.ForeignKey("user.id"), nullable=True)
+    author: sa_orm.Mapped["User"] | None = relationship(
+        "User", backref="offers", foreign_keys=[authorId], uselist=False
+    )
     bookingContact = sa.Column(sa.String(120), nullable=True)
     bookingEmail = sa.Column(sa.String(120), nullable=True)
     criteria: sa_orm.Mapped["Criterion"] = sa.orm.relationship(

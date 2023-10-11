@@ -6,6 +6,7 @@ from flask import redirect
 from flask import render_template
 from flask import request
 from flask import url_for
+from flask_login import current_user
 import sqlalchemy as sa
 
 from pcapi.core import search
@@ -22,6 +23,7 @@ from pcapi.core.mails import transactional as transactional_mails
 from pcapi.core.offerers import models as offerers_models
 from pcapi.core.offers import models as offers_models
 from pcapi.core.permissions import models as perm_models
+from pcapi.core.users import models as users_models
 from pcapi.models import db
 from pcapi.models import offer_mixin
 from pcapi.routes.backoffice import autocomplete
@@ -91,7 +93,7 @@ def _get_collective_offers(
         )
 
     if form.status.data:
-        base_query = base_query.filter(educational_models.CollectiveOffer.validation.in_(form.status.data))
+        base_query = base_query.filter(educational_models.CollectiveOffer.validation.in_(form.status.data))  # type: ignore [attr-defined]
 
     if form.only_validated_offerers.data:
         base_query = (
@@ -194,6 +196,7 @@ def _batch_validate_or_reject_collective_offers(
         collective_offer.validation = new_validation_status
         collective_offer.lastValidationDate = datetime.datetime.utcnow()
         collective_offer.lastValidationType = offer_mixin.OfferValidationType.MANUAL
+        collective_offer.lastValidationAuthorUserId = current_user.id
 
         if validation is offer_mixin.OfferValidationStatus.APPROVED:
             collective_offer.isActive = True
@@ -367,6 +370,9 @@ def get_collective_offer_details(collective_offer_id: int) -> utils.BackofficeRe
         ),
         sa.orm.joinedload(educational_models.CollectiveOffer.venue),
         sa.orm.joinedload(educational_models.CollectiveOffer.venue).joinedload(offerers_models.Venue.managingOfferer),
+        sa.orm.joinedload(educational_models.CollectiveOffer.lastValidationAuthor).load_only(
+            users_models.User.firstName, users_models.User.lastName
+        ),
     )
     collective_offer = collective_offer_query.one_or_none()
     if not collective_offer:
