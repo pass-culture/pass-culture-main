@@ -35,8 +35,6 @@ const Homepage = (): JSX.Element => {
   const [hasNoVenueVisible, setHasNoVenueVisible] = useState(false)
   const [isUserOffererValidated, setIsUserOffererValidated] = useState(false)
   const [venues, setVenues] = useState(INITIAL_OFFERER_VENUES)
-  const [displayAddBankAccountBanner, setDisplayBankAccountBanner] =
-    useState(false)
   const [displayLinkVenueBanner, setDisplayLinkVenueBanner] = useState(false)
   const { remoteConfigData } = useRemoteConfig()
 
@@ -57,11 +55,6 @@ const Homepage = (): JSX.Element => {
         })
         setSelectedOfferer(receivedOfferer)
         setIsUserOffererValidated(true)
-        setDisplayBankAccountBanner(
-          !receivedOfferer.hasValidBankAccount &&
-            receivedOfferer.venuesWithNonFreeOffersWithoutBankAccounts.length >
-              0
-        )
         setDisplayLinkVenueBanner(
           receivedOfferer.hasValidBankAccount &&
             receivedOfferer.venuesWithNonFreeOffersWithoutBankAccounts.length >
@@ -121,7 +114,7 @@ const Homepage = (): JSX.Element => {
       <div className="homepage">
         <h1>Bienvenue dans l’espace acteurs culturels</h1>
 
-        {displayAddBankAccountBanner && <AddBankAccountCallout />}
+        <AddBankAccountCallout offerer={selectedOfferer} />
         {displayLinkVenueBanner && (
           <LinkVenueCallout
             hasMultipleVenuesToLink={
