@@ -6,8 +6,7 @@ from pydantic.v1.class_validators import validator
 from pydantic.v1.fields import Field
 
 from pcapi.core.bookings.api import compute_booking_cancellation_limit_date
-from pcapi.core.categories import categories
-from pcapi.core.categories import subcategories
+from pcapi.core.categories import subcategories_v2 as subcategories
 from pcapi.core.offerers import models as offerers_models
 from pcapi.core.offers import offer_metadata
 from pcapi.core.offers import repository as offers_repository
@@ -279,44 +278,3 @@ class UserReportedOffersResponse(BaseModel):
 
     class Config:
         alias_generator = to_camel
-
-
-class SubcategoryResponseModel(BaseModel):
-    id: subcategories.SubcategoryIdEnum
-    category_id: categories.CategoryIdEnum
-    app_label: str
-    search_group_name: subcategories.SearchGroupNameEnum
-    homepage_label_name: subcategories.HomepageLabelNameEnum
-    is_event: bool
-    online_offline_platform: subcategories.OnlineOfflinePlatformChoicesEnum
-
-    class Config:
-        alias_generator = to_camel
-        allow_population_by_field_name = True
-        orm_mode = True
-
-
-class SearchGroupResponseModel(BaseModel):
-    name: subcategories.SearchGroupNameEnum
-    value: str | None
-
-    class Config:
-        alias_generator = to_camel
-        allow_population_by_field_name = True
-        orm_mode = True
-
-
-class HomepageLabelResponseModel(BaseModel):
-    name: subcategories.HomepageLabelNameEnum
-    value: str | None
-
-    class Config:
-        alias_generator = to_camel
-        allow_population_by_field_name = True
-        orm_mode = True
-
-
-class SubcategoriesResponseModel(BaseModel):
-    subcategories: list[SubcategoryResponseModel]
-    searchGroups: list[SearchGroupResponseModel]
-    homepageLabels: list[HomepageLabelResponseModel]
