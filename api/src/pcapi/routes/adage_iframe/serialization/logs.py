@@ -20,6 +20,11 @@ class OfferIdBody(AdageBaseModel):
     offerId: int
 
 
+class OfferFavoriteBody(AdageBaseModel):
+    offerId: int
+    isFavorite: bool
+
+
 class SearchBody(AdageBaseModel):
     filters: list[str]
     resultsCount: int
