@@ -4,7 +4,7 @@ from unittest.mock import patch
 from flask import url_for
 import pytest
 
-from pcapi.core.categories import subcategories
+from pcapi.core.categories import subcategories_v2 as subcategories
 import pcapi.core.criteria.factories as criteria_factories
 import pcapi.core.criteria.models as criteria_models
 import pcapi.core.offerers.factories as offerers_factories

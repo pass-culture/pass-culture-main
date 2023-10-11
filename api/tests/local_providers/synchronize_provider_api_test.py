@@ -7,7 +7,7 @@ import pytest
 import requests_mock
 
 from pcapi.core.bookings.factories import BookingFactory
-from pcapi.core.categories import subcategories
+from pcapi.core.categories import subcategories_v2 as subcategories
 import pcapi.core.offerers.factories as offerers_factories
 from pcapi.core.offerers.models import Venue
 from pcapi.core.offers import factories
