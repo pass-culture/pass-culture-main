@@ -20,12 +20,12 @@ describe('AddBankAccountCallout', () => {
     ).not.toBeInTheDocument()
     expect(
       screen.queryByText(
-        /Rendez-vous dans l'onglet informations bancaires de votre page Remboursements/
+        /Rendez-vous dans l'onglet informations bancaires de votre page Remboursements./
       )
     ).not.toBeInTheDocument()
     expect(
       screen.queryByRole('link', {
-        name: 'ajouter un compte bancaire',
+        name: 'Ajouter un compte bancaire',
       })
     ).not.toBeInTheDocument()
   })
@@ -51,12 +51,12 @@ describe('AddBankAccountCallout', () => {
       ).toBeInTheDocument()
       expect(
         screen.getByText(
-          /Rendez-vous dans l'onglet informations bancaires de votre page Remboursements/
+          /Rendez-vous dans l'onglet informations bancaires de votre page Remboursements./
         )
       ).toBeInTheDocument()
       expect(
         screen.getByRole('link', {
-          name: 'ajouter un compte bancaire',
+          name: 'Ajouter un compte bancaire',
         })
       ).toBeInTheDocument()
     })

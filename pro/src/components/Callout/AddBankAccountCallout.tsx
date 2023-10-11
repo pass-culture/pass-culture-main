@@ -24,7 +24,8 @@ const AddBankAccountCallout = ({
       links={[
         {
           href: '/remboursements/informations-bancaires',
-          linkTitle: 'ajouter un compte bancaire',
+          linkTitle: 'Ajouter un compte bancaire',
+          targetLink: '',
         },
       ]}
       type={CalloutVariant.ERROR}
@@ -32,7 +33,7 @@ const AddBankAccountCallout = ({
     >
       <div>
         Rendez-vous dans l'onglet informations bancaires de votre page
-        Remboursements
+        Remboursements.
       </div>
     </Callout>
   )
