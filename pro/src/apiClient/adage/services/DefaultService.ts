@@ -563,6 +563,28 @@ export class DefaultService {
   }
 
   /**
+   * log_tracking_map <POST>
+   * @param requestBody
+   * @returns void
+   * @throws ApiError
+   */
+  public logTrackingMap(
+    requestBody?: AdageBaseModel,
+  ): CancelablePromise<void> {
+    return this.httpRequest.request({
+      method: 'POST',
+      url: '/adage-iframe/logs/tracking-map',
+      body: requestBody,
+      mediaType: 'application/json',
+      errors: {
+        403: `Forbidden`,
+        404: `Not Found`,
+        422: `Unprocessable Entity`,
+      },
+    });
+  }
+
+  /**
    * get_educational_offers_categories <GET>
    * @returns CategoriesResponseModel OK
    * @throws ApiError

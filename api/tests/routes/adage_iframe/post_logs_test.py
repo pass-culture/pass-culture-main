@@ -305,7 +305,7 @@ class LogsTest:
         with caplog.at_level(logging.INFO):
             response = client.post(
                 "/adage-iframe/logs/sat-survey",
-                json={"source": "Academic Octathalon", "iframeFrom": "for_my_institution", "queryId": "1234a"},
+                json={"iframeFrom": "for_my_institution", "queryId": "1234a"},
             )
 
         # then
@@ -350,4 +350,28 @@ class LogsTest:
             "userId": "f0e2a21bcf499cbc713c47d8f034d66e90a99f9ffcfe96466c9971dfdc5c9816",
             "uai": "EAU123",
             "user_role": AdageFrontRoles.READONLY,
+        }
+
+    def test_log_adage_map(self, client, caplog):
+        # given
+        adage_jwt_fake_valid_token = create_adage_valid_token_with_email(email="test@mail.com")
+        client.auth_header = {"Authorization": f"Bearer {adage_jwt_fake_valid_token}"}
+
+        # when
+        with caplog.at_level(logging.INFO):
+            response = client.post(
+                "/adage-iframe/logs/tracking-map",
+                json={"iframeFrom": "for_my_institution", "queryId": "1234a"},
+            )
+
+        # then
+        assert response.status_code == 204
+        assert caplog.records[0].message == "adageMapClicked"
+        assert caplog.records[0].extra == {
+            "analyticsSource": "adage",
+            "queryId": "1234a",
+            "from": "for_my_institution",
+            "uai": "EAU123",
+            "user_role": AdageFrontRoles.READONLY,
+            "userId": "f0e2a21bcf499cbc713c47d8f034d66e90a99f9ffcfe96466c9971dfdc5c9816",
         }
