@@ -131,7 +131,7 @@ NAME_FIELD = pydantic_v1.Field(description="Offer title", example="Le Petit Prin
 DURATION_MINUTES_FIELD = pydantic_v1.Field(description="Event duration in minutes", example=60, alias="eventDuration")
 TICKET_COLLECTION_FIELD = pydantic_v1.Field(
     None,
-    description="How the ticket will be collected. Leave empty if there is no ticket. To use 'in_app' you must have developed the pass culture ticketing interface. Only some categories are compatible with tickets.",
+    description="How the ticket will be collected. Leave empty if there is no ticket. To use 'in_app' you must have developed the pass culture ticketing interface.",
     example=None,
 )
 PRICE_CATEGORY_LABEL_FIELD = pydantic_v1.Field(description="Price category label", example="Carré or")
