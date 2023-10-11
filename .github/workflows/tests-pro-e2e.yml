@@ -29,6 +29,7 @@ jobs:
         uses: iFaxity/wait-on-action@v1
         with:
           resource: http://localhost/health/api
+          timeout: 120000
       - name: Load sandbox
         run: ../pc sandbox -n industrial
       # Doc : https://github.com/cypress-io/github-action
