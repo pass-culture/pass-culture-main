@@ -123,7 +123,6 @@ class FeatureToggle(enum.Enum):
         "Backoffice : Afficher directement les détails lorsque la recherche ne renvoie qu'un seul résultat"
     )
     WIP_ENABLE_SEARCH_HISTORY_ADAGE = "Activer la possibilité de voir l'historique des recherches sur adage"
-    WIP_ENABLE_OFFER_RESERVATION_TAB = "Activer l'onglet réservation depuis les offres"
     WIP_ENABLE_MOCK_UBBLE = "Utiliser le mock Ubble à la place du vrai Ubble"
     WIP_PRO_STOCK_PAGINATION = "Active la pagination pour les stocks"
     WIP_ENABLE_BOOST_SHOWTIMES_FILTER = "Activer le filtre pour les requêtes showtimes Boost"
@@ -194,7 +193,6 @@ FEATURES_DISABLED_BY_DEFAULT: tuple[FeatureToggle, ...] = (
     FeatureToggle.WIP_ENABLE_MOCK_UBBLE,
     FeatureToggle.WIP_ENABLE_NEW_BANK_DETAILS_JOURNEY,
     FeatureToggle.WIP_ENABLE_NEW_USER_OFFERER_LINK,
-    FeatureToggle.WIP_ENABLE_OFFER_RESERVATION_TAB,
     FeatureToggle.WIP_ENABLE_REMINDER_MARKETING_MAIL_METADATA_DISPLAY,
     FeatureToggle.WIP_ENABLE_SATISFACTION_SURVEY,
     FeatureToggle.WIP_ENABLE_SEARCH_HISTORY_ADAGE,
