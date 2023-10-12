@@ -58,7 +58,10 @@ export enum Events {
   CLICKED_EAC_DMS_LINK = 'hasClickedEacDmsLink',
   CLICKED_CREATE_OFFER_FROM_REQUEST = 'hasClickedCreateOfferFromRequest',
   CLICKED_ADD_IMAGE = 'hasClickedAddImage',
+  CLICKED_DELETE_STOCK = 'hasClickedDeleteStock',
+  CLICKED_BULK_DELETE_STOCK = 'hasClickedBulkDeleteStock',
 }
+
 export enum VenueEvents {
   CLICKED_VENUE_ACCORDION_BUTTON = 'hasClickedVenueAccordionButton',
   CLICKED_VENUE_ADD_RIB_BUTTON = 'hasClickedVenueAddRibButton',
