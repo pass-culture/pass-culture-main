@@ -1,3 +1,4 @@
+import re
 from typing import Iterable
 
 from pcapi import settings
@@ -7,6 +8,9 @@ from pcapi.utils.module_loading import import_string
 from . import models
 from .backends.base import BaseBackend
 from .backends.logger import LoggerBackend
+
+
+VALID_LOOKING_EMAIL_ADDRESS = re.compile(".+@.+\..+")
 
 
 def send(
@@ -20,9 +24,18 @@ def send(
         if settings.IS_RUNNING_TESTS:
             raise ValueError("Recipients should be a sequence, not a single string.")
         recipients = [recipients]
+    recipients = _filter_out_invalid_looking_email_addresses(recipients)
+    if not recipients:
+        return False
+    bcc_recipients = _filter_out_invalid_looking_email_addresses(bcc_recipients)
     backend = _get_backend(data)
     result = backend().send_mail(recipients=recipients, bcc_recipients=bcc_recipients, data=data)
     return result.successful
+
+
+def _filter_out_invalid_looking_email_addresses(emails: Iterable[str]) -> set[str]:
+    """Return email addresses that "look valid"."""
+    return {email for email in emails if VALID_LOOKING_EMAIL_ADDRESS.match(email)}
 
 
 def create_contact(payload: sendinblue_tasks.UpdateSendinblueContactRequest) -> None:
