@@ -63,6 +63,7 @@ const Categories = ({
   const {
     values: { categoryId, subCategoryFields, offererId },
     setFieldValue,
+    handleChange,
   } = useFormikContext<IndividualOfferFormValues>()
   const { setSubcategory } = useIndividualOfferContext()
   const isBookingContactEnabled = useActiveFeature(
@@ -193,7 +194,10 @@ const Categories = ({
             value: FORM_DEFAULT_VALUES.categoryId,
           }}
           disabled={readOnlyFields.includes('categoryId')}
-          onChange={onCategoryChange}
+          onChange={(event: React.ChangeEvent<HTMLSelectElement>) => {
+            onCategoryChange(event)
+            handleChange(event)
+          }}
         />
       </FormLayout.Row>
 
@@ -211,9 +215,10 @@ const Categories = ({
               readOnlyFields.includes('subcategoryId') ||
               subcategoryOptions.length === 1
             }
-            onChange={(event: React.ChangeEvent<HTMLSelectElement>) =>
+            onChange={(event: React.ChangeEvent<HTMLSelectElement>) => {
               onSubCategoryChange(event.target.value)
-            }
+              handleChange(event)
+            }}
           />
         </FormLayout.Row>
       )}
