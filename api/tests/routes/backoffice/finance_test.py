@@ -99,6 +99,12 @@ class GetIncidentValidationFormTest(GetEndpointHelper):
 
         assert response.status_code == 200
 
+        text_content = html_parser.content_as_text(response.data)
+        assert (
+            f"Vous allez valider un incident de {filters.format_amount(finance_utils.to_euros(booking_incident.incident.due_amount_by_offerer))}"
+            in text_content
+        )
+
 
 class CancelIncidentTest(PostEndpointHelper):
     endpoint = "backoffice_web.finance_incident.cancel_finance_incident"
@@ -194,8 +200,11 @@ class ValidateIncidentTest(PostEndpointHelper):
 
         assert validation_action
         assert validation_action.actionType == history_models.ActionType.FINANCE_INCIDENT_VALIDATED
-        if force_debit_note:
-            assert validation_action.comment == "Génération d'une note de débit à la prochaine échéance."
+        assert (
+            validation_action.comment == "Génération d'une note de débit à la prochaine échéance."
+            if force_debit_note
+            else "Récupération sur les prochaines réservations."
+        )
 
         assert (
             beneficiary_action
