@@ -10,7 +10,6 @@ from flask_login import current_user
 import sqlalchemy as sa
 
 from pcapi.core import search
-from pcapi.core.bookings import constants as bookings_constants
 from pcapi.core.categories import subcategories_v2 as subcategories
 from pcapi.core.educational import adage_backends as adage_client
 from pcapi.core.educational import models as educational_models
@@ -25,6 +24,7 @@ from pcapi.core.offers import models as offers_models
 from pcapi.core.permissions import models as perm_models
 from pcapi.core.users import models as users_models
 from pcapi.models import db
+from pcapi.models import feature
 from pcapi.models import offer_mixin
 from pcapi.routes.backoffice import autocomplete
 from pcapi.routes.backoffice import utils
@@ -332,16 +332,35 @@ def _is_collective_offer_price_editable(collective_offer: educational_models.Col
     if not collective_offer.collectiveStock:
         return False
 
-    # if the offer is not USED it cannot be edited
-    if not collective_offer.isSoldOut or (
-        collective_offer.collectiveStock.beginningDatetime + bookings_constants.AUTO_USE_AFTER_EVENT_TIME_DELAY
-        < datetime.datetime.utcnow()
-    ):
-        return False
-
     # cannot update an offer's price while the cashflow generation script is running
     if app.redis_client.exists(finance_conf.REDIS_GENERATE_CASHFLOW_LOCK):  # type: ignore [attr-defined]
         return False
+
+    collective_booking: educational_models.CollectiveBooking = (
+        educational_models.CollectiveBooking.query.join(
+            educational_models.CollectiveStock, educational_models.CollectiveBooking.collectiveStock
+        )
+        .filter(
+            educational_models.CollectiveStock.collectiveOfferId == collective_offer.id,
+            educational_models.CollectiveBooking.status != educational_models.CollectiveBookingStatus.CANCELLED,
+        )
+        .one_or_none()
+    )
+
+    if collective_booking:
+        delta = datetime.timedelta(hours=48)
+        if (
+            collective_booking.status == educational_models.CollectiveBookingStatus.CONFIRMED
+            and collective_booking.confirmationDate
+            and collective_booking.confirmationDate + delta < datetime.datetime.utcnow()
+        ):
+            return False
+        if (
+            collective_booking.status == educational_models.CollectiveBookingStatus.USED
+            and collective_booking.dateUsed
+            and collective_booking.dateUsed + delta < datetime.datetime.utcnow()
+        ):
+            return False
 
     # cannot update an offer's stock if it already has a pricing
     pricing_query = (
@@ -425,14 +444,6 @@ def edit_collective_offer_price(collective_offer_id: int) -> utils.BackofficeRes
     price = form.price.data
     number_of_tickets = form.numberOfTickets.data
 
-    if price > collective_offer.collectiveStock.price:
-        flash("Impossible d'augmenter le prix")
-        return redirect(redirect_url, code=303)
-
-    if number_of_tickets > collective_offer.collectiveStock.numberOfTickets:
-        flash("Impossible d'augmenter le nombre de participants", "warning")
-        return redirect(redirect_url, code=303)
-
     collective_booking = (
         educational_models.CollectiveBooking.query.join(
             educational_models.CollectiveStock, educational_models.CollectiveBooking.collectiveStock
@@ -441,15 +452,33 @@ def edit_collective_offer_price(collective_offer_id: int) -> utils.BackofficeRes
             educational_models.CollectiveStock.collectiveOfferId == collective_offer.id,
             educational_models.CollectiveBooking.status != educational_models.CollectiveBookingStatus.CANCELLED,
         )
-        .one()
+        .one_or_none()
     )
 
-    try:
-        finance_api.cancel_pricing(booking=collective_booking, reason=finance_models.PricingLogReason.CHANGE_AMOUNT)
-    except finance_exceptions.NonCancellablePricingError:
-        flash("Impossible, réservation est déjà remboursée (ou en cours de remboursement)", "warning")
-        db.session.rollback()
-        return redirect(redirect_url, code=303)
+    if collective_booking:
+        is_confirmed_or_used = collective_booking.status in [
+            educational_models.CollectiveBookingStatus.CONFIRMED,
+            educational_models.CollectiveBookingStatus.USED,
+        ]
+        if is_confirmed_or_used and price > collective_offer.collectiveStock.price:
+            flash("Impossible d'augmenter le prix d'une offre confirmée")
+            return redirect(redirect_url, code=303)
+
+        if is_confirmed_or_used and number_of_tickets > collective_offer.collectiveStock.numberOfTickets:
+            flash("Impossible d'augmenter le nombre de participants d'une offre confirmée", "warning")
+            return redirect(redirect_url, code=303)
+
+        try:
+            if feature.FeatureToggle.PRICE_FINANCE_EVENTS.is_active():
+                finance_api.cancel_latest_event(collective_booking)
+            else:
+                finance_api.cancel_pricing(
+                    booking=collective_booking, reason=finance_models.PricingLogReason.CHANGE_AMOUNT
+                )
+        except finance_exceptions.NonCancellablePricingError:
+            flash("Impossible, réservation est déjà remboursée (ou en cours de remboursement)", "warning")
+            db.session.rollback()
+            return redirect(redirect_url, code=303)
 
     collective_offer.collectiveStock.price = price
     collective_offer.collectiveStock.numberOfTickets = number_of_tickets
