@@ -111,7 +111,7 @@ class BoostContext(PivotContext):
     def check_if_api_call_is_ok(cls, pivot: providers_models.BoostCinemaDetails) -> None:
         try:
             boost.login(pivot, ignore_device=True)
-            flash("Connexion à l'API OK.")
+            flash("Connexion à l'API OK.", "success")
             return
         except boost_exceptions.BoostAPIException as exc:
             logger.exception(
