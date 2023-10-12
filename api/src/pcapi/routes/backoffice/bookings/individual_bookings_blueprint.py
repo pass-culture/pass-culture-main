@@ -153,7 +153,7 @@ def list_individual_bookings() -> utils.BackofficeResponse:
         rows=bookings,
         form=form,
         mark_as_used_booking_form=empty_forms.EmptyForm(),
-        cancel_booking_form=empty_forms.EmptyForm(),
+        cancel_booking_form=booking_forms.CancelIndividualBookingForm(),
         pro_visualisation_link=pro_visualisation_link,
     )
 
@@ -221,8 +221,13 @@ def mark_booking_as_used(booking_id: int) -> utils.BackofficeResponse:
 def mark_booking_as_cancelled(booking_id: int) -> utils.BackofficeResponse:
     booking = bookings_models.Booking.query.get_or_404(booking_id)
 
+    form = booking_forms.CancelIndividualBookingForm()
+    if not form.validate():
+        flash(utils.build_form_error_msg(form), "warning")
+        return _redirect_after_individual_booking_action()
+
     try:
-        bookings_api.mark_as_cancelled(booking, bookings_models.BookingCancellationReasons.BACKOFFICE)
+        bookings_api.mark_as_cancelled(booking, bookings_models.BookingCancellationReasons(form.reason.data))
     except bookings_exceptions.BookingIsAlreadyCancelled:
         flash("Impossible d'annuler une réservation déjà annulée", "warning")
     except bookings_exceptions.BookingIsAlreadyRefunded:
@@ -272,7 +277,7 @@ def batch_validate_individual_bookings() -> utils.BackofficeResponse:
 @individual_bookings_blueprint.route("/batch-cancel", methods=["GET"])
 @utils.permission_required(perm_models.Permissions.MANAGE_BOOKINGS)
 def get_batch_cancel_individual_bookings_form() -> utils.BackofficeResponse:
-    form = booking_forms.BatchCancelBookingForm()
+    form = booking_forms.BatchCancelIndividualBookingsForm()
     return render_template(
         "components/turbo/modal_form.html",
         form=form,
@@ -286,14 +291,16 @@ def get_batch_cancel_individual_bookings_form() -> utils.BackofficeResponse:
 @individual_bookings_blueprint.route("/batch-cancel", methods=["POST"])
 @utils.permission_required(perm_models.Permissions.MANAGE_BOOKINGS)
 def batch_cancel_individual_bookings() -> utils.BackofficeResponse:
-    form = booking_forms.BatchCancelBookingForm()
+    form = booking_forms.BatchCancelIndividualBookingsForm()
     if not form.validate():
         flash(utils.build_form_error_msg(form), "warning")
         return _redirect_after_individual_booking_action()
 
     return _batch_individual_bookings_action(
         form,
-        lambda booking: bookings_api.mark_as_cancelled(booking, bookings_models.BookingCancellationReasons.BACKOFFICE),
+        lambda booking: bookings_api.mark_as_cancelled(
+            booking, bookings_models.BookingCancellationReasons(form.reason.data)
+        ),
         "Les réservations ont été annulées avec succès",
     )
 
