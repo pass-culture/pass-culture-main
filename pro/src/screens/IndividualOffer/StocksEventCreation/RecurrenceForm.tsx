@@ -29,7 +29,7 @@ import { SvgIcon } from 'ui-kit/SvgIcon/SvgIcon'
 import { isDateValid } from 'utils/date'
 import { formatLocalTimeDateString } from 'utils/timezone'
 
-import { getPriceCategoryOptions } from '../StocksEventEdition/StocksEventEdition'
+import { getPriceCategoryOptions } from '../StocksEventEdition/getPriceCategoryOptions'
 
 import { DayCheckbox } from './DayCheckbox'
 import { computeInitialValues } from './form/computeInitialValues'

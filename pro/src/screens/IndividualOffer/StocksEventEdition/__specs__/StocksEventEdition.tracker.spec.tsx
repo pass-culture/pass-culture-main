@@ -91,6 +91,7 @@ describe('screens:StocksEventEdition', () => {
     })
     props = {
       offer,
+      stocks: [],
     }
     contextValue = individualOfferContextFactory()
     vi.spyOn(api, 'getOffer').mockResolvedValue(

@@ -46,6 +46,10 @@ const renderStockEventScreen = async (
     categories: [],
     subcategories: [],
   })
+  vi.spyOn(api, 'getStocks').mockResolvedValue({
+    stocks: apiOffer.stocks,
+    stock_count: 2,
+  })
   vi.spyOn(api, 'getVenues').mockResolvedValue({ venues: [] })
   vi.spyOn(api, 'listOfferersNames').mockResolvedValue({ offerersNames: [] })
   vi.spyOn(api, 'upsertStocks').mockResolvedValue({} as StocksResponseModel)
