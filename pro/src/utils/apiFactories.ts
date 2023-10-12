@@ -1,5 +1,6 @@
 /* istanbul ignore file */
 import {
+  BookingRecapResponseModel,
   GetIndividualOfferResponseModel,
   GetOfferManagingOffererResponseModel,
   GetOfferStockResponseModel,
@@ -163,7 +164,7 @@ export const stockFactory = (customStock = {}): GetOfferStockResponseModel => {
 export const bookingRecapFactory = (
   customBookingRecap = {},
   customOffer = {}
-) => {
+): BookingRecapResponseModel => {
   const offer = GetIndividualOfferFactory(customOffer)
 
   return {
@@ -176,7 +177,6 @@ export const bookingRecapFactory = (
     bookingAmount: 0,
     bookingDate: '2020-04-12T19:31:12Z',
     bookingIsDuo: false,
-    bookingId: '1',
     bookingStatus: BookingRecapStatus.BOOKED,
     bookingStatusHistory: [
       {
@@ -186,7 +186,6 @@ export const bookingRecapFactory = (
     ],
     bookingToken: `TOKEN${bookingId++}`,
     stock: {
-      offerIdentifier: 'AA',
       offerId: offer.id,
       offerName: offer.name,
       offerIsEducational: false,
