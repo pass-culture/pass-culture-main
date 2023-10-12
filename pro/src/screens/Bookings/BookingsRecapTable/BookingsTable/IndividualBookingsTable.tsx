@@ -245,8 +245,6 @@ export const IndividualBookingsTable = ({
               >
                 <BookingDateCell
                   bookingDateTimeIsoString={booking.bookingDate}
-                  amount={booking.bookingAmount}
-                  priceCategoryLabel={booking.bookingPriceCategoryLabel}
                 />
               </td>
 

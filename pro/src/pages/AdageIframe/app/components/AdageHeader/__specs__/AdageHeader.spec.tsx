@@ -13,7 +13,6 @@ import {
   defaultEducationalInstitution,
   defaultUseStatsReturn,
 } from 'utils/adageFactories'
-import { formatPrice } from 'utils/formatPrice'
 import { renderWithProviders } from 'utils/renderWithProviders'
 
 import { AdageHeader } from '../AdageHeader'
@@ -117,7 +116,7 @@ describe('AdageHeader', () => {
       expect(screen.getByText('Solde prévisionnel')).toBeInTheDocument()
     )
 
-    expect(screen.getByText(formatPrice(1000))).toBeInTheDocument()
+    expect(screen.getByText('1000 €')).toBeInTheDocument()
   })
 
   it('should return an error when the institution budget could not be retrieved', async () => {

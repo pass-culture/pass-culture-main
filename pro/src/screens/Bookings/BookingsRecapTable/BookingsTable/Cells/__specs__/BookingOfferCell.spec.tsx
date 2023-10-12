@@ -2,6 +2,7 @@ import { screen } from '@testing-library/react'
 import { add } from 'date-fns'
 import React from 'react'
 
+import { bookingRecapFactory } from 'utils/apiFactories'
 import { collectiveBookingRecapFactory } from 'utils/collectiveApiFactories'
 import { renderWithProviders } from 'utils/renderWithProviders'
 
@@ -126,5 +127,18 @@ describe('bookings offer cell', () => {
     expect(
       screen.queryByRole('img', { name: 'Attention' })
     ).not.toBeInTheDocument()
+  })
+
+  it('should render tarif informations for individual bookings', () => {
+    const booking = bookingRecapFactory({
+      bookingAmount: 12,
+      bookingPriceCategoryLabel: 'Plein tarif',
+    })
+
+    renderOfferCell({
+      booking,
+    })
+
+    expect(screen.getByText('Plein tarif - 12 €')).toBeInTheDocument()
   })
 })
