@@ -530,6 +530,9 @@ class AlgoliaBackend(base.SearchBackend):
         department_code = get_department_code_from_postal_code(venue.postalCode)
         latitude, longitude = educational_api_offer.get_offer_coordinates(collective_offer)
 
+        raw_formats = collective_offer.get_formats()
+        formats = [fmt.value for fmt in raw_formats] if raw_formats else None
+
         return {
             "objectID": collective_offer.id,
             "offer": {
@@ -561,6 +564,7 @@ class AlgoliaBackend(base.SearchBackend):
             },
             "_geoloc": format_coordinates(latitude, longitude),
             "isTemplate": False,
+            "formats": formats,
         }
 
     @classmethod
@@ -572,6 +576,9 @@ class AlgoliaBackend(base.SearchBackend):
         date_created = collective_offer_template.dateCreated.timestamp()
         department_code = get_department_code_from_postal_code(venue.postalCode)
         latitude, longitude = educational_api_offer.get_offer_coordinates(collective_offer_template)
+
+        raw_formats = collective_offer_template.get_formats()
+        formats = [fmt.value for fmt in raw_formats] if raw_formats else None
 
         return {
             "objectID": _transform_collective_offer_template_id(collective_offer_template.id),
@@ -602,6 +609,7 @@ class AlgoliaBackend(base.SearchBackend):
             },
             "_geoloc": format_coordinates(latitude, longitude),
             "isTemplate": True,
+            "formats": formats,
         }
 
 

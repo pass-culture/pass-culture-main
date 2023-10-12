@@ -311,7 +311,10 @@ def check_activation_codes_expiration_datetime_on_stock_edition(
     check_activation_codes_expiration_datetime(activation_codes_expiration_datetime, booking_limit_datetime)
 
 
-def check_offer_is_eligible_for_educational(subcategory_id: str) -> None:
+def check_offer_is_eligible_for_educational(subcategory_id: str | None) -> None:
+    if not subcategory_id:
+        return
+
     subcategory = subcategories.ALL_SUBCATEGORIES_DICT.get(subcategory_id)
     if not subcategory or not subcategory.can_be_educational:
         raise exceptions.SubcategoryNotEligibleForEducationalOffer()
@@ -346,7 +349,9 @@ def check_offer_withdrawal(
             raise exceptions.NonLinkedProviderCannotHaveInAppTicket()
 
 
-def check_offer_subcategory_is_valid(offer_subcategory_id: str) -> None:
+def check_offer_subcategory_is_valid(offer_subcategory_id: str | None) -> None:
+    if not offer_subcategory_id:
+        return
     if offer_subcategory_id not in subcategories.ALL_SUBCATEGORIES_DICT:
         raise exceptions.UnknownOfferSubCategory()
     if not subcategories.ALL_SUBCATEGORIES_DICT[offer_subcategory_id].is_selectable:

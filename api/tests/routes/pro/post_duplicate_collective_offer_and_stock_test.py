@@ -5,6 +5,7 @@ from unittest import mock
 import pytest
 
 from pcapi import settings
+from pcapi.core.categories import subcategories_v2 as subcategories
 from pcapi.core.educational import models as educational_models
 from pcapi.core.educational.exceptions import CantGetImageFromUrl
 import pcapi.core.educational.factories as educational_factories
@@ -68,6 +69,7 @@ class Returns200Test:
         institution = educational_factories.EducationalInstitutionFactory()
         national_program = educational_factories.NationalProgramFactory()
         offer = educational_factories.CollectiveOfferFactory(
+            subcategoryId=subcategories.SEANCE_CINE.id,
             venue=venue,
             institution=institution,
             nationalProgram=national_program,
@@ -149,6 +151,7 @@ class Returns200Test:
             "lastBookingId": None,
             "teacher": None,
             "nationalProgram": {"id": national_program.id, "name": national_program.name},
+            "formats": [fmt.value for fmt in subcategories.SEANCE_CINE.formats],
         }
 
     def test_duplicate_collective_offer_draft_offer(self, client):

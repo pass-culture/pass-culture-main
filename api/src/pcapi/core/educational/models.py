@@ -290,7 +290,7 @@ class CollectiveOffer(
 
     dateCreated: datetime = sa.Column(sa.DateTime, nullable=False, default=datetime.utcnow)
 
-    subcategoryId: str = sa.Column(sa.Text, nullable=False, index=True)
+    subcategoryId: str | None = sa.Column(sa.Text, nullable=True)
 
     dateUpdated: datetime = sa.Column(sa.DateTime, nullable=True, default=datetime.utcnow, onupdate=datetime.utcnow)
 
@@ -372,6 +372,10 @@ class CollectiveOffer(
         "EducationalRedactor",
         secondary="collective_offer_educational_redactor",
         back_populates="favoriteCollectiveOffers",
+    )
+
+    formats: typing.Sequence[subcategories.EacFormat] | None = sa.Column(  # type: ignore
+        postgresql.ARRAY(sa.Enum(subcategories.EacFormat, create_constraint=False, native_enum=False)), nullable=True
     )
 
     # TODO(jeremieb): remove this property once the front end client
@@ -475,6 +479,11 @@ class CollectiveOffer(
             .where(aliased_collective_stock.hasBeginningDatetimePassed.is_(True))
         )
 
+    def get_formats(self) -> typing.Sequence[subcategories.EacFormat] | None:
+        if self.formats:
+            return self.formats
+        return self.subcategory.formats
+
     @property
     def subcategory(self) -> subcategories.Subcategory:
         if self.subcategoryId not in subcategories.ALL_SUBCATEGORIES_DICT:
@@ -553,7 +562,7 @@ class CollectiveOfferTemplate(
 
     dateCreated: datetime = sa.Column(sa.DateTime, nullable=False, default=datetime.utcnow)
 
-    subcategoryId: str = sa.Column(sa.Text, nullable=False, index=True)
+    subcategoryId: str | None = sa.Column(sa.Text, nullable=True)
 
     dateUpdated: datetime = sa.Column(sa.DateTime, nullable=True, default=datetime.utcnow, onupdate=datetime.utcnow)
 
@@ -625,6 +634,10 @@ class CollectiveOfferTemplate(
     )
 
     dateRange: psycopg2.extras.DateTimeRange = sa.Column(postgresql.TSRANGE)
+
+    formats: typing.Sequence[subcategories.EacFormat] | None = sa.Column(  # type: ignore
+        postgresql.ARRAY(sa.Enum(subcategories.EacFormat, create_constraint=False, native_enum=False)), nullable=True
+    )
 
     @declared_attr
     def __table_args__(self):
@@ -712,6 +725,11 @@ class CollectiveOfferTemplate(
 
     is_eligible_for_search = isReleased
 
+    def get_formats(self) -> typing.Sequence[subcategories.EacFormat]:
+        if self.formats:
+            return self.formats
+        return self.subcategory.formats
+
     @property
     def subcategory(self) -> subcategories.Subcategory:
         if self.subcategoryId not in subcategories.ALL_SUBCATEGORIES_DICT:
@@ -765,6 +783,7 @@ class CollectiveOfferTemplate(
             "students",
             "interventionArea",
             "nationalProgramId",
+            "formats",
         ]
         collective_offer_mapping = {x: getattr(collective_offer, x) for x in list_of_common_attributes}
         return cls(

@@ -46,6 +46,7 @@ class Returns200Test:
             "interventionArea": ["75", "92", "93"],
             "templateId": template.id,
             "nationalProgramId": national_program.id,
+            "formats": [subcategories.EacFormat.CONCERT.value],
         }
         with patch("pcapi.core.offerers.api.can_offerer_create_educational_offer"):
             response = client.with_session_auth("user@example.com").post("/collective/offers", json=data)
@@ -80,6 +81,7 @@ class Returns200Test:
         assert offer.description == "Ma super description"
         assert offer.templateId == template.id
         assert offer.nationalProgramId == national_program.id
+        assert offer.formats == [subcategories.EacFormat.CONCERT]
 
     def test_create_collective_offer_college_6(self, client):
         # Given

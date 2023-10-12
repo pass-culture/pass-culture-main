@@ -4,6 +4,7 @@ from flask import url_for
 from freezegun.api import freeze_time
 import pytest
 
+from pcapi.core.categories import subcategories_v2 as subcategories
 from pcapi.core.educational import factories as educational_factories
 from pcapi.core.educational.models import StudentLevels
 from pcapi.core.offerers import factories as offerers_factories
@@ -37,6 +38,7 @@ class CollectiveOfferTest:
         institution = educational_factories.EducationalInstitutionFactory(institutionId="12890AI")
         stock = educational_factories.CollectiveStockFactory(
             beginningDatetime=datetime(2021, 5, 15),
+            collectiveOffer__subcategoryId=subcategories.SEANCE_CINE.id,
             collectiveOffer__name="offer name",
             collectiveOffer__description="offer description",
             price=10,
@@ -129,6 +131,7 @@ class CollectiveOfferTest:
             },
             "nationalProgram": {"id": offer.nationalProgramId, "name": offer.nationalProgram.name},
             "isFavorite": False,
+            "formats": [fmt.value for fmt in subcategories.SEANCE_CINE.formats],
         }
 
     def test_is_a_redactors_favorite(self, eac_client):

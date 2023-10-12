@@ -6,6 +6,7 @@ from flask import url_for
 import pytest
 
 from pcapi.core import testing
+from pcapi.core.categories import subcategories_v2 as subcategories
 import pcapi.core.educational.factories as educational_factories
 import pcapi.core.educational.models as educational_models
 from pcapi.core.educational.models import CollectiveOfferDisplayedStatus
@@ -35,6 +36,7 @@ class Returns200Test:
         stock = educational_factories.CollectiveStockFactory()
         national_program = educational_factories.NationalProgramFactory()
         offer = educational_factories.CollectiveOfferFactory(
+            subcategoryId=subcategories.SEANCE_CINE.id,
             collectiveStock=stock,
             teacher=educational_factories.EducationalRedactorFactory(),
             templateId=template.id,
@@ -70,6 +72,7 @@ class Returns200Test:
         }
         assert response_json["templateId"] == template.id
         assert response_json["nationalProgram"] == {"id": national_program.id, "name": national_program.name}
+        assert response_json["formats"] == [fmt.value for fmt in subcategories.SEANCE_CINE.formats]
 
     def test_sold_out(self, client):
         # Given

@@ -39,6 +39,7 @@ class Returns200Test:
             "start": format_into_utc_date(offer.start),
             "end": format_into_utc_date(offer.end),
         }
+        assert response.json["formats"] == offer.formats
 
     def test_performance(self, client):
         # Given
