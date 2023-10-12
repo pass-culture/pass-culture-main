@@ -23,6 +23,9 @@ class IncidentCompensationModes(enum.Enum):
 
 
 class IncidentCreationForm(FlaskForm):
+    class Meta:
+        locales = ["fr_FR", "fr"]
+
     kind = fields.PCSelectField(
         "Type d'incident",
         choices=[
@@ -35,7 +38,7 @@ class IncidentCreationForm(FlaskForm):
     origin = fields.PCStringField("Origine de la demande")
 
     total_amount = fields.PCDecimalField(
-        "Montant de l'incident à récupérer (sans le calcul de barème)", validators=[Optional()]
+        "Montant de l'incident à récupérer (sans le calcul de barème)", use_locale=True, validators=[Optional()]
     )
 
 
