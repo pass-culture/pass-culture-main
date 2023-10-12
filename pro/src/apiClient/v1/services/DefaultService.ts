@@ -45,6 +45,7 @@ import type { GetOffererBankAccountsResponseModel } from '../models/GetOffererBa
 import type { GetOffererMembersResponseModel } from '../models/GetOffererMembersResponseModel';
 import type { GetOffererResponseModel } from '../models/GetOffererResponseModel';
 import type { GetOfferersNamesResponseModel } from '../models/GetOfferersNamesResponseModel';
+import type { GetStocksResponseModel } from '../models/GetStocksResponseModel';
 import type { GetVenueListResponseModel } from '../models/GetVenueListResponseModel';
 import type { GetVenueResponseModel } from '../models/GetVenueResponseModel';
 import type { GetVenuesOfOffererFromSiretResponseModel } from '../models/GetVenuesOfOffererFromSiretResponseModel';
@@ -90,7 +91,6 @@ import type { SharedLoginUserResponseModel } from '../models/SharedLoginUserResp
 import type { SirenInfo } from '../models/SirenInfo';
 import type { SiretInfo } from '../models/SiretInfo';
 import type { StockIdResponseModel } from '../models/StockIdResponseModel';
-import type { StockResponseModel } from '../models/StockResponseModel';
 import type { StocksOrderedBy } from '../models/StocksOrderedBy';
 import type { StocksResponseModel } from '../models/StocksResponseModel';
 import type { StocksUpsertBodyModel } from '../models/StocksUpsertBodyModel';
@@ -1645,7 +1645,7 @@ export class DefaultService {
    * @param priceCategoryId
    * @param orderBy
    * @param orderByDesc
-   * @returns StockResponseModel OK
+   * @returns GetStocksResponseModel OK
    * @throws ApiError
    */
   public getStocks(
@@ -1655,7 +1655,7 @@ export class DefaultService {
     priceCategoryId?: number | null,
     orderBy?: StocksOrderedBy,
     orderByDesc: boolean = false,
-  ): CancelablePromise<StockResponseModel> {
+  ): CancelablePromise<GetStocksResponseModel> {
     return this.httpRequest.request({
       method: 'GET',
       url: '/offers/{offer_id}/stocks/',

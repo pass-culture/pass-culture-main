@@ -360,7 +360,7 @@ class GetIndividualOfferResponseModel(BaseModel, AccessibilityComplianceMixin):
         use_enum_values = True
 
 
-class StockResponseModel(BaseModel):
+class GetStocksResponseModel(BaseModel):
     stocks: list[GetOfferStockResponseModel]
     stock_count: int
 
