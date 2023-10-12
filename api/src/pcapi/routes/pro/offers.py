@@ -81,10 +81,10 @@ def get_offer(offer_id: int) -> offers_serialize.GetIndividualOfferResponseModel
 @private_api.route("/offers/<int:offer_id>/stocks/", methods=["GET"])
 @login_required
 @spectree_serialize(
-    response_model=offers_serialize.StockResponseModel,
+    response_model=offers_serialize.GetStocksResponseModel,
     api=blueprint.pro_private_schema,
 )
-def get_stocks(offer_id: int, query: offers_serialize.StocksQueryModel) -> offers_serialize.StockResponseModel:
+def get_stocks(offer_id: int, query: offers_serialize.StocksQueryModel) -> offers_serialize.GetStocksResponseModel:
     try:
         offer = offers_repository.get_offer_by_id(offer_id)
     except exceptions.OfferNotFound:
@@ -104,7 +104,7 @@ def get_stocks(offer_id: int, query: offers_serialize.StocksQueryModel) -> offer
         order_by_desc=query.order_by_desc,
     )
     filtered_stock_list = [offers_serialize.GetOfferStockResponseModel.from_orm(stock) for stock in stocks]
-    return offers_serialize.StockResponseModel(stocks=filtered_stock_list, stock_count=len(filtered_stock_list))
+    return offers_serialize.GetStocksResponseModel(stocks=filtered_stock_list, stock_count=len(filtered_stock_list))
 
 
 @private_api.route("/offers/<int:offer_id>/stocks/delete", methods=["POST"])
