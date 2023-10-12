@@ -20,7 +20,13 @@ import {
 import { OFFER_WIZARD_STEP_IDS } from './constants'
 import styles from './IndividualOfferBreadcrumb.module.scss'
 
-export const IndividualOfferBreadcrumb = () => {
+interface IndividualOfferBreadcrumbProps {
+  bookingsCount?: number
+}
+
+export const IndividualOfferBreadcrumb = ({
+  bookingsCount,
+}: IndividualOfferBreadcrumbProps) => {
   const { offer, subcategory } = useIndividualOfferContext()
   const activeStep = useActiveStep(Object.values(OFFER_WIZARD_STEP_IDS))
   const mode = useOfferWizardMode()
@@ -122,7 +128,14 @@ export const IndividualOfferBreadcrumb = () => {
   ) {
     steps.push({
       id: OFFER_WIZARD_STEP_IDS.BOOKINGS,
-      label: 'Réservations',
+      label: (
+        <div>
+          Réservations{' '}
+          {bookingsCount !== undefined && (
+            <span className={styles['bookings-count']}>{bookingsCount}</span>
+          )}
+        </div>
+      ),
       path: getIndividualOfferPath({
         step: OFFER_WIZARD_STEP_IDS.BOOKINGS,
         mode: OFFER_WIZARD_MODE.READ_ONLY,

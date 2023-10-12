@@ -18,6 +18,7 @@ export interface IndivualOfferLayoutProps {
   offer: IndividualOffer | null
   setOffer: ((offer: IndividualOffer) => void) | null
   mode: OFFER_WIZARD_MODE
+  bookingsCount?: number
 }
 
 const IndivualOfferLayout = ({
@@ -27,6 +28,7 @@ const IndivualOfferLayout = ({
   offer,
   setOffer,
   mode,
+  bookingsCount,
 }: IndivualOfferLayoutProps) => {
   const shouldDisplayActionOnStatus =
     mode !== OFFER_WIZARD_MODE.CREATION && offer && withStepper
@@ -67,7 +69,9 @@ const IndivualOfferLayout = ({
         />
       )}
 
-      {withStepper && <IndividualOfferBreadcrumb />}
+      {withStepper && (
+        <IndividualOfferBreadcrumb bookingsCount={bookingsCount} />
+      )}
 
       <div className={styles['content']}>{children}</div>
     </>

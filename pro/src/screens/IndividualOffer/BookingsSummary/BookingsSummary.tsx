@@ -80,14 +80,20 @@ export const BookingsSummaryScreen = ({
   return (
     <SummaryLayout.Section title="Réservations">
       {bookings !== null ? (
-        <IndividualBookingsTable
-          bookings={filteredBookings}
-          bookingStatuses={bookingsStatusFilters}
-          updateGlobalFilters={({ bookingStatus }) => {
-            setBookingsStatusFilter(bookingStatus ?? [])
-          }}
-          resetFilters={() => setBookingsStatusFilter([])}
-        />
+        <>
+          <div>
+            {bookings.length} réservation{bookings.length !== 1 ? 's' : ''}
+          </div>
+
+          <IndividualBookingsTable
+            bookings={filteredBookings}
+            bookingStatuses={bookingsStatusFilters}
+            updateGlobalFilters={({ bookingStatus }) => {
+              setBookingsStatusFilter(bookingStatus ?? [])
+            }}
+            resetFilters={() => setBookingsStatusFilter([])}
+          />
+        </>
       ) : (
         <Spinner />
       )}

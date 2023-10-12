@@ -17,6 +17,7 @@ const FAILING_RESPONSE: AdapterFailure<GetFilteredBookingsRecapAdapterPayload> =
       bookings: [],
       pages: 0,
       currentPage: 1,
+      total: 0,
     },
   }
 
@@ -25,6 +26,7 @@ export const getFilteredBookingsRecapAdapter: GetFilteredBookingsRecapAdapter =
     try {
       let allBookings: BookingRecapResponseModel[] = []
       let currentPage = 0
+      let total = 0
       let pages: number
 
       do {
@@ -58,6 +60,7 @@ export const getFilteredBookingsRecapAdapter: GetFilteredBookingsRecapAdapter =
         pages = bookings.pages
 
         allBookings = [...allBookings, ...bookings.bookingsRecap]
+        total = bookings.total
       } while (currentPage < Math.min(pages, MAX_LOADED_PAGES))
 
       return {
@@ -67,6 +70,7 @@ export const getFilteredBookingsRecapAdapter: GetFilteredBookingsRecapAdapter =
           bookings: allBookings,
           pages,
           currentPage,
+          total,
         },
       }
     } catch (e) {
