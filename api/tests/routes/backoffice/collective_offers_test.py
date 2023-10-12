@@ -540,7 +540,7 @@ class GetCollectiveOfferDetailTest(GetEndpointHelper):
             collectiveStock__beginningDatetime=event_date,
         )
         url = url_for(self.endpoint, collective_offer_id=collective_booking.collectiveStock.collectiveOffer.id)
-        with assert_num_queries(4):
+        with assert_num_queries(5):
             response = authenticated_client.get(url)
 
         # then
@@ -605,7 +605,7 @@ class GetCollectiveOfferDetailTest(GetEndpointHelper):
             collectiveStock__collectiveOffer__lastValidationAuthor=legit_user,
         )
         url = url_for(self.endpoint, collective_offer_id=collective_booking.collectiveStock.collectiveOffer.id)
-        with assert_num_queries(4):  # session + user + offer + pricing + loaded data
+        with assert_num_queries(5):  # session + user + offer + pricing + loaded data
             response = authenticated_client.get(url)
 
         # then
@@ -625,7 +625,7 @@ class GetCollectiveOfferDetailTest(GetEndpointHelper):
             collectiveStock__collectiveOffer__lastValidationAuthor=legit_user,
         )
         url = url_for(self.endpoint, collective_offer_id=collective_booking.collectiveStock.collectiveOffer.id)
-        with assert_num_queries(4):  # session + user + offer + pricing + loaded data
+        with assert_num_queries(5):  # session + user + offer + pricing + loaded data
             response = authenticated_client.get(url)
 
         # then
@@ -668,52 +668,6 @@ class PostEditCollectiveOfferPriceTest(PostEndpointHelper):
         assert (
             html_parser.extract_alert(authenticated_client.get(response.location).data)
             == "L'offre collective a été mise à jour"
-        )
-
-    def test_edit_after_event_date(self, legit_user, authenticated_client):
-        event_date = datetime.datetime.utcnow() - datetime.timedelta(hours=47)
-        # when
-        collective_booking = educational_factories.CollectiveBookingFactory(
-            collectiveStock__price=Decimal(100.00),
-            collectiveStock__numberOfTickets=25,
-            collectiveStock__beginningDatetime=event_date,
-        )
-        response = self.post_to_endpoint(
-            authenticated_client,
-            form={"numberOfTickets": 5, "price": 1},
-            collective_offer_id=collective_booking.collectiveStock.collectiveOffer.id,
-        )
-
-        # then
-        assert response.status_code == 303
-        assert collective_booking.collectiveStock.price == 1
-        assert collective_booking.collectiveStock.numberOfTickets == 5
-        assert (
-            html_parser.extract_alert(authenticated_client.get(response.location).data)
-            == "L'offre collective a été mise à jour"
-        )
-
-    def test_edit_with_exceeded_event_date_by_48_hours(self, legit_user, authenticated_client):
-        event_date = datetime.datetime.utcnow() - datetime.timedelta(hours=49)
-        # when
-        collective_booking = educational_factories.CollectiveBookingFactory(
-            collectiveStock__price=Decimal(100.00),
-            collectiveStock__numberOfTickets=25,
-            collectiveStock__beginningDatetime=event_date,
-        )
-        response = self.post_to_endpoint(
-            authenticated_client,
-            form={"numberOfTickets": 5, "price": 1},
-            collective_offer_id=collective_booking.collectiveStock.collectiveOffer.id,
-        )
-
-        # then
-        assert response.status_code == 303
-        assert collective_booking.collectiveStock.price == 100
-        assert collective_booking.collectiveStock.numberOfTickets == 25
-        assert (
-            html_parser.extract_alert(authenticated_client.get(response.location).data)
-            == "Cette offre n'est pas modifiable"
         )
 
     def test_processed_pricing(self, legit_user, authenticated_client):
@@ -797,13 +751,25 @@ class PostEditCollectiveOfferPriceTest(PostEndpointHelper):
             == "Cette offre n'est pas modifiable"
         )
 
-    def test_price_higher_than_previously(self, legit_user, authenticated_client):
-        event_date = datetime.datetime.utcnow() + datetime.timedelta(days=1)
+    @pytest.mark.parametrize(
+        "booking_status",
+        [
+            educational_models.CollectiveBookingStatus.CANCELLED,
+            educational_models.CollectiveBookingStatus.PENDING,
+            educational_models.CollectiveBookingStatus.CONFIRMED,
+            educational_models.CollectiveBookingStatus.USED,
+        ],
+    )
+    def test_price_higher_than_previously(self, legit_user, authenticated_client, booking_status):
+        now = datetime.datetime.utcnow()
         # when
         collective_booking = educational_factories.CollectiveBookingFactory(
             collectiveStock__price=Decimal(100.00),
             collectiveStock__numberOfTickets=25,
-            collectiveStock__beginningDatetime=event_date,
+            collectiveStock__beginningDatetime=now,
+            status=booking_status,
+            dateUsed=now,
+            confirmationDate=now,
         )
         response = self.post_to_endpoint(
             authenticated_client,
@@ -812,21 +778,79 @@ class PostEditCollectiveOfferPriceTest(PostEndpointHelper):
         )
 
         # then
-        assert response.status_code == 303
-        assert collective_booking.collectiveStock.price == 100
-        assert collective_booking.collectiveStock.numberOfTickets == 25
-        assert (
-            html_parser.extract_alert(authenticated_client.get(response.location).data)
-            == "Impossible d'augmenter le prix"
-        )
+        if booking_status in [
+            educational_models.CollectiveBookingStatus.CONFIRMED,
+            educational_models.CollectiveBookingStatus.USED,
+        ]:
+            assert response.status_code == 303
+            assert collective_booking.collectiveStock.price == 100
+            assert collective_booking.collectiveStock.numberOfTickets == 25
+            assert (
+                html_parser.extract_alert(authenticated_client.get(response.location).data)
+                == "Impossible d'augmenter le prix d'une offre confirmée"
+            )
+        else:
+            assert response.status_code == 303
+            assert collective_booking.collectiveStock.price == 200
+            assert collective_booking.collectiveStock.numberOfTickets == 5
 
-    def test_number_of_tickets_higher_than_previously(self, legit_user, authenticated_client):
-        event_date = datetime.datetime.utcnow() + datetime.timedelta(days=1)
+    @pytest.mark.parametrize(
+        "booking_status",
+        [
+            educational_models.CollectiveBookingStatus.CANCELLED,
+            educational_models.CollectiveBookingStatus.PENDING,
+            educational_models.CollectiveBookingStatus.CONFIRMED,
+            educational_models.CollectiveBookingStatus.USED,
+        ],
+    )
+    def test_number_of_tickets_higher_than_previously(self, legit_user, authenticated_client, booking_status):
+        now = datetime.datetime.utcnow()
         # when
         collective_booking = educational_factories.CollectiveBookingFactory(
             collectiveStock__price=Decimal(100.00),
             collectiveStock__numberOfTickets=25,
-            collectiveStock__beginningDatetime=event_date,
+            collectiveStock__beginningDatetime=now,
+            status=booking_status,
+            dateUsed=now,
+            confirmationDate=now,
+        )
+        response = self.post_to_endpoint(
+            authenticated_client,
+            form={"numberOfTickets": 50, "price": 1},
+            collective_offer_id=collective_booking.collectiveStock.collectiveOffer.id,
+        )
+
+        # then
+        if booking_status in [
+            educational_models.CollectiveBookingStatus.CONFIRMED,
+            educational_models.CollectiveBookingStatus.USED,
+        ]:
+            assert response.status_code == 303
+            assert collective_booking.collectiveStock.price == 100
+            assert collective_booking.collectiveStock.numberOfTickets == 25
+            assert (
+                html_parser.extract_alert(authenticated_client.get(response.location).data)
+                == "Impossible d'augmenter le nombre de participants d'une offre confirmée"
+            )
+        else:
+            assert response.status_code == 303
+            assert collective_booking.collectiveStock.price == 1
+            assert collective_booking.collectiveStock.numberOfTickets == 50
+
+    @pytest.mark.parametrize(
+        "booking_status",
+        [educational_models.CollectiveBookingStatus.USED, educational_models.CollectiveBookingStatus.CONFIRMED],
+    )
+    def test_cannot_edit_offer_price(self, legit_user, authenticated_client, booking_status):
+        now = datetime.datetime.utcnow()
+        # when
+        collective_booking = educational_factories.CollectiveBookingFactory(
+            collectiveStock__price=Decimal(100.00),
+            collectiveStock__numberOfTickets=25,
+            collectiveStock__beginningDatetime=now,
+            status=booking_status,
+            dateUsed=now - datetime.timedelta(days=3),
+            confirmationDate=now - datetime.timedelta(days=3),
         )
         response = self.post_to_endpoint(
             authenticated_client,
@@ -840,5 +864,5 @@ class PostEditCollectiveOfferPriceTest(PostEndpointHelper):
         assert collective_booking.collectiveStock.numberOfTickets == 25
         assert (
             html_parser.extract_alert(authenticated_client.get(response.location).data)
-            == "Impossible d'augmenter le nombre de participants"
+            == "Cette offre n'est pas modifiable"
         )
