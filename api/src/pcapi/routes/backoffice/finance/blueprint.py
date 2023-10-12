@@ -452,9 +452,16 @@ def get_finance_incident_validation_form(finance_incident_id: int) -> utils.Back
     finance_incident = (
         finance_models.FinanceIncident.query.filter_by(id=finance_incident_id)
         .options(
-            sa.orm.joinedload(finance_models.FinanceIncident.booking_finance_incidents).load_only(
-                finance_models.BookingFinanceIncident.newTotalAmount
-            ),
+            sa.orm.joinedload(finance_models.FinanceIncident.booking_finance_incidents)
+            .load_only(finance_models.BookingFinanceIncident.newTotalAmount)
+            .joinedload(finance_models.BookingFinanceIncident.collectiveBooking)
+            .load_only(educational_models.CollectiveBooking.id)
+            .joinedload(educational_models.CollectiveBooking.collectiveStock)
+            .load_only(educational_models.CollectiveStock.price),
+            sa.orm.joinedload(finance_models.FinanceIncident.booking_finance_incidents)
+            .load_only(finance_models.BookingFinanceIncident.newTotalAmount)
+            .joinedload(finance_models.BookingFinanceIncident.booking)
+            .load_only(bookings_models.Booking.quantity, bookings_models.Booking.amount),
             sa.orm.joinedload(finance_models.FinanceIncident.venue)
             .load_only(offerer_models.Venue.name)
             .joinedload(offerer_models.Venue.reimbursement_point_links)
@@ -467,9 +474,7 @@ def get_finance_incident_validation_form(finance_incident_id: int) -> utils.Back
     if not finance_incident:
         raise NotFound()
 
-    incident_total_amount_euros = finance_utils.to_euros(
-        sum(booking_incident.newTotalAmount for booking_incident in finance_incident.booking_finance_incidents)
-    )
+    incident_total_amount_euros = finance_utils.to_euros(finance_incident.due_amount_by_offerer)
 
     current_reimbursement_point = finance_incident.venue.current_reimbursement_point or finance_incident.venue
 
@@ -482,7 +487,7 @@ def get_finance_incident_validation_form(finance_incident_id: int) -> utils.Back
         div_id=f"finance-incident-validation-modal-{finance_incident_id}",
         title="Valider l'incident",
         button_text="Confirmer",
-        information=f"Vous allez valider un incident de {incident_total_amount_euros} € "
+        information=f"Vous allez valider un incident de {filters.format_amount(incident_total_amount_euros)} "
         f"sur le point de remboursement {current_reimbursement_point.name}. Voulez-vous continuer ?",
     )
 
@@ -603,7 +608,9 @@ def _validate_finance_incident(finance_incident: finance_models.FinanceIncident,
         author=current_user,
         venue=finance_incident.venue,
         finance_incident=finance_incident,
-        comment="Génération d'une note de débit à la prochaine échéance." if force_debit_note else None,
+        comment="Génération d'une note de débit à la prochaine échéance."
+        if force_debit_note
+        else "Récupération sur les prochaines réservations.",
         save=False,
         linked_incident_id=finance_incident.id,
     )
