@@ -69,6 +69,7 @@ if typing.TYPE_CHECKING:
     import pcapi.core.criteria.models as criteria_models
     import pcapi.core.offers.models as offers_models
     import pcapi.core.providers.models as providers_models
+    from pcapi.core.providers.models import Provider
     import pcapi.core.users.models as users_models
 
 logger = logging.getLogger(__name__)

@@ -48,6 +48,7 @@ if TYPE_CHECKING:
     from pcapi.core.educational.models import CollectiveOfferTemplate
     from pcapi.core.offerers.models import Offerer
     from pcapi.core.offerers.models import Venue
+    from pcapi.core.providers.models import Provider
     from pcapi.core.users.models import User
 
 
