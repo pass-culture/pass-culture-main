@@ -305,7 +305,7 @@ def test_serialize_collective_offer():
         name="Titre formidable",
         description="description formidable",
         students=[StudentLevels.CAP1, StudentLevels.CAP2],
-        subcategoryId=subcategories.LIVRE_PAPIER.id,
+        subcategoryId=subcategories.CONCERT.id,
         venue__postalCode="86140",
         venue__name="La Moyenne Librairie SA",
         venue__publicName="La Moyenne Librairie",
@@ -330,7 +330,7 @@ def test_serialize_collective_offer():
             "dateCreated": 1641031200.0,
             "name": "Titre formidable",
             "students": ["CAP - 1re année", "CAP - 2e année"],
-            "subcategoryId": subcategories.LIVRE_PAPIER.id,
+            "subcategoryId": subcategories.CONCERT.id,
             "domains": [domain1.id, domain2.id],
             "educationalInstitutionUAICode": educational_institution.institutionId,
             "interventionArea": ["1", "90", "94"],
@@ -354,6 +354,7 @@ def test_serialize_collective_offer():
             "lng": float(collective_offer.venue.longitude),
         },
         "isTemplate": False,
+        "formats": [fmt.value for fmt in subcategories.CONCERT.formats],
     }
 
 
@@ -373,7 +374,7 @@ def test_serialize_collective_offer_template():
         name="Titre formidable",
         description="description formidable",
         students=[StudentLevels.CAP1, StudentLevels.CAP2],
-        subcategoryId=subcategories.LIVRE_PAPIER.id,
+        subcategoryId=subcategories.CONCERT.id,
         venue__postalCode="86140",
         venue__name="La Moyenne Librairie SA",
         venue__publicName="La Moyenne Librairie",
@@ -391,7 +392,7 @@ def test_serialize_collective_offer_template():
             "dateCreated": 1641031200.0,
             "name": "Titre formidable",
             "students": ["CAP - 1re année", "CAP - 2e année"],
-            "subcategoryId": subcategories.LIVRE_PAPIER.id,
+            "subcategoryId": subcategories.CONCERT.id,
             "domains": [domain1.id, domain2.id],
             "educationalInstitutionUAICode": "all",
             "interventionArea": [],
@@ -415,4 +416,5 @@ def test_serialize_collective_offer_template():
             "lng": float(venue.longitude),
         },
         "isTemplate": True,
+        "formats": [fmt.value for fmt in subcategories.CONCERT.formats],
     }

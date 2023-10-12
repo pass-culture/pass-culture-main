@@ -3,6 +3,7 @@ from datetime import timedelta
 
 import pytest
 
+from pcapi.core.categories import subcategories_v2 as subcategories
 from pcapi.core.educational import factories as educational_factories
 from pcapi.core.testing import assert_num_queries
 
@@ -18,6 +19,7 @@ class AllOffersByUaiTest:
         educational_institution = educational_factories.EducationalInstitutionFactory()
         national_program = educational_factories.NationalProgramFactory()
         collective_offer = educational_factories.CollectiveOfferFactory(
+            subcategoryId=subcategories.SEANCE_CINE.id,
             domains=[educational_factories.EducationalDomainFactory()],
             institution=educational_institution,
             teacher=educational_factories.EducationalRedactorFactory(),
@@ -112,6 +114,7 @@ class AllOffersByUaiTest:
                         "name": stock.collectiveOffer.nationalProgram.name,
                     },
                     "isFavorite": False,
+                    "formats": [fmt.value for fmt in subcategories.SEANCE_CINE.formats],
                 }
             ]
         }
@@ -123,6 +126,7 @@ class AllOffersByUaiTest:
         educational_institution = educational_factories.EducationalInstitutionFactory()
         national_program = educational_factories.NationalProgramFactory()
         collective_offer = educational_factories.CollectiveOfferFactory(
+            subcategoryId=subcategories.SEANCE_CINE.id,
             domains=[educational_factories.EducationalDomainFactory()],
             institution=educational_institution,
             teacher=educational_factories.EducationalRedactorFactory(),
@@ -218,6 +222,7 @@ class AllOffersByUaiTest:
                         "name": stock.collectiveOffer.nationalProgram.name,
                     },
                     "isFavorite": True,
+                    "formats": [fmt.value for fmt in subcategories.SEANCE_CINE.formats],
                 }
             ]
         }

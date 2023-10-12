@@ -1,5 +1,7 @@
 from dataclasses import dataclass
+from dataclasses import field
 from enum import Enum
+import typing
 
 from pcapi.core.categories import categories
 from pcapi.domain.book_types import BOOK_MACRO_SECTIONS
@@ -184,6 +186,17 @@ class FieldCondition:
     is_required_in_internal_form: bool = False
 
 
+class EacFormat(Enum):
+    ATELIER_DE_PRATIQUE = "Atelier de pratique"
+    CONCERT = "Concert"
+    CONFERENCE_RENCONTRE = "Conférence, rencontre"
+    FESTIVAL_SALON_CONGRES = "Festival, salon, congrès"
+    PROJECTION_AUDIOVISUELLE = "Projection audiovisuelle"
+    REPRESENTATION = "Représentation"
+    VISITE_GUIDEE = "Visite guidée"
+    VISITE_LIBRE = "Visite libre"
+
+
 @dataclass(frozen=True)
 class Subcategory:
     id: str
@@ -209,6 +222,7 @@ class Subcategory:
     is_bookable_by_underage_when_free: bool = True
     is_bookable_by_underage_when_not_free: bool = True
     can_be_withdrawable: bool = False
+    formats: typing.Sequence[EacFormat] = field(default_factory=list)
 
     def __post_init__(self) -> None:
         if self.search_group_name not in [s.name for s in SearchGroups]:
@@ -391,6 +405,7 @@ SEANCE_CINE = Subcategory(
     is_digital_deposit=False,
     is_physical_deposit=False,
     reimbursement_rule=ReimbursementRuleChoices.STANDARD.value,
+    formats=[EacFormat.PROJECTION_AUDIOVISUELLE],
 )
 EVENEMENT_CINE = Subcategory(
     id="EVENEMENT_CINE",
@@ -413,6 +428,7 @@ EVENEMENT_CINE = Subcategory(
     is_digital_deposit=False,
     is_physical_deposit=False,
     reimbursement_rule=ReimbursementRuleChoices.STANDARD.value,
+    formats=[EacFormat.PROJECTION_AUDIOVISUELLE],
 )
 FESTIVAL_CINE = Subcategory(
     id="FESTIVAL_CINE",
@@ -435,6 +451,7 @@ FESTIVAL_CINE = Subcategory(
     is_digital_deposit=False,
     is_physical_deposit=False,
     reimbursement_rule=ReimbursementRuleChoices.STANDARD.value,
+    formats=[EacFormat.FESTIVAL_SALON_CONGRES, EacFormat.PROJECTION_AUDIOVISUELLE],
 )
 CINE_VENTE_DISTANCE = Subcategory(
     id="CINE_VENTE_DISTANCE",
@@ -481,6 +498,7 @@ CINE_PLEIN_AIR = Subcategory(
     is_digital_deposit=False,
     is_physical_deposit=False,
     reimbursement_rule=ReimbursementRuleChoices.STANDARD.value,
+    formats=[EacFormat.PROJECTION_AUDIOVISUELLE],
 )
 
 # endregion
@@ -503,6 +521,7 @@ CONFERENCE = Subcategory(
     is_digital_deposit=False,
     is_physical_deposit=False,
     reimbursement_rule=ReimbursementRuleChoices.STANDARD.value,
+    formats=[EacFormat.CONFERENCE_RENCONTRE],
 )
 RENCONTRE = Subcategory(
     id="RENCONTRE",
@@ -521,6 +540,7 @@ RENCONTRE = Subcategory(
     is_digital_deposit=False,
     is_physical_deposit=False,
     reimbursement_rule=ReimbursementRuleChoices.STANDARD.value,
+    formats=[EacFormat.CONFERENCE_RENCONTRE],
 )
 DECOUVERTE_METIERS = Subcategory(
     id="DECOUVERTE_METIERS",
@@ -558,6 +578,7 @@ SALON = Subcategory(
     is_digital_deposit=False,
     is_physical_deposit=False,
     reimbursement_rule=ReimbursementRuleChoices.STANDARD.value,
+    formats=[EacFormat.FESTIVAL_SALON_CONGRES],
 )
 RENCONTRE_EN_LIGNE = Subcategory(
     id="RENCONTRE_EN_LIGNE",
@@ -577,6 +598,7 @@ RENCONTRE_EN_LIGNE = Subcategory(
     is_physical_deposit=False,
     reimbursement_rule=ReimbursementRuleChoices.NOT_REIMBURSED.value,
     is_bookable_by_underage_when_not_free=False,
+    formats=[EacFormat.CONFERENCE_RENCONTRE],
 )
 # endregion
 # region JEU
@@ -597,6 +619,7 @@ CONCOURS = Subcategory(
     is_digital_deposit=False,
     is_physical_deposit=False,
     reimbursement_rule=ReimbursementRuleChoices.STANDARD.value,
+    formats=[EacFormat.ATELIER_DE_PRATIQUE],
 )
 RENCONTRE_JEU = Subcategory(
     id="RENCONTRE_JEU",
@@ -615,6 +638,7 @@ RENCONTRE_JEU = Subcategory(
     is_digital_deposit=False,
     is_physical_deposit=False,
     reimbursement_rule=ReimbursementRuleChoices.STANDARD.value,
+    formats=[EacFormat.ATELIER_DE_PRATIQUE],
 )
 ESCAPE_GAME = Subcategory(
     id="ESCAPE_GAME",
@@ -651,6 +675,7 @@ EVENEMENT_JEU = Subcategory(
     is_digital_deposit=False,
     is_physical_deposit=False,
     reimbursement_rule=ReimbursementRuleChoices.STANDARD.value,
+    formats=[EacFormat.ATELIER_DE_PRATIQUE],
 )
 JEU_EN_LIGNE = Subcategory(
     id="JEU_EN_LIGNE",
@@ -933,6 +958,7 @@ VISITE = Subcategory(
     is_digital_deposit=False,
     is_physical_deposit=False,
     reimbursement_rule=ReimbursementRuleChoices.STANDARD.value,
+    formats=[EacFormat.VISITE_LIBRE],
 )
 VISITE_GUIDEE = Subcategory(
     id="VISITE_GUIDEE",
@@ -951,6 +977,7 @@ VISITE_GUIDEE = Subcategory(
     is_digital_deposit=False,
     is_physical_deposit=False,
     reimbursement_rule=ReimbursementRuleChoices.STANDARD.value,
+    formats=[EacFormat.VISITE_GUIDEE],
 )
 EVENEMENT_PATRIMOINE = Subcategory(
     id="EVENEMENT_PATRIMOINE",
@@ -969,6 +996,7 @@ EVENEMENT_PATRIMOINE = Subcategory(
     is_digital_deposit=False,
     is_physical_deposit=False,
     reimbursement_rule=ReimbursementRuleChoices.STANDARD.value,
+    formats=[EacFormat.ATELIER_DE_PRATIQUE],
 )
 VISITE_VIRTUELLE = Subcategory(
     id="VISITE_VIRTUELLE",
@@ -1029,6 +1057,7 @@ FESTIVAL_ART_VISUEL = Subcategory(
     is_physical_deposit=False,
     reimbursement_rule=ReimbursementRuleChoices.STANDARD.value,
     can_be_withdrawable=True,
+    formats=[EacFormat.FESTIVAL_SALON_CONGRES],
 )
 # endregion
 # region MUSIQUE_LIVE
@@ -1060,6 +1089,7 @@ CONCERT = Subcategory(
     is_physical_deposit=False,
     reimbursement_rule=ReimbursementRuleChoices.STANDARD.value,
     can_be_withdrawable=True,
+    formats=[EacFormat.CONCERT],
 )
 EVENEMENT_MUSIQUE = Subcategory(
     id="EVENEMENT_MUSIQUE",
@@ -1088,6 +1118,7 @@ EVENEMENT_MUSIQUE = Subcategory(
     is_physical_deposit=False,
     reimbursement_rule=ReimbursementRuleChoices.STANDARD.value,
     can_be_withdrawable=True,
+    formats=[EacFormat.CONCERT],
 )
 LIVESTREAM_MUSIQUE = Subcategory(
     id="LIVESTREAM_MUSIQUE",
@@ -1166,6 +1197,7 @@ FESTIVAL_MUSIQUE = Subcategory(
     is_physical_deposit=False,
     reimbursement_rule=ReimbursementRuleChoices.STANDARD.value,
     can_be_withdrawable=True,
+    formats=[EacFormat.FESTIVAL_SALON_CONGRES, EacFormat.CONCERT],
 )
 # endregion
 # region MUSIQUE_ENREGISTREE
@@ -1321,6 +1353,7 @@ SEANCE_ESSAI_PRATIQUE_ART = Subcategory(
     is_digital_deposit=False,
     is_physical_deposit=False,
     reimbursement_rule=ReimbursementRuleChoices.STANDARD.value,
+    formats=[EacFormat.ATELIER_DE_PRATIQUE],
 )
 ATELIER_PRATIQUE_ART = Subcategory(
     id="ATELIER_PRATIQUE_ART",
@@ -1339,6 +1372,7 @@ ATELIER_PRATIQUE_ART = Subcategory(
     is_digital_deposit=False,
     is_physical_deposit=False,
     reimbursement_rule=ReimbursementRuleChoices.STANDARD.value,
+    formats=[EacFormat.ATELIER_DE_PRATIQUE],
 )
 ABO_PRATIQUE_ART = Subcategory(
     id="ABO_PRATIQUE_ART",
@@ -1503,6 +1537,7 @@ SPECTACLE_REPRESENTATION = Subcategory(
     is_physical_deposit=False,
     reimbursement_rule=ReimbursementRuleChoices.STANDARD.value,
     can_be_withdrawable=True,
+    formats=[EacFormat.REPRESENTATION],
 )
 SPECTACLE_ENREGISTRE = Subcategory(
     id="SPECTACLE_ENREGISTRE",
@@ -1590,6 +1625,7 @@ FESTIVAL_SPECTACLE = Subcategory(
     is_physical_deposit=False,
     reimbursement_rule=ReimbursementRuleChoices.STANDARD.value,
     can_be_withdrawable=True,
+    formats=[EacFormat.FESTIVAL_SALON_CONGRES, EacFormat.REPRESENTATION],
 )
 ABO_SPECTACLE = Subcategory(
     id="ABO_SPECTACLE",

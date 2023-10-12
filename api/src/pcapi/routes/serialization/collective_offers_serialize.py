@@ -10,6 +10,7 @@ from pydantic.v1 import Field
 from pydantic.v1 import root_validator
 from pydantic.v1 import validator
 
+import pcapi.core.categories.subcategories_v2 as subcategories
 from pcapi.core.categories.subcategories_v2 import SubcategoryIdEnum
 from pcapi.core.educational.models import CollectiveBooking
 from pcapi.core.educational.models import CollectiveBookingStatus
@@ -112,6 +113,7 @@ class CollectiveOfferResponseModel(BaseModel):
     imageUrl: str | None
     isPublicApi: bool
     nationalProgram: NationalProgramModel | None
+    formats: typing.Sequence[subcategories.EacFormat] | None
 
     class Config:
         alias_generator = to_camel
@@ -163,6 +165,7 @@ def _serialize_offer_paginated(offer: CollectiveOffer | CollectiveOfferTemplate)
         imageUrl=offer.imageUrl,
         isPublicApi=offer.isPublicApi if not is_offer_template else False,
         nationalProgram=offer.nationalProgram,
+        formats=offer.get_formats(),
     )
 
 
@@ -294,6 +297,7 @@ class GetCollectiveOfferBaseResponseModel(BaseModel, AccessibilityComplianceMixi
     imageCredit: str | None
     imageUrl: str | None
     nationalProgram: NationalProgramModel | None
+    formats: typing.Sequence[subcategories.EacFormat] | None
 
     class Config:
         allow_population_by_field_name = True
@@ -357,10 +361,12 @@ class GetCollectiveOfferResponseModel(GetCollectiveOfferBaseResponseModel):
     lastBookingId: int | None
     teacher: EducationalRedactorResponseModel | None
     isPublicApi: bool
+    formats: typing.Sequence[subcategories.EacFormat] | None
 
     @classmethod
     def from_orm(cls, offer: CollectiveOffer) -> "GetCollectiveOfferResponseModel":
         result = super().from_orm(offer)
+        result.formats = offer.get_formats()
 
         if result.status == OfferStatus.INACTIVE.name:
             result.isActive = False
@@ -437,7 +443,8 @@ class DateRangeOnCreateModel(DateRangeModel):
 
 class PostCollectiveOfferBodyModel(BaseModel):
     venue_id: int
-    subcategory_id: str
+    # TODO(jeremieb): remove subcategory_id (replaced by formats)
+    subcategory_id: str | None
     name: str
     booking_emails: list[str]
     description: str
@@ -455,6 +462,32 @@ class PostCollectiveOfferBodyModel(BaseModel):
     template_id: int | None
     offerer_id: str | None  # FIXME (MathildeDuboille - 24/10/22) prevent bug in production where offererId is sent in params
     nationalProgramId: int | None
+    # TODO(jeremieb): when subcategory_id is removed, formats becomes
+    # mandatory
+    formats: typing.Sequence[subcategories.EacFormat] | None
+
+    @root_validator
+    def validate_formats_and_subcategory(cls, values: dict) -> dict:
+        # TODO(jeremieb): remove this validator when subcategory_id can
+        # be removed
+        if values.get("template_id"):
+            return values
+
+        formats = values.get("formats")
+        if formats:
+            return values
+
+        subcategory_id = values.get("subcategory_id")
+        if not subcategory_id:
+            raise ValueError("subcategory_id & formats: at least one should not be null")
+
+        try:
+            subcategory = subcategories.COLLECTIVE_SUBCATEGORIES[subcategory_id]
+        except KeyError:
+            raise ValueError("Unknown subcategory id")
+
+        values["formats"] = subcategory.formats
+        return values
 
     @validator("name", pre=True)
     def validate_name(cls, name: str) -> str:
@@ -538,6 +571,7 @@ class PatchCollectiveOfferBodyModel(BaseModel, AccessibilityComplianceMixin):
     interventionArea: list[str] | None
     venueId: int | None
     nationalProgramId: int | None
+    formats: typing.Sequence[subcategories.EacFormat] | None
 
     @validator("name", allow_reuse=True)
     def validate_name(cls, name: str | None) -> str | None:
