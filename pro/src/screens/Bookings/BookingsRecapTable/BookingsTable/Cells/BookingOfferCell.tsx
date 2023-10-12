@@ -16,6 +16,7 @@ import {
 } from 'pages/Offers/Offers/OfferItem/Cells/OfferNameCell/utils'
 import { SvgIcon } from 'ui-kit/SvgIcon/SvgIcon'
 import { FORMAT_DD_MM_YYYY_HH_mm, toDateStrippedOfTimezone } from 'utils/date'
+import { formatPrice } from 'utils/formatPrice'
 import { pluralize } from 'utils/pluralize'
 
 import styles from './BookingOfferCell.module.scss'
@@ -47,7 +48,6 @@ export const BookingOfferCell = ({ booking }: BookingOfferCellProps) => {
     isCollectiveBooking(booking) &&
     booking.bookingStatus.toUpperCase() === OFFER_STATUS_PENDING &&
     shouldDisplayWarning(booking.stock)
-
   return (
     <>
       <a
@@ -59,8 +59,7 @@ export const BookingOfferCell = ({ booking }: BookingOfferCellProps) => {
         <div
           className={cn(
             styles['booking-offer-name'],
-            !booking.stock.offerIsEducational &&
-              styles['booking-offer-name-individual']
+            !booking.stock.offerIsEducational && styles['crop-line']
           )}
         >
           {booking.stock.offerName}
@@ -94,6 +93,16 @@ export const BookingOfferCell = ({ booking }: BookingOfferCellProps) => {
             </span>
           </div>
         ))}
+
+      {!isCollectiveBooking(booking) && (
+        <div className={styles['tarif']}>
+          {booking.bookingPriceCategoryLabel
+            ? `${booking.bookingPriceCategoryLabel} - ${formatPrice(
+                booking.bookingAmount
+              )}`
+            : formatPrice(booking.bookingAmount)}
+        </div>
+      )}
     </>
   )
 }

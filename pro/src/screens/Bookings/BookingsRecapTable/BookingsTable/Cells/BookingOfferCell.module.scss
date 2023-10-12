@@ -11,12 +11,12 @@
   &:focus {
     text-decoration: underline;
   }
+}
 
-  &-individual {
-    overflow: hidden;
-    text-overflow: ellipsis;
-    white-space: nowrap;
-  }
+.crop-line {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }
 
 .booking-offer-additional-info {
@@ -24,8 +24,14 @@
 
   color: colors.$grey-dark;
   display: flex;
-  font-size: rem.torem(12px);
   align-items: center;
+}
+
+.tarif {
+  @include fonts.caption;
+
+  margin-top: rem.torem(4px);
+  color: colors.$grey-dark;
 }
 
 .stocks {
