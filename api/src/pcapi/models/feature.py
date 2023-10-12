@@ -128,6 +128,7 @@ class FeatureToggle(enum.Enum):
     WIP_PRO_STOCK_PAGINATION = "Active la pagination pour les stocks"
     WIP_ENABLE_BOOST_SHOWTIMES_FILTER = "Activer le filtre pour les requêtes showtimes Boost"
     WIP_ENABLE_DATES_OFFER_TEMPLATE = "Active la possibilité d'ajouter des dates pour les offres vitrines"
+    WIP_HOME_STATS = "Active la possibilité de voir les stats de consultation sur la page d'accueil"
 
     def is_active(self) -> bool:
         if flask.has_request_context():
@@ -203,6 +204,7 @@ FEATURES_DISABLED_BY_DEFAULT: tuple[FeatureToggle, ...] = (
     FeatureToggle.WIP_PRO_STOCK_PAGINATION,
     FeatureToggle.WIP_ENABLE_BOOST_SHOWTIMES_FILTER,
     FeatureToggle.WIP_ENABLE_DATES_OFFER_TEMPLATE,
+    FeatureToggle.WIP_HOME_STATS,
 )
 
 if settings.IS_PROD or settings.IS_STAGING:
