@@ -1,12 +1,12 @@
 import json
 import logging
+from unittest import mock
 
 import pytest
+import requests
 
 from pcapi.connectors.beneficiaries import ubble
 from pcapi.core.fraud import models as fraud_models
-from pcapi.core.testing import assert_num_queries
-from pcapi.core.testing import override_features
 from pcapi.core.testing import override_settings
 from pcapi.core.users.models import GenderEnum
 from pcapi.utils import requests as requests_utils
@@ -82,29 +82,40 @@ class StartIdentificationTest:
         assert record.message == "Ubble start-identification: Unexpected error: 401, "
 
 
-class BuildUrlTest:
-    @override_features(WIP_ENABLE_MOCK_UBBLE=True)
-    @override_settings(UBBLE_MOCK_API_URL="http://example.com")
-    def test_use_mock_api_if_ff_enabled_and_url_set(self):
-        url = ubble.build_url("")
-
-        assert url == "http://example.com/"
-
-    @override_features(WIP_ENABLE_MOCK_UBBLE=False)
-    @override_settings(UBBLE_MOCK_API_URL="http://example.com")
-    def test_use_real_ubble_if_ff_disabled_and_url_set(self):
-        url = ubble.build_url("")
-
-        assert url == "https://api.ubble.ai/"
-
-    @override_features(WIP_ENABLE_MOCK_UBBLE=True)
+class ShouldUseMockTest:
     @override_settings(UBBLE_MOCK_API_URL="")
-    def test_use_real_ubble_if_ff_enabled_and_url_unset(self):
-        with assert_num_queries(0):
-            url = ubble.build_url("")
+    @mock.patch("pcapi.utils.requests.get")
+    def test_return_early_false_if_mock_url_not_defined(self, mock_get):
+        result = ubble._should_use_mock("id")
 
-        assert url == "https://api.ubble.ai/"
+        assert result is False
+        assert mock_get.call_count == 0
 
+    @override_settings(UBBLE_MOCK_API_URL="http://mock-ubble.com")
+    @mock.patch("pcapi.utils.requests.get")
+    def test_return_early_false_if_id_not_provided(self, mock_get):
+        result = ubble._should_use_mock()
+
+        assert result is False
+        assert mock_get.call_count == 0
+
+    @override_settings(UBBLE_MOCK_API_URL="http://mock-ubble.com")
+    @pytest.mark.parametrize("id_,status_code,expected_result", [("whatever", 200, True), ("whatever", 404, False)])
+    @mock.patch("pcapi.utils.requests.get")
+    def test_calls_mock_route_and_decide_base_url(self, mock_get, id_, status_code, expected_result):
+        get_configuration_response = requests.Response()
+        get_configuration_response.status_code = status_code
+        mock_get.return_value = get_configuration_response
+
+        result = ubble._should_use_mock(id_=id_)
+
+        assert mock_get.call_count == 1
+        assert len(mock_get.call_args.args) == 1
+        assert mock_get.call_args.args[0] == f"http://mock-ubble.com/id_exists/{id_}"
+        assert result is expected_result
+
+
+class BuildUrlTest:
     @override_settings(UBBLE_API_URL="http://example.com/partial/path")
     def test_add_slash_if_missing(self):
         url = ubble.build_url("and/end")
