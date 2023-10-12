@@ -4,8 +4,10 @@ import typing
 from flask_wtf import FlaskForm
 import wtforms
 
+from pcapi.core.bookings import models as bookings_models
 from pcapi.core.bookings.models import BookingStatus
 from pcapi.core.categories import categories
+import pcapi.core.educational.models as educational_models
 from pcapi.core.educational.models import CollectiveBookingStatus
 from pcapi.routes.backoffice import filters
 from pcapi.routes.backoffice.forms import fields
@@ -122,5 +124,24 @@ class GetIndividualBookingListForm(BaseBookingListForm):
         self.status.choices = utils.choices_from_enum(BookingStatus, formatter=filters.format_booking_status)
 
 
-class BatchCancelBookingForm(BatchForm):
+class CancelCollectiveBookingForm(FlaskForm):
+    reason = fields.PCSelectWithPlaceholderValueField(
+        "Raison",
+        choices=utils.choices_from_enum(
+            educational_models.CollectiveBookingCancellationReasons,
+            formatter=filters.format_booking_cancellation_reason,
+        ),
+    )
+
+
+class CancelIndividualBookingForm(FlaskForm):
+    reason = fields.PCSelectWithPlaceholderValueField(
+        "Raison",
+        choices=utils.choices_from_enum(
+            bookings_models.BookingCancellationReasons, formatter=filters.format_booking_cancellation_reason
+        ),
+    )
+
+
+class BatchCancelIndividualBookingsForm(BatchForm, CancelIndividualBookingForm):
     pass
