@@ -922,7 +922,7 @@ class FinanceIncident(Base, Model):
         return any(booking_incident.collectiveBooking for booking_incident in self.booking_finance_incidents)
 
     @property
-    def due_amount_by_offerer(self) -> decimal.Decimal:
+    def due_amount_by_offerer(self) -> int:
         """
         Returns the amount we want to retrieve from the offerer for this incident.
         """
