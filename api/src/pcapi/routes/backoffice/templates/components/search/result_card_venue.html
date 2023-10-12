@@ -1,4 +1,5 @@
 {% from "components/badges.html" import build_venue_badges %}
+{% from "components/links.html" import build_offerer_name_to_details_link %}
 <div class="card shadow">
   <div class="card-body">
     <h5 class="mb-3">{{ build_venue_badges(row) }}</h5>
@@ -11,7 +12,7 @@
     {% endif %}
     <h6 class="card-subtitle mt-4 mb-3 text-muted">Venue ID : {{ row.id }}</h6>
     <h6 class="card-subtitle mb-3 text-muted">SIRET : {{ row.siret | empty_string_if_null }}</h6>
-    <h6 class="card-subtitle mb-4 text-muted">Structure : {{ row.managingOfferer.name | empty_string_if_null }}</h6>
+    <h6 class="card-subtitle mb-4 text-muted">Structure : {{ build_offerer_name_to_details_link(row.managingOfferer) }}</h6>
     <div class="fs-6">
       <p class="mb-1">
         <span class="fw-bold">Email :</span> {{ row.bookingEmail | empty_string_if_null }}
