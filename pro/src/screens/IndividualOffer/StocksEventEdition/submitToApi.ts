@@ -1,3 +1,4 @@
+import { api } from 'apiClient/api'
 import { getIndividualOfferAdapter } from 'core/Offers/adapters'
 import { IndividualOffer } from 'core/Offers/types'
 import { getToday } from 'utils/date'
@@ -5,9 +6,9 @@ import { getLocalDepartementDateTimeFromUtc } from 'utils/timezone'
 
 import { serializeStockEventEdition } from './adapters/serializers'
 import upsertStocksEventAdapter from './adapters/upsertStocksEventAdapter'
+import { getPriceCategoryOptions } from './getPriceCategoryOptions'
 import { StockEventFormValues, StocksEventFormik } from './StockFormList/types'
 import { buildInitialValues } from './StockFormList/utils'
-import { getPriceCategoryOptions } from './StocksEventEdition'
 
 export const submitToApi = async (
   allStockValues: StockEventFormValues[],
@@ -38,19 +39,31 @@ export const submitToApi = async (
     offer.venue.departmentCode
   )
 
-  const response = await getIndividualOfferAdapter(offer.id)
-  if (response.isOk) {
-    const updatedOffer = response.payload
-    setOffer && setOffer(updatedOffer)
-    resetForm({
-      values: buildInitialValues({
-        departmentCode: updatedOffer.venue.departmentCode,
-        offerStocks: updatedOffer.stocks,
-        today,
-        lastProviderName: updatedOffer.lastProviderName,
-        offerStatus: updatedOffer.status,
-        priceCategoriesOptions,
-      }),
-    })
+  try {
+    const [offerResponse, stocksResponse] = await Promise.all([
+      getIndividualOfferAdapter(offer.id),
+      api.getStocks(offer.id),
+    ])
+    const updatedStocks = stocksResponse.stocks
+    if (offerResponse.isOk) {
+      const updatedOffer = offerResponse.payload
+      setOffer && setOffer(updatedOffer)
+      resetForm({
+        values: buildInitialValues({
+          departmentCode: updatedOffer.venue.departmentCode,
+          offerStocks: updatedStocks,
+          today,
+          lastProviderName: updatedOffer.lastProviderName,
+          offerStatus: updatedOffer.status,
+          priceCategoriesOptions,
+        }),
+      })
+    } else {
+      throw new Error(offerResponse.message)
+    }
+  } catch {
+    throw new Error(
+      'Une erreur est survenue lors de la récupération de vos stocks'
+    )
   }
 }
