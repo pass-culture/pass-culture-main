@@ -162,7 +162,7 @@ class ListBookingsQueryModel(BaseModel):
     page: int = 1
     venue_id: int | None
     offer_id: int | None
-    event_date: datetime | None
+    event_date: date | None
     booking_status_filter: BookingStatusFilter | None
     booking_period_beginning_date: date | None
     booking_period_ending_date: date | None
