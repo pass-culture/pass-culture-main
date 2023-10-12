@@ -27,6 +27,7 @@ import sqlalchemy.dialects.postgresql as sa_psql
 from sqlalchemy.dialects.postgresql.json import JSONB
 from sqlalchemy.event import listens_for
 from sqlalchemy.exc import IntegrityError
+from sqlalchemy.ext import mutable as sa_mutable
 from sqlalchemy.ext.hybrid import hybrid_property
 from sqlalchemy.ext.mutable import MutableDict
 from sqlalchemy.ext.mutable import MutableList
@@ -42,6 +43,8 @@ from werkzeug.utils import cached_property
 
 from pcapi import settings
 from pcapi.connectors import sirene
+from pcapi.connectors.big_query.queries.offerer_stats import OffererViewsModel
+from pcapi.connectors.big_query.queries.offerer_stats import TopOffersData
 from pcapi.core.educational import models as educational_models
 import pcapi.core.finance.models as finance_models
 from pcapi.models import Base
@@ -1081,3 +1084,24 @@ class IndividualOffererSubscription(PcObject, Base, Model):
     isCertificateValid: bool = sa.Column(
         sa.Boolean, nullable=False, server_default=sa.sql.expression.false(), default=False
     )
+
+
+class OffererStatsData(typing.TypedDict, total=False):
+    daily_views: list[OffererViewsModel] | None
+    top_offers: list[TopOffersData] | None
+
+
+class OffererStats(PcObject, Base, Model):
+    __tablename__ = "offerer_stats"
+
+    offererId: int = Column(BigInteger, ForeignKey("offerer.id", ondelete="CASCADE"), nullable=False)
+    sa.Index("ix_offerer_stats_offererId", offererId)
+    offerer: Offerer = relationship("Offerer", foreign_keys=[offererId])
+
+    syncDate: datetime = Column(DateTime, nullable=False)
+    table: str = Column(String(120), nullable=False)
+    jsonData: OffererStatsData = sa.Column(
+        "jsonData", sa_mutable.MutableDict.as_mutable(sa_psql.JSONB), default={}, server_default="{}", nullable=False
+    )
+
+    __table_args__ = (UniqueConstraint("offererId", "table", name="offerer_stats_unique"),)
