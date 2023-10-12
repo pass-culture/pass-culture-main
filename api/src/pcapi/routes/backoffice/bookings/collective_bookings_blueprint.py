@@ -179,7 +179,7 @@ def get_collective_booking_xlsx_download() -> utils.BackofficeResponse:
 @utils.permission_required(perm_models.Permissions.MANAGE_BOOKINGS)
 def mark_booking_as_used(collective_booking_id: int) -> utils.BackofficeResponse:
     collective_booking = educational_models.CollectiveBooking.query.get_or_404(collective_booking_id)
-    if collective_booking.status != educational_models.CollectiveBookingStatus.CANCELLED:
+    if not _is_collective_booking_status_cancelled(collective_booking=collective_booking):
         flash("Impossible de valider une réservation qui n'est pas annulée", "warning")
         return _redirect_after_collective_booking_action()
 
@@ -191,6 +191,10 @@ def mark_booking_as_used(collective_booking_id: int) -> utils.BackofficeResponse
         flash(f"La réservation {collective_booking.id} a été validée", "success")
 
     return _redirect_after_collective_booking_action()
+
+
+def _is_collective_booking_status_cancelled(collective_booking: educational_models.CollectiveBooking) -> bool:
+    return collective_booking.status == educational_models.CollectiveBookingStatus.CANCELLED
 
 
 @collective_bookings_blueprint.route("/<int:collective_booking_id>/cancel", methods=["POST"])

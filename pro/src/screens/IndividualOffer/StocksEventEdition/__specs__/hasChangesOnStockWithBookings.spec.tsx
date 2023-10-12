@@ -3,7 +3,7 @@ import { format } from 'date-fns'
 import { stockEventFactory } from 'screens/IndividualOffer/StocksEventEdition/StockFormList/stockEventFactory'
 import { FORMAT_ISO_DATE_ONLY } from 'utils/date'
 
-import { hasChangesOnStockWithBookings } from '../StocksEventEdition'
+import { hasChangesOnStockWithBookings } from '../hasChangesOnStockWithBookings'
 
 describe('hasChangesOnStockWithBookings', () => {
   it('should return false when no booking quantity', () => {

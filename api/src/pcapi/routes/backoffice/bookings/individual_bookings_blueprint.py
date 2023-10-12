@@ -202,7 +202,7 @@ def get_individual_booking_xlsx_download() -> utils.BackofficeResponse:
 @utils.permission_required(perm_models.Permissions.MANAGE_BOOKINGS)
 def mark_booking_as_used(booking_id: int) -> utils.BackofficeResponse:
     booking = bookings_models.Booking.query.get_or_404(booking_id)
-    if booking.status != bookings_models.BookingStatus.CANCELLED:
+    if not _is_booking_status_cancelled(booking=booking):
         flash("Impossible de valider une réservation qui n'est pas annulée", "warning")
         return _redirect_after_individual_booking_action()
 
@@ -214,6 +214,10 @@ def mark_booking_as_used(booking_id: int) -> utils.BackofficeResponse:
         flash(f"La réservation {booking.token} a été validée", "success")
 
     return _redirect_after_individual_booking_action()
+
+
+def _is_booking_status_cancelled(booking: bookings_models.Booking) -> bool:
+    return booking.status == bookings_models.BookingStatus.CANCELLED
 
 
 @individual_bookings_blueprint.route("/<int:booking_id>/cancel", methods=["POST"])
