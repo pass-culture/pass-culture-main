@@ -5,6 +5,7 @@ from unittest.mock import patch
 from flask import url_for
 import pytest
 
+from pcapi.core.categories import subcategories_v2 as subcategories
 from pcapi.core.educational.exceptions import CulturalPartnerNotFoundException
 import pcapi.core.educational.factories as educational_factories
 from pcapi.core.educational.factories import CollectiveOfferTemplateFactory
@@ -80,6 +81,7 @@ class Returns200Test:
             "nationalProgramId": national_program.id,
             "dates": {"start": template_start.isoformat(), "end": template_end.isoformat()},
             "domains": [domain.id],
+            "formats": [subcategories.EacFormat.CONCERT.value],
         }
 
         with patch(PATCH_CAN_CREATE_OFFER_PATH):
@@ -105,6 +107,7 @@ class Returns200Test:
         assert updated_offer.dateRange
         assert updated_offer.start == template_start
         assert updated_offer.end == template_end
+        assert updated_offer.formats == [subcategories.EacFormat.CONCERT]
 
     def test_with_tz_aware_dates(self, pro_client, offer, template_start, template_end):
         payload = {

@@ -2,6 +2,7 @@ import logging
 
 from sqlalchemy.orm import exc as orm_exc
 
+import pcapi.core.categories.subcategories_v2 as subcategories
 from pcapi.core.educational import exceptions as educational_exceptions
 from pcapi.core.educational import repository as educational_repository
 from pcapi.core.educational.api import favorite as educational_api_favorite
@@ -74,6 +75,15 @@ def get_educational_eligible_offers_by_uai(
     ]
 
     return serializers.ListCollectiveOffersResponseModel(collectiveOffers=serialized_favorite_offers)
+
+
+@blueprint.adage_iframe.route("/offers/formats", methods=["GET"])
+@spectree_serialize(response_model=serializers.EacFormatsResponseModel, api=blueprint.api)
+@adage_jwt_required
+def get_educational_offers_formats(
+    authenticated_information: AuthenticatedInformation,
+) -> serializers.EacFormatsResponseModel:
+    return serializers.EacFormatsResponseModel(formats=list(subcategories.EacFormat))
 
 
 @blueprint.adage_iframe.route("/collective/offers/<int:offer_id>", methods=["GET"])

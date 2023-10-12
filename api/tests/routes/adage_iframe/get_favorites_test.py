@@ -3,6 +3,7 @@ from datetime import datetime
 from freezegun.api import freeze_time
 import pytest
 
+from pcapi.core.categories import subcategories_v2 as subcategories
 from pcapi.core.educational import factories as educational_factories
 from pcapi.core.educational.models import StudentLevels
 from pcapi.core.testing import assert_num_queries
@@ -18,6 +19,7 @@ class GetFavoriteOfferTest:
         national_program = educational_factories.NationalProgramFactory()
         stock = educational_factories.CollectiveStockFactory(
             beginningDatetime=datetime(2021, 5, 15),
+            collectiveOffer__subcategoryId=subcategories.SEANCE_CINE.id,
             collectiveOffer__name="offer name",
             collectiveOffer__description="offer description",
             price=10,
@@ -28,7 +30,9 @@ class GetFavoriteOfferTest:
             collectiveOffer__nationalProgramId=national_program.id,
         )
 
-        collective_offer_template = educational_factories.CollectiveOfferTemplateFactory()
+        collective_offer_template = educational_factories.CollectiveOfferTemplateFactory(
+            subcategoryId=subcategories.EVENEMENT_CINE.id,
+        )
         educational_redactor = educational_factories.EducationalRedactorFactory(
             favoriteCollectiveOffers=[stock.collectiveOffer],
             favoriteCollectiveOfferTemplates=[collective_offer_template],
@@ -116,6 +120,7 @@ class GetFavoriteOfferTest:
                         "id": stock.collectiveOffer.nationalProgram.id,
                         "name": stock.collectiveOffer.nationalProgram.name,
                     },
+                    "formats": [fmt.value for fmt in subcategories.SEANCE_CINE.formats],
                 }
             ],
             "favoritesTemplate": [
@@ -171,6 +176,7 @@ class GetFavoriteOfferTest:
                         "start": collective_offer_template.start.isoformat(),
                         "end": collective_offer_template.end.isoformat(),
                     },
+                    "formats": [fmt.value for fmt in subcategories.EVENEMENT_CINE.formats],
                 }
             ],
         }

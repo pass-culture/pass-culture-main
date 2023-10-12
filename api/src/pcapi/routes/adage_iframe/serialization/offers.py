@@ -7,6 +7,8 @@ import typing
 from pydantic.v1 import Field
 from pydantic.v1.class_validators import validator
 
+import pcapi.core.categories.subcategories_v2 as subcategories
+from pcapi.core.categories.subcategories_v2 import EacFormat
 from pcapi.core.educational import models as educational_models
 from pcapi.core.offerers import models as offerers_models
 from pcapi.routes.native.utils import convert_to_cent
@@ -94,6 +96,13 @@ class CategoriesResponseModel(BaseModel):
         orm_mode = True
 
 
+class EacFormatsResponseModel(BaseModel):
+    formats: typing.Sequence[subcategories.EacFormat]
+
+    class Config:
+        use_enum_values = True
+
+
 class OfferAddressType(enum.Enum):
     OFFERER_VENUE = "offererVenue"
     SCHOOL = "school"
@@ -172,6 +181,7 @@ class CollectiveOfferResponseModel(BaseModel, common_models.AccessibilityComplia
     teacher: EducationalRedactorResponseModel | None
     nationalProgram: NationalProgramModel | None
     isFavorite: bool | None
+    formats: typing.Sequence[EacFormat] | None
 
     @classmethod
     def build(
@@ -215,6 +225,7 @@ class CollectiveOfferResponseModel(BaseModel, common_models.AccessibilityComplia
             mentalDisabilityCompliant=offer.mentalDisabilityCompliant,
             motorDisabilityCompliant=offer.motorDisabilityCompliant,
             visualDisabilityCompliant=offer.visualDisabilityCompliant,
+            formats=offer.get_formats(),
         )
 
     class Config:
@@ -260,6 +271,7 @@ class CollectiveOfferTemplateResponseModel(BaseModel, common_models.Accessibilit
     nationalProgram: NationalProgramModel | None
     isFavorite: bool | None
     dates: TemplateDatesModel | None
+    formats: typing.Sequence[EacFormat] | None
 
     @classmethod
     def build(
@@ -304,6 +316,7 @@ class CollectiveOfferTemplateResponseModel(BaseModel, common_models.Accessibilit
                 start=offer.start,
                 end=offer.end,
             ),
+            formats=offer.get_formats(),
         )
 
     class Config:

@@ -1,6 +1,7 @@
 from flask import url_for
 import pytest
 
+from pcapi.core.categories import subcategories_v2 as subcategories
 from pcapi.core.educational import factories as educational_factories
 from pcapi.core.educational.models import StudentLevels
 from pcapi.core.offerers import factories as offerers_factories
@@ -28,6 +29,7 @@ class CollectiveOfferTemplateTest:
     def test_get_collective_offer_template(self, eac_client, redactor):
         venue = offerers_factories.VenueFactory()
         offer = educational_factories.CollectiveOfferTemplateFactory(
+            subcategoryId=subcategories.SEANCE_CINE.id,
             name="offer name",
             description="offer description",
             priceDetail="détail du prix",
@@ -97,6 +99,7 @@ class CollectiveOfferTemplateTest:
                 "start": format_into_utc_date(offer.start),
                 "end": format_into_utc_date(offer.end),
             },
+            "formats": [fmt.value for fmt in subcategories.SEANCE_CINE.formats],
         }
 
     def test_is_a_redactors_favorite(self, eac_client):

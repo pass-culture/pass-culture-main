@@ -4,6 +4,7 @@ from unittest.mock import patch
 from freezegun import freeze_time
 import pytest
 
+from pcapi.core.categories import subcategories_v2 as subcategories
 from pcapi.core.educational.exceptions import CulturalPartnerNotFoundException
 import pcapi.core.educational.factories as educational_factories
 from pcapi.core.educational.factories import CollectiveBookingFactory
@@ -65,6 +66,7 @@ class Returns200Test:
             "students": ["Collège - 4e"],
             "interventionArea": ["01", "2A"],
             "nationalProgramId": national_program.id,
+            "formats": [subcategories.EacFormat.CONCERT.value],
         }
 
         # WHEN
@@ -98,6 +100,7 @@ class Returns200Test:
         assert updated_offer.domains == [domain]
         assert updated_offer.interventionArea == ["01", "2A"]
         assert updated_offer.description == "Ma super description"
+        assert updated_offer.formats == [subcategories.EacFormat.CONCERT]
 
         expected_payload = EducationalBookingEdition(
             **serialize_collective_booking(booking).dict(),
@@ -112,6 +115,7 @@ class Returns200Test:
                     "subcategoryId",
                     "domains",
                     "description",
+                    "formats",
                 ]
             ),
         )

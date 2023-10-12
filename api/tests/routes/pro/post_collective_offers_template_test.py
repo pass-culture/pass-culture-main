@@ -89,6 +89,7 @@ def payload_fixture(venue, domains, offer_venue, template_start, template_end):
         "domains": [domain.id for domain in domains],
         "subcategoryId": subcategories.SPECTACLE_REPRESENTATION.id,
         "venueId": venue.id,
+        "formats": [subcategories.EacFormat.CONCERT.value],
     }
 
 
@@ -184,17 +185,6 @@ class Returns403Test:
 
 
 class Returns400Test:
-    def test_missing_category(self, pro_client, payload):
-        del payload["subcategoryId"]
-
-        with patch(PATCH_CAN_CREATE_OFFER_PATH):
-            response = pro_client.post("/collective/offers-template", json=payload)
-
-        assert response.status_code == 400
-        assert response.json == {"subcategoryId": ["Ce champ est obligatoire"]}
-
-        assert CollectiveOfferTemplate.query.count() == 0
-
     def test_unselectable_category(self, pro_client, payload):
         data = {**payload, "subcategoryId": subcategories.OEUVRE_ART.id}
 

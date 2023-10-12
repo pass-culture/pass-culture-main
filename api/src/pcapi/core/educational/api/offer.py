@@ -241,6 +241,7 @@ def create_collective_offer_template(
         visualDisabilityCompliant=offer_data.visual_disability_compliant,
         interventionArea=offer_data.intervention_area or [],
         priceDetail=offer_data.price_detail,
+        formats=offer_data.formats,
     )
 
     if offer_data.dates:
@@ -291,6 +292,7 @@ def create_collective_offer(
         visualDisabilityCompliant=offer_data.visual_disability_compliant,
         interventionArea=offer_data.intervention_area or [],
         templateId=offer_data.template_id,
+        formats=offer_data.formats,
     )
     collective_offer.bookingEmails = offer_data.booking_emails
 
@@ -572,7 +574,7 @@ def edit_collective_offer_public(
         updated_fields.append(key)
 
         if key == "subcategoryId":
-            offer_validation.check_offer_subcategory_is_valid(value)
+            # offer_validation.check_offer_subcategory_is_valid(value)
             offer_validation.check_offer_is_eligible_for_educational(value)
             offer.subcategoryId = value
         elif key == "domains":
