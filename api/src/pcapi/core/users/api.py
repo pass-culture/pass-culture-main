@@ -1268,6 +1268,33 @@ def is_login_device_a_trusted_device(
     return False
 
 
+def get_recent_suspicious_logins(user: users_models.User) -> list[users_models.LoginDeviceHistory]:
+    yesterday = datetime.datetime.utcnow() - relativedelta(hours=24)
+    recent_logins = users_models.LoginDeviceHistory.query.filter(
+        users_models.LoginDeviceHistory.user == user,
+        users_models.LoginDeviceHistory.dateCreated >= yesterday,
+    ).all()
+    recent_trusted_devices = users_models.TrustedDevice.query.filter(
+        users_models.TrustedDevice.dateCreated >= yesterday,
+    ).all()
+    user_trusted_device_ids = [device.deviceId for device in user.trusted_devices]
+
+    recent_suspicious_logins = []
+    for recent_login in recent_logins:
+        if recent_login.deviceId not in user_trusted_device_ids:
+            recent_suspicious_logins.append(recent_login)
+            continue
+
+        was_device_trusted_after_suspicious_login = any(
+            trusted_device.deviceId == recent_login.deviceId and trusted_device.dateCreated > recent_login.dateCreated
+            for trusted_device in recent_trusted_devices
+        )
+        if was_device_trusted_after_suspicious_login:
+            recent_suspicious_logins.append(recent_login)
+
+    return recent_suspicious_logins
+
+
 def create_suspicious_login_email_token(
     login_info: users_models.LoginDeviceHistory | None, user_id: int
 ) -> token_utils.Token:

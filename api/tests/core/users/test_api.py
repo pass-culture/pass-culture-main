@@ -1403,7 +1403,7 @@ class ShouldSaveLoginDeviceAsTrustedDeviceTest:
         assert users_api.should_save_login_device_as_trusted_device(device_info=self.device_info, user=user) is False
 
 
-class isLoginDeviceTrustedDeviceTest:
+class IsLoginDeviceTrustedDeviceTest:
     def should_not_be_trusted_when_user_has_no_trusted_device(self):
         user = users_factories.UserFactory()
         device_info = account_serialization.TrustedDevice(
@@ -1440,6 +1440,36 @@ class isLoginDeviceTrustedDeviceTest:
         device_info = account_serialization.TrustedDevice(deviceId="other-device-id", os="iOS", source="iPhone 13")
 
         assert users_api.is_login_device_a_trusted_device(device_info=device_info, user=user) is False
+
+
+class RecentSuspiciousLoginsTest:
+    def should_ignore_trusted_device_logins(self):
+        user = users_factories.UserFactory()
+        trusted_device = users_factories.TrustedDeviceFactory(user=user)
+        _trusted_login = users_factories.LoginDeviceHistoryFactory(user=user, deviceId=trusted_device.deviceId)
+
+        assert not users_api.get_recent_suspicious_logins(user)
+
+    def should_ignore_old_suspicious_device_logins(self):
+        user = users_factories.UserFactory()
+        _untrusted_login = users_factories.LoginDeviceHistoryFactory(
+            user=user, dateCreated=datetime.datetime.utcnow() - relativedelta(hours=25)
+        )
+
+        assert not users_api.get_recent_suspicious_logins(user)
+
+    def should_detect_suspicious_login(self):
+        user = users_factories.UserFactory()
+        untrusted_login = users_factories.LoginDeviceHistoryFactory(user=user)
+
+        assert users_api.get_recent_suspicious_logins(user) == [untrusted_login]
+
+    def should_detect_suspicious_login_before_trusted_device_addition(self):
+        user = users_factories.UserFactory()
+        untrusted_login = users_factories.LoginDeviceHistoryFactory(user=user)
+        _trusted_device = users_factories.TrustedDeviceFactory(user=user, deviceId=untrusted_login.deviceId)
+
+        assert users_api.get_recent_suspicious_logins(user) == [untrusted_login]
 
 
 class CreateSuspiciousLoginEmailTokenTest:
