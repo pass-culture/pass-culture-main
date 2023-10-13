@@ -9,7 +9,7 @@ from pcapi import settings
 # pre/post deployment: post
 # revision identifiers, used by Alembic.
 revision = "64f6f0c48964"
-down_revision = "cd2fcba2f97f"
+down_revision = "603064a3b53f"
 branch_labels = None
 depends_on = None
 
