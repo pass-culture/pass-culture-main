@@ -2,10 +2,12 @@ import {
   AdageFrontRoles,
   AuthenticatedResponse,
   CategoriesResponseModel,
+  CollectiveOfferResponseModel,
   CollectiveOfferTemplateResponseModel,
   EducationalInstitutionWithBudgetResponseModel,
   OfferAddressType,
 } from 'apiClient/adage'
+import { StudentLevels } from 'apiClient/v1'
 
 export const defaultCollectiveTemplateOffer: CollectiveOfferTemplateResponseModel =
   {
@@ -44,6 +46,57 @@ export const defaultCollectiveTemplateOffer: CollectiveOfferTemplateResponseMode
       },
     },
   }
+
+export const defaultCollectiveOffer: CollectiveOfferResponseModel = {
+  id: 479,
+  name: 'Une chouette à la mer',
+  description: 'Une offre vraiment chouette',
+  subcategoryLabel: 'Cinéma',
+  stock: {
+    id: 825,
+    beginningDatetime: new Date('2022-09-16T00:00:00Z').toISOString(),
+    bookingLimitDatetime: new Date('2022-09-16T00:00:00Z').toISOString(),
+    isBookable: true,
+    price: 140000,
+    numberOfTickets: 10,
+  },
+  venue: {
+    id: 1,
+    address: '1 boulevard Poissonnière',
+    city: 'Paris',
+    name: 'Le Petit Rintintin 33',
+    postalCode: '75000',
+    publicName: 'Le Petit Rintintin 33',
+    coordinates: {
+      latitude: 48.87004,
+      longitude: 2.3785,
+    },
+    managingOfferer: {
+      name: 'Le Petit Rintintin Management',
+    },
+  },
+  isSoldOut: false,
+  isExpired: false,
+  isFavorite: false,
+  visualDisabilityCompliant: true,
+  mentalDisabilityCompliant: true,
+  audioDisabilityCompliant: true,
+  motorDisabilityCompliant: true,
+  contactEmail: '',
+  contactPhone: '',
+  domains: [],
+  offerVenue: {
+    venueId: 1,
+    otherAddress: '',
+    addressType: OfferAddressType.OFFERER_VENUE,
+  },
+  teacher: {
+    firstName: 'Jean',
+    lastName: 'Dupont',
+  },
+  students: [StudentLevels.COLL_GE_4E, StudentLevels.COLL_GE_3E],
+  interventionArea: ['75', '92'],
+}
 
 export const defaultAdageUser: AuthenticatedResponse = {
   departmentCode: '75',

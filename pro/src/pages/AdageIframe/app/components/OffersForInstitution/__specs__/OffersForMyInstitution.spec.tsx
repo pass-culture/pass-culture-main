@@ -32,7 +32,6 @@ vi.mock('react-instantsearch', async () => {
     }),
     useInfiniteHits: () => ({
       ...defaultUseInfiniteHitsReturn,
-      hits: defaultUseInfiniteHitsReturn.hits,
       results: { queryID: 'queryId' },
     }),
     useInstantSearch: () => ({
