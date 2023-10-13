@@ -1,3 +1,4 @@
+import format from 'date-fns/format'
 import React, { useEffect, useState } from 'react'
 
 import { BookingRecapResponseModel } from 'apiClient/v1'
@@ -14,6 +15,7 @@ import { DEFAULT_OMNISEARCH_CRITERIA } from 'screens/Bookings/BookingsRecapTable
 import filterBookingsRecap from 'screens/Bookings/BookingsRecapTable/utils/filterBookingsRecap'
 import Spinner from 'ui-kit/Spinner/Spinner'
 import { SvgIcon } from 'ui-kit/SvgIcon/SvgIcon'
+import { FORMAT_ISO_DATE_ONLY } from 'utils/date'
 
 import styles from './BookingsSummary.module.scss'
 
@@ -36,6 +38,8 @@ export const BookingsSummaryScreen = ({
       const response = await getFilteredBookingsRecapAdapter({
         ...DEFAULT_PRE_FILTERS,
         offerId: String(offer.id),
+        bookingBeginningDate: '2015-01-01',
+        bookingEndingDate: format(new Date(), FORMAT_ISO_DATE_ONLY),
       })
 
       if (response.isOk) {
