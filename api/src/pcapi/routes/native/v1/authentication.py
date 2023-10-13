@@ -38,6 +38,8 @@ from .serialization import authentication
 
 logger = logging.getLogger(__name__)
 
+MAX_SUSPICIOUS_LOGIN_EMAILS = 5
+
 
 @blueprint.native_v1.route("/signin", methods=["POST"])
 @spectree_serialize(
@@ -77,6 +79,7 @@ def signin(body: authentication.SigninRequest) -> authentication.SigninResponse:
             (user.is_active or user.is_account_suspended_upon_user_request)
             and not users_api.is_login_device_a_trusted_device(body.device_info, user)
             and FeatureToggle.WIP_ENABLE_SUSPICIOUS_EMAIL_SEND.is_active()
+            and len(users_api.get_recent_suspicious_logins(user)) <= MAX_SUSPICIOUS_LOGIN_EMAILS
         )
 
         if should_send_suspicious_login_email:

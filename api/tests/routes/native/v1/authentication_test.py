@@ -1,6 +1,8 @@
+import copy
 from datetime import datetime
 import logging
 from unittest.mock import patch
+import uuid
 
 from flask_jwt_extended import decode_token
 from flask_jwt_extended.utils import create_access_token
@@ -29,6 +31,7 @@ from pcapi.core.users.models import Token
 from pcapi.core.users.models import TrustedDevice
 from pcapi.models import db
 import pcapi.notifications.push.testing as bash_testing
+from pcapi.routes.native.v1 import authentication
 from pcapi.utils import crypto
 
 from tests.scripts.beneficiary.fixture import make_single_application
@@ -310,6 +313,20 @@ class TrustedDeviceFeatureTest:
         WIP_ENABLE_TRUSTED_DEVICE=True,
         WIP_ENABLE_SUSPICIOUS_EMAIL_SEND=True,
     )
+    def should_send_limited_number_of_emails_when_login_is_suspicious(self, client):
+        users_factories.UserFactory(email=self.data["identifier"], password=self.data["password"], isActive=True)
+
+        for _ in range(authentication.MAX_SUSPICIOUS_LOGIN_EMAILS + 1):
+            data = copy.deepcopy(self.data)
+            data["deviceInfo"]["deviceId"] = str(uuid.uuid4()).upper()
+            client.post("/native/v1/signin", json=data, headers=self.headers)
+
+        assert len(mails_testing.outbox) == authentication.MAX_SUSPICIOUS_LOGIN_EMAILS
+
+    @override_features(
+        WIP_ENABLE_TRUSTED_DEVICE=True,
+        WIP_ENABLE_SUSPICIOUS_EMAIL_SEND=True,
+    )
     def should_send_suspicious_login_email_to_user_suspended_upon_request(self, client):
         user = users_factories.UserFactory(email=self.data["identifier"], password=self.data["password"])
         history_factories.SuspendedUserActionHistoryFactory(
@@ -350,7 +367,7 @@ class TrustedDeviceFeatureTest:
     )
     def should_extend_refresh_token_lifetime_when_logging_in_with_a_trusted_device(self, client):
         user = users_factories.UserFactory(email=self.data["identifier"], password=self.data["password"], isActive=True)
-        users_factories.TrustedDeviceFactory(user=user)
+        users_factories.TrustedDeviceFactory(user=user, deviceId=self.data["deviceInfo"]["deviceId"])
 
         response = client.post("/native/v1/signin", json=self.data)
 
@@ -383,7 +400,7 @@ class TrustedDeviceFeatureTest:
     )
     def should_extend_refresh_token_lifetime_on_email_validation_when_device_is_trusted(self, client):
         user = users_factories.UserFactory(isEmailValidated=False)
-        users_factories.TrustedDeviceFactory(user=user)
+        users_factories.TrustedDeviceFactory(user=user, deviceId=self.data["deviceInfo"]["deviceId"])
         token = token_utils.Token.create(
             type_=token_utils.TokenType.EMAIL_VALIDATION,
             ttl=users_constants.EMAIL_VALIDATION_TOKEN_LIFE_TIME,
