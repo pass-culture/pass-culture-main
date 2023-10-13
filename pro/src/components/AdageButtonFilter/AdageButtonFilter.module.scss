@@ -17,6 +17,7 @@
   height: rem.torem(40px);
   white-space: nowrap;
   font-size: rem.torem(15px);
+  cursor: pointer;
 
   &-is-active {
     font-weight: 700;
