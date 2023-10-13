@@ -128,6 +128,7 @@ vi.mock('react-instantsearch', async () => {
   return {
     ...((await vi.importActual('react-instantsearch')) ?? {}),
     useSearchBox: () => ({ refine: refineSearch }),
+    useInstantSearch: () => ({ scopedResults: [] }),
   }
 })
 

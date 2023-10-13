@@ -132,14 +132,14 @@ export const Autocomplete = ({
     }
 
     // TODO: delete when ff deleted
-    enableAutocompleteAdage && loadData()
+    enableAutocompleteAdage && void loadData()
   }, [])
 
   const logAutocompleteSuggestionClick = (
     suggestionType: SuggestionType,
     suggestionValue: string
   ) => {
-    apiAdage.logTrackingAutocompleteSuggestionClick({
+    void apiAdage.logTrackingAutocompleteSuggestionClick({
       iframeFrom: removeParamsFromUrl(location.pathname),
       suggestionType,
       suggestionValue,
@@ -264,12 +264,13 @@ export const Autocomplete = ({
               item['offer.subcategoryId'][0]
             )
 
-            result && formik.setFieldValue('categories', [result.subCategories])
+            result &&
+              (await formik.setFieldValue('categories', [result.subCategories]))
           } else {
-            formik.setFieldValue('categories', [])
+            await formik.setFieldValue('categories', [])
           }
           refine(item.query)
-          formik.submitForm()
+          await formik.submitForm()
           addSuggestionToHistory(item.query)
           logAutocompleteSuggestionClick(
             itemId <= 2 ? SuggestionType.OFFER_CATEGORY : SuggestionType.OFFER,

@@ -7,7 +7,8 @@
   display: flex;
   flex-direction: column;
   justify-content: center;
-  margin: rem.torem(40px) 0;
+  padding: rem.torem(40px) 0;
+  margin-bottom: rem.torem(32px);
   text-align: center;
 
   &-text {
@@ -23,7 +24,7 @@
       .no-results-text-query {
         text-decoration: underline;
         text-decoration-thickness: rem.torem(7px);
-        text-decoration-color: colors.$light-purple;
+        text-decoration-color: colors.$light-purple-with-transparency;
         text-decoration-skip-ink: none;
         text-underline-offset: rem.torem(-2px);
       }
