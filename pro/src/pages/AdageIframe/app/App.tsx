@@ -1,5 +1,5 @@
 import * as React from 'react'
-import { useCallback, useEffect, useId, useState } from 'react'
+import { useEffect, useId, useState } from 'react'
 
 import {
   AdageFrontRoles,
@@ -80,8 +80,6 @@ export const App = (): JSX.Element => {
       })
   }, [])
 
-  const removeVenueFilter = useCallback(() => setVenueFilter(null), [])
-
   const uniqueId = useId()
   useEffect(() => {
     // User token can not contains special characters
@@ -104,10 +102,7 @@ export const App = (): JSX.Element => {
           [AdageFrontRoles.READONLY, AdageFrontRoles.REDACTOR].includes(
             user.role
           ) ? (
-            <AppLayout
-              removeVenueFilter={removeVenueFilter}
-              venueFilter={venueFilter}
-            />
+            <AppLayout venueFilter={venueFilter} />
           ) : (
             <UnauthenticatedError />
           )}

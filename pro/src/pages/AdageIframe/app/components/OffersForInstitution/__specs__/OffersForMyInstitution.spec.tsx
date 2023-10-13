@@ -1,9 +1,14 @@
+import { screen, waitFor } from '@testing-library/react'
 import React from 'react'
 import { Configure } from 'react-instantsearch'
 
 import { AlgoliaQueryContextProvider } from 'pages/AdageIframe/app/providers'
 import { AdageUserContextProvider } from 'pages/AdageIframe/app/providers/AdageUserContext'
-import { defaultAdageUser } from 'utils/adageFactories'
+import {
+  defaultAdageUser,
+  defaultUseInfiniteHitsReturn,
+  defaultUseStatsReturn,
+} from 'utils/adageFactories'
 import { renderWithProviders } from 'utils/renderWithProviders'
 
 import OffersForMyInstitution from '../OffersForMyInstitution'
@@ -17,16 +22,27 @@ vi.mock('utils/config', async () => {
   }
 })
 
-vi.mock('../../OffersInstantSearch/OffersSearch/Offers/Offers', () => {
-  return {
-    Offers: vi.fn(() => <div />),
-  }
-})
-
 vi.mock('react-instantsearch', async () => {
   return {
     ...((await vi.importActual('react-instantsearch')) ?? {}),
     Configure: vi.fn(() => <div />),
+    useStats: () => ({
+      ...defaultUseStatsReturn,
+      nbHits: 2,
+    }),
+    useInfiniteHits: () => ({
+      ...defaultUseInfiniteHitsReturn,
+      hits: defaultUseInfiniteHitsReturn.hits,
+      results: { queryID: 'queryId' },
+    }),
+    useInstantSearch: () => ({
+      scopedResults: [
+        {
+          indexId: 'test-props-value',
+          results: { ...defaultUseStatsReturn, queryID: 'queryId' },
+        },
+      ],
+    }),
   }
 })
 
@@ -34,18 +50,18 @@ const renderOffersForMyInstitution = () => {
   renderWithProviders(
     <AdageUserContextProvider adageUser={defaultAdageUser}>
       <AlgoliaQueryContextProvider>
-        <OffersForMyInstitution
-          removeVenueFilter={() => {}}
-          venueFilter={null}
-        />
+        <OffersForMyInstitution />
       </AlgoliaQueryContextProvider>
     </AdageUserContextProvider>
   )
 }
 
 describe('OffersInstitutionList', () => {
-  it('should display list of offers for my institution', () => {
+  it('should display list of offers for my institution', async () => {
     renderOffersForMyInstitution()
+
+    const loadingMessage = screen.queryByText(/Chargement en cours/)
+    await waitFor(() => expect(loadingMessage).not.toBeInTheDocument())
 
     expect(Configure).toHaveBeenCalledWith(
       {
