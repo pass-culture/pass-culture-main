@@ -23,7 +23,7 @@ def create_data_thing_stocks(thing_offers_by_name: dict[str, Offer]) -> None:
         price = Decimal(1)
 
         name = offer_name + " / " + str(quantity) + " / " + str(price)
-        thing_stocks_by_name[name] = offers_factories.StockFactory(
+        thing_stocks_by_name[name] = offers_factories.ThingStockFactory(
             offer=offer,
             quantity=quantity,
             price=price,
