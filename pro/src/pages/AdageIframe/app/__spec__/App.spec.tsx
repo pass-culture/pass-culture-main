@@ -4,6 +4,7 @@ import { Configure } from 'react-instantsearch'
 
 import { AdageFrontRoles, VenueResponse } from 'apiClient/adage'
 import { apiAdage } from 'apiClient/api'
+import Notification from 'components/Notification/Notification'
 import { defaultCategories } from 'utils/adageFactories'
 import { renderWithProviders } from 'utils/renderWithProviders'
 
@@ -105,13 +106,17 @@ vi.mock('@algolia/autocomplete-plugin-query-suggestions', () => {
 
 const renderApp = (venueFilter: VenueResponse | null, initialEntries = '/') => {
   renderWithProviders(
-    <FiltersContextProvider venueFilter={venueFilter}>
-      <AlgoliaQueryContextProvider>
-        <FacetFiltersContextProvider>
-          <App />
-        </FacetFiltersContextProvider>
-      </AlgoliaQueryContextProvider>
-    </FiltersContextProvider>,
+    <>
+      <FiltersContextProvider venueFilter={venueFilter}>
+        <AlgoliaQueryContextProvider>
+          <FacetFiltersContextProvider>
+            <App />
+          </FacetFiltersContextProvider>
+        </AlgoliaQueryContextProvider>
+      </FiltersContextProvider>
+      ,
+      <Notification />
+    </>,
     { initialRouterEntries: [initialEntries] }
   )
 }
@@ -195,6 +200,44 @@ describe('app', () => {
         }),
         {}
       )
+    })
+
+    it('should trigger an error notification when siret is invalid', async () => {
+      const mockLocation = {
+        ...window.location,
+        search: '?siret=123456789',
+      }
+
+      window.location = mockLocation
+
+      vi.spyOn(apiAdage, 'getVenueBySiret').mockRejectedValueOnce(null)
+
+      renderApp(venue)
+
+      expect(
+        await screen.findByText(
+          'Lieu inconnu. Tous les résultats sont affichés.'
+        )
+      ).toBeInTheDocument()
+    })
+
+    it('should trigger an error notification when venue is invalid', async () => {
+      const mockLocation = {
+        ...window.location,
+        search: '?venue=123456789',
+      }
+
+      window.location = mockLocation
+
+      vi.spyOn(apiAdage, 'getVenueById').mockRejectedValueOnce(null)
+
+      renderApp(venue)
+
+      expect(
+        await screen.findByText(
+          'Lieu inconnu. Tous les résultats sont affichés.'
+        )
+      ).toBeInTheDocument()
     })
   })
 
