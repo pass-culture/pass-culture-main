@@ -6,8 +6,8 @@ import requests_mock
 
 from pcapi import settings
 from pcapi.core.external import zendesk_sell
-from pcapi.core.external.backends.zendesk_sell import ZendeskSellBackend
-from pcapi.core.external.backends.zendesk_sell import ZendeskSellReadOnlyBackend
+from pcapi.core.external.zendesk_sell_backends.zendesk_sell import ZendeskSellBackend
+from pcapi.core.external.zendesk_sell_backends.zendesk_sell import ZendeskSellReadOnlyBackend
 from pcapi.core.offerers import factories as offerers_factories
 from pcapi.core.offers import factories as offers_factories
 from pcapi.core.testing import override_features
