@@ -3,6 +3,8 @@ import { userEvent } from '@testing-library/user-event'
 
 import { AdageFrontRoles, AuthenticatedResponse } from 'apiClient/adage'
 import { apiAdage } from 'apiClient/api'
+import Notification from 'components/Notification/Notification'
+import { GET_DATA_ERROR_MESSAGE } from 'core/shared'
 import {
   AlgoliaQueryContextProvider,
   FiltersContextProvider,
@@ -105,13 +107,16 @@ const renderOffersSearchComponent = (
   storeOverrides?: unknown
 ) => {
   renderWithProviders(
-    <AdageUserContextProvider adageUser={user}>
-      <FiltersContextProvider>
-        <AlgoliaQueryContextProvider>
-          <OffersSearch {...props} />
-        </AlgoliaQueryContextProvider>
-      </FiltersContextProvider>
-    </AdageUserContextProvider>,
+    <>
+      <AdageUserContextProvider adageUser={user}>
+        <FiltersContextProvider>
+          <AlgoliaQueryContextProvider>
+            <OffersSearch {...props} />
+          </AlgoliaQueryContextProvider>
+        </FiltersContextProvider>
+      </AdageUserContextProvider>
+      <Notification />
+    </>,
     { storeOverrides: storeOverrides }
   )
 }
@@ -401,5 +406,23 @@ describe('offersSearch component', () => {
     expect(
       screen.getByText('Dans quelle zone géographique')
     ).toBeInTheDocument()
+  })
+
+  it('should show an error message notification when categories could not be fetched', async () => {
+    vi.spyOn(apiAdage, 'getEducationalOffersCategories').mockRejectedValueOnce(
+      null
+    )
+
+    renderOffersSearchComponent(props, user)
+
+    expect(await screen.findByText(GET_DATA_ERROR_MESSAGE)).toBeInTheDocument()
+  })
+
+  it('should show an error message notification when domains could not be fetched', async () => {
+    vi.spyOn(pcapi, 'getEducationalDomains').mockRejectedValueOnce(null)
+
+    renderOffersSearchComponent(props, user)
+
+    expect(await screen.findByText(GET_DATA_ERROR_MESSAGE)).toBeInTheDocument()
   })
 })

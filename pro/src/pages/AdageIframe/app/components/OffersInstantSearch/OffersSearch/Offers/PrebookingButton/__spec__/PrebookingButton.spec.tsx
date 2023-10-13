@@ -1,9 +1,11 @@
-import { render, screen } from '@testing-library/react'
+import { screen } from '@testing-library/react'
 import { userEvent } from '@testing-library/user-event'
 import React from 'react'
 
 import { OfferStockResponse } from 'apiClient/adage'
 import { apiAdage } from 'apiClient/api'
+import Notification from 'components/Notification/Notification'
+import { renderWithProviders } from 'utils/renderWithProviders'
 
 import PrebookingButton from '../PrebookingButton'
 
@@ -32,7 +34,7 @@ describe('offer', () => {
   describe('offer item', () => {
     it('should not display when prebooking is not activated', async () => {
       // Given
-      render(
+      renderWithProviders(
         <PrebookingButton
           canPrebookOffers={false}
           offerId={1}
@@ -46,7 +48,7 @@ describe('offer', () => {
 
     it('should display when prebooking is activated', async () => {
       // Given
-      render(
+      renderWithProviders(
         <PrebookingButton
           canPrebookOffers
           offerId={1}
@@ -59,7 +61,7 @@ describe('offer', () => {
     })
     it('should display modal on click', async () => {
       // Given
-      render(
+      renderWithProviders(
         <PrebookingButton
           canPrebookOffers
           offerId={1}
@@ -79,13 +81,16 @@ describe('offer', () => {
 
     it('should display error message if uai does not match', async () => {
       // Given
-      render(
-        <PrebookingButton
-          canPrebookOffers
-          offerId={1}
-          queryId="aez"
-          stock={stock}
-        />
+      renderWithProviders(
+        <>
+          <PrebookingButton
+            canPrebookOffers
+            offerId={1}
+            queryId="aez"
+            stock={stock}
+          />
+          <Notification />
+        </>
       )
       // When
       const preBookButton = screen.getByRole('button', { name: 'Préréserver' })
@@ -106,6 +111,38 @@ describe('offer', () => {
         screen.getByText(
           'Cette offre n’est pas préréservable par votre établissement'
         )
+      ).toBeInTheDocument()
+    })
+
+    it('should display a success message notification when booking worked', async () => {
+      vi.spyOn(apiAdage, 'bookCollectiveOffer').mockResolvedValue({
+        bookingId: 123,
+      })
+      // Given
+      renderWithProviders(
+        <>
+          <PrebookingButton
+            canPrebookOffers
+            offerId={1}
+            queryId="aez"
+            stock={stock}
+          />
+          <Notification />
+        </>
+      )
+      // When
+      const preBookButton = screen.getByRole('button', { name: 'Préréserver' })
+      await userEvent.click(preBookButton)
+
+      // Then
+      expect(
+        screen.getByText('Êtes-vous sûr de vouloir préréserver ?')
+      ).toBeInTheDocument()
+
+      await userEvent.click(screen.getByRole('button', { name: 'Préréserver' }))
+
+      expect(
+        screen.getByText('Votre préréservation a été effectuée avec succès')
       ).toBeInTheDocument()
     })
   })
