@@ -1,4 +1,4 @@
-import { screen } from '@testing-library/react'
+import { screen, waitFor } from '@testing-library/react'
 import { userEvent } from '@testing-library/user-event'
 
 import { AdageFrontRoles, AuthenticatedResponse } from 'apiClient/adage'
@@ -11,8 +11,13 @@ import {
 } from 'pages/AdageIframe/app/providers'
 import { AdageUserContextProvider } from 'pages/AdageIframe/app/providers/AdageUserContext'
 import * as pcapi from 'pages/AdageIframe/repository/pcapi/pcapi'
+import {
+  defaultUseInfiniteHitsReturn,
+  defaultUseStatsReturn,
+} from 'utils/adageFactories'
 import { renderWithProviders } from 'utils/renderWithProviders'
 
+import { MAIN_INDEX_ID } from '../../OffersInstantSearch'
 import { OffersSearch, SearchProps } from '../OffersSearch'
 
 interface getItems {
@@ -128,7 +133,33 @@ vi.mock('react-instantsearch', async () => {
   return {
     ...((await vi.importActual('react-instantsearch')) ?? {}),
     useSearchBox: () => ({ refine: refineSearch }),
-    useInstantSearch: () => ({ scopedResults: [] }),
+    useInstantSearch: () => ({
+      scopedResults: [
+        {
+          indexId: MAIN_INDEX_ID,
+          results: {
+            hits: [],
+            nbHits: 0,
+          },
+        },
+        {
+          indexId: 'no_results_offers_index_0',
+          results: {
+            hits: defaultUseInfiniteHitsReturn.hits,
+            nbHits: 1,
+          },
+        },
+      ],
+    }),
+    Configure: vi.fn(() => <div />),
+    Index: vi.fn(({ children }) => children),
+    useStats: () => ({
+      ...defaultUseStatsReturn,
+      nbHits: 0,
+    }),
+    useInfiniteHits: () => ({
+      ...defaultUseInfiniteHitsReturn,
+    }),
   }
 })
 
@@ -404,5 +435,14 @@ describe('offersSearch component', () => {
     renderOffersSearchComponent(props, user)
 
     expect(await screen.findByText(GET_DATA_ERROR_MESSAGE)).toBeInTheDocument()
+  })
+
+  it('should display suggestions if there are no search results', async () => {
+    renderOffersSearchComponent(props, user)
+
+    const loadingMessage = screen.queryByText(/Chargement en cours/)
+    await waitFor(() => expect(loadingMessage).not.toBeInTheDocument())
+
+    expect(screen.getByTestId('suggestions-header')).toBeInTheDocument()
   })
 })
