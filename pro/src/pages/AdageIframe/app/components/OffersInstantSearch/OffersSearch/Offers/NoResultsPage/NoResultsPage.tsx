@@ -11,10 +11,10 @@ interface NoResultsPageProps {
 
 export const NoResultsPage = ({ query }: NoResultsPageProps): JSX.Element => {
   const noResultText = !query ? (
-    "Nous n'avons trouvé aucun résultat"
+    'Nous n’avons trouvé aucune offre publiée'
   ) : (
     <>
-      Nous n’avons trouvé aucun résultat pour :
+      Nous n’avons trouvé aucune offre publiée pour :
       <span className={styles['no-results-text-query-container']}>
         “<span className={styles['no-results-text-query']}>{query}</span>”
       </span>

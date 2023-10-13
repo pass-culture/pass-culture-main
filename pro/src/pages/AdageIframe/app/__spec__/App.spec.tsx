@@ -45,6 +45,8 @@ vi.mock('react-instantsearch', async () => {
     useInfiniteHits: () => ({
       hits: [],
     }),
+    useInstantSearch: () => ({ scopedResults: [] }),
+    Index: vi.fn(({ children }) => children),
   }
 })
 

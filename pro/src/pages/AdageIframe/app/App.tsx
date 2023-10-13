@@ -1,5 +1,5 @@
 import * as React from 'react'
-import { useCallback, useEffect, useId, useState } from 'react'
+import { useEffect, useId, useState } from 'react'
 
 import {
   AdageFrontRoles,
@@ -36,7 +36,7 @@ export const App = (): JSX.Element => {
     const getRelativeOffers = params.get('all') === 'true'
     apiAdage
       .authenticate()
-      .then(user => setUser(user))
+      .then((user) => setUser(user))
       .then(async () => {
         if (siret) {
           try {
@@ -72,15 +72,13 @@ export const App = (): JSX.Element => {
       .finally(() => {
         setIsLoading(false)
         if (LOGS_DATA) {
-          apiAdage.logCatalogView({
+          void apiAdage.logCatalogView({
             iframeFrom: removeParamsFromUrl(location.pathname),
             source: siret || venueId ? 'partnersMap' : 'homepage',
           })
         }
       })
   }, [])
-
-  const removeVenueFilter = useCallback(() => setVenueFilter(null), [])
 
   const uniqueId = useId()
   useEffect(() => {
@@ -104,10 +102,7 @@ export const App = (): JSX.Element => {
           [AdageFrontRoles.READONLY, AdageFrontRoles.REDACTOR].includes(
             user.role
           ) ? (
-            <AppLayout
-              removeVenueFilter={removeVenueFilter}
-              venueFilter={venueFilter}
-            />
+            <AppLayout venueFilter={venueFilter} />
           ) : (
             <UnauthenticatedError />
           )}
