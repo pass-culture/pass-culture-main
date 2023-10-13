@@ -20,6 +20,7 @@ import HomepageBreadcrumb, { STEP_ID_OFFERERS } from './HomepageBreadcrumb'
 import Offerers from './Offerers/Offerers'
 import { OffererStats } from './OffererStats'
 import { ProfileAndSupport } from './ProfileAndSupport'
+import { StatisticsDashboard } from './StatisticsDashboard/StatisticsDashboard'
 import { VenueOfferSteps } from './VenueOfferSteps'
 
 const Homepage = (): JSX.Element => {
@@ -36,6 +37,7 @@ const Homepage = (): JSX.Element => {
   const [isUserOffererValidated, setIsUserOffererValidated] = useState(false)
   const [venues, setVenues] = useState(INITIAL_OFFERER_VENUES)
   const { remoteConfigData } = useRemoteConfig()
+  const isStatisticsDashboardEnabled = useActiveFeature('WIP_HOME_STATS')
 
   useEffect(() => {
     async function loadOfferer(offererId: string) {
@@ -117,6 +119,10 @@ const Homepage = (): JSX.Element => {
           profileRef={profileRef}
           statsRef={statsRef}
         />
+
+        {isStatisticsDashboardEnabled && (
+          <StatisticsDashboard offererId={selectedOffererId} />
+        )}
 
         <section className="h-section">
           <Offerers
