@@ -8,6 +8,8 @@ import pcapi.core.history.factories as history_factories
 import pcapi.core.history.models as history_models
 import pcapi.core.mails.testing as mails_testing
 import pcapi.core.offerers.factories as offerers_factories
+from pcapi.core.offers import factories as offers_factories
+from pcapi.core.offers import models as offers_models
 import pcapi.core.permissions.models as perm_models
 from pcapi.core.testing import assert_no_duplicated_queries
 import pcapi.core.users.constants as users_constants
@@ -464,3 +466,17 @@ class DeleteProUserTest(PostEndpointHelper):
         delete_user_attributes_task.delay.assert_not_called()
         assert users_models.User.query.filter(users_models.User.id == user_id).count() == 1
         assert history_models.ActionHistory.query.filter(history_models.ActionHistory.userId == user_id).count() == 1
+
+    def test_delete_pro_user_with_related_objects(self, authenticated_client):
+        user = users_factories.NonAttachedProFactory()
+        offers_factories.MediationFactory(author=user)
+
+        user_id = user.id
+
+        response = self.post_to_endpoint(authenticated_client, user_id=user_id, form={"email": user.email})
+
+        # ensure that it does not crash
+        assert response.status_code == 303
+
+        assert users_models.User.query.filter(users_models.User.id == user_id).count() == 0
+        assert offers_models.Mediation.query.one().authorId is None
