@@ -79,7 +79,7 @@ def test_serialize_offer():
             "nativeCategoryId": offer.subcategory.native_category_id,
             "prices": [decimal.Decimal("10.00")],
             "rankingWeight": 2,
-            "searchGroupName": "LIVRE",
+            "searchGroupName": "LIVRES",
             "searchGroupNamev2": "LIVRES",
             "showType": None,
             "stocksDateCreated": [stock.dateCreated.timestamp()],
