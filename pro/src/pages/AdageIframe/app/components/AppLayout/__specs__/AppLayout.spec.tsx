@@ -56,6 +56,10 @@ vi.mock('react-instantsearch', async () => {
     useInfiniteHits: () => ({
       hits: defaultUseInfiniteHitsReturn.hits.slice(0, 1),
     }),
+    useInstantSearch: () => ({
+      scopedResults: [],
+    }),
+    Index: vi.fn(({ children }) => children),
   }
 })
 
@@ -78,7 +82,7 @@ const renderAppLayout = (initialRoute = '/') => {
     <AdageUserContextProvider adageUser={defaultAdageUser}>
       <FiltersContextProvider>
         <AlgoliaQueryContextProvider>
-          <AppLayout removeVenueFilter={vi.fn()} venueFilter={null} />
+          <AppLayout venueFilter={null} />
         </AlgoliaQueryContextProvider>
       </FiltersContextProvider>
     </AdageUserContextProvider>,

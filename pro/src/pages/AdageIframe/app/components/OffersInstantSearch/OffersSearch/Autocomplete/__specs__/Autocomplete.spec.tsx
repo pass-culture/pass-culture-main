@@ -224,7 +224,7 @@ describe('Autocomplete', () => {
 
     await userEvent.type(inputElement, 'test query')
 
-    userEvent.click(searchButton)
+    await userEvent.click(searchButton)
 
     await waitFor(() => expect(refineMock).toHaveBeenCalledWith('test query'))
   })
