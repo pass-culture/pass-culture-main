@@ -153,7 +153,7 @@ class Mediation(PcObject, Base, Model, HasThumbMixin, ProvidableMixin, Deactivab
     __tablename__ = "mediation"
 
     author: sa_orm.Mapped["User"] | None = sa.orm.relationship("User", backref="mediations")
-    authorId = sa.Column(sa.BigInteger, sa.ForeignKey("user.id"), nullable=True)
+    authorId = sa.Column(sa.BigInteger, sa.ForeignKey("user.id", ondelete="SET NULL"), nullable=True)
     credit = sa.Column(sa.String(255), nullable=True)
     dateCreated: datetime.datetime = sa.Column(sa.DateTime, nullable=False, default=datetime.datetime.utcnow)
     offer: sa_orm.Mapped["Offer"] = sa.orm.relationship("Offer", backref="mediations")
