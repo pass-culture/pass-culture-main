@@ -5,17 +5,13 @@ import { VenueResponse } from 'apiClient/adage'
 import { api, apiAdage } from 'apiClient/api'
 import { GET_DATA_ERROR_MESSAGE } from 'core/shared'
 import useIsElementVisible from 'hooks/useIsElementVisible'
+import useNotification from 'hooks/useNotification'
 import useAdageUser from 'pages/AdageIframe/app/hooks/useAdageUser'
 import { FacetFiltersContext } from 'pages/AdageIframe/app/providers'
 import { Option } from 'pages/AdageIframe/app/types'
 import { filterEducationalSubCategories } from 'utils/collectiveCategories'
 import { removeParamsFromUrl } from 'utils/removeParamsFromUrl'
 
-import {
-  Notification,
-  NotificationComponent,
-  NotificationType,
-} from '../../Layout/Notification/Notification'
 import {
   ADAGE_FILTERS_DEFAULT_VALUES,
   adageFiltersToFacetFilters,
@@ -60,8 +56,9 @@ export const OffersSearch = ({
     Option<string[]>[]
   >([])
 
+  const notification = useNotification()
+
   const [domainsOptions, setDomainsOptions] = useState<Option<number>[]>([])
-  const [notification, setNotification] = useState<Notification | null>(null)
 
   useEffect(() => {
     const getAllCategories = async () => {
@@ -70,9 +67,7 @@ export const OffersSearch = ({
 
         return setCategoriesOptions(filterEducationalSubCategories(result))
       } catch {
-        return setNotification(
-          new Notification(NotificationType.error, GET_DATA_ERROR_MESSAGE)
-        )
+        notification.error(GET_DATA_ERROR_MESSAGE)
       }
     }
     const getAllDomains = async () => {
@@ -83,9 +78,7 @@ export const OffersSearch = ({
           result.map(({ id, name }) => ({ value: id, label: name }))
         )
       } catch {
-        return setNotification(
-          new Notification(NotificationType.error, GET_DATA_ERROR_MESSAGE)
-        )
+        notification.error(GET_DATA_ERROR_MESSAGE)
       }
     }
     getAllCategories()
@@ -161,7 +154,6 @@ export const OffersSearch = ({
   const isOfferFiltersVisible = useIsElementVisible(offerFilterRef)
   return (
     <>
-      {notification && <NotificationComponent notification={notification} />}
       <FormikContext.Provider value={formik}>
         <Autocomplete
           initialQuery={venueFilter?.publicName || venueFilter?.name || ''}

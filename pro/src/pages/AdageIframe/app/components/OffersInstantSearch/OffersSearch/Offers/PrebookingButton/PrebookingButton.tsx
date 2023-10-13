@@ -3,12 +3,8 @@ import React, { useCallback, useState } from 'react'
 
 import { OfferStockResponse } from 'apiClient/adage'
 import { apiAdage } from 'apiClient/api'
+import useNotification from 'hooks/useNotification'
 import strokeHourglass from 'icons/stroke-hourglass.svg'
-import {
-  Notification,
-  NotificationComponent,
-  NotificationType,
-} from 'pages/AdageIframe/app/components/Layout/Notification/Notification'
 import './PrebookingButton.scss'
 import { logOfferConversion } from 'pages/AdageIframe/libs/initAlgoliaAnalytics'
 import { Button } from 'ui-kit'
@@ -33,8 +29,9 @@ const PrebookingButton = ({
   queryId: string
 }): JSX.Element | null => {
   const [hasPrebookedOffer, setHasPrebookedOffer] = useState(false)
-  const [notification, setNotification] = useState<Notification | null>(null)
   const [isModalOpen, setIsModalOpen] = useState(false)
+
+  const notification = useNotification()
 
   const handleBookingModalButtonClick = (stockId: number) => {
     if (LOGS_DATA) {
@@ -56,14 +53,13 @@ const PrebookingButton = ({
     const { isOk, message } = await postBookingAdapater(stock.id)
 
     if (!isOk) {
-      return setNotification(new Notification(NotificationType.error, message))
+      notification.error(message)
+      return
     }
 
     setHasPrebookedOffer(true)
     closeModal()
-    setNotification(
-      new Notification(NotificationType.success, message as string)
-    )
+    notification.success(message)
   }, [stock.id, offerId, queryId])
 
   return canPrebookOffers ? (
@@ -97,7 +93,6 @@ const PrebookingButton = ({
         )}
       </div>
 
-      {notification && <NotificationComponent notification={notification} />}
       {isModalOpen && (
         <PrebookingModal
           closeModal={closeModal}

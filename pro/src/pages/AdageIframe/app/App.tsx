@@ -7,17 +7,13 @@ import {
   VenueResponse,
 } from 'apiClient/adage'
 import { apiAdage } from 'apiClient/api'
+import useNotification from 'hooks/useNotification'
 import { LOGS_DATA } from 'utils/config'
 import { removeParamsFromUrl } from 'utils/removeParamsFromUrl'
 
 import { initAlgoliaAnalytics } from '../libs/initAlgoliaAnalytics'
 
 import { AppLayout } from './components/AppLayout/AppLayout'
-import {
-  Notification,
-  NotificationComponent,
-  NotificationType,
-} from './components/Layout/Notification/Notification'
 import { LoaderPage } from './components/LoaderPage/LoaderPage'
 import { UnauthenticatedError } from './components/UnauthenticatedError/UnauthenticatedError'
 import {
@@ -30,7 +26,8 @@ export const App = (): JSX.Element => {
   const [user, setUser] = useState<AuthenticatedResponse | null>()
   const [isLoading, setIsLoading] = useState<boolean>(true)
   const [venueFilter, setVenueFilter] = useState<VenueResponse | null>(null)
-  const [notification, setNotification] = useState<Notification | null>(null)
+
+  const notification = useNotification()
 
   useEffect(() => {
     const params = new URLSearchParams(window.location.search)
@@ -49,11 +46,8 @@ export const App = (): JSX.Element => {
             )
             return setVenueFilter(result)
           } catch {
-            return setNotification(
-              new Notification(
-                NotificationType.error,
-                'Lieu inconnu. Tous les résultats sont affichés.'
-              )
+            notification.error(
+              'Lieu inconnu. Tous les résultats sont affichés.'
             )
           }
         }
@@ -67,11 +61,8 @@ export const App = (): JSX.Element => {
 
             return setVenueFilter(result)
           } catch {
-            return setNotification(
-              new Notification(
-                NotificationType.error,
-                'Lieu inconnu. Tous les résultats sont affichés.'
-              )
+            notification.error(
+              'Lieu inconnu. Tous les résultats sont affichés.'
             )
           }
         }
@@ -106,29 +97,28 @@ export const App = (): JSX.Element => {
   }
 
   return (
-    <AdageUserContextProvider adageUser={user}>
-      <FiltersContextProvider venueFilter={venueFilter}>
-        <FacetFiltersContextProvider
-          departmentCode={user?.departmentCode}
-          uai={user?.uai}
-          venueFilter={venueFilter}
-        >
-          {notification && (
-            <NotificationComponent notification={notification} />
-          )}
-          {user?.role &&
-          [AdageFrontRoles.READONLY, AdageFrontRoles.REDACTOR].includes(
-            user.role
-          ) ? (
-            <AppLayout
-              removeVenueFilter={removeVenueFilter}
-              venueFilter={venueFilter}
-            />
-          ) : (
-            <UnauthenticatedError />
-          )}
-        </FacetFiltersContextProvider>
-      </FiltersContextProvider>
-    </AdageUserContextProvider>
+    <>
+      <AdageUserContextProvider adageUser={user}>
+        <FiltersContextProvider venueFilter={venueFilter}>
+          <FacetFiltersContextProvider
+            departmentCode={user?.departmentCode}
+            uai={user?.uai}
+            venueFilter={venueFilter}
+          >
+            {user?.role &&
+            [AdageFrontRoles.READONLY, AdageFrontRoles.REDACTOR].includes(
+              user.role
+            ) ? (
+              <AppLayout
+                removeVenueFilter={removeVenueFilter}
+                venueFilter={venueFilter}
+              />
+            ) : (
+              <UnauthenticatedError />
+            )}
+          </FacetFiltersContextProvider>
+        </FiltersContextProvider>
+      </AdageUserContextProvider>
+    </>
   )
 }
