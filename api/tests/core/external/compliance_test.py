@@ -38,7 +38,7 @@ class GetDataComplianceScoringTest:
             compliance.make_update_offer_compliance_score(payload)
 
         assert exc.value.is_retryable is False
-        assert {"status_code": 401} in exc.value.args
+        assert exc.value.args[0] == {"info": "Connection to Compliance API was refused", "status_code": 401}
         assert "complianceScore" not in offer.extraData
 
     @mock.patch("pcapi.core.external.compliance.compliance_backend", ComplianceBackend())
@@ -52,7 +52,7 @@ class GetDataComplianceScoringTest:
             compliance.make_update_offer_compliance_score(payload)
 
         assert exc.value.is_retryable is False
-        assert {"status_code": 422} in exc.value.args
+        assert exc.value.args[0] == {"info": "Data sent to Compliance API is faulty", "status_code": 422}
         assert "complianceScore" not in offer.extraData
 
     @mock.patch("pcapi.core.external.compliance.compliance_backend", ComplianceBackend())
@@ -66,7 +66,7 @@ class GetDataComplianceScoringTest:
             compliance.make_update_offer_compliance_score(payload)
 
         assert exc.value.is_retryable is True
-        assert {"status_code": 500} in exc.value.args
+        assert exc.value.args[0] == {"info": "Response from Compliance API is not ok", "status_code": 500}
         assert "complianceScore" not in offer.extraData
 
 

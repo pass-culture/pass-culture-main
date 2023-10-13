@@ -1,9 +1,9 @@
 import logging
 
-from pcapi.core.external.backends import zendesk_backend
-from pcapi.core.external.backends.base import ContactFoundMoreThanOneError
-from pcapi.core.external.backends.base import ContactNotFoundError
-from pcapi.core.external.backends.base import ZendeskCustomFieldsShort
+from pcapi.core.external.zendesk_sell_backends import zendesk_backend
+from pcapi.core.external.zendesk_sell_backends.base import ContactFoundMoreThanOneError
+from pcapi.core.external.zendesk_sell_backends.base import ContactNotFoundError
+from pcapi.core.external.zendesk_sell_backends.base import ZendeskCustomFieldsShort
 from pcapi.core.offerers import models as offerers_models
 from pcapi.core.offerers import repository as offerers_repository
 from pcapi.models.feature import FeatureToggle

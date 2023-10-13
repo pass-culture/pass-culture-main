@@ -1,5 +1,5 @@
 from pcapi import settings
-from pcapi.core.external.backends.base import BaseBackend
+from pcapi.core.external.zendesk_sell_backends.base import BaseBackend
 from pcapi.utils.module_loading import import_string
 
 

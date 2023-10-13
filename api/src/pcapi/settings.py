@@ -407,7 +407,9 @@ ZENDESK_API_EMAIL = secrets_utils.get("ZENDESK_API_EMAIL")
 ZENDESK_API_TOKEN = secrets_utils.get("ZENDESK_API_TOKEN")
 
 # ZENDESK SELL
-ZENDESK_SELL_BACKEND = os.environ.get("ZENDESK_SELL_BACKEND", "pcapi.core.external.backends.zendesk.ZendeskSellBackend")
+ZENDESK_SELL_BACKEND = os.environ.get(
+    "ZENDESK_SELL_BACKEND", "pcapi.core.external.zendesk_sell_backends.zendesk_sell.ZendeskSellBackend"
+)
 ZENDESK_SELL_API_KEY = secrets_utils.get("ZENDESK_SELL_API_KEY")
 ZENDESK_SELL_API_URL = os.environ.get("ZENDESK_SELL_API_URL", "https://api.getbase.com")
 
