@@ -108,6 +108,13 @@ BASE_DATA_LINE_PARTS = [
 ]
 
 
+def run_titelive_things():
+    titelive_things = TiteLiveThings()
+
+    titelive_things.updateObjects()
+    titelive_things.postTreatment()
+
+
 class TiteliveThingsTest:
     @pytest.mark.usefixtures("db_session")
     @patch("pcapi.local_providers.titelive_things.titelive_things.get_files_to_process_from_titelive_ftp")
@@ -121,10 +128,9 @@ class TiteliveThingsTest:
         get_lines_from_thing_file.return_value = iter([data_line])
 
         providers_factories.TiteLiveThingsProviderFactory()
-        titelive_things = TiteLiveThings()
 
         # When
-        titelive_things.updateObjects()
+        run_titelive_things()
 
         # Then
         product = offers_models.Product.query.one()
@@ -152,10 +158,9 @@ class TiteliveThingsTest:
         get_lines_from_thing_file.return_value = iter([data_line])
 
         providers_factories.TiteLiveThingsProviderFactory()
-        titelive_things = TiteLiveThings()
 
         # When
-        titelive_things.updateObjects()
+        run_titelive_things()
 
         # Then
         product = offers_models.Product.query.one()
@@ -184,10 +189,9 @@ class TiteliveThingsTest:
         get_lines_from_thing_file.return_value = iter([data_line])
 
         providers_factories.TiteLiveThingsProviderFactory()
-        titelive_things = TiteLiveThings()
 
         # When
-        titelive_things.updateObjects()
+        run_titelive_things()
 
         # Then
         assert offers_models.Product.query.count() == 0
@@ -208,10 +212,9 @@ class TiteliveThingsTest:
         get_lines_from_thing_file.return_value = iter([data_line])
 
         providers_factories.TiteLiveThingsProviderFactory()
-        titelive_things = TiteLiveThings()
 
         # When
-        titelive_things.updateObjects()
+        run_titelive_things()
 
         # Then
         assert offers_models.Product.query.count() == 0
@@ -232,10 +235,9 @@ class TiteliveThingsTest:
         get_lines_from_thing_file.return_value = iter([data_line])
 
         providers_factories.TiteLiveThingsProviderFactory()
-        titelive_things = TiteLiveThings()
 
         # When
-        titelive_things.updateObjects()
+        run_titelive_things()
 
         # Then
         assert offers_models.Product.query.count() == 0
@@ -265,10 +267,9 @@ class TiteliveThingsTest:
         get_lines_from_thing_file.return_value = iter([data_line])
 
         providers_factories.TiteLiveThingsProviderFactory()
-        titelive_things = TiteLiveThings()
 
         # When
-        titelive_things.updateObjects()
+        run_titelive_things()
 
         # Then
         assert offers_models.Product.query.count() == 0
@@ -289,10 +290,9 @@ class TiteliveThingsTest:
         get_lines_from_thing_file.return_value = iter([data_line])
 
         providers_factories.TiteLiveThingsProviderFactory()
-        titelive_things = TiteLiveThings()
 
         # When
-        titelive_things.updateObjects()
+        run_titelive_things()
 
         # Then
         assert offers_models.Product.query.count() == 1
@@ -313,10 +313,9 @@ class TiteliveThingsTest:
         get_lines_from_thing_file.return_value = iter([data_line])
 
         providers_factories.TiteLiveThingsProviderFactory()
-        titelive_things = TiteLiveThings()
 
         # When
-        titelive_things.updateObjects()
+        run_titelive_things()
 
         # Then
         assert offers_models.Product.query.count() == 0
@@ -343,10 +342,9 @@ class TiteliveThingsTest:
         get_lines_from_thing_file.return_value = iter([data_line])
 
         providers_factories.TiteLiveThingsProviderFactory()
-        titelive_things = TiteLiveThings()
 
         # When
-        titelive_things.updateObjects()
+        run_titelive_things()
 
         # Then
         assert offers_models.Product.query.count() == 0
@@ -373,10 +371,9 @@ class TiteliveThingsTest:
         get_lines_from_thing_file.return_value = iter([data_line])
 
         providers_factories.TiteLiveThingsProviderFactory()
-        titelive_things = TiteLiveThings()
 
         # When
-        titelive_things.updateObjects()
+        run_titelive_things()
 
         # Then
         assert offers_models.Product.query.count() == 0
@@ -401,10 +398,9 @@ class TiteliveThingsTest:
             dateModifiedAtLastProvider=datetime(2001, 1, 1),
             lastProviderId=titelive_things_provider.id,
         )
-        titelive_things = TiteLiveThings()
 
         # When
-        titelive_things.updateObjects()
+        run_titelive_things()
 
         # Then
         updated_product = offers_models.Product.query.first()
@@ -418,10 +414,9 @@ class TiteliveThingsTest:
         get_files_to_process_from_titelive_ftp.return_value = []
 
         providers_factories.TiteLiveThingsProviderFactory()
-        titelive_things = TiteLiveThings()
 
         # When
-        titelive_things.updateObjects()
+        run_titelive_things()
 
         # Then
         assert offers_models.Product.query.count() == 0
@@ -439,10 +434,9 @@ class TiteliveThingsTest:
         get_lines_from_thing_file.return_value = iter([data_line])
 
         providers_factories.TiteLiveThingsProviderFactory()
-        titelive_things = TiteLiveThings()
 
         # When
-        titelive_things.updateObjects()
+        run_titelive_things()
 
         # Then
         assert offers_models.Product.query.count() == 0
@@ -463,10 +457,9 @@ class TiteliveThingsTest:
         get_lines_from_thing_file.return_value = iter([data_line])
 
         providers_factories.TiteLiveThingsProviderFactory()
-        titelive_things = TiteLiveThings()
 
         # When
-        titelive_things.updateObjects()
+        run_titelive_things()
 
         # Then
         assert offers_models.Product.query.count() == 0
@@ -487,10 +480,8 @@ class TiteliveThingsTest:
         get_lines_from_thing_file.return_value = iter([data_line])
 
         providers_factories.TiteLiveThingsProviderFactory()
-        titelive_things = TiteLiveThings()
-
         # When
-        titelive_things.updateObjects()
+        run_titelive_things()
 
         # Then
         assert offers_models.Product.query.count() == 0
@@ -527,10 +518,8 @@ class TiteliveThingsTest:
         assert users_models.Favorite.query.count() == 1
         assert offer.validation != offers_models.OfferValidationStatus.REJECTED
 
-        titelive_things = TiteLiveThings()
-
         # When
-        titelive_things.updateObjects()
+        run_titelive_things()
 
         # Then
         product = offers_models.Product.query.one()
@@ -571,10 +560,8 @@ class TiteliveThingsTest:
         assert users_models.Favorite.query.count() == 1
         assert offer.validation != offers_models.OfferValidationStatus.REJECTED
 
-        titelive_things = TiteLiveThings()
-
         # When
-        titelive_things.updateObjects()
+        run_titelive_things()
 
         # Then
         product = offers_models.Product.query.one()
@@ -612,10 +599,8 @@ class TiteliveThingsTest:
         )
 
         assert product.isGcuCompatible is True
-        titelive_things = TiteLiveThings()
-
         # When
-        titelive_things.updateObjects()
+        run_titelive_things()
 
         # Then
         product = offers_models.Product.query.one()
@@ -641,10 +626,10 @@ class TiteliveThingsTest:
         get_lines_from_thing_file.return_value = iter([data_line_1, data_line_2])
 
         providers_factories.TiteLiveThingsProviderFactory()
-        titelive_things = TiteLiveThings()
 
         # When
-        titelive_things.updateObjects()
+        run_titelive_things()
+
         products = offers_models.Product.query.all()
         product = products[0]
 
@@ -680,10 +665,8 @@ class TiteliveThingsTest:
 
         assert product.isGcuCompatible is True
 
-        titelive_things = TiteLiveThings()
-
         # When
-        titelive_things.updateObjects()
+        run_titelive_things()
 
         # Then
         product = offers_models.Product.query.one()
@@ -720,10 +703,9 @@ class TiteliveThingsTest:
         stock = ThingStockFactory(offer=offer, price=0)
         bookings_factories.BookingFactory(stock=stock)
         assert offer.validation != offers_models.OfferValidationStatus.REJECTED
-        titelive_things = TiteLiveThings()
 
         # When
-        titelive_things.updateObjects()
+        run_titelive_things()
 
         # Then
         offer = offers_models.Offer.query.one()
@@ -745,10 +727,9 @@ class TiteliveThingsTest:
         get_lines_from_thing_file.return_value = iter([data_line])
 
         providers_factories.TiteLiveThingsProviderFactory()
-        titelive_things = TiteLiveThings()
 
         # When
-        titelive_things.updateObjects()
+        run_titelive_things()
 
         # Then
         assert offers_models.Product.query.count() == 0
@@ -771,7 +752,6 @@ class TiteliveThingsTest:
         get_lines_from_thing_file.return_value = iter([data_line])
 
         titelive_provider = providers_factories.TiteLiveThingsProviderFactory()
-        titelive_things = TiteLiveThings()
 
         offerer = offerers_factories.OffererFactory(siren="123456789")
         venue = offerers_factories.VenueFactory(managingOfferer=offerer)
@@ -786,7 +766,7 @@ class TiteliveThingsTest:
         offer = ThingOfferFactory(product=product, venue=venue, isActive=True)
 
         # When
-        titelive_things.updateObjects()
+        run_titelive_things()
 
         # Then
         refreshed_offer = offers_models.Offer.query.get(offer.id)
@@ -819,11 +799,9 @@ class TiteliveThingsTest:
                 "ean": EAN_TEST,
             },
         )
-        titelive_things = TiteLiveThings()
 
         # When
-        titelive_things.updateObjects()
-        titelive_things.postTreatment()
+        run_titelive_things()
 
         # Then
         updated_product = offers_models.Product.query.first()
@@ -861,11 +839,8 @@ class TiteliveThingsTest:
             lastValidationType=OfferValidationType.CGU_INCOMPATIBLE_PRODUCT,
         )
 
-        titelive_things = TiteLiveThings()
-
         # When
-        titelive_things.updateObjects()
-        titelive_things.postTreatment()
+        run_titelive_things()
 
         # Then
         updated_product = offers_models.Product.query.first()
