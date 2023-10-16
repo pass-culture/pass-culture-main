@@ -28,7 +28,7 @@ Avec `poetry` et Python **3.10** :
 
 ```shell
 curl -sSL https://install.python-poetry.org | python3 -
-poetry env use python3.10
+poetry env use python3.11
 poetry install --with dev
 ```
 
