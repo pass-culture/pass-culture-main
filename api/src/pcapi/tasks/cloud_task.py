@@ -2,6 +2,7 @@ from datetime import datetime
 import hashlib
 import json
 import logging
+import typing
 
 from dateutil.relativedelta import relativedelta
 from google.api_core import retry
@@ -86,7 +87,14 @@ def enqueue_task(
     return task_id
 
 
-def enqueue_internal_task(queue, path, payload, deduplicate: bool = False, delayed_seconds: int = 0, task_request_timeout: int | None = None):  # type: ignore [no-untyped-def]
+def enqueue_internal_task(
+    queue: str,
+    path: str,
+    payload: typing.Any,
+    deduplicate: bool = False,
+    delayed_seconds: int = 0,
+    task_request_timeout: int | None = None,
+) -> str | None:
     url = settings.API_URL + CLOUD_TASK_SUBPATH + path
 
     if settings.IS_DEV:
@@ -111,7 +119,7 @@ def enqueue_internal_task(queue, path, payload, deduplicate: bool = False, delay
     )
 
 
-def _call_internal_api_endpoint(queue, url, payload):  # type: ignore [no-untyped-def]
+def _call_internal_api_endpoint(queue: str, url: str, payload: typing.Any) -> None:
     requests.post(
         url,
         headers={
