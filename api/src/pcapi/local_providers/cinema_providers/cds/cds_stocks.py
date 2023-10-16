@@ -135,7 +135,7 @@ class CDSStocks(LocalProvider):
 
         self.last_offer = cds_offer
 
-    def fill_stock_attributes(self, cds_stock: offers_models.Stock):  # type: ignore [no-untyped-def]
+    def fill_stock_attributes(self, cds_stock: offers_models.Stock) -> None:
         cds_stock.offer = self.last_offer
 
         showtime_uuid = _get_showtimes_uuid_by_idAtProvider(cds_stock.idAtProviders)  # type: ignore [arg-type]
@@ -264,7 +264,7 @@ def _find_showtime_by_showtime_uuid(showtimes: list[dict], showtime_uuid: str) -
     return None
 
 
-def _get_showtimes_uuid_by_idAtProvider(id_at_provider: str):  # type: ignore [no-untyped-def]
+def _get_showtimes_uuid_by_idAtProvider(id_at_provider: str) -> str:
     return id_at_provider.split("#")[1]
 
 
