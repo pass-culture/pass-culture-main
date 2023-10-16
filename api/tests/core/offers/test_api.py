@@ -1817,7 +1817,7 @@ class WhitelistExistingProductTest:
         assert product.extraData["prix_livre"] == article["prix"]
         assert product.extraData["collection"] == article["collection"]
         assert product.extraData["comic_series"] == article["serie"]
-        assert product.extraData["date_parution"] == "2014-10-02T00:00:00"
+        assert product.extraData["date_parution"] == "2014-10-02 00:00:00"
         assert product.extraData["distributeur"] == article["distributeur"]
         assert product.extraData["editeur"] == article["editeur"]
         assert product.extraData["num_in_collection"] == article["collection_no"]

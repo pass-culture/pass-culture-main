@@ -8,7 +8,7 @@ from pcapi.core.providers.titelive_gtl import GTLS
 from pcapi.domain.music_types import MUSIC_SUB_TYPES_BY_SLUG
 from pcapi.domain.music_types import MUSIC_TYPES_BY_SLUG
 from pcapi.domain.music_types import music_types
-from pcapi.domain.titelive import read_things_date
+from pcapi.domain.titelive import parse_things_date_to_string
 from pcapi.repository import repository
 import pcapi.sandboxes.scripts.creators.industrial.utils as industrial_utils
 from pcapi.sandboxes.scripts.mocks.thing_mocks import MOCK_AUTHOR_NAMES
@@ -135,7 +135,7 @@ def create_titelive_synced_music_products() -> list[offers_models.Product]:
             artist="The who",
             author="The who",
             comment="TBC",
-            date_parution=read_things_date("15/09/2023"),
+            date_parution=parse_things_date_to_string("15/09/2023"),
             dispo="2",
             distributeur="Universal Music France",
             ean="0602435858395",
@@ -157,7 +157,7 @@ def create_titelive_synced_music_products() -> list[offers_models.Product]:
         extraData=offers_models.OfferExtraData(
             artist="Gims",
             author="Gims",
-            date_parution=read_things_date("02/12/2022"),
+            date_parution=parse_things_date_to_string("02/12/2022"),
             dispo="1",
             distributeur="Believe",
             ean="3700187679323",
@@ -180,7 +180,7 @@ def create_titelive_synced_music_products() -> list[offers_models.Product]:
             artist="Orelsan",
             author="Orelsan",
             comment="édition double CD sous fourreau",
-            date_parution=read_things_date("28/10/2022"),
+            date_parution=parse_things_date_to_string("28/10/2022"),
             dispo="1",
             distributeur="Wagram Music",
             ean="3596974281424",
@@ -202,7 +202,7 @@ def create_titelive_synced_music_products() -> list[offers_models.Product]:
         extraData=offers_models.OfferExtraData(
             artist="Les enfoirés",
             author="Les enfoirés",
-            date_parution=read_things_date("04/03/2023"),
+            date_parution=parse_things_date_to_string("04/03/2023"),
             dispo="1",
             distributeur="Sony Music Entertainement",
             ean="0196587966423",
@@ -224,7 +224,7 @@ def create_titelive_synced_music_products() -> list[offers_models.Product]:
         extraData=offers_models.OfferExtraData(
             artist="Clara luciani",
             author="Clara luciani",
-            date_parution=read_things_date("25/11/2022"),
+            date_parution=parse_things_date_to_string("25/11/2022"),
             dispo="1",
             distributeur="Universal Music France",
             ean="0602448125255",
@@ -246,7 +246,7 @@ def create_titelive_synced_music_products() -> list[offers_models.Product]:
         extraData=offers_models.OfferExtraData(
             artist="Coldplay",
             author="Coldplay",
-            date_parution=read_things_date("15/10/2021"),
+            date_parution=parse_things_date_to_string("15/10/2021"),
             dispo="1",
             distributeur="Warner Music France",
             ean="0190296666964",
@@ -268,7 +268,7 @@ def create_titelive_synced_music_products() -> list[offers_models.Product]:
         extraData=offers_models.OfferExtraData(
             artist="Gorillaz",
             author="Gorillaz",
-            date_parution=read_things_date("24/02/2023"),
+            date_parution=parse_things_date_to_string("24/02/2023"),
             dispo="1",
             distributeur="Warner Music France",
             ean="5054197199738",
@@ -290,7 +290,7 @@ def create_titelive_synced_music_products() -> list[offers_models.Product]:
         extraData=offers_models.OfferExtraData(
             artist="The weeknd",
             author="The weeknd",
-            date_parution=read_things_date("21/07/2023"),
+            date_parution=parse_things_date_to_string("21/07/2023"),
             dispo="1",
             distributeur="Universal Music France",
             ean="0602435931975",
@@ -313,7 +313,7 @@ def create_titelive_synced_music_products() -> list[offers_models.Product]:
             artist="London grammar",
             author="London grammar",
             comment="édition double vinyle gatefold + CD",
-            date_parution=read_things_date("02/01/2019"),
+            date_parution=parse_things_date_to_string("02/01/2019"),
             dispo="1",
             distributeur="Universal Music France",
             ean="5060281614698",
