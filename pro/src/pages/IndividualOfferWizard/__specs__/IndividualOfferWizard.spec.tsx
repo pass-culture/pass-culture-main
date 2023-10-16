@@ -29,11 +29,6 @@ import { renderWithProviders } from 'utils/renderWithProviders'
 
 import IndividualOfferWizard from '../IndividualOfferWizard'
 
-vi.mock('core/Notification/constants', () => ({
-  NOTIFICATION_TRANSITION_DURATION: 10,
-  NOTIFICATION_SHOW_DURATION: 10,
-}))
-
 const offerer = offererFactory({ id: 12 })
 const venue = getOfferVenueFactory(undefined, offerer)
 const apiOffer: GetIndividualOfferResponseModel = GetIndividualOfferFactory(
@@ -60,7 +55,7 @@ const renderIndividualOfferWizardRoute = (
     { storeOverrides, initialRouterEntries: [url] }
   )
 
-describe('IndividualOfferWisard', () => {
+describe('IndividualOfferWizard', () => {
   let store: any
 
   beforeEach(() => {
@@ -136,7 +131,7 @@ describe('IndividualOfferWisard', () => {
     })
   })
 
-  it.skip('should display an error when unable to load categories', async () => {
+  it('should display an error when unable to load categories', async () => {
     vi.spyOn(api, 'getCategories').mockRejectedValueOnce(
       new ApiError(
         {} as ApiRequestOptions,
@@ -158,12 +153,11 @@ describe('IndividualOfferWisard', () => {
         })
       )
     )
+
     await waitForElementToBeRemoved(() =>
       screen.getByText(/Chargement en cours/)
     )
-    await waitFor(() => {
-      expect(screen.getByText(GET_DATA_ERROR_MESSAGE)).toBeInTheDocument()
-    })
+    expect(await screen.findByText(GET_DATA_ERROR_MESSAGE)).toBeInTheDocument()
   })
 
   it('should initialize context with api', async () => {
