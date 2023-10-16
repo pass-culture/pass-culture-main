@@ -90,7 +90,6 @@ NATIVE_APP_MINIMAL_CLIENT_VERSION = semver.VersionInfo.parse(
     os.environ.get("NATIVE_APP_MINIMAL_CLIENT_VERSION", "1.132.1")
 )
 
-
 # REDIS
 REDIS_URL = secrets_utils.get("REDIS_URL", "redis://localhost:6379")
 REDIS_OFFER_IDS_CHUNK_SIZE = int(os.environ.get("REDIS_OFFER_IDS_CHUNK_SIZE", 1000))
