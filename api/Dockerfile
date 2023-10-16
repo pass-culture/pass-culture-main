@@ -17,12 +17,25 @@ USER pcapi
 
 ENV PYTHONUNBUFFERED 1
 
-COPY ./requirements.txt ./
+COPY ./pyproject.toml ./poetry.lock ./
 
 ENV PATH=$PATH:/home/pcapi/.local/bin
 
-RUN pip install --no-cache-dir --user \
-	--requirement ./requirements.txt
+RUN pip install poetry
+
+WORKDIR /home/pcapi
+
+RUN poetry export -o requirements.txt --without dev 
+
+RUN pip install -r requirements.txt
+
+########## DEV BUILDER ##########
+
+FROM builder AS builder-dev
+
+RUN poetry export -o requirements-dev.txt --only dev
+
+RUN pip install -r requirements-dev.txt
 
 ########## SOURCES ##########
 
@@ -47,17 +60,15 @@ ENV PROMETHEUS_MULTIPROC_DIR /tmp
 ENV FLASK_PROMETHEUS_EXPORTER_PORT 5002
 
 RUN apt-get update \
-	&& apt-get --no-install-recommends -y install \
-		libglib2.0-0 \
-		libpango-1.0-0 \
-		libpangoft2-1.0-0 \
-		libpq5 \
-		libxmlsec1-openssl \
-		xmlsec1 && \
-        apt-get clean && \
-        rm -rf /var/lib/apt/lists*
-
-COPY --from=builder /home/pcapi/.local /home/pcapi/.local
+    && apt-get --no-install-recommends -y install \
+    libglib2.0-0 \
+    libpango-1.0-0 \
+    libpangoft2-1.0-0 \
+    libpq5 \
+    libxmlsec1-openssl \
+    xmlsec1 && \
+    apt-get clean && \
+    rm -rf /var/lib/apt/lists*
 
 WORKDIR /usr/src/app
 
@@ -67,9 +78,22 @@ RUN chown pcapi:pcapi /usr/src/app
 
 USER pcapi
 
+########## LIB PROD ##########
+
+FROM lib AS lib-prod
+
+COPY --from=builder /home/pcapi/.local /home/pcapi/.local
+
+########## LIB DEV ##########
+
+FROM lib AS lib-dev
+
+COPY --from=builder-dev /home/pcapi/.local /home/pcapi/.local
+
+
 ######### DEV ##########
 
-FROM lib AS api-flask
+FROM lib-dev AS api-flask
 
 USER root
 
@@ -84,7 +108,7 @@ RUN pip install --no-cache-dir --user -e .
 
 ######### PRODUCTION #########
 
-FROM lib AS pcapi
+FROM lib-prod AS pcapi
 
 WORKDIR /usr/src/app
 
@@ -96,7 +120,7 @@ ENTRYPOINT exec ./entrypoint.sh
 
 ######### CONSOLE #########
 
-FROM pcapi AS pcapi-console
+FROM api-flask AS pcapi-console
 
 USER root
 

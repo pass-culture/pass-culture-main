@@ -8,7 +8,6 @@ basecrm==1.2.9
 bcrypt==4.0.1
 beautifulsoup4==4.11.2
 black
-# `sentry_sdk.init()` uses `flask.signals`, which requires `blinker`
 blinker==1.4
 boto3==1.21.9
 click-option-group==0.5.5
@@ -37,10 +36,10 @@ isort
 itsdangerous==2.0.1
 Jinja2==3.0.3
 MarkupSafe==2.0.1
-mypy # Not pinned. If a new version introduces new errors we cannot fix in one go, see api/bin/mypy_add_type_ignores.py 
+mypy
 notion-client==1.0.0
 openpyxl
-pgcli # a tool not used in code. There is no point in pinning its version
+pgcli
 phonenumberslite==8.12.*
 Pillow>=8.1.1
 prometheus-flask-exporter
@@ -69,9 +68,6 @@ semver==2.13.0
 sentry-sdk==1.14.0
 sib-api-v3-sdk
 spectree==1.2.1
-# FIXME (dbaty, 2023-01-04): do not use 1.4.46 that has a new
-# deprecation warning for which we're not ready
-# (https://docs.sqlalchemy.org/en/20/changelog/changelog_14.html#change-e67bfa1efbe52ae40aa842124bc40c51).
 SQLAlchemy[mypy]==1.4.45
 slack-sdk==3.13.0
 types-freezegun
@@ -92,9 +88,4 @@ zeep==4.1.0
 libsass==0.22.0
 boussole==2.1.0
 djlint==1.25.1
-# FIXME (kopax-polyconseil, 2023-04-18): do not use 67.3.0 that has a new
-# deprecation warning for which we're not ready
-# https://setuptools.pypa.io/en/stable/history.html#v67-3-0
-# Issue to follow for the fix:
-# https://github.com/googleapis/python-storage/issues/1000
 setuptools<67.3
