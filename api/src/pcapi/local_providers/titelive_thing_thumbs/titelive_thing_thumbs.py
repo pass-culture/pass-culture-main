@@ -1,6 +1,9 @@
 from datetime import datetime
 from pathlib import PurePath
 import re
+from typing import Iterator
+from zipfile import ZipFile
+from zipfile import ZipInfo
 
 from pcapi.connectors.ftp_titelive import get_files_to_process_from_titelive_ftp
 from pcapi.connectors.ftp_titelive import get_zip_file_from_ftp
@@ -21,24 +24,24 @@ class TiteLiveThingThumbs(LocalProvider):
     name = "TiteLive (Epagine / Place des libraires.com) Thumbs"
     can_create = False
 
-    def __init__(self):  # type: ignore [no-untyped-def]
+    def __init__(self) -> None:
         super().__init__()
 
         all_zips = get_files_to_process_from_titelive_ftp(THUMB_FOLDER_NAME_TITELIVE, DATE_REGEXP)
 
         self.zips = self.get_remaining_files_to_check(all_zips)
-        self.thumb_zipinfos = None
-        self.zip = None
+        self.thumb_zipinfos: Iterator[ZipInfo] | None = None
+        self.zip: ZipFile | None = None
 
     def __next__(self) -> list[ProvidableInfo]:
         if self.thumb_zipinfos is None:
             self.open_next_file()
-
+        assert self.thumb_zipinfos is not None
         try:
-            self.thumb_zipinfo = next(self.thumb_zipinfos)  # type: ignore [arg-type]
+            self.thumb_zipinfo = next(self.thumb_zipinfos)
         except StopIteration:
             self.open_next_file()
-            self.thumb_zipinfo = next(self.thumb_zipinfos)  # type: ignore [arg-type]
+            self.thumb_zipinfo = next(self.thumb_zipinfos)
 
         path = PurePath(self.thumb_zipinfo.filename)
 
@@ -50,7 +53,7 @@ class TiteLiveThingThumbs(LocalProvider):
 
         return [product_providable_info]
 
-    def open_next_file(self):  # type: ignore [no-untyped-def]
+    def open_next_file(self) -> None:
         if self.zip:
             file_date = get_date_from_filename(self.zip, DATE_REGEXP)
             self.log_provider_event(providers_models.LocalProviderEventType.SyncPartEnd, file_date)
@@ -72,14 +75,16 @@ class TiteLiveThingThumbs(LocalProvider):
         return True
 
     def get_object_thumb(self) -> bytes:
+        assert self.zip is not None
         with self.zip.open(self.thumb_zipinfo) as f:
             return f.read()
 
-    def get_remaining_files_to_check(self, all_zips):  # type: ignore [no-untyped-def]
+    def get_remaining_files_to_check(self, all_zips: list[str]) -> Iterator[str]:
         latest_sync_part_end_event = providers_repository.find_latest_sync_part_end_event(self.provider)
 
         if latest_sync_part_end_event is None:
             return iter(all_zips)
+        assert latest_sync_part_end_event.payload is not None
         payload = int(latest_sync_part_end_event.payload)
         return iter(filter(lambda z: get_date_from_filename(z, DATE_REGEXP) > payload, all_zips))
 

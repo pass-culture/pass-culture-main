@@ -11,7 +11,7 @@ from pcapi.core import logging as core_logging
 from pcapi.core.categories import subcategories_v2 as subcategories
 from pcapi.core.offers import exceptions as offers_exceptions
 import pcapi.core.offers.models as offers_models
-from pcapi.domain.titelive import read_things_date
+from pcapi.domain.titelive import parse_things_date_to_string
 from pcapi.utils import date as date_utils
 from pcapi.utils import requests
 from pcapi.utils.cache import get_from_cache
@@ -170,7 +170,7 @@ def get_new_product_from_ean13(ean: str) -> offers_models.Product:
             prix_livre=article["prix"],
             collection=article.get("collection"),
             comic_series=article.get("serie"),
-            date_parution=read_things_date(article.get("dateparution")),
+            date_parution=parse_things_date_to_string(article.get("dateparution")),
             distributeur=article["distributeur"],
             editeur=article["editeur"],
             num_in_collection=article.get("collection_no"),
