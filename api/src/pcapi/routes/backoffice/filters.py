@@ -30,7 +30,6 @@ from pcapi.domain.show_types import SHOW_SUB_TYPES_LABEL_BY_CODE
 from pcapi.models import offer_mixin
 from pcapi.models import validation_status_mixin
 from pcapi.routes.backoffice.accounts import serialization as serialization_accounts
-from pcapi.routes.backoffice.serialization.search import TypeOptions
 from pcapi.utils import urls
 from pcapi.utils.csr import Csr
 from pcapi.utils.csr import get_csr
@@ -176,18 +175,6 @@ def format_reason_label(reason: str | None) -> str:
             users_constants.SuspensionReason(reason), "Raison inconnue"
         )
     return ""
-
-
-def format_search_type_options(type_option: TypeOptions) -> str:
-    match type_option:
-        case TypeOptions.OFFERER:
-            return "Structure"
-        case TypeOptions.VENUE:
-            return "Lieu"
-        case TypeOptions.USER:
-            return "Compte pro"
-        case _:
-            return type_option.value
 
 
 def format_booking_cancellation_reason(
@@ -848,7 +835,6 @@ def install_template_filters(app: Flask) -> None:
     app.jinja_env.lstrip_blocks = True
     app.jinja_env.filters["empty_string_if_null"] = empty_string_if_null
     app.jinja_env.filters["format_amount"] = format_amount
-    app.jinja_env.filters["format_search_type_options"] = format_search_type_options
     app.jinja_env.filters["format_booking_cancellation_reason"] = format_booking_cancellation_reason
     app.jinja_env.filters["format_booking_status"] = format_booking_status
     app.jinja_env.filters["format_booking_status_long"] = format_booking_status_long
