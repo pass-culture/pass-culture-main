@@ -100,7 +100,7 @@ const renderOfferTypes = async (
   })
 }
 
-describe.skip('screens:IndividualOffer::OfferType', () => {
+describe('screens:IndividualOffer::OfferType', () => {
   let store: any
   beforeEach(() => {
     vi.spyOn(api, 'listOfferersNames').mockResolvedValue({
@@ -182,12 +182,6 @@ describe.skip('screens:IndividualOffer::OfferType', () => {
   })
 
   it('should select template offer', async () => {
-    vi.spyOn(api, 'listOfferersNames').mockResolvedValueOnce({
-      offerersNames: [
-        { id: 1, name: 'Ma super structure' },
-        { id: 2, name: 'Ma super structure #2' },
-      ],
-    })
     renderOfferTypes(store)
 
     expect(
@@ -211,10 +205,7 @@ describe.skip('screens:IndividualOffer::OfferType', () => {
   })
 
   it('should display non eligible banner if offerer can not create collective offer', async () => {
-    vi.spyOn(api, 'listOfferersNames').mockResolvedValue({
-      offerersNames: [{ id: 1, name: 'Ma super structure' }],
-    })
-    vi.spyOn(api, 'canOffererCreateEducationalOffer').mockRejectedValue({})
+    vi.spyOn(api, 'canOffererCreateEducationalOffer').mockRejectedValueOnce({})
     renderOfferTypes(store)
 
     await userEvent.click(
@@ -230,9 +221,6 @@ describe.skip('screens:IndividualOffer::OfferType', () => {
   })
 
   it('should display dms application banner if offerer can not create collective offer but as dms application', async () => {
-    vi.spyOn(api, 'listOfferersNames').mockResolvedValue({
-      offerersNames: [{ id: 1, name: 'Ma super structure' }],
-    })
     const offerer: GetOffererResponseModel = {
       ...defautGetOffererResponseModel,
       managedVenues: [
@@ -249,7 +237,7 @@ describe.skip('screens:IndividualOffer::OfferType', () => {
       ],
     }
     vi.spyOn(api, 'getOfferer').mockResolvedValue(offerer)
-    vi.spyOn(api, 'canOffererCreateEducationalOffer').mockRejectedValue({})
+    vi.spyOn(api, 'canOffererCreateEducationalOffer').mockRejectedValueOnce({})
     renderOfferTypes(store, 'offererId')
 
     await userEvent.click(
@@ -362,14 +350,10 @@ describe.skip('screens:IndividualOffer::OfferType', () => {
   })
 
   it('should select duplicate template offer', async () => {
-    vi.spyOn(api, 'listOfferersNames').mockResolvedValue({
-      offerersNames: [{ id: 1, name: 'Ma super structure' }],
-    })
-    vi.spyOn(api, 'canOffererCreateEducationalOffer').mockResolvedValue()
     const offersRecap = [collectiveOfferFactory()]
     vi.spyOn(api, 'getCollectiveOffers')
       // @ts-expect-error FIX ME
-      .mockResolvedValue(offersRecap)
+      .mockResolvedValueOnce(offersRecap)
 
     renderOfferTypes(store)
 
@@ -415,11 +399,7 @@ describe.skip('screens:IndividualOffer::OfferType', () => {
   })
 
   it('should display error message if trying to duplicate without template offer', async () => {
-    vi.spyOn(api, 'listOfferersNames').mockResolvedValue({
-      offerersNames: [{ id: 1, name: 'Ma super structure' }],
-    })
     vi.spyOn(api, 'canOffererCreateEducationalOffer').mockResolvedValue()
-    vi.spyOn(api, 'getCollectiveOffers').mockResolvedValue([])
     const notifyError = vi.fn()
     vi.spyOn(useNotification, 'default').mockImplementation(() => ({
       ...vi.importActual('hooks/useNotification'),
