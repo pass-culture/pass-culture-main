@@ -1,6 +1,7 @@
 from functools import wraps
 import logging
 import time
+import typing
 
 from pcapi.models import db
 from pcapi.models.feature import FeatureToggle
@@ -11,10 +12,10 @@ from pcapi.scheduled_tasks.logger import build_cron_log_message
 logger = logging.getLogger(__name__)
 
 
-def cron_require_feature(feature_toggle: FeatureToggle):  # type: ignore [no-untyped-def]
-    def decorator(func):  # type: ignore [no-untyped-def]
+def cron_require_feature(feature_toggle: FeatureToggle) -> typing.Callable:
+    def decorator(func: typing.Callable) -> typing.Callable:
         @wraps(func)
-        def wrapper(*args, **kwargs):  # type: ignore [no-untyped-def]
+        def wrapper(*args: typing.Any, **kwargs: typing.Any) -> typing.Any:
             if feature_toggle.is_active():
                 return func(*args, **kwargs)
             logger.info("%s is not active", feature_toggle)
@@ -25,9 +26,9 @@ def cron_require_feature(feature_toggle: FeatureToggle):  # type: ignore [no-unt
     return decorator
 
 
-def log_cron_with_transaction(func):  # type: ignore [no-untyped-def]
+def log_cron_with_transaction(func: typing.Callable) -> typing.Callable:
     @wraps(func)
-    def wrapper(*args, **kwargs):  # type: ignore [no-untyped-def]
+    def wrapper(*args: typing.Any, **kwargs: typing.Any) -> typing.Any:
         start_time = time.time()
         logger.info(build_cron_log_message(name=func.__name__, status=CronStatus.STARTED))
 
