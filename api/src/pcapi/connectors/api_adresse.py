@@ -49,18 +49,18 @@ def _get_backend() -> "BaseBackend":
     return backend_class()
 
 
-def get_address(address: str, city: str, insee_code: str) -> AddressInfo:
+def get_address(address: str, postcode: str | None = None, city: str | None = None) -> AddressInfo:
     """Return information about the requested address."""
-    return _get_backend().get_single_address_result(address, city, insee_code)
+    return _get_backend().get_single_address_result(address=address, postcode=postcode, city=city)
 
 
 class BaseBackend:
-    def get_single_address_result(self, query: str, city: str, insee_code: str) -> AddressInfo:
+    def get_single_address_result(self, address: str, postcode: str | None, city: str | None = None) -> AddressInfo:
         raise NotImplementedError()
 
 
 class TestingBackend(BaseBackend):
-    def get_single_address_result(self, query: str, city: str, insee_code: str) -> AddressInfo:
+    def get_single_address_result(self, address: str, postcode: str | None, city: str | None = None) -> AddressInfo:
         return AddressInfo(
             id="75101_9575_00003",
             label="3 Rue de Valois 75001 Paris",
@@ -98,11 +98,11 @@ class ApiAdresseBackend(BaseBackend):
             raise AdresseApiException("Unexpected non-JSON response from Adresse API")
         return data
 
-    def _get_municipality_centroid(self, city: str, insee_code: str) -> AddressInfo:
+    def _get_municipality_centroid(self, city: str, postcode: str) -> AddressInfo:
         """Fallback to querying the city, because the q parameter must contain part of the address label"""
         parameters = {
             "q": city,
-            "citycode": insee_code,
+            "postcode": postcode,
             "type": "municipality",
             "autocomplete": 0,
             "limit": 1,
@@ -111,12 +111,12 @@ class ApiAdresseBackend(BaseBackend):
         if self._is_result_empty(data):
             logger.error(
                 "No result from API Adresse for a municipality",
-                extra={"insee_code": insee_code, "city": city},
+                extra={"postcode": postcode, "city": city},
             )
             raise NoResultException
         return self._format_result(data)
 
-    def get_single_address_result(self, query: str, city: str, insee_code: str) -> AddressInfo:
+    def get_single_address_result(self, address: str, postcode: str | None, city: str | None = None) -> AddressInfo:
         """
         No human interaction so we limit to 1 result, and add a filter on the INSEE code (Code Officiel Géographique)
         This will get the highest score result from the query, for a specific INSEE code.
@@ -125,8 +125,8 @@ class ApiAdresseBackend(BaseBackend):
         If no result is found, we return the centroid of the municipality
         """
         parameters = {
-            "q": query,
-            "citycode": insee_code,
+            "q": address,
+            "postcode": postcode,
             "autocomplete": 0,
             "limit": 1,
         }
@@ -135,9 +135,11 @@ class ApiAdresseBackend(BaseBackend):
         if self._is_result_empty(data):
             logger.info(
                 "No result from API Adresse for queried address",
-                extra={"queried_address": query, "citycode": insee_code},
+                extra={"queried_address": address, "postcode": postcode},
             )
-            return self._get_municipality_centroid(city=city, insee_code=insee_code)
+            if city is not None and postcode is not None:
+                return self._get_municipality_centroid(city=city, postcode=postcode)
+            raise NoResultException
 
         result = self._format_result(data)
 
@@ -146,7 +148,7 @@ class ApiAdresseBackend(BaseBackend):
             "label": result.label,
             "latitude": result.latitude,
             "longitude": result.longitude,
-            "queried_address": query,
+            "queried_address": address,
             "score": result.score,
         }
         # TODO(fseguin, 2023-03-15): monitor the results, and maybe use municipality centroid if results are too wrong

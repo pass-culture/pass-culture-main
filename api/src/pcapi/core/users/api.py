@@ -13,18 +13,23 @@ from flask_jwt_extended import create_access_token
 from flask_jwt_extended import create_refresh_token
 from flask_sqlalchemy import BaseQuery
 import sqlalchemy as sa
+from sqlalchemy import func
 from sqlalchemy.orm import Query
 
 from pcapi import settings
+from pcapi.connectors import api_adresse
 from pcapi.connectors import sirene
+from pcapi.core import mails as mails_api
 from pcapi.core import token as token_utils
 import pcapi.core.bookings.models as bookings_models
 import pcapi.core.bookings.repository as bookings_repository
 from pcapi.core.external.attributes import api as external_attributes_api
+from pcapi.core.external.sendinblue import update_contact_attributes
 from pcapi.core.finance import models as finance_models
 import pcapi.core.finance.api as finance_api
 import pcapi.core.fraud.api as fraud_api
 import pcapi.core.fraud.common.models as common_fraud_models
+from pcapi.core.geography.repository import get_iris_from_address
 import pcapi.core.history.api as history_api
 import pcapi.core.history.models as history_models
 import pcapi.core.mails.transactional as transactional_mails
@@ -41,6 +46,7 @@ from pcapi.models import db
 from pcapi.models import feature
 from pcapi.models.api_errors import ApiErrors
 from pcapi.models.validation_status_mixin import ValidationStatus
+from pcapi.notifications import push as push_api
 from pcapi.repository import repository
 from pcapi.repository import transaction
 from pcapi.routes.serialization.users import ImportUserFromCsvModel
@@ -51,6 +57,7 @@ import pcapi.utils.date as date_utils
 import pcapi.utils.email as email_utils
 import pcapi.utils.phone_number as phone_number_utils
 import pcapi.utils.postal_code as postal_code_utils
+from pcapi.utils.requests import ExternalAPIException
 
 from . import constants
 from . import exceptions
@@ -1410,3 +1417,133 @@ def notify_users_before_deletion_of_suspended_account() -> None:
                 "Could not send email before deletion of suspended account",
                 extra={"user": account.id},
             )
+
+
+def anonymize_user(user: users_models.User, *, force: bool = False) -> None:
+    """
+    Anonymize the given User. If force is True, the function will anonymize the user even if they have an address and
+    we cannot find an iris for it.
+    """
+    iris = None
+    if user.address:
+        try:
+            iris = get_iris_from_address(address=user.address, postcode=user.postalCode)
+        except (api_adresse.AdresseApiException, api_adresse.InvalidFormatException) as exc:
+            logger.error("Could not anonymize user", extra={"user_id": user.id, "exc": exc})
+            return
+
+        if not iris and not force:
+            return
+
+    try:
+        push_api.delete_user_attributes(user_id=user.id, can_be_asynchronously_retried=True)
+    except ExternalAPIException as exc:
+        # If is_retryable it is a real error. If this flag is False then it means the email is unknown for brevo.
+        if exc.is_retryable:
+            logger.error("Could not anonymize user", extra={"user_id": user.id, "exc": exc})
+            return
+    except Exception as exc:  # pylint: disable=broad-exception-caught
+        logger.error("Could not anonymize user", extra={"user_id": user.id, "exc": exc})
+        return
+
+    for beneficiary_fraud_check in user.beneficiaryFraudChecks:
+        beneficiary_fraud_check.resultContent = None
+        beneficiary_fraud_check.reason = "Anonymized"
+        beneficiary_fraud_check.dateCreated = beneficiary_fraud_check.dateCreated.replace(day=1, month=1)
+        beneficiary_fraud_check.updatedAt = beneficiary_fraud_check.updatedAt.replace(day=1, month=1)
+
+    for beneficiary_fraud_review in user.beneficiaryFraudReviews:
+        beneficiary_fraud_review.reason = "Anonymized"
+        beneficiary_fraud_review.dateReviewed = beneficiary_fraud_review.dateReviewed.replace(day=1, month=1)
+
+    user.password = b"Anonymized"
+    user.firstName = f"Anonymous_{user.id}"
+    user.lastName = f"Anonymous_{user.id}"
+    user.married_name = None
+    user.postalCode = None
+    user.phoneNumber = None  # type: ignore [method-assign]
+    user.dateOfBirth = user.dateOfBirth.replace(day=1, month=1) if user.dateOfBirth else None
+    user.address = None
+    user.city = None
+    user.externalIds = []
+    user.idPieceNumber = None
+    user.user_email_history = []
+    user.isActive = False
+    user.irisFrance = iris
+    user.validatedBirthDate = user.validatedBirthDate.replace(day=1, month=1) if user.validatedBirthDate else None
+
+    external_email_anonymized = _anonymise_external_user_email(user)
+
+    users_models.TrustedDevice.query.filter(users_models.TrustedDevice.userId == user.id).delete()
+    users_models.LoginDeviceHistory.query.filter(users_models.LoginDeviceHistory.userId == user.id).delete()
+    history_models.ActionHistory.query.filter(
+        history_models.ActionHistory.userId == user.id,
+        history_models.ActionHistory.offererId.is_(None),
+    ).delete()
+
+    if external_email_anonymized:
+        user.add_anonymized_role()
+        user.email = f"anonymous_{user.id}@anonymized.passculture"
+        db.session.add(
+            history_models.ActionHistory(
+                actionType=history_models.ActionType.USER_ANONYMIZED,
+                userId=user.id,
+            )
+        )
+    return
+
+
+def _anonymise_external_user_email(user: users_models.User) -> bool:
+    # check if this email is used in booking_email (it should not be)
+    is_email_used = (
+        db.session.query(
+            offerers_models.Venue.id,
+        )
+        .filter(
+            offerers_models.Venue.bookingEmail == user.email,
+        )
+        .limit(1)
+        .count()
+    )
+
+    # clean personal data on email partner's side
+    try:
+        if is_email_used:
+            attributes = external_attributes_api.get_anonymized_attributes(user)
+            update_contact_attributes(user.email, attributes, asynchronous=False)
+        else:
+            mails_api.delete_contact(user.email)
+    except ExternalAPIException as exc:
+        # If is_retryable it is a real error. If this flag is False then it means the email is unknown for brevo.
+        if exc.is_retryable:
+            logger.error("Could not anonymize user", extra={"user_id": user.id, "exc": exc})
+            return False
+    except Exception as exc:  # pylint: disable=broad-exception-caught
+        print(exc)
+        logger.error("Could not anonymize user", extra={"user_id": user.id, "exc": exc})
+        return False
+
+    return True
+
+
+def anonymize_non_pro_non_beneficiary_users(*, force: bool = False) -> None:
+    """
+    Anonymize user accounts that have never been beneficiary (no deposits), are not pro (no pro role) and which have
+    not connected for at lest 3 years.
+    """
+    users = (
+        users_models.User.query.outerjoin(
+            finance_models.Deposit,
+            users_models.User.deposits,
+        )
+        .filter(
+            ~users_models.User.email.like("%@passculture.app"),  # people who work or worked in the company
+            func.array_length(users_models.User.roles, 1).is_(None),  # no role, not already anonymized
+            finance_models.Deposit.userId.is_(None),  # no deposit
+            users_models.User.lastConnectionDate < datetime.datetime.utcnow() - datetime.timedelta(days=3 * 365),
+        )
+        .all()
+    )
+    for user in users:
+        anonymize_user(user, force=force)
+    db.session.commit()

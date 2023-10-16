@@ -23,6 +23,7 @@ from sqlalchemy.sql.functions import func
 
 from pcapi import settings
 from pcapi.core.finance.enum import DepositType
+from pcapi.core.geography.models import IrisFrance
 from pcapi.core.users import constants
 from pcapi.core.users import utils as users_utils
 from pcapi.models import Base
@@ -89,6 +90,7 @@ class Token(PcObject, Base, Model):
 
 class UserRole(enum.Enum):
     ADMIN = "ADMIN"
+    ANONYMIZED = "ANONYMIZED"
     BENEFICIARY = "BENEFICIARY"
     PRO = "PRO"
     NON_ATTACHED_PRO = "NON_ATTACHED_PRO"
@@ -200,6 +202,8 @@ class User(PcObject, Base, Model, NeedsValidationMixin, DeactivableMixin):
     hasSeenProRgs: bool = sa.Column(sa.Boolean, nullable=False, server_default=expression.false())
     idPieceNumber = sa.Column(sa.String, nullable=True, unique=True)
     ineHash = sa.Column(sa.String, nullable=True, unique=True)
+    irisFranceId = sa.Column(sa.BigInteger, sa.ForeignKey("iris_france.id"), index=True, nullable=True)
+    irisFrance: sa.orm.Mapped[IrisFrance] = orm.relationship(IrisFrance, foreign_keys=[irisFranceId])
     isEmailValidated = sa.Column(sa.Boolean, nullable=True, server_default=expression.false())
     lastConnectionDate = sa.Column(sa.DateTime, nullable=True)
     lastName = sa.Column(sa.String(128), nullable=True)
@@ -278,6 +282,9 @@ class User(PcObject, Base, Model, NeedsValidationMixin, DeactivableMixin):
 
     def add_test_role(self) -> None:
         self._add_role(UserRole.TEST)
+
+    def add_anonymized_role(self) -> None:
+        self.roles = [UserRole.ANONYMIZED]
 
     def checkPassword(self, passwordToCheck: str) -> bool:
         return crypto.check_password(passwordToCheck, self.password)
