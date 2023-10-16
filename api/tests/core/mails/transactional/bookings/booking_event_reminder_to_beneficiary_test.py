@@ -1,6 +1,6 @@
 import dataclasses
+import datetime
 
-from freezegun import freeze_time
 import pytest
 
 from pcapi.core.bookings.factories import BookingFactory
@@ -20,7 +20,6 @@ from pcapi.core.testing import override_features
 pytestmark = pytest.mark.usefixtures("db_session")
 
 
-@freeze_time("2021-10-15 12:48:00")
 class SendEventReminderEmailToBeneficiaryTest:
     def test_sendinblue_send_email(self):
         booking = BookingFactory(stock=offers_factories.EventStockFactory())
@@ -56,13 +55,13 @@ class SendEventReminderEmailToBeneficiaryTest:
         assert len(mails_testing.outbox) == 0
 
 
-@freeze_time("2021-10-15 12:48:00")
 class GetBookingEventReminderToBeneficiaryEmailDataTest:
     def test_given_nominal_booking_event(self):
         booking = BookingFactory(
             stock=offers_factories.EventStockFactory(
                 offer__venue__name="Le Petit Rintintin",
                 offer__name="Product",
+                beginningDatetime=datetime.datetime(2032, 1, 1, 10, 30),
             ),
             token="N2XPV5",
         )
@@ -71,9 +70,9 @@ class GetBookingEventReminderToBeneficiaryEmailDataTest:
 
         assert email_data.params == {
             "BOOKING_LINK": f"https://webapp-v2.example.com/reservation/{booking.id}/details",
-            "EVENT_DATETIME_ISO": "2021-11-14T13:48:00+01:00",
-            "EVENT_DATE": "14 novembre 2021",
-            "EVENT_HOUR": "13h48",
+            "EVENT_DATETIME_ISO": "2032-01-01T11:30:00+01:00",
+            "EVENT_DATE": "1 janvier 2032",
+            "EVENT_HOUR": "11h30",
             "IS_DUO_EVENT": False,
             "OFFER_NAME": "Product",
             "OFFER_TAGS": "",
