@@ -1,6 +1,7 @@
 import datetime
 from decimal import Decimal
 import logging
+import pathlib
 from unittest import mock
 
 from dateutil.relativedelta import relativedelta
@@ -18,6 +19,8 @@ from pcapi.core.categories import subcategories_v2
 import pcapi.core.finance.conf as finance_conf
 import pcapi.core.fraud.factories as fraud_factories
 import pcapi.core.fraud.models as fraud_models
+from pcapi.core.geography import api as geography_api
+from pcapi.core.geography import models as geography_models
 from pcapi.core.history import factories as history_factories
 from pcapi.core.history import models as history_models
 import pcapi.core.mails.testing as mails_testing
@@ -40,9 +43,11 @@ from pcapi.notifications.push import testing as batch_testing
 from pcapi.routes.native.v1.serialization import account as account_serialization
 from pcapi.routes.serialization.users import ImportUserFromCsvModel
 
+import tests
 from tests.test_utils import gen_offerer_tags
 
 
+DATA_DIR = pathlib.Path(tests.__path__[0]) / "files"
 pytestmark = pytest.mark.usefixtures("db_session")
 
 
@@ -1830,3 +1835,183 @@ class GetSuspendedAccountsUponUserRequestSinceTest:
 
         with assert_num_queries(1):
             assert not list(users_api.get_suspended_upon_user_request_accounts_since(5))
+
+
+class AnonymizeNonProNonBeneficiaryUsersTest:
+    def import_iris(self):
+        path = DATA_DIR / "iris_min.7z"
+        geography_api.import_iris_from_7z(str(path))
+
+    def test_anonymize_non_pro_non_beneficiary_users(self) -> None:
+        user_to_anonymize = users_factories.UserFactory(
+            firstName="user_to_anonymize",
+            lastConnectionDate=datetime.datetime.utcnow() - datetime.timedelta(days=((3 * 365) + 1)),
+            validatedBirthDate=datetime.date.today(),
+        )
+        user_too_new = users_factories.UserFactory(
+            firstName="user_too_new",
+            lastConnectionDate=datetime.datetime.utcnow() - datetime.timedelta(days=((3 * 365) - 1)),
+        )
+        user_never_connected = users_factories.UserFactory(firstName="user_never_connected", lastConnectionDate=None)
+        user_beneficiary = users_factories.BeneficiaryGrant18Factory(
+            firstName="user_beneficiary",
+        )
+        user_underage_beneficiary = users_factories.UnderageBeneficiaryFactory(
+            firstName="user_underage_beneficiary",
+        )
+        user_pro = users_factories.ProFactory(
+            firstName="user_pro",
+        )
+        user_pass_culture = users_factories.ProFactory(
+            firstName="user_pass_culture", email="user_pass_culture@passculture.app"
+        )
+        user_anonymized = users_factories.ProFactory(
+            firstName="user_anonymized", email="user_anonymized@anonymized.passculture"
+        )
+
+        self.import_iris()
+        iris = geography_models.IrisFrance.query.first()
+
+        with mock.patch("pcapi.core.users.api.get_iris_from_address", return_value=iris):
+            users_api.anonymize_non_pro_non_beneficiary_users(force=False)
+
+        db.session.refresh(user_to_anonymize)
+        db.session.refresh(user_too_new)
+        db.session.refresh(user_never_connected)
+        db.session.refresh(user_beneficiary)
+        db.session.refresh(user_underage_beneficiary)
+        db.session.refresh(user_pro)
+        db.session.refresh(user_pass_culture)
+        db.session.refresh(user_anonymized)
+
+        assert len(sendinblue_testing.sendinblue_requests) == 1
+        assert len(batch_testing.requests) == 1
+        assert batch_testing.requests[0]["user_id"] == user_to_anonymize.id
+
+        # these profiles should not have been anonymized
+        assert user_too_new.firstName == "user_too_new"
+        assert user_never_connected.firstName == "user_never_connected"
+        assert user_beneficiary.firstName == "user_beneficiary"
+        assert user_underage_beneficiary.firstName == "user_underage_beneficiary"
+        assert user_pro.firstName == "user_pro"
+        assert user_pass_culture.firstName == "user_pass_culture"
+        assert user_anonymized.firstName == "user_anonymized"
+
+        # only one profile should have been anonymized
+        for beneficiary_fraud_check in user_to_anonymize.beneficiaryFraudChecks:
+            assert beneficiary_fraud_check.resultContent == None
+            assert beneficiary_fraud_check.reason == "Anonymized"
+            assert beneficiary_fraud_check.dateCreated.day == 1
+            assert beneficiary_fraud_check.dateCreated.month == 1
+            assert beneficiary_fraud_check.updatedAt.day == 1
+            assert beneficiary_fraud_check.updatedAt.month == 1
+
+        for beneficiary_fraud_review in user_to_anonymize.beneficiaryFraudReviews:
+            assert beneficiary_fraud_review.reason == "Anonymized"
+            assert beneficiary_fraud_review.dateReviewed.day == 1
+            assert beneficiary_fraud_review.dateReviewed.month == 1
+
+        assert user_to_anonymize.email == f"anonymous_{user_to_anonymize.id}@anonymized.passculture"
+        assert user_to_anonymize.password == b"Anonymized"
+        assert user_to_anonymize.firstName == f"Anonymous_{user_to_anonymize.id}"
+        assert user_to_anonymize.lastName == f"Anonymous_{user_to_anonymize.id}"
+        assert user_to_anonymize.married_name == None
+        assert user_to_anonymize.postalCode == None
+        assert user_to_anonymize.phoneNumber == None
+        assert user_to_anonymize.dateOfBirth.day == 1
+        assert user_to_anonymize.dateOfBirth.month == 1
+        assert user_to_anonymize.address == None
+        assert user_to_anonymize.city == None
+        assert user_to_anonymize.externalIds == []
+        assert user_to_anonymize.idPieceNumber == None
+        assert user_to_anonymize.login_device_history == []
+        assert user_to_anonymize.user_email_history == []
+        assert user_to_anonymize.isActive == False
+        assert user_to_anonymize.irisFrance == iris
+        assert user_to_anonymize.validatedBirthDate.day == 1
+        assert user_to_anonymize.validatedBirthDate.month == 1
+        assert user_to_anonymize.roles == [users_models.UserRole.ANONYMIZED]
+        assert user_to_anonymize.login_device_history == []
+        assert user_to_anonymize.trusted_devices == []
+        assert len(user_to_anonymize.action_history) == 1
+        assert user_to_anonymize.action_history[0].actionType == history_models.ActionType.USER_ANONYMIZED
+        assert user_to_anonymize.action_history[0].authorUserId == None
+        assert user_to_anonymize.action_history[0].actionType == history_models.ActionType.USER_ANONYMIZED
+
+    def test_anonymize_non_pro_non_beneficiary_user_force_iris_not_found(self) -> None:
+        user_to_anonymize = users_factories.UserFactory(
+            firstName="user_to_anonymize",
+            lastConnectionDate=datetime.datetime.utcnow() - datetime.timedelta(days=((3 * 365) + 1)),
+        )
+
+        users_api.anonymize_non_pro_non_beneficiary_users(force=True)
+
+        db.session.refresh(user_to_anonymize)
+
+        assert len(sendinblue_testing.sendinblue_requests) == 1
+        assert len(batch_testing.requests) == 1
+        assert batch_testing.requests[0]["user_id"] == user_to_anonymize.id
+        assert user_to_anonymize.firstName == f"Anonymous_{user_to_anonymize.id}"
+
+    def test_anonymize_non_pro_non_beneficiary_user_keep_history_on_offere(self) -> None:
+        user_to_anonymize = users_factories.UserFactory(
+            firstName="user_to_anonymize",
+            lastConnectionDate=datetime.datetime.utcnow() - datetime.timedelta(days=((3 * 365) + 1)),
+        )
+        history_factories.ActionHistoryFactory(
+            authorUser=user_to_anonymize,
+            user=user_to_anonymize,
+            offerer=offerers_factories.OffererFactory(),
+            actionType=history_models.ActionType.OFFERER_VALIDATED,
+        )
+
+        users_api.anonymize_non_pro_non_beneficiary_users(force=True)
+
+        db.session.refresh(user_to_anonymize)
+
+        assert user_to_anonymize.firstName == f"Anonymous_{user_to_anonymize.id}"
+        assert (
+            history_models.ActionHistory.query.filter(
+                history_models.ActionHistory.userId == user_to_anonymize.id
+            ).count()
+            == 2
+        )
+
+    def test_anonymize_non_pro_non_beneficiary_user_iris_not_found(self) -> None:
+        user_to_anonymize = users_factories.UserFactory(
+            firstName="user_to_anonymize",
+            lastConnectionDate=datetime.datetime.utcnow() - datetime.timedelta(days=((3 * 365) + 1)),
+        )
+
+        users_api.anonymize_non_pro_non_beneficiary_users(force=False)
+
+        db.session.refresh(user_to_anonymize)
+
+        assert len(sendinblue_testing.sendinblue_requests) == 0
+        assert user_to_anonymize.firstName == "user_to_anonymize"
+
+    def test_anonymize_non_pro_non_beneficiary_user_no_addr_api(self) -> None:
+        user_to_anonymize = users_factories.UserFactory(
+            firstName="user_to_anonymize",
+            lastConnectionDate=datetime.datetime.utcnow() - datetime.timedelta(days=((3 * 365) + 1)),
+        )
+
+        users_api.anonymize_non_pro_non_beneficiary_users(force=False)
+        db.session.refresh(user_to_anonymize)
+
+        assert len(sendinblue_testing.sendinblue_requests) == 0
+        assert user_to_anonymize.firstName == "user_to_anonymize"
+
+    def test_anonymize_non_pro_non_beneficiary_user_keep_email_in_brevo_if_used_for_venue(self) -> None:
+        user_to_anonymize = users_factories.UserFactory(
+            firstName="user_to_anonymize",
+            lastConnectionDate=datetime.datetime.utcnow() - datetime.timedelta(days=((3 * 365) + 1)),
+        )
+        offerers_factories.VenueFactory(bookingEmail=user_to_anonymize.email)
+
+        users_api.anonymize_non_pro_non_beneficiary_users(force=True)
+        db.session.refresh(user_to_anonymize)
+
+        assert user_to_anonymize.firstName == f"Anonymous_{user_to_anonymize.id}"
+        assert user_to_anonymize.email == f"anonymous_{user_to_anonymize.id}@anonymized.passculture"
+        assert sendinblue_testing.sendinblue_requests[0]["attributes"]["FIRSTNAME"] == ""
