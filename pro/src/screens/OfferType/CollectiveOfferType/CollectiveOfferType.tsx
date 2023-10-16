@@ -45,8 +45,7 @@ const CollectiveOfferType = ({
   const queryParams = new URLSearchParams(location.search)
   const queryOffererId = queryParams.get('structure')
   const queryVenueId = queryParams.get('lieu')
-  const [isLoadingEligibility, setIsLoadingEligibility] = useState(false)
-  const [isLoadingValidation, setIsLoadingValidation] = useState(false)
+  const [isLoading, setIsLoading] = useState(false)
   const [isValidated, setIsValidated] = useState(true)
   const [lastDmsApplication, setLastDmsApplication] = useState<
     DMSApplicationForEAC | null | undefined
@@ -75,14 +74,13 @@ const CollectiveOfferType = ({
         setHasCollectiveTemplateOffer(true)
       }
     }
+
     const checkOffererEligibility = async () => {
-      setIsLoadingEligibility(true)
       const offererNames = await api.listOfferersNames()
 
       const offererId = queryOffererId ?? offererNames.offerersNames[0].id
       if (offererNames.offerersNames.length > 1 && !queryOffererId) {
         setIsEligible(true)
-        setIsLoadingEligibility(false)
         return
       }
 
@@ -95,10 +93,9 @@ const CollectiveOfferType = ({
         }
         setIsEligible(payload.isOffererEligibleToEducationalOffer)
       }
-      setIsLoadingEligibility(false)
     }
+
     const checkOffererValidation = async () => {
-      setIsLoadingValidation(true)
       if (queryOffererId !== null) {
         const response = await api.getOfferer(Number(queryOffererId))
         setIsValidated(response.isValidated)
@@ -108,19 +105,26 @@ const CollectiveOfferType = ({
         )
         setLastDmsApplication(lastDmsApplication)
       }
-      setIsLoadingValidation(false)
     }
     const initializeStates = async () => {
-      await getTemplateCollectiveOffers()
-      await checkOffererEligibility()
-      await checkOffererValidation()
+      setIsLoading(true)
+      await Promise.all([
+        getTemplateCollectiveOffers(),
+        checkOffererEligibility(),
+        checkOffererValidation(),
+      ])
+      setIsLoading(false)
     }
     void initializeStates()
   }, [queryOffererId, queryVenueId])
 
+  if (isLoading) {
+    return <Spinner />
+  }
+
   return (
     <>
-      {isValidated && isEligible && !isLoadingEligibility && (
+      {isValidated && isEligible && (
         <FormLayout.Section
           title="Quel est le type de l’offre ?"
           className={styles['subtype-section']}
@@ -196,7 +200,6 @@ const CollectiveOfferType = ({
           </FormLayout.Section>
         )}
 
-      {(isLoadingEligibility || isLoadingValidation) && <Spinner />}
       {values.offerType === OFFER_TYPES.EDUCATIONAL && !isValidated && (
         <Banner>
           Votre structure est en cours de validation par les équipes pass
@@ -204,8 +207,6 @@ const CollectiveOfferType = ({
         </Banner>
       )}
       {!isEligible &&
-        !isLoadingEligibility &&
-        !isLoadingValidation &&
         (lastDmsApplication ? (
           <Banner
             links={[
