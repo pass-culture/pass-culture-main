@@ -191,7 +191,7 @@ def format_search_type_options(type_option: TypeOptions) -> str:
 
 
 def format_booking_cancellation_reason(
-    reason: bookings_models.BookingCancellationReasons | educational_models.CollectiveBookingCancellationReasons,
+    reason: bookings_models.BookingCancellationReasons | educational_models.CollectiveBookingCancellationReasons | None,
 ) -> str:
     match reason:
         case bookings_models.BookingCancellationReasons.OFFERER | educational_models.CollectiveBookingCancellationReasons.OFFERER:
@@ -210,6 +210,8 @@ def format_booking_cancellation_reason(
             return "Refusée par l'institution"
         case educational_models.CollectiveBookingCancellationReasons.REFUSED_BY_HEADMASTER:
             return "Refusée par le chef d'établissement"
+        case None:
+            return ""
         case _:
             return reason.value
 
