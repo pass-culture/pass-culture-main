@@ -2,6 +2,7 @@ from io import BytesIO
 from io import TextIOWrapper
 import logging
 import re
+from typing import Iterator
 
 from pcapi.connectors.ftp_titelive import connect_to_titelive_ftp
 from pcapi.connectors.ftp_titelive import get_files_to_process_from_titelive_ftp
@@ -15,6 +16,7 @@ import pcapi.core.offers.models as offers_models
 import pcapi.core.providers.models as providers_models
 import pcapi.core.providers.repository as providers_repository
 from pcapi.domain.titelive import get_date_from_filename
+from pcapi.domain.titelive import parse_things_date_to_string
 from pcapi.domain.titelive import read_things_date
 from pcapi.local_providers.local_provider import LocalProvider
 from pcapi.local_providers.providable_info import ProvidableInfo
@@ -214,15 +216,15 @@ class TiteLiveThings(LocalProvider):
     name = "TiteLive (Epagine / Place des libraires.com)"
     can_create = True
 
-    def __init__(self):  # type: ignore [no-untyped-def]
+    def __init__(self) -> None:
         super().__init__()
 
         ordered_thing_files = get_files_to_process_from_titelive_ftp(THINGS_FOLDER_NAME_TITELIVE, DATE_REGEXP)
         self.thing_files = self.get_remaining_files_to_check(ordered_thing_files)
 
-        self.data_lines = None
+        self.data_lines: Iterator[str] | None = None
         self.products_file = None
-        self.product_approved_eans = []
+        self.product_approved_eans: list[str | None] = []
         self.product_extra_data = offers_models.OfferExtraData()
         self.product_whitelist_eans = {
             ean for ean, in fraud_models.ProductWhitelist.query.with_entities(fraud_models.ProductWhitelist.ean).all()
@@ -232,12 +234,13 @@ class TiteLiveThings(LocalProvider):
         if self.data_lines is None:
             self.open_next_file()
 
+        assert self.data_lines is not None
         try:
-            data_lines = next(self.data_lines)  # type: ignore [arg-type]
+            data_lines = next(self.data_lines)
             elements = data_lines.split("~")
         except StopIteration:
             self.open_next_file()
-            elements = next(self.data_lines).split("~")  # type: ignore [arg-type]
+            elements = next(self.data_lines).split("~")
 
         if len(elements) != NUMBER_OF_ELEMENTS_PER_LINE:
             logger.error(
@@ -368,7 +371,7 @@ class TiteLiveThings(LocalProvider):
 
     def fill_object_attributes(self, product: offers_models.Product) -> None:
         product.name = trim_with_ellipsis(self.product_infos[INFO_KEYS["TITRE"]], 140)
-        product.datePublished = read_things_date(self.product_infos[INFO_KEYS["DATE_PARUTION"]])
+        product.datePublished = parse_things_date_to_string(self.product_infos[INFO_KEYS["DATE_PARUTION"]])
         if not self.product_subcategory_id:
             raise ValueError("product subcategory id is missing")
         subcategory = subcategories.ALL_SUBCATEGORIES_DICT[self.product_subcategory_id]
@@ -379,7 +382,7 @@ class TiteLiveThings(LocalProvider):
         if product.isGcuCompatible is False and product.extraData:
             self.product_approved_eans.append(product.extraData.get("ean"))
 
-    def open_next_file(self):  # type: ignore [no-untyped-def]
+    def open_next_file(self) -> None:
         if self.products_file:
             file_date = get_date_from_filename(self.products_file, DATE_REGEXP)
             self.log_provider_event(providers_models.LocalProviderEventType.SyncPartEnd, file_date)
@@ -411,6 +414,8 @@ class TiteLiveThings(LocalProvider):
         # If the product is updated to eligible, it is because the offers must be approved to become ineligible due to gcu
         for ean in self.product_approved_eans:
             try:
+                if ean is None:
+                    raise ProductNotFound("ean is None")
                 offers_api.approves_provider_product_and_rejected_offers(ean)
             except ProductNotFound as exception:
                 logger.error("Imported product with ean not found", extra={"ean": ean, "exc": str(exception)})
@@ -418,7 +423,7 @@ class TiteLiveThings(LocalProvider):
                 logger.error("Product with ean cannot be approved", extra={"ean": ean, "exc": str(exception)})
 
 
-def get_lines_from_thing_file(thing_file: str):  # type: ignore [no-untyped-def]
+def get_lines_from_thing_file(thing_file: str) -> Iterator[str]:
     data_file = BytesIO()
     data_wrapper = TextIOWrapper(
         data_file,
