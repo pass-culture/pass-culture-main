@@ -22,19 +22,19 @@ const setDefaultInitialFormValues = (
     initialOffererId = offererNames[0].id.toString()
   } else if (
     offererId &&
-    offererNames.find(offerer => offerer.id.toString() === offererId)
+    offererNames.find((offerer) => offerer.id.toString() === offererId)
   ) {
     initialOffererId = offererId
   }
 
   let initialWithdrawalDetails = FORM_DEFAULT_VALUES.withdrawalDetails
   let initialAccessibility = FORM_DEFAULT_VALUES.accessibility
-  const initialIsVenueVirtual = venueList.every(v => v.isVirtual)
+  const initialIsVenueVirtual = venueList.every((v) => v.isVirtual)
 
   const venue =
     venueList.length === 1
       ? venueList[0]
-      : venueList.find(venue => venue.id.toString() === venueId)
+      : venueList.find((venue) => venue.id.toString() === venueId)
 
   if (venue) {
     initialAccessibility = venue.accessibility

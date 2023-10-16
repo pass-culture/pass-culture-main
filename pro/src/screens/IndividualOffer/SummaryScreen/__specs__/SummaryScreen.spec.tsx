@@ -290,7 +290,7 @@ describe('Summary', () => {
       })
       expect(buttonPublish).not.toBeDisabled()
 
-      const mockResponse = new CancelablePromise<void>(async resolve =>
+      const mockResponse = new CancelablePromise<void>(async (resolve) =>
         setTimeout(() => {
           resolve(undefined)
         }, 200)

@@ -52,14 +52,14 @@ export const validationSchema = yup.object().shape({
       ]),
     otherAddress: yup.string().when('addressType', {
       is: OfferAddressType.OTHER,
-      then: schema => schema.required('Veuillez renseigner une adresse'),
+      then: (schema) => schema.required('Veuillez renseigner une adresse'),
     }),
     venueId: yup
       .number()
       .nullable()
       .when('addressType', {
         is: OfferAddressType.OFFERER_VENUE,
-        then: schema => schema.required('Veuillez sélectionner un lieu'),
+        then: (schema) => schema.required('Veuillez sélectionner un lieu'),
       }),
   }),
   participants: yup.object().test({
@@ -103,7 +103,7 @@ export const validationSchema = yup.object().shape({
     ),
   domains: yup.array().test({
     message: 'Veuillez renseigner un domaine',
-    test: domains => Boolean(domains?.length && domains.length > 0),
+    test: (domains) => Boolean(domains?.length && domains.length > 0),
   }),
   'search-domains': yup.string().when('domains', (domains, schema) =>
     schema.test({
@@ -115,7 +115,7 @@ export const validationSchema = yup.object().shape({
   interventionArea: yup.array().when('eventAddress', {
     is: (eventAddress: { addressType: OfferAddressType }) =>
       eventAddress.addressType !== OfferAddressType.OFFERER_VENUE,
-    then: schema => schema.min(1, 'Veuillez renseigner une zone de mobilité'),
+    then: (schema) => schema.min(1, 'Veuillez renseigner une zone de mobilité'),
   }),
   'search-interventionArea': yup
     .string()
@@ -129,7 +129,7 @@ export const validationSchema = yup.object().shape({
           interventionArea.length === 0
         )
       },
-      then: schema => schema.required(),
+      then: (schema) => schema.required(),
     }),
   priceDetail: yup.string().max(MAX_DETAILS_LENGTH),
 })

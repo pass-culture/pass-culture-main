@@ -22,7 +22,7 @@ const VenueDetails = ({
 }: VenueDetailsProps): JSX.Element => {
   const venueName = publicName || name
   const venueAddressString = [venueName, address, postalCode, city]
-    .filter(str => Boolean(str))
+    .filter((str) => Boolean(str))
     .join(' - ')
 
   return (

@@ -24,7 +24,7 @@ const UserEmailForm = ({
 }: UserEmailFormProps): JSX.Element => {
   const { currentUser } = useCurrentUser()
   const onSubmit = (values: any) => {
-    postEmailAdapter(values).then(response => {
+    postEmailAdapter(values).then((response) => {
       if (response.isOk) {
         getPendingEmailRequest()
         closeForm()

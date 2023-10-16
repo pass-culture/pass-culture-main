@@ -77,7 +77,7 @@ describe('screens | OfferEducational', () => {
       name: 'Enregistrer',
     })
     await waitFor(() => {
-      inputs.forEach(input => expect(input).toBeDisabled())
+      inputs.forEach((input) => expect(input).toBeDisabled())
     })
     expect(submitButton).toBeDisabled()
   })

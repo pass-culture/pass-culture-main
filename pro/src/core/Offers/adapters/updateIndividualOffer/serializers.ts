@@ -23,7 +23,7 @@ export const serializeExtraData = (
   extraData.stageDirector = formValues.stageDirector
   extraData.visa = formValues.visa
 
-  const isEmpty = Object.values(extraData).every(value => value === undefined)
+  const isEmpty = Object.values(extraData).every((value) => value === undefined)
 
   return isEmpty ? undefined : extraData
 }

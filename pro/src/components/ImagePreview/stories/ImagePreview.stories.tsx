@@ -18,7 +18,7 @@ interface Props {
   title: string
 }
 
-const Template: Story<Props> = props => (
+const Template: Story<Props> = (props) => (
   <ImagePreviewsWrapper>
     <ImagePreview {...props}>
       <img alt="" className={style['home-screen-shell']} src={offerHomeShell} />

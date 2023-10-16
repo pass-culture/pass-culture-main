@@ -24,7 +24,7 @@ const ValidationMessageList = ({ name }: ValidationMessageListProps) => {
 
   return (
     <div className={styles['password-footer']}>
-      {Object.keys(errors).map(k => {
+      {Object.keys(errors).map((k) => {
         return (
           <div key={k} className={styles['field-layout-error']}>
             {errors[k] ? (

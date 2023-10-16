@@ -11,7 +11,7 @@ export default {
 }
 type Args = EmailSpellCheckInputProps<{ email: string }>
 
-const Template: Story<Args> = args => (
+const Template: Story<Args> = (args) => (
   <Formik initialValues={{}} onSubmit={() => {}}>
     <EmailSpellCheckInput {...args} />
   </Formik>

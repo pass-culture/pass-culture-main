@@ -39,7 +39,7 @@ const VenueCreation = (): JSX.Element | null => {
 
   if (errorOfferer || errorVenueTypes || errorVenueLabels) {
     const loadingError = [errorOfferer, errorVenueTypes, errorVenueLabels].find(
-      error => error !== undefined
+      (error) => error !== undefined
     )
     if (loadingError !== undefined) {
       navigate(homePath)

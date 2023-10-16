@@ -8,7 +8,7 @@ const createStore = (initialState = {}) => {
     preloadedState: initialState,
     // Increase timeouts for checks that are only in dev mode
     // https://stackoverflow.com/a/69624806
-    middleware: getDefaultMiddleware =>
+    middleware: (getDefaultMiddleware) =>
       getDefaultMiddleware({
         immutableCheck: { warnAfter: 128 },
         serializableCheck: { warnAfter: 128 },

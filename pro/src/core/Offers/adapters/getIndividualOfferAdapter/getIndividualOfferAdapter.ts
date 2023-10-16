@@ -15,7 +15,9 @@ const FAILING_RESPONSE: AdapterFailure<null> = {
   payload: null,
 }
 
-const getIndividualOfferAdapter: GetIndividualOfferAdapter = async offerId => {
+const getIndividualOfferAdapter: GetIndividualOfferAdapter = async (
+  offerId
+) => {
   if (offerId === undefined) {
     return FAILING_RESPONSE
   }

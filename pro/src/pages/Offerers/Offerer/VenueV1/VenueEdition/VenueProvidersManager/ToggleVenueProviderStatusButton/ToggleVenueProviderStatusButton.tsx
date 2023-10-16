@@ -37,7 +37,7 @@ const ToggleVenueProviderStatusButton = ({
     }
     api
       .updateVenueProvider(payload)
-      .then(editedVenueProvider => {
+      .then((editedVenueProvider) => {
         afterEdit(editedVenueProvider)
       })
       .catch(() => {

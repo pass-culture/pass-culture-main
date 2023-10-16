@@ -121,7 +121,7 @@ const getLineStyle = (
 
 const Timeline = ({ steps }: TimelineProps): JSX.Element => {
   const hasErrorSteps =
-    steps.filter(x => x.type === TimelineStepType.ERROR).length > 0
+    steps.filter((x) => x.type === TimelineStepType.ERROR).length > 0
   return (
     <ol className={styles.container}>
       {steps.map((step, index) => {

@@ -13,9 +13,9 @@ export const validationSchema = (
       .test(
         'len',
         'Le SIRET doit comporter 14 caractères',
-        siret => !!siret && valideSiretLength(siret)
+        (siret) => !!siret && valideSiretLength(siret)
       )
-      .test('apiSiretValid', 'Le SIRET n’existe pas', async siret => {
+      .test('apiSiretValid', 'Le SIRET n’existe pas', async (siret) => {
         const response = await siretApiValidate(siret || '')
         displayInvisibleSirenBanner(
           response ===

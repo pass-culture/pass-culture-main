@@ -55,7 +55,7 @@ const getVenueTypeAndSubcategories = async (
     if (venuesResponse.isOk && categoriesResponse.isOk) {
       const { subCategories } = categoriesResponse.payload
       const venuesData = venuesResponse.payload.filter(
-        venue => !venue.isVirtual
+        (venue) => !venue.isVirtual
       )
 
       if (venuesData.length === 1) {
@@ -125,7 +125,7 @@ const IndividualOfferType = (): JSX.Element | null => {
                   withBorder
                   value={subcategory}
                   label={
-                    subcategories.find(s => s.id === subcategory)?.proLabel ||
+                    subcategories.find((s) => s.id === subcategory)?.proLabel ||
                     ''
                   }
                   name="individualOfferSubcategory"

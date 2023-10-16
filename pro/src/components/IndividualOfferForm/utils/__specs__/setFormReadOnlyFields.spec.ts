@@ -21,7 +21,7 @@ describe('setFormReadOnlyFields', () => {
   const fullBlockedStatus = [OFFER_STATUS_PENDING, OFFER_STATUS_REJECTED]
   it.each(fullBlockedStatus)(
     'should return all form fields for %s offer status',
-    async status => {
+    async (status) => {
       const offer = {
         status,
       } as IndividualOffer
@@ -40,7 +40,7 @@ describe('setFormReadOnlyFields', () => {
   ]
   it.each(blockedStatus)(
     'should return standard blocked field for %s offer status',
-    async status => {
+    async (status) => {
       const offer = {
         status,
       } as IndividualOffer

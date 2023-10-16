@@ -19,7 +19,7 @@ export const StocksSummaryScreen = () => {
     return null
   }
   const canBeDuo = subCategories.find(
-    subcategory => subcategory.id === offer.subcategoryId
+    (subcategory) => subcategory.id === offer.subcategoryId
   )?.canBeDuo
 
   const editLink = getIndividualOfferUrl({

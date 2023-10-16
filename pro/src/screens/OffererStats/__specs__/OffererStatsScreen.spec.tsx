@@ -77,9 +77,9 @@ describe('OffererStatsScreen', () => {
       },
     ] as GetOffererResponseModel[]
 
-    vi.spyOn(api, 'getOfferer').mockImplementation(offererId => {
-      return new CancelablePromise(resolve =>
-        resolve(offerers.filter(offerer => offerer.id == offererId)[0])
+    vi.spyOn(api, 'getOfferer').mockImplementation((offererId) => {
+      return new CancelablePromise((resolve) =>
+        resolve(offerers.filter((offerer) => offerer.id == offererId)[0])
       )
     })
     vi.spyOn(api, 'getOffererStatsDashboardUrl').mockResolvedValue({

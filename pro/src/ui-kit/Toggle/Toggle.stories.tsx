@@ -8,7 +8,7 @@ export default {
   component: Toggle,
 }
 
-const Template: Story<ToggleProps> = args => <Toggle {...args} />
+const Template: Story<ToggleProps> = (args) => <Toggle {...args} />
 
 export const Default = Template.bind({})
 Default.args = {

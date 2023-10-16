@@ -62,7 +62,7 @@ const LinkNodes = ({
   if (links.length > 1) {
     return (
       <ul>
-        {links.map(link => {
+        {links.map((link) => {
           return (
             <li key={link.href} className={styles['bi-link-item']}>
               <LinkNode link={link} defaultLinkIcon={defaultLinkIcon} />

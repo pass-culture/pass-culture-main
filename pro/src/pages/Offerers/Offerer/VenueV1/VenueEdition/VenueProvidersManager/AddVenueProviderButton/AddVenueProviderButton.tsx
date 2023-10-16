@@ -31,11 +31,11 @@ const AddVenueProviderButton = ({
     DEFAULT_PROVIDER_OPTION.value
   )
   const selectedProvider = providers.find(
-    provider => provider.id.toString() === selectedProviderId
+    (provider) => provider.id.toString() === selectedProviderId
   )
 
   const providersOptions = sortByLabel(
-    providers.map(item => ({
+    providers.map((item) => ({
       value: item['id'].toString(),
       label: item['name'],
     }))
@@ -74,7 +74,7 @@ const AddVenueProviderButton = ({
       <FieldLayout label="Logiciel" name="provider">
         <SelectInput
           defaultOption={DEFAULT_PROVIDER_OPTION}
-          onChange={event => setSelectedProviderId(event.target.value)}
+          onChange={(event) => setSelectedProviderId(event.target.value)}
           name="provider"
           options={providersOptions}
           value={String(selectedProviderId)}

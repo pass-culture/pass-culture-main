@@ -33,7 +33,7 @@ const UserPhoneForm = ({
     values.phoneNumber = parseAndValidateFrenchPhoneNumber(
       values.phoneNumber
     ).number
-    patchPhoneAdapter(values).then(response => {
+    patchPhoneAdapter(values).then((response) => {
       if (response.isOk) {
         dispatch(
           setCurrentUser({

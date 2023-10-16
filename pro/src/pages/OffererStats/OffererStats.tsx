@@ -18,7 +18,7 @@ const OffererStats = (): JSX.Element | null => {
   }
 
   const offererOptions = sortByLabel(
-    offererNames.map(offerer => ({
+    offererNames.map((offerer) => ({
       value: offerer.id.toString(),
       label: offerer.name,
     }))

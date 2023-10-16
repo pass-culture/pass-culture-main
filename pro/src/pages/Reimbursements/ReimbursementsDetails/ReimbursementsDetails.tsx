@@ -50,7 +50,7 @@ const ReimbursementsDetails = (): JSX.Element => {
     venues: VenueListItemResponseModel[]
   ) =>
     sortByLabel(
-      venues.map(venue => ({
+      venues.map((venue) => ({
         value: venue.id.toString(),
         label: venue.isVirtual
           ? `${venue.offererName} - Offre numérique`

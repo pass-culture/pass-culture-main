@@ -44,9 +44,11 @@ const Homepage = (): JSX.Element => {
       try {
         const receivedOfferer = await api.getOfferer(Number(offererId))
         const offererPhysicalVenues =
-          receivedOfferer.managedVenues?.filter(venue => !venue.isVirtual) ?? []
+          receivedOfferer.managedVenues?.filter((venue) => !venue.isVirtual) ??
+          []
         const virtualVenue =
-          receivedOfferer.managedVenues?.find(venue => venue.isVirtual) ?? null
+          receivedOfferer.managedVenues?.find((venue) => venue.isVirtual) ??
+          null
         setHasNoVenueVisible(
           offererPhysicalVenues?.length === 0 && !virtualVenue?.hasCreatedOffer
         )
@@ -92,7 +94,7 @@ const Homepage = (): JSX.Element => {
   const isOffererStatsActive = useActiveFeature('ENABLE_OFFERER_STATS')
 
   useEffect(function fetchData() {
-    api.listOfferersNames().then(async offererNames => {
+    api.listOfferersNames().then(async (offererNames) => {
       setReceivedOffererNames(offererNames)
     })
   }, [])

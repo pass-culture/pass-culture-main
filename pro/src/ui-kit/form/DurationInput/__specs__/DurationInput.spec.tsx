@@ -51,7 +51,7 @@ describe('DurationInput', () => {
   const durationToBeEmpty = ['A', 'b', 'AZSQD', 'abcd']
   it.each(durationToBeEmpty)(
     'should render empty field onChange',
-    async value => {
+    async (value) => {
       renderDurationInput()
 
       const durationInput = screen.getByLabelText('Durée', {

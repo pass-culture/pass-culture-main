@@ -26,7 +26,7 @@ const FilterByEventDate = ({
   >
     <BaseDatePicker
       name="select-filter-date"
-      onChange={event =>
+      onChange={(event) =>
         updateFilters({
           offerEventDate:
             event.target.value !== ''

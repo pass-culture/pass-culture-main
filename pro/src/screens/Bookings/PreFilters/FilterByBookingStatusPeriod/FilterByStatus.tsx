@@ -21,7 +21,7 @@ const FilterByStatus = ({
   <>
     <label className="visually-hidden">Type de période</label>
     <SelectInput
-      onChange={event =>
+      onChange={(event) =>
         updateFilters({
           bookingStatusFilter: event.target.value as BookingStatusFilter,
         })

@@ -52,7 +52,7 @@ const StocksThing = ({ offer }: StocksThingProps): JSX.Element => {
   const { setOffer, subCategories } = useIndividualOfferContext()
 
   const canBeDuo = subCategories.find(
-    subCategory => subCategory.id === offer.subcategoryId
+    (subCategory) => subCategory.id === offer.subcategoryId
   )?.canBeDuo
 
   const [isActivationCodeFormVisible, setIsActivationCodeFormVisible] =

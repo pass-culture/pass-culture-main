@@ -40,7 +40,7 @@ const OfferFavoriteButton = ({
         ? apiAdage.deleteFavoriteForCollectiveOfferTemplate(offer.id)
         : apiAdage.deleteFavoriteForCollectiveOffer(offer.id))
       //  Decrease adage user favorite count for header
-      setFavoriteCount?.(count => count - 1)
+      setFavoriteCount?.((count) => count - 1)
 
       notify.success('Supprimé de vos favoris')
       apiAdage.logFavOfferButtonClick({
@@ -65,7 +65,7 @@ const OfferFavoriteButton = ({
         : apiAdage.postCollectiveOfferFavorites(offer.id))
 
       //  Increase adage user favorite count for header
-      setFavoriteCount?.(count => count + 1)
+      setFavoriteCount?.((count) => count + 1)
 
       notify.success('Ajouté à vos favoris')
       apiAdage.logFavOfferButtonClick({

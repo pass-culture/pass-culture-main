@@ -184,7 +184,7 @@ export const CollectiveBookingsTable = ({
         </thead>
 
         <tbody className={styles['table-body']}>
-          {currentPageItems.map(booking => (
+          {currentPageItems.map((booking) => (
             <CollectiveTableRow
               booking={booking}
               key={booking.bookingId}

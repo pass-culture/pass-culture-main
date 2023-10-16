@@ -13,7 +13,7 @@ const validationSchemaConcat = {
   isVenueVirtual: yup.boolean(),
   addressAutocomplete: yup.string().when('isVenueVirtual', {
     is: false,
-    then: schema =>
+    then: (schema) =>
       schema.required(
         'Veuillez sélectionner une adresse parmi les suggestions'
       ),

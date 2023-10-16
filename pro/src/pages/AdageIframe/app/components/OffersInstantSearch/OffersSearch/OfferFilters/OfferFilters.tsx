@@ -96,13 +96,13 @@ export const OfferFilters = ({
       setLocalisationFilterState(LocalisationFilterStates.NONE)
     }
     if (closeModal) {
-      setModalOpenStatus(prevState => ({ ...prevState, [modalName]: false }))
+      setModalOpenStatus((prevState) => ({ ...prevState, [modalName]: false }))
     }
   }
 
   const onSearch = (modalName: string) => {
     formik.handleSubmit()
-    setModalOpenStatus(prevState => ({ ...prevState, [modalName]: false }))
+    setModalOpenStatus((prevState) => ({ ...prevState, [modalName]: false }))
 
     resetLocalisationFilterState()
   }

@@ -112,7 +112,7 @@ export const buildInitialValues = ({
 
   return {
     stocks: offerStocks
-      .map(stock =>
+      .map((stock) =>
         buildSingleInitialValues({
           departmentCode,
           stock,

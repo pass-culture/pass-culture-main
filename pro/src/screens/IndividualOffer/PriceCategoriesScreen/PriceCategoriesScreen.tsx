@@ -37,7 +37,7 @@ const hasFieldChange = (
   stockPriceCategoryIds: (number | null | undefined)[],
   field: keyof PriceCategoryForm
 ) =>
-  priceCategories.some(priceCategory => {
+  priceCategories.some((priceCategory) => {
     // if no id, it is new and has no stocks
     if (!priceCategory.id) {
       return false
@@ -47,7 +47,7 @@ const hasFieldChange = (
     if (initialpriceCategory[field] !== priceCategory[field]) {
       // does it match a stock ?
       return stockPriceCategoryIds.some(
-        stockPriceCategoryId => stockPriceCategoryId === priceCategory.id
+        (stockPriceCategoryId) => stockPriceCategoryId === priceCategory.id
       )
     } else {
       return false
@@ -75,7 +75,7 @@ export const getPopinType = (
   )
 
   const changedPriceCategories = values.priceCategories.filter(
-    priceCategory => {
+    (priceCategory) => {
       if (!priceCategory.id) {
         return false
       }
@@ -90,15 +90,15 @@ export const getPopinType = (
     }
   )
 
-  const stockPriceCategoryIds = stocks.map(stock => stock.priceCategoryId)
+  const stockPriceCategoryIds = stocks.map((stock) => stock.priceCategoryId)
 
   const priceCategoryWithStocks = changedPriceCategories.filter(
-    priceCategory => {
+    (priceCategory) => {
       if (!priceCategory.id) {
         return false
       }
       return stockPriceCategoryIds.some(
-        stockPriceCategoryId => stockPriceCategoryId === priceCategory.id
+        (stockPriceCategoryId) => stockPriceCategoryId === priceCategory.id
       )
     }
   )
@@ -109,8 +109,8 @@ export const getPopinType = (
   }
 
   const priceCategoryWithBookings = priceCategoryWithStocks.filter(
-    priceCategory => {
-      return stocks.some(stock => {
+    (priceCategory) => {
+      return stocks.some((stock) => {
         if (
           stock.priceCategoryId === priceCategory.id &&
           stock.bookingsQuantity > 0
@@ -164,7 +164,7 @@ export const PriceCategoriesScreen = ({
     : false
   const isDisabled = isDisabledByStatus || isDisabledBySynchronization
   const canBeDuo = subCategories.find(
-    subCategory => subCategory.id === offer.subcategoryId
+    (subCategory) => subCategory.id === offer.subcategoryId
   )?.canBeDuo
 
   const onSubmit = async (values: PriceCategoriesFormValues) => {

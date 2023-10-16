@@ -9,7 +9,7 @@ export default {
   component: DatePicker,
 }
 
-const Template: Story<DatePickerProps> = props => (
+const Template: Story<DatePickerProps> = (props) => (
   <Formik initialValues={{ date: '' }} onSubmit={() => {}}>
     <DatePicker {...props} name="date" />
   </Formik>

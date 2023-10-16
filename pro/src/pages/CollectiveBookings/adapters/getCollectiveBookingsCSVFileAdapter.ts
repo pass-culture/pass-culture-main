@@ -8,7 +8,7 @@ const FAILING_RESPONSE: AdapterFailure<null> = {
 }
 
 export const getCollectiveBookingsCSVFileAdapter: GetBookingsCSVFileAdapter =
-  async filters => {
+  async (filters) => {
     try {
       const bookingsCsvText = await pcapi.getFilteredCollectiveBookingsCSV({
         bookingPeriodBeginningDate: filters.bookingBeginningDate,

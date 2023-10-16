@@ -313,7 +313,7 @@ export const RecurrenceForm = ({
             <FormLayout.Row>
               <FieldArray
                 name="beginningTimes"
-                render={arrayHelpers => (
+                render={(arrayHelpers) => (
                   <>
                     <div className={styles['beginning-time-list']}>
                       {values.beginningTimes.map((beginningTime, index) => (
@@ -368,7 +368,7 @@ export const RecurrenceForm = ({
 
             <FieldArray
               name="quantityPerPriceCategories"
-              render={arrayHelpers => (
+              render={(arrayHelpers) => (
                 <>
                   {values.quantityPerPriceCategories.map(
                     (quantityPerPriceCategory, index) => (

@@ -7,7 +7,7 @@ export const getImageBitmap = async (
     window.createImageBitmap = async (
       blob: ImageBitmapSource
     ): Promise<ImageBitmap> =>
-      new Promise(resolve => {
+      new Promise((resolve) => {
         const img = document.createElement('img')
         img.addEventListener('load', function () {
           resolve(this as any)

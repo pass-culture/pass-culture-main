@@ -27,7 +27,7 @@ const RecurrenceSection = ({ offer }: RecurrenceSectionProps) => {
 
   const sortedStocks = offer.stocks.sort(sortStocks)
 
-  const totalCapacity = sortedStocks.find(s => s.quantity === null)
+  const totalCapacity = sortedStocks.find((s) => s.quantity === null)
     ? 'Illimitée'
     : `${sortedStocks.reduce((a, b) => a + (b.quantity ?? 0), 0)} places`
 

@@ -31,10 +31,10 @@ export const formatDescription = (
 
   const descriptionWordsItems: WordOrLinkItem[] = []
 
-  description.split('\n').forEach(descriptionBloc => {
-    descriptionBloc.split(' ').map(wordOrLink => {
+  description.split('\n').forEach((descriptionBloc) => {
+    descriptionBloc.split(' ').map((wordOrLink) => {
       if (
-        ['www', 'http://', 'https://'].some(linkPrefix =>
+        ['www', 'http://', 'https://'].some((linkPrefix) =>
           wordOrLink.startsWith(linkPrefix)
         )
       ) {

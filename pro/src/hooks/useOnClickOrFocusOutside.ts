@@ -5,7 +5,7 @@ export default function useOnClickOrFocusOutside(
   handler: (event: Event) => void
 ) {
   useEffect(() => {
-    const listener: EventListener = event => {
+    const listener: EventListener = (event) => {
       if (!ref.current || ref.current.contains(event.target as Node)) {
         return
       }

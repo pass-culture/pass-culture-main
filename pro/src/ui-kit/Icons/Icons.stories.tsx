@@ -26,7 +26,7 @@ export const Icons = () => {
   const [fillColorInput, setFillColorInput] = useState('#000000')
   const [backgroundColorInput, setBackgroundColorInput] = useState('#ffffff')
 
-  const onClick: React.MouseEventHandler<HTMLDivElement> = e => {
+  const onClick: React.MouseEventHandler<HTMLDivElement> = (e) => {
     e.persist()
     const target = e.currentTarget as Element
 
@@ -44,7 +44,7 @@ export const Icons = () => {
       <div className={styles['search-input-container']}>
         <BaseInput
           name="search"
-          onChange={event => setSearchInput(event.target.value)}
+          onChange={(event) => setSearchInput(event.target.value)}
           placeholder="Rechercher ..."
           value={searchInput}
         />
@@ -52,7 +52,7 @@ export const Icons = () => {
         <BaseInput
           type="color"
           name="fillColor"
-          onChange={event => setFillColorInput(event.target.value)}
+          onChange={(event) => setFillColorInput(event.target.value)}
           placeholder="#000000, red...."
           value={fillColorInput}
           className={styles['color-input']}
@@ -61,15 +61,15 @@ export const Icons = () => {
         <BaseInput
           type="color"
           name="backgroundColor"
-          onChange={event => setBackgroundColorInput(event.target.value)}
+          onChange={(event) => setBackgroundColorInput(event.target.value)}
           placeholder="#000000, red...."
           value={backgroundColorInput}
           className={styles['color-input']}
         />
       </div>
 
-      {iconsSections.map(section => {
-        const filteredIcons = section.icons.filter(iconListItem =>
+      {iconsSections.map((section) => {
+        const filteredIcons = section.icons.filter((iconListItem) =>
           fuzzyMatch(searchInput, iconListItem.src)
         )
 
@@ -82,7 +82,7 @@ export const Icons = () => {
             <Title level={2}>{section.title}</Title>
 
             <div className={styles['icon-list']}>
-              {filteredIcons.map(icon => {
+              {filteredIcons.map((icon) => {
                 const fileNameParts = icon.src.split('/')
                 const iconName = fileNameParts[fileNameParts.length - 1]
                   .split('.')[0]

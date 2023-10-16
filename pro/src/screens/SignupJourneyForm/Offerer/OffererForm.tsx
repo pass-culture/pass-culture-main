@@ -29,7 +29,7 @@ const OffererForm = (): JSX.Element => {
           label="Numéro de SIRET à 14 chiffres"
           type="text"
           className={styles['input-siret']}
-          onChange={e => formatSiret(e.target.value)}
+          onChange={(e) => formatSiret(e.target.value)}
         />
       </FormLayout.Row>
     </FormLayout.Section>

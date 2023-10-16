@@ -24,7 +24,7 @@ const ERROR_RESPONSE: Record<string, any> = {
   },
 }
 
-export const postBookingAdapater: PostBookingAdapter = async stockId => {
+export const postBookingAdapater: PostBookingAdapter = async (stockId) => {
   try {
     await apiAdage.bookCollectiveOffer({ stockId })
 

@@ -441,7 +441,7 @@ describe('OfferType', () => {
 
   it('should render loader while fetching data', async () => {
     vi.spyOn(api, 'getOfferer').mockImplementationOnce(() => {
-      return new CancelablePromise<GetOffererResponseModel>(resolve =>
+      return new CancelablePromise<GetOffererResponseModel>((resolve) =>
         setTimeout(() => resolve({} as GetOffererResponseModel), 500)
       )
     })

@@ -121,14 +121,14 @@ export function IndividualOfferContextProvider({
         setOffererNames(response.payload.offererNames)
         setVenueList(response.payload.venueList)
         const venuesPopinDisplaying: Record<string, boolean> = {}
-        response.payload.venueList.forEach(v => {
+        response.payload.venueList.forEach((v) => {
           venuesPopinDisplaying[v.id] =
             !v.hasCreatedOffer && v.hasMissingReimbursementPoint
         })
         setShowVenuePopin(venuesPopinDisplaying)
         setSubcategory(
           response.payload.categoriesData.subCategories.find(
-            s => s.id === querySubcategoryId
+            (s) => s.id === querySubcategoryId
           )
         )
       } else {

@@ -42,7 +42,7 @@ const VenueList = ({
         />
       )}
 
-      {physicalVenues?.map(venue => (
+      {physicalVenues?.map((venue) => (
         <Venue
           venueId={venue.id}
           key={selectedOffererId + '-' + venue.id}

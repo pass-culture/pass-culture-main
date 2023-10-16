@@ -59,7 +59,7 @@ const IndividualOfferForm = ({
 
   useScrollToFirstErrorAfterSubmit()
 
-  const offerSubCategory = subCategories.find(s => s.id === subcategoryId)
+  const offerSubCategory = subCategories.find((s) => s.id === subcategoryId)
   const filteredVenueList = getFilteredVenueListBySubcategory(
     venueList,
     offerSubCategory
@@ -67,7 +67,7 @@ const IndividualOfferForm = ({
 
   const showFullForm = subcategoryId.length > 0 && filteredVenueList.length > 0
 
-  const venue = filteredVenueList.find(v => v.id.toString() === venueId)
+  const venue = filteredVenueList.find((v) => v.id.toString() === venueId)
 
   // we use venue is virtual here because we cannot infer it from the offerSubCategory
   // because of CATEGORY_STATUS.ONLINE_OR_OFFLINE who can be both virtual or not
@@ -79,7 +79,7 @@ const IndividualOfferForm = ({
 
   const areAllVenuesVirtual = filteredVenueList
     .filter(matchOffererId)
-    .every(v => v.isVirtual)
+    .every((v) => v.isVirtual)
 
   const showAddVenueBanner =
     offerSubCategory &&

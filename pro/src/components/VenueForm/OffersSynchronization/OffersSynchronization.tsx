@@ -31,7 +31,7 @@ const OffersSynchronization = ({
   const afterVenueProviderEdit = (
     editedVenueProvider: VenueProviderResponse
   ) => {
-    const newVenueProviders = venueProviders.map(venueProvider =>
+    const newVenueProviders = venueProviders.map((venueProvider) =>
       venueProvider.id === editedVenueProvider.id
         ? editedVenueProvider
         : venueProvider
@@ -41,7 +41,7 @@ const OffersSynchronization = ({
 
   const afterVenueProviderDelete = (deletedVenueProviderId: number) => {
     const newVenueProviders = venueProviders.filter(
-      venueProvider => venueProvider.id !== deletedVenueProviderId
+      (venueProvider) => venueProvider.id !== deletedVenueProviderId
     )
     setVenueProviders(newVenueProviders)
   }

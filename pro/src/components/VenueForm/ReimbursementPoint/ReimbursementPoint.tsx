@@ -92,19 +92,19 @@ const ReimbursementPoint = ({
       let venueReimbursementPointResponse = null
       if (venue.reimbursementPointId) {
         venueReimbursementPointResponse = reimbursementPointsResponse.find(
-          reimbursementPoint =>
+          (reimbursementPoint) =>
             reimbursementPoint.venueId === venue.reimbursementPointId
         )
       }
       setHasAlreadyAddReimbursementPoint(
         reimbursementPointsResponse.find(
-          reimbursementPoint => reimbursementPoint.venueId === venue.id
+          (reimbursementPoint) => reimbursementPoint.venueId === venue.id
         )
       )
 
       setVenueReimbursementPoint(venueReimbursementPointResponse)
       setReimbursementPointOptions(
-        reimbursementPointsResponse.map(reimbursementPoint => ({
+        reimbursementPointsResponse.map((reimbursementPoint) => ({
           key: `venue-reimbursement-point-${reimbursementPoint.venueId}`,
           displayName: reimbursementPointDisplayName(reimbursementPoint),
           id: reimbursementPoint.venueId,
@@ -211,7 +211,7 @@ const ReimbursementPoint = ({
                     value: '',
                     label: 'Sélectionner des coordonnées dans la liste',
                   },
-                  ...reimbursementPointOptions.map(option => ({
+                  ...reimbursementPointOptions.map((option) => ({
                     value: option.id,
                     label: option.displayName,
                   })),

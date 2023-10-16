@@ -33,8 +33,8 @@ const OffererDetails = ({
   )
 
   const hasAtLeastOnePhysicalVenue = selectedOfferer.managedVenues
-    ?.filter(venue => !venue.isVirtual)
-    .map(venue => venue.id)
+    ?.filter((venue) => !venue.isVirtual)
+    .map((venue) => venue.id)
     .some(Boolean)
 
   const hasMissingReimbursementPoints = useMemo(() => {
@@ -42,8 +42,8 @@ const OffererDetails = ({
       return false
     }
     return selectedOfferer.managedVenues
-      ?.filter(venue => !venue.isVirtual)
-      .map(venue => venue.hasMissingReimbursementPoint)
+      ?.filter((venue) => !venue.isVirtual)
+      .map((venue) => venue.hasMissingReimbursementPoint)
       .some(Boolean)
   }, [selectedOfferer])
 

@@ -21,7 +21,7 @@ describe('getOfferSubtypeFromParam', () => {
 
   it.each(cases)(
     'should deduce the offer subtype %s from the query param',
-    offerSubtype => {
+    (offerSubtype) => {
       expect(getOfferSubtypeFromParam(offerSubtype)).toBe(offerSubtype)
     }
   )
@@ -43,7 +43,7 @@ describe('getCategoryStatusFromOfferSubtype', () => {
 
   it.each(physicalCases)(
     'should return category offline for physical cases',
-    offerSubtype => {
+    (offerSubtype) => {
       expect(getCategoryStatusFromOfferSubtype(offerSubtype)).toBe(
         CATEGORY_STATUS.OFFLINE
       )
@@ -56,7 +56,7 @@ describe('getCategoryStatusFromOfferSubtype', () => {
 
   it.each(virtualCases)(
     'should return category online for virtual cases',
-    offerSubtype => {
+    (offerSubtype) => {
       expect(getCategoryStatusFromOfferSubtype(offerSubtype)).toBe(
         CATEGORY_STATUS.ONLINE
       )
@@ -200,7 +200,7 @@ describe('filterCategories', () => {
     )
 
     expect(
-      filteredCategories.find(category => category.id === 'D')
+      filteredCategories.find((category) => category.id === 'D')
     ).toBeUndefined()
     expect(
       filteredSubCategories.find((c: OfferSubCategory) => c.id === 'C-D')
@@ -216,7 +216,7 @@ describe('filterCategories', () => {
     )
 
     expect(
-      filteredCategories.find(category => category.id === 'D')
+      filteredCategories.find((category) => category.id === 'D')
     ).toBeUndefined()
     expect(
       filteredSubCategories.find((c: OfferSubCategory) => c.id === 'C-D')
@@ -231,8 +231,11 @@ describe('filterCategories', () => {
       null
     )
 
-    expect(filteredCategories.map(category => category.id)).toEqual(['A', 'C'])
-    expect(filteredSubCategories.map(subCategory => subCategory.id)).toEqual([
+    expect(filteredCategories.map((category) => category.id)).toEqual([
+      'A',
+      'C',
+    ])
+    expect(filteredSubCategories.map((subCategory) => subCategory.id)).toEqual([
       'A-A',
       'C-A',
       'C-B',
@@ -247,8 +250,11 @@ describe('filterCategories', () => {
       null
     )
 
-    expect(filteredCategories.map(category => category.id)).toEqual(['B', 'C'])
-    expect(filteredSubCategories.map(subCategory => subCategory.id)).toEqual([
+    expect(filteredCategories.map((category) => category.id)).toEqual([
+      'B',
+      'C',
+    ])
+    expect(filteredSubCategories.map((subCategory) => subCategory.id)).toEqual([
       'B-A',
       'C-A',
       'C-C',
@@ -263,8 +269,11 @@ describe('filterCategories', () => {
       true
     )
 
-    expect(filteredCategories.map(category => category.id)).toEqual(['A', 'C'])
-    expect(filteredSubCategories.map(subCategory => subCategory.id)).toEqual([
+    expect(filteredCategories.map((category) => category.id)).toEqual([
+      'A',
+      'C',
+    ])
+    expect(filteredSubCategories.map((subCategory) => subCategory.id)).toEqual([
       'A-A',
       'C-A',
       'C-B',
@@ -280,8 +289,8 @@ describe('filterCategories', () => {
       false
     )
 
-    expect(filteredCategories.map(category => category.id)).toEqual(['B'])
-    expect(filteredSubCategories.map(subCategory => subCategory.id)).toEqual([
+    expect(filteredCategories.map((category) => category.id)).toEqual(['B'])
+    expect(filteredSubCategories.map((subCategory) => subCategory.id)).toEqual([
       'B-A',
     ])
   })

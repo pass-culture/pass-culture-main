@@ -67,7 +67,7 @@ const SignIn = (): JSX.Element => {
 
   const formik = useFormik({
     initialValues: SIGNIN_FORM_DEFAULT_VALUES,
-    onSubmit: values => onSubmit(values),
+    onSubmit: (values) => onSubmit(values),
     validationSchema,
     validateOnChange: true,
   })

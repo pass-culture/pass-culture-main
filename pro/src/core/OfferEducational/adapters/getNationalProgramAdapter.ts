@@ -18,7 +18,7 @@ export const getNationalProgramsAdapter: GetNationalProgramsAdapter =
       return {
         isOk: true,
         message: null,
-        payload: result.map(nationalProgram => ({
+        payload: result.map((nationalProgram) => ({
           label: nationalProgram.name,
           value: nationalProgram.id,
         })),

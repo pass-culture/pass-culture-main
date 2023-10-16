@@ -42,7 +42,7 @@ export const createCollectiveOfferPayload = (
   },
   contactEmail: offer.email,
   contactPhone: offer.phone,
-  domains: offer.domains.map(domainIdString => Number(domainIdString)),
+  domains: offer.domains.map((domainIdString) => Number(domainIdString)),
   interventionArea:
     offer.eventAddress.addressType === OfferAddressType.OFFERER_VENUE
       ? []

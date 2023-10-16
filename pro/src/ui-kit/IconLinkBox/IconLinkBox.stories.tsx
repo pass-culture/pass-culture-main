@@ -12,7 +12,7 @@ export default {
   component: IconLinkBox,
 }
 
-const Template: Story<IconLinkBoxProps> = props => (
+const Template: Story<IconLinkBoxProps> = (props) => (
   <div style={{ width: '265px', height: '104px' }}>
     <IconLinkBox {...props} />
   </div>

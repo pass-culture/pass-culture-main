@@ -231,7 +231,7 @@ const Venue = ({
                 className="h-card-title h-card-title-button"
                 type="button"
                 onClick={() => {
-                  setIsStatOpen(prev => !prev)
+                  setIsStatOpen((prev) => !prev)
                   logEvent?.(
                     VenueEvents.CLICKED_VENUE_ACCORDION_BUTTON,
                     venueIdTrackParam
@@ -255,7 +255,7 @@ const Venue = ({
                   variant={ButtonVariant.TERNARY}
                   hasTooltip
                   onClick={() => {
-                    setIsStatOpen(prev => !prev)
+                    setIsStatOpen((prev) => !prev)
                     logEvent?.(
                       VenueEvents.CLICKED_VENUE_ACCORDION_BUTTON,
                       venueIdTrackParam
@@ -333,7 +333,7 @@ const Venue = ({
                   />
 
                   <div className="venue-stats">
-                    {venueStatData.map(stat => (
+                    {venueStatData.map((stat) => (
                       <Fragment key={stat.label}>
                         <VenueStat {...stat} />
                       </Fragment>

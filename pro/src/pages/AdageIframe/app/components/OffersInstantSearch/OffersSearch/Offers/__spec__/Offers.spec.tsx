@@ -360,7 +360,7 @@ describe('offers', () => {
     // Given
     vi.spyOn(apiAdage, 'getCollectiveOffer').mockImplementationOnce(
       () =>
-        new CancelablePromise<CollectiveOfferResponseModel>(resolve =>
+        new CancelablePromise<CollectiveOfferResponseModel>((resolve) =>
           setTimeout(() => resolve(offerInParis), 500)
         )
     )
@@ -398,13 +398,13 @@ describe('offers', () => {
     vi.spyOn(apiAdage, 'getCollectiveOffer')
       .mockImplementationOnce(
         () =>
-          new CancelablePromise<CollectiveOfferResponseModel>(resolve =>
+          new CancelablePromise<CollectiveOfferResponseModel>((resolve) =>
             setTimeout(() => resolve(offerInParis), 500)
           )
       )
       .mockImplementationOnce(
         () =>
-          new CancelablePromise<CollectiveOfferResponseModel>(resolve =>
+          new CancelablePromise<CollectiveOfferResponseModel>((resolve) =>
             setTimeout(() => resolve(offerInCayenne), 500)
           )
       )

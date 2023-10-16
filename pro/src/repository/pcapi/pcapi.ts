@@ -139,7 +139,7 @@ export const postCollectiveOfferTemplateImage: PostImageMethodType<
 //
 
 // @ts-expect-error ts-migrate(7006) FIXME: Parameter 'venueId' implicitly has an 'any' type.
-export const loadProviders = async venueId => {
+export const loadProviders = async (venueId) => {
   return client.get(`/providers/${venueId}`)
 }
 
@@ -187,25 +187,25 @@ export const buildBookingsRecapQuery = ({
 }
 
 // @ts-expect-error ts-migrate(7006) FIXME: Parameter 'filters' implicitly has an 'any' type.
-export const getFilteredBookingsCSV = async filters => {
+export const getFilteredBookingsCSV = async (filters) => {
   const queryParams = buildBookingsRecapQuery(filters)
   return client.getPlainText(`/bookings/csv?${queryParams}`)
 }
 
 // @ts-expect-error ts-migrate(7006) FIXME: Parameter 'filters' implicitly has an 'any' type.
-export const getFilteredBookingsXLS = async filters => {
+export const getFilteredBookingsXLS = async (filters) => {
   const queryParams = buildBookingsRecapQuery(filters)
   return client.getExcelFile(`/bookings/excel?${queryParams}`)
 }
 
 // @ts-expect-error ts-migrate(7006) FIXME: Parameter 'filters' implicitly has an 'any' type.
-export const getFilteredCollectiveBookingsCSV = async filters => {
+export const getFilteredCollectiveBookingsCSV = async (filters) => {
   const queryParams = buildBookingsRecapQuery(filters)
   return client.getPlainText(`/collective/bookings/csv?${queryParams}`)
 }
 
 // @ts-expect-error ts-migrate(7006) FIXME: Parameter 'filters' implicitly has an 'any' type.
-export const getFilteredCollectiveBookingsXLS = async filters => {
+export const getFilteredCollectiveBookingsXLS = async (filters) => {
   const queryParams = buildBookingsRecapQuery(filters)
   return client.getExcelFile(`/collective/bookings/excel?${queryParams}`)
 }

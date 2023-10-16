@@ -30,7 +30,7 @@ export const filterAndSortStocks = (
   }
 ): StockEventFormValues[] => {
   const { dateFilter, hourFilter, priceCategoryFilter } = filters
-  const filteredStocks = stocks.filter(stock => {
+  const filteredStocks = stocks.filter((stock) => {
     const stockDate = new Date(stock.beginningDate)
 
     const date = new Date(dateFilter)

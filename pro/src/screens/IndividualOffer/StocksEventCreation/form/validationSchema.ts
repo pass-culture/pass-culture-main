@@ -20,12 +20,13 @@ export const getValidationSchema = (priceCategoriesOptions: SelectOption[]) =>
       .test(
         'is-future',
         'L’évènement doit être à venir',
-        value => isDateValid(value) && new Date(value) > removeTime(getToday())
+        (value) =>
+          isDateValid(value) && new Date(value) > removeTime(getToday())
       )
       .when('recurrenceType', {
         is: RecurrenceType.UNIQUE,
-        then: schema => schema.required('Veuillez renseigner une date'),
-        otherwise: schema =>
+        then: (schema) => schema.required('Veuillez renseigner une date'),
+        otherwise: (schema) =>
           schema.required('Veuillez renseigner une date de début'),
       }),
     endingDate: yup
@@ -35,7 +36,7 @@ export const getValidationSchema = (priceCategoriesOptions: SelectOption[]) =>
       .when('recurrenceType', {
         is: (recurrenceType: RecurrenceType) =>
           recurrenceType !== RecurrenceType.UNIQUE,
-        then: schema =>
+        then: (schema) =>
           schema
             .required('Veuillez renseigner une date de fin')
             .test(
@@ -57,7 +58,7 @@ export const getValidationSchema = (priceCategoriesOptions: SelectOption[]) =>
       .of(yup.string())
       .when('recurrenceType', {
         is: RecurrenceType.WEEKLY,
-        then: schema => schema.min(1, 'Veuillez renseigner au moins un jour'),
+        then: (schema) => schema.min(1, 'Veuillez renseigner au moins un jour'),
       }),
     beginningTimes: yup
       .array()
@@ -113,7 +114,7 @@ export const getValidationSchema = (priceCategoriesOptions: SelectOption[]) =>
         if (!list) {
           return
         }
-        const price_category_map = list.map(a => a.priceCategory)
+        const price_category_map = list.map((a) => a.priceCategory)
         const duplicateIndex = price_category_map.reduce<yup.ValidationError[]>(
           (ac, a, i) => {
             if (
@@ -144,6 +145,6 @@ export const getValidationSchema = (priceCategoriesOptions: SelectOption[]) =>
       .nullable()
       .when('recurrenceType', {
         is: RecurrenceType.MONTHLY,
-        then: schema => schema.required('Veuillez choisir une option'),
+        then: (schema) => schema.required('Veuillez choisir une option'),
       }),
   })

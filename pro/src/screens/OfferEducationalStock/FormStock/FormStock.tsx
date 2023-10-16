@@ -40,7 +40,7 @@ const FormStock = ({
         minDate={new Date()}
         name="eventDate"
         smallLabel
-        onChange={event => {
+        onChange={(event) => {
           if (mode === Mode.EDITION) {
             setFieldValue('bookingLimitDatetime', event.target.value)
           }

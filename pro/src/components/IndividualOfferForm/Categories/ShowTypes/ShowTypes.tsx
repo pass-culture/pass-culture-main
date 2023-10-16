@@ -26,7 +26,7 @@ const ShowTypes = ({ readOnly = false }: ShowTypesProps): JSX.Element => {
     showSubType: SelectOption[]
   }>({
     showType: showOptionsTree
-      .map(data => ({
+      .map((data) => ({
         label: data.label,
         value: data.code.toString(),
       }))
@@ -39,13 +39,13 @@ const ShowTypes = ({ readOnly = false }: ShowTypesProps): JSX.Element => {
     let newShowSubTypeOptions: SelectOption[] = []
     if (showType !== FORM_DEFAULT_VALUES.showType) {
       const selectedShowTypeChildren = showOptionsTree.find(
-        showTypeOption => showTypeOption.code === parseInt(showType)
+        (showTypeOption) => showTypeOption.code === parseInt(showType)
       )?.children
 
       /* istanbul ignore next: DEBT, TO FIX */
       if (selectedShowTypeChildren) {
         newShowSubTypeOptions = selectedShowTypeChildren
-          .map(data => ({
+          .map((data) => ({
             value: data.code.toString(),
             label: data.label,
           }))
@@ -53,7 +53,7 @@ const ShowTypes = ({ readOnly = false }: ShowTypesProps): JSX.Element => {
       }
     }
 
-    setShowTypesOptions(prevOptions => {
+    setShowTypesOptions((prevOptions) => {
       return {
         ...prevOptions,
         showSubType: newShowSubTypeOptions,

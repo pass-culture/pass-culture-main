@@ -33,7 +33,7 @@ const PasswordInput = ({
 
   const handleToggleHidden = (e: React.MouseEvent<HTMLElement>) => {
     e.preventDefault()
-    setPasswordHidden(currentSetPasswordHidden => !currentSetPasswordHidden)
+    setPasswordHidden((currentSetPasswordHidden) => !currentSetPasswordHidden)
   }
 
   return (

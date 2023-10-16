@@ -211,7 +211,7 @@ describe('screens | OfferEducational : event address step', () => {
         const checkboxes = screen.getAllByRole('checkbox', { checked: true })
         expect(
           checkboxes.filter(
-            checkbox => checkbox.getAttribute('name') === 'interventionArea'
+            (checkbox) => checkbox.getAttribute('name') === 'interventionArea'
           )
         ).toHaveLength(2)
       })

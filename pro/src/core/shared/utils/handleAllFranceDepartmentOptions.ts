@@ -6,12 +6,12 @@ import {
 } from '../interventionOptions'
 
 const areAllMainlandDepartmentsSelected = (formikValues: string[]) =>
-  mainlandValues.every(departmentValue =>
+  mainlandValues.every((departmentValue) =>
     formikValues.includes(departmentValue)
   )
 
 export const areAllDepartmentsSelected = (formikValues: string[]) =>
-  allDepartmentValues.every(departmentValue =>
+  allDepartmentValues.every((departmentValue) =>
     formikValues.includes(departmentValue)
   )
 
@@ -39,7 +39,7 @@ export const handleAllFranceDepartmentOptions = (
   if (userUnselectedAllFrance) {
     return setValue(
       formikValues.filter(
-        value =>
+        (value) =>
           !allDepartmentValues.includes(value) &&
           value !== MAINLAND_OPTION_VALUE
       )
@@ -49,7 +49,7 @@ export const handleAllFranceDepartmentOptions = (
   if (userUnselectedMainland) {
     return setValue(
       formikValues.filter(
-        value =>
+        (value) =>
           !(mainlandValues.includes(value) || value == ALL_FRANCE_OPTION_VALUE)
       )
     )

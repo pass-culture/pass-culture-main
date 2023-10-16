@@ -8,10 +8,10 @@ export const filterEducationalSubCategories = ({
   if (!subcategories || !categories) {
     return []
   }
-  return categories.map(category => ({
+  return categories.map((category) => ({
     value: subcategories
-      .filter(subcategory => subcategory.categoryId == category.id)
-      .map(subcategory => subcategory.id),
+      .filter((subcategory) => subcategory.categoryId == category.id)
+      .map((subcategory) => subcategory.id),
     label: category.proLabel,
   }))
 }
@@ -21,9 +21,9 @@ export const inferCategoryLabelsFromSubcategories = (
   categoriesOptions: Option<string[]>[]
 ): string[] => {
   const categoryLabels = subCategories
-    .map(subCategories => {
-      return subCategories.map(subcategory => {
-        const categoryOption = categoriesOptions.find(option =>
+    .map((subCategories) => {
+      return subCategories.map((subcategory) => {
+        const categoryOption = categoriesOptions.find((option) =>
           option.value.includes(subcategory)
         )
         return categoryOption ? categoryOption.label : ''
