@@ -13,7 +13,7 @@ logger = logging.getLogger(__name__)
 
 def notify_soon_to_be_expired_individual_bookings() -> None:
     logger.info("[notify_soon_to_be_expired_individual_bookings] Start")
-    if settings.IS_STAGING:
+    if settings.EXPIRED_BOOKINGS_LOGGER_INFO:
         logger.info("[handle_expired_individual_bookings] ENV=STAGING: Skipping")
     else:
         notify_users_of_soon_to_be_expired_individual_bookings()
