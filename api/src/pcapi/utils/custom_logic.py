@@ -36,27 +36,32 @@ def less_or_equal(a: object, b: object, *args: typing.Any) -> bool:
     return (less(a, b) or soft_equals(a, b)) and (not args or less_or_equal(b, *args))
 
 
-def contains(a, b) -> bool:  # type: ignore [no-untyped-def]
-    """Checks if the list b contains the element a"""
+def contains(a: str, b: list[str]) -> bool:
+    """Checks if the list b contains the element a
+    1. We check if the element b is a list. If it is not, we raise an exception
+    2. We sanitize the element a and b and check if any element in b is in a
+    """
     if not a:
         return False
     if not isinstance(b, list):
         raise TypeError(f"{b} is not a list")
-    return (
-        any(sanitize_str(element) in sanitize_str(a) for element in b)  # type: ignore [operator]
-        if "__contains__" in dir(b)
-        else sanitize_str(b) in sanitize_str(a)  # type: ignore [operator]
-    )
+
+    a = sanitize_str(a)
+    b = sanitize_list(b)
+
+    return any(element in a for element in b)
 
 
-def contains_exact(a, b) -> bool:  # type: ignore [no-untyped-def]
+def contains_exact(a: str, b: list[str]) -> bool:
     if not a:
         return False
-    return (
-        any(sanitize_str(element) in sanitize_list(a.split()) for element in b)
-        if "__contains__" in dir(b)
-        else sanitize_str(b) in sanitize_str(a)  # type: ignore [operator]
-    )
+    if not isinstance(b, list):
+        raise TypeError(f"{b} is not a list")
+
+    split_a = sanitize_list(a.split())
+    b = sanitize_list(b)
+
+    return any(element in split_a for element in b)
 
 
 OPERATIONS = {
