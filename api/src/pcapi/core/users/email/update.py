@@ -8,18 +8,16 @@ from pcapi import settings
 from pcapi.core import token as token_utils
 import pcapi.core.external.sendinblue as external_contacts
 from pcapi.core.mails import transactional as transactional_mails
-from pcapi.core.token import Token
 from pcapi.core.users import api
 from pcapi.core.users import constants
 from pcapi.core.users import exceptions
 from pcapi.core.users import models
 from pcapi.core.users import repository as users_repository
+from pcapi.core.users.email.send import send_pro_user_emails_for_email_change
 from pcapi.models.api_errors import ApiErrors
 from pcapi.repository import repository
 from pcapi.repository import transaction
 from pcapi.utils.urls import generate_firebase_dynamic_link
-
-from .send import send_pro_user_emails_for_email_change
 
 
 logger = logging.getLogger(__name__)
@@ -52,7 +50,7 @@ def generate_and_send_beneficiary_confirmation_email_for_email_change(user: mode
 
     expiration_date = generate_email_change_token_expiration_date()
 
-    encoded_token = Token.create(
+    encoded_token = token_utils.Token.create(
         token_utils.TokenType.EMAIL_CHANGE_CONFIRMATION,
         constants.EMAIL_CHANGE_TOKEN_LIFE_TIME,
         user.id,
@@ -81,7 +79,7 @@ def generate_and_send_beneficiary_confirmation_email_for_email_change(user: mode
 
 def generate_and_send_beneficiary_validation_email_for_email_change(user: models.User, new_email: str) -> bool:
     expiration_date = generate_email_change_token_expiration_date()
-    encoded_token = Token.create(
+    encoded_token = token_utils.Token.create(
         token_utils.TokenType.EMAIL_CHANGE_VALIDATION,
         constants.EMAIL_CHANGE_TOKEN_LIFE_TIME,
         user_id=user.id,
@@ -115,7 +113,7 @@ def request_email_update(user: models.User, new_email: str, password: str) -> No
 
 def confirm_email_update_request(encoded_token: str) -> None:
     """Confirm the email update request for the given user"""
-    token = Token.load_and_check(encoded_token, token_utils.TokenType.EMAIL_CHANGE_CONFIRMATION)
+    token = token_utils.Token.load_and_check(encoded_token, token_utils.TokenType.EMAIL_CHANGE_CONFIRMATION)
     user = models.User.query.get(token.user_id)
     if not user:
         raise exceptions.InvalidToken()
@@ -136,7 +134,7 @@ def confirm_email_update_request(encoded_token: str) -> None:
 def cancel_email_update_request(encoded_token: str) -> None:
     """Cancel the email update request for the given user"""
 
-    token = Token.load_and_check(encoded_token, token_utils.TokenType.EMAIL_CHANGE_CONFIRMATION)
+    token = token_utils.Token.load_and_check(encoded_token, token_utils.TokenType.EMAIL_CHANGE_CONFIRMATION)
     user = models.User.query.get(token.user_id)
     if not user:
         raise exceptions.InvalidToken()
@@ -185,12 +183,17 @@ def request_email_update_from_pro(user: models.User, email: str, password: str) 
     check_pro_email_update_attempts(user)
     check_email_address_does_not_exist(email)
 
-    expiration_date = generate_email_change_token_expiration_date()
+    token = token_utils.Token.create(
+        token_utils.TokenType.EMAIL_CHANGE_VALIDATION,
+        ttl=constants.EMAIL_CHANGE_TOKEN_LIFE_TIME,
+        user_id=user.id,
+        data={"current_email": user.email, "new_email": email},
+    )
 
     email_history = models.UserEmailHistory.build_update_request(user=user, new_email=email)
     repository.save(email_history)
 
-    send_pro_user_emails_for_email_change(user, email, expiration_date)
+    send_pro_user_emails_for_email_change(user, email, token)
 
 
 def check_email_update_attempts_count(user: models.User) -> None:
@@ -260,8 +263,12 @@ def full_email_update_by_admin(user: models.User, email: str) -> None:
 
 def get_active_token_expiration(user: models.User) -> datetime | None:
     """returns the expiration date of the active token (confirmation or validation) or none if no ttl or no token exists"""
-    confirmation_token_expiration = Token.get_expiration_date(token_utils.TokenType.EMAIL_CHANGE_CONFIRMATION, user.id)
-    validation_token_expiration = Token.get_expiration_date(token_utils.TokenType.EMAIL_CHANGE_VALIDATION, user.id)
+    confirmation_token_expiration = token_utils.Token.get_expiration_date(
+        token_utils.TokenType.EMAIL_CHANGE_CONFIRMATION, user.id
+    )
+    validation_token_expiration = token_utils.Token.get_expiration_date(
+        token_utils.TokenType.EMAIL_CHANGE_VALIDATION, user.id
+    )
     return confirmation_token_expiration or validation_token_expiration
 
 
@@ -290,7 +297,7 @@ def check_email_address_does_not_exist(email: str) -> None:
 
 def check_no_ongoing_email_update_request(user: models.User) -> None:
     """Raise error if user has an ongoing email update request"""
-    if Token.token_exists(token_utils.TokenType.EMAIL_CHANGE_CONFIRMATION, user.id) or Token.token_exists(
-        token_utils.TokenType.EMAIL_CHANGE_VALIDATION, user.id
-    ):
+    if token_utils.Token.token_exists(
+        token_utils.TokenType.EMAIL_CHANGE_CONFIRMATION, user.id
+    ) or token_utils.Token.token_exists(token_utils.TokenType.EMAIL_CHANGE_VALIDATION, user.id):
         raise exceptions.EmailUpdateTokenExists()

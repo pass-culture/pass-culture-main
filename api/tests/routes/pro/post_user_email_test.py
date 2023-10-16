@@ -45,7 +45,7 @@ class ProUpdateEmailTest:
         activation_email = mails_testing.outbox[-1]
         confirmation_link = urlparse(activation_email.sent_data["params"]["CONFIRMATION_LINK"])
         base_url_params = parse_qs(confirmation_link.query)
-        assert {"token", "expiration_timestamp"} <= base_url_params.keys()
+        assert {"token"} == base_url_params.keys()
 
     def test_update_email_missing_password(self, client):
         pro = users_factories.ProFactory(email=self.origin_email)
