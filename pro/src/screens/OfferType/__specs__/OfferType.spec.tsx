@@ -129,7 +129,7 @@ describe('screens:IndividualOffer::OfferType', () => {
   })
 
   it('should render the component with button', async () => {
-    renderOfferTypes(store)
+    await renderOfferTypes(store)
 
     expect(
       screen.getByRole('heading', { name: 'Créer une offre' })
@@ -149,7 +149,7 @@ describe('screens:IndividualOffer::OfferType', () => {
   })
 
   it('should render action bar buttons ', async () => {
-    renderOfferTypes(store)
+    await renderOfferTypes(store)
 
     expect(
       screen.getByRole('link', { name: 'Annuler et quitter' })
@@ -160,7 +160,7 @@ describe('screens:IndividualOffer::OfferType', () => {
   })
 
   it('should select collective offer', async () => {
-    renderOfferTypes(store)
+    await renderOfferTypes(store)
 
     expect(
       await screen.findByRole('heading', { name: 'Votre offre est :' })
@@ -182,7 +182,7 @@ describe('screens:IndividualOffer::OfferType', () => {
   })
 
   it('should select template offer', async () => {
-    renderOfferTypes(store)
+    await renderOfferTypes(store)
 
     expect(
       await screen.findByRole('heading', { name: 'Votre offre est :' })
@@ -206,7 +206,7 @@ describe('screens:IndividualOffer::OfferType', () => {
 
   it('should display non eligible banner if offerer can not create collective offer', async () => {
     vi.spyOn(api, 'canOffererCreateEducationalOffer').mockRejectedValueOnce({})
-    renderOfferTypes(store)
+    await renderOfferTypes(store)
 
     await userEvent.click(
       screen.getByRole('radio', { name: 'À un groupe scolaire' })
@@ -238,7 +238,7 @@ describe('screens:IndividualOffer::OfferType', () => {
     }
     vi.spyOn(api, 'getOfferer').mockResolvedValue(offerer)
     vi.spyOn(api, 'canOffererCreateEducationalOffer').mockRejectedValueOnce({})
-    renderOfferTypes(store, 'offererId')
+    await renderOfferTypes(store, 'offererId')
 
     await userEvent.click(
       screen.getByRole('radio', { name: 'À un groupe scolaire' })
@@ -253,7 +253,7 @@ describe('screens:IndividualOffer::OfferType', () => {
   })
 
   it('should display individual offer choices', async () => {
-    renderOfferTypes(store)
+    await renderOfferTypes(store)
 
     expect(await screen.findByText('Un bien physique')).toBeInTheDocument()
     expect(screen.getByText('Un bien numérique')).toBeInTheDocument()
@@ -282,7 +282,7 @@ describe('screens:IndividualOffer::OfferType', () => {
   it.each(individualChoices)(
     'should select and redirect fine case : %s',
     async ({ buttonClicked, expectedSearch }) => {
-      renderOfferTypes(store)
+      await renderOfferTypes(store)
 
       await userEvent.click(await screen.findByText(buttonClicked))
 
@@ -323,7 +323,7 @@ describe('screens:IndividualOffer::OfferType', () => {
     })
 
     // there is a venue in url
-    renderOfferTypes(store, '1', '1')
+    await renderOfferTypes(store, '1', '1')
 
     expect(
       await screen.findByText('Quelle est la catégorie de l’offre ?')
@@ -355,7 +355,7 @@ describe('screens:IndividualOffer::OfferType', () => {
       // @ts-expect-error FIX ME
       .mockResolvedValueOnce(offersRecap)
 
-    renderOfferTypes(store)
+    await renderOfferTypes(store)
 
     await userEvent.click(
       screen.getByRole('radio', { name: 'À un groupe scolaire' })
@@ -406,7 +406,7 @@ describe('screens:IndividualOffer::OfferType', () => {
       error: notifyError,
     }))
 
-    renderOfferTypes(store)
+    await renderOfferTypes(store)
 
     await userEvent.click(
       screen.getByRole('radio', { name: 'À un groupe scolaire' })
@@ -434,7 +434,7 @@ describe('screens:IndividualOffer::OfferType', () => {
   })
 
   it('should log when cancelling ', async () => {
-    renderOfferTypes(store)
+    await renderOfferTypes(store)
 
     await userEvent.click(
       screen.getByRole('link', { name: 'Annuler et quitter' })
@@ -450,7 +450,7 @@ describe('screens:IndividualOffer::OfferType', () => {
     vi.spyOn(api, 'getOfferer').mockResolvedValue({
       isValidated: false,
     } as GetOffererResponseModel)
-    renderOfferTypes(store, '123')
+    await renderOfferTypes(store, '123')
 
     expect(
       await screen.queryByText(
@@ -476,7 +476,7 @@ describe('screens:IndividualOffer::OfferType', () => {
       )
     })
 
-    renderOfferTypes(store, '123')
+    await renderOfferTypes(store, '123')
 
     await userEvent.click(
       screen.getByRole('radio', { name: 'À un groupe scolaire' })

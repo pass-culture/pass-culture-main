@@ -115,7 +115,7 @@ const CollectiveOfferType = ({
       await checkOffererEligibility()
       await checkOffererValidation()
     }
-    initializeStates()
+    void initializeStates()
   }, [queryOffererId, queryVenueId])
 
   return (

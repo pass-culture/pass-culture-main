@@ -60,6 +60,10 @@ module.exports = {
         '@typescript-eslint/no-explicit-any': 'off',
         '@typescript-eslint/no-empty-function': 'off',
         '@typescript-eslint/prefer-ts-expect-error': 'error',
+        // TODO turn into errors
+        '@typescript-eslint/no-floating-promises': 'warn',
+        '@typescript-eslint/await-thenable': 'warn',
+        'require-await': 'warn',
       },
     },
   ],
