@@ -134,7 +134,7 @@ jobs:
             envsubst < .github/workflows/templates/pre-upgrade-job.yaml | kubectl -n ${{ inputs.environment }} apply -f -
             while true;
             do
-            kubectl logs -f jobs/pre-upgrade-${DATE} && break
+            kubectl logs -n ${{ inputs.environment }} -f jobs/pre-upgrade-${DATE} && break
             done
             kubectl wait --for=condition=complete --timeout=30s -n ${{ inputs.environment }} jobs/pre-upgrade-${DATE}
       - name: Deploy pcapi
@@ -159,7 +159,7 @@ jobs:
             envsubst < .github/workflows/templates/post-upgrade-job.yaml | kubectl -n ${{ inputs.environment }} apply -f -
             while true;
             do
-            kubectl logs -f jobs/post-upgrade-${DATE} && break
+            kubectl logs -n ${{ inputs.environment }} -f jobs/post-upgrade-${DATE} && break
             done
             kubectl wait --for=condition=complete --timeout=30s -n ${{ inputs.environment }} jobs/post-upgrade-${DATE}
   deploy-pro-on-testing-on-firebase:
