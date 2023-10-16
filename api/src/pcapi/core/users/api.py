@@ -844,7 +844,7 @@ def set_pro_rgs_as_seen(user: models.User) -> None:
     repository.save(user)
 
 
-def update_last_connection_date(user):  # type: ignore [no-untyped-def]
+def update_last_connection_date(user: models.User) -> None:
     previous_connection_date = user.lastConnectionDate
     last_connection_date = datetime.datetime.utcnow()
 
