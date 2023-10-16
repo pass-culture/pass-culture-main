@@ -26,7 +26,7 @@ def before_send(event: "Event", _hint: dict[str, typing.Any]) -> "Event | None":
 
 
 def init_sentry_sdk() -> None:
-    if settings.IS_DEV:
+    if not settings.ENABLE_SENTRY:
         return
     sentry_sdk.init(
         dsn=settings.SENTRY_DSN,
