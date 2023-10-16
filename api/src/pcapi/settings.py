@@ -99,6 +99,7 @@ REDIS_VENUE_IDS_CHUNK_SIZE = int(os.environ.get("REDIS_VENUE_IDS_CHUNK_SIZE", 10
 
 
 # SENTRY
+SENTRY_ENABLED = bool(int(os.environ.get("SENTRY_ENABLED", 1)))
 SENTRY_DSN = secrets_utils.get("SENTRY_DSN", "")
 SENTRY_SAMPLE_RATE = float(os.environ.get("SENTRY_SAMPLE_RATE", 0))
 SENTRY_CSP_REPORT_ONLY_URI = os.environ.get("SENTRY_CSP_REPORT_ONLY_URI", "")
