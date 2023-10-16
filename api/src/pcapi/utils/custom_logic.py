@@ -1,7 +1,9 @@
+import typing
+
 from pcapi.utils.clean_accents import clean_accents
 
 
-def sanitize_str(a: object) -> object:
+def sanitize_str(a: typing.Any) -> typing.Any:
     if isinstance(a, str):
         return clean_accents(a.lower())
     return a
@@ -19,7 +21,7 @@ def soft_equals(a: object, b: object) -> bool:
     return a == b
 
 
-def less(a: object, b: object, *args) -> bool:  # type: ignore [no-untyped-def]
+def less(a: object, b: object, *args: typing.Any) -> bool:
     types = set([type(a), type(b)])
     if float in types or int in types:
         try:
@@ -30,7 +32,7 @@ def less(a: object, b: object, *args) -> bool:  # type: ignore [no-untyped-def]
     return a < b and (not args or less(b, *args))  # type: ignore [operator]
 
 
-def less_or_equal(a: object, b: object, *args) -> bool:  # type: ignore [no-untyped-def]
+def less_or_equal(a: object, b: object, *args: typing.Any) -> bool:
     return (less(a, b) or soft_equals(a, b)) and (not args or less_or_equal(b, *args))
 
 
