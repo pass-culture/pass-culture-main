@@ -82,7 +82,7 @@ class ToDevSendinblueBackend(SendinblueBackend):
                 if (
                     (user and user.has_test_role)
                     or recipient in settings.WHITELISTED_EMAIL_RECIPIENTS
-                    or (settings.IS_STAGING and recipient.endswith("@yeswehack.ninja"))
+                    or (settings.YESWEHACK_RECIPIENTS_ENABLED and recipient.endswith("@yeswehack.ninja"))
                 ):
                     mail_recipient = user.email
 

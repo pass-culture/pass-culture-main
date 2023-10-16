@@ -134,9 +134,7 @@ class ToDevSendinblueBackendTest(SendinblueBackendTest):
         "recipient",
         ["avery.kelly@example.com", "Test-ywh-0123456789012345@yeswehack.ninja"],
     )
-    @override_settings(
-        WHITELISTED_EMAIL_RECIPIENTS=["whitelisted@example.com", "avery.kelly@example.com"], IS_STAGING=True
-    )
+    @override_settings(WHITELISTED_EMAIL_RECIPIENTS=["avery.kelly@example.com"])
     @patch("pcapi.core.mails.backends.sendinblue.send_transactional_email_secondary_task.delay")
     def test_send_mail_whitelisted(self, mock_send_transactional_email_secondary_task, recipient):
         users_factories.UserFactory(email=recipient, roles=[users_models.UserRole.TEST])
