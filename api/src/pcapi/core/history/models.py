@@ -53,6 +53,8 @@ class ActionType(enum.Enum):
     LINK_VENUE_BANK_ACCOUNT_CREATED = "Lieu associé à un compte bancaire"
     # Venue provider changes:
     LINK_VENUE_PROVIDER_DELETED = "Suppression du lien avec le provider"
+    # RGPD scripts
+    USER_ANONYMIZED = "Le compte a été anonymisé conformément au RGPD"
 
 
 ACTION_HISTORY_ORDER_BY = "ActionHistory.actionDate.asc().nulls_first()"

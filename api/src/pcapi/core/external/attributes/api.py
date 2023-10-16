@@ -68,10 +68,67 @@ def update_external_pro(email: str | None) -> None:
             )
 
 
+def get_anonymized_attributes(user: users_models.User) -> models.UserAttributes | models.ProAttributes:
+    if user.has_pro_role:
+        attributes = get_pro_attributes(user.email)
+        attributes.is_user_email = False
+        attributes.user_id = 0
+        attributes.first_name = ""
+        attributes.last_name = ""
+        attributes.user_is_creator = False
+        return attributes
+
+    return models.UserAttributes(
+        booking_categories=[],
+        booking_count=0,
+        booking_subcategories=[],
+        booking_venues_count=0,
+        city="",
+        date_created=user.dateCreated,
+        date_of_birth=user.dateOfBirth.replace(day=1, month=1) if user.dateOfBirth else None,
+        departement_code="",
+        deposits_count=0,
+        first_name="",
+        has_completed_id_check=False,
+        user_id=user.id,
+        is_active=False,
+        is_beneficiary=True,
+        is_current_beneficiary=False,
+        is_former_beneficiary=False,
+        is_eligible=False,
+        is_phone_validated=False,
+        is_pro=False,
+        last_name="",
+        marketing_email_subscription=False,
+        marketing_push_subscription=False,
+        phone_number="",
+        postal_code="",
+        products_use_date={},
+        roles=[],
+        deposit_activation_date=None,
+        deposit_expiration_date=None,
+        domains_credit=None,
+        eligibility=None,
+        is_email_validated=None,
+        last_booking_date=None,
+        last_favorite_creation_date=None,
+        last_visit_date=None,
+        most_booked_subcategory=None,
+        most_booked_movie_genre=None,
+        most_booked_music_type=None,
+        most_favorite_offer_subcategories=None,
+        suspension_date=None,
+        suspension_reason=None,
+        # Specific for Dec 2022 emailing campaign:
+        amount_spent_2022=Decimal(0),
+        first_booked_offer_2022=None,
+        last_booked_offer_2022=None,
+    )
+
+
 def get_user_or_pro_attributes(user: users_models.User) -> models.UserAttributes | models.ProAttributes:
     if user.has_pro_role:
         return get_pro_attributes(user.email)
-
     return get_user_attributes(user)
 
 

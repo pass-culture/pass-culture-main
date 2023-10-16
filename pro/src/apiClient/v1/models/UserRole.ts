@@ -8,6 +8,7 @@
  */
 export enum UserRole {
   ADMIN = 'ADMIN',
+  ANONYMIZED = 'ANONYMIZED',
   BENEFICIARY = 'BENEFICIARY',
   PRO = 'PRO',
   NON_ATTACHED_PRO = 'NON_ATTACHED_PRO',
