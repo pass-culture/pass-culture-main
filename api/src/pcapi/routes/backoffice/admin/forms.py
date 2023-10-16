@@ -1,9 +1,9 @@
 from flask_wtf import FlaskForm
-import wtforms
 
 from pcapi.core.permissions import models as perm_models
 
 from ..forms import fields
+from ..forms import search
 from ..forms import utils
 
 
@@ -25,18 +25,8 @@ class EditPermissionForm(FlaskForm):
             self._fields[perm.name].data = perm in role.permissions
 
 
-class BOUserSearchForm(utils.PCForm):
-    class Meta:
-        csrf = False
-
-    q = fields.PCOptSearchField(label="")
-    page = wtforms.HiddenField("page", default=1, validators=[wtforms.validators.Optional()])
-    per_page = wtforms.HiddenField("per_page", default=30, validators=[wtforms.validators.Optional()])
-
-    def validate_q(self, q: fields.PCOptSearchField) -> fields.PCOptSearchField:
-        if q.data and "%" in q.data:
-            raise wtforms.validators.ValidationError("Le caractère % n'est pas autorisé")
-        return q
+class BOUserSearchForm(search.SearchForm):
+    pass
 
 
 class EditBOUserForm(utils.PCForm):

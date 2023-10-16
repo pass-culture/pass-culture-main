@@ -1,19 +1,6 @@
 import re
 import typing
 
-from flask_sqlalchemy import BaseQuery
-from flask_sqlalchemy import Pagination
-
-from .serialization import search
-
-
-SearchFunc = typing.Callable[[str, list[str] | None], BaseQuery]
-
-
-def fetch_paginated_rows(search_func: SearchFunc, search_model: search.SearchUserModel) -> Pagination:
-    query = search_func(search_model.terms, search_model.order_by)
-    return query.paginate(page=search_model.page, per_page=search_model.per_page, error_out=False)
-
 
 class UrlForPartial(typing.Protocol):
     def __call__(self, page: int) -> str:

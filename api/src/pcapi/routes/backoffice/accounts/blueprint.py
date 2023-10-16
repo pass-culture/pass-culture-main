@@ -12,8 +12,6 @@ from flask import render_template
 from flask import request
 from flask import url_for
 from flask_login import current_user
-from flask_sqlalchemy import Pagination
-import pydantic.v1 as pydantic_v1
 import sqlalchemy as sa
 from werkzeug.exceptions import NotFound
 
@@ -47,8 +45,6 @@ from pcapi.repository import repository
 from pcapi.routes.backoffice import search_utils
 from pcapi.routes.backoffice import utils
 from pcapi.routes.backoffice.forms import empty as empty_forms
-from pcapi.routes.backoffice.forms import search as search_forms
-from pcapi.routes.backoffice.serialization import search
 from pcapi.routes.backoffice.users import forms as user_forms
 import pcapi.utils.email as email_utils
 
@@ -73,36 +69,23 @@ def search_public_accounts() -> utils.BackofficeResponse:
     if not request.args:
         return render_search_template()
 
-    form = search_forms.AccountSearchForm(request.args)
+    form = account_forms.AccountSearchForm(request.args)
     if not form.validate():
         return render_search_template(form), 400
 
-    try:
-        # let pydantic run the more detailed validation and format the
-        # form's data in a more user-friendly way
-        search_model = search.SearchUserModel(**form.data)
-    except pydantic_v1.ValidationError as err:
-        for error in err.errors():
-            form.add_error_to(typing.cast(str, error["loc"][0]))
-        return render_search_template(form), 400
+    users = users_api.search_public_account(form.q.data)
+    if users.count() == 0 and email_utils.is_valid_email_or_email_domain(email_utils.sanitize_email(form.q.data)):
+        users = users_api.search_public_account_in_history_email(form.q.data)
 
-    next_page = partial(
-        url_for,
-        ".search_public_accounts",
-        terms=search_model.terms,
-        order_by=search_model.order_by,
-        page=search_model.page,
-        per_page=search_model.per_page,
+    paginated_rows = users.paginate(
+        page=form.page.data,
+        per_page=form.per_page.data,
     )
-
-    paginated_rows = fetch_rows(search_model)
-
     if paginated_rows.total == 1 and FeatureToggle.WIP_BACKOFFICE_ENABLE_REDIRECT_SINGLE_RESULT.is_active():
-        return redirect(
-            url_for(".get_public_account", user_id=paginated_rows.items[0].id, terms=form.terms.data), code=303
-        )
+        return redirect(url_for(".get_public_account", user_id=paginated_rows.items[0].id, q=form.q.data), code=303)
 
-    next_pages_urls = search_utils.pagination_links(next_page, search_model.page, paginated_rows.pages)
+    next_page = partial(url_for, ".search_public_accounts", **form.raw_data)
+    next_pages_urls = search_utils.pagination_links(next_page, form.page.data, paginated_rows.pages)
 
     form.page.data = 1  # Reset to first page when form is submitted ("Chercher" clicked)
 
@@ -111,24 +94,20 @@ def search_public_accounts() -> utils.BackofficeResponse:
         search_form=form,
         search_dst=url_for(".search_public_accounts"),
         next_pages_urls=next_pages_urls,
-        new_search_url=url_for(".search_public_accounts"),
         get_link_to_detail=get_public_account_link,
         rows=paginated_rows,
-        terms=search_model.terms,
-        order_by=search_model.order_by,
-        per_page=search_model.per_page,
+        q=form.q.data,
     )
 
 
-def render_search_template(form: search_forms.SearchForm | None = None) -> str:
+def render_search_template(form: account_forms.AccountSearchForm | None = None) -> str:
     if not form:
-        form = search_forms.SearchForm()
+        form = account_forms.AccountSearchForm()
 
     return render_template(
         "accounts/search.html",
         title="Recherche grand public",
         dst=url_for(".search_public_accounts"),
-        order_by_options=search.OrderByCols,
         form=form,
     )
 
@@ -269,7 +248,7 @@ def render_public_account_details(
     kwargs.update(user_forms.get_toggle_suspension_args(user, suspension_type=user_forms.SuspensionUserType.PUBLIC))
     return render_template(
         "accounts/get.html",
-        search_form=search_forms.SearchForm(terms=request.args.get("terms")),
+        search_form=account_forms.AccountSearchForm(q=request.args.get("q")),
         search_dst=url_for(".search_public_accounts"),
         user=user,
         tunnel=tunnel,
@@ -956,15 +935,6 @@ def comment_public_account(user_id: int) -> utils.BackofficeResponse:
         flash("Commentaire enregistré", "success")
 
     return redirect(get_public_account_link(user_id, active_tab="history"), code=303)
-
-
-def fetch_rows(search_model: search.SearchUserModel) -> Pagination:
-    rows = search_utils.fetch_paginated_rows(users_api.search_public_account, search_model)
-
-    if rows.total == 0 and email_utils.is_valid_email_or_email_domain(email_utils.sanitize_email(search_model.terms)):
-        return search_utils.fetch_paginated_rows(users_api.search_public_account_in_history_email, search_model)
-
-    return rows
 
 
 def get_public_account_link(user_id: int, **kwargs: typing.Any) -> str:

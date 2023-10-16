@@ -6,7 +6,6 @@ from flask import render_template
 from flask import request
 from flask import url_for
 from flask_sqlalchemy import BaseQuery
-import pydantic.v1 as pydantic_v1
 
 from pcapi.core.offerers import api as offerers_api
 from pcapi.core.permissions import models as perm_models
@@ -17,10 +16,6 @@ from . import blueprint
 from . import search_utils
 from . import utils
 from .forms import search as search_forms
-from .serialization import search
-
-
-GetBaseQuery = typing.Callable[[int], BaseQuery]
 
 
 class Context:
@@ -29,8 +24,8 @@ class Context:
     and venues. Each one has its own context to handle its specificities
     """
 
-    fetch_rows_func: search_utils.SearchFunc
-    get_item_base_query: GetBaseQuery
+    fetch_rows_func: typing.Callable[[str], BaseQuery]
+    get_item_base_query: typing.Callable[[int], BaseQuery]
 
     @classmethod
     def get_pro_link(cls, row_id: int, **kwargs: typing.Any) -> str:
@@ -85,34 +80,24 @@ def search_pro() -> utils.BackofficeResponse:
     if not form.validate():
         return render_search_template(form), 400
 
-    try:
-        # let pydantic run the more detailed validation and format the
-        # form's data in a more user-friendly way
-        search_model = search.SearchProModel(**form.data)
-    except pydantic_v1.ValidationError as err:
-        for error in err.errors():
-            form.add_error_to(typing.cast(str, error["loc"][0]))
-        return render_search_template(form), 400
-
-    next_page = partial(
-        url_for,
-        ".search_pro",
-        pro_type=search_model.pro_type.name,
-        terms=search_model.terms,
-        order_by=search_model.order_by,
-        per_page=search_model.per_page,
+    result_type = form.pro_type.data
+    context = get_context(result_type)
+    rows = context.fetch_rows_func(form.q.data)
+    paginated_rows = rows.paginate(
+        page=form.page.data,
+        per_page=form.per_page.data,
     )
 
-    context = get_context(search_model.pro_type)
-    paginated_rows = search_utils.fetch_paginated_rows(context.fetch_rows_func, search_model)
+    next_page = partial(url_for, ".search_pro", **form.raw_data)
+    next_pages_urls = search_utils.pagination_links(next_page, form.page.data, paginated_rows.pages)
 
     utils.log_backoffice_tracking_data(
         event_name="PerformSearch",
         extra_data={
             "searchType": "ProSearch",
-            "searchQuery": search_model.terms,
+            "searchQuery": form.q.data,
             "searchNbResults": paginated_rows.total,
-            "searchProType": search_model.pro_type.value,
+            "searchProType": form.pro_type.data.value,
         },
     )
 
@@ -120,33 +105,30 @@ def search_pro() -> utils.BackofficeResponse:
         return redirect(
             context.get_pro_link(
                 paginated_rows.items[0].id,
-                terms=form.terms.data,
+                q=form.q.data,
             ),
             code=303,
         )
 
-    next_pages_urls = search_utils.pagination_links(next_page, search_model.page, paginated_rows.pages)
-
     form.page.data = 1  # Reset to first page when form is submitted ("Chercher" clicked)
+    form.pro_type.data = form.pro_type.data.name  # Don't send an enum to jinja
 
     return render_template(
         "pro/search_result.html",
         search_form=form,
         search_dst=url_for(".search_pro"),
-        result_type=search_model.pro_type.value,
+        result_type=result_type.value,
         next_pages_urls=next_pages_urls,
-        new_search_url=url_for(".search_pro"),
         get_link_to_detail=context.get_pro_link,
         rows=paginated_rows,
-        terms=search_model.terms,
-        order_by=search_model.order_by,
-        per_page=search_model.per_page,
+        q=form.q.data,
+        per_page=form.per_page.data,
     )
 
 
-def get_context(pro_type: search.TypeOptions) -> typing.Type[Context]:
+def get_context(pro_type: search_forms.TypeOptions) -> typing.Type[Context]:
     return {
-        search.TypeOptions.USER: UserContext,
-        search.TypeOptions.OFFERER: OffererContext,
-        search.TypeOptions.VENUE: VenueContext,
+        search_forms.TypeOptions.USER: UserContext,
+        search_forms.TypeOptions.OFFERER: OffererContext,
+        search_forms.TypeOptions.VENUE: VenueContext,
     }[pro_type]

@@ -131,7 +131,7 @@ class SearchPublicAccountsTest(search_helpers.SearchHelper, GetEndpointHelper):
     needed_permission = perm_models.Permissions.READ_PUBLIC_ACCOUNT
 
     def test_search_result_page(self, authenticated_client, legit_user):
-        url = url_for(self.endpoint, terms=legit_user.email, order_by="", page=1, per_page=20)
+        url = url_for(self.endpoint, q=legit_user.email, page=1, per_page=20)
 
         response = authenticated_client.get(url)
 
@@ -139,7 +139,7 @@ class SearchPublicAccountsTest(search_helpers.SearchHelper, GetEndpointHelper):
         assert legit_user.email in str(response.data)
 
     def test_malformed_query(self, authenticated_client, legit_user):
-        url = url_for(self.endpoint, terms=legit_user.email, order_by="unknown_field")
+        url = url_for(self.endpoint, q=legit_user.email, per_page="unknown_field")
 
         response = authenticated_client.get(url)
 
@@ -150,7 +150,7 @@ class SearchPublicAccountsTest(search_helpers.SearchHelper, GetEndpointHelper):
         underage, _, _, _, _ = create_bunch_of_accounts()
 
         # when
-        response = authenticated_client.get(url_for(self.endpoint, terms=underage.id))
+        response = authenticated_client.get(url_for(self.endpoint, q=underage.id))
 
         # then
         assert response.status_code == 200
@@ -160,7 +160,7 @@ class SearchPublicAccountsTest(search_helpers.SearchHelper, GetEndpointHelper):
 
     def test_can_search_public_account_by_small_id(self, authenticated_client):
         # when
-        response = authenticated_client.get(url_for(self.endpoint, terms="2"))
+        response = authenticated_client.get(url_for(self.endpoint, q="2"))
 
         # then
         assert response.status_code == 200
@@ -169,7 +169,7 @@ class SearchPublicAccountsTest(search_helpers.SearchHelper, GetEndpointHelper):
     @pytest.mark.parametrize("query", ["'", '""', "v", "xx"])
     def test_can_search_public_account_by_short_name(self, authenticated_client, query):
         # when
-        response = authenticated_client.get(url_for(self.endpoint, terms="v"))
+        response = authenticated_client.get(url_for(self.endpoint, q="v"))
 
         # then
         assert response.status_code == 400
@@ -183,14 +183,14 @@ class SearchPublicAccountsTest(search_helpers.SearchHelper, GetEndpointHelper):
         underage, _, _, _, _ = create_bunch_of_accounts()
 
         # when
-        response = authenticated_client.get(url_for(self.endpoint, terms=underage.id))
+        response = authenticated_client.get(url_for(self.endpoint, q=underage.id))
 
         # then redirect on single result
         assert response.status_code == 303
         assert response.location == url_for(
             "backoffice_web.public_accounts.get_public_account",
             user_id=underage.id,
-            terms=underage.id,
+            q=underage.id,
             _external=True,
         )
 
@@ -209,7 +209,7 @@ class SearchPublicAccountsTest(search_helpers.SearchHelper, GetEndpointHelper):
         _, _, _, _, _ = create_bunch_of_accounts()
 
         # when
-        response = authenticated_client.get(url_for(self.endpoint, terms=query))
+        response = authenticated_client.get(url_for(self.endpoint, q=query))
 
         # then
         assert response.status_code == 200
@@ -223,31 +223,13 @@ class SearchPublicAccountsTest(search_helpers.SearchHelper, GetEndpointHelper):
         _, _, _, random, _ = create_bunch_of_accounts()
 
         # when
-        response = authenticated_client.get(url_for(self.endpoint, terms=query))
+        response = authenticated_client.get(url_for(self.endpoint, q=query))
 
         # then
         assert response.status_code == 200
         cards_text = html_parser.extract_cards_text(response.data)
         assert len(cards_text) == 1
         assert_user_equals(cards_text[0], random)
-
-    def test_can_search_public_account_order_by_priority(self, authenticated_client):
-        # given
-        create_bunch_of_accounts()
-        users_factories.BeneficiaryGrant18Factory(firstName="Théo", lastName="Dorant")
-        users_factories.BeneficiaryGrant18Factory(firstName="Théodule", lastName="Dorantissime")
-        users_factories.BeneficiaryGrant18Factory(firstName="Théos", lastName="Doranta")
-
-        # when
-        response = authenticated_client.get(url_for(self.endpoint, terms="Théo Dorant"))
-
-        # then
-        assert response.status_code == 200
-        cards_text = html_parser.extract_cards_text(response.data)
-        assert len(cards_text) == 3
-        assert " Théo Dorant " in cards_text[0]
-        assert " Théodule Dorantissime " in cards_text[1]
-        assert " Théos Doranta " in cards_text[2]
 
     @pytest.mark.parametrize(
         "query,expected_results",
@@ -260,7 +242,7 @@ class SearchPublicAccountsTest(search_helpers.SearchHelper, GetEndpointHelper):
         users_factories.BeneficiaryGrant18Factory(validatedBirthDate=datetime.date(year=2001, month=1, day=1))
 
         # when
-        response = authenticated_client.get(url_for(self.endpoint, terms=query))
+        response = authenticated_client.get(url_for(self.endpoint, q=query))
 
         # then
         assert response.status_code == 200
@@ -272,7 +254,7 @@ class SearchPublicAccountsTest(search_helpers.SearchHelper, GetEndpointHelper):
         _, _, _, random, _ = create_bunch_of_accounts()
 
         # when
-        response = authenticated_client.get(url_for(self.endpoint, terms=random.email))
+        response = authenticated_client.get(url_for(self.endpoint, q=random.email))
 
         # then
         assert response.status_code == 200
@@ -285,7 +267,7 @@ class SearchPublicAccountsTest(search_helpers.SearchHelper, GetEndpointHelper):
         underage, grant_18, _, random, _ = create_bunch_of_accounts()
 
         # when
-        response = authenticated_client.get(url_for(self.endpoint, terms="@example.net"))
+        response = authenticated_client.get(url_for(self.endpoint, q="@example.net"))
 
         # then
         assert response.status_code == 200
@@ -298,7 +280,7 @@ class SearchPublicAccountsTest(search_helpers.SearchHelper, GetEndpointHelper):
         _, grant_18, _, _, _ = create_bunch_of_accounts()
 
         # when
-        response = authenticated_client.get(url_for(self.endpoint, terms=query))
+        response = authenticated_client.get(url_for(self.endpoint, q=query))
 
         # then
         assert response.status_code == 200
@@ -311,7 +293,7 @@ class SearchPublicAccountsTest(search_helpers.SearchHelper, GetEndpointHelper):
         _, _, _, _, no_address = create_bunch_of_accounts()
 
         # when
-        response = authenticated_client.get(url_for(self.endpoint, terms=no_address.phoneNumber))
+        response = authenticated_client.get(url_for(self.endpoint, q=no_address.phoneNumber))
 
         # then
         assert response.status_code == 200
@@ -325,7 +307,7 @@ class SearchPublicAccountsTest(search_helpers.SearchHelper, GetEndpointHelper):
         _, grant_18, _, _, _ = create_bunch_of_accounts()
 
         # when
-        response = authenticated_client.get(url_for(self.endpoint, terms=query))
+        response = authenticated_client.get(url_for(self.endpoint, q=query))
 
         # then
         assert response.status_code == 200
@@ -339,7 +321,7 @@ class SearchPublicAccountsTest(search_helpers.SearchHelper, GetEndpointHelper):
         create_bunch_of_accounts()
 
         # when
-        response = authenticated_client.get(url_for(self.endpoint, terms=query))
+        response = authenticated_client.get(url_for(self.endpoint, q=query))
 
         # then
         assert response.status_code == 200
@@ -351,7 +333,7 @@ class SearchPublicAccountsTest(search_helpers.SearchHelper, GetEndpointHelper):
         create_bunch_of_accounts()
 
         # when
-        response = authenticated_client.get(url_for(self.endpoint, terms=""))
+        response = authenticated_client.get(url_for(self.endpoint, q=""))
 
         # then
         assert response.status_code == 400
@@ -362,7 +344,7 @@ class SearchPublicAccountsTest(search_helpers.SearchHelper, GetEndpointHelper):
         create_bunch_of_accounts()
 
         # when
-        response = authenticated_client.get(url_for(self.endpoint, terms=query))
+        response = authenticated_client.get(url_for(self.endpoint, q=query))
 
         # then
         assert response.status_code == 200
@@ -374,7 +356,7 @@ class SearchPublicAccountsTest(search_helpers.SearchHelper, GetEndpointHelper):
         create_bunch_of_accounts()
 
         # when
-        response = authenticated_client.get(url_for(self.endpoint, terms="%terms"))
+        response = authenticated_client.get(url_for(self.endpoint, q="%terms"))
 
         # then
         assert response.status_code == 400
@@ -392,7 +374,7 @@ class SearchPublicAccountsTest(search_helpers.SearchHelper, GetEndpointHelper):
         offerers_factories.UserOffererFactory(user=young_and_pro)
 
         # when
-        response = authenticated_client.get(url_for(self.endpoint, terms=young_and_pro.email))
+        response = authenticated_client.get(url_for(self.endpoint, q=young_and_pro.email))
 
         # then
         assert response.status_code == 200
@@ -412,7 +394,7 @@ class SearchPublicAccountsTest(search_helpers.SearchHelper, GetEndpointHelper):
         )
 
         # when
-        response = authenticated_client.get(url_for(self.endpoint, terms=underage.id))
+        response = authenticated_client.get(url_for(self.endpoint, q=underage.id))
 
         # then
         assert response.status_code == 200
@@ -426,7 +408,7 @@ class SearchPublicAccountsTest(search_helpers.SearchHelper, GetEndpointHelper):
         event.user.email = event.newEmail
 
         # when
-        response = authenticated_client.get(url_for(self.endpoint, terms=event.oldEmail))
+        response = authenticated_client.get(url_for(self.endpoint, q=event.oldEmail))
 
         # then
         assert response.status_code == 200
@@ -440,7 +422,7 @@ class SearchPublicAccountsTest(search_helpers.SearchHelper, GetEndpointHelper):
         event.user.email = event.newEmail
 
         # when
-        response = authenticated_client.get(url_for(self.endpoint, terms=f"@{event.oldDomainEmail}"))
+        response = authenticated_client.get(url_for(self.endpoint, q=f"@{event.oldDomainEmail}"))
 
         # then
         assert response.status_code == 200
