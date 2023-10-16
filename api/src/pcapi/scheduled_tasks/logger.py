@@ -6,11 +6,11 @@ class CronStatus(Enum):
     ENDED = "ended"
     FAILED = "failed"
 
-    def __str__(self):  # type: ignore [no-untyped-def]
+    def __str__(self) -> str:
         return self.value
 
 
-def build_cron_log_message(name: str, status: CronStatus, duration: int | None = None):  # type: ignore [no-untyped-def]
+def build_cron_log_message(name: str, status: CronStatus | None, duration: int | float | None = None) -> str:
     log_message = f"type=cron name={name} status={status}"
 
     if duration:
