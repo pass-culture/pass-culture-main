@@ -8,5 +8,5 @@ TestingRowIterator = typing.Generator[TestingRow, None, None]
 
 
 class TestingBackend(BaseBackend):
-    def run_query(self, query: str, page_size: int, **parameters: dict[str, str | int]) -> TestingRowIterator:
+    def run_query(self, query: str, page_size: int, **parameters: typing.Any) -> TestingRowIterator:
         yield
