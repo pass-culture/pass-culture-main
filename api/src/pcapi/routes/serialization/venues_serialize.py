@@ -87,7 +87,8 @@ class PostVenueBodyModel(BaseModel, AccessibilityComplianceMixin):
         extra = "forbid"
 
     @validator("latitude", pre=True)
-    def validate_latitude(cls, raw_latitude):  # type: ignore [no-untyped-def]
+    @classmethod
+    def validate_latitude(cls, raw_latitude: str) -> str:
         try:
             latitude = Decimal(raw_latitude)
         except InvalidOperation:
@@ -97,7 +98,8 @@ class PostVenueBodyModel(BaseModel, AccessibilityComplianceMixin):
         return raw_latitude
 
     @validator("longitude", pre=True)
-    def validate_longitude(cls, raw_longitude):  # type: ignore [no-untyped-def]
+    @classmethod
+    def validate_longitude(cls, raw_longitude: str) -> str:
         try:
             longitude = Decimal(raw_longitude)
         except InvalidOperation:
@@ -107,7 +109,8 @@ class PostVenueBodyModel(BaseModel, AccessibilityComplianceMixin):
         return raw_longitude
 
     @validator("siret", always=True)
-    def requires_siret_xor_comment(cls, siret, values):  # type: ignore [no-untyped-def]
+    @classmethod
+    def requires_siret_xor_comment(cls, siret: str | None, values: dict) -> str | None:
         """siret is defined after comment, so the validator can access the previously validated value of comment"""
         comment = values.get("comment")
         if (comment and siret) or (not comment and not siret):
@@ -555,8 +558,14 @@ class AdageCulturalPartnerResponseModel(BaseModel):
         if isinstance(domaine_ids, list):
             return domaine_ids
 
-        # we let pydantic cast str into int to have better error logs if it crashes
-        return domaine_ids.split(",")  # type: ignore [return-value]
+        split_domaine_ids = domaine_ids.split(",")
+        ids = []
+        for domaine_id in split_domaine_ids:
+            if not domaine_id.isdigit():
+                raise ValueError("Domaine id must be an integer")
+            ids.append(int(domaine_id))
+
+        return ids
 
     class Config:
         orm_mode = True
