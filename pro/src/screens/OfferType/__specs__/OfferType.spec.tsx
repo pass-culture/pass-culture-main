@@ -13,6 +13,7 @@ import {
 import { Events } from 'core/FirebaseEvents/constants'
 import * as useAnalytics from 'hooks/useAnalytics'
 import * as useNotification from 'hooks/useNotification'
+import { baseStoreFactory } from 'store/testUtils'
 import {
   collectiveOfferFactory,
   defaultGetOffererVenueResponseModel,
@@ -52,11 +53,7 @@ vi.mock('apiClient/api', () => ({
   },
 }))
 
-const renderOfferTypes = (
-  storeOverrides: any,
-  structureId?: string,
-  venueId?: string
-) => {
+const renderOfferTypes = (structureId?: string, venueId?: string) => {
   renderWithProviders(
     <Routes>
       <Route path="/creation" element={<OfferType />} />
@@ -78,7 +75,9 @@ const renderOfferTypes = (
       />
     </Routes>,
     {
-      storeOverrides,
+      storeOverrides: baseStoreFactory({
+        featureList: ['WIP_CATEGORY_SELECTION'],
+      }),
       initialRouterEntries: [
         `/creation${
           structureId
@@ -91,26 +90,12 @@ const renderOfferTypes = (
 }
 
 describe('OfferType', () => {
-  let store: any
   beforeEach(() => {
     vi.spyOn(api, 'listOfferersNames').mockResolvedValue({
       offerersNames: [{ id: 1, name: 'Ma super structure' }],
     })
     vi.spyOn(api, 'getCollectiveOffers').mockResolvedValue([])
     vi.spyOn(api, 'canOffererCreateEducationalOffer').mockResolvedValue()
-
-    store = {
-      user: {
-        initialized: true,
-        currentUser: {
-          isAdmin: false,
-          email: 'email@example.com',
-        },
-      },
-      features: {
-        list: [{ isActive: true, nameKey: 'WIP_CATEGORY_SELECTION' }],
-      },
-    }
 
     vi.spyOn(useAnalytics, 'default').mockImplementation(() => ({
       logEvent: mockLogEvent,
@@ -119,7 +104,7 @@ describe('OfferType', () => {
   })
 
   it('should render the component with button', async () => {
-    renderOfferTypes(store)
+    renderOfferTypes()
 
     expect(
       screen.getByRole('heading', { name: 'Créer une offre' })
@@ -142,7 +127,7 @@ describe('OfferType', () => {
   })
 
   it('should select collective offer', async () => {
-    renderOfferTypes(store)
+    renderOfferTypes()
 
     expect(
       await screen.findByRole('heading', { name: 'Votre offre est :' })
@@ -165,7 +150,7 @@ describe('OfferType', () => {
   })
 
   it('should select template offer', async () => {
-    renderOfferTypes(store)
+    renderOfferTypes()
 
     expect(
       await screen.findByRole('heading', { name: 'Votre offre est :' })
@@ -189,7 +174,7 @@ describe('OfferType', () => {
 
   it('should display non eligible banner if offerer can not create collective offer', async () => {
     vi.spyOn(api, 'canOffererCreateEducationalOffer').mockRejectedValueOnce({})
-    renderOfferTypes(store)
+    renderOfferTypes()
 
     await userEvent.click(
       screen.getByRole('radio', { name: 'À un groupe scolaire' })
@@ -221,7 +206,7 @@ describe('OfferType', () => {
     }
     vi.spyOn(api, 'getOfferer').mockResolvedValue(offerer)
     vi.spyOn(api, 'canOffererCreateEducationalOffer').mockRejectedValueOnce({})
-    renderOfferTypes(store, 'offererId')
+    renderOfferTypes('offererId')
 
     await userEvent.click(
       screen.getByRole('radio', { name: 'À un groupe scolaire' })
@@ -236,7 +221,7 @@ describe('OfferType', () => {
   })
 
   it('should display individual offer choices', async () => {
-    renderOfferTypes(store)
+    renderOfferTypes()
 
     expect(await screen.findByText('Un bien physique')).toBeInTheDocument()
     expect(screen.getByText('Un bien numérique')).toBeInTheDocument()
@@ -265,7 +250,7 @@ describe('OfferType', () => {
   it.each(individualChoices)(
     'should select and redirect fine case : %s',
     async ({ buttonClicked, expectedSearch }) => {
-      renderOfferTypes(store)
+      renderOfferTypes()
 
       await userEvent.click(await screen.findByText(buttonClicked))
 
@@ -306,7 +291,7 @@ describe('OfferType', () => {
     })
 
     // there is a venue in url
-    renderOfferTypes(store, '1', '1')
+    renderOfferTypes('1', '1')
 
     expect(
       await screen.findByText('Quelle est la catégorie de l’offre ?')
@@ -338,7 +323,7 @@ describe('OfferType', () => {
       // @ts-expect-error FIX ME
       .mockResolvedValueOnce(offersRecap)
 
-    renderOfferTypes(store)
+    renderOfferTypes()
 
     await userEvent.click(
       screen.getByRole('radio', { name: 'À un groupe scolaire' })
@@ -391,7 +376,7 @@ describe('OfferType', () => {
       error: notifyError,
     }))
 
-    renderOfferTypes(store)
+    renderOfferTypes()
 
     await userEvent.click(
       screen.getByRole('radio', { name: 'À un groupe scolaire' })
@@ -419,7 +404,7 @@ describe('OfferType', () => {
   })
 
   it('should log when cancelling ', async () => {
-    renderOfferTypes(store)
+    renderOfferTypes()
 
     await userEvent.click(
       screen.getByRole('link', { name: 'Annuler et quitter' })
@@ -435,7 +420,7 @@ describe('OfferType', () => {
     vi.spyOn(api, 'getOfferer').mockResolvedValue({
       isValidated: false,
     } as GetOffererResponseModel)
-    renderOfferTypes(store, '123')
+    renderOfferTypes('123')
 
     expect(
       screen.queryByText(
@@ -461,7 +446,7 @@ describe('OfferType', () => {
       )
     })
 
-    renderOfferTypes(store, '123')
+    renderOfferTypes('123')
 
     await userEvent.click(
       screen.getByRole('radio', { name: 'À un groupe scolaire' })
