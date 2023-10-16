@@ -94,7 +94,7 @@ const IndividualOfferType = (): JSX.Element | null => {
         setIsLoading(false)
       }
     }
-    loadData()
+    void loadData()
   }, [queryVenueId, isCategorySelectionActive, queryOffererId])
 
   const venueTypeMostUsedSubcategories =
