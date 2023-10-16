@@ -497,23 +497,18 @@ class SQLFunctionsTest:
 
 @pytest.mark.usefixtures("db_session")
 class SuperAdminTest:
-    @override_settings(SUPER_ADMIN_EMAIL_ADDRESSES=["super@admin.user"], IS_PROD=True)
-    def test_super_user_prod(self):
+    @override_settings(SUPER_ADMIN_EMAIL_ADDRESSES=["super@admin.user"])
+    def test_is_super_admin(self):
         user = users_factories.UserFactory(email="super@admin.user")
         assert user.is_super_admin()
 
-    @override_settings(SUPER_ADMIN_EMAIL_ADDRESSES=[], IS_PROD=True)
-    def test_super_user_prod_not_configured(self):
-        user = users_factories.UserFactory(email="simple-admin@admin.user")
-        assert user.is_super_admin() is False
-
-    @override_settings()
-    def test_super_user_not_prod_not_admin(self):
+    @override_settings(SUPER_ADMIN_EMAIL_ADDRESSES=["super@admin.user"])
+    def test_simple_user_is_not_super_admin(self):
         user = users_factories.UserFactory(email="simple-user@example.com")
         assert user.is_super_admin() is False
 
-    @override_settings()
-    def test_super_user_not_prod_is_admin_is_super_admin(self):
+    @override_settings(SUPER_ADMIN_EMAIL_ADDRESSES=[])
+    def test_admin_is_super_user_if_not_configured(self):
         user = users_factories.AdminFactory()
         assert user.is_super_admin()
 

@@ -326,7 +326,7 @@ class User(PcObject, Base, Model, NeedsValidationMixin, DeactivableMixin):
         return str(self.id)
 
     def is_super_admin(self) -> bool:
-        if settings.IS_PROD:
+        if settings.SUPER_ADMIN_EMAIL_ADDRESSES:
             return self.email in settings.SUPER_ADMIN_EMAIL_ADDRESSES
         return self.has_admin_role
 
