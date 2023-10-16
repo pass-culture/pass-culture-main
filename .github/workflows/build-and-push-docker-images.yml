@@ -63,6 +63,12 @@ jobs:
         cd api
         echo "${{ inputs.tag }}" > version.txt
         git add version.txt
+    - name: Install poetry
+      run: pip install poetry
+    - name: check poetry lock is up to date
+      run: |
+        cd api
+        poetry check
     - name: Set up Docker Buildx
       uses: docker/setup-buildx-action@v2
       with:
