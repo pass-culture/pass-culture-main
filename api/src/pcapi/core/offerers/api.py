@@ -1,5 +1,6 @@
 import dataclasses
 from datetime import datetime
+from datetime import timedelta
 import enum
 import itertools
 import logging
@@ -15,6 +16,8 @@ import sqlalchemy.orm as sa_orm
 
 from pcapi import settings
 from pcapi.connectors import sirene
+from pcapi.connectors.big_query.queries.offerer_stats import OffererViewsPerDay
+from pcapi.connectors.big_query.queries.offerer_stats import OffersData
 import pcapi.connectors.thumb_storage as storage
 from pcapi.core import search
 from pcapi.core.bookings import models as bookings_models
@@ -40,6 +43,7 @@ from pcapi.models import db
 from pcapi.models import feature
 from pcapi.models.validation_status_mixin import ValidationStatus
 from pcapi.repository import repository
+from pcapi.repository import transaction
 from pcapi.routes.serialization import offerers_serialize
 from pcapi.routes.serialization import venues_serialize
 import pcapi.routes.serialization.base as serialize_base
@@ -48,6 +52,8 @@ from pcapi.utils import crypto
 from pcapi.utils import image_conversion
 import pcapi.utils.db as db_utils
 import pcapi.utils.email as email_utils
+from pcapi.workers import worker
+from pcapi.workers.decorators import job
 
 from . import exceptions
 from . import models
@@ -2007,3 +2013,49 @@ def get_providers_offerer_and_venues(
 
     for offerer, group in itertools.groupby(offerers_query, lambda row: row.Offerer):
         yield OffererVenues(offerer=offerer, venues=[row.Venue for row in group])
+
+
+def get_offerer_stats_data(offerer_id: int) -> offerers_models.OffererStatsData | None:
+    offerer_stats = offerers_models.OffererStats.query.filter_by(offererId=offerer_id).all()
+    if len(offerer_stats) < 2:
+        _update_offerer_stats_data.delay(offerer_id)
+    for stat in offerer_stats:
+        if stat.syncDate < datetime.utcnow() - timedelta(days=1):
+            _update_offerer_stats_data.delay(offerer_id)
+            break
+    return offerer_stats
+
+
+@job(worker.low_queue)
+def _update_offerer_stats_data(offerer_id: int) -> None:
+    with transaction():
+        daily_views_data = OffererViewsPerDay().execute(offerer_id=offerer_id)
+        daily_views_stats = offerers_models.OffererStats.query.filter_by(
+            offererId=offerer_id, table="stats_display_cum_daily_consult_per_offerer_last_180_days"
+        ).one_or_none()
+        if not daily_views_stats:
+            daily_views_stats = offerers_models.OffererStats(
+                offererId=offerer_id,
+                table="stats_display_cum_daily_consult_per_offerer_last_180_days",
+                jsonData=offerers_models.OffererStatsData(daily_views=list(daily_views_data)),
+                syncDate=datetime.utcnow(),
+            )
+        else:
+            daily_views_stats.jsonData = offerers_models.OffererStatsData(daily_views=list(daily_views_data))
+            daily_views_stats.syncDate = datetime.utcnow()
+
+        top_offers_data = OffersData().execute(page_size=3, offerer_id=offerer_id)
+        top_offers_stats = offerers_models.OffererStats.query.filter_by(
+            offererId=offerer_id, table="stats_display_top_3_most_consulted_offers_last_30_days"
+        ).one_or_none()
+        if not top_offers_stats:
+            top_offers_stats = offerers_models.OffererStats(
+                offererId=offerer_id,
+                table="stats_display_top_3_most_consulted_offers_last_30_days",
+                jsonData=offerers_models.OffererStatsData(top_offers=list(top_offers_data)),
+                syncDate=datetime.utcnow(),
+            )
+        else:
+            top_offers_stats.jsonData = offerers_models.OffererStatsData(top_offers=list(top_offers_data))
+            top_offers_stats.syncDate = datetime.utcnow()
+        repository.save(daily_views_stats, top_offers_stats)

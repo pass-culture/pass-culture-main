@@ -318,3 +318,11 @@ class IndividualOffererSubscription(BaseFactory):
     offerer = factory.SubFactory(NotValidatedOffererFactory)
     isEmailSent = True
     dateEmailSent = factory.LazyFunction(lambda: datetime.date.today() - datetime.timedelta(days=3))
+
+
+class OffererStatsFactory(BaseFactory):
+    class Meta:
+        model = models.OffererStats
+
+    id = factory.Sequence(int)
+    syncDate = factory.LazyFunction(lambda: datetime.date.today() - datetime.timedelta(hours=3))
