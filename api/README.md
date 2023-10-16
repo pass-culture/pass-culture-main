@@ -22,21 +22,36 @@ Spectree:
 ## Liens des mocks API:
 * [APi "Charlie" billeterie](https://mock-api-billeterie.ehp.passculture.team/)
 
-## Tests
+## Installation des dépendances
 
-### Installation des dépendances
-
-Avec `venv` (vous pouvez aussi utiliser `virtualenv` si vous préférez, voire `virtualenvwrapper`):
+Avec `poetry` et Python **3.10** :
 
 ```shell
-python3.10 -m venv ./venv
-source venv/bin/activate
-pip install -e .
-pip install -r requirements.txt
+curl -sSL https://install.python-poetry.org | python3 -
+poetry env use python3.10
+poetry install --with dev
 ```
+
+La bonne version de python est à installer soit à travers le gestionnaire de paquet du système d'exploitation,
+soit en utilisant `pyenv`.
 
 La génération de PDF via `weasyprint` nécessite également de suivre
 ces [étapes](https://doc.courtbouillon.org/weasyprint/stable/first_steps.html#installation) d'installation.
+
+### Poetry
+
+On utilise Poetry pour gérer nos dépendences. Par défaut, Poetry crée l'environnement virtuel dans un dossier
+qui dépend du système d'exploitation. Pour accéder aux exécutables de cet environnement, il y a deux méthodes :
+1. Préfixer la commande avec `poetry run`, e.g. `poetry run pytest`
+2. Activer l'environnement virtuel avec `source $(poetry env list --full-path | awk '{print $1}' | head -n 1)/bin/activate`.
+   Cela permet d'exécuter `pytest` sans préfixe.
+
+Une gestion plus fine de l'environnement virtuel utilisé par `poetry` peut être trouvée sur ce lien : [Managing environments | Documentation | Poetry](https://python-poetry.org/docs/managing-environments/)
+
+*NOTE* : Poetry n'est pas utilisé dans les conteneurs Docker, i.e. la commande `flask` est directement accessible.
+*NOTE* : L'ajout de dépendance doit se faire par Poetry pour mettre à jour le fichier lock.
+
+## Tests
 
 ### Lancement des tests
 
@@ -81,8 +96,15 @@ Les tests pourront ensuite être exécutés avec ou sans docker-compose
 * Lancement des tests depuis la ligne de commande. Il est ainsi très simple d'accéder à `stdin`/`stdout` via le
   paramètre  `-s`, par exemple pour utiliser des breakpoints.
   ```shell
-  python -m pytest # Pour lancer tous les tests
-  python -m pytest tests/core/offers/test_api.py::CreateOfferTest::test_create_offer_from_scratch # Pour lancer un test en particulier
+  poetry run pytest # Pour lancer tous les tests
+  poetry run pytest tests/core/offers/test_api.py::CreateOfferTest::test_create_offer_from_scratch # Pour lancer un test en particulier
+  ```
+
+* Les tests du backoffice ne peuvent pas être exécutés en même temps que le reste. Pour jouer tous les tests en une commande, il est possible
+  d'utiliser
+  ```shell
+  poetry run pytest -m 'not backoffice' && \
+  poetry run pytest -m 'backoffice'
   ```
 
 ### Écriture des tests
@@ -145,16 +167,15 @@ Si la base de données n'a pas été initialisée, vous devez suivre les étapes
 * Installer les extensions et jouer les migrations
 
   ```shell
-  source venv/bin/activate
-  flask install_postgres_extensions
-  alembic upgrade pre@head
-  alembic upgrade post@head
+  poetry run flask install_postgres_extensions
+  poetry run alembic upgrade pre@head
+  poetry run alembic upgrade post@head
   ```
 
 Vous pouvez maintenant lancer l'application Flask
 
 ```shell
-python src/pcapi/app.py
+poetry run python src/pcapi/app.py
 ```
 
 ### Database de jeu
@@ -165,7 +186,7 @@ bases de données "sandbox".
 La plus conséquente est `industrial`, elle se créée via la commande:
 
 ```bash
-flask sandbox -n industrial
+poetry run flask sandbox -n industrial
 ```
 
 ---
