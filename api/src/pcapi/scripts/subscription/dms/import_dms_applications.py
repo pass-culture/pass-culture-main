@@ -29,7 +29,7 @@ def _import_all_dms_applications_initial_import(procedure_id: int) -> None:
     if new_import_datetime is None:
         # This is a normal situation outside prod, when we have few
         # applications to process (and often no applications at all).
-        log = logger.error if settings.IS_PROD else logger.info
+        log = logger.error if settings.DS_LOGGER_ERROR else logger.info
         log("[DMS] No import for procedure %s", procedure_id)
         return
     new_import_record = dms_models.LatestDmsImport(
