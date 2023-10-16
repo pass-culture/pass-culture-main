@@ -1,10 +1,20 @@
 from flask_wtf import FlaskForm
+import wtforms
 
 import pcapi.core.fraud.models as fraud_models
 import pcapi.core.users.models as users_models
 from pcapi.routes.backoffice import filters
 from pcapi.routes.backoffice.forms import fields
+from pcapi.routes.backoffice.forms import search
 from pcapi.routes.backoffice.forms import utils
+
+
+class AccountSearchForm(search.SearchForm):
+    def validate_q(self, q: fields.PCSearchField) -> fields.PCSearchField:
+        q = super().validate_q(q)
+        if len(q.data) < 3 and not str(q.data).isnumeric():
+            raise wtforms.validators.ValidationError("Attention, la recherche doit contenir au moins 3 lettres.")
+        return q
 
 
 class EditAccountForm(utils.PCForm):

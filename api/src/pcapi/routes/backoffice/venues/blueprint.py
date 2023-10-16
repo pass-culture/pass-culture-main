@@ -41,7 +41,7 @@ from pcapi.routes.backoffice import filters
 from pcapi.routes.backoffice import utils
 from pcapi.routes.backoffice.forms import empty as empty_forms
 from pcapi.routes.backoffice.forms import search as search_forms
-from pcapi.routes.backoffice.serialization.search import TypeOptions
+from pcapi.routes.backoffice.forms.search import TypeOptions
 import pcapi.routes.serialization.base as serialize_base
 import pcapi.utils.regions as regions_utils
 from pcapi.utils.regions import get_department_codes_for_region
@@ -209,7 +209,7 @@ def render_venue_details(
 
     return render_template(
         "venue/get.html",
-        search_form=search_forms.ProSearchForm(terms=request.args.get("terms"), pro_type=TypeOptions.VENUE.name),
+        search_form=search_forms.ProSearchForm(q=request.args.get("q"), pro_type=TypeOptions.VENUE.name),
         search_dst=url_for("backoffice_web.search_pro"),
         venue=venue,
         edit_venue_form=edit_venue_form,
@@ -246,13 +246,13 @@ def list_venues() -> utils.BackofficeResponse:
 def get(venue_id: int) -> utils.BackofficeResponse:
     venue = get_venue(venue_id)
 
-    if request.args.get("terms") and request.args.get("search_rank"):
+    if request.args.get("q") and request.args.get("search_rank"):
         utils.log_backoffice_tracking_data(
             event_name="ConsultCard",
             extra_data={
                 "searchType": "ProSearch",
                 "searchProType": TypeOptions.VENUE.name,
-                "searchQuery": request.args.get("terms"),
+                "searchQuery": request.args.get("q"),
                 "searchRank": request.args.get("search_rank"),
                 "searchNbResults": request.args.get("total_items"),
             },

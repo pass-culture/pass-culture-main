@@ -214,6 +214,13 @@ class PCOptHiddenIntegerField(wtforms.IntegerField):
         validators.Optional(""),
     ]
 
+    def gettext(self, string: str) -> str:
+        match string:
+            case "Not a valid integer value.":
+                return f"Le paramètre {self.name} devrait être un entier"
+            case _:
+                return string
+
 
 class PCDateField(wtforms.DateField):
     widget = partial(widget, template="components/forms/date_field.html")

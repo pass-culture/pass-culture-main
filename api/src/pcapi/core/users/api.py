@@ -48,7 +48,6 @@ from pcapi.routes.serialization.users import ProUserCreationBodyV2Model
 from pcapi.tasks import batch_tasks
 from pcapi.utils.clean_accents import clean_accents
 import pcapi.utils.date as date_utils
-import pcapi.utils.db as db_utils
 import pcapi.utils.email as email_utils
 import pcapi.utils.phone_number as phone_number_utils
 import pcapi.utils.postal_code as postal_code_utils
@@ -967,7 +966,7 @@ def is_user_age_compatible_with_eligibility(user_age: int | None, eligibility: m
     return False
 
 
-def _filter_user_accounts(accounts: BaseQuery, search_term: str, order_by: list[str] | None = None) -> BaseQuery:
+def _filter_user_accounts(accounts: BaseQuery, search_term: str) -> BaseQuery:
     filters = []
     name_term = None
 
@@ -1022,12 +1021,6 @@ def _filter_user_accounts(accounts: BaseQuery, search_term: str, order_by: list[
     # each result must match all terms in any column
     accounts = accounts.filter(*filters).from_self()
 
-    if order_by:
-        try:
-            accounts = accounts.order_by(*db_utils.get_ordering_clauses(models.User, order_by))
-        except db_utils.BadSortError as err:
-            raise ApiErrors({"sorting": str(err)})
-
     if name_term:
         name_term = name_term.lower()
         accounts = accounts.order_by(
@@ -1036,19 +1029,18 @@ def _filter_user_accounts(accounts: BaseQuery, search_term: str, order_by: list[
             )
         )
 
-    if not order_by:
-        accounts = accounts.order_by(models.User.id)
+    accounts = accounts.order_by(models.User.id)
 
     return accounts
 
 
-def search_public_account(search_query: str, order_by: list[str] | None = None) -> BaseQuery:
+def search_public_account(search_query: str) -> BaseQuery:
     public_accounts = get_public_account_base_query()
 
-    return _filter_user_accounts(public_accounts, search_query, order_by=order_by)
+    return _filter_user_accounts(public_accounts, search_query)
 
 
-def search_public_account_in_history_email(search_query: str, order_by: list[str] | None = None) -> BaseQuery:
+def search_public_account_in_history_email(search_query: str) -> BaseQuery:
     if not email_utils.is_valid_email_or_email_domain(email_utils.sanitize_email(search_query)):
         raise ValueError(f"Unsupported email search on invalid email or email domain : {search_query}")
 
@@ -1095,13 +1087,7 @@ def search_public_account_in_history_email(search_query: str, order_by: list[str
             )
         ).from_self()
 
-    if order_by:
-        try:
-            return accounts.order_by(*db_utils.get_ordering_clauses(models.User, order_by))
-        except db_utils.BadSortError as err:
-            raise ApiErrors({"sorting": str(err)})
-    else:
-        return accounts.order_by(models.User.id)
+    return accounts.order_by(models.User.id)
 
 
 def get_public_account_base_query() -> BaseQuery:
@@ -1128,11 +1114,11 @@ def get_public_account_base_query() -> BaseQuery:
     return public_accounts
 
 
-def search_pro_account(search_query: str, order_by: list[str] | None = None) -> BaseQuery:
+def search_pro_account(search_query: str) -> BaseQuery:
     pro_accounts = models.User.query.filter(
         models.User.has_non_attached_pro_role.is_(True) | models.User.has_pro_role.is_(True)  # type: ignore [attr-defined]
     )
-    return _filter_user_accounts(pro_accounts, search_query, order_by=order_by)
+    return _filter_user_accounts(pro_accounts, search_query)
 
 
 def get_pro_account_base_query(pro_id: int) -> BaseQuery:
@@ -1141,7 +1127,7 @@ def get_pro_account_base_query(pro_id: int) -> BaseQuery:
     )
 
 
-def search_backoffice_accounts(search_query: str, order_by: list[str] | None = None) -> BaseQuery:
+def search_backoffice_accounts(search_query: str) -> BaseQuery:
     bo_accounts = models.User.query.outerjoin(users_models.User.backoffice_profile).filter(
         perm_models.BackOfficeUserProfile.id.is_not(None),
     )
@@ -1149,7 +1135,7 @@ def search_backoffice_accounts(search_query: str, order_by: list[str] | None = N
     if not search_query:
         return bo_accounts
 
-    return _filter_user_accounts(bo_accounts, search_query, order_by=order_by)
+    return _filter_user_accounts(bo_accounts, search_query)
 
 
 def validate_pro_user_email(user: users_models.User, author_user: users_models.User | None = None) -> None:
