@@ -52,7 +52,6 @@ def log_action(
         # None or AnonymousUserMixin
         # Examples: offerer validated by token (without authentication), offerer created by script
         author = None
-
     action = models.ActionHistory(
         actionType=action_type,
         authorUser=author,

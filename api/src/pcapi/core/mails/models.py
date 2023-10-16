@@ -33,13 +33,23 @@ class TransactionalAttachment:
 class TransactionalWithoutTemplateEmailData:
     subject: str
     html_content: str
-    sender: TransactionalSender = TransactionalSender.SUPPORT_PRO
-    attachment: TransactionalAttachment | None = None
-    reply_to: EmailInfo = None  # type: ignore [assignment]
+    reply_to: EmailInfo
+    sender: TransactionalSender
+    attachment: TransactionalAttachment | None
 
-    def __post_init__(self) -> None:
-        if self.reply_to is None:
-            self.reply_to = self.sender.value
+    def __init__(
+        self,
+        subject: str,
+        html_content: str,
+        sender: TransactionalSender = TransactionalSender.SUPPORT_PRO,
+        attachment: TransactionalAttachment | None = None,
+        reply_to: EmailInfo | None = None,
+    ):
+        self.subject = subject
+        self.html_content = html_content
+        self.sender = sender
+        self.attachment = attachment
+        self.reply_to = reply_to or self.sender.value
 
 
 @dataclasses.dataclass
@@ -64,9 +74,10 @@ class TemplatePro(Template):
 @dataclasses.dataclass
 class TransactionalEmailData:
     template: Template
-    params: dict = dataclasses.field(default_factory=dict)
-    reply_to: EmailInfo = None  # type: ignore [assignment]
+    reply_to: EmailInfo
+    params: dict
 
-    def __post_init__(self) -> None:
-        if self.reply_to is None:
-            self.reply_to = self.template.sender.value
+    def __init__(self, template: Template, params: dict | None = None, reply_to: EmailInfo | None = None):
+        self.template = template
+        self.params = params or {}
+        self.reply_to = reply_to or template.sender.value

@@ -199,13 +199,14 @@ class SendTest:
             result_bool = send(recipients=recipients, data=data)
 
         assert mock_send_transactional_email_secondary_task.call_count == 0
-        assert caplog.messages == [
-            "An email would be sent via Sendinblue to=lucy.ellingson@example.com, avery.kelly@example.com, "
-            "bcc=(): {'template': {'id_prod': 11, 'id_not_prod': 12, 'tags': ['some', 'stuff'], 'use_priority_queue':"
-            " False, 'sender': <TransactionalSender.SUPPORT: EmailInfo(email='support@example.com',"
-            " name='pass Culture')>, 'send_to_ehp': False}, 'params': {}, 'reply_to': {'email': 'reply_to@example.com',"
-            " 'name': 'Tom S.'}}"
-        ]
+
+        assert caplog.messages[0] == (
+            "An email would be sent via Sendinblue to=lucy.ellingson@example.com, avery.kelly@example.com, bcc=(): "
+            "{'template': {'id_prod': 11, 'id_not_prod': 12, 'tags': ['some', 'stuff'], 'use_priority_queue': False, "
+            "'sender': <TransactionalSender.SUPPORT: EmailInfo(email='support@example.com', name='pass Culture')>, 'send_to_ehp': False}, "
+            "'reply_to': {'email': 'reply_to@example.com', 'name': 'Tom S.'}, 'params': {}}"
+        )
+
         assert result_bool
 
     @override_settings(IS_TESTING=True)
