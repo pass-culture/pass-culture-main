@@ -1,0 +1,27 @@
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: post-upgrade-${DATE}
+spec:
+  backoffLimit: 0
+  ttlSecondsAfterFinished: 604800
+  template:
+    spec:
+      containers:
+      - name: pcapi 
+        image: ${IMAGE}
+        envFrom:
+        - configMapRef:
+            name: ${ENVIRONMENT}-pcapi
+        - configMapRef:
+            name: ${ENVIRONMENT}-pcapi-api-specific
+        - secretRef:
+            name: ${ENVIRONMENT}-pcapi
+        command: 
+          - "/bin/bash"
+        args:
+          - "-c"
+          - |
+            set -e
+            alembic upgrade post@head
+      restartPolicy: Never

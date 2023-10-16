@@ -126,13 +126,17 @@ jobs:
           max_attempts: 3
           command: |
             set -e
-            POD_NAME=$(kubectl -n ${{ inputs.environment }} get po -l role=api -o jsonpath='{.items[0].metadata.name}')
-            kubectl exec -it -n ${{ inputs.environment }} ${POD_NAME} -- bash <<EOF
-            set -e
-            flask install_postgres_extensions;
-            alembic upgrade pre@head;
-            flask install_data
-            EOF
+            VERSION="${{ inputs.app_version }}"
+            export ENVIRONMENT="${{ inputs.environment }}"
+            IMAGE=$(kubectl get -n ${{ inputs.environment }} po -l role=api -o json |jq -r '.items[0].spec.containers[0].image'|awk -F':' '{print $1}')
+            export IMAGE="${IMAGE}:${VERSION}"
+            export DATE=$(date +"%Y-%m-%d--%H-%M-%S")
+            envsubst < .github/workflows/templates/pre-upgrade-job.yaml | kubectl -n ${{ inputs.environment }} apply -f -
+            while true;
+            do
+            kubectl logs -f jobs/pre-upgrade-${DATE} && break
+            done
+            kubectl wait --for=condition=complete --timeout=30s -n ${{ inputs.environment }} jobs/pre-upgrade-${DATE}
       - name: Deploy pcapi
         run: |
           PASSCULTURE_USERNAME="oauth2accesstoken" \
@@ -147,11 +151,17 @@ jobs:
           max_attempts: 3
           command: |
             set -e
-            POD_NAME=$(kubectl -n ${{ inputs.environment }} get po -l role=api -o json |jq -r '.items[] | select(.spec.containers[0].image | contains("${{ inputs.app_version }}")) | "\(.metadata.name)"'|head -n 1)
-            kubectl exec -it -n ${{ inputs.environment }} ${POD_NAME} -- bash <<EOF
-            set -e
-            alembic upgrade post@head
-            EOF
+            VERSION="${{ inputs.app_version }}"
+            export ENVIRONMENT="${{ inputs.environment }}"
+            IMAGE=$(kubectl get -n ${{ inputs.environment }} po -l role=api -o json |jq -r '.items[0].spec.containers[0].image'|awk -F':' '{print $1}')
+            export IMAGE="${IMAGE}:${VERSION}"
+            export DATE=$(date +"%Y-%m-%d--%H-%M-%S")
+            envsubst < .github/workflows/templates/post-upgrade-job.yaml | kubectl -n ${{ inputs.environment }} apply -f -
+            while true;
+            do
+            kubectl logs -f jobs/post-upgrade-${DATE} && break
+            done
+            kubectl wait --for=condition=complete --timeout=30s -n ${{ inputs.environment }} jobs/post-upgrade-${DATE}
   deploy-pro-on-testing-on-firebase:
     name: Deploy pro on testing live channel
     needs: deploy-api
