@@ -1,3 +1,5 @@
+import typing
+
 import pydantic.v1 as pydantic_v1
 
 from pcapi import settings
@@ -29,7 +31,7 @@ class FavoritesNotBooked(BaseQuery):
 
     model = FavoritesNotBookedModel
 
-    def execute(self, page_size: int = 1_000) -> RowIterator:
+    def execute(self, page_size: int = 1_000, **parameters: typing.Any) -> RowIterator:
         for row in super().execute(page_size):
             for chunk in chunks.get_chunks(row.user_ids, page_size):
                 yield FavoritesNotBookedModel(offer_id=row.offer_id, offer_name=row.offer_name, user_ids=chunk)

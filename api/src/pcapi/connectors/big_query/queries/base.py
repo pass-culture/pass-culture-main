@@ -22,11 +22,11 @@ class BaseQuery:
     def __init__(self) -> None:
         self.backend = big_query_connector.get_backend()
 
-    def _get_rows(self, page_size: int) -> big_query_connector.BigQueryRowIterator:
-        return self.backend.run_query(self.raw_query, page_size=page_size)
+    def _get_rows(self, page_size: int, **parameters: typing.Any) -> big_query_connector.BigQueryRowIterator:
+        return self.backend.run_query(self.raw_query, page_size=page_size, **parameters)
 
-    def execute(self, page_size: int = 1_000) -> RowIterator:
-        rows = self._get_rows(page_size)
+    def execute(self, page_size: int = 1_000, **parameters: typing.Any) -> RowIterator:
+        rows = self._get_rows(page_size, **parameters)
         for index, row in enumerate(rows):
             try:
                 yield self.model(**typing.cast(Mapping, row))
