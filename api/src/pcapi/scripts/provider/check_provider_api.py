@@ -14,8 +14,8 @@ blueprint = Blueprint(__name__, __name__)
 @blueprint.cli.command("check_provider_api")
 @click.option("--url", required=True, help="Endpoint url")
 @click.option("--siret", required=True, help="A working siret")
-@click.option("--token", required=True, help="(Optionnal) Basic authentication token")
-def check_provider_api(url, siret, token):  # type: ignore [no-untyped-def]
+@click.option("--token", required=False, default=None, help="(Optional) Basic authentication token")
+def check_provider_api(url: str, siret: str, token: str | None) -> None:
     provider_api = ProviderAPI(
         api_url=url,
         name="TestApi",
@@ -24,9 +24,10 @@ def check_provider_api(url, siret, token):  # type: ignore [no-untyped-def]
 
     assert provider_api.is_siret_registered(siret), "L'appel avec uniquement le siret dans l'url doit fonctionner"
 
-    stocks = provider_api.stocks(siret, limit=1)
-    assert stocks.get("total") is not None, "Le total est manquant."
-    assert int(stocks.get("total")) > 0, "Le total n'est pas strictement supérieur à 0."
+    stocks: dict[str, str] = provider_api.stocks(siret, limit=1)
+    stocks_total = stocks.get("total")
+    assert stocks_total is not None, "Le total est manquant."
+    assert int(stocks_total) > 0, "Le total n'est pas strictement supérieur à 0."
 
     assert "stocks" in stocks, 'La clé "stocks" est manquante.'
     stock = stocks["stocks"][0]
@@ -60,16 +61,15 @@ def check_provider_api(url, siret, token):  # type: ignore [no-untyped-def]
     average_duration = duration / batch_count
 
     print(
-        f"""
-C'est ok !
-
-Le différentiel est implémenté : {modified_since_is_implemented}
-
-Le format des stocks ressemble à {stock}
-
-Récupérer {stock_count} offres en {batch_count} fois
-a duré {duration} secondes.
-
-Cela fait {average_duration}s par requête.
-"""
+        "C'est ok !"
+        "\n\n"
+        f"Le différentiel est implémenté : {modified_since_is_implemented}"
+        "\n\n"
+        f"Le format des stocks ressemble à {stock}"
+        "\n\n"
+        f"Récupérer {stock_count} offres en {batch_count} fois"
+        "\n\n"
+        f"a duré {duration} secondes."
+        "\n\n"
+        f"Cela fait {average_duration}s par requête."
     )
