@@ -62,7 +62,6 @@ export function IndividualOfferContextProvider({
   queryOffererId,
   querySubcategoryId,
 }: IndividualOfferContextProviderProps) {
-  const homePath = '/accueil'
   const notify = useNotification()
   const navigate = useNavigate()
 
@@ -99,7 +98,7 @@ export function IndividualOfferContextProvider({
         setOffer(response.payload)
         setVenueId(response.payload.venueId)
       } else {
-        navigate(homePath)
+        navigate('/accueil')
         notify.error(
           'Une erreur est survenue lors de la récupération de votre offre'
         )
@@ -137,7 +136,7 @@ export function IndividualOfferContextProvider({
         setSubCategories([])
         setOffererNames([])
         setVenueList([])
-        navigate(homePath)
+        navigate('/accueil')
         notify.error(GET_DATA_ERROR_MESSAGE)
       }
       setIsLoading(false)

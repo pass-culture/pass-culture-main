@@ -36,11 +36,6 @@ import SummaryScreen from '../SummaryScreen'
 
 const mockLogEvent = vi.fn()
 
-vi.mock('core/Notification/constants', () => ({
-  NOTIFICATION_TRANSITION_DURATION: 10,
-  NOTIFICATION_SHOW_DURATION: 10,
-}))
-
 const renderSummary = (
   customContext: Partial<IndividualOfferContextValues> = {},
   url: string = getIndividualOfferPath({
