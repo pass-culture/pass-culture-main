@@ -22,7 +22,7 @@ export const OffersFavorites = () => {
   useEffect(() => {
     const fetchFavorites = async () => {
       setIsLoading(true)
-      return await getFavoriteOffersAdapter().then(response => {
+      return await getFavoriteOffersAdapter().then((response) => {
         setIsLoading(false)
 
         if (!response.isOk) {
@@ -37,8 +37,8 @@ export const OffersFavorites = () => {
   const favoriteChangeHandler = (isFavorite: boolean, id: number) => {
     //  Remove favorite from list after it was removed from favorites
     if (!isFavorite) {
-      setFavoriteOffers(prevOffers =>
-        [...prevOffers].filter(offer => offer.id !== id)
+      setFavoriteOffers((prevOffers) =>
+        [...prevOffers].filter((offer) => offer.id !== id)
       )
     }
   }
@@ -61,7 +61,7 @@ export const OffersFavorites = () => {
                 queryId=""
                 position={i}
                 key={offer.id}
-                afterFavoriteChange={isFavorite => {
+                afterFavoriteChange={(isFavorite) => {
                   favoriteChangeHandler(isFavorite, offer.id)
                 }}
               ></Offer>

@@ -10,8 +10,8 @@ export default {
 
 const Template: Story<PaginationProps> = ({ currentPage, pageCount }) => {
   const [page, setPage] = useState(currentPage)
-  const previousPage = useCallback(() => setPage(page => page - 1), [])
-  const nextPage = useCallback(() => setPage(page => page + 1), [])
+  const previousPage = useCallback(() => setPage((page) => page - 1), [])
+  const nextPage = useCallback(() => setPage((page) => page + 1), [])
 
   return (
     <Pagination

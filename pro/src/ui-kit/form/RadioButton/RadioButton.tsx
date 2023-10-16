@@ -50,7 +50,7 @@ const RadioButton = ({
       hasError={hasError}
       withBorder={withBorder}
       variant={variant}
-      onChange={e => onCustomChange(e)}
+      onChange={(e) => onCustomChange(e)}
     />
   )
 }

@@ -81,7 +81,7 @@ const MultiSelectAutocomplete = ({
   useEffect(() => {
     setFilteredOptions(
       options.filter(
-        option =>
+        (option) =>
           searchField.value === '' ||
           option.label
             .toLocaleLowerCase()
@@ -177,7 +177,7 @@ const MultiSelectAutocomplete = ({
               key={`${name}-${value}`}
               value={value}
               name={name}
-              onChange={e => {
+              onChange={(e) => {
                 setFieldTouched(`search-${name}`, true)
                 handleChange(e)
                 onChange?.(e)

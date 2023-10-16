@@ -74,7 +74,7 @@ const Categories = ({
 
   const onSubCategoryChange = (newSubCategoryId: string) => {
     const newSubcategory = subCategories.find(
-      subcategory => subcategory.id === newSubCategoryId
+      (subcategory) => subcategory.id === newSubCategoryId
     )
 
     const { subcategoryFields: newSubcategoryFields } = buildSubcategoryFields(
@@ -108,7 +108,7 @@ const Categories = ({
     // If there is only one venue available for this subcategory, we select it automatically
     const filteredVenueList = getFilteredVenueListBySubcategory(
       venueList,
-      subCategories.find(subcategory => subcategory.id === newSubCategoryId)
+      subCategories.find((subcategory) => subcategory.id === newSubCategoryId)
     )
     if (filteredVenueList.length === 1) {
       setFieldValue('venueId', filteredVenueList[0].id.toString())
@@ -123,7 +123,7 @@ const Categories = ({
       // because it is used for form validation
       setFieldValue(
         'isVenueVirtual',
-        filteredVenueList.every(v => v.isVirtual)
+        filteredVenueList.every((v) => v.isVirtual)
       )
     }
     // If there is no venue no need to update the isVenueVirtual field,

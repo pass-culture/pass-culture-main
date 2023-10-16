@@ -11,7 +11,7 @@ const FAILING_RESPONSE: AdapterFailure<null> = {
   payload: null,
 }
 
-const getVenueAdapter: GetVenueAdapter = async venueId => {
+const getVenueAdapter: GetVenueAdapter = async (venueId) => {
   if (venueId === undefined) {
     return FAILING_RESPONSE
   }

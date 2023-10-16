@@ -21,7 +21,7 @@ const sortAlphabeticallyByLabel = (a: SelectOption, b: SelectOption) => {
 
 export const formatAndOrderVenues = (venues: VenueListItemResponseModel[]) =>
   venues
-    .map(venue => ({
+    .map((venue) => ({
       value: venue.id.toString(),
       label: computeVenueDisplayName(venue),
     }))

@@ -65,8 +65,8 @@ const PricingPoint = ({
   ]
 
   offerer.managedVenues
-    ?.filter(venue => venue.siret)
-    .forEach(venue =>
+    ?.filter((venue) => venue.siret)
+    .forEach((venue) =>
       pricingPointOptions.push({
         value: venue.id.toString(),
         label: `${venue.name} - ${venue.siret}`,

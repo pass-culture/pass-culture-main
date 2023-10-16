@@ -50,7 +50,7 @@ const SelectAutocomplete = ({
   resetOnOpen = true,
   description,
   onSearch = () => {},
-  searchInOptions = options => options,
+  searchInOptions = (options) => options,
   onReset = () => {},
   type = 'text',
   leftIcon,
@@ -117,7 +117,7 @@ const SelectAutocomplete = ({
   }, [searchField.value, options])
 
   /* istanbul ignore next: DEBT TO FIX */
-  const handleKeyDown: KeyboardEventHandler<HTMLDivElement> = event => {
+  const handleKeyDown: KeyboardEventHandler<HTMLDivElement> = (event) => {
     /* istanbul ignore next */
     switch (event.key) {
       case 'ArrowUp':
@@ -174,7 +174,7 @@ const SelectAutocomplete = ({
     let updatedSelection
     if (multi) {
       if (field.value.includes(value) && Array.isArray(field.value)) {
-        updatedSelection = field.value.filter(li => li !== value)
+        updatedSelection = field.value.filter((li) => li !== value)
       } else {
         updatedSelection = [...field.value, value]
       }

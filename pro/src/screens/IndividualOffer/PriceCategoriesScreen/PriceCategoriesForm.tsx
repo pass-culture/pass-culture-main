@@ -53,7 +53,7 @@ export const PriceCategoriesForm = ({
     number | null
   >(null)
   const isFreeCheckboxSelectedArray = values.priceCategories.map(
-    priceCategory => priceCategory.price === 0
+    (priceCategory) => priceCategory.price === 0
   )
 
   const onChangeFree =
@@ -73,7 +73,7 @@ export const PriceCategoriesForm = ({
   ) => {
     if (priceCategoryId) {
       const shouldDisplayConfirmDeletePriceCategory = stocks.some(
-        stock => stock.priceCategoryId === priceCategoryId
+        (stock) => stock.priceCategoryId === priceCategoryId
       )
       if (
         currentDeletionIndex === null &&
@@ -106,7 +106,7 @@ export const PriceCategoriesForm = ({
     if (values.priceCategories.length === 2) {
       setFieldValue(`priceCategories[0].label`, UNIQUE_PRICE)
       const otherPriceCategory = priceCategories.filter(
-        pC => pC.id !== priceCategoryId
+        (pC) => pC.id !== priceCategoryId
       )
       const otherPriceCategoryId = otherPriceCategory[0]?.id
       if (otherPriceCategoryId) {
@@ -141,7 +141,7 @@ export const PriceCategoriesForm = ({
         <FormLayout.MandatoryInfo />
         <FieldArray
           name="priceCategories"
-          render={arrayHelpers => (
+          render={(arrayHelpers) => (
             <FormLayout.Section title="Tarifs">
               {currentDeletionIndex !== null && (
                 <ConfirmDialog

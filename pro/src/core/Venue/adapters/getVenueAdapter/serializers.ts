@@ -15,7 +15,7 @@ export const serializeVenueApi = (venue: GetVenueResponseModel): Venue => {
       venue.mentalDisabilityCompliant,
       venue.audioDisabilityCompliant,
       venue.motorDisabilityCompliant,
-    ].every(accessibility => accessibility === false),
+    ].every((accessibility) => accessibility === false),
   }
 
   /* istanbul ignore next: DEBT, TO FIX */

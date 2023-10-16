@@ -15,7 +15,7 @@ export const venueHasCollectiveInformation = (
     'collectiveWebsite',
   ]
 
-  return collectiveKeys.some(key => {
+  return collectiveKeys.some((key) => {
     const value = venue[key]
     return Array.isArray(value) ? value?.length > 0 : !!venue[key]
   })

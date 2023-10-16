@@ -15,9 +15,9 @@ export const validationSchema = yup.object().shape({
     .test(
       'isPasswordValid',
       'Veuillez renseigner un mot de passe valide avec : ',
-      paswordValue => {
+      (paswordValue) => {
         const errors = passwordValidationStatus(paswordValue)
-        const hasError = Object.values(errors).some(e => e === true)
+        const hasError = Object.values(errors).some((e) => e === true)
         return !hasError
       }
     ),
@@ -32,7 +32,7 @@ export const validationSchema = yup.object().shape({
     .test(
       'isPhoneValid',
       'Veuillez renseigner un numéro de téléphone valide, exemple : 612345678',
-      value => {
+      (value) => {
         if (!value) {
           return false
         }

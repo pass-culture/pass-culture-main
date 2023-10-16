@@ -9,7 +9,7 @@ export default {
   component: TimePicker,
 }
 
-const Template: Story<TimePickerProps> = props => (
+const Template: Story<TimePickerProps> = (props) => (
   <Formik initialValues={{ time: null }} onSubmit={() => {}}>
     <TimePicker {...props} name="time" />
   </Formik>

@@ -73,7 +73,7 @@ const renderInformationsScreen = (
   return renderWithProviders(
     <>
       <Routes>
-        {Object.values(OFFER_WIZARD_MODE).map(mode => (
+        {Object.values(OFFER_WIZARD_MODE).map((mode) => (
           <Route
             key={mode}
             path={getIndividualOfferPath({

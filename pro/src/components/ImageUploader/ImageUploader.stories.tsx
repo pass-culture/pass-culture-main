@@ -13,7 +13,7 @@ export default {
   component: ImageUploader,
 }
 
-const Template: Story<ImageUploaderProps> = props => (
+const Template: Story<ImageUploaderProps> = (props) => (
   <StoreProvider isDev>
     <ImageUploader {...props} />
   </StoreProvider>

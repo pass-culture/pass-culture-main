@@ -21,7 +21,7 @@ export const onVenueChange = (
   venueList: IndividualOfferVenueItem[],
   venueId: string
 ) => {
-  const newVenue = venueList.find(v => v.id.toString() === venueId)
+  const newVenue = venueList.find((v) => v.id.toString() === venueId)
 
   if (!newVenue) {
     return
@@ -78,7 +78,7 @@ const Venue = ({
           label="Lieu"
           name="venueId"
           options={venueOptions}
-          onChange={event =>
+          onChange={(event) =>
             onVenueChange(setFieldValue, venueList, event.target.value)
           }
         />

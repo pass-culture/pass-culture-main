@@ -29,7 +29,7 @@ const areCollectiveBookings = (
 const areIndividualBookings = (
   bookings: (BookingRecapResponseModel | CollectiveBookingResponseModel)[]
 ): bookings is BookingRecapResponseModel[] =>
-  bookings.every(booking => !isCollectiveBooking(booking))
+  bookings.every((booking) => !isCollectiveBooking(booking))
 
 interface BookingsRecapTableProps<
   T extends BookingRecapResponseModel | CollectiveBookingResponseModel,
@@ -82,7 +82,7 @@ const BookingsRecapTable = <
   }, [bookingsRecap])
 
   const updateGlobalFilters = (updatedFilters: Partial<BookingsFilters>) => {
-    setFilters(filters => {
+    setFilters((filters) => {
       const newFilters = { ...filters, ...updatedFilters }
       applyFilters(newFilters)
       return newFilters
@@ -125,7 +125,7 @@ const BookingsRecapTable = <
     if (selectedOmniSearchCriteria === bookingIdOmnisearchFilter.id) {
       setDefaultBookingId('')
     }
-    setFilters(filters => ({
+    setFilters((filters) => ({
       ...filters,
       ...updatedFilter,
       keywords,

@@ -8,7 +8,7 @@ export default {
   component: Banner,
 }
 
-const Template: Story<BannerProps> = props => (
+const Template: Story<BannerProps> = (props) => (
   <Banner {...props}>
     Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod
     tempor incididunt ut labore et dolore magna aliqua.

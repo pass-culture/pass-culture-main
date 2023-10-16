@@ -36,7 +36,7 @@ const BankInformations = (): JSX.Element => {
   const offererOptions: SelectOption[] =
     offerers && offerers.length > 1
       ? sortByLabel(
-          offerers.map(item => ({
+          offerers.map((item) => ({
             value: item['id'].toString(),
             label: item['name'],
           }))
@@ -121,7 +121,7 @@ const BankInformations = (): JSX.Element => {
               <label htmlFor="selected-offerer">Structure</label>
             </div>
             <SelectInput
-              onChange={e => updateOfferer(e.target.value)}
+              onChange={(e) => updateOfferer(e.target.value)}
               data-testid="select-input-offerer"
               name="offererId"
               options={offererOptions}
@@ -131,7 +131,7 @@ const BankInformations = (): JSX.Element => {
         </div>
       )}
       <div className={styles['bank-accounts']}>
-        {selectedOffererBankAccounts?.bankAccounts.map(bankAccount => (
+        {selectedOffererBankAccounts?.bankAccounts.map((bankAccount) => (
           <ReimbursementBankAccount
             bankAccount={bankAccount}
             venuesNotLinkedLength={

@@ -11,7 +11,7 @@ export default {
   component: TextInput,
 }
 
-const Template: Story<TextInputProps> = props => (
+const Template: Story<TextInputProps> = (props) => (
   <Formik initialValues={{ email: '' }} onSubmit={() => {}}>
     {({ getFieldProps }) => (
       <TextInput

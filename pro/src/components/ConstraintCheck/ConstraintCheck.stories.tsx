@@ -9,7 +9,7 @@ export default {
   component: ConstraintCheck,
 }
 
-const Template: Story<ConstraintCheckProps> = props => (
+const Template: Story<ConstraintCheckProps> = (props) => (
   <ConstraintCheck {...props} />
 )
 

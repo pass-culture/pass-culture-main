@@ -7,7 +7,7 @@ export default {
   title: 'components/DialogBox',
   component: DialogBox,
 }
-const Template: Story<DialogProps> = args => (
+const Template: Story<DialogProps> = (args) => (
   <DialogBox {...args}>
     <p>lorem ipsum dolor sit amet</p>
   </DialogBox>

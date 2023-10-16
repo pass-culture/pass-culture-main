@@ -38,7 +38,7 @@ const priceCategoryValidationSchema = yup.object().shape({
 
         return (
           allFormValues.priceCategories.filter(
-            priceCategory =>
+            (priceCategory) =>
               priceCategory.label === currentPriceCategoryFormValues.label &&
               priceCategory.price === currentPriceCategoryFormValues.price
           ).length === 1

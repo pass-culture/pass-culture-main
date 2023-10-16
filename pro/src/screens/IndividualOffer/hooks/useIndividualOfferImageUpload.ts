@@ -78,7 +78,7 @@ export const useIndividualOfferImageUpload = () => {
     }
     if (offerId === null) {
       setImageOfferCreationArgs(creationArgs)
-      imageFileToDataUrl(imageFile, imageUrl => {
+      imageFileToDataUrl(imageFile, (imageUrl) => {
         setImageOffer({
           originalUrl: imageUrl,
           url: imageCroppedDataUrl || imageUrl,

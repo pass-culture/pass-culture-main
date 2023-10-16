@@ -21,7 +21,7 @@ const FAILING_RESPONSE: AdapterFailure<GetFilteredBookingsRecapAdapterPayload> =
   }
 
 export const getFilteredBookingsRecapAdapter: GetFilteredBookingsRecapAdapter =
-  async apiFilters => {
+  async (apiFilters) => {
     try {
       let allBookings: BookingRecapResponseModel[] = []
       let currentPage = 0

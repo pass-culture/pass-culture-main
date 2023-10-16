@@ -23,7 +23,7 @@ export const pluralizeString = (
 ): string => {
   return string
     .split(' ')
-    .map(w => pluralizeWord(w, number, pluralizeWith))
+    .map((w) => pluralizeWord(w, number, pluralizeWith))
     .join(' ')
 }
 

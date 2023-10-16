@@ -60,7 +60,7 @@ export const CollectiveTableRow = ({
     logEvent?.(
       CollectiveBookingsEvents.CLICKED_EXPAND_COLLECTIVE_BOOKING_DETAILS
     )
-    setIsExpanded(previousState => !previousState)
+    setIsExpanded((previousState) => !previousState)
   }
 
   // We expand row if bookingId match the one in the context

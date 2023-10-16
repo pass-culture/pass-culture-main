@@ -32,14 +32,14 @@ const AllocineProviderParameters = ({
 
     api
       .updateVenueProvider(payload)
-      .then(editedVenueProvider => {
+      .then((editedVenueProvider) => {
         afterVenueProviderEdit(editedVenueProvider)
         notification.success(
           "Les modifications ont bien été importées et s'appliqueront aux nouvelles séances créées."
         )
         isSucess = true
       })
-      .catch(error => {
+      .catch((error) => {
         isSucess = false
         if (isErrorAPIError(error)) {
           notification.error(getRequestErrorStringFromErrors(getError(error)))

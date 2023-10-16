@@ -23,7 +23,7 @@ const hasFromAttribute = (
 ): element is { from: { value: unknown }[] } =>
   hasProperty(element, 'from') &&
   Array.isArray(element.from) &&
-  element.from.every(values => hasProperty(values, 'value'))
+  element.from.every((values) => hasProperty(values, 'value'))
 
 // With TestContext, current field parents can be accessed,
 // each index of the "from" array corresponds to a parent field one level higher

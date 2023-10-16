@@ -114,7 +114,7 @@ describe('trackers creationLinks', () => {
         dsToken: '',
       },
     ]
-    baseOfferersNames = baseOfferers.map(offerer => ({
+    baseOfferersNames = baseOfferers.map((offerer) => ({
       id: offerer.id,
       name: offerer.name,
     }))

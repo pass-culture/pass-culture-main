@@ -8,7 +8,7 @@ export default {
   component: InfoBox,
 }
 
-const Template: Story<InfoBoxProps> = props => (
+const Template: Story<InfoBoxProps> = (props) => (
   <div style={{ maxWidth: '316px' }}>
     <InfoBox {...props} />
   </div>

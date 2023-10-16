@@ -50,7 +50,7 @@ const ActivityForm = ({ venueTypes }: ActivityFormProps): JSX.Element => {
       </FormLayout.Row>
       <FieldArray
         name="socialUrls"
-        render={arrayHelpers => (
+        render={(arrayHelpers) => (
           <FormLayout.Row>
             {values.socialUrls.map((url, index) => (
               <FormLayout.Row

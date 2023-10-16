@@ -10,7 +10,7 @@ const getCulturalPartnersAdapter: GetCulturalPartnersAdapter = async () => {
     return {
       isOk: true,
       message: '',
-      payload: response.partners.map(partner => ({
+      payload: response.partners.map((partner) => ({
         value: partner.id.toString(),
         label: partner.libelle,
       })),

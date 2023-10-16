@@ -104,7 +104,7 @@ const ReimbursementsInvoices = (): JSX.Element => {
             ? parseInt(reimbursmentPoint)
             : undefined
         )
-        .then(invoices => {
+        .then((invoices) => {
           setInvoices(invoices)
           setIsLoading(false)
           setHasError(false)
@@ -131,10 +131,10 @@ const ReimbursementsInvoices = (): JSX.Element => {
     }
     try {
       /* istanbul ignore next: TO FIX */
-      api.getReimbursementPoints().then(reimbursementPointsResponse =>
+      api.getReimbursementPoints().then((reimbursementPointsResponse) =>
         setReimbursementPointsOptions(
           sortByLabel(
-            reimbursementPointsResponse.map(item => ({
+            reimbursementPointsResponse.map((item) => ({
               value: String(item.id),
               label: item.publicName || item.name,
             }))

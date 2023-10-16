@@ -19,7 +19,7 @@ export const hasChangesOnStockWithBookings = (
     {}
   )
 
-  return submittedStocks.some(stock => {
+  return submittedStocks.some((stock) => {
     if (
       !stock.bookingsQuantity ||
       stock.bookingsQuantity === 0 ||

@@ -16,23 +16,23 @@ const generateSiretValidationSchema = (
   const siretValidationSchema = {
     siret: yup.string().when('isVenueVirtual', {
       is: false,
-      then: schema =>
+      then: (schema) =>
         schema
           .required('Veuillez renseigner un SIRET')
           .test(
             'len',
             'Le SIRET doit comporter 14 caractères',
-            siret => !!siret && valideSiretLength(siret)
+            (siret) => !!siret && valideSiretLength(siret)
           )
           .test(
             'correspondingToSiren',
             'Le code SIRET doit correspondre à un établissement de votre structure',
-            siret => Boolean(siret) && isSiretStartingWithSiren(siret, siren)
+            (siret) => Boolean(siret) && isSiretStartingWithSiren(siret, siren)
           )
           .test(
             'apiSiretValid',
             'Le code SIRET saisi n’est pas valide',
-            async siret => {
+            async (siret) => {
               const response = await siretApiValidate(siret || '')
               return !response
             }
@@ -43,7 +43,7 @@ const generateSiretValidationSchema = (
   const commentValidationSchema = {
     comment: yup.string().when('isVenueVirtual', {
       is: false,
-      then: schema => schema.required('Veuillez renseigner un commentaire'),
+      then: (schema) => schema.required('Veuillez renseigner un commentaire'),
     }),
   }
 

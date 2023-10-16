@@ -253,7 +253,7 @@ const Bookings = <
         isLocalLoading={isLocalLoading}
         isTableLoading={isTableLoading}
         resetPreFilters={resetPreFilters}
-        venues={venues.map(venue => ({
+        venues={venues.map((venue) => ({
           id: String(venue.value),
           displayName: venue.label,
         }))}

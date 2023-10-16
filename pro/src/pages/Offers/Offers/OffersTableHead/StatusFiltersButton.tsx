@@ -89,7 +89,8 @@ const StatusFiltersButton = ({
         Statut
         {isFilteredByStatus && (
           <span className="visually-hidden">
-            Tri par statut {filters.find(x => x.value === status)?.label} actif
+            Tri par statut {filters.find((x) => x.value === status)?.label}{' '}
+            actif
           </span>
         )}
         <span className={styles['status-container']}>

@@ -23,7 +23,7 @@ describe('handleAllFranceDepartmentOptions', () => {
   it('should add "Toute la France" in selected values', () => {
     const currentValues = [...allDepartmentValues, 'culturalPartner']
     const previousValues = [
-      ...allDepartmentValues.filter(value => value === '01'),
+      ...allDepartmentValues.filter((value) => value === '01'),
       'culturalPartner',
     ]
     const mockedSetValue = vi.fn()
@@ -43,7 +43,7 @@ describe('handleAllFranceDepartmentOptions', () => {
 
   it('should remove "Toute la France" from selected values', () => {
     const currentValues = [
-      ...allDepartmentValues.filter(value => value === '01'),
+      ...allDepartmentValues.filter((value) => value === '01'),
       ALL_FRANCE_OPTION_VALUE,
       'culturalPartner',
     ]
@@ -61,7 +61,7 @@ describe('handleAllFranceDepartmentOptions', () => {
     )
 
     expect(mockedSetValue).toHaveBeenCalledWith(
-      currentValues.filter(value => value !== ALL_FRANCE_OPTION_VALUE)
+      currentValues.filter((value) => value !== ALL_FRANCE_OPTION_VALUE)
     )
   })
 

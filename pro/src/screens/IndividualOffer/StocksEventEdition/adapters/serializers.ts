@@ -121,7 +121,7 @@ export const serializeStockEventEdition = (
 ): StockCreationBodyModel[] | StockEditionBodyModel[] => {
   const today = getToday()
   return formValuesList
-    .filter(stockFormValues => {
+    .filter((stockFormValues) => {
       const beginingDatetime =
         stockFormValues.beginningDate !== '' &&
         stockFormValues.beginningTime !== ''

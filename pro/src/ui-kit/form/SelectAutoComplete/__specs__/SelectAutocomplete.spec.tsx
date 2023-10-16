@@ -313,7 +313,7 @@ describe('SelectAutocomplete', () => {
     const validationSchema = yup.object().shape({
       departement: yup.array().test({
         message: 'Veuillez renseigner un département',
-        test: items => Boolean(items?.length && items.length > 0),
+        test: (items) => Boolean(items?.length && items.length > 0),
       }),
     })
     render(

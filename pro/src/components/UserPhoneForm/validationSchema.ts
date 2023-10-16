@@ -11,7 +11,7 @@ const validationSchema = yup.object().shape({
     .test(
       'isPhoneValid',
       'Votre numéro de téléphone n’est pas valide',
-      value => {
+      (value) => {
         if (!value) {
           return false
         }

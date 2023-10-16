@@ -34,7 +34,8 @@ const CollectiveOfferSelectionDuplication = (): JSX.Element => {
   const navigate = useNavigate()
   const formikSearch = useFormik({
     initialValues: { searchFilter: '' },
-    onSubmit: formValues => filterTemplateOfferByName(formValues.searchFilter),
+    onSubmit: (formValues) =>
+      filterTemplateOfferByName(formValues.searchFilter),
   })
   const formikSelection = useFormik({
     initialValues: { templateOfferId: '' },
@@ -122,7 +123,7 @@ const CollectiveOfferSelectionDuplication = (): JSX.Element => {
                 ? 'Les dernières offres vitrines créées'
                 : `${pluralize(offers.length, 'offre')} vitrine`}
             </p>
-            {offers?.slice(0, 5).map(offer => (
+            {offers?.slice(0, 5).map((offer) => (
               <div
                 key={offer.id}
                 className={cn(styles['offer-selection'], {

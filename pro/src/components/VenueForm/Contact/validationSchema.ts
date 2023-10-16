@@ -37,7 +37,8 @@ const validationSchema = {
     .email('Veuillez renseigner un email valide, exemple : mail@exemple.com')
     .when('isVenueVirtual', {
       is: false,
-      then: schema => schema.required('Veuillez renseigner une adresse email'),
+      then: (schema) =>
+        schema.required('Veuillez renseigner une adresse email'),
     }),
 }
 

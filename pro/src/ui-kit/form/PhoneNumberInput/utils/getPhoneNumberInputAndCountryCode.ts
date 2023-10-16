@@ -25,7 +25,7 @@ export const getPhoneNumberInputAndCountryCode = (
 
   if (phoneNumberWithCountryCode?.number) {
     const countryCode = PHONE_CODE_COUNTRY_CODE_OPTIONS.find(
-      option =>
+      (option) =>
         option.label === `+${phoneNumberWithCountryCode.countryCallingCode}`
     )?.value as CountryCode
 

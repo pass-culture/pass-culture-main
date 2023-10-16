@@ -27,7 +27,7 @@ export default {
     const url = `${API_ADRESSE_BASE_URL}/search/?limit=${limit}&q=${address}`
     const response = await handleApiError(await fetch(url), 'GET', url)
 
-    return response.features.map(f => ({
+    return response.features.map((f) => ({
       address: f.properties.name,
       city: f.properties.city,
       id: f.properties.id,

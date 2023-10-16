@@ -75,7 +75,7 @@ describe('getFilteredVenueList', () => {
     it('should return all venues when subCatagory is ONLINE or OFFLINE', async () => {
       const result = getFilteredVenueListBySubcategory(
         [...venueList, virtualVenue],
-        subCategories.find(s => s.id === 'ONLINE_OR_OFFLINE')
+        subCategories.find((s) => s.id === 'ONLINE_OR_OFFLINE')
       )
       expect(result.length).toEqual(3)
       expect(result[0].id).toEqual(secondVenueId)
@@ -86,7 +86,7 @@ describe('getFilteredVenueList', () => {
     it('should return virtual venues when subCatagory is ONLINE only', async () => {
       const result = getFilteredVenueListBySubcategory(
         [...venueList, virtualVenue],
-        subCategories.find(s => s.id === 'ONLINE_ONLY')
+        subCategories.find((s) => s.id === 'ONLINE_ONLY')
       )
       expect(result.length).toEqual(1)
       expect(result[0].id).toEqual(virtualVenueId)
@@ -95,7 +95,7 @@ describe('getFilteredVenueList', () => {
     it('should return not virtual when subCatagory is OFFLINE only', async () => {
       const result = getFilteredVenueListBySubcategory(
         [...venueList, virtualVenue],
-        subCategories.find(s => s.id === 'OFFLINE_ONLY')
+        subCategories.find((s) => s.id === 'OFFLINE_ONLY')
       )
       expect(result.length).toEqual(2)
       expect(result[0].id).toEqual(secondVenueId)

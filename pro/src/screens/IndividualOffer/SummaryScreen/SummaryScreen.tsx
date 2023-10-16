@@ -55,7 +55,7 @@ const SummaryScreen = () => {
     return null
   }
   const canBeDuo = subCategories.find(
-    subCategory => subCategory.id === offer.subcategoryId
+    (subCategory) => subCategory.id === offer.subcategoryId
   )?.canBeDuo
 
   const offerConfirmationStepUrl = getIndividualOfferUrl({
@@ -101,7 +101,9 @@ const SummaryScreen = () => {
       })
     )
   }
-  const offerSubCategory = subCategories.find(s => s.id === offer.subcategoryId)
+  const offerSubCategory = subCategories.find(
+    (s) => s.id === offer.subcategoryId
+  )
 
   const offerConditionalFields = getOfferConditionalFields({
     offerSubCategory,

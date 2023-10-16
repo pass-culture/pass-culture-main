@@ -16,7 +16,7 @@ const mockCategoriesOptions = [
   { value: 'musique', label: 'Musique' },
 ]
 
-const Template: Story<SelectProps> = props => (
+const Template: Story<SelectProps> = (props) => (
   <Formik initialValues={{ category: 'theatre' }} onSubmit={() => {}}>
     {({ getFieldProps }) => {
       return <Select {...getFieldProps('category')} {...props} />
@@ -38,7 +38,7 @@ SelectInline.args = {
   description: 'super select inline',
 }
 
-const SelectInputTemplate: Story<SelectInputProps> = props => (
+const SelectInputTemplate: Story<SelectInputProps> = (props) => (
   <SelectInput {...props} />
 )
 

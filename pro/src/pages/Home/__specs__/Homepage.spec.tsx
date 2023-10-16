@@ -74,7 +74,7 @@ describe('homepage', () => {
     },
   ]
 
-  const baseOfferersNames = baseOfferers.map(offerer => ({
+  const baseOfferersNames = baseOfferers.map((offerer) => ({
     id: offerer.id,
     name: offerer.name,
   }))

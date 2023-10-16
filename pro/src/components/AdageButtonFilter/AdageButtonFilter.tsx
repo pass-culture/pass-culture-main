@@ -73,7 +73,9 @@ const AdageButtonFilter = ({
   }, [containerRef, handleClickOutside])
 
   const clickModalButtonHandler = () => {
-    setIsOpen(previousIsOpen => ({ [filterName]: !previousIsOpen[filterName] }))
+    setIsOpen((previousIsOpen) => ({
+      [filterName]: !previousIsOpen[filterName],
+    }))
   }
 
   return (

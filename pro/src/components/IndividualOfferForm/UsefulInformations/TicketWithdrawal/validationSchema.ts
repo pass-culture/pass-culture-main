@@ -6,7 +6,7 @@ const validationSchema = {
   withdrawalType: yup.string().when('subCategoryFields', {
     is: (subCategoryFields: string[]) =>
       subCategoryFields.includes('withdrawalType'),
-    then: schema =>
+    then: (schema) =>
       schema
         .oneOf(Object.values(WithdrawalTypeEnum))
         .required('Veuillez sélectionner l’une de ces options'),
@@ -17,7 +17,7 @@ const validationSchema = {
       [WithdrawalTypeEnum.BY_EMAIL, WithdrawalTypeEnum.ON_SITE].includes(
         withdrawalType
       ),
-    then: schema =>
+    then: (schema) =>
       schema.required('Vous devez choisir l’une des options ci-dessus'),
   }),
 }

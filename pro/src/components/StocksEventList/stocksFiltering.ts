@@ -54,7 +54,7 @@ export const filterAndSortStocks = (
   }
 ): StocksEvent[] => {
   const { dateFilter, hourFilter, priceCategoryFilter } = filters
-  const filteredStocks = stocks.filter(stock => {
+  const filteredStocks = stocks.filter((stock) => {
     const stockDate = new Date(stock.beginningDatetime)
     const [year, month, day] = dateFilter.split('-')
     const date = new Date(parseInt(year), parseInt(month) - 1, parseInt(day))

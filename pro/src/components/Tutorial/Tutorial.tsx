@@ -71,7 +71,7 @@ const Tutorial = ({ onFinish }: TutorialProps): JSX.Element => {
 
       <section className={styles['tutorial-footer']}>
         <div className={styles['nav-step-list-section']}>
-          {steps.map(step => {
+          {steps.map((step) => {
             const navStepClasses = [styles['nav-step']]
             if (activeStepPosition === step.position) {
               navStepClasses.push(styles['nav-step-active'])

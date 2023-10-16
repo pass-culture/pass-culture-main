@@ -143,7 +143,7 @@ describe('src | components | Desk', () => {
     it('should display invalidating message when waiting for invalidation and display invalidation confirmation', async () => {
       vi.spyOn(submitTokenAdapter, 'submitInvalidate').mockImplementation(
         () => {
-          return new CancelablePromise<DeskSubmitResponse>(resolve =>
+          return new CancelablePromise<DeskSubmitResponse>((resolve) =>
             setTimeout(() => resolve({} as DeskSubmitResponse), 50)
           )
         }

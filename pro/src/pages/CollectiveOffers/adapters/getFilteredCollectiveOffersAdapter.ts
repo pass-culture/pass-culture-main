@@ -25,7 +25,7 @@ const FAILING_RESPONSE: AdapterFailure<Payload> = {
 }
 
 const getFilteredCollectiveOffersAdapter: GetFilteredCollectiveOffersAdapter =
-  async apiFilters => {
+  async (apiFilters) => {
     try {
       const {
         nameOrIsbn,

@@ -9,7 +9,7 @@ export default {
   component: Hero,
   decorators: [withRouter],
 }
-const Template: Story<HeroProps> = args => <Hero {...args} />
+const Template: Story<HeroProps> = (args) => <Hero {...args} />
 
 export const Default = Template.bind({})
 

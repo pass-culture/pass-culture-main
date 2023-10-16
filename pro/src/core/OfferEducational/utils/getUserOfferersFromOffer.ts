@@ -10,8 +10,8 @@ export const getUserOfferersFromOffer = (
     return offerers
   }
 
-  const userOfferers = offerers.filter(offerer =>
-    offerer.managedVenues.map(venue => venue.id).includes(offer.venue.id)
+  const userOfferers = offerers.filter((offerer) =>
+    offerer.managedVenues.map((venue) => venue.id).includes(offer.venue.id)
   )
 
   return userOfferers

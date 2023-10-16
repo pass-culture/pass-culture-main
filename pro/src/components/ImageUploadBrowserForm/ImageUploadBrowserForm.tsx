@@ -45,7 +45,7 @@ const ImageUploadBrowserForm = ({
         .then(() => onSubmit({ image: newFile }))
         .catch((validationErrors: ValidationError) =>
           setErrors(
-            validationErrors.inner.map(error => error.path || 'unknown')
+            validationErrors.inner.map((error) => error.path || 'unknown')
           )
         )
     }
@@ -53,7 +53,7 @@ const ImageUploadBrowserForm = ({
 
   /* istanbul ignore next: DEBT, TO FIX */
   return (
-    <form onSubmit={e => e.preventDefault()}>
+    <form onSubmit={(e) => e.preventDefault()}>
       <BaseFileInput
         label="Importer une image depuis l’ordinateur"
         fileTypes={['image/png', 'image/jpeg']}

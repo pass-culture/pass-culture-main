@@ -60,12 +60,12 @@ const FormOfferType = ({
 
     setAvailableSubCategories(
       subCategories.filter(
-        subCategory => subCategory.categoryId === values.category
+        (subCategory) => subCategory.categoryId === values.category
       )
     )
   }, [values.category, setFieldValue, subCategories, values.subCategory])
 
-  let categoriesOptions = categories.map(item => ({
+  let categoriesOptions = categories.map((item) => ({
     value: item['id'] as string,
     label: item['label'] as string,
   }))
@@ -77,7 +77,7 @@ const FormOfferType = ({
   }
 
   let subCategoriesOptions = availableSubCategories
-    ? availableSubCategories.map(item => ({
+    ? availableSubCategories.map((item) => ({
         value: item['id'] as string,
         label: item['label'] as string,
       }))

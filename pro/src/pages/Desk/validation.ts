@@ -29,7 +29,7 @@ export const validateToken = (token: string): ErrorMessage | false => {
     },
   ]
 
-  const error = validationRules.find(rule => rule.check(token))
+  const error = validationRules.find((rule) => rule.check(token))
   if (error) {
     return {
       message: error.message,

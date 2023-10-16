@@ -22,7 +22,7 @@ describe('Notification', () => {
   ]
   it.each(notificationTypes)(
     'should display given %s text with icon',
-    async notificationType => {
+    async (notificationType) => {
       const notification = {
         text: 'Mon petit succès',
         type: notificationType.type,
