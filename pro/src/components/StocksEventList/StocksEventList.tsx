@@ -87,10 +87,10 @@ const StocksEventList = ({
   const { page, setPage, previousPage, nextPage, pageCount, currentPageItems } =
     usePagination(filteredStocks, STOCKS_PER_PAGE)
 
-  const areAllChecked = isCheckedArray.every(isChecked => isChecked)
+  const areAllChecked = isCheckedArray.every((isChecked) => isChecked)
 
   const handleOnChangeSelected = (index: number) => {
-    const newArray = isCheckedArray.map(isChecked => isChecked)
+    const newArray = isCheckedArray.map((isChecked) => isChecked)
     newArray[index] = !newArray[index]
     setIsCheckedArray(newArray)
   }
@@ -108,7 +108,7 @@ const StocksEventList = ({
     const newArray = [...isCheckedArray]
     newArray.splice(selectIndex, 1)
     setIsCheckedArray(newArray)
-    const stockIndex = stocks.findIndex(stock => stock.uuid === uuid)
+    const stockIndex = stocks.findIndex((stock) => stock.uuid === uuid)
 
     stocks.splice(stockIndex, 1)
     setStocks?.([...stocks])
@@ -125,10 +125,10 @@ const StocksEventList = ({
   const onBulkDelete = () => {
     const stocksUuidToDelete = filteredStocks
       .filter((stock, index) => isCheckedArray[index])
-      .map(stock => stock.uuid)
+      .map((stock) => stock.uuid)
 
     const newStocks = stocks.filter(
-      stock => !stocksUuidToDelete.includes(stock.uuid)
+      (stock) => !stocksUuidToDelete.includes(stock.uuid)
     )
 
     const deletedStocksCount = stocks.length - newStocks.length
@@ -158,11 +158,11 @@ const StocksEventList = ({
   }
 
   const selectedDateText =
-    isCheckedArray.filter(e => e === true).length > 1
-      ? `${isCheckedArray.filter(e => e === true).length} dates sélectionnées`
+    isCheckedArray.filter((e) => e === true).length > 1
+      ? `${isCheckedArray.filter((e) => e === true).length} dates sélectionnées`
       : '1 date sélectionnée'
 
-  const isAtLeastOneStockChecked = isCheckedArray.some(e => e)
+  const isAtLeastOneStockChecked = isCheckedArray.some((e) => e)
   const areFiltersActive = Boolean(
     dateFilter || hourFilter || priceCategoryFilter
   )
@@ -210,7 +210,7 @@ const StocksEventList = ({
 
               <div className={cn(styles['filter-input'])}>
                 <BaseDatePicker
-                  onChange={event => {
+                  onChange={(event) => {
                     setDateFilter(event.target.value)
                     onFilterChange()
                   }}
@@ -239,7 +239,7 @@ const StocksEventList = ({
               />
               <div className={cn(styles['filter-input'])}>
                 <BaseTimePicker
-                  onChange={event => {
+                  onChange={(event) => {
                     setHourFilter(event.target.value)
                     onFilterChange()
                   }}
@@ -272,7 +272,7 @@ const StocksEventList = ({
                   defaultOption={{ label: '', value: '' }}
                   options={priceCategoryOptions}
                   value={priceCategoryFilter}
-                  onChange={event => {
+                  onChange={(event) => {
                     setPriceCategoryFilter(event.target.value)
                     onFilterChange()
                   }}
@@ -398,7 +398,7 @@ const StocksEventList = ({
               'dd/MM/yyyy'
             )
             const priceCategory = priceCategories.find(
-              pC => pC.id === stock.priceCategoryId
+              (pC) => pC.id === stock.priceCategoryId
             )
 
             let price = ''

@@ -61,10 +61,10 @@ const CollectiveOffers = (): JSX.Element => {
 
   useEffect(() => {
     const loadCategories = () => {
-      api.getCategories().then(categoriesAndSubcategories => {
+      api.getCategories().then((categoriesAndSubcategories) => {
         const categoriesOptions = filterEducationalCategories(
           categoriesAndSubcategories
-        ).educationalCategories.map(category => ({
+        ).educationalCategories.map((category) => ({
           value: category.id,
           label: category.label,
         }))
@@ -80,7 +80,7 @@ const CollectiveOffers = (): JSX.Element => {
     const loadAllVenuesByProUser = () =>
       getVenuesForOffererAdapter({
         offererId: offerer?.id.toString(),
-      }).then(venuesResponse =>
+      }).then((venuesResponse) =>
         setVenues(formatAndOrderVenues(venuesResponse.payload))
       )
 

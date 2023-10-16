@@ -8,7 +8,7 @@ export default {
   component: SubmitButton,
 }
 
-const Template: Story<SubmitButtonProps> = args => (
+const Template: Story<SubmitButtonProps> = (args) => (
   <SubmitButton {...args}>{args.children}</SubmitButton>
 )
 

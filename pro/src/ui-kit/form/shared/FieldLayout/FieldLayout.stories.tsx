@@ -19,7 +19,7 @@ const Template: Story<{
   count: number
   maxLength: number
   isOptional: boolean
-}> = args => (
+}> = (args) => (
   <FieldLayout {...args}>
     <BaseInput type="text" />
   </FieldLayout>

@@ -13,7 +13,7 @@ export const hasProperties = <T extends string>(
   element: unknown,
   properties: T[]
 ): element is Record<T, unknown> =>
-  properties.every(property => hasProperty(element, property))
+  properties.every((property) => hasProperty(element, property))
 
 // Utils that can be used in typeguard tests
 export const itShouldReturnFalseIfGivenUndefinedOrNull = (

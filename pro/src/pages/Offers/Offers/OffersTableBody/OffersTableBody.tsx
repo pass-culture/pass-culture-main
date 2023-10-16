@@ -28,7 +28,7 @@ const OffersTableBody = ({
   refreshOffers,
 }: OffersTableBodyProps) => (
   <tbody className="offers-list">
-    {offers.map(offer => {
+    {offers.map((offer) => {
       const offerId = computeURLCollectiveOfferId(
         offer.id,
         Boolean(offer.isShowcase)

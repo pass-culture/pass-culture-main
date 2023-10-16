@@ -10,7 +10,7 @@ export default {
   component: ConfirmDialog,
 } as ComponentMeta<typeof ConfirmDialog>
 
-const Template: ComponentStory<typeof ConfirmDialog> = args => (
+const Template: ComponentStory<typeof ConfirmDialog> = (args) => (
   <ConfirmDialog {...args} />
 )
 

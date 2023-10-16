@@ -8,7 +8,7 @@ export default {
   title: 'ui-kit/forms/Slider',
   component: Slider,
 }
-const Template: Story = args => (
+const Template: Story = (args) => (
   <Formik
     initialValues={{ sliderValue: 0 }}
     onSubmit={() => {}}

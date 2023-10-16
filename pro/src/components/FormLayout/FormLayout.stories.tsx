@@ -12,7 +12,7 @@ export default {
   component: FormLayout,
 }
 
-const Template: ComponentStory<typeof FormLayout> = args => (
+const Template: ComponentStory<typeof FormLayout> = (args) => (
   <div style={{ width: 780 }}>
     <FormLayout {...args}>
       <FormLayout.Section
@@ -74,7 +74,7 @@ const DemoInformationBox = () => (
   </div>
 )
 
-const TemplateDesigned: ComponentStory<typeof FormLayout> = args => (
+const TemplateDesigned: ComponentStory<typeof FormLayout> = (args) => (
   <div style={{ width: 850 }}>
     <Formik initialValues={{}} onSubmit={() => alert('Form submit !')}>
       <FormLayout {...args}>

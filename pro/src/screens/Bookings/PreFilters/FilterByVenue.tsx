@@ -20,7 +20,7 @@ const FilterByVenue = ({
   selectedVenueId,
   venuesFormattedAndOrdered,
 }: FilterByVenueProps): JSX.Element => {
-  const venueOptions = venuesFormattedAndOrdered.map(venue => ({
+  const venueOptions = venuesFormattedAndOrdered.map((venue) => ({
     value: venue.id,
     label: venue.displayName,
   }))
@@ -29,7 +29,9 @@ const FilterByVenue = ({
     <FieldLayout label="Lieu" name="lieu" className={styles['venue-filter']}>
       <SelectInput
         defaultOption={ALL_VENUES_OPTION}
-        onChange={event => updateFilters({ offerVenueId: event.target.value })}
+        onChange={(event) =>
+          updateFilters({ offerVenueId: event.target.value })
+        }
         disabled={isDisabled}
         name="lieu"
         options={venueOptions}

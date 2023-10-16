@@ -9,7 +9,7 @@ export default {
   component: Checkbox,
 }
 
-const Template: Story<CheckboxProps> = props => (
+const Template: Story<CheckboxProps> = (props) => (
   <Formik initialValues={{ accessibility: false }} onSubmit={() => {}}>
     {({ getFieldProps }) => {
       return <Checkbox {...getFieldProps('accessibility')} {...props} />

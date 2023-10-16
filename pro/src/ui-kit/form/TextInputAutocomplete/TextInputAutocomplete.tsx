@@ -184,7 +184,7 @@ const AutocompleteTextInput = ({
           autoComplete="off"
           {...searchField}
           maxLength={filterMaxLength}
-          onChange={e => handleSearchChange(e.target.value)}
+          onChange={(e) => handleSearchChange(e.target.value)}
         />
         <AutocompleteList
           className={styles['menu']}

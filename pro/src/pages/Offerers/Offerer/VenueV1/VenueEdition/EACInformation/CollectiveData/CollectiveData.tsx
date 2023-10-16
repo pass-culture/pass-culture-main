@@ -17,7 +17,7 @@ const CollectiveData = ({
   const [culturalPartners, setCulturalPartners] = useState<SelectOption[]>([])
 
   useEffect(() => {
-    getCulturalPartnersAdapter().then(response => {
+    getCulturalPartnersAdapter().then((response) => {
       setCulturalPartners(response.payload)
     })
   }, [])
@@ -59,7 +59,7 @@ const CollectiveData = ({
           <Title className={styles['collective-data-title']} level={4}>
             Domaines artistiques et culturels :{' '}
           </Title>
-          {venue.collectiveDomains.map(domain => domain.name).join(', ')}
+          {venue.collectiveDomains.map((domain) => domain.name).join(', ')}
         </div>
       )}
 
@@ -93,10 +93,10 @@ const CollectiveData = ({
               Réseau partenaire :{' '}
             </Title>
             {venue.collectiveNetwork
-              .map(partnerId => {
+              .map((partnerId) => {
                 /* istanbul ignore next: DEBT, TO FIX */
                 return culturalPartners.find(
-                  culturalPartner =>
+                  (culturalPartner) =>
                     partnerId === culturalPartner.value.toString()
                 )?.label
               })

@@ -106,7 +106,7 @@ const PreFilters = ({
         }
       }
 
-      setSelectedPreFilters(currentFilters => ({
+      setSelectedPreFilters((currentFilters) => ({
         ...currentFilters,
         ...updatedFilter,
       }))

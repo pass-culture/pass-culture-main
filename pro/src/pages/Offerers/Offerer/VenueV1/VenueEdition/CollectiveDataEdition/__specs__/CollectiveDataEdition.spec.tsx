@@ -330,7 +330,7 @@ describe('CollectiveDataEdition', () => {
         mainlandInterventionOption.label
       )
       await userEvent.click(mainlandOption)
-      ;[...mainlandOptions].forEach(option => {
+      ;[...mainlandOptions].forEach((option) => {
         expect(screen.getByLabelText(option.label)).toBeChecked()
       })
     })
@@ -350,7 +350,7 @@ describe('CollectiveDataEdition', () => {
       for await (const option of domtomOptions) {
         await userEvent.click(screen.getByLabelText(option.label))
       }
-      domtomOptions.forEach(option =>
+      domtomOptions.forEach((option) =>
         expect(screen.getByLabelText(option.label)).toBeChecked()
       )
     })

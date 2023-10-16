@@ -63,8 +63,8 @@ const doesBookingBeneficiaryMatchFilter = (
       lastNameFirstName,
     ]
     return (
-      referential.filter(item => item.includes(beneficiarySanitarized)).length >
-      0
+      referential.filter((item) => item.includes(beneficiarySanitarized))
+        .length > 0
     )
   }
   return true
@@ -151,7 +151,7 @@ export const filterBookingsRecap = <
     bookingId,
   } = filters
 
-  return bookingsRecap.filter(booking => {
+  return bookingsRecap.filter((booking) => {
     const matchFilters =
       doesOfferNameMatchFilter(offerName, booking) &&
       doesBookingStatusMatchFilter(bookingStatus, booking)

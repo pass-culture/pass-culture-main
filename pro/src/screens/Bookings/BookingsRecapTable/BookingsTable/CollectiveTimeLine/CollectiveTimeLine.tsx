@@ -426,7 +426,7 @@ const CollectiveTimeLine = ({
   }
 
   const arrayHistoryStep: Array<TimelineStep> =
-    bookingRecap.bookingStatusHistory.map(el => {
+    bookingRecap.bookingStatusHistory.map((el) => {
       switch (el.status) {
         case BOOKING_STATUS.PENDING:
           return pendingStep

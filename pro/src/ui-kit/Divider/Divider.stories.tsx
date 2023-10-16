@@ -8,7 +8,7 @@ export default {
   component: Divider,
 }
 
-const Template: Story<DividerProps> = args => (
+const Template: Story<DividerProps> = (args) => (
   <div>
     <p>Second text</p>
     <Divider {...args} />

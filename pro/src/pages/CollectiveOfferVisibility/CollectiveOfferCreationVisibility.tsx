@@ -50,7 +50,7 @@ export const CollectiveOfferVisibility = ({
   }
 
   useEffect(() => {
-    getEducationalInstitutionsAdapter().then(result => {
+    getEducationalInstitutionsAdapter().then((result) => {
       if (result.isOk) {
         setInstitutions(result.payload.institutions)
         setIsLoadingInstitutions(false)

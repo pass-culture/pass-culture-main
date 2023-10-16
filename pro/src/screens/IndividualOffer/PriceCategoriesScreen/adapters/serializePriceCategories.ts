@@ -5,7 +5,7 @@ import { PriceCategoriesFormValues } from '../form/types'
 export const serializePriceCategories = (
   values: PriceCategoriesFormValues
 ): PriceCategoryBody => {
-  const serializedData = values.priceCategories.map(priceCategory => {
+  const serializedData = values.priceCategories.map((priceCategory) => {
     if (priceCategory.price === '') {
       throw new Error('Price should not be empty because of formik validation')
     }

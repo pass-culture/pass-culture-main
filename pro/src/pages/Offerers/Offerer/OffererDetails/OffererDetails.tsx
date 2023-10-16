@@ -47,7 +47,8 @@ const OffererDetails = () => {
         const receivedOfferer = await api.getOfferer(id)
         setOfferer(transformOffererResponseModelToOfferer(receivedOfferer))
         setPhysicalVenues(
-          receivedOfferer.managedVenues?.filter(venue => !venue.isVirtual) ?? []
+          receivedOfferer.managedVenues?.filter((venue) => !venue.isVirtual) ??
+            []
         )
       } catch (error) {
         // TODO should redirect to a 404 page instead

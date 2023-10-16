@@ -56,7 +56,7 @@ const FormVenue = ({
       disableOfferSelection &&
       disabledBookingStatus.includes(lastBookingStatus))
 
-  let offerersOptions = userOfferers.map(item => ({
+  let offerersOptions = userOfferers.map((item) => ({
     value: item['id'].toString(),
     label: item['name'] as string,
   }))
@@ -75,7 +75,7 @@ const FormVenue = ({
     >
       <FormLayout.Row>
         <Select
-          onChange={e => onChangeOfferer(e.target.value)}
+          onChange={(e) => onChangeOfferer(e.target.value)}
           disabled={offerersOptions.length === 1 || disableOfferSelection}
           label={OFFERER_LABEL}
           name="offererId"
@@ -116,7 +116,7 @@ const FormVenue = ({
             label={VENUE_LABEL}
             name="venueId"
             options={venuesOptions}
-            onChange={event => {
+            onChange={(event) => {
               if (mode === Mode.CREATION) {
                 setValues(
                   applyVenueDefaultsToFormValues(

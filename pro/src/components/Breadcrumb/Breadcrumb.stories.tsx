@@ -42,7 +42,7 @@ const stepList: Step[] = [
   },
 ]
 
-const Template: ComponentStory<typeof Breadcrumb> = args => (
+const Template: ComponentStory<typeof Breadcrumb> = (args) => (
   <div style={{ width: 874 }}>
     <Breadcrumb {...args} />
   </div>

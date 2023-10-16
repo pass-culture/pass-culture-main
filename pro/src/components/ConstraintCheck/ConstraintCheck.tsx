@@ -16,7 +16,7 @@ export const ConstraintCheck: FunctionComponent<ConstraintCheckProps> = ({
   failingConstraints,
 }) => {
   const fileConstraint = () =>
-    constraints.map(constraint => (
+    constraints.map((constraint) => (
       <li key={constraint.id}>
         {failingConstraints.includes(constraint.id) ? (
           <FieldError name={constraint.id}>{constraint.description}</FieldError>

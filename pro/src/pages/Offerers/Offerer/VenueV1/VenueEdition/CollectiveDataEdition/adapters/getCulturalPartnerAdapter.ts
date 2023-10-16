@@ -8,7 +8,7 @@ type GetCulturalPartnerAdapter = Adapter<
   null
 >
 
-const getCulturalPartnerAdapter: GetCulturalPartnerAdapter = async siret => {
+const getCulturalPartnerAdapter: GetCulturalPartnerAdapter = async (siret) => {
   try {
     const response = await api.getEducationalPartner(siret)
     return {

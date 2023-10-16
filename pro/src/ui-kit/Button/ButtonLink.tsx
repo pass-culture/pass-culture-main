@@ -99,7 +99,7 @@ const ButtonLink = ({
   // for internal links so that developers can't make mistakes/forget to add the slash
   const absoluteUrl = isExternal || to.startsWith('/') ? to : `/${to}`
 
-  const callback: MouseEventHandler<HTMLAnchorElement> = e =>
+  const callback: MouseEventHandler<HTMLAnchorElement> = (e) =>
     isDisabled ? e.preventDefault() : onClick?.(e)
 
   const disabled = isDisabled
@@ -113,7 +113,7 @@ const ButtonLink = ({
       className={classNames}
       href={absoluteUrl}
       onClick={callback}
-      onBlur={e => onBlur?.(e)}
+      onBlur={(e) => onBlur?.(e)}
       {...disabled}
       {...linkProps}
     >
@@ -123,7 +123,7 @@ const ButtonLink = ({
     /* istanbul ignore next: graphic variation */ <Link
       className={classNames}
       onClick={callback}
-      onBlur={e => onBlur?.(e)}
+      onBlur={(e) => onBlur?.(e)}
       to={absoluteUrl}
       {...disabled}
       aria-label={linkProps['aria-label']}

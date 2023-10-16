@@ -26,7 +26,7 @@ export const initCookieConsent = () => {
     // We use it to execute the api call used to log the user consents
     // Still, we do not change the cookie content
     // @ts-expect-error no types for this lib yet
-    stringifyCookie: contents => {
+    stringifyCookie: (contents) => {
       const nonMandatoryConsents = Object.entries(contents).filter(([app]) => {
         return mandatoryCookies.indexOf(app) === -1
       })

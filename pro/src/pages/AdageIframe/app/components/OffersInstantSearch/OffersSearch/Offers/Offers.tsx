@@ -67,7 +67,7 @@ export const Offers = ({
     }
 
     Promise.all(
-      hits.map(async hit => {
+      hits.map(async (hit) => {
         if (fetchedOffers.has(hit.objectID)) {
           return Promise.resolve({
             hitId: hit.objectID,
@@ -86,11 +86,11 @@ export const Offers = ({
         return { hitId: hit.objectID, offer }
       })
     )
-      .then(offersFromHits => {
+      .then((offersFromHits) => {
         const offersFromHitsMap = new Map(fetchedOffers)
         offersFromHits
-          .filter(res => res?.offer && offerIsBookable(res.offer))
-          .forEach(res => {
+          .filter((res) => res?.offer && offerIsBookable(res.offer))
+          .forEach((res) => {
             if (res?.hitId && res.offer) {
               offersFromHitsMap.set(res.hitId, res.offer)
             }
@@ -103,7 +103,7 @@ export const Offers = ({
   }, [results?.queryID])
 
   const offers = hits
-    .map(hit => fetchedOffers.get(hit.objectID))
+    .map((hit) => fetchedOffers.get(hit.objectID))
     .filter((offer): offer is HydratedOffer => !!offer)
 
   if (queriesAreLoading && offers.length === 0) {

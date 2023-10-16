@@ -20,7 +20,7 @@ const getValue = <T extends keyof CollectiveDataFormValuesWithoutSearchField>(
   key: T
 ): CollectiveDataFormValues[T] => {
   if (key === 'collectiveDomains') {
-    return (venue.collectiveDomains?.map(domain => domain.id.toString()) ??
+    return (venue.collectiveDomains?.map((domain) => domain.id.toString()) ??
       COLLECTIVE_DATA_FORM_INITIAL_VALUES.collectiveDomains) as CollectiveDataFormValues[T]
   }
 

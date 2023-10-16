@@ -80,10 +80,10 @@ const OffersRoute = (): JSX.Element => {
 
   useEffect(() => {
     const loadCategories = () =>
-      api.getCategories().then(categoriesAndSubcategories => {
+      api.getCategories().then((categoriesAndSubcategories) => {
         const categoriesOptions = categoriesAndSubcategories.categories
-          .filter(category => category.isSelectable)
-          .map(category => ({
+          .filter((category) => category.isSelectable)
+          .map((category) => ({
             value: category.id,
             label: category.proLabel,
           }))
@@ -146,7 +146,7 @@ const OffersRoute = (): JSX.Element => {
     const loadAllVenuesByProUser = () =>
       getVenuesForOffererAdapter({
         offererId: offerer?.id.toString(),
-      }).then(venuesResponse =>
+      }).then((venuesResponse) =>
         setVenues(formatAndOrderVenues(venuesResponse.payload))
       )
 

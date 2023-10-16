@@ -35,7 +35,7 @@ const renderPriceCategories = (
   renderWithProviders(
     <>
       <Routes>
-        {Object.values(OFFER_WIZARD_MODE).map(mode => (
+        {Object.values(OFFER_WIZARD_MODE).map((mode) => (
           <Route
             path={getIndividualOfferPath({
               step: OFFER_WIZARD_STEP_IDS.TARIFS,

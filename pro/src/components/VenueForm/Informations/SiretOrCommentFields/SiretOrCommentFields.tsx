@@ -127,7 +127,7 @@ const SiretOrCommentFields = ({
           label="SIRET du lieu"
           disabled={readOnly}
           type="text"
-          onChange={e => onSiretChange(e.target.value)}
+          onChange={(e) => onSiretChange(e.target.value)}
         />
       ) : (
         <TextArea

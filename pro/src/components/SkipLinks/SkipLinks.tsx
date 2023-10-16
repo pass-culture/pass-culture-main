@@ -21,7 +21,7 @@ const SkipLinks = ({ displayMenu = false }: SkipLinksProps): JSX.Element => {
       <nav aria-label="Accès rapide" className={styles['skip-links']}>
         {buttons.length > 1 ? (
           <ul className={styles['skip-list']}>
-            {buttons.map(button => {
+            {buttons.map((button) => {
               return (
                 <li key={button.anchor}>
                   <ButtonLink

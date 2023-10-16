@@ -52,7 +52,7 @@ const renderStockEventScreen = (
   renderWithProviders(
     <>
       <Routes>
-        {['/creation/stocks', '/stocks'].map(path => (
+        {['/creation/stocks', '/stocks'].map((path) => (
           <Route
             key={path}
             path={path}

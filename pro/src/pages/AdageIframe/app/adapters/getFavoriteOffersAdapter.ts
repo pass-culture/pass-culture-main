@@ -24,14 +24,14 @@ export const getFavoriteOffersAdapter: GetFavoriteOffersAdapter = async () => {
 
     const favoriteOfferTemplatesResponse: HydratedCollectiveOfferTemplate[] = (
       favoriteOffersResponse?.favoritesTemplate ?? []
-    ).map(offer => ({
+    ).map((offer) => ({
       ...offer,
       isTemplate: true,
     }))
 
     const favoriteOffer: HydratedCollectiveOffer[] = (
       favoriteOffersResponse?.favoritesOffer ?? []
-    ).map(offer => ({ ...offer, isTemplate: false }))
+    ).map((offer) => ({ ...offer, isTemplate: false }))
 
     return {
       isOk: true,

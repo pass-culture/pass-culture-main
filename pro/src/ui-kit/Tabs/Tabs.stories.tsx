@@ -12,7 +12,7 @@ export default {
   component: Tabs,
 }
 
-const Template: Story<FilterTabsProps> = args => {
+const Template: Story<FilterTabsProps> = (args) => {
   return <Tabs {...args} />
 }
 

@@ -31,7 +31,7 @@ export const PriceCategoriesSection = ({ offer, canBeDuo }: Props) => {
       editLink={editLink}
       aria-label="Modifier les tarifs de l’offre"
     >
-      {offer.priceCategories?.map(priceCategory => (
+      {offer.priceCategories?.map((priceCategory) => (
         <div key={priceCategory.id} className={styles['price-category']}>
           {formatPrice(priceCategory.price)} - {priceCategory.label}
         </div>

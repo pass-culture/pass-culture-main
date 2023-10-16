@@ -10,7 +10,7 @@ export default {
   component: ListIconButton,
 }
 
-const Template: Story<ListIconButtonProps> = props => (
+const Template: Story<ListIconButtonProps> = (props) => (
   <div style={{ margin: '50px', display: 'flex' }}>
     <ListIconButton {...props}>{props.children}</ListIconButton>
   </div>

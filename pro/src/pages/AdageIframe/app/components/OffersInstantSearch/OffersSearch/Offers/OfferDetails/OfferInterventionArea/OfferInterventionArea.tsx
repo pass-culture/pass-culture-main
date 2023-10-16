@@ -19,7 +19,7 @@ export const getInterventionAreaLabels = (
   ) {
     labels.push(departmentLabelByValue[MAINLAND_OPTION_VALUE])
 
-    domtomOptions.forEach(domtomOption => {
+    domtomOptions.forEach((domtomOption) => {
       if (interventionArea.includes(domtomOption.value.toString())) {
         const [departmentCode, departmentLabel] =
           domtomOption.label.split(' - ')
@@ -30,7 +30,7 @@ export const getInterventionAreaLabels = (
     return labels.join(' - ')
   }
 
-  departmentOptions.forEach(interventionOption => {
+  departmentOptions.forEach((interventionOption) => {
     if (interventionArea.includes(interventionOption.value.toString())) {
       const [departmentCode, departmentLabel] =
         interventionOption.label.split(' - ')

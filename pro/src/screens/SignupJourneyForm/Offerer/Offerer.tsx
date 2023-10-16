@@ -81,7 +81,7 @@ const Offerer = (): JSX.Element => {
       postalCode: response.payload.values.postalCode,
       hasVenueWithSiret:
         siretResponse.payload.venues.find(
-          venue => venue.siret == formattedSiret
+          (venue) => venue.siret == formattedSiret
         ) !== undefined,
       legalCategoryCode: response.payload.values.legalCategoryCode,
     })
@@ -110,7 +110,7 @@ const Offerer = (): JSX.Element => {
   const formik = useFormik({
     initialValues,
     onSubmit: onSubmitOfferer,
-    validationSchema: validationSchema(showBanner =>
+    validationSchema: validationSchema((showBanner) =>
       setShowInvisibleBanner(showBanner)
     ),
     enableReinitialize: true,

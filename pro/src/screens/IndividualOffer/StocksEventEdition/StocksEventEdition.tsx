@@ -55,9 +55,9 @@ const hasStocksChanged = (
     return true
   }
 
-  return stocks.some(stock => {
+  return stocks.some((stock) => {
     const initialStock = initialsStocks.find(
-      initialStock => initialStock.stockId === stock.stockId
+      (initialStock) => initialStock.stockId === stock.stockId
     )
 
     return !isEqual(stock, initialStock)
@@ -109,7 +109,7 @@ const StocksEventEdition = ({
     const stocksToAdd = rawStocksToAdd.filter((stock1, index) => {
       return (
         rawStocksToAdd.findIndex(
-          stock2 =>
+          (stock2) =>
             stock1.beginningDate === stock2.beginningDate &&
             stock1.beginningTime === stock2.beginningTime &&
             stock1.priceCategoryId === stock2.priceCategoryId
@@ -151,7 +151,7 @@ const StocksEventEdition = ({
 
     // Return when saving in edition with an empty form
     const allStockValues = [...values.stocks, ...hiddenStocksRef.current]
-    const isFormEmpty = allStockValues.every(val =>
+    const isFormEmpty = allStockValues.every((val) =>
       isEqual(val, STOCK_EVENT_FORM_DEFAULT_VALUES)
     )
     if (isFormEmpty) {
@@ -162,7 +162,7 @@ const StocksEventEdition = ({
 
     // Return when there is nothing to save
     const hasSavedStock = allStockValues.some(
-      stock => stock.stockId !== undefined
+      (stock) => stock.stockId !== undefined
     )
     const dirty = hasStocksChanged(
       formik.values.stocks,

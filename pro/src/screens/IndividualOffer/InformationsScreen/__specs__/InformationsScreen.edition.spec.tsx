@@ -628,7 +628,7 @@ describe('screens:IndividualOffer::Informations:edition', () => {
     ]
     it.each(shouldNotOpenConditions)(
       "should not open widthdrawal send mail modal when user doesn't change withdrawal and stocks has bookingQuantity and submit form",
-      async condition => {
+      async (condition) => {
         const individualStock = individualStockFactory()
         if (!condition.hasBookingQuantity) {
           individualStock.bookingsQuantity = 0
@@ -769,7 +769,7 @@ describe('screens:IndividualOffer::Informations:edition', () => {
     ]
     it.each(withdrawalChanges)(
       'should open widthdrawal send mail modal when user change withdrawal information and submit',
-      async withdrawalInformations => {
+      async (withdrawalInformations) => {
         const individualStock = individualStockFactory()
         contextOverride.offer = {
           ...offer,

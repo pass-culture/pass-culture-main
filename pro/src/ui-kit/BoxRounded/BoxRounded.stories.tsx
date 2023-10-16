@@ -9,7 +9,7 @@ export default {
   title: 'ui-kit/BoxRounded',
 }
 
-const Template: Story<BoxRoundedProps> = args => <BoxRounded {...args} />
+const Template: Story<BoxRoundedProps> = (args) => <BoxRounded {...args} />
 
 export const DefaultBoxRounded = Template.bind({})
 

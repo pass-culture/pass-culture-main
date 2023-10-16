@@ -70,7 +70,7 @@ const AutocompleteList = ({
               Aucun résultat
             </span>
           )}
-          {filteredOptions.map(option => renderOption(option))}
+          {filteredOptions.map((option) => renderOption(option))}
         </div>
       )}
     </div>

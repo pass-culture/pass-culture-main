@@ -11,7 +11,7 @@ export default {
   component: PreferredOrientation,
 }
 
-const Template: Story<PreferredOrientationProps> = props => (
+const Template: Story<PreferredOrientationProps> = (props) => (
   <PreferredOrientation {...props} />
 )
 

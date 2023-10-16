@@ -53,27 +53,27 @@ export const adageFiltersToFacetFilters = ({
   const filtersKeys: string[] = []
 
   const filteredDomains: string[] = domains.map(
-    domain => `offer.domains:${domain}`
+    (domain) => `offer.domains:${domain}`
   )
 
   const filteredStudents: string[] = students.map(
-    student => `offer.students:${student}`
+    (student) => `offer.students:${student}`
   )
 
   let filteredDepartments: string[] = []
   if (eventAddressType == OfferAddressType.SCHOOL) {
-    filteredDepartments = departments.flatMap(department => [
+    filteredDepartments = departments.flatMap((department) => [
       `offer.schoolInterventionArea:${department}`,
     ])
   } else {
-    filteredDepartments = departments.flatMap(department => [
+    filteredDepartments = departments.flatMap((department) => [
       `venue.departmentCode:${department}`,
       `offer.interventionArea:${department}`,
     ])
   }
 
   const filteredAcademies: string[] = academies.map(
-    academy => `venue.academy:${academy}`
+    (academy) => `venue.academy:${academy}`
   )
 
   switch (eventAddressType) {
@@ -92,8 +92,8 @@ export const adageFiltersToFacetFilters = ({
       break
   }
 
-  const filteredCategories: string[] = categories.flatMap(categoryValue =>
-    categoryValue.map(subcategoryId => `offer.subcategoryId:${subcategoryId}`)
+  const filteredCategories: string[] = categories.flatMap((categoryValue) =>
+    categoryValue.map((subcategoryId) => `offer.subcategoryId:${subcategoryId}`)
   )
 
   if (filteredStudents.length > 0) {
@@ -126,7 +126,7 @@ export const adageFiltersToFacetFilters = ({
       filtersKeys.push('uaiCode')
     }
     updatedFilters.push(
-      uai.map(uaiCode => `offer.educationalInstitutionUAICode:${uaiCode}`)
+      uai.map((uaiCode) => `offer.educationalInstitutionUAICode:${uaiCode}`)
     )
   }
 
@@ -150,11 +150,13 @@ export const serializeFiltersForData = (
       categoriesOptions
     ),
     domains: filters.domains.map(
-      domainId =>
-        domainsOptions.find(option => option.value === Number(domainId))?.label
+      (domainId) =>
+        domainsOptions.find((option) => option.value === Number(domainId))
+          ?.label
     ),
     students: filters.students.map(
-      student => studentsForData.find(s => s.label === student)?.valueForData
+      (student) =>
+        studentsForData.find((s) => s.label === student)?.valueForData
     ),
   }
 }

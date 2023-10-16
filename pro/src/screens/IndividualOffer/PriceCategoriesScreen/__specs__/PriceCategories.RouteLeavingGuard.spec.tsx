@@ -29,7 +29,7 @@ const renderPriceCategories = (
 ) =>
   renderWithProviders(
     <Routes>
-      {[OFFER_WIZARD_MODE.CREATION, OFFER_WIZARD_MODE.EDITION].map(mode => (
+      {[OFFER_WIZARD_MODE.CREATION, OFFER_WIZARD_MODE.EDITION].map((mode) => (
         <Route
           key={mode}
           path={getIndividualOfferPath({

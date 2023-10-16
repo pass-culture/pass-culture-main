@@ -7,7 +7,7 @@ export default {
   title: 'components/AdageButtonFilter',
   component: AdageButtonFilter,
 }
-const Template: Story<AdageButtonFilterProps> = props => (
+const Template: Story<AdageButtonFilterProps> = (props) => (
   <AdageButtonFilter {...props} />
 )
 

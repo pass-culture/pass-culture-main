@@ -42,7 +42,7 @@ const stepList: Step[] = [
   },
 ]
 
-const Template: ComponentStory<typeof Stepper> = args => (
+const Template: ComponentStory<typeof Stepper> = (args) => (
   <div style={{ width: 874 }}>
     <Stepper {...args} />
   </div>

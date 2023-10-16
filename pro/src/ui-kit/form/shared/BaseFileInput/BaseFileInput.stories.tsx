@@ -8,7 +8,7 @@ export default {
   component: BaseFileInput,
 }
 
-const Template: Story<BaseFileInputProps> = props => (
+const Template: Story<BaseFileInputProps> = (props) => (
   <BaseFileInput {...props} />
 )
 

@@ -9,7 +9,7 @@ export default {
   component: CheckboxGroup,
 }
 
-const Template: Story<CheckboxGroupProps> = props => (
+const Template: Story<CheckboxGroupProps> = (props) => (
   <Formik initialValues={{ accessibility: false }} onSubmit={() => {}}>
     {({ getFieldProps }) => {
       return <CheckboxGroup {...getFieldProps('group')} {...props} />
@@ -19,7 +19,7 @@ const Template: Story<CheckboxGroupProps> = props => (
 
 export const Default = Template.bind({})
 Default.args = {
-  group: ['foo', 'bar', 'baz'].map(item => ({
+  group: ['foo', 'bar', 'baz'].map((item) => ({
     label: item,
     name: `checkBoxes.${item}`,
   })),

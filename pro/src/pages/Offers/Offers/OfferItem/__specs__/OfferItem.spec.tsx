@@ -467,7 +467,7 @@ describe('src | components | pages | Offers | OfferItem', () => {
     const greyedOfferStatusDataSet = [OfferStatus.REJECTED, OfferStatus.PENDING]
     it.each(greyedOfferStatusDataSet)(
       'should display the offer greyed when offer is %s',
-      status => {
+      (status) => {
         props.offer.status = status
         renderOfferItem(props)
 
@@ -481,7 +481,7 @@ describe('src | components | pages | Offers | OfferItem', () => {
     const offerStatusDataSet = [OfferStatus.ACTIVE, OfferStatus.DRAFT]
     it.each(offerStatusDataSet)(
       'should not display the offer greyed when offer is %s',
-      status => {
+      (status) => {
         props.offer.status = status
         renderOfferItem(props)
 

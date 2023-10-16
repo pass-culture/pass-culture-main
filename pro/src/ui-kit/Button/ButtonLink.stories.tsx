@@ -26,7 +26,7 @@ export default {
   },
 }
 
-const TemplateLink: Story<ButtonLinkProps> = args => (
+const TemplateLink: Story<ButtonLinkProps> = (args) => (
   <div style={{ margin: '50px', display: 'flex' }}>
     <ButtonLink {...args}>{args.children}</ButtonLink>
   </div>

@@ -74,7 +74,7 @@ export const StocksEventCreation = ({
     const stocksToAdd = rawStocksToAdd.filter((stock1, index) => {
       return (
         rawStocksToAdd.findIndex(
-          stock2 =>
+          (stock2) =>
             stock1.beginningDatetime === stock2.beginningDatetime &&
             stock1.priceCategoryId === stock2.priceCategoryId
         ) === index
@@ -106,7 +106,7 @@ export const StocksEventCreation = ({
   }
 
   const stocksToCreate = stocks
-    .filter(stock => stock.id === undefined)
+    .filter((stock) => stock.id === undefined)
     // uuid & bookingsQuantity are not sent to backend
     .map(
       ({
@@ -124,14 +124,16 @@ export const StocksEventCreation = ({
       })
     )
   const stocksToDelete = offer.stocks.filter(
-    s =>
-      !stocks.find(stock => stock.id === (s?.id ? s.id.toString() : undefined))
+    (s) =>
+      !stocks.find(
+        (stock) => stock.id === (s?.id ? s.id.toString() : undefined)
+      )
   )
 
   const handleNextStep = async () => {
     setIsSubmitting(true)
     if (stocksToDelete.length > 0) {
-      await Promise.all(stocksToDelete.map(s => api.deleteStock(s.id)))
+      await Promise.all(stocksToDelete.map((s) => api.deleteStock(s.id)))
     }
 
     // Check that there is at least one stock left

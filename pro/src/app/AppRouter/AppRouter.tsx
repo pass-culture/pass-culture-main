@@ -62,9 +62,10 @@ const AppRouter = ({ routes }: { routes: RouteConfig[] }): JSX.Element => {
 
   const activeRoutes = routes
     .filter(
-      route => !route.featureName || activeFeatures.includes(route.featureName)
+      (route) =>
+        !route.featureName || activeFeatures.includes(route.featureName)
     )
-    .map(route => ({
+    .map((route) => ({
       ...route,
       element: <RouteWrapper route={route} />,
     }))

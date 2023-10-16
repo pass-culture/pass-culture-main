@@ -141,7 +141,7 @@ describe('IndividualOffer section: UsefulInformations', () => {
     const durationMinutesValidDataSet = ['1:00', '10:04', '320:00', '12:12']
     it.each(durationMinutesValidDataSet)(
       'test valid format (durationMinutes ="%s")',
-      async durationMinutesValue => {
+      async (durationMinutesValue) => {
         initialValues.subCategoryFields = ['durationMinutes']
         const { buttonSubmit } = await renderInformations({
           props,

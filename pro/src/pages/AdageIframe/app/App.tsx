@@ -39,7 +39,7 @@ export const App = (): JSX.Element => {
     const getRelativeOffers = params.get('all') === 'true'
     apiAdage
       .authenticate()
-      .then(user => setUser(user))
+      .then((user) => setUser(user))
       .then(async () => {
         if (siret) {
           try {

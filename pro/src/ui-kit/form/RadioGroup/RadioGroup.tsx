@@ -53,7 +53,7 @@ const RadioGroup = ({
       legend={legend}
       name={`radio-group-${name}`}
     >
-      {group.map(item => (
+      {group.map((item) => (
         <div className={styles['radio-group-item']} key={item.label}>
           <RadioButton
             disabled={disabled}

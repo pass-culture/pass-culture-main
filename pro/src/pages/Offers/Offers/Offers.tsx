@@ -76,7 +76,7 @@ const Offers = ({
   const updateStatusFilter = (
     selectedStatus: SearchFiltersParams['status']
   ) => {
-    setSearchFilters(currentSearchFilters => ({
+    setSearchFilters((currentSearchFilters) => ({
       ...currentSearchFilters,
       status: selectedStatus,
     }))
@@ -96,7 +96,7 @@ const Offers = ({
 
   const selectOffer = useCallback(
     (offerId: number, selected: boolean, isTemplate: boolean) => {
-      setSelectedOfferIds(currentSelectedIds => {
+      setSelectedOfferIds((currentSelectedIds) => {
         const newSelectedOfferIds = [...currentSelectedIds]
         const id = computeURLCollectiveOfferId(offerId, isTemplate)
         if (selected) {
@@ -116,8 +116,8 @@ const Offers = ({
       areAllOffersSelected
         ? []
         : currentPageOffersSubset
-            .filter(offer => !isOfferDisabled(offer.status))
-            .map(offer => offer.id.toString())
+            .filter((offer) => !isOfferDisabled(offer.status))
+            .map((offer) => offer.id.toString())
     )
 
     toggleSelectAllCheckboxes()

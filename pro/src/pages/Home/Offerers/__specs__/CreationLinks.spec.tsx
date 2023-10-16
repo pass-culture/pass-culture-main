@@ -110,7 +110,7 @@ describe('creationLinks', () => {
         dsToken: '',
       } as GetOffererResponseModel,
     ]
-    baseOfferersNames = baseOfferers.map(offerer => ({
+    baseOfferersNames = baseOfferers.map((offerer) => ({
       id: offerer.id,
       name: offerer.name,
     }))

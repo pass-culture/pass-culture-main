@@ -23,9 +23,9 @@ const ReimbursementsTableHead = ({
       return
     }
 
-    const otherColumnOption = columns.filter(title => title !== columnOption)
+    const otherColumnOption = columns.filter((title) => title !== columnOption)
 
-    otherColumnOption.forEach(columnOption => {
+    otherColumnOption.forEach((columnOption) => {
       if (columnOption.selfDirection !== 'None') {
         columnOption.selfDirection = 'default'
       }
@@ -51,7 +51,7 @@ const ReimbursementsTableHead = ({
   return (
     <thead>
       <tr>
-        {columns.map(column => {
+        {columns.map((column) => {
           const sortingMode =
             column.selfDirection === 'default'
               ? SortingMode.NONE

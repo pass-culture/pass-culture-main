@@ -10,7 +10,7 @@ export default {
   component: BaseInput,
 }
 
-const Template: Story<BaseInputProps> = args => (
+const Template: Story<BaseInputProps> = (args) => (
   <div>
     <BaseInput {...args} />
   </div>
