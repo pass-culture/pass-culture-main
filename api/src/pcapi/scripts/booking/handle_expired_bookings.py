@@ -36,7 +36,7 @@ def handle_expired_individual_bookings() -> None:
         cancel_expired_individual_bookings()
     except Exception as e:  # pylint: disable=broad-except
         logger.exception("[handle_expired_individual_bookings] Error in STEP 1 : %s", e)
-    if settings.IS_STAGING:
+    if settings.EXPIRED_BOOKINGS_LOGGER_INFO:
         logger.info("[handle_expired_individual_bookings] ENV=STAGING: Skipping Steps 2 and 3")
     else:
         try:
