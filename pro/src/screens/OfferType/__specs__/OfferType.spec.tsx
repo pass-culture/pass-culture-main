@@ -52,7 +52,7 @@ vi.mock('apiClient/api', () => ({
   },
 }))
 
-const renderOfferTypes = async (
+const renderOfferTypes = (
   storeOverrides: any,
   structureId?: string,
   venueId?: string
@@ -88,19 +88,9 @@ const renderOfferTypes = async (
       ],
     }
   )
-
-  await waitFor(() => {
-    expect(api.listOfferersNames).toHaveBeenCalled()
-  })
-  await waitFor(() => {
-    expect(api.canOffererCreateEducationalOffer).toHaveBeenCalled()
-  })
-  await waitFor(() => {
-    expect(api.getCollectiveOffers).toHaveBeenCalled()
-  })
 }
 
-describe('screens:IndividualOffer::OfferType', () => {
+describe('OfferType', () => {
   let store: any
   beforeEach(() => {
     vi.spyOn(api, 'listOfferersNames').mockResolvedValue({
@@ -129,7 +119,7 @@ describe('screens:IndividualOffer::OfferType', () => {
   })
 
   it('should render the component with button', async () => {
-    await renderOfferTypes(store)
+    renderOfferTypes(store)
 
     expect(
       screen.getByRole('heading', { name: 'Créer une offre' })
@@ -146,21 +136,13 @@ describe('screens:IndividualOffer::OfferType', () => {
     expect(
       screen.getByRole('button', { name: 'Étape suivante' })
     ).toBeInTheDocument()
-  })
 
-  it('should render action bar buttons ', async () => {
-    await renderOfferTypes(store)
-
-    expect(
-      screen.getByRole('link', { name: 'Annuler et quitter' })
-    ).toBeInTheDocument()
-    expect(
-      screen.getByRole('button', { name: 'Étape suivante' })
-    ).toBeInTheDocument()
+    // Loads individual offer buttons by default
+    expect(await screen.findByText('Un bien physique')).toBeInTheDocument()
   })
 
   it('should select collective offer', async () => {
-    await renderOfferTypes(store)
+    renderOfferTypes(store)
 
     expect(
       await screen.findByRole('heading', { name: 'Votre offre est :' })
@@ -169,8 +151,9 @@ describe('screens:IndividualOffer::OfferType', () => {
     await userEvent.click(
       screen.getByRole('radio', { name: 'À un groupe scolaire' })
     )
+
     await userEvent.click(
-      screen.getByRole('radio', {
+      await screen.findByRole('radio', {
         name: 'Une offre réservable Cette offre a une date et un prix. Elle doit être associée à un établissement scolaire avec lequel vous avez préalablement échangé.',
       })
     )
@@ -182,7 +165,7 @@ describe('screens:IndividualOffer::OfferType', () => {
   })
 
   it('should select template offer', async () => {
-    await renderOfferTypes(store)
+    renderOfferTypes(store)
 
     expect(
       await screen.findByRole('heading', { name: 'Votre offre est :' })
@@ -193,7 +176,7 @@ describe('screens:IndividualOffer::OfferType', () => {
     )
 
     await userEvent.click(
-      screen.getByRole('radio', {
+      await screen.findByRole('radio', {
         name: 'Une offre vitrine Cette offre n’est pas réservable. Elle n’a ni date, ni prix et permet aux enseignants de vous contacter pour co-construire une offre adaptée. Vous pourrez facilement la dupliquer pour chaque enseignant intéressé.',
       })
     )
@@ -206,7 +189,7 @@ describe('screens:IndividualOffer::OfferType', () => {
 
   it('should display non eligible banner if offerer can not create collective offer', async () => {
     vi.spyOn(api, 'canOffererCreateEducationalOffer').mockRejectedValueOnce({})
-    await renderOfferTypes(store)
+    renderOfferTypes(store)
 
     await userEvent.click(
       screen.getByRole('radio', { name: 'À un groupe scolaire' })
@@ -238,7 +221,7 @@ describe('screens:IndividualOffer::OfferType', () => {
     }
     vi.spyOn(api, 'getOfferer').mockResolvedValue(offerer)
     vi.spyOn(api, 'canOffererCreateEducationalOffer').mockRejectedValueOnce({})
-    await renderOfferTypes(store, 'offererId')
+    renderOfferTypes(store, 'offererId')
 
     await userEvent.click(
       screen.getByRole('radio', { name: 'À un groupe scolaire' })
@@ -253,7 +236,7 @@ describe('screens:IndividualOffer::OfferType', () => {
   })
 
   it('should display individual offer choices', async () => {
-    await renderOfferTypes(store)
+    renderOfferTypes(store)
 
     expect(await screen.findByText('Un bien physique')).toBeInTheDocument()
     expect(screen.getByText('Un bien numérique')).toBeInTheDocument()
@@ -282,7 +265,7 @@ describe('screens:IndividualOffer::OfferType', () => {
   it.each(individualChoices)(
     'should select and redirect fine case : %s',
     async ({ buttonClicked, expectedSearch }) => {
-      await renderOfferTypes(store)
+      renderOfferTypes(store)
 
       await userEvent.click(await screen.findByText(buttonClicked))
 
@@ -323,7 +306,7 @@ describe('screens:IndividualOffer::OfferType', () => {
     })
 
     // there is a venue in url
-    await renderOfferTypes(store, '1', '1')
+    renderOfferTypes(store, '1', '1')
 
     expect(
       await screen.findByText('Quelle est la catégorie de l’offre ?')
@@ -355,26 +338,28 @@ describe('screens:IndividualOffer::OfferType', () => {
       // @ts-expect-error FIX ME
       .mockResolvedValueOnce(offersRecap)
 
-    await renderOfferTypes(store)
+    renderOfferTypes(store)
 
     await userEvent.click(
       screen.getByRole('radio', { name: 'À un groupe scolaire' })
     )
 
-    expect(api.getCollectiveOffers).toHaveBeenLastCalledWith(
-      undefined,
-      undefined,
-      undefined,
-      undefined,
-      undefined,
-      undefined,
-      undefined,
-      undefined,
-      'template'
-    )
+    await waitFor(() => {
+      expect(api.getCollectiveOffers).toHaveBeenLastCalledWith(
+        undefined,
+        undefined,
+        undefined,
+        undefined,
+        undefined,
+        undefined,
+        undefined,
+        undefined,
+        'template'
+      )
+    })
 
     await userEvent.click(
-      screen.getByRole('radio', {
+      await screen.findByRole('radio', {
         name: 'Une offre réservable Cette offre a une date et un prix. Elle doit être associée à un établissement scolaire avec lequel vous avez préalablement échangé.',
       })
     )
@@ -406,14 +391,14 @@ describe('screens:IndividualOffer::OfferType', () => {
       error: notifyError,
     }))
 
-    await renderOfferTypes(store)
+    renderOfferTypes(store)
 
     await userEvent.click(
       screen.getByRole('radio', { name: 'À un groupe scolaire' })
     )
 
     await userEvent.click(
-      screen.getByRole('radio', {
+      await screen.findByRole('radio', {
         name: 'Une offre réservable Cette offre a une date et un prix. Elle doit être associée à un établissement scolaire avec lequel vous avez préalablement échangé.',
       })
     )
@@ -434,7 +419,7 @@ describe('screens:IndividualOffer::OfferType', () => {
   })
 
   it('should log when cancelling ', async () => {
-    await renderOfferTypes(store)
+    renderOfferTypes(store)
 
     await userEvent.click(
       screen.getByRole('link', { name: 'Annuler et quitter' })
@@ -450,10 +435,10 @@ describe('screens:IndividualOffer::OfferType', () => {
     vi.spyOn(api, 'getOfferer').mockResolvedValue({
       isValidated: false,
     } as GetOffererResponseModel)
-    await renderOfferTypes(store, '123')
+    renderOfferTypes(store, '123')
 
     expect(
-      await screen.queryByText(
+      screen.queryByText(
         'Votre structure est en cours de validation par les équipes pass Culture.'
       )
     ).not.toBeInTheDocument()
@@ -476,7 +461,7 @@ describe('screens:IndividualOffer::OfferType', () => {
       )
     })
 
-    await renderOfferTypes(store, '123')
+    renderOfferTypes(store, '123')
 
     await userEvent.click(
       screen.getByRole('radio', { name: 'À un groupe scolaire' })
