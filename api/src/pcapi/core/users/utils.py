@@ -9,7 +9,7 @@ from pcapi import settings
 
 
 logger = logging.getLogger(__name__)
-JWT_ADAGE_PUBLIC_KEY_PATH = f"src/pcapi/routes/adage_iframe/public_key/{settings.JWT_ADAGE_PUBLIC_KEY_FILENAME}"
+JWT_ADAGE_PUBLIC_KEY_PATH = f"src/pcapi/routes/pro/public_key/{settings.JWT_ADAGE_PUBLIC_KEY_FILENAME}"
 
 
 ALGORITHM_HS_256 = "HS256"

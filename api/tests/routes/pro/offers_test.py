@@ -7,7 +7,7 @@ from pcapi.core.educational import factories as educational_factories
 from pcapi.core.educational import models as educational_models
 import pcapi.core.educational.testing as adage_api_testing
 import pcapi.core.educational.utils as educational_utils
-from pcapi.routes.adage_iframe.serialization.adage_authentication import AdageFrontRoles
+from pcapi.routes.serialization.adage_authentication import AdageFrontRoles
 
 
 pytestmark = pytest.mark.usefixtures("db_session")

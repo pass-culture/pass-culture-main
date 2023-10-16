@@ -40,7 +40,7 @@ from pcapi.repository.clean_database import clean_all_database
 from pcapi.routes.backoffice import install_routes
 from pcapi.utils.module_loading import import_string
 
-from tests.routes.adage_iframe.utils_create_test_token import create_adage_valid_token_with_email
+from tests.routes.pro.utils_create_test_token import create_adage_valid_token_with_email
 from tests.serialization.serialization_decorator_test import test_blueprint
 from tests.serialization.serialization_decorator_test import test_bookings_blueprint
 

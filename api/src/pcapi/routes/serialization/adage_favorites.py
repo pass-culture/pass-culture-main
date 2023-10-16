@@ -2,8 +2,8 @@ import logging
 
 from pcapi.core.educational import models as educational_models
 from pcapi.core.offerers.repository import get_venue_by_id
-from pcapi.routes.adage_iframe.serialization import offers as serialize_offers
 from pcapi.routes.serialization import BaseModel
+from pcapi.routes.serialization import offers_adage as serialize_offers
 
 
 logger = logging.getLogger(__name__)

@@ -15,23 +15,21 @@ import pcapi.core.educational.utils as educational_utils
 from pcapi.core.offerers.models import Venue
 from pcapi.core.offerers.repository import get_venue_by_id
 from pcapi.models.api_errors import ApiErrors
-from pcapi.routes.adage_iframe import blueprint
-from pcapi.routes.adage_iframe.security import adage_jwt_required
-from pcapi.routes.adage_iframe.serialization import offers as serializers
-from pcapi.routes.adage_iframe.serialization.adage_authentication import (
-    get_redactor_information_from_adage_authentication,
-)
-from pcapi.routes.adage_iframe.serialization.adage_authentication import AdageFrontRoles
-from pcapi.routes.adage_iframe.serialization.adage_authentication import AuthenticatedInformation
-from pcapi.routes.adage_iframe.serialization.favorites import serialize_collective_offer
+from pcapi.routes.pro import adage_blueprint
+from pcapi.routes.pro.adage_security import adage_jwt_required
+from pcapi.routes.serialization import offers_adage as serializers
+from pcapi.routes.serialization.adage_authentication import AdageFrontRoles
+from pcapi.routes.serialization.adage_authentication import AuthenticatedInformation
+from pcapi.routes.serialization.adage_authentication import get_redactor_information_from_adage_authentication
+from pcapi.routes.serialization.adage_favorites import serialize_collective_offer
 from pcapi.serialization.decorator import spectree_serialize
 
 
 logger = logging.getLogger(__name__)
 
 
-@blueprint.adage_iframe.route("/offers/categories", methods=["GET"])
-@spectree_serialize(response_model=serializers.CategoriesResponseModel, api=blueprint.api)
+@adage_blueprint.adage_iframe.route("/offers/categories", methods=["GET"])
+@spectree_serialize(response_model=serializers.CategoriesResponseModel, api=adage_blueprint.api)
 @adage_jwt_required
 def get_educational_offers_categories(
     authenticated_information: AuthenticatedInformation,
@@ -49,8 +47,8 @@ def get_educational_offers_categories(
     )
 
 
-@blueprint.adage_iframe.route("/collective/all-offers", methods=["GET"])
-@spectree_serialize(response_model=serializers.ListCollectiveOffersResponseModel, api=blueprint.api)
+@adage_blueprint.adage_iframe.route("/collective/all-offers", methods=["GET"])
+@spectree_serialize(response_model=serializers.ListCollectiveOffersResponseModel, api=adage_blueprint.api)
 @adage_jwt_required
 def get_educational_eligible_offers_by_uai(
     authenticated_information: AuthenticatedInformation,
@@ -77,8 +75,8 @@ def get_educational_eligible_offers_by_uai(
     return serializers.ListCollectiveOffersResponseModel(collectiveOffers=serialized_favorite_offers)
 
 
-@blueprint.adage_iframe.route("/offers/formats", methods=["GET"])
-@spectree_serialize(response_model=serializers.EacFormatsResponseModel, api=blueprint.api)
+@adage_blueprint.adage_iframe.route("/offers/formats", methods=["GET"])
+@spectree_serialize(response_model=serializers.EacFormatsResponseModel, api=adage_blueprint.api)
 @adage_jwt_required
 def get_educational_offers_formats(
     authenticated_information: AuthenticatedInformation,
@@ -86,8 +84,10 @@ def get_educational_offers_formats(
     return serializers.EacFormatsResponseModel(formats=list(subcategories.EacFormat))
 
 
-@blueprint.adage_iframe.route("/collective/offers/<int:offer_id>", methods=["GET"])
-@spectree_serialize(response_model=serializers.CollectiveOfferResponseModel, api=blueprint.api, on_error_statuses=[404])
+@adage_blueprint.adage_iframe.route("/collective/offers/<int:offer_id>", methods=["GET"])
+@spectree_serialize(
+    response_model=serializers.CollectiveOfferResponseModel, api=adage_blueprint.api, on_error_statuses=[404]
+)
 @adage_jwt_required
 def get_collective_offer(
     authenticated_information: AuthenticatedInformation, offer_id: int
@@ -111,9 +111,9 @@ def get_collective_offer(
     )
 
 
-@blueprint.adage_iframe.route("/collective/offers-template/<int:offer_id>", methods=["GET"])
+@adage_blueprint.adage_iframe.route("/collective/offers-template/<int:offer_id>", methods=["GET"])
 @spectree_serialize(
-    response_model=serializers.CollectiveOfferTemplateResponseModel, api=blueprint.api, on_error_statuses=[404]
+    response_model=serializers.CollectiveOfferTemplateResponseModel, api=adage_blueprint.api, on_error_statuses=[404]
 )
 @adage_jwt_required
 def get_collective_offer_template(
@@ -137,9 +137,9 @@ def get_collective_offer_template(
     )
 
 
-@blueprint.adage_iframe.route("/collective/offers-template/<int:offer_id>/request", methods=["POST"])
+@adage_blueprint.adage_iframe.route("/collective/offers-template/<int:offer_id>/request", methods=["POST"])
 @spectree_serialize(
-    response_model=serializers.CollectiveRequestResponseModel, api=blueprint.api, on_error_statuses=[404]
+    response_model=serializers.CollectiveRequestResponseModel, api=adage_blueprint.api, on_error_statuses=[404]
 )
 @adage_jwt_required
 def create_collective_request(

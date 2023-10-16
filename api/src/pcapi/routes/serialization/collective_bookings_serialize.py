@@ -467,3 +467,11 @@ class CollectiveBookingByIdResponseModel(BaseModel):
             venueId=booking.venueId,
             offererId=booking.venue.managingOffererId,
         )
+
+
+class BookCollectiveOfferRequest(BaseModel):
+    stockId: int
+
+
+class BookCollectiveOfferResponse(BaseModel):
+    bookingId: int

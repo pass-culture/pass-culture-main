@@ -1,14 +1,14 @@
 import pytest
 
 from pcapi.core.educational import factories as educational_factories
-from pcapi.routes.adage_iframe import blueprint
-from pcapi.routes.adage_iframe.security import adage_jwt_required
-from pcapi.routes.adage_iframe.serialization.adage_authentication import AuthenticatedInformation
+from pcapi.routes.pro import adage_blueprint
+from pcapi.routes.pro.adage_security import adage_jwt_required
+from pcapi.routes.serialization.adage_authentication import AuthenticatedInformation
 from pcapi.serialization.decorator import spectree_serialize
 
 
-@blueprint.adage_iframe.route("/test-security", methods=["GET"])
-@spectree_serialize(api=blueprint.api, on_error_statuses=[404], on_success_status=204)
+@adage_blueprint.adage_iframe.route("/test-security", methods=["GET"])
+@spectree_serialize(api=adage_blueprint.api, on_error_statuses=[404], on_success_status=204)
 @adage_jwt_required
 def security_endpoint(
     authenticated_information: AuthenticatedInformation,

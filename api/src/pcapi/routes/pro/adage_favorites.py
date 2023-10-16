@@ -5,16 +5,15 @@ from pcapi.core.educational.api import favorites as educational_api
 from pcapi.core.educational.repository import find_redactor_by_email
 from pcapi.models import db
 from pcapi.models.api_errors import ApiErrors
-from pcapi.routes.adage_iframe import blueprint
-from pcapi.routes.adage_iframe.security import adage_jwt_required
-from pcapi.routes.adage_iframe.serialization import favorites as serialize_favorites
-from pcapi.routes.adage_iframe.serialization.adage_authentication import AuthenticatedInformation
-from pcapi.routes.adage_iframe.serialization.favorites import FavoritesResponseModel
+from pcapi.routes.pro import adage_blueprint
+from pcapi.routes.pro.adage_security import adage_jwt_required
+from pcapi.routes.serialization import adage_favorites as serialize_favorites
+from pcapi.routes.serialization.adage_authentication import AuthenticatedInformation
 from pcapi.serialization.decorator import spectree_serialize
 
 
-@blueprint.adage_iframe.route("/collective/offers/<int:offer_id>/favorites", methods=["POST"])
-@spectree_serialize(on_success_status=204, api=blueprint.api)
+@adage_blueprint.adage_iframe.route("/collective/offers/<int:offer_id>/favorites", methods=["POST"])
+@spectree_serialize(on_success_status=204, api=adage_blueprint.api)
 @adage_jwt_required
 def post_collective_offer_favorites(
     authenticated_information: AuthenticatedInformation,
@@ -37,8 +36,8 @@ def post_collective_offer_favorites(
     return
 
 
-@blueprint.adage_iframe.route("/collective/templates/<int:offer_id>/favorites", methods=["POST"])
-@spectree_serialize(on_success_status=204, api=blueprint.api)
+@adage_blueprint.adage_iframe.route("/collective/templates/<int:offer_id>/favorites", methods=["POST"])
+@spectree_serialize(on_success_status=204, api=adage_blueprint.api)
 @adage_jwt_required
 def post_collective_template_favorites(
     authenticated_information: AuthenticatedInformation,
@@ -61,8 +60,8 @@ def post_collective_template_favorites(
     return
 
 
-@blueprint.adage_iframe.route("/collective/offer/<int:offer_id>/favorites", methods=["DELETE"])
-@spectree_serialize(on_success_status=204, api=blueprint.api)
+@adage_blueprint.adage_iframe.route("/collective/offer/<int:offer_id>/favorites", methods=["DELETE"])
+@spectree_serialize(on_success_status=204, api=adage_blueprint.api)
 @adage_jwt_required
 def delete_favorite_for_collective_offer(authenticated_information: AuthenticatedInformation, offer_id: int) -> None:
     redactor = find_redactor_by_email(authenticated_information.email)
@@ -83,8 +82,8 @@ def delete_favorite_for_collective_offer(authenticated_information: Authenticate
     return
 
 
-@blueprint.adage_iframe.route("/collective/template/<int:offer_template_id>/favorites", methods=["DELETE"])
-@spectree_serialize(on_success_status=204, api=blueprint.api)
+@adage_blueprint.adage_iframe.route("/collective/template/<int:offer_template_id>/favorites", methods=["DELETE"])
+@spectree_serialize(on_success_status=204, api=adage_blueprint.api)
 @adage_jwt_required
 def delete_favorite_for_collective_offer_template(
     authenticated_information: AuthenticatedInformation, offer_template_id: int
@@ -107,12 +106,14 @@ def delete_favorite_for_collective_offer_template(
     return
 
 
-@blueprint.adage_iframe.route("/collective/favorites", methods=["GET"])
-@spectree_serialize(on_success_status=200, response_model=FavoritesResponseModel, api=blueprint.api)
+@adage_blueprint.adage_iframe.route("/collective/favorites", methods=["GET"])
+@spectree_serialize(
+    on_success_status=200, response_model=serialize_favorites.FavoritesResponseModel, api=adage_blueprint.api
+)
 @adage_jwt_required
 def get_collective_favorites(
     authenticated_information: AuthenticatedInformation,
-) -> FavoritesResponseModel:
+) -> serialize_favorites.FavoritesResponseModel:
     redactor = find_redactor_by_email(authenticated_information.email)
     if redactor is None:
         raise ApiErrors({"message": "Redactor not found"}, status_code=403)
@@ -133,6 +134,6 @@ def get_collective_favorites(
         for template in templates
     ]
 
-    return FavoritesResponseModel(
+    return serialize_favorites.FavoritesResponseModel(
         favoritesOffer=serialized_favorite_offers, favoritesTemplate=serialized_favorite_templates
     )

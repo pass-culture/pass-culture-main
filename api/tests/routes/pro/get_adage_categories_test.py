@@ -6,7 +6,7 @@ from pcapi.core.categories import categories
 from pcapi.core.categories.subcategories_v2 import ABO_BIBLIOTHEQUE
 from pcapi.core.categories.subcategories_v2 import CINE_PLEIN_AIR
 
-from tests.routes.adage_iframe.utils_create_test_token import create_adage_valid_token_with_email
+from tests.routes.pro.utils_create_test_token import create_adage_valid_token_with_email
 
 
 pytestmark = pytest.mark.usefixtures("db_session")

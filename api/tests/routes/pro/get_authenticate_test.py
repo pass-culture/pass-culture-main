@@ -9,11 +9,11 @@ from pcapi.core.educational.factories import EducationalInstitutionFactory
 from pcapi.core.educational.factories import EducationalRedactorFactory
 from pcapi.core.testing import assert_num_queries
 
-from tests.routes.adage_iframe.utils_create_test_token import DEFAULT_LAT
-from tests.routes.adage_iframe.utils_create_test_token import DEFAULT_LON
-from tests.routes.adage_iframe.utils_create_test_token import create_adage_jwt_default_fake_valid_token
-from tests.routes.adage_iframe.utils_create_test_token import create_adage_jwt_fake_invalid_token
-from tests.routes.adage_iframe.utils_create_test_token import create_adage_jwt_fake_valid_token
+from tests.routes.pro.utils_create_test_token import DEFAULT_LAT
+from tests.routes.pro.utils_create_test_token import DEFAULT_LON
+from tests.routes.pro.utils_create_test_token import create_adage_jwt_default_fake_valid_token
+from tests.routes.pro.utils_create_test_token import create_adage_jwt_fake_invalid_token
+from tests.routes.pro.utils_create_test_token import create_adage_jwt_fake_valid_token
 
 
 @pytest.mark.usefixtures("db_session")

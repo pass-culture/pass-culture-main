@@ -35,11 +35,11 @@ from pcapi.models import db
 from pcapi.models import offer_mixin
 from pcapi.models import validation_status_mixin
 from pcapi.routes.adage.v1.serialization import prebooking
-from pcapi.routes.adage_iframe.serialization.offers import PostCollectiveRequestBodyModel
 from pcapi.routes.public.collective.serialization import offers as public_api_collective_offers_serialize
 from pcapi.routes.serialization import collective_offers_serialize
 from pcapi.routes.serialization.collective_offers_serialize import PostCollectiveOfferBodyModel
 from pcapi.routes.serialization.collective_offers_serialize import PostCollectiveOfferTemplateBodyModel
+from pcapi.routes.serialization.offers_adage import PostCollectiveRequestBodyModel
 from pcapi.utils import image_conversion
 from pcapi.utils import rest
 

@@ -5,8 +5,8 @@ import jwt
 
 from pcapi.core.users.utils import ALGORITHM_RS_256
 
-from tests.routes.adage_iframe import INVALID_RSA_PRIVATE_KEY_PATH
-from tests.routes.adage_iframe import VALID_RSA_PRIVATE_KEY_PATH
+from tests.routes.pro import INVALID_RSA_PRIVATE_KEY_PATH
+from tests.routes.pro import VALID_RSA_PRIVATE_KEY_PATH
 
 
 DEFAULT_LAT = 67.91865044229313

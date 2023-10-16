@@ -2,19 +2,19 @@ import logging
 
 from pcapi.core.educational.api import adage as educational_api_adage
 from pcapi.models.api_errors import ApiErrors
-from pcapi.routes.adage_iframe import blueprint
-from pcapi.routes.adage_iframe.security import adage_jwt_required
-from pcapi.routes.adage_iframe.serialization.adage_authentication import AuthenticatedInformation
-from pcapi.routes.adage_iframe.serialization.venues import GetRelativeVenuesQueryModel
-from pcapi.routes.adage_iframe.serialization.venues import VenueResponse
+from pcapi.routes.pro import adage_blueprint
+from pcapi.routes.pro.adage_security import adage_jwt_required
+from pcapi.routes.serialization.adage_authentication import AuthenticatedInformation
+from pcapi.routes.serialization.venues_adage import GetRelativeVenuesQueryModel
+from pcapi.routes.serialization.venues_adage import VenueResponse
 from pcapi.serialization.decorator import spectree_serialize
 
 
 logger = logging.getLogger(__name__)
 
 
-@blueprint.adage_iframe.route("/venues/siret/<siret>", methods=["GET"])
-@spectree_serialize(api=blueprint.api, response_model=VenueResponse)
+@adage_blueprint.adage_iframe.route("/venues/siret/<siret>", methods=["GET"])
+@spectree_serialize(api=adage_blueprint.api, response_model=VenueResponse)
 @adage_jwt_required
 def get_venue_by_siret(
     authenticated_information: AuthenticatedInformation, siret: str, query: GetRelativeVenuesQueryModel
@@ -29,8 +29,8 @@ def get_venue_by_siret(
     return VenueResponse.from_orm(venue, relative)
 
 
-@blueprint.adage_iframe.route("/venues/<int:venue_id>", methods=["GET"])
-@spectree_serialize(api=blueprint.api, response_model=VenueResponse)
+@adage_blueprint.adage_iframe.route("/venues/<int:venue_id>", methods=["GET"])
+@spectree_serialize(api=adage_blueprint.api, response_model=VenueResponse)
 @adage_jwt_required
 def get_venue_by_id(
     authenticated_information: AuthenticatedInformation, venue_id: int, query: GetRelativeVenuesQueryModel

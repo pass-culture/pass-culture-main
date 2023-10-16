@@ -28,8 +28,8 @@ from pcapi.repository import transaction
 from pcapi.routes.adage.v1.serialization import prebooking
 from pcapi.routes.adage.v1.serialization.prebooking import serialize_collective_booking
 from pcapi.routes.adage.v1.serialization.prebooking import serialize_reibursement_notification
-from pcapi.routes.adage_iframe.serialization.adage_authentication import RedactorInformation
 from pcapi.routes.serialization import collective_bookings_serialize
+from pcapi.routes.serialization.adage_authentication import RedactorInformation
 
 
 logger = logging.getLogger(__name__)

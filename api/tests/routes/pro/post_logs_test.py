@@ -2,9 +2,9 @@ import logging
 
 import pytest
 
-from pcapi.routes.adage_iframe.serialization.adage_authentication import AdageFrontRoles
+from pcapi.routes.serialization.adage_authentication import AdageFrontRoles
 
-from tests.routes.adage_iframe.utils_create_test_token import create_adage_valid_token_with_email
+from tests.routes.pro.utils_create_test_token import create_adage_valid_token_with_email
 
 
 class LogsTest:

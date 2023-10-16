@@ -1,15 +1,15 @@
 from pcapi.core.educational.repository import find_educational_institution_by_uai_code
 import pcapi.core.educational.utils as educational_utils
-from pcapi.routes.adage_iframe import blueprint
-from pcapi.routes.adage_iframe.security import adage_jwt_required
-from pcapi.routes.adage_iframe.serialization import logs as serialization
-from pcapi.routes.adage_iframe.serialization.adage_authentication import AdageFrontRoles
-from pcapi.routes.adage_iframe.serialization.adage_authentication import AuthenticatedInformation
+from pcapi.routes.pro import adage_blueprint
+from pcapi.routes.pro.adage_security import adage_jwt_required
+from pcapi.routes.serialization import logs as serialization
+from pcapi.routes.serialization.adage_authentication import AdageFrontRoles
+from pcapi.routes.serialization.adage_authentication import AuthenticatedInformation
 from pcapi.serialization.decorator import spectree_serialize
 
 
-@blueprint.adage_iframe.route("/logs/catalog-view", methods=["POST"])
-@spectree_serialize(api=blueprint.api, on_error_statuses=[404], on_success_status=204)
+@adage_blueprint.adage_iframe.route("/logs/catalog-view", methods=["POST"])
+@spectree_serialize(api=adage_blueprint.api, on_error_statuses=[404], on_success_status=204)
 @adage_jwt_required
 def log_catalog_view(
     authenticated_information: AuthenticatedInformation,
@@ -30,8 +30,8 @@ def log_catalog_view(
     return
 
 
-@blueprint.adage_iframe.route("/logs/search-button", methods=["POST"])
-@spectree_serialize(api=blueprint.api, on_error_statuses=[404], on_success_status=204)
+@adage_blueprint.adage_iframe.route("/logs/search-button", methods=["POST"])
+@spectree_serialize(api=adage_blueprint.api, on_error_statuses=[404], on_success_status=204)
 @adage_jwt_required
 def log_search_button_click(
     authenticated_information: AuthenticatedInformation,
@@ -50,8 +50,8 @@ def log_search_button_click(
     return
 
 
-@blueprint.adage_iframe.route("/logs/offer-detail", methods=["POST"])
-@spectree_serialize(api=blueprint.api, on_error_statuses=[404], on_success_status=204)
+@adage_blueprint.adage_iframe.route("/logs/offer-detail", methods=["POST"])
+@spectree_serialize(api=adage_blueprint.api, on_error_statuses=[404], on_success_status=204)
 @adage_jwt_required
 def log_offer_details_button_click(
     authenticated_information: AuthenticatedInformation,
@@ -68,8 +68,8 @@ def log_offer_details_button_click(
     return
 
 
-@blueprint.adage_iframe.route("/logs/offer-template-detail", methods=["POST"])
-@spectree_serialize(api=blueprint.api, on_error_statuses=[404], on_success_status=204)
+@adage_blueprint.adage_iframe.route("/logs/offer-template-detail", methods=["POST"])
+@spectree_serialize(api=adage_blueprint.api, on_error_statuses=[404], on_success_status=204)
 @adage_jwt_required
 def log_offer_template_details_button_click(
     authenticated_information: AuthenticatedInformation,
@@ -86,8 +86,8 @@ def log_offer_template_details_button_click(
     return
 
 
-@blueprint.adage_iframe.route("/logs/booking-modal-button", methods=["POST"])
-@spectree_serialize(api=blueprint.api, on_error_statuses=[404], on_success_status=204)
+@adage_blueprint.adage_iframe.route("/logs/booking-modal-button", methods=["POST"])
+@spectree_serialize(api=adage_blueprint.api, on_error_statuses=[404], on_success_status=204)
 @adage_jwt_required
 def log_booking_modal_button_click(
     authenticated_information: AuthenticatedInformation,
@@ -109,8 +109,8 @@ def log_booking_modal_button_click(
     return
 
 
-@blueprint.adage_iframe.route("/logs/contact-modal-button", methods=["POST"])
-@spectree_serialize(api=blueprint.api, on_error_statuses=[404], on_success_status=204)
+@adage_blueprint.adage_iframe.route("/logs/contact-modal-button", methods=["POST"])
+@spectree_serialize(api=adage_blueprint.api, on_error_statuses=[404], on_success_status=204)
 @adage_jwt_required
 def log_contact_modal_button_click(
     authenticated_information: AuthenticatedInformation,
@@ -132,8 +132,8 @@ def log_contact_modal_button_click(
     return
 
 
-@blueprint.adage_iframe.route("/logs/consult-playlist-element", methods=["POST"])
-@spectree_serialize(api=blueprint.api, on_error_statuses=[404], on_success_status=204)
+@adage_blueprint.adage_iframe.route("/logs/consult-playlist-element", methods=["POST"])
+@spectree_serialize(api=adage_blueprint.api, on_error_statuses=[404], on_success_status=204)
 @adage_jwt_required
 def log_consult_playlist_element(
     authenticated_information: AuthenticatedInformation,
@@ -157,8 +157,8 @@ def log_consult_playlist_element(
     return
 
 
-@blueprint.adage_iframe.route("/logs/fav-offer/", methods=["POST"])
-@spectree_serialize(api=blueprint.api, on_error_statuses=[404], on_success_status=204)
+@adage_blueprint.adage_iframe.route("/logs/fav-offer/", methods=["POST"])
+@spectree_serialize(api=adage_blueprint.api, on_error_statuses=[404], on_success_status=204)
 @adage_jwt_required
 def log_fav_offer_button_click(
     authenticated_information: AuthenticatedInformation,
@@ -181,8 +181,8 @@ def log_fav_offer_button_click(
     return
 
 
-@blueprint.adage_iframe.route("/logs/has-seen-whole-playlist/", methods=["POST"])
-@spectree_serialize(api=blueprint.api, on_error_statuses=[404], on_success_status=204)
+@adage_blueprint.adage_iframe.route("/logs/has-seen-whole-playlist/", methods=["POST"])
+@spectree_serialize(api=adage_blueprint.api, on_error_statuses=[404], on_success_status=204)
 @adage_jwt_required
 def log_has_seen_whole_playlist(
     authenticated_information: AuthenticatedInformation,
@@ -203,8 +203,8 @@ def log_has_seen_whole_playlist(
     return
 
 
-@blueprint.adage_iframe.route("/logs/header-link-click/", methods=["POST"])
-@spectree_serialize(api=blueprint.api, on_error_statuses=[404], on_success_status=204)
+@adage_blueprint.adage_iframe.route("/logs/header-link-click/", methods=["POST"])
+@spectree_serialize(api=adage_blueprint.api, on_error_statuses=[404], on_success_status=204)
 @adage_jwt_required
 def log_header_link_click(
     authenticated_information: AuthenticatedInformation,
@@ -220,8 +220,8 @@ def log_header_link_click(
     )
 
 
-@blueprint.adage_iframe.route("/logs/request-popin-dismiss", methods=["POST"])
-@spectree_serialize(api=blueprint.api, on_error_statuses=[404], on_success_status=204)
+@adage_blueprint.adage_iframe.route("/logs/request-popin-dismiss", methods=["POST"])
+@spectree_serialize(api=adage_blueprint.api, on_error_statuses=[404], on_success_status=204)
 @adage_jwt_required
 def log_request_form_popin_dismiss(
     authenticated_information: AuthenticatedInformation,
@@ -240,8 +240,8 @@ def log_request_form_popin_dismiss(
     return
 
 
-@blueprint.adage_iframe.route("/logs/tracking-filter", methods=["POST"])
-@spectree_serialize(api=blueprint.api, on_error_statuses=[404], on_success_status=204)
+@adage_blueprint.adage_iframe.route("/logs/tracking-filter", methods=["POST"])
+@spectree_serialize(api=adage_blueprint.api, on_error_statuses=[404], on_success_status=204)
 @adage_jwt_required
 def log_tracking_filter(
     authenticated_information: AuthenticatedInformation,
@@ -260,8 +260,8 @@ def log_tracking_filter(
     return
 
 
-@blueprint.adage_iframe.route("/logs/sat-survey", methods=["POST"])
-@spectree_serialize(api=blueprint.api, on_error_statuses=[404], on_success_status=204)
+@adage_blueprint.adage_iframe.route("/logs/sat-survey", methods=["POST"])
+@spectree_serialize(api=adage_blueprint.api, on_error_statuses=[404], on_success_status=204)
 @adage_jwt_required
 def log_open_satisfaction_survey(
     authenticated_information: AuthenticatedInformation,
@@ -281,8 +281,8 @@ def log_open_satisfaction_survey(
     return
 
 
-@blueprint.adage_iframe.route("/logs/tracking-autocompletion", methods=["POST"])
-@spectree_serialize(api=blueprint.api, on_error_statuses=[404], on_success_status=204)
+@adage_blueprint.adage_iframe.route("/logs/tracking-autocompletion", methods=["POST"])
+@spectree_serialize(api=adage_blueprint.api, on_error_statuses=[404], on_success_status=204)
 @adage_jwt_required
 def log_tracking_autocomplete_suggestion_click(
     authenticated_information: AuthenticatedInformation,
@@ -304,8 +304,8 @@ def log_tracking_autocomplete_suggestion_click(
     return
 
 
-@blueprint.adage_iframe.route("/logs/tracking-map", methods=["POST"])
-@spectree_serialize(api=blueprint.api, on_error_statuses=[404], on_success_status=204)
+@adage_blueprint.adage_iframe.route("/logs/tracking-map", methods=["POST"])
+@spectree_serialize(api=adage_blueprint.api, on_error_statuses=[404], on_success_status=204)
 @adage_jwt_required
 def log_tracking_map(
     authenticated_information: AuthenticatedInformation,
@@ -322,8 +322,8 @@ def log_tracking_map(
     return
 
 
-@blueprint.adage_iframe.route("/logs/playlist", methods=["POST"])
-@spectree_serialize(api=blueprint.api, on_error_statuses=[404], on_success_status=204)
+@adage_blueprint.adage_iframe.route("/logs/playlist", methods=["POST"])
+@spectree_serialize(api=adage_blueprint.api, on_error_statuses=[404], on_success_status=204)
 @adage_jwt_required
 def log_has_seen_all_playlist(
     authenticated_information: AuthenticatedInformation,

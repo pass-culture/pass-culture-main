@@ -1,6 +1,6 @@
 import pytest
 
-from tests.routes.adage_iframe.utils_create_test_token import create_adage_valid_token_with_email
+from tests.routes.pro.utils_create_test_token import create_adage_valid_token_with_email
 
 
 class FeaturesTest:

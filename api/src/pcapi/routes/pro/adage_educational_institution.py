@@ -1,22 +1,22 @@
 from pcapi.core.educational import repository
 import pcapi.core.educational.api.institution as api
 from pcapi.models.api_errors import ApiErrors
-from pcapi.routes.adage_iframe import blueprint
-from pcapi.routes.adage_iframe.security import adage_jwt_required
-from pcapi.routes.adage_iframe.serialization import educational_institution
-from pcapi.routes.adage_iframe.serialization.adage_authentication import AuthenticatedInformation
+from pcapi.routes.pro import adage_blueprint
+from pcapi.routes.pro.adage_security import adage_jwt_required
+from pcapi.routes.serialization import educational_institutions
+from pcapi.routes.serialization.adage_authentication import AuthenticatedInformation
 from pcapi.serialization.decorator import spectree_serialize
 
 
-@blueprint.adage_iframe.route("/collective/institution", methods=["GET"])
+@adage_blueprint.adage_iframe.route("/collective/institution", methods=["GET"])
 @spectree_serialize(
-    response_model=educational_institution.EducationalInstitutionWithBudgetResponseModel,
-    api=blueprint.api,
+    response_model=educational_institutions.EducationalInstitutionWithBudgetResponseModel,
+    api=adage_blueprint.api,
 )
 @adage_jwt_required
 def get_educational_institution_with_budget(
     authenticated_information: AuthenticatedInformation,
-) -> educational_institution.EducationalInstitutionWithBudgetResponseModel:
+) -> educational_institutions.EducationalInstitutionWithBudgetResponseModel:
     if not authenticated_information.uai:
         raise ApiErrors({"code": "NOT ALLOWED"}, status_code=403)
 
@@ -26,7 +26,7 @@ def get_educational_institution_with_budget(
 
     remaining_budget = api.get_current_year_remaining_credit(institution)
 
-    return educational_institution.EducationalInstitutionWithBudgetResponseModel(
+    return educational_institutions.EducationalInstitutionWithBudgetResponseModel(
         id=institution.id,
         name=institution.name,
         institutionType=institution.institutionType,

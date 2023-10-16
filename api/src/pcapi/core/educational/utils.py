@@ -7,7 +7,7 @@ import jwt
 
 from pcapi.core.educational import exceptions as educational_exceptions
 from pcapi.core.users.utils import ALGORITHM_RS_256
-from pcapi.routes.adage_iframe.serialization.adage_authentication import AdageFrontRoles
+from pcapi.routes.serialization.adage_authentication import AdageFrontRoles
 from pcapi.utils import requests
 
 
@@ -52,7 +52,7 @@ def log_information_for_data_purpose(
 
 
 def create_adage_jwt_fake_valid_token(readonly: bool) -> str:
-    with open("tests/routes/adage_iframe/private_keys_for_tests/valid_rsa_private_key", "rb") as reader:
+    with open("tests/routes/pro/private_keys_for_tests/valid_rsa_private_key", "rb") as reader:
         authenticated_informations = {
             "civilite": "M.",
             "nom": "TEST",

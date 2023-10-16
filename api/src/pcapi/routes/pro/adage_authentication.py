@@ -4,24 +4,22 @@ from pcapi.core.educational.api import favorites as educational_api_favorite
 from pcapi.core.educational.api.institution import get_educational_institution_department_code
 from pcapi.core.educational.exceptions import MissingRequiredRedactorInformation
 from pcapi.core.educational.repository import find_educational_institution_by_uai_code
-from pcapi.routes.adage_iframe import blueprint
-from pcapi.routes.adage_iframe.security import adage_jwt_required
-from pcapi.routes.adage_iframe.serialization.adage_authentication import (
-    get_redactor_information_from_adage_authentication,
-)
-from pcapi.routes.adage_iframe.serialization.adage_authentication import AdageFrontRoles
-from pcapi.routes.adage_iframe.serialization.adage_authentication import AuthenticatedInformation
-from pcapi.routes.adage_iframe.serialization.adage_authentication import AuthenticatedResponse
-from pcapi.routes.adage_iframe.serialization.adage_authentication import get_offers_count
-from pcapi.routes.adage_iframe.serialization.redactor import RedactorPreferences
+from pcapi.routes.pro import adage_blueprint
+from pcapi.routes.pro.adage_security import adage_jwt_required
+from pcapi.routes.serialization.adage_authentication import AdageFrontRoles
+from pcapi.routes.serialization.adage_authentication import AuthenticatedInformation
+from pcapi.routes.serialization.adage_authentication import AuthenticatedResponse
+from pcapi.routes.serialization.adage_authentication import get_offers_count
+from pcapi.routes.serialization.adage_authentication import get_redactor_information_from_adage_authentication
+from pcapi.routes.serialization.redactor import RedactorPreferences
 from pcapi.serialization.decorator import spectree_serialize
 
 
 OptionalRedactor = educational_models.EducationalRedactor | None
 
 
-@blueprint.adage_iframe.route("/authenticate", methods=["GET"])
-@spectree_serialize(api=blueprint.api, response_model=AuthenticatedResponse)
+@adage_blueprint.adage_iframe.route("/authenticate", methods=["GET"])
+@spectree_serialize(api=adage_blueprint.api, response_model=AuthenticatedResponse)
 @adage_jwt_required
 def authenticate(authenticated_information: AuthenticatedInformation) -> AuthenticatedResponse:
     if authenticated_information.uai is not None:

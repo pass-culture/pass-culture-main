@@ -7,8 +7,7 @@ import sqlalchemy as sa
 from pcapi.core.educational import models as educational_models
 from pcapi.core.educational.exceptions import MissingRequiredRedactorInformation
 from pcapi.routes.serialization import BaseModel
-
-from .redactor import RedactorPreferences
+from pcapi.routes.serialization.redactor import RedactorPreferences
 
 
 logger = logging.getLogger(__name__)

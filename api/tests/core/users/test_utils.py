@@ -10,8 +10,8 @@ from pcapi.core.users.utils import decode_jwt_token_rs256
 from pcapi.core.users.utils import encode_jwt_payload
 from pcapi.core.users.utils import format_login_location
 
-from tests.routes.adage_iframe import INVALID_RSA_PRIVATE_KEY_PATH
-from tests.routes.adage_iframe import VALID_RSA_PRIVATE_KEY_PATH
+from tests.routes.pro import INVALID_RSA_PRIVATE_KEY_PATH
+from tests.routes.pro import VALID_RSA_PRIVATE_KEY_PATH
 
 
 class EncodeJWTPayloadTest:

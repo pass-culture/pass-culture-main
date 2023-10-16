@@ -8,8 +8,8 @@ from jwt import InvalidTokenError
 
 from pcapi.core.users import utils as user_utils
 from pcapi.models.api_errors import ForbiddenError
-from pcapi.routes.adage_iframe.blueprint import JWT_AUTH
-from pcapi.routes.adage_iframe.serialization.adage_authentication import AuthenticatedInformation
+from pcapi.routes.pro.adage_blueprint import JWT_AUTH
+from pcapi.routes.serialization.adage_authentication import AuthenticatedInformation
 from pcapi.serialization.spec_tree import add_security_scheme
 
 
