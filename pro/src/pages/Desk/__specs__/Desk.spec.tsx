@@ -1,4 +1,4 @@
-import { screen } from '@testing-library/react'
+import { screen, waitFor } from '@testing-library/react'
 import { userEvent } from '@testing-library/user-event'
 import React from 'react'
 
@@ -140,7 +140,7 @@ describe('src | components | Desk', () => {
       })
     })
 
-    it('should display invaladating message when waiting for invalidation', async () => {
+    it('should display invalidating message when waiting for invalidation and display invalidation confirmation', async () => {
       vi.spyOn(submitTokenAdapter, 'submitInvalidate').mockImplementation(
         () => {
           return new CancelablePromise<DeskSubmitResponse>(resolve =>
@@ -158,23 +158,13 @@ describe('src | components | Desk', () => {
       })
       await userEvent.click(confirmModalButton)
 
-      expect(screen.getByText('Invalidation en cours...')).toBeInTheDocument()
-    })
+      expect(
+        await screen.findByText('Invalidation en cours...')
+      ).toBeInTheDocument()
 
-    it('should display validated message when token invalidation has been done', async () => {
-      vi.spyOn(submitTokenAdapter, 'submitInvalidate').mockResolvedValueOnce({})
-
-      renderDesk()
-
-      await userEvent.type(screen.getByLabelText('Contremarque'), 'AAAAAA')
-      await userEvent.click(screen.getByText('Invalider la contremarque'))
-
-      const confirmModalButton = screen.getByRole('button', {
-        name: 'Continuer',
+      await waitFor(() => {
+        expect(screen.getByText('Contremarque invalidée !')).toBeInTheDocument()
       })
-      await userEvent.click(confirmModalButton)
-
-      expect(screen.getByText('Contremarque invalidée !')).toBeInTheDocument()
     })
 
     it('should display error message when invalidation failed', async () => {
