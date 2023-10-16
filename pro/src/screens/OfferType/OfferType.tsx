@@ -46,7 +46,7 @@ const OfferType = (): JSX.Element => {
     useState(false)
   const [isEligible, setIsEligible] = useState(false)
 
-  const getNextPageHref = (values: OfferTypeFormValues) => {
+  const onSubmit = (values: OfferTypeFormValues) => {
     if (values.offerType === OFFER_TYPES.INDIVIDUAL_OR_DUO) {
       logEvent?.(Events.CLICKED_OFFER_FORM_NAVIGATION, {
         offerType: values.individualOfferSubtype,
@@ -106,11 +106,11 @@ const OfferType = (): JSX.Element => {
 
   const formik = useFormik<OfferTypeFormValues>({
     initialValues: initialValues,
-    onSubmit: getNextPageHref,
+    onSubmit,
   })
   const { values, handleChange } = formik
 
-  const isDisableForEducationnal =
+  const isDisabledForEducationnal =
     values.offerType === OFFER_TYPES.EDUCATIONAL && !isEligible
 
   const hasNotChosenSubcategory =
@@ -166,7 +166,7 @@ const OfferType = (): JSX.Element => {
             )}
             <ActionsBar
               disableNextButton={
-                isDisableForEducationnal || isDisableForIndividual
+                isDisabledForEducationnal || isDisableForIndividual
               }
             />
           </FormLayout>
