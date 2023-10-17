@@ -184,11 +184,13 @@ class CinemaProviderPivot(PcObject, Base, Model):
 
     venueId = Column(BigInteger, ForeignKey("venue.id"), index=False, nullable=True, unique=True)
 
-    venue: sa_orm.Mapped["Venue | None"] = relationship(Venue, foreign_keys=[venueId])
+    venue: sa_orm.Mapped["Venue | None"] = relationship(Venue, foreign_keys=[venueId], backref="cinemaProviderPivot")
 
     providerId: int = Column(BigInteger, ForeignKey("provider.id"), nullable=False)
 
-    provider: sa_orm.Mapped["Provider"] = relationship("Provider", foreign_keys=[providerId])
+    provider: sa_orm.Mapped["Provider"] = relationship(
+        "Provider", foreign_keys=[providerId], backref="cinemaProviderPivot"
+    )
 
     idAtProvider: str = Column(Text, nullable=False)
 
