@@ -140,7 +140,7 @@ ROLE_PERMISSIONS: dict[str, list[perm_models.Permissions]] = {
 }
 
 
-@pytest.fixture(scope="function", name="roles_with_permissions")
+@pytest.fixture(scope="session", name="roles_with_permissions")
 def roles_with_permissions_fixture():
     # Roles have already been created from enum in sync_db_roles()
     roles = perm_models.Role.query.all()
