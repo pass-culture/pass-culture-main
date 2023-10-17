@@ -1,11 +1,11 @@
 import { api } from 'apiClient/api'
 import {
-  StockIdResponseModel,
   StockCreationBodyModel,
   StockEditionBodyModel,
+  StocksResponseModel,
 } from 'apiClient/v1'
 
-type SuccessPayload = { stockIds: number[] }
+type SuccessPayload = StocksResponseModel
 type FailurePayload = { errors: string }
 type UpdateStocksAdapter = Adapter<
   {
@@ -29,9 +29,7 @@ const upsertStocksEventAdapter: UpdateStocksAdapter = async ({
       isOk: true,
       message: 'Vos modifications ont bien été prises en compte',
       payload: {
-        stockIds: response.stocks.map(
-          (stock: StockIdResponseModel) => stock.id
-        ),
+        stocks: response.stocks,
       },
     }
   } catch (error) {
