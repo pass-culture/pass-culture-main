@@ -55,8 +55,9 @@ const TextInput = ({
   })
 
   // think to add step="0.01" for decimal fields
-  const regexHasDecimal = /[0-9,.]|Backspace|Enter/
-  const regexHasNotDecimal = /[0-9]|Backspace|Enter/
+  const regexHasDecimal = /[0-9,.]/
+  const regexHasNotDecimal = /[0-9]/
+  const regexIsNavigationKey = /Tab|Backspace|Enter/
   const showError = meta.touched && !!meta.error
 
   return (
@@ -102,6 +103,9 @@ const TextInput = ({
           leftIcon={leftIcon}
           onKeyDown={event => {
             if (type === 'number') {
+              if (regexIsNavigationKey.test(event.key)) {
+                return
+              }
               const testInput = hasDecimal
                 ? !regexHasDecimal.test(event.key)
                 : !regexHasNotDecimal.test(event.key)
