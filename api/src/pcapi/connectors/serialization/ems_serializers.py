@@ -23,6 +23,16 @@ class Event(BaseModel):
 
 class Site(BaseModel):
     id: str
+    allocine_id: str
+    name: str
+    address: str
+    zip_code: str
+    city: str
+    siret: str | None
+
+
+class SiteWithEvents(BaseModel):
+    id: str
     name: str
     address: str
     zip_code: str
@@ -31,7 +41,7 @@ class Site(BaseModel):
 
 
 class ScheduleResponse(BaseModel):
-    sites: list[Site]
+    sites: list[SiteWithEvents]
     version: int
 
 
@@ -78,3 +88,8 @@ class AvailableShowsRequest(BaseModel):
 class AvailableShowsResponse(BaseModel):
     statut: int
     seances: list[str]
+
+
+class SitesResponse(BaseModel):
+    sites: list[Site]
+    version: int

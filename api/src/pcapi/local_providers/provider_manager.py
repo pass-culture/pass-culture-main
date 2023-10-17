@@ -1,18 +1,25 @@
 import logging
 from typing import Callable
 
+import sqlalchemy as sqla
+import sqlalchemy.orm as sqla_orm
 from urllib3 import exceptions as urllib3_exceptions
 
-from pcapi.connectors.ems import EMSScheduleConnector
+import pcapi.connectors.ems as ems_connectors
 import pcapi.connectors.notion as notion_connector
+from pcapi.core.history import api as history_api
+from pcapi.core.history import models as history_models
+from pcapi.core.offerers.models import Venue
+from pcapi.core.providers import models as provider_models
 from pcapi.core.providers import repository as providers_repository
+from pcapi.core.providers.api import update_venue_synchronized_offers_active_status_job
 from pcapi.core.providers.constants import CINEMA_PROVIDER_NAMES
-from pcapi.core.providers.models import VenueProvider
 from pcapi.infrastructure.repository.stock_provider import provider_api
 import pcapi.local_providers
 from pcapi.local_providers.cinema_providers.ems.ems_stocks import EMSStocks
 from pcapi.local_providers.provider_api import synchronize_provider_api
 from pcapi.models import db
+from pcapi.repository import repository
 from pcapi.repository import transaction
 from pcapi.scheduled_tasks.logger import CronStatus
 from pcapi.scheduled_tasks.logger import build_cron_log_message
@@ -32,7 +39,7 @@ def synchronize_data_for_provider(provider_name: str, limit: int | None = None) 
         logger.exception(build_cron_log_message(name=provider_name, status=CronStatus.FAILED))
 
 
-def synchronize_venue_providers(venue_providers: list[VenueProvider], limit: int | None = None) -> None:
+def synchronize_venue_providers(venue_providers: list[provider_models.VenueProvider], limit: int | None = None) -> None:
     for venue_provider in venue_providers:
         log_data = {
             "venue_provider": venue_provider.id,
@@ -59,7 +66,7 @@ def get_local_provider_class_by_name(class_name: str) -> Callable:
     return getattr(pcapi.local_providers, class_name)
 
 
-def synchronize_venue_provider(venue_provider: VenueProvider, limit: int | None = None) -> None:
+def synchronize_venue_provider(venue_provider: provider_models.VenueProvider, limit: int | None = None) -> None:
     if venue_provider.provider.implements_provider_api and not venue_provider.provider.isCinemaProvider:
         synchronize_provider_api.synchronize_venue_provider(venue_provider)
 
@@ -88,11 +95,11 @@ def synchronize_venue_provider(venue_provider: VenueProvider, limit: int | None 
 
 
 def synchronize_ems_venue_providers(from_last_version: bool = False) -> None:
-    connector = EMSScheduleConnector()
+    connector = ems_connectors.EMSScheduleConnector()
     last_version = providers_repository.get_ems_oldest_sync_version() if from_last_version else 0
     ems_provider_id = providers_repository.get_provider_by_local_class("EMSStocks").id
     venues_provider_to_sync: set[int] = set()
-    venue_provider_by_site_id: dict[str, VenueProvider] = {}
+    venue_provider_by_site_id: dict[str, provider_models.VenueProvider] = {}
 
     logger.info("Starting EMS synchronization", extra={"version": last_version})
 
@@ -138,8 +145,8 @@ def synchronize_ems_venue_providers(from_last_version: bool = False) -> None:
         db.session.commit()
 
 
-def synchronize_ems_venue_provider(venue_provider: VenueProvider) -> None:
-    connector = EMSScheduleConnector()
+def synchronize_ems_venue_provider(venue_provider: provider_models.VenueProvider) -> None:
+    connector = ems_connectors.EMSScheduleConnector()
     ems_cinema_details = providers_repository.get_ems_cinema_details(venue_provider.venueIdAtOfferProvider)
     last_version = ems_cinema_details.lastVersion
     schedules = connector.get_schedules(last_version)
@@ -151,3 +158,149 @@ def synchronize_ems_venue_provider(venue_provider: VenueProvider) -> None:
         ems_stocks.synchronize()
         providers_repository.bump_ems_sync_version(new_version, [venue_provider.id])
         db.session.commit()
+
+
+def collect_elligible_venues_and_activate_ems_sync() -> None:
+    """
+    Switch Allocine synchonization to EMS synchronization
+    """
+    with transaction():
+        connector = ems_connectors.EMSSitesConnector()
+
+        venues_successfully_activated: set[str] = set()
+
+        venue_providers_to_activate: list[dict] = []
+        pivot_to_create: list[dict] = []
+        venue_providers_to_deactivate: list[dict] = []
+        allocine_pivot_to_delete: list[int] = []
+        price_rules_to_delete: list[int] = []
+
+        ems_provider_id = providers_repository.get_provider_by_local_class("EMSStocks").id
+        available_sites_by_allocine_id = {venue.allocine_id: venue for venue in connector.get_available_sites()}
+
+        allocine_venue_provider_aliased = sqla_orm.aliased(provider_models.AllocineVenueProvider, flat=True)
+
+        venues_to_activate = (
+            Venue.query.join(Venue.venueProviders)
+            .join(
+                allocine_venue_provider_aliased,
+                sqla.and_(
+                    allocine_venue_provider_aliased.id == provider_models.VenueProvider.id,
+                    allocine_venue_provider_aliased.internalId.in_(available_sites_by_allocine_id),
+                ),
+            )
+            .outerjoin(Venue.allocinePivot)
+            .outerjoin(allocine_venue_provider_aliased.priceRules)
+            .options(
+                sqla_orm.joinedload(Venue.venueProviders.of_type(provider_models.AllocineVenueProvider)).joinedload(
+                    provider_models.AllocineVenueProvider.priceRules
+                )
+            )
+            .options(sqla_orm.joinedload(Venue.allocinePivot))
+            .all()
+        )
+
+        for venue_to_activate in venues_to_activate:
+            allocine_venue_provider = venue_to_activate.venueProviders[0]
+            available_venue = available_sites_by_allocine_id[allocine_venue_provider.internalId]
+            venue_providers_to_deactivate.append(
+                {
+                    "id": allocine_venue_provider.id,
+                    "venue_id": allocine_venue_provider.venueId,
+                    "provider_id": allocine_venue_provider.providerId,
+                    "is_active": False,
+                }
+            )
+            price_rules_to_delete.extend([price_rule.id for price_rule in allocine_venue_provider.priceRules])
+            logger.info(
+                "Deactivating Allocine sync for a venue",
+                extra={
+                    "venue_id": venue_to_activate.id,
+                    "venue_siret": venue_to_activate.siret,
+                    "venue_name": venue_to_activate.name,
+                    "venue_provider_id": allocine_venue_provider.id,
+                },
+            )
+            db.session.add(
+                history_api.log_action(
+                    action_type=history_models.ActionType.LINK_VENUE_PROVIDER_DELETED,
+                    author=None,
+                    venue=venue_to_activate,
+                    save=False,
+                    provider_id=allocine_venue_provider.providerId,
+                    provider_name="Allociné",
+                )
+            )
+
+            venue_providers_to_activate.append(
+                {
+                    "venueId": venue_to_activate.id,
+                    "providerId": ems_provider_id,
+                    "venueIdAtOfferProvider": available_venue.id,
+                }
+            )
+            logger.info(
+                "Creating EMS sync for a venue",
+                extra={
+                    "venue_id": venue_to_activate.id,
+                    "venue_siret": venue_to_activate.siret,
+                    "venue_name": venue_to_activate.name,
+                },
+            )
+
+            pivot = {
+                "venueId": venue_to_activate.id,
+                "providerId": ems_provider_id,
+                "idAtProvider": available_venue.id,
+            }
+            pivot_to_create.append(pivot)
+
+            allocine_pivot_to_delete.extend([allocine_pivot.id for allocine_pivot in venue_to_activate.allocinePivot])
+
+            venues_successfully_activated.add(allocine_venue_provider.internalId)
+
+        # Removing no longer up to date allocine sync
+        provider_models.AllocineVenueProviderPriceRule.query.filter(
+            provider_models.AllocineVenueProviderPriceRule.id.in_(price_rules_to_delete)
+        ).delete()
+        # As AllocineVenueProvider inherit from VenueProvider, we need to delete rows in both tables
+        provider_models.AllocineVenueProvider.query.filter(
+            provider_models.AllocineVenueProvider.id.in_(
+                venue_provider["id"] for venue_provider in venue_providers_to_deactivate
+            )
+        ).delete()
+        provider_models.VenueProvider.query.filter(
+            provider_models.VenueProvider.id.in_(
+                venue_provider["id"] for venue_provider in venue_providers_to_deactivate
+            )
+        ).delete()
+        provider_models.AllocinePivot.query.filter(
+            provider_models.AllocinePivot.id.in_(allocine_pivot_to_delete)
+        ).delete()
+
+        # Deactivate and deindex offers related to Allocine venue providers
+        for venue_provider in venue_providers_to_deactivate:
+            update_venue_synchronized_offers_active_status_job.delay(
+                venue_provider["venue_id"], venue_provider["provider_id"], False
+            )
+
+        # Then creating EMS sync
+        db.session.bulk_insert_mappings(provider_models.VenueProvider, venue_providers_to_activate)
+
+        # And finally creating pivots and EMSCinemaDetails
+        for mapping in pivot_to_create:
+            pivot = provider_models.CinemaProviderPivot(**mapping)
+            cinema_details = provider_models.EMSCinemaDetails(cinemaProviderPivot=pivot)
+            repository.save(pivot, cinema_details, commit=False)
+
+        if venues_left_to_be_activated := set(available_sites_by_allocine_id).difference(venues_successfully_activated):
+            for allocine_id in venues_left_to_be_activated:
+                venue = available_sites_by_allocine_id[allocine_id]
+                logger.warning(
+                    "Fail to find this venue available for EMS sync",
+                    extra={
+                        "venue_name": venue.name,
+                        "venue_allocine_id": venue.allocine_id,
+                        "venue_siret": venue.siret,
+                    },
+                )

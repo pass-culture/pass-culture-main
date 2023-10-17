@@ -100,6 +100,7 @@ class FeatureToggle(enum.Enum):
     ENABLE_OFFERER_STATS = "Active l'affichage des statistiques d'une structure sur le portail pro"
     ENABLE_EMS_INTEGRATION = "Active la synchronisation de stocks et la réservation via EMS"
     ENABLE_CGR_INTEGRATION = "Active la synchonisation de stocks et la réservation via CGR"
+    ENABLE_SWITCH_ALLOCINE_SYNC_TO_EMS_SYNC = "Activer le passage automatique des synchronisations Allociné à EMS"
     # For features under construction, a temporary feature flag must be named with the `WIP_` prefix
     WIP_BEHIND_L7_LOAD_BALANCER = "À activer/désactiver en même temps que le load balancer L7"
     WIP_ENABLE_OFFER_CREATION_API_V1 = "Active la création d'offres via l'API v1"
@@ -183,6 +184,7 @@ FEATURES_DISABLED_BY_DEFAULT: tuple[FeatureToggle, ...] = (
     FeatureToggle.ID_CHECK_ADDRESS_AUTOCOMPLETION,
     FeatureToggle.PRICE_FINANCE_EVENTS,
     FeatureToggle.SYNCHRONIZE_TITELIVE_API_MUSIC_PRODUCTS,
+    FeatureToggle.ENABLE_SWITCH_ALLOCINE_SYNC_TO_EMS_SYNC,
     FeatureToggle.WIP_BACKOFFICE_ENABLE_REDIRECT_SINGLE_RESULT,
     FeatureToggle.WIP_CATEGORY_SELECTION,
     FeatureToggle.WIP_EAC_ENABLE_NEW_AUTHENTICATION_PUBLIC_API,
