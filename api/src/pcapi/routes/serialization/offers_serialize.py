@@ -364,6 +364,9 @@ class GetStocksResponseModel(BaseModel):
     stocks: list[GetOfferStockResponseModel]
     stock_count: int
 
+    class Config:
+        json_encoders = {datetime.datetime: format_into_utc_date}
+
 
 class StocksQueryModel(BaseModel):
     date: datetime.date | None
