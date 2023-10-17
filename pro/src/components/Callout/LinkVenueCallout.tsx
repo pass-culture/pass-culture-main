@@ -35,7 +35,8 @@ const LinkVenueCallout = ({
       } à un compte bancaire`}
       links={[
         {
-          href: '/remboursements/informations-bancaires',
+          href:
+            '/remboursements/informations-bancaires?structure=' + offerer.id,
           linkTitle: 'Gérer le rattachement de mes lieux',
           targetLink: '',
           isExternal: false,

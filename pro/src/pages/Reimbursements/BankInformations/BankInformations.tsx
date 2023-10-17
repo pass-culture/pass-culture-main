@@ -53,12 +53,14 @@ const BankInformations = (): JSX.Element => {
   }
 
   useEffect(() => {
-    if (offererId && offerers && offerers?.length > 0) {
-      updateOfferer(offererId)
-    }
-    if (searchParams.has('structure')) {
-      searchParams.delete('structure')
-      setSearchParams(searchParams)
+    if (offerers && offerers?.length > 0) {
+      if (offererId) {
+        updateOfferer(offererId)
+      }
+      if (searchParams.has('structure')) {
+        searchParams.delete('structure')
+        setSearchParams(searchParams)
+      }
     }
   }, [])
 
@@ -90,9 +92,7 @@ const BankInformations = (): JSX.Element => {
 
   return (
     <>
-      <div className="header">
-        <h2 className="header-title">Informations bancaires</h2>
-      </div>
+      <h2 className="header-title">Informations bancaires</h2>
       <div className={styles['information']}>
         {!selectedOfferer?.hasValidBankAccount &&
           !selectedOfferer?.hasPendingBankAccount &&
