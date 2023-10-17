@@ -1,9 +1,11 @@
 import { format } from 'date-fns'
 import sub from 'date-fns/sub'
-import { v4 as uuidv4 } from 'uuid'
 
 import { StocksEvent } from 'components/StocksEventList/StocksEventList'
+import useNotification from 'hooks/useNotification'
+import { MAX_STOCKS_PER_OFFER } from 'screens/IndividualOffer/constants'
 import { serializeBeginningDateTime } from 'screens/IndividualOffer/StocksEventEdition/adapters/serializers'
+import upsertStocksEventAdapter from 'screens/IndividualOffer/StocksEventEdition/adapters/upsertStocksEventAdapter'
 import {
   FORMAT_ISO_DATE_ONLY,
   isDateValid,
@@ -16,12 +18,88 @@ import {
 } from './recurrenceUtils'
 import { RecurrenceFormValues, RecurrenceType } from './types'
 
-export const onSubmit = (
+export const onSubmit = async (
   values: RecurrenceFormValues,
-  departmentCode?: string | null
-): StocksEvent[] => {
+  departmentCode: string,
+  existingStocks: StocksEvent[],
+  offerId: number,
+  notify: ReturnType<typeof useNotification>
+): Promise<StocksEvent[] | undefined | void> => {
   const dates = getRecurrenceDates(values)
-  return generateStocksForDates(values, dates, departmentCode)
+  const generatedStocks = generateStocksForDates(values, dates, departmentCode)
+
+  if (generatedStocks.length + existingStocks.length > MAX_STOCKS_PER_OFFER) {
+    notify.error(
+      `Veuillez créer moins de ${MAX_STOCKS_PER_OFFER} occurrences par offre.`
+    )
+    return
+  }
+
+  const allStocks: StocksEvent[] = [...existingStocks, ...generatedStocks]
+
+  const uniqueStocksSet = new Set()
+
+  const deduplicatedStocks: StocksEvent[] = allStocks.filter((stock) => {
+    const stockKey = `${stock.beginningDatetime}-${stock.priceCategoryId}`
+    if (!uniqueStocksSet.has(stockKey)) {
+      uniqueStocksSet.add(stockKey)
+      return true
+    }
+    return false
+  })
+
+  const serializedStocksToAdd = deduplicatedStocks
+    //  keep only the new stocks
+    .filter((s) => s.id === undefined)
+    // keep only the fields that are needed for the API
+    .map(
+      ({
+        id,
+        beginningDatetime,
+        bookingLimitDatetime,
+        priceCategoryId,
+        quantity,
+      }) => ({
+        id,
+        beginningDatetime,
+        bookingLimitDatetime,
+        priceCategoryId,
+        quantity,
+      })
+    )
+  const numberOfRemovedStocks = allStocks.length - deduplicatedStocks.length
+
+  if (numberOfRemovedStocks > 0) {
+    // FIXED in same PR this notification is never shown
+    notify.information(
+      numberOfRemovedStocks === 1
+        ? 'Une occurence n’a pas été ajoutée car elle existait déjà'
+        : 'Certaines occurences n’ont pas été ajoutées car elles existaient déjà'
+    )
+  }
+
+  // Upsert stocks if there are stocks to upsert
+  if (serializedStocksToAdd.length > 0) {
+    const { isOk } = await upsertStocksEventAdapter({
+      offerId: offerId,
+      stocks: serializedStocksToAdd,
+    })
+    if (isOk) {
+      notify.success(
+        serializedStocksToAdd.length === 1
+          ? '1 nouvelle occurrence a été ajoutée'
+          : `${serializedStocksToAdd.length} nouvelles occurrences ont été ajoutées`
+      )
+    } else {
+      notify.error(
+        "Une erreur est survenue lors de l'enregistrement de vos stocks."
+      )
+      return
+    }
+  }
+
+  // FIXED in same PR this break deletion because we need ids now
+  return deduplicatedStocks
 }
 
 const getYearMonthDay = (date: string) => {
@@ -166,7 +244,7 @@ const generateStocksForDates = (
             })
           ),
           bookingsQuantity: 0,
-          uuid: uuidv4(),
+          isEventDeletable: true,
         }
       })
     )
