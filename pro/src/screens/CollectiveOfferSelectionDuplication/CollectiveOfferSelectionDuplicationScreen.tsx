@@ -97,12 +97,13 @@ const CollectiveOfferSelectionDuplication = (): JSX.Element => {
 
       <div className={styles['search-container']}>
         <FormikProvider value={formikSearch}>
-          <Form>
+          <Form className={styles['search-input-container']}>
             <TextInput
               label="Offre vitrine à dupliquer"
               isLabelHidden
               name="searchFilter"
               placeholder="Rechercher une offre vitrine"
+              className={styles['search-input']}
             />
             <SubmitButton
               className={styles['search-button']}
