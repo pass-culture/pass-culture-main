@@ -17,34 +17,16 @@ from pcapi.core.external_bookings.exceptions import ExternalBookingSoldOutError
 from pcapi.utils import requests
 
 
-class EMSScheduleConnector:
-    def _build_url(self) -> str:
-        return settings.EMS_API_URL
+class AbstractEMSConnector:
+    def build_url(self) -> str:
+        raise NotImplementedError
 
-    def _build_query_params(self, version: int) -> dict:
+    def build_query_params(self, version: int) -> dict:
         return {"version": version}
 
-    def _build_auth(self) -> HTTPBasicAuth:
+    def build_auth(self) -> HTTPBasicAuth:
         auth = HTTPBasicAuth(username=settings.EMS_API_USER, password=settings.EMS_API_PASSWORD)
         return auth
-
-    def get_schedules(self, version: int = 0) -> ScheduleResponse:
-        response = requests.get(
-            url=self._build_url(), auth=self._build_auth(), params=self._build_query_params(version)
-        )
-
-        self._check_response_is_ok(response)
-        return pydantic_v1.parse_obj_as(ems_serializers.ScheduleResponse, response.json())
-
-    def get_movie_poster_from_api(self, image_url: str) -> bytes:
-        api_response = requests.get(image_url)
-
-        if api_response.status_code != 200:
-            raise EMSAPIException(
-                f"Error getting EMS API movie poster {image_url} with code {api_response.status_code}"
-            )
-
-        return api_response.content
 
     def _check_response_is_ok(self, response: requests.Response) -> None:
         if response.status_code >= 400:
@@ -69,6 +51,27 @@ class EMSScheduleConnector:
         except json.JSONDecodeError:
             message = response.content
         return message
+
+
+class EMSScheduleConnector(AbstractEMSConnector):
+    def build_url(self) -> str:
+        return settings.EMS_API_URL
+
+    def get_schedules(self, version: int = 0) -> ScheduleResponse:
+        response = requests.get(url=self.build_url(), auth=self.build_auth(), params=self.build_query_params(version))
+
+        self._check_response_is_ok(response)
+        return pydantic_v1.parse_obj_as(ems_serializers.ScheduleResponse, response.json())
+
+    def get_movie_poster_from_api(self, image_url: str) -> bytes:
+        api_response = requests.get(image_url)
+
+        if api_response.status_code != 200:
+            raise EMSAPIException(
+                f"Error getting EMS API movie poster {image_url} with code {api_response.status_code}"
+            )
+
+        return api_response.content
 
 
 class EMSBookingConnector:
