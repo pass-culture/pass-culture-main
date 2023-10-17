@@ -20,7 +20,7 @@ def ignore_flask_shell_event(
 
 
 def init_sentry_sdk() -> None:
-    if settings.IS_DEV:
+    if not settings.SENTRY_ENABLED:
         return
     sentry_sdk.init(
         dsn=settings.SENTRY_DSN,

@@ -38,7 +38,7 @@ def delete_contact(contact_email: str) -> None:
 def _get_backend(data: models.TransactionalEmailData | models.TransactionalWithoutTemplateEmailData) -> type:
     # Do not send unnecessary transactional emails through Sendinblue in EHP
     if (
-        (settings.IS_STAGING or settings.IS_TESTING)
+        settings.DO_NOT_SEND_TRANSACTIONNAL_EMAIL
         and isinstance(data, models.TransactionalEmailData)
         and not data.template.send_to_ehp
     ):
