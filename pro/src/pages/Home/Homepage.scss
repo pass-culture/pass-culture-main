@@ -229,3 +229,9 @@
 .step-section {
   margin-top: rem.torem(16px);
 }
+
+.reimbursements-banners {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
