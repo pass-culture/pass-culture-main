@@ -17,17 +17,16 @@ export const ADAGE_FILTERS_DEFAULT_VALUES: SearchFormValues = {
 }
 
 export const computeFiltersInitialValues = (
-  userDepartmentCode?: string | null,
   venueFilter?: VenueResponse | null
 ) => {
   const venueDepartementFilter =
-    venueFilter && venueFilter.departementCode !== userDepartmentCode
+    venueFilter && venueFilter.departementCode
       ? [venueFilter.departementCode]
       : []
   return {
     ...ADAGE_FILTERS_DEFAULT_VALUES,
-    departments: userDepartmentCode
-      ? [userDepartmentCode, ...venueDepartementFilter]
+    departments: venueFilter
+      ? venueDepartementFilter
       : ADAGE_FILTERS_DEFAULT_VALUES.departments,
   }
 }

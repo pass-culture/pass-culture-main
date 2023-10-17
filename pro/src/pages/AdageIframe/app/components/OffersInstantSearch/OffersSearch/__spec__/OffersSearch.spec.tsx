@@ -352,31 +352,10 @@ describe('offersSearch component', () => {
       })
     )
     expect(screen.getByLabelText('75 - Paris', { exact: false })).toBeChecked()
-    expect(screen.getByLabelText('30 - Gard', { exact: false })).toBeChecked()
-  })
-
-  it('should go back to localisation main menu when reseting the localisation modal', async () => {
-    renderOffersSearchComponent(props, user)
-
-    await userEvent.click(
-      screen.getByRole('button', {
-        name: /Localisation des partenaires/,
-      })
-    )
-
-    await userEvent.click(screen.getByRole('button', { name: 'Réinitialiser' }))
-
-    expect(
-      screen.getByText('Dans quelle zone géographique')
-    ).toBeInTheDocument()
   })
 
   it('should go back to the localisation main menu when reopening the localisation multiselect after having submitted it with no values selected', async () => {
     renderOffersSearchComponent(props, user)
-
-    await userEvent.click(
-      screen.getByRole('button', { name: 'Réinitialiser les filtres' })
-    )
 
     const localisationFilter = screen.getByRole('button', {
       name: 'Localisation des partenaires',
