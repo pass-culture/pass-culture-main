@@ -1685,6 +1685,8 @@ def create_from_onboarding_data(
 ) -> models.UserOfferer:
     # Get name (raison sociale) from Sirene API
     siret_info = sirene.get_siret(onboarding_data.siret)
+    if not siret_info.active:
+        raise exceptions.InactiveSirenException()
     name = siret_info.name
 
     # Create Offerer or attach user to existing Offerer

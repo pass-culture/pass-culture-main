@@ -62,6 +62,7 @@ def test_new_offerer_auto_tagging(db_session, ape_code, expected_tag):
         name="this is not a name",
         head_office_siret="77712345600000",
         legal_category_code="don't know",
+        active=True,
     )
     user = users_factories.UserFactory()
 

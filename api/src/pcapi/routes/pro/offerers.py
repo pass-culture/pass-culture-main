@@ -5,6 +5,7 @@ from flask_login import login_required
 import sqlalchemy.orm as sqla_orm
 
 from pcapi import settings
+from pcapi.connectors import sirene
 from pcapi.connectors.api_recaptcha import ReCaptchaException
 from pcapi.connectors.api_recaptcha import check_webapp_recaptcha_token
 import pcapi.core.educational.exceptions as educational_exceptions
@@ -151,6 +152,10 @@ def delete_api_key(api_key_prefix: str) -> None:
     on_success_status=201, response_model=offerers_serialize.PostOffererResponseModel, api=blueprint.pro_private_schema
 )
 def create_offerer(body: offerers_serialize.CreateOffererQueryModel) -> offerers_serialize.PostOffererResponseModel:
+    siren_info = sirene.get_siren(body.siren)
+    if not siren_info.active:
+        raise ApiErrors(errors={"siren": ["SIREN is no longer active"]})
+    body.name = siren_info.name
     user_offerer = api.create_offerer(current_user, body)
 
     return offerers_serialize.PostOffererResponseModel.from_orm(user_offerer.offerer)
@@ -229,8 +234,10 @@ def save_new_onboarding_data(
         )
     except ReCaptchaException:
         raise ApiErrors({"token": "The given token is invalid"})
-
-    user_offerer = api.create_from_onboarding_data(current_user, body)
+    try:
+        user_offerer = api.create_from_onboarding_data(current_user, body)
+    except offerers_exceptions.InactiveSirenException:
+        raise ApiErrors({"siret": "SIRET is no longer active"})
     return offerers_serialize.PostOffererResponseModel.from_orm(user_offerer.offerer)
 
 

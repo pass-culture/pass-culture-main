@@ -28,6 +28,7 @@ def test_get_siren():
         assert siren_info.address.street == "1 BD POISSONIERE"
         assert siren_info.address.postal_code == "75002"
         assert siren_info.address.city == "PARIS"
+        assert siren_info.active
 
 
 @override_settings(SIRENE_BACKEND="pcapi.connectors.sirene.InseeBackend")
