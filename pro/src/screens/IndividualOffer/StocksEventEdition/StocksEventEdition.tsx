@@ -5,7 +5,6 @@ import React, { useRef, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 
 import { api } from 'apiClient/api'
-import { GetOfferStockResponseModel } from 'apiClient/v1'
 import DialogBox from 'components/DialogBox'
 import FormLayout from 'components/FormLayout'
 import { OFFER_WIZARD_STEP_IDS } from 'components/IndividualOfferBreadcrumb/constants'
@@ -65,7 +64,7 @@ const hasStocksChanged = (
 }
 export interface StocksEventEditionProps {
   offer: IndividualOffer
-  stocks: GetOfferStockResponseModel[]
+  stocks: StocksEvent[]
 }
 
 const StocksEventEdition = ({

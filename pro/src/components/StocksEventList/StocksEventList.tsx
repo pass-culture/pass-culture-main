@@ -1,6 +1,7 @@
 import cn from 'classnames'
 import React, { useState } from 'react'
 
+import { api } from 'apiClient/api'
 import { PriceCategoryResponseModel } from 'apiClient/v1'
 import ActionsBarSticky from 'components/ActionsBarSticky'
 import { Events } from 'core/FirebaseEvents/constants'
@@ -32,13 +33,13 @@ import {
 export const STOCKS_PER_PAGE = 20
 
 export interface StocksEvent {
-  id?: string
+  id?: number
   beginningDatetime: string
   bookingLimitDatetime: string
   priceCategoryId: number
   quantity: number | null
-  uuid: string
   bookingsQuantity: number
+  isEventDeletable: boolean
 }
 
 export interface StocksEventListProps {
@@ -103,15 +104,16 @@ const StocksEventList = ({
     }
   }
 
-  const onDeleteStock = (selectIndex: number, uuid: string) => {
+  const onDeleteStock = async (selectIndex: number, stockId: number) => {
     // handle checkbox selection
     const newArray = [...isCheckedArray]
     newArray.splice(selectIndex, 1)
     setIsCheckedArray(newArray)
-    const stockIndex = stocks.findIndex((stock) => stock.uuid === uuid)
+    const stockIndex = stocks.findIndex((stock) => stock.id === stockId)
 
     stocks.splice(stockIndex, 1)
     setStocks?.([...stocks])
+    await api.deleteStock(stockId)
     logEvent?.(Events.CLICKED_DELETE_STOCK, {
       offerId: offerId,
     })
@@ -122,13 +124,13 @@ const StocksEventList = ({
     notify.success('1 occurrence a été supprimée')
   }
 
-  const onBulkDelete = () => {
-    const stocksUuidToDelete = filteredStocks
+  const onBulkDelete = async () => {
+    const stocksIdToDelete = filteredStocks
       .filter((stock, index) => isCheckedArray[index])
-      .map((stock) => stock.uuid)
+      .map((stock) => stock.id)
 
     const newStocks = stocks.filter(
-      (stock) => !stocksUuidToDelete.includes(stock.uuid)
+      (stock) => !stocksIdToDelete.includes(stock.id)
     )
 
     const deletedStocksCount = stocks.length - newStocks.length
@@ -138,6 +140,13 @@ const StocksEventList = ({
     })
     setIsCheckedArray(stocks.map(() => false))
     setStocks?.([...newStocks])
+    if (stocksIdToDelete.length > 0) {
+      await Promise.all(
+        stocksIdToDelete.map(
+          (stockId) => stockId?.toString() && api.deleteStock(stockId)
+        )
+      )
+    }
 
     const newLastPage = Math.ceil(newStocks.length / STOCKS_PER_PAGE)
     if (
@@ -455,7 +464,9 @@ const StocksEventList = ({
                   <td className={cn(styles['data'], styles['clear-icon'])}>
                     <Button
                       variant={ButtonVariant.TERNARY}
-                      onClick={() => onDeleteStock(index, stock.uuid)}
+                      onClick={() =>
+                        stock.id?.toString() && onDeleteStock(index, stock.id)
+                      }
                       icon={fullTrashIcon}
                       hasTooltip
                     >
