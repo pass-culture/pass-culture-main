@@ -1,6 +1,7 @@
 import { format } from 'date-fns'
 
-import { GetOfferStockResponseModel, OfferStatus } from 'apiClient/v1'
+import { OfferStatus } from 'apiClient/v1'
+import { StocksEvent } from 'components/StocksEventList/StocksEventList'
 import { SelectOption } from 'custom_types/form'
 import { FORMAT_HH_mm, FORMAT_ISO_DATE_ONLY, isDateValid } from 'utils/date'
 import { getLocalDepartementDateTimeFromUtc } from 'utils/timezone'
@@ -18,7 +19,7 @@ interface BuildInitialValuesCommonArgs {
 }
 
 interface BuildSingleInitialValuesArgs extends BuildInitialValuesCommonArgs {
-  stock: GetOfferStockResponseModel
+  stock: StocksEvent
 }
 
 const buildSingleInitialValues = ({
@@ -85,7 +86,7 @@ const buildSingleInitialValues = ({
 }
 
 interface BuildInitialValuesArgs extends BuildInitialValuesCommonArgs {
-  offerStocks: GetOfferStockResponseModel[]
+  offerStocks: StocksEvent[]
 }
 
 export const buildInitialValues = ({

@@ -1,9 +1,10 @@
 import { FieldArray, FormikProvider, useFormik } from 'formik'
 import React from 'react'
 
+import { PriceCategoryResponseModel } from 'apiClient/v1'
 import FormLayout from 'components/FormLayout'
 import { StocksEvent } from 'components/StocksEventList/StocksEventList'
-import { IndividualOffer } from 'core/Offers/types'
+import useNotification from 'hooks/useNotification'
 import fullMoreIcon from 'icons/full-more.svg'
 import fullNextIcon from 'icons/full-next.svg'
 import fullTrashIcon from 'icons/full-trash.svg'
@@ -46,9 +47,13 @@ import { getValidationSchema } from './form/validationSchema'
 import styles from './RecurrenceForm.module.scss'
 
 interface Props {
-  offer: IndividualOffer
   onCancel: () => void
-  onConfirm: (newStocks: StocksEvent[]) => void
+  stocks: StocksEvent[]
+  setIsOpen: (p: boolean) => void
+  setStocks?: (stocks: StocksEvent[]) => void
+  departmentCode: string
+  offerId: number
+  priceCategories: PriceCategoryResponseModel[]
 }
 
 const mapNumberToFrenchOrdinals = (n: number): string => {
@@ -107,15 +112,29 @@ const getMonthlyOptions = (values: RecurrenceFormValues) => {
 }
 
 export const RecurrenceForm = ({
-  offer,
   onCancel,
-  onConfirm,
+  stocks,
+  setIsOpen,
+  setStocks,
+  departmentCode,
+  offerId,
+  priceCategories,
 }: Props): JSX.Element => {
-  const priceCategoryOptions = getPriceCategoryOptions(offer.priceCategories)
+  const priceCategoryOptions = getPriceCategoryOptions(priceCategories)
+  const notify = useNotification()
 
-  const handleSubmit = (values: RecurrenceFormValues) => {
-    const newStocks = onSubmit(values, offer.venue.departementCode)
-    onConfirm(newStocks)
+  const handleSubmit = async (values: RecurrenceFormValues) => {
+    const newStocks = await onSubmit(
+      values,
+      departmentCode,
+      stocks,
+      offerId,
+      notify
+    )
+    if (newStocks?.length) {
+      setStocks?.([...newStocks])
+    }
+    setIsOpen(false)
   }
 
   const formik = useFormik({
