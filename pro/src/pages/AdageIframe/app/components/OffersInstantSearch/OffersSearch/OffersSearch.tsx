@@ -131,10 +131,7 @@ export const OffersSearch = ({
   }
 
   const formik = useFormik<SearchFormValues>({
-    initialValues: computeFiltersInitialValues(
-      adageUser.departmentCode,
-      venueFilter
-    ),
+    initialValues: computeFiltersInitialValues(venueFilter),
     enableReinitialize: true,
     onSubmit: handleSubmit,
   })

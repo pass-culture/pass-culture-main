@@ -36,7 +36,7 @@ export const App = (): JSX.Element => {
     const getRelativeOffers = params.get('all') === 'true'
     apiAdage
       .authenticate()
-      .then((user) => setUser(user))
+      .then(user => setUser(user))
       .then(async () => {
         if (siret) {
           try {
@@ -97,28 +97,22 @@ export const App = (): JSX.Element => {
   }
 
   return (
-    <>
-      <AdageUserContextProvider adageUser={user}>
-        <FiltersContextProvider venueFilter={venueFilter}>
-          <FacetFiltersContextProvider
-            departmentCode={user?.departmentCode}
-            uai={user?.uai}
-            venueFilter={venueFilter}
-          >
-            {user?.role &&
-            [AdageFrontRoles.READONLY, AdageFrontRoles.REDACTOR].includes(
-              user.role
-            ) ? (
-              <AppLayout
-                removeVenueFilter={removeVenueFilter}
-                venueFilter={venueFilter}
-              />
-            ) : (
-              <UnauthenticatedError />
-            )}
-          </FacetFiltersContextProvider>
-        </FiltersContextProvider>
-      </AdageUserContextProvider>
-    </>
+    <AdageUserContextProvider adageUser={user}>
+      <FiltersContextProvider venueFilter={venueFilter}>
+        <FacetFiltersContextProvider uai={user?.uai} venueFilter={venueFilter}>
+          {user?.role &&
+          [AdageFrontRoles.READONLY, AdageFrontRoles.REDACTOR].includes(
+            user.role
+          ) ? (
+            <AppLayout
+              removeVenueFilter={removeVenueFilter}
+              venueFilter={venueFilter}
+            />
+          ) : (
+            <UnauthenticatedError />
+          )}
+        </FacetFiltersContextProvider>
+      </FiltersContextProvider>
+    </AdageUserContextProvider>
   )
 }
