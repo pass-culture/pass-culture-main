@@ -3,6 +3,7 @@ import sub from 'date-fns/sub'
 
 import { StocksEvent } from 'components/StocksEventList/StocksEventList'
 import useNotification from 'hooks/useNotification'
+import { serializeStockEvents } from 'pages/IndividualOfferWizard/Stocks/serializeStockEvents'
 import { MAX_STOCKS_PER_OFFER } from 'screens/IndividualOffer/constants'
 import { serializeBeginningDateTime } from 'screens/IndividualOffer/StocksEventEdition/adapters/serializers'
 import upsertStocksEventAdapter from 'screens/IndividualOffer/StocksEventEdition/adapters/upsertStocksEventAdapter'
@@ -67,20 +68,10 @@ export const onSubmit = async (
         quantity,
       })
     )
-  const numberOfRemovedStocks = allStocks.length - deduplicatedStocks.length
-
-  if (numberOfRemovedStocks > 0) {
-    // FIXED in same PR this notification is never shown
-    notify.information(
-      numberOfRemovedStocks === 1
-        ? 'Une occurence n’a pas été ajoutée car elle existait déjà'
-        : 'Certaines occurences n’ont pas été ajoutées car elles existaient déjà'
-    )
-  }
 
   // Upsert stocks if there are stocks to upsert
   if (serializedStocksToAdd.length > 0) {
-    const { isOk } = await upsertStocksEventAdapter({
+    const { isOk, payload } = await upsertStocksEventAdapter({
       offerId: offerId,
       stocks: serializedStocksToAdd,
     })
@@ -90,6 +81,7 @@ export const onSubmit = async (
           ? '1 nouvelle occurrence a été ajoutée'
           : `${serializedStocksToAdd.length} nouvelles occurrences ont été ajoutées`
       )
+      return [...existingStocks, ...serializeStockEvents(payload.stocks)]
     } else {
       notify.error(
         "Une erreur est survenue lors de l'enregistrement de vos stocks."
@@ -97,9 +89,6 @@ export const onSubmit = async (
       return
     }
   }
-
-  // FIXED in same PR this break deletion because we need ids now
-  return deduplicatedStocks
 }
 
 const getYearMonthDay = (date: string) => {
