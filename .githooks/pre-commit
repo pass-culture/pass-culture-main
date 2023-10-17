@@ -121,7 +121,7 @@ done
 if [[ ! -z "$STAGED_FILES" ]]; then
   if [[ ! ",${DISABLED_API_PRE_COMMIT_CHECKS}," =~ ",isort," ]]; then
     echo -ne "\033[0;96mRunning isort to organize imports...\033[0m"
-    isort $LINTED_FILES --check-only --settings-file pyproject.toml 2>/dev/null
+    poetry run isort $LINTED_FILES --check-only --settings-file pyproject.toml 2>/dev/null
     if [[ "$?" != 0 ]]; then
       edited_files=$(isort $LINTED_FILES --settings-file pyproject.toml | sed -E "s/Fixing (.*)/  - \\1/g")
       # Go up 1 line to overwrite "Running..." line
@@ -136,7 +136,7 @@ if [[ ! -z "$STAGED_FILES" ]]; then
 
   if [[ ! ",${DISABLED_API_PRE_COMMIT_CHECKS}," =~ ",black," ]]; then
     echo -ne "\033[0;96mRunning black to format files...\033[0m"
-    black $LINTED_FILES --check --quiet --config pyproject.toml
+    poetry run black $LINTED_FILES --check --quiet --config pyproject.toml
     if [[ "$?" != 0 ]]; then
       edited_files=$(black $LINTED_FILES --config pyproject.toml 2>&1 | grep "^reformatted " | sed -E "s/reformatted (.*)/  - \\1/g")
       counter=$((counter + 1))
@@ -152,7 +152,7 @@ if [[ ! -z "$STAGED_FILES" ]]; then
   if [[ ! ",${DISABLED_API_PRE_COMMIT_CHECKS}," =~ ",mypy," ]]; then
     echo -e "\033[0;96mRunning mypy for type checking...\033[0m"
     if [[ ! $MYPY_FILES == "" ]]; then
-      mypy $MYPY_FILES --pretty
+      poetry run mypy $MYPY_FILES --pretty
       if [[ "$?" != 0 ]]; then
         counter=$((counter + 1))
       fi
@@ -162,7 +162,7 @@ if [[ ! -z "$STAGED_FILES" ]]; then
   if [[ ! ",${DISABLED_API_PRE_COMMIT_CHECKS}," =~ ",pylint," ]]; then
     echo -e "\033[0;96mRunning pylint for code linting...\033[0m"
     # parallel execution breaks plugins, use one single job !
-    pylint $LINTED_FILES --output-format="colorized" --score=no --jobs=1
+    poetry run pylint $LINTED_FILES --output-format="colorized" --score=no --jobs=1
     if [[ "$?" != 0 ]]; then
       counter=$((counter + 1))
     fi
@@ -187,7 +187,7 @@ if [[ ! -z "$STAGED_HTML_FILES" ]]; then
   # run stylelint on staged files
   if [[ ! ",${DISABLED_BO_PRE_COMMIT_CHECKS}," =~ ",djlint," ]]; then
     echo "Running dj formater and linter..."
-    djlint $STAGED_HTML_FILES --configuration src/pcapi/routes/backoffice/.djlintrc --reformat
+    poetry run djlint $STAGED_HTML_FILES --configuration src/pcapi/routes/backoffice/.djlintrc --reformat
     DJLINT_EXIT_CODE=$?
 
     # add files auto-fixed by the linter
