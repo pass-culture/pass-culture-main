@@ -4,6 +4,7 @@
 /* eslint-disable */
 
 import type { CollectiveOfferVenueBodyModel } from './CollectiveOfferVenueBodyModel';
+import type { DateRangeModel } from './DateRangeModel';
 import type { StudentLevels } from './StudentLevels';
 import type { SubcategoryIdEnum } from './SubcategoryIdEnum';
 
@@ -12,6 +13,7 @@ export type PatchCollectiveOfferTemplateBodyModel = {
   bookingEmails?: Array<string> | null;
   contactEmail?: string | null;
   contactPhone?: string | null;
+  dates?: DateRangeModel | null;
   description?: string | null;
   domains?: Array<number> | null;
   durationMinutes?: number | null;
