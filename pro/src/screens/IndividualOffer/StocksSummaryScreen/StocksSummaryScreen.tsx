@@ -1,10 +1,14 @@
-import React from 'react'
+import React, { useEffect, useState } from 'react'
 
+import { api } from 'apiClient/api'
 import { OFFER_WIZARD_STEP_IDS } from 'components/IndividualOfferBreadcrumb/constants'
+import { StocksEvent } from 'components/StocksEventList/StocksEventList'
 import { SummaryLayout } from 'components/SummaryLayout'
 import { useIndividualOfferContext } from 'context/IndividualOfferContext'
 import { OFFER_WIZARD_MODE } from 'core/Offers/constants'
 import { getIndividualOfferUrl } from 'core/Offers/utils/getIndividualOfferUrl'
+import useNotification from 'hooks/useNotification'
+import { serializeStockEvents } from 'pages/IndividualOfferWizard/Stocks/serializeStockEvents'
 
 import { getStockWarningText } from '../SummaryScreen/StockSection/StockSection'
 import StockThingSection from '../SummaryScreen/StockSection/StockThingSection/StockThingSection'
@@ -14,8 +18,30 @@ import styles from './StocksSummary.module.scss'
 
 export const StocksSummaryScreen = () => {
   const { offer, subCategories } = useIndividualOfferContext()
+  const [isLoading, setIsLoading] = useState(true)
+  const [stocks, setStocks] = useState<StocksEvent[]>([])
+  const notify = useNotification()
 
-  if (offer === null) {
+  useEffect(() => {
+    async function loadData() {
+      setIsLoading(true)
+      if (offer?.isEvent) {
+        try {
+          const response = await api.getStocks(offer.id)
+
+          setStocks(serializeStockEvents(response.stocks))
+        } catch {
+          notify.error(
+            'Une erreur est survenue lors du chargement de vos stocks.'
+          )
+        }
+      }
+      setIsLoading(false)
+    }
+    void loadData()
+  }, [])
+
+  if (offer === null || isLoading) {
     return null
   }
   const canBeDuo = subCategories.find(
@@ -44,7 +70,7 @@ export const StocksSummaryScreen = () => {
       )}
 
       {offer.isEvent ? (
-        <RecurrenceSummary offer={offer} />
+        <RecurrenceSummary offer={offer} stocks={stocks} />
       ) : (
         <StockThingSection offer={offer} canBeDuo={canBeDuo} />
       )}
