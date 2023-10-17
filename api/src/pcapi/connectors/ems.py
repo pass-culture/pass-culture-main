@@ -11,7 +11,6 @@ import sentry_sdk
 
 from pcapi import settings
 from pcapi.connectors.serialization import ems_serializers
-from pcapi.connectors.serialization.ems_serializers import ScheduleResponse
 from pcapi.core.external_bookings.ems.exceptions import EMSAPIException
 from pcapi.core.external_bookings.exceptions import ExternalBookingSoldOutError
 from pcapi.utils import requests
@@ -57,7 +56,7 @@ class EMSScheduleConnector(AbstractEMSConnector):
     def build_url(self) -> str:
         return settings.EMS_API_URL
 
-    def get_schedules(self, version: int = 0) -> ScheduleResponse:
+    def get_schedules(self, version: int = 0) -> ems_serializers.ScheduleResponse:
         response = requests.get(url=self.build_url(), auth=self.build_auth(), params=self.build_query_params(version))
 
         self._check_response_is_ok(response)
@@ -72,6 +71,18 @@ class EMSScheduleConnector(AbstractEMSConnector):
             )
 
         return api_response.content
+
+
+class EMSSitesConnector(AbstractEMSConnector):
+    def build_url(self) -> str:
+        return settings.EMS_SITES_API_URL
+
+    def get_available_venues(self, version: int = 0) -> list[ems_serializers.Site]:
+        response = requests.get(url=self.build_url(), auth=self.build_auth(), params=self.build_query_params(version))
+
+        self._check_response_is_ok(response)
+        serialized_site_response = pydantic_v1.parse_obj_as(ems_serializers.SitesResponse, response.json())
+        return serialized_site_response.sites
 
 
 class EMSBookingConnector:

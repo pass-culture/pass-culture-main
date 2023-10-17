@@ -1,6 +1,7 @@
 from base64 import b64decode
 import datetime
 from decimal import Decimal
+import logging
 from pathlib import Path
 
 import pytest
@@ -15,6 +16,7 @@ from pcapi.core.providers import factories as providers_factories
 from pcapi.core.providers import models as providers_models
 from pcapi.core.providers.repository import get_provider_by_local_class
 from pcapi.local_providers.cinema_providers.ems.ems_stocks import EMSStocks
+from pcapi.local_providers.provider_manager import activate_ems_sync
 from pcapi.local_providers.provider_manager import synchronize_ems_venue_providers
 from pcapi.utils.human_ids import humanize
 
@@ -465,3 +467,164 @@ class EMSStocksTest:
 
         assert ems_provider.isCinemaProvider is True
         assert venue_provider.isFromCinemaProvider is True
+
+
+class EMSSyncSitesTest:
+    def test_existing_up_to_date_sync_does_nothing(self, requests_mock, db_session):
+        requests_mock.get("https://fake_url.com?version=0", json=fixtures.SITES_DATA_VERSION_0)
+        ems_provider = get_provider_by_local_class("EMSStocks")
+
+        oceanic = offerers_factories.VenueFactory(
+            bookingEmail="oceanic-booking@example.com", withdrawalDetails="Modalité de retrait", siret="33069874700160"
+        )
+        providers_factories.VenueProviderFactory(venue=oceanic, provider=ems_provider, venueIdAtOfferProvider="0661")
+        oceanic_cinema_provider_pivot = providers_factories.CinemaProviderPivotFactory(
+            venue=oceanic, provider=ems_provider, idAtProvider="0661"
+        )
+        providers_factories.EMSCinemaDetailsFactory(cinemaProviderPivot=oceanic_cinema_provider_pivot)
+
+        pavillon_bleu = offerers_factories.VenueFactory(
+            bookingEmail="pavillon-bleu-booking@example.com",
+            withdrawalDetails="Modalité de retrait",
+            siret="21060105000011",
+        )
+        providers_factories.VenueProviderFactory(
+            venue=pavillon_bleu, provider=ems_provider, venueIdAtOfferProvider="1048"
+        )
+        pavillon_bleu_cinema_provider_pivot = providers_factories.CinemaProviderPivotFactory(
+            venue=pavillon_bleu, provider=ems_provider, idAtProvider="1048"
+        )
+        providers_factories.EMSCinemaDetailsFactory(cinemaProviderPivot=pavillon_bleu_cinema_provider_pivot)
+
+        ems_cine = offerers_factories.VenueFactory(
+            bookingEmail="ems-cine-booking@example.com", withdrawalDetails="Modalité de retrait", siret="775670664"
+        )
+        providers_factories.VenueProviderFactory(venue=ems_cine, provider=ems_provider, venueIdAtOfferProvider="9997")
+        ems_cinema_provider_pivot = providers_factories.CinemaProviderPivotFactory(
+            venue=ems_cine, provider=ems_provider, idAtProvider="9997"
+        )
+        providers_factories.EMSCinemaDetailsFactory(cinemaProviderPivot=ems_cinema_provider_pivot)
+
+        palace = offerers_factories.VenueFactory(
+            bookingEmail="palace-booking@example.com", withdrawalDetails="Modalité de retrait", siret="42465026500012"
+        )
+        providers_factories.VenueProviderFactory(venue=palace, provider=ems_provider, venueIdAtOfferProvider="1290")
+        palace_cinema_provider_pivot = providers_factories.CinemaProviderPivotFactory(
+            venue=palace, provider=ems_provider, idAtProvider="1290"
+        )
+        providers_factories.EMSCinemaDetailsFactory(cinemaProviderPivot=palace_cinema_provider_pivot)
+
+        activate_ems_sync()
+
+        venues = Venue.query.all()
+        assert len(venues) == 4
+
+        for venue in venues:
+            assert len(venue.venueProviders) == 1
+            assert venue.venueProviders[0].providerId == ems_provider.id
+
+    @pytest.mark.usefixtures("db_session")
+    def test_existing_sync_with_another_provider_is_set_with_ems(self, requests_mock):
+        requests_mock.get("https://fake_url.com?version=0", json=fixtures.SITES_DATA_VERSION_0)
+        ems_provider = get_provider_by_local_class("EMSStocks")
+        allocine_provider = get_provider_by_local_class("AllocineStocks")
+
+        oceanic = offerers_factories.VenueFactory(
+            bookingEmail="oceanic-booking@example.com", withdrawalDetails="Modalité de retrait", siret="33069874700160"
+        )
+        providers_factories.AllocineVenueProviderFactory(
+            venue=oceanic, provider=allocine_provider, venueIdAtOfferProvider="1111"
+        )
+        providers_factories.AllocinePivotFactory(venue=oceanic)
+
+        activate_ems_sync()
+
+        venues = Venue.query.all()
+        assert len(venues) == 1
+        venue = venues[0]
+
+        assert len(venue.venueProviders) == 1
+        assert len(venue.cinemaProviderPivot) == 1
+        venue_provider = venue.venueProviders[0]
+        pivot = venue.cinemaProviderPivot[0]
+        assert venue_provider.providerId == ems_provider.id
+        assert venue_provider.isActive == True
+        assert pivot.idAtProvider == "0661"
+
+    @pytest.mark.usefixtures("db_session")
+    def test_we_have_knowledge_of_available_venue_that_doesnt_exists_on_our_side(self, requests_mock, caplog):
+        requests_mock.get("https://fake_url.com?version=0", json=fixtures.SITES_DATA_VERSION_0)
+        allocine_provider = get_provider_by_local_class("AllocineStocks")
+
+        # Available venue for sync but with a wrong siret on our side
+        oceanic = offerers_factories.VenueFactory(
+            bookingEmail="oceanic-booking@example.com", withdrawalDetails="Modalité de retrait", siret="11111111111"
+        )
+        providers_factories.VenueProviderFactory(
+            venue=oceanic, provider=allocine_provider, venueIdAtOfferProvider="1111"
+        )
+        providers_factories.CinemaProviderPivotFactory(venue=oceanic, provider=allocine_provider, idAtProvider="1111")
+        with caplog.at_level(logging.WARNING):
+            activate_ems_sync()
+
+        warning_record = caplog.records[0]
+
+        assert "Fail to find venues" in warning_record.msg
+        assert warning_record.extra["sirets"] == {"21060105000011", "775670664", "42465026500012", "33069874700160"}
+
+        venues = Venue.query.all()
+        assert len(venues) == 1
+
+        for venue in venues:
+            assert len(venue.venueProviders) == 1
+            for venue_provider in venue.venueProviders:
+                assert venue_provider.providerId == allocine_provider.id
+                assert venue_provider.isActive == True
+
+    @pytest.mark.usefixtures("db_session")
+    def test_we_dont_reactivate_ems_sync_that_was_deactivate_on_purpose(self, requests_mock):
+        requests_mock.get("https://fake_url.com?version=0", json=fixtures.SITES_DATA_VERSION_0)
+        ems_provider = get_provider_by_local_class("EMSStocks")
+
+        # EMS sync deactivate on purpose by a pro
+        oceanic = offerers_factories.VenueFactory(
+            bookingEmail="oceanic-booking@example.com", withdrawalDetails="Modalité de retrait", siret="11111111111"
+        )
+        providers_factories.VenueProviderFactory(
+            venue=oceanic, provider=ems_provider, venueIdAtOfferProvider="1111", isActive=False
+        )
+        providers_factories.CinemaProviderPivotFactory(venue=oceanic, provider=ems_provider, idAtProvider="1111")
+
+        activate_ems_sync()
+
+        venues = Venue.query.all()
+        assert len(venues) == 1
+        venue = venues[0]
+
+        assert len(venue.venueProviders) == 1
+        deactivated_venue_provider = venue.venueProviders[0]
+
+        assert deactivated_venue_provider.providerId == ems_provider.id
+        assert deactivated_venue_provider.isActive == False
+
+    @pytest.mark.usefixtures("db_session")
+    def test_sync_is_successfully_set_on_venue_without_existing_sync_and_pivot(self, requests_mock):
+        requests_mock.get("https://fake_url.com?version=0", json=fixtures.SITES_DATA_VERSION_0)
+        ems_provider = get_provider_by_local_class("EMSStocks")
+
+        # Available venue for sync but with a wrong siret on our side
+        offerers_factories.VenueFactory(
+            bookingEmail="oceanic-booking@example.com", withdrawalDetails="Modalité de retrait", siret="33069874700160"
+        )
+
+        activate_ems_sync()
+
+        venues = Venue.query.all()
+        assert len(venues) == 1
+        venue = venues[0]
+
+        assert len(venue.venueProviders) == 1
+        assert len(venue.cinemaProviderPivot) == 1
+        pivot = venue.cinemaProviderPivot[0]
+        assert pivot.providerId == ems_provider.id
+        assert pivot.idAtProvider == "0661"

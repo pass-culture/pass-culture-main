@@ -27,11 +27,20 @@ class Site(BaseModel):
     address: str
     zip_code: str
     city: str
+    siret: str
+
+
+class SiteWithEvents(BaseModel):
+    id: str
+    name: str
+    address: str
+    zip_code: str
+    city: str
     events: list[Event]
 
 
 class ScheduleResponse(BaseModel):
-    sites: list[Site]
+    sites: list[SiteWithEvents]
     version: int
 
 
@@ -78,3 +87,8 @@ class AvailableShowsRequest(BaseModel):
 class AvailableShowsResponse(BaseModel):
     statut: int
     seances: list[str]
+
+
+class SitesResponse(BaseModel):
+    sites: list[Site]
+    version: int

@@ -1,12 +1,17 @@
 import logging
 from typing import Callable
 
+from sqlalchemy import insert
+import sqlalchemy.orm as sqla_orm
 from urllib3 import exceptions as urllib3_exceptions
 
-from pcapi.connectors.ems import EMSScheduleConnector
+import pcapi.connectors.ems as ems_connectors
 import pcapi.connectors.notion as notion_connector
+from pcapi.core.offerers.models import Venue
 from pcapi.core.providers import repository as providers_repository
 from pcapi.core.providers.constants import CINEMA_PROVIDER_NAMES
+from pcapi.core.providers.models import CinemaProviderPivot
+from pcapi.core.providers.models import EMSCinemaDetails
 from pcapi.core.providers.models import VenueProvider
 from pcapi.infrastructure.repository.stock_provider import provider_api
 import pcapi.local_providers
@@ -88,7 +93,7 @@ def synchronize_venue_provider(venue_provider: VenueProvider, limit: int | None 
 
 
 def synchronize_ems_venue_providers(from_last_version: bool = False) -> None:
-    connector = EMSScheduleConnector()
+    connector = ems_connectors.EMSScheduleConnector()
     last_version = providers_repository.get_ems_oldest_sync_version() if from_last_version else 0
     ems_provider_id = providers_repository.get_provider_by_local_class("EMSStocks").id
     venues_provider_to_sync: set[int] = set()
@@ -139,7 +144,7 @@ def synchronize_ems_venue_providers(from_last_version: bool = False) -> None:
 
 
 def synchronize_ems_venue_provider(venue_provider: VenueProvider) -> None:
-    connector = EMSScheduleConnector()
+    connector = ems_connectors.EMSScheduleConnector()
     ems_cinema_details = providers_repository.get_ems_cinema_details(venue_provider.venueIdAtOfferProvider)
     last_version = ems_cinema_details.lastVersion
     schedules = connector.get_schedules(last_version)
@@ -151,3 +156,109 @@ def synchronize_ems_venue_provider(venue_provider: VenueProvider) -> None:
         ems_stocks.synchronize()
         providers_repository.bump_ems_sync_version(new_version, [venue_provider.id])
         db.session.commit()
+
+
+def activate_ems_sync() -> None:
+    """What we are doing here:
+
+    If a venue already exists:
+        - If it’s already sync with EMS:
+            - do nothing
+        - If it’s sync we another provider:
+            - remove the older sync and sync it with EMS
+    If not:
+        - Log the venue so we can fix it
+    """
+    with transaction():
+        connector = ems_connectors.EMSSitesConnector()
+
+        venues_siret_to_activate = set()
+        venues_siret_activated = set()
+
+        venue_providers_to_deactivate = []
+        venue_providers_to_activate = []
+        pivot_to_create = []
+        pivot_to_update = []
+        pivots_ids = []
+
+        ems_provider_id = providers_repository.get_provider_by_local_class("EMSStocks").id
+        venues_siret_already_activated = {
+            venue.siret
+            for venue in Venue.query.join(
+                Venue.venueProviders.and_(VenueProvider.providerId == ems_provider_id),
+            ).with_entities(Venue.siret)
+        }
+        available_venues_by_siret = {venue.siret: venue for venue in connector.get_available_venues()}
+
+        for siret in available_venues_by_siret:
+            if siret in venues_siret_already_activated:
+                continue
+            venues_siret_to_activate.add(siret)
+
+        venues_to_activate = (
+            Venue.query.filter(Venue.siret.in_(venues_siret_to_activate))
+            .outerjoin(Venue.venueProviders)
+            .outerjoin(
+                Venue.cinemaProviderPivot,
+            )
+            .options(sqla_orm.joinedload(Venue.venueProviders))
+            .options(sqla_orm.joinedload(Venue.cinemaProviderPivot))
+            .all()
+        )
+
+        for venue_to_activate in venues_to_activate:
+            logger.info(
+                "Deactivating deprected sync for a venue",
+                extra={
+                    "venue_id": venue_to_activate.id,
+                    "venue_siret": venue_to_activate.siret,
+                    "venue_name": venue_to_activate.name,
+                },
+            )
+
+            venue_providers_to_deactivate.extend(
+                [venue_provider.id for venue_provider in venue_to_activate.venueProviders]
+            )
+            venue_providers_to_activate.append({"venueId": venue_to_activate.id, "providerId": ems_provider_id})
+
+            logger.info(
+                "Creating EMS sync for a venue",
+                extra={
+                    "venue_id": venue_to_activate.id,
+                    "venue_siret": venue_to_activate.siret,
+                    "venue_name": venue_to_activate.name,
+                },
+            )
+
+            pivot_to_upsert = {
+                "venueId": venue_to_activate.id,
+                "providerId": ems_provider_id,
+                "idAtProvider": available_venues_by_siret[venue_to_activate.siret].id,
+            }
+            if venue_to_activate.cinemaProviderPivot:
+                pivot_to_upsert["id"] = venue_to_activate.cinemaProviderPivot[0].id
+                pivot_to_update.append(pivot_to_upsert)
+                pivots_ids.append({"cinemaProviderPivotId": pivot_to_upsert["id"]})
+            else:
+                pivot_to_create.append(pivot_to_upsert)
+
+            venues_siret_activated.add(venue_to_activate.siret)
+
+        # Remove no longer up to date sync and creating EMS ones
+        VenueProvider.query.filter(VenueProvider.id.in_(venue_providers_to_deactivate)).delete()
+        db.session.bulk_insert_mappings(VenueProvider, venue_providers_to_activate)
+
+        # Updating or creating suitable pivots
+        db.session.bulk_update_mappings(CinemaProviderPivot, pivot_to_update)
+        if pivot_to_create:
+            stmt = insert(CinemaProviderPivot).values(pivot_to_create).returning(CinemaProviderPivot.id)
+            created_pivots_ids = db.session.execute(stmt)
+
+            for _id in created_pivots_ids:
+                pivots_ids.append({"cinemaProviderPivotId": _id[0]})
+
+        # Finally creating EMS details
+        db.session.bulk_insert_mappings(EMSCinemaDetails, pivots_ids)
+
+        if venues_left_to_be_activated := venues_siret_to_activate.difference(venues_siret_activated):
+            logger.warning("Fail to find venues available for EMS sync", extra={"sirets": venues_left_to_be_activated})

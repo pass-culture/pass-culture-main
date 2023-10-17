@@ -30,7 +30,7 @@ class EMSStocks:
         self,
         connector: EMSScheduleConnector,
         venue_provider: providers_models.VenueProvider,
-        site: ems_serializers.Site,
+        site: ems_serializers.SiteWithEvents,
     ):
         self.connector = connector
         self.site = site

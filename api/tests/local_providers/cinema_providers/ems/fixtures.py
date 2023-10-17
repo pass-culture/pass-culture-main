@@ -130,3 +130,49 @@ DATA_VERSION_86400 = {
     ],
     "version": 172800,
 }
+
+SITES_DATA_VERSION_0 = {
+    "sites": [
+        {
+            "id": "0661",
+            "allocine_id": "P1025",
+            "siret": "33069874700160",
+            "name": "Océanic",
+            "address": "68 rue Plage",
+            "zip_code": "33780",
+            "city": "Soulac-sur-Mer",
+            "time_zone": "Europe/Paris",
+        },
+        {
+            "id": "1048",
+            "allocine_id": "W0633",
+            "siret": "21060105000011",
+            "name": "Le Pavillon Bleu",
+            "address": "Place Gustave CivatteRoute Départementale 2085",
+            "zip_code": "06330",
+            "city": "Roquefort-les-Pins",
+            "time_zone": "Europe/Paris",
+        },
+        {
+            "id": "9997",
+            "allocine_id": "Z9997",
+            "siret": "775670664",
+            "name": "Ems Cine",
+            "address": "Monnaie-Services, 334 rue du Luxembourg",
+            "zip_code": "83500",
+            "city": "La seyne sur mer",
+            "time_zone": "Europe/Paris",
+        },
+        {
+            "id": "1290",
+            "allocine_id": "W0613",
+            "siret": "42465026500012",
+            "name": "Palace",
+            "address": "3 Place du Pilori",
+            "zip_code": "53200",
+            "city": "Château-Gontier",
+            "time_zone": "Europe/Paris",
+        },
+    ],
+    "version": 1697543282,
+}
