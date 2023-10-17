@@ -394,19 +394,25 @@ def format_eligibility_type(eligibility_type: users_models.EligibilityType) -> s
             return eligibility_type.value
 
 
+def format_as_badges(items: list[str] | None) -> str:
+    if not items:
+        return ""
+
+    return " ".join(
+        Markup('<span class="badge text-bg-light shadow-sm">{name}</span>').format(name=item) for item in items
+    )
+
+
 def format_tag_object_list(
     objects_with_label_attribute: list[offerers_models.OffererTag] | list[offerers_models.OffererTagCategory],
 ) -> str:
     if objects_with_label_attribute:
-        return ", ".join([(obj.label or obj.name) for obj in objects_with_label_attribute])
+        return format_as_badges([(obj.label or obj.name) for obj in objects_with_label_attribute])
     return ""
 
 
 def format_criteria(criteria: list[criteria_models.OfferCriterion]) -> str:
-    return " ".join(
-        Markup('<span class="badge text-bg-light shadow-sm">{name}</span>').format(name=criterion.name)
-        for criterion in criteria
-    )
+    return format_as_badges([criterion.name for criterion in criteria])
 
 
 def format_fraud_check_url(id_check_item: serialization_accounts.IdCheckItemModel) -> str:
@@ -824,12 +830,6 @@ def format_finance_incident_type(incident_kind: finance_models.IncidentType) -> 
             return incident_kind.value
 
 
-def format_stock_quantity(quantity: int | None) -> str:
-    if quantity is None:
-        return "Illimité"
-    return str(quantity)
-
-
 def install_template_filters(app: Flask) -> None:
     app.jinja_env.trim_blocks = True
     app.jinja_env.lstrip_blocks = True
@@ -854,6 +854,7 @@ def install_template_filters(app: Flask) -> None:
     app.jinja_env.filters["format_offer_status"] = format_offer_status
     app.jinja_env.filters["format_offer_category"] = format_offer_category
     app.jinja_env.filters["format_subcategories"] = format_subcategories
+    app.jinja_env.filters["format_as_badges"] = format_as_badges
     app.jinja_env.filters["format_criteria"] = format_criteria
     app.jinja_env.filters["format_tag_object_list"] = format_tag_object_list
     app.jinja_env.filters["format_fraud_review_status"] = format_fraud_review_status
@@ -899,4 +900,3 @@ def install_template_filters(app: Flask) -> None:
     app.jinja_env.filters["format_finance_incident_status"] = format_finance_incident_status
     app.jinja_env.filters["format_finance_incident_type"] = format_finance_incident_type
     app.jinja_env.filters["format_finance_incident_type_str"] = format_finance_incident_type_str
-    app.jinja_env.filters["format_stock_quantity"] = format_stock_quantity
