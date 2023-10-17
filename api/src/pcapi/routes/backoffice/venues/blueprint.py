@@ -99,6 +99,9 @@ def _get_venues(form: forms.GetVenuesListForm) -> list[offerers_models.Venue]:
             criteria_models.Criterion.id.in_(form.criteria.data)
         )
 
+    if form.offerer.data:
+        base_query = base_query.filter(offerers_models.Venue.managingOffererId.in_(form.offerer.data))
+
     if form.order.data:
         base_query = base_query.order_by(getattr(getattr(offerers_models.Venue, "id"), form.order.data)())
     # +1 to check if there are more results than requested
@@ -235,6 +238,7 @@ def list_venues() -> utils.BackofficeResponse:
     venues = utils.limit_rows(venues, form.limit.data)
 
     autocomplete.prefill_criteria_choices(form.criteria)
+    autocomplete.prefill_offerers_choices(form.offerer)
 
     form_url = partial(url_for, ".list_venues", **form.raw_data)
     date_created_sort_url = form_url(order="desc" if form.order.data == "asc" else "asc")
