@@ -7,6 +7,8 @@ import pcapi.core.offerers.models as offerers_models
 from pcapi.core.testing import override_settings
 import pcapi.core.users.factories as users_factories
 
+from tests.connectors import sirene_test_data
+
 
 pytestmark = pytest.mark.usefixtures("db_session")
 
@@ -104,6 +106,26 @@ class Returns400Test:
 
         assert response.status_code == 400
         assert response.json == {"global": ["Les informations relatives à ce SIREN ou SIRET ne sont pas accessibles."]}
+        assert offerers_models.Offerer.query.count() == 0
+        assert offerers_models.UserOfferer.query.count() == 0
+        assert offerers_models.Venue.query.count() == 0
+
+    @override_settings(SIRENE_BACKEND="pcapi.connectors.sirene.InseeBackend")
+    def test_inactive_siret(self, requests_mock, client):
+        siret = REQUEST_BODY["siret"]
+
+        requests_mock.get(
+            f"https://api.insee.fr/entreprises/sirene/V3/siret/{siret}",
+            json=sirene_test_data.RESPONSE_SIRET_INACTIVE_COMPANY,
+        )
+
+        user = users_factories.UserFactory()
+
+        client = client.with_session_auth(user.email)
+        response = client.post("/offerers/new", json=REQUEST_BODY)
+
+        assert response.status_code == 400
+        assert response.json == {"siret": "SIRET is no longer active"}
         assert offerers_models.Offerer.query.count() == 0
         assert offerers_models.UserOfferer.query.count() == 0
         assert offerers_models.Venue.query.count() == 0

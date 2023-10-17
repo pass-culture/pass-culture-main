@@ -3,6 +3,7 @@ import React, { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 
 import { api } from 'apiClient/api'
+import { isErrorAPIError } from 'apiClient/helpers'
 import { CreateOffererQueryModel } from 'apiClient/v1'
 import FormLayout from 'components/FormLayout/FormLayout'
 import { getSirenDataAdapter } from 'core/Offerers/adapters'
@@ -46,7 +47,11 @@ const OffererCreation = (): JSX.Element => {
         redirectAfterSubmit(createdOfferer.id.toString())
       }
     } catch (error) {
-      notification.error('Vous étes déjà rattaché à cette structure.')
+      if (isErrorAPIError(error) && error.status == 400 && error.body.siren) {
+        notification.error('Le code SIREN saisi n’est pas valide.')
+      } else {
+        notification.error('Vous êtes déjà rattaché à cette structure.')
+      }
     }
   }
 

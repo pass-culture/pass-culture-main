@@ -175,3 +175,10 @@ def handle_sirene_non_public_data_exception(error: sirene.NonPublicDataException
     msg = "Les informations relatives à ce SIREN ou SIRET ne sont pas accessibles."
     err = {"global": [msg]}
     return app.generate_error_response(err), 400  # type: ignore [attr-defined]
+
+
+@app.errorhandler(sirene.SireneApiException)
+def handle_sirene_api_exception(error: sirene.SireneApiException) -> ApiErrorResponse:
+    msg = "Les informations relatives à ce SIREN ou SIRET n'ont pas pu être vérifiées, veuillez réessayer plus tard."
+    err = {"global": [msg]}
+    return app.generate_error_response(err), 500  # type: ignore [attr-defined]

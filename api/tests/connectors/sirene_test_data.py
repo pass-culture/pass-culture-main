@@ -268,6 +268,62 @@ RESPONSE_SIREN_ENTREPRISE_INDIVIDUELLE = {
     },
 }
 
+RESPONSE_SIREN_INACTIVE_COMPANY = {
+    "header": {"statut": 200, "message": "OK"},
+    "uniteLegale": {
+        "siren": "123456789",
+        "statutDiffusionUniteLegale": "O",
+        "unitePurgeeUniteLegale": True,
+        "dateCreationUniteLegale": "1957-01-01",
+        "sigleUniteLegale": None,
+        "sexeUniteLegale": None,
+        "prenom1UniteLegale": None,
+        "prenom2UniteLegale": None,
+        "prenom3UniteLegale": None,
+        "prenom4UniteLegale": None,
+        "prenomUsuelUniteLegale": None,
+        "pseudonymeUniteLegale": None,
+        "identifiantAssociationUniteLegale": None,
+        "trancheEffectifsUniteLegale": None,
+        "anneeEffectifsUniteLegale": None,
+        "dateDernierTraitementUniteLegale": None,
+        "nombrePeriodesUniteLegale": 1,
+        "categorieEntreprise": None,
+        "anneeCategorieEntreprise": None,
+        "periodesUniteLegale": [
+            {
+                "dateFin": None,
+                "dateDebut": "1995-01-01",
+                "etatAdministratifUniteLegale": "C",
+                "changementEtatAdministratifUniteLegale": True,
+                "nomUniteLegale": None,
+                "changementNomUniteLegale": False,
+                "nomUsageUniteLegale": None,
+                "changementNomUsageUniteLegale": False,
+                "denominationUniteLegale": "LE PETIT RINTINTIN",
+                "changementDenominationUniteLegale": False,
+                "denominationUsuelle1UniteLegale": None,
+                "denominationUsuelle2UniteLegale": None,
+                "denominationUsuelle3UniteLegale": None,
+                "changementDenominationUsuelleUniteLegale": False,
+                "categorieJuridiqueUniteLegale": "5599",
+                "changementCategorieJuridiqueUniteLegale": False,
+                "activitePrincipaleUniteLegale": "74.7Z",
+                "nomenclatureActivitePrincipaleUniteLegale": "NAF1993",
+                "changementActivitePrincipaleUniteLegale": False,
+                "nicSiegeUniteLegale": "00018",
+                "changementNicSiegeUniteLegale": False,
+                "economieSocialeSolidaireUniteLegale": None,
+                "changementEconomieSocialeSolidaireUniteLegale": False,
+                "societeMissionUniteLegale": None,
+                "changementSocieteMissionUniteLegale": False,
+                "caractereEmployeurUniteLegale": "N",
+                "changementCaractereEmployeurUniteLegale": False,
+            }
+        ],
+    },
+}
+
 RESPONSE_SIRET_COMPANY = {
     "header": {"statut": 200, "message": "ok"},
     "etablissement": {
