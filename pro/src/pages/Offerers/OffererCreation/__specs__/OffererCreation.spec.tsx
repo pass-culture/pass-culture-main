@@ -142,7 +142,7 @@ describe('src | components | OffererCreation', () => {
     await userEvent.click(screen.getByText('Créer'))
 
     expect(
-      screen.getByText('Vous étes déjà rattaché à cette structure.')
+      screen.getByText('Vous êtes déjà rattaché à cette structure.')
     ).toBeInTheDocument()
   })
 
@@ -167,6 +167,41 @@ describe('src | components | OffererCreation', () => {
 
     expect(
       screen.getByText('Impossible de vérifier le SIREN saisi.')
+    ).toBeInTheDocument()
+  })
+
+  it('should display error on submit if siren is inactive', async () => {
+    vi.spyOn(api, 'getSirenInfo').mockResolvedValue({
+      name: 'Ma Petite structure',
+      siren: '881457238',
+      address: {
+        street: '4 rue du test',
+        city: 'Plessix-Balisson',
+        postalCode: '22350',
+      },
+      ape_code: '',
+    })
+
+    vi.spyOn(api, 'createOfferer').mockRejectedValue(
+      new ApiError(
+        {} as ApiRequestOptions,
+        {
+          status: 400,
+          body: { siren: ['ERROR'] },
+        } as ApiResult,
+        ''
+      )
+    )
+
+    renderOffererCreation({})
+
+    await userEvent.type(screen.getByLabelText('SIREN'), '881457238')
+    await userEvent.tab()
+
+    await userEvent.click(screen.getByText('Créer'))
+
+    expect(
+      screen.getByText('Le code SIREN saisi n’est pas valide.')
     ).toBeInTheDocument()
   })
 })

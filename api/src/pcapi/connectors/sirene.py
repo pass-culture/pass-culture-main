@@ -67,6 +67,7 @@ class SirenInfo(pydantic_v1.BaseModel):
     else:
         head_office_siret: pydantic_v1.constr(strip_whitespace=True, min_length=14, max_length=14)
     ape_code: str
+    active: bool
     legal_category_code: str
     address: _Address | None
 
@@ -158,6 +159,7 @@ class TestingBackend(BaseBackend):
             ape_code=siren_ape[siren],
             legal_category_code="1000",
             address=self.address if with_address else None,
+            active=True,
         )
 
     def get_siret(self, siret: str) -> SiretInfo:
@@ -287,6 +289,7 @@ class InseeBackend(BaseBackend):
             legal_category_code=head_office["categorieJuridiqueUniteLegale"],
             ape_code=head_office["activitePrincipaleUniteLegale"],
             address=address,
+            active=head_office["etatAdministratifUniteLegale"] == "A",
         )
         self._check_non_public_data(info)
         return info
