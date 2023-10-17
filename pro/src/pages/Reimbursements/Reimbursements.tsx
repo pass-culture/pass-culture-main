@@ -16,7 +16,6 @@ import { ReimbursementsBreadcrumb } from 'components/ReimbursementsBreadcrumb'
 import { useReimbursementContext } from 'context/ReimbursementContext/ReimbursementContext'
 import useActiveFeature from 'hooks/useActiveFeature'
 import Spinner from 'ui-kit/Spinner/Spinner'
-import Titles from 'ui-kit/Titles/Titles'
 
 const Reimbursements = (): JSX.Element => {
   const isNewBankDetailsJourneyEnabled = useActiveFeature(
@@ -57,21 +56,23 @@ const Reimbursements = (): JSX.Element => {
   }
 
   return (
-    <>
-      <Titles title="Remboursements" />
-      <>
-        {!isNewBankDetailsJourneyEnabled && <BannerReimbursementsInfo />}
+    <div className="reimbursements-container">
+      <h1 className="title">Remboursements</h1>
+      {!isNewBankDetailsJourneyEnabled && <BannerReimbursementsInfo />}
+      <div className="banners">
         <AddBankAccountCallout titleOnly={true} offerer={selectedOfferer} />
         <PendingBankAccountCallout titleOnly={true} offerer={selectedOfferer} />
         <LinkVenueCallout titleOnly={true} offerer={selectedOfferer} />
-        <ReimbursementsBreadcrumb />
+      </div>
+      <ReimbursementsBreadcrumb />
+      <div>
         <Routes>
           {routes.map(({ path, element }) => (
             <Route key={path} path={path} element={element} />
           ))}
         </Routes>
-      </>
-    </>
+      </div>
+    </div>
   )
 }
 

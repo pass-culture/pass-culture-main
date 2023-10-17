@@ -112,9 +112,11 @@ const Homepage = (): JSX.Element => {
       <div className="homepage">
         <h1>Bienvenue dans l’espace acteurs culturels</h1>
 
-        <AddBankAccountCallout offerer={selectedOfferer} />
-        <LinkVenueCallout offerer={selectedOfferer} />
-        <PendingBankAccountCallout offerer={selectedOfferer} />
+        <div className="reimbursements-banners">
+          <AddBankAccountCallout offerer={selectedOfferer} />
+          <LinkVenueCallout offerer={selectedOfferer} />
+          <PendingBankAccountCallout offerer={selectedOfferer} />
+        </div>
         <HomepageBreadcrumb
           activeStep={STEP_ID_OFFERERS}
           isOffererStatsActive={isOffererStatsActive}
