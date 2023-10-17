@@ -61,6 +61,8 @@ export type { CreateThumbnailBodyModel } from './models/CreateThumbnailBodyModel
 export type { CreateThumbnailResponseModel } from './models/CreateThumbnailResponseModel';
 export type { CropParams } from './models/CropParams';
 export type { CulturalPartner } from './models/CulturalPartner';
+export type { DateRangeModel } from './models/DateRangeModel';
+export type { DateRangeOnCreateModel } from './models/DateRangeOnCreateModel';
 export type { DeleteFilteredStockListBody } from './models/DeleteFilteredStockListBody';
 export type { DeleteOfferRequestBody } from './models/DeleteOfferRequestBody';
 export type { DeleteStockListBody } from './models/DeleteStockListBody';
