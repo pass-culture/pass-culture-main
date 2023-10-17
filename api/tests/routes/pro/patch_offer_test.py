@@ -253,18 +253,6 @@ class Returns400Test:
         assert response.status_code == 400
         assert response.json["global"] == ["Les offres refusées ou en attente de validation ne sont pas modifiables"]
 
-    def test_withdrawal_is_checked_when_changed(self, client):
-        offer = offers_factories.OfferFactory(subcategoryId=subcategories.JEU_EN_LIGNE.id)
-        offerers_factories.UserOffererFactory(user__email="user@example.com", offerer=offer.venue.managingOfferer)
-
-        data = {
-            "withdrawalType": "no_ticket",
-        }
-        response = client.with_session_auth("user@example.com").patch(f"offers/{offer.id}", json=data)
-
-        assert response.status_code == 400
-        assert response.json["offer"] == ["La catégorie de l'offre n'accepte pas de modalité de retrait de billet"]
-
     def test_reuse_unchanged_withdrawal(self, client):
         offer = offers_factories.OfferFactory(
             subcategoryId=subcategories.CONCERT.id,

@@ -325,9 +325,6 @@ def check_offer_withdrawal(
     provider: providers_models.Provider | None,
 ) -> None:
     is_offer_withdrawable = subcategory_id in subcategories.WITHDRAWABLE_SUBCATEGORIES
-    if not is_offer_withdrawable and withdrawal_type is not None:
-        raise exceptions.NonWithdrawableEventOfferCantHaveWithdrawal()
-
     if is_offer_withdrawable and withdrawal_type is None:
         raise exceptions.WithdrawableEventOfferMustHaveWithdrawal()
 
