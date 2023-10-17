@@ -208,6 +208,18 @@ FEATURES_DISABLED_BY_DEFAULT: tuple[FeatureToggle, ...] = (
 if settings.IS_PROD or settings.IS_STAGING:
     FEATURES_DISABLED_BY_DEFAULT += (FeatureToggle.WIP_ENABLE_OFFER_CREATION_API_V1,)
 
+if settings.IS_TESTING:
+    testing_features_disabled_by_default = set(FEATURES_DISABLED_BY_DEFAULT)
+    features_to_enable = {
+        FeatureToggle.ENABLE_CHARLIE_BOOKINGS_API,
+        FeatureToggle.WIP_CATEGORY_SELECTION,
+        FeatureToggle.WIP_ENABLE_EVENTS_WITH_TICKETS_FOR_PUBLIC_API,
+        FeatureToggle.WIP_ENABLE_OFFER_CREATION_API_V1,
+        FeatureToggle.WIP_ENABLE_NEW_USER_OFFERER_LINK,
+    }
+
+    FEATURES_DISABLED_BY_DEFAULT = tuple(testing_features_disabled_by_default - features_to_enable)
+
 
 def add_feature_to_database(feature: Feature) -> None:
     """This function is to be used in the "downgrade" function of a
