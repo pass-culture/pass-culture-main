@@ -104,7 +104,11 @@ export function IndividualOfferContextProvider({
         )
       }
     }
-    offerId ? loadOffer() : setOffer(null)
+    if (offerId) {
+      void loadOffer()
+    } else {
+      setOffer(null)
+    }
   }, [offerId])
 
   useEffect(() => {
@@ -142,7 +146,7 @@ export function IndividualOfferContextProvider({
       setIsLoading(false)
     }
     if (!offerId || offer !== null) {
-      loadData()
+      void loadData()
     }
   }, [offerId, offerOfferer])
 

@@ -23,7 +23,7 @@ import {
 } from '../serializers'
 
 describe('serializer', () => {
-  it('serializeStockApi', async () => {
+  it('serializeStockApi', () => {
     const stock: GetOfferStockResponseModel = {
       beginningDatetime: '01-01-2001',
       bookingLimitDatetime: '01-10-2001',
@@ -60,7 +60,8 @@ describe('serializer', () => {
 
     expect(serializeStockApi(stock)).toEqual(stockSerialized)
   })
-  it('serializeStockApi with 0 remainingQuantity', async () => {
+
+  it('serializeStockApi with 0 remainingQuantity', () => {
     const stock: GetOfferStockResponseModel = {
       beginningDatetime: '01-01-2001',
       bookingLimitDatetime: '01-10-2001',
@@ -98,7 +99,7 @@ describe('serializer', () => {
     expect(serializeStockApi(stock)).toEqual(stockSerialized)
   })
 
-  it('serializeStockApi product', async () => {
+  it('serializeStockApi product', () => {
     const stock: GetOfferStockResponseModel = {
       bookingsQuantity: 10,
       dateCreated: '01-01-1999',
@@ -177,6 +178,7 @@ describe('serializer', () => {
       expect(serializeOfferApiImage(offerApi)).toEqual(expectedImage)
     }
   )
+
   it('serializeOfferApiImage from thumbUrl', () => {
     const offerApi = {
       thumbUrl: 'https://image.url',
@@ -190,7 +192,7 @@ describe('serializer', () => {
     })
   })
 
-  it('serializeVenueApi', async () => {
+  it('serializeVenueApi', () => {
     const venueId = 1
     const offerApi = {
       venue: {
@@ -237,7 +239,8 @@ describe('serializer', () => {
 
     expect(serializeVenueApi(offerApi)).toEqual(venue)
   })
-  it('serializeOfferApiExtraData', async () => {
+
+  it('serializeOfferApiExtraData', () => {
     const offerApi = {
       extraData: {
         author: 'test author',
@@ -266,10 +269,12 @@ describe('serializer', () => {
       visa: 'test visa',
     })
   })
-  it('serializeLastProvider with empty input', async () => {
+
+  it('serializeLastProvider with empty input', () => {
     expect(serializeLastProvider(null)).toEqual(null)
   })
-  it('serializeLastProvider', async () => {
+
+  it('serializeLastProvider', () => {
     const venueProviderApi: GetOfferLastProviderResponseModel = {
       name: 'Awesom provider',
     }
@@ -279,7 +284,8 @@ describe('serializer', () => {
 
     expect(serializeLastProvider(venueProviderApi)).toEqual(provider)
   })
-  it('serializeOfferApi', async () => {
+
+  it('serializeOfferApi', () => {
     const offerApi: GetIndividualOfferResponseModel =
       GetIndividualOfferFactory()
     const offerSerialized: IndividualOffer = {
