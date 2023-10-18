@@ -8,9 +8,8 @@ import { api } from 'apiClient/api'
 import {
   ApiError,
   GetIndividualOfferResponseModel,
+  GetOfferStockResponseModel,
   OfferStatus,
-  StockResponseModel,
-  StocksResponseModel,
   SubcategoryIdEnum,
 } from 'apiClient/v1'
 import { ApiRequestOptions } from 'apiClient/v1/core/ApiRequestOptions'
@@ -25,6 +24,7 @@ import {
 } from 'core/Offers/utils/getIndividualOfferUrl'
 import Stocks from 'pages/IndividualOfferWizard/Stocks/Stocks'
 import { FORMAT_ISO_DATE_ONLY } from 'utils/date'
+import { individualGetOfferStockResponseModelFactory } from 'utils/individualApiFactories'
 import { renderWithProviders } from 'utils/renderWithProviders'
 
 vi.mock('utils/date', async () => {
@@ -34,12 +34,9 @@ vi.mock('utils/date', async () => {
   }
 })
 
-vi.mock('screens/IndividualOffer/constants', () => ({
-  MAX_STOCKS_PER_OFFER: 1,
-}))
-
 const renderStockEventScreen = async (
-  apiOffer: GetIndividualOfferResponseModel
+  apiOffer: GetIndividualOfferResponseModel,
+  apiStocks: GetOfferStockResponseModel[] = []
 ) => {
   vi.spyOn(api, 'getOffer').mockResolvedValue(apiOffer)
   vi.spyOn(api, 'getCategories').mockResolvedValue({
@@ -52,7 +49,10 @@ const renderStockEventScreen = async (
   })
   vi.spyOn(api, 'getVenues').mockResolvedValue({ venues: [] })
   vi.spyOn(api, 'listOfferersNames').mockResolvedValue({ offerersNames: [] })
-  vi.spyOn(api, 'upsertStocks').mockResolvedValue({} as StocksResponseModel)
+  vi.spyOn(api, 'getStocks').mockResolvedValue({
+    stocks: apiStocks,
+    stock_count: apiStocks.length,
+  })
   vi.spyOn(api, 'listOffers').mockResolvedValue([
     {
       id: 1,
@@ -78,14 +78,8 @@ const renderStockEventScreen = async (
 
   const storeOverrides = {
     user: {
-      initialized: true,
       currentUser: {
         isAdmin: false,
-        dateCreated: '2001-01-01',
-        email: 'test@email.com',
-        id: 12,
-        roles: [],
-        isEmailValidated: true,
       },
     },
   }
@@ -134,28 +128,29 @@ const otherPriceCategoryId = '2'
 
 describe('screens:StocksEventEdition', () => {
   let apiOffer: GetIndividualOfferResponseModel
-  const stockToDelete = {
-    beginningDatetime: '2023-01-23T08:25:31.009799Z',
-    bookingLimitDatetime: '2023-01-23T07:25:31.009799Z',
-    bookingsQuantity: 4,
-    dateCreated: '2022-05-18T08:25:31.015652Z',
-    hasActivationCode: false,
-    id: 1,
-    isEventDeletable: true,
-    isEventExpired: false,
-    isSoftDeleted: false,
-    offerId: 'BQ',
-    price: 10.01,
-    priceCategoryId: Number(otherPriceCategoryId),
-    quantity: 10,
-    remainingQuantity: 6,
-    activationCodesExpirationDatetime: null,
-    isBookable: false,
-    dateModified: '2022-05-18T08:25:31.015652Z',
-    fieldsUpdated: [],
-  }
+  let apiStocks: GetOfferStockResponseModel[]
 
   beforeEach(() => {
+    apiStocks = [
+      individualGetOfferStockResponseModelFactory({
+        beginningDatetime: '2023-01-23T08:25:31.009799Z',
+        bookingLimitDatetime: '2023-01-23T07:25:31.009799Z',
+        bookingsQuantity: 4,
+        dateCreated: '2022-05-18T08:25:31.015652Z',
+        hasActivationCode: false,
+        id: 1,
+        isEventDeletable: true,
+        isEventExpired: false,
+        isSoftDeleted: false,
+        price: 10.01,
+        priceCategoryId: Number(otherPriceCategoryId),
+        quantity: 10,
+        remainingQuantity: 6,
+        activationCodesExpirationDatetime: null,
+        isBookable: false,
+        dateModified: '2022-05-18T08:25:31.015652Z',
+      }),
+    ]
     apiOffer = {
       bookingEmail: null,
       dateCreated: '2022-05-18T08:25:30.991476Z',
@@ -182,7 +177,7 @@ describe('screens:StocksEventEdition', () => {
         { id: Number(priceCategoryId), label: 'Cat 1', price: 10 },
         { id: Number(otherPriceCategoryId), label: 'Cat 2', price: 12.2 },
       ],
-      stocks: [stockToDelete],
+      stocks: [],
       subcategoryId: SubcategoryIdEnum.SEANCE_CINE,
       thumbUrl: null,
       externalTicketOfficeUrl: null,
@@ -214,7 +209,7 @@ describe('screens:StocksEventEdition', () => {
   })
 
   it('render stock event row', async () => {
-    await renderStockEventScreen(apiOffer)
+    await renderStockEventScreen(apiOffer, apiStocks)
 
     expect(await screen.findByLabelText('Date')).toBeInTheDocument()
     expect(screen.getByLabelText('Horaire')).toBeInTheDocument()
@@ -232,28 +227,7 @@ describe('screens:StocksEventEdition', () => {
   })
 
   it('should allow user to delete a stock', async () => {
-    apiOffer.stocks = [
-      ...apiOffer.stocks,
-      {
-        beginningDatetime: '2023-01-20T08:25:31.009799Z',
-        bookingLimitDatetime: '2023-01-20T07:25:31.009799Z',
-        bookingsQuantity: 5,
-        dateCreated: '2022-05-18T08:25:31.015652Z',
-        hasActivationCode: false,
-        id: 1,
-        isEventDeletable: true,
-        isEventExpired: false,
-        isSoftDeleted: false,
-        price: 30.01,
-        priceCategoryId: Number(otherPriceCategoryId),
-        quantity: 40,
-        remainingQuantity: 35,
-        activationCodesExpirationDatetime: null,
-        isBookable: false,
-        dateModified: '2022-05-18T08:25:31.015652Z',
-      },
-    ]
-    await renderStockEventScreen(apiOffer)
+    await renderStockEventScreen(apiOffer, apiStocks)
     vi.spyOn(api, 'deleteStock').mockResolvedValue({ id: 1 })
 
     await userEvent.click(
@@ -271,7 +245,7 @@ describe('screens:StocksEventEdition', () => {
     expect(
       await screen.findByText('Le stock a été supprimé.')
     ).toBeInTheDocument()
-    expect(api.deleteStock).toHaveBeenCalledWith(stockToDelete.id)
+    expect(api.deleteStock).toHaveBeenCalledWith(apiStocks[0].id)
 
     vi.spyOn(api, 'upsertStocks')
     await userEvent.click(
@@ -281,13 +255,9 @@ describe('screens:StocksEventEdition', () => {
   })
 
   it('should not allow user to delete a stock undeletable', async () => {
-    apiOffer.stocks = [
-      {
-        ...apiOffer.stocks[0],
-        isEventDeletable: false,
-      },
-    ]
-    await renderStockEventScreen(apiOffer)
+    await renderStockEventScreen(apiOffer, [
+      { ...apiStocks[0], isEventDeletable: false },
+    ])
     vi.spyOn(api, 'deleteStock').mockResolvedValue({ id: 1 })
 
     await userEvent.click(
@@ -295,7 +265,7 @@ describe('screens:StocksEventEdition', () => {
     )
     const deleteButton = screen.getAllByTitle('Supprimer le stock')[0]
     expect(deleteButton).toHaveAttribute('aria-disabled', 'true')
-    await deleteButton.click()
+    await userEvent.click(deleteButton)
     expect(api.deleteStock).not.toHaveBeenCalled()
     expect(screen.getByLabelText('Tarif')).toHaveValue(otherPriceCategoryId)
   })
@@ -305,7 +275,7 @@ describe('screens:StocksEventEdition', () => {
       ...apiOffer.lastProvider,
       name: 'Provider',
     }
-    await renderStockEventScreen(apiOffer)
+    await renderStockEventScreen(apiOffer, apiStocks)
     vi.spyOn(api, 'deleteStock').mockResolvedValue({ id: 1 })
 
     await userEvent.click(
@@ -325,16 +295,16 @@ describe('screens:StocksEventEdition', () => {
     expect(
       await screen.findByText('Le stock a été supprimé.')
     ).toBeInTheDocument()
-    expect(api.deleteStock).toHaveBeenCalledWith(stockToDelete.id)
+    expect(api.deleteStock).toHaveBeenCalledWith(apiStocks[0].id)
     expect(api.deleteStock).toHaveBeenCalledTimes(1)
   })
 
-  it('should allow user to delete stock from an offer created from charlie api', async () => {
+  it('should allow user to try delete stock from an offer created from charlie api', async () => {
     apiOffer.lastProvider = {
       ...apiOffer.lastProvider,
       name: 'Provider',
     }
-    await renderStockEventScreen(apiOffer)
+    await renderStockEventScreen(apiOffer, apiStocks)
     vi.spyOn(api, 'deleteStock').mockRejectedValueOnce(
       new ApiError(
         {} as ApiRequestOptions,
@@ -365,12 +335,15 @@ describe('screens:StocksEventEdition', () => {
         'La suppression des stocks de cette offre n’est possible que depuis le logiciel synchronisé.'
       )
     ).toBeInTheDocument()
-    expect(api.deleteStock).toHaveBeenCalledWith(stockToDelete.id)
+    expect(api.deleteStock).toHaveBeenCalledWith(apiStocks[0].id)
     expect(api.deleteStock).toHaveBeenCalledTimes(1)
   })
 
-  it('should display new stocks banner for several stocks', async () => {
-    await renderStockEventScreen(apiOffer)
+  it('should display new stocks banner when vcreating new stock', async () => {
+    vi.spyOn(api, 'upsertStocks').mockResolvedValueOnce({
+      stocks: apiStocks,
+    })
+    await renderStockEventScreen(apiOffer, apiStocks)
 
     await userEvent.click(screen.getByText('Ajouter une ou plusieurs dates'))
 
@@ -395,8 +368,7 @@ describe('screens:StocksEventEdition', () => {
       ...apiOffer.lastProvider,
       name: 'Provider',
     }
-    await renderStockEventScreen(apiOffer)
-    vi.spyOn(api, 'deleteStock').mockResolvedValue({ id: 1 })
+    await renderStockEventScreen(apiOffer, apiStocks)
 
     expect(screen.getByText('Ajouter une ou plusieurs dates')).toBeDisabled()
   })
@@ -406,9 +378,9 @@ describe('screens:StocksEventEdition', () => {
       ...apiOffer.lastProvider,
       name: 'ciné office',
     }
-    await renderStockEventScreen(apiOffer)
+    await renderStockEventScreen(apiOffer, apiStocks)
     vi.spyOn(api, 'upsertStocks').mockResolvedValue({
-      stocks: [{ id: 1 } as StockResponseModel],
+      stocks: apiStocks,
     })
 
     await userEvent.type(screen.getByLabelText('Quantité restante'), '30')
@@ -432,7 +404,7 @@ describe('screens:StocksEventEdition', () => {
         ''
       )
     )
-    await renderStockEventScreen(apiOffer)
+    await renderStockEventScreen(apiOffer, apiStocks)
 
     await userEvent.click(screen.getByTestId('stock-form-actions-button-open'))
     await userEvent.dblClick(await screen.findByText('Supprimer le stock'))
@@ -448,19 +420,17 @@ describe('screens:StocksEventEdition', () => {
       )
     ).toBeInTheDocument()
     expect(api.deleteStock).toHaveBeenCalledTimes(1)
-    expect(api.deleteStock).toHaveBeenCalledWith(stockToDelete.id)
+    expect(api.deleteStock).toHaveBeenCalledWith(apiStocks[0].id)
   })
 
   it('should save the offer without warning on "Enregistrer les modifications" button click', async () => {
-    apiOffer.stocks = [
-      {
-        ...apiOffer.stocks[0],
-        bookingsQuantity: 0,
-      },
-    ]
-    await renderStockEventScreen(apiOffer)
+    const testedStock = individualGetOfferStockResponseModelFactory({
+      bookingsQuantity: 0,
+    })
+
+    await renderStockEventScreen(apiOffer, [testedStock])
     vi.spyOn(api, 'upsertStocks').mockResolvedValue({
-      stocks: [{ id: 1 } as StockResponseModel],
+      stocks: [testedStock],
     })
 
     await userEvent.selectOptions(
@@ -476,39 +446,9 @@ describe('screens:StocksEventEdition', () => {
     expect(api.upsertStocks).toHaveBeenCalledTimes(1)
   })
 
-  it('should show a warning when too many stock are created', async () => {
-    await renderStockEventScreen(apiOffer)
-
-    await userEvent.click(screen.getByText('Ajouter une ou plusieurs dates'))
-
-    await userEvent.type(
-      screen.getByLabelText('Date de l’évènement'),
-      format(new Date(), FORMAT_ISO_DATE_ONLY)
-    )
-    await userEvent.type(screen.getByLabelText('Horaire 1'), '12:15')
-    await userEvent.selectOptions(
-      screen.getAllByLabelText('Tarif')[1],
-      priceCategoryId
-    )
-    await userEvent.click(screen.getByText('Valider'))
-
-    await userEvent.click(
-      screen.getByRole('button', { name: 'Enregistrer les modifications' })
-    )
-
-    // when not in test 1 is replaced by MAX_STOCKS_PER_OFFER
-    expect(
-      await screen.findByText(
-        'Veuillez créer moins de 1 occurrences par offre.'
-      )
-    ).toBeInTheDocument()
-  })
-
-  it('should show an error on click on "Enregistrer les modifications" when there are too many stocks', async () => {
-    vi.spyOn(api, 'upsertStocks').mockResolvedValue({
-      stocks: [{ id: 1 } as StockResponseModel],
-    })
-    await renderStockEventScreen(apiOffer)
+  it('should show a warning on click on "Enregistrer les modifications" when stock has already been booked', async () => {
+    vi.spyOn(api, 'upsertStocks').mockResolvedValueOnce({ stocks: apiStocks })
+    await renderStockEventScreen(apiOffer, apiStocks)
 
     await userEvent.selectOptions(
       screen.getByLabelText('Tarif'),
@@ -527,7 +467,7 @@ describe('screens:StocksEventEdition', () => {
   })
 
   it('should show a success notification if nothing has been touched', async () => {
-    await renderStockEventScreen(apiOffer)
+    await renderStockEventScreen(apiOffer, apiStocks)
 
     await userEvent.click(
       screen.getByRole('button', { name: 'Enregistrer les modifications' })
@@ -544,7 +484,7 @@ describe('screens:StocksEventEdition', () => {
   it('should not display any message when user delete empty stock', async () => {
     vi.spyOn(api, 'deleteStock').mockResolvedValue({ id: 1 })
     apiOffer.stocks = []
-    await renderStockEventScreen(apiOffer)
+    await renderStockEventScreen(apiOffer, apiStocks)
 
     await userEvent.click(
       (await screen.findAllByTitle('Supprimer le stock'))[1]
@@ -561,7 +501,7 @@ describe('screens:StocksEventEdition', () => {
   })
 
   it('should go back to summary when clicking on "Annuler et quitter"', async () => {
-    await renderStockEventScreen(apiOffer)
+    await renderStockEventScreen(apiOffer, apiStocks)
 
     await userEvent.click(screen.getByText('Annuler et quitter'))
 

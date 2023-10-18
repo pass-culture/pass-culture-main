@@ -3,7 +3,7 @@ import { userEvent } from '@testing-library/user-event'
 import React from 'react'
 
 import {
-  individualStockEventListFactory,
+  individualStockEventFactory,
   priceCategoryFactory,
 } from 'utils/individualApiFactories'
 import { renderWithProviders } from 'utils/renderWithProviders'
@@ -34,7 +34,7 @@ const renderStocksEventList = (props: Partial<StocksEventListProps>) => {
 describe('StocksEventList', () => {
   it('should render a table with header and data', () => {
     renderStocksEventList({
-      stocks: [individualStockEventListFactory({ priceCategoryId: 1 })],
+      stocks: [individualStockEventFactory({ priceCategoryId: 1 })],
     })
 
     expect(screen.getByText('Date')).toBeInTheDocument()
@@ -52,7 +52,7 @@ describe('StocksEventList', () => {
   it('should render Illimité', () => {
     renderStocksEventList({
       stocks: [
-        individualStockEventListFactory({ priceCategoryId: 1, quantity: null }),
+        individualStockEventFactory({ priceCategoryId: 1, quantity: null }),
       ],
     })
 
@@ -62,15 +62,15 @@ describe('StocksEventList', () => {
   it('should sort stocks', async () => {
     renderStocksEventList({
       stocks: [
-        individualStockEventListFactory({
+        individualStockEventFactory({
           beginningDatetime: new Date('2021-10-13T12:00:00Z').toISOString(),
           priceCategoryId: 1,
         }),
-        individualStockEventListFactory({
+        individualStockEventFactory({
           beginningDatetime: new Date('2021-10-14T12:00:00Z').toISOString(),
           priceCategoryId: 2,
         }),
-        individualStockEventListFactory({
+        individualStockEventFactory({
           beginningDatetime: new Date('2021-10-15T12:00:00Z').toISOString(),
           priceCategoryId: 3,
         }),
@@ -112,15 +112,15 @@ describe('StocksEventList', () => {
 
     renderStocksEventList({
       stocks: [
-        individualStockEventListFactory({
+        individualStockEventFactory({
           beginningDatetime: new Date('2021-10-15T12:00:00Z').toISOString(),
           priceCategoryId: 1,
         }),
-        individualStockEventListFactory({
+        individualStockEventFactory({
           beginningDatetime: new Date('2021-10-14T13:00:00Z').toISOString(),
           priceCategoryId: 2,
         }),
-        individualStockEventListFactory({
+        individualStockEventFactory({
           beginningDatetime: new Date('2021-10-14T12:00:00Z').toISOString(),
           priceCategoryId: filteredPriceCategoryId,
         }),
@@ -153,15 +153,15 @@ describe('StocksEventList', () => {
 
     renderStocksEventList({
       stocks: [
-        individualStockEventListFactory({
+        individualStockEventFactory({
           beginningDatetime: new Date('2021-10-15T12:00:00Z').toISOString(),
           priceCategoryId: 1,
         }),
-        individualStockEventListFactory({
+        individualStockEventFactory({
           beginningDatetime: new Date('2021-10-14T13:00:00Z').toISOString(),
           priceCategoryId: 2,
         }),
-        individualStockEventListFactory({
+        individualStockEventFactory({
           beginningDatetime: new Date('2021-10-14T12:00:00Z').toISOString(),
           priceCategoryId: filteredPriceCategoryId,
         }),
@@ -184,8 +184,8 @@ describe('StocksEventList', () => {
   it('should change checkbox states', async () => {
     renderStocksEventList({
       stocks: [
-        individualStockEventListFactory({ priceCategoryId: 1 }),
-        individualStockEventListFactory({ priceCategoryId: 1 }),
+        individualStockEventFactory({ priceCategoryId: 1 }),
+        individualStockEventFactory({ priceCategoryId: 1 }),
       ],
     })
     const selectAllCheckbox = screen.getByLabelText('Tout sélectionner')
@@ -219,15 +219,15 @@ describe('StocksEventList', () => {
   it('should check only filtered lines', async () => {
     renderStocksEventList({
       stocks: [
-        individualStockEventListFactory({
+        individualStockEventFactory({
           beginningDatetime: new Date('2021-10-15T12:00:00Z').toISOString(),
           priceCategoryId: 1,
         }),
-        individualStockEventListFactory({
+        individualStockEventFactory({
           beginningDatetime: new Date('2021-10-14T13:00:00Z').toISOString(),
           priceCategoryId: 2,
         }),
-        individualStockEventListFactory({
+        individualStockEventFactory({
           beginningDatetime: new Date('2021-10-14T12:00:00Z').toISOString(),
           priceCategoryId: 3,
         }),
@@ -257,8 +257,8 @@ describe('StocksEventList', () => {
   it('should bulk delete lines when clicking on button on action bar', async () => {
     renderStocksEventList({
       stocks: [
-        individualStockEventListFactory({ priceCategoryId: 1 }),
-        individualStockEventListFactory({ priceCategoryId: 1 }),
+        individualStockEventFactory({ priceCategoryId: 1 }),
+        individualStockEventFactory({ priceCategoryId: 1 }),
       ],
     })
     expect(
@@ -282,7 +282,7 @@ describe('StocksEventList', () => {
   it('should bring me on new last page when deleting more than one page by action bar', async () => {
     const stocks = []
     for (let i = 0; i < STOCKS_PER_PAGE * 2 + 1; i++) {
-      const stock = individualStockEventListFactory({ priceCategoryId: 1 })
+      const stock = individualStockEventFactory({ priceCategoryId: 1 })
       stocks.push(stock)
     }
 
@@ -333,8 +333,8 @@ describe('StocksEventList', () => {
   it('should delete line when clicking on trash icon', async () => {
     renderStocksEventList({
       stocks: [
-        individualStockEventListFactory({ priceCategoryId: 1 }),
-        individualStockEventListFactory({ priceCategoryId: 1 }),
+        individualStockEventFactory({ priceCategoryId: 1 }),
+        individualStockEventFactory({ priceCategoryId: 1 }),
       ],
     })
     expect(
@@ -366,7 +366,7 @@ describe('StocksEventList', () => {
   it('should bring me on previous page when deleting only one line by trash icon', async () => {
     renderStocksEventList({
       stocks: Array(STOCKS_PER_PAGE * 2 + 1).fill(
-        individualStockEventListFactory({ priceCategoryId: 1 })
+        individualStockEventFactory({ priceCategoryId: 1 })
       ),
     })
 

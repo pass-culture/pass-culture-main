@@ -5,20 +5,20 @@ import React from 'react'
 import { axe } from 'vitest-axe'
 
 import { FORMAT_ISO_DATE_ONLY } from 'utils/date'
-import {
-  individualOfferFactory,
-  priceCategoryFactory,
-} from 'utils/individualApiFactories'
+import { priceCategoryFactory } from 'utils/individualApiFactories'
 import { renderWithProviders } from 'utils/renderWithProviders'
 
+import * as formSubmit from '../form/onSubmit'
 import { RecurrenceForm } from '../RecurrenceForm'
 
-const offer = individualOfferFactory({ id: 1, stocks: [] })
-
 const defaultProps = {
-  offer: offer,
-  onCancel: vi.fn(),
-  onConfirm: vi.fn(),
+  stocks: [],
+  setIsOpen: vi.fn(),
+  setStocks: vi.fn(),
+  departmentCode: '75',
+  offerId: 1,
+  priceCategories: [priceCategoryFactory()],
+  setStocksInEditionForm: vi.fn(),
 }
 
 describe('RecurrenceForm', () => {
@@ -30,10 +30,8 @@ describe('RecurrenceForm', () => {
   })
 
   it('should submit', async () => {
-    const onConfirm = vi.fn()
-    renderWithProviders(
-      <RecurrenceForm {...defaultProps} onConfirm={onConfirm} />
-    )
+    vi.spyOn(formSubmit, 'onSubmit').mockResolvedValueOnce()
+    renderWithProviders(<RecurrenceForm {...defaultProps} />)
 
     await userEvent.type(
       screen.getByLabelText('Date de l’évènement'),
@@ -48,7 +46,7 @@ describe('RecurrenceForm', () => {
     )
 
     await userEvent.click(screen.getByText('Valider'))
-    expect(onConfirm).toHaveBeenCalled()
+    expect(formSubmit.onSubmit).toHaveBeenCalled()
   })
 
   it('should add and remove a beginning time', async () => {
@@ -73,12 +71,14 @@ describe('RecurrenceForm', () => {
   })
 
   it('should show an add button until we have less or an equal number of fields than different price_categories', async () => {
-    defaultProps.offer.priceCategories = [
+    const priceCategories = [
       priceCategoryFactory(),
       priceCategoryFactory(),
       priceCategoryFactory(),
     ]
-    renderWithProviders(<RecurrenceForm {...defaultProps} />)
+    renderWithProviders(
+      <RecurrenceForm {...defaultProps} priceCategories={priceCategories} />
+    )
 
     await userEvent.click(screen.getByText('Ajouter d’autres places et tarifs'))
     const deleteButton = screen.getAllByRole('button', {
