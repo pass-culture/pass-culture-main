@@ -53,14 +53,16 @@ const BankInformations = (): JSX.Element => {
   }
 
   useEffect(() => {
-    if (offerers && offerers?.length > 0) {
-      if (offererId) {
-        updateOfferer(offererId)
-      }
-      if (searchParams.has('structure')) {
-        searchParams.delete('structure')
-        setSearchParams(searchParams)
-      }
+    if (!offerers || offerers.length === 0) {
+      return
+    }
+
+    if (offererId) {
+      updateOfferer(offererId)
+    }
+    if (searchParams.has('structure')) {
+      searchParams.delete('structure')
+      setSearchParams(searchParams)
     }
   }, [])
 

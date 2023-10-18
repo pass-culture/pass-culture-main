@@ -16,6 +16,7 @@ import useRemoteConfig from 'hooks/useRemoteConfig'
 import { INITIAL_OFFERER_VENUES } from 'pages/Home/OffererVenues'
 import { HTTP_STATUS } from 'repository/pcapi/pcapiClient'
 
+import styles from './Homepage.module.scss'
 import HomepageBreadcrumb, { STEP_ID_OFFERERS } from './HomepageBreadcrumb'
 import Offerers from './Offerers/Offerers'
 import { OffererStats } from './OffererStats'
@@ -112,7 +113,7 @@ const Homepage = (): JSX.Element => {
       <div className="homepage">
         <h1>Bienvenue dans l’espace acteurs culturels</h1>
 
-        <div className="reimbursements-banners">
+        <div className={styles['reimbursements-banners']}>
           <AddBankAccountCallout offerer={selectedOfferer} />
           <LinkVenueCallout offerer={selectedOfferer} />
           <PendingBankAccountCallout offerer={selectedOfferer} />

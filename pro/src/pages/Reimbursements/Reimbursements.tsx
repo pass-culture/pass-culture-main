@@ -17,6 +17,8 @@ import { useReimbursementContext } from 'context/ReimbursementContext/Reimbursem
 import useActiveFeature from 'hooks/useActiveFeature'
 import Spinner from 'ui-kit/Spinner/Spinner'
 
+import styles from './Reimbursement.module.scss'
+
 const Reimbursements = (): JSX.Element => {
   const isNewBankDetailsJourneyEnabled = useActiveFeature(
     'WIP_ENABLE_NEW_BANK_DETAILS_JOURNEY'
@@ -56,10 +58,10 @@ const Reimbursements = (): JSX.Element => {
   }
 
   return (
-    <div className="reimbursements-container">
-      <h1 className="title">Remboursements</h1>
+    <div className={styles['reimbursements-container']}>
+      <h1 className={styles['title']}>Remboursements</h1>
       {!isNewBankDetailsJourneyEnabled && <BannerReimbursementsInfo />}
-      <div className="banners">
+      <div className={styles['banners']}>
         <AddBankAccountCallout titleOnly={true} offerer={selectedOfferer} />
         <PendingBankAccountCallout titleOnly={true} offerer={selectedOfferer} />
         <LinkVenueCallout titleOnly={true} offerer={selectedOfferer} />
