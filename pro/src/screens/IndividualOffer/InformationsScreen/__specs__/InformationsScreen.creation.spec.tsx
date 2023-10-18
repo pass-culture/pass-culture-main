@@ -4,7 +4,11 @@ import React from 'react'
 import { Route, Routes } from 'react-router-dom'
 
 import { api } from 'apiClient/api'
-import { ApiError, GetIndividualOfferResponseModel } from 'apiClient/v1'
+import {
+  ApiError,
+  GetIndividualOfferResponseModel,
+  SubcategoryResponseModel,
+} from 'apiClient/v1'
 import { ApiRequestOptions } from 'apiClient/v1/core/ApiRequestOptions'
 import { ApiResult } from 'apiClient/v1/core/ApiResult'
 import { OFFER_WIZARD_STEP_IDS } from 'components/IndividualOfferBreadcrumb/constants'
@@ -14,7 +18,6 @@ import {
   IndividualOfferContextValues,
 } from 'context/IndividualOfferContext'
 import { CATEGORY_STATUS, OFFER_WIZARD_MODE } from 'core/Offers/constants'
-import { OfferSubCategory } from 'core/Offers/types'
 import { getIndividualOfferPath } from 'core/Offers/utils/getIndividualOfferUrl'
 import { IndividualOfferVenueItem } from 'core/Venue/types'
 import * as pcapi from 'repository/pcapi/pcapi'
@@ -106,7 +109,7 @@ describe('screens:IndividualOffer::Informations::creation', () => {
   beforeEach(() => {
     Element.prototype.scrollIntoView = scrollIntoViewMock
     const categories = [individualOfferCategoryFactory({ id: 'A' })]
-    const subCategories: OfferSubCategory[] = [
+    const subCategories: SubcategoryResponseModel[] = [
       individualOfferSubCategoryFactory({
         id: 'virtual',
         categoryId: 'A',

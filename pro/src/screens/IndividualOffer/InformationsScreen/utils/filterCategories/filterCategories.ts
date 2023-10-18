@@ -1,9 +1,8 @@
-import { CategoryResponseModel } from 'apiClient/v1'
+import { CategoryResponseModel, SubcategoryResponseModel } from 'apiClient/v1'
 import {
   CATEGORY_STATUS,
   INDIVIDUAL_OFFER_SUBTYPE,
 } from 'core/Offers/constants'
-import { OfferSubCategory } from 'core/Offers/types'
 
 export const getOfferSubtypeFromParam = (
   offerType: string | null
@@ -52,7 +51,7 @@ export const isOfferSubtypeEvent = (
 }
 
 const isSubcategoryMatchingCriteria = (
-  subcategory: OfferSubCategory,
+  subcategory: SubcategoryResponseModel,
   onlineOfflinePlatform: CATEGORY_STATUS,
   isEvent: boolean | null
 ) => {
@@ -72,12 +71,12 @@ const isSubcategoryMatchingCriteria = (
 
 export const filterCategories = (
   allCategories: CategoryResponseModel[],
-  allSubCategories: OfferSubCategory[],
+  allSubCategories: SubcategoryResponseModel[],
   onlineOfflinePlatform: CATEGORY_STATUS,
   isEvent: boolean | null
-): [CategoryResponseModel[], OfferSubCategory[]] => {
-  const subCategories: OfferSubCategory[] = allSubCategories.filter(
-    (subcategory: OfferSubCategory) => {
+): [CategoryResponseModel[], SubcategoryResponseModel[]] => {
+  const subCategories: SubcategoryResponseModel[] = allSubCategories.filter(
+    (subcategory: SubcategoryResponseModel) => {
       if (!subcategory.isSelectable) {
         return false
       }
@@ -92,7 +91,7 @@ export const filterCategories = (
   const categories: CategoryResponseModel[] = allCategories.filter(
     (c: CategoryResponseModel) =>
       c.isSelectable &&
-      subCategories.some((s: OfferSubCategory) => s.categoryId === c.id)
+      subCategories.some((s: SubcategoryResponseModel) => s.categoryId === c.id)
   )
 
   return [categories, subCategories]

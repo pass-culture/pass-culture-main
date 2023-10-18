@@ -2,11 +2,10 @@ import { useFormikContext } from 'formik'
 import React, { useEffect, useState } from 'react'
 import { useLocation } from 'react-router-dom'
 
-import { SubcategoryIdEnum } from 'apiClient/v1'
+import { SubcategoryIdEnum, SubcategoryResponseModel } from 'apiClient/v1'
 import FormLayout from 'components/FormLayout'
 import { getCategoriesAdapter } from 'core/Offers/adapters'
 import { INDIVIDUAL_OFFER_SUBTYPE } from 'core/Offers/constants'
-import { OfferSubCategory } from 'core/Offers/types'
 import { getIndividualOfferVenuesAdapter } from 'core/Venue/adapters/getIndividualOfferVenuesAdapter'
 import { getVenueAdapter } from 'core/Venue/adapters/getVenueAdapter'
 import useCurrentUser from 'hooks/useCurrentUser'
@@ -28,9 +27,9 @@ import { venueTypeSubcategoriesMapping } from './venueTypeSubcategoriesMapping'
 const getVenueTypeAndSubcategories = async (
   venueId: string | null,
   offererId: string | null
-): Promise<[string | null, OfferSubCategory[]]> => {
+): Promise<[string | null, SubcategoryResponseModel[]]> => {
   let venueType: string | null = null
-  let subcategories: OfferSubCategory[] = []
+  let subcategories: SubcategoryResponseModel[] = []
 
   if (venueId) {
     const [categoriesResponse, venueResponse] = await Promise.all([
@@ -71,7 +70,9 @@ const IndividualOfferType = (): JSX.Element | null => {
   const location = useLocation()
   const { currentUser } = useCurrentUser()
   const { values, handleChange } = useFormikContext<OfferTypeFormValues>()
-  const [subcategories, setSubcategories] = useState<OfferSubCategory[]>([])
+  const [subcategories, setSubcategories] = useState<
+    SubcategoryResponseModel[]
+  >([])
   const [venueType, setVenueType] = useState<string | null>(null)
   const [isLoading, setIsLoading] = useState(false)
   const queryParams = new URLSearchParams(location.search)

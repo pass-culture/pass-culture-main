@@ -1,13 +1,13 @@
-import { CategoryResponseModel } from 'apiClient/v1'
+import { CategoryResponseModel, SubcategoryResponseModel } from 'apiClient/v1'
 import {
   musicOptionsTree,
   showOptionsTree,
 } from 'core/Offers/categoriesSubTypes'
-import { IndividualOffer, OfferSubCategory } from 'core/Offers/types'
+import { IndividualOffer } from 'core/Offers/types'
 
 const serializerOfferSubCategoryFields = (
   offer: IndividualOffer,
-  subCategory?: OfferSubCategory
+  subCategory?: SubcategoryResponseModel
 ): {
   author: string
   stageDirector: string
@@ -71,7 +71,7 @@ const serializerOfferSubCategoryFields = (
 export const serializeOfferSectionData = (
   offer: IndividualOffer,
   categories: CategoryResponseModel[],
-  subCategories: OfferSubCategory[]
+  subCategories: SubcategoryResponseModel[]
 ) => {
   const offerSubCategory = subCategories.find(
     (s) => s.id === offer.subcategoryId

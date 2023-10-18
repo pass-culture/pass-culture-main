@@ -1,8 +1,8 @@
-import { OfferSubCategory } from 'core/Offers/types'
+import { SubcategoryResponseModel } from 'apiClient/v1'
 
 const buildSubcategoryFields = (
   isBookingContactEnabled: boolean,
-  subcategory?: OfferSubCategory
+  subcategory?: SubcategoryResponseModel
 ): {
   subcategoryFields: string[]
 } => {

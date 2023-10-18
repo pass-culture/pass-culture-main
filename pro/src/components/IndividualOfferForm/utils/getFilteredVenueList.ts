@@ -1,10 +1,10 @@
+import { SubcategoryResponseModel } from 'apiClient/v1'
 import { CATEGORY_STATUS } from 'core/Offers/constants'
-import { OfferSubCategory } from 'core/Offers/types'
 import { IndividualOfferVenueItem } from 'core/Venue/types'
 
 export const getFilteredVenueListBySubcategory = (
   venueList: IndividualOfferVenueItem[],
-  subcategory?: OfferSubCategory
+  subcategory?: SubcategoryResponseModel
 ): IndividualOfferVenueItem[] => {
   if (!subcategory) {
     return venueList

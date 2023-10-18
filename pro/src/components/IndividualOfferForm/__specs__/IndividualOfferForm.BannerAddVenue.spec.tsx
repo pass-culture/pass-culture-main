@@ -3,10 +3,9 @@ import { userEvent } from '@testing-library/user-event'
 import { Formik } from 'formik'
 import React from 'react'
 
-import { CategoryResponseModel } from 'apiClient/v1'
+import { CategoryResponseModel, SubcategoryResponseModel } from 'apiClient/v1'
 import { OffererName } from 'core/Offerers/types'
 import { CATEGORY_STATUS } from 'core/Offers/constants'
-import { OfferSubCategory } from 'core/Offers/types'
 import { IndividualOfferVenueItem } from 'core/Venue/types'
 import {
   individualOfferCategoryFactory,
@@ -53,7 +52,7 @@ describe('IndividualOfferForm', () => {
   const onSubmit = vi.fn()
   let props: IndividualOfferFormProps
   let categories: CategoryResponseModel[] = []
-  let subCategories: OfferSubCategory[] = []
+  let subCategories: SubcategoryResponseModel[] = []
   let offererNames: OffererName[]
   let venueList: IndividualOfferVenueItem[]
 

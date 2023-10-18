@@ -1,9 +1,9 @@
+import { SubcategoryResponseModel } from 'apiClient/v1'
 import {
   FORM_DEFAULT_VALUES,
   IndividualOfferFormValues,
 } from 'components/IndividualOfferForm'
 import { OffererName } from 'core/Offerers/types'
-import { OfferSubCategory } from 'core/Offers/types'
 import { IndividualOfferVenueItem } from 'core/Venue/types'
 
 import buildSubcategoryFields from './buildSubCategoryFields'
@@ -14,7 +14,7 @@ const setDefaultInitialFormValues = (
   venueId: string | null,
   venueList: IndividualOfferVenueItem[],
   isBookingContactEnabled: boolean,
-  subcategory?: OfferSubCategory
+  subcategory?: SubcategoryResponseModel
 ): IndividualOfferFormValues => {
   let initialOffererId = FORM_DEFAULT_VALUES.offererId
 

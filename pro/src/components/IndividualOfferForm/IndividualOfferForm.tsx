@@ -1,7 +1,7 @@
 import { useFormikContext } from 'formik'
 import React from 'react'
 
-import { CategoryResponseModel } from 'apiClient/v1'
+import { CategoryResponseModel, SubcategoryResponseModel } from 'apiClient/v1'
 import FormLayout from 'components/FormLayout'
 import { OnImageUploadArgs } from 'components/ImageUploader/ButtonImageEdit/ModalImageEdit/ModalImageEdit'
 import { IndividualOfferFormValues } from 'components/IndividualOfferForm'
@@ -10,7 +10,7 @@ import {
   CATEGORY_STATUS,
   INDIVIDUAL_OFFER_SUBTYPE,
 } from 'core/Offers/constants'
-import { IndividualOfferImage, OfferSubCategory } from 'core/Offers/types'
+import { IndividualOfferImage } from 'core/Offers/types'
 import { IndividualOfferVenueItem } from 'core/Venue/types'
 import { useScrollToFirstErrorAfterSubmit } from 'hooks'
 import useCurrentUser from 'hooks/useCurrentUser'
@@ -28,7 +28,7 @@ export interface IndividualOfferFormProps {
   offererNames: OffererName[]
   venueList: IndividualOfferVenueItem[]
   categories: CategoryResponseModel[]
-  subCategories: OfferSubCategory[]
+  subCategories: SubcategoryResponseModel[]
   onImageUpload: (values: OnImageUploadArgs) => Promise<void>
   onImageDelete: () => Promise<void>
   readOnlyFields?: string[]

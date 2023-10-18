@@ -8,6 +8,7 @@ import {
   GetIndividualOfferResponseModel,
   OfferStatus,
   PatchOfferBodyModel,
+  SubcategoryResponseModel,
   WithdrawalTypeEnum,
 } from 'apiClient/v1'
 import { OFFER_WIZARD_STEP_IDS } from 'components/IndividualOfferBreadcrumb/constants'
@@ -18,7 +19,7 @@ import {
 } from 'context/IndividualOfferContext'
 import { REIMBURSEMENT_RULES } from 'core/Finances'
 import { CATEGORY_STATUS, OFFER_WIZARD_MODE } from 'core/Offers/constants'
-import { IndividualOffer, OfferSubCategory } from 'core/Offers/types'
+import { IndividualOffer } from 'core/Offers/types'
 import { getIndividualOfferPath } from 'core/Offers/utils/getIndividualOfferUrl'
 import { AccessiblityEnum } from 'core/shared'
 import { IndividualOfferVenueItem } from 'core/Venue/types'
@@ -110,7 +111,7 @@ describe('screens:IndividualOffer::Informations:edition', () => {
   let props: InformationsScreenProps
   let contextOverride: IndividualOfferContextValues
   let offer: IndividualOffer
-  let subCategories: OfferSubCategory[]
+  let subCategories: SubcategoryResponseModel[]
   const offererId = 1
   const physicalVenueId = 1
   const virtualVenueId = 2

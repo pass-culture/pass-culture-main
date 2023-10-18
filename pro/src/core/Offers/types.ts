@@ -6,7 +6,6 @@ import {
   PriceCategoryResponseModel,
   GetOfferVenueResponseModel,
   GetOfferLastProviderResponseModel,
-  SubcategoryResponseModel,
 } from 'apiClient/v1'
 import { CropParams } from 'components/ImageUploader'
 import { CollectiveOfferStatus } from 'core/OfferEducational'
@@ -74,8 +73,6 @@ export interface CategorySubtypeItem {
     label: string
   }[]
 }
-
-export interface OfferSubCategory extends SubcategoryResponseModel {}
 
 export interface IndividualOfferStock {
   beginningDatetime: string | null

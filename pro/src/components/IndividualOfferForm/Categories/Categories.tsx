@@ -2,7 +2,7 @@ import cn from 'classnames'
 import { useFormikContext } from 'formik'
 import React from 'react'
 
-import { CategoryResponseModel } from 'apiClient/v1'
+import { CategoryResponseModel, SubcategoryResponseModel } from 'apiClient/v1'
 import FormLayout from 'components/FormLayout'
 import {
   FORM_DEFAULT_VALUES,
@@ -10,7 +10,6 @@ import {
 } from 'components/IndividualOfferForm'
 import { useIndividualOfferContext } from 'context/IndividualOfferContext'
 import { INDIVIDUAL_OFFER_SUBTYPE } from 'core/Offers/constants'
-import { OfferSubCategory } from 'core/Offers/types'
 import { IndividualOfferVenueItem } from 'core/Venue/types'
 import { SelectOption } from 'custom_types/form'
 import useActiveFeature from 'hooks/useActiveFeature'
@@ -28,7 +27,7 @@ import { ShowTypes } from './ShowTypes'
 
 export interface CategoriesProps {
   categories: CategoryResponseModel[]
-  subCategories: OfferSubCategory[]
+  subCategories: SubcategoryResponseModel[]
   readOnlyFields?: string[]
   showAddVenueBanner?: boolean
   offerSubtype: INDIVIDUAL_OFFER_SUBTYPE | null
@@ -46,12 +45,13 @@ const buildCategoryOptions = (
     .sort((a, b) => a.label.localeCompare(b.label, 'fr'))
 
 const buildSubcategoryOptions = (
-  subCategories: OfferSubCategory[],
+  subCategories: SubcategoryResponseModel[],
   categoryId: string
 ): SelectOption[] =>
   buildCategoryOptions(
     subCategories.filter(
-      (subCategory: OfferSubCategory) => subCategory.categoryId === categoryId
+      (subCategory: SubcategoryResponseModel) =>
+        subCategory.categoryId === categoryId
     )
   )
 

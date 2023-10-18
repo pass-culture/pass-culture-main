@@ -1,5 +1,5 @@
-import { WithdrawalTypeEnum } from 'apiClient/v1'
-import { IndividualOffer, OfferSubCategory } from 'core/Offers/types'
+import { SubcategoryResponseModel, WithdrawalTypeEnum } from 'apiClient/v1'
+import { IndividualOffer } from 'core/Offers/types'
 import { AccessiblityEnum } from 'core/shared'
 import { offerVenueFactory } from 'utils/apiFactories'
 import {
@@ -11,7 +11,7 @@ import setInitialFormValues from '../setInitialFormValues'
 
 describe('setFormReadOnlyFields', () => {
   let offer: IndividualOffer
-  let subCategoryList: OfferSubCategory[]
+  let subCategoryList: SubcategoryResponseModel[]
   const venueId = 13
   const offererId = 12
 
