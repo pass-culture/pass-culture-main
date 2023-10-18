@@ -375,7 +375,7 @@ def update_collective_offer_template(offer_id: int, new_values: dict) -> None:
         start = new_values["dates"]["start"]
         end = new_values["dates"]["end"]
 
-        if start <= offer_to_update.dateCreated:
+        if start.date() < offer_to_update.dateCreated.date():
             raise educational_exceptions.StartsBeforeOfferCreation()
 
         offer_to_update.dateRange = DateTimeRange(start, end)

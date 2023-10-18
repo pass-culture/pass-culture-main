@@ -632,7 +632,7 @@ class CollectiveOfferTemplate(
             'NOT isempty("dateRange") '
             'AND lower("dateRange") is NOT NULL '
             'AND upper("dateRange") IS NOT NULL '
-            'AND lower("dateRange") >= "dateCreated")',
+            'AND lower("dateRange")::date >= "dateCreated"::date)',
             name="template_dates_non_empty_daterange",
         ),
     )
