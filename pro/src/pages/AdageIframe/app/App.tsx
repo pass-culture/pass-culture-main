@@ -36,7 +36,7 @@ export const App = (): JSX.Element => {
     const getRelativeOffers = params.get('all') === 'true'
     apiAdage
       .authenticate()
-      .then(user => setUser(user))
+      .then((user) => setUser(user))
       .then(async () => {
         if (siret) {
           try {
@@ -72,7 +72,7 @@ export const App = (): JSX.Element => {
       .finally(() => {
         setIsLoading(false)
         if (LOGS_DATA) {
-          apiAdage.logCatalogView({
+          void apiAdage.logCatalogView({
             iframeFrom: removeParamsFromUrl(location.pathname),
             source: siret || venueId ? 'partnersMap' : 'homepage',
           })
