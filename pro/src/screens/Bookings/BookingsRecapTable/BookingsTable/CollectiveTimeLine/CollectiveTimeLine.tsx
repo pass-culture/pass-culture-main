@@ -165,7 +165,7 @@ const CollectiveTimeLine = ({
               La réservation n’est plus annulable par l’établissement scolaire.
               <div className={styles['timeline-infobox']}>
                 <div className={styles['timeline-infobox-text']}>
-                  Votre événement a eu lieu le {eventDate}. Vous avez jusqu’au{' '}
+                  Votre évènement a eu lieu le {eventDate}. Vous avez jusqu’au{' '}
                   {eventDatePlusTwoDays} pour modifier le prix et le nombre de
                   participants si nécessaire.
                 </div>
