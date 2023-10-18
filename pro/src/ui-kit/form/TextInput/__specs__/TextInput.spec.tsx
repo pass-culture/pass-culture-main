@@ -15,7 +15,7 @@ describe('TextInput', () => {
     'search',
   ] as const)(
     'should allow tabbing from one input of type %s to the next',
-    async inputType => {
+    async (inputType) => {
       render(
         <Formik initialValues={{ test1: '', test2: '' }} onSubmit={() => {}}>
           <>
