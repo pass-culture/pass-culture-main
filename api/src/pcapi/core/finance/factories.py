@@ -191,7 +191,7 @@ class CustomReimbursementRuleFactory(BaseFactory):
             datetime.datetime.utcnow() + datetime.timedelta(days=365),
         ]
     )
-    amount = 5
+    amount = 500
     amountInEuroCents = 500
 
     @classmethod

@@ -1,5 +1,3 @@
-import decimal
-
 import pcapi.core.finance.models as finance_models
 import pcapi.core.offerers.factories as offerers_factories
 import pcapi.core.offerers.models as offerers_models
@@ -31,7 +29,7 @@ class AddCustomOfferReimbursementRuleTest:
         assert "Created new rule" in result.output
         rule = finance_models.CustomReimbursementRule.query.one()
         assert rule.offer.id == offer_id
-        assert rule.amount == decimal.Decimal("12.34")
+        assert rule.amount == 1234
         assert rule.amountInEuroCents == 1234
 
     @clean_database
@@ -77,7 +75,7 @@ class AddCustomOfferReimbursementRuleTest:
         assert "Created new rule" in result.output
         rule = finance_models.CustomReimbursementRule.query.one()
         assert rule.offer.id == offer_id
-        assert rule.amount == decimal.Decimal("12.34")
+        assert rule.amount == 1234
         assert rule.amountInEuroCents == 1234
 
 
