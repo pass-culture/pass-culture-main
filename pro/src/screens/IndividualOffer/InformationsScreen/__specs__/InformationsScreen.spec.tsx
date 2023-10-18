@@ -145,7 +145,7 @@ describe('screens:IndividualOffer::Informations', () => {
   })
 
   describe('when a subCategory is selected', () => {
-    beforeEach(async () => {
+    beforeEach(() => {
       const venue1: IndividualOfferVenueItem = individualOfferVenueItemFactory()
       const venue2: IndividualOfferVenueItem = individualOfferVenueItemFactory()
 

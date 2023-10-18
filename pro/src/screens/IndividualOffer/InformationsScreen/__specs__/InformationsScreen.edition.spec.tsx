@@ -17,7 +17,6 @@ import {
   IndividualOfferContext,
   IndividualOfferContextValues,
 } from 'context/IndividualOfferContext'
-import { REIMBURSEMENT_RULES } from 'core/Finances'
 import { CATEGORY_STATUS, OFFER_WIZARD_MODE } from 'core/Offers/constants'
 import { IndividualOffer } from 'core/Offers/types'
 import { getIndividualOfferPath } from 'core/Offers/utils/getIndividualOfferUrl'
@@ -119,39 +118,17 @@ describe('screens:IndividualOffer::Informations:edition', () => {
 
   beforeEach(() => {
     Element.prototype.scrollIntoView = scrollIntoViewMock
-    const categories = [
-      individualOfferCategoryFactory({
-        id: 'CID',
-        proLabel: 'Catégorie CID',
-        isSelectable: true,
-      }),
-    ]
+    const categories = [individualOfferCategoryFactory({ id: 'CID' })]
     subCategories = [
       individualOfferSubCategoryFactory({
         id: 'SCID virtual',
         categoryId: 'CID',
-        proLabel: 'Sous catégorie online de CID',
-        isEvent: false,
-        conditionalFields: [],
-        canBeDuo: false,
-        canBeEducational: false,
-        canBeWithdrawable: false,
         onlineOfflinePlatform: CATEGORY_STATUS.ONLINE,
-        reimbursementRule: REIMBURSEMENT_RULES.STANDARD,
-        isSelectable: true,
       }),
       individualOfferSubCategoryFactory({
         id: 'SCID physical',
         categoryId: 'CID',
-        proLabel: 'Sous catégorie offline de CID',
-        isEvent: false,
-        conditionalFields: [],
-        canBeDuo: true,
-        canBeEducational: false,
-        canBeWithdrawable: false,
         onlineOfflinePlatform: CATEGORY_STATUS.OFFLINE,
-        reimbursementRule: REIMBURSEMENT_RULES.STANDARD,
-        isSelectable: true,
       }),
     ]
 

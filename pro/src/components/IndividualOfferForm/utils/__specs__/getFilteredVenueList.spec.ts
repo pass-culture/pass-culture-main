@@ -47,7 +47,7 @@ describe('getFilteredVenueList', () => {
   ]
 
   describe('getFilteredVenueListBySubcategory', () => {
-    it('should return all venues when subCatagory is ONLINE or OFFLINE', async () => {
+    it('should return all venues when subCatagory is ONLINE or OFFLINE', () => {
       const result = getFilteredVenueListBySubcategory(
         [...venueList, virtualVenue],
         subCategories.find((s) => s.id === 'ONLINE_OR_OFFLINE')
@@ -58,7 +58,7 @@ describe('getFilteredVenueList', () => {
       expect(result[2].id).toEqual(virtualVenueId)
     })
 
-    it('should return virtual venues when subCatagory is ONLINE only', async () => {
+    it('should return virtual venues when subCatagory is ONLINE only', () => {
       const result = getFilteredVenueListBySubcategory(
         [...venueList, virtualVenue],
         subCategories.find((s) => s.id === 'ONLINE_ONLY')
@@ -67,7 +67,7 @@ describe('getFilteredVenueList', () => {
       expect(result[0].id).toEqual(virtualVenueId)
     })
 
-    it('should return not virtual when subCatagory is OFFLINE only', async () => {
+    it('should return not virtual when subCatagory is OFFLINE only', () => {
       const result = getFilteredVenueListBySubcategory(
         [...venueList, virtualVenue],
         subCategories.find((s) => s.id === 'OFFLINE_ONLY')
@@ -79,7 +79,7 @@ describe('getFilteredVenueList', () => {
   })
 
   describe('getFilteredVenueListBySubcategory', () => {
-    it('should return all venues when categoryStatus is ONLINE or OFFLINE', async () => {
+    it('should return all venues when categoryStatus is ONLINE or OFFLINE', () => {
       const result = getFilteredVenueListByCategoryStatus(
         [...venueList, virtualVenue],
         CATEGORY_STATUS.ONLINE_OR_OFFLINE
@@ -90,7 +90,7 @@ describe('getFilteredVenueList', () => {
       expect(result[2].id).toEqual(virtualVenueId)
     })
 
-    it('should return vitual venues when categoryStatus is ONLINE only', async () => {
+    it('should return vitual venues when categoryStatus is ONLINE only', () => {
       const result = getFilteredVenueListByCategoryStatus(
         [...venueList, virtualVenue],
         CATEGORY_STATUS.ONLINE
@@ -99,7 +99,7 @@ describe('getFilteredVenueList', () => {
       expect(result[0].id).toEqual(virtualVenueId)
     })
 
-    it('should return not virtual when categoryStatus is OFFLINE only', async () => {
+    it('should return not virtual when categoryStatus is OFFLINE only', () => {
       const result = getFilteredVenueListByCategoryStatus(
         [...venueList, virtualVenue],
         CATEGORY_STATUS.OFFLINE
