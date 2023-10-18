@@ -33,7 +33,7 @@ export const BookingOfferCell = ({ booking }: BookingOfferCellProps) => {
   const editionUrl = useOfferEditionURL(
     booking.stock.offerIsEducational,
     booking.stock.offerId,
-    true
+    false
   )
   const eventBeginningDatetime = booking.stock.eventBeginningDatetime
 
