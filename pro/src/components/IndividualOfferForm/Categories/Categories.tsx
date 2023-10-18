@@ -2,6 +2,7 @@ import cn from 'classnames'
 import { useFormikContext } from 'formik'
 import React from 'react'
 
+import { CategoryResponseModel } from 'apiClient/v1'
 import FormLayout from 'components/FormLayout'
 import {
   FORM_DEFAULT_VALUES,
@@ -9,7 +10,7 @@ import {
 } from 'components/IndividualOfferForm'
 import { useIndividualOfferContext } from 'context/IndividualOfferContext'
 import { INDIVIDUAL_OFFER_SUBTYPE } from 'core/Offers/constants'
-import { OfferCategory, OfferSubCategory } from 'core/Offers/types'
+import { OfferSubCategory } from 'core/Offers/types'
 import { IndividualOfferVenueItem } from 'core/Venue/types'
 import { SelectOption } from 'custom_types/form'
 import useActiveFeature from 'hooks/useActiveFeature'
@@ -26,7 +27,7 @@ import { OfferSubtypeTag } from './OfferSubtypeTag/OfferSubtypeTag'
 import { ShowTypes } from './ShowTypes'
 
 export interface CategoriesProps {
-  categories: OfferCategory[]
+  categories: CategoryResponseModel[]
   subCategories: OfferSubCategory[]
   readOnlyFields?: string[]
   showAddVenueBanner?: boolean
@@ -34,9 +35,11 @@ export interface CategoriesProps {
   venueList: IndividualOfferVenueItem[]
 }
 
-const buildCategoryOptions = (categories: OfferCategory[]): SelectOption[] =>
+const buildCategoryOptions = (
+  categories: CategoryResponseModel[]
+): SelectOption[] =>
   categories
-    .map((category: OfferCategory) => ({
+    .map((category: CategoryResponseModel) => ({
       value: category.id,
       label: category.proLabel,
     }))

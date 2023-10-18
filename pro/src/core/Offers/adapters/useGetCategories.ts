@@ -1,12 +1,12 @@
 import { api } from 'apiClient/api'
 import { CategoryResponseModel, SubcategoryResponseModel } from 'apiClient/v1'
-import { OfferCategory, OfferSubCategory } from 'core/Offers/types'
+import { OfferSubCategory } from 'core/Offers/types'
 import { GET_DATA_ERROR_MESSAGE } from 'core/shared'
 
 import { CATEGORY_STATUS } from '../constants'
 
 interface Payload {
-  categories: OfferCategory[]
+  categories: CategoryResponseModel[]
   subCategories: OfferSubCategory[]
 }
 
@@ -19,14 +19,6 @@ const FAILING_RESPONSE = {
     categories: [],
     subCategories: [],
   },
-}
-
-const serializeCategory = (s: CategoryResponseModel): OfferCategory => {
-  return {
-    id: s.id,
-    proLabel: s.proLabel,
-    isSelectable: s.isSelectable,
-  }
 }
 
 const serializeSubCategory = (
@@ -55,7 +47,7 @@ export const getCategoriesAdapter: GetCategoriesAdapter = async () => {
       isOk: true,
       message: null,
       payload: {
-        categories: result.categories.map(serializeCategory),
+        categories: result.categories,
         subCategories: result.subcategories.map(serializeSubCategory),
       },
     }

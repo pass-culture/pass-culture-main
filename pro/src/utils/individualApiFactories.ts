@@ -3,6 +3,7 @@
 import { v4 as uuidv4 } from 'uuid'
 
 import {
+  CategoryResponseModel,
   GetOfferVenueResponseModel,
   GetVenueResponseModel,
   PriceCategoryResponseModel,
@@ -18,7 +19,6 @@ import { IndividualOfferContextValues } from 'context/IndividualOfferContext'
 import { REIMBURSEMENT_RULES } from 'core/Finances'
 import { CATEGORY_STATUS } from 'core/Offers/constants'
 import {
-  OfferCategory,
   IndividualOffer,
   IndividualOfferStock,
   OfferSubCategory,
@@ -201,8 +201,8 @@ export const priceCategoryFactory = (
 })
 
 export const individualOfferCategoryFactory = (
-  customOfferCategory: Partial<OfferCategory> = {}
-): OfferCategory => ({
+  customOfferCategory: Partial<CategoryResponseModel> = {}
+): CategoryResponseModel => ({
   id: String(offerCategoryId++),
   proLabel: `catégorie ${offerCategoryId}`,
   isSelectable: true,
