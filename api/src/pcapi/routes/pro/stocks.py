@@ -15,6 +15,7 @@ from pcapi.models.api_errors import ApiErrors
 from pcapi.repository import transaction
 from pcapi.routes.apis import private_api
 from pcapi.routes.public.books_stocks import serialization
+from pcapi.routes.serialization import offers_serialize
 from pcapi.serialization import utils as serialization_utils
 from pcapi.serialization.decorator import spectree_serialize
 from pcapi.utils.rest import check_user_has_access_to_offerer
@@ -139,7 +140,7 @@ def upsert_stocks(
     offers_api.handle_stocks_edition(edited_stocks_with_update_info)
 
     return serialization.StocksResponseModel(
-        stocks=[serialization.StockResponseModel.from_orm(stock) for stock in upserted_stocks]
+        stocks=[offers_serialize.GetOfferStockResponseModel.from_orm(stock) for stock in upserted_stocks]
     )
 
 

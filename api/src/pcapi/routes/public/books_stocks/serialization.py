@@ -9,9 +9,8 @@ from pydantic.v1 import condecimal
 from pydantic.v1.types import NonNegativeInt
 
 from pcapi.core.offers import models
-from pcapi.core.offers.models import ActivationCode
-from pcapi.core.offers.models import Stock
 from pcapi.routes.serialization import BaseModel
+from pcapi.routes.serialization import offers_serialize
 from pcapi.serialization.utils import to_camel
 from pcapi.utils.date import format_into_utc_date
 
@@ -19,40 +18,8 @@ from pcapi.utils.date import format_into_utc_date
 logger = logging.getLogger(__name__)
 
 
-class StockResponseModel(BaseModel):
-    activationCodesExpirationDatetime: datetime | None
-    hasActivationCodes: bool
-    beginningDatetime: datetime | None
-    bookingLimitDatetime: datetime | None
-    dnBookedQuantity: int = Field(alias="bookingsQuantity")
-    dateCreated: datetime
-    dateModified: datetime
-    id: int
-    isEventDeletable: bool
-    isEventExpired: bool
-    price: float
-    quantity: int | None
-
-    @classmethod
-    def from_orm(cls, stock: Stock) -> "StockResponseModel":
-        activation_code = (
-            ActivationCode.query.filter(ActivationCode.stockId == stock.id).first()
-            if stock.canHaveActivationCodes
-            else None
-        )
-        stock.hasActivationCodes = bool(activation_code)
-        stock.activationCodesExpirationDatetime = activation_code.expirationDate if activation_code else None
-        return super().from_orm(stock)
-
-    class Config:
-        allow_population_by_field_name = True
-        arbitrary_types_allowed = True
-        json_encoders = {datetime: format_into_utc_date}
-        orm_mode = True
-
-
 class StocksResponseModel(BaseModel):
-    stocks: list[StockResponseModel]
+    stocks: list[offers_serialize.GetOfferStockResponseModel]
 
     class Config:
         json_encoders = {datetime: format_into_utc_date}

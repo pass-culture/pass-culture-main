@@ -1,12 +1,11 @@
 import { api } from 'apiClient/api'
 import { isErrorAPIError, serializeApiErrors } from 'apiClient/helpers'
-import { StockResponseModel } from 'apiClient/v1'
 
 import { StockThingFormValues } from '../types'
 
 import { serializeStockThingList } from './serializers'
 
-type SuccessPayload = { stockIds: number[] }
+type SuccessPayload = object
 type FailurePayload = { errors: Record<string, string> }
 type UpdateStocksAdapter = Adapter<
   {
@@ -24,16 +23,14 @@ const upsertStocksThingAdapter: UpdateStocksAdapter = async ({
   departementCode,
 }) => {
   try {
-    const response = await api.upsertStocks({
+    await api.upsertStocks({
       offerId: offerId,
       stocks: serializeStockThingList(values, departementCode),
     })
     return {
       isOk: true,
       message: 'OK',
-      payload: {
-        stockIds: response.stocks.map((stock: StockResponseModel) => stock.id),
-      },
+      payload: {},
     }
   } catch (error) {
     let formErrors = {}
