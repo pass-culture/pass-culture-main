@@ -1,5 +1,9 @@
+import { api } from 'apiClient/api'
 import { StocksEvent } from 'components/StocksEventList/StocksEventList'
-import { individualStockEventListFactory } from 'utils/individualApiFactories'
+import {
+  individualGetOfferStockResponseModelFactory,
+  individualStockEventListFactory,
+} from 'utils/individualApiFactories'
 
 import { onSubmit } from '../onSubmit'
 import {
@@ -9,13 +13,29 @@ import {
   RecurrenceType,
 } from '../types'
 
-vi.mock('uuid', () => ({ v4: () => 'uuid' }))
+vi.mock('screens/IndividualOffer/constants', () => ({
+  MAX_STOCKS_PER_OFFER: 5,
+}))
+
+const mockSuccessNotification = vi.fn()
+const mockErrorNotification = vi.fn()
+
+const notify = {
+  success: mockSuccessNotification,
+  error: mockErrorNotification,
+  pending: vi.fn(),
+  information: vi.fn(),
+  close: vi.fn(),
+}
+
+let stockId = 1
 
 describe('onSubmit', () => {
   const cases: {
     description: string
     formValues: RecurrenceFormValues
     expectedStocks: StocksEvent[]
+    expectedNotification: string
   }[] = [
     {
       description: 'generate stocks for one unique date',
@@ -34,30 +54,35 @@ describe('onSubmit', () => {
       },
       expectedStocks: [
         individualStockEventListFactory({
+          id: stockId++,
           beginningDatetime: '2020-03-03T09:00:00Z',
           bookingLimitDatetime: '2020-03-01T09:00:00Z',
           priceCategoryId: 1,
           quantity: 5,
         }),
         individualStockEventListFactory({
+          id: stockId++,
           beginningDatetime: '2020-03-03T09:00:00Z',
           bookingLimitDatetime: '2020-03-01T09:00:00Z',
           priceCategoryId: 2,
           quantity: null,
         }),
         individualStockEventListFactory({
+          id: stockId++,
           beginningDatetime: '2020-03-03T09:30:00Z',
           bookingLimitDatetime: '2020-03-01T09:30:00Z',
           priceCategoryId: 1,
           quantity: 5,
         }),
         individualStockEventListFactory({
+          id: stockId++,
           beginningDatetime: '2020-03-03T09:30:00Z',
           bookingLimitDatetime: '2020-03-01T09:30:00Z',
           priceCategoryId: 2,
           quantity: null,
         }),
       ],
+      expectedNotification: '4 nouvelles occurrences ont été ajoutées',
     },
     {
       description: 'generate stocks on a daily basis',
@@ -73,30 +98,35 @@ describe('onSubmit', () => {
       },
       expectedStocks: [
         individualStockEventListFactory({
+          id: stockId++,
           beginningDatetime: '2020-03-03T09:00:00Z',
           bookingLimitDatetime: '2020-03-01T09:00:00Z',
           priceCategoryId: 1,
           quantity: 5,
         }),
         individualStockEventListFactory({
+          id: stockId++,
           beginningDatetime: '2020-03-04T09:00:00Z',
           bookingLimitDatetime: '2020-03-02T09:00:00Z',
           priceCategoryId: 1,
           quantity: 5,
         }),
         individualStockEventListFactory({
+          id: stockId++,
           beginningDatetime: '2020-03-05T09:00:00Z',
           bookingLimitDatetime: '2020-03-03T09:00:00Z',
           priceCategoryId: 1,
           quantity: 5,
         }),
         individualStockEventListFactory({
+          id: stockId++,
           beginningDatetime: '2020-03-06T09:00:00Z',
           bookingLimitDatetime: '2020-03-04T09:00:00Z',
           priceCategoryId: 1,
           quantity: 5,
         }),
       ],
+      expectedNotification: '4 nouvelles occurrences ont été ajoutées',
     },
     {
       description: 'generate stocks on a weekly basis',
@@ -112,30 +142,35 @@ describe('onSubmit', () => {
       },
       expectedStocks: [
         individualStockEventListFactory({
+          id: stockId++,
           beginningDatetime: '2020-03-07T09:00:00Z',
           bookingLimitDatetime: '2020-03-05T09:00:00Z',
           priceCategoryId: 1,
           quantity: 5,
         }),
         individualStockEventListFactory({
+          id: stockId++,
           beginningDatetime: '2020-03-08T09:00:00Z',
           bookingLimitDatetime: '2020-03-06T09:00:00Z',
           priceCategoryId: 1,
           quantity: 5,
         }),
         individualStockEventListFactory({
+          id: stockId++,
           beginningDatetime: '2020-03-14T09:00:00Z',
           bookingLimitDatetime: '2020-03-12T09:00:00Z',
           priceCategoryId: 1,
           quantity: 5,
         }),
         individualStockEventListFactory({
+          id: stockId++,
           beginningDatetime: '2020-03-15T09:00:00Z',
           bookingLimitDatetime: '2020-03-13T09:00:00Z',
           priceCategoryId: 1,
           quantity: 5,
         }),
       ],
+      expectedNotification: '4 nouvelles occurrences ont été ajoutées',
     },
     {
       description:
@@ -152,30 +187,35 @@ describe('onSubmit', () => {
       },
       expectedStocks: [
         individualStockEventListFactory({
+          id: stockId++,
           beginningDatetime: '2020-03-03T09:00:00Z',
           bookingLimitDatetime: '2020-03-01T09:00:00Z',
           priceCategoryId: 1,
           quantity: 5,
         }),
         individualStockEventListFactory({
+          id: stockId++,
           beginningDatetime: '2020-04-03T08:00:00Z',
           bookingLimitDatetime: '2020-04-01T08:00:00Z',
           priceCategoryId: 1,
           quantity: 5,
         }),
         individualStockEventListFactory({
+          id: stockId++,
           beginningDatetime: '2020-05-03T08:00:00Z',
           bookingLimitDatetime: '2020-05-01T08:00:00Z',
           priceCategoryId: 1,
           quantity: 5,
         }),
         individualStockEventListFactory({
+          id: stockId++,
           beginningDatetime: '2020-06-03T08:00:00Z',
           bookingLimitDatetime: '2020-06-01T08:00:00Z',
           priceCategoryId: 1,
           quantity: 5,
         }),
       ],
+      expectedNotification: '4 nouvelles occurrences ont été ajoutées',
     },
     {
       description: 'generate stocks on a monthly basis every end of month',
@@ -191,18 +231,21 @@ describe('onSubmit', () => {
       },
       expectedStocks: [
         individualStockEventListFactory({
+          id: stockId++,
           beginningDatetime: '2020-03-31T08:00:00Z',
           bookingLimitDatetime: '2020-03-29T08:00:00Z',
           priceCategoryId: 1,
           quantity: 5,
         }),
         individualStockEventListFactory({
+          id: stockId++,
           beginningDatetime: '2020-05-31T08:00:00Z',
           bookingLimitDatetime: '2020-05-29T08:00:00Z',
           priceCategoryId: 1,
           quantity: 5,
         }),
       ],
+      expectedNotification: '2 nouvelles occurrences ont été ajoutées',
     },
 
     {
@@ -220,30 +263,35 @@ describe('onSubmit', () => {
       },
       expectedStocks: [
         individualStockEventListFactory({
+          id: stockId++,
           beginningDatetime: '2020-03-03T09:00:00Z',
           bookingLimitDatetime: '2020-03-01T09:00:00Z',
           priceCategoryId: 1,
           quantity: 5,
         }),
         individualStockEventListFactory({
+          id: stockId++,
           beginningDatetime: '2020-04-07T08:00:00Z',
           bookingLimitDatetime: '2020-04-05T08:00:00Z',
           priceCategoryId: 1,
           quantity: 5,
         }),
         individualStockEventListFactory({
+          id: stockId++,
           beginningDatetime: '2020-05-05T08:00:00Z',
           bookingLimitDatetime: '2020-05-03T08:00:00Z',
           priceCategoryId: 1,
           quantity: 5,
         }),
         individualStockEventListFactory({
+          id: stockId++,
           beginningDatetime: '2020-06-02T08:00:00Z',
           bookingLimitDatetime: '2020-05-31T08:00:00Z',
           priceCategoryId: 1,
           quantity: 5,
         }),
       ],
+      expectedNotification: '4 nouvelles occurrences ont été ajoutées',
     },
     {
       description:
@@ -260,24 +308,28 @@ describe('onSubmit', () => {
       },
       expectedStocks: [
         individualStockEventListFactory({
+          id: stockId++,
           beginningDatetime: '2020-03-31T08:00:00Z',
           bookingLimitDatetime: '2020-03-29T08:00:00Z',
           priceCategoryId: 1,
           quantity: 5,
         }),
         individualStockEventListFactory({
+          id: stockId++,
           beginningDatetime: '2020-06-30T08:00:00Z',
           bookingLimitDatetime: '2020-06-28T08:00:00Z',
           priceCategoryId: 1,
           quantity: 5,
         }),
         individualStockEventListFactory({
+          id: stockId++,
           beginningDatetime: '2020-09-29T08:00:00Z',
           bookingLimitDatetime: '2020-09-27T08:00:00Z',
           priceCategoryId: 1,
           quantity: 5,
         }),
       ],
+      expectedNotification: '3 nouvelles occurrences ont été ajoutées',
     },
     {
       description: 'generate stocks on a monthly basis by last day',
@@ -293,32 +345,140 @@ describe('onSubmit', () => {
       },
       expectedStocks: [
         individualStockEventListFactory({
+          id: stockId++,
           beginningDatetime: '2023-03-31T08:00:00Z',
           bookingLimitDatetime: '2023-03-29T08:00:00Z',
           priceCategoryId: 1,
           quantity: 5,
         }),
         individualStockEventListFactory({
+          id: stockId++,
           beginningDatetime: '2023-04-28T08:00:00Z',
           bookingLimitDatetime: '2023-04-26T08:00:00Z',
           priceCategoryId: 1,
           quantity: 5,
         }),
         individualStockEventListFactory({
+          id: stockId++,
           beginningDatetime: '2023-05-26T08:00:00Z',
           bookingLimitDatetime: '2023-05-24T08:00:00Z',
           priceCategoryId: 1,
           quantity: 5,
         }),
       ],
+      expectedNotification: '3 nouvelles occurrences ont été ajoutées',
     },
   ]
 
-  cases.forEach(({ description, formValues, expectedStocks }) => {
-    it(`should ${description}`, async () => {
-      const newStocks = onSubmit(formValues, '75')
+  cases.forEach(
+    ({ description, formValues, expectedStocks, expectedNotification }) => {
+      it(`should ${description}`, async () => {
+        vi.spyOn(api, 'upsertStocks').mockResolvedValueOnce({
+          stocks: [
+            ...expectedStocks.map((s) =>
+              individualGetOfferStockResponseModelFactory(s)
+            ),
+          ],
+        })
+        const newStocks = await onSubmit(formValues, '75', [], 66, notify)
 
-      expect(newStocks).toEqual(expectedStocks)
+        expect(newStocks).toEqual(expectedStocks)
+        expect(api.upsertStocks).toBeCalledWith({
+          offerId: 66,
+          stocks: expectedStocks.map(
+            ({
+              beginningDatetime,
+              bookingLimitDatetime,
+              priceCategoryId,
+              quantity,
+            }) => ({
+              beginningDatetime,
+              bookingLimitDatetime,
+              priceCategoryId,
+              quantity,
+            })
+          ),
+        })
+        expect(mockSuccessNotification).toBeCalledWith(expectedNotification)
+      })
+    }
+  )
+
+  it(`should when an error occured during stocks saving`, async () => {
+    const formValues = {
+      recurrenceType: RecurrenceType.UNIQUE,
+      days: [],
+      startingDate: '2020-03-03',
+      endingDate: '',
+      beginningTimes: ['10:00', '10:30'],
+      quantityPerPriceCategories: [{ quantity: 5, priceCategory: '1' }],
+      bookingLimitDateInterval: 2,
+      monthlyOption: null,
+    }
+
+    vi.spyOn(api, 'upsertStocks').mockRejectedValueOnce({})
+    await onSubmit(formValues, '75', [], 66, notify)
+
+    expect(mockErrorNotification).toBeCalledWith(
+      "Une erreur est survenue lors de l'enregistrement de vos stocks."
+    )
+  })
+
+  it(`should deduplicate stock when an existing stock with same beggining date and price exist`, async () => {
+    const formValues = {
+      recurrenceType: RecurrenceType.UNIQUE,
+      days: [],
+      startingDate: '2023-05-26T00:00:00Z',
+      endingDate: '',
+      beginningTimes: ['08:00'],
+      quantityPerPriceCategories: [{ quantity: 5, priceCategory: '1' }],
+      bookingLimitDateInterval: 2,
+      monthlyOption: null,
+    }
+
+    const existingStock = individualStockEventListFactory({
+      id: 2,
+      beginningDatetime: '2023-05-26T06:00:00Z',
+      bookingLimitDatetime: '2023-05-24T08:00:00Z',
+      priceCategoryId: 1,
     })
+
+    vi.spyOn(api, 'upsertStocks').mockResolvedValueOnce({ stocks: [] })
+
+    const result = await onSubmit(formValues, '75', [existingStock], 66, notify)
+
+    expect(api.upsertStocks).not.toHaveBeenCalled()
+    expect(mockSuccessNotification).not.toHaveBeenCalled()
+    expect(result).toEqual(undefined)
+  })
+
+  it(`should create nothing when creation limit is reach`, async () => {
+    const formValues = {
+      recurrenceType: RecurrenceType.MONTHLY,
+      days: [],
+      startingDate: '2020-03-03',
+      endingDate: '2020-07-20',
+      beginningTimes: ['08:00'],
+      quantityPerPriceCategories: [{ quantity: 5, priceCategory: '1' }],
+      bookingLimitDateInterval: 2,
+      monthlyOption: MonthlyOption.BY_FIRST_DAY,
+    }
+
+    const existingStock = individualStockEventListFactory({
+      id: 2,
+      beginningDatetime: '2023-05-26T06:00:00Z',
+      bookingLimitDatetime: '2023-05-24T08:00:00Z',
+      priceCategoryId: 1,
+    })
+
+    vi.spyOn(api, 'upsertStocks').mockResolvedValueOnce({ stocks: [] })
+
+    const result = await onSubmit(formValues, '75', [existingStock], 66, notify)
+
+    expect(api.upsertStocks).not.toHaveBeenCalled()
+    expect(mockErrorNotification).toHaveBeenCalledWith(
+      `Veuillez créer moins de 5 occurrences par offre.`
+    )
+    expect(result).toEqual(undefined)
   })
 })
