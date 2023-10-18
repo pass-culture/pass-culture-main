@@ -12,10 +12,12 @@ import {
 import { REIMBURSEMENT_RULES } from 'core/Finances'
 import { OffererName } from 'core/Offerers/types'
 import { CATEGORY_STATUS } from 'core/Offers/constants'
-import { OfferSubCategory } from 'core/Offers/types'
 import { IndividualOfferVenueItem } from 'core/Venue/types'
 import { SubmitButton } from 'ui-kit'
-import { individualOfferVenueItemFactory } from 'utils/individualApiFactories'
+import {
+  individualOfferSubCategoryFactory,
+  individualOfferVenueItemFactory,
+} from 'utils/individualApiFactories'
 import { renderWithProviders } from 'utils/renderWithProviders'
 
 import UsefulInformations, {
@@ -108,10 +110,10 @@ describe('IndividualOffer section: UsefulInformations', () => {
   it('should submit valid form', async () => {
     initialValues.subcategoryId = 'CONCERT'
     initialValues.subCategoryFields = ['withdrawalType', 'bookingContact']
-    props.offerSubCategory = {
+    props.offerSubCategory = individualOfferSubCategoryFactory({
       id: 'CONCERT',
       canBeWithdrawable: true,
-    } as OfferSubCategory
+    })
     await renderUsefulInformations({
       initialValues,
       onSubmit,
@@ -250,19 +252,10 @@ describe('IndividualOffer section: UsefulInformations', () => {
   describe('When venue is virtual', () => {
     beforeEach(() => {
       props.isVenueVirtual = true
-      props.offerSubCategory = {
+      props.offerSubCategory = individualOfferSubCategoryFactory({
         id: 'VIRTUAL_SUB_CATEGORY',
-        categoryId: 'A',
-        proLabel: 'Sous catégorie online de A',
-        isEvent: false,
-        conditionalFields: [],
-        canBeDuo: false,
-        canBeEducational: false,
-        canBeWithdrawable: false,
         onlineOfflinePlatform: CATEGORY_STATUS.ONLINE,
-        reimbursementRule: REIMBURSEMENT_RULES.NOT_REIMBURSED,
-        isSelectable: true,
-      }
+      })
       initialValues.subcategoryId = 'VIRTUAL_SUB_CATEGORY'
       initialValues.venueId = 'BBBB'
     })
@@ -356,19 +349,9 @@ describe('IndividualOffer section: UsefulInformations', () => {
   describe('banners', () => {
     it('should display not reimbursment banner when subcategory is not reimbursed', async () => {
       initialValues.subcategoryId = 'ANOTHER_SUB_CATEGORY'
-      props.offerSubCategory = {
-        id: 'A-A',
-        categoryId: 'A',
-        proLabel: 'Sous catégorie online de A',
-        isEvent: false,
-        conditionalFields: [],
-        canBeDuo: false,
-        canBeEducational: false,
-        canBeWithdrawable: false,
-        onlineOfflinePlatform: CATEGORY_STATUS.ONLINE,
+      props.offerSubCategory = individualOfferSubCategoryFactory({
         reimbursementRule: REIMBURSEMENT_RULES.NOT_REIMBURSED,
-        isSelectable: true,
-      }
+      })
       await renderUsefulInformations({
         initialValues,
         onSubmit,
@@ -390,19 +373,9 @@ describe('IndividualOffer section: UsefulInformations', () => {
 
     it('should not display not reimbursment banner when subcategory is reimbursed', async () => {
       initialValues.subcategoryId = 'ANOTHER_SUB_CATEGORY'
-      props.offerSubCategory = {
-        id: 'A-A',
-        categoryId: 'A',
-        proLabel: 'Sous catégorie online de A',
-        isEvent: false,
-        conditionalFields: [],
-        canBeDuo: false,
-        canBeEducational: false,
-        canBeWithdrawable: false,
-        onlineOfflinePlatform: CATEGORY_STATUS.ONLINE,
+      props.offerSubCategory = individualOfferSubCategoryFactory({
         reimbursementRule: REIMBURSEMENT_RULES.BOOK,
-        isSelectable: true,
-      }
+      })
       await renderUsefulInformations({
         initialValues,
         onSubmit,
@@ -418,19 +391,10 @@ describe('IndividualOffer section: UsefulInformations', () => {
 
     it('should display withdrawal banner when subcategory is on physical thing (not event, not virtual)', async () => {
       initialValues.subcategoryId = 'ANOTHER_SUB_CATEGORY'
-      props.offerSubCategory = {
-        id: 'A-A',
-        categoryId: 'A',
-        proLabel: 'Sous catégorie online de A',
+      props.offerSubCategory = individualOfferSubCategoryFactory({
         isEvent: false,
-        conditionalFields: [],
-        canBeDuo: false,
-        canBeEducational: false,
-        canBeWithdrawable: false,
         onlineOfflinePlatform: CATEGORY_STATUS.ONLINE_OR_OFFLINE,
-        reimbursementRule: REIMBURSEMENT_RULES.STANDARD,
-        isSelectable: true,
-      }
+      })
       props.isVenueVirtual = false
       await renderUsefulInformations({
         initialValues,
@@ -450,19 +414,9 @@ describe('IndividualOffer section: UsefulInformations', () => {
 
     it('should not display withdrawal banner when subcategory is an event', async () => {
       initialValues.subcategoryId = 'ANOTHER_SUB_CATEGORY'
-      props.offerSubCategory = {
-        id: 'A-A',
-        categoryId: 'A',
-        proLabel: 'Sous catégorie online de A',
+      props.offerSubCategory = individualOfferSubCategoryFactory({
         isEvent: true,
-        conditionalFields: [],
-        canBeDuo: false,
-        canBeEducational: false,
-        canBeWithdrawable: false,
-        onlineOfflinePlatform: CATEGORY_STATUS.ONLINE_OR_OFFLINE,
-        reimbursementRule: REIMBURSEMENT_RULES.STANDARD,
-        isSelectable: true,
-      }
+      })
       props.isVenueVirtual = false
       await renderUsefulInformations({
         initialValues,

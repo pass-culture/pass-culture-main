@@ -6,13 +6,13 @@ import * as yup from 'yup'
 
 import { CategoryResponseModel } from 'apiClient/v1'
 import { IndividualOfferFormValues } from 'components/IndividualOfferForm'
-import { REIMBURSEMENT_RULES } from 'core/Finances'
-import {
-  CATEGORY_STATUS,
-  INDIVIDUAL_OFFER_SUBTYPE,
-} from 'core/Offers/constants'
+import { INDIVIDUAL_OFFER_SUBTYPE } from 'core/Offers/constants'
 import { OfferSubCategory } from 'core/Offers/types'
 import { SubmitButton } from 'ui-kit'
+import {
+  individualOfferCategoryFactory,
+  individualOfferSubCategoryFactory,
+} from 'utils/individualApiFactories'
 import { renderWithProviders } from 'utils/renderWithProviders'
 
 import Categories, { CategoriesProps } from '../Categories'
@@ -52,62 +52,25 @@ describe('IndividualOffer section: Categories', () => {
   beforeEach(() => {
     initialValues = { ...CATEGORIES_DEFAULT_VALUES }
     categories = [
-      {
-        id: 'A',
-        proLabel: 'Catégorie',
-        isSelectable: true,
-      },
-      {
-        id: 'B',
-        proLabel: 'Catégorie music',
-        isSelectable: true,
-      },
-      {
-        id: 'C',
-        proLabel: 'Catégorie show',
-        isSelectable: true,
-      },
+      individualOfferCategoryFactory({ id: 'A' }),
+      individualOfferCategoryFactory({ id: 'B' }),
+      individualOfferCategoryFactory({ id: 'C' }),
     ]
     subCategories = [
-      {
+      individualOfferSubCategoryFactory({
         id: 'A-A',
         categoryId: 'A',
-        proLabel: 'Sous catégorie de A',
-        isEvent: false,
-        conditionalFields: [],
-        canBeDuo: false,
-        canBeEducational: false,
-        canBeWithdrawable: false,
-        onlineOfflinePlatform: CATEGORY_STATUS.OFFLINE,
-        reimbursementRule: REIMBURSEMENT_RULES.STANDARD,
-        isSelectable: true,
-      },
-      {
+      }),
+      individualOfferSubCategoryFactory({
         id: 'B-A',
         categoryId: 'B',
-        proLabel: 'Sous catégorie de B',
-        isEvent: false,
         conditionalFields: ['musicType', 'musicSubType'],
-        canBeDuo: false,
-        canBeEducational: false,
-        canBeWithdrawable: false,
-        onlineOfflinePlatform: CATEGORY_STATUS.OFFLINE,
-        reimbursementRule: REIMBURSEMENT_RULES.STANDARD,
-        isSelectable: true,
-      },
-      {
+      }),
+      individualOfferSubCategoryFactory({
         id: 'C-A',
         categoryId: 'C',
-        proLabel: 'Sous catégorie de C',
-        isEvent: false,
         conditionalFields: ['showType', 'showSubType'],
-        canBeDuo: false,
-        canBeWithdrawable: false,
-        canBeEducational: false,
-        onlineOfflinePlatform: CATEGORY_STATUS.OFFLINE,
-        reimbursementRule: REIMBURSEMENT_RULES.STANDARD,
-        isSelectable: true,
-      },
+      }),
     ]
     props = {
       categories,

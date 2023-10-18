@@ -1,7 +1,9 @@
-import { REIMBURSEMENT_RULES } from 'core/Finances'
 import { CATEGORY_STATUS } from 'core/Offers/constants'
 import { OfferSubCategory } from 'core/Offers/types'
-import { individualOfferVenueItemFactory } from 'utils/individualApiFactories'
+import {
+  individualOfferSubCategoryFactory,
+  individualOfferVenueItemFactory,
+} from 'utils/individualApiFactories'
 
 import {
   getFilteredVenueListByCategoryStatus,
@@ -14,45 +16,18 @@ describe('getFilteredVenueList', () => {
   const thirdVenueId = 3
 
   const subCategories: OfferSubCategory[] = [
-    {
+    individualOfferSubCategoryFactory({
       id: 'ONLINE_ONLY',
-      categoryId: 'A',
-      proLabel: 'Sous catégorie online de A',
-      isEvent: false,
-      conditionalFields: [],
-      canBeDuo: false,
-      canBeEducational: false,
-      canBeWithdrawable: false,
       onlineOfflinePlatform: CATEGORY_STATUS.ONLINE,
-      reimbursementRule: REIMBURSEMENT_RULES.STANDARD,
-      isSelectable: true,
-    },
-    {
+    }),
+    individualOfferSubCategoryFactory({
       id: 'OFFLINE_ONLY',
-      categoryId: 'A',
-      proLabel: 'Sous catégorie offline de A',
-      isEvent: false,
-      conditionalFields: [],
-      canBeDuo: false,
-      canBeEducational: false,
-      canBeWithdrawable: false,
       onlineOfflinePlatform: CATEGORY_STATUS.OFFLINE,
-      reimbursementRule: REIMBURSEMENT_RULES.STANDARD,
-      isSelectable: true,
-    },
-    {
+    }),
+    individualOfferSubCategoryFactory({
       id: 'ONLINE_OR_OFFLINE',
-      categoryId: 'A',
-      proLabel: 'Sous catégorie online or offline de A',
-      isEvent: false,
-      conditionalFields: [],
-      canBeDuo: false,
-      canBeEducational: false,
-      canBeWithdrawable: false,
       onlineOfflinePlatform: CATEGORY_STATUS.ONLINE_OR_OFFLINE,
-      reimbursementRule: REIMBURSEMENT_RULES.STANDARD,
-      isSelectable: true,
-    },
+    }),
   ]
 
   const virtualVenue = individualOfferVenueItemFactory({

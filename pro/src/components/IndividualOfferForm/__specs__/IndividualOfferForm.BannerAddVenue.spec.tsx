@@ -4,12 +4,15 @@ import { Formik } from 'formik'
 import React from 'react'
 
 import { CategoryResponseModel } from 'apiClient/v1'
-import { REIMBURSEMENT_RULES } from 'core/Finances'
 import { OffererName } from 'core/Offerers/types'
 import { CATEGORY_STATUS } from 'core/Offers/constants'
 import { OfferSubCategory } from 'core/Offers/types'
 import { IndividualOfferVenueItem } from 'core/Venue/types'
-import { individualOfferVenueItemFactory } from 'utils/individualApiFactories'
+import {
+  individualOfferCategoryFactory,
+  individualOfferSubCategoryFactory,
+  individualOfferVenueItemFactory,
+} from 'utils/individualApiFactories'
 import { renderWithProviders } from 'utils/renderWithProviders'
 
 import {
@@ -56,49 +59,20 @@ describe('IndividualOfferForm', () => {
 
   beforeEach(() => {
     categories = [
-      {
-        id: 'A',
-        proLabel: 'Catégorie',
-        isSelectable: true,
-      },
-      {
-        id: 'virtual',
-        proLabel: 'Catégorie music',
-        isSelectable: true,
-      },
-      {
-        id: 'physical',
-        proLabel: 'Catégorie physical',
-        isSelectable: true,
-      },
+      individualOfferCategoryFactory({ id: 'virtual' }),
+      individualOfferCategoryFactory({ id: 'physical' }),
     ]
     subCategories = [
-      {
+      individualOfferSubCategoryFactory({
         id: 'physical',
         categoryId: 'physical',
-        proLabel: 'Sous catégorie de C',
-        isEvent: false,
-        conditionalFields: ['showType', 'showSubType'],
-        canBeDuo: false,
-        canBeEducational: false,
-        canBeWithdrawable: false,
         onlineOfflinePlatform: CATEGORY_STATUS.OFFLINE,
-        reimbursementRule: REIMBURSEMENT_RULES.STANDARD,
-        isSelectable: true,
-      },
-      {
+      }),
+      individualOfferSubCategoryFactory({
         id: 'virtual',
         categoryId: 'virtual',
-        proLabel: 'Sous catégorie de C',
-        isEvent: false,
-        conditionalFields: ['showType', 'showSubType'],
-        canBeDuo: false,
-        canBeEducational: false,
-        canBeWithdrawable: false,
         onlineOfflinePlatform: CATEGORY_STATUS.ONLINE,
-        reimbursementRule: REIMBURSEMENT_RULES.STANDARD,
-        isSelectable: true,
-      },
+      }),
     ]
     offererNames = [
       {
