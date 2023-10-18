@@ -27,12 +27,12 @@ import {
   getIndividualOfferPath,
   getIndividualOfferUrl,
 } from 'core/Offers/utils/getIndividualOfferUrl'
+import { offerVenueFactory } from 'utils/apiFactories'
 import { FORMAT_ISO_DATE_ONLY } from 'utils/date'
 import {
   individualOfferContextFactory,
   individualOfferFactory,
   individualOfferSubCategoryFactory,
-  individualOfferVenueFactory,
   individualStockFactory,
 } from 'utils/individualApiFactories'
 import { renderWithProviders } from 'utils/renderWithProviders'
@@ -121,8 +121,8 @@ describe('screens:StocksThing', () => {
   beforeEach(() => {
     offer = individualOfferFactory({
       id: offerId,
-      venue: individualOfferVenueFactory({
-        departmentCode: '75',
+      venue: offerVenueFactory({
+        departementCode: '75',
       }),
       stocks: [],
       lastProviderName: 'Ciné Office',

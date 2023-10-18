@@ -21,13 +21,12 @@ import {
 import { OFFER_WIZARD_MODE } from 'core/Offers/constants'
 import { getIndividualOfferPath } from 'core/Offers/utils/getIndividualOfferUrl'
 import * as useAnalytics from 'hooks/useAnalytics'
+import { offerVenueFactory, offererFactory } from 'utils/apiFactories'
 import {
   individualOfferCategoryFactory,
   individualOfferContextFactory,
   individualOfferFactory,
-  individualOfferOffererFactory,
   individualOfferSubCategoryFactory,
-  individualOfferVenueFactory,
   individualStockFactory,
 } from 'utils/individualApiFactories'
 import { renderWithProviders } from 'utils/renderWithProviders'
@@ -124,13 +123,13 @@ describe('Summary', () => {
           bookingEmail: 'booking@example.com',
         },
         individualStockFactory({ price: 0, quantity: null }),
-        individualOfferVenueFactory(
+        offerVenueFactory(
           {
             name: 'ma venue',
             publicName: 'ma venue (nom public)',
             isVirtual: true,
           },
-          individualOfferOffererFactory({ name: 'mon offerer' })
+          offererFactory({ name: 'mon offerer' })
         )
       ),
       subCategories,

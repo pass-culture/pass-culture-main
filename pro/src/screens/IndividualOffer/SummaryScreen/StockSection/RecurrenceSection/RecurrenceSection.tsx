@@ -35,17 +35,17 @@ const RecurrenceSection = ({ offer }: RecurrenceSectionProps) => {
   if (sortedStocks.length > 1) {
     periodText = `du ${formatLocalTimeDateString(
       sortedStocks[0].beginningDatetime as string,
-      offer.venue.departmentCode,
+      offer.venue.departementCode,
       FORMAT_DD_MM_YYYY
     )} au ${formatLocalTimeDateString(
       sortedStocks[sortedStocks.length - 1].beginningDatetime as string,
-      offer.venue.departmentCode,
+      offer.venue.departementCode,
       FORMAT_DD_MM_YYYY
     )}`
   } else {
     periodText = `le ${formatLocalTimeDateString(
       sortedStocks[0].beginningDatetime as string,
-      offer.venue.departmentCode,
+      offer.venue.departementCode,
       FORMAT_DD_MM_YYYY
     )}`
   }

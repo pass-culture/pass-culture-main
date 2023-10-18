@@ -7,16 +7,13 @@ import {
 import {
   IndividualOffer,
   IndividualOfferStock,
-  IndividualOfferVenue,
   IndividualOfferVenueProvider,
 } from 'core/Offers/types'
-import { AccessiblityEnum } from 'core/shared'
 import { GetIndividualOfferFactory } from 'utils/apiFactories'
 
 import {
   serializeStockApi,
   serializeOfferApiImage,
-  serializeVenueApi,
   serializeOfferApiExtraData,
   serializeLastProvider,
   serializeOfferApi,
@@ -192,54 +189,6 @@ describe('serializer', () => {
     })
   })
 
-  it('serializeVenueApi', () => {
-    const venueId = 1
-    const offerApi = {
-      venue: {
-        id: venueId,
-        name: 'venue name',
-        publicName: 'venue publicName',
-        isVirtual: false,
-        address: 'venue address',
-        postalCode: 'venue postalCode',
-        departementCode: '75',
-        city: 'venue city',
-        offerer: 'venue offerer',
-        visualDisabilityCompliant: true,
-        mentalDisabilityCompliant: true,
-        audioDisabilityCompliant: true,
-        motorDisabilityCompliant: true,
-        managingOfferer: {
-          id: 1,
-          name: 'Offerer name',
-        },
-      },
-    } as unknown as GetIndividualOfferResponseModel
-    const venue: IndividualOfferVenue = {
-      id: venueId,
-      name: 'venue name',
-      publicName: 'venue publicName',
-      isVirtual: false,
-      address: 'venue address',
-      postalCode: 'venue postalCode',
-      departmentCode: '75',
-      city: 'venue city',
-      offerer: {
-        id: 1,
-        name: 'Offerer name',
-      },
-      accessibility: {
-        [AccessiblityEnum.AUDIO]: true,
-        [AccessiblityEnum.MENTAL]: true,
-        [AccessiblityEnum.MOTOR]: true,
-        [AccessiblityEnum.VISUAL]: true,
-        [AccessiblityEnum.NONE]: false,
-      },
-    }
-
-    expect(serializeVenueApi(offerApi)).toEqual(venue)
-  })
-
   it('serializeOfferApiExtraData', () => {
     const offerApi = {
       extraData: {
@@ -317,7 +266,7 @@ describe('serializer', () => {
       name: 'Le nom de l’offre 1',
       id: 1,
       offererId: offerApi.venue.managingOfferer.id,
-      offererName: 'La nom de la structure 1',
+      offererName: 'Le nom de la structure 1',
       performer: '',
       priceCategories: undefined,
       showSubType: '',
@@ -347,20 +296,17 @@ describe('serializer', () => {
       url: '',
       venue: {
         id: 1,
-        accessibility: {
-          audio: false,
-          mental: false,
-          motor: false,
-          none: true,
-          visual: false,
-        },
+        audioDisabilityCompliant: true,
+        mentalDisabilityCompliant: true,
+        motorDisabilityCompliant: true,
+        visualDisabilityCompliant: true,
         address: 'Ma Rue',
         city: 'Ma Ville',
-        departmentCode: '973',
+        departementCode: '78',
         isVirtual: false,
         name: 'Le nom du lieu 1',
-        offerer: {
-          name: 'La nom de la structure 1',
+        managingOfferer: {
+          name: 'Le nom de la structure 1',
           id: 3,
         },
         postalCode: '11100',

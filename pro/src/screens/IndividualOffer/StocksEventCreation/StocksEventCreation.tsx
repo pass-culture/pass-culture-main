@@ -207,7 +207,7 @@ export const StocksEventCreation = ({
           stocks={stocks}
           setStocks={setStocks}
           priceCategories={offer.priceCategories}
-          departmentCode={offer.venue.departmentCode}
+          departmentCode={offer.venue.departementCode}
           offerId={offer.id}
         />
       )}

@@ -45,7 +45,7 @@ export interface StocksEventListProps {
   stocks: StocksEvent[]
   priceCategories: PriceCategoryResponseModel[]
   className?: string
-  departmentCode: string
+  departmentCode?: string | null
   offerId: number
   setStocks?: (stocks: StocksEvent[]) => void
   readonly?: boolean

@@ -19,7 +19,7 @@ export const RecurrenceSummary = ({ offer }: RecurrenceSummaryProps) => {
         <StocksEventList
           stocks={stocks}
           priceCategories={offer.priceCategories}
-          departmentCode={offer.venue.departmentCode}
+          departmentCode={offer.venue.departementCode}
           offerId={offer.id}
           readonly
         />

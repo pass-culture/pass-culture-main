@@ -8,10 +8,10 @@ import {
 } from 'context/IndividualOfferContext'
 import { IndividualOffer } from 'core/Offers/types'
 import { RootState } from 'store/reducers'
+import { offerVenueFactory } from 'utils/apiFactories'
 import {
   individualOfferContextFactory,
   individualOfferFactory,
-  individualOfferVenueFactory,
 } from 'utils/individualApiFactories'
 import { renderWithProviders } from 'utils/renderWithProviders'
 
@@ -40,8 +40,8 @@ describe('screens:Stocks', () => {
   beforeEach(() => {
     offer = individualOfferFactory({
       id: offerId,
-      venue: individualOfferVenueFactory({
-        departmentCode: '75',
+      venue: offerVenueFactory({
+        departementCode: '75',
       }),
       stocks: [],
     })

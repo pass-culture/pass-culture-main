@@ -120,7 +120,7 @@ const StocksThing = ({ offer }: StocksThingProps): JSX.Element => {
   }
   const today = getLocalDepartementDateTimeFromUtc(
     getToday(),
-    offer.venue.departmentCode
+    offer.venue.departementCode
   )
   const initialValues = buildInitialValues(offer)
   const formik = useFormik({

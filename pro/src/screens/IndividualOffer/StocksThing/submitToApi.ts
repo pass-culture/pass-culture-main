@@ -36,7 +36,7 @@ export const submitToApi = async (
   } = await upsertStocksThingAdapter({
     offerId: offer.id,
     values,
-    departementCode: offer.venue.departmentCode,
+    departementCode: offer.venue.departementCode,
   })
   if (!isUpsertStocksOk) {
     setErrors(payload.errors)

@@ -6,7 +6,7 @@ import buildInitialValues from '../buildInitialValues'
 describe('StockThingForm::utils::buildInitialValues', () => {
   let offer: IndividualOffer
   beforeEach(() => {
-    offer = { venue: { departmentCode: '93' } } as IndividualOffer
+    offer = { venue: { departementCode: '93' } } as IndividualOffer
   })
 
   it('should return default values when offer have no stocks', () => {

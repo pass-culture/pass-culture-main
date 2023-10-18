@@ -6,10 +6,10 @@ import {
   OfferSubCategory,
 } from 'core/Offers/types'
 import { AccessiblityEnum } from 'core/shared'
+import { offerVenueFactory } from 'utils/apiFactories'
 import {
   individualOfferFactory,
   individualOfferSubCategoryFactory,
-  individualOfferVenueFactory,
 } from 'utils/individualApiFactories'
 
 import { serializeOfferSectionData } from '../serializer'
@@ -58,7 +58,7 @@ describe('routes::Summary::serializers', () => {
         status: OfferStatus.ACTIVE,
       },
       undefined,
-      individualOfferVenueFactory()
+      offerVenueFactory()
     )
     categories = [
       {

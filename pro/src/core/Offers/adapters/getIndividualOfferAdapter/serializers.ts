@@ -7,38 +7,9 @@ import {
   IndividualOffer,
   IndividualOfferImage,
   IndividualOfferStock,
-  IndividualOfferVenue,
   IndividualOfferVenueProvider,
 } from 'core/Offers/types'
 import { AccessiblityEnum } from 'core/shared'
-
-export const serializeVenueApi = (
-  apiOffer: GetIndividualOfferResponseModel
-): IndividualOfferVenue => {
-  const baseAccessibility = {
-    [AccessiblityEnum.VISUAL]:
-      apiOffer.venue.visualDisabilityCompliant || false,
-    [AccessiblityEnum.MENTAL]:
-      apiOffer.venue.mentalDisabilityCompliant || false,
-    [AccessiblityEnum.AUDIO]: apiOffer.venue.audioDisabilityCompliant || false,
-    [AccessiblityEnum.MOTOR]: apiOffer.venue.motorDisabilityCompliant || false,
-  }
-  return {
-    id: apiOffer.venue.id,
-    name: apiOffer.venue.name,
-    publicName: apiOffer.venue.publicName || '',
-    isVirtual: apiOffer.venue.isVirtual,
-    address: apiOffer.venue.address || '',
-    postalCode: apiOffer.venue.postalCode || '',
-    departmentCode: apiOffer.venue.departementCode || '',
-    city: apiOffer.venue.city || '',
-    offerer: apiOffer.venue.managingOfferer,
-    accessibility: {
-      ...baseAccessibility,
-      [AccessiblityEnum.NONE]: !Object.values(baseAccessibility).includes(true),
-    },
-  }
-}
 
 export const serializeStockApi = (
   apiStock: GetOfferStockResponseModel
@@ -147,7 +118,7 @@ export const serializeOfferApi = (
     url: apiOffer.url || '',
     externalTicketOfficeUrl: apiOffer.externalTicketOfficeUrl || '',
     venueId: apiOffer.venue.id,
-    venue: serializeVenueApi(apiOffer),
+    venue: apiOffer.venue,
     withdrawalDetails: apiOffer.withdrawalDetails || '',
     withdrawalDelay:
       apiOffer.withdrawalDelay === undefined ? null : apiOffer.withdrawalDelay,

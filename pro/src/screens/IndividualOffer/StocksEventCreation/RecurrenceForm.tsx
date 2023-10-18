@@ -114,7 +114,7 @@ export const RecurrenceForm = ({
   const priceCategoryOptions = getPriceCategoryOptions(offer.priceCategories)
 
   const handleSubmit = (values: RecurrenceFormValues) => {
-    const newStocks = onSubmit(values, offer.venue.departmentCode)
+    const newStocks = onSubmit(values, offer.venue.departementCode)
     onConfirm(newStocks)
   }
 

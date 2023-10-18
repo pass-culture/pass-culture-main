@@ -21,7 +21,6 @@ import { Offer } from 'core/Offers/types'
 import { Audience } from 'core/shared'
 import * as useNotification from 'hooks/useNotification'
 import { offererFactory } from 'utils/apiFactories'
-import { individualOfferOffererFactory } from 'utils/individualApiFactories'
 import { renderWithProviders } from 'utils/renderWithProviders'
 
 import Offers, { OffersProps } from '../Offers'
@@ -586,7 +585,7 @@ describe('screen Offers', () => {
   })
 
   it('should display the button to create an offer when user is not an admin', async () => {
-    const individualOffererNames = individualOfferOffererFactory()
+    const individualOffererNames = offererFactory()
     vi.spyOn(api, 'listOfferersNames').mockResolvedValue({
       offerersNames: [individualOffererNames],
     })

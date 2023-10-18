@@ -22,7 +22,7 @@ const buildInitialValues = (offer: IndividualOffer): StockThingFormValues => {
       ? format(
           getLocalDepartementDateTimeFromUtc(
             offer.stocks[0].bookingLimitDatetime,
-            offer.venue.departmentCode
+            offer.venue.departementCode
           ),
           FORMAT_ISO_DATE_ONLY
         )

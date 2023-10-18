@@ -60,7 +60,7 @@ const StockFormList = ({
   }>()
   const today = getLocalDepartementDateTimeFromUtc(
     getToday(),
-    offer.venue.departmentCode
+    offer.venue.departementCode
   )
 
   const { currentSortingColumn, currentSortingMode, onColumnHeaderClick } =
