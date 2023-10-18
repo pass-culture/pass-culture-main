@@ -5,6 +5,7 @@ import {
   CollectiveOffersBookingResponseModel,
   PriceCategoryResponseModel,
   GetOfferVenueResponseModel,
+  GetOfferLastProviderResponseModel,
 } from 'apiClient/v1'
 import { CropParams } from 'components/ImageUploader'
 import { CollectiveOfferStatus } from 'core/OfferEducational'
@@ -125,10 +126,6 @@ export interface OfferExtraData {
   visa?: string
 }
 
-export interface IndividualOfferVenueProvider {
-  name: string
-}
-
 export interface OfferCollectiveImage {
   url?: string | null
   credit?: string | null
@@ -178,7 +175,7 @@ export interface IndividualOffer {
   withdrawalType: WithdrawalTypeEnum | null
   stocks: IndividualOfferStock[]
   lastProviderName: string | null
-  lastProvider: IndividualOfferVenueProvider | null
+  lastProvider?: GetOfferLastProviderResponseModel | null
   status: OfferStatus
   bookingContact?: string | null
 }

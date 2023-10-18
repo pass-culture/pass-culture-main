@@ -1,4 +1,4 @@
-import { IndividualOfferVenueProvider } from 'core/Offers/types'
+import { GetOfferLastProviderResponseModel } from 'apiClient/v1'
 
 import { CINEMA_PROVIDER_NAMES } from '../constants'
 
@@ -22,7 +22,7 @@ export const isCinemaProviderName = (providerName: string | null): boolean => {
 
 /* istanbul ignore next: DEBT, TO FIX */
 export const isAllocineProvider = (
-  provider?: IndividualOfferVenueProvider | null
+  provider?: GetOfferLastProviderResponseModel | null
 ): boolean => {
   if (!provider) {
     return false
@@ -32,7 +32,7 @@ export const isAllocineProvider = (
 
 /* istanbul ignore next: DEBT, TO FIX */
 export const isCinemaProvider = (
-  provider?: IndividualOfferVenueProvider | null
+  provider?: GetOfferLastProviderResponseModel | null
 ): boolean => {
   if (!provider) {
     return false

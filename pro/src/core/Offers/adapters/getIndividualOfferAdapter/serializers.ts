@@ -1,13 +1,11 @@
 import {
   GetIndividualOfferResponseModel,
-  GetOfferLastProviderResponseModel,
   GetOfferStockResponseModel,
 } from 'apiClient/v1'
 import {
   IndividualOffer,
   IndividualOfferImage,
   IndividualOfferStock,
-  IndividualOfferVenueProvider,
 } from 'core/Offers/types'
 import { AccessiblityEnum } from 'core/shared'
 
@@ -53,18 +51,6 @@ export const serializeOfferApiExtraData = (
   stageDirector: apiOffer.extraData?.stageDirector || '',
   visa: apiOffer.extraData?.visa || '',
 })
-
-export const serializeLastProvider = (
-  apiVenueProvider: GetOfferLastProviderResponseModel | null
-): IndividualOfferVenueProvider | null => {
-  if (apiVenueProvider === null) {
-    return null
-  }
-
-  return {
-    name: apiVenueProvider.name,
-  }
-}
 
 export const serializeOfferApiImage = (
   apiOffer: GetIndividualOfferResponseModel
@@ -130,7 +116,7 @@ export const serializeOfferApi = (
     },
     stocks: apiOffer.stocks.map(serializeStockApi),
     lastProviderName: apiOffer.lastProvider?.name || null,
-    lastProvider: serializeLastProvider(apiOffer.lastProvider || null),
+    lastProvider: apiOffer.lastProvider,
     status: apiOffer.status,
     ...serializeOfferApiExtraData(apiOffer),
   }
