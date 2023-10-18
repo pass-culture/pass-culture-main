@@ -1,8 +1,8 @@
 import { NBSP } from 'core/shared'
 
-describe('Create an individual offer', () => {
+describe('Create an individual offer (event)', () => {
   it('should create an individual offer', () => {
-    cy.login('pctest.admin93.0@example.com', 'user@AZERTY123')
+    cy.login('pctest.pro93.0@example.com', 'user@AZERTY123')
 
     // Go to offer creation page
     cy.contains('Créer une offre').click()
@@ -33,6 +33,10 @@ describe('Create an individual offer', () => {
     cy.wait(['@postOffer', '@getOffer'])
 
     // Fill in second step: price categories
+    cy.get('[name="priceCategories[0].label"]').should(
+      'have.value',
+      'Tarif unique'
+    )
     cy.contains('Ajouter un tarif').click()
     cy.contains('Ajouter un tarif').click()
     cy.get('[name="priceCategories[0].label"]').type('Carré Or')
@@ -41,6 +45,7 @@ describe('Create an individual offer', () => {
     cy.get('[name="priceCategories[1].price"]').type('10')
     cy.get('[name="priceCategories[2].label"]').type('Fosse Sceptique')
     cy.get('[name="priceCategories[2].free"]').click()
+    cy.contains('Accepter les réservations “Duo“')
 
     cy.intercept({ method: 'PATCH', url: '/offers/*' }).as('patchOffer')
     cy.contains('Enregistrer et continuer').click()
@@ -78,6 +83,7 @@ describe('Create an individual offer', () => {
     cy.wait(['@postStocks', '@getOffer'])
 
     // Publish offer
+    cy.contains('Accepter les réservations "Duo" : Oui')
     cy.intercept({ method: 'PATCH', url: '/offers/publish' }).as('publishOffer')
     cy.contains('Publier l’offre').click()
     cy.wait(['@publishOffer', '@getOffer'])
