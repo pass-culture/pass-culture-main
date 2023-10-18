@@ -52,7 +52,7 @@ describe('screens:Stocks', () => {
     })
   })
 
-  it('should render stock thing', async () => {
+  it('should render stock thing', () => {
     contextOverride.offer = individualOfferFactory({
       ...contextOverride.offer,
       isEvent: false,

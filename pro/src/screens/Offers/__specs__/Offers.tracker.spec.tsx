@@ -49,8 +49,7 @@ describe('tracker screen Offers', () => {
       offerersNames: [individualOffererNames],
     })
 
-    // When
-    await renderOffers(props)
+    renderOffers(props)
 
     await waitFor(() => {
       expect(screen.getByText('Créer une offre')).toBeInTheDocument()
@@ -58,7 +57,6 @@ describe('tracker screen Offers', () => {
     expect(api.listOfferersNames).toHaveBeenCalledTimes(1)
     expect(api.listOfferersNames).toHaveBeenCalledWith(undefined, true)
 
-    // Then
     const createLink = screen.getByText('Créer une offre')
     await userEvent.click(createLink)
   })
