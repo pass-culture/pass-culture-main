@@ -4,10 +4,9 @@ import { Form, Formik } from 'formik'
 import React from 'react'
 import * as yup from 'yup'
 
-import { CategoryResponseModel } from 'apiClient/v1'
+import { CategoryResponseModel, SubcategoryResponseModel } from 'apiClient/v1'
 import { IndividualOfferFormValues } from 'components/IndividualOfferForm'
 import { INDIVIDUAL_OFFER_SUBTYPE } from 'core/Offers/constants'
-import { OfferSubCategory } from 'core/Offers/types'
 import { SubmitButton } from 'ui-kit'
 import {
   individualOfferCategoryFactory,
@@ -47,7 +46,7 @@ describe('IndividualOffer section: Categories', () => {
   const onSubmit = vi.fn()
   let props: CategoriesProps
   let categories: CategoryResponseModel[] = []
-  let subCategories: OfferSubCategory[] = []
+  let subCategories: SubcategoryResponseModel[] = []
 
   beforeEach(() => {
     initialValues = { ...CATEGORIES_DEFAULT_VALUES }

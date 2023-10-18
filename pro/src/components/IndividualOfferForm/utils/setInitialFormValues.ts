@@ -1,8 +1,9 @@
+import { SubcategoryResponseModel } from 'apiClient/v1'
 import {
   FORM_DEFAULT_VALUES,
   IndividualOfferFormValues,
 } from 'components/IndividualOfferForm'
-import { IndividualOffer, OfferSubCategory } from 'core/Offers/types'
+import { IndividualOffer } from 'core/Offers/types'
 
 import buildSubcategoryFields from './buildSubCategoryFields'
 
@@ -14,11 +15,11 @@ const serializeDurationHour = (durationMinute: number): string => {
 
 const setInitialFormValues = (
   offer: IndividualOffer,
-  subCategoryList: OfferSubCategory[],
+  subCategoryList: SubcategoryResponseModel[],
   isBookingContactEnabled: boolean
 ): IndividualOfferFormValues => {
   const subcategory = subCategoryList.find(
-    (s: OfferSubCategory) => s.id === offer.subcategoryId
+    (s: SubcategoryResponseModel) => s.id === offer.subcategoryId
   )
 
   if (subcategory === undefined) {
