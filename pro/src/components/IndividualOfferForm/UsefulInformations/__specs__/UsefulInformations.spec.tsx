@@ -25,7 +25,7 @@ import UsefulInformations, {
 } from '../UsefulInformations'
 import validationSchema from '../validationSchema'
 
-const renderUsefulInformations = async ({
+const renderUsefulInformations = ({
   initialValues,
   onSubmit = vi.fn(),
   props,
@@ -93,8 +93,8 @@ describe('IndividualOffer section: UsefulInformations', () => {
     }
   })
 
-  it('should render the component', async () => {
-    await renderUsefulInformations({
+  it('should render the component', () => {
+    renderUsefulInformations({
       initialValues,
       onSubmit,
       props,
@@ -114,7 +114,7 @@ describe('IndividualOffer section: UsefulInformations', () => {
       id: 'CONCERT',
       canBeWithdrawable: true,
     })
-    await renderUsefulInformations({
+    renderUsefulInformations({
       initialValues,
       onSubmit,
       props,
@@ -170,7 +170,7 @@ describe('IndividualOffer section: UsefulInformations', () => {
       withdrawalType: WithdrawalTypeEnum.ON_SITE,
     }
 
-    await renderUsefulInformations({
+    renderUsefulInformations({
       initialValues,
       onSubmit,
       props,
@@ -194,9 +194,9 @@ describe('IndividualOffer section: UsefulInformations', () => {
     )
   })
 
-  it('should contain isNational when user is admin', async () => {
+  it('should contain isNational when user is admin', () => {
     props.isUserAdmin = true
-    await renderUsefulInformations({
+    renderUsefulInformations({
       initialValues,
       onSubmit,
       props,
@@ -205,10 +205,10 @@ describe('IndividualOffer section: UsefulInformations', () => {
     expect(screen.getByLabelText('Rayonnement national')).toBeInTheDocument()
   })
 
-  it('should contain withdrawal ticket informations when subcategory is from specific subCategory', async () => {
+  it('should contain withdrawal ticket informations when subcategory is from specific subCategory', () => {
     initialValues.subcategoryId = 'CONCERT'
     initialValues.subCategoryFields = ['withdrawalType']
-    await renderUsefulInformations({
+    renderUsefulInformations({
       initialValues,
       onSubmit,
       props,
@@ -219,11 +219,11 @@ describe('IndividualOffer section: UsefulInformations', () => {
     ).toBeInTheDocument()
   })
 
-  it('should contain withdrawal ticket informations when offer contain withrawalType informations', async () => {
+  it('should contain withdrawal ticket informations when offer contain withrawalType informations', () => {
     // such a case is possible for all event public api/providers offers creation
     // even if they are not "canBeWithrawable"
     initialValues.withdrawalType = WithdrawalTypeEnum.NO_TICKET
-    await renderUsefulInformations({
+    renderUsefulInformations({
       initialValues,
       onSubmit,
       props,
@@ -234,9 +234,9 @@ describe('IndividualOffer section: UsefulInformations', () => {
     ).toBeInTheDocument()
   })
 
-  it('should not contain withdrawal ticket informations when subcategory is not from specific subCategory', async () => {
+  it('should not contain withdrawal ticket informations when subcategory is not from specific subCategory', () => {
     initialValues.subcategoryId = 'ANOTHER_SUB_CATEGORY'
-    await renderUsefulInformations({
+    renderUsefulInformations({
       initialValues,
       onSubmit,
       props,
@@ -261,7 +261,7 @@ describe('IndividualOffer section: UsefulInformations', () => {
     })
 
     it('should submit valid form', async () => {
-      await renderUsefulInformations({
+      renderUsefulInformations({
         initialValues,
         onSubmit,
         props,
@@ -305,7 +305,7 @@ describe('IndividualOffer section: UsefulInformations', () => {
     })
 
     it('should display url field with errors if needed', async () => {
-      await renderUsefulInformations({
+      renderUsefulInformations({
         initialValues,
         onSubmit,
         props,
@@ -347,12 +347,12 @@ describe('IndividualOffer section: UsefulInformations', () => {
   })
 
   describe('banners', () => {
-    it('should display not reimbursment banner when subcategory is not reimbursed', async () => {
+    it('should display not reimbursment banner when subcategory is not reimbursed', () => {
       initialValues.subcategoryId = 'ANOTHER_SUB_CATEGORY'
       props.offerSubCategory = individualOfferSubCategoryFactory({
         reimbursementRule: REIMBURSEMENT_RULES.NOT_REIMBURSED,
       })
-      await renderUsefulInformations({
+      renderUsefulInformations({
         initialValues,
         onSubmit,
         props,
@@ -371,12 +371,12 @@ describe('IndividualOffer section: UsefulInformations', () => {
       )
     })
 
-    it('should not display not reimbursment banner when subcategory is reimbursed', async () => {
+    it('should not display not reimbursment banner when subcategory is reimbursed', () => {
       initialValues.subcategoryId = 'ANOTHER_SUB_CATEGORY'
       props.offerSubCategory = individualOfferSubCategoryFactory({
         reimbursementRule: REIMBURSEMENT_RULES.BOOK,
       })
-      await renderUsefulInformations({
+      renderUsefulInformations({
         initialValues,
         onSubmit,
         props,
@@ -389,14 +389,14 @@ describe('IndividualOffer section: UsefulInformations', () => {
       ).not.toBeInTheDocument()
     })
 
-    it('should display withdrawal banner when subcategory is on physical thing (not event, not virtual)', async () => {
+    it('should display withdrawal banner when subcategory is on physical thing (not event, not virtual)', () => {
       initialValues.subcategoryId = 'ANOTHER_SUB_CATEGORY'
       props.offerSubCategory = individualOfferSubCategoryFactory({
         isEvent: false,
         onlineOfflinePlatform: CATEGORY_STATUS.ONLINE_OR_OFFLINE,
       })
       props.isVenueVirtual = false
-      await renderUsefulInformations({
+      renderUsefulInformations({
         initialValues,
         onSubmit,
         props,
@@ -412,13 +412,13 @@ describe('IndividualOffer section: UsefulInformations', () => {
       ).toHaveAttribute('href', 'https://pass.culture.fr/cgu-professionnels/')
     })
 
-    it('should not display withdrawal banner when subcategory is an event', async () => {
+    it('should not display withdrawal banner when subcategory is an event', () => {
       initialValues.subcategoryId = 'ANOTHER_SUB_CATEGORY'
       props.offerSubCategory = individualOfferSubCategoryFactory({
         isEvent: true,
       })
       props.isVenueVirtual = false
-      await renderUsefulInformations({
+      renderUsefulInformations({
         initialValues,
         onSubmit,
         props,
@@ -434,8 +434,8 @@ describe('IndividualOffer section: UsefulInformations', () => {
 
   describe('infobox', () => {
     describe('for not virtual offers', () => {
-      it('should render the component', async () => {
-        await renderUsefulInformations({
+      it('should render the component', () => {
+        renderUsefulInformations({
           initialValues,
           onSubmit,
           props,
@@ -453,10 +453,10 @@ describe('IndividualOffer section: UsefulInformations', () => {
       })
     })
     describe('for virtual offers', () => {
-      it('should render the component', async () => {
+      it('should render the component', () => {
         props.isVenueVirtual = true
 
-        await renderUsefulInformations({
+        renderUsefulInformations({
           initialValues,
           onSubmit,
           props,
