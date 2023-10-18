@@ -1,21 +1,15 @@
 import {
   GetIndividualOfferResponseModel,
-  GetOfferLastProviderResponseModel,
   GetOfferStockResponseModel,
   OfferStatus,
 } from 'apiClient/v1'
-import {
-  IndividualOffer,
-  IndividualOfferStock,
-  IndividualOfferVenueProvider,
-} from 'core/Offers/types'
+import { IndividualOffer, IndividualOfferStock } from 'core/Offers/types'
 import { GetIndividualOfferFactory } from 'utils/apiFactories'
 
 import {
   serializeStockApi,
   serializeOfferApiImage,
   serializeOfferApiExtraData,
-  serializeLastProvider,
   serializeOfferApi,
 } from '../serializers'
 
@@ -217,21 +211,6 @@ describe('serializer', () => {
       stageDirector: 'test stageDirector',
       visa: 'test visa',
     })
-  })
-
-  it('serializeLastProvider with empty input', () => {
-    expect(serializeLastProvider(null)).toEqual(null)
-  })
-
-  it('serializeLastProvider', () => {
-    const venueProviderApi: GetOfferLastProviderResponseModel = {
-      name: 'Awesom provider',
-    }
-    const provider: IndividualOfferVenueProvider = {
-      name: 'Awesom provider',
-    }
-
-    expect(serializeLastProvider(venueProviderApi)).toEqual(provider)
   })
 
   it('serializeOfferApi', () => {

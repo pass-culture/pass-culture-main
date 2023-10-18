@@ -89,6 +89,7 @@ export const GetIndividualOfferFactory = (
     isDuo: true,
     isNational: true,
     subcategoryId: SubcategoryIdEnum.SEANCE_CINE,
+    lastProvider: null,
     ...customOffer,
   }
 }

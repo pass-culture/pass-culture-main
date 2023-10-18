@@ -1,8 +1,6 @@
 import { OfferStatus } from 'apiClient/v1'
-import {
-  IndividualOffer,
-  IndividualOfferVenueProvider,
-} from 'core/Offers/types'
+import { IndividualOffer } from 'core/Offers/types'
+import { individualOfferFactory } from 'utils/individualApiFactories'
 
 import { StockThingFormValues } from '../../types'
 import setFormReadOnlyFields from '../setFormReadOnlyFields'
@@ -11,7 +9,7 @@ describe('StockThingForm::utils::setFormReadOnlyFields', () => {
   let offer: IndividualOffer
   let currentStock: StockThingFormValues
   beforeEach(() => {
-    offer = {} as IndividualOffer
+    offer = individualOfferFactory()
     currentStock = {} as StockThingFormValues
   })
   const disabledStatus = [OfferStatus.REJECTED, OfferStatus.PENDING]
@@ -37,7 +35,7 @@ describe('StockThingForm::utils::setFormReadOnlyFields', () => {
   it('should disabled field synchronized offer', () => {
     offer.lastProvider = {
       name: 'any provider',
-    } as IndividualOfferVenueProvider
+    }
     const readOnlyFields = setFormReadOnlyFields(offer, currentStock)
     expect(readOnlyFields).toEqual([
       'stockId',
@@ -53,7 +51,7 @@ describe('StockThingForm::utils::setFormReadOnlyFields', () => {
   })
 
   it('should not disabled field for allociné synchronized offer', () => {
-    offer.lastProvider = { name: 'allociné' } as IndividualOfferVenueProvider
+    offer.lastProvider = { name: 'allociné' }
     currentStock = {
       activationCodes: new Array<string>(),
     } as StockThingFormValues
