@@ -22,7 +22,7 @@ describe('Notification', () => {
   ]
   it.each(notificationTypes)(
     'should display given %s text with icon',
-    async (notificationType) => {
+    (notificationType) => {
       const notification = {
         text: 'Mon petit succès',
         type: notificationType.type,
@@ -31,7 +31,7 @@ describe('Notification', () => {
 
       renderNotification(notification)
 
-      const notificationElement = await screen.findByText(notification.text)
+      const notificationElement = screen.getByText(notification.text)
       expect(notificationElement).toBeInTheDocument()
       expect(notificationElement).toHaveClass('show')
       expect(notificationElement).toHaveClass(
