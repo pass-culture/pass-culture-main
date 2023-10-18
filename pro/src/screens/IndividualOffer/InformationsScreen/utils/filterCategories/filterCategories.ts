@@ -1,8 +1,9 @@
+import { CategoryResponseModel } from 'apiClient/v1'
 import {
   CATEGORY_STATUS,
   INDIVIDUAL_OFFER_SUBTYPE,
 } from 'core/Offers/constants'
-import { OfferCategory, OfferSubCategory } from 'core/Offers/types'
+import { OfferSubCategory } from 'core/Offers/types'
 
 export const getOfferSubtypeFromParam = (
   offerType: string | null
@@ -70,11 +71,11 @@ const isSubcategoryMatchingCriteria = (
 }
 
 export const filterCategories = (
-  allCategories: OfferCategory[],
+  allCategories: CategoryResponseModel[],
   allSubCategories: OfferSubCategory[],
   onlineOfflinePlatform: CATEGORY_STATUS,
   isEvent: boolean | null
-): [OfferCategory[], OfferSubCategory[]] => {
+): [CategoryResponseModel[], OfferSubCategory[]] => {
   const subCategories: OfferSubCategory[] = allSubCategories.filter(
     (subcategory: OfferSubCategory) => {
       if (!subcategory.isSelectable) {
@@ -88,8 +89,8 @@ export const filterCategories = (
       )
     }
   )
-  const categories: OfferCategory[] = allCategories.filter(
-    (c: OfferCategory) =>
+  const categories: CategoryResponseModel[] = allCategories.filter(
+    (c: CategoryResponseModel) =>
       c.isSelectable &&
       subCategories.some((s: OfferSubCategory) => s.categoryId === c.id)
   )

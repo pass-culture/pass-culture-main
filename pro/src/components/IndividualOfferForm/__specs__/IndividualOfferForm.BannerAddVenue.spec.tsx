@@ -3,10 +3,11 @@ import { userEvent } from '@testing-library/user-event'
 import { Formik } from 'formik'
 import React from 'react'
 
+import { CategoryResponseModel } from 'apiClient/v1'
 import { REIMBURSEMENT_RULES } from 'core/Finances'
 import { OffererName } from 'core/Offerers/types'
 import { CATEGORY_STATUS } from 'core/Offers/constants'
-import { OfferCategory, OfferSubCategory } from 'core/Offers/types'
+import { OfferSubCategory } from 'core/Offers/types'
 import { IndividualOfferVenueItem } from 'core/Venue/types'
 import { individualOfferVenueItemFactory } from 'utils/individualApiFactories'
 import { renderWithProviders } from 'utils/renderWithProviders'
@@ -48,7 +49,7 @@ describe('IndividualOfferForm', () => {
   let initialValues: IndividualOfferFormValues
   const onSubmit = vi.fn()
   let props: IndividualOfferFormProps
-  let categories: OfferCategory[] = []
+  let categories: CategoryResponseModel[] = []
   let subCategories: OfferSubCategory[] = []
   let offererNames: OffererName[]
   let venueList: IndividualOfferVenueItem[]

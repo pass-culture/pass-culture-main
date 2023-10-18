@@ -4,13 +4,14 @@ import { Form, Formik } from 'formik'
 import React from 'react'
 import * as yup from 'yup'
 
+import { CategoryResponseModel } from 'apiClient/v1'
 import { IndividualOfferFormValues } from 'components/IndividualOfferForm'
 import { REIMBURSEMENT_RULES } from 'core/Finances'
 import {
   CATEGORY_STATUS,
   INDIVIDUAL_OFFER_SUBTYPE,
 } from 'core/Offers/constants'
-import { OfferCategory, OfferSubCategory } from 'core/Offers/types'
+import { OfferSubCategory } from 'core/Offers/types'
 import { SubmitButton } from 'ui-kit'
 import { renderWithProviders } from 'utils/renderWithProviders'
 
@@ -45,7 +46,7 @@ describe('IndividualOffer section: Categories', () => {
   let initialValues: Partial<IndividualOfferFormValues>
   const onSubmit = vi.fn()
   let props: CategoriesProps
-  let categories: OfferCategory[] = []
+  let categories: CategoryResponseModel[] = []
   let subCategories: OfferSubCategory[] = []
 
   beforeEach(() => {

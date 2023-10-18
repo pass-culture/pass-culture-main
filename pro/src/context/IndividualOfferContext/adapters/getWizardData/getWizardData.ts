@@ -1,7 +1,8 @@
+import { CategoryResponseModel } from 'apiClient/v1'
 import { getOffererNamesAdapter } from 'core/Offerers/adapters'
 import { OffererName } from 'core/Offerers/types'
 import { getCategoriesAdapter } from 'core/Offers/adapters'
-import { OfferCategory, OfferSubCategory } from 'core/Offers/types'
+import { OfferSubCategory } from 'core/Offers/types'
 import { GET_DATA_ERROR_MESSAGE } from 'core/shared'
 import { getIndividualOfferVenuesAdapter } from 'core/Venue/adapters/getIndividualOfferVenuesAdapter'
 import { IndividualOfferVenueItem } from 'core/Venue/types'
@@ -18,7 +19,7 @@ interface OfferWizardData {
   offererNames: OffererName[]
   venueList: IndividualOfferVenueItem[]
   categoriesData: {
-    categories: OfferCategory[]
+    categories: CategoryResponseModel[]
     subCategories: OfferSubCategory[]
   }
 }
