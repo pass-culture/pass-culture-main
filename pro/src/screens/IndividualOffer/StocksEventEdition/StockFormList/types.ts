@@ -1,7 +1,7 @@
 import { useFormik } from 'formik'
 
 export interface StockEventFormHiddenValues {
-  stockId?: number
+  stockId: number
   isDeletable: boolean
   readOnlyFields: string[]
 }

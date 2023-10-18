@@ -47,13 +47,13 @@ import { getValidationSchema } from './form/validationSchema'
 import styles from './RecurrenceForm.module.scss'
 
 interface Props {
-  onCancel: () => void
   stocks: StocksEvent[]
   setIsOpen: (p: boolean) => void
-  setStocks?: (stocks: StocksEvent[]) => void
+  setStocks: (stocks: StocksEvent[]) => void
   departmentCode: string
   offerId: number
   priceCategories: PriceCategoryResponseModel[]
+  setStocksInEditionForm?: (stocks: StocksEvent[]) => void
 }
 
 const mapNumberToFrenchOrdinals = (n: number): string => {
@@ -112,13 +112,13 @@ const getMonthlyOptions = (values: RecurrenceFormValues) => {
 }
 
 export const RecurrenceForm = ({
-  onCancel,
   stocks,
   setIsOpen,
   setStocks,
   departmentCode,
   offerId,
   priceCategories,
+  setStocksInEditionForm,
 }: Props): JSX.Element => {
   const priceCategoryOptions = getPriceCategoryOptions(priceCategories)
   const notify = useNotification()
@@ -132,7 +132,8 @@ export const RecurrenceForm = ({
       notify
     )
     if (newStocks?.length) {
-      setStocks?.([...newStocks])
+      setStocks([...newStocks])
+      setStocksInEditionForm?.([...newStocks])
     }
     setIsOpen(false)
   }
@@ -484,7 +485,10 @@ export const RecurrenceForm = ({
         </fieldset>
 
         <div className={styles['action-buttons']}>
-          <Button variant={ButtonVariant.SECONDARY} onClick={onCancel}>
+          <Button
+            variant={ButtonVariant.SECONDARY}
+            onClick={() => setIsOpen(false)}
+          >
             Annuler
           </Button>
 

@@ -22,7 +22,7 @@ interface BuildSingleInitialValuesArgs extends BuildInitialValuesCommonArgs {
   stock: StocksEvent
 }
 
-const buildSingleInitialValues = ({
+export const buildSingleInitialValues = ({
   departementCode,
   stock,
   today,
@@ -31,7 +31,8 @@ const buildSingleInitialValues = ({
   priceCategoriesOptions,
 }: BuildSingleInitialValuesArgs): StockEventFormValues => {
   const hiddenValues = {
-    stockId: stock.id,
+    // FIX ME: now stock id is always defined
+    stockId: stock.id as number,
     isDeletable: stock.isEventDeletable,
     readOnlyFields: setFormReadOnlyFields({
       beginningDate: stock.beginningDatetime
