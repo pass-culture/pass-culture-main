@@ -1,4 +1,3 @@
-import { format } from 'date-fns'
 import { FormikProvider, useFormik } from 'formik'
 import isEqual from 'lodash/isEqual'
 import React, { useRef, useState } from 'react'
@@ -10,8 +9,6 @@ import FormLayout from 'components/FormLayout'
 import { OFFER_WIZARD_STEP_IDS } from 'components/IndividualOfferBreadcrumb/constants'
 import { RouteLeavingGuardIndividualOffer } from 'components/RouteLeavingGuardIndividualOffer/RouteLeavingGuardIndividualOffer'
 import { StocksEvent } from 'components/StocksEventList/StocksEventList'
-import { useIndividualOfferContext } from 'context/IndividualOfferContext'
-import { getIndividualOfferAdapter } from 'core/Offers/adapters'
 import { OFFER_WIZARD_MODE } from 'core/Offers/constants'
 import { IndividualOffer } from 'core/Offers/types'
 import { isOfferDisabled } from 'core/Offers/utils'
@@ -21,12 +18,11 @@ import useNotification from 'hooks/useNotification'
 import fullMoreIcon from 'icons/full-more.svg'
 import { Button } from 'ui-kit'
 import { ButtonVariant } from 'ui-kit/Button/types'
-import { FORMAT_HH_mm, FORMAT_ISO_DATE_ONLY, getToday } from 'utils/date'
+import { getToday } from 'utils/date'
 import { hasErrorCode } from 'utils/error'
 import { getLocalDepartementDateTimeFromUtc } from 'utils/timezone'
 
 import ActionBar from '../ActionBar/ActionBar'
-import { MAX_STOCKS_PER_OFFER } from '../constants'
 import DialogStocksEventEditConfirm from '../DialogStocksEventEditConfirm/DialogStocksEventEditConfirm'
 import useNotifyFormError from '../hooks/useNotifyFormError'
 import { RecurrenceForm } from '../StocksEventCreation/RecurrenceForm'
@@ -42,6 +38,7 @@ import {
   StocksEventFormValues,
 } from './StockFormList/types'
 import { buildInitialValues } from './StockFormList/utils'
+import { buildSingleInitialValues } from './StockFormList/utils/buildInitialValues'
 import { getValidationSchema } from './StockFormList/validationSchema'
 import styles from './StocksEventEdition.module.scss'
 import { submitToApi } from './submitToApi'
@@ -65,69 +62,42 @@ const hasStocksChanged = (
 export interface StocksEventEditionProps {
   offer: IndividualOffer
   stocks: StocksEvent[]
+  setStocks: (stocks: StocksEvent[]) => void
 }
 
 const StocksEventEdition = ({
   offer,
   stocks,
+  setStocks,
 }: StocksEventEditionProps): JSX.Element => {
   const mode = useOfferWizardMode()
   const navigate = useNavigate()
   const notify = useNotification()
-  const { setOffer } = useIndividualOfferContext()
   const [showStocksEventConfirmModal, setShowStocksEventConfirmModal] =
     useState(false)
   const priceCategoriesOptions = getPriceCategoryOptions(offer.priceCategories)
 
   const [isRecurrenceModalOpen, setIsRecurrenceModalOpen] = useState(false)
   const onCancel = () => setIsRecurrenceModalOpen(false)
+  const today = getLocalDepartementDateTimeFromUtc(
+    getToday(),
+    offer.venue.departementCode
+  )
 
-  const onConfirm = async (newStocks: StocksEvent[]) => {
-    setIsRecurrenceModalOpen(false)
-    const transformedStocks = newStocks.map(
-      (stock): StockEventFormValues => ({
-        priceCategoryId: String(stock.priceCategoryId),
-        bookingsQuantity: 0,
-        remainingQuantity: stock.quantity ?? '',
-        isDeletable: true,
-        beginningDate: format(
-          new Date(stock.beginningDatetime),
-          FORMAT_ISO_DATE_ONLY
-        ),
-        beginningTime: format(new Date(stock.beginningDatetime), FORMAT_HH_mm),
-        bookingLimitDatetime: format(
-          new Date(stock.bookingLimitDatetime),
-          FORMAT_ISO_DATE_ONLY
-        ),
-        readOnlyFields: [],
-      })
-    )
-    const rawStocksToAdd = [...formik.values.stocks, ...transformedStocks]
-
-    // deduplicate stocks in the whole list
-    const stocksToAdd = rawStocksToAdd.filter((stock1, index) => {
-      return (
-        rawStocksToAdd.findIndex(
-          (stock2) =>
-            stock1.beginningDate === stock2.beginningDate &&
-            stock1.beginningTime === stock2.beginningTime &&
-            stock1.priceCategoryId === stock2.priceCategoryId
-        ) === index
-      )
-    })
-    if (stocksToAdd.length < rawStocksToAdd.length) {
-      notify.information(
-        'Certaines occurences n’ont pas été ajoutées car elles existaient déjà'
-      )
-    } else {
-      notify.success(
-        newStocks.length === 1
-          ? '1 nouvelle occurrence a été ajoutée'
-          : `${newStocks.length} nouvelles occurrences ont été ajoutées`
-      )
-    }
-    await formik.setFieldValue('stocks', [...stocksToAdd])
-  }
+  const setStocksInEditionForm = (stocksToAdd: StocksEvent[]) =>
+    formik.setFieldValue('stocks', [
+      ...stocksToAdd.map(
+        (stock): StockEventFormValues =>
+          buildSingleInitialValues({
+            departementCode: offer.venue.departementCode || '',
+            stock,
+            today,
+            lastProviderName: offer.lastProviderName,
+            offerStatus: offer.status,
+            priceCategoriesOptions,
+          })
+      ),
+    ])
 
   // As we are using Formik to handle state and sorting/filtering, we need to
   // keep all the filtered out stocks in a variable somewhere so we don't lose them
@@ -153,21 +123,12 @@ const StocksEventEdition = ({
     const isFormEmpty = allStockValues.every((val) =>
       isEqual(val, STOCK_EVENT_FORM_DEFAULT_VALUES)
     )
-    if (isFormEmpty) {
-      navigate(nextStepUrl)
-      notify.success(getSuccessMessage(mode))
-      return
-    }
-
     // Return when there is nothing to save
-    const hasSavedStock = allStockValues.some(
-      (stock) => stock.stockId !== undefined
-    )
     const dirty = hasStocksChanged(
       formik.values.stocks,
       formik.initialValues.stocks
     )
-    if (hasSavedStock && !dirty) {
+    if (isFormEmpty || !dirty) {
       navigate(nextStepUrl)
       notify.success(getSuccessMessage(mode))
       return
@@ -183,22 +144,14 @@ const StocksEventEdition = ({
       return
     }
 
-    // Error if max number of stocks
-    if (allStockValues.length > MAX_STOCKS_PER_OFFER) {
-      notify.error(
-        `Veuillez créer moins de ${MAX_STOCKS_PER_OFFER} occurrences par offre.`
-      )
-      return
-    }
-
     // Submit
     try {
       await submitToApi(
         allStockValues,
-        offer,
-        setOffer,
-        formik.resetForm,
-        formik.setErrors
+        offer.id,
+        offer.venue.departementCode || '',
+        formik.setErrors,
+        setStocksInEditionForm
       )
     } catch (error) {
       if (error instanceof Error) {
@@ -219,18 +172,11 @@ const StocksEventEdition = ({
     const { isDeletable, stockId } = stockValues
     // tested but coverage don't see it.
     /* istanbul ignore next */
-    if (stockId === undefined || !isDeletable) {
+    if (!isDeletable) {
       return
     }
     try {
       await api.deleteStock(stockId)
-      const response = await getIndividualOfferAdapter(offer.id)
-      /* istanbul ignore next: DEBT, TO FIX */
-      if (response.isOk) {
-        setOffer && setOffer(response.payload)
-      }
-
-      const formStocks = [...formik.values.stocks]
 
       // When we delete a stock we must remove it from the initial values
       // otherwise it will trigger the routeLeavingGuard
@@ -240,8 +186,8 @@ const StocksEventEdition = ({
         values: { stocks: initialStocks },
       })
 
-      // Set back possible user change.
       /* istanbul ignore next: DEBT, TO FIX */
+      const formStocks = [...formik.values.stocks]
       formStocks.splice(stockIndex, 1)
       await formik.setValues({ stocks: formStocks })
       notify.success('Le stock a été supprimé.')
@@ -258,11 +204,6 @@ const StocksEventEdition = ({
       }
     }
   }
-
-  const today = getLocalDepartementDateTimeFromUtc(
-    getToday(),
-    offer.venue.departementCode
-  )
 
   const initialValues = buildInitialValues({
     departementCode: offer.venue.departementCode,
@@ -290,23 +231,15 @@ const StocksEventEdition = ({
     errors: formik.errors,
   })
 
-  const handlePreviousStepOrBackToReadOnly = () => {
+  const handleBackToReadOnly = () => {
     /* istanbul ignore next: DEBT, TO FIX */
-    mode === OFFER_WIZARD_MODE.EDITION
-      ? navigate(
-          getIndividualOfferUrl({
-            offerId: offer.id,
-            step: OFFER_WIZARD_STEP_IDS.STOCKS,
-            mode: OFFER_WIZARD_MODE.READ_ONLY,
-          })
-        )
-      : navigate(
-          getIndividualOfferUrl({
-            offerId: offer.id,
-            step: OFFER_WIZARD_STEP_IDS.TARIFS,
-            mode,
-          })
-        )
+    navigate(
+      getIndividualOfferUrl({
+        offerId: offer.id,
+        step: OFFER_WIZARD_STEP_IDS.STOCKS,
+        mode: OFFER_WIZARD_MODE.READ_ONLY,
+      })
+    )
   }
 
   const isDisabled = offer.status ? isOfferDisabled(offer.status) : false
@@ -345,9 +278,13 @@ const StocksEventEdition = ({
                 fullContentWidth
               >
                 <RecurrenceForm
-                  offer={offer}
-                  onCancel={onCancel}
-                  onConfirm={onConfirm}
+                  stocks={stocks}
+                  offerId={offer.id}
+                  departmentCode={offer.venue.departementCode || ''}
+                  setStocks={setStocks}
+                  priceCategories={offer.priceCategories || []}
+                  setIsOpen={setIsRecurrenceModalOpen}
+                  setStocksInEditionForm={setStocksInEditionForm}
                 />
               </DialogBox>
             )}
@@ -361,7 +298,7 @@ const StocksEventEdition = ({
 
             <ActionBar
               isDisabled={formik.isSubmitting || isOfferDisabled(offer.status)}
-              onClickPrevious={handlePreviousStepOrBackToReadOnly}
+              onClickPrevious={handleBackToReadOnly}
               step={OFFER_WIZARD_STEP_IDS.STOCKS}
             />
           </form>
