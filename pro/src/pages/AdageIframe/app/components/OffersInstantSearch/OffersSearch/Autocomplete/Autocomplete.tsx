@@ -86,6 +86,15 @@ const addSuggestionToHistory = (suggestion: string) => {
   )
 }
 
+function checkIfLocalStorageIsEnabled(): boolean {
+  try {
+    localStorage.getItem('')
+  } catch {
+    return false
+  }
+  return true
+}
+
 export const Autocomplete = ({
   initialQuery,
   placeholder,
@@ -119,6 +128,9 @@ export const Autocomplete = ({
   const VENUE_SUGGESTIONS_SOURCE_ID = 'VenueSuggestionsSource'
   const { adageUser } = useAdageUser()
   const KEYWORD_QUERY_SUGGESTIONS_SOURCE_ID = 'KeywordQuerySuggestionsSource'
+
+  const isLocalStorageEnabled = checkIfLocalStorageIsEnabled()
+
   useEffect(() => {
     const loadData = async () => {
       const categoriesResponse =
@@ -199,7 +211,11 @@ export const Autocomplete = ({
           const venueDisplayName = item.venue.publicName || item.venue.name
           autocomplete.setQuery(venueDisplayName)
           refine(venueDisplayName)
-          addSuggestionToHistory(venueDisplayName)
+
+          if (isLocalStorageEnabled) {
+            addSuggestionToHistory(venueDisplayName)
+          }
+
           logAutocompleteSuggestionClick(
             SuggestionType.VENUE,
             item.venue.publicName || item.venue.name
@@ -271,7 +287,11 @@ export const Autocomplete = ({
           }
           refine(item.query)
           await formik.submitForm()
-          addSuggestionToHistory(item.query)
+
+          if (isLocalStorageEnabled) {
+            addSuggestionToHistory(item.query)
+          }
+
           logAutocompleteSuggestionClick(
             itemId <= 2 ? SuggestionType.OFFER_CATEGORY : SuggestionType.OFFER,
             item.query
@@ -302,7 +322,7 @@ export const Autocomplete = ({
         placeholder,
         plugins: enableAutocompleteAdage
           ? [
-              recentSearchesPlugin,
+              ...(isLocalStorageEnabled ? [recentSearchesPlugin] : []),
               venuesSuggestionsPlugin,
               querySuggestionsPlugin,
             ]
