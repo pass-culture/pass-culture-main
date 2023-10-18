@@ -83,7 +83,7 @@ const StocksEventEdition = ({
   const [isRecurrenceModalOpen, setIsRecurrenceModalOpen] = useState(false)
   const onCancel = () => setIsRecurrenceModalOpen(false)
 
-  const onConfirm = (newStocks: StocksEvent[]) => {
+  const onConfirm = async (newStocks: StocksEvent[]) => {
     setIsRecurrenceModalOpen(false)
     const transformedStocks = newStocks.map(
       (stock): StockEventFormValues => ({
@@ -127,7 +127,7 @@ const StocksEventEdition = ({
           : `${newStocks.length} nouvelles occurrences ont été ajoutées`
       )
     }
-    formik.setFieldValue('stocks', [...stocksToAdd])
+    await formik.setFieldValue('stocks', [...stocksToAdd])
   }
 
   // As we are using Formik to handle state and sorting/filtering, we need to
@@ -244,7 +244,7 @@ const StocksEventEdition = ({
       // Set back possible user change.
       /* istanbul ignore next: DEBT, TO FIX */
       formStocks.splice(stockIndex, 1)
-      formik.setValues({ stocks: formStocks })
+      await formik.setValues({ stocks: formStocks })
       notify.success('Le stock a été supprimé.')
     } catch (error) {
       if (

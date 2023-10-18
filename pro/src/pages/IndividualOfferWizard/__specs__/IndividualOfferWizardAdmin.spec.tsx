@@ -90,7 +90,7 @@ describe('IndividualOfferWizard', () => {
   })
 
   it('should initialize context with api with offererId on query', async () => {
-    await renderIndividualOfferWizardRoute(
+    renderIndividualOfferWizardRoute(
       store,
       generatePath(
         getIndividualOfferPath({
@@ -122,7 +122,7 @@ describe('IndividualOfferWizard', () => {
   })
 
   it('should display admin creation banner when no offererId is given', async () => {
-    await renderIndividualOfferWizardRoute(
+    renderIndividualOfferWizardRoute(
       store,
       generatePath(
         getIndividualOfferPath({
@@ -177,7 +177,7 @@ describe('IndividualOfferWizard', () => {
       ],
     })
     const offerId = 12
-    await renderIndividualOfferWizardRoute(
+    renderIndividualOfferWizardRoute(
       store,
       generatePath(
         getIndividualOfferPath({

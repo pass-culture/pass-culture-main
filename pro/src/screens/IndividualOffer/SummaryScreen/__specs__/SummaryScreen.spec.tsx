@@ -179,7 +179,7 @@ describe('Summary', () => {
   }
 
   describe('On edition', () => {
-    it('should render component with informations', async () => {
+    it('should render component with informations', () => {
       // given / when
       renderSummary(customContext)
 
@@ -202,7 +202,7 @@ describe('Summary', () => {
       }
     })
 
-    it('should render component with informations', async () => {
+    it('should render component with informations', () => {
       // given / when
       renderSummary(
         customContext,
@@ -224,7 +224,7 @@ describe('Summary', () => {
     })
 
     describe('When it is form v3', () => {
-      it('should render component with right buttons', async () => {
+      it('should render component with right buttons', () => {
         // when
         renderSummary(
           customContext,
@@ -289,7 +289,7 @@ describe('Summary', () => {
       })
       expect(buttonPublish).not.toBeDisabled()
 
-      const mockResponse = new CancelablePromise<void>(async (resolve) =>
+      const mockResponse = new CancelablePromise<void>((resolve) =>
         setTimeout(() => {
           resolve(undefined)
         }, 200)

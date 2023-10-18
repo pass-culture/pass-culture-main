@@ -126,9 +126,9 @@ export const RecurrenceForm = ({
   const { values, setFieldValue } = formik
   const monthlyOptions = getMonthlyOptions(values)
 
-  const onRecurrenceTypeChange = () => {
-    setFieldValue('startingDate', '')
-    setFieldValue('endingDate', '')
+  const onRecurrenceTypeChange = async () => {
+    await setFieldValue('startingDate', '')
+    await setFieldValue('endingDate', '')
   }
   const minDateForEndingDate = isDateValid(values.startingDate)
     ? new Date(values.startingDate)

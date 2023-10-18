@@ -148,14 +148,14 @@ describe('screen Offers', () => {
     })
   })
 
-  it('should display column titles when offers are returned', async () => {
+  it('should display column titles when offers are returned', () => {
     renderOffers(props, store)
 
     expect(screen.getByText('Lieu', { selector: 'th' })).toBeInTheDocument()
     expect(screen.getByText('Stocks', { selector: 'th' })).toBeInTheDocument()
   })
 
-  it('should render as much offers as returned by the api', async () => {
+  it('should render as much offers as returned by the api', () => {
     const firstOffer = individualOfferFactory()
     const secondOffer = individualOfferFactory()
 
@@ -171,7 +171,7 @@ describe('screen Offers', () => {
     expect(screen.getByLabelText(secondOffer.name)).toBeInTheDocument()
   })
 
-  it('should display an unchecked by default checkbox to select all offers when user is not admin', async () => {
+  it('should display an unchecked by default checkbox to select all offers when user is not admin', () => {
     const firstOffer = individualOfferFactory()
     const secondOffer = individualOfferFactory()
 
@@ -190,7 +190,7 @@ describe('screen Offers', () => {
     expect(selectAllOffersCheckbox).not.toBeDisabled()
   })
 
-  it('should display total number of offers in plural if multiple offers', async () => {
+  it('should display total number of offers in plural if multiple offers', () => {
     renderOffers(
       {
         ...props,
@@ -219,7 +219,7 @@ describe('screen Offers', () => {
     expect(await screen.findByText('500+ offres')).toBeInTheDocument()
   })
 
-  it('should render venue filter with default option selected and given venues as options', async () => {
+  it('should render venue filter with default option selected and given venues as options', () => {
     const expectedSelectOptions = [
       { id: [ALL_VENUES_OPTION.value], value: ALL_VENUES_OPTION.label },
       { id: [proVenues[0].id], value: proVenues[0].name },
@@ -247,7 +247,7 @@ describe('screen Offers', () => {
     expect(secondVenueOption).toBeInTheDocument()
   })
 
-  it('should render venue filter with given venue selected', async () => {
+  it('should render venue filter with given venue selected', () => {
     const expectedSelectOptions = [
       { id: [proVenues[0].id], value: proVenues[0].name },
     ]
@@ -259,13 +259,13 @@ describe('screen Offers', () => {
     expect(venueSelect).toBeInTheDocument()
   })
 
-  it('should render creation mode filter with default option selected', async () => {
+  it('should render creation mode filter with default option selected', () => {
     renderOffers(props, store)
 
     expect(screen.getByDisplayValue('Tous')).toBeInTheDocument()
   })
 
-  it('should render creation mode filter with given creation mode selected', async () => {
+  it('should render creation mode filter with given creation mode selected', () => {
     renderOffers(
       {
         ...props,
@@ -298,14 +298,14 @@ describe('screen Offers', () => {
     expect(screen.getByDisplayValue('Synchronisé')).toBeInTheDocument()
   })
 
-  it('should display event period filter with no default option', async () => {
+  it('should display event period filter with no default option', () => {
     renderOffers(props, store)
 
     const eventPeriodSelect = screen.queryAllByPlaceholderText('JJ/MM/AAAA')
     expect(eventPeriodSelect).toHaveLength(2)
   })
 
-  it('should not display status filters modal', async () => {
+  it('should not display status filters modal', () => {
     renderOffers(props, store)
 
     expect(screen.getByText('Statut')).toBeInTheDocument()
@@ -363,7 +363,7 @@ describe('screen Offers', () => {
     expect(screen.queryByText('Afficher les offres')).not.toBeInTheDocument()
   })
 
-  it('should indicate that user has no offers yet', async () => {
+  it('should indicate that user has no offers yet', () => {
     renderOffers({ ...props, offers: [] }, store)
 
     const noOffersText = screen.getByText('Vous n’avez pas encore créé d’offre')
@@ -376,7 +376,7 @@ describe('screen Offers', () => {
     })
 
     describe('status filter can only be used with an offerer or a venue filter for performance reasons', () => {
-      it('should disable status filters when no venue nor offerer filter is selected', async () => {
+      it('should disable status filters when no venue nor offerer filter is selected', () => {
         renderOffers(props, store)
 
         expect(
@@ -430,7 +430,7 @@ describe('screen Offers', () => {
     })
 
     describe('select all offers checkbox', () => {
-      it('should disable select all checkbox when no venue nor offerer filter is applied', async () => {
+      it('should disable select all checkbox when no venue nor offerer filter is applied', () => {
         renderOffers(props, store)
 
         const selectAllOffersCheckbox =
@@ -481,7 +481,7 @@ describe('screen Offers', () => {
         expect(selectAllOffersCheckbox).toBeDisabled()
       })
 
-      it('should enable select all checkbox when venue filter is applied', async () => {
+      it('should enable select all checkbox when venue filter is applied', () => {
         renderOffers(
           {
             ...props,
@@ -506,7 +506,7 @@ describe('screen Offers', () => {
         expect(selectAllOffersCheckbox).not.toBeDisabled()
       })
 
-      it('should enable select all checkbox when offerer filter is applied', async () => {
+      it('should enable select all checkbox when offerer filter is applied', () => {
         renderOffers(
           {
             ...props,
@@ -533,7 +533,7 @@ describe('screen Offers', () => {
     })
   })
 
-  it('should disabled checkbox when offer is rejected or pending for validation', async () => {
+  it('should disabled checkbox when offer is rejected or pending for validation', () => {
     props.currentUser.isAdmin = false
     const offers = [
       individualOfferFactory({
@@ -576,10 +576,10 @@ describe('screen Offers', () => {
     })
   })
 
-  it('should not display the button to create an offer when user is an admin', async () => {
+  it('should not display the button to create an offer when user is an admin', () => {
     props.currentUser.isAdmin = true
 
-    await renderOffers(props, store)
+    renderOffers(props, store)
 
     expect(screen.queryByText('Créer une offre')).toBeNull()
   })
@@ -592,7 +592,7 @@ describe('screen Offers', () => {
 
     props.currentUser.isAdmin = false
 
-    await renderOffers(props, store)
+    renderOffers(props, store)
 
     expect(
       await screen.findByRole('link', { name: 'Créer une offre' })
@@ -603,7 +603,7 @@ describe('screen Offers', () => {
     vi.spyOn(api, 'listOfferersNames').mockResolvedValue({
       offerersNames: [],
     })
-    await renderOffers(props, store)
+    renderOffers(props, store)
 
     await waitFor(() => {
       expect(api.listOfferersNames).toHaveBeenCalledTimes(1)
