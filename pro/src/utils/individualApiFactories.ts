@@ -3,6 +3,7 @@
 import { v4 as uuidv4 } from 'uuid'
 
 import {
+  GetOfferManagingOffererResponseModel,
   GetVenueResponseModel,
   PriceCategoryResponseModel,
   SubcategoryIdEnum,
@@ -19,7 +20,6 @@ import { CATEGORY_STATUS } from 'core/Offers/constants'
 import {
   OfferCategory,
   IndividualOffer,
-  IndividualOfferOfferer,
   IndividualOfferStock,
   IndividualOfferVenue,
   OfferSubCategory,
@@ -116,7 +116,7 @@ export const individualStockFactory = (
 
 export const individualOfferVenueFactory = (
   customVenue: Partial<IndividualOfferVenue> = {},
-  customOfferer: IndividualOfferOfferer = individualOfferOffererFactory()
+  customOfferer: GetOfferManagingOffererResponseModel = individualOfferOffererFactory()
 ): IndividualOfferVenue => {
   const currentVenueId = venueId++
 
@@ -219,8 +219,8 @@ export const individualOfferGetVenuesFactory = (
 }
 
 export const individualOfferOffererFactory = (
-  customOfferer: Partial<IndividualOfferOfferer> = {}
-): IndividualOfferOfferer => {
+  customOfferer: Partial<GetOfferManagingOffererResponseModel> = {}
+): GetOfferManagingOffererResponseModel => {
   const currentOffererId = offererId++
 
   return {

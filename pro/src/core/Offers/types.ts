@@ -4,6 +4,7 @@ import {
   OfferStatus,
   CollectiveOffersBookingResponseModel,
   PriceCategoryResponseModel,
+  GetOfferManagingOffererResponseModel,
 } from 'apiClient/v1'
 import { CropParams } from 'components/ImageUploader'
 import { CollectiveOfferStatus } from 'core/OfferEducational'
@@ -110,11 +111,6 @@ export interface IndividualOfferStock {
   activationCodes: string[]
 }
 
-export interface IndividualOfferOfferer {
-  name: string
-  id: number
-}
-
 export interface IndividualOfferVenue {
   id: number
   name: string
@@ -123,7 +119,7 @@ export interface IndividualOfferVenue {
   address: string
   postalCode: string
   city: string
-  offerer: IndividualOfferOfferer
+  offerer: GetOfferManagingOffererResponseModel
   departmentCode: string
   accessibility: AccessibiltyFormValues
 }
