@@ -117,7 +117,7 @@ describe('IndividualOffer section: Categories', () => {
     }
   })
 
-  it('should render the component', async () => {
+  it('should render the component', () => {
     renderCategories({
       initialValues,
       onSubmit,
