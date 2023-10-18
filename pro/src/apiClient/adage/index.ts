@@ -49,6 +49,7 @@ export type { StockIdBody } from './models/StockIdBody';
 export { StudentLevels } from './models/StudentLevels';
 export type { SubcategoryResponseModel } from './models/SubcategoryResponseModel';
 export { SuggestionType } from './models/SuggestionType';
+export type { TemplateDatesModel } from './models/TemplateDatesModel';
 export type { TrackingAutocompleteSuggestionBody } from './models/TrackingAutocompleteSuggestionBody';
 export type { TrackingFilterBody } from './models/TrackingFilterBody';
 export type { ValidationError } from './models/ValidationError';

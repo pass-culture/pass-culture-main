@@ -10,6 +10,7 @@ import type { OfferDomain } from './OfferDomain';
 import type { OfferStatus } from './OfferStatus';
 import type { StudentLevels } from './StudentLevels';
 import type { SubcategoryIdEnum } from './SubcategoryIdEnum';
+import type { TemplateDatesModel } from './TemplateDatesModel';
 
 export type GetCollectiveOfferTemplateResponseModel = {
   audioDisabilityCompliant?: boolean | null;
@@ -17,6 +18,7 @@ export type GetCollectiveOfferTemplateResponseModel = {
   contactEmail: string;
   contactPhone?: string | null;
   dateCreated: string;
+  dates?: TemplateDatesModel | null;
   description: string;
   domains: Array<OfferDomain>;
   durationMinutes?: number | null;

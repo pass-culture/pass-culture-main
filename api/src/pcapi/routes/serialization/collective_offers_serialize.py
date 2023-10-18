@@ -302,8 +302,17 @@ class GetCollectiveOfferBaseResponseModel(BaseModel, AccessibilityComplianceMixi
         use_enum_values = True
 
 
+class TemplateDatesModel(BaseModel):
+    start: datetime
+    end: datetime
+
+    class Config:
+        json_encoders = {datetime: format_into_utc_date}
+
+
 class GetCollectiveOfferTemplateResponseModel(GetCollectiveOfferBaseResponseModel):
     priceDetail: PriceDetail | None = Field(alias="educationalPriceDetail")
+    dates: TemplateDatesModel | None
 
     class Config:
         orm_mode = True
