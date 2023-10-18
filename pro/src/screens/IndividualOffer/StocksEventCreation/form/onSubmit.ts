@@ -18,7 +18,7 @@ import { RecurrenceFormValues, RecurrenceType } from './types'
 
 export const onSubmit = (
   values: RecurrenceFormValues,
-  departmentCode: string
+  departmentCode?: string | null
 ): StocksEvent[] => {
   const dates = getRecurrenceDates(values)
   return generateStocksForDates(values, dates, departmentCode)
@@ -133,7 +133,7 @@ const getRecurrenceDates = (values: RecurrenceFormValues): Date[] => {
 const generateStocksForDates = (
   values: RecurrenceFormValues,
   dates: Date[],
-  departmentCode: string
+  departmentCode?: string | null
 ): StocksEvent[] =>
   dates.flatMap((beginningDate) =>
     values.beginningTimes.flatMap((beginningTime) =>

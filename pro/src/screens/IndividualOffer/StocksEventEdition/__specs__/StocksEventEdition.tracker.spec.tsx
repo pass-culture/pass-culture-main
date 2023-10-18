@@ -15,11 +15,11 @@ import {
   IndividualOfferContextValues,
 } from 'context/IndividualOfferContext'
 import { IndividualOffer } from 'core/Offers/types'
+import { offerVenueFactory } from 'utils/apiFactories'
 import { FORMAT_ISO_DATE_ONLY } from 'utils/date'
 import {
   individualOfferContextFactory,
   individualOfferFactory,
-  individualOfferVenueFactory,
 } from 'utils/individualApiFactories'
 import { renderWithProviders } from 'utils/renderWithProviders'
 
@@ -80,8 +80,8 @@ describe('screens:StocksEventEdition', () => {
   beforeEach(() => {
     offer = individualOfferFactory({
       id: offerId,
-      venue: individualOfferVenueFactory({
-        departmentCode: '75',
+      venue: offerVenueFactory({
+        departementCode: '75',
       }),
       stocks: [],
       priceCategories: [

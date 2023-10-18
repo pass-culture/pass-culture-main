@@ -55,11 +55,7 @@ const OfferAppPreview = ({ offer }: OfferAppPreviewProps): JSX.Element => {
 
         {!venue.isVirtual && (
           <VenueDetails
-            name={venue.name}
-            publicName={venue.publicName}
-            address={venue.address}
-            postalCode={venue.postalCode}
-            city={venue.city}
+            venue={venue}
             withdrawalDetails={
               offer.withdrawalDetails
                 ? cropPreviewText(offer.withdrawalDetails)

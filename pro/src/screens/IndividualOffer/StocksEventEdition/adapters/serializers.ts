@@ -13,7 +13,7 @@ const serializeBookingLimitDatetime = (
   beginningDate: string,
   beginningTime: string,
   bookingLimitDatetime: string,
-  departementCode: string
+  departementCode?: string | null
 ) => {
   // If the bookingLimitDatetime is the same day as the start of the event
   // the bookingLimitDatetime should be set to beginningDate and beginningTime
@@ -56,7 +56,7 @@ export const buildDateTime = (date: string, time: string) => {
 export const serializeBeginningDateTime = (
   beginningDate: string,
   beginningTime: string,
-  departementCode: string
+  departementCode?: string | null
 ): string => {
   const beginningDateTimeInUserTimezone = buildDateTime(
     beginningDate,
@@ -73,7 +73,7 @@ export const serializeBeginningDateTime = (
 
 const serializeStockEvent = (
   formValues: StockEventFormValues,
-  departementCode: string
+  departementCode?: string | null
 ): StockCreationBodyModel | StockEditionBodyModel => {
   if (!isDateValid(formValues.beginningDate)) {
     throw Error("La date de début d'évenement est invalide")
@@ -117,7 +117,7 @@ const serializeStockEvent = (
 
 export const serializeStockEventEdition = (
   formValuesList: StockEventFormValues[],
-  departementCode: string
+  departementCode?: string | null
 ): StockCreationBodyModel[] | StockEditionBodyModel[] => {
   const today = getToday()
   return formValuesList

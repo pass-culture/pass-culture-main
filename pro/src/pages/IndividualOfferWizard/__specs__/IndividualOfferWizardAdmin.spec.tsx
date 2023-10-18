@@ -13,15 +13,15 @@ import { CATEGORY_STATUS, OFFER_WIZARD_MODE } from 'core/Offers/constants'
 import { getIndividualOfferPath } from 'core/Offers/utils/getIndividualOfferUrl'
 import {
   GetIndividualOfferFactory,
-  getOfferVenueFactory,
   offererFactory,
+  offerVenueFactory,
 } from 'utils/apiFactories'
 import { renderWithProviders } from 'utils/renderWithProviders'
 
 import IndividualOfferWizard from '../IndividualOfferWizard'
 
 const offerer = offererFactory({ id: 12 })
-const venue = getOfferVenueFactory(undefined, offerer)
+const venue = offerVenueFactory(undefined, offerer)
 const apiOffer: GetIndividualOfferResponseModel = GetIndividualOfferFactory(
   undefined,
   undefined,

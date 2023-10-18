@@ -12,7 +12,7 @@ type UpdateStocksAdapter = Adapter<
   {
     offerId: number
     values: StockThingFormValues
-    departementCode: string
+    departementCode?: string | null
   },
   SuccessPayload,
   FailurePayload

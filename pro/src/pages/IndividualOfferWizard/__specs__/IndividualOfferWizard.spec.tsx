@@ -22,15 +22,15 @@ import { getIndividualOfferPath } from 'core/Offers/utils/getIndividualOfferUrl'
 import { GET_DATA_ERROR_MESSAGE } from 'core/shared'
 import {
   GetIndividualOfferFactory,
-  getOfferVenueFactory,
   offererFactory,
+  offerVenueFactory,
 } from 'utils/apiFactories'
 import { renderWithProviders } from 'utils/renderWithProviders'
 
 import IndividualOfferWizard from '../IndividualOfferWizard'
 
 const offerer = offererFactory({ id: 12 })
-const venue = getOfferVenueFactory(undefined, offerer)
+const venue = offerVenueFactory(undefined, offerer)
 const apiOffer: GetIndividualOfferResponseModel = GetIndividualOfferFactory(
   undefined,
   undefined,

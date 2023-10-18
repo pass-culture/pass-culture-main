@@ -28,7 +28,7 @@ let bookingId = 1
 export const collectiveOfferFactory = (
   customCollectiveOffer = {},
   customStock = collectiveStockFactory() || null,
-  customVenue = getOfferVenueFactory()
+  customVenue = offerVenueFactory()
 ) => {
   const stocks = customStock === null ? [] : [customStock]
   const currentOfferId = offerId++
@@ -67,7 +67,7 @@ const collectiveStockFactory = (customStock = {}) => {
 export const GetIndividualOfferFactory = (
   customOffer = {},
   customStock = stockFactory() || null,
-  customVenue = getOfferVenueFactory()
+  customVenue = offerVenueFactory()
 ): GetIndividualOfferResponseModel => {
   const stocks = customStock === null ? [] : [customStock]
   const currentOfferId = offerId++
@@ -90,25 +90,6 @@ export const GetIndividualOfferFactory = (
     isNational: true,
     subcategoryId: SubcategoryIdEnum.SEANCE_CINE,
     ...customOffer,
-  }
-}
-
-export const getOfferVenueFactory = (
-  customVenue = {},
-  customOfferer = offererFactory()
-): GetOfferVenueResponseModel => {
-  const currentVenueId = venueId++
-  return {
-    address: 'Ma Rue',
-    city: 'Ma Ville',
-    id: currentVenueId,
-    isVirtual: false,
-    name: `Le nom du lieu ${currentVenueId}`,
-    managingOfferer: customOfferer,
-    postalCode: '11100',
-    publicName: 'Mon Lieu',
-    departementCode: '973',
-    ...customVenue,
   }
 }
 
@@ -135,10 +116,35 @@ export const offererFactory = (
   customOfferer = {}
 ): GetOfferManagingOffererResponseModel => {
   const currentOffererId = offererId++
+
   return {
-    name: `La nom de la structure ${currentOffererId}`,
     id: 3,
+    name: `Le nom de la structure ${currentOffererId}`,
     ...customOfferer,
+  }
+}
+
+export const offerVenueFactory = (
+  customVenue: Partial<GetOfferVenueResponseModel> = {},
+  customOfferer: GetOfferManagingOffererResponseModel = offererFactory()
+): GetOfferVenueResponseModel => {
+  const currentVenueId = venueId++
+
+  return {
+    id: currentVenueId,
+    address: 'Ma Rue',
+    city: 'Ma Ville',
+    isVirtual: false,
+    name: `Le nom du lieu ${currentVenueId}`,
+    postalCode: '11100',
+    publicName: 'Mon Lieu',
+    departementCode: '78',
+    visualDisabilityCompliant: true,
+    mentalDisabilityCompliant: true,
+    motorDisabilityCompliant: true,
+    audioDisabilityCompliant: true,
+    managingOfferer: customOfferer,
+    ...customVenue,
   }
 }
 

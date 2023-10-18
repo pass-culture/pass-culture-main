@@ -25,7 +25,7 @@ export const submitToApi = async (
     offerId: offer.id,
     stocks: serializeStockEventEdition(
       allStockValues,
-      offer.venue.departmentCode
+      offer.venue.departementCode
     ),
   })
   if (!isUpsertStocksOk) {
@@ -36,7 +36,7 @@ export const submitToApi = async (
   const priceCategoriesOptions = getPriceCategoryOptions(offer.priceCategories)
   const today = getLocalDepartementDateTimeFromUtc(
     getToday(),
-    offer.venue.departmentCode
+    offer.venue.departementCode
   )
 
   try {
@@ -50,7 +50,7 @@ export const submitToApi = async (
       setOffer && setOffer(updatedOffer)
       resetForm({
         values: buildInitialValues({
-          departmentCode: updatedOffer.venue.departmentCode,
+          departementCode: updatedOffer.venue.departementCode,
           offerStocks: updatedStocks,
           today,
           lastProviderName: updatedOffer.lastProviderName,

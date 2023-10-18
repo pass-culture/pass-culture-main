@@ -9,7 +9,7 @@ import {
   INTERVENTION_AREA_LABEL,
   PRICE_INFORMATION,
 } from 'screens/OfferEducational/constants/labels'
-import { offererFactory, getOfferVenueFactory } from 'utils/apiFactories'
+import { offerVenueFactory, offererFactory } from 'utils/apiFactories'
 
 import FormPracticalInformation, {
   FormPracticalInformationProps,
@@ -51,14 +51,14 @@ describe('FormPracticalInformation', () => {
         ...offererFactory({}),
         managedVenues: [
           {
-            ...getOfferVenueFactory({
+            ...offerVenueFactory({
               publicName: 'Venue1',
               name: 'Venue1',
             }),
             id: 1,
           },
           {
-            ...getOfferVenueFactory({
+            ...offerVenueFactory({
               publicName: 'Venue2',
               name: 'Venue2',
             }),

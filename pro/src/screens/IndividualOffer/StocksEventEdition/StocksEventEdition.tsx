@@ -262,11 +262,11 @@ const StocksEventEdition = ({
 
   const today = getLocalDepartementDateTimeFromUtc(
     getToday(),
-    offer.venue.departmentCode
+    offer.venue.departementCode
   )
 
   const initialValues = buildInitialValues({
-    departmentCode: offer.venue.departmentCode,
+    departementCode: offer.venue.departementCode,
     offerStocks: stocks,
     today,
     lastProviderName: offer.lastProviderName,
