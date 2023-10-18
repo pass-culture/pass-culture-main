@@ -27,13 +27,15 @@ export const baseStoreFactory = ({
   isAdmin: boolean
   featureList: string[]
 }> = {}): Partial<RootState> => {
-  const featuresList: FeatureResponseModel[] = featureList.map(featureName => ({
-    id: featureName,
-    isActive: true,
-    description: '',
-    name: featureName,
-    nameKey: featureName,
-  }))
+  const featuresList: FeatureResponseModel[] = featureList.map(
+    (featureName) => ({
+      id: featureName,
+      isActive: true,
+      description: '',
+      name: featureName,
+      nameKey: featureName,
+    })
+  )
 
   return {
     user: {
