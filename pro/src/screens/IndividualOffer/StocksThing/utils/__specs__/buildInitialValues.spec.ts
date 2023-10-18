@@ -1,4 +1,9 @@
-import { IndividualOffer, IndividualOfferStock } from 'core/Offers/types'
+import { IndividualOffer } from 'core/Offers/types'
+import { offerVenueFactory } from 'utils/apiFactories'
+import {
+  individualOfferFactory,
+  individualStockFactory,
+} from 'utils/individualApiFactories'
 
 import { STOCK_THING_FORM_DEFAULT_VALUES } from '../../constants'
 import buildInitialValues from '../buildInitialValues'
@@ -6,7 +11,9 @@ import buildInitialValues from '../buildInitialValues'
 describe('StockThingForm::utils::buildInitialValues', () => {
   let offer: IndividualOffer
   beforeEach(() => {
-    offer = { venue: { departementCode: '93' } } as IndividualOffer
+    offer = individualOfferFactory({
+      venue: offerVenueFactory({ departementCode: '93' }),
+    })
   })
 
   it('should return default values when offer have no stocks', () => {
@@ -17,15 +24,16 @@ describe('StockThingForm::utils::buildInitialValues', () => {
 
   it('should build form initial values from offer', () => {
     offer.stocks = [
-      {
+      individualStockFactory({
         id: 1,
         remainingQuantity: 10,
         bookingsQuantity: 20,
         quantity: 40,
         bookingLimitDatetime: '2001-06-05',
         price: 12,
-      } as IndividualOfferStock,
+      }),
     ]
+
     const initialValues = buildInitialValues(offer)
     expect(initialValues).toEqual({
       stockId: 1,
@@ -34,24 +42,27 @@ describe('StockThingForm::utils::buildInitialValues', () => {
       quantity: 40,
       bookingLimitDatetime: '2001-06-05',
       price: 12,
-      activationCodes: undefined,
+      activationCodes: [],
       activationCodesExpirationDatetime: '',
+      isDuo: true,
     })
   })
 
   it('should normalize null values', () => {
     offer.stocks = [
-      {
+      individualStockFactory({
         id: 1,
         bookingsQuantity: 20,
+        remainingQuantity: undefined,
         quantity: null,
         bookingLimitDatetime: null,
         price: 12,
-      } as IndividualOfferStock,
+      }),
     ]
+
     const initialValues = buildInitialValues(offer)
     expect(initialValues).toEqual({
-      activationCodes: undefined,
+      activationCodes: [],
       activationCodesExpirationDatetime: '',
       stockId: 1,
       remainingQuantity: 'unlimited',
@@ -59,6 +70,7 @@ describe('StockThingForm::utils::buildInitialValues', () => {
       quantity: null,
       bookingLimitDatetime: '',
       price: 12,
+      isDuo: true,
     })
   })
 })
