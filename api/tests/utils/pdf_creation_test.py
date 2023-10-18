@@ -55,7 +55,7 @@ class GeneratePdfFromHtmlTest:
         if out1 != out2:
             assert False, "Output PDF is not the same when the cache is used."
         # We have tried to check that the second run was quicker than
-        # the first run, but it often failed on CircleCI, even though
+        # the first run, but it often failed on CI, even though
         # debugging statements showed that the cache was used (and
         # thus that the second run should be faster).
 

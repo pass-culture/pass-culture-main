@@ -24,7 +24,6 @@ LICENSE
 
 # Misc
 .gitguardian.yaml
-.circleci
 .vscode
 .pylintrc
 .tyrion-config.json
