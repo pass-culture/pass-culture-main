@@ -2,10 +2,11 @@ import typing
 
 from flask import g
 from flask import request
-from flask_limiter import Limiter
+import flask_limiter
 from flask_limiter.util import get_remote_address
 
 from pcapi import settings
+from pcapi.models.feature import FeatureToggle
 
 
 def get_email_from_request() -> str:
@@ -34,6 +35,18 @@ def get_username_or_remote_address() -> str:
     if username:
         return username
     return get_remote_address()
+
+
+class Limiter(flask_limiter.Limiter):
+    """A custom class that can completely disable rate-limiting if a
+    feature flag is enabled.
+    """
+
+    # pylint: disable=unused-private-member
+    def __check_request_limit(self, in_middleware: bool = True) -> None:
+        if not settings.IS_RUNNING_TESTS and not FeatureToggle.WIP_ENABLE_RATE_LIMITING.is_active():
+            return None
+        return super().__check_request_limit(in_middleware=in_middleware)
 
 
 rate_limiter = Limiter(
