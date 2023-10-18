@@ -12,6 +12,7 @@ from pcapi.core.educational.factories import EducationalDomainFactory
 from pcapi.core.educational.models import CollectiveOfferTemplate
 import pcapi.core.offerers.factories as offerers_factories
 from pcapi.core.offers.models import OfferValidationStatus
+from pcapi.utils.date import format_into_utc_date
 
 
 pytestmark = pytest.mark.usefixtures("db_session")
@@ -104,6 +105,19 @@ class Returns200Test:
         assert updated_offer.dateRange
         assert updated_offer.start == template_start
         assert updated_offer.end == template_end
+
+    def test_with_tz_aware_dates(self, pro_client, offer, template_start, template_end):
+        payload = {
+            "dates": {
+                "start": format_into_utc_date(template_start),
+                "end": format_into_utc_date(template_end),
+            },
+        }
+
+        with patch(PATCH_CAN_CREATE_OFFER_PATH):
+            response = pro_client.patch(f"/collective/offers-template/{offer.id}", json=payload)
+
+        assert response.status_code == 200
 
 
 class Returns400Test:
