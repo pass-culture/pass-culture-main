@@ -15,7 +15,6 @@ import {
   IndividualOfferContext,
   IndividualOfferContextValues,
 } from 'context/IndividualOfferContext'
-import { REIMBURSEMENT_RULES } from 'core/Finances'
 import { CATEGORY_STATUS, OFFER_WIZARD_MODE } from 'core/Offers/constants'
 import { IndividualOffer } from 'core/Offers/types'
 import { getIndividualOfferPath } from 'core/Offers/utils/getIndividualOfferUrl'
@@ -166,57 +165,25 @@ describe('screens:IndividualOffer::Informations::creation', () => {
     })
 
     const categories = [
-      individualOfferCategoryFactory({
-        id: 'A',
-        proLabel: 'Catégorie A',
-        isSelectable: true,
-      }),
+      individualOfferCategoryFactory({ id: 'A' }),
       // we need two categories otherwise the first one is preselected and the form is dirty
-      individualOfferCategoryFactory({
-        id: 'B',
-        proLabel: 'Catégorie B',
-        isSelectable: true,
-      }),
+      individualOfferCategoryFactory({ id: 'B' }),
     ]
     const subCategories = [
       individualOfferSubCategoryFactory({
         id: 'virtual',
         categoryId: 'A',
-        proLabel: 'Sous catégorie online de A',
-        isEvent: false,
-        conditionalFields: [],
-        canBeDuo: false,
-        canBeEducational: false,
-        canBeWithdrawable: false,
         onlineOfflinePlatform: CATEGORY_STATUS.ONLINE,
-        reimbursementRule: REIMBURSEMENT_RULES.STANDARD,
-        isSelectable: true,
       }),
       individualOfferSubCategoryFactory({
         id: 'physical',
         categoryId: 'A',
-        proLabel: 'Sous catégorie offline de A',
-        isEvent: false,
-        conditionalFields: [],
-        canBeDuo: true,
-        canBeEducational: false,
-        canBeWithdrawable: false,
         onlineOfflinePlatform: CATEGORY_STATUS.OFFLINE,
-        reimbursementRule: REIMBURSEMENT_RULES.STANDARD,
-        isSelectable: true,
       }),
       individualOfferSubCategoryFactory({
         id: 'physicalB',
         categoryId: 'B',
-        proLabel: 'Sous catégorie offline de B',
-        isEvent: false,
-        conditionalFields: [],
-        canBeDuo: true,
-        canBeEducational: false,
-        canBeWithdrawable: false,
         onlineOfflinePlatform: CATEGORY_STATUS.OFFLINE,
-        reimbursementRule: REIMBURSEMENT_RULES.STANDARD,
-        isSelectable: true,
       }),
     ]
 
