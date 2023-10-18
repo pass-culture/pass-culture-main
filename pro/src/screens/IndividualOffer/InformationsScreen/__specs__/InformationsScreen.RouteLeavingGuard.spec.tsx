@@ -17,7 +17,7 @@ import {
 } from 'context/IndividualOfferContext'
 import { REIMBURSEMENT_RULES } from 'core/Finances'
 import { CATEGORY_STATUS, OFFER_WIZARD_MODE } from 'core/Offers/constants'
-import { IndividualOffer, OfferSubCategory } from 'core/Offers/types'
+import { IndividualOffer } from 'core/Offers/types'
 import { getIndividualOfferPath } from 'core/Offers/utils/getIndividualOfferUrl'
 import { AccessiblityEnum } from 'core/shared'
 import { IndividualOfferVenueItem } from 'core/Venue/types'
@@ -178,7 +178,7 @@ describe('screens:IndividualOffer::Informations::creation', () => {
         isSelectable: true,
       }),
     ]
-    const subCategories: OfferSubCategory[] = [
+    const subCategories = [
       individualOfferSubCategoryFactory({
         id: 'virtual',
         categoryId: 'A',

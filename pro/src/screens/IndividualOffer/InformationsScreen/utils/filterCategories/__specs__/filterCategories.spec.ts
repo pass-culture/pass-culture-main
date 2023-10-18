@@ -1,9 +1,8 @@
-import { CategoryResponseModel } from 'apiClient/v1'
+import { CategoryResponseModel, SubcategoryResponseModel } from 'apiClient/v1'
 import {
   CATEGORY_STATUS,
   INDIVIDUAL_OFFER_SUBTYPE,
 } from 'core/Offers/constants'
-import { OfferSubCategory } from 'core/Offers/types'
 import {
   individualOfferCategoryFactory,
   individualOfferSubCategoryFactory,
@@ -75,7 +74,7 @@ describe('getCategoryStatusFromOfferSubtype', () => {
 
 describe('filterCategories', () => {
   let categories: CategoryResponseModel[]
-  let subCategories: OfferSubCategory[]
+  let subCategories: SubcategoryResponseModel[]
 
   beforeEach(() => {
     categories = [
@@ -140,7 +139,9 @@ describe('filterCategories', () => {
       filteredCategories.find((category) => category.id === 'D')
     ).toBeUndefined()
     expect(
-      filteredSubCategories.find((c: OfferSubCategory) => c.id === 'C-D')
+      filteredSubCategories.find(
+        (c: SubcategoryResponseModel) => c.id === 'C-D'
+      )
     ).toBeUndefined()
   })
 
@@ -156,7 +157,9 @@ describe('filterCategories', () => {
       filteredCategories.find((category) => category.id === 'D')
     ).toBeUndefined()
     expect(
-      filteredSubCategories.find((c: OfferSubCategory) => c.id === 'C-D')
+      filteredSubCategories.find(
+        (c: SubcategoryResponseModel) => c.id === 'C-D'
+      )
     ).toBeUndefined()
   })
 

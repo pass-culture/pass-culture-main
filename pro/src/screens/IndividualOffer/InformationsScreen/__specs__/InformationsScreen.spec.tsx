@@ -8,7 +8,6 @@ import {
 } from 'context/IndividualOfferContext'
 import { REIMBURSEMENT_RULES } from 'core/Finances'
 import { CATEGORY_STATUS } from 'core/Offers/constants'
-import { OfferSubCategory } from 'core/Offers/types'
 import { IndividualOfferVenueItem } from 'core/Venue/types'
 import * as filterCategories from 'screens/IndividualOffer/InformationsScreen/utils/filterCategories/filterCategories'
 import {
@@ -79,7 +78,7 @@ describe('screens:IndividualOffer::Informations', () => {
         isSelectable: true,
       }),
     ]
-    const subCategories: OfferSubCategory[] = [
+    const subCategories = [
       individualOfferSubCategoryFactory({
         id: 'virtual',
         categoryId: 'A',

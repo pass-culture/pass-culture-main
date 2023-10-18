@@ -3,7 +3,7 @@ import { userEvent } from '@testing-library/user-event'
 import { Form, Formik } from 'formik'
 import React from 'react'
 
-import { CategoryResponseModel } from 'apiClient/v1'
+import { CategoryResponseModel, SubcategoryResponseModel } from 'apiClient/v1'
 import {
   IndividualOfferContextValues,
   IndividualOfferContext,
@@ -13,7 +13,7 @@ import {
   CATEGORY_STATUS,
   INDIVIDUAL_OFFER_SUBTYPE,
 } from 'core/Offers/constants'
-import { IndividualOffer, OfferSubCategory } from 'core/Offers/types'
+import { IndividualOffer } from 'core/Offers/types'
 import { IndividualOfferVenueItem } from 'core/Venue/types'
 import { SubmitButton } from 'ui-kit'
 import {
@@ -72,7 +72,7 @@ describe('IndividualOfferForm', () => {
   const onSubmit = vi.fn()
   let props: IndividualOfferFormProps
   let categories: CategoryResponseModel[] = []
-  let subCategories: OfferSubCategory[] = []
+  let subCategories: SubcategoryResponseModel[] = []
   let offererNames: OffererName[]
   let venueList: IndividualOfferVenueItem[]
   const offererId = 2

@@ -1,7 +1,7 @@
-import { OfferSubCategory } from 'core/Offers/types'
+import { SubcategoryResponseModel } from 'apiClient/v1'
 
 interface GetOfferConditionalFieldsProps {
-  offerSubCategory?: OfferSubCategory | null
+  offerSubCategory?: SubcategoryResponseModel | null
   isUserAdmin?: boolean | null
   receiveNotificationEmails?: boolean | null
   isVenueVirtual?: boolean | null

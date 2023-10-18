@@ -1,11 +1,10 @@
 import { api } from 'apiClient/api'
-import { CategoryResponseModel } from 'apiClient/v1'
-import { OfferSubCategory } from 'core/Offers/types'
+import { CategoryResponseModel, SubcategoryResponseModel } from 'apiClient/v1'
 import { GET_DATA_ERROR_MESSAGE } from 'core/shared'
 
 interface Payload {
   categories: CategoryResponseModel[]
-  subCategories: OfferSubCategory[]
+  subCategories: SubcategoryResponseModel[]
 }
 
 type GetCategoriesAdapter = Adapter<void, Payload, Payload>
