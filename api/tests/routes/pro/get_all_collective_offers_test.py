@@ -153,13 +153,15 @@ class Returns200Test:
             imageId="00000125999998",
             imageCredit="offer",
         )
+
         template = educational_factories.CollectiveOfferTemplateFactory(
             venue=venue,
-            dateCreated=datetime.datetime.utcnow() + datetime.timedelta(days=10),
+            dateCreated=datetime.datetime.utcnow(),
             offerId=2,
             imageId="00000125999999",
             imageCredit="template",
         )
+
         educational_factories.CollectiveStockFactory(collectiveOffer=offer, stockId=1)
 
         # When
@@ -251,7 +253,7 @@ class Returns200Test:
             venue=venue, dateCreated=datetime.datetime.utcnow(), offerId=1
         )
         educational_factories.CollectiveOfferTemplateFactory(
-            venue=venue, dateCreated=datetime.datetime.utcnow() + datetime.timedelta(days=10), offerId=2
+            venue=venue, dateCreated=datetime.datetime.utcnow(), offerId=2
         )
         educational_factories.CollectiveStockFactory(collectiveOffer=offer, stockId=1)
 
@@ -281,7 +283,7 @@ class Returns200Test:
             beginningDatetime=datetime.datetime(2022, 8, 10),
         )
         educational_factories.CollectiveOfferTemplateFactory(
-            venue=venue, dateCreated=datetime.datetime.utcnow() + datetime.timedelta(days=10), offerId=2
+            venue=venue, dateCreated=datetime.datetime.utcnow(), offerId=2
         )
         educational_factories.CollectiveStockFactory(
             collectiveOffer=offer,
@@ -334,7 +336,7 @@ class Returns200Test:
             venue=venue, dateCreated=datetime.datetime.utcnow(), offerId=1
         )
         template = educational_factories.CollectiveOfferTemplateFactory(
-            venue=venue, dateCreated=datetime.datetime.utcnow() + datetime.timedelta(days=10), offerId=2
+            venue=venue, dateCreated=datetime.datetime.utcnow(), offerId=2
         )
         educational_factories.CollectiveStockFactory(collectiveOffer=offer, stockId=1)
 

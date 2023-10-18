@@ -1,7 +1,4 @@
-from datetime import datetime
-
 from flask import url_for
-from freezegun.api import freeze_time
 import pytest
 
 from pcapi.core.educational import factories as educational_factories
@@ -9,13 +6,10 @@ from pcapi.core.educational.models import StudentLevels
 from pcapi.core.offerers import factories as offerers_factories
 from pcapi.core.testing import assert_num_queries
 from pcapi.models import offer_mixin
+from pcapi.utils.date import format_into_utc_date
 
 
 pytestmark = pytest.mark.usefixtures("db_session")
-
-stock_date = datetime(2021, 5, 15)
-educational_year_dates = {"start": datetime(2020, 9, 1), "end": datetime(2021, 8, 31)}
-
 
 EMAIL = "toto@mail.com"
 
@@ -30,7 +24,6 @@ def redactor_fixture():
     return educational_factories.EducationalRedactorFactory(email=EMAIL)
 
 
-@freeze_time("2020-11-17 15:00:00")
 class CollectiveOfferTemplateTest:
     def test_get_collective_offer_template(self, eac_client, redactor):
         venue = offerers_factories.VenueFactory()
@@ -100,6 +93,10 @@ class CollectiveOfferTemplateTest:
             "imageCredit": None,
             "nationalProgram": {"id": offer.nationalProgramId, "name": offer.nationalProgram.name},
             "isFavorite": False,
+            "dates": {
+                "start": format_into_utc_date(offer.start),
+                "end": format_into_utc_date(offer.end),
+            },
         }
 
     def test_is_a_redactors_favorite(self, eac_client):

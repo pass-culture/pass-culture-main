@@ -8,11 +8,13 @@ import type { NationalProgramModel } from './NationalProgramModel';
 import type { OfferDomain } from './OfferDomain';
 import type { OfferVenueResponse } from './OfferVenueResponse';
 import type { StudentLevels } from './StudentLevels';
+import type { TemplateDatesModel } from './TemplateDatesModel';
 
 export type CollectiveOfferTemplateResponseModel = {
   audioDisabilityCompliant?: boolean | null;
   contactEmail: string;
   contactPhone?: string | null;
+  dates?: TemplateDatesModel | null;
   description?: string | null;
   domains: Array<OfferDomain>;
   durationMinutes?: number | null;
