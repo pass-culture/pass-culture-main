@@ -11,8 +11,8 @@ on:
 
 concurrency:
   # cancel previous workflow of the same branch except on master
-  group: ${{ github.ref == 'refs/heads/master' && github.sha || github.ref }}
-  cancel-in-progress: true
+  group: ${{ github.ref }}
+  cancel-in-progress: ${{ github.ref == 'refs/heads/master' && false || true }}
 
 jobs:
   check-api-folder-changes:
