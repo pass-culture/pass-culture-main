@@ -87,7 +87,7 @@ const LegalInfos = ({ title, className }: LegalInfoProps): JSX.Element => {
       >
         <SvgIcon
           src={fullMailIcon}
-          alt="Mail à support-pro@passculture.app"
+          alt=""
           className={styles['icon-legal-infos']}
           width="22"
         />
