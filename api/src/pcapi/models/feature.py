@@ -123,6 +123,7 @@ class FeatureToggle(enum.Enum):
     WIP_BACKOFFICE_ENABLE_REDIRECT_SINGLE_RESULT = (
         "Backoffice : Afficher directement les détails lorsque la recherche ne renvoie qu'un seul résultat"
     )
+    WIP_ENABLE_RATE_LIMITING = "Active le rate limiting"
     WIP_ENABLE_SEARCH_HISTORY_ADAGE = "Activer la possibilité de voir l'historique des recherches sur adage"
     WIP_ENABLE_MOCK_UBBLE = "Utiliser le mock Ubble à la place du vrai Ubble"
     WIP_PRO_STOCK_PAGINATION = "Active la pagination pour les stocks"
