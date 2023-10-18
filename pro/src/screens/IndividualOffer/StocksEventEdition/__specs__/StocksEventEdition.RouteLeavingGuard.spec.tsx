@@ -18,10 +18,10 @@ import { OFFER_WIZARD_MODE } from 'core/Offers/constants'
 import { IndividualOffer } from 'core/Offers/types'
 import { getIndividualOfferPath } from 'core/Offers/utils/getIndividualOfferUrl'
 import { ButtonLink } from 'ui-kit'
+import { offerVenueFactory } from 'utils/apiFactories'
 import {
   individualOfferContextFactory,
   individualOfferFactory,
-  individualOfferVenueFactory,
   priceCategoryFactory,
 } from 'utils/individualApiFactories'
 import { renderWithProviders } from 'utils/renderWithProviders'
@@ -117,8 +117,8 @@ describe('screens:StocksEventEdition', () => {
   beforeEach(() => {
     offer = individualOfferFactory({
       id: offerId,
-      venue: individualOfferVenueFactory({
-        departmentCode: '75',
+      venue: offerVenueFactory({
+        departementCode: '75',
       }),
       stocks: [],
       priceCategories: [

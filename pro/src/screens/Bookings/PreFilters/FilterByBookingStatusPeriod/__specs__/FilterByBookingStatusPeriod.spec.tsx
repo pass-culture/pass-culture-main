@@ -3,7 +3,7 @@ import { userEvent } from '@testing-library/user-event'
 import React from 'react'
 
 import { DEFAULT_PRE_FILTERS } from 'core/Bookings/constants'
-import { getOfferVenueFactory } from 'utils/apiFactories'
+import { offerVenueFactory } from 'utils/apiFactories'
 import { renderWithProviders } from 'utils/renderWithProviders'
 
 import PreFilters, { PreFiltersProps } from '../../PreFilters'
@@ -30,7 +30,7 @@ describe('filter bookings by bookings period', () => {
     props = {
       appliedPreFilters: { ...DEFAULT_PRE_FILTERS },
       applyPreFilters: vi.fn(),
-      venues: [getOfferVenueFactory()].map(({ id, name }) => ({
+      venues: [offerVenueFactory()].map(({ id, name }) => ({
         id: id.toString(),
         displayName: name,
       })),

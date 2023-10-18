@@ -4,7 +4,7 @@ import {
   OfferStatus,
   CollectiveOffersBookingResponseModel,
   PriceCategoryResponseModel,
-  GetOfferManagingOffererResponseModel,
+  GetOfferVenueResponseModel,
 } from 'apiClient/v1'
 import { CropParams } from 'components/ImageUploader'
 import { CollectiveOfferStatus } from 'core/OfferEducational'
@@ -111,19 +111,6 @@ export interface IndividualOfferStock {
   activationCodes: string[]
 }
 
-export interface IndividualOfferVenue {
-  id: number
-  name: string
-  publicName: string
-  isVirtual: boolean
-  address: string
-  postalCode: string
-  city: string
-  offerer: GetOfferManagingOffererResponseModel
-  departmentCode: string
-  accessibility: AccessibiltyFormValues
-}
-
 // TODO: this should be generated in openapi schema
 export interface OfferExtraData {
   author?: string
@@ -184,7 +171,7 @@ export interface IndividualOffer {
   url: string
   externalTicketOfficeUrl: string
   venueId: number
-  venue: IndividualOfferVenue
+  venue: GetOfferVenueResponseModel
   visa: string
   withdrawalDetails: string | null
   withdrawalDelay?: number | null

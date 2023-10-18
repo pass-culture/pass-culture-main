@@ -3,7 +3,7 @@
 import { v4 as uuidv4 } from 'uuid'
 
 import {
-  GetOfferManagingOffererResponseModel,
+  GetOfferVenueResponseModel,
   GetVenueResponseModel,
   PriceCategoryResponseModel,
   SubcategoryIdEnum,
@@ -21,15 +21,15 @@ import {
   OfferCategory,
   IndividualOffer,
   IndividualOfferStock,
-  IndividualOfferVenue,
   OfferSubCategory,
 } from 'core/Offers/types'
 import { IndividualOfferVenueItem } from 'core/Venue/types'
 
+import { offerVenueFactory } from './apiFactories'
+
 let offerId = 1
 let stockId = 1
 let venueId = 1
-let offererId = 1
 let priceCategoryId = 1
 let offerCategoryId = 1
 let offerSubCategoryId = 1
@@ -37,7 +37,7 @@ let offerSubCategoryId = 1
 export const individualOfferFactory = (
   customOffer: Partial<IndividualOffer> = {},
   customStock: IndividualOfferStock = individualStockFactory() || null,
-  customVenue: IndividualOfferVenue = individualOfferVenueFactory(),
+  customVenue: GetOfferVenueResponseModel = offerVenueFactory(),
   customPriceCatgory: PriceCategoryResponseModel = priceCategoryFactory() ||
     null
 ): IndividualOffer => {
@@ -54,7 +54,7 @@ export const individualOfferFactory = (
     musicType: 'douleur',
     musicSubType: 'cassage de genoux',
     durationMinutes: 3,
-    offererId: customVenue.offerer.id,
+    offererId: customVenue.managingOfferer.id,
     offererName: 'Chuck Norris',
     performer: 'Le Poing de Chuck',
     ean: "Chuck n'est pas identifiable par un EAN",
@@ -111,33 +111,6 @@ export const individualStockFactory = (
     activationCodesExpirationDatetime: null,
     activationCodes: [],
     ...customStock,
-  }
-}
-
-export const individualOfferVenueFactory = (
-  customVenue: Partial<IndividualOfferVenue> = {},
-  customOfferer: GetOfferManagingOffererResponseModel = individualOfferOffererFactory()
-): IndividualOfferVenue => {
-  const currentVenueId = venueId++
-
-  return {
-    id: currentVenueId,
-    address: 'Ma Rue',
-    city: 'Ma Ville',
-    isVirtual: false,
-    name: `Le nom du lieu ${currentVenueId}`,
-    postalCode: '11100',
-    publicName: 'Mon Lieu',
-    departmentCode: '78',
-    accessibility: {
-      visual: true,
-      mental: true,
-      motor: true,
-      audio: true,
-      none: false,
-    },
-    offerer: customOfferer,
-    ...customVenue,
   }
 }
 
@@ -215,18 +188,6 @@ export const individualOfferGetVenuesFactory = (
     managingOffererId: 1,
     offererName: 'la structure de Michel',
     ...customVenue,
-  }
-}
-
-export const individualOfferOffererFactory = (
-  customOfferer: Partial<GetOfferManagingOffererResponseModel> = {}
-): GetOfferManagingOffererResponseModel => {
-  const currentOffererId = offererId++
-
-  return {
-    id: currentOffererId,
-    name: `Le nom de la structure ${currentOffererId}`,
-    ...customOfferer,
   }
 }
 

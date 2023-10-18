@@ -81,14 +81,7 @@ export function IndividualOfferContextProvider({
 
   const setOffer = (offer: IndividualOffer | null) => {
     setOfferState(offer)
-    setOfferOfferer(
-      offer
-        ? {
-            id: offer.venue.offerer.id,
-            name: offer.venue.offerer.name,
-          }
-        : null
-    )
+    setOfferOfferer(offer ? offer.venue.managingOfferer : null)
   }
 
   useEffect(() => {

@@ -28,7 +28,7 @@ const IndividualOfferConfirmationScreen = ({
 }: IndividualOfferConfirmationScreenProps): JSX.Element => {
   const { logEvent } = useAnalytics()
   const isPendingOffer = offer.status === OFFER_STATUS_PENDING
-  const queryString = `?structure=${offer.venue.offerer.id}&lieu=${offer.venueId}`
+  const queryString = `?structure=${offer.venue.managingOfferer.id}&lieu=${offer.venueId}`
   const title = isPendingOffer
     ? 'Offre en cours de validation'
     : 'Offre publiée !'

@@ -1,27 +1,26 @@
 import cn from 'classnames'
 import React from 'react'
 
+import { GetOfferVenueResponseModel } from 'apiClient/v1'
+
 import style from './VenueDetails.module.scss'
 
 interface VenueDetailsProps {
-  name: string
-  publicName?: string
-  address: string
-  postalCode: string
-  city: string
+  venue: GetOfferVenueResponseModel
   withdrawalDetails?: string
 }
 
 const VenueDetails = ({
-  name,
-  publicName,
-  address,
-  postalCode,
-  city,
+  venue,
   withdrawalDetails,
 }: VenueDetailsProps): JSX.Element => {
-  const venueName = publicName || name
-  const venueAddressString = [venueName, address, postalCode, city]
+  const venueName = venue.publicName || venue.name
+  const venueAddressString = [
+    venueName,
+    venue.address,
+    venue.postalCode,
+    venue.city,
+  ]
     .filter((str) => Boolean(str))
     .join(' - ')
 

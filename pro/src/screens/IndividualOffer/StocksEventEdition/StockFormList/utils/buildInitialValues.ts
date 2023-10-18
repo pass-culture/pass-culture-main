@@ -10,7 +10,7 @@ import { StockEventFormValues } from '../types'
 import { setFormReadOnlyFields } from '../utils'
 
 interface BuildInitialValuesCommonArgs {
-  departmentCode: string
+  departementCode?: string | null
   today: Date
   lastProviderName: string | null
   offerStatus: OfferStatus
@@ -22,7 +22,7 @@ interface BuildSingleInitialValuesArgs extends BuildInitialValuesCommonArgs {
 }
 
 const buildSingleInitialValues = ({
-  departmentCode,
+  departementCode,
   stock,
   today,
   lastProviderName,
@@ -55,7 +55,7 @@ const buildSingleInitialValues = ({
       ? format(
           getLocalDepartementDateTimeFromUtc(
             stock.beginningDatetime,
-            departmentCode
+            departementCode
           ),
           FORMAT_ISO_DATE_ONLY
         )
@@ -64,7 +64,7 @@ const buildSingleInitialValues = ({
       ? format(
           getLocalDepartementDateTimeFromUtc(
             stock.beginningDatetime,
-            departmentCode
+            departementCode
           ),
           FORMAT_HH_mm
         )
@@ -73,7 +73,7 @@ const buildSingleInitialValues = ({
       ? format(
           getLocalDepartementDateTimeFromUtc(
             stock.bookingLimitDatetime,
-            departmentCode
+            departementCode
           ),
           FORMAT_ISO_DATE_ONLY
         )
@@ -89,7 +89,7 @@ interface BuildInitialValuesArgs extends BuildInitialValuesCommonArgs {
 }
 
 export const buildInitialValues = ({
-  departmentCode,
+  departementCode,
   offerStocks,
   today,
   lastProviderName,
@@ -114,7 +114,7 @@ export const buildInitialValues = ({
     stocks: offerStocks
       .map((stock) =>
         buildSingleInitialValues({
-          departmentCode,
+          departementCode,
           stock,
           today,
           lastProviderName,

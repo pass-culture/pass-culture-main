@@ -7,7 +7,6 @@ import { UserRole } from 'apiClient/v1'
 import { DEFAULT_SEARCH_FILTERS } from 'core/Offers/constants'
 import { Audience } from 'core/shared'
 import { offererFactory } from 'utils/apiFactories'
-import { individualOfferOffererFactory } from 'utils/individualApiFactories'
 import { renderWithProviders } from 'utils/renderWithProviders'
 
 import Offers, { OffersProps } from '../Offers'
@@ -45,7 +44,7 @@ describe('tracker screen Offers', () => {
       categories: [],
     }
 
-    const individualOffererNames = individualOfferOffererFactory()
+    const individualOffererNames = offererFactory()
     vi.spyOn(api, 'listOfferersNames').mockResolvedValue({
       offerersNames: [individualOffererNames],
     })

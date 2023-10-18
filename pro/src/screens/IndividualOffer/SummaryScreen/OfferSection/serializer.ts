@@ -92,9 +92,9 @@ export const serializeOfferSectionData = (
 
     venueName: offer.venue.name,
     venuePublicName: offer.venue.publicName,
-    venueDepartmentCode: offer.venue.departmentCode,
+    venueDepartmentCode: offer.venue.departementCode,
     isVenueVirtual: offer.venue.isVirtual,
-    offererName: offer.venue.offerer.name,
+    offererName: offer.venue.managingOfferer.name,
     bookingEmail: offer.bookingEmail,
     bookingContact: offer.bookingContact,
     withdrawalDetails: offer.withdrawalDetails || '',

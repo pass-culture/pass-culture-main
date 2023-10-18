@@ -12,7 +12,7 @@ import { StockThingFormValues } from '../types'
 
 export const serializeThingBookingLimitDatetime = (
   bookingLimitDatetime: Date,
-  departementCode: string
+  departementCode?: string | null
 ) => {
   const endOfBookingLimitDayUtcDatetime = getUtcDateTimeFromLocalDepartement(
     endOfDay(bookingLimitDatetime),
@@ -23,7 +23,7 @@ export const serializeThingBookingLimitDatetime = (
 
 export const serializeStockThingList = (
   formValues: StockThingFormValues,
-  departementCode: string
+  departementCode?: string | null
 ): StockCreationBodyModel[] | StockEditionBodyModel[] => {
   const [
     yearBookingLimitDatetime,

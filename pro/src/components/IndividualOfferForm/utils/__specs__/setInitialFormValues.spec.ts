@@ -1,10 +1,10 @@
 import { WithdrawalTypeEnum } from 'apiClient/v1'
 import { IndividualOffer, OfferSubCategory } from 'core/Offers/types'
 import { AccessiblityEnum } from 'core/shared'
+import { offerVenueFactory } from 'utils/apiFactories'
 import {
   individualOfferFactory,
   individualOfferSubCategoryFactory,
-  individualOfferVenueFactory,
 } from 'utils/individualApiFactories'
 
 import setInitialFormValues from '../setInitialFormValues'
@@ -55,7 +55,7 @@ describe('setFormReadOnlyFields', () => {
         withdrawalType: WithdrawalTypeEnum.ON_SITE,
       },
       undefined,
-      individualOfferVenueFactory({
+      offerVenueFactory({
         id: venueId,
       })
     )
