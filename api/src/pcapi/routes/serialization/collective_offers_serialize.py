@@ -1,6 +1,5 @@
 from datetime import date
 from datetime import datetime
-from datetime import timedelta
 import enum
 import typing
 
@@ -28,6 +27,7 @@ from pcapi.routes.serialization import BaseModel
 from pcapi.routes.serialization import base as base_serializers
 from pcapi.routes.serialization.educational_institutions import EducationalInstitutionResponseModel
 from pcapi.routes.serialization.national_programs import NationalProgramModel
+from pcapi.serialization import utils
 from pcapi.serialization.utils import to_camel
 from pcapi.utils.date import format_into_utc_date
 from pcapi.utils.image_conversion import CropParams
@@ -400,8 +400,16 @@ class DateRangeModel(BaseModel):
     start: datetime
     end: datetime
 
+    @validator("start")
+    def validate_start(cls, start: datetime) -> datetime:
+        return utils.without_timezone(start)
+
+    @validator("end")
+    def validate_end(cls, end: datetime) -> datetime:
+        return utils.without_timezone(end)
+
     @root_validator(skip_on_failure=True)
-    def validate_end(cls, values: dict) -> dict:
+    def validate_end_before_start(cls, values: dict) -> dict:
         if values["start"] > values["end"]:
             raise ValueError("end before start")
 
@@ -411,9 +419,9 @@ class DateRangeModel(BaseModel):
 class DateRangeOnCreateModel(DateRangeModel):
     @validator("start")
     def validate_start(cls, start: datetime) -> datetime:
-        # five minutes otherwise we might always raise an error
-        # because of a couple of (milli)seconds.
-        if start < (datetime.utcnow() - timedelta(minutes=5)):
+        start = super().validate_start(start)
+
+        if start.date() < date.today():
             raise ValueError("start date can't be passed")
         return start
 

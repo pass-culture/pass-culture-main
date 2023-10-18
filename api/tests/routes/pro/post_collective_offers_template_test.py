@@ -9,6 +9,7 @@ import pcapi.core.educational.exceptions as educational_exceptions
 import pcapi.core.educational.factories as educational_factories
 from pcapi.core.educational.models import CollectiveOfferTemplate
 import pcapi.core.offerers.factories as offerers_factories
+from pcapi.utils.date import format_into_utc_date
 
 
 pytestmark = pytest.mark.usefixtures("db_session")
@@ -139,6 +140,20 @@ class Returns200Test:
             **payload,
             "offerVenue": {"addressType": "offererVenue", "otherAddress": "", "venueId": venue.id},
             "interventionArea": [],
+        }
+
+        with patch(PATCH_CAN_CREATE_OFFER_PATH):
+            response = pro_client.post("/collective/offers-template", json=data)
+
+        assert response.status_code == 201
+
+    def test_with_tz_aware_dates(self, pro_client, payload, template_start, template_end):
+        data = {
+            **payload,
+            "dates": {
+                "start": format_into_utc_date(template_start),
+                "end": format_into_utc_date(template_end),
+            },
         }
 
         with patch(PATCH_CAN_CREATE_OFFER_PATH):
