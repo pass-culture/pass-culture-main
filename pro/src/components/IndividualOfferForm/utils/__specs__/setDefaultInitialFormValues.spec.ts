@@ -2,11 +2,12 @@ import {
   FORM_DEFAULT_VALUES,
   IndividualOfferFormValues,
 } from 'components/IndividualOfferForm'
-import { REIMBURSEMENT_RULES } from 'core/Finances'
 import { OffererName } from 'core/Offerers/types'
-import { CATEGORY_STATUS } from 'core/Offers/constants'
 import { IndividualOfferVenueItem } from 'core/Venue/types'
-import { individualOfferVenueItemFactory } from 'utils/individualApiFactories'
+import {
+  individualOfferSubCategoryFactory,
+  individualOfferVenueItemFactory,
+} from 'utils/individualApiFactories'
 
 import setDefaultInitialFormValues from '../setDefaultInitialFormValues'
 
@@ -120,19 +121,9 @@ describe('setDefaultInitialFormValues', () => {
   })
 
   it('should return initial values with subcategory', () => {
-    const subcategory = {
-      id: 'subcategoryId',
-      categoryId: 'categoryId',
-      proLabel: 'Sous catégorie',
-      isEvent: false,
-      conditionalFields: ['lapin', 'moustache'],
+    const subcategory = individualOfferSubCategoryFactory({
       canBeDuo: true,
-      canBeEducational: false,
-      canBeWithdrawable: false,
-      onlineOfflinePlatform: CATEGORY_STATUS.OFFLINE,
-      reimbursementRule: REIMBURSEMENT_RULES.STANDARD,
-      isSelectable: true,
-    }
+    })
 
     const initialValues = setDefaultInitialFormValues(
       offererNames,
@@ -152,19 +143,10 @@ describe('setDefaultInitialFormValues', () => {
   })
 
   it('should return subCategoryFields for subcategory who can be withrawable', () => {
-    const subcategory = {
-      id: 'subcategoryId',
-      categoryId: 'categoryId',
-      proLabel: 'Sous catégorie',
-      isEvent: false,
-      conditionalFields: ['lapin', 'moustache'],
+    const subcategory = individualOfferSubCategoryFactory({
       canBeDuo: true,
-      canBeEducational: false,
       canBeWithdrawable: true,
-      onlineOfflinePlatform: CATEGORY_STATUS.OFFLINE,
-      reimbursementRule: REIMBURSEMENT_RULES.STANDARD,
-      isSelectable: true,
-    }
+    })
 
     const initialValues = setDefaultInitialFormValues(
       offererNames,

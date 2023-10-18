@@ -13,14 +13,15 @@ import {
   IndividualOfferContext,
   IndividualOfferContextValues,
 } from 'context/IndividualOfferContext'
-import { REIMBURSEMENT_RULES } from 'core/Finances'
 import { CATEGORY_STATUS, OFFER_WIZARD_MODE } from 'core/Offers/constants'
 import { OfferSubCategory } from 'core/Offers/types'
 import { getIndividualOfferPath } from 'core/Offers/utils/getIndividualOfferUrl'
 import { IndividualOfferVenueItem } from 'core/Venue/types'
 import * as pcapi from 'repository/pcapi/pcapi'
 import {
+  individualOfferCategoryFactory,
   individualOfferContextFactory,
+  individualOfferSubCategoryFactory,
   individualOfferVenueItemFactory,
 } from 'utils/individualApiFactories'
 import { renderWithProviders } from 'utils/renderWithProviders'
@@ -104,40 +105,22 @@ describe('screens:IndividualOffer::Informations::creation', () => {
 
   beforeEach(() => {
     Element.prototype.scrollIntoView = scrollIntoViewMock
-    const categories = [
-      {
-        id: 'A',
-        proLabel: 'Catégorie A',
-        isSelectable: true,
-      },
-    ]
+    const categories = [individualOfferCategoryFactory({ id: 'A' })]
     const subCategories: OfferSubCategory[] = [
-      {
+      individualOfferSubCategoryFactory({
         id: 'virtual',
         categoryId: 'A',
-        proLabel: 'Sous catégorie online de A',
         isEvent: false,
-        conditionalFields: [],
-        canBeDuo: false,
-        canBeEducational: false,
-        canBeWithdrawable: false,
         onlineOfflinePlatform: CATEGORY_STATUS.ONLINE,
-        reimbursementRule: REIMBURSEMENT_RULES.STANDARD,
         isSelectable: true,
-      },
-      {
+      }),
+      individualOfferSubCategoryFactory({
         id: 'physical',
         categoryId: 'A',
-        proLabel: 'Sous catégorie offline de A',
         isEvent: false,
-        conditionalFields: [],
         canBeDuo: true,
-        canBeEducational: false,
-        canBeWithdrawable: false,
         onlineOfflinePlatform: CATEGORY_STATUS.OFFLINE,
-        reimbursementRule: REIMBURSEMENT_RULES.STANDARD,
-        isSelectable: true,
-      },
+      }),
     ]
 
     const venue1: IndividualOfferVenueItem = individualOfferVenueItemFactory({

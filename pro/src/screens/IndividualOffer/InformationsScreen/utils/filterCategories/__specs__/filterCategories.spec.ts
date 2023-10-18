@@ -1,10 +1,13 @@
 import { CategoryResponseModel } from 'apiClient/v1'
-import { REIMBURSEMENT_RULES } from 'core/Finances'
 import {
   CATEGORY_STATUS,
   INDIVIDUAL_OFFER_SUBTYPE,
 } from 'core/Offers/constants'
 import { OfferSubCategory } from 'core/Offers/types'
+import {
+  individualOfferCategoryFactory,
+  individualOfferSubCategoryFactory,
+} from 'utils/individualApiFactories'
 
 import {
   getOfferSubtypeFromParam,
@@ -76,119 +79,52 @@ describe('filterCategories', () => {
 
   beforeEach(() => {
     categories = [
-      {
-        id: 'A',
-        proLabel: 'Catégorie uniquement online',
-        isSelectable: true,
-      },
-      {
-        id: 'B',
-        proLabel: 'Catégorie uniquement offline',
-        isSelectable: true,
-      },
-      {
-        id: 'C',
-        proLabel: 'Catégorie mixe online et offline',
-        isSelectable: true,
-      },
-      {
-        id: 'D',
-        proLabel: 'Catégorie no disponible',
-        isSelectable: false,
-      },
+      individualOfferCategoryFactory({ id: 'A' }),
+      individualOfferCategoryFactory({ id: 'B' }),
+      individualOfferCategoryFactory({ id: 'C' }),
+      individualOfferCategoryFactory({ id: 'D' }),
     ]
     subCategories = [
-      {
+      individualOfferSubCategoryFactory({
         id: 'A-A',
         categoryId: 'A',
-        proLabel: 'Sous catégorie de A',
         isEvent: true,
-        conditionalFields: [],
-        canBeDuo: false,
-        canBeEducational: true,
-        onlineOfflinePlatform: CATEGORY_STATUS.ONLINE,
-        reimbursementRule: REIMBURSEMENT_RULES.STANDARD,
-        canBeWithdrawable: false,
-        isSelectable: true,
-      },
-      {
+      }),
+      individualOfferSubCategoryFactory({
         id: 'A-B',
         categoryId: 'A',
-        proLabel: 'Sous catégorie de A non disponible',
         isEvent: false,
-        conditionalFields: [],
-        canBeDuo: false,
-        canBeEducational: true,
-        canBeWithdrawable: false,
-        onlineOfflinePlatform: CATEGORY_STATUS.ONLINE,
-        reimbursementRule: REIMBURSEMENT_RULES.STANDARD,
         isSelectable: false,
-      },
-      {
+      }),
+      individualOfferSubCategoryFactory({
         id: 'B-A',
         categoryId: 'B',
-        proLabel: 'Sous catégorie de B',
         isEvent: false,
-        conditionalFields: [],
-        canBeDuo: false,
-        canBeEducational: true,
-        canBeWithdrawable: false,
         onlineOfflinePlatform: CATEGORY_STATUS.OFFLINE,
-        reimbursementRule: REIMBURSEMENT_RULES.STANDARD,
-        isSelectable: true,
-      },
-      {
+      }),
+      individualOfferSubCategoryFactory({
         id: 'C-A',
         categoryId: 'C',
-        proLabel: 'Sous catégorie de C',
         isEvent: true,
-        conditionalFields: [],
-        canBeDuo: false,
-        canBeEducational: true,
-        canBeWithdrawable: false,
         onlineOfflinePlatform: CATEGORY_STATUS.ONLINE_OR_OFFLINE,
-        reimbursementRule: REIMBURSEMENT_RULES.STANDARD,
-        isSelectable: true,
-      },
-      {
+      }),
+      individualOfferSubCategoryFactory({
         id: 'C-B',
         categoryId: 'C',
-        proLabel: 'Sous catégorie de C',
         isEvent: true,
-        conditionalFields: [],
-        canBeDuo: false,
-        canBeEducational: true,
-        canBeWithdrawable: false,
-        onlineOfflinePlatform: CATEGORY_STATUS.ONLINE,
-        reimbursementRule: REIMBURSEMENT_RULES.STANDARD,
-        isSelectable: true,
-      },
-      {
+      }),
+      individualOfferSubCategoryFactory({
         id: 'C-C',
         categoryId: 'C',
-        proLabel: 'Sous catégorie de C',
         isEvent: true,
-        conditionalFields: [],
-        canBeDuo: false,
-        canBeEducational: true,
-        canBeWithdrawable: false,
         onlineOfflinePlatform: CATEGORY_STATUS.OFFLINE,
-        reimbursementRule: REIMBURSEMENT_RULES.STANDARD,
-        isSelectable: true,
-      },
-      {
+      }),
+      individualOfferSubCategoryFactory({
         id: 'C-D',
         categoryId: 'C',
-        proLabel: 'Sous catégorie de C',
         isEvent: true,
-        conditionalFields: [],
-        canBeDuo: false,
-        canBeEducational: true,
-        canBeWithdrawable: false,
-        onlineOfflinePlatform: CATEGORY_STATUS.OFFLINE,
-        reimbursementRule: REIMBURSEMENT_RULES.STANDARD,
         isSelectable: false,
-      },
+      }),
     ]
   })
 

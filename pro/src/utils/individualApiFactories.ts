@@ -18,11 +18,7 @@ import { StocksEvent } from 'components/StocksEventList/StocksEventList'
 import { IndividualOfferContextValues } from 'context/IndividualOfferContext'
 import { REIMBURSEMENT_RULES } from 'core/Finances'
 import { CATEGORY_STATUS } from 'core/Offers/constants'
-import {
-  IndividualOffer,
-  IndividualOfferStock,
-  OfferSubCategory,
-} from 'core/Offers/types'
+import { IndividualOffer, IndividualOfferStock } from 'core/Offers/types'
 import { IndividualOfferVenueItem } from 'core/Venue/types'
 
 import { offerVenueFactory } from './apiFactories'
@@ -210,10 +206,11 @@ export const individualOfferCategoryFactory = (
 })
 
 export const individualOfferSubCategoryFactory = (
-  customOfferSubCategory: Partial<OfferSubCategory> = {}
-): OfferSubCategory => ({
+  customOfferSubCategory: Partial<SubcategoryResponseModel> = {}
+): SubcategoryResponseModel => ({
   id: String(offerSubCategoryId++),
   categoryId: 'A',
+  appLabel: `sous catégorie ${offerSubCategoryId}`,
   proLabel: `sous catégorie ${offerSubCategoryId}`,
   isEvent: false,
   conditionalFields: [],
@@ -223,6 +220,9 @@ export const individualOfferSubCategoryFactory = (
   onlineOfflinePlatform: CATEGORY_STATUS.ONLINE,
   reimbursementRule: REIMBURSEMENT_RULES.STANDARD,
   isSelectable: true,
+  canExpire: true,
+  isDigitalDeposit: false,
+  isPhysicalDeposit: true,
   ...customOfferSubCategory,
 })
 
