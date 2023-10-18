@@ -486,7 +486,7 @@ class PostCollectiveOfferBodyModel(BaseModel):
             if is_from_template:
                 values["booking_emails"] = [values["contact_email"]]
             else:
-                raise ValueError("Un email doit etre renseigné")
+                raise ValueError("Un email doit être renseigné")
         return values
 
     class Config:
@@ -575,7 +575,7 @@ class PatchCollectiveOfferBodyModel(BaseModel, AccessibilityComplianceMixin):
     @validator("bookingEmails")
     def validate_booking_emails(cls, booking_emails: list[str]) -> list[str]:
         if not booking_emails:
-            raise ValueError("Un email doit etre renseigné.")
+            raise ValueError("Un email doit être renseigné.")
         return booking_emails
 
     @validator("venueId", allow_reuse=True)

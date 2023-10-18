@@ -66,7 +66,7 @@ def validate_email(email: str) -> str:
 
 def validate_emails(emails: list[str]) -> list[str]:
     if not emails:
-        raise ValueError("Un email doit etre renseigné.")
+        raise ValueError("Un email doit être renseigné.")
     for email in emails:
         if not email_utils.is_valid_email(email):
             raise ValueError(f"{email} n'est pas une adresse mail valide")
@@ -125,7 +125,7 @@ def validate_price_detail(price_detail: str | None) -> str | None:
 
 def validate_students(students: list[str] | None) -> list[StudentLevels]:
     if not students:
-        raise ValueError("La liste des niveaux scolaire ne peut pas être vide")
+        raise ValueError("La liste des niveaux scolaires ne peut pas être vide")
     output = []
     for student in students:
         try:
@@ -143,7 +143,7 @@ def validate_image_file(image_file: str | None) -> str | None:
         # empty string case
         raise ValueError("Ce champ doit contenir une image en base 64 valide")
     if len(image_file) > 2000000:
-        raise ValueError("l'image ne doit pas faire plus de 1.5 Mio (2 000 000 caractères en base 64)")
+        raise ValueError("L'image ne doit pas faire plus de 1.5 Mio (2 000 000 caractères en base 64)")
     return image_file
 
 
@@ -420,7 +420,7 @@ class PostCollectiveOfferBodyModel(BaseModel):
         uai = values.get("educationalInstitution")
         if institution_id is not None and uai is not None:
             raise ValueError(
-                "Les champs educationalInstitution et educationalInstitutionId sont mutuellement exclusif. "
+                "Les champs educationalInstitution et educationalInstitutionId sont mutuellement exclusifs. "
                 "Vous ne pouvez pas remplir les deux en même temps"
             )
         if institution_id is None and uai is None:
@@ -519,7 +519,7 @@ class PatchCollectiveOfferBodyModel(BaseModel):
         uai = values.get("educationalInstitution")
         if institution_id is not None and uai is not None:
             raise ValueError(
-                "Les champs educationalInstitution et educationalInstitutionId sont mutuellement exclusif. "
+                "Les champs educationalInstitution et educationalInstitutionId sont mutuellement exclusifs. "
                 "Vous ne pouvez pas remplir les deux en même temps"
             )
 

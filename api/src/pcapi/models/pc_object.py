@@ -131,7 +131,7 @@ class PcObject:
     @staticmethod
     def restize_type_error(type_error: TypeError) -> tuple[str, str]:
         if type_error.args and len(type_error.args) > 1 and type_error.args[1] == "geography":
-            return (type_error.args[2], "doit etre une liste de nombre décimaux comme par exemple : [2.22, 3.22]")
+            return (type_error.args[2], "doit être une liste de nombre décimaux comme par exemple : [2.22, 3.22]")
         if type_error.args and len(type_error.args) > 1 and type_error.args[1] and type_error.args[1] == "decimal":
             return (type_error.args[2], "doit être un nombre décimal")
         if type_error.args and len(type_error.args) > 1 and type_error.args[1] and type_error.args[1] == "integer":
@@ -143,7 +143,7 @@ class PcObject:
         if len(value_error.args) > 1 and value_error.args[1] == "enum":
             return (
                 value_error.args[2],
-                " doit etre dans cette liste : " + ",".join(map(lambda x: '"' + x + '"', value_error.args[3])),
+                " doit être dans cette liste : " + ",".join(map(lambda x: '"' + x + '"', value_error.args[3])),
             )
         return PcObject.restize_global_error(value_error)
 
