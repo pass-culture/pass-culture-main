@@ -75,7 +75,7 @@ const Categories = ({
   const categoryOptions = buildCategoryOptions(categories)
   const subcategoryOptions = buildSubcategoryOptions(subCategories, categoryId)
 
-  const onSubCategoryChange = (newSubCategoryId: string) => {
+  const onSubCategoryChange = async (newSubCategoryId: string) => {
     const newSubcategory = subCategories.find(
       (subcategory) => subcategory.id === newSubCategoryId
     )
@@ -84,9 +84,8 @@ const Categories = ({
       isBookingContactEnabled,
       newSubcategory
     )
-    setFieldValue('subCategoryFields', newSubcategoryFields)
-
-    setFieldValue('isDuo', Boolean(newSubcategory?.canBeDuo))
+    await setFieldValue('subCategoryFields', newSubcategoryFields)
+    await setFieldValue('isDuo', Boolean(newSubcategory?.canBeDuo))
 
     setSubcategory(newSubcategory)
 
@@ -97,9 +96,9 @@ const Categories = ({
     const fieldsToReset = subCategoryFields.filter(
       (field: string) => !newSubcategoryFields.includes(field)
     )
-    fieldsToReset.forEach((field: string) => {
+    fieldsToReset.forEach(async (field: string) => {
       if (field in SUBCATEGORIES_FIELDS_DEFAULT_VALUES) {
-        setFieldValue(
+        await setFieldValue(
           field,
           SUBCATEGORIES_FIELDS_DEFAULT_VALUES[
             field as keyof typeof SUBCATEGORIES_FIELDS_DEFAULT_VALUES
@@ -114,7 +113,7 @@ const Categories = ({
       subCategories.find((subcategory) => subcategory.id === newSubCategoryId)
     )
     if (filteredVenueList.length === 1) {
-      setFieldValue('venueId', filteredVenueList[0].id.toString())
+      await setFieldValue('venueId', filteredVenueList[0].id.toString())
       onVenueChange(
         setFieldValue,
         filteredVenueList,
@@ -124,7 +123,7 @@ const Categories = ({
       // If there are several venues available for this subcategory,
       // we still need to update the isVenueVirtual field
       // because it is used for form validation
-      setFieldValue(
+      await setFieldValue(
         'isVenueVirtual',
         filteredVenueList.every((v) => v.isVirtual)
       )
@@ -133,7 +132,9 @@ const Categories = ({
     // the form is not displayed
   }
 
-  const onCategoryChange = (event: React.ChangeEvent<HTMLSelectElement>) => {
+  const onCategoryChange = async (
+    event: React.ChangeEvent<HTMLSelectElement>
+  ) => {
     if (readOnlyFields.includes('subcategoryId')) {
       return
     }
@@ -145,8 +146,8 @@ const Categories = ({
       newSubcategoryOptions.length === 1
         ? String(newSubcategoryOptions[0].value)
         : FORM_DEFAULT_VALUES.subcategoryId
-    setFieldValue('subcategoryId', subCategoryId, false)
-    onSubCategoryChange(subCategoryId)
+    await setFieldValue('subcategoryId', subCategoryId, false)
+    await onSubCategoryChange(subCategoryId)
   }
 
   const hasSubCategory = categoryId !== FORM_DEFAULT_VALUES.categoryId
@@ -197,8 +198,8 @@ const Categories = ({
             value: FORM_DEFAULT_VALUES.categoryId,
           }}
           disabled={readOnlyFields.includes('categoryId')}
-          onChange={(event: React.ChangeEvent<HTMLSelectElement>) => {
-            onCategoryChange(event)
+          onChange={async (event: React.ChangeEvent<HTMLSelectElement>) => {
+            await onCategoryChange(event)
             handleChange(event)
           }}
         />
@@ -218,8 +219,8 @@ const Categories = ({
               readOnlyFields.includes('subcategoryId') ||
               subcategoryOptions.length === 1
             }
-            onChange={(event: React.ChangeEvent<HTMLSelectElement>) => {
-              onSubCategoryChange(event.target.value)
+            onChange={async (event: React.ChangeEvent<HTMLSelectElement>) => {
+              await onSubCategoryChange(event.target.value)
               handleChange(event)
             }}
           />
