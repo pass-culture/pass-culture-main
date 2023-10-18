@@ -171,13 +171,17 @@ describe('getWizardData', () => {
           ],
           subCategories: [
             {
+              appLabel: 'appLabel',
+              canExpire: true,
               canBeDuo: false,
               canBeEducational: false,
               canBeWithdrawable: false,
               categoryId: 'A',
               conditionalFields: [],
               id: '1',
+              isDigitalDeposit: true,
               isEvent: false,
+              isPhysicalDeposit: true,
               isSelectable: true,
               onlineOfflinePlatform: 'ONLINE',
               proLabel: 'sous-catégorie 1',

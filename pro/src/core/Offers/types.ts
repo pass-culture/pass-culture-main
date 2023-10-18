@@ -6,12 +6,13 @@ import {
   PriceCategoryResponseModel,
   GetOfferVenueResponseModel,
   GetOfferLastProviderResponseModel,
+  SubcategoryResponseModel,
 } from 'apiClient/v1'
 import { CropParams } from 'components/ImageUploader'
 import { CollectiveOfferStatus } from 'core/OfferEducational'
 import { AccessibiltyFormValues } from 'core/shared'
 
-import { ALL_STATUS, CATEGORY_STATUS } from './constants'
+import { ALL_STATUS } from './constants'
 
 export type SearchFiltersParams = {
   nameOrIsbn: string
@@ -74,19 +75,7 @@ export interface CategorySubtypeItem {
   }[]
 }
 
-export interface OfferSubCategory {
-  id: string
-  categoryId: string
-  proLabel: string
-  isEvent: boolean
-  conditionalFields: string[]
-  canBeDuo: boolean
-  canBeEducational: boolean
-  onlineOfflinePlatform: CATEGORY_STATUS
-  reimbursementRule: string
-  isSelectable: boolean
-  canBeWithdrawable: boolean
-}
+export interface OfferSubCategory extends SubcategoryResponseModel {}
 
 export interface IndividualOfferStock {
   beginningDatetime: string | null
