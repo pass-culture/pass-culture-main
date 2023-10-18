@@ -93,7 +93,7 @@ class ListCollectiveOffersTest(GetEndpointHelper):
         assert rows[0]["Sous-catégorie"] == collective_offers[0].subcategory.pro_label
         assert rows[0]["État"] == "Validée"
         assert rows[0]["Date de création"] == (datetime.date.today() - datetime.timedelta(days=5)).strftime("%d/%m/%Y")
-        assert rows[0]["Date de l'événement"] == datetime.date.today().strftime("%d/%m/%Y")
+        assert rows[0]["Date de l'évènement"] == datetime.date.today().strftime("%d/%m/%Y")
         assert rows[0]["Structure"] == collective_offers[0].venue.managingOfferer.name
         assert rows[0]["Lieu"] == collective_offers[0].venue.name
 
@@ -114,7 +114,7 @@ class ListCollectiveOffersTest(GetEndpointHelper):
         assert rows[0]["Sous-catégorie"] == collective_offers[1].subcategory.pro_label
         assert rows[0]["État"] == "Validée"
         assert rows[0]["Date de création"] == (datetime.date.today() - datetime.timedelta(days=5)).strftime("%d/%m/%Y")
-        assert rows[0]["Date de l'événement"] == datetime.date.today().strftime("%d/%m/%Y")
+        assert rows[0]["Date de l'évènement"] == datetime.date.today().strftime("%d/%m/%Y")
         assert rows[0]["Structure"] == collective_offers[1].venue.managingOfferer.name
         assert rows[0]["Lieu"] == collective_offers[1].venue.name
 

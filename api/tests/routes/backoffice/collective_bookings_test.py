@@ -158,7 +158,7 @@ class ListCollectiveBookingsTest(GetEndpointHelper):
         assert row["Date de réservation"].startswith(
             (datetime.date.today() - datetime.timedelta(days=3)).strftime("%d/%m/%Y à ")
         )
-        assert row["Date de l'événement"].startswith(
+        assert row["Date de l'évènement"].startswith(
             (datetime.date.today() + datetime.timedelta(days=3)).strftime("%d/%m/%Y à ")
         )
         assert row["Structure"] == collective_bookings[1].offerer.name
@@ -250,7 +250,7 @@ class ListCollectiveBookingsTest(GetEndpointHelper):
         assert row["Date de réservation"].startswith(
             (datetime.date.today() - datetime.timedelta(days=2)).strftime("%d/%m/%Y à ")
         )
-        assert row["Date de l'événement"].startswith(
+        assert row["Date de l'évènement"].startswith(
             (datetime.date.today() + datetime.timedelta(days=7)).strftime("%d/%m/%Y à ")
         )
         assert row["Structure"] == collective_bookings[2].offerer.name
