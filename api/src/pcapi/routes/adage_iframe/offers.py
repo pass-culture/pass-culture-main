@@ -92,6 +92,7 @@ def get_collective_offer_template(
         is_favorite = False
 
     offer_venue = _get_offer_venue(offer)
+
     return serializers.CollectiveOfferTemplateResponseModel.build(
         offer=offer, is_favorite=is_favorite, offerVenue=offer_venue
     )

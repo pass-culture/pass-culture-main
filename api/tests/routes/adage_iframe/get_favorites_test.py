@@ -167,6 +167,10 @@ class GetFavoriteOfferTest:
                     "imageCredit": None,
                     "imageUrl": None,
                     "nationalProgram": None,
+                    "dates": {
+                        "start": collective_offer_template.start.isoformat(),
+                        "end": collective_offer_template.end.isoformat(),
+                    },
                 }
             ],
         }

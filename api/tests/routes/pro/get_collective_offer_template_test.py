@@ -4,6 +4,7 @@ from pcapi.core import testing
 import pcapi.core.educational.factories as educational_factories
 import pcapi.core.offerers.factories as offerers_factories
 import pcapi.core.users.factories as users_factories
+from pcapi.utils.date import format_into_utc_date
 
 
 @pytest.mark.usefixtures("db_session")
@@ -34,6 +35,10 @@ class Returns200Test:
         assert response_json["name"] == offer.name
         assert response_json["id"] == offer.id
         assert response.json["nationalProgram"] == {"id": national_program.id, "name": national_program.name}
+        assert response.json["dates"] == {
+            "start": format_into_utc_date(offer.start),
+            "end": format_into_utc_date(offer.end),
+        }
 
     def test_performance(self, client):
         # Given

@@ -646,6 +646,12 @@ class CollectiveOfferTemplate(
         return self.dateRange.upper
 
     @property
+    def dates(self) -> dict | None:
+        if not self.dateRange:
+            return None
+        return {"start": self.start, "end": self.end}
+
+    @property
     def isEducational(self) -> bool:
         # FIXME (rpaoloni, 2022-05-09): Remove legacy support layer
         return True

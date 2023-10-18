@@ -226,6 +226,14 @@ class CollectiveOfferResponseModel(BaseModel, common_models.AccessibilityComplia
         extra = "forbid"
 
 
+class TemplateDatesModel(BaseModel):
+    start: datetime
+    end: datetime
+
+    class Config:
+        json_encoders = {datetime: format_into_utc_date}
+
+
 class CollectiveOfferTemplateResponseModel(BaseModel, common_models.AccessibilityComplianceMixin):
     id: int
     subcategoryLabel: str
@@ -247,6 +255,7 @@ class CollectiveOfferTemplateResponseModel(BaseModel, common_models.Accessibilit
     imageUrl: str | None
     nationalProgram: NationalProgramModel | None
     isFavorite: bool | None
+    dates: TemplateDatesModel | None
 
     @classmethod
     def build(
@@ -287,6 +296,10 @@ class CollectiveOfferTemplateResponseModel(BaseModel, common_models.Accessibilit
             mentalDisabilityCompliant=offer.mentalDisabilityCompliant,
             motorDisabilityCompliant=offer.motorDisabilityCompliant,
             visualDisabilityCompliant=offer.visualDisabilityCompliant,
+            dates=TemplateDatesModel(
+                start=offer.start,
+                end=offer.end,
+            ),
         )
 
     class Config:

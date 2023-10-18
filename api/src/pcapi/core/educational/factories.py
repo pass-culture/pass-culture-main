@@ -10,6 +10,7 @@ from pcapi.core.educational import utils
 import pcapi.core.offerers.factories as offerers_factories
 from pcapi.core.testing import BaseFactory
 from pcapi.models.offer_mixin import OfferValidationStatus
+from pcapi.utils import db as db_utils
 
 
 ADAGE_STARTING_EDUCATIONAL_YEAR = 2014
@@ -100,6 +101,10 @@ class CollectiveOfferTemplateFactory(BaseFactory):
         "venueId": None,
     }
     interventionArea = ["2A", "2B"]
+    dateRange = db_utils.make_timerange(
+        start=datetime.datetime.utcnow() + datetime.timedelta(days=1),
+        end=datetime.datetime.utcnow() + datetime.timedelta(days=7),
+    )
 
     @classmethod
     def _create(
