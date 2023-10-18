@@ -247,7 +247,7 @@ export const individualOfferSubCategoryResponseModelFactory = (
   ...customOfferSubCategory,
 })
 
-export const individualStockEventListFactory = (
+export const individualStockEventFactory = (
   customStock: Partial<StocksEvent> = {}
 ): StocksEvent => {
   return {
