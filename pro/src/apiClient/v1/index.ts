@@ -185,7 +185,6 @@ export type { SiretInfo } from './models/SiretInfo';
 export type { StockCreationBodyModel } from './models/StockCreationBodyModel';
 export type { StockEditionBodyModel } from './models/StockEditionBodyModel';
 export type { StockIdResponseModel } from './models/StockIdResponseModel';
-export type { StockResponseModel } from './models/StockResponseModel';
 export { StocksOrderedBy } from './models/StocksOrderedBy';
 export type { StocksQueryModel } from './models/StocksQueryModel';
 export type { StocksResponseModel } from './models/StocksResponseModel';

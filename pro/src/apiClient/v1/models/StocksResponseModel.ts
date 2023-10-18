@@ -3,9 +3,9 @@
 /* tslint:disable */
 /* eslint-disable */
 
-import type { StockResponseModel } from './StockResponseModel';
+import type { GetOfferStockResponseModel } from './GetOfferStockResponseModel';
 
 export type StocksResponseModel = {
-  stocks: Array<StockResponseModel>;
+  stocks: Array<GetOfferStockResponseModel>;
 };
 
