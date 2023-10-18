@@ -113,7 +113,7 @@ const StockFormList = ({
   return (
     <FieldArray
       name="stocks"
-      render={(arrayHelpers) => (
+      render={() => (
         <>
           <table className={styles['stock-table']}>
             <caption className="visually-hidden">
@@ -337,20 +337,15 @@ const StockFormList = ({
                   const actions = [
                     {
                       callback: async () => {
-                        if (stockValues.stockId) {
-                          /* istanbul ignore next: DEBT, TO FIX */
-                          if (stockValues.bookingsQuantity > 0) {
-                            setDeletingStockData({
-                              deletingStock: stockValues,
-                              deletingIndex: index,
-                            })
-                            setIsModalOpen(true)
-                          } else {
-                            /* istanbul ignore next: DEBT, TO FIX */
-                            await onDeleteStock(stockValues, index)
-                          }
+                        if (stockValues.bookingsQuantity > 0) {
+                          setDeletingStockData({
+                            deletingStock: stockValues,
+                            deletingIndex: index,
+                          })
+                          setIsModalOpen(true)
                         } else {
-                          arrayHelpers.remove(index)
+                          /* istanbul ignore next: DEBT, TO FIX */
+                          await onDeleteStock(stockValues, index)
                         }
                       },
                       label: 'Supprimer le stock',

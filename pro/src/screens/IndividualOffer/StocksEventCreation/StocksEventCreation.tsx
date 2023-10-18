@@ -101,7 +101,6 @@ export const StocksEventCreation = ({
             offerId={offer.id}
             departmentCode={offer.venue.departmentCode}
             priceCategories={offer.priceCategories ?? []}
-            onCancel={onCancel}
             stocks={stocks}
             setStocks={setStocks}
             setIsOpen={setIsRecurrenceModalOpen}

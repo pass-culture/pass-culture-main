@@ -65,7 +65,11 @@ const Stocks = (): JSX.Element | null => {
             setStocks={setStocks}
           />
         ) : (
-          <StocksEventEdition offer={offer} stocks={stocks} />
+          <StocksEventEdition
+            offer={offer}
+            stocks={stocks}
+            setStocks={setStocks}
+          />
         )
       ) : (
         <StocksThing offer={offer} />
