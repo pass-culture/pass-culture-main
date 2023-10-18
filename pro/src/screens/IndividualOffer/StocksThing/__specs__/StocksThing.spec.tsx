@@ -146,7 +146,7 @@ describe('screens:StocksThing', () => {
     )
   })
 
-  it('should render physical stock thing', async () => {
+  it('should render physical stock thing', () => {
     props.offer = {
       ...offer,
       isDigital: false,
@@ -167,7 +167,7 @@ describe('screens:StocksThing', () => {
     expect(screen.getByLabelText('Quantité')).toBeInTheDocument()
   })
 
-  it('should render digital stock thing', async () => {
+  it('should render digital stock thing', () => {
     props.offer = {
       ...offer,
       subcategoryId: 'TESTID',
@@ -184,7 +184,7 @@ describe('screens:StocksThing', () => {
     ).not.toBeInTheDocument()
   })
 
-  it('should render digital book', async () => {
+  it('should render digital book', () => {
     props.offer = {
       ...offer,
       subcategoryId: LIVRE_PAPIER_SUBCATEGORY_ID,
@@ -411,7 +411,8 @@ describe('screens:StocksThing', () => {
       await userEvent.click(screen.getByTitle('Fermer la modale'))
       expect(title).not.toBeInTheDocument()
     })
-    it('should display an expiration field disabled when activationCodesExpirationDatetime is provided', async () => {
+
+    it('should display an expiration field disabled when activationCodesExpirationDatetime is provided', () => {
       props.offer = {
         ...offer,
         isDigital: true,

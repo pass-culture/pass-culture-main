@@ -174,7 +174,9 @@ const StocksThing = ({ offer }: StocksThingProps): JSX.Element => {
     setIsDeleteConfirmVisible(false)
   }
 
-  const onChangeQuantity = (event: React.ChangeEvent<HTMLInputElement>) => {
+  const onChangeQuantity = async (
+    event: React.ChangeEvent<HTMLInputElement>
+  ) => {
     const quantity = event.target.value
     let remainingQuantity: number | string =
       // No need to test
@@ -185,8 +187,8 @@ const StocksThing = ({ offer }: StocksThingProps): JSX.Element => {
       remainingQuantity = 'unlimited'
     }
 
-    formik.setFieldValue(`remainingQuantity`, remainingQuantity)
-    formik.setFieldValue(`quantity`, quantity)
+    await formik.setFieldValue(`remainingQuantity`, remainingQuantity)
+    await formik.setFieldValue(`quantity`, quantity)
   }
 
   const getMaximumBookingDatetime = (date: Date | undefined) => {
@@ -210,7 +212,7 @@ const StocksThing = ({ offer }: StocksThingProps): JSX.Element => {
         ) {
           setIsDeleteConfirmVisible(true)
         } else {
-          onConfirmDeleteStock()
+          await onConfirmDeleteStock()
         }
       },
       label: 'Supprimer le stock',
@@ -257,9 +259,9 @@ const StocksThing = ({ offer }: StocksThingProps): JSX.Element => {
     ]
   }
 
-  const submitActivationCodes = (activationCodes: string[]) => {
-    formik.setFieldValue('quantity', activationCodes?.length, true)
-    formik.setFieldValue('activationCodes', activationCodes)
+  const submitActivationCodes = async (activationCodes: string[]) => {
+    await formik.setFieldValue('quantity', activationCodes?.length, true)
+    await formik.setFieldValue('activationCodes', activationCodes)
     setIsActivationCodeFormVisible(false)
   }
 

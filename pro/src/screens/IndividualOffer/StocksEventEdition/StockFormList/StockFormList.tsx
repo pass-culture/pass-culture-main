@@ -87,7 +87,7 @@ const StockFormList = ({
     hiddenStocksRef.current = allStocks.filter(
       (stock) => filteredStocks.indexOf(stock) === -1
     )
-    setFieldValue('stocks', filteredStocks)
+    void setFieldValue('stocks', filteredStocks)
   }, [
     currentSortingColumn,
     currentSortingMode,
@@ -347,7 +347,7 @@ const StockFormList = ({
                             setIsModalOpen(true)
                           } else {
                             /* istanbul ignore next: DEBT, TO FIX */
-                            onDeleteStock(stockValues, index)
+                            await onDeleteStock(stockValues, index)
                           }
                         } else {
                           arrayHelpers.remove(index)
@@ -486,8 +486,9 @@ const StockFormList = ({
                 /* istanbul ignore next: DEBT, TO FIX */
                 if (deletingStockData !== null) {
                   const { deletingStock, deletingIndex } = deletingStockData
-                  deletingStock.stockId &&
-                    onDeleteStock(deletingStock, deletingIndex)
+                  if (deletingStock.stockId) {
+                    await onDeleteStock(deletingStock, deletingIndex)
+                  }
                 }
                 setIsModalOpen(false)
               }}
