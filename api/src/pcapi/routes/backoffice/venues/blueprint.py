@@ -512,7 +512,7 @@ def update_venue(venue_id: int) -> utils.BackofficeResponse:
             <button type="button"
                     class="btn"
                     data-bs-toggle="modal"
-                    data-bs-target="#venue-edit-details">
+                    data-bs-target="#edit-venue-modal">
                 Les données envoyées comportent des erreurs. Afficher
             </button>
             """
