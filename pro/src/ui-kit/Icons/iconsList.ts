@@ -79,6 +79,7 @@ import strokeInfoIcon from 'icons/stroke-info.svg'
 import strokeLeftIcon from 'icons/stroke-left.svg'
 import strokeLibraryIcon from 'icons/stroke-library.svg'
 import strokeLikeIcon from 'icons/stroke-like.svg'
+import strokeLinkIcon from 'icons/stroke-link.svg'
 import strokeLocalisationIcon from 'icons/stroke-localisation.svg'
 import strokeLocationIcon from 'icons/stroke-location.svg'
 import strokeLogoutIcon from 'icons/stroke-logout.svg'
@@ -220,6 +221,7 @@ export const strokeIcons: IconListItem[] = [
   { src: strokeRightIcon },
   { src: strokeDownIcon },
   { src: strokeUpIcon },
+  { src: strokeLinkIcon },
   { src: strokePassIcon },
   { src: strokeLibraryIcon },
   { src: strokeVenueIcon },
