@@ -2,6 +2,8 @@ import { screen, waitFor } from '@testing-library/react'
 import { userEvent } from '@testing-library/user-event'
 import React from 'react'
 
+import { apiAdage } from 'apiClient/api'
+import Notification from 'components/Notification/Notification'
 import { AdageUserContext } from 'pages/AdageIframe/app/providers/AdageUserContext'
 import { defaultAdageUser, defaultCategories } from 'utils/adageFactories'
 import { renderWithProviders } from 'utils/renderWithProviders'
@@ -127,19 +129,22 @@ const renderAutocomplete = ({
   }
 
   return renderWithProviders(
-    <AdageUserContext.Provider value={{ adageUser: defaultAdageUser }}>
-      <div>
-        <a href="#">First element</a>
-        <Autocomplete
-          initialQuery={initialQuery}
-          placeholder={
-            'Rechercher par mot-clé, par partenaire culturel, par nom d’offre...'
-          }
-          setCurrentSearch={vi.fn()}
-        />
-        <a href="#">Second element</a>
-      </div>
-    </AdageUserContext.Provider>,
+    <>
+      <AdageUserContext.Provider value={{ adageUser: defaultAdageUser }}>
+        <div>
+          <a href="#">First element</a>
+          <Autocomplete
+            initialQuery={initialQuery}
+            placeholder={
+              'Rechercher par mot-clé, par partenaire culturel, par nom d’offre...'
+            }
+            setCurrentSearch={vi.fn()}
+          />
+          <a href="#">Second element</a>
+        </div>
+      </AdageUserContext.Provider>
+      <Notification />
+    </>,
     { storeOverrides }
   )
 }
@@ -275,6 +280,43 @@ describe('Autocomplete', () => {
     await userEvent.click(inputElement)
   })
 
+  it('should disable saved history when cookies are disabled', async () => {
+    vi.spyOn(window.localStorage.__proto__, 'getItem').mockImplementation(
+      () => {
+        throw new Error()
+      }
+    )
+
+    const featuresOverride = [
+      {
+        nameKey: 'WIP_ENABLE_SEARCH_HISTORY_ADAGE',
+        isActive: true,
+      },
+    ]
+
+    renderAutocomplete({
+      initialQuery: '',
+      featuresOverride,
+    })
+
+    const inputElement = screen.getByPlaceholderText(
+      'Rechercher par mot-clé, par partenaire culturel, par nom d’offre...'
+    )
+    const searchButton = screen.getByText('Rechercher')
+
+    await userEvent.type(inputElement, 'test query')
+
+    await userEvent.click(searchButton)
+
+    await userEvent.clear(inputElement)
+
+    await userEvent.click(searchButton)
+
+    await userEvent.click(inputElement)
+
+    expect(screen.queryByText('Effacer')).not.toBeInTheDocument()
+  })
+
   it('should display venue suggestion when user start to type', async () => {
     const featuresOverride = [
       {
@@ -324,5 +366,28 @@ describe('Autocomplete', () => {
     const keywordSuggestion = screen.getAllByText(/mock keyword 1/)[0]
 
     expect(keywordSuggestion).toBeInTheDocument()
+  })
+
+  it('should display an error message when the categories cound not be fetched', async () => {
+    const featuresOverride = [
+      {
+        nameKey: 'WIP_ENABLE_SEARCH_HISTORY_ADAGE',
+        isActive: true,
+      },
+    ]
+
+    vi.spyOn(apiAdage, 'getEducationalOffersCategories').mockRejectedValueOnce(
+      null
+    )
+    renderAutocomplete({
+      initialQuery: '',
+      featuresOverride,
+    })
+
+    expect(
+      await screen.findByText(
+        'Nous avons rencontré un problème lors du chargemement des données'
+      )
+    ).toBeInTheDocument()
   })
 })
