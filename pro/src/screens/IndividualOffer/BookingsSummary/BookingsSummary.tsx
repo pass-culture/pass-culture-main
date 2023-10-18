@@ -16,6 +16,7 @@ import filterBookingsRecap from 'screens/Bookings/BookingsRecapTable/utils/filte
 import Spinner from 'ui-kit/Spinner/Spinner'
 import { SvgIcon } from 'ui-kit/SvgIcon/SvgIcon'
 import { FORMAT_ISO_DATE_ONLY } from 'utils/date'
+import { pluralize } from 'utils/pluralize'
 
 import styles from './BookingsSummary.module.scss'
 
@@ -46,7 +47,7 @@ export const BookingsSummaryScreen = ({
         setBookings(response.payload.bookings)
       }
     }
-    loadBookings()
+    void loadBookings()
   }, [setBookings])
 
   if (bookings?.length === 0) {
@@ -84,14 +85,17 @@ export const BookingsSummaryScreen = ({
   return (
     <SummaryLayout.Section title="Réservations">
       {bookings !== null ? (
-        <IndividualBookingsTable
-          bookings={filteredBookings}
-          bookingStatuses={bookingsStatusFilters}
-          updateGlobalFilters={({ bookingStatus }) => {
-            setBookingsStatusFilter(bookingStatus ?? [])
-          }}
-          resetFilters={() => setBookingsStatusFilter([])}
-        />
+        <>
+          <div>{pluralize(filteredBookings.length, 'réservation')}</div>
+          <IndividualBookingsTable
+            bookings={filteredBookings}
+            bookingStatuses={bookingsStatusFilters}
+            updateGlobalFilters={({ bookingStatus }) => {
+              setBookingsStatusFilter(bookingStatus ?? [])
+            }}
+            resetFilters={() => setBookingsStatusFilter([])}
+          />
+        </>
       ) : (
         <Spinner />
       )}

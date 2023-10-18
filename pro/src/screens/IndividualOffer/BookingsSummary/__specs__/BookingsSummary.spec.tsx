@@ -43,6 +43,7 @@ describe('BookingsSummary', () => {
     await waitForElementToBeRemoved(() => screen.queryAllByTestId('spinner'))
 
     expect(screen.getByText(/Réservations/)).toBeInTheDocument()
+    expect(screen.getByText(/3 réservations/)).toBeInTheDocument()
     expect(screen.getAllByRole('link', { name: 'Offre de test' })).toHaveLength(
       3
     )
