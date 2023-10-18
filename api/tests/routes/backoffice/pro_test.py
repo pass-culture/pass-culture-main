@@ -263,6 +263,8 @@ class SearchOffererTest:
         assert response.status_code == 200
         cards_text = html_parser.extract_cards_text(response.data)
         assert len(cards_text) == 1
+        assert self.offerers[2].city in response.data.decode()
+        assert self.offerers[2].postalCode in response.data.decode()
         assert_offerer_equals(cards_text[0], self.offerers[2])
 
     @pytest.mark.parametrize("siren", ["123456003", "123 456 003 "])
