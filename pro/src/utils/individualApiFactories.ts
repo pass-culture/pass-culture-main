@@ -1,10 +1,9 @@
 /* istanbul ignore file: Those are test helpers, their coverage is not relevant */
 
-import { v4 as uuidv4 } from 'uuid'
-
 import {
   CategoryResponseModel,
   GetOfferVenueResponseModel,
+  GetOfferStockResponseModel,
   GetVenueResponseModel,
   PriceCategoryResponseModel,
   SubcategoryIdEnum,
@@ -25,6 +24,7 @@ import { offerVenueFactory } from './apiFactories'
 
 let offerId = 1
 let stockId = 1
+let stockResponseId = 1
 let venueId = 1
 let priceCategoryId = 1
 let offerCategoryId = 1
@@ -255,8 +255,31 @@ export const individualStockEventListFactory = (
     bookingLimitDatetime: new Date('2021-09-15T12:00:00Z').toISOString(),
     priceCategoryId: 2,
     quantity: 18,
-    uuid: uuidv4(),
     bookingsQuantity: 0,
+    isEventDeletable: true,
+    ...customStock,
+  }
+}
+
+export const individualGetOfferStockResponseModelFactory = (
+  customStock: Partial<GetOfferStockResponseModel> = {}
+): GetOfferStockResponseModel => {
+  return {
+    id: stockResponseId++,
+    isBookable: true,
+    isEventExpired: false,
+    isSoftDeleted: false,
+    price: 10,
+    activationCodesExpirationDatetime: null,
+    dateCreated: new Date('2021-09-01T12:00:00Z').toISOString(),
+    dateModified: new Date('2021-09-01T12:00:00Z').toISOString(),
+    hasActivationCode: false,
+    beginningDatetime: new Date('2021-10-15T12:00:00Z').toISOString(),
+    bookingLimitDatetime: new Date('2021-09-15T12:00:00Z').toISOString(),
+    priceCategoryId: 2,
+    quantity: 18,
+    bookingsQuantity: 0,
+    isEventDeletable: true,
     ...customStock,
   }
 }
