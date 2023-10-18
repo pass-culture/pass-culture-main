@@ -6,7 +6,6 @@ import {
 } from 'apiClient/v1'
 import {
   IndividualOffer,
-  IndividualOfferOfferer,
   IndividualOfferStock,
   IndividualOfferVenue,
   IndividualOfferVenueProvider,
@@ -17,7 +16,6 @@ import { GetIndividualOfferFactory } from 'utils/apiFactories'
 import {
   serializeStockApi,
   serializeOfferApiImage,
-  serializeOffererApi,
   serializeVenueApi,
   serializeOfferApiExtraData,
   serializeLastProvider,
@@ -190,22 +188,6 @@ describe('serializer', () => {
       url: 'https://image.url',
       credit: '',
     })
-  })
-  it('serializeOffererApi', async () => {
-    const offerApi = {
-      venue: {
-        managingOfferer: {
-          id: 1,
-          name: 'Offerer name',
-        },
-      },
-    } as unknown as GetIndividualOfferResponseModel
-    const offerer: IndividualOfferOfferer = {
-      id: 1,
-      name: 'Offerer name',
-    }
-
-    expect(serializeOffererApi(offerApi)).toEqual(offerer)
   })
 
   it('serializeVenueApi', async () => {

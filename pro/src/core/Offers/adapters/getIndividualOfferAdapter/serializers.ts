@@ -6,19 +6,11 @@ import {
 import {
   IndividualOffer,
   IndividualOfferImage,
-  IndividualOfferOfferer,
   IndividualOfferStock,
   IndividualOfferVenue,
   IndividualOfferVenueProvider,
 } from 'core/Offers/types'
 import { AccessiblityEnum } from 'core/shared'
-
-export const serializeOffererApi = (
-  apiOffer: GetIndividualOfferResponseModel
-): IndividualOfferOfferer => ({
-  id: apiOffer.venue.managingOfferer.id,
-  name: apiOffer.venue.managingOfferer.name,
-})
 
 export const serializeVenueApi = (
   apiOffer: GetIndividualOfferResponseModel
@@ -40,7 +32,7 @@ export const serializeVenueApi = (
     postalCode: apiOffer.venue.postalCode || '',
     departmentCode: apiOffer.venue.departementCode || '',
     city: apiOffer.venue.city || '',
-    offerer: serializeOffererApi(apiOffer),
+    offerer: apiOffer.venue.managingOfferer,
     accessibility: {
       ...baseAccessibility,
       [AccessiblityEnum.NONE]: !Object.values(baseAccessibility).includes(true),
