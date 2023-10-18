@@ -15,11 +15,14 @@ import SelectInput from 'ui-kit/form/Select/SelectInput'
 import Spinner from 'ui-kit/Spinner/Spinner'
 import { sortByLabel } from 'utils/strings'
 
+import AddBankInformationsDialog from './AddBankInformationsDialog'
 import styles from './BankInformations.module.scss'
 
 const BankInformations = (): JSX.Element => {
   const notify = useNotification()
 
+  const [showAddBankInformationsDialog, setShowAddBankInformationsDialog] =
+    useState(false)
   const { offerers, selectedOfferer, setSelectedOfferer } =
     useReimbursementContext()
 
@@ -166,9 +169,19 @@ const BankInformations = (): JSX.Element => {
             ? ButtonVariant.SECONDARY
             : ButtonVariant.PRIMARY
         }
+        onClick={() => {
+          setShowAddBankInformationsDialog(true)
+        }}
       >
         Ajouter un compte bancaire
       </Button>
+      {showAddBankInformationsDialog && (
+        <AddBankInformationsDialog
+          closeDialog={() => {
+            setShowAddBankInformationsDialog(false)
+          }}
+        />
+      )}
     </>
   )
 }

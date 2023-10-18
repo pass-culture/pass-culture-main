@@ -250,4 +250,34 @@ describe('BankInformations page', () => {
     await waitForElementToBeRemoved(() => screen.queryByTestId('spinner'))
     expect(screen.getByText('second offerer')).toBeInTheDocument()
   })
+
+  it('should show AddBankInformationsDialog on click add bank account button', async () => {
+    renderBankInformations(customContext, store)
+
+    await waitForElementToBeRemoved(() => screen.queryByTestId('spinner'))
+
+    expect(
+      screen.queryByText(
+        'Vous allez être redirigé vers le site demarches-simplifiees.fr'
+      )
+    ).not.toBeInTheDocument()
+
+    await userEvent.click(await screen.findByText('Ajouter un compte bancaire'))
+
+    expect(
+      screen.getByText(
+        'Vous allez être redirigé vers le site demarches-simplifiees.fr'
+      )
+    ).toBeInTheDocument()
+
+    await userEvent.click(
+      await screen.findByRole('button', { name: 'Fermer la modale' })
+    )
+
+    expect(
+      screen.queryByText(
+        'Vous allez être redirigé vers le site demarches-simplifiees.fr'
+      )
+    ).not.toBeInTheDocument()
+  })
 })
