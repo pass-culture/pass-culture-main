@@ -1,13 +1,10 @@
 import React, { createContext, useContext, useEffect, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 
+import { CategoryResponseModel } from 'apiClient/v1'
 import { OffererName } from 'core/Offerers/types'
 import { getIndividualOfferAdapter } from 'core/Offers/adapters'
-import {
-  OfferCategory,
-  IndividualOffer,
-  OfferSubCategory,
-} from 'core/Offers/types'
+import { IndividualOffer, OfferSubCategory } from 'core/Offers/types'
 import { GET_DATA_ERROR_MESSAGE } from 'core/shared'
 import { IndividualOfferVenueItem } from 'core/Venue/types'
 import useNotification from 'hooks/useNotification'
@@ -19,7 +16,7 @@ export interface IndividualOfferContextValues {
   offerId: number | null
   offer: IndividualOffer | null
   setOffer: ((offer: IndividualOffer | null) => void) | null
-  categories: OfferCategory[]
+  categories: CategoryResponseModel[]
   subCategories: OfferSubCategory[]
   subcategory?: OfferSubCategory
   setSubcategory: (p?: OfferSubCategory) => void
@@ -70,7 +67,7 @@ export function IndividualOfferContextProvider({
   const [venueId, setVenueId] = useState<number>()
 
   const [offer, setOfferState] = useState<IndividualOffer | null>(null)
-  const [categories, setCategories] = useState<OfferCategory[]>([])
+  const [categories, setCategories] = useState<CategoryResponseModel[]>([])
   const [subCategories, setSubCategories] = useState<OfferSubCategory[]>([])
   const [subcategory, setSubcategory] = useState<OfferSubCategory>()
   const [offererNames, setOffererNames] = useState<OffererName[]>([])

@@ -74,12 +74,6 @@ export interface CategorySubtypeItem {
   }[]
 }
 
-export interface OfferCategory {
-  id: string
-  proLabel: string
-  isSelectable: boolean
-}
-
 export interface OfferSubCategory {
   id: string
   categoryId: string

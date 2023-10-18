@@ -1,9 +1,10 @@
+import { CategoryResponseModel } from 'apiClient/v1'
 import { REIMBURSEMENT_RULES } from 'core/Finances'
 import {
   CATEGORY_STATUS,
   INDIVIDUAL_OFFER_SUBTYPE,
 } from 'core/Offers/constants'
-import { OfferCategory, OfferSubCategory } from 'core/Offers/types'
+import { OfferSubCategory } from 'core/Offers/types'
 
 import {
   getOfferSubtypeFromParam,
@@ -70,7 +71,7 @@ describe('getCategoryStatusFromOfferSubtype', () => {
 })
 
 describe('filterCategories', () => {
-  let categories: OfferCategory[]
+  let categories: CategoryResponseModel[]
   let subCategories: OfferSubCategory[]
 
   beforeEach(() => {

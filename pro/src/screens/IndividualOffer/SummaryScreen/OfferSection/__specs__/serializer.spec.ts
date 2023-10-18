@@ -1,10 +1,10 @@
-import { OfferStatus, WithdrawalTypeEnum } from 'apiClient/v1'
-import { CATEGORY_STATUS } from 'core/Offers/constants'
 import {
-  OfferCategory,
-  IndividualOffer,
-  OfferSubCategory,
-} from 'core/Offers/types'
+  CategoryResponseModel,
+  OfferStatus,
+  WithdrawalTypeEnum,
+} from 'apiClient/v1'
+import { CATEGORY_STATUS } from 'core/Offers/constants'
+import { IndividualOffer, OfferSubCategory } from 'core/Offers/types'
 import { AccessiblityEnum } from 'core/shared'
 import { offerVenueFactory } from 'utils/apiFactories'
 import {
@@ -16,7 +16,7 @@ import { serializeOfferSectionData } from '../serializer'
 
 describe('routes::Summary::serializers', () => {
   let offer: IndividualOffer
-  let categories: OfferCategory[]
+  let categories: CategoryResponseModel[]
   let subCategoryList: OfferSubCategory[]
 
   beforeEach(() => {
