@@ -26,9 +26,9 @@ def mock_credentials(test_func):
 
     ``googleapiclient`` expects to find credentials somewhere (in an
     environment variable, in a file set up by Google Cloud SDK, etc.).
-    It works on real environments because we Kubernetes "workload
-    identity", but it fails on CircleCI (and on unconfigured
-    developer's machines). Here we fake default credentials.
+    It works on real environments because we use Kubernetes "workload
+    identity", but it fails on CI (and on unconfigured developer's
+    machines). Here we fake default credentials.
     """
 
     def fake_credentials(*args, **kwargs):
