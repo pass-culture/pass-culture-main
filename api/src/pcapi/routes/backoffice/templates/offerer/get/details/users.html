@@ -9,7 +9,7 @@
     <button class="btn btn-outline-primary lead fw-bold mt-2"
             data-bs-toggle="modal"
             data-bs-target=".pc-add-pro-user-modal"
-            type="button">Ajouter un compte pro</button>
+            type="button">Récupérer un compte pro rejeté</button>
     <div class="modal modal-lg fade pc-add-pro-user-modal"
          tabindex="-1"
          aria-describedby="{{ add_pro_user_modal_label_id }}"
@@ -17,7 +17,7 @@
       <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable">
         <div class="modal-content">
           <div class="modal-header fs-5"
-               id="{{ add_pro_user_modal_label_id }}">Ajouter un compte pro</div>
+               id="{{ add_pro_user_modal_label_id }}">Récupérer un compte pro rejeté</div>
           <div class="mx-4 mt-4">Veuillez sélectionner le compte pro à rattacher à cette structure</div>
           <form action="{{ add_user_dst }}"
                 name="{{ add_user_dst | action_to_name }}"
@@ -46,7 +46,7 @@
   {% else %}
     <button class="btn lead fw-bold mt-2"
             type="button"
-            disabled>Ajouter un compte pro</button>
+            disabled>Récupérer un compte pro rejeté</button>
   {% endif %}
 {% endif %}
 <table class="table table-hover my-4">
