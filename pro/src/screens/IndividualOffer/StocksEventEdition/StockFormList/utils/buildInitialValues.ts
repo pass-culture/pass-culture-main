@@ -22,7 +22,7 @@ interface BuildSingleInitialValuesArgs extends BuildInitialValuesCommonArgs {
   stock: StocksEvent
 }
 
-export const buildSingleInitialValues = ({
+const buildSingleInitialValues = ({
   departementCode,
   stock,
   today,
@@ -87,18 +87,18 @@ export const buildSingleInitialValues = ({
 }
 
 interface BuildInitialValuesArgs extends BuildInitialValuesCommonArgs {
-  offerStocks: StocksEvent[]
+  stocks: StocksEvent[]
 }
 
 export const buildInitialValues = ({
   departementCode,
-  offerStocks,
+  stocks,
   today,
   lastProviderName,
   offerStatus,
   priceCategoriesOptions,
 }: BuildInitialValuesArgs): { stocks: StockEventFormValues[] } => {
-  if (offerStocks.length === 0) {
+  if (stocks.length === 0) {
     return {
       stocks: [
         {
@@ -113,7 +113,7 @@ export const buildInitialValues = ({
   }
 
   return {
-    stocks: offerStocks
+    stocks: stocks
       .map((stock) =>
         buildSingleInitialValues({
           departementCode,
@@ -126,7 +126,8 @@ export const buildInitialValues = ({
       )
       .sort(
         (firstStock, secondStock) =>
-          Number(secondStock.beginningDate) - Number(firstStock.beginningDate)
+          Number(new Date(firstStock.beginningDate)) -
+          Number(new Date(secondStock.beginningDate))
       ),
   }
 }
