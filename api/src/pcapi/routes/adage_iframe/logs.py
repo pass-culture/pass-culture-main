@@ -96,7 +96,12 @@ def log_booking_modal_button_click(
     institution = find_educational_institution_by_uai_code(authenticated_information.uai)  # type: ignore [arg-type]
     educational_utils.log_information_for_data_purpose(
         event_name="BookingModalButtonClick",
-        extra_data={"stockId": body.stockId, "from": body.iframeFrom, "queryId": body.queryId},
+        extra_data={
+            "stockId": body.stockId,
+            "from": body.iframeFrom,
+            "queryId": body.queryId,
+            "isFromNoResult": body.isFromNoResult,
+        },
         user_email=authenticated_information.email,
         uai=authenticated_information.uai,
         user_role=AdageFrontRoles.REDACTOR if institution else AdageFrontRoles.READONLY,
@@ -118,6 +123,7 @@ def log_contact_modal_button_click(
             "offerId": body.offerId,
             "from": body.iframeFrom,
             "queryId": body.queryId,
+            "isFromNoResult": body.isFromNoResult,
         },
         user_email=authenticated_information.email,
         uai=authenticated_information.uai,
@@ -141,6 +147,7 @@ def log_fav_offer_button_click(
             "from": body.iframeFrom,
             "queryId": body.queryId,
             "isFavorite": body.isFavorite,
+            "isFromNoResult": body.isFromNoResult,
         },
         user_email=authenticated_information.email,
         uai=authenticated_information.uai,
@@ -260,10 +267,7 @@ def log_tracking_map(
     institution = find_educational_institution_by_uai_code(authenticated_information.uai)  # type: ignore [arg-type]
     educational_utils.log_information_for_data_purpose(
         event_name="adageMapClicked",
-        extra_data={
-            "from": body.iframeFrom,
-            "queryId": body.queryId,
-        },
+        extra_data={"from": body.iframeFrom, "queryId": body.queryId, "isFromNoResult": body.isFromNoResult},
         uai=authenticated_information.uai,
         user_role=AdageFrontRoles.REDACTOR if institution else AdageFrontRoles.READONLY,
         user_email=authenticated_information.email,
