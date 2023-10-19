@@ -1,6 +1,9 @@
 import React from 'react'
 
-import { BankAccountResponseModel } from 'apiClient/v1'
+import {
+  BankAccountApplicationStatus,
+  BankAccountResponseModel,
+} from 'apiClient/v1'
 import fullErrorIcon from 'icons/full-error.svg'
 import fullLinkIcon from 'icons/full-link.svg'
 import fullWaitIcon from 'icons/full-wait.svg'
@@ -34,7 +37,8 @@ const ReimbursementBankAccount = ({
           <div>BIC : {bankAccount.bic}</div>
         </div>
       </div>
-      {!bankAccount.isActive && (
+      {bankAccount.status === BankAccountApplicationStatus.EN_CONSTRUCTION ||
+      bankAccount.status === BankAccountApplicationStatus.EN_INSTRUCTION ? (
         <div className={styles['pending-account']}>
           <SvgIcon
             src={fullWaitIcon}
@@ -54,8 +58,7 @@ const ReimbursementBankAccount = ({
             Suivre le dossier
           </ButtonLink>
         </div>
-      )}
-      {bankAccount.isActive && (
+      ) : (
         <div className={styles['linked-venues-section']}>
           <div className={styles['linked-venues-section-title']}>
             Lieu(x) rattaché(s) à ce compte bancaire
