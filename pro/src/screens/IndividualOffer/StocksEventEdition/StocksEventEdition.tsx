@@ -38,7 +38,6 @@ import {
   StocksEventFormValues,
 } from './StockFormList/types'
 import { buildInitialValues } from './StockFormList/utils'
-import { buildSingleInitialValues } from './StockFormList/utils/buildInitialValues'
 import { getValidationSchema } from './StockFormList/validationSchema'
 import styles from './StocksEventEdition.module.scss'
 import { submitToApi } from './submitToApi'
@@ -84,20 +83,20 @@ const StocksEventEdition = ({
     offer.venue.departementCode
   )
 
-  const setStocksInEditionForm = (stocksToAdd: StocksEvent[]) =>
-    formik.setFieldValue('stocks', [
-      ...stocksToAdd.map(
-        (stock): StockEventFormValues =>
-          buildSingleInitialValues({
-            departementCode: offer.venue.departementCode || '',
-            stock,
-            today,
-            lastProviderName: offer.lastProviderName,
-            offerStatus: offer.status,
-            priceCategoriesOptions,
-          })
-      ),
-    ])
+  const resetStocks = (newStocks: StocksEvent[]) => {
+    setStocks(newStocks)
+    const stocksForForm = buildInitialValues({
+      departementCode: offer.venue.departementCode,
+      stocks: newStocks,
+      today,
+      lastProviderName: offer.lastProviderName,
+      offerStatus: offer.status,
+      priceCategoriesOptions,
+    })
+    formik.resetForm({
+      values: stocksForForm,
+    })
+  }
 
   // As we are using Formik to handle state and sorting/filtering, we need to
   // keep all the filtered out stocks in a variable somewhere so we don't lose them
@@ -151,7 +150,7 @@ const StocksEventEdition = ({
         offer.id,
         offer.venue.departementCode ?? '',
         formik.setErrors,
-        setStocksInEditionForm
+        resetStocks
       )
     } catch (error) {
       if (error instanceof Error) {
@@ -190,6 +189,17 @@ const StocksEventEdition = ({
       const formStocks = [...formik.values.stocks]
       formStocks.splice(stockIndex, 1)
       await formik.setValues({ stocks: formStocks })
+
+      // We also need to remove it from the stocks state
+      // otherwise it will be re-rendered at next creation
+      const removedStockIndex = stocks.findIndex(
+        (stock) => stock.id === stockId
+      )
+      if (removedStockIndex > -1) {
+        stocks.splice(removedStockIndex, 1)
+        setStocks(stocks)
+      }
+
       notify.success('Le stock a été supprimé.')
     } catch (error) {
       if (
@@ -207,7 +217,7 @@ const StocksEventEdition = ({
 
   const initialValues = buildInitialValues({
     departementCode: offer.venue.departementCode,
-    offerStocks: stocks,
+    stocks,
     today,
     lastProviderName: offer.lastProviderName,
     offerStatus: offer.status,
@@ -242,7 +252,7 @@ const StocksEventEdition = ({
     )
   }
 
-  const isDisabled = offer.status ? isOfferDisabled(offer.status) : false
+  const isDisabled = isOfferDisabled(offer.status)
   const isSynchronized = Boolean(offer.lastProvider)
 
   return (
@@ -280,11 +290,10 @@ const StocksEventEdition = ({
                 <RecurrenceForm
                   stocks={stocks}
                   offerId={offer.id}
-                  setStocks={setStocks}
                   departmentCode={offer.venue.departementCode ?? ''}
                   priceCategories={offer.priceCategories ?? []}
                   setIsOpen={setIsRecurrenceModalOpen}
-                  setStocksInEditionForm={setStocksInEditionForm}
+                  setStocks={resetStocks}
                 />
               </DialogBox>
             )}

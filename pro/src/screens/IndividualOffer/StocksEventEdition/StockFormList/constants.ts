@@ -23,12 +23,3 @@ export const STOCK_EVENT_ALLOCINE_READ_ONLY_FIELDS: (keyof StockEventFormValues)
 // 'quantity','bookingLimitDatetime' are editable
 export const STOCK_EVENT_CINEMA_PROVIDER_READ_ONLY_FIELDS: (keyof StockEventFormValues)[] =
   ['beginningDate', 'beginningTime', 'priceCategoryId']
-
-export const STOCK_EVENT_EDITION_EMPTY_SYNCHRONIZED_READ_ONLY_FIELDS: (keyof StockEventFormValues)[] =
-  [
-    'beginningDate',
-    'beginningTime',
-    'remainingQuantity',
-    'bookingLimitDatetime',
-    'priceCategoryId',
-  ]
