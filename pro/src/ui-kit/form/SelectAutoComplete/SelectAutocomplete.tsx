@@ -72,10 +72,13 @@ const SelectAutocomplete = ({
   const [filteredOptions, setFilteredOptions] = useState(options)
 
   useEffect(() => {
-    if (isOpen && resetOnOpen && searchField.value !== '') {
-      setFieldValue(`search-${name}`, '', false)
-      setFieldValue(name, '', false)
+    const resetSearchField = async () => {
+      await setFieldValue(`search-${name}`, '', false)
+      await setFieldValue(name, '', false)
       onReset()
+    }
+    if (isOpen && resetOnOpen && searchField.value !== '') {
+      void resetSearchField()
     }
   }, [isOpen])
 
@@ -117,7 +120,7 @@ const SelectAutocomplete = ({
   }, [searchField.value, options])
 
   /* istanbul ignore next: DEBT TO FIX */
-  const handleKeyDown: KeyboardEventHandler<HTMLDivElement> = (event) => {
+  const handleKeyDown: KeyboardEventHandler<HTMLDivElement> = async (event) => {
     /* istanbul ignore next */
     switch (event.key) {
       case 'ArrowUp':
@@ -147,13 +150,13 @@ const SelectAutocomplete = ({
         listRef.current?.focus()
         break
       case 'Space':
-        openField()
+        await openField()
         listRef.current?.focus()
         break
       case 'Enter':
         if (isOpen && hoveredOptionIndex !== null) {
           event.preventDefault()
-          selectOption(String(filteredOptions[hoveredOptionIndex].value))
+          await selectOption(String(filteredOptions[hoveredOptionIndex].value))
         }
         break
       case 'Escape':
@@ -170,7 +173,7 @@ const SelectAutocomplete = ({
     }
   }
 
-  const selectOption = (value: string) => {
+  const selectOption = async (value: string) => {
     let updatedSelection
     if (multi) {
       if (field.value.includes(value) && Array.isArray(field.value)) {
@@ -182,27 +185,31 @@ const SelectAutocomplete = ({
       updatedSelection = value
       setIsOpen(false)
       setHoveredOptionIndex(null)
-      setFieldValue(`search-${name}`, optionsLabelById[updatedSelection], false)
+      await setFieldValue(
+        `search-${name}`,
+        optionsLabelById[updatedSelection],
+        false
+      )
     }
-    setFieldValue(name, updatedSelection)
+    await setFieldValue(name, updatedSelection)
   }
 
-  const openField = () => {
+  const openField = async () => {
     /* istanbul ignore next */
     if (!isOpen) {
       setIsOpen(true)
     }
-    setFieldTouched(name, true)
+    await setFieldTouched(name, true)
   }
 
-  const toggleField = () => {
+  const toggleField = async () => {
     if (isOpen) {
       setIsOpen(false)
-      setFieldValue(`search-${name}`, '', false)
+      await setFieldValue(`search-${name}`, '', false)
     } else {
       setIsOpen(true)
     }
-    setFieldTouched(name, true)
+    await setFieldTouched(name, true)
   }
 
   const placeholderDisplay = Array.isArray(field.value)

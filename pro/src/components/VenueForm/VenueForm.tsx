@@ -98,11 +98,13 @@ const VenueForm = ({
   const [isSiretValued, setIsSiretValued] = useState(true)
 
   useEffect(() => {
-    canOffererCreateCollectiveOfferAdapter(offerer.id).then((response) =>
+    const loadCanOffererCreateCollectiveOffer = async () => {
+      const response = await canOffererCreateCollectiveOfferAdapter(offerer.id)
       setCanOffererCreateCollectiveOffer(
         response.payload.isOffererEligibleToEducationalOffer
       )
-    )
+    }
+    void loadCanOffererCreateCollectiveOffer()
   }, [])
 
   return (
