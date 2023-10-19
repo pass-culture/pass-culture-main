@@ -17,7 +17,10 @@ import { INITIAL_OFFERER_VENUES } from 'pages/Home/OffererVenues'
 import { HTTP_STATUS } from 'repository/pcapi/pcapiClient'
 
 import styles from './Homepage.module.scss'
-import HomepageBreadcrumb, { STEP_ID_OFFERERS } from './HomepageBreadcrumb'
+import HomepageBreadcrumb, {
+  STEP_ID_HOME_STATS,
+  STEP_ID_OFFERERS,
+} from './HomepageBreadcrumb'
 import Offerers from './Offerers/Offerers'
 import { OffererStats } from './OffererStats'
 import { ProfileAndSupport } from './ProfileAndSupport'
@@ -119,7 +122,9 @@ const Homepage = (): JSX.Element => {
           <PendingBankAccountCallout offerer={selectedOfferer} />
         </div>
         <HomepageBreadcrumb
-          activeStep={STEP_ID_OFFERERS}
+          activeStep={
+            isStatisticsDashboardEnabled ? STEP_ID_HOME_STATS : STEP_ID_OFFERERS
+          }
           isOffererStatsActive={isOffererStatsActive}
           profileRef={profileRef}
           statsRef={statsRef}
