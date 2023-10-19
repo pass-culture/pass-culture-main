@@ -282,7 +282,7 @@ describe('StocksEventList', () => {
   it('should bring me on new last page when deleting more than one page by action bar', async () => {
     const stocks = []
     for (let i = 0; i < STOCKS_PER_PAGE * 2 + 1; i++) {
-      const stock = individualStockEventFactory({ priceCategoryId: 1 })
+      const stock = individualStockEventFactory({ id: i, priceCategoryId: 1 })
       stocks.push(stock)
     }
 
@@ -319,10 +319,11 @@ describe('StocksEventList', () => {
       Array(STOCKS_PER_PAGE + 1).fill({
         beginningDatetime: '2021-10-15T12:00:00.000Z',
         bookingLimitDatetime: '2021-09-15T12:00:00.000Z',
+        isEventDeletable: true,
         bookingsQuantity: 0,
         priceCategoryId: 1,
         quantity: 18,
-        uuid: expect.any(String),
+        id: expect.any(Number),
       })
     )
 
@@ -333,8 +334,14 @@ describe('StocksEventList', () => {
   it('should delete line when clicking on trash icon', async () => {
     renderStocksEventList({
       stocks: [
-        individualStockEventFactory({ priceCategoryId: 1 }),
-        individualStockEventFactory({ priceCategoryId: 1 }),
+        individualStockEventFactory({
+          id: 2,
+          priceCategoryId: 1,
+        }),
+        individualStockEventFactory({
+          id: 1,
+          priceCategoryId: 1,
+        }),
       ],
     })
     expect(
@@ -355,7 +362,8 @@ describe('StocksEventList', () => {
         bookingsQuantity: 0,
         priceCategoryId: 1,
         quantity: 18,
-        uuid: expect.any(String),
+        id: 1,
+        isEventDeletable: true,
       },
     ])
   })
@@ -366,7 +374,7 @@ describe('StocksEventList', () => {
   it('should bring me on previous page when deleting only one line by trash icon', async () => {
     renderStocksEventList({
       stocks: Array(STOCKS_PER_PAGE * 2 + 1).fill(
-        individualStockEventFactory({ priceCategoryId: 1 })
+        individualStockEventFactory({ id: 1, priceCategoryId: 1 })
       ),
     })
 
