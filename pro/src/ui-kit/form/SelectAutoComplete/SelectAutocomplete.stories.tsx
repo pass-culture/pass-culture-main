@@ -12,7 +12,10 @@ export default {
   component: SelectAutocomplete,
 }
 interface Args extends SelectAutocompleteProps {
-  initialValues: { departement: string | string[] }
+  initialValues: {
+    departement: string | string[]
+    'search-departement': string
+  }
 }
 
 const Template: Story<Args> = (args) => (
@@ -44,7 +47,7 @@ const defaultProps: Args = {
     { value: '14', label: 'Calvados' },
     { value: '15', label: 'Cantal' },
   ],
-  initialValues: { departement: '01' },
+  initialValues: { departement: '01', 'search-departement': '' },
   label: 'Département',
   hideFooter: false,
   hideTags: false,
@@ -60,13 +63,13 @@ export const Multi = Template.bind({})
 Multi.args = {
   ...defaultProps,
   multi: true,
-  initialValues: { departement: ['01', '02'] },
+  initialValues: { departement: ['01', '02'], 'search-departement': '' },
 }
 
 export const WithoutTags = Template.bind({})
 WithoutTags.args = {
   ...defaultProps,
   multi: true,
-  initialValues: { departement: ['01', '02'] },
+  initialValues: { departement: ['01', '02'], 'search-departement': '' },
   hideTags: true,
 }

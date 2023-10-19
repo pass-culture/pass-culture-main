@@ -10,7 +10,7 @@ export default {
   component: MultiSelectAutocomplete,
 }
 interface Args extends MultiSelectAutocompleteProps {
-  initialValues: { departement: string[] }
+  initialValues: { departement: string[]; 'search-departement': string }
 }
 
 const Template: Story<Args> = (args) => (
@@ -42,7 +42,7 @@ const defaultProps: Args = {
     { value: '14', label: 'Calvados' },
     { value: '15', label: 'Cantal' },
   ],
-  initialValues: { departement: ['01', '02'] },
+  initialValues: { departement: ['01', '02'], 'search-departement': '' },
   label: 'Département',
   hideFooter: false,
   hideTags: false,
