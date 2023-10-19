@@ -49,11 +49,10 @@ import styles from './RecurrenceForm.module.scss'
 interface Props {
   stocks: StocksEvent[]
   setIsOpen: (p: boolean) => void
-  setStocks: (stocks: StocksEvent[]) => void
   departmentCode: string
   offerId: number
   priceCategories: PriceCategoryResponseModel[]
-  setStocksInEditionForm?: (stocks: StocksEvent[]) => void
+  setStocks: (stocks: StocksEvent[]) => void
 }
 
 const mapNumberToFrenchOrdinals = (n: number): string => {
@@ -114,11 +113,10 @@ const getMonthlyOptions = (values: RecurrenceFormValues) => {
 export const RecurrenceForm = ({
   stocks,
   setIsOpen,
-  setStocks,
   departmentCode,
   offerId,
   priceCategories,
-  setStocksInEditionForm,
+  setStocks,
 }: Props): JSX.Element => {
   const priceCategoryOptions = getPriceCategoryOptions(priceCategories)
   const notify = useNotification()
@@ -132,8 +130,7 @@ export const RecurrenceForm = ({
       notify
     )
     if (newStocks?.length) {
-      setStocks([...newStocks])
-      setStocksInEditionForm?.([...newStocks])
+      setStocks(newStocks)
     }
     setIsOpen(false)
   }

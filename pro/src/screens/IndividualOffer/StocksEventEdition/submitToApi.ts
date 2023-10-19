@@ -10,7 +10,7 @@ export const submitToApi = async (
   offerId: number,
   departmentCode: string,
   setErrors: StocksEventFormik['setErrors'],
-  setStocksInEditionForm: (stocks: StocksEvent[]) => void
+  setStocks: (stocks: StocksEvent[]) => void
 ) => {
   const {
     isOk,
@@ -25,5 +25,5 @@ export const submitToApi = async (
     throw new Error(upsertStocksMessage)
   }
 
-  setStocksInEditionForm(serializeStockEvents(payload.stocks))
+  setStocks(serializeStockEvents(payload.stocks))
 }

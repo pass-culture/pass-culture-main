@@ -48,7 +48,7 @@ export const StocksEventCreation = ({
     )
   }
 
-  const newHandleNextStep = () => {
+  const handleNextStep = () => {
     // Check that there is at least one stock left
     if (stocks.length < 1) {
       notify.error('Veuillez renseigner au moins une date')
@@ -111,7 +111,7 @@ export const StocksEventCreation = ({
       <ActionBar
         isDisabled={false}
         onClickPrevious={handlePreviousStep}
-        onClickNext={newHandleNextStep}
+        onClickNext={handleNextStep}
         step={OFFER_WIZARD_STEP_IDS.STOCKS}
         // now we submit in RecurrenceForm, StocksEventCreation could not be dirty
         dirtyForm={false}
