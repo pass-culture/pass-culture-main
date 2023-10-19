@@ -192,7 +192,6 @@ const MultiSelectAutocomplete = ({
           {field.value.map((value: string) => (
             <Tag
               key={`tag-${name}-${value}`}
-              label={optionsLabelById[value]}
               closeable={{
                 onClose: () => {
                   setFieldValue(
@@ -202,7 +201,9 @@ const MultiSelectAutocomplete = ({
                 },
                 disabled,
               }}
-            />
+            >
+              {optionsLabelById[value]}
+            </Tag>
           ))}
         </div>
       )}

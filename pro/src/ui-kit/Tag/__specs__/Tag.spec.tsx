@@ -10,7 +10,7 @@ describe('src | components | layout | Banner', () => {
 
     it('should display label', () => {
       // given
-      render(<Tag label={label} />)
+      render(<Tag>{label}</Tag>)
 
       // then
       expect(screen.getByText('Département')).toBeInTheDocument()
@@ -23,7 +23,7 @@ describe('src | components | layout | Banner', () => {
         onClose: spyClose,
       }
       // given
-      render(<Tag label={label} closeable={closeable} />)
+      render(<Tag closeable={closeable}>{label}</Tag>)
 
       // when
       await userEvent.click(screen.getByTitle('Supprimer l’option'))
