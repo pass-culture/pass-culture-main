@@ -62,6 +62,7 @@ class LogsTest:
             "userId": "f0e2a21bcf499cbc713c47d8f034d66e90a99f9ffcfe96466c9971dfdc5c9816",
             "uai": "EAU123",
             "user_role": AdageFrontRoles.READONLY,
+            "isFromNoResult": None,
         }
 
     def test_log_offer_detail(self, client, caplog):
@@ -141,6 +142,7 @@ class LogsTest:
             "userId": "f0e2a21bcf499cbc713c47d8f034d66e90a99f9ffcfe96466c9971dfdc5c9816",
             "uai": "EAU123",
             "user_role": AdageFrontRoles.READONLY,
+            "isFromNoResult": None,
         }
 
     def test_log_contact_modal_button_click(self, client, caplog):
@@ -196,6 +198,7 @@ class LogsTest:
             "userId": "f0e2a21bcf499cbc713c47d8f034d66e90a99f9ffcfe96466c9971dfdc5c9816",
             "uai": "EAU123",
             "user_role": AdageFrontRoles.READONLY,
+            "isFromNoResult": None,
         }
 
     def test_log_header_link_click(self, client, caplog):
@@ -258,6 +261,7 @@ class LogsTest:
             "uai": "EAU123",
             "user_role": AdageFrontRoles.READONLY,
             "queryId": None,
+            "isFromNoResult": None,
         }
 
     def test_log_tracking_filter(self, client, caplog):
@@ -294,6 +298,7 @@ class LogsTest:
                 "key1": "value1",
                 "key2": "value2",
             },
+            "isFromNoResult": None,
         }
 
     def test_log_closer_sastifaction_survey(self, client, caplog):
@@ -374,4 +379,5 @@ class LogsTest:
             "uai": "EAU123",
             "user_role": AdageFrontRoles.READONLY,
             "userId": "f0e2a21bcf499cbc713c47d8f034d66e90a99f9ffcfe96466c9971dfdc5c9816",
+            "isFromNoResult": None,
         }
