@@ -5,7 +5,7 @@ import re
 
 from pcapi.connectors.ftp_titelive import connect_to_titelive_ftp
 from pcapi.connectors.ftp_titelive import get_files_to_process_from_titelive_ftp
-from pcapi.core.categories import subcategories
+from pcapi.core.categories import subcategories_v2 as subcategories
 import pcapi.core.fraud.models as fraud_models
 import pcapi.core.offers.api as offers_api
 from pcapi.core.offers.api import deactivate_permanently_unavailable_products
@@ -376,7 +376,7 @@ class TiteLiveThings(LocalProvider):
         extra_data = self.product_extra_data | get_extra_data_from_infos(self.product_infos)
         product.extraData = extra_data
 
-        if not product.isGcuCompatible and product.extraData:
+        if product.isGcuCompatible is False and product.extraData:
             self.product_approved_eans.append(product.extraData.get("ean"))
 
     def open_next_file(self):  # type: ignore [no-untyped-def]
@@ -413,9 +413,9 @@ class TiteLiveThings(LocalProvider):
             try:
                 offers_api.approves_provider_product_and_rejected_offers(ean)
             except ProductNotFound as exception:
-                logger.error("Imported product with ean %s not found", extra={"ean": ean, "exc": str(exception)})
+                logger.error("Imported product with ean not found", extra={"ean": ean, "exc": str(exception)})
             except NotUpdateProductOrOffers as exception:
-                logger.error("Product with ean %s cannot be approved", extra={"ean": ean, "exc": str(exception)})
+                logger.error("Product with ean cannot be approved", extra={"ean": ean, "exc": str(exception)})
 
 
 def get_lines_from_thing_file(thing_file: str):  # type: ignore [no-untyped-def]

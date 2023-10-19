@@ -99,7 +99,7 @@ const Offers = ({
       }
       return filterNames
         .map(
-          filterName =>
+          (filterName) =>
             searchFilters[filterName] !== lastSearchFilters[filterName]
         )
         .includes(true)
@@ -151,7 +151,7 @@ const Offers = ({
   )
 
   const toggleSelectAllCheckboxes = useCallback(() => {
-    setAreAllOffersSelected(currentValue => !currentValue)
+    setAreAllOffersSelected((currentValue) => !currentValue)
   }, [])
 
   const resetFilters = () => {
@@ -207,15 +207,15 @@ const Offers = ({
   }
 
   const getUpdateOffersStatusMessage = (tmpSelectedOfferIds: string[]) => {
-    const selectedOffers = offers.filter(offer =>
+    const selectedOffers = offers.filter((offer) =>
       tmpSelectedOfferIds.includes(offer.id.toString())
     )
-    if (selectedOffers.some(offer => offer.status === OFFER_STATUS_DRAFT)) {
+    if (selectedOffers.some((offer) => offer.status === OFFER_STATUS_DRAFT)) {
       return 'Vous ne pouvez pas publier des brouillons depuis cette liste'
     }
     if (
       audience == Audience.COLLECTIVE &&
-      selectedOffers.some(offer => offer.hasBookingLimitDatetimesPassed)
+      selectedOffers.some((offer) => offer.hasBookingLimitDatetimesPassed)
     ) {
       return 'Vous ne pouvez pas publier des offres collectives dont la date de réservation est passée'
     }
@@ -224,10 +224,10 @@ const Offers = ({
 
   /* istanbul ignore next: DEBT, TO FIX */
   const canDeleteOffers = (tmpSelectedOfferIds: string[]) => {
-    const selectedOffers = offers.filter(offer =>
+    const selectedOffers = offers.filter((offer) =>
       tmpSelectedOfferIds.includes(offer.id.toString())
     )
-    return !selectedOffers.some(offer => offer.status !== OFFER_STATUS_DRAFT)
+    return !selectedOffers.some((offer) => offer.status !== OFFER_STATUS_DRAFT)
   }
   return (
     <div className="offers-page">

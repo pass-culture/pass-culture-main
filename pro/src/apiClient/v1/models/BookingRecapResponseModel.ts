@@ -13,6 +13,7 @@ export type BookingRecapResponseModel = {
   bookingAmount: number;
   bookingDate: string;
   bookingIsDuo: boolean;
+  bookingPriceCategoryLabel?: string | null;
   bookingStatus: BookingRecapStatus;
   bookingStatusHistory: Array<BookingRecapResponseBookingStatusHistoryModel>;
   bookingToken?: string | null;

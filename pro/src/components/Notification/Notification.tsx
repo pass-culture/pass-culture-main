@@ -17,27 +17,27 @@ const Notification = (): JSX.Element | null => {
   const notificationHook = useNotification()
 
   useEffect(() => {
-    if (notification && notification.text) {
-      setIsVisible(true)
-      setIsInDom(true)
-      const timer = setTimeout(() => setIsVisible(false), notification.duration)
-      return () => clearTimeout(timer)
+    if (!notification?.text || notification.duration === undefined) {
+      return () => undefined
     }
-    return () => undefined
-  }, [notification])
 
-  useEffect(() => {
-    if (!isVisible && notification && notification.text) {
-      const timer = setTimeout(() => {
-        /* istanbul ignore next: DEBT, TO FIX */
-        setIsInDom(false)
-        /* istanbul ignore next: DEBT, TO FIX */
-        notificationHook.close()
-      }, NOTIFICATION_TRANSITION_DURATION)
-      return () => clearTimeout(timer)
+    setIsVisible(true)
+    setIsInDom(true)
+
+    const hideNotificationTimer = setTimeout(() => {
+      setIsVisible(false)
+    }, notification.duration)
+
+    const removeNotificationFromDOMTimer = setTimeout(() => {
+      setIsInDom(false)
+      notificationHook.close()
+    }, notification.duration + NOTIFICATION_TRANSITION_DURATION)
+
+    return () => {
+      clearTimeout(hideNotificationTimer)
+      clearTimeout(removeNotificationFromDOMTimer)
     }
-    return () => undefined
-  }, [isVisible, notification])
+  }, [notification])
 
   if (!notification || !isInDom) {
     return null

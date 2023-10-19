@@ -9,7 +9,9 @@ export type StocksQueryModel = {
   date?: string | null;
   order_by?: StocksOrderedBy;
   order_by_desc?: boolean;
+  page?: number;
   price_category_id?: number | null;
+  stocks_limit_per_page?: number;
   time?: string | null;
 };
 

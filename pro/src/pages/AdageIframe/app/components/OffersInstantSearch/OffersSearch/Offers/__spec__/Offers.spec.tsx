@@ -23,6 +23,7 @@ import {
 } from 'pages/AdageIframe/app/providers'
 import { AdageUserContextProvider } from 'pages/AdageIframe/app/providers/AdageUserContext'
 import {
+  defaultCollectiveOffer,
   defaultUseInfiniteHitsReturn,
   defaultUseStatsReturn,
 } from 'utils/adageFactories'
@@ -132,6 +133,14 @@ describe('offers', () => {
           hits: searchFakeResults,
           results: { queryID: 'queryId' },
         }),
+        useInstantSearch: () => ({
+          scopedResults: [
+            {
+              indexId: 'test-props-value',
+              results: { ...defaultUseStatsReturn, queryID: 'queryId' },
+            },
+          ],
+        }),
       }
     })
 
@@ -140,51 +149,7 @@ describe('offers', () => {
       preferences: { feedback_form_closed: null },
     }
 
-    offerInParis = {
-      id: 479,
-      name: 'Une chouette à la mer',
-      description: 'Une offre vraiment chouette',
-      subcategoryLabel: 'Cinéma',
-      stock: {
-        id: 825,
-        beginningDatetime: new Date('2022-09-16T00:00:00Z').toISOString(),
-        bookingLimitDatetime: new Date('2022-09-16T00:00:00Z').toISOString(),
-        isBookable: true,
-        price: 140000,
-      },
-      venue: {
-        id: 1,
-        address: '1 boulevard Poissonnière',
-        city: 'Paris',
-        name: 'Le Petit Rintintin 33',
-        postalCode: '75000',
-        publicName: 'Le Petit Rintintin 33',
-        coordinates: {
-          latitude: 48.87004,
-          longitude: 2.3785,
-        },
-        managingOfferer: {
-          name: 'Le Petit Rintintin Management',
-        },
-      },
-      isSoldOut: false,
-      isExpired: false,
-      isFavorite: false,
-      visualDisabilityCompliant: true,
-      mentalDisabilityCompliant: true,
-      audioDisabilityCompliant: true,
-      motorDisabilityCompliant: true,
-      contactEmail: '',
-      contactPhone: '',
-      domains: [],
-      offerVenue: {
-        venueId: 1,
-        otherAddress: '',
-        addressType: OfferAddressType.OFFERER_VENUE,
-      },
-      students: [StudentLevels.COLL_GE_4E, StudentLevels.COLL_GE_3E],
-      interventionArea: ['75', '92'],
-    }
+    offerInParis = defaultCollectiveOffer
 
     offerInCayenne = {
       id: 480,
@@ -280,6 +245,7 @@ describe('offers', () => {
 
     offersProps = {
       submitCount: 0,
+      indexId: 'test-props-value',
     }
   })
 
@@ -360,7 +326,7 @@ describe('offers', () => {
     // Given
     vi.spyOn(apiAdage, 'getCollectiveOffer').mockImplementationOnce(
       () =>
-        new CancelablePromise<CollectiveOfferResponseModel>(resolve =>
+        new CancelablePromise<CollectiveOfferResponseModel>((resolve) =>
           setTimeout(() => resolve(offerInParis), 500)
         )
     )
@@ -398,13 +364,13 @@ describe('offers', () => {
     vi.spyOn(apiAdage, 'getCollectiveOffer')
       .mockImplementationOnce(
         () =>
-          new CancelablePromise<CollectiveOfferResponseModel>(resolve =>
+          new CancelablePromise<CollectiveOfferResponseModel>((resolve) =>
             setTimeout(() => resolve(offerInParis), 500)
           )
       )
       .mockImplementationOnce(
         () =>
-          new CancelablePromise<CollectiveOfferResponseModel>(resolve =>
+          new CancelablePromise<CollectiveOfferResponseModel>((resolve) =>
             setTimeout(() => resolve(offerInCayenne), 500)
           )
       )

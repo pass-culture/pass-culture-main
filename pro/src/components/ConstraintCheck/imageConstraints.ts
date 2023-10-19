@@ -10,7 +10,7 @@ export type Constraint = {
 
 export const imageConstraints = {
   formats: (supportedImageTypes: string[]): Constraint => {
-    const isNotAnImage: FileChecker = async file =>
+    const isNotAnImage: FileChecker = async (file) =>
       supportedImageTypes.includes(file.type) &&
       (await getImageBitmap(file)) !== null
     return {
@@ -20,7 +20,7 @@ export const imageConstraints = {
     }
   },
   size: (maxSize: number): Constraint => {
-    const isTooBig: FileChecker = async file => file.size <= maxSize
+    const isTooBig: FileChecker = async (file) => file.size <= maxSize
 
     return {
       id: 'size',
@@ -29,7 +29,7 @@ export const imageConstraints = {
     }
   },
   width: (minWidth: number): Constraint => {
-    const isOfPoorQuality: FileChecker = async file => {
+    const isOfPoorQuality: FileChecker = async (file) => {
       const imageBitmap = await getImageBitmap(file)
       return imageBitmap !== null && imageBitmap.width >= minWidth
     }
@@ -41,7 +41,7 @@ export const imageConstraints = {
     }
   },
   height: (minHeight?: number): Constraint => {
-    const isOfPoorQuality: FileChecker = async file => {
+    const isOfPoorQuality: FileChecker = async (file) => {
       if (!minHeight) {
         return false
       }
@@ -62,10 +62,10 @@ export const getValidatorErrors = async (
   file: File
 ): Promise<string[]> => {
   const failingConstraints = await Promise.all(
-    constraints.map(contraint =>
+    constraints.map((contraint) =>
       contraint
         .asyncValidator(file)
-        .then(isValid => (isValid ? undefined : contraint.id))
+        .then((isValid) => (isValid ? undefined : contraint.id))
     )
   )
 

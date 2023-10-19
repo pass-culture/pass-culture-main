@@ -45,7 +45,7 @@ class EditProviderForm(FlaskForm):
             wtforms.validators.Length(max=1024, message="Doit contenir moins de %(max)d caractères"),
         ),
     )
-    provider_hmac_key = fields.PCOptPasswordField("Clé de chiffrement des requêtes")
+    provider_hmac_key = fields.PCOptPasswordField("Clé de Signature des requêtes")
     enabled_for_pro = fields.PCSwitchBooleanField("Actif pour les pros", default="checked")
     is_active = fields.PCSwitchBooleanField("Actif", default="checked")
 

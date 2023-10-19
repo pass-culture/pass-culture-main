@@ -8,7 +8,7 @@ export default {
   component: Callout,
 }
 
-const Template: Story<CalloutProps> = props => (
+const Template: Story<CalloutProps> = (props) => (
   <Callout {...props}>
     Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod
     tempor incididunt ut labore et dolore magna aliqua.

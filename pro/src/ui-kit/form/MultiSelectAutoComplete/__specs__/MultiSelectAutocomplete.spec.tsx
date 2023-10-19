@@ -232,7 +232,7 @@ describe('MultiSelectAutocomplete', () => {
     const validationSchema = yup.object().shape({
       departement: yup.array().test({
         message: 'Veuillez renseigner un département',
-        test: domains => Boolean(domains?.length && domains.length > 0),
+        test: (domains) => Boolean(domains?.length && domains.length > 0),
       }),
     })
     render(

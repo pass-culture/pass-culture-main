@@ -15,7 +15,7 @@ interface Args extends SelectAutocompleteProps {
   initialValues: { departement: string | string[] }
 }
 
-const Template: Story<Args> = args => (
+const Template: Story<Args> = (args) => (
   <Formik initialValues={args.initialValues} onSubmit={() => {}}>
     <SelectAutocomplete {...args} />
   </Formik>

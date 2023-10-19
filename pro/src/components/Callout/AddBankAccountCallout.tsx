@@ -1,20 +1,28 @@
 import React from 'react'
 
+import { GetOffererResponseModel } from 'apiClient/v1'
 import Callout from 'components/Callout/Callout'
 import { CalloutVariant } from 'components/Callout/types'
 import useActiveFeature from 'hooks/useActiveFeature'
 
 export interface AddBankAccountCalloutProps {
+  offerer?: GetOffererResponseModel | null
   titleOnly?: boolean
 }
 
 const AddBankAccountCallout = ({
+  offerer = null,
   titleOnly = false,
 }: AddBankAccountCalloutProps): JSX.Element | null => {
+  const displayBankAccountBanner =
+    offerer &&
+    !offerer.hasValidBankAccount &&
+    offerer.venuesWithNonFreeOffersWithoutBankAccounts.length > 0
+
   const isNewBankDetailsJourneyEnabled = useActiveFeature(
     'WIP_ENABLE_NEW_BANK_DETAILS_JOURNEY'
   )
-  if (!isNewBankDetailsJourneyEnabled) {
+  if (!isNewBankDetailsJourneyEnabled || !displayBankAccountBanner) {
     return null
   }
 
@@ -24,7 +32,9 @@ const AddBankAccountCallout = ({
       links={[
         {
           href: '/remboursements/informations-bancaires',
-          linkTitle: 'ajouter un compte bancaire',
+          linkTitle: 'Ajouter un compte bancaire',
+          targetLink: '',
+          isExternal: false,
         },
       ]}
       type={CalloutVariant.ERROR}
@@ -32,7 +42,7 @@ const AddBankAccountCallout = ({
     >
       <div>
         Rendez-vous dans l'onglet informations bancaires de votre page
-        Remboursements
+        Remboursements.
       </div>
     </Callout>
   )

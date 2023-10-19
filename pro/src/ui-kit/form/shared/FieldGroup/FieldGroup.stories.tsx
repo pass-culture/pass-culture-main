@@ -12,7 +12,7 @@ export default {
 
 const Template: Story<{
   className: string
-}> = args => (
+}> = (args) => (
   <FieldGroup {...args}>
     <BaseInput type="text" />
     <BaseInput placeholder="Rechercher le terme" type="text" />

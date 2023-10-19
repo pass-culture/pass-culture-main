@@ -16,7 +16,7 @@ const FAILING_RESPONSE: AdapterFailure<PayloadFailure> = {
 }
 
 const getCollectiveOfferTemplateAdapter: GetCollectiveOfferTemplateAdapter =
-  async offerId => {
+  async (offerId) => {
     try {
       const offer = await api.getCollectiveOfferTemplate(offerId)
 

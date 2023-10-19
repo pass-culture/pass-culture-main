@@ -98,20 +98,20 @@ EXPECTED_RESULT_V4 = {
 
 class ParseRawBankInfoDataTest:
     @pytest.mark.parametrize(
-        "procedure_version, etablissement, identifiant_du_lieu, expected_result",
+        "procedure_version, etablissement, identifiant_du_lieu, expected_result, prenom, nom",
         [
-            (3, VENUE_FIELD, None, EXPECTED_RESULT_WITH_SIRET_V3),
-            (4, None, VENUE_DMS_TOKEN_FIELD_WITHOUT_PRO_PREFIX, EXPECTED_RESULT_V4),
-            (4, VENUE_FIELD, VENUE_DMS_TOKEN_FIELD_WITHOUT_PRO_PREFIX, EXPECTED_RESULT_V4),
-            (4, None, VENUE_DMS_TOKEN_FIELD_WITH_PRO_PREFIX, EXPECTED_RESULT_V4),
-            (4, VENUE_FIELD, VENUE_DMS_TOKEN_FIELD_WITH_PRO_PREFIX, EXPECTED_RESULT_V4),
+            (3, VENUE_FIELD, None, EXPECTED_RESULT_WITH_SIRET_V3, "Mon prénom", "Votre Nom plz"),
+            (4, None, VENUE_DMS_TOKEN_FIELD_WITHOUT_PRO_PREFIX, EXPECTED_RESULT_V4, "Prénom", "Nom"),
+            (4, VENUE_FIELD, VENUE_DMS_TOKEN_FIELD_WITHOUT_PRO_PREFIX, EXPECTED_RESULT_V4, "prénom", "nom"),
+            (4, None, VENUE_DMS_TOKEN_FIELD_WITH_PRO_PREFIX, EXPECTED_RESULT_V4, "Un prénom", "Un Nom"),
+            (4, VENUE_FIELD, VENUE_DMS_TOKEN_FIELD_WITH_PRO_PREFIX, EXPECTED_RESULT_V4, "Votre prénom", "Votre nom"),
         ],
     )
-    def test_parsing_works(self, procedure_version, etablissement, identifiant_du_lieu, expected_result):
+    def test_parsing_works(self, procedure_version, etablissement, identifiant_du_lieu, expected_result, prenom, nom):
         champs = [
             {"id": "Q2hhbXAtNDA3ODk1", "label": "Mes informations", "stringValue": "", "value": None},
-            {"id": "Q2hhbXAtNDA3ODg5", "label": "Mon prénom", "stringValue": "John", "value": "John"},
-            {"id": "Q2hhbXAtNDA3ODkw", "label": "Mon nom", "stringValue": "Doe", "value": "Doe"},
+            {"id": "Q2hhbXAtNDA3ODg5", "label": prenom, "stringValue": "John", "value": "John"},
+            {"id": "Q2hhbXAtNDA3ODkw", "label": nom, "stringValue": "Doe", "value": "Doe"},
             {
                 "id": "Q2hhbXAtNDA3ODky",
                 "label": "Mon numéro de téléphone",

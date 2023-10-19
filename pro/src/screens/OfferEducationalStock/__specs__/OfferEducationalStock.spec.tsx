@@ -94,7 +94,7 @@ describe('OfferEducationalStock', () => {
     }),
   ])(
     'should not disable description, price and places when offer is confirmed or used since less than 2 days',
-    offer => {
+    (offer) => {
       const testProps: OfferEducationalStockProps = {
         ...defaultProps,
         offer,
@@ -126,7 +126,7 @@ describe('OfferEducationalStock', () => {
     }),
   ])(
     'should disable description, price and places when offer is reimbursed or is used since more than 2 days',
-    offer => {
+    (offer) => {
       const testProps: OfferEducationalStockProps = {
         ...defaultProps,
         offer,

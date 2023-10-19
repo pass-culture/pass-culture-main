@@ -38,7 +38,7 @@ const CsvTable = ({ getCsvData }: CsvTableProps): JSX.Element => {
         <table id="csv-table">
           <thead>
             <tr>
-              {dataFromCsv.headers.map(header => (
+              {dataFromCsv.headers.map((header) => (
                 <th key={getKey(`header_${header}`)}>{header}</th>
               ))}
             </tr>

@@ -2,7 +2,6 @@ import { VenueResponse } from 'apiClient/adage'
 
 export const getDefaultFacetFilterUAICodeValue = (
   uai?: string | null,
-  departmentCode?: string | null,
   venueFilter?: VenueResponse | null
 ) => {
   const institutionIdFilters = ['offer.educationalInstitutionUAICode:all']
@@ -11,21 +10,14 @@ export const getDefaultFacetFilterUAICodeValue = (
     institutionIdFilters.push(`offer.educationalInstitutionUAICode:${uai}`)
   }
   const venueDepartmentFilter =
-    venueFilter && venueFilter.departementCode !== departmentCode
+    venueFilter && venueFilter.departementCode
       ? [
           `venue.departmentCode:${venueFilter?.departementCode}`,
           `offer.interventionArea:${venueFilter?.departementCode}`,
         ]
       : []
 
-  return departmentCode
-    ? [
-        [
-          `venue.departmentCode:${departmentCode}`,
-          `offer.interventionArea:${departmentCode}`,
-          ...venueDepartmentFilter,
-        ],
-        institutionIdFilters,
-      ]
+  return venueDepartmentFilter.length > 0
+    ? [venueDepartmentFilter, institutionIdFilters]
     : [institutionIdFilters]
 }

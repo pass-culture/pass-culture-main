@@ -562,6 +562,7 @@ class CancelCollectiveBookingTest(PostEndpointHelper):
         response = self.post_to_endpoint(
             authenticated_client,
             collective_booking_id=confirmed.id,
+            form={"reason": educational_models.CollectiveBookingCancellationReasons.BACKOFFICE.value},
         )
 
         # then
@@ -583,6 +584,7 @@ class CancelCollectiveBookingTest(PostEndpointHelper):
         response = self.post_to_endpoint(
             authenticated_client,
             collective_booking_id=reimbursed.id,
+            form={"reason": educational_models.CollectiveBookingCancellationReasons.BACKOFFICE.value},
         )
 
         # then
@@ -603,6 +605,7 @@ class CancelCollectiveBookingTest(PostEndpointHelper):
         response = self.post_to_endpoint(
             authenticated_client,
             collective_booking_id=cancelled.id,
+            form={"reason": educational_models.CollectiveBookingCancellationReasons.BACKOFFICE.value},
         )
 
         # then
@@ -615,6 +618,27 @@ class CancelCollectiveBookingTest(PostEndpointHelper):
 
         assert "Impossible d'annuler une réservation déjà annulée" in html_parser.extract_alert(
             redirected_response.data
+        )
+
+    def test_cant_cancel_booking_without_reason(self, authenticated_client, collective_bookings):
+        # give
+        confirmed = collective_bookings[1]
+
+        # when
+        response = self.post_to_endpoint(authenticated_client, collective_booking_id=confirmed.id)
+
+        # then
+        assert response.status_code == 303
+
+        db.session.refresh(confirmed)
+        assert confirmed.status == educational_models.CollectiveBookingStatus.CONFIRMED
+        assert confirmed.cancellationReason is None
+
+        redirected_response = authenticated_client.get(response.headers["location"])
+
+        assert (
+            "Les données envoyées comportent des erreurs. Raison: Information obligatoire"
+            in html_parser.extract_alert(redirected_response.data)
         )
 
 

@@ -10,7 +10,7 @@ export default {
   component: SvgIcon,
 }
 
-const Template: Story<SvgIconProps> = args => {
+const Template: Story<SvgIconProps> = (args) => {
   return <SvgIcon {...args} />
 }
 

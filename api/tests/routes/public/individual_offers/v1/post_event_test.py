@@ -84,7 +84,7 @@ class PostEventTest:
                 "location": {"type": "physical", "venueId": venue.id},
                 "name": "Nicolas Jaar dans ton salon",
                 "ticketCollection": {"way": "in_app"},
-                "priceCategories": [{"price": 2500, "label": "triangle or"}],
+                "priceCategories": [{"price": 30000, "label": "triangle or"}],
             },
         )
 
@@ -122,7 +122,7 @@ class PostEventTest:
         )
 
         created_price_category = offers_models.PriceCategory.query.one()
-        assert created_price_category.price == decimal.Decimal("25")
+        assert created_price_category.price == decimal.Decimal("300")
         assert created_price_category.label == "triangle or"
 
         assert response.json == {
@@ -154,7 +154,7 @@ class PostEventTest:
             "name": "Nicolas Jaar dans ton salon",
             "status": "SOLD_OUT",
             "ticketCollection": {"way": "in_app"},
-            "priceCategories": [{"id": created_price_category.id, "price": 2500, "label": "triangle or"}],
+            "priceCategories": [{"id": created_price_category.id, "price": 30000, "label": "triangle or"}],
         }
 
     @pytest.mark.usefixtures("db_session")

@@ -22,7 +22,7 @@ export const getInterventionAreaLabels = (
   } else if (interventionArea.includes(MAINLAND_OPTION_VALUE)) {
     labels.push(MAINLAND_OPTION_LABEL)
 
-    domtomOptions.forEach(domtomOption => {
+    domtomOptions.forEach((domtomOption) => {
       if (interventionArea.includes(domtomOption.value.toString())) {
         labels.push(domtomOption.label)
       }
@@ -30,7 +30,7 @@ export const getInterventionAreaLabels = (
   }
 
   if (labels.length === 0) {
-    venueInterventionOptions.forEach(interventionOption => {
+    venueInterventionOptions.forEach((interventionOption) => {
       if (interventionArea.includes(interventionOption.value.toString())) {
         labels.push(interventionOption.label)
       }

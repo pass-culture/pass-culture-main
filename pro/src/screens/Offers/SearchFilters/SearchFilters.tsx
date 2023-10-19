@@ -55,7 +55,7 @@ const SearchFilters = ({
   const updateSearchFilters = (
     newSearchFilters: Partial<SearchFiltersParams>
   ) => {
-    setSearchFilters(currentSearchFilters => ({
+    setSearchFilters((currentSearchFilters) => ({
       ...currentSearchFilters,
       ...newSearchFilters,
     }))

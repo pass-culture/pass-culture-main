@@ -1,4 +1,5 @@
 import React, { useCallback } from 'react'
+import { useSelector } from 'react-redux'
 
 import { computeURLCollectiveOfferId } from 'core/OfferEducational/utils/computeURLCollectiveOfferId'
 import { MAX_OFFERS_TO_DISPLAY } from 'core/Offers/constants'
@@ -7,7 +8,9 @@ import { hasSearchFilters, isOfferDisabled } from 'core/Offers/utils'
 import { Audience } from 'core/shared'
 import { getOffersCountToDisplay } from 'pages/Offers/domain/getOffersCountToDisplay'
 import NoResults from 'screens/Offers/NoResults'
+import { searchFiltersSelector } from 'store/offers/selectors'
 import { Banner } from 'ui-kit'
+import { BaseCheckbox } from 'ui-kit/form/shared'
 import { Pagination } from 'ui-kit/Pagination'
 import Spinner from 'ui-kit/Spinner/Spinner'
 
@@ -76,7 +79,7 @@ const Offers = ({
   const updateStatusFilter = (
     selectedStatus: SearchFiltersParams['status']
   ) => {
-    setSearchFilters(currentSearchFilters => ({
+    setSearchFilters((currentSearchFilters) => ({
       ...currentSearchFilters,
       status: selectedStatus,
     }))
@@ -96,7 +99,7 @@ const Offers = ({
 
   const selectOffer = useCallback(
     (offerId: number, selected: boolean, isTemplate: boolean) => {
-      setSelectedOfferIds(currentSelectedIds => {
+      setSelectedOfferIds((currentSelectedIds) => {
         const newSelectedOfferIds = [...currentSelectedIds]
         const id = computeURLCollectiveOfferId(offerId, isTemplate)
         if (selected) {
@@ -116,12 +119,14 @@ const Offers = ({
       areAllOffersSelected
         ? []
         : currentPageOffersSubset
-            .filter(offer => !isOfferDisabled(offer.status))
-            .map(offer => offer.id.toString())
+            .filter((offer) => !isOfferDisabled(offer.status))
+            .map((offer) => offer.id.toString())
     )
 
     toggleSelectAllCheckboxes()
   }
+
+  const savedSearchFilters = useSelector(searchFiltersSelector)
 
   return (
     <div aria-busy={isLoading} aria-live="polite" className="section">
@@ -143,27 +148,44 @@ const Offers = ({
             </div>
           )}
           {hasOffers && (
-            <table>
-              <OffersTableHead
-                applyFilters={applyFilters}
-                areAllOffersSelected={areAllOffersSelected}
-                areOffersPresent={hasOffers}
-                filters={searchFilters}
-                isAdminForbidden={isAdminForbidden}
-                selectAllOffers={selectAllOffers}
-                updateStatusFilter={updateStatusFilter}
-                audience={audience}
-                isAtLeastOneOfferChecked={isAtLeastOneOfferChecked}
-              />
-              <OffersTableBody
-                areAllOffersSelected={areAllOffersSelected}
-                offers={currentPageOffersSubset}
-                selectOffer={selectOffer}
-                selectedOfferIds={selectedOfferIds}
-                audience={audience}
-                refreshOffers={refreshOffers}
-              />
-            </table>
+            <>
+              <div className={styles['select-all-container']}>
+                <BaseCheckbox
+                  checked={areAllOffersSelected || isAtLeastOneOfferChecked}
+                  partialCheck={
+                    !areAllOffersSelected && isAtLeastOneOfferChecked
+                  }
+                  disabled={isAdminForbidden(savedSearchFilters) || !hasOffers}
+                  onChange={selectAllOffers}
+                  label={
+                    areAllOffersSelected
+                      ? 'Tout désélectionner'
+                      : 'Tout sélectionner'
+                  }
+                />
+              </div>
+              <table>
+                <OffersTableHead
+                  applyFilters={applyFilters}
+                  areAllOffersSelected={areAllOffersSelected}
+                  areOffersPresent={hasOffers}
+                  filters={searchFilters}
+                  isAdminForbidden={isAdminForbidden}
+                  selectAllOffers={selectAllOffers}
+                  updateStatusFilter={updateStatusFilter}
+                  audience={audience}
+                  isAtLeastOneOfferChecked={isAtLeastOneOfferChecked}
+                />
+                <OffersTableBody
+                  areAllOffersSelected={areAllOffersSelected}
+                  offers={currentPageOffersSubset}
+                  selectOffer={selectOffer}
+                  selectedOfferIds={selectedOfferIds}
+                  audience={audience}
+                  refreshOffers={refreshOffers}
+                />
+              </table>
+            </>
           )}
           {hasOffers && (
             <div className={styles['offers-pagination']}>

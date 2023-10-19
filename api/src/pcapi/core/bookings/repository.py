@@ -35,7 +35,7 @@ from pcapi.core.bookings.models import BookingStatusFilter
 from pcapi.core.bookings.models import ExternalBooking
 from pcapi.core.bookings.utils import _apply_departement_timezone
 from pcapi.core.bookings.utils import convert_booking_dates_utc_to_venue_timezone
-from pcapi.core.categories import subcategories
+from pcapi.core.categories import subcategories_v2 as subcategories
 from pcapi.core.educational import models as educational_models
 from pcapi.core.offerers.models import Offerer
 from pcapi.core.offerers.models import UserOfferer
@@ -95,7 +95,7 @@ def find_by_pro_user(
     user: User,
     booking_period: tuple[date, date] | None = None,
     status_filter: BookingStatusFilter | None = None,
-    event_date: datetime | None = None,
+    event_date: date | None = None,
     venue_id: int | None = None,
     offer_id: int | None = None,
     offer_type: OfferType | None = None,
@@ -332,7 +332,7 @@ def get_export(
     user: User,
     booking_period: tuple[date, date] | None = None,
     status_filter: BookingStatusFilter | None = BookingStatusFilter.BOOKED,
-    event_date: datetime | None = None,
+    event_date: date | None = None,
     venue_id: int | None = None,
     offer_type: OfferType | None = None,
     export_type: BookingExportType | None = BookingExportType.CSV,
@@ -428,7 +428,7 @@ def _get_filtered_booking_report(
     pro_user: User,
     period: tuple[date, date] | None,
     status_filter: BookingStatusFilter | None,
-    event_date: datetime | None = None,
+    event_date: date | None = None,
     venue_id: int | None = None,
     offer_id: int | None = None,
     offer_type: OfferType | None = None,
@@ -484,7 +484,7 @@ def _get_filtered_booking_pro(
     pro_user: User,
     period: tuple[date, date] | None = None,
     status_filter: BookingStatusFilter | None = None,
-    event_date: datetime | None = None,
+    event_date: date | None = None,
     venue_id: int | None = None,
     offer_id: int | None = None,
     offer_type: OfferType | None = None,
@@ -508,6 +508,7 @@ def _get_filtered_booking_pro(
             Booking.dateCreated.label("bookedAt"),
             Booking.quantity,
             Booking.amount.label("bookingAmount"),
+            Booking.priceCategoryLabel,
             Booking.dateUsed.label("usedAt"),
             Booking.cancellationDate.label("cancelledAt"),
             Booking.cancellationLimitDate,
@@ -546,6 +547,7 @@ def _serialize_booking_recap(booking: Booking) -> BookingRecap:
         beneficiary_firstname=booking.beneficiaryFirstname,
         beneficiary_lastname=booking.beneficiaryLastname,
         booking_amount=booking.bookingAmount,
+        booking_price_category_label=booking.priceCategoryLabel,
         booking_token=booking.bookingToken,
         booking_date=typing.cast(datetime, convert_booking_dates_utc_to_venue_timezone(booking.bookedAt, booking)),
         booking_is_used=booking.status in (BookingStatus.USED, BookingStatus.REIMBURSED),

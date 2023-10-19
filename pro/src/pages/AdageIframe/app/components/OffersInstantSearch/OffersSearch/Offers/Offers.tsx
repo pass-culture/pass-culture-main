@@ -1,5 +1,9 @@
 import React, { useEffect, useState } from 'react'
-import { useInfiniteHits, useStats } from 'react-instantsearch'
+import {
+  useInfiniteHits,
+  useInstantSearch,
+  useStats,
+} from 'react-instantsearch'
 
 import { AdageFrontRoles } from 'apiClient/adage'
 import useActiveFeature from 'hooks/useActiveFeature'
@@ -26,9 +30,12 @@ import { extractOfferIdFromObjectId, offerIsBookable } from './utils'
 
 export interface OffersProps {
   displayStats?: boolean
+  displayShowMore?: boolean
+  displayNoResult?: boolean
   logFiltersOnSearch?: (nbHits: number, queryId?: string) => void
   submitCount?: number
   isBackToTopVisibile?: boolean
+  indexId?: string //  IndexId is necessary if the component is within the scope of a react-instantsearch <Index />
 }
 
 type HydratedOffer = HydratedCollectiveOffer | HydratedCollectiveOfferTemplate
@@ -37,12 +44,20 @@ type OfferMap = Map<string, HydratedOffer>
 
 export const Offers = ({
   displayStats = true,
+  displayShowMore = true,
+  displayNoResult = true,
   logFiltersOnSearch,
   submitCount,
   isBackToTopVisibile = false,
-}: OffersProps): JSX.Element => {
-  const { hits, isLastPage, showMore, results } = useInfiniteHits()
+  indexId,
+}: OffersProps): JSX.Element | null => {
+  const { hits, isLastPage, showMore } = useInfiniteHits()
   const { nbHits } = useStats()
+  const { scopedResults, results: nonScopedResult } = useInstantSearch()
+
+  const results = indexId
+    ? scopedResults.find((res) => res.indexId === indexId)?.results
+    : nonScopedResult
 
   const [queriesAreLoading, setQueriesAreLoading] = useState(false)
   const [fetchedOffers, setFetchedOffers] = useState<OfferMap>(new Map())
@@ -67,7 +82,7 @@ export const Offers = ({
     }
 
     Promise.all(
-      hits.map(async hit => {
+      hits.map(async (hit) => {
         if (fetchedOffers.has(hit.objectID)) {
           return Promise.resolve({
             hitId: hit.objectID,
@@ -86,11 +101,11 @@ export const Offers = ({
         return { hitId: hit.objectID, offer }
       })
     )
-      .then(offersFromHits => {
+      .then((offersFromHits) => {
         const offersFromHitsMap = new Map(fetchedOffers)
         offersFromHits
-          .filter(res => res?.offer && offerIsBookable(res.offer))
-          .forEach(res => {
+          .filter((res) => res?.offer && offerIsBookable(res.offer))
+          .forEach((res) => {
             if (res?.hitId && res.offer) {
               offersFromHitsMap.set(res.hitId, res.offer)
             }
@@ -103,7 +118,7 @@ export const Offers = ({
   }, [results?.queryID])
 
   const offers = hits
-    .map(hit => fetchedOffers.get(hit.objectID))
+    .map((hit) => fetchedOffers.get(hit.objectID))
     .filter((offer): offer is HydratedOffer => !!offer)
 
   if (queriesAreLoading && offers.length === 0) {
@@ -114,8 +129,8 @@ export const Offers = ({
     )
   }
 
-  if (hits?.length === 0 || offers.length === 0) {
-    return <NoResultsPage query={results?.query} />
+  if (hits?.length === 0 || offers.length === 0 || !results) {
+    return displayNoResult ? <NoResultsPage query={results?.query} /> : null
   }
 
   return (
@@ -145,25 +160,27 @@ export const Offers = ({
             )}
           </div>
         ))}
-        <div className={styles['offers-load-more']}>
-          <div className={styles['offers-load-more-text']}>
-            {!isLastPage
-              ? `Vous avez vu ${offers.length} offre${
-                  offers.length > 1 ? 's' : ''
-                } sur ${nbHits}`
-              : 'Vous avez vu toutes les offres qui correspondent à votre recherche.'}
+        {displayShowMore && (
+          <div className={styles['offers-load-more']}>
+            <div className={styles['offers-load-more-text']}>
+              {!isLastPage
+                ? `Vous avez vu ${offers.length} offre${
+                    offers.length > 1 ? 's' : ''
+                  } sur ${nbHits}`
+                : 'Vous avez vu toutes les offres qui correspondent à votre recherche.'}
+            </div>
+            {!isLastPage &&
+              (queriesAreLoading ? (
+                <div className={styles['offers-loader']}>
+                  <Spinner />
+                </div>
+              ) : (
+                <Button onClick={showMore} variant={ButtonVariant.SECONDARY}>
+                  Voir plus d’offres
+                </Button>
+              ))}
           </div>
-          {!isLastPage &&
-            (queriesAreLoading ? (
-              <div className={styles['offers-loader']}>
-                <Spinner />
-              </div>
-            ) : (
-              <Button onClick={showMore} variant={ButtonVariant.SECONDARY}>
-                Voir plus d’offres
-              </Button>
-            ))}
-        </div>
+        )}
       </ul>
       {isBackToTopVisibile && (
         <a href="#root" className={styles['back-to-top-button']}>

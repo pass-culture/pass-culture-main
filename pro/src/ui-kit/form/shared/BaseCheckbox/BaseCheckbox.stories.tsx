@@ -10,7 +10,7 @@ export default {
   component: BaseCheckbox,
 }
 
-const Template: Story<BaseCheckboxProps> = args => (
+const Template: Story<BaseCheckboxProps> = (args) => (
   <div>
     <BaseCheckbox {...args} />
   </div>

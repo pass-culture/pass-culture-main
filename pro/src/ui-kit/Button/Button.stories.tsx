@@ -35,7 +35,7 @@ export default {
   },
 }
 
-const Template: Story<ButtonProps> = args => (
+const Template: Story<ButtonProps> = (args) => (
   <div style={{ margin: '50px', display: 'flex' }}>
     <Button {...args}>{args.children}</Button>
   </div>

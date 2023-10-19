@@ -4,7 +4,7 @@ import { AutocompleteItemProps } from 'ui-kit/form/shared/AutocompleteList/type'
 export const serializeAdressData = (
   adressData: AdresseData[]
 ): AutocompleteItemProps[] => {
-  return adressData.map(data => ({
+  return adressData.map((data) => ({
     value: data.id,
     label: data.label,
     disabled: false,

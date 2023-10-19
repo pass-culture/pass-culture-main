@@ -3,14 +3,21 @@ import { userEvent } from '@testing-library/user-event'
 
 import { AdageFrontRoles, AuthenticatedResponse } from 'apiClient/adage'
 import { apiAdage } from 'apiClient/api'
+import Notification from 'components/Notification/Notification'
+import { GET_DATA_ERROR_MESSAGE } from 'core/shared'
 import {
   AlgoliaQueryContextProvider,
   FiltersContextProvider,
 } from 'pages/AdageIframe/app/providers'
 import { AdageUserContextProvider } from 'pages/AdageIframe/app/providers/AdageUserContext'
 import * as pcapi from 'pages/AdageIframe/repository/pcapi/pcapi'
+import {
+  defaultUseInfiniteHitsReturn,
+  defaultUseStatsReturn,
+} from 'utils/adageFactories'
 import { renderWithProviders } from 'utils/renderWithProviders'
 
+import { MAIN_INDEX_ID } from '../../OffersInstantSearch'
 import { OffersSearch, SearchProps } from '../OffersSearch'
 
 interface getItems {
@@ -105,13 +112,16 @@ const renderOffersSearchComponent = (
   storeOverrides?: unknown
 ) => {
   renderWithProviders(
-    <AdageUserContextProvider adageUser={user}>
-      <FiltersContextProvider>
-        <AlgoliaQueryContextProvider>
-          <OffersSearch {...props} />
-        </AlgoliaQueryContextProvider>
-      </FiltersContextProvider>
-    </AdageUserContextProvider>,
+    <>
+      <AdageUserContextProvider adageUser={user}>
+        <FiltersContextProvider>
+          <AlgoliaQueryContextProvider>
+            <OffersSearch {...props} />
+          </AlgoliaQueryContextProvider>
+        </FiltersContextProvider>
+      </AdageUserContextProvider>
+      <Notification />
+    </>,
     { storeOverrides: storeOverrides }
   )
 }
@@ -123,6 +133,33 @@ vi.mock('react-instantsearch', async () => {
   return {
     ...((await vi.importActual('react-instantsearch')) ?? {}),
     useSearchBox: () => ({ refine: refineSearch }),
+    useInstantSearch: () => ({
+      scopedResults: [
+        {
+          indexId: MAIN_INDEX_ID,
+          results: {
+            hits: [],
+            nbHits: 0,
+          },
+        },
+        {
+          indexId: 'no_results_offers_index_0',
+          results: {
+            hits: defaultUseInfiniteHitsReturn.hits,
+            nbHits: 1,
+          },
+        },
+      ],
+    }),
+    Configure: vi.fn(() => <div />),
+    Index: vi.fn(({ children }) => children),
+    useStats: () => ({
+      ...defaultUseStatsReturn,
+      nbHits: 0,
+    }),
+    useInfiniteHits: () => ({
+      ...defaultUseInfiniteHitsReturn,
+    }),
   }
 })
 
@@ -144,7 +181,11 @@ describe('offersSearch component', () => {
       venueFilter: null,
       setGeoRadius: setGeoRadiusMock,
     }
-    vi.spyOn(pcapi, 'getEducationalDomains').mockResolvedValue([])
+    vi.spyOn(pcapi, 'getEducationalDomains').mockResolvedValue([
+      { id: 1, name: 'Danse' },
+      { id: 2, name: 'Architecture' },
+      { id: 3, name: 'Arts' },
+    ])
     vi.spyOn(apiAdage, 'getEducationalOffersCategories').mockResolvedValue({
       categories: [],
       subcategories: [],
@@ -198,9 +239,6 @@ describe('offersSearch component', () => {
   it('should display localisation filter with default state by default', async () => {
     // Given
     renderOffersSearchComponent(props, { ...user, departmentCode: null })
-    await waitFor(() => {
-      expect(pcapi.getEducationalDomains).toHaveBeenCalled()
-    })
 
     // When
     const localisationFilter = screen.getByRole('button', {
@@ -216,9 +254,6 @@ describe('offersSearch component', () => {
   it('should display localisation filter with departments options if user has selected departement filter', async () => {
     // Given
     renderOffersSearchComponent(props, { ...user, departmentCode: null })
-    await waitFor(() => {
-      expect(pcapi.getEducationalDomains).toHaveBeenCalled()
-    })
 
     await userEvent.click(
       screen.getByRole('button', {
@@ -251,9 +286,6 @@ describe('offersSearch component', () => {
   it('should display academies filter with departments options if user has selected academy filter', async () => {
     // Given
     renderOffersSearchComponent(props, { ...user, departmentCode: null })
-    await waitFor(() => {
-      expect(pcapi.getEducationalDomains).toHaveBeenCalled()
-    })
 
     await userEvent.click(
       screen.getByRole('button', {
@@ -288,9 +320,6 @@ describe('offersSearch component', () => {
       { ...user, departmentCode: null },
       isGeolocationActive
     )
-    await waitFor(() => {
-      expect(pcapi.getEducationalDomains).toHaveBeenCalled()
-    })
 
     await userEvent.click(
       screen.getByRole('button', {
@@ -316,10 +345,6 @@ describe('offersSearch component', () => {
       { ...user, departmentCode: null, lat: 0, lon: null },
       isGeolocationActive
     )
-    await waitFor(() => {
-      expect(pcapi.getEducationalDomains).toHaveBeenCalled()
-    })
-
     await userEvent.click(
       screen.getByRole('button', {
         name: 'Localisation des partenaires',
@@ -359,31 +384,10 @@ describe('offersSearch component', () => {
       })
     )
     expect(screen.getByLabelText('75 - Paris', { exact: false })).toBeChecked()
-    expect(screen.getByLabelText('30 - Gard', { exact: false })).toBeChecked()
-  })
-
-  it('should go back to localisation main menu when reseting the localisation modal', async () => {
-    renderOffersSearchComponent(props, user)
-
-    await userEvent.click(
-      screen.getByRole('button', {
-        name: /Localisation des partenaires/,
-      })
-    )
-
-    await userEvent.click(screen.getByRole('button', { name: 'Réinitialiser' }))
-
-    expect(
-      screen.getByText('Dans quelle zone géographique')
-    ).toBeInTheDocument()
   })
 
   it('should go back to the localisation main menu when reopening the localisation multiselect after having submitted it with no values selected', async () => {
     renderOffersSearchComponent(props, user)
-
-    await userEvent.click(
-      screen.getByRole('button', { name: 'Réinitialiser les filtres' })
-    )
 
     const localisationFilter = screen.getByRole('button', {
       name: 'Localisation des partenaires',
@@ -413,5 +417,32 @@ describe('offersSearch component', () => {
     expect(
       screen.getByText('Dans quelle zone géographique')
     ).toBeInTheDocument()
+  })
+
+  it('should show an error message notification when categories could not be fetched', async () => {
+    vi.spyOn(apiAdage, 'getEducationalOffersCategories').mockRejectedValueOnce(
+      null
+    )
+
+    renderOffersSearchComponent(props, user)
+
+    expect(await screen.findByText(GET_DATA_ERROR_MESSAGE)).toBeInTheDocument()
+  })
+
+  it('should show an error message notification when domains could not be fetched', async () => {
+    vi.spyOn(pcapi, 'getEducationalDomains').mockRejectedValueOnce(null)
+
+    renderOffersSearchComponent(props, user)
+
+    expect(await screen.findByText(GET_DATA_ERROR_MESSAGE)).toBeInTheDocument()
+  })
+
+  it('should display suggestions if there are no search results', async () => {
+    renderOffersSearchComponent(props, user)
+
+    const loadingMessage = screen.queryByText(/Chargement en cours/)
+    await waitFor(() => expect(loadingMessage).not.toBeInTheDocument())
+
+    expect(screen.getByTestId('suggestions-header')).toBeInTheDocument()
   })
 })

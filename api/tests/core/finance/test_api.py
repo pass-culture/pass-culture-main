@@ -15,7 +15,7 @@ import pytz
 import pcapi.core.bookings.api as bookings_api
 import pcapi.core.bookings.factories as bookings_factories
 import pcapi.core.bookings.models as bookings_models
-from pcapi.core.categories import subcategories
+from pcapi.core.categories import subcategories_v2 as subcategories
 import pcapi.core.educational.factories as educational_factories
 from pcapi.core.educational.factories import CollectiveBookingFactory
 from pcapi.core.educational.factories import EducationalDepositFactory
@@ -1791,7 +1791,7 @@ def test_generate_payments_file():
         booking__stock__offer__subcategoryId=subcategories.SUPPORT_PHYSIQUE_FILM.id,
         booking__stock__offer__venue=offer_venue2,
         standardRule="",
-        customRule=factories.CustomReimbursementRuleFactory(amount=6),
+        customRule=factories.CustomReimbursementRuleFactory(amountInEuroCents=600),
     )
     # pricing for an underage individual booking
     underage_user = users_factories.UnderageBeneficiaryFactory()
@@ -1804,7 +1804,7 @@ def test_generate_payments_file():
         booking__stock__offer__subcategoryId=subcategories.SUPPORT_PHYSIQUE_FILM.id,
         booking__stock__offer__venue=offer_venue2,
         standardRule="",
-        customRule=factories.CustomReimbursementRuleFactory(amount=6),
+        customRule=factories.CustomReimbursementRuleFactory(amountInEuroCents=600),
     )
     # pricing for educational booking
     # check that the right deposit is used for csv
@@ -2014,7 +2014,7 @@ def invoice_test_data():
     custom_rule_offer1 = offers_factories.ThingOfferFactory(venue=venue)
     factories.CustomReimbursementRuleFactory(rate=0.94, offer=custom_rule_offer1)
     custom_rule_offer2 = offers_factories.ThingOfferFactory(venue=venue)
-    factories.CustomReimbursementRuleFactory(amount=22, offer=custom_rule_offer2)
+    factories.CustomReimbursementRuleFactory(amountInEuroCents=2200, offer=custom_rule_offer2)
 
     stocks = [
         offers_factories.StockFactory(offer=thing_offer1, price=30),
@@ -2194,7 +2194,7 @@ class GenerateInvoiceTest:
 
         offer = offers_factories.ThingOfferFactory(venue=venue)
         stock = offers_factories.ThingStockFactory(offer=offer, price=23)
-        factories.CustomReimbursementRuleFactory(amount=22, offer=offer)
+        factories.CustomReimbursementRuleFactory(amountInEuroCents=2200, offer=offer)
         booking1 = bookings_factories.UsedBookingFactory(stock=stock)
         booking2 = bookings_factories.UsedBookingFactory(stock=stock)
         api.price_booking(booking1)

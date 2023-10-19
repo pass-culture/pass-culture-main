@@ -3,6 +3,7 @@ import urllib.parse
 from flask import url_for
 import pytest
 
+from pcapi import settings
 from pcapi.core.testing import override_settings
 import pcapi.core.users.factories as users_factories
 import pcapi.core.users.models as users_models
@@ -52,6 +53,35 @@ class UserGenerationGetRouteTest:
 
         assert response.status_code == 200
         assert "Aller sur l'app" not in html_parser.content_as_text(response.data)
+
+    @override_settings(UBBLE_MOCK_CONFIG_URL=None)
+    def test_does_not_contain_link_to_ubble_mock_if_not_url(self, authenticated_client):
+        generated_user = users_factories.BaseUserFactory()
+
+        response = authenticated_client.get(url_for(self.endpoint, userId=generated_user.id))
+
+        assert response.status_code == 200
+        assert "Configuration du mock Ubble pour l'utilisateur" not in html_parser.content_as_text(response.data)
+
+    @override_settings(UBBLE_MOCK_CONFIG_URL="http://mock-ubble.team")
+    def test_does_not_contain_link_to_ubble_mock_if_url_and_not_user(self, authenticated_client):
+        response = authenticated_client.get(url_for(self.endpoint, userId=999999999))
+
+        assert response.status_code == 200
+        assert "Configuration du mock Ubble pour l'utilisateur" not in html_parser.content_as_text(response.data)
+
+    @override_settings(UBBLE_MOCK_CONFIG_URL="http://mock-ubble.team/")
+    def test_contains_link_to_ubble_mock_if_url_and_user_id(self, authenticated_client):
+        generated_user = users_factories.BaseUserFactory()
+        link_to_ubble_mock = (
+            settings.UBBLE_MOCK_CONFIG_URL + f"?{urllib.parse.urlencode({'userId': generated_user.id})}"
+        )
+
+        response = authenticated_client.get(url_for(self.endpoint, userId=generated_user.id))
+
+        assert response.status_code == 200
+        assert link_to_ubble_mock in str(response.data)
+        assert "Configuration du mock Ubble pour l'utilisateur" in html_parser.content_as_text(response.data)
 
 
 class UserGenerationPostRouteTest(post_endpoint_helper.PostEndpointWithoutPermissionHelper):

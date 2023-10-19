@@ -7,7 +7,7 @@ import sqlalchemy as sqla
 
 from pcapi import repository
 from pcapi.core.categories import categories
-from pcapi.core.categories import subcategories
+from pcapi.core.categories import subcategories_v2 as subcategories
 from pcapi.core.offerers import exceptions as offerers_exceptions
 from pcapi.core.offerers import models as offerers_models
 from pcapi.core.offerers import repository as offerers_repository
@@ -81,10 +81,10 @@ def get_offer(offer_id: int) -> offers_serialize.GetIndividualOfferResponseModel
 @private_api.route("/offers/<int:offer_id>/stocks/", methods=["GET"])
 @login_required
 @spectree_serialize(
-    response_model=offers_serialize.StockResponseModel,
+    response_model=offers_serialize.GetStocksResponseModel,
     api=blueprint.pro_private_schema,
 )
-def get_stocks(offer_id: int, query: offers_serialize.StocksQueryModel) -> offers_serialize.StockResponseModel:
+def get_stocks(offer_id: int, query: offers_serialize.StocksQueryModel) -> offers_serialize.GetStocksResponseModel:
     try:
         offer = offers_repository.get_offer_by_id(offer_id)
     except exceptions.OfferNotFound:
@@ -103,8 +103,14 @@ def get_stocks(offer_id: int, query: offers_serialize.StocksQueryModel) -> offer
         order_by=query.order_by,
         order_by_desc=query.order_by_desc,
     )
-    filtered_stock_list = [offers_serialize.GetOfferStockResponseModel.from_orm(stock) for stock in stocks]
-    return offers_serialize.StockResponseModel(stocks=filtered_stock_list, stock_count=len(filtered_stock_list))
+    stocks_count = stocks.count()
+    stocks = offers_repository.get_paginated_stocks(
+        stocks_query=stocks,
+        page=query.page,
+        stocks_limit_per_page=query.stocks_limit_per_page,
+    )
+    stock_list = [offers_serialize.GetOfferStockResponseModel.from_orm(stock) for stock in stocks.all()]
+    return offers_serialize.GetStocksResponseModel(stocks=stock_list, stock_count=stocks_count)
 
 
 @private_api.route("/offers/<int:offer_id>/stocks/delete", methods=["POST"])
@@ -150,10 +156,36 @@ def delete_all_filtered_stocks(offer_id: int, body: offers_serialize.DeleteFilte
     filters = {
         "offer_id": offer_id,
         "date": body.date,
-        "time": body.price_category_id,
+        "time": body.time,
         "price_category_id": body.price_category_id,
     }
     batch_delete_filtered_stocks_job.delay(filters)
+
+
+@private_api.route("/offers/<int:offer_id>/stocks-stats", methods=["GET"])
+@login_required
+@spectree_serialize(
+    response_model=offers_serialize.StockStatsResponseModel,
+    api=blueprint.pro_private_schema,
+)
+def get_stocks_stats(offer_id: int) -> offers_serialize.StockStatsResponseModel:
+    try:
+        offer = offers_repository.get_offer_by_id(offer_id)
+    except exceptions.OfferNotFound:
+        raise api_errors.ApiErrors(
+            errors={
+                "global": ["Aucun objet ne correspond à cet identifiant dans notre base de données"],
+            },
+            status_code=404,
+        )
+    rest.check_user_has_access_to_offerer(current_user, offer.venue.managingOffererId)
+    stocks_stats = offers_api.get_stocks_stats(offer_id=offer_id)
+    return offers_serialize.StockStatsResponseModel(
+        oldest_stock=stocks_stats.oldest_stock,
+        newest_stock=stocks_stats.newest_stock,
+        stock_count=stocks_stats.stock_count,
+        remaining_quantity=stocks_stats.remaining_quantity,
+    )
 
 
 @private_api.route("/offers/delete-draft", methods=["POST"])

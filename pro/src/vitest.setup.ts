@@ -9,7 +9,7 @@ expect.extend(matchers)
 
 const fetchMock = createFetchMock(vi)
 fetchMock.enableMocks()
-fetchMock.mockResponse(req => {
+fetchMock.mockResponse((req) => {
   // eslint-disable-next-line
   console.error(`
   ----------------------------------------------------------------------------
@@ -75,7 +75,7 @@ const isErrorInAllowList = (...data: any[]) => {
   const errorSourceFile = findErrorSourceFile(...data)
 
   return acceptableErrors.some(
-    possibleError =>
+    (possibleError) =>
       possibleError.error === cleanedError &&
       possibleError.files.includes(errorSourceFile || '')
   )

@@ -119,7 +119,7 @@ export const getProviderInfo = (
     },
   ]
 
-  const provider = providers.find(providerInfo =>
+  const provider = providers.find((providerInfo) =>
     providerName.toLowerCase().startsWith(providerInfo.id)
   )
   if (provider) {

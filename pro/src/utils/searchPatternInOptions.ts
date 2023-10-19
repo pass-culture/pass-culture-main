@@ -33,7 +33,7 @@ export const searchPatternInOptions = (
     //  Look for options containing all of the pattern words
     const isLabelMatchingPattern = normalizeStrForSearch(pattern || '')
       .split(' ')
-      .every(word => normalizedOptionLabel.includes(word))
+      .every((word) => normalizedOptionLabel.includes(word))
 
     if (isLabelMatchingPattern) {
       matchingOptions.push(options[i])

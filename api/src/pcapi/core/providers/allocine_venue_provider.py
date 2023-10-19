@@ -1,3 +1,5 @@
+from typing import TYPE_CHECKING
+
 from sqlalchemy import BigInteger
 from sqlalchemy import Boolean
 from sqlalchemy import Column
@@ -7,6 +9,10 @@ from sqlalchemy import true
 from sqlalchemy.sql.sqltypes import Text
 
 from pcapi.core.providers.models import VenueProvider
+
+
+if TYPE_CHECKING:
+    from pcapi.core.providers.models import Provider
 
 
 class AllocineVenueProvider(VenueProvider):

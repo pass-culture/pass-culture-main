@@ -6,16 +6,11 @@ import { NotificationTypeEnum } from 'hooks/useNotification'
 import { Notification as NotificationType } from 'store/reducers/notificationReducer'
 import { renderWithProviders } from 'utils/renderWithProviders'
 
-vi.mock('core/Notification/constants', () => ({
-  NOTIFICATION_TRANSITION_DURATION: 10,
-  NOTIFICATION_SHOW_DURATION: 10,
-}))
-
 describe('Notification', () => {
-  const renderNotification = (sentNotification: NotificationType) =>
+  const renderNotification = (notification: NotificationType) =>
     renderWithProviders(<Notification />, {
       storeOverrides: {
-        notification: { notification: sentNotification },
+        notification: { notification },
       },
     })
 
@@ -27,50 +22,40 @@ describe('Notification', () => {
   ]
   it.each(notificationTypes)(
     'should display given %s text with icon',
-    async notificationType => {
-      const sentNotification = {
+    (notificationType) => {
+      const notification = {
         text: 'Mon petit succès',
         type: notificationType.type,
-        version: 2,
-      }
+        duration: 100,
+      } satisfies NotificationType
 
-      renderNotification(sentNotification)
+      renderNotification(notification)
 
-      const notification = screen.getByText(sentNotification.text)
-      expect(notification).toBeInTheDocument()
-      expect(notification).toHaveClass('show')
-      expect(notification).toHaveClass(
+      const notificationElement = screen.getByText(notification.text)
+      expect(notificationElement).toBeInTheDocument()
+      expect(notificationElement).toHaveClass('show')
+      expect(notificationElement).toHaveClass(
         `is-${notificationType.type || 'success'}`
       )
-      expect(notification).toHaveAttribute('role', notificationType.role)
+      expect(notificationElement).toHaveAttribute('role', notificationType.role)
     }
   )
 
-  it('should hide notification after fixed show duration', async () => {
-    const sentNotification = {
-      text: 'Mon petit succès',
-      type: NotificationTypeEnum.SUCCESS,
-      version: 2,
-    }
-
-    renderNotification(sentNotification)
-
-    await waitFor(() => {
-      expect(screen.getByText(sentNotification.text)).toHaveClass('hide')
-    })
-  })
-
   it('should remove notification after fixed show and transition duration', async () => {
-    const sentNotification = {
+    const notification = {
       text: 'Mon petit succès',
       type: NotificationTypeEnum.SUCCESS,
-      version: 2,
-    }
+      duration: 100,
+    } satisfies NotificationType
 
-    renderNotification(sentNotification)
+    renderNotification(notification)
 
     await waitFor(() => {
-      expect(screen.queryByText(sentNotification.text)).not.toBeInTheDocument()
+      expect(screen.getByText(notification.text)).toHaveClass('hide')
+    })
+
+    await waitFor(() => {
+      expect(screen.queryByText(notification.text)).not.toBeInTheDocument()
     })
   })
 })

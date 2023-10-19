@@ -10,12 +10,7 @@ import { submitValidate, getBooking, submitInvalidate } from './adapters'
 import { BookingDetails } from './BookingDetails'
 import { ButtonInvalidateToken } from './ButtonInvalidateToken'
 import styles from './Desk.module.scss'
-import {
-  DeskGetBookingResponse,
-  DeskSubmitResponse,
-  ErrorMessage,
-  MESSAGE_VARIANT,
-} from './types'
+import { ErrorMessage, MESSAGE_VARIANT } from './types'
 import { validateToken } from './validation'
 
 interface FormValues {
@@ -30,7 +25,6 @@ const Desk = (): JSX.Element => {
     message: 'Saisissez une contremarque',
     variant: MESSAGE_VARIANT.DEFAULT,
   })
-  const [disableSubmitValidate, setDisableSubmitValidate] = useState(true)
 
   const resetMessage = () => {
     setMessage({
@@ -39,22 +33,19 @@ const Desk = (): JSX.Element => {
     })
   }
 
-  const handleSubmitValidate = (formValues: FormValues) => {
-    setDisableSubmitValidate(true)
+  const onSubmit = async (formValues: FormValues) => {
     setMessage({
       message: 'Validation en cours...',
       variant: MESSAGE_VARIANT.DEFAULT,
     })
 
-    submitValidate(formValues.token).then(
-      (submitResponse: DeskSubmitResponse) => {
-        if (submitResponse.error) {
-          setMessage(submitResponse.error)
-        } else {
-          onSubmitSuccess('Contremarque validée !')
-        }
-      }
-    )
+    const validateResponse = await submitValidate(formValues.token)
+
+    if (validateResponse.error) {
+      setMessage(validateResponse.error)
+    } else {
+      onSubmitSuccess('Contremarque validée !')
+    }
   }
 
   const initialValues = {
@@ -63,10 +54,12 @@ const Desk = (): JSX.Element => {
 
   const formik = useFormik({
     initialValues,
-    onSubmit: handleSubmitValidate,
+    onSubmit,
   })
 
-  const handleOnChangeToken = (event: React.ChangeEvent<HTMLInputElement>) => {
+  const handleOnChangeToken = async (
+    event: React.ChangeEvent<HTMLInputElement>
+  ) => {
     formik.handleChange(event)
     const inputValue = event.target.value.toUpperCase()
     // QRCODE return a prefix that we want to ignore.
@@ -85,21 +78,21 @@ const Desk = (): JSX.Element => {
       setBooking(null)
     } else {
       resetMessage()
-      getBooking(token).then((responseBooking: DeskGetBookingResponse) => {
-        if (responseBooking.error) {
-          setIsTokenValidated(responseBooking.error.isTokenValidated)
-          setBooking(null)
-          setMessage(responseBooking.error)
-        }
-        if (responseBooking.booking) {
-          setDisableSubmitValidate(false)
-          setBooking(responseBooking.booking)
-          setMessage({
-            message: 'Coupon vérifié, cliquez sur "Valider" pour enregistrer',
-            variant: MESSAGE_VARIANT.DEFAULT,
-          })
-        }
-      })
+      const responseBooking = await getBooking(token)
+
+      if (responseBooking.error) {
+        setIsTokenValidated(responseBooking.error.isTokenValidated)
+        setBooking(null)
+        setMessage(responseBooking.error)
+      }
+
+      if (responseBooking.booking) {
+        setBooking(responseBooking.booking)
+        setMessage({
+          message: 'Coupon vérifié, cliquez sur "Valider" pour enregistrer',
+          variant: MESSAGE_VARIANT.DEFAULT,
+        })
+      }
     }
   }
 
@@ -111,21 +104,21 @@ const Desk = (): JSX.Element => {
     setIsTokenValidated(false)
     setToken('')
     setBooking(null)
-    setDisableSubmitValidate(true)
   }
 
-  const handleSubmitInvalidate = (token: string) => {
+  const handleSubmitInvalidate = async (token: string) => {
     setMessage({
       message: 'Invalidation en cours...',
       variant: MESSAGE_VARIANT.DEFAULT,
     })
-    submitInvalidate(token).then((submitResponse: DeskSubmitResponse) => {
-      if (submitResponse.error) {
-        setMessage(submitResponse.error)
-      } else {
-        onSubmitSuccess('Contremarque invalidée !')
-      }
-    })
+
+    const submitResponse = await submitInvalidate(token)
+
+    if (submitResponse.error) {
+      setMessage(submitResponse.error)
+    } else {
+      onSubmitSuccess('Contremarque invalidée !')
+    }
   }
 
   return (
@@ -156,7 +149,7 @@ const Desk = (): JSX.Element => {
                 onConfirm={() => handleSubmitInvalidate(token)}
               />
             ) : (
-              <SubmitButton disabled={disableSubmitValidate}>
+              <SubmitButton disabled={formik.isSubmitting || !booking}>
                 Valider la contremarque
               </SubmitButton>
             )}

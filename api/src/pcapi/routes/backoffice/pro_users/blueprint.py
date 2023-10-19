@@ -19,8 +19,8 @@ from pcapi.models import db
 from pcapi.routes.backoffice import utils
 from pcapi.routes.backoffice.forms import empty as empty_forms
 from pcapi.routes.backoffice.forms import search as search_forms
+from pcapi.routes.backoffice.forms.search import TypeOptions
 from pcapi.routes.backoffice.pro_users import forms as pro_users_forms
-from pcapi.routes.backoffice.serialization.search import TypeOptions
 from pcapi.routes.backoffice.users import forms as user_forms
 from pcapi.tasks.batch_tasks import DeleteBatchUserAttributesRequest
 from pcapi.tasks.batch_tasks import delete_user_attributes_task
@@ -54,13 +54,13 @@ def get(user_id: int) -> utils.BackofficeResponse:
     )
     dst = url_for(".update_pro_user", user_id=user.id)
 
-    if request.args.get("terms") and request.args.get("search_rank"):
+    if request.args.get("q") and request.args.get("search_rank"):
         utils.log_backoffice_tracking_data(
             event_name="ConsultCard",
             extra_data={
                 "searchType": "ProSearch",
                 "searchProType": TypeOptions.USER.name,
-                "searchQuery": request.args.get("terms"),
+                "searchQuery": request.args.get("q"),
                 "searchRank": request.args.get("search_rank"),
                 "searchNbResults": request.args.get("total_items"),
             },
@@ -68,7 +68,7 @@ def get(user_id: int) -> utils.BackofficeResponse:
 
     return render_template(
         "pro_user/get.html",
-        search_form=search_forms.ProSearchForm(terms=request.args.get("terms"), pro_type=TypeOptions.USER.name),
+        search_form=search_forms.ProSearchForm(q=request.args.get("q"), pro_type=TypeOptions.USER.name),
         search_dst=url_for("backoffice_web.search_pro"),
         user=user,
         form=form,

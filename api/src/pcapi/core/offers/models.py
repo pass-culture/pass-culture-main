@@ -22,7 +22,6 @@ from sqlalchemy.sql.elements import UnaryExpression
 
 import pcapi.core.bookings.constants as bookings_constants
 from pcapi.core.categories import categories
-from pcapi.core.categories import subcategories
 from pcapi.core.categories import subcategories_v2
 from pcapi.core.providers.models import VenueProvider
 from pcapi.models import Base
@@ -48,6 +47,7 @@ if TYPE_CHECKING:
     from pcapi.core.educational.models import CollectiveOfferTemplate
     from pcapi.core.offerers.models import Offerer
     from pcapi.core.offerers.models import Venue
+    from pcapi.core.providers.models import Provider
     from pcapi.core.users.models import User
 
 
@@ -131,10 +131,10 @@ class Product(PcObject, Base, Model, HasThumbMixin, ProvidableMixin):
     sa.Index("product_ean_idx", extraData["ean"].astext)
 
     @property
-    def subcategory(self) -> subcategories.Subcategory:
-        if self.subcategoryId not in subcategories.ALL_SUBCATEGORIES_DICT:
+    def subcategory(self) -> subcategories_v2.Subcategory:
+        if self.subcategoryId not in subcategories_v2.ALL_SUBCATEGORIES_DICT:
             raise ValueError(f"Unexpected subcategoryId '{self.subcategoryId}' for product {self.id}")
-        return subcategories.ALL_SUBCATEGORIES_DICT[self.subcategoryId]
+        return subcategories_v2.ALL_SUBCATEGORIES_DICT[self.subcategoryId]
 
     @property
     def isDigital(self) -> bool:
@@ -153,7 +153,7 @@ class Mediation(PcObject, Base, Model, HasThumbMixin, ProvidableMixin, Deactivab
     __tablename__ = "mediation"
 
     author: sa_orm.Mapped["User"] | None = sa.orm.relationship("User", backref="mediations")
-    authorId = sa.Column(sa.BigInteger, sa.ForeignKey("user.id"), nullable=True)
+    authorId = sa.Column(sa.BigInteger, sa.ForeignKey("user.id", ondelete="SET NULL"), nullable=True)
     credit = sa.Column(sa.String(255), nullable=True)
     dateCreated: datetime.datetime = sa.Column(sa.DateTime, nullable=False, default=datetime.datetime.utcnow)
     offer: sa_orm.Mapped["Offer"] = sa.orm.relationship("Offer", backref="mediations")
@@ -167,7 +167,7 @@ class Stock(PcObject, Base, Model, ProvidableMixin, SoftDeletableMixin):
     MAX_STOCK_QUANTITY = 1_000_000
 
     activationCodes: sa_orm.Mapped["ActivationCode"] = sa.orm.relationship("ActivationCode", back_populates="stock")
-    beginningDatetime = sa.Column(sa.DateTime, index=True, nullable=True)
+    beginningDatetime = sa.Column(sa.DateTime, nullable=True)
     bookingLimitDatetime = sa.Column(sa.DateTime, nullable=True)
     dateCreated: datetime.datetime = sa.Column(
         sa.DateTime, nullable=False, default=datetime.datetime.utcnow, server_default=sa.func.now()
@@ -188,6 +188,17 @@ class Stock(PcObject, Base, Model, ProvidableMixin, SoftDeletableMixin):
     quantity: int | None = sa.Column(sa.Integer, nullable=True)
     rawProviderQuantity = sa.Column(sa.Integer, nullable=True)
     features: list[str] = sa.Column(postgresql.ARRAY(sa.Text), nullable=False, server_default=sa.text("'{}'::text[]"))
+
+    __table_args__ = (
+        sa.Index(
+            "ix_stock_beginningDatetime_partial", beginningDatetime, postgresql_where=beginningDatetime.is_not(None)
+        ),
+        sa.Index(
+            "ix_stock_bookingLimitDatetime_partial",
+            bookingLimitDatetime,
+            postgresql_where=bookingLimitDatetime.is_not(None),
+        ),
+    )
 
     @property
     def isBookable(self) -> bool:
@@ -225,10 +236,10 @@ class Stock(PcObject, Base, Model, ProvidableMixin, SoftDeletableMixin):
         return sa.case([(cls.quantity.is_(None), None)], else_=(cls.quantity - cls.dnBookedQuantity))
 
     AUTOMATICALLY_USED_SUBCATEGORIES = [
-        subcategories.ABO_MUSEE.id,
-        subcategories.CARTE_MUSEE.id,
-        subcategories.ABO_BIBLIOTHEQUE.id,
-        subcategories.ABO_MEDIATHEQUE.id,
+        subcategories_v2.ABO_MUSEE.id,
+        subcategories_v2.CARTE_MUSEE.id,
+        subcategories_v2.ABO_BIBLIOTHEQUE.id,
+        subcategories_v2.ABO_MEDIATHEQUE.id,
     ]
 
     @property
@@ -300,10 +311,18 @@ class Stock(PcObject, Base, Model, ProvidableMixin, SoftDeletableMixin):
         return self.offer.isDigital
 
     @hybrid_property
-    def initialStock(self) -> int | None:
+    def totalStock(self) -> int | None:
+        """
+        Total stock shown in the backoffice is the total of booked quantities + remaining quantities still available
+        for booking. This means that an unlimited stock at the beginning becomes a limited total when event is expired.
+        """
         if self.isBookable:
             return self.quantity
-        return 0
+        return self.dnBookedQuantity
+
+    @totalStock.expression  # type: ignore [no-redef]
+    def totalStock(cls) -> Case:  # pylint: disable=no-self-argument
+        return sa.case([(cls._bookable, cls.quantity)], else_=cls.dnBookedQuantity)
 
     @hybrid_property
     def remainingStock(self) -> int | None:
@@ -311,6 +330,10 @@ class Stock(PcObject, Base, Model, ProvidableMixin, SoftDeletableMixin):
             # pylint: disable=comparison-with-callable
             return None if self.remainingQuantity == "unlimited" else self.remainingQuantity
         return 0
+
+    @remainingStock.expression  # type: ignore [no-redef]
+    def remainingStock(cls) -> Case:  # pylint: disable=no-self-argument
+        return sa.case([(cls._bookable, cls.remainingQuantity)], else_=0)
 
 
 @sa.event.listens_for(Stock, "before_insert")
@@ -498,11 +521,11 @@ class Offer(PcObject, Base, Model, DeactivableMixin, ValidationMixin, Accessibil
 
     @hybrid_property
     def canExpire(self) -> bool:
-        return self.subcategoryId in subcategories.EXPIRABLE_SUBCATEGORIES
+        return self.subcategoryId in subcategories_v2.EXPIRABLE_SUBCATEGORIES
 
     @canExpire.expression  # type: ignore [no-redef]
     def canExpire(cls) -> bool:  # pylint: disable=no-self-argument
-        return cls.subcategoryId.in_(subcategories.EXPIRABLE_SUBCATEGORIES)
+        return cls.subcategoryId.in_(subcategories_v2.EXPIRABLE_SUBCATEGORIES)
 
     @property
     def isReleased(self) -> bool:
@@ -519,11 +542,11 @@ class Offer(PcObject, Base, Model, DeactivableMixin, ValidationMixin, Accessibil
 
     @hybrid_property
     def isPermanent(self) -> bool:
-        return self.subcategoryId in subcategories.PERMANENT_SUBCATEGORIES
+        return self.subcategoryId in subcategories_v2.PERMANENT_SUBCATEGORIES
 
     @isPermanent.expression  # type: ignore [no-redef]
     def isPermanent(cls) -> bool:  # pylint: disable=no-self-argument
-        return cls.subcategoryId.in_(subcategories.PERMANENT_SUBCATEGORIES)
+        return cls.subcategoryId.in_(subcategories_v2.PERMANENT_SUBCATEGORIES)
 
     @hybrid_property
     def isEvent(self) -> bool:
@@ -531,7 +554,7 @@ class Offer(PcObject, Base, Model, DeactivableMixin, ValidationMixin, Accessibil
 
     @isEvent.expression  # type: ignore [no-redef]
     def isEvent(cls) -> bool:  # pylint: disable=no-self-argument
-        return cls.subcategoryId.in_(subcategories.EVENT_SUBCATEGORIES)
+        return cls.subcategoryId.in_(subcategories_v2.EVENT_SUBCATEGORIES)
 
     @property
     def isThing(self) -> bool:
@@ -623,13 +646,7 @@ class Offer(PcObject, Base, Model, DeactivableMixin, ValidationMixin, Accessibil
         return all(stock.is_forbidden_to_underage for stock in self.bookableStocks)
 
     @property
-    def subcategory(self) -> subcategories.Subcategory:
-        if self.subcategoryId not in subcategories.ALL_SUBCATEGORIES_DICT:
-            raise ValueError(f"Unexpected subcategoryId '{self.subcategoryId}' for offer {self.id}")
-        return subcategories.ALL_SUBCATEGORIES_DICT[self.subcategoryId]
-
-    @property
-    def subcategory_v2(self) -> subcategories_v2.Subcategory:
+    def subcategory(self) -> subcategories_v2.Subcategory:
         if self.subcategoryId not in subcategories_v2.ALL_SUBCATEGORIES_DICT:
             raise ValueError(f"Unexpected subcategoryId (v2) '{self.subcategoryId}' for offer {self.id}")
         return subcategories_v2.ALL_SUBCATEGORIES_DICT[self.subcategoryId]

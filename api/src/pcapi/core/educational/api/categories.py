@@ -1,5 +1,5 @@
 from pcapi.core.categories import categories
-from pcapi.core.categories import subcategories
+from pcapi.core.categories import subcategories_v2 as subcategories
 
 
 def get_educational_categories() -> dict:

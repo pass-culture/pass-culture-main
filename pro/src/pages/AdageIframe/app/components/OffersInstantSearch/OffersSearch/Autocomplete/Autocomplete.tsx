@@ -132,14 +132,14 @@ export const Autocomplete = ({
     }
 
     // TODO: delete when ff deleted
-    enableAutocompleteAdage && loadData()
+    enableAutocompleteAdage && void loadData()
   }, [])
 
   const logAutocompleteSuggestionClick = (
     suggestionType: SuggestionType,
     suggestionValue: string
   ) => {
-    apiAdage.logTrackingAutocompleteSuggestionClick({
+    void apiAdage.logTrackingAutocompleteSuggestionClick({
       iframeFrom: removeParamsFromUrl(location.pathname),
       suggestionType,
       suggestionValue,
@@ -249,7 +249,9 @@ export const Autocomplete = ({
             query: params.state.query,
           })) as SuggestionItem[]
 
-          const itemId = items.findIndex(elm => elm.objectID === item.objectID)
+          const itemId = items.findIndex(
+            (elm) => elm.objectID === item.objectID
+          )
 
           // if the id is less than 3, the category is displayed and must be pre-selected in the filters.
           if (
@@ -262,12 +264,13 @@ export const Autocomplete = ({
               item['offer.subcategoryId'][0]
             )
 
-            result && formik.setFieldValue('categories', [result.subCategories])
+            result &&
+              (await formik.setFieldValue('categories', [result.subCategories]))
           } else {
-            formik.setFieldValue('categories', [])
+            await formik.setFieldValue('categories', [])
           }
           refine(item.query)
-          formik.submitForm()
+          await formik.submitForm()
           addSuggestionToHistory(item.query)
           logAutocompleteSuggestionClick(
             itemId <= 2 ? SuggestionType.OFFER_CATEGORY : SuggestionType.OFFER,
@@ -342,7 +345,7 @@ export const Autocomplete = ({
   const { source: recentSearchesSource, items: recentSearchesItems } =
     (!instantSearchUiState.query &&
       instantSearchUiState.collections.find(
-        x => x.source.sourceId === RECENT_SEARCH_SOURCE_ID
+        (x) => x.source.sourceId === RECENT_SEARCH_SOURCE_ID
       )) || {
       source: null,
       items: [],
@@ -350,7 +353,7 @@ export const Autocomplete = ({
 
   const { source: venuesSuggestionsSource, items: venuesSuggestionsItems } =
     instantSearchUiState.collections.find(
-      x => x.source.sourceId === VENUE_SUGGESTIONS_SOURCE_ID
+      (x) => x.source.sourceId === VENUE_SUGGESTIONS_SOURCE_ID
     ) || {
       source: null,
       items: [],
@@ -358,14 +361,16 @@ export const Autocomplete = ({
 
   const { source: keywordSuggestionsSource, items: keywordSuggestionsItems } =
     instantSearchUiState.collections.find(
-      x => x.source.sourceId === KEYWORD_QUERY_SUGGESTIONS_SOURCE_ID
+      (x) => x.source.sourceId === KEYWORD_QUERY_SUGGESTIONS_SOURCE_ID
     ) || {
       source: null,
       items: [],
     }
 
   const getCategoriesFromSubcategory = (subCategory: string) => {
-    const result = categories?.find(objet => objet.value.includes(subCategory))
+    const result = categories?.find((objet) =>
+      objet.value.includes(subCategory)
+    )
 
     return { label: result?.label, subCategories: result?.value }
   }
@@ -403,7 +408,7 @@ export const Autocomplete = ({
           {...autocomplete.getFormProps({
             inputElement: inputRef.current,
           })}
-          onFocus={e => {
+          onFocus={(e) => {
             // Accessibility : if the focus element is part of the form and there are results, leave the panel open, otherwise close it
             if (
               formRef.current?.contains(e.target) &&
@@ -412,7 +417,7 @@ export const Autocomplete = ({
               autocomplete.setIsOpen(true)
             }
           }}
-          onKeyDown={e => {
+          onKeyDown={(e) => {
             if (e.code === 'Escape') {
               autocomplete.setIsOpen(false)
             }
@@ -444,7 +449,7 @@ export const Autocomplete = ({
                   }
                   autocomplete.setIsOpen(false)
                 }}
-                onMouseDown={e => {
+                onMouseDown={(e) => {
                   // avoids onfocus code when "Rechercher" is clicked
                   e.preventDefault()
                 }}

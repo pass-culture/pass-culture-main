@@ -50,7 +50,7 @@ export const generateValidationSchema = (
       .required('Champ requis')
       .when([], {
         is: () => preventPriceIncrease === false,
-        then: schema =>
+        then: (schema) =>
           schema.min(
             todayAtMidnight(),
             "La date de l’évènement doit être supérieure à aujourd'hui"
@@ -63,7 +63,7 @@ export const generateValidationSchema = (
       .when('eventDate', {
         is: (eventDate: string) =>
           isSameDay(new Date(eventDate), new Date()) && !preventPriceIncrease,
-        then: schema =>
+        then: (schema) =>
           schema.test({
             name: 'is-before-current-time',
             test: (eventTime: string) =>

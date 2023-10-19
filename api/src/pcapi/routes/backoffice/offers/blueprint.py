@@ -9,6 +9,7 @@ from flask import render_template
 from flask import request
 from flask import url_for
 from flask_login import current_user
+from flask_sqlalchemy import BaseQuery
 import sqlalchemy as sa
 from werkzeug.exceptions import NotFound
 
@@ -21,6 +22,7 @@ from pcapi.core.offerers import models as offerers_models
 from pcapi.core.offers import models as offers_models
 from pcapi.core.permissions import models as perm_models
 from pcapi.core.users import models as users_models
+from pcapi.models import db
 from pcapi.models.offer_mixin import OfferValidationType
 from pcapi.repository import repository
 from pcapi.routes.backoffice import search_utils
@@ -155,42 +157,9 @@ OPERATOR_DICT: typing.Dict[str, typing.Dict[str, typing.Any]] = {
 }
 
 
-def _get_offers(form: forms.InternalSearchForm) -> list[offers_models.Offer]:
-    query = offers_models.Offer.query.options(
-        sa.orm.load_only(
-            offers_models.Offer.id,
-            offers_models.Offer.name,
-            offers_models.Offer.subcategoryId,
-            offers_models.Offer.rankingWeight,
-            offers_models.Offer.dateCreated,
-            offers_models.Offer.validation,
-            offers_models.Offer.lastValidationDate,
-            offers_models.Offer.lastValidationType,
-            offers_models.Offer.isActive,
-        ),
-        sa.orm.joinedload(offers_models.Offer.stocks).load_only(
-            offers_models.Stock.offerId,
-            # needed to check if stock is bookable and compute initial/remaining stock:
-            offers_models.Stock.beginningDatetime,
-            offers_models.Stock.bookingLimitDatetime,
-            offers_models.Stock.isSoftDeleted,
-            offers_models.Stock.quantity,
-            offers_models.Stock.dnBookedQuantity,
-        ),
-        sa.orm.joinedload(offers_models.Offer.criteria).load_only(criteria_models.Criterion.name),
-        sa.orm.joinedload(offers_models.Offer.venue).load_only(
-            offerers_models.Venue.managingOffererId,
-            offerers_models.Venue.departementCode,
-            offerers_models.Venue.name,
-        )
-        # needed to check if stock is bookable and compute initial/remaining stock:
-        .joinedload(offerers_models.Venue.managingOfferer).load_only(
-            offerers_models.Offerer.name, offerers_models.Offerer.isActive, offerers_models.Offerer.validationStatus
-        ),
-        sa.orm.joinedload(offers_models.Offer.flaggingValidationRules).load_only(
-            offers_models.OfferValidationRule.name
-        ),
-    )
+def _get_offer_ids_query(form: forms.InternalSearchForm) -> BaseQuery:
+    query = offers_models.Offer.query
+
     if not forms.GetOfferAdvancedSearchForm.is_search_empty(form.search.data):
         query, inner_joins, _, warnings = utils.generate_search_query(
             query=query,
@@ -248,34 +217,111 @@ def _get_offers(form: forms.InternalSearchForm) -> list[offers_models.Offer]:
 
             if or_filters:
                 main_query = query.filter(or_filters[0])
-            if len(or_filters) > 1:
-                # Same as for bookings, where union has better performance than or_
-                query = main_query.union(*(query.filter(f) for f in or_filters[1:]))
-            else:
-                query = main_query
+                if len(or_filters) > 1:
+                    # Same as for bookings, where union has better performance than or_
+                    query = main_query.union(*(query.filter(f) for f in or_filters[1:]))
+                else:
+                    query = main_query
+
+    # +1 to check if there are more results than requested
+    return query.with_entities(offers_models.Offer.id).distinct().limit(form.limit.data + 1)
+
+
+def _get_offers(form: forms.InternalSearchForm) -> list[offers_models.Offer]:
+    # Compute displayed information in remaining stock column directly, don't joinedload/fetch huge stock data
+    remaining_stocks_subquery = (
+        sa.select(
+            sa.case(
+                [
+                    (
+                        sa.func.coalesce(
+                            sa.func.max(sa.case([(offers_models.Stock.remainingStock.is_(None), 1)], else_=0)), 0  # type: ignore [attr-defined]
+                        )
+                        == 0,
+                        sa.func.concat(
+                            sa.func.coalesce(sa.func.sum(offers_models.Stock.remainingStock), 0).cast(sa.String),
+                            " / ",
+                            sa.func.coalesce(sa.func.sum(offers_models.Stock.totalStock), 0).cast(sa.String),
+                        ),
+                    )
+                ],
+                else_="Illimité",
+            )
+        )
+        .select_from(offers_models.Stock)
+        .filter(offers_models.Stock.offerId == offers_models.Offer.id)
+        .correlate(offers_models.Offer)
+        .scalar_subquery()
+    )
+
+    # Aggregate tags as an array of names returned in a single row (joinedload would fetch 1 result row per tag)
+    tags_subquery = (
+        sa.select(sa.func.array_agg(criteria_models.Criterion.name))
+        .select_from(criteria_models.Criterion)
+        .join(criteria_models.OfferCriterion)
+        .filter(criteria_models.OfferCriterion.offerId == offers_models.Offer.id)
+        .correlate(offers_models.Offer)
+        .scalar_subquery()
+    )
+
+    # Aggregate validation rules as an array of names returned in a single row
+    rules_subquery = (
+        sa.select(sa.func.array_agg(offers_models.OfferValidationRule.name))
+        .select_from(offers_models.OfferValidationRule)
+        .join(offers_models.ValidationRuleOfferLink)
+        .filter(offers_models.ValidationRuleOfferLink.offerId == offers_models.Offer.id)
+        .correlate(offers_models.Offer)
+        .scalar_subquery()
+    )
+
+    query = (
+        db.session.query(
+            offers_models.Offer,
+            sa.case(
+                [
+                    (
+                        # Same as Offer.isReleased which is not an hybrid property
+                        sa.and_(  # type: ignore [type-var]
+                            offers_models.Offer._released,
+                            offerers_models.Offerer.isActive,
+                            offerers_models.Offerer.isValidated,
+                        ),
+                        remaining_stocks_subquery,
+                    )
+                ],
+                else_="-",
+            ).label("remaining_stocks"),
+            tags_subquery.label("tags"),
+            rules_subquery.label("rules"),
+        )
+        .filter(offers_models.Offer.id.in_(_get_offer_ids_query(form).subquery()))
+        # 1-1 relationships so join will not increase the number of SQL rows
+        .join(offers_models.Offer.venue)
+        .join(offerers_models.Venue.managingOfferer)
+        .options(
+            sa.orm.load_only(
+                offers_models.Offer.id,
+                offers_models.Offer.name,
+                offers_models.Offer.subcategoryId,
+                offers_models.Offer.rankingWeight,
+                offers_models.Offer.dateCreated,
+                offers_models.Offer.validation,
+                offers_models.Offer.lastValidationDate,
+                offers_models.Offer.lastValidationType,
+                offers_models.Offer.isActive,
+            ),
+            sa.orm.contains_eager(offers_models.Offer.venue)
+            .load_only(offerers_models.Venue.id, offerers_models.Venue.name, offerers_models.Venue.departementCode)
+            .contains_eager(offerers_models.Venue.managingOfferer)
+            .load_only(offerers_models.Offerer.id, offerers_models.Offerer.name),
+        )
+    )
 
     if form.sort.data:
         order = form.order.data or "desc"
         query = query.order_by(getattr(getattr(offers_models.Offer, form.sort.data), order)())
 
-    # +1 to check if there are more results than requested
-    return query.limit(form.limit.data + 1).all()
-
-
-def _get_initial_stock(offer: offers_models.Offer) -> int | str:
-    quantities = [stock.quantity for stock in offer.bookableStocks]
-    if None in quantities:
-        return "Illimité"
-    # only integers in quantities
-    return sum(quantities)  # type: ignore [arg-type]
-
-
-def _get_remaining_stock(offer: offers_models.Offer) -> int | str:
-    remaining_quantities = [stock.remainingQuantity for stock in offer.bookableStocks]
-    if "unlimited" in remaining_quantities:
-        return "Illimité"
-    # only integers in remaining_quantities
-    return sum(remaining_quantities)
+    return query.all()
 
 
 @list_offers_blueprint.route("", methods=["GET"])
@@ -311,8 +357,6 @@ def list_offers() -> utils.BackofficeResponse:
         rows=offers,
         form=display_form,
         date_created_sort_url=form.get_sort_link_with_search_data(".list_offers") if form.sort.data else None,
-        get_initial_stock=_get_initial_stock,
-        get_remaining_stock=_get_remaining_stock,
         advanced_query=advanced_query,
         search_data_tags=search_data_tags,
     )
@@ -328,7 +372,7 @@ def get_advanced_search_form() -> utils.BackofficeResponse:
         dst=url_for("backoffice_web.offer.list_offers"),
         div_id="advanced-offer-search",  # must be consistent with parameter passed to build_lazy_modal
         title="Recherche avancée d'offres individuelles",
-        button_text="Lycos va chercher !",
+        button_text="Appliquer",
     )
 
 
@@ -651,6 +695,8 @@ def get_offer_details(offer_id: int) -> utils.BackofficeResponse:
         .load_only(
             offerers_models.Offerer.id,
             offerers_models.Offerer.name,
+            offerers_models.Offerer.isActive,
+            offerers_models.Offerer.validationStatus,
         ),
         sa.orm.joinedload(offers_models.Offer.stocks),
         sa.orm.joinedload(offers_models.Offer.lastValidationAuthor).load_only(
@@ -661,4 +707,22 @@ def get_offer_details(offer_id: int) -> utils.BackofficeResponse:
     if not offer:
         raise NotFound()
 
-    return render_template("offer/details.html", offer=offer, active_tab=request.args.get("active_tab", "stock"))
+    return render_template(
+        "offer/details.html",
+        offer=offer,
+        active_tab=request.args.get("active_tab", "stock"),
+        reindex_offer_form=empty_forms.EmptyForm(),
+    )
+
+
+@list_offers_blueprint.route("/<int:offer_id>/reindex", methods=["POST"])
+@utils.permission_required(perm_models.Permissions.ADVANCED_PRO_SUPPORT)
+def reindex(offer_id: int) -> utils.BackofficeResponse:
+    search.async_index_offer_ids({offer_id})
+
+    flash("La resynchronisation de l'offre a été demandée.", "success")
+
+    if request.referrer:
+        return redirect(request.referrer)
+
+    return redirect(url_for("backoffice_web.offer.get_offer_details", offer_id=offer_id))

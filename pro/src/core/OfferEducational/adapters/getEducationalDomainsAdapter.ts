@@ -22,7 +22,7 @@ export const getEducationalDomainsAdapter: GetEducationalDomainsAdapter =
       return {
         isOk: true,
         message: null,
-        payload: domains.map(domain => ({
+        payload: domains.map((domain) => ({
           value: domain.id.toString(),
           label: domain.name,
         })),

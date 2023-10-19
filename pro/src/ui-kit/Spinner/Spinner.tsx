@@ -21,7 +21,7 @@ const Spinner = ({
       window.clearInterval(timer)
     }
     const newTimer = window.setInterval(() => {
-      setNbDots(oldVal => (oldVal % 3) + 1)
+      setNbDots((oldVal) => (oldVal % 3) + 1)
     }, 500)
     setTimer(newTimer)
     return () => {

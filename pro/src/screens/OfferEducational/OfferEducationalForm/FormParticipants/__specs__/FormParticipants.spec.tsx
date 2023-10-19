@@ -50,7 +50,7 @@ describe('FormParticipants', () => {
       await waitFor(() =>
         expect(screen.getByLabelText(ALL_STUDENTS_LABEL)).toBeChecked()
       )
-      Object.values(StudentLevels).forEach(studentLevel => {
+      Object.values(StudentLevels).forEach((studentLevel) => {
         const studentLevelCheckbox = screen.getByRole('checkbox', {
           name: studentLevel,
         })
@@ -72,7 +72,7 @@ describe('FormParticipants', () => {
       await waitFor(() =>
         expect(screen.getByLabelText(ALL_STUDENTS_LABEL)).not.toBeChecked()
       )
-      Object.values(StudentLevels).forEach(studentLevel => {
+      Object.values(StudentLevels).forEach((studentLevel) => {
         const studentLevelCheckbox = screen.getByRole('checkbox', {
           name: studentLevel,
         })
@@ -96,7 +96,7 @@ describe('FormParticipants', () => {
       await waitFor(() =>
         expect(screen.getByLabelText(ALL_STUDENTS_LABEL)).toBeChecked()
       )
-      Object.values(StudentLevels).forEach(studentLevel => {
+      Object.values(StudentLevels).forEach((studentLevel) => {
         const studentLevelCheckbox = screen.getByRole('checkbox', {
           name: studentLevel,
         })
@@ -122,8 +122,8 @@ describe('FormParticipants', () => {
         ).not.toBeChecked()
       )
       Object.values(StudentLevels)
-        .filter(studentLevel => studentLevel !== StudentLevels.COLL_GE_4E)
-        .forEach(studentLevel => {
+        .filter((studentLevel) => studentLevel !== StudentLevels.COLL_GE_4E)
+        .forEach((studentLevel) => {
           const studentLevelCheckbox = screen.getByRole('checkbox', {
             name: studentLevel,
           })

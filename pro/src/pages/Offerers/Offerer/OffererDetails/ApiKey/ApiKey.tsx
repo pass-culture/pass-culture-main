@@ -35,7 +35,10 @@ const ApiKey = ({
     try {
       setIsGeneratingKey(true)
       const generatedApiKey = (await api.generateApiKeyRoute(offererId)).apiKey
-      setNewlyGeneratedKeys(previousKeys => [...previousKeys, generatedApiKey])
+      setNewlyGeneratedKeys((previousKeys) => [
+        ...previousKeys,
+        generatedApiKey,
+      ])
       notification.success(
         'Votre clé a bien été générée. Attention elle ne sera affichée que quelques instants !'
       )
@@ -106,7 +109,7 @@ const ApiKey = ({
 
       {(savedApiKeys.length > 0 || newlyGeneratedKeys.length > 0) && (
         <div className={styles['list']}>
-          {savedApiKeys.map(savedApiKey => {
+          {savedApiKeys.map((savedApiKey) => {
             return (
               <div className={styles['item']} key={savedApiKey}>
                 <span className={styles['text']}>
@@ -125,7 +128,7 @@ const ApiKey = ({
             )
           })}
 
-          {newlyGeneratedKeys.map(newKey => {
+          {newlyGeneratedKeys.map((newKey) => {
             return (
               <div className={styles['item']} key={newKey}>
                 <span className={cn(styles['text'], styles['text--new-key'])}>

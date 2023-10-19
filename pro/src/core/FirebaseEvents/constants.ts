@@ -58,7 +58,10 @@ export enum Events {
   CLICKED_EAC_DMS_LINK = 'hasClickedEacDmsLink',
   CLICKED_CREATE_OFFER_FROM_REQUEST = 'hasClickedCreateOfferFromRequest',
   CLICKED_ADD_IMAGE = 'hasClickedAddImage',
+  CLICKED_DELETE_STOCK = 'hasClickedDeleteStock',
+  CLICKED_BULK_DELETE_STOCK = 'hasClickedBulkDeleteStock',
 }
+
 export enum VenueEvents {
   CLICKED_VENUE_ACCORDION_BUTTON = 'hasClickedVenueAccordionButton',
   CLICKED_VENUE_ADD_RIB_BUTTON = 'hasClickedVenueAddRibButton',
@@ -78,42 +81,15 @@ export enum CollectiveBookingsEvents {
 }
 
 export enum OFFER_FORM_NAVIGATION_MEDIUM {
-  RECAP_LINK = 'RecapLink',
   STICKY_BUTTONS = 'StickyButtons',
-  DRAFT_BUTTONS = 'DraftButtons',
-  BREADCRUMB = 'Breadcrumb',
-  HOME_BUTTON = 'HomeButton',
-  HOME_LINK = 'HomeLink',
-  HOME_VIRTUAL_LINK = 'HomeVirtualLink',
-  OFFERS_BUTTON = 'OffersButton',
-  OFFERER_LINK = 'OffererLink',
-  VENUE_BUTTON = 'VenueButton',
-  OFFERS_THUMB = 'OffersThumb',
-  OFFERS_TITLE = 'OffersTitle',
-  OFFERS_STOCKS = 'OffersStocks',
-  OFFERS_PEN = 'OffersPen',
-  BOOKINGS_TITLE = 'BookingsTitle',
   SUMMARY_PREVIEW = 'SummaryPreview',
   CONFIRMATION_PREVIEW = 'ConfirmationPreview',
-  CONFIRMATION_BUTTON_NEW_OFFER = 'ConfirmationButtonNewOffer',
-  CONFIRMATION_BUTTON_OFFER_LIST = 'ConfirmationButtonOfferList',
-  DETAILS_PREVIEW = 'DetailsPreview',
   OFFERS_TRASH_ICON = 'OffersTrashicon',
-  IMAGE_DELETE = 'ImageDelete',
-  IMAGE_CREATION = 'ImageCreation',
-  VENUE_OFFER_STEPS = 'VenueOfferSteps',
-  CREATE_OFFER_POPIN = 'CreateVenuePopin',
-  RECURRENCE_POPIN = 'RecurrencePopin',
-  STOCK_EVENT_DELETE = 'StockEventDelete',
-  STOCK_EVENT_BULK_DELETE = 'StockEventBulkDelete',
 }
 
 export enum OFFER_FORM_NAVIGATION_IN {
   HOME = 'Home',
   OFFERS = 'Offers',
-  OFFERER = 'Offerer',
-  VENUE = 'Venue',
-  BOOKINGS = 'Bookings',
 }
 
 export enum OFFER_FROM_TEMPLATE_ENTRIES {

@@ -104,7 +104,7 @@ export const filtersReducer = (
       }
     case 'REMOVE_ONE_DEPARTMENT_FILTER': {
       const newDepartments = state.departments?.filter(
-        department => department.value !== action.departmentFilter.value
+        (department) => department.value !== action.departmentFilter.value
       )
       return {
         ...state,
@@ -115,19 +115,19 @@ export const filtersReducer = (
     }
     case 'REMOVE_ONE_CATEGORY_FILTER': {
       const newCategories = state.categories?.filter(
-        category => category.value !== action.categoryFilter.value
+        (category) => category.value !== action.categoryFilter.value
       )
       return { ...state, categories: newCategories }
     }
     case 'REMOVE_ONE_STUDENT_FILTER': {
       const newStudents = state.students?.filter(
-        student => student.value !== action.studentFilter.value
+        (student) => student.value !== action.studentFilter.value
       )
       return { ...state, students: newStudents }
     }
     case 'REMOVE_ONE_DOMAIN_FILTER': {
       const newDomains = state.domains?.filter(
-        domain => domain.value !== action.domainFilter.value
+        (domain) => domain.value !== action.domainFilter.value
       )
       return { ...state, domains: newDomains }
     }

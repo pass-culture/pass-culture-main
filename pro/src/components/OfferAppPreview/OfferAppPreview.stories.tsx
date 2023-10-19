@@ -21,7 +21,7 @@ export default {
   title: 'components/OfferAppPreview',
   component: OfferAppPreview,
 }
-const Template: Story<OfferAppPreviewProps> = args => (
+const Template: Story<OfferAppPreviewProps> = (args) => (
   <OfferAppPreview {...args} />
 )
 

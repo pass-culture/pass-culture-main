@@ -37,7 +37,7 @@ const CheckboxGroup = ({
       legend={legend}
       name={groupName}
     >
-      {group.map(item => (
+      {group.map((item) => (
         <div className={styles['checkbox-group-item']} key={item.name}>
           <CheckboxGroupItem
             icon={item.icon}

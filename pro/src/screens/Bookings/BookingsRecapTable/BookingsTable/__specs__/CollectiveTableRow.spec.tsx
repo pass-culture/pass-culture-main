@@ -83,7 +83,7 @@ describe('CollectiveTableRow', () => {
 
     vi.spyOn(api, 'getCollectiveBookingById').mockImplementationOnce(() => {
       return new CancelablePromise<CollectiveBookingByIdResponseModel>(
-        resolve =>
+        (resolve) =>
           setTimeout(() => resolve(collectiveBookingDetailsFactory()), 500)
       )
     })

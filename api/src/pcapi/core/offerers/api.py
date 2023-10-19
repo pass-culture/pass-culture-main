@@ -38,7 +38,6 @@ import pcapi.core.users.models as users_models
 import pcapi.core.users.repository as users_repository
 from pcapi.models import db
 from pcapi.models import feature
-from pcapi.models.api_errors import ApiErrors
 from pcapi.models.validation_status_mixin import ValidationStatus
 from pcapi.repository import repository
 from pcapi.routes.serialization import offerers_serialize
@@ -1275,7 +1274,7 @@ def get_venue_by_id(venue_id: int) -> offerers_models.Venue:
     return offerers_repository.get_venue_by_id(venue_id)
 
 
-def search_offerer(search_query: str, order_by: list[str] | None = None) -> BaseQuery:
+def search_offerer(search_query: str) -> BaseQuery:
     offerers = models.Offerer.query
 
     search_query = search_query.strip()
@@ -1296,14 +1295,8 @@ def search_offerer(search_query: str, order_by: list[str] | None = None) -> Base
         # Always order by similarity when searching by name
         offerers = offerers.order_by(sa.desc(sa.func.similarity(models.Offerer.name, search_query)))
 
-    if order_by:
-        try:
-            offerers = offerers.order_by(*db_utils.get_ordering_clauses(models.Offerer, order_by))
-        except db_utils.BadSortError as err:
-            raise ApiErrors({"sorting": str(err)})
-    else:
-        # At the end, search by id, in case there is no order requested or equal similarity score
-        offerers = offerers.order_by(models.Offerer.id)
+    # At the end, order by id, in case of equal similarity score
+    offerers = offerers.order_by(models.Offerer.id)
 
     return offerers
 
@@ -1312,7 +1305,7 @@ def get_offerer_base_query(offerer_id: int) -> BaseQuery:
     return models.Offerer.query.filter(models.Offerer.id == offerer_id)
 
 
-def search_venue(search_query: str, order_by: list[str] | None = None) -> BaseQuery:
+def search_venue(search_query: str) -> BaseQuery:
     venues = models.Venue.query.outerjoin(models.VenueContact).options(
         sa.orm.joinedload(models.Venue.contact),
         sa.orm.joinedload(models.Venue.managingOfferer),
@@ -1369,14 +1362,8 @@ def search_venue(search_query: str, order_by: list[str] | None = None) -> BaseQu
                 )
             )
 
-    if order_by:
-        try:
-            venues = venues.order_by(*db_utils.get_ordering_clauses(models.Venue, order_by))
-        except db_utils.BadSortError as err:
-            raise ApiErrors({"sorting": str(err)})
-    else:
-        # At the end, search by id, in case there is no order requested or equal similarity score
-        venues = venues.order_by(models.Venue.id)
+    # At the end, order by id, in case of equal similarity score
+    venues = venues.order_by(models.Venue.id)
 
     return venues
 

@@ -19,9 +19,12 @@ const Thumb = ({ url = '', className }: ThumbProps) => {
       src={url}
     />
   ) : (
-    <div className={cn(styles['default-thumb'], className)}>
-      <SvgIcon alt="" src={strokeOfferIcon} width="40" />
-    </div>
+    <SvgIcon
+      alt=""
+      src={strokeOfferIcon}
+      width="40"
+      className={cn(styles['default-thumb'], className)}
+    />
   )
 }
 

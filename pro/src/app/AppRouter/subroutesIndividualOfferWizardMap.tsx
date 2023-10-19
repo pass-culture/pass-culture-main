@@ -1,6 +1,7 @@
 /* No need to test this file */
 /* istanbul ignore file */
 import React from 'react'
+import { Navigate } from 'react-router-dom'
 
 import { BookingsSummary } from 'pages/IndividualOfferWizard/BookingsSummary/BookingsSummary'
 import Confirmation from 'pages/IndividualOfferWizard/Confirmation/Confirmation'
@@ -44,12 +45,6 @@ export const routesIndividualOfferWizard: RouteConfig[] = [
   {
     element: <Offer />,
     parentPath: '/offre/individuelle/:offerId',
-    path: '/brouillon/informations',
-    title: 'Détails - Brouillon d’une offre individuelle',
-  },
-  {
-    element: <Offer />,
-    parentPath: '/offre/individuelle/:offerId',
     path: '/edition/informations',
     title: 'Détails - Modifier une offre individuelle',
   },
@@ -58,12 +53,6 @@ export const routesIndividualOfferWizard: RouteConfig[] = [
     parentPath: '/offre/individuelle/:offerId',
     path: '/creation/tarifs',
     title: 'Tarifs - Créer une offre individuelle',
-  },
-  {
-    element: <PriceCategories />,
-    parentPath: '/offre/individuelle/:offerId',
-    path: '/brouillon/tarifs',
-    title: 'Tarifs - Brouillon d’une offre individuelle',
   },
   {
     element: <PriceCategories />,
@@ -86,12 +75,6 @@ export const routesIndividualOfferWizard: RouteConfig[] = [
   {
     element: <Stocks />,
     parentPath: '/offre/individuelle/:offerId',
-    path: '/brouillon/stocks',
-    title: 'Stocks et prix - Brouillon d’une offre individuelle',
-  },
-  {
-    element: <Stocks />,
-    parentPath: '/offre/individuelle/:offerId',
     path: '/edition/stocks',
     title: 'Stocks et prix - Modifier une offre individuelle',
   },
@@ -110,12 +93,6 @@ export const routesIndividualOfferWizard: RouteConfig[] = [
   {
     element: <Summary />,
     parentPath: '/offre/individuelle/:offerId',
-    path: '/brouillon/recapitulatif',
-    title: 'Récapitulatif - Brouillon d’une offre individuelle',
-  },
-  {
-    element: <Summary />,
-    parentPath: '/offre/individuelle/:offerId',
     path: '/recapitulatif',
     title: 'Récapitulatif - Modifier une offre individuelle',
   },
@@ -128,12 +105,6 @@ export const routesIndividualOfferWizard: RouteConfig[] = [
   {
     element: <Confirmation />,
     parentPath: '/offre/individuelle/:offerId',
-    path: '/brouillon/confirmation',
-    title: 'Confirmation - Brouillon d’une offre individuelle publié',
-  },
-  {
-    element: <Confirmation />,
-    parentPath: '/offre/individuelle/:offerId',
     path: '/confirmation',
     title: 'Confirmation - Offre individuelle publiée',
   },
@@ -142,6 +113,37 @@ export const routesIndividualOfferWizard: RouteConfig[] = [
     parentPath: '/offre/individuelle/:offerId',
     path: '/reservations',
     title: 'Réservations - Consulter une offre individuelle',
+  },
+  // Deprecated routes, should be deleted in 6 months (09/04/2024)
+  {
+    element: <Navigate to="../creation/informations" replace={true} />,
+    parentPath: '/offre/individuelle/:offerId',
+    path: '/brouillon/informations',
+    title: 'Détails - Brouillon d’une offre individuelle',
+  },
+  {
+    element: <Navigate to="../creation/tarifs" replace={true} />,
+    parentPath: '/offre/individuelle/:offerId',
+    path: '/brouillon/tarifs',
+    title: 'Tarifs - Brouillon d’une offre individuelle',
+  },
+  {
+    element: <Navigate to="../creation/stocks" replace={true} />,
+    parentPath: '/offre/individuelle/:offerId',
+    path: '/brouillon/stocks',
+    title: 'Stocks et prix - Brouillon d’une offre individuelle',
+  },
+  {
+    element: <Navigate to="../creation/confirmation" replace={true} />,
+    parentPath: '/offre/individuelle/:offerId',
+    path: '/brouillon/confirmation',
+    title: 'Confirmation - Brouillon d’une offre individuelle publié',
+  },
+  {
+    element: <Navigate to="../creation/recapitulatif" replace={true} />,
+    parentPath: '/offre/individuelle/:offerId',
+    path: '/brouillon/recapitulatif',
+    title: 'Récapitulatif - Brouillon d’une offre individuelle',
   },
 ]
 

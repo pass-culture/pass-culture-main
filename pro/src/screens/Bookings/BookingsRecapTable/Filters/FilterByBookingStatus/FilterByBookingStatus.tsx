@@ -25,7 +25,7 @@ const getAvailableBookingStatuses = (audience: Audience) => {
       ? INDIVIDUAL_BOOKING_STATUS_DISPLAY_INFORMATIONS
       : COLLECTIVE_BOOKING_STATUS_DISPLAY_INFORMATIONS
 
-  const statusOptions = statuses.map(bookingStatus => ({
+  const statusOptions = statuses.map((bookingStatus) => ({
     title: bookingStatus?.status ?? '',
     value: bookingStatus.id,
   }))
@@ -85,7 +85,7 @@ const FilterByBookingStatus = <
       })
     } else {
       updateGlobalFilters({
-        bookingStatus: bookingStatuses.filter(el => el !== statusId),
+        bookingStatus: bookingStatuses.filter((el) => el !== statusId),
       })
     }
   }
@@ -124,7 +124,7 @@ const FilterByBookingStatus = <
                 Afficher les réservations
               </legend>
 
-              {bookingStatusOptions.map(bookingStatus => (
+              {bookingStatusOptions.map((bookingStatus) => (
                 <BaseCheckbox
                   key={bookingStatus.value}
                   checked={!bookingStatuses.includes(bookingStatus.value)}

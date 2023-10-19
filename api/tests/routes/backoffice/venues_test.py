@@ -164,6 +164,27 @@ class ListVenuesTest(GetEndpointHelper):
         assert len(rows) == 1
         assert int(rows[0]["ID"]) == venues[0].id
 
+    def test_list_venues_by_offerer(self, authenticated_client, venues):
+        # non-matching venues added in venues fixture
+        offerer = offerers_factories.OffererFactory()
+        matching_venues = [
+            offerers_factories.VenueFactory(managingOfferer=offerer),
+            offerers_factories.VirtualVenueFactory(managingOfferer=offerer),
+            offerers_factories.VenueWithoutSiretFactory(managingOfferer=offerer),
+        ]
+
+        offerer_id = offerer.id
+        # 1 more request is necessary to prefill form choices with selected offerer(s)
+        with assert_num_queries(self.expected_num_queries + 1):
+            response = authenticated_client.get(url_for(self.endpoint, offerer=offerer_id))
+
+        assert response.status_code == 200
+        rows = html_parser.extract_table_rows(response.data)
+        assert len(rows) == len(matching_venues)
+        assert {int(row["ID"]) for row in rows} == {venue.id for venue in matching_venues}
+        for row in rows:
+            assert row["Structure"] == offerer.name
+
     def test_list_venues_by_regions(self, authenticated_client, venues):
         # when
         venue = offerers_factories.VenueFactory(postalCode="82000")

@@ -89,7 +89,7 @@ const getInitialVenueId = (
 
   if (offererId) {
     const currentOfferer = offerers.find(
-      offerer => offerer.id.toString() === offererId
+      (offerer) => offerer.id.toString() === offererId
     )
 
     if (currentOfferer?.managedVenues.length === 1) {
@@ -129,7 +129,7 @@ export const computeInitialValuesFromOffer = (
 
   const eventAddress = offer?.offerVenue
   const participants = {
-    all: Object.values(StudentLevels).every(student =>
+    all: Object.values(StudentLevels).every((student) =>
       offer.students.includes(student)
     ),
     ...buildStudentLevelsMapWithDefaultValue((studentKey: StudentLevels) =>

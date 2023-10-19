@@ -3,19 +3,13 @@ import React, { useState } from 'react'
 
 import { PriceCategoryResponseModel } from 'apiClient/v1'
 import ActionsBarSticky from 'components/ActionsBarSticky'
-import { OFFER_WIZARD_STEP_IDS } from 'components/IndividualOfferBreadcrumb/constants'
-import {
-  Events,
-  OFFER_FORM_NAVIGATION_MEDIUM,
-} from 'core/FirebaseEvents/constants'
-import { OFFER_WIZARD_MODE } from 'core/Offers/constants'
-import { useOfferWizardMode } from 'hooks'
+import { Events } from 'core/FirebaseEvents/constants'
 import useAnalytics from 'hooks/useAnalytics'
 import { SortingMode, useColumnSorting } from 'hooks/useColumnSorting'
 import useNotification from 'hooks/useNotification'
 import { usePagination } from 'hooks/usePagination'
 import fullTrashIcon from 'icons/full-trash.svg'
-import { getPriceCategoryOptions } from 'screens/IndividualOffer/StocksEventEdition/StocksEventEdition'
+import { getPriceCategoryOptions } from 'screens/IndividualOffer/StocksEventEdition/getPriceCategoryOptions'
 import { Button } from 'ui-kit'
 import { ButtonVariant } from 'ui-kit/Button/types'
 import { BaseDatePicker } from 'ui-kit/form/DatePicker/BaseDatePicker'
@@ -67,7 +61,6 @@ const StocksEventList = ({
   readonly = false,
 }: StocksEventListProps): JSX.Element => {
   const { logEvent } = useAnalytics()
-  const mode = useOfferWizardMode()
   const notify = useNotification()
   const [isCheckedArray, setIsCheckedArray] = useState<boolean[]>(
     Array(stocks.length).fill(false)
@@ -94,10 +87,10 @@ const StocksEventList = ({
   const { page, setPage, previousPage, nextPage, pageCount, currentPageItems } =
     usePagination(filteredStocks, STOCKS_PER_PAGE)
 
-  const areAllChecked = isCheckedArray.every(isChecked => isChecked)
+  const areAllChecked = isCheckedArray.every((isChecked) => isChecked)
 
   const handleOnChangeSelected = (index: number) => {
-    const newArray = isCheckedArray.map(isChecked => isChecked)
+    const newArray = isCheckedArray.map((isChecked) => isChecked)
     newArray[index] = !newArray[index]
     setIsCheckedArray(newArray)
   }
@@ -115,17 +108,11 @@ const StocksEventList = ({
     const newArray = [...isCheckedArray]
     newArray.splice(selectIndex, 1)
     setIsCheckedArray(newArray)
-    const stockIndex = stocks.findIndex(stock => stock.uuid === uuid)
+    const stockIndex = stocks.findIndex((stock) => stock.uuid === uuid)
 
     stocks.splice(stockIndex, 1)
     setStocks?.([...stocks])
-    // TODO Should create dedicated event, this is not a navigation event
-    logEvent?.(Events.CLICKED_OFFER_FORM_NAVIGATION, {
-      from: OFFER_WIZARD_STEP_IDS.STOCKS,
-      to: OFFER_WIZARD_STEP_IDS.STOCKS,
-      used: OFFER_FORM_NAVIGATION_MEDIUM.STOCK_EVENT_DELETE,
-      isEdition: mode !== OFFER_WIZARD_MODE.CREATION,
-      isDraft: mode !== OFFER_WIZARD_MODE.EDITION,
+    logEvent?.(Events.CLICKED_DELETE_STOCK, {
       offerId: offerId,
     })
 
@@ -138,20 +125,14 @@ const StocksEventList = ({
   const onBulkDelete = () => {
     const stocksUuidToDelete = filteredStocks
       .filter((stock, index) => isCheckedArray[index])
-      .map(stock => stock.uuid)
+      .map((stock) => stock.uuid)
 
     const newStocks = stocks.filter(
-      stock => !stocksUuidToDelete.includes(stock.uuid)
+      (stock) => !stocksUuidToDelete.includes(stock.uuid)
     )
 
     const deletedStocksCount = stocks.length - newStocks.length
-    // TODO Should create dedicated event, this is not a navigation event
-    logEvent?.(Events.CLICKED_OFFER_FORM_NAVIGATION, {
-      from: OFFER_WIZARD_STEP_IDS.STOCKS,
-      to: OFFER_WIZARD_STEP_IDS.STOCKS,
-      used: OFFER_FORM_NAVIGATION_MEDIUM.STOCK_EVENT_BULK_DELETE,
-      isEdition: mode !== OFFER_WIZARD_MODE.CREATION,
-      isDraft: mode !== OFFER_WIZARD_MODE.EDITION,
+    logEvent?.(Events.CLICKED_BULK_DELETE_STOCK, {
       offerId: offerId,
       deletionCount: `${stocks.length - newStocks.length}`,
     })
@@ -177,11 +158,11 @@ const StocksEventList = ({
   }
 
   const selectedDateText =
-    isCheckedArray.filter(e => e === true).length > 1
-      ? `${isCheckedArray.filter(e => e === true).length} dates sélectionnées`
+    isCheckedArray.filter((e) => e === true).length > 1
+      ? `${isCheckedArray.filter((e) => e === true).length} dates sélectionnées`
       : '1 date sélectionnée'
 
-  const isAtLeastOneStockChecked = isCheckedArray.some(e => e)
+  const isAtLeastOneStockChecked = isCheckedArray.some((e) => e)
   const areFiltersActive = Boolean(
     dateFilter || hourFilter || priceCategoryFilter
   )
@@ -229,7 +210,7 @@ const StocksEventList = ({
 
               <div className={cn(styles['filter-input'])}>
                 <BaseDatePicker
-                  onChange={event => {
+                  onChange={(event) => {
                     setDateFilter(event.target.value)
                     onFilterChange()
                   }}
@@ -258,7 +239,7 @@ const StocksEventList = ({
               />
               <div className={cn(styles['filter-input'])}>
                 <BaseTimePicker
-                  onChange={event => {
+                  onChange={(event) => {
                     setHourFilter(event.target.value)
                     onFilterChange()
                   }}
@@ -291,7 +272,7 @@ const StocksEventList = ({
                   defaultOption={{ label: '', value: '' }}
                   options={priceCategoryOptions}
                   value={priceCategoryFilter}
-                  onChange={event => {
+                  onChange={(event) => {
                     setPriceCategoryFilter(event.target.value)
                     onFilterChange()
                   }}
@@ -417,7 +398,7 @@ const StocksEventList = ({
               'dd/MM/yyyy'
             )
             const priceCategory = priceCategories.find(
-              pC => pC.id === stock.priceCategoryId
+              (pC) => pC.id === stock.priceCategoryId
             )
 
             let price = ''

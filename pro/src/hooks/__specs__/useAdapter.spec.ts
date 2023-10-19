@@ -39,7 +39,7 @@ describe('useAdapter', () => {
   it('should return loading payload then success payload', async () => {
     const successCall = vi
       .fn()
-      .mockResolvedValue(new Promise(r => setTimeout(r, 200)))
+      .mockResolvedValue(new Promise((r) => setTimeout(r, 200)))
     const { result } = renderHook(() =>
       useAdapter<SuccessPayload, FailurePayload>(getTestingAdapter(successCall))
     )

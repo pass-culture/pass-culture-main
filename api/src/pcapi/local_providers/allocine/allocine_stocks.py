@@ -5,7 +5,7 @@ import re
 from dateutil.parser import parse
 
 from pcapi import settings
-from pcapi.core.categories import subcategories
+from pcapi.core.categories import subcategories_v2 as subcategories
 from pcapi.core.offerers.models import Venue
 from pcapi.core.offers import api as offers_api
 from pcapi.core.offers import models as offers_models

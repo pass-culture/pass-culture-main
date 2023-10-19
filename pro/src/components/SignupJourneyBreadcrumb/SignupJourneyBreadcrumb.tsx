@@ -83,7 +83,7 @@ const SignupJourneyBreadcrumb = () => {
     },
   ]
 
-  const breadcrumbStepIds = signupJourneyBreadcrumbSteps.map(step => step.id)
+  const breadcrumbStepIds = signupJourneyBreadcrumbSteps.map((step) => step.id)
 
   if (!breadcrumbStepIds.includes(activeStep)) {
     return <></>

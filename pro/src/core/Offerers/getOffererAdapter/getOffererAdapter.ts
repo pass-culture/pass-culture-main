@@ -12,7 +12,7 @@ const FAILING_RESPONSE: AdapterFailure<null> = {
   payload: null,
 }
 
-const getOffererAdapter: GetOffererAdapter = async offererId => {
+const getOffererAdapter: GetOffererAdapter = async (offererId) => {
   if (offererId === undefined) {
     return FAILING_RESPONSE
   }

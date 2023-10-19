@@ -86,7 +86,7 @@ describe('screens:Stocks', () => {
   const offerStatusWithoutBanner = [OfferStatus.REJECTED, OfferStatus.PENDING]
   it.each(offerStatusWithoutBanner)(
     'should not render stock description banner',
-    async offerStatus => {
+    async (offerStatus) => {
       contextOverride.offer = individualOfferFactory({
         ...contextOverride.offer,
         isEvent: true,
@@ -113,7 +113,7 @@ describe('screens:Stocks', () => {
   ]
   it.each(offerStatusWithBanner)(
     'should render stock description banner',
-    async offerStatus => {
+    async (offerStatus) => {
       contextOverride.offer = individualOfferFactory({
         ...contextOverride.offer,
         isEvent: true,

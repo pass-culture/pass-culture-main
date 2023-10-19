@@ -63,7 +63,7 @@ const Offerers = ({
     if (receivedOffererNames) {
       if (receivedOffererNames.offerersNames.length > 0) {
         const initialOffererOptions = sortByLabel(
-          receivedOffererNames.offerersNames.map(item => ({
+          receivedOffererNames.offerersNames.map((item) => ({
             value: item['id'].toString(),
             label: item['name'],
           }))

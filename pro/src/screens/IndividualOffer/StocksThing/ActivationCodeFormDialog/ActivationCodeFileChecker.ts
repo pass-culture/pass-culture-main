@@ -10,13 +10,13 @@ const csvToRows = (str = '') => {
     return []
   }
   const rowsAsString = str.split(CARRIAGE_RETURN)
-  return rowsAsString.map(row => row.trim()).filter(row => row.length)
+  return rowsAsString.map((row) => row.trim()).filter((row) => row.length)
 }
 
 export const fileReader = (file: Blob) => {
   const reader = new FileReader()
 
-  return new Promise<string | null>(resolve => {
+  return new Promise<string | null>((resolve) => {
     reader.onerror = () => {
       reader.abort()
       resolve(null)
@@ -56,7 +56,7 @@ export const checkAndParseUploadedFile = async ({
     return { errorMessage: 'Le fichier ne contient aucun code d’activation.' }
   }
 
-  if (rows.some(row => row.match(UNAUTHORIZED_CHARACTERS))) {
+  if (rows.some((row) => row.match(UNAUTHORIZED_CHARACTERS))) {
     return {
       errorMessage:
         'Le fichier ne respecte pas le format attendu. Merci de vous rapporter au gabarit CSV disponible au téléchargement.',
@@ -73,7 +73,7 @@ export const checkAndParseUploadedFile = async ({
       return acc
     }, {})
     const codeNonUniques = [
-      ...new Set(rows.filter(code => countByCode[code] > 1)),
+      ...new Set(rows.filter((code) => countByCode[code] > 1)),
     ]
     return {
       errorMessage: `Plusieurs codes identiques ont été trouvés dans le fichier : ${codeNonUniques

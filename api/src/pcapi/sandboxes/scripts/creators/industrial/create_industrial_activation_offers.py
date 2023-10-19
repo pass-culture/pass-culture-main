@@ -2,7 +2,7 @@ from decimal import Decimal
 import logging
 
 import pcapi.core.bookings.factories as bookings_factories
-from pcapi.core.categories import subcategories
+from pcapi.core.categories import subcategories_v2 as subcategories
 import pcapi.core.offerers.factories as offerers_factories
 import pcapi.core.offerers.models as offerers_models
 import pcapi.core.offers.factories as offers_factories

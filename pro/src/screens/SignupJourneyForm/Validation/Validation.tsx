@@ -173,11 +173,11 @@ const Validation = (): JSX.Element => {
           <div className={styles['data-line']}>
             {
               venueTypes?.find(
-                venueType => venueType.value === activity.venueTypeCode
+                (venueType) => venueType.value === activity.venueTypeCode
               )?.label
             }
           </div>
-          {activity.socialUrls.map(url => (
+          {activity.socialUrls.map((url) => (
             <div className={styles['data-line']} key={url}>
               {url}
             </div>

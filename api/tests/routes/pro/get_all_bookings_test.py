@@ -163,6 +163,7 @@ class Returns200Test:
                     booking.dateCreated.astimezone(tz.gettz("Europe/Paris")),
                 ),
                 "bookingAmount": 10.1,
+                "bookingPriceCategoryLabel": None,
                 "bookingToken": "ABCDEF",
                 "bookingStatus": "validated",
                 "bookingIsDuo": False,
@@ -188,10 +189,9 @@ class Returns200Test:
         assert response.json["pages"] == 1
         assert response.json["total"] == 1
 
-    def when_requested_event_date_is_iso_format(self, client: Any):
-        requested_date = datetime(2020, 8, 12, 20, 00)
-        requested_date_iso_format = "2020-08-12T00:00:00Z"
-        stock = offers_factories.EventStockFactory(beginningDatetime=requested_date)
+    def when_requested_with_event_date(self, client: Any):
+        requested_date = "2020-08-12"
+        stock = offers_factories.EventStockFactory(beginningDatetime=datetime(2020, 8, 12))
         booking = bookings_factories.BookingFactory(stock=stock, token="AAAAAA", dateCreated=datetime(2020, 8, 11))
         bookings_factories.BookingFactory(stock=offers_factories.EventStockFactory(), token="BBBBBB")
         pro_user = users_factories.ProFactory(email="pro@example.com")
@@ -201,7 +201,7 @@ class Returns200Test:
         client = client.with_session_auth(pro_user.email)
         with assert_no_duplicated_queries():
             response = client.get(
-                f"/bookings/pro?{BOOKING_PERIOD_PARAMS}&bookingStatusFilter=booked&eventDate={requested_date_iso_format}"
+                f"/bookings/pro?{BOOKING_PERIOD_PARAMS}&bookingStatusFilter=booked&eventDate={requested_date}"
             )
 
         assert response.status_code == 200
@@ -211,10 +211,10 @@ class Returns200Test:
         assert response.json["pages"] == 1
         assert response.json["total"] == 1
 
-    def when_requested_booking_period_dates_are_iso_format(self, client: Any):
+    def when_requested_with_booking_period_dates(self, client: Any):
         booking_date = datetime(2020, 8, 12, 20, 00, tzinfo=timezone.utc)
-        booking_period_beginning_date_iso = "2020-08-10"
-        booking_period_ending_date_iso = "2020-08-12"
+        booking_period_beginning_date = "2020-08-10"
+        booking_period_ending_date = "2020-08-12"
         booking = bookings_factories.BookingFactory(dateCreated=booking_date, token="AAAAAA")
         bookings_factories.BookingFactory(token="BBBBBB")
         pro_user = users_factories.ProFactory(email="pro@example.com")
@@ -224,7 +224,7 @@ class Returns200Test:
         with assert_no_duplicated_queries():
             response = client.get(
                 "/bookings/pro?bookingPeriodBeginningDate=%s&bookingPeriodEndingDate=%s&bookingStatusFilter=booked"
-                % (booking_period_beginning_date_iso, booking_period_ending_date_iso)
+                % (booking_period_beginning_date, booking_period_ending_date)
             )
 
         assert response.status_code == 200
@@ -263,6 +263,15 @@ class Returns400Test:
 
         assert response.status_code == 400
         assert response.json["page"] == ["Saisissez un nombre valide"]
+
+    def when_date_format_incorrect(self, client: Any):
+        pro = users_factories.ProFactory()
+
+        response = client.with_session_auth(pro.email).get(
+            "/bookings/pro?bookingPeriodBeginningDate=20234-08-10&bookingPeriodEndingDate=2020-08-12"
+        )
+
+        assert response.status_code == 400
 
     def when_booking_period_and_event_date_is_not_given(self, client: Any):
         pro = users_factories.ProFactory()

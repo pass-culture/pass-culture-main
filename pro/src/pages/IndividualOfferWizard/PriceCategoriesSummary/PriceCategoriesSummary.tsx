@@ -15,7 +15,7 @@ export const PriceCategoriesSummary = (): JSX.Element | null => {
   }
 
   const canBeDuo = subCategories.find(
-    subCategory => subCategory.id === offer.subcategoryId
+    (subCategory) => subCategory.id === offer.subcategoryId
   )?.canBeDuo
 
   return (

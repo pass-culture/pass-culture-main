@@ -10,7 +10,7 @@ export default {
   component: ImageEditor,
 }
 
-const Template: Story<ImageEditorProps> = props => (
+const Template: Story<ImageEditorProps> = (props) => (
   <>
     <ImageEditor {...props} ref={null} />
     <h1>

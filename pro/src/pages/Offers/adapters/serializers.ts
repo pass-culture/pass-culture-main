@@ -18,7 +18,7 @@ const serializeVenue = (
 const serializeStocks = (
   stocks: ListOffersOfferResponseModel['stocks']
 ): Stock[] =>
-  stocks.map(stock => ({
+  stocks.map((stock) => ({
     beginningDatetime: stock.beginningDatetime
       ? new Date(stock.beginningDatetime)
       : null,
@@ -27,7 +27,7 @@ const serializeStocks = (
   }))
 
 export const serializeOffers = (offers: ListOffersResponseModel): Offer[] =>
-  offers.map(offer => ({
+  offers.map((offer) => ({
     id: offer.id,
     // FIX ME: api should send OfferStatus
     status: offer.status as OfferStatus,

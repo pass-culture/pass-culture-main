@@ -33,7 +33,7 @@ const SignupContainer = (): JSX.Element => {
         ...values,
       })
       .then(() => onHandleSuccess())
-      .catch(response => onHandleFail(response.body ? response.body : {}))
+      .catch((response) => onHandleFail(response.body ? response.body : {}))
   }
 
   const onHandleSuccess = () => {

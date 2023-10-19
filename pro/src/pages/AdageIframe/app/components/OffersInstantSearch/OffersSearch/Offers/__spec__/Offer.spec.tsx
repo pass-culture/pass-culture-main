@@ -11,7 +11,10 @@ import {
 import { apiAdage } from 'apiClient/api'
 import { AdageUserContextProvider } from 'pages/AdageIframe/app/providers/AdageUserContext'
 import { HydratedCollectiveOffer } from 'pages/AdageIframe/app/types/offers'
-import { defaultCollectiveTemplateOffer } from 'utils/adageFactories'
+import {
+  defaultCollectiveOffer,
+  defaultCollectiveTemplateOffer,
+} from 'utils/adageFactories'
 import { renderWithProviders } from 'utils/renderWithProviders'
 
 import Offer, { OfferProps } from '../Offer'
@@ -65,58 +68,8 @@ describe('offer', () => {
   let offerInCayenne: HydratedCollectiveOffer
   let offerProps: OfferProps
   beforeEach(() => {
-    offerInParis = {
-      id: 479,
-      description: 'Une offre vraiment chouette',
-      name: 'Une chouette à la mer',
-      subcategoryLabel: 'Cinéma',
-      stock: {
-        id: 825,
-        beginningDatetime: new Date('2022-09-16T00:00:00Z').toISOString(),
-        bookingLimitDatetime: new Date('2022-09-16T00:00:00Z').toISOString(),
-        isBookable: true,
-        price: 140000,
-        numberOfTickets: 10,
-      },
+    offerInParis = { ...defaultCollectiveOffer, isTemplate: false }
 
-      venue: {
-        id: 1,
-        address: '1 boulevard Poissonnière',
-        city: 'Paris',
-        name: 'Le Petit Rintintin 33',
-        postalCode: '75000',
-        publicName: 'Le Petit Rintintin 33',
-        managingOfferer: {
-          name: 'Le Petit Rintintin Management',
-        },
-        coordinates: {
-          latitude: 48.87004,
-          longitude: 2.3785,
-        },
-      },
-      offerVenue: {
-        venueId: 1,
-        otherAddress: '',
-        addressType: OfferAddressType.OFFERER_VENUE,
-      },
-      students: [StudentLevels.COLL_GE_4E, StudentLevels.COLL_GE_3E],
-      isSoldOut: false,
-      isExpired: false,
-      isFavorite: false,
-      audioDisabilityCompliant: false,
-      visualDisabilityCompliant: false,
-      mentalDisabilityCompliant: true,
-      motorDisabilityCompliant: true,
-      contactEmail: '',
-      contactPhone: '',
-      domains: [],
-      interventionArea: ['75', '92'],
-      teacher: {
-        firstName: 'Jean',
-        lastName: 'Dupont',
-      },
-      isTemplate: false,
-    }
     offerInCayenne = {
       id: 480,
       description: 'Une offre vraiment chouette',

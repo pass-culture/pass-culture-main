@@ -226,18 +226,18 @@ describe('Signup', () => {
         // Count calls to window.addEventListener with "beforeunload" as first argument
         expect(
           spyAddEvent.mock.calls
-            .map(args => args[0] === 'beforeunload')
+            .map((args) => args[0] === 'beforeunload')
             .filter(Boolean).length
         ).toEqual(1)
         expect(
           spyRemoveEvent.mock.calls
-            .map(args => args[0] === 'beforeunload')
+            .map((args) => args[0] === 'beforeunload')
             .filter(Boolean).length
         ).toEqual(0)
         await unmount()
         expect(
           spyRemoveEvent.mock.calls
-            .map(args => args[0] === 'beforeunload')
+            .map((args) => args[0] === 'beforeunload')
             .filter(Boolean).length
         ).toEqual(1)
       })

@@ -172,14 +172,6 @@ class NonLinkedProviderCannotHaveInAppTicket(OfferCreationBaseException):
         )
 
 
-class NonWithdrawableEventOfferCantHaveWithdrawal(OfferCreationBaseException):
-    def __init__(self) -> None:
-        super().__init__(
-            "offer",
-            "La catégorie de l'offre n'accepte pas de modalité de retrait de billet",
-        )
-
-
 class WithdrawableEventOfferMustHaveWithdrawal(OfferCreationBaseException):
     def __init__(self) -> None:
         super().__init__(

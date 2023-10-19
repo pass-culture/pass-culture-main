@@ -23,6 +23,7 @@ from pcapi.core.permissions import models as perm_models
 from pcapi.core.users import models as users_models
 from pcapi.models import db
 from pcapi.models.validation_status_mixin import ValidationStatus
+from pcapi.routes.backoffice.forms.search import TypeOptions
 import pcapi.utils.regions as regions_utils
 
 from . import forms as offerer_forms
@@ -30,7 +31,6 @@ from . import serialization
 from .. import utils
 from ..forms import empty as empty_forms
 from ..forms import search as search_forms
-from ..serialization.search import TypeOptions
 
 
 offerer_blueprint = utils.child_backoffice_blueprint(
@@ -85,7 +85,7 @@ def render_offerer_details(
 
     return render_template(
         "offerer/get.html",
-        search_form=search_forms.ProSearchForm(terms=request.args.get("terms"), pro_type=TypeOptions.OFFERER.name),
+        search_form=search_forms.ProSearchForm(q=request.args.get("q"), pro_type=TypeOptions.OFFERER.name),
         search_dst=url_for("backoffice_web.search_pro"),
         offerer=offerer,
         region=regions_utils.get_region_name_from_postal_code(offerer.postalCode),
@@ -102,13 +102,13 @@ def render_offerer_details(
 def get(offerer_id: int) -> utils.BackofficeResponse:
     offerer = offerers_models.Offerer.query.get_or_404(offerer_id)
 
-    if request.args.get("terms") and request.args.get("search_rank"):
+    if request.args.get("q") and request.args.get("search_rank"):
         utils.log_backoffice_tracking_data(
             event_name="ConsultCard",
             extra_data={
                 "searchType": "ProSearch",
                 "searchProType": TypeOptions.OFFERER.name,
-                "searchQuery": request.args.get("terms"),
+                "searchQuery": request.args.get("q"),
                 "searchRank": request.args.get("search_rank"),
                 "searchNbResults": request.args.get("total_items"),
             },

@@ -29,7 +29,7 @@ const UserEmail = ({
   const [pendingEmailValidation, setPendingEmailValidation] =
     useState<string>('')
   const getPendingEmailRequest = () => {
-    getPendingEmailValidationAdapter().then(response => {
+    getPendingEmailValidationAdapter().then((response) => {
       const newEmail = response.payload?.newEmail || ''
       setPendingEmailValidation(newEmail)
     })

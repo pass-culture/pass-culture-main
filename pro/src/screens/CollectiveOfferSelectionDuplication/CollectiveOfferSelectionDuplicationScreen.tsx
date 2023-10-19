@@ -34,7 +34,8 @@ const CollectiveOfferSelectionDuplication = (): JSX.Element => {
   const navigate = useNavigate()
   const formikSearch = useFormik({
     initialValues: { searchFilter: '' },
-    onSubmit: formValues => filterTemplateOfferByName(formValues.searchFilter),
+    onSubmit: (formValues) =>
+      filterTemplateOfferByName(formValues.searchFilter),
   })
   const formikSelection = useFormik({
     initialValues: { templateOfferId: '' },
@@ -97,12 +98,13 @@ const CollectiveOfferSelectionDuplication = (): JSX.Element => {
 
       <div className={styles['search-container']}>
         <FormikProvider value={formikSearch}>
-          <Form>
+          <Form className={styles['search-input-container']}>
             <TextInput
               label="Offre vitrine à dupliquer"
               isLabelHidden
               name="searchFilter"
               placeholder="Rechercher une offre vitrine"
+              className={styles['search-input']}
             />
             <SubmitButton
               className={styles['search-button']}
@@ -121,7 +123,7 @@ const CollectiveOfferSelectionDuplication = (): JSX.Element => {
                 ? 'Les dernières offres vitrines créées'
                 : `${pluralize(offers.length, 'offre')} vitrine`}
             </p>
-            {offers?.slice(0, 5).map(offer => (
+            {offers?.slice(0, 5).map((offer) => (
               <div
                 key={offer.id}
                 className={cn(styles['offer-selection'], {
@@ -152,7 +154,7 @@ const CollectiveOfferSelectionDuplication = (): JSX.Element => {
               <div className={styles['search-no-results']}>
                 <SvgIcon
                   src={strokeSearchIcon}
-                  alt=""
+                  alt="Illustration de recherche"
                   className={styles['search-no-results-icon']}
                   width="124"
                 />

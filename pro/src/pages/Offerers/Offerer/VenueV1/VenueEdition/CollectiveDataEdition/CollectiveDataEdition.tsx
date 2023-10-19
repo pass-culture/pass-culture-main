@@ -49,7 +49,7 @@ const fetchCulturalPartnerIfVenueHasNoCollectiveData = async (
         }
       : null,
     collectiveWebsite: culturalPartnerResponse.payload.siteWeb,
-    collectiveDomains: culturalPartnerResponse.payload.domaineIds.map(id => ({
+    collectiveDomains: culturalPartnerResponse.payload.domaineIds.map((id) => ({
       id,
       name: '',
     })),
@@ -86,7 +86,7 @@ const CollectiveDataEdition = (): JSX.Element | null => {
         getEducationalCategoriesAdapter(),
       ])
 
-      if (allResponses.some(response => !response.isOk)) {
+      if (allResponses.some((response) => !response.isOk)) {
         notify.error(GET_DATA_ERROR_MESSAGE)
       }
 

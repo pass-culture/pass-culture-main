@@ -547,6 +547,7 @@ class CancelBookingTest(PostEndpointHelper):
         response = self.post_to_endpoint(
             authenticated_client,
             booking_id=confirmed.id,
+            form={"reason": bookings_models.BookingCancellationReasons.BACKOFFICE.value},
         )
 
         # then
@@ -567,6 +568,7 @@ class CancelBookingTest(PostEndpointHelper):
         response = self.post_to_endpoint(
             authenticated_client,
             booking_id=pricing.bookingId,
+            form={"reason": bookings_models.BookingCancellationReasons.BACKOFFICE.value},
         )
 
         # then
@@ -600,6 +602,7 @@ class CancelBookingTest(PostEndpointHelper):
         response = self.post_to_endpoint(
             authenticated_client,
             booking_id=reimbursed.id,
+            form={"reason": bookings_models.BookingCancellationReasons.BACKOFFICE.value},
         )
 
         # then
@@ -620,6 +623,7 @@ class CancelBookingTest(PostEndpointHelper):
         response = self.post_to_endpoint(
             authenticated_client,
             booking_id=cancelled.id,
+            form={"reason": bookings_models.BookingCancellationReasons.BACKOFFICE.value},
         )
 
         # then
@@ -631,6 +635,27 @@ class CancelBookingTest(PostEndpointHelper):
         redirected_response = authenticated_client.get(response.headers["location"])
         assert (
             html_parser.extract_alert(redirected_response.data) == "Impossible d'annuler une réservation déjà annulée"
+        )
+
+    def test_cant_cancel_booking_without_reason(self, authenticated_client, bookings):
+        # give
+        confirmed = bookings[2]
+
+        # when
+        response = self.post_to_endpoint(authenticated_client, booking_id=confirmed.id)
+
+        # then
+        assert response.status_code == 302
+
+        db.session.refresh(confirmed)
+        assert confirmed.status == bookings_models.BookingStatus.CONFIRMED
+        assert confirmed.cancellationReason is None
+
+        redirected_response = authenticated_client.get(response.headers["location"])
+
+        assert (
+            "Les données envoyées comportent des erreurs. Raison: Information obligatoire"
+            in html_parser.extract_alert(redirected_response.data)
         )
 
 
@@ -699,7 +724,7 @@ class BatchOfferCancelTest(PostEndpointHelper):
         parameter_ids = ",".join(str(booking.id) for booking in bookings)
         response = self.post_to_endpoint(
             authenticated_client,
-            form={"object_ids": parameter_ids},
+            form={"object_ids": parameter_ids, "reason": bookings_models.BookingCancellationReasons.BACKOFFICE.value},
         )
 
         assert response.status_code == 302

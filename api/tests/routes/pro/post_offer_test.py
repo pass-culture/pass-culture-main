@@ -1,6 +1,6 @@
 import pytest
 
-from pcapi.core.categories import subcategories
+from pcapi.core.categories import subcategories_v2 as subcategories
 import pcapi.core.offerers.factories as offerers_factories
 from pcapi.core.offers.models import Offer
 from pcapi.core.offers.models import WithdrawalTypeEnum

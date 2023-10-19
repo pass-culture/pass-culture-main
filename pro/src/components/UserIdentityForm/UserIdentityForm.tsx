@@ -29,7 +29,7 @@ const UserIdentityForm = ({
   const dispatch = useDispatch()
 
   const onSubmit = (values: any) => {
-    patchIdentityAdapter(values).then(response => {
+    patchIdentityAdapter(values).then((response) => {
       if (response.isOk) {
         dispatch(
           setCurrentUser({

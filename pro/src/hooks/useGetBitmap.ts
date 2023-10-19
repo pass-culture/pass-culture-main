@@ -7,7 +7,7 @@ export const useGetImageBitmap = (file: File) => {
   const [height, setHeight] = useState<number>(0)
 
   useEffect(() => {
-    getImageBitmap(file).then(data => {
+    getImageBitmap(file).then((data) => {
       /* istanbul ignore next: DEBT, TO FIX */
       if (data) {
         setWidth(data.width)

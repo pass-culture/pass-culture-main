@@ -46,7 +46,7 @@ const Venues = ({ venues, offererId }: VenuesProps) => {
       </div>
 
       <ul className={styles['venue-list']}>
-        {venues.map(venue => (
+        {venues.map((venue) => (
           <VenueItem key={venue.id} venue={venue} offererId={offererId} />
         ))}
       </ul>

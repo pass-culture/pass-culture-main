@@ -32,7 +32,7 @@ const CinemaProviderParameters = ({
 
     api
       .updateVenueProvider(payload)
-      .then(editedVenueProvider => {
+      .then((editedVenueProvider) => {
         afterVenueProviderEdit(editedVenueProvider)
         notification.success(
           "Les modifications ont bien été importées et s'appliqueront aux nouvelles séances créées."

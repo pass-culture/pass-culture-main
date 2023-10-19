@@ -1,5 +1,5 @@
 import { apiContremarque } from 'apiClient/api'
-import { HTTP_STATUS } from 'apiClient/helpers'
+import { HTTP_STATUS, isErrorAPIError } from 'apiClient/helpers'
 import { ApiError } from 'apiClient/v2'
 
 import { DeskGetBookingResponse, MESSAGE_VARIANT } from '../types'
@@ -67,8 +67,13 @@ const getBookingFailure = (
 export const getBooking = async (
   token: string
 ): Promise<DeskGetBookingResponse> => {
-  return apiContremarque
-    .getBookingByTokenV2(token)
-    .then(booking => ({ booking }))
-    .catch(getBookingFailure)
+  try {
+    const response = await apiContremarque.getBookingByTokenV2(token)
+    return { booking: response }
+  } catch (e) {
+    if (!isErrorAPIError(e)) {
+      return {}
+    }
+    return getBookingFailure(e)
+  }
 }

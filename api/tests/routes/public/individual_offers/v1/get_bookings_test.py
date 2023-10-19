@@ -363,7 +363,7 @@ class GetBookingsByOfferReturns200Test:
         )
 
         response = client.with_explicit_token(offerers_factories.DEFAULT_CLEAR_API_KEY).get(
-            f"/public/bookings/v1/bookings?offer_id={event_offer.id}&begining_datetime={past}",
+            f"/public/bookings/v1/bookings?offer_id={event_offer.id}&beginning_datetime={past}",
         )
 
         assert response.status_code == 200
@@ -506,7 +506,7 @@ class GetBookingsByOfferReturns200Test:
         )
 
         response = client.with_explicit_token(offerers_factories.DEFAULT_CLEAR_API_KEY).get(
-            f"/public/bookings/v1/bookings?offer_id={event_offer.id}&status=USED&begining_datetime={past + datetime.timedelta(days=2)}",
+            f"/public/bookings/v1/bookings?offer_id={event_offer.id}&status=USED&beginning_datetime={past + datetime.timedelta(days=2)}",
         )
 
         assert response.status_code == 200

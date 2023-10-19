@@ -158,7 +158,7 @@
                     </form>
                   </div>
                 </td>
-                <td>{{ item.tags | map(attribute="label") | join(", ") | escape }}</td>
+                <td>{{ item.tags | map(attribute="label") | format_as_badges | safe }}</td>
                 <td>{{ offerer.dateCreated | format_date("%d/%m/%Y") }}</td>
                 <td>
                   {{ item.last_comment | empty_string_if_null | replace("\n", "

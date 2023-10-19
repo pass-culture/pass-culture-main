@@ -8,7 +8,7 @@ const offerer = { id: 1 } as Offerer
 describe('redirect url after submit', () => {
   it.each([true, false])(
     `Redirect admin user to the right url, when creation is %s`,
-    creationMode => {
+    (creationMode) => {
       const url = venueSubmitRedirectUrl(creationMode, offerer.id, {
         isAdmin: true,
       } as SharedCurrentUserResponseModel)

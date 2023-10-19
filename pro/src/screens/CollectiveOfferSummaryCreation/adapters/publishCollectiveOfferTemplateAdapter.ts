@@ -8,7 +8,7 @@ type PublishCollectiveOfferTemplateAdapter = Adapter<
 >
 
 const publishCollectiveOfferTemplateAdapter: PublishCollectiveOfferTemplateAdapter =
-  async offerId => {
+  async (offerId) => {
     try {
       const offer = await api.patchCollectiveOfferTemplatePublication(offerId)
       return {

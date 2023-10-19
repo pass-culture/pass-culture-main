@@ -4,6 +4,7 @@
 /* eslint-disable */
 
 import type { CollectiveOfferVenueBodyModel } from './CollectiveOfferVenueBodyModel';
+import type { DateRangeOnCreateModel } from './DateRangeOnCreateModel';
 import type { StudentLevels } from './StudentLevels';
 
 export type PostCollectiveOfferTemplateBodyModel = {
@@ -11,6 +12,7 @@ export type PostCollectiveOfferTemplateBodyModel = {
   bookingEmails: Array<string>;
   contactEmail: string;
   contactPhone?: string | null;
+  dates?: DateRangeOnCreateModel | null;
   description: string;
   domains?: Array<number> | null;
   durationMinutes?: number | null;

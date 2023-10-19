@@ -16,7 +16,7 @@ const editVenueCollectiveDataAdapter: EditVenueCollectiveDataAdapter = async ({
   try {
     const response = await api.editVenueCollectiveData(venueId, {
       ...values,
-      collectiveDomains: values.collectiveDomains.map(stringId =>
+      collectiveDomains: values.collectiveDomains.map((stringId) =>
         Number(stringId)
       ),
       venueEducationalStatusId: values.collectiveLegalStatus

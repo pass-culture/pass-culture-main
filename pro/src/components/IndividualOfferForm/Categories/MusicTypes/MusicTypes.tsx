@@ -20,7 +20,7 @@ const MusicTypes = ({ readOnly = false }: MusicTypesProps): JSX.Element => {
     musicSubType: SelectOption[]
   }>({
     musicType: musicOptionsTree
-      .map(data => ({
+      .map((data) => ({
         value: data.code.toString(),
         label: data.label,
       }))
@@ -39,12 +39,12 @@ const MusicTypes = ({ readOnly = false }: MusicTypesProps): JSX.Element => {
     let newMusicSubTypeOptions: SelectOption[] = []
     if (musicType !== FORM_DEFAULT_VALUES.musicType) {
       const selectedMusicTypeChildren = musicOptionsTree.find(
-        musicTypeOption => musicTypeOption.code === parseInt(musicType)
+        (musicTypeOption) => musicTypeOption.code === parseInt(musicType)
       )?.children
 
       if (selectedMusicTypeChildren) {
         newMusicSubTypeOptions = selectedMusicTypeChildren
-          .map(data => ({
+          .map((data) => ({
             value: data.code.toString(),
             label: data.label,
           }))
@@ -52,7 +52,7 @@ const MusicTypes = ({ readOnly = false }: MusicTypesProps): JSX.Element => {
       }
     }
 
-    setMusicTypesOptions(prevOptions => {
+    setMusicTypesOptions((prevOptions) => {
       return {
         ...prevOptions,
         musicSubType: newMusicSubTypeOptions,

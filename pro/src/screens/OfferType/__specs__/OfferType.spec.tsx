@@ -13,6 +13,7 @@ import {
 import { Events } from 'core/FirebaseEvents/constants'
 import * as useAnalytics from 'hooks/useAnalytics'
 import * as useNotification from 'hooks/useNotification'
+import { baseStoreFactory } from 'store/testUtils'
 import {
   collectiveOfferFactory,
   defaultGetOffererVenueResponseModel,
@@ -52,11 +53,7 @@ vi.mock('apiClient/api', () => ({
   },
 }))
 
-const renderOfferTypes = async (
-  storeOverrides: any,
-  structureId?: string,
-  venueId?: string
-) => {
+const renderOfferTypes = (structureId?: string, venueId?: string) => {
   renderWithProviders(
     <Routes>
       <Route path="/creation" element={<OfferType />} />
@@ -78,7 +75,9 @@ const renderOfferTypes = async (
       />
     </Routes>,
     {
-      storeOverrides,
+      storeOverrides: baseStoreFactory({
+        featureList: ['WIP_CATEGORY_SELECTION'],
+      }),
       initialRouterEntries: [
         `/creation${
           structureId
@@ -88,39 +87,15 @@ const renderOfferTypes = async (
       ],
     }
   )
-
-  await waitFor(() => {
-    expect(api.listOfferersNames).toHaveBeenCalled()
-  })
-  await waitFor(() => {
-    expect(api.canOffererCreateEducationalOffer).toHaveBeenCalled()
-  })
-  await waitFor(() => {
-    expect(api.getCollectiveOffers).toHaveBeenCalled()
-  })
 }
 
-describe.skip('screens:IndividualOffer::OfferType', () => {
-  let store: any
+describe('OfferType', () => {
   beforeEach(() => {
     vi.spyOn(api, 'listOfferersNames').mockResolvedValue({
       offerersNames: [{ id: 1, name: 'Ma super structure' }],
     })
     vi.spyOn(api, 'getCollectiveOffers').mockResolvedValue([])
     vi.spyOn(api, 'canOffererCreateEducationalOffer').mockResolvedValue()
-
-    store = {
-      user: {
-        initialized: true,
-        currentUser: {
-          isAdmin: false,
-          email: 'email@example.com',
-        },
-      },
-      features: {
-        list: [{ isActive: true, nameKey: 'WIP_CATEGORY_SELECTION' }],
-      },
-    }
 
     vi.spyOn(useAnalytics, 'default').mockImplementation(() => ({
       logEvent: mockLogEvent,
@@ -129,7 +104,7 @@ describe.skip('screens:IndividualOffer::OfferType', () => {
   })
 
   it('should render the component with button', async () => {
-    renderOfferTypes(store)
+    renderOfferTypes()
 
     expect(
       screen.getByRole('heading', { name: 'Créer une offre' })
@@ -146,21 +121,13 @@ describe.skip('screens:IndividualOffer::OfferType', () => {
     expect(
       screen.getByRole('button', { name: 'Étape suivante' })
     ).toBeInTheDocument()
-  })
 
-  it('should render action bar buttons ', async () => {
-    renderOfferTypes(store)
-
-    expect(
-      screen.getByRole('link', { name: 'Annuler et quitter' })
-    ).toBeInTheDocument()
-    expect(
-      screen.getByRole('button', { name: 'Étape suivante' })
-    ).toBeInTheDocument()
+    // Loads individual offer buttons by default
+    expect(await screen.findByText('Un bien physique')).toBeInTheDocument()
   })
 
   it('should select collective offer', async () => {
-    renderOfferTypes(store)
+    renderOfferTypes()
 
     expect(
       await screen.findByRole('heading', { name: 'Votre offre est :' })
@@ -169,8 +136,9 @@ describe.skip('screens:IndividualOffer::OfferType', () => {
     await userEvent.click(
       screen.getByRole('radio', { name: 'À un groupe scolaire' })
     )
+
     await userEvent.click(
-      screen.getByRole('radio', {
+      await screen.findByRole('radio', {
         name: 'Une offre réservable Cette offre a une date et un prix. Elle doit être associée à un établissement scolaire avec lequel vous avez préalablement échangé.',
       })
     )
@@ -182,13 +150,7 @@ describe.skip('screens:IndividualOffer::OfferType', () => {
   })
 
   it('should select template offer', async () => {
-    vi.spyOn(api, 'listOfferersNames').mockResolvedValueOnce({
-      offerersNames: [
-        { id: 1, name: 'Ma super structure' },
-        { id: 2, name: 'Ma super structure #2' },
-      ],
-    })
-    renderOfferTypes(store)
+    renderOfferTypes()
 
     expect(
       await screen.findByRole('heading', { name: 'Votre offre est :' })
@@ -199,7 +161,7 @@ describe.skip('screens:IndividualOffer::OfferType', () => {
     )
 
     await userEvent.click(
-      screen.getByRole('radio', {
+      await screen.findByRole('radio', {
         name: 'Une offre vitrine Cette offre n’est pas réservable. Elle n’a ni date, ni prix et permet aux enseignants de vous contacter pour co-construire une offre adaptée. Vous pourrez facilement la dupliquer pour chaque enseignant intéressé.',
       })
     )
@@ -211,11 +173,8 @@ describe.skip('screens:IndividualOffer::OfferType', () => {
   })
 
   it('should display non eligible banner if offerer can not create collective offer', async () => {
-    vi.spyOn(api, 'listOfferersNames').mockResolvedValue({
-      offerersNames: [{ id: 1, name: 'Ma super structure' }],
-    })
-    vi.spyOn(api, 'canOffererCreateEducationalOffer').mockRejectedValue({})
-    renderOfferTypes(store)
+    vi.spyOn(api, 'canOffererCreateEducationalOffer').mockRejectedValueOnce({})
+    renderOfferTypes()
 
     await userEvent.click(
       screen.getByRole('radio', { name: 'À un groupe scolaire' })
@@ -230,9 +189,6 @@ describe.skip('screens:IndividualOffer::OfferType', () => {
   })
 
   it('should display dms application banner if offerer can not create collective offer but as dms application', async () => {
-    vi.spyOn(api, 'listOfferersNames').mockResolvedValue({
-      offerersNames: [{ id: 1, name: 'Ma super structure' }],
-    })
     const offerer: GetOffererResponseModel = {
       ...defautGetOffererResponseModel,
       managedVenues: [
@@ -249,8 +205,8 @@ describe.skip('screens:IndividualOffer::OfferType', () => {
       ],
     }
     vi.spyOn(api, 'getOfferer').mockResolvedValue(offerer)
-    vi.spyOn(api, 'canOffererCreateEducationalOffer').mockRejectedValue({})
-    renderOfferTypes(store, 'offererId')
+    vi.spyOn(api, 'canOffererCreateEducationalOffer').mockRejectedValueOnce({})
+    renderOfferTypes('offererId')
 
     await userEvent.click(
       screen.getByRole('radio', { name: 'À un groupe scolaire' })
@@ -265,7 +221,7 @@ describe.skip('screens:IndividualOffer::OfferType', () => {
   })
 
   it('should display individual offer choices', async () => {
-    renderOfferTypes(store)
+    renderOfferTypes()
 
     expect(await screen.findByText('Un bien physique')).toBeInTheDocument()
     expect(screen.getByText('Un bien numérique')).toBeInTheDocument()
@@ -294,7 +250,7 @@ describe.skip('screens:IndividualOffer::OfferType', () => {
   it.each(individualChoices)(
     'should select and redirect fine case : %s',
     async ({ buttonClicked, expectedSearch }) => {
-      renderOfferTypes(store)
+      renderOfferTypes()
 
       await userEvent.click(await screen.findByText(buttonClicked))
 
@@ -335,7 +291,7 @@ describe.skip('screens:IndividualOffer::OfferType', () => {
     })
 
     // there is a venue in url
-    renderOfferTypes(store, '1', '1')
+    renderOfferTypes('1', '1')
 
     expect(
       await screen.findByText('Quelle est la catégorie de l’offre ?')
@@ -362,35 +318,33 @@ describe.skip('screens:IndividualOffer::OfferType', () => {
   })
 
   it('should select duplicate template offer', async () => {
-    vi.spyOn(api, 'listOfferersNames').mockResolvedValue({
-      offerersNames: [{ id: 1, name: 'Ma super structure' }],
-    })
-    vi.spyOn(api, 'canOffererCreateEducationalOffer').mockResolvedValue()
     const offersRecap = [collectiveOfferFactory()]
     vi.spyOn(api, 'getCollectiveOffers')
       // @ts-expect-error FIX ME
-      .mockResolvedValue(offersRecap)
+      .mockResolvedValueOnce(offersRecap)
 
-    renderOfferTypes(store)
+    renderOfferTypes()
 
     await userEvent.click(
       screen.getByRole('radio', { name: 'À un groupe scolaire' })
     )
 
-    expect(api.getCollectiveOffers).toHaveBeenLastCalledWith(
-      undefined,
-      undefined,
-      undefined,
-      undefined,
-      undefined,
-      undefined,
-      undefined,
-      undefined,
-      'template'
-    )
+    await waitFor(() => {
+      expect(api.getCollectiveOffers).toHaveBeenLastCalledWith(
+        undefined,
+        undefined,
+        undefined,
+        undefined,
+        undefined,
+        undefined,
+        undefined,
+        undefined,
+        'template'
+      )
+    })
 
     await userEvent.click(
-      screen.getByRole('radio', {
+      await screen.findByRole('radio', {
         name: 'Une offre réservable Cette offre a une date et un prix. Elle doit être associée à un établissement scolaire avec lequel vous avez préalablement échangé.',
       })
     )
@@ -415,25 +369,21 @@ describe.skip('screens:IndividualOffer::OfferType', () => {
   })
 
   it('should display error message if trying to duplicate without template offer', async () => {
-    vi.spyOn(api, 'listOfferersNames').mockResolvedValue({
-      offerersNames: [{ id: 1, name: 'Ma super structure' }],
-    })
     vi.spyOn(api, 'canOffererCreateEducationalOffer').mockResolvedValue()
-    vi.spyOn(api, 'getCollectiveOffers').mockResolvedValue([])
     const notifyError = vi.fn()
     vi.spyOn(useNotification, 'default').mockImplementation(() => ({
       ...vi.importActual('hooks/useNotification'),
       error: notifyError,
     }))
 
-    renderOfferTypes(store)
+    renderOfferTypes()
 
     await userEvent.click(
       screen.getByRole('radio', { name: 'À un groupe scolaire' })
     )
 
     await userEvent.click(
-      screen.getByRole('radio', {
+      await screen.findByRole('radio', {
         name: 'Une offre réservable Cette offre a une date et un prix. Elle doit être associée à un établissement scolaire avec lequel vous avez préalablement échangé.',
       })
     )
@@ -454,7 +404,7 @@ describe.skip('screens:IndividualOffer::OfferType', () => {
   })
 
   it('should log when cancelling ', async () => {
-    renderOfferTypes(store)
+    renderOfferTypes()
 
     await userEvent.click(
       screen.getByRole('link', { name: 'Annuler et quitter' })
@@ -470,10 +420,10 @@ describe.skip('screens:IndividualOffer::OfferType', () => {
     vi.spyOn(api, 'getOfferer').mockResolvedValue({
       isValidated: false,
     } as GetOffererResponseModel)
-    renderOfferTypes(store, '123')
+    renderOfferTypes('123')
 
     expect(
-      await screen.queryByText(
+      screen.queryByText(
         'Votre structure est en cours de validation par les équipes pass Culture.'
       )
     ).not.toBeInTheDocument()
@@ -491,12 +441,12 @@ describe.skip('screens:IndividualOffer::OfferType', () => {
 
   it('should render loader while fetching data', async () => {
     vi.spyOn(api, 'getOfferer').mockImplementationOnce(() => {
-      return new CancelablePromise<GetOffererResponseModel>(resolve =>
+      return new CancelablePromise<GetOffererResponseModel>((resolve) =>
         setTimeout(() => resolve({} as GetOffererResponseModel), 500)
       )
     })
 
-    renderOfferTypes(store, '123')
+    renderOfferTypes('123')
 
     await userEvent.click(
       screen.getByRole('radio', { name: 'À un groupe scolaire' })

@@ -7,19 +7,31 @@ import pytz
 
 
 ACCOUNTING_TIMEZONE = pytz.timezone("Europe/Paris")
+ROUNDING = decimal.ROUND_HALF_UP
 
 
 def to_eurocents(amount_in_euros: decimal.Decimal | float) -> int:
     exponent = decimal.Decimal("0.01")
     # 0.010 to 0.014 -> 0.01
     # 0.015 to 0.019 -> 0.02
-    rounding = decimal.ROUND_HALF_UP
-    return int(100 * decimal.Decimal(f"{amount_in_euros}").quantize(exponent, rounding))
+    return int(100 * decimal.Decimal(f"{amount_in_euros}").quantize(exponent, ROUNDING))
 
 
 def to_euros(amount_in_eurocents: int) -> decimal.Decimal:
     exponent = decimal.Decimal("0.01")
     return decimal.Decimal(amount_in_eurocents / 100).quantize(exponent)
+
+
+def round_to_integer(amount: decimal.Decimal) -> int:
+    """Round to the closest integer.
+
+    >>> round(100.4)
+    100
+    >>> round(100.5)
+    101
+    """
+    exponent = decimal.Decimal("1")
+    return int(amount.quantize(exponent, ROUNDING))
 
 
 def fr_percentage_filter(decimal_rate: decimal.Decimal) -> str:

@@ -87,7 +87,7 @@ const ReimbursementBankAccount = ({
             {hasLinkedVenues && (
               <>
                 <div className={styles['linked-venues']}>
-                  {bankAccount.linkedVenues.map(venue => (
+                  {bankAccount.linkedVenues.map((venue) => (
                     <div className={styles['linked-venue']} key={venue.id}>
                       {venue.commonName}
                     </div>

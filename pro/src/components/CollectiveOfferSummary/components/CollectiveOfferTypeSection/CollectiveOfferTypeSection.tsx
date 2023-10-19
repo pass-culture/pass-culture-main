@@ -22,7 +22,7 @@ const CollectiveOfferTypeSection = ({
   const subCategory = useMemo(
     () =>
       categories.educationalSubCategories.find(
-        subCategory => subCategory.id === offer.subcategoryId
+        (subCategory) => subCategory.id === offer.subcategoryId
       ),
     [offer.subcategoryId]
   )
@@ -30,7 +30,7 @@ const CollectiveOfferTypeSection = ({
   const category = useMemo(() => {
     if (subCategory) {
       return categories.educationalCategories.find(
-        category => category.id === subCategory.categoryId
+        (category) => category.id === subCategory.categoryId
       )
     }
 
@@ -48,7 +48,7 @@ const CollectiveOfferTypeSection = ({
       />
       <SummaryLayout.Row
         title="Domaine artistiques et culturels"
-        description={offer.domains.map(domain => domain.name).join(', ')}
+        description={offer.domains.map((domain) => domain.name).join(', ')}
       />
       <SummaryLayout.Row
         title="Dispositif national"

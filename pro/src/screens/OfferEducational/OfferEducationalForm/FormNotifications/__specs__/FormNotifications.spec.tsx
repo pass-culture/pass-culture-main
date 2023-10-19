@@ -17,7 +17,7 @@ const renderFormNotifications = (
     notifications: yup.boolean(),
     notificationEmail: yup.string().when('notifications', {
       is: true,
-      then: schema =>
+      then: (schema) =>
         schema
           .required('Veuillez renseigner une adresse email')
           .email(

@@ -2,7 +2,7 @@ import pytest
 import requests_mock
 
 import pcapi.core.bookings.factories as bookings_factories
-from pcapi.core.categories import subcategories
+from pcapi.core.categories import subcategories_v2 as subcategories
 import pcapi.core.offers.factories as offers_factories
 import pcapi.core.offers.models as offers_models
 import pcapi.core.providers.factories as providers_factories

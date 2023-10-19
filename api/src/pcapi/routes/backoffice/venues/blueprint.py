@@ -41,7 +41,7 @@ from pcapi.routes.backoffice import filters
 from pcapi.routes.backoffice import utils
 from pcapi.routes.backoffice.forms import empty as empty_forms
 from pcapi.routes.backoffice.forms import search as search_forms
-from pcapi.routes.backoffice.serialization.search import TypeOptions
+from pcapi.routes.backoffice.forms.search import TypeOptions
 import pcapi.routes.serialization.base as serialize_base
 import pcapi.utils.regions as regions_utils
 from pcapi.utils.regions import get_department_codes_for_region
@@ -98,6 +98,9 @@ def _get_venues(form: forms.GetVenuesListForm) -> list[offerers_models.Venue]:
         base_query = base_query.outerjoin(offerers_models.Venue.criteria).filter(
             criteria_models.Criterion.id.in_(form.criteria.data)
         )
+
+    if form.offerer.data:
+        base_query = base_query.filter(offerers_models.Venue.managingOffererId.in_(form.offerer.data))
 
     if form.order.data:
         base_query = base_query.order_by(getattr(getattr(offerers_models.Venue, "id"), form.order.data)())
@@ -209,7 +212,7 @@ def render_venue_details(
 
     return render_template(
         "venue/get.html",
-        search_form=search_forms.ProSearchForm(terms=request.args.get("terms"), pro_type=TypeOptions.VENUE.name),
+        search_form=search_forms.ProSearchForm(q=request.args.get("q"), pro_type=TypeOptions.VENUE.name),
         search_dst=url_for("backoffice_web.search_pro"),
         venue=venue,
         edit_venue_form=edit_venue_form,
@@ -235,6 +238,7 @@ def list_venues() -> utils.BackofficeResponse:
     venues = utils.limit_rows(venues, form.limit.data)
 
     autocomplete.prefill_criteria_choices(form.criteria)
+    autocomplete.prefill_offerers_choices(form.offerer)
 
     form_url = partial(url_for, ".list_venues", **form.raw_data)
     date_created_sort_url = form_url(order="desc" if form.order.data == "asc" else "asc")
@@ -246,13 +250,13 @@ def list_venues() -> utils.BackofficeResponse:
 def get(venue_id: int) -> utils.BackofficeResponse:
     venue = get_venue(venue_id)
 
-    if request.args.get("terms") and request.args.get("search_rank"):
+    if request.args.get("q") and request.args.get("search_rank"):
         utils.log_backoffice_tracking_data(
             event_name="ConsultCard",
             extra_data={
                 "searchType": "ProSearch",
                 "searchProType": TypeOptions.VENUE.name,
-                "searchQuery": request.args.get("terms"),
+                "searchQuery": request.args.get("q"),
                 "searchRank": request.args.get("search_rank"),
                 "searchNbResults": request.args.get("total_items"),
             },
@@ -512,7 +516,7 @@ def update_venue(venue_id: int) -> utils.BackofficeResponse:
             <button type="button"
                     class="btn"
                     data-bs-toggle="modal"
-                    data-bs-target="#venue-edit-details">
+                    data-bs-target="#edit-venue-modal">
                 Les données envoyées comportent des erreurs. Afficher
             </button>
             """

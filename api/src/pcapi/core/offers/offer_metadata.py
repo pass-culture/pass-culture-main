@@ -1,6 +1,7 @@
 import datetime
 import typing
 
+from pcapi import settings
 from pcapi.core.offerers.models import Venue
 import pcapi.core.offers.models as offers_models
 
@@ -43,6 +44,7 @@ def _get_common_metadata_from_offer(offer: offers_models.Offer) -> Metadata:
             "@type": "AggregateOffer",
             "priceCurrency": "EUR",
             "lowPrice": str(offer.min_price),
+            "url": f"{settings.API_URL}/offre/{offer.id}",
         }
 
     return metadata
@@ -59,6 +61,13 @@ def _get_event_metadata_from_offer(offer: offers_models.Offer) -> Metadata:
     if offer.firstBeginningDatetime:
         firstBeginningDatetime: datetime.datetime = offer.firstBeginningDatetime
         event_metadata["startDate"] = firstBeginningDatetime.isoformat(timespec="minutes")
+
+    event_metadata["eventAttendanceMode"] = (
+        "OnlineEventAttendanceMode" if offer.isDigital else "OfflineEventAttendanceMode"
+    )
+
+    if offer.extraData and offer.extraData.get("releaseDate"):
+        event_metadata["validFrom"] = str(offer.extraData["releaseDate"])
 
     return common_metadata | event_metadata
 

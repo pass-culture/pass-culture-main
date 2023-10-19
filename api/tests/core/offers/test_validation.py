@@ -3,7 +3,7 @@ import pathlib
 
 import pytest
 
-from pcapi.core.categories import subcategories
+from pcapi.core.categories import subcategories_v2 as subcategories
 from pcapi.core.offerers import factories as offerers_factories
 from pcapi.core.offers import exceptions
 from pcapi.core.offers import factories as offers_factories
@@ -386,15 +386,17 @@ class CheckOfferWithdrawalTest:
                 provider=None,
             )
 
-    def test_non_withdrawable_event_offer_cant_have_withdrawal(self):
-        with pytest.raises(exceptions.NonWithdrawableEventOfferCantHaveWithdrawal):
-            validation.check_offer_withdrawal(
-                withdrawal_type=WithdrawalTypeEnum.NO_TICKET,
-                withdrawal_delay=None,
-                subcategory_id=subcategories.JEU_EN_LIGNE.id,
-                booking_contact=None,
-                provider=None,
-            )
+    def test_non_withdrawable_event_offer_can_have_withdrawal(self):
+        provider = providers_factories.ProviderFactory(
+            bookingExternalUrl="https://toto.fr/book", cancelExternalUrl="https://toto.fr/cancel"
+        )
+        assert not validation.check_offer_withdrawal(
+            withdrawal_type=WithdrawalTypeEnum.IN_APP,
+            withdrawal_delay=None,
+            subcategory_id=subcategories.FESTIVAL_MUSIQUE.id,
+            booking_contact="toto@mail.fr",
+            provider=provider,
+        )
 
     @pytest.mark.parametrize(
         "withdrawal_type",

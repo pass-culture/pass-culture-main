@@ -12,34 +12,34 @@ describe('useBeforeUnload', () => {
       vi.spyOn(window, 'removeEventListener').mockImplementation(spyRemoveEvent)
       expect(
         spyAddEvent.mock.calls
-          .map(args => args[0] === 'beforeunload')
+          .map((args) => args[0] === 'beforeunload')
           .filter(Boolean).length
       ).toEqual(0)
       expect(
         spyRemoveEvent.mock.calls
-          .map(args => args[0] === 'beforeunload')
+          .map((args) => args[0] === 'beforeunload')
           .filter(Boolean).length
       ).toEqual(0)
       await renderHook(() => useLogEventOnUnload(mockLogEvent))
       expect(
         spyAddEvent.mock.calls
-          .map(args => args[0] === 'beforeunload')
+          .map((args) => args[0] === 'beforeunload')
           .filter(Boolean).length
       ).toEqual(1)
       expect(
         spyRemoveEvent.mock.calls
-          .map(args => args[0] === 'beforeunload')
+          .map((args) => args[0] === 'beforeunload')
           .filter(Boolean).length
       ).toEqual(0)
       cleanup()
       expect(
         spyRemoveEvent.mock.calls
-          .map(args => args[0] === 'beforeunload')
+          .map((args) => args[0] === 'beforeunload')
           .filter(Boolean).length
       ).toEqual(1)
       expect(
         spyAddEvent.mock.calls
-          .map(args => args[0] === 'beforeunload')
+          .map((args) => args[0] === 'beforeunload')
           .filter(Boolean).length
       ).toEqual(1)
     })
