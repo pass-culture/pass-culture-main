@@ -4,10 +4,7 @@ import React from 'react'
 import { Route, Routes } from 'react-router-dom'
 
 import { api } from 'apiClient/api'
-import {
-  GetIndividualOfferResponseModel,
-  StockResponseModel,
-} from 'apiClient/v1'
+import { GetIndividualOfferResponseModel } from 'apiClient/v1'
 import { OFFER_WIZARD_STEP_IDS } from 'components/IndividualOfferBreadcrumb/constants'
 import Notification from 'components/Notification/Notification'
 import {
@@ -133,6 +130,7 @@ describe('screens:StocksEventEdition', () => {
     props = {
       offer,
       stocks: [],
+      setStocks: vi.fn(),
     }
     contextValue = individualOfferContextFactory()
     vi.spyOn(api, 'getOffer').mockResolvedValue(
@@ -142,7 +140,7 @@ describe('screens:StocksEventEdition', () => {
 
   it('should not block when going outside and form is not touched', async () => {
     vi.spyOn(api, 'upsertStocks').mockResolvedValue({
-      stocks: [{ id: 1 } as StockResponseModel],
+      stocks: [],
     })
 
     renderStockEventScreen(props, contextValue)
@@ -154,7 +152,7 @@ describe('screens:StocksEventEdition', () => {
 
   it('should be able to quit without submitting from RouteLeavingGuard', async () => {
     vi.spyOn(api, 'upsertStocks').mockResolvedValue({
-      stocks: [{ id: 1 } as StockResponseModel],
+      stocks: [],
     })
 
     renderStockEventScreen(props, contextValue)

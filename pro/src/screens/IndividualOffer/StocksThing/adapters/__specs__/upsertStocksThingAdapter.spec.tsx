@@ -1,5 +1,5 @@
 import { api } from 'apiClient/api'
-import { ApiError, StockResponseModel } from 'apiClient/v1'
+import { ApiError } from 'apiClient/v1'
 import { ApiRequestOptions } from 'apiClient/v1/core/ApiRequestOptions'
 import { ApiResult } from 'apiClient/v1/core/ApiResult'
 
@@ -9,9 +9,9 @@ import upsertStocksThingAdapter from '../upsertStocksThingAdapter'
 describe('upsertStocksThingAdapter', () => {
   it('should send StockCreationBodyModel to api', async () => {
     vi.spyOn(api, 'upsertStocks').mockResolvedValue({
-      stocks: [{ id: 1 } as StockResponseModel],
+      stocks: [],
     })
-    upsertStocksThingAdapter({
+    await upsertStocksThingAdapter({
       offerId: 1,
       values: {
         activationCodesExpirationDatetime: '',
@@ -39,9 +39,9 @@ describe('upsertStocksThingAdapter', () => {
 
   it('should send StockEditionBodyModel to api', async () => {
     vi.spyOn(api, 'upsertStocks').mockResolvedValue({
-      stocks: [{ id: 1 } as StockResponseModel],
+      stocks: [],
     })
-    upsertStocksThingAdapter({
+    await upsertStocksThingAdapter({
       offerId: 1,
       values: {
         activationCodesExpirationDatetime: '',
