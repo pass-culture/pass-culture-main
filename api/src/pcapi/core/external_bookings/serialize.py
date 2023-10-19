@@ -17,8 +17,8 @@ class ExternalEventBookingRequest(pydantic_v1.BaseModel):
     offer_id: pydantic_v1.StrictInt
     offer_name: str
     offer_price: pydantic_v1.StrictInt
-    price_category_id: pydantic_v1.StrictInt
-    price_category_label: str
+    price_category_id: pydantic_v1.StrictInt | None
+    price_category_label: str | None
     stock_id: pydantic_v1.StrictInt
     user_birth_date: datetime.date
     user_email: str
@@ -44,8 +44,10 @@ class ExternalEventBookingRequest(pydantic_v1.BaseModel):
             offer_ean=stock.offer.extraData.get("ean") if stock.offer.extraData is not None else None,
             offer_id=stock.offer.id,
             offer_name=stock.offer.name,
-            offer_price=finance_utils.to_eurocents(stock.priceCategory.price),
-            price_category_id=stock.priceCategoryId,  # type: ignore [arg-type]
+            offer_price=finance_utils.to_eurocents(stock.priceCategory.price)
+            if stock.priceCategoryId
+            else finance_utils.to_eurocents(stock.price),
+            price_category_id=stock.priceCategoryId,
             price_category_label=stock.priceCategory.label,  # type: ignore [arg-type]
             stock_id=booking.stockId,
             user_birth_date=user.birth_date,
