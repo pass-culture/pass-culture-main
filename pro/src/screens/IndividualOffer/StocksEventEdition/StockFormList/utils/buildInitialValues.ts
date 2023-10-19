@@ -31,7 +31,7 @@ export const buildSingleInitialValues = ({
   priceCategoriesOptions,
 }: BuildSingleInitialValuesArgs): StockEventFormValues => {
   const hiddenValues = {
-    // FIX ME: now stock id is always defined
+    // FIXME: stock.id is never undefined
     stockId: stock.id as number,
     isDeletable: stock.isEventDeletable,
     readOnlyFields: setFormReadOnlyFields({

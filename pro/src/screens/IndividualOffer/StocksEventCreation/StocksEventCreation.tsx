@@ -99,7 +99,7 @@ export const StocksEventCreation = ({
         >
           <RecurrenceForm
             offerId={offer.id}
-            departmentCode={offer.venue.departmentCode}
+            departmentCode={offer.venue.departementCode ?? ''}
             priceCategories={offer.priceCategories ?? []}
             stocks={stocks}
             setStocks={setStocks}

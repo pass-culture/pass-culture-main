@@ -14,7 +14,7 @@ export const serializeStockEvents = (stocks: GetOfferStockResponseModel[]) =>
       stock.priceCategoryId === undefined ||
       stock.quantity === undefined
     ) {
-      throw 'Error: this stock is not a stockEvent'
+      throw new Error('Error: this stock is not a stockEvent')
     }
     return {
       id: stock.id,

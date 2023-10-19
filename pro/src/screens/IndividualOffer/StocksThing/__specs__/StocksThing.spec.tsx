@@ -5,11 +5,7 @@ import React from 'react'
 import { Route, Routes } from 'react-router-dom'
 
 import { api } from 'apiClient/api'
-import {
-  ApiError,
-  GetIndividualOfferResponseModel,
-  StockResponseModel,
-} from 'apiClient/v1'
+import { ApiError, GetIndividualOfferResponseModel } from 'apiClient/v1'
 import { ApiRequestOptions } from 'apiClient/v1/core/ApiRequestOptions'
 import { ApiResult } from 'apiClient/v1/core/ApiResult'
 import { OFFER_WIZARD_STEP_IDS } from 'components/IndividualOfferBreadcrumb/constants'
@@ -39,16 +35,6 @@ import { renderWithProviders } from 'utils/renderWithProviders'
 
 import { serializeThingBookingLimitDatetime } from '../adapters/serializers'
 import StocksThing, { StocksThingProps } from '../StocksThing'
-
-vi.mock('screens/IndividualOffer/Informations/utils', () => {
-  return {
-    filterCategories: vi.fn(),
-  }
-})
-
-vi.mock('repository/pcapi/pcapi', () => ({
-  postThumbnail: vi.fn(),
-}))
 
 vi.mock('utils/date', async () => {
   return {
@@ -83,20 +69,6 @@ const renderStockThingScreen = (
             mode: OFFER_WIZARD_MODE.CREATION,
           })}
           element={<div>Next page</div>}
-        />
-        <Route
-          path={getIndividualOfferPath({
-            step: OFFER_WIZARD_STEP_IDS.STOCKS,
-            mode: OFFER_WIZARD_MODE.CREATION,
-          })}
-          element={<div>Save draft page</div>}
-        />
-        <Route
-          path={getIndividualOfferPath({
-            step: OFFER_WIZARD_STEP_IDS.INFORMATIONS,
-            mode: OFFER_WIZARD_MODE.CREATION,
-          })}
-          element={<div>Previous page</div>}
         />
       </Routes>
       <Notification />
@@ -203,7 +175,7 @@ describe('screens:StocksThing', () => {
 
   it('should submit stock form when click on "Enregistrer et continuer"', async () => {
     vi.spyOn(api, 'upsertStocks').mockResolvedValue({
-      stocks: [{ id: 1 } as StockResponseModel],
+      stocks: [],
     })
     renderStockThingScreen(props, contextValue)
     const nextButton = screen.getByRole('button', {
@@ -230,7 +202,7 @@ describe('screens:StocksThing', () => {
 
   it('should submit stock form with duo informations when clicking on on "Enregistrer et continuer"', async () => {
     vi.spyOn(api, 'upsertStocks').mockResolvedValue({
-      stocks: [{ id: 1 } as StockResponseModel],
+      stocks: [],
     })
     renderStockThingScreen(props, contextValue)
     const nextButton = screen.getByRole('button', {
@@ -254,7 +226,7 @@ describe('screens:StocksThing', () => {
 
   it('should not submit stock form when click on "Retour"', async () => {
     vi.spyOn(api, 'upsertStocks').mockResolvedValue({
-      stocks: [{ id: 1 } as StockResponseModel],
+      stocks: [],
     })
 
     renderStockThingScreen(props, contextValue)
@@ -302,7 +274,7 @@ describe('screens:StocksThing', () => {
   describe('activation codes', () => {
     it('should submit activation codes and freeze quantity when a csv is provided', async () => {
       vi.spyOn(api, 'upsertStocks').mockResolvedValue({
-        stocks: [{ id: 1 } as StockResponseModel],
+        stocks: [],
       })
       props.offer = {
         ...offer,
@@ -374,7 +346,7 @@ describe('screens:StocksThing', () => {
 
     it('should display an error when activation code file is incorrect', async () => {
       vi.spyOn(api, 'upsertStocks').mockResolvedValue({
-        stocks: [{ id: 1 } as StockResponseModel],
+        stocks: [],
       })
       props.offer = {
         ...offer,

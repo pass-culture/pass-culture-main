@@ -149,7 +149,7 @@ const StocksEventEdition = ({
       await submitToApi(
         allStockValues,
         offer.id,
-        offer.venue.departementCode || '',
+        offer.venue.departementCode ?? '',
         formik.setErrors,
         setStocksInEditionForm
       )
@@ -280,9 +280,9 @@ const StocksEventEdition = ({
                 <RecurrenceForm
                   stocks={stocks}
                   offerId={offer.id}
-                  departmentCode={offer.venue.departementCode || ''}
                   setStocks={setStocks}
-                  priceCategories={offer.priceCategories || []}
+                  departmentCode={offer.venue.departementCode ?? ''}
+                  priceCategories={offer.priceCategories ?? []}
                   setIsOpen={setIsRecurrenceModalOpen}
                   setStocksInEditionForm={setStocksInEditionForm}
                 />
