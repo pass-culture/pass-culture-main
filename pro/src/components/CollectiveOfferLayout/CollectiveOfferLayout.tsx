@@ -59,7 +59,7 @@ const CollectiveOfferLayout = ({
     <div className={styles['eac-layout']}>
       <div className={styles['eac-layout-headings']}>
         {isTemplate && (
-          <Tag label="Offre vitrine" className={styles['eac-layout-tag']} />
+          <Tag className={styles['eac-layout-tag']}>Offre vitrine</Tag>
         )}
         {}
         <Title level={1}>{title}</Title>

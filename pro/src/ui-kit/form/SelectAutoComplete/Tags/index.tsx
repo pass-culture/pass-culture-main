@@ -24,7 +24,6 @@ const Tags = ({
       {selectedOptions.map((value: string) => (
         <Tag
           key={`tag-${fieldName}-${value}`}
-          label={optionsLabelById[value]}
           closeable={{
             closeLabel: 'Supprimer ' + optionsLabelById[value],
             onClose: () => {
@@ -32,7 +31,9 @@ const Tags = ({
             },
             disabled,
           }}
-        />
+        >
+          {optionsLabelById[value]}
+        </Tag>
       ))}
     </div>
   )

@@ -157,10 +157,9 @@ const Offer = ({
                       className={style['offer-domains-list-item']}
                       key={domain.id}
                     >
-                      <Tag
-                        label={domain.name}
-                        className={style['offer-domains-tag']}
-                      />
+                      <Tag className={style['offer-domains-tag']}>
+                        {domain.name}
+                      </Tag>
                     </li>
                   ))}
                 </ul>
