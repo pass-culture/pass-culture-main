@@ -4,6 +4,8 @@ import fullMoreIcon from 'icons/full-more.svg'
 import { ButtonLink } from 'ui-kit'
 import { ButtonVariant } from 'ui-kit/Button/types'
 
+import { STEP_HOME_STATS_HASH } from '../HomepageBreadcrumb'
+
 import styles from './StatisticsDashboard.module.scss'
 
 interface StatisticsDashboardProps {
@@ -16,7 +18,9 @@ export const StatisticsDashboard = ({
   return (
     <section className={styles['section']}>
       <div className={styles['header']}>
-        <h2 className={styles['title']}>Présence sur le pass Culture</h2>
+        <h2 className={styles['title']} id={STEP_HOME_STATS_HASH}>
+          Présence sur le pass Culture
+        </h2>
 
         <ButtonLink
           variant={ButtonVariant.PRIMARY}
