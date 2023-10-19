@@ -58,7 +58,7 @@ const BankInformations = (): JSX.Element => {
     }
 
     if (offererId) {
-      updateOfferer(offererId)
+      void updateOfferer(offererId)
     }
     if (searchParams.has('structure')) {
       searchParams.delete('structure')
@@ -85,7 +85,7 @@ const BankInformations = (): JSX.Element => {
       }
     }
 
-    selectedOfferer && getSelectedOffererBankAccounts(selectedOfferer.id)
+    selectedOfferer && void getSelectedOffererBankAccounts(selectedOfferer.id)
   }, [selectedOfferer])
 
   if (isOffererBankAccountsLoading || isOffererLoading) {
