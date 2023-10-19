@@ -4,10 +4,6 @@ import React from 'react'
 import { generatePath, Route, Routes } from 'react-router-dom'
 
 import { api } from 'apiClient/api'
-import {
-  GetIndividualOfferResponseModel,
-  StockResponseModel,
-} from 'apiClient/v1'
 import { OFFER_WIZARD_STEP_IDS } from 'components/IndividualOfferBreadcrumb/constants'
 import {
   IndividualOfferContext,
@@ -25,16 +21,6 @@ import {
 import { renderWithProviders } from 'utils/renderWithProviders'
 
 import StocksThing, { StocksThingProps } from '../StocksThing'
-
-vi.mock('screens/IndividualOffer/Informations/utils', () => {
-  return {
-    filterCategories: vi.fn(),
-  }
-})
-
-vi.mock('repository/pcapi/pcapi', () => ({
-  postThumbnail: vi.fn(),
-}))
 
 vi.mock('utils/date', async () => {
   return {
@@ -77,20 +63,6 @@ const renderStockThingScreen = (
           }
         />
       ))}
-      <Route
-        path={getIndividualOfferPath({
-          step: OFFER_WIZARD_STEP_IDS.SUMMARY,
-          mode: OFFER_WIZARD_MODE.CREATION,
-        })}
-        element={<div>Next page</div>}
-      />
-      <Route
-        path={getIndividualOfferPath({
-          step: OFFER_WIZARD_STEP_IDS.INFORMATIONS,
-          mode: OFFER_WIZARD_MODE.CREATION,
-        })}
-        element={<div>Previous page</div>}
-      />
       <Route path="/outside" element={<div>This is outside stock form</div>} />
     </Routes>,
     { initialRouterEntries: [url] }
@@ -113,17 +85,11 @@ describe('screens:StocksThing', () => {
       offer,
     }
     contextValue = individualOfferContextFactory()
-    vi.spyOn(api, 'getOffer').mockResolvedValue(
-      {} as GetIndividualOfferResponseModel
-    )
-    vi.spyOn(api, 'patchOffer').mockResolvedValue(
-      {} as GetIndividualOfferResponseModel
-    )
   })
 
   it('should not block when going outside and form is not touched', async () => {
     vi.spyOn(api, 'upsertStocks').mockResolvedValue({
-      stocks: [{ id: 1 } as StockResponseModel],
+      stocks: [],
     })
 
     renderStockThingScreen(props, contextValue)
@@ -133,9 +99,9 @@ describe('screens:StocksThing', () => {
     expect(screen.getByText('This is outside stock form')).toBeInTheDocument()
   })
 
-  it('should be able to stay on stock form after click on "Annuler"', async () => {
+  it('should be able to stay on stock form after click on "Rester sur la page"', async () => {
     vi.spyOn(api, 'upsertStocks').mockResolvedValue({
-      stocks: [{ id: 1 } as StockResponseModel],
+      stocks: [],
     })
 
     renderStockThingScreen(props, contextValue)
@@ -150,7 +116,7 @@ describe('screens:StocksThing', () => {
 
   it('should be able to quit without submitting from RouteLeavingGuard', async () => {
     vi.spyOn(api, 'upsertStocks').mockResolvedValue({
-      stocks: [{ id: 1 } as StockResponseModel],
+      stocks: [],
     })
 
     renderStockThingScreen(props, contextValue)
@@ -165,17 +131,5 @@ describe('screens:StocksThing', () => {
     expect(api.upsertStocks).toHaveBeenCalledTimes(0)
 
     expect(screen.getByText('This is outside stock form')).toBeInTheDocument()
-  })
-
-  it('should track when quitting without submit from RouteLeavingGuard', async () => {
-    vi.spyOn(api, 'upsertStocks').mockResolvedValue({
-      stocks: [{ id: 1 } as StockResponseModel],
-    })
-    renderStockThingScreen(props, contextValue)
-
-    await userEvent.type(screen.getByLabelText('Prix'), '20')
-    await userEvent.click(screen.getByText('Go outside !'))
-
-    await userEvent.click(screen.getByText('Quitter la page'))
   })
 })

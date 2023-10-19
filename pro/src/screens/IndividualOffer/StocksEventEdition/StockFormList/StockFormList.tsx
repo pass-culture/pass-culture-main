@@ -23,7 +23,6 @@ import { Pagination } from 'ui-kit/Pagination'
 import { getToday } from 'utils/date'
 import { getLocalDepartementDateTimeFromUtc } from 'utils/timezone'
 
-import { STOCK_EVENT_EDITION_EMPTY_SYNCHRONIZED_READ_ONLY_FIELDS } from './constants'
 import styles from './StockFormList.module.scss'
 import {
   filterAndSortStocks,
@@ -97,7 +96,6 @@ const StockFormList = ({
   ])
 
   const isDisabled = offer.status ? isOfferDisabled(offer.status) : false
-  const isSynchronized = Boolean(offer.lastProvider)
 
   const { page, setPage, previousPage, nextPage, currentPageItems, pageCount } =
     usePagination(values.stocks, STOCKS_PER_PAGE)
@@ -320,17 +318,9 @@ const StockFormList = ({
               {currentPageItems.map(
                 (stockValues: StockEventFormValues, indexInPage) => {
                   const index = (page - 1) * STOCKS_PER_PAGE + indexInPage
-                  const disableAllStockFields =
-                    isSynchronized &&
-                    mode === OFFER_WIZARD_MODE.EDITION &&
-                    !stockValues.stockId
 
                   const stockFormValues = values.stocks[index]
 
-                  if (disableAllStockFields) {
-                    stockFormValues.readOnlyFields =
-                      STOCK_EVENT_EDITION_EMPTY_SYNCHRONIZED_READ_ONLY_FIELDS
-                  }
                   const { readOnlyFields } = stockFormValues
 
                   const beginningDate = stockFormValues.beginningDate
@@ -349,10 +339,7 @@ const StockFormList = ({
                         }
                       },
                       label: 'Supprimer le stock',
-                      disabled:
-                        !stockValues.isDeletable ||
-                        isDisabled ||
-                        disableAllStockFields,
+                      disabled: !stockValues.isDeletable || isDisabled,
                       icon: fullTrashIcon,
                     },
                   ]
@@ -481,9 +468,7 @@ const StockFormList = ({
                 /* istanbul ignore next: DEBT, TO FIX */
                 if (deletingStockData !== null) {
                   const { deletingStock, deletingIndex } = deletingStockData
-                  if (deletingStock.stockId) {
-                    await onDeleteStock(deletingStock, deletingIndex)
-                  }
+                  await onDeleteStock(deletingStock, deletingIndex)
                 }
                 setIsModalOpen(false)
               }}

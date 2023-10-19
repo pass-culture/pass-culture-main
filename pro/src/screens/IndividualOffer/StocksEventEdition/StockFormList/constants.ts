@@ -1,7 +1,7 @@
 import { StockEventFormValues, StockEventFormHiddenValues } from './types'
 
 const STOCK_EVENT_FORM_DEFAULT_HIDDEN_VALUES: StockEventFormHiddenValues = {
-  stockId: undefined,
+  stockId: 0,
   isDeletable: true,
   readOnlyFields: [],
 }
