@@ -9,13 +9,13 @@ export default {
 
 export const Default: StoryObj<typeof Tag> = {
   args: {
-    label: 'Offre collective',
+    children: 'Offre collective',
   },
 }
 
 export const Closeable: StoryObj<typeof Tag> = {
   args: {
-    label: 'Offre collective',
+    children: 'Offre collective',
     closeable: {
       onClose: () => {},
       closeLabel: 'Supprimer le tag',

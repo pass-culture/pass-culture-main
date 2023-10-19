@@ -67,7 +67,7 @@ const OfferNameCell = ({
   return (
     <td className={styles['title-column']}>
       {offer.isShowcase && (
-        <Tag label="Offre vitrine" className={styles['offer-template-tag']} />
+        <Tag className={styles['offer-template-tag']}>Offre vitrine</Tag>
       )}
       <Link
         className={styles['name']}

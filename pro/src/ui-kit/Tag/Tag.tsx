@@ -1,5 +1,5 @@
 import cx from 'classnames'
-import React from 'react'
+import React, { ReactNode } from 'react'
 
 import strokeCloseIcon from 'icons/stroke-close.svg'
 import { SvgIcon } from 'ui-kit/SvgIcon/SvgIcon'
@@ -14,10 +14,10 @@ interface Closeable {
 interface TagProps {
   className?: string
   closeable?: Closeable
-  label: string
+  children: ReactNode
 }
 
-const Tag = ({ label, className, closeable }: TagProps): JSX.Element => {
+const Tag = ({ children, className, closeable }: TagProps): JSX.Element => {
   return (
     <span
       className={cx(
@@ -36,7 +36,7 @@ const Tag = ({ label, className, closeable }: TagProps): JSX.Element => {
           type="button"
           disabled={closeable.disabled}
         >
-          {label}
+          {children}
           <SvgIcon
             src={strokeCloseIcon}
             alt={closeable.closeLabel ?? ''}
@@ -44,7 +44,7 @@ const Tag = ({ label, className, closeable }: TagProps): JSX.Element => {
           />
         </button>
       ) : (
-        <>{label}</>
+        <>{children}</>
       )}
     </span>
   )
