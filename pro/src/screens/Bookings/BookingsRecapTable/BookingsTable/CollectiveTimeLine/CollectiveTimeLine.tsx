@@ -1,4 +1,4 @@
-import { addDays, isBefore } from 'date-fns'
+import { addDays, isBefore, max } from 'date-fns'
 import React from 'react'
 
 import {
@@ -76,6 +76,15 @@ const CollectiveTimeLine = ({
       bookingRecap.bookingStatusHistory.length - 1
     ].date
   )
+  const confirmedDate = getDateToFrenchText(
+    max([
+      new Date(bookingRecap.bookingCancellationLimitDate),
+      bookingRecap.bookingConfirmationDate
+        ? new Date(bookingRecap.bookingConfirmationDate)
+        : new Date(),
+    ]).toString()
+  )
+
   const { logEvent } = useAnalytics()
 
   const logModifyBookingLimitDateClick = () => {
@@ -114,7 +123,7 @@ const CollectiveTimeLine = ({
           Réservation confirmée
         </div>
         <div>
-          {cancellationLimitDate}
+          {confirmedDate}
           <br />
           La réservation n’est plus annulable par l’établissement scolaire
         </div>
@@ -129,7 +138,7 @@ const CollectiveTimeLine = ({
           Réservation confirmée
         </div>
         <div>
-          {cancellationLimitDate}
+          {confirmedDate}
           <br />
           <br />
           {!eventHasPassed ? (
