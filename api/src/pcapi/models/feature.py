@@ -101,6 +101,7 @@ class FeatureToggle(enum.Enum):
     ENABLE_EMS_INTEGRATION = "Active la synchronisation de stocks et la réservation via EMS"
     ENABLE_CGR_INTEGRATION = "Active la synchonisation de stocks et la réservation via CGR"
     # For features under construction, a temporary feature flag must be named with the `WIP_` prefix
+    WIP_BEHIND_L7_LOAD_BALANCER = "À activer/désactiver en même temps que le load balancer L7"
     WIP_ENABLE_OFFER_CREATION_API_V1 = "Active la création d'offres via l'API v1"
     WIP_ENABLE_LIKE_IN_ADAGE = "Active la possibilité de liker une offre sur adage"
     WIP_ENABLE_REMINDER_MARKETING_MAIL_METADATA_DISPLAY = "Changer le template d'email de confirmation de réservation"
@@ -203,6 +204,7 @@ FEATURES_DISABLED_BY_DEFAULT: tuple[FeatureToggle, ...] = (
     FeatureToggle.WIP_ENABLE_BOOST_SHOWTIMES_FILTER,
     FeatureToggle.WIP_ENABLE_DATES_OFFER_TEMPLATE,
     FeatureToggle.WIP_HOME_STATS,
+    FeatureToggle.WIP_BEHIND_L7_LOAD_BALANCER,
 )
 
 if settings.IS_PROD or settings.IS_STAGING:

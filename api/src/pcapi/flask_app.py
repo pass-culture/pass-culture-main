@@ -1,3 +1,4 @@
+import contextlib
 import logging
 import os
 import sys
@@ -18,7 +19,7 @@ import redis
 import sentry_sdk
 from sqlalchemy import orm
 from werkzeug.middleware.profiler import ProfilerMiddleware
-from werkzeug.middleware.proxy_fix import ProxyFix
+import werkzeug.middleware.proxy_fix
 
 from pcapi import settings
 from pcapi.core import monkeypatches
@@ -134,6 +135,38 @@ if settings.PROFILE_REQUESTS:
         app.wsgi_app,
         restrictions=profiling_restrictions,
     )
+
+
+class ProxyFix(werkzeug.middleware.proxy_fix.ProxyFix):
+    """A wrapper around Werkzeug's ProxyFix that configures it with a
+    different `x_for` value depending on a feature flag.
+
+    The feature flag will be activated when we configure the HTTP
+    traffic to go through our L7 load balancer.
+    """
+
+    def __call__(self, environ, start_response):  # type: ignore [no-untyped-def]
+        import sqlalchemy
+
+        from pcapi.models.feature import FeatureToggle
+
+        # "Real" application needs an application context to access
+        # the database. Tests don't.
+        with contextlib.nullcontext() if settings.IS_RUNNING_TESTS else app.app_context():
+            try:
+                behind_l7 = FeatureToggle.WIP_BEHIND_L7_LOAD_BALANCER.is_active()
+            except sqlalchemy.orm.exc.NoResultFound:
+                logger.info("Could not find 'WIP_BEHIND_L7_LOAD_BALANCER' feature flag")
+                behind_l7 = False
+            if behind_l7:
+                # Our L7 load balancer adds 2 IPs to the `X-Forwarded-For` HTTP header.
+                # And there is another proxy in front of our app. Hence the 3.
+                self.x_for = 3
+            else:
+                self.x_for = 1
+
+        return super().__call__(environ, start_response)
+
 
 app.wsgi_app = ProxyFix(app.wsgi_app, x_for=1)  # type: ignore [method-assign]
 
