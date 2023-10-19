@@ -12,4 +12,5 @@ export enum BankAccountApplicationStatus {
   ACCEPTE = 'accepte',
   REFUSE = 'refuse',
   SANS_SUITE = 'sans_suite',
+  A_CORRIGER = 'a_corriger',
 }

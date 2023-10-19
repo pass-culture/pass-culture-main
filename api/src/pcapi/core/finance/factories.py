@@ -54,6 +54,13 @@ class BankAccountFactory(BaseFactory):
     dsApplicationId = factory.Sequence(lambda n: n)
 
 
+class BankAccountStatusHistoryFactory(BaseFactory):
+    class Meta:
+        model = models.BankAccountStatusHistory
+
+    bankAccount = factory.SubFactory(BankAccountFactory)
+
+
 class _BaseFinanceEventFactory(BaseFactory):
     class Meta:
         model = models.FinanceEvent
