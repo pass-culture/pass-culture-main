@@ -1,11 +1,10 @@
-import React, { useEffect, useState } from 'react'
+import React, { useState } from 'react'
 
 import { VenueProviderResponse } from 'apiClient/v1'
 import FormLayout from 'components/FormLayout'
 import { Providers, Venue } from 'core/Venue/types'
 import AddVenueProviderButton from 'pages/Offerers/Offerer/VenueV1/VenueEdition/VenueProvidersManager/AddVenueProviderButton'
 import VenueProviderList from 'pages/Offerers/Offerer/VenueV1/VenueEdition/VenueProvidersManager/VenueProviderList/VenueProviderList'
-import Spinner from 'ui-kit/Spinner/Spinner'
 
 interface OffersSynchronization {
   provider: Providers[]
@@ -18,15 +17,8 @@ const OffersSynchronization = ({
   provider,
   venueProvider,
 }: OffersSynchronization) => {
-  const [isLoading, setIsLoading] = useState(false)
-  const [providers, setProviders] = useState(provider)
   const [venueProviders, setVenueProviders] =
     useState<VenueProviderResponse[]>(venueProvider)
-  useEffect(() => {
-    setProviders(providers)
-    setVenueProviders(venueProviders)
-    setIsLoading(false)
-  }, [venue])
 
   const afterVenueProviderEdit = (
     editedVenueProvider: VenueProviderResponse
@@ -51,7 +43,6 @@ const OffersSynchronization = ({
       description="Vous pouvez synchroniser votre lieu avec un logiciel tiers afin de faciliter la gestion de vos offres et de vos réservations."
     >
       <FormLayout.Row>
-        {isLoading && <Spinner />}
         {venueProviders.length > 0 ? (
           <VenueProviderList
             afterVenueProviderDelete={afterVenueProviderDelete}
@@ -61,7 +52,7 @@ const OffersSynchronization = ({
           />
         ) : (
           <AddVenueProviderButton
-            providers={providers}
+            providers={provider}
             setVenueProviders={setVenueProviders}
             venue={venue}
           />
