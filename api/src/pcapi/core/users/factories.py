@@ -973,7 +973,7 @@ class TrustedDeviceFactory(BaseFactory):
         model = models.TrustedDevice
 
     user = factory.SubFactory(UserFactory)
-    deviceId = "2E429592-2446-425F-9A62-D6983F375B3B"
+    deviceId = factory.LazyFunction(lambda: str(uuid.uuid4()).upper())
     os = "iOS"
     source = "iPhone 13"
 
@@ -983,7 +983,7 @@ class LoginDeviceHistoryFactory(BaseFactory):
         model = models.LoginDeviceHistory
 
     user = factory.SubFactory(UserFactory)
-    deviceId = "2E429592-2446-425F-9A62-D6983F375B3B"
+    deviceId = factory.LazyFunction(lambda: str(uuid.uuid4()).upper())
     os = "iOS"
     source = "iPhone 13"
     location = "Paris"

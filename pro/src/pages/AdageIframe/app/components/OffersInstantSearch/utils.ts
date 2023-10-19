@@ -1,7 +1,9 @@
 import { VenueResponse } from 'apiClient/adage'
 import { OfferAddressType } from 'apiClient/v1'
-import { Facets } from 'pages/AdageIframe/app/types'
+import { Facets, Option } from 'pages/AdageIframe/app/types'
+import { inferCategoryLabelsFromSubcategories } from 'utils/collectiveCategories'
 
+import { studentsForData } from './OffersSearch/OfferFilters/studentsOptions'
 import { SearchFormValues } from './OffersSearch/OffersSearch'
 
 export const ADAGE_FILTERS_DEFAULT_VALUES: SearchFormValues = {
@@ -15,17 +17,16 @@ export const ADAGE_FILTERS_DEFAULT_VALUES: SearchFormValues = {
 }
 
 export const computeFiltersInitialValues = (
-  userDepartmentCode?: string | null,
   venueFilter?: VenueResponse | null
 ) => {
   const venueDepartementFilter =
-    venueFilter && venueFilter.departementCode !== userDepartmentCode
+    venueFilter && venueFilter.departementCode
       ? [venueFilter.departementCode]
       : []
   return {
     ...ADAGE_FILTERS_DEFAULT_VALUES,
-    departments: userDepartmentCode
-      ? [userDepartmentCode, ...venueDepartementFilter]
+    departments: venueFilter
+      ? venueDepartementFilter
       : ADAGE_FILTERS_DEFAULT_VALUES.departments,
   }
 }
@@ -51,27 +52,27 @@ export const adageFiltersToFacetFilters = ({
   const filtersKeys: string[] = []
 
   const filteredDomains: string[] = domains.map(
-    domain => `offer.domains:${domain}`
+    (domain) => `offer.domains:${domain}`
   )
 
   const filteredStudents: string[] = students.map(
-    student => `offer.students:${student}`
+    (student) => `offer.students:${student}`
   )
 
   let filteredDepartments: string[] = []
   if (eventAddressType == OfferAddressType.SCHOOL) {
-    filteredDepartments = departments.flatMap(department => [
+    filteredDepartments = departments.flatMap((department) => [
       `offer.schoolInterventionArea:${department}`,
     ])
   } else {
-    filteredDepartments = departments.flatMap(department => [
+    filteredDepartments = departments.flatMap((department) => [
       `venue.departmentCode:${department}`,
       `offer.interventionArea:${department}`,
     ])
   }
 
   const filteredAcademies: string[] = academies.map(
-    academy => `venue.academy:${academy}`
+    (academy) => `venue.academy:${academy}`
   )
 
   switch (eventAddressType) {
@@ -90,8 +91,8 @@ export const adageFiltersToFacetFilters = ({
       break
   }
 
-  const filteredCategories: string[] = categories.flatMap(categoryValue =>
-    categoryValue.map(subcategoryId => `offer.subcategoryId:${subcategoryId}`)
+  const filteredCategories: string[] = categories.flatMap((categoryValue) =>
+    categoryValue.map((subcategoryId) => `offer.subcategoryId:${subcategoryId}`)
   )
 
   if (filteredStudents.length > 0) {
@@ -124,12 +125,37 @@ export const adageFiltersToFacetFilters = ({
       filtersKeys.push('uaiCode')
     }
     updatedFilters.push(
-      uai.map(uaiCode => `offer.educationalInstitutionUAICode:${uaiCode}`)
+      uai.map((uaiCode) => `offer.educationalInstitutionUAICode:${uaiCode}`)
     )
   }
 
   return {
     queryFilters: updatedFilters,
     filtersKeys: filtersKeys,
+  }
+}
+
+export const serializeFiltersForData = (
+  filters: SearchFormValues,
+  currentSearch: string | null,
+  categoriesOptions: Option<string[]>[],
+  domainsOptions: Option<number>[]
+) => {
+  return {
+    ...filters,
+    query: currentSearch,
+    categories: inferCategoryLabelsFromSubcategories(
+      filters.categories,
+      categoriesOptions
+    ),
+    domains: filters.domains.map(
+      (domainId) =>
+        domainsOptions.find((option) => option.value === Number(domainId))
+          ?.label
+    ),
+    students: filters.students.map(
+      (student) =>
+        studentsForData.find((s) => s.label === student)?.valueForData
+    ),
   }
 }

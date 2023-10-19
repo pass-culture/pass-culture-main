@@ -1,7 +1,6 @@
 import React, { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 
-import { BannerSummary } from 'components/Banner'
 import RedirectDialog from 'components/Dialog/RedirectDialog'
 import { OFFER_WIZARD_STEP_IDS } from 'components/IndividualOfferBreadcrumb/constants'
 import { OfferAppPreview } from 'components/OfferAppPreview'
@@ -23,6 +22,7 @@ import useNotification from 'hooks/useNotification'
 import fullWaitIcon from 'icons/full-wait.svg'
 import strokePartyIcon from 'icons/stroke-party.svg'
 import phoneStrokeIcon from 'icons/stroke-phone.svg'
+import Banner from 'ui-kit/Banners/Banner/Banner'
 import { ButtonVariant } from 'ui-kit/Button/types'
 import { SvgIcon } from 'ui-kit/SvgIcon/SvgIcon'
 import { getOfferConditionalFields } from 'utils/getOfferConditionalFields'
@@ -55,7 +55,7 @@ const SummaryScreen = () => {
     return null
   }
   const canBeDuo = subCategories.find(
-    subCategory => subCategory.id === offer.subcategoryId
+    (subCategory) => subCategory.id === offer.subcategoryId
   )?.canBeDuo
 
   const offerConfirmationStepUrl = getIndividualOfferUrl({
@@ -101,7 +101,9 @@ const SummaryScreen = () => {
       })
     )
   }
-  const offerSubCategory = subCategories.find(s => s.id === offer.subcategoryId)
+  const offerSubCategory = subCategories.find(
+    (s) => s.id === offer.subcategoryId
+  )
 
   const offerConditionalFields = getOfferConditionalFields({
     offerSubCategory,
@@ -119,10 +121,16 @@ const SummaryScreen = () => {
 
   return (
     <>
-      {(mode === OFFER_WIZARD_MODE.CREATION ||
-        mode === OFFER_WIZARD_MODE.DRAFT) && (
+      {mode === OFFER_WIZARD_MODE.CREATION && (
         <div className={styles['offer-preview-banners']}>
-          <BannerSummary mode={mode} />
+          <Banner type="notification-info">
+            <strong>Vous y êtes presque !</strong>
+            <br />
+            Vérifiez les informations ci-dessous avant de publier votre offre.
+            <br />
+            Si vous souhaitez la publier plus tard, vous pouvez retrouver votre
+            brouillon dans la liste de vos offres.
+          </Banner>
         </div>
       )}
 
@@ -130,14 +138,11 @@ const SummaryScreen = () => {
         <SummaryLayout.Content>
           <OfferSection conditionalFields={conditionalFields} offer={offer} />
 
-          {(mode === OFFER_WIZARD_MODE.CREATION ||
-            mode === OFFER_WIZARD_MODE.DRAFT) &&
-            offer.isEvent && (
-              <PriceCategoriesSection offer={offer} canBeDuo={canBeDuo} />
-            )}
+          {mode === OFFER_WIZARD_MODE.CREATION && offer.isEvent && (
+            <PriceCategoriesSection offer={offer} canBeDuo={canBeDuo} />
+          )}
 
-          {(mode === OFFER_WIZARD_MODE.CREATION ||
-            mode === OFFER_WIZARD_MODE.DRAFT) && (
+          {mode === OFFER_WIZARD_MODE.CREATION && (
             <StockSection offer={offer} canBeDuo={canBeDuo} />
           )}
 

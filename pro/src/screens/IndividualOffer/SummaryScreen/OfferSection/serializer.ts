@@ -41,16 +41,16 @@ const serializerOfferSubCategoryFields = (
   }
 
   const musicType = musicOptionsTree.find(
-    item => item.code === parseInt(offer.musicType, 10)
+    (item) => item.code === parseInt(offer.musicType, 10)
   )
   const musicSubType = musicType?.children.find(
-    item => item.code === parseInt(offer.musicSubType, 10)
+    (item) => item.code === parseInt(offer.musicSubType, 10)
   )
   const showType = showOptionsTree.find(
-    item => item.code === parseInt(offer.showType, 10)
+    (item) => item.code === parseInt(offer.showType, 10)
   )
   const showSubType = showType?.children.find(
-    item => item.code === parseInt(offer.showSubType, 10)
+    (item) => item.code === parseInt(offer.showSubType, 10)
   )
 
   const defaultValue = (fieldName: string) =>
@@ -76,9 +76,11 @@ export const serializeOfferSectionData = (
   categories: OfferCategory[],
   subCategories: OfferSubCategory[]
 ) => {
-  const offerSubCategory = subCategories.find(s => s.id === offer.subcategoryId)
+  const offerSubCategory = subCategories.find(
+    (s) => s.id === offer.subcategoryId
+  )
   const offerCategory = categories.find(
-    c => c.id === offerSubCategory?.categoryId
+    (c) => c.id === offerSubCategory?.categoryId
   )
   const baseOffer = {
     id: offer.id,

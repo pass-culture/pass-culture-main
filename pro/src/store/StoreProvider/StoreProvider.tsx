@@ -39,12 +39,12 @@ const StoreProvider = ({
       } else {
         api
           .getProfile()
-          .then(response => setCurrentUser(response))
+          .then((response) => setCurrentUser(response))
           .catch(() => setCurrentUser(null))
       }
       api
         .listFeatures()
-        .then(response => setFeatures(response))
+        .then((response) => setFeatures(response))
         .catch(() => setFeatures([]))
     }
     isDev ? setEmptyInitialData() : getStoreInitialData()

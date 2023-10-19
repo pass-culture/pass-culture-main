@@ -13,21 +13,23 @@ export const filterEducationalCategories = ({
   }
 
   const educationalSubCategories = subcategories
-    .filter(subCategory => subCategory.canBeEducational === true)
-    .filter(subCategory => subCategory.isSelectable === true)
-    .map(subCategory => ({
+    .filter((subCategory) => subCategory.canBeEducational === true)
+    .filter((subCategory) => subCategory.isSelectable === true)
+    .map((subCategory) => ({
       id: subCategory.id,
       categoryId: subCategory.categoryId,
       label: subCategory.proLabel,
     }))
 
   const filteredCategoriesIds = Array.from(
-    new Set(educationalSubCategories.map(subCategory => subCategory.categoryId))
+    new Set(
+      educationalSubCategories.map((subCategory) => subCategory.categoryId)
+    )
   )
 
-  const educationalCategories = filteredCategoriesIds.map(categoryId => {
+  const educationalCategories = filteredCategoriesIds.map((categoryId) => {
     const currentCategory = categories.find(
-      category => categoryId === category.id
+      (category) => categoryId === category.id
     ) as CategoryResponseModel
 
     return {

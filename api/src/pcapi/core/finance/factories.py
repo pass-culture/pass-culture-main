@@ -89,8 +89,15 @@ class _BaseFinanceEventFactory(BaseFactory):
 class UsedBookingFinanceEventFactory(_BaseFinanceEventFactory):
     booking = factory.SubFactory(bookings_factories.UsedBookingFactory)
     motive = models.FinanceEventMotive.BOOKING_USED
-    venue = factory.LazyAttribute(lambda event: (event.booking or event.collectiveBooking).venue)
-    valueDate = factory.LazyAttribute(lambda event: (event.booking or event.collectiveBooking).dateUsed)
+    venue = factory.LazyAttribute(lambda event: event.booking.venue)
+    valueDate = factory.LazyAttribute(lambda event: event.booking.dateUsed)
+
+
+class UsedCollectiveBookingFinanceEventFactory(_BaseFinanceEventFactory):
+    collectiveBooking = factory.SubFactory(educational_factories.UsedCollectiveBookingFactory)
+    motive = models.FinanceEventMotive.BOOKING_USED
+    venue = factory.LazyAttribute(lambda event: event.collectiveBooking.venue)
+    valueDate = factory.LazyAttribute(lambda event: event.collectiveBooking.dateUsed)
 
 
 class FinanceEventFactory(BaseFactory):
@@ -185,6 +192,7 @@ class CustomReimbursementRuleFactory(BaseFactory):
         ]
     )
     amount = 5
+    amountInEuroCents = 500
 
     @classmethod
     def _create(
@@ -195,6 +203,7 @@ class CustomReimbursementRuleFactory(BaseFactory):
     ) -> models.CustomReimbursementRule:
         if "rate" in kwargs:
             kwargs["amount"] = None
+            kwargs["amountInEuroCents"] = None
         if "offerer" in kwargs:
             kwargs["offer"] = None
         return super()._create(model_class, *args, **kwargs)

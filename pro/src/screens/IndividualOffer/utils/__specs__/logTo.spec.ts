@@ -10,7 +10,7 @@ describe('logTo', () => {
     OFFER_WIZARD_STEP_IDS.SUMMARY,
     'otherLocation',
   ]
-  it.each(nextLocation)('should log %s right location', location => {
+  it.each(nextLocation)('should log %s right location', (location) => {
     const result = logTo(location)
 
     expect(result).toBe(location)

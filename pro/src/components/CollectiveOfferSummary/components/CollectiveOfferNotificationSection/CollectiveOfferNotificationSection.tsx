@@ -11,7 +11,7 @@ const CollectiveOfferNotificationSection = ({
 }: CollectiveOfferNotificationSectionProps) => {
   return (
     <SummaryLayout.SubSection title="Notifications des réservations">
-      {bookingEmails.map(email => (
+      {bookingEmails.map((email) => (
         <SummaryLayout.Row description={email} key={email} />
       ))}
     </SummaryLayout.SubSection>

@@ -8,7 +8,7 @@ const FAILING_RESPONSE: AdapterFailure<null> = {
 }
 
 export const getCollectiveBookingsXLSFileAdapter: GetBookingsXLSFileAdapter =
-  async filters => {
+  async (filters) => {
     try {
       const bookingsXLSText = await pcapi.getFilteredCollectiveBookingsXLS({
         bookingPeriodBeginningDate: filters.bookingBeginningDate,

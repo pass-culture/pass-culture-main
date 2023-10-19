@@ -45,7 +45,7 @@ EventCategoryEnum = StrEnum(  # type:ignore [call-overload]
 if typing.TYPE_CHECKING:
     offer_price_model = pydantic_v1.StrictInt
 else:
-    offer_price_model = pydantic_v1.conint(strict=True, ge=0, lt=30000)  # 300 euros
+    offer_price_model = pydantic_v1.conint(strict=True, ge=0, le=30000)  # 300 euros
 
 
 class Accessibility(serialization.ConfiguredBaseModel):
@@ -55,6 +55,15 @@ class Accessibility(serialization.ConfiguredBaseModel):
     mental_disability_compliant: bool
     motor_disability_compliant: bool
     visual_disability_compliant: bool
+
+
+class AccessibilityResponse(serialization.ConfiguredBaseModel):
+    """Accessibility for people with disabilities."""
+
+    audio_disability_compliant: bool | None
+    mental_disability_compliant: bool | None
+    motor_disability_compliant: bool | None
+    visual_disability_compliant: bool | None
 
 
 class PhysicalLocation(serialization.ConfiguredBaseModel):
@@ -131,7 +140,7 @@ NAME_FIELD = pydantic_v1.Field(description="Offer title", example="Le Petit Prin
 DURATION_MINUTES_FIELD = pydantic_v1.Field(description="Event duration in minutes", example=60, alias="eventDuration")
 TICKET_COLLECTION_FIELD = pydantic_v1.Field(
     None,
-    description="How the ticket will be collected. Leave empty if there is no ticket. To use 'in_app' you must have developed the pass culture ticketing interface. Only some categories are compatible with tickets.",
+    description="How the ticket will be collected. Leave empty if there is no ticket. To use 'in_app' you must have developed the pass culture ticketing interface.",
     example=None,
 )
 PRICE_CATEGORY_LABEL_FIELD = pydantic_v1.Field(description="Price category label", example="Carré or")
@@ -644,7 +653,7 @@ class PostDatesResponse(serialization.ConfiguredBaseModel):
 
 class OfferResponse(serialization.ConfiguredBaseModel):
     id: int
-    accessibility: Accessibility
+    accessibility: AccessibilityResponse
     booking_contact: pydantic_v1.EmailStr | None = BOOKING_CONTACT_FIELD
     booking_email: pydantic_v1.EmailStr | None = BOOKING_EMAIL_FIELD
     description: str | None = DESCRIPTION_FIELD
@@ -676,7 +685,7 @@ class OfferResponse(serialization.ConfiguredBaseModel):
             booking_contact=offer.bookingContact,  # type: ignore [arg-type]
             booking_email=offer.bookingEmail,  # type: ignore [arg-type]
             description=offer.description,
-            accessibility=Accessibility.from_orm(offer),
+            accessibility=AccessibilityResponse.from_orm(offer),
             external_ticket_office_url=offer.externalTicketOfficeUrl,  # type: ignore [arg-type]
             image=offer.image,  # type: ignore [arg-type]
             is_duo=offer.isDuo,

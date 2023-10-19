@@ -10,7 +10,6 @@ from pcapi.core import logging as core_logging
 from pcapi.core.fraud import models as fraud_models
 from pcapi.core.fraud.ubble import models as ubble_fraud_models
 from pcapi.core.users import models as users_models
-from pcapi.models.feature import FeatureToggle
 from pcapi.utils import requests
 
 
@@ -30,9 +29,17 @@ def configure_session() -> requests.Session:
     return session
 
 
-def build_url(path: str) -> str:
+def _should_use_mock(id_: int | str | None = None) -> bool:
+    if not settings.UBBLE_MOCK_API_URL or not id_:
+        return False
+
+    response = requests.get(f"{settings.UBBLE_MOCK_API_URL}/id_exists/{id_}")
+    return response.status_code == 200
+
+
+def build_url(path: str, id_: int | str | None = None) -> str:
     base_url = settings.UBBLE_API_URL
-    if settings.UBBLE_MOCK_API_URL and FeatureToggle.WIP_ENABLE_MOCK_UBBLE.is_active():
+    if settings.UBBLE_MOCK_API_URL and _should_use_mock(id_):
         base_url = settings.UBBLE_MOCK_API_URL
 
     base_url = base_url.rstrip("/")
@@ -168,7 +175,7 @@ def start_identification(
     }
 
     try:
-        response = session.post(build_url("/identifications/"), json=data)
+        response = session.post(build_url("/identifications/", user_id), json=data)
     except (urllib3_exceptions.HTTPError, requests.exceptions.RequestException) as e:
         core_logging.log_for_supervision(
             logger,
@@ -240,7 +247,7 @@ def get_content(identification_id: str) -> fraud_models.UbbleContent:
     base_extra_log = {"request_type": "get-content", "identification_id": identification_id}
 
     try:
-        response = session.get(build_url(f"/identifications/{identification_id}/"))
+        response = session.get(build_url(f"/identifications/{identification_id}/", identification_id))
     except (urllib3_exceptions.HTTPError, requests.exceptions.RequestException) as e:
         core_logging.log_for_supervision(
             logger,

@@ -28,7 +28,7 @@ export interface BookingStatusCellHistoryProps {
 export const BookingStatusCellHistory = ({
   bookingStatusHistory,
 }: BookingStatusCellHistoryProps) => {
-  const bookingsStatusHistoryItems = bookingStatusHistory.map(item => {
+  const bookingsStatusHistoryItems = bookingStatusHistory.map((item) => {
     const displayInfoFromStatus = getBookingStatusDisplayInformations(
       item.status
     )

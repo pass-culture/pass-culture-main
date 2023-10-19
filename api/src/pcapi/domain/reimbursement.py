@@ -2,7 +2,7 @@ import datetime
 from decimal import Decimal
 
 from pcapi.core.bookings.models import Booking
-from pcapi.core.categories import subcategories
+from pcapi.core.categories import subcategories_v2 as subcategories
 from pcapi.core.educational.models import CollectiveBooking
 from pcapi.core.finance import utils as finance_utils
 import pcapi.core.finance.models as finance_models
@@ -35,9 +35,9 @@ class EducationalOffersReimbursement(finance_models.ReimbursementRule):
     def is_relevant(self, booking: Booking | CollectiveBooking, cumulative_revenue: int) -> bool:
         return isinstance(booking, CollectiveBooking)
 
-    def apply(self, booking: CollectiveBooking, custom_total_amount: int | None = None) -> Decimal:
-        custom_total_amount_euros = finance_utils.to_euros(custom_total_amount or 0)
-        return Decimal(custom_total_amount_euros or booking.collectiveStock.price) * self.rate
+    def apply(self, booking: CollectiveBooking, custom_total_amount: int | None = None) -> int:
+        base = custom_total_amount or finance_utils.to_eurocents(booking.collectiveStock.price)
+        return int(base * self.rate)
 
 
 class PhysicalOffersReimbursement(finance_models.ReimbursementRule):

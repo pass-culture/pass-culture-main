@@ -9,7 +9,7 @@ export default {
   component: BaseRadio,
 }
 
-const Template: ComponentStory<typeof BaseRadio> = args => (
+const Template: ComponentStory<typeof BaseRadio> = (args) => (
   <div>
     <BaseRadio {...args} />
   </div>

@@ -4,7 +4,7 @@ import typing
 from dateutil.relativedelta import relativedelta
 import factory
 
-from pcapi.core.categories.subcategories import COLLECTIVE_SUBCATEGORIES
+from pcapi.core.categories.subcategories_v2 import COLLECTIVE_SUBCATEGORIES
 from pcapi.core.educational import models
 from pcapi.core.educational import utils
 import pcapi.core.offerers.factories as offerers_factories

@@ -8,7 +8,7 @@ export default {
   component: RedirectDialog,
 } as ComponentMeta<typeof RedirectDialog>
 
-const Template: ComponentStory<typeof RedirectDialog> = args => (
+const Template: ComponentStory<typeof RedirectDialog> = (args) => (
   <RedirectDialog {...args} />
 )
 

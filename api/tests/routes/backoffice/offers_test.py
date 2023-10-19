@@ -1,5 +1,6 @@
 import datetime
 from operator import itemgetter
+from unittest import mock
 from unittest.mock import patch
 
 from flask import g
@@ -9,7 +10,7 @@ import pytest
 import pcapi.core.bookings.factories as bookings_factories
 from pcapi.core.bookings.models import BookingStatus
 from pcapi.core.categories import categories
-from pcapi.core.categories import subcategories
+from pcapi.core.categories import subcategories_v2 as subcategories
 from pcapi.core.criteria import factories as criteria_factories
 from pcapi.core.offerers import factories as offerers_factories
 from pcapi.core.offers import factories as offers_factories
@@ -21,6 +22,7 @@ from pcapi.models import db
 from pcapi.models.offer_mixin import OfferValidationType
 from pcapi.routes.backoffice.filters import format_date
 
+from .helpers import button as button_helpers
 from .helpers import html_parser
 from .helpers.get import GetEndpointHelper
 from .helpers.post import PostEndpointHelper
@@ -113,8 +115,8 @@ class ListOffersTest(GetEndpointHelper):
         assert rows[0]["ID"] == searched_id
         assert rows[0]["Nom de l'offre"] == offers[0].name
         assert rows[0]["Catégorie"] == offers[0].category.pro_label
-        assert rows[0]["Sous-catégorie"] == offers[0].subcategory_v2.pro_label
-        assert rows[0]["Stock restant"] == "Illimité / Illimité"
+        assert rows[0]["Sous-catégorie"] == offers[0].subcategory.pro_label
+        assert rows[0]["Stock restant"] == "Illimité"
         assert rows[0]["Tag"] == offers[0].criteria[0].name
         assert rows[0]["Pond."] == ""
         assert rows[0]["État"] == "Validée"
@@ -146,7 +148,7 @@ class ListOffersTest(GetEndpointHelper):
         assert rows[0]["ID"] == str(offers[1].id)
         assert rows[0]["Nom de l'offre"] == offers[1].name
         assert rows[0]["Catégorie"] == offers[1].category.pro_label
-        assert rows[0]["Sous-catégorie"] == offers[1].subcategory_v2.pro_label
+        assert rows[0]["Sous-catégorie"] == offers[1].subcategory.pro_label
         assert rows[0]["Stock restant"] == "15 / 20"
         assert rows[0]["Tag"] == ""
         assert rows[0]["Pond."] == ""
@@ -605,6 +607,91 @@ class ListOffersTest(GetEndpointHelper):
         rows = html_parser.extract_table_rows(response.data)
         assert len(rows) == 0
 
+    @pytest.mark.parametrize("first_quantity,second_quantity,expected", [(10, 7, "12 / 17"), (5, 7, "7 / 12")])
+    def test_list_offers_check_stock_limited(self, authenticated_client, first_quantity, second_quantity, expected):
+        offer = offers_factories.OfferFactory()
+        offers_factories.StockFactory(offer=offer, quantity=first_quantity, dnBookedQuantity=5)
+        offers_factories.StockFactory(offer=offer, quantity=second_quantity, dnBookedQuantity=0)
+
+        searched_id = str(offer.id)
+        with assert_num_queries(self.expected_num_queries):
+            response = authenticated_client.get(url_for(self.endpoint, q=searched_id))
+            assert response.status_code == 200
+
+        row = html_parser.extract_table_rows(response.data)[0]
+        assert row["Stock restant"] == expected
+
+    @pytest.mark.parametrize("first_quantity,second_quantity", [(None, None), (None, 10), (5, None)])
+    def test_list_offers_check_stock_unlimited(self, authenticated_client, first_quantity, second_quantity):
+        offer = offers_factories.OfferFactory()
+        offers_factories.StockFactory(offer=offer, quantity=first_quantity, dnBookedQuantity=5)
+        offers_factories.StockFactory(offer=offer, quantity=second_quantity, dnBookedQuantity=0)
+
+        searched_id = str(offer.id)
+        with assert_num_queries(self.expected_num_queries):
+            response = authenticated_client.get(url_for(self.endpoint, q=searched_id))
+            assert response.status_code == 200
+
+        row = html_parser.extract_table_rows(response.data)[0]
+        assert row["Stock restant"] == "Illimité"
+
+    def test_list_offers_check_stock_sold_out(self, authenticated_client):
+        offer = offers_factories.EventOfferFactory()
+        offers_factories.EventStockFactory(offer=offer, quantity=5, dnBookedQuantity=5)
+        offers_factories.EventStockFactory(offer=offer, quantity=7, dnBookedQuantity=7)
+
+        searched_id = str(offer.id)
+        with assert_num_queries(self.expected_num_queries):
+            response = authenticated_client.get(url_for(self.endpoint, q=searched_id))
+            assert response.status_code == 200
+
+        row = html_parser.extract_table_rows(response.data)[0]
+        assert row["Stock restant"] == "0 / 12"
+
+    def test_list_offers_check_stock_expired(self, authenticated_client):
+        offer = offers_factories.EventOfferFactory()
+        offers_factories.EventStockFactory(
+            offer=offer,
+            quantity=7,
+            dnBookedQuantity=2,
+            beginningDatetime=datetime.datetime.utcnow() - datetime.timedelta(days=1),
+        )
+        offers_factories.EventStockFactory(
+            offer=offer,
+            quantity=9,
+            dnBookedQuantity=3,
+            bookingLimitDatetime=datetime.datetime.utcnow() - datetime.timedelta(days=1),
+        )
+        offers_factories.EventStockFactory(
+            offer=offer,
+            quantity=None,  # unlimited
+            dnBookedQuantity=7,
+            bookingLimitDatetime=datetime.datetime.utcnow() - datetime.timedelta(days=1),
+        )
+        searched_id = str(offer.id)
+        with assert_num_queries(self.expected_num_queries):
+            response = authenticated_client.get(url_for(self.endpoint, q=searched_id))
+            assert response.status_code == 200
+
+        row = html_parser.extract_table_rows(response.data)[0]
+        assert row["Stock restant"] == "0 / 12"
+
+    def test_list_offers_check_stock_not_active(self, authenticated_client):
+        for status in offers_models.OfferValidationStatus:
+            if status != offers_models.OfferValidationStatus.APPROVED:
+                offers_factories.StockFactory(offer__validation=status)
+        offers_factories.StockFactory(offer__venue__managingOfferer=offerers_factories.NotValidatedOffererFactory())
+        offers_factories.StockFactory(offer__venue__managingOfferer__isActive=False)
+
+        with assert_num_queries(self.expected_num_queries):
+            response = authenticated_client.get(url_for(self.endpoint, category=[categories.FILM.id]))
+            assert response.status_code == 200
+
+        rows = html_parser.extract_table_rows(response.data)
+        assert len(rows) == len(offers_models.OfferValidationStatus) - 1 + 2
+        for row in rows:
+            assert row["Stock restant"] == "-"
+
 
 class EditOfferTest(PostEndpointHelper):
     endpoint = "backoffice_web.offer.edit_offer"
@@ -918,13 +1005,15 @@ class GetOfferDetailsTest(GetEndpointHelper):
     endpoint_kwargs = {"offer_id": 1}
     needed_permission = perm_models.Permissions.READ_OFFERS
 
+    # session + user + offer with joined data
+    expected_num_queries = 3
+
     def test_get_detail_offer(self, legit_user, authenticated_client):
         offer = offers_factories.OfferFactory()
 
-        form_url = url_for(self.endpoint, offer_id=offer.id, _external=True)
-
-        with assert_num_queries(3):  # session + user + offer
-            response = authenticated_client.get(form_url)
+        url = url_for(self.endpoint, offer_id=offer.id, _external=True)
+        with assert_num_queries(self.expected_num_queries):
+            response = authenticated_client.get(url)
             assert response.status_code == 200
 
         cards_text = html_parser.extract_cards_text(response.data)
@@ -939,6 +1028,7 @@ class GetOfferDetailsTest(GetEndpointHelper):
         assert "Lieu : Le Petit Rintintin" in card_text
         assert "Utilisateur de la dernière validation" not in card_text
         assert "Date de dernière validation" not in card_text
+        assert "Resynchroniser l'offre dans Algolia" in card_text
 
         assert html_parser.count_table_rows(response.data) == 0
 
@@ -950,10 +1040,9 @@ class GetOfferDetailsTest(GetEndpointHelper):
             lastValidationAuthor=legit_user,
         )
 
-        form_url = url_for(self.endpoint, offer_id=offer.id, _external=True)
-
-        with assert_num_queries(3):  # session + user + offer + loaded data
-            response = authenticated_client.get(form_url)
+        url = url_for(self.endpoint, offer_id=offer.id, _external=True)
+        with assert_num_queries(self.expected_num_queries):
+            response = authenticated_client.get(url)
             assert response.status_code == 200
 
         cards_text = html_parser.extract_cards_text(response.data)
@@ -970,10 +1059,9 @@ class GetOfferDetailsTest(GetEndpointHelper):
             lastValidationAuthor=legit_user,
         )
 
-        form_url = url_for(self.endpoint, offer_id=offer.id, _external=True)
-
-        with assert_num_queries(3):  # session + user + offer + loaded data
-            response = authenticated_client.get(form_url)
+        url = url_for(self.endpoint, offer_id=offer.id, _external=True)
+        with assert_num_queries(self.expected_num_queries):
+            response = authenticated_client.get(url)
             assert response.status_code == 200
 
         cards_text = html_parser.extract_cards_text(response.data)
@@ -982,95 +1070,111 @@ class GetOfferDetailsTest(GetEndpointHelper):
         assert f"Utilisateur de la dernière validation : {legit_user.full_name}" in card_text
         assert f"Date de dernière validation : {format_date(validation_date, '%d/%m/%Y à %Hh%M')}" in card_text
 
-    def test_get_offer_details_with_one_stock_no_bookable(self, legit_user, authenticated_client):
+    def test_get_offer_details_with_one_expired_stock(self, legit_user, authenticated_client):
         offer = offers_factories.OfferFactory()
 
         expired_stock = offers_factories.EventStockFactory(
             offer=offer, beginningDatetime=datetime.datetime.utcnow() - datetime.timedelta(hours=1), price=6.66
         )
 
-        form_url = url_for(self.endpoint, offer_id=offer.id, _external=True)
-        with assert_num_queries(3):  # session + user + offer
-            response = authenticated_client.get(form_url)
+        url = url_for(self.endpoint, offer_id=offer.id, _external=True)
+        with assert_num_queries(self.expected_num_queries):
+            response = authenticated_client.get(url)
             assert response.status_code == 200
 
         stocks_rows = html_parser.extract_table_rows(response.data)
         assert len(stocks_rows) == 1
         assert stocks_rows[0]["Stock ID"] == str(expired_stock.id)
-        assert stocks_rows[0]["Nombre de stock initial / restant"] == "0 / 0"
+        assert stocks_rows[0]["Nombre de stock restant / total"] == "0 / 0"
         assert stocks_rows[0]["Prix"] == "6,66 €"
         assert stocks_rows[0]["Date / Heure"] == format_date(expired_stock.beginningDatetime, "%d/%m/%Y à %Hh%M")
 
-    def test_get_offer_details_with_two_stocks_no_bookable(self, legit_user, authenticated_client):
+    def test_get_offer_details_with_two_expired_stocks(self, legit_user, authenticated_client):
         offer = offers_factories.OfferFactory()
 
-        expired_stocks = offers_factories.EventStockFactory.create_batch(
-            2,
+        expired_stock_1 = offers_factories.EventStockFactory(
             offer=offer,
+            quantity=100,
+            dnBookedQuantity=70,
+            beginningDatetime=datetime.datetime.utcnow() - datetime.timedelta(hours=2),
+        )
+        expired_stock_2 = offers_factories.EventStockFactory(
+            offer=offer,
+            quantity=None,
+            dnBookedQuantity=25,
             beginningDatetime=datetime.datetime.utcnow() - datetime.timedelta(hours=1),
         )
 
-        form_url = url_for(self.endpoint, offer_id=offer.id, _external=True)
-        with assert_num_queries(3):  # session + user + offer
-            response = authenticated_client.get(form_url)
+        url = url_for(self.endpoint, offer_id=offer.id, _external=True)
+        with assert_num_queries(self.expected_num_queries):
+            response = authenticated_client.get(url)
             assert response.status_code == 200
 
         stocks_rows = html_parser.extract_table_rows(response.data)
         assert len(stocks_rows) == 2
-        assert stocks_rows[0]["Stock ID"] == str(expired_stocks[0].id)
-        assert stocks_rows[0]["Nombre de stock initial / restant"] == "0 / 0"
+        assert stocks_rows[0]["Stock ID"] == str(expired_stock_1.id)
+        assert stocks_rows[0]["Nombre de stock restant / total"] == "0 / 70"
         assert stocks_rows[0]["Prix"] == "10,10 €"
-        assert stocks_rows[0]["Date / Heure"] == format_date(expired_stocks[0].beginningDatetime, "%d/%m/%Y à %Hh%M")
+        assert stocks_rows[0]["Date / Heure"] == format_date(expired_stock_1.beginningDatetime, "%d/%m/%Y à %Hh%M")
 
-        assert stocks_rows[1]["Stock ID"] == str(expired_stocks[1].id)
-        assert stocks_rows[1]["Nombre de stock initial / restant"] == "0 / 0"
+        assert stocks_rows[1]["Stock ID"] == str(expired_stock_2.id)
+        assert stocks_rows[1]["Nombre de stock restant / total"] == "0 / 25"
         assert stocks_rows[1]["Prix"] == "10,10 €"
-        assert stocks_rows[1]["Date / Heure"] == format_date(expired_stocks[1].beginningDatetime, "%d/%m/%Y à %Hh%M")
+        assert stocks_rows[1]["Date / Heure"] == format_date(expired_stock_2.beginningDatetime, "%d/%m/%Y à %Hh%M")
 
-    def test_get_offer_details_with_one_bookable_stock(self, legit_user, authenticated_client):
+    @pytest.mark.parametrize(
+        "quantity,booked_quantity,expected_result",
+        [
+            (1000, 0, "1000 / 1000"),
+            (1000, 50, "950 / 1000"),
+            (1000, 1000, "0 / 1000"),
+            (None, 0, "Illimité"),
+            (None, 50, "Illimité"),
+        ],
+    )
+    def test_get_offer_details_with_one_bookable_stock(
+        self, legit_user, authenticated_client, quantity, booked_quantity, expected_result
+    ):
         offer = offers_factories.OfferFactory()
 
-        stock = offers_factories.EventStockFactory(offer=offer)
+        stock = offers_factories.EventStockFactory(offer=offer, quantity=quantity, dnBookedQuantity=booked_quantity)
 
-        form_url = url_for(self.endpoint, offer_id=offer.id, _external=True)
-        response = authenticated_client.get(form_url)
-        assert response.status_code == 200
+        url = url_for(self.endpoint, offer_id=offer.id, _external=True)
+        with assert_num_queries(self.expected_num_queries):
+            response = authenticated_client.get(url)
+            assert response.status_code == 200
 
         stocks_rows = html_parser.extract_table_rows(response.data)
         assert len(stocks_rows) == 1
         assert stocks_rows[0]["Stock ID"] == str(stock.id)
-        assert stocks_rows[0]["Nombre de stock initial / restant"] == "1000 / 1000"
+        assert stocks_rows[0]["Nombre de stock restant / total"] == expected_result
         assert stocks_rows[0]["Prix"] == "10,10 €"
         assert stocks_rows[0]["Date / Heure"] == format_date(stock.beginningDatetime, "%d/%m/%Y à %Hh%M")
 
-    def test_get_offer_details_with_one_bookable_stock_with_unlimited_quantity(self, legit_user, authenticated_client):
+    class IndexOfferButtonTest(button_helpers.ButtonHelper):
+        needed_permission = perm_models.Permissions.ADVANCED_PRO_SUPPORT
+        button_label = "Resynchroniser l'offre dans Algolia"
+
+        @property
+        def path(self):
+            offer = offers_factories.OfferFactory()
+            return url_for("backoffice_web.offer.get_offer_details", offer_id=offer.id)
+
+
+class IndexOfferTest(PostEndpointHelper):
+    endpoint = "backoffice_web.offer.reindex"
+    endpoint_kwargs = {"offer_id": 1}
+    needed_permission = perm_models.Permissions.ADVANCED_PRO_SUPPORT
+
+    @mock.patch("pcapi.core.search.async_index_offer_ids")
+    def test_index_offer(self, mocked_async_index_offer_ids, authenticated_client):
         offer = offers_factories.OfferFactory()
 
-        stock = offers_factories.EventStockFactory(offer=offer, quantity=None)
+        response = self.post_to_endpoint(authenticated_client, offer_id=offer.id)
+        assert response.status_code == 302
 
-        form_url = url_for(self.endpoint, offer_id=offer.id, _external=True)
-        response = authenticated_client.get(form_url)
-        assert response.status_code == 200
+        redirected_response = authenticated_client.get(response.headers["location"])
+        assert "La resynchronisation de l'offre a été demandée." in html_parser.extract_alert(redirected_response.data)
 
-        stocks_rows = html_parser.extract_table_rows(response.data)
-        assert len(stocks_rows) == 1
-        assert stocks_rows[0]["Stock ID"] == str(stock.id)
-        assert stocks_rows[0]["Nombre de stock initial / restant"] == "Illimité / Illimité"
-        assert stocks_rows[0]["Prix"] == "10,10 €"
-        assert stocks_rows[0]["Date / Heure"] == format_date(stock.beginningDatetime, "%d/%m/%Y à %Hh%M")
-
-    def test_get_offer_details_with_one_bookable_stock_but_no_remaining_stock(self, legit_user, authenticated_client):
-        offer = offers_factories.OfferFactory()
-
-        stock = offers_factories.EventStockFactory(offer=offer, dnBookedQuantity=50)
-
-        form_url = url_for(self.endpoint, offer_id=offer.id, _external=True)
-        response = authenticated_client.get(form_url)
-        assert response.status_code == 200
-
-        stocks_rows = html_parser.extract_table_rows(response.data)
-        assert len(stocks_rows) == 1
-        assert stocks_rows[0]["Stock ID"] == str(stock.id)
-        assert stocks_rows[0]["Nombre de stock initial / restant"] == "950 / 1000"
-        assert stocks_rows[0]["Prix"] == "10,10 €"
-        assert stocks_rows[0]["Date / Heure"] == format_date(stock.beginningDatetime, "%d/%m/%Y à %Hh%M")
+        mocked_async_index_offer_ids.assert_called()
+        assert set(mocked_async_index_offer_ids.call_args[0][0]) == {offer.id}

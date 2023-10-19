@@ -12,7 +12,7 @@ export default {
   component: NotificationToaster,
 }
 
-const Template: Story<NotificationToasterProps> = props => (
+const Template: Story<NotificationToasterProps> = (props) => (
   <NotificationToaster {...props} />
 )
 

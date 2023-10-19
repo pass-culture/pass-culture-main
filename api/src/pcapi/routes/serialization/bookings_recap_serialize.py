@@ -1,3 +1,4 @@
+from datetime import date
 from datetime import datetime
 from enum import Enum
 
@@ -59,6 +60,7 @@ class BookingRecapResponseModel(BaseModel):
     booking_is_duo: bool
     booking_status: BookingRecapStatus
     booking_status_history: list[BookingRecapResponseBookingStatusHistoryModel]
+    booking_price_category_label: str | None
     booking_token: str | None
     stock: BookingRecapResponseStockModel
 
@@ -126,7 +128,7 @@ def _serialize_booking_status_history(
     return serialized_booking_status_history
 
 
-def _serialize_booking_recap(booking_recap: BookingRecap) -> BookingRecapResponseModel:
+def serialize_booking_recap(booking_recap: BookingRecap) -> BookingRecapResponseModel:
     serialized_booking_recap = BookingRecapResponseModel(  # type: ignore [call-arg]
         stock={  # type: ignore [arg-type]
             "stockIdentifier": booking_recap.stock_identifier,
@@ -149,6 +151,7 @@ def _serialize_booking_recap(booking_recap: BookingRecap) -> BookingRecapRespons
         bookingStatus=booking_recap.booking_status.value,
         bookingIsDuo=booking_recap.booking_is_duo,
         bookingAmount=booking_recap.booking_amount,
+        bookingPriceCategoryLabel=booking_recap.booking_price_category_label,
         bookingStatusHistory=_serialize_booking_status_history(booking_recap.booking_status_history),
     )
 
@@ -159,10 +162,10 @@ class ListBookingsQueryModel(BaseModel):
     page: int = 1
     venue_id: int | None
     offer_id: int | None
-    event_date: str | None
+    event_date: date | None
     booking_status_filter: BookingStatusFilter | None
-    booking_period_beginning_date: str | None
-    booking_period_ending_date: str | None
+    booking_period_beginning_date: date | None
+    booking_period_ending_date: date | None
     offer_type: OfferType | None
     export_type: BookingExportType | None
 

@@ -1,3 +1,5 @@
+import { NBSP } from 'core/shared'
+
 describe('Create an individual offer', () => {
   it('should create an individual offer', () => {
     cy.login('pctest.admin93.0@example.com', 'user@AZERTY123')
@@ -58,15 +60,15 @@ describe('Create an individual offer', () => {
     cy.contains('Ajouter d’autres places et tarifs').click()
     cy.contains('Ajouter d’autres places et tarifs').click()
     cy.get('[name="quantityPerPriceCategories[0].priceCategory"]').select(
-      '0 € - Fosse Sceptique'
+      `0${NBSP}€ - Fosse Sceptique`
     )
     cy.get('[name="quantityPerPriceCategories[1].quantity"]').type('100')
     cy.get('[name="quantityPerPriceCategories[1].priceCategory"]').select(
-      '10 € - Fosse Debout'
+      `10${NBSP}€ - Fosse Debout`
     )
     cy.get('[name="quantityPerPriceCategories[2].quantity"]').type('20')
     cy.get('[name="quantityPerPriceCategories[2].priceCategory"]').select(
-      '100 € - Carré Or'
+      `100${NBSP}€ - Carré Or`
     )
     cy.get('#bookingLimitDateInterval').type('3')
     cy.contains('Valider').click()

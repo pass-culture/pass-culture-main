@@ -15,10 +15,10 @@ describe('findLastIndex', () => {
       { index: 3, isTrue: false },
     ]
 
-    const expectedIndex = findLastIndex(testArray, elem => elem.isTrue)
+    const expectedIndex = findLastIndex(testArray, (elem) => elem.isTrue)
     const anotherExpectedIndex = findLastIndex(
       anotherArray,
-      elem => elem.isTrue
+      (elem) => elem.isTrue
     )
 
     expect(expectedIndex).toBe(testArray[3].index)
@@ -33,7 +33,7 @@ describe('findLastIndex', () => {
       { id: 3, isTrue: false },
     ]
 
-    const expectedIndex = findLastIndex(testArray, elem => elem.isTrue)
+    const expectedIndex = findLastIndex(testArray, (elem) => elem.isTrue)
 
     expect(expectedIndex).toBe(-1)
   })

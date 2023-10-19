@@ -17,6 +17,7 @@ import type { CollectiveRequestResponseModel } from '../models/CollectiveRequest
 import type { EducationalInstitutionWithBudgetResponseModel } from '../models/EducationalInstitutionWithBudgetResponseModel';
 import type { FavoritesResponseModel } from '../models/FavoritesResponseModel';
 import type { ListFeatureResponseModel } from '../models/ListFeatureResponseModel';
+import type { OfferFavoriteBody } from '../models/OfferFavoriteBody';
 import type { OfferIdBody } from '../models/OfferIdBody';
 import type { PostCollectiveRequestBodyModel } from '../models/PostCollectiveRequestBodyModel';
 import type { RedactorPreferences } from '../models/RedactorPreferences';
@@ -370,7 +371,7 @@ export class DefaultService {
    * @throws ApiError
    */
   public logFavOfferButtonClick(
-    requestBody?: OfferIdBody,
+    requestBody?: OfferFavoriteBody,
   ): CancelablePromise<void> {
     return this.httpRequest.request({
       method: 'POST',
@@ -551,6 +552,28 @@ export class DefaultService {
     return this.httpRequest.request({
       method: 'POST',
       url: '/adage-iframe/logs/tracking-filter',
+      body: requestBody,
+      mediaType: 'application/json',
+      errors: {
+        403: `Forbidden`,
+        404: `Not Found`,
+        422: `Unprocessable Entity`,
+      },
+    });
+  }
+
+  /**
+   * log_tracking_map <POST>
+   * @param requestBody
+   * @returns void
+   * @throws ApiError
+   */
+  public logTrackingMap(
+    requestBody?: AdageBaseModel,
+  ): CancelablePromise<void> {
+    return this.httpRequest.request({
+      method: 'POST',
+      url: '/adage-iframe/logs/tracking-map',
       body: requestBody,
       mediaType: 'application/json',
       errors: {

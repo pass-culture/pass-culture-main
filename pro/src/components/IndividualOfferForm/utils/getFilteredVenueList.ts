@@ -16,7 +16,7 @@ export const getFilteredVenueListBySubcategory = (
     return venueList
   }
 
-  return venueList.filter(venue =>
+  return venueList.filter((venue) =>
     subcategory.onlineOfflinePlatform === CATEGORY_STATUS.ONLINE
       ? venue.isVirtual
       : !venue.isVirtual
@@ -31,7 +31,7 @@ export const getFilteredVenueListByCategoryStatus = (
     return venueList
   }
 
-  return venueList.filter(venue =>
+  return venueList.filter((venue) =>
     categoryStatus === CATEGORY_STATUS.ONLINE
       ? venue.isVirtual
       : !venue.isVirtual

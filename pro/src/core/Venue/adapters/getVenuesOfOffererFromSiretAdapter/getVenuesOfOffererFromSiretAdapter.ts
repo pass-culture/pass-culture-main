@@ -16,7 +16,7 @@ const FAILING_RESPONSE: AdapterFailure<null> = {
 }
 
 const getVenuesOfOffererFromSiretAdapter: GetVenueOfOffererProvidersAdapter =
-  async siret => {
+  async (siret) => {
     try {
       const venueOfOffererProvidersResponse =
         await api.getVenuesOfOffererFromSiret(siret)

@@ -20,7 +20,7 @@ const UserPasswordForm = ({
   postPasswordAdapter,
 }: UserPasswordFormProps): JSX.Element => {
   const onSubmit = (values: any) => {
-    postPasswordAdapter(values).then(response => {
+    postPasswordAdapter(values).then((response) => {
       if (response.isOk) {
         closeForm()
       } else {

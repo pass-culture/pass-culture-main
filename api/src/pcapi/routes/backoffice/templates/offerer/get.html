@@ -162,7 +162,7 @@
               </p>
               <p class="mb-1">
                 <span class="fw-bold">Tags structure :</span>
-                {{ offerer.tags | format_tag_object_list | escape }}
+                {{ offerer.tags | format_tag_object_list | safe }}
               </p>
             </div>
             <div class="col-4">

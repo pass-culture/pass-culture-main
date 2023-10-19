@@ -127,6 +127,13 @@ class GetVenuesListForm(utils.PCForm):
     criteria = fields.PCTomSelectField(
         "Tags", multiple=True, choices=[], validate_choice=False, endpoint="backoffice_web.autocomplete_criteria"
     )
+    offerer = fields.PCTomSelectField(
+        "Structures",
+        multiple=True,
+        choices=[],
+        validate_choice=False,
+        endpoint="backoffice_web.autocomplete_offerers",
+    )
     regions = fields.PCSelectMultipleField("Régions", choices=get_regions_choices())
     department = fields.PCSelectMultipleField("Départements", choices=area_choices)
     limit = fields.PCSelectField(
@@ -146,6 +153,7 @@ class GetVenuesListForm(utils.PCForm):
                 self.type.data,
                 self.venue_label.data,
                 self.criteria.data,
+                self.offerer.data,
                 self.regions.data,
                 self.department.data,
             )

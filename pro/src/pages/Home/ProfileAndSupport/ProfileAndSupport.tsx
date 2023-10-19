@@ -45,7 +45,9 @@ export const formatPhoneNumber = (phoneNumber: string | null | undefined) => {
       prefix = [internationalPrefix, areaPrefix].join(' ')
     }
 
-    return [prefix, ...number.split(/([0-9]{2})/g).filter(num => num)].join(' ')
+    return [prefix, ...number.split(/([0-9]{2})/g).filter((num) => num)].join(
+      ' '
+    )
   }
   return phoneNumber
 }

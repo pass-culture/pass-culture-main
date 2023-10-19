@@ -85,7 +85,7 @@ const StockFormList = ({
       { dateFilter, hourFilter, priceCategoryFilter }
     )
     hiddenStocksRef.current = allStocks.filter(
-      stock => filteredStocks.indexOf(stock) === -1
+      (stock) => filteredStocks.indexOf(stock) === -1
     )
     setFieldValue('stocks', filteredStocks)
   }, [
@@ -113,7 +113,7 @@ const StockFormList = ({
   return (
     <FieldArray
       name="stocks"
-      render={arrayHelpers => (
+      render={(arrayHelpers) => (
         <>
           <table className={styles['stock-table']}>
             <caption className="visually-hidden">
@@ -143,7 +143,7 @@ const StockFormList = ({
 
                   <div className={cn(styles['filter-input'])}>
                     <BaseDatePicker
-                      onChange={event => {
+                      onChange={(event) => {
                         setDateFilter(event.target.value)
                         onFilterChange()
                       }}
@@ -172,7 +172,7 @@ const StockFormList = ({
                   />
                   <div className={cn(styles['filter-input'])}>
                     <BaseTimePicker
-                      onChange={event => {
+                      onChange={(event) => {
                         setHourFilter(event.target.value)
                         onFilterChange()
                       }}
@@ -208,7 +208,7 @@ const StockFormList = ({
                       defaultOption={{ label: '', value: '' }}
                       options={priceCategoriesOptions}
                       value={priceCategoryFilter}
-                      onChange={event => {
+                      onChange={(event) => {
                         setPriceCategoryFilter(event.target.value)
                         onFilterChange()
                       }}

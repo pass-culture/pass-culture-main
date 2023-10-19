@@ -14,6 +14,16 @@
           <div class="row justify-content-start align-items-center">
             <div class="col d-flex align-items-center justify-content-start">
               <h2 class="card-title mb-3 text-primary">{{ links.build_offer_name_to_pc_pro_link(offer) }}</h2>
+              {% if has_permission("ADVANCED_PRO_SUPPORT") and reindex_offer_form %}
+                <div class="d-flex row-reverse justify-content-end flex-grow-1">
+                  <form action="{{ url_for('.reindex', offer_id=offer.id) }}"
+                        name="{{ url_for('.reindex', offer_id=offer.id) | action_to_name }}"
+                        method="post">
+                    {{ reindex_offer_form.csrf_token }}
+                    <button class="btn btn-outline-primary lead fw-bold mt-2 justify-content-end">Resynchroniser l'offre dans Algolia</button>
+                  </form>
+                </div>
+              {% endif %}
             </div>
             <div class="col-2"></div>
           </div>
@@ -77,7 +87,7 @@
               <thead>
                 <tr>
                   <th scope="col-1">Stock ID</th>
-                  <th scope="col-5" class="col-4">Nombre de stock initial / restant</th>
+                  <th scope="col-5" class="col-4">Nombre de stock restant / total</th>
                   <th scope="col-3" class="col-2">Prix</th>
                   <th scope="col-3" class="col-4">Date / Heure</th>
                 </tr>
@@ -86,7 +96,13 @@
                 {% for stock in offer.stocks | sort(attribute='id') %}
                   <tr>
                     <td>{{ stock.id }}</td>
-                    <td>{{ stock.remainingStock | format_stock_quantity }} / {{ stock.initialStock | format_stock_quantity }}</td>
+                    <td>
+                      {% if stock.remainingStock is none %}
+                        Illimité
+                      {% else %}
+                        {{ stock.remainingStock }} / {{ stock.totalStock }}
+                      {% endif %}
+                    </td>
                     <td>{{ stock.price | format_amount }}</td>
                     <td>{{ stock.beginningDatetime | format_date_time }}</td>
                   </tr>

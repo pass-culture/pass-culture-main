@@ -1,5 +1,5 @@
 /* istanbul ignore file: RomainC, I think testing is ok with this file*/
-import { useCallback, useMemo } from 'react'
+import { useMemo } from 'react'
 import { useDispatch } from 'react-redux'
 
 import { NOTIFICATION_SHOW_DURATION } from 'core/Notification/constants'
@@ -21,40 +21,33 @@ interface Options {
 
 const useNotification = () => {
   const dispatch = useDispatch()
-  const dispatchNotification = useCallback(
-    (
-      textMessage: string | null,
-      type: NotificationTypeEnum,
-      { duration = NOTIFICATION_SHOW_DURATION }: Options
-    ) => {
-      dispatch(
-        showNotification({
-          text: textMessage,
-          type: type,
-          duration,
-        })
-      )
-    },
-    [dispatch]
-  )
-  const dispatchCloseNotification = useCallback(
-    () => dispatch(closeNotification()),
-    [dispatch]
-  )
+  const notify = (
+    textMessage: string | null,
+    type: NotificationTypeEnum,
+    { duration = NOTIFICATION_SHOW_DURATION }: Options
+  ) => {
+    dispatch(
+      showNotification({
+        text: textMessage,
+        type: type,
+        duration,
+      })
+    )
+  }
 
   return useMemo(
     () => ({
       success: (msg: string | null, options: Options = {}) =>
-        dispatchNotification(msg, NotificationTypeEnum.SUCCESS, options),
+        notify(msg, NotificationTypeEnum.SUCCESS, options),
       error: (msg: string | null, options: Options = {}) =>
-        dispatchNotification(msg, NotificationTypeEnum.ERROR, options),
+        notify(msg, NotificationTypeEnum.ERROR, options),
       pending: (msg: string | null, options: Options = {}) =>
-        dispatchNotification(msg, NotificationTypeEnum.PENDING, options),
+        notify(msg, NotificationTypeEnum.PENDING, options),
       information: (msg: string | null, options: Options = {}) =>
-        dispatchNotification(msg, NotificationTypeEnum.INFORMATION, options),
-      close: () => dispatchCloseNotification(),
+        notify(msg, NotificationTypeEnum.INFORMATION, options),
+      close: () => dispatch(closeNotification()),
     }),
-    [dispatchCloseNotification, dispatchNotification]
+    [dispatch]
   )
 }
 

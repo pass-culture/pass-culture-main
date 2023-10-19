@@ -85,7 +85,7 @@ class GetFilteredBookingsRequest(IndexPaginationQueryParams):
     status: booking_models.BookingStatus | None = pydantic_v1.Field(
         description="Booking Status.\n\n* `CONFIRMED`: The bookings is confirmed.\n* `USED`: The bookings has been used.\n* `CANCELLED`: The bookings has been cancelled.\n* `REIMBURSED` The bookings has been reimbursed."
     )
-    begining_datetime: datetime | None = pydantic_v1.Field(description="Timezone aware datetime of the event.")
+    beginning_datetime: datetime | None = pydantic_v1.Field(description="Timezone aware datetime of the event.")
 
 
 class GetFilteredBookingsResponse(serialization.ConfiguredBaseModel):

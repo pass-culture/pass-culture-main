@@ -127,7 +127,7 @@ describe('reimbursementsWithFilters', () => {
     await waitFor(() => {
       const reimbursementCells = screen
         .queryAllByRole('cell')
-        .map(cell => cell.innerHTML)
+        .map((cell) => cell.innerHTML)
       expect(reimbursementCells.slice(0, 5)).toEqual(firstLine)
       expect(reimbursementCells[5]).toContain('J987654321.invoice')
       expect(reimbursementCells.slice(6, 11)).toEqual(secondLine)

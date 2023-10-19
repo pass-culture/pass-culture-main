@@ -6,7 +6,7 @@ const isOneTrue = (values: Record<string, boolean>): boolean =>
 const validationSchema = {
   accessibility: yup.object().when('isVenueVirtual', {
     is: false,
-    then: schema =>
+    then: (schema) =>
       schema
         .test({
           name: 'is-one-true',

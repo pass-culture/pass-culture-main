@@ -161,7 +161,7 @@ const CollectiveOfferVisibility = ({
         institution:
           institutionsOptions
             .find(
-              option =>
+              (option) =>
                 option.institutionId ==
                 requestInformations?.institution.institutionId
             )
@@ -178,7 +178,7 @@ const CollectiveOfferVisibility = ({
   const selectedTeacher: TeacherOption | null = requestId
     ? teachersOptions[0]
     : teachersOptions?.find(
-        teacher => teacher.value === formik.values.teacher
+        (teacher) => teacher.value === formik.values.teacher
       ) ?? null
 
   const selectedInstitution: InstitutionOption | null = requestId
@@ -188,7 +188,7 @@ const CollectiveOfferVisibility = ({
           .includes(formik.values['search-institution'].trim().toLowerCase())
       )[0]
     : institutionsOptions?.find(
-        institution => institution?.value === formik.values.institution
+        (institution) => institution?.value === formik.values.institution
       ) ?? null
 
   const onChangeTeacher = async () => {

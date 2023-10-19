@@ -23,7 +23,7 @@ export const DisplayOfferInAppLink: FunctionComponent<
       variant={variant}
       icon={icon}
       svgAlt={svgAlt}
-      onClick={event => {
+      onClick={(event) => {
         event.preventDefault()
         onClick?.()
 

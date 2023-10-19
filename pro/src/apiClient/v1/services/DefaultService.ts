@@ -45,6 +45,7 @@ import type { GetOffererBankAccountsResponseModel } from '../models/GetOffererBa
 import type { GetOffererMembersResponseModel } from '../models/GetOffererMembersResponseModel';
 import type { GetOffererResponseModel } from '../models/GetOffererResponseModel';
 import type { GetOfferersNamesResponseModel } from '../models/GetOfferersNamesResponseModel';
+import type { GetStocksResponseModel } from '../models/GetStocksResponseModel';
 import type { GetVenueListResponseModel } from '../models/GetVenueListResponseModel';
 import type { GetVenueResponseModel } from '../models/GetVenueResponseModel';
 import type { GetVenuesOfOffererFromSiretResponseModel } from '../models/GetVenuesOfOffererFromSiretResponseModel';
@@ -90,9 +91,9 @@ import type { SharedLoginUserResponseModel } from '../models/SharedLoginUserResp
 import type { SirenInfo } from '../models/SirenInfo';
 import type { SiretInfo } from '../models/SiretInfo';
 import type { StockIdResponseModel } from '../models/StockIdResponseModel';
-import type { StockResponseModel } from '../models/StockResponseModel';
 import type { StocksOrderedBy } from '../models/StocksOrderedBy';
 import type { StocksResponseModel } from '../models/StocksResponseModel';
+import type { StockStatsResponseModel } from '../models/StockStatsResponseModel';
 import type { StocksUpsertBodyModel } from '../models/StocksUpsertBodyModel';
 import type { UserEmailValidationResponseModel } from '../models/UserEmailValidationResponseModel';
 import type { UserHasBookingResponse } from '../models/UserHasBookingResponse';
@@ -1638,6 +1639,28 @@ export class DefaultService {
   }
 
   /**
+   * get_stocks_stats <GET>
+   * @param offerId
+   * @returns StockStatsResponseModel OK
+   * @throws ApiError
+   */
+  public getStocksStats(
+    offerId: number,
+  ): CancelablePromise<StockStatsResponseModel> {
+    return this.httpRequest.request({
+      method: 'GET',
+      url: '/offers/{offer_id}/stocks-stats',
+      path: {
+        'offer_id': offerId,
+      },
+      errors: {
+        403: `Forbidden`,
+        422: `Unprocessable Entity`,
+      },
+    });
+  }
+
+  /**
    * get_stocks <GET>
    * @param offerId
    * @param date
@@ -1645,7 +1668,9 @@ export class DefaultService {
    * @param priceCategoryId
    * @param orderBy
    * @param orderByDesc
-   * @returns StockResponseModel OK
+   * @param page
+   * @param stocksLimitPerPage
+   * @returns GetStocksResponseModel OK
    * @throws ApiError
    */
   public getStocks(
@@ -1655,7 +1680,9 @@ export class DefaultService {
     priceCategoryId?: number | null,
     orderBy?: StocksOrderedBy,
     orderByDesc: boolean = false,
-  ): CancelablePromise<StockResponseModel> {
+    page: number = 1,
+    stocksLimitPerPage: number = 20,
+  ): CancelablePromise<GetStocksResponseModel> {
     return this.httpRequest.request({
       method: 'GET',
       url: '/offers/{offer_id}/stocks/',
@@ -1668,6 +1695,8 @@ export class DefaultService {
         'price_category_id': priceCategoryId,
         'order_by': orderBy,
         'order_by_desc': orderByDesc,
+        'page': page,
+        'stocks_limit_per_page': stocksLimitPerPage,
       },
       errors: {
         403: `Forbidden`,

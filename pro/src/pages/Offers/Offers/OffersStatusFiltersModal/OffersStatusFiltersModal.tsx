@@ -57,7 +57,7 @@ export const OffersStatusFiltersModal = ({
             value={value}
             checked={status === value}
             className={styles['radio']}
-            onChange={event =>
+            onChange={(event) =>
               updateStatusFilter(
                 event.target.value as SearchFiltersParams['status']
               )

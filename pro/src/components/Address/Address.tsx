@@ -26,7 +26,7 @@ const AddressSelect = ({ description, suggestionLimit }: AddressProps) => {
 
   useEffect(() => {
     if (searchField.value.length >= 3) {
-      getSuggestions(searchField.value).then(response => {
+      getSuggestions(searchField.value).then((response) => {
         setAddressesMap(
           response.reduce<Record<string, AutocompleteItemProps>>(
             (acc, add: AutocompleteItemProps) => {
@@ -37,7 +37,7 @@ const AddressSelect = ({ description, suggestionLimit }: AddressProps) => {
           )
         )
         setOptions(
-          response.map(item => {
+          response.map((item) => {
             return {
               value: String(item.value),
               label: item.label,

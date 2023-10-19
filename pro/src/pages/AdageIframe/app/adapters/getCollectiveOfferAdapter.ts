@@ -10,17 +10,18 @@ const FAILING_RESPONSE: AdapterFailure<null> = {
   payload: null,
 }
 
-export const getCollectiveOfferAdapter: GetCollectiveOfferAdapter =
-  async offerId => {
-    try {
-      const result = await apiAdage.getCollectiveOffer(offerId)
+export const getCollectiveOfferAdapter: GetCollectiveOfferAdapter = async (
+  offerId
+) => {
+  try {
+    const result = await apiAdage.getCollectiveOffer(offerId)
 
-      return {
-        isOk: true,
-        message: null,
-        payload: { ...result, isTemplate: false },
-      }
-    } catch (e) {
-      return FAILING_RESPONSE
+    return {
+      isOk: true,
+      message: null,
+      payload: { ...result, isTemplate: false },
     }
+  } catch (e) {
+    return FAILING_RESPONSE
   }
+}

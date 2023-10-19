@@ -30,7 +30,7 @@ vi.mock('react-router-dom', async () => ({
   useNavigate: vi.fn(),
 }))
 
-const renderOfferTypes = async (venueId?: string) => {
+const renderOfferTypes = (venueId?: string) => {
   const storeOverrides = {
     user: {
       initialized: true,

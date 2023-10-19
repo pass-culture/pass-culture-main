@@ -135,9 +135,9 @@ const generateStocksForDates = (
   dates: Date[],
   departmentCode: string
 ): StocksEvent[] =>
-  dates.flatMap(beginningDate =>
-    values.beginningTimes.flatMap(beginningTime =>
-      values.quantityPerPriceCategories.flatMap(quantityPerPriceCategory => {
+  dates.flatMap((beginningDate) =>
+    values.beginningTimes.flatMap((beginningTime) =>
+      values.quantityPerPriceCategories.flatMap((quantityPerPriceCategory) => {
         /* istanbul ignore next: should be already validated by yup */
         if (beginningTime === '') {
           throw new Error('Some values are empty')

@@ -85,7 +85,7 @@ const OfferDetails = ({
       {students?.length > 0 && (
         <OfferSection title="Public Cible">
           <ul className="offer-details-list">
-            {students?.map(student => <li key={student}>{student}</li>)}
+            {students?.map((student) => <li key={student}>{student}</li>)}
           </ul>
         </OfferSection>
       )}

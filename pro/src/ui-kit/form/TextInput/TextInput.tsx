@@ -55,8 +55,9 @@ const TextInput = ({
   })
 
   // think to add step="0.01" for decimal fields
-  const regexHasDecimal = /[0-9,.]|Backspace|Enter/
-  const regexHasNotDecimal = /[0-9]|Backspace|Enter/
+  const regexHasDecimal = /[0-9,.]/
+  const regexHasNotDecimal = /[0-9]/
+  const regexIsNavigationKey = /Tab|Backspace|Enter/
   const showError = meta.touched && !!meta.error
 
   return (
@@ -100,8 +101,11 @@ const TextInput = ({
           ref={refForInput}
           rightIcon={rightIcon}
           leftIcon={leftIcon}
-          onKeyDown={event => {
+          onKeyDown={(event) => {
             if (type === 'number') {
+              if (regexIsNavigationKey.test(event.key)) {
+                return
+              }
               const testInput = hasDecimal
                 ? !regexHasDecimal.test(event.key)
                 : !regexHasNotDecimal.test(event.key)
@@ -109,7 +113,7 @@ const TextInput = ({
             }
           }}
           // Disable changing input value on scroll over a number input
-          onWheel={event => {
+          onWheel={(event) => {
             if (type === 'number') {
               // We blur so that the input loses focus and the scroll still happens on the page
               // otherwise the user can't scroll the page if the cursor is over the input

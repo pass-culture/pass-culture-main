@@ -102,7 +102,7 @@ const serializer = {
     offer: OfferEducationalFormValues
   ) => ({
     ...payload,
-    domains: offer.domains.map(domainIdString => Number(domainIdString)),
+    domains: offer.domains.map((domainIdString) => Number(domainIdString)),
   }),
   interventionArea: (
     payload: PatchCollectiveOfferBodyModel,
@@ -151,7 +151,7 @@ export const createPatchOfferPayload = (
 
   const offerSerializer = isTemplate ? templateSerializer : serializer
 
-  offerKeys.forEach(key => {
+  offerKeys.forEach((key) => {
     if (
       !isEqual(offer[key], initialValues[key]) &&
       !key.startsWith('search-') &&

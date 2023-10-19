@@ -60,7 +60,7 @@ const getCategoriesAndSubcategoriesOptions = (
   categories: EducationalCategories,
   availableSubCategories: EducationalSubCategory[]
 ) => {
-  let categoriesOptions = categories.educationalCategories.map(item => ({
+  let categoriesOptions = categories.educationalCategories.map((item) => ({
     value: item['id'],
     label: item['label'],
   }))
@@ -71,7 +71,7 @@ const getCategoriesAndSubcategoriesOptions = (
     ]
   }
 
-  let subCategoriesOptions = availableSubCategories.map(item => ({
+  let subCategoriesOptions = availableSubCategories.map((item) => ({
     value: item['id'],
     label: item['label'],
   }))
@@ -117,7 +117,7 @@ const CollectiveDataForm = ({
   >(
     initialValues.collectiveCategoryId
       ? categories.educationalSubCategories.filter(
-          x => x.categoryId == initialValues.collectiveCategoryId
+          (x) => x.categoryId == initialValues.collectiveCategoryId
         )
       : []
   )
@@ -186,7 +186,7 @@ const CollectiveDataForm = ({
 
       setAvailableSubCategories(
         categories.educationalSubCategories.filter(
-          subCategory => subCategory.categoryId === newCategoryId
+          (subCategory) => subCategory.categoryId === newCategoryId
         )
       )
     },

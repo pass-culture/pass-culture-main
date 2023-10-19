@@ -19,7 +19,7 @@ const args = {
   name: 'durationMinutes',
 }
 
-const Template: Story<Args> = args => (
+const Template: Story<Args> = (args) => (
   <Formik
     initialValues={initialValues}
     validationSchema={validationSchema}

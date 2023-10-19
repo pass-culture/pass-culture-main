@@ -21,7 +21,7 @@ const FAILING_RESPONSE: AdapterFailure<GetFilteredCollectiveBookingsRecapAdapter
   }
 
 export const getFilteredCollectiveBookingsRecapAdapter: GetFilteredCollectiveBookingsRecapAdapter =
-  async apiFilters => {
+  async (apiFilters) => {
     try {
       let allBookings: CollectiveBookingResponseModel[] = []
       let currentPage = 0

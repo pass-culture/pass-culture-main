@@ -67,7 +67,7 @@ const Select = ({
         defaultOption={defaultOption}
         {...field}
         {...selectAttributes}
-        onChange={e => onCustomChange(e)}
+        onChange={(e) => onCustomChange(e)}
       />
 
       {description && <span>{description}</span>}

@@ -12,7 +12,7 @@ const CollectiveOfferParticipantSection = ({
 }: CollectiveOfferParticipantSectionProps) => {
   return (
     <SummaryLayout.SubSection title="Participants">
-      {students.map(student => (
+      {students.map((student) => (
         <SummaryLayout.Row description={student} key={student} />
       ))}
     </SummaryLayout.SubSection>

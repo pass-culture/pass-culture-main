@@ -15,7 +15,7 @@ const FAILING_RESPONSE: AdapterFailure<null> = {
 }
 
 export const getCollectiveOfferTemplateAdapter: GetCollectiveOfferTemplateAdapter =
-  async offerId => {
+  async (offerId) => {
     try {
       const result = await apiAdage.getCollectiveOfferTemplate(offerId)
 

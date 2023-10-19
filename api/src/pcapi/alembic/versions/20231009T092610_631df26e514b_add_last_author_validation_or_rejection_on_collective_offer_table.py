@@ -1,5 +1,5 @@
 """
-add last author validation or rejection on "collective_offer" table
+add last author validation or rejection on "collective_offer" table 1/2
 """
 from alembic import op
 import sqlalchemy as sa
@@ -12,19 +12,22 @@ down_revision = "695bc13a7be4"
 branch_labels = None
 depends_on = None
 
+FOREIGN_KEY_NAME = "collective_offer_validation_author_fkey"
+COLUMN_TO_ADD = "lastValidationAuthorUserId"
+
 
 def upgrade() -> None:
-    op.add_column("collective_offer", sa.Column("lastValidationAuthorUserId", sa.BigInteger(), nullable=True))
+    op.add_column("collective_offer", sa.Column(COLUMN_TO_ADD, sa.BigInteger(), nullable=True))
     op.create_foreign_key(
-        "collective_offer_validation_author_fkey",
+        FOREIGN_KEY_NAME,
         "collective_offer",
         "user",
-        ["lastValidationAuthorUserId"],
+        [COLUMN_TO_ADD],
         ["id"],
         ondelete="SET NULL",
+        postgresql_not_valid=True,
     )
 
 
 def downgrade() -> None:
-    op.drop_constraint("collective_offer_validation_author_fkey", "collective_offer", type_="foreignkey")
-    op.drop_column("collective_offer", "lastValidationAuthorUserId")
+    op.drop_column("collective_offer", COLUMN_TO_ADD)

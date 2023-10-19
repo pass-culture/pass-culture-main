@@ -20,6 +20,7 @@ import HomepageBreadcrumb, { STEP_ID_OFFERERS } from './HomepageBreadcrumb'
 import Offerers from './Offerers/Offerers'
 import { OffererStats } from './OffererStats'
 import { ProfileAndSupport } from './ProfileAndSupport'
+import { StatisticsDashboard } from './StatisticsDashboard/StatisticsDashboard'
 import { VenueOfferSteps } from './VenueOfferSteps'
 
 const Homepage = (): JSX.Element => {
@@ -35,19 +36,19 @@ const Homepage = (): JSX.Element => {
   const [hasNoVenueVisible, setHasNoVenueVisible] = useState(false)
   const [isUserOffererValidated, setIsUserOffererValidated] = useState(false)
   const [venues, setVenues] = useState(INITIAL_OFFERER_VENUES)
-  const [displayAddBankAccountBanner, setDisplayBankAccountBanner] =
-    useState(false)
-  const [displayLinkVenueBanner, setDisplayLinkVenueBanner] = useState(false)
   const { remoteConfigData } = useRemoteConfig()
+  const isStatisticsDashboardEnabled = useActiveFeature('WIP_HOME_STATS')
 
   useEffect(() => {
     async function loadOfferer(offererId: string) {
       try {
         const receivedOfferer = await api.getOfferer(Number(offererId))
         const offererPhysicalVenues =
-          receivedOfferer.managedVenues?.filter(venue => !venue.isVirtual) ?? []
+          receivedOfferer.managedVenues?.filter((venue) => !venue.isVirtual) ??
+          []
         const virtualVenue =
-          receivedOfferer.managedVenues?.find(venue => venue.isVirtual) ?? null
+          receivedOfferer.managedVenues?.find((venue) => venue.isVirtual) ??
+          null
         setHasNoVenueVisible(
           offererPhysicalVenues?.length === 0 && !virtualVenue?.hasCreatedOffer
         )
@@ -57,16 +58,6 @@ const Homepage = (): JSX.Element => {
         })
         setSelectedOfferer(receivedOfferer)
         setIsUserOffererValidated(true)
-        setDisplayBankAccountBanner(
-          !receivedOfferer.hasValidBankAccount &&
-            receivedOfferer.venuesWithNonFreeOffersWithoutBankAccounts.length >
-              0
-        )
-        setDisplayLinkVenueBanner(
-          receivedOfferer.hasValidBankAccount &&
-            receivedOfferer.venuesWithNonFreeOffersWithoutBankAccounts.length >
-              0
-        )
       } catch (error) {
         /* istanbul ignore next: DEBT, TO FIX */
         if (hasStatusCode(error) && error.status === HTTP_STATUS.FORBIDDEN) {
@@ -103,7 +94,7 @@ const Homepage = (): JSX.Element => {
   const isOffererStatsActive = useActiveFeature('ENABLE_OFFERER_STATS')
 
   useEffect(function fetchData() {
-    api.listOfferersNames().then(async offererNames => {
+    api.listOfferersNames().then(async (offererNames) => {
       setReceivedOffererNames(offererNames)
     })
   }, [])
@@ -121,26 +112,19 @@ const Homepage = (): JSX.Element => {
       <div className="homepage">
         <h1>Bienvenue dans l’espace acteurs culturels</h1>
 
-        {displayAddBankAccountBanner && <AddBankAccountCallout />}
-        {displayLinkVenueBanner && (
-          <LinkVenueCallout
-            hasMultipleVenuesToLink={
-              selectedOfferer
-                ? selectedOfferer?.venuesWithNonFreeOffersWithoutBankAccounts
-                    .length > 1
-                : false
-            }
-          />
-        )}
-        {selectedOfferer?.hasPendingBankAccount && (
-          <PendingBankAccountCallout />
-        )}
+        <AddBankAccountCallout offerer={selectedOfferer} />
+        <LinkVenueCallout offerer={selectedOfferer} />
+        <PendingBankAccountCallout offerer={selectedOfferer} />
         <HomepageBreadcrumb
           activeStep={STEP_ID_OFFERERS}
           isOffererStatsActive={isOffererStatsActive}
           profileRef={profileRef}
           statsRef={statsRef}
         />
+
+        {isStatisticsDashboardEnabled && (
+          <StatisticsDashboard offererId={selectedOffererId} />
+        )}
 
         <section className="h-section">
           <Offerers

@@ -5,7 +5,7 @@ import React, { useRef, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 
 import { api } from 'apiClient/api'
-import { PriceCategoryResponseModel } from 'apiClient/v1'
+import { GetOfferStockResponseModel } from 'apiClient/v1'
 import DialogBox from 'components/DialogBox'
 import FormLayout from 'components/FormLayout'
 import { OFFER_WIZARD_STEP_IDS } from 'components/IndividualOfferBreadcrumb/constants'
@@ -17,7 +17,6 @@ import { OFFER_WIZARD_MODE } from 'core/Offers/constants'
 import { IndividualOffer } from 'core/Offers/types'
 import { isOfferDisabled } from 'core/Offers/utils'
 import { getIndividualOfferUrl } from 'core/Offers/utils/getIndividualOfferUrl'
-import { SelectOption } from 'custom_types/form'
 import { useOfferWizardMode } from 'hooks'
 import useNotification from 'hooks/useNotification'
 import fullMoreIcon from 'icons/full-more.svg'
@@ -25,7 +24,6 @@ import { Button } from 'ui-kit'
 import { ButtonVariant } from 'ui-kit/Button/types'
 import { FORMAT_HH_mm, FORMAT_ISO_DATE_ONLY, getToday } from 'utils/date'
 import { hasErrorCode } from 'utils/error'
-import { formatPrice } from 'utils/formatPrice'
 import { getLocalDepartementDateTimeFromUtc } from 'utils/timezone'
 
 import ActionBar from '../ActionBar/ActionBar'
@@ -36,6 +34,8 @@ import { RecurrenceForm } from '../StocksEventCreation/RecurrenceForm'
 import { getSuccessMessage } from '../utils/getSuccessMessage'
 
 import { EventCancellationBanner } from './EventCancellationBanner'
+import { getPriceCategoryOptions } from './getPriceCategoryOptions'
+import { hasChangesOnStockWithBookings } from './hasChangesOnStockWithBookings'
 import { STOCK_EVENT_FORM_DEFAULT_VALUES } from './StockFormList/constants'
 import StockFormList from './StockFormList/StockFormList'
 import {
@@ -47,47 +47,6 @@ import { getValidationSchema } from './StockFormList/validationSchema'
 import styles from './StocksEventEdition.module.scss'
 import { submitToApi } from './submitToApi'
 
-export const hasChangesOnStockWithBookings = (
-  submittedStocks: StockEventFormValues[],
-  initialStocks: StockEventFormValues[]
-) => {
-  const initialStocksById: Record<
-    string,
-    Partial<StockEventFormValues>
-  > = initialStocks.reduce(
-    (dict: Record<string, Partial<StockEventFormValues>>, stock) => {
-      dict[stock.stockId || 'StockEventFormValuesnewStock'] = {
-        priceCategoryId: stock.priceCategoryId,
-        beginningDate: stock.beginningDate,
-        beginningTime: stock.beginningTime,
-      }
-      return dict
-    },
-    {}
-  )
-
-  return submittedStocks.some(stock => {
-    if (
-      !stock.bookingsQuantity ||
-      stock.bookingsQuantity === 0 ||
-      !stock.stockId
-    ) {
-      return false
-    }
-    const initialStock = initialStocksById[stock.stockId]
-    const fieldsWithWarning: (keyof StockEventFormValues)[] = [
-      'priceCategoryId',
-      'beginningDate',
-      'beginningTime',
-    ]
-
-    return fieldsWithWarning.some(
-      (fieldName: keyof StockEventFormValues) =>
-        initialStock[fieldName] !== stock[fieldName]
-    )
-  })
-}
-
 const hasStocksChanged = (
   stocks: StockEventFormValues[],
   initialsStocks: StockEventFormValues[]
@@ -96,43 +55,22 @@ const hasStocksChanged = (
     return true
   }
 
-  return stocks.some(stock => {
+  return stocks.some((stock) => {
     const initialStock = initialsStocks.find(
-      initialStock => initialStock.stockId === stock.stockId
+      (initialStock) => initialStock.stockId === stock.stockId
     )
 
     return !isEqual(stock, initialStock)
   })
 }
-
-export const getPriceCategoryOptions = (
-  priceCategories?: PriceCategoryResponseModel[] | null
-): SelectOption[] => {
-  // Clone list to avoid mutation
-  const newPriceCategories = [...(priceCategories ?? [])]
-  newPriceCategories.sort((a, b) => {
-    if (a.price === b.price) {
-      return a.label.localeCompare(b.label)
-    }
-    return a.price - b.price
-  })
-
-  return (
-    newPriceCategories?.map(
-      (priceCategory): SelectOption => ({
-        label: `${formatPrice(priceCategory.price)} - ${priceCategory.label}`,
-        value: priceCategory.id,
-      })
-    ) ?? []
-  )
-}
-
 export interface StocksEventEditionProps {
   offer: IndividualOffer
+  stocks: GetOfferStockResponseModel[]
 }
 
 const StocksEventEdition = ({
   offer,
+  stocks,
 }: StocksEventEditionProps): JSX.Element => {
   const mode = useOfferWizardMode()
   const navigate = useNavigate()
@@ -144,6 +82,7 @@ const StocksEventEdition = ({
 
   const [isRecurrenceModalOpen, setIsRecurrenceModalOpen] = useState(false)
   const onCancel = () => setIsRecurrenceModalOpen(false)
+
   const onConfirm = (newStocks: StocksEvent[]) => {
     setIsRecurrenceModalOpen(false)
     const transformedStocks = newStocks.map(
@@ -170,7 +109,7 @@ const StocksEventEdition = ({
     const stocksToAdd = rawStocksToAdd.filter((stock1, index) => {
       return (
         rawStocksToAdd.findIndex(
-          stock2 =>
+          (stock2) =>
             stock1.beginningDate === stock2.beginningDate &&
             stock1.beginningTime === stock2.beginningTime &&
             stock1.priceCategoryId === stock2.priceCategoryId
@@ -212,7 +151,7 @@ const StocksEventEdition = ({
 
     // Return when saving in edition with an empty form
     const allStockValues = [...values.stocks, ...hiddenStocksRef.current]
-    const isFormEmpty = allStockValues.every(val =>
+    const isFormEmpty = allStockValues.every((val) =>
       isEqual(val, STOCK_EVENT_FORM_DEFAULT_VALUES)
     )
     if (isFormEmpty) {
@@ -223,7 +162,7 @@ const StocksEventEdition = ({
 
     // Return when there is nothing to save
     const hasSavedStock = allStockValues.some(
-      stock => stock.stockId !== undefined
+      (stock) => stock.stockId !== undefined
     )
     const dirty = hasStocksChanged(
       formik.values.stocks,
@@ -328,7 +267,7 @@ const StocksEventEdition = ({
 
   const initialValues = buildInitialValues({
     departmentCode: offer.venue.departmentCode,
-    offerStocks: offer.stocks,
+    offerStocks: stocks,
     today,
     lastProviderName: offer.lastProviderName,
     offerStatus: offer.status,

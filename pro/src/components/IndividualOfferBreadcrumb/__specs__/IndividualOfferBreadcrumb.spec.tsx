@@ -36,7 +36,7 @@ const renderIndividualOfferBreadcrumb = (
     <IndividualOfferContext.Provider value={contextValues}>
       <IndividualOfferBreadcrumb />
       <Routes>
-        {[OFFER_WIZARD_MODE.CREATION, OFFER_WIZARD_MODE.EDITION].map(mode => (
+        {[OFFER_WIZARD_MODE.CREATION, OFFER_WIZARD_MODE.EDITION].map((mode) => (
           <React.Fragment key={mode}>
             <Route
               path={getIndividualOfferPath({

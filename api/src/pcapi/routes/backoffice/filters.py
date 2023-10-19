@@ -30,7 +30,6 @@ from pcapi.domain.show_types import SHOW_SUB_TYPES_LABEL_BY_CODE
 from pcapi.models import offer_mixin
 from pcapi.models import validation_status_mixin
 from pcapi.routes.backoffice.accounts import serialization as serialization_accounts
-from pcapi.routes.backoffice.serialization.search import TypeOptions
 from pcapi.utils import urls
 from pcapi.utils.csr import Csr
 from pcapi.utils.csr import get_csr
@@ -178,20 +177,8 @@ def format_reason_label(reason: str | None) -> str:
     return ""
 
 
-def format_search_type_options(type_option: TypeOptions) -> str:
-    match type_option:
-        case TypeOptions.OFFERER:
-            return "Structure"
-        case TypeOptions.VENUE:
-            return "Lieu"
-        case TypeOptions.USER:
-            return "Compte pro"
-        case _:
-            return type_option.value
-
-
 def format_booking_cancellation_reason(
-    reason: bookings_models.BookingCancellationReasons | educational_models.CollectiveBookingCancellationReasons,
+    reason: bookings_models.BookingCancellationReasons | educational_models.CollectiveBookingCancellationReasons | None,
 ) -> str:
     match reason:
         case bookings_models.BookingCancellationReasons.OFFERER | educational_models.CollectiveBookingCancellationReasons.OFFERER:
@@ -202,14 +189,18 @@ def format_booking_cancellation_reason(
             return "Expirée"
         case bookings_models.BookingCancellationReasons.FRAUD | educational_models.CollectiveBookingCancellationReasons.FRAUD:
             return "Fraude"
+        case educational_models.CollectiveBookingCancellationReasons.FINANCE_INCIDENT | bookings_models.BookingCancellationReasons.FINANCE_INCIDENT:
+            return "Incident finance"
         case educational_models.CollectiveBookingCancellationReasons.BACKOFFICE | bookings_models.BookingCancellationReasons.BACKOFFICE:
             return "Annulée sur le backoffice"
         case bookings_models.BookingCancellationReasons.REFUSED_BY_INSTITUTE | educational_models.CollectiveBookingCancellationReasons.REFUSED_BY_INSTITUTE:
             return "Refusée par l'institution"
         case educational_models.CollectiveBookingCancellationReasons.REFUSED_BY_HEADMASTER:
             return "Refusée par le chef d'établissement"
-        case _:
+        case None:
             return ""
+        case _:
+            return reason.value
 
 
 def format_booking_status_long(
@@ -403,19 +394,25 @@ def format_eligibility_type(eligibility_type: users_models.EligibilityType) -> s
             return eligibility_type.value
 
 
+def format_as_badges(items: list[str] | None) -> str:
+    if not items:
+        return ""
+
+    return " ".join(
+        Markup('<span class="badge text-bg-light shadow-sm">{name}</span>').format(name=item) for item in items
+    )
+
+
 def format_tag_object_list(
     objects_with_label_attribute: list[offerers_models.OffererTag] | list[offerers_models.OffererTagCategory],
 ) -> str:
     if objects_with_label_attribute:
-        return ", ".join([(obj.label or obj.name) for obj in objects_with_label_attribute])
+        return format_as_badges([(obj.label or obj.name) for obj in objects_with_label_attribute])
     return ""
 
 
 def format_criteria(criteria: list[criteria_models.OfferCriterion]) -> str:
-    return " ".join(
-        Markup('<span class="badge text-bg-light shadow-sm">{name}</span>').format(name=criterion.name)
-        for criterion in criteria
-    )
+    return format_as_badges([criterion.name for criterion in criteria])
 
 
 def format_fraud_check_url(id_check_item: serialization_accounts.IdCheckItemModel) -> str:
@@ -833,18 +830,11 @@ def format_finance_incident_type(incident_kind: finance_models.IncidentType) -> 
             return incident_kind.value
 
 
-def format_stock_quantity(quantity: int | None) -> str:
-    if quantity is None:
-        return "Illimité"
-    return str(quantity)
-
-
 def install_template_filters(app: Flask) -> None:
     app.jinja_env.trim_blocks = True
     app.jinja_env.lstrip_blocks = True
     app.jinja_env.filters["empty_string_if_null"] = empty_string_if_null
     app.jinja_env.filters["format_amount"] = format_amount
-    app.jinja_env.filters["format_search_type_options"] = format_search_type_options
     app.jinja_env.filters["format_booking_cancellation_reason"] = format_booking_cancellation_reason
     app.jinja_env.filters["format_booking_status"] = format_booking_status
     app.jinja_env.filters["format_booking_status_long"] = format_booking_status_long
@@ -864,6 +854,7 @@ def install_template_filters(app: Flask) -> None:
     app.jinja_env.filters["format_offer_status"] = format_offer_status
     app.jinja_env.filters["format_offer_category"] = format_offer_category
     app.jinja_env.filters["format_subcategories"] = format_subcategories
+    app.jinja_env.filters["format_as_badges"] = format_as_badges
     app.jinja_env.filters["format_criteria"] = format_criteria
     app.jinja_env.filters["format_tag_object_list"] = format_tag_object_list
     app.jinja_env.filters["format_fraud_review_status"] = format_fraud_review_status
@@ -909,4 +900,3 @@ def install_template_filters(app: Flask) -> None:
     app.jinja_env.filters["format_finance_incident_status"] = format_finance_incident_status
     app.jinja_env.filters["format_finance_incident_type"] = format_finance_incident_type
     app.jinja_env.filters["format_finance_incident_type_str"] = format_finance_incident_type_str
-    app.jinja_env.filters["format_stock_quantity"] = format_stock_quantity

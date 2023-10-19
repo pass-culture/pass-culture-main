@@ -575,14 +575,24 @@ def get_venues_with_non_free_offers_without_bank_accounts(offerer_id: int) -> li
                 == None,  # Because as we LEFT OUTER JOIN on VenueReimbursementPointLink, timespan column can be NULL
                 ~models.VenueBankAccountLink.timespan.contains(datetime.utcnow()),
             ),
-            offers_models.Stock.query.join(
-                offers_models.Offer,
-                sqla.and_(
-                    offers_models.Stock.offerId == offers_models.Offer.id,
-                    offers_models.Offer.venueId == models.Venue.id,
-                    offers_models.Stock.price > 0,
-                ),
-            ).exists(),
+            sqla.or_(
+                offers_models.Stock.query.join(
+                    offers_models.Offer,
+                    sqla.and_(
+                        offers_models.Stock.offerId == offers_models.Offer.id,
+                        offers_models.Offer.venueId == models.Venue.id,
+                        offers_models.Stock.price > 0,
+                    ),
+                ).exists(),
+                CollectiveStock.query.join(
+                    CollectiveOffer,
+                    sqla.and_(
+                        CollectiveStock.collectiveOfferId == CollectiveOffer.id,
+                        CollectiveOffer.venueId == models.Venue.id,
+                        CollectiveStock.price > 0,
+                    ),
+                ).exists(),
+            ),
         )
         .join(models.Offerer)
         .outerjoin(models.VenueBankAccountLink, models.VenueBankAccountLink.venueId == models.Venue.id)

@@ -13,7 +13,6 @@ from pcapi import settings
 from pcapi.core import token as token_utils
 from pcapi.core.bookings import factories as bookings_factories
 from pcapi.core.bookings.models import BookingStatus
-from pcapi.core.categories import subcategories
 from pcapi.core.categories import subcategories_v2
 import pcapi.core.finance.conf as finance_conf
 import pcapi.core.fraud.factories as fraud_factories
@@ -735,19 +734,19 @@ class DomainsCreditTest:
         bookings_factories.BookingFactory(
             user=user,
             amount=50,
-            stock__offer__subcategoryId=subcategories.SEANCE_CINE.id,
+            stock__offer__subcategoryId=subcategories_v2.SEANCE_CINE.id,
         )
         bookings_factories.BookingFactory(
             user=user,
             amount=5,
-            stock__offer__subcategoryId=subcategories.SEANCE_CINE.id,
+            stock__offer__subcategoryId=subcategories_v2.SEANCE_CINE.id,
         )
 
         # booking in digital domain
         bookings_factories.BookingFactory(
             user=user,
             amount=80,
-            stock__offer__subcategoryId=subcategories.JEU_EN_LIGNE.id,
+            stock__offer__subcategoryId=subcategories_v2.JEU_EN_LIGNE.id,
             stock__offer__url="http://on.line",
         )
 
@@ -755,14 +754,14 @@ class DomainsCreditTest:
         bookings_factories.BookingFactory(
             user=user,
             amount=150,
-            stock__offer__subcategoryId=subcategories.JEU_SUPPORT_PHYSIQUE.id,
+            stock__offer__subcategoryId=subcategories_v2.JEU_SUPPORT_PHYSIQUE.id,
         )
 
         # cancelled booking
         bookings_factories.CancelledBookingFactory(
             user=user,
             amount=150,
-            stock__offer__subcategoryId=subcategories.JEU_SUPPORT_PHYSIQUE.id,
+            stock__offer__subcategoryId=subcategories_v2.JEU_SUPPORT_PHYSIQUE.id,
         )
 
         assert users_api.get_domains_credit(user) == users_models.DomainsCredit(
@@ -778,7 +777,7 @@ class DomainsCreditTest:
         bookings_factories.BookingFactory(
             user=user,
             amount=250,
-            stock__offer__subcategoryId=subcategories.JEU_SUPPORT_PHYSIQUE.id,
+            stock__offer__subcategoryId=subcategories_v2.JEU_SUPPORT_PHYSIQUE.id,
         )
 
         assert users_api.get_domains_credit(user) == users_models.DomainsCredit(
@@ -792,7 +791,7 @@ class DomainsCreditTest:
         bookings_factories.BookingFactory(
             user=user,
             amount=250,
-            stock__offer__subcategoryId=subcategories.JEU_SUPPORT_PHYSIQUE.id,
+            stock__offer__subcategoryId=subcategories_v2.JEU_SUPPORT_PHYSIQUE.id,
         )
 
         with freeze_time(
@@ -1403,7 +1402,7 @@ class ShouldSaveLoginDeviceAsTrustedDeviceTest:
         assert users_api.should_save_login_device_as_trusted_device(device_info=self.device_info, user=user) is False
 
 
-class isLoginDeviceTrustedDeviceTest:
+class IsLoginDeviceTrustedDeviceTest:
     def should_not_be_trusted_when_user_has_no_trusted_device(self):
         user = users_factories.UserFactory()
         device_info = account_serialization.TrustedDevice(
@@ -1440,6 +1439,36 @@ class isLoginDeviceTrustedDeviceTest:
         device_info = account_serialization.TrustedDevice(deviceId="other-device-id", os="iOS", source="iPhone 13")
 
         assert users_api.is_login_device_a_trusted_device(device_info=device_info, user=user) is False
+
+
+class RecentSuspiciousLoginsTest:
+    def should_ignore_trusted_device_logins(self):
+        user = users_factories.UserFactory()
+        trusted_device = users_factories.TrustedDeviceFactory(user=user)
+        _trusted_login = users_factories.LoginDeviceHistoryFactory(user=user, deviceId=trusted_device.deviceId)
+
+        assert not users_api.get_recent_suspicious_logins(user)
+
+    def should_ignore_old_suspicious_device_logins(self):
+        user = users_factories.UserFactory()
+        _untrusted_login = users_factories.LoginDeviceHistoryFactory(
+            user=user, dateCreated=datetime.datetime.utcnow() - relativedelta(hours=25)
+        )
+
+        assert not users_api.get_recent_suspicious_logins(user)
+
+    def should_detect_suspicious_login(self):
+        user = users_factories.UserFactory()
+        untrusted_login = users_factories.LoginDeviceHistoryFactory(user=user)
+
+        assert users_api.get_recent_suspicious_logins(user) == [untrusted_login]
+
+    def should_detect_suspicious_login_before_trusted_device_addition(self):
+        user = users_factories.UserFactory()
+        untrusted_login = users_factories.LoginDeviceHistoryFactory(user=user)
+        _trusted_device = users_factories.TrustedDeviceFactory(user=user, deviceId=untrusted_login.deviceId)
+
+        assert users_api.get_recent_suspicious_logins(user) == [untrusted_login]
 
 
 class CreateSuspiciousLoginEmailTokenTest:

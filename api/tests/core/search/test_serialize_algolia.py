@@ -3,7 +3,7 @@ import decimal
 
 import pytest
 
-from pcapi.core.categories import subcategories
+from pcapi.core.categories import subcategories_v2 as subcategories
 import pcapi.core.criteria.factories as criteria_factories
 import pcapi.core.educational.factories as educational_factories
 from pcapi.core.educational.models import StudentLevels
@@ -79,7 +79,7 @@ def test_serialize_offer():
             "nativeCategoryId": offer.subcategory.native_category_id,
             "prices": [decimal.Decimal("10.00")],
             "rankingWeight": 2,
-            "searchGroupName": "LIVRE",
+            "searchGroupName": "LIVRES",
             "searchGroupNamev2": "LIVRES",
             "showType": None,
             "stocksDateCreated": [stock.dateCreated.timestamp()],

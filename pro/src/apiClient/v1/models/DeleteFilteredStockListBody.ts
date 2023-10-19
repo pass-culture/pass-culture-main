@@ -5,7 +5,6 @@
 
 export type DeleteFilteredStockListBody = {
   date?: string | null;
-  offer_id: number;
   price_category_id?: number | null;
   time?: string | null;
 };

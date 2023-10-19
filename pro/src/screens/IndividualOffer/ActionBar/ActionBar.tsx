@@ -59,26 +59,6 @@ const ActionBar = ({
       )
     }
 
-    if (mode === OFFER_WIZARD_MODE.DRAFT) {
-      return step === OFFER_WIZARD_STEP_IDS.INFORMATIONS ? (
-        <ButtonLink
-          link={{ to: '/offres', isExternal: false }}
-          variant={ButtonVariant.SECONDARY}
-        >
-          Annuler et quitter
-        </ButtonLink>
-      ) : (
-        <Button
-          icon={fullLeftIcon}
-          onClick={onClickPrevious}
-          variant={ButtonVariant.SECONDARY}
-          disabled={isDisabled}
-        >
-          Retour
-        </Button>
-      )
-    }
-
     // mode === OFFER_WIZARD_MODE.EDITION
     return step === OFFER_WIZARD_STEP_IDS.SUMMARY ? (
       <ButtonLink
@@ -101,10 +81,7 @@ const ActionBar = ({
   }
 
   const Right = (): JSX.Element | null => {
-    if (
-      mode === OFFER_WIZARD_MODE.CREATION ||
-      mode === OFFER_WIZARD_MODE.DRAFT
-    ) {
+    if (mode === OFFER_WIZARD_MODE.CREATION) {
       return (
         <>
           {dirtyForm === false && (

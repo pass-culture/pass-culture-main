@@ -6,11 +6,18 @@
   margin: rem.torem(16px) 0;
 }
 
+.search-input-container {
+  display: flex;
+  align-items: flex-start;
+}
+
+.search-input input {
+  border-radius: rem.torem(24px) 0 0 rem.torem(24px);
+}
+
 .search-button {
-  position: absolute;
-  right: rem.torem(4px);
-  top: rem.torem(4px);
-  height: rem.torem(32px);
+  margin: 0;
+  border-radius: 0 rem.torem(24px) rem.torem(24px) 0;
 }
 
 .offer-info {

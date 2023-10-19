@@ -53,11 +53,11 @@ def search_bo_users() -> utils.BackofficeResponse:
     )
 
     paginated_rows = users.paginate(
-        page=int(form.page.data),
-        per_page=int(form.per_page.data),
+        page=form.page.data,
+        per_page=form.per_page.data,
     )
     next_page = partial(url_for, ".search_bo_users", **form.raw_data)
-    next_pages_urls = search_utils.pagination_links(next_page, int(form.page.data), paginated_rows.pages)
+    next_pages_urls = search_utils.pagination_links(next_page, form.page.data, paginated_rows.pages)
 
     form.page.data = 1  # Reset to first page when form is submitted ("Chercher" clicked)
 

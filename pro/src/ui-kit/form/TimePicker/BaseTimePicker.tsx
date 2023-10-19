@@ -33,7 +33,7 @@ export const BaseTimePicker = ({ className, ...props }: Props): JSX.Element => {
       />
 
       <datalist id={optionsListId}>
-        {TIME_OPTIONS.map(time => (
+        {TIME_OPTIONS.map((time) => (
           <option key={time} value={time}>
             {time}
           </option>

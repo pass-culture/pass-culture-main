@@ -463,7 +463,7 @@ class AlgoliaBackend(base.SearchBackend):
                 # home page label migration is over.
                 "rankingWeight": offer.rankingWeight,
                 "searchGroupName": offer.subcategory.search_group_name,
-                "searchGroupNamev2": offer.subcategory_v2.search_group_name,
+                "searchGroupNamev2": offer.subcategory.search_group_name,
                 "showType": show_type_label,
                 "stocksDateCreated": sorted(stocks_date_created),
                 "students": extra_data.get("students") or [],

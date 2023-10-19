@@ -28,6 +28,10 @@ vi.mock('apiClient/api', () => ({
   },
 }))
 
+vi.mock('utils/windowMatchMedia', () => ({
+  doesUserPreferReducedMotion: vi.fn(),
+}))
+
 const mockLogEvent = vi.fn()
 
 const renderSignIn = (
@@ -72,9 +76,10 @@ const renderSignIn = (
     }
   )
 }
-
+const scrollIntoViewMock = vi.fn()
 describe('SignIn', () => {
   beforeEach(() => {
+    Element.prototype.scrollIntoView = scrollIntoViewMock
     vi.spyOn(api, 'getProfile').mockResolvedValue(
       {} as SharedCurrentUserResponseModel
     )
@@ -251,7 +256,7 @@ describe('SignIn', () => {
     })
   })
 
-  it('should display an error message when login failed', async () => {
+  it('should display errors message and focus email input when login failed', async () => {
     renderSignIn()
 
     const email = screen.getByLabelText('Adresse email')
@@ -278,8 +283,10 @@ describe('SignIn', () => {
     )
 
     expect(
-      await screen.findByText('Identifiant ou mot de passe incorrect.')
-    ).toBeInTheDocument()
+      await screen.getAllByText('Identifiant ou mot de passe incorrect.')
+    ).toHaveLength(3)
+
+    expect(await screen.getByLabelText('Adresse email')).toHaveFocus()
   })
 
   it('should display an error message when login rate limit exceeded', async () => {
@@ -462,6 +469,45 @@ describe('SignIn', () => {
       ])
       renderSignIn()
       expect(await screen.findByText('Erreur invalide')).toBeInTheDocument()
+    })
+  })
+
+  describe('tracking', () => {
+    beforeEach(() => {
+      vi.spyOn(useAnalytics, 'default').mockImplementation(() => ({
+        logEvent: mockLogEvent,
+        setLogEvent: null,
+      }))
+    })
+
+    it('should trigger a tracking event', async () => {
+      renderSignIn({ user: { initialized: true, currentUser: null } })
+      await userEvent.click(
+        screen.getByRole('link', {
+          name: 'Créer un compte',
+        })
+      )
+      expect(mockLogEvent).toHaveBeenCalledTimes(1)
+      expect(mockLogEvent).toHaveBeenNthCalledWith(
+        1,
+        Events.CLICKED_CREATE_ACCOUNT,
+        { from: '/connexion' }
+      )
+    })
+
+    it('should trigger a tracking event when user clicks forgotten password"', async () => {
+      renderSignIn({ user: { initialized: true, currentUser: null } })
+      await userEvent.click(
+        screen.getByRole('link', {
+          name: 'Mot de passe oublié ?',
+        })
+      )
+      expect(mockLogEvent).toHaveBeenCalledTimes(1)
+      expect(mockLogEvent).toHaveBeenNthCalledWith(
+        1,
+        Events.CLICKED_FORGOTTEN_PASSWORD,
+        { from: '/connexion' }
+      )
     })
   })
 })

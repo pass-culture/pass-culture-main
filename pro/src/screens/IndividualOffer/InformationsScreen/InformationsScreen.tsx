@@ -83,7 +83,7 @@ const InformationsScreen = ({
   const querySubcategoryId = queryParams.get('sous-categorie')
   const queryOfferType = queryParams.get('offer-type')
   const querySubcategory = subCategories.find(
-    subcategory => subcategory.id === querySubcategoryId
+    (subcategory) => subcategory.id === querySubcategoryId
   )
 
   // querySubcategoryId & queryOfferType are mutually exclusive
@@ -131,7 +131,7 @@ const InformationsScreen = ({
         'withdrawalDetails',
         'withdrawalDelay',
         'withdrawalType',
-      ].some(field => {
+      ].some((field) => {
         const fieldMeta = formik.getFieldMeta(field)
         return (
           fieldMeta?.touched && fieldMeta?.value !== fieldMeta?.initialValue
@@ -189,7 +189,7 @@ const InformationsScreen = ({
     )
 
     const isEvent = subCategories.find(
-      subcategory => subcategory.id === formik.values.subcategoryId
+      (subcategory) => subcategory.id === formik.values.subcategoryId
     )?.isEvent
     const nextStep =
       mode === OFFER_WIZARD_MODE.EDITION
@@ -203,8 +203,7 @@ const InformationsScreen = ({
       to: nextStep,
       used: OFFER_FORM_NAVIGATION_MEDIUM.STICKY_BUTTONS,
       isEdition: mode !== OFFER_WIZARD_MODE.CREATION,
-      isDraft:
-        mode === OFFER_WIZARD_MODE.CREATION || mode === OFFER_WIZARD_MODE.DRAFT,
+      isDraft: mode === OFFER_WIZARD_MODE.CREATION,
       offerId: receivedOfferId,
       subcategoryId: formik.values.subcategoryId,
     })

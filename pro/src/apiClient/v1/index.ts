@@ -61,6 +61,8 @@ export type { CreateThumbnailBodyModel } from './models/CreateThumbnailBodyModel
 export type { CreateThumbnailResponseModel } from './models/CreateThumbnailResponseModel';
 export type { CropParams } from './models/CropParams';
 export type { CulturalPartner } from './models/CulturalPartner';
+export type { DateRangeModel } from './models/DateRangeModel';
+export type { DateRangeOnCreateModel } from './models/DateRangeOnCreateModel';
 export type { DeleteFilteredStockListBody } from './models/DeleteFilteredStockListBody';
 export type { DeleteOfferRequestBody } from './models/DeleteOfferRequestBody';
 export type { DeleteStockListBody } from './models/DeleteStockListBody';
@@ -108,6 +110,7 @@ export type { GetOfferManagingOffererResponseModel } from './models/GetOfferMana
 export type { GetOfferMediationResponseModel } from './models/GetOfferMediationResponseModel';
 export type { GetOfferStockResponseModel } from './models/GetOfferStockResponseModel';
 export type { GetOfferVenueResponseModel } from './models/GetOfferVenueResponseModel';
+export type { GetStocksResponseModel } from './models/GetStocksResponseModel';
 export type { GetVenueDomainResponseModel } from './models/GetVenueDomainResponseModel';
 export type { GetVenueListResponseModel } from './models/GetVenueListResponseModel';
 export type { GetVenueManagingOffererResponseModel } from './models/GetVenueManagingOffererResponseModel';
@@ -186,6 +189,7 @@ export type { StockResponseModel } from './models/StockResponseModel';
 export { StocksOrderedBy } from './models/StocksOrderedBy';
 export type { StocksQueryModel } from './models/StocksQueryModel';
 export type { StocksResponseModel } from './models/StocksResponseModel';
+export type { StockStatsResponseModel } from './models/StockStatsResponseModel';
 export type { StocksUpsertBodyModel } from './models/StocksUpsertBodyModel';
 export { StudentLevels } from './models/StudentLevels';
 export { SubcategoryIdEnum } from './models/SubcategoryIdEnum';

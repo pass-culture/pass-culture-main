@@ -20,39 +20,40 @@ const FAILING_RESPONSE: AdapterFailure<Payload> = {
   },
 }
 
-export const getFilteredOffersAdapter: GetFilteredOffersAdapter =
-  async apiFilters => {
-    try {
-      const {
-        nameOrIsbn,
-        offererId,
-        venueId,
-        categoryId,
-        status,
-        creationMode,
-        periodBeginningDate,
-        periodEndingDate,
-      } = serializeApiFilters(apiFilters)
+export const getFilteredOffersAdapter: GetFilteredOffersAdapter = async (
+  apiFilters
+) => {
+  try {
+    const {
+      nameOrIsbn,
+      offererId,
+      venueId,
+      categoryId,
+      status,
+      creationMode,
+      periodBeginningDate,
+      periodEndingDate,
+    } = serializeApiFilters(apiFilters)
 
-      const offers = await api.listOffers(
-        nameOrIsbn,
-        offererId,
-        status as OfferStatus,
-        venueId,
-        categoryId,
-        creationMode,
-        periodBeginningDate,
-        periodEndingDate
-      )
+    const offers = await api.listOffers(
+      nameOrIsbn,
+      offererId,
+      status as OfferStatus,
+      venueId,
+      categoryId,
+      creationMode,
+      periodBeginningDate,
+      periodEndingDate
+    )
 
-      return {
-        isOk: true,
-        message: null,
-        payload: {
-          offers: serializeOffers(offers),
-        },
-      }
-    } catch (e) {
-      return FAILING_RESPONSE
+    return {
+      isOk: true,
+      message: null,
+      payload: {
+        offers: serializeOffers(offers),
+      },
     }
+  } catch (e) {
+    return FAILING_RESPONSE
   }
+}

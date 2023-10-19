@@ -9,7 +9,7 @@ export const buildOffererOptions = (
   isDisabled: boolean
 } => {
   let offererOptions = offererNames
-    .map(offerer => ({
+    .map((offerer) => ({
       value: offerer.id.toString(),
       label: offerer.name,
     }))
@@ -42,7 +42,7 @@ export const buildVenueOptions = (
   })
 
   let venueOptions = offererVenues
-    .map(venue => ({
+    .map((venue) => ({
       value: venue.id.toString(),
       label: venue.name,
     }))

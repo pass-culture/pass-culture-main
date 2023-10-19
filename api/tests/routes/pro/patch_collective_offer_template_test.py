@@ -1,6 +1,8 @@
+from datetime import datetime
+from datetime import timedelta
 from unittest.mock import patch
 
-from freezegun import freeze_time
+from flask import url_for
 import pytest
 
 from pcapi.core.educational.exceptions import CulturalPartnerNotFoundException
@@ -10,49 +12,78 @@ from pcapi.core.educational.factories import EducationalDomainFactory
 from pcapi.core.educational.models import CollectiveOfferTemplate
 import pcapi.core.offerers.factories as offerers_factories
 from pcapi.core.offers.models import OfferValidationStatus
-import pcapi.core.users.factories as users_factories
 
 
 pytestmark = pytest.mark.usefixtures("db_session")
 
 
+PATCH_CAN_CREATE_OFFER_PATH = "pcapi.routes.pro.collective_offers.offerers_api.can_offerer_create_educational_offer"
+
+
+@pytest.fixture(name="user_offerer")
+def user_offerer_fixture():
+    return offerers_factories.UserOffererFactory()
+
+
+@pytest.fixture(name="venue")
+def venue_fixture(offerer):
+    return offerers_factories.VenueFactory(managingOfferer=offerer)
+
+
+@pytest.fixture(name="user")
+def user_fixture(user_offerer):
+    return user_offerer.user
+
+
+@pytest.fixture(name="offerer")
+def offerer_fixture(user_offerer):
+    return user_offerer.offerer
+
+
+@pytest.fixture(name="pro_client")
+def pro_client_fixture(client, user):
+    return client.with_session_auth(user.email)
+
+
+@pytest.fixture(name="offer")
+def offer_fixture(venue):
+    return CollectiveOfferTemplateFactory(
+        mentalDisabilityCompliant=False,
+        contactPhone="0600000000",
+        venue=venue,
+        domains=[],
+    )
+
+
+@pytest.fixture(name="template_start")
+def template_start_fixture():
+    return datetime.utcnow() + timedelta(days=1)
+
+
+@pytest.fixture(name="template_end")
+def template_end_fixture(template_start):
+    return template_start + timedelta(days=100)
+
+
 class Returns200Test:
-    @freeze_time("2019-01-01T12:00:00Z")
-    def test_patch_collective_offer_template(self, client):
-        # Given
+    def test_patch_collective_offer_template(self, pro_client, offer, template_start, template_end):
         domain = EducationalDomainFactory(name="Danse")
-        offer = CollectiveOfferTemplateFactory(
-            mentalDisabilityCompliant=False,
-            contactEmail="johndoe@yopmail.com",
-            contactPhone="0600000000",
-            subcategoryId="CINE_PLEIN_AIR",
-            priceDetail="price detail",
-            domains=[],
-        )
-        offerers_factories.UserOffererFactory(
-            user__email="user@example.com",
-            offerer=offer.venue.managingOfferer,
-        )
         national_program = educational_factories.NationalProgramFactory()
 
-        data = {
+        payload = {
             "name": "New name",
             "mentalDisabilityCompliant": True,
             "contactEmail": "toto@example.com",
             "subcategoryId": "CONCERT",
             "priceDetail": "pouet",
-            "domains": [domain.id],
             "nationalProgramId": national_program.id,
+            "dates": {"start": template_start.isoformat(), "end": template_end.isoformat()},
+            "domains": [domain.id],
         }
 
-        # WHEN
-        client = client.with_session_auth("user@example.com")
-        with patch(
-            "pcapi.routes.pro.collective_offers.offerers_api.can_offerer_create_educational_offer",
-        ):
-            response = client.patch(f"/collective/offers-template/{offer.id}", json=data)
+        with patch(PATCH_CAN_CREATE_OFFER_PATH):
+            response = pro_client.patch(f"/collective/offers-template/{offer.id}", json=payload)
 
-        # Then
         assert response.status_code == 200
         assert response.json["name"] == "New name"
         assert response.json["mentalDisabilityCompliant"]
@@ -70,281 +101,162 @@ class Returns200Test:
         assert updated_offer.subcategoryId == "CONCERT"
         assert updated_offer.priceDetail == "pouet"
         assert updated_offer.domains == [domain]
+        assert updated_offer.dateRange
+        assert updated_offer.start == template_start
+        assert updated_offer.end == template_end
 
 
 class Returns400Test:
-    def test_patch_non_approved_offer_fails(self, app, client):
+    def test_non_approved_offer_fails(self, pro_client, user):
         offer = CollectiveOfferTemplateFactory(validation=OfferValidationStatus.PENDING)
-        offerers_factories.UserOffererFactory(
-            user__email="user@example.com",
-            offerer=offer.venue.managingOfferer,
-        )
+        offerers_factories.UserOffererFactory(user=user, offerer=offer.venue.managingOfferer)
 
-        data = {
-            "visualDisabilityCompliant": True,
-        }
-        # WHEN
-        client = client.with_session_auth("user@example.com")
-        with patch(
-            "pcapi.routes.pro.collective_offers.offerers_api.can_offerer_create_educational_offer",
-        ):
-            response = client.patch(f"/collective/offers-template/{offer.id}", json=data)
+        data = {"visualDisabilityCompliant": True}
+        with patch(PATCH_CAN_CREATE_OFFER_PATH):
+            response = pro_client.patch(f"/collective/offers-template/{offer.id}", json=data)
 
         assert response.status_code == 400
         assert response.json["global"] == ["Les offres refusées ou en attente de validation ne sont pas modifiables"]
 
-    def test_patch_offer_with_empty_name(self, app, client):
-        # Given
-        offer = CollectiveOfferTemplateFactory()
-        offerers_factories.UserOffererFactory(
-            user__email="user@example.com",
-            offerer=offer.venue.managingOfferer,
-        )
+    def test_empty_name(self, pro_client, offer):
         data = {"name": " "}
 
-        # WHEN
-        client = client.with_session_auth("user@example.com")
-        with patch(
-            "pcapi.routes.pro.collective_offers.offerers_api.can_offerer_create_educational_offer",
-        ):
-            response = client.patch(f"/collective/offers-template/{offer.id}", json=data)
+        with patch(PATCH_CAN_CREATE_OFFER_PATH):
+            response = pro_client.patch(f"/collective/offers-template/{offer.id}", json=data)
 
-        # Then
         assert response.status_code == 400
+        assert response.json == {"name": [""]}
 
-    def test_patch_offer_with_null_name(self, app, client):
-        # Given
-        offer = CollectiveOfferTemplateFactory()
-        offerers_factories.UserOffererFactory(
-            user__email="user@example.com",
-            offerer=offer.venue.managingOfferer,
-        )
+    def test_null_name(self, pro_client, offer):
         data = {"name": None}
 
-        # WHEN
-        client = client.with_session_auth("user@example.com")
-        with patch(
-            "pcapi.routes.pro.collective_offers.offerers_api.can_offerer_create_educational_offer",
-        ):
-            response = client.patch(f"/collective/offers-template/{offer.id}", json=data)
+        with patch(PATCH_CAN_CREATE_OFFER_PATH):
+            response = pro_client.patch(f"/collective/offers-template/{offer.id}", json=data)
 
-        # Then
         assert response.status_code == 400
+        assert response.json == {"name": [""]}
 
-    def test_patch_offer_with_non_educational_subcategory(self, app, client):
-        # Given
-        offer = CollectiveOfferTemplateFactory()
-        offerers_factories.UserOffererFactory(
-            user__email="user@example.com",
-            offerer=offer.venue.managingOfferer,
-        )
+    def test_non_educational_subcategory(self, pro_client, offer):
         data = {"subcategoryId": "LIVRE_PAPIER"}
 
-        # WHEN
-        client = client.with_session_auth("user@example.com")
-        with patch(
-            "pcapi.routes.pro.collective_offers.offerers_api.can_offerer_create_educational_offer",
-        ):
-            response = client.patch(f"/collective/offers-template/{offer.id}", json=data)
+        with patch(PATCH_CAN_CREATE_OFFER_PATH):
+            response = pro_client.patch(f"/collective/offers-template/{offer.id}", json=data)
 
-        # Then
         assert response.status_code == 400
+        assert response.json == {"subcategoryId": "this subcategory is not educational"}
 
-    def test_patch_offer_with_empty_educational_domains(self, client):
-        # Given
-        offer = CollectiveOfferTemplateFactory()
-        offerers_factories.UserOffererFactory(
-            user__email="user@example.com",
-            offerer=offer.venue.managingOfferer,
-        )
+    def test_empty_educational_domains(self, pro_client, offer):
         data = {"domains": []}
 
-        # WHEN
-        client = client.with_session_auth("user@example.com")
-        with patch(
-            "pcapi.routes.pro.collective_offers.offerers_api.can_offerer_create_educational_offer",
-        ):
-            response = client.patch(f"/collective/offers-template/{offer.id}", json=data)
+        with patch(PATCH_CAN_CREATE_OFFER_PATH):
+            response = pro_client.patch(f"/collective/offers-template/{offer.id}", json=data)
 
-        # Then
         assert response.status_code == 400
+        assert response.json == {"domains": ["domains must have at least one value"]}
 
-    @freeze_time("2019-01-01T12:00:00Z")
-    def test_update_collective_offer_template_with_unknown_national_program(self, client):
-        # Given
-        domain = EducationalDomainFactory(name="Danse")
-        offer = CollectiveOfferTemplateFactory(
-            mentalDisabilityCompliant=False,
-            contactEmail="johndoe@yopmail.com",
-            contactPhone="0600000000",
-            subcategoryId="CINE_PLEIN_AIR",
-            priceDetail="price detail",
-            domains=[],
-        )
-        offerers_factories.UserOffererFactory(
-            user__email="user@example.com",
-            offerer=offer.venue.managingOfferer,
-        )
+    def test_unknown_national_program(self, pro_client, offer):
+        data = {"nationalProgramId": -1}
 
-        data = {
-            "name": "New name",
-            "mentalDisabilityCompliant": True,
-            "contactEmail": "toto@example.com",
-            "subcategoryId": "CONCERT",
-            "priceDetail": "pouet",
-            "domains": [domain.id],
-            "nationalProgramId": -1,
-        }
+        with patch(PATCH_CAN_CREATE_OFFER_PATH):
+            response = pro_client.patch(f"/collective/offers-template/{offer.id}", json=data)
 
-        # WHEN
-        client = client.with_session_auth("user@example.com")
-        with patch(
-            "pcapi.routes.pro.collective_offers.offerers_api.can_offerer_create_educational_offer",
-        ):
-            response = client.patch(f"/collective/offers-template/{offer.id}", json=data)
-
-        # Then
         assert response.status_code == 400
         assert response.json == {"global": ["National program not found"]}
 
 
+class InvalidDatesTest:
+    def test_missing_start(self, pro_client, offer, template_end):
+        response = self.send_request(pro_client, offer.id, {"end": template_end.isoformat()})
+        assert response.status_code == 400
+        assert "dates.start" in response.json
+
+    def test_start_is_null(self, pro_client, offer, template_end):
+        response = self.send_request(pro_client, offer.id, {"start": None, "end": template_end.isoformat()})
+        assert response.status_code == 400
+        assert "dates.start" in response.json
+
+    def test_start_is_in_the_past(self, pro_client, offer, template_end):
+        one_week_ago = datetime.utcnow() - timedelta(days=7)
+        dates = {"start": one_week_ago.isoformat(), "end": template_end.isoformat()}
+
+        response = self.send_request(pro_client, offer.id, dates)
+        assert response.status_code == 400
+        assert "dates.start" in response.json
+
+    def test_start_is_after_end(self, pro_client, offer, template_end):
+        dates = {"start": (template_end + timedelta(days=1)).isoformat(), "end": template_end.isoformat()}
+        response = self.send_request(pro_client, offer.id, dates)
+        assert response.status_code == 400
+        assert "dates.__root__" in response.json
+
+    def test_missing_end(self, pro_client, offer, template_start):
+        response = self.send_request(pro_client, offer.id, {"start": template_start.isoformat()})
+        assert response.status_code == 400
+        assert "dates.end" in response.json
+
+    def test_end_is_null(self, pro_client, offer, template_start):
+        response = self.send_request(pro_client, offer.id, {"start": template_start.isoformat(), "end": None})
+        assert response.status_code == 400
+        assert "dates.end" in response.json
+
+    def send_request(self, pro_client, offer_id, dates):
+        with patch(PATCH_CAN_CREATE_OFFER_PATH):
+            endpoint = url_for("Private API.edit_collective_offer_template", offer_id=offer_id)
+            return pro_client.patch(endpoint, json={"dates": dates})
+
+
 class Returns403Test:
-    def test_when_user_is_not_attached_to_offerer(self, app, client):
-        # Given
+    def test_user_is_not_attached_to_offerer(self, pro_client):
         offer = CollectiveOfferTemplateFactory(name="Old name")
-        offerers_factories.UserOffererFactory(user__email="user@example.com")
 
-        # When
         data = {"name": "New name"}
-        response = client.with_session_auth("user@example.com").patch(
-            f"/collective/offers-template/{offer.id}", json=data
-        )
+        response = pro_client.patch(f"/collective/offers-template/{offer.id}", json=data)
 
-        # Then
         assert response.status_code == 403
         assert response.json["global"] == [
             "Vous n'avez pas les droits d'accès suffisant pour accéder à cette information."
         ]
         assert CollectiveOfferTemplate.query.get(offer.id).name == "Old name"
 
+    def test_replacing_venue_with_different_offerer(self, pro_client, offer):
+        unrelated_venue = offerers_factories.VenueFactory()
+        data = {"venueId": unrelated_venue.id}
 
-class Returns404Test:
-    def test_returns_404_if_offer_does_not_exist(self, app, client):
-        # given
-        users_factories.UserFactory(email="user@example.com")
+        with patch(PATCH_CAN_CREATE_OFFER_PATH):
+            response = pro_client.patch(f"/collective/offers-template/{offer.id}", json=data)
 
-        # when
-        response = client.with_session_auth("user@example.com").patch("/collective/offers-template/12", json={})
-
-        # then
-        assert response.status_code == 404
-
-    def test_patch_collective_offer_replacing_venue_with_same_offerer(self, client):
-        # Given
-        offer = CollectiveOfferTemplateFactory()
-        offerers_factories.UserOffererFactory(
-            user__email="user@example.com",
-            offerer=offer.venue.managingOfferer,
-        )
-        data = {"name": "New name"}
-
-        # WHEN
-        client = client.with_session_auth("user@example.com")
-        with patch(
-            "pcapi.routes.pro.collective_offers.offerers_api.can_offerer_create_educational_offer",
-        ):
-            response = client.patch(f"/collective/offers-template/{offer.id}", json=data)
-
-        # Then
-        assert response.status_code == 200
-        assert response.json["name"] == "New name"
-
-    def test_patch_offer_with_unknown_educational_domain(self, client):
-        # Given
-        offer = CollectiveOfferTemplateFactory()
-        offerers_factories.UserOffererFactory(
-            user__email="user@example.com",
-            offerer=offer.venue.managingOfferer,
-        )
-        data = {"domains": [0]}
-
-        # WHEN
-        client = client.with_session_auth("user@example.com")
-        with patch(
-            "pcapi.routes.pro.collective_offers.offerers_api.can_offerer_create_educational_offer",
-        ):
-            response = client.patch(f"/collective/offers-template/{offer.id}", json=data)
-
-        # Then
-        assert response.status_code == 404
-        assert response.json["code"] == "EDUCATIONAL_DOMAIN_NOT_FOUND"
-
-    def test_patch_collective_offer_template_replacing_by_unknown_venue(self, client):
-        # Given
-        offerer = offerers_factories.OffererFactory()
-        offerers_factories.UserOffererFactory(
-            user__email="user@example.com",
-            offerer=offerer,
-        )
-        offer = CollectiveOfferTemplateFactory(venue__managingOfferer=offerer)
-        data = {"venueId": 0}
-
-        # WHEN
-        client = client.with_session_auth("user@example.com")
-        with patch(
-            "pcapi.routes.pro.collective_offers.offerers_api.can_offerer_create_educational_offer",
-        ):
-            response = client.patch(f"/collective/offers-template/{offer.id}", json=data)
-
-        # Then
-        assert response.status_code == 404
-        assert response.json["venueId"] == "The venue does not exist."
-
-    def test_patch_collective_offer_replacing_venue_with_different_offerer(self, client):
-        # Given
-        offerer = offerers_factories.OffererFactory()
-        offerer2 = offerers_factories.OffererFactory()
-        offerers_factories.UserOffererFactory(
-            user__email="user@example.com",
-            offerer=offerer,
-        )
-        offer = CollectiveOfferTemplateFactory(venue__managingOfferer=offerer)
-        venue2 = offerers_factories.VenueFactory(managingOfferer=offerer2)
-        data = {"venueId": venue2.id}
-
-        # WHEN
-        client = client.with_session_auth("user@example.com")
-        with patch(
-            "pcapi.routes.pro.collective_offers.offerers_api.can_offerer_create_educational_offer",
-        ):
-            response = client.patch(f"/collective/offers-template/{offer.id}", json=data)
-
-        # Then
         assert response.status_code == 403
         assert response.json == {"venueId": "New venue needs to have the same offerer"}
 
-    def test_edit_collective_offer_template_with_offerer_unregister_in_adage(self, client):
-        # GIVEN
+    def test_cultural_partner_not_found(self, pro_client, offer):
+        data = {"name": "Update some random field"}
 
-        offerer = offerers_factories.OffererFactory()
-        offerers_factories.UserOffererFactory(
-            user__email="user@example.com",
-            offerer=offerer,
-        )
-        offer = CollectiveOfferTemplateFactory(venue__managingOfferer=offerer)
+        with patch(PATCH_CAN_CREATE_OFFER_PATH, side_effect=CulturalPartnerNotFoundException):
+            response = pro_client.patch(f"/collective/offers-template/{offer.id}", json=data)
 
-        data = {
-            "contactEmail": "toto@example.com",
-        }
-
-        # WHEN
-        client = client.with_session_auth("user@example.com")
-        with patch(
-            "pcapi.routes.pro.collective_offers.offerers_api.can_offerer_create_educational_offer",
-            side_effect=CulturalPartnerNotFoundException,
-        ):
-            response = client.patch(f"/collective/offers-template/{offer.id}", json=data)
-
-        # THEN
         assert response.status_code == 403
         assert response.json == {"Partner": "User not in Adage can't edit the offer"}
+
+
+class Returns404Test:
+    def test_offer_does_not_exist(self, pro_client):
+        response = pro_client.patch("/collective/offers-template/12", json={})
+        assert response.status_code == 404
+
+    def test_unknown_educational_domain(self, pro_client, offer):
+        data = {"domains": [0]}
+
+        with patch(PATCH_CAN_CREATE_OFFER_PATH):
+            response = pro_client.patch(f"/collective/offers-template/{offer.id}", json=data)
+
+        assert response.status_code == 404
+        assert response.json["code"] == "EDUCATIONAL_DOMAIN_NOT_FOUND"
+
+    def test_replacing_by_unknown_venue(self, pro_client, offer):
+        data = {"venueId": 0}
+
+        with patch(PATCH_CAN_CREATE_OFFER_PATH):
+            response = pro_client.patch(f"/collective/offers-template/{offer.id}", json=data)
+
+        assert response.status_code == 404
+        assert response.json["venueId"] == "The venue does not exist."

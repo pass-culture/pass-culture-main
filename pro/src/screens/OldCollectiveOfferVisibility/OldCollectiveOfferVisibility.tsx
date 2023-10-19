@@ -142,7 +142,7 @@ const CollectiveOfferVisibility = ({
   const selectedTeacher: TeacherOption | null = requestId
     ? teachersOptions[0]
     : teachersOptions?.find(
-        teacher => teacher.value === formik.values.teacher
+        (teacher) => teacher.value === formik.values.teacher
       ) ?? null
 
   const institutionsOptions: InstitutionOption[] = useMemo(
@@ -170,7 +170,7 @@ const CollectiveOfferVisibility = ({
   const selectedInstitution: InstitutionOption | null = requestId
     ? institutionsOptions[0]
     : institutionsOptions?.find(
-        institution => institution?.value === formik.values.institution
+        (institution) => institution?.value === formik.values.institution
       ) ?? null
 
   const onChangeTeacher = async () => {

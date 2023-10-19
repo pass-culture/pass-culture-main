@@ -1,7 +1,7 @@
 from decimal import Decimal
 import logging
 
-from pcapi.core.categories import subcategories
+from pcapi.core.categories import subcategories_v2 as subcategories
 import pcapi.core.offers.factories as offers_factories
 from pcapi.repository import repository
 from pcapi.sandboxes.scripts.creators.data.create_data_event_occurrences import EventOccurrence
@@ -38,7 +38,7 @@ def create_data_event_stocks(event_occurrences_by_name: dict[str, EventOccurrenc
 
         name = event_occurrence_with_stocks_name + " / " + str(available) + " / " + str(price) + " / " + "DATA"
 
-        event_stocks_by_name[name] = offers_factories.StockFactory(
+        event_stocks_by_name[name] = offers_factories.EventStockFactory(
             offer=event_occurrence_with_stocks.offer,
             price=price,
             quantity=available,

@@ -152,7 +152,7 @@ const Offer = ({
                   </div>
                 )}
                 <ul className={style['offer-domains-list']}>
-                  {offer?.domains?.map(domain => (
+                  {offer?.domains?.map((domain) => (
                     <li
                       className={style['offer-domains-list-item']}
                       key={domain.id}
@@ -170,6 +170,7 @@ const Offer = ({
                   <OfferFavoriteButton
                     offer={offer}
                     afterFavoriteChange={afterFavoriteChange}
+                    queryId={queryId}
                   ></OfferFavoriteButton>
                 )}
                 {offer.isTemplate ? (

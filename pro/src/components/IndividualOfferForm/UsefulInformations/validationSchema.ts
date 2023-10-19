@@ -10,7 +10,7 @@ const validationSchema = {
   ...ticketWithdrawalValidationSchema,
   url: yup.string().when('isVenueVirtual', {
     is: (isVenueVirtual: boolean) => isVenueVirtual,
-    then: schema =>
+    then: (schema) =>
       schema
         .required(
           'Veuillez renseigner une URL valide. Ex : https://exemple.com'
@@ -26,7 +26,7 @@ const validationSchema = {
   bookingContact: yup.string().when('subCategoryFields', {
     is: (subCategoryFields: string[]) =>
       subCategoryFields.includes('bookingContact'),
-    then: schema =>
+    then: (schema) =>
       schema
         .required('Veuillez renseigner une adresse email')
         .email(

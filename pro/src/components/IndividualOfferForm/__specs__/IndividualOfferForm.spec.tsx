@@ -178,7 +178,7 @@ describe('IndividualOfferForm', () => {
   ]
   it.each(imageSectionDataset)(
     'should render image section when offer is given',
-    async offer => {
+    async (offer) => {
       renderIndividualOfferForm({
         initialValues,
         onSubmit,

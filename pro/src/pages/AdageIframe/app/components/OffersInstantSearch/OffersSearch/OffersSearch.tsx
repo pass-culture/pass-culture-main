@@ -1,34 +1,31 @@
 import { FormikContext, useFormik } from 'formik'
 import { useContext, useEffect, useRef, useState } from 'react'
+import { useInstantSearch } from 'react-instantsearch'
 
-import { VenueResponse } from 'apiClient/adage'
-import { apiAdage } from 'apiClient/api'
+import { AdageFrontRoles, VenueResponse } from 'apiClient/adage'
+import { api, apiAdage } from 'apiClient/api'
 import { GET_DATA_ERROR_MESSAGE } from 'core/shared'
 import useIsElementVisible from 'hooks/useIsElementVisible'
+import useNotification from 'hooks/useNotification'
 import useAdageUser from 'pages/AdageIframe/app/hooks/useAdageUser'
 import { FacetFiltersContext } from 'pages/AdageIframe/app/providers'
 import { Option } from 'pages/AdageIframe/app/types'
-import {
-  filterEducationalSubCategories,
-  inferCategoryLabelsFromSubcategories,
-} from 'utils/collectiveCategories'
+import { filterEducationalSubCategories } from 'utils/collectiveCategories'
 import { removeParamsFromUrl } from 'utils/removeParamsFromUrl'
 
-import {
-  Notification,
-  NotificationComponent,
-  NotificationType,
-} from '../../Layout/Notification/Notification'
+import { DEFAULT_GEO_RADIUS, MAIN_INDEX_ID } from '../OffersInstantSearch'
 import {
   ADAGE_FILTERS_DEFAULT_VALUES,
   adageFiltersToFacetFilters,
   computeFiltersInitialValues,
+  serializeFiltersForData,
 } from '../utils'
 
 import { Autocomplete } from './Autocomplete/Autocomplete'
 import { OfferFilters } from './OfferFilters/OfferFilters'
 import { Offers } from './Offers/Offers'
 import styles from './OffersSearch.module.scss'
+import { OffersSuggestions } from './OffersSuggestions/OffersSuggestions'
 
 export enum LocalisationFilterStates {
   DEPARTMENTS = 'departments',
@@ -39,7 +36,7 @@ export enum LocalisationFilterStates {
 
 export interface SearchProps {
   venueFilter: VenueResponse | null
-  setGeoRadius: (geoRadius: number | null) => void
+  setGeoRadius: (geoRadius: number) => void
 }
 
 export interface SearchFormValues {
@@ -58,10 +55,22 @@ export const OffersSearch = ({
 }: SearchProps): JSX.Element => {
   const { setFacetFilters } = useContext(FacetFiltersContext)
   const { adageUser } = useAdageUser()
+  const isUserAdmin = adageUser.role === AdageFrontRoles.READONLY
+
   const [categoriesOptions, setCategoriesOptions] = useState<
     Option<string[]>[]
   >([])
-  const [notification, setNotification] = useState<Notification | null>(null)
+
+  const notification = useNotification()
+
+  const [domainsOptions, setDomainsOptions] = useState<Option<number>[]>([])
+
+  const { scopedResults } = useInstantSearch()
+
+  const mainOffersSearchResults = scopedResults.find(
+    (res) => res.indexId === MAIN_INDEX_ID
+  )?.results
+  const nbHits = mainOffersSearchResults?.nbHits
 
   useEffect(() => {
     const getAllCategories = async () => {
@@ -70,12 +79,22 @@ export const OffersSearch = ({
 
         return setCategoriesOptions(filterEducationalSubCategories(result))
       } catch {
-        return setNotification(
-          new Notification(NotificationType.error, GET_DATA_ERROR_MESSAGE)
-        )
+        notification.error(GET_DATA_ERROR_MESSAGE)
       }
     }
-    getAllCategories()
+    const getAllDomains = async () => {
+      try {
+        const result = await api.listEducationalDomains()
+
+        return setDomainsOptions(
+          result.map(({ id, name }) => ({ value: id, label: name }))
+        )
+      } catch {
+        notification.error(GET_DATA_ERROR_MESSAGE)
+      }
+    }
+    void getAllCategories()
+    void getAllDomains()
   }, [])
 
   const handleSubmit = () => {
@@ -93,43 +112,38 @@ export const OffersSearch = ({
       setGeoRadius(
         localisationFilterState === LocalisationFilterStates.GEOLOCATION
           ? formik.values.geolocRadius * 1000
-          : null
+          : DEFAULT_GEO_RADIUS
       )
     }
   }
 
-  const resetForm = () => {
+  const resetForm = async () => {
     setlocalisationFilterState(LocalisationFilterStates.NONE)
-    formik.setValues(ADAGE_FILTERS_DEFAULT_VALUES)
+    await formik.setValues(ADAGE_FILTERS_DEFAULT_VALUES)
     formik.handleSubmit()
   }
   const [currentSearch, setCurrentSearch] = useState<string | null>(null)
   const logFiltersOnSearch = (nbHits: number, queryId?: string) => {
     /* istanbul ignore next: TO FIX the current structure make it hard to test, we probably should not mock Offers in OfferSearch tests */
     if (formik.submitCount > 0 || currentSearch !== null) {
-      apiAdage.logTrackingFilter({
+      void apiAdage.logTrackingFilter({
         iframeFrom: removeParamsFromUrl(location.pathname),
         resultNumber: nbHits,
         queryId: queryId ?? null,
         filterValues: formik
-          ? {
-              ...formik.values,
-              query: currentSearch,
-              categories: inferCategoryLabelsFromSubcategories(
-                formik.values.categories,
-                categoriesOptions
-              ),
-            }
+          ? serializeFiltersForData(
+              formik.values,
+              currentSearch,
+              categoriesOptions,
+              domainsOptions
+            )
           : {},
       })
     }
   }
 
   const formik = useFormik<SearchFormValues>({
-    initialValues: computeFiltersInitialValues(
-      adageUser.departmentCode,
-      venueFilter
-    ),
+    initialValues: computeFiltersInitialValues(venueFilter),
     enableReinitialize: true,
     onSubmit: handleSubmit,
   })
@@ -149,7 +163,6 @@ export const OffersSearch = ({
   const isOfferFiltersVisible = useIsElementVisible(offerFilterRef)
   return (
     <>
-      {notification && <NotificationComponent notification={notification} />}
       <FormikContext.Provider value={formik}>
         <Autocomplete
           initialQuery={venueFilter?.publicName || venueFilter?.name || ''}
@@ -165,6 +178,7 @@ export const OffersSearch = ({
             setLocalisationFilterState={setlocalisationFilterState}
             resetForm={resetForm}
             categoriesOptions={categoriesOptions}
+            domainsOptions={domainsOptions}
           />
         </div>
       </FormikContext.Provider>
@@ -173,7 +187,11 @@ export const OffersSearch = ({
           logFiltersOnSearch={logFiltersOnSearch}
           submitCount={formik.submitCount}
           isBackToTopVisibile={!isOfferFiltersVisible}
+          indexId="main_offers_index"
         />
+        {nbHits === 0 && !isUserAdmin && (
+          <OffersSuggestions formValues={formik.values} />
+        )}
       </div>
     </>
   )

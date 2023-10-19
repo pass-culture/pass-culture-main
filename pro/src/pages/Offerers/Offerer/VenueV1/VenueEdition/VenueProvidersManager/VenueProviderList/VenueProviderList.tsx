@@ -20,7 +20,7 @@ const VenueProviderList = ({
 }: VenueProviderListV2Props): JSX.Element => {
   return (
     <ul className="provider-list">
-      {venueProviders.map(venueProvider => (
+      {venueProviders.map((venueProvider) => (
         <VenueProviderItem
           afterDelete={afterVenueProviderDelete}
           afterSubmit={afterVenueProviderEdit}

@@ -1,4 +1,5 @@
 from datetime import datetime
+from typing import TYPE_CHECKING
 
 from sqlalchemy import BigInteger
 from sqlalchemy import CheckConstraint
@@ -13,14 +14,18 @@ from sqlalchemy.orm import declarative_mixin
 from sqlalchemy.orm import relationship
 
 
+if TYPE_CHECKING:
+    from pcapi.core.providers.models import Provider
+
+
 @declarative_mixin
 class ProvidableMixin:
     @declared_attr
     def lastProviderId(cls) -> Mapped[int | None]:  # pylint: disable=no-self-argument
         return Column(BigInteger, ForeignKey("provider.id"), nullable=True)
 
-    @declared_attr  # type: ignore[misc]
-    def lastProvider(cls):  # pylint: disable=no-self-argument
+    @declared_attr
+    def lastProvider(cls) -> Mapped["Provider | None"]:  # pylint: disable=no-self-argument
         return relationship("Provider", foreign_keys=[cls.lastProviderId])
 
     idAtProviders = Column(

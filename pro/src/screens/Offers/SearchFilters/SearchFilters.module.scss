@@ -1,5 +1,6 @@
 @use "styles/variables/_colors.scss" as colors;
 @use "styles/mixins/_rem.scss" as rem;
+@use "styles/variables/_size.scss" as size;
 
 .search-separator {
   align-items: center;
@@ -8,22 +9,25 @@
 
   .separator {
     background-color: colors.$grey-medium;
-    flex: 5;
+    flex: 1;
     height: rem.torem(1px);
-  }
-
-  button {
-    flex: 3;
   }
 }
 
 .reset-filters {
   display: flex;
-  justify-content: flex-end;
+  margin-top: rem.torem(32px);
 }
 
 .offerer-close-icon {
   width: rem.torem(14px);
   height: rem.torem(14px);
   color: colors.$black;
+}
+
+@media (min-width: size.$tablet) {
+  .reset-filters {
+    justify-content: flex-end;
+    margin-top: unset;
+  }
 }

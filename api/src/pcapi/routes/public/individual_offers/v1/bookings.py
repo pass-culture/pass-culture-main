@@ -45,7 +45,7 @@ def _get_paginated_and_filtered_bookings(
     price_category_id: int | None,
     stock_id: int | None,
     status: booking_models.BookingStatus | None,
-    begining_datetime: datetime | None,
+    beginning_datetime: datetime | None,
     firstIndex: int,
     limit: int,
 ) -> sqla_orm.Query:
@@ -62,8 +62,8 @@ def _get_paginated_and_filtered_bookings(
     if status:
         bookings_query = bookings_query.filter(booking_models.Booking.status == status)
 
-    if begining_datetime:
-        bookings_query = bookings_query.filter(offers_models.Stock.beginningDatetime == begining_datetime)
+    if beginning_datetime:
+        bookings_query = bookings_query.filter(offers_models.Stock.beginningDatetime == beginning_datetime)
 
     return (
         bookings_query.filter(booking_models.Booking.id >= firstIndex).order_by(booking_models.Booking.id).limit(limit)
@@ -101,7 +101,7 @@ def get_bookings_by_offer(
         query.price_category_id,
         query.stock_id,
         query.status,
-        query.begining_datetime,
+        query.beginning_datetime,
         query.firstIndex,
         query.limit,
     )

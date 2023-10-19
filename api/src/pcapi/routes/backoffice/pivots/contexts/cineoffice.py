@@ -117,7 +117,7 @@ class CineofficeContext(PivotContext):
                 cinema_api_token=api_token,
                 resource=cine_digital_service.ResourceCDS.RATING,
             )
-            flash("Connexion à l'API OK.", "danger")
+            flash("Connexion à l'API OK.", "success")
             return
         except (requests.exceptions.RequestException, cds_exceptions.CineDigitalServiceAPIException) as exc:
             logger.exception(

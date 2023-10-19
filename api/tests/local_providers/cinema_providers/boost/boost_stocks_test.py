@@ -5,7 +5,7 @@ from pathlib import Path
 import pytest
 
 import pcapi.core.bookings.factories as bookings_factories
-from pcapi.core.categories import subcategories
+from pcapi.core.categories import subcategories_v2 as subcategories
 from pcapi.core.external_bookings.boost import constants as boost_constants
 from pcapi.core.offers.models import Offer
 from pcapi.core.offers.models import PriceCategory

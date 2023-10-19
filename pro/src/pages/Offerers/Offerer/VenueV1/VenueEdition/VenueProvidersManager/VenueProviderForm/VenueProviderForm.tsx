@@ -31,12 +31,12 @@ const VenueProviderForm = ({
 
     api
       .createVenueProvider(payload)
-      .then(createdVenueProvider => {
+      .then((createdVenueProvider) => {
         isSucess = true
         notify.success('La synchronisation a bien été initiée.')
         afterSubmit(createdVenueProvider)
       })
-      .catch(error => {
+      .catch((error) => {
         isSucess = false
         if (isErrorAPIError(error)) {
           notify.error(getRequestErrorStringFromErrors(getError(error)))

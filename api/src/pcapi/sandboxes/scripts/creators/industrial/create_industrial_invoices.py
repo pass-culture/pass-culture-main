@@ -2,7 +2,7 @@ from datetime import datetime
 import logging
 
 import pcapi.core.bookings.factories as bookings_factories
-from pcapi.core.categories import subcategories
+from pcapi.core.categories import subcategories_v2 as subcategories
 from pcapi.core.finance import api as finance_api
 from pcapi.core.finance import factories as finance_factories
 from pcapi.core.finance import models as finance_models
@@ -58,7 +58,7 @@ def create_specific_invoice() -> None:
     custom_rule_offer1 = offers_factories.ThingOfferFactory(venue=venue)
     finance_factories.CustomReimbursementRuleFactory(rate=0.94, offer=custom_rule_offer1)
     custom_rule_offer2 = offers_factories.ThingOfferFactory(venue=venue)
-    finance_factories.CustomReimbursementRuleFactory(amount=22, offer=custom_rule_offer2)
+    finance_factories.CustomReimbursementRuleFactory(amountInEuroCents=2200, offer=custom_rule_offer2)
 
     stocks = [
         offers_factories.StockFactory(offer=thing_offer1, price=30),

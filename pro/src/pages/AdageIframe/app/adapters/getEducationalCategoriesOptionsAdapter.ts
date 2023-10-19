@@ -19,10 +19,10 @@ const filterEducationalSubCategories = ({
   }
 
   return {
-    educationalCategories: categories.map(category => ({
+    educationalCategories: categories.map((category) => ({
       value: subcategories
-        .filter(subcategory => subcategory.categoryId == category.id)
-        .map(subcategory => subcategory.id),
+        .filter((subcategory) => subcategory.categoryId == category.id)
+        .map((subcategory) => subcategory.id),
       label: category.proLabel,
     })),
   }

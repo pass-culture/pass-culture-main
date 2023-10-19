@@ -105,19 +105,6 @@ describe('IndividualOffer::ActionBar', () => {
     })
   })
 
-  describe('on draft', () => {
-    it('should render the component for information page', async () => {
-      props.step = OFFER_WIZARD_STEP_IDS.INFORMATIONS
-
-      renderActionBar({ props, url: '/brouillon/url' })
-
-      expect(screen.getByText('Annuler et quitter')).toBeInTheDocument()
-      const buttonNextStep = screen.getByText('Enregistrer et continuer')
-      await userEvent.click(buttonNextStep)
-      expect(onClickNextMock).toHaveBeenCalled()
-    })
-  })
-
   describe('on edition', () => {
     it('should render the component for information page', async () => {
       props.step = OFFER_WIZARD_STEP_IDS.INFORMATIONS

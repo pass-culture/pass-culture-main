@@ -12,7 +12,7 @@ from pydantic.v1 import constr
 from pydantic.v1 import validator
 from pydantic.v1.utils import GetterDict
 
-from pcapi.core.categories.subcategories import SubcategoryIdEnum
+from pcapi.core.categories.subcategories_v2 import SubcategoryIdEnum
 from pcapi.core.educational.models import CollectiveOfferDisplayedStatus
 from pcapi.core.offers import models as offers_models
 from pcapi.core.offers import repository as offers_repository
@@ -360,9 +360,19 @@ class GetIndividualOfferResponseModel(BaseModel, AccessibilityComplianceMixin):
         use_enum_values = True
 
 
-class StockResponseModel(BaseModel):
+class GetStocksResponseModel(BaseModel):
     stocks: list[GetOfferStockResponseModel]
     stock_count: int
+
+    class Config:
+        json_encoders = {datetime.datetime: format_into_utc_date}
+
+
+class StockStatsResponseModel(BaseModel):
+    oldest_stock: datetime.datetime | None
+    newest_stock: datetime.datetime | None
+    stock_count: int | None
+    remaining_quantity: int | None
 
 
 class StocksQueryModel(BaseModel):
@@ -371,6 +381,8 @@ class StocksQueryModel(BaseModel):
     price_category_id: int | None
     order_by: offers_repository.StocksOrderedBy = offers_repository.StocksOrderedBy.BEGINNING_DATETIME
     order_by_desc: bool = False
+    page: int = 1
+    stocks_limit_per_page: int = offers_repository.LIMIT_STOCKS_PER_PAGE
 
 
 class DeleteStockListBody(BaseModel):
@@ -381,7 +393,6 @@ class DeleteStockListBody(BaseModel):
 
 
 class DeleteFilteredStockListBody(BaseModel):
-    offer_id: int
     date: datetime.date | None
     time: datetime.time | None
     price_category_id: int | None

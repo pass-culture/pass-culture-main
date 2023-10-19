@@ -29,7 +29,6 @@ from pcapi.routes.backoffice import filters
 from pcapi.routes.backoffice import utils
 from pcapi.routes.backoffice.finance import forms
 from pcapi.routes.backoffice.finance import validation
-from pcapi.routes.backoffice.forms import empty as empty_forms
 from pcapi.routes.backoffice.offerers import forms as offerer_forms
 from pcapi.utils.human_ids import humanize
 
@@ -453,9 +452,16 @@ def get_finance_incident_validation_form(finance_incident_id: int) -> utils.Back
     finance_incident = (
         finance_models.FinanceIncident.query.filter_by(id=finance_incident_id)
         .options(
-            sa.orm.joinedload(finance_models.FinanceIncident.booking_finance_incidents).load_only(
-                finance_models.BookingFinanceIncident.newTotalAmount
-            ),
+            sa.orm.joinedload(finance_models.FinanceIncident.booking_finance_incidents)
+            .load_only(finance_models.BookingFinanceIncident.newTotalAmount)
+            .joinedload(finance_models.BookingFinanceIncident.collectiveBooking)
+            .load_only(educational_models.CollectiveBooking.id)
+            .joinedload(educational_models.CollectiveBooking.collectiveStock)
+            .load_only(educational_models.CollectiveStock.price),
+            sa.orm.joinedload(finance_models.FinanceIncident.booking_finance_incidents)
+            .load_only(finance_models.BookingFinanceIncident.newTotalAmount)
+            .joinedload(finance_models.BookingFinanceIncident.booking)
+            .load_only(bookings_models.Booking.quantity, bookings_models.Booking.amount),
             sa.orm.joinedload(finance_models.FinanceIncident.venue)
             .load_only(offerer_models.Venue.name)
             .joinedload(offerer_models.Venue.reimbursement_point_links)
@@ -468,22 +474,20 @@ def get_finance_incident_validation_form(finance_incident_id: int) -> utils.Back
     if not finance_incident:
         raise NotFound()
 
-    incident_total_amount_euros = finance_utils.to_euros(
-        sum(booking_incident.newTotalAmount for booking_incident in finance_incident.booking_finance_incidents)
-    )
+    incident_total_amount_euros = finance_utils.to_euros(finance_incident.due_amount_by_offerer)
 
     current_reimbursement_point = finance_incident.venue.current_reimbursement_point or finance_incident.venue
 
     return render_template(
         "components/turbo/modal_form.html",
-        form=empty_forms.EmptyForm(),
+        form=forms.IncidentValidationForm(),
         dst=url_for(
             "backoffice_web.finance_incident.validate_finance_incident", finance_incident_id=finance_incident_id
         ),
         div_id=f"finance-incident-validation-modal-{finance_incident_id}",
         title="Valider l'incident",
         button_text="Confirmer",
-        information=f"Vous allez valider un incident de {incident_total_amount_euros} € "
+        information=f"Vous allez valider un incident de {filters.format_amount(incident_total_amount_euros)} "
         f"sur le point de remboursement {current_reimbursement_point.name}. Voulez-vous continuer ?",
     )
 
@@ -492,6 +496,11 @@ def get_finance_incident_validation_form(finance_incident_id: int) -> utils.Back
 @utils.permission_required(perm_models.Permissions.MANAGE_INCIDENTS)
 def validate_finance_incident(finance_incident_id: int) -> utils.BackofficeResponse:
     finance_incident = _get_incident(finance_incident_id)
+    form = forms.IncidentValidationForm()
+
+    if not form.validate():
+        flash("Les données envoyées comportent des erreurs", "warning")
+        return render_finance_incident(finance_incident)
 
     if finance_incident.status != finance_models.IncidentStatus.CREATED:
         flash("L'incident ne peut être validé que s'il est au statut 'créé'.", "warning")
@@ -501,7 +510,9 @@ def validate_finance_incident(finance_incident_id: int) -> utils.BackofficeRespo
             303,
         )
 
-    _validate_finance_incident(finance_incident)
+    _validate_finance_incident(
+        finance_incident, form.compensation_mode.data == forms.IncidentCompensationModes.FORCE_DEBIT_NOTE.name
+    )
 
     flash("L'incident a été validé avec succès.", "success")
     return render_finance_incident(finance_incident)
@@ -552,7 +563,7 @@ def _create_finance_events_from_incident(
     return finance_events
 
 
-def _validate_finance_incident(finance_incident: finance_models.FinanceIncident) -> None:
+def _validate_finance_incident(finance_incident: finance_models.FinanceIncident, force_debit_note: bool) -> None:
     # TODO (cmorel): send mail to beneficiary / educational redactor
     incident_validation_date = datetime.utcnow()
     finance_events = []
@@ -590,12 +601,16 @@ def _validate_finance_incident(finance_incident: finance_models.FinanceIncident)
             )
 
     finance_incident.status = finance_models.IncidentStatus.VALIDATED
+    finance_incident.forceDebitNote = force_debit_note
 
     validation_action = history_api.log_action(
         history_models.ActionType.FINANCE_INCIDENT_VALIDATED,
         author=current_user,
         venue=finance_incident.venue,
         finance_incident=finance_incident,
+        comment="Génération d'une note de débit à la prochaine échéance."
+        if force_debit_note
+        else "Récupération sur les prochaines réservations.",
         save=False,
         linked_incident_id=finance_incident.id,
     )

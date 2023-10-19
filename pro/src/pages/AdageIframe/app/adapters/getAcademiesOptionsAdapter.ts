@@ -21,7 +21,7 @@ export const getAcademiesOptionsAdapter: GetAcademiesOptionsAdapter =
       return {
         isOk: true,
         message: null,
-        payload: academies.map(academy => ({
+        payload: academies.map((academy) => ({
           value: academy,
           label: academy,
         })),

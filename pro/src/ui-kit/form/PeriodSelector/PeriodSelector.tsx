@@ -47,7 +47,7 @@ const PeriodSelector = ({
           disabled={isDisabled}
           maxDate={new Date(periodEndingDate)}
           minDate={minDateBeginning}
-          onChange={event => onBeginningDateChange(event.target.value)}
+          onChange={(event) => onBeginningDateChange(event.target.value)}
           value={periodBeginningDate}
         />
       </div>
@@ -67,7 +67,7 @@ const PeriodSelector = ({
           disabled={isDisabled}
           maxDate={maxDateEnding}
           minDate={new Date(periodBeginningDate)}
-          onChange={event => onEndingDateChange(event.target.value)}
+          onChange={(event) => onEndingDateChange(event.target.value)}
           value={periodEndingDate}
         />
       </div>

@@ -15,7 +15,7 @@ const FAILING_RESPONSE = {
   payload: [],
 }
 
-const getVenueProvidersAdapter: GetVenueProvidersAdapter = async venueId => {
+const getVenueProvidersAdapter: GetVenueProvidersAdapter = async (venueId) => {
   if (!venueId) {
     return FAILING_RESPONSE
   }

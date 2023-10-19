@@ -13,7 +13,7 @@ interface Args extends MultiSelectAutocompleteProps {
   initialValues: { departement: string[] }
 }
 
-const Template: Story<Args> = args => (
+const Template: Story<Args> = (args) => (
   <Formik initialValues={args.initialValues} onSubmit={() => {}}>
     <MultiSelectAutocomplete {...args} />
   </Formik>

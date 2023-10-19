@@ -8,8 +8,7 @@ import pytest
 
 from pcapi import settings
 from pcapi.core.bookings.factories import BookingFactory
-from pcapi.core.categories import subcategories
-from pcapi.core.categories import subcategories_v2
+from pcapi.core.categories import subcategories_v2 as subcategories
 import pcapi.core.mails.testing as mails_testing
 import pcapi.core.offers.factories as offers_factories
 from pcapi.core.offers.models import OfferReport
@@ -807,45 +806,6 @@ class ReportedOffersTest:
 
 
 class SubcategoriesTest:
-    def test_get_subcategories(self, app):
-        with assert_num_queries(0):
-            response = TestClient(app.test_client()).get("/native/v1/subcategories")
-
-        assert response.status_code == 200
-        assert list(response.json.keys()) == ["subcategories", "searchGroups", "homepageLabels"]
-        assert len(response.json["subcategories"]) == len(subcategories.ALL_SUBCATEGORIES)
-        assert len(response.json["searchGroups"]) == len(subcategories.SearchGroups)
-        assert len(response.json["homepageLabels"]) == len(subcategories.HomepageLabels)
-        assert all(
-            list(subcategory_dict.keys())
-            == [
-                "id",
-                "categoryId",
-                "appLabel",
-                "searchGroupName",
-                "homepageLabelName",
-                "isEvent",
-                "onlineOfflinePlatform",
-            ]
-            for subcategory_dict in response.json["subcategories"]
-        )
-        assert all(
-            list(search_group_dict.keys())
-            == [
-                "name",
-                "value",
-            ]
-            for search_group_dict in response.json["searchGroups"]
-        )
-        assert all(
-            list(homepage_label_dict.keys())
-            == [
-                "name",
-                "value",
-            ]
-            for homepage_label_dict in response.json["homepageLabels"]
-        )
-
     def test_get_subcategories_v2(self, client):
         with assert_num_queries(0):
             response = client.get("/native/v1/subcategories/v2")
@@ -861,21 +821,21 @@ class SubcategoriesTest:
         }
 
         found_subcategory_ids = {x["id"] for x in response.json["subcategories"]}
-        expected_subcategory_ids = {x.id for x in subcategories_v2.ALL_SUBCATEGORIES}
+        expected_subcategory_ids = {x.id for x in subcategories.ALL_SUBCATEGORIES}
         assert found_subcategory_ids == expected_subcategory_ids
 
         found_search_group_names = {x["name"] for x in response.json["searchGroups"]}
-        expected_search_group_names = {x.search_group_name for x in subcategories_v2.ALL_SUBCATEGORIES}
+        expected_search_group_names = {x.search_group_name for x in subcategories.ALL_SUBCATEGORIES}
         assert found_search_group_names == expected_search_group_names
 
         found_home_labels = {x["name"] for x in response.json["homepageLabels"]}
-        expected_home_labels = {x.homepage_label_name for x in subcategories_v2.ALL_SUBCATEGORIES}
+        expected_home_labels = {x.homepage_label_name for x in subcategories.ALL_SUBCATEGORIES}
         assert found_home_labels == expected_home_labels
 
         found_native_categories = {x["name"] for x in response.json["nativeCategories"]}
-        expected_native_categories = {x.native_category.name for x in subcategories_v2.ALL_SUBCATEGORIES}
+        expected_native_categories = {x.native_category.name for x in subcategories.ALL_SUBCATEGORIES}
         assert found_native_categories == expected_native_categories
 
         found_genre_types = {x["name"] for x in response.json["genreTypes"]}
-        expected_genre_types = {x.name for x in subcategories_v2.GenreType}
+        expected_genre_types = {x.name for x in subcategories.GenreType}
         assert found_genre_types == expected_genre_types

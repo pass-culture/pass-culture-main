@@ -345,8 +345,11 @@ def edit_collective_offer_template(
         offerers_api.can_offerer_create_educational_offer(offerer.id)
     except educational_exceptions.CulturalPartnerNotFoundException:
         raise ApiErrors({"Partner": "User not in Adage can't edit the offer"}, status_code=403)
+
     try:
         offers_api.update_collective_offer_template(offer_id=offer_id, new_values=new_values)
+    except educational_exceptions.UpdateCollectiveOfferTemplateError as err:
+        raise ApiErrors({err.field: err.msg}, 400)
     except educational_exceptions.VenueIdDontExist:
         raise ApiErrors({"venueId": "The venue does not exist."}, 404)
     except educational_exceptions.OffererOfVenueDontMatchOfferer:

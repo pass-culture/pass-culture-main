@@ -26,7 +26,7 @@ interface AdageMultiselectProps {
 
 const filterItems = (items: ItemProps[], inputValue: string) => {
   const regExp = new RegExp(inputValue, 'i')
-  return items.filter(item => item.label.match(regExp))
+  return items.filter((item) => item.label.match(regExp))
 }
 
 const defaultSortOptions = (
@@ -57,10 +57,10 @@ const isIncluded = (
   if (Array.isArray(value)) {
     const valueSet = new Set(value)
     return fieldValue.some(
-      fieldValueItem =>
+      (fieldValueItem) =>
         Array.isArray(fieldValueItem) &&
         fieldValueItem.length === value.length &&
-        fieldValueItem.every(val => valueSet.has(val))
+        fieldValueItem.every((val) => valueSet.has(val))
     )
   }
 
@@ -120,14 +120,15 @@ const AdageMultiselect = ({
         setFieldValue(
           name,
           (field.value as string[][]).filter(
-            item => !(selection.value as string[]).some(el => item.includes(el))
+            (item) =>
+              !(selection.value as string[]).some((el) => item.includes(el))
           )
         )
         return
       }
       setFieldValue(
         name,
-        field.value.filter(item => !isIncluded([selection.value], item))
+        field.value.filter((item) => !isIncluded([selection.value], item))
       )
     } else {
       setFieldValue(name, [...field.value, selection.value])

@@ -43,7 +43,7 @@ const FilterByOmniSearch = ({
       : COLLECTIVE_OMNISEARCH_FILTERS
 
   const omnisearchFiltersOptions: SelectOption[] = omnisearchFilters.map(
-    omnisearchFilter => ({
+    (omnisearchFilter) => ({
       value: omnisearchFilter.id,
       label: omnisearchFilter.selectOptionText,
     })
@@ -63,7 +63,7 @@ const FilterByOmniSearch = ({
     }
 
     const omniSearchStateKey = omnisearchFilters.find(
-      criteria => criteria.id === omniSearchCriteria
+      (criteria) => criteria.id === omniSearchCriteria
     )?.stateKey
     if (omniSearchStateKey) {
       cleanedOmnisearchFilters[omniSearchStateKey] = keywords
@@ -92,7 +92,7 @@ const FilterByOmniSearch = ({
   }
 
   const placeholderText = omnisearchFilters.find(
-    criteria => criteria.id === selectedOmniSearchCriteria
+    (criteria) => criteria.id === selectedOmniSearchCriteria
   )?.placeholderText
 
   return (

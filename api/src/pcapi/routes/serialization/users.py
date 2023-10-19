@@ -67,6 +67,14 @@ class UserResetEmailBodyModel(BaseModel):
     email: EmailStr
     password: str
 
+    @validator("email", pre=True)
+    @classmethod
+    def validate_emails(cls, email: str) -> str:
+        try:
+            return sanitize_email(email)
+        except Exception as e:
+            raise ValueError(email) from e
+
 
 class UserEmailValidationResponseModel(BaseModel):
     newEmail: str | None

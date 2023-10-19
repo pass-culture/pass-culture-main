@@ -69,7 +69,7 @@ export const useConfigureFirebase = ({
                 ) => {
                   const remoteConfigValues = getAll(remoteConfig)
                   const remoteConfigParams: Record<string, string> = {}
-                  Object.keys(remoteConfigValues).forEach(k => {
+                  Object.keys(remoteConfigValues).forEach((k) => {
                     remoteConfigParams[k] = remoteConfigValues[k].asString()
                   })
                   setRemoteConfigData && setRemoteConfigData(remoteConfigParams)

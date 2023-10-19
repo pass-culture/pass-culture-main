@@ -52,7 +52,7 @@ const OfferNameCell = ({
   }
 
   const computeNumberOfSoldOutStocks = () =>
-    offer.stocks.filter(stock => stock.remainingQuantity === 0).length
+    offer.stocks.filter((stock) => stock.remainingQuantity === 0).length
 
   const shouldShowIndividualWarning =
     audience === Audience.INDIVIDUAL &&

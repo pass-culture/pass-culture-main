@@ -7,6 +7,7 @@ import typing
 from flask_sqlalchemy import BaseQuery
 from psycopg2.errorcodes import CHECK_VIOLATION
 from psycopg2.errorcodes import UNIQUE_VIOLATION
+from psycopg2.extras import DateTimeRange
 import sentry_sdk
 import sqlalchemy as sa
 import sqlalchemy.exc as sqla_exc
@@ -21,7 +22,7 @@ import pcapi.core.bookings.api as bookings_api
 import pcapi.core.bookings.models as bookings_models
 from pcapi.core.bookings.models import BookingCancellationReasons
 import pcapi.core.bookings.repository as bookings_repository
-from pcapi.core.categories import subcategories
+from pcapi.core.categories import subcategories_v2 as subcategories
 import pcapi.core.criteria.models as criteria_models
 from pcapi.core.educational import exceptions as educational_exceptions
 from pcapi.core.educational import models as educational_models
@@ -42,6 +43,7 @@ import pcapi.core.users.models as users_models
 from pcapi.domain.pro_offers.offers_recap import OffersRecap
 from pcapi.models import db
 from pcapi.models import feature
+from pcapi.models.api_errors import ApiErrors
 from pcapi.models.feature import FeatureToggle
 from pcapi.models.offer_mixin import OfferValidationType
 from pcapi.repository import repository
@@ -54,6 +56,7 @@ from pcapi.workers import push_notification_job
 from . import exceptions
 from . import models
 from . import repository as offers_repository
+from . import serialize as offers_serialize
 from . import validation
 
 
@@ -368,7 +371,17 @@ def update_collective_offer_template(offer_id: int, new_values: dict) -> None:
     nationalProgramId = new_values.pop("nationalProgramId", None)
     national_program_api.link_or_unlink_offer_to_program(nationalProgramId, offer_to_update)
 
+    if new_values.get("dates"):
+        start = new_values["dates"]["start"]
+        end = new_values["dates"]["end"]
+
+        if start <= offer_to_update.dateCreated:
+            raise educational_exceptions.StartsBeforeOfferCreation()
+
+        offer_to_update.dateRange = DateTimeRange(start, end)
+
     _update_collective_offer(offer=offer_to_update, new_values=new_values)
+
     search.async_index_collective_offer_template_ids([offer_to_update.id])
 
 
@@ -1338,3 +1351,29 @@ def approves_provider_product_and_rejected_offers(ean: str) -> None:
             extra={"ean": ean, "product": product.id, "offers": offer_ids, "exc": str(exception)},
         )
         raise exceptions.NotUpdateProductOrOffers(exception)
+
+
+def get_stocks_stats(offer_id: int) -> offers_serialize.StocksStats:
+    data = (
+        models.Stock.query.with_entities(
+            sa.func.min(models.Stock.beginningDatetime),
+            sa.func.max(models.Stock.beginningDatetime),
+            sa.func.count(models.Stock.id),
+            sa.case(
+                (models.Stock.query.filter(models.Stock.remainingQuantity == None).exists(), None),
+                else_=sa.cast(sa.func.sum(models.Stock.remainingQuantity), sa.Integer),
+            ),
+        )
+        .filter(models.Stock.offerId == offer_id)
+        .group_by(models.Stock.offerId)
+        .one_or_none()
+    )
+    try:
+        return offers_serialize.StocksStats(*data)
+    except TypeError:
+        raise ApiErrors(
+            errors={
+                "global": ["L'offre en cours de création ne possède aucun Stock"],
+            },
+            status_code=404,
+        )

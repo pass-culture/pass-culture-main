@@ -3,7 +3,7 @@ describe('Signup journey', () => {
   const offererName = 'MINISTERE DE LA CULTURE'
 
   beforeEach(() => {
-    cy.intercept('GET', `http://localhost:5001/sirene/siret/${siret}`, req =>
+    cy.intercept('GET', `http://localhost:5001/sirene/siret/${siret}`, (req) =>
       req.reply({
         statusCode: 200,
         body: {
@@ -24,7 +24,7 @@ describe('Signup journey', () => {
     cy.intercept(
       'GET',
       `https://api-adresse.data.gouv.fr/search/?limit=1&q=3 RUE DE VALOIS Paris 75001`,
-      req =>
+      (req) =>
         req.reply({
           statusCode: 200,
           body: {
@@ -165,7 +165,7 @@ describe('Signup journey', () => {
     cy.get('#structures')
       .find('option')
       .its('length')
-      .then(len => {
+      .then((len) => {
         cy.get('select').select(len - 2)
       })
 

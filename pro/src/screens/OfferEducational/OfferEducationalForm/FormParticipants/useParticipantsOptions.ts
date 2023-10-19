@@ -48,7 +48,7 @@ const useParticipantsOptions = (
           },
         ]
       : []),
-    ...Object.values(StudentLevels).map(studentLevel => ({
+    ...Object.values(StudentLevels).map((studentLevel) => ({
       label: studentLevel,
       name: `participants.${studentLevel}`,
       onChange: handleParticipantsChange,

@@ -52,7 +52,7 @@ const renderStockEventScreen = (
   renderWithProviders(
     <>
       <Routes>
-        {['/creation/stocks', '/brouillon/stocks', '/stocks'].map(path => (
+        {['/creation/stocks', '/stocks'].map((path) => (
           <Route
             key={path}
             path={path}
@@ -91,6 +91,7 @@ describe('screens:StocksEventEdition', () => {
     })
     props = {
       offer,
+      stocks: [],
     }
     contextValue = individualOfferContextFactory()
     vi.spyOn(api, 'getOffer').mockResolvedValue(

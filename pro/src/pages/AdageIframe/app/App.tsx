@@ -1,5 +1,5 @@
 import * as React from 'react'
-import { useCallback, useEffect, useId, useState } from 'react'
+import { useEffect, useId, useState } from 'react'
 
 import {
   AdageFrontRoles,
@@ -7,17 +7,13 @@ import {
   VenueResponse,
 } from 'apiClient/adage'
 import { apiAdage } from 'apiClient/api'
+import useNotification from 'hooks/useNotification'
 import { LOGS_DATA } from 'utils/config'
 import { removeParamsFromUrl } from 'utils/removeParamsFromUrl'
 
 import { initAlgoliaAnalytics } from '../libs/initAlgoliaAnalytics'
 
 import { AppLayout } from './components/AppLayout/AppLayout'
-import {
-  Notification,
-  NotificationComponent,
-  NotificationType,
-} from './components/Layout/Notification/Notification'
 import { LoaderPage } from './components/LoaderPage/LoaderPage'
 import { UnauthenticatedError } from './components/UnauthenticatedError/UnauthenticatedError'
 import {
@@ -30,7 +26,8 @@ export const App = (): JSX.Element => {
   const [user, setUser] = useState<AuthenticatedResponse | null>()
   const [isLoading, setIsLoading] = useState<boolean>(true)
   const [venueFilter, setVenueFilter] = useState<VenueResponse | null>(null)
-  const [notification, setNotification] = useState<Notification | null>(null)
+
+  const notification = useNotification()
 
   useEffect(() => {
     const params = new URLSearchParams(window.location.search)
@@ -39,7 +36,7 @@ export const App = (): JSX.Element => {
     const getRelativeOffers = params.get('all') === 'true'
     apiAdage
       .authenticate()
-      .then(user => setUser(user))
+      .then((user) => setUser(user))
       .then(async () => {
         if (siret) {
           try {
@@ -49,11 +46,8 @@ export const App = (): JSX.Element => {
             )
             return setVenueFilter(result)
           } catch {
-            return setNotification(
-              new Notification(
-                NotificationType.error,
-                'Lieu inconnu. Tous les résultats sont affichés.'
-              )
+            notification.error(
+              'Lieu inconnu. Tous les résultats sont affichés.'
             )
           }
         }
@@ -67,11 +61,8 @@ export const App = (): JSX.Element => {
 
             return setVenueFilter(result)
           } catch {
-            return setNotification(
-              new Notification(
-                NotificationType.error,
-                'Lieu inconnu. Tous les résultats sont affichés.'
-              )
+            notification.error(
+              'Lieu inconnu. Tous les résultats sont affichés.'
             )
           }
         }
@@ -81,15 +72,13 @@ export const App = (): JSX.Element => {
       .finally(() => {
         setIsLoading(false)
         if (LOGS_DATA) {
-          apiAdage.logCatalogView({
+          void apiAdage.logCatalogView({
             iframeFrom: removeParamsFromUrl(location.pathname),
             source: siret || venueId ? 'partnersMap' : 'homepage',
           })
         }
       })
   }, [])
-
-  const removeVenueFilter = useCallback(() => setVenueFilter(null), [])
 
   const uniqueId = useId()
   useEffect(() => {
@@ -108,22 +97,12 @@ export const App = (): JSX.Element => {
   return (
     <AdageUserContextProvider adageUser={user}>
       <FiltersContextProvider venueFilter={venueFilter}>
-        <FacetFiltersContextProvider
-          departmentCode={user?.departmentCode}
-          uai={user?.uai}
-          venueFilter={venueFilter}
-        >
-          {notification && (
-            <NotificationComponent notification={notification} />
-          )}
+        <FacetFiltersContextProvider uai={user?.uai} venueFilter={venueFilter}>
           {user?.role &&
           [AdageFrontRoles.READONLY, AdageFrontRoles.REDACTOR].includes(
             user.role
           ) ? (
-            <AppLayout
-              removeVenueFilter={removeVenueFilter}
-              venueFilter={venueFilter}
-            />
+            <AppLayout venueFilter={venueFilter} />
           ) : (
             <UnauthenticatedError />
           )}

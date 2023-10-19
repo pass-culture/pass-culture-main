@@ -14,7 +14,7 @@ interface TableBody {
 const ReimbursementsTableBody = ({ invoices }: TableBody): JSX.Element => {
   return (
     <tbody className={styles['reimbursement-body']}>
-      {invoices.map(invoice => {
+      {invoices.map((invoice) => {
         return (
           <tr key={invoice.reference}>
             <td className={styles['date']}>{invoice.date}</td>

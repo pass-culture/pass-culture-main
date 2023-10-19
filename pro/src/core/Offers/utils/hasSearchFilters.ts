@@ -9,7 +9,7 @@ export const hasSearchFilters = (
 ): boolean => {
   return filterNames
     .map(
-      filterName =>
+      (filterName) =>
         searchFilters[filterName] !== { ...DEFAULT_SEARCH_FILTERS }[filterName]
     )
     .includes(true)

@@ -176,7 +176,7 @@ describe('screens:SignupJourney::OffererForm', () => {
   })
 
   const lenErrorCondition = ['22223333', '1234567891234567']
-  it.each(lenErrorCondition)('should render errors', async siretValue => {
+  it.each(lenErrorCondition)('should render errors', async (siretValue) => {
     renderOffererForm({
       initialValues: initialValues,
       contextValue,

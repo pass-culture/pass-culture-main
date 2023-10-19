@@ -122,12 +122,13 @@ class FeatureToggle(enum.Enum):
     WIP_BACKOFFICE_ENABLE_REDIRECT_SINGLE_RESULT = (
         "Backoffice : Afficher directement les détails lorsque la recherche ne renvoie qu'un seul résultat"
     )
+    WIP_ENABLE_RATE_LIMITING = "Active le rate limiting"
     WIP_ENABLE_SEARCH_HISTORY_ADAGE = "Activer la possibilité de voir l'historique des recherches sur adage"
-    WIP_ENABLE_OFFER_RESERVATION_TAB = "Activer l'onglet réservation depuis les offres"
     WIP_ENABLE_MOCK_UBBLE = "Utiliser le mock Ubble à la place du vrai Ubble"
     WIP_PRO_STOCK_PAGINATION = "Active la pagination pour les stocks"
     WIP_ENABLE_BOOST_SHOWTIMES_FILTER = "Activer le filtre pour les requêtes showtimes Boost"
     WIP_ENABLE_DATES_OFFER_TEMPLATE = "Active la possibilité d'ajouter des dates pour les offres vitrines"
+    WIP_HOME_STATS = "Active la possibilité de voir les stats de consultation sur la page d'accueil"
 
     def is_active(self) -> bool:
         if flask.has_request_context():
@@ -193,7 +194,6 @@ FEATURES_DISABLED_BY_DEFAULT: tuple[FeatureToggle, ...] = (
     FeatureToggle.WIP_ENABLE_MOCK_UBBLE,
     FeatureToggle.WIP_ENABLE_NEW_BANK_DETAILS_JOURNEY,
     FeatureToggle.WIP_ENABLE_NEW_USER_OFFERER_LINK,
-    FeatureToggle.WIP_ENABLE_OFFER_RESERVATION_TAB,
     FeatureToggle.WIP_ENABLE_REMINDER_MARKETING_MAIL_METADATA_DISPLAY,
     FeatureToggle.WIP_ENABLE_SATISFACTION_SURVEY,
     FeatureToggle.WIP_ENABLE_SEARCH_HISTORY_ADAGE,
@@ -203,10 +203,23 @@ FEATURES_DISABLED_BY_DEFAULT: tuple[FeatureToggle, ...] = (
     FeatureToggle.WIP_PRO_STOCK_PAGINATION,
     FeatureToggle.WIP_ENABLE_BOOST_SHOWTIMES_FILTER,
     FeatureToggle.WIP_ENABLE_DATES_OFFER_TEMPLATE,
+    FeatureToggle.WIP_HOME_STATS,
 )
 
 if settings.IS_PROD or settings.IS_STAGING:
     FEATURES_DISABLED_BY_DEFAULT += (FeatureToggle.WIP_ENABLE_OFFER_CREATION_API_V1,)
+
+if settings.IS_TESTING:
+    testing_features_disabled_by_default = set(FEATURES_DISABLED_BY_DEFAULT)
+    features_to_enable = {
+        FeatureToggle.ENABLE_CHARLIE_BOOKINGS_API,
+        FeatureToggle.WIP_CATEGORY_SELECTION,
+        FeatureToggle.WIP_ENABLE_EVENTS_WITH_TICKETS_FOR_PUBLIC_API,
+        FeatureToggle.WIP_ENABLE_OFFER_CREATION_API_V1,
+        FeatureToggle.WIP_ENABLE_NEW_USER_OFFERER_LINK,
+    }
+
+    FEATURES_DISABLED_BY_DEFAULT = tuple(testing_features_disabled_by_default - features_to_enable)
 
 
 def add_feature_to_database(feature: Feature) -> None:

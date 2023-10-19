@@ -17,10 +17,8 @@ import { AdageHeader } from '../AdageHeader/AdageHeader'
 import styles from './AppLayout.module.scss'
 
 export const AppLayout = ({
-  removeVenueFilter,
   venueFilter,
 }: {
-  removeVenueFilter: () => void
   venueFilter: VenueResponse | null
 }): JSX.Element => {
   const { adageUser } = useAdageUser()
@@ -51,12 +49,7 @@ export const AppLayout = ({
               <Route
                 key={path}
                 path={path}
-                element={
-                  <Component
-                    venueFilter={venueFilter}
-                    removeVenueFilter={removeVenueFilter}
-                  />
-                }
+                element={<Component venueFilter={venueFilter} />}
               />
             )
           })}

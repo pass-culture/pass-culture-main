@@ -35,7 +35,7 @@ describe('src | AppLayout', () => {
     // Then
     await waitFor(() =>
       expect(
-        screen.queryByText(content =>
+        screen.queryByText((content) =>
           content.startsWith('Notre nom de domaine évolue !')
         )
       ).not.toBeInTheDocument()
@@ -49,7 +49,7 @@ describe('src | AppLayout', () => {
     // Then
     await waitFor(() =>
       expect(
-        screen.queryByText(content =>
+        screen.queryByText((content) =>
           content.startsWith('Notre nom de domaine évolue !')
         )
       ).toBeInTheDocument()

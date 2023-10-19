@@ -86,7 +86,7 @@ const OfferEducationalForm = ({
   const onOffererChange = useCallback(
     (newOffererId: string) => {
       const selectedOfferer = userOfferers.find(
-        offerer => offerer.id.toString() === newOffererId
+        (offerer) => offerer.id.toString() === newOffererId
       )
 
       if (selectedOfferer) {
@@ -116,7 +116,7 @@ const OfferEducationalForm = ({
 
         checkOffererEligibilityToEducationalOffer()
 
-        let venuesOptions = selectedOfferer.managedVenues.map(item => ({
+        let venuesOptions = selectedOfferer.managedVenues.map((item) => ({
           value: item['id'].toString(),
           label: item['name'] as string,
         }))

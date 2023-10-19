@@ -139,6 +139,36 @@ class OfferMetadataTest:
                 },
             }
 
+        def should_have_an_url(self):
+            offer = offers_factories.EventOfferFactory(id=72180399)
+
+            offers_factories.StockFactory(offer=offer)
+
+            metadata = get_metadata_from_offer(offer)
+
+            assert metadata["offers"]["url"] == "http://localhost:5001/offre/72180399"
+
+        def should_have_online_event_attendance_mode(self):
+            offer = offers_factories.EventOfferFactory(url="https://passculture.app/offre/72180399")
+
+            metadata = get_metadata_from_offer(offer)
+
+            assert metadata["eventAttendanceMode"] == "OnlineEventAttendanceMode"
+
+        def should_have_offline_event_attendance_mode(self):
+            offer = offers_factories.EventOfferFactory()
+
+            metadata = get_metadata_from_offer(offer)
+
+            assert metadata["eventAttendanceMode"] == "OfflineEventAttendanceMode"
+
+        def should_have_valid_from_date(self):
+            offer = offers_factories.EventOfferFactory(extraData={"releaseDate": "2000-01-01"})
+
+            metadata = get_metadata_from_offer(offer)
+
+            assert metadata["validFrom"] == "2000-01-01"
+
     class GivenAThingTest:
         def should_describe_a_product(self):
             offer = offers_factories.ThingOfferFactory()

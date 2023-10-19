@@ -22,9 +22,8 @@ export const BookingDateCell = ({
 
   return (
     <div>
-      <span>{bookingDateDay}</span>
-      <br />
-      <span className={styles['booking-date-subtitle']}>{bookingDateHour}</span>
+      <div>{bookingDateDay}</div>
+      <div className={styles['booking-date-subtitle']}>{bookingDateHour}</div>
     </div>
   )
 }
