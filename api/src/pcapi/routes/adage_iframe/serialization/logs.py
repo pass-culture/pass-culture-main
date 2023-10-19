@@ -6,6 +6,7 @@ from pcapi.routes.serialization import BaseModel
 class AdageBaseModel(BaseModel):
     iframeFrom: str
     queryId: str | None
+    isFromNoResult: bool | None
 
 
 class CatalogViewBody(AdageBaseModel):
