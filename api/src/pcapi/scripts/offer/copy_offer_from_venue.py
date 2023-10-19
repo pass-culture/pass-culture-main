@@ -38,13 +38,16 @@ EXTRACT_FOLDER = "/tmp/"
 
 def delete_files_csv(list_filenames: list[str]):
     for filename in list_filenames:
-        file = EXTRACT_FOLDER + filename
+        file = os.path.join(EXTRACT_FOLDER, filename)
         # If file exists, delete it.
         if os.path.isfile(file):
             os.remove(file)
 
 
 def _copy_offers(dryrun: bool):
+    description = f"copy offer from venue {FROM_VENUE_ID} to venue {TO_VENUE_ID}"
+    print(description)
+
     offers_to_copy = (
         offer_models.Offer.query.join(offer_models.Stock)
         .filter(offer_models.Offer.venueId == FROM_VENUE_ID)
@@ -62,6 +65,7 @@ def _copy_offers(dryrun: bool):
         stocks_copied = []
         offers_copied = []
         all_stocks_to_copy = []
+        i = 0
         with transaction():
             for offer_to_copy in offers_to_copy:
                 offer_copied = duplicate_object(offer_to_copy, offer_models.Offer)
@@ -74,7 +78,7 @@ def _copy_offers(dryrun: bool):
                     offer_models.Stock.offerId == offer_to_copy.id
                 ).all()
 
-                print(f"{len(stocks_to_copy)} stocks for offer {offer_to_copy.id}")
+                # print(f"{len(stocks_to_copy)} stocks for offer {offer_to_copy.id}")
                 all_stocks_to_copy.extend(stocks_to_copy)
 
                 price_category_by_offer = {}
@@ -114,6 +118,10 @@ def _copy_offers(dryrun: bool):
                 offer_to_copy.lastValidationAuthorUserId = None
                 offer_to_copy.isActive = False
                 db.session.add(offer_to_copy)
+                i = i + 1
+
+                if i % 50 == 0:
+                    print(i, "/", len(offers_to_copy))
 
             if dryrun:
                 db.session.rollback()
@@ -133,7 +141,7 @@ def _copy_offers(dryrun: bool):
 def _print_offers_csv(offers: list[offer_models.Offer], filename: str) -> None:
     if offers:
         with open(os.path.join(EXTRACT_FOLDER, filename), "w", encoding="utf-8", newline="") as offers_csv:
-            writer = csv.writer(offers_csv)
+            writer = csv.writer(offers_csv, delimiter=";")
             writer.writerow(
                 [
                     "offer_id",
@@ -161,7 +169,7 @@ def _print_offers_csv(offers: list[offer_models.Offer], filename: str) -> None:
 def _print_stocks_csv(stocks: list[offer_models.Stock], filename: str) -> None:
     if stocks:
         with open(EXTRACT_FOLDER + filename, "w", encoding="utf-8") as stocks_csv:
-            writer = csv.writer(stocks_csv)
+            writer = csv.writer(stocks_csv, delimiter=";")
             writer.writerow(
                 [
                     "idAtProviders",
@@ -211,11 +219,14 @@ def duplicate_object(old_obj, base_model):
 if __name__ == "__main__":
     app.app_context().push()
 
-    description = f"copy offer from venue {FROM_VENUE_ID} to venue {TO_VENUE_ID}"
-    print(description)
-    parser = argparse.ArgumentParser(description=description)
+    parser = argparse.ArgumentParser(description="copy offer from venue")
     parser.add_argument("--not-dry", action="store_true", help="set to really process (dry-run by default)")
+    parser.add_argument("--env", default="testing", help="set from")
     args = parser.parse_args()
+
+    if args.env == "staging":
+        FROM_VENUE_ID = 2525
+        TO_VENUE_ID = 92072
 
     print("dry-run", not args.not_dry)
 
