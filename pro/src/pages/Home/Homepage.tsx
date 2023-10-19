@@ -92,20 +92,25 @@ const Homepage = (): JSX.Element => {
       setIsLoading(false)
     }
 
-    selectedOffererId && loadOfferer(selectedOffererId)
+    if (selectedOffererId) {
+      void loadOfferer(selectedOffererId)
+    }
   }, [selectedOffererId])
 
   const isOffererStatsActive = useActiveFeature('ENABLE_OFFERER_STATS')
 
-  useEffect(function fetchData() {
-    api.listOfferersNames().then(async (offererNames) => {
+  useEffect(() => {
+    const loadOffererNames = async () => {
+      const offererNames = await api.listOfferersNames()
       setReceivedOffererNames(offererNames)
-    })
+    }
+
+    void loadOffererNames()
   }, [])
 
   useEffect(() => {
     if (remoteConfigData != null) {
-      api.postProFlags({
+      void api.postProFlags({
         firebase: remoteConfigData,
       })
     }
