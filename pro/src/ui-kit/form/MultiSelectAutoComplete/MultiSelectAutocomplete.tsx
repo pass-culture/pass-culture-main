@@ -60,7 +60,7 @@ const MultiSelectAutocomplete = ({
 
   useEffect(() => {
     if (!isOpen && searchField.value !== '') {
-      setFieldValue(`search-${name}`, '', false)
+      void setFieldValue(`search-${name}`, '', false)
     }
   }, [isOpen])
 
@@ -99,14 +99,14 @@ const MultiSelectAutocomplete = ({
     [options]
   )
 
-  const toggleField = () => {
+  const toggleField = async () => {
     if (isOpen) {
       setIsOpen(false)
-      setFieldValue(`search-${name}`, '', false)
+      await setFieldValue(`search-${name}`, '', false)
     } else {
       setIsOpen(true)
     }
-    setFieldTouched(name, true)
+    await setFieldTouched(name, true)
   }
 
   return (
@@ -126,11 +126,11 @@ const MultiSelectAutocomplete = ({
         ref={containerRef}
       >
         <BaseInput
-          onFocus={() => {
+          onFocus={async () => {
             if (!isOpen) {
               setIsOpen(true)
             }
-            setFieldTouched(name, true)
+            await setFieldTouched(name, true)
           }}
           placeholder={
             placeholder ??
@@ -177,8 +177,8 @@ const MultiSelectAutocomplete = ({
               key={`${name}-${value}`}
               value={value}
               name={name}
-              onChange={(e) => {
-                setFieldTouched(`search-${name}`, true)
+              onChange={async (e) => {
+                await setFieldTouched(`search-${name}`, true)
                 handleChange(e)
                 onChange?.(e)
               }}
@@ -193,8 +193,8 @@ const MultiSelectAutocomplete = ({
             <Tag
               key={`tag-${name}-${value}`}
               closeable={{
-                onClose: () => {
-                  setFieldValue(
+                onClose: async () => {
+                  await setFieldValue(
                     name,
                     field.value.filter((_value: string) => _value !== value)
                   )
