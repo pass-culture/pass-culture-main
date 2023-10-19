@@ -55,20 +55,24 @@ const Offer = ({
   const openOfferDetails = (
     offer: HydratedCollectiveOffer | HydratedCollectiveOfferTemplate
   ) => {
-    if (LOGS_DATA) {
-      !offer.isTemplate
-        ? apiAdage.logOfferDetailsButtonClick({
-            iframeFrom: removeParamsFromUrl(location.pathname),
-            stockId: offer.stock.id,
-            queryId: queryId,
-          })
-        : apiAdage.logOfferTemplateDetailsButtonClick({
-            iframeFrom: removeParamsFromUrl(location.pathname),
-            offerId: offer.id,
-            queryId: queryId,
-          })
-    }
     setDisplayDetails(!displayDetails)
+    if (!LOGS_DATA) {
+      return
+    }
+
+    if (!offer.isTemplate) {
+      void apiAdage.logOfferDetailsButtonClick({
+        iframeFrom: removeParamsFromUrl(location.pathname),
+        stockId: offer.stock.id,
+        queryId: queryId,
+      })
+    } else {
+      void apiAdage.logOfferTemplateDetailsButtonClick({
+        iframeFrom: removeParamsFromUrl(location.pathname),
+        offerId: offer.id,
+        queryId: queryId,
+      })
+    }
   }
 
   return (

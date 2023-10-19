@@ -202,7 +202,7 @@ const Venue = ({
     }
 
     if (isStatOpen && !isStatLoaded) {
-      updateStats()
+      void updateStats()
     }
   }, [venueId, isStatOpen, isStatLoaded, initialOpenState])
 
