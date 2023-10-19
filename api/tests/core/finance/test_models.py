@@ -167,9 +167,26 @@ class DepositSpecificCapsTest:
         assert specific_caps.PHYSICAL_CAP is None
 
 
+@pytest.mark.usefixtures("db_session")
 class BankAccountRulesTest:
     def test_we_cant_have_the_two_bank_account_with_same_dsapplicationid(self):
         factories.BankAccountFactory(dsApplicationId=42)
 
         with pytest.raises(IntegrityError):
             factories.BankAccountFactory(dsApplicationId=42)
+
+    def test_we_cant_log_twice_status_history_at_the_same_time(self):
+        bank_account = factories.BankAccountFactory()
+
+        factories.BankAccountStatusHistoryFactory(
+            bankAccount=bank_account,
+            status=models.BankAccountApplicationStatus.DRAFT,
+            timespan=(datetime.datetime.utcnow(),),
+        )
+
+        with pytest.raises(IntegrityError):
+            factories.BankAccountStatusHistoryFactory(
+                bankAccount=bank_account,
+                status=models.BankAccountApplicationStatus.ON_GOING,
+                timespan=(datetime.datetime.utcnow(),),
+            )

@@ -209,6 +209,7 @@ class BankAccountApplicationStatus(enum.Enum):
     ACCEPTED = "accepte"
     REFUSED = "refuse"
     WITHOUT_CONTINUATION = "sans_suite"
+    WITH_PENDING_CORRECTIONS = "a_corriger"
 
 
 class BankInformation(PcObject, Base, Model):
@@ -244,6 +245,32 @@ class BankAccount(PcObject, Base, Model, DeactivableMixin):
     venueLinks: sqla_orm.Mapped[list["offerers_models.VenueBankAccountLink"]] = sqla_orm.relationship(
         "VenueBankAccountLink", back_populates="bankAccount", passive_deletes=True
     )
+    statusHistory: sqla_orm.Mapped[list["BankAccountStatusHistory"]] = sqla_orm.relationship(
+        "BankAccountStatusHistory",
+        back_populates="bankAccount",
+        foreign_keys="BankAccountStatusHistory.bankAccountId",
+        uselist=True,
+    )
+
+
+class BankAccountStatusHistory(PcObject, Base, Model):
+    bankAccountId: int = sqla.Column(
+        sqla.BigInteger, sqla.ForeignKey("bank_account.id", ondelete="CASCADE"), index=True, nullable=False
+    )
+    bankAccount: sqla_orm.Mapped[BankAccount] = sqla_orm.relationship(
+        BankAccount, foreign_keys=[bankAccountId], back_populates="statusHistory"
+    )
+    status: BankAccountApplicationStatus = sqla.Column(sqla.Enum(BankAccountApplicationStatus), nullable=False)
+    timespan: psycopg2.extras.DateTimeRange = sqla.Column(sqla_psql.TSRANGE, nullable=False)
+
+    __table_args__ = (
+        # One status at a time per bank account.
+        sqla_psql.ExcludeConstraint(("bankAccountId", "="), ("timespan", "&&")),
+    )
+
+    def __init__(self, **kwargs: typing.Any) -> None:
+        kwargs["timespan"] = db_utils.make_timerange(*kwargs["timespan"])
+        super().__init__(**kwargs)
 
 
 class FinanceEvent(Base, Model):
