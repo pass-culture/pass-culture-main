@@ -5,6 +5,10 @@ on:
     branches:
       - master
 
+permissions:
+  contents: 'read'
+  id-token: 'write'
+
 jobs:
   issue-number:
     outputs:
@@ -13,6 +17,21 @@ jobs:
       commit-number: ${{ steps.get_commit_info.outputs.commit-number }}
     runs-on: [self-hosted, linux, x64]
     steps:
+      - name: Authentification to Google
+        uses: 'google-github-actions/auth@v1'
+        with:
+          workload_identity_provider: ${{ secrets.GCP_EHP_WORKLOAD_IDENTITY_PROVIDER }}
+          service_account: ${{ secrets.GCP_EHP_SERVICE_ACCOUNT }}
+
+      - name: Get Secret
+        id: 'secrets'
+        uses: 'google-github-actions/get-secretmanager-secrets@v1'
+        with:
+          secrets: |-
+            JIRA_BASE_URL:passculture-metier-ehp/passculture-main-jira-base-url
+            JIRA_USER_EMAIL:passculture-metier-ehp/passculture-main-jira-user-email
+            JIRA_API_TOKEN:passculture-metier-ehp/passculture-main-jira-api-token
+
       - name: Checkout 🛎️
         uses: actions/checkout@v2.3.4
         with:
@@ -33,9 +52,9 @@ jobs:
       - name: Login
         uses: atlassian/gajira-login@master
         env:
-          JIRA_BASE_URL: ${{ secrets.JIRA_BASE_URL }}
-          JIRA_USER_EMAIL: ${{ secrets.JIRA_USER_EMAIL }}
-          JIRA_API_TOKEN: ${{ secrets.JIRA_API_TOKEN }}
+          JIRA_BASE_URL: ${{ steps.secrets.outputs.JIRA_BASE_URL }}
+          JIRA_USER_EMAIL: ${{ steps.secrets.outputs.JIRA_USER_EMAIL }}
+          JIRA_API_TOKEN: ${{ steps.secrets.outputs.JIRA_API_TOKEN }}
 
       - name: Get jira issue key in commit
         id: get_jira_key
@@ -48,7 +67,7 @@ jobs:
         name: issue check
         if: ${{ steps.get_jira_key.outputs.issue != null }}
         env:
-          JIRA_API_TOKEN: ${{ secrets.JIRA_API_TOKEN }}
+          JIRA_API_TOKEN: ${{ steps.secrets.outputs.JIRA_API_TOKEN }}
         run: |
           issue_type=$(jira view ${{ steps.get_jira_key.outputs.issue }} --template viewTicketType)
           if [[ $issue_type != "OPS Task" && "$issue_type" != "Infra Task" ]]; then 
@@ -67,6 +86,21 @@ jobs:
           persist-credentials: false
           fetch-depth: 0 # Fetch all history for "git rev-list --count HEAD" info
 
+      - name: Authentification to Google
+        uses: 'google-github-actions/auth@v1'
+        with:
+          workload_identity_provider: ${{ secrets.GCP_EHP_WORKLOAD_IDENTITY_PROVIDER }}
+          service_account: ${{ secrets.GCP_EHP_SERVICE_ACCOUNT }}
+
+      - name: Get Secret
+        id: 'secrets'
+        uses: 'google-github-actions/get-secretmanager-secrets@v1'
+        with:
+          secrets: |-
+            JIRA_BASE_URL:passculture-metier-ehp/passculture-main-jira-base-url
+            JIRA_USER_EMAIL:passculture-metier-ehp/passculture-main-jira-user-email
+            JIRA_API_TOKEN:passculture-metier-ehp/passculture-main-jira-api-token
+
       - name: Setup gajira cli
         uses: atlassian/gajira-cli@master
         with:
@@ -75,21 +109,21 @@ jobs:
       - name: Login
         uses: atlassian/gajira-login@master
         env:
-          JIRA_BASE_URL: ${{ secrets.JIRA_BASE_URL }}
-          JIRA_USER_EMAIL: ${{ secrets.JIRA_USER_EMAIL }}
-          JIRA_API_TOKEN: ${{ secrets.JIRA_API_TOKEN }}
+          JIRA_BASE_URL: ${{ steps.secrets.outputs.JIRA_BASE_URL }}
+          JIRA_USER_EMAIL: ${{ steps.secrets.outputs.JIRA_USER_EMAIL }}
+          JIRA_API_TOKEN: ${{ steps.secrets.outputs.JIRA_API_TOKEN }}
 
       - name: Get jira previous commit number
         id: get_previous_commit_number
         env:
-          JIRA_API_TOKEN: ${{ secrets.JIRA_API_TOKEN }}
+          JIRA_API_TOKEN: ${{ steps.secrets.outputs.JIRA_API_TOKEN }}
         # The jira view command uses .jira.d/templates/view template by default
         run: |
           echo "value=$(jira view ${{ needs.issue-number.outputs.status }})" >> $GITHUB_OUTPUT
 
       - name: Mark issue as not deployable
         env:
-          JIRA_API_TOKEN: ${{ secrets.JIRA_API_TOKEN }}
+          JIRA_API_TOKEN: ${{ steps.secrets.outputs.JIRA_API_TOKEN }}
         if: ${{ steps.get_previous_commit_number.outputs.value != null && steps.get_previous_commit_number.outputs.value != '<no value>' }}
         # If previous_commit_number is not null, it means this push-to-master is a fix.
         # All commits with number between previous_commit_number and this commit number are therefore not safe to deploy.
@@ -103,7 +137,7 @@ jobs:
 
       - name: Push commit number and commit hash to jira issue
         env:
-          JIRA_API_TOKEN: ${{ secrets.JIRA_API_TOKEN }}
+          JIRA_API_TOKEN: ${{ steps.secrets.outputs.JIRA_API_TOKEN }}
         run: |
           jira edit ${{ needs.issue-number.outputs.status }} \
             --override customfield_10044=false \
