@@ -989,6 +989,15 @@ class LoginDeviceHistoryFactory(BaseFactory):
     location = "Paris"
 
 
+class SingleSignOnFactory(BaseFactory):
+    class Meta:
+        model = models.SingleSignOn
+
+    user = factory.SubFactory(UserFactory)
+    ssoProvider = "google"
+    ssoUserId = factory.Sequence("{}".format)
+
+
 class EmailUpdateEntryFactory(UserEmailHistoryFactory):
     eventType = models.EmailHistoryEventTypeEnum.UPDATE_REQUEST.value
 

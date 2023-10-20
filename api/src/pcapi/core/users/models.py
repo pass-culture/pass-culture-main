@@ -225,6 +225,7 @@ class User(PcObject, Base, Model, NeedsValidationMixin, DeactivableMixin):
     schoolType = sa.Column(sa.Enum(SchoolTypeEnum, create_constraint=False), nullable=True)
     trusted_devices: list["TrustedDevice"] = orm.relationship("TrustedDevice", back_populates="user")
     login_device_history: list["LoginDeviceHistory"] = orm.relationship("LoginDeviceHistory", back_populates="user")
+    single_sign_ons: list["SingleSignOn"] = orm.relationship("SingleSignOn", back_populates="user")
     validatedBirthDate = sa.Column(sa.Date, nullable=True)  # validated by an Identity Provider
     backoffice_profile: orm.Mapped["BackOfficeUserProfile"] = orm.relationship(
         "BackOfficeUserProfile", uselist=False, back_populates="user"
@@ -832,3 +833,26 @@ class LoginDeviceHistory(PcObject, Base, Model):
     os = sa.Column(sa.Text, nullable=True)
     location = sa.Column(sa.Text, nullable=True)
     dateCreated: datetime = sa.Column(sa.DateTime, nullable=False, default=datetime.utcnow)
+
+
+class SingleSignOn(PcObject, Base, Model):
+    __tablename__ = "single_sign_on"
+
+    userId: int = sa.Column(sa.BigInteger, sa.ForeignKey("user.id", ondelete="CASCADE"), nullable=False, index=True)
+    user: User = orm.relationship(User, foreign_keys=[userId], back_populates="single_sign_ons")
+
+    ssoProvider: str = sa.Column(sa.Text, nullable=False)
+    ssoUserId: str = sa.Column(sa.Text, nullable=False)
+
+    __table_args__ = (
+        sa.UniqueConstraint(
+            "ssoProvider",
+            "userId",
+            name="unique_user_per_sso_provider",
+        ),
+        sa.UniqueConstraint(
+            "ssoProvider",
+            "ssoUserId",
+            name="unique_sso_user_per_sso_provider",
+        ),
+    )
