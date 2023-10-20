@@ -45,7 +45,7 @@ describe('MultiSelectAutocomplete', () => {
     expect(screen.getByLabelText('Département')).toBeInTheDocument()
   })
 
-  it('should display the number of selected options', async () => {
+  it('should display the number of selected options', () => {
     render(
       <Formik initialValues={initialValues} onSubmit={vi.fn()}>
         <MultiSelectAutocomplete {...props} />
@@ -180,10 +180,10 @@ describe('MultiSelectAutocomplete', () => {
       await userEvent.click(screen.getByLabelText('Aveyron'))
       await userEvent.click(screen.getByLabelText('Calvados'))
       expect(
-        screen.getByRole('button', { name: 'Aveyron' })
+        screen.getByRole('button', { name: 'Aveyron Supprimer Aveyron' })
       ).toBeInTheDocument()
       expect(
-        screen.getByRole('button', { name: 'Calvados' })
+        screen.getByRole('button', { name: 'Calvados Supprimer Calvados' })
       ).toBeInTheDocument()
     })
 
@@ -197,10 +197,10 @@ describe('MultiSelectAutocomplete', () => {
       await userEvent.click(screen.getByLabelText('Aveyron'))
       await userEvent.click(screen.getByLabelText('Calvados'))
       expect(
-        screen.queryByRole('button', { name: 'Aveyron' })
+        screen.queryByRole('button', { name: 'Aveyron Supprimer Aveyron' })
       ).not.toBeInTheDocument()
       expect(
-        screen.queryByRole('button', { name: 'Calvados' })
+        screen.queryByRole('button', { name: 'Calvados Supprimer Calvados' })
       ).not.toBeInTheDocument()
     })
 
@@ -211,18 +211,23 @@ describe('MultiSelectAutocomplete', () => {
         </Formik>
       )
 
-      await userEvent.click(screen.getByRole('button', { name: 'Aisne' }))
+      await userEvent.click(
+        screen.getByRole('button', { name: 'Aisne Supprimer Aisne' })
+      )
       expect(
-        screen.queryByRole('button', { name: 'Aisne' })
+        screen.queryByRole('button', { name: 'Aisne Supprimer Aisne' })
       ).not.toBeInTheDocument()
     })
+
     it('should unselect option when the user removes a tag', async () => {
       render(
         <Formik initialValues={initialValues} onSubmit={vi.fn()}>
           <MultiSelectAutocomplete {...props} />
         </Formik>
       )
-      await userEvent.click(screen.getByRole('button', { name: 'Aisne' }))
+      await userEvent.click(
+        screen.getByRole('button', { name: 'Aisne Supprimer Aisne' })
+      )
       await userEvent.click(screen.getByRole('textbox'))
       expect(screen.queryByLabelText('Aisne')).not.toBeChecked()
     })
@@ -249,8 +254,12 @@ describe('MultiSelectAutocomplete', () => {
     ).not.toBeInTheDocument()
     await userEvent.click(screen.getByRole('textbox'))
     // and unselects default options
-    await userEvent.click(screen.getByLabelText('Ain'))
-    await userEvent.click(screen.getByLabelText('Aisne'))
+    await userEvent.click(
+      screen.getByRole('button', { name: 'Ain Supprimer Ain' })
+    )
+    await userEvent.click(
+      screen.getByRole('button', { name: 'Aisne Supprimer Aisne' })
+    )
     expect(
       await screen.findByText('Veuillez renseigner un département')
     ).toBeInTheDocument()
