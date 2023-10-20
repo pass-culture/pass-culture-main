@@ -101,8 +101,14 @@ const BankInformations = (): JSX.Element => {
           'Ajoutez au moins un compte bancaire pour percevoir vos remboursements.'}
 
         {(selectedOfferer?.hasValidBankAccount ||
-          selectedOfferer?.hasPendingBankAccount) &&
-          "Vous pouvez ajouter plusieurs comptes bancaires afin de percevoir les remboursements de vos offres. Chaque compte bancaire fera l'objet d'un remboursement et d'un justificatif de remboursement distincts."}
+          selectedOfferer?.hasPendingBankAccount) && (
+          <>
+            Vous pouvez ajouter plusieurs comptes bancaires afin de percevoir
+            les remboursements de vos offres. Chaque compte bancaire fera
+            l'objet d'un remboursement et d'un justificatif de remboursement
+            distincts. <br />
+          </>
+        )}
 
         <ButtonLink
           link={{
@@ -132,21 +138,24 @@ const BankInformations = (): JSX.Element => {
           </div>
         </div>
       )}
-      <div className={styles['bank-accounts']}>
-        {selectedOffererBankAccounts?.bankAccounts.map((bankAccount) => (
-          <ReimbursementBankAccount
-            bankAccount={bankAccount}
-            venuesNotLinkedLength={
-              selectedOfferer?.venuesWithNonFreeOffersWithoutBankAccounts
-                .length ?? 0
-            }
-            bankAccountsNumber={
-              selectedOffererBankAccounts?.bankAccounts.length
-            }
-            key={bankAccount.id}
-          />
-        ))}
-      </div>
+      {selectedOffererBankAccounts &&
+        selectedOffererBankAccounts?.bankAccounts.length > 0 && (
+          <div className={styles['bank-accounts']}>
+            {selectedOffererBankAccounts?.bankAccounts.map((bankAccount) => (
+              <ReimbursementBankAccount
+                bankAccount={bankAccount}
+                venuesNotLinkedLength={
+                  selectedOfferer?.venuesWithNonFreeOffersWithoutBankAccounts
+                    .length ?? 0
+                }
+                bankAccountsNumber={
+                  selectedOffererBankAccounts?.bankAccounts.length
+                }
+                key={bankAccount.id}
+              />
+            ))}
+          </div>
+        )}
       <Button
         icon={fullMoreIcon}
         className={styles['add-bank-account-button']}
