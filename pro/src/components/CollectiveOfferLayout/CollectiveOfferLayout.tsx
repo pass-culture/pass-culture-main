@@ -6,7 +6,7 @@ import CollectiveOfferBreadcrumb from 'components/CollectiveOfferBreadcrumb'
 import HelpLink from 'components/HelpLink'
 import { getActiveStep } from 'pages/CollectiveOfferRoutes/utils/getActiveStep'
 import { Title } from 'ui-kit'
-import { Tag } from 'ui-kit/Tag/Tag'
+import { Tag, TagVariant } from 'ui-kit/Tag/Tag'
 
 import styles from './CollectiveOfferLayout.module.scss'
 
@@ -60,7 +60,12 @@ const CollectiveOfferLayout = ({
     <div className={styles['eac-layout']}>
       <div className={styles['eac-layout-headings']}>
         {isTemplate && (
-          <Tag className={styles['eac-layout-tag']}>Offre vitrine</Tag>
+          <Tag
+            variant={TagVariant.SMALL_OUTLINE}
+            className={styles['eac-layout-tag']}
+          >
+            Offre vitrine
+          </Tag>
         )}
         {}
         <Title level={1}>{title}</Title>

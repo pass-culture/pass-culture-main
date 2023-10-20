@@ -15,7 +15,7 @@ import {
   isCollectiveOffer,
 } from 'pages/AdageIframe/app/types/offers'
 import { SvgIcon } from 'ui-kit/SvgIcon/SvgIcon'
-import { Tag } from 'ui-kit/Tag/Tag'
+import { Tag, TagVariant } from 'ui-kit/Tag/Tag'
 import { LOGS_DATA } from 'utils/config'
 import { getHumanizeRelativeDistance } from 'utils/getDistance'
 import { removeParamsFromUrl } from 'utils/removeParamsFromUrl'
@@ -161,9 +161,7 @@ const Offer = ({
                       className={style['offer-domains-list-item']}
                       key={domain.id}
                     >
-                      <Tag className={style['offer-domains-tag']}>
-                        {domain.name}
-                      </Tag>
+                      <Tag variant={TagVariant.GREY}>{domain.name}</Tag>
                     </li>
                   ))}
                 </ul>
