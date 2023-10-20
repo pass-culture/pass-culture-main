@@ -24,11 +24,11 @@ jobs:
         with:
           node-version-file: "pro/.nvmrc"
       - name: Run API server
-        run: docker-compose -f ../docker-compose-backend.yml up --build -d
+        run: docker-compose -f ../docker-compose-backend.yml up flask postgres redis --build -d
       - name: Wait for migrations to be run
         uses: iFaxity/wait-on-action@v1
         with:
-          resource: http://localhost/health/api
+          resource: http://localhost:5001/health/api
           timeout: 120000
       - name: Load sandbox
         run: ../pc sandbox -n industrial
@@ -40,7 +40,7 @@ jobs:
           start: yarn serve
           config: baseUrl=http://localhost:3001
           browser: chrome
-          wait-on: "http://localhost:3001,http://localhost/health/api,http://localhost/health/database"
+          wait-on: "http://localhost:3001,http://localhost:5001/health/api,http://localhost:5001/health/database"
           wait-on-timeout: 600
           working-directory: pro
       - name: "OpenID Connect Authentication"

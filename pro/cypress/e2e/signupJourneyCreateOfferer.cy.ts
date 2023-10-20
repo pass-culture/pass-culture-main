@@ -92,7 +92,7 @@ describe('Signup journey', () => {
     cy.contains('Valider et créer ma structure').click()
 
     // Homepage
-    cy.url().should('be.equal', 'http://localhost:3001/accueil')
+    cy.url().should('contain', '/accueil')
 
     cy.logout()
   })
@@ -131,7 +131,7 @@ describe('Signup journey', () => {
     cy.contains('Valider et créer ma structure').click()
 
     // Homepage
-    cy.url().should('be.equal', 'http://localhost:3001/accueil')
+    cy.url().should('contain', '/accueil')
 
     cy.logout()
   })
@@ -160,7 +160,7 @@ describe('Signup journey', () => {
     cy.contains('Accéder à votre espace').click()
 
     // Homepage
-    cy.url().should('be.equal', 'http://localhost:3001/accueil')
+    cy.url().should('contain', '/accueil')
 
     cy.get('#structures')
       .find('option')
