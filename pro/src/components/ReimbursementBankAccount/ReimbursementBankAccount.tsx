@@ -59,7 +59,8 @@ const ReimbursementBankAccount = ({
         <div className={styles['linked-venues-section']}>
           <div className={styles['linked-venues-section-title']}>
             Lieu(x) rattaché(s) à ce compte bancaire
-            {!hasLinkedVenues && venuesNotLinkedLength > 0 && (
+            {(!hasLinkedVenues ||
+              (hasLinkedVenues && venuesNotLinkedLength > 0)) && (
               <SvgIcon
                 src={fullErrorIcon}
                 alt="Une action est requise"
