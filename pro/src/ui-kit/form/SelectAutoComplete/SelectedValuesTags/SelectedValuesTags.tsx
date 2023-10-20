@@ -2,7 +2,7 @@ import React from 'react'
 
 import Tag from 'ui-kit/Tag'
 
-import styles from './Tags.module.scss'
+import styles from './SelectedValuesTags.module.scss'
 
 interface TagsProps {
   disabled: boolean
@@ -12,7 +12,7 @@ interface TagsProps {
   removeOption: (value: string) => void
 }
 
-const Tags = ({
+export const SelectedValuesTags = ({
   disabled,
   fieldName,
   optionsLabelById,
@@ -38,5 +38,3 @@ const Tags = ({
     </div>
   )
 }
-
-export default Tags

@@ -11,7 +11,7 @@ import { FieldLayoutBaseProps } from '../shared/FieldLayout/FieldLayout'
 
 import OptionsList from './OptionsList'
 import styles from './SelectAutocomplete.module.scss'
-import Tags from './Tags'
+import { SelectedValuesTags } from './SelectedValuesTags/SelectedValuesTags'
 import Toggle from './Toggle'
 
 export type SelectAutocompleteProps = FieldLayoutBaseProps & {
@@ -319,7 +319,7 @@ const SelectAutocomplete = ({
         </div>
       </div>
       {Array.isArray(field.value) && !hideTags && field.value.length > 0 && (
-        <Tags
+        <SelectedValuesTags
           disabled={disabled}
           fieldName={name}
           optionsLabelById={optionsLabelById}
