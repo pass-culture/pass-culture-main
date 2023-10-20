@@ -1,4 +1,4 @@
-import type { Story } from '@storybook/react'
+import { StoryObj } from '@storybook/react'
 import { Formik } from 'formik'
 import React from 'react'
 
@@ -9,11 +9,12 @@ export default {
   title: 'ui-kit/forms/MultiSelectAutocomplete',
   component: MultiSelectAutocomplete,
 }
+
 interface Args extends MultiSelectAutocompleteProps {
   initialValues: { departement: string[]; 'search-departement': string }
 }
 
-const Template: Story<Args> = (args) => (
+const ComponentWithFormik = (args: Args) => (
   <Formik initialValues={args.initialValues} onSubmit={() => {}}>
     <MultiSelectAutocomplete {...args} />
   </Formik>
@@ -50,8 +51,10 @@ const defaultProps: Args = {
   smallLabel: false,
 }
 
-export const Default = Template.bind({})
-Default.args = defaultProps
+export const Default: StoryObj<typeof ComponentWithFormik> = {
+  args: { ...defaultProps },
+}
 
-export const WithoutTags = Template.bind({})
-WithoutTags.args = { ...defaultProps, hideTags: true }
+export const WithoutTags: StoryObj<typeof ComponentWithFormik> = {
+  args: { ...defaultProps, hideTags: true },
+}

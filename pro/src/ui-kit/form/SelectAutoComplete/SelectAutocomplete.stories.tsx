@@ -1,4 +1,4 @@
-import type { Story } from '@storybook/react'
+import type { StoryObj } from '@storybook/react'
 import { Formik } from 'formik'
 import React from 'react'
 
@@ -18,7 +18,7 @@ interface Args extends SelectAutocompleteProps {
   }
 }
 
-const Template: Story<Args> = (args) => (
+const ComponentWithFormik = (args: Args) => (
   <Formik initialValues={args.initialValues} onSubmit={() => {}}>
     <SelectAutocomplete {...args} />
   </Formik>
@@ -56,20 +56,23 @@ const defaultProps: Args = {
   searchInOptions: searchPatternInOptions,
 }
 
-export const Default = Template.bind({})
-Default.args = defaultProps
-
-export const Multi = Template.bind({})
-Multi.args = {
-  ...defaultProps,
-  multi: true,
-  initialValues: { departement: ['01', '02'], 'search-departement': '' },
+export const Default: StoryObj<typeof ComponentWithFormik> = {
+  args: { ...defaultProps },
 }
 
-export const WithoutTags = Template.bind({})
-WithoutTags.args = {
-  ...defaultProps,
-  multi: true,
-  initialValues: { departement: ['01', '02'], 'search-departement': '' },
-  hideTags: true,
+export const Multi: StoryObj<typeof ComponentWithFormik> = {
+  args: {
+    ...defaultProps,
+    multi: true,
+    initialValues: { departement: ['01', '02'], 'search-departement': '' },
+  },
+}
+
+export const WithoutTags: StoryObj<typeof ComponentWithFormik> = {
+  args: {
+    ...defaultProps,
+    multi: true,
+    initialValues: { departement: ['01', '02'], 'search-departement': '' },
+    hideTags: true,
+  },
 }
