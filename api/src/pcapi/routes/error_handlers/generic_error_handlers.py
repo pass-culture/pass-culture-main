@@ -1,5 +1,6 @@
 import json
 import logging
+import traceback
 
 from flask import Response
 from flask import current_app as app
@@ -48,6 +49,7 @@ def internal_error(error: Exception) -> ApiErrorResponse | HTTPException:
     # pass through HTTP errors
     if isinstance(error, HTTPException):
         return error
+    traceback.print_exception(error)
     logger.exception("Unexpected error on method=%s url=%s: %s", request.method, request.url, error)
     errors = ApiErrors()
     errors.add_error("global", "Il semble que nous ayons des problèmes techniques :(" + " On répare ça au plus vite.")
