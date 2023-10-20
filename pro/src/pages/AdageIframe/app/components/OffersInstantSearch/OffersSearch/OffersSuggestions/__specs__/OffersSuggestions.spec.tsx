@@ -259,7 +259,7 @@ describe('OffersSuggestions', () => {
     )
   })
 
-  it("should clear the categories filters but keep the domains filters when clearing domains didn't give any result", () => {
+  it("should clear the domains filters filters but keep the categories when clearing categories didn't give any result", () => {
     vi.spyOn(
       instantSearch as {
         useInstantSearch: () => InstantSearchHookResultMock
@@ -312,7 +312,9 @@ describe('OffersSuggestions', () => {
 
     expect(Configure).toHaveBeenCalledTimes(4)
     expect(
-      screen.getByText('Découvrez des offres qui relèvent d’autres catégories')
+      screen.getByText(
+        'Découvrez des offres qui relèvent d’autres domaines artistiques'
+      )
     )
   })
 
