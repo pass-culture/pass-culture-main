@@ -1265,17 +1265,15 @@ def find_reimbursement_rule(rule_reference: str | int) -> models.ReimbursementRu
 
 
 def _make_invoice_line(
-    group: models.RuleGroup,
-    pricings: list,
-    line_rate: decimal.Decimal | None = None,
+    group: models.RuleGroup, pricings: list, line_rate: decimal.Decimal | None = None, is_incident_line: bool = False
 ) -> tuple[models.InvoiceLine, int]:
     reimbursed_amount = 0
     flat_lines = list(itertools.chain.from_iterable(pricing.lines for pricing in pricings))
-    # positive
+    # ingoing
     contribution_amount = sum(
         line.amount for line in flat_lines if line.category == models.PricingLineCategory.OFFERER_CONTRIBUTION
     )
-    # negative
+    # outgoing
     offerer_revenue = sum(
         line.amount for line in flat_lines if line.category == models.PricingLineCategory.OFFERER_REVENUE
     )
@@ -1293,7 +1291,7 @@ def _make_invoice_line(
     else:
         rate = decimal.Decimal(0)
     invoice_line = models.InvoiceLine(
-        label="Montant remboursé",
+        label="Incidents" if is_incident_line else "Réservations",
         group=group.value,
         contributionAmount=contribution_amount,
         reimbursedAmount=reimbursed_amount,
@@ -1468,6 +1466,7 @@ def _generate_invoice(
             sqla_orm.joinedload(models.Cashflow.pricings)
             .options(sqla_orm.joinedload(models.Pricing.lines))
             .options(sqla_orm.joinedload(models.Pricing.customRule))
+            .options(sqla_orm.joinedload(models.Pricing.event).joinedload(models.FinanceEvent.bookingFinanceIncident))
         )
     ).all()
     if not cashflows:
@@ -1494,15 +1493,47 @@ def _generate_invoice(
         for pricing, rate in pricings_and_rates:
             rates[rate].append(pricing)
         for rate, pricings in rates.items():
-            invoice_line, reimbursed_amount = _make_invoice_line(rule_group, pricings, rate)
+            incident_pricings = []
+            other_pricings = []
+            for pricing in pricings:
+                # TODO: remove condition on eventId when it becomes non-nullable
+                if pricing.eventId and pricing.event.bookingFinanceIncidentId:
+                    incident_pricings.append(pricing)
+                else:
+                    other_pricings.append(pricing)
+
+            if other_pricings:
+                invoice_line, reimbursed_amount = _make_invoice_line(rule_group, other_pricings, rate)
+                invoice_lines.append(invoice_line)
+                total_reimbursed_amount += reimbursed_amount
+
+            if incident_pricings:
+                invoice_line, reimbursed_amount = _make_invoice_line(
+                    rule_group, incident_pricings, is_incident_line=True
+                )
+                invoice_lines.append(invoice_line)
+                total_reimbursed_amount += reimbursed_amount
+
+    for custom_rule, pricings in pricings_by_custom_rule.items():
+        incident_pricings = []
+        other_pricings = []
+        for pricing in pricings:
+            if pricing.eventId and pricing.event.bookingFinanceIncidentId:
+                incident_pricings.append(pricing)
+            else:
+                other_pricings.append(pricing)
+        # An InvoiceLine rate will be calculated for a CustomRule with a set reimbursed amount
+        if other_pricings:
+            invoice_line, reimbursed_amount = _make_invoice_line(custom_rule.group, other_pricings, custom_rule.rate)
             invoice_lines.append(invoice_line)
             total_reimbursed_amount += reimbursed_amount
 
-    for custom_rule, pricings in pricings_by_custom_rule.items():
-        # An InvoiceLine rate will be calculated for a CustomRule with a set reimbursed amount
-        invoice_line, reimbursed_amount = _make_invoice_line(custom_rule.group, pricings, custom_rule.rate)
-        invoice_lines.append(invoice_line)
-        total_reimbursed_amount += reimbursed_amount
+        if incident_pricings:
+            invoice_line, reimbursed_amount = _make_invoice_line(
+                custom_rule.group, incident_pricings, is_incident_line=True
+            )
+            invoice_lines.append(invoice_line)
+            total_reimbursed_amount += reimbursed_amount
 
     invoice.amount = total_reimbursed_amount
     # As of Python 3.9, DEFAULT_ENTROPY is 32 bytes
@@ -1668,6 +1699,12 @@ def _prepare_invoice_context(invoice: models.Invoice, batch: models.CashflowBatc
         period_start=period_start,
         period_end=period_end,
         reimbursements_by_venue=reimbursements_by_venue,
+        including_finance_incident=any(
+            cashflow
+            for cashflow in cashflows
+            # TODO: remove condition on eventId when it becomes non-nullable
+            if any(pricing.event.bookingFinanceIncidentId for pricing in cashflow.pricings if pricing.eventId)
+        ),
     )
 
 

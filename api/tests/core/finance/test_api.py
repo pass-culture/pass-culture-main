@@ -37,10 +37,12 @@ import pcapi.core.offerers.models as offerers_models
 import pcapi.core.offers.factories as offers_factories
 from pcapi.core.testing import assert_num_queries
 from pcapi.core.testing import clean_temporary_files
+from pcapi.core.testing import override_features
 from pcapi.core.testing import override_settings
 import pcapi.core.users.factories as users_factories
 import pcapi.core.users.models as users_models
 from pcapi.models import db
+from pcapi.routes.backoffice.finance import finance_incidents_blueprint
 from pcapi.utils import human_ids
 import pcapi.utils.db as db_utils
 
@@ -1496,7 +1498,7 @@ class GenerateInvoiceTest:
         assert line.contributionAmount == 0
         assert line.reimbursedAmount == -40 * 100
         assert line.rate == 1
-        assert line.label == "Montant remboursé"
+        assert line.label == "Réservations"
 
     def test_two_regular_rules_two_rates(self):
         reimbursement_point = offerers_factories.VenueFactory()
@@ -1540,13 +1542,13 @@ class GenerateInvoiceTest:
         assert line_rate_1.contributionAmount == 0
         assert line_rate_1.reimbursedAmount == -19_850 * 100
         assert line_rate_1.rate == 1
-        assert line_rate_1.label == "Montant remboursé"
+        assert line_rate_1.label == "Réservations"
         line_rate_0_95 = invoice_lines[1]
         assert line_rate_0_95.group == {"label": "Barème général", "position": 1}
         assert line_rate_0_95.contributionAmount == 8 * 100
         assert line_rate_0_95.reimbursedAmount == -152 * 100
         assert line_rate_0_95.rate == Decimal("0.95")
-        assert line_rate_0_95.label == "Montant remboursé"
+        assert line_rate_0_95.label == "Réservations"
 
     def test_one_custom_rule(self):
         reimbursement_point = offerers_factories.VenueFactory()
@@ -1583,7 +1585,7 @@ class GenerateInvoiceTest:
         assert line.contributionAmount == 200
         assert line.reimbursedAmount == -4400
         assert line.rate == Decimal("0.9565")
-        assert line.label == "Montant remboursé"
+        assert line.label == "Réservations"
 
     def test_many_rules_and_rates_two_cashflows(self, invoice_data):
         reimbursement_point, stocks, _venue = invoice_data
@@ -1626,49 +1628,49 @@ class GenerateInvoiceTest:
         assert line0.contributionAmount == 0
         assert line0.reimbursedAmount == -19_980 * 100  # 19_950 + 30
         assert line0.rate == Decimal("1.0000")
-        assert line0.label == "Montant remboursé"
+        assert line0.label == "Réservations"
 
         line1 = invoice_lines[1]
         assert line1.group == {"label": "Barème général", "position": 1}
         assert line1.contributionAmount == 406
         assert line1.reimbursedAmount == -7724
         assert line1.rate == Decimal("0.9500")
-        assert line1.label == "Montant remboursé"
+        assert line1.label == "Réservations"
 
         line2 = invoice_lines[2]
         assert line2.group == {"label": "Barème livres", "position": 2}
         assert line2.contributionAmount == 0
         assert line2.reimbursedAmount == -20 * 100
         assert line2.rate == Decimal("1.0000")
-        assert line2.label == "Montant remboursé"
+        assert line2.label == "Réservations"
 
         line3 = invoice_lines[3]
         assert line3.group == {"label": "Barème livres", "position": 2}
         assert line3.contributionAmount == 2 * 100
         assert line3.reimbursedAmount == -38 * 100
         assert line3.rate == Decimal("0.9500")
-        assert line3.label == "Montant remboursé"
+        assert line3.label == "Réservations"
 
         line4 = invoice_lines[4]
         assert line4.group == {"label": "Barème non remboursé", "position": 3}
         assert line4.contributionAmount == 58 * 100
         assert line4.reimbursedAmount == 0
         assert line4.rate == Decimal("0.0000")
-        assert line4.label == "Montant remboursé"
+        assert line4.label == "Réservations"
 
         line5 = invoice_lines[5]
         assert line5.group == {"label": "Barème dérogatoire", "position": 4}
         assert line5.contributionAmount == 100
         assert line5.reimbursedAmount == -22 * 100
         assert line5.rate == Decimal("0.9565")
-        assert line5.label == "Montant remboursé"
+        assert line5.label == "Réservations"
 
         line6 = invoice_lines[6]
         assert line6.group == {"label": "Barème dérogatoire", "position": 4}
         assert line6.contributionAmount == 120
         assert line6.reimbursedAmount == -1880
         assert line6.rate == Decimal("0.9400")
-        assert line6.label == "Montant remboursé"
+        assert line6.label == "Réservations"
 
     def test_with_free_offer(self):
         reimbursement_point = offerers_factories.VenueFactory()
@@ -1712,13 +1714,13 @@ class GenerateInvoiceTest:
         assert line1.contributionAmount == 0
         assert line1.reimbursedAmount == -20 * 100
         assert line1.rate == 1
-        assert line1.label == "Montant remboursé"
+        assert line1.label == "Réservations"
         line2 = invoice.lines[1]
         assert line2.group == {"label": "Barème non remboursé", "position": 3}
         assert line2.contributionAmount == 0
         assert line2.reimbursedAmount == 0
         assert line2.rate == 0
-        assert line2.label == "Montant remboursé"
+        assert line2.label == "Réservations"
 
     def test_update_statuses_and_booking_reimbursement_date(self):
         stock = individual_stock_factory()
@@ -1868,17 +1870,67 @@ class GenerateInvoiceHtmlTest:
 
     def generate_and_compare_invoice(self, stocks, reimbursement_point, venue):
         user = users_factories.RichBeneficiaryFactory()
+        book_offer = offers_factories.OfferFactory(venue=venue, subcategoryId=subcategories.LIVRE_PAPIER.id)
+        factories.CustomReimbursementRuleFactory(rate=0.95, offer=book_offer)
+
         for stock in stocks:
             finance_event = factories.UsedBookingFinanceEventFactory(
                 booking__stock=stock,
                 booking__user=user,
             )
             api.price_event(finance_event)
+
         duo_offer = offers_factories.OfferFactory(venue=venue, isDuo=True)
         duo_stock = offers_factories.StockFactory(offer=duo_offer, price=1)
         duo_booking = bookings_factories.UsedBookingFactory(stock=duo_stock, quantity=2)
         duo_finance_event = factories.UsedBookingFinanceEventFactory(booking=duo_booking)
         api.price_event(duo_finance_event)
+
+
+        incident_booking1_event = factories.UsedBookingFinanceEventFactory(
+            booking__stock=offers_factories.StockFactory(offer=book_offer, price=30, quantity=1),
+            booking__user=user,
+            booking__amount=30,
+            booking__quantity=1,
+        )
+        api.price_event(incident_booking1_event)
+
+        incident_booking2_event = factories.UsedBookingFinanceEventFactory(
+            booking__stock=offers_factories.StockFactory(offer=book_offer, price=30, quantity=1),
+            booking__user=user,
+            booking__amount=30,
+            booking__quantity=1,
+        )
+        api.price_event(incident_booking2_event)
+
+        # Mark incident bookings as already invoiced
+        incident_booking1_event.booking.pricings[0].status = models.PricingStatus.INVOICED
+        incident_booking2_event.booking.pricings[0].status = models.PricingStatus.INVOICED
+
+        incident_events = []
+        # create total overpayment incident (30 €)
+        booking_total_incident = factories.IndividualBookingFinanceIncidentFactory(
+            incident__status=models.IncidentStatus.VALIDATED,
+            booking=incident_booking1_event.booking,
+            newTotalAmount=-incident_booking1_event.booking.total_amount * 100,
+        )
+        incident_events += finance_incidents_blueprint._create_finance_events_from_incident(
+            booking_total_incident, datetime.datetime.utcnow(), save=True
+        )
+
+        # create partial overpayment incident
+        booking_partial_incident = factories.IndividualBookingFinanceIncidentFactory(
+            incident__status=models.IncidentStatus.VALIDATED,
+            booking=incident_booking2_event.booking,
+            newTotalAmount=2000,
+        )
+        incident_events += finance_incidents_blueprint._create_finance_events_from_incident(
+            booking_partial_incident, datetime.datetime.utcnow(), save=True
+        )
+
+        for event in incident_events:
+            api.price_event(event)
+
         batch = api.generate_cashflows(cutoff=datetime.datetime.utcnow())
         api.generate_payment_files(batch)  # mark cashflows as UNDER_REVIEW
         cashflows = models.Cashflow.query.order_by(models.Cashflow.id).all()
@@ -1915,6 +1967,7 @@ class GenerateInvoiceHtmlTest:
         expected_invoice_html = expected_invoice_html.replace("\n    <p><b>SIRET :</b> 85331845900023</p>", "")
         assert expected_invoice_html == invoice_html
 
+    @override_features(WIP_ENABLE_FINANCE_INCIDENT=True)
     def test_basics(self, invoice_data):
         reimbursement_point, stocks, venue = invoice_data
         pricing_point = offerers_models.Venue.query.get(venue.current_pricing_point_id)

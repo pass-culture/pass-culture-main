@@ -87,7 +87,8 @@ class ListIndividualBookingsTest(GetEndpointHelper):
     # - fetch user (1 query)
     expected_num_queries_when_no_query = 2
     # - fetch individual bookings with extra data (1 query)
-    expected_num_queries = expected_num_queries_when_no_query + 1
+    # - check finance incident FF
+    expected_num_queries = expected_num_queries_when_no_query + 2
 
     def test_list_bookings_without_filter(self, authenticated_client, bookings):
         with assert_num_queries(self.expected_num_queries_when_no_query):
@@ -199,7 +200,8 @@ class ListIndividualBookingsTest(GetEndpointHelper):
         assert rows[0]["ID résa"] == str(bookings[0].id)
 
     def test_list_bookings_by_token_not_found(self, authenticated_client, bookings):
-        with assert_num_queries(self.expected_num_queries):
+        # -1 query because no need to check incident ff when no result
+        with assert_num_queries(self.expected_num_queries - 1):
             response = authenticated_client.get(url_for(self.endpoint, q="IENA06"))
             assert response.status_code == 200
 
