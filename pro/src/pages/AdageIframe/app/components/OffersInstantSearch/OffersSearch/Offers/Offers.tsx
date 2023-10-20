@@ -147,6 +147,7 @@ export const Offers = ({
               offer={offer}
               position={index}
               queryId={results?.queryID ?? ''}
+              isInSuggestions={indexId?.startsWith('no_results_offers')}
             />
             {index === 0 && showDiffuseHelp && (
               <DiffuseHelp

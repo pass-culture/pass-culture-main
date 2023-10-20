@@ -6,6 +6,7 @@
 export type TrackingFilterBody = {
   filterValues: Record<string, any>;
   iframeFrom: string;
+  isFromNoResult?: boolean | null;
   queryId?: string | null;
   resultNumber: number;
 };

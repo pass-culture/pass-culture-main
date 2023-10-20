@@ -47,6 +47,7 @@ class LogsTest:
                     ],
                     "iframeFrom": "for_my_institution",
                     "resultsCount": 0,
+                    "isFromNoResult": "true",
                 },
             )
 
@@ -62,7 +63,7 @@ class LogsTest:
             "userId": "f0e2a21bcf499cbc713c47d8f034d66e90a99f9ffcfe96466c9971dfdc5c9816",
             "uai": "EAU123",
             "user_role": AdageFrontRoles.READONLY,
-            "isFromNoResult": None,
+            "isFromNoResult": True,
         }
 
     def test_log_offer_detail(self, client, caplog):
