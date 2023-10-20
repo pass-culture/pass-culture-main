@@ -787,7 +787,7 @@ class GetDatesResponse(serialization.ConfiguredBaseModel):
 
 
 class GetProductsListByEansQuery(serialization.ConfiguredBaseModel):
-    eans: str | None = pydantic_v1.Field(example="0123456789123,0123456789124")
+    eans: str = pydantic_v1.Field(example="0123456789123,0123456789124")
     venueId: int = pydantic_v1.Field(example=1)
 
     @pydantic_v1.validator("eans")
