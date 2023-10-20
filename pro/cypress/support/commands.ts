@@ -47,13 +47,13 @@ Cypress.on('uncaught:exception', () => {
 Cypress.Commands.add('login', (email: string, password: string) => {
   cy.intercept({ method: 'POST', url: '/users/signin' }).as('signinUser')
 
-  cy.visit('http://localhost:3001/connexion')
+  cy.visit('/connexion')
   cy.get('#email').type(email)
   cy.get('#password').type(password)
   cy.get('button[type=submit]').click()
   cy.wait('@signinUser')
 
-  cy.url().should('be.equal', 'http://localhost:3001/accueil')
+  cy.url().should('contain', '/accueil')
 })
 
 Cypress.Commands.add('logout', () => {
@@ -62,7 +62,7 @@ Cypress.Commands.add('logout', () => {
   cy.get('[aria-label="Déconnexion"]').click()
   cy.wait('@signoutUser')
 
-  cy.url().should('be.equal', 'http://localhost:3001/connexion')
+  cy.url().should('contain', '/connexion')
 })
 
 Cypress.Commands.add('setFeatureFlags', (features: Feature[]) => {

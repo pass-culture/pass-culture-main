@@ -1,6 +1,6 @@
 describe('Account creation', () => {
   it('should create an account', () => {
-    cy.visit('http://localhost:3001/inscription')
+    cy.visit('/inscription')
 
     // Fill in form
     cy.get('#lastName').type('LEMOINE')
@@ -16,9 +16,6 @@ describe('Account creation', () => {
     )
     cy.get('button[type=submit]').click()
     cy.wait('@signupUser')
-    cy.url().should(
-      'be.equal',
-      'http://localhost:3001/inscription/confirmation'
-    )
+    cy.url().should('contain', '/inscription/confirmation')
   })
 })
