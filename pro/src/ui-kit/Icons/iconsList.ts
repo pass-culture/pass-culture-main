@@ -1,3 +1,4 @@
+import fullAddUserIcon from 'icons/full-add-user.svg'
 import fullArrowRightIcon from 'icons/full-arrow-right.svg'
 import fullBackIcon from 'icons/full-back.svg'
 import fullBookmarkIcon from 'icons/full-bookmark.svg'
@@ -154,6 +155,7 @@ export const fullIcons: IconListItem[] = [
   { src: fullLeftIcon },
   { src: fullGoTop },
   { src: fullArrowRightIcon },
+  { src: fullAddUserIcon },
   { src: fullBookmarkIcon },
   { src: fullDisclosureCloseIcon, viewBox: '0 0 16 16' }, // TODO clean viewbox
   { src: fullDisclosureOpenIcon, viewBox: '0 0 16 16' }, // TODO clean viewbox
