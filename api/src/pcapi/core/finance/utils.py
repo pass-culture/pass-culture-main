@@ -39,14 +39,20 @@ def fr_percentage_filter(decimal_rate: decimal.Decimal) -> str:
 
 
 def fr_currency_filter(eurocents: int) -> float:
-    """Returns a localized str without signing nor currency symbol"""
-    amount_in_euros = to_euros(abs(eurocents))
+    """Returns a localized str without currency symbol"""
+    amount_in_euros = to_euros(eurocents)
     return numbers.format_decimal(amount_in_euros, format="#,##0.00", locale="fr_FR")
+
+
+def fr_currency_opposite_filter(eurocents: int) -> float:
+    """Returns a localized str without currency symbol"""
+    return fr_currency_filter(-eurocents)
 
 
 def install_template_filters(app: Flask) -> None:
     app.jinja_env.filters["fr_percentage"] = fr_percentage_filter
     app.jinja_env.filters["fr_currency"] = fr_currency_filter
+    app.jinja_env.filters["fr_currency_opposite"] = fr_currency_opposite_filter
 
 
 def format_raw_iban_and_bic(raw_data: str | None) -> str | None:

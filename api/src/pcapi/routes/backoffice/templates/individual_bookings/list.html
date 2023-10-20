@@ -49,7 +49,7 @@
                       data-modal-selector="#batch-cancel-booking-modal">Annuler</button>
             </div>
           {% endif %}
-          {% if has_permission("MANAGE_INCIDENTS") %}
+          {% if has_permission("MANAGE_INCIDENTS") and is_feature_active("WIP_ENABLE_FINANCE_INCIDENT") %}
             <div class="btn-group btn-group-sm"
                  data-toggle="pc-batch-confirm-btn-group"
                  data-toggle-id="table-container-individual-booking-btn-group"
@@ -196,19 +196,21 @@
                 <td>{{ booking.stock.quantity }}</td>
                 <td>{{ booking.total_amount | format_amount }}</td>
                 <td>{{ booking.status | format_booking_status(with_badge=True) | safe }}</td>
-                <td class="text-center">
-                  {% if booking.incidents %}
-                    {% for booking_incident in booking.incidents %}
-                      {% if booking_incident.incident.status.name == "VALIDATED" %}
-                        <a href="{{ url_for('backoffice_web.finance_incidents.get_incident', finance_incident_id=booking_incident.incident.id) }}"
-                           class=""><i class="bi bi-exclamation-triangle-fill text-danger fs-3"
+                {% if is_feature_active("WIP_ENABLE_FINANCE_INCIDENT") %}
+                  <td class="text-center">
+                    {% if booking.incidents %}
+                      {% for booking_incident in booking.incidents %}
+                        {% if booking_incident.incident.status.name == "VALIDATED" %}
+                          <a href="{{ url_for('backoffice_web.finance_incidents.get_incident', finance_incident_id=booking_incident.incident.id) }}"
+                             class=""><i class="bi bi-exclamation-triangle-fill text-danger fs-3"
    data-bs-toggle="tooltip"
    data-bs-placement="top"
    data-bs-title="Visualiser l'incident"></i></a>
-                      {% endif %}
-                    {% endfor %}
-                  {% endif %}
-                </td>
+                        {% endif %}
+                      {% endfor %}
+                    {% endif %}
+                  </td>
+                {% endif %}
                 <td>{{ booking.dateCreated | format_date_time }}</td>
                 <td>{{ booking.stock.beginningDatetime | format_date_time }}</td>
                 <td>{{ links.build_offerer_name_to_details_link(booking.offerer) }}</td>
@@ -220,7 +222,9 @@
         </table>
         {{ build_lazy_modal(url_for("backoffice_web.individual_bookings.get_batch_validate_individual_bookings_form"), "batch-validate-booking-modal", "true") }}
         {{ build_lazy_modal(url_for("backoffice_web.individual_bookings.get_batch_cancel_individual_bookings_form"), "batch-cancel-booking-modal", "true") }}
-        {{ build_lazy_modal(url_for("backoffice_web.finance_incidents.get_incident_creation_form"), "incident-creation-modal", "true") }}
+        {% if is_feature_active("WIP_ENABLE_FINANCE_INCIDENT") %}
+          {{ build_lazy_modal(url_for("backoffice_web.finance_incidents.get_incident_creation_form"), "incident-creation-modal", "true") }}
+        {% endif %}
       {% endif %}
     </div>
   </div>
