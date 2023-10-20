@@ -80,3 +80,17 @@ class ValidateEmailResponse(BaseModel):
     class Config:
         alias_generator = to_camel
         allow_population_by_field_name = True
+
+
+class GoogleSigninRequest(BaseModel):
+    authorization_code: str
+
+    class Config:
+        alias_generator = to_camel
+        allow_population_by_field_name = True
+
+
+class GoogleUser(BaseModel):
+    sub: str
+    email: str
+    email_verified: bool

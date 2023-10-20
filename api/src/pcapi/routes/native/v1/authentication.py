@@ -1,7 +1,10 @@
+from pcapi.utils import requests
+from pcapi import settings
 import logging
 
 from flask_jwt_extended import get_jwt_identity
 from flask_jwt_extended import jwt_required
+import pydantic.v1 as pydantic_v1
 
 from pcapi.connectors import api_recaptcha
 from pcapi.core.external.attributes import api as external_attributes_api
@@ -15,11 +18,14 @@ from pcapi.core.users import repository as users_repo
 from pcapi.core.users.models import User
 from pcapi.core.users.repository import find_user_by_email
 from pcapi.domain.password import check_password_strength
+from pcapi.flask_app import oauth
 from pcapi.models import api_errors
+from pcapi.models import db
 from pcapi.models.api_errors import ApiErrors
 from pcapi.models.api_errors import ForbiddenError
 from pcapi.models.feature import FeatureToggle
 from pcapi.repository import repository
+from pcapi.repository import transaction
 from pcapi.routes.native.security import authenticated_and_active_user_required
 from pcapi.routes.native.v1.serialization.authentication import ChangePasswordRequest
 from pcapi.routes.native.v1.serialization.authentication import RequestPasswordResetRequest
@@ -206,3 +212,79 @@ def validate_email(body: ValidateEmailRequest) -> ValidateEmailResponse:
     )
 
     return response
+
+
+@blueprint.native_v1.route("/oauth/google/authorize", methods=["POST"])
+@spectree_serialize(
+    response_model=authentication.SigninResponse,
+    on_success_status=200,
+    on_error_statuses=[400, 401],
+    api=blueprint.api,
+)
+@ip_rate_limiter()
+def google_auth(body: authentication.GoogleSigninRequest) -> authentication.SigninResponse:
+    # postmessage is needed when the app uses a popup to fetch the authorization code
+    # see https://stackoverflow.com/questions/71968377
+    redirect_uri = "postmessage"
+    token = oauth.google.fetch_access_token(code=body.authorization_code, redirect_uri=redirect_uri)
+    google_user = pydantic_v1.parse_obj_as(authentication.GoogleUser, oauth.google.parse_id_token(token))
+    email = google_user.email
+    sso_user_id = google_user.sub
+
+    single_sign_on = users_repo.get_single_sign_on("google", sso_user_id)
+    if not single_sign_on:
+        user = users_repo.find_user_by_email(email)
+    else:
+        user = single_sign_on.user
+
+    if not user:
+        logger.info(
+            "Failed authentication attempt",
+            extra={
+                "identifier": email,
+                "sso_provider": "google",
+                "sso_user_id": sso_user_id,
+                "user": "not found",
+                "avoid_current_user": True,
+                "success": True,
+            },
+            technical_message_id="users.login.sso.google",
+        )
+        raise ApiErrors({"email": "unknown"}, status_code=401)
+
+    user_ssos = user.single_sign_ons if user else []
+    user_has_another_google_account_linked = user_ssos and sso_user_id not in [sso.ssoUserId for sso in user_ssos]
+    if user_has_another_google_account_linked:
+        raise ApiErrors(
+            {"code": "DUPLICATE_GOOGLE_ACCOUNT", "general": ["Un autre compte Google est déjà associé à ce compte."]}
+        )
+
+    if user.account_state.is_deleted:
+        raise ApiErrors({"code": "ACCOUNT_DELETED", "general": ["Le compte a été supprimé"]})
+
+    if not user.isValidated or not user.isEmailValidated or not google_user.email_verified:
+        raise ApiErrors({"code": "EMAIL_NOT_VALIDATED", "general": ["L'email n'a pas été validé."]})
+
+    if not single_sign_on:
+        with transaction():
+            single_sign_on = users_repo.create_single_sign_on(user, "google", sso_user_id)
+            db.session.add(single_sign_on)
+
+    users_api.update_last_connection_date(user)
+    logger.info(
+        "Successful authentication attempt",
+        extra={
+            "identifier": email,
+            "user": user.id,
+            "sso_provider": "google",
+            "sso_user_id": sso_user_id,
+            "avoid_current_user": True,
+            "success": True,
+        },
+        technical_message_id="users.login.sso.google",
+    )
+    return authentication.SigninResponse(
+        access_token=users_api.create_user_access_token(user),
+        refresh_token=users_api.create_user_refresh_token(user, device_info=None),
+        account_state=user.account_state,
+    )

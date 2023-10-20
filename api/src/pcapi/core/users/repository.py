@@ -145,3 +145,18 @@ def get_users_with_validated_attachment(offerer: offerers_models.Offerer) -> lis
 def get_and_lock_user(userId: int) -> models.User:
     user = models.User.query.filter(models.User.id == userId).populate_existing().with_for_update().one_or_none()
     return user
+
+
+def get_single_sign_on(sso_provider: str, sso_user_id: str) -> models.SingleSignOn | None:
+    return (
+        models.SingleSignOn.query.filter(
+            models.SingleSignOn.ssoProvider == sso_provider,
+            models.SingleSignOn.ssoUserId == sso_user_id,
+        )
+        .options(sa.orm.joinedload(models.SingleSignOn.user))
+        .one_or_none()
+    )
+
+
+def create_single_sign_on(user: models.User, sso_provider: str, sso_user_id: str) -> models.SingleSignOn:
+    return models.SingleSignOn(user=user, ssoProvider=sso_provider, ssoUserId=sso_user_id)
