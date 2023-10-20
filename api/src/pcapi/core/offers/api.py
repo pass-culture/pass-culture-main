@@ -371,9 +371,9 @@ def update_collective_offer_template(offer_id: int, new_values: dict) -> None:
     nationalProgramId = new_values.pop("nationalProgramId", None)
     national_program_api.link_or_unlink_offer_to_program(nationalProgramId, offer_to_update)
 
-    if new_values.get("dates"):
-        start = new_values["dates"]["start"]
-        end = new_values["dates"]["end"]
+    if dates := new_values.pop("dates", None):
+        start = dates["start"]
+        end = dates["end"]
 
         if start.date() < offer_to_update.dateCreated.date():
             raise educational_exceptions.StartsBeforeOfferCreation()
