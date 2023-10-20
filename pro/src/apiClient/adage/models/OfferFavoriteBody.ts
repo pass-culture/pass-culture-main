@@ -6,6 +6,7 @@
 export type OfferFavoriteBody = {
   iframeFrom: string;
   isFavorite: boolean;
+  isFromNoResult?: boolean | null;
   offerId: number;
   queryId?: string | null;
 };
