@@ -34,6 +34,7 @@ export interface OfferProps {
   queryId: string
   position: number
   afterFavoriteChange?: (isFavorite: boolean) => void
+  isInSuggestions?: boolean
 }
 
 const Offer = ({
@@ -41,6 +42,7 @@ const Offer = ({
   queryId,
   position,
   afterFavoriteChange,
+  isInSuggestions,
 }: OfferProps): JSX.Element => {
   const [displayDetails, setDisplayDetails] = useState(false)
   const isLikeActive = useActiveFeature('WIP_ENABLE_LIKE_IN_ADAGE')
@@ -65,12 +67,14 @@ const Offer = ({
         iframeFrom: removeParamsFromUrl(location.pathname),
         stockId: offer.stock.id,
         queryId: queryId,
+        isFromNoResult: isInSuggestions,
       })
     } else {
       void apiAdage.logOfferTemplateDetailsButtonClick({
         iframeFrom: removeParamsFromUrl(location.pathname),
         offerId: offer.id,
         queryId: queryId,
+        isFromNoResult: isInSuggestions,
       })
     }
   }
@@ -184,6 +188,7 @@ const Offer = ({
                     queryId={queryId}
                     userEmail={adageUser.email}
                     userRole={adageUser.role}
+                    isInSuggestions={isInSuggestions}
                   />
                 ) : (
                   <PrebookingButton
@@ -194,6 +199,7 @@ const Offer = ({
                     offerId={offer.id}
                     queryId={queryId}
                     stock={offer.stock}
+                    isInSuggestions={isInSuggestions}
                   />
                 )}
               </div>

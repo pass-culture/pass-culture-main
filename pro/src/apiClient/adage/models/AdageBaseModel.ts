@@ -5,6 +5,7 @@
 
 export type AdageBaseModel = {
   iframeFrom: string;
+  isFromNoResult?: boolean | null;
   queryId?: string | null;
 };
 

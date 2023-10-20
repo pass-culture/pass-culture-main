@@ -5,6 +5,7 @@
 
 export type StockIdBody = {
   iframeFrom: string;
+  isFromNoResult?: boolean | null;
   queryId?: string | null;
   stockId: number;
 };

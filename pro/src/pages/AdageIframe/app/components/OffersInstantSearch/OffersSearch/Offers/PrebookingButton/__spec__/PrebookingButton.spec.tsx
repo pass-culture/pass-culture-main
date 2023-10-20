@@ -13,9 +13,20 @@ vi.mock('repository/pcapi/pcapi', () => ({
   preBookStock: vi.fn(),
 }))
 vi.mock('pages/AdageIframe/libs/initAlgoliaAnalytics')
+
 vi.mock('apiClient/api', () => ({
-  apiAdage: { bookCollectiveOffer: vi.fn() },
+  apiAdage: {
+    bookCollectiveOffer: vi.fn(),
+    logBookingModalButtonClick: vi.fn(),
+  },
 }))
+
+vi.mock('utils/config', async () => {
+  return {
+    ...((await vi.importActual('utils/config')) ?? {}),
+    LOGS_DATA: true,
+  }
+})
 
 describe('offer', () => {
   let stock: OfferStockResponse
@@ -144,6 +155,56 @@ describe('offer', () => {
       expect(
         screen.getByText('Votre préréservation a été effectuée avec succès')
       ).toBeInTheDocument()
+    })
+
+    it('should log info when clicking "préréserver" button ', async () => {
+      renderWithProviders(
+        <>
+          <PrebookingButton
+            canPrebookOffers
+            offerId={1}
+            queryId="aez"
+            stock={stock}
+            isInSuggestions={false}
+          />
+          <Notification />
+        </>
+      )
+
+      const preBookButton = screen.getByRole('button', { name: 'Préréserver' })
+      await userEvent.click(preBookButton)
+
+      expect(apiAdage.logBookingModalButtonClick).toHaveBeenCalledWith({
+        iframeFrom: '/',
+        isFromNoResult: false,
+        queryId: 'aez',
+        stockId: 117,
+      })
+    })
+
+    it('should log info when clicking "préréserver" button for no result page suggestion', async () => {
+      renderWithProviders(
+        <>
+          <PrebookingButton
+            canPrebookOffers
+            offerId={1}
+            queryId="aez"
+            stock={stock}
+            isInSuggestions={true}
+          />
+          <Notification />
+        </>
+      )
+
+      const preBookButton = screen.getByRole('button', { name: 'Préréserver' })
+      await userEvent.click(preBookButton)
+
+      expect(apiAdage.logBookingModalButtonClick).toHaveBeenCalledWith({
+        iframeFrom: '/',
+        isFromNoResult: true,
+        queryId: 'aez',
+        stockId: 117,
+      })
     })
   })
 })

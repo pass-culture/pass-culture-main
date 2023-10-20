@@ -19,6 +19,7 @@ export interface ContactButtonProps {
   queryId: string
   userEmail?: string | null
   userRole: AdageFrontRoles
+  isInSuggestions?: boolean
 }
 
 const ContactButton = ({
@@ -30,6 +31,7 @@ const ContactButton = ({
   queryId,
   userEmail,
   userRole,
+  isInSuggestions,
 }: ContactButtonProps): JSX.Element => {
   const [isModalOpen, setIsModalOpen] = useState(false)
 
@@ -39,6 +41,7 @@ const ContactButton = ({
       iframeFrom: removeParamsFromUrl(location.pathname),
       offerId,
       queryId: queryId,
+      isFromNoResult: isInSuggestions,
     })
     logClickOnOffer(offerId.toString(), position, queryId)
   }
