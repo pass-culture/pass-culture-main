@@ -52,16 +52,16 @@ const getPossibleFilterValues = (
   const possibleFacetFilters = []
   //  The returned array should be in the order of preferred suggestion filters
 
-  if (formValues.eventAddressType !== OfferAddressType.OTHER) {
+  if (formValues.categories.length !== 0) {
     possibleFacetFilters.push({
       values: {
         ...formValues,
         eventAddressType: OfferAddressType.OTHER,
+        domains: [],
+        categories: [],
         geolocRadius: DEFAULT_GEO_RADIUS,
       },
-      headerMessage: (
-        <>Découvrez des offres qui relèvent d’autres types d’intervention</>
-      ),
+      headerMessage: 'Découvrez des offres qui relèvent d’autres catégories',
     })
   }
 
@@ -73,22 +73,20 @@ const getPossibleFilterValues = (
         domains: [],
         geolocRadius: DEFAULT_GEO_RADIUS,
       },
-      headerMessage: (
-        <>Découvrez des offres qui relèvent d’autres domaines artistiques</>
-      ),
+      headerMessage:
+        'Découvrez des offres qui relèvent d’autres domaines artistiques',
     })
   }
 
-  if (formValues.categories.length !== 0) {
+  if (formValues.eventAddressType !== OfferAddressType.OTHER) {
     possibleFacetFilters.push({
       values: {
         ...formValues,
         eventAddressType: OfferAddressType.OTHER,
-        domains: [],
-        categories: [],
         geolocRadius: DEFAULT_GEO_RADIUS,
       },
-      headerMessage: <>Découvrez des offres qui relèvent d’autres catégories</>,
+      headerMessage:
+        'Découvrez des offres qui relèvent d’autres types d’intervention',
     })
   }
 
@@ -101,12 +99,8 @@ const getPossibleFilterValues = (
         categories: [],
         eventAddressType: OfferAddressType.OTHER,
       },
-      headerMessage: (
-        <>
-          Découvrez des propositions de sorties scolaires à proximité de votre
-          établissement
-        </>
-      ),
+      headerMessage:
+        ' Découvrez des propositions de sorties scolaires à proximité de votre établissement',
     },
     {
       values: {
@@ -116,12 +110,8 @@ const getPossibleFilterValues = (
         categories: [],
         eventAddressType: OfferAddressType.OFFERER_VENUE,
       },
-      headerMessage: (
-        <>
-          Découvrez les offres de partenaires culturels locaux prêts à
-          intervenir dans votre classe
-        </>
-      ),
+      headerMessage:
+        'Découvrez les offres de partenaires culturels locaux prêts à intervenir dans votre classe',
     }
   )
 
