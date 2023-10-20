@@ -16,9 +16,5 @@ export const Default: StoryObj<typeof Tag> = {
 export const Closeable: StoryObj<typeof Tag> = {
   args: {
     children: 'Offre collective',
-    closeable: {
-      onClose: () => {},
-      closeLabel: 'Supprimer le tag',
-    },
   },
 }
