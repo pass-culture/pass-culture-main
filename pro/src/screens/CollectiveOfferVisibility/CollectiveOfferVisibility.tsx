@@ -130,7 +130,9 @@ const CollectiveOfferVisibility = ({
   }
 
   useEffect(() => {
-    requestId && getOfferRequestInformation()
+    if (requestId) {
+      void getOfferRequestInformation()
+    }
   }, [])
 
   const onSubmit = async (values: VisibilityFormValues) => {
@@ -261,9 +263,9 @@ const CollectiveOfferVisibility = ({
                         label="Nom de l'établissement scolaire ou code UAI"
                         placeholder="Ex : Lycee General Simone Weil ou 010456E ou Le Havre"
                         hideArrow
-                        onReset={() => {
+                        onReset={async () => {
                           setTeachersOptions([])
-                          formik.setFieldValue('search-teacher', '')
+                          await formik.setFieldValue('search-teacher', '')
                         }}
                         resetOnOpen={false}
                         disabled={mode === Mode.READ_ONLY}
@@ -286,8 +288,8 @@ const CollectiveOfferVisibility = ({
                   placeholder="Ex: Camille Dupont"
                   hideArrow
                   disabled={mode === Mode.READ_ONLY || !selectedInstitution}
-                  onSearch={() => {
-                    onChangeTeacher()
+                  onSearch={async () => {
+                    await onChangeTeacher()
                   }}
                   resetOnOpen={false}
                   leftIcon={strokeSearch}

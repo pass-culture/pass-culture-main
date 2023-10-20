@@ -174,7 +174,7 @@ const CollectiveDataForm = ({
 
   useEffect(() => {
     if (adageVenueCollectiveData && categories) {
-      formik.setValues(
+      void formik.setValues(
         extractInitialValuesFromVenue(adageVenueCollectiveData, categories)
       )
     }
