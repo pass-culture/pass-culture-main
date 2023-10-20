@@ -5,9 +5,9 @@ import { Events, OffererLinkEvents } from 'core/FirebaseEvents/constants'
 import { SelectOption } from 'custom_types/form'
 import useActiveFeature from 'hooks/useActiveFeature'
 import useAnalytics from 'hooks/useAnalytics'
+import fullAddUserIcon from 'icons/full-add-user.svg'
 import fullEditIcon from 'icons/full-edit.svg'
 import fullLinkIcon from 'icons/full-link.svg'
-import fullMoreIcon from 'icons/full-more.svg'
 import { Banner, ButtonLink } from 'ui-kit'
 import { ButtonVariant } from 'ui-kit/Button/types'
 import SelectInput from 'ui-kit/form/Select/SelectInput'
@@ -96,7 +96,7 @@ const OffererDetails = ({
                   to: `/structures/${selectedOfferer.id}`,
                   isExternal: false,
                 }}
-                icon={fullMoreIcon}
+                icon={fullAddUserIcon}
                 isDisabled={!isUserOffererValidated}
                 onClick={() => {
                   logEvent?.(OffererLinkEvents.CLICKED_INVITE_COLLABORATOR, {
