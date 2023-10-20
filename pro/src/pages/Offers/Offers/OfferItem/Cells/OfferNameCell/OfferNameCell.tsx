@@ -9,7 +9,7 @@ import { Offer } from 'core/Offers/types'
 import { Audience } from 'core/shared'
 import fullErrorIcon from 'icons/full-error.svg'
 import { SvgIcon } from 'ui-kit/SvgIcon/SvgIcon'
-import { Tag } from 'ui-kit/Tag/Tag'
+import { Tag, TagVariant } from 'ui-kit/Tag/Tag'
 import { FORMAT_DD_MM_YYYY_HH_mm } from 'utils/date'
 import { pluralize } from 'utils/pluralize'
 import { formatLocalTimeDateString } from 'utils/timezone'
@@ -67,7 +67,12 @@ const OfferNameCell = ({
   return (
     <td className={styles['title-column']}>
       {offer.isShowcase && (
-        <Tag className={styles['offer-template-tag']}>Offre vitrine</Tag>
+        <Tag
+          variant={TagVariant.SMALL_OUTLINE}
+          className={styles['offer-template-tag']}
+        >
+          Offre vitrine
+        </Tag>
       )}
       <Link
         className={styles['name']}
