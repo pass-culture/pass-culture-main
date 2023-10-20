@@ -259,6 +259,13 @@ class SearchBoUsersTest(GetEndpointHelper):
         assert len(cards_text) == 1
         assert_user_equals(cards_text[0], users[0])
 
+    def test_search_invalid(self, authenticated_client):
+        with assert_num_queries(2):  # only session + current user
+            response = authenticated_client.get(url_for(self.endpoint, q="%"))
+            assert response.status_code == 400
+
+        assert "Le caractère % n'est pas autorisé" in html_parser.extract_warnings(response.data)
+
 
 class GetBoUserTest(GetEndpointHelper):
     endpoint = "backoffice_web.bo_users.get_bo_user"

@@ -43,7 +43,7 @@ def search_bo_users() -> utils.BackofficeResponse:
     request_args = utils.get_query_params()
     form = forms.BOUserSearchForm(formdata=request_args)
     if request_args and not form.validate():
-        return render_template("admin/bo_users/search.html", rows=[]), 400
+        return render_template("admin/bo_users.html", search_form=form, search_dst=url_for(".search_bo_users")), 400
 
     users = users_api.search_backoffice_accounts(form.q.data)
 
