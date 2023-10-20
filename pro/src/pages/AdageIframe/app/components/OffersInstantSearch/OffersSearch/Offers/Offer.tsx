@@ -14,8 +14,8 @@ import {
   HydratedCollectiveOfferTemplate,
   isCollectiveOffer,
 } from 'pages/AdageIframe/app/types/offers'
-import { Tag } from 'ui-kit'
 import { SvgIcon } from 'ui-kit/SvgIcon/SvgIcon'
+import { Tag } from 'ui-kit/Tag/Tag'
 import { LOGS_DATA } from 'utils/config'
 import { getHumanizeRelativeDistance } from 'utils/getDistance'
 import { removeParamsFromUrl } from 'utils/removeParamsFromUrl'
