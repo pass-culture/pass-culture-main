@@ -76,11 +76,11 @@ describe('Create an individual offer (event)', () => {
       `100${NBSP}€ - Carré Or`
     )
     cy.get('#bookingLimitDateInterval').type('3')
-    cy.contains('Valider').click()
-
     cy.intercept({ method: 'POST', url: '/stocks/bulk' }).as('postStocks')
+    cy.contains('Valider').click()
+    cy.wait(['@postStocks'])
+
     cy.contains('Enregistrer et continuer').click()
-    cy.wait(['@postStocks', '@getOffer'])
 
     // Publish offer
     cy.contains('Accepter les réservations "Duo" : Oui')
