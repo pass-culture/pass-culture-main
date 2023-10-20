@@ -2,7 +2,7 @@ import cn from 'classnames'
 import React from 'react'
 
 import { OfferStatus } from 'apiClient/v1'
-import { StatusLabel } from 'components/StatusLabel'
+import { StatusLabel } from 'components/StatusLabel/StatusLabel'
 import { IndividualOffer } from 'core/Offers/types'
 import StatusToggleButton from 'screens/IndividualOffer/Status/StatusToggleButton'
 

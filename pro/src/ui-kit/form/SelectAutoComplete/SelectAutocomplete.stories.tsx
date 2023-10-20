@@ -7,9 +7,15 @@ import { searchPatternInOptions } from 'utils/searchPatternInOptions'
 import SelectAutocomplete from './SelectAutocomplete'
 import type { SelectAutocompleteProps } from './SelectAutocomplete'
 
+const ComponentWithFormik = (args: Args) => (
+  <Formik initialValues={args.initialValues} onSubmit={() => {}}>
+    <SelectAutocomplete {...args} />
+  </Formik>
+)
+
 export default {
   title: 'ui-kit/forms/SelectAutocomplete',
-  component: SelectAutocomplete,
+  component: ComponentWithFormik,
 }
 interface Args extends SelectAutocompleteProps {
   initialValues: {
@@ -17,12 +23,6 @@ interface Args extends SelectAutocompleteProps {
     'search-departement': string
   }
 }
-
-const ComponentWithFormik = (args: Args) => (
-  <Formik initialValues={args.initialValues} onSubmit={() => {}}>
-    <SelectAutocomplete {...args} />
-  </Formik>
-)
 
 const defaultProps: Args = {
   pluralLabel: 'Départements',
