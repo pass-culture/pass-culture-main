@@ -3,9 +3,9 @@ import { useField, useFormikContext } from 'formik'
 import React, { useEffect, useMemo, useRef, useState } from 'react'
 
 import { SelectOption } from 'custom_types/form'
-import Tag from 'ui-kit/Tag'
 import { getLabelString } from 'utils/getLabelString'
 
+import { SelectedValuesTags } from '../SelectAutoComplete/SelectedValuesTags/SelectedValuesTags'
 import { BaseInput } from '../shared'
 import AutocompleteList from '../shared/AutocompleteList'
 import BaseCheckbox from '../shared/BaseCheckbox'
@@ -178,34 +178,29 @@ const MultiSelectAutocomplete = ({
               value={value}
               name={name}
               onChange={async (e) => {
-                await setFieldTouched(`search-${name}`, true)
                 handleChange(e)
                 onChange?.(e)
+                await setFieldTouched(`search-${name}`, true)
               }}
               checked={field.value.includes(value)}
             />
           )}
         />
       </div>
+
       {!hideTags && field.value.length > 0 && (
-        <div className={styles['multi-select-autocomplete-tags']}>
-          {field.value.map((value: string) => (
-            <Tag
-              key={`tag-${name}-${value}`}
-              closeable={{
-                onClose: async () => {
-                  await setFieldValue(
-                    name,
-                    field.value.filter((_value: string) => _value !== value)
-                  )
-                },
-                disabled,
-              }}
-            >
-              {optionsLabelById[value]}
-            </Tag>
-          ))}
-        </div>
+        <SelectedValuesTags
+          disabled={disabled}
+          fieldName={name}
+          optionsLabelById={optionsLabelById}
+          selectedOptions={field.value}
+          removeOption={(value) =>
+            setFieldValue(
+              name,
+              field.value.filter((_value: string) => _value !== value)
+            )
+          }
+        />
       )}
     </FieldLayout>
   )
