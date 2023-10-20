@@ -49,8 +49,14 @@ def test_fr_percentage_filter():
 
 def test_fr_currency_filter():
     assert utils.fr_currency_filter(0) == "0,00"
-    assert utils.fr_currency_filter(-1234) == "12,34"
+    assert utils.fr_currency_filter(-1234) == "-12,34"
     assert utils.fr_currency_filter(500000) == "5 000,00"
+
+
+def test_fr_currency_opposite_filter():
+    assert utils.fr_currency_opposite_filter(0) == "0,00"
+    assert utils.fr_currency_opposite_filter(-1234) == "12,34"
+    assert utils.fr_currency_opposite_filter(500000) == "-5 000,00"
 
 
 def test_format_raw_iban_and_bic():

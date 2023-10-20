@@ -57,7 +57,7 @@
               <th scope="col">ID offre</th>
               <th scope="col">Montant</th>
               <th scope="col">Statut</th>
-              <th scope="col">Évènement comptable</th>
+              {% if is_feature_active("WIP_ENABLE_FINANCE_INCIDENT") %}<th scope="col">Évènement comptable</th>{% endif %}
               <th scope="col">Date de réservation</th>
               <th scope="col">Date de l'évènement</th>
               <th scope="col">Structure</th>
@@ -92,7 +92,7 @@
                                  data-bs-toggle="modal"
                                  data-bs-target=".pc-cancel-booking-modal-{{ collective_booking.id }}">Annuler la réservation</a>
                             </li>
-                          {% elif collective_booking.isReimbursed and has_permission('MANAGE_INCIDENTS') %}
+                          {% elif collective_booking.isReimbursed and has_permission('MANAGE_INCIDENTS') and is_feature_active("WIP_ENABLE_FINANCE_INCIDENT") %}
                             <li class="dropdown-item p-0">
                               <a class="btn btn-sm d-block w-100 text-start px-3"
                                  data-bs-toggle="modal"
@@ -169,8 +169,8 @@
                 <td>{{ collective_offer.id }}</td>
                 <td>{{ collective_booking.total_amount | format_amount }}</td>
                 <td>{{ collective_booking.status | format_booking_status(with_badge=True) | safe }}</td>
-                <td class="text-center">
-                  {% if True %}
+                {% if is_feature_active("WIP_ENABLE_FINANCE_INCIDENT") %}
+                  <td class="text-center">
                     {% for booking_incident in collective_booking.incidents %}
                       {% if booking_incident.incident.status.name == "VALIDATED" %}
                         <a href="{{ url_for('backoffice_web.finance_incidents.get_incident', finance_incident_id=booking_incident.incident.id) }}"
@@ -180,8 +180,8 @@
    data-bs-title="Visualiser l'incident"></i></a>
                       {% endif %}
                     {% endfor %}
-                  {% endif %}
-                </td>
+                  </td>
+                {% endif %}
                 <td>{{ collective_booking.dateCreated | format_date_time }}</td>
                 <td>{{ collective_booking.collectiveStock.beginningDatetime | format_date_time }}</td>
                 <td>{{ links.build_offerer_name_to_details_link(collective_booking.offerer) }}</td>
@@ -191,11 +191,13 @@
             {% endfor %}
           </tbody>
         </table>
-        {% for collective_booking in rows %}
-          {% if collective_booking.isReimbursed and has_permission('MANAGE_INCIDENTS') %}
-            {{ build_lazy_modal(url_for("backoffice_web.finance_incidents.get_collective_booking_incident_creation_form", collective_booking_id=collective_booking.id), "create-incident-modal-" + collective_booking.id|string) }}
-          {% endif %}
-        {% endfor %}
+        {% if is_feature_active("WIP_ENABLE_FINANCE_INCIDENT") %}
+          {% for collective_booking in rows %}
+            {% if collective_booking.isReimbursed and has_permission('MANAGE_INCIDENTS') %}
+              {{ build_lazy_modal(url_for("backoffice_web.finance_incidents.get_collective_booking_incident_creation_form", collective_booking_id=collective_booking.id), "create-incident-modal-" + collective_booking.id|string) }}
+            {% endif %}
+          {% endfor %}
+        {% endif %}
       {% endif %}
     </div>
   </div>

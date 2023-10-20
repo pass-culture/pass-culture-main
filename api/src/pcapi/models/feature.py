@@ -121,6 +121,7 @@ class FeatureToggle(enum.Enum):
     WIP_ENABLE_FORMAT = "Activer le remplacement des catégories/sous-catégories par les formats"
     WIP_ENABLE_DISCOVERY = "Activer la page de découverte dans adage"
     WIP_ENABLE_GOOGLE_SSO = "Activer la connexion SSO pour les jeunes"
+    WIP_ENABLE_FINANCE_INCIDENT = "Active les incidents de finance"
 
     def is_active(self) -> bool:
         if flask.has_request_context():

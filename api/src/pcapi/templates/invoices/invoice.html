@@ -200,7 +200,7 @@
     Remboursement des réservations validées entre le {{ period_start.strftime("%d/%m/%y") }} et le {{ period_end.strftime("%d/%m/%y") }}, sauf cas exceptionnels.
 </h3>
 <h3>
-    Détail des offres remboursées incluant la contribution offreur,
+    Détail des offres remboursées{% if including_finance_incident %} et des incidents de paiement{% endif %} incluant la contribution offreur,
     appliquée selon le barème défini dans nos conditions générales de vente
 </h3>
 <table>
@@ -221,12 +221,12 @@
     </tr>
 {% for line in group.lines %}
     <tr>
-        <td class="headRow">Montant remboursé</td>
+        <td class="headRow">{{ line.label }}</td>
         <td>{{ line.rate|fr_percentage }}</td>
         <td>{{ line.bookings_amount|fr_currency }} €</td>
         <td>{{ line.contribution_rate|fr_percentage }}</td>
         <td>{{ line.contributionAmount|fr_currency }} €</td>
-        <td>{{ line.reimbursedAmount|fr_currency }} €</td>
+        <td>{{ line.reimbursedAmount|fr_currency_opposite }} €</td>
     </tr>
 {% endfor %}
     <tr style="color: dimgrey">
@@ -235,7 +235,7 @@
         <td>{{ group.used_bookings_subtotal|fr_currency }} €</td>
         <td></td>
         <td>{{ group.contribution_subtotal|fr_currency }} €</td>
-        <td>{{ group.reimbursed_amount_subtotal|fr_currency }} €</td>
+        <td>{{ group.reimbursed_amount_subtotal|fr_currency_opposite }} €</td>
     </tr>
 {% endfor %}
     <tr class="bottomTableText">
@@ -244,12 +244,12 @@
         <td>{{ total_used_bookings_amount|fr_currency }} €</td>
         <td></td>
         <td>{{ total_contribution_amount|fr_currency }} €</td>
-        <td>{{ total_reimbursed_amount|fr_currency }} €</td>
+        <td>{{ total_reimbursed_amount|fr_currency_opposite }} €</td>
     </tr>
     </tbody>
 </table>
 <p class="anotations">
-    Au regard de la taxe sur la valeur ajoutée (TVA), les remboursements s’entendent toutes taxes comprises (TTC).
+    Au regard de la taxe sur la valeur ajoutée (TVA), les montants s’entendent toutes taxes comprises (TTC).
     L’Offreur s’engage à s’acquitter de la TVA résultant de
     l’application de son régime fiscal et selon le taux applicable à ses Offres.
     Il est considéré que la contribution offreur relative à l’application du barème constitue une réduction de prix, au
@@ -273,13 +273,13 @@
         <td>Virement {{ cashflow.bankAccount.iban }}</td>
         <td class="cashflow_batch_label">{{ cashflow.batch.label }}</td>
         <td class="cashflow_creation_date">{{ invoice.date.strftime("%d/%m/%Y") }}</td>
-        <td>{{ cashflow.amount|fr_currency }} €</td>
+        <td>{{ cashflow.amount|fr_currency_opposite }} €</td>
         <td>{{ reimbursement_point_name }}</td>
     </tr>
 {% endfor %}
     <tr class="coloredSection bottomTableText">
         <td class="headRow" colspan="3">TOTAL RÈGLEMENT PASS CULTURE</td>
-        <td>{{ invoice.amount|fr_currency }} €</td>
+        <td>{{ invoice.amount|fr_currency_opposite }} €</td>
     </tr>
     </tbody>
 </table>
@@ -299,11 +299,11 @@
 {% for venue in reimbursements_by_venue %}
         <tr>
             <td>{{ venue.venue_name }}</td>
-            <td>{{ venue.validated_booking_amount|fr_currency }} €</td>
-            <td>{{ (venue.validated_booking_amount - venue.reimbursed_amount)|fr_currency }} €</td>
-            <td class="coloredSection">{{ venue.reimbursed_amount|fr_currency }} €</td>
-            <td>{{ venue.individual_amount|fr_currency }} €</td>
-            <td>{{ (venue.reimbursed_amount - venue.individual_amount)|fr_currency }} €</td>
+            <td>{{ venue.validated_booking_amount|fr_currency_opposite }} €</td>
+            <td>{{ (venue.validated_booking_amount - venue.reimbursed_amount)|fr_currency_opposite }} €</td>
+            <td class="coloredSection">{{ venue.reimbursed_amount|fr_currency_opposite }} €</td>
+            <td>{{ venue.individual_amount|fr_currency_opposite }} €</td>
+            <td>{{ (venue.reimbursed_amount - venue.individual_amount)|fr_currency_opposite }} €</td>
         </tr>
 {% endfor %}
     </tbody>
