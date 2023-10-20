@@ -218,7 +218,7 @@ class CDSCinemaDetails(PcObject, Base, Model):
     )
 
     cinemaProviderPivot: sa_orm.Mapped["CinemaProviderPivot | None"] = relationship(
-        CinemaProviderPivot, foreign_keys=[cinemaProviderPivotId]
+        CinemaProviderPivot, foreign_keys=[cinemaProviderPivotId], backref="CDSCinemaDetails", uselist=False
     )
 
     cinemaApiToken: str = Column(Text, nullable=False)
@@ -339,7 +339,7 @@ class BoostCinemaDetails(PcObject, Base, Model):
         BigInteger, ForeignKey("cinema_provider_pivot.id"), index=False, nullable=True, unique=True
     )
     cinemaProviderPivot: sa_orm.Mapped["CinemaProviderPivot | None"] = relationship(
-        CinemaProviderPivot, foreign_keys=[cinemaProviderPivotId]
+        CinemaProviderPivot, foreign_keys=[cinemaProviderPivotId], backref="BoostCinemaDetails", uselist=False
     )
     cinemaUrl: str = Column(Text, nullable=False)  # including http:// or https:// and trailing /
     username: str = Column(Text, nullable=False)
@@ -355,7 +355,7 @@ class CGRCinemaDetails(PcObject, Base, Model):
         BigInteger, ForeignKey("cinema_provider_pivot.id"), index=False, nullable=True, unique=True
     )
     cinemaProviderPivot: sa_orm.Mapped["CinemaProviderPivot | None"] = relationship(
-        CinemaProviderPivot, foreign_keys=[cinemaProviderPivotId]
+        CinemaProviderPivot, foreign_keys=[cinemaProviderPivotId], backref="CGRCinemaDetails", uselist=False
     )
     cinemaUrl: str = Column(Text, nullable=False)
     numCinema: int = Column(Integer, nullable=True)
@@ -369,7 +369,7 @@ class EMSCinemaDetails(PcObject, Base, Model):
         BigInteger, ForeignKey("cinema_provider_pivot.id"), index=False, nullable=True, unique=True
     )
     cinemaProviderPivot: sa_orm.Mapped["CinemaProviderPivot | None"] = relationship(
-        CinemaProviderPivot, foreign_keys=[cinemaProviderPivotId]
+        CinemaProviderPivot, foreign_keys=[cinemaProviderPivotId], backref="EMSCinemaDetails", uselist=False
     )
     lastVersion: int = Column(BigInteger, default=0, nullable=False)
 
