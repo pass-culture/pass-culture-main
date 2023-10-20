@@ -112,6 +112,10 @@ describe('ReimbursementBankAccount', () => {
       expect(
         screen.getByText("Un de vos lieux n'est pas rattaché.")
       ).toBeInTheDocument()
+
+      expect(
+        screen.getByRole('img', { name: 'Une action est requise' })
+      ).toBeInTheDocument()
       expect(screen.getByText('Le Petit Rintintin')).toBeInTheDocument()
 
       expect(
@@ -133,7 +137,7 @@ describe('ReimbursementBankAccount', () => {
       ).toBeInTheDocument()
     })
 
-    it('should display error icon if one or more venues are not linked to an account', async () => {
+    it('should display error icon if no venues are linked to an account', async () => {
       bankAccount.linkedVenues = []
       render(
         <ReimbursementBankAccount
