@@ -161,7 +161,7 @@ const Offer = ({
                       className={style['offer-domains-list-item']}
                       key={domain.id}
                     >
-                      <Tag variant={TagVariant.GREY}>{domain.name}</Tag>
+                      <Tag variant={TagVariant.LIGHT_GREY}>{domain.name}</Tag>
                     </li>
                   ))}
                 </ul>
