@@ -5,12 +5,14 @@ import styles from './Tag.module.scss'
 
 export enum TagVariant {
   SMALL_OUTLINE = 'small-outline',
-  GREY = 'grey',
+  LIGHT_GREY = 'light-grey',
+  LIGHT_PURPLE = 'light-purple',
 }
 
 const classByVariant: Record<TagVariant, string> = {
   [TagVariant.SMALL_OUTLINE]: styles['small-outline'],
-  [TagVariant.GREY]: styles['grey'],
+  [TagVariant.LIGHT_GREY]: styles['light-grey'],
+  [TagVariant.LIGHT_PURPLE]: styles['light-purple'],
 }
 
 interface TagProps {
