@@ -304,3 +304,17 @@ class GetProductByEanTest:
             "motorDisabilityCompliant": None,
             "visualDisabilityCompliant": None,
         }
+
+    def test_400_when_eans_list_is_empty(self, client):
+        venue, _ = utils.create_offerer_provider_linked_to_venue()
+
+        offers_factories.OfferFactory(
+            venue=venue,
+        )
+
+        response = client.with_explicit_token(offerers_factories.DEFAULT_CLEAR_API_KEY).get(
+            f"/public/offers/v1/products/ean?venueId={venue.id}"
+        )
+
+        assert response.status_code == 400
+        assert response.json == {"eans": ["field required"]}
