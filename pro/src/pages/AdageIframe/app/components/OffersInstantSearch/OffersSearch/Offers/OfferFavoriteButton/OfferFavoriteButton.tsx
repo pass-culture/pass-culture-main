@@ -20,12 +20,14 @@ export interface OfferFavoriteButtonProps {
   offer: HydratedCollectiveOffer | HydratedCollectiveOfferTemplate
   queryId: string
   afterFavoriteChange?: (isFavorite: boolean) => void
+  isInSuggestions?: boolean
 }
 
 const OfferFavoriteButton = ({
   offer,
   queryId,
   afterFavoriteChange,
+  isInSuggestions,
 }: OfferFavoriteButtonProps): JSX.Element => {
   const [isFavorite, setIsFavorite] = useState(offer.isFavorite)
   const [isLoading, setIsLoading] = useState(false)
@@ -48,6 +50,7 @@ const OfferFavoriteButton = ({
         queryId: queryId,
         iframeFrom: removeParamsFromUrl(location.pathname),
         isFavorite: false,
+        isFromNoResult: isInSuggestions,
       })
 
       afterFavoriteChange?.(false)
@@ -73,6 +76,7 @@ const OfferFavoriteButton = ({
         queryId: queryId,
         iframeFrom: removeParamsFromUrl(location.pathname),
         isFavorite: true,
+        isFromNoResult: isInSuggestions,
       })
 
       afterFavoriteChange?.(true)

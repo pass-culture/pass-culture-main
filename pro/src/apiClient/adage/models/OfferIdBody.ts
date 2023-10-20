@@ -5,6 +5,7 @@
 
 export type OfferIdBody = {
   iframeFrom: string;
+  isFromNoResult?: boolean | null;
   offerId: number;
   queryId?: string | null;
 };

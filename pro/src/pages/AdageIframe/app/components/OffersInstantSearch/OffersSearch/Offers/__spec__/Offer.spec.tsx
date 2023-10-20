@@ -35,6 +35,13 @@ vi.mock('apiClient/api', () => ({
 }))
 vi.mock('pages/AdageIframe/libs/initAlgoliaAnalytics')
 
+vi.mock('utils/config', async () => {
+  return {
+    ...((await vi.importActual('utils/config')) ?? {}),
+    LOGS_DATA: true,
+  }
+})
+
 const user: AuthenticatedResponse = {
   role: AdageFrontRoles.REDACTOR,
   email: 'test@example.com',
@@ -489,5 +496,41 @@ describe('offer', () => {
     )
 
     expect(screen.queryByText('Enregistrer en favoris')).not.toBeInTheDocument()
+  })
+
+  it('should log event when clicking on "en savoir plus" button', async () => {
+    renderOffers({
+      ...offerProps,
+      isInSuggestions: false,
+      offer: { ...defaultCollectiveTemplateOffer, isTemplate: true },
+    })
+
+    const seeMoreButton = await screen.findByRole('button', {
+      name: 'en savoir plus',
+    })
+    await userEvent.click(seeMoreButton)
+
+    expect(apiAdage.logOfferTemplateDetailsButtonClick).toHaveBeenCalledWith({
+      iframeFrom: '/',
+      isFromNoResult: false,
+      queryId: '1',
+      offerId: 1,
+    })
+  })
+
+  it('should mention if the log is from a suggestion offer when clicking on "en savoir plus" button', async () => {
+    renderOffers({ ...offerProps, isInSuggestions: true })
+
+    const seeMoreButton = await screen.findByRole('button', {
+      name: 'en savoir plus',
+    })
+    await userEvent.click(seeMoreButton)
+
+    expect(apiAdage.logOfferDetailsButtonClick).toHaveBeenCalledWith({
+      iframeFrom: '/',
+      isFromNoResult: true,
+      queryId: '1',
+      stockId: 825,
+    })
   })
 })

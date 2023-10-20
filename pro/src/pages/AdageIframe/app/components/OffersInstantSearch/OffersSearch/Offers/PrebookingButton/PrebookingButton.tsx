@@ -21,12 +21,14 @@ const PrebookingButton = ({
   canPrebookOffers,
   offerId,
   queryId,
+  isInSuggestions,
 }: {
   className?: string
   stock: OfferStockResponse
   canPrebookOffers: boolean
   offerId: number
   queryId: string
+  isInSuggestions?: boolean
 }): JSX.Element | null => {
   const [hasPrebookedOffer, setHasPrebookedOffer] = useState(false)
   const [isModalOpen, setIsModalOpen] = useState(false)
@@ -39,6 +41,7 @@ const PrebookingButton = ({
         iframeFrom: removeParamsFromUrl(location.pathname),
         stockId,
         queryId: queryId,
+        isFromNoResult: isInSuggestions,
       })
     }
     setIsModalOpen(true)
