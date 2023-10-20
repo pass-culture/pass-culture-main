@@ -95,6 +95,7 @@
                   {% if has_permission("READ_PRO_ENTITY") and has_permission("MANAGE_PRO_ENTITY") %}
                     {{ menu_section_item("Actions sur les lieux", "backoffice_web.venue.list_venues") }}
                   {% endif %}
+                  {% if has_permission("READ_PRO_ENTITY") %}{{ menu_section_item("Préférences", "backoffice_web.preferences.edit_preferences") }}{% endif %}
                 {% endcall %}
               </div>
               <hr />
