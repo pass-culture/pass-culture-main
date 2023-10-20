@@ -1,5 +1,4 @@
-import cn from 'classnames'
-import React, { ReactElement } from 'react'
+import React from 'react'
 
 import { OfferStatus } from 'apiClient/v1'
 import fullHideIcon from 'icons/full-hide.svg'
@@ -10,50 +9,49 @@ import strokeCloseIcon from 'icons/stroke-close.svg'
 import strokeDraftIcon from 'icons/stroke-draft.svg'
 import strokeWarningIcon from 'icons/stroke-warning.svg'
 import { SvgIcon } from 'ui-kit/SvgIcon/SvgIcon'
-
-import style from './StatusLabel.module.scss'
+import { Tag, TagVariant } from 'ui-kit/Tag/Tag'
 
 const OFFER_STATUS_PROPERTIES: Record<
   string,
   {
-    className: string
-    Icon: ReactElement
+    variant: TagVariant
+    icon: string
     label: string
   }
 > = {
   [OfferStatus.EXPIRED]: {
-    className: style['status-expired'],
-    Icon: <SvgIcon alt="" src={strokeCalendarIcon} />,
+    variant: TagVariant.DARK_GREY,
+    icon: strokeCalendarIcon,
     label: 'expirée',
   },
   [OfferStatus.SOLD_OUT]: {
-    className: style['status-sold-out'],
-    Icon: <SvgIcon alt="" src={strokeWarningIcon} />,
+    variant: TagVariant.RED,
+    icon: strokeWarningIcon,
     label: 'épuisée',
   },
   [OfferStatus.ACTIVE]: {
-    className: style['status-active'],
-    Icon: <SvgIcon alt="" src={strokeCheckIcon} />,
+    variant: TagVariant.GREEN,
+    icon: strokeCheckIcon,
     label: 'publiée',
   },
   [OfferStatus.DRAFT]: {
-    className: style['status-draft'],
-    Icon: <SvgIcon alt="" src={strokeDraftIcon} />,
+    variant: TagVariant.PURPLE,
+    icon: strokeDraftIcon,
     label: 'brouillon',
   },
   [OfferStatus.REJECTED]: {
-    className: style['status-rejected'],
-    Icon: <SvgIcon alt="" src={strokeCloseIcon} />,
+    variant: TagVariant.BLACK,
+    icon: strokeCloseIcon,
     label: 'refusée',
   },
   [OfferStatus.PENDING]: {
-    className: style['status-pending'],
-    Icon: <SvgIcon alt="" src={strokeClockIcon} />,
+    variant: TagVariant.DARK_GREY,
+    icon: strokeClockIcon,
     label: 'en attente',
   },
   [OfferStatus.INACTIVE]: {
-    className: style['status-inactive'],
-    Icon: <SvgIcon alt="" src={fullHideIcon} />,
+    variant: TagVariant.DARK_GREY,
+    icon: fullHideIcon,
     label: 'désactivée',
   },
 }
@@ -61,19 +59,12 @@ const OFFER_STATUS_PROPERTIES: Record<
 type StatusLabelProps = {
   status: OfferStatus
 }
-const StatusLabel = ({ status }: StatusLabelProps) => {
+
+export const StatusLabel = ({ status }: StatusLabelProps) => {
   return (
-    <span
-      className={cn(
-        style['status-label'],
-        OFFER_STATUS_PROPERTIES[status]?.className
-      )}
-    >
-      <>
-        {OFFER_STATUS_PROPERTIES[status]?.Icon}
-        {OFFER_STATUS_PROPERTIES[status]?.label}
-      </>
-    </span>
+    <Tag variant={OFFER_STATUS_PROPERTIES[status].variant}>
+      <SvgIcon alt="" src={OFFER_STATUS_PROPERTIES[status].icon} />
+      {OFFER_STATUS_PROPERTIES[status].label}
+    </Tag>
   )
 }
-export default StatusLabel

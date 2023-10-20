@@ -60,7 +60,7 @@ const useOfferEducationalFormData = (
 
   useEffect(() => {
     if (!isReady) {
-      loadData(offer)
+      void loadData(offer)
     }
   }, [isReady, offer?.id, loadData, history])
 

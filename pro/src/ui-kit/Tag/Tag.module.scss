@@ -30,8 +30,33 @@
     color: colors.$black;
   }
 
+  &.dark-grey {
+    background-color: colors.$grey-dark;
+    color: colors.$white;
+  }
+
+  &.black {
+    background-color: colors.$black;
+    color: colors.$white;
+  }
+
   &.light-purple {
     background-color: colors.$grey-light;
     color: colors.$secondary;
+  }
+
+  &.purple {
+    background-color: colors.$secondary;
+    color: colors.$white;
+  }
+
+  &.red {
+    background-color: colors.$red-error;
+    color: colors.$white;
+  }
+
+  &.green {
+    background-color: colors.$green-valid;
+    color: colors.$white;
   }
 }

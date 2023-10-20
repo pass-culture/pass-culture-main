@@ -1,7 +1,7 @@
 import React from 'react'
 
 import { OfferStatus } from 'apiClient/v1'
-import { StatusLabel } from 'components/StatusLabel'
+import { StatusLabel } from 'components/StatusLabel/StatusLabel'
 
 import styles from '../../OfferItem.module.scss'
 

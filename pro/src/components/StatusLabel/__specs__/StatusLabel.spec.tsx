@@ -3,7 +3,7 @@ import React from 'react'
 
 import { OfferStatus } from 'apiClient/v1'
 
-import StatusLabel from '../StatusLabel'
+import { StatusLabel } from '../StatusLabel'
 
 const renderStatusLabel = (status: OfferStatus) => {
   return render(<StatusLabel status={status} />)
