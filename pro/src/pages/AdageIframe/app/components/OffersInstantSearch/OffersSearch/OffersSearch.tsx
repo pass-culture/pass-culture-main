@@ -23,6 +23,7 @@ import {
 } from '../utils'
 
 import { Autocomplete } from './Autocomplete/Autocomplete'
+import FiltersTags from './FiltersTags/FiltersTags'
 import { OfferFilters } from './OfferFilters/OfferFilters'
 import { Offers } from './Offers/Offers'
 import styles from './OffersSearch.module.scss'
@@ -177,6 +178,7 @@ export const OffersSearch = ({
           }
           setCurrentSearch={setCurrentSearch}
         />
+        <div className={styles['separator']} />
         <div ref={offerFilterRef}>
           <OfferFilters
             className={styles['search-filters']}
@@ -188,6 +190,13 @@ export const OffersSearch = ({
             isFormatEnabled={isFormatEnabled}
           />
         </div>
+
+        <FiltersTags
+          categoriesOptions={categoriesOptions}
+          domainsOptions={domainsOptions}
+          localisationFilterState={localisationFilterState}
+          setLocalisationFilterState={setlocalisationFilterState}
+        />
       </FormikContext.Provider>
       <div className="search-results">
         <Offers
