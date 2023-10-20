@@ -103,7 +103,9 @@ const CollectiveOfferVisibility = ({
   }
 
   useEffect(() => {
-    requestId && getOfferRequestInformation()
+    if (requestId) {
+      void getOfferRequestInformation()
+    }
   }, [])
 
   const onSubmit = async (values: VisibilityFormValues) => {
@@ -175,7 +177,7 @@ const CollectiveOfferVisibility = ({
 
   const onChangeTeacher = async () => {
     if (requestId) {
-      formik.setFieldValue('institution', selectedInstitution?.value)
+      await formik.setFieldValue('institution', selectedInstitution?.value)
     }
 
     const searchTeacherValue = formik.values['search-teacher']?.trim()
@@ -211,12 +213,13 @@ const CollectiveOfferVisibility = ({
       )
   }
 
-  const clearAllFields = () => {
-    formik.setFieldValue('search-institution', '')
-    formik.setFieldValue('institution', '')
-    formik.setFieldValue('search-teacher', '')
-    formik.setFieldValue('teacher', '')
+  const clearAllFields = async () => {
+    await formik.setFieldValue('search-institution', '')
+    await formik.setFieldValue('institution', '')
+    await formik.setFieldValue('search-teacher', '')
+    await formik.setFieldValue('teacher', '')
   }
+
   const noInstitutionSelected =
     formik.values.visibility === 'one' && formik.values.institution.length === 0
   const nextStepDisabled =
@@ -280,9 +283,9 @@ const CollectiveOfferVisibility = ({
                         label="Nom de l’établissement scolaire"
                         placeholder="Saisir l’établissement scolaire ou le code UAI"
                         hideArrow
-                        onReset={() => {
+                        onReset={async () => {
                           setTeachersOptions([])
-                          formik.setFieldValue('search-teacher', '')
+                          await formik.setFieldValue('search-teacher', '')
                         }}
                         disabled={mode === Mode.READ_ONLY}
                         searchInOptions={(options, pattern) =>
@@ -329,9 +332,7 @@ const CollectiveOfferVisibility = ({
                       placeholder="Saisir le prénom et le nom de l’enseignant"
                       hideArrow
                       disabled={mode === Mode.READ_ONLY}
-                      onSearch={() => {
-                        onChangeTeacher()
-                      }}
+                      onSearch={() => onChangeTeacher()}
                     />
                     {selectedTeacher && (
                       <Banner type="light" className={styles['institution']}>
@@ -344,9 +345,9 @@ const CollectiveOfferVisibility = ({
                           </div>
                           <Button
                             variant={ButtonVariant.TERNARY}
-                            onClick={() => {
-                              formik.setFieldValue('search-teacher', '')
-                              formik.setFieldValue('teacher', null)
+                            onClick={async () => {
+                              await formik.setFieldValue('search-teacher', '')
+                              await formik.setFieldValue('teacher', null)
                             }}
                             icon={fullTrashIcon}
                             iconPosition={IconPositionEnum.CENTER}

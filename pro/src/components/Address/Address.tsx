@@ -24,9 +24,11 @@ const AddressSelect = ({ description, suggestionLimit }: AddressProps) => {
     setOptions([{ label: selectedField.value, value: selectedField.value }])
   }, [])
 
+  // TODO we should not use useEffect for this but an event handler on the input
   useEffect(() => {
-    if (searchField.value.length >= 3) {
-      getSuggestions(searchField.value).then((response) => {
+    const onSearchFieldChange = async () => {
+      if (searchField.value.length >= 3) {
+        const response = await getSuggestions(searchField.value)
         setAddressesMap(
           response.reduce<Record<string, AutocompleteItemProps>>(
             (acc, add: AutocompleteItemProps) => {
@@ -37,20 +39,20 @@ const AddressSelect = ({ description, suggestionLimit }: AddressProps) => {
           )
         )
         setOptions(
-          response.map((item) => {
-            return {
-              value: String(item.value),
-              label: item.label,
-            }
-          })
+          response.map((item) => ({
+            value: String(item.value),
+            label: item.label,
+          }))
         )
-      })
-    } else if (searchField.value.length === 0) {
-      setOptions([])
-      handleAddressSelect(setFieldValue, undefined, searchField)
+      } else if (searchField.value.length === 0) {
+        setOptions([])
+        handleAddressSelect(setFieldValue, undefined, searchField)
+      }
     }
+    void onSearchFieldChange()
   }, [searchField.value])
 
+  // TODO we should not use useEffect for this but an event handler on the input
   useEffect(() => {
     if (addressesMap[searchField.value] != undefined) {
       handleAddressSelect(
