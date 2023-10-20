@@ -17,7 +17,7 @@ import styles from './Callout.module.scss'
 export interface CalloutProps {
   children?: React.ReactNode | React.ReactNode[]
   className?: string
-  title: string
+  title?: string
   links?: Link[]
   closable?: boolean
   onClose?: undefined | (() => void)
@@ -56,7 +56,7 @@ const Callout = ({
       className={cn(
         styles['callout'],
         styles[`callout-${type}`],
-        titleOnly ? styles['small-callout'] : '',
+        titleOnly || !title ? styles['small-callout'] : '',
         className
       )}
     >
@@ -67,7 +67,7 @@ const Callout = ({
         width="20"
       />
       <div className={styles['content']}>
-        <div className={styles['title']}>{title}</div>
+        {title && <div className={styles['title']}>{title}</div>}
         {!titleOnly && (
           <>
             {children && (
