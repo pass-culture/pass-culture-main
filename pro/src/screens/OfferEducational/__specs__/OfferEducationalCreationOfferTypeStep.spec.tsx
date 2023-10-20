@@ -226,9 +226,7 @@ describe('screens | OfferEducational : creation offer type step', () => {
         `${titleMaxLength}/${titleMaxLength}`
       )
 
-      await expect(titleInput.getAttribute('value')).toHaveLength(
-        titleMaxLength
-      )
+      expect(titleInput.getAttribute('value')).toHaveLength(titleMaxLength)
     })
 
     it('should require a description with less than 1000 chars (and truncate longer strings)', async () => {
@@ -256,7 +254,7 @@ describe('screens | OfferEducational : creation offer type step', () => {
         `${descMaxLength}/${descMaxLength}`
       )
 
-      await expect(description.textContent).toHaveLength(descMaxLength)
+      expect(description.textContent).toHaveLength(descMaxLength)
     })
 
     it('should have a duration field with a format of hh:mm', async () => {

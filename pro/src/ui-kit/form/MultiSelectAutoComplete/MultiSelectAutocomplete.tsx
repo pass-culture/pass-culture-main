@@ -177,10 +177,11 @@ const MultiSelectAutocomplete = ({
               key={`${name}-${value}`}
               value={value}
               name={name}
-              onChange={async (e) => {
+              onChange={(e) => {
+                // Don't know why the multiselect doesn't work anymore if we await this setFieldTouched
+                void setFieldTouched(`search-${name}`, true)
                 handleChange(e)
                 onChange?.(e)
-                await setFieldTouched(`search-${name}`, true)
               }}
               checked={field.value.includes(value)}
             />

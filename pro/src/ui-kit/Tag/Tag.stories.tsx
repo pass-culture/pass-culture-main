@@ -1,6 +1,6 @@
 import { StoryObj } from '@storybook/react'
 
-import { Tag } from './Tag'
+import { Tag, TagVariant } from './Tag'
 
 export default {
   title: 'ui-kit/Tag',
@@ -10,5 +10,6 @@ export default {
 export const Default: StoryObj<typeof Tag> = {
   args: {
     children: 'Offre collective',
+    variant: TagVariant.SMALL_OUTLINE,
   },
 }

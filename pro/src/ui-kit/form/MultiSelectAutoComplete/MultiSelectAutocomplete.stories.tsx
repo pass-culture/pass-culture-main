@@ -5,20 +5,20 @@ import React from 'react'
 import MultiSelectAutocomplete from './MultiSelectAutocomplete'
 import type { MultiSelectAutocompleteProps } from './MultiSelectAutocomplete'
 
-export default {
-  title: 'ui-kit/forms/MultiSelectAutocomplete',
-  component: MultiSelectAutocomplete,
-}
-
-interface Args extends MultiSelectAutocompleteProps {
-  initialValues: { departement: string[]; 'search-departement': string }
-}
-
 const ComponentWithFormik = (args: Args) => (
   <Formik initialValues={args.initialValues} onSubmit={() => {}}>
     <MultiSelectAutocomplete {...args} />
   </Formik>
 )
+
+export default {
+  title: 'ui-kit/forms/MultiSelectAutocomplete',
+  component: ComponentWithFormik,
+}
+
+interface Args extends MultiSelectAutocompleteProps {
+  initialValues: { departement: string[]; 'search-departement': string }
+}
 
 const defaultProps: Args = {
   pluralLabel: 'Départements',
