@@ -735,6 +735,12 @@ def test_public_api(client):
                     "title": "GenreTypeModel",
                     "type": "object",
                 },
+                "GoogleSigninRequest": {
+                    "properties": {"authorizationCode": {"title": "Authorizationcode", "type": "string"}},
+                    "required": ["authorizationCode"],
+                    "title": "GoogleSigninRequest",
+                    "type": "object",
+                },
                 "HomepageLabelResponseModelv2": {
                     "properties": {
                         "name": {"$ref": "#/components/schemas/_HomepageLabelNameEnumv2"},
@@ -2537,6 +2543,37 @@ def test_public_api(client):
                     },
                     "security": [{"JWTAuth": []}],
                     "summary": "delete_favorite <DELETE>",
+                    "tags": [],
+                }
+            },
+            "/native/v1/oauth/google/authorize": {
+                "post": {
+                    "description": "",
+                    "operationId": "post__native_v1_oauth_google_authorize",
+                    "parameters": [],
+                    "requestBody": {
+                        "content": {
+                            "application/json": {"schema": {"$ref": "#/components/schemas/GoogleSigninRequest"}}
+                        }
+                    },
+                    "responses": {
+                        "200": {
+                            "content": {
+                                "application/json": {"schema": {"$ref": "#/components/schemas/SigninResponse"}}
+                            },
+                            "description": "OK",
+                        },
+                        "400": {"description": "Bad Request"},
+                        "401": {"description": "Unauthorized"},
+                        "403": {"description": "Forbidden"},
+                        "422": {
+                            "content": {
+                                "application/json": {"schema": {"$ref": "#/components/schemas/ValidationError"}}
+                            },
+                            "description": "Unprocessable Entity",
+                        },
+                    },
+                    "summary": "google_auth <POST>",
                     "tags": [],
                 }
             },
