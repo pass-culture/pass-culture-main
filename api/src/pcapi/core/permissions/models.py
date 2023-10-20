@@ -210,6 +210,13 @@ class BackOfficeUserProfile(Base, Model):
         "Role", secondary=role_backoffice_profile_table, back_populates="profiles"
     )
 
+    preferences: sa.orm.Mapped[dict] = sa.Column(
+        sa.ext.mutable.MutableDict.as_mutable(sa.dialects.postgresql.JSONB),
+        nullable=False,
+        default={},
+        server_default="{}",
+    )
+
     @property
     def permissions(self) -> typing.Collection[Permissions]:
         permissions_members = Permissions.__members__

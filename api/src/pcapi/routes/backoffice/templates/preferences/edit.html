@@ -1,0 +1,19 @@
+{% from "components/forms.html" import build_form_fields_group with context %}
+{% extends "layouts/standard.html" %}
+{% block title %}Préférences{% endblock %}
+{% block main_content %}
+  <form action="{{ dst }}" name={{ dst | action_to_name }} method="post">
+    <div class="form-group">
+      <div class="w-100 my-4">
+        <p>Sélectionne les départements cochés par défaut dans le filtre de recherche des acteurs culturels.</p>
+        {% for error in form.departments.errors %}<p class="text-warning lead">{{ error }}</p>{% endfor %}
+        {{ form.departments }}
+      </div>
+    </div>
+    <div>
+      {{ form.csrf_token }}
+      <button type="submit"
+              class="btn btn-primary">Enregistrer</button>
+    </div>
+  </form>
+{% endblock main_content %}
