@@ -383,7 +383,7 @@ describe('offersSearch component', () => {
         name: /Localisation des partenaires/,
       })
     )
-    expect(screen.getByLabelText('75 - Paris', { exact: false })).toBeChecked()
+    expect(screen.getByRole('option', { name: '75 - Paris' })).toBeChecked()
   })
 
   it('should go back to the localisation main menu when reopening the localisation multiselect after having submitted it with no values selected', async () => {
