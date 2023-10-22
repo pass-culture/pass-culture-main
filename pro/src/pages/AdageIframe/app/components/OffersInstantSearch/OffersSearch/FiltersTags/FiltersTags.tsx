@@ -1,12 +1,17 @@
 import { useFormikContext } from 'formik'
+import isEqual from 'lodash.isequal'
 
 import { OfferAddressType } from 'apiClient/adage'
 import fullClearIcon from 'icons/full-clear.svg'
+import fullRefreshIcon from 'icons/full-refresh.svg'
 import { departmentOptions } from 'pages/AdageIframe/app/constants/departmentOptions'
 import { Option } from 'pages/AdageIframe/app/types'
+import { Button } from 'ui-kit'
+import { ButtonVariant } from 'ui-kit/Button/types'
 import { SvgIcon } from 'ui-kit/SvgIcon/SvgIcon'
 import { inferCategoryLabelsFromSubcategories } from 'utils/collectiveCategories'
 
+import { ADAGE_FILTERS_DEFAULT_VALUES } from '../../utils'
 import { LocalisationFilterStates, SearchFormValues } from '../OffersSearch'
 
 import styles from './FiltersTags.module.scss'
@@ -16,6 +21,7 @@ interface FiltersTagsProps {
   domainsOptions: Option<number>[]
   localisationFilterState: LocalisationFilterStates
   setLocalisationFilterState: (state: LocalisationFilterStates) => void
+  resetForm: () => void
 }
 
 const createTag = (label: string, onClose: () => void) => {
@@ -46,6 +52,7 @@ const FiltersTags = ({
   domainsOptions,
   localisationFilterState,
   setLocalisationFilterState,
+  resetForm,
 }: FiltersTagsProps) => {
   const { values, setFieldValue, handleSubmit } =
     useFormikContext<SearchFormValues>()
@@ -144,6 +151,18 @@ const FiltersTags = ({
           handleSubmit()
         })
       )}
+      {
+        // TODO : We should use a custom isEqual instead of lodash one
+        !isEqual(values, ADAGE_FILTERS_DEFAULT_VALUES) && (
+          <Button
+            onClick={resetForm}
+            icon={fullRefreshIcon}
+            variant={ButtonVariant.TERNARY}
+          >
+            Réinitialiser les filtres
+          </Button>
+        )
+      }
     </div>
   )
 }

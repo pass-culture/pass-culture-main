@@ -1,12 +1,10 @@
 import { Form, FormikProvider, useFormikContext } from 'formik'
-import isEqual from 'lodash.isequal'
 import React, { useEffect, useState } from 'react'
 
 import { AdageFrontRoles, EacFormat, OfferAddressType } from 'apiClient/adage'
 import AdageButtonFilter from 'components/AdageButtonFilter/AdageButtonFilter'
 import FormLayout from 'components/FormLayout'
 import useActiveFeature from 'hooks/useActiveFeature'
-import fullRefreshIcon from 'icons/full-refresh.svg'
 import strokeBuildingIcon from 'icons/stroke-building.svg'
 import strokeFranceIcon from 'icons/stroke-france.svg'
 import strokeNearIcon from 'icons/stroke-near.svg'
@@ -19,7 +17,6 @@ import { ButtonVariant } from 'ui-kit/Button/types'
 import AdageMultiselect from 'ui-kit/form/AdageMultiselect/AdageMultiselect'
 import Slider from 'ui-kit/form/Slider/Slider'
 
-import { ADAGE_FILTERS_DEFAULT_VALUES } from '../../utils'
 import { LocalisationFilterStates, SearchFormValues } from '../OffersSearch'
 
 import ModalFilterLayout from './ModalFilterLayout/ModalFilterLayout'
@@ -30,7 +27,7 @@ interface OfferFiltersProps {
   className?: string
   localisationFilterState: LocalisationFilterStates
   setLocalisationFilterState: (state: LocalisationFilterStates) => void
-  resetForm: () => void
+
   categoriesOptions: Option<string[]>[]
   domainsOptions: Option<number>[]
   isFormatEnabled: boolean
@@ -40,7 +37,6 @@ export const OfferFilters = ({
   className,
   localisationFilterState,
   setLocalisationFilterState,
-  resetForm,
   categoriesOptions,
   domainsOptions,
   isFormatEnabled,
@@ -432,19 +428,6 @@ export const OfferFilters = ({
                 </ModalFilterLayout>
               </AdageButtonFilter>
             </div>
-            {
-              // TODO : We should use a custom isEqual instead of lodash one
-              !isEqual(formik.values, ADAGE_FILTERS_DEFAULT_VALUES) && (
-                <Button
-                  className={styles['filter-container-button-clear']}
-                  onClick={resetForm}
-                  icon={fullRefreshIcon}
-                  variant={ButtonVariant.TERNARY}
-                >
-                  Réinitialiser les filtres
-                </Button>
-              )
-            }
           </div>
         </FormLayout.Row>
       </Form>

@@ -12,7 +12,6 @@ import { LocalisationFilterStates, SearchFormValues } from '../../OffersSearch'
 import { OfferFilters } from '../OfferFilters'
 
 const handleSubmit = vi.fn()
-const resetFormMock = vi.fn()
 const mockSetLocalisationFilterState = vi.fn()
 
 const isGeolocationActive = {
@@ -46,7 +45,6 @@ const renderOfferFilters = ({
         <OfferFilters
           localisationFilterState={localisationFilterState}
           setLocalisationFilterState={mockSetLocalisationFilterState}
-          resetForm={resetFormMock}
           categoriesOptions={[{ label: 'Cinéma', value: ['CINE_PLEIN_AIR'] }]}
           domainsOptions={[
             { value: 1, label: 'Danse' },
@@ -87,9 +85,6 @@ describe('OfferFilters', () => {
     ).toBeInTheDocument()
     expect(
       screen.getByRole('button', { name: 'Catégorie' })
-    ).toBeInTheDocument()
-    expect(
-      screen.getByRole('button', { name: 'Réinitialiser les filtres' })
     ).toBeInTheDocument()
   })
 
