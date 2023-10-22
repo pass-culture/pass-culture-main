@@ -180,7 +180,6 @@ export const OffersSearch = ({
             className={styles['search-filters']}
             localisationFilterState={localisationFilterState}
             setLocalisationFilterState={setlocalisationFilterState}
-            resetForm={resetForm}
             categoriesOptions={categoriesOptions}
             domainsOptions={domainsOptions}
           />
@@ -191,6 +190,7 @@ export const OffersSearch = ({
           domainsOptions={domainsOptions}
           localisationFilterState={localisationFilterState}
           setLocalisationFilterState={setlocalisationFilterState}
+          resetForm={resetForm}
         />
       </FormikContext.Provider>
       <div className="search-results">

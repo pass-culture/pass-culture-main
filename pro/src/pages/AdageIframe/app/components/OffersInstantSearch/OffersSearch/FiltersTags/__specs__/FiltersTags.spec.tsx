@@ -19,6 +19,7 @@ const categoriesOptions = [
 ]
 
 const mockSetLocalisationFilterState = vi.fn()
+const mockResetForm = vi.fn()
 const renderFiltersTag = (
   initialValues: SearchFormValues,
   localisationFilterState?: LocalisationFilterStates
@@ -32,6 +33,7 @@ const renderFiltersTag = (
           localisationFilterState || LocalisationFilterStates.NONE
         }
         setLocalisationFilterState={mockSetLocalisationFilterState}
+        resetForm={mockResetForm}
       />
     </Formik>
   )
@@ -225,5 +227,16 @@ describe('FiltersTag', () => {
       await userEvent.click(screen.getByText('Collège - 6e'))
       expect(screen.queryByText('Collège - 6e')).not.toBeInTheDocument()
     })
+  })
+
+  it('should call reinit filters on click reinit button', async () => {
+    renderFiltersTag({
+      ...ADAGE_FILTERS_DEFAULT_VALUES,
+      departments: ['75'],
+    })
+    await userEvent.click(
+      screen.getByRole('button', { name: 'Réinitialiser les filtres' })
+    )
+    expect(mockResetForm).toHaveBeenCalled()
   })
 })

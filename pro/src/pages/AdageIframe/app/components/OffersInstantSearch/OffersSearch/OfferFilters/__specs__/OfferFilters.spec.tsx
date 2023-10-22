@@ -12,7 +12,6 @@ import { LocalisationFilterStates, SearchFormValues } from '../../OffersSearch'
 import { OfferFilters } from '../OfferFilters'
 
 const handleSubmit = vi.fn()
-const resetFormMock = vi.fn()
 const mockSetLocalisationFilterState = vi.fn()
 
 const isGeolocationActive = {
@@ -44,7 +43,6 @@ const renderOfferFilters = ({
         <OfferFilters
           localisationFilterState={localisationFilterState}
           setLocalisationFilterState={mockSetLocalisationFilterState}
-          resetForm={resetFormMock}
           categoriesOptions={[{ label: 'Cinéma', value: ['CINE_PLEIN_AIR'] }]}
           domainsOptions={[
             { value: 1, label: 'Danse' },
@@ -83,9 +81,6 @@ describe('OfferFilters', () => {
     ).toBeInTheDocument()
     expect(
       screen.getByRole('button', { name: 'Catégorie' })
-    ).toBeInTheDocument()
-    expect(
-      screen.getByRole('button', { name: 'Réinitialiser les filtres' })
     ).toBeInTheDocument()
   })
 
@@ -190,7 +185,7 @@ describe('OfferFilters', () => {
     expect(screen.getByText('Arts')).toBeInTheDocument()
   })
 
-  it('should display departments and academies button in localisation filter modal', async () => {
+  it('should display departments and academies button in localisation filter modal', () => {
     renderOfferFilters({
       initialValues: initialValues,
       localisationFilterState: LocalisationFilterStates.NONE,
@@ -201,7 +196,7 @@ describe('OfferFilters', () => {
     expect(screen.getByText('Choisir une académie')).toBeInTheDocument()
   })
 
-  it('should display geoloc button in localisation filter modal', async () => {
+  it('should display geoloc button in localisation filter modal', () => {
     renderOfferFilters({
       initialValues: initialValues,
       localisationFilterState: LocalisationFilterStates.NONE,
@@ -214,7 +209,7 @@ describe('OfferFilters', () => {
     ).toBeInTheDocument()
   })
 
-  it('should not display geoloc button in localisation filter modal if the user does not have a valid geoloc', async () => {
+  it('should not display geoloc button in localisation filter modal if the user does not have a valid geoloc', () => {
     renderOfferFilters({
       initialValues: initialValues,
       localisationFilterState: LocalisationFilterStates.NONE,
@@ -227,7 +222,7 @@ describe('OfferFilters', () => {
     ).not.toBeInTheDocument()
   })
 
-  it('should display departments options in localisation filter modal', async () => {
+  it('should display departments options in localisation filter modal', () => {
     renderOfferFilters({
       initialValues: initialValues,
       localisationFilterState: LocalisationFilterStates.DEPARTMENTS,
@@ -237,7 +232,7 @@ describe('OfferFilters', () => {
       screen.getByPlaceholderText('Ex: 59 ou Hauts-de-France')
     ).toBeInTheDocument()
   })
-  it('should display academies options in localisation filter modal', async () => {
+  it('should display academies options in localisation filter modal', () => {
     renderOfferFilters({
       initialValues: initialValues,
       localisationFilterState: LocalisationFilterStates.ACADEMIES,
@@ -246,7 +241,7 @@ describe('OfferFilters', () => {
     expect(screen.getByPlaceholderText('Ex: Nantes')).toBeInTheDocument()
   })
 
-  it('should display radius range input in localisation filter modal', async () => {
+  it('should display radius range input in localisation filter modal', () => {
     renderOfferFilters({
       initialValues: initialValues,
       localisationFilterState: LocalisationFilterStates.GEOLOCATION,
