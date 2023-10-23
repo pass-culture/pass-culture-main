@@ -2,7 +2,6 @@ from datetime import datetime
 import logging
 
 from flask import current_app as app
-import jwt
 import pydantic.v1 as pydantic_v1
 import sqlalchemy as sa
 
@@ -22,7 +21,6 @@ from pcapi.core.users import exceptions
 from pcapi.core.users.email import repository as email_repository
 import pcapi.core.users.models as users_models
 from pcapi.core.users.repository import find_user_by_email
-from pcapi.core.users.utils import decode_jwt_token
 from pcapi.models import api_errors
 from pcapi.models.feature import FeatureToggle
 from pcapi.repository import transaction
@@ -369,59 +367,25 @@ def suspend_account(user: users_models.User) -> None:
 @blueprint.native_v1.route("/account/suspend_for_suspicious_login", methods=["POST"])
 @spectree_serialize(api=blueprint.api, on_success_status=204, on_error_statuses=[400, 401, 404])
 def suspend_account_for_suspicious_login(body: serializers.SuspendAccountForSuspiciousLoginRequest) -> None:
-    new_token = False
     try:
-        new_token = "token_type" in decode_jwt_token(body.token)
-    except jwt.ExpiredSignatureError:
+        token = token_utils.Token.load_and_check(body.token, token_utils.TokenType.SUSPENSION_SUSPICIOUS_LOGIN)
+        user = users_models.User.query.filter_by(id=token.user_id).one()
+    except sa.orm.exc.NoResultFound:
+        raise api_errors.ResourceNotFoundError()
+    except exceptions.ExpiredToken:
         raise api_errors.ApiErrors({"reason": "Le token a expiré."}, status_code=401)
-    except (jwt.InvalidTokenError, jwt.InvalidSignatureError):
+    except exceptions.InvalidToken:
         raise api_errors.ApiErrors({"reason": "Le token est invalide."})
-    if new_token:
-        try:
-            token = token_utils.Token.load_and_check(body.token, token_utils.TokenType.SUSPENSION_SUSPICIOUS_LOGIN)
-            user = users_models.User.query.filter_by(id=token.user_id).one()
-        except sa.orm.exc.NoResultFound:
-            raise api_errors.ResourceNotFoundError()
-        except exceptions.ExpiredToken:
-            raise api_errors.ApiErrors({"reason": "Le token a expiré."}, status_code=401)
-        except exceptions.InvalidToken:
-            raise api_errors.ApiErrors({"reason": "Le token est invalide."})
-    else:  # TODO abdelmoujibmegzari remove this part when all users have a new token https://passculture.atlassian.net/browse/PC-24727
-        try:
-            decoded_token = decode_jwt_token(body.token)
-        except jwt.ExpiredSignatureError:
-            raise api_errors.ApiErrors({"reason": "Le token a expiré."}, status_code=401)
-        except (jwt.InvalidTokenError, jwt.InvalidSignatureError):
-            raise api_errors.ApiErrors({"reason": "Le token est invalide."})
-        try:
-            user = users_models.User.query.filter_by(id=decoded_token["userId"]).one()
-        except sa.orm.exc.NoResultFound:
-            raise api_errors.ResourceNotFoundError()
     api.suspend_account(user, constants.SuspensionReason.SUSPICIOUS_LOGIN_REPORTED_BY_USER, actor=user)
 
 
 @blueprint.native_v1.route("/account/suspend/token_validation/<token>", methods=["GET"])
 @spectree_serialize(on_success_status=204, api=blueprint.api, on_error_statuses=[400, 401])
 def account_suspension_token_validation(token: str) -> None:
-    new_token = True
     try:
-        new_token = "token_type" in decode_jwt_token(token)
-    except jwt.ExpiredSignatureError:
-        raise api_errors.ApiErrors({"reason": "Le token a expiré."}, status_code=401)
-    except (jwt.InvalidTokenError, jwt.InvalidSignatureError):
+        token_utils.Token.load_and_check(token, token_utils.TokenType.SUSPENSION_SUSPICIOUS_LOGIN)
+    except exceptions.InvalidToken:
         raise api_errors.ApiErrors({"reason": "Le token est invalide."})
-    if new_token:
-        try:
-            token_utils.Token.load_and_check(token, token_utils.TokenType.SUSPENSION_SUSPICIOUS_LOGIN)
-        except exceptions.InvalidToken:
-            raise api_errors.ApiErrors({"reason": "Le token est invalide."})
-    else:  # TODO abdelmoujibmegzari remove this part when all users have a new token https://passculture.atlassian.net/browse/PC-24727
-        try:
-            decode_jwt_token(token)
-        except jwt.ExpiredSignatureError:
-            raise api_errors.ApiErrors({"reason": "Le token a expiré."}, status_code=401)
-        except (jwt.InvalidTokenError, jwt.InvalidSignatureError):
-            raise api_errors.ApiErrors({"reason": "Le token est invalide."})
 
 
 @blueprint.native_v1.route("/account/suspension_date", methods=["GET"])
