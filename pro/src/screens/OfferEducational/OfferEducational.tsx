@@ -93,7 +93,9 @@ const OfferEducational = ({
     let response = null
     if (isTemplate) {
       if (offer === undefined) {
-        response = postCollectiveOfferTemplateAdapter({ offer: offerValues })
+        response = await postCollectiveOfferTemplateAdapter({
+          offer: offerValues,
+        })
       } else {
         response = await patchCollectiveOfferTemplateAdapter({
           offer: offerValues,
@@ -103,7 +105,7 @@ const OfferEducational = ({
       }
     } else {
       if (offer === undefined) {
-        response = postCollectiveOfferAdapter({ offer: offerValues })
+        response = await postCollectiveOfferAdapter({ offer: offerValues })
       } else {
         response = await patchCollectiveOfferAdapter({
           offer: offerValues,
@@ -113,7 +115,7 @@ const OfferEducational = ({
       }
     }
 
-    const { payload, isOk, message } = await response
+    const { payload, isOk, message } = response
     if (!isOk) {
       return notify.error(message)
     }

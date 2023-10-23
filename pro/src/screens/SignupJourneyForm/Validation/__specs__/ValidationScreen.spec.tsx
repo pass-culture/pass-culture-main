@@ -97,7 +97,7 @@ describe('ValidationScreen', () => {
     })
   })
 
-  it('should see activity screen if no activity data is set but an offerer is set', async () => {
+  it('should see activity screen if no activity data is set but an offerer is set', () => {
     renderValidationScreen({
       ...contextValue,
       offerer: {
@@ -300,7 +300,7 @@ describe('ValidationScreen', () => {
       renderValidationScreen(contextValue)
       await waitForElementToBeRemoved(() => screen.queryAllByTestId('spinner'))
       expect(
-        await screen.queryByText('Informations structure')
+        screen.queryByText('Informations structure')
       ).not.toBeInTheDocument()
     })
   })

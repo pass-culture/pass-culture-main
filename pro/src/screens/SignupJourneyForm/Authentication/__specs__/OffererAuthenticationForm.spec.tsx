@@ -131,7 +131,7 @@ describe('OffererAuthenticationForm', () => {
     }
   })
 
-  it('should render form', async () => {
+  it('should render form', () => {
     renderOffererAuthenticationForm({
       initialValues: initialValues,
       contextValue: contextValue,

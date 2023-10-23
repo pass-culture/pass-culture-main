@@ -9,7 +9,7 @@ import styles from './ButtonImageDelete.module.scss'
 import { ModalImageDelete } from './ModalImageDelete'
 
 export interface ButtonImageDeleteProps {
-  onImageDelete: () => Promise<void>
+  onImageDelete: () => void
 }
 
 const ButtonImageDelete = ({
@@ -18,9 +18,9 @@ const ButtonImageDelete = ({
   const [isModalOpen, setIsModalOpen] = useState(false)
   const [isLoading, setIsLoading] = useState(false)
 
-  const onConfirm = async () => {
+  const onConfirm = () => {
     setIsLoading(true)
-    await onImageDelete()
+    onImageDelete()
   }
 
   return (

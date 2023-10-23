@@ -85,7 +85,7 @@ describe('AdageMultiselect', () => {
     expect(screen.getByText('Danse')).toBeInTheDocument()
   })
 
-  it('should have the correct options checked when values are string[]', async () => {
+  it('should have the correct options checked when values are string[]', () => {
     const strArrayOptions = [
       {
         value: ['val1', 'val2'],

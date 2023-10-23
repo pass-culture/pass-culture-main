@@ -35,7 +35,7 @@ const renderConfirmedAttachmentScreen = () => {
   )
 }
 describe('screens:SignupJourney::ConfirmedAttachment', () => {
-  it('should render component', async () => {
+  it('should render component', () => {
     renderConfirmedAttachmentScreen()
 
     expect(

@@ -34,7 +34,7 @@ describe('Banner', () => {
     )
   })
 
-  it('should display close icon with light type', async () => {
+  it('should display close icon with light type', () => {
     props.type = 'light'
     render(<Banner {...props}>This is the banner light content</Banner>)
     expect(screen.getByRole('img')).toHaveAttribute(

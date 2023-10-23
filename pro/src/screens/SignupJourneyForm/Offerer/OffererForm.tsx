@@ -16,7 +16,7 @@ const OffererForm = (): JSX.Element => {
 
   const formatSiret = async (siret: string): Promise<void> => {
     if ((siret && /^[0-9]+$/.test(unhumanizeSiret(siret))) || !siret) {
-      setFieldValue('siret', humanizeSiret(siret))
+      await setFieldValue('siret', humanizeSiret(siret))
     }
   }
 

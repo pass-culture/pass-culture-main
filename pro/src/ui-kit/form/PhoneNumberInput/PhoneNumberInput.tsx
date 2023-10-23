@@ -30,10 +30,10 @@ const PhoneNumberInput = ({
   )
   const [phoneInputValue, setPhoneInputValue] = useState<string>('')
 
-  const validateAndSetPhoneNumber = (
+  const validateAndSetPhoneNumber = async (
     phoneNumberInputValue: string,
     currentCountryCode: CountryCode
-  ): string => {
+  ): Promise<string> => {
     const phoneNumber = parsePhoneNumberFromString(
       phoneNumberInputValue,
       currentCountryCode
@@ -41,20 +41,22 @@ const PhoneNumberInput = ({
 
     // save formatted phone number i.e +33639980101 even if user types 0639980101 or 639980101
     if (phoneNumber) {
-      helpers.setValue(phoneNumber?.number, false)
+      await helpers.setValue(phoneNumber?.number, false)
     }
 
     setPhoneInputValue(phoneNumberInputValue)
 
     if (isOptional && phoneNumberInputValue === '') {
-      helpers.setValue('')
+      await helpers.setValue('')
       helpers.setError(undefined)
       return phoneNumberInputValue
     }
 
     if (!phoneNumber || !phoneNumber.isValid()) {
       // input optional -> if optional we want to value formik field with incorrect phone number to raise error on form validation
-      isOptional && helpers.setValue(phoneNumberInputValue)
+      if (isOptional) {
+        await helpers.setValue(phoneNumberInputValue)
+      }
       helpers.setError(
         'Veuillez renseigner un numéro de téléphone valide, exemple : 612345678'
       )
@@ -65,25 +67,25 @@ const PhoneNumberInput = ({
     return phoneNumber.nationalNumber
   }
 
-  const onPhoneNumberChange = (event: ChangeEvent<HTMLInputElement>) => {
+  const onPhoneNumberChange = async (event: ChangeEvent<HTMLInputElement>) => {
     const phoneNumberInputValue = event.target.value
-    validateAndSetPhoneNumber(phoneNumberInputValue, countryCode)
+    await validateAndSetPhoneNumber(phoneNumberInputValue, countryCode)
   }
 
-  const onPhoneCodeChange = (e: ChangeEvent<HTMLSelectElement>) => {
+  const onPhoneCodeChange = async (e: ChangeEvent<HTMLSelectElement>) => {
     const changedCountryCode = e.target.value as CountryCode
     setCountryCode(changedCountryCode)
     if (phoneInputValue) {
-      validateAndSetPhoneNumber(phoneInputValue, changedCountryCode)
+      await validateAndSetPhoneNumber(phoneInputValue, changedCountryCode)
     }
   }
 
-  const onPhoneNumberBlur = (event: FocusEvent<HTMLInputElement>) => {
+  const onPhoneNumberBlur = async (event: FocusEvent<HTMLInputElement>) => {
     if (!meta.touched) {
-      helpers.setTouched(true, false)
+      await helpers.setTouched(true, false)
     }
 
-    const phoneNumberInputValue = validateAndSetPhoneNumber(
+    const phoneNumberInputValue = await validateAndSetPhoneNumber(
       event.target.value,
       countryCode
     )

@@ -571,7 +571,7 @@ describe('VenueFormScreen', () => {
     await userEvent.click(screen.getByText(/Enregistrer/))
 
     expect(
-      await screen.queryByText(
+      screen.queryByText(
         'Veuillez sélectionner une adresse parmi les suggestions'
       )
     ).not.toBeInTheDocument()

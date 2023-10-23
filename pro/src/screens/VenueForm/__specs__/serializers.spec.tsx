@@ -47,7 +47,7 @@ const formValues: VenueFormValues = {
 }
 
 describe('screen | VenueForm | serializers', () => {
-  it('Serialize form value for venue creation with siret', async () => {
+  it('Serialize form value for venue creation with siret', () => {
     const result = serializePostVenueBodyModel(formValues, {
       hideSiret: false,
       offererId: 12,
@@ -57,7 +57,7 @@ describe('screen | VenueForm | serializers', () => {
     expect(result.comment).toEqual('')
   })
 
-  it('Serialize form value for venue creation with venueLabelId', async () => {
+  it('Serialize form value for venue creation with venueLabelId', () => {
     const result = serializePostVenueBodyModel(formValues, {
       hideSiret: true,
       offererId: 13,
@@ -66,7 +66,7 @@ describe('screen | VenueForm | serializers', () => {
     expect(result.venueLabelId).not.toBeNull()
   })
 
-  it('Serialize form value for venue updating with comment', async () => {
+  it('Serialize form value for venue updating with comment', () => {
     const result: EditVenueBodyModel = serializeEditVenueBodyModel(formValues, {
       hideSiret: true,
     })
@@ -75,7 +75,7 @@ describe('screen | VenueForm | serializers', () => {
     expect(result.comment).not.toEqual('')
   })
 
-  it('Serialize form value for venue updating with venueLabelId', async () => {
+  it('Serialize form value for venue updating with venueLabelId', () => {
     const result: EditVenueBodyModel = serializeEditVenueBodyModel(formValues, {
       hideSiret: true,
     })
@@ -83,7 +83,7 @@ describe('screen | VenueForm | serializers', () => {
     expect(result.venueLabelId).not.toBeNull()
   })
 
-  it('Serialize form value for venue creation without venueLabelId', async () => {
+  it('Serialize form value for venue creation without venueLabelId', () => {
     const formValues: VenueFormValues = {
       bannerMeta: undefined,
       comment: 'Commentaire',
@@ -130,7 +130,7 @@ describe('screen | VenueForm | serializers', () => {
     expect(result.venueLabelId).toBeNull()
   })
 
-  it('Serialize form value for venue updating with siret', async () => {
+  it('Serialize form value for venue updating with siret', () => {
     const result: EditVenueBodyModel = serializeEditVenueBodyModel(formValues, {
       hideSiret: false,
     })
@@ -139,7 +139,7 @@ describe('screen | VenueForm | serializers', () => {
     expect(result.comment).toEqual('')
   })
 
-  it('Serialize form value for venue updating with comment', async () => {
+  it('Serialize form value for venue updating with comment', () => {
     const result: EditVenueBodyModel = serializeEditVenueBodyModel(formValues, {
       hideSiret: true,
     })
@@ -149,7 +149,7 @@ describe('screen | VenueForm | serializers', () => {
   })
 
   describe('optional fields', () => {
-    it('User should be able to create a venue without contact info', async () => {
+    it('User should be able to create a venue without contact info', () => {
       const result = serializePostVenueBodyModel(
         {
           bannerMeta: undefined,
@@ -200,7 +200,7 @@ describe('screen | VenueForm | serializers', () => {
       expect(result.contact?.phoneNumber).toBeNull()
     })
 
-    it("User should be able to delete a venue's contact info", async () => {
+    it("User should be able to delete a venue's contact info", () => {
       const result: EditVenueBodyModel = serializeEditVenueBodyModel(
         {
           bannerMeta: undefined,
@@ -250,7 +250,7 @@ describe('screen | VenueForm | serializers', () => {
       expect(result.contact?.phoneNumber).toBeNull()
     })
 
-    it('User should be able to create a venue without a venueLabel', async () => {
+    it('User should be able to create a venue without a venueLabel', () => {
       const result = serializePostVenueBodyModel(
         {
           bannerMeta: undefined,
@@ -299,7 +299,7 @@ describe('screen | VenueForm | serializers', () => {
       expect(result.venueLabelId).toBeNull()
     })
 
-    it("User should be able to delete a venue's venueLabel", async () => {
+    it("User should be able to delete a venue's venueLabel", () => {
       const result: EditVenueBodyModel = serializeEditVenueBodyModel(
         {
           bannerMeta: undefined,
@@ -347,7 +347,7 @@ describe('screen | VenueForm | serializers', () => {
       expect(result.venueLabelId).toBeNull()
     })
 
-    it('should only be able to update reimbursement point if virtual', async () => {
+    it('should only be able to update reimbursement point if virtual', () => {
       const result: EditVirtualVenueBodyModel = serializeEditVenueBodyModel(
         {
           bannerMeta: undefined,
@@ -396,7 +396,7 @@ describe('screen | VenueForm | serializers', () => {
       expect(result.reimbursementPointId).not.toBeNull()
     })
 
-    it('should be able to update virtual venue without a reimbursement', async () => {
+    it('should be able to update virtual venue without a reimbursement', () => {
       const result: EditVirtualVenueBodyModel = serializeEditVenueBodyModel(
         {
           isVenueVirtual: true,

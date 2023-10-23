@@ -34,7 +34,7 @@ const DatePicker = ({
   const showError = meta.touched && !!meta.error
 
   const onCustomChange = useCallback(
-    async (e: React.ChangeEvent<HTMLInputElement>) => {
+    (e: React.ChangeEvent<HTMLInputElement>) => {
       field.onChange(e)
       if (onChange) {
         onChange(e)

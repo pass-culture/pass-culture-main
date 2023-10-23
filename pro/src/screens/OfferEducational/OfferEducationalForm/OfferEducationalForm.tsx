@@ -84,7 +84,7 @@ const OfferEducationalForm = ({
   useScrollToFirstErrorAfterSubmit()
 
   const onOffererChange = useCallback(
-    (newOffererId: string) => {
+    async (newOffererId: string) => {
       const selectedOfferer = userOfferers.find(
         (offerer) => offerer.id.toString() === newOffererId
       )
@@ -114,7 +114,7 @@ const OfferEducationalForm = ({
           setIsLoading(false)
         }
 
-        checkOffererEligibilityToEducationalOffer()
+        await checkOffererEligibilityToEducationalOffer()
 
         let venuesOptions = selectedOfferer.managedVenues.map((item) => ({
           value: item['id'].toString(),
@@ -129,9 +129,9 @@ const OfferEducationalForm = ({
         setCurrentOfferer(selectedOfferer)
         setVenuesOptions(venuesOptions)
         if (venuesOptions.length === 1) {
-          setFieldValue('venueId', venuesOptions[0].value)
+          await setFieldValue('venueId', venuesOptions[0].value)
         } else {
-          setFieldValue('venueId', initialValues.venueId)
+          await setFieldValue('venueId', initialValues.venueId)
         }
       }
     },
@@ -139,7 +139,7 @@ const OfferEducationalForm = ({
   )
 
   useEffect(() => {
-    onOffererChange(values.offererId)
+    void onOffererChange(values.offererId)
   }, [])
 
   return (

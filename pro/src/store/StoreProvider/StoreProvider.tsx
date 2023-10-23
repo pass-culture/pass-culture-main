@@ -37,17 +37,17 @@ const StoreProvider = ({
       if (isAdageIframe) {
         setCurrentUser(null)
       } else {
-        api
+        await api
           .getProfile()
           .then((response) => setCurrentUser(response))
           .catch(() => setCurrentUser(null))
       }
-      api
+      await api
         .listFeatures()
         .then((response) => setFeatures(response))
         .catch(() => setFeatures([]))
     }
-    isDev ? setEmptyInitialData() : getStoreInitialData()
+    isDev ? setEmptyInitialData() : void getStoreInitialData()
   }, [])
 
   useEffect(() => {

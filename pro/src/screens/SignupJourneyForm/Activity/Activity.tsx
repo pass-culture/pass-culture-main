@@ -72,16 +72,14 @@ const Activity = (): JSX.Element => {
     ? serializeActivityContext(activity)
     : DEFAULT_ACTIVITY_FORM_VALUES
 
-  const handleNextStep = () => async () => {
+  const handleNextStep = () => {
     if (Object.keys(formik.errors).length !== 0) {
       notify.error(FORM_ERROR_MESSAGE)
       return
     }
   }
 
-  const onSubmitActivity = async (
-    formValues: ActivityFormValues
-  ): Promise<void> => {
+  const onSubmitActivity = (formValues: ActivityFormValues) => {
     setActivity(serializeActivityFormToSubmit(formValues))
     navigate('/parcours-inscription/validation')
   }
@@ -113,7 +111,7 @@ const Activity = (): JSX.Element => {
           <ActivityForm venueTypes={venueTypes} />
           <ActionBar
             onClickPrevious={handlePreviousStep}
-            onClickNext={handleNextStep()}
+            onClickNext={handleNextStep}
             isDisabled={formik.isSubmitting}
             previousTo={SIGNUP_JOURNEY_STEP_IDS.AUTHENTICATION}
             nextTo={SIGNUP_JOURNEY_STEP_IDS.VALIDATION}

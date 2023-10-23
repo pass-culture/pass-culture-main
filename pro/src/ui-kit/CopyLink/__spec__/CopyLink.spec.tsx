@@ -10,7 +10,7 @@ const renderCopyLink = (props: CopyLinkProps) => {
 }
 
 describe('Copy link button', () => {
-  it('should display component with enabled button', async () => {
+  it('should display component with enabled button', () => {
     // Given
     const props = {
       textToCopy: 'mYc0dE',

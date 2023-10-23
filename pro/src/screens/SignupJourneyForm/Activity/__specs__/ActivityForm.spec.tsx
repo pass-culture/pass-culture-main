@@ -98,9 +98,7 @@ describe('screens:SignupJourney::ActivityForm', () => {
     })
     expect(await screen.findByText('Activité')).toBeInTheDocument()
     expect(screen.getByLabelText('Activité principale')).toHaveValue('')
-    expect(
-      await screen.getAllByText('Site internet, réseau social')
-    ).toHaveLength(1)
+    expect(screen.getAllByText('Site internet, réseau social')).toHaveLength(1)
     expect(
       await screen.findByRole('button', { name: 'Ajouter un lien' })
     ).toBeInTheDocument()
@@ -116,7 +114,7 @@ describe('screens:SignupJourney::ActivityForm', () => {
     ).not.toBeChecked()
   })
 
-  it('should render activity form with initialValues', async () => {
+  it('should render activity form with initialValues', () => {
     initialValues = {
       venueTypeCode: 'MUSEUM',
       socialUrls: ['https://example.com', 'https://exampleTwo.fr'],
@@ -130,9 +128,7 @@ describe('screens:SignupJourney::ActivityForm', () => {
     expect(
       screen.getByText('Cours et pratique artistiques')
     ).toBeInTheDocument()
-    expect(
-      await screen.getAllByText('Site internet, réseau social')
-    ).toHaveLength(2)
+    expect(screen.getAllByText('Site internet, réseau social')).toHaveLength(2)
     expect(
       screen.getByLabelText('Au grand public', {
         exact: false,
@@ -181,13 +177,9 @@ describe('screens:SignupJourney::ActivityForm', () => {
     })
 
     expect(await screen.findByText('Activité')).toBeInTheDocument()
-    expect(
-      await screen.getAllByText('Site internet, réseau social')
-    ).toHaveLength(1)
+    expect(screen.getAllByText('Site internet, réseau social')).toHaveLength(1)
     await userEvent.click(screen.getByText('Ajouter un lien'))
-    expect(
-      await screen.getAllByText('Site internet, réseau social')
-    ).toHaveLength(2)
+    expect(screen.getAllByText('Site internet, réseau social')).toHaveLength(2)
   })
 
   it('should remove social url input on click remove url button', async () => {
@@ -198,18 +190,14 @@ describe('screens:SignupJourney::ActivityForm', () => {
       contextValue,
     })
 
-    expect(
-      await screen.getAllByText('Site internet, réseau social')
-    ).toHaveLength(2)
+    expect(screen.getAllByText('Site internet, réseau social')).toHaveLength(2)
 
-    const trashButtons = await screen.getAllByRole('button', {
+    const trashButtons = screen.getAllByRole('button', {
       name: "Supprimer l'url",
     })
 
     await userEvent.click(trashButtons[0])
-    expect(
-      await screen.getAllByText('Site internet, réseau social')
-    ).toHaveLength(1)
+    expect(screen.getAllByText('Site internet, réseau social')).toHaveLength(1)
     expect(screen.queryByText('https://example.fr')).not.toBeInTheDocument()
     expect(
       screen.getByDisplayValue('https://exampleTwo.fr')
@@ -251,7 +239,7 @@ describe('screens:SignupJourney::ActivityForm', () => {
     const venueTypeSelect = screen.getByLabelText('Activité principale')
     expect(venueTypeSelect).toHaveValue('')
 
-    await userEvent.click(await venueTypeSelect)
+    await userEvent.click(venueTypeSelect)
     await userEvent.click(screen.getByText('Culture scientifique'))
     await waitFor(() => {
       expect(screen.getByText('Culture scientifique')).toBeInTheDocument()

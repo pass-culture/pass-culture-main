@@ -26,7 +26,7 @@ export interface OnImageUploadArgs {
 interface ModalImageEditProps {
   mode: UploaderModeEnum
   onDismiss: () => void
-  onImageUpload: (values: OnImageUploadArgs) => Promise<void>
+  onImageUpload: (values: OnImageUploadArgs) => void
   initialValues?: UploadImageValues
 }
 // FIXME: find a way to test FileReader
@@ -55,7 +55,7 @@ const ModalImageEdit = ({
       ? initialOriginalImageUrl
       : initialImageUrl
     if (imageUrl) {
-      setImageFromUrl(imageUrl)
+      void setImageFromUrl(imageUrl)
     }
     setIsReady(true)
   }, [])
@@ -96,7 +96,7 @@ const ModalImageEdit = ({
     setImage(undefined)
   }
 
-  const handleOnUpload = async (
+  const handleOnUpload = (
     croppedRect?: CroppedRect,
     imageToUpload?: File,
     imageDataUrl?: string
@@ -105,7 +105,7 @@ const ModalImageEdit = ({
       return
     }
 
-    await onImageUpload({
+    onImageUpload({
       imageFile: imageToUpload,
       imageCroppedDataUrl: imageDataUrl,
       cropParams: croppedRect,
