@@ -269,9 +269,10 @@ describe('offers', () => {
 
   it('should display non bookable offers', async () => {
     // Given
-    vi.spyOn(apiAdage, 'getCollectiveOfferTemplate').mockResolvedValueOnce(
-      offerInCayenne
-    )
+    vi.spyOn(apiAdage, 'getCollectiveOfferTemplate').mockResolvedValueOnce({
+      ...offerInCayenne,
+      dates: { end: '', start: '' },
+    })
 
     vi.spyOn(instantSearch, 'useInfiniteHits').mockImplementation(() => ({
       ...defaultUseInfiniteHitsReturn,

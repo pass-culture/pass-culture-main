@@ -1,3 +1,5 @@
+import { addDays } from 'date-fns'
+
 import {
   AdageFrontRoles,
   AuthenticatedResponse,
@@ -44,6 +46,10 @@ export const defaultCollectiveTemplateOffer: CollectiveOfferTemplateResponseMode
         latitude: 48.87004,
         longitude: 2.3785,
       },
+    },
+    dates: {
+      start: new Date().toISOString(),
+      end: addDays(new Date(), 1).toISOString(),
     },
   }
 
