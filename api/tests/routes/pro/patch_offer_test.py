@@ -11,7 +11,7 @@ from pcapi.core.offers.models import Offer
 from pcapi.core.offers.models import OfferValidationStatus
 from pcapi.core.offers.models import WithdrawalTypeEnum
 import pcapi.core.users.factories as users_factories
-from pcapi.routes.serialization import serialize
+from pcapi.utils.date import format_into_utc_date
 
 
 pytestmark = pytest.mark.usefixtures("db_session")
@@ -131,8 +131,8 @@ class Returns400Test:
 
         # When
         data = {
-            "dateCreated": serialize(datetime(2019, 1, 1)),
-            "dateModifiedAtLastProvider": serialize(datetime(2019, 1, 1)),
+            "dateCreated": format_into_utc_date(datetime(2019, 1, 1)),
+            "dateModifiedAtLastProvider": format_into_utc_date(datetime(2019, 1, 1)),
             "id": 1,
             "idAtProviders": 1,
             "lastProviderId": 1,

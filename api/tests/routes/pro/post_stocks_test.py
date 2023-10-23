@@ -16,7 +16,7 @@ import pcapi.core.offers.factories as offers_factories
 from pcapi.core.offers.models import OfferValidationStatus
 from pcapi.core.offers.models import Stock
 import pcapi.core.users.factories as users_factories
-from pcapi.routes.serialization import serialize
+from pcapi.utils.date import format_into_utc_date
 
 
 @pytest.mark.usefixtures("db_session")
@@ -72,18 +72,18 @@ class Returns201Test:
             "stocks": [
                 {
                     "priceCategoryId": first_price_cat.id,
-                    "beginningDatetime": serialize(beginning),
-                    "bookingLimitDatetime": serialize(beginning),
+                    "beginningDatetime": format_into_utc_date(beginning),
+                    "bookingLimitDatetime": format_into_utc_date(beginning),
                 },
                 {
                     "priceCategoryId": first_price_cat.id,
-                    "beginningDatetime": serialize(beginning),
-                    "bookingLimitDatetime": serialize(beginning),
+                    "beginningDatetime": format_into_utc_date(beginning),
+                    "bookingLimitDatetime": format_into_utc_date(beginning),
                 },
                 {
                     "priceCategoryId": second_price_cat.id,
-                    "beginningDatetime": serialize(beginning),
-                    "bookingLimitDatetime": serialize(beginning),
+                    "beginningDatetime": format_into_utc_date(beginning),
+                    "bookingLimitDatetime": format_into_utc_date(beginning),
                 },
             ],
         }
@@ -131,18 +131,18 @@ class Returns201Test:
             "stocks": [
                 {
                     "priceCategoryId": first_price_cat.id,
-                    "beginningDatetime": serialize(beginning),
-                    "bookingLimitDatetime": serialize(beginning),
+                    "beginningDatetime": format_into_utc_date(beginning),
+                    "bookingLimitDatetime": format_into_utc_date(beginning),
                 },
                 {
                     "priceCategoryId": second_price_cat.id,
-                    "beginningDatetime": serialize(beginning),
-                    "bookingLimitDatetime": serialize(beginning),
+                    "beginningDatetime": format_into_utc_date(beginning),
+                    "bookingLimitDatetime": format_into_utc_date(beginning),
                 },
                 {
                     "priceCategoryId": first_price_cat.id,
-                    "beginningDatetime": serialize(beginning),
-                    "bookingLimitDatetime": serialize(beginning),
+                    "beginningDatetime": format_into_utc_date(beginning),
+                    "bookingLimitDatetime": format_into_utc_date(beginning),
                 },
             ],
         }
@@ -210,8 +210,8 @@ class Returns201Test:
             "stocks": [
                 {
                     "id": existing_stock.id,
-                    "beginningDatetime": serialize(beginning),
-                    "bookingLimitDatetime": serialize(beginning),
+                    "beginningDatetime": format_into_utc_date(beginning),
+                    "bookingLimitDatetime": format_into_utc_date(beginning),
                     "priceCategoryId": price_category.id,
                 }
             ],
@@ -250,8 +250,8 @@ class Returns201Test:
             "stocks": [
                 {
                     "id": existing_stock.id,
-                    "beginningDatetime": serialize(beginning),
-                    "bookingLimitDatetime": serialize(beginning),
+                    "beginningDatetime": format_into_utc_date(beginning),
+                    "bookingLimitDatetime": format_into_utc_date(beginning),
                     "priceCategoryId": new_price_category.id,
                 }
             ],
@@ -322,17 +322,17 @@ class Returns201Test:
                     "id": existing_stock.id,
                     "price": 20,
                     "quantity": None,
-                    "bookingLimitDatetime": serialize(booking_limit_datetime),
+                    "bookingLimitDatetime": format_into_utc_date(booking_limit_datetime),
                 },
                 {
                     "price": 30,
                     "quantity": None,
-                    "bookingLimitDatetime": serialize(booking_limit_datetime),
+                    "bookingLimitDatetime": format_into_utc_date(booking_limit_datetime),
                 },
                 {
                     "price": 40,
                     "quantity": 0,
-                    "bookingLimitDatetime": serialize(booking_limit_datetime),
+                    "bookingLimitDatetime": format_into_utc_date(booking_limit_datetime),
                 },
             ],
         }
@@ -375,8 +375,8 @@ class Returns201Test:
                 {
                     "id": existing_stock.id,
                     "priceCategoryId": price_cat.id,
-                    "beginningDatetime": serialize(beginning),
-                    "bookingLimitDatetime": serialize(beginning),
+                    "beginningDatetime": format_into_utc_date(beginning),
+                    "bookingLimitDatetime": format_into_utc_date(beginning),
                 },
             ],
         }
@@ -425,8 +425,8 @@ class Returns201Test:
                 {
                     "id": existing_stock.id,
                     "priceCategoryId": price_cat.id,
-                    "beginningDatetime": serialize(event_reported_in_10_days),
-                    "bookingLimitDatetime": serialize(existing_stock.bookingLimitDatetime),
+                    "beginningDatetime": format_into_utc_date(event_reported_in_10_days),
+                    "bookingLimitDatetime": format_into_utc_date(existing_stock.bookingLimitDatetime),
                 },
             ],
         }
@@ -461,8 +461,8 @@ class Returns201Test:
                 {
                     "id": existing_stock.id,
                     "priceCategoryId": price_cat.id,
-                    "beginningDatetime": serialize(event_reported_in_10_days),
-                    "bookingLimitDatetime": serialize(existing_stock.bookingLimitDatetime),
+                    "beginningDatetime": format_into_utc_date(event_reported_in_10_days),
+                    "bookingLimitDatetime": format_into_utc_date(existing_stock.bookingLimitDatetime),
                 },
             ],
         }
@@ -505,8 +505,8 @@ class Returns201Test:
                 {
                     "id": existing_stock.id,
                     "priceCategoryId": price_cat.id,
-                    "beginningDatetime": serialize(event_reported_in_less_48_hours),
-                    "bookingLimitDatetime": serialize(existing_stock.bookingLimitDatetime),
+                    "beginningDatetime": format_into_utc_date(event_reported_in_less_48_hours),
+                    "bookingLimitDatetime": format_into_utc_date(existing_stock.bookingLimitDatetime),
                 },
             ],
         }
@@ -587,7 +587,7 @@ class Returns400Test:
                 {
                     "quantity": -2,
                     "price": 0,
-                    "bookingLimitDatetime": serialize(booking_limit_datetime),
+                    "bookingLimitDatetime": format_into_utc_date(booking_limit_datetime),
                 },
             ],
         }
@@ -870,8 +870,8 @@ class Returns400Test:
             "stocks": [
                 {
                     "price": 20,
-                    "beginningDatetime": serialize(beginning),
-                    "bookingLimitDatetime": serialize(beginning),
+                    "beginningDatetime": format_into_utc_date(beginning),
+                    "bookingLimitDatetime": format_into_utc_date(beginning),
                 }
             ],
         }
@@ -893,8 +893,8 @@ class Returns400Test:
             "stocks": [
                 {
                     "price": 20,
-                    "beginningDatetime": serialize(beginning),
-                    "bookingLimitDatetime": serialize(beginning),
+                    "beginningDatetime": format_into_utc_date(beginning),
+                    "bookingLimitDatetime": format_into_utc_date(beginning),
                     "priceCategoryId": price_category.id + 1,
                 }
             ],
@@ -921,7 +921,7 @@ class Returns403Test:
                 {
                     "quantity": 10,
                     "price": 0,
-                    "bookingLimitDatetime": serialize(booking_datetime),
+                    "bookingLimitDatetime": format_into_utc_date(booking_datetime),
                 },
             ],
         }
