@@ -9,7 +9,7 @@
         "subProcess": true,
         "pathMappings": [{
             "localRoot": "${workspaceFolder}",
-            "remoteRoot": "/opt/services/flaskapp/src"
+            "remoteRoot": "/usr/src/app"
         }]
     }]
 }
