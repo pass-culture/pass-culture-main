@@ -78,9 +78,7 @@ describe('screens:SignupJourney::Activity', () => {
       )
     ).toBeInTheDocument()
     expect(screen.getByLabelText('Activité principale')).toHaveValue('')
-    expect(
-      await screen.getAllByText('Site internet, réseau social')
-    ).toHaveLength(1)
+    expect(screen.getAllByText('Site internet, réseau social')).toHaveLength(1)
     expect(
       await screen.findByRole('button', { name: 'Ajouter un lien' })
     ).toBeInTheDocument()

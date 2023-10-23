@@ -33,7 +33,7 @@ const EmailSpellCheckInput = <FormType,>({
     overrideInitialTip
   )
 
-  const handleEmailValidation = () => {
+  const handleEmailValidation = async () => {
     if (field.value.length > 0) {
       const suggestion = suggestEmail(
         field.value.toString(),
@@ -43,14 +43,14 @@ const EmailSpellCheckInput = <FormType,>({
         setEmailValidationTip(suggestion)
       }
     }
-    setFieldTouched(field.name, true)
+    await setFieldTouched(field.name, true)
   }
   const resetEmailValidation = () => {
     setEmailValidationTip(null)
   }
 
-  const applyTip = () => {
-    setFieldValue(name, emailValidationTip, true)
+  const applyTip = async () => {
+    await setFieldValue(name, emailValidationTip, true)
     setEmailValidationTip(null)
   }
 

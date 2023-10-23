@@ -100,7 +100,7 @@ describe('TimePicker', () => {
     expect(bookingLimitDatetimeInput).toHaveValue(userDateInput)
   })
 
-  it('should not disable price and place when offer status is reimbursment', async () => {
+  it('should not disable price and place when offer status is reimbursment', () => {
     renderFormStock({
       initialValues: initialValues,
       onSubmit,

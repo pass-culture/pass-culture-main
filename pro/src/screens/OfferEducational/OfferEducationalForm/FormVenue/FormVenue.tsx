@@ -116,9 +116,9 @@ const FormVenue = ({
             label={VENUE_LABEL}
             name="venueId"
             options={venuesOptions}
-            onChange={(event) => {
+            onChange={async (event) => {
               if (mode === Mode.CREATION) {
-                setValues(
+                await setValues(
                   applyVenueDefaultsToFormValues(
                     { ...values, venueId: event.target.value },
                     userOfferers,

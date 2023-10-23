@@ -40,9 +40,9 @@ const FormStock = ({
         minDate={new Date()}
         name="eventDate"
         smallLabel
-        onChange={(event) => {
+        onChange={async (event) => {
           if (mode === Mode.EDITION) {
-            setFieldValue('bookingLimitDatetime', event.target.value)
+            await setFieldValue('bookingLimitDatetime', event.target.value)
           }
         }}
         className={styles['input-date']}

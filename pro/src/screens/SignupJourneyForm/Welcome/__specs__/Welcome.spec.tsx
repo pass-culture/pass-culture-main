@@ -33,7 +33,7 @@ const renderWelcomeScreen = () => {
   )
 }
 describe('screens:SignupJourney::Welcome', () => {
-  it('should render component', async () => {
+  it('should render component', () => {
     renderWelcomeScreen()
 
     expect(screen.getByText('Finalisez votre inscription')).toBeInTheDocument()

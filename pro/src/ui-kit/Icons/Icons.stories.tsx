@@ -30,7 +30,7 @@ export const Icons = () => {
     e.persist()
     const target = e.currentTarget as Element
 
-    navigator.clipboard.writeText(target.getAttribute('data-src') ?? '')
+    void navigator.clipboard.writeText(target.getAttribute('data-src') ?? '')
 
     target.classList.add(styles['copy-to-clipboard'])
     const timeoutId = setTimeout(() => {

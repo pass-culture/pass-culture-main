@@ -48,21 +48,28 @@ const FormOfferType = ({
   >(null)
 
   useEffect(() => {
-    const subCategoryObject = subCategories.find(
-      ({ id }) => id === values.subCategory
-    )
-    if (
-      !values.subCategory ||
-      (subCategoryObject && subCategoryObject.categoryId !== values.category)
-    ) {
-      setFieldValue('subCategory', DEFAULT_EAC_FORM_VALUES.subCategory, false)
-    }
-
-    setAvailableSubCategories(
-      subCategories.filter(
-        (subCategory) => subCategory.categoryId === values.category
+    async function preFillSubCategoryField() {
+      const subCategoryObject = subCategories.find(
+        ({ id }) => id === values.subCategory
       )
-    )
+      if (
+        !values.subCategory ||
+        (subCategoryObject && subCategoryObject.categoryId !== values.category)
+      ) {
+        await setFieldValue(
+          'subCategory',
+          DEFAULT_EAC_FORM_VALUES.subCategory,
+          false
+        )
+      }
+
+      setAvailableSubCategories(
+        subCategories.filter(
+          (subCategory) => subCategory.categoryId === values.category
+        )
+      )
+    }
+    void preFillSubCategoryField()
   }, [values.category, setFieldValue, subCategories, values.subCategory])
 
   let categoriesOptions = categories.map((item) => ({

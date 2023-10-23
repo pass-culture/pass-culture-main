@@ -30,11 +30,15 @@ const SirenInput = ({
 }: SirenInputProps): JSX.Element => {
   const [field, meta, helpers] = useField({ name })
   const { setValue } = helpers
+
   useEffect(() => {
-    setValue(formatSiren(field.value))
-    if (!meta.error && meta.touched) {
-      onValidSiren(field.value)
+    async function format() {
+      await setValue(formatSiren(field.value))
+      if (!meta.error && meta.touched) {
+        onValidSiren(field.value)
+      }
     }
+    void format()
   }, [meta.touched, meta.error, field.value])
 
   return (

@@ -23,12 +23,12 @@ export const useCollectiveOfferImageUpload = (
     null
   )
 
-  const onImageUpload = useCallback(async (image: OnImageUploadArgs) => {
+  const onImageUpload = useCallback((image: OnImageUploadArgs) => {
     setImageToUpload(image)
     setImageOffer({ url: image.imageCroppedDataUrl, credit: image.credit })
   }, [])
 
-  const onImageDelete = useCallback(async () => {
+  const onImageDelete = useCallback(() => {
     setImageToUpload(null)
     setImageOffer(null)
   }, [])

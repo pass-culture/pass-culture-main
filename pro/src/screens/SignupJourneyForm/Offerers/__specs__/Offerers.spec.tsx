@@ -161,7 +161,7 @@ describe('screens:SignupJourney::Offerers', () => {
     ).toBeInTheDocument()
 
     expect(
-      await screen.queryByRole('button', {
+      screen.queryByRole('button', {
         name: 'Ajouter une nouvelle structure',
       })
     ).toBeInTheDocument()
@@ -173,7 +173,7 @@ describe('screens:SignupJourney::Offerers', () => {
     ).toBeInTheDocument()
 
     expect(
-      await screen.queryByRole('button', {
+      screen.queryByRole('button', {
         name: 'Retour',
       })
     ).toBeInTheDocument()
@@ -197,7 +197,7 @@ describe('screens:SignupJourney::Offerers', () => {
     renderOfferersScreen(contextValue)
 
     expect(await screen.findAllByRole('listitem')).toHaveLength(5)
-    expect(await screen.queryByText('venue 5')).toBeVisible()
+    expect(screen.queryByText('venue 5')).toBeVisible()
 
     expect(
       screen.queryByRole('button', {
@@ -216,8 +216,8 @@ describe('screens:SignupJourney::Offerers', () => {
     renderOfferersScreen(contextValue)
 
     expect(await screen.findAllByRole('listitem')).toHaveLength(4)
-    expect(await screen.queryByText('venue 5')).not.toBeVisible()
-    expect(await screen.queryByText('public venue 6')).not.toBeVisible()
+    expect(screen.queryByText('venue 5')).not.toBeVisible()
+    expect(screen.queryByText('public venue 6')).not.toBeVisible()
 
     await userEvent.click(screen.getByText('Afficher plus de structures'))
 
@@ -236,8 +236,8 @@ describe('screens:SignupJourney::Offerers', () => {
     ).toBeInTheDocument()
 
     expect(await screen.findAllByRole('listitem')).toHaveLength(6)
-    expect(await screen.queryByText('venue 5')).toBeVisible()
-    expect(await screen.queryByText('public venue 6')).toBeVisible()
+    expect(screen.queryByText('venue 5')).toBeVisible()
+    expect(screen.queryByText('public venue 6')).toBeVisible()
 
     await userEvent.click(screen.getByText('Afficher moins de structures'))
 

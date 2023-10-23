@@ -55,8 +55,8 @@ const RequestFormDialog = ({
     notify.success('Votre demande a bien été envoyée')
     closeModal()
   }
-  const closeRequestFormDialog = () => {
-    apiAdage.logRequestFormPopinDismiss({
+  const closeRequestFormDialog = async () => {
+    await apiAdage.logRequestFormPopinDismiss({
       iframeFrom: removeParamsFromUrl(location.pathname),
       collectiveOfferTemplateId: offerId,
       comment: formik.values.description,

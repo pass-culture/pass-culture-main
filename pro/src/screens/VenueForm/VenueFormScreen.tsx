@@ -75,14 +75,14 @@ const VenueFormScreen = ({
     'WIP_ENABLE_NEW_BANK_DETAILS_JOURNEY'
   )
 
-  const handleCancelWithdrawalDialog = async () => {
+  const handleCancelWithdrawalDialog = () => {
     setShouldSendMail(false)
-    await formik.handleSubmit()
+    formik.handleSubmit()
   }
 
-  const handleConfirmWithdrawalDialog = async () => {
-    await setShouldSendMail(true)
-    await formik.handleSubmit()
+  const handleConfirmWithdrawalDialog = () => {
+    setShouldSendMail(true)
+    formik.handleSubmit()
   }
 
   const handleWithdrawalDialog = () => {

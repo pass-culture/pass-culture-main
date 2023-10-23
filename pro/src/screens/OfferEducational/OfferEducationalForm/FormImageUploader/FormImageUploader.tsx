@@ -7,8 +7,8 @@ import { UploaderModeEnum } from 'components/ImageUploader/types'
 import { OfferCollectiveImage } from 'core/Offers/types'
 
 export interface ImageUploaderOfferProps {
-  onImageUpload: (values: OnImageUploadArgs) => Promise<void>
-  onImageDelete: () => Promise<void>
+  onImageUpload: (values: OnImageUploadArgs) => void
+  onImageDelete: () => void
   imageOffer: OfferCollectiveImage | null
 }
 

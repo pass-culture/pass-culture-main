@@ -122,7 +122,9 @@ const Offers = ({
       }
     }
     // If user is admin, offer creation button doesn't show
-    !isAdmin && loadValidatedUserOfferers()
+    if (!isAdmin) {
+      void loadValidatedUserOfferers()
+    }
   }, [])
 
   const actionLink =
@@ -166,7 +168,7 @@ const Offers = ({
   useEffect(() => {
     if (isRefreshingOffers) {
       setSearchFilters(initialSearchFilters)
-      loadAndUpdateOffers(initialSearchFilters)
+      void loadAndUpdateOffers(initialSearchFilters)
     }
   }, [
     isRefreshingOffers,
@@ -183,10 +185,10 @@ const Offers = ({
     redirectWithUrlFilters(filters)
   }
 
-  const applyFilters = () => {
+  const applyFilters = async () => {
     // FIXME : this code's part seems to be useless
     if (!hasDifferentFiltersFromLastSearch(searchFilters)) {
-      refreshOffers()
+      await refreshOffers()
     }
     applyUrlFiltersAndRedirect({ ...searchFilters, page: DEFAULT_PAGE })
   }

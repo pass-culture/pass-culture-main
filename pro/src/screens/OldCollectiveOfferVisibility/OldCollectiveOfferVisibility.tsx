@@ -332,7 +332,9 @@ const CollectiveOfferVisibility = ({
                       placeholder="Saisir le prénom et le nom de l’enseignant"
                       hideArrow
                       disabled={mode === Mode.READ_ONLY}
-                      onSearch={() => onChangeTeacher()}
+                      onSearch={async () => {
+                        await onChangeTeacher()
+                      }}
                     />
                     {selectedTeacher && (
                       <Banner type="light" className={styles['institution']}>
