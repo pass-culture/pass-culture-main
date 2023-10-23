@@ -346,6 +346,27 @@ describe('src | components | pages | Offers | OfferItem', () => {
         // then
         expect(screen.queryByText('Collège Bellevue')).toBeInTheDocument()
       })
+
+      it('should display acronym + city when offer is collective and educationalinstitution has no name', () => {
+        renderOfferItem({
+          ...props,
+          audience: Audience.COLLECTIVE,
+          offer: {
+            ...props.offer,
+            educationalInstitution: {
+              id: 1,
+              name: '',
+              city: 'Alès',
+              postalCode: '30100',
+              phoneNumber: '',
+              institutionId: 'ABCDEF11',
+              institutionType: 'LYCEE',
+            },
+          },
+        })
+
+        expect(screen.queryByText('LYCEE Alès')).toBeInTheDocument()
+      })
     })
 
     describe('when offer is an event product', () => {
