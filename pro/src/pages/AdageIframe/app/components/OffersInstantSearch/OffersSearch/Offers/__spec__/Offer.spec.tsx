@@ -385,7 +385,11 @@ describe('offer', () => {
     renderOffers(
       {
         ...offerProps,
-        offer: { ...offerProps.offer, isTemplate: true },
+        offer: {
+          ...offerProps.offer,
+          dates: { end: '', start: '' },
+          isTemplate: true,
+        },
         afterFavoriteChange: () => {},
       },
       [{ nameKey: 'WIP_ENABLE_LIKE_IN_ADAGE', isActive: true }]

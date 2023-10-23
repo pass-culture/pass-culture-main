@@ -53,9 +53,10 @@ describe('CollectiveOfferFromRequest', () => {
       error: mockNotifyError,
     }))
 
-    vi.spyOn(api, 'getCollectiveOfferTemplate').mockResolvedValue(
-      defaultCollectifOfferResponseModel
-    )
+    vi.spyOn(api, 'getCollectiveOfferTemplate').mockResolvedValue({
+      ...defaultCollectifOfferResponseModel,
+      dates: { end: '', start: '' },
+    })
     vi.spyOn(api, 'getCategories').mockResolvedValue({
       categories: [],
       subcategories: [],

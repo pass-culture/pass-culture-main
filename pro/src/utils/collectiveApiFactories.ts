@@ -1,4 +1,6 @@
 /* istanbul ignore file: Those are test helpers, their coverage is not relevant */
+import { addDays } from 'date-fns'
+
 import {
   CategoryResponseModel,
   CollectiveBookingBankInformationStatus,
@@ -113,6 +115,10 @@ export const collectiveOfferTemplateFactory = (
   id: offerId++,
   venue: customVenue,
   isTemplate: true,
+  dates: {
+    start: new Date().toISOString(),
+    end: addDays(new Date(), 1).toISOString(),
+  },
   ...customCollectiveOfferTemplate,
 })
 
