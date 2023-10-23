@@ -6,6 +6,7 @@ import typing
 
 from pcapi.connectors.thumb_storage import create_thumb
 from pcapi.core import search
+import pcapi.core.finance.api as finance_api
 import pcapi.core.offers.models as offers_models
 import pcapi.core.providers.models as providers_models
 from pcapi.core.providers.repository import get_provider_by_local_class
@@ -48,6 +49,19 @@ class LocalProvider(Iterator):
     @abstractmethod
     def fill_object_attributes(self, obj: Model) -> None:
         pass
+
+    def maybe_update_finance_event_pricing_date(
+        self,
+        stock: offers_models.Stock,
+        old_beginning_datetime: datetime | None,
+    ) -> None:
+        assert stock.beginningDatetime is not None  # to make mypy happy
+        if (
+            stock.id is not None
+            and old_beginning_datetime is not None
+            and stock.beginningDatetime.replace(tzinfo=None) != old_beginning_datetime
+        ):
+            finance_api.update_finance_event_pricing_date(stock)
 
     def create_providable_info(
         self,

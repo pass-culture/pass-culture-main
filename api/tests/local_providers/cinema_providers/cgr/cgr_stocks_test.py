@@ -2,6 +2,7 @@ import datetime
 import decimal
 from decimal import Decimal
 from pathlib import Path
+from unittest import mock
 
 import pytest
 
@@ -257,6 +258,48 @@ class CGRStocksTest:
         assert len(created_stocks) == 1
         assert created_stocks[0].quantity == 2
         assert created_stocks[0].dnBookedQuantity == 2
+
+    def should_update_finance_event_when_stock_beginning_datetime_is_updated(self, requests_mock):
+        requests_mock.get("https://cgr-cinema-0.example.com/web_service", text=soap_definitions.WEB_SERVICE_DEFINITION)
+
+        cgr_provider = get_provider_by_local_class("CGRStocks")
+        venue_provider = providers_factories.VenueProviderFactory(provider=cgr_provider, isDuoOffers=True)
+        cinema_provider_pivot = providers_factories.CGRCinemaProviderPivotFactory(
+            venue=venue_provider.venue, idAtProvider=venue_provider.venueIdAtOfferProvider
+        )
+        providers_factories.CGRCinemaDetailsFactory(
+            cinemaProviderPivot=cinema_provider_pivot, cinemaUrl="https://cgr-cinema-0.example.com/web_service"
+        )
+
+        requests_mock.post(
+            "https://cgr-cinema-0.example.com/web_service", text=fixtures.cgr_response_template([fixtures.FILM_138473])
+        )
+        requests_mock.get("https://example.com/149341.jpg")
+
+        cgr_stocks = CGRStocks(venue_provider=venue_provider)
+        with mock.patch("pcapi.core.finance.api.update_finance_event_pricing_date") as mock_update_finance_event:
+            cgr_stocks.updateObjects()
+        mock_update_finance_event.assert_not_called()
+
+        # synchronize with show with same date
+        requests_mock.post(
+            "https://cgr-cinema-0.example.com/web_service",
+            text=fixtures.cgr_response_template([fixtures.FILM_138473]),
+        )
+        cgr_stocks = CGRStocks(venue_provider=venue_provider)
+        with mock.patch("pcapi.core.finance.api.update_finance_event_pricing_date") as mock_update_finance_event:
+            cgr_stocks.updateObjects()
+        mock_update_finance_event.assert_not_called()
+
+        # synchronize with show with new date
+        requests_mock.post(
+            "https://cgr-cinema-0.example.com/web_service",
+            text=fixtures.cgr_response_template([fixtures.FILM_138473_NEW_DATE]),
+        )
+        cgr_stocks = CGRStocks(venue_provider=venue_provider)
+        with mock.patch("pcapi.core.finance.api.update_finance_event_pricing_date") as mock_update_finance_event:
+            cgr_stocks.updateObjects()
+        mock_update_finance_event.assert_called_once()
 
     def should_create_product_with_correct_thumb(self, requests_mock):
         requests_mock.get("https://cgr-cinema-0.example.com/web_service", text=soap_definitions.WEB_SERVICE_DEFINITION)

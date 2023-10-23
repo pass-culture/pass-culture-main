@@ -18,8 +18,7 @@ from pcapi.local_providers.local_provider import LocalProvider
 from pcapi.local_providers.providable_info import ProvidableInfo
 from pcapi.models import Model
 from pcapi.repository.providable_queries import get_last_update_for_provider
-from pcapi.utils.date import get_department_timezone
-from pcapi.utils.date import local_datetime_to_default_timezone
+from pcapi.utils import date as utils_date
 
 
 PREVIEW_SHOW = "avant première"
@@ -145,12 +144,14 @@ class CGRStocks(LocalProvider):
                 providers_models.LocalProviderEventType.SyncError, f"Show {showtime_cgr_id} not found in shows list"
             )
             return
-        local_tz = get_department_timezone(self.venue.departementCode)
-        show_utc_datetime = local_datetime_to_default_timezone(
+        local_tz = utils_date.get_department_timezone(self.venue.departementCode)
+        show_utc_datetime = utils_date.local_datetime_to_default_timezone(
             datetime.datetime.combine(showtime.Date, showtime.Heure), local_tz
         )
+        old_beginning_datetime = stock.beginningDatetime
         stock.beginningDatetime = show_utc_datetime
         stock.bookingLimitDatetime = show_utc_datetime
+        self.maybe_update_finance_event_pricing_date(stock, old_beginning_datetime)
 
         is_new_stock_to_insert = stock.id is None
         if is_new_stock_to_insert:

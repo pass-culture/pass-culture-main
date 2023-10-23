@@ -726,6 +726,47 @@ def _delete_dependent_event_pricings(event: models.FinanceEvent, log_message: st
     )
 
 
+def update_finance_event_pricing_date(stock: offers_models.Stock) -> None:
+    """Update pricing ordering date of finance events linked to a stock when its date is modified.
+
+    `FinanceEvent.pricingOrderingDate` is calculated from the date of the stock (for event offers).
+    When this date changes, the `pricingOrderingDate` must be updated and subsequent finance
+    events must be repriced.
+    """
+    pricing_point_id = stock.offer.venue.current_pricing_point_id
+    finance_events_from_pricing_point = models.FinanceEvent.query.options(
+        sqla.orm.joinedload(models.FinanceEvent.pricings)
+    ).filter(models.FinanceEvent.pricingPointId == pricing_point_id)
+
+    bookings_of_this_stock = bookings_models.Booking.query.with_entities(bookings_models.Booking.id).filter(
+        bookings_models.Booking.stockId == stock.id
+    )
+    finance_events_from_stock = (
+        finance_events_from_pricing_point.filter(models.FinanceEvent.bookingId.in_(bookings_of_this_stock))
+        .order_by(models.FinanceEvent.pricingOrderingDate)
+        .all()
+    )
+
+    if finance_events_from_stock:
+        oldest_pricing_ordering_date = finance_events_from_stock[0].pricingOrderingDate
+        for finance_event in finance_events_from_stock:
+            finance_event.pricingOrderingDate = get_pricing_ordering_date(finance_event.booking)
+            oldest_pricing_ordering_date = min(oldest_pricing_ordering_date, finance_event.pricingOrderingDate)
+            db.session.add(finance_event)
+        first_event = (
+            models.FinanceEvent.query.filter(
+                models.FinanceEvent.pricingPointId == pricing_point_id,
+                models.FinanceEvent.pricingOrderingDate >= oldest_pricing_ordering_date,
+                models.FinanceEvent.status.in_([models.FinanceEventStatus.READY, models.FinanceEventStatus.PRICED]),
+            )
+            .order_by(models.FinanceEvent.pricingOrderingDate, models.FinanceEvent.id)
+            .first()
+        )
+        _cancel_event_pricing(first_event, models.PricingLogReason.CHANGE_DATE)
+        first_event.status = models.FinanceEventStatus.READY
+        db.session.add(first_event)
+
+
 def generate_cashflows_and_payment_files(cutoff: datetime.datetime) -> models.CashflowBatch:
     batch = generate_cashflows(cutoff)
     generate_payment_files(batch)
