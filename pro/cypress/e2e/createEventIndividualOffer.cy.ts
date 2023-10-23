@@ -48,8 +48,9 @@ describe('Create an individual offer (event)', () => {
     cy.contains('Accepter les réservations “Duo“')
 
     cy.intercept({ method: 'PATCH', url: '/offers/*' }).as('patchOffer')
+    cy.intercept({ method: 'GET', url: '/offers/*/stocks/*' }).as('getStocks')
     cy.contains('Enregistrer et continuer').click()
-    cy.wait(['@patchOffer', '@getOffer'])
+    cy.wait(['@patchOffer', '@getOffer', '@getStocks'])
 
     // Fill in third step: recurrence
     cy.contains('Ajouter une ou plusieurs dates').click()

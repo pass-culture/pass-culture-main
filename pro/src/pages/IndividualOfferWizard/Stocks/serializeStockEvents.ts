@@ -1,7 +1,9 @@
 import { GetOfferStockResponseModel } from 'apiClient/v1'
 import { StocksEvent } from 'components/StocksEventList/StocksEventList'
 
-export const serializeStockEvents = (stocks: GetOfferStockResponseModel[]) =>
+export const serializeStockEvents = (
+  stocks: GetOfferStockResponseModel[]
+): StocksEvent[] =>
   stocks.map((stock): StocksEvent => {
     if (
       stock.id === null ||

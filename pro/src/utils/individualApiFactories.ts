@@ -251,6 +251,7 @@ export const individualStockEventFactory = (
   customStock: Partial<StocksEvent> = {}
 ): StocksEvent => {
   return {
+    id: stockId++,
     beginningDatetime: new Date('2021-10-15T12:00:00Z').toISOString(),
     bookingLimitDatetime: new Date('2021-09-15T12:00:00Z').toISOString(),
     priceCategoryId: 2,

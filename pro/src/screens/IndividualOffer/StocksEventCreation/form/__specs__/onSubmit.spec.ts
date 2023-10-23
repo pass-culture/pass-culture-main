@@ -28,8 +28,6 @@ const notify = {
   close: vi.fn(),
 }
 
-let stockId = 1
-
 describe('onSubmit', () => {
   const cases: {
     description: string
@@ -54,28 +52,24 @@ describe('onSubmit', () => {
       },
       expectedStocks: [
         individualStockEventFactory({
-          id: stockId++,
           beginningDatetime: '2020-03-03T09:00:00Z',
           bookingLimitDatetime: '2020-03-01T09:00:00Z',
           priceCategoryId: 1,
           quantity: 5,
         }),
         individualStockEventFactory({
-          id: stockId++,
           beginningDatetime: '2020-03-03T09:00:00Z',
           bookingLimitDatetime: '2020-03-01T09:00:00Z',
           priceCategoryId: 2,
           quantity: null,
         }),
         individualStockEventFactory({
-          id: stockId++,
           beginningDatetime: '2020-03-03T09:30:00Z',
           bookingLimitDatetime: '2020-03-01T09:30:00Z',
           priceCategoryId: 1,
           quantity: 5,
         }),
         individualStockEventFactory({
-          id: stockId++,
           beginningDatetime: '2020-03-03T09:30:00Z',
           bookingLimitDatetime: '2020-03-01T09:30:00Z',
           priceCategoryId: 2,
@@ -98,28 +92,24 @@ describe('onSubmit', () => {
       },
       expectedStocks: [
         individualStockEventFactory({
-          id: stockId++,
           beginningDatetime: '2020-03-03T09:00:00Z',
           bookingLimitDatetime: '2020-03-01T09:00:00Z',
           priceCategoryId: 1,
           quantity: 5,
         }),
         individualStockEventFactory({
-          id: stockId++,
           beginningDatetime: '2020-03-04T09:00:00Z',
           bookingLimitDatetime: '2020-03-02T09:00:00Z',
           priceCategoryId: 1,
           quantity: 5,
         }),
         individualStockEventFactory({
-          id: stockId++,
           beginningDatetime: '2020-03-05T09:00:00Z',
           bookingLimitDatetime: '2020-03-03T09:00:00Z',
           priceCategoryId: 1,
           quantity: 5,
         }),
         individualStockEventFactory({
-          id: stockId++,
           beginningDatetime: '2020-03-06T09:00:00Z',
           bookingLimitDatetime: '2020-03-04T09:00:00Z',
           priceCategoryId: 1,
@@ -142,28 +132,24 @@ describe('onSubmit', () => {
       },
       expectedStocks: [
         individualStockEventFactory({
-          id: stockId++,
           beginningDatetime: '2020-03-07T09:00:00Z',
           bookingLimitDatetime: '2020-03-05T09:00:00Z',
           priceCategoryId: 1,
           quantity: 5,
         }),
         individualStockEventFactory({
-          id: stockId++,
           beginningDatetime: '2020-03-08T09:00:00Z',
           bookingLimitDatetime: '2020-03-06T09:00:00Z',
           priceCategoryId: 1,
           quantity: 5,
         }),
         individualStockEventFactory({
-          id: stockId++,
           beginningDatetime: '2020-03-14T09:00:00Z',
           bookingLimitDatetime: '2020-03-12T09:00:00Z',
           priceCategoryId: 1,
           quantity: 5,
         }),
         individualStockEventFactory({
-          id: stockId++,
           beginningDatetime: '2020-03-15T09:00:00Z',
           bookingLimitDatetime: '2020-03-13T09:00:00Z',
           priceCategoryId: 1,
@@ -187,28 +173,24 @@ describe('onSubmit', () => {
       },
       expectedStocks: [
         individualStockEventFactory({
-          id: stockId++,
           beginningDatetime: '2020-03-03T09:00:00Z',
           bookingLimitDatetime: '2020-03-01T09:00:00Z',
           priceCategoryId: 1,
           quantity: 5,
         }),
         individualStockEventFactory({
-          id: stockId++,
           beginningDatetime: '2020-04-03T08:00:00Z',
           bookingLimitDatetime: '2020-04-01T08:00:00Z',
           priceCategoryId: 1,
           quantity: 5,
         }),
         individualStockEventFactory({
-          id: stockId++,
           beginningDatetime: '2020-05-03T08:00:00Z',
           bookingLimitDatetime: '2020-05-01T08:00:00Z',
           priceCategoryId: 1,
           quantity: 5,
         }),
         individualStockEventFactory({
-          id: stockId++,
           beginningDatetime: '2020-06-03T08:00:00Z',
           bookingLimitDatetime: '2020-06-01T08:00:00Z',
           priceCategoryId: 1,
@@ -231,14 +213,12 @@ describe('onSubmit', () => {
       },
       expectedStocks: [
         individualStockEventFactory({
-          id: stockId++,
           beginningDatetime: '2020-03-31T08:00:00Z',
           bookingLimitDatetime: '2020-03-29T08:00:00Z',
           priceCategoryId: 1,
           quantity: 5,
         }),
         individualStockEventFactory({
-          id: stockId++,
           beginningDatetime: '2020-05-31T08:00:00Z',
           bookingLimitDatetime: '2020-05-29T08:00:00Z',
           priceCategoryId: 1,
@@ -263,28 +243,24 @@ describe('onSubmit', () => {
       },
       expectedStocks: [
         individualStockEventFactory({
-          id: stockId++,
           beginningDatetime: '2020-03-03T09:00:00Z',
           bookingLimitDatetime: '2020-03-01T09:00:00Z',
           priceCategoryId: 1,
           quantity: 5,
         }),
         individualStockEventFactory({
-          id: stockId++,
           beginningDatetime: '2020-04-07T08:00:00Z',
           bookingLimitDatetime: '2020-04-05T08:00:00Z',
           priceCategoryId: 1,
           quantity: 5,
         }),
         individualStockEventFactory({
-          id: stockId++,
           beginningDatetime: '2020-05-05T08:00:00Z',
           bookingLimitDatetime: '2020-05-03T08:00:00Z',
           priceCategoryId: 1,
           quantity: 5,
         }),
         individualStockEventFactory({
-          id: stockId++,
           beginningDatetime: '2020-06-02T08:00:00Z',
           bookingLimitDatetime: '2020-05-31T08:00:00Z',
           priceCategoryId: 1,
@@ -308,21 +284,18 @@ describe('onSubmit', () => {
       },
       expectedStocks: [
         individualStockEventFactory({
-          id: stockId++,
           beginningDatetime: '2020-03-31T08:00:00Z',
           bookingLimitDatetime: '2020-03-29T08:00:00Z',
           priceCategoryId: 1,
           quantity: 5,
         }),
         individualStockEventFactory({
-          id: stockId++,
           beginningDatetime: '2020-06-30T08:00:00Z',
           bookingLimitDatetime: '2020-06-28T08:00:00Z',
           priceCategoryId: 1,
           quantity: 5,
         }),
         individualStockEventFactory({
-          id: stockId++,
           beginningDatetime: '2020-09-29T08:00:00Z',
           bookingLimitDatetime: '2020-09-27T08:00:00Z',
           priceCategoryId: 1,
@@ -345,21 +318,18 @@ describe('onSubmit', () => {
       },
       expectedStocks: [
         individualStockEventFactory({
-          id: stockId++,
           beginningDatetime: '2023-03-31T08:00:00Z',
           bookingLimitDatetime: '2023-03-29T08:00:00Z',
           priceCategoryId: 1,
           quantity: 5,
         }),
         individualStockEventFactory({
-          id: stockId++,
           beginningDatetime: '2023-04-28T08:00:00Z',
           bookingLimitDatetime: '2023-04-26T08:00:00Z',
           priceCategoryId: 1,
           quantity: 5,
         }),
         individualStockEventFactory({
-          id: stockId++,
           beginningDatetime: '2023-05-26T08:00:00Z',
           bookingLimitDatetime: '2023-05-24T08:00:00Z',
           priceCategoryId: 1,

@@ -24,8 +24,8 @@ export const StocksSummaryScreen = () => {
 
   useEffect(() => {
     async function loadData() {
-      setIsLoading(true)
       if (offer?.isEvent) {
+        setIsLoading(true)
         try {
           const response = await api.getStocks(offer.id)
 
@@ -35,8 +35,8 @@ export const StocksSummaryScreen = () => {
             'Une erreur est survenue lors du chargement de vos stocks.'
           )
         }
+        setIsLoading(false)
       }
-      setIsLoading(false)
     }
     void loadData()
   }, [])
