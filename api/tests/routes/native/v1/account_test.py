@@ -2271,47 +2271,6 @@ class UnsuspendAccountTest:
         assert not user.isActive
 
 
-class OldSuspensionTokenValidationTest:  # TODO abdelmoujibmegzari remove when the old tokens are no longer in use https://passculture.atlassian.net/browse/PC-24727
-    def test_error_when_token_is_invalid(self, client):
-        response = client.get("/native/v1/account/suspend/token_validation/abc")
-
-        assert response.status_code == 400
-        assert response.json["reason"] == "Le token est invalide."
-
-    def test_error_when_token_has_invalid_signature(self, client):
-        token = jwt.encode(
-            {"userId": 1},
-            "wrong_jwt_secret_key",
-            algorithm=ALGORITHM_HS_256,
-        )
-        response = client.get(f"/native/v1/account/suspend/token_validation/{token}")
-
-        assert response.status_code == 400
-        assert response.json["reason"] == "Le token est invalide."
-
-    def test_success_when_token_is_valid(self, client):
-        token = jwt.encode(
-            {"userId": 1},
-            settings.JWT_SECRET_KEY,
-            algorithm=ALGORITHM_HS_256,
-        )
-        response = client.get(f"/native/v1/account/suspend/token_validation/{token}")
-
-        assert response.status_code == 204
-
-    def test_error_when_token_is_expired(self, client):
-        passed_expiration_date = (datetime.utcnow() - timedelta(days=1)).timestamp()
-        token = jwt.encode(
-            {"userId": 1, "exp": passed_expiration_date},
-            settings.JWT_SECRET_KEY,
-            algorithm=ALGORITHM_HS_256,
-        )
-        response = client.get(f"/native/v1/account/suspend/token_validation/{token}")
-
-        assert response.status_code == 401
-        assert response.json["reason"] == "Le token a expiré."
-
-
 class SuspendAccountForSuspiciousLoginTest:
     def test_error_when_token_is_invalid(self, client):
         response = client.post("/native/v1/account/suspend_for_suspicious_login", {"token": "abc"})
