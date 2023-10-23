@@ -116,6 +116,7 @@ const StocksEventList = ({
     await api.deleteStock(stockId)
     logEvent?.(Events.CLICKED_DELETE_STOCK, {
       offerId: offerId,
+      stockId: stockId,
     })
 
     if (stocks.length % STOCKS_PER_PAGE === 0 && page === pageCount) {
@@ -464,9 +465,11 @@ const StocksEventList = ({
                   <td className={cn(styles['data'], styles['clear-icon'])}>
                     <Button
                       variant={ButtonVariant.TERNARY}
-                      onClick={() =>
-                        stock.id?.toString() && onDeleteStock(index, stock.id)
-                      }
+                      onClick={async () => {
+                        if (stock.id?.toString()) {
+                          await onDeleteStock(index, stock.id)
+                        }
+                      }}
                       icon={fullTrashIcon}
                       hasTooltip
                     >
