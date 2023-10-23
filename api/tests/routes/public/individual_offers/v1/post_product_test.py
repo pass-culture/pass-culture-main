@@ -33,9 +33,8 @@ class PostProductTest:
                 "product_offers": [
                     {
                         "categoryRelatedFields": {
-                            "category": "SUPPORT_PHYSIQUE_MUSIQUE_CD",
+                            "category": "SUPPORT_PHYSIQUE_FILM",
                             "ean": "1234567891234",
-                            "musicType": "ROCK-LO_FI",
                         },
                         "accessibility": utils.ACCESSIBILITY_FIELDS,
                         "name": "Le champ des possibles",
@@ -48,14 +47,13 @@ class PostProductTest:
         created_offer = offers_models.Offer.query.one()
         assert created_offer.name == "Le champ des possibles"
         assert created_offer.venue == venue
-        assert created_offer.subcategoryId == "SUPPORT_PHYSIQUE_MUSIQUE_CD"
+        assert created_offer.subcategoryId == "SUPPORT_PHYSIQUE_FILM"
         assert created_offer.audioDisabilityCompliant is True
         assert created_offer.lastProvider.name == "Technical provider"
         assert created_offer.mentalDisabilityCompliant is True
         assert created_offer.motorDisabilityCompliant is True
         assert created_offer.visualDisabilityCompliant is True
         assert not created_offer.isDuo
-        assert created_offer.extraData == {"ean": "1234567891234", "musicType": "820", "musicSubType": "829"}
         assert created_offer.bookingEmail is None
         assert created_offer.description is None
         assert created_offer.status == offer_mixin.OfferStatus.SOLD_OUT
@@ -66,11 +64,8 @@ class PostProductTest:
                     "bookingContact": None,
                     "bookingEmail": None,
                     "categoryRelatedFields": {
-                        "author": None,
-                        "category": "SUPPORT_PHYSIQUE_MUSIQUE_CD",
+                        "category": "SUPPORT_PHYSIQUE_FILM",
                         "ean": "1234567891234",
-                        "musicType": "ROCK-LO_FI",
-                        "performer": None,
                     },
                     "description": None,
                     "accessibility": {
@@ -103,18 +98,16 @@ class PostProductTest:
                 "product_offers": [
                     {
                         "categoryRelatedFields": {
-                            "category": "SUPPORT_PHYSIQUE_MUSIQUE_CD",
+                            "category": "SUPPORT_PHYSIQUE_FILM",
                             "ean": "1234567891234",
-                            "musicType": "ROCK-LO_FI",
                         },
                         "accessibility": utils.ACCESSIBILITY_FIELDS,
                         "name": "Le champ des possibles",
                     },
                     {
                         "categoryRelatedFields": {
-                            "category": "SUPPORT_PHYSIQUE_MUSIQUE_CD",
+                            "category": "SUPPORT_PHYSIQUE_FILM",
                             "ean": "1234567890987",
-                            "musicType": "HIP_HOP_RAP-RAP_OLD_SCHOOL",
                         },
                         "accessibility": utils.ACCESSIBILITY_FIELDS,
                         "name": "Pump it",
@@ -131,8 +124,8 @@ class PostProductTest:
         assert first_created_offer.name == "Le champ des possibles"
         assert second_created_offer.venue == venue
         assert first_created_offer.venue == venue
-        assert second_created_offer.subcategoryId == "SUPPORT_PHYSIQUE_MUSIQUE_CD"
-        assert first_created_offer.subcategoryId == "SUPPORT_PHYSIQUE_MUSIQUE_CD"
+        assert second_created_offer.subcategoryId == "SUPPORT_PHYSIQUE_FILM"
+        assert first_created_offer.subcategoryId == "SUPPORT_PHYSIQUE_FILM"
         assert second_created_offer.audioDisabilityCompliant is True
         assert first_created_offer.audioDisabilityCompliant is True
         assert second_created_offer.lastProvider.name == "Technical provider"
@@ -142,8 +135,6 @@ class PostProductTest:
         assert first_created_offer.visualDisabilityCompliant is True
         assert not second_created_offer.isDuo
         assert not first_created_offer.isDuo
-        assert second_created_offer.extraData == {"ean": "1234567890987", "musicType": "900", "musicSubType": "910"}
-        assert first_created_offer.extraData == {"ean": "1234567891234", "musicType": "820", "musicSubType": "829"}
         assert first_created_offer.bookingEmail is None
         assert first_created_offer.description is None
         assert first_created_offer.status == offer_mixin.OfferStatus.SOLD_OUT
@@ -154,11 +145,8 @@ class PostProductTest:
             "bookingContact": None,
             "bookingEmail": None,
             "categoryRelatedFields": {
-                "author": None,
-                "category": "SUPPORT_PHYSIQUE_MUSIQUE_CD",
+                "category": "SUPPORT_PHYSIQUE_FILM",
                 "ean": "1234567891234",
-                "musicType": "ROCK-LO_FI",
-                "performer": None,
             },
             "description": None,
             "accessibility": {
@@ -181,30 +169,24 @@ class PostProductTest:
         offer_2 = next(offer for offer in response.json["productOffers"] if offer["name"] == "Pump it")
 
         assert offer_2 == {
-            "bookingContact": None,
-            "bookingEmail": None,
-            "categoryRelatedFields": {
-                "author": None,
-                "category": "SUPPORT_PHYSIQUE_MUSIQUE_CD",
-                "ean": "1234567890987",
-                "musicType": "HIP_HOP_RAP-RAP_OLD_SCHOOL",
-                "performer": None,
-            },
-            "description": None,
+            "id": offer_2["id"],
             "accessibility": {
                 "audioDisabilityCompliant": True,
                 "mentalDisabilityCompliant": True,
                 "motorDisabilityCompliant": True,
                 "visualDisabilityCompliant": True,
             },
-            "enableDoubleBookings": False,
+            "bookingContact": None,
+            "bookingEmail": None,
+            "description": None,
             "externalTicketOfficeUrl": None,
-            "id": created_offers[0].id,
             "image": None,
-            "itemCollectionDetails": None,
+            "enableDoubleBookings": False,
             "location": {"type": "physical", "venueId": venue.id},
             "name": "Pump it",
             "status": "SOLD_OUT",
+            "itemCollectionDetails": None,
+            "categoryRelatedFields": {"ean": "1234567890987", "category": "SUPPORT_PHYSIQUE_FILM"},
             "stock": None,
         }
 
@@ -223,12 +205,8 @@ class PostProductTest:
                         "bookingContact": "contact@example.com",
                         "bookingEmail": "spam@example.com",
                         "categoryRelatedFields": {
-                            "author": "Maurice",
-                            "category": "SUPPORT_PHYSIQUE_MUSIQUE_CD",
+                            "category": "SUPPORT_PHYSIQUE_FILM",
                             "ean": "1234567891234",
-                            "musicType": "JAZZ-FUSION",
-                            "performer": "Pink Pâtisserie",
-                            "stageDirector": "Alfred",  # field not applicable
                         },
                         "description": "Enregistrement pour la nuit des temps",
                         "accessibility": {
@@ -258,20 +236,13 @@ class PostProductTest:
         created_offer = offers_models.Offer.query.one()
         assert created_offer.name == "Le champ des possibles"
         assert created_offer.venue == venue
-        assert created_offer.subcategoryId == "SUPPORT_PHYSIQUE_MUSIQUE_CD"
+        assert created_offer.subcategoryId == "SUPPORT_PHYSIQUE_FILM"
         assert created_offer.audioDisabilityCompliant is True
         assert created_offer.lastProvider.name == "Technical provider"
         assert created_offer.mentalDisabilityCompliant is True
         assert created_offer.motorDisabilityCompliant is False
         assert created_offer.visualDisabilityCompliant is False
         assert created_offer.isDuo is False
-        assert created_offer.extraData == {
-            "author": "Maurice",
-            "ean": "1234567891234",
-            "musicType": "501",
-            "musicSubType": "511",
-            "performer": "Pink Pâtisserie",
-        }
         assert created_offer.bookingEmail == "spam@example.com"
         assert created_offer.description == "Enregistrement pour la nuit des temps"
         assert created_offer.externalTicketOfficeUrl == "https://maposaic.com"
@@ -298,11 +269,8 @@ class PostProductTest:
                     "bookingContact": "contact@example.com",
                     "bookingEmail": "spam@example.com",
                     "categoryRelatedFields": {
-                        "author": "Maurice",
                         "ean": "1234567891234",
-                        "category": "SUPPORT_PHYSIQUE_MUSIQUE_CD",
-                        "musicType": "JAZZ-FUSION",
-                        "performer": "Pink Pâtisserie",
+                        "category": "SUPPORT_PHYSIQUE_FILM",
                     },
                     "description": "Enregistrement pour la nuit des temps",
                     "accessibility": {
@@ -343,9 +311,8 @@ class PostProductTest:
                 "productOffers": [
                     {
                         "categoryRelatedFields": {
-                            "category": "SUPPORT_PHYSIQUE_MUSIQUE_CD",
+                            "category": "SUPPORT_PHYSIQUE_FILM",
                             "ean": "1234567891234",
-                            "musicType": "ROCK-LO_FI",
                         },
                         "accessibility": utils.ACCESSIBILITY_FIELDS,
                         "name": "Le champ des possibles",
@@ -380,9 +347,8 @@ class PostProductTest:
                 "productOffers": [
                     {
                         "categoryRelatedFields": {
-                            "category": "SUPPORT_PHYSIQUE_MUSIQUE_CD",
+                            "category": "SUPPORT_PHYSIQUE_FILM",
                             "ean": "1234567891234",
-                            "musicType": "ROCK-LO_FI",
                         },
                         "accessibility": utils.ACCESSIBILITY_FIELDS,
                         "name": "Le champ des possibles",
@@ -409,9 +375,8 @@ class PostProductTest:
                 "productOffers": [
                     {
                         "categoryRelatedFields": {
-                            "category": "SUPPORT_PHYSIQUE_MUSIQUE_CD",
+                            "category": "SUPPORT_PHYSIQUE_FILM",
                             "ean": "1234567891234",
-                            "musicType": "ROCK-LO_FI",
                         },
                         "accessibility": utils.ACCESSIBILITY_FIELDS,
                         "name": "Le champ des possibles",
@@ -438,9 +403,8 @@ class PostProductTest:
                 "productOffers": [
                     {
                         "categoryRelatedFields": {
-                            "category": "SUPPORT_PHYSIQUE_MUSIQUE_CD",
+                            "category": "SUPPORT_PHYSIQUE_FILM",
                             "ean": "1234567891234",
-                            "musicType": "ROCK-LO_FI",
                         },
                         "accessibility": utils.ACCESSIBILITY_FIELDS,
                         "name": "Le champ des possibles",
@@ -468,9 +432,8 @@ class PostProductTest:
                     {
                         "enableDoubleBookings": True,
                         "categoryRelatedFields": {
-                            "category": "SUPPORT_PHYSIQUE_MUSIQUE_CD",
+                            "category": "SUPPORT_PHYSIQUE_FILM",
                             "ean": "1234567891234",
-                            "musicType": "ROCK-LO_FI",
                         },
                         "accessibility": utils.ACCESSIBILITY_FIELDS,
                         "name": "Le champ des possibles",
@@ -516,10 +479,8 @@ class PostProductTest:
                 "productOffers": [
                     {
                         "categoryRelatedFields": {
-                            "category": "SUPPORT_PHYSIQUE_MUSIQUE_CD",
+                            "category": "SUPPORT_PHYSIQUE_FILM",
                             "ean": "1234567891234",
-                            "musicType": "ROCK-LO_FI",
-                            "performer": "Ichika Nito",
                         },
                         "accessibility": utils.ACCESSIBILITY_FIELDS,
                         "name": "Le champ des possibles",
@@ -533,17 +494,11 @@ class PostProductTest:
 
         assert created_offer.extraData == {
             "ean": "1234567891234",
-            "musicType": "820",
-            "musicSubType": "829",
-            "performer": "Ichika Nito",
         }
 
         assert response.json["productOffers"][0]["categoryRelatedFields"] == {
-            "author": None,
-            "category": "SUPPORT_PHYSIQUE_MUSIQUE_CD",
+            "category": "SUPPORT_PHYSIQUE_FILM",
             "ean": "1234567891234",
-            "musicType": "ROCK-LO_FI",
-            "performer": "Ichika Nito",
         }
 
     @pytest.mark.usefixtures("db_session")
@@ -557,9 +512,8 @@ class PostProductTest:
                 "productOffers": [
                     {
                         "categoryRelatedFields": {
-                            "category": "SUPPORT_PHYSIQUE_MUSIQUE_CD",
+                            "category": "SUPPORT_PHYSIQUE_FILM",
                             "ean": "1234567891234",
-                            "musicType": "CHANSON_VARIETE-OTHER",
                         },
                         "accessibility": utils.ACCESSIBILITY_FIELDS,
                         "name": "Le champ des possibles",
@@ -606,9 +560,8 @@ class PostProductTest:
                 "productOffers": [
                     {
                         "categoryRelatedFields": {
-                            "category": "SUPPORT_PHYSIQUE_MUSIQUE_CD",
+                            "category": "SUPPORT_PHYSIQUE_FILM",
                             "ean": "1234567891234",
-                            "musicType": "ROCK-LO_FI",
                         },
                         "accessibility": utils.ACCESSIBILITY_FIELDS,
                         "name": "Le champ des possibles",
@@ -634,9 +587,8 @@ class PostProductTest:
                 "product_offers": [
                     {
                         "categoryRelatedFields": {
-                            "category": "SUPPORT_PHYSIQUE_MUSIQUE_CD",
+                            "category": "SUPPORT_PHYSIQUE_FILM",
                             "ean": "1234567891234",
-                            "musicType": "ROCK-LO_FI",
                         },
                         "accessibility": utils.ACCESSIBILITY_FIELDS,
                         "name": "Le champ des possibles",
@@ -664,9 +616,8 @@ class PostProductTest:
                 "product_offers": [
                     {
                         "categoryRelatedFields": {
-                            "category": "SUPPORT_PHYSIQUE_MUSIQUE_CD",
+                            "category": "SUPPORT_PHYSIQUE_FILM",
                             "ean": "1234567891234",
-                            "musicType": "ROCK-LO_FI",
                         },
                         "accessibility": utils.ACCESSIBILITY_FIELDS,
                         "name": "Le champ des possibles",
@@ -697,9 +648,8 @@ class PostProductTest:
                 "product_offers": [
                     {
                         "categoryRelatedFields": {
-                            "category": "SUPPORT_PHYSIQUE_MUSIQUE_CD",
+                            "category": "SUPPORT_PHYSIQUE_FILM",
                             "ean": "1234567891234",
-                            "musicType": "ROCK-LO_FI",
                         },
                         "accessibility": utils.ACCESSIBILITY_FIELDS,
                         "name": "Le champ des possibles",
@@ -727,9 +677,8 @@ class PostProductTest:
                 "product_offers": [
                     {
                         "categoryRelatedFields": {
-                            "category": "SUPPORT_PHYSIQUE_MUSIQUE_CD",
+                            "category": "SUPPORT_PHYSIQUE_FILM",
                             "ean": "1234567891234",
-                            "musicType": "ROCK-LO_FI",
                         },
                         "accessibility": utils.ACCESSIBILITY_FIELDS,
                         "name": "Le champ des possibles",
@@ -746,18 +695,17 @@ class PostProductTest:
         }
 
     @pytest.mark.usefixtures("db_session")
-    def test_only_physical_music_is_allowed(self, client):
-        utils.create_offerer_provider_linked_to_venue()
+    def test_not_allowed_categories(self, client):
+        venue, _ = utils.create_offerer_provider_linked_to_venue(is_virtual=True)
 
         response = client.with_explicit_token(offerers_factories.DEFAULT_CLEAR_API_KEY).post(
             "/public/offers/v1/products",
             json={
-                "location": {"type": "digital", "url": "https://la-flute-en-chantier.fr"},
+                "location": {"type": "digital", "url": "https://la-flute-en-chantier.fr", "venue_id": venue.id},
                 "product_offers": [
                     {
-                        "categoryRelatedFields": {"category": "SPECTACLE_ENREGISTRE", "showType": "OPERA-GRAND_OPERA"},
+                        "categoryRelatedFields": {"category": "CARTE_CINE_ILLIMITE", "showType": "OPERA-GRAND_OPERA"},
                         "accessibility": utils.ACCESSIBILITY_FIELDS,
-                        "location": {"type": "digital", "url": "https://la-flute-en-chantier.fr"},
                         "name": "La flûte en chantier",
                     },
                 ],
@@ -765,8 +713,40 @@ class PostProductTest:
         )
 
         assert response.status_code == 400
-        assert "productOffers.0.categoryRelatedFields.category" in response.json
-        assert "SUPPORT_PHYSIQUE_MUSIQUE_CD" in response.json["productOffers.0.categoryRelatedFields.category"][0]
+        assert response.json == {
+            "productOffers.0.categoryRelatedFields.category": [
+                "unexpected value; permitted: 'ABO_BIBLIOTHEQUE'",
+                "unexpected value; permitted: 'ABO_CONCERT'",
+                "unexpected value; permitted: 'ABO_LIVRE_NUMERIQUE'",
+                "unexpected value; permitted: 'ABO_MEDIATHEQUE'",
+                "unexpected value; permitted: 'ABO_MUSEE'",
+                "unexpected value; permitted: 'ABO_PLATEFORME_MUSIQUE'",
+                "unexpected value; permitted: 'ABO_PLATEFORME_VIDEO'",
+                "unexpected value; permitted: 'ABO_PRATIQUE_ART'",
+                "unexpected value; permitted: 'ABO_PRESSE_EN_LIGNE'",
+                "unexpected value; permitted: 'ABO_SPECTACLE'",
+                "unexpected value; permitted: 'ACHAT_INSTRUMENT'",
+                "unexpected value; permitted: 'APP_CULTURELLE'",
+                "unexpected value; permitted: 'AUTRE_SUPPORT_NUMERIQUE'",
+                "unexpected value; permitted: 'CARTE_JEUNES'",
+                "unexpected value; permitted: 'CARTE_MUSEE'",
+                "unexpected value; permitted: 'LIVRE_AUDIO_PHYSIQUE'",
+                "unexpected value; permitted: 'LIVRE_NUMERIQUE'",
+                "unexpected value; permitted: 'LOCATION_INSTRUMENT'",
+                "unexpected value; permitted: 'PARTITION'",
+                "unexpected value; permitted: 'PLATEFORME_PRATIQUE_ARTISTIQUE'",
+                "unexpected value; permitted: 'PODCAST'",
+                "unexpected value; permitted: 'PRATIQUE_ART_VENTE_DISTANCE'",
+                "unexpected value; permitted: 'SPECTACLE_ENREGISTRE'",
+                "unexpected value; permitted: 'SUPPORT_PHYSIQUE_FILM'",
+                "unexpected value; permitted: 'TELECHARGEMENT_LIVRE_AUDIO'",
+                "unexpected value; permitted: 'TELECHARGEMENT_MUSIQUE'",
+                "unexpected value; permitted: 'VISITE_VIRTUELLE'",
+                "unexpected value; permitted: 'VOD'",
+            ],
+            "productOffers.0.categoryRelatedFields.ean": ["field required", "field required", "field required"],
+            "productOffers.0.categoryRelatedFields.musicType": ["field required", "field required"],
+        }
         assert offers_models.Offer.query.first() is None
 
     @pytest.mark.usefixtures("db_session")
@@ -795,6 +775,27 @@ class PostProductTest:
         assert offers_models.Offer.query.count() == 0
 
     @pytest.mark.usefixtures("db_session")
+    def test_create_allowed_product(self, client):
+        venue, _ = utils.create_offerer_provider_linked_to_venue(is_virtual=True)
+
+        response = client.with_explicit_token(offerers_factories.DEFAULT_CLEAR_API_KEY).post(
+            "/public/offers/v1/products",
+            json={
+                "location": {"type": "digital", "url": "https://la-flute-en-chantier.fr", "venue_id": venue.id},
+                "product_offers": [
+                    {
+                        "categoryRelatedFields": {"category": "SPECTACLE_ENREGISTRE", "showType": "OPERA-GRAND_OPERA"},
+                        "accessibility": utils.ACCESSIBILITY_FIELDS,
+                        "name": "La flûte en chantier",
+                    },
+                ],
+            },
+        )
+
+        assert response.status_code == 200
+        assert offers_models.Offer.query.count() == 1
+
+    @pytest.mark.usefixtures("db_session")
     def test_returns_404_for_inactive_venue_provider(self, client):
         venue, _ = utils.create_offerer_provider_linked_to_venue(is_venue_provider_active=False)
 
@@ -805,9 +806,8 @@ class PostProductTest:
                 "product_offers": [
                     {
                         "categoryRelatedFields": {
-                            "category": "SUPPORT_PHYSIQUE_MUSIQUE_CD",
+                            "category": "SUPPORT_PHYSIQUE_FILM",
                             "ean": "1234567891234",
-                            "musicType": "ROCK-LO_FI",
                         },
                         "accessibility": utils.ACCESSIBILITY_FIELDS,
                         "name": "Le champ des possibles",

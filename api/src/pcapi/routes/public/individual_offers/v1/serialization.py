@@ -254,8 +254,35 @@ def deserialize_extra_data(
 
 
 ALLOWED_PRODUCT_SUBCATEGORIES = [
-    subcategories.SUPPORT_PHYSIQUE_MUSIQUE_CD,
-    subcategories.SUPPORT_PHYSIQUE_MUSIQUE_VINYLE,
+    subcategories.ABO_BIBLIOTHEQUE,
+    subcategories.ABO_CONCERT,
+    subcategories.ABO_LIVRE_NUMERIQUE,
+    subcategories.ABO_MEDIATHEQUE,
+    subcategories.ABO_MUSEE,
+    subcategories.ABO_PLATEFORME_MUSIQUE,
+    subcategories.ABO_PLATEFORME_VIDEO,
+    subcategories.ABO_PRATIQUE_ART,
+    subcategories.ABO_PRESSE_EN_LIGNE,
+    subcategories.ABO_SPECTACLE,
+    subcategories.ACHAT_INSTRUMENT,
+    subcategories.APP_CULTURELLE,
+    subcategories.AUTRE_SUPPORT_NUMERIQUE,
+    subcategories.CAPTATION_MUSIQUE,
+    subcategories.CARTE_JEUNES,
+    subcategories.CARTE_MUSEE,
+    subcategories.LIVRE_AUDIO_PHYSIQUE,
+    subcategories.LIVRE_NUMERIQUE,
+    subcategories.LOCATION_INSTRUMENT,
+    subcategories.PARTITION,
+    subcategories.PLATEFORME_PRATIQUE_ARTISTIQUE,
+    subcategories.PODCAST,
+    subcategories.PRATIQUE_ART_VENTE_DISTANCE,
+    subcategories.SPECTACLE_ENREGISTRE,
+    subcategories.SUPPORT_PHYSIQUE_FILM,
+    subcategories.TELECHARGEMENT_LIVRE_AUDIO,
+    subcategories.TELECHARGEMENT_MUSIQUE,
+    subcategories.VISITE_VIRTUELLE,
+    subcategories.VOD,
 ]
 product_category_creation_models = {
     subcategory.id: compute_category_fields_model(subcategory, Method.create)
