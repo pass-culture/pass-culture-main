@@ -82,8 +82,8 @@ class FeatureToggle(enum.Enum):
     PRICE_FINANCE_EVENTS = "Active la valorisation des évènements de finance"
     SYNCHRONIZE_ALLOCINE = "Permettre la synchronisation journalière avec Allociné"
     SYNCHRONIZE_TITELIVE_PRODUCTS = "Permettre limport journalier du référentiel des livres"
-    SYNCHRONIZE_TITELIVE_PRODUCTS_DESCRIPTION = "Permettre limport journalier des résumés des livres"
-    SYNCHRONIZE_TITELIVE_PRODUCTS_THUMBS = "Permettre limport journalier des couvertures de livres"
+    SYNCHRONIZE_TITELIVE_PRODUCTS_DESCRIPTION = "Permettre l'import journalier des résumés des livres"
+    SYNCHRONIZE_TITELIVE_PRODUCTS_THUMBS = "Permettre l'import journalier des couvertures de livres"
     SYNCHRONIZE_TITELIVE_API_MUSIC_PRODUCTS = (
         "Permettre l'import journalier du référentiel de la musique à travers l'API Titelive"
     )
@@ -113,10 +113,10 @@ class FeatureToggle(enum.Enum):
     WIP_ENABLE_COOKIES_BANNER = "Active la nouvelle bannière de cookies"
     WIP_ENABLE_SATISFACTION_SURVEY = "Activer l'affichage du questionnaire de satisfaction adage"
     WIP_MANDATORY_BOOKING_CONTACT = "Rend obligatoire offer.bookingContact pour les offres retirables"
-    WIP_ENABLE_BOOST_PREFIXED_EXTERNAL_BOOKING = "Active les réservations externe boost avec préfix"
+    WIP_ENABLE_BOOST_PREFIXED_EXTERNAL_BOOKING = "Active les réservations externes boost avec préfixe"
     WIP_ENABLE_NEW_USER_OFFERER_LINK = "Activer le nouvel ajout des collaborateurs"
     WIP_ENABLE_DIFFUSE_HELP = "Activer l'affichage de l'aide diffuse adage"
-    WIP_ENABLE_EVENTS_WITH_TICKETS_FOR_PUBLIC_API = "Activer la création évènements avec tickets dans l'API publique"
+    WIP_ENABLE_EVENTS_WITH_TICKETS_FOR_PUBLIC_API = "Activer la création d'évènements avec tickets dans l'API publique"
     WIP_OFFER_TO_INSTITUTION = "Activer le fléchage d'une offre à un établissement"
     WIP_ENABLE_NEW_BANK_DETAILS_JOURNEY = "Activer le nouveau parcours de dépôt de coordonnées bancaires"
     WIP_CATEGORY_SELECTION = "Activer la nouvelle sélection de catégories"
