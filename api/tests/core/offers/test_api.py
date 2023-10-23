@@ -1764,17 +1764,65 @@ class UnindexExpiredOffersTest:
 
 @pytest.mark.usefixtures("db_session")
 class WhitelistExistingProductTest:
-    def test_modify_product_if_existing_and_not_cgcompatible_nor_synchronizable(self):
+    @override_settings(TITELIVE_EPAGINE_API_USERNAME="test@example.com")
+    @override_settings(TITELIVE_EPAGINE_API_PASSWORD="qwerty123")
+    def test_modify_product_if_existing_and_not_cgcompatible_nor_synchronizable(self, requests_mock):
         ean = "9782070455379"
+        requests_mock.post(
+            "https://login.epagine.fr/v1/login/test@example.com/token",
+            json={"token": "XYZ"},
+        )
+        requests_mock.get(
+            f"https://catsearch.epagine.fr/v1/ean/{ean}",
+            json=fixtures.BOOK_BY_EAN_FIXTURE,
+        )
+
         product = factories.ProductFactory(
             idAtProviders=ean,
+            name="test",
+            subcategoryId=subcategories.LIVRE_PAPIER.id,
+            extraData={
+                "ean": ean,
+                "author": "author",
+                "prix_livre": "66.6€",
+                "collection": "collection",
+                "comic_series": "comic_series",
+                "date_parution": "date_parution",
+                "distributeur": "distributeur",
+                "editeur": "editeur",
+                "num_in_collection": "test",
+                "schoolbook": False,
+                "csr_id": "csr_id",
+                "gtl_id": "gtl_id",
+                "code_clil": "code_clil",
+                "rayon": "test",
+            },
             isGcuCompatible=False,
             isSynchronizationCompatible=False,
         )
+
         api.whitelist_product(ean)
+
         assert models.Product.query.one() == product
         assert product.isGcuCompatible
         assert product.isSynchronizationCompatible
+        oeuvre = fixtures.BOOK_BY_EAN_FIXTURE["oeuvre"]
+        article = oeuvre["article"][0]
+        assert product.name == oeuvre["titre"]
+        assert product.description == article["resume"]
+        assert product.extraData["author"] == oeuvre["auteurs"]
+        assert product.extraData["ean"] == ean
+        assert product.extraData["prix_livre"] == article["prix"]
+        assert product.extraData["collection"] == article["collection"]
+        assert product.extraData["comic_series"] == article["serie"]
+        assert product.extraData["date_parution"] == "2014-10-02T00:00:00"
+        assert product.extraData["distributeur"] == article["distributeur"]
+        assert product.extraData["editeur"] == article["editeur"]
+        assert product.extraData["num_in_collection"] == article["collection_no"]
+        assert product.extraData["schoolbook"] == (article["scolaire"] == "1")
+        assert product.extraData["csr_id"] == "0105"
+        assert product.extraData["gtl_id"] == "01050000"
+        assert product.extraData["code_clil"] == "3665"
 
     @override_settings(TITELIVE_EPAGINE_API_USERNAME="test@example.com")
     @override_settings(TITELIVE_EPAGINE_API_PASSWORD="qwerty123")

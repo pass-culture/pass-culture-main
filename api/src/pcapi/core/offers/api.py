@@ -1200,20 +1200,35 @@ def update_stock_quantity_to_match_cinema_venue_provider_remaining_places(offer:
 
 
 def whitelist_product(idAtProviders: str) -> models.Product | None:
-    product = models.Product.query.filter_by(idAtProviders=idAtProviders).one_or_none()
-    if product:
-        product.isGcuCompatible = True
-        product.isSynchronizationCompatible = True
-        repository.save(product)
-        return product
+    titelive_product = get_new_product_from_ean13(idAtProviders)
 
-    product = get_new_product_from_ean13(idAtProviders)
-    if product:
-        db.session.add(product)
-        db.session.commit()
-        return product
+    product = fetch_or_update_product_with_titelive_data(titelive_product)
 
-    return None
+    product.isGcuCompatible = True
+    product.isSynchronizationCompatible = True
+
+    db.session.add(product)
+    db.session.commit()
+    return product
+
+
+def fetch_or_update_product_with_titelive_data(titelive_product: models.Product) -> models.Product:
+    product = models.Product.query.filter_by(idAtProviders=titelive_product.idAtProviders).one_or_none()
+    if not product:
+        return titelive_product
+
+    product.name = titelive_product.name
+    product.description = titelive_product.description
+    product.subcategoryId = titelive_product.subcategoryId
+    product.thumbCount = titelive_product.thumbCount
+    old_extra_data = product.extraData
+    if old_extra_data is None:
+        old_extra_data = {}
+
+    if titelive_product.extraData:
+        product.extraData = {**old_extra_data, **titelive_product.extraData}
+
+    return product
 
 
 def batch_delete_draft_offers(query: BaseQuery) -> None:
