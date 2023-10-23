@@ -103,7 +103,7 @@
     "eslint-config-prettier": "^9.0.0",
     "eslint-plugin-import": "^2.28.1",
     "eslint-plugin-prettier": "^5.0.0",
-    "happy-dom": "^12.5.0",
+    "happy-dom": "^12.9.1",
     "jsdom": "^22.0.0",
     "openapi-typescript-codegen": "^0.25.0",
     "prettier": "^3.0.1",
