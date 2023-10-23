@@ -6,6 +6,7 @@ import pcapi.connectors.ems as ems_connector
 from pcapi.connectors.serialization import ems_serializers
 from pcapi.core import search
 from pcapi.core.categories import subcategories_v2 as subcategories
+from pcapi.core.finance import api as finance_api
 from pcapi.core.offerers import models as offerers_models
 from pcapi.core.offers import api as offers_api
 from pcapi.core.offers import models as offers_models
@@ -178,8 +179,10 @@ class EMSStocks:
         local_tz = utils_date.get_department_timezone(self.venue.departementCode)
         beginning_datetime = datetime.datetime.strptime(session.date, "%Y%m%d%H%M")
         beginning_datetime_in_utc = utils_date.local_datetime_to_default_timezone(beginning_datetime, local_tz)
+        old_beginning_datetime = stock.beginningDatetime
         stock.beginningDatetime = beginning_datetime_in_utc
         stock.bookingLimitDatetime = beginning_datetime_in_utc
+        _maybe_update_finance_event_pricing_date(stock, old_beginning_datetime)
 
         show_price = decimal.Decimal(session.pass_culture_price)
         price_label = f"Tarif pass Culture {show_price}€"
@@ -224,3 +227,16 @@ def _build_movie_uuid_for_offer(movie_id: str, venue_id: int) -> str:
 
 def _get_movie_id_from_id_at_provider(id_at_provider: str) -> str:
     return id_at_provider.split("%")[0]
+
+
+def _maybe_update_finance_event_pricing_date(
+    stock: offers_models.Stock,
+    old_beginning_datetime: datetime.datetime | None,
+) -> None:
+    assert stock.beginningDatetime is not None  # to make mypy happy
+    if (
+        stock.id is not None
+        and old_beginning_datetime is not None
+        and stock.beginningDatetime.replace(tzinfo=None) != old_beginning_datetime
+    ):
+        finance_api.update_finance_event_pricing_date(stock)

@@ -650,6 +650,9 @@ def edit_stock(
     for model_attr, value in modifications.items():
         setattr(stock, model_attr, value)
 
+    if "beginningDatetime" in modifications:
+        finance_api.update_finance_event_pricing_date(stock)
+
     repository.add_to_session(stock)
     search.async_index_offer_ids(
         [stock.offerId],

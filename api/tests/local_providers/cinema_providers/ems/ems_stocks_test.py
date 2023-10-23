@@ -61,6 +61,42 @@ class EMSStocksTest:
 
         self._assert_seyne_sur_mer_initial_sync(venue, venue_provider, cinema_detail, 86400)
 
+    def should_update_finance_event_when_stock_beginning_datetime_is_updated(self, requests_mock):
+        requests_mock.get("https://fake_url.com?version=0", json=fixtures.DATA_VERSION_0)
+        requests_mock.get("https://example.com/FR/poster/5F988F1C/600/SHJRH.jpg", content=bytes())
+        requests_mock.get("https://example.com/FR/poster/D7C57D16/600/FGMSE.jpg", content=bytes())
+
+        venue = offerers_factories.VenueFactory(
+            bookingEmail="seyne-sur-mer-booking@example.com", withdrawalDetails="Modalité de retrait"
+        )
+        ems_provider = get_provider_by_local_class("EMSStocks")
+        providers_factories.VenueProviderFactory(venue=venue, provider=ems_provider, venueIdAtOfferProvider="9997")
+        cinema_provider_pivot = providers_factories.CinemaProviderPivotFactory(
+            venue=venue, provider=ems_provider, idAtProvider="9997"
+        )
+        providers_factories.EMSCinemaDetailsFactory(cinemaProviderPivot=cinema_provider_pivot)
+
+        with mock.patch("pcapi.core.finance.api.update_finance_event_pricing_date") as mock_update_finance_event:
+            synchronize_ems_venue_providers()
+        mock_update_finance_event.assert_not_called()
+
+        # synchronize with show with same date
+        requests_mock.get("https://fake_url.com?version=0", json=fixtures.DATA_VERSION_0)
+        requests_mock.get("https://example.com/FR/poster/5F988F1C/600/SHJRH.jpg", content=bytes())
+        requests_mock.get("https://example.com/FR/poster/D7C57D16/600/FGMSE.jpg", content=bytes())
+
+        with mock.patch("pcapi.core.finance.api.update_finance_event_pricing_date") as mock_update_finance_event:
+            synchronize_ems_venue_providers()
+        mock_update_finance_event.assert_not_called()
+
+        # synchronize with show with new date
+        requests_mock.get("https://fake_url.com?version=0", json=fixtures.DATA_VERSION_0_WITH_NEW_DATE)
+        requests_mock.get("https://example.com/FR/poster/5F988F1C/600/SHJRH.jpg", content=bytes())
+
+        with mock.patch("pcapi.core.finance.api.update_finance_event_pricing_date") as mock_update_finance_event:
+            synchronize_ems_venue_providers()
+        mock_update_finance_event.assert_called_once()
+
     def should_reuse_price_category(self, requests_mock):
         connector = EMSScheduleConnector()
         requests_mock.get("https://fake_url.com?version=0", json=fixtures.DATA_VERSION_0)

@@ -592,6 +592,81 @@ class CancelLatestEventTest:
         assert event2.pricings[0].status == models.PricingStatus.PROCESSED  # unchanged
 
 
+class UpdateFinanceEventPricingDateTest:
+    @freezegun.freeze_time("2023-10-20 17:00:00")
+    def test_editing_beginning_datetime_edits_finance_event(self):
+        # Given
+        new_beginning_datetime = datetime.datetime.utcnow() + datetime.timedelta(days=4)
+
+        pricing_point = offerers_factories.VenueFactory()
+        oldest_event = _generate_finance_event_context(
+            pricing_point, datetime.datetime.utcnow() + datetime.timedelta(days=2), datetime.datetime.utcnow()
+        )
+        older_event = _generate_finance_event_context(
+            pricing_point, datetime.datetime.utcnow() + datetime.timedelta(days=6), datetime.datetime.utcnow()
+        )
+        changing_event = _generate_finance_event_context(
+            pricing_point, datetime.datetime.utcnow() + datetime.timedelta(days=8), datetime.datetime.utcnow()
+        )
+        newest_event = _generate_finance_event_context(
+            pricing_point, datetime.datetime.utcnow() + datetime.timedelta(days=10), datetime.datetime.utcnow()
+        )
+
+        unrelated_event = _generate_finance_event_context(
+            offerers_factories.VenueFactory(),
+            datetime.datetime.utcnow() + datetime.timedelta(days=8),
+            datetime.datetime.utcnow(),
+        )
+
+        # When
+        changing_event.booking.stock.beginningDatetime = new_beginning_datetime
+        api.update_finance_event_pricing_date(stock=changing_event.booking.stock)
+
+        # Then
+        assert oldest_event.pricingOrderingDate == datetime.datetime.utcnow() + datetime.timedelta(days=2)
+        assert oldest_event.status == models.FinanceEventStatus.PRICED
+        assert len(oldest_event.pricings) == 1
+
+        assert older_event.pricingOrderingDate == datetime.datetime.utcnow() + datetime.timedelta(days=6)
+        assert older_event.status == models.FinanceEventStatus.READY
+        assert len(older_event.pricings) == 0
+
+        assert changing_event.pricingOrderingDate == datetime.datetime.utcnow() + datetime.timedelta(days=4)
+        assert changing_event.status == models.FinanceEventStatus.READY
+        assert len(changing_event.pricings) == 1
+        assert changing_event.pricings[0].status == models.PricingStatus.CANCELLED
+
+        assert newest_event.pricingOrderingDate == datetime.datetime.utcnow() + datetime.timedelta(days=10)
+        assert newest_event.status == models.FinanceEventStatus.READY
+        assert len(newest_event.pricings) == 0
+
+        assert unrelated_event.pricingOrderingDate == datetime.datetime.utcnow() + datetime.timedelta(days=8)
+        assert unrelated_event.status == models.FinanceEventStatus.PRICED
+        assert len(unrelated_event.pricings) == 1
+
+
+def _generate_finance_event_context(
+    pricing_point: offerers_models.Venue,
+    stock_beginning_datetime: datetime.datetime,
+    booking_date_used: datetime.datetime,
+) -> models.FinanceEvent:
+    venue = offerers_factories.VenueFactory(pricing_point=pricing_point)
+    stock = offers_factories.EventStockFactory(
+        offer__venue=venue,
+        beginningDatetime=stock_beginning_datetime,
+        bookingLimitDatetime=booking_date_used - datetime.timedelta(days=1),
+    )
+    booking = bookings_factories.UsedBookingFactory(stock=stock, dateUsed=booking_date_used)
+    event = factories.FinanceEventFactory(
+        booking=booking,
+        pricingOrderingDate=stock.beginningDatetime,
+        status=models.FinanceEventStatus.PRICED,
+        venue=venue,
+    )
+    factories.PricingFactory(event=event, booking=event.booking)
+    return event
+
+
 class GetPricingPointLinkTest:
     def test_used_before_start_of_only_active_link(self):
         # link:      |----------------------

@@ -117,8 +117,10 @@ class BoostStocks(LocalProvider):
     def fill_stock_attributes(self, stock: offers_models.Stock) -> None:
         stock.offer = self.last_offer
         # a pydantic validator has already converted the showDate to a UTC datetime
+        old_beginning_datetime = stock.beginningDatetime
         stock.beginningDatetime = self.showtime_details.showDate
         stock.bookingLimitDatetime = self.showtime_details.showDate
+        self.maybe_update_finance_event_pricing_date(stock, old_beginning_datetime)
 
         is_new_stock_to_insert = stock.id is None
         if is_new_stock_to_insert:

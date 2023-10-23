@@ -25,6 +25,7 @@ import pcapi.core.finance.factories as finance_factories
 import pcapi.core.finance.models as finance_models
 import pcapi.core.mails.testing as mails_testing
 import pcapi.core.offerers.factories as offerers_factories
+import pcapi.core.offerers.models as offerers_models
 from pcapi.core.offers import api
 from pcapi.core.offers import exceptions
 from pcapi.core.offers import factories
@@ -521,6 +522,77 @@ class EditStockTest:
         assert existing_stock.price == 10
 
         assert not mocked_send_first_venue_approved_offer_email_to_pro.called
+
+    @freeze_time("2023-10-20 17:00:00")
+    def test_editing_beginning_datetime_edits_finance_event(self):
+        # Given
+        new_beginning_datetime = datetime.utcnow() + timedelta(days=4)
+
+        pricing_point = offerers_factories.VenueFactory()
+        oldest_event = _generate_finance_event_context(
+            pricing_point, datetime.utcnow() + timedelta(days=2), datetime.utcnow()
+        )
+        older_event = _generate_finance_event_context(
+            pricing_point, datetime.utcnow() + timedelta(days=6), datetime.utcnow()
+        )
+        changing_event = _generate_finance_event_context(
+            pricing_point, datetime.utcnow() + timedelta(days=8), datetime.utcnow()
+        )
+        newest_event = _generate_finance_event_context(
+            pricing_point, datetime.utcnow() + timedelta(days=10), datetime.utcnow()
+        )
+
+        unrelated_event = _generate_finance_event_context(
+            offerers_factories.VenueFactory(), datetime.utcnow() + timedelta(days=8), datetime.utcnow()
+        )
+
+        # When
+        api.edit_stock(
+            stock=changing_event.booking.stock,
+            beginning_datetime=new_beginning_datetime,
+        )
+
+        # Then
+        assert oldest_event.pricingOrderingDate == datetime.utcnow() + timedelta(days=2)
+        assert oldest_event.status == finance_models.FinanceEventStatus.PRICED
+        assert len(oldest_event.pricings) == 1
+
+        assert older_event.pricingOrderingDate == datetime.utcnow() + timedelta(days=6)
+        assert older_event.status == finance_models.FinanceEventStatus.READY
+        assert len(older_event.pricings) == 0
+
+        assert changing_event.pricingOrderingDate == datetime.utcnow() + timedelta(days=4)
+        assert changing_event.status == finance_models.FinanceEventStatus.READY
+        assert len(changing_event.pricings) == 1
+        assert changing_event.pricings[0].status == finance_models.PricingStatus.CANCELLED
+
+        assert newest_event.pricingOrderingDate == datetime.utcnow() + timedelta(days=10)
+        assert newest_event.status == finance_models.FinanceEventStatus.READY
+        assert len(newest_event.pricings) == 0
+
+        assert unrelated_event.pricingOrderingDate == datetime.utcnow() + timedelta(days=8)
+        assert unrelated_event.status == finance_models.FinanceEventStatus.PRICED
+        assert len(unrelated_event.pricings) == 1
+
+
+def _generate_finance_event_context(
+    pricing_point: offerers_models.Venue, stock_beginning_datetime: datetime, booking_date_used: datetime
+) -> finance_models.FinanceEvent:
+    venue = offerers_factories.VenueFactory(pricing_point=pricing_point)
+    stock = factories.EventStockFactory(
+        offer__venue=venue,
+        beginningDatetime=stock_beginning_datetime,
+        bookingLimitDatetime=booking_date_used - timedelta(days=1),
+    )
+    booking = bookings_factories.UsedBookingFactory(stock=stock, dateUsed=booking_date_used)
+    event = finance_factories.FinanceEventFactory(
+        booking=booking,
+        pricingOrderingDate=stock.beginningDatetime,
+        status=finance_models.FinanceEventStatus.PRICED,
+        venue=venue,
+    )
+    finance_factories.PricingFactory(event=event, booking=event.booking)
+    return event
 
 
 @pytest.mark.usefixtures("db_session")
