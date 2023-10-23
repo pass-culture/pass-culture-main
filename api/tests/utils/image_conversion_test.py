@@ -104,3 +104,7 @@ class ImageConversionTest:
         assert result_image.width < original_image.width
         assert result_image.height < original_image.height
         assert (result_image.width / result_image.height) == pytest.approx(expected_ratio, 0.01)
+
+    def test_do_not_raise_error_when_image_is_truncated(self):
+        image_as_bytes = (IMAGES_DIR / "mouette_full_size.jpg").read_bytes()
+        assert _pre_process_image(image_as_bytes[:-25]).size == (1786, 1785)
