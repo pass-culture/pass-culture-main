@@ -19,7 +19,7 @@ class PatchProductTest:
             venue=venue,
             isActive=True,
             lastProvider=api_key.provider,
-            subcategoryId=subcategories.SUPPORT_PHYSIQUE_MUSIQUE_CD.id,
+            subcategoryId=subcategories.SUPPORT_PHYSIQUE_FILM.id,
         )
 
         response = client.with_explicit_token(offerers_factories.DEFAULT_CLEAR_API_KEY).patch(
@@ -42,7 +42,7 @@ class PatchProductTest:
             withdrawalDetails="Des conditions de retrait sur la sellette",
             bookingEmail="notify@example.com",
             lastProvider=api_key.provider,
-            subcategoryId=subcategories.SUPPORT_PHYSIQUE_MUSIQUE_CD.id,
+            subcategoryId=subcategories.SUPPORT_PHYSIQUE_FILM.id,
         )
 
         response = client.with_explicit_token(offerers_factories.DEFAULT_CLEAR_API_KEY).patch(
@@ -65,7 +65,7 @@ class PatchProductTest:
             venue=venue,
             bookingEmail="notify@example.com",
             lastProvider=api_key.provider,
-            subcategoryId=subcategories.SUPPORT_PHYSIQUE_MUSIQUE_CD.id,
+            subcategoryId=subcategories.SUPPORT_PHYSIQUE_FILM.id,
         )
 
         response = client.with_explicit_token(offerers_factories.DEFAULT_CLEAR_API_KEY).patch(
@@ -89,7 +89,7 @@ class PatchProductTest:
             motorDisabilityCompliant=True,
             visualDisabilityCompliant=True,
             lastProvider=api_key.provider,
-            subcategoryId=subcategories.SUPPORT_PHYSIQUE_MUSIQUE_CD.id,
+            subcategoryId=subcategories.SUPPORT_PHYSIQUE_FILM.id,
         )
 
         response = client.with_explicit_token(offerers_factories.DEFAULT_CLEAR_API_KEY).patch(
@@ -113,55 +113,12 @@ class PatchProductTest:
         assert product_offer.motorDisabilityCompliant is True
         assert product_offer.visualDisabilityCompliant is True
 
-    def test_update_extra_data_partially(self, client):
-        venue, api_key = utils.create_offerer_provider_linked_to_venue()
-        product_offer = offers_factories.ThingOfferFactory(
-            venue=venue,
-            subcategoryId="SUPPORT_PHYSIQUE_MUSIQUE_CD",
-            extraData={
-                "author": "Maurice",
-                "musicType": "501",
-                "musicSubType": "508",
-                "performer": "Pink Pâtisserie",
-            },
-            lastProvider=api_key.provider,
-        )
-
-        response = client.with_explicit_token(offerers_factories.DEFAULT_CLEAR_API_KEY).patch(
-            "/public/offers/v1/products",
-            json={
-                "product_offers": [
-                    {
-                        "offer_id": product_offer.id,
-                        "categoryRelatedFields": {
-                            "category": "SUPPORT_PHYSIQUE_MUSIQUE_CD",
-                            "musicType": "JAZZ-ACID_JAZZ",
-                        },
-                    },
-                ]
-            },
-        )
-        assert response.status_code == 200
-        assert response.json["productOffers"][0]["categoryRelatedFields"] == {
-            "author": "Maurice",
-            "ean": None,
-            "category": "SUPPORT_PHYSIQUE_MUSIQUE_CD",
-            "musicType": "JAZZ-ACID_JAZZ",
-            "performer": "Pink Pâtisserie",
-        }
-        assert product_offer.extraData == {
-            "author": "Maurice",
-            "musicSubType": "502",
-            "musicType": "501",
-            "performer": "Pink Pâtisserie",
-        }
-
     def test_create_stock(self, client):
         venue, api_key = utils.create_offerer_provider_linked_to_venue()
         product_offer = offers_factories.ThingOfferFactory(
             venue=venue,
             lastProvider=api_key.provider,
-            subcategoryId=subcategories.SUPPORT_PHYSIQUE_MUSIQUE_CD.id,
+            subcategoryId=subcategories.SUPPORT_PHYSIQUE_FILM.id,
         )
 
         response = client.with_explicit_token(offerers_factories.DEFAULT_CLEAR_API_KEY).patch(
@@ -188,7 +145,7 @@ class PatchProductTest:
         product_offer = offers_factories.ThingOfferFactory(
             venue=venue,
             lastProvider=api_key.provider,
-            subcategoryId=subcategories.SUPPORT_PHYSIQUE_MUSIQUE_CD.id,
+            subcategoryId=subcategories.SUPPORT_PHYSIQUE_FILM.id,
         )
         stock = offers_factories.StockFactory(offer=product_offer, quantity=30, price=10)
 
@@ -216,26 +173,20 @@ class PatchProductTest:
         product_offer = offers_factories.ThingOfferFactory(
             venue=venue,
             lastProvider=api_key.provider,
-            subcategoryId=subcategories.SUPPORT_PHYSIQUE_MUSIQUE_CD.id,
+            subcategoryId=subcategories.SUPPORT_PHYSIQUE_FILM.id,
         )
         stock = offers_factories.StockFactory(offer=product_offer, quantity=30, price=10)
 
         product_offer_2 = offers_factories.ThingOfferFactory(
             venue=venue,
-            subcategoryId="SUPPORT_PHYSIQUE_MUSIQUE_CD",
-            extraData={
-                "author": "Maurice",
-                "musicType": "501",
-                "musicSubType": "508",
-                "performer": "Pink Pâtisserie",
-            },
+            subcategoryId="SUPPORT_PHYSIQUE_FILM",
             lastProvider=api_key.provider,
         )
 
         product_offer_3 = offers_factories.ThingOfferFactory(
             venue=venue,
             lastProvider=api_key.provider,
-            subcategoryId=subcategories.SUPPORT_PHYSIQUE_MUSIQUE_CD.id,
+            subcategoryId=subcategories.SUPPORT_PHYSIQUE_FILM.id,
         )
 
         response = client.with_explicit_token(offerers_factories.DEFAULT_CLEAR_API_KEY).patch(
@@ -246,10 +197,6 @@ class PatchProductTest:
                     {
                         "offer_id": product_offer_2.id,
                         "accessibility": {"audioDisabilityCompliant": False},
-                        "categoryRelatedFields": {
-                            "musicType": "JAZZ-ACID_JAZZ",
-                            "category": "SUPPORT_PHYSIQUE_MUSIQUE_CD",
-                        },
                     },
                     {"offer_id": product_offer_3.id, "stock": {"price": 1000, "quantity": 1}},
                 ]
@@ -297,7 +244,7 @@ class PatchProductTest:
         product_offer = offers_factories.ThingOfferFactory(
             venue=venue,
             lastProvider=api_key.provider,
-            subcategoryId=subcategories.SUPPORT_PHYSIQUE_MUSIQUE_CD.id,
+            subcategoryId=subcategories.SUPPORT_PHYSIQUE_FILM.id,
         )
         response = client.with_explicit_token(offerers_factories.DEFAULT_CLEAR_API_KEY).patch(
             "/public/offers/v1/products",
@@ -317,7 +264,7 @@ class PatchProductTest:
         product_offer = offers_factories.ThingOfferFactory(
             venue=venue,
             lastProvider=api_key.provider,
-            subcategoryId=subcategories.SUPPORT_PHYSIQUE_MUSIQUE_CD.id,
+            subcategoryId=subcategories.SUPPORT_PHYSIQUE_FILM.id,
         )
         stock = offers_factories.StockFactory(offer=product_offer, bookingLimitDatetime="2021-01-15T00:00:00Z")
 
@@ -341,7 +288,7 @@ class PatchProductTest:
         product_offer = offers_factories.ThingOfferFactory(
             venue=venue,
             lastProvider=api_key.provider,
-            subcategoryId=subcategories.SUPPORT_PHYSIQUE_MUSIQUE_CD.id,
+            subcategoryId=subcategories.SUPPORT_PHYSIQUE_FILM.id,
         )
         stock = offers_factories.StockFactory(offer=product_offer, bookingLimitDatetime=None)
 
@@ -365,7 +312,7 @@ class PatchProductTest:
         product_offer = offers_factories.ThingOfferFactory(
             venue=venue,
             lastProvider=api_key.provider,
-            subcategoryId=subcategories.SUPPORT_PHYSIQUE_MUSIQUE_CD.id,
+            subcategoryId=subcategories.SUPPORT_PHYSIQUE_FILM.id,
         )
         stock = offers_factories.StockFactory(offer=product_offer, bookingLimitDatetime=None)
         confirmed_booking = bookings_factories.BookingFactory(
@@ -411,9 +358,8 @@ class PatchProductTest:
         )
         assert response.status_code == 400
         assert response.json == {
-            "productOffers.0.categoryRelatedFields.category": [
-                "unexpected value; permitted: 'SUPPORT_PHYSIQUE_MUSIQUE_CD'",
-                "unexpected value; permitted: 'SUPPORT_PHYSIQUE_MUSIQUE_VINYLE'",
+            "product.subcategory": [
+                "Only ABO_BIBLIOTHEQUE, ABO_CONCERT, ABO_LIVRE_NUMERIQUE, ABO_MEDIATHEQUE, ABO_MUSEE, ABO_PLATEFORME_MUSIQUE, ABO_PLATEFORME_VIDEO, ABO_PRATIQUE_ART, ABO_PRESSE_EN_LIGNE, ABO_SPECTACLE, ACHAT_INSTRUMENT, APP_CULTURELLE, AUTRE_SUPPORT_NUMERIQUE, CAPTATION_MUSIQUE, CARTE_JEUNES, CARTE_MUSEE, LIVRE_AUDIO_PHYSIQUE, LIVRE_NUMERIQUE, LOCATION_INSTRUMENT, PARTITION, PLATEFORME_PRATIQUE_ARTISTIQUE, PODCAST, PRATIQUE_ART_VENTE_DISTANCE, SPECTACLE_ENREGISTRE, SUPPORT_PHYSIQUE_FILM, TELECHARGEMENT_LIVRE_AUDIO, TELECHARGEMENT_MUSIQUE, VISITE_VIRTUELLE, VOD products can be edited"
             ]
         }
 
@@ -423,6 +369,7 @@ class PatchProductTest:
             venue=venue,
             bookingEmail="notify@example.com",
             lastProvider=api_key.provider,
+            subcategoryId=subcategories.CARTE_CINE_ILLIMITE.id,
         )
 
         response = client.with_explicit_token(offerers_factories.DEFAULT_CLEAR_API_KEY).patch(
@@ -437,6 +384,6 @@ class PatchProductTest:
         assert response.status_code == 400
         assert response.json == {
             "product.subcategory": [
-                "Only SUPPORT_PHYSIQUE_MUSIQUE_CD, SUPPORT_PHYSIQUE_MUSIQUE_VINYLE products can be edited"
+                "Only ABO_BIBLIOTHEQUE, ABO_CONCERT, ABO_LIVRE_NUMERIQUE, ABO_MEDIATHEQUE, ABO_MUSEE, ABO_PLATEFORME_MUSIQUE, ABO_PLATEFORME_VIDEO, ABO_PRATIQUE_ART, ABO_PRESSE_EN_LIGNE, ABO_SPECTACLE, ACHAT_INSTRUMENT, APP_CULTURELLE, AUTRE_SUPPORT_NUMERIQUE, CAPTATION_MUSIQUE, CARTE_JEUNES, CARTE_MUSEE, LIVRE_AUDIO_PHYSIQUE, LIVRE_NUMERIQUE, LOCATION_INSTRUMENT, PARTITION, PLATEFORME_PRATIQUE_ARTISTIQUE, PODCAST, PRATIQUE_ART_VENTE_DISTANCE, SPECTACLE_ENREGISTRE, SUPPORT_PHYSIQUE_FILM, TELECHARGEMENT_LIVRE_AUDIO, TELECHARGEMENT_MUSIQUE, VISITE_VIRTUELLE, VOD products can be edited"
             ]
         }
