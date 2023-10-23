@@ -161,7 +161,9 @@ describe('CollectiveOfferSummary', () => {
   })
 
   it('should return an error when the categorie call failed', async () => {
-    vi.spyOn(api, 'getCollectiveOfferTemplate').mockResolvedValueOnce(offer)
+    vi.spyOn(api, 'getCollectiveOfferTemplate').mockResolvedValueOnce(
+      collectiveOfferTemplateFactory({ isTemplate: true, isActive: true })
+    )
 
     vi.spyOn(api, 'getCategories').mockRejectedValueOnce('')
 
@@ -178,7 +180,9 @@ describe('CollectiveOfferSummary', () => {
   })
 
   it('should return an error when the duplication failed', async () => {
-    vi.spyOn(api, 'getCollectiveOfferTemplate').mockResolvedValueOnce(offer)
+    vi.spyOn(api, 'getCollectiveOfferTemplate').mockResolvedValueOnce(
+      collectiveOfferTemplateFactory({ isTemplate: true, isActive: true })
+    )
     vi.spyOn(api, 'createCollectiveOffer').mockRejectedValueOnce(
       new ApiError({} as ApiRequestOptions, { status: 400 } as ApiResult, '')
     )

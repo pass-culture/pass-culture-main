@@ -70,6 +70,7 @@ describe('getStockCollectiveOfferTemplateAdapter', () => {
           },
           name: 'mon lieu',
         },
+        dates: { end: '', start: '' },
       })
 
       // when
