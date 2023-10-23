@@ -126,7 +126,7 @@ jobs:
         uses: 'google-github-actions/get-secretmanager-secrets@v1'
         with:
           secrets: |-
-            SONAR_TOKEN: passculture-metier-ehp/passculture-main-sonar-token
+            SONAR_TOKEN:passculture-metier-ehp/passculture-main-sonar-token
       - name: Cache the node_modules
         id: yarn-modules-cache
         uses: kopax-polyconseil/gcs-cache-action@989d1c719834a9d4eec2535c02779eb5699f554a
