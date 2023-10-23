@@ -18,7 +18,6 @@ import { FORMAT_ISO_DATE_ONLY } from 'utils/date'
 import {
   individualOfferFactory,
   individualStockEventFactory,
-  priceCategoryFactory,
 } from 'utils/individualApiFactories'
 import { renderWithProviders } from 'utils/renderWithProviders'
 

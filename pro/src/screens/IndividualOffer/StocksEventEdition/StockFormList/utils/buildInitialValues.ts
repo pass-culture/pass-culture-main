@@ -30,9 +30,11 @@ const buildSingleInitialValues = ({
   offerStatus,
   priceCategoriesOptions,
 }: BuildSingleInitialValuesArgs): StockEventFormValues => {
+  if (!stock.id) {
+    throw new Error('Stock id should not be undefined')
+  }
   const hiddenValues = {
-    // FIXME: stock.id is never undefined
-    stockId: stock.id as number,
+    stockId: stock.id,
     isDeletable: stock.isEventDeletable,
     readOnlyFields: setFormReadOnlyFields({
       beginningDate: stock.beginningDatetime
