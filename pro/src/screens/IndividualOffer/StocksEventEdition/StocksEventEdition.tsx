@@ -16,6 +16,7 @@ import { getIndividualOfferUrl } from 'core/Offers/utils/getIndividualOfferUrl'
 import { useOfferWizardMode } from 'hooks'
 import useNotification from 'hooks/useNotification'
 import fullMoreIcon from 'icons/full-more.svg'
+import { onSubmit as onRecurrenceSubmit } from 'screens/IndividualOffer/StocksEventCreation/form/onSubmit'
 import { Button } from 'ui-kit'
 import { ButtonVariant } from 'ui-kit/Button/types'
 import { getToday } from 'utils/date'
@@ -25,6 +26,7 @@ import { getLocalDepartementDateTimeFromUtc } from 'utils/timezone'
 import ActionBar from '../ActionBar/ActionBar'
 import DialogStocksEventEditConfirm from '../DialogStocksEventEditConfirm/DialogStocksEventEditConfirm'
 import useNotifyFormError from '../hooks/useNotifyFormError'
+import { RecurrenceFormValues } from '../StocksEventCreation/form/types'
 import { RecurrenceForm } from '../StocksEventCreation/RecurrenceForm'
 import { getSuccessMessage } from '../utils/getSuccessMessage'
 
@@ -164,6 +166,20 @@ const StocksEventEdition = ({
     setShowStocksEventConfirmModal(false)
   }
 
+  const handleRecurrenceSubmit = async (values: RecurrenceFormValues) => {
+    const newStocks = await onRecurrenceSubmit(
+      values,
+      offer.venue.departementCode ?? '',
+      stocks,
+      offer.id,
+      notify
+    )
+    if (newStocks?.length) {
+      resetStocks(newStocks)
+    }
+    setIsRecurrenceModalOpen(false)
+  }
+
   const onDeleteStock = async (
     stockValues: StockEventFormValues,
     stockIndex: number
@@ -288,12 +304,9 @@ const StocksEventEdition = ({
                 fullContentWidth
               >
                 <RecurrenceForm
-                  stocks={stocks}
-                  offerId={offer.id}
-                  departmentCode={offer.venue.departementCode ?? ''}
                   priceCategories={offer.priceCategories ?? []}
                   setIsOpen={setIsRecurrenceModalOpen}
-                  setStocks={resetStocks}
+                  handleSubmit={handleRecurrenceSubmit}
                 />
               </DialogBox>
             )}

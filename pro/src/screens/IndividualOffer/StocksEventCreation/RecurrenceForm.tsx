@@ -3,8 +3,6 @@ import React from 'react'
 
 import { PriceCategoryResponseModel } from 'apiClient/v1'
 import FormLayout from 'components/FormLayout'
-import { StocksEvent } from 'components/StocksEventList/StocksEventList'
-import useNotification from 'hooks/useNotification'
 import fullMoreIcon from 'icons/full-more.svg'
 import fullNextIcon from 'icons/full-next.svg'
 import fullTrashIcon from 'icons/full-trash.svg'
@@ -35,7 +33,6 @@ import { getPriceCategoryOptions } from '../StocksEventEdition/getPriceCategoryO
 import { DayCheckbox } from './DayCheckbox'
 import { computeInitialValues } from './form/computeInitialValues'
 import { INITIAL_QUANTITY_PER_PRICE_CATEGORY } from './form/constants'
-import { onSubmit } from './form/onSubmit'
 import { isLastWeekOfMonth } from './form/recurrenceUtils'
 import {
   MonthlyOption,
@@ -47,12 +44,9 @@ import { getValidationSchema } from './form/validationSchema'
 import styles from './RecurrenceForm.module.scss'
 
 interface Props {
-  stocks: StocksEvent[]
   setIsOpen: (p: boolean) => void
-  departmentCode: string
-  offerId: number
   priceCategories: PriceCategoryResponseModel[]
-  setStocks: (stocks: StocksEvent[]) => void
+  handleSubmit: (values: RecurrenceFormValues) => Promise<void>
 }
 
 const mapNumberToFrenchOrdinals = (n: number): string => {
@@ -111,29 +105,11 @@ const getMonthlyOptions = (values: RecurrenceFormValues) => {
 }
 
 export const RecurrenceForm = ({
-  stocks,
   setIsOpen,
-  departmentCode,
-  offerId,
   priceCategories,
-  setStocks,
+  handleSubmit,
 }: Props): JSX.Element => {
   const priceCategoryOptions = getPriceCategoryOptions(priceCategories)
-  const notify = useNotification()
-
-  const handleSubmit = async (values: RecurrenceFormValues) => {
-    const newStocks = await onSubmit(
-      values,
-      departmentCode,
-      stocks,
-      offerId,
-      notify
-    )
-    if (newStocks?.length) {
-      setStocks(newStocks)
-    }
-    setIsOpen(false)
-  }
 
   const formik = useFormik({
     initialValues: computeInitialValues(priceCategoryOptions),
