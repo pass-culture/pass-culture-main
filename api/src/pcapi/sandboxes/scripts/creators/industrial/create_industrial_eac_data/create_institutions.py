@@ -19,6 +19,13 @@ def create_institutions() -> list[educational_models.EducationalInstitution]:
             postalCode="01000",
         ),
         educational_factories.EducationalInstitutionFactory(
+            institutionId="0102039E",
+            name="",
+            institutionType="LYCEE",
+            city="BOURG-EN-BRESSE",
+            postalCode="01000",
+        ),
+        educational_factories.EducationalInstitutionFactory(
             institutionId="0910620E",
             institutionType="LYCEE POLYVALENT",
             name="METIER ROBERT DOISNEAU",
