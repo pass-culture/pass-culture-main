@@ -108,6 +108,21 @@ SEANCE_177182 = {
     "libTarif": "Tarif Standard ICE",
 }
 
+SEANCE_177182_NEW_DATE = {
+    "IDSeance": 177182,
+    "Date": "2023-01-19",
+    "Heure": "14:00:00.000",
+    "NbPlacesRestantes": 99,
+    "bAvecPlacement": True,
+    "bAvecDuo": True,
+    "bICE": True,
+    "Relief": "2D",
+    "Version": "VF",
+    "bAVP": False,
+    "PrixUnitaire": 6.9,
+    "libTarif": "Tarif Standard ICE",
+}
+
 SEANCE_177182_SOLD_OUT = {
     "IDSeance": 177182,
     "Date": "2023-01-29",
@@ -133,6 +148,18 @@ FILM_138473 = {
     "Affiche": "https://example.com/149341.jpg",
     "TypeFilm": "CNC",
     "Seances": [SEANCE_177182],
+}
+
+FILM_138473_NEW_DATE = {
+    "IDFilm": 138473,
+    "IDFilmAlloCine": 138473,
+    "Titre": "Venom",
+    "NumVisa": 149341,
+    "Duree": 112,
+    "Synopsis": "Possédé par un symbiote qui agit de manière autonome, le journaliste Eddie Brock devient le protecteur létal Venom.",
+    "Affiche": "https://example.com/149341.jpg",
+    "TypeFilm": "CNC",
+    "Seances": [SEANCE_177182_NEW_DATE],
 }
 
 FILM_138473_SOLD_OUT = {
