@@ -36,7 +36,7 @@ const Offerer = (): JSX.Element => {
     ? { siret: offerer.siret }
     : { siret: DEFAULT_OFFERER_FORM_VALUES.siret }
 
-  const handleNextStep = () => async () => {
+  const handleNextStep = () => {
     if (Object.keys(formik.errors).length !== 0) {
       notify.error(FORM_ERROR_MESSAGE)
       return
@@ -151,7 +151,7 @@ const Offerer = (): JSX.Element => {
               </p>
             </Banner>
             <ActionBar
-              onClickNext={handleNextStep()}
+              onClickNext={handleNextStep}
               isDisabled={formik.isSubmitting}
               nextStepTitle="Continuer"
               logEvent={logEvent}

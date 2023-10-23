@@ -29,7 +29,7 @@ const RadioButton = ({
   const [field] = useField({ name, value, type: 'radio' })
 
   const onCustomChange = useCallback(
-    async (e: React.ChangeEvent<HTMLInputElement>) => {
+    (e: React.ChangeEvent<HTMLInputElement>) => {
       field.onChange(e)
       if (onChange) {
         onChange(e)

@@ -155,9 +155,7 @@ describe('screens:SignupJourney::OffererAuthentication', () => {
       await screen.findByRole('button', { name: 'Étape suivante' })
     ).toBeInTheDocument()
 
-    expect(
-      await screen.queryByRole('button', { name: 'Retour' })
-    ).toBeInTheDocument()
+    expect(screen.queryByRole('button', { name: 'Retour' })).toBeInTheDocument()
   })
 
   it('should display activity screen on submit', async () => {
@@ -176,20 +174,20 @@ describe('screens:SignupJourney::OffererAuthentication', () => {
     expect(screen.getByText('Offerer screen')).toBeInTheDocument()
   })
 
-  it('should redirect to offerer screen if there is no offerer siret', async () => {
+  it('should redirect to offerer screen if there is no offerer siret', () => {
     contextValue.offerer = DEFAULT_OFFERER_FORM_VALUES
     renderOffererAuthentiationScreen(contextValue)
-    expect(await screen.queryByText('Identification')).not.toBeInTheDocument()
+    expect(screen.queryByText('Identification')).not.toBeInTheDocument()
     expect(screen.getByText('Offerer screen')).toBeInTheDocument()
   })
 
-  it('should redirect to offerer screen if there is no offerer name', async () => {
+  it('should redirect to offerer screen if there is no offerer name', () => {
     contextValue.offerer = {
       ...DEFAULT_OFFERER_FORM_VALUES,
       siret: '12345678933333',
     }
     renderOffererAuthentiationScreen(contextValue)
-    expect(await screen.queryByText('Identification')).not.toBeInTheDocument()
+    expect(screen.queryByText('Identification')).not.toBeInTheDocument()
     expect(screen.getByText('Offerer screen')).toBeInTheDocument()
   })
 })

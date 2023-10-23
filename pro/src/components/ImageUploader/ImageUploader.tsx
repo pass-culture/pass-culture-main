@@ -9,8 +9,8 @@ import styles from './ImageUploader.module.scss'
 import { UploaderModeEnum } from './types'
 
 export interface ImageUploaderProps {
-  onImageUpload: (values: OnImageUploadArgs) => Promise<void>
-  onImageDelete: () => Promise<void>
+  onImageUpload: (values: OnImageUploadArgs) => void
+  onImageDelete: () => void
   initialValues?: UploadImageValues
   mode: UploaderModeEnum
   onClickButtonImageAdd?: () => void

@@ -34,9 +34,9 @@ const OffererAuthentication = (): JSX.Element => {
     navigate('/parcours-inscription/structure')
   }
 
-  const onSubmitOffererAuthentication = async (
+  const onSubmitOffererAuthentication = (
     formValues: OffererAuthenticationFormValues
-  ): Promise<void> => {
+  ) => {
     setOfferer({
       ...formValues,
       hasVenueWithSiret: false,

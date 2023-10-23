@@ -121,7 +121,7 @@ describe('Offerer', () => {
       await screen.findByRole('button', { name: 'Continuer' })
     ).toBeInTheDocument()
     expect(
-      await screen.queryByRole('button', { name: 'Étape précédente' })
+      screen.queryByRole('button', { name: 'Étape précédente' })
     ).not.toBeInTheDocument()
 
     expect(
@@ -139,7 +139,7 @@ describe('Offerer', () => {
     ).toBeInTheDocument()
   })
 
-  it('should display authentication signup journey if offerer is set', async () => {
+  it('should display authentication signup journey if offerer is set', () => {
     contextValue.offerer = {
       siret: '12345678933333',
       name: 'Test',

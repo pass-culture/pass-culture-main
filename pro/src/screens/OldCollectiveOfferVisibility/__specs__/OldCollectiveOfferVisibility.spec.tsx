@@ -343,9 +343,7 @@ describe('CollectiveOfferVisibility', () => {
           name: /Supprimer/i,
         })
       )
-      expect(
-        await screen.queryByText(/91190 Gif-sur-Yvette/)
-      ).not.toBeInTheDocument()
+      expect(screen.queryByText(/91190 Gif-sur-Yvette/)).not.toBeInTheDocument()
     })
 
     it('should hide banner when clicking on trash icon', async () => {

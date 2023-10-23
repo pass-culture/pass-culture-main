@@ -129,7 +129,9 @@ describe('RequestFormDialog', () => {
     await userEvent.click(submitButton)
 
     expect(
-      screen.getByText('Veuillez entrer un numéro de téléphone valide')
+      screen.getByText(
+        'Veuillez renseigner un numéro de téléphone valide, exemple : 612345678'
+      )
     ).toBeInTheDocument()
   })
 
@@ -142,6 +144,7 @@ describe('RequestFormDialog', () => {
       )
     ).not.toBeInTheDocument()
   })
+
   it('should log event when user close modal', async () => {
     const mockCloseModal = vi.fn()
     renderRequestFormDialog({ closeModal: mockCloseModal })

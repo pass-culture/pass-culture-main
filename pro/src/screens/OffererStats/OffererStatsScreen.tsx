@@ -37,7 +37,8 @@ const OffererStatsScreen = ({ offererOptions }: OffererStatsScreenProps) => {
   }
 
   useEffect(() => {
-    api.getOfferer(Number(selectedOffererId)).then((offerer) => {
+    async function loadData() {
+      const offerer = await api.getOfferer(Number(selectedOffererId))
       if (offerer.managedVenues) {
         const sortedVenueOptions = sortByLabel(
           offerer.managedVenues
@@ -56,7 +57,8 @@ const OffererStatsScreen = ({ offererOptions }: OffererStatsScreenProps) => {
       } else {
         setVenueOptions([])
       }
-    })
+    }
+    void loadData()
   }, [selectedOffererId])
 
   useEffect(() => {
@@ -75,7 +77,7 @@ const OffererStatsScreen = ({ offererOptions }: OffererStatsScreenProps) => {
       }
       setIframeUrl(response.dashboardUrl)
     }
-    updateDashboardUrl(selectedVenueId)
+    void updateDashboardUrl(selectedVenueId)
   }, [selectedVenueId, selectedOffererId])
 
   return (

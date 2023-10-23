@@ -28,14 +28,15 @@ const UserEmail = ({
   const resetForm = () => setCurrentForm(null)
   const [pendingEmailValidation, setPendingEmailValidation] =
     useState<string>('')
-  const getPendingEmailRequest = () => {
-    getPendingEmailValidationAdapter().then((response) => {
-      const newEmail = response.payload?.newEmail || ''
-      setPendingEmailValidation(newEmail)
-    })
+
+  const getPendingEmailRequest = async () => {
+    const response = await getPendingEmailValidationAdapter()
+    const newEmail = response.payload?.newEmail || ''
+    setPendingEmailValidation(newEmail)
   }
+
   useEffect(() => {
-    getPendingEmailRequest()
+    void getPendingEmailRequest()
   }, [])
 
   return (

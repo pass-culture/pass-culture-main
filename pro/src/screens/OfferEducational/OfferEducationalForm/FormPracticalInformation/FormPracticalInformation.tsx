@@ -74,62 +74,68 @@ const FormPracticalInformation = ({
   >(null)
 
   useEffect(() => {
-    if (
-      values.eventAddress.addressType !== OfferAddressType.OFFERER_VENUE &&
-      values.eventAddress.venueId
-    ) {
-      setFieldValue(
-        'eventAddress.venueId',
-        DEFAULT_EAC_FORM_VALUES.eventAddress.venueId
-      )
-      setCurrentVenue(null)
-    }
+    async function setAddressField() {
+      if (
+        values.eventAddress.addressType !== OfferAddressType.OFFERER_VENUE &&
+        values.eventAddress.venueId
+      ) {
+        await setFieldValue(
+          'eventAddress.venueId',
+          DEFAULT_EAC_FORM_VALUES.eventAddress.venueId
+        )
+        setCurrentVenue(null)
+      }
 
-    if (
-      values.eventAddress.addressType !== OfferAddressType.OTHER &&
-      values.eventAddress.otherAddress
-    ) {
-      setFieldValue(
-        'eventAddress.otherAddress',
-        DEFAULT_EAC_FORM_VALUES.eventAddress.otherAddress
-      )
+      if (
+        values.eventAddress.addressType !== OfferAddressType.OTHER &&
+        values.eventAddress.otherAddress
+      ) {
+        await setFieldValue(
+          'eventAddress.otherAddress',
+          DEFAULT_EAC_FORM_VALUES.eventAddress.otherAddress
+        )
+      }
     }
+    void setAddressField()
   }, [values.eventAddress, setFieldValue])
 
   useEffect(() => {
-    if (
-      values.eventAddress.addressType === OfferAddressType.OFFERER_VENUE &&
-      values.eventAddress.venueId
-    ) {
-      if (currentOfferer) {
-        const selectedVenue = currentOfferer.managedVenues.find(
-          (venue) => venue.id === values.eventAddress.venueId
-        )
-        return setCurrentVenue(selectedVenue ?? null)
-      }
-      return setCurrentVenue(null)
-    }
-
-    if (
-      values.eventAddress.addressType === OfferAddressType.OFFERER_VENUE &&
-      !values.eventAddress.venueId &&
-      values.venueId
-    ) {
-      if (currentOfferer) {
-        const selectedVenue = currentOfferer.managedVenues.find(
-          (venue) => venue.id === Number(values.venueId)
-        )
-        if (selectedVenue) {
-          setFieldValue('eventAddress.venueId', values.venueId)
-          return setCurrentVenue(selectedVenue)
+    async function setVenue() {
+      if (
+        values.eventAddress.addressType === OfferAddressType.OFFERER_VENUE &&
+        values.eventAddress.venueId
+      ) {
+        if (currentOfferer) {
+          const selectedVenue = currentOfferer.managedVenues.find(
+            (venue) => venue.id === values.eventAddress.venueId
+          )
+          return setCurrentVenue(selectedVenue ?? null)
         }
+        return setCurrentVenue(null)
       }
-      return setCurrentVenue(null)
-    }
 
-    if (!values.eventAddress.venueId) {
-      return setCurrentVenue(null)
+      if (
+        values.eventAddress.addressType === OfferAddressType.OFFERER_VENUE &&
+        !values.eventAddress.venueId &&
+        values.venueId
+      ) {
+        if (currentOfferer) {
+          const selectedVenue = currentOfferer.managedVenues.find(
+            (venue) => venue.id === Number(values.venueId)
+          )
+          if (selectedVenue) {
+            await setFieldValue('eventAddress.venueId', values.venueId)
+            return setCurrentVenue(selectedVenue)
+          }
+        }
+        return setCurrentVenue(null)
+      }
+
+      if (!values.eventAddress.venueId) {
+        return setCurrentVenue(null)
+      }
     }
+    void setVenue()
   }, [currentOfferer, values.eventAddress])
 
   useEffect(() => {

@@ -39,7 +39,7 @@ describe('ButtonLink', () => {
     expect(onBlur).toHaveBeenCalledTimes(1)
   })
 
-  it('should enforce absolute links', async () => {
+  it('should enforce absolute links', () => {
     renderWithProviders(
       <Routes>
         <Route

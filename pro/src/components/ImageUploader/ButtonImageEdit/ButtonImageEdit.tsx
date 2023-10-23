@@ -12,7 +12,7 @@ import { OnImageUploadArgs } from './ModalImageEdit/ModalImageEdit'
 import { UploadImageValues } from './types'
 
 export interface ButtonImageEditProps {
-  onImageUpload: (values: OnImageUploadArgs) => Promise<void>
+  onImageUpload: (values: OnImageUploadArgs) => void
   initialValues?: UploadImageValues
   mode: UploaderModeEnum
   onClickButtonImage?: () => void

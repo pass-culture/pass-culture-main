@@ -135,7 +135,7 @@ describe('screens:SignupJourney::OffererForm', () => {
     )
   })
 
-  it('should render offerer form with initialValues', async () => {
+  it('should render offerer form with initialValues', () => {
     initialValues = {
       siret: '123456789333',
     }
