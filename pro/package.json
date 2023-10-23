@@ -67,7 +67,7 @@
     "react-select": "^5.7.5",
     "redux": "^4.0.5",
     "reselect": "^4.1.5",
-    "search-insights": "^2.8.3",
+    "search-insights": "^2.9.0",
     "uuidv4": "^6.2.13",
     "yup": "^1.2.0"
   },
