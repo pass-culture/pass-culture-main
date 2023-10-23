@@ -92,6 +92,7 @@ def get_by_ean13(ean13: str) -> dict[str, typing.Any]:
             "Titelive get by ean 13: Network error",
             extra={
                 "exception": e,
+                "ean": ean13,
                 "alert": "Titelive error",
                 "error_type": "network",
                 "request_type": "get-by-ean13",
@@ -110,6 +111,7 @@ def get_by_ean13(ean13: str) -> dict[str, typing.Any]:
                 response.status_code,
                 extra={
                     "alert": "Titelive error",
+                    "ean": ean13,
                     "error_type": "http",
                     "status_code": response.status_code,
                     "request_type": "get-by-ean13",
@@ -144,7 +146,7 @@ def get_new_product_from_ean13(ean: str) -> offers_models.Product:
         core_logging.log_for_supervision(
             logger,
             logging.ERROR,
-            "Titelive get_new_product_from_ean13: External error: %s",
+            "Titelive get_new_product_from_ean13: External error:",
             extra={
                 "alert": "Titelive API no gtl_id",
                 "error_type": "http",
