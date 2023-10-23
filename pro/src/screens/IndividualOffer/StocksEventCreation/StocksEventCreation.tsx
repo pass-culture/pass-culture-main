@@ -15,6 +15,8 @@ import { ButtonVariant } from 'ui-kit/Button/types'
 
 import ActionBar from '../ActionBar/ActionBar'
 
+import { onSubmit } from './form/onSubmit'
+import { RecurrenceFormValues } from './form/types'
 import { HelpSection } from './HelpSection/HelpSection'
 import { RecurrenceForm } from './RecurrenceForm'
 import styles from './StocksEventCreation.module.scss'
@@ -36,6 +38,20 @@ export const StocksEventCreation = ({
 
   const [isRecurrenceModalOpen, setIsRecurrenceModalOpen] = useState(false)
   const onCancel = () => setIsRecurrenceModalOpen(false)
+
+  const handleSubmit = async (values: RecurrenceFormValues) => {
+    const newStocks = await onSubmit(
+      values,
+      offer.venue.departementCode ?? '',
+      stocks,
+      offer.id,
+      notify
+    )
+    if (newStocks?.length) {
+      setStocks(newStocks)
+    }
+    setIsRecurrenceModalOpen(false)
+  }
 
   const handlePreviousStep = () => {
     /* istanbul ignore next: DEBT, TO FIX */
@@ -98,12 +114,9 @@ export const StocksEventCreation = ({
           fullContentWidth
         >
           <RecurrenceForm
-            offerId={offer.id}
-            departmentCode={offer.venue.departementCode ?? ''}
             priceCategories={offer.priceCategories ?? []}
-            stocks={stocks}
-            setStocks={setStocks}
             setIsOpen={setIsRecurrenceModalOpen}
+            handleSubmit={handleSubmit}
           />
         </DialogBox>
       )}

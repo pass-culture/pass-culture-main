@@ -8,17 +8,14 @@ import { FORMAT_ISO_DATE_ONLY } from 'utils/date'
 import { priceCategoryFactory } from 'utils/individualApiFactories'
 import { renderWithProviders } from 'utils/renderWithProviders'
 
-import * as formSubmit from '../form/onSubmit'
 import { RecurrenceForm } from '../RecurrenceForm'
 
+const mockSubmit = vi.fn()
+
 const defaultProps = {
-  stocks: [],
   setIsOpen: vi.fn(),
-  setStocks: vi.fn(),
-  departmentCode: '75',
-  offerId: 1,
+  handleSubmit: mockSubmit,
   priceCategories: [priceCategoryFactory()],
-  setStocksInEditionForm: vi.fn(),
 }
 
 describe('RecurrenceForm', () => {
@@ -30,7 +27,6 @@ describe('RecurrenceForm', () => {
   })
 
   it('should submit', async () => {
-    vi.spyOn(formSubmit, 'onSubmit').mockResolvedValueOnce()
     renderWithProviders(<RecurrenceForm {...defaultProps} />)
 
     await userEvent.type(
@@ -46,7 +42,7 @@ describe('RecurrenceForm', () => {
     )
 
     await userEvent.click(screen.getByText('Valider'))
-    expect(formSubmit.onSubmit).toHaveBeenCalled()
+    expect(mockSubmit).toHaveBeenCalled()
   })
 
   it('should add and remove a beginning time', async () => {

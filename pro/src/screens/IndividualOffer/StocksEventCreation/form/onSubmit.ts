@@ -25,7 +25,7 @@ export const onSubmit = async (
   existingStocks: StocksEvent[],
   offerId: number,
   notify: ReturnType<typeof useNotification>
-): Promise<StocksEvent[] | undefined | void> => {
+): Promise<StocksEvent[] | void> => {
   const dates = getRecurrenceDates(values)
   const generatedStocks = generateStocksForDates(values, dates, departmentCode)
 
