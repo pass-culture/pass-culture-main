@@ -13,6 +13,7 @@ from typing import TYPE_CHECKING
 
 import PIL
 from PIL import Image
+from PIL import ImageFile
 from PIL import ImageOps
 from pydantic.v1 import confloat
 
@@ -21,6 +22,8 @@ if TYPE_CHECKING:
     CropParam = float
 else:
     CropParam = confloat(ge=0.0, le=1.0)
+
+ImageFile.LOAD_TRUNCATED_IMAGES = True
 
 
 @dataclass
