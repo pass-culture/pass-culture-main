@@ -16,7 +16,6 @@ from pcapi.core.users import exceptions as users_exceptions
 from pcapi.core.users import repository as users_repo
 from pcapi.core.users.api import update_user_password
 from pcapi.core.users.email import repository as email_repository
-from pcapi.core.users.models import TokenType
 from pcapi.domain.password import check_password_validity
 from pcapi.models.api_errors import ApiErrors
 from pcapi.routes.serialization import users as users_serializers
@@ -178,13 +177,8 @@ def check_activation_token_exists(token: str) -> None:
     # TODO (yacine-pc) 04-10-23 check if this route is needed, remove it else
     try:
         token_utils.Token.load_and_check(token, token_utils.TokenType.RESET_PASSWORD)
-    except (
-        users_exceptions.InvalidToken
-    ):  # TODO abdelmoujibmegzari: remove this except 1 sprint after this https://passculture.atlassian.net/browse/PC-24624
-        try:
-            users_repo.get_user_with_valid_token(token, [TokenType.RESET_PASSWORD], use_token=False)
-        except users_exceptions.InvalidToken:
-            flask.abort(404)
+    except users_exceptions.InvalidToken:
+        flask.abort(404)
 
 
 @blueprint.pro_private_api.route("/users/password", methods=["POST"])

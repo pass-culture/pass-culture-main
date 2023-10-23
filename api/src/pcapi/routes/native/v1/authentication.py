@@ -12,7 +12,6 @@ from pcapi.core.users import api as users_api
 from pcapi.core.users import exceptions as users_exceptions
 from pcapi.core.users import models as user_models
 from pcapi.core.users import repository as users_repo
-from pcapi.core.users.models import TokenType
 from pcapi.core.users.models import User
 from pcapi.core.users.repository import find_user_by_email
 from pcapi.domain.password import check_password_strength
@@ -138,10 +137,7 @@ def reset_password(body: ResetPasswordRequest) -> ResetPasswordResponse:
         token = token_utils.Token.load_and_check(body.reset_password_token, token_utils.TokenType.RESET_PASSWORD)
         user = user_models.User.query.get(token.user_id)
     except users_exceptions.InvalidToken:
-        try:  # TODO abdelmoujibmegzari: remove this except 1 sprint after this https://passculture.atlassian.net/browse/PC-24624
-            user = users_repo.get_user_with_valid_token(body.reset_password_token, [TokenType.RESET_PASSWORD])
-        except users_exceptions.InvalidToken:
-            raise ApiErrors({"token": ["Le token de changement de mot de passe est invalide."]})
+        raise ApiErrors({"token": ["Le token de changement de mot de passe est invalide."]})
 
     user.setPassword(body.new_password)
 
