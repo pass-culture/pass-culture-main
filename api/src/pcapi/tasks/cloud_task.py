@@ -22,11 +22,11 @@ AUTHORIZATION_HEADER_VALUE = f"Bearer {settings.CLOUD_TASK_BEARER_TOKEN}"
 CLOUD_TASK_SUBPATH = "/cloud-tasks"
 
 
-def get_client():  # type: ignore [no-untyped-def]
+def get_client() -> tasks_v2.CloudTasksClient:
     if not hasattr(get_client, "client"):
-        get_client.client = tasks_v2.CloudTasksClient()
+        get_client.__setattr__("client", tasks_v2.CloudTasksClient())
 
-    return get_client.client
+    return get_client.__getattribute__("client")
 
 
 def enqueue_task(
