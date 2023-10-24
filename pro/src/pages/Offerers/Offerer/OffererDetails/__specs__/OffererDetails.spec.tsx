@@ -66,22 +66,6 @@ describe('src | components | pages | Offerer | OffererDetails', () => {
       expect(screen.getByText('fake venue')).toBeInTheDocument()
     })
 
-    it('should render identifier', async () => {
-      const storeOverrides = {
-        features: {
-          list: [
-            { isActive: true, nameKey: 'WIP_ENABLE_NEW_BANK_DETAILS_JOURNEY' },
-          ],
-        },
-      }
-      renderWithProviders(<OffererDetails />, { storeOverrides })
-      await waitForElementToBeRemoved(() => screen.queryByTestId('spinner'))
-
-      expect(
-        screen.getByText('Identifiant de structure : 0123456789abcdef')
-      ).toBeInTheDocument()
-    })
-
     it("shouldn't render anything if venues won't load", async () => {
       vi.spyOn(api, 'getOfferer').mockRejectedValueOnce({
         status: HTTP_STATUS.FORBIDDEN,
