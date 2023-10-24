@@ -76,6 +76,9 @@ def cgr_annulation_response_template(success: bool = True, message_error: str = 
 
 
 def film(films_info: List[Dict]) -> List[Dict]:
+    if not films_info:
+        return []
+
     return [
         {
             "IDFilm": film_info["IDFilm"],

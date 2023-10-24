@@ -31,7 +31,14 @@ class CGRClientAPI(external_bookings_models.ExternalBookingsClientAPI):
 
     def get_film_showtimes_stocks(self, film_id: str) -> dict[int, int]:
         response = get_seances_pass_culture(self.cgr_cinema_details, allocine_film_id=int(film_id))
-        return {show.IDSeance: show.NbPlacesRestantes for show in response.ObjetRetour.Films[0].Seances}
+
+        try:
+            film = response.ObjetRetour.Films[0]
+        except IndexError:
+            # Showtimes stocks are sold out, Stock.quantity will be updated to dnBookedQuantity
+            # in `update_stock_quantity_to_match_cinema_venue_provider_remaining_places`
+            return {}
+        return {show.IDSeance: show.NbPlacesRestantes for show in film.Seances}
 
     def book_ticket(
         self, show_id: int, booking: bookings_models.Booking, beneficiary: users_models.User
