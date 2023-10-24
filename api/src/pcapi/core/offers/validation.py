@@ -100,15 +100,33 @@ def check_stock_quantity(quantity: int | None, bookingQuantity: int = 0) -> None
         raise errors
 
 
-def check_stock_price(price: decimal.Decimal, offer: models.Offer) -> None:
+def check_stocks_price(
+    stocks: list[serialization.StockCreationBodyModel] | list[serialization.StockEditionBodyModel],
+    offer: models.Offer,
+) -> None:
+    price_categories = {price_category.id: price_category for price_category in offer.priceCategories}
+    for stock in stocks:
+        check_stock_has_price_or_price_category(offer, stock, price_categories)
+        if stock.price_category_id:
+            error_key = "priceCategoryId"
+            price = price_categories[stock.price_category_id].price
+        else:
+            error_key = "price"
+            price = stock.price
+        check_stock_price(price, offer, error_key)
+
+
+def check_stock_price(price: decimal.Decimal, offer: models.Offer, error_key: str = "price") -> None:
     if price < 0:
         errors = api_errors.ApiErrors()
-        errors.add_error("price", "Le prix doit être positif")
+        errors.add_error(error_key, "Le prix doit être positif")
         raise errors
     if price > 300:
+        if error_key == "price":
+            error_key += "300"
         errors = api_errors.ApiErrors()
         errors.add_error(
-            "price300",
+            error_key,
             "Le prix d’une offre ne peut excéder 300 euros.",
         )
         raise errors
