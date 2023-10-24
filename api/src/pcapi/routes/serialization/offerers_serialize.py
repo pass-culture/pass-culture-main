@@ -9,6 +9,7 @@ from pcapi import settings
 import pcapi.core.offerers.models as offerers_models
 from pcapi.core.offerers.models import Target
 import pcapi.core.offerers.repository as offerers_repository
+import pcapi.core.offers.models as offers_models
 from pcapi.domain.demarches_simplifiees import DMS_TOKEN_PRO_PREFIX
 from pcapi.routes.native.v1.serialization.common_models import AccessibilityComplianceMixin
 from pcapi.routes.serialization import BaseModel
@@ -293,6 +294,55 @@ class GetOffererBankAccountsResponseModel(BaseModel):
 
     class Config:
         orm_mode = True
+
+
+class ImageResponse(BaseModel):
+    credit: str | None
+    url: str
+
+
+class TopOffersResponseData(offerers_models.TopOffersData):
+    offerName: str
+    image: ImageResponse | None
+
+    @classmethod
+    def build(cls, offer_id: int, number_of_views: int) -> "TopOffersResponseData":
+        # This adds a call to the db for every offer, but it's not a big deal since we only get the top 3 offers
+        offer = offers_models.Offer.query.get(offer_id)
+        if not offer:
+            raise ValueError(f"Offer with id {offer_id} does not exist")
+        return cls(offerId=offer_id, offerName=offer.name, image=offer.image, numberOfViews=number_of_views)
+
+
+class OffererStatsData(BaseModel):
+    topOffers: list[TopOffersResponseData] | None
+    dailyViews: list[offerers_models.OffererViewsModel] | None
+
+
+class GetOffererStatsResponseModel(BaseModel):
+    offererId: int
+    syncDate: datetime | None
+    jsonData: OffererStatsData | None
+
+    @classmethod
+    def build(
+        cls,
+        offerer_id: int,
+        syncDate: datetime,
+        dailyViews: list[offerers_models.OffererViewsModel] | None,
+        topOffers: list[offerers_models.TopOffersData] | None,
+    ) -> "GetOffererStatsResponseModel":
+        top_offers_response = None
+        if topOffers:
+            top_offers_response = [
+                TopOffersResponseData.build(topOffer["offerId"], topOffer["numberOfViews"]) for topOffer in topOffers  # type: ignore
+            ]
+
+        return cls(
+            offererId=offerer_id,
+            syncDate=syncDate,
+            jsonData=OffererStatsData(topOffers=top_offers_response, dailyViews=dailyViews),
+        )
 
 
 class LinkVenueToBankAccountBodyModel(BaseModel):
