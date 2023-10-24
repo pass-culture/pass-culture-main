@@ -1,6 +1,5 @@
 from datetime import datetime
 import logging
-import re
 
 from pcapi import settings
 from pcapi.connectors.dms import api as api_dms
@@ -13,11 +12,11 @@ from pcapi.domain.bank_information import CannotRegisterBankInformation
 logger = logging.getLogger(__name__)
 
 FIELD_NAME_TO_INTERNAL_NAME_MAPPING = {
-    r".*[P|p]rénom": "firstname",
-    r".*[N|n]om": "lastname",
-    r"Mon numéro de téléphone": "phone_number",
-    r"IBAN": "iban",
-    r"BIC": "bic",
+    ("Prénom", "prénom"): "firstname",
+    ("Nom", "nom"): "lastname",
+    ("Mon numéro de téléphone",): "phone_number",
+    ("IBAN",): "iban",
+    ("BIC",): "bic",
 }
 DMS_TOKEN_ID = "Q2hhbXAtMjY3NDMyMQ=="
 ACCEPTED_DMS_STATUS = (dms_models.DmsApplicationStates.closed,)
@@ -69,8 +68,8 @@ def parse_raw_bank_info_data(data: dict, procedure_version: int) -> dict:
         "dossier_id": data["dossier"]["id"],
     }
     for field in data["dossier"]["champs"]:
-        for mapped_field, internal_field in FIELD_NAME_TO_INTERNAL_NAME_MAPPING.items():
-            if re.match(mapped_field, field["label"]):
+        for mapped_fields, internal_field in FIELD_NAME_TO_INTERNAL_NAME_MAPPING.items():
+            if field["label"] in mapped_fields:
                 result[internal_field] = field["value"]
             elif field["id"] == DMS_TOKEN_ID:
                 result["dms_token"] = _remove_dms_pro_prefix(field["value"].strip("  "))
