@@ -44,7 +44,9 @@ from pcapi.utils.human_ids import humanize
 
 import tests
 from tests import conftest
+from tests.connectors.cgr import soap_definitions
 from tests.connectors.titelive import fixtures
+import tests.local_providers.cinema_providers.cgr.fixtures as cgr_fixtures
 
 
 IMAGES_DIR = pathlib.Path(tests.__path__[0]) / "files"
@@ -2177,6 +2179,50 @@ class UpdateStockQuantityToMatchCinemaVenueProviderRemainingPlacesTest:
 
         requests_mock.post(url_matcher, json=expected_data)
 
+        api.update_stock_quantity_to_match_cinema_venue_provider_remaining_places(offer)
+
+        assert stock.remainingQuantity == 0
+        assert stock.quantity == stock.dnBookedQuantity
+
+        mocked_async_index_offer_ids.assert_called_once_with([offer.id])
+
+    @override_features(ENABLE_CGR_INTEGRATION=True)
+    @patch("pcapi.core.search.async_index_offer_ids")
+    def test_cgr_no_remaining_places_case(
+        self,
+        mocked_async_index_offer_ids,
+        requests_mock,
+    ):
+        offer_id_at_provider = "123%12354114%CGR"
+        cgr_provider = providers_repository.get_provider_by_local_class("CGRStocks")
+        venue_provider = providers_factories.VenueProviderFactory(provider=cgr_provider)
+        cinema_provider_pivot = providers_factories.CinemaProviderPivotFactory(
+            venue=venue_provider.venue, provider=cgr_provider, idAtProvider=venue_provider.venueIdAtOfferProvider
+        )
+        providers_factories.CGRCinemaDetailsFactory(
+            cinemaUrl="http://cgr-cinema-0.example.com/web_service", cinemaProviderPivot=cinema_provider_pivot
+        )
+        offer = factories.EventOfferFactory(
+            name="Séance ciné solo",
+            venue=venue_provider.venue,
+            subcategoryId=subcategories.SEANCE_CINE.id,
+            lastProviderId=cinema_provider_pivot.provider.id,
+            idAtProvider=offer_id_at_provider,
+        )
+        stock = factories.EventStockFactory(offer=offer, idAtProviders=f"{offer_id_at_provider}#1111")
+        requests_mock.get(
+            "http://cgr-cinema-0.example.com/web_service?wsdl", text=soap_definitions.WEB_SERVICE_DEFINITION
+        )
+
+        # The show is sold-out, so there's no film either showtimes returned
+        requests_mock.post(
+            "http://cgr-cinema-0.example.com/web_service",
+            [
+                {"text": cgr_fixtures.cgr_response_template([])},
+            ],
+        )
+
+        # Then
         api.update_stock_quantity_to_match_cinema_venue_provider_remaining_places(offer)
 
         assert stock.remainingQuantity == 0
