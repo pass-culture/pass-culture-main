@@ -42,8 +42,8 @@ const EmailSpellCheckInput = <FormType,>({
       if (suggestion) {
         setEmailValidationTip(suggestion)
       }
-      setFieldTouched(field.name, true)
     }
+    setFieldTouched(field.name, true)
   }
   const resetEmailValidation = () => {
     setEmailValidationTip(null)
