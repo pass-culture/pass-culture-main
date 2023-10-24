@@ -37,9 +37,6 @@ const OffererDetails = () => {
   const isNewOffererLinkEnabled = useActiveFeature(
     'WIP_ENABLE_NEW_USER_OFFERER_LINK'
   )
-  const isNewBankDetailsEnabled = useActiveFeature(
-    'WIP_ENABLE_NEW_BANK_DETAILS_JOURNEY'
-  )
 
   const loadOfferer = useCallback(
     async (id: number) => {
@@ -79,7 +76,9 @@ const OffererDetails = () => {
       setIsLoading(false)
     }
 
-    offererId && initializeOfferer(Number(offererId))
+    if (offererId) {
+      void initializeOfferer(Number(offererId))
+    }
   }, [offererId, loadOfferer, resetOfferer])
 
   if (isLoading) {
@@ -105,22 +104,6 @@ const OffererDetails = () => {
           <h1>Structure</h1>
         </div>
         <h2 className={styles['offerer-name']}>{offerer.name}</h2>
-        {
-          /* For the screen reader to spell-out the id, we add a
-                visually hidden span with a space between each character.
-                The other span will be hidden from the screen reader. */
-          isNewBankDetailsEnabled && offerer.dsToken && (
-            <>
-              <span className="visually-hidden">
-                Identifiant de structure :{' '}
-                {offerer.dsToken?.split('').join(' ')}
-              </span>
-              <span aria-hidden="true">
-                Identifiant de structure : {offerer.dsToken}
-              </span>
-            </>
-          )
-        }
         <div className={styles['description']}>
           Détails de la structure rattachée, des collaborateurs, des lieux et
           des fournisseurs de ses offres
