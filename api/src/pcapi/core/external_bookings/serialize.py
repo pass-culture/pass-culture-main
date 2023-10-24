@@ -37,6 +37,15 @@ class ExternalEventBookingRequest(pydantic_v1.BaseModel):
         booking: bookings_models.Booking,
         user: users_models.User,
     ) -> "ExternalEventBookingRequest":
+        price_data = (
+            {
+                "offer_price": finance_utils.to_eurocents(stock.priceCategory.price),
+                "price_category_id": stock.priceCategoryId,
+                "price_category_label": stock.priceCategory.label,
+            }
+            if stock.priceCategoryId
+            else {"offer_price": finance_utils.to_eurocents(stock.price)}
+        )
         return cls(
             booking_confirmation_date=booking.cancellationLimitDate,  # type: ignore [arg-type]
             booking_creation_date=booking.dateCreated,
@@ -44,11 +53,6 @@ class ExternalEventBookingRequest(pydantic_v1.BaseModel):
             offer_ean=stock.offer.extraData.get("ean") if stock.offer.extraData is not None else None,
             offer_id=stock.offer.id,
             offer_name=stock.offer.name,
-            offer_price=finance_utils.to_eurocents(stock.priceCategory.price)
-            if stock.priceCategoryId
-            else finance_utils.to_eurocents(stock.price),
-            price_category_id=stock.priceCategoryId,
-            price_category_label=stock.priceCategory.label,  # type: ignore [arg-type]
             stock_id=booking.stockId,
             user_birth_date=user.birth_date,
             user_email=user.email,
@@ -59,6 +63,7 @@ class ExternalEventBookingRequest(pydantic_v1.BaseModel):
             venue_department_code=stock.offer.venue.departementCode,
             venue_id=stock.offer.venue.id,
             venue_name=stock.offer.venue.name,
+            **price_data,  # type: ignore [arg-type]
         )
 
 
