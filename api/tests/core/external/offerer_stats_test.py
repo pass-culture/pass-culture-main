@@ -2,6 +2,8 @@ from unittest.mock import patch
 
 import pytest
 
+from pcapi.connectors.big_query.queries.offerer_stats import DAILY_CONSULT_PER_OFFERER_LAST_180_DAYS_TABLE
+from pcapi.connectors.big_query.queries.offerer_stats import TOP_3_MOST_CONSULTED_OFFERS_LAST_30_DAYS_TABLE
 from pcapi.core.offerers import api
 from pcapi.core.offerers.factories import OffererFactory
 from pcapi.core.offerers.factories import OffererStatsFactory
@@ -25,7 +27,7 @@ class OffererStatsTest:
         OffererStatsFactory(
             offererId=offerer.id,
             syncDate="2023-10-14",
-            table="stats_display_cum_daily_consult_per_offerer_last_180_days",
+            table=DAILY_CONSULT_PER_OFFERER_LAST_180_DAYS_TABLE,
             jsonData={
                 "daily_views": [
                     {"numberOfViews": 10, "eventDate": "2023-10-14"},
@@ -37,7 +39,7 @@ class OffererStatsTest:
         OffererStatsFactory(
             offererId=offerer.id,
             syncDate="2023-10-14",
-            table="stats_display_top_3_most_consulted_offers_last_30_days",
+            table=TOP_3_MOST_CONSULTED_OFFERS_LAST_30_DAYS_TABLE,
             jsonData={
                 "top_offers": [
                     {"numberOfViews": 7, "offerId": offer1.id},
@@ -69,7 +71,7 @@ class OffererStatsTest:
 
         offerer_global_stats = OffererStats.query.filter(
             OffererStats.offererId == offerer.id,
-            OffererStats.table == "stats_display_cum_daily_consult_per_offerer_last_180_days",
+            OffererStats.table == DAILY_CONSULT_PER_OFFERER_LAST_180_DAYS_TABLE,
         ).one()
         assert offerer_global_stats.jsonData["daily_views"] == [
             {"eventDate": "2023-10-16", "numberOfViews": 15},
@@ -78,7 +80,7 @@ class OffererStatsTest:
 
         offerer_top_offers = OffererStats.query.filter(
             OffererStats.offererId == offerer.id,
-            OffererStats.table == "stats_display_top_3_most_consulted_offers_last_30_days",
+            OffererStats.table == TOP_3_MOST_CONSULTED_OFFERS_LAST_30_DAYS_TABLE,
         ).one()
         assert offerer_top_offers.jsonData["top_offers"] == [
             {"offerId": offer1.id, "numberOfViews": 12},
@@ -118,7 +120,7 @@ class OffererStatsTest:
 
         offerer_global_stats = OffererStats.query.filter(
             OffererStats.offererId == offerer.id,
-            OffererStats.table == "stats_display_cum_daily_consult_per_offerer_last_180_days",
+            OffererStats.table == DAILY_CONSULT_PER_OFFERER_LAST_180_DAYS_TABLE,
         ).one()
         assert offerer_global_stats.jsonData["daily_views"] == [
             {"eventDate": "2023-10-16", "numberOfViews": 15},
@@ -127,7 +129,7 @@ class OffererStatsTest:
 
         offerer_top_offers = OffererStats.query.filter(
             OffererStats.offererId == offerer.id,
-            OffererStats.table == "stats_display_top_3_most_consulted_offers_last_30_days",
+            OffererStats.table == TOP_3_MOST_CONSULTED_OFFERS_LAST_30_DAYS_TABLE,
         ).one()
         assert offerer_top_offers.jsonData["top_offers"] == [
             {"offerId": offer1.id, "numberOfViews": 12},
