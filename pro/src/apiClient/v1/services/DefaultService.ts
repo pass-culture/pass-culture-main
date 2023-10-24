@@ -45,6 +45,7 @@ import type { GetOffererBankAccountsResponseModel } from '../models/GetOffererBa
 import type { GetOffererMembersResponseModel } from '../models/GetOffererMembersResponseModel';
 import type { GetOffererResponseModel } from '../models/GetOffererResponseModel';
 import type { GetOfferersNamesResponseModel } from '../models/GetOfferersNamesResponseModel';
+import type { GetOffererStatsResponseModel } from '../models/GetOffererStatsResponseModel';
 import type { GetStocksResponseModel } from '../models/GetStocksResponseModel';
 import type { GetVenueListResponseModel } from '../models/GetVenueListResponseModel';
 import type { GetVenueResponseModel } from '../models/GetVenueResponseModel';
@@ -1318,6 +1319,28 @@ export class DefaultService {
     return this.httpRequest.request({
       method: 'GET',
       url: '/offerers/{offerer_id}/reimbursement-points',
+      path: {
+        'offerer_id': offererId,
+      },
+      errors: {
+        403: `Forbidden`,
+        422: `Unprocessable Entity`,
+      },
+    });
+  }
+
+  /**
+   * get_offerer_stats <GET>
+   * @param offererId
+   * @returns GetOffererStatsResponseModel OK
+   * @throws ApiError
+   */
+  public getOffererStats(
+    offererId: number,
+  ): CancelablePromise<GetOffererStatsResponseModel> {
+    return this.httpRequest.request({
+      method: 'GET',
+      url: '/offerers/{offerer_id}/stats',
       path: {
         'offerer_id': offererId,
       },
