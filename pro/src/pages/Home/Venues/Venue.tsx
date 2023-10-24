@@ -6,6 +6,7 @@ import { api } from 'apiClient/api'
 import { DMSApplicationForEAC, DMSApplicationstatus } from 'apiClient/v1'
 import { BOOKING_STATUS } from 'core/Bookings/constants'
 import { VenueEvents } from 'core/FirebaseEvents/constants'
+import useGetVenueProvider from 'core/Venue/adapters/getVenueProviderAdapter/useGetVenueProvider'
 import useActiveFeature from 'hooks/useActiveFeature'
 import useAnalytics from 'hooks/useAnalytics'
 import fullDisclosureClose from 'icons/full-disclosure-close.svg'
@@ -13,13 +14,16 @@ import fullDisclosureOpen from 'icons/full-disclosure-open.svg'
 import fullEditIcon from 'icons/full-edit.svg'
 import fullErrorIcon from 'icons/full-error.svg'
 import fullMoreIcon from 'icons/full-more.svg'
+import strokeConnectIcon from 'icons/stroke-connect.svg'
 import { Button, ButtonLink } from 'ui-kit'
 import { ButtonVariant } from 'ui-kit/Button/types'
 import Spinner from 'ui-kit/Spinner/Spinner'
 import { SvgIcon } from 'ui-kit/SvgIcon/SvgIcon'
+import { Tag, TagVariant } from 'ui-kit/Tag/Tag'
 
 import { VenueOfferSteps } from '../VenueOfferSteps'
 
+import styles from './Venue.module.scss'
 import VenueStat from './VenueStat'
 
 export interface VenueProps {
@@ -206,8 +210,11 @@ const Venue = ({
     }
   }, [venueId, isStatOpen, isStatLoaded, initialOpenState])
 
+  const { isLoading: isProvidersListLoading, data: venueProviders } =
+    useGetVenueProvider(venueId)
   const editVenueLink = `/structures/${offererId}/lieux/${venueId}?modification`
   const reimbursementSectionLink = `/structures/${offererId}/lieux/${venueId}?modification#remboursement`
+
   return (
     <div
       className="h-section-row nested offerer-venue"
@@ -248,6 +255,7 @@ const Venue = ({
                 />
                 <span className="align-baseline">{publicName || name}</span>
               </button>
+
               {initialOpenState && !isVirtual && (
                 <Button
                   icon={fullErrorIcon}
@@ -265,6 +273,18 @@ const Venue = ({
                   Cliquer pour voir les prochaines étapes
                 </Button>
               )}
+
+              {!isProvidersListLoading &&
+                venueProviders &&
+                venueProviders?.length > 0 && (
+                  <Tag
+                    variant={TagVariant.LIGHT_PURPLE}
+                    className={styles['api-tag']}
+                  >
+                    <SvgIcon alt="" src={strokeConnectIcon} />
+                    API
+                  </Tag>
+                )}
             </h3>
             <div className="button-group">
               {/*Delete when WIP_ENABLE_NEW_BANK_DETAILS_JOURNEY is deleted*/}
