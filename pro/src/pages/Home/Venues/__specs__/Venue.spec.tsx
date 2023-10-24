@@ -1,5 +1,6 @@
 import {
   screen,
+  waitFor,
   waitForElementToBeRemoved,
   within,
 } from '@testing-library/react'
@@ -16,8 +17,10 @@ import Venue, { VenueProps } from '../Venue'
 vi.mock('apiClient/api', () => ({
   api: {
     getVenueStats: vi.fn(),
+    listVenueProviders: vi.fn(),
   },
 }))
+
 const renderVenue = (
   props: VenueProps,
   features?: { list: { isActive: true; nameKey: string }[] }
@@ -49,14 +52,16 @@ describe('venues', () => {
       soldOutOffersCount: 3,
       validatedBookingsQuantity: 1,
     })
+    vi.spyOn(api, 'listVenueProviders').mockResolvedValue({
+      venue_providers: [],
+    })
   })
 
   it('should display stats tiles', async () => {
-    // When
     renderVenue(props)
     await waitForElementToBeRemoved(() => screen.queryByTestId('spinner'))
+    await waitFor(() => expect(api.listVenueProviders).toHaveBeenCalled())
 
-    // Then
     expect(api.getVenueStats).toHaveBeenCalledWith(props.venueId)
 
     const [
@@ -89,27 +94,24 @@ describe('venues', () => {
   })
 
   it('should contain a link for each stats', async () => {
-    // When
     renderVenue(props)
     await waitForElementToBeRemoved(() => screen.queryByTestId('spinner'))
+    await waitFor(() => expect(api.listVenueProviders).toHaveBeenCalled())
 
     const [activeOffersStat] = screen.getAllByTestId('venue-stat')
     expect(within(activeOffersStat).getByText('2')).toBeInTheDocument()
 
-    // Then
     expect(screen.getAllByRole('link', { name: /Voir/ })).toHaveLength(4)
   })
 
   describe('physical venue section', () => {
     it('should display edition venue link', async () => {
-      // Given
       props.isVirtual = false
 
-      // When
       renderVenue(props)
       await waitForElementToBeRemoved(() => screen.queryByTestId('spinner'))
+      await waitFor(() => expect(api.listVenueProviders).toHaveBeenCalled())
 
-      // Then
       expect(
         screen.getByRole('link', { name: 'Éditer le lieu' })
       ).toHaveAttribute(
@@ -118,15 +120,13 @@ describe('venues', () => {
       )
     })
 
-    it('should display add bank information when venue does not have a reimbursement point', () => {
-      // Given
+    it('should display add bank information when venue does not have a reimbursement point', async () => {
       props.hasMissingReimbursementPoint = true
       props.hasCreatedOffer = true
 
-      // When
       renderVenue(props)
+      await waitFor(() => expect(api.listVenueProviders).toHaveBeenCalled())
 
-      // Then
       expect(
         screen.getByRole('link', { name: 'Ajouter un RIB' })
       ).toHaveAttribute(
@@ -135,19 +135,17 @@ describe('venues', () => {
       )
     })
 
-    it('should not display add bank information when for the new bank details journey is enabled', () => {
-      // Given
+    it('should not display add bank information when for the new bank details journey is enabled', async () => {
       props.hasMissingReimbursementPoint = true
       props.hasCreatedOffer = true
 
-      // When
       renderVenue(props, {
         list: [
           { isActive: true, nameKey: 'WIP_ENABLE_NEW_BANK_DETAILS_JOURNEY' },
         ],
       })
+      await waitFor(() => expect(api.listVenueProviders).toHaveBeenCalled())
 
-      // Then
       expect(
         screen.queryByRole('link', { name: 'Ajouter un RIB' })
       ).not.toBeInTheDocument()
@@ -161,14 +159,15 @@ describe('venues', () => {
       dmsInformations: null,
     })
     await waitForElementToBeRemoved(() => screen.queryByTestId('spinner'))
+    await waitFor(() => expect(api.listVenueProviders).toHaveBeenCalled())
 
-    // Then
     expect(
       screen.queryByRole('link', {
         name: 'Suivre ma demande de référencement ADAGE',
       })
     ).not.toBeInTheDocument()
   })
+
   it('should display dms timeline link when venue has dms applicaiton and adage id less than 30 days', async () => {
     renderVenue({
       ...props,
@@ -180,8 +179,8 @@ describe('venues', () => {
       },
     })
     await waitForElementToBeRemoved(() => screen.queryByTestId('spinner'))
+    await waitFor(() => expect(api.listVenueProviders).toHaveBeenCalled())
 
-    // Then
     expect(
       screen.getByRole('link', {
         name: 'Suivre ma demande de référencement ADAGE',
@@ -202,14 +201,15 @@ describe('venues', () => {
       },
     })
     await waitForElementToBeRemoved(() => screen.queryByTestId('spinner'))
+    await waitFor(() => expect(api.listVenueProviders).toHaveBeenCalled())
 
-    // Then
     expect(
       screen.queryByRole('link', {
         name: 'Suivre ma demande de référencement ADAGE',
       })
     ).not.toBeInTheDocument()
   })
+
   it('should display dms timeline link if venue has refused application for less than 30days', async () => {
     renderVenue({
       ...props,
@@ -220,14 +220,15 @@ describe('venues', () => {
       },
     })
     await waitForElementToBeRemoved(() => screen.queryByTestId('spinner'))
+    await waitFor(() => expect(api.listVenueProviders).toHaveBeenCalled())
 
-    // Then
     expect(
       screen.getByRole('link', {
         name: 'Suivre ma demande de référencement ADAGE',
       })
     ).toBeInTheDocument()
   })
+
   it('should not display dms timeline link if venue has refused application for more than 30days', async () => {
     renderVenue({
       ...props,
@@ -238,12 +239,38 @@ describe('venues', () => {
       },
     })
     await waitForElementToBeRemoved(() => screen.queryByTestId('spinner'))
+    await waitFor(() => expect(api.listVenueProviders).toHaveBeenCalled())
 
-    // Then
     expect(
       screen.queryByRole('link', {
         name: 'Suivre ma demande de référencement ADAGE',
       })
     ).not.toBeInTheDocument()
+  })
+
+  it('should display API tag if venue has at least one provider', async () => {
+    vi.spyOn(api, 'listVenueProviders').mockResolvedValueOnce({
+      venue_providers: [
+        {
+          id: 1,
+          isActive: true,
+          isFromAllocineProvider: true,
+          nOffers: 10,
+          provider: {
+            id: 1,
+            isActive: true,
+            name: 'Allociné',
+            hasOffererProvider: true,
+          },
+          venueId: 1,
+        },
+      ],
+    })
+
+    renderVenue(props)
+    await waitForElementToBeRemoved(() => screen.queryByTestId('spinner'))
+    await waitFor(() => expect(api.listVenueProviders).toHaveBeenCalled())
+
+    await screen.findByText('API')
   })
 })
