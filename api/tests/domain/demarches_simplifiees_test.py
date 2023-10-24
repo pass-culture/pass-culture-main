@@ -100,11 +100,11 @@ class ParseRawBankInfoDataTest:
     @pytest.mark.parametrize(
         "procedure_version, etablissement, identifiant_du_lieu, expected_result, prenom, nom",
         [
-            (3, VENUE_FIELD, None, EXPECTED_RESULT_WITH_SIRET_V3, "Mon prénom", "Votre Nom plz"),
-            (4, None, VENUE_DMS_TOKEN_FIELD_WITHOUT_PRO_PREFIX, EXPECTED_RESULT_V4, "Prénom", "Nom"),
+            (3, VENUE_FIELD, None, EXPECTED_RESULT_WITH_SIRET_V3, "prénom", "Nom"),
+            (4, None, VENUE_DMS_TOKEN_FIELD_WITHOUT_PRO_PREFIX, EXPECTED_RESULT_V4, "Prénom", "nom"),
             (4, VENUE_FIELD, VENUE_DMS_TOKEN_FIELD_WITHOUT_PRO_PREFIX, EXPECTED_RESULT_V4, "prénom", "nom"),
-            (4, None, VENUE_DMS_TOKEN_FIELD_WITH_PRO_PREFIX, EXPECTED_RESULT_V4, "Un prénom", "Un Nom"),
-            (4, VENUE_FIELD, VENUE_DMS_TOKEN_FIELD_WITH_PRO_PREFIX, EXPECTED_RESULT_V4, "Votre prénom", "Votre nom"),
+            (4, None, VENUE_DMS_TOKEN_FIELD_WITH_PRO_PREFIX, EXPECTED_RESULT_V4, "Prénom", "Nom"),
+            (4, VENUE_FIELD, VENUE_DMS_TOKEN_FIELD_WITH_PRO_PREFIX, EXPECTED_RESULT_V4, "prénom", "nom"),
         ],
     )
     def test_parsing_works(self, procedure_version, etablissement, identifiant_du_lieu, expected_result, prenom, nom):
@@ -182,6 +182,17 @@ class ParseRawBankInfoDataTest:
                 "id": "Q2hhbXAtODU2ODE4",
                 "label": "RIB",
                 "stringValue": "",
+            },
+            {
+                "id": "Q2hhbXAtMjY0MjE3Nw==",
+                "label": "Devilish label write by a user *nom* that could match a regex",
+                "stringValue": "",
+                "file": {
+                    "url": "http://url.com",
+                    "checksum": "KKrLwnPYU67Z7CD1B4vIDA==",
+                    "contentType": "application/pdf",
+                    "filename": "file.pdf",
+                },
             },
         ]
         if identifiant_du_lieu:
