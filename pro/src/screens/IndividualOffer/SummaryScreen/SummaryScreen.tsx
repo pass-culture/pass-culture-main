@@ -17,6 +17,7 @@ import { publishIndividualOffer } from 'core/Offers/adapters/publishIndividualOf
 import { OFFER_WIZARD_MODE } from 'core/Offers/constants'
 import { getIndividualOfferUrl } from 'core/Offers/utils/getIndividualOfferUrl'
 import { useOfferWizardMode } from 'hooks'
+import useActiveFeature from 'hooks/useActiveFeature'
 import useAnalytics from 'hooks/useAnalytics'
 import useNotification from 'hooks/useNotification'
 import fullWaitIcon from 'icons/full-wait.svg'
@@ -36,6 +37,9 @@ import StockSection from './StockSection/StockSection'
 import styles from './SummaryScreen.module.scss'
 
 const SummaryScreen = () => {
+  const isNewBankDetailsJourneyEnabled = useActiveFeature(
+    'WIP_ENABLE_NEW_BANK_DETAILS_JOURNEY'
+  )
   const [isDisabled, setIsDisabled] = useState(false)
   const [displayRedirectDialog, setDisplayRedirectDialog] = useState(false)
   const notification = useNotification()
@@ -80,6 +84,7 @@ const SummaryScreen = () => {
       if (response.isOk) {
         setOffer && setOffer(response.payload)
       }
+
       if (showVenuePopin[venueId || '']) {
         setDisplayRedirectDialog(true)
       } else {
@@ -217,10 +222,19 @@ const SummaryScreen = () => {
           cancelIcon={fullWaitIcon}
           withRedirectLinkIcon={false}
         >
-          <p>Vous pouvez dès à présent renseigner des coordonnées bancaires.</p>
           <p>
-            Vos remboursements seront rétroactifs une fois vos coordonnées
-            bancaires validées.
+            Vous pouvez dès à présent renseigner{' '}
+            {isNewBankDetailsJourneyEnabled
+              ? 'un compte bancaire'
+              : 'des coordonnées bancaires'}
+            .
+          </p>
+          <p>
+            Vos remboursements seront rétroactifs une fois{' '}
+            {isNewBankDetailsJourneyEnabled
+              ? 'votre compte bancaire validé'
+              : 'vos coordonnées bancaires validées'}
+            .
           </p>
         </RedirectDialog>
       )}
