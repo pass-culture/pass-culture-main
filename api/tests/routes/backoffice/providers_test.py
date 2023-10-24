@@ -97,6 +97,7 @@ class CreateProviderTest(PostEndpointHelper):
         assert created_offerer.postalCode == form_data["postal_code"]
         assert created_offerer.siren == form_data["siren"]
         assert created_offerer.validationStatus == ValidationStatus.VALIDATED
+        assert created_offerer.dsToken is not None
 
         created_api_key = created_provider.apiKeys[0]
         assert created_api_key.offerer == created_offerer
