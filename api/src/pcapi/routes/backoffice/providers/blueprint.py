@@ -122,6 +122,7 @@ def _get_or_create_offerer(form: forms.CreateProviderForm) -> tuple[offerers_mod
             city=form.city.data,
             postalCode=form.postal_code.data,
             validationStatus=ValidationStatus.VALIDATED,
+            dsToken=offerers_api.generate_offerer_ds_token(),
         )
     return offerer, is_offerer_new
 
