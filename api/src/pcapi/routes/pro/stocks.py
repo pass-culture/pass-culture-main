@@ -72,6 +72,8 @@ def upsert_stocks(
 
     stocks_to_edit = [stock for stock in body.stocks if isinstance(stock, serialization.StockEditionBodyModel)]
     stocks_to_create = [stock for stock in body.stocks if isinstance(stock, serialization.StockCreationBodyModel)]
+    offers_validation.check_stocks_price(stocks_to_edit, offer)
+    offers_validation.check_stocks_price(stocks_to_create, offer)
     if stocks_to_create:
         number_of_existing_stocks = _get_number_of_existing_stocks(body.offer_id)
         if number_of_existing_stocks + len(stocks_to_create) > offers_models.Offer.MAX_STOCKS_PER_OFFER:
