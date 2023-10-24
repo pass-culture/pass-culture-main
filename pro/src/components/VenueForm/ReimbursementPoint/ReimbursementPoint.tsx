@@ -7,6 +7,7 @@ import ReimbursmentPointDialog from 'components/ReimbursementPointDialog/Reimbur
 import { Events } from 'core/FirebaseEvents/constants'
 import { serializeVenueApi } from 'core/Venue/adapters/getVenueAdapter/serializers'
 import { Venue } from 'core/Venue/types'
+import useActiveFeature from 'hooks/useActiveFeature'
 import useAnalytics from 'hooks/useAnalytics'
 import strokeWarningIcon from 'icons/stroke-warning.svg'
 import ApplicationBanner from 'pages/Offerers/Offerer/VenueV1/fields/ApplicationBanner'
@@ -40,6 +41,9 @@ const ReimbursementPoint = ({
   isCreatingVenue = false,
   venueHasPricingPoint,
 }: ReimbursementPointV2) => {
+  const isNewBankDetailsJourneyEnabled = useActiveFeature(
+    'WIP_ENABLE_NEW_BANK_DETAILS_JOURNEY'
+  )
   const [reimbursementPointOptions, setReimbursementPointOptions] =
     useState<Array<ReimbursementPointOptions>>()
   const [venueReimbursementPoint, setVenueReimbursementPoint] = useState<any>(
@@ -64,6 +68,10 @@ const ReimbursementPoint = ({
       : ''
 
   const modifyReimbursementPointLabel = useCallback(() => {
+    if (isNewBankDetailsJourneyEnabled) {
+      return 'Ajouter un compte bancaire'
+    }
+
     return hasAlreadyAddReimbursementPoint
       ? 'Modifier mes coordonnées bancaires'
       : 'Ajouter des coordonnées bancaires'
