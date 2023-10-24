@@ -22,9 +22,11 @@ from pcapi.utils.rest import check_user_has_access_to_offerer
 
 from . import blueprint
 
+from collections import defaultdict, namedtuple
 
-logger = logging.getLogger(__name__)
+logger = logging.getLogger(__name)
 
+StockUpdate = namedtuple("StockUpdate", ["stock", "is_beginning_updated"])
 
 def _get_existing_stocks(
     offer_id: int, stocks_payload: list[serialization.StockEditionBodyModel]
@@ -34,14 +36,12 @@ def _get_existing_stocks(
         offers_models.Stock.isSoftDeleted == False,
         offers_models.Stock.id.in_([stock_payload.id for stock_payload in stocks_payload]),
     ).all()
-    return {existing_stocks.id: existing_stocks for existing_stocks in existing_stocks}
-
-
-def _get_number_of_existing_stocks(offer_id: int) -> int:
-    return (
-        offers_models.Stock.query.filter_by(offerId=offer_id).filter(offers_models.Stock.isSoftDeleted == False).count()
-    )
-
+    
+    existing_stocks_dict = defaultdict(list)
+    for stock in existing_stocks:
+        existing_stocks_dict[stock.id] = stock
+    
+    return existing_stocks_dict
 
 @private_api.route("/stocks/bulk", methods=["POST"])
 @login_required
@@ -72,9 +72,11 @@ def upsert_stocks(
 
     stocks_to_edit = [stock for stock in body.stocks if isinstance(stock, serialization.StockEditionBodyModel)]
     stocks_to_create = [stock for stock in body.stocks if isinstance(stock, serialization.StockCreationBodyModel)]
+    
+    number_of_existing_stocks = offers_models.Stock.query.filter_by(offerId=body.offer_id).filter(offers_models.Stock.isSoftDeleted == False).count()
+
     if stocks_to_create:
-        number_of_existing_stocks = _get_number_of_existing_stocks(body.offer_id)
-        if number_of_existing_stocks + len(stocks_to_create) > offers_models.Offer.MAX_STOCKS_PER_OFFER:
+        if len(stocks_to_create) > offers_models.Offer.MAX_STOCKS_PER_OFFER - number_of_existing_stocks:
             raise ApiErrors(
                 {
                     "stocks": [
@@ -83,13 +85,14 @@ def upsert_stocks(
                 },
                 status_code=400,
             )
+
     if stocks_to_edit:
         existing_stocks = _get_existing_stocks(body.offer_id, stocks_to_edit)
 
     price_categories = {price_category.id: price_category for price_category in offer.priceCategories}
 
     upserted_stocks = []
-    edited_stocks_with_update_info: list[tuple[offers_models.Stock, bool]] = []
+    edited_stocks_with_update_info: list[StockUpdate] = []
     try:
         with transaction():
             for stock_to_edit in stocks_to_edit:
@@ -115,7 +118,7 @@ def upsert_stocks(
                     price_category=price_categories.get(stock_to_edit.price_category_id, None),
                 )
                 upserted_stocks.append(edited_stock)
-                edited_stocks_with_update_info.append((edited_stock, is_beginning_updated))
+                edited_stocks_with_update_info.append(StockUpdate(edited_stock, is_beginning_updated))
 
             for stock_to_create in stocks_to_create:
                 offers_validation.check_stock_has_price_or_price_category(offer, stock_to_create, price_categories)
@@ -143,7 +146,6 @@ def upsert_stocks(
         stocks=[offers_serialize.GetOfferStockResponseModel.from_orm(stock) for stock in upserted_stocks]
     )
 
-
 @private_api.route("/stocks/<int:stock_id>", methods=["DELETE"])
 @login_required
 @spectree_serialize(response_model=serialization.StockIdResponseModel, api=blueprint.pro_private_schema)
@@ -163,3 +165,4 @@ def delete_stock(stock_id: int) -> serialization.StockIdResponseModel:
     offers_api.delete_stock(stock)
 
     return serialization.StockIdResponseModel.from_orm(stock)
+    
