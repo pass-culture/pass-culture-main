@@ -11,10 +11,10 @@ import io
 import math
 from typing import TYPE_CHECKING
 
-import PIL
 from PIL import Image
 from PIL import ImageFile
 from PIL import ImageOps
+from PIL import UnidentifiedImageError
 from pydantic.v1 import confloat
 
 
@@ -102,7 +102,7 @@ def standardize_image(content: bytes, ratio: ImageRatio, crop_params: CropParams
     return _post_process_image(resized_image)
 
 
-def process_original_image(content: bytes, resize: bool = True) -> PIL.Image:
+def process_original_image(content: bytes, resize: bool = True) -> Image:
     """
     Process steps are:
         * transpose image
@@ -116,8 +116,8 @@ def process_original_image(content: bytes, resize: bool = True) -> PIL.Image:
     return _post_process_image(image)
 
 
-def _pre_process_image(content: bytes) -> PIL.Image:
-    raw_image = PIL.Image.open(io.BytesIO(content))
+def _pre_process_image(content: bytes) -> Image:
+    raw_image = Image.open(io.BytesIO(content))
 
     # Remove exif orientation so that it doesnt rotate after upload
     try:
@@ -126,21 +126,21 @@ def _pre_process_image(content: bytes) -> PIL.Image:
         # PIL may raise `SyntaxError("not a TIFF file [...]")` or a
         # similar message, depending on the expected type of file. In
         # that case, re-reraise as a more specific, PIL-related error.
-        raise PIL.UnidentifiedImageError() from exc
+        raise UnidentifiedImageError() from exc
 
     if transposed_image.mode == "RGBA":
-        background = PIL.Image.new("RGB", transposed_image.size, (255, 255, 255))
+        background = Image.new("RGB", transposed_image.size, (255, 255, 255))
         background.paste(transposed_image, mask=transposed_image.split()[3])
         transposed_image = background
 
     return transposed_image.convert("RGB")
 
 
-def _post_process_image(image: PIL.Image) -> bytes:
+def _post_process_image(image: Image) -> bytes:
     return _convert_to_jpeg(image)
 
 
-def _check_ratio(image: PIL.Image, ratio: ImageRatio) -> PIL.Image:
+def _check_ratio(image: Image, ratio: ImageRatio) -> Image:
     image_ratio = image.width / image.height
     if not math.isclose(image_ratio, ratio.value, abs_tol=0.04):
         raise ImageRatioError(expected=ratio.value, found=image_ratio)
