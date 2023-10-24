@@ -8,6 +8,8 @@ from pcapi import settings
 from pcapi.connectors import sirene
 from pcapi.connectors.api_recaptcha import ReCaptchaException
 from pcapi.connectors.api_recaptcha import check_webapp_recaptcha_token
+from pcapi.connectors.big_query.queries.offerer_stats import DAILY_CONSULT_PER_OFFERER_LAST_180_DAYS_TABLE
+from pcapi.connectors.big_query.queries.offerer_stats import TOP_3_MOST_CONSULTED_OFFERS_LAST_30_DAYS_TABLE
 import pcapi.core.educational.exceptions as educational_exceptions
 import pcapi.core.finance.api as finance_api
 import pcapi.core.finance.repository as finance_repository
@@ -267,3 +269,27 @@ def link_venue_to_bank_account(
     if bank_account is None:
         raise ResourceNotFoundError()
     finance_api.update_bank_account_venues_links(current_user, bank_account, body.venues_ids)
+
+
+@private_api.route("/offerers/<int:offerer_id>/stats", methods=["GET"])
+@login_required
+@spectree_serialize(
+    on_success_status=200,
+    api=blueprint.pro_private_schema,
+    response_model=offerers_serialize.GetOffererStatsResponseModel,
+)
+def get_offerer_stats(offerer_id: int) -> offerers_serialize.GetOffererStatsResponseModel:
+    check_user_has_access_to_offerer(current_user, offerer_id)
+    stats = api.get_offerer_stats_data(offerer_id)
+    if not stats:
+        return offerers_serialize.GetOffererStatsResponseModel(offererId=offerer_id, syncDate=None, jsonData=None)
+    top_offers = next(el for el in stats if el.table == TOP_3_MOST_CONSULTED_OFFERS_LAST_30_DAYS_TABLE)
+    daily_offerer_views = next(el for el in stats if el.table == DAILY_CONSULT_PER_OFFERER_LAST_180_DAYS_TABLE)
+    top_offers_data = top_offers.jsonData["top_offers"]
+    daily_offerer_viewsData = daily_offerer_views.jsonData["daily_views"]
+    return offerers_serialize.GetOffererStatsResponseModel.build(
+        offerer_id,
+        min(top_offers.syncDate, daily_offerer_views.syncDate),
+        daily_offerer_viewsData,
+        top_offers_data,
+    )
