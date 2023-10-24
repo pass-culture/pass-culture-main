@@ -11,66 +11,47 @@ import {
 } from 'core/OfferEducational'
 import { serializeDates } from 'core/OfferEducational/utils/createOfferPayload'
 
-const serializer = {
-  title: (
+type PatchOfferSerializer<T> = {
+  [key in keyof OfferEducationalFormValues]?: (
     payload: PatchCollectiveOfferBodyModel,
     offer: OfferEducationalFormValues
-  ) => ({ ...payload, name: offer.title }),
-  description: (
-    payload: PatchCollectiveOfferBodyModel,
-    offer: OfferEducationalFormValues
-  ) => ({ ...payload, description: offer.description }),
-  duration: (
-    payload: PatchCollectiveOfferBodyModel,
-    offer: OfferEducationalFormValues
-  ) => ({ ...payload, durationMinutes: parseDuration(offer.duration) }),
-  subCategory: (
-    payload: PatchCollectiveOfferBodyModel,
-    offer: OfferEducationalFormValues
-  ) => ({ ...payload, subcategoryId: offer.subCategory }),
-  accessibility: (
-    payload: PatchCollectiveOfferBodyModel,
-    offer: OfferEducationalFormValues
-  ) => ({
+  ) => T
+}
+
+const serializer: PatchOfferSerializer<PatchCollectiveOfferBodyModel> = {
+  title: (payload, offer) => ({ ...payload, name: offer.title }),
+  description: (payload, offer) => ({
+    ...payload,
+    description: offer.description,
+  }),
+  duration: (payload, offer) => ({
+    ...payload,
+    durationMinutes: parseDuration(offer.duration),
+  }),
+  subCategory: (payload, offer) => ({
+    ...payload,
+    subcategoryId: offer.subCategory,
+  }),
+  accessibility: (payload, offer) => ({
     ...payload,
     mentalDisabilityCompliant: offer.accessibility.mental,
     motorDisabilityCompliant: offer.accessibility.motor,
     audioDisabilityCompliant: offer.accessibility.audio,
     visualDisabilityCompliant: offer.accessibility.visual,
   }),
-  notificationEmails: (
-    payload: PatchCollectiveOfferBodyModel,
-    offer: OfferEducationalFormValues
-  ) => {
+  notificationEmails: (payload, offer) => {
     return {
       ...payload,
       bookingEmails: offer.notificationEmails,
     }
   },
-  notifications: (
-    payload: PatchCollectiveOfferBodyModel,
-    offer: OfferEducationalFormValues
-  ) => {
-    return {
-      ...payload,
-      bookingEmails: offer.notificationEmails,
-    }
-  },
-  // Unchanged keys
-  // Need to put them here for ts not to raise an error
   offererId: (payload: PatchCollectiveOfferBodyModel) => payload,
-  venueId: (
-    payload: PatchCollectiveOfferBodyModel,
-    offer: OfferEducationalFormValues
-  ) => ({
+  venueId: (payload, offer) => ({
     ...payload,
-    venueId: offer.venueId,
+    venueId: Number(offer.venueId),
   }),
-  category: (payload: PatchCollectiveOfferBodyModel) => payload,
-  eventAddress: (
-    payload: PatchCollectiveOfferBodyModel,
-    offer: OfferEducationalFormValues
-  ) => {
+  category: (payload) => payload,
+  eventAddress: (payload, offer) => {
     const eventAddressPayload = {
       ...offer.eventAddress,
       venueId: offer.eventAddress.venueId,
@@ -80,45 +61,27 @@ const serializer = {
       offerVenue: eventAddressPayload,
     }
   },
-  participants: (
-    payload: PatchCollectiveOfferBodyModel,
-    offer: OfferEducationalFormValues
-  ) => ({
+  participants: (payload, offer) => ({
     ...payload,
     students: serializeParticipants(offer.participants),
   }),
-  phone: (
-    payload: PatchCollectiveOfferBodyModel,
-    offer: OfferEducationalFormValues
-  ) => ({
+  phone: (payload, offer) => ({
     ...payload,
     contactPhone: offer.phone,
   }),
-  email: (
-    payload: PatchCollectiveOfferBodyModel,
-    offer: OfferEducationalFormValues
-  ) => ({
+  email: (payload, offer) => ({
     ...payload,
     contactEmail: offer.email,
   }),
-  domains: (
-    payload: PatchCollectiveOfferBodyModel,
-    offer: OfferEducationalFormValues
-  ) => ({
+  domains: (payload, offer) => ({
     ...payload,
     domains: offer.domains.map((domainIdString) => Number(domainIdString)),
   }),
-  interventionArea: (
-    payload: PatchCollectiveOfferBodyModel,
-    offer: OfferEducationalFormValues
-  ) => ({
+  interventionArea: (payload, offer) => ({
     ...payload,
     interventionArea: offer.interventionArea,
   }),
-  nationalProgramId: (
-    payload: PatchCollectiveOfferBodyModel,
-    offer: OfferEducationalFormValues
-  ) => ({
+  nationalProgramId: (payload, offer) => ({
     ...payload,
     nationalProgramId: offer.nationalProgramId
       ? Number(offer.nationalProgramId)
@@ -126,23 +89,14 @@ const serializer = {
   }),
 }
 
-const templateSerializer = {
-  ...serializer,
-  venueId: (
-    payload: PatchCollectiveOfferBodyModel,
-    offer: OfferEducationalFormValues
-  ) => ({
-    ...payload,
-    venueId: offer.venueId,
-  }),
-  priceDetail: (
-    payload: PatchCollectiveOfferBodyModel,
-    offer: OfferEducationalFormValues
-  ) => ({
-    ...payload,
-    priceDetail: offer.priceDetail,
-  }),
-}
+const templateSerializer: PatchOfferSerializer<PatchCollectiveOfferTemplateBodyModel> =
+  {
+    ...serializer,
+    priceDetail: (payload, offer) => ({
+      ...payload,
+      priceDetail: offer.priceDetail,
+    }),
+  }
 
 export const createPatchOfferPayload = (
   offer: OfferEducationalFormValues,
@@ -159,10 +113,7 @@ export const createPatchOfferPayload = (
       !key.startsWith('search-') &&
       !keysToOmmit.includes(key)
     ) {
-      // This is because startsWith eliminates the two keys that are not defined in the collectiveOfferSerializer
-      // @ts-expect-error (7053) Element implicitly has an 'any' type because expression of type 'keyof IOfferEducationalFormValues' can't be used to index type
-
-      changedValues = serializer[key](changedValues, offer)
+      changedValues = serializer[key]?.(changedValues, offer) ?? {}
     }
   })
   // We use this to patch field when user want to make it empty
@@ -194,10 +145,7 @@ export const createPatchOfferTemplatePayload = (
       !isEqual(offer[key], initialValues[key]) &&
       !key.startsWith('search-')
     ) {
-      // This is because startsWith eliminates the two keys that are not defined in the collectiveOfferSerializer
-      // @ts-expect-error (7053) Element implicitly has an 'any' type because expression of type 'keyof IOfferEducationalFormValues' can't be used to index type
-
-      changedValues = templateSerializer[key](changedValues, offer)
+      changedValues = templateSerializer[key]?.(changedValues, offer) ?? {}
     }
   })
   // We use this to patch field when user want to make it empty

@@ -110,7 +110,7 @@ describe('createPatchOfferPayload', () => {
 
     expect(payload).toMatchObject({
       ...patchOfferPayload,
-      venueId: venueId.toString(),
+      venueId: venueId,
     })
   })
 
@@ -121,7 +121,7 @@ describe('createPatchOfferPayload', () => {
     )
 
     expect(payload).toMatchObject({
-      venueId: venueId.toString(),
+      venueId: venueId,
       priceDetail: '123',
     })
   })
@@ -132,7 +132,7 @@ describe('createPatchOfferPayload', () => {
     )
 
     expect(payload).toMatchObject({
-      venueId: venueId.toString(),
+      venueId: venueId,
       priceDetail: '123',
       dates: undefined,
     })
