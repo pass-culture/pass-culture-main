@@ -16,8 +16,10 @@ import sqlalchemy.orm as sa_orm
 
 from pcapi import settings
 from pcapi.connectors import sirene
+from pcapi.connectors.big_query.queries.offerer_stats import DAILY_CONSULT_PER_OFFERER_LAST_180_DAYS_TABLE
 from pcapi.connectors.big_query.queries.offerer_stats import OffererViewsPerDay
 from pcapi.connectors.big_query.queries.offerer_stats import OffersData
+from pcapi.connectors.big_query.queries.offerer_stats import TOP_3_MOST_CONSULTED_OFFERS_LAST_30_DAYS_TABLE
 import pcapi.connectors.thumb_storage as storage
 from pcapi.core import search
 from pcapi.core.bookings import models as bookings_models
@@ -2052,7 +2054,7 @@ def get_providers_offerer_and_venues(
         yield OffererVenues(offerer=offerer, venues=[row.Venue for row in group])
 
 
-def get_offerer_stats_data(offerer_id: int) -> offerers_models.OffererStatsData | None:
+def get_offerer_stats_data(offerer_id: int) -> list[offerers_models.OffererStats]:
     offerer_stats = offerers_models.OffererStats.query.filter_by(offererId=offerer_id).all()
     if len(offerer_stats) < 2:
         _update_offerer_stats_data.delay(offerer_id)
@@ -2068,12 +2070,12 @@ def _update_offerer_stats_data(offerer_id: int) -> None:
     with transaction():
         daily_views_data = OffererViewsPerDay().execute(offerer_id=offerer_id)
         daily_views_stats = offerers_models.OffererStats.query.filter_by(
-            offererId=offerer_id, table="stats_display_cum_daily_consult_per_offerer_last_180_days"
+            offererId=offerer_id, table=DAILY_CONSULT_PER_OFFERER_LAST_180_DAYS_TABLE
         ).one_or_none()
         if not daily_views_stats:
             daily_views_stats = offerers_models.OffererStats(
                 offererId=offerer_id,
-                table="stats_display_cum_daily_consult_per_offerer_last_180_days",
+                table=DAILY_CONSULT_PER_OFFERER_LAST_180_DAYS_TABLE,
                 jsonData=offerers_models.OffererStatsData(daily_views=list(daily_views_data)),
                 syncDate=datetime.utcnow(),
             )
@@ -2083,12 +2085,12 @@ def _update_offerer_stats_data(offerer_id: int) -> None:
 
         top_offers_data = OffersData().execute(page_size=3, offerer_id=offerer_id)
         top_offers_stats = offerers_models.OffererStats.query.filter_by(
-            offererId=offerer_id, table="stats_display_top_3_most_consulted_offers_last_30_days"
+            offererId=offerer_id, table=TOP_3_MOST_CONSULTED_OFFERS_LAST_30_DAYS_TABLE
         ).one_or_none()
         if not top_offers_stats:
             top_offers_stats = offerers_models.OffererStats(
                 offererId=offerer_id,
-                table="stats_display_top_3_most_consulted_offers_last_30_days",
+                table=TOP_3_MOST_CONSULTED_OFFERS_LAST_30_DAYS_TABLE,
                 jsonData=offerers_models.OffererStatsData(top_offers=list(top_offers_data)),
                 syncDate=datetime.utcnow(),
             )
