@@ -904,6 +904,68 @@ class Returns400Test:
         assert response.status_code == 400
         assert response.json["price_category_id"] == [f"Le tarif avec l'id {price_category.id + 1} n'existe pas"]
 
+    def test_cannot_update_stock_with_price_higher_than_300_euros(self, client):
+        offer = offers_factories.OfferFactory(isActive=False, validation=OfferValidationStatus.DRAFT)
+        existing_stock = offers_factories.StockFactory(offer=offer, price=300)
+        offerers_factories.UserOffererFactory(
+            user__email="user@example.com",
+            offerer=offer.venue.managingOfferer,
+        )
+        too_high_price_category = offers_factories.PriceCategoryFactory(
+            offer=offer, priceCategoryLabel__label="too_high_price_category", price=310
+        )
+
+        # When
+        stock_data = {
+            "offerId": offer.id,
+            "stocks": [
+                {
+                    "id": existing_stock.id,
+                    "price": too_high_price_category.price,
+                }
+            ],
+        }
+
+        # Then
+        response = client.with_session_auth("user@example.com").post("/stocks/bulk/", json=stock_data)
+        assert response.status_code == 400
+        assert response.json["price300"] == ["Le prix d’une offre ne peut excéder 300 euros."]
+
+    def test_cannot_update_event_stock_with_price_higher_than_300_euros(self, client):
+        offer = offers_factories.EventOfferFactory(isActive=False, validation=OfferValidationStatus.DRAFT)
+        positive_price_category = offers_factories.PriceCategoryFactory(
+            offer=offer, priceCategoryLabel__label="positive_price", price=10
+        )
+        too_high_price_category = offers_factories.PriceCategoryFactory(
+            offer=offer, priceCategoryLabel__label="too_high_price_category", price=310
+        )
+        beginning = datetime.datetime.utcnow() + relativedelta(days=10)
+        existing_stock = offers_factories.EventStockFactory(
+            offer=offer, priceCategoryId=positive_price_category.id, beginningDatetime=beginning
+        )
+        offerers_factories.UserOffererFactory(
+            user__email="user@example.com",
+            offerer=offer.venue.managingOfferer,
+        )
+
+        # When
+        stock_data = {
+            "offerId": offer.id,
+            "stocks": [
+                {
+                    "id": existing_stock.id,
+                    "beginningDatetime": format_into_utc_date(beginning),
+                    "bookingLimitDatetime": format_into_utc_date(beginning),
+                    "priceCategoryId": too_high_price_category.id,
+                }
+            ],
+        }
+
+        # Then
+        response = client.with_session_auth("user@example.com").post("/stocks/bulk/", json=stock_data)
+        assert response.status_code == 400
+        assert response.json["priceCategoryId"] == ["Le prix d’une offre ne peut excéder 300 euros."]
+
 
 @pytest.mark.usefixtures("db_session")
 class Returns403Test:

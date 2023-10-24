@@ -599,6 +599,7 @@ def edit_stock(
     if price_category is not UNCHANGED and price_category is not None and price_category is not stock.priceCategory:
         modifications["priceCategory"] = price_category
         modifications["price"] = price_category.price
+        validation.check_stock_price(price_category.price, stock.offer)
 
     if quantity is not UNCHANGED and quantity != stock.quantity:
         modifications["quantity"] = quantity
