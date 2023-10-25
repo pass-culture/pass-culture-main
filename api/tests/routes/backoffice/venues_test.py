@@ -30,6 +30,7 @@ from pcapi.core.users import factories as users_factories
 from pcapi.core.users.backoffice import api as backoffice_api
 from pcapi.models import db
 from pcapi.routes.backoffice.filters import format_dms_status
+from pcapi.routes.backoffice.forms.search import TypeOptions
 from pcapi.routes.backoffice.venues import blueprint as venues_blueprint
 from pcapi.utils import urls
 
@@ -244,6 +245,19 @@ class GetVenueTest(GetEndpointHelper):
     # get user with profile and permissions (1 query)
     # get venue (1 query)
     expected_num_queries = 3
+
+    def test_keep_search_parameters_on_top(self, authenticated_client, venue):
+        url = url_for(self.endpoint, venue_id=venue.id, q=venue.name, departments=["75", "77"])
+
+        with assert_num_queries(self.expected_num_queries):
+            response = authenticated_client.get(url)
+            assert response.status_code == 200
+
+        assert html_parser.extract_input_value(response.data, "q") == venue.name
+        selected_type = html_parser.extract_select_options(response.data, "pro_type", selected_only=True)
+        assert set(selected_type.keys()) == {TypeOptions.VENUE.name}
+        selected_departments = html_parser.extract_select_options(response.data, "departments", selected_only=True)
+        assert set(selected_departments.keys()) == {"75", "77"}
 
     def test_get_venue(self, authenticated_client, venue):
         venue.publicName = "Le grand Rantanplan 1"

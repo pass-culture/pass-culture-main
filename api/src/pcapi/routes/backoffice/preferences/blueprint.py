@@ -11,7 +11,7 @@ from pcapi.routes.backoffice import utils
 from pcapi.routes.backoffice.preferences import forms
 
 
-# Permission is currently limited to permission READ_PRO_ENTITY because a single setting is available, which only
+# Preferences are currently limited to permission READ_PRO_ENTITY because a single setting is available, which only
 # concerns search for pro; this required permission may be removed in the future so that everyone has access.
 preferences_blueprint = utils.child_backoffice_blueprint(
     "preferences",

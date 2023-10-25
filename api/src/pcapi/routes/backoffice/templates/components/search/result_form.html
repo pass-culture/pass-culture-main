@@ -1,12 +1,13 @@
-{% macro build_result_page_form(form, dst) %}
+{% macro build_result_page_form(form, dst, col_width=6) %}
   <form action="{{ dst }}"
         name="{{ dst | action_to_name }}"
         method="get">
-    <div class="col-8 row">
-      <div class="col-8">
+    <div class="col-{{ col_width }} row">
+      <div class="col-11">
         <div class="input-group mb-3">
+          {% set hidden_fields = [] %}
           {% for form_field in form %}
-            {% if form_field.type != 'HiddenField' %}{{ form_field }}{% endif %}
+            {% if "Hidden" not in form_field.type %}{{ form_field }}{% endif %}
             {% if form_field.errors %}
               <div class="w-100 my-4">
                 {% for error in form_field.errors %}<p class="text-warning lead">{{ error }}</p>{% endfor %}
@@ -15,12 +16,12 @@
           {% endfor %}
         </div>
         {% for form_field in form %}
-          {% if form_field.type == 'HiddenField' %}{{ form_field }}{% endif %}
+          {% if "Hidden" in form_field.type %}{{ form_field }}{% endif %}
         {% endfor %}
       </div>
-      <div class="col-4">
+      <div class="col-1 d-flex align-items-center">
         <button type="submit"
-                class="btn btn-primary">Chercher</button>
+                class="btn btn-primary mb-3">Chercher</button>
       </div>
     </div>
   </form>

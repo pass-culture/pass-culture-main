@@ -11,6 +11,7 @@ from pcapi.core.testing import assert_num_queries
 from pcapi.core.testing import override_features
 from pcapi.core.users import factories as users_factories
 from pcapi.core.users import models as users_models
+from pcapi.models import db
 from pcapi.models.validation_status_mixin import ValidationStatus
 from pcapi.routes.backoffice.forms.search import TypeOptions
 
@@ -25,14 +26,20 @@ pytestmark = [
 ]
 
 
-class SearchProUnauthorizedTest(GetEndpointHelper):
+class SearchProTest(search_helpers.SearchHelper, GetEndpointHelper):
+    # This class performs basic search tests by inheritance
     endpoint = "backoffice_web.search_pro"
     needed_permission = perm_models.Permissions.READ_PRO_ENTITY
 
+    def test_default_options(self, legit_user, authenticated_client):
+        legit_user.backoffice_profile.preferences = {"departments": ["04", "05", "06"]}
+        db.session.flush()
 
-class SearchProTest(search_helpers.SearchHelper):
-    # This class performs basic search tests by inheritance
-    endpoint = "backoffice_web.search_pro"
+        response = authenticated_client.get(self.search_path)
+        assert response.status_code == 200
+
+        selected_departments = html_parser.extract_select_options(response.data, "departments", selected_only=True)
+        assert set(selected_departments.keys()) == {"04", "05", "06"}
 
 
 def assert_user_equals(result_card_text: str, expected_user: users_models.User):
@@ -50,6 +57,8 @@ def assert_offerer_equals(result_card_text: str, expected_offerer: offerers_mode
     assert f"{expected_offerer.name.upper()} " in result_card_text
     assert f"Offerer ID : {expected_offerer.id} " in result_card_text
     assert f"SIREN : {expected_offerer.siren} " in result_card_text
+    assert f"Ville : {expected_offerer.city}" in result_card_text
+    assert f"Code postal : {expected_offerer.postalCode}" in result_card_text
     assert "Structure " in result_card_text
     if expected_offerer.isValidated:
         assert " Validée " in result_card_text
@@ -238,6 +247,7 @@ class SearchOffererTest:
         number: int = 12,
         name_part1: list[str] = ("Librairie", "Cinéma", "Théâtre"),
         name_part2: list[str] = ("de la Gare", "de la Plage", "du Centre", "du Centaure"),
+        postal_codes: list[str] = ("03000", "55000", "97100", "60000"),
     ):
         validation_statuses = list(ValidationStatus)
         self.offerers = []
@@ -247,6 +257,7 @@ class SearchOffererTest:
                 siren=str(123456000 + i),
                 validationStatus=validation_statuses[i % len(validation_statuses)],
                 isActive=bool(i % 4),
+                postalCode=postal_codes[i % len(postal_codes)],
             )
             self.offerers.append(offerer)
 
@@ -298,13 +309,37 @@ class SearchOffererTest:
         assert_offerer_equals(cards_text[0], self.offerers[2])  # Théâtre du Centre (most relevant)
         assert_offerer_equals(cards_text[1], self.offerers[11])  # Théâtre du Centaure (very close to the first one)
 
-    @pytest.mark.parametrize("query", ["987654321", "festival@example.com", "Festival de la Montagne"])
-    def test_can_search_offerer_no_result(self, authenticated_client, query):
+    def test_can_search_offerer_by_name_and_department(self, authenticated_client):
+        self._create_offerers()
+
+        response = authenticated_client.get(
+            url_for(self.endpoint, q="Librairie", pro_type=TypeOptions.OFFERER.name, departments=["03", "971"])
+        )
+
+        assert response.status_code == 200
+        cards_text = html_parser.extract_cards_text(response.data)
+        assert len(cards_text) == 2
+        assert_offerer_equals(cards_text[0], self.offerers[0])  # Librairie de la Gare
+        assert_offerer_equals(cards_text[1], self.offerers[6])  # Librairie du Centre
+
+    @pytest.mark.parametrize(
+        "query,departments",
+        [
+            ("987654321", []),
+            ("festival@example.com", []),
+            ("Festival de la Montagne", []),
+            ("Librairie", ["62"]),
+            ("Plage", ["03"]),
+        ],
+    )
+    def test_can_search_offerer_no_result(self, authenticated_client, query, departments):
         # given
         self._create_offerers()
 
         # when
-        response = authenticated_client.get(url_for(self.endpoint, q=query, pro_type=TypeOptions.OFFERER.name))
+        response = authenticated_client.get(
+            url_for(self.endpoint, q=query, pro_type=TypeOptions.OFFERER.name, departments=departments)
+        )
 
         # then
         assert response.status_code == 200
@@ -330,6 +365,7 @@ class SearchVenueTest:
         name_part2_admin: list[str] = ("Alpha", "Beta", "Gamma", "Delta"),
         name_part2_public: list[str] = ("de la Gare", "de la Plage", "du Centre", "du Centaure"),
         domains: list[str] = ("librairie.fr", "cinema.com", "theatre.net"),
+        postal_codes: list[str] = ("74000", "97400", "98000", "80000"),
     ):
         validation_statuses = list(ValidationStatus)
         self.venues = []
@@ -338,6 +374,7 @@ class SearchVenueTest:
                 name=f"{name_part1[i % len(name_part1)]} {name_part2_admin[i % len(name_part2_admin)]}",
                 publicName=f"{name_part1[i % len(name_part1)]} {name_part2_public[i % len(name_part2_public)]}",
                 siret=f"123456{i:03}{i:05}",
+                postalCode=postal_codes[i % len(postal_codes)],
                 isPermanent=bool(i % 2 == 0),
                 contact=None,
                 managingOfferer__validationStatus=validation_statuses[i % len(validation_statuses)],
@@ -446,6 +483,21 @@ class SearchVenueTest:
         assert_venue_equals(sorted_cards_text[1], self.venues[4])  # Cinéma Alpha
         assert_venue_equals(sorted_cards_text[2], self.venues[8])  # Théâtre Alpha
 
+    def test_can_search_venue_by_name_and_department(self, authenticated_client):
+        self._create_venues()
+
+        with assert_num_queries(self.expected_num_queries):
+            response = authenticated_client.get(
+                url_for(self.endpoint, q="cinema", pro_type=TypeOptions.VENUE.name, departments=["974", "80"])
+            )
+
+        assert response.status_code == 200
+        cards_text = html_parser.extract_cards_text(response.data)
+        assert len(cards_text) == 2
+        sorted_cards_text = sorted(cards_text, key=lambda text: re.findall(r"Venue ID : \d+ ", text)[0])
+        assert_venue_equals(sorted_cards_text[0], self.venues[1])  # Cinéma Beta
+        assert_venue_equals(sorted_cards_text[1], self.venues[7])  # Cinéma Delta
+
     def test_can_search_venue_by_public_name(self, authenticated_client):
         # given
         self._create_venues()
@@ -485,14 +537,19 @@ class SearchVenueTest:
         assert len(cards_text) == 1
         assert_venue_equals(cards_text[0], venue_with_num_token if "ONLY_NUM" in cards_text[0] else venue_with_token)
 
-    @pytest.mark.parametrize("query", ["987654321", "festival@example.com", "Festival de la Montagne"])
-    def test_can_search_venue_no_result(self, authenticated_client, query):
+    @pytest.mark.parametrize(
+        "query,departments",
+        [("987654321", []), ("festival@example.com", []), ("Festival de la Montagne", []), ("Plage", ["74", "77"])],
+    )
+    def test_can_search_venue_no_result(self, authenticated_client, query, departments):
         # given
         self._create_venues()
 
         # when
         with assert_num_queries(self.expected_num_queries):
-            response = authenticated_client.get(url_for(self.endpoint, q=query, pro_type=TypeOptions.VENUE.name))
+            response = authenticated_client.get(
+                url_for(self.endpoint, q=query, pro_type=TypeOptions.VENUE.name, departments=departments)
+            )
 
         # then
         assert response.status_code == 200
@@ -504,13 +561,13 @@ class LogsTest:
 
     def test_log_pro_search(self, authenticated_client, caplog):
         # given
-        offerers_factories.OffererFactory(
-            name="Log à rythme",
-        )
+        offerers_factories.OffererFactory(name="Log à rythme", postalCode="02302")
 
         # when
         with caplog.at_level(logging.INFO):
-            response = authenticated_client.get(url_for(self.endpoint, q="rythme", pro_type=TypeOptions.OFFERER.name))
+            response = authenticated_client.get(
+                url_for(self.endpoint, q="rythme", pro_type=TypeOptions.OFFERER.name, departments=["02", "30"])
+            )
 
         # then
         assert response.status_code == 200
@@ -519,6 +576,7 @@ class LogsTest:
             "analyticsSource": "backoffice",
             "searchType": "ProSearch",
             "searchQuery": "rythme",
+            "searchDepartments": "02,30",
             "searchNbResults": 1,
             "searchProType": "offerer",
         }

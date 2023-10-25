@@ -63,3 +63,7 @@ input {
     @extend .bg-dark;
   }
 }
+
+form[name="pro_search"] .pc-field-departments {
+  min-width: 40% !important
+}
