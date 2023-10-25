@@ -112,8 +112,11 @@ CATEGORY_RELATED_FIELD_DESCRIPTION = (
     "Cultural category the offer belongs to. According to the category, some fields may or must be specified."
 )
 CATEGORY_RELATED_FIELD = pydantic_v1.Field(..., description=CATEGORY_RELATED_FIELD_DESCRIPTION)
-DESCRIPTION_FIELD = pydantic_v1.Field(
+DESCRIPTION_FIELD_MODEL = pydantic_v1.Field(
     None, description="Offer description", example="A great book for kids and old kids.", max_length=1000
+)
+DESCRIPTION_FIELD_RESPONSE = pydantic_v1.Field(
+    None, description="Offer description", example="A great book for kids and old kids."
 )
 EXTERNAL_TICKET_OFFICE_URL_FIELD = pydantic_v1.Field(
     None,
@@ -175,7 +178,7 @@ class OfferCreationBase(serialization.ConfiguredBaseModel):
     booking_contact: pydantic_v1.EmailStr | None = BOOKING_CONTACT_FIELD
     booking_email: pydantic_v1.EmailStr | None = BOOKING_EMAIL_FIELD
     category_related_fields: CategoryRelatedFields = CATEGORY_RELATED_FIELD
-    description: str | None = DESCRIPTION_FIELD
+    description: str | None = DESCRIPTION_FIELD_MODEL
     external_ticket_office_url: pydantic_v1.HttpUrl | None = EXTERNAL_TICKET_OFFICE_URL_FIELD
     image: ImageBody | None
     is_duo: bool | None = IS_DUO_BOOKINGS_FIELD
@@ -682,7 +685,7 @@ class OfferResponse(serialization.ConfiguredBaseModel):
     accessibility: AccessibilityResponse
     booking_contact: pydantic_v1.EmailStr | None = BOOKING_CONTACT_FIELD
     booking_email: pydantic_v1.EmailStr | None = BOOKING_EMAIL_FIELD
-    description: str | None = DESCRIPTION_FIELD
+    description: str | None = DESCRIPTION_FIELD_RESPONSE
     external_ticket_office_url: pydantic_v1.HttpUrl | None = EXTERNAL_TICKET_OFFICE_URL_FIELD
     image: ImageResponse | None
     is_duo: bool | None = IS_DUO_BOOKINGS_FIELD
