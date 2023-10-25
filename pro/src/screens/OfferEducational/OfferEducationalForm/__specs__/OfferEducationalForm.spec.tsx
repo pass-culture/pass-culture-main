@@ -1,4 +1,4 @@
-import { screen } from '@testing-library/react'
+import { screen, waitFor } from '@testing-library/react'
 import { Formik } from 'formik'
 
 import { DEFAULT_EAC_FORM_VALUES, Mode } from 'core/OfferEducational'
@@ -37,32 +37,44 @@ const renderOfferEducationalForm = (
   )
 }
 
+const defaultProps: OfferEducationalFormProps = {
+  categories: {
+    educationalCategories: [],
+    educationalSubCategories: [],
+  },
+  userOfferers: [userOffererFactory({})],
+  mode: Mode.CREATION,
+  domainsOptions: [],
+  nationalPrograms: [],
+  isTemplate: false,
+  imageOffer: null,
+  onImageUpload: vi.fn(),
+  onImageDelete: vi.fn(),
+}
+
 describe('OfferEducationalForm', () => {
-  const defaultProps: OfferEducationalFormProps = {
-    categories: {
-      educationalCategories: [],
-      educationalSubCategories: [],
-    },
-    userOfferers: [userOffererFactory({})],
-    mode: Mode.CREATION,
-    domainsOptions: [],
-    nationalPrograms: [],
-    isTemplate: false,
-    imageOffer: null,
-    onImageUpload: vi.fn(),
-    onImageDelete: vi.fn(),
-  }
-  it('should render price details if offer is template', () => {
+  it('should render price details if offer is template', async () => {
     renderOfferEducationalForm({ ...defaultProps, isTemplate: true })
-    expect(screen.getByRole('heading', { name: 'Prix' })).toBeInTheDocument()
+
+    expect(
+      await screen.findByRole('heading', { name: 'Prix' })
+    ).toBeInTheDocument()
   })
-  it('should not render price details if offer is not template', () => {
+  it('should not render price details if offer is not template', async () => {
     renderOfferEducationalForm({ ...defaultProps, isTemplate: false })
+
+    await waitFor(() => {
+      expect(
+        screen.queryByText(
+          /Pour proposer des offres à destination d'un groupe scolaire, vous devez renseigner un lieu pour pouvoir être remboursé./
+        )
+      ).not.toBeInTheDocument()
+    })
     expect(
       screen.queryByRole('heading', { name: 'Prix' })
     ).not.toBeInTheDocument()
   })
-  it('should render dates if offer is template and dates for template ff is active', () => {
+  it('should render dates if offer is template and dates for template ff is active', async () => {
     renderOfferEducationalForm(
       {
         ...defaultProps,
@@ -73,7 +85,7 @@ describe('OfferEducationalForm', () => {
       }
     )
     expect(
-      screen.getByRole('heading', { name: 'Date et heure' })
+      await screen.findByRole('heading', { name: 'Date et heure' })
     ).toBeInTheDocument()
   })
 })
