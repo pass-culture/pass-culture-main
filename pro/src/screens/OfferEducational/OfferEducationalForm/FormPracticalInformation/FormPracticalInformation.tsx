@@ -96,7 +96,8 @@ const FormPracticalInformation = ({
         )
       }
     }
-    void setAddressField()
+    // eslint-disable-next-line @typescript-eslint/no-floating-promises
+    setAddressField()
   }, [values.eventAddress, setFieldValue])
 
   useEffect(() => {
@@ -135,7 +136,8 @@ const FormPracticalInformation = ({
         return setCurrentVenue(null)
       }
     }
-    void setVenue()
+    // eslint-disable-next-line @typescript-eslint/no-floating-promises
+    setVenue()
   }, [currentOfferer, values.eventAddress])
 
   useEffect(() => {

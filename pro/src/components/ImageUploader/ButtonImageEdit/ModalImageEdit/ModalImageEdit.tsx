@@ -55,7 +55,8 @@ const ModalImageEdit = ({
       ? initialOriginalImageUrl
       : initialImageUrl
     if (imageUrl) {
-      void setImageFromUrl(imageUrl)
+      // eslint-disable-next-line @typescript-eslint/no-floating-promises
+      setImageFromUrl(imageUrl)
     }
     setIsReady(true)
   }, [])

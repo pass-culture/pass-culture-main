@@ -115,7 +115,8 @@ const CollectiveOfferType = ({
       ])
       setIsLoading(false)
     }
-    void initializeStates()
+    // eslint-disable-next-line @typescript-eslint/no-floating-promises
+    initializeStates()
   }, [queryOffererId, queryVenueId])
 
   if (isLoading) {

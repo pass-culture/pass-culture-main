@@ -109,7 +109,7 @@ const Offers = ({
 
   const [isOffererValidated, setIsOffererValidated] = useState<boolean>(false)
 
-  useEffect(function fetchData() {
+  useEffect(() => {
     const loadValidatedUserOfferers = async () => {
       const validatedUserOfferers = await getUserValidatedOfferersNamesAdapter()
       if (
@@ -123,7 +123,8 @@ const Offers = ({
     }
     // If user is admin, offer creation button doesn't show
     if (!isAdmin) {
-      void loadValidatedUserOfferers()
+      // eslint-disable-next-line @typescript-eslint/no-floating-promises
+      loadValidatedUserOfferers()
     }
   }, [])
 
@@ -168,7 +169,8 @@ const Offers = ({
   useEffect(() => {
     if (isRefreshingOffers) {
       setSearchFilters(initialSearchFilters)
-      void loadAndUpdateOffers(initialSearchFilters)
+      // eslint-disable-next-line @typescript-eslint/no-floating-promises
+      loadAndUpdateOffers(initialSearchFilters)
     }
   }, [
     isRefreshingOffers,

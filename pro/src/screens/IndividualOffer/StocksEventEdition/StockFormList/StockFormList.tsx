@@ -86,7 +86,8 @@ const StockFormList = ({
     hiddenStocksRef.current = allStocks.filter(
       (stock) => filteredStocks.indexOf(stock) === -1
     )
-    void setFieldValue('stocks', filteredStocks)
+    // eslint-disable-next-line @typescript-eslint/no-floating-promises
+    setFieldValue('stocks', filteredStocks)
   }, [
     currentSortingColumn,
     currentSortingMode,

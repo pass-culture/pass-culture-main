@@ -47,7 +47,8 @@ export const BookingsSummaryScreen = ({
         setBookings(response.payload.bookings)
       }
     }
-    void loadBookings()
+    // eslint-disable-next-line @typescript-eslint/no-floating-promises
+    loadBookings()
   }, [setBookings])
 
   if (bookings?.length === 0) {

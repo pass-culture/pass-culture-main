@@ -23,7 +23,7 @@ const Stocks = (): JSX.Element | null => {
   const notify = useNotification()
 
   useEffect(() => {
-    async function loadData() {
+    async function loadStocks() {
       setIsLoading(true)
       if (offer?.isEvent) {
         try {
@@ -38,7 +38,8 @@ const Stocks = (): JSX.Element | null => {
       }
       setIsLoading(false)
     }
-    void loadData()
+    // eslint-disable-next-line @typescript-eslint/no-floating-promises
+    loadStocks()
   }, [])
 
   // Here we display a spinner because when the router transitions from
