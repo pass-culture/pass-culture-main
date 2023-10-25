@@ -18,7 +18,7 @@ import styles from './StocksSummary.module.scss'
 
 export const StocksSummaryScreen = () => {
   const { offer, subCategories } = useIndividualOfferContext()
-  const [isLoading, setIsLoading] = useState(true)
+  const [isLoading, setIsLoading] = useState(false)
   const [stocks, setStocks] = useState<StocksEvent[]>([])
   const notify = useNotification()
 
