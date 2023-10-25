@@ -19,12 +19,21 @@ query getDemarche($demarcheNumber: Int!, $state: DossierState, $order: Order, $f
         number
         state
         dateDerniereModification
+	demandeur {
+	  ... on PersonneMorale {
+	     siret
+	  }
+	}
         champs {
           ...ChampFragment
         }
         annotations {
           id
           label
+	  stringValue
+	  ... on TextChamp {
+	    value
+	  }
         }
       }
     }
