@@ -3,23 +3,13 @@
 @use "styles/mixins/_fonts.scss" as fonts;
 
 .no-results {
-  align-items: center;
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-  padding: rem.torem(40px) 0;
-  margin-bottom: rem.torem(32px);
-  text-align: center;
+  margin: rem.torem(40px) 0;
 
   &-text {
     @include fonts.title2;
 
-    margin-top: rem.torem(24px);
-
     &-query-container {
       white-space: nowrap;
-      display: block;
-      text-align: center;
 
       .no-results-text-query {
         text-decoration: underline;
@@ -31,8 +21,8 @@
     }
   }
 
-  &-suggestion-text {
-    margin-top: rem.torem(32px);
+  &-suggestion {
+    margin-top: rem.torem(16px);
   }
 
   &-icon {
