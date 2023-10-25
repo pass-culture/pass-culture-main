@@ -53,7 +53,7 @@ export type OfferEducationalFormValues = {
   imageCredit?: string
   nationalProgramId?: string
   isTemplate: boolean
-  begginningDate?: string
+  beginningDate?: string
   endingDate?: string
   hour?: string
 }

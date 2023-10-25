@@ -43,7 +43,7 @@ describe('FormDates', () => {
     renderFormDates(defaultProps, {
       ...DEFAULT_EAC_FORM_VALUES,
       isTemplate: true,
-      begginningDate: '',
+      beginningDate: '',
       endingDate: addYears(new Date(), 4).toString(),
       hour: '',
     })
@@ -57,7 +57,7 @@ describe('FormDates', () => {
     renderFormDates(defaultProps, {
       ...DEFAULT_EAC_FORM_VALUES,
       isTemplate: true,
-      begginningDate: new Date().toString(),
+      beginningDate: new Date().toString(),
       endingDate: '',
       hour: '',
     })
@@ -72,7 +72,7 @@ describe('FormDates', () => {
       {
         ...DEFAULT_EAC_FORM_VALUES,
         isTemplate: true,
-        begginningDate: new Date().toString(),
+        beginningDate: new Date().toString(),
         endingDate: '',
         hour: '',
       }

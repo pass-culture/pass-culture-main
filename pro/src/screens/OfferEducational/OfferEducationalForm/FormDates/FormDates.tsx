@@ -19,9 +19,9 @@ const FormDates = ({
   dateCreated,
 }: FormDatesProps): JSX.Element => {
   const { values } = useFormikContext<OfferEducationalFormValues>()
-  const minBegginningDate = dateCreated ? new Date(dateCreated) : new Date()
-  const minDateForEndingDate = isDateValid(values.begginningDate)
-    ? new Date(values.begginningDate)
+  const minBeginningDate = dateCreated ? new Date(dateCreated) : new Date()
+  const minDateForEndingDate = isDateValid(values.beginningDate)
+    ? new Date(values.beginningDate)
     : new Date()
   return (
     <FormLayout.Section
@@ -34,10 +34,10 @@ const FormDates = ({
       </Callout>
       <FormLayout.Row className={styles.container}>
         <DatePicker
-          name="begginningDate"
+          name="beginningDate"
           label="Date de début"
           disabled={disableForm}
-          minDate={minBegginningDate}
+          minDate={minBeginningDate}
           hideFooter
         />
         <DatePicker
@@ -49,7 +49,7 @@ const FormDates = ({
         />
         <TimePicker
           name="hour"
-          label="Horraire"
+          label="Horaire"
           disabled={disableForm}
           isOptional
           hideFooter
