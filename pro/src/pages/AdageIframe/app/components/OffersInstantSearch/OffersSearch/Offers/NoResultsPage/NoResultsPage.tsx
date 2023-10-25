@@ -1,8 +1,5 @@
 import React from 'react'
 
-import strokeNoResultIcon from 'icons/stroke-no-result.svg'
-import { SvgIcon } from 'ui-kit/SvgIcon/SvgIcon'
-
 import styles from './NoResultsPage.module.scss'
 
 interface NoResultsPageProps {
@@ -14,7 +11,7 @@ export const NoResultsPage = ({ query }: NoResultsPageProps): JSX.Element => {
     'Nous n’avons trouvé aucune offre publiée'
   ) : (
     <>
-      Nous n’avons trouvé aucune offre publiée pour :
+      Nous n’avons trouvé aucune offre publiée pour :{' '}
       <span className={styles['no-results-text-query-container']}>
         “<span className={styles['no-results-text-query']}>{query}</span>”
       </span>
@@ -27,14 +24,8 @@ export const NoResultsPage = ({ query }: NoResultsPageProps): JSX.Element => {
 
   return (
     <div className={styles['no-results']}>
-      <SvgIcon
-        src={strokeNoResultIcon}
-        alt=""
-        className={styles['no-results-icon']}
-        width="156"
-      />
       <p className={styles['no-results-text']}>{noResultText}</p>
-      <p className={styles['no-results-suggestion-text']}>
+      <p className={styles['no-results-suggestion']}>
         {noResultSuggestionText}
       </p>
     </div>
