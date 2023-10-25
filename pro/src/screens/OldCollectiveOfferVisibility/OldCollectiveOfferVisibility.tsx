@@ -104,7 +104,8 @@ const CollectiveOfferVisibility = ({
 
   useEffect(() => {
     if (requestId) {
-      void getOfferRequestInformation()
+      // eslint-disable-next-line @typescript-eslint/no-floating-promises
+      getOfferRequestInformation()
     }
   }, [])
 

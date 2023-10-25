@@ -47,7 +47,8 @@ const StoreProvider = ({
         .then((response) => setFeatures(response))
         .catch(() => setFeatures([]))
     }
-    isDev ? setEmptyInitialData() : void getStoreInitialData()
+    // eslint-disable-next-line @typescript-eslint/no-floating-promises
+    isDev ? setEmptyInitialData() : getStoreInitialData()
   }, [])
 
   useEffect(() => {

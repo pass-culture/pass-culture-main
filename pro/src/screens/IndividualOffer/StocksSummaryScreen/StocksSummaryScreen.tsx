@@ -23,7 +23,7 @@ export const StocksSummaryScreen = () => {
   const notify = useNotification()
 
   useEffect(() => {
-    async function loadData() {
+    async function loadStocks() {
       if (offer?.isEvent) {
         setIsLoading(true)
         try {
@@ -38,7 +38,8 @@ export const StocksSummaryScreen = () => {
         setIsLoading(false)
       }
     }
-    void loadData()
+    // eslint-disable-next-line @typescript-eslint/no-floating-promises
+    loadStocks()
   }, [])
 
   if (offer === null || isLoading) {

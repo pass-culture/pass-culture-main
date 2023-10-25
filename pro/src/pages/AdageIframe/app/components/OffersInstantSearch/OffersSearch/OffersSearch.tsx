@@ -93,8 +93,10 @@ export const OffersSearch = ({
         notification.error(GET_DATA_ERROR_MESSAGE)
       }
     }
-    void getAllCategories()
-    void getAllDomains()
+    // eslint-disable-next-line @typescript-eslint/no-floating-promises
+    getAllCategories()
+    // eslint-disable-next-line @typescript-eslint/no-floating-promises
+    getAllDomains()
   }, [])
 
   const handleSubmit = () => {
@@ -123,10 +125,10 @@ export const OffersSearch = ({
     formik.handleSubmit()
   }
   const [currentSearch, setCurrentSearch] = useState<string | null>(null)
-  const logFiltersOnSearch = (nbHits: number, queryId?: string) => {
+  const logFiltersOnSearch = async (nbHits: number, queryId?: string) => {
     /* istanbul ignore next: TO FIX the current structure make it hard to test, we probably should not mock Offers in OfferSearch tests */
     if (formik.submitCount > 0 || currentSearch !== null) {
-      void apiAdage.logTrackingFilter({
+      await apiAdage.logTrackingFilter({
         iframeFrom: removeParamsFromUrl(location.pathname),
         resultNumber: nbHits,
         queryId: queryId ?? null,

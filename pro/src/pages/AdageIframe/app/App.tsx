@@ -72,7 +72,8 @@ export const App = (): JSX.Element => {
       .finally(() => {
         setIsLoading(false)
         if (LOGS_DATA) {
-          void apiAdage.logCatalogView({
+          // eslint-disable-next-line @typescript-eslint/no-floating-promises
+          apiAdage.logCatalogView({
             iframeFrom: removeParamsFromUrl(location.pathname),
             source: siret || venueId ? 'partnersMap' : 'homepage',
           })

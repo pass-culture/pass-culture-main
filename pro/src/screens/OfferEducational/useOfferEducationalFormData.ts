@@ -60,7 +60,8 @@ const useOfferEducationalFormData = (
 
   useEffect(() => {
     if (!isReady) {
-      void loadData(offer)
+      // eslint-disable-next-line @typescript-eslint/no-floating-promises
+      loadData(offer)
     }
   }, [isReady, offer?.id, loadData, history])
 

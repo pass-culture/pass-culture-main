@@ -49,7 +49,8 @@ const AddressSelect = ({ description, suggestionLimit }: AddressProps) => {
         handleAddressSelect(setFieldValue, undefined, searchField)
       }
     }
-    void onSearchFieldChange()
+    // eslint-disable-next-line @typescript-eslint/no-floating-promises
+    onSearchFieldChange()
   }, [searchField.value])
 
   // TODO we should not use useEffect for this but an event handler on the input

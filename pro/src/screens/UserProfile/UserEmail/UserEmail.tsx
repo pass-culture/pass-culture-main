@@ -36,7 +36,8 @@ const UserEmail = ({
   }
 
   useEffect(() => {
-    void getPendingEmailRequest()
+    // eslint-disable-next-line @typescript-eslint/no-floating-promises
+    getPendingEmailRequest()
   }, [])
 
   return (

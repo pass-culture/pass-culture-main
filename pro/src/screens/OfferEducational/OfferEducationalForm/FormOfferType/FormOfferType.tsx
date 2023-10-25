@@ -69,7 +69,8 @@ const FormOfferType = ({
         )
       )
     }
-    void preFillSubCategoryField()
+    // eslint-disable-next-line @typescript-eslint/no-floating-promises
+    preFillSubCategoryField()
   }, [values.category, setFieldValue, subCategories, values.subCategory])
 
   let categoriesOptions = categories.map((item) => ({

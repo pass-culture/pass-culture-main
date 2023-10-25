@@ -38,7 +38,8 @@ const SirenInput = ({
         onValidSiren(field.value)
       }
     }
-    void format()
+    // eslint-disable-next-line @typescript-eslint/no-floating-promises
+    format()
   }, [meta.touched, meta.error, field.value])
 
   return (

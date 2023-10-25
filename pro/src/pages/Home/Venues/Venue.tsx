@@ -206,7 +206,8 @@ const Venue = ({
     }
 
     if (isStatOpen && !isStatLoaded) {
-      void updateStats()
+      // eslint-disable-next-line @typescript-eslint/no-floating-promises
+      updateStats()
     }
   }, [venueId, isStatOpen, isStatLoaded, initialOpenState])
 

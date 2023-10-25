@@ -26,11 +26,11 @@ export const Icons = () => {
   const [fillColorInput, setFillColorInput] = useState('#000000')
   const [backgroundColorInput, setBackgroundColorInput] = useState('#ffffff')
 
-  const onClick: React.MouseEventHandler<HTMLDivElement> = (e) => {
+  const onClick = async (e: React.MouseEvent<HTMLDivElement, MouseEvent>) => {
     e.persist()
     const target = e.currentTarget as Element
 
-    void navigator.clipboard.writeText(target.getAttribute('data-src') ?? '')
+    await navigator.clipboard.writeText(target.getAttribute('data-src') ?? '')
 
     target.classList.add(styles['copy-to-clipboard'])
     const timeoutId = setTimeout(() => {

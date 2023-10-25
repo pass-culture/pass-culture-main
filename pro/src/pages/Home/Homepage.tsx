@@ -93,7 +93,8 @@ const Homepage = (): JSX.Element => {
     }
 
     if (selectedOffererId) {
-      void loadOfferer(selectedOffererId)
+      // eslint-disable-next-line @typescript-eslint/no-floating-promises
+      loadOfferer(selectedOffererId)
     }
   }, [selectedOffererId])
 
@@ -105,15 +106,20 @@ const Homepage = (): JSX.Element => {
       setReceivedOffererNames(offererNames)
     }
 
-    void loadOffererNames()
+    // eslint-disable-next-line @typescript-eslint/no-floating-promises
+    loadOffererNames()
   }, [])
 
   useEffect(() => {
-    if (remoteConfigData != null) {
-      void api.postProFlags({
-        firebase: remoteConfigData,
-      })
+    async function logProFlags() {
+      if (remoteConfigData != null) {
+        await api.postProFlags({
+          firebase: remoteConfigData,
+        })
+      }
     }
+    // eslint-disable-next-line @typescript-eslint/no-floating-promises
+    logProFlags()
   }, [remoteConfigData])
 
   return (

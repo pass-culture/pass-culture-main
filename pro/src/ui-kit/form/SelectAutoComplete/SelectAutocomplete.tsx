@@ -78,7 +78,8 @@ const SelectAutocomplete = ({
       onReset()
     }
     if (isOpen && resetOnOpen && searchField.value !== '') {
-      void resetSearchField()
+      // eslint-disable-next-line @typescript-eslint/no-floating-promises
+      resetSearchField()
     }
   }, [isOpen])
 
