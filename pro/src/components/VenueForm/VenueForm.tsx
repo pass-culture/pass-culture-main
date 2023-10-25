@@ -104,7 +104,8 @@ const VenueForm = ({
         response.payload.isOffererEligibleToEducationalOffer
       )
     }
-    void loadCanOffererCreateCollectiveOffer()
+    // eslint-disable-next-line @typescript-eslint/no-floating-promises
+    loadCanOffererCreateCollectiveOffer()
   }, [])
 
   return (

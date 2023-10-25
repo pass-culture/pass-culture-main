@@ -97,7 +97,8 @@ export function IndividualOfferContextProvider({
       }
     }
     if (offerId) {
-      void loadOffer()
+      // eslint-disable-next-line @typescript-eslint/no-floating-promises
+      loadOffer()
     } else {
       setOffer(null)
     }
@@ -138,7 +139,8 @@ export function IndividualOfferContextProvider({
       setIsLoading(false)
     }
     if (!offerId || offer !== null) {
-      void loadData()
+      // eslint-disable-next-line @typescript-eslint/no-floating-promises
+      loadData()
     }
   }, [offerId, offerOfferer])
 

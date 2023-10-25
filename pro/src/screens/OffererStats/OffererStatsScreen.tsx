@@ -58,7 +58,8 @@ const OffererStatsScreen = ({ offererOptions }: OffererStatsScreenProps) => {
         setVenueOptions([])
       }
     }
-    void loadData()
+    // eslint-disable-next-line @typescript-eslint/no-floating-promises
+    loadData()
   }, [selectedOffererId])
 
   useEffect(() => {
@@ -77,7 +78,8 @@ const OffererStatsScreen = ({ offererOptions }: OffererStatsScreenProps) => {
       }
       setIframeUrl(response.dashboardUrl)
     }
-    void updateDashboardUrl(selectedVenueId)
+    // eslint-disable-next-line @typescript-eslint/no-floating-promises
+    updateDashboardUrl(selectedVenueId)
   }, [selectedVenueId, selectedOffererId])
 
   return (

@@ -95,7 +95,8 @@ const IndividualOfferType = (): JSX.Element | null => {
         setIsLoading(false)
       }
     }
-    void loadData()
+    // eslint-disable-next-line @typescript-eslint/no-floating-promises
+    loadData()
   }, [queryVenueId, isCategorySelectionActive, queryOffererId])
 
   const venueTypeMostUsedSubcategories =

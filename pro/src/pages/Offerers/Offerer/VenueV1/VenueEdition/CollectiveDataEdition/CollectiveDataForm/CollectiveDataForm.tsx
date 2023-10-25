@@ -173,11 +173,15 @@ const CollectiveDataForm = ({
   }, [venueCollectiveData])
 
   useEffect(() => {
-    if (adageVenueCollectiveData && categories) {
-      void formik.setValues(
-        extractInitialValuesFromVenue(adageVenueCollectiveData, categories)
-      )
+    async function setExtractInitialValuesFromVenue() {
+      if (adageVenueCollectiveData && categories) {
+        await formik.setValues(
+          extractInitialValuesFromVenue(adageVenueCollectiveData, categories)
+        )
+      }
     }
+    // eslint-disable-next-line @typescript-eslint/no-floating-promises
+    setExtractInitialValuesFromVenue()
   }, [adageVenueCollectiveData, categories])
 
   const handleCategoryChange = useCallback(

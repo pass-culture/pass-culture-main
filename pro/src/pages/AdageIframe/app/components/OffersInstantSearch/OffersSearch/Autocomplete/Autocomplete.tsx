@@ -147,11 +147,11 @@ export const Autocomplete = ({
     enableAutocompleteAdage && void loadData()
   }, [])
 
-  const logAutocompleteSuggestionClick = (
+  const logAutocompleteSuggestionClick = async (
     suggestionType: SuggestionType,
     suggestionValue: string
   ) => {
-    void apiAdage.logTrackingAutocompleteSuggestionClick({
+    await apiAdage.logTrackingAutocompleteSuggestionClick({
       iframeFrom: removeParamsFromUrl(location.pathname),
       suggestionType,
       suggestionValue,

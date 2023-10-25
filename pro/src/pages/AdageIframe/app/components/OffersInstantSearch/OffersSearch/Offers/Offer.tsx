@@ -52,7 +52,7 @@ const Offer = ({
     offer.isTemplate &&
     adageUser.role !== AdageFrontRoles.READONLY
 
-  const openOfferDetails = (
+  const openOfferDetails = async (
     offer: HydratedCollectiveOffer | HydratedCollectiveOfferTemplate
   ) => {
     setDisplayDetails(!displayDetails)
@@ -61,13 +61,13 @@ const Offer = ({
     }
 
     if (!offer.isTemplate) {
-      void apiAdage.logOfferDetailsButtonClick({
+      await apiAdage.logOfferDetailsButtonClick({
         iframeFrom: removeParamsFromUrl(location.pathname),
         stockId: offer.stock.id,
         queryId: queryId,
       })
     } else {
-      void apiAdage.logOfferTemplateDetailsButtonClick({
+      await apiAdage.logOfferTemplateDetailsButtonClick({
         iframeFrom: removeParamsFromUrl(location.pathname),
         offerId: offer.id,
         queryId: queryId,

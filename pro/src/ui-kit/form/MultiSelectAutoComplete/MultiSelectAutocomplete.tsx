@@ -59,9 +59,13 @@ const MultiSelectAutocomplete = ({
   }, [options])
 
   useEffect(() => {
-    if (!isOpen && searchField.value !== '') {
-      void setFieldValue(`search-${name}`, '', false)
+    async function setSearch() {
+      if (!isOpen && searchField.value !== '') {
+        await setFieldValue(`search-${name}`, '', false)
+      }
     }
+    // eslint-disable-next-line @typescript-eslint/no-floating-promises
+    setSearch()
   }, [isOpen])
 
   useEffect(() => {

@@ -34,7 +34,8 @@ const SignupValidation = (): JSX.Element | null => {
         }
       }
     }
-    void validateTokenAndRedirect()
+    // eslint-disable-next-line @typescript-eslint/no-floating-promises
+    validateTokenAndRedirect()
   }, [token, currentUser?.id])
 
   return urlToRedirect ? <Navigate to={urlToRedirect} replace /> : null

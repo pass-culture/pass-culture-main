@@ -139,7 +139,8 @@ const OfferEducationalForm = ({
   )
 
   useEffect(() => {
-    void onOffererChange(values.offererId)
+    // eslint-disable-next-line @typescript-eslint/no-floating-promises
+    onOffererChange(values.offererId)
   }, [])
 
   return (
