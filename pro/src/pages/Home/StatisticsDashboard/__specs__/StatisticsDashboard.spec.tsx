@@ -20,7 +20,10 @@ const renderStatisticsDashboard = (
   props: Partial<StatisticsDashboardProps> = {}
 ) =>
   renderWithProviders(
-    <StatisticsDashboard offerer={defautGetOffererResponseModel} {...props} />
+    <StatisticsDashboard
+      offerer={{ ...defautGetOffererResponseModel, isValidated: true }}
+      {...props}
+    />
   )
 
 describe('StatisticsDashboard', () => {
