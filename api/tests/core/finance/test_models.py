@@ -86,7 +86,7 @@ class CustomReimbursementRuleTest:
         assert not rule.is_relevant(booking2)
 
     def test_apply_with_amount(self):
-        rule = factories.CustomReimbursementRuleFactory(amountInEuroCents=1000)
+        rule = factories.CustomReimbursementRuleFactory(amount=1000)
         single = bookings_factories.BookingFactory(quantity=1, amount=12)
         double = bookings_factories.BookingFactory(quantity=2, amount=12)
 

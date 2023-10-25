@@ -30,7 +30,6 @@ class AddCustomOfferReimbursementRuleTest:
         rule = finance_models.CustomReimbursementRule.query.one()
         assert rule.offer.id == offer_id
         assert rule.amount == 1234
-        assert rule.amountInEuroCents == 1234
 
     @clean_database
     def test_warnings(self, app):
@@ -76,7 +75,6 @@ class AddCustomOfferReimbursementRuleTest:
         rule = finance_models.CustomReimbursementRule.query.one()
         assert rule.offer.id == offer_id
         assert rule.amount == 1234
-        assert rule.amountInEuroCents == 1234
 
 
 @clean_database
