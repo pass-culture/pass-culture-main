@@ -610,6 +610,41 @@ class ListOffersTest(GetEndpointHelper):
         rows = html_parser.extract_table_rows(response.data)
         assert len(rows) == 0
 
+    # === Advanced search: error cases ===
+
+    def test_list_offers_advanced_search_by_invalid_field(self, authenticated_client, offers):
+        query_args = {
+            "search-0-search_field": "CATEGRY",
+            "search-0-operator": "IN",
+            "search-0-category": categories.LIVRE.id,
+        }
+        with assert_num_queries(2):  # only session + current user, before form validation
+            response = authenticated_client.get(url_for(self.endpoint, **query_args))
+            assert response.status_code == 400
+
+        assert html_parser.extract_alert(response.data) == "Le filtre CATEGRY est invalide."
+
+    def test_list_offers_advanced_search_by_category_and_missing_date(self, authenticated_client, offers):
+        query_args = {
+            "search-0-search_field": "CATEGORY",
+            "search-0-operator": "IN",
+            "search-0-category": categories.LIVRE.id,
+            "search-2-search_field": "CREATION_DATE",
+            "search-2-operator": "GREATER_THAN_OR_EQUAL_TO",
+            "search-4-search_field": "BOOKING_LIMIT_DATE",
+            "search-4-operator": "LESS_THAN",
+        }
+        with assert_num_queries(2):  # only session + current user, before form validation
+            response = authenticated_client.get(url_for(self.endpoint, **query_args))
+            assert response.status_code == 400
+
+        assert (
+            html_parser.extract_alert(response.data)
+            == "Le filtre « Date de création » est vide. Le filtre « Date limite de réservation » est vide."
+        )
+
+    # === Result content ===
+
     @pytest.mark.parametrize("first_quantity,second_quantity,expected", [(10, 7, "12 / 17"), (5, 7, "7 / 12")])
     def test_list_offers_check_stock_limited(self, authenticated_client, first_quantity, second_quantity, expected):
         offer = offers_factories.OfferFactory()
