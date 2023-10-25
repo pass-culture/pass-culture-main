@@ -43,10 +43,6 @@ const renderStockEventScreen = async (
     categories: [],
     subcategories: [],
   })
-  vi.spyOn(api, 'getStocks').mockResolvedValue({
-    stocks: apiOffer.stocks,
-    stock_count: 2,
-  })
   vi.spyOn(api, 'getVenues').mockResolvedValue({ venues: [] })
   vi.spyOn(api, 'listOfferersNames').mockResolvedValue({ offerersNames: [] })
   vi.spyOn(api, 'getStocks').mockResolvedValue({
@@ -339,7 +335,7 @@ describe('screens:StocksEventEdition', () => {
     expect(api.deleteStock).toHaveBeenCalledTimes(1)
   })
 
-  it('should display new stocks banner when vcreating new stock', async () => {
+  it('should display new stocks notification when creating new stock', async () => {
     vi.spyOn(api, 'upsertStocks').mockResolvedValueOnce({
       stocks: apiStocks,
     })
@@ -361,6 +357,39 @@ describe('screens:StocksEventEdition', () => {
     expect(
       screen.getByText('1 nouvelle occurrence a été ajoutée')
     ).toBeInTheDocument()
+  })
+
+  it('should only call api with edited stocks', async () => {
+    vi.spyOn(api, 'upsertStocks').mockResolvedValueOnce({
+      stocks: [],
+    })
+    await renderStockEventScreen(apiOffer, [
+      individualGetOfferStockResponseModelFactory({ id: 42 }),
+      individualGetOfferStockResponseModelFactory({
+        id: 666,
+        quantity: 642,
+      }),
+    ])
+
+    await userEvent.type(screen.getByDisplayValue('642'), '31')
+
+    await userEvent.click(screen.getByText('Enregistrer les modifications'))
+
+    expect(
+      screen.getByText('Vos modifications ont bien été enregistrées')
+    ).toBeInTheDocument()
+    expect(api.upsertStocks).toHaveBeenCalledWith({
+      offerId: apiOffer.id,
+      stocks: [
+        {
+          beginningDatetime: '2021-10-15T12:00:00Z',
+          bookingLimitDatetime: '2021-09-15T21:59:59Z',
+          id: 666,
+          priceCategoryId: 2,
+          quantity: 64231,
+        },
+      ],
+    })
   })
 
   it('should not allow user to add a date for a synchronized offer', async () => {

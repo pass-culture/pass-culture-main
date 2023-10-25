@@ -1,6 +1,3 @@
-import { StocksEvent } from 'components/StocksEventList/StocksEventList'
-import { serializeStockEvents } from 'pages/IndividualOfferWizard/Stocks/serializeStockEvents'
-
 import { serializeStockEventEdition } from './adapters/serializers'
 import upsertStocksEventAdapter from './adapters/upsertStocksEventAdapter'
 import { StockEventFormValues, StocksEventFormik } from './StockFormList/types'
@@ -9,8 +6,7 @@ export const submitToApi = async (
   allStockValues: StockEventFormValues[],
   offerId: number,
   departmentCode: string,
-  setErrors: StocksEventFormik['setErrors'],
-  setStocks: (stocks: StocksEvent[]) => void
+  setErrors: StocksEventFormik['setErrors']
 ) => {
   const {
     isOk,
@@ -24,6 +20,4 @@ export const submitToApi = async (
     setErrors({ stocks: payload.errors })
     throw new Error(upsertStocksMessage)
   }
-
-  setStocks(serializeStockEvents(payload.stocks))
 }
