@@ -7,6 +7,7 @@ import { getIndividualOfferAdapter } from 'core/Offers/adapters'
 import { IndividualOffer } from 'core/Offers/types'
 import { GET_DATA_ERROR_MESSAGE } from 'core/shared'
 import { IndividualOfferVenueItem } from 'core/Venue/types'
+import useActiveFeature from 'hooks/useActiveFeature'
 import useNotification from 'hooks/useNotification'
 import Spinner from 'ui-kit/Spinner/Spinner'
 
@@ -25,6 +26,7 @@ export interface IndividualOfferContextValues {
   venueId?: number | undefined
   offerOfferer?: OffererName | null
   showVenuePopin: Record<string, boolean>
+  showFirstNonFreeOfferPopin: boolean
 }
 
 export const IndividualOfferContext =
@@ -38,6 +40,7 @@ export const IndividualOfferContext =
     venueList: [],
     showVenuePopin: {},
     setSubcategory: () => {},
+    showFirstNonFreeOfferPopin: false,
   })
 
 export const useIndividualOfferContext = () => {
@@ -61,7 +64,9 @@ export function IndividualOfferContextProvider({
 }: IndividualOfferContextProviderProps) {
   const notify = useNotification()
   const navigate = useNavigate()
-
+  const isNewBankDetailsJourneyEnabled = useActiveFeature(
+    'WIP_ENABLE_NEW_BANK_DETAILS_JOURNEY'
+  )
   const [isLoading, setIsLoading] = useState<boolean>(true)
   const [offerOfferer, setOfferOfferer] = useState<OffererName | null>(null)
   const [venueId, setVenueId] = useState<number>()
@@ -77,6 +82,8 @@ export function IndividualOfferContextProvider({
   const [showVenuePopin, setShowVenuePopin] = useState<Record<string, boolean>>(
     {}
   )
+  const [showFirstNonFreeOfferPopin, setShowFirstNonFreeOfferPopin] =
+    useState<boolean>(false)
 
   const setOffer = (offer: IndividualOffer | null) => {
     setOfferState(offer)
@@ -117,12 +124,23 @@ export function IndividualOfferContextProvider({
         setSubCategories(response.payload.categoriesData.subCategories)
         setOffererNames(response.payload.offererNames)
         setVenueList(response.payload.venueList)
-        const venuesPopinDisplaying: Record<string, boolean> = {}
-        response.payload.venueList.forEach((v) => {
-          venuesPopinDisplaying[v.id] =
-            !v.hasCreatedOffer && v.hasMissingReimbursementPoint
-        })
-        setShowVenuePopin(venuesPopinDisplaying)
+
+        if (isNewBankDetailsJourneyEnabled) {
+          // TODO: check venue.hasNonFreeOfferCreated
+          const venueHasCreatedOffer = response.payload.venueList.some(
+            (venue) => {
+              return venue.hasCreatedOffer
+            }
+          )
+          setShowFirstNonFreeOfferPopin(venueHasCreatedOffer)
+        } else {
+          const venuesPopinDisplaying: Record<string, boolean> = {}
+          response.payload.venueList.forEach((v) => {
+            venuesPopinDisplaying[v.id] =
+              !v.hasCreatedOffer && v.hasMissingReimbursementPoint
+          })
+          setShowVenuePopin(venuesPopinDisplaying)
+        }
         setSubcategory(
           response.payload.categoriesData.subCategories.find(
             (s) => s.id === querySubcategoryId
@@ -161,6 +179,7 @@ export function IndividualOfferContextProvider({
         venueId,
         offerOfferer,
         showVenuePopin: showVenuePopin,
+        showFirstNonFreeOfferPopin: showFirstNonFreeOfferPopin,
         subcategory,
         setSubcategory,
       }}

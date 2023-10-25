@@ -1,6 +1,7 @@
 import React, { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 
+import { api } from 'apiClient/api'
 import RedirectDialog from 'components/Dialog/RedirectDialog'
 import { OFFER_WIZARD_STEP_IDS } from 'components/IndividualOfferNavigation/constants'
 import { OfferAppPreview } from 'components/OfferAppPreview'
@@ -50,6 +51,7 @@ const SummaryScreen = () => {
     venueId,
     offerOfferer,
     showVenuePopin,
+    showFirstNonFreeOfferPopin,
     offer,
     subCategories,
   } = useIndividualOfferContext()
@@ -85,10 +87,26 @@ const SummaryScreen = () => {
         setOffer && setOffer(response.payload)
       }
 
-      if (showVenuePopin[venueId || '']) {
-        setDisplayRedirectDialog(true)
+      if (isNewBankDetailsJourneyEnabled) {
+        const isNonFreeOffer = response.payload?.stocks.some((stock) => {
+          return stock.price > 0
+        })
+
+        if (isNonFreeOffer && !showFirstNonFreeOfferPopin && offerOfferer?.id) {
+          const offererResponse = await api.getOfferer(offerOfferer?.id)
+          if (
+            offererResponse.hasPendingBankAccount === false &&
+            offererResponse.hasValidBankAccount === false
+          ) {
+            setDisplayRedirectDialog(true)
+          }
+        }
       } else {
-        navigate(offerConfirmationStepUrl)
+        if (showVenuePopin[venueId || '']) {
+          setDisplayRedirectDialog(true)
+        } else {
+          navigate(offerConfirmationStepUrl)
+        }
       }
     } else {
       notification.error("Une erreur s'est produite, veuillez réessayer")
