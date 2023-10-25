@@ -21,6 +21,7 @@ import HomepageBreadcrumb, {
   STEP_ID_HOME_STATS,
   STEP_ID_OFFERERS,
 } from './HomepageBreadcrumb'
+import { OffererBanners } from './Offerers/OffererBanners'
 import Offerers from './Offerers/Offerers'
 import { OffererStats } from './OffererStats'
 import { ProfileAndSupport } from './ProfileAndSupport'
@@ -142,7 +143,13 @@ const Homepage = (): JSX.Element => {
         />
 
         {isStatisticsDashboardEnabled && selectedOfferer !== null && (
-          <StatisticsDashboard offerer={selectedOfferer} />
+          <>
+            <OffererBanners
+              isUserOffererValidated={isUserOffererValidated}
+              selectedOfferer={selectedOfferer}
+            />
+            <StatisticsDashboard offerer={selectedOfferer} />
+          </>
         )}
 
         <section className="h-section">
