@@ -1,6 +1,4 @@
 import logging
-from typing import Literal
-from typing import TYPE_CHECKING
 
 from pcapi import settings
 from pcapi.connectors.dms import api as api_dms
@@ -10,9 +8,6 @@ from pcapi.domain.bank_information import CannotRegisterBankInformation
 
 
 logger = logging.getLogger(__name__)
-
-if TYPE_CHECKING:
-    from pcapi.connectors.dms.serializer import ApplicationDetail
 
 
 FIELD_NAME_TO_INTERNAL_NAME_MAPPING = {
@@ -42,15 +37,6 @@ def parse_raw_bank_info_data(data: dict, procedure_version: int) -> dict:
         "dossier_id": data["id"],
         "application_id": data["number"],
     }
-    for field in data["champs"]:
-        for mapped_fields, internal_field in FIELD_NAME_TO_INTERNAL_NAME_MAPPING.items():
-            if field["label"] in mapped_fields:
-                result[internal_field] = field["value"]
-            elif field["id"] == DMS_TOKEN_ID:
-                result["dms_token"] = _remove_dms_pro_prefix(field["value"].strip("  "))
-            elif field["id"] == "Q2hhbXAtNzgyODAw" and procedure_version in (2, 3):
-                result["siret"] = field["etablissement"]["siret"]
-                result["siren"] = field["etablissement"]["siret"][:9]
 
     result["error_annotation_id"] = None
     result["venue_url_annotation_id"] = None
@@ -60,6 +46,49 @@ def parse_raw_bank_info_data(data: dict, procedure_version: int) -> dict:
                 result["error_annotation_id"] = annotation["id"]
             case "URL du lieu":
                 result["venue_url_annotation_id"] = annotation["id"]
+
+    match procedure_version:
+        case 2 | 3:
+            _parse_v2_v3_content(data, result)
+        case 4:
+            _parse_v4_content(data, result)
+        case 5:
+            _parse_v5_content(data, result)
+
+    return result
+
+
+def _parse_v2_v3_content(data: dict, result: dict) -> dict:
+    for field in data["champs"]:
+        for mapped_fields, internal_field in FIELD_NAME_TO_INTERNAL_NAME_MAPPING.items():
+            if field["label"] in mapped_fields:
+                result[internal_field] = field["value"]
+            elif field["id"] == DMS_TOKEN_ID:
+                result["dms_token"] = _remove_dms_pro_prefix(field["value"].strip("  "))
+            elif field["id"] == "Q2hhbXAtNzgyODAw":
+                result["siret"] = field["etablissement"]["siret"]
+                result["siren"] = field["etablissement"]["siret"][:9]
+    return result
+
+
+def _parse_v4_content(data: dict, result: dict) -> dict:
+    for field in data["champs"]:
+        for mapped_fields, internal_field in FIELD_NAME_TO_INTERNAL_NAME_MAPPING.items():
+            if field["label"] in mapped_fields:
+                result[internal_field] = field["value"]
+            elif field["id"] == DMS_TOKEN_ID:
+                result["dms_token"] = _remove_dms_pro_prefix(field["value"].strip("  "))
+    return result
+
+
+def _parse_v5_content(data: dict, result: dict) -> dict:
+    for field in data["champs"]:
+        for mapped_fields, internal_field in FIELD_NAME_TO_INTERNAL_NAME_MAPPING.items():
+            if field["label"] in mapped_fields:
+                result[internal_field] = field["value"]
+    result["siret"] = data["demandeur"]["siret"]
+    result["siren"] = result["siret"][:9]
+
     return result
 
 
@@ -67,16 +96,6 @@ def _remove_dms_pro_prefix(dms_token: str) -> str:
     if dms_token.startswith(DMS_TOKEN_PRO_PREFIX):
         return dms_token[len(DMS_TOKEN_PRO_PREFIX) :]
     return dms_token
-
-
-def ds_bank_information_application_details_from_raw_data(
-    raw_data: dict, procedure_version: int
-) -> "ApplicationDetail":
-    from pcapi.connectors.dms.serializer import ApplicationDetail
-
-    data = parse_raw_bank_info_data(raw_data, procedure_version)
-
-    return ApplicationDetail.parse_obj({"application_type": procedure_version, **data})
 
 
 def get_status_from_demarches_simplifiees_application_state_v2(
