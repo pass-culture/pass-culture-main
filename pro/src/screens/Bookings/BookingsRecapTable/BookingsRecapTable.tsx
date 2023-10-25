@@ -149,12 +149,14 @@ const BookingsRecapTable = <
         />
       </div>
 
-      <Header
-        bookingsRecapFilteredLength={filteredBookings.length}
-        isLoading={isLoading}
-        queryBookingId={defaultBookingId}
-        resetBookings={resetBookings}
-      />
+      {filteredBookings.length !== 0 && (
+        <Header
+          bookingsRecapFilteredLength={filteredBookings.length}
+          isLoading={isLoading}
+          queryBookingId={defaultBookingId}
+          resetBookings={resetBookings}
+        />
+      )}
 
       {audience === Audience.INDIVIDUAL &&
         areIndividualBookings(filteredBookings) && (

@@ -1,6 +1,9 @@
 import React from 'react'
 
+import fullRefresh from 'icons/full-refresh.svg'
 import strokeSearchIcon from 'icons/stroke-search.svg'
+import { Button } from 'ui-kit'
+import { ButtonVariant } from 'ui-kit/Button/types'
 import { SvgIcon } from 'ui-kit/SvgIcon/SvgIcon'
 
 import styles from './NoFilteredBookings.module.scss'
@@ -11,18 +14,26 @@ interface NoFilteredBookingsProps {
 
 export const NoFilteredBookings = ({
   resetFilters,
-}: NoFilteredBookingsProps) => (
-  <div className={styles['no-filtered-bookings-wrapper']}>
+}: NoFilteredBookingsProps): JSX.Element => (
+  <div className={styles['search-no-results']}>
     <SvgIcon
       src={strokeSearchIcon}
       alt=""
-      className={styles['nfb-icon']}
+      className={styles['search-no-results-icon']}
       width="124"
     />
-    <span>Aucune réservation trouvée pour votre recherche</span>
-    <span>Vous pouvez modifier votre recherche ou</span>
-    <button onClick={resetFilters} type="button">
-      afficher toutes les réservations
-    </button>
+    <p className={styles['search-no-results-title4']}>
+      Aucune réservation trouvée pour votre recherche
+    </p>
+    <p className={styles['search-no-results-text']}>
+      Vous pouvez modifier vos filtres et lancer une nouvelle recherche ou
+    </p>
+    <Button
+      variant={ButtonVariant.TERNARYPINK}
+      icon={fullRefresh}
+      onClick={resetFilters}
+    >
+      Réinitialiser les filtres
+    </Button>
   </div>
 )

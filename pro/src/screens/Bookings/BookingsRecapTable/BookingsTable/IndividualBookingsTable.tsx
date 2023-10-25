@@ -97,181 +97,183 @@ export const IndividualBookingsTable = ({
 
   return (
     <div className={styles['table-wrapper']}>
-      <table className={styles['table']}>
-        <thead>
-          <tr>
-            <th
-              scope="col"
-              className={cn(
-                styles['table-header'],
-                styles['column-offer-name']
-              )}
-            >
-              <span>Nom de l’offre</span>
-
-              <SortArrow
-                onClick={() =>
-                  onColumnHeaderClick(
-                    IndividualBookingsSortingColumn.OFFER_NAME
-                  )
-                }
-                sortingMode={
-                  currentSortingColumn ===
-                  IndividualBookingsSortingColumn.OFFER_NAME
-                    ? currentSortingMode
-                    : SortingMode.NONE
-                }
-              />
-            </th>
-
-            <th
-              scope="col"
-              className={cn(
-                styles['table-header'],
-                styles['column-booking-duo']
-              )}
-            ></th>
-
-            <th
-              scope="col"
-              className={cn(
-                styles['table-header'],
-                styles['column-beneficiary']
-              )}
-            >
-              <span>Bénéficiaire</span>
-
-              <SortArrow
-                onClick={() =>
-                  onColumnHeaderClick(
-                    IndividualBookingsSortingColumn.BENEFICIARY_NAME
-                  )
-                }
-                sortingMode={
-                  currentSortingColumn ===
-                  IndividualBookingsSortingColumn.BENEFICIARY_NAME
-                    ? currentSortingMode
-                    : SortingMode.NONE
-                }
-              />
-            </th>
-
-            <th
-              scope="col"
-              className={cn(
-                styles['table-header'],
-                styles['column-booking-date']
-              )}
-            >
-              <span>Réservation</span>
-
-              <SortArrow
-                onClick={() =>
-                  onColumnHeaderClick(
-                    IndividualBookingsSortingColumn.BOOKING_DATE
-                  )
-                }
-                sortingMode={
-                  currentSortingColumn ===
-                  IndividualBookingsSortingColumn.BOOKING_DATE
-                    ? currentSortingMode
-                    : SortingMode.NONE
-                }
-              />
-            </th>
-
-            <th
-              scope="col"
-              className={cn(
-                styles['table-header'],
-                styles['column-booking-token']
-              )}
-            >
-              Contremarque
-            </th>
-
-            <th
-              scope="col"
-              className={cn(
-                styles['table-header'],
-                styles['column-booking-status']
-              )}
-            >
-              <FilterByBookingStatus
-                bookingStatuses={bookingStatuses}
-                bookingsRecap={bookings}
-                updateGlobalFilters={updateGlobalFilters}
-                audience={Audience.INDIVIDUAL}
-              />
-            </th>
-          </tr>
-        </thead>
-
-        <tbody className={styles['table-body']}>
-          {currentPageItems.map((booking, index) => (
-            <tr className={styles['table-row']} key={index}>
-              <td
+      {currentPageItems.length !== 0 && (
+        <table className={styles['table']}>
+          <thead>
+            <tr>
+              <th
+                scope="col"
                 className={cn(
-                  styles['table-cell'],
+                  styles['table-header'],
                   styles['column-offer-name']
                 )}
               >
-                <BookingOfferCell booking={booking} />
-              </td>
+                <span>Nom de l’offre</span>
 
-              <td
+                <SortArrow
+                  onClick={() =>
+                    onColumnHeaderClick(
+                      IndividualBookingsSortingColumn.OFFER_NAME
+                    )
+                  }
+                  sortingMode={
+                    currentSortingColumn ===
+                    IndividualBookingsSortingColumn.OFFER_NAME
+                      ? currentSortingMode
+                      : SortingMode.NONE
+                  }
+                />
+              </th>
+
+              <th
+                scope="col"
                 className={cn(
-                  styles['table-cell'],
+                  styles['table-header'],
                   styles['column-booking-duo']
                 )}
-              >
-                <BookingIsDuoCell isDuo={booking.bookingIsDuo} />
-              </td>
+              ></th>
 
-              <td
+              <th
+                scope="col"
                 className={cn(
-                  styles['table-cell'],
+                  styles['table-header'],
                   styles['column-beneficiary']
                 )}
               >
-                <BeneficiaryCell beneficiaryInfos={booking.beneficiary} />
-              </td>
+                <span>Bénéficiaire</span>
 
-              <td
+                <SortArrow
+                  onClick={() =>
+                    onColumnHeaderClick(
+                      IndividualBookingsSortingColumn.BENEFICIARY_NAME
+                    )
+                  }
+                  sortingMode={
+                    currentSortingColumn ===
+                    IndividualBookingsSortingColumn.BENEFICIARY_NAME
+                      ? currentSortingMode
+                      : SortingMode.NONE
+                  }
+                />
+              </th>
+
+              <th
+                scope="col"
                 className={cn(
-                  styles['table-cell'],
+                  styles['table-header'],
                   styles['column-booking-date']
                 )}
               >
-                <BookingDateCell
-                  bookingDateTimeIsoString={booking.bookingDate}
-                />
-              </td>
+                <span>Réservation</span>
 
-              <td
+                <SortArrow
+                  onClick={() =>
+                    onColumnHeaderClick(
+                      IndividualBookingsSortingColumn.BOOKING_DATE
+                    )
+                  }
+                  sortingMode={
+                    currentSortingColumn ===
+                    IndividualBookingsSortingColumn.BOOKING_DATE
+                      ? currentSortingMode
+                      : SortingMode.NONE
+                  }
+                />
+              </th>
+
+              <th
+                scope="col"
                 className={cn(
-                  styles['table-cell'],
+                  styles['table-header'],
                   styles['column-booking-token']
                 )}
               >
-                <BookingTokenCell bookingToken={booking.bookingToken} />
-              </td>
+                Contremarque
+              </th>
 
-              <td
+              <th
+                scope="col"
                 className={cn(
-                  styles['table-cell'],
+                  styles['table-header'],
                   styles['column-booking-status']
                 )}
               >
-                <BookingStatusCell
-                  booking={booking}
-                  isCollectiveStatus={false}
+                <FilterByBookingStatus
+                  bookingStatuses={bookingStatuses}
+                  bookingsRecap={bookings}
+                  updateGlobalFilters={updateGlobalFilters}
+                  audience={Audience.INDIVIDUAL}
                 />
-              </td>
+              </th>
             </tr>
-          ))}
-        </tbody>
-      </table>
+          </thead>
+
+          <tbody className={styles['table-body']}>
+            {currentPageItems.map((booking, index) => (
+              <tr className={styles['table-row']} key={index}>
+                <td
+                  className={cn(
+                    styles['table-cell'],
+                    styles['column-offer-name']
+                  )}
+                >
+                  <BookingOfferCell booking={booking} />
+                </td>
+
+                <td
+                  className={cn(
+                    styles['table-cell'],
+                    styles['column-booking-duo']
+                  )}
+                >
+                  <BookingIsDuoCell isDuo={booking.bookingIsDuo} />
+                </td>
+
+                <td
+                  className={cn(
+                    styles['table-cell'],
+                    styles['column-beneficiary']
+                  )}
+                >
+                  <BeneficiaryCell beneficiaryInfos={booking.beneficiary} />
+                </td>
+
+                <td
+                  className={cn(
+                    styles['table-cell'],
+                    styles['column-booking-date']
+                  )}
+                >
+                  <BookingDateCell
+                    bookingDateTimeIsoString={booking.bookingDate}
+                  />
+                </td>
+
+                <td
+                  className={cn(
+                    styles['table-cell'],
+                    styles['column-booking-token']
+                  )}
+                >
+                  <BookingTokenCell bookingToken={booking.bookingToken} />
+                </td>
+
+                <td
+                  className={cn(
+                    styles['table-cell'],
+                    styles['column-booking-status']
+                  )}
+                >
+                  <BookingStatusCell
+                    booking={booking}
+                    isCollectiveStatus={false}
+                  />
+                </td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      )}
 
       {currentPageItems.length === 0 && (
         <NoFilteredBookings resetFilters={resetFilters} />
