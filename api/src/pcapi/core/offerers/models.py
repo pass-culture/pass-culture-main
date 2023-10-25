@@ -836,7 +836,7 @@ class Offerer(
     offererProviders: list["OffererProvider"] = sa.orm.relationship("OffererProvider", back_populates="offerer")
     thumb_path_component = "offerers"
 
-    dsToken: str = Column(Text, nullable=True, unique=True)
+    dsToken: str = Column(Text, nullable=False, unique=True)
 
     bankAccounts: list[finance_models.BankAccount] = sa.orm.relationship(
         finance_models.BankAccount,
