@@ -7,12 +7,13 @@ import useActiveFeature from 'hooks/useActiveFeature'
 import useAnalytics from 'hooks/useAnalytics'
 import fullAddUserIcon from 'icons/full-add-user.svg'
 import fullEditIcon from 'icons/full-edit.svg'
-import fullLinkIcon from 'icons/full-link.svg'
-import { Banner, ButtonLink } from 'ui-kit'
+import { ButtonLink } from 'ui-kit'
 import { ButtonVariant } from 'ui-kit/Button/types'
 import SelectInput from 'ui-kit/form/Select/SelectInput'
 
 import { STEP_OFFERER_HASH } from '../HomepageBreadcrumb'
+
+import { OffererBanners } from './OffererBanners'
 
 interface OffererDetailsProps {
   handleChangeOfferer: (event: React.ChangeEvent<HTMLSelectElement>) => void
@@ -131,101 +132,10 @@ const OffererDetails = ({
         {isExpanded && (
           <>
             <div className="od-separator horizontal" />
-            {!isUserOffererValidated && (
-              <Banner
-                type="notification-info"
-                className="banner"
-                links={[
-                  {
-                    href: `https://aide.passculture.app/hc/fr/articles/4514252662172--Acteurs-Culturels-S-inscrire-et-comprendre-le-fonctionnement-du-pass-Culture-cr%C3%A9ation-d-offres-gestion-des-r%C3%A9servations-remboursements-etc-`,
-                    linkTitle: 'En savoir plus',
-                    icon: fullLinkIcon,
-                  },
-                ]}
-              >
-                <strong>
-                  Le rattachement à votre structure est en cours de traitement
-                  par les équipes du pass Culture
-                </strong>
-                <br />
-                Un email vous sera envoyé lors de la validation de votre
-                rattachement. Vous aurez alors accès à l’ensemble des
-                fonctionnalités du pass Culture Pro.
-              </Banner>
-            )}
-
-            {showOffererNotValidatedAndPhysicalVenue && (
-              <Banner
-                type="notification-info"
-                className="banner"
-                links={[
-                  {
-                    href: `https://aide.passculture.app/hc/fr/articles/4514252662172--Acteurs-Culturels-S-inscrire-et-comprendre-le-fonctionnement-du-pass-Culture-cr%C3%A9ation-d-offres-gestion-des-r%C3%A9servations-remboursements-etc-`,
-                    linkTitle:
-                      'En savoir plus sur le fonctionnement du pass Culture',
-                    icon: fullLinkIcon,
-                  },
-                ]}
-              >
-                <strong>
-                  Votre structure est en cours de traitement par les équipes du
-                  pass Culture
-                </strong>
-                <br />
-                Toutes les offres créées à l’échelle de vos lieux seront
-                publiées sous réserve de validation de votre structure.
-              </Banner>
-            )}
-
-            {showOffererNotValidatedAndNoPhysicalVenue && (
-              <Banner
-                type="notification-info"
-                className="banner"
-                links={[
-                  {
-                    href: `https://aide.passculture.app/hc/fr/articles/4514252662172--Acteurs-Culturels-S-inscrire-et-comprendre-le-fonctionnement-du-pass-Culture-cr%C3%A9ation-d-offres-gestion-des-r%C3%A9servations-remboursements-etc-`,
-                    linkTitle: 'En savoir plus',
-                    icon: fullLinkIcon,
-                  },
-                ]}
-              >
-                <strong>
-                  Votre structure est en cours de traitement par les équipes du
-                  pass Culture
-                </strong>
-                <br />
-                Nous vous invitons à créer un lieu afin de pouvoir proposer des
-                offres physiques ou des évènements. Vous pouvez dès à présent
-                créer des offres numériques.
-                <br />
-                L’ensemble de ces offres seront publiées sous réserve de
-                validation de votre structure.
-              </Banner>
-            )}
-            {showCreateVenueBanner && (
-              <Banner
-                type="notification-info"
-                className="banner"
-                links={[
-                  {
-                    href: `https://aide.passculture.app/hc/fr/articles/4411992075281--Acteurs-Culturels-Comment-cr%C3%A9er-un-lieu-`,
-                    linkTitle: 'En savoir plus sur la création d’un lieu',
-                    icon: fullLinkIcon,
-                  },
-                ]}
-              >
-                <p>
-                  Nous vous invitons à créer un lieu, cela vous permettra
-                  ensuite de créer des offres physiques ou des évènements qui
-                  seront réservables.
-                </p>
-                <br />
-                <p>
-                  Vous avez la possibilité de créer dès maintenant des offres
-                  numériques.
-                </p>
-              </Banner>
-            )}
+            <OffererBanners
+              selectedOfferer={selectedOfferer}
+              isUserOffererValidated={isUserOffererValidated}
+            />
           </>
         )}
       </div>
