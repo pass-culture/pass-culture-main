@@ -82,7 +82,7 @@
                   <td>{{ links.build_offer_name_to_pc_pro_link(reimbursement_rule.offer) }}</td>
                 {% endif %}
                 <td>{{ reimbursement_rule.rate | format_rate_multiply_by_100 }}</td>
-                <td>{{ reimbursement_rule.amountInEuroCents | format_cents if reimbursement_rule.amountInEuroCents else "" }}</td>
+                <td>{{ reimbursement_rule.amount | format_cents if reimbursement_rule.amount else "" }}</td>
                 <td>{{ reimbursement_rule.subcategories | format_subcategories }}</td>
                 <td>{{ reimbursement_rule.timespan | format_timespan }}</td>
               </tr>

@@ -58,7 +58,7 @@ def create_specific_invoice() -> None:
     custom_rule_offer1 = offers_factories.ThingOfferFactory(venue=venue)
     finance_factories.CustomReimbursementRuleFactory(rate=0.94, offer=custom_rule_offer1)
     custom_rule_offer2 = offers_factories.ThingOfferFactory(venue=venue)
-    finance_factories.CustomReimbursementRuleFactory(amountInEuroCents=2200, offer=custom_rule_offer2)
+    finance_factories.CustomReimbursementRuleFactory(amount=2200, offer=custom_rule_offer2)
 
     stocks = [
         offers_factories.StockFactory(offer=thing_offer1, price=30),

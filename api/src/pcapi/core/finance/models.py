@@ -539,9 +539,8 @@ class CustomReimbursementRule(ReimbursementRule, Base, Model):
     # offerer.
     subcategories: list[str] = sqla.Column(sqla_psql.ARRAY(sqla.Text()), server_default="{}")
 
+    # The amount of the reimbursement, or NULL if `rate` is set.
     amount: int = sqla.Column(sqla.Integer, nullable=True)
-    amountInEuroCents: int = sqla.Column(sqla.Integer, nullable=True)
-
     # rate is between 0 and 1 (included), or NULL if `amount` is set.
     rate: decimal.Decimal = sqla.Column(sqla.Numeric(5, 4), nullable=True)
 
@@ -590,8 +589,8 @@ class CustomReimbursementRule(ReimbursementRule, Base, Model):
         booking: "bookings_models.Booking",
         custom_total_amount: int | None = None,
     ) -> int:
-        if self.amountInEuroCents is not None:
-            return booking.quantity * self.amountInEuroCents
+        if self.amount is not None:
+            return booking.quantity * self.amount
         return super().apply(booking, custom_total_amount)
 
     @property
