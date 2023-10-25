@@ -291,18 +291,25 @@ class PCSelectMultipleField(wtforms.SelectMultipleField):
     widget = partial(widget, template="components/forms/select_multiple_field.html")
     validators = [validators.Optional()]
 
-    def __init__(self, *args: typing.Any, **kwargs: typing.Any):
-        if "search_inline" in kwargs:
-            self.search_inline = kwargs.pop("search_inline")
-        super().__init__(*args, **kwargs)
+    def __init__(
+        self,
+        label: str,
+        *,
+        search_inline: bool = False,
+        full_row: bool = False,
+        field_list_compatibility: bool = False,
+        **kwargs: typing.Any,
+    ):
+        super().__init__(label, **kwargs)
+        self.search_inline = search_inline  # not higher than other form fields
+        self.full_row = full_row  # new line in the form with a full-width dropdown
+        self.field_list_compatibility = field_list_compatibility
 
 
 class PCTomSelectField(PCSelectMultipleField):
     widget = partial(widget, template="components/forms/tom_select_field.html")
 
-    def __init__(self, label: str, endpoint: str, multiple: bool = False, **kwargs: typing.Any):
-        if "search_inline" in kwargs:
-            self.search_inline = kwargs.pop("search_inline")
+    def __init__(self, label: str, *, endpoint: str, multiple: bool = False, **kwargs: typing.Any):
         super().__init__(label, **kwargs)
         self.tomselect_autocomplete_url = url_for(endpoint)
         self.multiple = multiple
@@ -343,9 +350,9 @@ class PCSwitchBooleanField(wtforms.BooleanField):
     widget = partial(widget, template="components/forms/switch_boolean_field.html")
     false_values = (False, "False", "false", "off", "0", "")
 
-    def __init__(self, label: str, full_width: bool = False, **kwargs: typing.Any):
+    def __init__(self, label: str, full_row: bool = False, **kwargs: typing.Any):
         super().__init__(label, **kwargs)
-        self.full_width = full_width
+        self.full_row = full_row
 
 
 class PCCheckboxField(wtforms.BooleanField):

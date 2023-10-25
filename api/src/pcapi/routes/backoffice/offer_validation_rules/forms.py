@@ -129,23 +129,29 @@ class OfferValidationSubRuleForm(FlaskForm):
         rows=10,
         validators=(wtforms.validators.Length(max=10000, message="ne doit pas dépasser %(max)d caractères"),),
     )
-    offer_type = fields.PCSelectMultipleField("Type de l'offre", choices=utils.choices_from_enum(OfferType))
+    offer_type = fields.PCSelectMultipleField(
+        "Type de l'offre", choices=utils.choices_from_enum(OfferType), field_list_compatibility=True
+    )
     offerer = fields.PCTomSelectField(
         "Structure",
         multiple=True,
         choices=[],
         validate_choice=False,
         endpoint="backoffice_web.autocomplete_offerers",
+        field_list_compatibility=True,
     )
     subcategories = fields.PCSelectMultipleField(
-        "Sous-catégories", choices=[(s.id, s.pro_label) for s in subcategories_v2.ALL_SUBCATEGORIES]
+        "Sous-catégories",
+        choices=[(s.id, s.pro_label) for s in subcategories_v2.ALL_SUBCATEGORIES],
+        field_list_compatibility=True,
     )
     categories = fields.PCSelectMultipleField(
-        "Catégories", choices=utils.choices_from_enum(categories.CategoryIdLabelEnum)
+        "Catégories", choices=utils.choices_from_enum(categories.CategoryIdLabelEnum), field_list_compatibility=True
     )
     show_sub_type = fields.PCSelectMultipleField(
         "Sous-type de spectacle",
         choices=[(str(s), SHOW_SUB_TYPES_LABEL_BY_CODE[s]) for s in SHOW_SUB_TYPES_LABEL_BY_CODE],
+        field_list_compatibility=True,
     )
 
     form_field_configuration = OFFER_VALIDATION_SUB_RULE_FORM_FIELD_CONFIGURATION

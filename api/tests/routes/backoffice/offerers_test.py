@@ -25,6 +25,7 @@ from pcapi.core.testing import assert_num_queries
 from pcapi.core.users import factories as users_factories
 from pcapi.models import db
 from pcapi.models.validation_status_mixin import ValidationStatus
+from pcapi.routes.backoffice.forms.search import TypeOptions
 from pcapi.routes.backoffice.offerers import offerer_blueprint
 
 from .helpers import button as button_helpers
@@ -88,6 +89,18 @@ class GetOffererTest(GetEndpointHelper):
     endpoint = "backoffice_web.offerer.get"
     endpoint_kwargs = {"offerer_id": 1}
     needed_permission = perm_models.Permissions.READ_PRO_ENTITY
+
+    def test_keep_search_parameters_on_top(self, authenticated_client, offerer):
+        url = url_for(self.endpoint, offerer_id=offerer.id, q=offerer.name, departments=["75", "77"])
+
+        response = authenticated_client.get(url)
+        assert response.status_code == 200
+
+        assert html_parser.extract_input_value(response.data, "q") == offerer.name
+        selected_type = html_parser.extract_select_options(response.data, "pro_type", selected_only=True)
+        assert set(selected_type.keys()) == {TypeOptions.OFFERER.name}
+        selected_departments = html_parser.extract_select_options(response.data, "departments", selected_only=True)
+        assert set(selected_departments.keys()) == {"75", "77"}
 
     def test_get_offerer(self, authenticated_client, offerer, top_acteur_tag):
         offerers_factories.OffererTagMappingFactory(tagId=top_acteur_tag.id, offererId=offerer.id)

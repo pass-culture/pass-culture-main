@@ -5,6 +5,7 @@ import wtforms
 
 from pcapi.routes.backoffice.forms import fields
 from pcapi.routes.backoffice.forms import utils
+from pcapi.routes.backoffice.forms.constants import area_choices
 
 
 DIGITS_AND_WHITESPACES_REGEX = re.compile(r"^[\d\s]+$")
@@ -48,6 +49,7 @@ class ProSearchForm(SearchForm):
         choices=utils.choices_from_enum(TypeOptions, format_search_type_options),
         default=TypeOptions.OFFERER,
     )
+    departments = fields.PCSelectMultipleField("Départements", choices=area_choices, full_row=True)
 
     def filter_q(self, q: str | None) -> str | None:
         # Remove spaces from SIREN, SIRET and IDs
@@ -61,3 +63,8 @@ class ProSearchForm(SearchForm):
         except KeyError:
             raise wtforms.validators.ValidationError("Le type sélectionné est invalide")
         return pro_type
+
+
+class CompactProSearchForm(ProSearchForm):
+    # Compact form on top of search results and details pages
+    departments = fields.PCSelectMultipleField("Départements", choices=area_choices, search_inline=True)

@@ -1280,12 +1280,15 @@ def get_venue_by_id(venue_id: int) -> offerers_models.Venue:
     return offerers_repository.get_venue_by_id(venue_id)
 
 
-def search_offerer(search_query: str) -> BaseQuery:
+def search_offerer(search_query: str, departments: typing.Iterable[str] = ()) -> BaseQuery:
     offerers = models.Offerer.query
 
     search_query = search_query.strip()
     if not search_query:
         return offerers.filter(False)
+
+    if departments:
+        offerers = offerers.filter(models.Offerer.departementCode.in_(departments))  # type: ignore [attr-defined]
 
     if search_query.isnumeric():
         if len(search_query) == 9:
@@ -1311,7 +1314,7 @@ def get_offerer_base_query(offerer_id: int) -> BaseQuery:
     return models.Offerer.query.filter(models.Offerer.id == offerer_id)
 
 
-def search_venue(search_query: str) -> BaseQuery:
+def search_venue(search_query: str, departments: typing.Iterable[str] = ()) -> BaseQuery:
     venues = models.Venue.query.outerjoin(models.VenueContact).options(
         sa.orm.joinedload(models.Venue.contact),
         sa.orm.joinedload(models.Venue.managingOfferer),
@@ -1320,6 +1323,9 @@ def search_venue(search_query: str) -> BaseQuery:
     search_query = search_query.strip()
     if not search_query:
         return venues.filter(False)
+
+    if departments:
+        venues = venues.filter(models.Venue.departementCode.in_(departments))
 
     if search_query.isnumeric():
         if len(search_query) == 14:

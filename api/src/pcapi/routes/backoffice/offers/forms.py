@@ -170,11 +170,13 @@ class OfferAdvancedSearchSubForm(utils.PCForm):
         "Catégories",
         choices=utils.choices_from_enum(categories.CategoryIdLabelEnum),
         search_inline=True,
+        field_list_compatibility=True,
     )
     subcategory = fields.PCSelectMultipleField(
         "Sous-catégories",
         choices=utils.choices_from_enum(subcategories.SubcategoryProLabelEnumv2),
         search_inline=True,
+        field_list_compatibility=True,
     )
     criteria = fields.PCTomSelectField(
         "Tags",
@@ -183,11 +185,13 @@ class OfferAdvancedSearchSubForm(utils.PCForm):
         validate_choice=False,
         endpoint="backoffice_web.autocomplete_criteria",
         search_inline=True,
+        field_list_compatibility=True,
     )
     department = fields.PCSelectMultipleField(
         "Départements",
         choices=constants.area_choices,
         search_inline=True,
+        field_list_compatibility=True,
     )
     integer = fields.PCOptIntegerField(
         "Valeur numérique",
@@ -203,6 +207,7 @@ class OfferAdvancedSearchSubForm(utils.PCForm):
         validate_choice=False,
         endpoint="backoffice_web.autocomplete_offerers",
         search_inline=True,
+        field_list_compatibility=True,
     )
     string = fields.PCOptStringField(
         "Text",
@@ -217,6 +222,7 @@ class OfferAdvancedSearchSubForm(utils.PCForm):
         validate_choice=False,
         endpoint="backoffice_web.autocomplete_venues",
         search_inline=True,
+        field_list_compatibility=True,
     )
     date = fields.PCDateField(
         validators=[
@@ -230,6 +236,7 @@ class OfferAdvancedSearchSubForm(utils.PCForm):
             formatter=filters.format_offer_validation_status,
         ),
         search_inline=True,
+        field_list_compatibility=True,
     )
     status = fields.PCSelectMultipleField(
         "Statut",
@@ -238,6 +245,7 @@ class OfferAdvancedSearchSubForm(utils.PCForm):
             formatter=filters.format_offer_status,
         ),
         search_inline=True,
+        field_list_compatibility=True,
     )
 
 

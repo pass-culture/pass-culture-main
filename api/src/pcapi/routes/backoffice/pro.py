@@ -5,6 +5,7 @@ from flask import redirect
 from flask import render_template
 from flask import request
 from flask import url_for
+from flask_login import current_user
 from flask_sqlalchemy import BaseQuery
 
 from pcapi.core.offerers import api as offerers_api
@@ -24,7 +25,7 @@ class Context:
     and venues. Each one has its own context to handle its specificities
     """
 
-    fetch_rows_func: typing.Callable[[str], BaseQuery]
+    fetch_rows_func: typing.Callable[[str, list[str]], BaseQuery]
     get_item_base_query: typing.Callable[[int], BaseQuery]
 
     @classmethod
@@ -61,7 +62,8 @@ class VenueContext(Context):
 
 def render_search_template(form: search_forms.ProSearchForm | None = None) -> str:
     if form is None:
-        form = search_forms.ProSearchForm()
+        preferences = current_user.backoffice_profile.preferences
+        form = search_forms.ProSearchForm(departments=preferences.get("departments", []))
 
     return render_template("pro/search.html", title="Recherche pro", dst=url_for(".search_pro"), form=form)
 
@@ -82,7 +84,7 @@ def search_pro() -> utils.BackofficeResponse:
 
     result_type = form.pro_type.data
     context = get_context(result_type)
-    rows = context.fetch_rows_func(form.q.data)
+    rows = context.fetch_rows_func(form.q.data, form.departments.data)
     paginated_rows = rows.paginate(
         page=form.page.data,
         per_page=form.per_page.data,
@@ -96,6 +98,7 @@ def search_pro() -> utils.BackofficeResponse:
         extra_data={
             "searchType": "ProSearch",
             "searchQuery": form.q.data,
+            "searchDepartments": ",".join(form.departments.data),
             "searchNbResults": paginated_rows.total,
             "searchProType": form.pro_type.data.value,
         },
@@ -103,25 +106,24 @@ def search_pro() -> utils.BackofficeResponse:
 
     if paginated_rows.total == 1 and FeatureToggle.WIP_BACKOFFICE_ENABLE_REDIRECT_SINGLE_RESULT.is_active():
         return redirect(
-            context.get_pro_link(
-                paginated_rows.items[0].id,
-                q=form.q.data,
-            ),
+            context.get_pro_link(paginated_rows.items[0].id, q=form.q.data, departments=form.departments.data),
             code=303,
         )
 
-    form.page.data = 1  # Reset to first page when form is submitted ("Chercher" clicked)
-    form.pro_type.data = form.pro_type.data.name  # Don't send an enum to jinja
+    search_form = search_forms.CompactProSearchForm(request.args)
+    search_form.page.data = 1  # Reset to first page when form is submitted ("Chercher" clicked)
+    search_form.pro_type.data = form.pro_type.data.name  # Don't send an enum to jinja
 
     return render_template(
         "pro/search_result.html",
-        search_form=form,
+        search_form=search_form,
         search_dst=url_for(".search_pro"),
         result_type=result_type.value,
         next_pages_urls=next_pages_urls,
         get_link_to_detail=context.get_pro_link,
         rows=paginated_rows,
         q=form.q.data,
+        departments=form.departments.data,
         per_page=form.per_page.data,
     )
 

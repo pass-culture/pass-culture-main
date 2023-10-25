@@ -68,7 +68,7 @@ def get(user_id: int) -> utils.BackofficeResponse:
 
     return render_template(
         "pro_user/get.html",
-        search_form=search_forms.ProSearchForm(q=request.args.get("q"), pro_type=TypeOptions.USER.name),
+        search_form=search_forms.CompactProSearchForm(q=request.args.get("q"), pro_type=TypeOptions.USER.name),
         search_dst=url_for("backoffice_web.search_pro"),
         user=user,
         form=form,
