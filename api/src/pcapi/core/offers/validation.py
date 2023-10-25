@@ -195,6 +195,11 @@ def check_event_expiration(stock: educational_models.CollectiveStock | models.St
 def check_stock_is_deletable(stock: models.Stock) -> None:
     check_validation_status(stock.offer)
     check_stock_is_not_from_charlie_api(stock.offer)
+    if stock.offer.isFromProvider:
+        error = api_errors.ApiErrors()
+        error.status_code = 400
+        error.add_error("global", "Les offres importées ne sont pas modifiables")
+        raise error
     if not stock.isEventDeletable:
         raise exceptions.TooLateToDeleteStock()
 
