@@ -191,6 +191,7 @@ def recredit_underage_users() -> None:
 @cron_decorators.log_cron_with_transaction
 def import_ds_bank_information_applications() -> None:
     procedures = [
+        settings.DS_BANK_ACCOUNT_PROCEDURE_ID,
         settings.DMS_VENUE_PROCEDURE_ID_V4,
         settings.DMS_VENUE_PROCEDURE_ID_V3,
         settings.DMS_VENUE_PROCEDURE_ID_V2,
