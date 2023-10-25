@@ -9,7 +9,7 @@ export const hasChangesOnStockWithBookings = (
     Partial<StockEventFormValues>
   > = initialStocks.reduce(
     (dict: Record<string, Partial<StockEventFormValues>>, stock) => {
-      dict[stock.stockId ?? 'StockEventFormValuesnewStock'] = {
+      dict[stock.stockId] = {
         priceCategoryId: stock.priceCategoryId,
         beginningDate: stock.beginningDate,
         beginningTime: stock.beginningTime,
@@ -20,11 +20,7 @@ export const hasChangesOnStockWithBookings = (
   )
 
   return submittedStocks.some((stock) => {
-    if (
-      !stock.bookingsQuantity ||
-      stock.bookingsQuantity === 0 ||
-      !stock.stockId
-    ) {
+    if (!stock.bookingsQuantity || stock.bookingsQuantity === 0) {
       return false
     }
     const initialStock = initialStocksById[stock.stockId]

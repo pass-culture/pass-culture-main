@@ -44,14 +44,27 @@ import { getValidationSchema } from './StockFormList/validationSchema'
 import styles from './StocksEventEdition.module.scss'
 import { submitToApi } from './submitToApi'
 
+const getEditedStocks = (
+  stocks: StockEventFormValues[],
+  initialsStocks: StockEventFormValues[]
+): StockEventFormValues[] => {
+  return stocks.reduce<StockEventFormValues[]>((accumulator, stock) => {
+    const initialStock = initialsStocks.find(
+      (initialStock) => initialStock.stockId === stock.stockId
+    )
+
+    if (!isEqual(stock, initialStock)) {
+      accumulator.push(stock)
+    }
+
+    return accumulator
+  }, [])
+}
+
 const hasStocksChanged = (
   stocks: StockEventFormValues[],
   initialsStocks: StockEventFormValues[]
 ): boolean => {
-  if (stocks.length !== initialsStocks.length) {
-    return true
-  }
-
   return stocks.some((stock) => {
     const initialStock = initialsStocks.find(
       (initialStock) => initialStock.stockId === stock.stockId
@@ -119,25 +132,22 @@ const StocksEventEdition = ({
         mode === OFFER_WIZARD_MODE.EDITION ? OFFER_WIZARD_MODE.READ_ONLY : mode,
     })
 
-    // Return when saving in edition with an empty form
     const allStockValues = [...values.stocks, ...hiddenStocksRef.current]
     const isFormEmpty = allStockValues.every((val) =>
       isEqual(val, STOCK_EVENT_FORM_DEFAULT_VALUES)
     )
-    // Return when there is nothing to save
-    const dirty = hasStocksChanged(
-      formik.values.stocks,
-      formik.initialValues.stocks
-    )
-    if (isFormEmpty || !dirty) {
+
+    const editedStocks = getEditedStocks(allStockValues, initialValues.stocks)
+
+    if (isFormEmpty || editedStocks.length === 0) {
       navigate(nextStepUrl)
       notify.success(getSuccessMessage(mode))
       return
     }
 
-    // Show modal if relevant
+    // Show modal if there is changes on stock with bookings on some fields
     const changesOnStockWithBookings = hasChangesOnStockWithBookings(
-      allStockValues,
+      editedStocks,
       formik.initialValues.stocks
     )
     if (!showStocksEventConfirmModal && changesOnStockWithBookings) {
@@ -145,14 +155,12 @@ const StocksEventEdition = ({
       return
     }
 
-    // Submit
     try {
       await submitToApi(
-        allStockValues,
+        editedStocks,
         offer.id,
         offer.venue.departementCode ?? '',
-        formik.setErrors,
-        resetStocks
+        formik.setErrors
       )
     } catch (error) {
       if (error instanceof Error) {
