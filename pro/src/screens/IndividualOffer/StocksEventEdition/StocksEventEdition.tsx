@@ -44,14 +44,27 @@ import { getValidationSchema } from './StockFormList/validationSchema'
 import styles from './StocksEventEdition.module.scss'
 import { submitToApi } from './submitToApi'
 
+const getEditedStocks = (
+  stocks: StockEventFormValues[],
+  initialsStocks: StockEventFormValues[]
+): StockEventFormValues[] => {
+  return stocks.reduce<StockEventFormValues[]>((accumulator, stock) => {
+    const initialStock = initialsStocks.find(
+      (initialStock) => initialStock.stockId === stock.stockId
+    )
+
+    if (!isEqual(stock, initialStock)) {
+      accumulator.push(stock)
+    }
+
+    return accumulator
+  }, [])
+}
+
 const hasStocksChanged = (
   stocks: StockEventFormValues[],
   initialsStocks: StockEventFormValues[]
 ): boolean => {
-  if (stocks.length !== initialsStocks.length) {
-    return true
-  }
-
   return stocks.some((stock) => {
     const initialStock = initialsStocks.find(
       (initialStock) => initialStock.stockId === stock.stockId
@@ -125,10 +138,11 @@ const StocksEventEdition = ({
       isEqual(val, STOCK_EVENT_FORM_DEFAULT_VALUES)
     )
     // Return when there is nothing to save
-    const dirty = hasStocksChanged(
-      formik.values.stocks,
-      formik.initialValues.stocks
+    const allEditededStocks = getEditedStocks(
+      allStockValues,
+      initialValues.stocks
     )
+    const dirty = allEditededStocks.length > 0
     if (isFormEmpty || !dirty) {
       navigate(nextStepUrl)
       notify.success(getSuccessMessage(mode))
@@ -137,7 +151,7 @@ const StocksEventEdition = ({
 
     // Show modal if relevant
     const changesOnStockWithBookings = hasChangesOnStockWithBookings(
-      allStockValues,
+      allEditededStocks,
       formik.initialValues.stocks
     )
     if (!showStocksEventConfirmModal && changesOnStockWithBookings) {
@@ -148,7 +162,7 @@ const StocksEventEdition = ({
     // Submit
     try {
       await submitToApi(
-        allStockValues,
+        allEditededStocks,
         offer.id,
         offer.venue.departementCode ?? '',
         formik.setErrors,
