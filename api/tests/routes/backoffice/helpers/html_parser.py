@@ -148,13 +148,13 @@ def extract_warnings(html_content: str) -> list[str]:
     return extract(html_content, tag="p", class_="text-warning")
 
 
-def extract_select_options(html_content: str, name: str) -> str:
+def extract_select_options(html_content: str, name: str, selected_only: bool = False) -> dict[str, str]:
     soup = get_soup(html_content)
 
     select = soup.find("select", attrs={"name": name})
     assert select is not None
 
-    options = select.find_all("option")
+    options = select.find_all("option", selected=selected_only or None)
 
     return {option["value"]: _filter_whitespaces(option.text) for option in options if option["value"]}
 

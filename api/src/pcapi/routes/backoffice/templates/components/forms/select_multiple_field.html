@@ -17,20 +17,22 @@
          data-original-name="{{ field.name }}"
          for="{{ select_field_id }}">{{ field.label.text }}</label>
 </div>
-<!-- (Almost) duplicated html for field list field widget -->
-<div class="form-floating {{ field.name }}-container pc-field-{{ field.name }} d-none empty-tom-select-form-container {% if field.search_inline %}pc-search-inline{% endif %}"
-     data-clone-function-name="_tomSelectCloneFunction">
-  {% set select_field_id = random_hash() %}
-  <select multiple
-          class="form-select pc-select-field value-element-form pc-no-update"
-          data-original-name="{{ field.name }}"
-          size="2">
-    {% for value, label, selected in field.iter_choices() %}
-      <option value="{{ value }}" {{ "selected" if selected else "" }}>
-        {{ label  }}
-      </option>
-    {% endfor %}
-  </select>
-  <label class="pc-select-label label-element-form pc-no-update"
-         data-original-name="{{ field.name }}">{{ field.label.text }}</label>
-</div>
+{% if field.field_list_compatibility %}
+  <!-- (Almost) duplicated html for field list field widget -->
+  <div class="form-floating {{ field.name }}-container pc-field-{{ field.name }} d-none empty-tom-select-form-container {% if field.search_inline %}pc-search-inline{% endif %}"
+       data-clone-function-name="_tomSelectCloneFunction">
+    {% set select_field_id = random_hash() %}
+    <select multiple
+            class="form-select pc-select-field value-element-form pc-no-update"
+            data-original-name="{{ field.name }}"
+            size="2">
+      {% for value, label, selected in field.iter_choices() %}
+        <option value="{{ value }}" {{ "selected" if selected else "" }}>
+          {{ label  }}
+        </option>
+      {% endfor %}
+    </select>
+    <label class="pc-select-label label-element-form pc-no-update"
+           data-original-name="{{ field.name }}">{{ field.label.text }}</label>
+  </div>
+{% endif %}

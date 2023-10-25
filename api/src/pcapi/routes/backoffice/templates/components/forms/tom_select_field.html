@@ -17,21 +17,23 @@
          data-original-name="{{ field.name }}"
          for="{{ tom_select_field_id }}">{{ field.label.text }}</label>
 </div>
-<!-- (Almost) duplicated html for field list field widget -->
-<div class="form-floating {{ field.name }}-container pc-field-{{ field.name }} d-none empty-tom-select-form-container"
-     data-original-name="{{ field.name }}"
-     data-clone-function-name="_tomSelectCloneFunction">
-  {% set tom_select_field_id = random_hash() %}
-  <select {% if field.multiple %}multiple{% endif %}
-          {% if field.disabled or field.readonly %}disabled{% endif %}
-          data-tomselect-autocomplete-url="{{ field.tomselect_autocomplete_url }}"
-          data-tomselect-options="{{ field.tomselect_options }}"
-          data-tomselect-items="{{ field.tomselect_items }}"
-          data-original-name="{{ field.name }}"
-          class="form-select pc-tom-select-autocomplete-field value-element-form pc-no-update"
-          {% if field.readonly %}data-tom-select-readonly{% endif %}
-          size="2"></select>
-  <label class="pc-select-label label-element-form pc-no-update"
-         data-original-name="{{ field.name }}"
-         for="{{ tom_select_field_id }}">{{ field.label.text }}</label>
-</div>
+{% if field.field_list_compatibility %}
+  <!-- (Almost) duplicated html for field list field widget -->
+  <div class="form-floating {{ field.name }}-container pc-field-{{ field.name }} d-none empty-tom-select-form-container"
+       data-original-name="{{ field.name }}"
+       data-clone-function-name="_tomSelectCloneFunction">
+    {% set tom_select_field_id = random_hash() %}
+    <select {% if field.multiple %}multiple{% endif %}
+            {% if field.disabled or field.readonly %}disabled{% endif %}
+            data-tomselect-autocomplete-url="{{ field.tomselect_autocomplete_url }}"
+            data-tomselect-options="{{ field.tomselect_options }}"
+            data-tomselect-items="{{ field.tomselect_items }}"
+            data-original-name="{{ field.name }}"
+            class="form-select pc-tom-select-autocomplete-field value-element-form pc-no-update"
+            {% if field.readonly %}data-tom-select-readonly{% endif %}
+            size="2"></select>
+    <label class="pc-select-label label-element-form pc-no-update"
+           data-original-name="{{ field.name }}"
+           for="{{ tom_select_field_id }}">{{ field.label.text }}</label>
+  </div>
+{% endif %}

@@ -178,7 +178,7 @@ class RemovePricingPointForm(utils.PCForm):
     comment = fields.PCCommentField("Commentaire interne")
     override_revenue_check = fields.PCSwitchBooleanField(
         "Ignorer la limite de revenus annuels (accord de la comptabilité nécessaire)",
-        full_width=True,
+        full_row=True,
     )
 
 

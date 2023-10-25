@@ -77,6 +77,10 @@ def render_offerer_details(
             tags=offerer.tags,
         )
 
+    search_form = search_forms.CompactProSearchForm(
+        q=request.args.get("q"), pro_type=TypeOptions.OFFERER.name, departments=request.args.getlist("departments")
+    )
+
     show_subscription_tab = (
         utils.has_current_user_permission(perm_models.Permissions.VALIDATE_OFFERER)
         and offerer.individualSubscription
@@ -85,7 +89,7 @@ def render_offerer_details(
 
     return render_template(
         "offerer/get.html",
-        search_form=search_forms.ProSearchForm(q=request.args.get("q"), pro_type=TypeOptions.OFFERER.name),
+        search_form=search_form,
         search_dst=url_for("backoffice_web.search_pro"),
         offerer=offerer,
         region=regions_utils.get_region_name_from_postal_code(offerer.postalCode),
@@ -109,6 +113,7 @@ def get(offerer_id: int) -> utils.BackofficeResponse:
                 "searchType": "ProSearch",
                 "searchProType": TypeOptions.OFFERER.name,
                 "searchQuery": request.args.get("q"),
+                "searchDepartments": ",".join(request.args.get("departments", [])),
                 "searchRank": request.args.get("search_rank"),
                 "searchNbResults": request.args.get("total_items"),
             },

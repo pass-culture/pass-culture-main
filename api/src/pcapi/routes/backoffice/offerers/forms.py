@@ -249,14 +249,14 @@ class CreateOffererTagCategoryForm(OffererTagBaseForm):
 
 
 class IndividualOffererSubscriptionForm(FlaskForm):
-    is_email_sent = fields.PCSwitchBooleanField("Mail envoyé à l'acteur", full_width=True)
+    is_email_sent = fields.PCSwitchBooleanField("Mail envoyé à l'acteur", full_row=True)
     date_email_sent = fields.PCOptDateField("Date d'envoi")
-    is_criminal_record_received = fields.PCSwitchBooleanField("Casier judiciaire reçu", full_width=True)
+    is_criminal_record_received = fields.PCSwitchBooleanField("Casier judiciaire reçu", full_row=True)
     date_criminal_record_received = fields.PCOptDateField("Date de réception")
-    is_certificate_received = fields.PCSwitchBooleanField("Diplôme reçu", full_width=True)
+    is_certificate_received = fields.PCSwitchBooleanField("Diplôme reçu", full_row=True)
     certificate_details = fields.PCTextareaField("Type de diplôme / niveau")
-    is_experience_received = fields.PCSwitchBooleanField("Expérience reçue", full_width=True)
+    is_experience_received = fields.PCSwitchBooleanField("Expérience reçue", full_row=True)
     experience_details = fields.PCTextareaField("Type d'expérience")
     has_1yr_experience = fields.PCSwitchBooleanField("1 à 4 ans")
     has_4yr_experience = fields.PCSwitchBooleanField("+ 5 ans")
-    is_certificate_valid = fields.PCSwitchBooleanField("Validité du diplôme", full_width=True)
+    is_certificate_valid = fields.PCSwitchBooleanField("Validité du diplôme", full_row=True)

@@ -1114,7 +1114,7 @@ def get_public_account_base_query() -> BaseQuery:
     return public_accounts
 
 
-def search_pro_account(search_query: str) -> BaseQuery:
+def search_pro_account(search_query: str, *_: typing.Any) -> BaseQuery:
     pro_accounts = models.User.query.filter(
         models.User.has_non_attached_pro_role.is_(True) | models.User.has_pro_role.is_(True)  # type: ignore [attr-defined]
     )

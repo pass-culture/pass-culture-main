@@ -210,9 +210,13 @@ def render_venue_details(
 
     delete_form = empty_forms.EmptyForm()
 
+    search_form = search_forms.CompactProSearchForm(
+        q=request.args.get("q"), pro_type=TypeOptions.VENUE.name, departments=request.args.getlist("departments")
+    )
+
     return render_template(
         "venue/get.html",
-        search_form=search_forms.ProSearchForm(q=request.args.get("q"), pro_type=TypeOptions.VENUE.name),
+        search_form=search_form,
         search_dst=url_for("backoffice_web.search_pro"),
         venue=venue,
         edit_venue_form=edit_venue_form,
@@ -257,6 +261,7 @@ def get(venue_id: int) -> utils.BackofficeResponse:
                 "searchType": "ProSearch",
                 "searchProType": TypeOptions.VENUE.name,
                 "searchQuery": request.args.get("q"),
+                "searchDepartments": ",".join(request.args.get("departments", [])),
                 "searchRank": request.args.get("search_rank"),
                 "searchNbResults": request.args.get("total_items"),
             },
