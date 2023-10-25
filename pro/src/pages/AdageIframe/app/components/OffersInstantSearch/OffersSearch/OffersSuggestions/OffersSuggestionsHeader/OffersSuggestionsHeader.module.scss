@@ -7,7 +7,7 @@
   border-top: rem.torem(1px) solid colors.$grey;
 
   &-text {
-    @include fonts.title2;
+    @include fonts.title3;
   }
 
   &-link {
