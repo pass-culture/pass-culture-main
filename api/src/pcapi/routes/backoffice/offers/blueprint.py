@@ -325,41 +325,43 @@ def _get_offers(form: forms.InternalSearchForm) -> list[offers_models.Offer]:
     return query.all()
 
 
-@list_offers_blueprint.route("", methods=["GET"])
-def list_offers() -> utils.BackofficeResponse:
-    display_form = forms.GetOffersSearchForm(formdata=utils.get_query_params())
-    form = forms.InternalSearchForm(formdata=utils.get_query_params())
-    if not form.validate():
-        return render_template("offer/list.html", rows=[], form=display_form), 400
-
-    if form.is_empty():
-        return render_template("offer/list.html", rows=[], form=display_form)
-
-    offers = _get_offers(form)
+def _get_advanced_search_args(form: forms.InternalSearchForm) -> dict[str, typing.Any]:
     advanced_query = ""
-
-    offers = utils.limit_rows(offers, form.limit.data)
-
     search_data_tags = set()
     if form.search.data:
         advanced_query = f"?{request.query_string.decode()}"
 
         for data in form.search.data:
-            if not (data["operator"] and data["search_field"]):
-                continue
-            value = data[forms.form_field_configuration.get(data["search_field"], {}).get("field")]
-            if isinstance(value, list):
-                value = ", ".join(value)
+            if data.get("operator"):
+                if search_field := data.get("search_field"):
+                    if search_field_attr := getattr(forms.SearchAttributes, search_field, None):
+                        search_data_tags.add(search_field_attr.value)
 
-            search_data_tags.add(getattr(forms.SearchAttributes, data["search_field"]).value)
+    return {
+        "advanced_query": advanced_query,
+        "search_data_tags": search_data_tags,
+    }
+
+
+@list_offers_blueprint.route("", methods=["GET"])
+def list_offers() -> utils.BackofficeResponse:
+    display_form = forms.GetOffersSearchForm(formdata=utils.get_query_params())
+    form = forms.InternalSearchForm(formdata=utils.get_query_params())
+    if not form.validate():
+        return render_template("offer/list.html", rows=[], form=display_form, **_get_advanced_search_args(form)), 400
+
+    if form.is_empty():
+        return render_template("offer/list.html", rows=[], form=display_form)
+
+    offers = _get_offers(form)
+    offers = utils.limit_rows(offers, form.limit.data)
 
     return render_template(
         "offer/list.html",
         rows=offers,
         form=display_form,
         date_created_sort_url=form.get_sort_link_with_search_data(".list_offers") if form.sort.data else None,
-        advanced_query=advanced_query,
-        search_data_tags=search_data_tags,
+        **_get_advanced_search_args(form),
     )
 
 

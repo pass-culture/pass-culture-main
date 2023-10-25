@@ -4,6 +4,7 @@ import json
 import typing
 from urllib.parse import urlencode
 
+from flask import flash
 from flask import url_for
 from flask_wtf import FlaskForm
 import wtforms
@@ -267,19 +268,24 @@ class GetOfferAdvancedSearchForm(GetOffersBaseFields):
         return empty and super().is_empty()
 
     @staticmethod
+    def is_sub_search_empty(sub_search: dict[str, typing.Any]) -> bool:
+        field_name = sub_search.get("search_field")
+        operator = sub_search.get("operator")
+        if field_name:
+            field_attribute_name = form_field_configuration.get(field_name, {}).get("field", "")
+            field_data = sub_search.get(field_attribute_name)  # type: ignore [call-overload]
+            if field_data:
+                return False
+            if operator in operator_no_require_value:
+                return False
+        return True
+
+    @staticmethod
     def is_search_empty(search_data: list[dict[str, typing.Any]]) -> bool:
-        empty = True
         for sub_search in search_data:
-            field_name = sub_search.get("search_field")
-            operator = sub_search.get("operator")
-            if field_name:
-                field_attribute_name = form_field_configuration.get(field_name, {}).get("field", "")
-                field_data = sub_search.get(field_attribute_name)  # type: ignore [call-overload]
-                if field_data:
-                    return False
-                if operator in operator_no_require_value:
-                    return False
-        return empty
+            if not GetOfferAdvancedSearchForm.is_sub_search_empty(sub_search):
+                return False
+        return True
 
     def get_sort_link_with_search_data(self, endpoint: str) -> str:
         search_data = {}
@@ -294,6 +300,23 @@ class GetOfferAdvancedSearchForm(GetOffersBaseFields):
         base_url = self.get_sort_link(endpoint)
 
         return f"{base_url}&{encoded_search_data}" if encoded_search_data else f"{base_url}"
+
+    def validate(self, extra_validators: dict | None = None) -> bool:
+        errors = []
+
+        for sub_search in self.search.data:
+            if search_field := sub_search.get("search_field"):
+                if GetOfferAdvancedSearchForm.is_sub_search_empty(sub_search):
+                    try:
+                        errors.append(f"Le filtre « {SearchAttributes[search_field].value} » est vide.")
+                    except KeyError:
+                        errors.append(f"Le filtre {search_field} est invalide.")
+
+        if errors:
+            flash("\n".join(errors), "warning")
+            return False
+
+        return super().validate(extra_validators)
 
 
 class GetOffersSearchForm(GetOffersBaseFields):
