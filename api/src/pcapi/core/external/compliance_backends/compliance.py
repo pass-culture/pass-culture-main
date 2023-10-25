@@ -35,21 +35,34 @@ class ComplianceBackend(BaseBackend):
 
         if not api_response.ok:
             if api_response.status_code in {401, 403}:
-                raise requests.ExternalAPIException(
-                    False, {"info": "Connection to Compliance API was refused", "status_code": api_response.status_code}
+                logger.exception(
+                    "Connection to Compliance API was refused",
+                    extra={"status_code": api_response.status_code},
                 )
+                raise requests.ExternalAPIException(is_retryable=False)
             if api_response.status_code == 422:
-                error_data = {"info": "Data sent to Compliance API is faulty", "status_code": api_response.status_code}
+                error_data = {"status_code": api_response.status_code}
                 try:
                     error_data += api_response.json()
                 except requests.exceptions.JSONDecodeError:  # docs says response should be a json, but let's be careful
                     pass
 
-                raise requests.ExternalAPIException(False, error_data)
+                logger.exception(
+                    "Data sent to Compliance API is faulty",
+                    extra=error_data,
+                )
+                raise requests.ExternalAPIException(is_retryable=False)
 
-            raise requests.ExternalAPIException(
-                True, {"info": "Response from Compliance API is not ok", "status_code": api_response.status_code}
+            error_data = {"status_code": api_response.status_code}
+            try:
+                error_data += api_response.json()
+            except requests.exceptions.JSONDecodeError:
+                pass
+            logger.exception(
+                "Response from Compliance API is not ok",
+                extra=error_data,
             )
+            raise requests.ExternalAPIException(is_retryable=True)
 
         data_score = api_response.json()["probability_validated"]
         return data_score

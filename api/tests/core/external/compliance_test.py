@@ -1,3 +1,4 @@
+import logging
 from unittest import mock
 
 import pytest
@@ -29,44 +30,50 @@ class GetDataComplianceScoringTest:
 
     @mock.patch("pcapi.core.external.compliance.compliance_backend", ComplianceBackend())
     @mock.patch("pcapi.core.auth.api.get_id_token_from_google", return_value="Good token")
-    def test_get_data_compliance_scoring_with_failed_auth_exception(self, mock_requests_post, requests_mock):
+    def test_get_data_compliance_scoring_with_failed_auth_exception(self, mock_requests_post, requests_mock, caplog):
         requests_mock.post("https://compliance.passculture.team/latest/model/compliance/scoring", status_code=401)
         offer = offers_factories.OfferFactory(name="Hello la data", extraData={})
         payload = compliance._get_payload_for_compliance_api(offer)
 
-        with pytest.raises(requests.ExternalAPIException) as exc:
-            compliance.make_update_offer_compliance_score(payload)
+        with caplog.at_level(logging.ERROR):
+            with pytest.raises(requests.ExternalAPIException) as exc:
+                compliance.make_update_offer_compliance_score(payload)
 
         assert exc.value.is_retryable is False
-        assert exc.value.args[0] == {"info": "Connection to Compliance API was refused", "status_code": 401}
+        assert caplog.records[0].message == "Connection to Compliance API was refused"
+        assert caplog.records[0].extra == {"status_code": 401}
         assert "complianceScore" not in offer.extraData
 
     @mock.patch("pcapi.core.external.compliance.compliance_backend", ComplianceBackend())
     @mock.patch("pcapi.core.auth.api.get_id_token_from_google", return_value="Good token")
-    def test_get_data_compliance_scoring_with_bad_data_exception(self, mock_requests_post, requests_mock):
+    def test_get_data_compliance_scoring_with_bad_data_exception(self, mock_requests_post, requests_mock, caplog):
         requests_mock.post("https://compliance.passculture.team/latest/model/compliance/scoring", status_code=422)
         offer = offers_factories.OfferFactory(name="Hello la data", extraData={})
         payload = compliance._get_payload_for_compliance_api(offer)
 
-        with pytest.raises(requests.ExternalAPIException) as exc:
-            compliance.make_update_offer_compliance_score(payload)
+        with caplog.at_level(logging.ERROR):
+            with pytest.raises(requests.ExternalAPIException) as exc:
+                compliance.make_update_offer_compliance_score(payload)
 
         assert exc.value.is_retryable is False
-        assert exc.value.args[0] == {"info": "Data sent to Compliance API is faulty", "status_code": 422}
+        assert caplog.records[0].message == "Data sent to Compliance API is faulty"
+        assert caplog.records[0].extra == {"status_code": 422}
         assert "complianceScore" not in offer.extraData
 
     @mock.patch("pcapi.core.external.compliance.compliance_backend", ComplianceBackend())
     @mock.patch("pcapi.core.auth.api.get_id_token_from_google", return_value="Good token")
-    def test_get_data_compliance_scoring_with_unknown_exception(self, mock_requests_post, requests_mock):
+    def test_get_data_compliance_scoring_with_unknown_exception(self, mock_requests_post, requests_mock, caplog):
         requests_mock.post("https://compliance.passculture.team/latest/model/compliance/scoring", status_code=500)
         offer = offers_factories.OfferFactory(name="Hello la data", extraData={})
         payload = compliance._get_payload_for_compliance_api(offer)
 
-        with pytest.raises(requests.ExternalAPIException) as exc:
-            compliance.make_update_offer_compliance_score(payload)
+        with caplog.at_level(logging.ERROR):
+            with pytest.raises(requests.ExternalAPIException) as exc:
+                compliance.make_update_offer_compliance_score(payload)
 
         assert exc.value.is_retryable is True
-        assert exc.value.args[0] == {"info": "Response from Compliance API is not ok", "status_code": 500}
+        assert caplog.records[0].message == "Response from Compliance API is not ok"
+        assert caplog.records[0].extra == {"status_code": 500}
         assert "complianceScore" not in offer.extraData
 
 
