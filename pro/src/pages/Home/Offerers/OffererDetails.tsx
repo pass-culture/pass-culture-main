@@ -29,6 +29,7 @@ const OffererDetails = ({
   selectedOfferer,
 }: OffererDetailsProps) => {
   const { logEvent } = useAnalytics()
+  const isStatisticsDashboardEnabled = useActiveFeature('WIP_HOME_STATS')
   const isNewOffererLinkEnabled = useActiveFeature(
     'WIP_ENABLE_NEW_USER_OFFERER_LINK'
   )
@@ -129,7 +130,7 @@ const OffererDetails = ({
           </ButtonLink>
         </div>
 
-        {isExpanded && (
+        {isExpanded && !isStatisticsDashboardEnabled && (
           <>
             <div className="od-separator horizontal" />
             <OffererBanners
