@@ -136,7 +136,7 @@ export const validationSchema = yup.object().shape({
       then: (schema) => schema.required(),
     }),
   priceDetail: yup.string().max(MAX_DETAILS_LENGTH),
-  begginningDate: yup.string().when('isTemplate', {
+  beginningDate: yup.string().when('isTemplate', {
     is: true,
     then: (schema) => schema.required('Veuillez renseigner une date de début'),
   }),

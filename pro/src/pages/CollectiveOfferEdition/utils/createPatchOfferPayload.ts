@@ -130,7 +130,7 @@ export const createPatchOfferTemplatePayload = (
   const keysToOmmit = [
     'imageUrl',
     'imageCredit',
-    'begginningDate',
+    'beginningDate',
     'endingDate',
     'hour',
     'isTemplate',
@@ -152,8 +152,8 @@ export const createPatchOfferTemplatePayload = (
   changedValues.contactPhone = offer.phone || null
   changedValues.nationalProgramId = Number(offer.nationalProgramId) || null
   changedValues.dates =
-    offer.begginningDate && offer.endingDate
-      ? serializeDates(offer.begginningDate, offer.endingDate, offer.hour)
+    offer.beginningDate && offer.endingDate
+      ? serializeDates(offer.beginningDate, offer.endingDate, offer.hour)
       : undefined
 
   return changedValues

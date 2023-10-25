@@ -195,13 +195,19 @@ export const computeInitialValuesFromOffer = (
     'search-interventionArea': '',
     nationalProgramId: offer.nationalProgram?.id?.toString() || '',
     isTemplate: offer.isTemplate,
-    begginningDate:
+    beginningDate:
       isCollectiveOfferTemplate(offer) && offer.dates
-        ? format(new Date(offer.dates.start), FORMAT_ISO_DATE_ONLY)
-        : DEFAULT_EAC_FORM_VALUES.begginningDate,
+        ? format(
+            toDateStrippedOfTimezone(offer.dates.start),
+            FORMAT_ISO_DATE_ONLY
+          )
+        : DEFAULT_EAC_FORM_VALUES.beginningDate,
     endingDate:
       isCollectiveOfferTemplate(offer) && offer.dates
-        ? format(new Date(offer.dates.end), FORMAT_ISO_DATE_ONLY)
+        ? format(
+            toDateStrippedOfTimezone(offer.dates.end),
+            FORMAT_ISO_DATE_ONLY
+          )
         : DEFAULT_EAC_FORM_VALUES.endingDate,
     hour:
       isCollectiveOfferTemplate(offer) && offer.dates
