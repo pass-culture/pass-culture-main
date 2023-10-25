@@ -141,8 +141,8 @@ const Homepage = (): JSX.Element => {
           statsRef={statsRef}
         />
 
-        {isStatisticsDashboardEnabled && (
-          <StatisticsDashboard offererId={selectedOffererId} />
+        {isStatisticsDashboardEnabled && selectedOfferer !== null && (
+          <StatisticsDashboard offerer={selectedOfferer} />
         )}
 
         <section className="h-section">
