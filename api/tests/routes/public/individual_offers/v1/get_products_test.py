@@ -84,6 +84,14 @@ class GetProductsTest:
         assert response.status_code == 200
         assert [product["id"] for product in response.json["products"]] == [offer.id]
 
+    def test_get_offer_with_more_than_1000_description(self, client):
+        venue, _ = utils.create_offerer_provider_linked_to_venue()
+        offers_factories.ThingOfferFactory(venue=venue, description="a" * 1001)
+        response = client.with_explicit_token(offerers_factories.DEFAULT_CLEAR_API_KEY).get(
+            f"/public/offers/v1/products?venueId={venue.id}"
+        )
+        assert response.status_code == 200
+
     def test_404_when_venue_id_not_tied_to_api_key(self, client):
         utils.create_offerer_provider_linked_to_venue()
         unrelated_venue = offerers_factories.VenueFactory()
