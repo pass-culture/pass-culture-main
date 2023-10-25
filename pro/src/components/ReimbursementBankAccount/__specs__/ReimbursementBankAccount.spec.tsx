@@ -196,7 +196,7 @@ describe('ReimbursementBankAccount', () => {
     ).toBeInTheDocument()
   })
 
-  it('should render with all venues linked to the account', () => {
+  it('should not render error and warning messages when all venues are linked', () => {
     render(
       <ReimbursementBankAccount
         bankAccount={bankAccount}
