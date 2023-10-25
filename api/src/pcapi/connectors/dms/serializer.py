@@ -2,18 +2,18 @@ from datetime import datetime
 import logging
 import re
 from typing import Any
-from typing import Type
 
 from dateutil import parser as date_parser
-import pydantic.v1 as pydantic_v1
+from pydantic.v1 import root_validator
 
 from pcapi.connectors.dms import models as dms_models
-from pcapi.core.finance.models import BankInformationStatus
+from pcapi.core.finance import models as finance_models
 from pcapi.core.finance.utils import format_raw_iban_and_bic
 from pcapi.core.fraud import api as fraud_api
 from pcapi.core.fraud import models as fraud_models
 from pcapi.core.users import models as users_models
 from pcapi.domain.demarches_simplifiees import get_status_from_demarches_simplifiees_application_state_v2
+from pcapi.routes.serialization import BaseModel
 from pcapi.utils.date import FrenchParserInfo
 
 
@@ -169,26 +169,23 @@ def _parse_dms_civility(civility: dms_models.Civility) -> users_models.GenderEnu
     return None
 
 
-class ApplicationDetail(pydantic_v1.BaseModel):
-    status: BankInformationStatus
+class ApplicationDetail(BaseModel):
+    procedure_version: int
     application_id: int
     dossier_id: str
     modification_date: datetime
     siren: str | None = None
-    iban: str | None = None
-    bic: str | None = None
+    iban: str
+    bic: str
     siret: str | None = None
-    venue_name: str | None = None
     dms_token: str | None = None
     error_annotation_id: str | None = None
     venue_url_annotation_id: str | None = None
 
-    @classmethod
-    def parse_obj(cls: Type["ApplicationDetail"], obj: dict) -> "ApplicationDetail":
+    @root_validator(pre=True)
+    def to_representation(cls: "ApplicationDetail", obj: dict) -> dict:
         to_representation: dict[str, Any] = {}
-        to_representation["status"] = get_status_from_demarches_simplifiees_application_state_v2(
-            dms_models.GraphQLApplicationStates(obj["status"])
-        )
+        to_representation["procedure_version"] = obj["application_type"]
         to_representation["application_id"] = obj["application_id"]
         to_representation["dossier_id"] = obj["dossier_id"]
         to_representation["siren"] = obj.get("siren")
@@ -202,4 +199,16 @@ class ApplicationDetail(pydantic_v1.BaseModel):
         to_representation["error_annotation_id"] = obj["error_annotation_id"]
         to_representation["venue_url_annotation_id"] = obj["venue_url_annotation_id"]
 
-        return cls(**to_representation)
+        return to_representation
+
+
+class ApplicationDetailOldJourney(ApplicationDetail):
+    status: finance_models.BankInformationStatus
+
+    @root_validator(pre=True)
+    def to_representation(cls: "ApplicationDetailOldJourney", obj: dict) -> dict:
+        to_representation = super().to_representation(obj)
+        to_representation["status"] = get_status_from_demarches_simplifiees_application_state_v2(
+            dms_models.GraphQLApplicationStates(obj["status"])
+        )
+        return to_representation

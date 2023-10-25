@@ -3,7 +3,8 @@ import logging
 
 from pcapi.connectors.dms import api as ds_api
 from pcapi.connectors.dms import models as ds_models
-from pcapi.domain.demarches_simplifiees import ds_bank_information_application_details_from_raw_data
+from pcapi.connectors.dms.serializer import ApplicationDetailOldJourney
+from pcapi.domain.demarches_simplifiees import parse_raw_bank_info_data
 from pcapi.infrastructure.repository.bank_informations.bank_informations_sql_repository import (
     BankInformationsSQLRepository,
 )
@@ -62,7 +63,7 @@ def update_ds_applications_for_procedure(procedure_number: int, since: datetime.
     procedure_version = PROCEDURE_ID_VERSION_MAP[str(procedure_number)]
 
     for node in ds_client.get_pro_bank_nodes_states(procedure_number=procedure_number, since=since):
-        application_detail = ds_bank_information_application_details_from_raw_data(node, procedure_version)
+        data = parse_raw_bank_info_data(node, procedure_version)
         try:
             SaveVenueBankInformations = SaveVenueBankInformationsFactory.get(procedure_id=str(procedure_number))
             save_venue_bank_informations = SaveVenueBankInformations(
@@ -70,7 +71,7 @@ def update_ds_applications_for_procedure(procedure_number: int, since: datetime.
                 bank_informations_repository=BankInformationsSQLRepository(),
             )
             save_venue_bank_informations.execute(
-                application_details=application_detail,
+                application_details=ApplicationDetailOldJourney(**{"application_type": procedure_version, **data})
             )
         except Exception as exc:  # pylint: disable=broad-exception-caught
             logger.exception(
