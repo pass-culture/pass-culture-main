@@ -226,7 +226,7 @@ describe('components | BookingsRecapTable', () => {
     ).toBeInTheDocument()
   })
 
-  it('should reset filters when clicking on "afficher toutes les réservations"', async () => {
+  it('should reset filters when clicking on "Réinitialiser les filtres"', async () => {
     const props: Props = {
       ...defaultProps,
       bookingsRecap: [bookingRecapFactory()],
@@ -237,7 +237,7 @@ describe('components | BookingsRecapTable', () => {
     await userEvent.type(screen.getByRole('textbox'), 'Le nom de l’offre 2')
 
     const displayAllBookingsButton = screen.getByRole('button', {
-      name: /afficher toutes les réservations/i,
+      name: /Réinitialiser les filtres/i,
     })
 
     await userEvent.click(displayAllBookingsButton)
