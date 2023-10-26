@@ -1,13 +1,13 @@
-import { screen } from '@testing-library/react'
+import { screen, waitFor } from '@testing-library/react'
 import { userEvent } from '@testing-library/user-event'
 import React from 'react'
 import { generatePath, Route, Routes } from 'react-router-dom'
 
+import { api } from 'apiClient/api'
 import { OfferStatus } from 'apiClient/v1'
 import { OFFER_WIZARD_STEP_IDS } from 'components/IndividualOfferBreadcrumb/constants'
 import { OFFER_WIZARD_MODE } from 'core/Offers/constants'
 import { getIndividualOfferPath } from 'core/Offers/utils/getIndividualOfferUrl'
-import * as useAnalytics from 'hooks/useAnalytics'
 import {
   individualOfferFactory,
   individualStockFactory,
@@ -15,8 +15,6 @@ import {
 import { renderWithProviders } from 'utils/renderWithProviders'
 
 import StockSection, { StockSectionProps } from '../StockSection'
-
-const mockLogEvent = vi.fn()
 
 const renderStockSection = (
   props: StockSectionProps,
@@ -46,31 +44,23 @@ const renderStockSection = (
           step: OFFER_WIZARD_STEP_IDS.STOCKS,
           mode: OFFER_WIZARD_MODE.CREATION,
         })}
-        element={<div>Offer V3 creation: page stocks</div>}
+        element={<div>Offer creation: page stocks</div>}
       />
       <Route
         path={getIndividualOfferPath({
           step: OFFER_WIZARD_STEP_IDS.STOCKS,
           mode: OFFER_WIZARD_MODE.EDITION,
         })}
-        element={<div>Offer V3 edition: page stocks</div>}
+        element={<div>Offer edition: page stocks</div>}
       />
     </Routes>,
     { initialRouterEntries: [url] }
   )
 
 describe('Summary stock section', () => {
-  let props: StockSectionProps
-
-  beforeEach(() => {
-    vi.spyOn(useAnalytics, 'default').mockImplementation(() => ({
-      logEvent: mockLogEvent,
-    }))
-  })
-
   describe('for general case', () => {
-    it('should render sold out warning', async () => {
-      props = {
+    it('should render sold out warning', () => {
+      const props = {
         offer: individualOfferFactory(
           {
             isEvent: false,
@@ -101,8 +91,8 @@ describe('Summary stock section', () => {
       expect(screen.getByText('0')).toBeInTheDocument()
     })
 
-    it('should render expired warning', async () => {
-      props = {
+    it('should render expired warning', () => {
+      const props = {
         offer: individualOfferFactory(
           {
             status: OfferStatus.EXPIRED,
@@ -132,8 +122,8 @@ describe('Summary stock section', () => {
       expect(screen.getByText(/Date limite de réservation/)).toBeInTheDocument()
     })
 
-    it('should render no stock warning', async () => {
-      props = {
+    it('should render no stock warning', () => {
+      const props = {
         offer: individualOfferFactory({
           status: OfferStatus.SOLD_OUT,
           isEvent: false,
@@ -161,8 +151,8 @@ describe('Summary stock section', () => {
   })
 
   describe('for stock thing', () => {
-    beforeEach(() => {
-      props = {
+    it('should render creation summary', async () => {
+      const props = {
         offer: individualOfferFactory(
           {
             status: OfferStatus.ACTIVE,
@@ -175,9 +165,7 @@ describe('Summary stock section', () => {
           })
         ),
       }
-    })
 
-    it('should render creation summary (v3)', async () => {
       renderStockSection(
         props,
         generatePath(
@@ -188,6 +176,7 @@ describe('Summary stock section', () => {
           { offerId: 'AA' }
         )
       )
+
       expect(
         screen.getByRole('heading', { name: /Stocks et prix/ })
       ).toBeInTheDocument()
@@ -197,12 +186,27 @@ describe('Summary stock section', () => {
 
       await userEvent.click(screen.getByRole('link', { name: /Modifier/ }))
       expect(
-        screen.getByText(/Offer V3 creation: page stocks/)
+        screen.getByText(/Offer creation: page stocks/)
       ).toBeInTheDocument()
     })
 
-    it('should render edition summary (v3)', async () => {
+    it('should render edition summary', async () => {
+      const props = {
+        offer: individualOfferFactory(
+          {
+            status: OfferStatus.ACTIVE,
+            isEvent: false,
+          },
+          individualStockFactory({
+            quantity: 10,
+            price: 20,
+            bookingLimitDatetime: null,
+          })
+        ),
+      }
+
       renderStockSection(props)
+
       expect(
         screen.getByRole('heading', { name: /Stocks et prix/ })
       ).toBeInTheDocument()
@@ -211,13 +215,11 @@ describe('Summary stock section', () => {
       ).not.toBeInTheDocument()
 
       await userEvent.click(screen.getByRole('link', { name: /Modifier/ }))
-      expect(
-        screen.getByText(/Offer V3 edition: page stocks/)
-      ).toBeInTheDocument()
+      expect(screen.getByText(/Offer edition: page stocks/)).toBeInTheDocument()
     })
 
-    it("should render booking limit date when it's given", async () => {
-      props = {
+    it("should render booking limit date when it's given", () => {
+      const props = {
         offer: individualOfferFactory(
           {
             status: OfferStatus.EXPIRED,
@@ -233,10 +235,11 @@ describe('Summary stock section', () => {
     })
 
     it('should render quantity as "Illimité" when quantity is null or undefined', () => {
-      props = {
+      const props = {
         offer: individualOfferFactory(
           {
             status: OfferStatus.ACTIVE,
+            isEvent: false,
           },
           individualStockFactory({
             quantity: null,
@@ -247,35 +250,23 @@ describe('Summary stock section', () => {
       }
 
       renderStockSection(props)
-      expect(screen.getByText('Illimitée')).toBeInTheDocument()
+
+      expect(screen.getByText('Illimité')).toBeInTheDocument()
     })
   })
 
   describe('for stock event', () => {
-    beforeEach(() => {
-      props = {
+    it('should render creation summary', async () => {
+      vi.spyOn(api, 'getStocksStats').mockResolvedValueOnce({})
+
+      const props = {
         offer: individualOfferFactory({
           status: OfferStatus.ACTIVE,
           isEvent: true,
-          stocks: [
-            individualStockFactory({
-              quantity: 10,
-              price: 20,
-              bookingLimitDatetime: '12/03/2020',
-              beginningDatetime: '12/03/2020',
-            }),
-            individualStockFactory({
-              quantity: 10,
-              price: 20,
-              bookingLimitDatetime: '12/03/2020',
-              beginningDatetime: '12/03/2020',
-            }),
-          ],
+          stocks: [],
         }),
       }
-    })
 
-    it('should render creation summary (v3)', async () => {
       renderStockSection(
         props,
         generatePath(
@@ -286,69 +277,50 @@ describe('Summary stock section', () => {
           { offerId: 'AA' }
         )
       )
+
+      await waitFor(() => {
+        expect(api.getStocksStats).toHaveBeenCalled()
+      })
+
       expect(
         screen.getByRole('heading', { name: /Dates et capacité/ })
       ).toBeInTheDocument()
 
-      await userEvent.click(screen.getByRole('link', { name: /Modifier/ }))
       expect(
-        screen.getByText(/Offer V3 creation: page stocks/)
+        screen.getByText('Vous n’avez aucun stock renseigné.')
       ).toBeInTheDocument()
-    })
 
-    it('should render edition summary (v3)', async () => {
-      renderStockSection(props)
-      expect(
-        screen.getByRole('heading', { name: /Dates et capacité/ })
-      ).toBeInTheDocument()
+      expect(screen.queryByText('Illimitée')).not.toBeInTheDocument()
 
       await userEvent.click(screen.getByRole('link', { name: /Modifier/ }))
       expect(
-        screen.getByText(/Offer V3 edition: page stocks/)
+        screen.getByText(/Offer creation: page stocks/)
       ).toBeInTheDocument()
     })
 
-    it('should display or not all stocks', async () => {
-      props = {
+    it('should render edition summary', async () => {
+      vi.spyOn(api, 'getStocksStats').mockResolvedValueOnce({})
+
+      const props = {
         offer: individualOfferFactory({
           status: OfferStatus.ACTIVE,
-          stocks: [
-            individualStockFactory({
-              quantity: 10,
-              price: 20,
-              bookingLimitDatetime: '12/03/2020',
-              beginningDatetime: '12/03/2020',
-            }),
-            individualStockFactory({
-              quantity: 10,
-              price: 20,
-              bookingLimitDatetime: '12/03/2020',
-              beginningDatetime: '12/03/2020',
-            }),
-            individualStockFactory({
-              quantity: null,
-              price: 20,
-              bookingLimitDatetime: '12/03/2020',
-              beginningDatetime: '12/03/2020',
-            }),
-          ],
+          isEvent: true,
+          stocks: [],
         }),
       }
 
-      renderStockSection(
-        props,
-        generatePath(
-          getIndividualOfferPath({
-            step: OFFER_WIZARD_STEP_IDS.SUMMARY,
-            mode: OFFER_WIZARD_MODE.CREATION,
-          }),
-          { offerId: 'AA' }
-        )
-      )
+      renderStockSection(props)
+
+      await waitFor(() => {
+        expect(api.getStocksStats).toHaveBeenCalled()
+      })
+
       expect(
         screen.getByRole('heading', { name: /Dates et capacité/ })
       ).toBeInTheDocument()
-      expect(screen.getAllByText(/Illimité/)).toHaveLength(1)
+
+      await userEvent.click(screen.getByRole('link', { name: /Modifier/ }))
+      expect(screen.getByText(/Offer edition: page stocks/)).toBeInTheDocument()
     })
   })
 })
