@@ -9,6 +9,7 @@ from pcapi.core.categories import categories
 from pcapi.core.categories import subcategories_v2 as subcategories
 from pcapi.core.educational import factories as educational_factories
 from pcapi.core.educational import models as educational_models
+from pcapi.core.finance import api as finance_api
 from pcapi.core.finance import conf as finance_conf
 from pcapi.core.finance import factories as finance_factories
 from pcapi.core.finance import models as finance_models
@@ -540,7 +541,7 @@ class GetCollectiveOfferDetailTest(GetEndpointHelper):
             collectiveStock__beginningDatetime=event_date,
         )
         url = url_for(self.endpoint, collective_offer_id=collective_booking.collectiveStock.collectiveOffer.id)
-        with assert_num_queries(5):
+        with assert_num_queries(4):
             response = authenticated_client.get(url)
 
         # then
@@ -605,7 +606,7 @@ class GetCollectiveOfferDetailTest(GetEndpointHelper):
             collectiveStock__collectiveOffer__lastValidationAuthor=legit_user,
         )
         url = url_for(self.endpoint, collective_offer_id=collective_booking.collectiveStock.collectiveOffer.id)
-        with assert_num_queries(5):  # session + user + offer + pricing + loaded data
+        with assert_num_queries(4):  # session + user + offer + pricing + loaded data
             response = authenticated_client.get(url)
 
         # then
@@ -625,7 +626,7 @@ class GetCollectiveOfferDetailTest(GetEndpointHelper):
             collectiveStock__collectiveOffer__lastValidationAuthor=legit_user,
         )
         url = url_for(self.endpoint, collective_offer_id=collective_booking.collectiveStock.collectiveOffer.id)
-        with assert_num_queries(5):  # session + user + offer + pricing + loaded data
+        with assert_num_queries(4):  # session + user + offer + pricing + loaded data
             response = authenticated_client.get(url)
 
         # then
@@ -647,13 +648,17 @@ class PostEditCollectiveOfferPriceTest(PostEndpointHelper):
     needed_permission = perm_models.Permissions.ADVANCED_PRO_SUPPORT
 
     def test_nominal(self, legit_user, authenticated_client):
-        event_date = datetime.datetime.utcnow() + datetime.timedelta(days=1)
+        venue = offerers_factories.VenueFactory(pricing_point="self")
+        date_used = datetime.datetime.utcnow() - datetime.timedelta(hours=72)
         # when
-        collective_booking = educational_factories.CollectiveBookingFactory(
+        collective_booking = educational_factories.UsedCollectiveBookingFactory(
             collectiveStock__price=Decimal(100.00),
             collectiveStock__numberOfTickets=25,
-            collectiveStock__beginningDatetime=event_date,
+            collectiveStock__beginningDatetime=date_used,
+            venue=venue,
+            dateUsed=date_used,
         )
+        finance_api.add_event(finance_models.FinanceEventMotive.BOOKING_USED, booking=collective_booking, commit=True)
 
         response = self.post_to_endpoint(
             authenticated_client,
@@ -836,33 +841,3 @@ class PostEditCollectiveOfferPriceTest(PostEndpointHelper):
             assert response.status_code == 303
             assert collective_booking.collectiveStock.price == 1
             assert collective_booking.collectiveStock.numberOfTickets == 50
-
-    @pytest.mark.parametrize(
-        "booking_status",
-        [educational_models.CollectiveBookingStatus.USED, educational_models.CollectiveBookingStatus.CONFIRMED],
-    )
-    def test_cannot_edit_offer_price(self, legit_user, authenticated_client, booking_status):
-        now = datetime.datetime.utcnow()
-        # when
-        collective_booking = educational_factories.CollectiveBookingFactory(
-            collectiveStock__price=Decimal(100.00),
-            collectiveStock__numberOfTickets=25,
-            collectiveStock__beginningDatetime=now,
-            status=booking_status,
-            dateUsed=now - datetime.timedelta(days=3),
-            confirmationDate=now - datetime.timedelta(days=3),
-        )
-        response = self.post_to_endpoint(
-            authenticated_client,
-            form={"numberOfTickets": 50, "price": 1},
-            collective_offer_id=collective_booking.collectiveStock.collectiveOffer.id,
-        )
-
-        # then
-        assert response.status_code == 303
-        assert collective_booking.collectiveStock.price == 100
-        assert collective_booking.collectiveStock.numberOfTickets == 25
-        assert (
-            html_parser.extract_alert(authenticated_client.get(response.location).data)
-            == "Cette offre n'est pas modifiable"
-        )
