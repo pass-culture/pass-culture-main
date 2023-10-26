@@ -183,6 +183,7 @@ class OfferAdvancedSearchSubForm(utils.PCForm):
         "Tags",
         multiple=True,
         choices=[],
+        coerce=int,
         validate_choice=False,
         endpoint="backoffice_web.autocomplete_criteria",
         search_inline=True,

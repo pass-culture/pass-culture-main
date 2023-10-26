@@ -353,21 +353,51 @@ class ListOffersTest(GetEndpointHelper):
         rows = html_parser.extract_table_rows(response.data)
         assert set(int(row["ID"]) for row in rows) == {offers[1].id}
 
-    def test_list_offers_advanced_search_by_criteria(self, authenticated_client, criteria, offers):
-        criterion_id = criteria[0].id
+    @pytest.mark.parametrize(
+        "operator,criteria_indexes,expected_offer_indexes",
+        [
+            ("IN", [0], [0, 2]),
+            ("NOT_IN", [0], [1]),
+            ("NOT_IN", [1], [0, 1]),
+            ("NOT_IN", [2], [0, 1, 2]),
+            ("NOT_IN", [0, 1], [1]),
+            ("NOT_EXIST", [], [1]),
+        ],
+    )
+    def test_list_offers_advanced_search_by_criterion(
+        self, authenticated_client, criteria, offers, operator, criteria_indexes, expected_offer_indexes
+    ):
         query_args = {
             "search-3-search_field": "TAG",
-            "search-3-operator": "IN",
-            "search-3-criteria": criterion_id,
+            "search-3-operator": operator,
+            "search-3-criteria": [criteria[criterion_index].id for criterion_index in criteria_indexes],
         }
         with assert_num_queries(
-            self.expected_num_queries + 1
-        ):  # +1 because of reloading selected criterion in the form
+            self.expected_num_queries + int(bool(criteria_indexes))
+        ):  # +1 because of reloading selected criterion in the form when criteria arg is set
             response = authenticated_client.get(url_for(self.endpoint, **query_args))
             assert response.status_code == 200
 
         rows = html_parser.extract_table_rows(response.data)
-        assert set(int(row["ID"]) for row in rows) == {offers[0].id, offers[2].id}
+        assert set(int(row["ID"]) for row in rows) == {offers[index].id for index in expected_offer_indexes}
+
+    def test_list_offers_advanced_search_by_in_and_not_in_criteria(self, authenticated_client, criteria, offers):
+        query_args = {
+            "search-0-search_field": "TAG",
+            "search-0-operator": "IN",
+            "search-0-criteria": criteria[0].id,
+            "search-2-search_field": "TAG",
+            "search-2-operator": "NOT_IN",
+            "search-2-criteria": criteria[1].id,
+        }
+        with assert_num_queries(
+            self.expected_num_queries + 2
+        ):  # +2 because of reloading selected criterion in the form, in both filters
+            response = authenticated_client.get(url_for(self.endpoint, **query_args))
+            assert response.status_code == 200
+
+        rows = html_parser.extract_table_rows(response.data)
+        assert set(int(row["ID"]) for row in rows) == {offers[0].id}
 
     def test_list_offers_advanced_search_by_category(self, authenticated_client, offers):
         query_args = {
@@ -642,6 +672,18 @@ class ListOffersTest(GetEndpointHelper):
             html_parser.extract_alert(response.data)
             == "Le filtre « Date de création » est vide. Le filtre « Date limite de réservation » est vide."
         )
+
+    def test_list_offers_advanced_search_by_invalid_criteria(self, authenticated_client, offers):
+        query_args = {
+            "search-0-search_field": "TAG",
+            "search-0-operator": "IN",
+            "search-0-criteria": "A",
+        }
+        with assert_num_queries(2):  # only session + current user, before form validation
+            response = authenticated_client.get(url_for(self.endpoint, **query_args))
+            assert response.status_code == 400
+
+        assert html_parser.extract_alert(response.data) == "Le filtre « Tag » est vide."
 
     # === Result content ===
 
