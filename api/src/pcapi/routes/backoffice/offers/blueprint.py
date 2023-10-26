@@ -204,6 +204,9 @@ def _get_offer_ids_query(form: forms.InternalSearchForm) -> BaseQuery:
                 offerers_models.Venue.managingOffererId.in_(form.offerer.data)
             )
 
+        if form.status.data:
+            query = query.filter(offers_models.Offer.validation.in_(form.status.data))  # type: ignore [attr-defined]
+
         if form.q.data:
             search_query = form.q.data
             or_filters = []

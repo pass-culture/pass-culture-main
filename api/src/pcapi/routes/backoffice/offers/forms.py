@@ -338,12 +338,18 @@ class GetOffersSearchForm(GetOffersBaseFields):
         endpoint="backoffice_web.autocomplete_offerers",
         search_inline=True,
     )
+    status = fields.PCSelectMultipleField(
+        "États",
+        choices=utils.choices_from_enum(OfferValidationStatus, formatter=filters.format_offer_validation_status),
+        search_inline=True,
+    )
 
     def __init__(self, *args: typing.Any, **kwargs: typing.Any) -> None:
         super().__init__(*args, **kwargs)
         self._fields.move_to_end("q", last=False)
         self._fields.move_to_end("category")
         self._fields.move_to_end("offerer")
+        self._fields.move_to_end("status")
         self._fields.move_to_end("limit")
         autocomplete.prefill_offerers_choices(self.offerer)
 
@@ -353,6 +359,7 @@ class GetOffersSearchForm(GetOffersBaseFields):
                 self.q.data,
                 self.category.data,
                 self.offerer.data,
+                self.status.data,
             )
         )
         return empty and super().is_empty()
