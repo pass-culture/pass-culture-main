@@ -52,7 +52,7 @@ describe('LinkVenueCallout', () => {
       },
     ])(
       'should not render the add link venue banner if the offerer  hasValidBankAccount = $hasValidBankAccount and venuesWithNonFreeOffersWithoutBankAccounts = $venuesWithNonFreeOffersWithoutBankAccounts',
-      async ({
+      ({
         hasValidBankAccount,
         venuesWithNonFreeOffersWithoutBankAccounts,
         ...rest
