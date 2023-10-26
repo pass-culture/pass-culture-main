@@ -190,7 +190,7 @@ const StocksEventList = ({
         )}
 
         <div className={styles['stocks-count']}>
-          {stocks.length} occurence{stocks.length !== 1 && 's'}
+          {stocks.length} occurrence{stocks.length !== 1 && 's'}
         </div>
       </div>
 
