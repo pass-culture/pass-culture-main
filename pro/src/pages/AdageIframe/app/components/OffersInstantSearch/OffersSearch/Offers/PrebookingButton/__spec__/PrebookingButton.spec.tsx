@@ -43,7 +43,7 @@ describe('offer', () => {
   })
 
   describe('offer item', () => {
-    it('should not display when prebooking is not activated', async () => {
+    it('should not display when prebooking is not activated', () => {
       // Given
       renderWithProviders(
         <PrebookingButton
@@ -57,7 +57,7 @@ describe('offer', () => {
       expect(screen.queryByText('Préréserver')).not.toBeInTheDocument()
     })
 
-    it('should display when prebooking is activated', async () => {
+    it('should display when prebooking is activated', () => {
       // Given
       renderWithProviders(
         <PrebookingButton

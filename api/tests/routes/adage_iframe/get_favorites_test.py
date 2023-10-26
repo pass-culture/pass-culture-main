@@ -80,6 +80,7 @@ class GetFavoriteOfferTest:
                         "publicName": stock.collectiveOffer.venue.publicName,
                         "coordinates": {"latitude": 48.87004, "longitude": 2.3785},
                         "managingOfferer": {"name": stock.collectiveOffer.venue.managingOfferer.name},
+                        "adageId": None,
                     },
                     "students": ["Lycée - Seconde"],
                     "offerVenue": {
@@ -145,6 +146,7 @@ class GetFavoriteOfferTest:
                         "publicName": collective_offer_template.venue.publicName,
                         "coordinates": {"latitude": 48.87004, "longitude": 2.3785},
                         "managingOfferer": {"name": collective_offer_template.venue.managingOfferer.name},
+                        "adageId": None,
                     },
                     "students": ["Lycée - Seconde"],
                     "offerVenue": {

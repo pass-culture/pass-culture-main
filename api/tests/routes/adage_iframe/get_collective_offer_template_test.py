@@ -68,6 +68,7 @@ class CollectiveOfferTemplateTest:
                 "postalCode": "75000",
                 "publicName": offer.venue.publicName,
                 "managingOfferer": {"name": offer.venue.managingOfferer.name},
+                "adageId": None,
             },
             "interventionArea": offer.interventionArea,
             "audioDisabilityCompliant": False,
