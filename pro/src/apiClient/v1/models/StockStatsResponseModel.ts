@@ -4,9 +4,9 @@
 /* eslint-disable */
 
 export type StockStatsResponseModel = {
-  newest_stock?: string | null;
-  oldest_stock?: string | null;
-  remaining_quantity?: number | null;
-  stock_count?: number | null;
+  newestStock?: string | null;
+  oldestStock?: string | null;
+  remainingQuantity?: number | null;
+  stockCount?: number | null;
 };
 
