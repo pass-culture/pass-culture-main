@@ -202,6 +202,16 @@ class ListOffersTest(GetEndpointHelper):
         rows = html_parser.extract_table_rows(response.data)
         assert set(int(row["ID"]) for row in rows) == {offers[1].id}
 
+    def test_list_offers_by_status(self, authenticated_client, offers):
+        status = offers[2].validation
+        with assert_num_queries(self.expected_num_queries):
+            response = authenticated_client.get(url_for(self.endpoint, status=[status.value]))
+
+        assert response.status_code == 200
+        rows = html_parser.extract_table_rows(response.data)
+        assert set(int(row["ID"]) for row in rows) == {offers[2].id}
+        assert rows[0]["État"] == "Rejetée"
+
     # === Advanced search ===
 
     def test_list_offers_advanced_search_by_date(self, authenticated_client, offers):
