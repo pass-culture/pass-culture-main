@@ -77,8 +77,8 @@ class Returns200Test:
         # Then
         assert response.status_code == 200
         assert response.json == {
-            "stock_count": 2,
-            "oldest_stock": "2020-10-15T01:00:00",
-            "newest_stock": "2020-10-15T02:00:00",
-            "remaining_quantity": 15,
+            "stockCount": 2,
+            "oldestStock": "2020-10-15T01:00:00Z",
+            "newestStock": "2020-10-15T02:00:00Z",
+            "remainingQuantity": 15,
         }
