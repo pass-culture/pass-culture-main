@@ -112,8 +112,8 @@ def assert_user_equals(result_card_text: str, expected_user: users_models.User):
     assert f"{expected_user.firstName} {expected_user.lastName} " in result_card_text
     assert f"User ID : {expected_user.id} " in result_card_text
     assert f"Email : {expected_user.email} " in result_card_text
-    if expected_user.phoneNumber:
-        assert f"Tél : {expected_user.phoneNumber} " in result_card_text
+    if birth_date := expected_user.validatedBirthDate or expected_user.dateOfBirth:
+        assert f"Date de naissance : {birth_date.strftime('%d/%m/%Y')} " in result_card_text
     if users_models.UserRole.BENEFICIARY in expected_user.roles:
         assert "Pass 18 " in result_card_text
     if users_models.UserRole.UNDERAGE_BENEFICIARY in expected_user.roles:
