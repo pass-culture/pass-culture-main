@@ -27,6 +27,9 @@ from pcapi.sandboxes.scripts.creators.industrial.create_industrial_offerer_tags 
 from pcapi.sandboxes.scripts.creators.industrial.create_industrial_offerer_with_custom_reimbursement_rule import (
     create_industrial_offerer_with_custom_reimbursement_rule,
 )
+from pcapi.sandboxes.scripts.creators.industrial.create_industrial_offerers_stats import (
+    create_industrial_offerers_stats,
+)
 from pcapi.sandboxes.scripts.creators.industrial.create_industrial_offerers_with_pro_users import *
 from pcapi.sandboxes.scripts.creators.industrial.create_industrial_offers_with_activation_codes import (
     create_industrial_offers_with_activation_codes,
@@ -80,6 +83,8 @@ def save_industrial_sandbox() -> None:
     event_offers_by_name = create_industrial_event_offers(event_products_by_name, offerers_by_name)
 
     thing_offers_by_name = create_industrial_thing_offers(thing_products_by_name, offerers_by_name, venues_by_name)
+
+    create_industrial_offerers_stats(offerers_by_name, event_offers_by_name)
 
     create_industrial_draft_offers(offerers_by_name)
 

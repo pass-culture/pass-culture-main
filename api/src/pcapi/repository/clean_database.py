@@ -85,6 +85,7 @@ def clean_all_database(*args, **kwargs):  # type: ignore [no-untyped-def]
     offerers_models.UserOfferer.query.delete()
     offerers_models.ApiKey.query.delete()
     offerers_models.Offerer.query.delete()
+    offerers_models.OffererStats.query.delete()
     offerers_models.OffererTag.query.delete()
     offerers_models.OffererTagCategory.query.delete()
     finance_models.Recredit.query.delete()
