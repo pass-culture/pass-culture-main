@@ -8,7 +8,7 @@ import { Events } from 'core/FirebaseEvents/constants'
 import useAnalytics from 'hooks/useAnalytics'
 import { SortingMode, useColumnSorting } from 'hooks/useColumnSorting'
 import useNotification from 'hooks/useNotification'
-import { usePagination } from 'hooks/usePagination'
+import { usePaginationWithSearchParams } from 'hooks/usePagination'
 import fullTrashIcon from 'icons/full-trash.svg'
 import { getPriceCategoryOptions } from 'screens/IndividualOffer/StocksEventEdition/getPriceCategoryOptions'
 import { Button } from 'ui-kit'
@@ -54,6 +54,7 @@ export interface StocksEventListProps {
   offerId: number
   setStocks?: (stocks: StocksEvent[]) => void
   readonly?: boolean
+  stockCount: number
 }
 
 const DELETE_STOCKS_CHUNK_SIZE = 50
@@ -70,6 +71,7 @@ const StocksEventList = ({
   departmentCode,
   offerId,
   setStocks,
+  stockCount,
   readonly = false,
 }: StocksEventListProps): JSX.Element => {
   const { logEvent } = useAnalytics()
@@ -84,9 +86,11 @@ const StocksEventList = ({
   const [dateFilter, setDateFilter] = useState<string>('')
   const [hourFilter, setHourFilter] = useState<string>('')
   const [priceCategoryFilter, setPriceCategoryFilter] = useState('')
+
   const onFilterChange = () => {
-    setPage(1)
+    // FIX ME: this is broken
     setIsCheckedArray(stocks.map(() => false))
+    firstPage()
   }
 
   const filteredStocks = filterAndSortStocks(
@@ -97,8 +101,8 @@ const StocksEventList = ({
     { dateFilter, hourFilter, priceCategoryFilter },
     departmentCode
   )
-  const { page, setPage, previousPage, nextPage, pageCount, currentPageItems } =
-    usePagination(filteredStocks, STOCKS_PER_PAGE)
+  const { page, previousPage, nextPage, pageCount, firstPage, lastPage } =
+    usePaginationWithSearchParams(STOCKS_PER_PAGE, stockCount)
 
   const areAllChecked = isCheckedArray.every((isChecked) => isChecked)
 
@@ -131,6 +135,8 @@ const StocksEventList = ({
       stockId: stockId,
     })
 
+    // FIX ME: this is broken
+    // if it's still here in pull request, please block it :)
     if (stocks.length % STOCKS_PER_PAGE === 0 && page === pageCount) {
       previousPage()
     }
@@ -181,7 +187,8 @@ const StocksEventList = ({
 
     const newLastPage = Math.ceil(newStocks.length / STOCKS_PER_PAGE)
     if (page > newLastPage) {
-      setPage(newLastPage)
+      // FIX ME: this is broken
+      lastPage()
     }
     notify.success(
       stocksIdToDelete.length === 1
@@ -412,7 +419,7 @@ const StocksEventList = ({
             />
           )}
 
-          {currentPageItems.map((stock, index) => {
+          {filteredStocks.map((stock, index) => {
             const beginningDay = formatLocalTimeDateString(
               stock.beginningDatetime,
               departmentCode,

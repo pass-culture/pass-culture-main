@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from 'react'
+import { useSearchParams } from 'react-router-dom'
 
 import { api } from 'apiClient/api'
 import { GetOfferStockResponseModel } from 'apiClient/v1'
@@ -18,35 +19,54 @@ import { serializeStockEvents } from './serializeStockEvents'
 const Stocks = (): JSX.Element | null => {
   const { offer, setOffer } = useIndividualOfferContext()
   const mode = useOfferWizardMode()
-  const [isLoading, setIsLoading] = useState(true)
   const [stockEvents, setStockEvents] = useState<StocksEvent[]>([])
   const [stocks, setStocks] = useState<GetOfferStockResponseModel[]>([])
+  const [stockCount, setStockCount] = useState<number>(0)
+  const [searchParams] = useSearchParams()
+  const page = searchParams.get('page')
 
   useEffect(() => {
+    // we set ignore variable to avoid race conditions
+    // see react doc:  https://react.dev/reference/react/useEffect#fetching-data-with-effects
+    let ignore = false
     async function loadStocks() {
       if (!offer) {
         return
       }
-      setIsLoading(true)
-      const response = await api.getStocks(offer.id)
-
-      if (offer?.isEvent) {
-        setStockEvents(serializeStockEvents(response.stocks))
-      } else {
-        setStocks(response.stocks)
+      const response = await api.getStocks(
+        offer.id,
+        undefined, // date
+        undefined, // time
+        undefined, // priceCategoryId
+        undefined, // orderBy
+        undefined, // orderByDesc
+        page ? Number(page) : 1
+      )
+      if (!ignore) {
+        if (offer?.isEvent) {
+          setStockEvents(serializeStockEvents(response.stocks))
+          setStockCount(response.stock_count)
+        } else {
+          setStocks(response.stocks)
+        }
       }
-      setIsLoading(false)
     }
     // eslint-disable-next-line @typescript-eslint/no-floating-promises
     loadStocks()
-  }, [])
+    return () => {
+      ignore = true
+    }
+  }, [page])
 
   // Here we display a spinner because when the router transitions from
   // Informations form to Stocks form the setOffer after the submit is not
   // propagated yet so there is a quick moment where the offer is null.
   // This is a temporary fix until we use a better pattern than the IndividualOfferWizard
   // to share the offer context
-  if (offer === null || isLoading || !offer.priceCategories) {
+  if (offer === null || !offer.priceCategories) {
+    // we don't want to display the spinner when stocks are loading
+    // it really looks bad for the stocks pagination
+    // (the spinner is displayed each time we change page)
     return <Spinner />
   }
 
@@ -63,6 +83,7 @@ const Stocks = (): JSX.Element | null => {
             offer={offer}
             stocks={stockEvents}
             setStocks={setStockEvents}
+            stockCount={stockCount}
           />
         ) : (
           <StocksEventEdition

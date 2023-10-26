@@ -12,7 +12,7 @@ import { isOfferDisabled } from 'core/Offers/utils'
 import { SelectOption } from 'custom_types/form'
 import { useOfferWizardMode } from 'hooks'
 import { SortingMode, useColumnSorting } from 'hooks/useColumnSorting'
-import { usePagination } from 'hooks/usePagination'
+import { usePaginationWithSearchParams } from 'hooks/usePagination'
 import fullTrashIcon from 'icons/full-trash.svg'
 import DialogStockEventDeleteConfirm from 'screens/IndividualOffer/DialogStockDeleteConfirm/DialogStockEventDeleteConfirm'
 import { DatePicker, Select, TextInput, TimePicker } from 'ui-kit'
@@ -99,8 +99,8 @@ const StockFormList = ({
 
   const isDisabled = offer.status ? isOfferDisabled(offer.status) : false
 
-  const { page, setPage, previousPage, nextPage, currentPageItems, pageCount } =
-    usePagination(values.stocks, STOCKS_PER_PAGE)
+  const { page, setPage, previousPage, nextPage, pageCount } =
+    usePaginationWithSearchParams(STOCKS_PER_PAGE)
 
   const computeMaxBookingLimitDatetime = (beginningDate: string) => {
     const [year, month, day] = beginningDate.split('-')
