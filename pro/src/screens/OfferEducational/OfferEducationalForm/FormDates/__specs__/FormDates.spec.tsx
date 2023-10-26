@@ -8,7 +8,7 @@ import {
   DEFAULT_EAC_FORM_VALUES,
   OfferEducationalFormValues,
 } from 'core/OfferEducational'
-import { validationSchema } from 'screens/OfferEducational/validationSchema'
+import { getOfferEducationalValidationSchema } from 'screens/OfferEducational/validationSchema'
 import { SubmitButton } from 'ui-kit'
 import { FORMAT_ISO_DATE_ONLY } from 'utils/date'
 
@@ -22,7 +22,7 @@ const renderFormDates = (
     <Formik
       initialValues={initialValues}
       onSubmit={vi.fn()}
-      validationSchema={validationSchema}
+      validationSchema={getOfferEducationalValidationSchema(true)}
     >
       {({ handleSubmit }) => (
         <form onSubmit={handleSubmit}>

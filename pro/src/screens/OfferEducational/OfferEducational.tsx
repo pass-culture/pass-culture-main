@@ -21,6 +21,7 @@ import postCollectiveOfferTemplateAdapter from 'core/OfferEducational/adapters/p
 import { computeInitialValuesFromOffer } from 'core/OfferEducational/utils/computeInitialValuesFromOffer'
 import { computeURLCollectiveOfferId } from 'core/OfferEducational/utils/computeURLCollectiveOfferId'
 import { SelectOption } from 'custom_types/form'
+import useActiveFeature from 'hooks/useActiveFeature'
 import useNotification from 'hooks/useNotification'
 import { patchCollectiveOfferTemplateAdapter } from 'pages/CollectiveOfferEdition/adapters/patchCollectiveOfferTemplateAdapter'
 import { queryParamsFromOfferer } from 'pages/Offers/utils/queryParamsFromOfferer'
@@ -28,7 +29,7 @@ import { queryParamsFromOfferer } from 'pages/Offers/utils/queryParamsFromOffere
 import styles from './OfferEducational.module.scss'
 import OfferEducationalForm from './OfferEducationalForm'
 import { useCollectiveOfferImageUpload } from './useCollectiveOfferImageUpload'
-import { validationSchema } from './validationSchema'
+import { getOfferEducationalValidationSchema } from './validationSchema'
 
 export interface OfferEducationalProps {
   offer?: CollectiveOffer | CollectiveOfferTemplate
@@ -64,6 +65,10 @@ const OfferEducational = ({
   const location = useLocation()
   const { imageOffer, onImageDelete, onImageUpload, handleImageOnSubmit } =
     useCollectiveOfferImageUpload(offer, isTemplate)
+
+  const templateOfferDatesEnabled = useActiveFeature(
+    'WIP_ENABLE_DATES_OFFER_TEMPLATE'
+  )
 
   const {
     structure: offererId,
@@ -151,7 +156,9 @@ const OfferEducational = ({
   const { resetForm, ...formik } = useFormik({
     initialValues,
     onSubmit,
-    validationSchema,
+    validationSchema: getOfferEducationalValidationSchema(
+      templateOfferDatesEnabled
+    ),
   })
 
   return (
