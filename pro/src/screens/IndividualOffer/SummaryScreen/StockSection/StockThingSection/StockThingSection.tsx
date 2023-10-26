@@ -40,7 +40,7 @@ const StockThingSection = ({
         description={stock.quantity ?? 'Illimité'}
       />
 
-      {/* Some things offer can be duo like ESCAPE_GAME, CARTE_MUSEE or ABO_MUSEE  */}
+      {/* Some things offer can be duo like ESCAPE_GAME or CARTE_MUSEE */}
       {canBeDuo && (
         <SummaryLayout.Row
           title='Accepter les réservations "Duo"'

@@ -231,7 +231,7 @@ class OffersTest:
         assert response.json["withdrawalDetails"] == "modalité de retrait"
 
     def test_get_offer_with_unlimited_stock(self, client):
-        product = offers_factories.ProductFactory(thumbCount=1, subcategoryId=subcategories.ABO_MUSEE.id)
+        product = offers_factories.ProductFactory(thumbCount=1, subcategoryId=subcategories.CARTE_MUSEE.id)
         offer = offers_factories.OfferFactory(product=product, venue__isPermanent=True)
         offers_factories.ThingStockFactory(offer=offer, price=12.34, quantity=None)
 
@@ -242,9 +242,9 @@ class OffersTest:
         assert response.json["stocks"][0]["remainingQuantity"] is None
 
     def test_get_thing_offer(self, client):
-        product = offers_factories.ProductFactory(thumbCount=1, subcategoryId=subcategories.ABO_MUSEE.id)
+        product = offers_factories.ProductFactory(thumbCount=1, subcategoryId=subcategories.CARTE_MUSEE.id)
         offer = offers_factories.OfferFactory(
-            product=product, venue__isPermanent=True, subcategoryId=subcategories.ABO_MUSEE.id
+            product=product, venue__isPermanent=True, subcategoryId=subcategories.CARTE_MUSEE.id
         )
         offers_factories.ThingStockFactory(offer=offer, price=12.34)
 
@@ -257,7 +257,7 @@ class OffersTest:
         assert response.json["stocks"][0]["price"] == 1234
         assert response.json["stocks"][0]["priceCategoryLabel"] is None
         assert response.json["stocks"][0]["remainingQuantity"] == 1000
-        assert response.json["subcategoryId"] == "ABO_MUSEE"
+        assert response.json["subcategoryId"] == "CARTE_MUSEE"
         assert response.json["isEducational"] is False
         assert not response.json["isExpired"]
         assert response.json["venue"]["isPermanent"]

@@ -779,10 +779,10 @@ class GetBookingsTest:
     def test_get_free_bookings_in_subcategory(self, client):
         user = users_factories.BeneficiaryGrant18Factory(email=self.identifier)
         ongoing_booking = booking_factories.UsedBookingFactory(
-            user=user, stock=StockFactory(price=0, offer__subcategoryId=subcategories.ABO_MUSEE.id)
+            user=user, stock=StockFactory(price=0, offer__subcategoryId=subcategories.CARTE_MUSEE.id)
         )
         ended_booking = booking_factories.UsedBookingFactory(
-            user=user, stock=StockFactory(price=10, offer__subcategoryId=subcategories.ABO_MUSEE.id)
+            user=user, stock=StockFactory(price=10, offer__subcategoryId=subcategories.CARTE_MUSEE.id)
         )
 
         with assert_no_duplicated_queries():

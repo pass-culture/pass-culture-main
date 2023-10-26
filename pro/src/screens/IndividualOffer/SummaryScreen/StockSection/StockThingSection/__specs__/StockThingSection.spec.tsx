@@ -27,7 +27,7 @@ describe('StockThingSection', () => {
     expect(screen.queryByText(/Prix/)).not.toBeInTheDocument()
   })
 
-  it('should render duo informations for can be duo things (like ESCAPE_GAME, CARTE_MUSEE or ABO_MUSEE)', () => {
+  it('should render duo informations for can be duo things (like ESCAPE_GAME or CARTE_MUSEE)', () => {
     const stock = individualStockFactory()
 
     renderWithProviders(
