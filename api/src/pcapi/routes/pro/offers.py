@@ -181,10 +181,10 @@ def get_stocks_stats(offer_id: int) -> offers_serialize.StockStatsResponseModel:
     rest.check_user_has_access_to_offerer(current_user, offer.venue.managingOffererId)
     stocks_stats = offers_api.get_stocks_stats(offer_id=offer_id)
     return offers_serialize.StockStatsResponseModel(
-        oldest_stock=stocks_stats.oldest_stock,
-        newest_stock=stocks_stats.newest_stock,
-        stock_count=stocks_stats.stock_count,
-        remaining_quantity=stocks_stats.remaining_quantity,
+        oldestStock=stocks_stats.oldest_stock,
+        newestStock=stocks_stats.newest_stock,
+        stockCount=stocks_stats.stock_count,
+        remainingQuantity=stocks_stats.remaining_quantity,
     )
 
 

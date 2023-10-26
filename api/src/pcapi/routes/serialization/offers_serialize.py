@@ -369,10 +369,13 @@ class GetStocksResponseModel(BaseModel):
 
 
 class StockStatsResponseModel(BaseModel):
-    oldest_stock: datetime.datetime | None
-    newest_stock: datetime.datetime | None
-    stock_count: int | None
-    remaining_quantity: int | None
+    oldestStock: datetime.datetime | None
+    newestStock: datetime.datetime | None
+    stockCount: int | None
+    remainingQuantity: int | None
+
+    class Config:
+        json_encoders = {datetime.datetime: format_into_utc_date}
 
 
 class StocksQueryModel(BaseModel):
