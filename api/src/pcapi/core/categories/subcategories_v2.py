@@ -923,25 +923,7 @@ CARTE_MUSEE = Subcategory(
     is_physical_deposit=False,
     reimbursement_rule=ReimbursementRuleChoices.STANDARD.value,
 )
-ABO_MUSEE = Subcategory(
-    id="ABO_MUSEE",
-    category=categories.MUSEE,
-    native_category=NativeCategory.ABONNEMENTS_MUSEE,
-    pro_label="Entrée libre ou abonnement musée, patrimoine…",
-    app_label="Entrée libre ou abonnement musée",
-    search_group_name=SearchGroups.MUSEES_VISITES_CULTURELLES.name,
-    homepage_label_name=HomepageLabels.MUSEE.name,
-    is_event=False,
-    conditional_fields={},
-    can_expire=True,
-    can_be_duo=True,
-    can_be_educational=False,
-    online_offline_platform=OnlineOfflinePlatformChoices.OFFLINE.value,
-    is_digital_deposit=False,
-    is_physical_deposit=False,
-    reimbursement_rule=ReimbursementRuleChoices.STANDARD.value,
-    is_selectable=False,
-)
+
 VISITE = Subcategory(
     id="VISITE",
     category=categories.MUSEE,
@@ -1869,7 +1851,6 @@ ALL_SUBCATEGORIES = (
     ABO_LIVRE_NUMERIQUE,
     ABO_LUDOTHEQUE,
     ABO_MEDIATHEQUE,
-    ABO_MUSEE,
     ABO_PLATEFORME_MUSIQUE,
     ABO_PLATEFORME_VIDEO,
     ABO_PRATIQUE_ART,
