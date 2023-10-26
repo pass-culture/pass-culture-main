@@ -31,7 +31,7 @@ export const INDIVIDUAL_BOOKING_STATUS_DISPLAY_INFORMATIONS = [
   {
     id: BOOKING_STATUS.BOOKED,
     status: 'Réservée',
-    label: 'Réservé',
+    label: 'Réservée',
     historyClassName: 'bs-history-booked',
     statusClassName: styles['booking-status-booked'],
     dateFormat: FORMAT_DD_MM_YYYY_HH_mm,

@@ -186,7 +186,7 @@ describe('BookingsStatusCell', () => {
 
     renderBookingStatusCell(props)
 
-    const historyCellReserved = screen.getByText('Réservé : 04/01/2020 20:31')
+    const historyCellReserved = screen.getByText('Réservée : 04/01/2020 20:31')
     expect(historyCellReserved).toBeInTheDocument()
     const historyCellValidated = screen.getByText(
       'Réservation validée : 05/01/2020 20:31'
