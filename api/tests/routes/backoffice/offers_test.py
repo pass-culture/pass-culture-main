@@ -116,6 +116,7 @@ class ListOffersTest(GetEndpointHelper):
         assert rows[0]["Nom de l'offre"] == offers[0].name
         assert rows[0]["Catégorie"] == offers[0].category.pro_label
         assert rows[0]["Sous-catégorie"] == offers[0].subcategory.pro_label
+        assert rows[0]["Stock réservé"] == "0"
         assert rows[0]["Stock restant"] == "Illimité"
         assert rows[0]["Tag"] == offers[0].criteria[0].name
         assert rows[0]["Pond."] == ""
@@ -149,7 +150,8 @@ class ListOffersTest(GetEndpointHelper):
         assert rows[0]["Nom de l'offre"] == offers[1].name
         assert rows[0]["Catégorie"] == offers[1].category.pro_label
         assert rows[0]["Sous-catégorie"] == offers[1].subcategory.pro_label
-        assert rows[0]["Stock restant"] == "15 / 20"
+        assert rows[0]["Stock réservé"] == "5"
+        assert rows[0]["Stock restant"] == "15"
         assert rows[0]["Tag"] == ""
         assert rows[0]["Pond."] == ""
         assert rows[0]["État"] == "Validée"
@@ -687,8 +689,10 @@ class ListOffersTest(GetEndpointHelper):
 
     # === Result content ===
 
-    @pytest.mark.parametrize("first_quantity,second_quantity,expected", [(10, 7, "12 / 17"), (5, 7, "7 / 12")])
-    def test_list_offers_check_stock_limited(self, authenticated_client, first_quantity, second_quantity, expected):
+    @pytest.mark.parametrize("first_quantity,second_quantity,expected_remaining", [(10, 7, 12), (5, 7, 7)])
+    def test_list_offers_check_stock_limited(
+        self, authenticated_client, first_quantity, second_quantity, expected_remaining
+    ):
         offer = offers_factories.OfferFactory()
         offers_factories.StockFactory(offer=offer, quantity=first_quantity, dnBookedQuantity=5)
         offers_factories.StockFactory(offer=offer, quantity=second_quantity, dnBookedQuantity=0)
@@ -699,7 +703,8 @@ class ListOffersTest(GetEndpointHelper):
             assert response.status_code == 200
 
         row = html_parser.extract_table_rows(response.data)[0]
-        assert row["Stock restant"] == expected
+        assert row["Stock réservé"] == "5"
+        assert row["Stock restant"] == str(expected_remaining)
 
     @pytest.mark.parametrize("first_quantity,second_quantity", [(None, None), (None, 10), (5, None)])
     def test_list_offers_check_stock_unlimited(self, authenticated_client, first_quantity, second_quantity):
@@ -713,6 +718,7 @@ class ListOffersTest(GetEndpointHelper):
             assert response.status_code == 200
 
         row = html_parser.extract_table_rows(response.data)[0]
+        assert row["Stock réservé"] == "5"
         assert row["Stock restant"] == "Illimité"
 
     def test_list_offers_check_stock_sold_out(self, authenticated_client):
@@ -726,7 +732,8 @@ class ListOffersTest(GetEndpointHelper):
             assert response.status_code == 200
 
         row = html_parser.extract_table_rows(response.data)[0]
-        assert row["Stock restant"] == "0 / 12"
+        assert row["Stock réservé"] == "12"
+        assert row["Stock restant"] == "0"
 
     def test_list_offers_check_stock_expired(self, authenticated_client):
         offer = offers_factories.EventOfferFactory()
@@ -754,7 +761,8 @@ class ListOffersTest(GetEndpointHelper):
             assert response.status_code == 200
 
         row = html_parser.extract_table_rows(response.data)[0]
-        assert row["Stock restant"] == "0 / 12"
+        assert row["Stock réservé"] == "12"
+        assert row["Stock restant"] == "0"
 
     def test_list_offers_check_stock_not_active(self, authenticated_client):
         for status in offers_models.OfferValidationStatus:
@@ -770,6 +778,7 @@ class ListOffersTest(GetEndpointHelper):
         rows = html_parser.extract_table_rows(response.data)
         assert len(rows) == len(offers_models.OfferValidationStatus) - 1 + 2
         for row in rows:
+            assert row["Stock réservé"] == "0"
             assert row["Stock restant"] == "-"
 
 
@@ -1165,7 +1174,8 @@ class GetOfferDetailsTest(GetEndpointHelper):
         stocks_rows = html_parser.extract_table_rows(response.data)
         assert len(stocks_rows) == 1
         assert stocks_rows[0]["Stock ID"] == str(expired_stock.id)
-        assert stocks_rows[0]["Nombre de stock restant / total"] == "0 / 0"
+        assert stocks_rows[0]["Stock réservé"] == "0"
+        assert stocks_rows[0]["Stock restant"] == "0"
         assert stocks_rows[0]["Prix"] == "6,66 €"
         assert stocks_rows[0]["Date / Heure"] == format_date(expired_stock.beginningDatetime, "%d/%m/%Y à %Hh%M")
 
@@ -1193,27 +1203,29 @@ class GetOfferDetailsTest(GetEndpointHelper):
         stocks_rows = html_parser.extract_table_rows(response.data)
         assert len(stocks_rows) == 2
         assert stocks_rows[0]["Stock ID"] == str(expired_stock_1.id)
-        assert stocks_rows[0]["Nombre de stock restant / total"] == "0 / 70"
+        assert stocks_rows[0]["Stock réservé"] == "70"
+        assert stocks_rows[0]["Stock restant"] == "0"
         assert stocks_rows[0]["Prix"] == "10,10 €"
         assert stocks_rows[0]["Date / Heure"] == format_date(expired_stock_1.beginningDatetime, "%d/%m/%Y à %Hh%M")
 
         assert stocks_rows[1]["Stock ID"] == str(expired_stock_2.id)
-        assert stocks_rows[1]["Nombre de stock restant / total"] == "0 / 25"
+        assert stocks_rows[1]["Stock réservé"] == "25"
+        assert stocks_rows[1]["Stock restant"] == "0"
         assert stocks_rows[1]["Prix"] == "10,10 €"
         assert stocks_rows[1]["Date / Heure"] == format_date(expired_stock_2.beginningDatetime, "%d/%m/%Y à %Hh%M")
 
     @pytest.mark.parametrize(
-        "quantity,booked_quantity,expected_result",
+        "quantity,booked_quantity,expected_remaining",
         [
-            (1000, 0, "1000 / 1000"),
-            (1000, 50, "950 / 1000"),
-            (1000, 1000, "0 / 1000"),
+            (1000, 0, "1000"),
+            (1000, 50, "950"),
+            (1000, 1000, "0"),
             (None, 0, "Illimité"),
             (None, 50, "Illimité"),
         ],
     )
     def test_get_offer_details_with_one_bookable_stock(
-        self, legit_user, authenticated_client, quantity, booked_quantity, expected_result
+        self, legit_user, authenticated_client, quantity, booked_quantity, expected_remaining
     ):
         offer = offers_factories.OfferFactory()
 
@@ -1227,7 +1239,8 @@ class GetOfferDetailsTest(GetEndpointHelper):
         stocks_rows = html_parser.extract_table_rows(response.data)
         assert len(stocks_rows) == 1
         assert stocks_rows[0]["Stock ID"] == str(stock.id)
-        assert stocks_rows[0]["Nombre de stock restant / total"] == expected_result
+        assert stocks_rows[0]["Stock réservé"] == str(booked_quantity)
+        assert stocks_rows[0]["Stock restant"] == expected_remaining
         assert stocks_rows[0]["Prix"] == "10,10 €"
         assert stocks_rows[0]["Date / Heure"] == format_date(stock.beginningDatetime, "%d/%m/%Y à %Hh%M")
 

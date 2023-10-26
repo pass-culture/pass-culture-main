@@ -72,7 +72,10 @@
               <th scope="col">Nom de l'offre</th>
               <th scope="col">Catégorie</th>
               <th scope="col">Sous-catégorie</th>
-              <th scope="col">Stock restant</th>
+              <th scope="col"
+                  class="text-center">Stock réservé</th>
+              <th scope="col"
+                  class="text-center">Stock restant</th>
               {% if has_permission("PRO_FRAUD_ACTIONS") %}
                 <th scope="col">Règles de conformité</th>
                 <th scope="col">Score data</th>
@@ -146,9 +149,12 @@
                 <td>{{ links.build_offer_name_to_pc_pro_link(offer) }}</td>
                 <td>{{ offer.category.pro_label }}</td>
                 <td>{{ offer.subcategory.pro_label }}</td>
-                <td class="text-nowrap">{{ row.remaining_stocks }}</td>
+                <td class="text-nowrap text-center">{{ row.booked_quantity }}</td>
+                <td class="text-nowrap text-center">{{ row.remaining_quantity }}</td>
                 {% if has_permission("PRO_FRAUD_ACTIONS") %}
-                  <td>{% if row.rules %}{{ row.rules | join(", ") | escape }}{% endif %}</td>
+                  <td>
+                    {% if row.rules %}{{ row.rules | join(", ") | escape }}{% endif %}
+                  </td>
                   <td>{{ offer.extraData.get("complianceScore","") if offer.extraData else "" | safe }}</td>
                 {% endif %}
                 {% if has_permission("MANAGE_OFFERS_AND_VENUES_TAGS") %}
