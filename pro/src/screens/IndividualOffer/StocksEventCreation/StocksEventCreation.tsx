@@ -25,12 +25,14 @@ export interface StocksEventCreationProps {
   offer: IndividualOffer
   stocks: StocksEvent[]
   setStocks: (stocks: StocksEvent[]) => void
+  stockCount: number
 }
 
 export const StocksEventCreation = ({
   offer,
   stocks,
   setStocks,
+  stockCount,
 }: StocksEventCreationProps): JSX.Element => {
   const navigate = useNavigate()
   const mode = useOfferWizardMode()
@@ -103,6 +105,7 @@ export const StocksEventCreation = ({
           priceCategories={offer.priceCategories}
           departmentCode={offer.venue.departementCode}
           offerId={offer.id}
+          stockCount={stockCount}
         />
       )}
 
