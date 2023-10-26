@@ -4,6 +4,7 @@
 /* eslint-disable */
 
 import type { CollectiveOfferOfferVenueResponseModel } from './CollectiveOfferOfferVenueResponseModel';
+import type { EacFormat } from './EacFormat';
 import type { GetCollectiveOfferVenueResponseModel } from './GetCollectiveOfferVenueResponseModel';
 import type { NationalProgramModel } from './NationalProgramModel';
 import type { OfferDomain } from './OfferDomain';
@@ -23,6 +24,7 @@ export type GetCollectiveOfferTemplateResponseModel = {
   domains: Array<OfferDomain>;
   durationMinutes?: number | null;
   educationalPriceDetail?: string | null;
+  formats?: Array<EacFormat> | null;
   hasBookingLimitDatetimesPassed: boolean;
   id: number;
   imageCredit?: string | null;
