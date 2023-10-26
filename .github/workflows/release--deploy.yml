@@ -14,6 +14,8 @@ on:
           - production
           - testing
 
+permissions: write-all
+
 jobs:
   check-worflow-ref:
     name: Check worflow ref
@@ -103,6 +105,18 @@ jobs:
       - deploy-ehp
     steps:
       - uses: technote-space/workflow-conclusion-action@v3
+      - name: Authentification to Google
+        uses: 'google-github-actions/auth@v1'
+        with:
+          workload_identity_provider: ${{ secrets.GCP_EHP_WORKLOAD_IDENTITY_PROVIDER }}
+          service_account: ${{ secrets.GCP_EHP_SERVICE_ACCOUNT }}
+
+      - name: Get Secret
+        id: 'secrets'
+        uses: 'google-github-actions/get-secretmanager-secrets@v1'
+        with:
+          secrets: |-
+            SLACK_BOT_TOKEN:passculture-metier-ehp/passculture-ci-slack-bot-token
 
       - name: Post to a Slack channel
         id: slack
@@ -128,4 +142,4 @@ jobs:
                     "unfurl_media": false
             }
         env:
-          SLACK_BOT_TOKEN: ${{ secrets.SLACK_BOT_TOKEN }}
+          SLACK_BOT_TOKEN: ${{ steps.secrets.outputs.SLACK_BOT_TOKEN }}
