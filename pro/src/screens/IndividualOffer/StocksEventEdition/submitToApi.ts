@@ -1,29 +1,34 @@
-import { StocksEvent } from 'components/StocksEventList/StocksEventList'
-import { serializeStockEvents } from 'pages/IndividualOfferWizard/Stocks/serializeStockEvents'
+import { GetOfferStockResponseModel } from 'apiClient/v1'
 
 import { serializeStockEventEdition } from './adapters/serializers'
 import upsertStocksEventAdapter from './adapters/upsertStocksEventAdapter'
 import { StockEventFormValues, StocksEventFormik } from './StockFormList/types'
 
-export const submitToApi = async (
-  allStockValues: StockEventFormValues[],
-  offerId: number,
-  departmentCode: string,
-  setErrors: StocksEventFormik['setErrors'],
-  setStocks: (stocks: StocksEvent[]) => void
-) => {
+type SubmitToApi = {
+  editedStocks: StockEventFormValues[]
+  offerId: number
+  departmentCode: string
+  setErrors: StocksEventFormik['setErrors']
+}
+
+export const submitToApi = async ({
+  editedStocks,
+  offerId,
+  departmentCode,
+  setErrors,
+}: SubmitToApi): Promise<GetOfferStockResponseModel[]> => {
   const {
     isOk,
     payload,
     message: upsertStocksMessage,
   } = await upsertStocksEventAdapter({
     offerId,
-    stocks: serializeStockEventEdition(allStockValues, departmentCode),
+    stocks: serializeStockEventEdition(editedStocks, departmentCode),
   })
   if (!isOk) {
     setErrors({ stocks: payload.errors })
     throw new Error(upsertStocksMessage)
   }
 
-  setStocks(serializeStockEvents(payload.stocks))
+  return payload.stocks
 }

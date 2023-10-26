@@ -16,6 +16,7 @@ import { getIndividualOfferUrl } from 'core/Offers/utils/getIndividualOfferUrl'
 import { useOfferWizardMode } from 'hooks'
 import useNotification from 'hooks/useNotification'
 import fullMoreIcon from 'icons/full-more.svg'
+import { serializeStockEvents } from 'pages/IndividualOfferWizard/Stocks/serializeStockEvents'
 import { onSubmit as onRecurrenceSubmit } from 'screens/IndividualOffer/StocksEventCreation/form/onSubmit'
 import { Button } from 'ui-kit'
 import { ButtonVariant } from 'ui-kit/Button/types'
@@ -99,7 +100,6 @@ const StocksEventEdition = ({
   )
 
   const resetStocks = (newStocks: StocksEvent[]) => {
-    setStocks(newStocks)
     const stocksForForm = buildInitialValues({
       departementCode: offer.venue.departementCode,
       stocks: newStocks,
@@ -121,7 +121,65 @@ const StocksEventEdition = ({
   // We use a ref to prevent re-renreders and we forward it to the StockFormList component
   const hiddenStocksRef = useRef<StockEventFormValues[]>([])
 
-  const onSubmit = async (values: StocksEventFormValues) => {
+  const onPageSubmit = async (
+    values: StocksEventFormValues,
+    nextPage: () => void
+  ) => {
+    // const allStockValues = [...values.stocks, ...hiddenStocksRef.current]
+    const editedStocks = getEditedStocks(values.stocks, initialValues.stocks)
+
+    // Return when there is nothing to save
+    const dirty = editedStocks.length > 0
+    if (!dirty) {
+      nextPage()
+      return
+    }
+
+    // Show modal if relevant
+    const changesOnStockWithBookings = hasChangesOnStockWithBookings(
+      editedStocks,
+      formik.initialValues.stocks
+    )
+    if (!showStocksEventConfirmModal && changesOnStockWithBookings) {
+      setShowStocksEventConfirmModal(true)
+      return
+    }
+
+    // Submit
+    try {
+      const updatedRawStocks = await submitToApi({
+        editedStocks,
+        offerId: offer.id,
+        departmentCode: offer.venue.departementCode ?? '',
+        setErrors: formik.setErrors,
+      })
+
+      const updatedStocks = serializeStockEvents(updatedRawStocks)
+
+      for (const updatedStock of updatedStocks) {
+        const indexBeyondExistingStocks = stocks.findIndex(
+          (stock) => stock.id === updatedStock.id
+        )
+
+        if (indexBeyondExistingStocks !== -1) {
+          stocks[indexBeyondExistingStocks] = updatedStock
+        }
+      }
+
+      resetStocks(stocks)
+    } catch (error) {
+      if (error instanceof Error) {
+        notify.error(error?.message)
+      }
+      return
+    }
+
+    notify.success(getSuccessMessage(mode))
+    setShowStocksEventConfirmModal(false)
+    nextPage()
+  }
+
+  const onMainSubmit = async (values: StocksEventFormValues) => {
     const nextStepUrl = getIndividualOfferUrl({
       offerId: offer.id,
       step:
@@ -138,11 +196,8 @@ const StocksEventEdition = ({
       isEqual(val, STOCK_EVENT_FORM_DEFAULT_VALUES)
     )
     // Return when there is nothing to save
-    const allEditededStocks = getEditedStocks(
-      allStockValues,
-      initialValues.stocks
-    )
-    const dirty = allEditededStocks.length > 0
+    const editedStocks = getEditedStocks(allStockValues, initialValues.stocks)
+    const dirty = editedStocks.length > 0
     if (isFormEmpty || !dirty) {
       navigate(nextStepUrl)
       notify.success(getSuccessMessage(mode))
@@ -151,7 +206,7 @@ const StocksEventEdition = ({
 
     // Show modal if relevant
     const changesOnStockWithBookings = hasChangesOnStockWithBookings(
-      allEditededStocks,
+      editedStocks,
       formik.initialValues.stocks
     )
     if (!showStocksEventConfirmModal && changesOnStockWithBookings) {
@@ -161,13 +216,12 @@ const StocksEventEdition = ({
 
     // Submit
     try {
-      await submitToApi(
-        allEditededStocks,
-        offer.id,
-        offer.venue.departementCode ?? '',
-        formik.setErrors,
-        resetStocks
-      )
+      await submitToApi({
+        editedStocks,
+        offerId: offer.id,
+        departmentCode: offer.venue.departementCode ?? '',
+        setErrors: formik.setErrors,
+      })
     } catch (error) {
       if (error instanceof Error) {
         notify.error(error?.message)
@@ -256,7 +310,7 @@ const StocksEventEdition = ({
 
   const formik = useFormik<StocksEventFormValues>({
     initialValues,
-    onSubmit,
+    onSubmit: onMainSubmit,
     validationSchema: getValidationSchema(priceCategoriesOptions),
   })
 
@@ -330,6 +384,7 @@ const StocksEventEdition = ({
               onDeleteStock={onDeleteStock}
               priceCategoriesOptions={priceCategoriesOptions}
               hiddenStocksRef={hiddenStocksRef}
+              onSubmit={onPageSubmit}
             />
 
             <ActionBar

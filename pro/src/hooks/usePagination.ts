@@ -1,10 +1,10 @@
-import { useState, useCallback } from 'react'
+import { useState } from 'react'
 
 export const usePagination = <T>(items: T[], itemsPerPage: number) => {
   const [page, setPage] = useState(1)
 
-  const previousPage = useCallback(() => setPage((page) => page - 1), [])
-  const nextPage = useCallback(() => setPage((page) => page + 1), [])
+  const previousPage = () => setPage((page) => page - 1)
+  const nextPage = () => setPage((page) => page + 1)
 
   const currentPageItems = items.slice(
     (page - 1) * itemsPerPage,

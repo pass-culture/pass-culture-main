@@ -28,7 +28,7 @@ import {
   filterAndSortStocks,
   StocksEventFormSortingColumn,
 } from './stocksFiltering'
-import { StockEventFormValues } from './types'
+import { StockEventFormValues, StocksEventFormValues } from './types'
 
 interface StockFormListProps {
   offer: IndividualOffer
@@ -38,6 +38,10 @@ interface StockFormListProps {
   ) => Promise<void>
   priceCategoriesOptions: SelectOption[]
   hiddenStocksRef: React.MutableRefObject<StockEventFormValues[]>
+  onSubmit: (
+    values: StocksEventFormValues,
+    nextPage: () => void
+  ) => Promise<void>
 }
 
 const STOCKS_PER_PAGE = 20
@@ -47,6 +51,7 @@ const StockFormList = ({
   onDeleteStock,
   priceCategoriesOptions,
   hiddenStocksRef,
+  onSubmit,
 }: StockFormListProps) => {
   const [isModalOpen, setIsModalOpen] = useState(false)
   const mode = useOfferWizardMode()
@@ -107,6 +112,14 @@ const StockFormList = ({
     return beginningDate !== ''
       ? new Date(parseInt(year), parseInt(month) - 1, parseInt(day))
       : undefined
+  }
+
+  async function nextPageWithSubmit() {
+    await onSubmit(values, nextPage)
+  }
+
+  async function previousPageWithSubmit() {
+    return await onSubmit(values, previousPage)
   }
 
   return (
@@ -458,8 +471,8 @@ const StockFormList = ({
           <Pagination
             currentPage={page}
             pageCount={pageCount}
-            onPreviousPageClick={previousPage}
-            onNextPageClick={nextPage}
+            onPreviousPageClick={previousPageWithSubmit}
+            onNextPageClick={nextPageWithSubmit}
           />
 
           {isModalOpen && (
