@@ -1047,7 +1047,7 @@ class GetOfferDetailsTest(GetEndpointHelper):
     expected_num_queries = 3
 
     def test_get_detail_offer(self, legit_user, authenticated_client):
-        offer = offers_factories.OfferFactory()
+        offer = offers_factories.OfferFactory(extraData={"complianceScore": 55})
 
         url = url_for(self.endpoint, offer_id=offer.id, _external=True)
         with assert_num_queries(self.expected_num_queries):
@@ -1062,6 +1062,7 @@ class GetOfferDetailsTest(GetEndpointHelper):
         assert "Sous-catégorie : Support physique (DVD, Blu-ray...)" in card_text
         assert "Statut : Épuisée" in card_text
         assert "État : Validée" in card_text
+        assert "Score data : 55 " in card_text
         assert "Structure : Le Petit Rintintin Management" in card_text
         assert "Lieu : Le Petit Rintintin" in card_text
         assert "Utilisateur de la dernière validation" not in card_text
