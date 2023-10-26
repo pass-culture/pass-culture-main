@@ -261,7 +261,6 @@ ALLOWED_PRODUCT_SUBCATEGORIES = [
     subcategories.ABO_CONCERT,
     subcategories.ABO_LIVRE_NUMERIQUE,
     subcategories.ABO_MEDIATHEQUE,
-    subcategories.ABO_MUSEE,
     subcategories.ABO_PLATEFORME_MUSIQUE,
     subcategories.ABO_PLATEFORME_VIDEO,
     subcategories.ABO_PRATIQUE_ART,

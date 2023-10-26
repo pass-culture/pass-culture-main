@@ -238,7 +238,7 @@ class Stock(PcObject, Base, Model, ProvidableMixin, SoftDeletableMixin):
         return sa.case([(cls.quantity.is_(None), None)], else_=(cls.quantity - cls.dnBookedQuantity))
 
     AUTOMATICALLY_USED_SUBCATEGORIES = [
-        subcategories_v2.ABO_MUSEE.id,
+        subcategories_v2.ABO_MUSEE.id,  # FIXME: ogeber 2023-10-26: delete line cf. ticket PC-25361
         subcategories_v2.CARTE_MUSEE.id,
         subcategories_v2.ABO_BIBLIOTHEQUE.id,
         subcategories_v2.ABO_MEDIATHEQUE.id,

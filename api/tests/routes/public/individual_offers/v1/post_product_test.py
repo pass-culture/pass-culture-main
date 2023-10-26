@@ -719,7 +719,6 @@ class PostProductTest:
                 "unexpected value; permitted: 'ABO_CONCERT'",
                 "unexpected value; permitted: 'ABO_LIVRE_NUMERIQUE'",
                 "unexpected value; permitted: 'ABO_MEDIATHEQUE'",
-                "unexpected value; permitted: 'ABO_MUSEE'",
                 "unexpected value; permitted: 'ABO_PLATEFORME_MUSIQUE'",
                 "unexpected value; permitted: 'ABO_PLATEFORME_VIDEO'",
                 "unexpected value; permitted: 'ABO_PRATIQUE_ART'",
