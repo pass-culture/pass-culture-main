@@ -274,6 +274,69 @@ describe('CollectiveOfferVisibility', () => {
     )
   })
 
+  it('should clear teacher suggestion when clearing teacher input', async () => {
+    renderVisibilityStep(props)
+
+    vi.spyOn(
+      api,
+      'getAutocompleteEducationalRedactorsForUai'
+    ).mockResolvedValueOnce([
+      {
+        email: 'compte.test@education.gouv.fr',
+        gender: 'Mr.',
+        name: 'REDA',
+        surname: 'KHTEUR',
+      },
+    ])
+
+    const institutionSelect = screen.getAllByTestId('select')[0]
+    await userEvent.selectOptions(institutionSelect, '12')
+    const teacherInput = screen.getByLabelText(/Prénom et nom de l’enseignant/)
+    await userEvent.type(teacherInput, 'Red')
+
+    expect(
+      screen.getByRole('option', { name: 'KHTEUR REDA' })
+    ).toBeInTheDocument()
+
+    await userEvent.clear(teacherInput)
+
+    expect(
+      screen.queryByRole('option', { name: 'KHTEUR REDA' })
+    ).not.toBeInTheDocument()
+  })
+
+  it('should clear teacher suggestion when clearing institution', async () => {
+    renderVisibilityStep(props)
+    vi.spyOn(
+      api,
+      'getAutocompleteEducationalRedactorsForUai'
+    ).mockResolvedValueOnce([
+      {
+        email: 'compte.test@education.gouv.fr',
+        gender: 'Mr.',
+        name: 'REDA',
+        surname: 'KHTEUR',
+      },
+    ])
+    const institutionSelect = screen.getAllByTestId('select')[0]
+    await userEvent.selectOptions(institutionSelect, '12')
+    const teacherInput = screen.getByLabelText(/Prénom et nom de l’enseignant/)
+    await userEvent.type(teacherInput, 'Red')
+
+    expect(
+      screen.getByRole('option', { name: 'KHTEUR REDA' })
+    ).toBeInTheDocument()
+
+    await userEvent.type(
+      screen.getByLabelText(/Nom de l'établissement scolaire ou code UAI/),
+      ' '
+    )
+
+    expect(
+      screen.queryByRole('option', { name: 'KHTEUR REDA' })
+    ).not.toBeInTheDocument()
+  })
+
   describe('edition', () => {
     it('shoud prefill form with initial values', async () => {
       renderVisibilityStep({

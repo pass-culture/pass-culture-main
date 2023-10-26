@@ -202,6 +202,7 @@ const CollectiveOfferVisibility = ({
       searchTeacherValue.length < 3 ||
       !selectedInstitution
     ) {
+      setTeachersOptions([])
       return
     }
     const { payload } = await getEducationalRedactorsAdapter({
@@ -227,7 +228,6 @@ const CollectiveOfferVisibility = ({
         )
       )
   }
-
   return (
     <>
       <FormLayout.MandatoryInfo />
@@ -267,6 +267,12 @@ const CollectiveOfferVisibility = ({
                         onReset={async () => {
                           setTeachersOptions([])
                           await formik.setFieldValue('search-teacher', '')
+                        }}
+                        onSearch={async () => {
+                          if (formik.dirty) {
+                            await formik.setFieldValue('institution', '')
+                            await formik.setFieldValue('search-teacher', '')
+                          }
                         }}
                         resetOnOpen={false}
                         disabled={mode === Mode.READ_ONLY}
