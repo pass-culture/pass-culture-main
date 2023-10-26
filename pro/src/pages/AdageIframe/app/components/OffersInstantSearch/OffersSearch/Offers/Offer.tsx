@@ -4,6 +4,7 @@ import React, { useState } from 'react'
 import { AdageFrontRoles, OfferAddressType } from 'apiClient/adage'
 import { apiAdage } from 'apiClient/api'
 import useActiveFeature from 'hooks/useActiveFeature'
+import fullLinkIcon from 'icons/full-link.svg'
 import fullUpIcon from 'icons/full-up.svg'
 import strokeFranceIcon from 'icons/stroke-france.svg'
 import strokeLocalisationIcon from 'icons/stroke-localisation.svg'
@@ -14,6 +15,8 @@ import {
   HydratedCollectiveOfferTemplate,
   isCollectiveOffer,
 } from 'pages/AdageIframe/app/types/offers'
+import { ButtonLink } from 'ui-kit'
+import { ButtonVariant } from 'ui-kit/Button/types'
 import { SvgIcon } from 'ui-kit/SvgIcon/SvgIcon'
 import { Tag, TagVariant } from 'ui-kit/Tag/Tag'
 import { LOGS_DATA } from 'utils/config'
@@ -54,7 +57,7 @@ const Offer = ({
     offer.isTemplate &&
     adageUser.role !== AdageFrontRoles.READONLY
 
-  const openOfferDetails = async (
+  const openOfferDetails = (
     offer: HydratedCollectiveOffer | HydratedCollectiveOfferTemplate
   ) => {
     setDisplayDetails(!displayDetails)
@@ -63,14 +66,14 @@ const Offer = ({
     }
 
     if (!offer.isTemplate) {
-      await apiAdage.logOfferDetailsButtonClick({
+      void apiAdage.logOfferDetailsButtonClick({
         iframeFrom: removeParamsFromUrl(location.pathname),
         stockId: offer.stock.id,
         queryId: queryId,
         isFromNoResult: isInSuggestions,
       })
     } else {
-      await apiAdage.logOfferTemplateDetailsButtonClick({
+      void apiAdage.logOfferTemplateDetailsButtonClick({
         iframeFrom: removeParamsFromUrl(location.pathname),
         offerId: offer.id,
         queryId: queryId,
@@ -78,6 +81,14 @@ const Offer = ({
       })
     }
   }
+
+  function offerVenueLinkClicked() {
+    void apiAdage.logTrackingMap({
+      iframeFrom: removeParamsFromUrl(location.pathname),
+    })
+  }
+
+  const venueAndOffererName = getOfferVenueAndOffererName(offer.venue)
 
   return (
     <li className={style['offer']} data-testid="offer-listitem">
@@ -145,9 +156,27 @@ const Offer = ({
                 <h2 className={style['offer-header-title']}>{offer.name}</h2>
                 <div className={style['offer-header-subtitles']}>
                   <span className={style['offer-header-label']}>
-                    Proposée par{' '}
+                    Proposée par
                   </span>
-                  <span>{getOfferVenueAndOffererName(offer.venue)}</span>
+
+                  {offer.venue.adageId ? (
+                    <ButtonLink
+                      link={{
+                        isExternal: true,
+                        to: `${document.referrer}adage/ressource/partenaires/id/${offer.venue.adageId}`,
+                        target: '_blank',
+                        rel: 'noopener noreferrer',
+                      }}
+                      variant={ButtonVariant.TERNARY}
+                      className={style['offer-header-venue-link']}
+                      onClick={offerVenueLinkClicked}
+                      icon={fullLinkIcon}
+                    >
+                      {venueAndOffererName}
+                    </ButtonLink>
+                  ) : (
+                    <span>{venueAndOffererName}</span>
+                  )}
                 </div>
                 {isCollectiveOffer(offer) && offer.teacher && (
                   <div className={style['offer-header-teacher']}>

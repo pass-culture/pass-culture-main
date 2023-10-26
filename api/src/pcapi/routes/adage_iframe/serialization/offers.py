@@ -62,6 +62,7 @@ class OfferVenueResponse(BaseModel):
     publicName: str | None
     coordinates: common_models.Coordinates
     managingOfferer: OfferManagingOffererResponse
+    adageId: str | None
 
     class Config:
         orm_mode = True

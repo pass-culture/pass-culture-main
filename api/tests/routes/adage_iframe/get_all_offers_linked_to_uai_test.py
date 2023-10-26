@@ -75,6 +75,7 @@ class AllOffersByUaiTest:
                         "publicName": collective_offer.venue.publicName,
                         "coordinates": {"latitude": 48.87004, "longitude": 2.3785},
                         "managingOfferer": {"name": collective_offer.venue.managingOfferer.name},
+                        "adageId": None,
                     },
                     "students": ["Lycée - Seconde"],
                     "offerVenue": {
@@ -183,6 +184,7 @@ class AllOffersByUaiTest:
                         "publicName": collective_offer.venue.publicName,
                         "coordinates": {"latitude": 48.87004, "longitude": 2.3785},
                         "managingOfferer": {"name": collective_offer.venue.managingOfferer.name},
+                        "adageId": None,
                     },
                     "students": ["Lycée - Seconde"],
                     "offerVenue": {
