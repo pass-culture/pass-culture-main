@@ -37,6 +37,13 @@ def login_or_api_key_required(function: typing.Callable) -> typing.Callable:
             raise api_errors.UnauthorizedError(errors={"auth": "API key or login required"})
         if g.current_api_key:
             _check_active_offerer(g.current_api_key)
+        # FIXME (dbaty, 2023-10-26): detect if anyone still uses this
+        # authentication scheme, so that we can safely remove it.
+        if not g.current_api_key:
+            logger.info(
+                "Access to API contremarque via username/password",
+                extra={"user": current_user.id},
+            )
         return function(*args, **kwds)
 
     return wrapper
