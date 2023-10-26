@@ -1,51 +1,48 @@
 import React from 'react'
 
+import { StockStatsResponseModel } from 'apiClient/v1'
 import { SummaryLayout } from 'components/SummaryLayout'
-import { IndividualOffer, IndividualOfferStock } from 'core/Offers/types'
 import { FORMAT_DD_MM_YYYY } from 'utils/date'
 import { formatLocalTimeDateString } from 'utils/timezone'
 
 interface RecurrenceSectionProps {
-  offer: IndividualOffer
+  stocksStats?: StockStatsResponseModel
+  departementCode: string
 }
 
-const sortStocks = (
-  a: IndividualOfferStock,
-  b: IndividualOfferStock
-): number => {
-  const aDate =
-    a.beginningDatetime !== null ? new Date(a.beginningDatetime) : a.dateCreated
-  const bDate =
-    b.beginningDatetime !== null ? new Date(b.beginningDatetime) : b.dateCreated
-  return aDate < bDate ? -1 : 1
-}
-
-const RecurrenceSection = ({ offer }: RecurrenceSectionProps) => {
-  if (offer.stocks.length === 0) {
+const RecurrenceSection = ({
+  stocksStats,
+  departementCode,
+}: RecurrenceSectionProps) => {
+  if (!stocksStats?.stockCount) {
     return null
   }
 
-  const sortedStocks = offer.stocks.sort(sortStocks)
+  function formatCapacity(capacity: number): string {
+    return capacity === 1 ? `${capacity} place` : `${capacity} places`
+  }
 
-  const totalCapacity = sortedStocks.find((s) => s.quantity === null)
-    ? 'Illimitée'
-    : `${sortedStocks.reduce((a, b) => a + (b.quantity ?? 0), 0)} places`
+  const totalCapacity = stocksStats.remainingQuantity
+    ? formatCapacity(stocksStats.remainingQuantity)
+    : 'Illimitée'
 
   let periodText = ''
-  if (sortedStocks.length > 1) {
+  const { oldestStock, newestStock } = stocksStats
+  // when there is only one date the api send oldestStock = newestStock
+  if (oldestStock && newestStock && oldestStock !== newestStock) {
     periodText = `du ${formatLocalTimeDateString(
-      sortedStocks[0].beginningDatetime as string,
-      offer.venue.departementCode,
+      oldestStock,
+      departementCode,
       FORMAT_DD_MM_YYYY
     )} au ${formatLocalTimeDateString(
-      sortedStocks[sortedStocks.length - 1].beginningDatetime as string,
-      offer.venue.departementCode,
+      newestStock,
+      departementCode,
       FORMAT_DD_MM_YYYY
     )}`
-  } else {
+  } else if (oldestStock) {
     periodText = `le ${formatLocalTimeDateString(
-      sortedStocks[0].beginningDatetime as string,
-      offer.venue.departementCode,
+      oldestStock,
+      departementCode,
       FORMAT_DD_MM_YYYY
     )}`
   }
@@ -54,7 +51,7 @@ const RecurrenceSection = ({ offer }: RecurrenceSectionProps) => {
     <>
       <SummaryLayout.Row
         title="Nombre de dates"
-        description={sortedStocks.length}
+        description={stocksStats.stockCount}
       />
       <SummaryLayout.Row title="Période concernée" description={periodText} />
       <SummaryLayout.Row title="Capacité totale" description={totalCapacity} />

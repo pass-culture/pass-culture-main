@@ -1,27 +1,33 @@
-import React from 'react'
+import React, { useEffect, useState } from 'react'
 
-import { OfferStatus } from 'apiClient/v1'
+import { api } from 'apiClient/api'
+import { OfferStatus, StockStatsResponseModel } from 'apiClient/v1'
 import { OFFER_WIZARD_STEP_IDS } from 'components/IndividualOfferBreadcrumb/constants'
 import { SummaryLayout } from 'components/SummaryLayout'
 import { OFFER_WIZARD_MODE } from 'core/Offers/constants'
 import { IndividualOffer } from 'core/Offers/types'
 import { getIndividualOfferUrl } from 'core/Offers/utils/getIndividualOfferUrl'
 import { useOfferWizardMode } from 'hooks'
+import useNotification from 'hooks/useNotification'
+import Spinner from 'ui-kit/Spinner/Spinner'
 
 import RecurrenceSection from './RecurrenceSection/RecurrenceSection'
 import styles from './StockSection.module.scss'
 import StockThingSection from './StockThingSection/StockThingSection'
 
-export const getStockWarningText = (offer: IndividualOffer) => {
-  if (offer.stocks.length === 0) {
+export const getStockWarningText = (
+  offerStatus: OfferStatus,
+  stocksCount?: number | null
+) => {
+  if (!stocksCount) {
     return 'Vous n’avez aucun stock renseigné.'
   }
 
-  if (offer.status === OfferStatus.SOLD_OUT) {
+  if (offerStatus === OfferStatus.SOLD_OUT) {
     return 'Votre stock est épuisé.'
   }
 
-  if (offer.status === OfferStatus.EXPIRED) {
+  if (offerStatus === OfferStatus.EXPIRED) {
     return 'Votre stock est expiré.'
   }
 
@@ -34,6 +40,34 @@ export interface StockSectionProps {
 
 const StockSection = ({ offer }: StockSectionProps): JSX.Element => {
   const mode = useOfferWizardMode()
+  const [isLoading, setIsLoading] = useState(false)
+  const [stocksEventsStats, setStocksEventsStats] = useState<
+    StockStatsResponseModel | undefined
+  >(undefined)
+  const notification = useNotification()
+
+  useEffect(() => {
+    async function getStocksEventsStats() {
+      setIsLoading(true)
+      try {
+        const reponse = await api.getStocksStats(offer.id)
+        setStocksEventsStats(reponse)
+      } catch {
+        notification.error(
+          'Une erreur est survenue lors de la récupération des informations de vos stocks'
+        )
+      }
+      setIsLoading(false)
+    }
+    if (offer.isEvent) {
+      // eslint-disable-next-line @typescript-eslint/no-floating-promises
+      getStocksEventsStats()
+    }
+  }, [])
+
+  if (isLoading) {
+    return <Spinner />
+  }
 
   const editLink = getIndividualOfferUrl({
     offerId: offer.id,
@@ -42,7 +76,10 @@ const StockSection = ({ offer }: StockSectionProps): JSX.Element => {
       mode === OFFER_WIZARD_MODE.READ_ONLY ? OFFER_WIZARD_MODE.EDITION : mode,
   })
 
-  const stockWarningText = getStockWarningText(offer)
+  const stockWarningText = getStockWarningText(
+    offer.status,
+    offer.isEvent ? stocksEventsStats?.stockCount : offer.stocks.length
+  )
 
   return (
     <>
@@ -59,7 +96,10 @@ const StockSection = ({ offer }: StockSectionProps): JSX.Element => {
         )}
 
         {offer.isEvent ? (
-          <RecurrenceSection offer={offer} />
+          <RecurrenceSection
+            stocksStats={stocksEventsStats}
+            departementCode={offer.venue.departementCode ?? ''}
+          />
         ) : (
           <StockThingSection stock={offer.stocks[0]} />
         )}
