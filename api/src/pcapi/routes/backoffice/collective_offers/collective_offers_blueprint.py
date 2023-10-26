@@ -24,7 +24,6 @@ from pcapi.core.offers import models as offers_models
 from pcapi.core.permissions import models as perm_models
 from pcapi.core.users import models as users_models
 from pcapi.models import db
-from pcapi.models import feature
 from pcapi.models import offer_mixin
 from pcapi.routes.backoffice import autocomplete
 from pcapi.routes.backoffice import utils
@@ -336,32 +335,6 @@ def _is_collective_offer_price_editable(collective_offer: educational_models.Col
     if app.redis_client.exists(finance_conf.REDIS_GENERATE_CASHFLOW_LOCK):  # type: ignore [attr-defined]
         return False
 
-    collective_booking: educational_models.CollectiveBooking = (
-        educational_models.CollectiveBooking.query.join(
-            educational_models.CollectiveStock, educational_models.CollectiveBooking.collectiveStock
-        )
-        .filter(
-            educational_models.CollectiveStock.collectiveOfferId == collective_offer.id,
-            educational_models.CollectiveBooking.status != educational_models.CollectiveBookingStatus.CANCELLED,
-        )
-        .one_or_none()
-    )
-
-    if collective_booking:
-        delta = datetime.timedelta(hours=48)
-        if (
-            collective_booking.status == educational_models.CollectiveBookingStatus.CONFIRMED
-            and collective_booking.confirmationDate
-            and collective_booking.confirmationDate + delta < datetime.datetime.utcnow()
-        ):
-            return False
-        if (
-            collective_booking.status == educational_models.CollectiveBookingStatus.USED
-            and collective_booking.dateUsed
-            and collective_booking.dateUsed + delta < datetime.datetime.utcnow()
-        ):
-            return False
-
     # cannot update an offer's stock if it already has a pricing
     pricing_query = (
         db.session.query(finance_models.Pricing.id)
@@ -469,12 +442,14 @@ def edit_collective_offer_price(collective_offer_id: int) -> utils.BackofficeRes
             return redirect(redirect_url, code=303)
 
         try:
-            if feature.FeatureToggle.PRICE_FINANCE_EVENTS.is_active():
-                finance_api.cancel_latest_event(collective_booking)
-            else:
-                finance_api.cancel_pricing(
-                    booking=collective_booking, reason=finance_models.PricingLogReason.CHANGE_AMOUNT
+            cancelled_event = finance_api.cancel_latest_event(collective_booking)
+            if cancelled_event:
+                finance_api.add_event(
+                    motive=finance_models.FinanceEventMotive.BOOKING_USED,
+                    booking=collective_booking,
+                    commit=False,
                 )
+            db.session.commit()
         except finance_exceptions.NonCancellablePricingError:
             flash("Impossible, réservation est déjà remboursée (ou en cours de remboursement)", "warning")
             db.session.rollback()
