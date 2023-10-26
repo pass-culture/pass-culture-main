@@ -26,6 +26,7 @@ vi.mock('apiClient/api', () => ({
     logOfferTemplateDetailsButtonClick: vi.fn(),
     logFavOfferButtonClick: vi.fn(),
     logContactModalButtonClick: vi.fn(),
+    logTrackingMap: vi.fn(),
     postCollectiveOfferFavorites: vi.fn().mockImplementation(() => {}),
     postCollectiveTemplateFavorites: vi.fn().mockImplementation(() => {}),
     deleteFavoriteForCollectiveOffer: vi.fn().mockImplementation(() => {}),
@@ -51,7 +52,7 @@ const user: AuthenticatedResponse = {
   lon: null,
 }
 
-const renderOffers = (
+const renderOffer = (
   props: OfferProps,
   featuresOverride?: { nameKey: string; isActive: boolean }[],
   adageUser: AuthenticatedResponse | null = user
@@ -77,7 +78,6 @@ describe('offer', () => {
   let offerProps: OfferProps
   beforeEach(() => {
     offerInParis = { ...defaultCollectiveOffer, isTemplate: false }
-
     offerInCayenne = {
       id: 480,
       description: 'Une offre vraiment chouette',
@@ -121,11 +121,13 @@ describe('offer', () => {
       motorDisabilityCompliant: true,
       contactEmail: '',
       contactPhone: '',
-      domains: [],
+      domains: [{ id: 1, name: 'Super domaine' }],
       interventionArea: ['973'],
       isTemplate: false,
       nationalProgram: { name: 'Program Test', id: 123 },
+      imageUrl: 'url',
     }
+
     offerProps = {
       offer: offerInParis,
       queryId: '1',
@@ -136,7 +138,7 @@ describe('offer', () => {
   describe('offer item', () => {
     it('should not show all information at first', async () => {
       // When
-      renderOffers(offerProps)
+      renderOffer(offerProps)
 
       // Then
       const offerName = await screen.findByText(offerInParis.name)
@@ -162,7 +164,7 @@ describe('offer', () => {
 
     it('should show all offer informations if user click on "en savoir plus"', async () => {
       // When
-      renderOffers({ ...offerProps, offer: offerInCayenne })
+      renderOffer({ ...offerProps, offer: offerInCayenne })
 
       const offerName = await screen.findByText(offerInCayenne.name)
       expect(offerName).toBeInTheDocument()
@@ -209,7 +211,7 @@ describe('offer', () => {
       // Given
 
       // When
-      renderOffers({
+      renderOffer({
         ...offerProps,
         offer: {
           ...offerInParis,
@@ -244,7 +246,7 @@ describe('offer', () => {
     })
 
     it('should display request form modal', async () => {
-      renderOffers(
+      renderOffer(
         {
           ...offerProps,
           offer: { ...defaultCollectiveTemplateOffer, isTemplate: true },
@@ -264,7 +266,7 @@ describe('offer', () => {
       user.lat = 0
       user.lon = 0
 
-      renderOffers(
+      renderOffer(
         {
           ...offerProps,
           offer: {
@@ -285,7 +287,7 @@ describe('offer', () => {
     })
 
     it('should display can move in your institution is offer intervention area match user one', () => {
-      renderOffers(
+      renderOffer(
         {
           ...offerProps,
           offer: {
@@ -314,7 +316,7 @@ describe('offer', () => {
   it('should not display the distance to venue if the user does not have a valid geoloc', () => {
     user.lat = null
     user.lon = null
-    renderOffers(
+    renderOffer(
       {
         ...offerProps,
       },
@@ -327,7 +329,7 @@ describe('offer', () => {
   })
 
   it('should display the add to favorite button on offers that are not favorite yet', () => {
-    renderOffers(
+    renderOffer(
       {
         ...offerProps,
         offer: { ...defaultCollectiveTemplateOffer, isTemplate: true },
@@ -339,7 +341,7 @@ describe('offer', () => {
   })
 
   it('should display the remove from favorite button on offers that are already favorite', () => {
-    renderOffers(
+    renderOffer(
       {
         ...offerProps,
         offer: {
@@ -358,7 +360,7 @@ describe('offer', () => {
     vi.spyOn(apiAdage, 'postCollectiveOfferFavorites').mockResolvedValue()
     vi.spyOn(apiAdage, 'deleteFavoriteForCollectiveOffer').mockResolvedValue()
 
-    renderOffers(
+    renderOffer(
       {
         ...offerProps,
         offer: { ...defaultCollectiveTemplateOffer, isTemplate: true },
@@ -390,7 +392,7 @@ describe('offer', () => {
       'deleteFavoriteForCollectiveOfferTemplate'
     ).mockResolvedValue()
 
-    renderOffers(
+    renderOffer(
       {
         ...offerProps,
         offer: {
@@ -425,7 +427,7 @@ describe('offer', () => {
       null
     )
 
-    renderOffers(
+    renderOffer(
       {
         ...offerProps,
         offer: {
@@ -451,7 +453,7 @@ describe('offer', () => {
       'deleteFavoriteForCollectiveOfferTemplate'
     ).mockRejectedValue(null)
 
-    renderOffers(
+    renderOffer(
       {
         ...offerProps,
         offer: {
@@ -473,7 +475,7 @@ describe('offer', () => {
   })
 
   it('should not display favorite button when adage user is admin', () => {
-    renderOffers(
+    renderOffer(
       {
         ...offerProps,
         offer: {
@@ -489,7 +491,7 @@ describe('offer', () => {
   })
 
   it('should not display favorite button when offer is bookable', () => {
-    renderOffers(
+    renderOffer(
       {
         ...offerProps,
       },
@@ -500,7 +502,7 @@ describe('offer', () => {
   })
 
   it('should log event when clicking on "en savoir plus" button', async () => {
-    renderOffers({
+    renderOffer({
       ...offerProps,
       isInSuggestions: false,
       offer: { ...defaultCollectiveTemplateOffer, isTemplate: true },
@@ -520,7 +522,7 @@ describe('offer', () => {
   })
 
   it('should mention if the log is from a suggestion offer when clicking on "en savoir plus" button', async () => {
-    renderOffers({ ...offerProps, isInSuggestions: true })
+    renderOffer({ ...offerProps, isInSuggestions: true })
 
     const seeMoreButton = await screen.findByRole('button', {
       name: 'en savoir plus',
@@ -535,8 +537,8 @@ describe('offer', () => {
     })
   })
 
-  it('should display format when FF is active', async () => {
-    renderOffers(
+  it('should display format when FF is active', () => {
+    renderOffer(
       {
         ...offerProps,
         offer: {
@@ -549,5 +551,49 @@ describe('offer', () => {
     )
 
     expect(screen.getByText('Concert, Représentation')).toBeInTheDocument()
+  })
+
+  it('should display a link as the name of the venue when the venue has a valid adageId', () => {
+    renderOffer({
+      ...offerProps,
+      offer: {
+        ...offerProps.offer,
+        venue: { ...offerProps.offer.venue, adageId: '123' },
+      },
+    })
+
+    expect(
+      screen.getByRole('link', {
+        name: 'Le Petit Rintintin 33 - Le Petit Rintintin Management (75000)',
+      })
+    ).toBeInTheDocument()
+  })
+
+  it('should not display a link as the name of the venue when the venue has no valid adageId', () => {
+    renderOffer(offerProps)
+
+    expect(
+      screen.queryByRole('link', {
+        name: 'Le Petit Rintintin 33 - Le Petit Rintintin Management (75000)',
+      })
+    ).not.toBeInTheDocument()
+  })
+
+  it('should trigger a tracking event when the venue name link is clicked', async () => {
+    renderOffer({
+      ...offerProps,
+      offer: {
+        ...offerProps.offer,
+        venue: { ...offerProps.offer.venue, adageId: '123' },
+      },
+    })
+
+    const link = screen.getByRole('link', {
+      name: 'Le Petit Rintintin 33 - Le Petit Rintintin Management (75000)',
+    })
+
+    await userEvent.click(link)
+
+    expect(apiAdage.logTrackingMap).toHaveBeenCalled()
   })
 })

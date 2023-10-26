@@ -95,27 +95,35 @@ $offer-image-width: rem.torem(176px);
       align-items: flex-start;
     }
 
-    .offer-header-label {
+    &-label {
       color: colors.$grey-dark;
     }
 
-    .offer-header-title {
+    &-venue-link {
+      display: flex;
+      align-items: center;
+    }
+
+    &-title {
       margin-bottom: rem.torem(6px);
 
       @include fonts.title3;
     }
 
-    .offer-header-subtitles,
-    .offer-header-teacher {
+    &-subtitles,
+    &-teacher {
       font-weight: 500;
       font-size: rem.torem(15px);
     }
 
-    .offer-header-subtitles {
+    &-subtitles {
       margin-bottom: rem.torem(24px);
+      display: inline-flex;
+      flex-wrap: wrap;
+      gap: rem.torem(8px);
     }
 
-    .offer-header-teacher {
+    &-teacher {
       margin-bottom: rem.torem(8px);
     }
 

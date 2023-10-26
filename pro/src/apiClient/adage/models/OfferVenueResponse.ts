@@ -7,6 +7,7 @@ import type { Coordinates } from './Coordinates';
 import type { OfferManagingOffererResponse } from './OfferManagingOffererResponse';
 
 export type OfferVenueResponse = {
+  adageId?: string | null;
   address?: string | null;
   city?: string | null;
   coordinates: Coordinates;
