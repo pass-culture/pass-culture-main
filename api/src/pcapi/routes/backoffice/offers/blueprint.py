@@ -229,7 +229,14 @@ def _get_offer_ids_query(form: forms.InternalSearchForm) -> BaseQuery:
 
 def _get_offers(form: forms.InternalSearchForm) -> list[offers_models.Offer]:
     # Compute displayed information in remaining stock column directly, don't joinedload/fetch huge stock data
-    remaining_stocks_subquery = (
+    booked_quantity_subquery = (
+        sa.select(sa.func.coalesce(sa.func.sum(offers_models.Stock.dnBookedQuantity), 0))
+        .select_from(offers_models.Stock)
+        .filter(offers_models.Stock.offerId == offers_models.Offer.id)
+        .correlate(offers_models.Offer)
+        .scalar_subquery()
+    )
+    remaining_quantity_subquery = (
         sa.select(
             sa.case(
                 [
@@ -238,11 +245,7 @@ def _get_offers(form: forms.InternalSearchForm) -> list[offers_models.Offer]:
                             sa.func.max(sa.case([(offers_models.Stock.remainingStock.is_(None), 1)], else_=0)), 0  # type: ignore [attr-defined]
                         )
                         == 0,
-                        sa.func.concat(
-                            sa.func.coalesce(sa.func.sum(offers_models.Stock.remainingStock), 0).cast(sa.String),
-                            " / ",
-                            sa.func.coalesce(sa.func.sum(offers_models.Stock.totalStock), 0).cast(sa.String),
-                        ),
+                        sa.func.coalesce(sa.func.sum(offers_models.Stock.remainingStock), 0).cast(sa.String),
                     )
                 ],
                 else_="Illimité",
@@ -277,6 +280,7 @@ def _get_offers(form: forms.InternalSearchForm) -> list[offers_models.Offer]:
     query = (
         db.session.query(
             offers_models.Offer,
+            booked_quantity_subquery.label("booked_quantity"),
             sa.case(
                 [
                     (
@@ -286,11 +290,11 @@ def _get_offers(form: forms.InternalSearchForm) -> list[offers_models.Offer]:
                             offerers_models.Offerer.isActive,
                             offerers_models.Offerer.isValidated,
                         ),
-                        remaining_stocks_subquery,
+                        remaining_quantity_subquery,
                     )
                 ],
                 else_="-",
-            ).label("remaining_stocks"),
+            ).label("remaining_quantity"),
             tags_subquery.label("tags"),
             rules_subquery.label("rules"),
         )

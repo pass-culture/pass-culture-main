@@ -313,20 +313,6 @@ class Stock(PcObject, Base, Model, ProvidableMixin, SoftDeletableMixin):
         return self.offer.isDigital
 
     @hybrid_property
-    def totalStock(self) -> int | None:
-        """
-        Total stock shown in the backoffice is the total of booked quantities + remaining quantities still available
-        for booking. This means that an unlimited stock at the beginning becomes a limited total when event is expired.
-        """
-        if self.isBookable:
-            return self.quantity
-        return self.dnBookedQuantity
-
-    @totalStock.expression  # type: ignore [no-redef]
-    def totalStock(cls) -> Case:  # pylint: disable=no-self-argument
-        return sa.case([(cls._bookable, cls.quantity)], else_=cls.dnBookedQuantity)
-
-    @hybrid_property
     def remainingStock(self) -> int | None:
         if self.isBookable:
             # pylint: disable=comparison-with-callable
