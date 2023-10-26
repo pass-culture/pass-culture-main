@@ -86,21 +86,23 @@
             <table class="table mb-4 my-4">
               <thead>
                 <tr>
-                  <th scope="col-1">Stock ID</th>
-                  <th scope="col-5" class="col-4">Nombre de stock restant / total</th>
-                  <th scope="col-3" class="col-2">Prix</th>
-                  <th scope="col-3" class="col-4">Date / Heure</th>
+                  <th scope="col">Stock ID</th>
+                  <th scope="col" class="col-2">Stock réservé</th>
+                  <th scope="col" class="col-2">Stock restant</th>
+                  <th scope="col" class="col-2">Prix</th>
+                  <th scope="col" class="col-4">Date / Heure</th>
                 </tr>
               </thead>
               <tbody>
                 {% for stock in offer.stocks | sort(attribute='id') %}
                   <tr>
                     <td>{{ stock.id }}</td>
+                    <td>{{ stock.dnBookedQuantity }}</td>
                     <td>
                       {% if stock.remainingStock is none %}
                         Illimité
                       {% else %}
-                        {{ stock.remainingStock }} / {{ stock.totalStock }}
+                        {{ stock.remainingStock }}
                       {% endif %}
                     </td>
                     <td>{{ stock.price | format_amount }}</td>
