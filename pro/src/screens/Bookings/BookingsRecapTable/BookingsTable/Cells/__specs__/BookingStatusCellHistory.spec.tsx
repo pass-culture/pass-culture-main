@@ -24,7 +24,7 @@ describe('bookings status history cell', () => {
 
     renderBookingStatusCellHistory(props)
 
-    expect(screen.getByText('Réservé : 04/01/2020 20:31')).toBeInTheDocument()
+    expect(screen.getByText('Réservée : 04/01/2020 20:31')).toBeInTheDocument()
   })
 
   it('should display proper infos for booked status', () => {
@@ -39,7 +39,7 @@ describe('bookings status history cell', () => {
 
     renderBookingStatusCellHistory(props)
 
-    expect(screen.getByText('Réservé : 04/01/2020 20:31')).toBeInTheDocument()
+    expect(screen.getByText('Réservée : 04/01/2020 20:31')).toBeInTheDocument()
   })
 
   it('should display proper infos for validated status', () => {
