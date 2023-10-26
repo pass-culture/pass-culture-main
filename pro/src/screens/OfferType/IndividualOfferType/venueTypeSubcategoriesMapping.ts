@@ -93,7 +93,7 @@ export const venueTypeSubcategoriesMapping: Record<
     SubcategoryIdEnum.VISITE,
     SubcategoryIdEnum.VISITE_GUIDEE,
     SubcategoryIdEnum.CONFERENCE,
-    SubcategoryIdEnum.ABO_MUSEE,
+    SubcategoryIdEnum.CARTE_MUSEE,
   ],
   ['MUSICAL_INSTRUMENT_STORE']: [
     SubcategoryIdEnum.ACHAT_INSTRUMENT,
@@ -147,7 +147,7 @@ export const venueTypeSubcategoriesMapping: Record<
     SubcategoryIdEnum.VISITE,
     SubcategoryIdEnum.ATELIER_PRATIQUE_ART,
     SubcategoryIdEnum.MATERIEL_ART_CREATIF,
-    SubcategoryIdEnum.ABO_MUSEE,
+    SubcategoryIdEnum.CARTE_MUSEE,
     SubcategoryIdEnum.SEANCE_CINE,
   ],
 }
