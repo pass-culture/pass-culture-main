@@ -214,6 +214,36 @@ describe('collective timeline', () => {
         '/structures/1/lieux/1?modification#reimbursement-section'
       )
     })
+
+    it('should render steps for validated booking and missing bankInformation when FF bank details enable', () => {
+      const bookingRecap = collectiveBookingRecapFactory({
+        bookingStatus: BOOKING_STATUS.VALIDATED,
+      })
+      bookingDetails = collectiveBookingDetailsFactory({
+        bankInformationStatus: CollectiveBookingBankInformationStatus.MISSING,
+      })
+      const storeOverrides = {
+        features: {
+          list: [
+            { isActive: true, nameKey: 'WIP_ENABLE_NEW_BANK_DETAILS_JOURNEY' },
+          ],
+        },
+      }
+      renderCollectiveTimeLine(bookingRecap, bookingDetails, storeOverrides)
+      expect(
+        screen.getByText(
+          'Complétez vos informations bancaires pour débloquer le remboursement.'
+        )
+      ).toBeInTheDocument()
+      expect(
+        screen.getByRole('link', {
+          name: 'Paramétrer les informations bancaires',
+        })
+      ).toHaveAttribute(
+        'href',
+        '/remboursements/informations-bancaires?structure=1'
+      )
+    })
   })
 
   describe('confirmed booking', () => {
