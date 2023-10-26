@@ -11,10 +11,10 @@ export const NoResultsPage = ({ query }: NoResultsPageProps): JSX.Element => {
     'Nous n’avons trouvé aucune offre publiée'
   ) : (
     <>
-      Nous n’avons trouvé aucune offre publiée pour :{' '}
       <span className={styles['no-results-text-query-container']}>
         “<span className={styles['no-results-text-query']}>{query}</span>”
-      </span>
+      </span>{' '}
+      n’a pas d’offres disponibles pour le moment
     </>
   )
 
