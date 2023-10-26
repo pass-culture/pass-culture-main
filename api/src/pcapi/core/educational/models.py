@@ -14,6 +14,7 @@ from sqlalchemy.ext.hybrid import hybrid_property
 from sqlalchemy.ext.mutable import MutableDict
 from sqlalchemy.ext.mutable import MutableList
 import sqlalchemy.orm as sa_orm
+from sqlalchemy.orm import declared_attr
 from sqlalchemy.orm import relationship
 from sqlalchemy.sql.elements import BinaryExpression
 from sqlalchemy.sql.elements import False_
@@ -625,17 +626,27 @@ class CollectiveOfferTemplate(
 
     dateRange: psycopg2.extras.DateTimeRange = sa.Column(postgresql.TSRANGE)
 
-    __table_args__ = (
-        sa.UniqueConstraint("dateRange", "id", name="collective_offer_template_unique_daterange"),
-        sa.CheckConstraint(
-            '"dateRange" is NULL OR ('
-            'NOT isempty("dateRange") '
-            'AND lower("dateRange") is NOT NULL '
-            'AND upper("dateRange") IS NOT NULL '
-            'AND lower("dateRange")::date >= "dateCreated"::date)',
-            name="template_dates_non_empty_daterange",
-        ),
-    )
+    @declared_attr
+    def __table_args__(self):
+        parent_args = []
+        # Retrieves indexes from parent mixins defined in __table_args__
+        for base_class in self.__mro__:
+            try:
+                parent_args += super(base_class, self).__table_args__
+            except (AttributeError, TypeError):
+                pass
+        parent_args += [
+            sa.UniqueConstraint("dateRange", "id", name="collective_offer_template_unique_daterange"),
+            sa.CheckConstraint(
+                '"dateRange" is NULL OR ('
+                'NOT isempty("dateRange") '
+                'AND lower("dateRange") is NOT NULL '
+                'AND upper("dateRange") IS NOT NULL '
+                'AND lower("dateRange")::date >= "dateCreated"::date)',
+                name="template_dates_non_empty_daterange",
+            ),
+        ]
+        return tuple(parent_args)
 
     @property
     def start(self) -> datetime:

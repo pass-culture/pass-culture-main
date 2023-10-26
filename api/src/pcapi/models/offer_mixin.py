@@ -64,3 +64,13 @@ class ValidationMixin:
     @declared_attr
     def lastValidationAuthor(self) -> Mapped["User | None"]:
         return sa.orm.relationship("User", foreign_keys=[self.lastValidationAuthorUserId])
+
+    @declared_attr
+    def __table_args__(self):
+        return (
+            sa.Index(
+                f"idx_{self.__tablename__}_lastValidationAuthorUserId",
+                self.lastValidationAuthorUserId,
+                postgresql_where=self.lastValidationAuthorUserId.is_not(None),
+            ),
+        )
