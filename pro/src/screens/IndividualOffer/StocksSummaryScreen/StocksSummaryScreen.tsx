@@ -19,7 +19,7 @@ import styles from './StocksSummary.module.scss'
 export const StocksSummaryScreen = () => {
   const { offer } = useIndividualOfferContext()
   const [isLoading, setIsLoading] = useState(false)
-  const [stocks, setStocks] = useState<StocksEvent[]>([])
+  const [stocksEvent, setStocksEvent] = useState<StocksEvent[]>([])
   const notify = useNotification()
 
   useEffect(() => {
@@ -29,7 +29,7 @@ export const StocksSummaryScreen = () => {
         try {
           const response = await api.getStocks(offer.id)
 
-          setStocks(serializeStockEvents(response.stocks))
+          setStocksEvent(serializeStockEvents(response.stocks))
         } catch {
           notify.error(
             'Une erreur est survenue lors du chargement de vos stocks.'
@@ -52,7 +52,10 @@ export const StocksSummaryScreen = () => {
     mode: OFFER_WIZARD_MODE.EDITION,
   })
 
-  const stockWarningText = getStockWarningText(offer)
+  const stockWarningText = getStockWarningText(
+    offer.status,
+    offer.isEvent ? stocksEvent.length : offer.stocks.length
+  )
 
   return (
     <SummaryLayout.Section
@@ -68,7 +71,7 @@ export const StocksSummaryScreen = () => {
       )}
 
       {offer.isEvent ? (
-        <RecurrenceSummary offer={offer} stocks={stocks} />
+        <RecurrenceSummary offer={offer} stocks={stocksEvent} />
       ) : (
         <StockThingSection stock={offer.stocks[0]} />
       )}
