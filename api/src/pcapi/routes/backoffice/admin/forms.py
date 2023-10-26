@@ -26,7 +26,8 @@ class EditPermissionForm(FlaskForm):
 
 
 class BOUserSearchForm(search.SearchForm):
-    pass
+    # optional in Admin users page because all users are displayed when no filter is set
+    q = fields.PCOptSearchField(label="")
 
 
 class EditBOUserForm(utils.PCForm):

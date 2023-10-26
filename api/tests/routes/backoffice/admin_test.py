@@ -221,6 +221,23 @@ class SearchBoUsersTest(GetEndpointHelper):
         assert_user_equals(cards_text[1], legit_user)  # starts with "Hercule"
         assert_user_equals(cards_text[2], user2)  # starts with "Suspendu"
 
+    def test_search_paginated_without_filter(self, authenticated_client, legit_user):
+        users_factories.AdminFactory.create_batch(2)  # + legit_user = 3 admin users
+
+        with assert_num_queries(self.expected_num_queries):
+            response = authenticated_client.get(url_for(self.endpoint, page=1, per_page=2))
+            assert response.status_code == 200
+
+        cards_text = html_parser.extract_cards_text(response.data)
+        assert len(cards_text) == 2
+
+        with assert_num_queries(self.expected_num_queries):
+            response = authenticated_client.get(url_for(self.endpoint, page=2, per_page=2))
+            assert response.status_code == 200
+
+        cards_text = html_parser.extract_cards_text(response.data)
+        assert len(cards_text) == 1
+
     def test_search_by_name(self, authenticated_client, legit_user):
         user1 = users_factories.AdminFactory(firstName="Alice", lastName="Bob")
         users_factories.AdminFactory(firstName="Bob", lastName="Carole")
