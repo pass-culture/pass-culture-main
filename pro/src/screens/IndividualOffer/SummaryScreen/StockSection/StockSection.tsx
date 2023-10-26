@@ -30,10 +30,9 @@ export const getStockWarningText = (offer: IndividualOffer) => {
 
 export interface StockSectionProps {
   offer: IndividualOffer
-  canBeDuo?: boolean
 }
 
-const StockSection = ({ offer, canBeDuo }: StockSectionProps): JSX.Element => {
+const StockSection = ({ offer }: StockSectionProps): JSX.Element => {
   const mode = useOfferWizardMode()
 
   const editLink = getIndividualOfferUrl({
@@ -62,7 +61,7 @@ const StockSection = ({ offer, canBeDuo }: StockSectionProps): JSX.Element => {
         {offer.isEvent ? (
           <RecurrenceSection offer={offer} />
         ) : (
-          <StockThingSection offer={offer} canBeDuo={canBeDuo} />
+          <StockThingSection stock={offer.stocks[0]} />
         )}
       </SummaryLayout.Section>
     </>
