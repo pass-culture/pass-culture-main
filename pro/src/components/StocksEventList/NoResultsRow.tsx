@@ -17,7 +17,7 @@ export const NoResultsRow = ({ colSpan }: NoResultsRowProps) => (
         alt=""
         className={styles['no-data-icon']}
       />
-      <div className={styles['no-data-message']}>Aucune occurence trouvée</div>
+      <div className={styles['no-data-message']}>Aucune occurrence trouvée</div>
       <div className={styles['no-data-help']}>
         Vous pouvez modifier vos filtres pour lancer une nouvelle recherche
       </div>

@@ -23,7 +23,7 @@ export const FilterResultsRow = ({
         <div>
           Résultat de recherche :{' '}
           <span className={styles['search-result']}>
-            {resultsCount} occurence
+            {resultsCount} occurrence
             {resultsCount !== 1 && 's'}
           </span>
         </div>
