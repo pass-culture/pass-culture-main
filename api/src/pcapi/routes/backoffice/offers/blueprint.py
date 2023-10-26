@@ -96,6 +96,18 @@ SEARCH_FIELD_TO_PYTHON = {
         "inner_join": "criterion",
         "outer_join": "offer_criterion",
         "outer_join_column": criteria_models.OfferCriterion.offerId,
+        "custom_filters": {
+            "NOT_IN": lambda values: (
+                sa.exists()
+                .where(
+                    sa.and_(
+                        criteria_models.OfferCriterion.offerId == offers_models.Offer.id,
+                        criteria_models.OfferCriterion.criterionId.in_(values),
+                    )
+                )
+                .is_(False)
+            )
+        },
     },
     "STATUS": {
         "field": "status",
