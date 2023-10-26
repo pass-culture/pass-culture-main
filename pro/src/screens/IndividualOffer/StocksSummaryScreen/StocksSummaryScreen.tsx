@@ -17,7 +17,7 @@ import { RecurrenceSummary } from './RecurrenceSummary'
 import styles from './StocksSummary.module.scss'
 
 export const StocksSummaryScreen = () => {
-  const { offer, subCategories } = useIndividualOfferContext()
+  const { offer } = useIndividualOfferContext()
   const [isLoading, setIsLoading] = useState(false)
   const [stocks, setStocks] = useState<StocksEvent[]>([])
   const notify = useNotification()
@@ -45,9 +45,6 @@ export const StocksSummaryScreen = () => {
   if (offer === null || isLoading) {
     return null
   }
-  const canBeDuo = subCategories.find(
-    (subcategory) => subcategory.id === offer.subcategoryId
-  )?.canBeDuo
 
   const editLink = getIndividualOfferUrl({
     offerId: offer.id,
@@ -73,7 +70,7 @@ export const StocksSummaryScreen = () => {
       {offer.isEvent ? (
         <RecurrenceSummary offer={offer} stocks={stocks} />
       ) : (
-        <StockThingSection offer={offer} canBeDuo={canBeDuo} />
+        <StockThingSection stock={offer.stocks[0]} />
       )}
     </SummaryLayout.Section>
   )
