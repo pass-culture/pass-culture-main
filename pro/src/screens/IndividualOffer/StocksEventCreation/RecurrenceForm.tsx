@@ -468,6 +468,7 @@ export const RecurrenceForm = ({
           <SubmitButton
             icon={fullNextIcon}
             disabled={formik.isSubmitting}
+            isLoading={formik.isSubmitting}
             iconPosition={IconPositionEnum.RIGHT}
           >
             Valider
