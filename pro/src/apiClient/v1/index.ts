@@ -68,6 +68,7 @@ export type { DeleteOfferRequestBody } from './models/DeleteOfferRequestBody';
 export type { DeleteStockListBody } from './models/DeleteStockListBody';
 export type { DMSApplicationForEAC } from './models/DMSApplicationForEAC';
 export { DMSApplicationstatus } from './models/DMSApplicationstatus';
+export { EacFormat } from './models/EacFormat';
 export type { EditPriceCategoryModel } from './models/EditPriceCategoryModel';
 export type { EditVenueBodyModel } from './models/EditVenueBodyModel';
 export type { EditVenueCollectiveDataBodyModel } from './models/EditVenueCollectiveDataBodyModel';

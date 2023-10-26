@@ -5,6 +5,7 @@
 
 import type { CollectiveBookingStatus } from './CollectiveBookingStatus';
 import type { CollectiveOfferOfferVenueResponseModel } from './CollectiveOfferOfferVenueResponseModel';
+import type { EacFormat } from './EacFormat';
 import type { EducationalInstitutionResponseModel } from './EducationalInstitutionResponseModel';
 import type { EducationalRedactorResponseModel } from './EducationalRedactorResponseModel';
 import type { GetCollectiveOfferCollectiveStockResponseModel } from './GetCollectiveOfferCollectiveStockResponseModel';
@@ -25,6 +26,7 @@ export type GetCollectiveOfferResponseModel = {
   description: string;
   domains: Array<OfferDomain>;
   durationMinutes?: number | null;
+  formats?: Array<EacFormat> | null;
   hasBookingLimitDatetimesPassed: boolean;
   id: number;
   imageCredit?: string | null;

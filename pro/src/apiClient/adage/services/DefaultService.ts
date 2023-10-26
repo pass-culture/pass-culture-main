@@ -14,6 +14,7 @@ import type { CollectiveOfferResponseModel } from '../models/CollectiveOfferResp
 import type { CollectiveOfferTemplateResponseModel } from '../models/CollectiveOfferTemplateResponseModel';
 import type { CollectiveRequestBody } from '../models/CollectiveRequestBody';
 import type { CollectiveRequestResponseModel } from '../models/CollectiveRequestResponseModel';
+import type { EacFormatsResponseModel } from '../models/EacFormatsResponseModel';
 import type { EducationalInstitutionWithBudgetResponseModel } from '../models/EducationalInstitutionWithBudgetResponseModel';
 import type { FavoritesResponseModel } from '../models/FavoritesResponseModel';
 import type { ListCollectiveOffersResponseModel } from '../models/ListCollectiveOffersResponseModel';
@@ -610,6 +611,22 @@ export class DefaultService {
     return this.httpRequest.request({
       method: 'GET',
       url: '/adage-iframe/offers/categories',
+      errors: {
+        403: `Forbidden`,
+        422: `Unprocessable Entity`,
+      },
+    });
+  }
+
+  /**
+   * get_educational_offers_formats <GET>
+   * @returns EacFormatsResponseModel OK
+   * @throws ApiError
+   */
+  public getEducationalOffersFormats(): CancelablePromise<EacFormatsResponseModel> {
+    return this.httpRequest.request({
+      method: 'GET',
+      url: '/adage-iframe/offers/formats',
       errors: {
         403: `Forbidden`,
         422: `Unprocessable Entity`,

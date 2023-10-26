@@ -5,6 +5,7 @@
 
 import type { CollectiveOffersBookingResponseModel } from './CollectiveOffersBookingResponseModel';
 import type { CollectiveOffersStockResponseModel } from './CollectiveOffersStockResponseModel';
+import type { EacFormat } from './EacFormat';
 import type { EducationalInstitutionResponseModel } from './EducationalInstitutionResponseModel';
 import type { ListOffersVenueResponseModel } from './ListOffersVenueResponseModel';
 import type { NationalProgramModel } from './NationalProgramModel';
@@ -13,6 +14,7 @@ import type { SubcategoryIdEnum } from './SubcategoryIdEnum';
 export type CollectiveOfferResponseModel = {
   booking?: CollectiveOffersBookingResponseModel | null;
   educationalInstitution?: EducationalInstitutionResponseModel | null;
+  formats?: Array<EacFormat> | null;
   hasBookingLimitDatetimesPassed: boolean;
   id: number;
   imageCredit?: string | null;
