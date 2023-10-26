@@ -4,6 +4,7 @@
 /* eslint-disable */
 
 import type { CollectiveOfferVenueBodyModel } from './CollectiveOfferVenueBodyModel';
+import type { EacFormat } from './EacFormat';
 import type { StudentLevels } from './StudentLevels';
 
 export type PostCollectiveOfferBodyModel = {
@@ -14,6 +15,7 @@ export type PostCollectiveOfferBodyModel = {
   description: string;
   domains?: Array<number> | null;
   durationMinutes?: number | null;
+  formats?: Array<EacFormat> | null;
   interventionArea?: Array<string> | null;
   mentalDisabilityCompliant?: boolean;
   motorDisabilityCompliant?: boolean;
@@ -22,7 +24,7 @@ export type PostCollectiveOfferBodyModel = {
   offerVenue: CollectiveOfferVenueBodyModel;
   offererId?: string | null;
   students: Array<StudentLevels>;
-  subcategoryId: string;
+  subcategoryId?: string | null;
   templateId?: number | null;
   venueId: number;
   visualDisabilityCompliant?: boolean;

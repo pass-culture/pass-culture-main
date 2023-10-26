@@ -5,6 +5,7 @@
 
 import type { CollectiveOfferVenueBodyModel } from './CollectiveOfferVenueBodyModel';
 import type { DateRangeOnCreateModel } from './DateRangeOnCreateModel';
+import type { EacFormat } from './EacFormat';
 import type { StudentLevels } from './StudentLevels';
 
 export type PostCollectiveOfferTemplateBodyModel = {
@@ -16,6 +17,7 @@ export type PostCollectiveOfferTemplateBodyModel = {
   description: string;
   domains?: Array<number> | null;
   durationMinutes?: number | null;
+  formats?: Array<EacFormat> | null;
   interventionArea?: Array<string> | null;
   mentalDisabilityCompliant?: boolean;
   motorDisabilityCompliant?: boolean;
@@ -25,7 +27,7 @@ export type PostCollectiveOfferTemplateBodyModel = {
   offererId?: string | null;
   priceDetail?: string | null;
   students: Array<StudentLevels>;
-  subcategoryId: string;
+  subcategoryId?: string | null;
   templateId?: number | null;
   venueId: number;
   visualDisabilityCompliant?: boolean;

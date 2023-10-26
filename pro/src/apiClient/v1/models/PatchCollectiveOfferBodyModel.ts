@@ -4,6 +4,7 @@
 /* eslint-disable */
 
 import type { CollectiveOfferVenueBodyModel } from './CollectiveOfferVenueBodyModel';
+import type { EacFormat } from './EacFormat';
 import type { StudentLevels } from './StudentLevels';
 import type { SubcategoryIdEnum } from './SubcategoryIdEnum';
 
@@ -15,6 +16,7 @@ export type PatchCollectiveOfferBodyModel = {
   description?: string | null;
   domains?: Array<number> | null;
   durationMinutes?: number | null;
+  formats?: Array<EacFormat> | null;
   interventionArea?: Array<string> | null;
   mentalDisabilityCompliant?: boolean | null;
   motorDisabilityCompliant?: boolean | null;
