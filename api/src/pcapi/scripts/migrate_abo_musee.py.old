@@ -1,0 +1,68 @@
+import logging
+from typing import Iterator
+
+from sqlalchemy.orm import joinedload
+
+from pcapi.core import search
+from pcapi.core.categories.subcategories_v2 import ABO_MUSEE
+from pcapi.core.categories.subcategories_v2 import CARTE_MUSEE
+from pcapi.core.offers.models import Offer
+from pcapi.core.offers.models import Product
+from pcapi.models import db
+from pcapi.repository import transaction
+from pcapi.settings import IS_PROD
+
+
+logger = logging.getLogger(__name__)
+CHUNK_SIZE = 1000
+
+
+def migrate_abo_musee_offers_and_products_to_carte_musee(from_id: int | None = None) -> None:
+    product_pages_to_update = _get_abo_musee_product_pages(from_id)
+    counter = 0
+    for product_page in product_pages_to_update:
+        with transaction():
+            for product in product_page:
+                product.subcategoryId = CARTE_MUSEE.id
+                for offer in product.offers:
+                    offer.subcategoryId = CARTE_MUSEE.id
+            db.session.add_all(product_page)
+
+        if IS_PROD:
+            offer_ids = [offer.id for product in product_page for offer in product.offers]
+            search.reindex_offer_ids(offer_ids)
+
+        counter += len(product_page)
+        logger.info("successfully migrated %s museum products", counter)
+
+    remaining_offers = Offer.query.filter(Offer.subcategoryId == ABO_MUSEE.id).all()
+    with transaction():
+        for offer in remaining_offers:
+            offer.subcategoryId = CARTE_MUSEE.id
+        db.session.add_all(remaining_offers)
+
+    if IS_PROD:
+        offer_ids = [offer.id for offer in remaining_offers]
+        search.reindex_offer_ids(offer_ids)
+
+    logger.info("successfully migrated all offers")
+
+
+def _get_abo_musee_product_pages(from_id: int | None = None) -> Iterator[list[Product]]:
+    products = None
+    while products is None or len(products) == CHUNK_SIZE:
+        products = (
+            Product.query.filter(Product.subcategoryId == ABO_MUSEE.id)
+            .options(joinedload(Product.offers))
+            .filter(Product.id > (from_id or 0))
+            .order_by(Product.id)
+            .limit(CHUNK_SIZE)
+            .all()
+        )
+        yield products
+        if products:
+            from_id = products[-1].id
+        logger.info("last successfully migrated product id %s", from_id)
+
+
+migrate_abo_musee_offers_and_products_to_carte_musee()
