@@ -241,15 +241,17 @@ def generate_search_query(
         if not search_field:
             continue
 
-        if search_field not in fields_definition:
-            warnings.add(f"La règle de recherche '{search_field}' n'est pas supportée, merci de prévenir les devs")
-            continue
-
         meta_field = fields_definition.get(search_field)
         if not meta_field:
             warnings.add(f"La règle de recherche '{search_field}' n'est pas supportée, merci de prévenir les devs")
             continue
+
         field_value = meta_field.get("special", lambda x: x)(search_data.get(meta_field["field"]))
+
+        if custom_filter := meta_field.get("custom_filters", {}).get(operator):
+            filters.append(custom_filter(field_value))
+            continue
+
         column = meta_field["column"]
         if operators_definition[operator].get("outer_join", False):
             if not meta_field.get("outer_join") or not meta_field.get("outer_join_column"):
