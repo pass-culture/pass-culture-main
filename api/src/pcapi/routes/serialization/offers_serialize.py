@@ -270,6 +270,7 @@ class GetOfferStockResponseModel(BaseModel):
         allow_population_by_field_name = True
         orm_mode = True
         json_encoders = {datetime.datetime: format_into_utc_date}
+        arbitrary_types_allowed = True
 
 
 class GetOfferManagingOffererResponseModel(BaseModel):
