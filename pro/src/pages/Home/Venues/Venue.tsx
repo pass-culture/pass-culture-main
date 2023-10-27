@@ -6,7 +6,6 @@ import { api } from 'apiClient/api'
 import { DMSApplicationForEAC, DMSApplicationstatus } from 'apiClient/v1'
 import { BOOKING_STATUS } from 'core/Bookings/constants'
 import { VenueEvents } from 'core/FirebaseEvents/constants'
-import useGetVenueProvider from 'core/Venue/adapters/getVenueProviderAdapter/useGetVenueProvider'
 import useActiveFeature from 'hooks/useActiveFeature'
 import useAnalytics from 'hooks/useAnalytics'
 import fullDisclosureClose from 'icons/full-disclosure-close.svg'
@@ -34,6 +33,7 @@ export interface VenueProps {
   offererId: number
   publicName?: string | null
   hasCreatedOffer?: boolean
+  hasProvider?: boolean
   dmsInformations?: DMSApplicationForEAC | null
   hasAdageId?: boolean
   adageInscriptionDate?: string | null
@@ -47,6 +47,7 @@ const Venue = ({
   isVirtual = false,
   name,
   offererId,
+  hasProvider,
   publicName,
   hasCreatedOffer,
   dmsInformations,
@@ -211,8 +212,6 @@ const Venue = ({
     }
   }, [venueId, isStatOpen, isStatLoaded, initialOpenState])
 
-  const { isLoading: isProvidersListLoading, data: venueProviders } =
-    useGetVenueProvider(venueId)
   const editVenueLink = `/structures/${offererId}/lieux/${venueId}?modification`
   const reimbursementSectionLink = `/structures/${offererId}/lieux/${venueId}?modification#remboursement`
 
@@ -275,17 +274,15 @@ const Venue = ({
                 </Button>
               )}
 
-              {!isProvidersListLoading &&
-                venueProviders &&
-                venueProviders?.length > 0 && (
-                  <Tag
-                    variant={TagVariant.LIGHT_PURPLE}
-                    className={styles['api-tag']}
-                  >
-                    <SvgIcon alt="" src={strokeConnectIcon} />
-                    API
-                  </Tag>
-                )}
+              {hasProvider && (
+                <Tag
+                  variant={TagVariant.LIGHT_PURPLE}
+                  className={styles['api-tag']}
+                >
+                  <SvgIcon alt="" src={strokeConnectIcon} />
+                  API
+                </Tag>
+              )}
             </h3>
             <div className="button-group">
               {/*Delete when WIP_ENABLE_NEW_BANK_DETAILS_JOURNEY is deleted*/}
