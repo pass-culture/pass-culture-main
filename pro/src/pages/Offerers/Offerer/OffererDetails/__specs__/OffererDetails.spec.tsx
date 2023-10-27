@@ -51,6 +51,7 @@ describe('src | components | pages | Offerer | OffererDetails', () => {
           hasCreatedOffer: false,
           hasMissingReimbursementPoint: false,
           venueTypeCode: VenueTypeCode.AUTRE,
+          hasVenueProviders: false,
         },
       ],
       dsToken: '0123456789abcdef',

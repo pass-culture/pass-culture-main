@@ -25,6 +25,7 @@ describe('VenueItem', () => {
         hasCreatedOffer: false,
         isVirtual: false,
         venueTypeCode: VenueTypeCode.AUTRE,
+        hasVenueProviders: false,
       },
       offererId: offererId,
     }
