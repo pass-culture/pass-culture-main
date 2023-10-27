@@ -49,7 +49,7 @@ export type GetCollectiveOfferResponseModel = {
   offerVenue: CollectiveOfferOfferVenueResponseModel;
   status: OfferStatus;
   students: Array<StudentLevels>;
-  subcategoryId: SubcategoryIdEnum;
+  subcategoryId?: SubcategoryIdEnum | null;
   teacher?: EducationalRedactorResponseModel | null;
   templateId?: number | null;
   venue: GetCollectiveOfferVenueResponseModel;
