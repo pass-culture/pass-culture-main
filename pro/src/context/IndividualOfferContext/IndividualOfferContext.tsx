@@ -126,13 +126,12 @@ export function IndividualOfferContextProvider({
         setVenueList(response.payload.venueList)
 
         if (isNewBankDetailsJourneyEnabled) {
-          // TODO: check venue.hasNonFreeOfferCreated
-          const venueHasCreatedOffer = response.payload.venueList.some(
-            (venue) => {
-              return venue.hasCreatedOffer
+          const venueHasCreatedNonFreeOffer = response.payload.venueList.some(
+            ({ hasNonFreeOffers }) => {
+              return hasNonFreeOffers
             }
           )
-          setShowFirstNonFreeOfferPopin(venueHasCreatedOffer)
+          setShowFirstNonFreeOfferPopin(venueHasCreatedNonFreeOffer)
         } else {
           const venuesPopinDisplaying: Record<string, boolean> = {}
           response.payload.venueList.forEach((v) => {
