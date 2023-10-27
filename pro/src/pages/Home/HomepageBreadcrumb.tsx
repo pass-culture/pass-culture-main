@@ -59,29 +59,28 @@ const HomepageBreadcrumb = ({
     })
   }
 
-  steps.push(
-    {
-      id: STEP_ID_OFFERERS,
-      label: 'Structures et lieux',
-      hash: STEP_OFFERER_HASH,
-      onClick: () => logEvent?.(Events.CLICKED_BREADCRUMBS_STRUCTURES),
-    },
-    {
-      id: STEP_ID_PROFILE,
-      label: 'Profil et aide',
-      hash: STEP_PROFILE_HASH,
-      onClick: jumpToProfileSection,
-    }
-  )
+  steps.push({
+    id: STEP_ID_OFFERERS,
+    label: 'Structures et lieux',
+    hash: STEP_OFFERER_HASH,
+    onClick: () => logEvent?.(Events.CLICKED_BREADCRUMBS_STRUCTURES),
+  })
 
   if (isOffererStatsActive) {
-    steps.splice(1, 0, {
+    steps.push({
       id: STEP_ID_STATS,
       label: 'Statistiques',
       hash: STEP_STATS_HASH,
       onClick: jumpToStatsSection,
     })
   }
+
+  steps.push({
+    id: STEP_ID_PROFILE,
+    label: 'Profil et aide',
+    hash: STEP_PROFILE_HASH,
+    onClick: jumpToProfileSection,
+  })
 
   return (
     <Breadcrumb
