@@ -1299,8 +1299,7 @@ class MarkAsUsedTest:
         assert booking.status is not BookingStatus.USED
 
     def test_raise_if_already_reimbursed(self):
-        booking = bookings_factories.UsedBookingFactory()
-        finance_factories.PaymentFactory(booking=booking)
+        booking = bookings_factories.ReimbursedBookingFactory()
         with pytest.raises(exceptions.BookingIsAlreadyRefunded):
             api.mark_as_used(booking)
 
@@ -1350,13 +1349,6 @@ class MarkAsUnusedTest:
     def test_raise_if_has_reimbursement(self):
         booking = bookings_factories.UsedBookingFactory()
         finance_factories.PricingFactory(booking=booking, status=finance_models.PricingStatus.PROCESSED)
-        with pytest.raises(api_errors.ResourceGoneError):
-            api.mark_as_unused(booking)
-        assert booking.status is BookingStatus.USED
-
-    def test_raise_if_has_reimbursement_legacy_payment(self):
-        booking = bookings_factories.UsedBookingFactory()
-        finance_factories.PaymentFactory(booking=booking)
         with pytest.raises(api_errors.ResourceGoneError):
             api.mark_as_unused(booking)
         assert booking.status is BookingStatus.USED

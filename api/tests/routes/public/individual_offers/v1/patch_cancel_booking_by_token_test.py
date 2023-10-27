@@ -5,7 +5,6 @@ import pytest
 
 from pcapi.core.bookings import factories as bookings_factories
 from pcapi.core.bookings.models import BookingStatus
-from pcapi.core.finance import factories as finance_factories
 from pcapi.core.offerers import factories as offerers_factories
 from pcapi.core.offers import factories as offers_factories
 
@@ -136,17 +135,13 @@ class PatchBookingByTokenReturns403Test:
     def test_when_booking_is_refunded(self, client):
         # Given
         venue, _ = utils.create_offerer_provider_linked_to_venue()
-
-        offer = offers_factories.ThingOfferFactory(
-            venue=venue,
-        )
+        offer = offers_factories.ThingOfferFactory(venue=venue)
         stock = offers_factories.StockFactory(offer=offer)
-        payment = finance_factories.PaymentFactory(booking__stock=stock)
+        booking = bookings_factories.ReimbursedBookingFactory(stock=stock)
 
         # When
-        response = client.with_explicit_token(offerers_factories.DEFAULT_CLEAR_API_KEY).patch(
-            f"/public/bookings/v1/cancel/token/{payment.booking.token}",
-        )
+        client = client.with_explicit_token(offerers_factories.DEFAULT_CLEAR_API_KEY)
+        response = client.patch(f"/public/bookings/v1/cancel/token/{booking.token}")
 
         # Then
         assert response.status_code == 403

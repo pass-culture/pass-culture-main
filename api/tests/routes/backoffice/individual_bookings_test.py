@@ -583,20 +583,10 @@ class CancelBookingTest(PostEndpointHelper):
             == "Impossible d'annuler une réservation déjà valorisée ou remboursée"
         )
 
-    @pytest.mark.parametrize(
-        "with_pricing,expected_message",
-        [
-            (False, "Impossible d'annuler une réservation déjà utilisée"),
-            (True, "Impossible d'annuler une réservation déjà valorisée ou remboursée"),
-        ],
-    )
-    def test_cant_cancel_reimbursed_booking(self, authenticated_client, bookings, with_pricing, expected_message):
+    def test_cant_cancel_reimbursed_booking(self, authenticated_client, bookings):
         # give
         reimbursed = bookings[3]
         old_status = reimbursed.status
-        if with_pricing:
-            finance_factories.PricingFactory(booking=reimbursed, status=finance_models.PricingStatus.INVOICED)
-            finance_factories.PaymentFactory(booking=reimbursed)
 
         # when
         response = self.post_to_endpoint(
@@ -612,7 +602,10 @@ class CancelBookingTest(PostEndpointHelper):
         assert reimbursed.status == old_status
 
         redirected_response = authenticated_client.get(response.headers["location"])
-        assert html_parser.extract_alert(redirected_response.data) == expected_message
+        assert (
+            html_parser.extract_alert(redirected_response.data)
+            == "Impossible d'annuler une réservation déjà valorisée ou remboursée"
+        )
 
     def test_cant_cancel_cancelled_booking(self, authenticated_client, bookings):
         # give

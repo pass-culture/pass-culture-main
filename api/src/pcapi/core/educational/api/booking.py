@@ -371,8 +371,6 @@ def cancel_collective_booking(
     with transaction():
         educational_repository.get_and_lock_collective_stock(stock_id=collective_booking.collectiveStock.id)
         db.session.refresh(collective_booking)
-        if collective_booking.status == educational_models.CollectiveBookingStatus.REIMBURSED:
-            raise exceptions.BookingIsAlreadyRefunded()
         if finance_repository.has_reimbursement(collective_booking):
             raise exceptions.BookingIsAlreadyRefunded()
 
