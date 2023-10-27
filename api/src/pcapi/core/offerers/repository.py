@@ -132,8 +132,47 @@ def get_filtered_venues(
     offerer_id: int | None = None,
     validated_offerer: bool | None = None,
 ) -> list[models.Venue]:
+    has_non_free_offers_subquey = (
+        sqla.select(1)
+        .select_from(offers_models.Stock)
+        .join(
+            offers_models.Offer,
+            sqla.and_(
+                offers_models.Stock.offerId == Offer.id,
+                offers_models.Stock.price > 0,
+                offers_models.Stock.isSoftDeleted.is_(False),
+                offers_models.Offer.isActive.is_(True),
+                offers_models.Offer.venueId == models.Venue.id,
+            ),
+        )
+        .correlate(models.Venue)
+        .exists()
+    )
+    has_non_free_collective_offers_sub_query = (
+        sqla.select(1)
+        .select_from(CollectiveStock)
+        .join(
+            CollectiveOffer,
+            sqla.and_(
+                CollectiveStock.collectiveOfferId == CollectiveOffer.id,
+                CollectiveStock.price > 0,
+                CollectiveOffer.isActive.is_(True),
+                CollectiveOffer.venueId == models.Venue.id,
+            ),
+        )
+        .correlate(models.Venue)
+        .exists()
+    )
+
     query = (
-        models.Venue.query.join(models.Offerer, models.Offerer.id == models.Venue.managingOffererId)
+        db.session.query(
+            models.Venue,
+            sqla.or_(
+                has_non_free_offers_subquey,
+                has_non_free_collective_offers_sub_query,
+            ).label("hasNonFreeOffers"),
+        )
+        .join(models.Offerer, models.Offerer.id == models.Venue.managingOffererId)
         .join(models.UserOfferer, models.UserOfferer.offererId == models.Offerer.id)
         .options(sqla_orm.joinedload(models.Venue.managingOfferer))
         .options(sqla_orm.joinedload(models.Venue.collectiveDomains))

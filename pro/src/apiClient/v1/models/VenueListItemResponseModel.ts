@@ -11,6 +11,7 @@ export type VenueListItemResponseModel = {
   collectiveSubCategoryId?: string | null;
   hasCreatedOffer: boolean;
   hasMissingReimbursementPoint: boolean;
+  hasNonFreeOffers: boolean;
   id: number;
   isVirtual: boolean;
   managingOffererId: number;
