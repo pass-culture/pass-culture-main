@@ -6,9 +6,12 @@ from typing import Any
 from typing import Generator
 
 import gql
+import gql.transport.exceptions as gql_exceptions
+import urllib3.exceptions
 
 from pcapi import settings
 from pcapi.connectors.dms import models as dms_models
+from pcapi.routes.serialization import BaseModel
 from pcapi.utils import requests
 
 from . import exceptions
@@ -28,6 +31,13 @@ MARK_WITHOUT_CONTINUATION_MUTATION_NAME = "mark_wihtout_continuation"
 SEND_USER_MESSAGE_QUERY_NAME = "send_user_message"
 UPDATE_TEXT_ANNOTATION_QUERY_NAME = "update_text_annotation"
 GET_EAC_APPLICATIONS_STATE_SIRET = "eac/get_applications_state_siret"
+
+
+class DmsStats(BaseModel):
+    status: str
+    subscriptionDate: datetime.datetime
+    lastChangeDate: datetime.datetime
+    url: str
 
 
 class DMSGraphQLClient:
@@ -242,3 +252,33 @@ class DMSGraphQLClient:
                 page_token=results["demarche"]["dossiers"]["pageInfo"]["endCursor"],
             )
         # pylint: enable=unsubscriptable-object
+
+
+def get_dms_stats(dms_application_id: int | None, api_v4: bool = False) -> DmsStats | None:
+    if not dms_application_id:
+        return None
+
+    try:
+        dms_stats = DMSGraphQLClient().get_bank_info_status(dms_application_id)
+    except (
+        gql_exceptions.TransportError,
+        gql_exceptions.TransportQueryError,
+        urllib3.exceptions.HTTPError,
+        requests.exceptions.RequestException,
+    ):
+        return None
+    if api_v4:
+        api_url = f"https://www.demarches-simplifiees.fr/procedures/{settings.DMS_VENUE_PROCEDURE_ID_V4}/dossiers/{dms_application_id}"
+    else:
+        api_url = f"https://www.demarches-simplifiees.fr/procedures/{settings.DS_BANK_ACCOUNT_PROCEDURE_ID}/dossiers/{dms_application_id}"
+    return DmsStats(
+        status=dms_stats["dossier"]["state"],  # pylint: disable=unsubscriptable-object
+        subscriptionDate=datetime.datetime.fromisoformat(
+            dms_stats["dossier"]["dateDepot"]  # pylint: disable=unsubscriptable-object
+        ),
+        # validation date of the dossier
+        lastChangeDate=datetime.datetime.fromisoformat(
+            dms_stats["dossier"]["dateDerniereModification"]  # pylint: disable=unsubscriptable-object
+        ),
+        url=api_url,
+    )

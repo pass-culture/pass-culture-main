@@ -3,6 +3,8 @@
     {% include "components/search/result_card_offerer.html" %}
   {% elif result_type == "venue" %}
     {% include "components/search/result_card_venue.html" %}
+  {% elif result_type == "bank-account" %}
+    {% include "components/search/result_card_bank_account.html" %}
   {% else %}
     {% include "components/search/result_card.html" %}
   {% endif %}

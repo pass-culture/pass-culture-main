@@ -15,6 +15,7 @@ class TypeOptions(enum.Enum):
     OFFERER = "offerer"
     VENUE = "venue"
     USER = "user"
+    BANK_ACCOUNT = "bank-account"
 
 
 def format_search_type_options(type_option: TypeOptions) -> str:
@@ -25,6 +26,8 @@ def format_search_type_options(type_option: TypeOptions) -> str:
             return "Lieu"
         case TypeOptions.USER:
             return "Compte pro"
+        case TypeOptions.BANK_ACCOUNT:
+            return "Compte bancaire"
         case _:
             return type_option.value
 
