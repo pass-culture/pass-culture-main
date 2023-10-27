@@ -163,24 +163,35 @@ class UpdateSnapshot:
         self._fields: typing.MutableMapping[str, typing.Any] = {}
 
     def set(self, field_name: str, old: typing.Any, new: typing.Any) -> None:
-        self._fields[field_name] = {"old_info": old, "new_info": new}
+        if old in ("", {}, []):
+            old = None
+        if new in ("", {}, []):
+            new = None
+        if old != new:
+            self._fields[field_name] = {"old_info": old, "new_info": new}
 
     def to_dict(self) -> typing.Mapping[str, typing.Any]:
         return serialize_fields(self._fields)
+
+
+def _serialize_value(data: typing.Any) -> typing.Any:
+    # Warning: str is a Collection
+    if data is None or isinstance(data, (bool, int, str)):
+        return data
+    if isinstance(data, enum.Enum):
+        return data.value
+    if isinstance(data, typing.Mapping):
+        return serialize_fields(data)
+    if isinstance(data, typing.Collection):
+        return list(serialize_collection(data))
+    return str(data)
 
 
 def serialize_fields(fields: typing.Mapping[str, typing.Any]) -> typing.Mapping[str, typing.Any]:
     res: typing.MutableMapping[str, typing.Any] = {}
 
     for column, data in fields.items():
-        if isinstance(data, str):  # str is a Collection
-            res[column] = data
-        elif isinstance(data, typing.Mapping):
-            res[column] = serialize_fields(data)
-        elif isinstance(data, typing.Collection):
-            res[column] = list(serialize_collection(data))
-        else:
-            res[column] = str(data)
+        res[column] = _serialize_value(data)
 
     return res
 
@@ -189,13 +200,10 @@ def serialize_collection(items: typing.Collection) -> typing.Collection:
     res: list[typing.Any] = []
 
     for item in items:
-        if isinstance(item, str):  # str is a Collection
-            res.append(item)
-        elif isinstance(item, typing.Mapping):
-            res.append(serialize_fields(item))
-        elif isinstance(item, typing.Collection):
-            res.extend(serialize_collection(item))
+        serialized_item = _serialize_value(item)
+        if isinstance(serialized_item, list):
+            res.extend(serialized_item)
         else:
-            res.append(str(item))
+            res.append(serialized_item)
 
     return res

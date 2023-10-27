@@ -1054,8 +1054,8 @@ class UpdateVenueTest(PostEndpointHelper):
         assert venue.action_history[0].authorUser == legit_user
         assert venue.action_history[0].extraData == {
             "modified_info": {
-                "siret": {"old_info": "None", "new_info": data["siret"]},
-                "comment": {"old_info": "No SIRET", "new_info": "None"},
+                "siret": {"old_info": None, "new_info": data["siret"]},
+                "comment": {"old_info": "No SIRET", "new_info": None},
             }
         }
 
@@ -1209,6 +1209,11 @@ class GetVenueHistoryTest(GetEndpointHelper):
     endpoint_kwargs = {"venue_id": 1}
     needed_permission = perm_models.Permissions.READ_PRO_ENTITY
 
+    # get session (1 query)
+    # get user with profile and permissions (1 query)
+    # get history (1 query)
+    expected_num_queries = 3
+
     class CommentButtonTest(button_helpers.ButtonHelper):
         needed_permission = perm_models.Permissions.MANAGE_PRO_ENTITY
         button_label = "Ajouter un commentaire"
@@ -1222,7 +1227,31 @@ class GetVenueHistoryTest(GetEndpointHelper):
         venue = offerers_factories.VenueFactory()
 
         comment = "test comment"
-        history_factories.ActionHistoryFactory(authorUser=legit_user, venue=venue, comment=comment)
+        history_factories.ActionHistoryFactory(
+            actionType=history_models.ActionType.COMMENT,
+            actionDate=datetime.utcnow() - timedelta(hours=3),
+            authorUser=legit_user,
+            venue=venue,
+            comment=comment,
+        )
+        history_factories.ActionHistoryFactory(
+            actionType=history_models.ActionType.INFO_MODIFIED,
+            actionDate=datetime.utcnow() - timedelta(hours=2),
+            authorUser=legit_user,
+            venue=venue,
+            comment=None,
+            extraData={
+                "modified_info": {
+                    "venueTypeCode": {
+                        "new_info": offerers_models.VenueTypeCode.BOOKSTORE.name,
+                        "old_info": offerers_models.VenueTypeCode.OTHER.name,
+                    },
+                    "withdrawalDetails": {"new_info": "Come here!", "old_info": None},
+                    "contact.website": {"new_info": None, "old_info": "https://old.website.com"},
+                    "visualDisabilityCompliant": {"new_info": True, "old_info": False},
+                }
+            },
+        )
 
         url = url_for(self.endpoint, venue_id=venue.id)
 
@@ -1232,14 +1261,24 @@ class GetVenueHistoryTest(GetEndpointHelper):
         # count.
         db.session.expire(venue)
 
-        # get session (1 query)
-        # get user with profile and permissions (1 query)
-        # get venue details (1 query)
-        with assert_num_queries(3):
+        with assert_num_queries(self.expected_num_queries):
             response = authenticated_client.get(url)
             assert response.status_code == 200
 
         assert comment in response.data.decode("utf-8")
+
+        rows = html_parser.extract_table_rows(response.data)
+        assert len(rows) == 2
+        assert rows[0]["Type"] == "Modification des informations"
+        assert "Informations modifiées : " in rows[0]["Commentaire"]
+        assert "Activité principale : Autre => Librairie " in rows[0]["Commentaire"]
+        assert "Site internet de contact : suppression de : https://old.website.com " in rows[0]["Commentaire"]
+        assert "Conditions de retrait : ajout de : Come here!" in rows[0]["Commentaire"]
+        assert "Accessibilité handicap visuel : Non => Oui" in rows[0]["Commentaire"]
+        assert rows[0]["Auteur"] == legit_user.full_name
+        assert rows[1]["Type"] == "Commentaire interne"
+        assert rows[1]["Commentaire"] == comment
+        assert rows[1]["Auteur"] == legit_user.full_name
 
     def test_venue_without_history(self, authenticated_client, legit_user):
         venue = offerers_factories.VenueFactory()
@@ -1252,12 +1291,11 @@ class GetVenueHistoryTest(GetEndpointHelper):
         # count.
         db.session.expire(venue)
 
-        # get session (1 query)
-        # get user with profile and permissions (1 query)
-        # get venue details (1 query)
-        with assert_num_queries(3):
+        with assert_num_queries(self.expected_num_queries):
             response = authenticated_client.get(url)
             assert response.status_code == 200
+
+        assert html_parser.count_table_rows(response.data) == 0
 
 
 class GetVenueInvoicesTest(GetEndpointHelper):
