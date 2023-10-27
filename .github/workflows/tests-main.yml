@@ -9,6 +9,8 @@ on:
     branches-ignore:
       - docs
 
+permissions: write-all
+
 concurrency:
   # cancel previous workflow of the same branch except on master
   group: ${{ github.ref }}
