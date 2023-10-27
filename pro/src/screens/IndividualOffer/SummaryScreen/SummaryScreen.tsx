@@ -143,7 +143,7 @@ const SummaryScreen = () => {
           )}
 
           {mode === OFFER_WIZARD_MODE.CREATION && (
-            <StockSection offer={offer} />
+            <StockSection offer={offer} canBeDuo={canBeDuo} />
           )}
 
           <ActionBar

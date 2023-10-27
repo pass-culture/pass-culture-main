@@ -36,9 +36,10 @@ export const getStockWarningText = (
 
 export interface StockSectionProps {
   offer: IndividualOffer
+  canBeDuo?: boolean
 }
 
-const StockSection = ({ offer }: StockSectionProps): JSX.Element => {
+const StockSection = ({ offer, canBeDuo }: StockSectionProps): JSX.Element => {
   const mode = useOfferWizardMode()
   const [isLoading, setIsLoading] = useState(false)
   const [stocksEventsStats, setStocksEventsStats] = useState<
@@ -101,7 +102,11 @@ const StockSection = ({ offer }: StockSectionProps): JSX.Element => {
             departementCode={offer.venue.departementCode ?? ''}
           />
         ) : (
-          <StockThingSection stock={offer.stocks[0]} />
+          <StockThingSection
+            stock={offer.stocks[0]}
+            canBeDuo={canBeDuo}
+            isDuo={offer.isDuo}
+          />
         )}
       </SummaryLayout.Section>
     </>
