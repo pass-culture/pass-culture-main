@@ -483,8 +483,9 @@ def _execute_cancel_booking(
                     },
                 )
                 return False
-
             stock.dnBookedQuantity -= booking.quantity
+            if booking.activationCode and stock.quantity:
+                stock.quantity -= 1
             repository.save(booking, stock)
     return True
 
