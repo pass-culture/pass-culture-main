@@ -13,6 +13,7 @@ import useActiveFeature from 'hooks/useActiveFeature'
 import styles from './CollectiveOfferSummary.module.scss'
 import CollectiveOfferAccessibilitySection from './components/CollectiveOfferAccessibilitySection'
 import CollectiveOfferContactSection from './components/CollectiveOfferContactSection'
+import CollectiveOfferDateSection from './components/CollectiveOfferDateSection/CollectiveOfferDateSection'
 import CollectiveOfferImagePreview from './components/CollectiveOfferImagePreview'
 import CollectiveOfferNotificationSection from './components/CollectiveOfferNotificationSection'
 import CollectiveOfferParticipantSection from './components/CollectiveOfferParticipantSection'
@@ -41,6 +42,11 @@ const CollectiveOfferSummary = ({
   const isOfferToInstitutionActive = useActiveFeature(
     'WIP_OFFER_TO_INSTITUTION'
   )
+
+  const isTemplateOfferDatesActive = useActiveFeature(
+    'WIP_ENABLE_DATES_OFFER_TEMPLATE'
+  )
+
   return (
     <>
       <SummaryLayout>
@@ -60,6 +66,9 @@ const CollectiveOfferSummary = ({
             <CollectiveOfferVenueSection venue={offer.venue} />
             <CollectiveOfferTypeSection offer={offer} categories={categories} />
             <CollectiveOfferImagePreview offer={offer} />
+            {offer.isTemplate && isTemplateOfferDatesActive && (
+              <CollectiveOfferDateSection offer={offer} />
+            )}
             <CollectiveOfferPracticalInformation offer={offer} />
             <CollectiveOfferParticipantSection students={offer.students} />
             <CollectiveOfferAccessibilitySection offer={offer} />
