@@ -284,6 +284,7 @@ const Venue = ({
                 </Tag>
               )}
             </h3>
+
             <div className="button-group">
               {/*Delete when WIP_ENABLE_NEW_BANK_DETAILS_JOURNEY is deleted*/}
               {!isNewBankDetailsJourneyEnabled &&
