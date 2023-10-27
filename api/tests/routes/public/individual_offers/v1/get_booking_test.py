@@ -4,7 +4,6 @@ from dateutil.relativedelta import relativedelta
 import pytest
 
 from pcapi.core.bookings import factories as bookings_factories
-from pcapi.core.finance import factories as finance_factories
 from pcapi.core.finance import utils as finance_utils
 from pcapi.core.offerers import factories as offerers_factories
 from pcapi.core.offers import factories as offers_factories
@@ -157,16 +156,13 @@ class GetBookingByTokenReturns403Test:
         # Given
         venue, _ = utils.create_offerer_provider_linked_to_venue()
 
-        offer = offers_factories.ThingOfferFactory(
-            venue=venue,
-        )
+        offer = offers_factories.ThingOfferFactory(venue=venue)
         stock = offers_factories.StockFactory(offer=offer)
-        payment = finance_factories.PaymentFactory(booking__stock=stock)
+        booking = bookings_factories.ReimbursedBookingFactory(stock=stock)
 
         # When
-        response = client.with_explicit_token(offerers_factories.DEFAULT_CLEAR_API_KEY).get(
-            f"/public/bookings/v1/token/{payment.booking.token}",
-        )
+        client = client.with_explicit_token(offerers_factories.DEFAULT_CLEAR_API_KEY)
+        response = client.get(f"/public/bookings/v1/token/{booking.token}")
 
         # Then
         assert response.status_code == 403

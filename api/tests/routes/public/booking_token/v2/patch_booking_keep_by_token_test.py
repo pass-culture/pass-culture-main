@@ -3,7 +3,6 @@ import pytest
 from pcapi.core.bookings import factories as bookings_factories
 from pcapi.core.bookings.models import Booking
 from pcapi.core.bookings.models import BookingStatus
-import pcapi.core.finance.factories as finance_factories
 import pcapi.core.offerers.factories as offerers_factories
 from pcapi.core.users import factories as users_factories
 
@@ -160,7 +159,7 @@ class Returns410Test:
     @pytest.mark.usefixtures("db_session")
     def test_when_user_is_logged_in_and_booking_payment_exists(self, client):
         # Given
-        booking = finance_factories.PaymentFactory().booking
+        booking = bookings_factories.ReimbursedBookingFactory()
         pro_user = offerers_factories.UserOffererFactory(offerer=booking.offerer).user
 
         # When
@@ -170,7 +169,7 @@ class Returns410Test:
         # Then
         assert response.status_code == 410
         assert response.json["payment"] == ["Le remboursement est en cours de traitement"]
-        assert booking.status is BookingStatus.USED
+        assert booking.status is BookingStatus.REIMBURSED
 
     @pytest.mark.usefixtures("db_session")
     def test_when_user_is_logged_in_and_booking_has_been_cancelled_already(self, client):

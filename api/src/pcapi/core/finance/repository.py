@@ -100,17 +100,27 @@ def get_invoices_query(
 
 def has_reimbursement(booking: bookings_models.Booking | educational_models.CollectiveBooking) -> bool:
     """Return whether the requested booking has been reimbursed."""
+    if booking.status in (
+        bookings_models.BookingStatus.REIMBURSED,
+        educational_models.CollectiveBookingStatus.REIMBURSED,
+    ):
+        return True
+    # A booking could have been cancelled after its reimbursement. In
+    # that case, its status ("cancelled") cannot be trusted and we
+    # must look at the status of its pricing (which do not change when
+    # the booking is cancelled).
     if isinstance(booking, bookings_models.Booking):
         pricing_field = models.Pricing.bookingId
-        payment_field = models.Payment.bookingId
     else:
         pricing_field = models.Pricing.collectiveBookingId
-        payment_field = models.Payment.collectiveBookingId
-    if db.session.query(models.Payment.query.filter(payment_field == booking.id).exists()).scalar():
-        return True
     paid_pricings = models.Pricing.query.filter(
         pricing_field == booking.id,
-        models.Pricing.status.in_((models.PricingStatus.PROCESSED, models.PricingStatus.INVOICED)),
+        models.Pricing.status.in_(
+            (
+                models.PricingStatus.PROCESSED,
+                models.PricingStatus.INVOICED,
+            )
+        ),
     )
     return db.session.query(paid_pricings.exists()).scalar()
 

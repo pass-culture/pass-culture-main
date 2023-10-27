@@ -6,7 +6,6 @@ import pytest
 
 import pcapi.core.bookings.factories as bookings_factories
 from pcapi.core.categories import subcategories_v2 as subcategories
-import pcapi.core.finance.factories as finance_factories
 import pcapi.core.offerers.factories as offerers_factories
 import pcapi.core.offers.factories as offers_factories
 from pcapi.utils.date import format_into_utc_date
@@ -171,7 +170,7 @@ class Returns403Test:
 
     def test_when_booking_is_refunded(self, client):
         # Given
-        booking = finance_factories.PaymentFactory().booking
+        booking = bookings_factories.ReimbursedBookingFactory()
         pro_user = offerers_factories.UserOffererFactory(offerer=booking.offerer).user
 
         # When

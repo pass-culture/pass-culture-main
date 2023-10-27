@@ -159,17 +159,34 @@ class GetInvoicesQueryTest:
         assert invoices.count() == 0
 
 
-def test_has_reimbursement():
-    booking = bookings_factories.UsedBookingFactory()
-    assert not repository.has_reimbursement(booking)
+class HasReimbursementTest:
+    def test_booking_status(self):
+        confirmed = bookings_factories.BookingFactory()
+        assert not repository.has_reimbursement(confirmed)
 
-    pricing = factories.PricingFactory(booking=booking, status=models.PricingStatus.VALIDATED)
-    assert not repository.has_reimbursement(booking)
+        used = bookings_factories.BookingFactory()
+        assert not repository.has_reimbursement(used)
 
-    pricing.status = models.PricingStatus.PROCESSED
-    db.session.add(pricing)
-    db.session.commit()
-    assert repository.has_reimbursement(booking)
+        cancelled = bookings_factories.BookingFactory()
+        assert not repository.has_reimbursement(cancelled)
+
+        reimbursed = bookings_factories.ReimbursedBookingFactory()
+        assert repository.has_reimbursement(reimbursed)
+
+    def test_pricing_status(self):
+        booking = bookings_factories.UsedBookingFactory()
+        assert not repository.has_reimbursement(booking)
+        pricing = factories.PricingFactory(
+            booking=booking,
+            status=models.PricingStatus.VALIDATED,
+        )
+        assert not repository.has_reimbursement(booking)
+        pricing.status = models.PricingStatus.PROCESSED
+        db.session.flush()
+        assert repository.has_reimbursement(booking)
+        pricing.status = models.PricingStatus.INVOICED
+        db.session.flush()
+        assert repository.has_reimbursement(booking)
 
 
 class HasActiveOrFutureCustomRemibursementRuleTest:
