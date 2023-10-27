@@ -3,6 +3,7 @@ import React from 'react'
 import fullRefreshIcon from 'icons/full-refresh.svg'
 import { Button } from 'ui-kit/Button'
 import { ButtonVariant } from 'ui-kit/Button/types'
+import { pluralizeString } from 'utils/pluralize'
 
 import styles from './FilterResultsRow.module.scss'
 
@@ -23,8 +24,8 @@ export const FilterResultsRow = ({
         <div>
           Résultat de recherche :{' '}
           <span className={styles['search-result']}>
-            {resultsCount} occurrence
-            {resultsCount !== 1 && 's'}
+            {new Intl.NumberFormat('fr-FR').format(resultsCount)}{' '}
+            {pluralizeString('occurrence', resultsCount)}
           </span>
         </div>
 
