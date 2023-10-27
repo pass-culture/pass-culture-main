@@ -1,6 +1,5 @@
 import datetime
 import logging
-from typing import Any
 
 from flask_sqlalchemy import BaseQuery
 import pytz
@@ -182,10 +181,8 @@ def find_all_offerers_payments(
     # Pricing data for them, but no Cashflow nor Invoice (which we
     # need to display various details). So the functions above would
     # not yield any result. We need to look at Payment.
-    payment_date = sqla.cast(models.PaymentStatus.date, sqla.Date)
     results.extend(
         _get_legacy_payments_for_individual_bookings(
-            payment_date,
             offerer_ids,
             reimbursement_period,
             venue_id,
@@ -193,7 +190,6 @@ def find_all_offerers_payments(
     )
     results.extend(
         _get_legacy_payments_for_collective_bookings(
-            payment_date,
             offerer_ids,
             reimbursement_period,
             venue_id,
@@ -576,17 +572,17 @@ def _get_individual_reimbursement_details_from_invoices(invoice_ids: list[int]) 
 
 
 def _get_legacy_payments_for_individual_bookings(
-    payment_date_cast: Any,
     offerer_ids: list[int],
     reimbursement_period: tuple[datetime.date, datetime.date],
     venue_id: int | None = None,
 ) -> sqla_orm.Query:
+    payment_date = sqla.cast(models.PaymentStatus.date, sqla.Date)
     return (
         models.Payment.query.join(models.PaymentStatus)
         .join(bookings_models.Booking)
         .filter(
             models.PaymentStatus.status == models.TransactionStatus.SENT,
-            payment_date_cast.between(*reimbursement_period, symmetric=True),
+            payment_date.between(*reimbursement_period, symmetric=True),
             bookings_models.Booking.offererId.in_(offerer_ids),
             (bookings_models.Booking.venueId == venue_id)
             if venue_id
@@ -630,17 +626,17 @@ def _get_legacy_payments_for_individual_bookings(
 
 
 def _get_legacy_payments_for_collective_bookings(
-    payment_date_cast: Any,
     offerer_ids: list[int],
     reimbursement_period: tuple[datetime.date, datetime.date],
     venue_id: int | None = None,
 ) -> sqla_orm.Query:
+    payment_date = sqla.cast(models.PaymentStatus.date, sqla.Date)
     return (
         models.Payment.query.join(models.PaymentStatus)
         .join(educational_models.CollectiveBooking)
         .filter(
             models.PaymentStatus.status == models.TransactionStatus.SENT,
-            payment_date_cast.between(*reimbursement_period, symmetric=True),
+            payment_date.between(*reimbursement_period, symmetric=True),
             educational_models.CollectiveBooking.offererId.in_(offerer_ids),
             (educational_models.CollectiveBooking.venueId == venue_id)
             if venue_id
