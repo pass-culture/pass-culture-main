@@ -1,8 +1,8 @@
 """FIXME: Cher auteur de cette migration : le message ci-dessous
 apparaît dans la sortie de `alembic history`. Tu dois supprimer ce
 FIXME et faire en sorte que le message ci-dessous soit en anglais,
-clair et lisible (un peu comme un message de commit). Exemple : Add
-"blob" column to "offer" table.
+clair, en une seule ligne et lisible (un peu comme un message de
+commit). Exemple : Add "blob" column to "offer" table.
 
 ${message}
 """
