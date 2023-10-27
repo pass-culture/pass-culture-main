@@ -75,7 +75,7 @@ def get_venues(query: venues_serialize.VenueListQueryModel) -> venues_serialize.
         validated_offerer=query.validated,
     )
     ids_of_venues_with_offers = (
-        offerers_repository.get_ids_of_venues_with_offers(list({venue.managingOffererId for venue in venue_list}))
+        offerers_repository.get_ids_of_venues_with_offers(list({row.Venue.managingOffererId for row in venue_list}))
         if venue_list
         else []
     )
