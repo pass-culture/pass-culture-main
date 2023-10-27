@@ -1384,6 +1384,25 @@ def get_venue_base_query(venue_id: int) -> BaseQuery:
     return models.Venue.query.outerjoin(offerers_models.VenueContact).filter(models.Venue.id == venue_id)
 
 
+def get_bank_account_base_query(bank_account_id: int) -> BaseQuery:
+    return finance_models.BankAccount.filter(finance_models.BankAccount.id == bank_account_id)
+
+
+def search_bank_account(search_query: str, *_: typing.Any) -> BaseQuery:
+    bank_accounts = finance_models.BankAccount.query.options(sa.orm.joinedload(finance_models.BankAccount.offerer))
+
+    search_query = search_query.strip()
+    if not search_query:
+        return bank_accounts.filter(False)
+
+    if search_query.isnumeric():
+        bank_accounts = bank_accounts.filter(finance_models.BankAccount.id == int(search_query))
+    else:
+        return bank_accounts.filter(False)
+
+    return bank_accounts
+
+
 def get_offerer_basic_info(offerer_id: int) -> sa.engine.Row:
     bank_informations_query = sa.select(sa.func.jsonb_object_agg(sa.text("status"), sa.text("number"))).select_from(
         sa.select(

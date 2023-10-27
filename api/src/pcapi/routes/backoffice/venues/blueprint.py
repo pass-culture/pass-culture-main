@@ -9,16 +9,12 @@ from flask import render_template
 from flask import request
 from flask import url_for
 from flask_login import current_user
-import gql.transport.exceptions as gql_exceptions
 from markupsafe import Markup
-import requests.exceptions
 import sqlalchemy as sa
-import urllib3.exceptions
 from werkzeug.exceptions import NotFound
 
-from pcapi import settings
 from pcapi.connectors import sirene
-from pcapi.connectors.dms.api import DMSGraphQLClient
+from pcapi.connectors.dms import api as dms_api
 from pcapi.core import search
 from pcapi.core.criteria import models as criteria_models
 from pcapi.core.educational import models as educational_models
@@ -146,38 +142,11 @@ def get_venue(venue_id: int) -> offerers_models.Venue:
     return venue
 
 
-def get_dms_stats(dms_application_id: int | None) -> serialization.VenueDmsStats | None:
-    if not dms_application_id:
-        return None
-
-    try:
-        dms_stats = DMSGraphQLClient().get_bank_info_status(dms_application_id)
-    except (
-        gql_exceptions.TransportError,
-        gql_exceptions.TransportQueryError,
-        urllib3.exceptions.HTTPError,
-        requests.exceptions.RequestException,
-    ):
-        return None
-
-    return serialization.VenueDmsStats(
-        status=dms_stats["dossier"]["state"],  # pylint: disable=unsubscriptable-object
-        subscriptionDate=datetime.fromisoformat(
-            dms_stats["dossier"]["dateDepot"]  # pylint: disable=unsubscriptable-object
-        ),
-        # validation date of the dossier
-        lastChangeDate=datetime.fromisoformat(
-            dms_stats["dossier"]["dateDerniereModification"]  # pylint: disable=unsubscriptable-object
-        ),
-        url=f"https://www.demarches-simplifiees.fr/procedures/{settings.DMS_VENUE_PROCEDURE_ID_V4}/dossiers/{dms_application_id}",
-    )
-
-
 def render_venue_details(
     venue: offerers_models.Venue, edit_venue_form: forms.EditVirtualVenueForm | None = None
 ) -> str:
     dms_application_id = venue.bankInformation.applicationId if venue.bankInformation else None
-    dms_stats = get_dms_stats(dms_application_id)
+    dms_stats = dms_api.get_dms_stats(dms_application_id, api_v4=True)
     region = regions_utils.get_region_name_from_postal_code(venue.postalCode) if venue.postalCode else ""
 
     if not edit_venue_form:

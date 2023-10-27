@@ -60,6 +60,15 @@ class VenueContext(Context):
         return url_for(".venue.get", venue_id=row_id, **kwargs)
 
 
+class BankAccountContext(Context):
+    fetch_rows_func = offerers_api.search_bank_account
+    get_item_base_query = offerers_api.get_bank_account_base_query
+
+    @classmethod
+    def get_pro_link(cls, row_id: int, **kwargs: typing.Any) -> str:
+        return url_for(".bank_account.get", bank_account_id=row_id, **kwargs)
+
+
 def render_search_template(form: search_forms.ProSearchForm | None = None) -> str:
     if form is None:
         preferences = current_user.backoffice_profile.preferences
@@ -133,4 +142,5 @@ def get_context(pro_type: search_forms.TypeOptions) -> typing.Type[Context]:
         search_forms.TypeOptions.USER: UserContext,
         search_forms.TypeOptions.OFFERER: OffererContext,
         search_forms.TypeOptions.VENUE: VenueContext,
+        search_forms.TypeOptions.BANK_ACCOUNT: BankAccountContext,
     }[pro_type]

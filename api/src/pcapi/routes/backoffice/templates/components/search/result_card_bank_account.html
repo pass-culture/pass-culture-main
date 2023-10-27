@@ -1,0 +1,21 @@
+{% from "components/badges.html" import build_venue_badges %}
+{% from "components/links.html" import build_offerer_name_to_details_link %}
+<div class="card shadow">
+  <div class="card-body">
+    <h5 class="mb-3"></h5>
+    <h5 class="card-title">
+      <a href="{{ get_link_to_detail(row.id, q=q, search_rank=index, total_items=rows.total) }}"
+         class="link-primary">{{ row.label | upper }}</a>
+      <span class="fs-5 ps-4">
+        <span class="me-1 pb-1 badge rounded-pill text-bg-warning align-middle">Compte bancaire</span>
+      </span>
+    </h5>
+    <h6 class="card-subtitle mt-4 mb-3 text-muted">Bank Account ID : {{ row.id }}</h6>
+    <div class="d-flex flex-row-reverse">
+      <a href="{{ get_link_to_detail(row.id, q=q, search_rank=index, total_items=rows.total) }}"
+         class="btn btn-md btn-outline-primary fw-bold">
+        CONSULTER CE COMPTE <i class="bi bi-arrow-right"></i>
+      </a>
+    </div>
+  </div>
+</div>
