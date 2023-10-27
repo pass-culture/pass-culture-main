@@ -1,5 +1,5 @@
-from datetime import date
-from datetime import timedelta
+import datetime
+import urllib.parse
 
 import pytest
 
@@ -11,8 +11,7 @@ import pcapi.core.users.factories as users_factories
 
 @pytest.mark.usefixtures("db_session")
 def test_with_venue_filter(client):
-    beginning_date_iso_format = (date.today() - timedelta(days=2)).isoformat()
-    ending_date_iso_format = (date.today() + timedelta(days=2)).isoformat()
+    period = datetime.date(2021, 1, 1), datetime.date(2021, 1, 15)
     offerer = offerers_factories.OffererFactory()
     venue1 = offerers_factories.VenueFactory(managingOfferer=offerer, pricing_point="self")
     venue2 = offerers_factories.VenueFactory(managingOfferer=offerer, pricing_point=venue1)
@@ -20,14 +19,23 @@ def test_with_venue_filter(client):
         finance_factories.PaymentStatusFactory(
             payment__booking__stock__offer__venue=venue,
             status=finance_models.TransactionStatus.SENT,
-            payment__transactionLabel="pass Culture Pro - remboursement 1ère quinzaine 06-21",
+            payment__transactionLabel="pass Culture Pro - remboursement 1ère quinzaine 01-21",
+            date=datetime.datetime(2021, 1, 1),
         )
     pro = users_factories.ProFactory()
     offerers_factories.UserOffererFactory(user=pro, offerer=offerer)
 
     # When
-    response = client.with_session_auth(pro.email).get(
-        f"/reimbursements/csv?reimbursementPeriodBeginningDate={beginning_date_iso_format}&reimbursementPeriodEndingDate={ending_date_iso_format}&venueId={venue1.id}"
+    client = client.with_session_auth(pro.email)
+    response = client.get(
+        "/reimbursements/csv?"
+        + urllib.parse.urlencode(
+            {
+                "reimbursementPeriodBeginningDate": period[0].isoformat(),
+                "reimbursementPeriodEndingDate": period[1].isoformat(),
+                "venueId": venue1.id,
+            }
+        )
     )
 
     # Then
@@ -40,8 +48,7 @@ def test_with_venue_filter(client):
 
 @pytest.mark.usefixtures("db_session")
 def test_with_reimbursement_period_filter(client):
-    beginning_date_iso_format = (date.today() - timedelta(days=2)).isoformat()
-    ending_date_iso_format = (date.today() + timedelta(days=2)).isoformat()
+    period = datetime.date(2021, 1, 1), datetime.date(2021, 1, 15)
     user_offerer = offerers_factories.UserOffererFactory()
     offerer = user_offerer.offerer
     pro = user_offerer.user
@@ -49,34 +56,41 @@ def test_with_reimbursement_period_filter(client):
         payment__booking__stock__offer__venue__managingOfferer=offerer,
         payment__booking__stock__offer__venue__pricing_point="self",
         status=finance_models.TransactionStatus.SENT,
-        payment__transactionLabel="pass Culture Pro - remboursement 1ère quinzaine 06-21",
-        date=date.today() - timedelta(days=2),
+        payment__transactionLabel="pass Culture Pro - remboursement 1ère quinzaine 01-21",
+        date=datetime.datetime(2021, 1, 1),  # in requested period
     )
     finance_factories.PaymentStatusFactory(
         payment__booking__stock__offer__venue__managingOfferer=offerer,
         payment__booking__stock__offer__venue__pricing_point="self",
         status=finance_models.TransactionStatus.SENT,
-        payment__transactionLabel="pass Culture Pro - remboursement 1ère quinzaine 06-21",
-        date=date.today() - timedelta(days=3),
+        payment__transactionLabel="xxx",
+        date=datetime.datetime(2020, 12, 1),  # before requested period
     )
     finance_factories.PaymentStatusFactory(
         payment__booking__stock__offer__venue__managingOfferer=offerer,
         payment__booking__stock__offer__venue__pricing_point="self",
         status=finance_models.TransactionStatus.SENT,
-        payment__transactionLabel="pass Culture Pro - remboursement 1ère quinzaine 06-21",
-        date=date.today() + timedelta(days=2),
+        payment__transactionLabel="pass Culture Pro - remboursement 2ème quinzaine 01-21",
+        date=datetime.datetime(2021, 1, 4),  # in requested period
     )
     finance_factories.PaymentStatusFactory(
         payment__booking__stock__offer__venue__managingOfferer=offerer,
         payment__booking__stock__offer__venue__pricing_point="self",
         status=finance_models.TransactionStatus.SENT,
-        payment__transactionLabel="pass Culture Pro - remboursement 1ère quinzaine 06-21",
-        date=date.today() + timedelta(days=3),
+        payment__transactionLabel="xxx",
+        date=datetime.datetime(2021, 2, 1),  # after requested period
     )
 
     # When
-    response = client.with_session_auth(pro.email).get(
-        f"/reimbursements/csv?reimbursementPeriodBeginningDate={beginning_date_iso_format}&reimbursementPeriodEndingDate={ending_date_iso_format}"
+    client = client.with_session_auth(pro.email)
+    response = client.get(
+        "/reimbursements/csv?"
+        + urllib.parse.urlencode(
+            {
+                "reimbursementPeriodBeginningDate": period[0].isoformat(),
+                "reimbursementPeriodEndingDate": period[1].isoformat(),
+            }
+        )
     )
 
     # Then
@@ -88,7 +102,7 @@ def test_with_reimbursement_period_filter(client):
 
 
 @pytest.mark.usefixtures("db_session")
-def test_with_non_given_reimbursement_period(client):
+def test_without_reimbursement_period(client):
     user_offerer = offerers_factories.UserOffererFactory()
     pro = user_offerer.user
 
@@ -106,10 +120,9 @@ def test_with_non_given_reimbursement_period(client):
 
 
 @pytest.mark.usefixtures("db_session")
-def test_admin_can_access_reimbursements_data_with_venue_filter(app, client):
+def test_admin_can_access_reimbursements_data_with_venue_filter(client):
     # Given
-    beginning_date = date.today() - timedelta(days=2)
-    ending_date = date.today() + timedelta(days=2)
+    period = datetime.date(2021, 1, 1), datetime.date(2021, 1, 15)
     admin = users_factories.AdminFactory()
     user_offerer = offerers_factories.UserOffererFactory()
     offerer = user_offerer.offerer
@@ -118,14 +131,21 @@ def test_admin_can_access_reimbursements_data_with_venue_filter(app, client):
         payment__booking__stock__offer__venue__pricing_point="self",
         status=finance_models.TransactionStatus.SENT,
         payment__transactionLabel="pass Culture Pro - remboursement 1ère quinzaine 06-21",
-        date=date.today(),
+        date=datetime.datetime(2021, 1, 1),
     )
     venue = status.payment.booking.venue
 
     # When
-    admin_client = client.with_session_auth(admin.email)
-    response = admin_client.get(
-        f"/reimbursements/csv?venueId={venue.id}&reimbursementPeriodBeginningDate={beginning_date.isoformat()}&reimbursementPeriodEndingDate={ending_date.isoformat()}"
+    client = client.with_session_auth(admin.email)
+    response = client.get(
+        "/reimbursements/csv?"
+        + urllib.parse.urlencode(
+            {
+                "reimbursementPeriodBeginningDate": period[0].isoformat(),
+                "reimbursementPeriodEndingDate": period[1].isoformat(),
+                "venueId": venue.id,
+            }
+        )
     )
 
     # Then
@@ -137,26 +157,20 @@ def test_admin_can_access_reimbursements_data_with_venue_filter(app, client):
 
 
 @pytest.mark.usefixtures("db_session")
-def test_admin_cannot_access_reimbursements_data_without_venue_filter(app, client):
+def test_admin_cannot_access_reimbursements_data_without_venue_filter(client):
     # Given
-    beginning_date = date.today() - timedelta(days=2)
-    ending_date = date.today() + timedelta(days=2)
+    period = datetime.date(2021, 1, 1), datetime.date(2021, 1, 15)
     admin = users_factories.AdminFactory()
-    user_offerer = offerers_factories.UserOffererFactory()
-    offerer = user_offerer.offerer
-    finance_factories.PaymentStatusFactory(
-        payment__booking__stock__offer__venue__managingOfferer=offerer,
-        payment__booking__stock__offer__venue__pricing_point="self",
-        status=finance_models.TransactionStatus.SENT,
-        payment__transactionLabel="pass Culture Pro - remboursement 1ère quinzaine 06-21",
-        date=date.today(),
-    )
 
     # When
-    admin_client = client.with_session_auth(admin.email)
-    response = admin_client.get(
-        "/reimbursements/csv?reimbursementPeriodBeginningDate={}&reimbursementPeriodEndingDate={}".format(
-            beginning_date.isoformat(), ending_date.isoformat()
+    client = client.with_session_auth(admin.email)
+    response = client.get(
+        "/reimbursements/csv?"
+        + urllib.parse.urlencode(
+            {
+                "reimbursementPeriodBeginningDate": period[0].isoformat(),
+                "reimbursementPeriodEndingDate": period[1].isoformat(),
+            }
         )
     )
 
