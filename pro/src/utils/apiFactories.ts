@@ -235,6 +235,7 @@ export const defaultGetOffererVenueResponseModel: GetOffererVenueResponseModel =
     name: 'Mon super lieu',
     id: 0,
     venueTypeCode: VenueTypeCode.LIEU_ADMINISTRATIF,
+    hasVenueProviders: false,
   }
 
 export const defaultBookingResponse: GetBookingResponse = {

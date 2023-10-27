@@ -20,6 +20,7 @@ export type GetOffererVenueResponseModel = {
   hasCreatedOffer: boolean;
   hasMissingReimbursementPoint: boolean;
   hasPendingBankInformationApplication?: boolean | null;
+  hasVenueProviders: boolean;
   id: number;
   isVirtual: boolean;
   mentalDisabilityCompliant?: boolean | null;

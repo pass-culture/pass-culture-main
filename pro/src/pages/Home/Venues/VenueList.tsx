@@ -32,6 +32,7 @@ const VenueList = ({
             virtualVenue.collectiveDmsApplications
           )}
           hasAdageId={virtualVenue.hasAdageId}
+          hasProvider={virtualVenue.hasVenueProviders}
           adageInscriptionDate={virtualVenue.adageInscriptionDate}
           hasPendingBankInformationApplication={
             virtualVenue.hasPendingBankInformationApplication
@@ -54,6 +55,7 @@ const VenueList = ({
           dmsInformations={getLastCollectiveDmsApplication(
             venue.collectiveDmsApplications
           )}
+          hasProvider={venue.hasVenueProviders}
           hasAdageId={venue.hasAdageId}
           adageInscriptionDate={venue.adageInscriptionDate}
           hasPendingBankInformationApplication={
