@@ -1,5 +1,3 @@
-import datetime
-
 from pcapi.routes.serialization import BaseModel
 
 
@@ -10,10 +8,3 @@ class VenueBankInformation(BaseModel):
     reimbursement_point_url: str | None
     bic: str | None
     iban: str | None
-
-
-class VenueDmsStats(BaseModel):
-    status: str
-    subscriptionDate: datetime.datetime
-    lastChangeDate: datetime.datetime
-    url: str

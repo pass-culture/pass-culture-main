@@ -1,0 +1,99 @@
+{% from "components/forms.html" import build_form_fields_group with context %}
+{% import "components/links.html" as links %}
+{% from "components/presentation/details/tabs.html" import build_details_tab %}
+{% from "components/presentation/details/tabs.html" import build_details_tabs_wrapper %}
+{% from "components/presentation/details/tabs.html" import build_details_tab_content %}
+{% from "components/presentation/details/tabs.html" import build_details_tabs_content_wrapper %}
+{% from "components/turbo/lazy_modal.html" import build_lazy_modal with context %}
+{% from "components/turbo/spinner.html" import build_loading_spinner with context %}
+{% import "components/clipboard.html" as clipboard %}
+{% extends "layouts/pro.html" %}
+{% block pro_main_content %}
+  <div class="row row-cols-1 g-4 py-3">
+    <div class="col">
+      <div class="card shadow">
+        <div class="card-body">
+          <div class="d-flex flex-fill align-items-center">
+            <h2 class="card-title text-primary">{{ bank_account.label }}</h2>
+            <span class="fs-5 ps-4">
+              <span class="me-1 pb-1 badge rounded-pill text-bg-warning align-middle">Compte bancaire</span>
+            </span>
+            {% if dms_stats %}
+              <div class="d-flex row-reverse justify-content-end flex-grow-1">
+                <a href="{{ dms_stats.url }}"
+                   target="_blank"
+                   class="card-link">
+                  <button class="btn btn-outline-primary lead fw-bold mt-2 mx-3"
+                          type="button">ACCÉDER AU DOSSIER DMS CB</button>
+                </a>
+              </div>
+            {% endif %}
+          </div>
+          <p class="card-subtitle text-muted mb-3 h5">Bank Account ID : {{ bank_account.id }}</p>
+          <p class="card-subtitle text-muted mb-3 h5">Humanized ID : {{ humanized_bank_account_id }}</p>
+          <div class="row pt-3">
+            <div class="col-4">
+              <div class="fs-6">
+                <p class="mb-1">
+                  <span class="fw-bold">IBAN :</span>
+                  {{ bank_account.iban }}
+                </p>
+                <p class="mb-4">
+                  <span class="fw-bold">BIC :</span>
+                  {{ bank_account.bic }}
+                </p>
+                <p class="mb-1">
+                  <span class="fw-bold">Structure :</span>
+                  {{ links.build_offerer_name_to_details_link(bank_account.offerer) }}
+                </p>
+              </div>
+            </div>
+            <div class="col-4">
+              <div class="fs-6">
+                {% if dms_stats %}
+                  <p class="mb-1">
+                    <span class="fw-bold">Statut DMS CB :</span>
+                    {{ dms_stats.status | format_dms_status }}
+                  </p>
+                  {% if dms_stats.status == "accepte" %}
+                    <p class="mb-4">
+                      <span class="fw-bold">Date de validation du dossier DMS CB :</span>
+                      {{ dms_stats.lastChangeDate | format_date }}
+                    </p>
+                  {% else %}
+                    <p class="mb-4">
+                      <span class="fw-bold">Date de dépôt du dossier DMS CB :</span>
+                      {{ dms_stats.subscriptionDate | format_date }}
+                    </p>
+                  {% endif %}
+                {% else %}
+                  <p class="mb-4">
+                    <span class="fw-bold">Pas de dossier DMS CB</span>
+                  </p>
+                {% endif %}
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="mt-4">
+        {% call build_details_tabs_wrapper() %}
+          {{ build_details_tab("linked-venues", "Lieux associés", active_tab == 'linked_venues') }}
+          {{ build_details_tab("history", "Historique du compte bancaire", active_tab == 'history') }}
+        {% endcall %}
+        {% call build_details_tabs_content_wrapper() %}
+          {% call build_details_tab_content("linked-venues", active_tab == 'linked_venues') %}
+            <turbo-frame data-turbo="false" id="bank_account_venues_frame" loading="lazy" src="{{ url_for("backoffice_web.bank_account.get_linked_venues", bank_account_id=bank_account.id) }}">
+            {{ build_loading_spinner() }}
+            </turbo-frame>
+          {% endcall %}
+          {% call build_details_tab_content("history", active_tab == 'history') %}
+            <turbo-frame data-turbo="false" id="bank_account_history_frame" loading="lazy" src="{{ url_for("backoffice_web.bank_account.get_history", bank_account_id=bank_account.id) }}">
+            {{ build_loading_spinner() }}
+            </turbo-frame>
+          {% endcall %}
+        {% endcall %}
+      </div>
+    </div>
+  </div>
+{% endblock pro_main_content %}
