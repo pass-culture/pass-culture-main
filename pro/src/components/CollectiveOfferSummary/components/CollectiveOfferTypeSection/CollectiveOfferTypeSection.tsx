@@ -6,6 +6,7 @@ import {
   CollectiveOfferTemplate,
   EducationalCategories,
 } from 'core/OfferEducational'
+import useActiveFeature from 'hooks/useActiveFeature'
 
 import { DEFAULT_RECAP_VALUE } from '../constants'
 import { formatDuration } from '../utils/formatDuration'
@@ -36,16 +37,27 @@ const CollectiveOfferTypeSection = ({
 
     return
   }, [offer.subcategoryId])
+  const isFormatActive = useActiveFeature('WIP_ENABLE_FORMAT')
   return (
     <SummaryLayout.SubSection title="Type d’offre">
-      <SummaryLayout.Row
-        title="Catégorie"
-        description={category?.label || DEFAULT_RECAP_VALUE}
-      />
-      <SummaryLayout.Row
-        title="Sous-catégorie"
-        description={subCategory?.label || DEFAULT_RECAP_VALUE}
-      />
+      {isFormatActive ? (
+        <SummaryLayout.Row
+          title="Format"
+          description={offer.formats?.join(', ') || DEFAULT_RECAP_VALUE}
+        />
+      ) : (
+        <>
+          <SummaryLayout.Row
+            title="Catégorie"
+            description={category?.label || DEFAULT_RECAP_VALUE}
+          />
+          <SummaryLayout.Row
+            title="Sous-catégorie"
+            description={subCategory?.label || DEFAULT_RECAP_VALUE}
+          />
+        </>
+      )}
+
       <SummaryLayout.Row
         title="Domaine artistiques et culturels"
         description={offer.domains.map((domain) => domain.name).join(', ')}
