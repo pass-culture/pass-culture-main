@@ -156,19 +156,6 @@ def format_bool(data: bool | None) -> str:
     return "Non"
 
 
-def format_bool_str(data: str | None) -> str:
-    if data is None:
-        return ""
-
-    match data:
-        case "True":
-            return "Oui"
-        case "False":
-            return "Non"
-        case _:
-            return data
-
-
 def format_string_list(data: list[str] | None) -> str:
     if data is None:
         return ""
@@ -441,52 +428,92 @@ def format_adage_referred(venues: list[offerers_models.Venue]) -> str:
     return f"{len([venue for venue in venues if venue.adageId])}/{len(venues)}"
 
 
-def format_modified_info_value(value: typing.Any) -> str:
+def _format_modified_info_value(value: typing.Any, name: str | None = None) -> str:
+    if name == "venueTypeCode":
+        try:
+            value = offerers_models.VenueTypeCode[value].value
+        except KeyError:
+            pass  # in case of an old type code removed from enum
+
     if isinstance(value, list):
         return format_string_list(value)
     if isinstance(value, bool):
         return format_bool(value)
-    if isinstance(value, str) and value in ["True", "False"]:
-        return format_bool_str(value)
     return str(value)
 
 
+def format_modified_info_values(modified_info: typing.Any, name: str | None = None) -> str:
+    old_info = modified_info.get("old_info")
+    new_info = modified_info.get("new_info")
+
+    if old_info is not None and new_info is not None:
+        return f"{_format_modified_info_value(old_info, name)} => {_format_modified_info_value(new_info, name)}"
+
+    if old_info is not None:
+        return f"suppression de : {_format_modified_info_value(old_info, name)}"
+
+    if new_info is not None:
+        return f"ajout de : {_format_modified_info_value(new_info, name)}"
+
+    return str(modified_info)  # this should not happen if data is consistent
+
+
 def format_modified_info_name(info_name: str) -> str:
-    match info_name.lower():
+    match info_name:
+        case "comment":
+            return "Commentaire"
         case "email":
             return "Email"
-        case "firstname":
+        case "firstName":
             return "Prénom"
-        case "lastname":
+        case "lastName":
             return "Nom"
-        case "validatedbirthdate":
+        case "validatedBirthDate":
             return "Date de naissance"
-        case "postalcode":
+        case "postalCode":
             return "Code postal"
-        case "phonenumber":
+        case "phoneNumber":
             return "Téléphone"
         case "city":
             return "Ville"
         case "address":
             return "Adresse"
-        case "bookingemail":
+        case "bookingEmail":
             return "Email"
         case "contact.email":
             return "Email de contact"
         case "contact.phone_number":
             return "Numéro de téléphone de contact"
-        case "ispermanent":
+        case "contact.social_medias":
+            return "Réseaux sociaux de contact"
+        case "contact.website":
+            return "Site internet de contact"
+        case "isPermanent":
             return "Permanent"
         case "name":
             return "Nom juridique"
-        case "publicname":
+        case "publicName":
             return "Nom d'usage"
         case "criteria":
             return "Tags"
-        case "pricingpointsiret":
+        case "pricingPointSiret":
             return "Siret de valorisation"
-        case "reimbursementpointsiret":
+        case "reimbursementPointSiret":
             return "Siret de remboursement"
+        case "audioDisabilityCompliant":
+            return "Accessibilité handicap auditif"
+        case "motorDisabilityCompliant":
+            return "Accessibilité handicap moteur"
+        case "mentalDisabilityCompliant":
+            return "Accessibilité handicap psychique"
+        case "visualDisabilityCompliant":
+            return "Accessibilité handicap visuel"
+        case "withdrawalDetails":
+            return "Conditions de retrait"
+        case "venueLabelId":
+            return "ID Label"
+        case "venueTypeCode":
+            return "Activité principale"
         case _:
             return info_name.replace("_", " ").capitalize()
 
@@ -845,7 +872,6 @@ def install_template_filters(app: Flask) -> None:
     app.jinja_env.filters["format_booking_status"] = format_booking_status
     app.jinja_env.filters["format_booking_status_long"] = format_booking_status_long
     app.jinja_env.filters["format_bool"] = format_bool
-    app.jinja_env.filters["format_bool_str"] = format_bool_str
     app.jinja_env.filters["format_cents"] = format_cents
     app.jinja_env.filters["format_rate"] = format_rate
     app.jinja_env.filters["format_rate_multiply_by_100"] = format_rate_multiply_by_100
@@ -877,7 +903,7 @@ def install_template_filters(app: Flask) -> None:
     app.jinja_env.filters["format_state"] = format_state
     app.jinja_env.filters["format_reason_label"] = format_reason_label
     app.jinja_env.filters["format_adage_referred"] = format_adage_referred
-    app.jinja_env.filters["format_modified_info_value"] = format_modified_info_value
+    app.jinja_env.filters["format_modified_info_values"] = format_modified_info_values
     app.jinja_env.filters["format_modified_info_name"] = format_modified_info_name
     app.jinja_env.filters["format_gtl_id"] = format_gtl_id
     app.jinja_env.filters["format_gtl_as_csr"] = format_gtl_as_csr

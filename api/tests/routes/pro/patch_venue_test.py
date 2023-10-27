@@ -3,6 +3,7 @@ from unittest.mock import patch
 import pytest
 
 import pcapi.core.finance.factories as finance_factories
+from pcapi.core.history import models as history_models
 import pcapi.core.offerers.factories as offerers_factories
 import pcapi.core.offerers.models as offerers_models
 from pcapi.core.users import testing as external_testing
@@ -51,6 +52,7 @@ class Returns200Test:
                 "publicName": "Ma librairie",
                 "venueTypeCode": "BOOKSTORE",
                 "venueLabelId": venue_label.id,
+                "withdrawalDetails": "",  # should not appear in history with None => ""
             },
             venue,
         )
@@ -64,6 +66,24 @@ class Returns200Test:
         assert venue.venueTypeCode == offerers_models.VenueTypeCode.BOOKSTORE
         assert len(external_testing.sendinblue_requests) == 1
         assert external_testing.zendesk_sell_requests == [{"action": "update", "type": "Venue", "id": venue.id}]
+
+        assert len(venue.action_history) == 1
+        assert venue.action_history[0].actionType == history_models.ActionType.INFO_MODIFIED
+        assert venue.action_history[0].venueId == venue_id
+        assert venue.action_history[0].authorUser.id == user_offerer.user.id
+        assert venue.action_history[0].extraData == {
+            "modified_info": {
+                "publicName": {"new_info": "Ma librairie", "old_info": "old name"},
+                "venueTypeCode": {
+                    "new_info": offerers_models.VenueTypeCode.BOOKSTORE.name,
+                    "old_info": offerers_models.VenueTypeCode.OTHER.name,
+                },
+                "venueLabelId": {"new_info": venue_label.id, "old_info": None},
+                "contact.email": {"new_info": "no.contact.field@is.mandatory.com", "old_info": "contact@venue.com"},
+                "contact.phone_number": {"new_info": None, "old_info": "+33102030405"},
+                "contact.website": {"new_info": None, "old_info": "https://my.website.com"},
+            }
+        }
 
     @patch("pcapi.routes.pro.venues.update_all_venue_offers_email_job.delay")
     def test_edit_venue_booking_email_with_applied_on_all_offers(self, mocked_update_all_venue_offers_email_job, app):
@@ -150,6 +170,12 @@ class Returns200Test:
         assert len(external_testing.sendinblue_requests) == 1
         assert len(external_testing.zendesk_sell_requests) == 1
 
+        assert len(venue.action_history) == 1
+        assert venue.action_history[0].actionType == history_models.ActionType.INFO_MODIFIED
+        modified_info = venue.action_history[0].extraData["modified_info"]
+        assert modified_info["publicName"] == {"new_info": venue_data["publicName"], "old_info": "old name"}
+        assert modified_info["withdrawalDetails"] == {"new_info": venue_data["withdrawalDetails"], "old_info": None}
+
     @patch("pcapi.routes.pro.venues.update_all_venue_offers_withdrawal_details_job.delay")
     def test_edit_venue_withdrawal_details_with_no_email_notif(
         self, mocked_update_all_venue_offers_withdrawal_details_job, app
@@ -188,6 +214,7 @@ class Returns200Test:
         venue = offerers_factories.VenueFactory(
             name="old name",
             managingOfferer=user_offerer.offerer,
+            contact=None,
         )
 
         auth_request = TestClient(app.test_client()).with_session_auth(email=user_offerer.user.email)
@@ -197,6 +224,7 @@ class Returns200Test:
                 "publicName": "new public name",
                 "audioDisabilityCompliant": True,
                 "isAccessibilityAppliedOnAllOffers": True,
+                "contact": None,
             },
             venue,
         )
@@ -217,8 +245,11 @@ class Returns200Test:
         )
 
         assert len(venue.action_history) == 1
-        update_snapshot = venue.action_history[0].extraData["modified_info"]
-        assert update_snapshot["publicName"]["new_info"] == venue_data["publicName"]
+        assert venue.action_history[0].actionType == history_models.ActionType.INFO_MODIFIED
+        assert venue.action_history[0].extraData["modified_info"] == {
+            "publicName": {"new_info": venue_data["publicName"], "old_info": "old name"},
+            "audioDisabilityCompliant": {"new_info": True, "old_info": False},
+        }
 
     def when_siret_does_not_change(self, app) -> None:
         # Given
@@ -239,14 +270,14 @@ class Returns200Test:
     @pytest.mark.parametrize("venue_factory", [offerers_factories.VenueFactory, offerers_factories.VirtualVenueFactory])
     def test_add_reimbursement_point(self, venue_factory, client) -> None:
         user_offerer = offerers_factories.UserOffererFactory()
-        pricing_point = offerers_factories.VenueFactory(managingOfferer=user_offerer.offerer)
+        pricing_point = offerers_factories.VenueFactory(managingOfferer=user_offerer.offerer, contact=None)
         venue = venue_factory(managingOfferer=user_offerer.offerer, pricing_point=pricing_point)
         new_reimbursement_point = offerers_factories.VenueFactory(
             managingOfferer=user_offerer.offerer,
         )
         finance_factories.BankInformationFactory(venue=new_reimbursement_point)
         venue_data = populate_missing_data_from_venue(
-            {"reimbursementPointId": new_reimbursement_point.id},
+            {"reimbursementPointId": new_reimbursement_point.id, "contact": None},
             venue,
         )
         response = client.with_session_auth(email=user_offerer.user.email).patch(f"/venues/{venue.id}", json=venue_data)
@@ -255,11 +286,23 @@ class Returns200Test:
         assert response.json["reimbursementPointId"] == new_reimbursement_point.id
         assert len(external_testing.sendinblue_requests) == 1
 
+        assert len(venue.action_history) == 1
+        assert venue.action_history[0].actionType == history_models.ActionType.INFO_MODIFIED
+        assert venue.action_history[0].venueId == venue.id
+        assert venue.action_history[0].authorUser.id == user_offerer.user.id
+        assert venue.action_history[0].extraData == {
+            "modified_info": {
+                "reimbursementPointSiret": {"new_info": new_reimbursement_point.siret, "old_info": None},
+            }
+        }
+
     @pytest.mark.parametrize("venue_factory", [offerers_factories.VenueFactory, offerers_factories.VirtualVenueFactory])
     def test_remove_reimbursement_point_id(self, venue_factory, client) -> None:
         user_offerer = offerers_factories.UserOffererFactory()
         pricing_point = offerers_factories.VenueFactory(managingOfferer=user_offerer.offerer)
-        current_reimbursement_point = offerers_factories.VenueFactory(managingOfferer=user_offerer.offerer)
+        current_reimbursement_point = offerers_factories.VenueFactory(
+            managingOfferer=user_offerer.offerer, contact=None
+        )
         venue = venue_factory(
             managingOfferer=user_offerer.offerer,
             pricing_point=pricing_point,
@@ -270,7 +313,7 @@ class Returns200Test:
         assert venue.current_reimbursement_point_id
 
         venue_data = populate_missing_data_from_venue(
-            {"reimbursementPointId": None},
+            {"reimbursementPointId": None, "contact": None},
             venue,
         )
         response = client.with_session_auth(email=user_offerer.user.email).patch(f"/venues/{venue.id}", json=venue_data)
@@ -279,6 +322,16 @@ class Returns200Test:
         assert response.status_code == 200
         assert response.json["reimbursementPointId"] is None
         assert len(external_testing.sendinblue_requests) == 1
+
+        assert len(venue.action_history) == 1
+        assert venue.action_history[0].actionType == history_models.ActionType.INFO_MODIFIED
+        assert venue.action_history[0].venueId == venue.id
+        assert venue.action_history[0].authorUser.id == user_offerer.user.id
+        assert venue.action_history[0].extraData == {
+            "modified_info": {
+                "reimbursementPointSiret": {"new_info": None, "old_info": current_reimbursement_point.siret},
+            }
+        }
 
 
 class Returns400Test:

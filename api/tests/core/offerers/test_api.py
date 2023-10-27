@@ -661,8 +661,8 @@ class EditVenueTest:
         assert action.authorUserId == user.id
         assert action.venueId == venue.id
         assert action.extraData["modified_info"] == {
-            "contact.email": {"new_info": contact_data.email, "old_info": "None"},
-            "contact.website": {"new_info": contact_data.website, "old_info": "None"},
+            "contact.email": {"new_info": contact_data.email, "old_info": None},
+            "contact.website": {"new_info": contact_data.website, "old_info": None},
         }
 
     def test_edit_reimbursement_point_id(self):

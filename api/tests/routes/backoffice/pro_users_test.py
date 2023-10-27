@@ -163,7 +163,7 @@ class UpdateProUserTest(PostEndpointHelper):
     needed_permission = perm_models.Permissions.MANAGE_PRO_ENTITY
 
     def test_update_pro_user(self, authenticated_client, legit_user):
-        user_to_edit = offerers_factories.UserOffererFactory().user
+        user_to_edit = offerers_factories.UserOffererFactory(user__postalCode="74000").user
 
         old_last_name = user_to_edit.lastName
         new_last_name = "La Fripouille"
