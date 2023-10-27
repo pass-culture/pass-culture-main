@@ -44,15 +44,8 @@
                 </div>
                 {% for info_name, modified_info in modified_info.items() %}
                   <div>
-                    <span class="text-decoration-underline">{{ info_name | format_modified_info_name }} :</span>
-                    {% if modified_info['old_info'] and modified_info['new_info'] %}
-                      {{ modified_info['old_info'] | format_modified_info_value | escape }}
-                      =&gt; {{ modified_info['new_info'] | format_modified_info_value | escape }}
-                    {% elif modified_info['old_info'] %}
-                      suppression de : {{ modified_info['old_info'] | format_modified_info_value | escape }}
-                    {% elif modified_info['new_info'] %}
-                      ajout de : {{ modified_info['new_info'] | format_modified_info_value | escape }}
-                    {% endif %}
+                    <span class="text-decoration-underline">{{ info_name | format_modified_info_name | escape }} :</span>
+                    {{ modified_info | format_modified_info_values(info_name) }}
                   </div>
                 {% endfor %}
               {% endif %}

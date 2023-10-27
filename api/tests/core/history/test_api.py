@@ -177,7 +177,7 @@ class SerializeFieldsTest:
     def test_serialize_basic_fields(self):
         input_data = {"a": 1, "b": "str"}
         res = history_api.serialize_fields(input_data)
-        assert res == {"a": "1", "b": "str"}
+        assert res == {"a": 1, "b": "str"}
 
     def test_serialize_fields(self):
         criteria = criteria_factories.CriterionFactory.build_batch(3)
@@ -186,9 +186,9 @@ class SerializeFieldsTest:
         res = history_api.serialize_fields(input_data)
 
         assert res == {
-            "int": "1",
+            "int": 1,
             "str": "str",
-            "list": ["1", "2", "3"],
-            "set": ["4", "5", "6"],
+            "list": [1, 2, 3],
+            "set": [4, 5, 6],
             "list_of_objects": [str(criterion) for criterion in criteria],
         }

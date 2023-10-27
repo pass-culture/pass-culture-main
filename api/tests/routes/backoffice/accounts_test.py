@@ -764,7 +764,7 @@ class GetPublicAccountTest(GetEndpointHelper):
             comment=None,
             extraData={
                 "modified_info": {
-                    "firstName": {"new_info": "None", "old_info": "François"},
+                    "firstName": {"new_info": None, "old_info": "François"},
                     "lastName": {"new_info": "Leblanc", "old_info": "Pignon"},
                     "validatedBirthDate": {"new_info": "2000-09-19", "old_info": "2001-04-14"},
                 }
@@ -802,7 +802,7 @@ class GetPublicAccountTest(GetEndpointHelper):
         )
         assert history_rows[2]["Commentaire"].startswith("Informations modifiées :")
         assert "Nom : Pignon => Leblanc" in history_rows[2]["Commentaire"]
-        assert "Prénom : François => None" in history_rows[2]["Commentaire"]
+        assert "Prénom : suppression de : François" in history_rows[2]["Commentaire"]
         assert "Date de naissance : 2001-04-14 => 2000-09-19" in history_rows[2]["Commentaire"]
         assert history_rows[2]["Auteur"] == admin.full_name
 
@@ -882,8 +882,8 @@ class UpdatePublicAccountTest(PostEndpointHelper):
         assert action.offererId is None
         assert action.venueId is None
         assert action.extraData["modified_info"] == {
-            "phoneNumber": {"new_info": "+33836656565", "old_info": "None"},
-            "postalCode": {"new_info": expected_new_postal_code, "old_info": "None"},
+            "phoneNumber": {"new_info": "+33836656565", "old_info": None},
+            "postalCode": {"new_info": expected_new_postal_code, "old_info": None},
         }
 
     def test_update_all_fields(self, legit_user, authenticated_client):
@@ -952,7 +952,7 @@ class UpdatePublicAccountTest(PostEndpointHelper):
                 "new_info": base_form["birth_date"].isoformat(),
                 "old_info": date_of_birth.date().isoformat(),
             },
-            "idPieceNumber": {"new_info": "A123B456C", "old_info": "None"},
+            "idPieceNumber": {"new_info": "A123B456C", "old_info": None},
             "address": {"new_info": "Chemin du Haut des Ormes", "old_info": "Château d'If"},
             "postalCode": {"new_info": "78560", "old_info": "13007"},
             "city": {"new_info": "Port-Marly", "old_info": "Marseille"},
