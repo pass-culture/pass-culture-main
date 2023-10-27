@@ -5,6 +5,7 @@ import logging
 
 from PIL import Image
 from PIL import UnidentifiedImageError
+import flask
 import sqlalchemy as sqla
 
 from pcapi.core.categories import subcategories_v2 as subcategories
@@ -111,32 +112,37 @@ def check_stock_price(price: decimal.Decimal, offer: models.Offer) -> None:
             "Le prix d’une offre ne peut excéder 300 euros.",
         )
         raise errors
-    if finance_repository.has_active_or_future_custom_reimbursement_rule(offer):
-        # We obviously look for active rules, but also future ones: if
-        # a reimbursement rule has been negotiated that will enter in
-        # effect tomorrow, we don't want to let the offerer change its
-        # price today.
-        error = (
-            "Vous ne pouvez pas modifier le prix ou créer un stock pour cette offre, "
-            "car elle bénéficie d'un montant de remboursement spécifique."
-        )
-        current_prices = {stock.price for stock in offer.stocks if not stock.isSoftDeleted}
-        if len(current_prices) > 1:
-            # This is not supposed to happen, we should be notified.
-            logger.error(
-                "An offer with a custom reimbursement rule has multiple prices",
-                extra={
-                    "offer": offer.id,
-                    "prices": current_prices,
-                },
+
+    # Cache this part to avoid N+1 when creating many stocks on the same offer.
+    cache_attribute = f"_cached_checked_custom_reimbursement_rules_{offer.id}"
+    if not getattr(flask.request, cache_attribute, False):
+        if finance_repository.has_active_or_future_custom_reimbursement_rule(offer):
+            # We obviously look for active rules, but also future ones: if
+            # a reimbursement rule has been negotiated that will enter in
+            # effect tomorrow, we don't want to let the offerer change its
+            # price today.
+            error = (
+                "Vous ne pouvez pas modifier le prix ou créer un stock pour cette offre, "
+                "car elle bénéficie d'un montant de remboursement spécifique."
             )
-            raise api_errors.ApiErrors({"price": [error]})
-        if not current_prices:
-            # Do not allow an offerer to (soft-)delete all its stocks
-            # and create a new one with a different price.
-            raise api_errors.ApiErrors({"price": [error]})
-        if current_prices.pop() != price:
-            raise api_errors.ApiErrors({"price": [error]})
+            current_prices = {stock.price for stock in offer.stocks if not stock.isSoftDeleted}
+            if len(current_prices) > 1:
+                # This is not supposed to happen, we should be notified.
+                logger.error(
+                    "An offer with a custom reimbursement rule has multiple prices",
+                    extra={
+                        "offer": offer.id,
+                        "prices": current_prices,
+                    },
+                )
+                raise api_errors.ApiErrors({"price": [error]})
+            if not current_prices:
+                # Do not allow an offerer to (soft-)delete all its stocks
+                # and create a new one with a different price.
+                raise api_errors.ApiErrors({"price": [error]})
+            if current_prices.pop() != price:
+                raise api_errors.ApiErrors({"price": [error]})
+        setattr(flask.request, cache_attribute, True)
 
 
 def check_required_dates_for_stock(
