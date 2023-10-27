@@ -102,7 +102,7 @@ class CollectiveOfferResponseModel(BaseModel):
     name: str
     stocks: list[CollectiveOffersStockResponseModel]
     booking: CollectiveOffersBookingResponseModel | None
-    subcategoryId: SubcategoryIdEnum
+    subcategoryId: SubcategoryIdEnum | None
     isShowcase: bool
     venue: base_serializers.ListOffersVenueResponseModel
     status: str
@@ -288,7 +288,7 @@ class GetCollectiveOfferBaseResponseModel(BaseModel, AccessibilityComplianceMixi
     isEditable: bool
     id: int
     name: str
-    subcategoryId: SubcategoryIdEnum
+    subcategoryId: SubcategoryIdEnum | None
     venue: GetCollectiveOfferVenueResponseModel
     status: OfferStatus
     domains: list[OfferDomain]

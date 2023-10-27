@@ -29,7 +29,7 @@ export type CollectiveOfferResponseModel = {
   nationalProgram?: NationalProgramModel | null;
   status: string;
   stocks: Array<CollectiveOffersStockResponseModel>;
-  subcategoryId: SubcategoryIdEnum;
+  subcategoryId?: SubcategoryIdEnum | null;
   templateId?: string | null;
   venue: ListOffersVenueResponseModel;
 };
