@@ -8,6 +8,7 @@ import pcapi.core.finance.factories as finance_factories
 import pcapi.core.finance.models as finance_models
 import pcapi.core.offerers.factories as offerers_factories
 import pcapi.core.offers.factories as offers_factories
+import pcapi.core.providers.factories as providers_factories
 import pcapi.core.users.factories as users_factories
 from pcapi.models import db
 from pcapi.utils.date import format_into_utc_date
@@ -114,6 +115,7 @@ class GetOffererTest:
                     "venueTypeCode": venue.venueTypeCode.name,
                     "visualDisabilityCompliant": False,
                     "withdrawalDetails": venue.withdrawalDetails,
+                    "hasVenueProviders": False,
                 }
                 for venue in sorted(offerer.managedVenues, key=lambda v: v.publicName)
             ],
@@ -382,3 +384,24 @@ class GetOffererTest:
         assert sorted(offerer["venuesWithNonFreeOffersWithoutBankAccounts"]) == [
             non_linked_venue_with_collective_offer.id,
         ]
+
+    @pytest.mark.usefixtures("db_session")
+    def test_user_can_know_if_each_managed_venues_has_venue_provider(self, client):
+        pro = users_factories.ProFactory()
+        offerer = offerers_factories.OffererFactory()
+        offerers_factories.UserOffererFactory(user=pro, offerer=offerer)
+
+        offerers_factories.VenueFactory(managingOfferer=offerer, name="Without venueProvider")
+        venue_with_providers = offerers_factories.VenueFactory(managingOfferer=offerer, name="With venueProvider")
+        providers_factories.VenueProviderFactory(venue=venue_with_providers)
+
+        offerer_id = offerer.id
+        client = client.with_session_auth(pro.email)
+
+        response = client.get(f"/offerers/{offerer_id}")
+        assert response.status_code == 200
+        assert response.json["managedVenues"][0]["hasVenueProviders"] is False
+        assert response.json["managedVenues"][1]["hasVenueProviders"] is True
+        assert response.json["hasValidBankAccount"] is False
+        assert response.json["hasPendingBankAccount"] is False
+        assert response.json["venuesWithNonFreeOffersWithoutBankAccounts"] == []
