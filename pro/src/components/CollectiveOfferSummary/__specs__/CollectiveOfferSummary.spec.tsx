@@ -1,6 +1,7 @@
 import { screen, waitForElementToBeRemoved } from '@testing-library/react'
 import React from 'react'
 
+import { EacFormat } from 'apiClient/v1'
 import {
   categoriesFactory,
   subCategoriesFactory,
@@ -14,6 +15,7 @@ import { renderWithProviders } from 'utils/renderWithProviders'
 import CollectiveOfferSummary, {
   CollectiveOfferSummaryProps,
 } from '../CollectiveOfferSummary'
+import { DEFAULT_RECAP_VALUE } from '../components/constants'
 
 vi.mock('apiClient/api', () => ({
   api: {
@@ -23,11 +25,25 @@ vi.mock('apiClient/api', () => ({
   },
 }))
 
+const isFormatActive = {
+  features: {
+    list: [
+      {
+        nameKey: 'WIP_ENABLE_FORMAT',
+        isActive: true,
+      },
+    ],
+    initialized: true,
+  },
+}
+
 const renderCollectiveOfferSummary = (
   props: CollectiveOfferSummaryProps,
   storeOverrides?: any
 ) => {
-  renderWithProviders(<CollectiveOfferSummary {...props} />, { storeOverrides })
+  renderWithProviders(<CollectiveOfferSummary {...props} />, {
+    storeOverrides: storeOverrides,
+  })
 }
 
 describe('CollectiveOfferSummary', () => {
@@ -75,6 +91,41 @@ describe('CollectiveOfferSummary', () => {
     await waitForElementToBeRemoved(() => screen.queryAllByTestId('spinner'))
     expect(screen.getByText('Dispositif national :')).toBeInTheDocument()
     expect(screen.getByText('Collège au cinéma')).toBeInTheDocument()
+  })
+  it('should display format when ff is active', async () => {
+    renderCollectiveOfferSummary(
+      {
+        ...props,
+        offer: {
+          ...props.offer,
+          formats: [EacFormat.PROJECTION_AUDIOVISUELLE, EacFormat.CONCERT],
+        },
+      },
+      isFormatActive
+    )
+    await waitForElementToBeRemoved(() => screen.queryAllByTestId('spinner'))
+
+    expect(screen.getByText('Format :')).toBeInTheDocument()
+    expect(
+      screen.getByText('Projection audiovisuelle, Concert')
+    ).toBeInTheDocument()
+  })
+
+  it('should display defaut format value when null and ff is active', async () => {
+    renderCollectiveOfferSummary(
+      {
+        ...props,
+        offer: {
+          ...props.offer,
+          formats: null,
+        },
+      },
+      isFormatActive
+    )
+    await waitForElementToBeRemoved(() => screen.queryAllByTestId('spinner'))
+
+    expect(screen.getByText('Format :')).toBeInTheDocument()
+    expect(screen.getAllByText(DEFAULT_RECAP_VALUE)[0]).toBeInTheDocument()
   })
 
   it('should display the date and time if the FF is enabled', async () => {
