@@ -1,55 +1,6 @@
-from datetime import datetime
-from unittest.mock import patch
-
 import pytest
 
-from pcapi.core.finance.models import BankInformationStatus
-from pcapi.domain.demarches_simplifiees import ApplicationDetail
-from pcapi.domain.demarches_simplifiees import get_venue_bank_information_application_details_by_application_id
 from pcapi.domain.demarches_simplifiees import parse_raw_bank_info_data
-
-from tests.connector_creators.demarches_simplifiees_creators import get_bank_info_response_procedure_v2
-
-
-@patch("pcapi.connectors.dms.api.DMSGraphQLClient")
-class GetVenueBankInformationApplicationDetailsByApplicationIdTest:
-    @pytest.mark.parametrize(
-        "annotation, procedure_version",
-        [
-            ({"label": "Erreur traitement pass Culture", "id": "INTERESTINGID"}, 3),
-            ({"label": "Erreur traitement pass Culture", "id": "INTERESTINGID"}, 4),
-            # "Nouvelle annotation Texte" is a default annotation created by DMS
-            ({"label": "Nouvelle annotation Texte", "id": "OTHERID"}, 3),
-            ({"label": "Nouvelle annotation Texte", "id": "OTHERID"}, 4),
-        ],
-    )
-    def test_retrieve_and_format_all_fields_v2(self, DMSGraphQLClient, annotation, procedure_version):
-        # Given
-        updated_at = datetime(2020, 1, 3)
-        DMSGraphQLClient.return_value.get_bank_info.return_value = get_bank_info_response_procedure_v2(annotation)
-
-        # When
-        application_details = get_venue_bank_information_application_details_by_application_id("8", procedure_version)
-
-        # Then
-        assert isinstance(application_details, ApplicationDetail)
-        if procedure_version == 3:
-            assert application_details.siren == "123456789"
-            assert application_details.siret == "12345678900014"
-            assert application_details.dms_token is None
-        else:
-            assert application_details.siren is None
-            assert application_details.siret is None
-            assert application_details.dms_token == "60a7536a21c8"
-        assert application_details.status == BankInformationStatus.ACCEPTED
-        assert application_details.application_id == 8
-        assert application_details.iban == "FR7630007000111234567890144"
-        assert application_details.bic == "SOGEFRPP"
-        assert application_details.dossier_id == "Q2zzbXAtNzgyODAw"
-        assert application_details.modification_date == updated_at
-        assert application_details.error_annotation_id == (
-            annotation["id"] if annotation["label"] == "Erreur traitement pass Culture" else None
-        )
 
 
 VENUE_DMS_TOKEN_FIELD_WITHOUT_PRO_PREFIX = {
@@ -68,6 +19,7 @@ VENUE_FIELD = {
     "siret": "43839119500056",
 }
 EXPECTED_RESULT_WITH_SIRET_V3 = {
+    "application_id": 1234,
     "status": "en_construction",
     "updated_at": "2021-11-12T14:51:42+01:00",
     "firstname": "John",
@@ -82,6 +34,7 @@ EXPECTED_RESULT_WITH_SIRET_V3 = {
     "venue_url_annotation_id": None,
 }
 EXPECTED_RESULT_V4 = {
+    "application_id": 1234,
     "status": "en_construction",
     "updated_at": "2021-11-12T14:51:42+01:00",
     "dms_token": "50a7536a21c8",
@@ -198,19 +151,18 @@ class ParseRawBankInfoDataTest:
         if identifiant_du_lieu:
             champs.insert(3, identifiant_du_lieu)
         input_data = {
-            "dossier": {
-                "id": "Q2zzbXAtNzgyODAw",
-                "champs": champs,
-                "dateDerniereModification": "2021-11-12T14:51:42+01:00",
-                "state": "en_construction",
-                "annotations": [
-                    {"label": "Nouvelle annotation texte", "id": "OtherId"},
-                    {"label": "Erreur traitement pass Culture", "id": "InterestingId"},
-                ],
-            }
+            "id": "Q2zzbXAtNzgyODAw",
+            "number": 1234,
+            "champs": champs,
+            "dateDerniereModification": "2021-11-12T14:51:42+01:00",
+            "state": "en_construction",
+            "annotations": [
+                {"label": "Nouvelle annotation texte", "id": "OtherId"},
+                {"label": "Erreur traitement pass Culture", "id": "InterestingId"},
+            ],
         }
         if procedure_version == 4:
-            input_data["dossier"]["annotations"].append({"label": "URL du lieu", "id": "AnotherInterestingId"})
+            input_data["annotations"].append({"label": "URL du lieu", "id": "AnotherInterestingId"})
 
         result = parse_raw_bank_info_data(input_data, procedure_version)
 
