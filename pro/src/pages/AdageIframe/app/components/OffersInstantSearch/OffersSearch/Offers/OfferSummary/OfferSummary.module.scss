@@ -3,27 +3,24 @@
 
 .offer-summary {
   display: flex;
-  margin-bottom: rem.torem(8px);
+  gap: rem.torem(8px) rem.torem(24px);
   padding: 0;
-
-  &:last-child {
-    margin-bottom: rem.torem(22px);
-  }
+  flex-wrap: wrap;
+  margin: rem.torem(24px) 0;
 
   &-item {
     display: flex;
     align-items: center;
     font-size: rem.torem(12px);
+    gap: 0 rem.torem(4px);
 
-    &:not(:last-of-type) {
-      margin-right: rem.torem(20px);
+    dt {
+      display: flex;
+      align-items: center;
     }
 
     &-icon {
-      margin-right: rem.torem(10px);
       color: colors.$primary;
-      width: rem.torem(24px);
-      height: rem.torem(24px);
     }
   }
 }

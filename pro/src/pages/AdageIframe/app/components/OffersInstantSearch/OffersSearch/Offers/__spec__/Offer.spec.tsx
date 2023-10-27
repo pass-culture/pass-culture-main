@@ -182,7 +182,7 @@ describe('offer', () => {
       const seeMoreButton = await screen.findByRole('button', {
         name: 'en savoir plus',
       })
-      userEvent.click(seeMoreButton)
+      await userEvent.click(seeMoreButton)
 
       await waitFor(() => {
         expect(screen.queryByText('Le détail de mon prix')).toBeInTheDocument()
@@ -259,7 +259,7 @@ describe('offer', () => {
       expect(screen.getByText('Contacter le partenaire culturel'))
     })
 
-    it('should display distance when offer has coordinates and FF is active', async () => {
+    it('should display distance when offer has coordinates and FF is active', () => {
       user.lat = 0
       user.lon = 0
 
@@ -283,7 +283,7 @@ describe('offer', () => {
       ).toBeInTheDocument()
     })
 
-    it('should display can move in your institution is offer intervention area match user one', async () => {
+    it('should display can move in your institution is offer intervention area match user one', () => {
       renderOffers(
         {
           ...offerProps,
@@ -310,7 +310,7 @@ describe('offer', () => {
     })
   })
 
-  it('should not display the distance to venue if the user does not have a valid geoloc', async () => {
+  it('should not display the distance to venue if the user does not have a valid geoloc', () => {
     user.lat = null
     user.lon = null
     renderOffers(
@@ -471,7 +471,7 @@ describe('offer', () => {
     expect(screen.getByText('Supprimer des favoris')).toBeInTheDocument()
   })
 
-  it('should not display favorite button when adage user is admin', async () => {
+  it('should not display favorite button when adage user is admin', () => {
     renderOffers(
       {
         ...offerProps,
@@ -487,7 +487,7 @@ describe('offer', () => {
     expect(screen.queryByText('Enregistrer en favoris')).not.toBeInTheDocument()
   })
 
-  it('should not display favorite button when offer is bookable', async () => {
+  it('should not display favorite button when offer is bookable', () => {
     renderOffers(
       {
         ...offerProps,
