@@ -39,6 +39,7 @@ class GetOffererVenueResponseModel(BaseModel, AccessibilityComplianceMixin):
     venueTypeCode: offerers_models.VenueTypeCode
     withdrawalDetails: str | None
     collectiveDmsApplications: list[DMSApplicationForEAC]
+    hasVenueProviders: bool
 
     @classmethod
     def from_orm(
@@ -58,6 +59,7 @@ class GetOffererVenueResponseModel(BaseModel, AccessibilityComplianceMixin):
         )
         venue.hasCreatedOffer = venue.id in ids_of_venues_with_offers
         venue.hasAdageId = bool(venue.adageId)
+        venue.hasVenueProviders = bool(venue.venueProviders)
         return super().from_orm(venue)
 
     class Config:
@@ -116,6 +118,7 @@ class GetOffererResponseModel(BaseModel):
             .options(sqla_orm.joinedload(offerers_models.Venue.reimbursement_point_links))
             .options(sqla_orm.joinedload(offerers_models.Venue.bankInformation))
             .options(sqla_orm.joinedload(offerers_models.Venue.collectiveDmsApplications))
+            .options(sqla_orm.joinedload(offerers_models.Venue.venueProviders))
             .order_by(offerers_models.Venue.common_name)
             .all()
         )
