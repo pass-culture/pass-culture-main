@@ -12,6 +12,7 @@ from pcapi.core.categories import subcategories_v2
 from pcapi.core.finance import factories as finance_factories
 from pcapi.core.finance import models as finance_models
 from pcapi.core.offerers import factories as offerers_factories
+from pcapi.core.offers import factories as offers_factories
 import pcapi.core.permissions.models as perm_models
 from pcapi.core.testing import assert_no_duplicated_queries
 from pcapi.core.testing import assert_num_queries
@@ -428,7 +429,7 @@ class ListIndividualBookingsTest(GetEndpointHelper):
         assert "Il y a plus de 20 résultats dans la base de données" in html_parser.extract_alert(response.data)
 
     def test_additional_data_when_reimbursed(self, authenticated_client, bookings):
-        # give
+        # given
         reimbursed = bookings[3]
         reimbursement_and_pricing_venue = offerers_factories.VenueFactory()
         pricing = finance_factories.PricingFactory(
@@ -461,7 +462,7 @@ class MarkBookingAsUsedTest(PostEndpointHelper):
     needed_permission = perm_models.Permissions.MANAGE_BOOKINGS
 
     def test_uncancel_and_mark_as_used(self, authenticated_client, bookings):
-        # give
+        # given
         cancelled = bookings[1]
 
         # when
@@ -477,7 +478,7 @@ class MarkBookingAsUsedTest(PostEndpointHelper):
         assert html_parser.extract_alert(redirected_response.data) == f"La réservation {cancelled.token} a été validée"
 
     def test_uncancel_non_cancelled_booking(self, authenticated_client, bookings):
-        # give
+        # given
         non_cancelled = bookings[2]
         old_status = non_cancelled.status
 
@@ -540,7 +541,8 @@ class CancelBookingTest(PostEndpointHelper):
     needed_permission = perm_models.Permissions.MANAGE_BOOKINGS
 
     def test_cancel_booking(self, authenticated_client, bookings):
-        # give
+        # given
+
         confirmed = bookings[2]
 
         # when
@@ -559,6 +561,29 @@ class CancelBookingTest(PostEndpointHelper):
 
         redirected_response = authenticated_client.get(response.headers["location"])
         assert html_parser.extract_alert(redirected_response.data) == f"La réservation {confirmed.token} a été annulée"
+
+    def test_cancel_booking_decreases_stock_quantity(self, authenticated_client, bookings):
+        # given
+        stock = offers_factories.StockFactory(quantity=3)
+
+        booking = bookings_factories.BookingFactory(stock=stock)
+        booking_to_cancel = bookings_factories.BookingFactory(stock=stock)
+        offers_factories.ActivationCodeFactory(booking=booking, stock=stock)
+        offers_factories.ActivationCodeFactory(booking=booking_to_cancel, stock=stock)
+
+        # when
+        response = self.post_to_endpoint(
+            authenticated_client,
+            booking_id=booking_to_cancel.id,
+            form={"reason": bookings_models.BookingCancellationReasons.BENEFICIARY.value},
+        )
+        # then
+        assert response.status_code == 302
+        db.session.refresh(booking_to_cancel)
+        assert booking_to_cancel.status == bookings_models.BookingStatus.CANCELLED
+        assert booking_to_cancel.cancellationReason == bookings_models.BookingCancellationReasons.BENEFICIARY
+        assert stock.quantity == 2
+        assert stock.dnBookedQuantity == 1
 
     def test_cant_cancel_booking_with_pricing_processed(self, authenticated_client, bookings):
         # given
@@ -584,7 +609,7 @@ class CancelBookingTest(PostEndpointHelper):
         )
 
     def test_cant_cancel_reimbursed_booking(self, authenticated_client, bookings):
-        # give
+        # given
         reimbursed = bookings[3]
         old_status = reimbursed.status
 
@@ -608,7 +633,7 @@ class CancelBookingTest(PostEndpointHelper):
         )
 
     def test_cant_cancel_cancelled_booking(self, authenticated_client, bookings):
-        # give
+        # given
         cancelled = bookings[1]
         old_status = cancelled.status
 
@@ -631,7 +656,7 @@ class CancelBookingTest(PostEndpointHelper):
         )
 
     def test_cant_cancel_booking_without_reason(self, authenticated_client, bookings):
-        # give
+        # given
         confirmed = bookings[2]
 
         # when
