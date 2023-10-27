@@ -181,20 +181,22 @@ def find_all_offerers_payments(
     # Pricing data for them, but no Cashflow nor Invoice (which we
     # need to display various details). So the functions above would
     # not yield any result. We need to look at Payment.
-    results.extend(
-        _get_legacy_payments_for_individual_bookings(
-            offerer_ids,
-            reimbursement_period,
-            venue_id,
+    # The date of the last PaymentStatus is 2022-01-25.
+    if reimbursement_period[0] < datetime.date(2022, 1, 31):
+        results.extend(
+            _get_legacy_payments_for_individual_bookings(
+                offerer_ids,
+                reimbursement_period,
+                venue_id,
+            )
         )
-    )
-    results.extend(
-        _get_legacy_payments_for_collective_bookings(
-            offerer_ids,
-            reimbursement_period,
-            venue_id,
+        results.extend(
+            _get_legacy_payments_for_collective_bookings(
+                offerer_ids,
+                reimbursement_period,
+                venue_id,
+            )
         )
-    )
 
     return results
 

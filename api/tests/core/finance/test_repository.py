@@ -222,10 +222,11 @@ class FindAllOffererPaymentsTest:
             payment=payment,
             status=models.TransactionStatus.ERROR,
             detail="Iban non fourni",
+            date=datetime.datetime(2021, 1, 1),
         )
 
         # When
-        reimbursement_period = (datetime.date.today(), datetime.date.today() + datetime.timedelta(days=2))
+        reimbursement_period = (datetime.date(2021, 1, 1), datetime.date(2021, 1, 15))
         payments = repository.find_all_offerer_payments(offerer.id, reimbursement_period)
 
         # Then
@@ -239,11 +240,15 @@ class FindAllOffererPaymentsTest:
             models.TransactionStatus.RETRY,
             models.TransactionStatus.SENT,
         ):
-            factories.PaymentStatusFactory(payment=payment, status=status)
+            factories.PaymentStatusFactory(
+                payment=payment,
+                status=status,
+                date=datetime.datetime(2021, 1, 1),
+            )
         offerer = payment.booking.offerer
 
         # When
-        reimbursement_period = (datetime.date.today(), datetime.date.today() + datetime.timedelta(days=2))
+        reimbursement_period = (datetime.date(2021, 1, 1), datetime.date(2021, 1, 15))
         payments = repository.find_all_offerer_payments(offerer.id, reimbursement_period)
 
         # Then
@@ -264,10 +269,11 @@ class FindAllOffererPaymentsTest:
         factories.PaymentStatusFactory(
             payment=payment,
             status=models.TransactionStatus.SENT,
+            date=datetime.datetime(2021, 1, 1),
         )
 
         # When
-        reimbursement_period = (datetime.date.today(), datetime.date.today() + datetime.timedelta(days=2))
+        reimbursement_period = (datetime.date(2021, 1, 1), datetime.date(2021, 1, 15))
         payments = repository.find_all_offerer_payments(offerer.id, reimbursement_period)
 
         # Then
@@ -294,24 +300,28 @@ class FindAllOffererPaymentsTest:
         factories.PaymentStatusFactory(
             payment=payment1,
             status=models.TransactionStatus.RETRY,
+            date=datetime.datetime(2021, 1, 1),
         )
         factories.PaymentStatusFactory(
             payment=payment1,
             status=models.TransactionStatus.SENT,
+            date=datetime.datetime(2021, 1, 2),
         )
 
         payment2 = factories.PaymentFactory(booking=booking2)
         factories.PaymentStatusFactory(
             payment=payment2,
             status=models.TransactionStatus.ERROR,
+            date=datetime.datetime(2021, 1, 3),
         )
         factories.PaymentStatusFactory(
             payment=payment2,
             status=models.TransactionStatus.SENT,
+            date=datetime.datetime(2021, 1, 4),
         )
 
         # When
-        reimbursement_period = (datetime.date.today(), datetime.date.today() + datetime.timedelta(days=2))
+        reimbursement_period = (datetime.date(2021, 1, 1), datetime.date(2021, 1, 15))
         payments = repository.find_all_offerer_payments(offerer.id, reimbursement_period)
 
         # Then
@@ -326,15 +336,17 @@ class FindAllOffererPaymentsTest:
             payment__booking__stock__offer__venue__managingOfferer=offerer,
             payment__booking__stock__offer__venue__pricing_point="self",
             status=models.TransactionStatus.SENT,
+            date=datetime.datetime(2021, 1, 1),
         )
         factories.PaymentStatusFactory(
             payment__booking__stock__offer__venue__managingOfferer=offerer,
             payment__booking__stock__offer__venue__pricing_point="self",
             status=models.TransactionStatus.SENT,
+            date=datetime.datetime(2021, 1, 1),
         )
 
         # When
-        reimbursement_period = (datetime.date.today(), datetime.date.today() + datetime.timedelta(days=2))
+        reimbursement_period = (datetime.date(2021, 1, 1), datetime.date(2021, 1, 15))
         payments = repository.find_all_offerer_payments(offerer.id, reimbursement_period)
 
         # Then
@@ -347,12 +359,20 @@ class FindAllOffererPaymentsTest:
         venue_2 = offerers_factories.VenueFactory(managingOfferer=offerer, pricing_point="self")
 
         payment_1 = factories.PaymentFactory(booking__stock__offer__venue=venue_1)
-        factories.PaymentStatusFactory(payment=payment_1, status=models.TransactionStatus.SENT)
+        factories.PaymentStatusFactory(
+            payment=payment_1,
+            status=models.TransactionStatus.SENT,
+            date=datetime.datetime(2021, 1, 1),
+        )
         payment_2 = factories.PaymentFactory(booking__stock__offer__venue=venue_2)
-        factories.PaymentStatusFactory(payment=payment_2, status=models.TransactionStatus.SENT)
+        factories.PaymentStatusFactory(
+            payment=payment_2,
+            status=models.TransactionStatus.SENT,
+            date=datetime.datetime(2021, 1, 1),
+        )
 
         # When
-        reimbursement_period = (datetime.date.today(), datetime.date.today() + datetime.timedelta(days=2))
+        reimbursement_period = (datetime.date(2021, 1, 1), datetime.date(2021, 1, 15))
         payments = repository.find_all_offerer_payments(offerer.id, reimbursement_period, venue_1.id)
 
         # Then
@@ -362,22 +382,23 @@ class FindAllOffererPaymentsTest:
 
     def test_should_return_payments_filtered_by_payment_date(self):
         # Given
-        tomorrow_at_nine = datetime.datetime.combine(
-            datetime.date.today() + datetime.timedelta(days=1), datetime.datetime.min.time()
-        ) + datetime.timedelta(hours=9)
         offerer = offerers_factories.OffererFactory()
         venue_1 = offerers_factories.VenueFactory(managingOfferer=offerer, pricing_point="self")
         payment_1 = factories.PaymentFactory(booking__stock__offer__venue=venue_1)
-        factories.PaymentStatusFactory(date=tomorrow_at_nine, payment=payment_1, status=models.TransactionStatus.SENT)
+        factories.PaymentStatusFactory(
+            payment=payment_1,
+            status=models.TransactionStatus.SENT,
+            date=datetime.datetime(2021, 1, 1),
+        )
         payment_2 = factories.PaymentFactory(booking__stock__offer__venue=venue_1)
         factories.PaymentStatusFactory(
-            date=datetime.date.today() + datetime.timedelta(days=2),
             payment=payment_2,
             status=models.TransactionStatus.SENT,
+            date=datetime.datetime(2021, 1, 16),
         )
 
         # When
-        reimbursement_period = (datetime.date.today(), datetime.date.today() + datetime.timedelta(days=1))
+        reimbursement_period = (datetime.date(2021, 1, 1), datetime.date(2021, 1, 15))
         payments = repository.find_all_offerer_payments(offerer.id, reimbursement_period)
 
         # Then
@@ -414,6 +435,7 @@ class FindAllOffererPaymentsTest:
         factories.PaymentStatusFactory(
             payment=payment,
             status=models.TransactionStatus.SENT,
+            date=datetime.datetime(2022, 1, 1),
         )
 
         # Create a new-style pricing on the same booking. In real life
@@ -431,7 +453,7 @@ class FindAllOffererPaymentsTest:
         cashflow = models.Cashflow.query.one()
         invoice = models.Invoice.query.one()
 
-        reimbursement_period = (datetime.date.today(), datetime.date.today() + datetime.timedelta(days=1))
+        reimbursement_period = (datetime.date(2022, 1, 1), datetime.date.today() + datetime.timedelta(days=1))
         payments = repository.find_all_offerer_payments(booking.offerer.id, reimbursement_period)
 
         expected_in_both = {
