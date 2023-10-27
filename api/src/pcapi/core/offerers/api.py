@@ -130,10 +130,11 @@ def update_venue(
         current_reimbursement_point_id = current_link.reimbursementPointId if current_link else None
         if reimbursement_point_id != current_reimbursement_point_id:
             link_venue_to_reimbursement_point(venue, reimbursement_point_id)
+            new_link = venue.current_reimbursement_point_link
             venue_snapshot.set(
                 "reimbursementPointSiret",
                 current_link.reimbursementPoint.siret if current_link else None,
-                offerers_repository.find_venue_by_id(reimbursement_point_id).siret if reimbursement_point_id else None,
+                new_link.reimbursementPoint.siret if new_link else None,
             )
 
     old_booking_email = venue.bookingEmail if modifications.get("bookingEmail") else None
