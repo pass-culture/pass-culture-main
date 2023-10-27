@@ -1,5 +1,4 @@
-"""add formats to collective offers (and templates)
-+ subcategoryId becomes nullable (before being removed)"""
+"""Add "formats" to collective offers (and templates) + make "subcategoryId" nullable"""
 from alembic import op
 import sqlalchemy as sa
 from sqlalchemy.dialects import postgresql
