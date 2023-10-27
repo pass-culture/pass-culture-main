@@ -9,9 +9,7 @@ on:
     branches-ignore:
       - docs
 
-permissions:
-  contents: 'read'
-  id-token: 'write'
+permissions: write-all
 
 concurrency:
   # cancel previous workflow of the same branch except on master
