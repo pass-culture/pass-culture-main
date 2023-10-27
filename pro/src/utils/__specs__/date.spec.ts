@@ -1,6 +1,7 @@
 import {
   FORMAT_DD_MM_YYYY_HH_mm,
   formatBrowserTimezonedDateAsUTC,
+  getRangeToFrenchText,
   toDateStrippedOfTimezone,
   toISOStringWithoutMilliseconds,
 } from '../date'
@@ -53,5 +54,54 @@ describe('toISOStringWithoutMilliseconds', () => {
     const dateISOString = toISOStringWithoutMilliseconds(date)
 
     expect(dateISOString).toBe('2020-11-17T08:15:00Z')
+  })
+})
+
+describe('getRangeToFrenchText', () => {
+  it('should display only one day when the starting date and ending date are the same day', () => {
+    const from = new Date('2020-11-17T08:15:00Z')
+    const to = new Date('2020-11-17T23:59:00Z')
+
+    const formattedRange = getRangeToFrenchText(from, to)
+
+    expect(formattedRange).toBe('Le mardi 17 novembre 2020 à 08h15')
+  })
+
+  it('should format the months for both dates when the starting date and ending date are the same year', () => {
+    const from = new Date('2020-11-17T08:15:00Z')
+    const to = new Date('2020-12-10T23:59:00Z')
+
+    const formattedRange = getRangeToFrenchText(from, to)
+
+    expect(formattedRange).toBe('Du 17 novembre au 10 décembre 2020 à 08h15')
+  })
+
+  it('should format the months and years for both dates when the starting date and ending date are on different years', () => {
+    const from = new Date('2020-11-17T08:15:00Z')
+    const to = new Date('2021-01-10T23:59:00Z')
+
+    const formattedRange = getRangeToFrenchText(from, to)
+
+    expect(formattedRange).toBe(
+      'Du 17 novembre 2020 au 10 janvier 2021 à 08h15'
+    )
+  })
+
+  it('should not display the time when the starting date is at midnight', () => {
+    const from = new Date('2020-11-17T00:00:00Z')
+    const to = new Date('2021-01-10T23:59:00Z')
+
+    const formattedRange = getRangeToFrenchText(from, to)
+
+    expect(formattedRange).toBe('Du 17 novembre 2020 au 10 janvier 2021')
+  })
+
+  it('should not display the time minutes when the starting date minutes are 00', () => {
+    const from = new Date('2020-11-17T08:00:00Z')
+    const to = new Date('2021-01-10T23:59:00Z')
+
+    const formattedRange = getRangeToFrenchText(from, to)
+
+    expect(formattedRange).toBe('Du 17 novembre 2020 au 10 janvier 2021 à 08h')
   })
 })
