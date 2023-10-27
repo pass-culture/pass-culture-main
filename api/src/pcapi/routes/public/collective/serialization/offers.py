@@ -265,7 +265,7 @@ class GetPublicCollectiveOfferResponseModel(BaseModel):
     status: str
     name: str
     description: str | None
-    subcategoryId: str
+    subcategoryId: str | None
     bookingEmails: list[str] | None
     contactEmail: str
     contactPhone: str
