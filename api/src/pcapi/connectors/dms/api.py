@@ -21,7 +21,6 @@ logger = logging.getLogger(__name__)
 GRAPHQL_DIRECTORY = pathlib.Path(os.path.dirname(__file__)) / "graphql"
 
 ARCHIVE_APPLICATION_QUERY_NAME = "archive_application"
-GET_BANK_INFO_QUERY_NAME = "pro/get_bank_info_v2"
 GET_BANK_INFO_STATUS_QUERY_NAME = "pro/get_bank_info_status"
 GET_DELETED_APPLICATIONS_QUERY_NAME = "get_deleted_applications"
 GET_SINGLE_APPLICATION_QUERY_NAME = "beneficiaries/get_single_application_details"
@@ -31,6 +30,7 @@ MARK_WITHOUT_CONTINUATION_MUTATION_NAME = "mark_wihtout_continuation"
 SEND_USER_MESSAGE_QUERY_NAME = "send_user_message"
 UPDATE_TEXT_ANNOTATION_QUERY_NAME = "update_text_annotation"
 GET_EAC_APPLICATIONS_STATE_SIRET = "eac/get_applications_state_siret"
+GET_BANK_INFO_APPLICATIONS_QUERY_NAME = "pro/get_bank_info_applications"
 
 
 class DmsStats(BaseModel):
@@ -195,10 +195,6 @@ class DMSGraphQLClient:
 
         return dms_models.DmsApplicationResponse(**response["dossier"])  # pylint: disable=unsubscriptable-object
 
-    def get_bank_info(self, dossier_id: int) -> Any:
-        variables = {"dossierNumber": dossier_id}
-        return self.execute_query(GET_BANK_INFO_QUERY_NAME, variables=variables)
-
     def get_bank_info_status(self, dossier_id: int) -> dict:
         variables = {"dossierNumber": dossier_id}
         return self.execute_query(GET_BANK_INFO_STATUS_QUERY_NAME, variables=variables)
@@ -213,6 +209,43 @@ class DMSGraphQLClient:
             }
         }
         return self.execute_query(UPDATE_TEXT_ANNOTATION_QUERY_NAME, variables=variables)
+
+    def get_pro_bank_nodes_states(
+        self,
+        procedure_number: int,
+        state: dms_models.GraphQLApplicationStates | None = None,
+        since: datetime.datetime | None = None,
+        page_token: str | None = None,
+    ) -> Generator[dict, None, None]:
+        variables: dict[str, int | str] = {
+            "demarcheNumber": procedure_number,
+        }
+        if state:
+            variables["state"] = state.value
+        if since:
+            variables["since"] = since.isoformat()
+        if page_token:
+            variables["after"] = page_token
+        results = self.execute_query(GET_BANK_INFO_APPLICATIONS_QUERY_NAME, variables=variables)
+        # pylint: disable=unsubscriptable-object
+        nodes = results["demarche"]["dossiers"]["nodes"]
+        logger.info(
+            "[DS] Found %s applications for procedure %d (page token: %s)",
+            len(nodes),
+            procedure_number,
+            page_token,
+        )
+        for node in nodes:
+            yield node
+
+        # pylint: disable=unsubscriptable-object
+        if results["demarche"]["dossiers"]["pageInfo"]["hasNextPage"]:
+            yield from self.get_pro_bank_nodes_states(
+                procedure_number=procedure_number,
+                state=state,
+                since=since,
+                page_token=results["demarche"]["dossiers"]["pageInfo"]["endCursor"],
+            )
 
     def get_eac_nodes_siret_states(
         self,

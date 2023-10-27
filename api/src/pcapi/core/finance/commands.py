@@ -5,6 +5,8 @@ import logging
 import click
 import sqlalchemy.orm as sqla_orm
 
+from pcapi import settings
+from pcapi.core.finance import ds
 from pcapi.core.finance import siret_api
 import pcapi.core.finance.api as finance_api
 import pcapi.core.finance.models as finance_models
@@ -183,3 +185,18 @@ def move_siret(
 @cron_decorators.log_cron_with_transaction
 def recredit_underage_users() -> None:
     finance_api.recredit_underage_users()
+
+
+@blueprint.cli.command("import_ds_bank_information_applications")
+@cron_decorators.log_cron_with_transaction
+def import_ds_bank_information_applications() -> None:
+    procedures = [
+        settings.DMS_VENUE_PROCEDURE_ID_V4,
+        settings.DMS_VENUE_PROCEDURE_ID_V3,
+        settings.DMS_VENUE_PROCEDURE_ID_V2,
+    ]
+    for procedure in procedures:
+        if not procedure:
+            logger.info("Skipping DS %s because procedure id is empty", procedure)
+            continue
+        ds.import_ds_bank_information_applications(procedure_number=int(procedure))
