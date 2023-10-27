@@ -16,7 +16,7 @@ vi.mock('utils/date', async () => ({
   getToday: vi.fn(() => new Date('2020-12-15T12:00:00Z')),
 }))
 
-const renderReimbursementsInvoices = async (storeOverrides: any) => {
+const renderReimbursementsInvoices = (storeOverrides: any) => {
   renderWithProviders(<ReimbursementsInvoices />, {
     storeOverrides,
   })
@@ -185,6 +185,8 @@ describe('reimbursementsWithFilters', () => {
         'Les remboursements s’effectuent tous les 15 jours, rétroactivement suite à la validation d’une contremarque dans le guichet ou à la validation automatique des contremarques d’évènements. Cette page est automatiquement mise à jour à chaque remboursement.'
       )
     ).not.toBeInTheDocument()
+
+    expect(screen.getByLabelText('Point de remboursement')).toBeInTheDocument()
   })
 
   it('should display invoice banner if FF WIP_ENABLE_NEW_BANK_DETAILS_JOURNEY is enable', async () => {
@@ -201,5 +203,7 @@ describe('reimbursementsWithFilters', () => {
         'Les remboursements s’effectuent tous les 15 jours, rétroactivement suite à la validation d’une contremarque dans le guichet ou à la validation automatique des contremarques d’évènements. Cette page est automatiquement mise à jour à chaque remboursement.'
       )
     ).toBeInTheDocument()
+
+    expect(screen.getByLabelText('Compte bancaire')).toBeInTheDocument()
   })
 })

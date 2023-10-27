@@ -2,6 +2,7 @@ import React, { Dispatch, SetStateAction } from 'react'
 
 import FormLayout from 'components/FormLayout/FormLayout'
 import { SelectOption } from 'custom_types/form'
+import useActiveFeature from 'hooks/useActiveFeature'
 import { Button } from 'ui-kit'
 import { ButtonVariant } from 'ui-kit/Button/types'
 import PeriodSelector from 'ui-kit/form/PeriodSelector/PeriodSelector'
@@ -35,6 +36,9 @@ const InvoicesFilters = ({
   setAreFiltersDefault,
   setFilters,
 }: ReimbursementsSectionHeaderProps): JSX.Element => {
+  const isNewBankDetailsJourneyEnabled = useActiveFeature(
+    'WIP_ENABLE_NEW_BANK_DETAILS_JOURNEY'
+  )
   const {
     reimbursementPoint: selectedReimbursementPoint,
     periodStart: selectedPeriodStart,
@@ -92,7 +96,14 @@ const InvoicesFilters = ({
       </div>
 
       <FormLayout.Row inline>
-        <FieldLayout label="Point de remboursement" name="reimbursementPoint">
+        <FieldLayout
+          label={
+            isNewBankDetailsJourneyEnabled
+              ? 'Compte bancaire'
+              : 'Point de remboursement'
+          }
+          name="reimbursementPoint"
+        >
           <SelectInput
             defaultOption={{
               label: 'Tous les points de remboursement',
