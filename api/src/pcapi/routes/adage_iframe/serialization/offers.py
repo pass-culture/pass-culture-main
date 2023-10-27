@@ -268,6 +268,11 @@ class CollectiveOfferTemplateResponseModel(BaseModel, common_models.Accessibilit
         is_favorite: bool,
         offerVenue: offerers_models.Venue | None = None,
     ) -> "CollectiveOfferTemplateResponseModel":
+        if offer.start and offer.end:
+            dates = TemplateDatesModel(start=offer.start, end=offer.end)
+        else:
+            dates = None
+
         return cls(
             id=offer.id,
             subcategoryLabel=offer.subcategory.app_label,
@@ -300,10 +305,7 @@ class CollectiveOfferTemplateResponseModel(BaseModel, common_models.Accessibilit
             mentalDisabilityCompliant=offer.mentalDisabilityCompliant,
             motorDisabilityCompliant=offer.motorDisabilityCompliant,
             visualDisabilityCompliant=offer.visualDisabilityCompliant,
-            dates=TemplateDatesModel(
-                start=offer.start,
-                end=offer.end,
-            ),
+            dates=dates,
         )
 
     class Config:
