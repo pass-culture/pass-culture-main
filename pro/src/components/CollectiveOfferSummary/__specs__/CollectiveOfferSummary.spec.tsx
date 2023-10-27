@@ -5,7 +5,10 @@ import {
   categoriesFactory,
   subCategoriesFactory,
 } from 'screens/OfferEducational/__tests-utils__'
-import { collectiveOfferFactory } from 'utils/collectiveApiFactories'
+import {
+  collectiveOfferFactory,
+  collectiveOfferTemplateFactory,
+} from 'utils/collectiveApiFactories'
 import { renderWithProviders } from 'utils/renderWithProviders'
 
 import CollectiveOfferSummary, {
@@ -20,8 +23,11 @@ vi.mock('apiClient/api', () => ({
   },
 }))
 
-const renderCollectiveOfferSummary = (props: CollectiveOfferSummaryProps) => {
-  renderWithProviders(<CollectiveOfferSummary {...props} />)
+const renderCollectiveOfferSummary = (
+  props: CollectiveOfferSummaryProps,
+  storeOverrides?: any
+) => {
+  renderWithProviders(<CollectiveOfferSummary {...props} />, { storeOverrides })
 }
 
 describe('CollectiveOfferSummary', () => {
@@ -69,5 +75,29 @@ describe('CollectiveOfferSummary', () => {
     await waitForElementToBeRemoved(() => screen.queryAllByTestId('spinner'))
     expect(screen.getByText('Dispositif national :')).toBeInTheDocument()
     expect(screen.getByText('Collège au cinéma')).toBeInTheDocument()
+  })
+
+  it('should display the date and time if the FF is enabled', async () => {
+    const offer = collectiveOfferTemplateFactory({
+      dates: { start: '2023-10-24T09:14:00', end: '2023-10-24T09:16:00' },
+    })
+    renderCollectiveOfferSummary(
+      { ...props, offer },
+      {
+        features: {
+          list: [
+            { isActive: true, nameKey: 'WIP_ENABLE_DATES_OFFER_TEMPLATE' },
+          ],
+        },
+      }
+    )
+
+    await waitForElementToBeRemoved(() => screen.queryAllByTestId('spinner'))
+
+    const title = screen.getByRole('heading', {
+      name: 'Date et heure',
+    })
+
+    expect(title).toBeInTheDocument()
   })
 })

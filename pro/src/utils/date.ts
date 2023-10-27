@@ -48,6 +48,53 @@ export const getDateToFrenchText = (dateIsoString: string) => {
   return format(noTimeZoneDate, FORMAT_DD_MMMM_YYYY, { locale: fr })
 }
 
+function getDateTimeToFrenchText(
+  date: Date,
+  options: Intl.DateTimeFormatOptions = {
+    day: '2-digit',
+    month: 'long',
+    year: 'numeric',
+  }
+): string {
+  return Intl.DateTimeFormat('fr-FR', options).format(date)
+}
+
+export function getRangeToFrenchText(from: Date, to: Date): string {
+  //  The time displayed will be the one taken from the first date
+
+  const isSameYear = from.getFullYear() === to.getFullYear()
+  const isSameMonth = isSameYear && from.getMonth() === to.getMonth()
+  const isSameDay = isSameYear && isSameMonth && from.getDate() === to.getDate()
+
+  const shouldDisplayTime = from.getHours() !== 0 || from.getMinutes() !== 0
+
+  const timeToFrenchText = getDateTimeToFrenchText(from, {
+    hour: '2-digit',
+    minute: from.getMinutes() === 0 ? undefined : '2-digit',
+  })
+    .replace(':', 'h')
+    .replace(' ', '')
+
+  const formattedTime = shouldDisplayTime ? ` à ${timeToFrenchText}` : ''
+
+  if (isSameDay) {
+    return `Le ${getDateTimeToFrenchText(from, {
+      dateStyle: 'full',
+    })}${formattedTime}`
+  }
+
+  if (isSameYear) {
+    return `Du ${getDateTimeToFrenchText(from, {
+      day: '2-digit',
+      month: 'long',
+    })} au ${getDateTimeToFrenchText(to)}${formattedTime}`
+  }
+
+  return `Du ${getDateTimeToFrenchText(from)} au ${getDateTimeToFrenchText(
+    to
+  )}${formattedTime}`
+}
+
 export const toISOStringWithoutMilliseconds = (date: Date) => {
   return date.toISOString().replace(/\.\d{3}/, '')
 }
