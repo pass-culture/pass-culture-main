@@ -662,11 +662,15 @@ class CollectiveOfferTemplate(
         return tuple(parent_args)
 
     @property
-    def start(self) -> datetime:
+    def start(self) -> datetime | None:
+        if not self.dateRange:
+            return None
         return self.dateRange.lower
 
     @property
-    def end(self) -> datetime:
+    def end(self) -> datetime | None:
+        if not self.dateRange:
+            return None
         return self.dateRange.upper
 
     @property
