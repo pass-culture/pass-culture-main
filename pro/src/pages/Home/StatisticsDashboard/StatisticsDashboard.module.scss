@@ -29,11 +29,19 @@
     width: rem.torem(42px);
     height: rem.torem(32px);
   }
+
+  margin-bottom: rem.torem(24px);
+}
+
+.data-container {
+  display: grid;
+  gap: rem.torem(32px);
+  grid-template-columns: rem.torem(255px) 1fr;
+  margin-top: rem.torem(8px);
 }
 
 .sync-date {
   @include fonts.mini-highlight;
 
-  margin-top: rem.torem(24px);
   text-align: end;
 }

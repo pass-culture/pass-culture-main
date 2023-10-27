@@ -13,6 +13,8 @@ import { SvgIcon } from 'ui-kit/SvgIcon/SvgIcon'
 
 import { STEP_HOME_STATS_HASH } from '../HomepageBreadcrumb'
 
+import { CumulatedViews } from './CumulatedViews'
+import { MostViewedOffers } from './MostViewedOffers'
 import styles from './StatisticsDashboard.module.scss'
 
 export interface StatisticsDashboardProps {
@@ -31,7 +33,8 @@ export const StatisticsDashboard = ({ offerer }: StatisticsDashboardProps) => {
       setIsLoading(false)
     }
 
-    void loadStats()
+    // eslint-disable-next-line @typescript-eslint/no-floating-promises
+    loadStats()
   }, [])
 
   const hasAtLeastOneOffer = Boolean(
@@ -60,7 +63,7 @@ export const StatisticsDashboard = ({ offerer }: StatisticsDashboardProps) => {
       {!isLoading && (
         <div className="h-card">
           <div className="h-card-inner">
-            {stats?.jsonData === null ? (
+            {!stats?.jsonData ? (
               <div className={styles['no-data']}>
                 <SvgIcon
                   src={strokeNoBookingIcon}
@@ -75,7 +78,14 @@ export const StatisticsDashboard = ({ offerer }: StatisticsDashboardProps) => {
                   : 'Créez vos premières offres grand public pour être visible par les bénéficiaires'}
               </div>
             ) : (
-              <div className="h-card-inner">TODO content</div>
+              <div className={styles['data-container']}>
+                <MostViewedOffers
+                  topOffers={stats.jsonData.topOffers}
+                  dailyViews={stats.jsonData.dailyViews}
+                />
+
+                <CumulatedViews />
+              </div>
             )}
 
             <div className={styles['sync-date']}>
