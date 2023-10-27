@@ -374,7 +374,7 @@ class CollectiveOffer(
         back_populates="favoriteCollectiveOffers",
     )
 
-    formats: typing.Sequence[subcategories.EacFormat] | None = sa.Column(  # type: ignore
+    formats: list[subcategories.EacFormat] | None = sa.Column(
         postgresql.ARRAY(sa.Enum(subcategories.EacFormat, create_constraint=False, native_enum=False)), nullable=True
     )
 
@@ -635,7 +635,7 @@ class CollectiveOfferTemplate(
 
     dateRange: psycopg2.extras.DateTimeRange = sa.Column(postgresql.TSRANGE)
 
-    formats: typing.Sequence[subcategories.EacFormat] | None = sa.Column(  # type: ignore
+    formats: list[subcategories.EacFormat] | None = sa.Column(
         postgresql.ARRAY(sa.Enum(subcategories.EacFormat, create_constraint=False, native_enum=False)), nullable=True
     )
 

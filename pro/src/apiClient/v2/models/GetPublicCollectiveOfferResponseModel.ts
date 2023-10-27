@@ -37,7 +37,7 @@ export type GetPublicCollectiveOfferResponseModel = {
   offerVenue: OfferVenueModel;
   status: string;
   students: Array<string>;
-  subcategoryId: string;
+  subcategoryId?: string | null;
   totalPrice: number;
   venueId: number;
   visualDisabilityCompliant?: boolean | null;

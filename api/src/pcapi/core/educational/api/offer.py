@@ -241,7 +241,7 @@ def create_collective_offer_template(
         visualDisabilityCompliant=offer_data.visual_disability_compliant,
         interventionArea=offer_data.intervention_area or [],
         priceDetail=offer_data.price_detail,
-        formats=offer_data.formats,
+        formats=offer_data.formats,  # type: ignore[arg-type]
     )
 
     if offer_data.dates:
@@ -292,7 +292,7 @@ def create_collective_offer(
         visualDisabilityCompliant=offer_data.visual_disability_compliant,
         interventionArea=offer_data.intervention_area or [],
         templateId=offer_data.template_id,
-        formats=offer_data.formats,
+        formats=offer_data.formats,  # type: ignore[arg-type]
     )
     collective_offer.bookingEmails = offer_data.booking_emails
 

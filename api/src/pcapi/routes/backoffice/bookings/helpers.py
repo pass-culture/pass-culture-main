@@ -52,9 +52,9 @@ def get_bookings(
     if form.venue.data:
         base_query = base_query.filter(booking_class.venueId.in_(form.venue.data))  # type: ignore [attr-defined]
 
-    if form.category.data:
+    if form.category.data and offer_class.subcategoryId:
         base_query = base_query.filter(
-            offer_class.subcategoryId.in_(  # type: ignore [attr-defined]
+            offer_class.subcategoryId.in_(  # type: ignore[attr-defined]
                 subcategory.id
                 for subcategory in subcategories_v2.ALL_SUBCATEGORIES
                 if subcategory.category.id in form.category.data
