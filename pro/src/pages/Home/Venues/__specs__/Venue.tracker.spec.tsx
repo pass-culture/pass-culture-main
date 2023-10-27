@@ -18,7 +18,6 @@ const mockLogEvent = vi.fn()
 vi.mock('apiClient/api', () => ({
   api: {
     getVenueStats: vi.fn(),
-    listVenueProviders: vi.fn(),
   },
 }))
 
@@ -47,9 +46,6 @@ describe('venue create offer link', () => {
     vi.spyOn(useAnalytics, 'default').mockImplementation(() => ({
       logEvent: mockLogEvent,
     }))
-    vi.spyOn(api, 'listVenueProviders').mockResolvedValue({
-      venue_providers: [],
-    })
   })
 
   it('should track with virtual param', async () => {
