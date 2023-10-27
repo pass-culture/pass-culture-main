@@ -78,28 +78,38 @@ const SummaryScreen = () => {
     }
 
     setIsDisabled(true)
-    const response = await publishIndividualOffer({
+    const publishIndividualOfferResponse = await publishIndividualOffer({
       offerId: offer.id,
     })
-    if (response.isOk) {
-      const response = await getIndividualOfferAdapter(offer.id)
-      if (response.isOk) {
-        setOffer && setOffer(response.payload)
+    if (publishIndividualOfferResponse.isOk) {
+      const getIndividualOfferResponse = await getIndividualOfferAdapter(
+        offer.id
+      )
+      if (getIndividualOfferResponse.isOk) {
+        setOffer && setOffer(getIndividualOfferResponse.payload)
       }
 
       if (isNewBankDetailsJourneyEnabled) {
-        const isNonFreeOffer = response.payload?.stocks.some((stock) => {
-          return stock.price > 0
-        })
+        if (showFirstNonFreeOfferPopin) {
+          const isNonFreeOffer =
+            getIndividualOfferResponse.payload?.stocks.some((stock) => {
+              return stock.price > 0
+            })
+          if (!isNonFreeOffer) {
+            navigate(offerConfirmationStepUrl)
+          }
 
-        if (isNonFreeOffer && !showFirstNonFreeOfferPopin && offerOfferer?.id) {
-          const offererResponse = await api.getOfferer(offerOfferer?.id)
+          const offererResponse = await api.getOfferer(offer.offererId)
           if (
             offererResponse.hasPendingBankAccount === false &&
             offererResponse.hasValidBankAccount === false
           ) {
             setDisplayRedirectDialog(true)
+          } else {
+            navigate(offerConfirmationStepUrl)
           }
+        } else {
+          navigate(offerConfirmationStepUrl)
         }
       } else {
         if (showVenuePopin[venueId || '']) {
