@@ -68,9 +68,6 @@ class FeatureToggle(enum.Enum):
         "Active la génération automatique (via cron) des flux monétaires et fichiers de remboursement"
     )
     ID_CHECK_ADDRESS_AUTOCOMPLETION = "Autocomplétion de l'adresse lors du parcours IDCheck"
-    INCLUDE_LEGACY_PAYMENTS_FOR_REIMBURSEMENTS = (
-        "Inclure les anciens modèles de données pour le téléchargement des remboursements "
-    )
     PRICE_FINANCE_EVENTS = "Active la valorisation des évènements de finance"
     SYNCHRONIZE_ALLOCINE = "Permettre la synchronisation journalière avec Allociné"
     SYNCHRONIZE_TITELIVE_PRODUCTS = "Permettre limport journalier du référentiel des livres"

@@ -16,7 +16,6 @@ import pcapi.core.offerers.models as offerers_models
 import pcapi.core.offers.models as offers_models
 import pcapi.core.users.models as users_models
 from pcapi.models import db
-from pcapi.models.feature import FeatureToggle
 import pcapi.utils.date as date_utils
 import pcapi.utils.db as db_utils
 
@@ -178,18 +177,28 @@ def find_all_offerers_payments(
         )
     )
 
-    if FeatureToggle.INCLUDE_LEGACY_PAYMENTS_FOR_REIMBURSEMENTS.is_active():
-        payment_date = sqla.cast(models.PaymentStatus.date, sqla.Date)
-        results.extend(
-            _get_legacy_payments_for_individual_bookings(
-                payment_date, offerer_ids, reimbursement_period, venue_id
-            ).all()
+    # Reimbursements that have been done before January 2022 were
+    # represented by instances of Payment. We do have corresponding
+    # Pricing data for them, but no Cashflow nor Invoice (which we
+    # need to display various details). So the functions above would
+    # not yield any result. We need to look at Payment.
+    payment_date = sqla.cast(models.PaymentStatus.date, sqla.Date)
+    results.extend(
+        _get_legacy_payments_for_individual_bookings(
+            payment_date,
+            offerer_ids,
+            reimbursement_period,
+            venue_id,
         )
-        results.extend(
-            _get_legacy_payments_for_collective_bookings(
-                payment_date, offerer_ids, reimbursement_period, venue_id
-            ).all()
+    )
+    results.extend(
+        _get_legacy_payments_for_collective_bookings(
+            payment_date,
+            offerer_ids,
+            reimbursement_period,
+            venue_id,
         )
+    )
 
     return results
 

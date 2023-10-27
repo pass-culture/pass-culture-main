@@ -108,9 +108,6 @@ class ReimbursementDetails:
     # typing for the whole method.
     @typing.no_type_check
     def __init__(self, payment_info: namedtuple):
-        # FIXME (dbaty, 2021-01-14): once we have created
-        # pricing+cashflow data for pre-2022 payments, remove handling
-        # of legacy Payment data from this function.
         using_legacy_models = hasattr(payment_info, "transaction_label")
 
         # Validation period

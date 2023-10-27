@@ -385,10 +385,6 @@ class FindAllOffererPaymentsTest:
         assert payment_1.booking.token in payments[0]
         assert venue_1.name in payments[0]
 
-    # FIXME (dbaty, 2022-03-15): once we have Pricing and Cashflow for
-    # pre-2022 payments, we can rename and update this test. Some
-    # tests above could be updated, some could be removed if they
-    # don't make sense.
     def test_with_new_models(self, css_font_http_request_mock):
         stock = offers_factories.ThingStockFactory(
             offer__name="Test Book",
