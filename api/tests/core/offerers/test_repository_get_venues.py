@@ -78,9 +78,9 @@ class GetFilteredVenuesForProUserTest:
 
         # then
         assert len(venue_list) == 3
-        assert venue_list[0] == venue_1
-        assert venue_list[1].name == venue_2.name
-        assert venue_list[2].name == venue_3.name
+        assert venue_list[0].Venue == venue_1
+        assert venue_list[1].Venue.name == venue_2.name
+        assert venue_list[2].Venue.name == venue_3.name
 
     @pytest.mark.usefixtures("db_session")
     def test_empty_return_value(self, app):
@@ -105,7 +105,7 @@ class GetFilteredVenuesForProUserTest:
         # then
         assert len(venue_list) == 4
 
-        venue_ids = [venue.id for venue in venue_list]
+        venue_ids = [venue.Venue.id for venue in venue_list]
         assert venues["owned_venue_validated"].id in venue_ids
         assert venues["owned_venue_not_validated"].id in venue_ids
         assert venues["owned_venue_validated_for_user"].id in venue_ids
@@ -127,7 +127,7 @@ class GetFilteredVenuesForProUserTest:
         # then
         assert len(venue_list) == 3
 
-        venue_ids = [venue.id for venue in venue_list]
+        venue_ids = [venue.Venue.id for venue in venue_list]
         assert venues["owned_venue_validated"].id in venue_ids
         assert venues["owned_venue_validated_for_user"].id in venue_ids
         assert venues["owned_venue_not_validated_for_user"].id not in venue_ids
@@ -148,7 +148,7 @@ class GetFilteredVenuesForProUserTest:
         # then
         assert len(venue_list) == 1
 
-        venue_ids = [venue.id for venue in venue_list]
+        venue_ids = [venue.Venue.id for venue in venue_list]
         assert venues["owned_venue_not_validated"].id in venue_ids
 
     @pytest.mark.usefixtures("db_session")
@@ -168,7 +168,7 @@ class GetFilteredVenuesForProUserTest:
         # then
         assert len(venue_list) == 1
 
-        venue_ids = [venue.id for venue in venue_list]
+        venue_ids = [venue.Venue.id for venue in venue_list]
         assert expected_venue.id in venue_ids
 
     @pytest.mark.usefixtures("db_session")
@@ -187,7 +187,7 @@ class GetFilteredVenuesForProUserTest:
         # then
         assert len(venue_list) == 3
 
-        venue_ids = [venue.id for venue in venue_list]
+        venue_ids = [venue.Venue.id for venue in venue_list]
         assert venues["venue_from_inactive_offerer"].id not in venue_ids
 
     @pytest.mark.usefixtures("db_session")
@@ -206,7 +206,7 @@ class GetFilteredVenuesForProUserTest:
         # then
         assert len(venue_list) == 4
 
-        venue_ids = [venue.id for venue in venue_list]
+        venue_ids = [venue.Venue.id for venue in venue_list]
         assert venues["venue_from_inactive_offerer"].id in venue_ids
 
 
@@ -255,7 +255,7 @@ class GetFilteredVenuesForAdminTest:
         # then
         assert len(venue_list) == 4
 
-        venue_ids = [venue.id for venue in venue_list]
+        venue_ids = [venue.Venue.id for venue in venue_list]
         assert venues["venue"].id in venue_ids
         assert venues["venue_not_validated"].id in venue_ids
         assert venues["other_venue"].id in venue_ids
@@ -275,7 +275,7 @@ class GetFilteredVenuesForAdminTest:
         # then
         assert len(venue_list) == 2
 
-        venue_ids = [venue.id for venue in venue_list]
+        venue_ids = [venue.Venue.id for venue in venue_list]
         assert venues["venue"].id in venue_ids
         assert venues["other_venue"].id in venue_ids
 
@@ -293,6 +293,6 @@ class GetFilteredVenuesForAdminTest:
         # then
         assert len(venue_list) == 2
 
-        venue_ids = [venue.id for venue in venue_list]
+        venue_ids = [venue.Venue.id for venue in venue_list]
         assert venues["venue_not_validated"].id in venue_ids
         assert venues["other_venue_not_validated"].id in venue_ids

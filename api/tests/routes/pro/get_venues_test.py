@@ -1,10 +1,10 @@
 import pytest
 
-from pcapi.core.educational.factories import CollectiveOfferFactory
 from pcapi.core.educational.factories import CollectiveOfferTemplateFactory
+from pcapi.core.educational.factories import CollectiveStockFactory
 from pcapi.core.finance.factories import BankInformationFactory
 import pcapi.core.offerers.factories as offerers_factories
-from pcapi.core.offers.factories import OfferFactory
+from pcapi.core.offers.factories import StockFactory
 from pcapi.core.testing import assert_no_duplicated_queries
 import pcapi.core.users.factories as users_factories
 
@@ -44,6 +44,7 @@ def test_response_serialization(client):
         "venueTypeCode": venue.venueTypeCode.name,
         "hasMissingReimbursementPoint": True,
         "hasCreatedOffer": False,
+        "hasNonFreeOffers": False,
     }
 
 
@@ -68,23 +69,28 @@ def test_response_missing_reimbursement_point_serialization(client):
     assert len(response.json["venues"]) == 3
 
     assert response.json["venues"][0]["hasMissingReimbursementPoint"] is True
+    assert response.json["venues"][0]["hasNonFreeOffers"] is False
     assert response.json["venues"][1]["hasMissingReimbursementPoint"] is False
+    assert response.json["venues"][1]["hasNonFreeOffers"] is False
     assert response.json["venues"][2]["hasMissingReimbursementPoint"] is False
+    assert response.json["venues"][2]["hasNonFreeOffers"] is False
 
 
 def test_response_created_offer_serialization(client):
     user_offerer = offerers_factories.UserOffererFactory()
 
     venue_with_offer = offerers_factories.VenueFactory(managingOfferer=user_offerer.offerer)
-    OfferFactory(venue=venue_with_offer)
+    StockFactory(offer__venue=venue_with_offer)
 
     venue_with_collective_offer = offerers_factories.VenueFactory(managingOfferer=user_offerer.offerer)
-    CollectiveOfferFactory(venue=venue_with_collective_offer)
+    CollectiveStockFactory(collectiveOffer__venue=venue_with_collective_offer)
 
     venue_with_collective_offer_template = offerers_factories.VenueFactory(managingOfferer=user_offerer.offerer)
     CollectiveOfferTemplateFactory(venue=venue_with_collective_offer_template)
 
     offerers_factories.VenueFactory(managingOfferer=user_offerer.offerer)
+    venue_with_free_offer = offerers_factories.VenueFactory(managingOfferer=user_offerer.offerer)
+    StockFactory(offer__venue=venue_with_free_offer, price=0)
 
     # when
     client = client.with_session_auth(user_offerer.user.email)
@@ -94,12 +100,19 @@ def test_response_created_offer_serialization(client):
     assert response.status_code == 200
 
     assert "venues" in response.json
-    assert len(response.json["venues"]) == 4
+    assert len(response.json["venues"]) == 5
+    venues = sorted(response.json["venues"], key=lambda v: v["id"])
 
-    assert response.json["venues"][0]["hasCreatedOffer"] is True
-    assert response.json["venues"][1]["hasCreatedOffer"] is True
-    assert response.json["venues"][2]["hasCreatedOffer"] is True
-    assert response.json["venues"][3]["hasCreatedOffer"] is False
+    assert venues[0]["hasCreatedOffer"] is True
+    assert venues[0]["hasNonFreeOffers"] is True
+    assert venues[1]["hasCreatedOffer"] is True
+    assert venues[1]["hasNonFreeOffers"] is True
+    assert venues[2]["hasCreatedOffer"] is True
+    assert venues[2]["hasNonFreeOffers"] is False
+    assert venues[3]["hasCreatedOffer"] is False
+    assert venues[3]["hasNonFreeOffers"] is False
+    assert venues[4]["hasCreatedOffer"] is True
+    assert venues[4]["hasNonFreeOffers"] is False
 
 
 def test_admin_call(client):

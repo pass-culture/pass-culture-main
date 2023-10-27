@@ -183,6 +183,7 @@ export const individualOfferGetVenuesFactory = (
     hasMissingReimbursementPoint: false,
     managingOffererId: 1,
     offererName: 'la structure de Michel',
+    hasNonFreeOffers: false,
     ...customVenue,
   }
 }
