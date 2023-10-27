@@ -18,6 +18,7 @@
     display: flex;
     flex-wrap: nowrap;
     align-items: center;
+    flex-shrink: 0;
 
     // Delete when WIP_ENABLE_NEW_BANK_DETAILS_JOURNEY is deleted
     &-separator {
@@ -34,8 +35,10 @@
     background: none;
     border: none;
     text-align: left;
+    word-break: break-all;
 
     .h-card-title-ico {
+      flex-shrink: 0;
       margin-left: 0;
       margin-right: rem.torem(8px);
       height: rem.torem(12px);
