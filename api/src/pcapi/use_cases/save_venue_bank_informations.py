@@ -15,7 +15,6 @@ from pcapi.domain.bank_informations.bank_informations_repository import BankInfo
 from pcapi.domain.demarches_simplifiees import ApplicationDetail
 from pcapi.domain.demarches_simplifiees import archive_dossier
 from pcapi.domain.demarches_simplifiees import format_error_to_demarches_simplifiees_text
-from pcapi.domain.demarches_simplifiees import get_venue_bank_information_application_details_by_application_id
 from pcapi.domain.demarches_simplifiees import update_demarches_simplifiees_text_annotations
 from pcapi.domain.venue.venue_with_basic_information.venue_with_basic_information import VenueWithBasicInformation
 from pcapi.domain.venue.venue_with_basic_information.venue_with_basic_information_repository import (
@@ -43,13 +42,13 @@ class SaveVenueBankInformations:
         self.venue_repository = venue_repository
         self.bank_informations_repository = bank_informations_repository
 
-    def execute(self, application_id: str, procedure_id: str) -> BankInformations | None:
+    def execute(self, application_details: ApplicationDetail, procedure_id: str) -> BankInformations | None:
         procedure_version = PROCEDURE_ID_VERSION_MAP[procedure_id]
         if procedure_version in (2, 3):
             logger.info(
                 "This DMS application was created on a bank info procedure that is deprecated.",
                 extra={
-                    "application_id": application_id,
+                    "application_id": application_details.application_id,
                     "procedure_version": procedure_version,
                     "procedure_id": procedure_id,
                 },
@@ -57,10 +56,6 @@ class SaveVenueBankInformations:
         elif procedure_version != 4:
             raise CannotRegisterBankInformation(errors={"procedure": f"Unknown procedure: {procedure_id}"})
 
-        application_details = get_venue_bank_information_application_details_by_application_id(
-            application_id=application_id,
-            procedure_version=procedure_version,
-        )
         api_errors = CannotRegisterBankInformation()
         venue = self.get_referent_venue(application_details, api_errors, procedure_version)
 

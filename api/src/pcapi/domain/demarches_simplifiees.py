@@ -63,11 +63,12 @@ class ApplicationDetail:
 
 def parse_raw_bank_info_data(data: dict, procedure_version: int) -> dict:
     result = {
-        "status": data["dossier"]["state"],
-        "updated_at": data["dossier"]["dateDerniereModification"],
-        "dossier_id": data["dossier"]["id"],
+        "status": data["state"],
+        "updated_at": data["dateDerniereModification"],
+        "dossier_id": data["id"],
+        "application_id": data["number"],
     }
-    for field in data["dossier"]["champs"]:
+    for field in data["champs"]:
         for mapped_fields, internal_field in FIELD_NAME_TO_INTERNAL_NAME_MAPPING.items():
             if field["label"] in mapped_fields:
                 result[internal_field] = field["value"]
@@ -79,7 +80,7 @@ def parse_raw_bank_info_data(data: dict, procedure_version: int) -> dict:
 
     result["error_annotation_id"] = None
     result["venue_url_annotation_id"] = None
-    for annotation in data["dossier"]["annotations"]:
+    for annotation in data["annotations"]:
         match annotation["label"]:
             case "Erreur traitement pass Culture":
                 result["error_annotation_id"] = annotation["id"]
@@ -94,19 +95,14 @@ def _remove_dms_pro_prefix(dms_token: str) -> str:
     return dms_token
 
 
-def get_venue_bank_information_application_details_by_application_id(
-    application_id: str,
-    procedure_version: int = 4,
-) -> ApplicationDetail:
-    client = api_dms.DMSGraphQLClient()
-    raw_data = client.get_bank_info(int(application_id))
+def ds_bank_information_application_details_from_raw_data(raw_data: dict, procedure_version: int) -> ApplicationDetail:
     data = parse_raw_bank_info_data(raw_data, procedure_version)
     return ApplicationDetail(
         siren=data.get("siren", None),
         status=_get_status_from_demarches_simplifiees_application_state_v2(
             dms_models.GraphQLApplicationStates(data["status"])
         ),
-        application_id=int(application_id),
+        application_id=int(data["application_id"]),
         iban=data["iban"],
         bic=data["bic"],
         siret=data.get("siret", None),

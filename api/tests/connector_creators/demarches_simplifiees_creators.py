@@ -5,6 +5,7 @@ def get_bank_info_response_procedure_v2(annotation: dict):
     return {
         "dossier": {
             "id": "Q2zzbXAtNzgyODAw",
+            "number": 8,
             "champs": [
                 {
                     "etablissement": {
@@ -45,6 +46,7 @@ def get_bank_info_response_procedure_v4(
     state: str = GraphQLApplicationStates.accepted.value,
     annotations: dict | None = None,
     dossier_id: str = "Q2zzbXAtNzgyODAw",
+    application_id: int = 9,
 ) -> dict:
     etablissement = etablissement or {
         "etablissement": {
@@ -57,34 +59,33 @@ def get_bank_info_response_procedure_v4(
     }
     annotations = annotations or [{"label": "Nouvelle annotation Texte", "id": "OTHERID"}]
     result = {
-        "dossier": {
-            "id": dossier_id,
-            "champs": [
-                {
-                    "id": "Q2hhbXAtMjY3NDMyMQ==",
-                    "label": "N° d'identifiant du lieu",
-                    "stringValue": dms_token,
-                    "value": dms_token,
-                },
-                etablissement,
-                {"id": "Q2hhbXAtNzAwNTA5", "label": "Vos coordonnées bancaires", "stringValue": "", "value": None},
-                {
-                    "id": "Q2hhbXAtMzUyNzIy",
-                    "label": "IBAN",
-                    "stringValue": "FR7630007000111234567890144",
-                    "value": "FR7630007000111234567890144",
-                },
-                {"id": "Q2hhbXAtMzUyNzI3", "label": "BIC", "stringValue": "SOGEFRPP", "value": "SOGEFRPP"},
-                {
-                    "id": "Q2hhbXAtNDA3ODk1",
-                    "label": "N° d'identifiant du lieu",
-                    "stringValue": "60a7536a21c8",
-                    "value": "60a7536a21c8",
-                },
-            ],
-            "dateDerniereModification": "2020-01-03T01:00:00+01:00",
-            "state": state,
-            "annotations": annotations,
-        },
+        "id": dossier_id,
+        "number": application_id,
+        "champs": [
+            {
+                "id": "Q2hhbXAtMjY3NDMyMQ==",
+                "label": "N° d'identifiant du lieu",
+                "stringValue": dms_token,
+                "value": dms_token,
+            },
+            etablissement,
+            {"id": "Q2hhbXAtNzAwNTA5", "label": "Vos coordonnées bancaires", "stringValue": "", "value": None},
+            {
+                "id": "Q2hhbXAtMzUyNzIy",
+                "label": "IBAN",
+                "stringValue": "FR7630007000111234567890144",
+                "value": "FR7630007000111234567890144",
+            },
+            {"id": "Q2hhbXAtMzUyNzI3", "label": "BIC", "stringValue": "SOGEFRPP", "value": "SOGEFRPP"},
+            {
+                "id": "Q2hhbXAtNDA3ODk1",
+                "label": "N° d'identifiant du lieu",
+                "stringValue": "60a7536a21c8",
+                "value": "60a7536a21c8",
+            },
+        ],
+        "dateDerniereModification": "2020-01-03T01:00:00+01:00",
+        "state": state,
+        "annotations": annotations,
     }
     return result
