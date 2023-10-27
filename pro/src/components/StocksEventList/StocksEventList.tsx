@@ -19,6 +19,7 @@ import { BaseCheckbox } from 'ui-kit/form/shared'
 import { BaseTimePicker } from 'ui-kit/form/TimePicker/BaseTimePicker'
 import { Pagination } from 'ui-kit/Pagination'
 import { formatPrice } from 'utils/formatPrice'
+import { pluralizeString } from 'utils/pluralize'
 import { formatLocalTimeDateString } from 'utils/timezone'
 
 import { FilterResultsRow } from './FilterResultsRow'
@@ -190,7 +191,8 @@ const StocksEventList = ({
         )}
 
         <div className={styles['stocks-count']}>
-          {stocks.length} occurrence{stocks.length !== 1 && 's'}
+          {new Intl.NumberFormat('fr-FR').format(stocks.length)}{' '}
+          {pluralizeString('occurrence', stocks.length)}
         </div>
       </div>
 
