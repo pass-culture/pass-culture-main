@@ -60,9 +60,9 @@
 
     .h-card-header-row {
       display: flex;
-      flex-wrap: wrap;
       gap: rem.torem(12px);
       justify-content: space-between;
+      align-items: center;
     }
 
     &.h-card-primary {
