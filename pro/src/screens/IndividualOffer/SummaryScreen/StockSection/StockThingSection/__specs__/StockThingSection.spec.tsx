@@ -10,16 +10,33 @@ describe('StockThingSection', () => {
   it('should render correctly', () => {
     const stock = individualStockFactory()
 
-    renderWithProviders(<StockThingSection stock={stock} />)
+    renderWithProviders(
+      <StockThingSection stock={stock} canBeDuo={false} isDuo={false} />
+    )
 
-    expect(screen.queryAllByText(/Prix/)).toHaveLength(1)
+    expect(screen.getByText(/Prix/)).toBeInTheDocument()
   })
 
   it('should not render if there are no stocks', () => {
     const stock = undefined
 
-    renderWithProviders(<StockThingSection stock={stock} />)
+    renderWithProviders(
+      <StockThingSection stock={stock} canBeDuo={false} isDuo={false} />
+    )
 
     expect(screen.queryByText(/Prix/)).not.toBeInTheDocument()
+  })
+
+  it('should render duo informations for can be duo things (like ESCAPE_GAME, CARTE_MUSEE or ABO_MUSEE)', () => {
+    const stock = individualStockFactory()
+
+    renderWithProviders(
+      <StockThingSection stock={stock} canBeDuo={true} isDuo={true} />
+    )
+
+    expect(
+      screen.getByText('Accepter les réservations "Duo" :')
+    ).toBeInTheDocument()
+    expect(screen.getByText('Oui')).toBeInTheDocument()
   })
 })
