@@ -9,21 +9,26 @@ import { sortByLabel } from 'utils/strings'
 const OffererStats = (): JSX.Element | null => {
   const notify = useNotification()
   const { isLoading, error, data: offererNames } = useGetOffererNames({})
-  if (isLoading) {
-    return <Spinner />
-  }
+
   if (error) {
     notify.error(error.message)
-    return null
   }
 
-  const offererOptions = sortByLabel(
-    offererNames.map((offerer) => ({
-      value: offerer.id.toString(),
-      label: offerer.name,
-    }))
+  return (
+    <>
+      <Spinner isLoading={isLoading} />
+      {!isLoading && !error && (
+        <OffererStatsScreen
+          offererOptions={sortByLabel(
+            offererNames.map((offerer) => ({
+              value: offerer.id.toString(),
+              label: offerer.name,
+            }))
+          )}
+        />
+      )}
+    </>
   )
-  return <OffererStatsScreen offererOptions={offererOptions} />
 }
 
 export default OffererStats

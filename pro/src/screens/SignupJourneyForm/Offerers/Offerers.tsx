@@ -59,156 +59,168 @@ const Offerers = (): JSX.Element => {
     }
   }, [isLoadingVenues])
 
-  if (isLoadingVenues || !offerer) {
-    return <Spinner />
-  }
-
   const redirectToOnboarding = () => {
-    const newOfferer: Offerer = {
-      ...offerer,
-      createVenueWithoutSiret: true,
+    if (offerer) {
+      const newOfferer: Offerer = {
+        ...offerer,
+        createVenueWithoutSiret: true,
+      }
+      logEvent?.(Events.CLICKED_ONBOARDING_FORM_NAVIGATION, {
+        from: location.pathname,
+        to: SIGNUP_JOURNEY_STEP_IDS.AUTHENTICATION,
+        used: OnboardingFormNavigationAction.NewOfferer,
+        categorieJuridiqueUniteLegale: offerer.legalCategoryCode,
+      })
+      setOfferer(newOfferer)
+      navigate('/parcours-inscription/identification')
     }
-    logEvent?.(Events.CLICKED_ONBOARDING_FORM_NAVIGATION, {
-      from: location.pathname,
-      to: SIGNUP_JOURNEY_STEP_IDS.AUTHENTICATION,
-      used: OnboardingFormNavigationAction.NewOfferer,
-      categorieJuridiqueUniteLegale: offerer.legalCategoryCode,
-    })
-    setOfferer(newOfferer)
-    navigate('/parcours-inscription/identification')
   }
 
   const doLinkAccount = async () => {
-    logEvent?.(Events.CLICKED_ONBOARDING_FORM_NAVIGATION, {
-      from: location.pathname,
-      to: '/parcours-inscription/structure/rattachement/confirmation',
-      used: OnboardingFormNavigationAction.JoinModal,
-      categorieJuridiqueUniteLegale: offerer.legalCategoryCode,
-    })
-    /* istanbul ignore next: venuesOfOfferer will always be defined here or else,
+    if (offerer) {
+      logEvent?.(Events.CLICKED_ONBOARDING_FORM_NAVIGATION, {
+        from: location.pathname,
+        to: '/parcours-inscription/structure/rattachement/confirmation',
+        used: OnboardingFormNavigationAction.JoinModal,
+        categorieJuridiqueUniteLegale: offerer.legalCategoryCode,
+      })
+      /* istanbul ignore next: venuesOfOfferer will always be defined here or else,
      the user would have been redirected */
-    try {
-      const response = await getSirenDataAdapter(
-        venuesOfOfferer?.offererSiren ?? ''
-      )
-      const request: CreateOffererQueryModel = {
-        city: response.payload.values?.city ?? '',
-        name: venuesOfOfferer?.offererName ?? '',
-        postalCode: response.payload.values?.postalCode ?? '',
-        siren: venuesOfOfferer?.offererSiren ?? '',
+      try {
+        const response = await getSirenDataAdapter(
+          venuesOfOfferer?.offererSiren ?? ''
+        )
+        const request: CreateOffererQueryModel = {
+          city: response.payload.values?.city ?? '',
+          name: venuesOfOfferer?.offererName ?? '',
+          postalCode: response.payload.values?.postalCode ?? '',
+          siren: venuesOfOfferer?.offererSiren ?? '',
+        }
+        await api.createOfferer(request)
+        navigate('/parcours-inscription/structure/rattachement/confirmation')
+      } catch (e) {
+        notify.error('Impossible de lier votre compte à cette structure.')
       }
-      await api.createOfferer(request)
-      navigate('/parcours-inscription/structure/rattachement/confirmation')
-    } catch (e) {
-      notify.error('Impossible de lier votre compte à cette structure.')
     }
   }
 
   const doLinkUserToOfferer = () => {
-    logEvent?.(Events.CLICKED_ONBOARDING_FORM_NAVIGATION, {
-      from: location.pathname,
-      to: 'LinkModal',
-      used: OnboardingFormNavigationAction.LinkModalActionButton,
-      categorieJuridiqueUniteLegale: offerer.legalCategoryCode,
-    })
-    setShowLinkDialog(true)
+    if (offerer) {
+      logEvent?.(Events.CLICKED_ONBOARDING_FORM_NAVIGATION, {
+        from: location.pathname,
+        to: 'LinkModal',
+        used: OnboardingFormNavigationAction.LinkModalActionButton,
+        categorieJuridiqueUniteLegale: offerer.legalCategoryCode,
+      })
+      setShowLinkDialog(true)
+    }
   }
 
   const cancelLinkUserToOfferer = () => {
-    logEvent?.(Events.CLICKED_ONBOARDING_FORM_NAVIGATION, {
-      from: 'LinkModal',
-      to: location.pathname,
-      used: OnboardingFormNavigationAction.LinkModalActionButton,
-      categorieJuridiqueUniteLegale: offerer.legalCategoryCode,
-    })
-    setShowLinkDialog(false)
+    if (offerer) {
+      logEvent?.(Events.CLICKED_ONBOARDING_FORM_NAVIGATION, {
+        from: 'LinkModal',
+        to: location.pathname,
+        used: OnboardingFormNavigationAction.LinkModalActionButton,
+        categorieJuridiqueUniteLegale: offerer.legalCategoryCode,
+      })
+      setShowLinkDialog(false)
+    }
   }
 
   return (
-    <div className={styles['existing-offerers-layout-wrapper']}>
-      <div className={styles['existing-offerers-layout']}>
-        <div className={styles['title-4']}>
-          Nous avons trouvé un espace déjà inscrit comprenant le SIRET{' '}
-          {offerer.siret} :
-        </div>
-        <div className={styles['venues-layout']}>
-          <div className={styles['offerer-name-accent']}>
-            {venuesOfOfferer?.offererName}
-          </div>
-          {permanentVenues.length > 0 && (
-            <ul className={styles['venue-list']}>
-              {permanentVenues.map((venue, index) => (
-                <li
-                  key={venue.id}
-                  hidden={
-                    displayToggleVenueList && !isVenueListOpen && index >= 4
-                  }
+    <>
+      <Spinner isLoading={isLoadingVenues || !offerer} />
+      {!isLoadingVenues && offerer && (
+        <div className={styles['existing-offerers-layout-wrapper']}>
+          <div className={styles['existing-offerers-layout']}>
+            <div className={styles['title-4']}>
+              Nous avons trouvé un espace déjà inscrit comprenant le SIRET{' '}
+              {offerer.siret} :
+            </div>
+            <div className={styles['venues-layout']}>
+              <div className={styles['offerer-name-accent']}>
+                {venuesOfOfferer?.offererName}
+              </div>
+              {permanentVenues.length > 0 && (
+                <ul className={styles['venue-list']}>
+                  {permanentVenues.map((venue, index) => (
+                    <li
+                      key={venue.id}
+                      hidden={
+                        displayToggleVenueList && !isVenueListOpen && index >= 4
+                      }
+                    >
+                      {venue.publicName ?? venue.name}
+                    </li>
+                  ))}
+                </ul>
+              )}
+              {displayToggleVenueList && (
+                <Button
+                  onClick={() => {
+                    setIsVenueListOpen(!isVenueListOpen)
+                  }}
+                  variant={ButtonVariant.TERNARY}
+                  icon={isVenueListOpen ? fullDownIcon : fullUpIcon}
                 >
-                  {venue.publicName ?? venue.name}
-                </li>
-              ))}
-            </ul>
-          )}
-          {displayToggleVenueList && (
+                  {isVenueListOpen
+                    ? 'Afficher moins de structures'
+                    : 'Afficher plus de structures'}
+                </Button>
+              )}
+            </div>
             <Button
-              onClick={() => {
-                setIsVenueListOpen(!isVenueListOpen)
-              }}
-              variant={ButtonVariant.TERNARY}
-              icon={isVenueListOpen ? fullDownIcon : fullUpIcon}
+              variant={ButtonVariant.SECONDARY}
+              onClick={doLinkUserToOfferer}
             >
-              {isVenueListOpen
-                ? 'Afficher moins de structures'
-                : 'Afficher plus de structures'}
+              Rejoindre cet espace
             </Button>
+          </div>
+          <div className={cn(styles['wrong-offerer-title'], styles['title-4'])}>
+            Vous souhaitez ajouter une nouvelle structure à cet espace ?
+          </div>
+          <Button
+            className={
+              /* istanbul ignore next: displaying changes */
+              isNewOffererLinkEnabled ? styles['button-add-new-offerer'] : ''
+            }
+            onClick={redirectToOnboarding}
+            variant={ButtonVariant.SECONDARY}
+          >
+            Ajouter une nouvelle structure
+          </Button>
+          <ActionBar
+            previousStepTitle="Retour"
+            hideRightButton
+            onClickPrevious={() => {
+              setOfferer(null)
+              navigate('/parcours-inscription/structure')
+            }}
+            previousTo={SIGNUP_JOURNEY_STEP_IDS.OFFERER}
+            isDisabled={false}
+            logEvent={logEvent}
+            legalCategoryCode={offerer?.legalCategoryCode}
+          />
+          {showLinkDialog && (
+            <ConfirmDialog
+              // TODO: add definitive icon add user
+              icon={tempStrokeAddUserIcon}
+              onCancel={cancelLinkUserToOfferer}
+              title="Êtes-vous sûr de vouloir rejoindre cet espace ?"
+              onConfirm={doLinkAccount}
+              confirmText="Rejoindre cet espace"
+              cancelText="Annuler"
+              extraClassNames={styles['dialog-content']}
+            >
+              <div className={styles['dialog-info']}>
+                Votre demande sera prise en compte et analysée par nos équipes.
+              </div>
+            </ConfirmDialog>
           )}
         </div>
-        <Button variant={ButtonVariant.SECONDARY} onClick={doLinkUserToOfferer}>
-          Rejoindre cet espace
-        </Button>
-      </div>
-      <div className={cn(styles['wrong-offerer-title'], styles['title-4'])}>
-        Vous souhaitez ajouter une nouvelle structure à cet espace ?
-      </div>
-      <Button
-        className={
-          /* istanbul ignore next: displaying changes */
-          isNewOffererLinkEnabled ? styles['button-add-new-offerer'] : ''
-        }
-        onClick={redirectToOnboarding}
-        variant={ButtonVariant.SECONDARY}
-      >
-        Ajouter une nouvelle structure
-      </Button>
-      <ActionBar
-        previousStepTitle="Retour"
-        hideRightButton
-        onClickPrevious={() => {
-          setOfferer(null)
-          navigate('/parcours-inscription/structure')
-        }}
-        previousTo={SIGNUP_JOURNEY_STEP_IDS.OFFERER}
-        isDisabled={false}
-        logEvent={logEvent}
-        legalCategoryCode={offerer?.legalCategoryCode}
-      />
-      {showLinkDialog && (
-        <ConfirmDialog
-          // TODO: add definitive icon add user
-          icon={tempStrokeAddUserIcon}
-          onCancel={cancelLinkUserToOfferer}
-          title="Êtes-vous sûr de vouloir rejoindre cet espace ?"
-          onConfirm={doLinkAccount}
-          confirmText="Rejoindre cet espace"
-          cancelText="Annuler"
-          extraClassNames={styles['dialog-content']}
-        >
-          <div className={styles['dialog-info']}>
-            Votre demande sera prise en compte et analysée par nos équipes.
-          </div>
-        </ConfirmDialog>
       )}
-    </div>
+    </>
   )
 }
 

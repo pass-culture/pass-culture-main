@@ -43,31 +43,32 @@ export const OffersFavorites = () => {
     }
   }
 
-  if (isLoading) {
-    return <Spinner message="Chargement en cours" />
-  }
-
   return (
     <>
-      <h1>Mes Favoris</h1>
-      {favoriteOffers.length === 0 ? (
-        <OffersFavoritesNoResult />
-      ) : (
-        <ul className={styles['favorite-list']}>
-          {favoriteOffers.map((offer, i) => {
-            return (
-              <Offer
-                offer={offer}
-                queryId=""
-                position={i}
-                key={offer.id}
-                afterFavoriteChange={(isFavorite) => {
-                  favoriteChangeHandler(isFavorite, offer.id)
-                }}
-              ></Offer>
-            )
-          })}
-        </ul>
+      <Spinner isLoading={isLoading} message="Chargement en cours" />
+      {!isLoading && (
+        <>
+          <h1>Mes Favoris</h1>
+          {favoriteOffers.length === 0 ? (
+            <OffersFavoritesNoResult />
+          ) : (
+            <ul className={styles['favorite-list']}>
+              {favoriteOffers.map((offer, i) => {
+                return (
+                  <Offer
+                    offer={offer}
+                    queryId=""
+                    position={i}
+                    key={offer.id}
+                    afterFavoriteChange={(isFavorite) => {
+                      favoriteChangeHandler(isFavorite, offer.id)
+                    }}
+                  ></Offer>
+                )
+              })}
+            </ul>
+          )}
+        </>
       )}
     </>
   )

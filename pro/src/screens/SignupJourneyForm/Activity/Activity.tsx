@@ -95,32 +95,32 @@ const Activity = (): JSX.Element => {
     navigate('/parcours-inscription/identification')
   }
 
-  if (isLoadingVenueTypes) {
-    return <Spinner />
-  }
-
-  if (errorVenueTypes) {
-    return <></>
-  }
-
   return (
-    <FormLayout>
-      <FormikProvider value={formik}>
-        <form onSubmit={formik.handleSubmit} data-testid="signup-activity-form">
-          <FormLayout.MandatoryInfo />
-          <ActivityForm venueTypes={venueTypes} />
-          <ActionBar
-            onClickPrevious={handlePreviousStep}
-            onClickNext={handleNextStep}
-            isDisabled={formik.isSubmitting}
-            previousTo={SIGNUP_JOURNEY_STEP_IDS.AUTHENTICATION}
-            nextTo={SIGNUP_JOURNEY_STEP_IDS.VALIDATION}
-            logEvent={logEvent}
-            legalCategoryCode={offerer?.legalCategoryCode}
-          />
-        </form>
-      </FormikProvider>
-    </FormLayout>
+    <>
+      <Spinner isLoading={isLoadingVenueTypes} />
+      {!isLoadingVenueTypes && !errorVenueTypes && (
+        <FormLayout>
+          <FormikProvider value={formik}>
+            <form
+              onSubmit={formik.handleSubmit}
+              data-testid="signup-activity-form"
+            >
+              <FormLayout.MandatoryInfo />
+              <ActivityForm venueTypes={venueTypes} />
+              <ActionBar
+                onClickPrevious={handlePreviousStep}
+                onClickNext={handleNextStep}
+                isDisabled={formik.isSubmitting}
+                previousTo={SIGNUP_JOURNEY_STEP_IDS.AUTHENTICATION}
+                nextTo={SIGNUP_JOURNEY_STEP_IDS.VALIDATION}
+                logEvent={logEvent}
+                legalCategoryCode={offerer?.legalCategoryCode}
+              />
+            </form>
+          </FormikProvider>
+        </FormLayout>
+      )}
+    </>
   )
 }
 
