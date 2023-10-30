@@ -14,6 +14,7 @@ from pcapi.domain.allocine import get_movie_poster
 from pcapi.domain.allocine import get_movies_showtimes
 from pcapi.domain.price_rule import AllocineStocksPriceRule
 from pcapi.domain.price_rule import PriceRule
+from pcapi.local_providers.cinema_providers.constants import ShowtimeFeatures
 from pcapi.local_providers.local_provider import LocalProvider
 from pcapi.local_providers.providable_info import ProvidableInfo
 from pcapi.models import Model
@@ -28,6 +29,13 @@ LOCAL_VERSION = "LOCAL"
 ORIGINAL_VERSION = "ORIGINAL"
 FRENCH_VERSION_SUFFIX = "VF"
 ORIGINAL_VERSION_SUFFIX = "VO"
+
+
+ACCEPTED_FEATURES_MAPPING = {
+    DUBBED_VERSION: ShowtimeFeatures.VF.value,
+    LOCAL_VERSION: ShowtimeFeatures.VF.value,
+    ORIGINAL_VERSION: ShowtimeFeatures.VO.value,
+}
 
 
 class AllocineStocks(LocalProvider):
@@ -57,8 +65,6 @@ class AllocineStocks(LocalProvider):
         self.movie_information: dict | None = None
         self.filtered_movie_showtimes: list[dict] | None = None
         self.last_product_id: int | None = None
-        self.last_vf_offer_id: int | None = None
-        self.last_vo_offer_id: int | None = None
         self.label: offers_models.PriceCategoryLabel = offers_api.get_or_create_label("Tarif unique", self.venue)
         self.price_categories_by_offer: dict[offers_models.Offer, list[offers_models.PriceCategory]] = {}
 
@@ -79,26 +85,14 @@ class AllocineStocks(LocalProvider):
         showtimes_number = len(self.filtered_movie_showtimes)
         providable_information_list = []
 
-        if _has_original_version_product(self.filtered_movie_showtimes):
-            venue_movie_original_version_unique_id = _build_original_movie_uuid(self.movie_information, self.venue)
-            original_version_offer_providable_information = self.create_providable_info(
-                offers_models.Offer,
-                venue_movie_original_version_unique_id,
-                datetime.utcnow(),
-                venue_movie_original_version_unique_id,
-            )
-
-            providable_information_list.append(original_version_offer_providable_information)
-
-        if _has_french_version_product(self.filtered_movie_showtimes):
-            venue_movie_french_version_unique_id = _build_french_movie_uuid(self.movie_information, self.venue)
-            french_version_offer_providable_information = self.create_providable_info(
-                offers_models.Offer,
-                venue_movie_french_version_unique_id,
-                datetime.utcnow(),
-                venue_movie_french_version_unique_id,
-            )
-            providable_information_list.append(french_version_offer_providable_information)
+        venue_movie_unique_id = _build_movie_uuid(self.movie_information, self.venue)
+        offer_providable_information = self.create_providable_info(
+            offers_models.Offer,
+            venue_movie_unique_id,
+            datetime.utcnow(),
+            venue_movie_unique_id,
+        )
+        providable_information_list.append(offer_providable_information)
 
         for showtime_number in range(showtimes_number):
             showtime = self.filtered_movie_showtimes[showtime_number]
@@ -158,15 +152,8 @@ class AllocineStocks(LocalProvider):
         if self.movie_information and "stageDirector" in self.movie_information:
             allocine_offer.extraData["stageDirector"] = self.movie_information["stageDirector"]  # type: ignore [index]
 
-        movie_version = (
-            ORIGINAL_VERSION_SUFFIX
-            if _is_original_version_offer(allocine_offer.idAtProvider)  # type: ignore [arg-type]
-            else FRENCH_VERSION_SUFFIX
-        )
-
-        allocine_offer.name = f"{self.movie_information['title']} - {movie_version}"  # type: ignore [index]
+        allocine_offer.name = self.movie_information["title"]  # type: ignore [index]
         allocine_offer.subcategoryId = subcategories.SEANCE_CINE.id
-        allocine_offer.extraData["diffusionVersion"] = movie_version  # type: ignore [index]
 
         is_new_offer_to_insert = allocine_offer.id is None
         if is_new_offer_to_insert:
@@ -185,10 +172,7 @@ class AllocineStocks(LocalProvider):
                 )
                 self.createdThumbs += 1
 
-        if movie_version == ORIGINAL_VERSION_SUFFIX:
-            self.last_vo_offer = allocine_offer
-        else:
-            self.last_vf_offer = allocine_offer
+        self.last_offer = allocine_offer
 
     def fill_stock_attributes(self, allocine_stock: offers_models.Stock) -> None:
         showtime_uuid = _get_showtimes_uuid_by_idAtProvider(allocine_stock.idAtProviders)  # type: ignore [arg-type]
@@ -197,7 +181,9 @@ class AllocineStocks(LocalProvider):
         parsed_showtimes = retrieve_showtime_information(showtime)  # type: ignore [arg-type]
         diffusion_version = parsed_showtimes["diffusionVersion"]
 
-        allocine_stock.offer = self.last_vo_offer if diffusion_version == ORIGINAL_VERSION else self.last_vf_offer
+        allocine_stock.offer = self.last_offer
+        if diffusion_version in ACCEPTED_FEATURES_MAPPING:
+            allocine_stock.features = [ACCEPTED_FEATURES_MAPPING.get(diffusion_version)]
 
         local_tz = get_department_timezone(self.venue.departementCode)
         date_in_utc = local_datetime_to_default_timezone(parsed_showtimes["startsAt"], local_tz)
@@ -346,30 +332,9 @@ def _parse_movie_duration(duration: str | None) -> int | None:
     return movie_duration_hours * 60 + movie_duration_minutes
 
 
-def _has_original_version_product(movies_showtimes: list[dict]) -> bool:
-    return ORIGINAL_VERSION in list(map(lambda movie: movie["diffusionVersion"], movies_showtimes))
-
-
-def _has_french_version_product(movies_showtimes: list[dict]) -> bool:
-    movies = list(map(lambda movie: movie["diffusionVersion"], movies_showtimes))
-    return LOCAL_VERSION in movies or DUBBED_VERSION in movies
-
-
-def _is_original_version_offer(id_at_provider: str) -> bool:
-    return id_at_provider[-3:] == f"-{ORIGINAL_VERSION_SUFFIX}"
-
-
 def _build_movie_uuid(movie_information: dict, venue: Venue) -> str:
     venue_id = venue.id if not venue.siret else venue.siret
     return f"{movie_information['id']}%{venue_id}"
-
-
-def _build_french_movie_uuid(movie_information: dict, venue: Venue) -> str:
-    return f"{_build_movie_uuid(movie_information, venue)}-{FRENCH_VERSION_SUFFIX}"
-
-
-def _build_original_movie_uuid(movie_information: dict, venue: Venue) -> str:
-    return f"{_build_movie_uuid(movie_information, venue)}-{ORIGINAL_VERSION_SUFFIX}"
 
 
 def _build_showtime_uuid(showtime_details: dict) -> str:
