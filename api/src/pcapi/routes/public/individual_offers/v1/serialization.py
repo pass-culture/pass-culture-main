@@ -788,7 +788,7 @@ class EventOfferResponse(OfferResponse, PriceCategoriesResponse):
 
 
 class GetOffersQueryParams(IndexPaginationQueryParams):
-    venue_id: int = pydantic_v1.Field(..., description="Venue id to filter offers on. Optional.")
+    venue_id: int = pydantic_v1.Field(..., description="Venue id to filter offers on.")
 
 
 class GetDatesQueryParams(IndexPaginationQueryParams):
