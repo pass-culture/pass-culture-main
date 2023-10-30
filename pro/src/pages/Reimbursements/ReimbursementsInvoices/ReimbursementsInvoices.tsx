@@ -1,5 +1,5 @@
 import { format, subMonths } from 'date-fns'
-import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react'
+import React, { useEffect, useMemo, useState } from 'react'
 
 import { api } from 'apiClient/api'
 import { InvoiceResponseModel } from 'apiClient/v1'
@@ -47,7 +47,6 @@ const ReimbursementsInvoices = (): JSX.Element => {
   const [hasError, setHasError] = useState(false)
   const [areFiltersDefault, setAreFiltersDefault] = useState(true)
   const [hasSearchedOnce, setHasSearchedOnce] = useState(false)
-  const isCalledOnceRef = useRef(false)
   const [reimbursementPointsOptions, setReimbursementPointsOptions] = useState<
     SelectOption[]
   >([])
@@ -81,73 +80,60 @@ const ReimbursementsInvoices = (): JSX.Element => {
     requireBUFilterForAdmin ||
     hasNoInvoicesYetForNonAdmin
 
-  const loadInvoices = useCallback(
-    (shouldReset?: boolean) => {
-      if (shouldReset) {
-        setHasSearchedOnce(false)
-      }
-      const reimbursmentPoint = shouldReset
-        ? INITIAL_FILTERS.reimbursementPoint
-        : filters.reimbursementPoint
-      const periodStart = shouldReset
-        ? INITIAL_FILTERS.periodStart
-        : filters.periodStart
-      const periodEnd = shouldReset
-        ? INITIAL_FILTERS.periodEnd
-        : filters.periodEnd
+  const loadInvoices = async (shouldReset?: boolean) => {
+    if (shouldReset) {
+      setHasSearchedOnce(false)
+    }
+    const reimbursmentPoint = shouldReset
+      ? INITIAL_FILTERS.reimbursementPoint
+      : filters.reimbursementPoint
+    const periodStart = shouldReset
+      ? INITIAL_FILTERS.periodStart
+      : filters.periodStart
+    const periodEnd = shouldReset
+      ? INITIAL_FILTERS.periodEnd
+      : filters.periodEnd
 
-      api
-        .getInvoices(
-          periodStart,
-          periodEnd,
-          reimbursmentPoint !== DEFAULT_INVOICES_FILTERS.reimbursementPointId
-            ? parseInt(reimbursmentPoint)
-            : undefined
-        )
-        .then((invoices) => {
-          setInvoices(invoices)
-          setIsLoading(false)
-          setHasError(false)
-          // FIXME: api route getInvoices() should give use this information: does user have at least one invoice in database ?
-          setNoInvoices(false)
-        })
-        .catch(() => {
-          setIsLoading(false)
-          setHasError(true)
-        })
-    },
-    [
-      INITIAL_FILTERS,
-      filters.reimbursementPoint,
-      filters.periodEnd,
-      filters.periodStart,
-    ]
-  )
+    try {
+      const invoices = await api.getInvoices(
+        periodStart,
+        periodEnd,
+        reimbursmentPoint !== DEFAULT_INVOICES_FILTERS.reimbursementPointId
+          ? parseInt(reimbursmentPoint)
+          : undefined
+      )
+
+      setInvoices(invoices)
+      setIsLoading(false)
+      setHasError(false)
+      // FIXME: api route getInvoices() should give us this information: does the user have at least one invoice in the database?
+      setNoInvoices(false)
+    } catch (error) {
+      setIsLoading(false)
+      setHasError(true)
+    }
+  }
 
   useEffect(() => {
-    if (!isCalledOnceRef.current) {
-      isCalledOnceRef.current = true
-      loadInvoices()
-    }
-    try {
-      /* istanbul ignore next: TO FIX */
-      api.getReimbursementPoints().then((reimbursementPointsResponse) =>
-        setReimbursementPointsOptions(
-          sortByLabel(
-            reimbursementPointsResponse.map((item) => ({
-              value: String(item.id),
-              label: item.publicName || item.name,
-            }))
-          )
+    void loadInvoices()
+  }, [])
+
+  useEffect(() => {
+    const getReimbursementPointsResult = async () => {
+      const result = await api.getReimbursementPoints()
+
+      setReimbursementPointsOptions(
+        sortByLabel(
+          result.map((item) => ({
+            value: String(item.id),
+            label: item.publicName || item.name,
+          }))
         )
       )
-    } catch (err) {
-      /* istanbul ignore next: TO FIX */
-      // FIX ME
-      // eslint-disable-next-line
-      console.error(err)
     }
-  }, [loadInvoices])
+
+    void getReimbursementPointsResult()
+  }, [])
 
   if (isLoading) {
     return (
