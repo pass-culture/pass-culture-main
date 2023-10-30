@@ -622,6 +622,19 @@ class Venue(PcObject, Base, Model, HasThumbMixin, ProvidableMixin, Accessibility
         link = self.current_reimbursement_point_link
         return link.reimbursementPoint if link else None
 
+    @property
+    def current_bank_account_link(self) -> "VenueBankAccountLink | None":
+        now = datetime.utcnow()
+
+        for link in self.bankAccountLinks:
+            lower = link.timespan.lower
+            upper = link.timespan.upper
+
+            if lower <= now and (not upper or now <= upper):
+                return link
+
+        return None
+
     @hybrid_property
     def common_name(self) -> str:
         return self.publicName or self.name
