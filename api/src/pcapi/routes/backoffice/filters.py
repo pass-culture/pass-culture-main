@@ -338,17 +338,19 @@ def format_dms_status(status: str) -> str:
             return status
 
 
-def format_graphql_application_status(status: GraphQLApplicationStates) -> str:
+def format_dms_application_status(
+    status: GraphQLApplicationStates | finance_models.BankAccountApplicationStatus,
+) -> str:
     match status:
-        case GraphQLApplicationStates.accepted:
+        case GraphQLApplicationStates.accepted | finance_models.BankAccountApplicationStatus.ACCEPTED:
             return "Accepté"
-        case GraphQLApplicationStates.on_going:
+        case GraphQLApplicationStates.on_going | finance_models.BankAccountApplicationStatus.ON_GOING:
             return "En instruction"
-        case GraphQLApplicationStates.draft:
+        case GraphQLApplicationStates.draft | finance_models.BankAccountApplicationStatus.DRAFT:
             return "En construction"
-        case GraphQLApplicationStates.refused:
+        case GraphQLApplicationStates.refused | finance_models.BankAccountApplicationStatus.REFUSED:
             return "Refusé"
-        case GraphQLApplicationStates.without_continuation:
+        case GraphQLApplicationStates.without_continuation | finance_models.BankAccountApplicationStatus.WITHOUT_CONTINUATION:
             return "Classé sans suite"
         case _:
             return status.value
@@ -866,7 +868,7 @@ def install_template_filters(app: Flask) -> None:
     app.jinja_env.filters["format_tag_object_list"] = format_tag_object_list
     app.jinja_env.filters["format_fraud_review_status"] = format_fraud_review_status
     app.jinja_env.filters["format_dms_status"] = format_dms_status
-    app.jinja_env.filters["format_graphql_application_status"] = format_graphql_application_status
+    app.jinja_env.filters["format_dms_application_status"] = format_dms_application_status
     app.jinja_env.filters["format_registration_step_description"] = format_registration_step_description
     app.jinja_env.filters["format_subscription_step"] = format_subscription_step
     app.jinja_env.filters["format_eligibility_value"] = format_eligibility_value
@@ -893,6 +895,7 @@ def install_template_filters(app: Flask) -> None:
     app.jinja_env.filters["parse_referrer"] = parse_referrer
     app.jinja_env.filters["unescape"] = html.unescape
     app.jinja_env.filters["action_to_name"] = action_to_name
+    app.jinja_env.filters["pc_pro_bank_account_link"] = urls.build_pc_pro_bank_account_link
     app.jinja_env.filters["pc_pro_offer_link"] = urls.build_pc_pro_offer_link
     app.jinja_env.filters["pc_pro_offerer_link"] = urls.build_pc_pro_offerer_link
     app.jinja_env.filters["pc_pro_offerer_offers_link"] = urls.build_pc_pro_offerer_offers_link
