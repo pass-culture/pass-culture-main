@@ -18,27 +18,29 @@ const CollectiveOfferPracticalInformationSection = ({
 }: CollectiveOfferPracticalInformationSectionProps) => {
   const notify = useNotification()
   const { error, isLoading, data: venue } = useGetVenue(offer.venue.id)
-  if (isLoading) {
-    return <Spinner />
-  }
-  if (error) {
+
+  if (error && !isLoading) {
     notify.error(error.message)
-    return null
   }
 
   return (
-    <SummaryLayout.SubSection title="Informations pratiques">
-      <SummaryLayout.Row
-        title="Adresse où se déroulera l’évènement"
-        description={formatOfferEventAddress(offer.offerVenue, venue)}
-      />
-      {offer.isTemplate && (
-        <SummaryLayout.Row
-          title="Informations sur le prix"
-          description={offer.educationalPriceDetail || DEFAULT_RECAP_VALUE}
-        />
+    <>
+      <Spinner isLoading={isLoading} />
+      {!isLoading && !error && (
+        <SummaryLayout.SubSection title="Informations pratiques">
+          <SummaryLayout.Row
+            title="Adresse où se déroulera l’évènement"
+            description={formatOfferEventAddress(offer.offerVenue, venue)}
+          />
+          {offer.isTemplate && (
+            <SummaryLayout.Row
+              title="Informations sur le prix"
+              description={offer.educationalPriceDetail || DEFAULT_RECAP_VALUE}
+            />
+          )}
+        </SummaryLayout.SubSection>
       )}
-    </SummaryLayout.SubSection>
+    </>
   )
 }
 

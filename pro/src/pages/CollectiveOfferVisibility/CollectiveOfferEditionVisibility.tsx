@@ -60,46 +60,43 @@ const CollectiveOfferVisibility = ({
     notify.success(message)
   }
 
-  if (isLoading) {
-    return <Spinner />
-  }
-
-  if (error) {
-    return null
-  }
-
   return (
-    <CollectiveOfferLayout subTitle={offer.name} isTemplate={isTemplate}>
-      {isOfferInstitutionActive ? (
-        <CollectiveOfferVisibilityScreen
-          mode={offer.isVisibilityEditable ? Mode.EDITION : Mode.READ_ONLY}
-          patchInstitution={patchEducationalInstitutionAdapter}
-          initialValues={extractInitialVisibilityValues(
-            offer.institution,
-            offer.teacher
+    <>
+      <Spinner isLoading={isLoading} />
+      {!isLoading && !error && (
+        <CollectiveOfferLayout subTitle={offer.name} isTemplate={isTemplate}>
+          {isOfferInstitutionActive ? (
+            <CollectiveOfferVisibilityScreen
+              mode={offer.isVisibilityEditable ? Mode.EDITION : Mode.READ_ONLY}
+              patchInstitution={patchEducationalInstitutionAdapter}
+              initialValues={extractInitialVisibilityValues(
+                offer.institution,
+                offer.teacher
+              )}
+              onSuccess={onSuccess}
+              institutions={institutionsPayload.institutions}
+              isLoadingInstitutions={isLoading}
+              offer={offer}
+              reloadCollectiveOffer={reloadCollectiveOffer}
+            />
+          ) : (
+            <OldCollectiveOfferVisibility
+              mode={offer.isVisibilityEditable ? Mode.EDITION : Mode.READ_ONLY}
+              patchInstitution={patchEducationalInstitutionAdapter}
+              initialValues={extractInitialVisibilityValues(
+                offer.institution,
+                offer.teacher
+              )}
+              onSuccess={onSuccess}
+              institutions={institutionsPayload.institutions}
+              isLoadingInstitutions={isLoading}
+              offer={offer}
+              reloadCollectiveOffer={reloadCollectiveOffer}
+            />
           )}
-          onSuccess={onSuccess}
-          institutions={institutionsPayload.institutions}
-          isLoadingInstitutions={isLoading}
-          offer={offer}
-          reloadCollectiveOffer={reloadCollectiveOffer}
-        />
-      ) : (
-        <OldCollectiveOfferVisibility
-          mode={offer.isVisibilityEditable ? Mode.EDITION : Mode.READ_ONLY}
-          patchInstitution={patchEducationalInstitutionAdapter}
-          initialValues={extractInitialVisibilityValues(
-            offer.institution,
-            offer.teacher
-          )}
-          onSuccess={onSuccess}
-          institutions={institutionsPayload.institutions}
-          isLoadingInstitutions={isLoading}
-          offer={offer}
-          reloadCollectiveOffer={reloadCollectiveOffer}
-        />
+        </CollectiveOfferLayout>
       )}
-    </CollectiveOfferLayout>
+    </>
   )
 }
 

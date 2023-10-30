@@ -21,28 +21,29 @@ const CollectiveOfferEdition = ({
     offer
   )
 
-  if (!isReady || !offer) {
-    return <Spinner />
-  }
-
   return (
-    <CollectiveOfferLayout subTitle={offer.name} isTemplate={isTemplate}>
-      <OfferEducationalScreen
-        categories={offerEducationalFormData.categories}
-        userOfferers={offerEducationalFormData.offerers}
-        domainsOptions={offerEducationalFormData.domains}
-        nationalPrograms={offerEducationalFormData.nationalPrograms}
-        offer={offer}
-        setOffer={setOffer}
-        isOfferActive={offer?.isActive}
-        isOfferBooked={
-          offer?.isTemplate ? false : offer?.collectiveStock?.isBooked
-        }
-        mode={offer?.isEditable ? Mode.EDITION : Mode.READ_ONLY}
-        reloadCollectiveOffer={reloadCollectiveOffer}
-        isTemplate={offer.isTemplate}
-      />
-    </CollectiveOfferLayout>
+    <>
+      <Spinner isLoading={!isReady || !offer} />
+      {isReady && !!offer && (
+        <CollectiveOfferLayout subTitle={offer.name} isTemplate={isTemplate}>
+          <OfferEducationalScreen
+            categories={offerEducationalFormData.categories}
+            userOfferers={offerEducationalFormData.offerers}
+            domainsOptions={offerEducationalFormData.domains}
+            nationalPrograms={offerEducationalFormData.nationalPrograms}
+            offer={offer}
+            setOffer={setOffer}
+            isOfferActive={offer?.isActive}
+            isOfferBooked={
+              offer?.isTemplate ? false : offer?.collectiveStock?.isBooked
+            }
+            mode={offer?.isEditable ? Mode.EDITION : Mode.READ_ONLY}
+            reloadCollectiveOffer={reloadCollectiveOffer}
+            isTemplate={offer.isTemplate}
+          />
+        </CollectiveOfferLayout>
+      )}
+    </>
   )
 }
 
