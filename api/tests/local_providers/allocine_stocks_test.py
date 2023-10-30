@@ -151,8 +151,8 @@ class AllocineStocksTest:
             stock_providable_info = allocine_providable_infos[1]
 
             assert offer_providable_info.type == offers_models.Offer
-            assert offer_providable_info.id_at_providers == "TW92aWU6Mzc4MzI=%77567146400110-VF"
-            assert offer_providable_info.new_id_at_provider == "TW92aWU6Mzc4MzI=%77567146400110-VF"
+            assert offer_providable_info.id_at_providers == "TW92aWU6Mzc4MzI=%77567146400110"
+            assert offer_providable_info.new_id_at_provider == "TW92aWU6Mzc4MzI=%77567146400110"
             assert offer_providable_info.date_modified_at_provider == datetime(year=2019, month=10, day=15, hour=9)
 
             assert stock_providable_info.type == offers_models.Stock
@@ -168,7 +168,7 @@ class UpdateObjectsTest:
     @patch("pcapi.local_providers.allocine.allocine_stocks.get_movies_showtimes")
     @patch("pcapi.settings.ALLOCINE_API_KEY", "token")
     @pytest.mark.usefixtures("db_session")
-    def test_should_create_one_local_version_offer_with_movie_info(self, mock_call_allocine_api, mock_api_poster):
+    def test_should_create_one_offer_with_movie_info(self, mock_call_allocine_api, mock_api_poster):
         # Given
         mock_call_allocine_api.return_value = iter(
             [
@@ -217,7 +217,6 @@ class UpdateObjectsTest:
         )
         assert created_offer.durationMinutes == 46
         assert created_offer.extraData == {
-            "diffusionVersion": "VF",
             "visa": "2009993528",
             "stageDirector": "Farkhondeh Torabi",
             "theater": {"allocine_movie_id": 37832, "allocine_room_id": "PXXXXX"},
@@ -233,7 +232,7 @@ class UpdateObjectsTest:
         }
 
         assert not created_offer.isDuo
-        assert created_offer.name == "Les Contes de la mère poule - VF"
+        assert created_offer.name == "Les Contes de la mère poule"
         assert created_offer.subcategoryId == subcategories.SEANCE_CINE.id
         assert created_offer.withdrawalDetails == venue.withdrawalDetails
 
@@ -241,7 +240,7 @@ class UpdateObjectsTest:
     @patch("pcapi.local_providers.allocine.allocine_stocks.get_movies_showtimes")
     @patch("pcapi.settings.ALLOCINE_API_KEY", "token")
     @pytest.mark.usefixtures("db_session")
-    def test_should_create_one_original_version_offer_and_one_dubbed_version_offer_with_movie_info(
+    def test_should_create_one_unique_offer_for_original_version_and_dubbed_version_with_movie_info(
         self, mock_call_allocine_api, mock_api_poster
     ):
         # Given
@@ -260,6 +259,12 @@ class UpdateObjectsTest:
                             {
                                 "startsAt": "2019-10-29T10:30:00",
                                 "diffusionVersion": "DUBBED",
+                                "projection": ["DIGITAL"],
+                                "experience": None,
+                            },
+                            {
+                                "startsAt": "2019-10-29T10:30:00",
+                                "diffusionVersion": "LOCAL",
                                 "projection": ["DIGITAL"],
                                 "experience": None,
                             },
@@ -298,37 +303,19 @@ class UpdateObjectsTest:
         allocine_stocks_provider.updateObjects()
 
         # Then
-        created_offers = offers_models.Offer.query.order_by("id").all()
+        created_offer = offers_models.Offer.query.one()
 
-        assert len(created_offers) == 2
-
-        original_version_offer = created_offers[0]
-        assert original_version_offer.bookingEmail == "toto@example.com"
+        assert created_offer.bookingEmail == "toto@example.com"
         assert (
-            original_version_offer.description == "synopsis du film\nTous les détails du film sur AlloCiné:"
+            created_offer.description == "synopsis du film\nTous les détails du film sur AlloCiné:"
             " http://www.allocine.fr/film/fichefilm_gen_cfilm=37832.html"
         )
-        assert original_version_offer.durationMinutes == 46
-        assert original_version_offer.extraData["visa"] == "2009993528"
-        assert original_version_offer.extraData["stageDirector"] == "Farkhondeh Torabi"
-        assert original_version_offer.extraData["diffusionVersion"] == "VO"
-        assert not original_version_offer.isDuo
-        assert original_version_offer.name == "Les Contes de la mère poule - VO"
-        assert original_version_offer.subcategoryId == subcategories.SEANCE_CINE.id
-
-        dubbed_version_offer = created_offers[1]
-        assert dubbed_version_offer.bookingEmail == "toto@example.com"
-        assert (
-            dubbed_version_offer.description == "synopsis du film\nTous les détails du film sur AlloCiné:"
-            " http://www.allocine.fr/film/fichefilm_gen_cfilm=37832.html"
-        )
-        assert dubbed_version_offer.durationMinutes == 46
-        assert dubbed_version_offer.extraData["visa"] == "2009993528"
-        assert dubbed_version_offer.extraData["stageDirector"] == "Farkhondeh Torabi"
-        assert dubbed_version_offer.extraData["diffusionVersion"] == "VF"
-        assert not dubbed_version_offer.isDuo
-        assert dubbed_version_offer.name == "Les Contes de la mère poule - VF"
-        assert dubbed_version_offer.subcategoryId == subcategories.SEANCE_CINE.id
+        assert created_offer.durationMinutes == 46
+        assert created_offer.extraData["visa"] == "2009993528"
+        assert created_offer.extraData["stageDirector"] == "Farkhondeh Torabi"
+        assert not created_offer.isDuo
+        assert created_offer.name == "Les Contes de la mère poule"
+        assert created_offer.subcategoryId == subcategories.SEANCE_CINE.id
 
     @patch("pcapi.local_providers.allocine.allocine_stocks.get_movie_poster")
     @patch("pcapi.local_providers.allocine.allocine_stocks.get_movies_showtimes")
@@ -421,21 +408,11 @@ class UpdateObjectsTest:
             bookingEmail="toto@example.com",
         )
 
-        # offer VO
         offers_factories.OfferFactory(
             name="Test event",
             subcategoryId=subcategories.SEANCE_CINE.id,
             durationMinutes=60,
-            idAtProvider="TW92aWU6Mzc4MzI=%77567146400110-VO",
-            venue=venue,
-        )
-
-        # offer VF
-        offers_factories.OfferFactory(
-            name="Test event",
-            subcategoryId=subcategories.SEANCE_CINE.id,
-            durationMinutes=60,
-            idAtProvider="TW92aWU6Mzc4MzI=%77567146400110-VF",
+            idAtProvider="TW92aWU6Mzc4MzI=%77567146400110",
             venue=venue,
         )
 
@@ -448,11 +425,8 @@ class UpdateObjectsTest:
         allocine_stocks_provider.updateObjects()
 
         # Then
-        existing_offers = offers_models.Offer.query.order_by("id").all()
-
-        assert len(existing_offers) == 2
-        assert existing_offers[0].durationMinutes == 46
-        assert existing_offers[1].durationMinutes == 46
+        existing_offer = offers_models.Offer.query.one()
+        assert existing_offer.durationMinutes == 46
 
     @patch("pcapi.local_providers.allocine.allocine_stocks.get_movie_poster")
     @patch("pcapi.local_providers.allocine.allocine_stocks.get_movies_showtimes")
@@ -496,9 +470,8 @@ class UpdateObjectsTest:
 
         # Then
         created_offer = offers_models.Offer.query.one()
-
         assert created_offer.durationMinutes == 46
-        assert created_offer.name == "Les Contes de la mère poule - VF"
+        assert created_offer.name == "Les Contes de la mère poule"
 
     @patch("pcapi.local_providers.allocine.allocine_stocks.get_movie_poster")
     @patch("pcapi.local_providers.allocine.allocine_stocks.get_movies_showtimes")
@@ -545,7 +518,6 @@ class UpdateObjectsTest:
 
         assert created_offer.durationMinutes == 46
         assert created_offer.extraData == {
-            "diffusionVersion": "VF",
             "visa": "2009993528",
             "stageDirector": "Farkhondeh Torabi",
             "theater": {"allocine_movie_id": 37832, "allocine_room_id": "P12345"},
@@ -561,7 +533,7 @@ class UpdateObjectsTest:
         }
 
         assert created_offer.subcategoryId == subcategories.SEANCE_CINE.id
-        assert created_offer.name == "Les Contes de la mère poule - VF"
+        assert created_offer.name == "Les Contes de la mère poule"
 
     @patch("pcapi.local_providers.allocine.allocine_stocks.get_movie_poster")
     @patch("pcapi.local_providers.allocine.allocine_stocks.get_movies_showtimes")
@@ -714,102 +686,7 @@ class UpdateObjectsTest:
     @patch("pcapi.local_providers.allocine.allocine_stocks.get_movie_poster")
     @patch("pcapi.settings.ALLOCINE_API_KEY", "token")
     @pytest.mark.usefixtures("db_session")
-    def test_should_one_offer_and_associated_stocks(self, mock_api_poster, mock_call_allocine_api):
-        # Given
-        mock_api_poster.return_value = bytes()
-        mock_call_allocine_api.return_value = iter(
-            [
-                {
-                    "node": {
-                        "movie": MOVIE_INFO,
-                        "showtimes": [
-                            {
-                                "startsAt": "2019-12-03T10:00:00",
-                                "diffusionVersion": "LOCAL",
-                                "projection": ["DIGITAL"],
-                                "experience": None,
-                            },
-                            {
-                                "startsAt": "2019-12-03T18:00:00",
-                                "diffusionVersion": "LOCAL",
-                                "projection": ["DIGITAL"],
-                                "experience": None,
-                            },
-                            {
-                                "startsAt": "2019-12-03T20:00:00",
-                                "diffusionVersion": "LOCAL",
-                                "projection": ["DIGITAL"],
-                                "experience": "experience",
-                            },
-                        ],
-                    }
-                }
-            ]
-        )
-
-        venue = offerers_factories.VenueFactory(
-            managingOfferer__siren="775671464",
-            name="Cinema Allocine",
-            siret="77567146400110",
-            bookingEmail="toto@example.com",
-        )
-
-        allocine_venue_provider = providers_factories.AllocineVenueProviderFactory(venue=venue, quantity=None)
-        providers_factories.AllocineVenueProviderPriceRuleFactory(
-            allocineVenueProvider=allocine_venue_provider, price=10
-        )
-
-        allocine_stocks_provider = AllocineStocks(allocine_venue_provider)
-
-        # When
-        allocine_stocks_provider.updateObjects()
-
-        # Then
-        created_offer = offers_models.Offer.query.all()
-        created_stock = offers_models.Stock.query.order_by("id").all()
-        created_price_category = offers_models.PriceCategory.query.one()
-        created_price_category_label = offers_models.PriceCategoryLabel.query.one()
-
-        first_stock = created_stock[0]
-        second_stock = created_stock[1]
-
-        assert len(created_offer) == 1
-        assert len(created_stock) == 2
-
-        vf_offer = offers_models.Offer.query.filter(offers_models.Offer.name.contains("VF")).one()
-
-        assert vf_offer is not None
-        assert vf_offer.name == "Les Contes de la mère poule - VF"
-
-        assert first_stock.offerId == vf_offer.id
-        assert first_stock.quantity is None
-        assert first_stock.price == 10
-        assert first_stock.beginningDatetime == datetime(2019, 12, 3, 9, 0)
-        assert first_stock.bookingLimitDatetime == datetime(2019, 12, 3, 9, 0)
-        assert first_stock.priceCategory == created_price_category
-
-        assert second_stock.offerId == vf_offer.id
-        assert second_stock.quantity is None
-        assert second_stock.price == 10
-        assert second_stock.beginningDatetime == datetime(2019, 12, 3, 17, 0)
-        assert second_stock.bookingLimitDatetime == datetime(2019, 12, 3, 17, 0)
-        assert second_stock.priceCategory == created_price_category
-
-        assert created_price_category.price == 10
-        assert created_price_category.priceCategoryLabel == created_price_category_label
-        assert created_price_category.offer == vf_offer
-
-        assert created_price_category_label.venue == venue
-        assert created_price_category_label.label == "Tarif unique"
-
-        assert allocine_stocks_provider.erroredObjects == 0
-        assert allocine_stocks_provider.erroredThumbs == 0
-
-    @patch("pcapi.local_providers.allocine.allocine_stocks.get_movies_showtimes")
-    @patch("pcapi.local_providers.allocine.allocine_stocks.get_movie_poster")
-    @patch("pcapi.settings.ALLOCINE_API_KEY", "token")
-    @pytest.mark.usefixtures("db_session")
-    def test_should_create_two_offers_and_associated_stocks(self, mock_poster_get_allocine, mock_call_allocine_api):
+    def test_should_create_one_offer_and_associated_stocks(self, mock_poster_get_allocine, mock_call_allocine_api):
         # Given
         mock_poster_get_allocine.return_value = bytes()
         mock_call_allocine_api.return_value = iter(
@@ -821,6 +698,12 @@ class UpdateObjectsTest:
                             {
                                 "startsAt": "2019-12-03T10:00:00",
                                 "diffusionVersion": "LOCAL",
+                                "projection": ["DIGITAL"],
+                                "experience": None,
+                            },
+                            {
+                                "startsAt": "2019-12-03T10:00:00",
+                                "diffusionVersion": "DUBBED",
                                 "projection": ["DIGITAL"],
                                 "experience": None,
                             },
@@ -877,54 +760,54 @@ class UpdateObjectsTest:
         created_price_category = offers_models.PriceCategory.query.all()
         created_price_category_label = offers_models.PriceCategoryLabel.query.one()
 
-        vf_offer = created_offer[0]
-        vo_offer = created_offer[1]
+        unique_offer = created_offer[0]
 
         first_stock = created_stock[0]
         second_stock = created_stock[1]
         third_stock = created_stock[2]
+        fourth_stock = created_stock[3]
 
         first_price_category = created_price_category[0]
-        second_price_category = created_price_category[1]
 
-        assert len(created_offer) == 2
-        assert len(created_stock) == 3
+        assert len(created_offer) == 1
+        assert len(created_stock) == 4
+        assert len(created_price_category) == 1
 
-        assert len(created_price_category) == 2
+        assert unique_offer.name == "Les Contes de la mère poule"
 
-        assert vo_offer.name == "Les Contes de la mère poule - VO"
-        assert vf_offer.name == "Les Contes de la mère poule - VF"
+        assert unique_offer.durationMinutes == 46
 
-        assert vo_offer.durationMinutes == 46
-
-        assert first_stock.offerId == vf_offer.id
+        assert first_stock.offerId == unique_offer.id
         assert first_stock.quantity is None
         assert first_stock.price == 10
         assert first_stock.priceCategory == first_price_category
         assert first_stock.beginningDatetime == datetime(2019, 12, 3, 9, 0)
         assert first_stock.bookingLimitDatetime == datetime(2019, 12, 3, 9, 0)
 
-        assert second_stock.offerId == vo_offer.id
+        assert second_stock.offerId == unique_offer.id
         assert second_stock.quantity is None
         assert second_stock.price == 10
-        assert second_stock.priceCategory == second_price_category
-        assert second_stock.beginningDatetime == datetime(2019, 12, 3, 17, 0)
-        assert second_stock.bookingLimitDatetime == datetime(2019, 12, 3, 17, 0)
+        assert second_stock.priceCategory == first_price_category
+        assert second_stock.beginningDatetime == datetime(2019, 12, 3, 9, 0)
+        assert second_stock.bookingLimitDatetime == datetime(2019, 12, 3, 9, 0)
 
-        assert third_stock.offerId == vf_offer.id
+        assert third_stock.offerId == unique_offer.id
         assert third_stock.quantity is None
         assert third_stock.price == 10
         assert third_stock.priceCategory == first_price_category
-        assert third_stock.beginningDatetime == datetime(2019, 12, 3, 19, 0)
-        assert third_stock.bookingLimitDatetime == datetime(2019, 12, 3, 19, 0)
+        assert third_stock.beginningDatetime == datetime(2019, 12, 3, 17, 0)
+        assert third_stock.bookingLimitDatetime == datetime(2019, 12, 3, 17, 0)
 
-        assert first_price_category.offerId == vf_offer.id
+        assert fourth_stock.offerId == unique_offer.id
+        assert fourth_stock.quantity is None
+        assert fourth_stock.price == 10
+        assert fourth_stock.priceCategory == first_price_category
+        assert fourth_stock.beginningDatetime == datetime(2019, 12, 3, 19, 0)
+        assert fourth_stock.bookingLimitDatetime == datetime(2019, 12, 3, 19, 0)
+
+        assert first_price_category.offerId == unique_offer.id
         assert first_price_category.price == 10
         assert first_price_category.priceCategoryLabel == created_price_category_label
-
-        assert second_price_category.offerId == vo_offer.id
-        assert second_price_category.price == 10
-        assert second_price_category.priceCategoryLabel == created_price_category_label
 
         assert allocine_stocks_provider.erroredObjects == 0
         assert allocine_stocks_provider.erroredThumbs == 0
@@ -1317,7 +1200,7 @@ class UpdateObjectsTest:
             offer = offers_factories.OfferFactory(
                 name="Test event",
                 durationMinutes=60,
-                idAtProvider="TW92aWU6Mzc4MzI=%77567146400110-VO",
+                idAtProvider="TW92aWU6Mzc4MzI=%77567146400110",
                 venue=venue,
             )
             offers_factories.PriceCategoryFactory(offer=offer, price=price_rule.price)
@@ -1378,7 +1261,7 @@ class UpdateObjectsTest:
             offer = offers_factories.OfferFactory(
                 name="Test event",
                 durationMinutes=60,
-                idAtProvider="TW92aWU6Mzc4MzI=%77567146400110-VO",
+                idAtProvider="TW92aWU6Mzc4MzI=%77567146400110",
                 venue=venue,
             )
             default_price_category = offers_factories.PriceCategoryFactory(offer=offer, price=decimal.Decimal("10.1"))
