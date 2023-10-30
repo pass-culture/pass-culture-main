@@ -121,6 +121,7 @@ describe('homepage', () => {
           firebase: { toto: 'tata' },
         })
       })
+      expect(api.postProFlags).toHaveBeenCalledTimes(1)
     })
 
     it('the user should see the home offer steps if they do not have any venues', async () => {

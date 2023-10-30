@@ -112,7 +112,7 @@ const Homepage = (): JSX.Element => {
 
   useEffect(() => {
     async function logProFlags() {
-      if (remoteConfigData != null) {
+      if (remoteConfigData !== null) {
         await api.postProFlags({
           firebase: remoteConfigData,
         })
@@ -120,7 +120,7 @@ const Homepage = (): JSX.Element => {
     }
     // eslint-disable-next-line @typescript-eslint/no-floating-promises
     logProFlags()
-  }, [remoteConfigData])
+  }, [remoteConfigData?.REMOTE_CONFIG_LOADED])
 
   return (
     <>
