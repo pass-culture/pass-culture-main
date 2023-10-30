@@ -7,13 +7,3 @@
 .title {
   margin: 0;
 }
-
-.banners {
-  display: flex;
-  flex-direction: column;
-  gap: 1rem;
-
-  &:empty {
-    display: none;
-  }
-}

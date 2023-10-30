@@ -92,7 +92,8 @@ describe('reimbursementsWithFilters', () => {
 
     await waitForElementToBeRemoved(() => screen.queryAllByTestId('spinner'))
 
-    expect(api.getInvoices).toBeCalledWith(
+    expect(api.getInvoices).toHaveBeenNthCalledWith(
+      1,
       '2020-11-15',
       '2020-12-15',
       undefined
@@ -135,6 +136,16 @@ describe('reimbursementsWithFilters', () => {
       expect(reimbursementCells.slice(12, 17)).toEqual(thirdLine)
       expect(reimbursementCells[17]).toContain('J123456789.invoice')
     })
+  })
+
+  it('should display reimbursement points', async () => {
+    renderReimbursementsInvoices(store)
+    expect(
+      await (
+        await screen.findByLabelText(/Point de remboursement/)
+      ).childElementCount
+    ).toEqual(BASE_REIMBURSEMENT_POINTS.length + 1)
+    expect(api.getReimbursementPoints).toHaveBeenCalledTimes(1)
   })
 
   it('should reorder invoices on order buttons click', async () => {
