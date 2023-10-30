@@ -252,7 +252,7 @@ def _create_or_update_ean_offers(serialized_products_stocks: dict, venue_id: int
         if not_found_eans:
             logger.warning(
                 "Some provided eans were not found",
-                extra={"eans": not_found_eans, "venue": venue_id},
+                extra={"eans": ",".join(not_found_eans), "venue": venue_id},
                 technical_message_id="ean.not_found",
             )
         for product in existing_products:
