@@ -162,6 +162,7 @@ describe('reimbursementsWithFilters', () => {
       'Offerer name venue 2 - Offre numérique'
     )
     expect(options[2].textContent).toStrictEqual('Public Name venue 1')
+    expect(api.getVenues).toHaveBeenCalledTimes(1)
   })
 
   it('should prefix with managingOfferer name when venue is digital', async () => {
