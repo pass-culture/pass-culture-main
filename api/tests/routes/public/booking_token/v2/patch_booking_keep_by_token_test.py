@@ -97,7 +97,7 @@ class Returns403Test:
         @pytest.mark.usefixtures("db_session")
         def test_when_user_is_not_attached_to_linked_offerer(self, client):
             # Given
-            booking = bookings_factories.BookingFactory()
+            booking = bookings_factories.UsedBookingFactory()
             another_pro_user = offerers_factories.UserOffererFactory().user
 
             # When
@@ -109,7 +109,7 @@ class Returns403Test:
             assert response.json["user"] == [
                 "Vous n’avez pas les droits suffisants pour valider cette contremarque car cette réservation n'a pas été faite sur une de vos offres, ou que votre rattachement à la structure est encore en cours de validation"
             ]
-            assert booking.status is not BookingStatus.USED
+            assert booking.status == BookingStatus.USED
 
 
 class Returns404Test:
