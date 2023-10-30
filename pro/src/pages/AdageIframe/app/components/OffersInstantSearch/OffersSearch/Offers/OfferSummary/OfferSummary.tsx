@@ -113,18 +113,35 @@ const OfferSummary = ({ offer }: OfferSummaryProps): JSX.Element => {
 
   const formattedPrice = getFormattedPrice(price)
 
+  const isFormatEnable = useActiveFeature('WIP_ENABLE_FORMAT')
+
   return (
     <dl className={styles['offer-summary']}>
       <div className={styles['offer-summary-item']}>
-        <dt>
-          <SvgIcon
-            alt="Sous-catégorie"
-            src={strokeOfferIcon}
-            className={styles['offer-summary-item-icon']}
-            width="20"
-          />
-        </dt>
-        <dd>{subcategoryLabel}</dd>
+        {isFormatEnable ? (
+          <>
+            <dt>
+              <SvgIcon
+                alt="Format"
+                src={strokeOfferIcon}
+                className={styles['offer-summary-item-icon']}
+              />
+            </dt>
+            <dd>{offer.formats?.join(', ')}</dd>
+          </>
+        ) : (
+          <>
+            <dt>
+              <SvgIcon
+                alt="Sous-catégorie"
+                src={strokeOfferIcon}
+                className={styles['offer-summary-item-icon']}
+                width="20"
+              />
+            </dt>
+            <dd>{subcategoryLabel}</dd>
+          </>
+        )}
       </div>
       <div className={styles['offer-summary-item']}>
         <dt>
