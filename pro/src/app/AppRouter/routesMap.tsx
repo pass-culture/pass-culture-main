@@ -3,7 +3,6 @@
 import React from 'react'
 import { Navigate, useLocation } from 'react-router-dom'
 
-import { ReimbursementContextProvider } from 'context/ReimbursementContext/ReimbursementContext'
 import AdageIframe from 'pages/AdageIframe/AdageIframe'
 import Bookings from 'pages/Bookings'
 import CollectiveBookings from 'pages/CollectiveBookings'
@@ -322,11 +321,7 @@ const routes: RouteConfig[] = [
     meta: { shouldRedirect: true },
   },
   {
-    element: (
-      <ReimbursementContextProvider>
-        <Reimbursements />
-      </ReimbursementContextProvider>
-    ),
+    element: <Reimbursements />,
     path: '/remboursements/*',
     title: 'Remboursements',
     meta: {
