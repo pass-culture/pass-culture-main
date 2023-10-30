@@ -221,7 +221,7 @@ class GetProductByEanTest:
         assert response.status_code == 200
         assert response.json == {"products": []}
 
-    def test_empty_list_when_inactive_venue_provider(self, client):
+    def test_error_when_inactive_venue_provider(self, client):
         venue, _ = utils.create_offerer_provider_linked_to_venue(is_venue_provider_active=False)
         product_offer = offers_factories.ThingOfferFactory(
             venue=venue,
@@ -234,8 +234,8 @@ class GetProductByEanTest:
             f"/public/offers/v1/products/ean?eans={product_offer.extraData['ean']}&venueId={venue.id}"
         )
 
-        assert response.status_code == 200
-        assert response.json == {"products": []}
+        assert response.status_code == 404
+        assert response.json == {"venue_id": ["The venue could not be found"]}
 
     def test_200_when_one_ean_in_list_not_found(self, client):
         venue, _ = utils.create_offerer_provider_linked_to_venue()
