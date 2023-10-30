@@ -24,7 +24,7 @@ describe('src | components | Desk', () => {
       expect(contremarque).toHaveValue('ZERRZ')
     })
 
-    it('should display default messages and disable submit button', async () => {
+    it('should display default messages and disable submit button', () => {
       renderDesk()
       expect(screen.getByText('Saisissez une contremarque')).toBeInTheDocument()
       expect(
@@ -158,9 +158,7 @@ describe('src | components | Desk', () => {
       })
       await userEvent.click(confirmModalButton)
 
-      expect(
-        await screen.findByText('Invalidation en cours...')
-      ).toBeInTheDocument()
+      expect(screen.getByText('Invalidation en cours...')).toBeInTheDocument()
 
       await waitFor(() => {
         expect(screen.getByText('Contremarque invalidée !')).toBeInTheDocument()
