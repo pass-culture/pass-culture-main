@@ -1,96 +1,61 @@
 from pcapi.core.users.models import AccountState
 from pcapi.routes.native.v1.serialization.account import TrustedDevice
-from pcapi.routes.serialization import BaseModel
-from pcapi.serialization.utils import to_camel
+from pcapi.routes.serialization import ConfiguredBaseModel
 
 
-class SigninRequest(BaseModel):
+class SigninRequest(ConfiguredBaseModel):
     identifier: str
     password: str
     device_info: TrustedDevice | None = None
     token: str | None = None
 
-    class Config:
-        alias_generator = to_camel
 
-
-class SigninResponse(BaseModel):
+class SigninResponse(ConfiguredBaseModel):
     refresh_token: str
     access_token: str
     account_state: AccountState
 
-    class Config:
-        alias_generator = to_camel
-        allow_population_by_field_name = True
 
-
-class RefreshResponse(BaseModel):
+class RefreshResponse(ConfiguredBaseModel):
     access_token: str
 
-    class Config:
-        alias_generator = to_camel
-        allow_population_by_field_name = True
 
-
-class RequestPasswordResetRequest(BaseModel):
+class RequestPasswordResetRequest(ConfiguredBaseModel):
     email: str
     token: str | None = None
 
 
-class ResetPasswordRequest(BaseModel):
+class ResetPasswordRequest(ConfiguredBaseModel):
     reset_password_token: str
     new_password: str
     device_info: TrustedDevice | None = None
 
-    class Config:
-        alias_generator = to_camel
-        allow_population_by_field_name = True
 
-
-class ResetPasswordResponse(BaseModel):
+class ResetPasswordResponse(ConfiguredBaseModel):
     access_token: str
     refresh_token: str
 
-    class Config:
-        alias_generator = to_camel
-        allow_population_by_field_name = True
 
-
-class ChangePasswordRequest(BaseModel):
+class ChangePasswordRequest(ConfiguredBaseModel):
     current_password: str
     new_password: str
 
-    class Config:
-        alias_generator = to_camel
 
-
-class ValidateEmailRequest(BaseModel):
+class ValidateEmailRequest(ConfiguredBaseModel):
     email_validation_token: str
     device_info: TrustedDevice | None = None
 
-    class Config:
-        alias_generator = to_camel
-        allow_population_by_field_name = True
 
-
-class ValidateEmailResponse(BaseModel):
+class ValidateEmailResponse(ConfiguredBaseModel):
     access_token: str
     refresh_token: str
 
-    class Config:
-        alias_generator = to_camel
-        allow_population_by_field_name = True
 
-
-class GoogleSigninRequest(BaseModel):
+class GoogleSigninRequest(ConfiguredBaseModel):
     authorization_code: str
 
-    class Config:
-        alias_generator = to_camel
-        allow_population_by_field_name = True
 
-
-class GoogleUser(BaseModel):
+class GoogleUser(ConfiguredBaseModel):
     sub: str
     email: str
     email_verified: bool
