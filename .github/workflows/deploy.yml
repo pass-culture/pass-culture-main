@@ -79,10 +79,21 @@ jobs:
     if: ${{ inputs.deploy_api }}
     steps:
       - uses: actions/checkout@v3
+      - name: Authentification to Google
+        uses: 'google-github-actions/auth@v1'
+        with:
+          workload_identity_provider: ${{ secrets.GCP_EHP_WORKLOAD_IDENTITY_PROVIDER }}
+          service_account: ${{ secrets.GCP_EHP_SERVICE_ACCOUNT }}
+      - name: Get Secret
+        id: 'secrets'
+        uses: 'google-github-actions/get-secretmanager-secrets@v1'
+        with:
+          secrets: |-
+            PASSCULTURE_SA_ACCESS_TOKEN:passculture-metier-ehp/passculture-main-sa-access-token
       - uses: actions/checkout@v3
         with:
           repository: pass-culture/pass-culture-deployment
-          token: ${{ secrets.PASSCULTURE_SA_ACCESS_TOKEN }}
+          token: ${{ steps.secrets.outputs.PASSCULTURE_SA_ACCESS_TOKEN }}
           path: ./pass-culture-deployment
       - id: openid-auth-infra
         name: "OpenID Connect Authentication"
