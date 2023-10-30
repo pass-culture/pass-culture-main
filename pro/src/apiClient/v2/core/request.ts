@@ -343,11 +343,15 @@ export const request = <T>(
         }
 
         catchErrorCodes(options, result)
-
         resolve(result.body)
       }
     } catch (error) {
-      reject(error)
+      if(error?.message === 'Failed to fetch' || error?.message.includes('NetworkError')) {
+        console.error(error)
+      }
+      else {
+        reject(error)
+      }
     }
   })
 }
