@@ -66,7 +66,7 @@ describe('ReimbursementFields', () => {
 
   let props: ReimbursementFieldsProps
   beforeEach(() => {
-    props = { venue, offerer, readOnly: false }
+    props = { venue, offerer }
     vi.spyOn(api, 'getAvailableReimbursementPoints').mockResolvedValue([])
   })
 

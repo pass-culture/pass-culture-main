@@ -22,7 +22,6 @@ interface ReimbursementPointV2 {
   initialVenue: Venue
   isCreatingVenue?: boolean
   offerer: GetOffererResponseModel
-  readOnly: boolean
   venueHasPricingPoint?: boolean
 }
 type ReimbursementPointOptions = {
@@ -36,7 +35,6 @@ type ReimbursementPoint = {
 }
 
 const ReimbursementPoint = ({
-  readOnly = false,
   offerer,
   initialVenue,
   isCreatingVenue = false,
@@ -116,7 +114,7 @@ const ReimbursementPoint = ({
       setIsLoading(false)
     }
     loadReimbursementPoints(offerer.id)
-  }, [isCreatingVenue, offerer.id, readOnly, venue])
+  }, [isCreatingVenue, offerer.id, venue])
   const { logEvent } = useAnalytics()
 
   const onCancelNoSiretDialog = () => {
@@ -200,7 +198,7 @@ const ReimbursementPoint = ({
                 id="reimbursementPointId"
                 name="reimbursementPointId"
                 className={styles['select-input']}
-                disabled={readOnly || !venueHasPricingPoint}
+                disabled={!venueHasPricingPoint}
                 label="Coordonnées bancaires"
                 hideFooter
                 defaultValue={
