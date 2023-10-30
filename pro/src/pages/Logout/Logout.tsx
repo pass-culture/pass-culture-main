@@ -1,3 +1,4 @@
+import { useEffect } from 'react'
 import { useDispatch } from 'react-redux'
 import { useNavigate } from 'react-router-dom'
 
@@ -8,15 +9,17 @@ const Logout = () => {
   const navigate = useNavigate()
   const dispatch = useDispatch()
 
-  api.signout().then(() => {
-    dispatch(resetIsInitialized())
+  useEffect(() => {
+    const logout = async () => {
+      await api.signout()
+      dispatch(resetIsInitialized())
 
-    if (window.Beamer !== undefined) {
-      window.Beamer.destroy()
+      navigate(`/connexion`)
     }
 
-    navigate(`/connexion`)
-  })
+    // eslint-disable-next-line @typescript-eslint/no-floating-promises
+    logout()
+  }, [])
 
   return null
 }
