@@ -501,6 +501,45 @@ class CurrentReimbursementPointTest:
             assert venue_with_joinedload.current_reimbursement_point.name == "current"
 
 
+class CurrentBankAccountTest:
+    def _load_venue(self, venue_id) -> models.Venue:
+        return (
+            models.Venue.query.filter_by(id=venue_id)
+            .options(
+                sa.orm.joinedload(models.Venue.bankAccountLinks).joinedload(models.VenueBankAccountLink.bankAccount)
+            )
+            .one()
+        )
+
+    def test_no_bank_account(self):
+        venue = factories.VenueWithoutSiretFactory()
+
+        venue_with_joinedload = self._load_venue(venue.id)
+
+        with assert_num_queries(0):
+            assert venue_with_joinedload.current_bank_account_link is None
+
+    def test_bank_account_link(self):
+        venue = factories.VenueWithoutSiretFactory()
+        now = datetime.datetime.utcnow()
+        factories.VenueBankAccountLinkFactory(
+            venue=venue,
+            bankAccount=finance_factories.BankAccountFactory(offererId=venue.managingOffererId, label="former"),
+            timespan=[now - datetime.timedelta(days=7), now - datetime.timedelta(days=1)],
+        )
+        link = factories.VenueBankAccountLinkFactory(
+            venue=venue,
+            bankAccount=finance_factories.BankAccountFactory(offererId=venue.managingOffererId, label="current"),
+            timespan=[now - datetime.timedelta(days=1), None],
+        )
+
+        venue_with_joinedload = self._load_venue(venue.id)
+
+        with assert_num_queries(0):
+            assert venue_with_joinedload.current_bank_account_link == link
+            assert venue_with_joinedload.current_bank_account_link.bankAccount.label == "current"
+
+
 class VenueBankAccountLinkTest:
     def test_venue_and_bank_account_cant_overlap(self):
         venue = factories.VenueFactory()

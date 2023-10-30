@@ -245,6 +245,23 @@ def venue_with_accepted_reimbursement_point_fixture(
         venue=venue_with_no_bank_info,
         reimbursementPoint=venue_with_accepted_bank_info,
     )
+    offerers_factories.VenueBankAccountLinkFactory(
+        venue=venue_with_no_bank_info,
+        timespan=[
+            datetime.datetime.utcnow() - datetime.timedelta(days=365),
+            datetime.datetime.utcnow() - datetime.timedelta(days=1),
+        ],
+        bankAccount=finance_factories.BankAccountFactory(
+            label="Ancien compte", offererId=venue_with_no_bank_info.managingOffererId
+        ),
+    )
+    offerers_factories.VenueBankAccountLinkFactory(
+        venue=venue_with_no_bank_info,
+        timespan=[datetime.datetime.utcnow() - datetime.timedelta(days=1), None],
+        bankAccount=finance_factories.BankAccountFactory(
+            label="Nouveau compte", offererId=venue_with_no_bank_info.managingOffererId
+        ),
+    )
     return venue_with_no_bank_info
 
 
