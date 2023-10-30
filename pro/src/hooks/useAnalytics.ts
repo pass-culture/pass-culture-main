@@ -72,7 +72,11 @@ export const useConfigureFirebase = ({
                   Object.keys(remoteConfigValues).forEach((k) => {
                     remoteConfigParams[k] = remoteConfigValues[k].asString()
                   })
-                  setRemoteConfigData && setRemoteConfigData(remoteConfigParams)
+                  setRemoteConfigData &&
+                    setRemoteConfigData({
+                      ...remoteConfigParams,
+                      REMOTE_CONFIG_LOADED: 'true',
+                    })
                   analyticsLogEvent(getAnalytics(app), event, {
                     ...params,
                     ...utmParameters,
