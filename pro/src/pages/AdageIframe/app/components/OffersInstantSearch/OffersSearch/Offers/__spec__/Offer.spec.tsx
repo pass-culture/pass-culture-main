@@ -5,6 +5,7 @@ import React from 'react'
 import {
   AdageFrontRoles,
   AuthenticatedResponse,
+  EacFormat,
   OfferAddressType,
   StudentLevels,
 } from 'apiClient/adage'
@@ -532,5 +533,21 @@ describe('offer', () => {
       queryId: '1',
       stockId: 825,
     })
+  })
+
+  it('should display format when FF is active', async () => {
+    renderOffers(
+      {
+        ...offerProps,
+        offer: {
+          ...defaultCollectiveTemplateOffer,
+          isTemplate: true,
+          formats: [EacFormat.CONCERT, EacFormat.REPR_SENTATION],
+        },
+      },
+      [{ nameKey: 'WIP_ENABLE_FORMAT', isActive: true }]
+    )
+
+    expect(screen.getByText('Concert, Représentation')).toBeInTheDocument()
   })
 })
