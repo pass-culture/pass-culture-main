@@ -24,7 +24,7 @@ class Returns204Test:
 
             assert response.status_code == 204
             booking = Booking.query.one()
-            assert booking.status is not BookingStatus.USED
+            assert booking.status == BookingStatus.CONFIRMED
             assert booking.dateUsed is None
 
     class WithBasicAuthTest:
@@ -37,7 +37,7 @@ class Returns204Test:
 
             assert response.status_code == 204
             booking = Booking.query.one()
-            assert booking.status is not BookingStatus.USED
+            assert booking.status == BookingStatus.CONFIRMED
             assert booking.dateUsed is None
 
         def test_when_user_is_logged_in_expect_booking_with_token_in_lower_case_to_be_used(self, client):
@@ -49,7 +49,7 @@ class Returns204Test:
 
             assert response.status_code == 204
             booking = Booking.query.one()
-            assert booking.status is not BookingStatus.USED
+            assert booking.status == BookingStatus.CONFIRMED
             assert booking.dateUsed is None
 
 
@@ -141,7 +141,7 @@ class Returns410Test:
         # Then
         assert response.status_code == 410
         assert response.json["booking"] == ["Cette réservation n'a pas encore été validée"]
-        assert booking.status is not BookingStatus.USED
+        assert booking.status == BookingStatus.CONFIRMED
 
     @pytest.mark.usefixtures("db_session")
     def test_when_user_is_logged_in_and_booking_payment_exists(self, client):
