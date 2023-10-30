@@ -5,6 +5,7 @@ from pcapi import settings
 from pcapi.core.bookings.models import Booking
 from pcapi.core.educational.models import CollectiveOffer
 from pcapi.core.educational.models import CollectiveOfferTemplate
+from pcapi.core.finance import models as finance_models
 from pcapi.core.offerers import models as offerers_models
 from pcapi.core.offers.models import Offer
 from pcapi.core.users import models as users_models
@@ -64,6 +65,10 @@ def build_pc_pro_venue_offers_link(venue: offerers_models.Venue) -> str:
 
 def build_pc_pro_user_email_validation_link(user: users_models.User) -> str:
     return f"{settings.PRO_URL}/inscription/validation/{user.validationToken}"
+
+
+def build_pc_pro_bank_account_link(bank_account: finance_models.BankAccount) -> str:
+    return f"{settings.PRO_URL}/remboursements/informations-bancaires?structure={bank_account.offererId}"
 
 
 def build_backoffice_public_account_link(user_id: int) -> str:

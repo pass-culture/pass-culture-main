@@ -96,7 +96,7 @@ class OffererValidationListForm(utils.PCForm):
     )
     dms_adage_status = fields.PCSelectMultipleField(
         "États du dossier DMS Adage",
-        choices=utils.choices_from_enum(GraphQLApplicationStates, filters.format_graphql_application_status),
+        choices=utils.choices_from_enum(GraphQLApplicationStates, filters.format_dms_application_status),
     )
     from_date = fields.PCDateField("Demande à partir du", validators=(wtforms.validators.Optional(),))
     to_date = fields.PCDateField("Demande jusqu'au", validators=(wtforms.validators.Optional(),))
