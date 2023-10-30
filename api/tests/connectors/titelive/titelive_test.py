@@ -1,3 +1,4 @@
+from copy import deepcopy
 import datetime
 import html
 
@@ -23,7 +24,7 @@ class TiteliveTest:
         if "ean" in kwargs:
             requests_mock.get(
                 f"https://catsearch.epagine.fr/v1/ean/{kwargs['ean']}",
-                json=fixtures.BOOK_BY_EAN_FIXTURE if "fixture" not in kwargs else kwargs["fixture"],
+                json=kwargs.get("fixture", fixtures.BOOK_BY_EAN_FIXTURE),
             )
 
     def test_get_jwt_token(self, requests_mock):
@@ -68,9 +69,20 @@ class TiteliveTest:
         assert product.extraData["gtl_id"] == "01050000"
         assert product.extraData["code_clil"] == "3665"
 
+    def test_get_new_product_without_resume_from_ean_13(self, requests_mock):
+        ean = "9782070455379"
+        json = deepcopy(fixtures.BOOK_BY_EAN_FIXTURE)
+        del json["oeuvre"]["article"][0]["resume"]
+        self._configure_mock(requests_mock, ean=ean, fixture=json)
+
+        product = titelive.get_new_product_from_ean13(ean)
+
+        assert product.idAtProviders == ean
+        assert product.description is None
+
     def test_get_new_product_from_ean_13_without_gtl(self, requests_mock):
         ean = "9782070455379"
-        json = fixtures.BOOK_BY_EAN_FIXTURE
+        json = deepcopy(fixtures.BOOK_BY_EAN_FIXTURE)
 
         del json["oeuvre"]["article"][0]["gtl"]
 

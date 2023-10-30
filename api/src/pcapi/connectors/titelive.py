@@ -160,24 +160,24 @@ def get_new_product_from_ean13(ean: str) -> offers_models.Product:
 
     return offers_models.Product(
         idAtProviders=ean,
-        description=html.unescape(article["resume"]),
+        description=html.unescape(article["resume"]) if "resume" in article else None,
         name=html.unescape(oeuvre["titre"]),
         subcategoryId=subcategories.LIVRE_PAPIER.id,
-        thumbCount=article["image"],  # 0 or 1
+        thumbCount=article.get("image", 0),  # 0 or 1
         extraData=offers_models.OfferExtraData(
-            author=oeuvre["auteurs"],
+            author=oeuvre.get("auteurs", ""),
             ean=ean,
             prix_livre=article["prix"],
-            collection=article["collection"] if "collection" in article else None,
-            comic_series=article["serie"],
-            date_parution=read_things_date(article["dateparution"]) if "dateparution" in article else None,
+            collection=article.get("collection"),
+            comic_series=article.get("serie"),
+            date_parution=read_things_date(article.get("dateparution")),
             distributeur=article["distributeur"],
             editeur=article["editeur"],
-            num_in_collection=article["collection_no"] if "collection_no" in article else None,
+            num_in_collection=article.get("collection_no"),
             schoolbook=article["scolaire"] == "1",
             csr_id=csr["csr_id"] if csr else None,
             gtl_id=gtl_id,
-            code_clil=article["code_clil"] if "code_clil" in article else None,
+            code_clil=article.get("code_clil"),
             # remove rayon when removing csr
             rayon=csr["label"] if csr else None,
         ),
