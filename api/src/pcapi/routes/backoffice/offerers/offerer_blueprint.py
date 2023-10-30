@@ -13,6 +13,7 @@ from werkzeug.exceptions import NotFound
 from pcapi.connectors.dms.models import GraphQLApplicationStates
 from pcapi.core.educational import models as educational_models
 from pcapi.core.external.attributes import api as external_attributes_api
+from pcapi.core.finance import models as finance_models
 from pcapi.core.history import api as history_api
 from pcapi.core.history import models as history_models
 from pcapi.core.offerers import api as offerers_api
@@ -502,6 +503,28 @@ def get_managed_venues(offerer_id: int) -> utils.BackofficeResponse:
     return render_template(
         "offerer/get/details/managed_venues.html",
         venues=venues,
+    )
+
+
+@offerer_blueprint.route("/bank-accounts", methods=["GET"])
+def get_bank_accounts(offerer_id: int) -> utils.BackofficeResponse:
+    bank_accounts = (
+        finance_models.BankAccount.query.filter_by(offererId=offerer_id)
+        .options(
+            sa.orm.load_only(
+                finance_models.BankAccount.id,
+                finance_models.BankAccount.label,
+                finance_models.BankAccount.status,
+                finance_models.BankAccount.offererId,
+            ),
+        )
+        .order_by(finance_models.BankAccount.label)
+        .all()
+    )
+
+    return render_template(
+        "offerer/get/details/bank_accounts.html",
+        bank_accounts=bank_accounts,
     )
 
 

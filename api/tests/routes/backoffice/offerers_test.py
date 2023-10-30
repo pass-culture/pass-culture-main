@@ -979,6 +979,47 @@ class GetOffererVenuesTest(GetEndpointHelper):
         assert rows[1]["Statut du dossier DMS Adage"] == "En construction"
 
 
+class GetOffererBankAccountTest(GetEndpointHelper):
+    endpoint = "backoffice_web.offerer.get_bank_accounts"
+    endpoint_kwargs = {"offerer_id": 1}
+    needed_permission = perm_models.Permissions.READ_PRO_ENTITY
+
+    # - session + authenticated user (2 queries)
+    # - bank accounts (1 query)
+    expected_num_queries = 3
+
+    def test_get_bank_accounts(self, authenticated_client, offerer):
+        offerer = offerers_factories.OffererFactory()
+        bank1 = finance_factories.BankAccountFactory(
+            offerer=offerer,
+            label="Premier compte",
+            status=finance_models.BankAccountApplicationStatus.ACCEPTED,
+        )
+        bank2 = finance_factories.BankAccountFactory(
+            offerer=offerer,
+            label="Deuxième compte",
+            status=finance_models.BankAccountApplicationStatus.ON_GOING,
+        )
+        finance_factories.BankAccountFactory()  # not listed
+
+        url = url_for(self.endpoint, offerer_id=offerer.id)
+
+        with assert_num_queries(self.expected_num_queries):
+            response = authenticated_client.get(url)
+            assert response.status_code == 200
+
+        rows = html_parser.extract_table_rows(response.data)
+        assert len(rows) == 2
+
+        assert rows[0]["ID"] == str(bank2.id)
+        assert rows[0]["Intitulé du compte bancaire"] == bank2.label
+        assert rows[0]["Statut du dossier DMS CB"] == "En instruction"
+
+        assert rows[1]["ID"] == str(bank1.id)
+        assert rows[1]["Intitulé du compte bancaire"] == bank1.label
+        assert rows[1]["Statut du dossier DMS CB"] == "Accepté"
+
+
 class CommentOffererTest(PostEndpointHelper):
     endpoint = "backoffice_web.offerer.comment_offerer"
     endpoint_kwargs = {"offerer_id": 1}
