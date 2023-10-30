@@ -454,6 +454,7 @@ def get_product_by_ean(
     """
     Get bulk product offers using their European Article Number (EAN-13).
     """
+    utils.check_venue_id_is_tied_to_api_key(query.venueId)
     offers: list[offers_models.Offer] | None = (
         utils.retrieve_offer_relations_query(_retrieve_offer_by_eans_query(query.eans, query.venueId))  # type: ignore [arg-type]
         .filter(sqla.not_(offers_models.Offer.isEvent))
