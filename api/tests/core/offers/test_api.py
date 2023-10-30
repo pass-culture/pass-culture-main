@@ -2446,42 +2446,101 @@ class ApproveProductAndRejectedOffersTest:
 @pytest.mark.usefixtures("db_session")
 class GetStocksStatsTest:
     def test_get_stocks_stats(self):
+        # Given
         offer = factories.OfferFactory()
         now = datetime.utcnow()
         factories.StockFactory(offer=offer, quantity=10, dnBookedQuantity=5, beginningDatetime=now)
         factories.StockFactory(offer=offer, quantity=20, dnBookedQuantity=5, beginningDatetime=now + timedelta(hours=1))
+
+        # When
         stats = api.get_stocks_stats(offer_id=offer.id)
 
+        # Then
         assert stats.stock_count == 2
         assert stats.remaining_quantity == 20
         assert stats.oldest_stock == now
         assert stats.newest_stock == now + timedelta(hours=1)
 
-    def test_get_stocks_stats_when_stock_has_unlimited_quantity(self):
+    def test_get_stocks_stats_with_soft_deleted_stock(self):
+        # Given
         offer = factories.OfferFactory()
-        factories.StockFactory(offer=offer, quantity=None)
+        factories.StockFactory(offer=offer, quantity=None, dnBookedQuantity=5, isSoftDeleted=True)
+        factories.StockFactory(offer=offer, quantity=10, dnBookedQuantity=5)
+
+        # When
         stats = api.get_stocks_stats(offer_id=offer.id)
 
+        # Then
+        assert stats.stock_count == 1
+        assert stats.remaining_quantity == 5
+
+    def test_get_stocks_stats_when_stock_has_unlimited_quantity(self):
+        # Given
+        offer = factories.OfferFactory()
+        factories.StockFactory(offer=offer, quantity=None)
+
+        # When
+        stats = api.get_stocks_stats(offer_id=offer.id)
+
+        # Then
         assert stats.stock_count == 1
         assert stats.remaining_quantity == None
 
+    def test_get_stocks_stats_with_another_stock_has_unlimited_quantity(self):
+        # Given
+        offer = factories.OfferFactory()
+        now = datetime.utcnow()
+        factories.StockFactory(
+            beginningDatetime=now + timedelta(hours=1),
+            quantity=20,
+            dnBookedQuantity=10,
+            offer=offer,
+        )
+        factories.StockFactory(
+            beginningDatetime=now + timedelta(hours=2),
+            quantity=30,
+            dnBookedQuantity=25,
+            offer=offer,
+        )
+        # Stock on another offer
+        factories.StockFactory(
+            beginningDatetime=now + timedelta(hours=2),
+            quantity=None,
+            dnBookedQuantity=25,
+        )
+
+        # When
+        stats = api.get_stocks_stats(offer_id=offer.id)
+
+        # Then
+        assert stats.stock_count == 2
+        assert stats.remaining_quantity == 15
+
     def test_get_stocks_stats_when_one_stock_has_unlimited_quantity(self):
+        # Given
         offer = factories.OfferFactory()
         price_category_1 = api.create_price_category(offer=offer, label="1", price=10)
         price_category_2 = api.create_price_category(offer=offer, label="2", price=20)
 
         factories.StockFactory(offer=offer, priceCategory=price_category_1, quantity=None)
         factories.StockFactory(offer=offer, priceCategory=price_category_2, quantity=5)
+
+        # When
         stats = api.get_stocks_stats(offer_id=offer.id)
 
+        # Then
         assert stats.stock_count == 2
         assert stats.remaining_quantity == None
 
     def test_get_stocks_stats_with_no_stock(self):
+        # Given
         offer = factories.OfferFactory()
+
+        # When
         with pytest.raises(api_errors.ApiErrors) as error:
             api.get_stocks_stats(offer_id=offer.id)
 
+        # Then
         assert error.value.errors == {
             "global": ["L'offre en cours de création ne possède aucun Stock"],
         }
