@@ -130,62 +130,73 @@ class SearchPublicAccountsTest(search_helpers.SearchHelper, GetEndpointHelper):
     endpoint = "backoffice_web.public_accounts.search_public_accounts"
     needed_permission = perm_models.Permissions.READ_PUBLIC_ACCOUNT
 
-    def test_search_result_page(self, authenticated_client, legit_user):
-        url = url_for(self.endpoint, q=legit_user.email, page=1, per_page=20)
+    # session + current user
+    expected_num_queries_when_no_query = 2
 
-        response = authenticated_client.get(url)
+    # + results + count
+    expected_num_queries = expected_num_queries_when_no_query + 2
 
-        assert response.status_code == 200, f"[{response.status}] {response.location}"
-        assert legit_user.email in str(response.data)
+    # + WIP_BACKOFFICE_ENABLE_REDIRECT_SINGLE_RESULT
+    expected_num_queries_when_single_result = expected_num_queries + 1
+
+    # + results in email history + count
+    expected_num_queries_when_old_email_and_single_result = expected_num_queries_when_single_result + 2
+
+    def test_search_result_page(self, authenticated_client):
+        user = users_factories.UserFactory()
+        url = url_for(self.endpoint, q=user.email, page=1, per_page=20)
+
+        with assert_num_queries(self.expected_num_queries_when_single_result):
+            response = authenticated_client.get(url)
+            assert response.status_code == 200, f"[{response.status}] {response.location}"
+
+        assert user.email in str(response.data)
 
     def test_malformed_query(self, authenticated_client, legit_user):
         url = url_for(self.endpoint, q=legit_user.email, per_page="unknown_field")
 
-        response = authenticated_client.get(url)
-
-        assert response.status_code == 400
+        with assert_num_queries(self.expected_num_queries_when_no_query):
+            response = authenticated_client.get(url)
+            assert response.status_code == 400
 
     def test_can_search_public_account_by_id(self, authenticated_client):
-        # given
         underage, _, _, _, _ = create_bunch_of_accounts()
+        user_id = underage.id
 
-        # when
-        response = authenticated_client.get(url_for(self.endpoint, q=underage.id))
+        with assert_num_queries(self.expected_num_queries_when_single_result):
+            response = authenticated_client.get(url_for(self.endpoint, q=str(user_id)))
+            assert response.status_code == 200
 
-        # then
-        assert response.status_code == 200
         cards_text = html_parser.extract_cards_text(response.data)
         assert len(cards_text) == 1
         assert_user_equals(cards_text[0], underage)
 
     def test_can_search_public_account_by_small_id(self, authenticated_client):
-        # when
-        response = authenticated_client.get(url_for(self.endpoint, q="2"))
+        with assert_num_queries(self.expected_num_queries):
+            response = authenticated_client.get(url_for(self.endpoint, q="2"))
+            assert response.status_code == 200
 
-        # then
-        assert response.status_code == 200
         assert b"Attention, la recherche doit contenir au moins 3 lettres." not in response.data
 
     @pytest.mark.parametrize("query", ["'", '""', "v", "xx"])
     def test_can_search_public_account_by_short_name(self, authenticated_client, query):
-        # when
-        response = authenticated_client.get(url_for(self.endpoint, q="v"))
+        with assert_num_queries(self.expected_num_queries_when_no_query):
+            response = authenticated_client.get(url_for(self.endpoint, q="v"))
+            assert response.status_code == 400
 
-        # then
-        assert response.status_code == 400
         assert "Attention, la recherche doit contenir au moins 3 lettres." in html_parser.extract_warnings(
             response.data
         )
 
     @override_features(WIP_BACKOFFICE_ENABLE_REDIRECT_SINGLE_RESULT=True)
     def test_can_search_public_account_by_id_redirected(self, authenticated_client):
-        # given
         underage, _, _, _, _ = create_bunch_of_accounts()
+        user_id = underage.id
 
-        # when
-        response = authenticated_client.get(url_for(self.endpoint, q=underage.id))
+        with assert_num_queries(self.expected_num_queries_when_single_result):
+            response = authenticated_client.get(url_for(self.endpoint, q=user_id))
 
-        # then redirect on single result
+        # redirect on single result
         assert response.status_code == 303
         assert response.location == url_for(
             "backoffice_web.public_accounts.get_public_account",
@@ -205,28 +216,24 @@ class SearchPublicAccountsTest(search_helpers.SearchHelper, GetEndpointHelper):
         ],
     )
     def test_can_search_public_account_by_first_name(self, authenticated_client, query, expected_found):
-        # given
         _, _, _, _, _ = create_bunch_of_accounts()
 
-        # when
-        response = authenticated_client.get(url_for(self.endpoint, q=query))
+        with assert_num_queries(self.expected_num_queries_when_single_result):
+            response = authenticated_client.get(url_for(self.endpoint, q=query))
+            assert response.status_code == 200
 
-        # then
-        assert response.status_code == 200
         cards_text = html_parser.extract_cards_text(response.data)
         assert len(cards_text) == 1
         assert expected_found in cards_text[0]
 
     @pytest.mark.parametrize("query", ["ALGÉZIC", "Algézic", "Algezic"])
     def test_can_search_public_account_by_name(self, authenticated_client, query):
-        # given
         _, _, _, random, _ = create_bunch_of_accounts()
 
-        # when
-        response = authenticated_client.get(url_for(self.endpoint, q=query))
+        with assert_num_queries(self.expected_num_queries_when_single_result):
+            response = authenticated_client.get(url_for(self.endpoint, q=query))
+            assert response.status_code == 200
 
-        # then
-        assert response.status_code == 200
         cards_text = html_parser.extract_cards_text(response.data)
         assert len(cards_text) == 1
         assert_user_equals(cards_text[0], random)
@@ -236,134 +243,116 @@ class SearchPublicAccountsTest(search_helpers.SearchHelper, GetEndpointHelper):
         [("01/01/2000", 1), ("01/01/2001", 1), ("1/1/2001", 1), ("12/12/2001", 0), ("31/31/3131", 0)],
     )
     def test_can_search_public_account_by_birthdate(self, authenticated_client, query, expected_results):
-        # given
         create_bunch_of_accounts()
         users_factories.BeneficiaryGrant18Factory(validatedBirthDate=datetime.date(year=2000, month=1, day=1))
         users_factories.BeneficiaryGrant18Factory(validatedBirthDate=datetime.date(year=2001, month=1, day=1))
 
-        # when
-        response = authenticated_client.get(url_for(self.endpoint, q=query))
+        with assert_num_queries(
+            self.expected_num_queries_when_single_result if expected_results == 1 else self.expected_num_queries
+        ):
+            response = authenticated_client.get(url_for(self.endpoint, q=query))
+            assert response.status_code == 200
 
-        # then
-        assert response.status_code == 200
         cards_text = html_parser.extract_cards_text(response.data)
         assert len(cards_text) == expected_results
 
     def test_can_search_public_account_by_email(self, authenticated_client):
-        # given
         _, _, _, random, _ = create_bunch_of_accounts()
+        email = random.email
 
-        # when
-        response = authenticated_client.get(url_for(self.endpoint, q=random.email))
+        with assert_num_queries(self.expected_num_queries_when_single_result):
+            response = authenticated_client.get(url_for(self.endpoint, q=email))
+            assert response.status_code == 200
 
-        # then
-        assert response.status_code == 200
         cards_text = html_parser.extract_cards_text(response.data)
         assert len(cards_text) == 1
         assert_user_equals(cards_text[0], random)
 
     def test_can_search_public_account_by_email_domain(self, authenticated_client):
-        # given
         underage, grant_18, _, random, _ = create_bunch_of_accounts()
 
-        # when
-        response = authenticated_client.get(url_for(self.endpoint, q="@example.net"))
+        with assert_num_queries(self.expected_num_queries):
+            response = authenticated_client.get(url_for(self.endpoint, q="@example.net"))
+            assert response.status_code == 200
 
-        # then
-        assert response.status_code == 200
         cards_titles = html_parser.extract_cards_titles(response.data)
         assert set(cards_titles) == {underage.full_name, grant_18.full_name, random.full_name}
 
     @pytest.mark.parametrize("query", ["+33756273849", "0756273849", "756273849"])
     def test_can_search_public_account_by_phone(self, authenticated_client, query):
-        # given
         _, grant_18, _, _, _ = create_bunch_of_accounts()
 
-        # when
-        response = authenticated_client.get(url_for(self.endpoint, q=query))
+        with assert_num_queries(self.expected_num_queries_when_single_result):
+            response = authenticated_client.get(url_for(self.endpoint, q=query))
+            assert response.status_code == 200
 
-        # then
-        assert response.status_code == 200
         cards_text = html_parser.extract_cards_text(response.data)
         assert len(cards_text) == 1
         assert_user_equals(cards_text[0], grant_18)
 
     def test_can_search_public_account_even_with_missing_city_address(self, authenticated_client):
-        # given
         _, _, _, _, no_address = create_bunch_of_accounts()
+        phone_number = no_address.phoneNumber
 
-        # when
-        response = authenticated_client.get(url_for(self.endpoint, q=no_address.phoneNumber))
+        with assert_num_queries(self.expected_num_queries_when_single_result):
+            response = authenticated_client.get(url_for(self.endpoint, q=phone_number))
+            assert response.status_code == 200
 
-        # then
-        assert response.status_code == 200
         cards_text = html_parser.extract_cards_text(response.data)
         assert len(cards_text) == 1
         assert_user_equals(cards_text[0], no_address)
 
     @pytest.mark.parametrize("query", ["Abdel Yves Akhim Flaille", "Abdel Flaille", "Flaille Akhim", "Yves Abdel"])
     def test_can_search_public_account_by_both_first_name_and_name(self, authenticated_client, query):
-        # given
         _, grant_18, _, _, _ = create_bunch_of_accounts()
 
-        # when
-        response = authenticated_client.get(url_for(self.endpoint, q=query))
+        with assert_num_queries(self.expected_num_queries_when_single_result):
+            response = authenticated_client.get(url_for(self.endpoint, q=query))
+            assert response.status_code == 200
 
-        # then
-        assert response.status_code == 200
         cards_text = html_parser.extract_cards_text(response.data)
         assert len(cards_text) == 1
         assert_user_equals(cards_text[0], grant_18)
 
     @pytest.mark.parametrize("query", ["Gédéon Flaille", "Abdal Flaille", "Autre Algézic"])
     def test_can_search_public_account_names_which_do_not_match(self, authenticated_client, query):
-        # given
         create_bunch_of_accounts()
 
-        # when
-        response = authenticated_client.get(url_for(self.endpoint, q=query))
+        with assert_num_queries(self.expected_num_queries):
+            response = authenticated_client.get(url_for(self.endpoint, q=query))
+            assert response.status_code == 200
 
-        # then
-        assert response.status_code == 200
         cards_text = html_parser.extract_cards_text(response.data)
         assert len(cards_text) == 0
 
     def test_can_search_public_account_empty_query(self, authenticated_client):
-        # given
         create_bunch_of_accounts()
 
-        # when
-        response = authenticated_client.get(url_for(self.endpoint, q=""))
-
-        # then
-        assert response.status_code == 400
+        with assert_num_queries(self.expected_num_queries_when_no_query):
+            response = authenticated_client.get(url_for(self.endpoint, q=""))
+            assert response.status_code == 400
 
     @pytest.mark.parametrize("query", ["Ge*", "([{#/="])
     def test_can_search_public_account_unexpected(self, authenticated_client, query):
-        # given
         create_bunch_of_accounts()
 
-        # when
-        response = authenticated_client.get(url_for(self.endpoint, q=query))
+        with assert_num_queries(self.expected_num_queries):
+            response = authenticated_client.get(url_for(self.endpoint, q=query))
+            assert response.status_code == 200
 
-        # then
-        assert response.status_code == 200
         cards_text = html_parser.extract_cards_text(response.data)
         assert len(cards_text) == 0
 
     def test_search_public_account_with_percent_is_forbidden(self, authenticated_client):
-        # given
         create_bunch_of_accounts()
 
-        # when
-        response = authenticated_client.get(url_for(self.endpoint, q="%terms"))
+        with assert_num_queries(self.expected_num_queries_when_no_query):
+            response = authenticated_client.get(url_for(self.endpoint, q="%terms"))
+            assert response.status_code == 400
 
-        # then
-        assert response.status_code == 400
         assert "Le caractère % n'est pas autorisé" in html_parser.extract_warnings(response.data)
 
     def test_can_search_public_account_young_but_also_pro(self, authenticated_client):
-        # given
         # She has started subscription process, but is also hired by an offerer
         young_and_pro = users_factories.BeneficiaryGrant18Factory(
             firstName="Maud",
@@ -372,18 +361,17 @@ class SearchPublicAccountsTest(search_helpers.SearchHelper, GetEndpointHelper):
             dateOfBirth=datetime.date.today() - relativedelta(years=16, days=5),
         )
         offerers_factories.UserOffererFactory(user=young_and_pro)
+        email = young_and_pro.email
 
-        # when
-        response = authenticated_client.get(url_for(self.endpoint, q=young_and_pro.email))
+        with assert_num_queries(self.expected_num_queries_when_single_result):
+            response = authenticated_client.get(url_for(self.endpoint, q=email))
+            assert response.status_code == 200
 
-        # then
-        assert response.status_code == 200
         cards_text = html_parser.extract_cards_text(response.data)
         assert len(cards_text) == 1
         assert_user_equals(cards_text[0], young_and_pro)
 
     def test_search_suspended_public_account_data(self, authenticated_client):
-        # given
         underage, _, _, _, _ = create_bunch_of_accounts()
         underage.isActive = False
         history_factories.ActionHistoryFactory(
@@ -392,40 +380,42 @@ class SearchPublicAccountsTest(search_helpers.SearchHelper, GetEndpointHelper):
             user=underage,
             extraData={"reason": users_constants.SuspensionReason.FRAUD_SUSPICION},
         )
+        user_id = underage.id
 
-        # when
-        response = authenticated_client.get(url_for(self.endpoint, q=underage.id))
+        with assert_num_queries(self.expected_num_queries_when_single_result):
+            response = authenticated_client.get(url_for(self.endpoint, q=user_id))
+            assert response.status_code == 200
 
-        # then
-        assert response.status_code == 200
         cards_text = html_parser.extract_cards_text(response.data)
         assert len(cards_text) == 1
         assert_user_equals(cards_text[0], underage)
 
     def test_can_search_old_email(self, authenticated_client):
-        # given
         event = users_factories.EmailValidationEntryFactory()
         event.user.email = event.newEmail
+        old_email = event.oldEmail
 
-        # when
-        response = authenticated_client.get(url_for(self.endpoint, q=event.oldEmail))
+        db.session.flush()
 
-        # then
-        assert response.status_code == 200
+        with assert_num_queries(self.expected_num_queries_when_old_email_and_single_result):
+            response = authenticated_client.get(url_for(self.endpoint, q=old_email))
+            assert response.status_code == 200
+
         cards_text = html_parser.extract_cards_text(response.data)
         assert len(cards_text) == 1
         assert_user_equals(cards_text[0], event.user)
 
     def test_can_search_old_domain(self, authenticated_client):
-        # given
         event = users_factories.EmailValidationEntryFactory()
         event.user.email = event.newEmail
+        old_domain_email = event.oldDomainEmail
 
-        # when
-        response = authenticated_client.get(url_for(self.endpoint, q=f"@{event.oldDomainEmail}"))
+        db.session.flush()
 
-        # then
-        assert response.status_code == 200
+        with assert_num_queries(self.expected_num_queries_when_old_email_and_single_result):
+            response = authenticated_client.get(url_for(self.endpoint, q=f"@{old_domain_email}"))
+            assert response.status_code == 200
+
         cards_text = html_parser.extract_cards_text(response.data)
         assert len(cards_text) == 1
         assert_user_equals(cards_text[0], event.user)
@@ -435,6 +425,9 @@ class GetPublicAccountTest(GetEndpointHelper):
     endpoint = "backoffice_web.public_accounts.get_public_account"
     endpoint_kwargs = {"user_id": 1}
     needed_permission = perm_models.Permissions.READ_PUBLIC_ACCOUNT
+
+    # session + current user + user data
+    expected_num_queries = 3
 
     class ReviewButtonTest(button_helpers.ButtonHelper):
         needed_permission = perm_models.Permissions.BENEFICIARY_FRAUD_ACTIONS
@@ -468,18 +461,15 @@ class GetPublicAccountTest(GetEndpointHelper):
         [(0, "Pass 15-17", 3), (1, "Pass 18", 3), (3, None, 3)],
     )
     def test_get_public_account(self, authenticated_client, index, expected_badge, expected_num_queries):
-        # given
         users = create_bunch_of_accounts()
         user = users[index]
 
-        # when
         user_id = user.id
         # expected_num_queries depends on the number of feature flags checked (2 + user + FF)
         with assert_num_queries(expected_num_queries):
             response = authenticated_client.get(url_for(self.endpoint, user_id=user_id))
+            assert response.status_code == 200
 
-        # then
-        assert response.status_code == 200
         content = html_parser.content_as_text(response.data)
         assert f"User ID : {user.id} " in content
         assert f"Email : {user.email} " in content
@@ -509,15 +499,12 @@ class GetPublicAccountTest(GetEndpointHelper):
     def test_get_public_account_with_modified_email(self, authenticated_client):
         _, grant_18, _, _, _ = create_bunch_of_accounts()
         users_factories.EmailUpdateEntryFactory(user=grant_18)
-
-        # when
         user_id = grant_18.id
 
-        with assert_num_queries(3):
+        with assert_num_queries(self.expected_num_queries):
             response = authenticated_client.get(url_for(self.endpoint, user_id=user_id))
+            assert response.status_code == 200
 
-        # then
-        assert response.status_code == 200
         parsed_html = html_parser.get_soup(response.data)
         assert parsed_html.find("i", class_="pc-email-changed-icon") is not None
 
@@ -526,7 +513,6 @@ class GetPublicAccountTest(GetEndpointHelper):
         ([fraud_models.FraudReasonCode.DUPLICATE_ID_PIECE_NUMBER], [fraud_models.FraudReasonCode.DUPLICATE_USER]),
     )
     def test_get_public_account_with_resolved_duplicate(self, authenticated_client, reasonCodes):
-        # Given
         first_name = "Jack"
         last_name = "Sparrow"
         email = "jsparrow@pirate.mail"
@@ -583,32 +569,29 @@ class GetPublicAccountTest(GetEndpointHelper):
             eligibilityType=users_models.EligibilityType.AGE18,
         )
 
-        # When checking duplicate user profile
-        response = authenticated_client.get(url_for(self.endpoint, user_id=duplicate_user.id))
-        # then
+        with assert_num_queries(self.expected_num_queries + 1):  # +1 to get duplicate user info
+            response = authenticated_client.get(url_for(self.endpoint, user_id=duplicate_user.id))
+            assert response.status_code == 200
 
-        assert response.status_code == 200
         content = html_parser.content_as_text(response.data)
         assert f"User ID doublon : {original_user.id}" in content
 
     def test_get_public_account_birth_dates(self, authenticated_client):
-        # given
         user = users_factories.UserFactory(
             dateOfBirth=datetime.datetime.utcnow() - relativedelta(years=18, days=15),
             validatedBirthDate=datetime.datetime.utcnow() - relativedelta(years=17, days=15),
         )
+        user_id = user.id
 
-        # when
-        response = authenticated_client.get(url_for(self.endpoint, user_id=user.id))
+        with assert_num_queries(self.expected_num_queries):
+            response = authenticated_client.get(url_for(self.endpoint, user_id=user_id))
+            assert response.status_code == 200
 
-        # then
-        assert response.status_code == 200
         content = html_parser.content_as_text(response.data)
         assert f"Date de naissance {user.validatedBirthDate.strftime('%d/%m/%Y')} " in content
         assert f"Date de naissance déclarée à l'inscription {user.dateOfBirth.strftime('%d/%m/%Y')} " in content
 
     def test_get_beneficiary_credit(self, authenticated_client):
-        # given
         _, grant_18, _, _, _ = create_bunch_of_accounts()
 
         bookings_factories.BookingFactory(
@@ -618,29 +601,24 @@ class GetPublicAccountTest(GetEndpointHelper):
             user__deposit__expirationDate=datetime.datetime(year=2031, month=12, day=31),
         )
 
-        # when
         user_id = grant_18.id
-        with assert_num_queries(3):  # 2 + user
+        with assert_num_queries(self.expected_num_queries):
             response = authenticated_client.get(url_for(self.endpoint, user_id=user_id))
+            assert response.status_code == 200
 
-        # then
-        assert response.status_code == 200
         cards_text = html_parser.extract_cards_text(response.data)
         # Remaining credit + Title + Initial Credit
         assert "287,50 € Crédit restant 300,00 €" in cards_text
         assert "87,50 € Crédit digital restant 100,00 €" in cards_text
 
     def test_get_non_beneficiary_credit(self, authenticated_client):
-        # given
         _, _, _, random, _ = create_bunch_of_accounts()
-
-        # when
         user_id = random.id
-        with assert_num_queries(3):  # 2 + user
-            response = authenticated_client.get(url_for(self.endpoint, user_id=user_id))
 
-            # then
+        with assert_num_queries(self.expected_num_queries):
+            response = authenticated_client.get(url_for(self.endpoint, user_id=user_id))
             assert response.status_code == 200
+
         assert "Crédit restant" not in html_parser.content_as_text(response.data)
 
     def test_get_beneficiary_bookings(self, authenticated_client):
@@ -707,6 +685,7 @@ class GetPublicAccountTest(GetEndpointHelper):
         user_id = user.id
         with assert_num_queries(4):  # 2 + user + 1 FF
             response = authenticated_client.get(url_for(self.endpoint, user_id=user_id))
+            assert response.status_code == 200
 
         parsed_html = html_parser.get_soup(response.data)
 
@@ -736,7 +715,6 @@ class GetPublicAccountTest(GetEndpointHelper):
         )
 
     def test_get_public_account_history(self, legit_user, authenticated_client):
-        # given
         # More than 30 days ago to have deterministic order because "Import ubble" is generated randomly between
         # -30 days and -1 day in BeneficiaryImportStatusFactory
         user = users_factories.BeneficiaryGrant18Factory(
@@ -776,12 +754,11 @@ class GetPublicAccountTest(GetEndpointHelper):
         no_date_action.actionDate = None
         repository.save(no_date_action)
 
-        # when
         user_id = user.id
         with assert_num_queries(4):  # 2 + user + 1 FF
             response = authenticated_client.get(url_for(self.endpoint, user_id=user_id))
+            assert response.status_code == 200
 
-        # then
         assert response.status_code == 200
         history_rows = html_parser.extract_table_rows(response.data, parent_class="history-tab-pane")
         assert len(history_rows) == 6
@@ -969,13 +946,10 @@ class UpdatePublicAccountTest(PostEndpointHelper):
         assert response.status_code == 400
 
     def test_update_email_triggers_history_token_and_mail(self, authenticated_client):
-        # given
         user, _, _, _, _ = create_bunch_of_accounts()
 
-        # when
         response = self.post_to_endpoint(authenticated_client, user_id=user.id, form={"email": "Updated@example.com"})
 
-        # then
         assert response.status_code == 303
 
         # check that email has been changed immediately after admin request
@@ -994,13 +968,10 @@ class UpdatePublicAccountTest(PostEndpointHelper):
         assert email_history[0].newEmail == "updated@example.com"
 
     def test_update_invalid_email(self, authenticated_client):
-        # given
         user, _, _, _, _ = create_bunch_of_accounts()
 
-        # when
         response = self.post_to_endpoint(authenticated_client, user_id=user.id, form={"email": "updated.example.com"})
 
-        # then
         assert response.status_code == 400
         assert "Le formulaire n'est pas valide" in html_parser.extract_alert(response.data)
 
@@ -1155,15 +1126,12 @@ class SendValidationCodeTest(PostEndpointHelper):
         assert token_utils.SixDigitsToken.get_expiration_date(token_utils.TokenType.PHONE_VALIDATION, user.id) is None
 
     def test_phone_validation_code_sending_ignores_limit(self, authenticated_client):
-        # given
         user = users_factories.UserFactory(phoneValidationStatus=None, phoneNumber="+33612345678")
 
-        # when
         with mock.patch("pcapi.core.fraud.phone_validation.sending_limit.is_SMS_sending_allowed") as limit_mock:
             limit_mock.return_value = False
             response = self.post_to_endpoint(authenticated_client, user_id=user.id)
 
-        # then
         assert limit_mock.call_count == 0
         assert response.status_code == 303
         assert token_utils.SixDigitsToken.token_exists(token_utils.TokenType.PHONE_VALIDATION, user.id)
@@ -1331,21 +1299,16 @@ class UpdatePublicAccountReviewTest(PostEndpointHelper):
 
 class GetPublicAccountHistoryTest:
     def test_history_contains_creation_date(self):
-        # given
         user = users_factories.UserFactory()
 
-        # when
         history = get_public_account_history(user)
 
-        # then
         assert len(history) == 1
-
         assert history[0].actionType == history_models.ActionType.USER_CREATED
         assert history[0].actionDate == user.dateCreated
         assert history[0].authorUser == user
 
     def test_history_contains_email_changes(self):
-        # given
         user = users_factories.UserFactory(dateCreated=datetime.datetime.utcnow() - datetime.timedelta(days=1))
         email_request = users_factories.EmailUpdateEntryFactory(
             user=user, creationDate=datetime.datetime.utcnow() - datetime.timedelta(minutes=10)
@@ -1357,10 +1320,8 @@ class GetPublicAccountHistoryTest:
             user=user, creationDate=datetime.datetime.utcnow() - datetime.timedelta(minutes=5)
         )
 
-        # when
         history = get_public_account_history(user)
 
-        # then
         assert len(history) >= 2
 
         assert history[0].actionType == "Validation de changement d'email"
@@ -1376,7 +1337,6 @@ class GetPublicAccountHistoryTest:
         assert history[2].comment == f"de {email_request.oldEmail} à {email_request.newEmail}"
 
     def test_history_contains_suspensions(self):
-        # given
         user = users_factories.UserFactory(dateCreated=datetime.datetime.utcnow() - datetime.timedelta(days=3))
         author = users_factories.UserFactory()
         suspension_action = history_factories.SuspendedUserActionHistoryFactory(
@@ -1391,16 +1351,13 @@ class GetPublicAccountHistoryTest:
             actionDate=datetime.datetime.utcnow() - relativedelta(days=1),
         )
 
-        # when
         history = get_public_account_history(user)
 
-        # then
         assert len(history) >= 2
         assert history[0] == unsuspension_action
         assert history[1] == suspension_action
 
     def test_history_contains_fraud_checks(self):
-        # given
         user = users_factories.UserFactory(dateCreated=datetime.datetime.utcnow() - datetime.timedelta(days=1))
         dms = fraud_factories.BeneficiaryFraudCheckFactory(
             user=user,
@@ -1419,10 +1376,8 @@ class GetPublicAccountHistoryTest:
             status=None,
         )
 
-        # when
         history = get_public_account_history(user)
 
-        # then
         assert len(history) >= 3
 
         assert history[2].actionType == "Étape de vérification"
@@ -1447,7 +1402,6 @@ class GetPublicAccountHistoryTest:
         )
 
     def test_history_contains_reviews(self):
-        # given
         user = users_factories.UserFactory(dateCreated=datetime.datetime.utcnow() - datetime.timedelta(days=1))
         author_user = users_factories.UserFactory()
         ko = fraud_factories.BeneficiaryFraudReviewFactory(
@@ -1465,10 +1419,8 @@ class GetPublicAccountHistoryTest:
             reason="",
         )
 
-        # when
         history = get_public_account_history(user)
 
-        # then
         assert len(history) >= 2
 
         assert history[0].actionType == "Revue manuelle"
@@ -1482,7 +1434,6 @@ class GetPublicAccountHistoryTest:
         assert history[0].authorUser == dms.author
 
     def test_history_contains_imports(self):
-        # given
         now = datetime.datetime.utcnow()
         user = users_factories.UserFactory(dateCreated=now - datetime.timedelta(days=1))
         author_user = users_factories.UserFactory()
@@ -1535,10 +1486,8 @@ class GetPublicAccountHistoryTest:
             ],
         )
 
-        # when
         history = get_public_account_history(user)
 
-        # then
         assert len(history) >= 6
         for i, status in enumerate(sorted(dms.statuses, key=lambda s: s.date)):
             assert history[5 - i].actionType == "Import demarches_simplifiees"
@@ -1552,7 +1501,6 @@ class GetPublicAccountHistoryTest:
             assert history[2 - i].authorUser == status.author
 
     def test_history_is_sorted_antichronologically(self):
-        # given
         now = datetime.datetime.utcnow()
         user = users_factories.UserFactory(dateCreated=now - datetime.timedelta(days=1))
         author_user = users_factories.UserFactory()
@@ -1595,10 +1543,8 @@ class GetPublicAccountHistoryTest:
             review=fraud_models.FraudReviewStatus.OK,
         )
 
-        # when
         history = get_public_account_history(user)
 
-        # then
         assert len(history) == 8
         datetimes = [item.actionDate for item in history]
         assert datetimes == sorted(datetimes, reverse=True)
@@ -1608,6 +1554,12 @@ class GetUserRegistrationStepTest(GetEndpointHelper):
     endpoint = "backoffice_web.public_accounts.get_public_account"
     endpoint_kwargs = {"user_id": 1}
     needed_permission = perm_models.Permissions.READ_PUBLIC_ACCOUNT
+
+    # - session
+    # - current user
+    # - displayed user
+    # - feature flag ENABLE_PHONE_VALIDATION
+    expected_num_queries = 4
 
     @pytest.mark.parametrize(
         "age,id_check_type,expected_items_status_18,expected_id_check_status_18",
@@ -1622,7 +1574,6 @@ class GetUserRegistrationStepTest(GetEndpointHelper):
     def test_registration_step_underage_ok_age18_void(
         self, authenticated_client, age, id_check_type, expected_items_status_18, expected_id_check_status_18
     ):
-        # given
         expected_results = [
             ("Validation Email", SubscriptionItemStatus.OK),
             ("Profil Complet", SubscriptionItemStatus.OK),
@@ -1663,12 +1614,11 @@ class GetUserRegistrationStepTest(GetEndpointHelper):
             eligibilityType=users_models.EligibilityType.UNDERAGE,
         )
 
-        # when
         user_id = user.id
-        response = authenticated_client.get(url_for(self.endpoint, user_id=user_id))
+        with assert_num_queries(self.expected_num_queries):
+            response = authenticated_client.get(url_for(self.endpoint, user_id=user_id))
+            assert response.status_code == 200
 
-        # then
-        assert response.status_code == 200
         soup = html_parser.get_soup(response.data)
 
         step_icon_views = soup.select(".steps .pc-test-step-status")
@@ -1683,7 +1633,6 @@ class GetUserRegistrationStepTest(GetEndpointHelper):
             assert step_title == expected_title.value
 
     def test_registration_step_underage_ko_age18_void(self, authenticated_client):
-        # given
         expected_results = [
             ("Validation Email", SubscriptionItemStatus.OK),
             ("Profil Complet", SubscriptionItemStatus.OK),
@@ -1716,12 +1665,11 @@ class GetUserRegistrationStepTest(GetEndpointHelper):
             eligibilityType=users_models.EligibilityType.UNDERAGE,
         )
 
-        # when
         user_id = user.id
-        response = authenticated_client.get(url_for(self.endpoint, user_id=user_id))
+        with assert_num_queries(self.expected_num_queries):
+            response = authenticated_client.get(url_for(self.endpoint, user_id=user_id))
+            assert response.status_code == 200
 
-        # then
-        assert response.status_code == 200
         soup = html_parser.get_soup(response.data)
 
         step_icon_views = soup.select(".steps .pc-test-step-status")
