@@ -99,7 +99,7 @@ class Returns403Test:
                 "Vous n’avez pas les droits suffisants pour valider cette contremarque car cette réservation n'a pas été faite sur une de vos offres, ou que votre rattachement à la structure est encore en cours de validation"
             ]
             booking = Booking.query.get(booking.id)
-            assert booking.status is not BookingStatus.USED
+            assert booking.status == BookingStatus.CONFIRMED
 
 
 class Returns404Test:
@@ -129,7 +129,7 @@ class Returns410Test:
         assert response.status_code == 410
         assert response.json["booking_cancelled"] == ["Cette réservation a été annulée"]
         booking = Booking.query.get(booking.id)
-        assert booking.status is not BookingStatus.USED
+        assert booking.status == BookingStatus.CANCELLED
 
     def test_when_user_is_logged_in_and_booking_has_been_cancelled_already(self, client):
         # Given
@@ -144,4 +144,4 @@ class Returns410Test:
         assert response.status_code == 410
         assert response.json["booking_cancelled"] == ["Cette réservation a été annulée"]
         booking = Booking.query.get(booking.id)
-        assert booking.status is not BookingStatus.USED
+        assert booking.status == BookingStatus.CANCELLED
