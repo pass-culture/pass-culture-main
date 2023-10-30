@@ -1,5 +1,5 @@
 import { format, subMonths } from 'date-fns'
-import React, { useCallback, useEffect, useState } from 'react'
+import React, { useEffect, useState } from 'react'
 
 import { VenueListItemResponseModel } from 'apiClient/v1'
 import ButtonDownloadCSV from 'components/ButtonDownloadCSV'
@@ -59,18 +59,20 @@ const ReimbursementsDetails = (): JSX.Element => {
       }))
     )
 
-  const loadVenues = useCallback(async () => {
-    const venuesResponse = await getVenuesForOffererAdapter({
-      activeOfferersOnly: true,
-    })
-    const selectOptions = buildAndSortVenueFilterOptions(venuesResponse.payload)
-    setVenuesOptions(selectOptions)
-    setIsLoading(false)
-  }, [setVenuesOptions])
-
   useEffect(() => {
-    loadVenues()
-  }, [loadVenues])
+    const loadVenues = async () => {
+      const venuesResponse = await getVenuesForOffererAdapter({
+        activeOfferersOnly: true,
+      })
+      const selectOptions = buildAndSortVenueFilterOptions(
+        venuesResponse.payload
+      )
+      setVenuesOptions(selectOptions)
+      setIsLoading(false)
+    }
+
+    void loadVenues()
+  }, [])
 
   useEffect(() => {
     const params: CsvQueryParams = {}
@@ -85,6 +87,7 @@ const ReimbursementsDetails = (): JSX.Element => {
     }
     setCsvQueryParams(new URLSearchParams(params).toString())
   }, [periodEnd, periodStart, venue])
+
   if (isLoading) {
     return (
       <div className="spinner">
@@ -92,6 +95,7 @@ const ReimbursementsDetails = (): JSX.Element => {
       </div>
     )
   }
+
   if (venuesOptions.length === 0) {
     return (
       <div className="no-refunds">
@@ -106,6 +110,7 @@ const ReimbursementsDetails = (): JSX.Element => {
       </div>
     )
   }
+
   return (
     <>
       <DetailsFilters
