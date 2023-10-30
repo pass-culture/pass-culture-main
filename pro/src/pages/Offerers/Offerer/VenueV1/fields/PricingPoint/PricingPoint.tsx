@@ -18,14 +18,12 @@ import { SvgIcon } from 'ui-kit/SvgIcon/SvgIcon'
 import styles from './PricingPoint.module.scss'
 
 interface PricingPointProps {
-  readOnly: boolean
   offerer: GetOffererResponseModel
   venue: Venue
   setVenueHasPricingPoint: (venueHasPricingPoint: boolean) => void
 }
 
 const PricingPoint = ({
-  readOnly,
   offerer,
   venue,
   setVenueHasPricingPoint,
@@ -83,7 +81,7 @@ const PricingPoint = ({
         </div>
       )}
 
-      {!readOnly && !venue.pricingPoint && isBannerVisible && (
+      {!venue.pricingPoint && isBannerVisible && (
         <Banner
           links={[
             {
@@ -132,7 +130,7 @@ const PricingPoint = ({
         </ConfirmDialog>
       )}
 
-      {!readOnly && !venue.pricingPoint && (
+      {!venue.pricingPoint && (
         <p className={styles['reimbursement-subtitle']}>
           <span className={styles['text-hightlight']}>
             Sélectionner et valider{' '}
@@ -144,9 +142,7 @@ const PricingPoint = ({
       <div className={styles['dropdown-container']}>
         <div className={styles['select']}>
           <Select
-            disabled={
-              venue.pricingPoint?.id ? true : isInputDisabled || readOnly
-            }
+            disabled={venue.pricingPoint?.id ? true : isInputDisabled}
             id="venueSiret"
             name="venueSiret"
             data-testid={'pricingPointSelect'}
@@ -158,7 +154,7 @@ const PricingPoint = ({
             hideFooter
           />
         </div>
-        {!readOnly && !isInputDisabled && !venue.pricingPoint && (
+        {!isInputDisabled && !venue.pricingPoint && (
           <Button
             className={styles['space-left']}
             onClick={() => setIsConfirmSiretDialogOpen(true)}
@@ -167,7 +163,7 @@ const PricingPoint = ({
             Valider la sélection
           </Button>
         )}
-        {!readOnly && isInputDisabled && (
+        {isInputDisabled && (
           <>
             <SvgIcon
               src={strokeValidIcon}
