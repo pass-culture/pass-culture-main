@@ -41,6 +41,7 @@ import {
   ALGOLIA_COLLECTIVE_OFFERS_INDEX,
   ALGOLIA_COLLECTIVE_OFFERS_SUGGESTIONS_INDEX,
 } from 'utils/config'
+import { localStorageAvailable } from 'utils/localStorageAvailable'
 import { removeParamsFromUrl } from 'utils/removeParamsFromUrl'
 
 import styles from './Autocomplete.module.scss'
@@ -86,15 +87,6 @@ const addSuggestionToHistory = (suggestion: string) => {
   )
 }
 
-function checkIfLocalStorageIsEnabled(): boolean {
-  try {
-    localStorage.getItem('')
-  } catch {
-    return false
-  }
-  return true
-}
-
 export const Autocomplete = ({
   initialQuery,
   placeholder,
@@ -129,7 +121,7 @@ export const Autocomplete = ({
   const { adageUser } = useAdageUser()
   const KEYWORD_QUERY_SUGGESTIONS_SOURCE_ID = 'KeywordQuerySuggestionsSource'
 
-  const isLocalStorageEnabled = checkIfLocalStorageIsEnabled()
+  const isLocalStorageEnabled = localStorageAvailable()
 
   useEffect(() => {
     const loadData = async () => {
@@ -216,7 +208,7 @@ export const Autocomplete = ({
             addSuggestionToHistory(venueDisplayName)
           }
 
-          logAutocompleteSuggestionClick(
+          void logAutocompleteSuggestionClick(
             SuggestionType.VENUE,
             item.venue.publicName || item.venue.name
           )
@@ -292,7 +284,7 @@ export const Autocomplete = ({
             addSuggestionToHistory(item.query)
           }
 
-          logAutocompleteSuggestionClick(
+          void logAutocompleteSuggestionClick(
             itemId <= 2 ? SuggestionType.OFFER_CATEGORY : SuggestionType.OFFER,
             item.query
           )

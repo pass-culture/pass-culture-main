@@ -12,6 +12,7 @@ import useNotification from 'hooks/useNotification'
 import copyIcon from 'icons/full-duplicate.svg'
 import fullPlusIcon from 'icons/full-plus.svg'
 import ListIconButton from 'ui-kit/ListIconButton/ListIconButton'
+import { localStorageAvailable } from 'utils/localStorageAvailable'
 
 import DuplicateOfferDialog from './DuplicateOfferDialog'
 
@@ -29,31 +30,33 @@ const DuplicateOfferCell = ({
   const buttonRef = useRef<HTMLButtonElement>(null)
   const { logEvent } = useAnalytics()
   const [isModalOpen, setIsModalOpen] = useState(false)
+  const isLocalStorageAvailable = localStorageAvailable()
   const shouldDisplayModal =
+    !isLocalStorageAvailable ||
     localStorage.getItem(LOCAL_STORAGE_HAS_SEEN_MODAL_KEY) !== 'true'
 
-  const onDialogConfirm = (shouldNotDisplayModalAgain: boolean) => {
+  const onDialogConfirm = async (shouldNotDisplayModalAgain: boolean) => {
     logEvent?.(Events.CLICKED_DUPLICATE_TEMPLATE_OFFER, {
       from: OFFER_FROM_TEMPLATE_ENTRIES.OFFERS_MODAL,
     })
-    if (shouldNotDisplayModalAgain) {
+    if (shouldNotDisplayModalAgain && isLocalStorageAvailable) {
       localStorage.setItem(LOCAL_STORAGE_HAS_SEEN_MODAL_KEY, 'true')
     }
-    createOfferFromTemplate(navigate, notify, offerId)
+    await createOfferFromTemplate(navigate, notify, offerId)
   }
 
-  const handleCreateOfferClick = () => {
+  const handleCreateOfferClick = async () => {
     if (isShowcase) {
       if (!shouldDisplayModal) {
         logEvent?.(Events.CLICKED_DUPLICATE_TEMPLATE_OFFER, {
           from: OFFER_FROM_TEMPLATE_ENTRIES.OFFERS,
         })
-        createOfferFromTemplate(navigate, notify, offerId)
+        await createOfferFromTemplate(navigate, notify, offerId)
       }
       buttonRef.current?.blur()
       setIsModalOpen(true)
     } else {
-      createOfferFromBookableOffer(navigate, notify, offerId)
+      await createOfferFromBookableOffer(navigate, notify, offerId)
     }
   }
 
