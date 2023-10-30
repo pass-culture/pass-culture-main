@@ -10,22 +10,23 @@ export const PriceCategoriesSummary = (): JSX.Element | null => {
   const mode = useOfferWizardMode()
   const { offer, subCategories, setOffer } = useIndividualOfferContext()
 
-  if (offer === null) {
-    return <Spinner />
-  }
-
   const canBeDuo = subCategories.find(
-    (subCategory) => subCategory.id === offer.subcategoryId
+    (subCategory) => subCategory.id === offer?.subcategoryId
   )?.canBeDuo
 
   return (
-    <IndivualOfferLayout
-      title="Récapitulatif"
-      offer={offer}
-      setOffer={setOffer}
-      mode={mode}
-    >
-      <PriceCategoriesSection offer={offer} canBeDuo={canBeDuo} />
-    </IndivualOfferLayout>
+    <>
+      <Spinner isLoading={offer === null} />
+      {offer !== null && (
+        <IndivualOfferLayout
+          title="Récapitulatif"
+          offer={offer}
+          setOffer={setOffer}
+          mode={mode}
+        >
+          <PriceCategoriesSection offer={offer} canBeDuo={canBeDuo} />
+        </IndivualOfferLayout>
+      )}
+    </>
   )
 }

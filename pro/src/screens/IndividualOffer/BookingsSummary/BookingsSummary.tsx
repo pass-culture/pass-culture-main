@@ -85,7 +85,8 @@ export const BookingsSummaryScreen = ({
 
   return (
     <SummaryLayout.Section title="Réservations">
-      {bookings !== null ? (
+      <Spinner isLoading={bookings === null} />
+      {bookings !== null && (
         <>
           <div>{pluralize(filteredBookings.length, 'réservation')}</div>
           <IndividualBookingsTable
@@ -97,8 +98,6 @@ export const BookingsSummaryScreen = ({
             resetFilters={() => setBookingsStatusFilter([])}
           />
         </>
-      ) : (
-        <Spinner />
       )}
     </SummaryLayout.Section>
   )

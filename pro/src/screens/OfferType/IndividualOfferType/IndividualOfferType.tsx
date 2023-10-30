@@ -102,44 +102,43 @@ const IndividualOfferType = (): JSX.Element | null => {
   const venueTypeMostUsedSubcategories =
     venueType && venueTypeSubcategoriesMapping[venueType]
 
-  if (isLoading) {
-    return <Spinner />
-  }
-
   return (
     <>
-      {isCategorySelectionActive && venueTypeMostUsedSubcategories && (
-        <FormLayout.Section
-          title="Quelle est la catégorie de l’offre ?"
-          description="Ces catégories sont suggérées d’après les catégories les plus fréquemment sélectionnées pour votre type de lieu."
-          className={styles['subcategory-section']}
-        >
-          {venueTypeMostUsedSubcategories.map(
-            (subcategory: SubcategoryIdEnum) => (
-              <RadioButton
-                className={styles['individual-radio-button-subcategory']}
-                key={subcategory}
-                withBorder
-                value={subcategory}
-                label={
-                  subcategories.find((s) => s.id === subcategory)?.proLabel ||
-                  ''
-                }
-                name="individualOfferSubcategory"
-                variant={BaseRadioVariant.SECONDARY}
-              />
-            )
-          )}
-          <RadioButton
-            className={styles['individual-radio-button-subcategory']}
-            withBorder
-            value="OTHER"
-            label="Autre"
-            name="individualOfferSubcategory"
-            variant={BaseRadioVariant.SECONDARY}
-          />
-        </FormLayout.Section>
-      )}
+      <Spinner isLoading={isLoading} />
+      {!isLoading &&
+        isCategorySelectionActive &&
+        venueTypeMostUsedSubcategories && (
+          <FormLayout.Section
+            title="Quelle est la catégorie de l’offre ?"
+            description="Ces catégories sont suggérées d’après les catégories les plus fréquemment sélectionnées pour votre type de lieu."
+            className={styles['subcategory-section']}
+          >
+            {venueTypeMostUsedSubcategories.map(
+              (subcategory: SubcategoryIdEnum) => (
+                <RadioButton
+                  className={styles['individual-radio-button-subcategory']}
+                  key={subcategory}
+                  withBorder
+                  value={subcategory}
+                  label={
+                    subcategories.find((s) => s.id === subcategory)?.proLabel ||
+                    ''
+                  }
+                  name="individualOfferSubcategory"
+                  variant={BaseRadioVariant.SECONDARY}
+                />
+              )
+            )}
+            <RadioButton
+              className={styles['individual-radio-button-subcategory']}
+              withBorder
+              value="OTHER"
+              label="Autre"
+              name="individualOfferSubcategory"
+              variant={BaseRadioVariant.SECONDARY}
+            />
+          </FormLayout.Section>
+        )}
 
       {(!venueTypeMostUsedSubcategories ||
         values.individualOfferSubcategory === 'OTHER') && (

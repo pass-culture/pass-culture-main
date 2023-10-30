@@ -11,20 +11,21 @@ const Confirmation = (): JSX.Element => {
   const mode = useOfferWizardMode()
   const { offer, setOffer } = useIndividualOfferContext()
 
-  if (offer === null) {
-    return <Spinner />
-  }
-
   return (
-    <IndivualOfferLayout
-      withStepper={false}
-      offer={offer}
-      setOffer={setOffer}
-      title={getTitle(mode)}
-      mode={mode}
-    >
-      <IndividualOfferConfirmationScreen offer={offer} />
-    </IndivualOfferLayout>
+    <>
+      <Spinner isLoading={offer === null} />
+      {offer !== null && (
+        <IndivualOfferLayout
+          withStepper={false}
+          offer={offer}
+          setOffer={setOffer}
+          title={getTitle(mode)}
+          mode={mode}
+        >
+          <IndividualOfferConfirmationScreen offer={offer} />
+        </IndivualOfferLayout>
+      )}
+    </>
   )
 }
 

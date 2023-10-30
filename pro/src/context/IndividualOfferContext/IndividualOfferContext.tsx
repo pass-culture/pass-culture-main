@@ -144,28 +144,29 @@ export function IndividualOfferContextProvider({
     }
   }, [offerId, offerOfferer])
 
-  if (isLoading === true) {
-    return <Spinner />
-  }
-
   return (
-    <IndividualOfferContext.Provider
-      value={{
-        offerId: offer?.id || null,
-        offer,
-        setOffer,
-        categories,
-        subCategories,
-        offererNames,
-        venueList,
-        venueId,
-        offerOfferer,
-        showVenuePopin: showVenuePopin,
-        subcategory,
-        setSubcategory,
-      }}
-    >
-      {children}
-    </IndividualOfferContext.Provider>
+    <>
+      <Spinner isLoading={isLoading} />
+      {!isLoading && (
+        <IndividualOfferContext.Provider
+          value={{
+            offerId: offer?.id || null,
+            offer,
+            setOffer,
+            categories,
+            subCategories,
+            offererNames,
+            venueList,
+            venueId,
+            offerOfferer,
+            showVenuePopin: showVenuePopin,
+            subcategory,
+            setSubcategory,
+          }}
+        >
+          {children}
+        </IndividualOfferContext.Provider>
+      )}
+    </>
   )
 }
