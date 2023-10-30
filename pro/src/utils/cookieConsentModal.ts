@@ -5,6 +5,8 @@ import { v4 as uuidv4 } from 'uuid'
 import { api } from 'apiClient/api'
 import { toISOStringWithoutMilliseconds } from 'utils/date'
 
+import { localStorageAvailable } from './localStorageAvailable'
+
 export enum Consents {
   FIREBASE = 'firebase',
   HOTJAR = 'hotjar',
@@ -55,7 +57,9 @@ export const initCookieConsent = () => {
               return app
             }),
         },
-        deviceId: localStorage.getItem('DEVICE_ID') ?? 'NODEVICEID',
+        deviceId: localStorageAvailable()
+          ? localStorage.getItem('DEVICE_ID') ?? 'NODEVICEID'
+          : 'NODEVICEID',
       }
 
       await api.cookiesConsent(cookieConsent)
@@ -163,8 +167,7 @@ export const initCookieConsent = () => {
     ],
   }
 
-  const storageId = localStorage.getItem('DEVICE_ID')
-  if (storageId === null) {
+  if (localStorageAvailable() && localStorage.getItem('DEVICE_ID') === null) {
     localStorage.setItem('DEVICE_ID', uuidv4())
   }
   return Orejime.init(orejimeConfig)

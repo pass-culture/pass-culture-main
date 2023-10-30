@@ -6,6 +6,7 @@ import { apiAdage } from 'apiClient/api'
 import Notification from 'components/Notification/Notification'
 import { AdageUserContext } from 'pages/AdageIframe/app/providers/AdageUserContext'
 import { defaultAdageUser, defaultCategories } from 'utils/adageFactories'
+import * as localStorageAvailable from 'utils/localStorageAvailable'
 import { renderWithProviders } from 'utils/renderWithProviders'
 
 import { Autocomplete } from '../Autocomplete'
@@ -281,12 +282,6 @@ describe('Autocomplete', () => {
   })
 
   it('should disable saved history when cookies are disabled', async () => {
-    vi.spyOn(window.localStorage.__proto__, 'getItem').mockImplementation(
-      () => {
-        throw new Error()
-      }
-    )
-
     const featuresOverride = [
       {
         nameKey: 'WIP_ENABLE_SEARCH_HISTORY_ADAGE',
@@ -298,6 +293,11 @@ describe('Autocomplete', () => {
       initialQuery: '',
       featuresOverride,
     })
+
+    vi.spyOn(
+      localStorageAvailable,
+      'localStorageAvailable'
+    ).mockImplementationOnce(() => false)
 
     const inputElement = screen.getByPlaceholderText(
       'Rechercher par mot-clé, par partenaire culturel, par nom d’offre...'

@@ -20,6 +20,7 @@ import { GET_DATA_ERROR_MESSAGE } from 'core/shared'
 import * as useNotification from 'hooks/useNotification'
 import * as pcapi from 'repository/pcapi/pcapi'
 import { collectiveOfferFactory } from 'utils/collectiveApiFactories'
+import * as localStorageAvailable from 'utils/localStorageAvailable'
 import { renderWithProviders } from 'utils/renderWithProviders'
 
 import DuplicateOfferCell, {
@@ -301,5 +302,28 @@ describe('DuplicateOfferCell', () => {
 
       expect(notifyError).toHaveBeenNthCalledWith(1, GET_DATA_ERROR_MESSAGE)
     })
+  })
+
+  it('should not display the modal if the localstorage is not available', async () => {
+    localStorage.setItem(LOCAL_STORAGE_HAS_SEEN_MODAL_KEY, 'true')
+
+    renderDuplicateOfferCell()
+
+    vi.spyOn(
+      localStorageAvailable,
+      'localStorageAvailable'
+    ).mockImplementationOnce(() => false)
+
+    const button = screen.getByRole('button', {
+      name: 'Créer une offre réservable',
+    })
+
+    await userEvent.click(button)
+
+    expect(
+      screen.getByText(
+        'Créer une offre réservable pour un établissement scolaire'
+      )
+    ).toBeInTheDocument()
   })
 })
