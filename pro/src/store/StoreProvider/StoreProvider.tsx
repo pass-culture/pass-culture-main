@@ -23,16 +23,10 @@ const StoreProvider = ({
 }: StoreProviderProps) => {
   const [currentUser, setCurrentUser] =
     useState<SharedCurrentUserResponseModel | null>()
-  const [features, setFeatures] = useState<FeatureResponseModel[]>()
-  const [initialState, setInitialState] =
-    useState<Partial<RootState | null>>(null)
+  const [features, setFeatures] = useState<FeatureResponseModel[]>([])
+  const [initialState, setInitialState] = useState<Partial<RootState>>()
 
   useEffect(() => {
-    function setEmptyInitialData() {
-      setCurrentUser(null)
-      setFeatures([])
-    }
-
     async function getStoreInitialData() {
       if (isAdageIframe) {
         setCurrentUser(null)
@@ -47,8 +41,11 @@ const StoreProvider = ({
         .then((response) => setFeatures(response))
         .catch(() => setFeatures([]))
     }
-    // eslint-disable-next-line @typescript-eslint/no-floating-promises
-    isDev ? setEmptyInitialData() : getStoreInitialData()
+
+    if (!isDev) {
+      // eslint-disable-next-line @typescript-eslint/no-floating-promises
+      getStoreInitialData()
+    }
   }, [])
 
   useEffect(() => {
@@ -59,16 +56,14 @@ const StoreProvider = ({
       })
     }
   }, [currentUser, features])
-  if (initialState === null) {
-    return (
-      <main id="content" className="spinner-container">
-        <Spinner />
-      </main>
-    )
-  }
 
   const { store } = createStore(initialState)
-  return <Provider store={store}>{children}</Provider>
+  return (
+    <Provider store={store}>
+      <Spinner isLoading={!initialState} />
+      {initialState && children}
+    </Provider>
+  )
 }
 
 export default StoreProvider
