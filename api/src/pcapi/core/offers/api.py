@@ -1381,11 +1381,18 @@ def get_stocks_stats(offer_id: int) -> offers_serialize.StocksStats:
             sa.func.max(models.Stock.beginningDatetime),
             sa.func.count(models.Stock.id),
             sa.case(
-                (models.Stock.query.filter(models.Stock.remainingQuantity == None).exists(), None),
-                else_=sa.cast(sa.func.sum(models.Stock.remainingQuantity), sa.Integer),
+                (
+                    models.Stock.query.filter(
+                        models.Stock.quantity == None,
+                        models.Stock.isSoftDeleted.is_(False),
+                        models.Stock.offerId == offer_id,
+                    ).exists(),
+                    None,
+                ),
+                else_=sa.cast(sa.func.sum(models.Stock.quantity - models.Stock.dnBookedQuantity), sa.Integer),
             ),
         )
-        .filter(models.Stock.offerId == offer_id)
+        .filter(models.Stock.offerId == offer_id, models.Stock.isSoftDeleted.is_(False))
         .group_by(models.Stock.offerId)
         .one_or_none()
     )
