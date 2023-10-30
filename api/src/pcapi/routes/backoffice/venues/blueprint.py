@@ -31,6 +31,7 @@ import pcapi.core.permissions.models as perm_models
 from pcapi.core.providers import api as providers_api
 from pcapi.core.providers import models as providers_models
 from pcapi.models.api_errors import ApiErrors
+from pcapi.models.feature import FeatureToggle
 from pcapi.repository import repository
 from pcapi.routes.backoffice import autocomplete
 from pcapi.routes.backoffice import filters
@@ -321,23 +322,41 @@ def get_venue_bank_information(venue: offerers_models.Venue) -> serialization.Ve
 
 @venue_blueprint.route("/<int:venue_id>/stats", methods=["GET"])
 def get_stats(venue_id: int) -> utils.BackofficeResponse:
-    venue = (
-        offerers_models.Venue.query.filter(offerers_models.Venue.id == venue_id)
-        .options(
-            sa.orm.joinedload(offerers_models.Venue.pricing_point_links).joinedload(
-                offerers_models.VenuePricingPointLink.pricingPoint
-            ),
-            sa.orm.joinedload(offerers_models.Venue.reimbursement_point_links)
-            .joinedload(offerers_models.VenueReimbursementPointLink.reimbursementPoint)
-            .load_only(offerers_models.Venue.name)
-            .joinedload(offerers_models.Venue.bankInformation)
-            .load_only(finance_models.BankInformation.bic, finance_models.BankInformation.iban),
-            sa.orm.joinedload(offerers_models.Venue.bankInformation).load_only(
-                finance_models.BankInformation.bic, finance_models.BankInformation.iban
-            ),
-        )
-        .one_or_none()
+    venue_query = offerers_models.Venue.query.filter(offerers_models.Venue.id == venue_id).options(
+        sa.orm.joinedload(offerers_models.Venue.pricing_point_links).joinedload(
+            offerers_models.VenuePricingPointLink.pricingPoint
+        ),
+        sa.orm.joinedload(offerers_models.Venue.reimbursement_point_links)
+        .joinedload(offerers_models.VenueReimbursementPointLink.reimbursementPoint)
+        .load_only(offerers_models.Venue.name)
+        .joinedload(offerers_models.Venue.bankInformation)
+        .load_only(finance_models.BankInformation.bic, finance_models.BankInformation.iban),
+        sa.orm.joinedload(offerers_models.Venue.bankInformation).load_only(
+            finance_models.BankInformation.bic, finance_models.BankInformation.iban
+        ),
     )
+
+    if FeatureToggle.WIP_ENABLE_NEW_BANK_DETAILS_JOURNEY.is_active():
+        venue_query = (
+            venue_query.outerjoin(
+                offerers_models.VenueBankAccountLink,
+                sa.and_(
+                    offerers_models.Venue.id == offerers_models.VenueBankAccountLink.venueId,
+                    offerers_models.VenueBankAccountLink.timespan.contains(datetime.utcnow()),
+                ),
+            )
+            .outerjoin(offerers_models.VenueBankAccountLink.bankAccount)
+            .options(
+                sa.orm.contains_eager(offerers_models.Venue.bankAccountLinks)
+                .load_only(offerers_models.VenueBankAccountLink.timespan)
+                .contains_eager(offerers_models.VenueBankAccountLink.bankAccount)
+                .load_only(finance_models.BankAccount.id, finance_models.BankAccount.label)
+            )
+        )
+
+    venue = venue_query.one_or_none()
+    if not venue:
+        raise NotFound()
 
     data = get_stats_data(venue.id)
     bank_information = get_venue_bank_information(venue)

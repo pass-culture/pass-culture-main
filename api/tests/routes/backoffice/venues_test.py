@@ -26,6 +26,7 @@ import pcapi.core.permissions.models as perm_models
 import pcapi.core.providers.factories as providers_factories
 import pcapi.core.providers.models as providers_models
 from pcapi.core.testing import assert_num_queries
+from pcapi.core.testing import override_features
 from pcapi.core.users import factories as users_factories
 from pcapi.core.users.backoffice import api as backoffice_api
 from pcapi.models import db
@@ -532,7 +533,8 @@ class GetVenueStatsTest(GetEndpointHelper):
     # get venue with reimbursement and pricing points (1 query)
     # get total revenue (1 query)
     # get venue stats (6 query)
-    expected_num_queries = 10
+    # get feature flag: WIP_ENABLE_NEW_BANK_DETAILS_JOURNEY (1 query)
+    expected_num_queries = 11
 
     def test_get_venue_with_no_reimbursement_point_bank_information(
         self, authenticated_client, venue_with_accepted_bank_info
@@ -617,6 +619,41 @@ class GetVenueStatsTest(GetEndpointHelper):
         pricing_point = venue_with_no_siret.pricing_point_links[0].pricingPoint
         assert venue_with_no_siret.siret is None
         assert f"Siret de valorisation : {pricing_point.name}" in cards_content[2]
+
+    @override_features(WIP_ENABLE_NEW_BANK_DETAILS_JOURNEY=True)
+    def test_get_venue_with_no_bank_account(self, authenticated_client, venue_with_no_bank_info):
+        venue_id = venue_with_no_bank_info.id
+        with assert_num_queries(self.expected_num_queries):
+            response = authenticated_client.get(url_for(self.endpoint, venue_id=venue_id))
+            assert response.status_code == 200
+
+        cards_content = html_parser.extract_cards_text(response.data)
+        assert cards_content[2].endswith("Compte bancaire :")
+
+    @override_features(WIP_ENABLE_NEW_BANK_DETAILS_JOURNEY=True)
+    def test_get_venue_with_bank_accounts(self, authenticated_client, venue_with_accepted_reimbursement_point):
+        venue_id = venue_with_accepted_reimbursement_point.id
+        with assert_num_queries(self.expected_num_queries):
+            response = authenticated_client.get(url_for(self.endpoint, venue_id=venue_id))
+            assert response.status_code == 200
+
+        cards_content = html_parser.extract_cards_text(response.data)
+        assert (
+            f"Compte bancaire : Nouveau compte ({(datetime.utcnow() - timedelta(days=1)).strftime('%d/%m/%Y')})"
+            in cards_content[2]
+        )
+
+    # Remove test when WIP_ENABLE_NEW_BANK_DETAILS_JOURNEY is removed
+    def test_get_venue_without_bank_account_feature_flag(
+        self, authenticated_client, venue_with_accepted_reimbursement_point
+    ):
+        venue_id = venue_with_accepted_reimbursement_point.id
+        with assert_num_queries(self.expected_num_queries):
+            response = authenticated_client.get(url_for(self.endpoint, venue_id=venue_id))
+            assert response.status_code == 200
+
+        cards_content = html_parser.extract_cards_text(response.data)
+        assert "Compte bancaire :" not in cards_content[2]
 
     def test_get_stats(self, authenticated_client, venue):
         booking = bookings_factories.BookingFactory(stock__offer__venue=venue)
@@ -709,6 +746,10 @@ class GetVenueStatsTest(GetEndpointHelper):
         assert response.status_code == 200
         cards_text = html_parser.extract_cards_text(response.data)
         assert "0 offres actives ( 0 IND / 0 EAC ) 0 offres inactives ( 0 IND / 0 EAC )" in cards_text
+
+    def test_get_venue_not_found(self, authenticated_client):
+        response = authenticated_client.get(url_for(self.endpoint, venue_id=1))
+        assert response.status_code == 404
 
 
 class HasReimbursementPointTest:
