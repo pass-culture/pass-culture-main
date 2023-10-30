@@ -230,7 +230,9 @@ export const sendRequest = async (
 
   onCancel(() => controller.abort())
 
-  return await fetch(url, request)
+  // we manually remove the await here
+  // So that the parent can correctly catch the error
+  return fetch(url, request)
 }
 
 const getResponseHeader = (
