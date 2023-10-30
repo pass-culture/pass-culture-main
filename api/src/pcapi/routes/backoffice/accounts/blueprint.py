@@ -73,14 +73,20 @@ def search_public_accounts() -> utils.BackofficeResponse:
     if not form.validate():
         return render_search_template(form), 400
 
-    users = users_api.search_public_account(form.q.data)
-    if users.count() == 0 and email_utils.is_valid_email_or_email_domain(email_utils.sanitize_email(form.q.data)):
-        users = users_api.search_public_account_in_history_email(form.q.data)
+    # Joinedload with ActionHistory avoids N+1 query to show suspension reason.
+    # It should be OK because per_page is 20 on this search page and can not be set to thousands
+    query_options = sa.orm.joinedload(users_models.User.action_history)
+    users_query = users_api.search_public_account(form.q.data).options(query_options)
+    paginated_rows = users_query.paginate(page=form.page.data, per_page=form.per_page.data)
 
-    paginated_rows = users.paginate(
-        page=form.page.data,
-        per_page=form.per_page.data,
-    )
+    # Do NOT call users.count() after search_public_account, this would make one more request on all users every time
+    # (so it would select count twice: in users.count() and in users.paginate)
+    if paginated_rows.total == 0 and email_utils.is_valid_email_or_email_domain(
+        email_utils.sanitize_email(form.q.data)
+    ):
+        users_query = users_api.search_public_account_in_history_email(form.q.data).options(query_options)
+        paginated_rows = users_query.paginate(page=form.page.data, per_page=form.per_page.data)
+
     if paginated_rows.total == 1 and FeatureToggle.WIP_BACKOFFICE_ENABLE_REDIRECT_SINGLE_RESULT.is_active():
         return redirect(url_for(".get_public_account", user_id=paginated_rows.items[0].id, q=form.q.data), code=303)
 
