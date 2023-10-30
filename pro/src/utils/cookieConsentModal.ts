@@ -26,7 +26,7 @@ export const initCookieConsent = () => {
     // We use it to execute the api call used to log the user consents
     // Still, we do not change the cookie content
     // @ts-expect-error no types for this lib yet
-    stringifyCookie: async (contents) => {
+    stringifyCookie: (contents) => {
       const nonMandatoryConsents = Object.entries(contents).filter(([app]) => {
         return mandatoryCookies.indexOf(app) === -1
       })
@@ -58,7 +58,9 @@ export const initCookieConsent = () => {
         deviceId: localStorage.getItem('DEVICE_ID') ?? 'NODEVICEID',
       }
 
-      await api.cookiesConsent(cookieConsent)
+      // l'api orejime n'est pas asynchrone
+      // eslint-disable-next-line @typescript-eslint/no-floating-promises
+      api.cookiesConsent(cookieConsent)
 
       return JSON.stringify(contents)
     },
@@ -167,5 +169,6 @@ export const initCookieConsent = () => {
   if (storageId === null) {
     localStorage.setItem('DEVICE_ID', uuidv4())
   }
+
   return Orejime.init(orejimeConfig)
 }
