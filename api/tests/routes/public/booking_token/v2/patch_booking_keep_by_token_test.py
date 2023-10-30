@@ -52,19 +52,6 @@ class Returns204Test:
             assert booking.status is not BookingStatus.USED
             assert booking.dateUsed is None
 
-        # FIXME: I don't understand what we're trying to test, here.
-        def test_when_there_is_no_remaining_quantity_after_validating(self, client):
-            booking = bookings_factories.UsedBookingFactory(stock__quantity=1)
-            pro_user = offerers_factories.UserOffererFactory(offerer=booking.offerer).user
-
-            url = f"/v2/bookings/keep/token/{booking.token.lower()}"
-            response = client.with_session_auth(pro_user.email).patch(url)
-
-            assert response.status_code == 204
-            booking = Booking.query.one()
-            assert booking.status is not BookingStatus.USED
-            assert booking.dateUsed is None
-
 
 class Returns401Test:
     @pytest.mark.usefixtures("db_session")
