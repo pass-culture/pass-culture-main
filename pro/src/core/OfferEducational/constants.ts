@@ -38,6 +38,7 @@ export const DEFAULT_EAC_FORM_VALUES: OfferEducationalFormValues = {
   notificationEmails: [''],
   domains: [],
   'search-domains': '',
+  'search-formats': '',
   'search-interventionArea': '',
   priceDetail: '',
   imageUrl: '',
@@ -47,6 +48,7 @@ export const DEFAULT_EAC_FORM_VALUES: OfferEducationalFormValues = {
   beginningDate: '',
   endingDate: '',
   hour: '',
+  formats: [],
 }
 
 export const DEFAULT_EAC_STOCK_FORM_VALUES: OfferEducationalStockFormValues = {

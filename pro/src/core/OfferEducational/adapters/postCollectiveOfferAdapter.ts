@@ -7,6 +7,7 @@ import { createCollectiveOfferPayload } from '../utils/createOfferPayload'
 type Params = {
   offer: OfferEducationalFormValues
   offerTemplateId?: number
+  isFormatActive?: boolean
 }
 
 type PayloadSuccess = { id: number }
@@ -33,9 +34,15 @@ const UNKNOWN_FAILING_RESPONSE: AdapterFailure<PayloadFailure> = {
 const postCollectiveOfferAdapter: PostOfferAdapter = async ({
   offer,
   offerTemplateId,
+  isFormatActive,
 }) => {
   try {
-    const payload = createCollectiveOfferPayload(offer, false, offerTemplateId)
+    const payload = createCollectiveOfferPayload(
+      offer,
+      false,
+      offerTemplateId,
+      isFormatActive
+    )
 
     const response = await api.createCollectiveOffer(payload)
 
