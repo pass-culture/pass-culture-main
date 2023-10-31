@@ -20,9 +20,12 @@
     margin-bottom: rem.torem(32px);
   }
 
+  &-heading {
+    margin-bottom: rem.torem(8px);
+  }
+
   &-sub-heading {
     max-width: rem.torem(588px);
-    margin-top: rem.torem(4px);
     font-weight: 500;
   }
 

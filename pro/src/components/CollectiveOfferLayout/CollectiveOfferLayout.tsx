@@ -5,7 +5,6 @@ import { useLocation, useParams } from 'react-router-dom'
 import CollectiveOfferBreadcrumb from 'components/CollectiveOfferBreadcrumb'
 import HelpLink from 'components/HelpLink'
 import { getActiveStep } from 'pages/CollectiveOfferRoutes/utils/getActiveStep'
-import { Title } from 'ui-kit'
 import { Tag, TagVariant } from 'ui-kit/Tag/Tag'
 
 import styles from './CollectiveOfferLayout.module.scss'
@@ -68,12 +67,10 @@ const CollectiveOfferLayout = ({
           </Tag>
         )}
         {}
-        <Title level={1}>{title}</Title>
+        <h1 className={styles['eac-layout-heading']}>{title}</h1>
 
         {subTitle && (
-          <Title level={4} className={styles['eac-layout-sub-heading']}>
-            {subTitle}
-          </Title>
+          <h2 className={styles['eac-layout-sub-heading']}>{subTitle}</h2>
         )}
       </div>
 
