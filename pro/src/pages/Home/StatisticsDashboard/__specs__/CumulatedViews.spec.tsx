@@ -1,0 +1,55 @@
+import { screen } from '@testing-library/react'
+import { add, format } from 'date-fns'
+import React from 'react'
+
+import { FORMAT_ISO_DATE_ONLY } from 'utils/date'
+import { renderWithProviders } from 'utils/renderWithProviders'
+
+import { CumulatedViews, CumulatedViewsProps } from '../CumulatedViews'
+
+const renderCumulatedViews = (props: CumulatedViewsProps) =>
+  renderWithProviders(<CumulatedViews {...props} />)
+
+describe('CumulatedViews', () => {
+  it('should render empty state when no views data', () => {
+    renderCumulatedViews({ dailyViews: [] })
+
+    expect(
+      screen.getByText(
+        'Vos offres n’ont pas encore été découvertes par les bénéficiaires'
+      )
+    ).toBeInTheDocument()
+  })
+
+  it('should render empty state when 0 views in the past 6 months', () => {
+    const sixMonthsWithNoViews = Array.from(Array(180)).map((key, index) => ({
+      numberOfViews: 0,
+      eventDate: format(
+        add(new Date('2021-01-01'), { days: index }),
+        FORMAT_ISO_DATE_ONLY
+      ),
+    }))
+
+    renderCumulatedViews({ dailyViews: sixMonthsWithNoViews })
+
+    expect(
+      screen.getByText(
+        'Vos offres n’ont pas encore été découvertes par les bénéficiaires'
+      )
+    ).toBeInTheDocument()
+  })
+
+  it('should render graph is data is present', () => {
+    const dailyViews = Array.from(Array(180)).map((key, index) => ({
+      numberOfViews: index,
+      eventDate: format(
+        add(new Date('2021-01-01'), { days: index }),
+        FORMAT_ISO_DATE_ONLY
+      ),
+    }))
+
+    renderCumulatedViews({ dailyViews })
+
+    expect(screen.getByText('TODO graphique')).toBeInTheDocument()
+  })
+})
