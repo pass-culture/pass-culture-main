@@ -9,6 +9,7 @@ import pytz
 from pcapi.core import token as token_utils
 from pcapi.core.bookings import factories as bookings_factories
 from pcapi.core.categories import subcategories_v2 as subcategories
+from pcapi.core.finance import models as finance_models
 from pcapi.core.fraud import factories as fraud_factories
 import pcapi.core.fraud.models as fraud_models
 from pcapi.core.history import factories as history_factories
@@ -1177,6 +1178,43 @@ class UpdatePublicAccountReviewTest(PostEndpointHelper):
 
         assert user.has_beneficiary_role is False
 
+    def test_set_beneficiary_on_underage(self, authenticated_client, legit_user):
+        user = users_factories.UnderageBeneficiaryFactory()
+
+        base_form = {
+            "status": fraud_models.FraudReviewStatus.OK.name,
+            "eligibility": users_models.EligibilityType.AGE18.name,
+            "reason": "test",
+        }
+
+        response = self.post_to_endpoint(authenticated_client, user_id=user.id, form=base_form)
+        assert response.status_code == 303
+
+        expected_url = url_for("backoffice_web.public_accounts.get_public_account", user_id=user.id, _external=True)
+        assert response.location == expected_url
+
+        user = users_models.User.query.get(user.id)
+
+        assert len(user.beneficiaryFraudReviews) == 1
+        fraud_review = user.beneficiaryFraudReviews[0]
+        assert fraud_review.author == legit_user
+        assert fraud_review.review == fraud_models.FraudReviewStatus.OK
+        assert fraud_review.reason == "test"
+
+        assert user.has_beneficiary_role is True
+
+        deposits = (
+            finance_models.Deposit.query.filter(finance_models.Deposit.userId == user.id)
+            .order_by(finance_models.Deposit.dateCreated)
+            .all()
+        )
+
+        assert len(deposits) == 2
+        assert deposits[0].expirationDate < datetime.datetime.utcnow()
+        assert deposits[0].amount < 300
+        assert deposits[1].expirationDate > datetime.datetime.utcnow()
+        assert deposits[1].amount == 300
+
     def test_malformed_form(self, authenticated_client):
         user = users_factories.UserFactory()
 
@@ -1230,30 +1268,6 @@ class UpdatePublicAccountReviewTest(PostEndpointHelper):
 
         user = users_models.User.query.get(user.id)
         assert not user.deposits
-
-    def test_accepte_beneficiary_already_underage(self, authenticated_client, legit_user):
-        user = users_factories.UnderageBeneficiaryFactory()
-
-        base_form = {
-            "status": fraud_models.FraudReviewStatus.OK.name,
-            "eligibility": users_models.EligibilityType.AGE18.name,
-            "reason": "test",
-        }
-
-        response = self.post_to_endpoint(authenticated_client, user_id=user.id, form=base_form)
-        assert response.status_code == 303
-        expected_url = url_for("backoffice_web.public_accounts.get_public_account", user_id=user.id, _external=True)
-        assert response.location == expected_url
-
-        user = users_models.User.query.get(user.id)
-        assert len(user.beneficiaryFraudReviews) == 0
-        assert user.roles == [users_models.UserRole.UNDERAGE_BENEFICIARY]
-
-        response = authenticated_client.get(response.location)
-        assert (
-            "Le compte est déjà bénéficiaire (15-17) il ne peut pas aussi être bénéficiaire (18+)"
-            in html_parser.extract_alert(response.data)
-        )
 
     def test_accepte_underage_beneficiary_already_beneficiary(self, authenticated_client, legit_user):
         user = users_factories.BeneficiaryFactory()
