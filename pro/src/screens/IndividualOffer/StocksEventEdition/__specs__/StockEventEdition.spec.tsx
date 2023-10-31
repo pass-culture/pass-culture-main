@@ -129,22 +129,7 @@ describe('screens:StocksEventEdition', () => {
   beforeEach(() => {
     apiStocks = [
       individualGetOfferStockResponseModelFactory({
-        beginningDatetime: '2023-01-23T08:25:31.009799Z',
-        bookingLimitDatetime: '2023-01-23T07:25:31.009799Z',
         bookingsQuantity: 4,
-        dateCreated: '2022-05-18T08:25:31.015652Z',
-        hasActivationCode: false,
-        id: 1,
-        isEventDeletable: true,
-        isEventExpired: false,
-        isSoftDeleted: false,
-        price: 10.01,
-        priceCategoryId: Number(otherPriceCategoryId),
-        quantity: 10,
-        remainingQuantity: 6,
-        activationCodesExpirationDatetime: null,
-        isBookable: false,
-        dateModified: '2022-05-18T08:25:31.015652Z',
       }),
     ]
     apiOffer = {

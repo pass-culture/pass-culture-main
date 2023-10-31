@@ -78,11 +78,8 @@ export interface IndividualOfferStock {
   beginningDatetime: string | null
   bookingLimitDatetime: string | null
   bookingsQuantity: number
-  dateCreated: Date
   hasActivationCode: boolean
   isEventDeletable: boolean
-  isEventExpired: boolean
-  isSoftDeleted: boolean
   id: number
   price: number
   priceCategoryId?: number | null
