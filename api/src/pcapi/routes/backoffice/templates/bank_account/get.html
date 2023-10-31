@@ -18,16 +18,49 @@
             <span class="fs-5 ps-4">
               <span class="me-1 pb-1 badge rounded-pill text-bg-warning align-middle">Compte bancaire</span>
             </span>
-            {% if dms_stats %}
-              <div class="d-flex row-reverse justify-content-end flex-grow-1">
+            <div class="d-flex row-reverse justify-content-end flex-grow-1">
+              {% if edit_form %}
+                {% set edit_bank_account_aria_described_by_id = random_hash() %}
+                <button class="btn btn-outline-primary lead fw-bold mt-2 mx-2"
+                        data-bs-toggle="modal"
+                        data-bs-target="#edit-bank-account-modal"
+                        type="button">Modifier les informations</button>
+                <div class="modal modal-lg fade"
+                     id="edit-bank-account-modal"
+                     tabindex="-1"
+                     aria-describedby="{{ edit_bank_account_aria_described_by_id }}"
+                     aria-hidden="true">
+                  <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable">
+                    <div class="modal-content">
+                      <form action="{{ url_for("backoffice_web.bank_account.update_bank_account", bank_account_id=bank_account.id) }}"
+                            name="{{ url_for("backoffice_web.bank_account.update_bank_account", bank_account_id=bank_account.id) | action_to_name }}"
+                            method="post">
+                        <div class="modal-header"
+                             id="{{ edit_bank_account_aria_described_by_id }}">
+                          <h5 class="modal-title">Modifier les informations du compte bancaire</h5>
+                        </div>
+                        <div class="modal-body pb-3">{{ build_form_fields_group(edit_form) }}</div>
+                        <div class="modal-footer">
+                          <button type="button"
+                                  class="btn btn-outline-primary"
+                                  data-bs-dismiss="modal">Annuler</button>
+                          <button type="submit"
+                                  class="btn btn-primary">Enregistrer</button>
+                        </div>
+                      </form>
+                    </div>
+                  </div>
+                </div>
+              {% endif %}
+              {% if dms_stats %}
                 <a href="{{ dms_stats.url }}"
                    target="_blank"
                    class="card-link">
                   <button class="btn btn-outline-primary lead fw-bold mt-2 mx-3"
                           type="button">ACCÉDER AU DOSSIER DMS CB</button>
                 </a>
-              </div>
-            {% endif %}
+              {% endif %}
+            </div>
           </div>
           <p class="card-subtitle text-muted mb-3 h5">Bank Account ID : {{ bank_account.id }}</p>
           <p class="card-subtitle text-muted mb-3 h5">Humanized ID : {{ humanized_bank_account_id }}</p>

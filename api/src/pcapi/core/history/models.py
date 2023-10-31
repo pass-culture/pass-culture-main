@@ -146,7 +146,7 @@ class ActionHistory(PcObject, Base, Model):
     __table_args__ = (
         sa.CheckConstraint(
             (
-                'num_nonnulls("userId", "offererId", "venueId", "financeIncidentId") >= 1 OR actionType = "BLACKLIST_DOMAIN_NAME" OR actionType = "REMOVE_BLACKLISTED_DOMAIN_NAME"'
+                'num_nonnulls("userId", "offererId", "venueId", "financeIncidentId", "bankAccountId") >= 1 OR actionType = "BLACKLIST_DOMAIN_NAME" OR actionType = "REMOVE_BLACKLISTED_DOMAIN_NAME"'
             ),
             name="check_at_least_one_resource_or_is_fraud_action",
         ),
