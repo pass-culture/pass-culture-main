@@ -1,8 +1,10 @@
 import enum
 import re
+import typing
 
 import wtforms
 
+from pcapi.models.feature import FeatureToggle
 from pcapi.routes.backoffice.forms import fields
 from pcapi.routes.backoffice.forms import utils
 from pcapi.routes.backoffice.forms.constants import area_choices
@@ -66,6 +68,15 @@ class ProSearchForm(SearchForm):
         except KeyError:
             raise wtforms.validators.ValidationError("Le type sélectionné est invalide")
         return pro_type
+
+    # We can't use exclude_opts in pro_type definition because choices would not be updated when changing the value of
+    # WIP_ENABLE_NEW_BANK_DETAILS_JOURNEY. This init function can be removed at the same time as the feature flag.
+    def __init__(self, *args: typing.Any, **kwargs: typing.Any) -> None:
+        super().__init__(*args, **kwargs)
+        if not FeatureToggle.WIP_ENABLE_NEW_BANK_DETAILS_JOURNEY.is_active():
+            self.pro_type.choices = [
+                choice for choice in self.pro_type.choices if choice[0] != TypeOptions.BANK_ACCOUNT.name
+            ]
 
 
 class CompactProSearchForm(ProSearchForm):

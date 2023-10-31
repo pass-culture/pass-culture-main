@@ -30,7 +30,8 @@ class GetBankAccountTest(GetEndpointHelper):
     # get session (1 query)
     # get user with profile and permissions (1 query)
     # get bank_account (1 query)
-    expected_num_queries = 3
+    # get feature flag: WIP_ENABLE_NEW_BANK_DETAILS_JOURNEY (1 query)
+    expected_num_queries = 4
 
     def test_get_bank_account(self, authenticated_client):
         bank_account = finance_factories.BankAccountFactory()
