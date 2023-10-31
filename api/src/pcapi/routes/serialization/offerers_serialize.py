@@ -296,14 +296,9 @@ class GetOffererBankAccountsResponseModel(BaseModel):
         orm_mode = True
 
 
-class ImageResponse(BaseModel):
-    credit: str | None
-    url: str
-
-
 class TopOffersResponseData(offerers_models.TopOffersData):
     offerName: str
-    image: ImageResponse | None
+    image: offers_models.OfferImage | None
 
     @classmethod
     def build(cls, offer_id: int, number_of_views: int) -> "TopOffersResponseData":

@@ -3,8 +3,8 @@
 /* tslint:disable */
 /* eslint-disable */
 
-export type ImageResponse = {
-  credit?: string | null;
+export type OfferImage = {
+  credit?: string;
   url: string;
 };
 
