@@ -32,8 +32,8 @@ def log_action(
     new resources in parameters; when such an exception is raised, it shows a bug in our code.
     """
     legit_actions = (models.ActionType.BLACKLIST_DOMAIN_NAME, models.ActionType.REMOVE_BLACKLISTED_DOMAIN_NAME)
-    if (not user and not offerer and not venue and not finance_incident) and (action_type not in legit_actions):
-        raise ValueError("No resource (user, offerer, venue, finance incident)")
+    if not any((user, offerer, venue, finance_incident, bank_account)) and (action_type not in legit_actions):
+        raise ValueError("No resource (user, offerer, venue, finance incident, bank account)")
 
     if save:
         if user is not None and user.id is None:
@@ -61,6 +61,7 @@ def log_action(
         offerer=offerer,  # type: ignore [arg-type]
         venue=venue,  # type: ignore [arg-type]
         financeIncident=finance_incident,  # type: ignore [arg-type]
+        bankAccount=bank_account,  # type: ignore [arg-type]
         comment=comment or None,  # do not store empty string
         extraData=extra_data,
     )
