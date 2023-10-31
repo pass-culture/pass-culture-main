@@ -21,7 +21,8 @@
     "searchable(offer.subcategoryId)",
     "filterOnly(venue.departmentCode)",
     "filterOnly(venue.id)",
-    "filterOnly(venue.academy)"
+    "filterOnly(venue.academy)",
+    "searchable(formats)"
   ],
   "attributesToSnippet": null,
   "attributesToHighlight": null,

@@ -14,6 +14,7 @@ export const ADAGE_FILTERS_DEFAULT_VALUES: SearchFormValues = {
   categories: [],
   eventAddressType: OfferAddressType.OTHER,
   geolocRadius: 50,
+  formats: [],
 }
 
 export const computeFiltersInitialValues = (
@@ -39,6 +40,7 @@ export const adageFiltersToFacetFilters = ({
   departments,
   academies,
   categories,
+  formats,
 }: {
   domains: string[]
   uai?: string[] | null
@@ -47,6 +49,7 @@ export const adageFiltersToFacetFilters = ({
   academies: string[]
   eventAddressType: string
   categories: string[][]
+  formats: string[]
 }) => {
   const updatedFilters: Facets = []
   const filtersKeys: string[] = []
@@ -58,6 +61,8 @@ export const adageFiltersToFacetFilters = ({
   const filteredStudents: string[] = students.map(
     (student) => `offer.students:${student}`
   )
+
+  const filteredFormats: string[] = formats.map((format) => `formats:${format}`)
 
   let filteredDepartments: string[] = []
   if (eventAddressType == OfferAddressType.SCHOOL) {
@@ -120,6 +125,11 @@ export const adageFiltersToFacetFilters = ({
     updatedFilters.push(filteredCategories)
   }
 
+  if (filteredFormats.length > 0) {
+    filtersKeys.push('formats')
+    updatedFilters.push(filteredFormats)
+  }
+
   if (uai) {
     if (!uai.includes('all')) {
       filtersKeys.push('uaiCode')
@@ -139,7 +149,8 @@ export const serializeFiltersForData = (
   filters: SearchFormValues,
   currentSearch: string | null,
   categoriesOptions: Option<string[]>[],
-  domainsOptions: Option<number>[]
+  domainsOptions: Option<number>[],
+  isFormatEnable: boolean
 ) => {
   return {
     ...filters,
@@ -157,5 +168,6 @@ export const serializeFiltersForData = (
       (student) =>
         studentsForData.find((s) => s.label === student)?.valueForData
     ),
+    formats: isFormatEnable ? filters.formats : undefined,
   }
 }
