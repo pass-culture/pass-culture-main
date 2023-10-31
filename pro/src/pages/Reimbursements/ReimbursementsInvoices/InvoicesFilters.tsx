@@ -39,6 +39,7 @@ const InvoicesFilters = ({
   const isNewBankDetailsJourneyEnabled = useActiveFeature(
     'WIP_ENABLE_NEW_BANK_DETAILS_JOURNEY'
   )
+
   const {
     reimbursementPoint: selectedReimbursementPoint,
     periodStart: selectedPeriodStart,
@@ -106,7 +107,9 @@ const InvoicesFilters = ({
         >
           <SelectInput
             defaultOption={{
-              label: 'Tous les points de remboursement',
+              label: isNewBankDetailsJourneyEnabled
+                ? 'Tous les comptes bancaires'
+                : 'Tous les points de remboursement',
               value: 'all',
             }}
             onChange={setReimbursementPointFilter}
