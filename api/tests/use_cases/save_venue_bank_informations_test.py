@@ -21,7 +21,7 @@ from pcapi.infrastructure.repository.venue.venue_with_basic_information.venue_wi
     VenueWithBasicInformationSQLRepository,
 )
 from pcapi.models.api_errors import ApiErrors
-from pcapi.use_cases.save_venue_bank_informations import SaveVenueBankInformations
+from pcapi.use_cases.save_venue_bank_informations import SaveVenueBankInformationsFactory
 
 import tests.connector_creators.demarches_simplifiees_creators as dms_creators
 
@@ -32,7 +32,13 @@ pytestmark = pytest.mark.usefixtures("db_session")
 class SaveVenueBankInformationsTest:
     class GetReferentVenueTest:
         def setup_method(self):
-            self.save_venue_bank_informations = SaveVenueBankInformations(
+            SaveVenueBankInformationsV3 = SaveVenueBankInformationsFactory.get(settings.DMS_VENUE_PROCEDURE_ID_V3)
+            SaveVenueBankInformationsV4 = SaveVenueBankInformationsFactory.get(settings.DMS_VENUE_PROCEDURE_ID_V4)
+            self.save_venue_bank_informations_v3 = SaveVenueBankInformationsV3(
+                venue_repository=VenueWithBasicInformationSQLRepository(),
+                bank_informations_repository=BankInformationsSQLRepository(),
+            )
+            self.save_venue_bank_informations_v4 = SaveVenueBankInformationsV4(
                 venue_repository=VenueWithBasicInformationSQLRepository(),
                 bank_informations_repository=BankInformationsSQLRepository(),
             )
@@ -42,6 +48,7 @@ class SaveVenueBankInformationsTest:
                 siren="999999999",
                 status=BankInformationStatus.ACCEPTED,
                 application_id=1,
+                dossier_id=2,
                 iban="XXX",
                 bic="YYY",
                 modification_date=datetime.utcnow(),
@@ -49,10 +56,9 @@ class SaveVenueBankInformationsTest:
             )
             errors = CannotRegisterBankInformation()
 
-            self.save_venue_bank_informations.get_referent_venue(
+            self.save_venue_bank_informations_v3.get_referent_venue(
                 application_details,
                 errors,
-                procedure_version=3,
             )
             assert errors.errors["Venue"] == ["Venue not found"]
 
@@ -61,6 +67,7 @@ class SaveVenueBankInformationsTest:
                 siren="999999999",
                 status=BankInformationStatus.ACCEPTED,
                 application_id=1,
+                dossier_id=2,
                 iban="XXX",
                 bic="YYY",
                 modification_date=datetime.utcnow(),
@@ -68,10 +75,9 @@ class SaveVenueBankInformationsTest:
             )
             errors = CannotRegisterBankInformation()
 
-            self.save_venue_bank_informations.get_referent_venue(
+            self.save_venue_bank_informations_v3.get_referent_venue(
                 application_details,
                 errors,
-                procedure_version=3,
             )
             assert errors.errors["Venue"] == ["Venue not found"]
 
@@ -79,15 +85,15 @@ class SaveVenueBankInformationsTest:
             application_details = ApplicationDetail(
                 status=BankInformationStatus.ACCEPTED,
                 application_id=1,
+                dossier_id=2,
                 modification_date=datetime.utcnow(),
                 dms_token=None,
             )
             errors = CannotRegisterBankInformation()
 
-            self.save_venue_bank_informations.get_referent_venue(
+            self.save_venue_bank_informations_v4.get_referent_venue(
                 application_details,
                 errors,
-                procedure_version=4,
             )
             assert errors.errors["Venue"] == ["Venue not found"]
 
@@ -95,15 +101,15 @@ class SaveVenueBankInformationsTest:
             application_details = ApplicationDetail(
                 status=BankInformationStatus.ACCEPTED,
                 application_id=1,
+                dossier_id=2,
                 modification_date=datetime.utcnow(),
                 dms_token="1234567890abcdef",
             )
             errors = CannotRegisterBankInformation()
 
-            self.save_venue_bank_informations.get_referent_venue(
+            self.save_venue_bank_informations_v4.get_referent_venue(
                 application_details,
                 errors,
-                procedure_version=4,
             )
             assert errors.errors["Venue"] == ["Venue not found"]
 
@@ -115,6 +121,7 @@ class SaveVenueBankInformationsTest:
                 siren="999999999",
                 status=BankInformationStatus.ACCEPTED,
                 application_id=1,
+                dossier_id=2,
                 iban="XXX",
                 bic="YYY",
                 modification_date=datetime.utcnow(),
@@ -122,16 +129,16 @@ class SaveVenueBankInformationsTest:
             )
             errors = CannotRegisterBankInformation()
 
-            self.save_venue_bank_informations.get_referent_venue(
+            self.save_venue_bank_informations_v3.get_referent_venue(
                 application_details,
                 errors,
-                procedure_version=3,
             )
             assert errors.errors["Venue"] == ["Error while checking SIRET on Sirene API"]
 
     @patch("pcapi.use_cases.save_venue_bank_informations.archive_dossier")
     class SaveBankInformationV4ProcedureTest:
         def setup_method(self):
+            SaveVenueBankInformations = SaveVenueBankInformationsFactory.get(settings.DMS_VENUE_PROCEDURE_ID_V4)
             self.save_venue_bank_informations = SaveVenueBankInformations(
                 venue_repository=VenueWithBasicInformationSQLRepository(),
                 bank_informations_repository=BankInformationsSQLRepository(),
@@ -147,7 +154,6 @@ class SaveVenueBankInformationsTest:
 
             self.save_venue_bank_informations.execute(
                 application_details=application_details,
-                procedure_id=settings.DMS_VENUE_PROCEDURE_ID_V4,
             )
 
             bank_information = BankInformation.query.one()
@@ -165,7 +171,6 @@ class SaveVenueBankInformationsTest:
 
             self.save_venue_bank_informations.execute(
                 application_details=application_details,
-                procedure_id=settings.DMS_VENUE_PROCEDURE_ID_V4,
             )
 
             assert BankInformation.query.count() == 0
@@ -179,7 +184,6 @@ class SaveVenueBankInformationsTest:
 
             self.save_venue_bank_informations.execute(
                 application_details=application_details,
-                procedure_id=settings.DMS_VENUE_PROCEDURE_ID_V4,
             )
 
             bank_information = BankInformation.query.one()
@@ -198,7 +202,6 @@ class SaveVenueBankInformationsTest:
 
             self.save_venue_bank_informations.execute(
                 application_details=application_details,
-                procedure_id=settings.DMS_VENUE_PROCEDURE_ID_V4,
             )
 
             bank_information = BankInformation.query.one()
@@ -218,7 +221,6 @@ class SaveVenueBankInformationsTest:
 
             self.save_venue_bank_informations.execute(
                 application_details=application_details,
-                procedure_id=settings.DMS_VENUE_PROCEDURE_ID_V4,
             )
 
             bank_information = BankInformation.query.one()
@@ -237,7 +239,6 @@ class SaveVenueBankInformationsTest:
 
             self.save_venue_bank_informations.execute(
                 application_details=application_details,
-                procedure_id=settings.DMS_VENUE_PROCEDURE_ID_V4,
             )
 
             bank_information = BankInformation.query.one()
@@ -250,6 +251,7 @@ class SaveVenueBankInformationsTest:
     @patch("pcapi.use_cases.save_venue_bank_informations.archive_dossier")
     class UpdateBankInformationV4ProcedureTest:
         def setup_method(self):
+            SaveVenueBankInformations = SaveVenueBankInformationsFactory.get(settings.DMS_VENUE_PROCEDURE_ID_V4)
             self.save_venue_bank_informations = SaveVenueBankInformations(
                 venue_repository=VenueWithBasicInformationSQLRepository(),
                 bank_informations_repository=BankInformationsSQLRepository(),
@@ -270,7 +272,6 @@ class SaveVenueBankInformationsTest:
 
             self.save_venue_bank_informations.execute(
                 application_details=application_details,
-                procedure_id=settings.DMS_VENUE_PROCEDURE_ID_V4,
             )
 
             bank_information = BankInformation.query.one()
@@ -293,9 +294,7 @@ class SaveVenueBankInformationsTest:
             )
             application_details = ds_bank_information_application_details_from_raw_data(application_raw_data, 4)
 
-            self.save_venue_bank_informations.execute(
-                application_details=application_details, procedure_id=settings.DMS_VENUE_PROCEDURE_ID_V4
-            )
+            self.save_venue_bank_informations.execute(application_details=application_details)
 
             bank_information = BankInformation.query.one()
             assert bank_information.venue == venue_with_accpeted_bank_info
@@ -336,7 +335,6 @@ class SaveVenueBankInformationsTest:
             with pytest.raises(ApiErrors) as errors:
                 self.save_venue_bank_informations.execute(
                     application_details=application_details,
-                    procedure_id=settings.DMS_VENUE_PROCEDURE_ID_V4,
                 )
 
             # Then
@@ -354,6 +352,7 @@ class SaveVenueBankInformationsTest:
         dossier_id = "Q4zzaXAtOEE1NSg5"
 
         def setup_method(self):
+            SaveVenueBankInformations = SaveVenueBankInformationsFactory.get(settings.DMS_VENUE_PROCEDURE_ID_V4)
             self.save_venue_bank_informations = SaveVenueBankInformations(
                 venue_repository=VenueWithBasicInformationSQLRepository(),
                 bank_informations_repository=BankInformationsSQLRepository(),
@@ -364,12 +363,12 @@ class SaveVenueBankInformationsTest:
                 "siren": "999999999",
                 "status": BankInformationStatus.ACCEPTED,
                 "application_id": self.application_id,
+                "dossier_id": self.dossier_id,
                 "iban": "FR7630007000111234567890144",
                 "bic": "SOGEFRPP",
                 "modification_date": datetime.utcnow(),
                 "venue_name": "venuedemo",
                 "error_annotation_id": self.annotation_id,
-                "dossier_id": self.dossier_id,
                 "dms_token": "1234567890abcdef",
             }
             if updated_field:
@@ -381,7 +380,6 @@ class SaveVenueBankInformationsTest:
 
             self.save_venue_bank_informations.execute(
                 application_details=application_details,
-                procedure_id=settings.DMS_VENUE_PROCEDURE_ID_V4,
             )
 
             mock_update_text_annotation.assert_called_once_with(
@@ -398,7 +396,6 @@ class SaveVenueBankInformationsTest:
 
             self.save_venue_bank_informations.execute(
                 application_details=application_details,
-                procedure_id=settings.DMS_VENUE_PROCEDURE_ID_V4,
             )
 
             mock_update_text_annotation.assert_called_once_with(
@@ -417,7 +414,6 @@ class SaveVenueBankInformationsTest:
 
             self.save_venue_bank_informations.execute(
                 application_details=application_details,
-                procedure_id=settings.DMS_VENUE_PROCEDURE_ID_V4,
             )
 
             mock_update_text_annotation.assert_called_once_with(
@@ -436,7 +432,6 @@ class SaveVenueBankInformationsTest:
 
             self.save_venue_bank_informations.execute(
                 application_details=application_details,
-                procedure_id=settings.DMS_VENUE_PROCEDURE_ID_V4,
             )
 
             mock_update_text_annotation.assert_called_once_with(
@@ -453,7 +448,6 @@ class SaveVenueBankInformationsTest:
 
             self.save_venue_bank_informations.execute(
                 application_details=application_details,
-                procedure_id=settings.DMS_VENUE_PROCEDURE_ID_V4,
             )
 
             mock_update_text_annotation.assert_called_once_with(
@@ -466,6 +460,7 @@ class SaveVenueBankInformationsTest:
     @patch("pcapi.use_cases.save_venue_bank_informations.archive_dossier")
     class SaveBankInformationUpdateTextTest:
         def setup_method(self):
+            SaveVenueBankInformations = SaveVenueBankInformationsFactory.get(settings.DMS_VENUE_PROCEDURE_ID_V4)
             self.save_venue_bank_informations = SaveVenueBankInformations(
                 venue_repository=VenueWithBasicInformationSQLRepository(),
                 bank_informations_repository=BankInformationsSQLRepository(),
@@ -477,12 +472,12 @@ class SaveVenueBankInformationsTest:
                 "siret": "36252187900034",
                 "status": BankInformationStatus.ACCEPTED,
                 "application_id": 1,
+                "dossier_id": "DOSSIER_ID",
                 "iban": "FR7630007000111234567890144",
                 "bic": "SOGEFRPP",
                 "modification_date": datetime.utcnow(),
                 "venue_name": "venuedemo",
                 "error_annotation_id": "ANNOTATION_ID",
-                "dossier_id": "DOSSIER_ID",
                 "dms_token": "1234567890abcdef",
             }
             if updated_field:
@@ -495,9 +490,7 @@ class SaveVenueBankInformationsTest:
             offerers_factories.VenueFactory(name="venuedemo", pricing_point="self", dmsToken="1234567890abcdef")
             application_details = self.build_application_detail()
 
-            self.save_venue_bank_informations.execute(
-                application_details=application_details, procedure_id=settings.DMS_VENUE_PROCEDURE_ID_V4
-            )
+            self.save_venue_bank_informations.execute(application_details=application_details)
 
             bank_information_count = BankInformation.query.count()
             assert bank_information_count == 1
@@ -515,7 +508,6 @@ class SaveVenueBankInformationsTest:
             application_details = self.build_application_detail({"status": BankInformationStatus.REJECTED})
             self.save_venue_bank_informations.execute(
                 application_details=application_details,
-                procedure_id=settings.DMS_VENUE_PROCEDURE_ID_V4,
             )
 
             bank_information_count = BankInformation.query.count()
@@ -530,7 +522,6 @@ class SaveVenueBankInformationsTest:
 
             self.save_venue_bank_informations.execute(
                 application_details=application_details,
-                procedure_id=settings.DMS_VENUE_PROCEDURE_ID_V4,
             )
 
             bank_information_count = BankInformation.query.count()
