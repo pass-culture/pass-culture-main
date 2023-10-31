@@ -1,3 +1,5 @@
+import { EacFormat } from 'apiClient/adage'
+
 import { SearchFormValues } from '../OffersSearch/OffersSearch'
 import { adageFiltersToFacetFilters, serializeFiltersForData } from '../utils'
 
@@ -8,6 +10,7 @@ describe('adageFiltersToFacetFilters', () => {
   const academies: string[] = ['Paris']
 
   const categories: string[][] = [['categorie1', 'categorie2']]
+  const formats: string[] = [EacFormat.CONCERT]
 
   it('should return facet filter from form values', () => {
     expect(
@@ -19,6 +22,7 @@ describe('adageFiltersToFacetFilters', () => {
         departments,
         academies,
         categories,
+        formats,
       })
     ).toStrictEqual({
       queryFilters: [
@@ -28,6 +32,7 @@ describe('adageFiltersToFacetFilters', () => {
         ['offer.schoolInterventionArea:01'],
         ['venue.academy:Paris'],
         ['offer.subcategoryId:categorie1', 'offer.subcategoryId:categorie2'],
+        ['formats:Concert'],
         ['offer.educationalInstitutionUAICode:all'],
       ],
       filtersKeys: [
@@ -37,6 +42,7 @@ describe('adageFiltersToFacetFilters', () => {
         'departments',
         'academies',
         'categories',
+        'formats',
       ],
     })
   })
@@ -54,6 +60,7 @@ describe('adageFiltersToFacetFilters', () => {
         departments,
         academies,
         categories,
+        formats,
       })
     ).toStrictEqual({
       queryFilters: [
@@ -63,6 +70,7 @@ describe('adageFiltersToFacetFilters', () => {
         ['offer.schoolInterventionArea:01'],
         ['venue.academy:Paris'],
         ['offer.subcategoryId:categorie1', 'offer.subcategoryId:categorie2'],
+        ['formats:Concert'],
         ['offer.educationalInstitutionUAICode:123456'],
       ],
       filtersKeys: [
@@ -72,6 +80,7 @@ describe('adageFiltersToFacetFilters', () => {
         'departments',
         'academies',
         'categories',
+        'formats',
         'uaiCode',
       ],
     })
@@ -86,6 +95,7 @@ describe('adageFiltersToFacetFilters', () => {
         departments,
         academies,
         categories,
+        formats,
       })
     ).toStrictEqual({
       queryFilters: [
@@ -95,6 +105,7 @@ describe('adageFiltersToFacetFilters', () => {
         ['offer.schoolInterventionArea:01'],
         ['venue.academy:Paris'],
         ['offer.subcategoryId:categorie1', 'offer.subcategoryId:categorie2'],
+        ['formats:Concert'],
       ],
       filtersKeys: [
         'eventAddressType',
@@ -103,6 +114,7 @@ describe('adageFiltersToFacetFilters', () => {
         'departments',
         'academies',
         'categories',
+        'formats',
       ],
     })
   })
@@ -116,6 +128,7 @@ describe('adageFiltersToFacetFilters', () => {
         departments,
         academies,
         categories,
+        formats,
       })
     ).toStrictEqual({
       queryFilters: [
@@ -125,6 +138,7 @@ describe('adageFiltersToFacetFilters', () => {
         ['venue.departmentCode:01', 'offer.interventionArea:01'],
         ['venue.academy:Paris'],
         ['offer.subcategoryId:categorie1', 'offer.subcategoryId:categorie2'],
+        ['formats:Concert'],
       ],
       filtersKeys: [
         'eventAddressType',
@@ -133,6 +147,7 @@ describe('adageFiltersToFacetFilters', () => {
         'departments',
         'academies',
         'categories',
+        'formats',
       ],
     })
   })
@@ -152,13 +167,15 @@ describe('serializeFiltersForData', () => {
       departments: ['01'],
       academies: ['Paris'],
       categories: [['subcat1', 'subcat3']],
+      formats: [EacFormat.CONCERT],
       geolocRadius: 10,
     }
     const result = serializeFiltersForData(
       filters,
       'test',
       categoriesOptions,
-      domainsOptions
+      domainsOptions,
+      true
     )
 
     expect(result).toStrictEqual({
@@ -169,6 +186,38 @@ describe('serializeFiltersForData', () => {
       departments: ['01'],
       academies: ['Paris'],
       categories: ['Category 1', 'Category 2'],
+      formats: ['Concert'],
+      geolocRadius: 10,
+    })
+  })
+  it('should not serialize serialise formats if ff is not active', () => {
+    const filters: SearchFormValues = {
+      domains: ['1'],
+      students: ['Collège - 4e'],
+      eventAddressType: 'school',
+      departments: ['01'],
+      academies: ['Paris'],
+      categories: [['subcat1', 'subcat3']],
+      formats: [EacFormat.CONCERT],
+      geolocRadius: 10,
+    }
+    const result = serializeFiltersForData(
+      filters,
+      'test',
+      categoriesOptions,
+      domainsOptions,
+      false
+    )
+
+    expect(result).toStrictEqual({
+      domains: ['domaine1'],
+      query: 'test',
+      students: ['Collège quatrième'],
+      eventAddressType: 'school',
+      departments: ['01'],
+      academies: ['Paris'],
+      categories: ['Category 1', 'Category 2'],
+      formats: undefined,
       geolocRadius: 10,
     })
   })

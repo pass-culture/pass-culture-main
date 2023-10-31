@@ -3,7 +3,7 @@ import { userEvent } from '@testing-library/user-event'
 import { Formik } from 'formik'
 import React from 'react'
 
-import { AuthenticatedResponse } from 'apiClient/adage'
+import { AuthenticatedResponse, EacFormat } from 'apiClient/adage'
 import { AdageUserContextProvider } from 'pages/AdageIframe/app/providers/AdageUserContext'
 import { defaultAdageUser } from 'utils/adageFactories'
 import { renderWithProviders } from 'utils/renderWithProviders'
@@ -32,11 +32,13 @@ const renderOfferFilters = ({
   localisationFilterState = LocalisationFilterStates.NONE,
   adageUser = defaultAdageUser,
   storeOverrides = null,
+  isFormatEnabled = false,
 }: {
   initialValues: SearchFormValues
   localisationFilterState?: LocalisationFilterStates
   adageUser?: AuthenticatedResponse
   storeOverrides?: unknown
+  isFormatEnabled?: boolean
 }) =>
   renderWithProviders(
     <AdageUserContextProvider adageUser={adageUser}>
@@ -51,6 +53,7 @@ const renderOfferFilters = ({
             { value: 2, label: 'Architecture' },
             { value: 3, label: 'Arts' },
           ]}
+          isFormatEnabled={isFormatEnabled}
         />
       </Formik>
     </AdageUserContextProvider>,
@@ -65,6 +68,7 @@ const initialValues = {
   departments: [],
   academies: [],
   categories: [],
+  formats: [],
   geolocRadius: 50,
 }
 
@@ -119,6 +123,28 @@ describe('OfferFilters', () => {
     await userEvent.click(screen.getAllByTestId('search-button-modal')[0])
 
     expect(handleSubmit).toHaveBeenCalled()
+  })
+
+  it('should submit formats values onclick modal search button', async () => {
+    renderOfferFilters({
+      initialValues: {
+        ...initialValues,
+        formats: [EacFormat.CONCERT, EacFormat.REPR_SENTATION],
+      },
+      isFormatEnabled: true,
+    })
+
+    await userEvent.click(screen.getByRole('button', { name: 'Format (2)' }))
+
+    await userEvent.click(screen.getAllByTestId('search-button-modal')[0])
+
+    expect(handleSubmit).toHaveBeenCalledWith(
+      expect.objectContaining({
+        ...initialValues,
+        formats: [EacFormat.CONCERT, EacFormat.REPR_SENTATION],
+      }),
+      expect.anything()
+    )
   })
 
   it('should submit onclick modal search button school level', async () => {
@@ -190,7 +216,7 @@ describe('OfferFilters', () => {
     expect(screen.getByText('Arts')).toBeInTheDocument()
   })
 
-  it('should display departments and academies button in localisation filter modal', async () => {
+  it('should display departments and academies button in localisation filter modal', () => {
     renderOfferFilters({
       initialValues: initialValues,
       localisationFilterState: LocalisationFilterStates.NONE,
@@ -201,7 +227,7 @@ describe('OfferFilters', () => {
     expect(screen.getByText('Choisir une académie')).toBeInTheDocument()
   })
 
-  it('should display geoloc button in localisation filter modal', async () => {
+  it('should display geoloc button in localisation filter modal', () => {
     renderOfferFilters({
       initialValues: initialValues,
       localisationFilterState: LocalisationFilterStates.NONE,
@@ -214,7 +240,7 @@ describe('OfferFilters', () => {
     ).toBeInTheDocument()
   })
 
-  it('should not display geoloc button in localisation filter modal if the user does not have a valid geoloc', async () => {
+  it('should not display geoloc button in localisation filter modal if the user does not have a valid geoloc', () => {
     renderOfferFilters({
       initialValues: initialValues,
       localisationFilterState: LocalisationFilterStates.NONE,
@@ -227,7 +253,7 @@ describe('OfferFilters', () => {
     ).not.toBeInTheDocument()
   })
 
-  it('should display departments options in localisation filter modal', async () => {
+  it('should display departments options in localisation filter modal', () => {
     renderOfferFilters({
       initialValues: initialValues,
       localisationFilterState: LocalisationFilterStates.DEPARTMENTS,
@@ -237,7 +263,7 @@ describe('OfferFilters', () => {
       screen.getByPlaceholderText('Ex: 59 ou Hauts-de-France')
     ).toBeInTheDocument()
   })
-  it('should display academies options in localisation filter modal', async () => {
+  it('should display academies options in localisation filter modal', () => {
     renderOfferFilters({
       initialValues: initialValues,
       localisationFilterState: LocalisationFilterStates.ACADEMIES,
@@ -246,7 +272,7 @@ describe('OfferFilters', () => {
     expect(screen.getByPlaceholderText('Ex: Nantes')).toBeInTheDocument()
   })
 
-  it('should display radius range input in localisation filter modal', async () => {
+  it('should display radius range input in localisation filter modal', () => {
     renderOfferFilters({
       initialValues: initialValues,
       localisationFilterState: LocalisationFilterStates.GEOLOCATION,
