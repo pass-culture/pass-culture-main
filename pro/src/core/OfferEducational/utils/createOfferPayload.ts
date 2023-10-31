@@ -53,10 +53,11 @@ export const serializeDates = (
 export const createCollectiveOfferPayload = (
   offer: OfferEducationalFormValues,
   isTemplate: boolean,
-  offerTemplateId?: number
+  offerTemplateId?: number,
+  isFormatActive?: boolean
 ): PostCollectiveOfferTemplateBodyModel => ({
   venueId: Number(offer.venueId),
-  subcategoryId: offer.subCategory,
+  subcategoryId: isFormatActive ? null : offer.subCategory,
   name: offer.title,
   bookingEmails: offer.notificationEmails,
   description: offer.description,
@@ -81,4 +82,5 @@ export const createCollectiveOfferPayload = (
     offer.beginningDate && offer.endingDate
       ? serializeDates(offer.beginningDate, offer.endingDate, offer.hour)
       : undefined,
+  formats: isFormatActive ? offer.formats : null,
 })

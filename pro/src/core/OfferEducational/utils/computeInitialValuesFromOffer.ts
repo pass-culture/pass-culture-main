@@ -192,6 +192,7 @@ export const computeInitialValuesFromOffer = (
     imageUrl: offer.imageUrl || DEFAULT_EAC_FORM_VALUES.imageUrl,
     imageCredit: offer.imageCredit || DEFAULT_EAC_FORM_VALUES.imageCredit,
     'search-domains': '',
+    'search-formats': '',
     'search-interventionArea': '',
     nationalProgramId: offer.nationalProgram?.id?.toString() || '',
     isTemplate: offer.isTemplate,
@@ -213,5 +214,6 @@ export const computeInitialValuesFromOffer = (
       isCollectiveOfferTemplate(offer) && offer.dates
         ? format(toDateStrippedOfTimezone(offer.dates.start), FORMAT_HH_mm)
         : DEFAULT_EAC_FORM_VALUES.hour,
+    formats: offer.formats ?? DEFAULT_EAC_FORM_VALUES.formats,
   }
 }

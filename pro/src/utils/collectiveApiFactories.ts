@@ -1,6 +1,7 @@
 /* istanbul ignore file: Those are test helpers, their coverage is not relevant */
 import { addDays } from 'date-fns'
 
+import { EacFormat } from 'apiClient/adage'
 import {
   CategoryResponseModel,
   CollectiveBookingBankInformationStatus,
@@ -69,6 +70,7 @@ const sharedCollectiveOfferData = {
     id: 1,
     name: 'Collège au cinéma',
   },
+  formats: [EacFormat.ATELIER_DE_PRATIQUE],
 }
 
 export const collectiveOfferFactory = (

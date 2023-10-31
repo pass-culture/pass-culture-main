@@ -1,4 +1,8 @@
-import { PatchCollectiveOfferBodyModel, SubcategoryIdEnum } from 'apiClient/v1'
+import {
+  EacFormat,
+  PatchCollectiveOfferBodyModel,
+  SubcategoryIdEnum,
+} from 'apiClient/v1'
 import { OfferAddressType } from 'apiClient/v2'
 import { OfferEducationalFormValues } from 'core/OfferEducational'
 import { buildStudentLevelsMapWithDefaultValue } from 'core/OfferEducational/utils/buildStudentLevelsMapWithDefaultValue'
@@ -79,6 +83,7 @@ describe('createPatchOfferPayload', () => {
     endingDate: '2021-09-30',
     hour: '10:00',
     isTemplate: false,
+    formats: [EacFormat.ATELIER_DE_PRATIQUE],
   }
 
   const patchOfferPayload: PatchCollectiveOfferBodyModel = {
@@ -103,6 +108,7 @@ describe('createPatchOfferPayload', () => {
     interventionArea: ['2B'],
     domains: [123],
     nationalProgramId: 1,
+    formats: [EacFormat.ATELIER_DE_PRATIQUE],
   }
 
   it('should return the correct patch offer payload for a non-template offer', () => {

@@ -1,6 +1,7 @@
 import { useFormikContext } from 'formik'
 import React, { useEffect, useState } from 'react'
 
+import { EacFormat } from 'apiClient/adage'
 import FormLayout from 'components/FormLayout'
 import {
   DEFAULT_EAC_FORM_VALUES,
@@ -10,6 +11,7 @@ import {
   MAX_DETAILS_LENGTH,
 } from 'core/OfferEducational'
 import { SelectOption } from 'custom_types/form'
+import useActiveFeature from 'hooks/useActiveFeature'
 import {
   InfoBox,
   MultiSelectAutocomplete,
@@ -17,6 +19,7 @@ import {
   TextArea,
   TextInput,
 } from 'ui-kit'
+import SelectAutocomplete from 'ui-kit/form/SelectAutoComplete/SelectAutocomplete'
 
 import {
   CATEGORY_LABEL,
@@ -47,6 +50,8 @@ const FormOfferType = ({
     EducationalSubCategory[] | null
   >(null)
 
+  const isFormatActive = useActiveFeature('WIP_ENABLE_FORMAT')
+
   useEffect(() => {
     async function preFillSubCategoryField() {
       const subCategoryObject = subCategories.find(
@@ -73,6 +78,11 @@ const FormOfferType = ({
     preFillSubCategoryField()
   }, [values.category, setFieldValue, subCategories, values.subCategory])
 
+  const eacFormatOptions = Object.entries(EacFormat).map(([, value]) => ({
+    value: value,
+    label: String(value),
+  }))
+
   let categoriesOptions = categories.map((item) => ({
     value: item['id'] as string,
     label: item['label'] as string,
@@ -96,28 +106,44 @@ const FormOfferType = ({
       ...subCategoriesOptions,
     ]
   }
+
   return (
     <FormLayout.Section
       description="Le type de l’offre permet de la caractériser et de la valoriser au mieux pour les enseignants et chefs d’établissement."
       title="Type d’offre"
     >
-      <FormLayout.Row>
-        <Select
-          label={CATEGORY_LABEL}
-          name="category"
-          options={categoriesOptions}
-          disabled={disableForm}
-        />
-      </FormLayout.Row>
-      {!!availableSubCategories?.length && (
+      {isFormatActive ? (
         <FormLayout.Row>
-          <Select
-            label={SUBCATEGORY_LABEL}
-            name="subCategory"
-            options={subCategoriesOptions}
+          <SelectAutocomplete
+            multi
+            options={eacFormatOptions}
+            label="Format"
+            placeholder="Sélectionner un format"
+            name="formats"
             disabled={disableForm}
           />
         </FormLayout.Row>
+      ) : (
+        <>
+          <FormLayout.Row>
+            <Select
+              label={CATEGORY_LABEL}
+              name="category"
+              options={categoriesOptions}
+              disabled={disableForm}
+            />
+          </FormLayout.Row>
+          {!!availableSubCategories?.length && (
+            <FormLayout.Row>
+              <Select
+                label={SUBCATEGORY_LABEL}
+                name="subCategory"
+                options={subCategoriesOptions}
+                disabled={disableForm}
+              />
+            </FormLayout.Row>
+          )}
+        </>
       )}
       {domainsOptions.length > 0 && (
         <FormLayout.Row>
