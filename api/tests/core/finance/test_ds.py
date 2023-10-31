@@ -15,7 +15,7 @@ from tests.connector_creators import demarches_simplifiees_creators as ds_creato
 @pytest.mark.usefixtures("db_session")
 class ImportDSBankInformationApplicationsTest:
     @patch("pcapi.connectors.dms.api.DMSGraphQLClient.get_pro_bank_nodes_states")
-    @patch("pcapi.core.finance.ds.save_venue_bank_informations.execute")
+    @patch("pcapi.use_cases.save_venue_bank_informations.SaveVenueBankInformationsV4.execute")
     def test_import_empty_db(self, mocked_save_venue_bank_informations_execute, mocked_get_pro_bank_nodes):
         mocked_get_pro_bank_nodes.return_value = [
             ds_creators.get_bank_info_response_procedure_v4(),
@@ -37,10 +37,6 @@ class ImportDSBankInformationApplicationsTest:
         assert application_detail_first_call_arg.bic == "SOGEFRPP"
         assert application_detail_first_call_arg.dms_token == "1234567890abcdef"
         assert application_detail_first_call_arg.dossier_id == "Q2zzbXAtNzgyODAw"
-        assert (
-            mocked_save_venue_bank_informations_execute.mock_calls[0].kwargs["procedure_id"]
-            == settings.DMS_VENUE_PROCEDURE_ID_V4
-        )
 
         application_detail_second_call_arg = mocked_save_venue_bank_informations_execute.mock_calls[1].kwargs[
             "application_details"
@@ -52,10 +48,6 @@ class ImportDSBankInformationApplicationsTest:
         assert application_detail_second_call_arg.bic == "SOGEFRPP"
         assert application_detail_second_call_arg.dms_token == "987654321fedcba"
         assert application_detail_second_call_arg.dossier_id == "AbLQmfezdf"
-        assert (
-            mocked_save_venue_bank_informations_execute.mock_calls[1].kwargs["procedure_id"]
-            == settings.DMS_VENUE_PROCEDURE_ID_V4
-        )
 
         latest_import = ds_models.LatestDmsImport.query.one()
         assert latest_import.procedureId == int(settings.DMS_VENUE_PROCEDURE_ID_V4)

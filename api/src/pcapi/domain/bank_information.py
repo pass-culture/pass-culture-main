@@ -29,7 +29,7 @@ def check_new_bank_information_has_a_more_advanced_status(
     bank_information: BankInformations, status: BankInformationStatus, api_errors: CannotRegisterBankInformation
 ) -> None:
     is_new_bank_information_status_more_important_than_saved_one = (
-        bank_information.status and status_weight[status] < status_weight[bank_information.status]  # type: ignore [index]
+        bank_information.status and status_weight[status] < status_weight[bank_information.status]
     )
     if is_new_bank_information_status_more_important_than_saved_one:
         if status == BankInformationStatus.DRAFT:

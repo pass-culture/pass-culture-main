@@ -4,8 +4,8 @@ from pcapi.domain.bank_informations.bank_informations import BankInformations
 
 def to_domain(bank_informations_sql_entity: BankInformationsSQLEntity) -> BankInformations:
     return BankInformations(
-        application_id=bank_informations_sql_entity.applicationId,  # type: ignore [arg-type]
-        status=bank_informations_sql_entity.status,  # type: ignore [arg-type]
+        application_id=bank_informations_sql_entity.applicationId,
+        status=bank_informations_sql_entity.status,
         iban=bank_informations_sql_entity.iban,
         bic=bank_informations_sql_entity.bic,
         date_modified=bank_informations_sql_entity.dateModified,
