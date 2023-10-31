@@ -516,6 +516,8 @@ def format_modified_info_name(info_name: str) -> str:
             return "ID Label"
         case "venueTypeCode":
             return "Activité principale"
+        case "label":
+            return "Intitulé"
         case _:
             return info_name.replace("_", " ").capitalize()
 

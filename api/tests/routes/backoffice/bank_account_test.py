@@ -12,8 +12,10 @@ from pcapi.core.permissions import models as perm_models
 from pcapi.core.testing import assert_num_queries
 from pcapi.utils.human_ids import humanize
 
+from .helpers import button as button_helpers
 from .helpers import html_parser
 from .helpers.get import GetEndpointHelper
+from .helpers.post import PostEndpointHelper
 
 
 pytestmark = [
@@ -32,6 +34,7 @@ class GetBankAccountTest(GetEndpointHelper):
     # get bank_account (1 query)
     expected_num_queries = 3
 
+    @mock.patch("pcapi.routes.backoffice.bank_account.blueprint.dms_api.get_dms_stats", lambda x: None)
     def test_get_bank_account(self, authenticated_client):
         bank_account = finance_factories.BankAccountFactory()
 
@@ -231,3 +234,72 @@ class GetOffererHistoryTest(GetEndpointHelper):
         assert rows[1]["Type"] == "Lieu associé à un compte bancaire"
         assert rows[1]["Date/Heure"].startswith(link_action.actionDate.strftime("Le %d/%m/%Y à "))
         assert rows[1]["Auteur"] == legit_user.full_name
+
+
+@mock.patch("pcapi.routes.backoffice.bank_account.blueprint.dms_api.get_dms_stats", lambda x: None)
+class EditBankAccountButtonTest(button_helpers.ButtonHelper):
+    needed_permission = perm_models.Permissions.MANAGE_PRO_ENTITY
+    button_label = "Modifier les informations"
+
+    @property
+    def path(self):
+        bank_account = finance_factories.BankAccountFactory()
+        return url_for("backoffice_web.bank_account.update_bank_account", bank_account_id=bank_account.id)
+
+
+class UpdateBankAccountTest(PostEndpointHelper):
+    endpoint = "backoffice_web.bank_account.update_bank_account"
+    endpoint_kwargs = {"bank_account_id": 1}
+    needed_permission = perm_models.Permissions.MANAGE_PRO_ENTITY
+
+    def test_update_bank_account(self, legit_user, authenticated_client):
+        bank_account = finance_factories.BankAccountFactory()
+
+        old_label = bank_account.label
+        new_label = "Mon compte bancaire"
+
+        response = self.post_to_endpoint(
+            authenticated_client, bank_account_id=bank_account.id, form={"label": new_label}
+        )
+        assert response.status_code == 303
+
+        expected_url = url_for("backoffice_web.bank_account.get", bank_account_id=bank_account.id, _external=True)
+        assert response.location == expected_url
+
+        assert bank_account.label == new_label
+
+        assert len(bank_account.action_history) == 1
+        assert bank_account.action_history[0].actionType == history_models.ActionType.INFO_MODIFIED
+        assert bank_account.action_history[0].authorUser == legit_user
+        assert bank_account.action_history[0].extraData["modified_info"] == {
+            "label": {"old_info": old_label, "new_info": new_label}
+        }
+
+    def test_update_bank_account_unchanged_label(self, legit_user, authenticated_client):
+        bank_account = finance_factories.BankAccountFactory()
+        old_label = bank_account.label
+
+        response = self.post_to_endpoint(
+            authenticated_client, bank_account_id=bank_account.id, form={"label": old_label}
+        )
+        assert response.status_code == 303
+
+        expected_url = url_for("backoffice_web.bank_account.get", bank_account_id=bank_account.id, _external=True)
+        assert response.location == expected_url
+
+        assert bank_account.label == old_label
+        assert len(bank_account.action_history) == 0
+
+    @mock.patch("pcapi.routes.backoffice.bank_account.blueprint.dms_api.get_dms_stats", lambda x: None)
+    def test_update_bank_account_empty_label(self, legit_user, authenticated_client):
+        bank_account = finance_factories.BankAccountFactory(label="Original")
+
+        response = self.post_to_endpoint(authenticated_client, bank_account_id=bank_account.id, form={"label": ""})
+        assert response.status_code == 400
+
+        assert bank_account.label == "Original"
+        assert len(bank_account.action_history) == 0
+
+    def test_update_bank_account_not_found(self, legit_user, authenticated_client):
+        response = self.post_to_endpoint(authenticated_client, bank_account_id=1, form={"label": "Compte"})
+        assert response.status_code == 404
