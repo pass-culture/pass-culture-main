@@ -346,7 +346,7 @@ export const request = <T>(
         resolve(result.body)
       }
     } catch (error) {
-      if(error?.message === 'Failed to fetch' || error?.message.includes('NetworkError')) {
+      if(error instanceof Error &&  (error.message === 'Failed to fetch' || error.message.includes('NetworkError'))) {
         console.error(error)
       }
       else {
