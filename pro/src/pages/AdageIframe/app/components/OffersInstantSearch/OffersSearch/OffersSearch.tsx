@@ -5,6 +5,7 @@ import { useInstantSearch } from 'react-instantsearch'
 import { AdageFrontRoles, VenueResponse } from 'apiClient/adage'
 import { api, apiAdage } from 'apiClient/api'
 import { GET_DATA_ERROR_MESSAGE } from 'core/shared'
+import useActiveFeature from 'hooks/useActiveFeature'
 import useIsElementVisible from 'hooks/useIsElementVisible'
 import useNotification from 'hooks/useNotification'
 import useAdageUser from 'pages/AdageIframe/app/hooks/useAdageUser'
@@ -47,6 +48,7 @@ export interface SearchFormValues {
   eventAddressType: string
   categories: string[][]
   geolocRadius: number
+  formats: string[]
 }
 
 export const OffersSearch = ({
@@ -71,6 +73,7 @@ export const OffersSearch = ({
     (res) => res.indexId === MAIN_INDEX_ID
   )?.results
   const nbHits = mainOffersSearchResults?.nbHits
+  const isFormatEnabled = useActiveFeature('WIP_ENABLE_FORMAT')
 
   useEffect(() => {
     const getAllCategories = async () => {
@@ -137,7 +140,8 @@ export const OffersSearch = ({
               formik.values,
               currentSearch,
               categoriesOptions,
-              domainsOptions
+              domainsOptions,
+              isFormatEnabled
             )
           : {},
       })
@@ -181,6 +185,7 @@ export const OffersSearch = ({
             resetForm={resetForm}
             categoriesOptions={categoriesOptions}
             domainsOptions={domainsOptions}
+            isFormatEnabled={isFormatEnabled}
           />
         </div>
       </FormikContext.Provider>
