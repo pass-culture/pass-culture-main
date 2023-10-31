@@ -113,7 +113,10 @@ def search_pro() -> utils.BackofficeResponse:
         },
     )
 
-    if paginated_rows.total == 1 and FeatureToggle.WIP_BACKOFFICE_ENABLE_REDIRECT_SINGLE_RESULT.is_active():
+    if paginated_rows.total == 1 and (
+        result_type == search_forms.TypeOptions.BANK_ACCOUNT
+        or FeatureToggle.WIP_BACKOFFICE_ENABLE_REDIRECT_SINGLE_RESULT.is_active()
+    ):
         return redirect(
             context.get_pro_link(paginated_rows.items[0].id, q=form.q.data, departments=form.departments.data),
             code=303,

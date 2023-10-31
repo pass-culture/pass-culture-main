@@ -11,6 +11,7 @@ import typing
 
 from flask_sqlalchemy import BaseQuery
 import jwt
+import schwifty
 import sqlalchemy as sa
 import sqlalchemy.orm as sa_orm
 
@@ -51,6 +52,7 @@ from pcapi.routes.serialization import venues_serialize
 import pcapi.routes.serialization.base as serialize_base
 from pcapi.routes.serialization.offerers_serialize import OffererMemberStatus
 from pcapi.utils import crypto
+from pcapi.utils import human_ids
 from pcapi.utils import image_conversion
 import pcapi.utils.db as db_utils
 import pcapi.utils.email as email_utils
@@ -1401,18 +1403,34 @@ def get_bank_account_base_query(bank_account_id: int) -> BaseQuery:
 
 
 def search_bank_account(search_query: str, *_: typing.Any) -> BaseQuery:
-    bank_accounts = finance_models.BankAccount.query.options(sa.orm.joinedload(finance_models.BankAccount.offerer))
+    bank_accounts_query = finance_models.BankAccount.query.options(
+        sa.orm.joinedload(finance_models.BankAccount.offerer)
+    )
 
     search_query = search_query.strip()
     if not search_query:
-        return bank_accounts.filter(False)
+        return bank_accounts_query.filter(False)
 
-    if search_query.isnumeric():
-        bank_accounts = bank_accounts.filter(finance_models.BankAccount.id == int(search_query))
+    filters = []
+
+    try:
+        dehumanized_id = human_ids.dehumanize(search_query)
+    except human_ids.NonDehumanizableId:
+        pass
     else:
-        return bank_accounts.filter(False)
+        filters.append(finance_models.BankAccount.id == dehumanized_id)
 
-    return bank_accounts
+    try:
+        iban = schwifty.IBAN(search_query)
+    except ValueError:  # All SchwiftyException are ValueError
+        pass
+    else:
+        filters.append(finance_models.BankAccount.iban == iban.compact)
+
+    if not filters:
+        return bank_accounts_query.filter(False)
+
+    return bank_accounts_query.filter(sa.or_(*filters) if len(filters) > 0 else filters[0])
 
 
 def get_offerer_basic_info(offerer_id: int) -> sa.engine.Row:
