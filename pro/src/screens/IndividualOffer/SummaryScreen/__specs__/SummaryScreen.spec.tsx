@@ -18,13 +18,16 @@ import {
   IndividualOfferContextValues,
   IndividualOfferContext,
 } from 'context/IndividualOfferContext'
+import * as getIndividualOfferAdapter from 'core/Offers/adapters/getIndividualOfferAdapter/getIndividualOfferAdapter'
 import { OFFER_WIZARD_MODE } from 'core/Offers/constants'
+import { IndividualOffer } from 'core/Offers/types'
 import { getIndividualOfferPath } from 'core/Offers/utils/getIndividualOfferUrl'
 import * as useAnalytics from 'hooks/useAnalytics'
 import {
+  GetIndividualOfferFactory,
+  defaultGetOffererResponseModel,
   offerVenueFactory,
   offererFactory,
-  GetIndividualOfferFactory,
 } from 'utils/apiFactories'
 import {
   individualOfferCategoryFactory,
@@ -385,6 +388,153 @@ describe('Summary', () => {
       expect(
         await screen.findByText('Félicitations, vous avez créé votre offre !')
       ).toBeInTheDocument()
+    })
+
+    it('should display redirect modal if first non free offer', async () => {
+      const context = {
+        offer: individualOfferFactory(
+          individualStockFactory({ price: 2, quantity: null })
+        ),
+        venueId: 1,
+        showFirstNonFreeOfferPopin: true,
+        offererId: 1,
+      }
+      const storeOverride = {
+        features: {
+          initialized: true,
+          list: [
+            {
+              isActive: true,
+              nameKey: 'WIP_ENABLE_NEW_OFFER_CREATION_JOURNEY',
+            },
+            {
+              isActive: true,
+              nameKey: 'WIP_ENABLE_NEW_BANK_DETAILS_JOURNEY',
+            },
+          ],
+        },
+      }
+
+      vi.spyOn(getIndividualOfferAdapter, 'default').mockResolvedValue({
+        isOk: true,
+        message: '',
+        payload: {
+          status: OfferStatus.ACTIVE,
+          stocks: [individualStockFactory()],
+        } as IndividualOffer,
+      })
+
+      vi.spyOn(api, 'getOfferer').mockResolvedValue({
+        ...defaultGetOffererResponseModel,
+        hasValidBankAccount: false,
+        hasPendingBankAccount: false,
+      })
+
+      renderSummary(
+        context,
+        generatePath(
+          getIndividualOfferPath({
+            step: OFFER_WIZARD_STEP_IDS.SUMMARY,
+            mode: OFFER_WIZARD_MODE.CREATION,
+          }),
+          { offerId: 'AA' }
+        ),
+        storeOverride
+      )
+
+      await userEvent.click(
+        screen.getByRole('button', { name: /Publier l’offre/ })
+      )
+
+      expect(
+        await screen.findByText('Félicitations, vous avez créé votre offre !')
+      ).toBeInTheDocument()
+    })
+
+    it('should not display redirect modal if offer is free', async () => {
+      const context = {
+        offer: individualOfferFactory(),
+        venueId: 1,
+        showFirstNonFreeOfferPopin: true,
+      }
+      const storeOverride = {
+        features: {
+          initialized: true,
+          list: [
+            {
+              isActive: true,
+              nameKey: 'WIP_ENABLE_NEW_OFFER_CREATION_JOURNEY',
+            },
+            {
+              isActive: true,
+              nameKey: 'WIP_ENABLE_NEW_BANK_DETAILS_JOURNEY',
+            },
+          ],
+        },
+      }
+
+      renderSummary(
+        context,
+        generatePath(
+          getIndividualOfferPath({
+            step: OFFER_WIZARD_STEP_IDS.SUMMARY,
+            mode: OFFER_WIZARD_MODE.CREATION,
+          }),
+          { offerId: 'AA' }
+        ),
+        storeOverride
+      )
+
+      await userEvent.click(
+        screen.getByRole('button', { name: /Publier l’offre/ })
+      )
+
+      expect(
+        screen.queryByText('Félicitations, vous avez créé votre offre !')
+      ).not.toBeInTheDocument()
+    })
+
+    it('should not display redirect modal if showFirstNonFreeOfferPopin is false', async () => {
+      const context = {
+        offer: individualOfferFactory(),
+        venueId: 1,
+        showFirstNonFreeOfferPopin: false,
+      }
+      const storeOverride = {
+        features: {
+          initialized: true,
+          list: [
+            {
+              isActive: true,
+              nameKey: 'WIP_ENABLE_NEW_OFFER_CREATION_JOURNEY',
+            },
+            {
+              isActive: true,
+              nameKey: 'WIP_ENABLE_NEW_BANK_DETAILS_JOURNEY',
+            },
+          ],
+        },
+      }
+
+      renderSummary(
+        context,
+        generatePath(
+          getIndividualOfferPath({
+            step: OFFER_WIZARD_STEP_IDS.SUMMARY,
+            mode: OFFER_WIZARD_MODE.CREATION,
+          }),
+          { offerId: 'AA' }
+        ),
+        storeOverride
+      )
+
+      await userEvent.click(
+        screen.getByRole('button', { name: /Publier l’offre/ })
+      )
+
+      expect(
+        screen.queryByText('Félicitations, vous avez créé votre offre !')
+      ).not.toBeInTheDocument()
     })
   })
 

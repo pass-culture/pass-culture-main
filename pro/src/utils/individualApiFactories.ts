@@ -128,6 +128,7 @@ export const individualOfferVenueItemFactory = (
     hasMissingReimbursementPoint: false,
     withdrawalDetails: null,
     venueType: VenueTypeCode.AUTRE,
+    hasNonFreeOffers: false,
     ...customVenue,
   }
 }
@@ -293,6 +294,7 @@ export const individualOfferContextFactory = (
     setOffer: () => {},
     setSubcategory: () => {},
     showVenuePopin: {},
+    showFirstNonFreeOfferPopin: false,
     ...customContext,
   }
 }
