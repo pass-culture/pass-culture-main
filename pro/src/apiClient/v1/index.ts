@@ -119,7 +119,6 @@ export type { GetVenueManagingOffererResponseModel } from './models/GetVenueMana
 export type { GetVenuePricingPointResponseModel } from './models/GetVenuePricingPointResponseModel';
 export type { GetVenueResponseModel } from './models/GetVenueResponseModel';
 export type { GetVenuesOfOffererFromSiretResponseModel } from './models/GetVenuesOfOffererFromSiretResponseModel';
-export type { ImageResponse } from './models/ImageResponse';
 export type { InviteMemberQueryModel } from './models/InviteMemberQueryModel';
 export type { InvoiceListQueryModel } from './models/InvoiceListQueryModel';
 export type { InvoiceListResponseModel } from './models/InvoiceListResponseModel';
@@ -157,6 +156,7 @@ export type { OffererReimbursementPointResponseModel } from './models/OffererRei
 export type { OffererStatsData } from './models/OffererStatsData';
 export type { OffererStatsResponseModel } from './models/OffererStatsResponseModel';
 export type { OffererViewsModel } from './models/OffererViewsModel';
+export type { OfferImage } from './models/OfferImage';
 export { OfferStatus } from './models/OfferStatus';
 export { OfferType } from './models/OfferType';
 export type { PatchAllCollectiveOffersActiveStatusBodyModel } from './models/PatchAllCollectiveOffersActiveStatusBodyModel';

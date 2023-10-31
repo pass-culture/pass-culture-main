@@ -3,10 +3,10 @@
 /* tslint:disable */
 /* eslint-disable */
 
-import type { ImageResponse } from './ImageResponse';
+import type { OfferImage } from './OfferImage';
 
 export type TopOffersResponseData = {
-  image?: ImageResponse;
+  image?: OfferImage;
   numberOfViews: number;
   offerId: number;
   offerName: string;
