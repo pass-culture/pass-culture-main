@@ -1,6 +1,5 @@
-import { Offer, Stock } from 'core/Offers/types'
+import { Offer } from 'core/Offers/types'
 import { individualOfferFactory } from 'screens/Offers/utils/individualOffersFactories'
-import { stockFactory } from 'utils/apiFactories'
 
 import { offerHasBookingQuantity } from '../offerHasBookingQuantity'
 
@@ -9,7 +8,9 @@ describe('offerHasBookingQuantity', () => {
   let stock
   beforeEach(() => {
     const offer = individualOfferFactory()
-    const stockFactories = stockFactory() as Stock
+    const stockFactories = {
+      remainingQuantity: 0,
+    }
     stock = stockFactories
     offers = [
       { ...offer, stocks: [stock] },
