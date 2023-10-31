@@ -1,3 +1,4 @@
+import { format } from 'date-fns'
 import React, { useEffect, useState } from 'react'
 
 import { api } from 'apiClient/api'
@@ -10,6 +11,7 @@ import strokeNoBookingIcon from 'icons/stroke-no-booking.svg'
 import { ButtonLink } from 'ui-kit'
 import { ButtonVariant } from 'ui-kit/Button/types'
 import { SvgIcon } from 'ui-kit/SvgIcon/SvgIcon'
+import { FORMAT_DD_MM_YYYY_HH_mm } from 'utils/date'
 
 import { STEP_HOME_STATS_HASH } from '../HomepageBreadcrumb'
 
@@ -35,7 +37,7 @@ export const StatisticsDashboard = ({ offerer }: StatisticsDashboardProps) => {
 
     // eslint-disable-next-line @typescript-eslint/no-floating-promises
     loadStats()
-  }, [])
+  }, [offerer.id])
 
   const hasAtLeastOneOffer = Boolean(
     offerer.managedVenues?.some((venue) => venue.hasCreatedOffer)
@@ -63,7 +65,16 @@ export const StatisticsDashboard = ({ offerer }: StatisticsDashboardProps) => {
       {!isLoading && (
         <div className="h-card">
           <div className="h-card-inner">
-            {!stats?.jsonData ? (
+            {stats?.jsonData?.topOffers && stats.jsonData.dailyViews ? (
+              <div className={styles['data-container']}>
+                <MostViewedOffers
+                  topOffers={stats.jsonData.topOffers}
+                  dailyViews={stats.jsonData.dailyViews}
+                />
+
+                <CumulatedViews />
+              </div>
+            ) : (
               <div className={styles['no-data']}>
                 <SvgIcon
                   src={strokeNoBookingIcon}
@@ -77,19 +88,13 @@ export const StatisticsDashboard = ({ offerer }: StatisticsDashboardProps) => {
                   ? 'Les statistiques de consultation de vos offres seront bientôt disponibles.'
                   : 'Créez vos premières offres grand public pour être visible par les bénéficiaires'}
               </div>
-            ) : (
-              <div className={styles['data-container']}>
-                <MostViewedOffers
-                  topOffers={stats.jsonData.topOffers}
-                  dailyViews={stats.jsonData.dailyViews}
-                />
-
-                <CumulatedViews />
-              </div>
             )}
 
             <div className={styles['sync-date']}>
-              Dernière mise à jour : {stats?.syncDate ?? 'N/A'}
+              Dernière mise à jour :{' '}
+              {stats?.syncDate
+                ? format(new Date(stats.syncDate), FORMAT_DD_MM_YYYY_HH_mm)
+                : 'N/A'}
             </div>
           </div>
         </div>
