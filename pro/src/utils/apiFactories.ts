@@ -3,7 +3,6 @@ import {
   BookingRecapResponseModel,
   GetIndividualOfferResponseModel,
   GetOfferManagingOffererResponseModel,
-  GetOfferStockResponseModel,
   GetOfferVenueResponseModel,
   GetOffererResponseModel,
   GetOffererVenueResponseModel,
@@ -18,6 +17,8 @@ import {
   BookingOfferType,
   GetBookingResponse,
 } from 'apiClient/v2'
+
+import { individualGetOfferStockResponseModelFactory } from './individualApiFactories'
 
 let offerId = 1
 let venueId = 1
@@ -66,7 +67,7 @@ const collectiveStockFactory = (customStock = {}) => {
 
 export const GetIndividualOfferFactory = (
   customOffer = {},
-  customStock = stockFactory() || null,
+  customStock = individualGetOfferStockResponseModelFactory() || null,
   customVenue = offerVenueFactory()
 ): GetIndividualOfferResponseModel => {
   const stocks = customStock === null ? [] : [customStock]
@@ -147,25 +148,6 @@ export const offerVenueFactory = (
     audioDisabilityCompliant: true,
     managingOfferer: customOfferer,
     ...customVenue,
-  }
-}
-
-export const stockFactory = (customStock = {}): GetOfferStockResponseModel => {
-  const id = stockId++
-  return {
-    bookingsQuantity: 0,
-    id: id,
-    price: 10,
-    quantity: null,
-    remainingQuantity: 2,
-    dateCreated: '2020-04-12T19:31:12Z',
-    dateModified: '2020-04-12T19:31:12Z',
-    hasActivationCode: false,
-    isBookable: true,
-    isEventDeletable: true,
-    isEventExpired: false,
-    isSoftDeleted: false,
-    ...customStock,
   }
 }
 
