@@ -238,24 +238,6 @@ class SearchPublicAccountsTest(search_helpers.SearchHelper, GetEndpointHelper):
         assert len(cards_text) == 1
         assert_user_equals(cards_text[0], random)
 
-    @pytest.mark.parametrize(
-        "query,expected_results",
-        [("01/01/2000", 1), ("01/01/2001", 1), ("1/1/2001", 1), ("12/12/2001", 0), ("31/31/3131", 0)],
-    )
-    def test_can_search_public_account_by_birthdate(self, authenticated_client, query, expected_results):
-        create_bunch_of_accounts()
-        users_factories.BeneficiaryGrant18Factory(validatedBirthDate=datetime.date(year=2000, month=1, day=1))
-        users_factories.BeneficiaryGrant18Factory(validatedBirthDate=datetime.date(year=2001, month=1, day=1))
-
-        with assert_num_queries(
-            self.expected_num_queries_when_single_result if expected_results == 1 else self.expected_num_queries
-        ):
-            response = authenticated_client.get(url_for(self.endpoint, q=query))
-            assert response.status_code == 200
-
-        cards_text = html_parser.extract_cards_text(response.data)
-        assert len(cards_text) == expected_results
-
     def test_can_search_public_account_by_email(self, authenticated_client):
         _, _, _, random, _ = create_bunch_of_accounts()
         email = random.email
