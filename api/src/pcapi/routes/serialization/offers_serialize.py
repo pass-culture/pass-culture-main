@@ -237,14 +237,9 @@ class GetOfferStockResponseModel(BaseModel):
     activationCodesExpirationDatetime: datetime.datetime | None
     beginningDatetime: datetime.datetime | None
     bookingLimitDatetime: datetime.datetime | None
-    dateCreated: datetime.datetime
-    dateModified: datetime.datetime
     dnBookedQuantity: int = Field(alias="bookingsQuantity")
     hasActivationCode: bool
-    isBookable: bool
     isEventDeletable: bool
-    isEventExpired: bool
-    isSoftDeleted: bool
     id: int
     price: float
     priceCategoryId: int | None
