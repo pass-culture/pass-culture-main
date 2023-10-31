@@ -87,6 +87,10 @@ const serializer: PatchOfferSerializer<PatchCollectiveOfferBodyModel> = {
       ? Number(offer.nationalProgramId)
       : null,
   }),
+  formats: (payload, offer) => ({
+    ...payload,
+    formats: offer.formats,
+  }),
 }
 
 const templateSerializer: PatchOfferSerializer<PatchCollectiveOfferTemplateBodyModel> =

@@ -1,3 +1,4 @@
+import { EacFormat } from 'apiClient/adage'
 import {
   EducationalInstitutionResponseModel,
   OfferAddressType,
@@ -28,7 +29,7 @@ export type EducationalCategories = {
 
 export type OfferEducationalFormValues = {
   category: string
-  subCategory: SubcategoryIdEnum
+  subCategory?: SubcategoryIdEnum
   title: string
   description: string
   duration: string
@@ -48,6 +49,7 @@ export type OfferEducationalFormValues = {
   domains: string[]
   'search-domains'?: string
   'search-interventionArea'?: string
+  'search-formats'?: string
   priceDetail?: string
   imageUrl?: string
   imageCredit?: string
@@ -56,6 +58,7 @@ export type OfferEducationalFormValues = {
   beginningDate?: string
   endingDate?: string
   hour?: string
+  formats?: EacFormat[]
 }
 
 export type CanOffererCreateCollectiveOffer = Adapter<

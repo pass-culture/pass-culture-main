@@ -197,6 +197,27 @@ describe('screens | OfferEducational : creation offer type step', () => {
     })
   })
 
+  describe('formats', () => {
+    it('should user select formats', async () => {
+      renderWithProviders(<OfferEducational {...props} />, {
+        storeOverrides: {
+          ...store,
+          features: {
+            list: [{ isActive: true, nameKey: 'WIP_ENABLE_FORMAT' }],
+          },
+        },
+      })
+
+      const selectFormat = await screen.findByTestId('select')
+
+      await userEvent.selectOptions(selectFormat, 'Atelier de pratique')
+
+      expect(
+        screen.getByRole('button', { name: /Atelier de pratique/ })
+      ).toBeInTheDocument()
+    })
+  })
+
   describe('title, description and duration inputs', () => {
     it('should require a title with less than 110 chars (and truncate longer strings)', async () => {
       renderWithProviders(<OfferEducational {...props} />)

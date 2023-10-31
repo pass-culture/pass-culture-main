@@ -70,6 +70,8 @@ const OfferEducational = ({
     'WIP_ENABLE_DATES_OFFER_TEMPLATE'
   )
 
+  const isFormatActive = useActiveFeature('WIP_ENABLE_FORMAT')
+
   const {
     structure: offererId,
     lieu: venueId,
@@ -101,6 +103,7 @@ const OfferEducational = ({
       if (offer === undefined) {
         response = await postCollectiveOfferTemplateAdapter({
           offer: offerValues,
+          isFormatActive,
         })
       } else {
         response = await patchCollectiveOfferTemplateAdapter({
@@ -111,7 +114,10 @@ const OfferEducational = ({
       }
     } else {
       if (offer === undefined) {
-        response = await postCollectiveOfferAdapter({ offer: offerValues })
+        response = await postCollectiveOfferAdapter({
+          offer: offerValues,
+          isFormatActive,
+        })
       } else {
         response = await patchCollectiveOfferAdapter({
           offer: offerValues,
@@ -157,7 +163,8 @@ const OfferEducational = ({
     initialValues,
     onSubmit,
     validationSchema: getOfferEducationalValidationSchema(
-      templateOfferDatesEnabled
+      templateOfferDatesEnabled,
+      isFormatActive
     ),
   })
 
