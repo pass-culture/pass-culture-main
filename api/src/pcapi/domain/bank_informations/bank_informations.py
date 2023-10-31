@@ -1,11 +1,13 @@
 from datetime import datetime
 
+from pcapi.core.finance.models import BankInformationStatus
+
 
 class BankInformations:
     def __init__(
         self,
-        application_id: str | None = None,
-        status: str | None = None,
+        application_id: int | None = None,
+        status: BankInformationStatus | None = None,
         iban: str | None = None,
         bic: str | None = None,
         offerer_id: int | None = None,
