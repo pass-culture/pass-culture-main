@@ -141,9 +141,7 @@ describe('reimbursementsWithFilters', () => {
   it('should display reimbursement points', async () => {
     renderReimbursementsInvoices(store)
     expect(
-      await (
-        await screen.findByLabelText(/Point de remboursement/)
-      ).childElementCount
+      (await screen.findByLabelText(/Point de remboursement/)).childElementCount
     ).toEqual(BASE_REIMBURSEMENT_POINTS.length + 1)
     expect(api.getReimbursementPoints).toHaveBeenCalledTimes(1)
   })
@@ -187,6 +185,9 @@ describe('reimbursementsWithFilters', () => {
     ).not.toBeInTheDocument()
 
     expect(screen.getByLabelText('Point de remboursement')).toBeInTheDocument()
+    expect(
+      screen.getByText('Tous les points de remboursement')
+    ).toBeInTheDocument()
   })
 
   it('should display invoice banner if FF WIP_ENABLE_NEW_BANK_DETAILS_JOURNEY is enable', async () => {
@@ -205,5 +206,6 @@ describe('reimbursementsWithFilters', () => {
     ).toBeInTheDocument()
 
     expect(screen.getByLabelText('Compte bancaire')).toBeInTheDocument()
+    expect(screen.getByText('Tous les comptes bancaires')).toBeInTheDocument()
   })
 })
