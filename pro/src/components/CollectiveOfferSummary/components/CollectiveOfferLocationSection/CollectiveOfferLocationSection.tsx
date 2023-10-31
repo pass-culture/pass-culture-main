@@ -4,20 +4,23 @@ import { SummaryLayout } from 'components/SummaryLayout'
 import { CollectiveOffer, CollectiveOfferTemplate } from 'core/OfferEducational'
 import { useGetVenue } from 'core/Venue/adapters/getVenueAdapter'
 import useNotification from 'hooks/useNotification'
+import { getInterventionAreaLabels } from 'pages/Offerers/Offerer/VenueV1/VenueEdition/EACInformation/utils/getInterventionAreaLabels'
 import Spinner from 'ui-kit/Spinner/Spinner'
 
-import { DEFAULT_RECAP_VALUE } from '../constants'
 import { formatOfferEventAddress } from '../utils/formatOfferEventAddress'
 
-interface CollectiveOfferPracticalInformationSectionProps {
+interface CollectiveOfferLocationSectionProps {
   offer: CollectiveOfferTemplate | CollectiveOffer
 }
 
-const CollectiveOfferPracticalInformationSection = ({
+export default function CollectiveOfferLocationSection({
   offer,
-}: CollectiveOfferPracticalInformationSectionProps) => {
+}: CollectiveOfferLocationSectionProps) {
   const notify = useNotification()
   const { error, isLoading, data: venue } = useGetVenue(offer.venue.id)
+
+  const interventionAreas = getInterventionAreaLabels(offer.interventionArea)
+
   if (isLoading) {
     return <Spinner />
   }
@@ -27,19 +30,16 @@ const CollectiveOfferPracticalInformationSection = ({
   }
 
   return (
-    <SummaryLayout.SubSection title="Informations pratiques">
+    <SummaryLayout.SubSection title="Lieu de l'événement">
       <SummaryLayout.Row
-        title="Adresse où se déroulera l’évènement"
         description={formatOfferEventAddress(offer.offerVenue, venue)}
       />
-      {offer.isTemplate && (
+      {interventionAreas && (
         <SummaryLayout.Row
-          title="Informations sur le prix"
-          description={offer.educationalPriceDetail || DEFAULT_RECAP_VALUE}
+          title="Zone de mobilité pour l'événement"
+          description={interventionAreas}
         />
       )}
     </SummaryLayout.SubSection>
   )
 }
-
-export default CollectiveOfferPracticalInformationSection

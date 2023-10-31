@@ -12,14 +12,16 @@ import useActiveFeature from 'hooks/useActiveFeature'
 
 import styles from './CollectiveOfferSummary.module.scss'
 import CollectiveOfferAccessibilitySection from './components/CollectiveOfferAccessibilitySection'
+import CollectiveOfferArtisticSection from './components/CollectiveOfferArtisticSection/CollectiveOfferArtisticSection'
 import CollectiveOfferContactSection from './components/CollectiveOfferContactSection'
 import CollectiveOfferDateSection from './components/CollectiveOfferDateSection/CollectiveOfferDateSection'
 import CollectiveOfferImagePreview from './components/CollectiveOfferImagePreview'
+import CollectiveOfferLocationSection from './components/CollectiveOfferLocationSection/CollectiveOfferLocationSection'
 import CollectiveOfferNotificationSection from './components/CollectiveOfferNotificationSection'
 import CollectiveOfferParticipantSection from './components/CollectiveOfferParticipantSection'
-import CollectiveOfferPracticalInformation from './components/CollectiveOfferPracticalInformation'
+import CollectiveOfferPriceSection from './components/CollectiveOfferPriceSection/CollectiveOfferPriceSection'
 import CollectiveOfferStockSection from './components/CollectiveOfferStockSection'
-import CollectiveOfferTypeSection from './components/CollectiveOfferTypeSection'
+import CollectiveOfferTypeSection from './components/CollectiveOfferTypeSection/CollectiveOfferTypeSection'
 import CollectiveOfferVenueSection from './components/CollectiveOfferVenueSection'
 import CollectiveOfferVisibilitySection from './components/CollectiveOfferVisibilitySection'
 
@@ -65,11 +67,13 @@ const CollectiveOfferSummary = ({
           >
             <CollectiveOfferVenueSection venue={offer.venue} />
             <CollectiveOfferTypeSection offer={offer} categories={categories} />
+            <CollectiveOfferArtisticSection offer={offer} />
             <CollectiveOfferImagePreview offer={offer} />
             {offer.isTemplate && isTemplateOfferDatesActive && (
               <CollectiveOfferDateSection offer={offer} />
             )}
-            <CollectiveOfferPracticalInformation offer={offer} />
+            <CollectiveOfferLocationSection offer={offer} />
+            {offer.isTemplate && <CollectiveOfferPriceSection offer={offer} />}
             <CollectiveOfferParticipantSection students={offer.students} />
             <CollectiveOfferAccessibilitySection offer={offer} />
             <CollectiveOfferContactSection

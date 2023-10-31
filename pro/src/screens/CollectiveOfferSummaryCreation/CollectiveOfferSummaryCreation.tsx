@@ -10,7 +10,7 @@ import {
 } from 'core/OfferEducational'
 import { computeURLCollectiveOfferId } from 'core/OfferEducational/utils/computeURLCollectiveOfferId'
 import useNotification from 'hooks/useNotification'
-import { Banner, Button, ButtonLink } from 'ui-kit'
+import { Button, ButtonLink } from 'ui-kit'
 import { ButtonVariant } from 'ui-kit/Button/types'
 
 import publishCollectiveOfferAdapter from './adapters/publishCollectiveOfferAdapter'
@@ -65,10 +65,6 @@ const CollectiveOfferSummaryCreation = ({
 
   return (
     <div className={styles['summary']}>
-      <Banner type="notification-info" className={styles['summary-banner']}>
-        Vous y êtes presque !<br />
-        Vérifiez les informations ci-dessous avant de publier votre offre.
-      </Banner>
       <CollectiveOfferSummary
         offer={offer}
         categories={categories}
