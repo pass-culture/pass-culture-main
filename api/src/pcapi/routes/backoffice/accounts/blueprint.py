@@ -17,6 +17,7 @@ from werkzeug.exceptions import NotFound
 
 from pcapi.core.bookings import models as bookings_models
 from pcapi.core.external.attributes import api as external_attributes_api
+from pcapi.core.finance import api as finance_api
 import pcapi.core.fraud.api as fraud_api
 import pcapi.core.fraud.models as fraud_models
 from pcapi.core.history import api as history_api
@@ -889,16 +890,8 @@ def review_public_account(user_id: int) -> utils.BackofficeResponse:
         flash("Les données envoyées comportent des erreurs", "warning")
         return redirect(url_for("backoffice_web.public_accounts.get_public_account", user_id=user_id), code=303)
 
+    eligibility = users_models.EligibilityType[form.eligibility.data]
     if form.status.data == fraud_models.FraudReviewStatus.OK.value:
-        eligibility = users_models.EligibilityType[form.eligibility.data]
-        if eligibility == users_models.EligibilityType.AGE18:
-            if users_models.UserRole.UNDERAGE_BENEFICIARY in user.roles:
-                flash(
-                    "Le compte est déjà bénéficiaire (15-17) il ne peut pas aussi être bénéficiaire (18+)",
-                    "warning",
-                )
-                return redirect(get_public_account_link(user_id), code=303)
-
         if eligibility == users_models.EligibilityType.UNDERAGE:
             if users_models.UserRole.BENEFICIARY in user.roles:
                 flash(
@@ -908,12 +901,14 @@ def review_public_account(user_id: int) -> utils.BackofficeResponse:
                 return redirect(get_public_account_link(user_id), code=303)
 
     try:
+        if eligibility == users_models.EligibilityType.AGE18 and user.has_underage_beneficiary_role:
+            finance_api.expire_current_deposit_for_user(user=user)
         fraud_api.validate_beneficiary(
             user=user,
             reviewer=current_user,
             reason=form.reason.data,
             review=fraud_models.FraudReviewStatus(form.status.data),
-            reviewed_eligibility=users_models.EligibilityType[form.eligibility.data],
+            reviewed_eligibility=eligibility,
         )
     except (fraud_api.FraudCheckError, fraud_api.EligibilityError) as err:
         # `validate_beneficiary` immediately creates some objects that

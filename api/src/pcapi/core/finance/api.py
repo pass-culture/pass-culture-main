@@ -2617,6 +2617,18 @@ def create_deposit(
     return deposit
 
 
+def expire_current_deposit_for_user(user: users_models.User) -> None:
+    models.Deposit.query.filter(
+        models.Deposit.user == user,
+        models.Deposit.expirationDate > datetime.datetime.utcnow(),
+    ).update(
+        {
+            models.Deposit.expirationDate: datetime.datetime.utcnow() - datetime.timedelta(seconds=1),
+            models.Deposit.dateUpdated: datetime.datetime.utcnow(),
+        },
+    )
+
+
 def _can_be_recredited(user: users_models.User) -> bool:
     return (
         user.age in conf.RECREDIT_TYPE_AGE_MAPPING
