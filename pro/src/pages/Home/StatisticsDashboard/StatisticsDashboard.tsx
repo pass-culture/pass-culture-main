@@ -72,7 +72,7 @@ export const StatisticsDashboard = ({ offerer }: StatisticsDashboardProps) => {
                   dailyViews={stats.jsonData.dailyViews}
                 />
 
-                <CumulatedViews />
+                <CumulatedViews dailyViews={stats.jsonData.dailyViews} />
               </div>
             ) : (
               <div className={styles['no-data']}>
