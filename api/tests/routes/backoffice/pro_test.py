@@ -1,9 +1,11 @@
 import logging
 import re
+import typing
 
 from flask import url_for
 import pytest
 
+from pcapi.core.finance import factories as finance_factories
 from pcapi.core.offerers import factories as offerers_factories
 from pcapi.core.offerers import models as offerers_models
 import pcapi.core.permissions.models as perm_models
@@ -14,6 +16,7 @@ from pcapi.core.users import models as users_models
 from pcapi.models import db
 from pcapi.models.validation_status_mixin import ValidationStatus
 from pcapi.routes.backoffice.forms.search import TypeOptions
+from pcapi.utils.human_ids import humanize
 
 from .helpers import html_parser
 from .helpers import search as search_helpers
@@ -353,10 +356,11 @@ class SearchVenueTest:
     # - fetch authenticated user
     # - fetch results
     # - fetch count for pagination
-    expected_num_queries = 4
+    # - fetch feature flag: WIP_ENABLE_NEW_BANK_DETAILS_JOURNEY (to build form options)
+    expected_num_queries = 5
 
     # - fetch feature flag: WIP_BACKOFFICE_ENABLE_REDIRECT_SINGLE_RESULT when one single result is returned
-    expected_num_queries_with_ff = 5
+    expected_num_queries_with_ff = expected_num_queries + 1
 
     def _create_venues(
         self,
@@ -553,6 +557,64 @@ class SearchVenueTest:
 
         # then
         assert response.status_code == 200
+        assert len(html_parser.extract_cards_text(response.data)) == 0
+
+
+class SearchBankAccountTest:
+    endpoint = "backoffice_web.search_pro"
+
+    # session + current user (2 queries)
+    # results + count in .paginate (2 queries)
+    # get feature flag WIP_ENABLE_NEW_BANK_DETAILS_JOURNEY (1 query)
+    expected_num_queries = 5
+
+    def _search_for_one(self, authenticated_client, search_query: typing.Any, expected_id: int):
+        with assert_num_queries(self.expected_num_queries):
+            response = authenticated_client.get(
+                url_for(self.endpoint, q=str(search_query), pro_type=TypeOptions.BANK_ACCOUNT.name)
+            )
+            assert response.status_code == 303
+
+        assert response.location == url_for(
+            "backoffice_web.bank_account.get", bank_account_id=expected_id, q=str(search_query), _external=True
+        )
+
+    @override_features(WIP_ENABLE_NEW_BANK_DETAILS_JOURNEY=True)
+    def test_search_bank_account_by_humanized_id(self, authenticated_client):
+        bank_accounts = finance_factories.BankAccountFactory.create_batch(3)
+        self._search_for_one(authenticated_client, humanize(bank_accounts[2].id), bank_accounts[2].id)
+
+    @pytest.mark.parametrize("search_query", ["FR7612345000000123456789008", "FR76 1234 5000 0001 2345 6789 008"])
+    @override_features(WIP_ENABLE_NEW_BANK_DETAILS_JOURNEY=True)
+    def test_search_bank_account_by_iban(self, authenticated_client, search_query):
+        bank_account = finance_factories.BankAccountFactory(label="Expected", iban="FR7612345000000123456789008")
+        finance_factories.BankAccountFactory(label="Other")
+        self._search_for_one(authenticated_client, search_query, bank_account.id)
+
+    @override_features(WIP_ENABLE_NEW_BANK_DETAILS_JOURNEY=True)
+    def test_search_bank_account_by_id_not_available(self, authenticated_client):
+        bank_account = finance_factories.BankAccountFactory()
+        search_query = bank_account.id
+
+        with assert_num_queries(self.expected_num_queries):
+            response = authenticated_client.get(
+                url_for(self.endpoint, q=search_query, pro_type=TypeOptions.BANK_ACCOUNT.name)
+            )
+            assert response.status_code == 200
+
+        assert len(html_parser.extract_cards_text(response.data)) == 0
+
+    @pytest.mark.parametrize("search_query", ["123", "FR76123450000001234567890", "Mon compte"])
+    @override_features(WIP_ENABLE_NEW_BANK_DETAILS_JOURNEY=True)
+    def test_search_bank_account_no_result(self, authenticated_client, search_query):
+        finance_factories.BankAccountFactory(label="Mon compte", iban="FR7612345000000123456789008")
+
+        with assert_num_queries(self.expected_num_queries):
+            response = authenticated_client.get(
+                url_for(self.endpoint, q=search_query, pro_type=TypeOptions.BANK_ACCOUNT.name)
+            )
+            assert response.status_code == 200
+
         assert len(html_parser.extract_cards_text(response.data)) == 0
 
 
