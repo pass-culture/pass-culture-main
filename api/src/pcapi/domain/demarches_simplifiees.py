@@ -36,6 +36,7 @@ class ApplicationDetail:
         self,
         status: BankInformationStatus,
         application_id: int,
+        dossier_id: str,
         modification_date: datetime,
         siren: str | None = None,
         iban: str | None = None,
@@ -45,7 +46,6 @@ class ApplicationDetail:
         dms_token: str | None = None,
         error_annotation_id: str | None = None,
         venue_url_annotation_id: str | None = None,
-        dossier_id: str | None = None,
     ):
         self.siren = siren
         self.status = status
@@ -103,13 +103,13 @@ def ds_bank_information_application_details_from_raw_data(raw_data: dict, proced
             dms_models.GraphQLApplicationStates(data["status"])
         ),
         application_id=int(data["application_id"]),
+        dossier_id=data["dossier_id"],
         iban=data["iban"],
         bic=data["bic"],
         siret=data.get("siret", None),
         dms_token=data["dms_token"] if procedure_version == 4 else None,
         modification_date=datetime.fromisoformat(data["updated_at"]).astimezone().replace(tzinfo=None),
         error_annotation_id=data["error_annotation_id"],
-        dossier_id=data["dossier_id"],
         venue_url_annotation_id=data["venue_url_annotation_id"],
     )
 

@@ -223,7 +223,7 @@ class BankInformation(PcObject, Base, Model):
     )
     iban = sqla.Column(sqla.String(27), nullable=True)
     bic = sqla.Column(sqla.String(11), nullable=True)
-    applicationId = sqla.Column(sqla.Integer, nullable=True, index=True, unique=True)
+    applicationId: int | None = sqla.Column(sqla.Integer, nullable=True, index=True, unique=True)
     status: BankInformationStatus = sqla.Column(sqla.Enum(BankInformationStatus), nullable=False)
     dateModified = sqla.Column(sqla.DateTime, nullable=True)
 
@@ -238,7 +238,7 @@ class BankAccount(PcObject, Base, Model, DeactivableMixin):
     )
     iban: str = sqla.Column(sqla.String(27), nullable=False)
     bic: str = sqla.Column(sqla.String(11), nullable=False)
-    dsApplicationId: int = sqla.Column(sqla.BigInteger, nullable=True, unique=True)
+    dsApplicationId: int | None = sqla.Column(sqla.BigInteger, nullable=True, unique=True)
     status: BankAccountApplicationStatus = sqla.Column(sqla.Enum(BankAccountApplicationStatus), nullable=False)
     dateCreated: datetime.datetime = sqla.Column(sqla.DateTime, nullable=False, server_default=sqla.func.now())
     dateLastStatusUpdate: datetime.datetime = sqla.Column(sqla.DateTime)
