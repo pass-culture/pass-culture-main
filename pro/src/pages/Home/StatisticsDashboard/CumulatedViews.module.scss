@@ -1,4 +1,5 @@
 @use "styles/mixins/_rem.scss" as rem;
+@use "styles/variables/_colors.scss" as colors;
 @use "styles/mixins/_fonts.scss" as fonts;
 
 .cumulated-views {
@@ -9,4 +10,24 @@
 
 .block-title {
   @include fonts.button;
+}
+
+.no-data {
+  flex-grow: 1;
+  display: flex;
+  flex-direction: column;
+  gap: rem.torem(20px);
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+
+  &-icon {
+    width: rem.torem(128px);
+    height: rem.torem(100px);
+    color: colors.$grey-semi-dark;
+  }
+
+  &-caption {
+    @include fonts.body-important;
+  }
 }
