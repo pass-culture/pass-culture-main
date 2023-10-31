@@ -6,7 +6,7 @@ import { Thumb } from 'ui-kit'
 
 import styles from './MostViewedOffers.module.scss'
 
-interface MostViewedOffersProps {
+export interface MostViewedOffersProps {
   topOffers: TopOffersResponseData[]
   dailyViews: OffererViewsModel[]
 }
@@ -25,7 +25,7 @@ export const MostViewedOffers = ({
     <div className={styles['container']}>
       <div>
         <h3 className={styles['block-title']}>
-          Vos offres ont été vues {last30daysViews} fois
+          Vos offres ont été vues {last30daysViews.toLocaleString('fr-FR')} fois
         </h3>
         <span>ces 30 derniers jours</span>
       </div>
@@ -43,7 +43,7 @@ export const MostViewedOffers = ({
           />
           <div className={styles['top-offer-details']}>
             {topOffer.offerName}
-            <br /> {topOffer.numberOfViews} vues
+            <br /> {topOffer.numberOfViews.toLocaleString('fr-FR')} vues
           </div>
         </div>
       ))}
