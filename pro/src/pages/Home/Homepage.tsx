@@ -123,6 +123,12 @@ const Homepage = (): JSX.Element => {
     logProFlags()
   }, [remoteConfigData?.REMOTE_CONFIG_LOADED])
 
+  const hasAtLeastOnePhysicalVenue =
+    selectedOfferer?.managedVenues
+      ?.filter((venue) => !venue.isVirtual)
+      .map((venue) => venue.id)
+      .some(Boolean) ?? false
+
   return (
     <>
       <div className="homepage">
@@ -147,6 +153,7 @@ const Homepage = (): JSX.Element => {
             <OffererBanners
               isUserOffererValidated={isUserOffererValidated}
               selectedOfferer={selectedOfferer}
+              hasAtLeastOnePhysicalVenue={hasAtLeastOnePhysicalVenue}
             />
             <StatisticsDashboard offerer={selectedOfferer} />
           </>
@@ -157,6 +164,7 @@ const Homepage = (): JSX.Element => {
             selectedOfferer={selectedOfferer}
             isLoading={isLoading}
             isUserOffererValidated={isUserOffererValidated}
+            hasAtLeastOnePhysicalVenue={hasAtLeastOnePhysicalVenue}
             receivedOffererNames={receivedOffererNames}
             onSelectedOffererChange={setSelectedOffererId}
             cancelLoading={() => setIsLoading(false)}
