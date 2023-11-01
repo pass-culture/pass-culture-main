@@ -1,5 +1,7 @@
 from datetime import datetime
+from datetime import timedelta
 import logging
+from random import randint
 
 from pcapi.connectors.big_query.queries.offerer_stats import DAILY_CONSULT_PER_OFFERER_LAST_180_DAYS_TABLE
 from pcapi.connectors.big_query.queries.offerer_stats import TOP_3_MOST_CONSULTED_OFFERS_LAST_30_DAYS_TABLE
@@ -18,9 +20,14 @@ def create_industrial_offerers_stats(
     for _, offerer in offerers_by_name.items():
         # Create offerer daily views stats
         daily_views_stats = []
+        views_count = randint(0, 1000)
         for i in range(180):
+            views_count += randint(0, 1000) * randint(0, 10)
             daily_views_stats.append(
-                offerers_models.OffererViewsModel(eventDate=datetime.utcnow().date(), numberOfViews=i * 10)
+                offerers_models.OffererViewsModel(
+                    eventDate=datetime.utcnow().date() - timedelta(days=180 - i),
+                    numberOfViews=views_count,
+                )
             )
         offerers_factories.OffererStatsFactory(
             offerer=offerer,
