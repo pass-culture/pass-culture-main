@@ -26,6 +26,14 @@ fetchMock.mockResponse((req) => {
   return Promise.reject('Unmocked fetch call')
 })
 
+// Mock the ResizeObserver for Charts
+class ResizeObserver {
+  observe() {}
+  unobserve() {}
+  disconnect() {}
+}
+window.ResizeObserver = ResizeObserver
+
 /* BELOW WE HANDLE WARNINGS AND ERRORS THROWN INSIDE THE TESTS */
 
 // DO NOT ADD ERRORS TO THIS LIST!

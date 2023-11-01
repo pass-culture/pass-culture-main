@@ -39,7 +39,7 @@ describe('CumulatedViews', () => {
     ).toBeInTheDocument()
   })
 
-  it('should render graph is data is present', () => {
+  it('should render graph and accessible table if data is present', () => {
     const dailyViews = Array.from(Array(180)).map((key, index) => ({
       numberOfViews: index,
       eventDate: format(
@@ -50,6 +50,8 @@ describe('CumulatedViews', () => {
 
     renderCumulatedViews({ dailyViews })
 
-    expect(screen.getByText('TODO graphique')).toBeInTheDocument()
+    expect(
+      screen.getByText('Données des vues cumulées sur les 6 derniers mois')
+    ).toBeInTheDocument()
   })
 })
