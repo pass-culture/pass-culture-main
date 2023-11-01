@@ -30,6 +30,7 @@ interface OfferersProps {
   selectedOfferer?: GetOffererResponseModel | null
   isLoading: boolean
   isUserOffererValidated: boolean
+  hasAtLeastOnePhysicalVenue: boolean
   venues: OffererVenues
 }
 
@@ -41,6 +42,7 @@ const Offerers = ({
   isLoading,
   isUserOffererValidated,
   venues,
+  hasAtLeastOnePhysicalVenue,
 }: OfferersProps) => {
   const [offererOptions, setOffererOptions] = useState<SelectOption[]>([])
   const [openSuccessDialog, setOpenSuccessDialog] = useState(false)
@@ -163,6 +165,7 @@ const Offerers = ({
             isUserOffererValidated={isUserOffererValidated}
             offererOptions={offererOptions}
             selectedOfferer={selectedOfferer}
+            hasAtLeastOnePhysicalVenue={hasAtLeastOnePhysicalVenue}
           />
 
           {!isOffererSoftDeleted && (

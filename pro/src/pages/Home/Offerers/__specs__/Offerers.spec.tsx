@@ -30,7 +30,7 @@ const selectedOfferer: GetOffererResponseModel = {
   siren: null,
   dsToken: '',
 }
-const renderOfferers = async (userOffererValidated: boolean) => {
+const renderOfferers = (userOffererValidated: boolean) => {
   renderWithProviders(
     <Offerers
       receivedOffererNames={{
@@ -41,14 +41,15 @@ const renderOfferers = async (userOffererValidated: boolean) => {
       selectedOfferer={selectedOfferer}
       isLoading={false}
       isUserOffererValidated={userOffererValidated}
+      hasAtLeastOnePhysicalVenue={false}
       venues={INITIAL_OFFERER_VENUES}
     />
   )
 }
 
 describe('Offerers', () => {
-  it('should not display venue soft deleted if user is not validated', async () => {
-    await renderOfferers(false)
+  it('should not display venue soft deleted if user is not validated', () => {
+    renderOfferers(false)
     expect(
       screen.getByText(
         /Le rattachement à votre structure est en cours de traitement par les équipes du pass Culture/
@@ -61,8 +62,8 @@ describe('Offerers', () => {
     ).not.toBeInTheDocument()
   })
 
-  it('should display venue soft deleted', async () => {
-    await renderOfferers(true)
+  it('should display venue soft deleted', () => {
+    renderOfferers(true)
     expect(
       screen.queryByText(
         /Votre structure a été désactivée. Pour plus d’informations sur la désactivation veuillez contacter notre support./
