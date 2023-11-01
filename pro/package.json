@@ -61,7 +61,7 @@
     "react-avatar-editor": "^13.0.0",
     "react-csv": "^2.2.2",
     "react-dom": "^18.0.0",
-    "react-instantsearch": "^7.2.1",
+    "react-instantsearch": "^7.3.0",
     "react-redux": "^8.0.7",
     "react-router-dom": "^6.17.0",
     "react-select": "^5.7.5",
