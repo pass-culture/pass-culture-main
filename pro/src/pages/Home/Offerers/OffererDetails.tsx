@@ -18,6 +18,7 @@ import { OffererBanners } from './OffererBanners'
 interface OffererDetailsProps {
   handleChangeOfferer: (event: React.ChangeEvent<HTMLSelectElement>) => void
   isUserOffererValidated: boolean
+  hasAtLeastOnePhysicalVenue: boolean
   offererOptions: SelectOption[]
   selectedOfferer: GetOffererResponseModel
 }
@@ -27,17 +28,13 @@ const OffererDetails = ({
   isUserOffererValidated,
   offererOptions,
   selectedOfferer,
+  hasAtLeastOnePhysicalVenue,
 }: OffererDetailsProps) => {
   const { logEvent } = useAnalytics()
   const isStatisticsDashboardEnabled = useActiveFeature('WIP_HOME_STATS')
   const isNewOffererLinkEnabled = useActiveFeature(
     'WIP_ENABLE_NEW_USER_OFFERER_LINK'
   )
-
-  const hasAtLeastOnePhysicalVenue = selectedOfferer.managedVenues
-    ?.filter((venue) => !venue.isVirtual)
-    .map((venue) => venue.id)
-    .some(Boolean)
 
   const hasMissingReimbursementPoints = useMemo(() => {
     if (!selectedOfferer) {
@@ -136,6 +133,7 @@ const OffererDetails = ({
             <OffererBanners
               selectedOfferer={selectedOfferer}
               isUserOffererValidated={isUserOffererValidated}
+              hasAtLeastOnePhysicalVenue={hasAtLeastOnePhysicalVenue}
             />
           </>
         )}
