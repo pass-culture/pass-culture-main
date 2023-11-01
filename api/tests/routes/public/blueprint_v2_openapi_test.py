@@ -16,18 +16,6 @@ def test_public_api(client, app):
                     "title": "AuthErrorResponseModel",
                     "type": "object",
                 },
-                "BookingFormula": {
-                    "description": "An enumeration.",
-                    "enum": ["PLACE", "ABO"],
-                    "title": "BookingFormula",
-                    "type": "string",
-                },
-                "BookingOfferType": {
-                    "description": "An enumeration.",
-                    "enum": ["BIEN", "EVENEMENT"],
-                    "title": "BookingOfferType",
-                    "type": "string",
-                },
                 "CollectiveBookingResponseModel": {
                     "properties": {
                         "cancellationLimitDate": {
@@ -174,58 +162,6 @@ def test_public_api(client, app):
                     },
                     "required": ["errors"],
                     "title": "ErrorResponseModel",
-                    "type": "object",
-                },
-                "GetBookingResponse": {
-                    "properties": {
-                        "bookingId": {"title": "Bookingid", "type": "string"},
-                        "dateOfBirth": {"nullable": True, "title": "Dateofbirth", "type": "string"},
-                        "datetime": {"title": "Datetime", "type": "string"},
-                        "ean13": {"nullable": True, "title": "Ean13", "type": "string"},
-                        "email": {"title": "Email", "type": "string"},
-                        "firstName": {"nullable": True, "title": "Firstname", "type": "string"},
-                        "formula": {
-                            "allOf": [{"$ref": "#/components/schemas/BookingFormula"}],
-                            "description": "S'applique uniquement aux offres de catégorie Cinéma. Abonnement (ABO) ou place (PLACE).",
-                            "nullable": True,
-                        },
-                        "isUsed": {"title": "Isused", "type": "boolean"},
-                        "lastName": {"nullable": True, "title": "Lastname", "type": "string"},
-                        "offerId": {"title": "Offerid", "type": "integer"},
-                        "offerName": {"title": "Offername", "type": "string"},
-                        "offerType": {"$ref": "#/components/schemas/BookingOfferType"},
-                        "phoneNumber": {"nullable": True, "title": "Phonenumber", "type": "string"},
-                        "price": {"title": "Price", "type": "number"},
-                        "priceCategoryLabel": {"nullable": True, "title": "Pricecategorylabel", "type": "string"},
-                        "publicOfferId": {"title": "Publicofferid", "type": "string"},
-                        "quantity": {"title": "Quantity", "type": "integer"},
-                        "theater": {
-                            "description": "Identifiant du film et de la salle dans le cas d’une offre synchronisée par Allociné.",
-                            "example": {"film_id": "...", "salle_id": "..."},
-                            "title": "Theater",
-                            "type": "object",
-                        },
-                        "userName": {"title": "Username", "type": "string"},
-                        "venueAddress": {"nullable": True, "title": "Venueaddress", "type": "string"},
-                        "venueDepartmentCode": {"nullable": True, "title": "Venuedepartmentcode", "type": "string"},
-                        "venueName": {"title": "Venuename", "type": "string"},
-                    },
-                    "required": [
-                        "bookingId",
-                        "datetime",
-                        "email",
-                        "isUsed",
-                        "offerId",
-                        "publicOfferId",
-                        "offerName",
-                        "offerType",
-                        "price",
-                        "quantity",
-                        "theater",
-                        "userName",
-                        "venueName",
-                    ],
-                    "title": "GetBookingResponse",
                     "type": "object",
                 },
                 "GetListEducationalInstitutionsQueryModel": {
@@ -777,143 +713,6 @@ def test_public_api(client, app):
         "info": {"title": "pass Culture pro public API v2", "version": "2"},
         "openapi": "3.0.3",
         "paths": {
-            "/v2/bookings/cancel/token/{token}": {
-                "patch": {
-                    "description": "Bien que, dans le cas d’un évènement, l’utilisateur ne peut plus annuler sa réservation 72h avant le début de ce dernier, cette API permet d’annuler la réservation d’un utilisateur si elle n’a pas encore été validé.",
-                    "operationId": "PatchCancelBookingByToken",
-                    "parameters": [
-                        {
-                            "description": "",
-                            "in": "path",
-                            "name": "token",
-                            "required": True,
-                            "schema": {"type": "string"},
-                        }
-                    ],
-                    "responses": {
-                        "204": {"description": "La contremarque a été annulée avec succès"},
-                        "401": {"description": "Authentification nécessaire"},
-                        "403": {
-                            "description": "Vous n'avez pas les droits nécessaires pour annuler cette contremarque ou la réservation a déjà été validée"
-                        },
-                        "404": {"description": "La contremarque n'existe pas"},
-                        "410": {"description": "La contremarque a déjà été annulée"},
-                        "422": {
-                            "content": {
-                                "application/json": {"schema": {"$ref": "#/components/schemas/ValidationError"}}
-                            },
-                            "description": "Unprocessable Entity",
-                        },
-                    },
-                    "security": [{"ApiKeyAuth": []}, {"SessionAuth": []}],
-                    "summary": "Annulation d'une réservation.",
-                    "tags": ["API Contremarque"],
-                }
-            },
-            "/v2/bookings/keep/token/{token}": {
-                "patch": {
-                    "description": "",
-                    "operationId": "PatchBookingKeepByToken",
-                    "parameters": [
-                        {
-                            "description": "",
-                            "in": "path",
-                            "name": "token",
-                            "required": True,
-                            "schema": {"type": "string"},
-                        }
-                    ],
-                    "responses": {
-                        "204": {"description": "L'annulation de la validation de la contremarque a bien été effectuée"},
-                        "401": {"description": "Authentification nécessaire"},
-                        "403": {"description": "Vous n'avez pas les droits nécessaires pour voir cette contremarque"},
-                        "404": {"description": "La contremarque n'existe pas"},
-                        "410": {
-                            "description": "La requête est refusée car la contremarque n'a pas encore été validée, a été annulée, ou son remboursement a été initié"
-                        },
-                        "422": {
-                            "content": {
-                                "application/json": {"schema": {"$ref": "#/components/schemas/ValidationError"}}
-                            },
-                            "description": "Unprocessable Entity",
-                        },
-                    },
-                    "security": [{"ApiKeyAuth": []}, {"SessionAuth": []}],
-                    "summary": "Annulation de la validation d'une réservation.",
-                    "tags": ["API Contremarque"],
-                }
-            },
-            "/v2/bookings/token/{token}": {
-                "get": {
-                    "description": "Le code “contremarque” ou \"token\" est une chaîne de caractères permettant d’identifier la réservation et qui sert de preuve de réservation. Ce code unique est généré pour chaque réservation d'un utilisateur sur l'application et lui est transmis à cette occasion.",
-                    "operationId": "GetBookingByTokenV2",
-                    "parameters": [
-                        {
-                            "description": "",
-                            "in": "path",
-                            "name": "token",
-                            "required": True,
-                            "schema": {"type": "string"},
-                        }
-                    ],
-                    "responses": {
-                        "200": {
-                            "content": {
-                                "application/json": {"schema": {"$ref": "#/components/schemas/GetBookingResponse"}}
-                            },
-                            "description": "La contremarque existe et n’est pas validée",
-                        },
-                        "401": {"description": "Authentification nécessaire"},
-                        "403": {"description": "Vous n'avez pas les droits nécessaires pour voir cette contremarque"},
-                        "404": {"description": "La contremarque n'existe pas"},
-                        "410": {
-                            "description": "Cette contremarque a été validée.\n En l’invalidant vous indiquez qu’elle n’a pas été utilisée et vous ne serez pas remboursé."
-                        },
-                        "422": {
-                            "content": {
-                                "application/json": {"schema": {"$ref": "#/components/schemas/ValidationError"}}
-                            },
-                            "description": "Unprocessable Entity",
-                        },
-                    },
-                    "security": [{"ApiKeyAuth": []}, {"SessionAuth": []}],
-                    "summary": "Consultation d'une réservation.",
-                    "tags": ["API Contremarque"],
-                }
-            },
-            "/v2/bookings/use/token/{token}": {
-                "patch": {
-                    "description": "Pour confirmer que la réservation a bien été utilisée par le jeune.",
-                    "operationId": "PatchBookingUseByToken",
-                    "parameters": [
-                        {
-                            "description": "",
-                            "in": "path",
-                            "name": "token",
-                            "required": True,
-                            "schema": {"type": "string"},
-                        }
-                    ],
-                    "responses": {
-                        "204": {"description": "La contremarque a bien été validée"},
-                        "401": {"description": "Authentification nécessaire"},
-                        "403": {"description": "Vous n'avez pas les droits nécessaires pour voir cette contremarque"},
-                        "404": {"description": "La contremarque n'existe pas"},
-                        "410": {
-                            "description": "Cette contremarque a été validée.\n En l’invalidant vous indiquez qu’elle n’a pas été utilisée et vous ne serez pas remboursé."
-                        },
-                        "422": {
-                            "content": {
-                                "application/json": {"schema": {"$ref": "#/components/schemas/ValidationError"}}
-                            },
-                            "description": "Unprocessable Entity",
-                        },
-                    },
-                    "security": [{"ApiKeyAuth": []}, {"SessionAuth": []}],
-                    "summary": "Validation d'une réservation.",
-                    "tags": ["API Contremarque"],
-                }
-            },
             "/v2/collective/bookings/{booking_id}": {
                 "patch": {
                     "description": "",
@@ -1533,5 +1332,5 @@ def test_public_api(client, app):
         },
         "security": [],
         "servers": [{"url": settings.API_URL}],
-        "tags": [{"name": "API offres collectives"}, {"name": "API Contremarque"}],
+        "tags": [{"name": "API offres collectives"}],
     }

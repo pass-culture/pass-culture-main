@@ -76,7 +76,7 @@ class DigitalLocation(serialization.ConfiguredBaseModel):
     venue_id: int = pydantic_v1.Field(..., example=1, description="List of venues is available at GET /offerer_venues")
     url: pydantic_v1.HttpUrl = pydantic_v1.Field(
         ...,
-        description="Link users will be redirected to after booking this offer. You may include '{token}', '{email}' and/or '{offerId}' in the URL, which will be replaced respectively by the booking token (use this token to confirm the offer - see API Contremarque), the email of the user who booked the offer and the created offer id",
+        description="Link users will be redirected to after booking this offer. You may include '{token}', '{email}' and/or '{offerId}' in the URL, which will be replaced respectively by the booking token (use this token to confirm the offer), the email of the user who booked the offer and the created offer id",
         example="https://example.com?token={token}&email={email}&offerId={offerId}",
     )
 
