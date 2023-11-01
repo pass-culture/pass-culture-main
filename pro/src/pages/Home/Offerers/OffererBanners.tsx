@@ -6,11 +6,13 @@ import { Banner } from 'ui-kit'
 
 interface OffererBannersProps {
   isUserOffererValidated: boolean
+  hasAtLeastOnePhysicalVenue: boolean
   selectedOfferer: GetOffererResponseModel
 }
 
 export const OffererBanners = ({
   isUserOffererValidated,
+  hasAtLeastOnePhysicalVenue,
   selectedOfferer,
 }: OffererBannersProps) => {
   if (!isUserOffererValidated) {
@@ -38,13 +40,8 @@ export const OffererBanners = ({
     )
   }
 
-  const hasAtLeastOnePhysicalVenue = selectedOfferer.managedVenues
-    ?.filter((venue) => !venue.isVirtual)
-    .map((venue) => venue.id)
-    .some(Boolean)
-
   if (!selectedOfferer.isValidated) {
-    return hasAtLeastOnePhysicalVenue ? (
+    return (
       <Banner
         type="notification-info"
         className="banner"
@@ -61,32 +58,21 @@ export const OffererBanners = ({
           Culture
         </strong>
         <br />
-        Toutes les offres créées à l’échelle de vos lieux seront publiées sous
-        réserve de validation de votre structure.
-      </Banner>
-    ) : (
-      <Banner
-        type="notification-info"
-        className="banner"
-        links={[
-          {
-            href: `https://aide.passculture.app/hc/fr/articles/4514252662172--Acteurs-Culturels-S-inscrire-et-comprendre-le-fonctionnement-du-pass-Culture-cr%C3%A9ation-d-offres-gestion-des-r%C3%A9servations-remboursements-etc-`,
-            linkTitle: 'En savoir plus',
-            icon: fullLinkIcon,
-          },
-        ]}
-      >
-        <strong>
-          Votre structure est en cours de traitement par les équipes du pass
-          Culture
-        </strong>
-        <br />
-        Nous vous invitons à créer un lieu afin de pouvoir proposer des offres
-        physiques ou des évènements. Vous pouvez dès à présent créer des offres
-        numériques.
-        <br />
-        L’ensemble de ces offres seront publiées sous réserve de validation de
-        votre structure.
+        {hasAtLeastOnePhysicalVenue ? (
+          <>
+            Toutes les offres créées à l’échelle de vos lieux seront publiées
+            sous réserve de validation de votre structure.
+          </>
+        ) : (
+          <>
+            Nous vous invitons à créer un lieu afin de pouvoir proposer des
+            offres physiques ou des évènements. Vous pouvez dès à présent créer
+            des offres numériques.
+            <br />
+            L’ensemble de ces offres seront publiées sous réserve de validation
+            de votre structure.
+          </>
+        )}
       </Banner>
     )
   }
