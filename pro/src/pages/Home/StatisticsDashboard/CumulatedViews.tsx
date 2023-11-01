@@ -1,10 +1,13 @@
+import { fr } from 'date-fns/locale'
 import React from 'react'
+import { Line } from 'react-chartjs-2'
 
 import { OffererViewsModel } from 'apiClient/v1'
 import fullLinkIcon from 'icons/full-link.svg'
 import strokeBookingHoldIcon from 'icons/stroke-booking-hold.svg'
 import { ButtonLink } from 'ui-kit'
 import { ButtonVariant } from 'ui-kit/Button/types'
+import { chartColors } from 'ui-kit/chartGlobals'
 import { SvgIcon } from 'ui-kit/SvgIcon/SvgIcon'
 
 import styles from './CumulatedViews.module.scss'
@@ -17,6 +20,34 @@ export const CumulatedViews = ({ dailyViews }: CumulatedViewsProps) => {
   const hasNoViews =
     dailyViews.length === 0 ||
     dailyViews.every((view) => view.numberOfViews === 0)
+
+  const data = {
+    datasets: [
+      {
+        data: dailyViews.map((dailyView) => ({
+          x: dailyView.eventDate,
+          y: dailyView.numberOfViews,
+        })),
+        pointStyle: false as const,
+        backgroundColor: chartColors.primary,
+        borderColor: chartColors.primary,
+        tension: 0.3,
+      },
+    ],
+  }
+
+  const options = {
+    scales: {
+      x: {
+        title: { display: true, text: 'Date' },
+        type: 'time',
+        adapters: { date: { locale: fr } },
+      },
+      y: {
+        title: { display: true, text: 'Nombre de vues cumulées' },
+      },
+    },
+  } as const
 
   return (
     <div className={styles['cumulated-views']}>
@@ -64,7 +95,32 @@ export const CumulatedViews = ({ dailyViews }: CumulatedViewsProps) => {
           </div>
         </div>
       ) : (
-        <div>TODO graphique</div>
+        <div className={styles['chart']}>
+          <Line
+            data={data}
+            options={options}
+            aria-label="Les données textuelles pour ce graphique sont disponibles dans la table ci-dessous"
+          />
+
+          <table className="visually-hidden">
+            <caption>Données des vues cumulées sur les 6 derniers mois</caption>
+
+            <thead>
+              <tr>
+                <th scope="col">Date</th>
+                <th scope="col">Nombre de vues cumulées</th>
+              </tr>
+            </thead>
+            <tbody>
+              {dailyViews.map((dailyView) => (
+                <tr key={dailyView.eventDate}>
+                  <td>{dailyView.eventDate}</td>
+                  <td>{dailyView.numberOfViews}</td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
       )}
     </div>
   )
