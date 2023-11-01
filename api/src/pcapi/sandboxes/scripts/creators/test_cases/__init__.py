@@ -7,6 +7,7 @@ from pcapi.core.offerers import factories as offerers_factories
 from pcapi.core.offerers import models as offerers_models
 from pcapi.core.offers import factories as offers_factories
 from pcapi.core.providers.titelive_gtl import GTLS
+from pcapi.sandboxes.scripts.creators.test_cases.venues_mock import venues
 
 
 Fake = faker.Faker(locale="fr_FR")
@@ -14,6 +15,7 @@ Fake = faker.Faker(locale="fr_FR")
 
 def save_test_cases_sandbox() -> None:
     create_offers_with_gtls()
+    create_offers_with_same_ean()
 
 
 def create_offers_with_gtls() -> None:
@@ -85,3 +87,66 @@ def create_offers_with_gtl_id(gtl_id: str, size_per_gtl: int, venue: offerers_mo
             size=random.randint(1, 10),
             offer=offer,
         )
+
+
+def create_offers_with_same_ean() -> None:
+    offers = []
+    ean = Fake.ean13()
+    author = Fake.name()
+    product = offers_factories.ProductFactory(
+        name="Le livre du pass Culture",
+        subcategoryId=subcategories_v2.LIVRE_PAPIER.id,
+        extraData={
+            "ean": ean,
+            "author": author,
+        },
+    )
+    for venue_data in venues:
+        offers.append(
+            offers_factories.OfferFactory(
+                product=product,
+                isActive=True,
+                subcategoryId=subcategories_v2.LIVRE_PAPIER.id,
+                venue=offerers_factories.VenueFactory(
+                    name=venue_data["name"],
+                    venueTypeCode=offerers_models.VenueTypeCode.BOOKSTORE,
+                    isPermanent=True,
+                    latitude=venue_data["latitude"],
+                    longitude=venue_data["longitude"],
+                    address=venue_data["address"],
+                    postalCode=venue_data["postalCode"],
+                    city=venue_data["city"],
+                    departementCode=venue_data["departementCode"],
+                ),
+                extraData={
+                    "ean": ean,
+                    "author": author,
+                },
+            )
+        )
+        for offer in offers:
+            offers_factories.StockFactory.create_batch(
+                size=random.randint(1, 10),
+                offer=offer,
+            )
+    for _ in range(10):
+        ean = Fake.ean13()
+        author = Fake.name()
+        create_offer_with_ean(ean, random.choice(offers).venue, author=author)
+
+
+def create_offer_with_ean(ean: str, venue: offerers_models.Venue, author: str) -> None:
+    product = offers_factories.ProductFactory(
+        subcategoryId=subcategories_v2.LIVRE_PAPIER.id,
+        extraData={"ean": ean, "author": author},
+    )
+    offer = offers_factories.OfferFactory(
+        isActive=True,
+        product=product,
+        extraData={"ean": ean, "author": author},
+        venue=venue,
+    )
+    offers_factories.StockFactory.create_batch(
+        size=random.randint(1, 10),
+        offer=offer,
+    )
