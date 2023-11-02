@@ -11,6 +11,7 @@ from pcapi.core.providers import models as providers_models
 from pcapi.core.providers import repository as providers_repository
 from pcapi.core.testing import assert_num_queries
 from pcapi.models import db
+from pcapi.utils.crypto import decrypt
 
 from tests.connectors.cgr import soap_definitions
 from tests.local_providers.cinema_providers.cgr import fixtures
@@ -373,7 +374,7 @@ class CreatePivotTest(PostEndpointHelper):
         assert created.cinemaProviderPivot.venueId == venue_id
         assert created.cinemaProviderPivot.idAtProvider == form["cinema_id"]
         assert created.cinemaUrl == form["cinema_url"]
-        assert created.password == form["password"]
+        assert decrypt(created.password) == form["password"]
 
     def test_create_pivot_cineoffice(self, authenticated_client):
         venue_id = offerers_factories.VenueFactory().id
@@ -552,7 +553,7 @@ class UpdatePivotTest(PostEndpointHelper):
         updated = providers_models.CGRCinemaDetails.query.one()
         assert updated.cinemaProviderPivot.idAtProvider == form["cinema_id"]
         assert updated.cinemaUrl == form["cinema_url"]
-        assert updated.password == form["password"]
+        assert decrypt(updated.password) == form["password"]
 
     def test_update_pivot_cineoffice(self, authenticated_client):
         cineoffice_pivot = providers_factories.CDSCinemaDetailsFactory()

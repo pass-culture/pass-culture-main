@@ -8,6 +8,7 @@ from pcapi.core.offerers import models as offerers_models
 from pcapi.core.providers import models as providers_models
 from pcapi.core.providers import repository as providers_repository
 from pcapi.models import db
+from pcapi.utils.crypto import decrypt
 from pcapi.utils.crypto import encrypt
 
 from .. import forms
@@ -34,7 +35,7 @@ class CGRContext(PivotContext):
             venue_id=[pivot.cinemaProviderPivot.venue.id],
             cinema_id=pivot.cinemaProviderPivot.idAtProvider,
             cinema_url=pivot.cinemaUrl,
-            password=pivot.password,
+            password=decrypt(pivot.encryptedPassword),
         )
         form.venue_id.readonly = True
         return form
@@ -67,7 +68,7 @@ class CGRContext(PivotContext):
         cinema_pivot = providers_models.CGRCinemaDetails(
             cinemaProviderPivot=cinema_provider_pivot,
             cinemaUrl=cinema_url,
-            password=cinema_password,
+            password=encrypted_password,
             encryptedPassword=encrypted_password,
         )
 
@@ -88,8 +89,8 @@ class CGRContext(PivotContext):
             return False
         pivot.cinemaProviderPivot.idAtProvider = form.cinema_id.data
         pivot.cinemaUrl = form.cinema_url.data.rstrip("/")
-        pivot.password = form.password.data
-        pivot.encryptedPassword = encrypt(form.password.data)
+        pivot.password = encrypt(form.password.data)
+        pivot.encryptedPassword = pivot.password
         num_cinema = cls.check_if_api_call_is_ok(pivot)
 
         if num_cinema:
