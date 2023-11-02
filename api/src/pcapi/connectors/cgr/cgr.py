@@ -11,6 +11,7 @@ from pcapi.connectors.cgr.exceptions import CGRAPIException
 from pcapi.connectors.serialization import cgr_serializers
 from pcapi.core.providers import models as providers_models
 from pcapi.utils import requests
+from pcapi.utils.crypto import decrypt
 
 
 logger = logging.getLogger(__name__)
@@ -33,7 +34,7 @@ def get_seances_pass_culture(
     if allocine_film_id is not 0 CGR API wil return only shows for concerned movie
     """
     user = settings.CGR_API_USER
-    password = cinema_details.password
+    password = decrypt(cinema_details.encryptedPassword)
     cinema_url = cinema_details.cinemaUrl
     service = get_cgr_service_proxy(cinema_url)
     response = service.GetSeancesPassCulture(User=user, mdp=password, IDFilmAllocine=str(allocine_film_id))
@@ -46,7 +47,7 @@ def reservation_pass_culture(
     cinema_details: providers_models.CGRCinemaDetails, body: cgr_serializers.ReservationPassCultureBody
 ) -> cgr_serializers.ReservationPassCultureResponse:
     user = settings.CGR_API_USER
-    password = cinema_details.password
+    password = decrypt(cinema_details.encryptedPassword)
     cinema_url = cinema_details.cinemaUrl
     service = get_cgr_service_proxy(cinema_url)
     response = service.ReservationPassCulture(
@@ -74,7 +75,7 @@ def annulation_pass_culture(
         raise AssertionError("Either QRCode or token is mandatory")
     payload = {
         "User": settings.CGR_API_USER,
-        "mdp": cinema_details.password,
+        "mdp": decrypt(cinema_details.encryptedPassword),
         "pQrCode": qr_code or token,
     }
     cinema_url = cinema_details.cinemaUrl
