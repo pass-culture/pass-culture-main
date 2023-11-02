@@ -5,7 +5,16 @@ from pathlib import Path
 import typing
 from typing import TypedDict
 
-import black
+
+# Black is only used for the `flask update_gtl` command, which is only
+# used on development environments. We don't need (and thus don't
+# install) Black on production Docker image.
+try:
+    import black
+
+    HAS_BLACK = True
+except ImportError:
+    HAS_BLACK = False
 
 from pcapi import settings
 
@@ -86,6 +95,7 @@ def _get_gtls_from_csv_reader(reader: typing.Any) -> dict[str, Gtl]:
 def generate_titelive_gtl_from_file(file: str) -> None:
     if not settings.IS_DEV:
         raise RuntimeError("Not DEV environment")
+    assert HAS_BLACK
 
     import_str = "from .titelive_utils import Gtl"
     method_str = """
