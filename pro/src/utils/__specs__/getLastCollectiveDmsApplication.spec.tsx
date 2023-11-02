@@ -1,7 +1,7 @@
 import { GetOffererResponseModel } from 'apiClient/v1'
 import {
   defaultGetOffererVenueResponseModel,
-  defautGetOffererResponseModel,
+  defaultGetOffererResponseModel,
 } from 'utils/apiFactories'
 import { defaultCollectiveDmsApplication } from 'utils/collectiveApiFactories'
 import {
@@ -36,7 +36,7 @@ describe('getLastCollectiveDmsApplication', () => {
     it('should return the last DMS application for a specific venue', () => {
       const venueId = 1
       const offerer: GetOffererResponseModel = {
-        ...defautGetOffererResponseModel,
+        ...defaultGetOffererResponseModel,
         managedVenues: [
           {
             ...defaultGetOffererVenueResponseModel,
@@ -74,7 +74,7 @@ describe('getLastCollectiveDmsApplication', () => {
 
     it('should return the last DMS application across all venues if no venueId is provided', () => {
       const offerer: GetOffererResponseModel = {
-        ...defautGetOffererResponseModel,
+        ...defaultGetOffererResponseModel,
         managedVenues: [
           {
             ...defaultGetOffererVenueResponseModel,
@@ -106,7 +106,7 @@ describe('getLastCollectiveDmsApplication', () => {
 
     it('should return null if there are no venues', () => {
       const offerer: GetOffererResponseModel = {
-        ...defautGetOffererResponseModel,
+        ...defaultGetOffererResponseModel,
         managedVenues: [],
       }
 
@@ -120,7 +120,7 @@ describe('getLastCollectiveDmsApplication', () => {
 
     it('should return null if there are no DMS applications', () => {
       const offerer: GetOffererResponseModel = {
-        ...defautGetOffererResponseModel,
+        ...defaultGetOffererResponseModel,
         managedVenues: [
           {
             ...defaultGetOffererVenueResponseModel,

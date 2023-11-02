@@ -54,7 +54,7 @@ const OffersRoute = (): JSX.Element => {
         setOfferer(payload)
       }
     }
-
+    // eslint-disable-next-line @typescript-eslint/no-floating-promises
     loadOfferer()
   }, [urlSearchFilters.offererId, notify])
 
@@ -91,6 +91,7 @@ const OffersRoute = (): JSX.Element => {
         setCategories(sortByLabel(categoriesOptions))
       })
 
+    // eslint-disable-next-line @typescript-eslint/no-floating-promises
     loadCategories()
   }, [])
 
@@ -143,13 +144,17 @@ const OffersRoute = (): JSX.Element => {
   }, [dispatch, currentPageNumber, urlSearchFilters])
 
   useEffect(() => {
-    const loadAllVenuesByProUser = () =>
-      getVenuesForOffererAdapter({
+    const loadAllVenuesByProUser = async () => {
+      const venuesResponse = await getVenuesForOffererAdapter({
         offererId: offerer?.id.toString(),
-      }).then((venuesResponse) =>
+      })
+      if (venuesResponse.isOk) {
         setVenues(formatAndOrderVenues(venuesResponse.payload))
-      )
-
+      } else {
+        return notify.error(venuesResponse.message)
+      }
+    }
+    // eslint-disable-next-line @typescript-eslint/no-floating-promises
     loadAllVenuesByProUser()
   }, [offerer?.id])
 

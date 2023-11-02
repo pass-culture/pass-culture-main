@@ -6,6 +6,9 @@ import {
   GetOfferVenueResponseModel,
   GetOffererResponseModel,
   GetOffererVenueResponseModel,
+  ListOffersOfferResponseModel,
+  ListOffersStockResponseModel,
+  ListOffersVenueResponseModel,
   OfferStatus,
   SubcategoryIdEnum,
   VenueListItemResponseModel,
@@ -186,7 +189,7 @@ export const bookingRecapFactory = (
   }
 }
 
-export const defautGetOffererResponseModel: GetOffererResponseModel = {
+export const defaultGetOffererResponseModel: GetOffererResponseModel = {
   address: 'Fake Address',
   apiKey: {
     maxAllowed: 10,
@@ -245,3 +248,52 @@ export const defaultBookingResponse: GetBookingResponse = {
   venueDepartmentCode: '75',
   priceCategoryLabel: 'price label',
 }
+
+type ListOffersOfferResponseModelFactory = {
+  customOffer?: Partial<ListOffersOfferResponseModel>
+  customStocksList?: ListOffersStockResponseModel[]
+  customVenue?: Partial<ListOffersVenueResponseModel>
+}
+
+export const listOffersOfferResponseModelFactory = ({
+  customOffer,
+  customStocksList,
+  customVenue,
+}: ListOffersOfferResponseModelFactory = {}): ListOffersOfferResponseModel => ({
+  hasBookingLimitDatetimesPassed: true,
+  id: offerId++,
+  isActive: true,
+  isEditable: true,
+  isEducational: false,
+  isEvent: true,
+  isShowcase: false,
+  isThing: false,
+  name: `mon offre ${offerId}`,
+  productIsbn: null,
+  status: OfferStatus.ACTIVE,
+  stocks: customStocksList ?? [listOffersStockResponseModelFactory()],
+  subcategoryId: SubcategoryIdEnum.CINE_PLEIN_AIR,
+  thumbUrl: 'https://www.example.com',
+  venue: listOffersVenueResponseModelFactory(customVenue),
+  ...customOffer,
+})
+
+const listOffersStockResponseModelFactory = (
+  customStock?: Partial<ListOffersStockResponseModel>
+): ListOffersStockResponseModel => ({
+  id: stockId++,
+  hasBookingLimitDatetimePassed: false,
+  remainingQuantity: 10,
+  ...customStock,
+})
+
+const listOffersVenueResponseModelFactory = (
+  customVenue?: Partial<ListOffersVenueResponseModel>
+): ListOffersVenueResponseModel => ({
+  id: venueId++,
+  name: 'mon lieu azmefhzihfmiùazer',
+  isVirtual: false,
+  offererName: 'mon offerer',
+  departementCode: '75',
+  ...customVenue,
+})

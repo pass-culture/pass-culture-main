@@ -2,7 +2,7 @@ import { screen } from '@testing-library/react'
 import React from 'react'
 
 import { api } from 'apiClient/api'
-import { defautGetOffererResponseModel } from 'utils/apiFactories'
+import { defaultGetOffererResponseModel } from 'utils/apiFactories'
 import { renderWithProviders } from 'utils/renderWithProviders'
 
 import {
@@ -21,7 +21,7 @@ const renderStatisticsDashboard = (
 ) =>
   renderWithProviders(
     <StatisticsDashboard
-      offerer={{ ...defautGetOffererResponseModel, isValidated: true }}
+      offerer={{ ...defaultGetOffererResponseModel, isValidated: true }}
       {...props}
     />
   )

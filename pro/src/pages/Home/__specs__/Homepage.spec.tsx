@@ -13,7 +13,7 @@ import { Events } from 'core/FirebaseEvents/constants'
 import * as useAnalytics from 'hooks/useAnalytics'
 import {
   defaultGetOffererVenueResponseModel,
-  defautGetOffererResponseModel,
+  defaultGetOffererResponseModel,
 } from 'utils/apiFactories'
 import { renderWithProviders } from 'utils/renderWithProviders'
 
@@ -46,7 +46,7 @@ const mockLogEvent = vi.fn()
 describe('homepage', () => {
   const baseOfferers: GetOffererResponseModel[] = [
     {
-      ...defautGetOffererResponseModel,
+      ...defaultGetOffererResponseModel,
       id: 1,
       managedVenues: [
         {
@@ -68,7 +68,7 @@ describe('homepage', () => {
       hasValidBankAccount: false,
     },
     {
-      ...defautGetOffererResponseModel,
+      ...defaultGetOffererResponseModel,
       id: 2,
       hasValidBankAccount: true,
     },
