@@ -7,7 +7,7 @@ import {
 import { api } from 'apiClient/api'
 import { GetOffererResponseModel } from 'apiClient/v1'
 import { ReimbursementContextProvider } from 'context/ReimbursementContext/ReimbursementContext'
-import { defautGetOffererResponseModel } from 'utils/apiFactories'
+import { defaultGetOffererResponseModel } from 'utils/apiFactories'
 import { renderWithProviders } from 'utils/renderWithProviders'
 
 import Reimbursements from '../Reimbursements'
@@ -67,7 +67,7 @@ describe('Reimbursement page with FF WIP_ENABLE_NEW_BANK_DETAILS_JOURNEY enabled
 
   beforeEach(() => {
     selectedOfferer = {
-      ...defautGetOffererResponseModel,
+      ...defaultGetOffererResponseModel,
     }
 
     vi.spyOn(api, 'listOfferersNames').mockResolvedValue({

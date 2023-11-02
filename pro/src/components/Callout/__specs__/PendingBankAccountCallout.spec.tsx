@@ -4,7 +4,7 @@ import React from 'react'
 import PendingBankAccountCallout, {
   PendingBankAccountCalloutProps,
 } from 'components/Callout/PendingBankAccountCallout'
-import { defautGetOffererResponseModel } from 'utils/apiFactories'
+import { defaultGetOffererResponseModel } from 'utils/apiFactories'
 import { renderWithProviders } from 'utils/renderWithProviders'
 
 describe('PendingBankAccountCallout', () => {
@@ -37,7 +37,7 @@ describe('PendingBankAccountCallout', () => {
 
     it('should not render the pending bank account banner if the offerer has no pending bank account', async () => {
       props.offerer = {
-        ...defautGetOffererResponseModel,
+        ...defaultGetOffererResponseModel,
         hasPendingBankAccount: false,
       }
       renderWithProviders(<PendingBankAccountCallout {...props} />, {
@@ -53,7 +53,7 @@ describe('PendingBankAccountCallout', () => {
 
     it('should render PendingBankAccountCallout if the offerer has a pending bank account', () => {
       props.offerer = {
-        ...defautGetOffererResponseModel,
+        ...defaultGetOffererResponseModel,
         hasPendingBankAccount: true,
       }
       renderWithProviders(<PendingBankAccountCallout {...props} />, {
