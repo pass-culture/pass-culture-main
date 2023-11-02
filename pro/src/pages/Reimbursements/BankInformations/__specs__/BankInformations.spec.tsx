@@ -10,7 +10,7 @@ import {
   ReimbursementContextValues,
 } from 'context/ReimbursementContext/ReimbursementContext'
 import BankInformations from 'pages/Reimbursements/BankInformations/BankInformations'
-import { defautGetOffererResponseModel } from 'utils/apiFactories'
+import { defaultGetOffererResponseModel } from 'utils/apiFactories'
 import { renderWithProviders } from 'utils/renderWithProviders'
 
 const renderBankInformations = (
@@ -54,7 +54,7 @@ describe('BankInformations page', () => {
     }
 
     offerer = {
-      ...defautGetOffererResponseModel,
+      ...defaultGetOffererResponseModel,
       hasValidBankAccount: false,
     }
 
@@ -62,11 +62,11 @@ describe('BankInformations page', () => {
       selectedOfferer: offerer,
       offerers: [
         {
-          ...defautGetOffererResponseModel,
+          ...defaultGetOffererResponseModel,
           name: 'first offerer',
         },
         {
-          ...defautGetOffererResponseModel,
+          ...defaultGetOffererResponseModel,
           id: 2,
           name: 'second offerer',
         },

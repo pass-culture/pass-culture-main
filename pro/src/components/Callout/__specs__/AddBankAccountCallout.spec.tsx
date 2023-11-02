@@ -4,7 +4,7 @@ import React from 'react'
 import AddBankAccountCallout, {
   AddBankAccountCalloutProps,
 } from 'components/Callout/AddBankAccountCallout'
-import { defautGetOffererResponseModel } from 'utils/apiFactories'
+import { defaultGetOffererResponseModel } from 'utils/apiFactories'
 import { renderWithProviders } from 'utils/renderWithProviders'
 
 describe('AddBankAccountCallout', () => {
@@ -42,12 +42,12 @@ describe('AddBankAccountCallout', () => {
 
     it.each([
       {
-        ...defautGetOffererResponseModel,
+        ...defaultGetOffererResponseModel,
         hasValidBankAccount: false,
         venuesWithNonFreeOffersWithoutBankAccounts: [],
       },
       {
-        ...defautGetOffererResponseModel,
+        ...defaultGetOffererResponseModel,
         id: 2,
         venuesWithNonFreeOffersWithoutBankAccounts: [1],
         hasValidBankAccount: true,
@@ -79,7 +79,7 @@ describe('AddBankAccountCallout', () => {
 
     it('should render the add bank account banner if the offerer has no valid bank account and some unlinked venues', async () => {
       props.offerer = {
-        ...defautGetOffererResponseModel,
+        ...defaultGetOffererResponseModel,
         hasValidBankAccount: false,
         venuesWithNonFreeOffersWithoutBankAccounts: [1],
       }
