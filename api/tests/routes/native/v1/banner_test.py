@@ -17,8 +17,8 @@ class BannerTest:
     # - authenticated user
     # - user joinloaded with subscription data
     expected_num_queries_without_subscription_check = 2
-    # - 3 feature flags checked
-    expected_num_queries_with_subscription_check = expected_num_queries_without_subscription_check + 3
+    # - all feature flags checked
+    expected_num_queries_with_subscription_check = expected_num_queries_without_subscription_check + 1
 
     def setup_method(self):
         self.geolocation_banner = {

@@ -356,11 +356,8 @@ class SearchVenueTest:
     # - fetch authenticated user
     # - fetch results
     # - fetch count for pagination
-    # - fetch feature flag: WIP_ENABLE_NEW_BANK_DETAILS_JOURNEY (to build form options)
+    # - fetch all feature flags
     expected_num_queries = 5
-
-    # - fetch feature flag: WIP_BACKOFFICE_ENABLE_REDIRECT_SINGLE_RESULT when one single result is returned
-    expected_num_queries_with_ff = expected_num_queries + 1
 
     def _create_venues(
         self,
@@ -398,7 +395,7 @@ class SearchVenueTest:
 
         # when
         venue_id = self.venues[2].id
-        with assert_num_queries(self.expected_num_queries_with_ff):
+        with assert_num_queries(self.expected_num_queries):
             response = authenticated_client.get(url_for(self.endpoint, q=venue_id, pro_type=TypeOptions.VENUE.name))
 
         # then
@@ -413,7 +410,7 @@ class SearchVenueTest:
         self._create_venues()
 
         # when
-        with assert_num_queries(self.expected_num_queries_with_ff):
+        with assert_num_queries(self.expected_num_queries):
             response = authenticated_client.get(url_for(self.endpoint, q=siret, pro_type=TypeOptions.VENUE.name))
 
         # then
@@ -428,7 +425,7 @@ class SearchVenueTest:
 
         # when
         email = self.venues[1].bookingEmail
-        with assert_num_queries(self.expected_num_queries_with_ff):
+        with assert_num_queries(self.expected_num_queries):
             response = authenticated_client.get(url_for(self.endpoint, q=email, pro_type=TypeOptions.VENUE.name))
 
         # then
@@ -461,7 +458,7 @@ class SearchVenueTest:
 
         # when
         email = self.venues[1].contact.email
-        with assert_num_queries(self.expected_num_queries_with_ff):
+        with assert_num_queries(self.expected_num_queries):
             response = authenticated_client.get(url_for(self.endpoint, q=email, pro_type=TypeOptions.VENUE.name))
 
         # then
@@ -532,7 +529,7 @@ class SearchVenueTest:
         )
 
         # when
-        with assert_num_queries(self.expected_num_queries_with_ff):
+        with assert_num_queries(self.expected_num_queries):
             response = authenticated_client.get(url_for(self.endpoint, q=query, pro_type=TypeOptions.VENUE.name))
 
         # then
