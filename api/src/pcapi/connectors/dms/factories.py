@@ -1,11 +1,11 @@
 import factory
 
-from pcapi.core import testing
+from pcapi.core.factories import BaseFactory
 
 from . import models
 
 
-class LatestDmsImportFactory(testing.BaseFactory):
+class LatestDmsImportFactory(BaseFactory):
     class Meta:
         model = models.LatestDmsImport
 

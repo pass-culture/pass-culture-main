@@ -1,6 +1,6 @@
 import typing
 
-from pcapi.core.testing import BaseFactory
+from pcapi.core.factories import BaseFactory
 
 from . import models
 

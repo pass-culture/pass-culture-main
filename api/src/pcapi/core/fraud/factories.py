@@ -12,7 +12,7 @@ from factory.declarations import LazyAttribute
 import factory.fuzzy
 
 from pcapi import settings
-from pcapi.core import testing
+from pcapi.core import factories
 from pcapi.core.users import constants as users_constants
 from pcapi.core.users import models as users_models
 import pcapi.core.users.factories as users_factories
@@ -150,7 +150,7 @@ FRAUD_CHECK_TYPE_MODEL_ASSOCIATION: dict[models.FraudCheckType, factory.Factory 
 }
 
 
-class BeneficiaryFraudCheckFactory(testing.BaseFactory):
+class BeneficiaryFraudCheckFactory(factories.BaseFactory):
     class Meta:
         model = models.BeneficiaryFraudCheck
 
@@ -206,12 +206,12 @@ class BeneficiaryFraudCheckFactory(testing.BaseFactory):
         return super()._create(model_class, *args, **kwargs)
 
 
-class OrphanDmsFraudCheckFactory(testing.BaseFactory):
+class OrphanDmsFraudCheckFactory(factories.BaseFactory):
     class Meta:
         model = models.OrphanDmsApplication
 
 
-class BeneficiaryFraudReviewFactory(testing.BaseFactory):
+class BeneficiaryFraudReviewFactory(factories.BaseFactory):
     class Meta:
         model = models.BeneficiaryFraudReview
 
@@ -220,7 +220,7 @@ class BeneficiaryFraudReviewFactory(testing.BaseFactory):
     reason = factory.Sequence("Fraud validation reason #{0}".format)
 
 
-class OrphanDmsApplicationFactory(testing.BaseFactory):
+class OrphanDmsApplicationFactory(factories.BaseFactory):
     class Meta:
         model = models.OrphanDmsApplication
 
@@ -252,14 +252,14 @@ class UbbleRetryFraudCheckFactory(BeneficiaryFraudCheckFactory):
     reasonCodes = [models.FraudReasonCode.ID_CHECK_UNPROCESSABLE]
 
 
-class BlacklistedDomainNameFactory(testing.BaseFactory):
+class BlacklistedDomainNameFactory(factories.BaseFactory):
     class Meta:
         model = models.BlacklistedDomainName
 
     domain = factory.Sequence("my-domain-{}.com".format)
 
 
-class ProductWhitelistFactory(testing.BaseFactory):
+class ProductWhitelistFactory(factories.BaseFactory):
     class Meta:
         model = models.ProductWhitelist
 

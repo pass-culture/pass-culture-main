@@ -3,9 +3,9 @@ import typing
 
 import factory
 
+from pcapi.core.factories import BaseFactory
 import pcapi.core.offers.factories as offers_factories
 import pcapi.core.offers.models as offers_models
-from pcapi.core.testing import BaseFactory
 import pcapi.core.users.factories as users_factories
 from pcapi.models import db
 from pcapi.utils.token import random_token
