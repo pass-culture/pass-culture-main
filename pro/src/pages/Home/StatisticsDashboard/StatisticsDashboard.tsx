@@ -92,9 +92,11 @@ export const StatisticsDashboard = ({ offerer }: StatisticsDashboardProps) => {
 
             <div className={styles['sync-date']}>
               Dernière mise à jour :{' '}
-              {stats?.syncDate
-                ? format(new Date(stats.syncDate), FORMAT_DD_MM_YYYY_HH_mm)
-                : 'N/A'}
+              {stats?.syncDate ? (
+                format(new Date(stats.syncDate), FORMAT_DD_MM_YYYY_HH_mm)
+              ) : (
+                <abbr title="Non applicable">N/A</abbr>
+              )}
             </div>
           </div>
         </div>

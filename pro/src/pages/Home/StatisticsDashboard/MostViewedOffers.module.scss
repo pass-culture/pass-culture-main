@@ -15,6 +15,12 @@
   @include fonts.caption;
 }
 
+.top-offers {
+  display: flex;
+  flex-direction: column;
+  gap: rem.torem(16px);
+}
+
 .top-offer {
   display: flex;
   align-items: center;

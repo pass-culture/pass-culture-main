@@ -84,9 +84,8 @@ export const CumulatedViews = ({ dailyViews }: CumulatedViewsProps) => {
                 isExternal: true,
                 rel: 'noopener noreferrer',
                 target: '_blank',
-                'aria-label':
-                  'Bonnes pratiques de création d’offres (Nouvelle fenêtre)',
               }}
+              svgAlt="Nouvelle fenêtre"
               variant={ButtonVariant.TERNARY}
               icon={fullLinkIcon}
             >
@@ -99,11 +98,16 @@ export const CumulatedViews = ({ dailyViews }: CumulatedViewsProps) => {
           <Line
             data={data}
             options={options}
-            aria-label="Les données textuelles pour ce graphique sont disponibles dans la table ci-dessous"
+            role="img"
+            aria-labelledby="chart-title"
+            aria-describedby="chart-description"
           />
 
-          <table className="visually-hidden">
-            <caption>Données des vues cumulées sur les 6 derniers mois</caption>
+          <table className="visually-hidden" id="chart-description">
+            <caption id="chart-title">
+              Nombre de vues cumulées de toutes vos offres sur les 6 derniers
+              mois
+            </caption>
 
             <thead>
               <tr>
