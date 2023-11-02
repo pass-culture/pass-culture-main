@@ -51,7 +51,9 @@ describe('CumulatedViews', () => {
     renderCumulatedViews({ dailyViews })
 
     expect(
-      screen.getByText('Données des vues cumulées sur les 6 derniers mois')
+      screen.getByText(
+        'Nombre de vues cumulées de toutes vos offres sur les 6 derniers mois'
+      )
     ).toBeInTheDocument()
   })
 })

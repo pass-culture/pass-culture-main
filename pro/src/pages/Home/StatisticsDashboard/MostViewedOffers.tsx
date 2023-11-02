@@ -25,7 +25,9 @@ export const MostViewedOffers = ({
     <div className={styles['container']}>
       <div>
         <h3 className={styles['block-title']}>
-          Vos offres ont été vues {last30daysViews.toLocaleString('fr-FR')} fois
+          Vos offres ont été vues
+          <br />
+          {last30daysViews.toLocaleString('fr-FR')} fois
         </h3>
         <span>ces 30 derniers jours</span>
       </div>
@@ -44,7 +46,9 @@ export const MostViewedOffers = ({
               })}
             />
             <div className={styles['top-offer-details']}>
-              {topOffer.offerName}
+              <span className={styles['offer-title']}>
+                {topOffer.offerName}
+              </span>
               <br /> {topOffer.numberOfViews.toLocaleString('fr-FR')} vues
             </div>
           </li>
