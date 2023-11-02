@@ -7,6 +7,7 @@ from pcapi.connectors.cgr.cgr import get_seances_pass_culture
 import pcapi.connectors.cgr.exceptions as cgr_exceptions
 import pcapi.core.providers.factories as providers_factories
 from pcapi.core.testing import override_settings
+from pcapi.utils.crypto import encrypt
 
 from tests.connectors.cgr import soap_definitions
 from tests.local_providers.cinema_providers.cgr import fixtures
@@ -91,7 +92,9 @@ class CGRGetSeancesPassCultureTest:
             "http://example.com/web_service", text=fixtures.cgr_response_template([fixtures.FILM_138473])
         )
         cgr_cinema_details = providers_factories.CGRCinemaDetailsFactory(
-            cinemaUrl="http://example.com/web_service", password="theRealPassword"
+            cinemaUrl="http://example.com/web_service",
+            password="theRealPassword",
+            encryptedPassword=encrypt("theRealPassword"),
         )
 
         get_seances_pass_culture(cinema_details=cgr_cinema_details)

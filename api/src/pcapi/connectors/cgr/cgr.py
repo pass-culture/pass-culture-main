@@ -72,7 +72,11 @@ def annulation_pass_culture(
 ) -> None:
     if not qr_code and not token:
         raise AssertionError("Either QRCode or token is mandatory")
-    payload = {"User": settings.CGR_API_USER, "mdp": cinema_details.password, "pQrCode": qr_code or token}
+    payload = {
+        "User": settings.CGR_API_USER,
+        "mdp": cinema_details.password,
+        "pQrCode": qr_code or token,
+    }
     cinema_url = cinema_details.cinemaUrl
     service = get_cgr_service_proxy(cinema_url)
     response = service.AnnulationPassCulture(**payload)
