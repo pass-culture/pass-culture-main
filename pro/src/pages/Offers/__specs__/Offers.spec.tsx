@@ -4,7 +4,7 @@ import React from 'react'
 import { Routes, Route } from 'react-router-dom'
 
 import { api } from 'apiClient/api'
-import { OfferStatus } from 'apiClient/v1'
+import { ListOffersOfferResponseModel, OfferStatus } from 'apiClient/v1'
 import {
   ALL_CATEGORIES_OPTION,
   ALL_CREATION_MODES,
@@ -13,11 +13,14 @@ import {
   CREATION_MODES_OPTIONS,
   DEFAULT_SEARCH_FILTERS,
 } from 'core/Offers/constants'
-import { Offer, SearchFiltersParams } from 'core/Offers/types'
+import { SearchFiltersParams } from 'core/Offers/types'
 import { computeOffersUrl } from 'core/Offers/utils'
 import { Audience } from 'core/shared'
-import { individualOfferFactory } from 'screens/Offers/utils/individualOffersFactories'
-import { GetIndividualOfferFactory } from 'utils/apiFactories'
+import {
+  defaultGetOffererResponseModel,
+  getVenueListItemFactory,
+  listOffersOfferResponseModelFactory,
+} from 'utils/apiFactories'
 import { renderWithProviders } from 'utils/renderWithProviders'
 
 import OffersRoute from '../../../pages/Offers/OffersRoute'
@@ -32,18 +35,19 @@ const categoriesAndSubcategories = {
 }
 
 const proVenues = [
-  {
+  getVenueListItemFactory({
     id: 1,
     name: 'Ma venue',
     offererName: 'Mon offerer',
+    publicName: undefined,
     isVirtual: false,
-  },
-  {
+  }),
+  getVenueListItemFactory({
     id: 2,
     name: 'Ma venue virtuelle',
     offererName: 'Mon offerer',
     isVirtual: true,
-  },
+  }),
 ]
 
 const renderOffers = async (
@@ -88,7 +92,7 @@ describe('route Offers', () => {
     name: string
   }
   let store: any
-  let offersRecap: Offer[]
+  let offersRecap: ListOffersOfferResponseModel[]
 
   beforeEach(() => {
     currentUser = {
@@ -105,12 +109,13 @@ describe('route Offers', () => {
         searchFilters: DEFAULT_SEARCH_FILTERS,
       },
     }
-    offersRecap = [individualOfferFactory()]
-    // @ts-expect-error FIX ME
-    vi.spyOn(api, 'listOffers').mockResolvedValue(offersRecap)
-    vi.spyOn(api, 'getCategories').mockResolvedValue(categoriesAndSubcategories)
-    vi.spyOn(api, 'getOfferer')
-    // @ts-expect-error FIX ME
+    offersRecap = [
+      listOffersOfferResponseModelFactory({ customVenue: proVenues[0] }),
+    ]
+    vi.spyOn(api, 'listOffers').mockResolvedValueOnce(offersRecap)
+    vi.spyOn(api, 'getCategories').mockResolvedValueOnce(
+      categoriesAndSubcategories
+    )
     vi.spyOn(api, 'getVenues').mockResolvedValue({ venues: proVenues })
   })
 
@@ -159,10 +164,8 @@ describe('route Offers', () => {
         })
 
         it('should filter draft offers given status filter when clicking on "Appliquer"', async () => {
-          // Given
           await renderOffers(store)
 
-          // When
           await userEvent.click(
             screen.getByRole('button', {
               name: 'Statut Afficher ou masquer le filtre par statut',
@@ -172,7 +175,6 @@ describe('route Offers', () => {
 
           await userEvent.click(screen.getByText('Appliquer'))
 
-          // Then
           expect(api.listOffers).toHaveBeenCalledTimes(1)
           expect(api.listOffers).toHaveBeenLastCalledWith(
             undefined,
@@ -187,13 +189,11 @@ describe('route Offers', () => {
         })
 
         it('should indicate that no offers match selected filters', async () => {
-          // Given
           vi.spyOn(api, 'listOffers')
-            // @ts-expect-error FIX ME
             .mockResolvedValueOnce(offersRecap)
             .mockResolvedValueOnce([])
           await renderOffers(store)
-          // When
+
           await userEvent.click(
             screen.getByRole('button', {
               name: 'Statut Afficher ou masquer le filtre par statut',
@@ -201,7 +201,7 @@ describe('route Offers', () => {
           )
           await userEvent.click(screen.getByLabelText('Expirée'))
           await userEvent.click(screen.getByText('Appliquer'))
-          // Then
+
           const noOffersForSearchFiltersText = screen.getByText(
             'Aucune offre trouvée pour votre recherche'
           )
@@ -209,12 +209,10 @@ describe('route Offers', () => {
         })
 
         it('should not display column titles when no offers are returned', async () => {
-          // Given
           vi.spyOn(api, 'listOffers').mockResolvedValueOnce([])
-          // When
+
           await renderOffers(store)
 
-          // Then
           expect(screen.queryByText('Lieu', { selector: 'th' })).toBeNull()
           expect(screen.queryByText('Stock', { selector: 'th' })).toBeNull()
         })
@@ -234,20 +232,20 @@ describe('route Offers', () => {
         })
         describe('status filter can only be used with an offerer or a venue filter for performance reasons', () => {
           it('should reset and disable status filter when venue filter is deselected', async () => {
-            // Given
             const { id: venueId, name: venueName } = proVenues[0]
             const filters = {
               venueId: venueId.toString(),
               status: OfferStatus.INACTIVE,
             }
             await renderOffers(store, filters)
+
             await userEvent.selectOptions(
               screen.getByDisplayValue(venueName),
               ALL_VENUES
             )
-            // When
+
             await userEvent.click(screen.getByText('Lancer la recherche'))
-            // Then
+
             expect(
               screen.getByRole('button', {
                 name: 'Statut Afficher ou masquer le filtre par statut',
@@ -266,7 +264,6 @@ describe('route Offers', () => {
           })
 
           it('should not reset or disable status filter when venue filter is deselected while offerer filter is applied', async () => {
-            // Given
             const { id: venueId, name: venueName } = proVenues[0]
             const filters = {
               venueId: venueId.toString(),
@@ -278,9 +275,9 @@ describe('route Offers', () => {
               screen.getByDisplayValue(venueName),
               ALL_VENUES
             )
-            // When
+
             await userEvent.click(screen.getByText('Lancer la recherche'))
-            // Then
+
             expect(
               screen.getByRole('button', {
                 name: /Afficher ou masquer le filtre par statut/,
@@ -299,18 +296,21 @@ describe('route Offers', () => {
           })
 
           it('should reset and disable status filter when offerer filter is removed', async () => {
-            // Given
-            const offerer = { name: 'La structure', id: 'EF' }
-            // @ts-expect-error FIX ME
+            const offerer = {
+              ...defaultGetOffererResponseModel,
+              name: 'La structure',
+              id: 25,
+            }
+
             vi.spyOn(api, 'getOfferer').mockResolvedValue(offerer)
             const filters = {
-              offererId: offerer.id,
+              offererId: offerer.id.toString(),
               status: OfferStatus.INACTIVE,
             }
             await renderOffers(store, filters)
-            // When
+
             await userEvent.click(screen.getByTestId('remove-offerer-filter'))
-            // Then
+
             expect(
               screen.getByRole('button', {
                 name: 'Statut Afficher ou masquer le filtre par statut',
@@ -329,20 +329,23 @@ describe('route Offers', () => {
           })
 
           it('should not reset or disable status filter when offerer filter is removed while venue filter is applied', async () => {
-            // Given
             const { id: venueId } = proVenues[0]
-            const offerer = { name: 'La structure', id: 'EF' }
-            // @ts-expect-error FIX ME
+            const offerer = {
+              ...defaultGetOffererResponseModel,
+              name: 'La structure',
+              id: 65,
+            }
+
             vi.spyOn(api, 'getOfferer').mockResolvedValue(offerer)
             const filters = {
               venueId: venueId.toString(),
               status: OfferStatus.INACTIVE,
-              offererId: offerer.id,
+              offererId: offerer.id.toString(),
             }
             await renderOffers(store, filters)
-            // When
+
             await userEvent.click(screen.getByTestId('remove-offerer-filter'))
-            // Then
+
             expect(
               screen.getByRole('button', {
                 name: /Afficher ou masquer le filtre par statut/,
@@ -361,11 +364,10 @@ describe('route Offers', () => {
           })
 
           it('should enable status filters when venue filter is applied', async () => {
-            // Given
             const filters = { venueId: 'IJ' }
-            // When
+
             await renderOffers(store, filters)
-            // Then
+
             expect(
               screen.getByRole('button', {
                 name: 'Statut Afficher ou masquer le filtre par statut',
@@ -374,11 +376,10 @@ describe('route Offers', () => {
           })
 
           it('should enable status filters when offerer filter is applied', async () => {
-            // Given
             const filters = { offererId: 'A4' }
-            // When
+
             await renderOffers(store, filters)
-            // Then
+
             expect(
               screen.getByRole('button', {
                 name: 'Statut Afficher ou masquer le filtre par statut',
@@ -390,7 +391,6 @@ describe('route Offers', () => {
 
       describe('on click on search button', () => {
         it('should load offers with written offer name filter', async () => {
-          // Given
           await renderOffers(store)
           await userEvent.type(
             screen.getByPlaceholderText(
@@ -398,9 +398,9 @@ describe('route Offers', () => {
             ),
             'Any word'
           )
-          // When
+
           await userEvent.click(screen.getByText('Lancer la recherche'))
-          // Then
+
           expect(api.listOffers).toHaveBeenCalledWith(
             'Any word',
             undefined,
@@ -414,16 +414,15 @@ describe('route Offers', () => {
         })
 
         it('should load offers with selected venue filter', async () => {
-          // Given
           await renderOffers(store)
           const firstVenueOption = screen.getByRole('option', {
             name: proVenues[0].name,
           })
           const venueSelect = screen.getByLabelText('Lieu')
           await userEvent.selectOptions(venueSelect, firstVenueOption)
-          // When
+
           await userEvent.click(screen.getByText('Lancer la recherche'))
-          // Then
+
           expect(api.listOffers).toHaveBeenCalledWith(
             undefined,
             undefined,
@@ -437,7 +436,6 @@ describe('route Offers', () => {
         })
 
         it('should load offers with selected type filter', async () => {
-          // Given
           await renderOffers(store)
           const firstTypeOption = screen.getByRole('option', {
             name: 'Cinéma',
@@ -446,9 +444,9 @@ describe('route Offers', () => {
             ALL_CATEGORIES_OPTION.label
           )
           await userEvent.selectOptions(typeSelect, firstTypeOption)
-          // When
+
           await userEvent.click(screen.getByText('Lancer la recherche'))
-          // Then
+
           expect(api.listOffers).toHaveBeenLastCalledWith(
             undefined,
             undefined,
@@ -462,7 +460,6 @@ describe('route Offers', () => {
         })
 
         it('should load offers with selected creation mode filter', async () => {
-          // Given
           await renderOffers(store)
           const creationModeSelect = screen.getByDisplayValue('Tous')
           const importedCreationMode = CREATION_MODES_OPTIONS[2].value
@@ -470,9 +467,9 @@ describe('route Offers', () => {
             creationModeSelect,
             String(importedCreationMode)
           )
-          // When
+
           await userEvent.click(screen.getByText('Lancer la recherche'))
-          // Then
+
           expect(api.listOffers).toHaveBeenLastCalledWith(
             undefined,
             undefined,
@@ -533,31 +530,27 @@ describe('route Offers', () => {
 
   describe('url query params', () => {
     it('should have page value when page value is not first page', async () => {
-      // Given
       const offersRecap = Array.from({ length: 11 }, () =>
-        individualOfferFactory()
+        listOffersOfferResponseModelFactory()
       )
-      // @ts-expect-error FIX ME
       vi.spyOn(api, 'listOffers').mockResolvedValueOnce(offersRecap)
       await renderOffers(store)
       const nextPageIcon = screen.getByRole('button', { name: 'Page suivante' })
-      // When
+
       await userEvent.click(nextPageIcon)
 
-      // Then
       expect(screen.getByText('Page 2/2')).toBeInTheDocument()
     })
 
     it('should store search value', async () => {
-      // Given
       await renderOffers(store)
       const searchInput = screen.getByPlaceholderText(
         'Rechercher par nom d’offre ou par EAN-13'
       )
-      // When
+
       await userEvent.type(searchInput, 'search string')
       await userEvent.click(screen.getByText('Lancer la recherche'))
-      // Then
+
       expect(api.listOffers).toHaveBeenCalledWith(
         'search string',
         undefined,
@@ -571,15 +564,13 @@ describe('route Offers', () => {
     })
 
     it('should have offer name value be removed when name search value is an empty string', async () => {
-      // Given
       await renderOffers(store)
-      // When
+
       await userEvent.clear(
         screen.getByPlaceholderText('Rechercher par nom d’offre ou par EAN-13')
       )
       await userEvent.click(screen.getByText('Lancer la recherche'))
 
-      // Then
       expect(api.listOffers).toHaveBeenCalledWith(
         undefined,
         undefined,
@@ -593,17 +584,15 @@ describe('route Offers', () => {
     })
 
     it('should have venue value when user filters by venue', async () => {
-      // Given
       await renderOffers(store)
       const firstVenueOption = screen.getByRole('option', {
         name: proVenues[0].name,
       })
       const venueSelect = screen.getByLabelText('Lieu')
-      // When
+
       await userEvent.selectOptions(venueSelect, firstVenueOption)
       await userEvent.click(screen.getByText('Lancer la recherche'))
 
-      // Then
       expect(api.listOffers).toHaveBeenCalledWith(
         undefined,
         undefined,
@@ -617,7 +606,6 @@ describe('route Offers', () => {
     })
 
     it('should have venue value be removed when user asks for all venues', async () => {
-      // Given
       vi.spyOn(api, 'getCategories').mockResolvedValueOnce({
         categories: [
           { id: 'test_id_1', proLabel: 'My test value', isSelectable: true },
@@ -634,11 +622,10 @@ describe('route Offers', () => {
         name: 'My test value',
       })
       const typeSelect = screen.getByDisplayValue(ALL_CATEGORIES_OPTION.label)
-      // When
+
       await userEvent.selectOptions(typeSelect, firstTypeOption)
       await userEvent.click(screen.getByText('Lancer la recherche'))
 
-      // Then
       expect(api.listOffers).toHaveBeenCalledWith(
         undefined,
         undefined,
@@ -652,20 +639,15 @@ describe('route Offers', () => {
     })
 
     it('should have status value when user filters by status', async () => {
-      // Given
-
       vi.spyOn(api, 'listOffers').mockResolvedValueOnce([
-        // @ts-expect-error FIX ME
-        GetIndividualOfferFactory(
-          {
-            id: 'KE',
-            availabilityMessage: 'Pas de stock',
+        listOffersOfferResponseModelFactory({
+          customOffer: {
             status: OfferStatus.ACTIVE,
           },
-          // @ts-expect-error individualOfferFactory is not typed and null throws an error but is accepted by the function
-          null
-        ),
+          customStocksList: [],
+        }),
       ])
+
       await renderOffers(store)
       await userEvent.click(
         screen.getByRole('button', {
@@ -673,10 +655,8 @@ describe('route Offers', () => {
         })
       )
       await userEvent.click(screen.getByLabelText('Épuisée'))
-      // When
       await userEvent.click(screen.getByText('Appliquer'))
 
-      // Then
       expect(api.listOffers).toHaveBeenCalledWith(
         undefined,
         undefined,
@@ -690,18 +670,13 @@ describe('route Offers', () => {
     })
 
     it('should have status value be removed when user ask for all status', async () => {
-      // Given
       vi.spyOn(api, 'listOffers').mockResolvedValueOnce([
-        // @ts-expect-error FIX ME
-        GetIndividualOfferFactory(
-          {
-            id: 'KE',
-            availabilityMessage: 'Pas de stock',
+        listOffersOfferResponseModelFactory({
+          customOffer: {
             status: OfferStatus.ACTIVE,
           },
-          // @ts-expect-error individualOfferFactory is not typed and null throws an error but is accepted by the function
-          null
-        ),
+          customStocksList: [],
+        }),
       ])
       await renderOffers(store)
       await userEvent.click(
@@ -710,10 +685,9 @@ describe('route Offers', () => {
         })
       )
       await userEvent.click(screen.getByLabelText('Toutes'))
-      // When
+
       await userEvent.click(screen.getByText('Appliquer'))
 
-      // Then
       expect(api.listOffers).toHaveBeenCalledWith(
         undefined,
         undefined,
@@ -727,41 +701,41 @@ describe('route Offers', () => {
     })
 
     it('should have offerer filter when user filters by offerer', async () => {
-      // Given
-      const filters = { offererId: 'A4' }
-      // @ts-expect-error FIX ME
+      const id = 654
+
       vi.spyOn(api, 'getOfferer').mockResolvedValueOnce({
+        ...defaultGetOffererResponseModel,
         name: 'La structure',
       })
-      // When
+      const filters = { offererId: id.toString() }
+
       await renderOffers(store, filters)
-      // Then
+
       const offererFilter = screen.getByText('La structure')
       expect(offererFilter).toBeInTheDocument()
     })
 
     it('should have offerer value be removed when user removes offerer filter', async () => {
-      // Given
-      const filters = { offererId: 'A4' }
-      // @ts-expect-error FIX ME
+      const id = 654
       vi.spyOn(api, 'getOfferer').mockResolvedValueOnce({
+        ...defaultGetOffererResponseModel,
         name: 'La structure',
+        id,
       })
+      const filters = { offererId: id.toString() }
       await renderOffers(store, filters)
-      // When
+
       await userEvent.click(screen.getByTestId('remove-offerer-filter'))
-      // Then
+
       expect(screen.queryByText('La structure')).not.toBeInTheDocument()
     })
 
     it('should have creation mode value when user filters by creation mode', async () => {
-      // Given
       await renderOffers(store)
-      // When
+
       await userEvent.selectOptions(screen.getByDisplayValue('Tous'), 'manual')
       await userEvent.click(screen.getByText('Lancer la recherche'))
 
-      // Then
       expect(api.listOffers).toHaveBeenCalledWith(
         undefined,
         undefined,
@@ -775,19 +749,17 @@ describe('route Offers', () => {
     })
 
     it('should have creation mode value be removed when user ask for all creation modes', async () => {
-      // Given
       await renderOffers(store)
       const searchButton = screen.getByText('Lancer la recherche')
       await userEvent.selectOptions(screen.getByDisplayValue('Tous'), 'manual')
       await userEvent.click(searchButton)
-      // When
+
       await userEvent.selectOptions(
         screen.getByDisplayValue('Manuel'),
         ALL_CREATION_MODES
       )
       await userEvent.click(searchButton)
 
-      // Then
       expect(api.listOffers).toHaveBeenCalledWith(
         undefined,
         undefined,
@@ -803,8 +775,6 @@ describe('route Offers', () => {
 
   describe('page navigation', () => {
     it('should redirect to collective offers when user click on collective offer link', async () => {
-      // Given
-      // @ts-expect-error FIX ME
       vi.spyOn(api, 'listOffers').mockResolvedValue(offersRecap)
       await renderOffers(store)
       screen.getByText('Lancer la recherche')
@@ -812,37 +782,30 @@ describe('route Offers', () => {
         selector: 'span',
       })
 
-      // When
       await userEvent.click(collectiveAudienceLink)
 
-      // Then
       expect(screen.getByText('Offres collectives')).toBeInTheDocument()
     })
 
     it('should display next page when clicking on right arrow', async () => {
-      // Given
       const offers = Array.from({ length: 11 }, () =>
-        GetIndividualOfferFactory()
+        listOffersOfferResponseModelFactory()
       )
-      // @ts-expect-error FIX ME
       vi.spyOn(api, 'listOffers').mockResolvedValueOnce(offers)
       await renderOffers(store)
       const nextIcon = screen.getByRole('button', { name: 'Page suivante' })
 
-      // When
       await userEvent.click(nextIcon)
 
-      // Then
       expect(screen.getByLabelText(offers[10].name)).toBeInTheDocument()
       expect(screen.queryByLabelText(offers[0].name)).not.toBeInTheDocument()
     })
 
     it('should display previous page when clicking on left arrow', async () => {
-      // Given
       const offers = Array.from({ length: 11 }, () =>
-        GetIndividualOfferFactory()
+        listOffersOfferResponseModelFactory()
       )
-      // @ts-expect-error FIX ME
+
       vi.spyOn(api, 'listOffers').mockResolvedValueOnce(offers)
       await renderOffers(store)
       const nextIcon = screen.getByRole('button', { name: 'Page suivante' })
@@ -851,10 +814,8 @@ describe('route Offers', () => {
       })
       await userEvent.click(nextIcon)
 
-      // When
       await userEvent.click(previousIcon)
 
-      // Then
       expect(screen.getByLabelText(offers[0].name)).toBeInTheDocument()
       expect(screen.queryByText(offers[10].name)).not.toBeInTheDocument()
     })
@@ -862,37 +823,27 @@ describe('route Offers', () => {
     describe('when 501 offers are fetched', () => {
       beforeEach(() => {
         offersRecap = Array.from({ length: 501 }, () =>
-          individualOfferFactory()
+          listOffersOfferResponseModelFactory({ customStocksList: [] })
         )
       })
 
       it('should have max number page of 50', async () => {
-        // Given
-        vi.spyOn(api, 'listOffers')
-          // @ts-expect-error FIX ME
-          .mockResolvedValueOnce(offersRecap)
+        vi.spyOn(api, 'listOffers').mockResolvedValueOnce(offersRecap)
 
-        // When
         await renderOffers(store)
 
-        // Then
         expect(screen.getByText('Page 1/50')).toBeInTheDocument()
       })
 
       it('should not display the 501st offer', async () => {
-        // Given
-        vi.spyOn(api, 'listOffers')
-          // @ts-expect-error FIX ME
-          .mockResolvedValueOnce(offersRecap)
+        vi.spyOn(api, 'listOffers').mockResolvedValueOnce(offersRecap)
         await renderOffers(store)
         const nextIcon = screen.getByRole('button', { name: 'Page suivante' })
 
-        // When
         for (let i = 1; i < 51; i++) {
           await userEvent.click(nextIcon)
         }
 
-        // Then
         expect(screen.getByLabelText(offersRecap[499].name)).toBeInTheDocument()
         expect(
           screen.queryByLabelText(offersRecap[500].name)
@@ -904,7 +855,6 @@ describe('route Offers', () => {
   describe('should reset filters', () => {
     it('when clicking on "afficher toutes les offres" when no offers are displayed', async () => {
       vi.spyOn(api, 'listOffers')
-        // @ts-expect-error FIX ME
         .mockResolvedValueOnce(offersRecap)
         .mockResolvedValueOnce([])
       await renderOffers(store)
@@ -951,7 +901,6 @@ describe('route Offers', () => {
 
     it('when clicking on "Réinitialiser les filtres"', async () => {
       vi.spyOn(api, 'listOffers')
-        // @ts-expect-error FIX ME
         .mockResolvedValueOnce(offersRecap)
         .mockResolvedValueOnce([])
 

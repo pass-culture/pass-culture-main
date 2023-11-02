@@ -17,7 +17,7 @@ import { baseStoreFactory } from 'store/testUtils'
 import {
   collectiveOfferFactory,
   defaultGetOffererVenueResponseModel,
-  defautGetOffererResponseModel,
+  defaultGetOffererResponseModel,
 } from 'utils/apiFactories'
 import { defaultCollectiveDmsApplication } from 'utils/collectiveApiFactories'
 import {
@@ -189,7 +189,7 @@ describe('OfferType', () => {
 
   it('should display dms application banner if offerer can not create collective offer but as dms application', async () => {
     const offerer: GetOffererResponseModel = {
-      ...defautGetOffererResponseModel,
+      ...defaultGetOffererResponseModel,
       managedVenues: [
         {
           ...defaultGetOffererVenueResponseModel,

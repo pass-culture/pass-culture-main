@@ -4,7 +4,7 @@ import React from 'react'
 import LinkVenueCallout, {
   LinkVenueCalloutProps,
 } from 'components/Callout/LinkVenueCallout'
-import { defautGetOffererResponseModel } from 'utils/apiFactories'
+import { defaultGetOffererResponseModel } from 'utils/apiFactories'
 import { renderWithProviders } from 'utils/renderWithProviders'
 
 describe('LinkVenueCallout', () => {
@@ -40,12 +40,12 @@ describe('LinkVenueCallout', () => {
 
     it.each([
       {
-        ...defautGetOffererResponseModel,
+        ...defaultGetOffererResponseModel,
         hasValidBankAccount: true,
         venuesWithNonFreeOffersWithoutBankAccounts: [],
       },
       {
-        ...defautGetOffererResponseModel,
+        ...defaultGetOffererResponseModel,
         id: 2,
         hasValidBankAccount: false,
         venuesWithNonFreeOffersWithoutBankAccounts: [1],
@@ -74,7 +74,7 @@ describe('LinkVenueCallout', () => {
 
     it('should render LinkVenueCallout', () => {
       props.offerer = {
-        ...defautGetOffererResponseModel,
+        ...defaultGetOffererResponseModel,
         hasValidBankAccount: true,
         venuesWithNonFreeOffersWithoutBankAccounts: [1],
       }
@@ -100,7 +100,7 @@ describe('LinkVenueCallout', () => {
     it('should render LinkVenueCallout with singular wording', () => {
       props.titleOnly = false
       props.offerer = {
-        ...defautGetOffererResponseModel,
+        ...defaultGetOffererResponseModel,
         hasValidBankAccount: true,
         venuesWithNonFreeOffersWithoutBankAccounts: [1],
       }
@@ -125,7 +125,7 @@ describe('LinkVenueCallout', () => {
         titleOnly: false,
       }
       props.offerer = {
-        ...defautGetOffererResponseModel,
+        ...defaultGetOffererResponseModel,
         hasValidBankAccount: true,
         venuesWithNonFreeOffersWithoutBankAccounts: [1, 2],
       }
