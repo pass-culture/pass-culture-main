@@ -6,9 +6,9 @@ import uuid
 import factory
 
 from pcapi.core.categories import subcategories_v2 as subcategories
+from pcapi.core.factories import BaseFactory
 import pcapi.core.offerers.factories as offerers_factories
 import pcapi.core.offers.models as offers_models
-from pcapi.core.testing import BaseFactory
 import pcapi.core.users.factories as users_factories
 from pcapi.models.offer_mixin import OfferValidationType
 

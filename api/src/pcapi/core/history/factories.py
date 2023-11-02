@@ -3,8 +3,8 @@ from datetime import datetime
 from dateutil.relativedelta import relativedelta
 import factory
 
+from pcapi.core.factories import BaseFactory
 from pcapi.core.history import models
-from pcapi.core.testing import BaseFactory
 import pcapi.core.users.constants as users_constants
 import pcapi.core.users.factories as users_factories
 

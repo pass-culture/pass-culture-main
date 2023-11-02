@@ -3,7 +3,7 @@ import typing
 
 import factory
 
-from pcapi.core.testing import BaseFactory
+from pcapi.core.factories import BaseFactory
 import pcapi.core.users.factories as users_factories
 from pcapi.models.validation_status_mixin import ValidationStatus
 from pcapi.utils import crypto
