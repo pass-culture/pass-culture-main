@@ -1,4 +1,4 @@
-import React, { useCallback, useEffect, useState } from 'react'
+import React, { useEffect, useState } from 'react'
 
 import { api } from 'apiClient/api'
 import { GetOffererResponseModel } from 'apiClient/v1'
@@ -25,6 +25,7 @@ interface ReimbursementPointV2 {
   offerer: GetOffererResponseModel
   venueHasPricingPoint?: boolean
 }
+
 type ReimbursementPointOptions = {
   key: string
   displayName: string
@@ -67,7 +68,7 @@ const ReimbursementPoint = ({
       ? `${reimbursementPoint.venueName} - ${reimbursementPoint.iban}`
       : ''
 
-  const modifyReimbursementPointLabel = useCallback(() => {
+  const modifyReimbursementPointLabel = () => {
     if (isNewBankDetailsJourneyEnabled) {
       return 'Ajouter un compte bancaire'
     }
@@ -75,21 +76,21 @@ const ReimbursementPoint = ({
     return hasAlreadyAddReimbursementPoint
       ? 'Modifier mes coordonnées bancaires'
       : 'Ajouter des coordonnées bancaires'
-  }, [hasAlreadyAddReimbursementPoint])
+  }
 
-  const openDMSApplication = useCallback(() => {
+  const openDMSApplication = () => {
     if (venueHasPricingPoint || venue.siret) {
       setIsDmsDialogOpen(true)
     } else {
       setIsNoSiretDialogOpen(true)
     }
-  }, [venueHasPricingPoint])
+  }
 
-  const closeDmsDialog = useCallback(async () => {
+  const closeDmsDialog = async () => {
     setIsDmsDialogOpen(false)
     const venueRequest = await api.getVenue(venue.id)
     setVenue(serializeVenueApi(venueRequest))
-  }, [])
+  }
 
   useEffect(() => {
     async function loadReimbursementPoints(offererId: number) {

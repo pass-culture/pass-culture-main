@@ -16,6 +16,7 @@ import {
 import { getIndividualOfferAdapter } from 'core/Offers/adapters'
 import { publishIndividualOffer } from 'core/Offers/adapters/publishIndividualOffer'
 import { OFFER_WIZARD_MODE } from 'core/Offers/constants'
+import { IndividualOffer } from 'core/Offers/types'
 import { getIndividualOfferUrl } from 'core/Offers/utils/getIndividualOfferUrl'
 import { useOfferWizardMode } from 'hooks'
 import useActiveFeature from 'hooks/useActiveFeature'
@@ -70,6 +71,27 @@ const SummaryScreen = () => {
     mode,
   })
 
+  const checkFirstNonFreeOfferPopin = async (
+    getIndividualOfferResponse: IndividualOffer
+  ) => {
+    const isNonFreeOffer = getIndividualOfferResponse.stocks.some((stock) => {
+      return stock.price > 0
+    })
+    if (!isNonFreeOffer) {
+      navigate(offerConfirmationStepUrl)
+    }
+
+    const offererResponse = await api.getOfferer(offer.offererId)
+    if (
+      offererResponse.hasPendingBankAccount === false &&
+      offererResponse.hasValidBankAccount === false
+    ) {
+      setDisplayRedirectDialog(true)
+    } else {
+      navigate(offerConfirmationStepUrl)
+    }
+  }
+
   const publishOffer = async () => {
     // edition mode offers are already publish
     /* istanbul ignore next: DEBT, TO FIX */
@@ -86,37 +108,22 @@ const SummaryScreen = () => {
         offer.id
       )
       if (getIndividualOfferResponse.isOk) {
-        setOffer && setOffer(getIndividualOfferResponse.payload)
+        setOffer?.(getIndividualOfferResponse.payload)
       }
 
-      if (isNewBankDetailsJourneyEnabled) {
-        if (showFirstNonFreeOfferPopin) {
-          const isNonFreeOffer =
-            getIndividualOfferResponse.payload?.stocks.some((stock) => {
-              return stock.price > 0
-            })
-          if (!isNonFreeOffer) {
-            navigate(offerConfirmationStepUrl)
-          }
-
-          const offererResponse = await api.getOfferer(offer.offererId)
-          if (
-            offererResponse.hasPendingBankAccount === false &&
-            offererResponse.hasValidBankAccount === false
-          ) {
-            setDisplayRedirectDialog(true)
-          } else {
-            navigate(offerConfirmationStepUrl)
-          }
-        } else {
-          navigate(offerConfirmationStepUrl)
-        }
+      if (
+        isNewBankDetailsJourneyEnabled &&
+        getIndividualOfferResponse.isOk &&
+        showFirstNonFreeOfferPopin
+      ) {
+        await checkFirstNonFreeOfferPopin(getIndividualOfferResponse.payload)
+      } else if (
+        !isNewBankDetailsJourneyEnabled &&
+        showVenuePopin[venueId || '']
+      ) {
+        setDisplayRedirectDialog(true)
       } else {
-        if (showVenuePopin[venueId || '']) {
-          setDisplayRedirectDialog(true)
-        } else {
-          navigate(offerConfirmationStepUrl)
-        }
+        navigate(offerConfirmationStepUrl)
       }
     } else {
       notification.error("Une erreur s'est produite, veuillez réessayer")
@@ -235,9 +242,15 @@ const SummaryScreen = () => {
             navigate(offerConfirmationStepUrl)
           }}
           title="Félicitations, vous avez créé votre offre !"
-          redirectText="Renseigner des coordonnées bancaires"
+          redirectText={
+            isNewBankDetailsJourneyEnabled
+              ? 'Renseigner un compte bancaire'
+              : 'Renseigner des coordonnées bancaires'
+          }
           redirectLink={{
-            to: `/structures/${offerOfferer?.id}/lieux/${venueId}?modification#remboursement`,
+            to: isNewBankDetailsJourneyEnabled
+              ? `remboursements/informations-bancaires?structure=${offerOfferer?.id}`
+              : `/structures/${offerOfferer?.id}/lieux/${venueId}?modification#remboursement`,
             isExternal: false,
           }}
           onRedirect={() =>
