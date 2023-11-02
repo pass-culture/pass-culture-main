@@ -20,7 +20,7 @@ Spectree:
 * [API publique d'offres individuelles](https://backend.passculture.app/public/offers/v1/swagger)
 
 ## Liens des mocks API:
-* [APi "Charlie" billeterie](https://mock-api-billeterie.ehp.passculture.team/)
+* [API "Charlie" billeterie](https://mock-api-billeterie.ehp.passculture.team/)
 
 ## Installation des dépendances
 
@@ -43,8 +43,8 @@ ces [étapes](https://doc.courtbouillon.org/weasyprint/stable/first_steps.html#i
 On utilise Poetry pour gérer nos dépendences. Par défaut, Poetry crée l'environnement virtuel dans un dossier
 qui dépend du système d'exploitation. Pour accéder aux exécutables de cet environnement, il y a deux méthodes :
 1. Préfixer la commande avec `poetry run`, e.g. `poetry run pytest`
-2. Activer l'environnement virtuel avec `source $(poetry env list --full-path | awk '{print $1}' | head -n 1)/bin/activate`.
-   Cela permet d'exécuter `pytest` sans préfixe.
+2. Activer l'environnement virtuel avec `poetry shell`. Cela permet d'exécuter `pytest` sans préfixe. Il existe
+   [d'autres manières d'activer son environnement virtuel](https://python-poetry.org/docs/basic-usage#activating-the-virtual-environment).
 
 Une gestion plus fine de l'environnement virtuel utilisé par `poetry` peut être trouvée sur ce lien : [Managing environments | Documentation | Poetry](https://python-poetry.org/docs/managing-environments/)
 
