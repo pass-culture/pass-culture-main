@@ -1,6 +1,5 @@
 from datetime import datetime
 from functools import partial
-from functools import reduce
 import typing
 
 from flask import flash
@@ -622,7 +621,7 @@ def get_batch_edit_venues_form() -> utils.BackofficeResponse:
             )
             .all()
         )
-        criteria = list(reduce(set.intersection, [set(venue.criteria) for venue in venues]))  # type: ignore [arg-type]
+        criteria = list(set.intersection(*[set(venue.criteria) for venue in venues]))
 
         if len(criteria) > 0:
             form.criteria.choices = [(criterion.id, criterion.name) for criterion in criteria]

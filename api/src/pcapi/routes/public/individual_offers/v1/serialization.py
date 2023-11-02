@@ -210,7 +210,7 @@ def compute_category_fields_model(
         specific_fields[field_name] = (model_field.type_, ... if is_required else model_field.default)
 
     specific_fields["subcategory_id"] = (
-        typing.Literal[subcategory.id],  # pyright: ignore (pylance error message)
+        typing.Literal[subcategory.id],
         pydantic_v1.Field(alias="category"),
     )
 
