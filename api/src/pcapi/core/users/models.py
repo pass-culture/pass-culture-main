@@ -775,7 +775,7 @@ class UserEmailHistory(PcObject, Base, Model):
         return f"{self.oldUserEmail}@{self.oldDomainEmail}"
 
     @oldEmail.expression  # type: ignore [no-redef]
-    def oldEmail(cls):  # pylint: disable=no-self-argument # type: ignore[no-redef]
+    def oldEmail(cls):  # pylint: disable=no-self-argument
         return func.concat(cls.oldUserEmail, "@", cls.oldDomainEmail)
 
     @hybrid_property
@@ -783,7 +783,7 @@ class UserEmailHistory(PcObject, Base, Model):
         return f"{self.newUserEmail}@{self.newDomainEmail}"
 
     @newEmail.expression  # type: ignore [no-redef]
-    def newEmail(cls):  # pylint: disable=no-self-argument # type: ignore[no-redef]
+    def newEmail(cls):  # pylint: disable=no-self-argument
         return func.concat(cls.newUserEmail, "@", cls.newDomainEmail)
 
 

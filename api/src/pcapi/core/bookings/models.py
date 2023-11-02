@@ -229,7 +229,7 @@ class Booking(PcObject, Base, Model):
         return self.cancellationLimitDate is not None and self.cancellationLimitDate <= datetime.utcnow()
 
     @isConfirmed.expression  # type: ignore [no-redef]
-    def isConfirmed(cls) -> BooleanClauseList:  # pylint: disable=no-self-argument # type: ignore[no-redef]
+    def isConfirmed(cls) -> BooleanClauseList:  # pylint: disable=no-self-argument
         return and_(cls.cancellationLimitDate.is_not(None), cls.cancellationLimitDate <= datetime.utcnow())
 
     @hybrid_property
@@ -277,7 +277,7 @@ class Booking(PcObject, Base, Model):
         return any(externalBooking.id for externalBooking in self.externalBookings)
 
     @isExternal.expression  # type: ignore [no-redef]
-    def isExternal(cls) -> Label:  # pylint: disable=no-self-argument # type: ignore[no-redef]
+    def isExternal(cls) -> Label:  # pylint: disable=no-self-argument
         return select(
             [
                 case(
