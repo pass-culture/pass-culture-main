@@ -131,7 +131,7 @@ export function IndividualOfferContextProvider({
               return hasNonFreeOffers
             }
           )
-          setShowFirstNonFreeOfferPopin(venueHasCreatedNonFreeOffer)
+          setShowFirstNonFreeOfferPopin(!venueHasCreatedNonFreeOffer)
         } else {
           const venuesPopinDisplaying: Record<string, boolean> = {}
           response.payload.venueList.forEach((v) => {
@@ -178,7 +178,7 @@ export function IndividualOfferContextProvider({
         venueId,
         offerOfferer,
         showVenuePopin: showVenuePopin,
-        showFirstNonFreeOfferPopin: showFirstNonFreeOfferPopin,
+        showFirstNonFreeOfferPopin,
         subcategory,
         setSubcategory,
       }}

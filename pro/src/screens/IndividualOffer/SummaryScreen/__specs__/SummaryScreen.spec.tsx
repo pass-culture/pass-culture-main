@@ -353,6 +353,7 @@ describe('Summary', () => {
       const context = {
         offer: individualOfferFactory(),
         venueId: 1,
+        offerOfferer: { name: 'offerOffererName', id: 1 },
         showVenuePopin: {
           1: true,
         },
@@ -388,6 +389,14 @@ describe('Summary', () => {
       expect(
         await screen.findByText('Félicitations, vous avez créé votre offre !')
       ).toBeInTheDocument()
+      expect(
+        screen.getByRole('link', {
+          name: 'Renseigner des coordonnées bancaires',
+        })
+      ).toHaveAttribute(
+        'href',
+        '/structures/1/lieux/1?modification#remboursement'
+      )
     })
 
     it('should display redirect modal if first non free offer', async () => {
@@ -395,9 +404,9 @@ describe('Summary', () => {
         offer: individualOfferFactory(
           individualStockFactory({ price: 2, quantity: null })
         ),
+        offerOfferer: { name: 'offerOffererName', id: 1 },
         venueId: 1,
         showFirstNonFreeOfferPopin: true,
-        offererId: 1,
       }
       const storeOverride = {
         features: {
@@ -449,6 +458,12 @@ describe('Summary', () => {
       expect(
         await screen.findByText('Félicitations, vous avez créé votre offre !')
       ).toBeInTheDocument()
+      expect(
+        screen.getByRole('link', { name: 'Renseigner un compte bancaire' })
+      ).toHaveAttribute(
+        'href',
+        '/remboursements/informations-bancaires?structure=1'
+      )
     })
 
     it('should not display redirect modal if offer is free', async () => {
