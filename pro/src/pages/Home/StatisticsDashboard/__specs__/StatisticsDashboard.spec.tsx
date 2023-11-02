@@ -42,6 +42,6 @@ describe('StatisticsDashboard', () => {
         'Créez vos premières offres grand public pour être visible par les bénéficiaires'
       )
     ).toBeInTheDocument()
-    expect(screen.getByText('Dernière mise à jour : N/A')).toBeInTheDocument()
+    expect(screen.getByText('Dernière mise à jour :')).toBeInTheDocument()
   })
 })

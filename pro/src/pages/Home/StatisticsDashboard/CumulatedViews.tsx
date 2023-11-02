@@ -100,7 +100,7 @@ export const CumulatedViews = ({ dailyViews }: CumulatedViewsProps) => {
             options={options}
             role="img"
             aria-labelledby="chart-title"
-            aria-describedby="chart-description"
+            aria-details="chart-description"
           />
 
           <table className="visually-hidden" id="chart-description">

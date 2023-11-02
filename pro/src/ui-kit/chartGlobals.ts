@@ -21,7 +21,7 @@ Chart.defaults.scales.time.time.displayFormats = {
 Chart.defaults.scales.time.ticks.font = { weight: '600' }
 Chart.defaults.scales.time.ticks.color = chartColors.black
 Chart.defaults.scales.time.time.tooltipFormat = FORMAT_DD_MM_YYYY
-Chart.defaults.scales.time.grid = { display: false }
+Chart.defaults.scales.time.grid = { drawTicks: false }
 
 Chart.defaults.scales.linear.ticks.font = { weight: '600' }
 Chart.defaults.scales.linear.ticks.color = chartColors.black
