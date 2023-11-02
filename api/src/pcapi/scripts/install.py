@@ -2,6 +2,8 @@ import importlib
 
 import flask
 
+from pcapi import settings
+
 
 def install_commands(app: flask.Flask) -> None:
     module_paths = (
@@ -22,7 +24,6 @@ def install_commands(app: flask.Flask) -> None:
         "pcapi.scripts.beneficiary.import_test_users",
         "pcapi.scripts.booking.commands",
         "pcapi.scripts.check_pre_migrations",
-        "pcapi.scripts.clean_database",
         "pcapi.scripts.external_users.commands",
         "pcapi.scripts.full_index_offers",
         "pcapi.scripts.full_index_collective_offers",
@@ -37,6 +38,9 @@ def install_commands(app: flask.Flask) -> None:
         "pcapi.utils.secrets",
         "pcapi.workers.worker",
     )
+
+    if settings.ENABLE_COMMAND_CLEAN_DATABASE:
+        module_paths += ("pcapi.scripts.clean_database",)
 
     for path in module_paths:
         module = importlib.import_module(path)
