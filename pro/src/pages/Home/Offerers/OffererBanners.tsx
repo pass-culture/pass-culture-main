@@ -25,6 +25,8 @@ export const OffererBanners = ({
             href: `https://aide.passculture.app/hc/fr/articles/4514252662172--Acteurs-Culturels-S-inscrire-et-comprendre-le-fonctionnement-du-pass-Culture-cr%C3%A9ation-d-offres-gestion-des-r%C3%A9servations-remboursements-etc-`,
             linkTitle: 'En savoir plus',
             icon: fullLinkIcon,
+            'aria-label':
+              'Acteurs Culturels: s’inscrire et comprendre le fonctionnement (Nouvelle fenêtre, site https://aide.passculture.app)',
           },
         ]}
       >
@@ -50,6 +52,8 @@ export const OffererBanners = ({
             href: `https://aide.passculture.app/hc/fr/articles/4514252662172--Acteurs-Culturels-S-inscrire-et-comprendre-le-fonctionnement-du-pass-Culture-cr%C3%A9ation-d-offres-gestion-des-r%C3%A9servations-remboursements-etc-`,
             linkTitle: 'En savoir plus sur le fonctionnement du pass Culture',
             icon: fullLinkIcon,
+            'aria-label':
+              'Acteurs Culturels: s’inscrire et comprendre le fonctionnement (Nouvelle fenêtre, site https://aide.passculture.app)',
           },
         ]}
       >
@@ -86,6 +90,8 @@ export const OffererBanners = ({
           {
             href: `https://aide.passculture.app/hc/fr/articles/4411992075281--Acteurs-Culturels-Comment-cr%C3%A9er-un-lieu-`,
             linkTitle: 'En savoir plus sur la création d’un lieu',
+            'aria-label':
+              'Acteurs Culturels: Comment ajouter de nouveaux lieux sur votre espace et les paramétrer ? (Nouvelle fenêtre, site https://aide.passculture.app)',
             icon: fullLinkIcon,
           },
         ]}

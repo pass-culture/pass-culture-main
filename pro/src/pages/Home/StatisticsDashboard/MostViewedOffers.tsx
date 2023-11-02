@@ -32,21 +32,24 @@ export const MostViewedOffers = ({
 
       <div className={styles['caption']}>Offres les plus consultées</div>
 
-      {topOffers.map((topOffer, index) => (
-        <div key={topOffer.offerId} className={styles['top-offer']}>
-          <div className={styles['top-offer-rank']}>#{index + 1}</div>
-          <Thumb
-            url={topOffer.image?.url}
-            className={cn(styles['top-offer-thumbnail'], {
-              [styles['top-offer-thumbnail-placeholder']]: !topOffer.image?.url,
-            })}
-          />
-          <div className={styles['top-offer-details']}>
-            {topOffer.offerName}
-            <br /> {topOffer.numberOfViews.toLocaleString('fr-FR')} vues
-          </div>
-        </div>
-      ))}
+      <ol className={styles['top-offers']}>
+        {topOffers.map((topOffer, index) => (
+          <li key={topOffer.offerId} className={styles['top-offer']}>
+            <div className={styles['top-offer-rank']}>#{index + 1}</div>
+            <Thumb
+              url={topOffer.image?.url}
+              className={cn(styles['top-offer-thumbnail'], {
+                [styles['top-offer-thumbnail-placeholder']]:
+                  !topOffer.image?.url,
+              })}
+            />
+            <div className={styles['top-offer-details']}>
+              {topOffer.offerName}
+              <br /> {topOffer.numberOfViews.toLocaleString('fr-FR')} vues
+            </div>
+          </li>
+        ))}
+      </ol>
     </div>
   )
 }

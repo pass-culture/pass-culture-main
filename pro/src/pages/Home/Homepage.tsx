@@ -124,10 +124,9 @@ const Homepage = (): JSX.Element => {
   }, [remoteConfigData?.REMOTE_CONFIG_LOADED])
 
   const hasAtLeastOnePhysicalVenue =
-    selectedOfferer?.managedVenues
-      ?.filter((venue) => !venue.isVirtual)
-      .map((venue) => venue.id)
-      .some(Boolean) ?? false
+    selectedOfferer?.managedVenues?.some(
+      (venue) => !venue.isVirtual && venue.id
+    ) ?? false
 
   return (
     <>
