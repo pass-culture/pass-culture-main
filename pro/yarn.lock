@@ -2307,10 +2307,10 @@
     redux-thunk "^2.4.2"
     reselect "^4.1.8"
 
-"@remix-run/router@1.10.0":
-  version "1.10.0"
-  resolved "https://registry.yarnpkg.com/@remix-run/router/-/router-1.10.0.tgz#e2170dc2049b06e65bbe883adad0e8ddf8291278"
-  integrity sha512-Lm+fYpMfZoEucJ7cMxgt4dYt8jLfbpwRCzAjm9UgSLOkmlqo9gupxt6YX3DY0Fk155NT9l17d/ydi+964uS9Lw==
+"@remix-run/router@1.11.0":
+  version "1.11.0"
+  resolved "https://registry.yarnpkg.com/@remix-run/router/-/router-1.11.0.tgz#e0e45ac3fff9d8a126916f166809825537e9f955"
+  integrity sha512-BHdhcWgeiudl91HvVa2wxqZjSHbheSgIiDvxrF1VjFzBzpTtuDPkOdOi3Iqvc08kXtFkLjhbS+ML9aM8mJS+wQ==
 
 "@rollup/pluginutils@^4.2.0":
   version "4.2.1"
@@ -2577,18 +2577,6 @@
     magic-string "^0.30.0"
     rollup "^2.25.0 || ^3.3.0"
 
-"@storybook/channels@7.5.1":
-  version "7.5.1"
-  resolved "https://registry.yarnpkg.com/@storybook/channels/-/channels-7.5.1.tgz#f850c6da3e2cabe51239499d68a8b3d7eb22c621"
-  integrity sha512-7hTGHqvtdFTqRx8LuCznOpqPBYfUeMUt/0IIp7SFuZT585yMPxrYoaK//QmLEWnPb80B8HVTSQi7caUkJb32LA==
-  dependencies:
-    "@storybook/client-logger" "7.5.1"
-    "@storybook/core-events" "7.5.1"
-    "@storybook/global" "^5.0.0"
-    qs "^6.10.0"
-    telejson "^7.2.0"
-    tiny-invariant "^1.3.1"
-
 "@storybook/channels@7.5.2":
   version "7.5.2"
   resolved "https://registry.yarnpkg.com/@storybook/channels/-/channels-7.5.2.tgz#f5ea597a799e13b7307fe79067faede5e13e6619"
@@ -2647,13 +2635,6 @@
     tempy "^1.0.1"
     ts-dedent "^2.0.0"
     util-deprecate "^1.0.2"
-
-"@storybook/client-logger@7.5.1":
-  version "7.5.1"
-  resolved "https://registry.yarnpkg.com/@storybook/client-logger/-/client-logger-7.5.1.tgz#dc4c693900ae1f7ebda9f7faeea46956e70ef184"
-  integrity sha512-XxbLvg0aQRoBrzxYLcVYCbjDkGbkU8Rfb74XbV2CLiO2bIbFPmA1l1Nwbp+wkCGA+O6Z1zwzSl6wcKKqZ6XZCg==
-  dependencies:
-    "@storybook/global" "^5.0.0"
 
 "@storybook/client-logger@7.5.2":
   version "7.5.2"
@@ -2733,13 +2714,6 @@
     pkg-dir "^5.0.0"
     pretty-hrtime "^1.0.3"
     resolve-from "^5.0.0"
-    ts-dedent "^2.0.0"
-
-"@storybook/core-events@7.5.1":
-  version "7.5.1"
-  resolved "https://registry.yarnpkg.com/@storybook/core-events/-/core-events-7.5.1.tgz#a6bf057e4605fb8360c76d28a3c36daa676a81a4"
-  integrity sha512-2eyaUhTfmEEqOEZVoCXVITCBn6N7QuZCG2UNxv0l//ED+7MuMiFhVw7kS7H3WOVk65R7gb8qbKFTNX8HFTgBHg==
-  dependencies:
     ts-dedent "^2.0.0"
 
 "@storybook/core-events@7.5.2":
@@ -2884,26 +2858,6 @@
   resolved "https://registry.yarnpkg.com/@storybook/preset-scss/-/preset-scss-1.0.3.tgz#8ac834545c642dada0f64f510ef08dfb882e9737"
   integrity sha512-o9Iz6wxPeNENrQa2mKlsDKynBfqU2uWaRP80HeWp4TkGgf7/x3DVF2O7yi9N0x/PI1qzzTTpxlQ90D62XmpiTw==
 
-"@storybook/preview-api@7.5.1":
-  version "7.5.1"
-  resolved "https://registry.yarnpkg.com/@storybook/preview-api/-/preview-api-7.5.1.tgz#c21697587d7202941e0f90538115d9c3be21f781"
-  integrity sha512-8xjUbuGmHLmw8tfTUCjXSvMM9r96JaexPFmHdwW6XLe71KKdWp8u96vRDRE5648cd+/of15OjaRtakRKqluA/A==
-  dependencies:
-    "@storybook/channels" "7.5.1"
-    "@storybook/client-logger" "7.5.1"
-    "@storybook/core-events" "7.5.1"
-    "@storybook/csf" "^0.1.0"
-    "@storybook/global" "^5.0.0"
-    "@storybook/types" "7.5.1"
-    "@types/qs" "^6.9.5"
-    dequal "^2.0.2"
-    lodash "^4.17.21"
-    memoizerific "^1.11.3"
-    qs "^6.10.0"
-    synchronous-promise "^2.0.15"
-    ts-dedent "^2.0.0"
-    util-deprecate "^1.0.2"
-
 "@storybook/preview-api@7.5.2":
   version "7.5.2"
   resolved "https://registry.yarnpkg.com/@storybook/preview-api/-/preview-api-7.5.2.tgz#72512c11369975904894c6f50036f10d3c329e59"
@@ -3006,16 +2960,6 @@
     "@storybook/client-logger" "7.5.2"
     "@storybook/global" "^5.0.0"
     memoizerific "^1.11.3"
-
-"@storybook/types@7.5.1":
-  version "7.5.1"
-  resolved "https://registry.yarnpkg.com/@storybook/types/-/types-7.5.1.tgz#fa7f5c4ded412c92af9e6bcb238689c1f4f57d2a"
-  integrity sha512-ZcMSaqFNx1E+G00nRDUi8kKL7gxJVlnCvbKLNj3V85guy4DkIYAZr31yDqze07gDWbjvKoHIp3tKpgE+2i8upQ==
-  dependencies:
-    "@storybook/channels" "7.5.1"
-    "@types/babel__core" "^7.0.0"
-    "@types/express" "^4.7.0"
-    file-system-cache "2.3.0"
 
 "@storybook/types@7.5.2":
   version "7.5.2"
@@ -8840,20 +8784,20 @@ react-resize-detector@^7.1.2:
   dependencies:
     lodash "^4.17.21"
 
-react-router-dom@^6.17.0:
-  version "6.17.0"
-  resolved "https://registry.yarnpkg.com/react-router-dom/-/react-router-dom-6.17.0.tgz#ea73f89186546c1cf72b10fcb7356d874321b2ad"
-  integrity sha512-qWHkkbXQX+6li0COUUPKAUkxjNNqPJuiBd27dVwQGDNsuFBdMbrS6UZ0CLYc4CsbdLYTckn4oB4tGDuPZpPhaQ==
+react-router-dom@^6.18.0:
+  version "6.18.0"
+  resolved "https://registry.yarnpkg.com/react-router-dom/-/react-router-dom-6.18.0.tgz#0a50c167209d6e7bd2ed9de200a6579ea4fb1dca"
+  integrity sha512-Ubrue4+Ercc/BoDkFQfc6og5zRQ4A8YxSO3Knsne+eRbZ+IepAsK249XBH/XaFuOYOYr3L3r13CXTLvYt5JDjw==
   dependencies:
-    "@remix-run/router" "1.10.0"
-    react-router "6.17.0"
+    "@remix-run/router" "1.11.0"
+    react-router "6.18.0"
 
-react-router@6.17.0:
-  version "6.17.0"
-  resolved "https://registry.yarnpkg.com/react-router/-/react-router-6.17.0.tgz#7b680c4cefbc425b57537eb9c73bedecbdc67c1e"
-  integrity sha512-YJR3OTJzi3zhqeJYADHANCGPUu9J+6fT5GLv82UWRGSxu6oJYCKVmxUcaBQuGm9udpWmPsvpme/CdHumqgsoaA==
+react-router@6.18.0:
+  version "6.18.0"
+  resolved "https://registry.yarnpkg.com/react-router/-/react-router-6.18.0.tgz#32e2bedc318e095a48763b5ed7758e54034cd36a"
+  integrity sha512-vk2y7Dsy8wI02eRRaRmOs9g2o+aE72YCx5q9VasT1N9v+lrdB79tIqrjMfByHiY5+6aYkH2rUa5X839nwWGPDg==
   dependencies:
-    "@remix-run/router" "1.10.0"
+    "@remix-run/router" "1.11.0"
 
 react-select@*, react-select@^5.7.5:
   version "5.7.5"
