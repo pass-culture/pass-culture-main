@@ -13,10 +13,10 @@ from freezegun import freeze_time
 
 from pcapi import settings
 from pcapi.connectors.beneficiaries.educonnect import models as educonnect_models
+from pcapi.core.factories import BaseFactory
 import pcapi.core.finance.api as finance_api
 import pcapi.core.finance.models as finance_models
 from pcapi.core.fraud import models as fraud_models
-from pcapi.core.testing import BaseFactory
 from pcapi.core.users import utils as users_utils
 import pcapi.core.users.constants as users_constants
 from pcapi.models import db

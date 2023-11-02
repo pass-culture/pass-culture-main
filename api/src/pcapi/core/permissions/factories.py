@@ -1,8 +1,8 @@
 import factory
 
+from pcapi.core.factories import BaseFactory
 from pcapi.core.permissions import models as perm_models
 from pcapi.core.permissions.models import Permission
-from pcapi.core.testing import BaseFactory
 
 
 class PermissionFactory(BaseFactory):
