@@ -93,7 +93,7 @@ class CGRGetSeancesPassCultureTest:
         )
         cgr_cinema_details = providers_factories.CGRCinemaDetailsFactory(
             cinemaUrl="http://example.com/web_service",
-            password="theRealPassword",
+            password=encrypt("theRealPassword"),
             encryptedPassword=encrypt("theRealPassword"),
         )
 
