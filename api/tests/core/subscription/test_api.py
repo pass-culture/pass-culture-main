@@ -2688,6 +2688,6 @@ class TestQueriesTest:
             .one()
         )
 
-        # 3 features flags checked, no N+1 query when fraud checks and reviews joinedloaded
-        with assert_num_queries(3):
+        # 3 features flags checked in one query, no N+1 query when fraud checks and reviews joinedloaded
+        with assert_num_queries(1):
             subscription_api.get_user_subscription_state(fetched_user)

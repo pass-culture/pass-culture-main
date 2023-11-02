@@ -67,6 +67,12 @@ class FeatureToggleTest:
         finally:
             flask._request_ctx_stack.push(context)
 
+    def test_one_request_for_all_flags(self):
+        with assert_num_queries(1):
+            FeatureToggle.SYNCHRONIZE_ALLOCINE.is_active()
+            FeatureToggle.DISABLE_CGR_EXTERNAL_BOOKINGS.is_active()
+            FeatureToggle.ALGOLIA_BOOKINGS_NUMBER_COMPUTATION.is_active()
+
 
 @pytest.mark.usefixtures("db_session")
 class FeatureTest:
