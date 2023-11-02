@@ -41,8 +41,12 @@
   }
 
   &-details {
-    @include fonts.caption;
+    @include fonts.preview-text;
 
     flex-grow: 1;
   }
+}
+
+.offer-title {
+  @include fonts.caption;
 }

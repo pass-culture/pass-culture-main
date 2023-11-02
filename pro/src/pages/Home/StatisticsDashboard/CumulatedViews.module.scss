@@ -34,4 +34,6 @@
 
 .chart {
   flex-grow: 1;
+  min-height: rem.torem(300px);
+  margin-top: rem.torem(16px);
 }
