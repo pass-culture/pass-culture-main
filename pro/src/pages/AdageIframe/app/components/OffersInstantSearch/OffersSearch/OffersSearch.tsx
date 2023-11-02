@@ -18,7 +18,6 @@ import { DEFAULT_GEO_RADIUS, MAIN_INDEX_ID } from '../OffersInstantSearch'
 import {
   ADAGE_FILTERS_DEFAULT_VALUES,
   adageFiltersToFacetFilters,
-  computeFiltersInitialValues,
   serializeFiltersForData,
 } from '../utils'
 
@@ -50,6 +49,7 @@ export interface SearchFormValues {
   categories: string[][]
   geolocRadius: number
   formats: string[]
+  venue: VenueResponse | null
 }
 
 export const OffersSearch = ({
@@ -150,7 +150,7 @@ export const OffersSearch = ({
   }
 
   const formik = useFormik<SearchFormValues>({
-    initialValues: computeFiltersInitialValues(venueFilter),
+    initialValues: { ...ADAGE_FILTERS_DEFAULT_VALUES, venue: venueFilter },
     enableReinitialize: true,
     onSubmit: handleSubmit,
   })
@@ -172,7 +172,7 @@ export const OffersSearch = ({
     <>
       <FormikContext.Provider value={formik}>
         <Autocomplete
-          initialQuery={venueFilter?.publicName || venueFilter?.name || ''}
+          initialQuery={''}
           placeholder={
             'Rechercher par mot-clé, par partenaire culturel, par nom d’offre...'
           }

@@ -39,6 +39,35 @@ const renderFiltersTag = (
   )
 }
 describe('FiltersTag', () => {
+  describe('venue filter', () => {
+    const venueFilter = {
+      id: 1,
+      name: 'Mon super lieu',
+      relative: [],
+      departementCode: '75',
+    }
+
+    it('should display venue name in tag', () => {
+      renderFiltersTag({
+        ...ADAGE_FILTERS_DEFAULT_VALUES,
+        venue: venueFilter,
+      })
+
+      expect(screen.getByText(/Lieu : Mon super lieu/)).toBeInTheDocument()
+    })
+    it('should remove venue tag on click', async () => {
+      renderFiltersTag({
+        ...ADAGE_FILTERS_DEFAULT_VALUES,
+        venue: { ...venueFilter, publicName: 'Public name' },
+      })
+      await userEvent.click(
+        screen.getByRole('button', { name: /Lieu : Public name/ })
+      )
+      expect(
+        screen.queryByRole('button', { name: /Lieu : Public name/ })
+      ).not.toBeInTheDocument()
+    })
+  })
   describe('event address type', () => {
     it('should render in my school tag if event adress type school is selected', () => {
       renderFiltersTag({

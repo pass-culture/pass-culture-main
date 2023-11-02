@@ -20,11 +20,11 @@ describe('getDefaultFacetFilterUAICodeValue', () => {
     const venueFilter = {
       id: 1,
       name: 'test',
-      relative: [],
+      relative: [2],
       departementCode: '30',
     }
     const expectedFilters = [
-      ['venue.departmentCode:30', 'offer.interventionArea:30'],
+      ['venue.id:1', 'venue.id:2'],
       ['offer.educationalInstitutionUAICode:all'],
     ]
 

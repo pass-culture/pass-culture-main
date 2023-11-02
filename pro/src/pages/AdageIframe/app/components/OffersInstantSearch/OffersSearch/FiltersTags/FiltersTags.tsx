@@ -83,8 +83,22 @@ const FiltersTags = ({
     )
   }
 
+  const getVenueTag = () => {
+    if (!values.venue) {
+      return null
+    }
+    const venueDisplayName = `Lieu :  ${
+      values.venue.publicName || values.venue.name
+    }`
+    return createTag(venueDisplayName, async () => {
+      await setFieldValue('venue', null)
+      handleSubmit()
+    })
+  }
+
   return (
     <div className={styles.container}>
+      {getVenueTag()}
       {getOfferAdressTypeTag()}
       {getGeoLocalisationTag()}
       {values.academies.map((academy) =>

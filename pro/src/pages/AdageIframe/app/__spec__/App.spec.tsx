@@ -145,7 +145,7 @@ describe('app', () => {
       }))
     })
 
-    it('should show search offers input with filter on venue public name when siret is provided and public name exists', async () => {
+    it('should display venue tag when siret is provided and public name exists', async () => {
       const mockLocation = {
         ...window.location,
         search: '?siret=123456789',
@@ -156,12 +156,12 @@ describe('app', () => {
       renderApp(venue)
       await waitForElementToBeRemoved(() => screen.queryAllByTestId('spinner'))
 
-      const inputElement = screen.getByLabelText('Autocomplete')
-
-      expect(inputElement).toHaveValue("Lib de Par's")
+      expect(
+        screen.getByRole('button', { name: /Lieu : Lib de Par's/ })
+      ).toBeInTheDocument()
     })
 
-    it('should show search offers input with filter on venue public name when venueId is provided and public name exists', async () => {
+    it('should venue tag when venueId is provided and public name exists', async () => {
       // Given
       const mockLocation = {
         ...window.location,
@@ -175,9 +175,9 @@ describe('app', () => {
 
       await waitForElementToBeRemoved(() => screen.queryAllByTestId('spinner'))
 
-      const inputElement = screen.getByLabelText('Autocomplete')
-
-      expect(inputElement).toHaveValue("Lib de Par's")
+      expect(
+        screen.getByRole('button', { name: /Lieu : Lib de Par's/ })
+      ).toBeInTheDocument()
     })
 
     it('should add geo location filter when user has latitude and longitude', async () => {

@@ -3,6 +3,13 @@ import { EacFormat } from 'apiClient/adage'
 import { SearchFormValues } from '../OffersSearch/OffersSearch'
 import { adageFiltersToFacetFilters, serializeFiltersForData } from '../utils'
 
+const venueFilter = {
+  id: 123,
+  name: 'test',
+  departementCode: '01',
+  relative: [456],
+}
+
 describe('adageFiltersToFacetFilters', () => {
   const domains: string[] = ['1']
   const students: string[] = ['Collège - 4e']
@@ -23,6 +30,7 @@ describe('adageFiltersToFacetFilters', () => {
         academies,
         categories,
         formats,
+        venue: venueFilter,
       })
     ).toStrictEqual({
       queryFilters: [
@@ -34,6 +42,7 @@ describe('adageFiltersToFacetFilters', () => {
         ['offer.subcategoryId:categorie1', 'offer.subcategoryId:categorie2'],
         ['formats:Concert'],
         ['offer.educationalInstitutionUAICode:all'],
+        ['venue.id:123', 'venue.id:456'],
       ],
       filtersKeys: [
         'eventAddressType',
@@ -43,6 +52,7 @@ describe('adageFiltersToFacetFilters', () => {
         'academies',
         'categories',
         'formats',
+        'venue',
       ],
     })
   })
@@ -61,6 +71,7 @@ describe('adageFiltersToFacetFilters', () => {
         academies,
         categories,
         formats,
+        venue: null,
       })
     ).toStrictEqual({
       queryFilters: [
@@ -96,6 +107,7 @@ describe('adageFiltersToFacetFilters', () => {
         academies,
         categories,
         formats,
+        venue: null,
       })
     ).toStrictEqual({
       queryFilters: [
@@ -129,6 +141,7 @@ describe('adageFiltersToFacetFilters', () => {
         academies,
         categories,
         formats,
+        venue: null,
       })
     ).toStrictEqual({
       queryFilters: [
@@ -169,6 +182,7 @@ describe('serializeFiltersForData', () => {
       categories: [['subcat1', 'subcat3']],
       formats: [EacFormat.CONCERT],
       geolocRadius: 10,
+      venue: null,
     }
     const result = serializeFiltersForData(
       filters,
@@ -188,6 +202,7 @@ describe('serializeFiltersForData', () => {
       categories: ['Category 1', 'Category 2'],
       formats: ['Concert'],
       geolocRadius: 10,
+      venue: undefined,
     })
   })
   it('should not serialize serialise formats if ff is not active', () => {
@@ -200,6 +215,7 @@ describe('serializeFiltersForData', () => {
       categories: [['subcat1', 'subcat3']],
       formats: [EacFormat.CONCERT],
       geolocRadius: 10,
+      venue: venueFilter,
     }
     const result = serializeFiltersForData(
       filters,
@@ -219,6 +235,7 @@ describe('serializeFiltersForData', () => {
       categories: ['Category 1', 'Category 2'],
       formats: undefined,
       geolocRadius: 10,
+      venue: [123, 456],
     })
   })
 })
