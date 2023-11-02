@@ -466,3 +466,5 @@ COMPLIANCE_API_SERVICE_ACCOUNT = os.environ.get("COMPLIANCE_API_SERVICE_ACCOUNT"
 COMPLIANCE_BACKEND = os.environ.get(
     "COMPLIANCE_BACKEND", "pcapi.core.external.compliance_backends.compliance.ComplianceBackend"
 )
+
+ENABLE_COMMAND_CLEAN_DATABASE = bool(int(os.environ.get("ENABLE_COMMAND_CLEAN_DATABASE", 0)))
