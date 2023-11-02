@@ -7,8 +7,8 @@ import factory
 from pcapi.core.categories.subcategories_v2 import COLLECTIVE_SUBCATEGORIES
 from pcapi.core.educational import models
 from pcapi.core.educational import utils
+from pcapi.core.factories import BaseFactory
 import pcapi.core.offerers.factories as offerers_factories
-from pcapi.core.testing import BaseFactory
 from pcapi.models.offer_mixin import OfferValidationStatus
 from pcapi.utils import db as db_utils
 

@@ -2,7 +2,7 @@ import factory
 
 from pcapi.core.bookings.factories import BookingFactory
 from pcapi.core.bookings.models import ExternalBooking
-from pcapi.core.testing import BaseFactory
+from pcapi.core.factories import BaseFactory
 
 
 class ExternalBookingFactory(BaseFactory):
