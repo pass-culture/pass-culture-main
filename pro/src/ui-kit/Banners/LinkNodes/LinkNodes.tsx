@@ -14,6 +14,7 @@ export type Link = {
   isExternal?: boolean
   onClick?: () => void
   svgAlt?: string
+  'aria-label'?: string
 }
 
 interface LinkNodeProps {
@@ -36,6 +37,7 @@ const LinkNode = ({
     isExternal = true,
     onClick,
     svgAlt,
+    'aria-label': ariaLabel,
   },
   defaultLinkIcon = fullLinkIcon,
 }: LinkNodeProps): React.ReactNode => (
@@ -45,6 +47,7 @@ const LinkNode = ({
       to: href,
       target: targetLink,
       rel: 'noopener noreferrer',
+      'aria-label': ariaLabel,
     }}
     icon={hideLinkIcon ? undefined : icon ?? defaultLinkIcon}
     className={styles['bi-link']}
