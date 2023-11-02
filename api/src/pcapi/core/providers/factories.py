@@ -10,6 +10,7 @@ from pcapi.core.offerers import factories as offerers_factories
 from pcapi.core.offerers import models as offerers_models
 import pcapi.core.providers.repository as providers_repository
 from pcapi.core.testing import BaseFactory
+from pcapi.utils.crypto import encrypt
 
 from . import models
 
@@ -135,6 +136,7 @@ class CGRCinemaDetailsFactory(BaseFactory):
     cinemaUrl = factory.Sequence("https://cgr-cinema-{}.example.com/".format)
     numCinema = factory.Sequence(int)
     password = "a great password"
+    encryptedPassword = encrypt("a great password")
 
 
 class EMSCinemaDetailsFactory(BaseFactory):
