@@ -18,14 +18,30 @@ jobs:
       contents: read
     steps:
       - uses: actions/checkout@v3
+
+      - name: Authentification to Google
+        uses: 'google-github-actions/auth@v1'
+        with:
+          workload_identity_provider: ${{ secrets.GCP_EHP_WORKLOAD_IDENTITY_PROVIDER }}
+          service_account: ${{ secrets.GCP_EHP_SERVICE_ACCOUNT }}
+
+      - name: Get Secret
+        id: 'secrets'
+        uses: 'google-github-actions/get-secretmanager-secrets@v1'
+        with:
+          secrets: |-
+            INFRA_PROD_GCP_WORKLOAD_IDENTITY_PROVIDER:passculture-metier-ehp/passculture-main-gcp-workload-identity-provider
+            ARTIFACT_REGISTRY_SERVICE_ACCOUNT:passculture-metier-ehp/passculture-main-artifact-registry-service-account
+            SLACK_BOT_TOKEN:passculture-metier-ehp/passculture-ci-slack-bot-token
+
       - id: openid-auth
         name: "OpenID Connect Authentication"
         uses: "google-github-actions/auth@v1"
         with:
           create_credentials_file: false
           token_format: "access_token"
-          workload_identity_provider: ${{ secrets.INFRA_PROD_GCP_WORKLOAD_IDENTITY_PROVIDER }}
-          service_account: ${{ secrets.ARTIFACT_REGISTRY_SERVICE_ACCOUNT }}
+          workload_identity_provider: ${{ steps.secrets.outputs.INFRA_PROD_GCP_WORKLOAD_IDENTITY_PROVIDER }}
+          service_account: ${{ steps.secrets.outputs.ARTIFACT_REGISTRY_SERVICE_ACCOUNT }}
       - uses: docker/login-action@v2
         with:
           registry: "${{ env.region }}-docker.pkg.dev"
@@ -76,7 +92,7 @@ jobs:
             "unfurl_media": false
             }
         env:
-          SLACK_BOT_TOKEN: ${{ secrets.SLACK_BOT_TOKEN }}
+          SLACK_BOT_TOKEN: ${{ steps.secrets.outputs.SLACK_BOT_TOKEN }}
 
   pylint-check:
     name: Pylint
@@ -92,8 +108,8 @@ jobs:
         with:
           create_credentials_file: false
           token_format: "access_token"
-          workload_identity_provider: ${{ secrets.INFRA_PROD_GCP_WORKLOAD_IDENTITY_PROVIDER }}
-          service_account: ${{ secrets.ARTIFACT_REGISTRY_SERVICE_ACCOUNT }}
+          workload_identity_provider: ${{ steps.secrets.outputs.INFRA_PROD_GCP_WORKLOAD_IDENTITY_PROVIDER }}
+          service_account: ${{ steps.secrets.outputs.ARTIFACT_REGISTRY_SERVICE_ACCOUNT }}
       - uses: docker/login-action@v2
         with:
           registry: "${{ env.region }}-docker.pkg.dev"
@@ -134,7 +150,7 @@ jobs:
             "unfurl_media": false
             }
         env:
-          SLACK_BOT_TOKEN: ${{ secrets.SLACK_BOT_TOKEN }}
+          SLACK_BOT_TOKEN: ${{ steps.secrets.outputs.SLACK_BOT_TOKEN }}
 
   tests-database:
     name: "Tests database schema"
@@ -177,8 +193,8 @@ jobs:
         with:
           create_credentials_file: false
           token_format: "access_token"
-          workload_identity_provider: ${{ secrets.INFRA_PROD_GCP_WORKLOAD_IDENTITY_PROVIDER }}
-          service_account: ${{ secrets.ARTIFACT_REGISTRY_SERVICE_ACCOUNT }}
+          workload_identity_provider: ${{ steps.secrets.outputs.INFRA_PROD_GCP_WORKLOAD_IDENTITY_PROVIDER }}
+          service_account: ${{ steps.secrets.outputs.ARTIFACT_REGISTRY_SERVICE_ACCOUNT }}
       - uses: docker/login-action@v2
         with:
           registry: "${{ env.region }}-docker.pkg.dev"
@@ -243,7 +259,7 @@ jobs:
             "unfurl_media": false
             }
         env:
-          SLACK_BOT_TOKEN: ${{ secrets.SLACK_BOT_TOKEN }}
+          SLACK_BOT_TOKEN: ${{ steps.secrets.outputs.SLACK_BOT_TOKEN }}
 
   pytest:
     name: "Pytest"
@@ -298,8 +314,8 @@ jobs:
         with:
           create_credentials_file: false
           token_format: "access_token"
-          workload_identity_provider: ${{ secrets.INFRA_PROD_GCP_WORKLOAD_IDENTITY_PROVIDER }}
-          service_account: ${{ secrets.ARTIFACT_REGISTRY_SERVICE_ACCOUNT }}
+          workload_identity_provider: ${{ steps.secrets.outputs.INFRA_PROD_GCP_WORKLOAD_IDENTITY_PROVIDER }}
+          service_account: ${{ steps.secrets.outputs.ARTIFACT_REGISTRY_SERVICE_ACCOUNT }}
       - uses: docker/login-action@v2
         with:
           registry: "${{ env.region }}-docker.pkg.dev"
@@ -366,4 +382,4 @@ jobs:
             "unfurl_media": false
             }
         env:
-          SLACK_BOT_TOKEN: ${{ secrets.SLACK_BOT_TOKEN }}
+          SLACK_BOT_TOKEN: ${{ steps.secrets.outputs.SLACK_BOT_TOKEN }}
