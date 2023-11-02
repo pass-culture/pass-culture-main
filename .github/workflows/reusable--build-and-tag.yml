@@ -131,17 +131,41 @@ jobs:
         if: ${{ inputs.base_ref_is_a_branch }}
         run: git push origin "${{ inputs.base_ref }}"
 
+  slack-notification:
+    runs-on: ubuntu-latest
+    needs: build-and-tag-version
+    if: ${{ always() }} 
+    permissions:
+      id-token: write
+      contents: write
+
+    env:
+      TAG_NAME: v${{ inputs.tag_number }}
+
+    steps:
       - uses: technote-space/workflow-conclusion-action@v3
 
-      - name: Slack output
-        if: ${{ always() }} 
-        run: |
-          echo TEXT="la pose du tag *${{ env.tag_name }}* a réussi. rdv sur <https://github.com/pass-culture/pass-culture-main/actions/workflows/release--deploy.yml|cette action github> pour le déployer :rocket:" >> $GITHUB_ENV
+      - name: Authentification to Google
+        uses: 'google-github-actions/auth@v1'
+        with:
+          workload_identity_provider: ${{ secrets.GCP_EHP_WORKLOAD_IDENTITY_PROVIDER }}
+          service_account: ${{ secrets.GCP_EHP_SERVICE_ACCOUNT }}
+
+      - name: Get Secret
+        id: 'secrets'
+        uses: 'google-github-actions/get-secretmanager-secrets@v1'
+        with:
+          secrets: |-
+            SLACK_BOT_TOKEN:passculture-metier-ehp/passculture-ci-slack-bot-token
 
       - name: Slack output
-        if: ${{ always() }} && ${{ env.WORKFLOW_CONCLUSION == 'failure' }}
         run: |
-          echo TEXT="La pose du tag *${{ env.TAG_NAME }}* a échoué :x: Détails sur <${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}|Github>" >> $GITHUB_ENV
+          if [ "${{ env.WORKFLOW_CONCLUSION }}" == "failure" ];
+          then
+            echo TEXT="La pose du tag *${{ env.TAG_NAME }}* a échoué :x: Détails sur <${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}|Github>" >> $GITHUB_ENV
+          else
+            echo TEXT="la pose du tag *${{ env.TAG_NAME }}* a réussi. rdv sur <https://github.com/pass-culture/pass-culture-main/actions/workflows/release--deploy.yml|cette action github> pour le déployer :rocket:" >> $GITHUB_ENV
+          fi
 
       - name: Post to a Slack channel
         id: slack
