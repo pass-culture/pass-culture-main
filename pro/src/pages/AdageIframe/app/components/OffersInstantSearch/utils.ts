@@ -15,21 +15,7 @@ export const ADAGE_FILTERS_DEFAULT_VALUES: SearchFormValues = {
   eventAddressType: OfferAddressType.OTHER,
   geolocRadius: 50,
   formats: [],
-}
-
-export const computeFiltersInitialValues = (
-  venueFilter?: VenueResponse | null
-) => {
-  const venueDepartementFilter =
-    venueFilter && venueFilter.departementCode
-      ? [venueFilter.departementCode]
-      : []
-  return {
-    ...ADAGE_FILTERS_DEFAULT_VALUES,
-    departments: venueFilter
-      ? venueDepartementFilter
-      : ADAGE_FILTERS_DEFAULT_VALUES.departments,
-  }
+  venue: null,
 }
 
 export const adageFiltersToFacetFilters = ({
@@ -41,6 +27,7 @@ export const adageFiltersToFacetFilters = ({
   academies,
   categories,
   formats,
+  venue,
 }: {
   domains: string[]
   uai?: string[] | null
@@ -50,6 +37,7 @@ export const adageFiltersToFacetFilters = ({
   eventAddressType: string
   categories: string[][]
   formats: string[]
+  venue: VenueResponse | null
 }) => {
   const updatedFilters: Facets = []
   const filtersKeys: string[] = []
@@ -100,6 +88,13 @@ export const adageFiltersToFacetFilters = ({
     categoryValue.map((subcategoryId) => `offer.subcategoryId:${subcategoryId}`)
   )
 
+  const filteredVenues = venue
+    ? [
+        `venue.id:${venue.id}`,
+        ...venue.relative.map((venueId) => `venue.id:${venueId}`),
+      ]
+    : []
+
   if (filteredStudents.length > 0) {
     filtersKeys.push('students')
     updatedFilters.push(filteredStudents)
@@ -139,6 +134,11 @@ export const adageFiltersToFacetFilters = ({
     )
   }
 
+  if (filteredVenues.length > 0) {
+    filtersKeys.push('venue')
+    updatedFilters.push(filteredVenues)
+  }
+
   return {
     queryFilters: updatedFilters,
     filtersKeys: filtersKeys,
@@ -169,5 +169,8 @@ export const serializeFiltersForData = (
         studentsForData.find((s) => s.label === student)?.valueForData
     ),
     formats: isFormatEnable ? filters.formats : undefined,
+    venue: filters.venue
+      ? [filters.venue.id, ...filters.venue.relative.map((venueId) => venueId)]
+      : undefined,
   }
 }
