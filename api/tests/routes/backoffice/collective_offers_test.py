@@ -729,6 +729,39 @@ class PostEditCollectiveOfferPriceTest(PostEndpointHelper):
             == "Cette offre n'est pas modifiable"
         )
 
+    @pytest.mark.parametrize(
+        "pricing_status",
+        [
+            finance_models.PricingStatus.CANCELLED,
+            finance_models.PricingStatus.VALIDATED,
+            finance_models.PricingStatus.PENDING,
+            finance_models.PricingStatus.REJECTED,
+        ],
+    )
+    def test_unprocessed_pricing(self, legit_user, authenticated_client, pricing_status):
+        # when
+        pricing = finance_factories.CollectivePricingFactory(
+            status=pricing_status,
+            collectiveBooking__collectiveStock__price=Decimal(100.00),
+            collectiveBooking__collectiveStock__numberOfTickets=25,
+            collectiveBooking__collectiveStock__beginningDatetime=datetime.datetime(1970, 1, 1),
+        )
+
+        response = self.post_to_endpoint(
+            authenticated_client,
+            form={"numberOfTickets": 5, "price": 1},
+            collective_offer_id=pricing.collectiveBooking.collectiveStock.collectiveOffer.id,
+        )
+
+        # then
+        assert response.status_code == 303
+        assert pricing.collectiveBooking.collectiveStock.price == 1
+        assert pricing.collectiveBooking.collectiveStock.numberOfTickets == 5
+        assert (
+            html_parser.extract_alert(authenticated_client.get(response.location).data)
+            == "L'offre collective a été mise à jour"
+        )
+
     def test_cashflow_pending(self, legit_user, authenticated_client, app):
         event_date = datetime.datetime.utcnow() + datetime.timedelta(days=1)
         # when
