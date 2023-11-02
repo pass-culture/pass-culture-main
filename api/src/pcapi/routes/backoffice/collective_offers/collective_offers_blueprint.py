@@ -342,7 +342,9 @@ def _is_collective_offer_price_editable(collective_offer: educational_models.Col
         .join(educational_models.CollectiveStock, educational_models.CollectiveBooking.collectiveStock)
         .filter(
             educational_models.CollectiveStock.collectiveOfferId == collective_offer.id,
-            finance_models.Pricing.status != finance_models.PricingStatus.CANCELLED,
+            finance_models.Pricing.status.in_(
+                (finance_models.PricingStatus.PROCESSED, finance_models.PricingStatus.INVOICED)
+            ),
         )
     )
     if pricing_query.one_or_none():
