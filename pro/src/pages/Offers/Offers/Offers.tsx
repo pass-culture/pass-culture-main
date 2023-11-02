@@ -130,9 +130,8 @@ const Offers = ({
 
   return (
     <div aria-busy={isLoading} aria-live="polite" className="section">
-      {isLoading ? (
-        <Spinner />
-      ) : (
+      <Spinner isLoading={isLoading} />
+      {!isLoading && (
         <>
           {offersCount > MAX_OFFERS_TO_DISPLAY && (
             <Banner type="notification-info">

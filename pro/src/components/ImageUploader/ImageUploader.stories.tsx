@@ -14,7 +14,7 @@ export default {
 }
 
 const Template: Story<ImageUploaderProps> = (props) => (
-  <StoreProvider isDev>
+  <StoreProvider>
     <ImageUploader {...props} />
   </StoreProvider>
 )

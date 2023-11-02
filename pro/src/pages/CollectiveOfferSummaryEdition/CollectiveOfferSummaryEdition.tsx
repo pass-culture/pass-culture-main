@@ -41,17 +41,20 @@ const CollectiveOfferSummaryEdition = ({
 
   const isReady = offer !== null && categories !== null
 
-  return !isReady ? (
-    <Spinner />
-  ) : (
-    <CollectiveOfferLayout subTitle={offer.name} isTemplate={isTemplate}>
-      <CollectiveOfferSummaryEditionScreen
-        offer={offer}
-        categories={categories}
-        reloadCollectiveOffer={reloadCollectiveOffer}
-        mode={Mode.EDITION}
-      />
-    </CollectiveOfferLayout>
+  return (
+    <>
+      <Spinner isLoading={!isReady} />
+      {isReady && (
+        <CollectiveOfferLayout subTitle={offer.name} isTemplate={isTemplate}>
+          <CollectiveOfferSummaryEditionScreen
+            offer={offer}
+            categories={categories}
+            reloadCollectiveOffer={reloadCollectiveOffer}
+            mode={Mode.EDITION}
+          />
+        </CollectiveOfferLayout>
+      )}
+    </>
   )
 }
 

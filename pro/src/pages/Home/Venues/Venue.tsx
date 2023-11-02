@@ -331,7 +331,8 @@ const Venue = ({
           </div>
           {isStatOpen && (
             <>
-              {isStatLoaded ? (
+              <Spinner isLoading={!isStatLoaded} />
+              {isStatLoaded && (
                 <>
                   <VenueOfferSteps
                     venueId={venueId}
@@ -374,8 +375,6 @@ const Venue = ({
                     </div>
                   </div>
                 </>
-              ) : (
-                <Spinner />
               )}
             </>
           )}

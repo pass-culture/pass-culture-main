@@ -11,18 +11,19 @@ export const StocksSummary = (): JSX.Element | null => {
   const mode = useOfferWizardMode()
   const { offer, setOffer } = useIndividualOfferContext()
 
-  if (offer === null) {
-    return <Spinner />
-  }
-
   return (
-    <IndivualOfferLayout
-      title="Récapitulatif"
-      offer={offer}
-      setOffer={setOffer}
-      mode={mode}
-    >
-      <StocksSummaryScreen />
-    </IndivualOfferLayout>
+    <>
+      <Spinner isLoading={offer === null} />
+      {offer !== null && (
+        <IndivualOfferLayout
+          title="Récapitulatif"
+          offer={offer}
+          setOffer={setOffer}
+          mode={mode}
+        >
+          <StocksSummaryScreen />
+        </IndivualOfferLayout>
+      )}
+    </>
   )
 }

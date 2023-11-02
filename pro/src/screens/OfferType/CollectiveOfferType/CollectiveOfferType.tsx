@@ -119,125 +119,126 @@ const CollectiveOfferType = ({
     initializeStates()
   }, [queryOffererId, queryVenueId])
 
-  if (isLoading) {
-    return <Spinner />
-  }
-
   return (
     <>
-      {isValidated && isEligible && (
-        <FormLayout.Section
-          title="Quel est le type de l’offre ?"
-          className={styles['subtype-section']}
-        >
-          <FormLayout.Row inline mdSpaceAfter>
-            <RadioButtonWithImage
-              name="collectiveOfferSubtype"
-              icon={strokeBookedIcon}
-              isChecked={
-                values.collectiveOfferSubtype ===
-                COLLECTIVE_OFFER_SUBTYPE.COLLECTIVE
-              }
-              label="Une offre réservable"
-              description="Cette offre a une date et un prix. Elle doit être associée à un établissement scolaire avec lequel vous avez préalablement échangé."
-              onChange={handleChange}
-              value={COLLECTIVE_OFFER_SUBTYPE.COLLECTIVE}
-            />
-          </FormLayout.Row>
+      <Spinner isLoading={isLoading} />
+      {!isLoading && (
+        <>
+          {isValidated && isEligible && (
+            <FormLayout.Section
+              title="Quel est le type de l’offre ?"
+              className={styles['subtype-section']}
+            >
+              <FormLayout.Row inline mdSpaceAfter>
+                <RadioButtonWithImage
+                  name="collectiveOfferSubtype"
+                  icon={strokeBookedIcon}
+                  isChecked={
+                    values.collectiveOfferSubtype ===
+                    COLLECTIVE_OFFER_SUBTYPE.COLLECTIVE
+                  }
+                  label="Une offre réservable"
+                  description="Cette offre a une date et un prix. Elle doit être associée à un établissement scolaire avec lequel vous avez préalablement échangé."
+                  onChange={handleChange}
+                  value={COLLECTIVE_OFFER_SUBTYPE.COLLECTIVE}
+                />
+              </FormLayout.Row>
 
-          <FormLayout.Row inline mdSpaceAfter>
-            <RadioButtonWithImage
-              name="collectiveOfferSubtype"
-              icon={strokeTemplateOfferIcon}
-              isChecked={
-                values.collectiveOfferSubtype ===
-                COLLECTIVE_OFFER_SUBTYPE.TEMPLATE
-              }
-              label="Une offre vitrine"
-              description={`Cette offre n’est pas réservable. Elle ${
-                !isDatesForTemplateOffer ? 'n’a ni date, ni prix et' : ''
-              } permet aux enseignants de vous contacter pour co-construire une offre adaptée. Vous pourrez facilement la dupliquer pour chaque enseignant intéressé.`}
-              onChange={handleChange}
-              value={COLLECTIVE_OFFER_SUBTYPE.TEMPLATE}
-            />
-          </FormLayout.Row>
-        </FormLayout.Section>
-      )}
-      {isEligible &&
-        values.collectiveOfferSubtype ===
-          COLLECTIVE_OFFER_SUBTYPE.COLLECTIVE && (
-          <FormLayout.Section
-            title="Créer une nouvelle offre ou dupliquer une offre ?"
-            className={styles['subtype-section']}
-          >
-            <FormLayout.Row inline mdSpaceAfter>
-              <RadioButtonWithImage
-                name="collectiveOfferSubtypeDuplicate"
-                icon={strokeNewOfferIcon}
-                isChecked={
-                  values.collectiveOfferSubtypeDuplicate ===
-                  COLLECTIVE_OFFER_SUBTYPE_DUPLICATE.NEW_OFFER
-                }
-                label="Créer une nouvelle offre"
-                description="Créer une nouvelle offre réservable en partant d’un formulaire vierge."
-                onChange={handleChange}
-                value={COLLECTIVE_OFFER_SUBTYPE_DUPLICATE.NEW_OFFER}
-              />
-            </FormLayout.Row>
-            <FormLayout.Row inline mdSpaceAfter>
-              <RadioButtonWithImage
-                name="collectiveOfferSubtypeDuplicate"
-                icon={duplicateOfferIcon}
-                isChecked={
-                  values.collectiveOfferSubtypeDuplicate ===
-                  COLLECTIVE_OFFER_SUBTYPE_DUPLICATE.DUPLICATE
-                }
-                label="Dupliquer les informations d’une d’offre vitrine"
-                description="Créez une offre réservable en dupliquant les informations d’une offre vitrine existante."
-                onChange={handleChange}
-                value={COLLECTIVE_OFFER_SUBTYPE_DUPLICATE.DUPLICATE}
-              />
-            </FormLayout.Row>
-          </FormLayout.Section>
-        )}
+              <FormLayout.Row inline mdSpaceAfter>
+                <RadioButtonWithImage
+                  name="collectiveOfferSubtype"
+                  icon={strokeTemplateOfferIcon}
+                  isChecked={
+                    values.collectiveOfferSubtype ===
+                    COLLECTIVE_OFFER_SUBTYPE.TEMPLATE
+                  }
+                  label="Une offre vitrine"
+                  description={`Cette offre n’est pas réservable. Elle ${
+                    !isDatesForTemplateOffer ? 'n’a ni date, ni prix et' : ''
+                  } permet aux enseignants de vous contacter pour co-construire une offre adaptée. Vous pourrez facilement la dupliquer pour chaque enseignant intéressé.`}
+                  onChange={handleChange}
+                  value={COLLECTIVE_OFFER_SUBTYPE.TEMPLATE}
+                />
+              </FormLayout.Row>
+            </FormLayout.Section>
+          )}
+          {isEligible &&
+            values.collectiveOfferSubtype ===
+              COLLECTIVE_OFFER_SUBTYPE.COLLECTIVE && (
+              <FormLayout.Section
+                title="Créer une nouvelle offre ou dupliquer une offre ?"
+                className={styles['subtype-section']}
+              >
+                <FormLayout.Row inline mdSpaceAfter>
+                  <RadioButtonWithImage
+                    name="collectiveOfferSubtypeDuplicate"
+                    icon={strokeNewOfferIcon}
+                    isChecked={
+                      values.collectiveOfferSubtypeDuplicate ===
+                      COLLECTIVE_OFFER_SUBTYPE_DUPLICATE.NEW_OFFER
+                    }
+                    label="Créer une nouvelle offre"
+                    description="Créer une nouvelle offre réservable en partant d’un formulaire vierge."
+                    onChange={handleChange}
+                    value={COLLECTIVE_OFFER_SUBTYPE_DUPLICATE.NEW_OFFER}
+                  />
+                </FormLayout.Row>
+                <FormLayout.Row inline mdSpaceAfter>
+                  <RadioButtonWithImage
+                    name="collectiveOfferSubtypeDuplicate"
+                    icon={duplicateOfferIcon}
+                    isChecked={
+                      values.collectiveOfferSubtypeDuplicate ===
+                      COLLECTIVE_OFFER_SUBTYPE_DUPLICATE.DUPLICATE
+                    }
+                    label="Dupliquer les informations d’une d’offre vitrine"
+                    description="Créez une offre réservable en dupliquant les informations d’une offre vitrine existante."
+                    onChange={handleChange}
+                    value={COLLECTIVE_OFFER_SUBTYPE_DUPLICATE.DUPLICATE}
+                  />
+                </FormLayout.Row>
+              </FormLayout.Section>
+            )}
 
-      {values.offerType === OFFER_TYPES.EDUCATIONAL && !isValidated && (
-        <Banner>
-          Votre structure est en cours de validation par les équipes pass
-          Culture.
-        </Banner>
+          {values.offerType === OFFER_TYPES.EDUCATIONAL && !isValidated && (
+            <Banner>
+              Votre structure est en cours de validation par les équipes pass
+              Culture.
+            </Banner>
+          )}
+          {!isEligible &&
+            (lastDmsApplication ? (
+              <Banner
+                links={[
+                  {
+                    href: `/structures/${queryOffererId}/lieux/${lastDmsApplication?.venueId}#venue-collective-data`,
+                    linkTitle: 'Voir ma demande de référencement',
+                  },
+                ]}
+              >
+                Vous avez une demande de référencement en cours de traitement
+              </Banner>
+            ) : (
+              <Banner
+                links={[
+                  {
+                    href: 'https://www.demarches-simplifiees.fr/commencer/demande-de-referencement-sur-adage',
+                    linkTitle: 'Faire une demande de référencement',
+                  },
+                  {
+                    href: 'https://aide.passculture.app/hc/fr/articles/5700215550364',
+                    linkTitle:
+                      'Ma demande de référencement a été acceptée mais je ne peux toujours pas créer d’offres collectives',
+                  },
+                ]}
+              >
+                Pour proposer des offres à destination d’un groupe scolaire,
+                vous devez être référencé auprès du ministère de l’Éducation
+                Nationale et du ministère de la Culture.
+              </Banner>
+            ))}
+        </>
       )}
-      {!isEligible &&
-        (lastDmsApplication ? (
-          <Banner
-            links={[
-              {
-                href: `/structures/${queryOffererId}/lieux/${lastDmsApplication?.venueId}#venue-collective-data`,
-                linkTitle: 'Voir ma demande de référencement',
-              },
-            ]}
-          >
-            Vous avez une demande de référencement en cours de traitement
-          </Banner>
-        ) : (
-          <Banner
-            links={[
-              {
-                href: 'https://www.demarches-simplifiees.fr/commencer/demande-de-referencement-sur-adage',
-                linkTitle: 'Faire une demande de référencement',
-              },
-              {
-                href: 'https://aide.passculture.app/hc/fr/articles/5700215550364',
-                linkTitle:
-                  'Ma demande de référencement a été acceptée mais je ne peux toujours pas créer d’offres collectives',
-              },
-            ]}
-          >
-            Pour proposer des offres à destination d’un groupe scolaire, vous
-            devez être référencé auprès du ministère de l’Éducation Nationale et
-            du ministère de la Culture.
-          </Banner>
-        ))}
     </>
   )
 }

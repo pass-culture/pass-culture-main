@@ -30,25 +30,27 @@ export const CollectiveOfferSummaryCreation = ({
 
   if (error) {
     notify.error(error.message)
-    return <></>
   }
 
-  return isLoading ? (
-    <Spinner />
-  ) : (
-    <CollectiveOfferLayout
-      subTitle={offer?.name}
-      isFromTemplate={isCollectiveOffer(offer) && Boolean(offer.templateId)}
-      isTemplate={isTemplate}
-      isCreation={true}
-    >
-      <CollectiveOfferSummaryCreationScreen
-        offer={offer}
-        categories={categories}
-        setOffer={setOffer}
-      />
-      <RouteLeavingGuardCollectiveOfferCreation />
-    </CollectiveOfferLayout>
+  return (
+    <>
+      <Spinner isLoading={isLoading} />
+      {!isLoading && !error && (
+        <CollectiveOfferLayout
+          subTitle={offer?.name}
+          isFromTemplate={isCollectiveOffer(offer) && Boolean(offer.templateId)}
+          isTemplate={isTemplate}
+          isCreation={true}
+        >
+          <CollectiveOfferSummaryCreationScreen
+            offer={offer}
+            categories={categories}
+            setOffer={setOffer}
+          />
+          <RouteLeavingGuardCollectiveOfferCreation />
+        </CollectiveOfferLayout>
+      )}
+    </>
   )
 }
 

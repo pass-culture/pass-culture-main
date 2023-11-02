@@ -153,26 +153,27 @@ const OffersRoute = (): JSX.Element => {
     loadAllVenuesByProUser()
   }, [offerer?.id])
 
-  if (!initialSearchFilters) {
-    return <Spinner />
-  }
-
   return (
-    <OffersScreen
-      audience={Audience.INDIVIDUAL}
-      categories={categories}
-      currentPageNumber={currentPageNumber}
-      currentUser={currentUser}
-      initialSearchFilters={initialSearchFilters}
-      isLoading={isLoading}
-      loadAndUpdateOffers={loadAndUpdateOffers}
-      offerer={offerer}
-      offers={offers}
-      redirectWithUrlFilters={redirectWithUrlFilters}
-      setOfferer={setOfferer}
-      urlSearchFilters={urlSearchFilters}
-      venues={venues}
-    />
+    <>
+      <Spinner isLoading={!initialSearchFilters} />
+      {initialSearchFilters && (
+        <OffersScreen
+          audience={Audience.INDIVIDUAL}
+          categories={categories}
+          currentPageNumber={currentPageNumber}
+          currentUser={currentUser}
+          initialSearchFilters={initialSearchFilters}
+          isLoading={isLoading}
+          loadAndUpdateOffers={loadAndUpdateOffers}
+          offerer={offerer}
+          offers={offers}
+          redirectWithUrlFilters={redirectWithUrlFilters}
+          setOfferer={setOfferer}
+          urlSearchFilters={urlSearchFilters}
+          venues={venues}
+        />
+      )}
+    </>
   )
 }
 

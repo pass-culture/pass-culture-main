@@ -27,30 +27,32 @@ export const CollectiveOfferCreation = ({
     offer
   )
 
-  if (!isReady) {
-    return <Spinner />
-  }
   return (
-    <CollectiveOfferLayout
-      subTitle={offer?.name}
-      isCreation
-      isTemplate={isTemplate}
-      isFromTemplate={isCollectiveOffer(offer) && Boolean(offer.templateId)}
-      requestId={requestId}
-    >
-      <OfferEducationalScreen
-        categories={offerEducationalFormData.categories}
-        userOfferers={offerEducationalFormData.offerers}
-        domainsOptions={offerEducationalFormData.domains}
-        nationalPrograms={offerEducationalFormData.nationalPrograms}
-        offer={offer}
-        setOffer={setOffer}
-        getIsOffererEligible={canOffererCreateCollectiveOfferAdapter}
-        mode={Mode.CREATION}
-        isTemplate={isTemplate}
-      />
-      <RouteLeavingGuardCollectiveOfferCreation />
-    </CollectiveOfferLayout>
+    <>
+      <Spinner isLoading={!isReady} />
+      {isReady && (
+        <CollectiveOfferLayout
+          subTitle={offer?.name}
+          isCreation
+          isTemplate={isTemplate}
+          isFromTemplate={isCollectiveOffer(offer) && Boolean(offer.templateId)}
+          requestId={requestId}
+        >
+          <OfferEducationalScreen
+            categories={offerEducationalFormData.categories}
+            userOfferers={offerEducationalFormData.offerers}
+            domainsOptions={offerEducationalFormData.domains}
+            nationalPrograms={offerEducationalFormData.nationalPrograms}
+            offer={offer}
+            setOffer={setOffer}
+            getIsOffererEligible={canOffererCreateCollectiveOfferAdapter}
+            mode={Mode.CREATION}
+            isTemplate={isTemplate}
+          />
+          <RouteLeavingGuardCollectiveOfferCreation />
+        </CollectiveOfferLayout>
+      )}
+    </>
   )
 }
 

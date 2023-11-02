@@ -23,18 +23,20 @@ export const Summary = (): JSX.Element | null => {
   } else {
     title = getTitle(mode)
   }
-  if (offer === null) {
-    return <Spinner />
-  }
 
   return (
-    <IndivualOfferLayout
-      title={title}
-      offer={offer}
-      setOffer={setOffer}
-      mode={mode}
-    >
-      <SummaryScreen />
-    </IndivualOfferLayout>
+    <>
+      <Spinner isLoading={offer === null} />
+      {offer !== null && (
+        <IndivualOfferLayout
+          title={title}
+          offer={offer}
+          setOffer={setOffer}
+          mode={mode}
+        >
+          <SummaryScreen />
+        </IndivualOfferLayout>
+      )}
+    </>
   )
 }
