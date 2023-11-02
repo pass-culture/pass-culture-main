@@ -365,7 +365,7 @@ describe('offersSearch component', () => {
     expect(setGeoRadiusMock).not.toHaveBeenCalled()
   })
 
-  it('should filters department on venue filter if provided', async () => {
+  it('should filters venue id on venue filter if provided', async () => {
     renderOffersSearchComponent(
       {
         ...props,
@@ -378,12 +378,11 @@ describe('offersSearch component', () => {
       },
       user
     )
-    await userEvent.click(
-      screen.getByRole('button', {
-        name: /Localisation des partenaires/,
-      })
-    )
-    expect(screen.getByRole('option', { name: '75 - Paris' })).toBeChecked()
+
+    const tagVenue = await screen.findByRole('button', {
+      name: /Lieu : test/,
+    })
+    expect(tagVenue).toBeInTheDocument()
   })
 
   it('should go back to the localisation main menu when reopening the localisation multiselect after having submitted it with no values selected', async () => {

@@ -68,6 +68,7 @@ const initialValues = {
   categories: [],
   formats: [],
   geolocRadius: 50,
+  venue: null,
 }
 
 describe('OfferFilters', () => {

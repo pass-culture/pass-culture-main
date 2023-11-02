@@ -56,8 +56,10 @@ type AutocompleteProps = {
 export type SuggestionItem = AutocompleteQuerySuggestionsHit & {
   label: string
   venue: {
+    id: string
     name: string
     publicName: string
+    departmentCode: string
   }
   offerer: {
     name: string
@@ -199,18 +201,19 @@ export const Autocomplete = ({
       return {
         ...source,
         sourceId: VENUE_SUGGESTIONS_SOURCE_ID,
-        onSelect({ item }) {
+        async onSelect({ item }) {
           const venueDisplayName = item.venue.publicName || item.venue.name
-          autocomplete.setQuery(venueDisplayName)
-          refine(venueDisplayName)
+          autocomplete.setQuery('')
+          await formik.setFieldValue('venue', { ...item.venue, relative: [] })
+          await formik.submitForm()
 
           if (isLocalStorageEnabled) {
             addSuggestionToHistory(venueDisplayName)
           }
 
-          void logAutocompleteSuggestionClick(
+          await logAutocompleteSuggestionClick(
             SuggestionType.VENUE,
-            item.venue.publicName || item.venue.name
+            venueDisplayName
           )
         },
         getItems(params) {

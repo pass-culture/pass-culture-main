@@ -9,15 +9,14 @@ export const getDefaultFacetFilterUAICodeValue = (
   if (uai) {
     institutionIdFilters.push(`offer.educationalInstitutionUAICode:${uai}`)
   }
-  const venueDepartmentFilter =
-    venueFilter && venueFilter.departementCode
-      ? [
-          `venue.departmentCode:${venueFilter?.departementCode}`,
-          `offer.interventionArea:${venueFilter?.departementCode}`,
-        ]
-      : []
+  const venueIdFilter = venueFilter
+    ? [
+        `venue.id:${venueFilter?.id}`,
+        ...venueFilter.relative.map((venueId) => `venue.id:${venueId}`),
+      ]
+    : []
 
-  return venueDepartmentFilter.length > 0
-    ? [venueDepartmentFilter, institutionIdFilters]
+  return venueIdFilter.length > 0
+    ? [venueIdFilter, institutionIdFilters]
     : [institutionIdFilters]
 }
