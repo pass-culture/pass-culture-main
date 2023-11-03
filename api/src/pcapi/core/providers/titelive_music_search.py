@@ -171,7 +171,10 @@ def parse_titelive_music_genre(gtl_id: str | None) -> tuple[music_types.MusicTyp
     )
 
 
-def is_music_codesupport_allowed(codesupport: str) -> bool:
+def is_music_codesupport_allowed(codesupport: str | None) -> bool:
+    if not codesupport:
+        return False
+
     support = TITELIVE_MUSIC_SUPPORTS_BY_CODE.get(codesupport)
     if support is None:
         logger.warning("received unexpected titelive codesupport %s", codesupport)
@@ -180,9 +183,11 @@ def is_music_codesupport_allowed(codesupport: str) -> bool:
     return support["is_allowed"]
 
 
-def parse_titelive_music_codesupport(codesupport: str) -> subcategories.Subcategory:
+def parse_titelive_music_codesupport(codesupport: str | None) -> subcategories.Subcategory:
+    assert codesupport, "empty code support was not filtered"
+
     support = TITELIVE_MUSIC_SUPPORTS_BY_CODE.get(codesupport)
-    assert support, "unexpected codesupport %s was not filtered" % codesupport
+    assert support, f"unexpected codesupport {codesupport} was not filtered"
 
     is_vinyl = any(not_cd_libelle in support["libelle"] for not_cd_libelle in NOT_CD_LIBELLES)
     if is_vinyl:
