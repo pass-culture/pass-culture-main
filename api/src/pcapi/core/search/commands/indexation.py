@@ -4,6 +4,7 @@ import typing
 
 import click
 
+from pcapi import settings
 from pcapi.core import search
 from pcapi.core.educational.api.offer import unindex_expired_collective_offers
 from pcapi.core.educational.api.offer import unindex_expired_collective_offers_template
@@ -11,6 +12,7 @@ import pcapi.core.educational.repository as collective_offers_repository
 from pcapi.core.offerers import api as offerers_api
 import pcapi.core.offers.api as offers_api
 import pcapi.core.offers.repository as offers_repository
+from pcapi.core.search import staging_indexation
 from pcapi.scheduled_tasks.decorators import log_cron_with_transaction
 from pcapi.utils.blueprint import Blueprint
 from pcapi.utils.chunks import get_chunks
@@ -250,3 +252,19 @@ def update_products_booking_count_and_reindex_offers(since: int) -> None:
     This command is needed to have to have last30daysBookings count by EAN in Algolia.
     """
     search.update_products_booking_count(datetime.datetime.utcnow() - datetime.timedelta(days=since))
+
+
+@blueprint.cli.command("index_offers_staging")
+@click.option("--clear", help="Clear search index first", type=bool, default=False)
+def index_offers_staging(
+    clear: bool,
+) -> None:
+    """Index a subset of offers for staging.
+    we do not index by batch because we only have 5000 offers to index
+    """
+    if settings.ENV != "staging":
+        raise RuntimeError("This script should only be run on staging")
+    if clear:
+        search.unindex_all_offers()
+    offer_ids_to_reindex = staging_indexation.get_relevant_offers_to_index()
+    search.reindex_offer_ids(offer_ids_to_reindex)

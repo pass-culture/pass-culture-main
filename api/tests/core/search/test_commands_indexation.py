@@ -1,11 +1,17 @@
 import datetime
+import random
 
 from freezegun import freeze_time
+import pytest
 
 import pcapi.core.bookings.factories as bookings_factories
+from pcapi.core.categories.subcategories_v2 import ALL_SUBCATEGORIES
 import pcapi.core.educational.factories as educational_factories
 import pcapi.core.offerers.factories as offerers_factories
+from pcapi.core.offers import models as offers_models
 import pcapi.core.offers.factories as offers_factories
+from pcapi.core.providers.titelive_gtl import GTLS
+from pcapi.core.search import staging_indexation
 import pcapi.core.search.testing as search_testing
 from pcapi.repository import repository
 
@@ -231,3 +237,97 @@ def test_partially_index_venues_removes_non_eligible_venues(app):
     # fmt: on
 
     assert set(search_testing.search_store["venues"].keys()) == expected_to_be_reindexed
+
+
+@pytest.mark.usefixtures("db_session")
+class StagingIndexationTest:
+    def test_get_offers_for_each_subcategory(self):
+        # we limit to 4 subcategories to have a shorter test execution time
+        for subcategory in ALL_SUBCATEGORIES[:4]:
+            offers_factories.StockFactory.create_batch(
+                size=20, offer__subcategoryId=subcategory.id, offer__isActive=True
+            )
+        offers = staging_indexation.get_offers_for_each_subcategory(10)
+        assert len(offers) == len(ALL_SUBCATEGORIES[:4]) * 10
+
+    def test_get_offers_with_gtl(self):
+        stock_with_gtl = offers_factories.StockFactory.create_batch(
+            size=20, offer__isActive=True, offer__extraData={"gtl_id": random.choice(list(GTLS.keys()))}
+        )
+        offers_factories.StockFactory.create_batch(size=20, offer__isActive=True)
+
+        offer_ids = staging_indexation.get_offers_with_gtl(10)
+
+        assert len(offer_ids) == 10
+        offer_ids_with_gtl = [stock.offer.id for stock in stock_with_gtl]
+        assert all(offer_id in offer_ids_with_gtl for offer_id in offer_ids)
+
+    def test_get_offers_for_each_gtl_level_1(self):
+        for gtl_id_prefix in range(1, 14):
+            offers_factories.StockFactory.create_batch(
+                size=3,
+                offer__isActive=True,
+                offer__extraData={
+                    "gtl_id": random.choice(
+                        list(
+                            filter(
+                                lambda gtl_id, gtl_id_prefix=gtl_id_prefix: gtl_id.startswith(
+                                    str(gtl_id_prefix).zfill(2)
+                                ),
+                                GTLS.keys(),
+                            )
+                        )
+                    )
+                },
+            )
+        offers_factories.StockFactory.create_batch(size=20, offer__isActive=True)
+
+        offer_ids = staging_indexation.get_offers_for_each_gtl_level_1(2)
+        offers = offers_models.Offer.query.filter(offers_models.Offer.id.in_(offer_ids)).all()
+
+        assert len(offer_ids) == 26
+
+        for gtl_id_prefix in range(1, 14):
+            gtl_id_prefix = str(gtl_id_prefix).zfill(2)
+            assert (
+                len(
+                    list(
+                        filter(
+                            lambda offer, gtl_id_prefix=gtl_id_prefix: offer.extraData.get("gtl_id").startswith(
+                                gtl_id_prefix
+                            ),
+                            offers,
+                        )
+                    )
+                )
+                == 2
+            )
+
+    def test_get_offers_with_visa_number(self):
+        stock_with_visa_number = offers_factories.StockFactory.create_batch(
+            size=20, offer__isActive=True, offer__extraData={"visa_number": str(random.randint(1, 100000))}
+        )
+        offers_factories.StockFactory.create_batch(size=20, offer__isActive=True)
+
+        offer_ids = staging_indexation.get_offers_with_visa_number(10)
+
+        assert len(offer_ids) == 10
+        offer_ids_with_visa_number = [stock.offer.id for stock in stock_with_visa_number]
+        assert all(offer_id in offer_ids_with_visa_number for offer_id in offer_ids)
+
+    def test_get_random_offers(self):
+        offers_factories.StockFactory.create_batch(size=20, offer__isActive=True)
+
+        offer_ids = staging_indexation.get_random_offers(10, {})
+
+        assert len(offer_ids) == 10
+
+    def test_get_random_offers_exclude(self):
+        offers_factories.StockFactory.create_batch(size=5, offer__isActive=True)
+        stocks_not_to_reindex = offers_factories.StockFactory.create_batch(size=5, offer__isActive=True)
+
+        offers_not_to_reindex = {stock.offer.id for stock in stocks_not_to_reindex}
+        offer_ids = staging_indexation.get_random_offers(10, offers_not_to_reindex)
+
+        assert len(offer_ids) == 5
+        assert all(offer_id not in offers_not_to_reindex for offer_id in offer_ids)
