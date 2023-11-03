@@ -5,7 +5,7 @@ import { ButtonVariant } from 'ui-kit/Button/types'
 
 import styles from './Hero.module.scss'
 
-export interface HeroProps {
+interface HeroProps {
   title: string
   text: string
   linkLabel: string
