@@ -37,7 +37,7 @@ def generate_and_store_invoice_task(payload: GenerateInvoicePayload) -> None:
             logger.info("Generated and sent invoice", extra={"reimbursement_point_id": payload.reimbursement_point_id})
 
             # When it's the last invoice, generate and upload the invoices file
-            if current_app.redis_client.decr(finance_conf.REDIS_INVOICES_LEFT_TO_GENERATE) == 0:  # type: ignore [attr-defined]
+            if current_app.redis_client.decr(finance_conf.REDIS_INVOICES_LEFT_TO_GENERATE) == 0:
                 try:
                     batch = finance_models.CashflowBatch.query.get(payload.batch_id)
                     path = finance_api.generate_invoice_file(batch)
@@ -53,8 +53,8 @@ def generate_and_store_invoice_task(payload: GenerateInvoicePayload) -> None:
                         extra={"batch_id": payload.batch_id, "exception": exc},
                     )
                     # TODO (vroullier, 2023-10-10) send mail about failed generation
-                current_app.redis_client.delete(finance_conf.REDIS_INVOICES_LEFT_TO_GENERATE)  # type: ignore [attr-defined]
-                current_app.redis_client.delete(finance_conf.REDIS_GENERATE_INVOICES_LENGTH)  # type: ignore [attr-defined]
+                current_app.redis_client.delete(finance_conf.REDIS_INVOICES_LEFT_TO_GENERATE)
+                current_app.redis_client.delete(finance_conf.REDIS_GENERATE_INVOICES_LENGTH)
 
     except Exception as exc:  # pylint: disable=broad-except
         logger.exception(

@@ -153,7 +153,7 @@ class AlgoliaBackend(base.SearchBackend):
             settings.ALGOLIA_COLLECTIVE_OFFERS_INDEX_NAME
         )
         self.algolia_venues_client = client.init_index(settings.ALGOLIA_VENUES_INDEX_NAME)
-        self.redis_client = current_app.redis_client  # type: ignore[attr-defined]
+        self.redis_client = current_app.redis_client
 
     def enqueue_offer_ids(self, offer_ids: Iterable[int]) -> None:
         self._enqueue_ids(offer_ids, REDIS_OFFER_IDS_NAME)
@@ -700,7 +700,7 @@ class AlgoliaBackend(base.SearchBackend):
         once a delay has passed and we are reasonably sure that the job
         has crashed (and that the items must be processed again).
         """
-        redis_client = current_app.redis_client  # type: ignore [attr-defined]
+        redis_client = current_app.redis_client
         for originating_queue in QUEUES:
             # There a very few queues, no need to paginate with `_cursor`.
             _cursor, processing_queues = redis_client.scan(0, f"{originating_queue}:processing:*")

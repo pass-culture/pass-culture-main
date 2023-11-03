@@ -40,4 +40,4 @@ class DummyBackend(AlgoliaBackend):
         self.algolia_venues_client = FakeClient()
         self.algolia_collective_offers_client = FakeClient()
         self.algolia_collective_offers_templates_client = FakeClient()
-        self.redis_client = current_app.redis_client  # type: ignore[attr-defined]
+        self.redis_client = current_app.redis_client
