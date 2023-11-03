@@ -31,6 +31,7 @@ describe('VenueOfferSteps', () => {
   const props: VenueOfferStepsProps = {
     hasVenue: false,
     offererId: 1,
+    offererHasBankAccount: false,
   }
   it('Should display venue creation link if user has no venue', async () => {
     props.hasVenue = false
@@ -59,6 +60,30 @@ describe('VenueOfferSteps', () => {
     renderVenueOfferSteps(props)
     expect(
       screen.queryByText('Renseigner des coordonnées bancaires')
+    ).not.toBeInTheDocument()
+  })
+  it('Should display bank account link if user has no bank account and no offer on offerer', async () => {
+    props.offererHasBankAccount = false
+    props.hasCreatedOffer = false
+    renderVenueOfferSteps(props, {
+      list: [
+        { isActive: true, nameKey: 'WIP_ENABLE_NEW_BANK_DETAILS_JOURNEY' },
+      ],
+    })
+    expect(screen.getByText('Ajouter un compte bancaire')).toBeInTheDocument()
+    expect(
+      screen.queryByText('Renseigner des coordonnées bancaires')
+    ).not.toBeInTheDocument()
+  })
+  it('Should not display account link if user has bank account on offerer', async () => {
+    props.offererHasBankAccount = true
+    renderVenueOfferSteps(props, {
+      list: [
+        { isActive: true, nameKey: 'WIP_ENABLE_NEW_BANK_DETAILS_JOURNEY' },
+      ],
+    })
+    expect(
+      screen.queryByText('Ajouter un compte bancaire')
     ).not.toBeInTheDocument()
   })
   it('Should display eac dms link when condition to display it is true', async () => {
