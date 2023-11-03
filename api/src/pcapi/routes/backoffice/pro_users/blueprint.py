@@ -38,9 +38,18 @@ pro_user_blueprint = utils.child_backoffice_blueprint(
 @pro_user_blueprint.route("", methods=["GET"])
 def get(user_id: int) -> utils.BackofficeResponse:
     # Make sure user is pro
-    user = users_models.User.query.filter(
-        sa.and_(users_models.User.id == user_id, (users_models.User.has_non_attached_pro_role.is_(True) | users_models.User.has_pro_role.is_(True)))  # type: ignore [attr-defined]
-    ).one_or_none()
+    user = (
+        users_models.User.query.filter(
+            sa.and_(
+                users_models.User.id == user_id,
+                (users_models.User.has_non_attached_pro_role.is_(True) | users_models.User.has_pro_role.is_(True)),  # type: ignore [attr-defined]
+            )
+        )
+        .options(
+            sa.orm.joinedload(users_models.User.UserOfferers).load_only(offerers_models.UserOfferer.validationStatus)
+        )
+        .one_or_none()
+    )
     if not user:
         flash("Cet utilisateur n'a pas de compte pro ou n'existe pas", "warning")
         return redirect(url_for("backoffice_web.search_pro"), code=303)

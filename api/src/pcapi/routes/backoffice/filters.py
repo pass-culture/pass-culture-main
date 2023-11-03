@@ -426,10 +426,6 @@ def format_fraud_action_dict_url(fraud_action_dict: dict) -> str:
     return ""
 
 
-def format_adage_referred(venues: list[offerers_models.Venue]) -> str:
-    return f"{len([venue for venue in venues if venue.adageId])}/{len(venues)}"
-
-
 def _format_modified_info_value(value: typing.Any, name: str | None = None) -> str:
     if name == "venueTypeCode":
         try:
@@ -906,7 +902,6 @@ def install_template_filters(app: Flask) -> None:
     app.jinja_env.filters["format_role"] = format_role
     app.jinja_env.filters["format_state"] = format_state
     app.jinja_env.filters["format_reason_label"] = format_reason_label
-    app.jinja_env.filters["format_adage_referred"] = format_adage_referred
     app.jinja_env.filters["format_modified_info_values"] = format_modified_info_values
     app.jinja_env.filters["format_modified_info_name"] = format_modified_info_name
     app.jinja_env.filters["format_gtl_id"] = format_gtl_id

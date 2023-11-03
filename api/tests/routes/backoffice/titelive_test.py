@@ -10,6 +10,7 @@ from pcapi.core.fraud.factories import ProductWhitelistFactory
 from pcapi.core.offers import factories as offers_factories
 import pcapi.core.offers.models as offers_models
 import pcapi.core.permissions.models as perm_models
+from pcapi.core.testing import assert_num_queries
 from pcapi.core.testing import override_settings
 from pcapi.models.offer_mixin import OfferValidationType
 from pcapi.routes.backoffice.filters import format_titelive_id_lectorat
@@ -32,11 +33,15 @@ class SearchEanTest(GetEndpointHelper):
     endpoint_kwargs = {"ean": "9782070455379"}
     needed_permission = perm_models.Permissions.PRO_FRAUD_ACTIONS
 
-    def test_search_ean_initial(self, authenticated_client):
-        response = authenticated_client.get(url_for(self.endpoint))
-        soup = html_parser.get_soup(response.data)
+    # session + current user + query
+    expected_num_queries = 3
 
-        assert response.status_code == 200
+    def test_search_ean_initial(self, authenticated_client):
+        with assert_num_queries(2):
+            response = authenticated_client.get(url_for(self.endpoint))
+            assert response.status_code == 200
+
+        soup = html_parser.get_soup(response.data)
         card_ean = soup.select("div.pc-ean-result")
         assert not card_ean
 
@@ -45,12 +50,14 @@ class SearchEanTest(GetEndpointHelper):
         mock_get_by_ean13.return_value = BOOK_BY_EAN_FIXTURE
         article = BOOK_BY_EAN_FIXTURE["oeuvre"]["article"][0]
 
-        response = authenticated_client.get(url_for(self.endpoint, **self.endpoint_kwargs))
+        with assert_num_queries(self.expected_num_queries):
+            response = authenticated_client.get(url_for(self.endpoint, **self.endpoint_kwargs))
+            assert response.status_code == 200
+
         soup = html_parser.get_soup(response.data)
         card_titles = html_parser.extract_cards_titles(response.data)
         card_text = html_parser.extract_cards_text(response.data)
 
-        assert response.status_code == 200
         card_ean = soup.select("div.pc-ean-result")
         assert card_ean
         assert BOOK_BY_EAN_FIXTURE["oeuvre"]["titre"] in card_titles[0]
@@ -84,12 +91,12 @@ class SearchEanTest(GetEndpointHelper):
         )
         mock_get_by_ean13.return_value = BOOK_BY_EAN_FIXTURE
 
-        response = authenticated_client.get(url_for(self.endpoint, **self.endpoint_kwargs))
+        with assert_num_queries(self.expected_num_queries):
+            response = authenticated_client.get(url_for(self.endpoint, **self.endpoint_kwargs))
+            assert response.status_code == 200
+
         card_text = html_parser.extract_cards_text(response.data)
-
-        assert response.status_code == 200
         assert "EAN white listé : Oui" in card_text[0]
-
         assert f"Date d'ajout : {datetime.datetime.utcnow().strftime('%d/%m/%Y')}" in card_text[0]
         assert "Auteur : Frank Columbo" in card_text[0]
         assert "Commentaire : Superbe livre !" in card_text[0]
@@ -101,8 +108,9 @@ class ProductBlackListFormTest(GetEndpointHelper):
     needed_permission = perm_models.Permissions.PRO_FRAUD_ACTIONS
 
     def test_get_search_form(self, authenticated_client):
-        response = authenticated_client.get(url_for(self.endpoint, **self.endpoint_kwargs))
-        assert response.status_code == 200
+        with assert_num_queries(2):  # session + current user
+            response = authenticated_client.get(url_for(self.endpoint, **self.endpoint_kwargs))
+            assert response.status_code == 200
 
 
 class AddProductWhitelistTest(PostEndpointHelper):

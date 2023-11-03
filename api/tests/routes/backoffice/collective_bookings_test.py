@@ -13,7 +13,6 @@ from pcapi.core.finance import factories as finance_factories
 from pcapi.core.finance import models as finance_models
 from pcapi.core.offerers import factories as offerers_factories
 import pcapi.core.permissions.models as perm_models
-from pcapi.core.testing import assert_no_duplicated_queries
 from pcapi.core.testing import assert_num_queries
 from pcapi.models import db
 
@@ -98,12 +97,10 @@ class ListCollectiveBookingsTest(GetEndpointHelper):
     expected_num_queries = 3
 
     def test_list_bookings_without_filter(self, authenticated_client, collective_bookings):
-        # when
-        with assert_no_duplicated_queries():
+        with assert_num_queries(self.expected_num_queries - 1):
             response = authenticated_client.get(url_for(self.endpoint))
+            assert response.status_code == 200
 
-        # then
-        assert response.status_code == 200
         assert html_parser.count_table_rows(response.data) == 0
 
     @pytest.mark.parametrize(
@@ -123,23 +120,22 @@ class ListCollectiveBookingsTest(GetEndpointHelper):
             ]
         )
 
-        with assert_no_duplicated_queries():
-            response = authenticated_client.get(url_for(self.endpoint, q=collective_booking.id))
+        search_query = collective_booking.id
+        with assert_num_queries(self.expected_num_queries):
+            response = authenticated_client.get(url_for(self.endpoint, q=search_query))
+            assert response.status_code == 200
 
-        assert response.status_code == 200
         if display_alert:
             assert "bi-exclamation-triangle-fill" in str(response.data)
         else:
             assert "bi-exclamation-triangle-fill" not in str(response.data)
 
     def test_list_bookings_by_id(self, authenticated_client, collective_bookings):
-        # when
         searched_id = str(collective_bookings[1].id)
         with assert_num_queries(self.expected_num_queries):
             response = authenticated_client.get(url_for(self.endpoint, q=searched_id))
+            assert response.status_code == 200
 
-        # then
-        assert response.status_code == 200
         rows = html_parser.extract_table_rows(response.data)
         # Warning: test may return more than 1 row when an offer id or institution id is the same as booking id
         assert len(rows) >= 1
@@ -203,35 +199,29 @@ class ListCollectiveBookingsTest(GetEndpointHelper):
         assert b"pc-clipboard" in response.data
 
     def test_list_bookings_by_name(self, authenticated_client, collective_bookings):
-        # when
         with assert_num_queries(self.expected_num_queries):
             response = authenticated_client.get(url_for(self.endpoint, q="Visite des locaux primitifs du pass Culture"))
+            assert response.status_code == 200
 
-        # then
-        assert response.status_code == 200
         rows = html_parser.extract_table_rows(response.data)
         assert len(rows) == 1
         assert rows[0]["Nom de l'offre"] == "Visite des locaux primitifs du pass Culture"
         assert html_parser.extract_pagination_info(response.data) == (1, 1, 1)
 
     def test_list_bookings_by_id_not_found(self, authenticated_client, collective_bookings):
-        # when
         search_query = str(collective_bookings[-1].id * 1000)
         with assert_num_queries(self.expected_num_queries):
             response = authenticated_client.get(url_for(self.endpoint, q=search_query))
+            assert response.status_code == 200
 
-        # then
-        assert response.status_code == 200
         assert html_parser.count_table_rows(response.data) == 0
 
     def test_list_bookings_by_offer_id(self, authenticated_client, collective_bookings):
-        # when
         searched_id = str(collective_bookings[2].collectiveStock.collectiveOffer.id)
         with assert_num_queries(self.expected_num_queries):
             response = authenticated_client.get(url_for(self.endpoint, q=searched_id))
+            assert response.status_code == 200
 
-        # then
-        assert response.status_code == 200
         rows = html_parser.extract_table_rows(response.data)
         # Warning: test may return more than 1 row when a booking id or institution id is the same as offer id
         assert len(rows) >= 1
@@ -273,13 +263,11 @@ class ListCollectiveBookingsTest(GetEndpointHelper):
         assert html_parser.extract_pagination_info(response.data) == (1, 1, len(rows))
 
     def test_list_bookings_by_institution_id(self, authenticated_client, collective_bookings):
-        # when
         search_query = str(collective_bookings[1].educationalInstitution.id)
         with assert_num_queries(self.expected_num_queries):
             response = authenticated_client.get(url_for(self.endpoint, q=search_query))
+            assert response.status_code == 200
 
-        # then
-        assert response.status_code == 200
         rows = html_parser.extract_table_rows(response.data)
         # Warning: test may return more than 1 row when an offer id is the same as expected institution id
         assert len(rows) >= 1
@@ -302,27 +290,22 @@ class ListCollectiveBookingsTest(GetEndpointHelper):
     def test_list_bookings_by_institution_name(
         self, authenticated_client, collective_bookings, search_query, expected_idx
     ):
-        # when
         with assert_num_queries(self.expected_num_queries):
             response = authenticated_client.get(url_for(self.endpoint, q=search_query))
+            assert response.status_code == 200
 
-        # then
-        assert response.status_code == 200
         rows = html_parser.extract_table_rows(response.data)
         assert set(row["ID résa"] for row in rows) == {str(collective_bookings[idx].id) for idx in expected_idx}
 
     def test_list_bookings_by_category(self, authenticated_client, collective_bookings):
-        # when
         with assert_num_queries(self.expected_num_queries):
             response = authenticated_client.get(url_for(self.endpoint, category=categories.CONFERENCE_RENCONTRE.id))
+            assert response.status_code == 200
 
-        # then
-        assert response.status_code == 200
         rows = html_parser.extract_table_rows(response.data)
         assert set(int(row["ID résa"]) for row in rows) == {collective_bookings[2].id, collective_bookings[3].id}
 
     def test_list_bookings_by_cashflow_batch(self, authenticated_client):
-        # given
         cashflows = finance_factories.CashflowFactory.create_batch(
             3,
             reimbursementPoint=finance_factories.BankInformationFactory(venue=offerers_factories.VenueFactory()).venue,
@@ -342,14 +325,12 @@ class ListCollectiveBookingsTest(GetEndpointHelper):
             collectiveBooking=educational_factories.ReimbursedCollectiveBookingFactory(), cashflows=[cashflows[2]]
         )
 
-        # when
         searched_cashflow_batches = [cashflows[0].batch.id, cashflows[2].batch.id]
         # one more query because of cashflow_batches validation
         with assert_num_queries(self.expected_num_queries + 1):
             response = authenticated_client.get(url_for(self.endpoint, cashflow_batches=searched_cashflow_batches))
+            assert response.status_code == 200
 
-        # then
-        assert response.status_code == 200
         rows = html_parser.extract_table_rows(response.data)
         assert set(int(row["ID résa"]) for row in rows) == {
             reimbursed_pricing1.collectiveBookingId,
@@ -374,20 +355,18 @@ class ListCollectiveBookingsTest(GetEndpointHelper):
         ],
     )
     def test_list_bookings_by_status(self, authenticated_client, collective_bookings, status, expected_idx):
-        # when
         with assert_num_queries(self.expected_num_queries):
             response = authenticated_client.get(url_for(self.endpoint, status=status))
+            assert response.status_code == 200
 
-        # then
-        assert response.status_code == 200
         rows = html_parser.extract_table_rows(response.data)
         assert set(row["ID résa"] for row in rows) == {str(collective_bookings[idx].id) for idx in expected_idx}
 
     def test_list_bookings_by_date(self, authenticated_client, collective_bookings):
-        # when
         date_from = datetime.date.today() - datetime.timedelta(days=3)
         date_to = datetime.date.today() - datetime.timedelta(days=2)
         separator = " - "
+
         with assert_num_queries(self.expected_num_queries):
             response = authenticated_client.get(
                 url_for(
@@ -395,9 +374,8 @@ class ListCollectiveBookingsTest(GetEndpointHelper):
                     from_to_date=f"{date_from.strftime('%d/%m/%Y')}{separator}{date_to.strftime('%d/%m/%Y')}",
                 )
             )
+            assert response.status_code == 200
 
-        # then
-        assert response.status_code == 200
         rows = html_parser.extract_table_rows(response.data)
         assert set(int(row["ID résa"]) for row in rows) == {collective_bookings[1].id, collective_bookings[2].id}
 
@@ -424,7 +402,6 @@ class ListCollectiveBookingsTest(GetEndpointHelper):
     def test_list_bookings_by_event_date(
         self, authenticated_client, collective_bookings, from_date, to_date, expected_offers_name
     ):
-        # when
         with assert_num_queries(self.expected_num_queries):
             response = authenticated_client.get(
                 url_for(
@@ -433,53 +410,44 @@ class ListCollectiveBookingsTest(GetEndpointHelper):
                     event_to_date=to_date,
                 )
             )
+            assert response.status_code == 200
 
-        # then
-        assert response.status_code == 200
         rows = html_parser.extract_table_rows(response.data)
         assert set(row["Nom de l'offre"] for row in rows) == expected_offers_name
 
     def test_list_bookings_by_offerer(self, authenticated_client, collective_bookings):
-        # when
         offerer_ids = [collective_bookings[1].offererId, collective_bookings[3].offererId]
         with assert_num_queries(self.expected_num_queries + 1):
             response = authenticated_client.get(url_for(self.endpoint, offerer=offerer_ids))
+            assert response.status_code == 200
 
-        # then
-        assert response.status_code == 200
         rows = html_parser.extract_table_rows(response.data)
         assert set(int(row["ID résa"]) for row in rows) == {collective_bookings[1].id, collective_bookings[3].id}
 
     def test_list_bookings_by_venue(self, authenticated_client, collective_bookings):
-        # when
         venue_id = collective_bookings[0].venueId
         with assert_num_queries(self.expected_num_queries + 1):
             response = authenticated_client.get(url_for(self.endpoint, venue=venue_id))
+            assert response.status_code == 200
 
-        # then
-        assert response.status_code == 200
         rows = html_parser.extract_table_rows(response.data)
         assert set(int(row["ID résa"]) for row in rows) == {collective_bookings[0].id, collective_bookings[2].id}
 
     def test_list_bookings_more_than_max(self, authenticated_client):
-        # given
         educational_factories.CollectiveBookingFactory.create_batch(
             25, status=educational_models.CollectiveBookingStatus.CONFIRMED
         )
 
-        # when
         with assert_num_queries(self.expected_num_queries):
             response = authenticated_client.get(
                 url_for(self.endpoint, status=educational_models.CollectiveBookingStatus.CONFIRMED.name, limit=20)
             )
+            assert response.status_code == 200
 
-        # then
-        assert response.status_code == 200
         assert html_parser.count_table_rows(response.data) == 2 * 20  # extra data in second row for each booking
         assert "Il y a plus de 20 résultats dans la base de données" in html_parser.extract_alert(response.data)
 
     def test_additional_data_when_reimbursed(self, authenticated_client, collective_bookings):
-        # give
         reimbursed = collective_bookings[4]
         reimbursement_and_pricing_venue = offerers_factories.VenueFactory()
         pricing = finance_factories.CollectivePricingFactory(
@@ -492,14 +460,12 @@ class ListCollectiveBookingsTest(GetEndpointHelper):
             reimbursementPoint=reimbursement_and_pricing_venue, bankAccount=bank_info, pricings=[pricing]
         )
 
-        # when
         with assert_num_queries(self.expected_num_queries):
             response = authenticated_client.get(
                 url_for(self.endpoint, status=educational_models.CollectiveBookingStatus.REIMBURSED.name)
             )
+            assert response.status_code == 200
 
-        # then
-        assert response.status_code == 200
         reimbursement_data = html_parser.extract(response.data, tag="tr", class_="collapse accordion-collapse")[0]
         assert "Total payé par l'utilisateur : 100,00 €" in reimbursement_data
         assert f"Date de remboursement : {reimbursed.reimbursementDate.strftime('%d/%m/%Y')} à " in reimbursement_data
@@ -514,13 +480,10 @@ class MarkCollectiveBookingAsUsedTest(PostEndpointHelper):
     needed_permission = perm_models.Permissions.MANAGE_BOOKINGS
 
     def test_uncancel_and_mark_as_used(self, authenticated_client, collective_bookings):
-        # give
         cancelled = collective_bookings[2]
 
-        # when
         response = self.post_to_endpoint(authenticated_client, collective_booking_id=cancelled.id)
 
-        # then
         assert response.status_code == 303
 
         db.session.refresh(cancelled)
@@ -530,14 +493,11 @@ class MarkCollectiveBookingAsUsedTest(PostEndpointHelper):
         assert f"La réservation {cancelled.id} a été validée" in html_parser.extract_alert(redirected_response.data)
 
     def test_uncancel_non_cancelled_booking(self, authenticated_client, collective_bookings):
-        # give
         non_cancelled = collective_bookings[3]
         old_status = non_cancelled.status
 
-        # when
         response = self.post_to_endpoint(authenticated_client, collective_booking_id=non_cancelled.id)
 
-        # then
         assert response.status_code == 303
 
         db.session.refresh(non_cancelled)
@@ -555,17 +515,14 @@ class CancelCollectiveBookingTest(PostEndpointHelper):
     needed_permission = perm_models.Permissions.MANAGE_BOOKINGS
 
     def test_cancel_booking(self, authenticated_client, collective_bookings):
-        # give
         confirmed = collective_bookings[1]
 
-        # when
         response = self.post_to_endpoint(
             authenticated_client,
             collective_booking_id=confirmed.id,
             form={"reason": educational_models.CollectiveBookingCancellationReasons.BACKOFFICE.value},
         )
 
-        # then
         assert response.status_code == 303
 
         db.session.refresh(confirmed)
@@ -576,18 +533,15 @@ class CancelCollectiveBookingTest(PostEndpointHelper):
         assert f"La réservation {confirmed.id} a été annulée" in html_parser.extract_alert(redirected_response.data)
 
     def test_cant_cancel_reimbursed_booking(self, authenticated_client, collective_bookings):
-        # give
         reimbursed = collective_bookings[4]
         old_status = reimbursed.status
 
-        # when
         response = self.post_to_endpoint(
             authenticated_client,
             collective_booking_id=reimbursed.id,
             form={"reason": educational_models.CollectiveBookingCancellationReasons.BACKOFFICE.value},
         )
 
-        # then
         assert response.status_code == 303
 
         db.session.refresh(reimbursed)
@@ -597,18 +551,15 @@ class CancelCollectiveBookingTest(PostEndpointHelper):
         assert "Impossible d'annuler une réservation remboursée" in html_parser.extract_alert(redirected_response.data)
 
     def test_cant_cancel_cancelled_booking(self, authenticated_client, collective_bookings):
-        # give
         cancelled = collective_bookings[2]
         old_status = cancelled.status
 
-        # when
         response = self.post_to_endpoint(
             authenticated_client,
             collective_booking_id=cancelled.id,
             form={"reason": educational_models.CollectiveBookingCancellationReasons.BACKOFFICE.value},
         )
 
-        # then
         assert response.status_code == 303
 
         db.session.refresh(cancelled)
@@ -621,13 +572,10 @@ class CancelCollectiveBookingTest(PostEndpointHelper):
         )
 
     def test_cant_cancel_booking_without_reason(self, authenticated_client, collective_bookings):
-        # give
         confirmed = collective_bookings[1]
 
-        # when
         response = self.post_to_endpoint(authenticated_client, collective_booking_id=confirmed.id)
 
-        # then
         assert response.status_code == 303
 
         db.session.refresh(confirmed)
@@ -646,20 +594,29 @@ class GetCollectiveBookingCSVDownloadTest(GetEndpointHelper):
     endpoint = "backoffice_web.collective_bookings.get_collective_booking_csv_download"
     needed_permission = perm_models.Permissions.READ_BOOKINGS
 
+    # session + current user + list of bookings
+    expected_num_queries = 3
+
     def test_csv_length(self, authenticated_client, collective_bookings):
         venue_id = collective_bookings[0].venueId
-        response = authenticated_client.get(url_for(self.endpoint, venue_id=venue_id))
+
+        with assert_num_queries(self.expected_num_queries):
+            response = authenticated_client.get(url_for(self.endpoint, venue_id=venue_id))
+            assert response.status_code == 200
+
         expected_length = 1  # headers
         expected_length += 1  # on booking
         expected_length += 1  # empty line
 
-        assert response.status_code == 200
-        assert len(response.data.split(b"\n")) == 3
+        assert len(response.data.split(b"\n")) == expected_length
 
 
 class GetCollectiveBookingXLSXDownloadTest(GetEndpointHelper):
     endpoint = "backoffice_web.collective_bookings.get_collective_booking_xlsx_download"
     needed_permission = perm_models.Permissions.READ_BOOKINGS
+
+    # session + current user + list of bookings
+    expected_num_queries = 3
 
     def reader_from_response(self, response):
         wb = openpyxl.load_workbook(BytesIO(response.data))
@@ -667,12 +624,13 @@ class GetCollectiveBookingXLSXDownloadTest(GetEndpointHelper):
 
     def test_xlsx_length(self, authenticated_client, collective_bookings):
         venue_id = collective_bookings[0].venueId
-        response = authenticated_client.get(url_for(self.endpoint, venue_id=venue_id))
-        expected_length = 1  # headers
-        expected_length += 1  # on booking
+
+        with assert_num_queries(self.expected_num_queries):
+            response = authenticated_client.get(url_for(self.endpoint, venue_id=venue_id))
+            assert response.status_code == 200
+
         sheet = self.reader_from_response(response)
 
-        assert response.status_code == 200
         assert sheet.cell(row=1, column=1).value == "Lieu"
         assert sheet.cell(row=2, column=1).value == collective_bookings[0].venue.name
         assert sheet.cell(row=3, column=1).value == None

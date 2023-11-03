@@ -31,7 +31,7 @@ def get_user_with_id(user_id: int) -> users_models.User | None:
         return None
 
     try:
-        if flask.request.blueprint.startswith(backoffice_web.name):  # type: ignore
+        if flask.request.blueprint.startswith(backoffice_web.name):  # type: ignore [union-attr]
             return backoffice_api.fetch_user_with_profile(user_id)
     except AttributeError:
         pass

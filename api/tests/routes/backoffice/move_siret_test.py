@@ -77,7 +77,6 @@ class MoveSiretTestHelper(PostEndpointHelper):
         assert history_models.ActionHistory.query.count() == 0
 
     def test_move_siret_same_venue(self, authenticated_client):
-        # given
         offerer = offerers_factories.OffererFactory(siren="123456789")
         venue = offerers_factories.VenueFactory(managingOfferer=offerer, siret="12345678900001")
 
@@ -86,7 +85,6 @@ class MoveSiretTestHelper(PostEndpointHelper):
         )
 
     def test_move_siret_not_matching_venue(self, authenticated_client):
-        # given
         offerer = offerers_factories.OffererFactory(siren="123456789")
         venue1 = offerers_factories.VenueFactory(managingOfferer=offerer, siret="12345678900001")
         venue2 = offerers_factories.VirtualVenueFactory(managingOfferer=offerer)

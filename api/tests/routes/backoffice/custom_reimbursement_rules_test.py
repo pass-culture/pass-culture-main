@@ -46,12 +46,10 @@ class ListCustomReimbursementRulesTest(GetEndpointHelper):
             offerer=offerer, rate=0.5, subcategories=["FESTIVAL_LIVRE"]
         )
 
-        # when
         with assert_num_queries(self.expected_num_queries):
             response = authenticated_client.get(url_for(self.endpoint))
+            assert response.status_code == 200
 
-        # then
-        assert response.status_code == 200
         rows = html_parser.extract_table_rows(response.data)
         assert len(rows) == 2
 
@@ -84,12 +82,10 @@ class ListCustomReimbursementRulesTest(GetEndpointHelper):
         searched_id = str(offer_rule.offerId)
         finance_factories.CustomReimbursementRuleFactory.create_batch(2)
 
-        # when
         with assert_num_queries(self.expected_num_queries):
             response = authenticated_client.get(url_for(self.endpoint, q=searched_id))
+            assert response.status_code == 200
 
-        # then
-        assert response.status_code == 200
         rows = html_parser.extract_table_rows(response.data)
         assert len(rows) == 1
         assert rows[0]["ID règle"] == str(offer_rule.id)
@@ -100,14 +96,13 @@ class ListCustomReimbursementRulesTest(GetEndpointHelper):
         offer = offers_factories.OfferFactory(name="Comment obtenir un tarif dérogatoire au pass")
         offer_rule = finance_factories.CustomReimbursementRuleFactory(offer=offer)
         finance_factories.CustomReimbursementRuleFactory.create_batch(2)
-        # when
+
         with assert_num_queries(self.expected_num_queries):
             response = authenticated_client.get(
                 url_for(self.endpoint, q="Comment obtenir un tarif dérogatoire au pass")
             )
+            assert response.status_code == 200
 
-        # then
-        assert response.status_code == 200
         rows = html_parser.extract_table_rows(response.data)
         assert len(rows) == 1
         assert rows[0]["ID règle"] == str(offer_rule.id)
@@ -116,13 +111,11 @@ class ListCustomReimbursementRulesTest(GetEndpointHelper):
 
     def test_list_rules_by_id_not_found(self, authenticated_client):
         rules = finance_factories.CustomReimbursementRuleFactory.create_batch(5)
-        # when
         search_query = str(rules[-1].id * 1000)
         with assert_num_queries(self.expected_num_queries):
             response = authenticated_client.get(url_for(self.endpoint, q=search_query))
+            assert response.status_code == 200
 
-        # then
-        assert response.status_code == 200
         assert html_parser.count_table_rows(response.data) == 0
 
     def test_list_rules_by_offerer(self, authenticated_client):
@@ -135,26 +128,21 @@ class ListCustomReimbursementRulesTest(GetEndpointHelper):
         offer = offers_factories.OfferFactory(venue__managingOfferer=offerer_1)
         offerer_rule_3 = finance_factories.CustomReimbursementRuleFactory(offer=offer)
 
-        # when
         offerer_ids = [offerer_1.id, offerer_2.id]
         with assert_num_queries(self.expected_num_queries + 1):
             response = authenticated_client.get(url_for(self.endpoint, offerer=offerer_ids))
+            assert response.status_code == 200
 
-        # then
-        assert response.status_code == 200
         rows = html_parser.extract_table_rows(response.data)
         assert set(int(row["ID règle"]) for row in rows) == {offerer_rule_1.id, offerer_rule_2.id, offerer_rule_3.id}
 
     def test_list_rules_more_than_max(self, authenticated_client):
-        # given
         finance_factories.CustomReimbursementRuleFactory.create_batch(30)
 
-        # when
         with assert_num_queries(self.expected_num_queries):
             response = authenticated_client.get(url_for(self.endpoint, limit=25))
+            assert response.status_code == 200
 
-        # then
-        assert response.status_code == 200
         assert html_parser.count_table_rows(response.data) == 25  # extra data in second row for each booking
         assert "Il y a plus de 25 résultats dans la base de données" in html_parser.extract_alert(response.data)
 
@@ -166,7 +154,7 @@ class GetCreateCustomReimbursementRuleFormTest(GetEndpointHelper):
     def test_get_create_form_test(self, legit_user, authenticated_client):
         form_url = url_for(self.endpoint)
 
-        with assert_num_queries(2):  # session + user
+        with assert_num_queries(2):  # session + current user
             response = authenticated_client.get(form_url)
             assert response.status_code == 200
 
@@ -414,7 +402,7 @@ class GetEditCustomReimbursementRuleFormTest(GetEndpointHelper):
         form_url = url_for(self.endpoint, reimbursement_rule_id=custom_reimbursement_rule.id)
         db.session.expire(custom_reimbursement_rule)
 
-        with assert_num_queries(3):  # session + user + rule
+        with assert_num_queries(3):  # session + current user + rule
             response = authenticated_client.get(form_url)
             assert response.status_code == 200
 

@@ -30,16 +30,16 @@ class GetRolesTest(GetEndpointHelper):
     endpoint = "backoffice_web.get_roles"
     needed_permission = perm_models.Permissions.MANAGE_PERMISSIONS
 
+    # session + current user + roles + permissions
+    expected_num_queries = 4
+
     def test_can_list_roles_and_permissions(self, authenticated_client):
-        # given
         perm_factories.RoleFactory(name="test_role_1")
         perm_factories.RoleFactory(name="test_role_2")
 
-        # when
-        response = authenticated_client.get(url_for(self.endpoint))
-
-        # then
-        assert response.status_code == 200
+        with assert_num_queries(self.expected_num_queries):
+            response = authenticated_client.get(url_for(self.endpoint))
+            assert response.status_code == 200
 
         roles = html_parser.extract(response.data, class_="card-header")
         assert "test_role_1" in roles
@@ -49,16 +49,13 @@ class GetRolesTest(GetEndpointHelper):
         assert set(switches) == {p.value for p in perm_models.Permissions}
 
     def test_can_list_roles_ignoring_obsolete_permissions(self, authenticated_client):
-        # given
         obsolete_perm = perm_factories.PermissionFactory(name="OBSOLETE")
         perm_factories.RoleFactory(name="test_role_1", permissions=[obsolete_perm])
         perm_factories.RoleFactory(name="test_role_2")
 
-        # when
-        response = authenticated_client.get(url_for(self.endpoint))
-
-        # then
-        assert response.status_code == 200
+        with assert_num_queries(self.expected_num_queries):
+            response = authenticated_client.get(url_for(self.endpoint))
+            assert response.status_code == 200
 
         roles = html_parser.extract(response.data, class_="card-header")
         assert "test_role_1" in roles
@@ -111,23 +108,30 @@ class ListFeatureFlagsTest(GetEndpointHelper):
     endpoint = "backoffice_web.list_feature_flags"
     needed_permission = perm_models.Permissions.FEATURE_FLIPPING
 
+    # user + session + list of feature flags
+    expected_num_queries = 3
+
     def test_list_feature_flags(self, authenticated_client):
         first_feature_flag = feature_models.Feature.query.order_by(feature_models.Feature.name).first()
         first_feature_flag.isActive = True
+        db.session.flush()
 
-        response = authenticated_client.get(url_for(self.endpoint))
+        with assert_num_queries(self.expected_num_queries):
+            response = authenticated_client.get(url_for(self.endpoint))
+            assert response.status_code == 200
 
-        assert response.status_code == 200
         rows = html_parser.extract_table_rows(response.data)
         assert "Vous allez désactiver" in rows[0]["Activé"]  # "Vous allez désactiver" is inside the modal
         assert rows[0]["Nom"] == first_feature_flag.name
         assert rows[0]["Description"] == first_feature_flag.description
 
         first_feature_flag.isActive = False
+        db.session.flush()
 
-        response = authenticated_client.get(url_for(self.endpoint))
+        with assert_num_queries(self.expected_num_queries):
+            response = authenticated_client.get(url_for(self.endpoint))
+            assert response.status_code == 200
 
-        assert response.status_code == 200
         rows = html_parser.extract_table_rows(response.data)
         assert "Vous allez activer" in rows[0]["Activé"]  # "Vous allez activer" is inside the modal
         assert rows[0]["Nom"] == first_feature_flag.name

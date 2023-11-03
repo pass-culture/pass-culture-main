@@ -861,7 +861,7 @@ class GetEditOfferFormTest(GetEndpointHelper):
 
         form_url = url_for(self.endpoint, offer_id=offer.id)
 
-        with assert_num_queries(3):  # session + user + tested_query
+        with assert_num_queries(3):  # session + current user + tested_query
             response = authenticated_client.get(form_url)
             assert response.status_code == 200
 
@@ -874,7 +874,7 @@ class GetBatchEditOfferFormTest(PostEndpointHelper):
     def test_get_empty_edit_form_test(self, legit_user, authenticated_client):
         form_url = url_for(self.endpoint, _external=True)
 
-        with assert_num_queries(2):  # session + user
+        with assert_num_queries(2):  # session + current user
             response = authenticated_client.get(form_url)
             assert response.status_code == 200
 
@@ -1006,7 +1006,7 @@ class GetValidateOfferFormTest(GetEndpointHelper):
 
         form_url = url_for(self.endpoint, offer_id=offer.id)
 
-        with assert_num_queries(3):  # session + user + tested_query
+        with assert_num_queries(3):  # session + current user + tested_query
             response = authenticated_client.get(form_url)
             assert response.status_code == 200
 
@@ -1048,7 +1048,7 @@ class GetRejectOfferFormTest(GetEndpointHelper):
 
         form_url = url_for(self.endpoint, offer_id=offer.id, _external=True)
 
-        with assert_num_queries(3):  # session + user + tested_query
+        with assert_num_queries(3):  # session + current user + tested_query
             response = authenticated_client.get(form_url)
             assert response.status_code == 200
 
