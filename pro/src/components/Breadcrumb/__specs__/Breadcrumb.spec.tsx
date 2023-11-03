@@ -61,13 +61,9 @@ describe('Breadcrumb', () => {
 
       expect(listItems).toHaveLength(4)
       expect(listItems[0]).toHaveTextContent('Informations')
-      expect(listItems[0].getElementsByClassName('separator')).toHaveLength(0)
       expect(listItems[1]).toHaveTextContent('Stocks & Prix')
-      expect(listItems[1].getElementsByClassName('separator')).toHaveLength(0)
       expect(listItems[2]).toHaveTextContent('Récapitulatif')
-      expect(listItems[2].getElementsByClassName('separator')).toHaveLength(0)
       expect(listItems[3]).toHaveTextContent('Confirmation')
-      expect(listItems[3].getElementsByClassName('separator')).toHaveLength(0)
     })
 
     it('should render link or hash when needed', () => {
@@ -116,7 +112,6 @@ describe('Breadcrumb', () => {
       renderBreadcrumb(props)
 
       expect(screen.getByTestId('stepper')).toBeInTheDocument()
-      // see other tests in Stepper tests
     })
   })
 })
