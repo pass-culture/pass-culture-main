@@ -40,13 +40,23 @@ class AuthenticateTest:
     def test_should_return_redactor_role_when_token_has_an_uai_code(self, app) -> None:
         # Given
         EducationalRedactorFactory(email=self.valid_user.get("mail"))
-        EducationalInstitutionFactory(
+        educational_institution = EducationalInstitutionFactory(
             institutionId=self.valid_user.get("uai"),
             name="BELLEVUE",
             institutionType="COLLEGE",
             postalCode="30100",
             city="Ales",
         )
+        CollectiveStockFactory(
+            collectiveOffer__institution=educational_institution,
+            collectiveOffer__teacher=EducationalRedactorFactory(),
+        )
+        CollectiveStockFactory(
+            beginningDatetime=datetime.datetime.utcnow() - datetime.timedelta(days=5),
+            collectiveOffer__institution=educational_institution,
+            collectiveOffer__teacher=EducationalRedactorFactory(),
+        )
+
         valid_encoded_token = self._create_adage_valid_token(uai_code=self.valid_user.get("uai"))
 
         test_client = TestClient(app.test_client())
@@ -71,6 +81,7 @@ class AuthenticateTest:
             "lat": DEFAULT_LAT,
             "lon": DEFAULT_LON,
             "favoritesCount": 0,
+            "offersCount": 1,
         }
 
     def test_favorites_count(self, client) -> None:
@@ -84,7 +95,8 @@ class AuthenticateTest:
         # fetch the institution
         # fetch the redactor
         # count the redactor's favorites (2 requests: offers and templates)
-        with assert_num_queries(4):
+        # count the offers linked to institution uai
+        with assert_num_queries(5):
             response = client.get(url_for("adage_iframe.authenticate"))
 
         assert response.status_code == 200
@@ -126,6 +138,7 @@ class AuthenticateTest:
             "lat": None,
             "lon": None,
             "favoritesCount": 0,
+            "offersCount": 0,
         }
 
     valid_user = {

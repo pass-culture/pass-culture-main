@@ -2,7 +2,9 @@ import enum
 import logging
 
 from pydantic.v1 import ValidationError
+import sqlalchemy as sa
 
+from pcapi.core.educational import models as educational_models
 from pcapi.core.educational.exceptions import MissingRequiredRedactorInformation
 from pcapi.routes.serialization import BaseModel
 
@@ -38,6 +40,7 @@ class AuthenticatedResponse(BaseModel):
     lat: float | None = None
     lon: float | None = None
     favoritesCount: int = 0
+    offersCount: int = 0
 
     class Config:
         use_enum_values = True
@@ -59,3 +62,19 @@ def get_redactor_information_from_adage_authentication(
     except ValidationError:
         raise MissingRequiredRedactorInformation()
     return redactor_information
+
+
+def get_offers_count(authenticated_information: AuthenticatedInformation) -> int:
+    offer_query = (
+        educational_models.CollectiveOffer.query.join(
+            educational_models.EducationalInstitution, educational_models.CollectiveOffer.institution
+        )
+        .options(
+            sa.orm.joinedload(educational_models.CollectiveOffer.collectiveStock).joinedload(
+                educational_models.CollectiveStock.collectiveBookings
+            ),
+        )
+        .filter(educational_models.EducationalInstitution.institutionId == authenticated_information.uai)
+    )
+    offer_count = len([query for query in offer_query if query.isBookable])
+    return offer_count
