@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react'
 import { useSearchParams } from 'react-router-dom'
 
 import { api } from 'apiClient/api'
-import { GetOfferStockResponseModel } from 'apiClient/v1'
+import { GetOfferStockResponseModel, StocksOrderedBy } from 'apiClient/v1'
 import { StocksEvent } from 'components/StocksEventList/StocksEventList'
 import { useIndividualOfferContext } from 'context/IndividualOfferContext'
 import { OFFER_WIZARD_MODE } from 'core/Offers/constants'
@@ -24,24 +24,27 @@ const Stocks = (): JSX.Element | null => {
   const [stockCount, setStockCount] = useState<number>(0)
   const [searchParams] = useSearchParams()
   const page = searchParams.get('page')
+  const date = searchParams.get('date')
+  const time = searchParams.get('time')
+  const priceCategoryId = searchParams.get('priceCategoryId')
+  const orderBy = searchParams.get('orderBy')
+  const orderByDesc = searchParams.get('orderByDesc')
 
   useEffect(() => {
-    // we set ignore variable to avoid race conditions
-    // see react doc:  https://react.dev/reference/react/useEffect#fetching-data-with-effects
-    let ignore = false
     async function loadStocks() {
       if (!offer) {
         return
       }
       const response = await api.getStocks(
         offer.id,
-        undefined, // date
-        undefined, // time
-        undefined, // priceCategoryId
-        undefined, // orderBy
-        undefined, // orderByDesc
+        date,
+        time,
+        priceCategoryId ? Number(priceCategoryId) : undefined,
+        (orderBy as StocksOrderedBy) ?? undefined,
+        orderByDesc ? orderByDesc === '1' : undefined,
         page ? Number(page) : 1
       )
+
       if (!ignore) {
         if (offer?.isEvent) {
           setStockEvents(serializeStockEvents(response.stocks))
@@ -51,12 +54,16 @@ const Stocks = (): JSX.Element | null => {
         }
       }
     }
+
+    // we set ignore variable to avoid race conditions
+    // see react doc:  https://react.dev/reference/react/useEffect#fetching-data-with-effects
+    let ignore = false
     // eslint-disable-next-line @typescript-eslint/no-floating-promises
     loadStocks()
     return () => {
       ignore = true
     }
-  }, [page])
+  }, [page, date, time, priceCategoryId, orderBy, orderByDesc])
 
   // Here we display a spinner because when the router transitions from
   // Informations form to Stocks form the setOffer after the submit is not

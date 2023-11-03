@@ -97,12 +97,12 @@ export const StocksEventCreation = ({
         Ajouter une ou plusieurs dates
       </Button>
 
-      {stocks.length !== 0 && offer?.priceCategories && (
+      {stocks.length !== 0 && (
         <StocksEventList
           className={styles['stock-section']}
           stocks={stocks}
           setStocks={setStocks}
-          priceCategories={offer.priceCategories}
+          priceCategories={offer.priceCategories ?? []}
           departmentCode={offer.venue.departementCode}
           offerId={offer.id}
           stockCount={stockCount}
