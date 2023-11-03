@@ -11,6 +11,7 @@ import { apiAdage } from 'apiClient/api'
 import useActiveFeature from 'hooks/useActiveFeature'
 import strokeBookedIcon from 'icons/stroke-booked.svg'
 import strokeBookmarkIcon from 'icons/stroke-bookmark.svg'
+import strokePassIcon from 'icons/stroke-pass.svg'
 import strokeSearchIcon from 'icons/stroke-search.svg'
 import strokeVenueIcon from 'icons/stroke-venue.svg'
 import useAdageUser from 'pages/AdageIframe/app/hooks/useAdageUser'
@@ -32,6 +33,7 @@ export const AdageHeaderMenu = ({ adageUser }: AdageHeaderMenuProps) => {
   const { nbHits } = useStats()
 
   const areFavoritesActive = useActiveFeature('WIP_ENABLE_LIKE_IN_ADAGE')
+  const isDiscoveryActive = useActiveFeature('WIP_ENABLE_DISCOVERY')
 
   const logAdageLinkClick = (headerLinkName: AdageHeaderLink) => {
     apiAdage.logHeaderLinkClick({
@@ -44,6 +46,23 @@ export const AdageHeaderMenu = ({ adageUser }: AdageHeaderMenuProps) => {
     <ul className={styles['adage-header-menu']}>
       {adageUser.role !== AdageFrontRoles.READONLY && (
         <>
+          {isDiscoveryActive && (
+            <li className={styles['adage-header-menu-item']}>
+              <NavLink
+                to={`/adage-iframe/decouverte?token=${adageAuthToken}`}
+                end
+                className={({ isActive }) => {
+                  return cn(styles['adage-header-link'], {
+                    [styles['adage-header-link-active']]: isActive,
+                  })
+                }}
+                /*onClick={() => logAdageLinkClick(AdageHeaderLink.DISCOVERY)} */
+              >
+                <SvgIcon src={strokePassIcon} alt="" width="20" />
+                Découvrir
+              </NavLink>
+            </li>
+          )}
           <li className={styles['adage-header-menu-item']}>
             <NavLink
               to={`/adage-iframe?token=${adageAuthToken}`}
