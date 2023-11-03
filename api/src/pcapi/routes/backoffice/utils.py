@@ -61,12 +61,6 @@ def has_current_user_permission(permission: perm_models.Permissions | str) -> bo
 
 
 def _check_any_permission_of(permissions: typing.Iterable[perm_models.Permissions]) -> None:
-    if not current_user.is_authenticated:
-        raise UnauthenticatedUserError()
-
-    if not current_user.backoffice_profile:
-        raise ApiErrors({"global": ["utilisateur inconnu"]}, status_code=403)
-
     if not any(has_current_user_permission(permission) for permission in permissions):
         logger.warning(
             "user %s missed permission %s while trying to access %s",
@@ -120,6 +114,12 @@ def child_backoffice_blueprint(
 
     @child_blueprint.before_request
     def check_permission() -> None:
+        if not current_user.is_authenticated:
+            raise UnauthenticatedUserError()
+
+        if not current_user.backoffice_profile:
+            raise ApiErrors({"global": ["utilisateur inconnu"]}, status_code=403)
+
         if permission:
             _check_any_permission_of((permission,))
 
