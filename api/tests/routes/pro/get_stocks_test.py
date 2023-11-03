@@ -70,6 +70,7 @@ class Returns200Test:
         assert response.status_code == 200
         assert response.json == {
             "stock_count": 1,
+            "hasStocks": True,
             "stocks": [
                 {
                     "activationCodesExpirationDatetime": None,
@@ -106,6 +107,7 @@ class Returns200Test:
         assert response.status_code == 200
         assert response.json == {
             "stock_count": 1,
+            "hasStocks": True,
             "stocks": [
                 {
                     "activationCodesExpirationDatetime": None,
@@ -138,6 +140,47 @@ class Returns200Test:
         assert response.status_code == 200
         assert len(response.json["stocks"]) == 0
 
+    def test_returns_false_if_no_stocks(self, client):
+        # Given
+        user_offerer = offerers_factories.UserOffererFactory()
+        offer = offers_factories.EventOfferFactory(venue__managingOfferer=user_offerer.offerer)
+
+        # When
+        response = client.with_session_auth(email=user_offerer.user.email).get(f"/offers/{offer.id}/stocks")
+
+        # Then
+        assert response.status_code == 200
+        assert response.json["hasStocks"] == False
+
+    def test_returns_false_if_all_stocks_are_soft_deleted(self, client):
+        # Given
+        user_offerer = offerers_factories.UserOffererFactory()
+        offer = offers_factories.EventOfferFactory(venue__managingOfferer=user_offerer.offerer)
+        offers_factories.StockFactory.create_batch(3, offer=offer, isSoftDeleted=True)
+        # When
+        response = client.with_session_auth(email=user_offerer.user.email).get(f"/offers/{offer.id}/stocks")
+
+        # Then
+        assert response.status_code == 200
+        assert response.json["hasStocks"] == False
+
+    def test_returns_true_if_stock_exists_outside_filter(self, client):
+        # Given
+        date_1 = datetime.utcnow()
+        date_2 = datetime.utcnow() + timedelta(days=1)
+        user_offerer = offerers_factories.UserOffererFactory()
+        offer = offers_factories.OfferFactory(venue__managingOfferer=user_offerer.offerer)
+        offers_factories.StockFactory.create_batch(
+            3, beginningDatetime=date_1, dateCreated=date_1, dateModified=date_1, offer=offer
+        )
+        # When
+        response = client.with_session_auth(email=user_offerer.user.email).get(
+            f"/offers/{offer.id}/stocks?date={date_2.date()}"
+        )
+        assert response.status_code == 200
+        assert len(response.json["stocks"]) == 0
+        assert response.json["hasStocks"] == True
+
     @freeze_time("2020-10-15 00:00:00")
     @override_features(WIP_PRO_STOCK_PAGINATION=True)
     def test_should_return_total_stock_count_when_unfiltered(self, client):
@@ -151,8 +194,6 @@ class Returns200Test:
 
         # When
         response = client.with_session_auth(email=user_offerer.user.email).get(f"/offers/{offer.id}/stocks")
-        print(response.json)
-
         assert response.status_code == 200
         assert response.json["stock_count"] == 5
         assert len(response.json["stocks"]) == 5
@@ -180,6 +221,7 @@ class Returns200Test:
         assert response.status_code == 200
         assert response.json == {
             "stock_count": 5,
+            "hasStocks": True,
             "stocks": [
                 {
                     "activationCodesExpirationDatetime": None,
@@ -218,7 +260,7 @@ class Returns200Test:
             f"/offers/{offer.id}/stocks?date={date_1.date()}&stocks_limit_per_page={stock_limit_per_page}"
         )
         assert response.status_code == 200
-        assert response.json["stock_count"] == 3
+        assert response.json["stockCount"] == 3
         assert len(response.json["stocks"]) == 2
 
     @freeze_time("2020-10-15 00:00:00")
@@ -244,5 +286,5 @@ class Returns200Test:
             f"/offers/{offer.id}/stocks?date={date_1.date()}&stocks_limit_per_page={stock_limit_per_page}"
         )
         assert response.status_code == 200
-        assert response.json["stock_count"] == 3
+        assert response.json["stockCount"] == 3
         assert len(response.json["stocks"]) == 3
