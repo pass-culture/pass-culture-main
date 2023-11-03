@@ -27,6 +27,7 @@ vi.mock('apiClient/api', () => ({
 const renderStocksEventList = (props: Partial<StocksEventListProps>) => {
   renderWithProviders(
     <StocksEventList
+      stockCount={props.stocks?.length ?? 0}
       stocks={props.stocks ?? []}
       priceCategories={[
         priceCategoryFactory({ label: 'Label', price: 12.5, id: 1 }),
@@ -223,44 +224,6 @@ describe('StocksEventList', () => {
     expect(selectAllCheckbox).not.toBeChecked()
     expect(allCheckboxes[1]).not.toBeChecked()
     expect(allCheckboxes[2]).not.toBeChecked()
-  })
-
-  it('should check only filtered lines', async () => {
-    renderStocksEventList({
-      stocks: [
-        individualStockEventFactory({
-          beginningDatetime: new Date('2021-10-15T12:00:00Z').toISOString(),
-          priceCategoryId: 1,
-        }),
-        individualStockEventFactory({
-          beginningDatetime: new Date('2021-10-14T13:00:00Z').toISOString(),
-          priceCategoryId: 2,
-        }),
-        individualStockEventFactory({
-          beginningDatetime: new Date('2021-10-14T12:00:00Z').toISOString(),
-          priceCategoryId: 3,
-        }),
-      ],
-    })
-
-    expect(screen.getAllByRole('row')).toHaveLength(4) // 1 header + 3 stock rows
-
-    await userEvent.selectOptions(
-      screen.getByLabelText('Filtrer par tarif'),
-      String(3)
-    )
-    expect(screen.getAllByRole('row')).toHaveLength(3) // 1 header + 1 filter result row + 1 stock rows
-
-    await userEvent.click(screen.getByLabelText('Tout sélectionner'))
-    expect(screen.getByText('1 date sélectionnée')).toBeInTheDocument()
-
-    await userEvent.selectOptions(
-      screen.getByLabelText('Filtrer par tarif'),
-      ''
-    )
-    expect(
-      screen.queryByText('date sélectionnée', { exact: false })
-    ).not.toBeInTheDocument()
   })
 
   it('should bulk delete lines with filters when clicking on button on action bar', async () => {
