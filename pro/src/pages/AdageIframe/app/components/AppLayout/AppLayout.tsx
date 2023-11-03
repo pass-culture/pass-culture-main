@@ -1,9 +1,10 @@
 import algoliasearch from 'algoliasearch/lite'
 import * as React from 'react'
 import { Configure, InstantSearch } from 'react-instantsearch'
-import { Route, Routes } from 'react-router-dom'
+import { Route, Routes, useLocation } from 'react-router-dom'
 
 import { VenueResponse } from 'apiClient/adage'
+import useActiveFeature from 'hooks/useActiveFeature'
 import {
   ALGOLIA_API_KEY,
   ALGOLIA_APP_ID,
@@ -11,7 +12,7 @@ import {
 } from 'utils/config'
 
 import useAdageUser from '../../hooks/useAdageUser'
-import { routesAdage } from '../../subRoutesAdage'
+import { routesAdage, oldRoutesAdage } from '../../subRoutesAdage'
 import { AdageHeader } from '../AdageHeader/AdageHeader'
 
 import styles from './AppLayout.module.scss'
@@ -22,6 +23,13 @@ export const AppLayout = ({
   venueFilter: VenueResponse | null
 }): JSX.Element => {
   const { adageUser } = useAdageUser()
+  const { pathname } = useLocation()
+
+  const isDiscoveryPage = pathname.includes('decouverte')
+  const isDiscoveryActive = useActiveFeature('WIP_ENABLE_DISCOVERY')
+
+  const allRoutesAdage = isDiscoveryActive ? routesAdage : oldRoutesAdage
+
   return (
     <div>
       <InstantSearch
@@ -40,9 +48,12 @@ export const AppLayout = ({
         />
         <AdageHeader />
       </InstantSearch>
-      <main className={styles['app-layout-content']} id="content">
+      <main
+        className={isDiscoveryPage ? '' : styles['app-layout-content']}
+        id="content"
+      >
         <Routes>
-          {routesAdage.map(({ path, element }) => {
+          {allRoutesAdage.map(({ path, element }) => {
             // FIX ME : we pass props to routesAdage until we put those props in a context or store
             const Component = element
             return (

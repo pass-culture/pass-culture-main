@@ -46,6 +46,18 @@ const isFavoritesActive = {
   },
 }
 
+const isDiscoveryActive = {
+  features: {
+    list: [
+      {
+        nameKey: 'WIP_ENABLE_DISCOVERY',
+        isActive: true,
+      },
+    ],
+    initialized: true,
+  },
+}
+
 vi.mock('apiClient/api', () => ({
   apiAdage: {
     logHeaderLinkClick: vi.fn(),
@@ -95,7 +107,21 @@ describe('AdageHeader', () => {
     expect(
       screen.getByRole('link', { name: 'Pour mon établissement 0' })
     ).toBeInTheDocument()
+    expect(
+      screen.queryByRole('link', { name: 'Découvrir' })
+    ).not.toBeInTheDocument()
     expect(screen.getByText('Suivi')).toBeInTheDocument()
+  })
+
+  it('should render adage header with link for discovery', async () => {
+    renderAdageHeader(user, isDiscoveryActive)
+    await waitFor(() =>
+      expect(
+        apiAdage.getEducationalInstitutionWithBudget
+      ).toHaveBeenCalledTimes(1)
+    )
+
+    expect(screen.getByRole('link', { name: 'Découvrir' })).toBeInTheDocument()
   })
 
   it('should render the number of hits', async () => {
