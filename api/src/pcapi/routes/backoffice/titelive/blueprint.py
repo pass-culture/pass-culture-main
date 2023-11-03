@@ -104,7 +104,7 @@ def add_product_whitelist(ean: str, title: str) -> utils.BackofficeResponse:
     try:
         product = whitelist_product(ean)
     except offers_exceptions.TiteLiveAPINotExistingEAN:
-        flash(f"L'EAN \"{ean}\" n'existe pas chez Titelive", "danger")
+        flash(f"L'EAN \"{ean}\" n'existe pas chez Titelive", "warning")
     else:
         try:
             product_whitelist = fraud_models.ProductWhitelist(
@@ -114,10 +114,10 @@ def add_product_whitelist(ean: str, title: str) -> utils.BackofficeResponse:
             db.session.commit()
         except sa.exc.IntegrityError as error:
             db.session.rollback()
-            flash(f"L'EAN \"{ean}\" n'a pas été rajouté dans la whitelist : {error}", "danger")
+            flash(f"L'EAN \"{ean}\" n'a pas été rajouté dans la whitelist : {error}", "warning")
         except GtlIdError as gtl_error:
             db.session.rollback()
-            flash(f"L'EAN \"{ean}\" n'a pas été rajouté dans la whitelist : {gtl_error}", "danger")
+            flash(f"L'EAN \"{ean}\" n'a pas été rajouté dans la whitelist : {gtl_error}", "warning")
         else:
             flash(f'L\'EAN "{ean}" a été ajouté dans la whitelist', "success")
 
@@ -158,7 +158,7 @@ def delete_product_whitelist(ean: str) -> utils.BackofficeResponse:
             db.session.commit()
     except sa.exc.IntegrityError:
         db.session.rollback()
-        flash("Impossible de supprimer l'EAN de la whitelist", "danger")
+        flash("Impossible de supprimer l'EAN de la whitelist", "warning")
     else:
         flash(f'L\'EAN "{ean}" a été supprimé de la whitelist', "success")
 

@@ -68,7 +68,7 @@ def get_finance_invoices_generation_form() -> utils.BackofficeResponse:
 def generate_invoices() -> utils.BackofficeResponse:
     latest_cashflow_batch = finance_models.CashflowBatch.query.order_by(finance_models.CashflowBatch.id.desc()).first()
     if not finance_tasks.is_generate_invoices_queue_empty():
-        flash("La tâche de génération des justificatifs est déjà en cours", "danger")
+        flash("La tâche de génération des justificatifs est déjà en cours", "warning")
         return redirect(url_for("backoffice_web.finance_invoices.get_finance_invoices"))
 
     finance_api.async_generate_invoices(latest_cashflow_batch)

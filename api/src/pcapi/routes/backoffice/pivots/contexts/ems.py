@@ -58,7 +58,7 @@ class EMSContext(PivotContext):
 
         pivot = providers_models.CinemaProviderPivot.query.filter_by(venueId=venue.id).one_or_none()
         if pivot:
-            flash(f"Des identifiants cinéma existent déjà pour ce lieu id={venue_id}", "danger")
+            flash(f"Des identifiants cinéma existent déjà pour ce lieu id={venue_id}", "warning")
             return False
 
         cinema_provider_pivot = providers_models.CinemaProviderPivot(
@@ -79,14 +79,14 @@ class EMSContext(PivotContext):
             flash("Connexion à l'API EMS OK.", "success")
         except Exception as exc:  # pylint: disable=broad-except
             logger.exception("Error while checking EMS API information", extra={"exc": exc})
-            flash("Connexion à l'API EMS KO.", "danger")
+            flash("Connexion à l'API EMS KO.", "warning")
 
     @classmethod
     def update_pivot(cls, form: forms.EditEMSForm, pivot_id: int) -> bool:
         pivot: providers_models.EMSCinemaDetails = providers_models.EMSCinemaDetails.query.get_or_404(pivot_id)
 
         if not pivot.cinemaProviderPivot:
-            flash("Le provider n'a pas de pivot", "danger")
+            flash("Le provider n'a pas de pivot", "warning")
             return False
 
         pivot.cinemaProviderPivot.idAtProvider = form.cinema_id.data
@@ -109,7 +109,7 @@ class EMSContext(PivotContext):
         ).one_or_none()
 
         if venue_provider:
-            flash("Ce lieu est toujours synchronisé avec EMS, vous ne pouvez pas supprimer ce pivot.", "danger")
+            flash("Ce lieu est toujours synchronisé avec EMS, vous ne pouvez pas supprimer ce pivot.", "warning")
             return False
         db.session.delete(pivot)
         db.session.delete(cinema_provider_pivot)

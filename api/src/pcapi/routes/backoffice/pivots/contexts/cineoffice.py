@@ -44,7 +44,7 @@ class CineofficeContext(PivotContext):
     def create_pivot(cls, form: forms.EditCineOfficeForm) -> bool:
         cds_provider = providers_repository.get_provider_by_local_class("CDSStocks")
         if not cds_provider:
-            flash("Provider Ciné Office n'existe pas.", "danger")
+            flash("Provider Ciné Office n'existe pas.", "warning")
             return False
         venue_id = form.venue_id.data[0]
         account_id = form.account_id.data
@@ -53,11 +53,11 @@ class CineofficeContext(PivotContext):
 
         venue = offerers_models.Venue.query.get(venue_id)
         if not venue:
-            flash(f"Lieu id={venue_id} n'existe pas", "danger")
+            flash(f"Lieu id={venue_id} n'existe pas", "warning")
             return False
         pivot = providers_models.CinemaProviderPivot.query.filter_by(venueId=venue_id).one_or_none()
         if pivot:
-            flash(f"Des identifiants cinéma existent déjà pour ce lieu id={venue_id}", "danger")
+            flash(f"Des identifiants cinéma existent déjà pour ce lieu id={venue_id}", "warning")
             return False
 
         cinema_provider_pivot = providers_models.CinemaProviderPivot(
@@ -101,7 +101,7 @@ class CineofficeContext(PivotContext):
             venueId=cinema_provider_pivot.venueId, providerId=cinema_provider_pivot.providerId
         ).one_or_none()
         if venue_provider:
-            flash("Ce lieu est toujours synchronisé avec CDS, Vous ne pouvez pas supprimer ce pivot CDS", "danger")
+            flash("Ce lieu est toujours synchronisé avec CDS, Vous ne pouvez pas supprimer ce pivot CDS", "warning")
             return False
         db.session.delete(pivot)
         db.session.delete(cinema_provider_pivot)
@@ -124,4 +124,4 @@ class CineofficeContext(PivotContext):
                 "Network error on checking CDS API information", extra={"exc": exc, "account_id": account_id}
             )
 
-        flash("Connexion à l'API KO.", "danger")
+        flash("Connexion à l'API KO.", "warning")

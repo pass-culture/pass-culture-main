@@ -556,7 +556,7 @@ def edit_offer(offer_id: int) -> utils.BackofficeResponse:
     form = forms.EditOfferForm()
 
     if not form.validate():
-        flash("Le formulaire n'est pas valide", "danger")
+        flash("Le formulaire n'est pas valide", "warning")
         return redirect(request.referrer, 400)
 
     criteria = criteria_models.Criterion.query.filter(criteria_models.Criterion.id.in_(form.criteria.data)).all()

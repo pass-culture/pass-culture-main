@@ -182,7 +182,7 @@ def _batch_validate_or_reject_collective_offers(
             "Seules les offres collectives en attente peuvent être validées"
             if validation is offer_mixin.OfferValidationStatus.APPROVED
             else "Seules les offres collectives en attente peuvent être rejetées",
-            "danger",
+            "warning",
         )
         return False
 
@@ -243,7 +243,7 @@ def _batch_validate_or_reject_collective_offers(
             f"Une erreur est survenue lors de la validation des offres collectives : {', '.join(map(str, collective_offer_update_failed_ids))}"
             if validation is offer_mixin.OfferValidationStatus.APPROVED
             else f"Une erreur est survenue lors du rejet des offres collectives : {', '.join(map(str, collective_offer_update_failed_ids))}",
-            "danger",
+            "warning",
         )
     return True
 
@@ -306,7 +306,7 @@ def batch_validate_collective_offers() -> utils.BackofficeResponse:
     form = empty_forms.BatchForm()
 
     if not form.validate():
-        flash("L'un des identifiants sélectionnés est invalide", "danger")
+        flash("L'un des identifiants sélectionnés est invalide", "warning")
         return redirect(request.referrer or url_for("backoffice_web.collective_offer.list_collective_offers"), 303)
 
     _batch_validate_or_reject_collective_offers(offer_mixin.OfferValidationStatus.APPROVED, form.object_ids_list)
@@ -319,7 +319,7 @@ def batch_reject_collective_offers() -> utils.BackofficeResponse:
     form = empty_forms.BatchForm()
 
     if not form.validate():
-        flash("L'un des identifiants sélectionnés est invalide", "danger")
+        flash("L'un des identifiants sélectionnés est invalide", "warning")
         return redirect(request.referrer or url_for("backoffice_web.collective_offer.list_collective_offers"), 303)
 
     _batch_validate_or_reject_collective_offers(offer_mixin.OfferValidationStatus.REJECTED, form.object_ids_list)
@@ -436,7 +436,7 @@ def edit_collective_offer_price(collective_offer_id: int) -> utils.BackofficeRes
             educational_models.CollectiveBookingStatus.USED,
         ]
         if is_confirmed_or_used and price > collective_offer.collectiveStock.price:
-            flash("Impossible d'augmenter le prix d'une offre confirmée")
+            flash("Impossible d'augmenter le prix d'une offre confirmée", "warning")
             return redirect(redirect_url, code=303)
 
         if is_confirmed_or_used and number_of_tickets > collective_offer.collectiveStock.numberOfTickets:

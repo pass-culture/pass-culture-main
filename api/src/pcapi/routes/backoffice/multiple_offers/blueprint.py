@@ -66,7 +66,7 @@ def search_multiple_offers() -> utils.BackofficeResponse:
     ).one_or_none()
 
     if not product:
-        flash("Aucun produit n'a été trouvé avec cet EAN-13", "danger")
+        flash("Aucun produit n'a été trouvé avec cet EAN-13", "warning")
         return _render_search(form)
 
     offers = (
