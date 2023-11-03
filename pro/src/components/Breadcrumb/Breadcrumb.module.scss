@@ -39,18 +39,6 @@
       }
     }
 
-    .separator {
-      align-items: center;
-      display: flex;
-      justify-content: center;
-      width: rem.torem(24px);
-
-      &-icon {
-        width: rem.torem(18px);
-        color: colors.$grey-medium;
-      }
-    }
-
     .error-icon {
       margin-left: rem.torem(8px);
       color: colors.$primary;

@@ -3,14 +3,11 @@ import React from 'react'
 import { Link } from 'react-router-dom'
 
 import Stepper from 'components/Stepper'
-import fullArrowRightIcon from 'icons/full-arrow-right.svg'
-import { SvgIcon } from 'ui-kit/SvgIcon/SvgIcon'
 
 import styles from './Breadcrumb.module.scss'
 import type { Step } from './types'
 
 export enum BreadcrumbStyle {
-  DEFAULT = 'default',
   TAB = 'tab',
   STEPPER = 'stepper',
 }
@@ -26,7 +23,7 @@ export interface BreadcrumbProps {
 const Breadcrumb = ({
   activeStep,
   isDisabled = false,
-  styleType = BreadcrumbStyle.DEFAULT,
+  styleType = BreadcrumbStyle.TAB,
   steps,
   className,
 }: BreadcrumbProps): JSX.Element => {
@@ -35,7 +32,6 @@ const Breadcrumb = ({
     styles[`bc-${styleType}`]
   )
   className = isDisabled ? `${className} ${styles['bc-disabled']}` : className
-  const lastStepIndex = steps.length - 1
 
   if (styleType === BreadcrumbStyle.STEPPER) {
     return (
@@ -48,9 +44,8 @@ const Breadcrumb = ({
       className={cn(breadcrumbClassName, className)}
       data-testid={`bc-${styleType}`}
     >
-      {steps.map((step, stepIndex) => {
+      {steps.map((step) => {
         const isActive = activeStep === step.id
-        const isLastStep = lastStepIndex === stepIndex
 
         return (
           <li
@@ -80,16 +75,6 @@ const Breadcrumb = ({
                 <span>{step.label}</span>
               )}
             </span>
-
-            {styleType === BreadcrumbStyle.DEFAULT && !isLastStep && (
-              <div className={styles['separator']}>
-                <SvgIcon
-                  src={fullArrowRightIcon}
-                  alt=""
-                  className={styles['separator-icon']}
-                />
-              </div>
-            )}
           </li>
         )
       })}
