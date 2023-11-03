@@ -14,6 +14,7 @@ export type AuthenticatedResponse = {
   institutionName?: string | null;
   lat?: number | null;
   lon?: number | null;
+  offersCount?: number;
   preferences?: RedactorPreferences | null;
   role: AdageFrontRoles;
   uai?: string | null;
