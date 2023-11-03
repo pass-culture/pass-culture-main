@@ -2,7 +2,7 @@
 {% from "components/generic_modal.html" import build_modal_form with context %}
 {% import "components/clipboard.html" as clipboard %}
 {% set username = user.firstName | empty_string_if_null + ' ' + user.lastName | empty_string_if_null | upper %}
-<div class="row row-cols-1 g-4 py-3">
+<div class="row row-cols-1 g-4 py-3 pc-strip-query-string">
   <div class="col">
     <div class="card">
       <div class="card-body">

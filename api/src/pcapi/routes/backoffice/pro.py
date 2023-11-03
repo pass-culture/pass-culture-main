@@ -27,46 +27,48 @@ class Context:
 
     fetch_rows_func: typing.Callable[[str, list[str]], BaseQuery]
     get_item_base_query: typing.Callable[[int], BaseQuery]
+    endpoint: str
+    row_id_name: str
 
     @classmethod
-    def get_pro_link(cls, row_id: int, **kwargs: typing.Any) -> str:
-        raise NotImplementedError()
+    def get_pro_link(cls, row_id: int, form: search_forms.ProSearchForm | None, **kwargs: typing.Any) -> str:
+        if form:
+            kwargs.update({cls.row_id_name: row_id, "q": form.q.data, "departments": form.departments.data})
+        return url_for(cls.endpoint, **kwargs)
 
 
 class UserContext(Context):
     fetch_rows_func = users_api.search_pro_account
     get_item_base_query = users_api.get_pro_account_base_query
-
-    @classmethod
-    def get_pro_link(cls, row_id: int, **kwargs: typing.Any) -> str:
-        return url_for(".pro_user.get", user_id=row_id, **kwargs)
+    endpoint = ".pro_user.get"
+    row_id_name = "user_id"
 
 
 class OffererContext(Context):
     fetch_rows_func = offerers_api.search_offerer
     get_item_base_query = offerers_api.get_offerer_base_query
-
-    @classmethod
-    def get_pro_link(cls, row_id: int, **kwargs: typing.Any) -> str:
-        return url_for(".offerer.get", offerer_id=row_id, **kwargs)
+    endpoint = ".offerer.get"
+    row_id_name = "offerer_id"
 
 
 class VenueContext(Context):
     fetch_rows_func = offerers_api.search_venue
     get_item_base_query = offerers_api.get_venue_base_query
-
-    @classmethod
-    def get_pro_link(cls, row_id: int, **kwargs: typing.Any) -> str:
-        return url_for(".venue.get", venue_id=row_id, **kwargs)
+    endpoint = ".venue.get"
+    row_id_name = "venue_id"
 
 
 class BankAccountContext(Context):
     fetch_rows_func = offerers_api.search_bank_account
     get_item_base_query = offerers_api.get_bank_account_base_query
+    endpoint = ".bank_account.get"
+    row_id_name = "bank_account_id"
 
     @classmethod
-    def get_pro_link(cls, row_id: int, **kwargs: typing.Any) -> str:
-        return url_for(".bank_account.get", bank_account_id=row_id, **kwargs)
+    def get_pro_link(cls, row_id: int, form: search_forms.ProSearchForm | None, **kwargs: typing.Any) -> str:
+        # No ConsultCard logged for bank account
+        filtered_kwargs = {k: v for k, v in kwargs.items() if v and k not in ("search_rank", "total_items")}
+        return super().get_pro_link(row_id, form, **filtered_kwargs)
 
 
 def render_search_template(form: search_forms.ProSearchForm | None = None) -> str:
@@ -118,8 +120,7 @@ def search_pro() -> utils.BackofficeResponse:
         or FeatureToggle.WIP_BACKOFFICE_ENABLE_REDIRECT_SINGLE_RESULT.is_active()
     ):
         return redirect(
-            context.get_pro_link(paginated_rows.items[0].id, q=form.q.data, departments=form.departments.data),
-            code=303,
+            context.get_pro_link(paginated_rows.items[0].id, form=form, search_rank=1, total_items=1), code=303
         )
 
     search_form = search_forms.CompactProSearchForm(request.args)
@@ -134,9 +135,6 @@ def search_pro() -> utils.BackofficeResponse:
         next_pages_urls=next_pages_urls,
         get_link_to_detail=context.get_pro_link,
         rows=paginated_rows,
-        q=form.q.data,
-        departments=form.departments.data,
-        per_page=form.per_page.data,
     )
 
 

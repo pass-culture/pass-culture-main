@@ -57,6 +57,7 @@ from .helpers import html_parser
 from .helpers import search as search_helpers
 from .helpers.get import GetEndpointHelper
 from .helpers.post import PostEndpointHelper
+from .helpers.url import assert_response_location
 
 
 pytestmark = [
@@ -199,11 +200,13 @@ class SearchPublicAccountsTest(search_helpers.SearchHelper, GetEndpointHelper):
 
         # redirect on single result
         assert response.status_code == 303
-        assert response.location == url_for(
+        assert_response_location(
+            response,
             "backoffice_web.public_accounts.get_public_account",
             user_id=underage.id,
             q=underage.id,
-            _external=True,
+            search_rank=1,
+            total_items=1,
         )
 
     @pytest.mark.parametrize(

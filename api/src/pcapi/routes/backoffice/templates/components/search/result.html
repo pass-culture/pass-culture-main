@@ -1,4 +1,4 @@
-{% macro result_card_switch(row,index, terms, result_type="public_account") %}
+{% macro result_card_switch(row, index, terms, result_type="public_account") %}
   {% if result_type == "offerer" %}
     {% include "components/search/result_card_offerer.html" %}
   {% elif result_type == "venue" %}
@@ -22,7 +22,11 @@
       </p>
       <div>
         <div class="row row-cols-sm-1 row-cols-md-2 row-cols-lg-3 g-4">
-          {% for row in rows.items %}<div class="col">{{ result_card_switch(row,loop.index,terms, result_type) }}</div>{% endfor %}
+          {% set offset = (rows.page - 1) * rows.per_page %}
+          {% for row in rows.items %}
+            {% set index = offset + loop.index if search_form.q.data else none %}
+            <div class="col">{{ result_card_switch(row, index, terms, result_type) }}</div>
+          {% endfor %}
         </div>
       </div>
     </div>
