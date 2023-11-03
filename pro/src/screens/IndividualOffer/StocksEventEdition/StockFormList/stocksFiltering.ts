@@ -1,5 +1,4 @@
 import { PriceCategoryResponseModel } from 'apiClient/v1'
-import { sortStockByPriceCategory } from 'components/StocksEventList/stocksFiltering'
 import {
   SortingMode,
   sortColumnByDateString,
@@ -9,6 +8,31 @@ import { isDateValid } from 'utils/date'
 import { getLocalDepartementDateTimeFromUtc } from 'utils/timezone'
 
 import { StockEventFormValues } from './types'
+
+const sortStockByPriceCategory = <
+  StockWithPriceCategory extends {
+    priceCategoryId: string | number
+  },
+>(
+  stocks: StockWithPriceCategory[],
+  priceCategories: PriceCategoryResponseModel[],
+  sortingMode: SortingMode
+): StockWithPriceCategory[] => {
+  const priceCategoryIdToPriceMap = priceCategories.reduce(
+    (acc, priceCategory) => {
+      acc[priceCategory.id] = priceCategory.price
+      return acc
+    },
+    {} as { [key: number]: number }
+  )
+
+  return stocks.sort(
+    (a, b) =>
+      (priceCategoryIdToPriceMap[Number(a.priceCategoryId)] -
+        priceCategoryIdToPriceMap[Number(b.priceCategoryId)]) *
+      (sortingMode === SortingMode.ASC ? 1 : -1)
+  )
+}
 
 export enum StocksEventFormSortingColumn {
   DATE = 'DATE',

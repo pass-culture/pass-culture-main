@@ -1,8 +1,9 @@
 import cn from 'classnames'
-import React, { useState } from 'react'
+import React, { useEffect, useState } from 'react'
+import { useSearchParams } from 'react-router-dom'
 
 import { api } from 'apiClient/api'
-import { PriceCategoryResponseModel } from 'apiClient/v1'
+import { PriceCategoryResponseModel, StocksOrderedBy } from 'apiClient/v1'
 import ActionsBarSticky from 'components/ActionsBarSticky'
 import { Events } from 'core/FirebaseEvents/constants'
 import useAnalytics from 'hooks/useAnalytics'
@@ -29,10 +30,6 @@ import { FilterResultsRow } from './FilterResultsRow'
 import { NoResultsRow } from './NoResultsRow'
 import { SortArrow } from './SortArrow'
 import styles from './StocksEventList.module.scss'
-import {
-  StocksEventListSortingColumn,
-  filterAndSortStocks,
-} from './stocksFiltering'
 
 export const STOCKS_PER_PAGE = 20
 
@@ -82,27 +79,52 @@ const StocksEventList = ({
   const priceCategoryOptions = getPriceCategoryOptions(priceCategories)
 
   const { currentSortingColumn, currentSortingMode, onColumnHeaderClick } =
-    useColumnSorting<StocksEventListSortingColumn>()
-  const [dateFilter, setDateFilter] = useState<string>('')
-  const [hourFilter, setHourFilter] = useState<string>('')
-  const [priceCategoryFilter, setPriceCategoryFilter] = useState('')
+    useColumnSorting<StocksOrderedBy>()
+  const [searchParams, setSearchParams] = useSearchParams()
+  const { page, previousPage, nextPage, pageCount, firstPage, lastPage } =
+    usePaginationWithSearchParams(STOCKS_PER_PAGE, stockCount)
+  const date = searchParams.get('date')
+  const time = searchParams.get('time')
+  const priceCategoryId = searchParams.get('priceCategoryId')
+  const [dateFilter, setDateFilter] = useState<string>(date ?? '')
+  const [timeFilter, setTimeFilter] = useState<string>(time ?? '')
+  const [priceCategoryIdFilter, setPriceCategoryIdFilter] = useState(
+    priceCategoryId ?? ''
+  )
+
+  useEffect(() => {
+    if (dateFilter) {
+      searchParams.set('date', dateFilter)
+    }
+    if (timeFilter) {
+      searchParams.set('time', timeFilter)
+    }
+    if (priceCategoryIdFilter) {
+      searchParams.set('priceCategoryId', priceCategoryIdFilter)
+    }
+    if (currentSortingColumn) {
+      searchParams.set('orderBy', currentSortingColumn)
+    }
+    if (currentSortingMode) {
+      if (currentSortingMode === SortingMode.DESC) {
+        searchParams.set('orderByDesc', '1')
+      } else if (currentSortingMode === SortingMode.ASC) {
+        searchParams.set('orderByDesc', '0')
+      }
+    }
+    setSearchParams(searchParams)
+  }, [
+    dateFilter,
+    timeFilter,
+    priceCategoryIdFilter,
+    currentSortingColumn,
+    currentSortingMode,
+  ])
 
   const onFilterChange = () => {
-    // FIX ME: this is broken
     setIsCheckedArray(stocks.map(() => false))
     firstPage()
   }
-
-  const filteredStocks = filterAndSortStocks(
-    stocks,
-    priceCategories,
-    currentSortingColumn,
-    currentSortingMode,
-    { dateFilter, hourFilter, priceCategoryFilter },
-    departmentCode
-  )
-  const { page, previousPage, nextPage, pageCount, firstPage, lastPage } =
-    usePaginationWithSearchParams(STOCKS_PER_PAGE, stockCount)
 
   const areAllChecked = isCheckedArray.every((isChecked) => isChecked)
 
@@ -114,9 +136,9 @@ const StocksEventList = ({
 
   const handleOnChangeSelectAll = () => {
     if (areAllChecked) {
-      setIsCheckedArray(filteredStocks.map(() => false))
+      setIsCheckedArray(stocks.map(() => false))
     } else {
-      setIsCheckedArray(filteredStocks.map(() => true))
+      setIsCheckedArray(stocks.map(() => true))
     }
   }
 
@@ -144,7 +166,7 @@ const StocksEventList = ({
   }
 
   const onBulkDelete = async () => {
-    const stocksIdToDelete = filteredStocks
+    const stocksIdToDelete = stocks
       .filter((stock, index) => isCheckedArray[index])
       .map((stock) => stock.id)
 
@@ -208,7 +230,7 @@ const StocksEventList = ({
 
   const isAtLeastOneStockChecked = isCheckedArray.some((e) => e)
   const areFiltersActive = Boolean(
-    dateFilter || hourFilter || priceCategoryFilter
+    dateFilter || timeFilter || priceCategoryIdFilter
   )
 
   return (
@@ -243,11 +265,9 @@ const StocksEventList = ({
               <span className={styles['header-name']}>Date</span>
 
               <SortArrow
-                onClick={() =>
-                  onColumnHeaderClick(StocksEventListSortingColumn.DATE)
-                }
+                onClick={() => onColumnHeaderClick(StocksOrderedBy.DATE)}
                 sortingMode={
-                  currentSortingColumn === StocksEventListSortingColumn.DATE
+                  currentSortingColumn === StocksOrderedBy.DATE
                     ? currentSortingMode
                     : SortingMode.NONE
                 }
@@ -273,11 +293,9 @@ const StocksEventList = ({
               <span className={styles['header-name']}>Horaire</span>
 
               <SortArrow
-                onClick={() =>
-                  onColumnHeaderClick(StocksEventListSortingColumn.HOUR)
-                }
+                onClick={() => onColumnHeaderClick(StocksOrderedBy.TIME)}
                 sortingMode={
-                  currentSortingColumn === StocksEventListSortingColumn.HOUR
+                  currentSortingColumn === StocksOrderedBy.TIME
                     ? currentSortingMode
                     : SortingMode.NONE
                 }
@@ -285,10 +303,10 @@ const StocksEventList = ({
               <div className={cn(styles['filter-input'])}>
                 <BaseTimePicker
                   onChange={(event) => {
-                    setHourFilter(event.target.value)
+                    setTimeFilter(event.target.value)
                     onFilterChange()
                   }}
-                  value={hourFilter}
+                  value={timeFilter}
                   filterVariant
                   aria-label="Filtrer par horaire"
                 />
@@ -300,13 +318,10 @@ const StocksEventList = ({
 
               <SortArrow
                 onClick={() =>
-                  onColumnHeaderClick(
-                    StocksEventListSortingColumn.PRICE_CATEGORY
-                  )
+                  onColumnHeaderClick(StocksOrderedBy.PRICE_CATEGORY_ID)
                 }
                 sortingMode={
-                  currentSortingColumn ===
-                  StocksEventListSortingColumn.PRICE_CATEGORY
+                  currentSortingColumn === StocksOrderedBy.PRICE_CATEGORY_ID
                     ? currentSortingMode
                     : SortingMode.NONE
                 }
@@ -316,9 +331,9 @@ const StocksEventList = ({
                   name="priceCategoryFilter"
                   defaultOption={{ label: '', value: '' }}
                   options={priceCategoryOptions}
-                  value={priceCategoryFilter}
+                  value={priceCategoryIdFilter}
                   onChange={(event) => {
-                    setPriceCategoryFilter(event.target.value)
+                    setPriceCategoryIdFilter(event.target.value)
                     onFilterChange()
                   }}
                   filterVariant
@@ -342,13 +357,11 @@ const StocksEventList = ({
 
               <SortArrow
                 onClick={() =>
-                  onColumnHeaderClick(
-                    StocksEventListSortingColumn.BOOKING_LIMIT_DATETIME
-                  )
+                  onColumnHeaderClick(StocksOrderedBy.BOOKING_LIMIT_DATETIME)
                 }
                 sortingMode={
                   currentSortingColumn ===
-                  StocksEventListSortingColumn.BOOKING_LIMIT_DATETIME
+                  StocksOrderedBy.BOOKING_LIMIT_DATETIME
                     ? currentSortingMode
                     : SortingMode.NONE
                 }
@@ -364,10 +377,10 @@ const StocksEventList = ({
 
               <SortArrow
                 onClick={() =>
-                  onColumnHeaderClick(StocksEventListSortingColumn.QUANTITY)
+                  onColumnHeaderClick(StocksOrderedBy.REMAINING_QUANTITY)
                 }
                 sortingMode={
-                  currentSortingColumn === StocksEventListSortingColumn.QUANTITY
+                  currentSortingColumn === StocksOrderedBy.REMAINING_QUANTITY
                     ? currentSortingMode
                     : SortingMode.NONE
                 }
@@ -386,13 +399,10 @@ const StocksEventList = ({
 
                 <SortArrow
                   onClick={() =>
-                    onColumnHeaderClick(
-                      StocksEventListSortingColumn.BOOKINGS_QUANTITY
-                    )
+                    onColumnHeaderClick(StocksOrderedBy.DN_BOOKED_QUANTITY)
                   }
                   sortingMode={
-                    currentSortingColumn ===
-                    StocksEventListSortingColumn.BOOKINGS_QUANTITY
+                    currentSortingColumn === StocksOrderedBy.DN_BOOKED_QUANTITY
                       ? currentSortingMode
                       : SortingMode.NONE
                   }
@@ -411,15 +421,15 @@ const StocksEventList = ({
               colSpan={6}
               onFiltersReset={() => {
                 setDateFilter('')
-                setHourFilter('')
-                setPriceCategoryFilter('')
+                setTimeFilter('')
+                setPriceCategoryIdFilter('')
                 onFilterChange()
               }}
-              resultsCount={filteredStocks.length}
+              resultsCount={stocks.length}
             />
           )}
 
-          {filteredStocks.map((stock, index) => {
+          {stocks.map((stock, index) => {
             const beginningDay = formatLocalTimeDateString(
               stock.beginningDatetime,
               departmentCode,
@@ -516,7 +526,7 @@ const StocksEventList = ({
             )
           })}
 
-          {filteredStocks.length === 0 && <NoResultsRow colSpan={6} />}
+          {stocks.length === 0 && <NoResultsRow colSpan={6} />}
         </tbody>
       </table>
 
