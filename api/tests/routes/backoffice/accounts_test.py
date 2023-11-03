@@ -474,9 +474,32 @@ class GetPublicAccountTest(GetEndpointHelper):
             in content
         )
         assert f"Adresse {user.address} " in content
+
+        badges = html_parser.extract(response.data, tag="span", class_="badge")
         if expected_badge:
-            assert expected_badge in content
-        assert "Suspendu" not in content
+            assert expected_badge in badges
+        assert "Suspendu" not in badges
+
+    def test_get_suspended_public_account(self, legit_user, authenticated_client):
+        user = users_factories.UserFactory(isActive=False)
+        history_factories.ActionHistoryFactory(
+            actionType=history_models.ActionType.USER_SUSPENDED,
+            actionDate=datetime.datetime(2023, 11, 3, 11, 12),
+            user=user,
+            authorUser=legit_user,
+            extraData={"reason": users_constants.SuspensionReason.FRAUD_HACK},
+        )
+
+        user_id = user.id
+        with assert_num_queries(self.expected_num_queries):
+            response = authenticated_client.get(url_for(self.endpoint, user_id=user_id))
+            assert response.status_code == 200
+
+        badges = html_parser.extract(response.data, tag="span", class_="badge")
+        assert "Suspendu : Fraude hacking" in badges
+
+        content = html_parser.content_as_text(response.data)
+        assert "Date de suspension : 03/11/2023" in content
 
     def test_get_public_account_with_modified_email(self, authenticated_client):
         _, grant_18, _, _, _ = create_bunch_of_accounts()
