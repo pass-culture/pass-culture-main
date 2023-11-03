@@ -7,8 +7,7 @@ import wtforms
 from pcapi.core.bookings import models as bookings_models
 from pcapi.core.bookings.models import BookingStatus
 from pcapi.core.categories import categories
-import pcapi.core.educational.models as educational_models
-from pcapi.core.educational.models import CollectiveBookingStatus
+from pcapi.core.educational import models as educational_models
 from pcapi.routes.backoffice import filters
 from pcapi.routes.backoffice.forms import fields
 from pcapi.routes.backoffice.forms import utils
@@ -114,7 +113,9 @@ class GetCollectiveBookingListForm(BaseBookingListForm):
     def __init__(self, *args: typing.Any, **kwargs: typing.Any) -> None:
         super().__init__(*args, **kwargs)
         self.q.label.text = "ID réservation collective, ID offre, Nom ou ID de l'établissement"
-        self.status.choices = utils.choices_from_enum(CollectiveBookingStatus, formatter=filters.format_booking_status)
+        self.status.choices = utils.choices_from_enum(
+            educational_models.CollectiveBookingStatus, formatter=filters.format_booking_status
+        )
 
 
 class GetIndividualBookingListForm(BaseBookingListForm):

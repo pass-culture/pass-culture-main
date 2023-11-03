@@ -5,9 +5,9 @@ import typing
 import pytest
 
 from pcapi.core.permissions import factories as perm_factories
-import pcapi.core.permissions.models as perm_models
+from pcapi.core.permissions import models as perm_models
 from pcapi.core.users import factories as users_factories
-import pcapi.core.users.models as users_models
+from pcapi.core.users import models as users_models
 
 from . import base
 

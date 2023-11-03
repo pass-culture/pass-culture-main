@@ -3,7 +3,7 @@ import typing
 
 from flask_wtf import FlaskForm
 
-import pcapi.utils.email as email_utils
+from pcapi.utils import email as email_utils
 
 
 class PCForm(FlaskForm):

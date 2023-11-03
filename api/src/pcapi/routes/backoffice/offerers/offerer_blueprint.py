@@ -26,7 +26,7 @@ from pcapi.core.users import models as users_models
 from pcapi.models import db
 from pcapi.models.validation_status_mixin import ValidationStatus
 from pcapi.routes.backoffice.forms.search import TypeOptions
-import pcapi.utils.regions as regions_utils
+from pcapi.utils import regions as regions_utils
 
 from . import forms as offerer_forms
 from . import serialization

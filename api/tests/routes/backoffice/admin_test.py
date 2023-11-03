@@ -3,8 +3,8 @@ import datetime
 from flask import url_for
 import pytest
 
+from pcapi.core.history import factories as history_factories
 from pcapi.core.history import models as history_models
-import pcapi.core.history.factories as history_factories
 from pcapi.core.permissions import factories as perm_factories
 from pcapi.core.permissions import models as perm_models
 from pcapi.core.testing import assert_num_queries

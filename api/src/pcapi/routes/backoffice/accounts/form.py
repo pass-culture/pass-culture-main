@@ -1,8 +1,8 @@
 from flask_wtf import FlaskForm
 import wtforms
 
-import pcapi.core.fraud.models as fraud_models
-import pcapi.core.users.models as users_models
+from pcapi.core.fraud import models as fraud_models
+from pcapi.core.users import models as users_models
 from pcapi.routes.backoffice import filters
 from pcapi.routes.backoffice.forms import fields
 from pcapi.routes.backoffice.forms import search

@@ -10,15 +10,15 @@ import sqlalchemy as sa
 
 from pcapi.connectors.dms.models import GraphQLApplicationStates
 from pcapi.core.educational import models as educational_models
-import pcapi.core.history.models as history_models
+from pcapi.core.history import models as history_models
 from pcapi.core.offerers import api as offerers_api
 from pcapi.core.offerers import models as offerers_models
-import pcapi.core.users.models as users_models
+from pcapi.core.users import models as users_models
 from pcapi.models import db
 from pcapi.models.api_errors import ApiErrors
 from pcapi.models.validation_status_mixin import ValidationStatus
+from pcapi.utils import email as email_utils
 from pcapi.utils.clean_accents import clean_accents
-import pcapi.utils.email as email_utils
 from pcapi.utils.regions import get_department_codes_for_region
 
 

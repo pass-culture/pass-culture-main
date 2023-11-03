@@ -13,13 +13,13 @@ from pcapi.core.finance import factories as finance_factories
 from pcapi.core.finance import models as finance_models
 from pcapi.core.history import factories as history_factories
 from pcapi.core.history import models as history_models
-import pcapi.core.mails.testing as mails_testing
+from pcapi.core.mails import testing as mails_testing
 from pcapi.core.mails.transactional import sendinblue_template_ids
+from pcapi.core.offerers import factories as offerers_factories
 from pcapi.core.offerers import models as offerers_models
-import pcapi.core.offerers.factories as offerers_factories
 from pcapi.core.offers import factories as offers_factories
 from pcapi.core.offers import models as offers_models
-import pcapi.core.permissions.models as perm_models
+from pcapi.core.permissions import models as perm_models
 from pcapi.core.testing import assert_num_queries
 from pcapi.core.users import factories as users_factories
 from pcapi.models import db

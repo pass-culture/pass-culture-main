@@ -10,13 +10,13 @@ from flask_sqlalchemy import BaseQuery
 import sqlalchemy as sa
 from werkzeug.exceptions import NotFound
 
-import pcapi.core.fraud.models as fraud_models
-import pcapi.core.history.api as history_api
-import pcapi.core.history.models as history_models
-import pcapi.core.permissions.models as perm_models
+from pcapi.core.fraud import models as fraud_models
+from pcapi.core.history import api as history_api
+from pcapi.core.history import models as history_models
+from pcapi.core.permissions import models as perm_models
+from pcapi.core.users import constants as users_constants
+from pcapi.core.users import models as users_models
 from pcapi.core.users.api import suspend_account
-import pcapi.core.users.constants as users_constants
-import pcapi.core.users.models as users_models
 from pcapi.repository import repository
 from pcapi.routes.backoffice import utils
 

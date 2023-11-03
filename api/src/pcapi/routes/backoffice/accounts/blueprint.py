@@ -19,15 +19,14 @@ from werkzeug.exceptions import NotFound
 from pcapi.core.bookings import models as bookings_models
 from pcapi.core.external.attributes import api as external_attributes_api
 from pcapi.core.finance import api as finance_api
-import pcapi.core.fraud.api as fraud_api
-import pcapi.core.fraud.models as fraud_models
+from pcapi.core.fraud import api as fraud_api
+from pcapi.core.fraud import models as fraud_models
 from pcapi.core.history import api as history_api
 from pcapi.core.history import models as history_models
 from pcapi.core.offerers import models as offerers_models
 from pcapi.core.offers import models as offers_models
 from pcapi.core.permissions import models as perm_models
-from pcapi.core.subscription import models as subscription_models
-import pcapi.core.subscription.api as subscription_api
+from pcapi.core.subscription import api as subscription_api
 from pcapi.core.subscription.models import SubscriptionItemStatus
 from pcapi.core.subscription.models import SubscriptionStep
 from pcapi.core.subscription.phone_validation import api as phone_validation_api
@@ -37,7 +36,7 @@ from pcapi.core.users import constants as users_constants
 from pcapi.core.users import exceptions as users_exceptions
 from pcapi.core.users import models as users_models
 from pcapi.core.users import utils as users_utils
-import pcapi.core.users.email.update as email_update
+from pcapi.core.users.email import update as email_update
 from pcapi.core.users.models import EligibilityType
 from pcapi.models import db
 from pcapi.models.beneficiary_import import BeneficiaryImport
@@ -48,7 +47,7 @@ from pcapi.routes.backoffice import search_utils
 from pcapi.routes.backoffice import utils
 from pcapi.routes.backoffice.forms import empty as empty_forms
 from pcapi.routes.backoffice.users import forms as user_forms
-import pcapi.utils.email as email_utils
+from pcapi.utils import email as email_utils
 
 from . import form as account_forms
 from . import serialization
@@ -209,8 +208,7 @@ def render_public_account_details(
         subscription_items = [
             item
             for item in eligibility_history[user_current_eligibility.value].subscriptionItems
-            if item.type == subscription_models.SubscriptionStep.IDENTITY_CHECK.value
-            and item.status != subscription_models.SubscriptionItemStatus.OK.value
+            if item.type == SubscriptionStep.IDENTITY_CHECK.value and item.status != SubscriptionItemStatus.OK.value
         ]
 
         if eligibility_history[user_current_eligibility.value].idCheckHistory and len(subscription_items) > 0:

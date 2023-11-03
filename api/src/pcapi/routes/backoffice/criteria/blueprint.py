@@ -8,8 +8,8 @@ from flask import request
 from flask import url_for
 import sqlalchemy as sa
 
-import pcapi.core.criteria.models as criteria_models
-import pcapi.core.permissions.models as perm_models
+from pcapi.core.criteria import models as criteria_models
+from pcapi.core.permissions import models as perm_models
 from pcapi.models import db
 from pcapi.routes.backoffice import search_utils
 from pcapi.routes.backoffice import utils
