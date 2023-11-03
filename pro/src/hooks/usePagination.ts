@@ -32,7 +32,7 @@ export const usePaginationWithSearchParams = (
   totalCount: number = 0
 ) => {
   const [searchParams, setSearchParams] = useSearchParams()
-  const page = Number(searchParams.get('page'))
+  const page = Number(searchParams.get('page')) || 1
 
   const pageCount = Math.ceil(totalCount / itemsPerPage)
 
