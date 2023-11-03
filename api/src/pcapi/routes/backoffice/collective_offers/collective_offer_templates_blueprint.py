@@ -210,7 +210,7 @@ def _batch_validate_or_reject_collective_offer_templates(
             "Seules les offres collectives vitrines en attente peuvent être validées"
             if validation is OfferValidationStatus.APPROVED
             else "Seules les offres collectives vitrines en attente peuvent être rejetées",
-            "danger",
+            "warning",
         )
         return False
 
@@ -267,7 +267,7 @@ def _batch_validate_or_reject_collective_offer_templates(
             f"Une erreur est survenue lors du rejet des offres collectives vitrines : {', '.join(map(str, collective_offer_template_update_failed_ids))}"
             if validation is OfferValidationStatus.APPROVED
             else f"Une erreur est survenue lors du rejet des offres collectives vitrines : {', '.join(map(str, collective_offer_template_update_failed_ids))}"
-            "danger",
+            "warning",
         )
 
     return True
@@ -307,7 +307,7 @@ def batch_validate_collective_offer_templates() -> utils.BackofficeResponse:
     form = empty_forms.BatchForm()
 
     if not form.validate():
-        flash("L'un des identifiants sélectionnés est invalide", "danger")
+        flash("L'un des identifiants sélectionnés est invalide", "warning")
         return redirect(
             request.referrer or url_for("backoffice_web.collective_offer_template.list_collective_offer_templates"),
             303,
@@ -325,7 +325,7 @@ def batch_reject_collective_offer_templates() -> utils.BackofficeResponse:
     form = empty_forms.BatchForm()
 
     if not form.validate():
-        flash("L'un des identifiants sélectionnés est invalide", "danger")
+        flash("L'un des identifiants sélectionnés est invalide", "warning")
         return redirect(
             request.referrer or url_for("backoffice_web.collective_offer_template.list_collective_offer_templates"),
             303,

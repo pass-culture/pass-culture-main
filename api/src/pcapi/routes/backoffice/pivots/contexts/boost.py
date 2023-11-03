@@ -43,7 +43,7 @@ class BoostContext(PivotContext):
     def create_pivot(cls, form: forms.EditBoostForm) -> bool:
         boost_provider = providers_repository.get_provider_by_local_class("BoostStocks")
         if not boost_provider:
-            flash("Provider Boost n'existe pas.", "danger")
+            flash("Provider Boost n'existe pas.", "warning")
             return False
 
         venue_id = form.venue_id.data[0]
@@ -54,11 +54,11 @@ class BoostContext(PivotContext):
 
         venue = offerers_models.Venue.query.get(venue_id)
         if not venue:
-            flash(f"Lieu id={venue_id} n'existe pas", "danger")
+            flash(f"Lieu id={venue_id} n'existe pas", "warning")
             return False
         pivot = providers_models.CinemaProviderPivot.query.filter_by(venueId=venue_id).one_or_none()
         if pivot:
-            flash(f"Des identifiants cinéma existent déjà pour ce lieu id={venue_id}", "danger")
+            flash(f"Des identifiants cinéma existent déjà pour ce lieu id={venue_id}", "warning")
             return False
 
         cinema_provider_pivot = providers_models.CinemaProviderPivot(
@@ -100,7 +100,7 @@ class BoostContext(PivotContext):
         ).one_or_none()
 
         if venue_provider:
-            flash("Ce lieu est toujours synchronisé avec Boost, vous ne pouvez pas supprimer ce pivot Boost", "danger")
+            flash("Ce lieu est toujours synchronisé avec Boost, vous ne pouvez pas supprimer ce pivot Boost", "warning")
             return False
 
         db.session.delete(pivot)
@@ -118,4 +118,4 @@ class BoostContext(PivotContext):
                 "Network error on checking Boost API information",
                 extra={"exc": exc, "username": pivot.username},
             )
-        flash("Connexion à l'API KO.", "danger")
+        flash("Connexion à l'API KO.", "warning")

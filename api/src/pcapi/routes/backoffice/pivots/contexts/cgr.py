@@ -52,11 +52,11 @@ class CGRContext(PivotContext):
 
         venue = offerers_models.Venue.query.get(venue_id)
         if not venue:
-            flash(f"Lieu id={venue_id} n'existe pas", "danger")
+            flash(f"Lieu id={venue_id} n'existe pas", "warning")
             return False
         pivot = providers_models.CinemaProviderPivot.query.filter_by(venueId=venue.id).one_or_none()
         if pivot:
-            flash(f"Des identifiants cinéma existent déjà pour ce lieu id={venue.id}", "danger")
+            flash(f"Des identifiants cinéma existent déjà pour ce lieu id={venue.id}", "warning")
             return False
 
         cinema_provider_pivot = providers_models.CinemaProviderPivot(
@@ -79,7 +79,7 @@ class CGRContext(PivotContext):
         pivot = providers_models.CGRCinemaDetails.query.get_or_404(pivot_id)
 
         if pivot.cinemaProviderPivot is None:
-            flash("Le provider n'a pas de pivot", "danger")  #  Demander le message le mieux adapté
+            flash("Le provider n'a pas de pivot", "warning")  #  Demander le message le mieux adapté
             return False
         pivot.cinemaProviderPivot.idAtProvider = form.cinema_id.data
         pivot.cinemaUrl = form.cinema_url.data.rstrip("/")
@@ -102,7 +102,7 @@ class CGRContext(PivotContext):
         ).one_or_none()
 
         if venue_provider:
-            flash("Ce lieu est toujours synchronisé avec CGR, Vous ne pouvez pas supprimer ce pivot CGR", "danger")
+            flash("Ce lieu est toujours synchronisé avec CGR, Vous ne pouvez pas supprimer ce pivot CGR", "warning")
             return False
         db.session.delete(pivot)
         db.session.delete(cinema_provider_pivot)
@@ -117,5 +117,5 @@ class CGRContext(PivotContext):
         # it could be an unexpected XML parsing error
         except Exception as exc:  # pylint: disable=broad-except
             logger.exception("Error while checking CGR API information", extra={"exc": exc})
-        flash("Connexion à l'API KO.", "danger")
+        flash("Connexion à l'API KO.", "warning")
         return None
