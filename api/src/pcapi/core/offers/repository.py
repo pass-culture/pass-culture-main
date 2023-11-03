@@ -725,6 +725,12 @@ def get_offer_by_id(offer_id: int) -> models.Offer:
         raise exceptions.OfferNotFound()
 
 
+def offer_has_stocks(offer_id: int) -> bool:
+    return db.session.query(
+        models.Stock.query.filter(models.Stock.offerId == offer_id, sa.not_(models.Stock.isSoftDeleted)).exists()
+    ).scalar()
+
+
 def _order_stocks_by(
     query: flask_sqlalchemy.BaseQuery, order_by: StocksOrderedBy, order_by_desc: bool
 ) -> flask_sqlalchemy.BaseQuery:
