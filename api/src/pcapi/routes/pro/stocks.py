@@ -136,6 +136,8 @@ def upsert_stocks(
             {"stocks": ["La date limite de réservation ne peut être postérieure à la date de début de l'évènement"]},
             status_code=400,
         )
+    except offers_exceptions.OfferEditionBaseException as error:
+        raise ApiErrors(error.errors, status_code=400)
 
     offers_api.handle_stocks_edition(edited_stocks_with_update_info)
 
@@ -159,7 +161,8 @@ def delete_stock(stock_id: int) -> serialization.StockIdResponseModel:
 
     offerer_id = stock.offer.venue.managingOffererId
     check_user_has_access_to_offerer(current_user, offerer_id)
-
-    offers_api.delete_stock(stock)
-
+    try:
+        offers_api.delete_stock(stock)
+    except offers_exceptions.OfferEditionBaseException as error:
+        raise ApiErrors(error.errors, status_code=400)
     return serialization.StockIdResponseModel.from_orm(stock)

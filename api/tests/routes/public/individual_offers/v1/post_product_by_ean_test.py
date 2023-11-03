@@ -188,6 +188,64 @@ class PostProductByEanTest:
         assert stock.quantity == 2
         assert stock.price == decimal.Decimal("12.34")
 
+    @freezegun.freeze_time("2022-01-01 12:00:00")
+    def test_update_multiple_stocks_with_one_rejected(self, client):
+        venue_data = {
+            "audioDisabilityCompliant": True,
+            "mentalDisabilityCompliant": False,
+            "motorDisabilityCompliant": True,
+            "visualDisabilityCompliant": False,
+        }
+        venue, _ = utils.create_offerer_provider_linked_to_venue(venue_data)
+        cd_product = offers_factories.ThingProductFactory(
+            subcategoryId=subcategories.SUPPORT_PHYSIQUE_MUSIQUE_CD.id, extraData={"ean": "1234567890123"}
+        )
+        book_product = offers_factories.ThingProductFactory(
+            subcategoryId=subcategories.LIVRE_PAPIER.id, extraData={"ean": "1234527890123"}
+        )
+
+        cd_offer = offers_factories.ThingOfferFactory(product=cd_product, venue=venue, extraData=cd_product.extraData)
+        book_offer = offers_factories.ThingOfferFactory(
+            product=book_product,
+            venue=venue,
+            extraData=book_product.extraData,
+            validation=offers_models.OfferValidationStatus.REJECTED,
+        )
+
+        cd_stock = offers_factories.ThingStockFactory(offer=cd_offer, quantity=10, price=100)
+        book_stock = offers_factories.ThingStockFactory(offer=book_offer, quantity=10, price=100)
+
+        response = client.with_explicit_token(offerers_factories.DEFAULT_CLEAR_API_KEY).post(
+            "/public/offers/v1/products/ean",
+            json={
+                "location": {"type": "physical", "venueId": venue.id},
+                "products": [
+                    {
+                        "ean": cd_product.extraData["ean"],
+                        "stock": {
+                            "bookingLimitDatetime": "2022-01-01T16:00:00+04:00",
+                            "price": 1234,
+                            "quantity": 0,
+                        },
+                    },
+                    {
+                        "ean": book_product.extraData["ean"],
+                        "stock": {
+                            "bookingLimitDatetime": "2022-01-01T16:00:00+04:00",
+                            "price": 2345,
+                            "quantity": 25,
+                        },
+                    },
+                ],
+            },
+        )
+
+        assert response.status_code == 204
+        assert cd_stock.quantity == 0
+        assert cd_stock.price == decimal.Decimal("12.34")
+        assert book_stock.quantity == 10
+        assert book_stock.price == decimal.Decimal("100.00")
+
     @mock.patch("pcapi.tasks.sendinblue_tasks.update_sib_pro_attributes_task")
     @freezegun.freeze_time("2022-01-01 12:00:00")
     def test_valid_ean_without_task_autoflush(self, update_sib_pro_task_mock, client):

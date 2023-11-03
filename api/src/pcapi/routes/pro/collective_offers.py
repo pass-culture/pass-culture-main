@@ -279,6 +279,8 @@ def edit_collective_offer(
             {"code": "EDUCATIONAL_DOMAIN_NOT_FOUND"},
             status_code=404,
         )
+    except offers_exceptions.OfferEditionBaseException as error:
+        raise ApiErrors(error.errors, status_code=400)
 
     offer = educational_api_offer.get_collective_offer_by_id(offer_id)
     if offer.template and (not offer.template.domains or not offer.template.interventionArea):
@@ -367,6 +369,8 @@ def edit_collective_offer_template(
             {"code": "EDUCATIONAL_DOMAIN_NOT_FOUND"},
             status_code=404,
         )
+    except offers_exceptions.OfferEditionBaseException as error:
+        raise ApiErrors(error.errors, status_code=400)
     offer = educational_api_offer.get_collective_offer_template_by_id(offer_id)
     return collective_offers_serialize.GetCollectiveOfferTemplateResponseModel.from_orm(offer)
 
