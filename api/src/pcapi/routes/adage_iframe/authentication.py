@@ -12,6 +12,7 @@ from pcapi.routes.adage_iframe.serialization.adage_authentication import (
 from pcapi.routes.adage_iframe.serialization.adage_authentication import AdageFrontRoles
 from pcapi.routes.adage_iframe.serialization.adage_authentication import AuthenticatedInformation
 from pcapi.routes.adage_iframe.serialization.adage_authentication import AuthenticatedResponse
+from pcapi.routes.adage_iframe.serialization.adage_authentication import get_offers_count
 from pcapi.routes.adage_iframe.serialization.redactor import RedactorPreferences
 from pcapi.serialization.decorator import spectree_serialize
 
@@ -31,6 +32,7 @@ def authenticate(authenticated_information: AuthenticatedInformation) -> Authent
         redactor = _get_redactor(authenticated_information)
         preferences = _get_preferences(redactor)
         favorites_count = _get_favorites_count(redactor)
+        offer_count = get_offers_count(authenticated_information)
 
         return AuthenticatedResponse(
             role=AdageFrontRoles.REDACTOR if institution else AdageFrontRoles.READONLY,
@@ -43,6 +45,7 @@ def authenticate(authenticated_information: AuthenticatedInformation) -> Authent
             lat=authenticated_information.lat,
             lon=authenticated_information.lon,
             favoritesCount=favorites_count,
+            offersCount=offer_count,
         )
     return AuthenticatedResponse(role=AdageFrontRoles.READONLY)
 
