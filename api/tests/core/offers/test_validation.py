@@ -160,7 +160,7 @@ class CheckStockIsDeletableTest:
         offer = offers_factories.OfferFactory(validation=OfferValidationStatus.PENDING)
         stock = offers_factories.StockFactory(offer=offer)
 
-        with pytest.raises(ApiErrors) as error:
+        with pytest.raises(exceptions.RejectedOrPendingOfferNotEditable) as error:
             validation.check_stock_is_deletable(stock)
 
         assert error.value.errors["global"] == [
@@ -233,12 +233,8 @@ class CheckStockIsUpdatableTest:
         offer = offers_factories.OfferFactory(validation=OfferValidationStatus.PENDING)
         stock = offers_factories.StockFactory(offer=offer)
 
-        with pytest.raises(ApiErrors) as error:
+        with pytest.raises(exceptions.RejectedOrPendingOfferNotEditable):
             validation.check_stock_is_updatable(stock)
-
-        assert error.value.errors["global"] == [
-            "Les offres refusées ou en attente de validation ne sont pas modifiables"
-        ]
 
     def test_offer_from_non_allocine_provider(self):
         provider = providers_factories.APIProviderFactory()
@@ -342,7 +338,7 @@ class CheckValidationStatusTest:
     def test_pending_offer(self):
         pending_validation_offer = offers_factories.OfferFactory(validation=OfferValidationStatus.PENDING)
 
-        with pytest.raises(ApiErrors) as error:
+        with pytest.raises(exceptions.RejectedOrPendingOfferNotEditable) as error:
             validation.check_validation_status(pending_validation_offer)
 
         assert error.value.errors["global"] == [
@@ -352,7 +348,7 @@ class CheckValidationStatusTest:
     def test_rejected_offer(self):
         rejected_offer = offers_factories.OfferFactory(validation=OfferValidationStatus.REJECTED)
 
-        with pytest.raises(ApiErrors) as error:
+        with pytest.raises(exceptions.RejectedOrPendingOfferNotEditable) as error:
             validation.check_validation_status(rejected_offer)
 
         assert error.value.errors["global"] == [

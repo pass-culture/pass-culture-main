@@ -15,10 +15,10 @@ from pcapi.core.educational.api import stock as educational_api_stock
 from pcapi.core.educational.api.offer import unindex_expired_collective_offers
 from pcapi.core.educational.models import CollectiveBookingStatus
 from pcapi.core.educational.models import CollectiveStock
+from pcapi.core.offers import exceptions as offers_exceptions
 import pcapi.core.search.testing as search_testing
 from pcapi.core.testing import override_settings
 import pcapi.core.users.factories as users_factories
-from pcapi.models import api_errors
 from pcapi.models.offer_mixin import OfferValidationStatus
 from pcapi.routes.serialization import collective_stock_serialize
 
@@ -83,7 +83,7 @@ class CreateCollectiveOfferStocksTest:
         )
 
         # When
-        with pytest.raises(api_errors.ApiErrors) as error:
+        with pytest.raises(offers_exceptions.RejectedOrPendingOfferNotEditable) as error:
             educational_api_stock.create_collective_stock(stock_data=created_stock_data, user=user)
 
         # Then

@@ -349,7 +349,7 @@ def patch_offer(
                 withdrawalType=update_body.get("withdrawalType", offers_api.UNCHANGED),
                 shouldSendMail=update_body.get("shouldSendMail") or False,
             )
-    except exceptions.OfferCreationBaseException as error:
+    except (exceptions.OfferCreationBaseException, exceptions.OfferEditionBaseException) as error:
         raise api_errors.ApiErrors(error.errors, status_code=400)
 
     return offers_serialize.GetIndividualOfferResponseModel.from_orm(offer)

@@ -107,7 +107,7 @@ def post_event_offer(body: serialization.EventOfferCreation) -> serialization.Ev
 
             offers_api.publish_offer(created_offer, user=None)
 
-    except offers_exceptions.OfferCreationBaseException as error:
+    except (offers_exceptions.OfferCreationBaseException, offers_exceptions.OfferEditionBaseException) as error:
         raise api_errors.ApiErrors(error.errors, status_code=400)
 
     return serialization.EventOfferResponse.build_event_offer(created_offer)
@@ -241,7 +241,7 @@ def edit_event(event_id: int, body: serialization.EventOfferEdition) -> serializ
                 withdrawalDetails=update_body.get("withdrawal_details", offers_api.UNCHANGED),
                 **utils.compute_accessibility_edition_fields(update_body.get("accessibility")),
             )
-    except offers_exceptions.OfferCreationBaseException as error:
+    except (offers_exceptions.OfferCreationBaseException, offers_exceptions.OfferEditionBaseException) as error:
         raise api_errors.ApiErrors(error.errors, status_code=400)
 
     return serialization.EventOfferResponse.build_event_offer(offer)
@@ -421,7 +421,7 @@ def post_event_dates(event_id: int, body: serialization.DatesCreation) -> serial
                         creating_provider=current_api_key.provider,
                     )
                 )
-    except offers_exceptions.OfferCreationBaseException as error:
+    except (offers_exceptions.OfferCreationBaseException, offers_exceptions.OfferEditionBaseException) as error:
         raise api_errors.ApiErrors(error.errors, status_code=400)
 
     return serialization.PostDatesResponse(
@@ -597,7 +597,7 @@ def patch_event_date(
                 editing_provider=current_api_key.provider,
             )
         offers_api.handle_stocks_edition([(stock_to_edit, is_beginning_updated)])
-    except offers_exceptions.OfferCreationBaseException as error:
+    except (offers_exceptions.OfferCreationBaseException, offers_exceptions.OfferEditionBaseException) as error:
         raise api_errors.ApiErrors(error.errors, status_code=400)
     return serialization.DateResponse.build_date(edited_date)
 

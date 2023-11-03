@@ -258,9 +258,7 @@ def check_validation_status(
     offer: models.Offer | educational_models.CollectiveOffer | educational_models.CollectiveOfferTemplate,
 ) -> None:
     if offer.validation in (models.OfferValidationStatus.REJECTED, models.OfferValidationStatus.PENDING):
-        error = api_errors.ApiErrors()
-        error.add_error("global", "Les offres refusées ou en attente de validation ne sont pas modifiables")
-        raise error
+        raise exceptions.RejectedOrPendingOfferNotEditable()
 
 
 def check_offer_is_digital(offer: models.Offer) -> None:
