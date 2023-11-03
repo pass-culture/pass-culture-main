@@ -21,7 +21,6 @@
                     <b>Période couverte:</b> {{ second_last_cashflow_batch.cutoff | format_cutoff_date }}
                   </li>
                 </ul>
-
                 <div class="card-body pt-5">
                   <h5 class="card-title">{{ "Justificatifs en cours de génération" if is_task_already_running else "Prochains justificatifs générés" }}</h5>
                 </div>
@@ -49,10 +48,11 @@
                     {% if number_of_invoices_left_to_generate == 0 %}
                       Génération du fichier CSV en cours
                     {% else %}
-                      Il reste {{ number_of_invoices_left_to_generate }} justificatifs sur {{ number_of_invoices_to_generate }} à générer 
+                      Il reste {{ number_of_invoices_left_to_generate }} justificatifs sur {{ number_of_invoices_to_generate }} à générer
                     {% endif %}
                   {% endif %}
-                  <button type="button" disabled
+                  <button type="button"
+                          disabled
                           class="btn btn-outline-primary"
                           data-bs-toggle="modal"
                           data-bs-target="#generate-invoices-modal">Une tâche est déjà en cours pour générer les justificatifs</button>
@@ -68,17 +68,18 @@
                   </div>
                 {% else %}
                   <div class="card-body">
-                    <button type="button" disabled
+                    <button type="button"
+                            disabled
                             class="btn btn-outline-primary"
                             data-bs-toggle="modal"
                             data-bs-target="#generate-invoices-modal">Il n'y a pas de justificatifs à générer pour le moment</button>
                   </div>
                 {% endif %}
               {% endif %}
-              </div>
             </div>
           </div>
         </div>
       </div>
     </div>
-  {% endblock page %}
+  </div>
+{% endblock page %}
