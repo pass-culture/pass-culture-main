@@ -5,13 +5,13 @@ from flask import url_for
 import pytest
 
 from pcapi.core.categories import subcategories_v2 as subcategories
-import pcapi.core.criteria.factories as criteria_factories
-import pcapi.core.criteria.models as criteria_models
-import pcapi.core.offerers.factories as offerers_factories
+from pcapi.core.criteria import factories as criteria_factories
+from pcapi.core.criteria import models as criteria_models
+from pcapi.core.offerers import factories as offerers_factories
 from pcapi.core.offers import factories as offers_factories
-import pcapi.core.offers.models as offers_models
+from pcapi.core.offers import models as offers_models
 from pcapi.core.offers.models import Offer
-import pcapi.core.permissions.models as perm_models
+from pcapi.core.permissions import models as perm_models
 from pcapi.core.providers import factories as providers_factories
 from pcapi.core.testing import assert_num_queries
 from pcapi.models.offer_mixin import OfferValidationStatus

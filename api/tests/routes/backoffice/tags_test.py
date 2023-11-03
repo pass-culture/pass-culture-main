@@ -5,10 +5,10 @@ from datetime import timedelta
 from flask import url_for
 import pytest
 
-import pcapi.core.criteria.factories as criteria_factories
-import pcapi.core.criteria.models as criteria_models
-import pcapi.core.offers.factories as offers_factories
-import pcapi.core.permissions.models as perm_models
+from pcapi.core.criteria import factories as criteria_factories
+from pcapi.core.criteria import models as criteria_models
+from pcapi.core.offers import factories as offers_factories
+from pcapi.core.permissions import models as perm_models
 from pcapi.core.testing import assert_num_queries
 from pcapi.models import db
 

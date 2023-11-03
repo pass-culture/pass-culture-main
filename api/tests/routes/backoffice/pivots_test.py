@@ -8,7 +8,7 @@ from pcapi.core.offerers import factories as offerers_factories
 from pcapi.core.permissions import models as perm_models
 from pcapi.core.providers import factories as providers_factories
 from pcapi.core.providers import models as providers_models
-import pcapi.core.providers.repository as providers_repository
+from pcapi.core.providers import repository as providers_repository
 from pcapi.core.testing import assert_num_queries
 from pcapi.models import db
 

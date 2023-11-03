@@ -9,22 +9,21 @@ from unittest.mock import patch
 from flask import url_for
 import pytest
 
-import pcapi.core.bookings.factories as bookings_factories
+from pcapi.core.bookings import factories as bookings_factories
 from pcapi.core.criteria import factories as criteria_factories
 from pcapi.core.criteria import models as criteria_models
 from pcapi.core.educational import factories as educational_factories
 from pcapi.core.finance import factories as finance_factories
 from pcapi.core.finance import models as finance_models
+from pcapi.core.history import factories as history_factories
 from pcapi.core.history import models as history_models
-import pcapi.core.history.factories as history_factories
 from pcapi.core.mails import testing as mails_testing
 from pcapi.core.mails.transactional.sendinblue_template_ids import TransactionalEmail
-import pcapi.core.offerers.factories as offerers_factories
-import pcapi.core.offerers.models as offerers_models
-from pcapi.core.offerers.models import VenueTypeCode
-import pcapi.core.permissions.models as perm_models
-import pcapi.core.providers.factories as providers_factories
-import pcapi.core.providers.models as providers_models
+from pcapi.core.offerers import factories as offerers_factories
+from pcapi.core.offerers import models as offerers_models
+from pcapi.core.permissions import models as perm_models
+from pcapi.core.providers import factories as providers_factories
+from pcapi.core.providers import models as providers_models
 from pcapi.core.testing import assert_num_queries
 from pcapi.core.testing import override_features
 from pcapi.core.users import factories as users_factories
@@ -85,14 +84,14 @@ def venue_with_no_siret_fixture(offerer) -> offerers_models.Venue:
 def venues_fixture(criteria) -> list[offerers_models.Venue]:
     return [
         offerers_factories.VenueFactory(
-            venueTypeCode=VenueTypeCode.MOVIE,
+            venueTypeCode=offerers_models.VenueTypeCode.MOVIE,
             venueLabelId=offerers_factories.VenueLabelFactory(label="Cinéma d'art et d'essai").id,
             criteria=criteria[:2],
             postalCode="82000",
             isPermanent=True,
         ),
         offerers_factories.VenueFactory(
-            venueTypeCode=VenueTypeCode.GAMES,
+            venueTypeCode=offerers_models.VenueTypeCode.GAMES,
             venueLabelId=offerers_factories.VenueLabelFactory(label="Scènes conventionnées").id,
             criteria=criteria[2:],
             postalCode="45000",
@@ -121,7 +120,7 @@ class ListVenuesTest(GetEndpointHelper):
 
     def test_list_venues_by_type(self, authenticated_client, venues):
         with assert_num_queries(self.expected_num_queries):
-            response = authenticated_client.get(url_for(self.endpoint, type=VenueTypeCode.MOVIE.name))
+            response = authenticated_client.get(url_for(self.endpoint, type=offerers_models.VenueTypeCode.MOVIE.name))
             assert response.status_code == 200
 
         rows = html_parser.extract_table_rows(response.data)
@@ -210,11 +209,13 @@ class ListVenuesTest(GetEndpointHelper):
     )
     def test_list_venues_by_order(self, authenticated_client, row_key, order):
         venues = [
-            offerers_factories.VenueFactory(venueTypeCode=VenueTypeCode.MOVIE),
-            offerers_factories.VenueFactory(venueTypeCode=VenueTypeCode.MOVIE),
+            offerers_factories.VenueFactory(venueTypeCode=offerers_models.VenueTypeCode.MOVIE),
+            offerers_factories.VenueFactory(venueTypeCode=offerers_models.VenueTypeCode.MOVIE),
         ]
         with assert_num_queries(self.expected_num_queries):
-            response = authenticated_client.get(url_for(self.endpoint, order=order, type=VenueTypeCode.MOVIE.name))
+            response = authenticated_client.get(
+                url_for(self.endpoint, order=order, type=offerers_models.VenueTypeCode.MOVIE.name)
+            )
             assert response.status_code == 200
 
         rows = html_parser.extract_table_rows(response.data)

@@ -5,10 +5,10 @@ from flask import flash
 
 from pcapi import settings
 from pcapi.connectors import cine_digital_service
-import pcapi.core.external_bookings.cds.exceptions as cds_exceptions
-import pcapi.core.offerers.models as offerers_models
-import pcapi.core.providers.models as providers_models
-import pcapi.core.providers.repository as providers_repository
+from pcapi.core.external_bookings.cds import exceptions as cds_exceptions
+from pcapi.core.offerers import models as offerers_models
+from pcapi.core.providers import models as providers_models
+from pcapi.core.providers import repository as providers_repository
 from pcapi.models import db
 from pcapi.utils import requests
 

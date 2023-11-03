@@ -1,15 +1,15 @@
 from flask import url_for
 import pytest
 
-import pcapi.core.bookings.factories as bookings_factories
+from pcapi.core.bookings import factories as bookings_factories
 import pcapi.core.bookings.models as bookings_models
-import pcapi.core.fraud.factories as fraud_factories
-import pcapi.core.fraud.models as fraud_models
-import pcapi.core.history.factories as history_factories
-import pcapi.core.history.models as history_models
-import pcapi.core.permissions.models as perm_models
+from pcapi.core.fraud import factories as fraud_factories
+from pcapi.core.fraud import models as fraud_models
+from pcapi.core.history import factories as history_factories
+from pcapi.core.history import models as history_models
+from pcapi.core.permissions import models as perm_models
 from pcapi.core.testing import assert_num_queries
-import pcapi.core.users.factories as users_factories
+from pcapi.core.users import factories as users_factories
 from pcapi.models import db
 from pcapi.routes.backoffice.fraud.blueprint import _blacklist_domain_name
 

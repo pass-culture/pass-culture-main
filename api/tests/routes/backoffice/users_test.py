@@ -5,7 +5,7 @@ from pcapi.core.bookings import factories as bookings_factories
 from pcapi.core.bookings import models as bookings_models
 from pcapi.core.history import models as history_models
 from pcapi.core.offerers import factories as offerers_factories
-import pcapi.core.permissions.models as perm_models
+from pcapi.core.permissions import models as perm_models
 from pcapi.core.testing import assert_num_queries
 from pcapi.core.users import constants as users_constants
 from pcapi.core.users import factories as users_factories

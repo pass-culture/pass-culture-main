@@ -5,8 +5,8 @@ import pytest
 
 from pcapi import settings
 from pcapi.core.testing import override_settings
-import pcapi.core.users.factories as users_factories
-import pcapi.core.users.models as users_models
+from pcapi.core.users import factories as users_factories
+from pcapi.core.users import models as users_models
 
 from tests.routes.backoffice.helpers import html_parser
 from tests.routes.backoffice.helpers import post as post_endpoint_helper

@@ -13,9 +13,9 @@ from pcapi.connectors.titelive import GtlIdError
 from pcapi.connectors.titelive import get_by_ean13
 from pcapi.core import search
 from pcapi.core.fraud import models as fraud_models
+from pcapi.core.offers import api as offers_api
 from pcapi.core.offers import exceptions as offers_exceptions
-from pcapi.core.offers.api import whitelist_product
-import pcapi.core.offers.models as offers_models
+from pcapi.core.offers import models as offers_models
 from pcapi.core.permissions import models as perm_models
 from pcapi.core.users import models as users_models
 from pcapi.models import db
@@ -102,7 +102,7 @@ def get_add_product_whitelist_confirmation_form(ean: str, title: str) -> utils.B
 def add_product_whitelist(ean: str, title: str) -> utils.BackofficeResponse:
     form = forms.OptionalCommentForm()
     try:
-        product = whitelist_product(ean)
+        product = offers_api.whitelist_product(ean)
     except offers_exceptions.TiteLiveAPINotExistingEAN:
         flash(f"L'EAN \"{ean}\" n'existe pas chez Titelive", "warning")
     else:

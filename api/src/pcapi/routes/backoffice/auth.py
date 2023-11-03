@@ -13,9 +13,9 @@ import werkzeug
 from pcapi import settings
 from pcapi.core.auth import api as auth_api
 from pcapi.core.permissions import models as perm_models
+from pcapi.core.users import api as users_api
 from pcapi.core.users import models as users_models
 from pcapi.core.users import repository as users_repository
-import pcapi.core.users.api as users_api
 from pcapi.core.users.backoffice import api as backoffice_api
 from pcapi.flask_app import oauth
 from pcapi.models import db

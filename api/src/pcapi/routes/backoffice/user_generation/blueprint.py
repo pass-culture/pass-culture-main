@@ -10,8 +10,8 @@ from pcapi import settings
 from pcapi.core import token as token_utils
 from pcapi.core.users import constants as users_constants
 from pcapi.core.users import exceptions as users_exceptions
+from pcapi.core.users import generator as users_generator
 from pcapi.core.users import models as users_models
-import pcapi.core.users.generator as users_generator
 from pcapi.routes.backoffice import blueprint
 from pcapi.routes.backoffice import utils
 

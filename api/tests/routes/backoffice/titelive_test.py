@@ -8,8 +8,8 @@ import pytest
 from pcapi.core.fraud import models as fraud_models
 from pcapi.core.fraud.factories import ProductWhitelistFactory
 from pcapi.core.offers import factories as offers_factories
-import pcapi.core.offers.models as offers_models
-import pcapi.core.permissions.models as perm_models
+from pcapi.core.offers import models as offers_models
+from pcapi.core.permissions import models as perm_models
 from pcapi.core.testing import assert_num_queries
 from pcapi.core.testing import override_settings
 from pcapi.models.offer_mixin import OfferValidationType
@@ -121,7 +121,7 @@ class AddProductWhitelistTest(PostEndpointHelper):
 
     @patch("pcapi.core.search.async_index_offer_ids")
     @patch("pcapi.routes.backoffice.titelive.blueprint.get_by_ean13")
-    @patch("pcapi.routes.backoffice.titelive.blueprint.whitelist_product")
+    @patch("pcapi.routes.backoffice.titelive.blueprint.offers_api.whitelist_product")
     @pytest.mark.parametrize(
         "form_data",
         [
@@ -214,7 +214,7 @@ class AddProductWhitelistTest(PostEndpointHelper):
         mocked_async_index_offer_ids.assert_called_once_with([o.id for o in offers_to_restore])
 
     @patch("pcapi.routes.backoffice.titelive.blueprint.get_by_ean13")
-    @patch("pcapi.routes.backoffice.titelive.blueprint.whitelist_product")
+    @patch("pcapi.routes.backoffice.titelive.blueprint.offers_api.whitelist_product")
     def test_create_whitelisted_product_if_not_existing(
         self, mock_whitelist_product, mock_get_by_ean13, authenticated_client, requests_mock
     ):
@@ -277,7 +277,7 @@ class AddProductWhitelistTest(PostEndpointHelper):
 
     @patch("pcapi.core.search.async_index_offer_ids")
     @patch("pcapi.routes.backoffice.titelive.blueprint.get_by_ean13")
-    @patch("pcapi.routes.backoffice.titelive.blueprint.whitelist_product")
+    @patch("pcapi.routes.backoffice.titelive.blueprint.offers_api.whitelist_product")
     def test_add_product_to_whitelist_should_set_validation_author(
         self, mock_whitelist_product, mock_get_by_ean13, mocked_async_index_offer_ids, authenticated_client, legit_user
     ):

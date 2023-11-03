@@ -7,7 +7,7 @@ import wtforms
 
 from pcapi.core.categories import categories
 from pcapi.core.categories import subcategories_v2
-import pcapi.core.offers.models as offers_models
+from pcapi.core.offers import models as offers_models
 from pcapi.domain.show_types import SHOW_SUB_TYPES_LABEL_BY_CODE
 from pcapi.routes.backoffice import autocomplete
 from pcapi.utils.clean_accents import clean_accents
