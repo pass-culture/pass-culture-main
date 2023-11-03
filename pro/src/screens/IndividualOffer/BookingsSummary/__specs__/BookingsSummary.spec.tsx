@@ -64,7 +64,7 @@ describe('BookingsSummary', () => {
     await waitForElementToBeRemoved(() => screen.queryAllByTestId('spinner'))
 
     expect(
-      screen.getByText('Vous n’avez pas encore de réservations')
+      screen.getByText('Vous n’avez aucune réservation pour le moment')
     ).toBeInTheDocument()
   })
 })

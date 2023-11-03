@@ -746,7 +746,7 @@ describe('components | BookingsRecap | Pro user', () => {
       name: 'Télécharger',
     })
     const informationMessage = await screen.findByText(
-      'Vous n’avez aucune réservation pour le moment'
+      'Aucune réservation trouvée pour votre recherche'
     )
 
     expect(displayBookingsButton).toBeDisabled()

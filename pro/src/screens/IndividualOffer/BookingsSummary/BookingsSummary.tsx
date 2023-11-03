@@ -58,11 +58,8 @@ export const BookingsSummaryScreen = ({
           className={styles['no-data-icon']}
           src={strokeBookingHold}
           alt=""
-          width="128"
           viewBox="0 0 200 156"
         />
-
-        <div>Vous n’avez pas encore de réservations</div>
       </div>
     )
   }
