@@ -1,4 +1,6 @@
+import cn from 'classnames'
 import React, { useEffect, useState } from 'react'
+import { useLocation } from 'react-router-dom'
 
 import { AdageFrontRoles } from 'apiClient/adage'
 import useNotification from 'hooks/useNotification'
@@ -21,6 +23,9 @@ export const AdageHeader = () => {
 
   const [isLoading, setIsLoading] = useState(true)
   const [institutionBudget, setInstitutionBudget] = useState(0)
+  const { pathname } = useLocation()
+
+  const isDiscoveryPage = pathname.includes('decouverte')
 
   const getEducationalInstitutionBudget = async () => {
     const { isOk, payload, message } =
@@ -41,7 +46,11 @@ export const AdageHeader = () => {
   }, [adageUser.role])
 
   return (
-    <div className={styles['adage-header']}>
+    <div
+      className={cn([styles['adage-header']], {
+        [styles['adage-header-discovery']]: isDiscoveryPage,
+      })}
+    >
       <nav className={styles['adage-header-nav']}>
         <div className={styles['adage-header-nav-brand']}>
           <SvgIcon
@@ -64,7 +73,7 @@ export const AdageHeader = () => {
           </div>
         )}
       </nav>
-      {adageUser.role !== AdageFrontRoles.READONLY && (
+      {adageUser.role !== AdageFrontRoles.READONLY && !isDiscoveryPage && (
         <div className={styles['adage-header-help']}>
           Besoin d'aide pour réserver des offres pass Culture ?
           <ButtonLink

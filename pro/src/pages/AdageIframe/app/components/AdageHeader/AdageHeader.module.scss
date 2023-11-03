@@ -7,6 +7,10 @@
   flex-direction: column;
   margin-bottom: rem.torem(32px);
 
+  &-discovery {
+    margin-bottom: 0;
+  }
+
   &-help {
     display: flex;
     box-shadow: inset 0 rem.torem(5px) rem.torem(3px) rem.torem(-3px)
