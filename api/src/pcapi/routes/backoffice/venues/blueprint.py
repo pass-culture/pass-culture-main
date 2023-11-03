@@ -621,7 +621,7 @@ def get_batch_edit_venues_form() -> utils.BackofficeResponse:
             )
             .all()
         )
-        criteria = list(set.intersection(*[set(venue.criteria) for venue in venues]))
+        criteria = set.intersection(*[set(venue.criteria) for venue in venues])
 
         if len(criteria) > 0:
             form.criteria.choices = [(criterion.id, criterion.name) for criterion in criteria]
@@ -668,7 +668,7 @@ def _update_venues_criteria(
     new_criteria = criteria_models.Criterion.query.filter(criteria_models.Criterion.id.in_(criteria_ids)).all()
 
     previous_criteria = set.intersection(*(set(venue.criteria) for venue in venues))
-    deleted_criteria = list(previous_criteria.difference(new_criteria))
+    deleted_criteria = previous_criteria.difference(new_criteria)
 
     changed_venues = []
 
