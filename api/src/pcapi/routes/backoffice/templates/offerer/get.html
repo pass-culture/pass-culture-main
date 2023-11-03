@@ -143,17 +143,17 @@
                     {{ offerer.address }}
                   </p>
                 {% endif %}
-                {% if offerer.first_user %}
+                {% if creator_phone_number %}
                   <p class="mb-1">
                     <span class="fw-bold">Numéro d'inscription :</span>
-                    {{ offerer.first_user.phoneNumber | empty_string_if_null }}
+                    {{ creator_phone_number | empty_string_if_null }}
                   </p>
                 {% endif %}
               </div>
             </div>
             <div class="col-4">
               <p class="mb-1">
-                <span class="fw-bold">Référencement Adage : {{ offerer.managedVenues | format_adage_referred }}</span>
+                <span class="fw-bold">Référencement Adage : {{ adage_information }}</span>
               </p>
               <p class="mb-1">
                 <span class="fw-bold">Présence CB dans les lieux :</span>
@@ -162,7 +162,7 @@
               </p>
               <p class="mb-1">
                 <span class="fw-bold">Tags structure :</span>
-                {{ offerer.tags | format_tag_object_list | safe }}
+                {{ offerer.tags | sort(attribute="label") | format_tag_object_list | safe }}
               </p>
             </div>
             <div class="col-4">

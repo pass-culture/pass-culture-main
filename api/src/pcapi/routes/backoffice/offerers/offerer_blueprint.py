@@ -1,3 +1,4 @@
+import datetime
 import typing
 
 from flask import flash
@@ -51,20 +52,86 @@ def _self_redirect(
     return redirect(url, code=303)
 
 
-def render_offerer_details(
-    offerer: offerers_models.Offerer, edit_offerer_form: offerer_forms.EditOffererForm | None = None
-) -> str:
-    basic_info = offerers_api.get_offerer_basic_info(offerer.id)
+def _load_offerer_data(offerer_id: int) -> sa.engine.Row:
+    bank_informations_query = sa.select(sa.func.jsonb_object_agg(sa.text("status"), sa.text("number"))).select_from(
+        sa.select(
+            sa.case(
+                (
+                    offerers_models.VenueReimbursementPointLink.id.is_(None)
+                    | sa.not_(
+                        offerers_models.VenueReimbursementPointLink.timespan.contains(datetime.datetime.utcnow())
+                    ),
+                    "ko",
+                ),
+                else_="ok",
+            ).label("status"),
+            sa.func.count(offerers_models.Venue.id).label("number"),
+        )
+        .select_from(offerers_models.Venue)
+        .outerjoin(
+            offerers_models.VenueReimbursementPointLink,
+            offerers_models.VenueReimbursementPointLink.venueId == offerers_models.Venue.id,
+        )
+        .filter(
+            offerers_models.Venue.managingOffererId == offerer_id,
+        )
+        .group_by(sa.text("status"))
+        .subquery()
+    )
 
-    if not basic_info:
+    adage_query = (
+        sa.select(
+            sa.func.concat(
+                sa.func.sum(sa.case([(offerers_models.Venue.adageId.is_not(None), 1)], else_=0)),
+                "/",
+                sa.func.count(offerers_models.Venue.id),
+            )
+        )
+        .select_from(offerers_models.Venue)
+        .filter(offerers_models.Venue.managingOffererId == offerers_models.Offerer.id)
+        .correlate(offerers_models.Offerer)
+        .scalar_subquery()
+    )
+
+    creator_user_offerer_id_query = (
+        db.session.query(offerers_models.UserOfferer.id)
+        .filter(offerers_models.UserOfferer.offererId == offerers_models.Offerer.id)
+        .order_by(offerers_models.UserOfferer.id.asc())
+        .limit(1)
+        .correlate(offerers_models.Offerer)
+        .scalar_subquery()
+    )
+
+    offerer_query = (
+        db.session.query(
+            offerers_models.Offerer,
+            bank_informations_query.scalar_subquery().label("bank_informations"),
+            adage_query.label("adage_information"),
+            users_models.User.phoneNumber.label("creator_phone_number"),  # type: ignore[attr-defined]
+        )
+        .filter(offerers_models.Offerer.id == offerer_id)
+        .outerjoin(offerers_models.UserOfferer, offerers_models.UserOfferer.id == creator_user_offerer_id_query)
+        .outerjoin(offerers_models.UserOfferer.user)
+        .options(
+            sa.orm.joinedload(offerers_models.Offerer.individualSubscription).load_only(
+                offerers_models.IndividualOffererSubscription.id
+            ),
+        )
+    )
+
+    return offerer_query.one_or_none()
+
+
+def _render_offerer_details(offerer_id: int, edit_offerer_form: offerer_forms.EditOffererForm | None = None) -> str:
+    row = _load_offerer_data(offerer_id)
+    offerer: offerers_models.Offerer = row.Offerer
+
+    if not row:
         raise NotFound()
 
-    bank_informations = basic_info.bank_informations or {}
-    bank_informations_ok = bank_informations.get("ok", 0)
-    bank_informations_ko = bank_informations.get("ko", 0)
-
+    bank_informations = row.bank_informations or {}
     bank_information_status = serialization.OffererBankInformationStatus(
-        ok=bank_informations_ok, ko=bank_informations_ko
+        ok=bank_informations.get("ok", 0), ko=bank_informations.get("ko", 0)
     )
     if not edit_offerer_form:
         edit_offerer_form = offerer_forms.EditOffererForm(
@@ -94,6 +161,8 @@ def render_offerer_details(
         search_dst=url_for("backoffice_web.search_pro"),
         offerer=offerer,
         region=regions_utils.get_region_name_from_postal_code(offerer.postalCode),
+        creator_phone_number=row.creator_phone_number,
+        adage_information=row.adage_information,
         bank_information_status=bank_information_status,
         edit_offerer_form=edit_offerer_form,
         suspension_form=offerer_forms.SuspendOffererForm(),
@@ -105,8 +174,6 @@ def render_offerer_details(
 
 @offerer_blueprint.route("", methods=["GET"])
 def get(offerer_id: int) -> utils.BackofficeResponse:
-    offerer = offerers_models.Offerer.query.get_or_404(offerer_id)
-
     if request.args.get("q") and request.args.get("search_rank"):
         utils.log_backoffice_tracking_data(
             event_name="ConsultCard",
@@ -120,7 +187,7 @@ def get(offerer_id: int) -> utils.BackofficeResponse:
             },
         )
 
-    return render_offerer_details(offerer)
+    return _render_offerer_details(offerer_id)
 
 
 @typing.no_type_check
@@ -252,7 +319,7 @@ def update_offerer(offerer_id: int) -> utils.BackofficeResponse:
             """
         ).format()
         flash(msg, "warning")
-        return render_offerer_details(offerer=offerer, edit_offerer_form=form), 400
+        return _render_offerer_details(offerer_id, edit_offerer_form=form), 400
 
     modified_info = offerers_api.update_offerer(
         offerer,

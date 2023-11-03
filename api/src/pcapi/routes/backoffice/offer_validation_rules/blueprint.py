@@ -38,6 +38,9 @@ def _get_offerers_data_for_rules(rules: list[offers_models.OfferValidationRule])
             ):
                 all_offerer_ids |= set(sub_rule.comparated["comparated"])
 
+    if not all_offerer_ids:
+        return {}
+
     offerers_from_rules = (
         offerers_models.Offerer.query.options(
             sa.orm.load_only(
@@ -57,12 +60,13 @@ def _get_offerers_data_for_rules(rules: list[offers_models.OfferValidationRule])
 def list_rules() -> utils.BackofficeResponse:
     form = forms.SearchRuleForm(formdata=utils.get_query_params())
 
-    base_query = (
+    query = (
         offers_models.OfferValidationRule.query.outerjoin(offers_models.OfferValidationSubRule)
         .options(
             sa.orm.joinedload(offers_models.OfferValidationRule.latestAuthor).load_only(
                 users_models.User.firstName, users_models.User.lastName, users_models.User.email
-            )
+            ),
+            sa.orm.contains_eager(offers_models.OfferValidationRule.subRules),
         )
         .order_by(offers_models.OfferValidationRule.name)
     )
@@ -73,11 +77,7 @@ def list_rules() -> utils.BackofficeResponse:
             400,
         )
 
-    if form.is_empty():
-        rules = base_query.all()
-
-    else:
-        query = base_query
+    if not form.is_empty():
         if form.q.data:
             search_query = clean_accents(form.q.data)
             split_search = f'"{clean_accents(form.q.data.lower())}"'
@@ -136,7 +136,7 @@ def list_rules() -> utils.BackofficeResponse:
                 )
             )
 
-        rules = query.distinct()
+    rules = query.all()
 
     offerer_dict = _get_offerers_data_for_rules(rules)
 

@@ -169,7 +169,7 @@ def _redirect_after_individual_booking_action() -> utils.BackofficeResponse:
 def get_individual_booking_csv_download() -> utils.BackofficeResponse:
     form = booking_forms.GetDownloadBookingsForm(formdata=utils.get_query_params())
     export_data = booking_repository.get_export(
-        user=current_user._get_current_object(),  # for tests to succeed, because current_user is actually a LocalProxy
+        user=current_user,
         booking_period=typing.cast(tuple[datetime.date, datetime.date], form.from_to_date.data),
         venue_id=form.venue.data,
         offer_type=OfferType.INDIVIDUAL_OR_DUO,
@@ -183,7 +183,7 @@ def get_individual_booking_csv_download() -> utils.BackofficeResponse:
 def get_individual_booking_xlsx_download() -> utils.BackofficeResponse:
     form = booking_forms.GetDownloadBookingsForm(formdata=utils.get_query_params())
     export_data = booking_repository.get_export(
-        user=current_user._get_current_object(),  # for tests to succeed, because current_user is actually a LocalProxy
+        user=current_user,
         booking_period=typing.cast(tuple[datetime.date, datetime.date], form.from_to_date.data),
         venue_id=form.venue.data,
         offer_type=OfferType.INDIVIDUAL_OR_DUO,

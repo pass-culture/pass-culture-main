@@ -5,6 +5,7 @@ import pytest
 
 from pcapi.core.criteria import factories as criteria_factories
 from pcapi.core.offerers import factories as offerers_factories
+from pcapi.core.testing import assert_num_queries
 
 
 pytestmark = [
@@ -14,11 +15,13 @@ pytestmark = [
 
 
 def _test_autocomplete(authenticated_client, endpoint: str, search_query: str, expected_texts: list[str]):
-    # when
-    response = authenticated_client.get(url_for(endpoint, q=search_query))
+    # user + session + data requested
+    expected_num_queries = 3 if len(search_query) >= 2 else 2
 
-    # then
-    assert response.status_code == 200
+    with assert_num_queries(expected_num_queries):
+        response = authenticated_client.get(url_for(endpoint, q=search_query))
+        assert response.status_code == 200
+
     items = response.json["items"]
     for item in items:
         assert isinstance(item["id"], int)
@@ -96,7 +99,6 @@ class AutocompleteCriteriaTest:
         ],
     )
     def test_autocomplete_criteria(self, authenticated_client, search_query, expected_texts):
-        # given
         criteria_factories.CriterionFactory(name="Bonne offre d'appel")
         criteria_factories.CriterionFactory(name="Mauvaise accroche", startDateTime=datetime.datetime(2023, 2, 22, 12))
         criteria_factories.CriterionFactory(name="Offre du moment")

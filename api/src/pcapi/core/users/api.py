@@ -1106,11 +1106,29 @@ def get_public_account_base_query() -> BaseQuery:
     return public_accounts
 
 
+# TODO (prouzet, 2023-11-02) This function should be moved in backoffice and use common _join_suspension_history()
 def search_pro_account(search_query: str, *_: typing.Any) -> BaseQuery:
     pro_accounts = models.User.query.filter(
         models.User.has_non_attached_pro_role.is_(True) | models.User.has_pro_role.is_(True)  # type: ignore [attr-defined]
     )
-    return _filter_user_accounts(pro_accounts, search_query)
+
+    return (
+        _filter_user_accounts(pro_accounts, search_query)
+        .outerjoin(
+            # Join only suspension actions to limit the number of fetched rows
+            history_models.ActionHistory,
+            sa.and_(
+                history_models.ActionHistory.userId == models.User.id,
+                history_models.ActionHistory.actionType.in_(
+                    [history_models.ActionType.USER_SUSPENDED, history_models.ActionType.USER_UNSUSPENDED]
+                ),
+            ),
+        )
+        .options(
+            sa.orm.joinedload(users_models.User.UserOfferers).load_only(offerers_models.UserOfferer.validationStatus),
+            sa.orm.contains_eager(users_models.User.action_history),
+        )
+    )
 
 
 def get_pro_account_base_query(pro_id: int) -> BaseQuery:

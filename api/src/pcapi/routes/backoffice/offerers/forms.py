@@ -19,7 +19,11 @@ DIGITS_AND_WHITESPACES_REGEX = re.compile(r"^[\d\s]+$")
 
 
 def _get_all_tags_query() -> sa.orm.Query:
-    return offerers_models.OffererTag.query.order_by(offerers_models.OffererTag.label)
+    return offerers_models.OffererTag.query.order_by(offerers_models.OffererTag.label).options(
+        sa.orm.load_only(
+            offerers_models.OffererTag.id, offerers_models.OffererTag.name, offerers_models.OffererTag.label
+        )
+    )
 
 
 def _get_validation_tags_query() -> sa.orm.Query:

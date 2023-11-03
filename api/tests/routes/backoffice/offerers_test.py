@@ -20,7 +20,6 @@ import pcapi.core.offerers.factories as offerers_factories
 from pcapi.core.offers import factories as offers_factories
 from pcapi.core.offers import models as offers_models
 import pcapi.core.permissions.models as perm_models
-from pcapi.core.testing import assert_no_duplicated_queries
 from pcapi.core.testing import assert_num_queries
 from pcapi.core.users import factories as users_factories
 from pcapi.models import db
@@ -90,6 +89,13 @@ class GetOffererTest(GetEndpointHelper):
     endpoint_kwargs = {"offerer_id": 1}
     needed_permission = perm_models.Permissions.READ_PRO_ENTITY
 
+    # - session + current user (2 queries)
+    # - offerer with joined data except tags (1 query)
+    # - get offerer tags (1 query)
+    # - get all tags for edit form (1 query)
+    # - get feature flag WIP_ENABLE_NEW_BANK_DETAILS_JOURNEY (1 query)
+    expected_num_queries = 6
+
     def test_keep_search_parameters_on_top(self, authenticated_client, offerer):
         url = url_for(self.endpoint, offerer_id=offerer.id, q=offerer.name, departments=["75", "77"])
 
@@ -102,8 +108,9 @@ class GetOffererTest(GetEndpointHelper):
         selected_departments = html_parser.extract_select_options(response.data, "departments", selected_only=True)
         assert set(selected_departments.keys()) == {"75", "77"}
 
-    def test_get_offerer(self, authenticated_client, offerer, top_acteur_tag):
-        offerers_factories.OffererTagMappingFactory(tagId=top_acteur_tag.id, offererId=offerer.id)
+    def test_get_offerer(self, authenticated_client, offerer, offerer_tags):
+        offerers_factories.OffererTagMappingFactory(tagId=offerer_tags[0].id, offererId=offerer.id)
+        offerers_factories.OffererTagMappingFactory(tagId=offerer_tags[1].id, offererId=offerer.id)
 
         url = url_for(self.endpoint, offerer_id=offerer.id)
 
@@ -113,7 +120,7 @@ class GetOffererTest(GetEndpointHelper):
         # count.
         db.session.expire(offerer)
 
-        with assert_no_duplicated_queries():
+        with assert_num_queries(self.expected_num_queries):
             response = authenticated_client.get(url)
             assert response.status_code == 200
 
@@ -127,7 +134,7 @@ class GetOffererTest(GetEndpointHelper):
         assert f"Code postal : {offerer.postalCode} " in content
         assert f"Adresse : {offerer.address} " in content
         assert "Présence CB dans les lieux : 0 OK / 0 KO " in content
-        assert "Tags structure : Top Acteur " in content
+        assert "Tags structure : Collectivité Top acteur " in content
 
         badges = html_parser.extract(response.data, tag="span", class_="badge")
         assert "Structure" in badges
@@ -144,62 +151,64 @@ class GetOffererTest(GetEndpointHelper):
         venue_with_rejected_bank_info,
         random_venue,
     ):
-        # when
-        response = authenticated_client.get(url_for(self.endpoint, offerer_id=offerer.id))
+        offerer_id = offerer.id
 
-        # then
-        assert response.status_code == 200
+        with assert_num_queries(self.expected_num_queries):
+            response = authenticated_client.get(url_for(self.endpoint, offerer_id=offerer_id))
+            assert response.status_code == 200
+
         assert "Présence CB dans les lieux : 2 OK / 2 KO " in html_parser.content_as_text(response.data)
 
     def test_offerer_with_educational_venue_has_adage_data(self, authenticated_client, offerer, venue_with_adage_id):
-        # when
-        response = authenticated_client.get(url_for(self.endpoint, offerer_id=offerer.id))
+        offerer_id = offerer.id
 
-        # then
-        assert response.status_code == 200
+        with assert_num_queries(self.expected_num_queries):
+            response = authenticated_client.get(url_for(self.endpoint, offerer_id=offerer_id))
+            assert response.status_code == 200
+
         assert "Référencement Adage : 1/1" in html_parser.content_as_text(response.data)
 
     def test_offerer_with_no_educational_venue_has_adage_data(
         self, authenticated_client, offerer, venue_with_accepted_bank_info
     ):
-        # when
-        response = authenticated_client.get(url_for(self.endpoint, offerer_id=offerer.id))
+        offerer_id = offerer.id
 
-        # then
-        assert response.status_code == 200
+        with assert_num_queries(self.expected_num_queries):
+            response = authenticated_client.get(url_for(self.endpoint, offerer_id=offerer_id))
+            assert response.status_code == 200
+
         assert "Référencement Adage : 0/1" in html_parser.content_as_text(response.data)
 
     def test_offerer_with_no_individual_subscription_tab(self, authenticated_client, offerer):
-        # when
-        response = authenticated_client.get(url_for(self.endpoint, offerer_id=offerer.id))
+        offerer_id = offerer.id
 
-        # then
-        assert response.status_code == 200
+        with assert_num_queries(self.expected_num_queries):
+            response = authenticated_client.get(url_for(self.endpoint, offerer_id=offerer_id))
+            assert response.status_code == 200
+
         assert not html_parser.get_soup(response.data).find(class_="subscription-tab-pane")
 
     def test_offerer_with_individual_subscription_tab_no_data(self, authenticated_client):
-        # given
         tag = offerers_factories.OffererTagFactory(name="auto-entrepreneur")
         offerer = offerers_factories.NotValidatedOffererFactory(tags=[tag])
+        offerer_id = offerer.id
 
-        # when
-        response = authenticated_client.get(url_for(self.endpoint, offerer_id=offerer.id))
+        with assert_num_queries(self.expected_num_queries):
+            response = authenticated_client.get(url_for(self.endpoint, offerer_id=offerer_id))
+            assert response.status_code == 200
 
-        # then
-        assert response.status_code == 200
         assert html_parser.get_soup(response.data).find(class_="subscription-tab-pane")
 
     def test_offerer_with_individual_subscription_data(self, authenticated_client):
-        # given
         tag = offerers_factories.OffererTagFactory(name="auto-entrepreneur")
         offerer = offerers_factories.NotValidatedOffererFactory(tags=[tag])
         offerers_factories.IndividualOffererSubscription(offerer=offerer)
+        offerer_id = offerer.id
 
-        # when
-        response = authenticated_client.get(url_for(self.endpoint, offerer_id=offerer.id))
+        with assert_num_queries(self.expected_num_queries):
+            response = authenticated_client.get(url_for(self.endpoint, offerer_id=offerer_id))
+            assert response.status_code == 200
 
-        # then
-        assert response.status_code == 200
         assert html_parser.get_soup(response.data).find(class_="subscription-tab-pane")
 
 
@@ -713,7 +722,6 @@ class GetOffererHistoryTest(GetEndpointHelper):
         assert user_offerer_2.user.full_name in content
 
     def test_get_full_sorted_history(self, authenticated_client, legit_user):
-        # given
         admin = users_factories.UserFactory()
         user_offerer = offerers_factories.UserOffererFactory()
         history_factories.ActionHistoryFactory(
@@ -757,13 +765,11 @@ class GetOffererHistoryTest(GetEndpointHelper):
             comment="Commentaire sur une autre structure",
         )
 
-        # when
         url = url_for(self.endpoint, offerer_id=user_offerer.offerer.id)
         with assert_num_queries(self.expected_num_queries):
             response = authenticated_client.get(url)
             assert response.status_code == 200
 
-        # then
         rows = html_parser.extract_table_rows(response.data)
         assert len(rows) == 4
 
@@ -798,7 +804,6 @@ class GetOffererUsersTest(GetEndpointHelper):
     expected_num_queries = 3
 
     def test_get_pro_users(self, authenticated_client, offerer):
-        # given
         uo1 = offerers_factories.UserOffererFactory(
             offerer=offerer, user=users_factories.ProFactory(firstName=None, lastName=None)
         )
@@ -809,13 +814,11 @@ class GetOffererUsersTest(GetEndpointHelper):
 
         offerers_factories.UserOffererFactory()
 
-        # when
         url = url_for(self.endpoint, offerer_id=offerer.id)
         with assert_num_queries(self.expected_num_queries):
             response = authenticated_client.get(url)
             assert response.status_code == 200
 
-        # then
         rows = html_parser.extract_table_rows(response.data)
         assert len(rows) == 3
 
@@ -879,17 +882,13 @@ class GetDeleteOffererAttachmentFormTest(GetEndpointHelper):
     needed_permission = perm_models.Permissions.MANAGE_PRO_ENTITY
 
     def test_get_delete_offerer_attachment_form(self, legit_user, authenticated_client):
-        # given
         user_offerer = offerers_factories.NotValidatedUserOffererFactory()
 
-        # when
         url = url_for(self.endpoint, offerer_id=user_offerer.offerer.id, user_offerer_id=user_offerer.id)
         with assert_num_queries(3):
             response = authenticated_client.get(url)
-
-        # then
-        # Rendering is not checked, but at least the fetched frame does not crash
-        assert response.status_code == 200
+            # Rendering is not checked, but at least the fetched frame does not crash
+            assert response.status_code == 200
 
 
 class DeleteOffererAttachmentTest(PostEndpointHelper):
@@ -898,15 +897,12 @@ class DeleteOffererAttachmentTest(PostEndpointHelper):
     needed_permission = perm_models.Permissions.MANAGE_PRO_ENTITY
 
     def test_delete_offerer_attachment(self, legit_user, authenticated_client):
-        # given
         user_offerer = offerers_factories.NotValidatedUserOffererFactory()
 
-        # when
         response = self.post_to_endpoint(
             authenticated_client, offerer_id=user_offerer.offerer.id, user_offerer_id=user_offerer.id
         )
 
-        # then
         assert response.status_code == 303
 
         users_offerers = offerers_models.UserOfferer.query.all()
@@ -924,10 +920,7 @@ class DeleteOffererAttachmentTest(PostEndpointHelper):
         assert len(mails_testing.outbox) == 0
 
     def test_delete_offerer_returns_404_if_offerer_attachment_is_not_found(self, authenticated_client, offerer):
-        # when
         response = self.post_to_endpoint(authenticated_client, offerer_id=offerer.id, user_offerer_id=42)
-
-        # then
         assert response.status_code == 404
 
 
@@ -1061,9 +1054,10 @@ class ListOfferersToValidateTest(GetEndpointHelper):
         # - session + authenticated user (2 queries)
         # - validation status count (1 query)
         # - offerer tags filter (1 query)
+        expected_num_queries_when_no_query = 4
         # - get results (1 query)
         # - get results count (1 query)
-        expected_num_queries = 6
+        expected_num_queries = expected_num_queries_when_no_query + 2
 
         @pytest.mark.parametrize(
             "row_key,sort,order",
@@ -1075,7 +1069,6 @@ class ListOfferersToValidateTest(GetEndpointHelper):
             ],
         )
         def test_list_offerers_to_be_validated(self, authenticated_client, row_key, sort, order):
-            # given
             _validated_offerers = [offerers_factories.UserOffererFactory().offerer for _ in range(3)]
             to_be_validated_offerers = []
             for _ in range(4):
@@ -1089,14 +1082,12 @@ class ListOfferersToValidateTest(GetEndpointHelper):
                 )
                 to_be_validated_offerers.append(user_offerer.offerer)
 
-            # when
             with assert_num_queries(self.expected_num_queries):
                 response = authenticated_client.get(
                     url_for("backoffice_web.validation.list_offerers_to_validate", order=order, sort=sort)
                 )
+                assert response.status_code == 200
 
-            # then
-            assert response.status_code == 200
             rows = html_parser.extract_table_rows(response.data)
             # Without sort, table is ordered by dateCreated desc
             to_be_validated_offerers.sort(
@@ -1114,7 +1105,6 @@ class ListOfferersToValidateTest(GetEndpointHelper):
             ],
         )
         def test_payload_content(self, authenticated_client, validation_status, expected_status, top_acteur_tag):
-            # given
             user_offerer = offerers_factories.UserNotValidatedOffererFactory(
                 offerer__dateCreated=datetime.datetime(2022, 10, 3, 11, 59),
                 offerer__validationStatus=validation_status,
@@ -1159,12 +1149,10 @@ class ListOfferersToValidateTest(GetEndpointHelper):
                 comment=None,
             )
 
-            # when
             with assert_num_queries(self.expected_num_queries):
                 response = authenticated_client.get(url_for("backoffice_web.validation.list_offerers_to_validate"))
+                assert response.status_code == 200
 
-            # then
-            assert response.status_code == 200
             rows = html_parser.extract_table_rows(response.data)
             assert len(rows) == 1
             assert rows[0]["ID"] == str(user_offerer.offerer.id)
@@ -1183,17 +1171,14 @@ class ListOfferersToValidateTest(GetEndpointHelper):
             assert dms_adage_data == []
 
         def test_payload_content_no_action(self, authenticated_client):
-            # given
             user_offerer = offerers_factories.UserNotValidatedOffererFactory(
                 offerer__dateCreated=datetime.datetime(2022, 10, 3, 11, 59),
             )
 
-            # when
             with assert_num_queries(self.expected_num_queries):
                 response = authenticated_client.get(url_for("backoffice_web.validation.list_offerers_to_validate"))
+                assert response.status_code == 200
 
-            # then
-            assert response.status_code == 200
             rows = html_parser.extract_table_rows(response.data)
             assert len(rows) == 1
             assert rows[0]["ID"] == str(user_offerer.offerer.id)
@@ -1203,19 +1188,16 @@ class ListOfferersToValidateTest(GetEndpointHelper):
             assert rows[0]["Dernier commentaire"] == ""
 
         def test_dms_adage_additional_data(self, authenticated_client):
-            # given
             user_offerer = offerers_factories.UserNotValidatedOffererFactory()
             venue = offerers_factories.VenueFactory(managingOfferer=user_offerer.offerer)
             educational_factories.CollectiveDmsApplicationFactory(venue=venue, state="accepte")
             other_venue = offerers_factories.VenueFactory(managingOfferer=user_offerer.offerer)
             educational_factories.CollectiveDmsApplicationFactory(venue=other_venue, state="accepte")
 
-            # when
             with assert_num_queries(self.expected_num_queries):
                 response = authenticated_client.get(url_for("backoffice_web.validation.list_offerers_to_validate"))
+                assert response.status_code == 200
 
-            # then
-            assert response.status_code == 200
             rows = html_parser.extract_table_rows(response.data)
             assert len(rows) == 1
             assert rows[0]["ID"] == str(user_offerer.offerer.id)
@@ -1248,17 +1230,15 @@ class ListOfferersToValidateTest(GetEndpointHelper):
             expected_page,
             expected_items,
         ):
-            # given
             for _ in range(total_items):
                 offerers_factories.UserNotValidatedOffererFactory()
 
-            # when
-            response = authenticated_client.get(
-                url_for("backoffice_web.validation.list_offerers_to_validate", **pagination_config)
-            )
+            with assert_num_queries(self.expected_num_queries):
+                response = authenticated_client.get(
+                    url_for("backoffice_web.validation.list_offerers_to_validate", **pagination_config)
+                )
+                assert response.status_code == 200
 
-            # then
-            assert response.status_code == 200
             assert html_parser.count_table_rows(response.data) == expected_items
             assert html_parser.extract_pagination_info(response.data) == (
                 expected_page,
@@ -1276,14 +1256,12 @@ class ListOfferersToValidateTest(GetEndpointHelper):
         def test_list_filtering_by_region(
             self, authenticated_client, region_filter, expected_offerer_names, offerers_to_be_validated
         ):
-            # when
             with assert_num_queries(self.expected_num_queries):
                 response = authenticated_client.get(
                     url_for("backoffice_web.validation.list_offerers_to_validate", regions=region_filter)
                 )
+                assert response.status_code == 200
 
-            # then
-            assert response.status_code == 200
             rows = html_parser.extract_table_rows(response.data)
             assert {row["Nom de la structure"] for row in rows} == expected_offerer_names
 
@@ -1299,7 +1277,6 @@ class ListOfferersToValidateTest(GetEndpointHelper):
         def test_list_filtering_by_tags(
             self, authenticated_client, tag_filter, expected_offerer_names, offerers_to_be_validated
         ):
-            # given
             tags = (
                 offerers_models.OffererTag.query.filter(offerers_models.OffererTag.label.in_(tag_filter))
                 .with_entities(offerers_models.OffererTag.id)
@@ -1307,19 +1284,16 @@ class ListOfferersToValidateTest(GetEndpointHelper):
             )
             tags_ids = [_id for _id, in tags]
 
-            # when
             with assert_num_queries(self.expected_num_queries):
                 response = authenticated_client.get(
                     url_for("backoffice_web.validation.list_offerers_to_validate", tags=tags_ids)
                 )
+                assert response.status_code == 200
 
-            # then
-            assert response.status_code == 200
             rows = html_parser.extract_table_rows(response.data)
             assert {row["Nom de la structure"] for row in rows} == expected_offerer_names
 
         def test_list_filtering_by_date(self, authenticated_client):
-            # given
             # Created before requested range, excluded from results:
             offerers_factories.UserNotValidatedOffererFactory(offerer__dateCreated=datetime.datetime(2022, 11, 4, 4))
             # Created within requested range: Nov 4 23:45 UTC is Nov 5 00:45 CET
@@ -1337,7 +1311,6 @@ class ListOfferersToValidateTest(GetEndpointHelper):
             # Excluded from results:
             offerers_factories.UserNotValidatedOffererFactory(offerer__dateCreated=datetime.datetime(2022, 11, 10, 7))
 
-            # when
             with assert_num_queries(self.expected_num_queries):
                 response = authenticated_client.get(
                     url_for(
@@ -1346,62 +1319,52 @@ class ListOfferersToValidateTest(GetEndpointHelper):
                         to_date="2022-11-08",
                     )
                 )
+                assert response.status_code == 200
 
-            # then
-            assert response.status_code == 200
             rows = html_parser.extract_table_rows(response.data)
             assert [int(row["ID"]) for row in rows] == [uo.offerer.id for uo in (user_offerer_3, user_offerer_2)]
 
         def test_list_filtering_by_invalid_date(self, authenticated_client):
-            # given
-
-            # when
-            response = authenticated_client.get(
-                url_for(
-                    "backoffice_web.validation.list_offerers_to_validate",
-                    from_date="05/11/2022",
+            with assert_num_queries(self.expected_num_queries_when_no_query):
+                response = authenticated_client.get(
+                    url_for(
+                        "backoffice_web.validation.list_offerers_to_validate",
+                        from_date="05/11/2022",
+                    )
                 )
-            )
+                assert response.status_code == 400
 
-            # then
-            assert response.status_code == 400
             assert "Date invalide" in response.data.decode("utf-8")
 
         @pytest.mark.parametrize("search", ["123004004", "123 004 004", "  123004004 ", "123004004\n"])
         def test_list_search_by_siren(self, authenticated_client, offerers_to_be_validated, search):
-            # when
             with assert_num_queries(self.expected_num_queries):
                 response = authenticated_client.get(
                     url_for("backoffice_web.validation.list_offerers_to_validate", q=search)
                 )
+                assert response.status_code == 200
 
-            # then
-            assert response.status_code == 200
             rows = html_parser.extract_table_rows(response.data)
             assert {row["Nom de la structure"] for row in rows} == {"D"}
 
         @pytest.mark.parametrize("postal_code", ["35400", "35 400"])
         def test_list_search_by_postal_code(self, authenticated_client, offerers_to_be_validated, postal_code):
-            # when
             with assert_num_queries(self.expected_num_queries):
                 response = authenticated_client.get(
                     url_for("backoffice_web.validation.list_offerers_to_validate", q=postal_code)
                 )
+                assert response.status_code == 200
 
-            # then
-            assert response.status_code == 200
             rows = html_parser.extract_table_rows(response.data)
             assert {row["Nom de la structure"] for row in rows} == {"E"}
 
         def test_list_search_by_department_code(self, authenticated_client, offerers_to_be_validated):
-            # when
             with assert_num_queries(self.expected_num_queries):
                 response = authenticated_client.get(
                     url_for("backoffice_web.validation.list_offerers_to_validate", q="35")
                 )
+                assert response.status_code == 200
 
-            # then
-            assert response.status_code == 200
             rows = html_parser.extract_table_rows(response.data)
             assert {row["Nom de la structure"] for row in rows} == {"A", "E"}
 
@@ -1410,53 +1373,46 @@ class ListOfferersToValidateTest(GetEndpointHelper):
             offerers_factories.UserOffererFactory.create_batch(3, offerer=offerers_to_be_validated[1])
 
             # Search "quimper" => results include "Quimper" and "Quimperlé"
-            # when
             with assert_num_queries(self.expected_num_queries):
                 response = authenticated_client.get(
                     url_for("backoffice_web.validation.list_offerers_to_validate", q="quimper")
                 )
+                assert response.status_code == 200
 
-            # then
-            assert response.status_code == 200
             rows = html_parser.extract_table_rows(response.data)
             assert {row["Nom de la structure"] for row in rows} == {"B", "D"}
             assert html_parser.extract_pagination_info(response.data) == (1, 1, 2)
 
         @pytest.mark.parametrize("search", ["1", "1234", "123456", "1234567", "12345678", "12345678912345", "  1234"])
         def test_list_search_by_invalid_number_of_digits(self, authenticated_client, search):
-            # when
-            response = authenticated_client.get(
-                url_for("backoffice_web.validation.list_offerers_to_validate", q=search)
-            )
+            with assert_num_queries(self.expected_num_queries_when_no_query):
+                response = authenticated_client.get(
+                    url_for("backoffice_web.validation.list_offerers_to_validate", q=search)
+                )
+                assert response.status_code == 400
 
-            # then
-            assert response.status_code == 400
             assert (
                 "Le nombre de chiffres ne correspond pas à un SIREN, code postal, département ou ID DMS CB"
                 in response.data.decode("utf-8")
             )
 
         def test_list_search_by_email(self, authenticated_client, offerers_to_be_validated):
-            # when
             with assert_num_queries(self.expected_num_queries):
                 response = authenticated_client.get(
                     url_for("backoffice_web.validation.list_offerers_to_validate", q="sadi@example.com")
                 )
+                assert response.status_code == 200
 
-            # then
-            assert response.status_code == 200
             rows = html_parser.extract_table_rows(response.data)
             assert {row["Nom de la structure"] for row in rows} == {"B"}
 
         def test_list_search_by_user_name(self, authenticated_client, offerers_to_be_validated):
-            # when
             with assert_num_queries(self.expected_num_queries):
                 response = authenticated_client.get(
                     url_for("backoffice_web.validation.list_offerers_to_validate", q="Felix faure")
                 )
+                assert response.status_code == 200
 
-            # then
-            assert response.status_code == 200
             rows = html_parser.extract_table_rows(response.data)
             assert {row["Nom de la structure"] for row in rows} == {"C"}
 
@@ -1470,7 +1426,6 @@ class ListOfferersToValidateTest(GetEndpointHelper):
             ),
         )
         def test_list_search_by_name(self, authenticated_client, search_filter, expected_offerer_names):
-            # given
             for name in (
                 "Librairie de la Plage",
                 "Cinéma de la Petite Plage",
@@ -1479,14 +1434,12 @@ class ListOfferersToValidateTest(GetEndpointHelper):
             ):
                 offerers_factories.NotValidatedOffererFactory(name=name)
 
-            # when
             with assert_num_queries(self.expected_num_queries):
                 response = authenticated_client.get(
                     url_for("backoffice_web.validation.list_offerers_to_validate", q=search_filter)
                 )
+                assert response.status_code == 200
 
-            # then
-            assert response.status_code == 200
             rows = html_parser.extract_table_rows(response.data)
             assert {row["Nom de la structure"] for row in rows} == expected_offerer_names
 
@@ -1506,7 +1459,6 @@ class ListOfferersToValidateTest(GetEndpointHelper):
         def test_list_filtering_by_status(
             self, authenticated_client, status_filter, expected_status, expected_offerer_names, offerers_to_be_validated
         ):
-            # when
             expected_num_queries = (
                 self.expected_num_queries if expected_status == 200 else self.expected_num_queries - 2
             )
@@ -1514,9 +1466,8 @@ class ListOfferersToValidateTest(GetEndpointHelper):
                 response = authenticated_client.get(
                     url_for("backoffice_web.validation.list_offerers_to_validate", status=status_filter)
                 )
+                assert response.status_code == expected_status
 
-            # then
-            assert response.status_code == expected_status
             if expected_status == 200:
                 rows = html_parser.extract_table_rows(response.data)
                 assert {row["Nom de la structure"] for row in rows} == expected_offerer_names
@@ -1545,7 +1496,6 @@ class ListOfferersToValidateTest(GetEndpointHelper):
             expected_offerer_names,
             offerers_to_be_validated,
         ):
-            # when
             expected_num_queries = (
                 self.expected_num_queries if expected_status == 200 else self.expected_num_queries - 2
             )
@@ -1553,9 +1503,8 @@ class ListOfferersToValidateTest(GetEndpointHelper):
                 response = authenticated_client.get(
                     url_for("backoffice_web.validation.list_offerers_to_validate", dms_adage_status=dms_status_filter)
                 )
+                assert response.status_code == expected_status
 
-            # then
-            assert response.status_code == expected_status
             if expected_status == 200:
                 rows = html_parser.extract_table_rows(response.data)
                 assert {row["Nom de la structure"] for row in rows} == expected_offerer_names
@@ -1566,19 +1515,16 @@ class ListOfferersToValidateTest(GetEndpointHelper):
             "query", ["123a456b789c", "123A456B789C", "PRO-123a456b789c", "124578235689", "PRO-124578235689"]
         )
         def test_list_filtering_by_dms_token(self, authenticated_client, query, offerers_to_be_validated):
-            # given
             user_offerer = offerers_factories.UserNotValidatedOffererFactory()
             offerers_factories.VenueFactory(managingOfferer=user_offerer.offerer, dmsToken="123a456b789c")
             offerers_factories.VenueFactory(managingOfferer=user_offerer.offerer, dmsToken="124578235689")
 
-            # when
             with assert_num_queries(self.expected_num_queries):
                 response = authenticated_client.get(
                     url_for("backoffice_web.validation.list_offerers_to_validate", q=query)
                 )
+                assert response.status_code == 200
 
-            # then
-            assert response.status_code == 200
             rows = html_parser.extract_table_rows(response.data)
             assert len(rows) == 1
             assert rows[0]["ID"] == str(user_offerer.offerer.id)
@@ -1595,11 +1541,9 @@ class ListOfferersToValidateTest(GetEndpointHelper):
         def test_list_filtering_with_filters_using_same_joins(
             self, authenticated_client, query, dms_status_filter, offerers_to_be_validated
         ):
-            # given
             user_offerer = offerers_factories.UserNotValidatedOffererFactory()
             offerers_factories.VenueFactory(managingOfferer=user_offerer.offerer, dmsToken="124578235689")
 
-            # when
             with assert_num_queries(self.expected_num_queries):
                 response = authenticated_client.get(
                     url_for(
@@ -1608,21 +1552,16 @@ class ListOfferersToValidateTest(GetEndpointHelper):
                         dms_adage_status=dms_status_filter,
                     )
                 )
-
-            # then
-            assert response.status_code == 200
+                assert response.status_code == 200
 
         def test_offerers_stats_are_displayed(self, authenticated_client, offerers_to_be_validated):
-            # given
             offerers_factories.UserOffererFactory(offerer__validationStatus=ValidationStatus.PENDING)
             offerers_factories.UserOffererFactory(offerer__validationStatus=ValidationStatus.REJECTED)
 
-            # when
             with assert_num_queries(self.expected_num_queries):
                 response = authenticated_client.get(url_for("backoffice_web.validation.list_offerers_to_validate"))
+                assert response.status_code == 200
 
-            # then
-            assert response.status_code == 200
             cards = html_parser.extract_cards_text(response.data)
             assert "3 nouvelles structures" in cards
             assert "4 structures en attente" in cards
@@ -1630,12 +1569,10 @@ class ListOfferersToValidateTest(GetEndpointHelper):
             assert "2 structures rejetées" in cards
 
         def test_no_offerer(self, authenticated_client):
-            # when
             with assert_num_queries(self.expected_num_queries):
                 response = authenticated_client.get(url_for("backoffice_web.validation.list_offerers_to_validate"))
+                assert response.status_code == 200
 
-            # then
-            assert response.status_code == 200
             cards = html_parser.extract_cards_text(response.data)
             assert "0 nouvelle structure" in cards
             assert "0 structure en attente" in cards
@@ -1650,13 +1587,10 @@ class ValidateOffererTest(PostEndpointHelper):
     needed_permission = perm_models.Permissions.VALIDATE_OFFERER
 
     def test_validate_offerer(self, legit_user, authenticated_client):
-        # given
         user_offerer = offerers_factories.UserNotValidatedOffererFactory()
 
-        # when
         response = self.post_to_endpoint(authenticated_client, offerer_id=user_offerer.offererId)
 
-        # then
         assert response.status_code == 303
 
         db.session.refresh(user_offerer)
@@ -1674,13 +1608,10 @@ class ValidateOffererTest(PostEndpointHelper):
         assert action.venueId is None
 
     def test_validate_rejected_offerer(self, legit_user, authenticated_client):
-        # given
         offerer = offerers_factories.RejectedOffererFactory()
 
-        # when
         response = self.post_to_endpoint(authenticated_client, offerer_id=offerer.id)
 
-        # then
         assert response.status_code == 303
 
         db.session.refresh(offerer)
@@ -1688,20 +1619,15 @@ class ValidateOffererTest(PostEndpointHelper):
         assert offerer.isActive
 
     def test_validate_offerer_returns_404_if_offerer_is_not_found(self, authenticated_client):
-        # when
         response = self.post_to_endpoint(authenticated_client, offerer_id=1)
 
-        # then
         assert response.status_code == 404
 
     def test_cannot_validate_offerer_already_validated(self, authenticated_client):
-        # given
         user_offerer = offerers_factories.UserOffererFactory()
 
-        # when
         response = self.post_to_endpoint(authenticated_client, offerer_id=user_offerer.offererId)
 
-        # then
         assert response.status_code == 303
 
         redirected_response = authenticated_client.get(response.headers["location"])
@@ -1714,16 +1640,13 @@ class GetRejectOffererFormTest(GetEndpointHelper):
     needed_permission = perm_models.Permissions.VALIDATE_OFFERER
 
     def test_get_reject_offerer_form(self, legit_user, authenticated_client):
-        # given
         offerer = offerers_factories.NotValidatedOffererFactory()
 
-        # when
         url = url_for(self.endpoint, offerer_id=offerer.id)
-        response = authenticated_client.get(url)
-
-        # then
-        # Rendering is not checked, but at least the fetched frame does not crash
-        assert response.status_code == 200
+        with assert_num_queries(2):  # session + current user
+            response = authenticated_client.get(url)
+            # Rendering is not checked, but at least the fetched frame does not crash
+            assert response.status_code == 200
 
 
 class RejectOffererTest(PostEndpointHelper):
@@ -1732,15 +1655,12 @@ class RejectOffererTest(PostEndpointHelper):
     needed_permission = perm_models.Permissions.VALIDATE_OFFERER
 
     def test_reject_offerer(self, legit_user, authenticated_client):
-        # given
         user = users_factories.NonAttachedProFactory()
         offerer = offerers_factories.NotValidatedOffererFactory()
         user_offerer = offerers_factories.UserOffererFactory(user=user, offerer=offerer)
 
-        # when
         response = self.post_to_endpoint(authenticated_client, offerer_id=offerer.id)
 
-        # then
         assert response.status_code == 303
 
         db.session.refresh(user)
@@ -1772,16 +1692,13 @@ class RejectOffererTest(PostEndpointHelper):
         assert action.venueId is None
 
     def test_reject_offerer_keep_pro_role(self, authenticated_client):
-        # given
         user = users_factories.ProFactory()
         offerers_factories.UserOffererFactory(user=user)  # already validated
         offerer = offerers_factories.NotValidatedOffererFactory()
         offerers_factories.UserOffererFactory(user=user, offerer=offerer)  # deleted when rejected
 
-        # when
         response = self.post_to_endpoint(authenticated_client, offerer_id=offerer.id)
 
-        # then
         assert response.status_code == 303
 
         db.session.refresh(user)
@@ -1791,20 +1708,15 @@ class RejectOffererTest(PostEndpointHelper):
         assert not user.has_non_attached_pro_role
 
     def test_reject_offerer_returns_404_if_offerer_is_not_found(self, authenticated_client):
-        # when
         response = self.post_to_endpoint(authenticated_client, offerer_id=1)
 
-        # then
         assert response.status_code == 404
 
     def test_cannot_reject_offerer_already_rejected(self, authenticated_client):
-        # given
         offerer = offerers_factories.RejectedOffererFactory()
 
-        # when
         response = self.post_to_endpoint(authenticated_client, offerer_id=offerer.id)
 
-        # then
         assert response.status_code == 303
 
         redirected_response = authenticated_client.get(response.headers["location"])
@@ -1816,17 +1728,19 @@ class GetOffererPendingFormTest(GetEndpointHelper):
     endpoint_kwargs = {"offerer_id": 1}
     needed_permission = perm_models.Permissions.VALIDATE_OFFERER
 
+    # session + current user (2 queries)
+    # get current tags set for this offerer (1 query)
+    # get all tags to fill in form choices (1 query)
+    expected_num_queries = 4
+
     def test_get_offerer_pending_form(self, legit_user, authenticated_client):
-        # given
         offerer = offerers_factories.NotValidatedOffererFactory()
 
-        # when
         url = url_for(self.endpoint, offerer_id=offerer.id)
-        response = authenticated_client.get(url)
-
-        # then
-        # Rendering is not checked, but at least the fetched frame does not crash
-        assert response.status_code == 200
+        with assert_num_queries(self.expected_num_queries):
+            response = authenticated_client.get(url)
+            # Rendering is not checked, but at least the fetched frame does not crash
+            assert response.status_code == 200
 
 
 class SetOffererPendingTest(PostEndpointHelper):
@@ -1835,20 +1749,17 @@ class SetOffererPendingTest(PostEndpointHelper):
     needed_permission = perm_models.Permissions.VALIDATE_OFFERER
 
     def test_set_offerer_pending(self, legit_user, authenticated_client, offerer_tags):
-        # given
         non_homologation_tag = offerers_factories.OffererTagFactory(name="Tag conservé")
         offerer = offerers_factories.NotValidatedOffererFactory(
             tags=[non_homologation_tag, offerer_tags[0], offerer_tags[1]]
         )
 
-        # when
         response = self.post_to_endpoint(
             authenticated_client,
             offerer_id=offerer.id,
             form={"comment": "En attente de documents", "tags": [offerer_tags[0].id, offerer_tags[2].id]},
         )
 
-        # then
         assert response.status_code == 303
 
         db.session.refresh(offerer)
@@ -1872,16 +1783,13 @@ class SetOffererPendingTest(PostEndpointHelper):
         }
 
     def test_set_offerer_pending_keep_pro_role(self, authenticated_client):
-        # given
         user = users_factories.ProFactory()
         offerers_factories.UserOffererFactory(user=user)  # already validated
         offerer = offerers_factories.NotValidatedOffererFactory()
         offerers_factories.UserOffererFactory(user=user, offerer=offerer)  # deleted when rejected
 
-        # when
         response = self.post_to_endpoint(authenticated_client, offerer_id=offerer.id)
 
-        # then
         assert response.status_code == 303
 
         db.session.refresh(user)
@@ -1891,17 +1799,14 @@ class SetOffererPendingTest(PostEndpointHelper):
         assert not user.has_non_attached_pro_role
 
     def test_set_offerer_pending_remove_pro_role(self, authenticated_client):
-        # given
         user = users_factories.ProFactory()
         offerer = offerers_factories.OffererFactory()  # validated offerer
         offerers_factories.UserOffererFactory(user=user, offerer=offerer)  # with validated attachment
         offerers_factories.UserNotValidatedOffererFactory(user=user)  # other pending offerer validation
         offerers_factories.NotValidatedUserOffererFactory(user=user)  # other pending attachment
 
-        # when
         response = self.post_to_endpoint(authenticated_client, offerer_id=offerer.id)
 
-        # then
         assert response.status_code == 303
 
         db.session.refresh(user)
@@ -1911,9 +1816,7 @@ class SetOffererPendingTest(PostEndpointHelper):
         assert user.has_non_attached_pro_role
 
     def test_set_offerer_pending_returns_404_if_offerer_is_not_found(self, authenticated_client):
-        # when
         response = self.post_to_endpoint(authenticated_client, offerer_id=1, form={"comment": "Questionnaire"})
-        # then
         assert response.status_code == 404
 
 
@@ -1923,49 +1826,35 @@ class ToggleTopActorTest(PostEndpointHelper):
     needed_permission = perm_models.Permissions.VALIDATE_OFFERER
 
     def test_toggle_is_top_actor(self, authenticated_client, top_acteur_tag):
-        # given
         offerer = offerers_factories.UserNotValidatedOffererFactory().offerer
 
-        # when
         response = self.post_to_endpoint(authenticated_client, offerer_id=offerer.id, form={"is_top_actor": "on"})
 
-        # then
         assert response.status_code == 303
         offerer_mappings = offerers_models.OffererTagMapping.query.all()
         assert len(offerer_mappings) == 1
         assert offerer_mappings[0].tagId == top_acteur_tag.id
         assert offerer_mappings[0].offererId == offerer.id
 
-        # when
         response = self.post_to_endpoint(authenticated_client, offerer_id=offerer.id)
 
-        # then
         assert response.status_code == 303
         assert offerers_models.OffererTagMapping.query.count() == 0
 
     def test_toggle_is_top_actor_twice_true(self, authenticated_client, top_acteur_tag):
-        # given
         offerer = offerers_factories.UserNotValidatedOffererFactory().offerer
 
-        # when
         for _ in range(2):
             response = self.post_to_endpoint(authenticated_client, offerer_id=offerer.id, form={"is_top_actor": "on"})
-
-            # then
             assert response.status_code == 303
 
-        # then
         offerer_mappings = offerers_models.OffererTagMapping.query.all()
         assert len(offerer_mappings) == 1
         assert offerer_mappings[0].tagId == top_acteur_tag.id
         assert offerer_mappings[0].offererId == offerer.id
 
     def test_toggle_top_actor_returns_404_if_offerer_is_not_found(self, authenticated_client):
-        # given
-
-        # when
         response = self.post_to_endpoint(authenticated_client, offerer_id=1, form={"is_top_actor": "on"})
-        # then
         assert response.status_code == 404
 
 
@@ -1975,9 +1864,10 @@ class ListUserOffererToValidateTest(GetEndpointHelper):
 
     # - session + authenticated user (2 queries)
     # - offerer tags filter (1 query)
+    expected_num_queries_when_no_query = 3
     # - get results (1 query)
     # - get results count (1 query)
-    expected_num_queries = 5
+    expected_num_queries = expected_num_queries_when_no_query + 2
 
     @pytest.mark.parametrize(
         "row_key,sort,order",
@@ -1990,7 +1880,6 @@ class ListUserOffererToValidateTest(GetEndpointHelper):
         ],
     )
     def test_list_only_user_offerer_to_be_validated(self, authenticated_client, row_key, sort, order):
-        # given
         to_be_validated = []
         for _ in range(2):
             validated_user_offerer = offerers_factories.UserOffererFactory()
@@ -2001,12 +1890,10 @@ class ListUserOffererToValidateTest(GetEndpointHelper):
             )
             to_be_validated.append(pending_user_offerer)
 
-        # when
         with assert_num_queries(self.expected_num_queries):
             response = authenticated_client.get(url_for(self.endpoint, order=order, sort=sort))
+            assert response.status_code == 200
 
-        # then
-        assert response.status_code == 200
         rows = html_parser.extract_table_rows(response.data)
         # Without sort, table is ordered by id desc
         to_be_validated.sort(key=attrgetter(sort or "id"), reverse=(order == "desc") if sort else True)
@@ -2025,7 +1912,6 @@ class ListUserOffererToValidateTest(GetEndpointHelper):
         ],
     )
     def test_payload_content(self, authenticated_client, validation_status, expected_status, offerer_tags):
-        # given
         owner_user_offerer = offerers_factories.UserOffererFactory(
             offerer__dateCreated=datetime.datetime(2022, 11, 2, 11, 30),
             offerer__tags=[offerer_tags[1]],
@@ -2064,12 +1950,10 @@ class ListUserOffererToValidateTest(GetEndpointHelper):
                 comment="Bla blabla",
             )
 
-        # when
         with assert_num_queries(self.expected_num_queries):
             response = authenticated_client.get(url_for(self.endpoint))
+            assert response.status_code == 200
 
-        # then
-        assert response.status_code == 200
         rows = html_parser.extract_table_rows(response.data)
         assert len(rows) == 1
         assert rows[0]["ID Compte pro"] == str(new_user_offerer.user.id)
@@ -2083,7 +1967,6 @@ class ListUserOffererToValidateTest(GetEndpointHelper):
         assert rows[0]["Dernier commentaire"] == "Bla blabla"
 
     def test_payload_content_no_action(self, authenticated_client, offerer_tags):
-        # given
         owner_user_offerer = offerers_factories.UserOffererFactory(
             offerer__dateCreated=datetime.datetime(2022, 11, 3),
             offerer__tags=[offerer_tags[2]],
@@ -2094,12 +1977,10 @@ class ListUserOffererToValidateTest(GetEndpointHelper):
             offerer=owner_user_offerer.offerer, dateCreated=datetime.datetime(2022, 11, 25)
         )
 
-        # when
         with assert_num_queries(self.expected_num_queries):
             response = authenticated_client.get(url_for(self.endpoint))
+            assert response.status_code == 200
 
-        # then
-        assert response.status_code == 200
         rows = html_parser.extract_table_rows(response.data)
         assert len(rows) == 1
         assert rows[0]["ID Compte pro"] == str(new_user_offerer.user.id)
@@ -2129,16 +2010,13 @@ class ListUserOffererToValidateTest(GetEndpointHelper):
     def test_list_pagination(
         self, authenticated_client, total_items, pagination_config, expected_total_pages, expected_page, expected_items
     ):
-        # given
         for _ in range(total_items):
             offerers_factories.NotValidatedUserOffererFactory()
 
-        # when
         with assert_num_queries(self.expected_num_queries):
             response = authenticated_client.get(url_for(self.endpoint, **pagination_config))
+            assert response.status_code == 200
 
-        # then
-        assert response.status_code == 200
         assert html_parser.count_table_rows(response.data) == expected_items
         assert html_parser.extract_pagination_info(response.data) == (
             expected_page,
@@ -2169,12 +2047,12 @@ class ListUserOffererToValidateTest(GetEndpointHelper):
     def test_list_filtering_by_status(
         self, authenticated_client, status_filter, expected_status, expected_users_emails, user_offerer_to_be_validated
     ):
-        # when
-        with assert_no_duplicated_queries():
+        with assert_num_queries(
+            self.expected_num_queries_when_no_query if expected_status == 400 else self.expected_num_queries
+        ):
             response = authenticated_client.get(url_for(self.endpoint, status=status_filter))
+            assert response.status_code == expected_status
 
-        # then
-        assert response.status_code == expected_status
         if expected_status == 200:
             rows = html_parser.extract_table_rows(response.data)
             assert {row["Email Compte pro"] for row in rows} == expected_users_emails
@@ -2209,17 +2087,15 @@ class ListUserOffererToValidateTest(GetEndpointHelper):
         expected_users_emails,
         user_offerer_to_be_validated,
     ):
-        # when
-        with assert_no_duplicated_queries():
+        with assert_num_queries(self.expected_num_queries if expected_status == 200 else self.expected_num_queries - 2):
             response = authenticated_client.get(
                 url_for(
                     self.endpoint,
                     offerer_status=offerer_status_filter,
                 )
             )
+            assert response.status_code == expected_status
 
-        # then
-        assert response.status_code == expected_status
         if expected_status == 200:
             rows = html_parser.extract_table_rows(response.data)
             assert {row["Email Compte pro"] for row in rows} == expected_users_emails
@@ -2236,12 +2112,10 @@ class ListUserOffererToValidateTest(GetEndpointHelper):
     def test_list_filtering_by_region(
         self, authenticated_client, region_filter, expected_users_emails, user_offerer_to_be_validated
     ):
-        # when
         with assert_num_queries(self.expected_num_queries):
             response = authenticated_client.get(url_for(self.endpoint, regions=region_filter))
+            assert response.status_code == 200
 
-        # then
-        assert response.status_code == 200
         rows = html_parser.extract_table_rows(response.data)
         assert {row["Email Compte pro"] for row in rows} == expected_users_emails
 
@@ -2257,7 +2131,6 @@ class ListUserOffererToValidateTest(GetEndpointHelper):
     def test_list_filtering_by_tags(
         self, authenticated_client, tag_filter, expected_users_emails, user_offerer_to_be_validated
     ):
-        # given
         tags = (
             offerers_models.OffererTag.query.filter(offerers_models.OffererTag.label.in_(tag_filter))
             .with_entities(offerers_models.OffererTag.id)
@@ -2265,17 +2138,14 @@ class ListUserOffererToValidateTest(GetEndpointHelper):
         )
         tags_ids = [_id for _id, in tags]
 
-        # when
         with assert_num_queries(self.expected_num_queries):
             response = authenticated_client.get(url_for(self.endpoint, tags=tags_ids))
+            assert response.status_code == 200
 
-        # then
-        assert response.status_code == 200
         rows = html_parser.extract_table_rows(response.data)
         assert {row["Email Compte pro"] for row in rows} == expected_users_emails
 
     def test_list_filtering_by_date(self, authenticated_client):
-        # given
         # Created before requested range, excluded from results:
         offerers_factories.NotValidatedUserOffererFactory(dateCreated=datetime.datetime(2022, 11, 24, 22, 30))
         # Created within requested range: Nov 24 23:45 UTC is Nov 25 00:45 CET
@@ -2289,7 +2159,6 @@ class ListUserOffererToValidateTest(GetEndpointHelper):
         # Excluded from results because on the day after, Metropolitan French time:
         offerers_factories.NotValidatedUserOffererFactory(dateCreated=datetime.datetime(2022, 11, 25, 23, 30))
 
-        # when
         with assert_num_queries(self.expected_num_queries):
             response = authenticated_client.get(
                 url_for(
@@ -2298,50 +2167,41 @@ class ListUserOffererToValidateTest(GetEndpointHelper):
                     to_date="2022-11-25",
                 )
             )
+            assert response.status_code == 200
 
-        # then
-        assert response.status_code == 200
         rows = html_parser.extract_table_rows(response.data)
         assert [int(row["ID Compte pro"]) for row in rows] == [uo.user.id for uo in (user_offerer_3, user_offerer_2)]
 
     @pytest.mark.parametrize("postal_code", ["97100", "97 100"])
     def test_list_search_by_postal_code(self, authenticated_client, user_offerer_to_be_validated, postal_code):
-        # when
         with assert_num_queries(self.expected_num_queries):
             response = authenticated_client.get(url_for(self.endpoint, q=postal_code))
+            assert response.status_code == 200
 
-        # then
-        assert response.status_code == 200
         rows = html_parser.extract_table_rows(response.data)
         assert {row["Email Compte pro"] for row in rows} == {"b@example.com"}
 
     def test_list_search_by_department_code(self, authenticated_client, user_offerer_to_be_validated):
-        # when
         with assert_num_queries(self.expected_num_queries):
             response = authenticated_client.get(url_for(self.endpoint, q="972"))
+            assert response.status_code == 200
 
-        # then
-        assert response.status_code == 200
         rows = html_parser.extract_table_rows(response.data)
         assert {row["Email Compte pro"] for row in rows} == {"a@example.com", "d@example.com"}
 
     def test_list_search_by_city(self, authenticated_client, user_offerer_to_be_validated):
-        # when
         with assert_num_queries(self.expected_num_queries):
             response = authenticated_client.get(url_for(self.endpoint, q="Fort-De-France"))
+            assert response.status_code == 200
 
-        # then
-        assert response.status_code == 200
         rows = html_parser.extract_table_rows(response.data)
         assert {row["Email Compte pro"] for row in rows} == {"a@example.com"}
 
     def test_list_search_by_email(self, authenticated_client, user_offerer_to_be_validated):
-        # when
         with assert_num_queries(self.expected_num_queries):
             response = authenticated_client.get(url_for(self.endpoint, q="b@example.com"))
+            assert response.status_code == 200
 
-        # then
-        assert response.status_code == 200
         rows = html_parser.extract_table_rows(response.data)
         assert {row["Email Compte pro"] for row in rows} == {"b@example.com"}
 
@@ -2352,13 +2212,10 @@ class ValidateOffererAttachmentTest(PostEndpointHelper):
     needed_permission = perm_models.Permissions.VALIDATE_OFFERER
 
     def test_validate_offerer_attachment(self, legit_user, authenticated_client):
-        # given
         user_offerer = offerers_factories.NotValidatedUserOffererFactory()
 
-        # when
         response = self.post_to_endpoint(authenticated_client, user_offerer_id=user_offerer.id)
 
-        # then
         assert response.status_code == 303
 
         db.session.refresh(user_offerer)
@@ -2382,20 +2239,14 @@ class ValidateOffererAttachmentTest(PostEndpointHelper):
         )
 
     def test_validate_offerer_attachment_returns_404_if_offerer_is_not_found(self, authenticated_client, offerer):
-        # when
         response = self.post_to_endpoint(authenticated_client, user_offerer_id=42)
-
-        # then
         assert response.status_code == 404
 
     def test_cannot_validate_offerer_attachment_already_validated(self, authenticated_client):
-        # given
         user_offerer = offerers_factories.UserOffererFactory()
 
-        # when
         response = self.post_to_endpoint(authenticated_client, user_offerer_id=user_offerer.id)
 
-        # then
         assert response.status_code == 303
 
         redirected_response = authenticated_client.get(response.headers["location"])
@@ -2407,17 +2258,17 @@ class GetRejectOffererAttachmentFormTest(GetEndpointHelper):
     endpoint_kwargs = {"user_offerer_id": 1}
     needed_permission = perm_models.Permissions.VALIDATE_OFFERER
 
+    # session + current user + UserOfferer
+    expected_num_queries = 3
+
     def test_get_reject_offerer_attachment_form(self, legit_user, authenticated_client):
-        # given
         user_offerer = offerers_factories.NotValidatedUserOffererFactory()
 
-        # when
         url = url_for(self.endpoint, user_offerer_id=user_offerer.id)
-        response = authenticated_client.get(url)
-
-        # then
-        # Rendering is not checked, but at least the fetched frame does not crash
-        assert response.status_code == 200
+        with assert_num_queries(self.expected_num_queries):
+            response = authenticated_client.get(url)
+            # Rendering is not checked, but at least the fetched frame does not crash
+            assert response.status_code == 200
 
 
 class RejectOffererAttachmentTest(PostEndpointHelper):
@@ -2426,13 +2277,10 @@ class RejectOffererAttachmentTest(PostEndpointHelper):
     needed_permission = perm_models.Permissions.VALIDATE_OFFERER
 
     def test_reject_offerer_attachment(self, legit_user, authenticated_client):
-        # given
         user_offerer = offerers_factories.NotValidatedUserOffererFactory()
 
-        # when
         response = self.post_to_endpoint(authenticated_client, user_offerer_id=user_offerer.id)
 
-        # then
         assert response.status_code == 303
 
         users_offerers = offerers_models.UserOfferer.query.all()
@@ -2455,10 +2303,7 @@ class RejectOffererAttachmentTest(PostEndpointHelper):
         )
 
     def test_reject_offerer_returns_404_if_offerer_attachment_is_not_found(self, authenticated_client, offerer):
-        # when
         response = self.post_to_endpoint(authenticated_client, user_offerer_id=42)
-
-        # then
         assert response.status_code == 404
 
 
@@ -2468,15 +2313,12 @@ class SetOffererAttachmentPendingTest(PostEndpointHelper):
     needed_permission = perm_models.Permissions.VALIDATE_OFFERER
 
     def test_set_offerer_attachment_pending(self, legit_user, authenticated_client):
-        # given
         user_offerer = offerers_factories.NotValidatedUserOffererFactory()
 
-        # when
         response = self.post_to_endpoint(
             authenticated_client, user_offerer_id=user_offerer.id, form={"comment": "En attente de documents"}
         )
 
-        # then
         assert response.status_code == 303
 
         db.session.refresh(user_offerer)
@@ -2492,14 +2334,11 @@ class SetOffererAttachmentPendingTest(PostEndpointHelper):
         assert action.comment == "En attente de documents"
 
     def test_set_offerer_attachment_pending_keep_pro_role(self, authenticated_client):
-        # given
         user = offerers_factories.UserOffererFactory().user  # already validated
         user_offerer = offerers_factories.NotValidatedUserOffererFactory(user=user)
 
-        # when
         response = self.post_to_endpoint(authenticated_client, user_offerer_id=user_offerer.id)
 
-        # then
         assert response.status_code == 303
 
         db.session.refresh(user_offerer)
@@ -2509,15 +2348,12 @@ class SetOffererAttachmentPendingTest(PostEndpointHelper):
         assert not user.has_non_attached_pro_role
 
     def test_set_offerer_attachment_pending_remove_pro_role(self, authenticated_client):
-        # given
         user_offerer = offerers_factories.UserOffererFactory()
         offerers_factories.UserNotValidatedOffererFactory(user=user_offerer.user)  # other pending offerer validation
         offerers_factories.NotValidatedUserOffererFactory(user=user_offerer.user)  # other pending attachment
 
-        # when
         response = self.post_to_endpoint(authenticated_client, user_offerer_id=user_offerer.id)
 
-        # then
         assert response.status_code == 303
 
         db.session.refresh(user_offerer)
@@ -2532,7 +2368,6 @@ class AddUserOffererAndValidateTest(PostEndpointHelper):
     needed_permission = perm_models.Permissions.VALIDATE_OFFERER
 
     def test_add_user_offerer_and_validate(self, legit_user, authenticated_client):
-        # given
         offerer = offerers_factories.UserOffererFactory().offerer
         user = users_factories.UserFactory()
         history_factories.ActionHistoryFactory(
@@ -2542,14 +2377,12 @@ class AddUserOffererAndValidateTest(PostEndpointHelper):
             user=user,
         )
 
-        # when
         response = self.post_to_endpoint(
             authenticated_client,
             offerer_id=offerer.id,
             form={"pro_user_id": user.id, "comment": "Le rattachement avait été rejeté par erreur"},
         )
 
-        # then
         assert response.status_code == 303
         db.session.refresh(offerer)
         db.session.refresh(user)
@@ -2577,17 +2410,14 @@ class AddUserOffererAndValidateTest(PostEndpointHelper):
         )
 
     def test_add_existing_user_offerer(self, legit_user, authenticated_client):
-        # given
         user_offerer = offerers_factories.NotValidatedUserOffererFactory()
 
-        # when
         response = self.post_to_endpoint(
             authenticated_client,
             offerer_id=user_offerer.offererId,
             form={"pro_user_id": user_offerer.userId, "comment": "test"},
         )
 
-        # then
         assert response.status_code == 303
         redirected_response = authenticated_client.get(response.headers["location"])
         assert (
@@ -2600,16 +2430,13 @@ class AddUserOffererAndValidateTest(PostEndpointHelper):
         assert len(mails_testing.outbox) == 0
 
     def test_add_user_not_related(self, legit_user, authenticated_client):
-        # given
         offerer = offerers_factories.UserOffererFactory().offerer
         user = users_factories.UserFactory()
 
-        # when
         response = self.post_to_endpoint(
             authenticated_client, offerer_id=offerer.id, form={"pro_user_id": user.id, "comment": "test"}
         )
 
-        # then
         assert response.status_code == 303
         redirected_response = authenticated_client.get(response.headers["location"])
         assert (
@@ -2618,7 +2445,6 @@ class AddUserOffererAndValidateTest(PostEndpointHelper):
         )
 
     def test_add_user_empty(self, legit_user, authenticated_client):
-        # given
         offerer = offerers_factories.UserOffererFactory().offerer
         history_factories.ActionHistoryFactory(
             actionType=history_models.ActionType.USER_OFFERER_REJECTED,
@@ -2627,12 +2453,10 @@ class AddUserOffererAndValidateTest(PostEndpointHelper):
             user=users_factories.UserFactory(),
         )
 
-        # when
         response = self.post_to_endpoint(
             authenticated_client, offerer_id=offerer.id, form={"pro_user_id": 0, "comment": "test"}
         )
 
-        # then
         assert response.status_code == 303
         redirected_response = authenticated_client.get(response.headers["location"])
         assert html_parser.extract_alert(redirected_response.data) == "Les données envoyées comportent des erreurs"
@@ -2670,17 +2494,18 @@ class GetBatchOffererPendingFormTest(GetEndpointHelper):
     endpoint = "backoffice_web.validation.get_batch_offerer_pending_form"
     needed_permission = perm_models.Permissions.VALIDATE_OFFERER
 
+    # session + current user (2 queries)
+    # get all tags to fill in form choices (1 query)
+    expected_num_queries = 3
+
     def test_get_batch_offerer_pending_form(self, legit_user, authenticated_client):
-        # given
         offerers_factories.NotValidatedOffererFactory()
 
-        # when
         url = url_for(self.endpoint)
-        response = authenticated_client.get(url)
-
-        # then
-        # Rendering is not checked, but at least the fetched frame does not crash
-        assert response.status_code == 200
+        with assert_num_queries(self.expected_num_queries):
+            response = authenticated_client.get(url)
+            # Rendering is not checked, but at least the fetched frame does not crash
+            assert response.status_code == 200
 
 
 class SetBatchOffererPendingTest(PostEndpointHelper):
@@ -2731,16 +2556,13 @@ class GetBatchOffererRejectFormTest(GetEndpointHelper):
     needed_permission = perm_models.Permissions.VALIDATE_OFFERER
 
     def test_get_offerer_attachment_pending_form(self, legit_user, authenticated_client):
-        # given
         offerers_factories.NotValidatedOffererFactory()
 
-        # when
         url = url_for(self.endpoint)
-        response = authenticated_client.get(url)
-
-        # then
-        # Rendering is not checked, but at least the fetched frame does not crash
-        assert response.status_code == 200
+        with assert_num_queries(2):  # session + current user
+            response = authenticated_client.get(url)
+            # Rendering is not checked, but at least the fetched frame does not crash
+            assert response.status_code == 200
 
 
 class BatchOffererRejectTest(PostEndpointHelper):
@@ -2819,17 +2641,17 @@ class GetOffererAttachmentPendingFormTest(GetEndpointHelper):
     endpoint_kwargs = {"user_offerer_id": 1}
     needed_permission = perm_models.Permissions.VALIDATE_OFFERER
 
+    # session + current user + UserOfferer
+    expected_num_queries = 3
+
     def test_get_offerer_attachment_pending_form(self, legit_user, authenticated_client):
-        # given
         user_offerer = offerers_factories.NotValidatedUserOffererFactory()
 
-        # when
         url = url_for(self.endpoint, user_offerer_id=user_offerer.id)
-        response = authenticated_client.get(url)
-
-        # then
-        # Rendering is not checked, but at least the fetched frame does not crash
-        assert response.status_code == 200
+        with assert_num_queries(self.expected_num_queries):
+            response = authenticated_client.get(url)
+            # Rendering is not checked, but at least the fetched frame does not crash
+            assert response.status_code == 200
 
 
 class SetBatchOffererAttachmentPendingTest(PostEndpointHelper):
@@ -2869,16 +2691,13 @@ class GetOffererAttachmentRejectFormTest(GetEndpointHelper):
     needed_permission = perm_models.Permissions.VALIDATE_OFFERER
 
     def test_get_batch_reject_user_offerer_form(self, legit_user, authenticated_client):
-        # given
         user_offerer = offerers_factories.NotValidatedUserOffererFactory()
 
-        # when
         url = url_for(self.endpoint, user_offerer_id=user_offerer.id)
-        response = authenticated_client.get(url)
-
-        # then
-        # Rendering is not checked, but at least the fetched frame does not crash
-        assert response.status_code == 200
+        with assert_num_queries(2):  # session + current user
+            response = authenticated_client.get(url)
+            # Rendering is not checked, but at least the fetched frame does not crash
+            assert response.status_code == 200
 
 
 class BatchOffererAttachmentRejectTest(PostEndpointHelper):
@@ -2933,7 +2752,6 @@ class ListOffererTagsTest(GetEndpointHelper):
     expected_num_queries = 4
 
     def test_list_offerer_tags(self, authenticated_client):
-        # given
         category = offerers_factories.OffererTagCategoryFactory(label="indépendant")
         offerer_tag = offerers_factories.OffererTagFactory(
             name="scottish-tag",
@@ -2942,12 +2760,10 @@ class ListOffererTagsTest(GetEndpointHelper):
             categories=[category],
         )
 
-        # when
         with assert_num_queries(self.expected_num_queries):
             response = authenticated_client.get(url_for(self.endpoint))
+            assert response.status_code == 200
 
-        # then
-        assert response.status_code == 200
         rows = html_parser.extract_table_rows(response.data, parent_class="tags-tab-pane")
         assert len(rows) == 1
         assert rows[0]["Nom"] == offerer_tag.name
@@ -2956,15 +2772,13 @@ class ListOffererTagsTest(GetEndpointHelper):
         assert rows[0]["Catégories"] == category.label
 
     def test_list_offerer_tag_categories(self, authenticated_client, offerer_tags):
-        # given (fixture + second category)
+        # fixture + second category
         offerers_factories.OffererTagCategoryFactory(name="comptage", label="Comptage partenaires")
 
-        # when
         with assert_num_queries(self.expected_num_queries):
             response = authenticated_client.get(url_for(self.endpoint))
+            assert response.status_code == 200
 
-        # then
-        assert response.status_code == 200
         rows = html_parser.extract_table_rows(response.data, parent_class="categories-tab-pane")
         assert len(rows) == 2
         assert rows[0]["Nom"] == "comptage"

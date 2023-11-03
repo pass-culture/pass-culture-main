@@ -114,20 +114,16 @@ class ListVenuesTest(GetEndpointHelper):
     expected_num_queries = 4
 
     def test_list_venues_without_filter(self, authenticated_client):
-        # when
         response = authenticated_client.get(url_for(self.endpoint))
 
-        # then
         assert response.status_code == 200
         assert html_parser.count_table_rows(response.data) == 0
 
     def test_list_venues_by_type(self, authenticated_client, venues):
-        # when
         with assert_num_queries(self.expected_num_queries):
             response = authenticated_client.get(url_for(self.endpoint, type=VenueTypeCode.MOVIE.name))
+            assert response.status_code == 200
 
-        # then
-        assert response.status_code == 200
         rows = html_parser.extract_table_rows(response.data)
         assert len(rows) == 1
         assert int(rows[0]["ID"]) == venues[0].id
@@ -140,28 +136,24 @@ class ListVenuesTest(GetEndpointHelper):
         assert rows[0]["Date de création"] == venues[0].dateCreated.strftime("%d/%m/%Y")
 
     def test_list_venues_by_label(self, authenticated_client, venues):
-        # when
         venue_label_id = venues[0].venueLabelId
         with assert_num_queries(self.expected_num_queries):
             response = authenticated_client.get(url_for(self.endpoint, venue_label=venue_label_id))
+            assert response.status_code == 200
 
-        # then
-        assert response.status_code == 200
         rows = html_parser.extract_table_rows(response.data)
         assert len(rows) == 1
         assert int(rows[0]["ID"]) == venues[0].id
 
     def test_list_venues_by_tags(self, authenticated_client, venues):
-        # when
         expected_num_queries = (
             self.expected_num_queries + 1
         )  # 1 more request is necessary to prefill form choices with selected tag(s)
         criteria_id = venues[0].criteria[0].id
         with assert_num_queries(expected_num_queries):
             response = authenticated_client.get(url_for(self.endpoint, criteria=criteria_id))
+            assert response.status_code == 200
 
-        # then
-        assert response.status_code == 200
         rows = html_parser.extract_table_rows(response.data)
         assert len(rows) == 1
         assert int(rows[0]["ID"]) == venues[0].id
@@ -188,25 +180,21 @@ class ListVenuesTest(GetEndpointHelper):
             assert row["Structure"] == offerer.name
 
     def test_list_venues_by_regions(self, authenticated_client, venues):
-        # when
         venue = offerers_factories.VenueFactory(postalCode="82000")
         with assert_num_queries(self.expected_num_queries):
             response = authenticated_client.get(url_for(self.endpoint, regions="Occitanie", order="asc"))
+            assert response.status_code == 200
 
-        # then
-        assert response.status_code == 200
         rows = html_parser.extract_table_rows(response.data)
         assert len(rows) == 2
         assert int(rows[0]["ID"]) == venues[0].id
         assert int(rows[1]["ID"]) == venue.id
 
     def test_list_venues_by_department(self, authenticated_client, venues):
-        # when
         with assert_num_queries(self.expected_num_queries):
             response = authenticated_client.get(url_for(self.endpoint, department="82"))
+            assert response.status_code == 200
 
-        # then
-        assert response.status_code == 200
         rows = html_parser.extract_table_rows(response.data)
         assert len(rows) == 1
         assert int(rows[0]["ID"]) == venues[0].id
@@ -225,12 +213,10 @@ class ListVenuesTest(GetEndpointHelper):
             offerers_factories.VenueFactory(venueTypeCode=VenueTypeCode.MOVIE),
             offerers_factories.VenueFactory(venueTypeCode=VenueTypeCode.MOVIE),
         ]
-        # when
         with assert_num_queries(self.expected_num_queries):
             response = authenticated_client.get(url_for(self.endpoint, order=order, type=VenueTypeCode.MOVIE.name))
+            assert response.status_code == 200
 
-        # then
-        assert response.status_code == 200
         rows = html_parser.extract_table_rows(response.data)
         # Without sort, table is ordered by dateCreated desc
         venues.sort(key=attrgetter("id"), reverse=(order == "desc"))
@@ -369,7 +355,6 @@ class GetVenueTest(GetEndpointHelper):
                 response = authenticated_client.get(url_for(self.endpoint, venue_id=venue_id))
                 assert response.status_code == 200
 
-        # then
         assert response.status_code == 200
         response_text = html_parser.content_as_text(response.data)
         assert "Statut DMS CB : En construction" in response_text
@@ -670,13 +655,11 @@ class GetVenueStatsTest(GetEndpointHelper):
     def test_venue_total_revenue(
         self, authenticated_client, venue_with_accepted_bank_info, individual_offerer_bookings, collective_venue_booking
     ):
-        # when
         venue_id = venue_with_accepted_bank_info.id
         with assert_num_queries(self.expected_num_queries):
             response = authenticated_client.get(url_for(self.endpoint, venue_id=venue_id))
+            assert response.status_code == 200
 
-        # then
-        assert response.status_code == 200
         assert "72,00 € de CA" in html_parser.extract_cards_text(response.data)
 
     def test_venue_total_revenue_individual_bookings_only(
@@ -685,35 +668,29 @@ class GetVenueStatsTest(GetEndpointHelper):
         venue_with_accepted_bank_info,
         individual_offerer_bookings,
     ):
-        # when
         venue_id = venue_with_accepted_bank_info.id
         with assert_num_queries(self.expected_num_queries):
             response = authenticated_client.get(url_for(self.endpoint, venue_id=venue_id))
+            assert response.status_code == 200
 
-        # then
-        assert response.status_code == 200
         assert "30,00 € de CA" in html_parser.extract_cards_text(response.data)
 
     def test_venue_total_revenue_collective_bookings_only(
         self, authenticated_client, venue_with_accepted_bank_info, collective_venue_booking
     ):
-        # when
         venue_id = venue_with_accepted_bank_info.id
         with assert_num_queries(self.expected_num_queries):
             response = authenticated_client.get(url_for(self.endpoint, venue_id=venue_id))
+            assert response.status_code == 200
 
-        # then
-        assert response.status_code == 200
         assert "42,00 € de CA" in html_parser.extract_cards_text(response.data)
 
     def test_venue_total_revenue_no_booking(self, authenticated_client, venue_with_accepted_bank_info):
-        # when
         venue_id = venue_with_accepted_bank_info.id
         with assert_num_queries(self.expected_num_queries):
             response = authenticated_client.get(url_for(self.endpoint, venue_id=venue_id))
+            assert response.status_code == 200
 
-        # then
-        assert response.status_code == 200
         assert "0,00 € de CA" in html_parser.extract_cards_text(response.data)
 
     def test_venue_offers_stats(
@@ -727,24 +704,20 @@ class GetVenueStatsTest(GetEndpointHelper):
         offerer_active_collective_offer_templates,
         offerer_inactive_collective_offer_templates,
     ):
-        # when
         venue_id = venue_with_accepted_bank_info.id
         with assert_num_queries(self.expected_num_queries):
             response = authenticated_client.get(url_for(self.endpoint, venue_id=venue_id))
+            assert response.status_code == 200
 
-        # then
-        assert response.status_code == 200
         cards_text = html_parser.extract_cards_text(response.data)
         assert "7 offres actives ( 2 IND / 5 EAC ) 16 offres inactives ( 5 IND / 11 EAC )" in cards_text
 
     def test_venue_offers_stats_0_if_no_offer(self, authenticated_client, venue_with_accepted_bank_info):
-        # when
         venue_id = venue_with_accepted_bank_info.id
         with assert_num_queries(self.expected_num_queries):
             response = authenticated_client.get(url_for(self.endpoint, venue_id=venue_id))
+            assert response.status_code == 200
 
-        # then
-        assert response.status_code == 200
         cards_text = html_parser.extract_cards_text(response.data)
         assert "0 offres actives ( 0 IND / 0 EAC ) 0 offres inactives ( 0 IND / 0 EAC )" in cards_text
 
@@ -1410,7 +1383,7 @@ class GetBatchEditVenuesFormTest(PostEndpointHelper):
     needed_permission = perm_models.Permissions.MANAGE_PRO_ENTITY
 
     def test_get_empty_batch_edit_venues_form(self, legit_user, authenticated_client):
-        with assert_num_queries(2):  # session + user
+        with assert_num_queries(2):  # session + current user
             response = authenticated_client.get(url_for(self.endpoint))
             assert response.status_code == 200
 
@@ -1424,7 +1397,7 @@ class GetBatchEditVenuesFormTest(PostEndpointHelper):
             "object_ids": ",".join(str(venue.id) for venue in venues),
         }
 
-        with assert_num_queries(self.fetch_csrf_num_queries + 3):  # session + user + criteria
+        with assert_num_queries(self.fetch_csrf_num_queries + 3):  # session + current user + criteria
             response = self.post_to_endpoint(authenticated_client, form=form_data)
             assert response.status_code == 200
 

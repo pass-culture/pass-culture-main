@@ -14,7 +14,6 @@ from pcapi.core.offerers import factories as offerers_factories
 from pcapi.core.offers import factories as offers_factories
 from pcapi.core.offers import models as offers_models
 import pcapi.core.permissions.models as perm_models
-from pcapi.core.testing import assert_no_duplicated_queries
 from pcapi.core.testing import assert_num_queries
 from pcapi.models import db
 from pcapi.models.offer_mixin import OfferValidationStatus
@@ -57,26 +56,23 @@ class ListCollectiveOfferTemplatesTest(GetEndpointHelper):
     # by a field added in the jinja template.
     # - fetch session (1 query)
     # - fetch user (1 query)
+    expected_num_queries_when_no_query = 2
     # - fetch collective offer templates with joinedload including extra data (1 query)
-    expected_num_queries = 3
+    expected_num_queries = expected_num_queries_when_no_query + 1
 
     def test_list_collective_offer_templates_without_filter(self, authenticated_client, collective_offer_templates):
-        # when
-        with assert_no_duplicated_queries():
+        with assert_num_queries(self.expected_num_queries_when_no_query):
             response = authenticated_client.get(url_for(self.endpoint))
+            assert response.status_code == 200
 
-        # then
-        assert response.status_code == 200
         assert html_parser.count_table_rows(response.data) == 0
 
     def test_list_collective_offer_templates_by_id(self, authenticated_client, collective_offer_templates):
-        # when
         searched_id = str(collective_offer_templates[0].id)
         with assert_num_queries(self.expected_num_queries):
             response = authenticated_client.get(url_for(self.endpoint, q=searched_id))
+            assert response.status_code == 200
 
-        # then
-        assert response.status_code == 200
         rows = html_parser.extract_table_rows(response.data)
         assert len(rows) == 1
         assert rows[0]["ID"] == searched_id
@@ -89,13 +85,11 @@ class ListCollectiveOfferTemplatesTest(GetEndpointHelper):
         assert rows[0]["Lieu"] == collective_offer_templates[0].venue.name
 
     def test_list_collective_offer_templates_by_name(self, authenticated_client, collective_offer_templates):
-        # when
         searched_name = collective_offer_templates[1].name
         with assert_num_queries(self.expected_num_queries):
             response = authenticated_client.get(url_for(self.endpoint, q=searched_name, sort="id", order="asc"))
+            assert response.status_code == 200
 
-        # then
-        assert response.status_code == 200
         rows = html_parser.extract_table_rows(response.data)
         assert len(rows) == 2
         assert rows[0]["ID"] == str(collective_offer_templates[1].id)
@@ -108,7 +102,6 @@ class ListCollectiveOfferTemplatesTest(GetEndpointHelper):
         assert rows[0]["Lieu"] == collective_offer_templates[1].venue.name
 
     def test_list_offers_by_date(self, authenticated_client, collective_offer_templates):
-        # when
         with assert_num_queries(self.expected_num_queries):
             response = authenticated_client.get(
                 url_for(
@@ -117,19 +110,16 @@ class ListCollectiveOfferTemplatesTest(GetEndpointHelper):
                     to_date=(datetime.date.today() - datetime.timedelta(days=1)).isoformat(),
                 )
             )
+            assert response.status_code == 200
 
-        # then
-        assert response.status_code == 200
         rows = html_parser.extract_table_rows(response.data)
         assert set(int(row["ID"]) for row in rows) == {collective_offer_templates[2].id}
 
     def test_list_collective_offer_templates_by_category(self, authenticated_client, collective_offer_templates):
-        # when
         with assert_num_queries(self.expected_num_queries):
             response = authenticated_client.get(url_for(self.endpoint, category=[categories.CINEMA.id]))
+            assert response.status_code == 200
 
-        # then
-        assert response.status_code == 200
         rows = html_parser.extract_table_rows(response.data)
         assert set(int(row["ID"]) for row in rows) == {
             collective_offer_templates[1].id,
@@ -137,41 +127,34 @@ class ListCollectiveOfferTemplatesTest(GetEndpointHelper):
         }
 
     def test_list_collective_offer_templates_by_venue(self, authenticated_client, collective_offer_templates):
-        # when
         venue_id = collective_offer_templates[1].venueId
         with assert_num_queries(self.expected_num_queries + 1):  # +1 because of reloading selected venue in the form
             response = authenticated_client.get(url_for(self.endpoint, venue=[venue_id]))
+            assert response.status_code == 200
 
-        # then
-        assert response.status_code == 200
         rows = html_parser.extract_table_rows(response.data)
         assert set(int(row["ID"]) for row in rows) == {collective_offer_templates[1].id}
 
     def test_list_collective_offer_templates_by_offerer(self, authenticated_client, collective_offer_templates):
-        # when
         offerer_id = collective_offer_templates[1].venue.managingOffererId
         with assert_num_queries(self.expected_num_queries + 1):  # +1 because of reloading selected offerer in the form
             response = authenticated_client.get(url_for(self.endpoint, offerer=[offerer_id]))
+            assert response.status_code == 200
 
-        # then
-        assert response.status_code == 200
         rows = html_parser.extract_table_rows(response.data)
         assert set(int(row["ID"]) for row in rows) == {collective_offer_templates[1].id}
 
     def test_list_collective_offer_templates_by_status(self, authenticated_client, collective_offer_templates):
-        # when
         status = collective_offer_templates[2].validation
         with assert_num_queries(self.expected_num_queries):
             response = authenticated_client.get(url_for(self.endpoint, status=[status.value]))
+            assert response.status_code == 200
 
-        # then
-        assert response.status_code == 200
         rows = html_parser.extract_table_rows(response.data)
         assert set(int(row["ID"]) for row in rows) == {collective_offer_templates[2].id}
         assert rows[0]["État"] == "Rejetée"
 
     def test_list_offers_by_all_filters(self, authenticated_client, collective_offer_templates):
-        # when
         venue_id = collective_offer_templates[2].venueId
         with assert_num_queries(self.expected_num_queries + 1):  # +1 because of reloading selected venue
             response = authenticated_client.get(
@@ -182,9 +165,8 @@ class ListCollectiveOfferTemplatesTest(GetEndpointHelper):
                     venue=[venue_id],
                 )
             )
+            assert response.status_code == 200
 
-        # then
-        assert response.status_code == 200
         rows = html_parser.extract_table_rows(response.data)
         assert set(int(row["ID"]) for row in rows) == {collective_offer_templates[2].id}
 
@@ -200,7 +182,6 @@ class ListCollectiveOfferTemplatesTest(GetEndpointHelper):
         self, authenticated_client, order, expected_list
     ):
         # test results when clicking on pending collective offers link (home page)
-        # given
         educational_factories.CollectiveOfferTemplateFactory(
             validation=offers_models.OfferValidationStatus.PENDING,
             venue__managingOfferer=offerers_factories.NotValidatedOffererFactory(),
@@ -215,7 +196,6 @@ class ListCollectiveOfferTemplatesTest(GetEndpointHelper):
                 venue=validated_venue,
             )
 
-        # when
         with assert_num_queries(self.expected_num_queries):
             response = authenticated_client.get(
                 url_for(
@@ -228,24 +208,21 @@ class ListCollectiveOfferTemplatesTest(GetEndpointHelper):
             )
             assert response.status_code == 200
 
-        # then: must be sorted, older first
+        # must be sorted, older first
         rows = html_parser.extract_table_rows(response.data)
         assert [row["Nom de l'offre"] for row in rows] == expected_list
 
     def test_list_collective_offer_templates_with_flagging_rules(self, authenticated_client):
-        # given
         rule_1 = offers_factories.OfferValidationRuleFactory(name="Règle magique")
         rule_2 = offers_factories.OfferValidationRuleFactory(name="Règle moldue")
         collective_offer_template = educational_factories.CollectiveOfferTemplateFactory(
             flaggingValidationRules=[rule_1, rule_2]
         )
 
-        # when
         with assert_num_queries(self.expected_num_queries):
             response = authenticated_client.get(url_for(self.endpoint, q=str(collective_offer_template.id)))
             assert response.status_code == 200
 
-        # then
         rows = html_parser.extract_table_rows(response.data)
         assert rows[0]["Règles de conformité"] == ", ".join([rule_1.name, rule_2.name])
 
@@ -327,7 +304,7 @@ class ValidateCollectiveOfferTemplateFormTest(GetEndpointHelper):
 
         url = url_for(self.endpoint, collective_offer_template_id=collective_offer_template.id)
 
-        with assert_num_queries(2):  # session + user
+        with assert_num_queries(2):  # session + current user
             response = authenticated_client.get(url)
             assert response.status_code == 200
 
@@ -409,7 +386,7 @@ class RejectCollectiveOfferTemplateFormTest(GetEndpointHelper):
 
         form_url = url_for(self.endpoint, collective_offer_template_id=collective_offer_template.id)
 
-        with assert_num_queries(2):  # session + user
+        with assert_num_queries(2):  # session + current user
             response = authenticated_client.get(form_url)
             assert response.status_code == 200
 
@@ -538,12 +515,11 @@ class GetBatchCollectiveOfferTemplatesApproveFormTest(GetEndpointHelper):
     needed_permission = perm_models.Permissions.PRO_FRAUD_ACTIONS
 
     def test_get_batch_collective_offer_templates_approve_form(self, legit_user, authenticated_client):
-        # when
         url = url_for(self.endpoint)
-        response = authenticated_client.get(url)
 
-        # then
-        assert response.status_code == 200
+        with assert_num_queries(2):  # session + current user
+            response = authenticated_client.get(url)
+            assert response.status_code == 200
 
 
 class GetBatchCollectiveOfferTemplatesRejectFormTest(GetEndpointHelper):
@@ -551,9 +527,8 @@ class GetBatchCollectiveOfferTemplatesRejectFormTest(GetEndpointHelper):
     needed_permission = perm_models.Permissions.PRO_FRAUD_ACTIONS
 
     def test_get_batch_collective_offer_templates_reject_form(self, legit_user, authenticated_client):
-        # when
         url = url_for(self.endpoint)
-        response = authenticated_client.get(url)
 
-        # then
-        assert response.status_code == 200
+        with assert_num_queries(2):  # session + current user
+            response = authenticated_client.get(url)
+            assert response.status_code == 200
