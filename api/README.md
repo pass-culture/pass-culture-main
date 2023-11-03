@@ -40,11 +40,13 @@ ces [étapes](https://doc.courtbouillon.org/weasyprint/stable/first_steps.html#i
 
 ### Poetry
 
-On utilise Poetry pour gérer nos dépendences. Par défaut, Poetry crée l'environnement virtuel dans un dossier
-qui dépend du système d'exploitation. Pour accéder aux exécutables de cet environnement, il y a deux méthodes :
-1. Préfixer la commande avec `poetry run`, e.g. `poetry run pytest`
-2. Activer l'environnement virtuel avec `poetry shell`. Cela permet d'exécuter `pytest` sans préfixe. Il existe
-   [d'autres manières d'activer son environnement virtuel](https://python-poetry.org/docs/basic-usage#activating-the-virtual-environment).
+On utilise Poetry pour gérer nos dépendances. Par défaut, Poetry crée l'environnement virtuel dans un dossier
+qui dépend du système d'exploitation.
+
+La méthode recommandée d'activer son environnement virtuel est avec la commande `poetry shell`.
+
+Pour un usage avancé comme avoir plusieurs environnements virtuels, il existe [d'autres manières d'activer son
+environnement virtuel](https://python-poetry.org/docs/basic-usage#activating-the-virtual-environment).
 
 Une gestion plus fine de l'environnement virtuel utilisé par `poetry` peut être trouvée sur ce lien : [Managing environments | Documentation | Poetry](https://python-poetry.org/docs/managing-environments/)
 
@@ -93,18 +95,18 @@ Les tests pourront ensuite être exécutés avec ou sans docker-compose
   pc test-backend tests/core/offers/test_api.py::CreateOfferTest::test_create_offer_from_scratch # Pour lancer un test en particulier
   ```
 
-* Lancement des tests depuis la ligne de commande. Il est ainsi très simple d'accéder à `stdin`/`stdout` via le
-  paramètre  `-s`, par exemple pour utiliser des breakpoints.
+* Lancement des tests depuis la ligne de commande dans un `poetry shell`. Il est ainsi très simple d'accéder à
+  `stdin`/`stdout` via le paramètre  `-s`, par exemple pour utiliser des breakpoints.
   ```shell
-  poetry run pytest # Pour lancer tous les tests
-  poetry run pytest tests/core/offers/test_api.py::CreateOfferTest::test_create_offer_from_scratch # Pour lancer un test en particulier
+  pytest # Pour lancer tous les tests
+  pytest tests/core/offers/test_api.py::CreateOfferTest::test_create_offer_from_scratch # Pour lancer un test en particulier
   ```
 
 * Les tests du backoffice ne peuvent pas être exécutés en même temps que le reste. Pour jouer tous les tests en une commande, il est possible
-  d'utiliser
+  d'utiliser dans un `poetry shell`
   ```shell
-  poetry run pytest -m 'not backoffice' && \
-  poetry run pytest -m 'backoffice'
+  pytest -m 'not backoffice' && \
+  pytest -m 'backoffice'
   ```
 
 ### Écriture des tests
@@ -163,18 +165,18 @@ Si la base de données n'a pas été initialisée, vous devez suivre les étapes
   - MacOS : `PostGIS` est fourni avec la distribution [Postgres.app](https://postgresapp.com/). Si une autre manière
     d'installer `PostgreSQL` a été choisie, alors la commande d'installation est `brew install postgis`
 
-* Installer les extensions et jouer les migrations
+* Installer les extensions et jouer les migrations en ayant dans le `poetry shell` :
 
   ```shell
-  poetry run flask install_postgres_extensions
-  poetry run alembic upgrade pre@head
-  poetry run alembic upgrade post@head
+  flask install_postgres_extensions
+  alembic upgrade pre@head
+  alembic upgrade post@head
   ```
 
 Vous pouvez maintenant lancer l'application Flask
 
 ```shell
-poetry run python src/pcapi/app.py
+python src/pcapi/app.py
 ```
 
 ### Database de jeu
@@ -182,10 +184,10 @@ poetry run python src/pcapi/app.py
 Afin de naviguer/tester différentes situations de données, il existe dans api des scripts permettant d'engendrer des
 bases de données "sandbox".
 
-La plus conséquente est `industrial`, elle se créée via la commande:
+La plus conséquente est `industrial`, elle se créée depuis un `poetry shell` via la commande:
 
 ```bash
-poetry run flask sandbox -n industrial
+flask sandbox -n industrial
 ```
 
 ---
