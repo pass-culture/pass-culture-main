@@ -39,6 +39,7 @@ export interface VenueProps {
   adageInscriptionDate?: string | null
   hasPendingBankInformationApplication?: boolean | null
   demarchesSimplifieesApplicationId?: number | null
+  offererHasBankAccount: boolean
 }
 
 const Venue = ({
@@ -55,6 +56,7 @@ const Venue = ({
   adageInscriptionDate,
   demarchesSimplifieesApplicationId,
   hasPendingBankInformationApplication = false,
+  offererHasBankAccount,
 }: VenueProps) => {
   const venueCreateOfferLink = [
     '/offre/creation',
@@ -349,6 +351,7 @@ const Venue = ({
                     demarchesSimplifieesApplicationId={
                       demarchesSimplifieesApplicationId
                     }
+                    offererHasBankAccount={offererHasBankAccount}
                   />
 
                   <div className="venue-stats">

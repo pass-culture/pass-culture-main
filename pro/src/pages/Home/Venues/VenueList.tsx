@@ -9,12 +9,14 @@ interface VenueListProps {
   physicalVenues: GetOffererVenueResponseModel[]
   selectedOffererId: number
   virtualVenue: GetOffererVenueResponseModel | null
+  offererHasBankAccount: boolean
 }
 
 const VenueList = ({
   physicalVenues,
   selectedOffererId,
   virtualVenue,
+  offererHasBankAccount,
 }: VenueListProps) => {
   return (
     <div className="h-venue-list">
@@ -40,6 +42,7 @@ const VenueList = ({
           demarchesSimplifieesApplicationId={
             virtualVenue.demarchesSimplifieesApplicationId
           }
+          offererHasBankAccount={offererHasBankAccount}
         />
       )}
 
@@ -64,6 +67,7 @@ const VenueList = ({
           demarchesSimplifieesApplicationId={
             venue.demarchesSimplifieesApplicationId
           }
+          offererHasBankAccount={offererHasBankAccount}
         />
       ))}
     </div>
