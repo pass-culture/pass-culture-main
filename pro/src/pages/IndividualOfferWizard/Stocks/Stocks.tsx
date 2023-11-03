@@ -42,7 +42,7 @@ const Stocks = (): JSX.Element | null => {
         priceCategoryId ? Number(priceCategoryId) : undefined,
         (orderBy as StocksOrderedBy) ?? undefined,
         orderByDesc ? orderByDesc === '1' : undefined,
-        page ? Number(page) : 1
+        Number(page || 1)
       )
 
       if (!ignore) {
