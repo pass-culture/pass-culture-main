@@ -21,6 +21,7 @@ from pcapi.utils.human_ids import humanize
 from .helpers import html_parser
 from .helpers import search as search_helpers
 from .helpers.get import GetEndpointHelper
+from .helpers.url import assert_response_location
 
 
 pytestmark = [
@@ -162,11 +163,13 @@ class SearchProUserTest:
             response = authenticated_client.get(url_for(self.endpoint, q=search_query, pro_type=TypeOptions.USER.name))
             assert response.status_code == 303
 
-        assert response.location == url_for(
+        assert_response_location(
+            response,
             "backoffice_web.pro_user.get",
             user_id=self.pro_accounts[2].id,
             q=self.pro_accounts[2].email,
-            _external=True,
+            search_rank=1,
+            total_items=1,
         )
 
     def test_can_search_pro_by_last_name(self, authenticated_client):

@@ -3,8 +3,9 @@
 <div class="card shadow">
   <div class="card-body">
     <h5 class="mb-3"></h5>
+    {% set link = get_link_to_detail(row.id, form=search_form) %}
     <h5 class="card-title">
-      <a href="{{ get_link_to_detail(row.id, q=q, search_rank=index, total_items=rows.total) }}"
+      <a href="{{ link }}"
          class="link-primary">{{ row.label | upper }}</a>
       <span class="fs-5 ps-4">
         <span class="me-1 pb-1 badge rounded-pill text-bg-warning align-middle">Compte bancaire</span>
@@ -12,10 +13,9 @@
     </h5>
     <h6 class="card-subtitle mt-4 mb-3 text-muted">Bank Account ID : {{ row.id }}</h6>
     <div class="d-flex flex-row-reverse">
-      <a href="{{ get_link_to_detail(row.id, q=q, search_rank=index, total_items=rows.total) }}"
-         class="btn btn-md btn-outline-primary fw-bold">
-        CONSULTER CE COMPTE <i class="bi bi-arrow-right"></i>
-      </a>
-    </div>
-  </div>
+    <a href="{{ link }}"
+       class="btn btn-md btn-outline-primary fw-bold">CONSULTER CE COMPTE <i class="bi bi-arrow-right"></i>
+  </a>
+</div>
+</div>
 </div>
