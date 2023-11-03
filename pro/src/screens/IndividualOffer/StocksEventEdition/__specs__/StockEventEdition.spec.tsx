@@ -47,7 +47,8 @@ const renderStockEventScreen = async (
   vi.spyOn(api, 'listOfferersNames').mockResolvedValue({ offerersNames: [] })
   vi.spyOn(api, 'getStocks').mockResolvedValue({
     stocks: apiStocks,
-    stock_count: apiStocks.length,
+    stockCount: apiStocks.length,
+    hasStocks: true,
   })
   vi.spyOn(api, 'listOffers').mockResolvedValue([
     {

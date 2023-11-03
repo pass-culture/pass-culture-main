@@ -364,6 +364,7 @@ class GetIndividualOfferResponseModel(BaseModel, AccessibilityComplianceMixin):
 class GetStocksResponseModel(BaseModel):
     stocks: list[GetOfferStockResponseModel]
     stock_count: int
+    hasStocks: bool
 
     class Config:
         json_encoders = {datetime.datetime: format_into_utc_date}

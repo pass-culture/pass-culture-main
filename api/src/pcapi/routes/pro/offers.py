@@ -95,22 +95,27 @@ def get_stocks(offer_id: int, query: offers_serialize.StocksQueryModel) -> offer
             status_code=404,
         )
     rest.check_user_has_access_to_offerer(current_user, offer.venue.managingOffererId)
-    stocks = offers_repository.get_filtered_stocks(
-        offer_id=offer_id,
-        date=query.date,
-        time=query.time,
-        price_category_id=query.price_category_id,
-        order_by=query.order_by,
-        order_by_desc=query.order_by_desc,
-    )
-    stocks_count = stocks.count()
-    stocks = offers_repository.get_paginated_stocks(
-        stocks_query=stocks,
-        page=query.page,
-        stocks_limit_per_page=query.stocks_limit_per_page,
-    )
-    stock_list = [offers_serialize.GetOfferStockResponseModel.from_orm(stock) for stock in stocks.all()]
-    return offers_serialize.GetStocksResponseModel(stocks=stock_list, stock_count=stocks_count)
+    has_stocks = offers_repository.offer_has_stocks(offer_id=offer_id)
+    if has_stocks:
+        stocks = offers_repository.get_filtered_stocks(
+            offer_id=offer_id,
+            date=query.date,
+            time=query.time,
+            price_category_id=query.price_category_id,
+            order_by=query.order_by,
+            order_by_desc=query.order_by_desc,
+        )
+        stocks_count = stocks.count()
+        stocks = offers_repository.get_paginated_stocks(
+            stocks_query=stocks,
+            page=query.page,
+            stocks_limit_per_page=query.stocks_limit_per_page,
+        )
+        stock_list = [offers_serialize.GetOfferStockResponseModel.from_orm(stock) for stock in stocks.all()]
+    else:
+        stock_list = []
+        stocks_count = 0
+    return offers_serialize.GetStocksResponseModel(stocks=stock_list, stock_count=stocks_count, hasStocks=has_stocks)
 
 
 @private_api.route("/offers/<int:offer_id>/stocks/delete", methods=["POST"])
