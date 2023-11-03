@@ -19,7 +19,7 @@ pytestmark = [
 
 
 class UserGenerationGetRouteTest:
-    endpoint = "backoffice_web.get_generated_user"
+    endpoint = "backoffice_web.user_generator.get_generated_user"
     needed_permission = None
 
     def test_returns_user_data(self, authenticated_client):
@@ -85,7 +85,7 @@ class UserGenerationGetRouteTest:
 
 
 class UserGenerationPostRouteTest(post_endpoint_helper.PostEndpointWithoutPermissionHelper):
-    endpoint = "backoffice_web.generate_user"
+    endpoint = "backoffice_web.user_generator.generate_user"
     needed_permission = None
 
     @override_settings(ENABLE_TEST_USER_GENERATION=False)
@@ -100,7 +100,7 @@ class UserGenerationPostRouteTest(post_endpoint_helper.PostEndpointWithoutPermis
         response = self.post_to_endpoint(authenticated_client, form=form)
         number_of_users_after = users_models.User.query.count()
         assert response.status_code == 303
-        assert urllib.parse.urlparse(response.headers["location"]).path == url_for("backoffice_web.get_generated_user")
+        assert urllib.parse.urlparse(response.headers["location"]).path == url_for(self.endpoint)
         assert number_of_users_before == number_of_users_after
 
     def test_user_not_created_when_underage_validates_phone_number(self, authenticated_client):
@@ -109,7 +109,7 @@ class UserGenerationPostRouteTest(post_endpoint_helper.PostEndpointWithoutPermis
         response = self.post_to_endpoint(authenticated_client, form=form)
         number_of_users_after = users_models.User.query.count()
         assert response.status_code == 303
-        assert urllib.parse.urlparse(response.headers["location"]).path == url_for("backoffice_web.get_generated_user")
+        assert urllib.parse.urlparse(response.headers["location"]).path == url_for(self.endpoint)
         assert number_of_users_before == number_of_users_after
 
     def test_user_not_created_when_age_below_valid_range(self, authenticated_client):
@@ -118,7 +118,7 @@ class UserGenerationPostRouteTest(post_endpoint_helper.PostEndpointWithoutPermis
         response = self.post_to_endpoint(authenticated_client, form=form)
         number_of_users_after = users_models.User.query.count()
         assert response.status_code == 303
-        assert urllib.parse.urlparse(response.headers["location"]).path == url_for("backoffice_web.get_generated_user")
+        assert urllib.parse.urlparse(response.headers["location"]).path == url_for(self.endpoint)
         assert number_of_users_before == number_of_users_after
 
     def test_user_not_created_when_age_above_valid_range(self, authenticated_client):
@@ -127,5 +127,5 @@ class UserGenerationPostRouteTest(post_endpoint_helper.PostEndpointWithoutPermis
         response = self.post_to_endpoint(authenticated_client, form=form)
         number_of_users_after = users_models.User.query.count()
         assert response.status_code == 303
-        assert urllib.parse.urlparse(response.headers["location"]).path == url_for("backoffice_web.get_generated_user")
+        assert urllib.parse.urlparse(response.headers["location"]).path == url_for(self.endpoint)
         assert number_of_users_before == number_of_users_after

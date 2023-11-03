@@ -12,14 +12,19 @@ from pcapi.core.users import constants as users_constants
 from pcapi.core.users import exceptions as users_exceptions
 from pcapi.core.users import models as users_models
 import pcapi.core.users.generator as users_generator
-from pcapi.routes.backoffice import blueprint
 from pcapi.routes.backoffice import utils
 
 from . import forms
 
 
-@blueprint.backoffice_web.route("/admin/user-generator", methods=["GET"])
-@utils.custom_login_required(redirect_to=".home")
+user_generator_blueprint = utils.child_backoffice_blueprint(
+    "user_generator",
+    __name__,
+    url_prefix="/admin/user-generator",
+)
+
+
+@user_generator_blueprint.route("", methods=["GET"])
 def get_generated_user() -> utils.BackofficeResponse:
     form = forms.UserGeneratorForm()
     user = _get_user_if_exists(utils.get_query_params().get("userId"))
@@ -41,19 +46,18 @@ def get_generated_user() -> utils.BackofficeResponse:
         link_to_ubble_mock=link_to_ubble_mock,
         user=user,
         form=form,
-        dst=url_for("backoffice_web.generate_user"),
+        dst=url_for("backoffice_web.user_generator.generate_user"),
     )
 
 
-@blueprint.backoffice_web.route("/admin/user-generator", methods=["POST"])
-@utils.custom_login_required(redirect_to=".home")
+@user_generator_blueprint.route("", methods=["POST"])
 def generate_user() -> utils.BackofficeResponse:
     form = forms.UserGeneratorForm()
-
+    get_generated_user_endpoint = "backoffice_web.user_generator.get_generated_user"
     if not form.validate():
         error_msg = utils.build_form_error_msg(form)
         flash(error_msg, "warning")
-        return redirect(url_for("backoffice_web.get_generated_user"), code=303)
+        return redirect(url_for(get_generated_user_endpoint), code=303)
 
     # >18yo user cannot be identified with Educonnect
     age = form.age.data
@@ -65,7 +69,7 @@ def generate_user() -> utils.BackofficeResponse:
         and id_provider == users_generator.GeneratedIdProvider.EDUCONNECT.name
     ):
         flash("Un utilisateur de plus de 18 ans ne peut pas être identifié via Educonnect", "warning")
-        return redirect(url_for("backoffice_web.get_generated_user"), code=303)
+        return redirect(url_for(get_generated_user_endpoint), code=303)
 
     # <18yo user cannot validate phone number
     step = form.step.data
@@ -74,7 +78,7 @@ def generate_user() -> utils.BackofficeResponse:
         and step == users_generator.GeneratedSubscriptionStep.PHONE_VALIDATION.name
     ):
         flash("Un utilisateur de moins de 18 ans ne peut pas valider son numéro de téléphone", "warning")
-        return redirect(url_for("backoffice_web.get_generated_user"), code=303)
+        return redirect(url_for(get_generated_user_endpoint), code=303)
 
     try:
         user_data = users_generator.GenerateUserData(
@@ -91,7 +95,12 @@ def generate_user() -> utils.BackofficeResponse:
         token_utils.TokenType.EMAIL_VALIDATION, users_constants.EMAIL_VALIDATION_TOKEN_LIFE_TIME, user.id
     )
     return redirect(
-        url_for("backoffice_web.get_generated_user", userId=user.id, accessToken=token.encoded_token), code=303
+        url_for(
+            get_generated_user_endpoint,
+            userId=user.id,
+            accessToken=token.encoded_token,
+        ),
+        code=303,
     )
 
 
