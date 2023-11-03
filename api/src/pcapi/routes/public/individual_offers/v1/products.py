@@ -191,7 +191,7 @@ def post_product_offer(body: serialization.BatchProductOfferCreation) -> seriali
                     utils.save_image(product_offer.image, saved_offer)
                 offers_api.publish_offer(saved_offer, user=None)
 
-    except offers_exceptions.OfferCreationBaseException as error:
+    except (offers_exceptions.OfferCreationBaseException, offers_exceptions.OfferEditionBaseException) as error:
         raise api_errors.ApiErrors(error.errors, status_code=400)
 
     return serialization.BatchProductOfferResponse.build_product_offers(created_offers)
@@ -266,7 +266,7 @@ def _create_or_update_ean_offers(serialized_products_stocks: dict, venue_id: int
                 )
                 created_offers.append(created_offer)
 
-            except offers_exceptions.OfferCreationBaseException as exc:
+            except (offers_exceptions.OfferCreationBaseException, offers_exceptions.OfferEditionBaseException) as exc:
                 logger.exception("Error while creating offer by ean", extra={"exc": exc})
                 continue
 
@@ -274,18 +274,22 @@ def _create_or_update_ean_offers(serialized_products_stocks: dict, venue_id: int
 
         reloaded_offers = _get_existing_offers(ean_list_to_create, venue)
         for offer in reloaded_offers:
-            ean = offer.extraData["ean"]  # type: ignore [index]
-            stock_data = serialized_products_stocks[ean]
-            # FIXME (mageoffray, 2023-05-26): stock saving optimisation
-            # Stocks are inserted one by one for now, we need to improve create_stock to remove the repository.session.add()
-            # It will be done before the release of this API
-            offers_api.create_stock(
-                offer=offer,
-                price=finance_utils.to_euros(stock_data["price"]),
-                quantity=serialization.deserialize_quantity(stock_data["quantity"]),
-                booking_limit_datetime=stock_data["booking_limit_datetime"],
-                creating_provider=provider,
-            )
+            try:
+                ean = offer.extraData["ean"]  # type: ignore [index]
+                stock_data = serialized_products_stocks[ean]
+                # FIXME (mageoffray, 2023-05-26): stock saving optimisation
+                # Stocks are inserted one by one for now, we need to improve create_stock to remove the repository.session.add()
+                # It will be done before the release of this API
+                offers_api.create_stock(
+                    offer=offer,
+                    price=finance_utils.to_euros(stock_data["price"]),
+                    quantity=serialization.deserialize_quantity(stock_data["quantity"]),
+                    booking_limit_datetime=stock_data["booking_limit_datetime"],
+                    creating_provider=provider,
+                )
+            except (offers_exceptions.OfferCreationBaseException, offers_exceptions.OfferEditionBaseException) as exc:
+                logger.exception("Error while creating offer by ean", extra={"exc": exc})
+
     for offer in offers_to_update:
         try:
             offer.lastProvider = provider
@@ -308,7 +312,7 @@ def _create_or_update_ean_offers(serialized_products_stocks: dict, venue_id: int
                 provider,
             )
             offers_to_index.append(offer_to_update_by_ean[ean].id)
-        except offers_exceptions.OfferCreationBaseException as exc:
+        except (offers_exceptions.OfferCreationBaseException, offers_exceptions.OfferEditionBaseException) as exc:
             logger.exception("Error while creating offer by ean", extra={"exc": exc})
             continue
     db.session.commit()
@@ -593,7 +597,7 @@ def edit_product(body: serialization.BatchProductOfferEdition) -> serialization.
                 updated_offers.append(updated_offer)
                 if "stock" in updated_offer_from_body:
                     _upsert_product_stock(updated_offer, product_offer.stock, current_api_key.provider)
-        except offers_exceptions.OfferCreationBaseException as e:
+        except (offers_exceptions.OfferCreationBaseException, offers_exceptions.OfferEditionBaseException) as e:
             raise api_errors.ApiErrors(e.errors, status_code=400)
 
     return serialization.BatchProductOfferResponse.build_product_offers(updated_offers)

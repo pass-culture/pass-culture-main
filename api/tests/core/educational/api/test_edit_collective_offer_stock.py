@@ -285,7 +285,7 @@ class returnErrorTest:
         )
 
         # When
-        with pytest.raises(offers_exceptions.ApiErrors) as error:
+        with pytest.raises(offers_exceptions.RejectedOrPendingOfferNotEditable) as error:
             educational_api_stock.edit_collective_stock(
                 stock=stock_to_be_updated, stock_data=new_stock_data.dict(exclude_unset=True)
             )

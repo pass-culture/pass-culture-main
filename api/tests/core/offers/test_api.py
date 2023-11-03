@@ -211,7 +211,7 @@ class CreateStockTest:
     def test_create_stock_for_non_approved_offer_fails(self, mocked_send_first_venue_approved_offer_email_to_pro):
         offer = factories.ThingOfferFactory(validation=models.OfferValidationStatus.PENDING)
 
-        with pytest.raises(api_errors.ApiErrors) as error:
+        with pytest.raises(exceptions.RejectedOrPendingOfferNotEditable) as error:
             api.create_stock(offer=offer, price=10, quantity=7)
 
         assert error.value.errors == {
@@ -506,7 +506,7 @@ class EditStockTest:
         offer = factories.ThingOfferFactory(validation=models.OfferValidationStatus.PENDING)
         existing_stock = factories.StockFactory(offer=offer, price=10)
 
-        with pytest.raises(api_errors.ApiErrors) as error:
+        with pytest.raises(exceptions.RejectedOrPendingOfferNotEditable) as error:
             api.edit_stock(stock=existing_stock, price=5, quantity=7)
 
         assert error.value.errors == {
@@ -951,7 +951,7 @@ class UpdateOfferTest:
     def test_update_non_approved_offer_fails(self):
         pending_offer = factories.OfferFactory(name="Soliloquy", validation=models.OfferValidationStatus.PENDING)
 
-        with pytest.raises(api_errors.ApiErrors) as error:
+        with pytest.raises(exceptions.RejectedOrPendingOfferNotEditable) as error:
             api.update_offer(pending_offer, name="Monologue")
 
         assert error.value.errors == {
