@@ -234,8 +234,8 @@ def _offerer_batch_action(
 
     if hasattr(form, "tags"):
         tags = form.tags.data
-        previous_tags = list(set.intersection(*[set(offerer.tags) for offerer in offerers]))
-        deleted_tags = list(set(previous_tags).difference(list(set(tags))))
+        previous_tags = set.intersection(*[set(offerer.tags) for offerer in offerers])
+        deleted_tags = list(previous_tags.difference(set(tags)))
     else:
         deleted_tags = []
 
