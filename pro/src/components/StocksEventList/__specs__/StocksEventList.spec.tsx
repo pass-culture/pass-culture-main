@@ -2,6 +2,7 @@ import { screen, within } from '@testing-library/react'
 import { userEvent } from '@testing-library/user-event'
 import React from 'react'
 
+import { api } from 'apiClient/api'
 import {
   individualStockEventFactory,
   priceCategoryFactory,
@@ -14,6 +15,14 @@ import StocksEventList, {
 } from '../StocksEventList'
 
 const mockSetSotcks = vi.fn()
+
+vi.mock('apiClient/api', () => ({
+  api: {
+    deleteAllFilteredStocks: vi.fn(),
+    deleteStocks: vi.fn(),
+    deleteStock: vi.fn(),
+  },
+}))
 
 const renderStocksEventList = (props: Partial<StocksEventListProps>) => {
   renderWithProviders(
@@ -254,13 +263,18 @@ describe('StocksEventList', () => {
     ).not.toBeInTheDocument()
   })
 
-  it('should bulk delete lines when clicking on button on action bar', async () => {
+  it('should bulk delete lines with filters when clicking on button on action bar', async () => {
     renderStocksEventList({
       stocks: [
         individualStockEventFactory({ priceCategoryId: 1 }),
         individualStockEventFactory({ priceCategoryId: 1 }),
+        individualStockEventFactory({ priceCategoryId: 2 }),
       ],
     })
+    await userEvent.selectOptions(
+      screen.getByLabelText('Filtrer par tarif'),
+      '1'
+    )
     expect(
       screen.getAllByText('12,5 € - Label', { selector: 'td' })
     ).toHaveLength(2)
@@ -270,8 +284,39 @@ describe('StocksEventList', () => {
     expect(screen.getByText('2 dates sélectionnées')).toBeInTheDocument()
 
     await userEvent.click(screen.getByText('Supprimer ces dates'))
-    expect(mockSetSotcks).toBeCalledTimes(1)
-    expect(mockSetSotcks).toHaveBeenNthCalledWith(1, [])
+    expect(api.deleteStock).not.toHaveBeenCalled()
+    expect(api.deleteStocks).not.toHaveBeenCalled()
+    expect(api.deleteAllFilteredStocks).toBeCalledTimes(1)
+    expect(api.deleteAllFilteredStocks).toHaveBeenCalledWith(1, {
+      date: null,
+      price_category_id: 1,
+      time: null,
+    })
+
+    expect(screen.queryByText('2 dates sélectionnées')).not.toBeInTheDocument()
+  })
+
+  it('should bulk delete lines with ids when clicking on each stock', async () => {
+    const stock1 = individualStockEventFactory({ priceCategoryId: 1 })
+    const stock2 = individualStockEventFactory({ priceCategoryId: 1 })
+    const stock3 = individualStockEventFactory({ priceCategoryId: 2 })
+
+    renderStocksEventList({
+      stocks: [stock1, stock2, stock3],
+    })
+
+    const checkboxes = screen.getAllByRole('checkbox')
+    await userEvent.click(checkboxes[1])
+    await userEvent.click(checkboxes[3])
+    expect(screen.getByText('2 dates sélectionnées')).toBeInTheDocument()
+
+    await userEvent.click(screen.getByText('Supprimer ces dates'))
+    expect(api.deleteStock).not.toHaveBeenCalled()
+    expect(api.deleteAllFilteredStocks).not.toHaveBeenCalled()
+    expect(api.deleteStocks).toBeCalledTimes(1)
+    expect(api.deleteStocks).toHaveBeenCalledWith(1, {
+      ids_to_delete: [stock1.id, stock3.id],
+    })
 
     expect(screen.queryByText('2 dates sélectionnées')).not.toBeInTheDocument()
   })

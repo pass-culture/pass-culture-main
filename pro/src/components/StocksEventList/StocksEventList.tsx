@@ -34,7 +34,7 @@ import {
 export const STOCKS_PER_PAGE = 20
 
 export interface StocksEvent {
-  id?: number
+  id: number
   beginningDatetime: string
   bookingLimitDatetime: string
   priceCategoryId: number
@@ -51,6 +51,13 @@ export interface StocksEventListProps {
   offerId: number
   setStocks?: (stocks: StocksEvent[]) => void
   readonly?: boolean
+}
+
+const DELETE_STOCKS_CHUNK_SIZE = 50
+function* chunks<T>(array: T[], n: number): Generator<T[], void> {
+  for (let i = 0; i < array.length; i += n) {
+    yield array.slice(i, i + n)
+  }
 }
 
 const StocksEventList = ({
@@ -135,32 +142,41 @@ const StocksEventList = ({
       (stock) => !stocksIdToDelete.includes(stock.id)
     )
 
-    const deletedStocksCount = stocks.length - newStocks.length
     logEvent?.(Events.CLICKED_BULK_DELETE_STOCK, {
       offerId: offerId,
-      deletionCount: `${stocks.length - newStocks.length}`,
+      deletionCount: stocksIdToDelete.length,
     })
-    setIsCheckedArray(stocks.map(() => false))
     setStocks?.([...newStocks])
+    setIsCheckedArray(stocks.map(() => false))
+
     if (stocksIdToDelete.length > 0) {
-      await Promise.all(
-        stocksIdToDelete.map(
-          (stockId) => stockId?.toString() && api.deleteStock(stockId)
+      // If all stocks are checked without any stock unchecked,
+      // use the delete all route with filters
+      if (areAllChecked) {
+        await api.deleteAllFilteredStocks(offerId, {
+          date: dateFilter === '' ? null : dateFilter,
+          time: hourFilter === '' ? null : hourFilter,
+          price_category_id:
+            priceCategoryFilter === '' ? null : parseInt(priceCategoryFilter),
+        })
+      } else {
+        // Otherwise, use the bulk delete stocks by id route
+        await Promise.all(
+          [...chunks(stocksIdToDelete, DELETE_STOCKS_CHUNK_SIZE)].map((ids) =>
+            api.deleteStocks(offerId, { ids_to_delete: ids })
+          )
         )
-      )
+      }
     }
 
     const newLastPage = Math.ceil(newStocks.length / STOCKS_PER_PAGE)
-    if (
-      deletedStocksCount >= stocks.length % STOCKS_PER_PAGE &&
-      page > newLastPage
-    ) {
+    if (page > newLastPage) {
       setPage(newLastPage)
     }
     notify.success(
-      deletedStocksCount === 1
+      stocksIdToDelete.length === 1
         ? '1 occurrence a été supprimée'
-        : `${deletedStocksCount} occurrences ont été supprimées`
+        : `${stocksIdToDelete.length} occurrences ont été supprimées`
     )
   }
 
