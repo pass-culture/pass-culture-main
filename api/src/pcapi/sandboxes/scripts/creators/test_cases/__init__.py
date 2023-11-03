@@ -1,12 +1,15 @@
 import random
 
-import factory.fuzzy
+from factory.faker import faker
 
 from pcapi.core.categories import subcategories_v2
 from pcapi.core.offerers import factories as offerers_factories
 from pcapi.core.offerers import models as offerers_models
 from pcapi.core.offers import factories as offers_factories
 from pcapi.core.providers.titelive_gtl import GTLS
+
+
+Fake = faker.Faker(locale="fr_FR")
 
 
 def save_test_cases_sandbox() -> None:
@@ -67,15 +70,15 @@ def create_offers_for_each_gtl_level_1(size_per_gtl_level_1: int, venue: offerer
 
 def create_offers_with_gtl_id(gtl_id: str, size_per_gtl: int, venue: offerers_models.Venue) -> None:
     product = offers_factories.ProductFactory(
-        subcategoryId=subcategories_v2.LIVRE_PAPIER,
-        extraData={"gtl_id": gtl_id, "author": factory.Faker("name")},
+        subcategoryId=subcategories_v2.LIVRE_PAPIER.id,
+        extraData={"gtl_id": gtl_id, "author": Fake.name()},
     )
     offers = offers_factories.OfferFactory.create_batch(
         product=product,
         size=size_per_gtl,
         isActive=True,
         venue=venue,
-        extraData={"gtl_id": gtl_id, "author": factory.Faker("name")},
+        extraData={"gtl_id": gtl_id, "author": Fake.name()},
     )
     for offer in offers:
         offers_factories.StockFactory.create_batch(
