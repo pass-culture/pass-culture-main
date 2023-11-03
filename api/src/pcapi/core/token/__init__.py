@@ -69,7 +69,7 @@ class AbstractToken(abc.ABC):
     @classmethod
     def get_expiration_date(cls, type_: TokenType, user_id: int) -> datetime | None:
         key = Token._get_redis_key(type_, user_id)
-        ttl = app.redis_client.ttl(key)  # type: ignore [attr-defined]
+        ttl = app.redis_client.ttl(key)
         if ttl < 0:
             # -2 if doesn't exist, -1 if no expiration
             return None
@@ -83,26 +83,26 @@ class AbstractToken(abc.ABC):
         if (
             self.type_ != type_
             or (user_id is not None and self.user_id != user_id)
-            or app.redis_client.get(redis_key) != self.encoded_token  # type: ignore [attr-defined]
+            or app.redis_client.get(redis_key) != self.encoded_token
         ):
             self._log(self._TokenAction.CHECK_KO)
             raise users_exceptions.InvalidToken()
         self._log(self._TokenAction.CHECK_OK)
 
     def expire(self) -> None:
-        app.redis_client.delete(Token._get_redis_key(self.type_, self.user_id))  # type: ignore [attr-defined]
+        app.redis_client.delete(Token._get_redis_key(self.type_, self.user_id))
         self._log(self._TokenAction.EXPIRE)
 
     @classmethod
     def token_exists(cls, type_: TokenType, user_id: int) -> bool:
-        return bool(app.redis_client.exists(cls._get_redis_key(type_, user_id)))  # type: ignore [attr-defined]
+        return bool(app.redis_client.exists(cls._get_redis_key(type_, user_id)))
 
     def _log(self, action: _TokenAction) -> None:
         logger.info("[TOKEN](%s){%i, %s, %s}", action.value, self.user_id, self.type_.value, self.encoded_token)
 
     @classmethod
     def delete(cls, type_: TokenType, user_id: int) -> None:
-        app.redis_client.delete(cls._get_redis_key(type_, user_id))  # type: ignore [attr-defined]
+        app.redis_client.delete(cls._get_redis_key(type_, user_id))
 
     @classmethod
     def get_token(cls, type_: TokenType, user_id: int) -> "AbstractToken | None":
@@ -138,14 +138,14 @@ class Token(AbstractToken):
 
         encoded_token = utils.encode_jwt_payload(payload)
         if ttl is None or ttl > timedelta(0):
-            app.redis_client.set(cls._get_redis_key(type_, user_id), encoded_token, ex=ttl)  # type: ignore [attr-defined]
+            app.redis_client.set(cls._get_redis_key(type_, user_id), encoded_token, ex=ttl)
         token = Token.load_without_checking(encoded_token)
         token._log(cls._TokenAction.CREATE)
         return token
 
     @classmethod
     def get_token(cls, type_: TokenType, user_id: int) -> "Token | None":
-        encoded_token = app.redis_client.get(cls._get_redis_key(type_, user_id))  # type: ignore [attr-defined]
+        encoded_token = app.redis_client.get(cls._get_redis_key(type_, user_id))
         if encoded_token is None:
             return None
         return cls.load_without_checking(encoded_token)
@@ -167,7 +167,7 @@ class SixDigitsToken(AbstractToken):
         **kwargs: typing.Any,
     ) -> "SixDigitsToken":
         try:
-            data_json = app.redis_client.get(cls._get_redis_extra_data_key(type_=type_, user_id=user_id))  # type: ignore [attr-defined]
+            data_json = app.redis_client.get(cls._get_redis_extra_data_key(type_=type_, user_id=user_id))
             if data_json is None:
                 raise users_exceptions.InvalidToken()
             data = json.loads(data_json)
@@ -186,25 +186,25 @@ class SixDigitsToken(AbstractToken):
         cls, type_: TokenType, ttl: timedelta | None, user_id: int, data: dict | None = None
     ) -> "SixDigitsToken":
         encoded_token = "{:06}".format(secrets.randbelow(1_000_000))  # 6 digits
-        app.redis_client.set(cls._get_redis_key(type_, user_id), encoded_token, ex=ttl)  # type: ignore [attr-defined]
+        app.redis_client.set(cls._get_redis_key(type_, user_id), encoded_token, ex=ttl)
         json_data = json.dumps(data or {})
-        app.redis_client.set(cls._get_redis_extra_data_key(type_, user_id), json_data, ex=ttl)  # type: ignore [attr-defined]
+        app.redis_client.set(cls._get_redis_extra_data_key(type_, user_id), json_data, ex=ttl)
         token = cls.load_without_checking(encoded_token, type_, user_id)
         token._log(cls._TokenAction.CREATE)
         return token
 
     def expire(self) -> None:
         super().expire()
-        app.redis_client.delete(self._get_redis_extra_data_key(self.type_, self.user_id))  # type: ignore [attr-defined]
+        app.redis_client.delete(self._get_redis_extra_data_key(self.type_, self.user_id))
 
     @classmethod
     def delete(cls, type_: TokenType, user_id: int) -> None:
         super().delete(type_, user_id)
-        app.redis_client.delete(cls._get_redis_extra_data_key(type_, user_id))  # type: ignore [attr-defined]
+        app.redis_client.delete(cls._get_redis_extra_data_key(type_, user_id))
 
     @classmethod
     def get_token(cls, type_: TokenType, user_id: int) -> "SixDigitsToken | None":
-        encoded_token = app.redis_client.get(cls._get_redis_key(type_, user_id))  # type: ignore [attr-defined]
+        encoded_token = app.redis_client.get(cls._get_redis_key(type_, user_id))
         if encoded_token is None:
             return None
         return cls.load_without_checking(encoded_token, type_, user_id)

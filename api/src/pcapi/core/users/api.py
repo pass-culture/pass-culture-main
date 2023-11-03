@@ -308,7 +308,7 @@ def _email_validation_resends_key(user: models.User) -> str:
 
 
 def get_remaining_email_validation_resends(user: models.User) -> int:
-    email_validation_resends_count = app.redis_client.get(_email_validation_resends_key(user))  # type: ignore [attr-defined]
+    email_validation_resends_count = app.redis_client.get(_email_validation_resends_key(user))
 
     if email_validation_resends_count:
         return max(settings.MAX_EMAIL_VALIDATION_RESENDS - int(email_validation_resends_count), 0)
@@ -317,7 +317,7 @@ def get_remaining_email_validation_resends(user: models.User) -> int:
 
 
 def get_email_validation_resends_limitation_expiration_time(user: models.User) -> datetime.datetime | None:
-    ttl = app.redis_client.ttl(_email_validation_resends_key(user))  # type: ignore [attr-defined]
+    ttl = app.redis_client.ttl(_email_validation_resends_key(user))
 
     if ttl > 0:
         return datetime.datetime.utcnow() + datetime.timedelta(seconds=ttl)
@@ -330,7 +330,7 @@ def check_email_validation_resends_count(user: models.User) -> None:
     Check if the user has reached the maximum number of email validation resends.
     If yes, raise an exception.
     """
-    email_validation_resends = app.redis_client.get(_email_validation_resends_key(user))  # type: ignore [attr-defined]
+    email_validation_resends = app.redis_client.get(_email_validation_resends_key(user))
 
     if email_validation_resends and int(email_validation_resends) >= settings.MAX_EMAIL_VALIDATION_RESENDS:
         raise exceptions.EmailValidationLimitReached()
@@ -341,11 +341,11 @@ def increment_email_validation_resends_count(user: models.User) -> None:
     Increment or initiate the number of resends of the email validation email
     """
     email_validation_resends_key = _email_validation_resends_key(user)
-    email_validation_resends = app.redis_client.incr(email_validation_resends_key)  # type: ignore [attr-defined]
+    email_validation_resends = app.redis_client.incr(email_validation_resends_key)
 
     if email_validation_resends == 1:
         # If the key did not exist, set the expiration time
-        app.redis_client.expire(email_validation_resends_key, settings.EMAIL_VALIDATION_RESENDS_TTL)  # type: ignore [attr-defined]
+        app.redis_client.expire(email_validation_resends_key, settings.EMAIL_VALIDATION_RESENDS_TTL)
 
 
 def request_password_reset(user: models.User | None, reason: constants.SuspensionReason | None = None) -> None:

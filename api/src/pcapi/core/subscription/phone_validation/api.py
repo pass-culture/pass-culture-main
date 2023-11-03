@@ -48,7 +48,7 @@ def _check_phone_number_is_legit(user: users_models.User, phone_number: str, cou
 
 
 def _check_sms_sending_is_allowed(user: users_models.User) -> None:
-    if not sending_limit.is_SMS_sending_allowed(app.redis_client, user):  # type: ignore [attr-defined]
+    if not sending_limit.is_SMS_sending_allowed(app.redis_client, user):
         fraud_api.handle_sms_sending_limit_reached(user)
         raise exceptions.SMSSendingLimitReached()
 
@@ -164,17 +164,17 @@ def send_phone_validation_code(
 
     _send_sms_with_retry(phone_data.phone_number, content)
 
-    sending_limit.update_sent_SMS_counter(app.redis_client, user)  # type: ignore [attr-defined]
+    sending_limit.update_sent_SMS_counter(app.redis_client, user)
 
 
 def validate_phone_number(user: users_models.User, code: str) -> None:
     _check_phone_number_validation_is_authorized(user)
-    _check_and_update_phone_validation_attempts(app.redis_client, user)  # type: ignore [attr-defined]
+    _check_and_update_phone_validation_attempts(app.redis_client, user)
 
     try:
         token = token_utils.SixDigitsToken.load_and_check(code, token_utils.TokenType.PHONE_VALIDATION, user.id)
     except users_exceptions.InvalidToken:
-        code_validation_attempts = sending_limit.get_code_validation_attempts(app.redis_client, user)  # type: ignore [attr-defined]
+        code_validation_attempts = sending_limit.get_code_validation_attempts(app.redis_client, user)
         if code_validation_attempts.remaining == 0:
             fraud_api.handle_phone_validation_attempts_limit_reached(user, code_validation_attempts.attempts)
         raise exceptions.NotValidCode(remaining_attempts=code_validation_attempts.remaining)

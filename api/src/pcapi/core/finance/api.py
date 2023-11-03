@@ -790,13 +790,13 @@ def generate_cashflows(cutoff: datetime.datetime) -> models.CashflowBatch:
     """Generate a new CashflowBatch and a new cashflow for each
     reimbursement point for which there is money to transfer.
     """
-    app.redis_client.set(conf.REDIS_GENERATE_CASHFLOW_LOCK, "1", ex=conf.REDIS_GENERATE_CASHFLOW_LOCK_TIMEOUT)  # type: ignore [attr-defined]
+    app.redis_client.set(conf.REDIS_GENERATE_CASHFLOW_LOCK, "1", ex=conf.REDIS_GENERATE_CASHFLOW_LOCK_TIMEOUT)
     batch = models.CashflowBatch(cutoff=cutoff, label=_get_next_cashflow_batch_label())
     db.session.add(batch)
     db.session.commit()
     _generate_cashflows(batch)
     # if the script fail we want to keep the lock to forbid backoffice to modify the data
-    app.redis_client.delete(conf.REDIS_GENERATE_CASHFLOW_LOCK)  # type: ignore [attr-defined]
+    app.redis_client.delete(conf.REDIS_GENERATE_CASHFLOW_LOCK)
     return batch
 
 
@@ -1411,8 +1411,10 @@ def generate_invoices(batch: models.CashflowBatch) -> None:
 def async_generate_invoices(batch: models.CashflowBatch) -> None:
     rows = _get_cashflows_by_reimbursement_points(batch)
 
-    app.redis_client.set(conf.REDIS_INVOICES_LEFT_TO_GENERATE, len(rows), ex=conf.REDIS_GENERATE_INVOICES_COUNTER_TIMEOUT)  # type: ignore [attr-defined]
-    app.redis_client.set(conf.REDIS_GENERATE_INVOICES_LENGTH, len(rows), ex=conf.REDIS_GENERATE_INVOICES_LENGTH_TIMEOUT)  # type: ignore [attr-defined]
+    app.redis_client.set(
+        conf.REDIS_INVOICES_LEFT_TO_GENERATE, len(rows), ex=conf.REDIS_GENERATE_INVOICES_COUNTER_TIMEOUT
+    )
+    app.redis_client.set(conf.REDIS_GENERATE_INVOICES_LENGTH, len(rows), ex=conf.REDIS_GENERATE_INVOICES_LENGTH_TIMEOUT)
     for row in rows:
         row_payload = finance_tasks.GenerateInvoicePayload(
             reimbursement_point_id=row.reimbursement_point_id, cashflow_ids=row.cashflow_ids, batch_id=batch.id
@@ -2501,4 +2503,4 @@ def cancel_finance_incident(incident: models.FinanceIncident, comment: str) -> N
 
 
 def are_cashflows_being_generated() -> bool:
-    return bool(app.redis_client.exists(conf.REDIS_GENERATE_CASHFLOW_LOCK))  # type: ignore [attr-defined]
+    return bool(app.redis_client.exists(conf.REDIS_GENERATE_CASHFLOW_LOCK))

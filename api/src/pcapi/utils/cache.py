@@ -47,7 +47,7 @@ def get_from_cache(
         compatibility. It can be either `BaseModel` or `str`.
     :param force_update: If True force the update of the field cache.
     """
-    redis_client = current_app.redis_client  # type: ignore [attr-defined]
+    redis_client = current_app.redis_client
     if key_args:
         key = key_template % key_args
     else:
@@ -61,6 +61,8 @@ def get_from_cache(
         if isinstance(data, pydantic_v1.BaseModel):
             data = data.json(exclude_none=False, by_alias=True)
         redis_client.set(key, data.encode("utf-8"), ex=expire)
+
+    assert isinstance(data, str)  # help mypy
 
     if return_type is str:
         return data

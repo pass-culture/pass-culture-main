@@ -25,8 +25,8 @@ finance_invoices_blueprint = utils.child_backoffice_blueprint(
 @finance_invoices_blueprint.route("", methods=["GET"])
 def get_finance_invoices() -> utils.BackofficeResponse:
     is_task_already_running = not finance_tasks.is_generate_invoices_queue_empty()
-    number_of_invoices_to_generate = current_app.redis_client.get(finance_conf.REDIS_GENERATE_INVOICES_LENGTH)  # type: ignore [attr-defined]
-    number_of_invoices_left_to_generate = current_app.redis_client.get(finance_conf.REDIS_INVOICES_LEFT_TO_GENERATE)  # type: ignore [attr-defined]
+    number_of_invoices_to_generate = current_app.redis_client.get(finance_conf.REDIS_GENERATE_INVOICES_LENGTH)
+    number_of_invoices_left_to_generate = current_app.redis_client.get(finance_conf.REDIS_INVOICES_LEFT_TO_GENERATE)
 
     last_cashflow_batches = (
         finance_models.CashflowBatch.query.options(sa.orm.joinedload(finance_models.CashflowBatch.cashflows))

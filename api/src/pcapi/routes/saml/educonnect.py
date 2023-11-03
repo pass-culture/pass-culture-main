@@ -73,7 +73,7 @@ def login_educonnect_e2e(user: users_models.User, body: educonnect_serializers.E
 
     mocked_saml_request_id = f"saml-request-id_e2e-test_{user.id}"
     key = educonnect_connector.build_saml_request_id_key(mocked_saml_request_id)
-    app.redis_client.set(name=key, value=user.id, ex=constants.EDUCONNECT_SAML_REQUEST_ID_TTL)  # type: ignore [attr-defined]
+    app.redis_client.set(name=key, value=user.id, ex=constants.EDUCONNECT_SAML_REQUEST_ID_TTL)
 
     educonnect_user = users_factories.EduconnectUserFactory(
         birth_date=body.birthDate,
@@ -152,7 +152,7 @@ def on_educonnect_authentication_response() -> Response:
 
 def _user_id_from_saml_request_id(saml_request_id: str) -> int | None:
     key = educonnect_connector.build_saml_request_id_key(saml_request_id)
-    return app.redis_client.get(key)  # type: ignore [attr-defined]
+    return app.redis_client.get(key)
 
 
 def _on_educonnect_authentication_errors(

@@ -206,7 +206,7 @@ def generate_error_response(errors: dict, backoffice_template_name: str = "error
 
 
 with app.app_context():
-    app.redis_client = redis.from_url(url=settings.REDIS_URL, decode_responses=True)  # type: ignore [attr-defined]
+    app.redis_client = redis.from_url(url=settings.REDIS_URL, decode_responses=True)
     app.generate_error_response = generate_error_response  # type: ignore [attr-defined]
 
 

@@ -36,4 +36,4 @@ class TestingBackend(AlgoliaBackend):
         self.algolia_venues_client = FakeClient("venues")
         self.algolia_collective_offers_client = FakeClient("collective-offers")
         self.algolia_collective_offers_templates_client = FakeClient("collective-offers-templates")
-        self.redis_client = current_app.redis_client  # type: ignore[attr-defined]
+        self.redis_client = current_app.redis_client
