@@ -261,3 +261,12 @@ class TiteLiveAPINotExistingEAN(Exception):
 
 class NotUpdateProductOrOffers(Exception):
     pass
+
+
+class OfferEditionBaseException(ClientError):
+    pass
+
+
+class RejectedOrPendingOfferNotEditable(OfferEditionBaseException):
+    def __init__(self) -> None:
+        super().__init__("global", "Les offres refusées ou en attente de validation ne sont pas modifiables")
