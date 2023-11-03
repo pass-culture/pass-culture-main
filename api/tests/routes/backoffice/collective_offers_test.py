@@ -19,7 +19,6 @@ from pcapi.core.offerers import factories as offerers_factories
 from pcapi.core.offers import factories as offers_factories
 from pcapi.core.offers import models as offers_models
 from pcapi.core.permissions import models as perm_models
-from pcapi.core.testing import assert_no_duplicated_queries
 from pcapi.core.testing import assert_num_queries
 from pcapi.models import db
 from pcapi.models.offer_mixin import OfferValidationStatus
@@ -70,22 +69,18 @@ class ListCollectiveOffersTest(GetEndpointHelper):
     expected_num_queries = 3
 
     def test_list_collective_offers_without_filter(self, authenticated_client, collective_offers):
-        # when
-        with assert_no_duplicated_queries():
+        with assert_num_queries(self.expected_num_queries - 1):
             response = authenticated_client.get(url_for(self.endpoint))
+            assert response.status_code == 200
 
-        # then
-        assert response.status_code == 200
         assert html_parser.count_table_rows(response.data) == 0
 
     def test_list_collective_offers_by_id(self, authenticated_client, collective_offers):
-        # when
         searched_id = str(collective_offers[0].id)
         with assert_num_queries(self.expected_num_queries):
             response = authenticated_client.get(url_for(self.endpoint, q=searched_id))
+            assert response.status_code == 200
 
-        # then
-        assert response.status_code == 200
         rows = html_parser.extract_table_rows(response.data)
         assert len(rows) == 1
         assert rows[0]["ID"] == searched_id
@@ -99,13 +94,11 @@ class ListCollectiveOffersTest(GetEndpointHelper):
         assert rows[0]["Lieu"] == collective_offers[0].venue.name
 
     def test_list_collective_offers_by_name(self, authenticated_client, collective_offers):
-        # when
         searched_name = collective_offers[1].name
         with assert_num_queries(self.expected_num_queries):
             response = authenticated_client.get(url_for(self.endpoint, q=searched_name))
+            assert response.status_code == 200
 
-        # then
-        assert response.status_code == 200
         rows = html_parser.extract_table_rows(response.data)
         rows = sorted(rows, key=lambda row: row["Nom de l'offre"])
         assert len(rows) == 2
@@ -120,7 +113,6 @@ class ListCollectiveOffersTest(GetEndpointHelper):
         assert rows[0]["Lieu"] == collective_offers[1].venue.name
 
     def test_list_offers_by_date(self, authenticated_client, collective_offers):
-        # when
         with assert_num_queries(self.expected_num_queries):
             response = authenticated_client.get(
                 url_for(
@@ -129,58 +121,48 @@ class ListCollectiveOffersTest(GetEndpointHelper):
                     to_date=(datetime.date.today() - datetime.timedelta(days=1)).isoformat(),
                 )
             )
+            assert response.status_code == 200
 
-        # then
-        assert response.status_code == 200
         rows = html_parser.extract_table_rows(response.data)
         assert set(int(row["ID"]) for row in rows) == {collective_offers[2].id}
 
     def test_list_collective_offers_by_category(self, authenticated_client, collective_offers):
-        # when
         with assert_num_queries(self.expected_num_queries):
             response = authenticated_client.get(url_for(self.endpoint, category=[categories.CINEMA.id]))
+            assert response.status_code == 200
 
-        # then
-        assert response.status_code == 200
         rows = html_parser.extract_table_rows(response.data)
         assert set(int(row["ID"]) for row in rows) == {collective_offers[1].id, collective_offers[2].id}
 
     def test_list_collective_offers_by_venue(self, authenticated_client, collective_offers):
-        # when
         venue_id = collective_offers[1].venueId
         with assert_num_queries(self.expected_num_queries + 1):  # +1 because of reloading selected venue in the form
             response = authenticated_client.get(url_for(self.endpoint, venue=[venue_id]))
+            assert response.status_code == 200
 
-        # then
-        assert response.status_code == 200
         rows = html_parser.extract_table_rows(response.data)
         assert set(int(row["ID"]) for row in rows) == {collective_offers[1].id}
 
     def test_list_collective_offers_by_offerer(self, authenticated_client, collective_offers):
-        # when
         offerer_id = collective_offers[1].venue.managingOffererId
         with assert_num_queries(self.expected_num_queries + 1):  # +1 because of reloading selected offerer in the form
             response = authenticated_client.get(url_for(self.endpoint, offerer=[offerer_id]))
+            assert response.status_code == 200
 
-        # then
-        assert response.status_code == 200
         rows = html_parser.extract_table_rows(response.data)
         assert set(int(row["ID"]) for row in rows) == {collective_offers[1].id}
 
     def test_list_collective_offers_by_status(self, authenticated_client, collective_offers):
-        # when
         status = collective_offers[2].validation
         with assert_num_queries(self.expected_num_queries):
             response = authenticated_client.get(url_for(self.endpoint, status=[status.value]))
+            assert response.status_code == 200
 
-        # then
-        assert response.status_code == 200
         rows = html_parser.extract_table_rows(response.data)
         assert set(int(row["ID"]) for row in rows) == {collective_offers[2].id}
         assert rows[0]["État"] == "Rejetée"
 
     def test_list_offers_by_all_filters(self, authenticated_client, collective_offers):
-        # when
         venue_id = collective_offers[2].venueId
         with assert_num_queries(self.expected_num_queries + 1):  # +1 because of reloading selected venue
             response = authenticated_client.get(
@@ -191,9 +173,8 @@ class ListCollectiveOffersTest(GetEndpointHelper):
                     venue=[venue_id],
                 )
             )
+            assert response.status_code == 200
 
-        # then
-        assert response.status_code == 200
         rows = html_parser.extract_table_rows(response.data)
         assert set(int(row["ID"]) for row in rows) == {collective_offers[2].id}
 
@@ -209,7 +190,6 @@ class ListCollectiveOffersTest(GetEndpointHelper):
         self, authenticated_client, order, expected_list
     ):
         # test results when clicking on pending collective offers link (home page)
-        # given
         educational_factories.CollectiveOfferFactory(
             validation=offers_models.OfferValidationStatus.PENDING,
             venue__managingOfferer=offerers_factories.NotValidatedOffererFactory(),
@@ -224,7 +204,6 @@ class ListCollectiveOffersTest(GetEndpointHelper):
                 venue=validated_venue,
             )
 
-        # when
         with assert_num_queries(self.expected_num_queries):
             response = authenticated_client.get(
                 url_for(
@@ -237,24 +216,21 @@ class ListCollectiveOffersTest(GetEndpointHelper):
             )
             assert response.status_code == 200
 
-        # then: must be sorted, older first
+        # must be sorted, older first
         rows = html_parser.extract_table_rows(response.data)
         assert [row["Nom de l'offre"] for row in rows] == expected_list
 
     def test_list_collective_offers_with_flagging_rules(self, authenticated_client):
-        # given
         rule_1 = offers_factories.OfferValidationRuleFactory(name="Règle magique")
         rule_2 = offers_factories.OfferValidationRuleFactory(name="Règle moldue")
         collective_offer = educational_factories.CollectiveStockFactory(
             collectiveOffer__flaggingValidationRules=[rule_1, rule_2],
         ).collectiveOffer
 
-        # when
         with assert_num_queries(self.expected_num_queries):
             response = authenticated_client.get(url_for(self.endpoint, q=str(collective_offer.id)))
             assert response.status_code == 200
 
-        # then
         rows = html_parser.extract_table_rows(response.data)
         assert rows[0]["Règles de conformité"] == ", ".join([rule_1.name, rule_2.name])
 
@@ -326,7 +302,7 @@ class ValidateCollectiveOfferFormTest(GetEndpointHelper):
 
         form_url = url_for(self.endpoint, collective_offer_id=collective_offer.id)
 
-        with assert_num_queries(2):  # session + user
+        with assert_num_queries(2):  # session + current user
             response = authenticated_client.get(form_url)
             assert response.status_code == 200
 
@@ -394,7 +370,7 @@ class RejectCollectiveOfferFormTest(GetEndpointHelper):
 
         form_url = url_for(self.endpoint, collective_offer_id=collective_offer.id)
 
-        with assert_num_queries(2):  # session + user
+        with assert_num_queries(2):  # session + current user
             response = authenticated_client.get(form_url)
             assert response.status_code == 200
 
@@ -508,12 +484,11 @@ class GetBatchCollectiveOffersApproveFormTest(GetEndpointHelper):
     needed_permission = perm_models.Permissions.PRO_FRAUD_ACTIONS
 
     def test_get_batch_collective_offers_approve_form(self, legit_user, authenticated_client):
-        # when
         url = url_for(self.endpoint)
-        response = authenticated_client.get(url)
 
-        # then
-        assert response.status_code == 200
+        with assert_num_queries(2):  # session + current user
+            response = authenticated_client.get(url)
+            assert response.status_code == 200
 
 
 class GetBatchCollectiveOffersRejectFormTest(GetEndpointHelper):
@@ -521,12 +496,11 @@ class GetBatchCollectiveOffersRejectFormTest(GetEndpointHelper):
     needed_permission = perm_models.Permissions.PRO_FRAUD_ACTIONS
 
     def test_get_batch_collective_offers_reject_form(self, legit_user, authenticated_client):
-        # when
         url = url_for(self.endpoint)
-        response = authenticated_client.get(url)
 
-        # then
-        assert response.status_code == 200
+        with assert_num_queries(2):  # session + current user
+            response = authenticated_client.get(url)
+            assert response.status_code == 200
 
 
 class GetCollectiveOfferDetailTest(GetEndpointHelper):
@@ -535,7 +509,6 @@ class GetCollectiveOfferDetailTest(GetEndpointHelper):
     needed_permission = perm_models.Permissions.READ_OFFERS
 
     def test_nominal(self, legit_user, authenticated_client):
-        # when
         event_date = datetime.datetime.utcnow() - datetime.timedelta(days=1)
         collective_booking = educational_factories.CollectiveBookingFactory(
             collectiveStock__beginningDatetime=event_date,
@@ -543,10 +516,9 @@ class GetCollectiveOfferDetailTest(GetEndpointHelper):
         url = url_for(self.endpoint, collective_offer_id=collective_booking.collectiveStock.collectiveOffer.id)
         with assert_num_queries(4):
             response = authenticated_client.get(url)
+            assert response.status_code == 200
 
-        # then
         content_as_text = html_parser.content_as_text(response.data)
-        assert response.status_code == 200
         assert "Ajuster le prix de l'offre" in content_as_text
         assert "Statut : Expirée" in content_as_text
         assert "État : Validée" in content_as_text
@@ -554,49 +526,47 @@ class GetCollectiveOfferDetailTest(GetEndpointHelper):
         assert "Date de dernière validation de l’offre" not in content_as_text
 
     def test_processed_pricing(self, legit_user, authenticated_client):
-        # when
         pricing = finance_factories.CollectivePricingFactory(
             status=finance_models.PricingStatus.PROCESSED,
             collectiveBooking__collectiveStock__beginningDatetime=datetime.datetime(1970, 1, 1),
         )
         url = url_for(self.endpoint, collective_offer_id=pricing.collectiveBooking.collectiveStock.collectiveOffer.id)
-        response = authenticated_client.get(url)
 
-        # then
-        assert response.status_code == 200
+        with assert_num_queries(4):
+            response = authenticated_client.get(url)
+            assert response.status_code == 200
+
         assert "Ajuster le prix de l'offre" not in response.data.decode()
 
     def test_invoiced_pricing(self, legit_user, authenticated_client):
-        # when
         pricing = finance_factories.CollectivePricingFactory(
             status=finance_models.PricingStatus.INVOICED,
             collectiveBooking__collectiveStock__beginningDatetime=datetime.datetime(1970, 1, 1),
         )
         url = url_for(self.endpoint, collective_offer_id=pricing.collectiveBooking.collectiveStock.collectiveOffer.id)
-        response = authenticated_client.get(url)
 
-        # then
-        assert response.status_code == 200
+        with assert_num_queries(4):
+            response = authenticated_client.get(url)
+            assert response.status_code == 200
+
         assert "Ajuster le prix de l'offre" not in response.data.decode()
 
     def test_cashflow_pending(self, legit_user, authenticated_client, app):
-        # when
         pricing = finance_factories.CollectivePricingFactory(
             collectiveBooking__collectiveStock__beginningDatetime=datetime.datetime(1970, 1, 1),
         )
         url = url_for(self.endpoint, collective_offer_id=pricing.collectiveBooking.collectiveStock.collectiveOffer.id)
         app.redis_client.set(finance_conf.REDIS_GENERATE_CASHFLOW_LOCK, "1", 600)
         try:
-            response = authenticated_client.get(url)
-
+            with assert_num_queries(3):
+                response = authenticated_client.get(url)
+                assert response.status_code == 200
         finally:
             app.redis_client.delete(finance_conf.REDIS_GENERATE_CASHFLOW_LOCK)
-        # then
-        assert response.status_code == 200
+
         assert "Ajuster le prix de l'offre" not in response.data.decode()
 
     def test_get_validated_offer(self, legit_user, authenticated_client):
-        # when
         event_date = datetime.datetime.utcnow() - datetime.timedelta(days=1)
         validation_date = datetime.datetime.utcnow()
         collective_booking = educational_factories.CollectiveBookingFactory(
@@ -609,14 +579,12 @@ class GetCollectiveOfferDetailTest(GetEndpointHelper):
         with assert_num_queries(4):  # session + user + offer + pricing + loaded data
             response = authenticated_client.get(url)
 
-        # then
         content_as_text = html_parser.content_as_text(response.data)
         assert response.status_code == 200
         assert f"Utilisateur de la dernière validation : {legit_user.full_name}" in content_as_text
         assert f"Date de dernière validation : {format_date(validation_date, '%d/%m/%Y à %Hh%M')}" in content_as_text
 
     def test_get_rejected_offer(self, legit_user, authenticated_client):
-        # when
         event_date = datetime.datetime.utcnow() - datetime.timedelta(days=1)
         validation_date = datetime.datetime.utcnow()
         collective_booking = educational_factories.CollectiveBookingFactory(
@@ -628,10 +596,9 @@ class GetCollectiveOfferDetailTest(GetEndpointHelper):
         url = url_for(self.endpoint, collective_offer_id=collective_booking.collectiveStock.collectiveOffer.id)
         with assert_num_queries(4):  # session + user + offer + pricing + loaded data
             response = authenticated_client.get(url)
+            assert response.status_code == 200
 
-        # then
         content_as_text = html_parser.content_as_text(response.data)
-        assert response.status_code == 200
         assert f"Utilisateur de la dernière validation : {legit_user.full_name}" in content_as_text
         assert f"Date de dernière validation : {format_date(validation_date, '%d/%m/%Y à %Hh%M')}" in content_as_text
 
@@ -640,6 +607,16 @@ class GetCollectiveOfferPriceFormTest(GetEndpointHelper):
     endpoint = "backoffice_web.collective_offer.get_collective_offer_price_form"
     endpoint_kwargs = {"collective_offer_id": 1}
     needed_permission = perm_models.Permissions.ADVANCED_PRO_SUPPORT
+
+    # session + current user + stock
+    expected_num_queries = 3
+
+    def test_get_collective_offer_price_form(self, legit_user, authenticated_client):
+        collective_offer_id = educational_factories.CollectiveStockFactory().collectiveOffer.id
+
+        with assert_num_queries(self.expected_num_queries):
+            response = authenticated_client.get(url_for(self.endpoint, collective_offer_id=collective_offer_id))
+            assert response.status_code == 200
 
 
 class PostEditCollectiveOfferPriceTest(PostEndpointHelper):
@@ -650,7 +627,6 @@ class PostEditCollectiveOfferPriceTest(PostEndpointHelper):
     def test_nominal(self, legit_user, authenticated_client):
         venue = offerers_factories.VenueFactory(pricing_point="self")
         date_used = datetime.datetime.utcnow() - datetime.timedelta(hours=72)
-        # when
         collective_booking = educational_factories.UsedCollectiveBookingFactory(
             collectiveStock__price=Decimal(100.00),
             collectiveStock__numberOfTickets=25,
@@ -666,7 +642,6 @@ class PostEditCollectiveOfferPriceTest(PostEndpointHelper):
             collective_offer_id=collective_booking.collectiveStock.collectiveOffer.id,
         )
 
-        # then
         assert response.status_code == 303
         assert collective_booking.collectiveStock.price == 1
         assert collective_booking.collectiveStock.numberOfTickets == 5
@@ -676,7 +651,6 @@ class PostEditCollectiveOfferPriceTest(PostEndpointHelper):
         )
 
     def test_processed_pricing(self, legit_user, authenticated_client):
-        # when
         pricing = finance_factories.CollectivePricingFactory(
             status=finance_models.PricingStatus.PROCESSED,
             collectiveBooking__collectiveStock__price=Decimal(100.00),
@@ -684,16 +658,14 @@ class PostEditCollectiveOfferPriceTest(PostEndpointHelper):
             collectiveBooking__collectiveStock__beginningDatetime=datetime.datetime(1970, 1, 1),
         )
         url = url_for(self.endpoint, collective_offer_id=pricing.collectiveBooking.collectiveStock.collectiveOffer.id)
-        response = authenticated_client.get(url)
+        authenticated_client.get(url)
 
-        # then
         response = self.post_to_endpoint(
             authenticated_client,
             form={"numberOfTickets": 5, "price": 1},
             collective_offer_id=pricing.collectiveBooking.collectiveStock.collectiveOffer.id,
         )
 
-        # then
         assert response.status_code == 303
         assert pricing.collectiveBooking.collectiveStock.price == 100
         assert pricing.collectiveBooking.collectiveStock.numberOfTickets == 25
@@ -703,7 +675,6 @@ class PostEditCollectiveOfferPriceTest(PostEndpointHelper):
         )
 
     def test_invoiced_pricing(self, legit_user, authenticated_client):
-        # when
         pricing = finance_factories.CollectivePricingFactory(
             status=finance_models.PricingStatus.INVOICED,
             collectiveBooking__collectiveStock__price=Decimal(100.00),
@@ -711,16 +682,14 @@ class PostEditCollectiveOfferPriceTest(PostEndpointHelper):
             collectiveBooking__collectiveStock__beginningDatetime=datetime.datetime(1970, 1, 1),
         )
         url = url_for(self.endpoint, collective_offer_id=pricing.collectiveBooking.collectiveStock.collectiveOffer.id)
-        response = authenticated_client.get(url)
+        authenticated_client.get(url)
 
-        # then
         response = self.post_to_endpoint(
             authenticated_client,
             form={"numberOfTickets": 5, "price": 1},
             collective_offer_id=pricing.collectiveBooking.collectiveStock.collectiveOffer.id,
         )
 
-        # then
         assert response.status_code == 303
         assert pricing.collectiveBooking.collectiveStock.price == 100
         assert pricing.collectiveBooking.collectiveStock.numberOfTickets == 25
@@ -731,7 +700,6 @@ class PostEditCollectiveOfferPriceTest(PostEndpointHelper):
 
     def test_cashflow_pending(self, legit_user, authenticated_client, app):
         event_date = datetime.datetime.utcnow() + datetime.timedelta(days=1)
-        # when
         collective_booking = educational_factories.CollectiveBookingFactory(
             collectiveStock__price=Decimal(100.00),
             collectiveStock__numberOfTickets=25,
@@ -747,7 +715,6 @@ class PostEditCollectiveOfferPriceTest(PostEndpointHelper):
         finally:
             app.redis_client.delete(finance_conf.REDIS_GENERATE_CASHFLOW_LOCK)
 
-        # then
         assert response.status_code == 303
         assert collective_booking.collectiveStock.price == 100
         assert collective_booking.collectiveStock.numberOfTickets == 25
@@ -767,7 +734,6 @@ class PostEditCollectiveOfferPriceTest(PostEndpointHelper):
     )
     def test_price_higher_than_previously(self, legit_user, authenticated_client, booking_status):
         now = datetime.datetime.utcnow()
-        # when
         collective_booking = educational_factories.CollectiveBookingFactory(
             collectiveStock__price=Decimal(100.00),
             collectiveStock__numberOfTickets=25,
@@ -782,7 +748,6 @@ class PostEditCollectiveOfferPriceTest(PostEndpointHelper):
             collective_offer_id=collective_booking.collectiveStock.collectiveOffer.id,
         )
 
-        # then
         if booking_status in [
             educational_models.CollectiveBookingStatus.CONFIRMED,
             educational_models.CollectiveBookingStatus.USED,
@@ -810,7 +775,6 @@ class PostEditCollectiveOfferPriceTest(PostEndpointHelper):
     )
     def test_number_of_tickets_higher_than_previously(self, legit_user, authenticated_client, booking_status):
         now = datetime.datetime.utcnow()
-        # when
         collective_booking = educational_factories.CollectiveBookingFactory(
             collectiveStock__price=Decimal(100.00),
             collectiveStock__numberOfTickets=25,
@@ -825,7 +789,6 @@ class PostEditCollectiveOfferPriceTest(PostEndpointHelper):
             collective_offer_id=collective_booking.collectiveStock.collectiveOffer.id,
         )
 
-        # then
         if booking_status in [
             educational_models.CollectiveBookingStatus.CONFIRMED,
             educational_models.CollectiveBookingStatus.USED,

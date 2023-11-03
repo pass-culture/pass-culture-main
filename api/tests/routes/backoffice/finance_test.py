@@ -97,8 +97,7 @@ class GetIncidentValidationFormTest(GetEndpointHelper):
 
         with assert_num_queries(self.expected_num_queries):
             response = authenticated_client.get(url)
-
-        assert response.status_code == 200
+            assert response.status_code == 200
 
         text_content = html_parser.content_as_text(response.data)
         assert (
@@ -460,8 +459,8 @@ class GetIncidentCreationFormTest(PostEndpointHelper):
 
         with assert_num_queries(self.expected_num_queries):
             response = self.post_to_endpoint(authenticated_client, form={"object_ids": object_ids})
+            assert response.status_code == 200
 
-        assert response.status_code == 200
         additional_data_text = html_parser.extract_cards_text(response.data)[0]
         assert f"Lieu : {venue.name}" in additional_data_text
         assert f"ID de la réservation : {booking.id}" in additional_data_text
@@ -494,8 +493,8 @@ class GetIncidentCreationFormTest(PostEndpointHelper):
 
         with assert_num_queries(self.expected_num_queries):
             response = self.post_to_endpoint(authenticated_client, form={"object_ids": object_ids})
+            assert response.status_code == 200
 
-        assert response.status_code == 200
         additional_data_text = html_parser.extract_cards_text(response.data)[0]
         assert f"Lieu : {venue.name}" in additional_data_text
         assert f"Nombre de réservations : {len(selected_bookings)}" in additional_data_text
@@ -544,8 +543,8 @@ class GetCollectiveBookingIncidentFormTest(PostEndpointHelper):
 
         with assert_num_queries(self.expected_num_queries):
             response = self.post_to_endpoint(authenticated_client, collective_booking_id=collective_booking.id)
+            assert response.status_code == 200
 
-        assert response.status_code == 200
         additional_data_text = html_parser.extract_cards_text(response.data)[0]
 
         assert f"ID de la réservation : {collective_booking.id}" in additional_data_text
@@ -733,6 +732,9 @@ class GetIncidentHistoryTest(GetEndpointHelper):
     endpoint_kwargs = {"finance_incident_id": 1}
     needed_permission = perm_models.Permissions.READ_INCIDENTS
 
+    # session + current user + incident data
+    expected_num_queries = 3
+
     def test_get_incident_history(self, legit_user, authenticated_client):
         finance_incident = finance_factories.FinanceIncidentFactory()
         action = history_factories.ActionHistoryFactory(
@@ -742,8 +744,10 @@ class GetIncidentHistoryTest(GetEndpointHelper):
         )
         _cancel_finance_incident(finance_incident, comment="Je décide d'annuler l'incident")
 
-        response = authenticated_client.get(url_for(self.endpoint, finance_incident_id=finance_incident.id))
-        assert response.status_code == 200
+        finance_incident_id = finance_incident.id
+        with assert_num_queries(self.expected_num_queries):
+            response = authenticated_client.get(url_for(self.endpoint, finance_incident_id=finance_incident_id))
+            assert response.status_code == 200
 
         rows = html_parser.extract_table_rows(response.data)
         assert len(rows) == 2

@@ -444,11 +444,27 @@ user_offerer_blueprint = utils.child_backoffice_blueprint(
 )
 
 
-@validation_blueprint.route("/user-offerer/<int:user_offerer_id>/validate", methods=["POST"])
-def validate_user_offerer(user_offerer_id: int) -> utils.BackofficeResponse:
-    user_offerer = offerers_models.UserOfferer.query.filter_by(id=user_offerer_id).one_or_none()
+def _load_user_offerer(user_offerer_id: int) -> offerers_models.UserOfferer:
+    user_offerer = (
+        offerers_models.UserOfferer.query.filter_by(id=user_offerer_id)
+        .options(
+            sa.orm.joinedload(offerers_models.UserOfferer.user).load_only(users_models.User.email),
+            sa.orm.joinedload(offerers_models.UserOfferer.offerer).load_only(
+                offerers_models.Offerer.id, offerers_models.Offerer.name
+            ),
+        )
+        .one_or_none()
+    )
+
     if not user_offerer:
         raise NotFound()
+
+    return user_offerer
+
+
+@validation_blueprint.route("/user-offerer/<int:user_offerer_id>/validate", methods=["POST"])
+def validate_user_offerer(user_offerer_id: int) -> utils.BackofficeResponse:
+    user_offerer = _load_user_offerer(user_offerer_id)
 
     try:
         offerers_api.validate_offerer_attachment(user_offerer, current_user)
@@ -494,9 +510,7 @@ def get_batch_user_offerer_pending_form() -> utils.BackofficeResponse:
 
 @validation_blueprint.route("/user-offerer/<int:user_offerer_id>/reject", methods=["GET"])
 def get_reject_user_offerer_form(user_offerer_id: int) -> utils.BackofficeResponse:
-    user_offerer = offerers_models.UserOfferer.query.filter_by(id=user_offerer_id).one_or_none()
-    if not user_offerer:
-        raise NotFound()
+    user_offerer = _load_user_offerer(user_offerer_id)
 
     form = offerer_forms.OptionalCommentForm()
 
@@ -512,9 +526,7 @@ def get_reject_user_offerer_form(user_offerer_id: int) -> utils.BackofficeRespon
 
 @validation_blueprint.route("/user-offerer/<int:user_offerer_id>/reject", methods=["POST"])
 def reject_user_offerer(user_offerer_id: int) -> utils.BackofficeResponse:
-    user_offerer = offerers_models.UserOfferer.query.filter_by(id=user_offerer_id).one_or_none()
-    if not user_offerer:
-        raise NotFound()
+    user_offerer = _load_user_offerer(user_offerer_id)
 
     form = offerer_forms.OptionalCommentForm()
     if not form.validate():
@@ -532,9 +544,7 @@ def reject_user_offerer(user_offerer_id: int) -> utils.BackofficeResponse:
 
 @validation_blueprint.route("/user-offerer/<int:user_offerer_id>/pending", methods=["GET"])
 def get_user_offerer_pending_form(user_offerer_id: int) -> utils.BackofficeResponse:
-    user_offerer = offerers_models.UserOfferer.query.filter_by(id=user_offerer_id).one_or_none()
-    if not user_offerer:
-        raise NotFound()
+    user_offerer = _load_user_offerer(user_offerer_id)
 
     form = offerer_forms.OptionalCommentForm()
 
@@ -550,9 +560,7 @@ def get_user_offerer_pending_form(user_offerer_id: int) -> utils.BackofficeRespo
 
 @validation_blueprint.route("/user-offerer/<int:user_offerer_id>/pending", methods=["POST"])
 def set_user_offerer_pending(user_offerer_id: int) -> utils.BackofficeResponse:
-    user_offerer = offerers_models.UserOfferer.query.filter_by(id=user_offerer_id).one_or_none()
-    if not user_offerer:
-        raise NotFound()
+    user_offerer = _load_user_offerer(user_offerer_id)
 
     form = offerer_forms.OptionalCommentForm()
     if not form.validate():

@@ -11,7 +11,7 @@ import pcapi.core.offerers.factories as offerers_factories
 from pcapi.core.offers import factories as offers_factories
 from pcapi.core.offers import models as offers_models
 import pcapi.core.permissions.models as perm_models
-from pcapi.core.testing import assert_no_duplicated_queries
+from pcapi.core.testing import assert_num_queries
 import pcapi.core.users.constants as users_constants
 import pcapi.core.users.factories as users_factories
 import pcapi.core.users.models as users_models
@@ -34,6 +34,10 @@ class GetProUserTest(GetEndpointHelper):
     endpoint = "backoffice_web.pro_user.get"
     endpoint_kwargs = {"user_id": 1}
     needed_permission = perm_models.Permissions.READ_PRO_ENTITY
+
+    # session + current user + pro user data + WIP_ENABLE_NEW_BANK_DETAILS_JOURNEY
+    expected_num_queries = 4
+    expected_num_queries_without_ff_checked = expected_num_queries - 1
 
     class EmailValidationButtonTest(button_helpers.ButtonHelper):
         needed_permission = perm_models.Permissions.MANAGE_PRO_ENTITY
@@ -125,7 +129,7 @@ class GetProUserTest(GetEndpointHelper):
         user = offerers_factories.UserOffererFactory(user__phoneNumber="+33638656565", user__postalCode="29000").user
         url = url_for(self.endpoint, user_id=user.id)
 
-        with assert_no_duplicated_queries():
+        with assert_num_queries(self.expected_num_queries):
             response = authenticated_client.get(url)
             assert response.status_code == 200
 
@@ -149,9 +153,9 @@ class GetProUserTest(GetEndpointHelper):
         user = users_factories.BeneficiaryGrant18Factory()
         url = url_for(self.endpoint, user_id=user.id)
 
-        with assert_no_duplicated_queries():
+        with assert_num_queries(self.expected_num_queries_without_ff_checked):
             response = authenticated_client.get(url)
-        assert response.status_code == 303
+            assert response.status_code == 303
 
         expected_url = url_for("backoffice_web.search_pro", _external=True)
         assert response.location == expected_url
@@ -208,6 +212,9 @@ class GetProUserHistoryTest(GetEndpointHelper):
     endpoint_kwargs = {"user_id": 1}
     needed_permission = perm_models.Permissions.READ_PRO_ENTITY
 
+    # session + current user + actions + former user_offerer
+    expected_num_queries = 4
+
     class CommentButtonTest(button_helpers.ButtonHelper):
         needed_permission = perm_models.Permissions.MANAGE_PRO_ENTITY
         button_label = "Ajouter un commentaire"
@@ -230,10 +237,10 @@ class GetProUserHistoryTest(GetEndpointHelper):
         )
         url = url_for(self.endpoint, user_id=pro_user.id)
 
-        with assert_no_duplicated_queries():
+        with assert_num_queries(self.expected_num_queries):
             response = authenticated_client.get(url)
+            assert response.status_code == 200
 
-        assert response.status_code == 200
         rows = html_parser.extract_table_rows(response.data, parent_class="history-tab-pane")
         assert len(rows) == 2
 
@@ -253,10 +260,10 @@ class GetProUserHistoryTest(GetEndpointHelper):
     def test_no_history(self, authenticated_client, pro_user):
         url = url_for(self.endpoint, user_id=pro_user.id)
 
-        with assert_no_duplicated_queries():
+        with assert_num_queries(self.expected_num_queries):
             response = authenticated_client.get(url)
+            assert response.status_code == 200
 
-        assert response.status_code == 200
         assert html_parser.count_table_rows(response.data, parent_class="history-tab-pane") == 0
 
 
@@ -291,14 +298,17 @@ class GetProUserOfferersTest(GetEndpointHelper):
     endpoint_kwargs = {"user_id": 1}
     needed_permission = perm_models.Permissions.READ_PRO_ENTITY
 
+    # session + current user + actions + user_offerer objects
+    expected_num_queries = 4
+
     def test_get_user_offerers(self, authenticated_client, pro_user):
         user_offerer_validated = offerers_factories.UserOffererFactory(user=pro_user)
         user_offerer_new = offerers_factories.NotValidatedUserOffererFactory(user=pro_user)
         url = url_for(self.endpoint, user_id=pro_user.id)
 
-        with assert_no_duplicated_queries():
+        with assert_num_queries(self.expected_num_queries):
             response = authenticated_client.get(url)
-        assert response.status_code == 200
+            assert response.status_code == 200
 
         content = response.data.decode("utf-8")
 
@@ -316,9 +326,9 @@ class GetProUserOfferersTest(GetEndpointHelper):
     def test_no_user_offerers(self, authenticated_client, pro_user):
         url = url_for(self.endpoint, user_id=pro_user.id)
 
-        with assert_no_duplicated_queries():
+        with assert_num_queries(self.expected_num_queries):
             response = authenticated_client.get(url)
-        assert response.status_code == 200
+            assert response.status_code == 200
 
 
 class ValidateProEmailTest(PostEndpointHelper):

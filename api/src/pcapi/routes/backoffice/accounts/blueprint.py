@@ -12,6 +12,7 @@ from flask import render_template
 from flask import request
 from flask import url_for
 from flask_login import current_user
+from flask_sqlalchemy import BaseQuery
 import sqlalchemy as sa
 from werkzeug.exceptions import NotFound
 
@@ -60,6 +61,21 @@ public_accounts_blueprint = utils.child_backoffice_blueprint(
 )
 
 
+def _join_suspension_history(query: BaseQuery) -> BaseQuery:
+    # Joinedload with ActionHistory avoids N+1 query to show suspension reason.
+    # Join only suspension actions to limit the number of fetched rows.
+    # It should be OK because per_page is 20 on this search page and can not be set to thousands
+    return query.outerjoin(
+        history_models.ActionHistory,
+        sa.and_(
+            history_models.ActionHistory.userId == users_models.User.id,
+            history_models.ActionHistory.actionType.in_(
+                [history_models.ActionType.USER_SUSPENDED, history_models.ActionType.USER_UNSUSPENDED]
+            ),
+        ),
+    ).options(sa.orm.contains_eager(users_models.User.action_history))
+
+
 @public_accounts_blueprint.route("/search", methods=["GET"])
 def search_public_accounts() -> utils.BackofficeResponse:
     """
@@ -73,10 +89,8 @@ def search_public_accounts() -> utils.BackofficeResponse:
     if not form.validate():
         return render_search_template(form), 400
 
-    # Joinedload with ActionHistory avoids N+1 query to show suspension reason.
-    # It should be OK because per_page is 20 on this search page and can not be set to thousands
-    query_options = sa.orm.joinedload(users_models.User.action_history)
-    users_query = users_api.search_public_account(form.q.data).options(query_options)
+    users_query = users_api.search_public_account(form.q.data)
+    users_query = _join_suspension_history(users_query)
     paginated_rows = users_query.paginate(page=form.page.data, per_page=form.per_page.data)
 
     # Do NOT call users.count() after search_public_account, this would make one more request on all users every time
@@ -84,7 +98,8 @@ def search_public_accounts() -> utils.BackofficeResponse:
     if paginated_rows.total == 0 and email_utils.is_valid_email_or_email_domain(
         email_utils.sanitize_email(form.q.data)
     ):
-        users_query = users_api.search_public_account_in_history_email(form.q.data).options(query_options)
+        users_query = users_api.search_public_account_in_history_email(form.q.data)
+        users_query = _join_suspension_history(users_query)
         paginated_rows = users_query.paginate(page=form.page.data, per_page=form.per_page.data)
 
     if paginated_rows.total == 1 and FeatureToggle.WIP_BACKOFFICE_ENABLE_REDIRECT_SINGLE_RESULT.is_active():

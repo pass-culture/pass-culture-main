@@ -1433,51 +1433,6 @@ def search_bank_account(search_query: str, *_: typing.Any) -> BaseQuery:
     return bank_accounts_query.filter(sa.or_(*filters) if len(filters) > 0 else filters[0])
 
 
-def get_offerer_basic_info(offerer_id: int) -> sa.engine.Row:
-    bank_informations_query = sa.select(sa.func.jsonb_object_agg(sa.text("status"), sa.text("number"))).select_from(
-        sa.select(
-            sa.case(
-                (
-                    offerers_models.VenueReimbursementPointLink.id.is_(None)
-                    | sa.not_(offerers_models.VenueReimbursementPointLink.timespan.contains(datetime.utcnow())),
-                    "ko",
-                ),
-                else_="ok",
-            ).label("status"),
-            sa.func.count(offerers_models.Venue.id).label("number"),
-        )
-        .select_from(offerers_models.Venue)
-        .outerjoin(
-            offerers_models.VenueReimbursementPointLink,
-            offerers_models.VenueReimbursementPointLink.venueId == offerers_models.Venue.id,
-        )
-        .filter(
-            offerers_models.Venue.managingOffererId == offerer_id,
-        )
-        .group_by(sa.text("status"))
-        .subquery()
-    )
-
-    offerer_query = (
-        sa.select(
-            offerers_models.Offerer.id,
-            offerers_models.Offerer.name,
-            offerers_models.Offerer.validationStatus,
-            offerers_models.Offerer.isActive,
-            offerers_models.Offerer.siren,
-            offerers_models.Offerer.postalCode,
-            offerers_models.Offerer.individualSubscription,
-            bank_informations_query.scalar_subquery().label("bank_informations"),
-        )
-        .outerjoin(offerers_models.Offerer.individualSubscription)
-        .filter(offerers_models.Offerer.id == offerer_id)
-    )
-
-    offerer = db.session.execute(offerer_query).one_or_none()
-
-    return offerer
-
-
 def get_offerer_total_revenue(offerer_id: int) -> float:
     individual_revenue_query = sa.select(
         sa.func.coalesce(

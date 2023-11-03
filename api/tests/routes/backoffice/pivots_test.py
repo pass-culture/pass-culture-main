@@ -47,15 +47,12 @@ class ListPivotsTest(GetEndpointHelper):
     expected_num_queries = 3
 
     def test_list_pivots_allocine(self, authenticated_client):
-        # given
         allocine_pivot = providers_factories.AllocinePivotFactory()
 
-        # when
         with assert_num_queries(self.expected_num_queries):
             response = authenticated_client.get(url_for(self.endpoint, name="allocine"))
             assert response.status_code == 200
 
-        # then
         allocine_rows = html_parser.extract_table_rows(response.data)
         assert allocine_rows[0]["Id du Lieu"] == str(allocine_pivot.venue.id)
         assert allocine_rows[0]["Lieu"] == allocine_pivot.venue.name
@@ -75,7 +72,6 @@ class ListPivotsTest(GetEndpointHelper):
         ],
     )
     def test_filter_pivots_allocine(self, authenticated_client, query_string, expected_venues):
-        # given
         providers_factories.AllocinePivotFactory(
             venue__id=10, venue__name="Cinéma Edison", theaterId="ABCDEFGHIJKLMNOPQR==", internalId="P01891"
         )
@@ -86,25 +82,20 @@ class ListPivotsTest(GetEndpointHelper):
             venue__id=12, venue__name="Chez les Frères Lumière", theaterId="CDEFGHIJKLMNOPQRST==", internalId="P18950"
         )
 
-        # when
         with assert_num_queries(self.expected_num_queries):
             response = authenticated_client.get(url_for(self.endpoint, name="allocine", q=query_string))
             assert response.status_code == 200
 
-        # then
         allocine_rows = html_parser.extract_table_rows(response.data)
         assert {row["Lieu"] for row in allocine_rows} == expected_venues
 
     def test_list_pivots_boost(self, authenticated_client):
-        # given
         boost_pivot = providers_factories.BoostCinemaDetailsFactory()
 
-        # when
         with assert_num_queries(self.expected_num_queries):
             response = authenticated_client.get(url_for(self.endpoint, name="boost"))
             assert response.status_code == 200
 
-        # then
         boost_rows = html_parser.extract_table_rows(response.data)
         assert boost_rows[0]["Id du Lieu"] == str(boost_pivot.cinemaProviderPivot.venue.id)
         assert boost_rows[0]["Lieu"] == boost_pivot.cinemaProviderPivot.venue.name
@@ -125,7 +116,6 @@ class ListPivotsTest(GetEndpointHelper):
         ],
     )
     def test_filter_pivots_boost(self, authenticated_client, query_string, expected_venues):
-        # given
         cgr_provider = providers_repository.get_provider_by_local_class("BoostStocks")
         providers_factories.BoostCinemaDetailsFactory(
             cinemaProviderPivot=providers_factories.CinemaProviderPivotFactory(
@@ -149,25 +139,20 @@ class ListPivotsTest(GetEndpointHelper):
             ),
         )
 
-        # when
         with assert_num_queries(self.expected_num_queries):
             response = authenticated_client.get(url_for(self.endpoint, name="boost", q=query_string))
             assert response.status_code == 200
 
-        # then
         cgr_rows = html_parser.extract_table_rows(response.data)
         assert {row["Lieu"] for row in cgr_rows} == expected_venues
 
     def test_list_pivots_cgr(self, authenticated_client):
-        # given
         cgr_pivot = providers_factories.CGRCinemaDetailsFactory()
 
-        # when
         with assert_num_queries(self.expected_num_queries):
             response = authenticated_client.get(url_for(self.endpoint, name="cgr"))
             assert response.status_code == 200
 
-        # then
         cgr_rows = html_parser.extract_table_rows(response.data)
         assert cgr_rows[0]["Id du Lieu"] == str(cgr_pivot.cinemaProviderPivot.venue.id)
         assert cgr_rows[0]["Lieu"] == cgr_pivot.cinemaProviderPivot.venue.name
@@ -187,7 +172,6 @@ class ListPivotsTest(GetEndpointHelper):
         ],
     )
     def test_filter_pivots_cgr(self, authenticated_client, query_string, expected_venues):
-        # given
         cgr_provider = providers_repository.get_provider_by_local_class("CGRStocks")
         providers_factories.CGRCinemaDetailsFactory(
             cinemaProviderPivot=providers_factories.CinemaProviderPivotFactory(
@@ -211,25 +195,20 @@ class ListPivotsTest(GetEndpointHelper):
             ),
         )
 
-        # when
         with assert_num_queries(self.expected_num_queries):
             response = authenticated_client.get(url_for(self.endpoint, name="cgr", q=query_string))
             assert response.status_code == 200
 
-        # then
         cgr_rows = html_parser.extract_table_rows(response.data)
         assert {row["Lieu"] for row in cgr_rows} == expected_venues
 
     def test_list_pivots_cineoffice(self, authenticated_client):
-        # given
         cineoffice_pivot = providers_factories.CDSCinemaDetailsFactory()
 
-        # when
         with assert_num_queries(self.expected_num_queries):
             response = authenticated_client.get(url_for(self.endpoint, name="cineoffice"))
             assert response.status_code == 200
 
-        # then
         cineoffice_rows = html_parser.extract_table_rows(response.data)
         assert cineoffice_rows[0]["Id du Lieu"] == str(cineoffice_pivot.cinemaProviderPivot.venue.id)
         assert cineoffice_rows[0]["Lieu"] == cineoffice_pivot.cinemaProviderPivot.venue.name
@@ -249,7 +228,6 @@ class ListPivotsTest(GetEndpointHelper):
         ],
     )
     def test_filter_pivots_cineoffice(self, authenticated_client, query_string, expected_venues):
-        # given
         cds_provider = providers_repository.get_provider_by_local_class("CDSStocks")
         providers_factories.CDSCinemaDetailsFactory(
             cinemaProviderPivot=providers_factories.CinemaProviderPivotFactory(
@@ -279,12 +257,10 @@ class ListPivotsTest(GetEndpointHelper):
             cinemaApiToken="azerty123",
         )
 
-        # when
         with assert_num_queries(self.expected_num_queries):
             response = authenticated_client.get(url_for(self.endpoint, name="cineoffice", q=query_string))
             assert response.status_code == 200
 
-        # then
         cgr_rows = html_parser.extract_table_rows(response.data)
         assert {row["Lieu"] for row in cgr_rows} == expected_venues
 
@@ -468,7 +444,6 @@ class GetUpdatePivotFormTest(GetEndpointHelper):
     expected_num_queries = 6
 
     def test_get_update_pivot_form_allocine(self, authenticated_client):
-        # given
         # - fetch session (1 query)
         # - fetch user (1 query)
         # - fetch pivot (1 query)
@@ -480,42 +455,33 @@ class GetUpdatePivotFormTest(GetEndpointHelper):
 
         db.session.expire(allocine_pivot)
 
-        # when
         with assert_num_queries(allocine_pivot_expected_num_queries):
             response = authenticated_client.get(url_for(self.endpoint, name="allocine", pivot_id=pivot_id))
             assert response.status_code == 200
 
     def test_get_update_pivot_form_boost(self, authenticated_client):
-        # given
-
         boost_pivot = providers_factories.BoostCinemaDetailsFactory(cinemaUrl="http://example.com/boost1")
 
         db.session.expire(boost_pivot)
 
-        # when
         with assert_num_queries(self.expected_num_queries):
             response = authenticated_client.get(url_for(self.endpoint, name="boost", pivot_id=boost_pivot.id))
             assert response.status_code == 200
 
     def test_get_update_pivot_form_cgr(self, authenticated_client):
-        # given
         cgr_pivot = providers_factories.CGRCinemaDetailsFactory(cinemaUrl="http://example.com/another_web_service")
 
         db.session.expire(cgr_pivot)
 
-        # when
         with assert_num_queries(self.expected_num_queries):
             response = authenticated_client.get(url_for(self.endpoint, name="cgr", pivot_id=cgr_pivot.id))
             assert response.status_code == 200
 
     def test_get_update_pivot_form_cineoffice(self, authenticated_client):
-        # given
-
         cineoffice_pivot = providers_factories.CDSCinemaDetailsFactory()
 
         db.session.expire(cineoffice_pivot)
 
-        # when
         with assert_num_queries(self.expected_num_queries):
             response = authenticated_client.get(url_for(self.endpoint, name="cineoffice", pivot_id=cineoffice_pivot.id))
             assert response.status_code == 200

@@ -72,7 +72,6 @@ class GetBankAccountTest(GetEndpointHelper):
                 response = authenticated_client.get(url)
                 assert response.status_code == 200
 
-        # then
         response_text = html_parser.content_as_text(response.data)
         assert "Statut DMS CB : En construction" in response_text
         assert "Date de dépôt du dossier DMS CB : 21/09/2022" in response_text
@@ -199,7 +198,6 @@ class GetOffererHistoryTest(GetEndpointHelper):
         assert rows[0]["Auteur"] == action.authorUser.full_name
 
     def test_get_full_sorted_history(self, authenticated_client, legit_user):
-        # given
         bank_account = finance_factories.BankAccountFactory()
 
         link_action = history_factories.ActionHistoryFactory(
@@ -219,12 +217,10 @@ class GetOffererHistoryTest(GetEndpointHelper):
 
         url = url_for(self.endpoint, bank_account_id=bank_account.id)
 
-        # when
         with assert_num_queries(self.expected_num_queries):
             response = authenticated_client.get(url)
             assert response.status_code == 200
 
-        # then
         rows = html_parser.extract_table_rows(response.data)
         assert len(rows) == 2
 
