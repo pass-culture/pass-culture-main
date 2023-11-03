@@ -429,7 +429,7 @@ const StocksEventList = ({
             />
           )}
 
-          {stocks.map((stock, index) => {
+          {stocks.map((stock) => {
             const beginningDay = formatLocalTimeDateString(
               stock.beginningDatetime,
               departmentCode,
@@ -464,10 +464,9 @@ const StocksEventList = ({
               )} - ${priceCategory?.label}`
             }
 
-            const currentStockIndex = (page - 1) * STOCKS_PER_PAGE + index
-
+            const stockIndex = stocks.findIndex((s) => s.id === stock.id)
             return (
-              <tr key={index} className={styles['row']}>
+              <tr key={stock.id} className={styles['row']}>
                 <td className={styles['data']}>
                   <div
                     className={cn(
@@ -477,10 +476,8 @@ const StocksEventList = ({
                   >
                     {!readonly && (
                       <BaseCheckbox
-                        checked={isCheckedArray[currentStockIndex]}
-                        onChange={() =>
-                          handleOnChangeSelected(currentStockIndex)
-                        }
+                        checked={isCheckedArray[stockIndex]}
+                        onChange={() => handleOnChangeSelected(stockIndex)}
                         label=""
                       />
                     )}
@@ -512,7 +509,7 @@ const StocksEventList = ({
                       variant={ButtonVariant.TERNARY}
                       onClick={async () => {
                         if (stock.id?.toString()) {
-                          await onDeleteStock(index, stock.id)
+                          await onDeleteStock(stockIndex, stock.id)
                         }
                       }}
                       icon={fullTrashIcon}
