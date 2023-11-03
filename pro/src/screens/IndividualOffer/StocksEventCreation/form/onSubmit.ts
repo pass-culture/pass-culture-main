@@ -19,6 +19,8 @@ import {
 } from './recurrenceUtils'
 import { RecurrenceFormValues, RecurrenceType } from './types'
 
+type StocksEventWithOptionalId = Omit<StocksEvent, 'id'> & { id?: number }
+
 export const onSubmit = async (
   values: RecurrenceFormValues,
   departmentCode: string,
@@ -36,18 +38,23 @@ export const onSubmit = async (
     return
   }
 
-  const allStocks: StocksEvent[] = [...existingStocks, ...generatedStocks]
+  const allStocks: StocksEventWithOptionalId[] = [
+    ...existingStocks,
+    ...generatedStocks,
+  ]
 
   const uniqueStocksSet = new Set()
 
-  const deduplicatedStocks: StocksEvent[] = allStocks.filter((stock) => {
-    const stockKey = `${stock.beginningDatetime}-${stock.priceCategoryId}`
-    if (!uniqueStocksSet.has(stockKey)) {
-      uniqueStocksSet.add(stockKey)
-      return true
+  const deduplicatedStocks: StocksEventWithOptionalId[] = allStocks.filter(
+    (stock) => {
+      const stockKey = `${stock.beginningDatetime}-${stock.priceCategoryId}`
+      if (!uniqueStocksSet.has(stockKey)) {
+        uniqueStocksSet.add(stockKey)
+        return true
+      }
+      return false
     }
-    return false
-  })
+  )
 
   const serializedStocksToAdd = deduplicatedStocks
     //  keep only the new stocks
@@ -201,7 +208,7 @@ const generateStocksForDates = (
   values: RecurrenceFormValues,
   dates: Date[],
   departmentCode?: string | null
-): StocksEvent[] =>
+): StocksEventWithOptionalId[] =>
   dates.flatMap((beginningDate) =>
     values.beginningTimes.flatMap((beginningTime) =>
       values.quantityPerPriceCategories.flatMap((quantityPerPriceCategory) => {
