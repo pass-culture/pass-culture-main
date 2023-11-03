@@ -9,8 +9,14 @@
         {{ build_pro_user_status_badge(row) }}
       {% endif %}
     </h5>
+    {% if result_type == "user" %}
+      {# ConsultCard tracker only for pro #}
+      {% set link = get_link_to_detail(row.id, form=search_form, search_rank=index, total_items=rows.total) %}
+    {% else %}
+      {% set link = get_link_to_detail(row.id, form=search_form) %}
+    {% endif %}
     <h5 class="card-title">
-      <a href="{{ get_link_to_detail(row.id, q=q, search_rank=index, total_items=rows.total) }}"
+      <a href="{{ link }}"
          class="link-primary">{{ row.full_name }}</a>
     </h5>
     <h6 class="card-subtitle mb-4 text-muted">User ID : {{ row.id }}</h6>
@@ -41,10 +47,9 @@
       {% endif %}
     </div>
     <div class="d-flex flex-row-reverse">
-      <a href="{{ get_link_to_detail(row.id, q=q, search_rank=index, total_items=rows.total ) }}"
-         class="btn btn-md btn-outline-primary fw-bold">
-        CONSULTER CE PROFIL <i class="bi bi-arrow-right"></i>
-      </a>
-    </div>
-  </div>
+    <a href="{{ link }}"
+       class="btn btn-md btn-outline-primary fw-bold">CONSULTER CE PROFIL <i class="bi bi-arrow-right"></i>
+  </a>
+</div>
+</div>
 </div>

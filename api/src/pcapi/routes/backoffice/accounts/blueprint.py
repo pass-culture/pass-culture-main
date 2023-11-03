@@ -103,7 +103,12 @@ def search_public_accounts() -> utils.BackofficeResponse:
         paginated_rows = users_query.paginate(page=form.page.data, per_page=form.per_page.data)
 
     if paginated_rows.total == 1 and FeatureToggle.WIP_BACKOFFICE_ENABLE_REDIRECT_SINGLE_RESULT.is_active():
-        return redirect(url_for(".get_public_account", user_id=paginated_rows.items[0].id, q=form.q.data), code=303)
+        return redirect(
+            url_for(
+                ".get_public_account", user_id=paginated_rows.items[0].id, q=form.q.data, search_rank=1, total_items=1
+            ),
+            code=303,
+        )
 
     next_page = partial(url_for, ".search_public_accounts", **form.raw_data)
     next_pages_urls = search_utils.pagination_links(next_page, form.page.data, paginated_rows.pages)
@@ -117,7 +122,6 @@ def search_public_accounts() -> utils.BackofficeResponse:
         next_pages_urls=next_pages_urls,
         get_link_to_detail=get_public_account_link,
         rows=paginated_rows,
-        q=form.q.data,
     )
 
 
@@ -951,7 +955,11 @@ def comment_public_account(user_id: int) -> utils.BackofficeResponse:
     return redirect(get_public_account_link(user_id, active_tab="history"), code=303)
 
 
-def get_public_account_link(user_id: int, **kwargs: typing.Any) -> str:
+def get_public_account_link(
+    user_id: int, form: account_forms.AccountSearchForm | None = None, **kwargs: typing.Any
+) -> str:
+    if form and form.q.data:
+        kwargs["q"] = form.q.data
     return url_for("backoffice_web.public_accounts.get_public_account", user_id=user_id, **kwargs)
 
 

@@ -34,7 +34,9 @@ bo_users_blueprint = utils.child_backoffice_blueprint(
 )
 
 
-def get_admin_account_link(user_id: int, **kwargs: typing.Any) -> str:
+def get_admin_account_link(user_id: int, form: forms.BOUserSearchForm | None, **kwargs: typing.Any) -> str:
+    if form and form.q.data:
+        kwargs["q"] = form.q.data
     return url_for("backoffice_web.bo_users.get_bo_user", user_id=user_id, **kwargs)
 
 
@@ -112,7 +114,7 @@ def render_bo_user_page(user_id: int, edit_form: forms.EditBOUserForm | None = N
     return render_template(
         "accounts/get.html",
         layout="layouts/admin.html",
-        search_form=forms.BOUserSearchForm(),
+        search_form=forms.BOUserSearchForm(q=request.args.get("q")),
         search_dst=url_for(".search_bo_users"),
         user=user,
         edit_account_form=edit_form,
