@@ -28,6 +28,7 @@ export interface VenueOfferStepsProps {
   shouldDisplayEACInformationSection?: boolean
   hasPendingBankInformationApplication?: boolean | null
   demarchesSimplifieesApplicationId?: number | null
+  offererHasBankAccount: boolean
 }
 
 const VenueOfferSteps = ({
@@ -39,6 +40,7 @@ const VenueOfferSteps = ({
   hasAdageId = false,
   shouldDisplayEACInformationSection = false,
   hasPendingBankInformationApplication = false,
+  offererHasBankAccount,
   demarchesSimplifieesApplicationId,
 }: VenueOfferStepsProps) => {
   const isVenueCreationAvailable = useActiveFeature('API_SIRENE_AVAILABLE')
@@ -128,26 +130,49 @@ const VenueOfferSteps = ({
                     Créer une offre
                   </ButtonLink>
                 )}
-                {hasMissingReimbursementPoint && (
-                  <ButtonLink
-                    className={styles['step-button-width']}
-                    isDisabled={!hasVenue}
-                    variant={ButtonVariant.BOX}
-                    icon={fullNextIcon}
-                    link={{
-                      to: `/structures/${offererId}/lieux/${venueId}#reimbursement`,
-                      isExternal: false,
-                    }}
-                    onClick={() => {
-                      logEvent?.(VenueEvents.CLICKED_VENUE_ADD_RIB_BUTTON, {
-                        venue_id: venueId || '',
-                        from: OFFER_FORM_NAVIGATION_IN.HOME,
-                      })
-                    }}
-                  >
-                    Renseigner des coordonnées bancaires
-                  </ButtonLink>
-                )}
+                {!isNewBankDetailsJourneyEnabled &&
+                  hasMissingReimbursementPoint && (
+                    <ButtonLink
+                      className={styles['step-button-width']}
+                      isDisabled={!hasVenue}
+                      variant={ButtonVariant.BOX}
+                      icon={fullNextIcon}
+                      link={{
+                        to: `/structures/${offererId}/lieux/${venueId}#reimbursement`,
+                        isExternal: false,
+                      }}
+                      onClick={() => {
+                        logEvent?.(VenueEvents.CLICKED_VENUE_ADD_RIB_BUTTON, {
+                          venue_id: venueId || '',
+                          from: OFFER_FORM_NAVIGATION_IN.HOME,
+                        })
+                      }}
+                    >
+                      Renseigner des coordonnées bancaires
+                    </ButtonLink>
+                  )}
+                {isNewBankDetailsJourneyEnabled &&
+                  !hasCreatedOffer &&
+                  !offererHasBankAccount && (
+                    <ButtonLink
+                      className={styles['step-button-width']}
+                      isDisabled={!hasVenue}
+                      variant={ButtonVariant.BOX}
+                      icon={fullNextIcon}
+                      link={{
+                        to: `remboursements/informations-bancaires?structure=${offererId}`,
+                        isExternal: false,
+                      }}
+                      onClick={() => {
+                        logEvent?.(VenueEvents.CLICKED_VENUE_ADD_RIB_BUTTON, {
+                          venue_id: venueId || '',
+                          from: OFFER_FORM_NAVIGATION_IN.HOME,
+                        })
+                      }}
+                    >
+                      Ajouter un compte bancaire
+                    </ButtonLink>
+                  )}
                 {shouldDisplayEACInformationSection && (
                   <ButtonLink
                     className={styles['step-button-width']}
