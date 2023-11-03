@@ -7,10 +7,10 @@ from flask import url_for
 from flask_login import current_user
 import sqlalchemy as sa
 
-import pcapi.core.offerers.models as offerers_models
-import pcapi.core.offers.models as offers_models
-import pcapi.core.permissions.models as perm_models
-import pcapi.core.users.models as users_models
+from pcapi.core.offerers import models as offerers_models
+from pcapi.core.offers import models as offers_models
+from pcapi.core.permissions import models as perm_models
+from pcapi.core.users import models as users_models
 from pcapi.models import db
 from pcapi.routes.backoffice import autocomplete
 from pcapi.routes.backoffice.forms import empty as empty_forms

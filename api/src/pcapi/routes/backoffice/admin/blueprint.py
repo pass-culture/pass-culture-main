@@ -8,7 +8,7 @@ from pcapi import settings
 from pcapi.core.permissions import api as perm_api
 from pcapi.core.permissions import models as perm_models
 from pcapi.models import feature as feature_models
-import pcapi.notifications.internal.transactional.change_feature_flip as change_feature_flip_internal_message
+from pcapi.notifications.internal.transactional import change_feature_flip as change_feature_flip_internal_message
 from pcapi.repository import repository
 
 from . import forms

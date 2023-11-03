@@ -11,13 +11,13 @@ from pcapi.core.bookings import factories as bookings_factories
 from pcapi.core.categories import subcategories_v2 as subcategories
 from pcapi.core.finance import models as finance_models
 from pcapi.core.fraud import factories as fraud_factories
-import pcapi.core.fraud.models as fraud_models
+from pcapi.core.fraud import models as fraud_models
 from pcapi.core.history import factories as history_factories
 from pcapi.core.history import models as history_models
 from pcapi.core.mails import testing as mails_testing
 from pcapi.core.mails.transactional.sendinblue_template_ids import TransactionalEmail
 from pcapi.core.offerers import factories as offerers_factories
-import pcapi.core.permissions.models as perm_models
+from pcapi.core.permissions import models as perm_models
 from pcapi.core.subscription.models import SubscriptionItemStatus
 from pcapi.core.subscription.models import SubscriptionStep
 from pcapi.core.testing import assert_num_queries
@@ -50,7 +50,7 @@ from pcapi.routes.backoffice.accounts.blueprint import _get_tunnel_type
 from pcapi.routes.backoffice.accounts.blueprint import _set_steps_with_active_and_disabled
 from pcapi.routes.backoffice.accounts.blueprint import get_eligibility_history
 from pcapi.routes.backoffice.accounts.blueprint import get_public_account_history
-import pcapi.utils.email as email_utils
+from pcapi.utils import email as email_utils
 
 from .helpers import button as button_helpers
 from .helpers import html_parser

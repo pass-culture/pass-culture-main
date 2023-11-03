@@ -4,10 +4,10 @@ import typing
 from flask import flash
 
 from pcapi.connectors import boost
-import pcapi.core.external_bookings.boost.exceptions as boost_exceptions
-import pcapi.core.offerers.models as offerers_models
+from pcapi.core.external_bookings.boost import exceptions as boost_exceptions
+from pcapi.core.offerers import models as offerers_models
 from pcapi.core.providers import models as providers_models
-import pcapi.core.providers.repository as providers_repository
+from pcapi.core.providers import repository as providers_repository
 from pcapi.models import db
 
 from .. import forms

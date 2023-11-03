@@ -4,7 +4,7 @@ from flask import flash
 from flask_wtf import FlaskForm
 import wtforms
 
-import pcapi.core.providers.repository as providers_repository
+from pcapi.core.providers import repository as providers_repository
 
 from ..forms import fields
 

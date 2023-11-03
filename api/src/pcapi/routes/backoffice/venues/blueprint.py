@@ -20,13 +20,13 @@ from pcapi.core.educational import models as educational_models
 from pcapi.core.external.attributes import api as external_attributes_api
 from pcapi.core.finance import models as finance_models
 from pcapi.core.finance import siret_api
-import pcapi.core.history.models as history_models
+from pcapi.core.history import models as history_models
 from pcapi.core.mails import transactional as transactional_mails
 from pcapi.core.offerers import api as offerers_api
 from pcapi.core.offerers import exceptions as offerers_exceptions
 from pcapi.core.offerers import models as offerers_models
 from pcapi.core.offerers import repository as offerers_repository
-import pcapi.core.permissions.models as perm_models
+from pcapi.core.permissions import models as perm_models
 from pcapi.core.providers import api as providers_api
 from pcapi.core.providers import models as providers_models
 from pcapi.models.api_errors import ApiErrors
@@ -38,9 +38,8 @@ from pcapi.routes.backoffice import utils
 from pcapi.routes.backoffice.forms import empty as empty_forms
 from pcapi.routes.backoffice.forms import search as search_forms
 from pcapi.routes.backoffice.forms.search import TypeOptions
-import pcapi.routes.serialization.base as serialize_base
-import pcapi.utils.regions as regions_utils
-from pcapi.utils.regions import get_department_codes_for_region
+from pcapi.routes.serialization import base as serialize_base
+from pcapi.utils import regions as regions_utils
 from pcapi.utils.string import to_camelcase
 
 from . import form as forms
@@ -84,7 +83,7 @@ def _get_venues(form: forms.GetVenuesListForm) -> list[offerers_models.Venue]:
     if form.regions.data:
         department_codes: list[str] = []
         for region in form.regions.data:
-            department_codes += get_department_codes_for_region(region)
+            department_codes += regions_utils.get_department_codes_for_region(region)
         base_query = base_query.filter(offerers_models.Venue.departementCode.in_(department_codes))
 
     if form.type.data:

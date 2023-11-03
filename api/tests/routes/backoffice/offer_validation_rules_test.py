@@ -4,10 +4,10 @@ from operator import attrgetter
 from flask import url_for
 import pytest
 
-import pcapi.core.offerers.factories as offerers_factories
-import pcapi.core.offers.factories as offers_factories
-import pcapi.core.offers.models as offers_models
-import pcapi.core.permissions.models as perm_models
+from pcapi.core.offerers import factories as offerers_factories
+from pcapi.core.offers import factories as offers_factories
+from pcapi.core.offers import models as offers_models
+from pcapi.core.permissions import models as perm_models
 from pcapi.core.testing import assert_num_queries
 
 from .helpers import html_parser

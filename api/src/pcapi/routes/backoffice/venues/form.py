@@ -5,8 +5,7 @@ import sqlalchemy as sa
 import wtforms
 from wtforms import validators
 
-import pcapi.core.offerers.models as offerers_models
-from pcapi.core.offerers.models import VenueTypeCode
+from pcapi.core.offerers import models as offerers_models
 from pcapi.core.permissions import models as perm_models
 from pcapi.routes.backoffice.forms import empty as empty_forms
 from pcapi.routes.backoffice.forms import fields
@@ -117,7 +116,7 @@ class GetVenuesListForm(utils.PCForm):
     class Meta:
         csrf = False
 
-    type = fields.PCSelectMultipleField("Type de lieu", choices=utils.choices_from_enum(VenueTypeCode))
+    type = fields.PCSelectMultipleField("Type de lieu", choices=utils.choices_from_enum(offerers_models.VenueTypeCode))
     venue_label = fields.PCQuerySelectMultipleField(
         "Label",
         query_factory=_get_all_venue_labels_query,

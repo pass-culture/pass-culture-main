@@ -1,10 +1,10 @@
 import pytest
 import sqlalchemy as sa
 
-import pcapi.core.permissions.models as perm_models
-import pcapi.core.users.backoffice.api as backoffice_api
-import pcapi.core.users.factories as users_factories
-import pcapi.core.users.models as users_models
+from pcapi.core.permissions import models as perm_models
+from pcapi.core.users import factories as users_factories
+from pcapi.core.users import models as users_models
+from pcapi.core.users.backoffice import api as backoffice_api
 
 
 pytestmark = [

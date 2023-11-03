@@ -27,9 +27,10 @@ from pcapi.repository import repository
 from pcapi.routes.backoffice import search_utils
 from pcapi.routes.backoffice import utils
 from pcapi.routes.backoffice.forms import empty as empty_forms
-from pcapi.routes.backoffice.offers import forms
 from pcapi.utils import date as date_utils
 from pcapi.workers import push_notification_job
+
+from . import forms
 
 
 list_offers_blueprint = utils.child_backoffice_blueprint(

@@ -4,17 +4,17 @@ from unittest.mock import patch
 from flask import url_for
 import pytest
 
-import pcapi.core.history.factories as history_factories
-import pcapi.core.history.models as history_models
-import pcapi.core.mails.testing as mails_testing
-import pcapi.core.offerers.factories as offerers_factories
+from pcapi.core.history import factories as history_factories
+from pcapi.core.history import models as history_models
+from pcapi.core.mails import testing as mails_testing
+from pcapi.core.offerers import factories as offerers_factories
 from pcapi.core.offers import factories as offers_factories
 from pcapi.core.offers import models as offers_models
-import pcapi.core.permissions.models as perm_models
+from pcapi.core.permissions import models as perm_models
 from pcapi.core.testing import assert_num_queries
-import pcapi.core.users.constants as users_constants
-import pcapi.core.users.factories as users_factories
-import pcapi.core.users.models as users_models
+from pcapi.core.users import constants as users_constants
+from pcapi.core.users import factories as users_factories
+from pcapi.core.users import models as users_models
 from pcapi.routes.backoffice.filters import format_date
 from pcapi.utils import email as email_utils
 
