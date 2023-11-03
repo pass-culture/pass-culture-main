@@ -252,10 +252,10 @@ class TiteliveSearchTest:
         self._configure_login_and_images(requests_mock)
         not_fully_allowed_response = copy.deepcopy(fixtures.MUSIC_SEARCH_FIXTURE)
         not_fully_allowed_response["result"][-1]["article"]["1"]["codesupport"] = 35
+        del not_fully_allowed_response["result"][0]["article"]["2"]["codesupport"]
         requests_mock.get("https://catsearch.epagine.fr/v1/search", json=not_fully_allowed_response)
 
         TiteliveMusicSearch().synchronize_products(datetime.date(2022, 12, 1))
 
-        synced_products = offers_models.Product.query.all()
-        assert len(synced_products) == 2
-        assert all(synced_product.idAtProviders != "5054197199738" for synced_product in synced_products)
+        synced_product = offers_models.Product.query.one()
+        assert synced_product.idAtProviders == "3700187679323"
