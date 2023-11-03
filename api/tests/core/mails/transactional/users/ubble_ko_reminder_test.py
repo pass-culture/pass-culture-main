@@ -180,14 +180,22 @@ class FindUsersThatFailedUbbleTest:
 
 @pytest.mark.usefixtures("db_session")
 class SendUbbleKoReminderReminderTest:
-    def _test_push_has_ko_ubble_status_has_been_sent(self, user_ids, error_code):
+    def _are_requests_equal(self, request1: dict, request2: dict) -> bool:
+        return (
+            request1["can_be_asynchronously_retried"] == request2["can_be_asynchronously_retried"]
+            and request1["event_name"] == request2["event_name"]
+            and request1["event_payload"] == request2["event_payload"]
+            and set(request1["user_ids"]) == set(request2["user_ids"])
+        )
+
+    def _test_push_has_ko_ubble_status_has_been_sent(self, user_ids: list, error_code: str):
         request = {
             "can_be_asynchronously_retried": True,
             "event_name": "has_ubble_ko_status",
             "event_payload": {"error_code": error_code},
             "user_ids": user_ids,
         }
-        assert request in push_testing.requests
+        assert any(map(lambda req: self._are_requests_equal(req, request), push_testing.requests))
 
     @override_settings(DAYS_BEFORE_UBBLE_QUICK_ACTION_REMINDER=7)
     def should_send_7_days_reminders(self):
