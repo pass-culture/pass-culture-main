@@ -163,8 +163,10 @@ jobs:
           if [ "${{ env.WORKFLOW_CONCLUSION }}" == "failure" ];
           then
             echo TEXT="La pose du tag *${{ env.TAG_NAME }}* a échoué :x: Détails sur <${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}|Github>" >> $GITHUB_ENV
+          elif [ "${{ env.WORKFLOW_CONCLUSION }}" == "skipped" ];
+            echo TEXT="La pose du tag a été annulée. Détails sur <${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}|Github>" >> $GITHUB_ENV
           else
-            echo TEXT="la pose du tag *${{ env.TAG_NAME }}* a réussi. rdv sur <https://github.com/pass-culture/pass-culture-main/actions/workflows/release--deploy.yml|cette action github> pour le déployer :rocket:" >> $GITHUB_ENV
+            echo TEXT="La pose du tag *${{ env.TAG_NAME }}* a réussi. rdv sur <https://github.com/pass-culture/pass-culture-main/actions/workflows/release--deploy.yml|cette action github> pour le déployer :rocket:" >> $GITHUB_ENV
           fi
 
       - name: Post to a Slack channel
