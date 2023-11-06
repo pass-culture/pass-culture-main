@@ -241,6 +241,7 @@ class SSOSigninTest:
 
     @patch("pcapi.routes.native.v1.authentication.oauth.google.parse_id_token")
     @patch("pcapi.routes.native.v1.authentication.oauth.google.fetch_access_token")
+    @override_features(WIP_ENABLE_GOOGLE_SSO=True)
     def test_account_is_active(self, _mock_fetch_access_token, mock_parse_id_token, client, caplog):
         users_factories.SingleSignOnFactory(
             ssoUserId=self.valid_user["sub"], user__email=self.valid_user["email"], user__isActive=True
@@ -256,6 +257,7 @@ class SSOSigninTest:
 
     @patch("pcapi.routes.native.v1.authentication.oauth.google.parse_id_token")
     @patch("pcapi.routes.native.v1.authentication.oauth.google.fetch_access_token")
+    @override_features(WIP_ENABLE_GOOGLE_SSO=True)
     def test_account_is_deleted(self, _mock_fetch_access_token, mock_parse_id_token, client):
         user = users_factories.UserFactory(email=self.valid_user["email"], isActive=False)
         users_factories.SingleSignOnFactory(user=user, ssoUserId=self.valid_user["sub"])
@@ -269,6 +271,7 @@ class SSOSigninTest:
 
     @patch("pcapi.routes.native.v1.authentication.oauth.google.parse_id_token")
     @patch("pcapi.routes.native.v1.authentication.oauth.google.fetch_access_token")
+    @override_features(WIP_ENABLE_GOOGLE_SSO=True)
     def test_account_does_not_exist(self, _mock_fetch_access_token, mock_parse_id_token, client, caplog):
         mock_parse_id_token.return_value = self.valid_user
 
@@ -281,6 +284,7 @@ class SSOSigninTest:
 
     @patch("pcapi.routes.native.v1.authentication.oauth.google.parse_id_token")
     @patch("pcapi.routes.native.v1.authentication.oauth.google.fetch_access_token")
+    @override_features(WIP_ENABLE_GOOGLE_SSO=True)
     def test_single_sign_on_ignores_email_if_found(self, _mock_fetch_access_token, mock_parse_id_token, client):
         user = users_factories.UserFactory(email="another@email.com", isActive=True)
         users_factories.SingleSignOnFactory(user=user, ssoUserId=self.valid_user["sub"])
@@ -292,6 +296,7 @@ class SSOSigninTest:
 
     @patch("pcapi.routes.native.v1.authentication.oauth.google.parse_id_token")
     @patch("pcapi.routes.native.v1.authentication.oauth.google.fetch_access_token")
+    @override_features(WIP_ENABLE_GOOGLE_SSO=True)
     def test_single_sign_on_inserts_sso_method_if_email_found(
         self, _mock_fetch_access_token, mock_parse_id_token, client
     ):
@@ -307,6 +312,7 @@ class SSOSigninTest:
 
     @patch("pcapi.routes.native.v1.authentication.oauth.google.parse_id_token")
     @patch("pcapi.routes.native.v1.authentication.oauth.google.fetch_access_token")
+    @override_features(WIP_ENABLE_GOOGLE_SSO=True)
     def test_single_sign_on_raises_if_email_not_validated(self, _mock_fetch_access_token, mock_parse_id_token, client):
         users_factories.UserFactory(email=self.valid_user["email"], isActive=True)
         unvalidated_email_google_user = copy.deepcopy(self.valid_user)
@@ -319,6 +325,7 @@ class SSOSigninTest:
 
     @patch("pcapi.routes.native.v1.authentication.oauth.google.parse_id_token")
     @patch("pcapi.routes.native.v1.authentication.oauth.google.fetch_access_token")
+    @override_features(WIP_ENABLE_GOOGLE_SSO=True)
     def test_single_sign_on_does_not_duplicate_ssos(self, _mock_fetch_access_token, mock_parse_id_token, client):
         single_sign_on = users_factories.SingleSignOnFactory(ssoUserId=self.valid_user["sub"])
         mock_parse_id_token.return_value = self.valid_user
@@ -330,6 +337,7 @@ class SSOSigninTest:
 
     @patch("pcapi.routes.native.v1.authentication.oauth.google.parse_id_token")
     @patch("pcapi.routes.native.v1.authentication.oauth.google.fetch_access_token")
+    @override_features(WIP_ENABLE_GOOGLE_SSO=True)
     def test_single_sign_on_raises_if_another_sso_is_already_configured(
         self, _mock_fetch_access_token, mock_parse_id_token, client
     ):
@@ -340,6 +348,11 @@ class SSOSigninTest:
 
         assert response.status_code == 400
         assert SingleSignOn.query.filter(SingleSignOn.ssoUserId == self.valid_user["sub"]).count() == 0
+
+    def test_sso_is_feature_flagged(self, client):
+        response = client.post("/native/v1/oauth/google/authorize", json={"code": "4/google_code"})
+
+        assert response.status_code == 400
 
 
 class TrustedDeviceFeatureTest:

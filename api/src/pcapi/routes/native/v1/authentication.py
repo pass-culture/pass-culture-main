@@ -1,5 +1,3 @@
-from pcapi.utils import requests
-from pcapi import settings
 import logging
 
 from flask_jwt_extended import get_jwt_identity
@@ -34,6 +32,7 @@ from pcapi.routes.native.v1.serialization.authentication import ResetPasswordRes
 from pcapi.routes.native.v1.serialization.authentication import ValidateEmailRequest
 from pcapi.routes.native.v1.serialization.authentication import ValidateEmailResponse
 from pcapi.serialization.decorator import spectree_serialize
+from pcapi.utils.feature import feature_required
 from pcapi.utils.rate_limiting import email_rate_limiter
 from pcapi.utils.rate_limiting import ip_rate_limiter
 
@@ -222,6 +221,7 @@ def validate_email(body: ValidateEmailRequest) -> ValidateEmailResponse:
     api=blueprint.api,
 )
 @ip_rate_limiter()
+@feature_required(FeatureToggle.WIP_ENABLE_GOOGLE_SSO)
 def google_auth(body: authentication.GoogleSigninRequest) -> authentication.SigninResponse:
     # postmessage is needed when the app uses a popup to fetch the authorization code
     # see https://stackoverflow.com/questions/71968377

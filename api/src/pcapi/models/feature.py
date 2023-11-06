@@ -130,6 +130,7 @@ class FeatureToggle(enum.Enum):
     WIP_HOME_STATS = "Active la possibilité de voir les stats de consultation sur la page d'accueil"
     WIP_ENABLE_FORMAT = "Activer le remplacement des catégories/sous-catégories par les formats"
     WIP_ENABLE_DISCOVERY = "Activer la page de découverte dans adage"
+    WIP_ENABLE_GOOGLE_SSO = "Activer la connexion SSO pour les jeunes"
 
     def is_active(self) -> bool:
         if flask.has_request_context():
@@ -203,6 +204,7 @@ FEATURES_DISABLED_BY_DEFAULT: tuple[FeatureToggle, ...] = (
     FeatureToggle.WIP_BEHIND_L7_LOAD_BALANCER,
     FeatureToggle.WIP_ENABLE_FORMAT,
     FeatureToggle.WIP_ENABLE_DISCOVERY,
+    FeatureToggle.WIP_ENABLE_GOOGLE_SSO,
 )
 
 if settings.IS_PROD or settings.IS_STAGING:
