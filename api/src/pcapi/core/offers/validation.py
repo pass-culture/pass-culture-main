@@ -115,7 +115,7 @@ def check_stock_price(price: decimal.Decimal, offer: models.Offer) -> None:
 
     # Cache this part to avoid N+1 when creating many stocks on the same offer.
     cache_attribute = f"_cached_checked_custom_reimbursement_rules_{offer.id}"
-    if not getattr(flask.request, cache_attribute, False):
+    if not flask.has_request_context() or not getattr(flask.request, cache_attribute, False):
         if finance_repository.has_active_or_future_custom_reimbursement_rule(offer):
             # We obviously look for active rules, but also future ones: if
             # a reimbursement rule has been negotiated that will enter in
@@ -142,7 +142,8 @@ def check_stock_price(price: decimal.Decimal, offer: models.Offer) -> None:
                 raise api_errors.ApiErrors({"price": [error]})
             if current_prices.pop() != price:
                 raise api_errors.ApiErrors({"price": [error]})
-        setattr(flask.request, cache_attribute, True)
+        if flask.has_request_context():
+            setattr(flask.request, cache_attribute, True)
 
 
 def check_required_dates_for_stock(
