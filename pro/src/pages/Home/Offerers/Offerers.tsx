@@ -178,8 +178,8 @@ const Offerers = ({
                   : null
               }
               offererHasBankAccount={
-                selectedOfferer.hasPendingBankAccount === false &&
-                selectedOfferer.hasValidBankAccount === false
+                selectedOfferer.hasPendingBankAccount === true ||
+                selectedOfferer.hasValidBankAccount === true
               }
             />
           )}

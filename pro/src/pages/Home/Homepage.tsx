@@ -177,8 +177,8 @@ const Homepage = (): JSX.Element => {
               hasVenue={!hasNoVenueVisible}
               offererId={Number(selectedOffererId)}
               offererHasBankAccount={
-                selectedOfferer?.hasPendingBankAccount === false &&
-                selectedOfferer?.hasValidBankAccount === false
+                selectedOfferer?.hasPendingBankAccount === true ||
+                selectedOfferer?.hasValidBankAccount === true
               }
             />
           </section>

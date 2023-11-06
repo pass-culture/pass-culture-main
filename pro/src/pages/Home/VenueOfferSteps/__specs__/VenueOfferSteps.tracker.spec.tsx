@@ -15,7 +15,9 @@ const renderVenueOfferSteps = (
   hasMissingReimbursementPoint = true,
   shouldDisplayEacSection = false,
   hasPendingBankInformationApplication = false,
-  demarchesSimplifieesApplicationId?: number
+  demarchesSimplifieesApplicationId?: number,
+  offererHasBankAccount = false,
+  features?: any
 ) => {
   const currentUser = {
     id: 'EY',
@@ -25,6 +27,7 @@ const renderVenueOfferSteps = (
       initialized: true,
       currentUser,
     },
+    features,
   }
 
   return renderWithProviders(
@@ -38,6 +41,7 @@ const renderVenueOfferSteps = (
         hasPendingBankInformationApplication
       }
       demarchesSimplifieesApplicationId={demarchesSimplifieesApplicationId}
+      offererHasBankAccount={offererHasBankAccount}
     />,
     { storeOverrides, initialRouterEntries: ['/accueil'] }
   )
@@ -78,6 +82,25 @@ describe('VenueOfferSteps', () => {
     await userEvent.click(
       screen.getByText(/Renseigner des coordonnées bancaires/)
     )
+
+    expect(mockLogEvent).toHaveBeenCalledTimes(1)
+    expect(mockLogEvent).toHaveBeenCalledWith(
+      VenueEvents.CLICKED_VENUE_ADD_RIB_BUTTON,
+      {
+        venue_id: venueId,
+        from: 'Home',
+      }
+    )
+  })
+
+  it('should track ReimbursementPoint', async () => {
+    renderVenueOfferSteps(venueId, false, false, false, undefined, false, {
+      list: [
+        { isActive: true, nameKey: 'WIP_ENABLE_NEW_BANK_DETAILS_JOURNEY' },
+      ],
+    })
+
+    await userEvent.click(screen.getByText(/Ajouter un compte bancaire/))
 
     expect(mockLogEvent).toHaveBeenCalledTimes(1)
     expect(mockLogEvent).toHaveBeenCalledWith(
