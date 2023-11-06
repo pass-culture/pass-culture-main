@@ -4,6 +4,7 @@ import pytest
 
 from pcapi.core.categories import subcategories_v2
 import pcapi.core.offers.factories as offers_factories
+from pcapi.core.offers.models import BookFormat
 from pcapi.core.offers.offer_metadata import get_metadata_from_offer
 
 
@@ -179,12 +180,34 @@ class OfferMetadataTest:
                 subcategories_v2.LIVRE_NUMERIQUE.id,
             ],
         )
-        def should_describe_a_book_as_additional_type(self, subcategoryId):
+        def should_describe_a_book(self, subcategoryId):
             offer = offers_factories.OfferFactory(subcategoryId=subcategoryId)
 
             metadata = get_metadata_from_offer(offer)
 
-            assert metadata["additionalType"] == "Book"
+            assert metadata["@type"] == ["Product", "Book"]
+
+        def should_define_an_id_and_url(self):
+            offer = offers_factories.OfferFactory(id=12345, subcategoryId=subcategories_v2.LIVRE_PAPIER.id)
+
+            metadata = get_metadata_from_offer(offer)
+
+            assert metadata["@id"] == "https://webapp-v2.example.com/offre/12345"
+            assert metadata["url"] == "https://webapp-v2.example.com/offre/12345"
+
+        def should_define_family_friendliness(self):
+            stock = offers_factories.StockFactory(offer__subcategoryId=subcategories_v2.LIVRE_PAPIER.id)
+
+            metadata = get_metadata_from_offer(stock.offer)
+
+            assert metadata["isFamilyFriendly"] == True
+
+        def should_not_be_family_friendly_when_book_is_forbidden_for_underage(self):
+            offer = offers_factories.OfferFactory(subcategoryId=subcategories_v2.LIVRE_PAPIER.id)
+
+            metadata = get_metadata_from_offer(offer)
+
+            assert metadata["isFamilyFriendly"] == False
 
         def should_define_an_author(self):
             offer = offers_factories.OfferFactory(
@@ -195,14 +218,71 @@ class OfferMetadataTest:
 
             assert metadata["author"] == {"@type": "Person", "name": "John Doe"}
 
-        def should_define_an_isbn(self):
-            offer = offers_factories.OfferFactory(
-                subcategoryId=subcategories_v2.LIVRE_PAPIER.id, extraData={"ean": 9782371266124}
+        class WorkExampleTest:
+            def should_describe_a_book(self):
+                offer = offers_factories.OfferFactory(
+                    subcategoryId=subcategories_v2.LIVRE_PAPIER.id,
+                )
+
+                metadata = get_metadata_from_offer(offer)
+
+                assert metadata["workExample"]["@type"] == "Book"
+
+            def should_define_an_id(self):
+                offer = offers_factories.OfferFactory(
+                    id="1234567",
+                    subcategoryId=subcategories_v2.LIVRE_PAPIER.id,
+                )
+
+                metadata = get_metadata_from_offer(offer)
+
+                assert metadata["workExample"]["@id"] == "https://webapp-v2.example.com/offre/1234567"
+
+            def should_define_a_language(self):
+                offer = offers_factories.OfferFactory(
+                    subcategoryId=subcategories_v2.LIVRE_PAPIER.id,
+                )
+
+                metadata = get_metadata_from_offer(offer)
+
+                assert metadata["workExample"]["inLanguage"] == "fr"
+
+            def should_define_an_isbn(self):
+                offer = offers_factories.OfferFactory(
+                    subcategoryId=subcategories_v2.LIVRE_PAPIER.id, extraData={"ean": 9782371266124}
+                )
+
+                metadata = get_metadata_from_offer(offer)
+
+                assert metadata["gtin13"] == 9782371266124
+                assert metadata["workExample"]["isbn"] == 9782371266124
+
+            @pytest.mark.parametrize(
+                ("subcategoryId", "expectedFormat"),
+                [
+                    (subcategories_v2.LIVRE_PAPIER.id, "Hardcover"),
+                    (subcategories_v2.LIVRE_AUDIO_PHYSIQUE.id, "AudiobookFormat"),
+                    (subcategories_v2.TELECHARGEMENT_LIVRE_AUDIO.id, "AudiobookFormat"),
+                    (subcategories_v2.LIVRE_NUMERIQUE.id, "EBook"),
+                ],
             )
+            def should_define_a_book_format(self, subcategoryId, expectedFormat):
+                offer = offers_factories.OfferFactory(
+                    subcategoryId=subcategoryId,
+                )
 
-            metadata = get_metadata_from_offer(offer)
+                metadata = get_metadata_from_offer(offer)
 
-            assert metadata["gtin13"] == 9782371266124
+                assert metadata["workExample"]["bookFormat"] == f"https://schema.org/{expectedFormat}"
+
+            def should_define_a_book_format_for_paperback_book(self):
+                offer = offers_factories.OfferFactory(
+                    subcategoryId=subcategories_v2.LIVRE_PAPIER.id, extraData={"bookFormat": BookFormat.POCHE}
+                )
+
+                metadata = get_metadata_from_offer(offer)
+
+                assert metadata["workExample"]["bookFormat"] == "https://schema.org/Paperback"
 
     class GivenAThingTest:
         def should_describe_a_product(self):
