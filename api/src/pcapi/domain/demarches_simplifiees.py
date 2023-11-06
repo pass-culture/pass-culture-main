@@ -1,15 +1,19 @@
-from datetime import datetime
 import logging
+from typing import Literal
+from typing import TYPE_CHECKING
 
 from pcapi import settings
 from pcapi.connectors.dms import api as api_dms
 from pcapi.connectors.dms import models as dms_models
 from pcapi.core.finance.models import BankInformationStatus
-from pcapi.core.finance.utils import format_raw_iban_and_bic
 from pcapi.domain.bank_information import CannotRegisterBankInformation
 
 
 logger = logging.getLogger(__name__)
+
+if TYPE_CHECKING:
+    from pcapi.connectors.dms.serializer import ApplicationDetail
+
 
 FIELD_NAME_TO_INTERNAL_NAME_MAPPING = {
     ("Prénom", "prénom"): "firstname",
@@ -29,36 +33,6 @@ REJECTED_DMS_STATUS = (
     dms_models.DmsApplicationStates.without_continuation,
 )
 DMS_TOKEN_PRO_PREFIX = "PRO-"
-
-
-class ApplicationDetail:
-    def __init__(
-        self,
-        status: BankInformationStatus,
-        application_id: int,
-        dossier_id: str,
-        modification_date: datetime,
-        siren: str | None = None,
-        iban: str | None = None,
-        bic: str | None = None,
-        siret: str | None = None,
-        venue_name: str | None = None,
-        dms_token: str | None = None,
-        error_annotation_id: str | None = None,
-        venue_url_annotation_id: str | None = None,
-    ):
-        self.siren = siren
-        self.status = status
-        self.application_id = application_id
-        self.iban = format_raw_iban_and_bic(iban)
-        self.bic = format_raw_iban_and_bic(bic)
-        self.siret = siret
-        self.venue_name = venue_name
-        self.dms_token = dms_token
-        self.modification_date = modification_date
-        self.error_annotation_id = error_annotation_id
-        self.venue_url_annotation_id = venue_url_annotation_id
-        self.dossier_id = dossier_id
 
 
 def parse_raw_bank_info_data(data: dict, procedure_version: int) -> dict:
@@ -95,26 +69,17 @@ def _remove_dms_pro_prefix(dms_token: str) -> str:
     return dms_token
 
 
-def ds_bank_information_application_details_from_raw_data(raw_data: dict, procedure_version: int) -> ApplicationDetail:
+def ds_bank_information_application_details_from_raw_data(
+    raw_data: dict, procedure_version: int
+) -> "ApplicationDetail":
+    from pcapi.connectors.dms.serializer import ApplicationDetail
+
     data = parse_raw_bank_info_data(raw_data, procedure_version)
-    return ApplicationDetail(
-        siren=data.get("siren", None),
-        status=_get_status_from_demarches_simplifiees_application_state_v2(
-            dms_models.GraphQLApplicationStates(data["status"])
-        ),
-        application_id=int(data["application_id"]),
-        dossier_id=data["dossier_id"],
-        iban=data["iban"],
-        bic=data["bic"],
-        siret=data.get("siret", None),
-        dms_token=data["dms_token"] if procedure_version == 4 else None,
-        modification_date=datetime.fromisoformat(data["updated_at"]).astimezone().replace(tzinfo=None),
-        error_annotation_id=data["error_annotation_id"],
-        venue_url_annotation_id=data["venue_url_annotation_id"],
-    )
+
+    return ApplicationDetail.parse_obj({"application_type": procedure_version, **data})
 
 
-def _get_status_from_demarches_simplifiees_application_state_v2(
+def get_status_from_demarches_simplifiees_application_state_v2(
     state: dms_models.GraphQLApplicationStates,
 ) -> BankInformationStatus:
     return {
