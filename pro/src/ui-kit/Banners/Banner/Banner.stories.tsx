@@ -1,51 +1,75 @@
-import type { Story } from '@storybook/react'
-import React from 'react'
+import type { StoryObj } from '@storybook/react'
 
-import Banner, { BannerProps } from './Banner'
+import Banner from './Banner'
 
 export default {
   title: 'ui-kit/Banner',
   component: Banner,
 }
 
-const Template: Story<BannerProps> = (props) => (
-  <Banner {...props}>
-    Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod
-    tempor incididunt ut labore et dolore magna aliqua.
-  </Banner>
-)
+const textMock =
+  'Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.'
 
-export const Attention = Template.bind({})
-Attention.args = { type: 'attention', closable: true }
+export const Attention: StoryObj<typeof Banner> = {
+  args: {
+    type: 'attention',
+    closable: true,
+    children: textMock,
+  },
+}
 
-export const AttentionWithoutTitle = Template.bind({})
-AttentionWithoutTitle.args = { type: 'attention', showTitle: false }
+export const AttentionWithoutTitle: StoryObj<typeof Banner> = {
+  args: {
+    type: 'attention',
+    showTitle: false,
+    children: textMock,
+  },
+}
 
-export const Info = Template.bind({})
-Info.args = { type: 'notification-info', closable: true }
+export const Info: StoryObj<typeof Banner> = {
+  args: {
+    type: 'notification-info',
+    closable: true,
+    children: textMock,
+  },
+}
 
-export const InfoWithoutTitle = Template.bind({})
-InfoWithoutTitle.args = { type: 'notification-info', showTitle: false }
+export const InfoWithoutTitle: StoryObj<typeof Banner> = {
+  args: {
+    type: 'notification-info',
+    showTitle: false,
+    children: textMock,
+  },
+}
 
-export const Light = Template.bind({})
-Light.args = { type: 'light', closable: true }
+export const Light: StoryObj<typeof Banner> = {
+  args: {
+    type: 'light',
+    closable: true,
+    children: textMock,
+  },
+}
+export const Minimal: StoryObj<typeof Banner> = {
+  args: {
+    minimalStyle: true,
+    children: textMock,
+  },
+}
 
-export const Minimal = Template.bind({})
-Minimal.args = { minimalStyle: true }
-
-export const WithLink = Template.bind({})
-WithLink.args = {
-  links: [
-    {
-      href: 'https://pro.testing.passculture.team',
-      linkTitle: 'Lien vers le pass culture',
-    },
-    {
-      href: '#',
-      linkTitle: 'Un autre lien',
-    },
-  ],
-  minimalStyle: false,
-  closable: false,
-  type: 'notification-info',
+export const WithLink: StoryObj<typeof Banner> = {
+  args: {
+    links: [
+      {
+        href: 'https://pro.testing.passculture.team',
+        linkTitle: 'Lien vers le pass culture',
+      },
+      {
+        href: '#',
+        linkTitle: 'Un autre lien',
+      },
+    ],
+    minimalStyle: false,
+    closable: false,
+    type: 'notification-info',
+  },
 }
