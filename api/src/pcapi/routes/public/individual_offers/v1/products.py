@@ -636,3 +636,32 @@ def _upsert_product_stock(
         booking_limit_datetime=stock_update_body.get("booking_limit_datetime", offers_api.UNCHANGED),
         editing_provider=provider,
     )
+
+
+@blueprint.v1_blueprint.route("/products/categories", methods=["GET"])
+@spectree_serialize(
+    api=blueprint.v1_product_schema,
+    tags=[constants.PRODUCT_OFFER_TAG],
+    response_model=serialization.GetProductCategoriesResponse,
+    resp=SpectreeResponse(
+        **(
+            constants.BASE_CODE_DESCRIPTIONS
+            | {
+                "HTTP_200": (serialization.GetProductCategoriesResponse, "The product categories have been returned"),
+            }
+        )
+    ),
+)
+@api_key_required
+@rate_limiting.api_key_high_rate_limiter()
+def get_product_categories() -> serialization.GetProductCategoriesResponse:
+    """
+    Get all the product categories, their conditional fields, and whether they are required for event creation.
+    """
+    # Individual offers API only relies on subcategories, not categories.
+    # To make it simpler for the provider using this API, we only expose subcategories and call them categories.
+    product_categories_response = [
+        serialization.ProductCategoryResponse.build_category(subcategory)
+        for subcategory in serialization.ALLOWED_PRODUCT_SUBCATEGORIES
+    ]
+    return serialization.GetProductCategoriesResponse(__root__=product_categories_response)
