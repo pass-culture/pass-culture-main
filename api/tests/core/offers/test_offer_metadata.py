@@ -169,6 +169,41 @@ class OfferMetadataTest:
 
             assert metadata["validFrom"] == "2000-01-01"
 
+    class GivenABookTest:
+        @pytest.mark.parametrize(
+            "subcategoryId",
+            [
+                subcategories_v2.LIVRE_PAPIER.id,
+                subcategories_v2.LIVRE_AUDIO_PHYSIQUE.id,
+                subcategories_v2.TELECHARGEMENT_LIVRE_AUDIO.id,
+                subcategories_v2.LIVRE_NUMERIQUE.id,
+            ],
+        )
+        def should_describe_a_book_as_additional_type(self, subcategoryId):
+            offer = offers_factories.OfferFactory(subcategoryId=subcategoryId)
+
+            metadata = get_metadata_from_offer(offer)
+
+            assert metadata["additionalType"] == "Book"
+
+        def should_define_an_author(self):
+            offer = offers_factories.OfferFactory(
+                subcategoryId=subcategories_v2.LIVRE_PAPIER.id, extraData={"author": "John Doe"}
+            )
+
+            metadata = get_metadata_from_offer(offer)
+
+            assert metadata["author"] == {"@type": "Person", "name": "John Doe"}
+
+        def should_define_an_isbn(self):
+            offer = offers_factories.OfferFactory(
+                subcategoryId=subcategories_v2.LIVRE_PAPIER.id, extraData={"ean": 9782371266124}
+            )
+
+            metadata = get_metadata_from_offer(offer)
+
+            assert metadata["gtin13"] == 9782371266124
+
     class GivenAThingTest:
         def should_describe_a_product(self):
             offer = offers_factories.ThingOfferFactory()
