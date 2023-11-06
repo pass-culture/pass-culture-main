@@ -637,7 +637,6 @@ class Returns400Test:
         }
 
         response = client.with_session_auth("user@example.com").post("/stocks/bulk/", json=stock_data)
-        print(response.json)
 
         assert response.json["stocks.0.quantity"] == [
             "ensure this value is less than or equal to 1000000",
