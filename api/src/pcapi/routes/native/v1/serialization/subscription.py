@@ -128,17 +128,6 @@ class ProfileUpdateRequest(BaseModel):
         return v
 
 
-class SchoolTypeResponseModel(BaseModel):
-    id: profile_options.SCHOOL_TYPE_ID_ENUM
-    description: str | None
-    label: str
-
-    class Config:
-        alias_generator = to_camel
-        allow_population_by_field_name = True
-        orm_mode = True
-
-
 class ActivityResponseModel(BaseModel):
     id: profile_options.ACTIVITY_ID_ENUM
     label: str
@@ -148,11 +137,6 @@ class ActivityResponseModel(BaseModel):
         alias_generator = to_camel
         allow_population_by_field_name = True
         orm_mode = True
-
-
-class ProfileOptionsResponse(BaseModel):
-    activities: list[ActivityResponseModel]
-    school_types: list[SchoolTypeResponseModel]
 
 
 class ActivityTypesResponse(BaseModel):

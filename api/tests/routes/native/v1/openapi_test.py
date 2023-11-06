@@ -1100,23 +1100,6 @@ def test_public_api(client):
                     "enum": ["INFO", "ERROR", "WARNING", "CLOCK", "FILE", "MAGNIFYING_GLASS"],
                     "title": "PopOverIcon",
                 },
-                "ProfileOptionsResponse": {
-                    "properties": {
-                        "activities": {
-                            "items": {"$ref": "#/components/schemas/ActivityResponseModel"},
-                            "title": "Activities",
-                            "type": "array",
-                        },
-                        "school_types": {
-                            "items": {"$ref": "#/components/schemas/SchoolTypeResponseModel"},
-                            "title": "School Types",
-                            "type": "array",
-                        },
-                    },
-                    "required": ["activities", "school_types"],
-                    "title": "ProfileOptionsResponse",
-                    "type": "object",
-                },
                 "ActivityTypesResponse": {
                     "properties": {
                         "activities": {
@@ -1212,16 +1195,6 @@ def test_public_api(client):
                     },
                     "required": ["accessToken", "refreshToken"],
                     "title": "ResetPasswordResponse",
-                    "type": "object",
-                },
-                "SchoolTypeResponseModel": {
-                    "properties": {
-                        "description": {"nullable": True, "title": "Description", "type": "string"},
-                        "id": {"$ref": "#/components/schemas/SchoolTypesIdEnum"},
-                        "label": {"title": "Label", "type": "string"},
-                    },
-                    "required": ["id", "label"],
-                    "title": "SchoolTypeResponseModel",
                     "type": "object",
                 },
                 "SchoolTypesIdEnum": {
@@ -3301,30 +3274,6 @@ def test_public_api(client):
                     "summary": "complete_profile <POST>",
                     "tags": [],
                 },
-            },
-            "/native/v1/subscription/profile_options": {
-                "get": {
-                    "description": "",
-                    "operationId": "get__native_v1_subscription_profile_options",
-                    "parameters": [],
-                    "responses": {
-                        "200": {
-                            "content": {
-                                "application/json": {"schema": {"$ref": "#/components/schemas/ProfileOptionsResponse"}}
-                            },
-                            "description": "OK",
-                        },
-                        "403": {"description": "Forbidden"},
-                        "422": {
-                            "content": {
-                                "application/json": {"schema": {"$ref": "#/components/schemas/ValidationError"}}
-                            },
-                            "description": "Unprocessable Entity",
-                        },
-                    },
-                    "summary": "get_profile_options <GET>",
-                    "tags": [],
-                }
             },
             "/native/v1/subscription/stepper": {
                 "get": {
