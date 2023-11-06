@@ -89,3 +89,5 @@ def edit_collective_stock(
             {"beginningDatetime": "Les offres pour les 6eme 5eme ne peuvent pas avoir lieux avant le 01/09/2023"},
             status_code=403,
         )
+    except offers_exceptions.OfferEditionBaseException as error:
+        raise ApiErrors(error.errors, status_code=400)
