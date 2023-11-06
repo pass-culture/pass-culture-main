@@ -864,6 +864,34 @@ class CancelByBeneficiaryTest:
 
         assert mocked_task.call_args.args[0].notificationUrl == provider.notificationExternalUrl
 
+    @patch("pcapi.tasks.external_api_booking_notification_tasks.external_api_booking_notification_task.delay")
+    def test_cancel_booking_when_send_notification_to_external_api_fails(self, mocked_task):
+        provider = providers_factories.ProviderFactory(
+            name="Technical provider", localClass=None, notificationExternalUrl="http://external.api.com/notify"
+        )
+        providers_factories.OffererProviderFactory(provider=provider)
+        stock = offers_factories.EventStockFactory(
+            offer__lastProvider=provider,
+            offer__venue__address="1 boulevard Poissonniere",
+            offer__extraData={"ean": "1234567890123"},
+            offer__withdrawalType=offers_models.WithdrawalTypeEnum.NO_TICKET,
+            dnBookedQuantity=1,
+            idAtProviders="",
+            lastProvider=provider,
+        )
+        booking = bookings_factories.BookingFactory(stock=stock)
+
+        mocked_task.side_effect = Exception("Something wrong happened")
+
+        api.cancel_booking_by_beneficiary(booking.user, booking)
+
+        updated_booking = models.Booking.query.filter().one()
+
+        assert models.Booking.query.filter().count() == 1
+        assert updated_booking.status == BookingStatus.CANCELLED
+
+        assert updated_booking.stock.dnBookedQuantity == 1
+
     def test_cancel_booking_twice(self):
         booking = bookings_factories.BookingFactory()
         initial_quantity = booking.stock.dnBookedQuantity
