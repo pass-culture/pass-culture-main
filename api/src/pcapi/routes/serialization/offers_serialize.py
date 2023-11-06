@@ -320,6 +320,7 @@ class PriceCategoryResponseModel(BaseModel):
 class GetIndividualOfferResponseModel(BaseModel, AccessibilityComplianceMixin):
     activeMediation: GetOfferMediationResponseModel | None
     bookingContact: str | None
+    bookingsCount: int = 0
     bookingEmail: str | None
     dateCreated: datetime.datetime
     description: str | None
@@ -348,6 +349,11 @@ class GetIndividualOfferResponseModel(BaseModel, AccessibilityComplianceMixin):
     withdrawalDetails: str | None
     withdrawalType: offers_models.WithdrawalTypeEnum | None
     status: OfferStatus
+
+    @classmethod
+    def from_orm(cls, offer: offers_models.Offer) -> "GetIndividualOfferResponseModel":
+        offer.bookingsCount = offers_repository.get_bookings_count_by_offer(offer.id)
+        return super().from_orm(offer)
 
     class Config:
         orm_mode = True
