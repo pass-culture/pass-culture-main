@@ -57,6 +57,7 @@ const mockKeywordSuggestions = [
     popularity: 1,
     nb_words: 1,
     'offer.subcategoryId': ['CINE_PLEIN_AIR'],
+    formats: ['Atelier de pratique'],
     querySuggestionName: {
       exact_nb_hits: 10,
     },
@@ -67,6 +68,7 @@ const mockKeywordSuggestions = [
     popularity: 2,
     nb_words: 1,
     'offer.subcategoryId': ['RENCONTRE'],
+    formats: ['Concert'],
     querySuggestionName: {
       exact_nb_hits: 5,
     },
@@ -389,5 +391,31 @@ describe('Autocomplete', () => {
         'Nous avons rencontré un problème lors du chargemement des données'
       )
     ).toBeInTheDocument()
+  })
+
+  it('should display format value for suggestion word ', async () => {
+    const featuresOverride = [
+      {
+        nameKey: 'WIP_ENABLE_SEARCH_HISTORY_ADAGE',
+        isActive: true,
+      },
+      {
+        nameKey: 'WIP_ENABLE_FORMAT',
+        isActive: true,
+      },
+    ]
+
+    renderAutocomplete({
+      initialQuery: 'mock keyword 1',
+      featuresOverride,
+    })
+
+    const inputElement = screen.getByPlaceholderText(
+      'Rechercher par mot-clé, par partenaire culturel, par nom d’offre...'
+    )
+
+    await userEvent.click(inputElement)
+
+    expect(await screen.findByText('Atelier de pratique')).toBeInTheDocument()
   })
 })
