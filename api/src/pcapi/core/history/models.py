@@ -15,6 +15,7 @@ from pcapi.models.pc_object import PcObject
 if typing.TYPE_CHECKING:
     from pcapi.core.finance import models as finance_models
     from pcapi.core.offerers import models as offerers_models
+    from pcapi.core.offers import models as offers_models
 
 
 class ActionType(enum.Enum):
@@ -61,6 +62,10 @@ class ActionType(enum.Enum):
     ROLE_PERMISSIONS_CHANGED = "Modification des permissions du rôle"
     # RGPD scripts
     USER_ANONYMIZED = "Le compte a été anonymisé conformément au RGPD"
+    # Offer validation rule changes:
+    RULE_CREATED = "Création d'une règle de conformité"
+    RULE_DELETED = "Suppression d'une règle de conformité"
+    RULE_MODIFIED = "Modification d'une règle de conformité"
 
 
 ACTION_HISTORY_ORDER_BY = "ActionHistory.actionDate.asc().nulls_first()"
@@ -149,15 +154,25 @@ class ActionHistory(PcObject, Base, Model):
         backref=sa.orm.backref("action_history", order_by=ACTION_HISTORY_ORDER_BY, passive_deletes=True),
     )
 
+    ruleId: int | None = sa.Column(
+        sa.BigInteger, sa.ForeignKey("offer_validation_rule.id", ondelete="CASCADE"), index=True, nullable=True
+    )
+
+    rule: sa.orm.Mapped["offers_models.OfferValidationRule | None"] = sa.orm.relationship(
+        "OfferValidationRule",
+        foreign_keys=[ruleId],
+        backref=sa.orm.backref("action_history", order_by=ACTION_HISTORY_ORDER_BY, passive_deletes=True),
+    )
+
     comment = sa.Column(sa.Text(), nullable=True)
 
     __table_args__ = (
         sa.CheckConstraint(
             (
-                'num_nonnulls("userId", "offererId", "venueId", "financeIncidentId", "bankAccountId") >= 1 '
+                'num_nonnulls("userId", "offererId", "venueId", "financeIncidentId", "bankAccountId", "ruleId") >= 1 '
                 'OR actionType = "BLACKLIST_DOMAIN_NAME" OR actionType = "REMOVE_BLACKLISTED_DOMAIN_NAME" '
                 'OR actionType = "ROLE_PERMISSIONS_CHANGED"'
             ),
-            name="check_at_least_one_resource_or_is_fraud_action",
+            name="check_action_resource",
         ),
     )

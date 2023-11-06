@@ -7,6 +7,7 @@ from sqlalchemy.ext.mutable import MutableDict
 from pcapi.core.finance import models as finance_models
 from pcapi.core.history import models
 from pcapi.core.offerers import models as offerers_models
+from pcapi.core.offers import models as offers_models
 from pcapi.core.users import models as users_models
 from pcapi.models import Model
 from pcapi.repository import repository
@@ -20,6 +21,7 @@ def log_action(
     venue: offerers_models.Venue | None = None,
     finance_incident: finance_models.FinanceIncident | None = None,
     bank_account: finance_models.BankAccount | None = None,
+    rule: offers_models.OfferValidationRule | None = None,
     comment: str | None = None,
     save: bool = True,
     **extra_data: typing.Any,
@@ -36,8 +38,8 @@ def log_action(
         models.ActionType.REMOVE_BLACKLISTED_DOMAIN_NAME,
         models.ActionType.ROLE_PERMISSIONS_CHANGED,
     )
-    if not any((user, offerer, venue, finance_incident, bank_account, (action_type in legit_actions))):
-        raise ValueError("No resource (user, offerer, venue, finance incident, bank account)")
+    if not any((user, offerer, venue, finance_incident, bank_account, rule)) and (action_type not in legit_actions):
+        raise ValueError("No resource (user, offerer, venue, finance incident, bank account, rule)")
 
     if save:
         if user is not None and user.id is None:
@@ -51,6 +53,9 @@ def log_action(
 
         if bank_account is not None and bank_account.id is None:
             raise RuntimeError("Unsaved bank account would be saved with action %s" % bank_account.label)
+
+        if rule is not None and rule.id is None:
+            raise RuntimeError("Unsaved rule would be saved with action %s" % rule.name)
 
     if not isinstance(author, users_models.User):
         # None or AnonymousUserMixin
@@ -66,6 +71,7 @@ def log_action(
         venue=venue,  # type: ignore [arg-type]
         financeIncident=finance_incident,  # type: ignore [arg-type]
         bankAccount=bank_account,  # type: ignore [arg-type]
+        rule=rule,  # type: ignore [arg-type]
         comment=comment or None,  # do not store empty string
         extraData=extra_data,
     )

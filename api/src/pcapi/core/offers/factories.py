@@ -227,8 +227,6 @@ class OfferValidationRuleFactory(BaseFactory):
         model = models.OfferValidationRule
 
     name = factory.Sequence("Offer validation rule {}".format)
-    dateModified = datetime.datetime.utcnow()
-    latestAuthor = factory.SubFactory(users_factories.UserFactory)
 
 
 class OfferValidationSubRuleFactory(BaseFactory):

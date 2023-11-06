@@ -1055,9 +1055,13 @@ def rule_flags_offer(rule: models.OfferValidationRule, offer: AnyOffer) -> bool:
 
 
 def set_offer_status_based_on_fraud_criteria(offer: AnyOffer) -> models.OfferValidationStatus:
-    offer_validation_rules = models.OfferValidationRule.query.options(
-        sa.orm.joinedload(models.OfferValidationSubRule, models.OfferValidationRule.subRules)
-    ).all()
+    offer_validation_rules = (
+        models.OfferValidationRule.query.options(
+            sa.orm.joinedload(models.OfferValidationSubRule, models.OfferValidationRule.subRules)
+        )
+        .filter(models.OfferValidationRule.isActive.is_(True))
+        .all()
+    )
 
     flagging_rules = []
     for rule in offer_validation_rules:
