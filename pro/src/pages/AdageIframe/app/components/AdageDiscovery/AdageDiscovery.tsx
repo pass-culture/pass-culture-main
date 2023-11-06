@@ -1,11 +1,29 @@
 import React from 'react'
 
+import { OfferAddressType } from 'apiClient/adage'
 import bannerDiscovery from 'icons/banner-discovery-adage.svg'
 import fullLinkIcon from 'icons/full-link.svg'
 import { ButtonLink } from 'ui-kit'
 import { ButtonVariant } from 'ui-kit/Button/types'
 
 import styles from './AdageDiscovery.module.scss'
+import CardOfferComponent from './CardOffer/CardOffer'
+
+const mockOffer = {
+  imageUrl: 'https://picsum.photos/201/',
+  name: 'Titre de l’offre maximum sur 3 lignes. Passé ces trois lignes, il faut tronquer le texte',
+  offerAddressType: OfferAddressType.OTHER,
+  venue: {
+    name: 'Venue 1',
+    distance: 5,
+    city: 'Paris',
+  },
+  offerVenue: {
+    name: 'Venue 2',
+    distance: 10,
+    city: 'Paris',
+  },
+}
 
 export const AdageDiscovery = () => {
   return (
@@ -20,7 +38,33 @@ export const AdageDiscovery = () => {
           <h1 className={styles['section-title']}>
             Les nouvelles offres publiées
           </h1>
-          <div>TODO: Playlist nouvelle offres publiées à ajouter </div>
+          <div className={styles['section-todo']}>
+            <div>TODO: Playlist nouvelle offres publiées à ajouter </div>
+            <div className={styles['section-todo-playlist']}>
+              <CardOfferComponent
+                offer={{
+                  ...mockOffer,
+                  name: 'Ma super offre',
+                  offerAddressType: OfferAddressType.OFFERER_VENUE,
+                  imageUrl: 'https://picsum.photos/201/',
+                }}
+              />
+              <CardOfferComponent
+                offer={{
+                  ...mockOffer,
+                  offerAddressType: OfferAddressType.SCHOOL,
+                  imageUrl: 'https://picsum.photos/202/',
+                }}
+              />
+              <CardOfferComponent
+                offer={{
+                  ...mockOffer,
+                  offerAddressType: OfferAddressType.OTHER,
+                  imageUrl: 'https://picsum.photos/203/',
+                }}
+              />
+            </div>
+          </div>
         </div>
         <div>
           <h1 className={styles['section-title']}>
