@@ -2,11 +2,18 @@ import datetime
 import typing
 
 from pcapi import settings
+from pcapi.core.categories import subcategories_v2
 from pcapi.core.offerers.models import Venue
 import pcapi.core.offers.models as offers_models
 
 
 Metadata = dict[str, typing.Any]
+book_subcategories = [
+    subcategories_v2.LIVRE_AUDIO_PHYSIQUE.id,
+    subcategories_v2.TELECHARGEMENT_LIVRE_AUDIO.id,
+    subcategories_v2.LIVRE_NUMERIQUE.id,
+    subcategories_v2.LIVRE_PAPIER.id,
+]
 
 
 def _get_metadata_from_venue(venue: Venue) -> Metadata:
@@ -72,6 +79,23 @@ def _get_event_metadata_from_offer(offer: offers_models.Offer) -> Metadata:
     return common_metadata | event_metadata
 
 
+def _get_book_metadata_from_offer(offer: offers_models.Offer) -> Metadata:
+    book_metadata: Metadata = {
+        "additionalType": "Book",
+    }
+
+    extra_data = offer.extraData or {}
+    if ean := extra_data.get("ean"):
+        book_metadata["gtin13"] = ean
+    if author := extra_data.get("author"):
+        book_metadata["author"] = {
+            "@type": "Person",
+            "name": author,
+        }
+
+    return _get_common_metadata_from_offer(offer) | book_metadata
+
+
 def get_metadata_from_offer(offer: offers_models.Offer) -> Metadata:
     context = {
         "@context": "https://schema.org",
@@ -79,5 +103,8 @@ def get_metadata_from_offer(offer: offers_models.Offer) -> Metadata:
 
     if offer.isEvent:
         return context | _get_event_metadata_from_offer(offer)
+
+    if offer.subcategory.id in book_subcategories:
+        return context | _get_book_metadata_from_offer(offer)
 
     return context | _get_common_metadata_from_offer(offer)
