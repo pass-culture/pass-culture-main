@@ -1,13 +1,16 @@
-import datetime
+import typing
 
 from flask import flash
 from flask import redirect
 from flask import render_template
+from flask import request
 from flask import url_for
 from flask_login import current_user
 from markupsafe import Markup
 import sqlalchemy as sa
 
+from pcapi.core.history import api as history_api
+from pcapi.core.history import models as history_models
 from pcapi.core.offerers import models as offerers_models
 from pcapi.core.offers import models as offers_models
 from pcapi.core.permissions import models as perm_models
@@ -63,12 +66,8 @@ def list_rules() -> utils.BackofficeResponse:
 
     query = (
         offers_models.OfferValidationRule.query.outerjoin(offers_models.OfferValidationSubRule)
-        .options(
-            sa.orm.joinedload(offers_models.OfferValidationRule.latestAuthor).load_only(
-                users_models.User.firstName, users_models.User.lastName, users_models.User.email
-            ),
-            sa.orm.contains_eager(offers_models.OfferValidationRule.subRules),
-        )
+        .options(sa.orm.contains_eager(offers_models.OfferValidationRule.subRules))
+        .filter(offers_models.OfferValidationRule.isActive.is_(True))
         .order_by(offers_models.OfferValidationRule.name)
     )
 
@@ -147,7 +146,82 @@ def list_rules() -> utils.BackofficeResponse:
         offerer_dict=offerer_dict,
         form=form,
         dst=url_for(".list_rules"),
+        active_tab=request.args.get("active_tab", "rules"),
     )
+
+
+class SubRuleHistorySerializer:
+    model: offers_models.OfferValidationModel | None
+    attribute: offers_models.OfferValidationAttribute
+    operator: offers_models.OfferValidationRuleOperator
+
+    def __init__(self, rule_history_extra_data: dict) -> None:
+        self.model = (
+            offers_models.OfferValidationModel[rule_history_extra_data["model"]]
+            if rule_history_extra_data["model"]
+            else None
+        )
+        self.attribute = offers_models.OfferValidationAttribute[rule_history_extra_data["attribute"]]
+        self.operator = offers_models.OfferValidationRuleOperator[rule_history_extra_data["operator"]]
+
+
+@offer_validation_rules_blueprint.route("/history", methods=["GET"])
+def get_rules_history() -> utils.BackofficeResponse:
+    actions_history = (
+        history_models.ActionHistory.query.filter(history_models.ActionHistory.ruleId.is_not(None))
+        .order_by(history_models.ActionHistory.actionDate.desc())
+        .options(
+            sa.orm.joinedload(history_models.ActionHistory.authorUser).load_only(
+                users_models.User.id, users_models.User.firstName, users_models.User.lastName
+            ),
+            sa.orm.joinedload(history_models.ActionHistory.rule).load_only(offers_models.OfferValidationRule.name),
+        )
+        .all()
+    )
+
+    def sub_rule_info_serializer(info: dict) -> SubRuleHistorySerializer:
+        return SubRuleHistorySerializer(info)
+
+    return render_template(
+        "offer_validation_rules/history.html",
+        actions=actions_history,
+        sub_rule_info_serializer=sub_rule_info_serializer,
+        offerer_dict=_get_offerers_data_for_rule_history(actions_history),
+    )
+
+
+def _get_offerers_data_for_rule_history(rules_history: list[history_models.ActionHistory]) -> dict:
+    all_offerer_ids: set = set()
+    for history in rules_history:
+        assert history.extraData is not None  # if it's None, then the history is faulty
+        for sub_rules_keys in history.extraData["sub_rules_info"]:
+            for sub_rule_data in history.extraData["sub_rules_info"][sub_rules_keys]:
+                if (
+                    sub_rule_data["model"] == offers_models.OfferValidationModel.OFFERER.name
+                    and sub_rule_data["attribute"] == offers_models.OfferValidationAttribute.ID.name
+                ):
+                    all_offerer_ids |= (
+                        set(sub_rule_data["comparated"]["added"]) | set(sub_rule_data["comparated"]["removed"])
+                        if sub_rules_keys == "sub_rules_modified"
+                        else set(sub_rule_data["comparated"])
+                    )
+
+    if not all_offerer_ids:
+        return {}
+
+    offerers_from_history = (
+        offerers_models.Offerer.query.options(
+            sa.orm.load_only(
+                offerers_models.Offerer.id,
+                offerers_models.Offerer.name,
+                offerers_models.Offerer.siren,
+            )
+        )
+        .filter(offerers_models.Offerer.id.in_(all_offerer_ids))
+        .all()
+    )
+    offerer_dict = {offerer.id: f"{offerer.name} ({offerer.siren})" for offerer in offerers_from_history}
+    return offerer_dict
 
 
 @offer_validation_rules_blueprint.route("/create", methods=["GET"])
@@ -173,8 +247,9 @@ def create_rule() -> utils.BackofficeResponse:
         return redirect(url_for("backoffice_web.offer_validation_rules.list_rules"), code=303)
 
     try:
-        new_rule = offers_models.OfferValidationRule(name=form.name.data, latestAuthor=current_user)
+        new_rule = offers_models.OfferValidationRule(name=form.name.data)
         db.session.add(new_rule)
+        sub_rules_info: dict[str, list] = {"sub_rules_created": []}
         for sub_rule_data in form.sub_rules.data:
             comparated = (
                 sub_rule_data["decimal_field"]
@@ -194,6 +269,17 @@ def create_rule() -> utils.BackofficeResponse:
                 comparated={"comparated": comparated},
             )
             db.session.add(sub_rule)
+            db.session.flush()
+            _add_sub_rule_data_to_history(sub_rule, sub_rules_info["sub_rules_created"])
+        db.session.add(
+            history_api.log_action(
+                history_models.ActionType.RULE_CREATED,
+                current_user,
+                rule=new_rule,
+                sub_rules_info=sub_rules_info,
+                save=False,
+            )
+        )
         db.session.commit()
         flash("Règle créée avec succès", "success")
 
@@ -229,9 +315,20 @@ def delete_rule(rule_id: int) -> utils.BackofficeResponse:
 
     if rule_to_delete:
         try:
+            sub_rules_info: dict[str, list] = {"sub_rules_deleted": []}
             for sub_rule in subrules_to_delete:
+                _add_sub_rule_data_to_history(sub_rule, sub_rules_info["sub_rules_deleted"])
                 db.session.delete(sub_rule)
-            db.session.delete(rule_to_delete)
+            rule_to_delete.isActive = False
+            db.session.add(
+                history_api.log_action(
+                    history_models.ActionType.RULE_DELETED,
+                    current_user,
+                    rule=rule_to_delete,
+                    sub_rules_info=sub_rules_info,
+                    save=False,
+                )
+            )
             db.session.commit()
         except sa.exc.IntegrityError as exc:
             db.session.rollback()
@@ -295,13 +392,15 @@ def edit_rule(rule_id: int) -> utils.BackofficeResponse:
         flash(utils.build_form_error_msg(form), "warning")
         return redirect(url_for("backoffice_web.offer_validation_rules.list_rules"), code=303)
 
+    sub_rules_info: dict[str, list] = {"sub_rules_deleted": [], "sub_rules_created": [], "sub_rules_modified": []}
     try:
         # delete unwanted rules
         old_sub_rules = {sub_rule.id: sub_rule for sub_rule in rule_to_update.subRules}
         for sub_rule_id in old_sub_rules:
             if sub_rule_id not in [sub_rule_data["id"] for sub_rule_data in form.sub_rules.data]:
+                _add_sub_rule_data_to_history(old_sub_rules[sub_rule_id], sub_rules_info["sub_rules_deleted"])
+                rule_to_update.subRules.remove(old_sub_rules[sub_rule_id])
                 db.session.delete(old_sub_rules[sub_rule_id])
-        new_subrule_ids = []
 
         for sub_rule_data in form.sub_rules.data:
             comparated = (
@@ -318,16 +417,37 @@ def edit_rule(rule_id: int) -> utils.BackofficeResponse:
             # edit existing subrule
             if sub_rule_data["id"]:
                 sub_rule_to_update = offers_models.OfferValidationSubRule.query.get(int(sub_rule_data["id"]))
-                sub_rule_to_update.model = offers_models.OfferValidationSubRuleField[
-                    sub_rule_data["sub_rule_type"]
-                ].value["model"]
-                sub_rule_to_update.attribute = offers_models.OfferValidationSubRuleField[
-                    sub_rule_data["sub_rule_type"]
-                ].value["attribute"]
-                sub_rule_to_update.operator = offers_models.OfferValidationRuleOperator[sub_rule_data["operator"]]
-                sub_rule_to_update.comparated = {"comparated": comparated}
+                is_different_sub_rule = any(
+                    [
+                        sub_rule_to_update.model
+                        != offers_models.OfferValidationSubRuleField[sub_rule_data["sub_rule_type"]].value["model"],
+                        sub_rule_to_update.attribute
+                        != offers_models.OfferValidationSubRuleField[sub_rule_data["sub_rule_type"]].value["attribute"],
+                        sub_rule_to_update.operator
+                        != offers_models.OfferValidationRuleOperator[sub_rule_data["operator"]],
+                    ]
+                )
+
+                # the sub_rule is heavily modified, so it's like deleting it and recreating a new one
+                if is_different_sub_rule:
+                    _add_sub_rule_data_to_history(sub_rule_to_update, sub_rules_info["sub_rules_deleted"])
+                    sub_rule_to_update.model = offers_models.OfferValidationSubRuleField[
+                        sub_rule_data["sub_rule_type"]
+                    ].value["model"]
+                    sub_rule_to_update.attribute = offers_models.OfferValidationSubRuleField[
+                        sub_rule_data["sub_rule_type"]
+                    ].value["attribute"]
+                    sub_rule_to_update.operator = offers_models.OfferValidationRuleOperator[sub_rule_data["operator"]]
+                    sub_rule_to_update.comparated = {"comparated": comparated}
+                    _add_sub_rule_data_to_history(sub_rule_to_update, sub_rules_info["sub_rules_created"])
+                # only the comparated is modified, so we keep the diff
+                elif sub_rule_to_update.comparated != {"comparated": comparated}:
+                    old_comparated = sub_rule_to_update.comparated["comparated"]
+                    sub_rule_to_update.comparated = {"comparated": comparated}
+                    _add_sub_rule_data_to_history(
+                        sub_rule_to_update, sub_rules_info["sub_rules_modified"], old_comparated
+                    )
                 db.session.add(sub_rule_to_update)
-                new_subrule_ids.append(int(sub_rule_data["id"]))
 
             # create new subrule
             else:
@@ -341,12 +461,27 @@ def edit_rule(rule_id: int) -> utils.BackofficeResponse:
                     comparated={"comparated": comparated},
                 )
                 db.session.add(sub_rule)
-                new_subrule_ids.append(sub_rule.id)
+                db.session.flush()
+                _add_sub_rule_data_to_history(sub_rule, sub_rules_info["sub_rules_created"])
 
         rule_to_update.name = form.name.data
-        rule_to_update.dateModified = datetime.datetime.utcnow()
-        rule_to_update.latestAuthor = current_user
         db.session.add(rule_to_update)
+        if any(
+            [
+                sub_rules_info["sub_rules_deleted"],
+                sub_rules_info["sub_rules_modified"],
+                sub_rules_info["sub_rules_created"],
+            ]
+        ):
+            db.session.add(
+                history_api.log_action(
+                    history_models.ActionType.RULE_MODIFIED,
+                    current_user,
+                    rule=rule_to_update,
+                    sub_rules_info=sub_rules_info,
+                    save=False,
+                )
+            )
         db.session.commit()
 
     except sa.exc.IntegrityError as exc:
@@ -359,3 +494,30 @@ def edit_rule(rule_id: int) -> utils.BackofficeResponse:
         )
 
     return redirect(url_for("backoffice_web.offer_validation_rules.list_rules"), code=303)
+
+
+def _add_sub_rule_data_to_history(
+    sub_rule: offers_models.OfferValidationSubRule, history_info: list[dict], old_comparated: typing.Any | None = None
+) -> None:
+    if old_comparated:
+        if isinstance(sub_rule.comparated["comparated"], list):
+            comparated_info = {
+                "added": sorted(set(sub_rule.comparated["comparated"]) - set(old_comparated)),
+                "removed": sorted(set(old_comparated) - set(sub_rule.comparated["comparated"])),
+            }
+        else:
+            comparated_info = {
+                "added": sub_rule.comparated["comparated"],
+                "removed": old_comparated,
+            }
+    else:
+        comparated_info = sub_rule.comparated["comparated"]
+    history_info.append(
+        {
+            "id": sub_rule.id,
+            "model": sub_rule.model.name if sub_rule.model else None,
+            "attribute": sub_rule.attribute.name,
+            "operator": sub_rule.operator.name,
+            "comparated": comparated_info,
+        }
+    )

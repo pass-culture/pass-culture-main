@@ -894,7 +894,7 @@ class OfferValidationSubRuleField(enum.Enum):
 class OfferValidationSubRule(PcObject, Base, Model):
     __tablename__ = "offer_validation_sub_rule"
     validationRule: sa.orm.Mapped["OfferValidationRule"] = sa.orm.relationship(
-        "OfferValidationRule", backref="subRules"
+        "OfferValidationRule", backref="subRules", order_by="OfferValidationSubRule.id.asc()"
     )
     validationRuleId = sa.Column(sa.BigInteger, sa.ForeignKey("offer_validation_rule.id"), index=True, nullable=False)
     model: OfferValidationModel = sa.Column(sa.Enum(OfferValidationModel), nullable=True)
@@ -909,12 +909,9 @@ class OfferValidationSubRule(PcObject, Base, Model):
     comparated: dict = sa.Column("comparated", MutableDict.as_mutable(postgresql.json.JSONB), nullable=False)
 
 
-class OfferValidationRule(PcObject, Base, Model):
+class OfferValidationRule(PcObject, Base, Model, DeactivableMixin):
     __tablename__ = "offer_validation_rule"
     name: str = sa.Column(sa.Text, nullable=False)
-    dateModified: datetime.datetime = sa.Column(sa.DateTime, nullable=False, default=datetime.datetime.utcnow)
-    latestAuthorId: int = sa.Column(sa.BigInteger, sa.ForeignKey("user.id"), nullable=False)
-    latestAuthor: sa_orm.Mapped["User"] = sa.orm.relationship("User", foreign_keys=[latestAuthorId])
     offers: list["Offer"] = sa.orm.relationship(
         "Offer", secondary="validation_rule_offer_link", back_populates="flaggingValidationRules"
     )

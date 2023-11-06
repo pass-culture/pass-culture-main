@@ -1,4 +1,5 @@
 {% import "components/links.html" as links %}
+{% from "offer_validation_rules/sub_rules_extra_row.html" import build_sub_rules_extra_data with context %}
 {# This macro must be imported with context because of is_user_offerer_action_type() #}
 {% macro build_actions_table(actions, show_venue) %}
   <table class="table table-hover my-4">
@@ -23,6 +24,9 @@
               {{ links.build_pro_user_name_to_details_link(action.user.id, action.user.full_name) }}
             {% elif action.actionType.name == "USER_SUSPENDED" %}
               <p>{{ action.extraData['reason'] | format_reason_label }}</p>
+            {% elif action.actionType.name in ["RULE_CREATED","RULE_DELETED","RULE_MODIFIED"] %}
+              <p>{{ action.rule.name }}</p>
+              {{ build_sub_rules_extra_data(action.extraData['sub_rules_info']) }}
             {% endif %}
             {% if action.comment %}
               <p>

@@ -4,6 +4,8 @@ from operator import attrgetter
 from flask import url_for
 import pytest
 
+from pcapi.core.history import factories as history_factories
+from pcapi.core.history import models as history_models
 from pcapi.core.offerers import factories as offerers_factories
 from pcapi.core.offers import factories as offers_factories
 from pcapi.core.offers import models as offers_models
@@ -45,9 +47,7 @@ class ListRulesTest(GetEndpointHelper):
     expected_num_queries_when_using_offerer = expected_num_queries + 1
 
     def test_list_rules(self, authenticated_client):
-        rule = offers_factories.OfferValidationRuleFactory(
-            name="Règles de fraude", dateModified=datetime.datetime.utcnow()
-        )
+        rule = offers_factories.OfferValidationRuleFactory(name="Règles de fraude")
         offers_factories.OfferValidationSubRuleFactory(
             validationRule=rule,
             model=offers_models.OfferValidationModel.OFFER,
@@ -64,8 +64,6 @@ class ListRulesTest(GetEndpointHelper):
 
         assert rows[0]["ID"] == str(rule.id)
         assert rows[0]["Nom"] == rule.name
-        assert rows[0]["Dernier auteur"] == rule.latestAuthor.full_name
-        assert datetime.datetime.utcnow().strftime("%d/%m/%Y") in rows[0]["Date de dernière modification"]
 
         extra_data = html_parser.extract(response.data, tag="tr", class_="collapse accordion-collapse")[0]
         assert "Le nom de l'offre individuelle" in extra_data
@@ -450,8 +448,6 @@ class CreateOfferValidationRuleTest(PostEndpointHelper):
 
         rule = offers_models.OfferValidationRule.query.one()
         assert rule.name == "First rule of robotics"
-        assert rule.latestAuthor == legit_user
-        assert rule.dateModified.date() == datetime.date.today()
         assert rule.subRules[0].model == expected_result["model"]
         assert rule.subRules[0].attribute == expected_result["attribute"]
         assert rule.subRules[0].operator == expected_result["operator"]
@@ -475,8 +471,6 @@ class CreateOfferValidationRuleTest(PostEndpointHelper):
 
         rule = offers_models.OfferValidationRule.query.one()
         assert rule.name == "First rule of robotics"
-        assert rule.latestAuthor == legit_user
-        assert rule.dateModified.date() == datetime.date.today()
         assert rule.subRules[0].model == offers_models.OfferValidationModel.OFFERER
         assert rule.subRules[0].attribute == offers_models.OfferValidationAttribute.ID
         assert rule.subRules[0].operator == offers_models.OfferValidationRuleOperator.IN
@@ -504,8 +498,6 @@ class CreateOfferValidationRuleTest(PostEndpointHelper):
 
         rule = offers_models.OfferValidationRule.query.one()
         assert rule.name == "First rule of robotics"
-        assert rule.latestAuthor == legit_user
-        assert rule.dateModified.date() == datetime.date.today()
         assert rule.subRules[0].model == offers_models.OfferValidationModel.OFFER
         assert rule.subRules[0].attribute == offers_models.OfferValidationAttribute.MAX_PRICE
         assert rule.subRules[0].operator == offers_models.OfferValidationRuleOperator.GREATER_THAN
@@ -514,6 +506,27 @@ class CreateOfferValidationRuleTest(PostEndpointHelper):
         assert rule.subRules[1].attribute == offers_models.OfferValidationAttribute.CATEGORY_ID
         assert rule.subRules[1].operator == offers_models.OfferValidationRuleOperator.NOT_IN
         assert rule.subRules[1].comparated == {"comparated": ["INSTRUMENT"]}
+
+        action_history = history_models.ActionHistory.query.one()
+        assert action_history.authorUser == legit_user
+        assert action_history.actionType == history_models.ActionType.RULE_CREATED
+        assert action_history.rule.name == rule.name
+
+        assert len(action_history.extraData["sub_rules_info"]["sub_rules_created"]) == 2
+        assert {
+            "id": rule.subRules[0].id,
+            "model": "OFFER",
+            "attribute": "MAX_PRICE",
+            "operator": "GREATER_THAN",
+            "comparated": 200,
+        } in action_history.extraData["sub_rules_info"]["sub_rules_created"]
+        assert {
+            "id": rule.subRules[1].id,
+            "model": "OFFER",
+            "attribute": "CATEGORY_ID",
+            "operator": "NOT_IN",
+            "comparated": ["INSTRUMENT"],
+        } in action_history.extraData["sub_rules_info"]["sub_rules_created"]
 
     def test_create_offer_validation_rule_without_name(self, authenticated_client):
         sub_rule_data = get_empty_sub_rule_data() | {
@@ -666,9 +679,30 @@ class DeleteOfferValidationRuleTest(PostEndpointHelper):
             == f"La règle {rule.name} et ses sous-règles ont été supprimées"
         )
 
-        assert not offers_models.OfferValidationRule.query.filter_by(id=rule.id).one_or_none()
-        assert not offers_models.OfferValidationRule.query.filter_by(id=sub_rule_1.id).one_or_none()
-        assert not offers_models.OfferValidationRule.query.filter_by(id=sub_rule_2.id).one_or_none()
+        rule = offers_models.OfferValidationRule.query.one()
+        assert rule.isActive is False
+        assert offers_models.OfferValidationSubRule.query.filter_by(id=sub_rule_1.id).one_or_none() is None
+        assert offers_models.OfferValidationSubRule.query.filter_by(id=sub_rule_2.id).one_or_none() is None
+
+        action_history = history_models.ActionHistory.query.one()
+        assert action_history.authorUser == legit_user
+        assert action_history.actionType == history_models.ActionType.RULE_DELETED
+        assert action_history.rule.name == rule.name
+        assert len(action_history.extraData["sub_rules_info"]["sub_rules_deleted"]) == 2
+        assert {
+            "id": sub_rule_1.id,
+            "model": "OFFER",
+            "attribute": "NAME",
+            "operator": "CONTAINS",
+            "comparated": ["interdit", "suspicious", "verboten"],
+        } in action_history.extraData["sub_rules_info"]["sub_rules_deleted"]
+        assert {
+            "id": sub_rule_2.id,
+            "model": "OFFER",
+            "attribute": "DESCRIPTION",
+            "operator": "CONTAINS_EXACTLY",
+            "comparated": ["interdit", "suspicious", "verboten"],
+        } in action_history.extraData["sub_rules_info"]["sub_rules_deleted"]
 
     def test_no_script_injection_in_rule_name(self, legit_user, authenticated_client):
         rule = offers_factories.OfferValidationRuleFactory(name="<script>alert('coucou')</script>")
@@ -708,9 +742,7 @@ class EditOfferValidationRuleTest(PostEndpointHelper):
     needed_permission = perm_models.Permissions.PRO_FRAUD_ACTIONS
 
     def test_edit_offer_validation_rule(self, legit_user, authenticated_client):
-        rule = offers_factories.OfferValidationRuleFactory(
-            name="First rule of robotics", dateModified=datetime.datetime.utcnow() - datetime.timedelta(days=1)
-        )
+        rule = offers_factories.OfferValidationRuleFactory(name="First rule of robotics")
         sub_rule = offers_factories.OfferValidationSubRuleFactory(
             validationRule=rule,
             model=offers_models.OfferValidationModel.OFFER,
@@ -735,8 +767,6 @@ class EditOfferValidationRuleTest(PostEndpointHelper):
 
         rule = offers_models.OfferValidationRule.query.one()
         assert rule.name == "Second rule of robotics"
-        assert rule.latestAuthor == legit_user
-        assert rule.dateModified.date() == datetime.date.today()
         assert rule.subRules[0].id == sub_rule.id
         assert rule.subRules[0].model == offers_models.OfferValidationModel.OFFER
         assert rule.subRules[0].attribute == offers_models.OfferValidationAttribute.DESCRIPTION
@@ -744,9 +774,7 @@ class EditOfferValidationRuleTest(PostEndpointHelper):
         assert rule.subRules[0].comparated == {"comparated": ["ajout", "interdit", "suspicious", "verboten"]}
 
     def test_edit_offer_validation_rule_add_sub_rule(self, legit_user, authenticated_client):
-        rule = offers_factories.OfferValidationRuleFactory(
-            name="First rule of robotics", dateModified=datetime.datetime.utcnow() - datetime.timedelta(days=1)
-        )
+        rule = offers_factories.OfferValidationRuleFactory(name="First rule of robotics")
         sub_rule = offers_factories.OfferValidationSubRuleFactory(
             validationRule=rule,
             model=offers_models.OfferValidationModel.OFFER,
@@ -778,8 +806,6 @@ class EditOfferValidationRuleTest(PostEndpointHelper):
 
         rule = offers_models.OfferValidationRule.query.one()
         assert rule.name == "Second rule of robotics"
-        assert rule.latestAuthor == legit_user
-        assert rule.dateModified.date() == datetime.date.today()
 
         # sort to avoid flaky test
         sub_rules = sorted(rule.subRules, key=attrgetter("id"))
@@ -794,10 +820,37 @@ class EditOfferValidationRuleTest(PostEndpointHelper):
         assert sub_rules[1].operator == offers_models.OfferValidationRuleOperator.CONTAINS_EXACTLY
         assert sub_rules[1].comparated == {"comparated": ["interdit", "suspicious", "verboten"]}
 
+        action_history = history_models.ActionHistory.query.one()
+        assert action_history.authorUser == legit_user
+        assert action_history.actionType == history_models.ActionType.RULE_MODIFIED
+        assert action_history.rule.name == rule.name
+        assert len(action_history.extraData["sub_rules_info"]["sub_rules_deleted"]) == 1
+        assert len(action_history.extraData["sub_rules_info"]["sub_rules_modified"]) == 0
+        assert len(action_history.extraData["sub_rules_info"]["sub_rules_created"]) == 2
+        assert {
+            "id": sub_rules[0].id,
+            "model": "OFFER",
+            "attribute": "NAME",
+            "operator": "CONTAINS",
+            "comparated": ["interdit", "suspicious", "verboten"],
+        } in action_history.extraData["sub_rules_info"]["sub_rules_deleted"]
+        assert {
+            "id": sub_rules[1].id,
+            "model": "COLLECTIVE_OFFER",
+            "attribute": "DESCRIPTION",
+            "operator": "CONTAINS_EXACTLY",
+            "comparated": ["interdit", "suspicious", "verboten"],
+        } in action_history.extraData["sub_rules_info"]["sub_rules_created"]
+        assert {
+            "id": sub_rules[0].id,
+            "model": "OFFER",
+            "attribute": "DESCRIPTION",
+            "operator": "CONTAINS",
+            "comparated": ["ajout", "interdit", "suspicious", "verboten"],
+        } in action_history.extraData["sub_rules_info"]["sub_rules_created"]
+
     def test_edit_offer_validation_rule_delete_sub_rule(self, legit_user, authenticated_client):
-        rule = offers_factories.OfferValidationRuleFactory(
-            name="First rule of robotics", dateModified=datetime.datetime.utcnow() - datetime.timedelta(days=1)
-        )
+        rule = offers_factories.OfferValidationRuleFactory(name="First rule of robotics")
         sub_rule_1 = offers_factories.OfferValidationSubRuleFactory(
             validationRule=rule,
             model=offers_models.OfferValidationModel.OFFER,
@@ -820,9 +873,9 @@ class EditOfferValidationRuleTest(PostEndpointHelper):
         }
         sub_rule_data_1 = get_empty_sub_rule_data(1) | {
             "sub_rules-1-id": str(sub_rule_1.id),
-            "sub_rules-1-sub_rule_type": "DESCRIPTION_COLLECTIVE_OFFER",
-            "sub_rules-1-operator": "CONTAINS_EXACTLY",
-            "sub_rules-1-list_field": "Astérix, Obélix",
+            "sub_rules-1-sub_rule_type": "NAME_OFFER",
+            "sub_rules-1-operator": "CONTAINS",
+            "sub_rules-1-list_field": "Astérix, Obélix, verboten",
         }
         form = {"name": "Second rule of robotics"} | sub_rule_data_0 | sub_rule_data_1
 
@@ -836,16 +889,14 @@ class EditOfferValidationRuleTest(PostEndpointHelper):
         rule = offers_models.OfferValidationRule.query.one()
 
         assert rule.name == "Second rule of robotics"
-        assert rule.latestAuthor == legit_user
-        assert rule.dateModified.date() == datetime.date.today()
 
         # sort to avoid flaky test
         sub_rules = sorted(rule.subRules, key=attrgetter("id"))
         assert sub_rules[0].id == sub_rule_1.id
-        assert sub_rules[0].model == offers_models.OfferValidationModel.COLLECTIVE_OFFER
-        assert sub_rules[0].attribute == offers_models.OfferValidationAttribute.DESCRIPTION
-        assert sub_rules[0].operator == offers_models.OfferValidationRuleOperator.CONTAINS_EXACTLY
-        assert sub_rules[0].comparated == {"comparated": ["Astérix", "Obélix"]}
+        assert sub_rules[0].model == offers_models.OfferValidationModel.OFFER
+        assert sub_rules[0].attribute == offers_models.OfferValidationAttribute.NAME
+        assert sub_rules[0].operator == offers_models.OfferValidationRuleOperator.CONTAINS
+        assert sub_rules[0].comparated == {"comparated": ["Astérix", "Obélix", "verboten"]}
         assert sub_rules[1].id != sub_rule_1.id
         assert sub_rules[1].model == offers_models.OfferValidationModel.OFFER
         assert sub_rules[1].attribute == offers_models.OfferValidationAttribute.DESCRIPTION
@@ -853,3 +904,201 @@ class EditOfferValidationRuleTest(PostEndpointHelper):
         assert sub_rules[1].comparated == {"comparated": ["Fifi", "Loulou", "Riri"]}
 
         assert not offers_models.OfferValidationSubRule.query.filter_by(id=sub_rule_2.id).one_or_none()
+
+        action_history = history_models.ActionHistory.query.one()
+        assert action_history.authorUser == legit_user
+        assert action_history.actionType == history_models.ActionType.RULE_MODIFIED
+        assert action_history.rule.name == rule.name
+        assert len(action_history.extraData["sub_rules_info"]["sub_rules_deleted"]) == 1
+        assert len(action_history.extraData["sub_rules_info"]["sub_rules_modified"]) == 1
+        assert len(action_history.extraData["sub_rules_info"]["sub_rules_created"]) == 1
+        assert {
+            "id": sub_rule_2.id,
+            "model": "COLLECTIVE_OFFER",
+            "attribute": "NAME",
+            "operator": "CONTAINS_EXACTLY",
+            "comparated": ["interdit", "suspicious", "verboten"],
+        } in action_history.extraData["sub_rules_info"]["sub_rules_deleted"]
+        assert {
+            "id": sub_rule_1.id,
+            "model": "OFFER",
+            "attribute": "NAME",
+            "operator": "CONTAINS",
+            "comparated": {"added": ["Astérix", "Obélix"], "removed": ["interdit", "suspicious"]},
+        } in action_history.extraData["sub_rules_info"]["sub_rules_modified"]
+        assert {
+            "id": sub_rules[1].id,
+            "model": "OFFER",
+            "attribute": "DESCRIPTION",
+            "operator": "CONTAINS",
+            "comparated": ["Fifi", "Loulou", "Riri"],
+        } in action_history.extraData["sub_rules_info"]["sub_rules_created"]
+
+
+class ListRulesHistoryTest(GetEndpointHelper):
+    endpoint = "backoffice_web.offer_validation_rules.get_rules_history"
+    needed_permission = perm_models.Permissions.PRO_FRAUD_ACTIONS
+
+    # session + current_user
+    expected_num_queries = 3
+    # offerer names and siren
+    expected_num_queries_when_using_offerer = expected_num_queries + 1
+
+    def test_list_rules_history(self, authenticated_client, legit_user):
+        rule = offers_factories.OfferValidationRuleFactory(name="Règles de fraude")
+        rule_creation_history = history_factories.ActionHistoryFactory(
+            ruleId=rule.id,
+            actionType=history_models.ActionType.RULE_CREATED,
+            actionDate=datetime.datetime.utcnow(),
+            authorUser=legit_user,
+            comment=None,
+            extraData={
+                "sub_rules_info": {
+                    "sub_rules_created": [
+                        {
+                            "id": 1,
+                            "model": "OFFER",
+                            "attribute": "SUBCATEGORY_ID",
+                            "operator": "CONTAINS",
+                            "comparated": ["ESCAPE_GAME", "RENCONTRE_JEU"],
+                        },
+                        {
+                            "id": 2,
+                            "model": "OFFER",
+                            "attribute": "DESCRIPTION",
+                            "operator": "CONTAINS",
+                            "comparated": ["Fifi", "Loulou", "Riri"],
+                        },
+                    ]
+                },
+            },
+        )
+        # totally change the first one; change the comparated only for the second one
+        rule_modification_history = history_factories.ActionHistoryFactory(
+            ruleId=rule.id,
+            actionType=history_models.ActionType.RULE_MODIFIED,
+            actionDate=datetime.datetime.utcnow(),
+            authorUser=legit_user,
+            comment=None,
+            extraData={
+                "sub_rules_info": {
+                    "sub_rules_created": [
+                        {
+                            "id": 1,
+                            "model": "OFFER",
+                            "attribute": "MAX_PRICE",
+                            "operator": "GREATER_THAN",
+                            "comparated": 12,
+                        },
+                    ],
+                    "sub_rules_modified": [
+                        {
+                            "id": 2,
+                            "model": "OFFER",
+                            "attribute": "DESCRIPTION",
+                            "operator": "CONTAINS",
+                            "comparated": {"added": ["Foufou, Rourou"], "removed": ["Fifi, Riri"]},
+                        },
+                    ],
+                    "sub_rules_deleted": [
+                        {
+                            "id": 1,
+                            "model": "OFFER",
+                            "attribute": "SUBCATEGORY_ID",
+                            "operator": "CONTAINS",
+                            "comparated": ["ESCAPE_GAME", "RENCONTRE_JEU"],
+                        },
+                    ],
+                },
+            },
+        )
+        rule_deletion_history = history_factories.ActionHistoryFactory(
+            ruleId=rule.id,
+            actionType=history_models.ActionType.RULE_DELETED,
+            actionDate=datetime.datetime.utcnow(),
+            authorUser=legit_user,
+            comment=None,
+            extraData={
+                "sub_rules_info": {
+                    "sub_rules_deleted": [
+                        {
+                            "id": 1,
+                            "model": "OFFER",
+                            "attribute": "MAX_PRICE",
+                            "operator": "GREATER_THAN",
+                            "comparated": 12,
+                        },
+                        {
+                            "id": 2,
+                            "model": "OFFER",
+                            "attribute": "DESCRIPTION",
+                            "operator": "CONTAINS",
+                            "comparated": ["Foufou, Loulou, Rourou"],
+                        },
+                    ],
+                },
+            },
+        )
+
+        with assert_num_queries(self.expected_num_queries):
+            response = authenticated_client.get(url_for(self.endpoint))
+            assert response.status_code == 200
+
+        rows = html_parser.extract_table_rows(response.data)
+        deletion_history_row, modification_history_row, creation_history_row = rows[0], rows[1], rows[2]
+
+        assert creation_history_row["Type"] == "Création d'une règle de conformité"
+        assert creation_history_row["Date/Heure"].startswith(rule_creation_history.actionDate.strftime("Le %d/%m/%Y à"))
+        assert creation_history_row["Auteur"] == legit_user.full_name
+        for text in [
+            rule.name,
+            "Ajout de sous-règle(s) :",
+            "La sous-catégorie de l'offre individuelle contient",
+            "Escape game",
+            "Rencontres - jeux",
+            "La description de l'offre individuelle contient",
+            "Riri",
+            "Fifi",
+            "Loulou",
+        ]:
+            assert text in creation_history_row["Commentaire"]
+        assert "Modification de sous-règle(s) :" not in creation_history_row["Commentaire"]
+        assert "Suppression de sous-règle(s) :" not in creation_history_row["Commentaire"]
+
+        assert modification_history_row["Type"] == "Modification d'une règle de conformité"
+        assert modification_history_row["Date/Heure"].startswith(
+            rule_modification_history.actionDate.strftime("Le %d/%m/%Y à")
+        )
+        assert modification_history_row["Auteur"] == legit_user.full_name
+
+        for text in [
+            rule.name,
+            "Ajout de sous-règle(s) :",
+            "Le prix max de l'offre individuelle est supérieur à 12",
+            "Suppression de sous-règle(s) :",
+            "La sous-catégorie de l'offre individuelle contient",
+            "Escape game",
+            "Rencontres - jeux",
+            "Modification de sous-règle(s) :",
+            "La description de l'offre individuelle contient",
+            "Ajout de : Foufou, Rourou",
+            "Suppression de : Fifi, Riri",
+        ]:
+            assert text in modification_history_row["Commentaire"]
+        assert "Loulou" not in modification_history_row["Commentaire"]
+
+        assert deletion_history_row["Type"] == "Suppression d'une règle de conformité"
+        assert deletion_history_row["Date/Heure"].startswith(rule_deletion_history.actionDate.strftime("Le %d/%m/%Y à"))
+        assert deletion_history_row["Auteur"] == legit_user.full_name
+        for text in [
+            rule.name,
+            "Suppression de sous-règle(s) :",
+            "Le prix max de l'offre individuelle est supérieur à 12",
+            "La description de l'offre individuelle contient",
+            "Foufou",
+            "Loulou",
+            "Rourou",
+        ]:
+            assert text in deletion_history_row["Commentaire"]
+        assert "Modification de sous-règle(s) :" not in deletion_history_row["Commentaire"]
+        assert "Création de sous-règle(s) :" not in deletion_history_row["Commentaire"]
