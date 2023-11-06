@@ -2,6 +2,7 @@ import { useFormikContext } from 'formik'
 import isEqual from 'lodash.isequal'
 
 import { OfferAddressType } from 'apiClient/adage'
+import useActiveFeature from 'hooks/useActiveFeature'
 import fullClearIcon from 'icons/full-clear.svg'
 import fullRefreshIcon from 'icons/full-refresh.svg'
 import { departmentOptions } from 'pages/AdageIframe/app/constants/departmentOptions'
@@ -56,6 +57,9 @@ const FiltersTags = ({
 }: FiltersTagsProps) => {
   const { values, setFieldValue, handleSubmit } =
     useFormikContext<SearchFormValues>()
+
+  const isFormatEnabled = useActiveFeature('WIP_ENABLE_FORMAT')
+
   const getOfferAdressTypeTag = () => {
     if (values.eventAddressType == OfferAddressType.OTHER) {
       return <></>
@@ -141,21 +145,22 @@ const FiltersTags = ({
           }
         )
       )}
-      {inferCategoryLabelsFromSubcategories(
-        values.categories,
-        categoriesOptions
-      ).map((categoryLabel) =>
-        createTag(categoryLabel, async () => {
-          const subCategoriesToRemove = categoriesOptions.find(
-            (x) => x.label == categoryLabel
-          )?.value
-          const newCategories = values.categories.filter(
-            (x) => JSON.stringify(x) !== JSON.stringify(subCategoriesToRemove)
-          )
-          await setFieldValue('categories', newCategories)
-          handleSubmit()
-        })
-      )}
+      {!isFormatEnabled &&
+        inferCategoryLabelsFromSubcategories(
+          values.categories,
+          categoriesOptions
+        ).map((categoryLabel) =>
+          createTag(categoryLabel, async () => {
+            const subCategoriesToRemove = categoriesOptions.find(
+              (x) => x.label == categoryLabel
+            )?.value
+            const newCategories = values.categories.filter(
+              (x) => JSON.stringify(x) !== JSON.stringify(subCategoriesToRemove)
+            )
+            await setFieldValue('categories', newCategories)
+            handleSubmit()
+          })
+        )}
       {values.students.map((student) =>
         createTag(student, async () => {
           await setFieldValue(
@@ -165,6 +170,16 @@ const FiltersTags = ({
           handleSubmit()
         })
       )}
+      {isFormatEnabled &&
+        values.formats.map((format) =>
+          createTag(format, async () => {
+            await setFieldValue(
+              'formats',
+              values.formats.filter((x) => x != format)
+            )
+            handleSubmit()
+          })
+        )}
       {
         // TODO : We should use a custom isEqual instead of lodash one
         !isEqual(values, ADAGE_FILTERS_DEFAULT_VALUES) && (
