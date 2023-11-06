@@ -3,6 +3,7 @@ from typing import Type
 
 from pcapi import settings
 from pcapi.connectors import sirene
+from pcapi.connectors.dms.serializer import ApplicationDetail
 from pcapi.core.external.attributes.api import update_external_pro
 from pcapi.core.finance.models import BankInformationStatus
 from pcapi.core.offerers import api as offerers_api
@@ -13,7 +14,6 @@ from pcapi.domain.bank_information import check_new_bank_information_older_than_
 from pcapi.domain.bank_information import check_new_bank_information_valid
 from pcapi.domain.bank_informations.bank_informations import BankInformations
 from pcapi.domain.bank_informations.bank_informations_repository import BankInformationsRepository
-from pcapi.domain.demarches_simplifiees import ApplicationDetail
 from pcapi.domain.demarches_simplifiees import archive_dossier
 from pcapi.domain.demarches_simplifiees import format_error_to_demarches_simplifiees_text
 from pcapi.domain.demarches_simplifiees import update_demarches_simplifiees_text_annotations

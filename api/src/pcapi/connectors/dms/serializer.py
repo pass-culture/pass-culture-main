@@ -1,12 +1,19 @@
+from datetime import datetime
 import logging
 import re
+from typing import Any
+from typing import Type
 
 from dateutil import parser as date_parser
+import pydantic.v1 as pydantic_v1
 
 from pcapi.connectors.dms import models as dms_models
+from pcapi.core.finance.models import BankInformationStatus
+from pcapi.core.finance.utils import format_raw_iban_and_bic
 from pcapi.core.fraud import api as fraud_api
 from pcapi.core.fraud import models as fraud_models
 from pcapi.core.users import models as users_models
+from pcapi.domain.demarches_simplifiees import get_status_from_demarches_simplifiees_application_state_v2
 from pcapi.utils.date import FrenchParserInfo
 
 
@@ -160,3 +167,39 @@ def _parse_dms_civility(civility: dms_models.Civility) -> users_models.GenderEnu
     if civility == dms_models.Civility.MME:
         return users_models.GenderEnum.F
     return None
+
+
+class ApplicationDetail(pydantic_v1.BaseModel):
+    status: BankInformationStatus
+    application_id: int
+    dossier_id: str
+    modification_date: datetime
+    siren: str | None = None
+    iban: str | None = None
+    bic: str | None = None
+    siret: str | None = None
+    venue_name: str | None = None
+    dms_token: str | None = None
+    error_annotation_id: str | None = None
+    venue_url_annotation_id: str | None = None
+
+    @classmethod
+    def parse_obj(cls: Type["ApplicationDetail"], obj: dict) -> "ApplicationDetail":
+        to_representation: dict[str, Any] = {}
+        to_representation["status"] = get_status_from_demarches_simplifiees_application_state_v2(
+            dms_models.GraphQLApplicationStates(obj["status"])
+        )
+        to_representation["application_id"] = obj["application_id"]
+        to_representation["dossier_id"] = obj["dossier_id"]
+        to_representation["siren"] = obj.get("siren")
+        to_representation["iban"] = format_raw_iban_and_bic(obj["iban"])
+        to_representation["bic"] = format_raw_iban_and_bic(obj["bic"])
+        to_representation["siret"] = obj.get("siret")
+        to_representation["dms_token"] = obj.get("dms_token") if obj.get("application_type") == 4 else None
+        to_representation["modification_date"] = (
+            datetime.fromisoformat(obj["updated_at"]).astimezone().replace(tzinfo=None)
+        )
+        to_representation["error_annotation_id"] = obj["error_annotation_id"]
+        to_representation["venue_url_annotation_id"] = obj["venue_url_annotation_id"]
+
+        return cls(**to_representation)
