@@ -7,12 +7,12 @@ import pytest
 from pcapi import settings
 from pcapi.connectors import sirene
 from pcapi.connectors.dms.models import GraphQLApplicationStates
+from pcapi.connectors.dms.serializer import ApplicationDetail
 import pcapi.core.finance.factories as finance_factories
 from pcapi.core.finance.models import BankInformation
 from pcapi.core.finance.models import BankInformationStatus
 import pcapi.core.offerers.factories as offerers_factories
 from pcapi.domain.bank_information import CannotRegisterBankInformation
-from pcapi.domain.demarches_simplifiees import ApplicationDetail
 from pcapi.domain.demarches_simplifiees import ds_bank_information_application_details_from_raw_data
 from pcapi.infrastructure.repository.bank_informations.bank_informations_sql_repository import (
     BankInformationsSQLRepository,
@@ -45,6 +45,7 @@ class SaveVenueBankInformationsTest:
 
         def test_v3_raises_an_error_if_siret_is_absent(self):
             application_details = ApplicationDetail(
+                application_type=3,
                 siren="999999999",
                 status=BankInformationStatus.ACCEPTED,
                 application_id=1,
@@ -64,6 +65,7 @@ class SaveVenueBankInformationsTest:
 
         def test_v3_raises_an_error_if_no_venue_found_by_siret(self):
             application_details = ApplicationDetail(
+                application_type=3,
                 siren="999999999",
                 status=BankInformationStatus.ACCEPTED,
                 application_id=1,
@@ -83,6 +85,7 @@ class SaveVenueBankInformationsTest:
 
         def test_v4_raises_an_error_if_dms_token_is_absent(self):
             application_details = ApplicationDetail(
+                application_type=4,
                 status=BankInformationStatus.ACCEPTED,
                 application_id=1,
                 dossier_id=2,
@@ -99,6 +102,7 @@ class SaveVenueBankInformationsTest:
 
         def test_v4_raises_an_error_if_no_venue_found_by_dms_token(self):
             application_details = ApplicationDetail(
+                application_type=4,
                 status=BankInformationStatus.ACCEPTED,
                 application_id=1,
                 dossier_id=2,
@@ -118,6 +122,7 @@ class SaveVenueBankInformationsTest:
             offerer = offerers_factories.OffererFactory()
             offerers_factories.VenueFactory(managingOfferer=offerer, siret="99999999900000")
             application_details = ApplicationDetail(
+                application_type=3,
                 siren="999999999",
                 status=BankInformationStatus.ACCEPTED,
                 application_id=1,
@@ -361,19 +366,21 @@ class SaveVenueBankInformationsTest:
         def build_application_detail(self, updated_field=None):
             application_data = {
                 "siren": "999999999",
-                "status": BankInformationStatus.ACCEPTED,
+                "application_type": 4,
+                "status": GraphQLApplicationStates.accepted.value,
                 "application_id": self.application_id,
                 "dossier_id": self.dossier_id,
                 "iban": "FR7630007000111234567890144",
                 "bic": "SOGEFRPP",
-                "modification_date": datetime.utcnow(),
+                "updated_at": datetime.utcnow().isoformat(),
                 "venue_name": "venuedemo",
                 "error_annotation_id": self.annotation_id,
+                "venue_url_annotation_id": None,
                 "dms_token": "1234567890abcdef",
             }
             if updated_field:
                 application_data.update(updated_field)
-            return ApplicationDetail(**application_data)
+            return ApplicationDetail.parse_obj(application_data)
 
         def test_update_text_venue_not_found(self, mock_update_text_annotation, app):
             application_details = self.build_application_detail()
@@ -391,7 +398,7 @@ class SaveVenueBankInformationsTest:
             finance_factories.BankInformationFactory(dateModified=datetime.utcnow(), venue=venue)
             yesterday = datetime.utcnow() - timedelta(days=1)
             application_details = self.build_application_detail(
-                {"dms_token": venue.dmsToken, "modification_date": yesterday}
+                {"dms_token": venue.dmsToken, "updated_at": yesterday.isoformat()}
             )
 
             self.save_venue_bank_informations.execute(
@@ -409,7 +416,7 @@ class SaveVenueBankInformationsTest:
             venue = offerers_factories.VenueFactory(name="venuedemo")
             finance_factories.BankInformationFactory(venue=venue, status=BankInformationStatus.ACCEPTED)
             application_details = self.build_application_detail(
-                {"dms_token": venue.dmsToken, "status": BankInformationStatus.DRAFT}
+                {"dms_token": venue.dmsToken, "status": GraphQLApplicationStates.draft}
             )
 
             self.save_venue_bank_informations.execute(
@@ -427,7 +434,7 @@ class SaveVenueBankInformationsTest:
             venue = offerers_factories.VenueFactory(name="venuedemo")
             finance_factories.BankInformationFactory(venue=venue, status=BankInformationStatus.ACCEPTED)
             application_details = self.build_application_detail(
-                {"dms_token": venue.dmsToken, "status": BankInformationStatus.REJECTED}
+                {"dms_token": venue.dmsToken, "status": GraphQLApplicationStates.refused}
             )
 
             self.save_venue_bank_informations.execute(
