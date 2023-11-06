@@ -499,12 +499,22 @@ def _send_external_booking_notification_if_necessary(booking: Booking, action: B
     ):
         return
 
-    external_api_notification_request = ExternalApiBookingNotificationRequest.build(booking, action)
-    signature = utils.generate_hmac_signature(provider.hmacKey, external_api_notification_request.json())
-    payload = external_api_booking_notification.ExternalApiBookingNotificationTaskPayload(
-        data=external_api_notification_request, notificationUrl=provider.notificationExternalUrl, signature=signature
-    )
-    external_api_booking_notification.external_api_booking_notification_task.delay(payload)
+    try:
+        external_api_notification_request = ExternalApiBookingNotificationRequest.build(booking, action)
+        signature = utils.generate_hmac_signature(provider.hmacKey, external_api_notification_request.json())
+        payload = external_api_booking_notification.ExternalApiBookingNotificationTaskPayload(
+            data=external_api_notification_request,
+            notificationUrl=provider.notificationExternalUrl,
+            signature=signature,
+        )
+        external_api_booking_notification.external_api_booking_notification_task.delay(payload)
+    except Exception as err:  # pylint: disable=broad-except
+        logger.exception(
+            "Error: %s. Could not send external booking notification for: booking: %s, action %s",
+            err,
+            action.value,
+            booking.id,
+        )
 
 
 def _cancel_external_booking(booking: Booking, stock: Stock) -> None:
