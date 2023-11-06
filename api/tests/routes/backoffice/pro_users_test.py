@@ -330,6 +330,20 @@ class GetProUserOfferersTest(GetEndpointHelper):
             response = authenticated_client.get(url)
             assert response.status_code == 200
 
+    def test_get_user_offerers_in_different_offerer_status(self, authenticated_client, pro_user):
+        offerers_factories.UserOffererFactory(user=pro_user, offerer=offerers_factories.PendingOffererFactory())
+        url = url_for(self.endpoint, user_id=pro_user.id)
+
+        with assert_num_queries(self.expected_num_queries):
+            response = authenticated_client.get(url)
+            assert response.status_code == 200
+
+        rows = html_parser.extract_table_rows(response.data, parent_class="user_offerers-tab-pane")
+        assert len(rows) == 2
+
+        assert rows[0]["Statut structure"] == "Validée"
+        assert rows[1]["Statut structure"] == "En attente"
+
 
 class ValidateProEmailTest(PostEndpointHelper):
     endpoint = "backoffice_web.pro_user.validate_pro_user_email"
