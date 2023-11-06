@@ -12,6 +12,7 @@ import pcapi.core.educational.testing as adage_api_testing
 import pcapi.core.offerers.factories as offerers_factories
 import pcapi.core.providers.factories as providers_factories
 from pcapi.core.testing import override_settings
+from pcapi.models import offer_mixin
 from pcapi.routes.adage.v1.serialization.prebooking import EducationalBookingEdition
 from pcapi.routes.adage.v1.serialization.prebooking import serialize_collective_booking
 
@@ -510,3 +511,21 @@ class Return400Test:
         # Then
         assert response.status_code == 400
         assert response.json == {"beginningDatetime": ["L'évènement ne peut commencer dans le passé."]}
+
+    def test_doesnot_edit_offer_if_rejected(self, client):
+        offer = educational_factories.CollectiveOfferFactory(validation=offer_mixin.OfferValidationStatus.REJECTED)
+        stock = educational_factories.CollectiveStockFactory(price=1200, collectiveOffer=offer)
+        offerers_factories.UserOffererFactory(
+            user__email="user@example.com",
+            offerer=stock.collectiveOffer.venue.managingOfferer,
+        )
+
+        stock_edition_payload = {
+            "totalPrice": 111,
+        }
+        response = client.with_session_auth("user@example.com").patch(
+            f"/collective/stocks/{stock.id}", json=stock_edition_payload
+        )
+
+        assert response.status_code == 400
+        assert response.json["global"][0] == "Les offres refusées ou en attente de validation ne sont pas modifiables"
