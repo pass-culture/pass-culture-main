@@ -1149,38 +1149,7 @@ class UpdateProfileTest:
         assert notification["attribute_values"]["u.postal_code"] == "75008"
 
 
-class ProfileOptionsTypeTest:
-    def test_get_profile_options(self, client):
-        response = client.get("/native/v1/subscription/profile_options")
-
-        assert response.status_code == 200
-        assert response.json == {
-            "activities": [
-                {"id": "MIDDLE_SCHOOL_STUDENT", "label": "Collégien", "description": None},
-                {"id": "HIGH_SCHOOL_STUDENT", "label": "Lycéen", "description": None},
-                {"id": "STUDENT", "label": "Étudiant", "description": None},
-                {"id": "EMPLOYEE", "label": "Employé", "description": None},
-                {"id": "APPRENTICE", "label": "Apprenti", "description": None},
-                {"id": "APPRENTICE_STUDENT", "label": "Alternant", "description": None},
-                {
-                    "id": "VOLUNTEER",
-                    "label": "Volontaire",
-                    "description": "En service civique",
-                },
-                {
-                    "id": "INACTIVE",
-                    "label": "Inactif",
-                    "description": "En incapacité de travailler",
-                },
-                {
-                    "id": "UNEMPLOYED",
-                    "label": "Demandeur d'emploi",
-                    "description": "En recherche d'emploi",
-                },
-            ],
-            "school_types": [],
-        }
-
+class ActivityTypesTest:
     @pytest.mark.parametrize("age", (15, 16, 17, 18))
     def test_get_activity_types(self, client, age):
         user = users_factories.BaseUserFactory(age=age)
