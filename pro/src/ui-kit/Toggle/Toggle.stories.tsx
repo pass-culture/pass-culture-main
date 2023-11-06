@@ -1,17 +1,15 @@
-import type { Story } from '@storybook/react'
-import React from 'react'
+import { StoryObj } from '@storybook/react'
 
-import Toggle, { ToggleProps } from './Toggle'
+import Toggle from './Toggle'
 
 export default {
   title: 'ui-kit/Toggle',
   component: Toggle,
 }
 
-const Template: Story<ToggleProps> = (args) => <Toggle {...args} />
-
-export const Default = Template.bind({})
-Default.args = {
-  isActiveByDefault: false,
-  isDisabled: false,
+export const Default: StoryObj<typeof Toggle> = {
+  args: {
+    isActiveByDefault: false,
+    isDisabled: false,
+  },
 }
