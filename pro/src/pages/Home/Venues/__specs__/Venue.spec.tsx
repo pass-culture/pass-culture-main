@@ -43,6 +43,7 @@ describe('venues', () => {
       name: 'My venue',
       offererId: offererId,
       dmsInformations: null,
+      offererHasBankAccount: false,
     }
     vi.spyOn(api, 'getVenueStats').mockResolvedValue({
       activeBookingsQuantity: 0,
