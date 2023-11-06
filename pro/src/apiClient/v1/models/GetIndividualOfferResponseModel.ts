@@ -17,6 +17,7 @@ export type GetIndividualOfferResponseModel = {
   audioDisabilityCompliant?: boolean | null;
   bookingContact?: string | null;
   bookingEmail?: string | null;
+  bookingsCount?: number;
   dateCreated: string;
   description?: string | null;
   durationMinutes?: number | null;

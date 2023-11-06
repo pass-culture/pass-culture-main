@@ -5,6 +5,7 @@ from freezegun import freeze_time
 import pytest
 
 from pcapi.core import testing
+import pcapi.core.bookings.factories as bookings_factories
 from pcapi.core.categories import subcategories_v2 as subcategories
 import pcapi.core.finance.factories as finance_factories
 import pcapi.core.offerers.factories as offerers_factories
@@ -162,6 +163,7 @@ class Returns200Test:
         assert response.json == {
             "activeMediation": None,
             "bookingContact": None,
+            "bookingsCount": 0,
             "bookingEmail": "offer.booking.email@example.com",
             "dateCreated": "2020-10-15T00:00:00Z",
             "description": "Tatort, but slower",
@@ -282,3 +284,18 @@ class Returns200Test:
         # Then
         assert response.status_code == 200
         assert len(response.json["stocks"]) == 0
+
+    def test_returns_positive_booking_count(self, app):
+        # Given
+        user_offerer = offerers_factories.UserOffererFactory()
+        offer = offers_factories.EventOfferFactory(venue__managingOfferer=user_offerer.offerer)
+        stock = offers_factories.EventStockFactory(offer=offer)
+        bookings_factories.BookingFactory.create_batch(2, stock=stock)
+
+        # When
+        client = TestClient(app.test_client()).with_session_auth(email=user_offerer.user.email)
+        response = client.get(f"/offers/{offer.id}")
+
+        # Then
+        assert response.status_code == 200
+        assert response.json["bookingsCount"] == 2
