@@ -27,6 +27,38 @@ from pcapi.utils import date as date_utils
 logger = logging.getLogger(__name__)
 
 
+ALLOWED_PRODUCT_SUBCATEGORIES = [
+    subcategories.ABO_BIBLIOTHEQUE,
+    subcategories.ABO_CONCERT,
+    subcategories.ABO_LIVRE_NUMERIQUE,
+    subcategories.ABO_MEDIATHEQUE,
+    subcategories.ABO_PLATEFORME_MUSIQUE,
+    subcategories.ABO_PLATEFORME_VIDEO,
+    subcategories.ABO_PRATIQUE_ART,
+    subcategories.ABO_PRESSE_EN_LIGNE,
+    subcategories.ABO_SPECTACLE,
+    subcategories.ACHAT_INSTRUMENT,
+    subcategories.APP_CULTURELLE,
+    subcategories.AUTRE_SUPPORT_NUMERIQUE,
+    subcategories.CAPTATION_MUSIQUE,
+    subcategories.CARTE_JEUNES,
+    subcategories.CARTE_MUSEE,
+    subcategories.LIVRE_AUDIO_PHYSIQUE,
+    subcategories.LIVRE_NUMERIQUE,
+    subcategories.LOCATION_INSTRUMENT,
+    subcategories.PARTITION,
+    subcategories.PLATEFORME_PRATIQUE_ARTISTIQUE,
+    subcategories.PODCAST,
+    subcategories.PRATIQUE_ART_VENTE_DISTANCE,
+    subcategories.SPECTACLE_ENREGISTRE,
+    subcategories.SUPPORT_PHYSIQUE_FILM,
+    subcategories.TELECHARGEMENT_LIVRE_AUDIO,
+    subcategories.TELECHARGEMENT_MUSIQUE,
+    subcategories.VISITE_VIRTUELLE,
+    subcategories.VOD,
+]
+
+
 MusicTypeEnum = StrEnum(  # type: ignore [call-overload]
     "MusicTypeEnum",
     {music_sub_type_slug: music_sub_type_slug for music_sub_type_slug in music_types.MUSIC_SUB_TYPES_BY_SLUG},
@@ -40,6 +72,10 @@ ShowTypeEnum = StrEnum(  # type: ignore [call-overload]
 
 EventCategoryEnum = StrEnum(  # type:ignore [call-overload]
     "CategoryEnum", {subcategory_id: subcategory_id for subcategory_id in subcategories.EVENT_SUBCATEGORIES}
+)
+
+ProductCategoryEnum = StrEnum(  # type:ignore [call-overload]
+    "CategoryEnum", {subcategory.id: subcategory.id for subcategory in ALLOWED_PRODUCT_SUBCATEGORIES}
 )
 
 if typing.TYPE_CHECKING:
@@ -256,36 +292,6 @@ def deserialize_extra_data(
     return extra_data
 
 
-ALLOWED_PRODUCT_SUBCATEGORIES = [
-    subcategories.ABO_BIBLIOTHEQUE,
-    subcategories.ABO_CONCERT,
-    subcategories.ABO_LIVRE_NUMERIQUE,
-    subcategories.ABO_MEDIATHEQUE,
-    subcategories.ABO_PLATEFORME_MUSIQUE,
-    subcategories.ABO_PLATEFORME_VIDEO,
-    subcategories.ABO_PRATIQUE_ART,
-    subcategories.ABO_PRESSE_EN_LIGNE,
-    subcategories.ABO_SPECTACLE,
-    subcategories.ACHAT_INSTRUMENT,
-    subcategories.APP_CULTURELLE,
-    subcategories.AUTRE_SUPPORT_NUMERIQUE,
-    subcategories.CAPTATION_MUSIQUE,
-    subcategories.CARTE_JEUNES,
-    subcategories.CARTE_MUSEE,
-    subcategories.LIVRE_AUDIO_PHYSIQUE,
-    subcategories.LIVRE_NUMERIQUE,
-    subcategories.LOCATION_INSTRUMENT,
-    subcategories.PARTITION,
-    subcategories.PLATEFORME_PRATIQUE_ARTISTIQUE,
-    subcategories.PODCAST,
-    subcategories.PRATIQUE_ART_VENTE_DISTANCE,
-    subcategories.SPECTACLE_ENREGISTRE,
-    subcategories.SUPPORT_PHYSIQUE_FILM,
-    subcategories.TELECHARGEMENT_LIVRE_AUDIO,
-    subcategories.TELECHARGEMENT_MUSIQUE,
-    subcategories.VISITE_VIRTUELLE,
-    subcategories.VOD,
-]
 product_category_creation_models = {
     subcategory.id: compute_category_fields_model(subcategory, Method.create)
     for subcategory in ALLOWED_PRODUCT_SUBCATEGORIES
@@ -854,8 +860,29 @@ class EventCategoryResponse(serialization.ConfiguredBaseModel):
         )
 
 
+class ProductCategoryResponse(serialization.ConfiguredBaseModel):
+    id: ProductCategoryEnum  # type: ignore [valid-type]
+    conditional_fields: dict[str, bool] = pydantic_v1.Field(
+        description="The keys are fields that should be set in the category_related_fields of a product. The values indicate whether their associated field is mandatory during product creation."
+    )
+
+    @classmethod
+    def build_category(cls, subcategory: subcategories.Subcategory) -> "ProductCategoryResponse":
+        return cls(
+            id=subcategory.id,
+            conditional_fields={
+                field: condition.is_required_in_external_form
+                for field, condition in subcategory.conditional_fields.items()
+            },
+        )
+
+
 class GetEventCategoriesResponse(serialization.ConfiguredBaseModel):
     __root__: list[EventCategoryResponse]
+
+
+class GetProductCategoriesResponse(serialization.ConfiguredBaseModel):
+    __root__: list[ProductCategoryResponse]
 
 
 class ShowTypeResponse(serialization.ConfiguredBaseModel):
