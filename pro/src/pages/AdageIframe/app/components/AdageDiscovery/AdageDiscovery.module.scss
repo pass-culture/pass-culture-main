@@ -3,38 +3,50 @@
 @use "styles/variables/_colors.scss" as colors;
 
 .discovery {
-    &-playlist {
-        margin: rem.torem(24px);
-    }
+  &-playlist {
+    margin: rem.torem(24px);
+  }
 }
 
 .section-title {
-    @include fonts.title3;
+  @include fonts.title3;
+}
+
+.section-todo {
+  display: flex;
+  flex-direction: column;
+  gap: rem.torem(16px);
+  margin-bottom: rem.torem(24px);
+
+  &-playlist {
+    display: flex;
+    gap: rem.torem(16px);
+  }
 }
 
 .suggestion {
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-    background-color: colors.$light-pink;
-    width: auto;
-    height: rem.torem(158px);
-    padding-left: rem.torem(24px);
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  background-color: colors.$light-pink;
+  width: auto;
+  height: rem.torem(158px);
+  padding-left: rem.torem(24px);
 
-    h1 {
-        margin-bottom: rem.torem(8px);
-    }
+  h1 {
+    margin-bottom: rem.torem(8px);
+  }
 }
 
 .footer-link {
-    @include fonts.caption;
+  @include fonts.caption;
 
-    align-items: center;
-    width: max-content;
-    margin: 0;
-    
-    svg {
-      max-width: rem.torem(16px);
-      margin-right: rem.torem(4px) !important;
-    }
+  align-items: center;
+  width: max-content;
+  margin: 0;
+
+  svg {
+    max-width: rem.torem(16px);
+    margin-right: rem.torem(4px) !important;
   }
+}
