@@ -120,21 +120,6 @@ def complete_profile(user: users_models.User, body: serializers.ProfileUpdateReq
         external_attributes_api.update_external_user(user)
 
 
-@blueprint.native_v1.route("/subscription/profile_options", methods=["GET"])
-@spectree_serialize(
-    response_model=serializers.ProfileOptionsResponse,
-    on_success_status=200,
-    api=blueprint.api,
-)
-def get_profile_options() -> serializers.ProfileOptionsResponse:
-    return serializers.ProfileOptionsResponse(
-        activities=[
-            serializers.ActivityResponseModel.from_orm(activity) for activity in profile_options.ALL_ACTIVITIES
-        ],
-        school_types=[],
-    )
-
-
 @blueprint.native_v1.route("/subscription/activity_types", methods=["GET"])
 @spectree_serialize(
     response_model=serializers.ActivityTypesResponse,
