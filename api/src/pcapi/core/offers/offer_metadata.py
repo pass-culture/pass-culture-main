@@ -8,12 +8,12 @@ from pcapi.core.offers.utils import offer_app_link
 
 
 Metadata = dict[str, typing.Any]
-book_subcategories = [
-    subcategories_v2.LIVRE_AUDIO_PHYSIQUE.id,
-    subcategories_v2.TELECHARGEMENT_LIVRE_AUDIO.id,
-    subcategories_v2.LIVRE_NUMERIQUE.id,
-    subcategories_v2.LIVRE_PAPIER.id,
-]
+book_subcategories = {
+    subcategories_v2.LIVRE_AUDIO_PHYSIQUE.id: "https://schema.org/AudiobookFormat",
+    subcategories_v2.TELECHARGEMENT_LIVRE_AUDIO.id: "https://schema.org/AudiobookFormat",
+    subcategories_v2.LIVRE_NUMERIQUE.id: "https://schema.org/EBook",
+    subcategories_v2.LIVRE_PAPIER.id: "https://schema.org/Hardcover",
+}
 
 
 def _get_metadata_from_venue(venue: Venue) -> Metadata:
@@ -80,18 +80,35 @@ def _get_event_metadata_from_offer(offer: offers_models.Offer) -> Metadata:
 
 
 def _get_book_metadata_from_offer(offer: offers_models.Offer) -> Metadata:
-    book_metadata: Metadata = {
-        "additionalType": "Book",
+    book_metadata = {
+        "@type": ["Product", "Book"],
+        "@id": offer_app_link(offer),
+        "isFamilyFriendly": not offer.is_forbidden_to_underage,
+        "url": offer_app_link(offer),
+    }
+
+    work_example = {
+        "@type": "Book",
+        "@id": offer_app_link(offer),
+        "inLanguage": "fr",
     }
 
     extra_data = offer.extraData or {}
-    if ean := extra_data.get("ean"):
-        book_metadata["gtin13"] = ean
     if author := extra_data.get("author"):
         book_metadata["author"] = {
             "@type": "Person",
             "name": author,
         }
+    if ean := extra_data.get("ean"):
+        book_metadata["gtin13"] = ean
+        work_example["isbn"] = ean
+
+    if extra_data.get("bookFormat") == offers_models.BookFormat.POCHE.value:
+        work_example["bookFormat"] = "https://schema.org/Paperback"
+    else:
+        work_example["bookFormat"] = book_subcategories[offer.subcategoryId]
+
+    book_metadata["workExample"] = work_example
 
     return _get_common_metadata_from_offer(offer) | book_metadata
 
