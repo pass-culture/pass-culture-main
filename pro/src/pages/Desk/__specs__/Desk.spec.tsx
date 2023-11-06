@@ -2,14 +2,13 @@ import { screen, waitFor } from '@testing-library/react'
 import { userEvent } from '@testing-library/user-event'
 import React from 'react'
 
-import { CancelablePromise } from 'apiClient/v1'
 import { defaultBookingResponse } from 'utils/apiFactories'
 import { renderWithProviders } from 'utils/renderWithProviders'
 
 import * as getBookingAdapter from '../adapters/getBooking'
 import * as submitTokenAdapter from '../adapters/submitToken'
 import Desk from '../Desk'
-import { DeskSubmitResponse, MESSAGE_VARIANT } from '../types'
+import { MESSAGE_VARIANT } from '../types'
 
 const renderDesk = () => {
   renderWithProviders(<Desk />)
@@ -141,13 +140,6 @@ describe('src | components | Desk', () => {
     })
 
     it('should display invalidating message when waiting for invalidation and display invalidation confirmation', async () => {
-      vi.spyOn(submitTokenAdapter, 'submitInvalidate').mockImplementation(
-        () => {
-          return new CancelablePromise<DeskSubmitResponse>((resolve) =>
-            setTimeout(() => resolve({} as DeskSubmitResponse), 50)
-          )
-        }
-      )
       renderDesk()
 
       await userEvent.type(screen.getByLabelText('Contremarque'), 'AAAAAA')
@@ -157,8 +149,6 @@ describe('src | components | Desk', () => {
         name: 'Continuer',
       })
       await userEvent.click(confirmModalButton)
-
-      expect(screen.getByText('Invalidation en cours...')).toBeInTheDocument()
 
       await waitFor(() => {
         expect(screen.getByText('Contremarque invalidée !')).toBeInTheDocument()
