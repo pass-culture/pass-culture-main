@@ -36,6 +36,7 @@ describe('venue create offer link', () => {
       name: 'My venue',
       offererId: offererId,
       dmsInformations: null,
+      offererHasBankAccount: false,
     }
     vi.spyOn(api, 'getVenueStats').mockResolvedValue({
       activeBookingsQuantity: 0,
