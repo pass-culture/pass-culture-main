@@ -63,6 +63,7 @@ export type SuggestionItem = AutocompleteQuerySuggestionsHit & {
     name: string
   }
   ['offer.subcategoryId']: string[]
+  formats: string[]
 }
 
 const ALGOLIA_NUMBER_RECENT_SEARCHES = 5
@@ -110,6 +111,7 @@ export const Autocomplete = ({
   const enableAutocompleteAdage = useActiveFeature(
     'WIP_ENABLE_SEARCH_HISTORY_ADAGE'
   )
+  const isFormatEnable = useActiveFeature('WIP_ENABLE_FORMAT')
 
   const formik = useContext(FormikContext)
 
@@ -251,7 +253,6 @@ export const Autocomplete = ({
         },
         async onSelect(params) {
           const { item, source: sourceTmp } = params
-
           const items = (await sourceTmp.getItems({
             ...params,
             query: params.state.query,
@@ -261,21 +262,24 @@ export const Autocomplete = ({
             (elm) => elm.objectID === item.objectID
           )
 
-          // if the id is less than 3, the category is displayed and must be pre-selected in the filters.
-          if (
-            itemId >= 0 &&
-            itemId < 3 &&
-            item['offer.subcategoryId'] &&
-            item['offer.subcategoryId'].length > 0
-          ) {
-            const result = getCategoriesFromSubcategory(
-              item['offer.subcategoryId'][0]
-            )
-
-            result &&
-              (await formik.setFieldValue('categories', [result.subCategories]))
+          if (isFormatEnable) {
+            if (itemId >= 0 && itemId < 3) {
+              await formik.setFieldValue('formats', [item.formats[0]])
+            } else {
+              await formik.setFieldValue('formats', [])
+            }
           } else {
-            await formik.setFieldValue('categories', [])
+            // if the id is less than 3, the category is displayed and must be pre-selected in the filters.
+            if (itemId >= 0 && itemId < 3) {
+              const { subCategories } = getCategoriesFromSubcategory(
+                item['offer.subcategoryId'][0]
+              )
+
+              subCategories &&
+                (await formik.setFieldValue('categories', [subCategories]))
+            } else {
+              await formik.setFieldValue('categories', [])
+            }
           }
           refine(item.query)
           await formik.submitForm()
@@ -581,10 +585,24 @@ export const Autocomplete = ({
                       {...autocomplete.getListProps()}
                     >
                       {keywordSuggestionsItems.map((item, index) => {
+                        let displayValue = null
+                        const shouldDisplayFormats =
+                          index <= 2 && item.formats && item.formats.length > 0
+
                         const shouldDisplayCategory =
                           index <= 2 &&
                           item['offer.subcategoryId'] &&
-                          item['offer.subcategoryId'].length > 0
+                          item['offer.subcategoryId'].length > 0 &&
+                          !isFormatEnable
+
+                        if (shouldDisplayCategory && !isFormatEnable) {
+                          displayValue = getCategoriesFromSubcategory(
+                            item['offer.subcategoryId'][0]
+                          ).label
+                        } else if (shouldDisplayFormats) {
+                          displayValue = item.formats[0]
+                        }
+
                         return (
                           <li
                             key={`item-keyword-${index}`}
@@ -608,16 +626,15 @@ export const Autocomplete = ({
                                 attribute={['query']}
                                 tagName="strong"
                               />
-                              {shouldDisplayCategory && ' dans '}
+                              {shouldDisplayCategory || shouldDisplayFormats
+                                ? ' dans '
+                                : ''}
                               <span
                                 className={
                                   styles['dialog-panel-autocomplete-category']
                                 }
                               >
-                                {shouldDisplayCategory &&
-                                  getCategoriesFromSubcategory(
-                                    item['offer.subcategoryId'][0]
-                                  ).label}
+                                {displayValue}
                               </span>
                             </div>
                           </li>
