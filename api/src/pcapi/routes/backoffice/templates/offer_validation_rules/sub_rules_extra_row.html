@@ -13,20 +13,7 @@
           <div class="card shadow-sm p-4 mx-2">
             {% for sub_rule in rule.subRules %}
               <ul>
-                {% if sub_rule.comparated["comparated"].__class__.__name__ == "list" %}
-                  {% if not sub_rule.model %}
-                    <li>{{ sub_rule | format_offer_validation_sub_rule }} {{ sub_rule.comparated["comparated"] | format_offer_types }}</li>
-                  {% else %}
-                    <li>{{ sub_rule | format_offer_validation_sub_rule }}</li>
-                    <ul class="card-columns"
-                        style="column-count: 5">
-                      {% set element_filter = sub_rule | get_comparated_format_function(offerer_dict) %}
-                      {% for element in sub_rule.comparated["comparated"] %}<li>{{ element_filter(element) }}</li>{% endfor %}
-                    </ul>
-                  {% endif %}
-                {% else %}
-                  <li>{{ sub_rule | format_offer_validation_sub_rule }} {{ sub_rule.comparated["comparated"] }}</li>
-                {% endif %}
+                {{ build_sub_rule_info(sub_rule, sub_rule | format_offer_validation_sub_rule, sub_rule.comparated["comparated"], 5) }}
               </ul>
             {% endfor %}
           </div>
@@ -34,4 +21,47 @@
       </div>
     </td>
   </tr>
+{% endmacro %}
+{% macro build_sub_rules_extra_data(sub_rules) %}
+  <ul>
+    {% for sub_rule_info_key in sub_rules %}
+      {% if sub_rules[sub_rule_info_key] %}
+        <li class="text-decoration-underline">{{ sub_rule_info_key | format_sub_rules_info_type }}</li>
+        <ul>
+          {% for sub_rule in sub_rules[sub_rule_info_key] %}
+            {% set serialized_sub_rule = sub_rule_info_serializer(sub_rule) %}
+            {% if sub_rule_info_key == "sub_rules_created" or sub_rule_info_key == "sub_rules_deleted" %}
+              {{ build_sub_rule_info(serialized_sub_rule, serialized_sub_rule | format_offer_validation_sub_rule, sub_rule.comparated, 5) }}
+            {% else %}
+              <li>{{ serialized_sub_rule | format_offer_validation_sub_rule }}</li>
+              <ul>
+                {% if sub_rule.comparated["added"] %}
+                  {{ build_sub_rule_info(serialized_sub_rule, "Ajout de :", sub_rule.comparated["added"], 4) }}
+                {% endif %}
+                {% if sub_rule.comparated["removed"] %}
+                  {{ build_sub_rule_info(serialized_sub_rule, "Suppression de :", sub_rule.comparated["removed"], 4) }}
+                {% endif %}
+              </ul>
+            {% endif %}
+          {% endfor %}
+        </ul>
+      {% endif %}
+    {% endfor %}
+  </ul>
+{% endmacro %}
+{% macro build_sub_rule_info(sub_rule, label, comparated, column_count) %}
+  {% if comparated.__class__.__name__ == "list" %}
+    {% if not sub_rule.model %}
+      <li>{{ label }} {{ comparated | format_offer_types }}</li>
+    {% else %}
+      <li>{{ label }}</li>
+      <ul class="card-columns"
+          style="column-count: {{ column_count }}">
+        {% set element_filter = sub_rule | get_comparated_format_function(offerer_dict) %}
+        {% for element in comparated %}<li>{{ element_filter(element) }}</li>{% endfor %}
+      </ul>
+    {% endif %}
+  {% else %}
+    <li>{{ label }} {{ comparated }}</li>
+  {% endif %}
 {% endmacro %}

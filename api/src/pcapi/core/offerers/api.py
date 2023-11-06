@@ -1072,6 +1072,7 @@ def set_offerer_pending(
         user=None,  # otherwise mypy does not accept extra_data dict
         finance_incident=None,  # otherwise mypy does not accept extra_data dict
         bank_account=None,  # otherwise mypy does not accept extra_data dict
+        rule=None,  # otherwise mypy does not accept extra_data dict
         comment=comment,
         save=False,
         **extra_data,

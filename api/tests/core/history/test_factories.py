@@ -36,4 +36,4 @@ class HistoryFactoriesTest:
     def test_action_history_factory_without_resource(self):
         with pytest.raises(IntegrityError) as err:
             factories.ActionHistoryFactory()
-        assert "check_at_least_one_resource" in str(err.value)
+        assert "check_action_resource" in str(err.value)
