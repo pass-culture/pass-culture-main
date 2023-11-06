@@ -55,3 +55,50 @@ jobs:
         with:
           path: "pro/cypress/videos"
           destination: "${{ inputs.CACHE_BUCKET_NAME }}/pro/cypress/videos/e2e-artifacts"
+
+  notification:
+    name: "Notification"
+    runs-on: [self-hosted, linux, x64]
+    if: ${{ failure() && github.ref == 'refs/heads/master' }}
+    needs:
+      - tests-pro-e2e-tests
+    steps:
+      - uses: technote-space/workflow-conclusion-action@v3
+      - name: Authentification to Google
+        uses: 'google-github-actions/auth@v1'
+        with:
+          workload_identity_provider: ${{ secrets.GCP_EHP_WORKLOAD_IDENTITY_PROVIDER }}
+          service_account: ${{ secrets.GCP_EHP_SERVICE_ACCOUNT }}
+
+      - name: Get Secret
+        id: 'secrets'
+        uses: 'google-github-actions/get-secretmanager-secrets@v1'
+        with:
+          secrets: |-
+            SLACK_BOT_TOKEN:passculture-metier-ehp/passculture-ci-slack-bot-token
+
+      - name: Post to a Slack channel
+        id: slack
+        uses: slackapi/slack-github-action@v1.23.0
+        with:
+          # channel #dev
+          channel-id: "CPZ7U1CNP"
+          payload: |
+            {
+            "attachments": [
+              {
+                "mrkdwn_in": ["text"],
+                "color": "#A30002",
+                "author_name": "${{github.actor}}",
+                "author_link": "https://github.com/${{github.actor}}",
+                "author_icon": "https://github.com/${{github.actor}}.png",
+                "title": "Tests pro E2E",
+                "title_link": "https://github.com/${{github.repository}}/actions/runs/${{github.run_id}}",
+                "text": "Les tests pro E2E échouent sur `master` :boom:"
+              }
+            ],
+            "unfurl_links": false,
+            "unfurl_media": false
+            }
+        env:
+          SLACK_BOT_TOKEN: ${{ steps.secrets.outputs.SLACK_BOT_TOKEN }}
