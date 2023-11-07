@@ -16,7 +16,7 @@ interface Tab {
   icon?: string
 }
 
-export interface FilterTabsProps {
+interface FilterTabsProps {
   nav?: string
   tabs: Tab[]
   selectedKey?: string
