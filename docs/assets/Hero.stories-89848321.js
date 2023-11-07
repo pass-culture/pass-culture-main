@@ -1,9 +1,0 @@
-import{K as m}from"./index-21861e74.js";import{j as e}from"./jsx-runtime-ffb262ed.js";import{b as d,a as u}from"./Button-bde1a446.js";import"./index-76fb7be0.js";import"./_commonjsHelpers-de833af9.js";import"./index-d4657265.js";import"./index-a587463d.js";import"./full-right-83efe067.js";import"./SvgIcon-c0bf369c.js";import"./Button.module-a8fe741a.js";import"./stroke-pass-cf331655.js";import"./Tooltip-7f0a196a.js";import"./useTooltipProps-b20503ef.js";const _="_hero_r9jv2_2",i={hero:_,"hero-body":"_hero-body_r9jv2_12"},r=({title:o,text:l,linkLabel:p,linkTo:c})=>e.jsx("section",{className:i.hero,children:e.jsxs("div",{className:i["hero-body"],children:[e.jsx("h1",{children:o}),e.jsx("h2",{children:l}),e.jsx(d,{variant:u.PRIMARY,link:{isExternal:!1,to:c},children:p})]})}),x=r;try{r.displayName="Hero",r.__docgenInfo={description:"",displayName:"Hero",props:{title:{defaultValue:null,description:"",name:"title",required:!0,type:{name:"string"}},text:{defaultValue:null,description:"",name:"text",required:!0,type:{name:"string"}},linkLabel:{defaultValue:null,description:"",name:"linkLabel",required:!0,type:{name:"string"}},linkTo:{defaultValue:null,description:"",name:"linkTo",required:!0,type:{name:"string"}}}}}catch{}const T={title:"components/Hero",component:x,decorators:[m]},t={args:{title:"Mon titre",text:"Une petite explication",linkLabel:"cliquez-moi !",linkTo:"/"}};var n,a,s;t.parameters={...t.parameters,docs:{...(n=t.parameters)==null?void 0:n.docs,source:{originalSource:`{
-  args: {
-    title: 'Mon titre',
-    text: 'Une petite explication',
-    linkLabel: 'cliquez-moi !',
-    linkTo: '/'
-  }
-}`,...(s=(a=t.parameters)==null?void 0:a.docs)==null?void 0:s.source}}};const E=["Default"];export{t as Default,E as __namedExportsOrder,T as default};
-//# sourceMappingURL=Hero.stories-89848321.js.map
