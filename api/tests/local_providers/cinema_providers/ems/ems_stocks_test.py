@@ -50,7 +50,7 @@ class EMSStocksTest:
         )
         ems_provider = get_provider_by_local_class("EMSStocks")
         venue_provider = providers_factories.VenueProviderFactory(
-            venue=venue, provider=ems_provider, venueIdAtOfferProvider="9997"
+            venue=venue, provider=ems_provider, venueIdAtOfferProvider="9997", isDuoOffers=True
         )
         cinema_provider_pivot = providers_factories.CinemaProviderPivotFactory(
             venue=venue, provider=ems_provider, idAtProvider="9997"
@@ -127,7 +127,7 @@ class EMSStocksTest:
             bookingEmail="ormeaux-booking@example.com", withdrawalDetails="Modalité de retrait"
         )
         ormeaux_venue_provider = providers_factories.VenueProviderFactory(
-            venue=ormeaux_venue, provider=ems_provider, venueIdAtOfferProvider="0063"
+            venue=ormeaux_venue, provider=ems_provider, venueIdAtOfferProvider="0063", isDuoOffers=False
         )
         ormeaux_cinema_provider_pivot = providers_factories.CinemaProviderPivotFactory(
             venue=ormeaux_venue, provider=ems_provider, idAtProvider="0063"
@@ -140,7 +140,7 @@ class EMSStocksTest:
             bookingEmail="seyne-sur-mer-booking@example.com", withdrawalDetails="Modalité de retrait"
         )
         ems_cine_venue_provider = providers_factories.VenueProviderFactory(
-            venue=ems_cine_venue, provider=ems_provider, venueIdAtOfferProvider="9997"
+            venue=ems_cine_venue, provider=ems_provider, venueIdAtOfferProvider="9997", isDuoOffers=True
         )
         ems_cine_cinema_provider_pivot = providers_factories.CinemaProviderPivotFactory(
             venue=ems_cine_venue, provider=ems_provider, idAtProvider="9997"
@@ -226,6 +226,7 @@ class EMSStocksTest:
         assert created_offers[0].subcategoryId == subcategories.SEANCE_CINE.id
         assert created_offers[0].bookingEmail == "ormeaux-booking@example.com"
         assert created_offers[0].withdrawalDetails == "Modalité de retrait"
+        assert not created_offers[0].isDuo
 
         assert not created_stocks[0].quantity
         assert created_stocks[0].price == Decimal("7.00")
@@ -281,6 +282,7 @@ class EMSStocksTest:
         assert created_offers[0].subcategoryId == subcategories.SEANCE_CINE.id
         assert created_offers[0].bookingEmail == "seyne-sur-mer-booking@example.com"
         assert created_offers[0].withdrawalDetails == "Modalité de retrait"
+        assert created_offers[0].isDuo
 
         assert not created_stocks[0].quantity
         assert created_stocks[0].price == Decimal("7.15")
@@ -311,6 +313,7 @@ class EMSStocksTest:
         assert created_offers[1].subcategoryId == subcategories.SEANCE_CINE.id
         assert created_offers[1].bookingEmail == "seyne-sur-mer-booking@example.com"
         assert created_offers[1].withdrawalDetails == "Modalité de retrait"
+        assert created_offers[1].isDuo
 
         assert not created_stocks[2].quantity
         assert created_stocks[2].price == Decimal("5.15")
