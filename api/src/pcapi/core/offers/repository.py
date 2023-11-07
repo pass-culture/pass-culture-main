@@ -6,6 +6,7 @@ import typing
 
 import flask_sqlalchemy
 import sqlalchemy as sa
+from sqlalchemy.dialects import postgresql
 import sqlalchemy.orm as sa_orm
 
 from pcapi.core.bookings import models as bookings_models
@@ -198,6 +199,7 @@ def get_collective_offers_by_filters(
     name_keywords: str | None = None,
     period_beginning_date: datetime.date | None = None,
     period_ending_date: datetime.date | None = None,
+    formats: list[subcategories.EacFormat] | None = None,
 ) -> flask_sqlalchemy.BaseQuery:
     query = educational_models.CollectiveOffer.query.filter(
         educational_models.CollectiveOffer.validation != models.OfferValidationStatus.DRAFT
@@ -351,6 +353,10 @@ def get_collective_offers_by_filters(
             )
         q2 = subquery.subquery()
         query = query.join(q2, q2.c.collectiveOfferId == educational_models.CollectiveOffer.id)
+    if formats:
+        query = query.filter(
+            educational_models.CollectiveOffer.formats.overlap(postgresql.array((format.name for format in formats)))
+        )
     return query
 
 
@@ -364,6 +370,7 @@ def get_collective_offers_template_by_filters(
     name_keywords: str | None = None,
     period_beginning_date: datetime.date | None = None,
     period_ending_date: datetime.date | None = None,
+    formats: list[subcategories.EacFormat] | None = None,
 ) -> flask_sqlalchemy.BaseQuery:
     query = educational_models.CollectiveOfferTemplate.query.filter(
         educational_models.CollectiveOfferTemplate.validation != models.OfferValidationStatus.DRAFT
@@ -417,6 +424,12 @@ def get_collective_offers_template_by_filters(
             query = query.filter(
                 educational_models.CollectiveOfferTemplate.status == offer_mixin.OfferStatus[status].name
             )
+    if formats:
+        query = query.filter(
+            educational_models.CollectiveOfferTemplate.formats.overlap(
+                postgresql.array((format.name for format in formats))
+            )
+        )
     return query
 
 

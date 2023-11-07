@@ -28,6 +28,7 @@ import type { CreateThumbnailResponseModel } from '../models/CreateThumbnailResp
 import type { DeleteFilteredStockListBody } from '../models/DeleteFilteredStockListBody';
 import type { DeleteOfferRequestBody } from '../models/DeleteOfferRequestBody';
 import type { DeleteStockListBody } from '../models/DeleteStockListBody';
+import type { EacFormat } from '../models/EacFormat';
 import type { EditVenueBodyModel } from '../models/EditVenueBodyModel';
 import type { EditVenueCollectiveDataBodyModel } from '../models/EditVenueCollectiveDataBodyModel';
 import type { EducationalDomainsResponseModel } from '../models/EducationalDomainsResponseModel';
@@ -287,6 +288,7 @@ export class DefaultService {
    * @param periodBeginningDate
    * @param periodEndingDate
    * @param collectiveOfferType
+   * @param formats
    * @returns ListCollectiveOffersResponseModel OK
    * @throws ApiError
    */
@@ -300,6 +302,7 @@ export class DefaultService {
     periodBeginningDate?: string | null,
     periodEndingDate?: string | null,
     collectiveOfferType?: CollectiveOfferType | null,
+    formats?: Array<EacFormat> | null,
   ): CancelablePromise<ListCollectiveOffersResponseModel> {
     return this.httpRequest.request({
       method: 'GET',
@@ -314,6 +317,7 @@ export class DefaultService {
         'periodBeginningDate': periodBeginningDate,
         'periodEndingDate': periodEndingDate,
         'collectiveOfferType': collectiveOfferType,
+        'formats': formats,
       },
       errors: {
         403: `Forbidden`,
