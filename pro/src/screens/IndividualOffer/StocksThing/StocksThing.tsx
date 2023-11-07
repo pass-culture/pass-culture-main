@@ -4,6 +4,7 @@ import React, { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 
 import { api } from 'apiClient/api'
+import { GetOfferStockResponseModel } from 'apiClient/v1'
 import FormLayout, { FormLayoutDescription } from 'components/FormLayout'
 import { OFFER_WIZARD_STEP_IDS } from 'components/IndividualOfferBreadcrumb/constants'
 import { RouteLeavingGuardIndividualOffer } from 'components/RouteLeavingGuardIndividualOffer/RouteLeavingGuardIndividualOffer'
@@ -43,9 +44,10 @@ import { getValidationSchema } from './validationSchema'
 
 export interface StocksThingProps {
   offer: IndividualOffer
+  stocks: GetOfferStockResponseModel[]
 }
 
-const StocksThing = ({ offer }: StocksThingProps): JSX.Element => {
+const StocksThing = ({ offer, stocks }: StocksThingProps): JSX.Element => {
   const mode = useOfferWizardMode()
   const navigate = useNavigate()
   const notify = useNotification()
@@ -112,17 +114,17 @@ const StocksThing = ({ offer }: StocksThingProps): JSX.Element => {
   }
 
   let minQuantity = null
-  // validation is test in getValidationSchema
+  // validation is tested in getValidationSchema
   // and it's not possible as is to test it here
   /* istanbul ignore next: DEBT, TO FIX */
-  if (offer.stocks.length > 0) {
-    minQuantity = offer.stocks[0].bookingsQuantity
+  if (stocks.length > 0) {
+    minQuantity = stocks[0].bookingsQuantity
   }
   const today = getLocalDepartementDateTimeFromUtc(
     getToday(),
     offer.venue.departementCode
   )
-  const initialValues = buildInitialValues(offer)
+  const initialValues = buildInitialValues(offer, stocks)
   const formik = useFormik({
     initialValues,
     onSubmit,
@@ -233,7 +235,7 @@ const StocksThing = ({ offer }: StocksThingProps): JSX.Element => {
     Dans le cas d’offres avec codes d’activation, les bénéficiaires ne peuvent pas annuler leurs réservations. Toute réservation est définitive et sera immédiatement validée.`
 
     let isDisabled = false
-    if (offer.stocks.length > 0 && offer.stocks[0].hasActivationCode) {
+    if (stocks.length > 0 && stocks[0].hasActivationCode) {
       isDisabled = true
     }
 
@@ -265,7 +267,7 @@ const StocksThing = ({ offer }: StocksThingProps): JSX.Element => {
     setIsActivationCodeFormVisible(false)
   }
 
-  const readOnlyFields = setFormReadOnlyFields(offer, formik.values)
+  const readOnlyFields = setFormReadOnlyFields(offer, stocks, formik.values)
   const showExpirationDate =
     formik.values.activationCodesExpirationDatetime !== ''
 
@@ -364,36 +366,35 @@ const StocksThing = ({ offer }: StocksThingProps): JSX.Element => {
                   onChange={onChangeQuantity}
                 />
               </div>
-              {mode === OFFER_WIZARD_MODE.EDITION &&
-                offer.stocks.length > 0 && (
-                  <div
-                    className={cn(
-                      styles['stock-form-info'],
-                      styles['stock-form-info']
-                    )}
-                  >
-                    <TextInput
-                      name="availableStock"
-                      value={
-                        formik.values.remainingQuantity === 'unlimited'
-                          ? 'Illimité'
-                          : formik.values.remainingQuantity
-                      }
-                      readOnly
-                      label="Stock restant"
-                      smallLabel
-                      classNameFooter={styles['field-layout-footer']}
-                    />
-                    <TextInput
-                      name="bookingsQuantity"
-                      value={formik.values.bookingsQuantity || 0}
-                      readOnly
-                      label="Réservations"
-                      smallLabel
-                      classNameFooter={styles['field-layout-footer']}
-                    />
-                  </div>
-                )}
+              {mode === OFFER_WIZARD_MODE.EDITION && stocks.length > 0 && (
+                <div
+                  className={cn(
+                    styles['stock-form-info'],
+                    styles['stock-form-info']
+                  )}
+                >
+                  <TextInput
+                    name="availableStock"
+                    value={
+                      formik.values.remainingQuantity === 'unlimited'
+                        ? 'Illimité'
+                        : formik.values.remainingQuantity
+                    }
+                    readOnly
+                    label="Stock restant"
+                    smallLabel
+                    classNameFooter={styles['field-layout-footer']}
+                  />
+                  <TextInput
+                    name="bookingsQuantity"
+                    value={formik.values.bookingsQuantity || 0}
+                    readOnly
+                    label="Réservations"
+                    smallLabel
+                    classNameFooter={styles['field-layout-footer']}
+                  />
+                </div>
+              )}
 
               {actions && actions.length > 0 && (
                 <div className={styles['stock-actions']}>

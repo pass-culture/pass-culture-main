@@ -1,3 +1,4 @@
+import { api } from 'apiClient/api'
 import {
   getIndividualOfferAdapter,
   updateIndividualOffer,
@@ -43,9 +44,14 @@ export const submitToApi = async (
     throw new Error(upsertStocksMessage)
   }
 
-  const response = await getIndividualOfferAdapter(offer.id)
-  if (response.isOk) {
-    setOffer && setOffer(response.payload)
-    resetForm({ values: buildInitialValues(response.payload) })
+  const [offerResponse, stockResponse] = await Promise.all([
+    getIndividualOfferAdapter(offer.id),
+    api.getStocks(offer.id),
+  ])
+  if (offerResponse.isOk) {
+    setOffer && setOffer(offerResponse.payload)
+    resetForm({
+      values: buildInitialValues(offerResponse.payload, stockResponse.stocks),
+    })
   }
 }

@@ -1,6 +1,7 @@
 import { screen, waitFor } from '@testing-library/react'
 import React from 'react'
 
+import { api } from 'apiClient/api'
 import { OfferStatus } from 'apiClient/v1'
 import {
   IndividualOfferContextValues,
@@ -10,6 +11,7 @@ import { IndividualOffer } from 'core/Offers/types'
 import { RootState } from 'store/reducers'
 import { offerVenueFactory } from 'utils/apiFactories'
 import {
+  individualGetOfferStockResponseModelFactory,
   individualOfferContextFactory,
   individualOfferFactory,
 } from 'utils/individualApiFactories'
@@ -50,9 +52,14 @@ describe('screens:Stocks', () => {
       offerId,
       offer,
     })
+
+    vi.spyOn(api, 'getStocks').mockResolvedValue({
+      stocks: [individualGetOfferStockResponseModelFactory()],
+      stock_count: 1,
+    })
   })
 
-  it('should render stock thing', () => {
+  it('should render stock thing', async () => {
     contextOverride.offer = individualOfferFactory({
       ...contextOverride.offer,
       isEvent: false,
@@ -61,7 +68,7 @@ describe('screens:Stocks', () => {
     renderStocksScreen(storeOverrides, contextOverride)
 
     expect(
-      screen.getByText(
+      await screen.findByText(
         'Les bénéficiaires ont 30 jours pour faire valider leur contremarque. Passé ce délai, la réservation est automatiquement annulée et l’offre remise en vente.'
       )
     ).toBeInTheDocument()
