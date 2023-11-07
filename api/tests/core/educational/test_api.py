@@ -13,6 +13,7 @@ from pcapi.core.educational.api import adage as educational_api_adage
 from pcapi.core.educational.api import booking as educational_api_booking
 from pcapi.core.educational.api import stock as educational_api_stock
 from pcapi.core.educational.api.offer import unindex_expired_collective_offers
+from pcapi.core.educational.api.offer import unindex_expired_collective_offers_template
 from pcapi.core.educational.models import CollectiveBookingStatus
 from pcapi.core.educational.models import CollectiveStock
 from pcapi.core.offers import exceptions as offers_exceptions
@@ -21,6 +22,7 @@ from pcapi.core.testing import override_settings
 import pcapi.core.users.factories as users_factories
 from pcapi.models.offer_mixin import OfferValidationStatus
 from pcapi.routes.serialization import collective_stock_serialize
+from pcapi.utils import db as db_utils
 
 
 @freeze_time("2020-11-17 15:00:00")
@@ -136,6 +138,44 @@ class UnindexExpiredOffersTest:
         # Then
         assert mock_unindex_collective_offer_ids.mock_calls == [
             mock.call([collective_stock.collectiveOfferId]),
+        ]
+
+    @override_settings(ALGOLIA_DELETING_COLLECTIVE_OFFERS_CHUNK_SIZE=2)
+    @mock.patch("pcapi.core.search.unindex_collective_offer_template_ids")
+    def test_default_run_template(self, mock_unindex_collective_offer_template_ids) -> None:
+        # Given
+        # Expired template offer
+        collective_offer_template_1 = educational_factories.CollectiveOfferTemplateFactory(
+            dateCreated=datetime.datetime.utcnow() - datetime.timedelta(days=9),
+            dateRange=db_utils.make_timerange(
+                start=datetime.datetime.utcnow() - datetime.timedelta(days=7),
+                end=datetime.datetime.utcnow() - datetime.timedelta(days=3),
+            ),
+        )
+        # Non expired template offer
+        educational_factories.CollectiveOfferTemplateFactory()
+        # Expired template offer
+        collective_offer_template_2 = educational_factories.CollectiveOfferTemplateFactory(
+            dateCreated=datetime.datetime.utcnow() - datetime.timedelta(days=9),
+            dateRange=db_utils.make_timerange(
+                start=datetime.datetime.utcnow() - datetime.timedelta(days=7),
+                end=datetime.datetime.utcnow() - datetime.timedelta(days=2),
+            ),
+        )
+        # Non expired template offer with dateRange overlapping today
+        educational_factories.CollectiveOfferTemplateFactory(
+            dateCreated=datetime.datetime.utcnow() - datetime.timedelta(days=9),
+            dateRange=db_utils.make_timerange(
+                start=datetime.datetime.utcnow() - datetime.timedelta(days=3),
+                end=datetime.datetime.utcnow() + datetime.timedelta(days=3),
+            ),
+        )
+        # When
+        unindex_expired_collective_offers_template()
+
+        # Then
+        assert mock_unindex_collective_offer_template_ids.mock_calls == [
+            mock.call([collective_offer_template_1.id, collective_offer_template_2.id]),
         ]
 
 
