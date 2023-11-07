@@ -13,15 +13,15 @@ on:
         required: true
 
 jobs:
-  check-image-resizing-folder-changes:
-    name: "Check if folder changed"
-    uses: ./.github/workflows/check-folder-changes.yml
-    with:
-      folder: app-engine/image-resizing
+  # check-image-resizing-folder-changes:
+  #   name: "Check if folder changed"
+  #   uses: ./.github/workflows/check-folder-changes.yml
+  #   with:
+  #     folder: app-engine/image-resizing
 
   deploy-image-resizing:
-    needs: check-image-resizing-folder-changes
-    if: ${{ needs.check-image-resizing-folder-changes.outputs.folder_changed == 'true' }}
+    # needs: check-image-resizing-folder-changes
+    # if: ${{ needs.check-image-resizing-folder-changes.outputs.folder_changed == 'true' }}
     environment: ${{ inputs.environment }}
     runs-on: [self-hosted, linux, x64]
     permissions:
