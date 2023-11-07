@@ -1,16 +1,14 @@
 {
-  "python.linting.pylintEnabled": true,
-  "python.linting.mypyEnabled": true,
-  "python.linting.ignorePatterns": ["**/tests/**"],
+  "pylint.importStrategy": "fromEnvironment",
+  "pylint.ignorePatterns": ["**/tests/**"],
   "editor.codeActionsOnSave": {
     "source.organizeImports": true
   },
   "editor.formatOnSave": true,
   "python.testing.unittestEnabled": false,
-  "python.testing.nosetestsEnabled": false,
   "python.testing.pytestEnabled": true,
   "python.testing.pytestArgs": ["-vv", "-s"],
-  "python.formatting.provider": "black",
+  "black-formatter.importStrategy": "fromEnvironment",
   "liveshare.languages.allowGuestCommandControl": true,
   "liveshare.allowGuestDebugControl": true,
   "liveshare.allowGuestTaskControl": true,
