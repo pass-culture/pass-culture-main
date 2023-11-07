@@ -48,6 +48,7 @@ def get_collective_offers(
         period_beginning_date=query.period_beginning_date,
         period_ending_date=query.period_ending_date,
         offer_type=query.collective_offer_type,
+        formats=query.formats,
     )
 
     return collective_offers_serialize.ListCollectiveOffersResponseModel(

@@ -58,6 +58,7 @@ class ListCollectiveOffersQueryModel(BaseModel):
     period_beginning_date: date | None
     period_ending_date: date | None
     collective_offer_type: CollectiveOfferType | None
+    formats: list[subcategories.EacFormat] | None
 
     class Config:
         alias_generator = to_camel

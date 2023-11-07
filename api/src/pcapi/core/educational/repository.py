@@ -12,6 +12,7 @@ import sqlalchemy.orm as sa_orm
 from sqlalchemy.sql.expression import extract
 
 from pcapi.core.bookings.repository import field_to_venue_timezone
+import pcapi.core.categories.subcategories_v2 as subcategories
 from pcapi.core.educational import exceptions as educational_exceptions
 from pcapi.core.educational import models as educational_models
 from pcapi.core.finance import models as finance_models
@@ -434,6 +435,7 @@ def get_collective_offers_for_filters(
     name_keywords: str | None = None,
     period_beginning_date: date | None = None,
     period_ending_date: date | None = None,
+    formats: list[subcategories.EacFormat] | None = None,
 ) -> list[educational_models.CollectiveOffer]:
     query = offers_repository.get_collective_offers_by_filters(
         user_id=user_id,
@@ -445,6 +447,7 @@ def get_collective_offers_for_filters(
         name_keywords=name_keywords,
         period_beginning_date=period_beginning_date,
         period_ending_date=period_ending_date,
+        formats=formats,
     )
 
     query = query.order_by(educational_models.CollectiveOffer.id.desc())
@@ -477,6 +480,7 @@ def get_collective_offers_template_for_filters(
     name_keywords: str | None = None,
     period_beginning_date: date | None = None,
     period_ending_date: date | None = None,
+    formats: list[subcategories.EacFormat] | None = None,
 ) -> list[educational_models.CollectiveOfferTemplate]:
     query = offers_repository.get_collective_offers_template_by_filters(
         user_id=user_id,
@@ -488,6 +492,7 @@ def get_collective_offers_template_for_filters(
         name_keywords=name_keywords,
         period_beginning_date=period_beginning_date,
         period_ending_date=period_ending_date,
+        formats=formats,
     )
 
     if query is None:
