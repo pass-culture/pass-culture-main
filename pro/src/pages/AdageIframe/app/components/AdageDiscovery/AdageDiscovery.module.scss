@@ -50,3 +50,8 @@
     margin-right: rem.torem(4px) !important;
   }
 }
+
+.section-domains-card {
+  display: inline-flex;
+  gap: rem.torem(32px);
+}
