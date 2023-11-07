@@ -108,6 +108,19 @@ def unindex_expired_collective_offers(process_all_expired: bool = False) -> None
         page += 1
 
 
+def unindex_expired_collective_offers_template(process_all_expired: bool = False) -> None:
+    """Unindex collective offers template that have expired."""
+    page = 0
+    limit = settings.ALGOLIA_DELETING_COLLECTIVE_OFFERS_CHUNK_SIZE
+    while collective_offer_template_ids := _get_expired_collective_offer_template_ids(page, limit):
+        logger.info(
+            "[ALGOLIA] Found %d expired collective offers template to unindex",
+            len(collective_offer_template_ids),
+        )
+        search.unindex_collective_offer_template_ids(collective_offer_template_ids)
+        page += 1
+
+
 def list_collective_offers_for_pro_user(
     user_id: int,
     user_is_admin: bool,
@@ -697,6 +710,15 @@ def _get_expired_collective_offer_ids(
     collective_offers = educational_repository.get_expired_collective_offers(interval)
     collective_offers = collective_offers.offset(page * limit).limit(limit)
     return [offer_id for offer_id, in collective_offers.with_entities(educational_models.CollectiveOffer.id)]
+
+
+def _get_expired_collective_offer_template_ids(
+    page: int,
+    limit: int,
+) -> list[int]:
+    collective_offers_template = educational_repository.get_expired_collective_offers_template()
+    collective_offers_template = collective_offers_template.offset(page * limit).limit(limit)
+    return [offer_template.id for offer_template in collective_offers_template]
 
 
 def duplicate_offer_and_stock(

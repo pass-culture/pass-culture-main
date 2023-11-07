@@ -1,3 +1,5 @@
+import datetime
+
 from flask import url_for
 import pytest
 
@@ -7,6 +9,7 @@ from pcapi.core.educational.models import StudentLevels
 from pcapi.core.offerers import factories as offerers_factories
 from pcapi.core.testing import assert_num_queries
 from pcapi.models import offer_mixin
+from pcapi.utils import db as db_utils
 from pcapi.utils.date import format_into_utc_date
 
 
@@ -23,6 +26,15 @@ def eac_client_fixture(client):
 @pytest.fixture(name="redactor")
 def redactor_fixture():
     return educational_factories.EducationalRedactorFactory(email=EMAIL)
+
+
+@pytest.fixture(name="offer")
+def offer_fixture():
+    offer_range = educational_factories.DateRangeFactory(
+        start=datetime.datetime.utcnow() - datetime.timedelta(days=7),
+        end=datetime.datetime.utcnow() - datetime.timedelta(days=1),
+    )
+    return offer_range
 
 
 class CollectiveOfferTemplateTest:
@@ -52,6 +64,7 @@ class CollectiveOfferTemplateTest:
             response = eac_client.get(url)
 
         assert response.status_code == 200
+        assert offer.status == "ACTIVE"
         assert response.json == {
             "description": "offer description",
             "id": offer.id,
@@ -102,6 +115,39 @@ class CollectiveOfferTemplateTest:
             },
             "formats": [fmt.value for fmt in subcategories.SEANCE_CINE.formats],
         }
+
+    def test_get_collective_offer_template_if_inactif(self, eac_client, redactor):
+        venue = offerers_factories.VenueFactory()
+        offer = educational_factories.CollectiveOfferTemplateFactory(
+            subcategoryId=subcategories.SEANCE_CINE.id,
+            name="offer name",
+            description="offer description",
+            priceDetail="détail du prix",
+            students=[StudentLevels.GENERAL2],
+            offerVenue={
+                "venueId": venue.id,
+                "addressType": "offererVenue",
+                "otherAddress": "",
+            },
+            nationalProgramId=educational_factories.NationalProgramFactory().id,
+            dateCreated=datetime.datetime.utcnow() - datetime.timedelta(days=9),
+            dateRange=db_utils.make_timerange(
+                start=datetime.datetime.utcnow() - datetime.timedelta(days=7),
+                end=datetime.datetime.utcnow() - datetime.timedelta(days=1),
+            ),
+        )
+
+        url = url_for("adage_iframe.get_collective_offer_template", offer_id=offer.id)
+
+        # 1. fetch redactor
+        # 2. fetch collective offer and related data
+        # 3. fetch the offerVenue's details (Venue)
+        # 4. find out if its a redactor's favorite
+        with assert_num_queries(4):
+            response = eac_client.get(url)
+
+        assert response.status_code == 200
+        assert offer.status == offer_mixin.OfferStatus.INACTIVE.value
 
     def test_is_a_redactors_favorite(self, eac_client):
         """Ensure that the isFavorite field is true only if the

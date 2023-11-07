@@ -1,5 +1,6 @@
 from datetime import date
 from datetime import datetime
+from datetime import time
 import decimal
 from decimal import Decimal
 import enum
@@ -234,6 +235,8 @@ class StatusMixin:
                 return offer_mixin.OfferStatus.SOLD_OUT
             if self.hasBookingLimitDatetimesPassed:
                 return offer_mixin.OfferStatus.INACTIVE
+            if self.hasEndDatePassed:
+                return offer_mixin.OfferStatus.INACTIVE
 
         return offer_mixin.OfferStatus.ACTIVE
 
@@ -254,6 +257,7 @@ class StatusMixin:
                 (cls.hasBeginningDatetimePassed, offer_mixin.OfferStatus.EXPIRED.name),
                 (cls.isSoldOut, offer_mixin.OfferStatus.SOLD_OUT.name),
                 (cls.hasBookingLimitDatetimesPassed, offer_mixin.OfferStatus.INACTIVE.name),
+                (cls.hasEndDatePassed, offer_mixin.OfferStatus.INACTIVE.name),
             ],
             else_=offer_mixin.OfferStatus.ACTIVE.name,
         )
@@ -410,6 +414,14 @@ class CollectiveOffer(
             is_editable = is_editable and not self.collectiveStock.isSoldOut
 
         return is_editable
+
+    @hybrid_property
+    def hasEndDatePassed(self) -> bool:
+        return False
+
+    @hasEndDatePassed.expression  # type: ignore[no-redef]
+    def hasEndDatePassed(cls) -> False_:  # pylint: disable=no-self-argument
+        return sa.sql.expression.false()
 
     @hybrid_property
     def isSoldOut(self) -> bool:
@@ -687,6 +699,15 @@ class CollectiveOfferTemplate(
     @property
     def isEditable(self) -> bool:
         return self.status not in [offer_mixin.OfferStatus.PENDING, offer_mixin.OfferStatus.REJECTED]
+
+    @hybrid_property
+    def hasEndDatePassed(self) -> bool:
+        return self.end <= datetime.combine(datetime.utcnow(), time.max)
+
+    @hasEndDatePassed.expression  # type: ignore[no-redef]
+    def hasEndDatePassed(cls) -> Exists:  # pylint: disable=no-self-argument
+        today = datetime.combine(datetime.utcnow(), time.max)
+        return cls.dateRange.contained_by(psycopg2.extras.DateTimeRange(upper=today))
 
     @hybrid_property
     def hasBookingLimitDatetimesPassed(self) -> bool:
