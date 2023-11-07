@@ -55,10 +55,7 @@ def install_template_filters(app: Flask) -> None:
     app.jinja_env.filters["fr_currency_opposite"] = fr_currency_opposite_filter
 
 
-def format_raw_iban_and_bic(raw_data: str | None) -> str | None:
-    if not raw_data:
-        return None
-
+def format_raw_iban_and_bic(raw_data: str) -> str:
     formatted_data = raw_data.upper()
     formatted_data = formatted_data.replace(" ", "").replace("\xa0", "")
     return formatted_data
