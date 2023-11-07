@@ -29,12 +29,13 @@ class OffererViewsPerDay(BaseQuery):
             `{settings.BIG_QUERY_NOTIFICATIONS_TABLE_BASENAME}.{DAILY_CONSULT_PER_OFFERER_LAST_180_DAYS_TABLE}`
         WHERE
             offerer_id = @offerer_id
-            """
+        LIMIT 180
+        """
 
     model = OffererViewsModel
 
     def execute(self, page_size: int = 180, **parameters: typing.Any) -> RowIterator:
-        for row in super().execute(page_size, **parameters):
+        for row in super().execute(page_size=page_size, **parameters):
             yield OffererViewsModel(
                 eventDate=datetime.date.fromisoformat(str(row.eventDate)), numberOfViews=row.numberOfViews
             )
@@ -56,7 +57,8 @@ class OffersData(BaseQuery):
             `{settings.BIG_QUERY_NOTIFICATIONS_TABLE_BASENAME}.{TOP_3_MOST_CONSULTED_OFFERS_LAST_30_DAYS_TABLE}`
         WHERE
             offerer_id = @offerer_id
-        order by consult_rank
+        ORDER BY consult_rank
+        LIMIT 3
         """
 
     model = TopOffersData
