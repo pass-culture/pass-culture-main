@@ -39,6 +39,7 @@ class EMSStocks:
         self.errored_objects = 0
         self.venue_provider = venue_provider
         self.venue = venue_provider.venue
+        self.is_duo = bool(venue_provider.isDuoOffers)
         self.provider = venue_provider.provider
         self.poster_urls_map: dict[str, str | None] = {}
         self.created_offers: set[offers_models.Offer] = set()
@@ -128,6 +129,7 @@ class EMSStocks:
             offer.description = event.synopsis
         if event.duration:
             offer.durationMinutes = event.duration
+        offer.isDuo = self.is_duo
 
         return offer
 
