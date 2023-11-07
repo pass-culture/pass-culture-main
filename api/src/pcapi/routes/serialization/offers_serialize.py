@@ -379,7 +379,7 @@ class StocksQueryModel(BaseModel):
     price_category_id: int | None
     order_by: offers_repository.StocksOrderedBy = offers_repository.StocksOrderedBy.BEGINNING_DATETIME
     order_by_desc: bool = False
-    page: int = 1
+    page: int = Field(1, ge=1)
     stocks_limit_per_page: int = offers_repository.LIMIT_STOCKS_PER_PAGE
 
 
