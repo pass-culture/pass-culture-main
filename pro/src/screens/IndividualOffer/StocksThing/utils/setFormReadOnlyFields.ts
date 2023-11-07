@@ -1,3 +1,4 @@
+import { GetOfferStockResponseModel } from 'apiClient/v1'
 import {
   OFFER_STATUS_REJECTED,
   OFFER_STATUS_PENDING,
@@ -10,6 +11,7 @@ import { StockThingFormValues } from '../types'
 
 const setFormReadOnlyFields = (
   offer: IndividualOffer,
+  stocks: GetOfferStockResponseModel[],
   currentStock: StockThingFormValues
 ): string[] => {
   const isDisabledStatus = offer.status
@@ -27,7 +29,7 @@ const setFormReadOnlyFields = (
 
   if (
     currentStock.activationCodes?.length != 0 ||
-    (offer.stocks?.length > 0 && offer.stocks[0].hasActivationCode)
+    (stocks?.length > 0 && stocks[0].hasActivationCode)
   ) {
     return ['quantity']
   }

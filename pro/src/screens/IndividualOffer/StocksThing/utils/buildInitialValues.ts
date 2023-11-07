@@ -1,5 +1,6 @@
 import { format } from 'date-fns'
 
+import { GetOfferStockResponseModel } from 'apiClient/v1'
 import { IndividualOffer } from 'core/Offers/types'
 import { FORMAT_ISO_DATE_ONLY, isDateValid } from 'utils/date'
 import { getLocalDepartementDateTimeFromUtc } from 'utils/timezone'
@@ -7,36 +8,37 @@ import { getLocalDepartementDateTimeFromUtc } from 'utils/timezone'
 import { STOCK_THING_FORM_DEFAULT_VALUES } from '../constants'
 import { StockThingFormValues } from '../types'
 
-const buildInitialValues = (offer: IndividualOffer): StockThingFormValues => {
-  if (offer.stocks.length === 0) {
+const buildInitialValues = (
+  offer: IndividualOffer,
+  stocks: GetOfferStockResponseModel[]
+): StockThingFormValues => {
+  if (stocks.length === 0) {
     return STOCK_THING_FORM_DEFAULT_VALUES
   }
   return {
-    stockId: offer.stocks[0].id,
-    remainingQuantity:
-      offer.stocks[0].remainingQuantity?.toString() || 'unlimited',
-    bookingsQuantity: offer.stocks[0].bookingsQuantity.toString(),
-    quantity:
-      offer.stocks[0].quantity === undefined ? '' : offer.stocks[0].quantity,
-    bookingLimitDatetime: offer.stocks[0].bookingLimitDatetime
+    stockId: stocks[0].id,
+    remainingQuantity: stocks[0].remainingQuantity?.toString() || 'unlimited',
+    bookingsQuantity: stocks[0].bookingsQuantity.toString(),
+    quantity: stocks[0].quantity === undefined ? '' : stocks[0].quantity,
+    bookingLimitDatetime: stocks[0].bookingLimitDatetime
       ? format(
           getLocalDepartementDateTimeFromUtc(
-            offer.stocks[0].bookingLimitDatetime,
+            stocks[0].bookingLimitDatetime,
             offer.venue.departementCode
           ),
           FORMAT_ISO_DATE_ONLY
         )
       : '',
-    price: offer.stocks[0].price,
+    price: stocks[0].price,
     activationCodesExpirationDatetime: isDateValid(
-      offer.stocks[0].activationCodesExpirationDatetime
+      stocks[0].activationCodesExpirationDatetime
     )
       ? format(
-          offer.stocks[0].activationCodesExpirationDatetime,
+          new Date(stocks[0].activationCodesExpirationDatetime),
           FORMAT_ISO_DATE_ONLY
         )
       : '',
-    activationCodes: offer.stocks[0].activationCodes,
+    activationCodes: [],
     isDuo: offer.isDuo,
   }
 }
