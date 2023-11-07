@@ -1,3 +1,9 @@
 {
-    "recommendations": ["ms-python.vscode-pylance", "ms-python.python", ]
+    "recommendations": [
+        "ms-python.vscode-pylance",
+        "ms-python.python",
+        "ms-python.pylint",
+        "ms-python.mypy-type-checker",
+        "ms-python.black-formatter"
+    ]
 }
