@@ -7,6 +7,7 @@ from psycopg2.extras import DateTimeRange
 
 from pcapi import settings
 from pcapi.core import search
+import pcapi.core.categories.subcategories_v2 as subcategories
 from pcapi.core.educational import adage_backends as adage_client
 from pcapi.core.educational import exceptions
 from pcapi.core.educational import models as educational_models
@@ -118,6 +119,7 @@ def list_collective_offers_for_pro_user(
     period_beginning_date: datetime.date | None = None,
     period_ending_date: datetime.date | None = None,
     offer_type: collective_offers_serialize.CollectiveOfferType | None = None,
+    formats: list[subcategories.EacFormat] | None = None,
 ) -> list[educational_models.CollectiveOffer | educational_models.CollectiveOfferTemplate]:
     if offer_type != collective_offers_serialize.CollectiveOfferType.template:
         offers = educational_repository.get_collective_offers_for_filters(
@@ -131,6 +133,7 @@ def list_collective_offers_for_pro_user(
             name_keywords=name_keywords,
             period_beginning_date=period_beginning_date,
             period_ending_date=period_ending_date,
+            formats=formats,
         )
         if offer_type is not None:
             return offers
@@ -146,6 +149,7 @@ def list_collective_offers_for_pro_user(
             name_keywords=name_keywords,
             period_beginning_date=period_beginning_date,
             period_ending_date=period_ending_date,
+            formats=formats,
         )
         if offer_type is not None:
             return templates

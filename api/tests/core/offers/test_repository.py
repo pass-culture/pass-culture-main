@@ -1288,6 +1288,21 @@ class GetCollectiveOffersTemplateByFiltersTest:
         assert len(result) == 1
         assert result[0].id == template.id
 
+    def test_formats_filter(self):
+        # given
+        user = users_factories.AdminFactory()
+        template = educational_factories.CollectiveOfferTemplateFactory(
+            formats=[subcategories.EacFormat.CONCERT, subcategories.EacFormat.CONFERENCE_RENCONTRE]
+        )
+        educational_factories.CollectiveOfferTemplateFactory(formats=[subcategories.EacFormat.CONFERENCE_RENCONTRE])
+        educational_factories.CollectiveOfferTemplateFactory(formats=None)
+        # when
+        result = repository.get_collective_offers_template_by_filters(
+            user_id=user.id, user_is_admin=True, formats=[subcategories.EacFormat.CONCERT]
+        ).one()
+        # then
+        assert result.id == template.id
+
 
 @pytest.mark.usefixtures("db_session")
 class UpdateStockQuantityToDnBookedQuantityTest:
@@ -1406,6 +1421,22 @@ class GetFilteredCollectiveOffersTest:
             status=educational_models.CollectiveOfferDisplayedStatus.ENDED.value,
         )
         assert offers.all() == [collective_offer_ended]
+
+    def test_get_collective_offers_with_formats(self):
+        user_offerer = offerers_factories.UserOffererFactory()
+        collective_offer = educational_factories.CollectiveOfferFactory(
+            venue__managingOfferer=user_offerer.offerer, formats=[subcategories.EacFormat.CONCERT]
+        )
+        educational_factories.CollectiveOfferFactory(
+            venue__managingOfferer=user_offerer.offerer, formats=[subcategories.EacFormat.CONFERENCE_RENCONTRE]
+        )
+
+        offers = repository.get_collective_offers_by_filters(
+            collective_offer.venue.managingOfferer.first_user.id,
+            False,
+            formats=[subcategories.EacFormat.CONCERT],
+        )
+        assert offers.one() == collective_offer
 
 
 @pytest.mark.usefixtures("db_session")
