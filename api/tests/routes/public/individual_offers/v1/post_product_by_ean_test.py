@@ -26,9 +26,13 @@ class PostProductByEanTest:
             "motorDisabilityCompliant": True,
             "visualDisabilityCompliant": False,
         }
+        product_provider = providers_factories.ProviderFactory()
         venue, _ = utils.create_offerer_provider_linked_to_venue(venue_data)
         product = offers_factories.ProductFactory(
-            subcategoryId=subcategories.SUPPORT_PHYSIQUE_MUSIQUE_CD.id, extraData={"ean": "1234567890123"}
+            subcategoryId=subcategories.SUPPORT_PHYSIQUE_MUSIQUE_CD.id,
+            extraData={"ean": "1234567890123"},
+            lastProviderId=product_provider.id,
+            idAtProviders="1234567890123",
         )
         unknown_ean = "1234567897123"
 
@@ -79,6 +83,56 @@ class PostProductByEanTest:
         assert created_stock.quantity == 3
         assert created_stock.offer == created_offer
         assert created_stock.bookingLimitDatetime == datetime.datetime(2022, 1, 1, 12, 0, 0)
+
+    def test_valid_ean_with_multiple_products(self, client):
+        # FIXME : (mageoffray, 2023-11-07) Delete this test one product database is cleaned
+        product_provider = providers_factories.ProviderFactory()
+        venue, _ = utils.create_offerer_provider_linked_to_venue()
+        product = offers_factories.ProductFactory(
+            subcategoryId=subcategories.SUPPORT_PHYSIQUE_MUSIQUE_CD.id,
+            extraData={"ean": "1234567890123"},
+            lastProviderId=product_provider.id,
+            idAtProviders="1234567890123",
+        )
+        offers_factories.ProductFactory(
+            subcategoryId=subcategories.SUPPORT_PHYSIQUE_MUSIQUE_CD.id,
+            extraData={"ean": "1234567890123"},
+        )
+        offers_factories.ProductFactory(
+            subcategoryId=subcategories.SUPPORT_PHYSIQUE_MUSIQUE_CD.id,
+            extraData={"ean": "1234567890123"},
+            owningOfferer=offerers_factories.OffererFactory(),
+        )
+        unknown_ean = "1234567897123"
+
+        response = client.with_explicit_token(offerers_factories.DEFAULT_CLEAR_API_KEY).post(
+            "/public/offers/v1/products/ean",
+            json={
+                "location": {"type": "physical", "venueId": venue.id},
+                "products": [
+                    {
+                        "ean": product.extraData["ean"],
+                        "stock": {
+                            "bookingLimitDatetime": None,
+                            "price": 1234,
+                            "quantity": 3,
+                        },
+                    },
+                    {
+                        "ean": unknown_ean,
+                        "stock": {
+                            "bookingLimitDatetime": None,
+                            "price": 1234,
+                            "quantity": 3,
+                        },
+                    },
+                ],
+            },
+        )
+        assert response.status_code == 204
+
+        offer = offers_models.Offer.query.one()
+        assert offer.product == product
 
     @freezegun.freeze_time("2022-01-01 12:00:00")
     def test_update_stock_quantity_with_previous_bookings(self, client):
@@ -249,9 +303,13 @@ class PostProductByEanTest:
     @mock.patch("pcapi.tasks.sendinblue_tasks.update_sib_pro_attributes_task")
     @freezegun.freeze_time("2022-01-01 12:00:00")
     def test_valid_ean_without_task_autoflush(self, update_sib_pro_task_mock, client):
+        product_provider = providers_factories.ProviderFactory()
         venue, api_key = utils.create_offerer_provider_linked_to_venue()
         product = offers_factories.ProductFactory(
-            subcategoryId=subcategories.SUPPORT_PHYSIQUE_MUSIQUE_CD.id, extraData={"ean": "1234567890123"}
+            subcategoryId=subcategories.SUPPORT_PHYSIQUE_MUSIQUE_CD.id,
+            extraData={"ean": "1234567890123"},
+            lastProviderId=product_provider.id,
+            idAtProviders="1234567890123",
         )
         finance_factories.CustomReimbursementRuleFactory(offerer=api_key.offerer, rate=0.2, offer=None)
 
@@ -378,9 +436,13 @@ class PostProductByEanTest:
         assert response.status_code == 400
 
     def test_update_offer_when_ean_already_exists(self, client):
+        product_provider = providers_factories.ProviderFactory()
         venue, _ = utils.create_offerer_provider_linked_to_venue()
         product = offers_factories.ProductFactory(
-            subcategoryId=subcategories.SUPPORT_PHYSIQUE_MUSIQUE_CD.id, extraData={"ean": "1234567890123"}
+            subcategoryId=subcategories.SUPPORT_PHYSIQUE_MUSIQUE_CD.id,
+            extraData={"ean": "1234567890123"},
+            lastProviderId=product_provider.id,
+            idAtProviders="1234567890123",
         )
 
         client.with_explicit_token(offerers_factories.DEFAULT_CLEAR_API_KEY).post(
@@ -421,14 +483,21 @@ class PostProductByEanTest:
 
     @mock.patch("pcapi.core.search.async_index_offer_ids")
     def test_create_and_update_offer(self, async_index_offer_ids, client):
+        product_provider = providers_factories.ProviderFactory()
         venue, _ = utils.create_offerer_provider_linked_to_venue()
         ean_to_update = "1234567890123"
         ean_to_create = "1234567897123"
         offers_factories.ProductFactory(
-            subcategoryId=subcategories.SUPPORT_PHYSIQUE_MUSIQUE_CD.id, extraData={"ean": ean_to_update}
+            subcategoryId=subcategories.SUPPORT_PHYSIQUE_MUSIQUE_CD.id,
+            extraData={"ean": ean_to_update},
+            lastProviderId=product_provider.id,
+            idAtProviders=ean_to_update,
         )
         offers_factories.ProductFactory(
-            subcategoryId=subcategories.SUPPORT_PHYSIQUE_MUSIQUE_CD.id, extraData={"ean": ean_to_create}
+            subcategoryId=subcategories.SUPPORT_PHYSIQUE_MUSIQUE_CD.id,
+            extraData={"ean": ean_to_create},
+            lastProviderId=product_provider.id,
+            idAtProviders=ean_to_create,
         )
 
         client.with_explicit_token(offerers_factories.DEFAULT_CLEAR_API_KEY).post(
