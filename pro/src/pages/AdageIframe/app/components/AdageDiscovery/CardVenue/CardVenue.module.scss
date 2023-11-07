@@ -1,0 +1,57 @@
+@use "styles/mixins/_rem.scss" as rem;
+@use "styles/mixins/_fonts.scss" as fonts;
+@use "styles/variables/_colors.scss" as colors;
+
+$venue-image-height: rem.torem(184px);
+$venue-image-width: rem.torem(276px);
+
+.container {
+  display: flex;
+  flex-direction: column;
+  width: $venue-image-width;
+  border: none;
+  background-color: transparent;
+  gap: 16px;
+  text-align: unset;
+
+  &:hover {
+    cursor: pointer;
+
+    .venue-name,
+    .venue-distance {
+      text-decoration: underline;
+    }
+  }
+
+  &:focus-within {
+    outline: rem.torem(1px) solid colors.$input-text-color;
+    outline-offset: rem.torem(4px);
+    border-radius: rem.torem(4px);
+  }
+}
+
+.venue-image {
+  width: $venue-image-width;
+  height: $venue-image-height;
+  border-radius: rem.torem(16px);
+  object-fit: cover;
+}
+
+.venue-infos {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+
+  &-name {
+    @include fonts.button;
+
+    overflow: hidden;
+  }
+
+  &-distance {
+    @include fonts.small-caption;
+
+    color: colors.$grey-dark;
+    text-transform: uppercase;
+  }
+}
