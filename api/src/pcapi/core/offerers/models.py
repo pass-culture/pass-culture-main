@@ -391,7 +391,7 @@ class Venue(PcObject, Base, Model, HasThumbMixin, ProvidableMixin, Accessibility
         "VenueRegistration", back_populates="venue", uselist=False
     )
 
-    bankAccountLinks: sa_orm.Mapped["VenueBankAccountLink | None"] = relationship(
+    bankAccountLinks: list["VenueBankAccountLink"] = relationship(
         "VenueBankAccountLink", back_populates="venue", passive_deletes=True
     )
 

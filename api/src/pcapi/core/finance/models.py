@@ -245,12 +245,19 @@ class BankAccount(PcObject, Base, Model, DeactivableMixin):
     venueLinks: sqla_orm.Mapped[list["offerers_models.VenueBankAccountLink"]] = sqla_orm.relationship(
         "VenueBankAccountLink", back_populates="bankAccount", passive_deletes=True
     )
-    statusHistory: sqla_orm.Mapped[list["BankAccountStatusHistory"]] = sqla_orm.relationship(
+    statusHistory: list["BankAccountStatusHistory"] = sqla_orm.relationship(
         "BankAccountStatusHistory",
         back_populates="bankAccount",
         foreign_keys="BankAccountStatusHistory.bankAccountId",
         uselist=True,
     )
+
+    @property
+    def current_link(self) -> "offerers_models.VenueBankAccountLink | None":
+        for link in self.venueLinks:
+            if link.timespan.upper is None and link.timespan.lower <= datetime.datetime.utcnow():
+                return link
+        return None
 
 
 class BankAccountStatusHistory(PcObject, Base, Model):

@@ -176,6 +176,7 @@ class ApplicationDetail(BaseModel):
     modification_date: datetime
     siren: str | None = None
     iban: str
+    obfuscatedIban: str
     bic: str
     siret: str | None = None
     dms_token: str | None = None
@@ -191,6 +192,7 @@ class ApplicationDetail(BaseModel):
         to_representation["dossier_id"] = obj["dossier_id"]
         to_representation["siren"] = obj.get("siren")
         to_representation["iban"] = format_raw_iban_and_bic(obj["iban"])
+        to_representation["obfuscatedIban"] = f"""XXXX XXXX XXXX {to_representation["iban"][-4:]}"""
         to_representation["bic"] = format_raw_iban_and_bic(obj["bic"])
         to_representation["siret"] = obj.get("siret")
         to_representation["dms_token"] = obj.get("dms_token") if obj.get("application_type") == 4 else None
@@ -213,4 +215,16 @@ class ApplicationDetailOldJourney(ApplicationDetail):
         to_representation["status"] = get_status_from_demarches_simplifiees_application_state_v2(
             dms_models.GraphQLApplicationStates(obj["status"])
         )
+        return to_representation
+
+
+class ApplicationDetailNewJourney(ApplicationDetail):
+    status: finance_models.BankAccountApplicationStatus
+
+    @root_validator(pre=True)
+    def to_representation(cls: "ApplicationDetailNewJourney", obj: dict) -> dict:
+        to_representation = super().to_representation(obj)
+        to_representation["status"] = finance_models.BankAccountApplicationStatus(obj["status"])
+        if to_representation["procedure_version"] == 5:
+            to_representation["siren"] = to_representation["siret"][:9]
         return to_representation
