@@ -12,7 +12,7 @@ import { useTooltipProps } from 'ui-kit/Tooltip/useTooltipProps'
 import styles from './Button.module.scss'
 import { ButtonVariant, IconPositionEnum, SharedButtonProps } from './types'
 
-export interface ButtonProps
+interface ButtonProps
   extends SharedButtonProps,
     React.HTMLProps<HTMLButtonElement> {
   type?: 'button' | 'submit'
