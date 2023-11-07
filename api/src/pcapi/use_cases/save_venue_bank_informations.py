@@ -1,12 +1,19 @@
 from abc import ABC
+from datetime import datetime
 import logging
 import typing
 
+import sqlalchemy as sqla
+from sqlalchemy import orm as sqla_orm
+
 from pcapi import settings
 from pcapi.connectors import sirene
+from pcapi.connectors.dms.serializer import ApplicationDetailNewJourney
 from pcapi.connectors.dms.serializer import ApplicationDetailOldJourney
 from pcapi.core.external.attributes.api import update_external_pro
 from pcapi.core.finance import models as finance_models
+from pcapi.core.finance.models import BankAccountApplicationStatus
+from pcapi.core.history import models as history_models
 from pcapi.core.offerers import api as offerers_api
 from pcapi.core.offerers import models as offerers_models
 from pcapi.domain.bank_information import CannotRegisterBankInformation
@@ -22,12 +29,15 @@ from pcapi.domain.venue.venue_with_basic_information.venue_with_basic_informatio
 from pcapi.domain.venue.venue_with_basic_information.venue_with_basic_information_repository import (
     VenueWithBasicInformationRepository,
 )
+from pcapi.models import db
 from pcapi.models.api_errors import ApiErrors
 from pcapi.utils import urls
 
 
 if typing.TYPE_CHECKING:
-    from pcapi.core.offerers.models import Venue
+    from pcapi.core.offerers.models import Venue, Offerer
+
+from pcapi.utils.db import make_timerange
 
 
 logger = logging.getLogger(__name__)
@@ -481,3 +491,283 @@ class SaveVenueBankInformationsFactory:
     @classmethod
     def get(cls, procedure_id: str) -> "type[AbstractSaveBankInformations]":
         return cls.procedure_to_class[PROCEDURE_ID_VERSION_MAP[procedure_id]]
+
+
+### New BankAccount Journey ###
+
+
+class AbstractImportBankAccount:
+    def __init__(self, application_details: ApplicationDetailNewJourney) -> None:
+        self.application_details = application_details
+
+    def execute(self) -> None:
+        raise NotImplementedError()
+
+    def get_venue(self) -> "Venue | None":
+        raise NotImplementedError()
+
+
+class ImportBankAccountMixin:
+    # Let mypy know this class is going to be mixed with a child of `AbstractImportBankAccount`
+    application_details: ApplicationDetailNewJourney
+
+    def get_or_create_bank_account(
+        self,
+        offerer: offerers_models.Offerer,
+        venue: "Venue | None" = None,
+    ) -> finance_models.BankAccount:
+        """
+        Retrieve a bankAccount if already existing and update the status
+        or create it and fill it with DS metadata.
+        """
+        bank_account = (
+            finance_models.BankAccount.query.filter_by(dsApplicationId=self.application_details.application_id)
+            .options(sqla_orm.load_only(finance_models.BankAccount.id))
+            .join(
+                finance_models.BankAccountStatusHistory,
+                sqla.and_(
+                    finance_models.BankAccountStatusHistory.bankAccountId == finance_models.BankAccount.id,
+                    finance_models.BankAccountStatusHistory.timespan.contains(datetime.utcnow()),
+                ),
+            )
+            .outerjoin(
+                offerers_models.VenueBankAccountLink,
+                sqla.and_(
+                    offerers_models.VenueBankAccountLink.bankAccountId == finance_models.BankAccount.id,
+                    offerers_models.VenueBankAccountLink.timespan.contains(datetime.utcnow()),
+                ),
+            )
+            .outerjoin(offerers_models.Venue, offerers_models.Venue.id == offerers_models.VenueBankAccountLink.venueId)
+            .options(sqla_orm.contains_eager(finance_models.BankAccount.statusHistory))
+            .options(
+                sqla_orm.contains_eager(finance_models.BankAccount.venueLinks)
+                .contains_eager(offerers_models.VenueBankAccountLink.venue)
+                .load_only(offerers_models.Venue.id)
+            )
+            .one_or_none()
+        )
+        if bank_account is None:
+            label = venue.common_name if venue is not None else self.application_details.obfuscatedIban
+            bank_account = finance_models.BankAccount(
+                iban=self.application_details.iban,
+                bic=self.application_details.bic,
+                label=label,
+                offerer=offerer,
+                dsApplicationId=self.application_details.application_id,
+            )
+        bank_account.status = self.application_details.status
+        db.session.add(bank_account)
+        return bank_account
+
+    def link_venue_to_bank_account(
+        self, bank_account: finance_models.BankAccount, venue: "Venue"
+    ) -> offerers_models.VenueBankAccountLink | None:
+        """
+        Link a venue to a bankAccount.
+        Do nothing if the link is already up to date.
+        (The bankAccount might have been fetched because of a status update but already processed before)
+        """
+        if bank_account.venueLinks:
+            current_link = bank_account.current_link
+            assert current_link  # helps mypy
+            if current_link.venue == venue:
+                logger.info(
+                    "bank_account already linked to its venue",
+                    extra={
+                        "application_id": self.application_details.application_id,
+                        "bank_account_id": bank_account.id,
+                        "venue_id": venue.id,
+                    },
+                )
+                return None
+
+        if venue.bankAccountLinks:
+            deprecated_link = venue.bankAccountLinks[0]
+            lower_bound = deprecated_link.timespan.lower
+            upper_bound = datetime.utcnow()
+            timespan = make_timerange(start=lower_bound, end=upper_bound)
+            deprecated_link.timespan = timespan
+            deprecated_log = history_models.ActionHistory(
+                actionType=history_models.ActionType.LINK_VENUE_BANK_ACCOUNT_DEPRECATED,
+                venueId=venue.id,
+                bankAccountId=deprecated_link.bankAccountId,
+            )
+            db.session.add(deprecated_log)
+        link = offerers_models.VenueBankAccountLink(
+            bankAccount=bank_account, venue=venue, timespan=(datetime.utcnow(),)
+        )
+        created_log = history_models.ActionHistory(
+            actionType=history_models.ActionType.LINK_VENUE_BANK_ACCOUNT_CREATED,
+            venue=venue,
+            bankAccount=bank_account,
+        )
+        db.session.add(created_log)
+        db.session.add(link)
+        return link
+
+    def keep_track_of_bank_account_status_changes(self, bank_account: finance_models.BankAccount) -> None:
+        now = datetime.utcnow()
+        if bank_account.statusHistory:
+            current_link = bank_account.statusHistory[0]
+            if current_link.status == bank_account.status:
+                logger.info(
+                    "bank_account status did not change. Nothing to track.",
+                    extra={
+                        "application_id": self.application_details.application_id,
+                        "bank_account_id": bank_account.id,
+                        "bank_account_status": bank_account.status,
+                    },
+                )
+                return
+            current_link.timespan = make_timerange(start=current_link.timespan.lower, end=now)
+            db.session.add(current_link)
+
+        bank_account_status_history = finance_models.BankAccountStatusHistory(
+            bankAccount=bank_account, status=bank_account.status, timespan=(now,)
+        )
+        db.session.add(bank_account_status_history)
+
+    def archive_dossier(self) -> None:
+        if self.application_details.status not in (
+            BankAccountApplicationStatus.DRAFT,
+            BankAccountApplicationStatus.ON_GOING,
+        ):
+            archive_dossier(self.application_details.dossier_id)
+
+
+class ImportBankAccountV4(AbstractImportBankAccount, ImportBankAccountMixin):
+    def execute(self) -> None:
+        venue = self.get_venue()
+
+        if not venue:
+            return
+
+        bank_account = self.get_or_create_bank_account(venue.managingOfferer, venue)
+        self.keep_track_of_bank_account_status_changes(bank_account)
+        self.link_venue_to_bank_account(bank_account, venue)
+        self.archive_dossier()
+
+    def get_venue(self) -> "Venue | None":
+        """
+        Fetch the venue given the DS token of the application.
+        """
+        venue = (
+            offerers_models.Venue.query.filter(offerers_models.Venue.dmsToken == self.application_details.dms_token)
+            .options(
+                sqla_orm.load_only(
+                    offerers_models.Venue.id, offerers_models.Venue.publicName, offerers_models.Venue.name
+                )
+            )
+            .join(offerers_models.Offerer)
+            .outerjoin(
+                offerers_models.VenueBankAccountLink,
+                sqla.and_(
+                    offerers_models.VenueBankAccountLink.venueId == offerers_models.Venue.id,
+                    offerers_models.VenueBankAccountLink.timespan.contains(datetime.utcnow()),
+                ),
+            )
+            .options(
+                sqla_orm.contains_eager(offerers_models.Venue.managingOfferer).load_only(offerers_models.Offerer.id)
+            )
+            .options(sqla_orm.contains_eager(offerers_models.Venue.bankAccountLinks))
+            .one_or_none()
+        )
+        if venue is None:
+            logger.info(
+                "Venue not found with DS token",
+                extra={
+                    "application_id": self.application_details.application_id,
+                    "ds_token": self.application_details.dms_token,
+                },
+            )
+        return venue
+
+
+class ImportBankAccountV5(AbstractImportBankAccount, ImportBankAccountMixin):
+    def execute(self) -> None:
+        if not self.application_details.siren:
+            logger.info(
+                "siren can't be None in DSv5 context", extra={"application_id": self.application_details.application_id}
+            )
+            return
+
+        venue = self.get_venue()
+
+        if not venue:
+            offerer = self.get_offerer()
+            if not offerer:
+                return
+        else:
+            offerer = venue.managingOfferer
+
+        bank_account = self.get_or_create_bank_account(offerer, venue)
+        self.keep_track_of_bank_account_status_changes(bank_account)
+        if venue:
+            self.link_venue_to_bank_account(bank_account, venue)
+        self.archive_dossier()
+
+    def get_venue(self) -> "Venue | None":
+        """
+        Fetch a venue among physical ones of the offerer.
+        Return None if no existing venues or more than one.
+        """
+        venues = (
+            offerers_models.Venue.query.filter(offerers_models.Offerer.siren == self.application_details.siren)
+            .options(
+                sqla_orm.load_only(
+                    offerers_models.Venue.id, offerers_models.Venue.publicName, offerers_models.Venue.name
+                )
+            )
+            .join(offerers_models.Offerer)
+            .outerjoin(
+                offerers_models.VenueBankAccountLink,
+                sqla.and_(
+                    offerers_models.VenueBankAccountLink.venueId == offerers_models.Venue.id,
+                    offerers_models.VenueBankAccountLink.timespan.contains(datetime.utcnow()),
+                ),
+            )
+            .options(
+                sqla_orm.contains_eager(offerers_models.Venue.managingOfferer).load_only(offerers_models.Offerer.id)
+            )
+            .options(sqla_orm.contains_eager(offerers_models.Venue.bankAccountLinks))
+            .all()
+        )
+        if not venues or len(venues) > 1:
+            logger.info(
+                "Can't link a BankAccount to a venue",
+                extra={
+                    "siren": self.application_details.siret,
+                    "application_id": self.application_details.application_id,
+                    "has_venues": bool(venues),
+                },
+            )
+            return None
+        return venues[0]
+
+    def get_offerer(self) -> "Offerer | None":
+        assert self.application_details.siren  # helps mypy
+        offerer = (
+            offerers_models.Offerer.query.filter_by(siren=self.application_details.siren)
+            .options(sqla_orm.load_only(offerers_models.Offerer.id))
+            .one_or_none()
+        )
+        if not offerer:
+            logger.info(
+                "Can't find an offerer by siren",
+                extra={
+                    "application_id": self.application_details.application_id,
+                    "siren": self.application_details.siren,
+                },
+            )
+        return offerer
+
+
+class ImportBankAccountFactory:
+    procedure_to_class = {
+        4: ImportBankAccountV4,
+        5: ImportBankAccountV5,
+    }
+
+    @classmethod
+    def get(cls, procedure_version: int) -> type["AbstractImportBankAccount"]:
+        return cls.procedure_to_class[procedure_version]

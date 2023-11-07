@@ -1,5 +1,6 @@
 from datetime import datetime
 from datetime import timedelta
+from unittest.mock import call
 from unittest.mock import patch
 
 import pytest
@@ -11,8 +12,10 @@ from pcapi.connectors.dms.serializer import ApplicationDetailOldJourney
 from pcapi.core.finance import models as finance_models
 from pcapi.core.finance.ds import update_ds_applications_for_procedure
 import pcapi.core.finance.factories as finance_factories
+from pcapi.core.history import models as history_models
 from pcapi.core.offerers import models as offerers_models
 import pcapi.core.offerers.factories as offerers_factories
+from pcapi.core.testing import override_features
 from pcapi.domain.demarches_simplifiees import parse_raw_bank_info_data
 from pcapi.infrastructure.repository.bank_informations.bank_informations_sql_repository import (
     BankInformationsSQLRepository,
@@ -782,3 +785,509 @@ class DSV5InOldBankInformationsJourneyTest:
         # New journey is not active, should not create BankAccount nor links
         assert not finance_models.BankAccount.query.count()
         assert not offerers_models.VenueBankAccountLink.query.count()
+
+
+@patch("pcapi.connectors.dms.api.DMSGraphQLClient.execute_query")
+@patch("pcapi.use_cases.save_venue_bank_informations.update_demarches_simplifiees_text_annotations")
+@patch("pcapi.use_cases.save_venue_bank_informations.archive_dossier")
+class NewBankAccountJourneyTest:
+    dsv4_application_id = 9
+    dsv5_application_id = 14742654
+
+    @override_features(WIP_ENABLE_DOUBLE_MODEL_WRITING=True)
+    def test_DSv4_is_handled(self, mock_archive_dossier, mock_update_text_annotation, mock_grapqhl_client):
+        siret = "85331845900049"
+        siren = siret[:9]
+        venue = offerers_factories.VenueFactory(pricing_point="self", managingOfferer__siren=siren)
+        offerer = venue.managingOfferer
+
+        mock_grapqhl_client.return_value = dms_creators.get_bank_info_response_procedure_v4_as_batch(
+            state=GraphQLApplicationStates.accepted.value, dms_token=venue.dmsToken
+        )
+        update_ds_applications_for_procedure(settings.DMS_VENUE_PROCEDURE_ID_V4, since=None)
+
+        # Old journey
+        bank_information = finance_models.BankInformation.query.one()
+        assert bank_information.venue == venue
+        assert bank_information.bic == "SOGEFRPP"
+        assert bank_information.iban == "FR7630007000111234567890144"
+        assert bank_information.status == finance_models.BankInformationStatus.ACCEPTED
+
+        # New journey
+        bank_account = finance_models.BankAccount.query.one()
+        assert bank_account.bic == "SOGEFRPP"
+        assert bank_account.iban == "FR7630007000111234567890144"
+        assert bank_account.offerer == offerer
+        assert bank_account.status == finance_models.BankAccountApplicationStatus.ACCEPTED
+        assert bank_account.label == venue.common_name
+        assert bank_account.dsApplicationId == self.dsv4_application_id
+        bank_account_link = offerers_models.VenueBankAccountLink.query.one()
+        assert bank_account_link.venue == venue
+
+        mock_archive_dossier.assert_has_calls([call("Q2zzbXAtNzgyODAw"), call("Q2zzbXAtNzgyODAw")])
+
+        assert history_models.ActionHistory.query.count() == 1  # One link created
+        assert finance_models.BankAccountStatusHistory.query.count() == 1  # One status change recorded
+
+    @override_features(WIP_ENABLE_DOUBLE_MODEL_WRITING=True)
+    def test_DSv4_link_is_created_if_sevelal_venues_exists(
+        self, mock_archive_dossier, mock_update_text_annotation, mock_grapqhl_client
+    ):
+        siret = "85331845900049"
+        siren = siret[:9]
+        venue = offerers_factories.VenueFactory(pricing_point="self", managingOfferer__siren=siren)
+        offerers_factories.VenueFactory(pricing_point="self", managingOfferer=venue.managingOfferer)
+        offerer = venue.managingOfferer
+
+        mock_grapqhl_client.return_value = dms_creators.get_bank_info_response_procedure_v4_as_batch(
+            state=GraphQLApplicationStates.accepted.value, dms_token=venue.dmsToken
+        )
+        update_ds_applications_for_procedure(settings.DMS_VENUE_PROCEDURE_ID_V4, since=None)
+
+        # Old journey
+        bank_information = finance_models.BankInformation.query.one()
+        assert bank_information.venue == venue
+        assert bank_information.bic == "SOGEFRPP"
+        assert bank_information.iban == "FR7630007000111234567890144"
+        assert bank_information.status == finance_models.BankInformationStatus.ACCEPTED
+
+        # New journey
+        bank_account = finance_models.BankAccount.query.one()
+        assert bank_account.bic == "SOGEFRPP"
+        assert bank_account.iban == "FR7630007000111234567890144"
+        assert bank_account.offerer == offerer
+        assert bank_account.status == finance_models.BankAccountApplicationStatus.ACCEPTED
+        assert bank_account.label == venue.common_name
+        assert bank_account.dsApplicationId == self.dsv4_application_id
+        bank_account_link = offerers_models.VenueBankAccountLink.query.one()
+        assert bank_account_link.venue == venue
+
+        mock_archive_dossier.assert_has_calls([call("Q2zzbXAtNzgyODAw"), call("Q2zzbXAtNzgyODAw")])
+
+        assert history_models.ActionHistory.query.count() == 1  # One link created
+        assert finance_models.BankAccountStatusHistory.query.count() == 1  # One status change recorded
+
+    @override_features(WIP_ENABLE_DOUBLE_MODEL_WRITING=True)
+    def test_creating_DSv4_with_aldready_existing_link_should_deprecate_old_one_and_create_new_one(
+        self, mock_archive_dossier, mock_update_text_annotation, mock_grapqhl_client
+    ):
+        siret = "85331845900049"
+        siren = siret[:9]
+        venue = offerers_factories.VenueFactory(pricing_point="self", managingOfferer__siren=siren)
+        bank_account = finance_factories.BankAccountFactory(offerer=venue.managingOfferer)
+        soon_to_be_deprecated_link = offerers_factories.VenueBankAccountLinkFactory(
+            bankAccount=bank_account, venue=venue, timespan=(datetime.utcnow(),)
+        )
+        offerers_factories.VenueFactory(pricing_point="self", managingOfferer=venue.managingOfferer)
+        offerer = venue.managingOfferer
+
+        mock_grapqhl_client.return_value = dms_creators.get_bank_info_response_procedure_v4_as_batch(
+            state=GraphQLApplicationStates.accepted.value, dms_token=venue.dmsToken
+        )
+        update_ds_applications_for_procedure(settings.DMS_VENUE_PROCEDURE_ID_V4, since=None)
+
+        # Old journey
+        bank_information = finance_models.BankInformation.query.one()
+        assert bank_information.venue == venue
+        assert bank_information.bic == "SOGEFRPP"
+        assert bank_information.iban == "FR7630007000111234567890144"
+        assert bank_information.status == finance_models.BankInformationStatus.ACCEPTED
+
+        # New journey
+        bank_accounts = sorted(finance_models.BankAccount.query.all(), key=lambda b: b.id)
+        assert len(bank_accounts) == 2
+        bank_account = bank_accounts[1]
+        assert bank_account.bic == "SOGEFRPP"
+        assert bank_account.iban == "FR7630007000111234567890144"
+        assert bank_account.offerer == offerer
+        assert bank_account.status == finance_models.BankAccountApplicationStatus.ACCEPTED
+        assert bank_account.label == venue.common_name
+        assert bank_account.dsApplicationId == self.dsv4_application_id
+        bank_account_link = sorted(offerers_models.VenueBankAccountLink.query.all(), key=lambda v: v.id)
+        assert len(bank_account_link) == 2
+
+        mock_archive_dossier.assert_has_calls([call("Q2zzbXAtNzgyODAw"), call("Q2zzbXAtNzgyODAw")])
+
+        old_link = bank_account_link[0]
+        new_link = bank_account_link[1]
+
+        assert old_link == soon_to_be_deprecated_link
+        assert old_link.timespan.upper
+        assert new_link.venue == venue
+        assert new_link.bankAccount == bank_account
+        assert not new_link.timespan.upper
+
+        assert history_models.ActionHistory.query.count() == 2  # One link deprecated and one created
+        assert finance_models.BankAccountStatusHistory.query.count() == 1  # One status change recorded
+
+    @override_features(WIP_ENABLE_DOUBLE_MODEL_WRITING=True)
+    def test_DSv4_bank_account_get_successfully_updated_on_status_change(
+        self, mock_archive_dossier, mock_update_text_annotation, mock_grapqhl_client, db_session
+    ):
+        siret = "85331845900049"
+        siren = siret[:9]
+        venue = offerers_factories.VenueFactory(pricing_point="self", managingOfferer__siren=siren)
+
+        mock_grapqhl_client.return_value = dms_creators.get_bank_info_response_procedure_v4_as_batch(
+            state=GraphQLApplicationStates.on_going.value, dms_token=venue.dmsToken
+        )
+
+        update_ds_applications_for_procedure(settings.DMS_VENUE_PROCEDURE_ID_V4, since=None)
+
+        # Old journey
+        bank_information = finance_models.BankInformation.query.one()
+        assert bank_information.venue == venue
+        assert not bank_information.bic
+        assert not bank_information.iban
+        assert bank_information.status == finance_models.BankInformationStatus.DRAFT
+
+        # New journey
+        bank_account = finance_models.BankAccount.query.one()
+        assert bank_account.bic == "SOGEFRPP"
+        assert bank_account.iban == "FR7630007000111234567890144"
+        assert bank_account.offerer == venue.managingOfferer
+        assert bank_account.status == finance_models.BankAccountApplicationStatus.ON_GOING
+        assert bank_account.label == venue.name
+        assert bank_account.dsApplicationId == self.dsv4_application_id
+        mock_archive_dossier.assert_not_called()
+
+        assert offerers_models.VenueBankAccountLink.query.count() == 1
+
+        assert history_models.ActionHistory.query.count() == 1
+        on_going_status_history = finance_models.BankAccountStatusHistory.query.one()
+
+        assert on_going_status_history.status == bank_account.status
+        assert on_going_status_history.timespan.upper is None
+
+        # DS dossier status is updated by the compliance (accepted)
+
+        mock_grapqhl_client.return_value = dms_creators.get_bank_info_response_procedure_v4_as_batch(
+            state=GraphQLApplicationStates.accepted.value, dms_token=venue.dmsToken
+        )
+
+        update_ds_applications_for_procedure(settings.DMS_VENUE_PROCEDURE_ID_V4, since=None)
+
+        # Old journey
+        bank_information = finance_models.BankInformation.query.one()
+        assert bank_information.venue == venue
+        assert bank_account.bic == "SOGEFRPP"
+        assert bank_account.iban == "FR7630007000111234567890144"
+        assert bank_information.status == finance_models.BankInformationStatus.ACCEPTED
+
+        # New journey
+        bank_account = finance_models.BankAccount.query.one()
+        assert bank_account.bic == "SOGEFRPP"
+        assert bank_account.iban == "FR7630007000111234567890144"
+        assert bank_account.offerer == venue.managingOfferer
+        assert bank_account.status == finance_models.BankAccountApplicationStatus.ACCEPTED
+        assert bank_account.label == venue.name
+        mock_archive_dossier.assert_has_calls([call("Q2zzbXAtNzgyODAw"), call("Q2zzbXAtNzgyODAw")])
+
+        assert offerers_models.VenueBankAccountLink.query.count() == 1
+
+        assert history_models.ActionHistory.query.count() == 1
+        status_history = finance_models.BankAccountStatusHistory.query.order_by(
+            finance_models.BankAccountStatusHistory.id
+        ).all()
+        assert len(status_history) == 2
+        accepted_status_history = status_history[-1]
+
+        db_session.refresh(on_going_status_history)
+        db_session.refresh(bank_account)
+
+        assert on_going_status_history.timespan.upper is not None
+        assert (
+            accepted_status_history.status
+            == bank_account.status
+            == finance_models.BankAccountApplicationStatus.ACCEPTED
+        )
+        assert accepted_status_history.timespan.upper is None
+
+    @override_features(WIP_ENABLE_DOUBLE_MODEL_WRITING=True)
+    def test_DSv5_is_handled(self, mock_archive_dossier, mock_update_text_annotation, mock_grapqhl_client):
+        siret = "85331845900049"
+        siren = siret[:9]
+        venue = offerers_factories.VenueFactory(pricing_point="self", managingOfferer__siren=siren)
+        offerer = venue.managingOfferer
+
+        mock_grapqhl_client.return_value = dms_creators.get_bank_info_response_procedure_v5(
+            state=GraphQLApplicationStates.accepted.value,
+        )
+        update_ds_applications_for_procedure(settings.DS_BANK_ACCOUNT_PROCEDURE_ID, since=None)
+
+        # Old journey
+        bank_information = finance_models.BankInformation.query.one()
+        assert bank_information.venue == venue
+        assert bank_information.bic == "BICAGRIFRPP"
+        assert bank_information.iban == "FR7630006000011234567890189"
+        assert bank_information.status == finance_models.BankInformationStatus.ACCEPTED
+
+        # New journey
+        bank_account = finance_models.BankAccount.query.one()
+        assert bank_account.bic == "BICAGRIFRPP"
+        assert bank_account.iban == "FR7630006000011234567890189"
+        assert bank_account.offerer == offerer
+        assert bank_account.status == finance_models.BankAccountApplicationStatus.ACCEPTED
+        assert bank_account.label == venue.common_name
+        assert bank_account.dsApplicationId == self.dsv5_application_id
+        bank_account_link = offerers_models.VenueBankAccountLink.query.one()
+        assert bank_account_link.venue == venue
+
+        mock_archive_dossier.assert_has_calls([call("RG9zc2llci0xNDc0MjY1NA=="), call("RG9zc2llci0xNDc0MjY1NA==")])
+
+        assert history_models.ActionHistory.query.count() == 1  # One link created
+        assert finance_models.BankAccountStatusHistory.query.count() == 1  # One status change recorded
+
+    @override_features(WIP_ENABLE_DOUBLE_MODEL_WRITING=True)
+    def test_DSv5_link_is_not_created_if_several_venues_exists(
+        self, mock_archive_dossier, mock_update_text_annotation, mock_grapqhl_client
+    ):
+        siret = "85331845900049"
+        siren = siret[:9]
+        venue = offerers_factories.VenueFactory(pricing_point="self", managingOfferer__siren=siren)
+        offerers_factories.VenueFactory(pricing_point="self", managingOfferer=venue.managingOfferer)
+
+        mock_grapqhl_client.return_value = dms_creators.get_bank_info_response_procedure_v5(
+            state=GraphQLApplicationStates.accepted.value,
+        )
+        update_ds_applications_for_procedure(settings.DS_BANK_ACCOUNT_PROCEDURE_ID, since=None)
+
+        # Old journey
+        bank_information = finance_models.BankInformation.query.one()
+        assert not bank_information.venue
+        assert bank_information.bic == "BICAGRIFRPP"
+        assert bank_information.iban == "FR7630006000011234567890189"
+        assert bank_information.status == finance_models.BankInformationStatus.ACCEPTED
+
+        # New journey
+        bank_account = finance_models.BankAccount.query.one()
+        assert bank_account.bic == "BICAGRIFRPP"
+        assert bank_account.iban == "FR7630006000011234567890189"
+        assert bank_account.offerer == venue.managingOfferer
+        assert bank_account.status == finance_models.BankAccountApplicationStatus.ACCEPTED
+        assert bank_account.label == f"XXXX XXXX XXXX {bank_account.iban[-4:]}"
+        assert bank_account.dsApplicationId == self.dsv5_application_id
+        mock_archive_dossier.assert_called_once_with("RG9zc2llci0xNDc0MjY1NA==")
+
+        assert not offerers_models.VenueBankAccountLink.query.count()
+
+        assert not history_models.ActionHistory.query.count()
+        assert finance_models.BankAccountStatusHistory.query.count() == 1  # One status change recorded
+
+    @override_features(WIP_ENABLE_DOUBLE_MODEL_WRITING=True)
+    def test_draft_dossier_are_not_archived(
+        self, mock_archive_dossier, mock_update_text_annotation, mock_grapqhl_client
+    ):
+        siret = "85331845900049"
+        siren = siret[:9]
+        venue = offerers_factories.VenueFactory(pricing_point="self", managingOfferer__siren=siren)
+
+        mock_grapqhl_client.return_value = dms_creators.get_bank_info_response_procedure_v5(
+            state=GraphQLApplicationStates.draft.value,
+        )
+        update_ds_applications_for_procedure(settings.DS_BANK_ACCOUNT_PROCEDURE_ID, since=None)
+
+        # Old journey
+        bank_information = finance_models.BankInformation.query.one()
+        assert bank_information.venue == venue
+        assert not bank_information.bic
+        assert not bank_information.iban
+        assert bank_information.status == finance_models.BankInformationStatus.DRAFT
+
+        # New journey
+        bank_account = finance_models.BankAccount.query.one()
+        assert bank_account.bic == "BICAGRIFRPP"
+        assert bank_account.iban == "FR7630006000011234567890189"
+        assert bank_account.offerer == venue.managingOfferer
+        assert bank_account.status == finance_models.BankAccountApplicationStatus.DRAFT
+        assert bank_account.label == venue.publicName
+        assert bank_account.venueLinks
+        assert bank_account.dsApplicationId == self.dsv5_application_id
+        mock_archive_dossier.assert_not_called()
+
+    @override_features(WIP_ENABLE_DOUBLE_MODEL_WRITING=True)
+    def test_on_going_dossier_are_not_archived(
+        self, mock_archive_dossier, mock_update_text_annotation, mock_grapqhl_client
+    ):
+        siret = "85331845900049"
+        siren = siret[:9]
+        venue = offerers_factories.VenueFactory(pricing_point="self", managingOfferer__siren=siren)
+        offerers_factories.VenueFactory(pricing_point="self", managingOfferer=venue.managingOfferer)
+
+        mock_grapqhl_client.return_value = dms_creators.get_bank_info_response_procedure_v5(
+            state=GraphQLApplicationStates.on_going.value,
+        )
+        update_ds_applications_for_procedure(settings.DS_BANK_ACCOUNT_PROCEDURE_ID, since=None)
+
+        # Old journey
+        bank_information = finance_models.BankInformation.query.one()
+        assert not bank_information.venue
+        assert not bank_information.bic
+        assert not bank_information.iban
+        assert bank_information.status == finance_models.BankInformationStatus.DRAFT
+
+        # New journey
+        bank_account = finance_models.BankAccount.query.one()
+        assert bank_account.bic == "BICAGRIFRPP"
+        assert bank_account.iban == "FR7630006000011234567890189"
+        assert bank_account.offerer == venue.managingOfferer
+        assert bank_account.status == finance_models.BankAccountApplicationStatus.ON_GOING
+        assert bank_account.label == f"XXXX XXXX XXXX {bank_account.iban[-4:]}"
+        assert bank_account.dsApplicationId == self.dsv5_application_id
+        mock_archive_dossier.assert_not_called()
+
+        assert not offerers_models.VenueBankAccountLink.query.count()
+
+        assert not history_models.ActionHistory.query.count()
+        assert finance_models.BankAccountStatusHistory.query.count() == 1  # One status change recorded
+
+    @override_features(WIP_ENABLE_DOUBLE_MODEL_WRITING=True)
+    def test_DSv5_bank_account_get_successfully_updated_on_status_change(
+        self, mock_archive_dossier, mock_update_text_annotation, mock_grapqhl_client, db_session
+    ):
+        siret = "85331845900049"
+        siren = siret[:9]
+        venue = offerers_factories.VenueFactory(pricing_point="self", managingOfferer__siren=siren)
+
+        mock_grapqhl_client.return_value = dms_creators.get_bank_info_response_procedure_v5(
+            state=GraphQLApplicationStates.on_going.value,
+        )
+
+        update_ds_applications_for_procedure(settings.DS_BANK_ACCOUNT_PROCEDURE_ID, since=None)
+
+        # Old journey
+        bank_information = finance_models.BankInformation.query.one()
+        assert bank_information.venue == venue
+        assert not bank_information.bic
+        assert not bank_information.iban
+        assert bank_information.status == finance_models.BankInformationStatus.DRAFT
+
+        # New journey
+        bank_account = finance_models.BankAccount.query.one()
+        assert bank_account.bic == "BICAGRIFRPP"
+        assert bank_account.iban == "FR7630006000011234567890189"
+        assert bank_account.offerer == venue.managingOfferer
+        assert bank_account.status == finance_models.BankAccountApplicationStatus.ON_GOING
+        assert bank_account.label == venue.name
+        assert bank_account.dsApplicationId == self.dsv5_application_id
+        mock_archive_dossier.assert_not_called()
+
+        link = offerers_models.VenueBankAccountLink.query.one()
+
+        assert link.bankAccount == bank_account
+        assert link.venue == venue
+
+        assert history_models.ActionHistory.query.count() == 1
+        on_going_status_history = finance_models.BankAccountStatusHistory.query.one()
+
+        assert on_going_status_history.status == bank_account.status
+        assert on_going_status_history.timespan.upper is None
+
+        # DS dossier status is updated by the compliance (accepted)
+
+        mock_grapqhl_client.return_value = dms_creators.get_bank_info_response_procedure_v5(
+            state=GraphQLApplicationStates.accepted.value,
+        )
+
+        update_ds_applications_for_procedure(settings.DS_BANK_ACCOUNT_PROCEDURE_ID, since=None)
+
+        # Old journey
+        bank_information = finance_models.BankInformation.query.one()
+        assert bank_information.venue == venue
+        assert bank_information.bic == "BICAGRIFRPP"
+        assert bank_information.iban == "FR7630006000011234567890189"
+        assert bank_information.status == finance_models.BankInformationStatus.ACCEPTED
+
+        # New journey
+        bank_account = finance_models.BankAccount.query.one()
+        assert bank_account.bic == "BICAGRIFRPP"
+        assert bank_account.iban == "FR7630006000011234567890189"
+        assert bank_account.offerer == venue.managingOfferer
+        assert bank_account.status == finance_models.BankAccountApplicationStatus.ACCEPTED
+        assert bank_account.label == venue.name
+        mock_archive_dossier.assert_has_calls([call("RG9zc2llci0xNDc0MjY1NA=="), call("RG9zc2llci0xNDc0MjY1NA==")])
+
+        link = offerers_models.VenueBankAccountLink.query.one()
+        assert link.bankAccount == bank_account
+        assert link.venue == venue
+
+        assert history_models.ActionHistory.query.count() == 1
+        status_history = finance_models.BankAccountStatusHistory.query.order_by(
+            finance_models.BankAccountStatusHistory.id
+        ).all()
+        assert len(status_history) == 2
+        accepted_status_history = status_history[-1]
+
+        db_session.refresh(on_going_status_history)
+        db_session.refresh(bank_account)
+
+        assert on_going_status_history.timespan.upper is not None
+        assert (
+            accepted_status_history.status
+            == bank_account.status
+            == finance_models.BankAccountApplicationStatus.ACCEPTED
+        )
+        assert accepted_status_history.timespan.upper is None
+
+    @override_features(WIP_ENABLE_DOUBLE_MODEL_WRITING=True)
+    def test_dsv5_with_no_status_changes_does_not_create_nor_link_nor_status_changes_logs(
+        self, mock_archive_dossier, mock_update_text_annotation, mock_grapqhl_client, db_session
+    ):
+        siret = "85331845900049"
+        siren = siret[:9]
+        venue = offerers_factories.VenueFactory(pricing_point="self", managingOfferer__siren=siren)
+
+        mock_grapqhl_client.return_value = dms_creators.get_bank_info_response_procedure_v5(
+            state=GraphQLApplicationStates.accepted.value,
+        )
+        update_ds_applications_for_procedure(settings.DS_BANK_ACCOUNT_PROCEDURE_ID, since=None)
+
+        # Old journey
+        bank_information = finance_models.BankInformation.query.one()
+        assert bank_information.venue == venue
+        assert bank_information.bic == "BICAGRIFRPP"
+        assert bank_information.iban == "FR7630006000011234567890189"
+        assert bank_information.status == finance_models.BankInformationStatus.ACCEPTED
+
+        # New journey
+        bank_account = finance_models.BankAccount.query.one()
+        assert bank_account.bic == "BICAGRIFRPP"
+        assert bank_account.iban == "FR7630006000011234567890189"
+        assert bank_account.offerer == venue.managingOfferer
+        assert bank_account.status == finance_models.BankAccountApplicationStatus.ACCEPTED
+        assert bank_account.label == venue.common_name
+        assert bank_account.dsApplicationId == self.dsv5_application_id
+
+        link = offerers_models.VenueBankAccountLink.query.one()
+        assert link.venue == venue
+        assert link.bankAccount == bank_account
+
+        assert history_models.ActionHistory.query.count() == 1
+        assert finance_models.BankAccountStatusHistory.query.count() == 1  # One status change recorded
+
+        # Multiple crons running without any changes
+
+        mock_grapqhl_client.return_value = dms_creators.get_bank_info_response_procedure_v5(
+            state=GraphQLApplicationStates.accepted.value,
+        )
+
+        update_ds_applications_for_procedure(settings.DS_BANK_ACCOUNT_PROCEDURE_ID, since=None)
+
+        mock_grapqhl_client.return_value = dms_creators.get_bank_info_response_procedure_v5(
+            state=GraphQLApplicationStates.accepted.value,
+        )
+
+        update_ds_applications_for_procedure(settings.DS_BANK_ACCOUNT_PROCEDURE_ID, since=None)
+
+        mock_grapqhl_client.return_value = dms_creators.get_bank_info_response_procedure_v5(
+            state=GraphQLApplicationStates.accepted.value,
+        )
+
+        update_ds_applications_for_procedure(settings.DS_BANK_ACCOUNT_PROCEDURE_ID, since=None)
+
+        link = offerers_models.VenueBankAccountLink.query.one()
+        assert link.venue == venue
+        assert link.bankAccount == bank_account
+
+        assert history_models.ActionHistory.query.count() == 1
+        assert finance_models.BankAccountStatusHistory.query.count() == 1  # One status change recorded
