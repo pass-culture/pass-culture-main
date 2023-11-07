@@ -351,6 +351,17 @@ def get_expired_collective_offers(interval: tuple[datetime, datetime]) -> BaseQu
     )
 
 
+def get_expired_collective_offers_template() -> BaseQuery:
+    """Return a query of collective offers template whose latest booking limit occurs within
+    the given interval.
+    """
+    return (
+        educational_models.CollectiveOfferTemplate.query.group_by(educational_models.CollectiveOfferTemplate.id)
+        .order_by(educational_models.CollectiveOfferTemplate.id)
+        .filter_by(hasEndDatePassed=True)
+    )
+
+
 def find_expiring_collective_bookings_query() -> BaseQuery:
     today_at_midnight = datetime.combine(date.today(), time(0, 0))
 
