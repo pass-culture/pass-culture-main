@@ -2056,7 +2056,7 @@ def _update_offerer_stats_data(offerer_id: int) -> None:
             daily_views_stats.jsonData = offerers_models.OffererStatsData(daily_views=list(daily_views_data))
             daily_views_stats.syncDate = datetime.utcnow()
 
-        top_offers_data = OffersData().execute(page_size=3, offerer_id=str(offerer_id))
+        top_offers_data = OffersData().execute(offerer_id=str(offerer_id))
         top_offers_stats = offerers_models.OffererStats.query.filter_by(
             offererId=offerer_id, table=TOP_3_MOST_CONSULTED_OFFERS_LAST_30_DAYS_TABLE
         ).one_or_none()
