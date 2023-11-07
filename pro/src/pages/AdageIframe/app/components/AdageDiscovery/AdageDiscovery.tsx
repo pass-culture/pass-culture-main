@@ -1,14 +1,25 @@
-import React from 'react'
+import React, { useEffect, useState } from 'react'
 
 import { OfferAddressType, StudentLevels } from 'apiClient/adage'
+import { api } from 'apiClient/api'
+import { GET_DATA_ERROR_MESSAGE } from 'core/shared/constants'
+import useNotification from 'hooks/useNotification'
 import bannerDiscovery from 'icons/banner-discovery-adage.svg'
 import fullLinkIcon from 'icons/full-link.svg'
+import { Option } from 'pages/AdageIframe/app/types'
 import { ButtonLink } from 'ui-kit'
 import { ButtonVariant } from 'ui-kit/Button/types'
 
 import styles from './AdageDiscovery.module.scss'
 import CardOfferComponent, { CardOfferModel } from './CardOffer/CardOffer'
 import CardVenue from './CardVenue/CardVenue'
+import circles from './DomainsCard/assets/circles.svg'
+import ellipses from './DomainsCard/assets/ellipses.svg'
+import pills from './DomainsCard/assets/pills.svg'
+import rectangles from './DomainsCard/assets/rectangles.svg'
+import squares from './DomainsCard/assets/squares.svg'
+import triangles from './DomainsCard/assets/triangles.svg'
+import DomainsCard from './DomainsCard/DomainsCard'
 
 const mockOffer: CardOfferModel = {
   id: 479,
@@ -74,6 +85,36 @@ const mockVenue = {
 }
 
 export const AdageDiscovery = () => {
+  const [domainsOptions, setDomainsOptions] = useState<Option<number>[]>([])
+
+  const notification = useNotification()
+
+  useEffect(() => {
+    const getAllDomains = async () => {
+      try {
+        const result = await api.listEducationalDomains()
+
+        return setDomainsOptions(
+          result.map(({ id, name }) => ({ value: id, label: name }))
+        )
+      } catch {
+        notification.error(GET_DATA_ERROR_MESSAGE)
+      }
+    }
+
+    // eslint-disable-next-line @typescript-eslint/no-floating-promises
+    getAllDomains()
+  }, [])
+
+  const colorAndMotifOrder = [
+    { color: 'orange', src: squares },
+    { color: 'purple', src: pills },
+    { color: 'pink', src: triangles },
+    { color: 'green', src: rectangles },
+    { color: 'red', src: ellipses },
+    { color: 'blue', src: circles },
+  ]
+
   return (
     <div className={styles['discovery']}>
       <img
@@ -130,7 +171,20 @@ export const AdageDiscovery = () => {
           <h1 className={styles['section-title']}>
             Explorez les domaines artistiques
           </h1>
-          <div> TODO: Playlist domaines artistiques à ajouter</div>
+          <div className={styles['section-domains-card']}>
+            {domainsOptions.map((elm, key) => {
+              const colorAndMotif =
+                colorAndMotifOrder[key % colorAndMotifOrder.length]
+
+              return (
+                <DomainsCard
+                  title={elm.label}
+                  color={colorAndMotif.color}
+                  src={colorAndMotif.src}
+                />
+              )
+            })}
+          </div>
         </div>
         <div>
           <h1 className={styles['section-title']}>
