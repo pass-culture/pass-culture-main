@@ -8,6 +8,7 @@ import { ButtonVariant } from 'ui-kit/Button/types'
 
 import styles from './AdageDiscovery.module.scss'
 import CardOfferComponent from './CardOffer/CardOffer'
+import CardVenue from './CardVenue/CardVenue'
 
 const mockOffer = {
   imageUrl: 'https://picsum.photos/201/',
@@ -23,6 +24,15 @@ const mockOffer = {
     distance: 10,
     city: 'Paris',
   },
+}
+
+const mockVenue = {
+  imageUrl: 'https://picsum.photos/200/300',
+  name: 'Le nom administratif du lieu',
+  publicName: 'Mon super lieu sur vraiment beaucoup de super lignes',
+  distance: 2,
+  id: '28',
+  city: 'Paris',
 }
 
 export const AdageDiscovery = () => {
@@ -82,7 +92,12 @@ export const AdageDiscovery = () => {
           <h1 className={styles['section-title']}>
             À moins de 30 minutes à pieds
           </h1>
-          <div>TODO: Playlist à moins de 30 minutes à pieds à ajouter</div>
+          <div className={styles['section-todo']}>
+            <div>TODO: Playlist à moins de 30 minutes à pieds à ajouter</div>
+            <div className={styles['section-todo-playlist']}>
+              <CardVenue venue={mockVenue} />
+            </div>
+          </div>
         </div>
       </div>
       <div className={styles['suggestion']}>
