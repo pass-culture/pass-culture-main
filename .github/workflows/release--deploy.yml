@@ -32,7 +32,7 @@ jobs:
   version:
     environment:  ${{ fromJSON('["deploy", "testing"]')[github.event.inputs.target_environment == 'testing'] }}
     runs-on: [self-hosted, linux, x64]
-    needs: check-worflow-ref
+    # needs: check-worflow-ref
     outputs:
       APP_VERSION: ${{ steps.app-version.outputs.APP_VERSION }}
     steps:
