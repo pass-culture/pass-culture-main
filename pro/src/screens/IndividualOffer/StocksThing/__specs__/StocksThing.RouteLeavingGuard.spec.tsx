@@ -15,6 +15,7 @@ import { getIndividualOfferPath } from 'core/Offers/utils/getIndividualOfferUrl'
 import { ButtonLink } from 'ui-kit'
 import { offerVenueFactory } from 'utils/apiFactories'
 import {
+  individualGetOfferStockResponseModelFactory,
   individualOfferContextFactory,
   individualOfferFactory,
 } from 'utils/individualApiFactories'
@@ -83,6 +84,7 @@ describe('screens:StocksThing', () => {
     })
     props = {
       offer,
+      stocks: [individualGetOfferStockResponseModelFactory()],
     }
     contextValue = individualOfferContextFactory()
   })

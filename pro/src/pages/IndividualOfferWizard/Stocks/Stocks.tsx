@@ -1,11 +1,11 @@
 import React, { useEffect, useState } from 'react'
 
 import { api } from 'apiClient/api'
+import { GetOfferStockResponseModel } from 'apiClient/v1'
 import { StocksEvent } from 'components/StocksEventList/StocksEventList'
 import { useIndividualOfferContext } from 'context/IndividualOfferContext'
 import { OFFER_WIZARD_MODE } from 'core/Offers/constants'
 import { useOfferWizardMode } from 'hooks'
-import useNotification from 'hooks/useNotification'
 import IndivualOfferLayout from 'screens/IndividualOffer/IndivualOfferLayout/IndivualOfferLayout'
 import { getTitle } from 'screens/IndividualOffer/IndivualOfferLayout/utils/getTitle'
 import { StocksEventCreation } from 'screens/IndividualOffer/StocksEventCreation/StocksEventCreation'
@@ -19,22 +19,21 @@ const Stocks = (): JSX.Element | null => {
   const { offer, setOffer } = useIndividualOfferContext()
   const mode = useOfferWizardMode()
   const [isLoading, setIsLoading] = useState(true)
-  const [stocks, setStocks] = useState<StocksEvent[]>([])
-  const notify = useNotification()
+  const [stockEvents, setStockEvents] = useState<StocksEvent[]>([])
+  const [stocks, setStocks] = useState<GetOfferStockResponseModel[]>([])
 
   useEffect(() => {
     async function loadStocks() {
+      if (!offer) {
+        return
+      }
       setIsLoading(true)
-      if (offer?.isEvent) {
-        try {
-          const response = await api.getStocks(offer.id)
+      const response = await api.getStocks(offer.id)
 
-          setStocks(serializeStockEvents(response.stocks))
-        } catch {
-          notify.error(
-            'Une erreur est survenue lors du chargement de vos stocks.'
-          )
-        }
+      if (offer?.isEvent) {
+        setStockEvents(serializeStockEvents(response.stocks))
+      } else {
+        setStocks(response.stocks)
       }
       setIsLoading(false)
     }
@@ -62,18 +61,18 @@ const Stocks = (): JSX.Element | null => {
         mode === OFFER_WIZARD_MODE.CREATION ? (
           <StocksEventCreation
             offer={offer}
-            stocks={stocks}
-            setStocks={setStocks}
+            stocks={stockEvents}
+            setStocks={setStockEvents}
           />
         ) : (
           <StocksEventEdition
             offer={offer}
-            stocks={stocks}
-            setStocks={setStocks}
+            stocks={stockEvents}
+            setStocks={setStockEvents}
           />
         )
       ) : (
-        <StocksThing offer={offer} />
+        <StocksThing offer={offer} stocks={stocks} />
       )}
     </IndivualOfferLayout>
   )

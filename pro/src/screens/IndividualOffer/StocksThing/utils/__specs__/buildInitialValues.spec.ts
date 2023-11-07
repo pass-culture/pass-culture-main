@@ -1,8 +1,8 @@
 import { IndividualOffer } from 'core/Offers/types'
 import { offerVenueFactory } from 'utils/apiFactories'
 import {
+  individualGetOfferStockResponseModelFactory,
   individualOfferFactory,
-  individualStockFactory,
 } from 'utils/individualApiFactories'
 
 import { STOCK_THING_FORM_DEFAULT_VALUES } from '../../constants'
@@ -17,14 +17,13 @@ describe('StockThingForm::utils::buildInitialValues', () => {
   })
 
   it('should return default values when offer have no stocks', () => {
-    offer.stocks = []
-    const initialValues = buildInitialValues(offer)
+    const initialValues = buildInitialValues(offer, [])
     expect(initialValues).toEqual(STOCK_THING_FORM_DEFAULT_VALUES)
   })
 
   it('should build form initial values from offer', () => {
-    offer.stocks = [
-      individualStockFactory({
+    const initialValues = buildInitialValues(offer, [
+      individualGetOfferStockResponseModelFactory({
         id: 1,
         remainingQuantity: 10,
         bookingsQuantity: 20,
@@ -32,9 +31,7 @@ describe('StockThingForm::utils::buildInitialValues', () => {
         bookingLimitDatetime: '2001-06-05',
         price: 12,
       }),
-    ]
-
-    const initialValues = buildInitialValues(offer)
+    ])
     expect(initialValues).toEqual({
       stockId: 1,
       remainingQuantity: '10',
@@ -49,8 +46,8 @@ describe('StockThingForm::utils::buildInitialValues', () => {
   })
 
   it('should normalize null values', () => {
-    offer.stocks = [
-      individualStockFactory({
+    const initialValues = buildInitialValues(offer, [
+      individualGetOfferStockResponseModelFactory({
         id: 1,
         bookingsQuantity: 20,
         remainingQuantity: undefined,
@@ -58,9 +55,7 @@ describe('StockThingForm::utils::buildInitialValues', () => {
         bookingLimitDatetime: null,
         price: 12,
       }),
-    ]
-
-    const initialValues = buildInitialValues(offer)
+    ])
     expect(initialValues).toEqual({
       activationCodes: [],
       activationCodesExpirationDatetime: '',

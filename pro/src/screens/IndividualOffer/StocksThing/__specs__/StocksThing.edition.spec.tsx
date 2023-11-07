@@ -22,6 +22,7 @@ import {
 } from 'core/Offers/utils/getIndividualOfferUrl'
 import Stocks from 'pages/IndividualOfferWizard/Stocks/Stocks'
 import { RootState } from 'store/reducers'
+import { individualGetOfferStockResponseModelFactory } from 'utils/individualApiFactories'
 import { renderWithProviders } from 'utils/renderWithProviders'
 
 vi.mock('screens/IndividualOffer/Informations/utils', () => {
@@ -83,25 +84,18 @@ const renderStockThingScreen = (storeOverrides: Partial<RootState> = {}) =>
 describe('screens:StocksThing', () => {
   let storeOverride: Partial<RootState>
   let apiOffer: GetIndividualOfferResponseModel
-  const stockToDelete = {
+  const stockToDelete = individualGetOfferStockResponseModelFactory({
     beginningDatetime: '2022-05-23T08:25:31.009799Z',
     bookingLimitDatetime: '2022-05-23T07:25:31.009799Z',
     bookingsQuantity: 4,
-    dateCreated: '2022-05-18T08:25:31.015652Z',
     hasActivationCode: false,
     id: 1,
     isEventDeletable: false,
-    isEventExpired: true,
-    isSoftDeleted: false,
-    offerId: 'YA',
     price: 10.01,
     quantity: 10,
     remainingQuantity: 6,
     activationCodesExpirationDatetime: null,
-    isBookable: false,
-    dateModified: '2022-05-18T08:25:31.015652Z',
-    fieldsUpdated: [],
-  }
+  })
 
   beforeEach(() => {
     apiOffer = {
@@ -171,6 +165,10 @@ describe('screens:StocksThing', () => {
     }
 
     vi.spyOn(api, 'getOffer').mockResolvedValue(apiOffer)
+    vi.spyOn(api, 'getStocks').mockResolvedValue({
+      stocks: [stockToDelete],
+      stock_count: 1,
+    })
     vi.spyOn(api, 'getCategories').mockResolvedValue({
       categories: [],
       subcategories: [],

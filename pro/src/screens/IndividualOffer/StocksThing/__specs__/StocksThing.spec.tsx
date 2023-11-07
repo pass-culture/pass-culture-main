@@ -26,10 +26,10 @@ import {
 import { offerVenueFactory } from 'utils/apiFactories'
 import { FORMAT_ISO_DATE_ONLY } from 'utils/date'
 import {
+  individualGetOfferStockResponseModelFactory,
   individualOfferContextFactory,
   individualOfferFactory,
   individualOfferSubCategoryFactory,
-  individualStockFactory,
 } from 'utils/individualApiFactories'
 import { renderWithProviders } from 'utils/renderWithProviders'
 
@@ -102,6 +102,7 @@ describe('screens:StocksThing', () => {
     })
     props = {
       offer,
+      stocks: [],
     }
     contextValue = individualOfferContextFactory({
       offerId: offerId,
@@ -388,15 +389,15 @@ describe('screens:StocksThing', () => {
       props.offer = {
         ...offer,
         isDigital: true,
-        stocks: [
-          individualStockFactory({
-            bookingsQuantity: 1,
-            price: 12,
-            hasActivationCode: true,
-            activationCodesExpirationDatetime: new Date('2020-12-15T12:00:00Z'),
-          }),
-        ],
       }
+      props.stocks = [
+        individualGetOfferStockResponseModelFactory({
+          bookingsQuantity: 1,
+          price: 12,
+          hasActivationCode: true,
+          activationCodesExpirationDatetime: '2020-12-15T12:00:00Z',
+        }),
+      ]
       renderStockThingScreen(props, contextValue)
 
       expect(screen.getByLabelText('Quantité')).toBeDisabled()
