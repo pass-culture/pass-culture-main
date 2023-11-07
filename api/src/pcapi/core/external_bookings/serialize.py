@@ -10,7 +10,7 @@ import pcapi.core.users.models as users_models
 
 
 class ExternalEventBookingRequest(pydantic_v1.BaseModel):
-    booking_confirmation_date: datetime.datetime
+    booking_confirmation_date: datetime.datetime | None
     booking_creation_date: datetime.datetime
     booking_quantity: pydantic_v1.StrictInt
     offer_ean: str | None
