@@ -256,7 +256,9 @@ class GetOfferAdvancedSearchForm(GetOffersBaseFields):
         csrf = False
 
     method = "GET"
-    only_validated_offerers = fields.PCSwitchBooleanField("Uniquement les offres des structures validées")
+    only_validated_offerers = fields.PCSwitchBooleanField(
+        "Uniquement les offres des structures validées", full_row=True
+    )
     search = fields.PCFieldListField(
         fields.PCFormField(OfferAdvancedSearchSubForm),
         label="recherches",
