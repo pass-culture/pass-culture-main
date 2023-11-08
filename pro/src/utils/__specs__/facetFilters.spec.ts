@@ -32,4 +32,15 @@ describe('getDefaultFacetFilterUAICodeValue', () => {
       expectedFilters
     )
   })
+
+  it('should return filters with artistic domain id filter if valued', () => {
+    const expectedFilters = [
+      ['offer.domains:1'],
+      ['offer.educationalInstitutionUAICode:all'],
+    ]
+
+    expect(getDefaultFacetFilterUAICodeValue(null, null, 1)).toEqual(
+      expectedFilters
+    )
+  })
 })

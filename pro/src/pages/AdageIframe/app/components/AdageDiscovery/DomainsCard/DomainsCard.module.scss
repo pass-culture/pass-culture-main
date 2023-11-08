@@ -7,8 +7,14 @@
     align-items: flex-end;
     position: relative;
     width: rem.torem(186px);
-    height: rem.torem(96px);
+    min-height: rem.torem(96px);
     border-radius: rem.torem(16px);
+
+    &:focus-visible {
+        outline: rem.torem(2px) solid colors.$input-text-color;
+        outline-offset: rem.torem(2px);
+        border-radius: rem.torem(16px);
+    }
 
     &-img {
         position: absolute;
