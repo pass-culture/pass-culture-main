@@ -56,6 +56,7 @@ export const ALL_OFFERS = ''
 export const ALL_VENUES = 'all'
 export const ALL_OFFERERS = 'all'
 export const ALL_CATEGORIES = 'all'
+export const ALL_FORMATS = 'all'
 export const ALL_STATUS = 'all'
 export const ALL_CREATION_MODES = 'all'
 export const ALL_COLLECTIVE_OFFER_TYPE = 'all'
@@ -69,6 +70,7 @@ export const DEFAULT_SEARCH_FILTERS: SearchFiltersParams = {
   offererId: 'all',
   venueId: ALL_VENUES,
   categoryId: ALL_CATEGORIES,
+  format: ALL_FORMATS,
   status: ALL_STATUS,
   creationMode: ALL_CREATION_MODES,
   collectiveOfferType: ALL_COLLECTIVE_OFFER_TYPE,
@@ -85,6 +87,11 @@ export const ALL_VENUES_OPTION: SelectOption = {
 export const ALL_CATEGORIES_OPTION: SelectOption = {
   label: 'Toutes',
   value: ALL_CATEGORIES,
+}
+
+export const ALL_FORMATS_OPTION: SelectOption = {
+  label: 'Tous',
+  value: ALL_FORMATS,
 }
 
 export const CREATION_MODES_OPTIONS: SelectOption[] = [
