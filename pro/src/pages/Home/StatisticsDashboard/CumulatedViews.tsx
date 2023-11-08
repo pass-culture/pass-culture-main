@@ -18,7 +18,7 @@ export interface CumulatedViewsProps {
 
 export const CumulatedViews = ({ dailyViews }: CumulatedViewsProps) => {
   const hasNoViews =
-    dailyViews.length === 0 ||
+    dailyViews.length < 2 ||
     dailyViews.every((view) => view.numberOfViews === 0)
 
   const data = {
