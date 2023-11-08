@@ -14,6 +14,7 @@
   background: none;
   border: none;
   height: rem.torem(24px);
+  cursor: pointer;
 
   &:disabled {
     cursor: not-allowed;

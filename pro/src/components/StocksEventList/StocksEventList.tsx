@@ -11,6 +11,7 @@ import { SortingMode, useColumnSorting } from 'hooks/useColumnSorting'
 import useNotification from 'hooks/useNotification'
 import { usePaginationWithSearchParams } from 'hooks/usePagination'
 import fullTrashIcon from 'icons/full-trash.svg'
+import { serializeStockEvents } from 'pages/IndividualOfferWizard/Stocks/serializeStockEvents'
 import { getPriceCategoryOptions } from 'screens/IndividualOffer/StocksEventEdition/getPriceCategoryOptions'
 import { Button } from 'ui-kit'
 import { ButtonVariant } from 'ui-kit/Button/types'
@@ -44,14 +45,12 @@ export interface StocksEvent {
 }
 
 export interface StocksEventListProps {
-  stocks: StocksEvent[]
   priceCategories: PriceCategoryResponseModel[]
   className?: string
   departmentCode?: string | null
   offerId: number
-  setStocks?: (stocks: StocksEvent[]) => void
   readonly?: boolean
-  stockCount: number
+  onStocksLoad: (hasStocks: boolean) => void
 }
 
 const DELETE_STOCKS_CHUNK_SIZE = 50
@@ -62,27 +61,25 @@ function* chunks<T>(array: T[], n: number): Generator<T[], void> {
 }
 
 const StocksEventList = ({
-  stocks,
   priceCategories,
   className,
   departmentCode,
   offerId,
-  setStocks,
-  stockCount,
   readonly = false,
+  onStocksLoad,
 }: StocksEventListProps): JSX.Element => {
   const { logEvent } = useAnalytics()
   const notify = useNotification()
-  const [isCheckedArray, setIsCheckedArray] = useState<boolean[]>(
-    Array(stocks.length).fill(false)
-  )
+  const [isCheckedArray, setIsCheckedArray] = useState<boolean[]>([])
   const priceCategoryOptions = getPriceCategoryOptions(priceCategories)
 
   const { currentSortingColumn, currentSortingMode, onColumnHeaderClick } =
     useColumnSorting<StocksOrderedBy>()
   const [searchParams, setSearchParams] = useSearchParams()
+  const [stocks, setStocks] = useState<StocksEvent[]>([])
+  const [stocksCount, setStocksCount] = useState<number>(0)
   const { page, previousPage, nextPage, pageCount, firstPage, lastPage } =
-    usePaginationWithSearchParams(STOCKS_PER_PAGE, stockCount)
+    usePaginationWithSearchParams(STOCKS_PER_PAGE, stocksCount)
   const date = searchParams.get('date')
   const time = searchParams.get('time')
   const priceCategoryId = searchParams.get('priceCategoryId')
@@ -113,12 +110,44 @@ const StocksEventList = ({
       }
     }
     setSearchParams(searchParams)
+
+    async function loadStocks() {
+      const response = await api.getStocks(
+        offerId,
+        date,
+        time,
+        priceCategoryId ? Number(priceCategoryId) : undefined,
+        currentSortingColumn ?? undefined,
+        currentSortingMode
+          ? currentSortingMode === SortingMode.DESC
+          : undefined,
+        Number(page || 1)
+      )
+
+      if (!ignore) {
+        setStocks(serializeStockEvents(response.stocks))
+        setStocksCount(response.stockCount)
+        onStocksLoad(true)
+        setIsCheckedArray(response.stocks.map(() => false))
+      }
+    }
+
+    // we set ignore variable to avoid race conditions
+    // see react doc:  https://react.dev/reference/react/useEffect#fetching-data-with-effects
+    let ignore = false
+
+    // eslint-disable-next-line @typescript-eslint/no-floating-promises
+    loadStocks()
+    return () => {
+      ignore = true
+    }
   }, [
     dateFilter,
     timeFilter,
     priceCategoryIdFilter,
     currentSortingColumn,
     currentSortingMode,
+    page,
   ])
 
   const onFilterChange = () => {
@@ -248,8 +277,8 @@ const StocksEventList = ({
         )}
 
         <div className={styles['stocks-count']}>
-          {new Intl.NumberFormat('fr-FR').format(stocks.length)}{' '}
-          {pluralizeString('occurrence', stocks.length)}
+          {new Intl.NumberFormat('fr-FR').format(stocksCount)}{' '}
+          {pluralizeString('occurrence', stocksCount)}
         </div>
       </div>
 
