@@ -11,7 +11,7 @@ export type ListCollectiveOffersQueryModel = {
   categoryId?: string | null;
   collectiveOfferType?: CollectiveOfferType | null;
   creationMode?: string | null;
-  formats?: Array<EacFormat> | null;
+  format?: EacFormat | null;
   nameOrIsbn?: string | null;
   offererId?: number | null;
   periodBeginningDate?: string | null;

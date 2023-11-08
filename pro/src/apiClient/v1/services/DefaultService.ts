@@ -288,7 +288,7 @@ export class DefaultService {
    * @param periodBeginningDate
    * @param periodEndingDate
    * @param collectiveOfferType
-   * @param formats
+   * @param format
    * @returns ListCollectiveOffersResponseModel OK
    * @throws ApiError
    */
@@ -302,7 +302,7 @@ export class DefaultService {
     periodBeginningDate?: string | null,
     periodEndingDate?: string | null,
     collectiveOfferType?: CollectiveOfferType | null,
-    formats?: Array<EacFormat> | null,
+    format?: EacFormat | null,
   ): CancelablePromise<ListCollectiveOffersResponseModel> {
     return this.httpRequest.request({
       method: 'GET',
@@ -317,7 +317,7 @@ export class DefaultService {
         'periodBeginningDate': periodBeginningDate,
         'periodEndingDate': periodEndingDate,
         'collectiveOfferType': collectiveOfferType,
-        'formats': formats,
+        'format': format,
       },
       errors: {
         403: `Forbidden`,
