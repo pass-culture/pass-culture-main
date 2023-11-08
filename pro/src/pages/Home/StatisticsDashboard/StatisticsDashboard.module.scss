@@ -19,7 +19,7 @@
 }
 
 .no-data {
-  @include fonts.title4;
+  @include fonts.body-important;
 
   color: colors.$grey-darker;
   display: flex;
