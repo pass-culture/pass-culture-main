@@ -23,13 +23,15 @@ export const FacetFiltersContextProvider = ({
   children,
   uai,
   venueFilter,
+  domainFilter,
 }: {
   children: ReactNode | ReactNode[]
   uai?: string | null
   venueFilter?: VenueResponse | null
+  domainFilter?: number | null
 }): JSX.Element => {
   const [facetFilters, setFacetFilters] = useState<Facets>([
-    ...getDefaultFacetFilterUAICodeValue(uai, venueFilter),
+    ...getDefaultFacetFilterUAICodeValue(uai, venueFilter, domainFilter),
   ])
 
   const value = useMemo(

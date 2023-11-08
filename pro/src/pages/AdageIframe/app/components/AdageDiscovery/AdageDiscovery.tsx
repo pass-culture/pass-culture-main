@@ -85,9 +85,11 @@ const mockVenue = {
 }
 
 export const AdageDiscovery = () => {
+  const params = new URLSearchParams(location.search)
   const [domainsOptions, setDomainsOptions] = useState<Option<number>[]>([])
 
   const notification = useNotification()
+  const adageAuthToken = params.get('token')
 
   useEffect(() => {
     const getAllDomains = async () => {
@@ -178,9 +180,11 @@ export const AdageDiscovery = () => {
 
               return (
                 <DomainsCard
+                  key={`domains-${elm.value}`}
                   title={elm.label}
                   color={colorAndMotif.color}
                   src={colorAndMotif.src}
+                  href={`/adage-iframe?token=${adageAuthToken}&domain=${elm.value}`}
                 />
               )
             })}

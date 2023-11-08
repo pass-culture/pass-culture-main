@@ -1,13 +1,13 @@
 import React, { createContext, ReactNode, useMemo, useReducer } from 'react'
 
 import { VenueResponse } from 'apiClient/adage'
+import { Option, Filters } from 'pages/AdageIframe/app/types'
 
 import {
   filtersReducer,
   FiltersReducerAction,
 } from '../components/OffersInstantSearch/OffersSearch/filtersReducer'
 import { INITIAL_FILTERS } from '../constants'
-import { Filters } from '../types'
 
 type FiltersContextType = {
   currentFilters: Filters
@@ -25,14 +25,17 @@ const FiltersContext = createContext<FiltersContextType>(
 
 export const FiltersContextProvider = ({
   venueFilter,
+  domainFilter,
   children,
 }: {
   venueFilter?: VenueResponse | null
+  domainFilter?: Option<number> | null
   children: ReactNode | ReactNode[]
 }): JSX.Element => {
   const [currentFilters, dispatchCurrentFilters] = useReducer(filtersReducer, {
     ...INITIAL_FILTERS,
     onlyInMyDpt: venueFilter ? false : INITIAL_FILTERS.onlyInMyDpt,
+    domains: domainFilter ? [domainFilter] : [],
   })
 
   const value = useMemo(
