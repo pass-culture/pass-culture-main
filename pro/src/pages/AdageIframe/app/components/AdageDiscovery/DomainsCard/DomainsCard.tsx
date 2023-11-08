@@ -2,18 +2,22 @@ import cn from 'classnames'
 
 import styles from './DomainsCard.module.scss'
 
-interface DomainsCardProps {
+export interface DomainsCardProps {
   title: string
   color: string
   src: string
+  href: string
 }
 
-const DomainsCard = ({ title, color, src }: DomainsCardProps) => {
+const DomainsCard = ({ title, color, src, href }: DomainsCardProps) => {
   return (
-    <div className={cn(styles['container'], styles[`container-${color}`])}>
+    <a
+      className={cn(styles['container'], styles[`container-${color}`])}
+      href={href}
+    >
       <img src={src} alt="" className={styles['container-img']} />
       <div className={styles['container-title']}>{title}</div>
-    </div>
+    </a>
   )
 }
 
