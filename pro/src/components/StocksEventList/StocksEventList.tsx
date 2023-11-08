@@ -188,14 +188,16 @@ const StocksEventList = ({
         await api.deleteAllFilteredStocks(offerId, {
           date: dateFilter === '' ? null : dateFilter,
           time:
-            hourFilter === ''
+            timeFilter === ''
               ? null
               : convertFromLocalTimeToVenueTimezoneInUtc(
-                  hourFilter,
+                  timeFilter,
                   departmentCode
                 ),
           price_category_id:
-            priceCategoryFilter === '' ? null : parseInt(priceCategoryFilter),
+            priceCategoryIdFilter === ''
+              ? null
+              : parseInt(priceCategoryIdFilter),
         })
       } else {
         // Otherwise, use the bulk delete stocks by id route
