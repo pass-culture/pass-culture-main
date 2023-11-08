@@ -1,6 +1,6 @@
 import cn from 'classnames'
 import { FormikProvider, useFormik } from 'formik'
-import React, { useState } from 'react'
+import React, { useEffect, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 
 import { api } from 'apiClient/api'
@@ -44,12 +44,12 @@ import { getValidationSchema } from './validationSchema'
 
 export interface StocksThingProps {
   offer: IndividualOffer
-  stocks: GetOfferStockResponseModel[]
 }
 
-const StocksThing = ({ offer, stocks }: StocksThingProps): JSX.Element => {
+const StocksThing = ({ offer }: StocksThingProps): JSX.Element => {
   const mode = useOfferWizardMode()
   const navigate = useNavigate()
+  const [stocks, setStocks] = useState<GetOfferStockResponseModel[]>([])
   const notify = useNotification()
   const { setOffer, subCategories } = useIndividualOfferContext()
 
@@ -60,6 +60,16 @@ const StocksThing = ({ offer, stocks }: StocksThingProps): JSX.Element => {
   const [isActivationCodeFormVisible, setIsActivationCodeFormVisible] =
     useState(false)
   const [isDeleteConfirmVisible, setIsDeleteConfirmVisible] = useState(false)
+
+  useEffect(() => {
+    async function loadStocks() {
+      const response = await api.getStocks(offer.id)
+      setStocks(response.stocks)
+    }
+
+    // eslint-disable-next-line @typescript-eslint/no-floating-promises
+    loadStocks()
+  }, [])
 
   /* istanbul ignore next: DEBT, TO FIX */
   const isDisabled = isOfferDisabled(offer.status)
@@ -127,6 +137,7 @@ const StocksThing = ({ offer, stocks }: StocksThingProps): JSX.Element => {
   const initialValues = buildInitialValues(offer, stocks)
   const formik = useFormik({
     initialValues,
+    enableReinitialize: true, // use fetched stocks after loading
     onSubmit,
     validationSchema: getValidationSchema(minQuantity),
   })

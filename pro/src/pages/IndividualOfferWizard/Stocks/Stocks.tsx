@@ -1,69 +1,17 @@
-import React, { useEffect, useState } from 'react'
-import { useSearchParams } from 'react-router-dom'
+import React from 'react'
 
-import { api } from 'apiClient/api'
-import { GetOfferStockResponseModel, StocksOrderedBy } from 'apiClient/v1'
-import { StocksEvent } from 'components/StocksEventList/StocksEventList'
 import { useIndividualOfferContext } from 'context/IndividualOfferContext'
 import { OFFER_WIZARD_MODE } from 'core/Offers/constants'
 import { useOfferWizardMode } from 'hooks'
 import IndivualOfferLayout from 'screens/IndividualOffer/IndivualOfferLayout/IndivualOfferLayout'
 import { getTitle } from 'screens/IndividualOffer/IndivualOfferLayout/utils/getTitle'
 import { StocksEventCreation } from 'screens/IndividualOffer/StocksEventCreation/StocksEventCreation'
-import StocksEventEdition from 'screens/IndividualOffer/StocksEventEdition/StocksEventEdition'
 import StocksThing from 'screens/IndividualOffer/StocksThing/StocksThing'
 import Spinner from 'ui-kit/Spinner/Spinner'
-
-import { serializeStockEvents } from './serializeStockEvents'
 
 const Stocks = (): JSX.Element | null => {
   const { offer, setOffer } = useIndividualOfferContext()
   const mode = useOfferWizardMode()
-  const [stockEvents, setStockEvents] = useState<StocksEvent[]>([])
-  const [stocks, setStocks] = useState<GetOfferStockResponseModel[]>([])
-  const [stockCount, setStockCount] = useState<number>(0)
-  const [searchParams] = useSearchParams()
-  const page = searchParams.get('page')
-  const date = searchParams.get('date')
-  const time = searchParams.get('time')
-  const priceCategoryId = searchParams.get('priceCategoryId')
-  const orderBy = searchParams.get('orderBy')
-  const orderByDesc = searchParams.get('orderByDesc')
-
-  useEffect(() => {
-    async function loadStocks() {
-      if (!offer) {
-        return
-      }
-      const response = await api.getStocks(
-        offer.id,
-        date,
-        time,
-        priceCategoryId ? Number(priceCategoryId) : undefined,
-        (orderBy as StocksOrderedBy) ?? undefined,
-        orderByDesc ? orderByDesc === '1' : undefined,
-        Number(page || 1)
-      )
-
-      if (!ignore) {
-        if (offer?.isEvent) {
-          setStockEvents(serializeStockEvents(response.stocks))
-          setStockCount(response.stock_count)
-        } else {
-          setStocks(response.stocks)
-        }
-      }
-    }
-
-    // we set ignore variable to avoid race conditions
-    // see react doc:  https://react.dev/reference/react/useEffect#fetching-data-with-effects
-    let ignore = false
-    // eslint-disable-next-line @typescript-eslint/no-floating-promises
-    loadStocks()
-    return () => {
-      ignore = true
-    }
-  }, [page, date, time, priceCategoryId, orderBy, orderByDesc])
 
   // Here we display a spinner because when the router transitions from
   // Informations form to Stocks form the setOffer after the submit is not
@@ -71,9 +19,6 @@ const Stocks = (): JSX.Element | null => {
   // This is a temporary fix until we use a better pattern than the IndividualOfferWizard
   // to share the offer context
   if (offer === null || !offer.priceCategories) {
-    // we don't want to display the spinner when stocks are loading
-    // it really looks bad for the stocks pagination
-    // (the spinner is displayed each time we change page)
     return <Spinner />
   }
 
@@ -86,21 +31,18 @@ const Stocks = (): JSX.Element | null => {
     >
       {offer.isEvent ? (
         mode === OFFER_WIZARD_MODE.CREATION ? (
-          <StocksEventCreation
-            offer={offer}
-            stocks={stockEvents}
-            setStocks={setStockEvents}
-            stockCount={stockCount}
-          />
+          <StocksEventCreation offer={offer} />
         ) : (
-          <StocksEventEdition
-            offer={offer}
-            stocks={stockEvents}
-            setStocks={setStockEvents}
-          />
+          <div />
+          // TODO: implement edition
+          // <StocksEventEdition
+          //   offer={offer}
+          //   stocks={stockEvents}
+          //   setStocks={setStockEvents}
+          // />
         )
       ) : (
-        <StocksThing offer={offer} stocks={stocks} />
+        <StocksThing offer={offer} />
       )}
     </IndivualOfferLayout>
   )

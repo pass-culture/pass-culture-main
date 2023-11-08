@@ -4,7 +4,6 @@ import { useNavigate } from 'react-router-dom'
 import DialogBox from 'components/DialogBox'
 import { OFFER_WIZARD_STEP_IDS } from 'components/IndividualOfferBreadcrumb/constants'
 import StocksEventList from 'components/StocksEventList'
-import { StocksEvent } from 'components/StocksEventList/StocksEventList'
 import { IndividualOffer } from 'core/Offers/types'
 import { getIndividualOfferUrl } from 'core/Offers/utils/getIndividualOfferUrl'
 import { useOfferWizardMode } from 'hooks'
@@ -23,36 +22,23 @@ import styles from './StocksEventCreation.module.scss'
 
 export interface StocksEventCreationProps {
   offer: IndividualOffer
-  stocks: StocksEvent[]
-  setStocks: (stocks: StocksEvent[]) => void
-  stockCount: number
 }
 
 export const StocksEventCreation = ({
   offer,
-  stocks,
-  setStocks,
-  stockCount,
 }: StocksEventCreationProps): JSX.Element => {
   const navigate = useNavigate()
   const mode = useOfferWizardMode()
   const notify = useNotification()
 
+  const [hasStocks, setHasStocks] = useState<boolean | null>(null)
   const [isRecurrenceModalOpen, setIsRecurrenceModalOpen] = useState(false)
   const onCancel = () => setIsRecurrenceModalOpen(false)
 
   const handleSubmit = async (values: RecurrenceFormValues) => {
-    const newStocks = await onSubmit(
-      values,
-      offer.venue.departementCode ?? '',
-      stocks,
-      offer.id,
-      notify
-    )
-    if (newStocks?.length) {
-      setStocks(newStocks)
-    }
+    await onSubmit(values, offer.venue.departementCode ?? '', offer.id, notify)
     setIsRecurrenceModalOpen(false)
+    setHasStocks(true)
   }
 
   const handlePreviousStep = () => {
@@ -68,7 +54,7 @@ export const StocksEventCreation = ({
 
   const handleNextStep = () => {
     // Check that there is at least one stock left
-    if (stocks.length < 1) {
+    if (!hasStocks) {
       notify.error('Veuillez renseigner au moins une date')
       return
     }
@@ -84,7 +70,7 @@ export const StocksEventCreation = ({
 
   return (
     <div className={styles['container']}>
-      {stocks.length === 0 && (
+      {hasStocks === false && (
         <HelpSection className={styles['help-section']} />
       )}
 
@@ -97,15 +83,13 @@ export const StocksEventCreation = ({
         Ajouter une ou plusieurs dates
       </Button>
 
-      {stocks.length !== 0 && (
+      {hasStocks !== false && (
         <StocksEventList
           className={styles['stock-section']}
-          stocks={stocks}
-          setStocks={setStocks}
           priceCategories={offer.priceCategories ?? []}
           departmentCode={offer.venue.departementCode}
           offerId={offer.id}
-          stockCount={stockCount}
+          onStocksLoad={setHasStocks}
         />
       )}
 
