@@ -1,8 +1,11 @@
+import { format } from 'date-fns'
 import endOfDay from 'date-fns/endOfDay'
 
 import { StockCreationBodyModel, StockEditionBodyModel } from 'apiClient/v1'
 import { StockEventFormValues } from 'screens/IndividualOffer/StocksEventEdition/StockFormList/types'
 import {
+  FORMAT_HH_mm,
+  FORMAT_ISO_DATE_ONLY,
   getToday,
   isDateValid,
   toISOStringWithoutMilliseconds,
@@ -51,6 +54,20 @@ export const buildDateTime = (date: string, time: string) => {
     parseInt(hours),
     parseInt(minutes)
   )
+}
+
+export const convertLocalTimeToUTCTime = (
+  time: string,
+  departementCode?: string | null
+) => {
+  const date = format(new Date(), FORMAT_ISO_DATE_ONLY)
+  const localDateTime = buildDateTime(date, time)
+  const utcDateTime = getUtcDateTimeFromLocalDepartement(
+    localDateTime,
+    departementCode
+  )
+
+  return format(utcDateTime, FORMAT_HH_mm)
 }
 
 export const serializeBeginningDateTime = (
