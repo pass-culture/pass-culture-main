@@ -19,8 +19,10 @@ import styles from './AppLayout.module.scss'
 
 export const AppLayout = ({
   venueFilter,
+  domainFilter,
 }: {
   venueFilter: VenueResponse | null
+  domainFilter: number | null
 }): JSX.Element => {
   const { adageUser } = useAdageUser()
   const { pathname } = useLocation()
@@ -60,7 +62,12 @@ export const AppLayout = ({
               <Route
                 key={path}
                 path={path}
-                element={<Component venueFilter={venueFilter} />}
+                element={
+                  <Component
+                    venueFilter={venueFilter}
+                    domainFilter={domainFilter}
+                  />
+                }
               />
             )
           })}

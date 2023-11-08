@@ -2,7 +2,7 @@ import { screen, waitFor } from '@testing-library/react'
 import { userEvent } from '@testing-library/user-event'
 
 import { AdageFrontRoles, AuthenticatedResponse } from 'apiClient/adage'
-import { apiAdage } from 'apiClient/api'
+import { apiAdage, api } from 'apiClient/api'
 import Notification from 'components/Notification/Notification'
 import { GET_DATA_ERROR_MESSAGE } from 'core/shared'
 import {
@@ -10,7 +10,6 @@ import {
   FiltersContextProvider,
 } from 'pages/AdageIframe/app/providers'
 import { AdageUserContextProvider } from 'pages/AdageIframe/app/providers/AdageUserContext'
-import * as pcapi from 'pages/AdageIframe/repository/pcapi/pcapi'
 import {
   defaultUseInfiniteHitsReturn,
   defaultUseStatsReturn,
@@ -85,6 +84,13 @@ vi.mock('../Offers/Offers', () => {
 })
 
 vi.mock('apiClient/api', () => ({
+  api: {
+    listEducationalDomains: vi.fn(() => [
+      { id: 1, name: 'Danse' },
+      { id: 2, name: 'Architecture' },
+      { id: 3, name: 'Arts' },
+    ]),
+  },
   apiAdage: {
     getEducationalOffersCategories: vi.fn(() => ({
       categories: [],
@@ -179,13 +185,9 @@ describe('offersSearch component', () => {
   beforeEach(() => {
     props = {
       venueFilter: null,
+      domainFilter: null,
       setGeoRadius: setGeoRadiusMock,
     }
-    vi.spyOn(pcapi, 'getEducationalDomains').mockResolvedValue([
-      { id: 1, name: 'Danse' },
-      { id: 2, name: 'Architecture' },
-      { id: 3, name: 'Arts' },
-    ])
     vi.spyOn(apiAdage, 'getEducationalOffersCategories').mockResolvedValue({
       categories: [],
       subcategories: [],
@@ -385,6 +387,22 @@ describe('offersSearch component', () => {
     expect(tagVenue).toBeInTheDocument()
   })
 
+  it('should filters with artistic domains id if provided in url', async () => {
+    renderOffersSearchComponent(
+      {
+        ...props,
+        domainFilter: 1,
+      },
+      user
+    )
+
+    const tagDomain = await screen.findByRole('button', {
+      name: /Danse/,
+    })
+
+    expect(tagDomain).toBeInTheDocument()
+  })
+
   it('should go back to the localisation main menu when reopening the localisation multiselect after having submitted it with no values selected', async () => {
     renderOffersSearchComponent(props, user)
 
@@ -429,7 +447,7 @@ describe('offersSearch component', () => {
   })
 
   it('should show an error message notification when domains could not be fetched', async () => {
-    vi.spyOn(pcapi, 'getEducationalDomains').mockRejectedValueOnce(null)
+    vi.spyOn(api, 'listEducationalDomains').mockRejectedValueOnce(null)
 
     renderOffersSearchComponent(props, user)
 

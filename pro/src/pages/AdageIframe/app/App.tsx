@@ -23,14 +23,15 @@ import {
 import { AdageUserContextProvider } from './providers/AdageUserContext'
 
 export const App = (): JSX.Element => {
+  const params = new URLSearchParams(window.location.search)
   const [user, setUser] = useState<AuthenticatedResponse | null>()
   const [isLoading, setIsLoading] = useState<boolean>(true)
   const [venueFilter, setVenueFilter] = useState<VenueResponse | null>(null)
+  const domainId = Number(params.get('domain'))
 
   const notification = useNotification()
 
   useEffect(() => {
-    const params = new URLSearchParams(window.location.search)
     const siret = params.get('siret')
     const venueId = Number(params.get('venue'))
     const getRelativeOffers = params.get('all') === 'true'
@@ -98,12 +99,16 @@ export const App = (): JSX.Element => {
   return (
     <AdageUserContextProvider adageUser={user}>
       <FiltersContextProvider venueFilter={venueFilter}>
-        <FacetFiltersContextProvider uai={user?.uai} venueFilter={venueFilter}>
+        <FacetFiltersContextProvider
+          uai={user?.uai}
+          venueFilter={venueFilter}
+          domainFilter={domainId}
+        >
           {user?.role &&
           [AdageFrontRoles.READONLY, AdageFrontRoles.REDACTOR].includes(
             user.role
           ) ? (
-            <AppLayout venueFilter={venueFilter} />
+            <AppLayout venueFilter={venueFilter} domainFilter={domainId} />
           ) : (
             <UnauthenticatedError />
           )}

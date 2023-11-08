@@ -37,6 +37,7 @@ export enum LocalisationFilterStates {
 
 export interface SearchProps {
   venueFilter: VenueResponse | null
+  domainFilter: number | null
   setGeoRadius: (geoRadius: number) => void
 }
 
@@ -54,6 +55,7 @@ export interface SearchFormValues {
 
 export const OffersSearch = ({
   venueFilter,
+  domainFilter,
   setGeoRadius,
 }: SearchProps): JSX.Element => {
   const { setFacetFilters } = useContext(FacetFiltersContext)
@@ -89,6 +91,12 @@ export const OffersSearch = ({
     const getAllDomains = async () => {
       try {
         const result = await api.listEducationalDomains()
+
+        const domainFromPath =
+          domainFilter && result.find((elm) => elm.id === domainFilter)
+
+        domainFromPath &&
+          (await formik.setFieldValue('domains', [domainFromPath.id]))
 
         return setDomainsOptions(
           result.map(({ id, name }) => ({ value: id, label: name }))
@@ -150,10 +158,14 @@ export const OffersSearch = ({
   }
 
   const formik = useFormik<SearchFormValues>({
-    initialValues: { ...ADAGE_FILTERS_DEFAULT_VALUES, venue: venueFilter },
+    initialValues: {
+      ...ADAGE_FILTERS_DEFAULT_VALUES,
+      venue: venueFilter,
+    },
     enableReinitialize: true,
     onSubmit: handleSubmit,
   })
+
   const getActiveLocalisationFilter = () => {
     if (formik.values.departments.length > 0) {
       return LocalisationFilterStates.DEPARTMENTS
@@ -168,6 +180,7 @@ export const OffersSearch = ({
 
   const offerFilterRef = useRef<HTMLDivElement>(null)
   const isOfferFiltersVisible = useIsElementVisible(offerFilterRef)
+
   return (
     <>
       <FormikContext.Provider value={formik}>
