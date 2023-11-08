@@ -658,7 +658,7 @@ def _upsert_product_stock(
 @rate_limiting.api_key_high_rate_limiter()
 def get_product_categories() -> serialization.GetProductCategoriesResponse:
     """
-    Get all the product categories, their conditional fields, and whether they are required for event creation.
+    Get all the product categories, their conditional fields, and whether they are required for product creation.
     """
     # Individual offers API only relies on subcategories, not categories.
     # To make it simpler for the provider using this API, we only expose subcategories and call them categories.
