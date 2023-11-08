@@ -10,6 +10,7 @@ import { SortingMode, useColumnSorting } from 'hooks/useColumnSorting'
 import useNotification from 'hooks/useNotification'
 import { usePagination } from 'hooks/usePagination'
 import fullTrashIcon from 'icons/full-trash.svg'
+import { convertLocalTimeToUTCTime } from 'screens/IndividualOffer/StocksEventEdition/adapters/serializers'
 import { getPriceCategoryOptions } from 'screens/IndividualOffer/StocksEventEdition/getPriceCategoryOptions'
 import { Button } from 'ui-kit'
 import { ButtonVariant } from 'ui-kit/Button/types'
@@ -155,7 +156,10 @@ const StocksEventList = ({
       if (areAllChecked) {
         await api.deleteAllFilteredStocks(offerId, {
           date: dateFilter === '' ? null : dateFilter,
-          time: hourFilter === '' ? null : hourFilter,
+          time:
+            hourFilter === ''
+              ? null
+              : convertLocalTimeToUTCTime(hourFilter, departmentCode),
           price_category_id:
             priceCategoryFilter === '' ? null : parseInt(priceCategoryFilter),
         })
