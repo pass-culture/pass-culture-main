@@ -16,10 +16,7 @@ def check_incident_bookings(bookings: list[bookings_models.Booking]) -> bool:
         return False
 
     booking_incident_already_created_or_validated = (
-        finance_models.BookingFinanceIncident.query.options(
-            sa.orm.joinedload(finance_models.BookingFinanceIncident.incident)
-        )
-        .join(finance_models.FinanceIncident)
+        finance_models.BookingFinanceIncident.query.join(finance_models.FinanceIncident)
         .filter(
             sa.and_(
                 finance_models.BookingFinanceIncident.bookingId.in_([booking.id for booking in bookings]),
@@ -40,10 +37,7 @@ def check_incident_bookings(bookings: list[bookings_models.Booking]) -> bool:
 
 def check_incident_collective_booking(collective_booking: educational_models.CollectiveBooking) -> bool:
     pending_incident_on_same_booking = (
-        finance_models.BookingFinanceIncident.query.options(
-            sa.orm.joinedload(finance_models.BookingFinanceIncident.incident)
-        )
-        .join(finance_models.FinanceIncident)
+        finance_models.BookingFinanceIncident.query.join(finance_models.FinanceIncident)
         .filter(
             sa.and_(
                 finance_models.BookingFinanceIncident.collectiveBookingId == collective_booking.id,
@@ -54,7 +48,6 @@ def check_incident_collective_booking(collective_booking: educational_models.Col
         )
         .count()
     )
-
     if pending_incident_on_same_booking:
         flash("Cette réservation fait déjà l'objet d'un incident au statut 'créé' ou 'validé'.", "warning")
         return False

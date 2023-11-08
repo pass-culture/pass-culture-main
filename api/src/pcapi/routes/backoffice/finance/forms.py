@@ -22,7 +22,7 @@ class IncidentCompensationModes(enum.Enum):
     COMPENSATE_ON_BOOKINGS = "Récupérer l'argent sur les prochaines réservations"
 
 
-class IncidentCreationForm(FlaskForm):
+class BaseIncidentCreationForm(FlaskForm):
     class Meta:
         locales = ["fr_FR", "fr"]
 
@@ -37,13 +37,18 @@ class IncidentCreationForm(FlaskForm):
 
     origin = fields.PCStringField("Origine de la demande")
 
+
+class CollectiveIncidentCreationForm(BaseIncidentCreationForm):
+    pass
+
+
+class BookingIncidentForm(empty_forms.BatchForm, BaseIncidentCreationForm):
+    class Meta:
+        locales = ["fr_FR", "fr"]
+
     total_amount = fields.PCDecimalField(
         "Montant de l'incident à récupérer (sans le calcul de barème)", use_locale=True, validators=[Optional()]
     )
-
-
-class BookingIncidentForm(empty_forms.BatchForm, IncidentCreationForm):
-    pass
 
 
 class IncidentValidationForm(FlaskForm):
