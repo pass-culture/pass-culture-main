@@ -9,6 +9,7 @@ import {
   ALL_COLLECTIVE_OFFER_TYPE,
   ALL_CREATION_MODES,
   ALL_EVENT_PERIODS,
+  ALL_FORMATS,
   ALL_OFFERERS,
   ALL_OFFERS,
   ALL_STATUS,
@@ -145,6 +146,7 @@ describe('screen Offers', () => {
       periodBeginningDate: ALL_EVENT_PERIODS,
       periodEndingDate: ALL_EVENT_PERIODS,
       collectiveOfferType: ALL_COLLECTIVE_OFFER_TYPE,
+      format: ALL_FORMATS,
     })
   })
 
@@ -573,6 +575,7 @@ describe('screen Offers', () => {
       periodBeginningDate: DEFAULT_SEARCH_FILTERS.periodBeginningDate,
       periodEndingDate: DEFAULT_SEARCH_FILTERS.periodEndingDate,
       collectiveOfferType: ALL_COLLECTIVE_OFFER_TYPE,
+      format: ALL_FORMATS,
     })
   })
 
@@ -718,5 +721,46 @@ describe('screen Offers', () => {
       expect(thirdOfferCheckbox).not.toBeChecked()
       expect(fourthOfferCheckbox).not.toBeChecked()
     })
+  })
+
+  it('should display the collective offers format when the ff is enabled', () => {
+    renderOffers(
+      { ...props, audience: Audience.COLLECTIVE },
+      {
+        features: {
+          list: [{ isActive: true, nameKey: 'WIP_ENABLE_FORMAT' }],
+        },
+      }
+    )
+
+    expect(screen.getByRole('combobox', { name: 'Format' }))
+  })
+
+  it('should filter on the format when the ff is enabled', async () => {
+    renderOffers(
+      { ...props, audience: Audience.COLLECTIVE },
+      {
+        features: {
+          list: [{ isActive: true, nameKey: 'WIP_ENABLE_FORMAT' }],
+        },
+      }
+    )
+
+    const formatSelect = screen.getByRole('combobox', { name: 'Format' })
+
+    await userEvent.selectOptions(
+      formatSelect,
+      screen.getByRole('option', { name: 'Concert' })
+    )
+
+    const searchButton = screen.getByText('Lancer la recherche')
+
+    await userEvent.click(searchButton)
+
+    expect(props.redirectWithUrlFilters).toHaveBeenCalledWith(
+      expect.objectContaining({
+        format: 'Concert',
+      })
+    )
   })
 })

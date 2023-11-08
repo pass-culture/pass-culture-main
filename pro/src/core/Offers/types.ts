@@ -6,18 +6,20 @@ import {
   PriceCategoryResponseModel,
   GetOfferVenueResponseModel,
   GetOfferLastProviderResponseModel,
+  EacFormat,
 } from 'apiClient/v1'
 import { CropParams } from 'components/ImageUploader'
 import { CollectiveOfferStatus } from 'core/OfferEducational'
 import { AccessibiltyFormValues } from 'core/shared'
 
-import { ALL_STATUS } from './constants'
+import { ALL_FORMATS, ALL_STATUS } from './constants'
 
 export type SearchFiltersParams = {
   nameOrIsbn: string
   offererId: string
   venueId: string
   categoryId: string
+  format: EacFormat | typeof ALL_FORMATS
   status: OfferStatus | CollectiveOfferStatus | typeof ALL_STATUS
   creationMode: string
   collectiveOfferType: string
