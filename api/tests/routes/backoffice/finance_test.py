@@ -665,7 +665,7 @@ class CreateIncidentOnCollectiveBookingTest(PostEndpointHelper):
 
         response = self.post_to_endpoint(
             authenticated_client,
-            form={"total_amount": 40, "origin": "Demande E-mail", "kind": finance_models.IncidentType.OVERPAYMENT.name},
+            form={"origin": "Demande E-mail", "kind": finance_models.IncidentType.OVERPAYMENT.name},
             collective_booking_id=collective_booking.id,
         )
 
@@ -679,24 +679,7 @@ class CreateIncidentOnCollectiveBookingTest(PostEndpointHelper):
         booking_incidents = finance_incidents[0].booking_finance_incidents
         assert len(booking_incidents) == 1
         assert booking_incidents[0].collectiveBookingId == collective_booking.id
-        assert booking_incidents[0].newTotalAmount == 6000
-
-    def test_incident_amount_superior_to_booking_amount(self, authenticated_client):
-        collective_booking = educational_factories.ReimbursedCollectiveBookingFactory(
-            pricings=[
-                finance_factories.CollectivePricingFactory(status=finance_models.PricingStatus.INVOICED, amount=-4500)
-            ],
-            collectiveStock__price=50,
-        )
-
-        response = self.post_to_endpoint(
-            authenticated_client,
-            form={"total_amount": 55, "origin": "Demande E-mail", "kind": finance_models.IncidentType.OVERPAYMENT.name},
-            collective_booking_id=collective_booking.id,
-        )
-
-        assert response.status_code == 303
-        assert finance_models.FinanceIncident.query.count() == 0
+        assert booking_incidents[0].newTotalAmount == 0
 
     @pytest.mark.parametrize(
         "incident_status,expect_incident_creation",
@@ -718,7 +701,7 @@ class CreateIncidentOnCollectiveBookingTest(PostEndpointHelper):
 
         response = self.post_to_endpoint(
             authenticated_client,
-            form={"total_amount": 50, "origin": "Demande E-mail", "kind": finance_models.IncidentType.OVERPAYMENT.name},
+            form={"origin": "Demande E-mail", "kind": finance_models.IncidentType.OVERPAYMENT.name},
             collective_booking_id=collective_booking.id,
         )
 
