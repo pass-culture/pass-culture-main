@@ -70,7 +70,7 @@ DATA_VERSION_0 = {
             "events": [
                 {
                     "id": "CDFG5",
-                    "allocine_id": 14790,
+                    "allocine_id": "",
                     "title": "Mon voisin Totoro",
                     "director": "Hayao Miyazaki",
                     "release_date": "19991208",
