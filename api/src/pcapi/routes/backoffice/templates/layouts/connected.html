@@ -174,7 +174,7 @@
                   <div class="alert alert-{{ category }} alert-dismissible fade show mb-0 px-5 rounded-0"
                        role="alert">
                     <p class="mx-3 mb-0">
-                      {{ message }}
+                      {{ message | safe }}
                       <button type="button"
                               class="btn-close"
                               data-bs-dismiss="alert"
