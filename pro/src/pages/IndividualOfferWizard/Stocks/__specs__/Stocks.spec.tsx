@@ -55,7 +55,8 @@ describe('screens:Stocks', () => {
 
     vi.spyOn(api, 'getStocks').mockResolvedValue({
       stocks: [individualGetOfferStockResponseModelFactory()],
-      stock_count: 1,
+      hasStocks: true,
+      stockCount: 1,
     })
   })
 
