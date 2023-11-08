@@ -18,6 +18,7 @@ Chart.defaults.scales.time.time.displayFormats = {
   day: FORMAT_DD_MM_YYYY,
   month: 'MMMM',
 }
+Chart.defaults.scales.time.time.minUnit = 'day'
 Chart.defaults.scales.time.ticks.font = { weight: '600' }
 Chart.defaults.scales.time.ticks.color = chartColors.black
 Chart.defaults.scales.time.time.tooltipFormat = FORMAT_DD_MM_YYYY
