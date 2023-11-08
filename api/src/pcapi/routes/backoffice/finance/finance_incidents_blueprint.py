@@ -250,7 +250,7 @@ def get_collective_booking_incident_creation_form(collective_booking_id: int) ->
         .joinedload(educational_models.CollectiveStock.collectiveOffer)
         .load_only(educational_models.CollectiveOffer.name),
     ).get_or_404(collective_booking_id)
-    form = forms.IncidentCreationForm(kind=finance_models.IncidentType.OVERPAYMENT.name)
+    form = forms.CollectiveIncidentCreationForm(kind=finance_models.IncidentType.OVERPAYMENT.name)
     additional_data = _initialize_collective_booking_additional_data(collective_booking)
 
     return render_template(
@@ -324,7 +324,8 @@ def create_individual_booking_incident() -> utils.BackofficeResponse:
 @finance_incidents_blueprint.route("/create-from-collective-booking/<int:collective_booking_id>/", methods=["POST"])
 @utils.permission_required(perm_models.Permissions.MANAGE_INCIDENTS)
 def create_collective_booking_incident(collective_booking_id: int) -> utils.BackofficeResponse:
-    form = forms.IncidentCreationForm()
+    redirect_url = request.referrer or url_for("backoffice_web.collective_bookings.list_collective_bookings")
+    form = forms.CollectiveIncidentCreationForm()
 
     if not form.validate():
         flash(utils.build_form_error_msg(form), "warning")
@@ -333,22 +334,27 @@ def create_collective_booking_incident(collective_booking_id: int) -> utils.Back
     collective_booking = educational_models.CollectiveBooking.query.get_or_404(collective_booking_id)
     is_commercial_gesture = form.kind.data == finance_models.IncidentType.COMMERCIAL_GESTURE.name
 
-    if not validation.check_incident_collective_booking(collective_booking) or not validation.check_total_amount(
-        form.total_amount.data, [collective_booking], not is_commercial_gesture
-    ):
-        return redirect(request.referrer or url_for("backoffice_web.collective_bookings.list_collective_bookings"), 303)
+    booking_has_no_incident = validation.check_incident_collective_booking(collective_booking)
+    is_valid_amount = validation.check_total_amount(
+        input_amount=collective_booking.total_amount,
+        bookings=[collective_booking],
+        check_positive_amount=not is_commercial_gesture,
+    )
+
+    if not (booking_has_no_incident and is_valid_amount):
+        return redirect(redirect_url, 303)
 
     incident = _create_incident_with_log(form.kind.data, collective_booking.venueId, form.origin.data)
 
     collective_booking_incident = finance_models.BookingFinanceIncident(
         collectiveBookingId=collective_booking_id,
         incidentId=incident.id,
-        newTotalAmount=finance_utils.to_eurocents(collective_booking.total_amount - form.total_amount.data),
+        newTotalAmount=0,
     )
     repository.save(collective_booking_incident)
 
     flash("L'incident a bien été créé.", "success")
-    return redirect(request.referrer or url_for("backoffice_web.collective_bookings.list_collective_bookings"), 303)
+    return redirect(redirect_url, 303)
 
 
 def _create_incident_with_log(
