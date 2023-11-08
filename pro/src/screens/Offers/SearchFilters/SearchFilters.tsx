@@ -1,8 +1,10 @@
 import React, { FormEvent } from 'react'
 
+import { EacFormat } from 'apiClient/v1'
 import FormLayout from 'components/FormLayout/FormLayout'
 import {
   ALL_CATEGORIES_OPTION,
+  ALL_FORMATS_OPTION,
   ALL_VENUES_OPTION,
   COLLECTIVE_OFFER_TYPES_OPTIONS,
   CREATION_MODES_OPTIONS,
@@ -12,6 +14,7 @@ import { Offerer, SearchFiltersParams } from 'core/Offers/types'
 import { hasSearchFilters } from 'core/Offers/utils'
 import { Audience } from 'core/shared'
 import { SelectOption } from 'custom_types/form'
+import useActiveFeature from 'hooks/useActiveFeature'
 import fullRefreshIcon from 'icons/full-refresh.svg'
 import strokeCloseIcon from 'icons/stroke-close.svg'
 import { Button, SubmitButton } from 'ui-kit'
@@ -52,6 +55,13 @@ const SearchFilters = ({
   categories,
   audience,
 }: SearchFiltersProps): JSX.Element => {
+  const isFormatActive = useActiveFeature('WIP_ENABLE_FORMAT')
+
+  const formats: SelectOption[] = Object.values(EacFormat).map((format) => ({
+    value: format,
+    label: format,
+  }))
+
   const updateSearchFilters = (
     newSearchFilters: Partial<SearchFiltersParams>
   ) => {
@@ -71,6 +81,12 @@ const SearchFilters = ({
 
   const storeSelectedCategory = (event: FormEvent<HTMLSelectElement>) => {
     updateSearchFilters({ categoryId: event.currentTarget.value })
+  }
+
+  const storeSelectedFormat = (event: FormEvent<HTMLSelectElement>) => {
+    updateSearchFilters({
+      format: event.currentTarget.value as EacFormat | 'all',
+    })
   }
 
   const storeCreationMode = (event: FormEvent<HTMLSelectElement>) => {
@@ -158,16 +174,29 @@ const SearchFilters = ({
             />
           </FieldLayout>
 
-          <FieldLayout label="Catégories" name="categorie">
-            <SelectInput
-              defaultOption={ALL_CATEGORIES_OPTION}
-              onChange={storeSelectedCategory}
-              disabled={disableAllFilters}
-              name="categorie"
-              options={categories}
-              value={selectedFilters.categoryId}
-            />
-          </FieldLayout>
+          {isFormatActive && audience === Audience.COLLECTIVE ? (
+            <FieldLayout label="Format" name="format">
+              <SelectInput
+                defaultOption={ALL_FORMATS_OPTION}
+                onChange={storeSelectedFormat}
+                disabled={disableAllFilters}
+                name="format"
+                options={formats}
+                value={selectedFilters.format}
+              />
+            </FieldLayout>
+          ) : (
+            <FieldLayout label="Catégories" name="categorie">
+              <SelectInput
+                defaultOption={ALL_CATEGORIES_OPTION}
+                onChange={storeSelectedCategory}
+                disabled={disableAllFilters}
+                name="categorie"
+                options={categories}
+                value={selectedFilters.categoryId}
+              />
+            </FieldLayout>
+          )}
 
           {audience === Audience.INDIVIDUAL && (
             <FieldLayout label="Mode de création" name="creationMode">
