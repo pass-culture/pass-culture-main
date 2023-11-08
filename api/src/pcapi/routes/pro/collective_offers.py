@@ -48,7 +48,8 @@ def get_collective_offers(
         period_beginning_date=query.period_beginning_date,
         period_ending_date=query.period_ending_date,
         offer_type=query.collective_offer_type,
-        formats=query.formats,
+        #   The format should be a list but for now we cannot send a list in the get_collective_offers query params
+        formats=[query.format] if query.format else None,
     )
 
     return collective_offers_serialize.ListCollectiveOffersResponseModel(
