@@ -16,6 +16,18 @@ import {
   FiltersContextProvider,
 } from '../providers'
 
+const isDiscoveryActive = {
+  features: {
+    list: [
+      {
+        nameKey: 'WIP_ENABLE_DISCOVERY',
+        isActive: true,
+      },
+    ],
+    initialized: true,
+  },
+}
+
 vi.mock(
   '../components/OffersInstantSearch/OffersSearch/Autocomplete/Autocomplete',
   () => {
@@ -106,7 +118,11 @@ vi.mock('@algolia/autocomplete-plugin-query-suggestions', () => {
   }
 })
 
-const renderApp = (venueFilter: VenueResponse | null, initialEntries = '/') => {
+const renderApp = (
+  venueFilter: VenueResponse | null,
+  initialEntries = '/',
+  storeOverrides: any = null
+) => {
   renderWithProviders(
     <>
       <FiltersContextProvider venueFilter={venueFilter}>
@@ -119,7 +135,10 @@ const renderApp = (venueFilter: VenueResponse | null, initialEntries = '/') => {
       ,
       <Notification />
     </>,
-    { initialRouterEntries: [initialEntries] }
+    {
+      storeOverrides: storeOverrides,
+      initialRouterEntries: [initialEntries],
+    }
   )
 }
 
@@ -177,6 +196,26 @@ describe('app', () => {
 
       expect(
         screen.getByRole('button', { name: /Lieu : Lib de Par's/ })
+      ).toBeInTheDocument()
+    })
+
+    it('should display venue when venueId is provided in url', async () => {
+      renderApp(venue, '/venue/1436', isDiscoveryActive)
+
+      await waitForElementToBeRemoved(() => screen.queryAllByTestId('spinner'))
+
+      expect(
+        screen.getByRole('button', { name: /Lieu : Lib de Par's/ })
+      ).toBeInTheDocument()
+    })
+    it('should display error messagee when venueId does not exist', async () => {
+      renderApp(venue, '/venue/999', isDiscoveryActive)
+      vi.spyOn(apiAdage, 'getVenueById').mockRejectedValue(null)
+
+      await waitForElementToBeRemoved(() => screen.queryAllByTestId('spinner'))
+
+      expect(
+        screen.getByText('Lieu inconnu. Tous les résultats sont affichés.')
       ).toBeInTheDocument()
     })
 

@@ -1,8 +1,11 @@
 import algoliasearch from 'algoliasearch/lite'
-import React, { useContext, useState } from 'react'
+import React, { useContext, useEffect, useState } from 'react'
 import { Configure, Index, InstantSearch } from 'react-instantsearch'
+import { useParams } from 'react-router-dom'
 
 import { VenueResponse } from 'apiClient/adage'
+import { apiAdage } from 'apiClient/api'
+import useNotification from 'hooks/useNotification'
 import {
   ALGOLIA_API_KEY,
   ALGOLIA_APP_ID,
@@ -38,11 +41,32 @@ export const OffersInstantSearch = ({
 }: {
   venueFilter: VenueResponse | null
 }): JSX.Element => {
-  const { facetFilters } = useContext(FacetFiltersContext)
+  const { facetFilters, setFacetFilters } = useContext(FacetFiltersContext)
 
   const [geoRadius, setGeoRadius] = useState<number>(DEFAULT_GEO_RADIUS)
   const { adageUser } = useAdageUser()
+  const { venueId } = useParams<{
+    venueId: string
+  }>()
+  const [venueFilterFromParam, setVenueFilterFromParam] =
+    useState<VenueResponse | null>(null)
 
+  const notification = useNotification()
+  useEffect(() => {
+    const getVenueById = async () => {
+      try {
+        const venueResponse = await apiAdage.getVenueById(Number(venueId))
+        setVenueFilterFromParam(venueResponse)
+        setFacetFilters([...facetFilters, [`venue.id:${venueId}`]])
+      } catch {
+        notification.error('Lieu inconnu. Tous les résultats sont affichés.')
+      }
+    }
+    if (venueId) {
+      // eslint-disable-next-line @typescript-eslint/no-floating-promises
+      getVenueById()
+    }
+  }, [venueId])
   return (
     <InstantSearch
       indexName={ALGOLIA_COLLECTIVE_OFFERS_INDEX}
@@ -70,7 +94,10 @@ export const OffersInstantSearch = ({
           distinct={false}
         />
         <AnalyticsContextProvider>
-          <OffersSearch venueFilter={venueFilter} setGeoRadius={setGeoRadius} />
+          <OffersSearch
+            venueFilter={venueFilter || venueFilterFromParam}
+            setGeoRadius={setGeoRadius}
+          />
         </AnalyticsContextProvider>
       </Index>
     </InstantSearch>
