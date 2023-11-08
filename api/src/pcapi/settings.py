@@ -231,6 +231,9 @@ UBBLE_MOCK_CONFIG_URL = os.environ.get("UBBLE_MOCK_CONFIG_URL", None)
 DAYS_BEFORE_UBBLE_QUICK_ACTION_REMINDER = 7 if IS_PROD else 0
 DAYS_BEFORE_UBBLE_LONG_ACTION_REMINDER = 21 if IS_PROD else 0
 
+
+# EHP SANDBOX
+CAN_RUN_SANDBOX = bool(int(os.environ.get("CAN_RUN_SANDBOX", 0)))
 # Sandbox users and unit tests default password - overridden by a secret password on cloud environments
 TEST_DEFAULT_PASSWORD = secrets_utils.get("TEST_DEFAULT_PASSWORD", "user@AZERTY123")
 
