@@ -41,6 +41,12 @@ export const routesAdage = [
     title: 'Recherche',
   },
   {
+    element: OffersInstantSearch,
+    parentPath: '/adage-iframe',
+    path: '/venue/:venueId',
+    title: 'Recherche',
+  },
+  {
     element: OffersForMyInstitution,
     parentPath: '/adage-iframe',
     path: '/mon-etablissement',
