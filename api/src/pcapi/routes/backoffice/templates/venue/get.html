@@ -9,6 +9,7 @@
 {% from "components/turbo/spinner.html" import build_loading_spinner with context %}
 {% import "components/clipboard.html" as clipboard %}
 {% extends "layouts/pro.html" %}
+{% set sync_zsell_aria_described_by_id = random_hash() %}
 {% block pro_main_content %}
   <div class="row row-cols-1 g-4 py-3 pc-strip-query-string">
     <div class="col">
@@ -326,6 +327,51 @@
                    target="_blank"
                    class="fw-bold link-primary">Offres associées</a>
               </p>
+              <div>
+                {% if zendesk_sell_synchronisation_form %}
+                  <button class="btn btn-outline-primary btn-sm"
+                          data-bs-toggle="modal"
+                          data-bs-target=".pc-sync-zsell-modal"
+                          type="button">
+                    <i class="bi bi-arrow-repeat"></i>
+                    Zendesk Sell
+                  </button>
+                  <div class="modal modal-lg fade pc-sync-zsell-modal"
+                       tabindex="-1"
+                       aria-describedby="{{ sync_zsell_aria_described_by_id }}"
+                       aria-hidden="true">
+                    <div class="modal-dialog modal-dialog-centered">
+                      <div class="modal-content">
+                        <form action="{{ url_for('backoffice_web.zendesk_sell.update_venue', venue_id=venue.id) }}"
+                              name="{{ url_for('backoffice_web.zendesk_sell.update_venue', venue_id=venue.id) | action_to_name }}"
+                              method="post"
+                              data-turbo="false">
+                          {{ zendesk_sell_synchronisation_form.csrf_token }}
+                          <div class="modal-header"
+                               id="{{ sync_zsell_aria_described_by_id }}">
+                            <h5 class="modal-title">Synchroniser le lieu {{ venue.name }} sur Zendesk Sell</h5>
+                          </div>
+                          <div class="modal-body row">
+                            <div class="">
+                              <i class="bi bi-exclamation-diamond-fill text-warning align-middle me-3 ms-2"
+                                 style="font-size: 3.1rem"></i>
+                              <span class="lead">Vérifier que l’id lieu est bien renseigné sur Zendesk Sell !</span>
+                            </div>
+                            {{ build_form_fields_group(zendesk_sell_synchronisation_form) }}
+                          </div>
+                          <div class="modal-footer">
+                            <button type="button"
+                                    class="btn btn-outline-primary"
+                                    data-bs-dismiss="modal">Annuler</button>
+                            <button type="submit"
+                                    class="btn btn-primary">Confirmer</button>
+                          </div>
+                        </form>
+                      </div>
+                    </div>
+                  </div>
+                {% endif %}
+              </div>
             </div>
           </div>
         </div>
