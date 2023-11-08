@@ -363,7 +363,7 @@ class GetIndividualOfferResponseModel(BaseModel, AccessibilityComplianceMixin):
 
 class GetStocksResponseModel(BaseModel):
     stocks: list[GetOfferStockResponseModel]
-    stock_count: int
+    stockCount: int
     hasStocks: bool
 
     class Config:
