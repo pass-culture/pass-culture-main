@@ -102,10 +102,17 @@ def _load_offerer_data(offerer_id: int) -> sa.engine.Row:
         .scalar_subquery()
     )
 
+    has_non_virtual_venues_query = (
+        sa.exists()
+        .where(offerers_models.Venue.managingOffererId == offerers_models.Offerer.id)
+        .where(~offerers_models.Venue.isVirtual)
+    )
+
     offerer_query = (
         db.session.query(
             offerers_models.Offerer,
             bank_informations_query.scalar_subquery().label("bank_informations"),
+            has_non_virtual_venues_query.label("has_non_virtual_venues"),
             adage_query.label("adage_information"),
             users_models.User.phoneNumber.label("creator_phone_number"),  # type: ignore[attr-defined]
         )
@@ -169,6 +176,9 @@ def _render_offerer_details(offerer_id: int, edit_offerer_form: offerer_forms.Ed
         delete_offerer_form=empty_forms.EmptyForm(),
         show_subscription_tab=show_subscription_tab,
         active_tab=request.args.get("active_tab", "history"),
+        zendesk_sell_synchronisation_form=empty_forms.EmptyForm()
+        if row.has_non_virtual_venues and utils.has_current_user_permission(perm_models.Permissions.MANAGE_PRO_ENTITY)
+        else None,
     )
 
 
