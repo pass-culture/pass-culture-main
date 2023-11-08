@@ -1,5 +1,7 @@
 from decimal import Decimal
 
+from pydantic.v1 import validator
+
 from pcapi.routes.serialization import BaseModel
 
 
@@ -19,6 +21,12 @@ class Event(BaseModel):
     bill_url: str | None
     duration: int | None
     sessions: list[Session]
+
+    @validator("allocine_id", pre=True)
+    def make_empty_string_null(cls, value: int | str | None) -> int | str | None:
+        if value == "":
+            return None
+        return value
 
 
 class Site(BaseModel):
