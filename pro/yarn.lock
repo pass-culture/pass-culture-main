@@ -3267,10 +3267,10 @@
   dependencies:
     "@reach/menu-button" "*"
 
-"@types/react-avatar-editor@^13.0.1":
-  version "13.0.1"
-  resolved "https://registry.yarnpkg.com/@types/react-avatar-editor/-/react-avatar-editor-13.0.1.tgz#b3613d97b8efbbdd399d2057719eb839f7154ee6"
-  integrity sha512-jlBA6T15aU4a5z9cobIwMPQCTECVRcDD7OIEaiRg757eDcWMIcwg4RSd0eP56NC7ktgnSYCd2V3S2R4RKY5u2g==
+"@types/react-avatar-editor@^13.0.2":
+  version "13.0.2"
+  resolved "https://registry.yarnpkg.com/@types/react-avatar-editor/-/react-avatar-editor-13.0.2.tgz#26c58252e8465f5a99dd146072fe9351c07b9c3f"
+  integrity sha512-vnGU4sx5TDB9JMCuw+kB3+jfDNMhVlpBbgMRZG9NzVnaBb5xUjVV4VmHdD2O8gj/pb5GN+QXKk7jan09aMjG2A==
   dependencies:
     "@types/react" "*"
 
