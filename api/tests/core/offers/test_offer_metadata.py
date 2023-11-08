@@ -146,7 +146,7 @@ class OfferMetadataTest:
 
             metadata = get_metadata_from_offer(offer)
 
-            assert metadata["offers"]["url"] == "http://localhost:5001/offre/72180399"
+            assert metadata["offers"]["url"] == "https://webapp-v2.example.com/offre/72180399"
 
         def should_have_online_event_attendance_mode(self):
             offer = offers_factories.EventOfferFactory(url="https://passculture.app/offre/72180399")
