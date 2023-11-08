@@ -118,10 +118,7 @@ def create_offers_with_same_ean() -> None:
             )
         )
         for offer in offers:
-            offers_factories.StockFactory.create_batch(
-                size=random.randint(1, 10),
-                offer=offer,
-            )
+            offers_factories.StockFactory(quantity=random.randint(10, 100), offer=offer)
     for _ in range(10):
         ean = Fake.ean13()
         author = Fake.name()
@@ -139,7 +136,4 @@ def create_offer_with_ean(ean: str, venue: offerers_models.Venue, author: str) -
         extraData={"ean": ean, "author": author},
         venue=venue,
     )
-    offers_factories.StockFactory.create_batch(
-        size=random.randint(1, 10),
-        offer=offer,
-    )
+    offers_factories.StockFactory(quantity=random.randint(10, 100), offer=offer)
