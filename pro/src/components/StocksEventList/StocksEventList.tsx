@@ -21,7 +21,7 @@ import { BaseCheckbox } from 'ui-kit/form/shared'
 import { BaseTimePicker } from 'ui-kit/form/TimePicker/BaseTimePicker'
 import { Pagination } from 'ui-kit/Pagination'
 import { formatPrice } from 'utils/formatPrice'
-import { pluralizeString } from 'utils/pluralize'
+import { pluralize, pluralizeString } from 'utils/pluralize'
 import {
   convertFromLocalTimeToVenueTimezoneInUtc,
   formatLocalTimeDateString,
@@ -73,19 +73,14 @@ const StocksEventList = ({
   const notify = useNotification()
   const [searchParams, setSearchParams] = useSearchParams()
 
-  // search params
-  const date = searchParams.get('date')
-  const time = searchParams.get('time')
-  const priceCategoryId = searchParams.get('priceCategoryId')
-
   // states
   const [isCheckedArray, setIsCheckedArray] = useState<boolean[]>([])
   const [stocks, setStocks] = useState<StocksEvent[]>([])
   const [stocksCount, setStocksCount] = useState<number>(0)
-  const [dateFilter, setDateFilter] = useState<string>(date ?? '')
-  const [timeFilter, setTimeFilter] = useState<string>(time ?? '')
+  const [dateFilter, setDateFilter] = useState(searchParams.get('date'))
+  const [timeFilter, setTimeFilter] = useState(searchParams.get('time'))
   const [priceCategoryIdFilter, setPriceCategoryIdFilter] = useState(
-    priceCategoryId ?? ''
+    searchParams.get('priceCategoryId')
   )
   const { currentSortingColumn, currentSortingMode, onColumnHeaderClick } =
     useColumnSorting<StocksOrderedBy>()
@@ -118,9 +113,9 @@ const StocksEventList = ({
     async function loadStocks() {
       const response = await api.getStocks(
         offerId,
-        date,
-        time,
-        priceCategoryId ? Number(priceCategoryId) : undefined,
+        dateFilter ? dateFilter : undefined,
+        timeFilter ? timeFilter : undefined,
+        priceCategoryIdFilter ? Number(priceCategoryIdFilter) : undefined,
         currentSortingColumn ?? undefined,
         currentSortingMode
           ? currentSortingMode === SortingMode.DESC
@@ -156,11 +151,14 @@ const StocksEventList = ({
 
   // Derived data
   const priceCategoryOptions = getPriceCategoryOptions(priceCategories)
-  const areAllChecked = isCheckedArray.every((isChecked) => isChecked)
-  const selectedDateText =
-    isCheckedArray.filter((e) => e === true).length > 1
-      ? `${isCheckedArray.filter((e) => e === true).length} dates sélectionnées`
-      : '1 date sélectionnée'
+  const areAllChecked =
+    stocksCount > 0 && isCheckedArray.every((isChecked) => isChecked)
+  const selectedDateText = areAllChecked
+    ? pluralize(stocksCount, 'dates sélectionnées')
+    : pluralize(
+        isCheckedArray.filter((e) => e === true).length,
+        'dates sélectionnées'
+      )
   const isAtLeastOneStockChecked = isCheckedArray.some((e) => e)
   const areFiltersActive = Boolean(
     dateFilter || timeFilter || priceCategoryIdFilter
@@ -230,16 +228,15 @@ const StocksEventList = ({
       // use the delete all route with filters
       if (areAllChecked) {
         await api.deleteAllFilteredStocks(offerId, {
-          date: dateFilter === '' ? null : dateFilter,
-          time:
-            timeFilter === ''
-              ? null
-              : convertFromLocalTimeToVenueTimezoneInUtc(
-                  timeFilter,
-                  departmentCode
-                ),
+          date: dateFilter,
+          time: timeFilter
+            ? convertFromLocalTimeToVenueTimezoneInUtc(
+                timeFilter,
+                departmentCode
+              )
+            : null,
           price_category_id:
-            priceCategoryIdFilter === ''
+            priceCategoryIdFilter === null
               ? null
               : parseInt(priceCategoryIdFilter),
         })
@@ -315,7 +312,7 @@ const StocksEventList = ({
                     setDateFilter(event.target.value)
                     onFilterChange()
                   }}
-                  value={dateFilter}
+                  value={dateFilter ?? ''}
                   filterVariant
                   aria-label="Filtrer par date"
                 />
@@ -342,7 +339,7 @@ const StocksEventList = ({
                     setTimeFilter(event.target.value)
                     onFilterChange()
                   }}
-                  value={timeFilter}
+                  value={timeFilter ?? ''}
                   filterVariant
                   aria-label="Filtrer par horaire"
                 />
@@ -367,7 +364,7 @@ const StocksEventList = ({
                   name="priceCategoryFilter"
                   defaultOption={{ label: '', value: '' }}
                   options={priceCategoryOptions}
-                  value={priceCategoryIdFilter}
+                  value={priceCategoryIdFilter ?? ''}
                   onChange={(event) => {
                     setPriceCategoryIdFilter(event.target.value)
                     onFilterChange()
