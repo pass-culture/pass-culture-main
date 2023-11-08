@@ -56,34 +56,36 @@ const CollectiveOffers = (): JSX.Element => {
       }
     }
 
+    // eslint-disable-next-line @typescript-eslint/no-floating-promises
     loadOfferer()
   }, [urlSearchFilters.offererId, notify])
 
   useEffect(() => {
-    const loadCategories = () => {
-      api.getCategories().then((categoriesAndSubcategories) => {
-        const categoriesOptions = filterEducationalCategories(
-          categoriesAndSubcategories
-        ).educationalCategories.map((category) => ({
-          value: category.id,
-          label: category.label,
-        }))
+    const loadCategories = async () => {
+      const categoriesAndSubcategories = await api.getCategories()
+      const categoriesOptions = filterEducationalCategories(
+        categoriesAndSubcategories
+      ).educationalCategories.map((category) => ({
+        value: category.id,
+        label: category.label,
+      }))
 
-        setCategories(sortByLabel(categoriesOptions))
-      })
+      setCategories(sortByLabel(categoriesOptions))
     }
 
+    // eslint-disable-next-line @typescript-eslint/no-floating-promises
     loadCategories()
   }, [])
 
   useEffect(() => {
-    const loadAllVenuesByProUser = () =>
-      getVenuesForOffererAdapter({
+    const loadAllVenuesByProUser = async () => {
+      const venuesResponse = await getVenuesForOffererAdapter({
         offererId: offerer?.id.toString(),
-      }).then((venuesResponse) =>
-        setVenues(formatAndOrderVenues(venuesResponse.payload))
-      )
+      })
+      setVenues(formatAndOrderVenues(venuesResponse.payload))
+    }
 
+    // eslint-disable-next-line @typescript-eslint/no-floating-promises
     loadAllVenuesByProUser()
   }, [offerer?.id])
 
@@ -139,6 +141,7 @@ const CollectiveOffers = (): JSX.Element => {
         venueId: urlSearchFilters.venueId || DEFAULT_SEARCH_FILTERS.venueId,
         categoryId:
           urlSearchFilters.categoryId || DEFAULT_SEARCH_FILTERS.categoryId,
+        format: urlSearchFilters.format || DEFAULT_SEARCH_FILTERS.format,
         status: urlSearchFilters.status
           ? urlSearchFilters.status
           : DEFAULT_SEARCH_FILTERS.status,
