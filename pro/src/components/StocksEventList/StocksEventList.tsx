@@ -68,27 +68,31 @@ const StocksEventList = ({
   readonly = false,
   onStocksLoad,
 }: StocksEventListProps): JSX.Element => {
+  // utilities
   const { logEvent } = useAnalytics()
   const notify = useNotification()
-  const [isCheckedArray, setIsCheckedArray] = useState<boolean[]>([])
-  const priceCategoryOptions = getPriceCategoryOptions(priceCategories)
-
-  const { currentSortingColumn, currentSortingMode, onColumnHeaderClick } =
-    useColumnSorting<StocksOrderedBy>()
   const [searchParams, setSearchParams] = useSearchParams()
-  const [stocks, setStocks] = useState<StocksEvent[]>([])
-  const [stocksCount, setStocksCount] = useState<number>(0)
-  const { page, previousPage, nextPage, pageCount, firstPage, lastPage } =
-    usePaginationWithSearchParams(STOCKS_PER_PAGE, stocksCount)
+
+  // search params
   const date = searchParams.get('date')
   const time = searchParams.get('time')
   const priceCategoryId = searchParams.get('priceCategoryId')
+
+  // states
+  const [isCheckedArray, setIsCheckedArray] = useState<boolean[]>([])
+  const [stocks, setStocks] = useState<StocksEvent[]>([])
+  const [stocksCount, setStocksCount] = useState<number>(0)
   const [dateFilter, setDateFilter] = useState<string>(date ?? '')
   const [timeFilter, setTimeFilter] = useState<string>(time ?? '')
   const [priceCategoryIdFilter, setPriceCategoryIdFilter] = useState(
     priceCategoryId ?? ''
   )
+  const { currentSortingColumn, currentSortingMode, onColumnHeaderClick } =
+    useColumnSorting<StocksOrderedBy>()
+  const { page, previousPage, nextPage, pageCount, firstPage, lastPage } =
+    usePaginationWithSearchParams(STOCKS_PER_PAGE, stocksCount)
 
+  // Effects
   useEffect(() => {
     if (dateFilter) {
       searchParams.set('date', dateFilter)
@@ -150,12 +154,23 @@ const StocksEventList = ({
     page,
   ])
 
+  // Derived data
+  const priceCategoryOptions = getPriceCategoryOptions(priceCategories)
+  const areAllChecked = isCheckedArray.every((isChecked) => isChecked)
+  const selectedDateText =
+    isCheckedArray.filter((e) => e === true).length > 1
+      ? `${isCheckedArray.filter((e) => e === true).length} dates sélectionnées`
+      : '1 date sélectionnée'
+  const isAtLeastOneStockChecked = isCheckedArray.some((e) => e)
+  const areFiltersActive = Boolean(
+    dateFilter || timeFilter || priceCategoryIdFilter
+  )
+
+  // Handlers
   const onFilterChange = () => {
     setIsCheckedArray(stocks.map(() => false))
     firstPage()
   }
-
-  const areAllChecked = isCheckedArray.every((isChecked) => isChecked)
 
   const handleOnChangeSelected = (index: number) => {
     const newArray = isCheckedArray.map((isChecked) => isChecked)
@@ -253,16 +268,6 @@ const StocksEventList = ({
   const onCancelClick = () => {
     setIsCheckedArray(stocks.map(() => false))
   }
-
-  const selectedDateText =
-    isCheckedArray.filter((e) => e === true).length > 1
-      ? `${isCheckedArray.filter((e) => e === true).length} dates sélectionnées`
-      : '1 date sélectionnée'
-
-  const isAtLeastOneStockChecked = isCheckedArray.some((e) => e)
-  const areFiltersActive = Boolean(
-    dateFilter || timeFilter || priceCategoryIdFilter
-  )
 
   return (
     <div className={className}>

@@ -33,6 +33,7 @@ export const StocksEventCreation = ({
 
   const [hasStocks, setHasStocks] = useState<boolean | null>(null)
   const [isRecurrenceModalOpen, setIsRecurrenceModalOpen] = useState(false)
+
   const onCancel = () => setIsRecurrenceModalOpen(false)
 
   const handleSubmit = async (values: RecurrenceFormValues) => {
