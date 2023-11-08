@@ -1,5 +1,6 @@
 import click
 
+from pcapi import settings
 from pcapi.sandboxes.scripts.save_sandbox import save_sandbox
 from pcapi.utils.blueprint import Blueprint
 
@@ -11,5 +12,8 @@ blueprint = Blueprint(__name__, __name__)
 @click.option("-n", "--name", help="Sandbox name", default="classic")
 @click.option("-c", "--clean", help="Clean database first", default="true")
 def sandbox(name: str, clean: str) -> None:
-    with_clean = clean == "true"
-    save_sandbox(name, with_clean)
+    if settings.CAN_RUN_SANDBOX:
+        with_clean = clean == "true"
+        save_sandbox(name, with_clean)
+    else:
+        print("Sandbox is disabled on this environment")
