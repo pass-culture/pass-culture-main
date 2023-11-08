@@ -1920,8 +1920,8 @@ def generate_invoices(batch: models.CashflowBatch) -> None:
 def async_generate_invoices(batch: models.CashflowBatch) -> None:
     rows = _get_cashflows_by_reimbursement_points(batch)
 
-    app.redis_client.set(conf.REDIS_INVOICES_LEFT_TO_GENERATE, len(rows), ttl=conf.REDIS_GENERATE_INVOICES_COUNTER_TIMEOUT)  # type: ignore [attr-defined]
-    app.redis_client.set(conf.REDIS_GENERATE_INVOICES_LENGTH, len(rows), ttl=conf.REDIS_GENERATE_INVOICES_LENGTH_TIMEOUT)  # type: ignore [attr-defined]
+    app.redis_client.set(conf.REDIS_INVOICES_LEFT_TO_GENERATE, len(rows), ex=conf.REDIS_GENERATE_INVOICES_COUNTER_TIMEOUT)  # type: ignore [attr-defined]
+    app.redis_client.set(conf.REDIS_GENERATE_INVOICES_LENGTH, len(rows), ex=conf.REDIS_GENERATE_INVOICES_LENGTH_TIMEOUT)  # type: ignore [attr-defined]
     for row in rows:
         row_payload = finance_tasks.GenerateInvoicePayload(
             reimbursement_point_id=row.reimbursement_point_id, cashflow_ids=row.cashflow_ids, batch_id=batch.id
