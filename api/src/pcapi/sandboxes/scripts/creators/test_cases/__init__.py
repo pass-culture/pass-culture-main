@@ -56,15 +56,8 @@ def create_offers_with_gtls() -> None:
 def create_offers_for_each_gtl_level_1(size_per_gtl_level_1: int, venue: offerers_models.Venue) -> None:
     for gtl_id_prefix in range(1, 14):
         gtl_id_prefix_str = str(gtl_id_prefix).zfill(2)
-        gtl_ids = list(
-            filter(
-                # pylint: disable=cell-var-from-loop
-                lambda gtl_id: gtl_id.startswith(
-                    gtl_id_prefix_str
-                ),  # gtl_id_prefix_str changes at each iteration, we tested that lambda considers the last value so it's fine to disable the warning
-                GTLS.keys(),
-            )
-        )
+        gtl_ids = [gtl_id for gtl_id in GTLS if gtl_id.startswith(gtl_id_prefix_str)]
+
         for _ in range(size_per_gtl_level_1):
             gtl_id = random.choice(gtl_ids)
             create_offers_with_gtl_id(gtl_id, 1, venue)
