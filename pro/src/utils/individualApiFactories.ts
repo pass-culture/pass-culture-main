@@ -250,8 +250,8 @@ export const individualStockEventFactory = (
 ): StocksEvent => {
   return {
     id: stockId++,
-    beginningDatetime: new Date('2021-10-15T12:00:00Z').toISOString(),
-    bookingLimitDatetime: new Date('2021-09-15T12:00:00Z').toISOString(),
+    beginningDatetime: '2021-10-15T12:00:00.000Z',
+    bookingLimitDatetime: '2021-09-15T12:00:00.000Z',
     priceCategoryId: 2,
     quantity: 18,
     bookingsQuantity: 0,

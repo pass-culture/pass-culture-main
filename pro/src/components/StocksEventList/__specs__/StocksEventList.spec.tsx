@@ -296,6 +296,45 @@ describe('StocksEventList', () => {
     expect(screen.queryByText('2 dates sélectionnées')).not.toBeInTheDocument()
   })
 
+  it('should bulk delete lines with filters and use UTC for hour filter when clicking on button on action bar', async () => {
+    renderStocksEventList({
+      stocks: [
+        individualStockEventFactory({
+          priceCategoryId: 1,
+          beginningDatetime: '2021-09-15T10:00:00.000Z',
+        }),
+        individualStockEventFactory({
+          priceCategoryId: 1,
+          beginningDatetime: '2021-10-15T10:00:00.000Z',
+        }),
+        individualStockEventFactory({
+          priceCategoryId: 1,
+          beginningDatetime: '2021-10-15T11:00:00.000Z',
+        }),
+      ],
+    })
+    await userEvent.type(screen.getByLabelText('Filtrer par horaire'), '10:00')
+    expect(
+      screen.getAllByText('12,5 € - Label', { selector: 'td' })
+    ).toHaveLength(2)
+
+    const checkboxes = screen.getAllByRole('checkbox')
+    await userEvent.click(checkboxes[0])
+    expect(screen.getByText('2 dates sélectionnées')).toBeInTheDocument()
+
+    await userEvent.click(screen.getByText('Supprimer ces dates'))
+    expect(api.deleteStock).not.toHaveBeenCalled()
+    expect(api.deleteStocks).not.toHaveBeenCalled()
+    expect(api.deleteAllFilteredStocks).toBeCalledTimes(1)
+    expect(api.deleteAllFilteredStocks).toHaveBeenCalledWith(1, {
+      date: null,
+      price_category_id: null,
+      time: '09:00',
+    })
+
+    expect(screen.queryByText('2 dates sélectionnées')).not.toBeInTheDocument()
+  })
+
   it('should bulk delete lines with ids when clicking on each stock', async () => {
     const stock1 = individualStockEventFactory({ priceCategoryId: 1 })
     const stock2 = individualStockEventFactory({ priceCategoryId: 1 })
