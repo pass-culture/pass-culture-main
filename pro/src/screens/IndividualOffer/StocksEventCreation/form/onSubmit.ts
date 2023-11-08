@@ -3,7 +3,6 @@ import sub from 'date-fns/sub'
 
 import { StocksEvent } from 'components/StocksEventList/StocksEventList'
 import useNotification from 'hooks/useNotification'
-import { serializeStockEvents } from 'pages/IndividualOfferWizard/Stocks/serializeStockEvents'
 import { MAX_STOCKS_PER_OFFER } from 'screens/IndividualOffer/constants'
 import { serializeBeginningDateTime } from 'screens/IndividualOffer/StocksEventEdition/adapters/serializers'
 import upsertStocksEventAdapter from 'screens/IndividualOffer/StocksEventEdition/adapters/upsertStocksEventAdapter'
@@ -24,41 +23,20 @@ type StocksEventWithOptionalId = Omit<StocksEvent, 'id'> & { id?: number }
 export const onSubmit = async (
   values: RecurrenceFormValues,
   departmentCode: string,
-  existingStocks: StocksEvent[],
   offerId: number,
   notify: ReturnType<typeof useNotification>
 ): Promise<StocksEvent[] | void> => {
   const dates = getRecurrenceDates(values)
   const generatedStocks = generateStocksForDates(values, dates, departmentCode)
 
-  if (generatedStocks.length + existingStocks.length > MAX_STOCKS_PER_OFFER) {
+  if (generatedStocks.length > MAX_STOCKS_PER_OFFER) {
     notify.error(
       `Veuillez créer moins de ${MAX_STOCKS_PER_OFFER} occurrences par offre.`
     )
     return
   }
 
-  const allStocks: StocksEventWithOptionalId[] = [
-    ...existingStocks,
-    ...generatedStocks,
-  ]
-
-  const uniqueStocksSet = new Set()
-
-  const deduplicatedStocks: StocksEventWithOptionalId[] = allStocks.filter(
-    (stock) => {
-      const stockKey = `${stock.beginningDatetime}-${stock.priceCategoryId}`
-      if (!uniqueStocksSet.has(stockKey)) {
-        uniqueStocksSet.add(stockKey)
-        return true
-      }
-      return false
-    }
-  )
-
-  const serializedStocksToAdd = deduplicatedStocks
-    //  keep only the new stocks
-    .filter((s) => s.id === undefined)
+  const serializedStocksToAdd = generatedStocks
     // keep only the fields that are needed for the API
     .map(
       ({
@@ -78,7 +56,7 @@ export const onSubmit = async (
 
   // Upsert stocks if there are stocks to upsert
   if (serializedStocksToAdd.length > 0) {
-    const { isOk, payload } = await upsertStocksEventAdapter({
+    const { isOk } = await upsertStocksEventAdapter({
       offerId: offerId,
       stocks: serializedStocksToAdd,
     })
@@ -88,12 +66,10 @@ export const onSubmit = async (
           ? '1 nouvelle occurrence a été ajoutée'
           : `${serializedStocksToAdd.length} nouvelles occurrences ont été ajoutées`
       )
-      return [...existingStocks, ...serializeStockEvents(payload.stocks)]
     } else {
       notify.error(
         "Une erreur est survenue lors de l'enregistrement de vos stocks."
       )
-      return
     }
   }
 }

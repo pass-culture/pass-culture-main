@@ -19,7 +19,6 @@ export const RecurrenceSummary = ({
 
       {stocks.length !== 0 && offer?.priceCategories && (
         <StocksEventList
-          stocks={stocks}
           priceCategories={offer.priceCategories}
           departmentCode={offer.venue.departementCode}
           offerId={offer.id}
