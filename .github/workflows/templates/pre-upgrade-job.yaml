@@ -10,6 +10,7 @@ spec:
       containers:
       - name: pcapi 
         image: ${IMAGE}
+        imagePullPolicy: Always
         envFrom:
         - configMapRef:
             name: ${ENVIRONMENT}-pcapi
