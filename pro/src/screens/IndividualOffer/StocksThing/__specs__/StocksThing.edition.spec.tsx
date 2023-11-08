@@ -167,7 +167,8 @@ describe('screens:StocksThing', () => {
     vi.spyOn(api, 'getOffer').mockResolvedValue(apiOffer)
     vi.spyOn(api, 'getStocks').mockResolvedValue({
       stocks: [stockToDelete],
-      stock_count: 1,
+      hasStocks: true,
+      stockCount: 1,
     })
     vi.spyOn(api, 'getCategories').mockResolvedValue({
       categories: [],
