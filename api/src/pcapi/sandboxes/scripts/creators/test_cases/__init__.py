@@ -71,7 +71,6 @@ def create_offers_with_gtl_id(gtl_id: str, size_per_gtl: int, venue: offerers_mo
     offers = offers_factories.OfferFactory.create_batch(
         product=product,
         size=size_per_gtl,
-        isActive=True,
         venue=venue,
         extraData={"gtl_id": gtl_id, "author": Fake.name()},
     )
@@ -98,7 +97,6 @@ def create_offers_with_same_ean() -> None:
         offers.append(
             offers_factories.OfferFactory(
                 product=product,
-                isActive=True,
                 subcategoryId=subcategories_v2.LIVRE_PAPIER.id,
                 venue=offerers_factories.VenueFactory(
                     name=venue_data["name"],
@@ -131,7 +129,6 @@ def create_offer_with_ean(ean: str, venue: offerers_models.Venue, author: str) -
         extraData={"ean": ean, "author": author},
     )
     offer = offers_factories.OfferFactory(
-        isActive=True,
         product=product,
         extraData={"ean": ean, "author": author},
         venue=venue,
