@@ -7,7 +7,7 @@ import type { GetOfferStockResponseModel } from './GetOfferStockResponseModel';
 
 export type GetStocksResponseModel = {
   hasStocks: boolean;
-  stock_count: number;
+  stockCount: number;
   stocks: Array<GetOfferStockResponseModel>;
 };
 

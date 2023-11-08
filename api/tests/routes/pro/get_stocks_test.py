@@ -69,7 +69,7 @@ class Returns200Test:
         # Then
         assert response.status_code == 200
         assert response.json == {
-            "stock_count": 1,
+            "stockCount": 1,
             "hasStocks": True,
             "stocks": [
                 {
@@ -106,7 +106,7 @@ class Returns200Test:
         # Then
         assert response.status_code == 200
         assert response.json == {
-            "stock_count": 1,
+            "stockCount": 1,
             "hasStocks": True,
             "stocks": [
                 {
@@ -195,7 +195,7 @@ class Returns200Test:
         # When
         response = client.with_session_auth(email=user_offerer.user.email).get(f"/offers/{offer.id}/stocks")
         assert response.status_code == 200
-        assert response.json["stock_count"] == 5
+        assert response.json["stockCount"] == 5
         assert len(response.json["stocks"]) == 5
 
     @override_features(WIP_PRO_STOCK_PAGINATION=True)
@@ -220,7 +220,7 @@ class Returns200Test:
         # Then
         assert response.status_code == 200
         assert response.json == {
-            "stock_count": 5,
+            "stockCount": 5,
             "hasStocks": True,
             "stocks": [
                 {

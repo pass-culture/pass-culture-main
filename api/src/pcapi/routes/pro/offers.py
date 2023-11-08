@@ -115,7 +115,7 @@ def get_stocks(offer_id: int, query: offers_serialize.StocksQueryModel) -> offer
     else:
         stock_list = []
         stocks_count = 0
-    return offers_serialize.GetStocksResponseModel(stocks=stock_list, stock_count=stocks_count, hasStocks=has_stocks)
+    return offers_serialize.GetStocksResponseModel(stocks=stock_list, stockCount=stocks_count, hasStocks=has_stocks)
 
 
 @private_api.route("/offers/<int:offer_id>/stocks/delete", methods=["POST"])
