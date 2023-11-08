@@ -1,10 +1,10 @@
 import datetime
 import typing
 
-from pcapi import settings
 from pcapi.core.categories import subcategories_v2
 from pcapi.core.offerers.models import Venue
 import pcapi.core.offers.models as offers_models
+from pcapi.core.offers.utils import offer_app_link
 
 
 Metadata = dict[str, typing.Any]
@@ -51,7 +51,7 @@ def _get_common_metadata_from_offer(offer: offers_models.Offer) -> Metadata:
             "@type": "AggregateOffer",
             "priceCurrency": "EUR",
             "lowPrice": str(offer.min_price),
-            "url": f"{settings.API_URL}/offre/{offer.id}",
+            "url": offer_app_link(offer),
         }
 
     return metadata
