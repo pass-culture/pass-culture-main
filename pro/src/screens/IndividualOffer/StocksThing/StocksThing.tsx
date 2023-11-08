@@ -49,14 +49,10 @@ export interface StocksThingProps {
 const StocksThing = ({ offer }: StocksThingProps): JSX.Element => {
   const mode = useOfferWizardMode()
   const navigate = useNavigate()
-  const [stocks, setStocks] = useState<GetOfferStockResponseModel[]>([])
   const notify = useNotification()
   const { setOffer, subCategories } = useIndividualOfferContext()
 
-  const canBeDuo = subCategories.find(
-    (subCategory) => subCategory.id === offer.subcategoryId
-  )?.canBeDuo
-
+  const [stocks, setStocks] = useState<GetOfferStockResponseModel[]>([])
   const [isActivationCodeFormVisible, setIsActivationCodeFormVisible] =
     useState(false)
   const [isDeleteConfirmVisible, setIsDeleteConfirmVisible] = useState(false)
@@ -71,8 +67,18 @@ const StocksThing = ({ offer }: StocksThingProps): JSX.Element => {
     loadStocks()
   }, [])
 
+  // validation is tested in getValidationSchema
+  // and it's not possible as is to test it here
   /* istanbul ignore next: DEBT, TO FIX */
+  const minQuantity = stocks.length > 0 ? stocks[0].bookingsQuantity : null
   const isDisabled = isOfferDisabled(offer.status)
+  const today = getLocalDepartementDateTimeFromUtc(
+    getToday(),
+    offer.venue.departementCode
+  )
+  const canBeDuo = subCategories.find(
+    (subCategory) => subCategory.id === offer.subcategoryId
+  )?.canBeDuo
 
   const onSubmit = async (values: StockThingFormValues) => {
     const nextStepUrl = getIndividualOfferUrl({
@@ -123,20 +129,8 @@ const StocksThing = ({ offer }: StocksThingProps): JSX.Element => {
     }
   }
 
-  let minQuantity = null
-  // validation is tested in getValidationSchema
-  // and it's not possible as is to test it here
-  /* istanbul ignore next: DEBT, TO FIX */
-  if (stocks.length > 0) {
-    minQuantity = stocks[0].bookingsQuantity
-  }
-  const today = getLocalDepartementDateTimeFromUtc(
-    getToday(),
-    offer.venue.departementCode
-  )
-  const initialValues = buildInitialValues(offer, stocks)
   const formik = useFormik({
-    initialValues,
+    initialValues: buildInitialValues(offer, stocks),
     enableReinitialize: true, // use fetched stocks after loading
     onSubmit,
     validationSchema: getValidationSchema(minQuantity),
