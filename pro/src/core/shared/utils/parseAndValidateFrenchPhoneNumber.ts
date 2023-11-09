@@ -12,14 +12,18 @@ const prefixRegionDict: { [key: string]: string } = {
   '639': FRENCH_PACIFIC_DOM_PHONE_REGION,
   '692': FRENCH_PACIFIC_DOM_PHONE_REGION,
   '693': FRENCH_PACIFIC_DOM_PHONE_REGION,
+  '262': FRENCH_PACIFIC_DOM_PHONE_REGION,
   // Guadeloupe, Saint-Martin et Saint-Barthélemy
   '690': GUADELOUPE_PHONE_REGION,
   '691': GUADELOUPE_PHONE_REGION,
+  '590': GUADELOUPE_PHONE_REGION,
   // Guyane
   '694': GUYUANE_PHONE_REGION,
+  '594': GUYUANE_PHONE_REGION,
   // Martinique
   '696': MARTINIQUE_PHONE_REGION,
   '697': MARTINIQUE_PHONE_REGION,
+  '596': MARTINIQUE_PHONE_REGION,
 }
 
 export const parseAndValidateFrenchPhoneNumber = (phoneNumber: string) => {
