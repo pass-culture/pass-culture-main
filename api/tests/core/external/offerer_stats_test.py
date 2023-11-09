@@ -74,8 +74,8 @@ class OffererStatsTest:
             OffererStats.table == DAILY_CONSULT_PER_OFFERER_LAST_180_DAYS_TABLE,
         ).one()
         assert offerer_global_stats.jsonData["daily_views"] == [
-            {"eventDate": "2023-10-16", "numberOfViews": 15},
             {"eventDate": "2023-10-15", "numberOfViews": 10},
+            {"eventDate": "2023-10-16", "numberOfViews": 15},
         ]
 
         offerer_top_offers = OffererStats.query.filter(
@@ -123,8 +123,8 @@ class OffererStatsTest:
             OffererStats.table == DAILY_CONSULT_PER_OFFERER_LAST_180_DAYS_TABLE,
         ).one()
         assert offerer_global_stats.jsonData["daily_views"] == [
-            {"eventDate": "2023-10-16", "numberOfViews": 15},
             {"eventDate": "2023-10-15", "numberOfViews": 10},
+            {"eventDate": "2023-10-16", "numberOfViews": 15},
         ]
 
         offerer_top_offers = OffererStats.query.filter(
