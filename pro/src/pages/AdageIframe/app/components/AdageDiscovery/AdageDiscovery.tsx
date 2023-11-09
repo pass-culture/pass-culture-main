@@ -5,25 +5,23 @@ import bannerDiscovery from 'icons/banner-discovery-adage.svg'
 import fullLinkIcon from 'icons/full-link.svg'
 import { ButtonLink } from 'ui-kit'
 import { ButtonVariant } from 'ui-kit/Button/types'
+import { defaultCollectiveOffer } from 'utils/adageFactories'
 
 import styles from './AdageDiscovery.module.scss'
-import CardOfferComponent from './CardOffer/CardOffer'
+import CardOfferComponent, { CardOfferModel } from './CardOffer/CardOffer'
 import CardVenue from './CardVenue/CardVenue'
 
-const mockOffer = {
-  imageUrl: 'https://picsum.photos/201/',
-  name: 'Titre de l’offre maximum sur 3 lignes. Passé ces trois lignes, il faut tronquer le texte',
-  offerAddressType: OfferAddressType.OTHER,
+const mockOffer: CardOfferModel = {
+  ...defaultCollectiveOffer,
   venue: {
-    name: 'Venue 1',
+    ...defaultCollectiveOffer.venue,
     distance: 5,
-    city: 'Paris',
   },
   offerVenue: {
-    name: 'Venue 2',
+    ...defaultCollectiveOffer.offerVenue,
     distance: 10,
-    city: 'Paris',
   },
+  isTemplate: false,
 }
 
 const mockVenue = {
@@ -55,21 +53,30 @@ export const AdageDiscovery = () => {
                 offer={{
                   ...mockOffer,
                   name: 'Ma super offre',
-                  offerAddressType: OfferAddressType.OFFERER_VENUE,
+                  offerVenue: {
+                    ...mockOffer.offerVenue,
+                    addressType: OfferAddressType.OFFERER_VENUE,
+                  },
                   imageUrl: 'https://picsum.photos/201/',
                 }}
               />
               <CardOfferComponent
                 offer={{
                   ...mockOffer,
-                  offerAddressType: OfferAddressType.SCHOOL,
+                  offerVenue: {
+                    ...mockOffer.offerVenue,
+                    addressType: OfferAddressType.SCHOOL,
+                  },
                   imageUrl: 'https://picsum.photos/202/',
                 }}
               />
               <CardOfferComponent
                 offer={{
                   ...mockOffer,
-                  offerAddressType: OfferAddressType.OTHER,
+                  offerVenue: {
+                    ...mockOffer.offerVenue,
+                    addressType: OfferAddressType.OTHER,
+                  },
                   imageUrl: 'https://picsum.photos/203/',
                 }}
               />
