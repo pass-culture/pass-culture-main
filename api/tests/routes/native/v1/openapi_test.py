@@ -14,6 +14,7 @@ def test_public_api(client):
                         "appsFlyerUserId": {"nullable": True, "title": "Appsflyeruserid", "type": "string"},
                         "birthdate": {"format": "date", "title": "Birthdate", "type": "string"},
                         "email": {"title": "Email", "type": "string"},
+                        "firebasePseudoId": {"nullable": True, "title": "Firebasepseudoid", "type": "string"},
                         "marketingEmailSubscription": {
                             "default": False,
                             "nullable": True,

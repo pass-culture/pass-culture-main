@@ -195,6 +195,7 @@ def create_account(body: serializers.AccountRequest) -> None:
             is_email_validated=False,
             apps_flyer_user_id=body.apps_flyer_user_id,
             apps_flyer_platform=body.apps_flyer_platform,
+            firebase_pseudo_id=body.firebase_pseudo_id,
         )
 
         if FeatureToggle.WIP_ENABLE_TRUSTED_DEVICE.is_active() and body.trusted_device is not None:

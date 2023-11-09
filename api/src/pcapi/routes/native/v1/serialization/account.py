@@ -46,6 +46,7 @@ class AccountRequest(BaseModel):
     token: str
     apps_flyer_user_id: str | None = None
     apps_flyer_platform: str | None = None
+    firebase_pseudo_id: str | None = None
     trusted_device: TrustedDevice | None = None
 
     class Config:

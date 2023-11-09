@@ -377,6 +377,9 @@ class AccountCreationTest:
             "notifications": True,
             "token": "gnagna",
             "marketingEmailSubscription": True,
+            "appsFlyerUserId": "apps_flyer_user_id",
+            "appsFlyerPlatform": "iOS",
+            "firebasePseudoId": "firebase_pseudo_id",
         }
 
         response = client.post("/native/v1/account", json=data)
@@ -388,6 +391,10 @@ class AccountCreationTest:
         assert user.get_notification_subscriptions().marketing_email
         assert user.isEmailValidated is False
         assert user.checkPassword(data["password"])
+        assert user.externalIds == {
+            "apps_flyer": {"user": "apps_flyer_user_id", "platform": "IOS"},
+            "firebase_pseudo_id": "firebase_pseudo_id",
+        }
 
         mocked_check_recaptcha_token_is_valid.assert_called()
         assert len(mails_testing.outbox) == 1
