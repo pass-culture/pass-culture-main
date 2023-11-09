@@ -26,7 +26,8 @@ class SubscribeOrUnsubscribeUserTestHelper:
         assert existing_user.notificationSubscriptions["marketing_email"] is self.initial_marketing_email
 
         # When
-        response = TestClient(app.test_client()).post(self.endpoint, json=data, headers=headers)
+        with override_settings(IS_DEV=False):  # enforce source IP check
+            response = TestClient(app.test_client()).post(self.endpoint, json=data, headers=headers)
 
         # Then
         assert response.status_code == 204
@@ -45,7 +46,7 @@ class SubscribeOrUnsubscribeUserTestHelper:
         data = {"email": "lucy.ellingson@kennet.ca"}
 
         # When
-        with override_settings(IS_DEV=False):
+        with override_settings(IS_DEV=False):  # enforce source IP check
             response = TestClient(app.test_client()).post(self.endpoint, json=data, headers=headers)
 
         # Then
