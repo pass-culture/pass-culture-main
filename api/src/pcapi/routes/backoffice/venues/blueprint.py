@@ -42,7 +42,7 @@ from pcapi.routes.serialization import base as serialize_base
 from pcapi.utils import regions as regions_utils
 from pcapi.utils.string import to_camelcase
 
-from . import form as forms
+from . import forms
 from . import serialization
 
 

@@ -16,7 +16,7 @@ from pcapi.routes.backoffice import utils
 from pcapi.routes.backoffice.forms import empty as empty_forms
 from pcapi.utils.clean_accents import clean_accents
 
-from . import form as criteria_forms
+from . import forms as criteria_forms
 
 
 tags_blueprint = utils.child_backoffice_blueprint(
