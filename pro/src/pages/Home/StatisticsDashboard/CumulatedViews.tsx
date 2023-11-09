@@ -103,27 +103,30 @@ export const CumulatedViews = ({ dailyViews }: CumulatedViewsProps) => {
             aria-details="chart-description"
           />
 
-          <table className="visually-hidden" id="chart-description">
-            <caption id="chart-title">
-              Nombre de vues cumulées de toutes vos offres sur les 6 derniers
-              mois
-            </caption>
+          {/* Wrap in visually hidden div, this class doesn't work on Chrome on <table> element */}
+          <div className="visually-hidden">
+            <table id="chart-description">
+              <caption id="chart-title">
+                Nombre de vues cumulées de toutes vos offres sur les 6 derniers
+                mois
+              </caption>
 
-            <thead>
-              <tr>
-                <th scope="col">Date</th>
-                <th scope="col">Nombre de vues cumulées</th>
-              </tr>
-            </thead>
-            <tbody>
-              {dailyViews.map((dailyView) => (
-                <tr key={dailyView.eventDate}>
-                  <td>{dailyView.eventDate}</td>
-                  <td>{dailyView.numberOfViews}</td>
+              <thead>
+                <tr>
+                  <th scope="col">Date</th>
+                  <th scope="col">Nombre de vues cumulées</th>
                 </tr>
-              ))}
-            </tbody>
-          </table>
+              </thead>
+              <tbody>
+                {dailyViews.map((dailyView) => (
+                  <tr key={dailyView.eventDate}>
+                    <td>{dailyView.eventDate}</td>
+                    <td>{dailyView.numberOfViews}</td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
         </div>
       )}
     </div>
