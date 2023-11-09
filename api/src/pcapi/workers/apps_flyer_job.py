@@ -44,6 +44,7 @@ def log_user_becomes_beneficiary_event_job(user_id: int) -> None:
         raise AppsFlyerMissingError("user has no apps flyer information")
 
     user_apps_flyer = user.externalIds["apps_flyer"]
+    user_firebase_pseudo_id = user.externalIds.get("firebase_pseudo_id", "")
     context = AppsFlyerContext(apps_flyer_user_id=user_apps_flyer["user"], platform=user_apps_flyer["platform"])
 
     base = APPS_FLYER_API_URL.strip("/")
@@ -54,7 +55,11 @@ def log_user_becomes_beneficiary_event_job(user_id: int) -> None:
     data = {
         "appsflyer_id": context.apps_flyer_user_id,
         "eventName": "af_complete_beneficiary",
-        "eventValue": {"af_user_id": str(user.id)},
+        "eventValue": {
+            "af_user_id": str(user.id),
+            "af_firebase_pseudo_id": user_firebase_pseudo_id,
+            "type": user.deposit.type.value,
+        },
     }
 
     try:
