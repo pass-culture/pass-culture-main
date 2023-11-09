@@ -176,10 +176,10 @@ const Homepage = (): JSX.Element => {
             <VenueOfferSteps
               hasVenue={!hasNoVenueVisible}
               offererId={Number(selectedOffererId)}
-              offererHasBankAccount={
-                selectedOfferer?.hasPendingBankAccount === true ||
-                selectedOfferer?.hasValidBankAccount === true
-              }
+              offererHasBankAccount={Boolean(
+                selectedOfferer?.hasPendingBankAccount ||
+                  selectedOfferer?.hasValidBankAccount
+              )}
             />
           </section>
         )}
