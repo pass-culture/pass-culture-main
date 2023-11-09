@@ -110,32 +110,45 @@
     </svg>
   </div>
   <script>
-    const allowedDomains = [
-      '^https://app\.testing\.passculture\.team/',
-      '^https://pro\.testing\.passculture\.team/',
-      '^https://app\.staging\.passculture\.team/',
-      '^https://pro\.staging\.passculture\.team/',
-      '^https://integration\.passculture\.app/',
-      '^https://integration\.passculture\.pro/',
-      '^https://passculture\.app/',
-      '^https://passculture\.pro/',
-    ]
-    const url = new URL(window.location.href)
-    const source = url.searchParams.get("source") || ""
+    function setupRedirect() {
+      const allowedDomains = new Set([
+        'app.testing.passculture.team',
+        'pro.testing.passculture.team',
+        'app.staging.passculture.team',
+        'pro.staging.passculture.team',
+        'integration.passculture.app',
+        'integration.passculture.pro',
+        'passculture.app',
+        'passculture.pro',
+      ])
+      const source = new URLSearchParams(window.location.search).get('source');
+      try {
+        const sourceUrl = new URL(source)
+        if (sourceUrl.protocol != 'https:') {
+          return
+        }
+        sourceDomain = sourceUrl.host
+      } catch (error) {
+        return
+      }
 
-    var blockClassToShow = "from-pro"
-    if (source.match(/app\.passculture/)) {
-      blockClassToShow = "from-app"
-    }
-    const block = document.getElementsByClassName(blockClassToShow)[0]
-    block.style.display = "block"
+      var blockClassToShow = "from-pro"
+      if (sourceDomain.match(/app/)) {
+        blockClassToShow = "from-app"
+      }
+      const block = document.getElementsByClassName(blockClassToShow)[0]
+      block.style.display = "block"
 
-    const redirectToApp = () => {
-      if (allowedDomains.find((domain) => new RegExp(domain, 'i').test(source))) {
+      if (!allowedDomains.has(sourceDomain)) {
+        return
+      }
+
+      const redirectToSource = () => {
         window.location.replace(source)
       }
+      setTimeout(redirectToSource, 60000)
     }
-    setInterval(redirectToApp, 60000)
+    setupRedirect()
   </script>
 </body>
 
