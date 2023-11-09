@@ -52,7 +52,8 @@ logger = logging.getLogger(__name__)
 
 
 def _check_sendinblue_source_ip() -> None:
-    if request.remote_addr not in SENDINBLUE_IP_RANGE and not settings.IS_DEV:
+    source_ip = ipaddress.IPv4Address(request.remote_addr)
+    if source_ip not in SENDINBLUE_IP_RANGE and not settings.IS_DEV:
         raise ApiErrors(
             {"IP": "Source IP address is not whitelisted"},
             status_code=401,
