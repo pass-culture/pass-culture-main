@@ -597,7 +597,10 @@ class CreateBeneficiaryTest:
         assert user.deposit.amount == 30
 
     def test_apps_flyer_called(self):
-        apps_flyer_data = {"apps_flyer": {"user": "some-user-id", "platform": "ANDROID"}}
+        apps_flyer_data = {
+            "apps_flyer": {"user": "some-user-id", "platform": "ANDROID"},
+            "firebase_pseudo_id": "firebase_pseudo_id",
+        }
         user = users_factories.UserFactory(externalIds=apps_flyer_data)
         fraud_check = fraud_factories.BeneficiaryFraudCheckFactory(
             user=user, type=fraud_models.FraudCheckType.UBBLE, status=fraud_models.FraudCheckStatus.OK
@@ -605,7 +608,11 @@ class CreateBeneficiaryTest:
         expected = {
             "appsflyer_id": "some-user-id",
             "eventName": "af_complete_beneficiary",
-            "eventValue": {"af_user_id": str(user.id)},
+            "eventValue": {
+                "af_user_id": str(user.id),
+                "af_firebase_pseudo_id": "firebase_pseudo_id",
+                "type": "GRANT_18",
+            },
         }
 
         with requests_mock.Mocker() as request_mock:
