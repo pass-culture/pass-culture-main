@@ -1,23 +1,24 @@
 import { render, screen } from '@testing-library/react'
 
 import { OfferAddressType } from 'apiClient/adage'
+import { defaultCollectiveOffer } from 'utils/adageFactories'
 
-import CardOfferComponent, { CardComponentProps } from '../CardOffer'
+import CardOfferComponent, {
+  CardComponentProps,
+  CardOfferModel,
+} from '../CardOffer'
 
-const mockOffer = {
-  imageUrl: 'https://picsum.photos/200/300',
-  name: 'Titre de l’offre maximum sur 3 lignes. Passé ces trois lignes, il faut tronquer le texte',
-  offerAddressType: OfferAddressType.OTHER,
+const mockOffer: CardOfferModel = {
+  ...defaultCollectiveOffer,
   venue: {
-    name: 'Venue 1',
+    ...defaultCollectiveOffer.venue,
     distance: 5,
-    city: 'Paris',
   },
   offerVenue: {
-    name: 'Venue 2',
+    ...defaultCollectiveOffer.offerVenue,
     distance: 10,
-    city: 'Paris',
   },
+  isTemplate: false,
 }
 
 const renderCardOfferComponent = ({ offer }: CardComponentProps) => {
@@ -28,7 +29,10 @@ describe('CardOffer component', () => {
   it('should render school tag when offer will happens in school', () => {
     const offer = {
       ...mockOffer,
-      offerAddressType: OfferAddressType.SCHOOL,
+      offerVenue: {
+        ...mockOffer.offerVenue,
+        addressType: OfferAddressType.SCHOOL,
+      },
     }
     renderCardOfferComponent({ offer })
 
@@ -38,7 +42,10 @@ describe('CardOffer component', () => {
   it('should render offer venue tag when offer will happens in pro venue', () => {
     const offer = {
       ...mockOffer,
-      offerAddressType: OfferAddressType.OFFERER_VENUE,
+      offerVenue: {
+        ...mockOffer.offerVenue,
+        addressType: OfferAddressType.OFFERER_VENUE,
+      },
     }
     renderCardOfferComponent({ offer })
 
@@ -49,7 +56,10 @@ describe('CardOffer component', () => {
   it('should render other venue tag when offer will happens in other venue than pro one', () => {
     const offer = {
       ...mockOffer,
-      offerAddressType: OfferAddressType.OTHER,
+      offerVenue: {
+        ...mockOffer.offerVenue,
+        addressType: OfferAddressType.OTHER,
+      },
     }
     renderCardOfferComponent({ offer })
 
