@@ -11,7 +11,6 @@ from flask_sqlalchemy import BaseQuery
 from pcapi.core.offerers import api as offerers_api
 from pcapi.core.permissions import models as perm_models
 from pcapi.core.users import api as users_api
-from pcapi.models.feature import FeatureToggle
 
 from . import blueprint
 from . import search_utils
@@ -115,10 +114,7 @@ def search_pro() -> utils.BackofficeResponse:
         },
     )
 
-    if paginated_rows.total == 1 and (
-        result_type == search_forms.TypeOptions.BANK_ACCOUNT
-        or FeatureToggle.WIP_BACKOFFICE_ENABLE_REDIRECT_SINGLE_RESULT.is_active()
-    ):
+    if paginated_rows.total == 1:
         return redirect(
             context.get_pro_link(paginated_rows.items[0].id, form=form, search_rank=1, total_items=1), code=303
         )
