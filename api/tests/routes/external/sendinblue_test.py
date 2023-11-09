@@ -6,8 +6,6 @@ from pcapi.core.testing import override_settings
 from pcapi.core.users.factories import UserFactory
 from pcapi.models import db
 
-from tests.conftest import TestClient
-
 
 class SubscribeOrUnsubscribeUserTestHelper:
     # attributes overriden in inherited test classes
@@ -15,7 +13,7 @@ class SubscribeOrUnsubscribeUserTestHelper:
     initial_marketing_email = NotImplemented
     expected_marketing_email = NotImplemented
 
-    def test_webhook_ok(self, app):
+    def test_webhook_ok(self, client):
         # Given
         existing_user = UserFactory(
             email="lucy.ellingson@kennet.ca",
@@ -27,14 +25,14 @@ class SubscribeOrUnsubscribeUserTestHelper:
 
         # When
         with override_settings(IS_DEV=False):  # enforce source IP check
-            response = TestClient(app.test_client()).post(self.endpoint, json=data, headers=headers)
+            response = client.post(self.endpoint, json=data, headers=headers)
 
         # Then
         assert response.status_code == 204
         db.session.refresh(existing_user)
         assert existing_user.notificationSubscriptions["marketing_email"] is self.expected_marketing_email
 
-    def test_webhook_from_forbidden_ip(self, app):
+    def test_webhook_from_forbidden_ip(self, client):
         # Given
         existing_user = UserFactory(
             email="lucy.ellingson@kennet.ca",
@@ -47,14 +45,14 @@ class SubscribeOrUnsubscribeUserTestHelper:
 
         # When
         with override_settings(IS_DEV=False):  # enforce source IP check
-            response = TestClient(app.test_client()).post(self.endpoint, json=data, headers=headers)
+            response = client.post(self.endpoint, json=data, headers=headers)
 
         # Then
         assert response.status_code == 401
         db.session.refresh(existing_user)
         assert existing_user.notificationSubscriptions["marketing_email"] is self.initial_marketing_email
 
-    def test_webhook_bad_request(self, app):
+    def test_webhook_bad_request(self, client):
         # Given
         existing_user = UserFactory(
             email="lucy.ellingson@kennet.ca",
@@ -66,20 +64,20 @@ class SubscribeOrUnsubscribeUserTestHelper:
         data = {}
 
         # When
-        response = TestClient(app.test_client()).post(self.endpoint, json=data, headers=headers)
+        response = client.post(self.endpoint, json=data, headers=headers)
 
         # Then
         assert response.status_code == 400
         db.session.refresh(existing_user)
         assert existing_user.notificationSubscriptions["marketing_email"] is self.initial_marketing_email
 
-    def test_webhook_user_does_not_exist(self, app):
+    def test_webhook_user_does_not_exist(self, client):
         # Given
         headers = {"X-Forwarded-For": "185.107.232.1"}
         data = {"email": "lucy.ellingson@kennet.ca"}
 
         # When
-        response = TestClient(app.test_client()).post(self.endpoint, json=data, headers=headers)
+        response = client.post(self.endpoint, json=data, headers=headers)
 
         # Then
         assert response.status_code == 400
@@ -101,13 +99,13 @@ class SubscribeUserTest(SubscribeOrUnsubscribeUserTestHelper):
 
 @pytest.mark.usefixtures("db_session")
 class NotifyImportContactsTest:
-    def test_notify_importcontacts(self, app, caplog):
+    def test_notify_importcontacts(self, client, caplog):
         # Given
         headers = {"X-Forwarded-For": "1.179.112.9"}
 
         # When
         with caplog.at_level(logging.INFO):
-            response = TestClient(app.test_client()).post("/webhooks/sendinblue/importcontacts/18/1", headers=headers)
+            response = client.post("/webhooks/sendinblue/importcontacts/18/1", headers=headers)
 
         # Then
         assert response.status_code == 204
