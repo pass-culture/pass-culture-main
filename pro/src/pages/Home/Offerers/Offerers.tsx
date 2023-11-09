@@ -177,10 +177,10 @@ const Offerers = ({
                   ? venues.virtualVenue
                   : null
               }
-              offererHasBankAccount={
-                selectedOfferer.hasPendingBankAccount === true ||
-                selectedOfferer.hasValidBankAccount === true
-              }
+              offererHasBankAccount={Boolean(
+                selectedOfferer.hasPendingBankAccount ||
+                  selectedOfferer.hasValidBankAccount
+              )}
             />
           )}
         </>
