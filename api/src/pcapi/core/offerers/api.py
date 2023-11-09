@@ -2042,6 +2042,7 @@ def get_offerer_stats_data(offerer_id: int) -> list[offerers_models.OffererStats
 def _update_offerer_stats_data(offerer_id: int) -> None:
     with transaction():
         daily_views_data = OffererViewsPerDay().execute(offerer_id=str(offerer_id))
+        daily_views_data_list = list(daily_views_data)[::-1]  # reverse list to have the oldest date first
         daily_views_stats = offerers_models.OffererStats.query.filter_by(
             offererId=offerer_id, table=DAILY_CONSULT_PER_OFFERER_LAST_180_DAYS_TABLE
         ).one_or_none()
@@ -2049,11 +2050,11 @@ def _update_offerer_stats_data(offerer_id: int) -> None:
             daily_views_stats = offerers_models.OffererStats(
                 offererId=offerer_id,
                 table=DAILY_CONSULT_PER_OFFERER_LAST_180_DAYS_TABLE,
-                jsonData=offerers_models.OffererStatsData(daily_views=list(daily_views_data)),
+                jsonData=offerers_models.OffererStatsData(daily_views=list(daily_views_data_list)),
                 syncDate=datetime.utcnow(),
             )
         else:
-            daily_views_stats.jsonData = offerers_models.OffererStatsData(daily_views=list(daily_views_data))
+            daily_views_stats.jsonData = offerers_models.OffererStatsData(daily_views=list(daily_views_data_list))
             daily_views_stats.syncDate = datetime.utcnow()
 
         top_offers_data = OffersData().execute(offerer_id=str(offerer_id))
