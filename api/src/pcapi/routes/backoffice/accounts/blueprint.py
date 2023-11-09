@@ -41,7 +41,6 @@ from pcapi.core.users.models import EligibilityType
 from pcapi.models import db
 from pcapi.models.beneficiary_import import BeneficiaryImport
 from pcapi.models.beneficiary_import_status import BeneficiaryImportStatus
-from pcapi.models.feature import FeatureToggle
 from pcapi.repository import repository
 from pcapi.routes.backoffice import search_utils
 from pcapi.routes.backoffice import utils
@@ -102,7 +101,7 @@ def search_public_accounts() -> utils.BackofficeResponse:
         users_query = _join_suspension_history(users_query)
         paginated_rows = users_query.paginate(page=form.page.data, per_page=form.per_page.data)
 
-    if paginated_rows.total == 1 and FeatureToggle.WIP_BACKOFFICE_ENABLE_REDIRECT_SINGLE_RESULT.is_active():
+    if paginated_rows.total == 1:
         return redirect(
             url_for(
                 ".get_public_account", user_id=paginated_rows.items[0].id, q=form.q.data, search_rank=1, total_items=1

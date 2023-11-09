@@ -136,11 +136,17 @@ class SearchProUserTest:
         search_query = self.pro_accounts[5].id
         with assert_num_queries(self.expected_num_queries):
             response = authenticated_client.get(url_for(self.endpoint, q=search_query, pro_type=TypeOptions.USER.name))
-            assert response.status_code == 200
+            assert response.status_code == 303
 
-        cards_text = html_parser.extract_cards_text(response.data)
-        assert len(cards_text) == 1
-        assert_user_equals(cards_text[0], self.pro_accounts[5])
+        # Redirected to single result
+        assert_response_location(
+            response,
+            "backoffice_web.pro_user.get",
+            user_id=self.pro_accounts[5].id,
+            q=self.pro_accounts[5].id,
+            search_rank=1,
+            total_items=1,
+        )
 
     def test_can_search_pro_by_email(self, authenticated_client):
         self._create_accounts()
@@ -148,21 +154,9 @@ class SearchProUserTest:
         search_query = self.pro_accounts[2].email
         with assert_num_queries(self.expected_num_queries):
             response = authenticated_client.get(url_for(self.endpoint, q=search_query, pro_type=TypeOptions.USER.name))
-            assert response.status_code == 200
-
-        cards_text = html_parser.extract_cards_text(response.data)
-        assert len(cards_text) == 1
-        assert_user_equals(cards_text[0], self.pro_accounts[2])
-
-    @override_features(WIP_BACKOFFICE_ENABLE_REDIRECT_SINGLE_RESULT=True)
-    def test_can_search_pro_by_email_redirected(self, legit_user, authenticated_client):
-        self._create_accounts()
-
-        search_query = self.pro_accounts[2].email
-        with assert_num_queries(self.expected_num_queries):
-            response = authenticated_client.get(url_for(self.endpoint, q=search_query, pro_type=TypeOptions.USER.name))
             assert response.status_code == 303
 
+        # Redirected to single result
         assert_response_location(
             response,
             "backoffice_web.pro_user.get",
@@ -190,11 +184,17 @@ class SearchProUserTest:
             response = authenticated_client.get(
                 url_for(self.endpoint, q="Alice Dubois", pro_type=TypeOptions.USER.name)
             )
-            assert response.status_code == 200
+            assert response.status_code == 303
 
-        cards_text = html_parser.extract_cards_text(response.data)
-        assert len(cards_text) == 1
-        assert_user_equals(cards_text[0], self.pro_accounts[3])
+        # Redirected to single result
+        assert_response_location(
+            response,
+            "backoffice_web.pro_user.get",
+            user_id=self.pro_accounts[3].id,
+            q="Alice Dubois",
+            search_rank=1,
+            total_items=1,
+        )
 
     @pytest.mark.parametrize("query", ["'", '""', "*", "([{#/="])
     def test_can_search_pro_unexpected(self, authenticated_client, query):
@@ -227,11 +227,17 @@ class SearchProUserTest:
         search_query = pro_beneficiary.id
         with assert_num_queries(self.expected_num_queries):
             response = authenticated_client.get(url_for(self.endpoint, q=search_query, pro_type=TypeOptions.USER.name))
-            assert response.status_code == 200
+            assert response.status_code == 303
 
-        cards_text = html_parser.extract_cards_text(response.data)
-        assert len(cards_text) == 1
-        assert_user_equals(cards_text[0], pro_beneficiary)
+        # Redirected to single result
+        assert_response_location(
+            response,
+            "backoffice_web.pro_user.get",
+            user_id=pro_beneficiary.id,
+            q=search_query,
+            search_rank=1,
+            total_items=1,
+        )
 
 
 class SearchOffererTest:
@@ -269,13 +275,17 @@ class SearchOffererTest:
 
         with assert_num_queries(self.expected_num_queries):
             response = authenticated_client.get(url_for(self.endpoint, q=offerer_id, pro_type=TypeOptions.OFFERER.name))
-            assert response.status_code == 200
+            assert response.status_code == 303
 
-        cards_text = html_parser.extract_cards_text(response.data)
-        assert len(cards_text) == 1
-        assert self.offerers[2].city in response.data.decode()
-        assert self.offerers[2].postalCode in response.data.decode()
-        assert_offerer_equals(cards_text[0], self.offerers[2])
+        # Redirected to single result
+        assert_response_location(
+            response,
+            "backoffice_web.offerer.get",
+            offerer_id=offerer_id,
+            q=offerer_id,
+            search_rank=1,
+            total_items=1,
+        )
 
     @pytest.mark.parametrize("siren", ["123456003", "123 456 003 "])
     def test_can_search_offerer_by_siren(self, authenticated_client, siren):
@@ -283,11 +293,17 @@ class SearchOffererTest:
 
         with assert_num_queries(self.expected_num_queries):
             response = authenticated_client.get(url_for(self.endpoint, q=siren, pro_type=TypeOptions.OFFERER.name))
-            assert response.status_code == 200
+            assert response.status_code == 303
 
-        cards_text = html_parser.extract_cards_text(response.data)
-        assert len(cards_text) == 1
-        assert_offerer_equals(cards_text[0], self.offerers[3])
+        # Redirected to single result
+        assert_response_location(
+            response,
+            "backoffice_web.offerer.get",
+            offerer_id=self.offerers[3].id,
+            q=self.offerers[3].siren,
+            search_rank=1,
+            total_items=1,
+        )
 
     def test_can_search_offerer_by_name(self, authenticated_client):
         self._create_offerers()
@@ -386,11 +402,12 @@ class SearchVenueTest:
         venue_id = self.venues[2].id
         with assert_num_queries(self.expected_num_queries):
             response = authenticated_client.get(url_for(self.endpoint, q=venue_id, pro_type=TypeOptions.VENUE.name))
-            assert response.status_code == 200
+            assert response.status_code == 303
 
-        cards_text = html_parser.extract_cards_text(response.data)
-        assert len(cards_text) == 1
-        assert_venue_equals(cards_text[0], self.venues[2])
+        # Redirected to single result
+        assert_response_location(
+            response, "backoffice_web.venue.get", venue_id=venue_id, q=venue_id, search_rank=1, total_items=1
+        )
 
     @pytest.mark.parametrize("siret", ["12345600300003", "123 456 003 00003"])
     def test_can_search_venue_by_siret(self, authenticated_client, siret):
@@ -398,11 +415,17 @@ class SearchVenueTest:
 
         with assert_num_queries(self.expected_num_queries):
             response = authenticated_client.get(url_for(self.endpoint, q=siret, pro_type=TypeOptions.VENUE.name))
-            assert response.status_code == 200
+            assert response.status_code == 303
 
-        cards_text = html_parser.extract_cards_text(response.data)
-        assert len(cards_text) == 1
-        assert_venue_equals(cards_text[0], self.venues[3])
+        # Redirected to single result
+        assert_response_location(
+            response,
+            "backoffice_web.venue.get",
+            venue_id=self.venues[3].id,
+            q=self.venues[3].siret,
+            search_rank=1,
+            total_items=1,
+        )
 
     def test_can_search_venue_by_booking_email(self, authenticated_client):
         self._create_venues()
@@ -410,11 +433,12 @@ class SearchVenueTest:
         email = self.venues[1].bookingEmail
         with assert_num_queries(self.expected_num_queries):
             response = authenticated_client.get(url_for(self.endpoint, q=email, pro_type=TypeOptions.VENUE.name))
-            assert response.status_code == 200
+            assert response.status_code == 303
 
-        cards_text = html_parser.extract_cards_text(response.data)
-        assert len(cards_text) == 1
-        assert_venue_equals(cards_text[0], self.venues[1])
+        # Redirected to single result
+        assert_response_location(
+            response, "backoffice_web.venue.get", venue_id=self.venues[1].id, q=email, search_rank=1, total_items=1
+        )
 
     def test_can_search_venue_by_booking_email_domain(self, authenticated_client):
         self._create_venues()
@@ -437,11 +461,12 @@ class SearchVenueTest:
         email = self.venues[1].contact.email
         with assert_num_queries(self.expected_num_queries):
             response = authenticated_client.get(url_for(self.endpoint, q=email, pro_type=TypeOptions.VENUE.name))
-            assert response.status_code == 200
+            assert response.status_code == 303
 
-        cards_text = html_parser.extract_cards_text(response.data)
-        assert len(cards_text) == 1
-        assert_venue_equals(cards_text[0], self.venues[1])
+        # Redirected to single result
+        assert_response_location(
+            response, "backoffice_web.venue.get", venue_id=self.venues[1].id, q=email, search_rank=1, total_items=1
+        )
 
     def test_can_search_venue_by_name(self, authenticated_client):
         self._create_venues()
@@ -488,22 +513,35 @@ class SearchVenueTest:
         assert_venue_equals(cards_text[1], self.venues[11])  # Théâtre du Centaure (very close to the first one)
 
     @pytest.mark.parametrize(
-        "query", ["123a456b789c", "123A456B789C", "PRO-123a456b789c", "124578235689", "PRO-124578235689"]
+        "query,expected_venue_index",
+        [
+            ("123a456b789c", 0),
+            ("123A456B789C", 0),
+            ("PRO-123a456b789c", 0),
+            ("124578235689", 1),
+            ("PRO-124578235689", 1),
+        ],
     )
-    def test_can_search_venue_by_dms_token(self, authenticated_client, query):
+    def test_can_search_venue_by_dms_token(self, authenticated_client, query, expected_venue_index):
         self._create_venues()
-        venue_with_token = offerers_factories.VenueFactory(dmsToken="123a456b789c")
-        venue_with_num_token = offerers_factories.VenueFactory(
-            name="ONLY_NUM", publicName="ONLY_NUM", dmsToken="124578235689"
-        )
+        venue_ids = [
+            offerers_factories.VenueFactory(dmsToken="123a456b789c").id,
+            offerers_factories.VenueFactory(name="ONLY_NUM", publicName="ONLY_NUM", dmsToken="124578235689").id,
+        ]
 
         with assert_num_queries(self.expected_num_queries):
             response = authenticated_client.get(url_for(self.endpoint, q=query, pro_type=TypeOptions.VENUE.name))
-            assert response.status_code == 200
+            assert response.status_code == 303
 
-        cards_text = html_parser.extract_cards_text(response.data)
-        assert len(cards_text) == 1
-        assert_venue_equals(cards_text[0], venue_with_num_token if "ONLY_NUM" in cards_text[0] else venue_with_token)
+        # Redirected to single result
+        assert_response_location(
+            response,
+            "backoffice_web.venue.get",
+            venue_id=venue_ids[expected_venue_index],
+            q=query,
+            search_rank=1,
+            total_items=1,
+        )
 
     @pytest.mark.parametrize(
         "query,departments",
@@ -590,7 +628,7 @@ class LogsTest:
                 url_for(self.endpoint, q="rythme", pro_type=TypeOptions.OFFERER.name, departments=["02", "30"])
             )
 
-        assert response.status_code == 200
+        assert response.status_code == 303
         assert caplog.records[0].message == "PerformSearch"
         assert caplog.records[0].extra == {
             "analyticsSource": "backoffice",
