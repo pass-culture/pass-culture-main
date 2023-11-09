@@ -1,65 +1,64 @@
 import { getPhoneNumberInputAndCountryCode } from '../getPhoneNumberInputAndCountryCode'
 
+const countryCodeTests: {
+  value: string
+  expectedInput: string
+  expectedCountryCode: string
+}[] = [
+  {
+    value: '06 94 00 01 02',
+    expectedInput: '694000102',
+    expectedCountryCode: 'GF',
+  },
+  {
+    value: '05 94 00 01 02',
+    expectedInput: '594000102',
+    expectedCountryCode: 'GF',
+  },
+  {
+    value: '06 92 98 01 01',
+    expectedInput: '692980101',
+    expectedCountryCode: 'RE',
+  },
+  {
+    value: '02 62 41 83 00',
+    expectedInput: '262418300',
+    expectedCountryCode: 'RE',
+  },
+  {
+    value: '06 90 41 83 00',
+    expectedInput: '690418300',
+    expectedCountryCode: 'GP',
+  },
+  {
+    value: '05 90 41 83 00',
+    expectedInput: '590418300',
+    expectedCountryCode: 'GP',
+  },
+  {
+    value: '06 96 41 83 00',
+    expectedInput: '696418300',
+    expectedCountryCode: 'MQ',
+  },
+  {
+    value: '05 96 41 83 00',
+    expectedInput: '596418300',
+    expectedCountryCode: 'MQ',
+  },
+  {
+    value: '',
+    expectedInput: '',
+    expectedCountryCode: 'FR',
+  },
+]
 describe('getPhoneNumberValues', () => {
-  it('should detect GF country code', () => {
-    const { inputValue, countryCode } =
-      getPhoneNumberInputAndCountryCode('06 94 00 01 02')
-    expect(inputValue).toStrictEqual('694000102')
-    expect(countryCode).toStrictEqual('GF')
-  })
-
-  it('should detect GF fix country code', () => {
-    const { inputValue, countryCode } =
-      getPhoneNumberInputAndCountryCode('05 94 00 01 02')
-    expect(inputValue).toStrictEqual('594000102')
-    expect(countryCode).toStrictEqual('GF')
-  })
-
-  it('should detect RE country code', () => {
-    const { inputValue, countryCode } =
-      getPhoneNumberInputAndCountryCode('692 98 01 01')
-    expect(inputValue).toStrictEqual('692980101')
-    expect(countryCode).toStrictEqual('RE')
-  })
-
-  it('should detect RE fix country code', () => {
-    const { inputValue, countryCode } =
-      getPhoneNumberInputAndCountryCode('02 62 41 83 00')
-    expect(inputValue).toStrictEqual('262418300')
-    expect(countryCode).toStrictEqual('RE')
-  })
-
-  it('should detect GP country code', () => {
-    const { inputValue, countryCode } =
-      getPhoneNumberInputAndCountryCode('06 90 41 83 00')
-    expect(inputValue).toStrictEqual('690418300')
-    expect(countryCode).toStrictEqual('GP')
-  })
-
-  it('should detect GP fix country code', () => {
-    const { inputValue, countryCode } =
-      getPhoneNumberInputAndCountryCode('05 90 41 83 00')
-    expect(inputValue).toStrictEqual('590418300')
-    expect(countryCode).toStrictEqual('GP')
-  })
-
-  it('should detect MQ country code', () => {
-    const { inputValue, countryCode } =
-      getPhoneNumberInputAndCountryCode('06 96 41 83 00')
-    expect(inputValue).toStrictEqual('696418300')
-    expect(countryCode).toStrictEqual('MQ')
-  })
-
-  it('should detect MQ fix country code', () => {
-    const { inputValue, countryCode } =
-      getPhoneNumberInputAndCountryCode('05 96 41 83 00')
-    expect(inputValue).toStrictEqual('596418300')
-    expect(countryCode).toStrictEqual('MQ')
-  })
-
-  it('should return default value', () => {
-    const { inputValue, countryCode } = getPhoneNumberInputAndCountryCode('')
-    expect(inputValue).toStrictEqual('')
-    expect(countryCode).toStrictEqual('FR')
-  })
+  it.each(countryCodeTests)(
+    'should should detect $expectedCountryCode country code',
+    ({ value, expectedInput, expectedCountryCode }) => {
+      const { inputValue, countryCode } =
+        getPhoneNumberInputAndCountryCode(value)
+      expect(inputValue).toStrictEqual(expectedInput)
+      expect(countryCode).toStrictEqual(expectedCountryCode)
+    }
+  )
 })
