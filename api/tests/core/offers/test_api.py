@@ -2528,5 +2528,5 @@ class GetStocksStatsTest:
 
         # Then
         assert error.value.errors == {
-            "global": ["L'offre en cours de création ne possède aucun Stock"],
+            "global": ["L'offre en cours de création ne possède aucun Stock"],  # lalalalala
         }
