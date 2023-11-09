@@ -10,6 +10,8 @@ import strokeOfferIcon from 'icons/stroke-offer.svg'
 import { SvgIcon } from 'ui-kit/SvgIcon/SvgIcon'
 import { Tag, TagVariant } from 'ui-kit/Tag/Tag'
 
+import OfferFavoriteButton from '../../OffersInstantSearch/OffersSearch/Offers/OfferFavoriteButton/OfferFavoriteButton'
+
 import logoSchoolTrip from './assets/icon-school-trip.svg'
 import logoSchool from './assets/icon-school.svg'
 import styles from './CardOffer.module.scss'
@@ -44,18 +46,24 @@ const CardOfferComponent = ({ offer }: CardComponentProps) => {
 
   return (
     <div className={styles.container}>
-      {offer.imageUrl ? (
-        <img
-          alt=""
-          className={styles['offer-image']}
-          loading="lazy"
-          src={offer.imageUrl}
+      <div className={styles['offer-image-container']}>
+        {offer.imageUrl ? (
+          <img
+            alt=""
+            className={styles['offer-image']}
+            loading="lazy"
+            src={offer.imageUrl}
+          />
+        ) : (
+          <div className={styles['offer-image']}>
+            <SvgIcon src={strokeOfferIcon} alt="" />
+          </div>
+        )}
+        <OfferFavoriteButton
+          offer={offer}
+          className={styles['offer-favorite-button']}
         />
-      ) : (
-        <div className={styles['offer-image']}>
-          <SvgIcon src={strokeOfferIcon} alt="" />
-        </div>
-      )}
+      </div>
 
       <div className={styles['offer-tag-container']}>
         <Tag variant={TagVariant.LIGHT_GREY} className={styles['offer-tag']}>

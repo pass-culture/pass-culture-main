@@ -18,9 +18,10 @@ import styles from './OfferFavoriteButton.module.scss'
 
 export interface OfferFavoriteButtonProps {
   offer: HydratedCollectiveOffer | HydratedCollectiveOfferTemplate
-  queryId: string
+  queryId?: string
   afterFavoriteChange?: (isFavorite: boolean) => void
   isInSuggestions?: boolean
+  className?: string
 }
 
 const OfferFavoriteButton = ({
@@ -28,6 +29,7 @@ const OfferFavoriteButton = ({
   queryId,
   afterFavoriteChange,
   isInSuggestions,
+  className,
 }: OfferFavoriteButtonProps): JSX.Element => {
   const [isFavorite, setIsFavorite] = useState(offer.isFavorite)
   const [isLoading, setIsLoading] = useState(false)
@@ -103,7 +105,7 @@ const OfferFavoriteButton = ({
   return (
     <Button
       icon={isFavorite ? fullBookmarkIcon : strokeBookmarkIcon}
-      className={cn(styles['favorite-button'], {
+      className={cn(styles['favorite-button'], className, {
         [styles['favorite-button-active']]: isFavorite,
       })}
       variant={ButtonVariant.TERNARY}
