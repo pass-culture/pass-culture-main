@@ -112,6 +112,17 @@ const FormOfferType = ({
       description="Le type de l’offre permet de la caractériser et de la valoriser au mieux pour les enseignants et chefs d’établissement."
       title="Type d’offre"
     >
+      {domainsOptions.length > 0 && (
+        <FormLayout.Row>
+          <MultiSelectAutocomplete
+            options={domainsOptions}
+            pluralLabel="Domaines artistiques et culturels"
+            label="Domaine artistique et culturel"
+            name="domains"
+            disabled={disableForm}
+          />
+        </FormLayout.Row>
+      )}
       {isFormatActive ? (
         <FormLayout.Row>
           <SelectAutocomplete
@@ -144,17 +155,6 @@ const FormOfferType = ({
             </FormLayout.Row>
           )}
         </>
-      )}
-      {domainsOptions.length > 0 && (
-        <FormLayout.Row>
-          <MultiSelectAutocomplete
-            options={domainsOptions}
-            pluralLabel="Domaines artistiques et culturels"
-            label="Domaine artistique et culturel"
-            name="domains"
-            disabled={disableForm}
-          />
-        </FormLayout.Row>
       )}
       {nationalPrograms.length > 0 && (
         <FormLayout.Row
