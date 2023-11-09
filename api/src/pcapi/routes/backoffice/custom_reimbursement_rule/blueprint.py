@@ -23,7 +23,7 @@ from pcapi.routes.backoffice import autocomplete
 from pcapi.routes.backoffice import utils
 from pcapi.utils import date as date_utils
 
-from . import form as custom_reimbursement_rule_forms
+from . import forms as custom_reimbursement_rule_forms
 
 
 custom_reimbursement_rules_blueprint = utils.child_backoffice_blueprint(

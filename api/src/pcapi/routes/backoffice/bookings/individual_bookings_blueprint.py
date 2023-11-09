@@ -25,7 +25,7 @@ from pcapi.core.users import models as users_models
 from pcapi.routes.backoffice import autocomplete
 from pcapi.routes.backoffice import search_utils
 from pcapi.routes.backoffice import utils
-from pcapi.routes.backoffice.bookings import form as booking_forms
+from pcapi.routes.backoffice.bookings import forms as booking_forms
 from pcapi.routes.backoffice.bookings import helpers as booking_helpers
 from pcapi.routes.backoffice.forms import empty as empty_forms
 from pcapi.routes.serialization.bookings_recap_serialize import OfferType
