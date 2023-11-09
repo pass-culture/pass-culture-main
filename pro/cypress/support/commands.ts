@@ -44,17 +44,24 @@ Cypress.on('uncaught:exception', () => {
   return false
 })
 
-Cypress.Commands.add('login', (email: string, password: string) => {
-  cy.intercept({ method: 'POST', url: '/users/signin' }).as('signinUser')
+Cypress.Commands.add(
+  'login',
+  (email: string, password: string, redirectUrl?: string) => {
+    cy.intercept({ method: 'POST', url: '/users/signin' }).as('signinUser')
 
-  cy.visit('/connexion')
-  cy.get('#email').type(email)
-  cy.get('#password').type(password)
-  cy.get('button[type=submit]').click()
-  cy.wait('@signinUser')
+    cy.visit(
+      redirectUrl
+        ? `/connexion?de=${encodeURIComponent(redirectUrl)}`
+        : '/connexion'
+    )
+    cy.get('#email').type(email)
+    cy.get('#password').type(password)
+    cy.get('button[type=submit]').click()
+    cy.wait('@signinUser')
 
-  cy.url().should('contain', '/accueil')
-})
+    cy.url().should('contain', redirectUrl ?? '/accueil')
+  }
+)
 
 Cypress.Commands.add('logout', () => {
   cy.intercept({ method: 'GET', url: '/users/signout' }).as('signoutUser')

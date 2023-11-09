@@ -63,10 +63,13 @@ describe('Signup journey', () => {
   })
 
   it('should create offerer', () => {
-    cy.login('eac_1_lieu@example.com', 'user@AZERTY123')
+    cy.login(
+      'eac_1_lieu@example.com',
+      'user@AZERTY123',
+      '/parcours-inscription'
+    )
 
     // Welcome page
-    cy.visit({ method: 'GET', url: '/parcours-inscription' })
     cy.contains('Commencer').click()
 
     // Offerer page
@@ -93,16 +96,18 @@ describe('Signup journey', () => {
 
     // Homepage
     cy.url().should('contain', '/accueil')
-
-    cy.logout()
   })
 
   it('should ask offerer attachment to a user and create new offerer', () => {
-    cy.login('pctest.pro97.0@example.com', 'user@AZERTY123')
+    cy.login(
+      'pctest.pro97.0@example.com',
+      'user@AZERTY123',
+      '/parcours-inscription'
+    )
 
     // Welcome page
-    cy.visit({ method: 'GET', url: '/parcours-inscription' })
     cy.contains('Commencer').click()
+
     // Offerer page
     cy.get('#siret').type(siret)
     cy.wait('@getSiret')
@@ -132,16 +137,18 @@ describe('Signup journey', () => {
 
     // Homepage
     cy.url().should('contain', '/accueil')
-
-    cy.logout()
   })
 
   it('should attach user to an existing offerer', () => {
-    cy.login('pctest.pro93.0@example.com', 'user@AZERTY123')
+    cy.login(
+      'pctest.pro93.0@example.com',
+      'user@AZERTY123',
+      '/parcours-inscription'
+    )
 
     // Welcome page
-    cy.visit({ method: 'GET', url: '/parcours-inscription' })
     cy.contains('Commencer').click()
+
     // Offerer page
     cy.get('#siret').type(siret)
     cy.wait('@getSiret')
@@ -172,7 +179,5 @@ describe('Signup journey', () => {
     cy.contains(
       'Le rattachement à votre structure est en cours de traitement par les équipes du pass Culture'
     ).should('be.visible')
-
-    cy.logout()
   })
 })
