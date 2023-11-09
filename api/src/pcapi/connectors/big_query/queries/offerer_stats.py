@@ -29,6 +29,7 @@ class OffererViewsPerDay(BaseQuery):
             `{settings.BIG_QUERY_NOTIFICATIONS_TABLE_BASENAME}.{DAILY_CONSULT_PER_OFFERER_LAST_180_DAYS_TABLE}`
         WHERE
             offerer_id = @offerer_id
+        ORDER BY event_date DESC
         LIMIT 180
         """
 
@@ -57,7 +58,7 @@ class OffersData(BaseQuery):
             `{settings.BIG_QUERY_NOTIFICATIONS_TABLE_BASENAME}.{TOP_3_MOST_CONSULTED_OFFERS_LAST_30_DAYS_TABLE}`
         WHERE
             offerer_id = @offerer_id
-        ORDER BY consult_rank
+        ORDER BY consult_rank DESC
         LIMIT 3
         """
 
