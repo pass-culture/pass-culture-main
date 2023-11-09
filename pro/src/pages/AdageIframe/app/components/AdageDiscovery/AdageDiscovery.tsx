@@ -1,26 +1,66 @@
 import React from 'react'
 
-import { OfferAddressType } from 'apiClient/adage'
+import { OfferAddressType, StudentLevels } from 'apiClient/adage'
 import bannerDiscovery from 'icons/banner-discovery-adage.svg'
 import fullLinkIcon from 'icons/full-link.svg'
 import { ButtonLink } from 'ui-kit'
 import { ButtonVariant } from 'ui-kit/Button/types'
-import { defaultCollectiveOffer } from 'utils/adageFactories'
 
 import styles from './AdageDiscovery.module.scss'
 import CardOfferComponent, { CardOfferModel } from './CardOffer/CardOffer'
 import CardVenue from './CardVenue/CardVenue'
 
 const mockOffer: CardOfferModel = {
-  ...defaultCollectiveOffer,
+  id: 479,
+  name: 'Une chouette à la mer',
+  description: 'Une offre vraiment chouette',
+  subcategoryLabel: 'Cinéma',
+  stock: {
+    id: 825,
+    beginningDatetime: new Date('2022-09-16T00:00:00Z').toISOString(),
+    bookingLimitDatetime: new Date('2022-09-16T00:00:00Z').toISOString(),
+    isBookable: true,
+    price: 140000,
+    numberOfTickets: 10,
+  },
   venue: {
-    ...defaultCollectiveOffer.venue,
+    id: 1,
+    address: '1 boulevard Poissonnière',
+    city: 'Paris',
+    name: 'Le Petit Rintintin 33',
+    postalCode: '75000',
+    publicName: 'Le Petit Rintintin 33',
+    coordinates: {
+      latitude: 48.87004,
+      longitude: 2.3785,
+    },
+    managingOfferer: {
+      name: 'Le Petit Rintintin Management',
+    },
     distance: 5,
   },
+  isSoldOut: false,
+  isExpired: false,
+  isFavorite: false,
+  visualDisabilityCompliant: true,
+  mentalDisabilityCompliant: true,
+  audioDisabilityCompliant: true,
+  motorDisabilityCompliant: true,
+  contactEmail: '',
+  contactPhone: '',
+  domains: [],
   offerVenue: {
-    ...defaultCollectiveOffer.offerVenue,
+    venueId: 1,
+    otherAddress: '',
+    addressType: OfferAddressType.OFFERER_VENUE,
     distance: 10,
   },
+  teacher: {
+    firstName: 'Jean',
+    lastName: 'Dupont',
+  },
+  students: [StudentLevels.COLL_GE_4E, StudentLevels.COLL_GE_3E],
+  interventionArea: ['75', '92'],
   isTemplate: false,
 }
 
@@ -52,6 +92,7 @@ export const AdageDiscovery = () => {
               <CardOfferComponent
                 offer={{
                   ...mockOffer,
+                  id: 1,
                   name: 'Ma super offre',
                   offerVenue: {
                     ...mockOffer.offerVenue,
@@ -63,6 +104,7 @@ export const AdageDiscovery = () => {
               <CardOfferComponent
                 offer={{
                   ...mockOffer,
+                  id: 2,
                   offerVenue: {
                     ...mockOffer.offerVenue,
                     addressType: OfferAddressType.SCHOOL,
@@ -73,6 +115,7 @@ export const AdageDiscovery = () => {
               <CardOfferComponent
                 offer={{
                   ...mockOffer,
+                  id: 3,
                   offerVenue: {
                     ...mockOffer.offerVenue,
                     addressType: OfferAddressType.OTHER,
