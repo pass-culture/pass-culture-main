@@ -1,7 +1,9 @@
-import { render, screen } from '@testing-library/react'
+import { screen } from '@testing-library/react'
 
 import { OfferAddressType } from 'apiClient/adage'
-import { defaultCollectiveOffer } from 'utils/adageFactories'
+import { AdageUserContextProvider } from 'pages/AdageIframe/app/providers/AdageUserContext'
+import { defaultAdageUser, defaultCollectiveOffer } from 'utils/adageFactories'
+import { renderWithProviders } from 'utils/renderWithProviders'
 
 import CardOfferComponent, {
   CardComponentProps,
@@ -22,7 +24,11 @@ const mockOffer: CardOfferModel = {
 }
 
 const renderCardOfferComponent = ({ offer }: CardComponentProps) => {
-  render(<CardOfferComponent offer={offer} />)
+  renderWithProviders(
+    <AdageUserContextProvider adageUser={defaultAdageUser}>
+      <CardOfferComponent offer={offer} />
+    </AdageUserContextProvider>
+  )
 }
 
 describe('CardOffer component', () => {
