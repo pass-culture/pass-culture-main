@@ -29,6 +29,7 @@ import pcapi.core.finance.repository as finance_repository
 import pcapi.core.mails.transactional as transactional_mails
 from pcapi.core.offerers.models import Venue
 from pcapi.core.offers import repository as offers_repository
+import pcapi.core.offers.api as offers_api
 import pcapi.core.offers.exceptions as offers_exceptions
 import pcapi.core.offers.models as offers_models
 from pcapi.core.offers.models import Offer
@@ -189,7 +190,7 @@ def classify_and_sort_bookings(
     return (sorted_ended_bookings, sorted_ongoing_bookings)
 
 
-def book_offer(
+def _book_offer(
     beneficiary: User,
     stock_id: int,
     quantity: int,
@@ -217,10 +218,6 @@ def book_offer(
         )
         if is_activation_code_applicable:
             validation.check_activation_code_available(stock)
-
-        first_venue_booking = not db.session.query(
-            Booking.query.filter(Booking.venueId == stock.offer.venueId).exists()
-        ).scalar()
 
         # FIXME (dbaty, 2020-10-20): if we directly set relations (for
         # example with `booking.user = beneficiary`) instead of foreign keys,
@@ -293,6 +290,48 @@ def book_offer(
                 finance_models.FinanceEventMotive.BOOKING_USED,
                 booking=booking,
             )
+    return booking
+
+
+def book_offer(
+    beneficiary: User,
+    stock_id: int,
+    quantity: int,
+) -> Booking:
+    """
+    Return a booking or raise an exception if it's not possible.
+    Update a user's credit information on Batch.
+    """
+    stock = offers_models.Stock.query.filter_by(id=stock_id).one_or_none()
+    if not stock:
+        raise offers_exceptions.StockDoesNotExist()
+
+    first_venue_booking = not db.session.query(
+        Booking.query.filter(Booking.venueId == stock.offer.venueId).exists()
+    ).scalar()
+
+    try:
+        booking = _book_offer(beneficiary, stock_id, quantity)
+    except external_bookings_exceptions.ExternalBookingNotEnoughSeatsError as error:
+        offers_api.edit_stock(
+            stock,
+            quantity=(stock.dnBookedQuantity + error.remainingQuantity),
+            editing_provider=stock.offer.lastProvider,
+        )
+        db.session.commit()
+        logger.info(
+            "Could not book offer: Event has not enough seats left",
+            extra={"offer_id": stock.offer.id, "provider_id": stock.offer.lastProviderId},
+        )
+        raise
+    except external_bookings_exceptions.ExternalBookingSoldOutError:
+        offers_api.edit_stock(stock, quantity=stock.dnBookedQuantity, editing_provider=stock.offer.lastProvider)
+        db.session.commit()
+        logger.info(
+            "Could not book offer: Event sold out",
+            extra={"offer_id": stock.offer.id, "provider_id": stock.offer.lastProviderId},
+        )
+        raise
 
     logger.info(
         "Beneficiary booked an offer",
