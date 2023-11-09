@@ -17,7 +17,10 @@
       {% for booking_finance_incident in booking_finance_incidents %}
         <tr>
           <th scope="row">{{ build_booking_toggle_extra_row_button(booking_finance_incident.collectiveBooking) }}</th>
-          <td>{{ booking_finance_incident.collectiveBooking.id }}</td>
+          <td>
+            <a href="{{ url_for('backoffice_web.collective_bookings.list_collective_bookings', q=booking_finance_incident.collectiveBooking.id) }}"
+               class="link-primary">{{ booking_finance_incident.collectiveBooking.id }}</a>
+          </td>
           <td>{{ booking_finance_incident.collectiveBooking.educationalInstitution.name }}</td>
           <td>{{ booking_finance_incident.collectiveBooking.userName }}</td>
           <td>{{ booking_finance_incident.collectiveBooking.status | format_booking_status_long | safe }}</td>
