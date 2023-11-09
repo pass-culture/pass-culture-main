@@ -145,6 +145,7 @@ def create_account(
     phone_number: str | None = None,
     apps_flyer_user_id: str | None = None,
     apps_flyer_platform: str | None = None,
+    firebase_pseudo_id: str | None = None,
 ) -> models.User:
     email = email_utils.sanitize_email(email)
     if users_repository.find_user_by_email(email):
@@ -166,10 +167,14 @@ def create_account(
 
     user.setPassword(password)
 
+    if user.externalIds is None:
+        user.externalIds = {}
+
     if apps_flyer_user_id and apps_flyer_platform:
-        if user.externalIds is None:
-            user.externalIds = {}
         user.externalIds["apps_flyer"] = {"user": apps_flyer_user_id, "platform": apps_flyer_platform.upper()}  # type: ignore [index, call-overload]
+
+    if firebase_pseudo_id:
+        user.externalIds["firebase_pseudo_id"] = firebase_pseudo_id  # type: ignore [index, call-overload]
 
     repository.save(user)
     logger.info("Created user account", extra={"user": user.id})
