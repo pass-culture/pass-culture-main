@@ -49,7 +49,7 @@ from pcapi.routes.backoffice.forms import empty as empty_forms
 from pcapi.routes.backoffice.users import forms as user_forms
 from pcapi.utils import email as email_utils
 
-from . import form as account_forms
+from . import forms as account_forms
 from . import serialization
 
 
