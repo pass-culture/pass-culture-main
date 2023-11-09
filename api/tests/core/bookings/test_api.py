@@ -655,6 +655,61 @@ class BookOfferTest:
             assert booking.token
             assert len(booking.externalBookings) == 0
 
+        @override_features(ENABLE_CHARLIE_BOOKINGS_API=True)
+        def test_sold_out_failure(self, requests_mock):
+            external_booking_url = "https://api.example.com/"
+            beneficiary = users_factories.BeneficiaryGrant18Factory()
+            provider = providers_factories.ProviderFactory(
+                bookingExternalUrl=external_booking_url,
+                cancelExternalUrl=external_booking_url,
+            )
+            stock = offers_factories.EventStockFactory(
+                offer__lastProvider=provider,
+                offer__withdrawalType=offers_models.WithdrawalTypeEnum.IN_APP,
+                idAtProviders="",
+                quantity=25,
+                dnBookedQuantity=10,
+            )
+            requests_mock.post(
+                external_booking_url,
+                json={"error": "sold_out", "remainingQuantity": 0},
+                status_code=409,
+            )
+
+            with pytest.raises(external_bookings_exceptions.ExternalBookingSoldOutError):
+                api.book_offer(beneficiary, stock.id, quantity=1)
+
+            assert not models.Booking.query.count()
+            assert stock.quantity == 10  # dnBookedQuantity + 0
+
+        @override_features(ENABLE_CHARLIE_BOOKINGS_API=True)
+        def test_not_enough_seats_failure(self, requests_mock):
+            external_booking_url = "https://api.example.com/"
+            beneficiary = users_factories.BeneficiaryGrant18Factory()
+            provider = providers_factories.ProviderFactory(
+                bookingExternalUrl=external_booking_url,
+                cancelExternalUrl=external_booking_url,
+            )
+            stock = offers_factories.EventStockFactory(
+                offer__isDuo=True,
+                offer__lastProvider=provider,
+                offer__withdrawalType=offers_models.WithdrawalTypeEnum.IN_APP,
+                idAtProviders="",
+                quantity=25,
+                dnBookedQuantity=10,
+            )
+            requests_mock.post(
+                external_booking_url,
+                json={"error": "not_enough_seats", "remainingQuantity": 1},
+                status_code=409,
+            )
+
+            with pytest.raises(external_bookings_exceptions.ExternalBookingNotEnoughSeatsError):
+                api.book_offer(beneficiary, stock.id, quantity=2)
+
+            assert not models.Booking.query.count()
+            assert stock.quantity == 11  # dnBookedQuantity + 1
+
         @override_features(DISABLE_CDS_EXTERNAL_BOOKINGS=True)
         def test_should_raise_error_when_cds_external_bookings_are_disabled(self):
             beneficiary = users_factories.BeneficiaryGrant18Factory()
