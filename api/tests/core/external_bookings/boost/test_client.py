@@ -1,3 +1,4 @@
+import datetime
 from decimal import Decimal
 import json
 
@@ -6,6 +7,7 @@ import pytest
 from pcapi.connectors.serialization import boost_serializers
 import pcapi.core.bookings.factories as bookings_factories
 from pcapi.core.external_bookings.boost import client as boost_client
+from pcapi.core.external_bookings.boost import constants as boost_constants
 import pcapi.core.external_bookings.boost.exceptions as boost_exceptions
 import pcapi.core.external_bookings.models as external_bookings_models
 import pcapi.core.providers.factories as providers_factories
@@ -139,12 +141,16 @@ class GetShowtimesTest:
     def test_should_return_showtimes_with_enabled_filter_ff(self, requests_mock):
         cinema_details = providers_factories.BoostCinemaDetailsFactory(cinemaUrl="https://cinema-0.example.com/")
         cinema_str_id = cinema_details.cinemaProviderPivot.idAtProvider
+        start_date = datetime.date.today()
+        end_date = (start_date + datetime.timedelta(days=boost_constants.BOOST_SHOWS_INTERVAL_DAYS)).strftime(
+            "%Y-%m-%d"
+        )
         requests_mock.get(
-            "https://cinema-0.example.com/api/showtimes/between/2022-10-10/2022-10-20?paymentMethod=external:credit:passculture&hideFullReservation=1&page=1&per_page=2",
+            f"https://cinema-0.example.com/api/showtimes/between/{start_date.strftime('%Y-%m-%d')}/{end_date}?paymentMethod=external:credit:passculture&hideFullReservation=1&page=1&per_page=2",
             json=fixtures.ShowtimesWithPaymentMethodFilterEndpointResponse.PAGE_1_JSON_DATA,
         )
         requests_mock.get(
-            "https://cinema-0.example.com/api/showtimes/between/2022-10-10/2022-10-20?paymentMethod=external:credit:passculture&hideFullReservation=1&page=2&per_page=2",
+            f"https://cinema-0.example.com/api/showtimes/between/{start_date.strftime('%Y-%m-%d')}/{end_date}?paymentMethod=external:credit:passculture&hideFullReservation=1&page=2&per_page=2",
             json=fixtures.ShowtimesWithPaymentMethodFilterEndpointResponse.PAGE_2_JSON_DATA,
         )
         boost = boost_client.BoostClientAPI(cinema_str_id)

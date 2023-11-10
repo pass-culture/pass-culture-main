@@ -1,4 +1,5 @@
 import datetime
+import json
 import logging
 import typing
 
@@ -56,16 +57,16 @@ def get_boost_external_booking_barcode(barcode: str) -> str:
 
 
 class BoostClientAPI(external_bookings_models.ExternalBookingsClientAPI):
-    def __init__(self, cinema_str_id: str):
-        self.cinema_id = cinema_str_id
-
     # FIXME: define those later
-    def get_shows_remaining_places(self, shows_id: list[int]) -> dict[int, int]:
-        return {}
+    def get_shows_remaining_places(self, shows_id: list[int]) -> dict[str, int]:
+        raise NotImplementedError()
 
-    def get_film_showtimes_stocks(self, film_id: str) -> dict[int, int]:
+    @external_bookings_models.cache_external_call(
+        key_template=constants.BOOST_SHOWTIMES_STOCKS_CACHE_KEY, expire=constants.BOOST_SHOWTIMES_STOCKS_CACHE_TIMEOUT
+    )
+    def get_film_showtimes_stocks(self, film_id: str) -> str:
         showtimes = self.get_showtimes(film=int(film_id))
-        return {showtime.id: showtime.numberSeatsRemaining for showtime in showtimes}
+        return json.dumps({showtime.id: showtime.numberSeatsRemaining for showtime in showtimes})
 
     def cancel_booking(self, barcodes: list[str]) -> None:
         barcodes = list(set(barcodes))

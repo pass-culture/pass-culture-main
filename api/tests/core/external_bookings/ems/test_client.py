@@ -191,7 +191,7 @@ class EMSGetFilmShowtimesStocksTest:
         requests_mock.post(url=url_matcher, json=response_json)
 
         client = EMSClientAPI(cinema_id=cinema_id)
-        stocks = client.get_film_showtimes_stocks(film_id=12345)
+        stocks = client.get_film_showtimes_stocks("12345")
 
         assert len(stocks) == 2
-        assert stocks == {999000111: 100, 998880001: 100}
+        assert stocks == {"999000111": 100, "998880001": 100}

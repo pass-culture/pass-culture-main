@@ -1140,7 +1140,7 @@ def update_stock_quantity_to_match_cinema_venue_provider_remaining_places(offer:
             stock.idAtProviders, venue_provider.provider.localClass
         )
         assert showtime_id
-        remaining_places = shows_remaining_places.pop(showtime_id, None)
+        remaining_places = shows_remaining_places.pop(str(showtime_id), None)
         # make this stock sold out, instead of soft-deleting it (don't update its bookings)
         logger.info(
             "Updating stock quantity to match cinema remaining places",
