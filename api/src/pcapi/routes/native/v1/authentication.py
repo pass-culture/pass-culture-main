@@ -50,8 +50,7 @@ MAX_SUSPICIOUS_LOGIN_EMAILS = 5
 @email_rate_limiter()
 @ip_rate_limiter()
 def signin(body: authentication.SigninRequest) -> authentication.SigninResponse:
-    # TODO(aliraiki, PC-24336): Make recaptcha token mandatory
-    if FeatureToggle.ENABLE_NATIVE_APP_RECAPTCHA.is_active() and body.token:
+    if FeatureToggle.ENABLE_NATIVE_APP_RECAPTCHA.is_active():
         try:
             api_recaptcha.check_native_app_recaptcha_token(body.token)
         except (api_recaptcha.ReCaptchaException, api_recaptcha.InvalidRecaptchaTokenException):
@@ -113,7 +112,7 @@ def refresh() -> authentication.RefreshResponse:
 def request_password_reset(body: RequestPasswordResetRequest) -> None:
     if FeatureToggle.ENABLE_NATIVE_APP_RECAPTCHA.is_active():
         try:
-            api_recaptcha.check_native_app_recaptcha_token(body.token)  # type: ignore [arg-type]
+            api_recaptcha.check_native_app_recaptcha_token(body.token)
         except api_recaptcha.ReCaptchaException:
             raise ApiErrors({"token": "The given token is not valid"})
     user = find_user_by_email(body.email)
