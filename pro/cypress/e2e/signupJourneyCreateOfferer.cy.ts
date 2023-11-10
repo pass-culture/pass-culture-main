@@ -92,7 +92,9 @@ describe('Signup journey', () => {
     cy.contains('Étape suivante').click()
 
     // Validation page
+    cy.intercept({ method: 'POST', url: '/offerers/new' }).as('createOfferer')
     cy.contains('Valider et créer ma structure').click()
+    cy.wait('@createOfferer').its('response.statusCode').should('eq', 201)
 
     // Homepage
     cy.url().should('contain', '/accueil')
@@ -133,7 +135,9 @@ describe('Signup journey', () => {
     cy.contains('Étape suivante').click()
 
     // Validation page
+    cy.intercept({ method: 'POST', url: '/offerers/new' }).as('createOfferer')
     cy.contains('Valider et créer ma structure').click()
+    cy.wait('@createOfferer').its('response.statusCode').should('eq', 201)
 
     // Homepage
     cy.url().should('contain', '/accueil')
@@ -161,7 +165,9 @@ describe('Signup journey', () => {
     cy.get('[data-testid="confirm-dialog-button-confirm"]').as(
       'dialogConfirmButton'
     )
+    cy.intercept({ method: 'POST', url: '/offerers' }).as('postOfferers')
     cy.get('@dialogConfirmButton').click()
+    cy.wait('@postOfferers').its('response.statusCode').should('eq', 201)
 
     // Confirmation page
     cy.contains('Accéder à votre espace').click()
