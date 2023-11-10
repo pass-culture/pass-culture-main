@@ -868,12 +868,14 @@ class ProductCategoryResponse(serialization.ConfiguredBaseModel):
 
     @classmethod
     def build_category(cls, subcategory: subcategories.Subcategory) -> "ProductCategoryResponse":
+        conditional_fields = {}
+        for field_name, condition in subcategory.conditional_fields.items():
+            if field_name in ExtraDataModel.__fields__:
+                conditional_fields[field_name] = condition.is_required_in_external_form
+
         return cls(
             id=subcategory.id,
-            conditional_fields={
-                field: condition.is_required_in_external_form
-                for field, condition in subcategory.conditional_fields.items()
-            },
+            conditional_fields=conditional_fields,
         )
 
 
