@@ -19,26 +19,27 @@ import pcapi.core.bookings.models as bookings_models
 import pcapi.core.external_bookings.cds.constants as cds_constants
 import pcapi.core.external_bookings.cds.exceptions as cds_exceptions
 import pcapi.core.external_bookings.models as external_bookings_models
-from pcapi.core.external_bookings.models import ExternalBookingsClientAPI
 from pcapi.core.external_bookings.models import Ticket
 import pcapi.core.users.models as users_models
 from pcapi.utils.queue import add_to_queue
+
+from . import constants
 
 
 CDS_DATE_FORMAT = "%Y-%m-%dT%H:%M:%S.%f%z"
 
 
-class CineDigitalServiceAPI(ExternalBookingsClientAPI):
+class CineDigitalServiceAPI(external_bookings_models.ExternalBookingsClientAPI):
     def __init__(self, cinema_id: str, account_id: str, api_url: str, cinema_api_token: str | None):
+        super().__init__(cinema_id=cinema_id)
         if not cinema_api_token:
             raise ValueError(f"Missing token for {cinema_id}")
         self.token = cinema_api_token
         self.api_url = api_url
-        self.cinema_id = cinema_id
         self.account_id = account_id
         super()
 
-    def get_film_showtimes_stocks(self, film_id: str) -> dict[int, int]:
+    def get_film_showtimes_stocks(self, film_id: str) -> dict:
         return {}
 
     @lru_cache
@@ -57,12 +58,15 @@ class CineDigitalServiceAPI(ExternalBookingsClientAPI):
             f"for cinemaId={self.cinema_id} & url={self.api_url}"
         )
 
-    def get_shows_remaining_places(self, show_ids: list[int]) -> dict[int, int]:
+    @external_bookings_models.cache_external_call(
+        key_template=constants.CDS_SHOWTIMES_STOCKS_CACHE_KEY, expire=cds_constants.CDS_SHOWTIMES_STOCKS_CACHE_TIMEOUT
+    )
+    def get_shows_remaining_places(self, show_ids: list[int]) -> str:
         data = get_resource(self.api_url, self.account_id, self.token, ResourceCDS.SHOWS)
         shows = parse_obj_as(list[cds_serializers.ShowCDS], data)
         if self.get_internet_sale_gauge_active():
-            return {show.id: show.internet_remaining_place for show in shows if show.id in show_ids}
-        return {show.id: show.remaining_place for show in shows if show.id in show_ids}
+            return json.dumps({show.id: show.internet_remaining_place for show in shows if show.id in show_ids})
+        return json.dumps({show.id: show.remaining_place for show in shows if show.id in show_ids})
 
     def get_shows(self) -> list[cds_serializers.ShowCDS]:
         data = get_resource(self.api_url, self.account_id, self.token, ResourceCDS.SHOWS)

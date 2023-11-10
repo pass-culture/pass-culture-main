@@ -314,7 +314,7 @@ class CineDigitalServiceGetShowsRemainingPlacesTest:
         # then
         mocked_get_resource.assert_called_once_with(api_url, account_id, token, resource)
 
-        assert shows_remaining_places == {2: 30, 3: 100}
+        assert shows_remaining_places == {"2": 30, "3": 100}
 
     @patch("pcapi.core.external_bookings.cds.client.get_resource")
     @patch(
@@ -400,7 +400,7 @@ class CineDigitalServiceGetShowsRemainingPlacesTest:
         # then
         mocked_get_resource.assert_called_once_with(api_url, account_id, token, resource)
 
-        assert shows_remaining_places == {2: 88, 3: 88}
+        assert shows_remaining_places == {"2": 88, "3": 88}
 
 
 class CineDigitalServiceGetPaymentTypeTest:

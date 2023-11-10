@@ -32,10 +32,10 @@ class ExternalBookingsClientAPI:
 
     # Fixme (yacine, 2022-12-19) remove this method from ExternalBookingsClientAPI. Unlike CDS, on Boost API
     #  we can't get shows remaining places from list of shows ids
-    def get_shows_remaining_places(self, shows_id: list[int]) -> dict[int, int]:
+    def get_shows_remaining_places(self, shows_id: list[int]) -> dict[str, int]:
         raise NotImplementedError("Should be implemented in subclass (abstract method)")
 
-    def get_film_showtimes_stocks(self, film_id: str) -> dict[int, int]:
+    def get_film_showtimes_stocks(self, film_id: str) -> dict[str, int]:
         raise NotImplementedError("Should be implemented in subclass (abstract method)")
 
     def cancel_booking(self, barcodes: list[str]) -> None:
@@ -64,7 +64,8 @@ def cache_external_call(key_template: str, expire: int | None = None) -> typing.
             result_as_json = get_from_cache(
                 key_template=key_template, key_args=key_args, expire=expire, retriever=retriever
             )
-            assert isinstance(result_as_json, str)
+            if not isinstance(result_as_json, str):
+                raise AssertionError("This function is meant to be used with functions returning data as JSON")
             return json.loads(result_as_json)
 
         return func_to_cache
