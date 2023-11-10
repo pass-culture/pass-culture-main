@@ -393,21 +393,22 @@ def _update_collective_offer(offer: AnyOffer, new_values: dict) -> list[str]:
 def batch_update_offers(query: BaseQuery, update_fields: dict, send_email_notification: bool = False) -> None:
     query = query.filter(models.Offer.validation == models.OfferValidationStatus.APPROVED)
     raw_results = query.with_entities(models.Offer.id, models.Offer.venueId).all()
-    offer_ids, venue_ids = [], []
+    offer_ids: tuple[int, ...] = ()
+    venue_ids: tuple[int, ...] = ()
     if raw_results:
         offer_ids, venue_ids = zip(*raw_results)
-    venue_ids = sorted(set(venue_ids))
+    sorted_venue_ids = sorted(set(venue_ids))
     number_of_offers_to_update = len(offer_ids)
     logger.info(
         "Batch update of offers",
-        extra={"updated_fields": update_fields, "nb_offers": number_of_offers_to_update, "venue_ids": venue_ids},
+        extra={"updated_fields": update_fields, "nb_offers": number_of_offers_to_update, "venue_ids": sorted_venue_ids},
     )
     if "isActive" in update_fields.keys():
         message = "Offers has been activated" if update_fields["isActive"] else "Offers has been deactivated"
         technical_message_id = "offers.activated" if update_fields["isActive"] else "offers.deactivated"
         logger.info(
             message,
-            extra={"offer_ids": offer_ids, "venue_id": venue_ids},
+            extra={"offer_ids": list(offer_ids), "venue_id": sorted_venue_ids},
             technical_message_id=technical_message_id,
         )
 
