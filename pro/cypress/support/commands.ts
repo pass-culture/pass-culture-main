@@ -63,15 +63,6 @@ Cypress.Commands.add(
   }
 )
 
-Cypress.Commands.add('logout', () => {
-  cy.intercept({ method: 'GET', url: '/users/signout' }).as('signoutUser')
-
-  cy.get('[aria-label="Déconnexion"]').click()
-  cy.wait('@signoutUser')
-
-  cy.url().should('contain', '/connexion')
-})
-
 Cypress.Commands.add('setFeatureFlags', (features: Feature[]) => {
   cy.request({
     method: 'PATCH',
