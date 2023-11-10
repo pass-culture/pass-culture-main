@@ -1,4 +1,5 @@
 import copy
+from datetime import date
 from datetime import datetime
 from datetime import timedelta
 import logging
@@ -18,6 +19,7 @@ import pcapi.core.criteria.factories as criteria_factories
 import pcapi.core.criteria.models as criteria_models
 import pcapi.core.educational.factories as educational_factories
 import pcapi.core.educational.models as educational_models
+from pcapi.core.external_bookings.boost import constants as boost_constants
 import pcapi.core.finance.factories as finance_factories
 import pcapi.core.finance.models as finance_models
 import pcapi.core.mails.testing as mails_testing
@@ -46,6 +48,8 @@ import tests
 from tests import conftest
 from tests.connectors.cgr import soap_definitions
 from tests.connectors.titelive import fixtures
+from tests.local_providers.cinema_providers.boost import fixtures as boost_fixtures
+from tests.local_providers.cinema_providers.cds import fixtures as cds_fixtures
 import tests.local_providers.cinema_providers.cgr.fixtures as cgr_fixtures
 
 
@@ -2001,11 +2005,11 @@ class UpdateStockQuantityToMatchCinemaVenueProviderRemainingPlacesTest:
     @pytest.mark.parametrize(
         "show_id, show_beginning_datetime, api_return_value, expected_remaining_quantity",
         [
-            (888, DATETIME_10_DAYS_AFTER, {888: 10}, 10),
-            (888, DATETIME_10_DAYS_AFTER, {888: 5}, 10),
-            (888, DATETIME_10_DAYS_AFTER, {888: 1}, 1),
-            (888, DATETIME_10_DAYS_AFTER, {888: 0}, 0),
-            (123, DATETIME_10_DAYS_AFTER, {888: 0}, 0),
+            (888, DATETIME_10_DAYS_AFTER, {"888": 10}, 10),
+            (888, DATETIME_10_DAYS_AFTER, {"888": 5}, 10),
+            (888, DATETIME_10_DAYS_AFTER, {"888": 1}, 1),
+            (888, DATETIME_10_DAYS_AFTER, {"888": 0}, 0),
+            (123, DATETIME_10_DAYS_AFTER, {"888": 0}, 0),
             (888, DATETIME_10_DAYS_AGO, None, 10),
         ],
     )
@@ -2019,6 +2023,7 @@ class UpdateStockQuantityToMatchCinemaVenueProviderRemainingPlacesTest:
         show_beginning_datetime,
         api_return_value,
         expected_remaining_quantity,
+        app,
     ):
         cds_provider = providers_repository.get_provider_by_local_class("CDSStocks")
         venue_provider = providers_factories.VenueProviderFactory(provider=cds_provider)
@@ -2049,15 +2054,88 @@ class UpdateStockQuantityToMatchCinemaVenueProviderRemainingPlacesTest:
         else:
             mocked_async_index_offer_ids.assert_not_called()
 
+    @override_features(ENABLE_CDS_IMPLEMENTATION=True)
+    def test_cds_with_get_showtimes_stocks_cached(
+        self,
+        requests_mock,
+        app,
+    ):
+        redis_client = app.redis_client
+
+        movie_id = cds_fixtures.SHOW_1["mediaid"]["id"]
+        showtime_id = cds_fixtures.SHOW_1["id"]
+        cds_provider = providers_repository.get_provider_by_local_class("CDSStocks")
+        venue_provider = providers_factories.VenueProviderFactory(
+            provider=cds_provider, venueIdAtOfferProvider="cinema_id_test"
+        )
+        pivot = providers_factories.CinemaProviderPivotFactory(
+            venue=venue_provider.venue,
+            provider=venue_provider.provider,
+            idAtProvider=venue_provider.venueIdAtOfferProvider,
+        )
+        cinema = providers_factories.CDSCinemaDetailsFactory(cinemaProviderPivot=pivot)
+        offer_id_at_provider = f"{movie_id}%{venue_provider.venue.siret}%CDS"
+        offer = factories.EventOfferFactory(
+            venue=venue_provider.venue, idAtProvider=offer_id_at_provider, lastProviderId=cds_provider.id
+        )
+        show_time = "2023-02-08"
+        stock = factories.EventStockFactory(
+            offer=offer,
+            quantity=10,
+            idAtProviders=f"{offer_id_at_provider}#{showtime_id}/{show_time}",
+            beginningDatetime=self.DATETIME_10_DAYS_AFTER,
+        )
+
+        shows_adapter = requests_mock.get(
+            f"https://{cinema.accountId}.test_cds_url/vad/shows?api_token={cinema.cinemaApiToken}",
+            json=[cds_fixtures.SHOW_1, cds_fixtures.SHOW_2],
+        )  # ggignore
+        gauge_adapter = requests_mock.get(
+            f"https://{cinema.accountId}.test_cds_url/vad/cinemas?api_token={cinema.cinemaApiToken}",
+            json=[cds_fixtures.CINEMA_WITH_INTERNET_SALE_GAUGE_ACTIVE_TRUE],
+        )  # ggignore
+
+        api.update_stock_quantity_to_match_cinema_venue_provider_remaining_places(offer)
+
+        assert shows_adapter.call_count == 1
+        assert gauge_adapter.call_count == 1
+
+        # Cached call
+        api.update_stock_quantity_to_match_cinema_venue_provider_remaining_places(offer)
+        api.update_stock_quantity_to_match_cinema_venue_provider_remaining_places(offer)
+
+        assert shows_adapter.call_count == 1
+        assert gauge_adapter.call_count == 1
+
+        # Non regression test. The stock SHOULD NOT be sold out
+        # as no bookings are created
+        # If so, it means we didn’t find the showtime in
+        # `update_stock_quantity_to_match_cinema_venue_provider_remaining_places`
+        # and therefor the stock is automatically set to sold out.
+        # Which means something is probably wrong and should be fixed !
+        assert stock.quantity == 10
+        assert stock.quantity != stock.dnBookedQuantity
+
+        # One minute into the future
+        redis_client.expire("api:cinema_provider:cds:stocks:cinema_id_test:[1]", 0)
+
+        api.update_stock_quantity_to_match_cinema_venue_provider_remaining_places(offer)
+
+        assert shows_adapter.call_count == 2
+        assert gauge_adapter.call_count == 2
+
+        assert stock.quantity == 10
+        assert stock.quantity != stock.dnBookedQuantity
+
     @override_features(ENABLE_BOOST_API_INTEGRATION=True)
     @pytest.mark.parametrize(
         "show_id, show_beginning_datetime, api_return_value, expected_remaining_quantity",
         [
-            (888, DATETIME_10_DAYS_AFTER, {888: 10}, 10),
-            (888, DATETIME_10_DAYS_AFTER, {888: 5}, 10),
-            (888, DATETIME_10_DAYS_AFTER, {888: 1}, 1),
-            (888, DATETIME_10_DAYS_AFTER, {888: 0}, 0),
-            (123, DATETIME_10_DAYS_AFTER, {888: 0}, 0),
+            (888, DATETIME_10_DAYS_AFTER, {"888": 10}, 10),
+            (888, DATETIME_10_DAYS_AFTER, {"888": 5}, 10),
+            (888, DATETIME_10_DAYS_AFTER, {"888": 1}, 1),
+            (888, DATETIME_10_DAYS_AFTER, {"888": 0}, 0),
+            (123, DATETIME_10_DAYS_AFTER, {"888": 0}, 0),
             (888, DATETIME_10_DAYS_AGO, None, 10),
         ],
     )
@@ -2071,6 +2149,7 @@ class UpdateStockQuantityToMatchCinemaVenueProviderRemainingPlacesTest:
         show_beginning_datetime,
         api_return_value,
         expected_remaining_quantity,
+        app,
     ):
         boost_provider = providers_repository.get_provider_by_local_class("BoostStocks")
         venue_provider = providers_factories.VenueProviderFactory(provider=boost_provider)
@@ -2100,15 +2179,88 @@ class UpdateStockQuantityToMatchCinemaVenueProviderRemainingPlacesTest:
         else:
             mocked_async_index_offer_ids.assert_not_called()
 
+    @override_features(ENABLE_BOOST_API_INTEGRATION=True)
+    @override_features(WIP_ENABLE_BOOST_SHOWTIMES_FILTER=True)
+    def test_boost_with_get_film_showtimes_stocks_cached(
+        self,
+        requests_mock,
+        app,
+    ):
+        redis_client = app.redis_client
+
+        movie_id = boost_fixtures.SHOWTIME_15971["film"]["id"]
+        shomtime_id = boost_fixtures.SHOWTIME_15971["id"]
+        # Call made by get_film_showtimes_stocks
+        start_date = date.today()
+        end_date = (start_date + timedelta(days=boost_constants.BOOST_SHOWS_INTERVAL_DAYS)).strftime("%Y-%m-%d")
+        page_1_adapter = requests_mock.get(
+            f"https://cinema-0.example.com/api/showtimes/between/{start_date.strftime('%Y-%m-%d')}/{end_date}?paymentMethod=external%3Acredit%3Apassculture&hideFullReservation=1&film={movie_id}&page=1&per_page=30",
+            json=boost_fixtures.ShowtimesWithPaymentMethodFilterEndpointResponse.PAGE_1_JSON_DATA,
+        )
+        page_2_adapter = requests_mock.get(
+            f"https://cinema-0.example.com/api/showtimes/between/{start_date.strftime('%Y-%m-%d')}/{end_date}?paymentMethod=external%3Acredit%3Apassculture&hideFullReservation=1&film={movie_id}&page=2&per_page=30",
+            json=boost_fixtures.ShowtimesWithPaymentMethodFilterEndpointResponse.PAGE_2_JSON_DATA,
+        )
+
+        boost_provider = providers_repository.get_provider_by_local_class("BoostStocks")
+        venue_provider = providers_factories.VenueProviderFactory(provider=boost_provider)
+        pivot = cinema_provider_pivot = providers_factories.CinemaProviderPivotFactory(
+            venue=venue_provider.venue,
+            provider=venue_provider.provider,
+            idAtProvider=venue_provider.venueIdAtOfferProvider,
+        )
+        providers_factories.BoostCinemaDetailsFactory(
+            cinemaProviderPivot=cinema_provider_pivot, cinemaUrl="https://cinema-0.example.com/"
+        )
+        offer_id_at_provider = f"{movie_id}%{venue_provider.venueId}%Boost"
+        offer = factories.EventOfferFactory(
+            venue=venue_provider.venue, idAtProvider=offer_id_at_provider, lastProviderId=boost_provider.id
+        )
+        stock = factories.EventStockFactory(
+            offer=offer,
+            idAtProviders=f"{offer_id_at_provider}#{shomtime_id}",
+            beginningDatetime=self.DATETIME_10_DAYS_AFTER,
+            quantity=10,
+        )
+
+        api.update_stock_quantity_to_match_cinema_venue_provider_remaining_places(offer)
+
+        # Cached calls
+        api.update_stock_quantity_to_match_cinema_venue_provider_remaining_places(offer)
+        api.update_stock_quantity_to_match_cinema_venue_provider_remaining_places(offer)
+
+        # Non regression test. The stock SHOULD NOT be sold out
+        # as no bookings are created
+        # If so, it means we didn’t find the showtime in
+        # `update_stock_quantity_to_match_cinema_venue_provider_remaining_places`
+        # and therefor the stock is automatically set to sold out.
+        # Which means something is probably wron and should be fixed !
+        assert stock.quantity == 10
+        assert stock.quantity != stock.dnBookedQuantity
+
+        assert page_1_adapter.call_count == 1
+        assert page_2_adapter.call_count == 1
+
+        # We are now one minutes in the future
+        redis_client.expire(f"api:cinema_provider:boost:stocks:{pivot.idAtProvider}:{movie_id}", 0)
+
+        api.update_stock_quantity_to_match_cinema_venue_provider_remaining_places(offer)
+
+        assert page_1_adapter.call_count == 2
+        assert page_2_adapter.call_count == 2
+
+        assert stock.quantity == 10
+        assert stock.quantity != stock.dnBookedQuantity
+
     @override_features(ENABLE_CGR_INTEGRATION=True)
     @pytest.mark.parametrize(
         "show_id, show_beginning_datetime, api_return_value, expected_remaining_quantity",
         [
-            (888, DATETIME_10_DAYS_AFTER, {888: 10}, 10),
-            (888, DATETIME_10_DAYS_AFTER, {888: 5}, 10),
-            (888, DATETIME_10_DAYS_AFTER, {888: 1}, 1),
-            (888, DATETIME_10_DAYS_AFTER, {888: 0}, 0),
-            (123, DATETIME_10_DAYS_AFTER, {888: 0}, 0),
+            (888, DATETIME_10_DAYS_AFTER, {"888": 10}, 10),
+            (888, DATETIME_10_DAYS_AFTER, {"888": 5}, 10),
+            (888, DATETIME_10_DAYS_AFTER, {"888": 1}, 1),
+            (888, DATETIME_10_DAYS_AFTER, {"888": 0}, 0),
+            (123, DATETIME_10_DAYS_AFTER, {"888": 0}, 0),
             (888, DATETIME_10_DAYS_AGO, None, 10),
         ],
     )
@@ -2122,6 +2274,7 @@ class UpdateStockQuantityToMatchCinemaVenueProviderRemainingPlacesTest:
         show_beginning_datetime,
         api_return_value,
         expected_remaining_quantity,
+        app,
     ):
         cgr_provider = providers_repository.get_provider_by_local_class("CGRStocks")
         venue_provider = providers_factories.VenueProviderFactory(provider=cgr_provider)
@@ -2151,12 +2304,78 @@ class UpdateStockQuantityToMatchCinemaVenueProviderRemainingPlacesTest:
         else:
             mocked_async_index_offer_ids.assert_not_called()
 
+    @override_features(ENABLE_CGR_INTEGRATION=True)
+    def test_cgr_with_get_showtimes_stock_cached(
+        self,
+        requests_mock,
+        app,
+    ):
+        redis_client = app.redis_client
+
+        showtime_id = cgr_fixtures.FILM_138473["Seances"][0]["IDSeance"]
+        movie_id = cgr_fixtures.FILM_138473["IDFilm"]
+        offer_id_at_provider = f"{movie_id}%12354114%CGR"
+        cgr_provider = providers_repository.get_provider_by_local_class("CGRStocks")
+        venue_provider = providers_factories.VenueProviderFactory(provider=cgr_provider)
+        pivot = cinema_provider_pivot = providers_factories.CinemaProviderPivotFactory(
+            venue=venue_provider.venue, provider=cgr_provider, idAtProvider=venue_provider.venueIdAtOfferProvider
+        )
+        providers_factories.CGRCinemaDetailsFactory(
+            cinemaUrl="http://cgr-cinema-0.example.com/web_service", cinemaProviderPivot=cinema_provider_pivot
+        )
+        offer = factories.EventOfferFactory(
+            name="Séance ciné solo",
+            venue=venue_provider.venue,
+            subcategoryId=subcategories.SEANCE_CINE.id,
+            lastProviderId=cinema_provider_pivot.provider.id,
+            idAtProvider=offer_id_at_provider,
+        )
+        stock = factories.EventStockFactory(
+            offer=offer, idAtProviders=f"{offer_id_at_provider}#{showtime_id}", quantity=10
+        )
+        requests_mock.get(
+            "http://cgr-cinema-0.example.com/web_service?wsdl", text=soap_definitions.WEB_SERVICE_DEFINITION
+        )
+
+        post_adapter = requests_mock.post(
+            "http://cgr-cinema-0.example.com/web_service",
+            [
+                {"text": cgr_fixtures.cgr_response_template([cgr_fixtures.FILM_138473])},
+            ],
+        )
+
+        # Then
+        api.update_stock_quantity_to_match_cinema_venue_provider_remaining_places(offer)
+
+        # Cached calls
+        api.update_stock_quantity_to_match_cinema_venue_provider_remaining_places(offer)
+        api.update_stock_quantity_to_match_cinema_venue_provider_remaining_places(offer)
+
+        assert post_adapter.call_count == 1
+
+        # Non regression test. The stock SHOULD NOT be sold out
+        # as no bookings are created
+        # If so, it means we didn’t find the showtime in
+        # `update_stock_quantity_to_match_cinema_venue_provider_remaining_places`
+        # and therefor the stock is automatically set to sold out.
+        # Which means something is probably wron and should be fixed !
+        assert stock.quantity == 10
+        assert stock.quantity != stock.dnBookedQuantity
+
+        # One minute into the futur
+        redis_client.expire(f"api:cinema_provider:cgr:stocks:{pivot.idAtProvider}:{movie_id}", 0)
+
+        api.update_stock_quantity_to_match_cinema_venue_provider_remaining_places(offer)
+
+        assert post_adapter.call_count == 2
+
     @override_features(ENABLE_EMS_INTEGRATION=True)
     @patch("pcapi.core.search.async_index_offer_ids")
     def test_ems(
         self,
         mocked_async_index_offer_ids,
         requests_mock,
+        app,
     ):
         expected_remaining_quantity = 10
         api_return_value = [888]
@@ -2186,6 +2405,60 @@ class UpdateStockQuantityToMatchCinemaVenueProviderRemainingPlacesTest:
 
         assert stock.remainingQuantity == expected_remaining_quantity
         mocked_async_index_offer_ids.assert_not_called()
+
+    @override_features(ENABLE_EMS_INTEGRATION=True)
+    def test_ems_with_get_film_showtimes_stocks_cached(self, requests_mock, app):
+        redis_client = app.redis_client
+
+        api_return_value = [888]
+        ems_provider = providers_repository.get_provider_by_local_class("EMSStocks")
+        venue_provider = providers_factories.VenueProviderFactory(provider=ems_provider)
+        pivot = providers_factories.CinemaProviderPivotFactory(
+            venue=venue_provider.venue,
+            provider=venue_provider.provider,
+            idAtProvider=venue_provider.venueIdAtOfferProvider,
+        )
+        movie_id = "52F3G"
+        offer_id_at_provider = f"{movie_id}%{venue_provider.venueId}%EMS"
+        offer = factories.EventOfferFactory(
+            venue=venue_provider.venue, idAtProvider=offer_id_at_provider, lastProviderId=ems_provider.id
+        )
+        stock = factories.EventStockFactory(
+            offer=offer,
+            quantity=10,
+            idAtProviders=f"{offer_id_at_provider}#{888}",
+            beginningDatetime=self.DATETIME_10_DAYS_AFTER,
+        )
+        response_json = {"statut": 1, "seances": api_return_value}
+        url_matcher = re.compile("https://fake_url.com/SEANCE/*")
+        post_adapter = requests_mock.post(url=url_matcher, json=response_json)
+
+        api.update_stock_quantity_to_match_cinema_venue_provider_remaining_places(offer)
+
+        # Call cached
+        api.update_stock_quantity_to_match_cinema_venue_provider_remaining_places(offer)
+        api.update_stock_quantity_to_match_cinema_venue_provider_remaining_places(offer)
+
+        assert post_adapter.call_count == 1
+
+        # Non regression test. The stock SHOULD NOT be sold out
+        # as no bookings are created
+        # If so, it means we didn’t find the showtime in
+        # `update_stock_quantity_to_match_cinema_venue_provider_remaining_places`
+        # and therefor the stock is automatically set to sold out.
+        # Which means something is probably wrong and should be fixed !
+        assert stock.quantity == 10
+        assert stock.quantity != stock.dnBookedQuantity
+
+        # We are now one minutes in the future
+        redis_client.expire(f"api:cinema_provider:ems:stocks:{pivot.idAtProvider}:{movie_id}", 0)
+
+        api.update_stock_quantity_to_match_cinema_venue_provider_remaining_places(offer)
+
+        assert post_adapter.call_count == 2
+
+        assert stock.quantity == 10
+        assert stock.quantity != stock.dnBookedQuantity
 
     @override_features(ENABLE_EMS_INTEGRATION=True)
     @patch("pcapi.core.search.async_index_offer_ids")

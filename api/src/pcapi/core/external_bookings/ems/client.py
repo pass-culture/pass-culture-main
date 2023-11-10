@@ -1,3 +1,4 @@
+import json
 import logging
 
 from pcapi.connectors.ems import EMSBookingConnector
@@ -8,6 +9,8 @@ from pcapi.core.external_bookings import models as external_bookings_models
 from pcapi.core.external_bookings.exceptions import ExternalBookingSoldOutError
 from pcapi.core.users import models as users_models
 
+from . import constants
+
 
 logger = logging.getLogger(__name__)
 
@@ -16,8 +19,8 @@ class EMSClientAPI(external_bookings_models.ExternalBookingsClientAPI):
     EMS_FAKE_REMAINING_PLACES = 100
 
     def __init__(self, cinema_id: str):
+        super().__init__(cinema_id=cinema_id)
         self.connector = EMSBookingConnector()
-        self.cinema_id = cinema_id
 
     def book_ticket(
         self, show_id: int, booking: booking_models.Booking, beneficiary: users_models.User
@@ -66,10 +69,13 @@ class EMSClientAPI(external_bookings_models.ExternalBookingsClientAPI):
 
             logger.info("Successfully canceled an EMS external booking", extra={"barcode": booking.barcode})
 
-    def get_shows_remaining_places(self, shows_id: list[int]) -> dict[int, int]:
+    def get_shows_remaining_places(self, shows_id: list[int]) -> dict[str, int]:
         raise NotImplementedError()
 
-    def get_film_showtimes_stocks(self, film_id: str) -> dict[int, int]:
+    @external_bookings_models.cache_external_call(
+        key_template=constants.EMS_SHOWTIMES_STOCKS_CACHE_KEY, expire=constants.EMS_SHOWTIMES_STOCKS_CACHE_TIMEOUT
+    )
+    def get_film_showtimes_stocks(self, film_id: str) -> str:
         payload = ems_serializers.AvailableShowsRequest(num_cine=self.cinema_id, id_film=film_id)
         response = self.connector.do_request(self.connector.shows_availability_endpoint, payload.dict())
         try:
@@ -77,10 +83,10 @@ class EMSClientAPI(external_bookings_models.ExternalBookingsClientAPI):
         except ExternalBookingSoldOutError:
             # Showtimes stocks are sold out, Stock.quantity will be updated to dnBookedQuantity
             # in `update_stock_quantity_to_match_cinema_venue_provider_remaining_places`
-            return {}
+            return json.dumps({})
 
         available_shows = ems_serializers.AvailableShowsResponse(**response.json())
 
         # We use a fake value for remaining places because we don't have access to real remaining places for EMS shows
         # This value will not impact quantity, seen that we update showtime quantity only if remaining places is 0 or 1.
-        return {int(show): self.EMS_FAKE_REMAINING_PLACES for show in available_shows.seances}
+        return json.dumps({int(show): self.EMS_FAKE_REMAINING_PLACES for show in available_shows.seances})

@@ -1,4 +1,5 @@
 import datetime
+import json
 import logging
 
 from requests.exceptions import ReadTimeout
@@ -16,20 +17,25 @@ import pcapi.core.users.models as users_models
 from pcapi.utils.decorators import retry
 from pcapi.utils.queue import add_to_queue
 
+from . import constants
+
 
 logger = logging.getLogger(__name__)
 
 
 class CGRClientAPI(external_bookings_models.ExternalBookingsClientAPI):
     def __init__(self, cinema_id: str):
-        self.cinema_id = cinema_id
+        super().__init__(cinema_id=cinema_id)
         self.cgr_cinema_details = get_cgr_cinema_details(cinema_id)
 
     def get_films(self) -> list[cgr_serializers.Film]:
         response = get_seances_pass_culture(self.cgr_cinema_details)
         return response.ObjetRetour.Films
 
-    def get_film_showtimes_stocks(self, film_id: str) -> dict[int, int]:
+    @external_bookings_models.cache_external_call(
+        key_template=constants.CGR_SHOWTIMES_STOCKS_CACHE_KEY, expire=constants.CGR_SHOWTIMES_STOCKS_CACHE_TIMEOUT
+    )
+    def get_film_showtimes_stocks(self, film_id: str) -> str:
         response = get_seances_pass_culture(self.cgr_cinema_details, allocine_film_id=int(film_id))
 
         try:
@@ -37,8 +43,8 @@ class CGRClientAPI(external_bookings_models.ExternalBookingsClientAPI):
         except IndexError:
             # Showtimes stocks are sold out, Stock.quantity will be updated to dnBookedQuantity
             # in `update_stock_quantity_to_match_cinema_venue_provider_remaining_places`
-            return {}
-        return {show.IDSeance: show.NbPlacesRestantes for show in film.Seances}
+            return json.dumps({})
+        return json.dumps({show.IDSeance: show.NbPlacesRestantes for show in film.Seances})
 
     def book_ticket(
         self, show_id: int, booking: bookings_models.Booking, beneficiary: users_models.User
@@ -110,5 +116,5 @@ class CGRClientAPI(external_bookings_models.ExternalBookingsClientAPI):
             annulation_pass_culture(self.cgr_cinema_details, qr_code=barcode)
             logger.info("CGR Booking Cancelled", extra={"barcode": barcode})
 
-    def get_shows_remaining_places(self, shows_id: list[int]) -> dict[int, int]:
+    def get_shows_remaining_places(self, shows_id: list[int]) -> dict[str, int]:
         raise NotImplementedError
