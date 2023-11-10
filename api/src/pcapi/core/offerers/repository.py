@@ -29,6 +29,8 @@ from . import models
 
 logger = logging.getLogger(__name__)
 
+MAX_OFFERS_PER_OFFERER_FOR_COUNT = 9999
+
 
 def get_all_venue_labels() -> list[models.VenueLabel]:
     return models.VenueLabel.query.all()
@@ -695,3 +697,74 @@ def get_venues_with_non_free_offers_without_bank_accounts(offerer_id: int) -> li
         .with_entities(models.Venue.id)
     )
     return [venue.id for venue in venue_with_non_free_offers]
+
+
+def get_number_of_bookable_offers_for_offerer(offerer_id: int) -> int:
+    return (
+        offers_models.Offer.query.with_entities(offers_models.Offer.id)
+        .join(models.Venue)
+        .join(offers_models.Stock)
+        .filter(
+            models.Venue.managingOffererId == offerer_id,
+            offers_models.Offer.validation == OfferValidationStatus.APPROVED,
+            offers_models.Offer.is_eligible_for_search,
+        )
+        .limit(MAX_OFFERS_PER_OFFERER_FOR_COUNT)
+        .count()
+    )
+
+
+def get_number_of_pending_offers_for_offerer(offerer_id: int) -> int:
+    return (
+        offers_models.Offer.query.with_entities(offers_models.Offer.id)
+        .join(models.Venue)
+        .filter(
+            models.Venue.managingOffererId == offerer_id,
+            offers_models.Offer.validation == OfferValidationStatus.PENDING,
+        )
+        .limit(MAX_OFFERS_PER_OFFERER_FOR_COUNT)
+        .count()
+    )
+
+
+def get_number_of_bookable_collective_offers_for_offerer(offerer_id: int) -> int:
+    return (
+        CollectiveOffer.query.join(models.Venue)
+        .filter(
+            models.Venue.managingOffererId == offerer_id,
+            CollectiveOffer.isActive,
+            CollectiveOffer.validation == OfferValidationStatus.APPROVED,
+        )
+        .with_entities(CollectiveOffer.id)
+        .union_all(
+            CollectiveOfferTemplate.query.join(models.Venue)
+            .filter(
+                models.Venue.managingOffererId == offerer_id,
+                CollectiveOfferTemplate.isActive,
+                CollectiveOfferTemplate.validation == OfferValidationStatus.APPROVED,
+            )
+            .with_entities(CollectiveOfferTemplate.id)
+        )
+        .limit(MAX_OFFERS_PER_OFFERER_FOR_COUNT)
+        .count()
+    )
+
+
+def get_number_of_pending_collective_offers_for_offerer(offerer_id: int) -> int:
+    return (
+        CollectiveOffer.query.join(models.Venue)
+        .filter(
+            models.Venue.managingOffererId == offerer_id, CollectiveOffer.validation == OfferValidationStatus.PENDING
+        )
+        .with_entities(CollectiveOffer.id)
+        .union_all(
+            CollectiveOfferTemplate.query.join(models.Venue)
+            .filter(
+                models.Venue.managingOffererId == offerer_id,
+                CollectiveOfferTemplate.validation == OfferValidationStatus.PENDING,
+            )
+            .with_entities(CollectiveOfferTemplate.id)
+        )
+        .limit(MAX_OFFERS_PER_OFFERER_FOR_COUNT)
+        .count()
+    )
