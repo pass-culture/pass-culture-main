@@ -6,6 +6,7 @@ import pytest
 
 from pcapi import settings
 from pcapi.connectors.api_recaptcha import InvalidRecaptchaTokenException
+from pcapi.connectors.api_recaptcha import MissingReCaptchaTokenException
 from pcapi.connectors.api_recaptcha import ReCaptchaException
 from pcapi.connectors.api_recaptcha import ReCaptchaVersion
 from pcapi.connectors.api_recaptcha import check_recaptcha_token_is_valid
@@ -221,3 +222,17 @@ class CheckRecaptchaTokenIsValidTest:
         )
         with pytest.raises(ReCaptchaException):
             check_recaptcha_token_is_valid("token", "secret", ReCaptchaVersion.V2)
+
+    def test_v2_should_raise_upon_missing_recaptcha_token(self, requests_mock):
+        with pytest.raises(MissingReCaptchaTokenException):
+            check_recaptcha_token_is_valid(None, "secret", ReCaptchaVersion.V2)
+
+    def test_v3_should_raise_upon_missing_recaptcha_token(self, requests_mock):
+        with pytest.raises(MissingReCaptchaTokenException):
+            check_recaptcha_token_is_valid(
+                None,
+                "secret",
+                version=ReCaptchaVersion.V3,
+                original_action=ORIGINAL_ACTION,
+                minimal_score=0.5,
+            )

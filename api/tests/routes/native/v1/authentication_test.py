@@ -190,6 +190,19 @@ class SigninTest:
         assert response.status_code == 401
         assert response.json == {"token": "Le token est invalide"}
 
+    @override_settings(RECAPTCHA_IGNORE_VALIDATION=0)
+    def test_fail_when_recaptcha_token_is_missing(self, client):
+        data = {
+            "identifier": "user@test.com",
+            "password": settings.TEST_DEFAULT_PASSWORD,
+        }
+        users_factories.UserFactory(email=data["identifier"], password=data["password"])
+
+        response = client.post("/native/v1/signin", json=data)
+
+        assert response.status_code == 401
+        assert response.json == {"token": "Le token est invalide"}
+
     @patch("pcapi.connectors.api_recaptcha.check_recaptcha_token_is_valid")
     def test_success_when_recaptcha_token_is_valid(self, mocked_check_recaptcha_token_is_valid, client):
         data = {

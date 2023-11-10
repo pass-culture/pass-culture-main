@@ -14,6 +14,10 @@ class ReCaptchaException(Exception):
     pass
 
 
+class MissingReCaptchaTokenException(ReCaptchaException):
+    pass
+
+
 class InvalidRecaptchaTokenException(ApiErrors):
     def __init__(self, message: str = "Le token renseigné n'est pas valide"):
         super().__init__()
@@ -39,7 +43,7 @@ def get_token_validation_and_score(token: str, secret: str) -> dict:
 
 
 def check_recaptcha_token_is_valid(
-    token: str,
+    token: str | None,
     secret: str,
     version: ReCaptchaVersion,
     original_action: str | None = None,
@@ -48,6 +52,9 @@ def check_recaptcha_token_is_valid(
     # This is to prevent E2E tests from being flaky
     if settings.RECAPTCHA_IGNORE_VALIDATION:
         return
+
+    if not token:
+        raise MissingReCaptchaTokenException()
 
     response = get_token_validation_and_score(token, secret)
     is_token_valid = response["success"]
@@ -71,11 +78,11 @@ def check_recaptcha_token_is_valid(
             )
 
 
-def check_native_app_recaptcha_token(token: str) -> None:
+def check_native_app_recaptcha_token(token: str | None) -> None:
     check_recaptcha_token_is_valid(token, settings.NATIVE_RECAPTCHA_SECRET, ReCaptchaVersion.V2)
 
 
-def check_webapp_recaptcha_token(token: str, original_action: str, minimal_score: float) -> None:
+def check_webapp_recaptcha_token(token: str | None, original_action: str, minimal_score: float) -> None:
     check_recaptcha_token_is_valid(
         token, settings.RECAPTCHA_SECRET, ReCaptchaVersion.V3, original_action, minimal_score
     )
