@@ -299,3 +299,19 @@ def get_offerer_stats(offerer_id: int) -> offerers_serialize.GetOffererStatsResp
         top_offers_data,
         total_views_last_30_days,
     )
+
+
+@private_api.route("/offerers/<int:offerer_id>/v2/stats", methods=["GET"])
+@login_required
+@spectree_serialize(
+    on_success_status=200,
+    api=blueprint.pro_private_schema,
+    response_model=offerers_serialize.GetOffererV2StatsResponseModel,
+)
+def get_offerer_v2_stats(offerer_id: int) -> offerers_serialize.GetOffererV2StatsResponseModel:
+    check_user_has_access_to_offerer(current_user, offerer_id)
+    try:
+        stats = api.get_offerer_v2_stats(offerer_id)
+    except offerers_exceptions.CannotFindOffererForOfferId:
+        raise ResourceNotFoundError()
+    return offerers_serialize.GetOffererV2StatsResponseModel.from_orm(stats)

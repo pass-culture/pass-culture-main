@@ -353,3 +353,13 @@ class GetOffererStatsResponseModel(BaseModel):
 
 class LinkVenueToBankAccountBodyModel(BaseModel):
     venues_ids: set[int]
+
+
+class GetOffererV2StatsResponseModel(BaseModel):
+    publishedPublicOffers: int
+    publishedEducationalOffers: int
+    pendingPublicOffers: int
+    pendingEducationalOffers: int
+
+    class Config:
+        orm_mode = True

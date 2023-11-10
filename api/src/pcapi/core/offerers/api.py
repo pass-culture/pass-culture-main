@@ -2104,3 +2104,27 @@ def _update_offerer_stats_data(offerer_id: int) -> None:
                 top_offers=top_offers, total_views_last_30_days=number_of_total_views_last_30_days.totalViews
             )
             top_offers_stats.syncDate = datetime.utcnow()
+
+
+@dataclasses.dataclass
+class OffererV2Stats:
+    publishedPublicOffers: int
+    publishedEducationalOffers: int
+    pendingEducationalOffers: int
+    pendingPublicOffers: int
+
+
+def get_offerer_v2_stats(offerer_id: int) -> OffererV2Stats:
+    offerer = offerers_repository.find_offerer_by_id(offerer_id)
+    if not offerer:
+        raise exceptions.CannotFindOffererForOfferId()
+    return OffererV2Stats(
+        publishedPublicOffers=offerers_repository.get_number_of_bookable_offers_for_offerer(offerer_id=offerer_id),
+        publishedEducationalOffers=offerers_repository.get_number_of_bookable_collective_offers_for_offerer(
+            offerer_id=offerer_id
+        ),
+        pendingPublicOffers=offerers_repository.get_number_of_pending_offers_for_offerer(offerer_id=offerer_id),
+        pendingEducationalOffers=offerers_repository.get_number_of_pending_collective_offers_for_offerer(
+            offerer_id=offerer_id
+        ),
+    )
