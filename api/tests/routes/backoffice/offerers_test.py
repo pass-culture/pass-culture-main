@@ -1048,7 +1048,7 @@ class CommentOffererTest(PostEndpointHelper):
 
 class ListOfferersToValidateTest(GetEndpointHelper):
     endpoint = "backoffice_web.validation.list_offerers_to_validate"
-    needed_permission = perm_models.Permissions.VALIDATE_OFFERER
+    needed_permission = perm_models.Permissions.READ_PRO_ENTITY
 
     class ListOfferersToBeValidatedTest:
         # - session + authenticated user (2 queries)
@@ -1097,14 +1097,7 @@ class ListOfferersToValidateTest(GetEndpointHelper):
                 offerer.dateCreated.strftime("%d/%m/%Y") for offerer in to_be_validated_offerers
             ]
 
-        @pytest.mark.parametrize(
-            "validation_status,expected_status",
-            [
-                (ValidationStatus.NEW, "Nouvelle"),
-                (ValidationStatus.PENDING, "En attente"),
-            ],
-        )
-        def test_payload_content(self, authenticated_client, validation_status, expected_status, top_acteur_tag):
+        def _test_payload_content(self, auth_client, validation_status, expected_status, top_acteur_column_expected):
             user_offerer = offerers_factories.UserNotValidatedOffererFactory(
                 offerer__dateCreated=datetime.datetime(2022, 10, 3, 11, 59),
                 offerer__validationStatus=validation_status,
@@ -1150,7 +1143,7 @@ class ListOfferersToValidateTest(GetEndpointHelper):
             )
 
             with assert_num_queries(self.expected_num_queries):
-                response = authenticated_client.get(url_for("backoffice_web.validation.list_offerers_to_validate"))
+                response = auth_client.get(url_for("backoffice_web.validation.list_offerers_to_validate"))
                 assert response.status_code == 200
 
             rows = html_parser.extract_table_rows(response.data)
@@ -1158,7 +1151,10 @@ class ListOfferersToValidateTest(GetEndpointHelper):
             assert rows[0]["ID"] == str(user_offerer.offerer.id)
             assert rows[0]["Nom de la structure"] == user_offerer.offerer.name
             assert rows[0]["État"] == expected_status
-            assert rows[0]["Top Acteur"] == ""  # no text
+            if top_acteur_column_expected:
+                assert rows[0]["Top Acteur"] == ""  # no text
+            else:
+                assert "Top Acteur" not in rows[0]
             assert rows[0]["Tags structure"] == tag.label
             assert rows[0]["Date de la demande"] == "03/10/2022"
             assert rows[0]["Dernier commentaire"] == "Houlala"
@@ -1169,6 +1165,20 @@ class ListOfferersToValidateTest(GetEndpointHelper):
 
             dms_adage_data = html_parser.extract(response.data, tag="tr", class_="collapse accordion-collapse")
             assert dms_adage_data == []
+
+        @pytest.mark.parametrize(
+            "validation_status,expected_status",
+            [
+                (ValidationStatus.NEW, "Nouvelle"),
+                (ValidationStatus.PENDING, "En attente"),
+            ],
+        )
+        def test_payload_content(self, authenticated_client, validation_status, expected_status, top_acteur_tag):
+            self._test_payload_content(authenticated_client, validation_status, expected_status, True)
+
+        def test_payload_content_as_read_only_user(self, client, read_only_bo_user, offerer_tags):
+            auth_client = client.with_bo_session_auth(read_only_bo_user)
+            self._test_payload_content(auth_client, ValidationStatus.NEW, "Nouvelle", False)
 
         def test_payload_content_no_action(self, authenticated_client):
             user_offerer = offerers_factories.UserNotValidatedOffererFactory(
@@ -1860,7 +1870,7 @@ class ToggleTopActorTest(PostEndpointHelper):
 
 class ListUserOffererToValidateTest(GetEndpointHelper):
     endpoint = "backoffice_web.validation.list_offerers_attachments_to_validate"
-    needed_permission = perm_models.Permissions.VALIDATE_OFFERER
+    needed_permission = perm_models.Permissions.READ_PRO_ENTITY
 
     # - session + authenticated user (2 queries)
     # - offerer tags filter (1 query)
@@ -1904,14 +1914,7 @@ class ListUserOffererToValidateTest(GetEndpointHelper):
                 user_offerer.dateCreated.strftime("%d/%m/%Y") for user_offerer in to_be_validated
             ]
 
-    @pytest.mark.parametrize(
-        "validation_status,expected_status",
-        [
-            (ValidationStatus.NEW, "Nouveau"),
-            (ValidationStatus.PENDING, "En attente"),
-        ],
-    )
-    def test_payload_content(self, authenticated_client, validation_status, expected_status, offerer_tags):
+    def _test_payload_content(self, auth_client, validation_status, expected_status, offerer_tags):
         owner_user_offerer = offerers_factories.UserOffererFactory(
             offerer__dateCreated=datetime.datetime(2022, 11, 2, 11, 30),
             offerer__tags=[offerer_tags[1]],
@@ -1951,7 +1954,7 @@ class ListUserOffererToValidateTest(GetEndpointHelper):
             )
 
         with assert_num_queries(self.expected_num_queries):
-            response = authenticated_client.get(url_for(self.endpoint))
+            response = auth_client.get(url_for(self.endpoint))
             assert response.status_code == 200
 
         rows = html_parser.extract_table_rows(response.data)
@@ -1965,6 +1968,20 @@ class ListUserOffererToValidateTest(GetEndpointHelper):
         assert rows[0]["Nom Structure"] == owner_user_offerer.offerer.name
         assert rows[0]["Email Responsable"] == owner_user_offerer.user.email
         assert rows[0]["Dernier commentaire"] == "Bla blabla"
+
+    @pytest.mark.parametrize(
+        "validation_status,expected_status",
+        [
+            (ValidationStatus.NEW, "Nouveau"),
+            (ValidationStatus.PENDING, "En attente"),
+        ],
+    )
+    def test_payload_content(self, authenticated_client, validation_status, expected_status, offerer_tags):
+        self._test_payload_content(authenticated_client, validation_status, expected_status, offerer_tags)
+
+    def test_payload_content_as_read_only_user(self, client, read_only_bo_user, offerer_tags):
+        auth_client = client.with_bo_session_auth(read_only_bo_user)
+        self._test_payload_content(auth_client, ValidationStatus.NEW, "Nouveau", offerer_tags)
 
     def test_payload_content_no_action(self, authenticated_client, offerer_tags):
         owner_user_offerer = offerers_factories.UserOffererFactory(
