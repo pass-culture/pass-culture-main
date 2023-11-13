@@ -45,6 +45,7 @@ import pcapi.core.users.models as users_models
 from pcapi.domain.pro_offers.offers_recap import OffersRecap
 from pcapi.models import db
 from pcapi.models import feature
+from pcapi.models import pc_object
 from pcapi.models.api_errors import ApiErrors
 from pcapi.models.feature import FeatureToggle
 from pcapi.models.offer_mixin import OfferValidationType
@@ -277,7 +278,11 @@ def update_offer(
     if offer.isFromProvider:
         validation.check_update_only_allowed_fields_for_offer_from_provider(set(modifications), offer.lastProvider)
 
-    offer.populate_from_dict(modifications)
+    if offer.is_soft_deleted():
+        raise pc_object.DeletedRecordException()
+
+    for key, value in modifications.items():
+        setattr(offer, key, value)
     if offer.isFromAllocine:
         offer.fieldsUpdated = list(set(offer.fieldsUpdated) | set(modifications))
 

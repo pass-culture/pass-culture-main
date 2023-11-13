@@ -45,6 +45,7 @@ import pcapi.core.users.utils as users_utils
 from pcapi.domain.password import random_password
 from pcapi.models import db
 from pcapi.models import feature
+from pcapi.models import pc_object
 from pcapi.models.api_errors import ApiErrors
 from pcapi.models.validation_status_mixin import ValidationStatus
 from pcapi.notifications import push as push_api
@@ -791,7 +792,7 @@ def get_domains_credit(
 def import_pro_user_and_offerer_from_csv(pro_user: ImportUserFromCsvModel) -> models.User:
     new_pro_user = create_pro_user(pro_user)
 
-    offerer = _generate_offerer(pro_user.dict(by_alias=True))
+    offerer = _generate_offerer(pro_user)
     user_offerer = offerers_api.grant_user_offerer_access(offerer, new_pro_user)
     digital_venue = offerers_api.create_digital_venue(offerer)
 
@@ -856,7 +857,14 @@ def create_pro_user_V2(pro_user: ProUserCreationBodyV2Model) -> models.User:
 
 
 def create_pro_user(pro_user: ImportUserFromCsvModel | ProUserCreationBodyV2Model) -> models.User:
-    new_pro_user = models.User(from_dict=pro_user.dict(by_alias=True))
+    user_kwargs = {
+        k: v
+        for k, v in pro_user.dict(by_alias=True).items()
+        if k not in ("latitude", "longitude", "name", "siren", "contactOk", "token", "_sa_instance_state")
+    }
+    password_arg = user_kwargs.pop("password")
+    new_pro_user = models.User(**user_kwargs)
+    new_pro_user.setPassword(password_arg)
     new_pro_user.email = email_utils.sanitize_email(new_pro_user.email)
     new_pro_user.notificationSubscriptions = asdict(
         models.NotificationSubscriptions(marketing_email=pro_user.contact_ok)
@@ -887,9 +895,13 @@ def _generate_user_offerer_when_existing_offerer(
     return user_offerer
 
 
-def _generate_offerer(data: dict) -> offerers_models.Offerer:
+def _generate_offerer(user_data: ImportUserFromCsvModel) -> offerers_models.Offerer:
     offerer = offerers_models.Offerer()
-    offerer.populate_from_dict(data)
+    if offerer.is_soft_deleted():
+        raise pc_object.DeletedRecordException()
+
+    for key, value in user_data.dict(by_alias=True).items():
+        setattr(offerer, key, value)
 
     # If offerer was rejected, it appears as deleted from the view. When registering again with the same SIREN, it
     # should look like it was created again, with up-to-date data, and start a new validation process.
