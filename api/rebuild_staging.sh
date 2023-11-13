@@ -10,3 +10,5 @@ flask import_test_users --default --update
 flask sandbox --name beneficiaries --clean false
 
 flask add_permissions_to_staging_specific_roles
+
+flask disable_external_bookings
