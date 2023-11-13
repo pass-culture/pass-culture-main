@@ -476,14 +476,18 @@ class RuleGroup(enum.Enum):
 
 
 class ReimbursementRule:
+    valid_from: datetime.datetime | None = None
+    valid_until: datetime.datetime | None = None
     # A `rate` attribute (or property) must be defined by subclasses.
     # It's not defined in this abstract class because SQLAlchemy would
     # then miss the `rate` column in `CustomReimbursementRule`.
 
     def is_active(self, booking: "bookings_models.Booking") -> bool:
-        valid_from = self.valid_from or datetime.datetime(datetime.MINYEAR, 1, 1)  # type: ignore [attr-defined]
-        valid_until = self.valid_until or datetime.datetime(datetime.MAXYEAR, 1, 1)  # type: ignore [attr-defined]
-        return valid_from <= booking.dateUsed < valid_until  # type: ignore [operator]
+        if booking.dateUsed is None:
+            raise ValueError("Can't compare None to datetime")
+        valid_from = self.valid_from or datetime.datetime(datetime.MINYEAR, 1, 1)
+        valid_until = self.valid_until or datetime.datetime(datetime.MAXYEAR, 1, 1)
+        return valid_from <= booking.dateUsed < valid_until
 
     def is_relevant(
         self,
