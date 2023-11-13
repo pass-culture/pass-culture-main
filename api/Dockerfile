@@ -120,7 +120,7 @@ ENTRYPOINT exec ./entrypoint.sh
 
 ######### CONSOLE #########
 
-FROM api-flask AS pcapi-console
+FROM pcapi AS pcapi-console
 
 USER root
 
@@ -138,7 +138,7 @@ USER pcapi
 
 ######### TESTS #########
 
-FROM pcapi-console AS pcapi-tests
+FROM api-flask AS pcapi-tests
 
 USER root
 
