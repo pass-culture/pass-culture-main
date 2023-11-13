@@ -393,7 +393,8 @@ def _update_collective_offer(offer: AnyOffer, new_values: dict) -> list[str]:
 def batch_update_offers(query: BaseQuery, update_fields: dict, send_email_notification: bool = False) -> None:
     query = query.filter(models.Offer.validation == models.OfferValidationStatus.APPROVED)
     raw_results = query.with_entities(models.Offer.id, models.Offer.venueId).all()
-    offer_ids, venue_ids = [], []
+    offer_ids: typing.Sequence[int] = []
+    venue_ids: typing.Sequence[int] = []
     if raw_results:
         offer_ids, venue_ids = zip(*raw_results)
     venue_ids = sorted(set(venue_ids))
