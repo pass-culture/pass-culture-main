@@ -3,7 +3,7 @@ on: workflow_call
 
 env:
   region: europe-west1
-  tests_docker_image: europe-west1-docker.pkg.dev/passculture-infra-prod/pass-culture-artifact-registry/pcapi-tests:${{ github.sha }}
+  tests_docker_image: europe-west1-docker.pkg.dev/passculture-infra-prod/pass-culture-artifact-registry/pcapi-tests:${{ github.event_name == 'pull_request' && github.event.pull_request.head.sha || github.sha }}
 
 defaults:
   run:
