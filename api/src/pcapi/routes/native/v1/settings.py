@@ -8,12 +8,12 @@ from . import blueprint
 from .serialization import settings as serializers
 
 
-def _get_features(*requested_features: FeatureToggle):  # type: ignore [no-untyped-def]
-    requested_features = {feature.name: feature for feature in requested_features}  # type: ignore [assignment]
+def _get_features(*requested_features: FeatureToggle) -> dict[FeatureToggle, bool]:
+    requested_features_by_name = {feature.name: feature for feature in requested_features}
     return {
-        requested_features[db_feature.name]: db_feature.isActive
+        requested_features_by_name[db_feature.name]: db_feature.isActive
         for db_feature in feature_queries.find_all()
-        if db_feature.name in requested_features
+        if db_feature.name in requested_features_by_name
     }
 
 
