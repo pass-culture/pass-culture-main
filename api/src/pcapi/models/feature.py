@@ -54,7 +54,6 @@ class FeatureToggle(enum.Enum):
     ENABLE_DMS_LINK_ON_MAINTENANCE_PAGE_FOR_UNDERAGE = (
         "Permet l'affichage du lien vers DMS sur la page de maintenance pour les 15-17 ans"
     )
-    ENABLE_DUPLICATE_USER_RULE_WITHOUT_BIRTHDATE = "Utiliser la nouvelle règle de détection d'utilisateur en doublon"
     ENABLE_EDUCONNECT_AUTHENTICATION = "Active l'authentification via educonnect sur l'app native"
     ENABLE_FRONT_IMAGE_RESIZING = "Active le redimensionnement sur demande des images par l'app et le web"
     ENABLE_IOS_OFFERS_LINK_WITH_REDIRECTION = "Active l'utilisation du lien avec redirection pour les offres (nécessaires pour contourner des restrictions d'iOS)"
@@ -162,7 +161,6 @@ FEATURES_DISABLED_BY_DEFAULT: tuple[FeatureToggle, ...] = (
     FeatureToggle.ENABLE_CHARLIE_BOOKINGS_API,
     FeatureToggle.ENABLE_CULTURAL_SURVEY,
     FeatureToggle.ENABLE_DMS_LINK_ON_MAINTENANCE_PAGE_FOR_UNDERAGE,
-    FeatureToggle.ENABLE_DUPLICATE_USER_RULE_WITHOUT_BIRTHDATE,
     FeatureToggle.ENABLE_EAC_FINANCIAL_PROTECTION,
     FeatureToggle.ENABLE_EMS_INTEGRATION,
     FeatureToggle.ENABLE_FRONT_IMAGE_RESIZING,
