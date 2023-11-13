@@ -394,12 +394,12 @@ class NextSubscriptionStepTest:
         [
             # User 18
             (
-                {"ALLOW_IDCHECK_REGISTRATION": True, "ENABLE_UBBLE": True},
+                {"ENABLE_UBBLE": True},
                 18,
                 [subscription_models.IdentityCheckMethod.UBBLE],
             ),
             (
-                {"ALLOW_IDCHECK_REGISTRATION": False},
+                {"ENABLE_UBBLE": False},
                 18,
                 [],
             ),
@@ -408,41 +408,6 @@ class NextSubscriptionStepTest:
             (
                 {
                     "ENABLE_EDUCONNECT_AUTHENTICATION": True,
-                    "ALLOW_IDCHECK_UNDERAGE_REGISTRATION": True,
-                },
-                15,
-                [subscription_models.IdentityCheckMethod.EDUCONNECT, subscription_models.IdentityCheckMethod.UBBLE],
-            ),
-            (
-                {
-                    "ENABLE_EDUCONNECT_AUTHENTICATION": True,
-                    "ALLOW_IDCHECK_UNDERAGE_REGISTRATION": True,
-                },
-                15,
-                [subscription_models.IdentityCheckMethod.EDUCONNECT, subscription_models.IdentityCheckMethod.UBBLE],
-            ),
-            (
-                {
-                    "ENABLE_EDUCONNECT_AUTHENTICATION": False,
-                    "ALLOW_IDCHECK_UNDERAGE_REGISTRATION": True,
-                    "ENABLE_UBBLE": True,
-                },
-                15,
-                [subscription_models.IdentityCheckMethod.UBBLE],
-            ),
-            (
-                {
-                    "ENABLE_EDUCONNECT_AUTHENTICATION": False,
-                    "ALLOW_IDCHECK_UNDERAGE_REGISTRATION": True,
-                },
-                15,
-                [subscription_models.IdentityCheckMethod.UBBLE],
-            ),
-            # Other schools
-            (
-                {
-                    "ENABLE_EDUCONNECT_AUTHENTICATION": True,
-                    "ALLOW_IDCHECK_UNDERAGE_REGISTRATION": True,
                     "ENABLE_UBBLE": True,
                 },
                 15,
@@ -451,8 +416,7 @@ class NextSubscriptionStepTest:
             (
                 {
                     "ENABLE_EDUCONNECT_AUTHENTICATION": True,
-                    "ALLOW_IDCHECK_UNDERAGE_REGISTRATION": False,
-                    "ENABLE_UBBLE": True,
+                    "ENABLE_UBBLE": False,
                 },
                 15,
                 [subscription_models.IdentityCheckMethod.EDUCONNECT],
@@ -460,19 +424,10 @@ class NextSubscriptionStepTest:
             (
                 {
                     "ENABLE_EDUCONNECT_AUTHENTICATION": False,
-                    "ALLOW_IDCHECK_UNDERAGE_REGISTRATION": True,
                     "ENABLE_UBBLE": True,
                 },
                 15,
                 [subscription_models.IdentityCheckMethod.UBBLE],
-            ),
-            (
-                {
-                    "ENABLE_EDUCONNECT_AUTHENTICATION": True,
-                    "ALLOW_IDCHECK_UNDERAGE_REGISTRATION": False,
-                },
-                15,
-                [subscription_models.IdentityCheckMethod.EDUCONNECT],
             ),
         ],
     )

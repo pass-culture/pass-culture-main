@@ -567,18 +567,14 @@ def complete_profile(
 def get_allowed_identity_check_methods(user: users_models.User) -> list[models.IdentityCheckMethod]:
     allowed_methods = []
 
-    if user.eligibility == users_models.EligibilityType.UNDERAGE:
-        if FeatureToggle.ENABLE_EDUCONNECT_AUTHENTICATION.is_active():
-            allowed_methods.append(models.IdentityCheckMethod.EDUCONNECT)
+    if (
+        user.eligibility == users_models.EligibilityType.UNDERAGE
+        and FeatureToggle.ENABLE_EDUCONNECT_AUTHENTICATION.is_active()
+    ):
+        allowed_methods.append(models.IdentityCheckMethod.EDUCONNECT)
 
-        if FeatureToggle.ALLOW_IDCHECK_UNDERAGE_REGISTRATION.is_active():
-            if FeatureToggle.ENABLE_UBBLE.is_active() and _is_ubble_allowed_if_subscription_overflow(user):
-                allowed_methods.append(models.IdentityCheckMethod.UBBLE)
-
-    elif user.eligibility == users_models.EligibilityType.AGE18:
-        if FeatureToggle.ALLOW_IDCHECK_REGISTRATION.is_active():
-            if FeatureToggle.ENABLE_UBBLE.is_active() and _is_ubble_allowed_if_subscription_overflow(user):
-                allowed_methods.append(models.IdentityCheckMethod.UBBLE)
+    if FeatureToggle.ENABLE_UBBLE.is_active() and _is_ubble_allowed_if_subscription_overflow(user):
+        allowed_methods.append(models.IdentityCheckMethod.UBBLE)
 
     return allowed_methods
 

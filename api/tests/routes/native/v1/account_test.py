@@ -187,7 +187,7 @@ class AccountTest:
         me_response = client.get("/native/v1/me")
         assert me_response.json["recreditAmountToShow"] == 3000
 
-    @override_features(ALLOW_IDCHECK_REGISTRATION=False)
+    @override_features(ENABLE_UBBLE=False)
     def test_maintenance_message(self, client):
         """
         Test that when a user has no subscription message and when the

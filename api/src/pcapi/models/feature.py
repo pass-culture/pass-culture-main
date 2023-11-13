@@ -27,10 +27,6 @@ class FeatureToggle(enum.Enum):
     ALGOLIA_BOOKINGS_NUMBER_COMPUTATION = (
         "Active le calcul du nombre des réservations lors de l'indexation des offres sur Algolia"
     )
-    ALLOW_IDCHECK_REGISTRATION = "Autoriser les utilisateurs de 18 ans à suivre le parcours d inscription ID Check"
-    ALLOW_IDCHECK_UNDERAGE_REGISTRATION = (
-        "Autoriser les utilisateurs de moins de 15 à 17 ans à suivre le parcours d inscription ID Check"
-    )
     API_ADRESSE_AVAILABLE = "Active les fonctionnalitées liées à l'API Adresse"
     API_SIRENE_AVAILABLE = "Active les fonctionnalitées liées à l'API Sirene"
     APP_ENABLE_AUTOCOMPLETE = "Active l'autocomplete sur la barre de recherche relative au rework de la homepage"
