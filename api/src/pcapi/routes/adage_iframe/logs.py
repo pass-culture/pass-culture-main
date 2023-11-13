@@ -132,6 +132,31 @@ def log_contact_modal_button_click(
     return
 
 
+@blueprint.adage_iframe.route("/logs/consult-playlist-element", methods=["POST"])
+@spectree_serialize(api=blueprint.api, on_error_statuses=[404], on_success_status=204)
+@adage_jwt_required
+def log_consult_playlist_element(
+    authenticated_information: AuthenticatedInformation,
+    body: serialization.PlaylistBody,
+) -> None:
+    institution = find_educational_institution_by_uai_code(authenticated_information.uai)  # type: ignore [arg-type]
+    educational_utils.log_information_for_data_purpose(
+        event_name="ConsultPlaylistElement",
+        extra_data={
+            "offerId": body.elementId if body.playlistType == serialization.AdagePlaylistType.OFFER else None,
+            "venueId": body.elementId if body.playlistType == serialization.AdagePlaylistType.VENUE else None,
+            "domainId": body.elementId if body.playlistType == serialization.AdagePlaylistType.DOMAIN else None,
+            "playlistId": body.playlistId,
+            "from": body.iframeFrom,
+            "queryId": body.queryId,
+        },
+        user_email=authenticated_information.email,
+        uai=authenticated_information.uai,
+        user_role=AdageFrontRoles.REDACTOR if institution else AdageFrontRoles.READONLY,
+    )
+    return
+
+
 @blueprint.adage_iframe.route("/logs/fav-offer/", methods=["POST"])
 @spectree_serialize(api=blueprint.api, on_error_statuses=[404], on_success_status=204)
 @adage_jwt_required
