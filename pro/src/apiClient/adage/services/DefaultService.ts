@@ -21,6 +21,7 @@ import type { ListCollectiveOffersResponseModel } from '../models/ListCollective
 import type { ListFeatureResponseModel } from '../models/ListFeatureResponseModel';
 import type { OfferFavoriteBody } from '../models/OfferFavoriteBody';
 import type { OfferIdBody } from '../models/OfferIdBody';
+import type { PlaylistBody } from '../models/PlaylistBody';
 import type { PostCollectiveRequestBodyModel } from '../models/PostCollectiveRequestBodyModel';
 import type { RedactorPreferences } from '../models/RedactorPreferences';
 import type { SearchBody } from '../models/SearchBody';
@@ -350,6 +351,28 @@ export class DefaultService {
     return this.httpRequest.request({
       method: 'POST',
       url: '/adage-iframe/logs/catalog-view',
+      body: requestBody,
+      mediaType: 'application/json',
+      errors: {
+        403: `Forbidden`,
+        404: `Not Found`,
+        422: `Unprocessable Entity`,
+      },
+    });
+  }
+
+  /**
+   * log_consult_playlist_element <POST>
+   * @param requestBody
+   * @returns void
+   * @throws ApiError
+   */
+  public logConsultPlaylistElement(
+    requestBody?: PlaylistBody,
+  ): CancelablePromise<void> {
+    return this.httpRequest.request({
+      method: 'POST',
+      url: '/adage-iframe/logs/consult-playlist-element',
       body: requestBody,
       mediaType: 'application/json',
       errors: {
