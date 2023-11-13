@@ -804,6 +804,11 @@ def import_pro_user_and_offerer_from_csv(pro_user: ImportUserFromCsvModel) -> mo
     )
 
     repository.save(new_pro_user, user_offerer, offerer, digital_venue, action)
+    token = token_utils.Token.create(
+        token_utils.TokenType.EMAIL_VALIDATION,
+        ttl=None,
+        user_id=new_pro_user.id,
+    )
 
     try:
         siren_info = sirene.get_siren(offerer.siren or "")
@@ -824,7 +829,7 @@ def import_pro_user_and_offerer_from_csv(pro_user: ImportUserFromCsvModel) -> mo
         **extra_data,
     )
 
-    if not transactional_mails.send_email_validation_to_pro_email(new_pro_user):
+    if not transactional_mails.send_email_validation_to_pro_email(new_pro_user, token):
         logger.warning(
             "Could not send validation email when creating pro user",
             extra={"user": new_pro_user.id},
@@ -843,8 +848,13 @@ def create_pro_user_V2(pro_user: ProUserCreationBodyV2Model) -> models.User:
     )
 
     repository.save(new_pro_user, action)
+    token = token_utils.Token.create(
+        token_utils.TokenType.EMAIL_VALIDATION,
+        ttl=None,
+        user_id=new_pro_user.id,
+    )
 
-    if not transactional_mails.send_email_validation_to_pro_email(new_pro_user):
+    if not transactional_mails.send_email_validation_to_pro_email(new_pro_user, token):
         logger.warning(
             "Could not send validation email when creating pro user",
             extra={"user": new_pro_user.id},
@@ -864,7 +874,6 @@ def create_pro_user(pro_user: ImportUserFromCsvModel | ProUserCreationBodyV2Mode
     new_pro_user.remove_admin_role()
     new_pro_user.remove_beneficiary_role()
     new_pro_user.needsToFillCulturalSurvey = False
-    new_pro_user.generate_validation_token()
 
     if hasattr(pro_user, "postal_code") and pro_user.postal_code:
         new_pro_user.departementCode = postal_code_utils.PostalCode(pro_user.postal_code).get_departement_code()

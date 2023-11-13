@@ -1,6 +1,10 @@
+from dataclasses import asdict
+
 import pytest
 
 import pcapi.core.history.models as history_models
+import pcapi.core.mails.testing as mails_testing
+from pcapi.core.mails.transactional.sendinblue_template_ids import TransactionalEmail
 from pcapi.core.users.models import User
 
 
@@ -46,6 +50,10 @@ class Returns204Test:
         assert actions_list[0].actionType == history_models.ActionType.USER_CREATED
         assert actions_list[0].authorUser == user
         assert actions_list[0].user == user
+
+        assert len(mails_testing.outbox) == 1  # test number of emails sent
+        assert mails_testing.outbox[0].sent_data["To"] == user.email
+        assert mails_testing.outbox[0].sent_data["template"] == asdict(TransactionalEmail.EMAIL_VALIDATION_TO_PRO.value)
 
     def when_successful_and_mark_pro_user_as_no_cultural_survey_needed(self, client):
         data = BASE_DATA_PRO.copy()
