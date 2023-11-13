@@ -105,13 +105,14 @@ jobs:
           run: |
             set -e
             python src/pcapi/app.py
+            flask sandbox -n industrial
       # - name: Wait for migrations to be run
       #   uses: iFaxity/wait-on-action@v1
       #   with:
       #     resource: http://localhost:5001/health/api
       #     timeout: 30000  
-      - name: Load sandbox
-        run: ../pc sandbox -n industrial
+      # - name: Load sandbox
+      #   run: ../pc sandbox -n industrial
       # Doc : https://github.com/cypress-io/github-action
       - name: Cypress run
         uses: cypress-io/github-action@v5

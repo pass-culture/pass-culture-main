@@ -69,7 +69,7 @@ OFFERS_RECAP_LIMIT = 501
 STOCK_LIMIT_TO_DELETE = 50
 
 
-OFFER_LIKE_MODELS = {"Offer", "CollectiveOffer", "CollectiveOfferTemplate", "NEW"}
+OFFER_LIKE_MODELS = {"Offer", "CollectiveOffer", "CollectiveOfferTemplate", "NEW", "RENEW"}
 
 
 class T_UNCHANGED(enum.Enum):
