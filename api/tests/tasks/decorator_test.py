@@ -37,6 +37,18 @@ class CloudTaskDecoratorTest:
 
         assert slow_chouquette_handler.call_args_list == [mock.call(12), mock.call(12)]
 
+    @override_settings(IS_RUNNING_TESTS=False, IS_REBUILD_STAGING=True)
+    @mock.patch("pcapi.tasks.cloud_task.requests.post")
+    def test_rebuild_staging_does_not_create_cloud_task(self, requests_post):
+        # When rebuilding staging, we do not call any cloud_task
+        payload = ChouquetteSender(number=12)
+
+        send_chouquettes(payload)
+        send_chouquettes.delay(payload)
+
+        requests_post.assert_not_called()
+        assert slow_chouquette_handler.call_args_list == [mock.call(12), mock.call(12)]
+
     @mock.patch("pcapi.tasks.cloud_task.AUTHORIZATION_HEADER_VALUE", "Bearer secret-token")
     @override_settings(IS_RUNNING_TESTS=False, IS_DEV=True)
     @mock.patch("pcapi.tasks.cloud_task.requests.post")

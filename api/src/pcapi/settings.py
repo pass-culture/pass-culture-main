@@ -25,6 +25,7 @@ if ENV not in ("development", "integration", "staging", "production", "testing")
     raise RuntimeError("Unknown environment")
 
 IS_RUNNING_TESTS = os.environ.get("RUN_ENV") == "tests"
+IS_REBUILD_STAGING = bool(int(os.environ.get("IS_REBUILD_STAGING", "0")))
 IS_PERFORMANCE_TESTS = bool(int(os.environ.get("IS_PERFORMANCE_TESTS", "0")))
 IS_E2E_TESTS = bool(int(os.environ.get("IS_E2E_TESTS", "0")))
 assert not (IS_PROD and IS_PERFORMANCE_TESTS)
@@ -37,6 +38,8 @@ if IS_DEV:
     load_dotenv(dotenv_path=".env.local.secret", override=True)
 if IS_RUNNING_TESTS and not IS_E2E_TESTS:
     load_dotenv(dotenv_path=".env.testauto", override=True)
+if IS_REBUILD_STAGING:
+    load_dotenv(dotenv_path=".env.rebuild_staging", override=True)
 
 LOG_LEVEL = int(os.environ.get("LOG_LEVEL", LOG_LEVEL_INFO))
 
