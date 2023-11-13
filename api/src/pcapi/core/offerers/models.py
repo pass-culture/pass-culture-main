@@ -457,7 +457,7 @@ class Venue(PcObject, Base, Model, HasThumbMixin, ProvidableMixin, Accessibility
     def last_collective_dms_application(self) -> educational_models.CollectiveDmsApplication | None:
         if self.collectiveDmsApplications:
             return sorted(
-                self.collectiveDmsApplications, key=lambda application: application.lastChangeDate, reverse=True  # type: ignore [return-value, arg-type]
+                self.collectiveDmsApplications, key=lambda application: application.lastChangeDate, reverse=True
             )[0]
         return None
 

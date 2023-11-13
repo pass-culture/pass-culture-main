@@ -1305,7 +1305,7 @@ class CollectiveDmsApplication(PcObject, Base, Model):
     procedure: int = sa.Column(sa.BigInteger, nullable=False)
     application: int = sa.Column(sa.BigInteger, nullable=False, index=True)
     siret: str = sa.Column(sa.String(14), nullable=False, index=True)
-    lastChangeDate = sa.Column(sa.DateTime, nullable=False)
+    lastChangeDate: datetime = sa.Column(sa.DateTime, nullable=False)
     depositDate = sa.Column(sa.DateTime, nullable=False)
     expirationDate = sa.Column(sa.DateTime, nullable=True)
     buildDate = sa.Column(sa.DateTime, nullable=True)

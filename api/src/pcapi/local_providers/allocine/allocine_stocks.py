@@ -349,7 +349,7 @@ def _build_countries_list(movie_info: dict) -> list[str]:
     return [country["name"] for country in movie_info["countries"]]
 
 
-def _build_cast_list(movie_info: dict) -> list[str | None]:
+def _build_cast_list(movie_info: dict) -> list[str]:
     cast_list = []
     edges = movie_info["cast"]["edges"]
     for edge in edges:
@@ -359,7 +359,7 @@ def _build_cast_list(movie_info: dict) -> list[str | None]:
         full_name = f"{first_name} {last_name}".strip()
         if full_name:
             cast_list.append(full_name)
-    return cast_list  # type: ignore [return-value]
+    return cast_list
 
 
 def _get_release_date(movie_info: dict) -> str:
