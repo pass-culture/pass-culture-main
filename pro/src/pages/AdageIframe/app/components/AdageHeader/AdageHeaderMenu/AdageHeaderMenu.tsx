@@ -56,7 +56,7 @@ export const AdageHeaderMenu = ({ adageUser }: AdageHeaderMenuProps) => {
                     [styles['adage-header-link-active']]: isActive,
                   })
                 }}
-                /*onClick={() => logAdageLinkClick(AdageHeaderLink.DISCOVERY)} */
+                onClick={() => logAdageLinkClick(AdageHeaderLink.DISCOVERY)}
               >
                 <SvgIcon src={strokePassIcon} alt="" width="20" />
                 Découvrir

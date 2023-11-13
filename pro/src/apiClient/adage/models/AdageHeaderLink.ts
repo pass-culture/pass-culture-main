@@ -11,4 +11,5 @@ export enum AdageHeaderLink {
   MY_INSTITUTION_OFFERS = 'my_institution_offers',
   ADAGE_LINK = 'adage_link',
   MY_FAVORITES = 'my_favorites',
+  DISCOVERY = 'discovery',
 }

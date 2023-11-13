@@ -36,6 +36,7 @@ class AdageHeaderLink(enum.Enum):
     MY_INSITUTION_OFFERS = "my_institution_offers"
     ADAGE_LINK = "adage_link"
     MY_FAVORITES = "my_favorites"
+    DISCOVERY = "discovery"
 
 
 class AdageHeaderLogBody(AdageBaseModel):
