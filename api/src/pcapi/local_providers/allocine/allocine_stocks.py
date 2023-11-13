@@ -69,7 +69,7 @@ class AllocineStocks(LocalProvider):
         self.price_categories_by_offer: dict[offers_models.Offer, list[offers_models.PriceCategory]] = {}
 
     def __next__(self) -> list[ProvidableInfo]:
-        raw_movie_information = next(self.movies_showtimes)  # type: ignore [var-annotated]
+        raw_movie_information: dict = next(self.movies_showtimes)
         try:
             self.movie_information = retrieve_movie_information(raw_movie_information["node"]["movie"])
             self.filtered_movie_showtimes = _filter_only_digital_and_non_experience_showtimes(
