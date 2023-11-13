@@ -39,7 +39,7 @@ const OffererStatsScreen = ({ offererOptions }: OffererStatsScreenProps) => {
   useEffect(() => {
     async function loadData() {
       const offerer = await api.getOfferer(Number(selectedOffererId))
-      if (offerer.managedVenues) {
+      if (offerer.managedVenues && offerer.managedVenues.length > 0) {
         const sortedVenueOptions = sortByLabel(
           offerer.managedVenues
             .filter(
