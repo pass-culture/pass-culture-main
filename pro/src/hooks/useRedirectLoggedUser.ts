@@ -19,8 +19,8 @@ const useRedirectLoggedUser = () => {
 
   useEffect(() => {
     async function fetchOfferersNames() {
-      const listOfferer = await api.listOfferersNames()
-      if (listOfferer.offerersNames.length === 0) {
+      const { offerersNames } = await api.listOfferersNames()
+      if (offerersNames?.length === 0) {
         navigate('/parcours-inscription')
       } else {
         redirectToUrl()
@@ -29,6 +29,7 @@ const useRedirectLoggedUser = () => {
 
     if (currentUser) {
       if (!currentUser.isAdmin) {
+        // eslint-disable-next-line @typescript-eslint/no-floating-promises
         fetchOfferersNames()
       } else {
         redirectToUrl()
