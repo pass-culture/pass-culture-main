@@ -1,13 +1,11 @@
+"""Delete feature flag WIP_EAC_ENABLE_NEW_AUTHENTICATION_PUBLIC_API
 """
-Delete feature flag WIP_EAC_ENABLE_NEW_AUTHENTICATION_PUBLIC_API
-"""
-
 
 
 # pre/post deployment: post
 # revision identifiers, used by Alembic.
-revision = 'c3eff57a0838'
-down_revision = '7e51a47a52ef'
+revision = "c3eff57a0838"
+down_revision = "7e51a47a52ef"
 branch_labels = None
 depends_on = None
 
