@@ -11,7 +11,6 @@ from pcapi.core.educational.utils import get_hashed_user_id
 from pcapi.models.offer_mixin import OfferValidationStatus
 from pcapi.routes.adage_iframe.serialization.adage_authentication import AdageFrontRoles
 
-from tests.conftest import TestClient
 from tests.routes.adage_iframe.utils_create_test_token import create_adage_valid_token_with_email
 
 
@@ -23,7 +22,7 @@ educational_year_dates = {"start": datetime(2020, 9, 1), "end": datetime(2021, 8
 
 @freeze_time("2020-11-17 15:00:00")
 class CollectiveBookingTest:
-    def test_post_educational_booking(self, app, caplog):
+    def test_post_educational_booking(self, client, caplog):
         # Given
         stock = educational_factories.CollectiveStockFactory(beginningDatetime=stock_date)
         educational_institution = educational_factories.EducationalInstitutionFactory()
@@ -35,12 +34,10 @@ class CollectiveBookingTest:
         adage_jwt_fake_valid_token = create_adage_valid_token_with_email(
             email=educational_redactor.email, uai=educational_institution.institutionId
         )
-        test_client = TestClient(app.test_client())
-        test_client.auth_header = {"Authorization": f"Bearer {adage_jwt_fake_valid_token}"}
 
         # When
         with caplog.at_level(logging.INFO):
-            response = test_client.post(
+            response = client.with_explicit_token(adage_jwt_fake_valid_token).post(
                 "/adage-iframe/collective/bookings",
                 json={
                     "stockId": stock.id,
@@ -63,7 +60,7 @@ class CollectiveBookingTest:
 
         assert len(adage_api_testing.adage_requests) == 1
 
-    def test_post_educational_booking_with_less_redactor_information(self, app):
+    def test_post_educational_booking_with_less_redactor_information(self, client):
         # Given
         stock = educational_factories.CollectiveStockFactory(beginningDatetime=stock_date)
         educational_institution = educational_factories.EducationalInstitutionFactory()
@@ -78,11 +75,9 @@ class CollectiveBookingTest:
             firstname=None,
             lastname=None,
         )
-        test_client = TestClient(app.test_client())
-        test_client.auth_header = {"Authorization": f"Bearer {adage_jwt_fake_valid_token}"}
 
         # When
-        response = test_client.post(
+        response = client.with_explicit_token(adage_jwt_fake_valid_token).post(
             "/adage-iframe/collective/bookings",
             json={
                 "stockId": stock.id,
@@ -115,17 +110,15 @@ class CollectiveBookingTest:
         educational_redactor = educational_factories.EducationalRedactorFactory(email="professeur@example.com")
         return (stock, educational_institution, educational_redactor)
 
-    def test_should_not_allow_booking_when_educational_institution_is_unknown(self, test_data, app):
+    def test_should_not_allow_booking_when_educational_institution_is_unknown(self, test_data, client):
         # Given
         stock, _, educational_redactor = test_data
         adage_jwt_fake_valid_token = create_adage_valid_token_with_email(
             email=educational_redactor.email, uai="Unknown"
         )
-        test_client = TestClient(app.test_client())
-        test_client.auth_header = {"Authorization": f"Bearer {adage_jwt_fake_valid_token}"}
 
         # When
-        response = test_client.post(
+        response = client.with_explicit_token(adage_jwt_fake_valid_token).post(
             "/adage-iframe/collective/bookings",
             json={
                 "stockId": stock.id,
@@ -137,7 +130,7 @@ class CollectiveBookingTest:
         assert response.json == {"code": "UNKNOWN_EDUCATIONAL_INSTITUTION"}
         assert len(adage_api_testing.adage_requests) == 0
 
-    def test_should_not_allow_booking_when_stock_has_no_remaining_quantity(self, test_data, app):
+    def test_should_not_allow_booking_when_stock_has_no_remaining_quantity(self, test_data, client):
         # Given
         _, educational_institution, educational_redactor = test_data
         stock = educational_factories.CollectiveStockFactory(
@@ -146,11 +139,9 @@ class CollectiveBookingTest:
         adage_jwt_fake_valid_token = create_adage_valid_token_with_email(
             email=educational_redactor.email, uai=educational_institution.institutionId
         )
-        test_client = TestClient(app.test_client())
-        test_client.auth_header = {"Authorization": f"Bearer {adage_jwt_fake_valid_token}"}
 
         # When
-        response = test_client.post(
+        response = client.with_explicit_token(adage_jwt_fake_valid_token).post(
             "/adage-iframe/collective/bookings",
             json={
                 "stockId": stock.id,
@@ -162,15 +153,13 @@ class CollectiveBookingTest:
         assert response.json == {"stock": "Cette offre n'est pas disponible à la réservation"}
         assert len(adage_api_testing.adage_requests) == 0
 
-    def test_should_not_allow_booking_when_uai_code_is_not_provided_through_jwt(self, test_data, app):
+    def test_should_not_allow_booking_when_uai_code_is_not_provided_through_jwt(self, test_data, client):
         # Given
         stock, _, educational_redactor = test_data
         adage_jwt_fake_valid_token = create_adage_valid_token_with_email(email=educational_redactor.email, uai=None)
-        test_client = TestClient(app.test_client())
-        test_client.auth_header = {"Authorization": f"Bearer {adage_jwt_fake_valid_token}"}
 
         # When
-        response = test_client.post(
+        response = client.with_explicit_token(adage_jwt_fake_valid_token).post(
             "/adage-iframe/collective/bookings",
             json={
                 "stockId": stock.id,
@@ -198,10 +187,9 @@ class CollectiveBookingTest:
         adage_jwt_fake_valid_token = create_adage_valid_token_with_email(
             email=educational_redactor.email, uai=educational_institution2.institutionId
         )
-        client.auth_header = {"Authorization": f"Bearer {adage_jwt_fake_valid_token}"}
 
         # When
-        response = client.post(
+        response = client.with_explicit_token(adage_jwt_fake_valid_token).post(
             "/adage-iframe/collective/bookings",
             json={
                 "stockId": stock.id,

@@ -7,12 +7,10 @@ from pcapi.core.offers import factories as offers_factories
 import pcapi.core.providers.factories as providers_factories
 from pcapi.core.providers.repository import get_provider_by_local_class
 
-from tests.conftest import TestClient
-
 
 class Returns200Test:
     @pytest.mark.usefixtures("db_session")
-    def test_get_list_with_valid_venue_id(self, app):
+    def test_get_list_with_valid_venue_id(self, client):
         # given
         user_offerer = offerers_factories.UserOffererFactory()
         titelive_things_provider = get_provider_by_local_class("TiteLiveThings")
@@ -38,7 +36,7 @@ class Returns200Test:
         )
 
         # when
-        auth_request = TestClient(app.test_client()).with_session_auth(email=user_offerer.user.email)
+        auth_request = client.with_session_auth(email=user_offerer.user.email)
         response = auth_request.get(f"/venueProviders?venueId={venue_provider.venue.id}")
 
         # then
@@ -49,7 +47,7 @@ class Returns200Test:
         assert response.json["venue_providers"][0].get("lastSyncDate") == "2021-08-16T00:00:00Z"
 
     @pytest.mark.usefixtures("db_session")
-    def test_get_list_that_include_allocine_with_valid_venue_id(self, app):
+    def test_get_list_that_include_allocine_with_valid_venue_id(self, client):
         # given
         user_offerer = offerers_factories.UserOffererFactory()
         allocine_stocks_provider = get_provider_by_local_class("AllocineStocks")
@@ -63,7 +61,7 @@ class Returns200Test:
         )
 
         # when
-        auth_request = TestClient(app.test_client()).with_session_auth(email=user_offerer.user.email)
+        auth_request = client.with_session_auth(email=user_offerer.user.email)
         response = auth_request.get(f"/venueProviders?venueId={allocine_venue_provider.venue.id}")
 
         # then
@@ -75,7 +73,7 @@ class Returns200Test:
 
 class Returns400Test:
     @pytest.mark.usefixtures("db_session")
-    def when_listing_all_venues_without_venue_id_argument(self, app):
+    def when_listing_all_venues_without_venue_id_argument(self, client):
         # given
         user_offerer = offerers_factories.UserOffererFactory()
         titelive_things_provider = get_provider_by_local_class("TiteLiveThings")
@@ -86,7 +84,7 @@ class Returns400Test:
         )
 
         # when
-        auth_request = TestClient(app.test_client()).with_session_auth(email=user_offerer.user.email)
+        auth_request = client.with_session_auth(email=user_offerer.user.email)
         response = auth_request.get("/venueProviders")
 
         # then

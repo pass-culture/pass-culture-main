@@ -2,8 +2,6 @@ import pytest
 
 from pcapi.core.testing import override_features
 
-from tests.conftest import TestClient
-
 
 pytestmark = pytest.mark.usefixtures("db_session")
 
@@ -19,8 +17,8 @@ class SettingsTest:
         ID_CHECK_ADDRESS_AUTOCOMPLETION=True,
         APP_ENABLE_AUTOCOMPLETE=True,
     )
-    def test_get_settings_feature_combination_1(self, app):
-        response = TestClient(app.test_client()).get("/native/v1/settings")
+    def test_get_settings_feature_combination_1(self, client):
+        response = client.get("/native/v1/settings")
         assert response.status_code == 200
         assert response.json == {
             "accountCreationMinimumAge": 15,
@@ -47,8 +45,8 @@ class SettingsTest:
         ID_CHECK_ADDRESS_AUTOCOMPLETION=False,
         APP_ENABLE_AUTOCOMPLETE=False,
     )
-    def test_get_settings_feature_combination_2(self, app):
-        response = TestClient(app.test_client()).get("/native/v1/settings")
+    def test_get_settings_feature_combination_2(self, client):
+        response = client.get("/native/v1/settings")
         assert response.status_code == 200
         assert response.json == {
             "accountCreationMinimumAge": 15,

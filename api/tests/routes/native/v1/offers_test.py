@@ -23,12 +23,9 @@ import pcapi.local_providers.cinema_providers.constants as cinema_providers_cons
 from pcapi.models.offer_mixin import OfferValidationStatus
 import pcapi.notifications.push.testing as notifications_testing
 
-from tests.conftest import TestClient
 from tests.connectors.cgr import soap_definitions
 from tests.local_providers.cinema_providers.boost import fixtures as boost_fixtures
 from tests.local_providers.cinema_providers.cgr import fixtures as cgr_fixtures
-
-from .utils import create_user_and_test_client
 
 
 pytestmark = pytest.mark.usefixtures("db_session")
@@ -36,7 +33,7 @@ pytestmark = pytest.mark.usefixtures("db_session")
 
 class OffersTest:
     @freeze_time("2020-01-01")
-    def test_get_event_offer(self, app):
+    def test_get_event_offer(self, client):
         extra_data = {
             "author": "mandibule",
             "ean": "3838",
@@ -107,7 +104,7 @@ class OffersTest:
 
         offer_id = offer.id
         with assert_no_duplicated_queries():
-            response = TestClient(app.test_client()).get(f"/native/v1/offer/{offer_id}")
+            response = client.get(f"/native/v1/offer/{offer_id}")
 
         assert response.status_code == 200
 
@@ -244,7 +241,7 @@ class OffersTest:
         assert response.status_code == 200
         assert response.json["stocks"][0]["remainingQuantity"] is None
 
-    def test_get_thing_offer(self, app):
+    def test_get_thing_offer(self, client):
         product = offers_factories.ProductFactory(thumbCount=1, subcategoryId=subcategories.ABO_MUSEE.id)
         offer = offers_factories.OfferFactory(
             product=product, venue__isPermanent=True, subcategoryId=subcategories.ABO_MUSEE.id
@@ -253,7 +250,7 @@ class OffersTest:
 
         offer_id = offer.id
         with assert_no_duplicated_queries():
-            response = TestClient(app.test_client()).get(f"/native/v1/offer/{offer_id}")
+            response = client.get(f"/native/v1/offer/{offer_id}")
 
         assert response.status_code == 200
         assert not response.json["stocks"][0]["beginningDatetime"]
@@ -266,57 +263,57 @@ class OffersTest:
         assert response.json["venue"]["isPermanent"]
         assert response.json["stocks"][0]["features"] == []
 
-    def test_get_digital_offer_with_available_activation_and_no_expiration_date(self, app):
+    def test_get_digital_offer_with_available_activation_and_no_expiration_date(self, client):
         # given
         stock = offers_factories.StockWithActivationCodesFactory()
         offer_id = stock.offer.id
 
         # when
         with assert_no_duplicated_queries():
-            response = TestClient(app.test_client()).get(f"/native/v1/offer/{offer_id}")
+            response = client.get(f"/native/v1/offer/{offer_id}")
 
         # then
         assert response.status_code == 200
         assert response.json["stocks"][0]["activationCode"] == {"expirationDate": None}
 
-    def test_get_digital_offer_with_available_activation_code_and_expiration_date(self, app):
+    def test_get_digital_offer_with_available_activation_code_and_expiration_date(self, client):
         # given
         stock = offers_factories.StockWithActivationCodesFactory(activationCodes__expirationDate=datetime(2050, 1, 1))
         offer_id = stock.offer.id
 
         # when
         with assert_no_duplicated_queries():
-            response = TestClient(app.test_client()).get(f"/native/v1/offer/{offer_id}")
+            response = client.get(f"/native/v1/offer/{offer_id}")
 
         # then
         assert response.status_code == 200
         assert response.json["stocks"][0]["activationCode"] == {"expirationDate": "2050-01-01T00:00:00Z"}
 
-    def test_get_digital_offer_without_available_activation_code(self, app):
+    def test_get_digital_offer_without_available_activation_code(self, client):
         # given
         stock = offers_factories.StockWithActivationCodesFactory(activationCodes__expirationDate=datetime(2000, 1, 1))
         offer_id = stock.offer.id
 
         # when
         with assert_no_duplicated_queries():
-            response = TestClient(app.test_client()).get(f"/native/v1/offer/{offer_id}")
+            response = client.get(f"/native/v1/offer/{offer_id}")
 
         # then
         assert response.status_code == 200
         assert response.json["stocks"][0]["activationCode"] is None
 
     @freeze_time("2020-01-01")
-    def test_get_expired_offer(self, app):
+    def test_get_expired_offer(self, client):
         stock = offers_factories.EventStockFactory(beginningDatetime=datetime.utcnow() - timedelta(days=1))
 
         offer_id = stock.offer.id
         with assert_no_duplicated_queries():
-            response = TestClient(app.test_client()).get(f"/native/v1/offer/{offer_id}")
+            response = client.get(f"/native/v1/offer/{offer_id}")
 
         assert response.json["isExpired"]
 
-    def test_get_offer_not_found(self, app):
-        response = TestClient(app.test_client()).get("/native/v1/offer/1")
+    def test_get_offer_not_found(self, client):
+        response = client.get("/native/v1/offer/1")
 
         assert response.status_code == 404
 
@@ -332,7 +329,7 @@ class OffersTest:
 
     @override_features(ENABLE_CDS_IMPLEMENTATION=True)
     @patch("pcapi.core.offers.api.external_bookings_api.get_shows_stock")
-    def test_get_cds_sync_offer_updates_stock(self, mocked_get_shows_stock, app):
+    def test_get_cds_sync_offer_updates_stock(self, mocked_get_shows_stock, client):
         movie_id = 54
         show_id = 5008
 
@@ -358,7 +355,7 @@ class OffersTest:
             idAtProviders=f"{offer_id_at_provider}#{show_id}/2022-12-03",
         )
 
-        response = TestClient(app.test_client()).get(f"/native/v1/offer/{offer.id}")
+        response = client.get(f"/native/v1/offer/{offer.id}")
 
         assert stock.remainingQuantity == 0
         assert response.json["stocks"][0]["isSoldOut"]
@@ -407,7 +404,7 @@ class OffersTest:
         assert will_be_sold_out_show_stock.remainingQuantity == 0
 
     @override_features(ENABLE_CGR_INTEGRATION=True)
-    def test_get_cgr_sync_offer_updates_stock(self, requests_mock, app):
+    def test_get_cgr_sync_offer_updates_stock(self, requests_mock, client):
         allocine_movie_id = 234099
         still_scheduled_show = 182021
         descheduled_show = 182022
@@ -443,14 +440,14 @@ class OffersTest:
             offer=offer, idAtProviders=f"{offer_id_at_provider}#{descheduled_show}", quantity=95
         )
 
-        response = TestClient(app.test_client()).get(f"/native/v1/offer/{offer.id}")
+        response = client.get(f"/native/v1/offer/{offer.id}")
 
         assert response.status_code == 200
         assert still_scheduled_show_stock.remainingQuantity == 95
         assert descheduled_show_stock.remainingQuantity == 0
 
     @override_features(ENABLE_CDS_IMPLEMENTATION=True)
-    def test_get_inactive_cinema_provider_offer(self, app):
+    def test_get_inactive_cinema_provider_offer(self, client):
         cds_provider = get_provider_by_local_class("CDSStocks")
         venue_provider = providers_factories.VenueProviderFactory(provider=cds_provider, isActive=False)
         cinema_provider_pivot = providers_factories.CinemaProviderPivotFactory(
@@ -467,7 +464,7 @@ class OffersTest:
         )
         offers_factories.EventStockFactory(offer=offer, idAtProviders="toto")
 
-        response = TestClient(app.test_client()).get(f"/native/v1/offer/{offer.id}")
+        response = client.get(f"/native/v1/offer/{offer.id}")
 
         assert response.json["isReleased"] is False
         assert offer.isActive is False
@@ -522,23 +519,25 @@ class SendOfferWebAppLinkTest:
         mail = self.send_request(client)
         assert mail.sent_data["params"]["OFFER_WEBAPP_LINK"].startswith(settings.WEBAPP_V2_REDIRECT_URL)
 
-    def test_send_offer_webapp_link_by_email_not_found(self, app):
-        _, test_client = create_user_and_test_client(app)
+    def test_send_offer_webapp_link_by_email_not_found(self, client):
+        user = users_factories.UserFactory()
+        client = client.with_token(user.email)
 
         with assert_no_duplicated_queries():
-            response = test_client.post("/native/v1/send_offer_webapp_link_by_email/98765432123456789")
+            response = client.post("/native/v1/send_offer_webapp_link_by_email/98765432123456789")
             assert response.status_code == 404
         assert not mails_testing.outbox
 
     @pytest.mark.parametrize(
         "validation", [OfferValidationStatus.DRAFT, OfferValidationStatus.PENDING, OfferValidationStatus.REJECTED]
     )
-    def test_send_non_approved_offer_webapp_link_by_email(self, app, validation):
-        _, test_client = create_user_and_test_client(app)
+    def test_send_non_approved_offer_webapp_link_by_email(self, client, validation):
+        user = users_factories.UserFactory()
+        client = client.with_token(user.email)
         offer_id = offers_factories.OfferFactory(validation=validation).id
 
         with assert_no_duplicated_queries():
-            response = test_client.post(f"/native/v1/send_offer_webapp_link_by_email/{offer_id}")
+            response = client.post(f"/native/v1/send_offer_webapp_link_by_email/{offer_id}")
             assert response.status_code == 404
         assert not mails_testing.outbox
 
@@ -560,7 +559,7 @@ class SendOfferWebAppLinkTest:
 
 
 class SendOfferLinkNotificationTest:
-    def test_send_offer_link_notification(self, app):
+    def test_send_offer_link_notification(self, client):
         """
         Test that a push notification to the user is send with a link to the
         offer.
@@ -570,10 +569,11 @@ class SendOfferLinkNotificationTest:
         offer = offers_factories.OfferFactory()
         offer_id = offer.id
 
-        user, test_client = create_user_and_test_client(app)
+        user = users_factories.UserFactory()
+        client = client.with_token(user.email)
 
         with assert_no_duplicated_queries():
-            response = test_client.post(f"/native/v1/send_offer_link_by_push/{offer_id}")
+            response = client.post(f"/native/v1/send_offer_link_by_push/{offer_id}")
             assert response.status_code == 204
 
         assert len(notifications_testing.requests) == 1
@@ -583,12 +583,13 @@ class SendOfferLinkNotificationTest:
 
         assert offer.name in notification["message"]["title"]
 
-    def test_send_offer_link_notification_not_found(self, app):
+    def test_send_offer_link_notification_not_found(self, client):
         """Test that no push notification is sent when offer is not found"""
-        _, test_client = create_user_and_test_client(app)
+        user = users_factories.UserFactory()
+        client = client.with_token(user.email)
 
         with assert_no_duplicated_queries():
-            response = test_client.post("/native/v1/send_offer_link_by_push/9999999999")
+            response = client.post("/native/v1/send_offer_link_by_push/9999999999")
             assert response.status_code == 404
 
         assert len(notifications_testing.requests) == 0
@@ -596,20 +597,22 @@ class SendOfferLinkNotificationTest:
     @pytest.mark.parametrize(
         "validation", [OfferValidationStatus.DRAFT, OfferValidationStatus.PENDING, OfferValidationStatus.REJECTED]
     )
-    def test_send_non_approved_offer_link_notification(self, app, validation):
-        _, test_client = create_user_and_test_client(app)
+    def test_send_non_approved_offer_link_notification(self, client, validation):
+        user = users_factories.UserFactory()
+        client = client.with_token(user.email)
         offer_id = offers_factories.OfferFactory(validation=validation).id
 
         with assert_no_duplicated_queries():
-            response = test_client.post(f"/native/v1/send_offer_link_by_push/{offer_id}")
+            response = client.post(f"/native/v1/send_offer_link_by_push/{offer_id}")
             assert response.status_code == 404
 
         assert len(notifications_testing.requests) == 0
 
 
 class ReportOfferTest:
-    def test_report_offer(self, app):
-        user, test_client = create_user_and_test_client(app)
+    def test_report_offer(self, client):
+        user = users_factories.UserFactory()
+        client = client.with_token(user.email)
         offer = offers_factories.OfferFactory()
 
         # expected queries:
@@ -621,7 +624,7 @@ class ReportOfferTest:
         #   * reload user
         #   * select offer
         with assert_num_queries(6):
-            response = test_client.post(f"/native/v1/offer/{offer.id}/report", json={"reason": "INAPPROPRIATE"})
+            response = client.post(f"/native/v1/offer/{offer.id}/report", json={"reason": "INAPPROPRIATE"})
             assert response.status_code == 204
 
         assert OfferReport.query.count() == 1
@@ -637,8 +640,9 @@ class ReportOfferTest:
         assert email.sent_data["params"]["USER_ID"] == user.id
         assert email.sent_data["params"]["OFFER_ID"] == offer.id
 
-    def test_report_offer_with_custom_reason(self, app):
-        user, test_client = create_user_and_test_client(app)
+    def test_report_offer_with_custom_reason(self, client):
+        user = users_factories.UserFactory()
+        client = client.with_token(user.email)
         offer = offers_factories.OfferFactory()
 
         # expected queries:
@@ -651,7 +655,7 @@ class ReportOfferTest:
         #   * select offer
         with assert_num_queries(6):
             data = {"reason": "OTHER", "customReason": "saynul"}
-            response = test_client.post(f"/native/v1/offer/{offer.id}/report", json=data)
+            response = client.post(f"/native/v1/offer/{offer.id}/report", json=data)
             assert response.status_code == 204
 
         assert OfferReport.query.count() == 1
@@ -669,14 +673,15 @@ class ReportOfferTest:
         assert "saynul" in email.sent_data["params"]["REASON"]
         assert "OFFER_URL" in email.sent_data["params"]
 
-    def test_report_offer_twice(self, app):
-        user, test_client = create_user_and_test_client(app)
+    def test_report_offer_twice(self, client):
+        user = users_factories.UserFactory()
+        client = client.with_token(user.email)
         offer = offers_factories.OfferFactory()
 
         offers_factories.OfferReportFactory(user=user, offer=offer)
 
         with assert_no_duplicated_queries():
-            response = test_client.post(f"/native/v1/offer/{offer.id}/report", json={"reason": "PRICE_TOO_HIGH"})
+            response = client.post(f"/native/v1/offer/{offer.id}/report", json={"reason": "PRICE_TOO_HIGH"})
             assert response.status_code == 400
             assert response.json["code"] == "OFFER_ALREADY_REPORTED"
 
@@ -733,11 +738,13 @@ class ReportOfferTest:
     @pytest.mark.parametrize(
         "validation", [OfferValidationStatus.DRAFT, OfferValidationStatus.PENDING, OfferValidationStatus.REJECTED]
     )
-    def test_report_non_approved_offer(self, app, validation):
-        _, test_client = create_user_and_test_client(app)
+    def test_report_non_approved_offer(self, client, validation):
+        user = users_factories.UserFactory()
         offer = offers_factories.ThingOfferFactory(validation=validation)
 
-        response = test_client.post(f"/native/v1/offer/{offer.id}/report", json={"reason": "PRICE_TOO_HIGH"})
+        response = client.with_token(user.email).post(
+            f"/native/v1/offer/{offer.id}/report", json={"reason": "PRICE_TOO_HIGH"}
+        )
 
         assert response.status_code == 404
         assert OfferReport.query.count() == 0  # no new report
