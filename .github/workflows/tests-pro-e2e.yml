@@ -50,6 +50,29 @@ jobs:
           POSTGRES_USER: pytest
           POSTGRES_PASSWORD: pytest
           POSTGRES_DB: pass_culture
+      flask:
+        image: europe-west1-docker.pkg.dev/passculture-infra-prod/pass-culture-artifact-registry/pcapi:${{ github.event_name == 'pull_request' && github.event.pull_request.head.sha || github.sha}}
+        ports:
+          - 5001:5001
+        options: >-
+          --health-cmd "curl -f http://localhost:5001/health/api || exit 1"
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+        env:
+          RUN_ENV: tests
+          DATABASE_URL_TEST: postgresql://pytest:pytest@postgres:5432/pass_culture
+          POSTGRES_USER: pytest
+          POSTGRES_PASSWORD: pytest
+          POSTGRES_DB: pass_culture 
+          REDIS_URL: redis://redis:6379
+          GUNICORN_PORT: 5000
+          GUNICORN_MAX_REQUESTS: 10
+          GUNICORN_MAX_REQUESTS_JITTER: 10
+          GUNICORN_WORKERS=2 GUNICORN_THREADS: 2
+          GUNICORN_TIMEOUT: 10
+          GUNICORN_LOG_LEVEL: info
+        
 
     steps:
       - uses: actions/checkout@v3
@@ -96,23 +119,19 @@ jobs:
             alembic upgrade pre@head
             alembic upgrade post@head
             flask install_data
-      - name: start api server
-        uses: addnab/docker-run-action@v3
-        with:
-          image: ${{ env.tests_docker_image }}
-          shell: bash
-          options: -e RUN_ENV -e DATABASE_URL_TEST -e REDIS_URL -d
-          run: |
-            set -e
-            python src/pcapi/app.py
-            flask sandbox -n industrial
-      # - name: Wait for migrations to be run
-      #   uses: iFaxity/wait-on-action@v1
+      # - name: start api server
+      #   uses: addnab/docker-run-action@v3
       #   with:
-      #     resource: http://localhost:5001/health/api
-      #     timeout: 30000  
-      # - name: Load sandbox
-      #   run: ../pc sandbox -n industrial
+      #     image: ${{ env.tests_docker_image }}
+      #     shell: bash
+      #     options: -e RUN_ENV -e DATABASE_URL_TEST -e REDIS_URL -d
+      - name: Wait for migrations to be run
+        uses: iFaxity/wait-on-action@v1
+        with:
+          resource: http://localhost:5001/health/api
+          timeout: 30000  
+      - name: Load sandbox
+        run: ../pc sandbox -n industrial
       # Doc : https://github.com/cypress-io/github-action
       - name: Cypress run
         uses: cypress-io/github-action@v5
