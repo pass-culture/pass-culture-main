@@ -11,7 +11,6 @@ from pcapi.core.offers import models
 import pcapi.core.providers.factories as providers_factories
 from pcapi.models import offer_mixin
 from pcapi.models.api_errors import ApiErrors
-from pcapi.models.pc_object import DeletedRecordException
 from pcapi.models.validation_status_mixin import ValidationStatus
 from pcapi.repository import repository
 from pcapi.utils import human_ids
@@ -444,12 +443,6 @@ def test_queryNotSoftDeleted():
     assert len(stocks) == 1
     assert alive in stocks
     assert deleted not in stocks
-
-
-def test_cannot_populate_dict_if_soft_deleted():
-    stock = factories.StockFactory(isSoftDeleted=True)
-    with pytest.raises(DeletedRecordException):
-        stock.populate_from_dict({"quantity": 5})
 
 
 def test_stock_cannot_have_a_negative_price():

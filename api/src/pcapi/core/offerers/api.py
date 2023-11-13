@@ -38,6 +38,7 @@ import pcapi.core.users.models as users_models
 import pcapi.core.users.repository as users_repository
 from pcapi.models import db
 from pcapi.models import feature
+from pcapi.models import pc_object
 from pcapi.models.validation_status_mixin import ValidationStatus
 from pcapi.repository import repository
 from pcapi.routes.serialization import offerers_serialize
@@ -136,7 +137,10 @@ def update_venue(
     old_booking_email = venue.bookingEmail if modifications.get("bookingEmail") else None
 
     venue_snapshot.trace_update(modifications)
-    venue.populate_from_dict(modifications)
+    if venue.is_soft_deleted():
+        raise pc_object.DeletedRecordException()
+    for key, value in modifications.items():
+        setattr(venue, key, value)
 
     venue_snapshot.add_action()
 
@@ -186,7 +190,10 @@ def update_venue_collective_data(
         else:
             venue.venueEducationalStatusId = None
 
-    venue.populate_from_dict(modifications)
+    if venue.is_soft_deleted():
+        raise pc_object.DeletedRecordException()
+    for key, value in modifications.items():
+        setattr(venue, key, value)
 
     repository.save(venue)
 
@@ -230,8 +237,12 @@ def create_venue(
     validation.check_venue_creation(data, strict_accessibility_compliance)
     venue = models.Venue()
     data["dmsToken"] = generate_dms_token()
-    venue.populate_from_dict(data, skipped_keys=("contact",))
-
+    if venue.is_soft_deleted():
+        raise pc_object.DeletedRecordException()
+    for key, value in data.items():
+        if key == "contact":
+            continue
+        setattr(venue, key, value)
     if venue_data.contact:
         upsert_venue_contact(venue, venue_data.contact)
     repository.save(venue)
