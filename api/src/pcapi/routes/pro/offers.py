@@ -97,7 +97,7 @@ def get_stocks(offer_id: int, query: offers_serialize.StocksQueryModel) -> offer
     rest.check_user_has_access_to_offerer(current_user, offer.venue.managingOffererId)
     has_stocks = offers_repository.offer_has_stocks(offer_id=offer_id)
     if has_stocks:
-        stocks = offers_repository.get_filtered_stocks(
+        filtered_stocks = offers_repository.get_filtered_stocks(
             offer_id=offer_id,
             date=query.date,
             time=query.time,
@@ -105,17 +105,19 @@ def get_stocks(offer_id: int, query: offers_serialize.StocksQueryModel) -> offer
             order_by=query.order_by,
             order_by_desc=query.order_by_desc,
         )
-        stocks_count = stocks.count()
-        stocks = offers_repository.get_paginated_stocks(
-            stocks_query=stocks,
+        stocks_count = filtered_stocks.count()
+        filtered_and_paginated_stocks = offers_repository.get_paginated_stocks(
+            stocks_query=filtered_stocks,
             page=query.page,
             stocks_limit_per_page=query.stocks_limit_per_page,
         )
-        stock_list = [offers_serialize.GetOfferStockResponseModel.from_orm(stock) for stock in stocks.all()]
+        stocks = [
+            offers_serialize.GetOfferStockResponseModel.from_orm(stock) for stock in filtered_and_paginated_stocks.all()
+        ]
     else:
-        stock_list = []
+        stocks = []
         stocks_count = 0
-    return offers_serialize.GetStocksResponseModel(stocks=stock_list, stockCount=stocks_count, hasStocks=has_stocks)
+    return offers_serialize.GetStocksResponseModel(stocks=stocks, stock_count=stocks_count, has_stocks=has_stocks)
 
 
 @private_api.route("/offers/<int:offer_id>/stocks/delete", methods=["POST"])
@@ -186,10 +188,10 @@ def get_stocks_stats(offer_id: int) -> offers_serialize.StockStatsResponseModel:
     rest.check_user_has_access_to_offerer(current_user, offer.venue.managingOffererId)
     stocks_stats = offers_api.get_stocks_stats(offer_id=offer_id)
     return offers_serialize.StockStatsResponseModel(
-        oldestStock=stocks_stats.oldest_stock,
-        newestStock=stocks_stats.newest_stock,
-        stockCount=stocks_stats.stock_count,
-        remainingQuantity=stocks_stats.remaining_quantity,
+        oldest_stock=stocks_stats.oldest_stock,
+        newest_stock=stocks_stats.newest_stock,
+        stock_count=stocks_stats.stock_count,
+        remaining_quantity=stocks_stats.remaining_quantity,
     )
 
 

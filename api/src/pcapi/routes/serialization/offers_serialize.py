@@ -20,6 +20,7 @@ from pcapi.core.offers.serialize import CollectiveOfferType
 from pcapi.models.offer_mixin import OfferStatus
 from pcapi.routes.native.v1.serialization.common_models import AccessibilityComplianceMixin
 from pcapi.routes.serialization import BaseModel
+from pcapi.routes.serialization import ConfiguredBaseModel
 from pcapi.routes.serialization import base as base_serializers
 from pcapi.serialization.utils import to_camel
 from pcapi.utils.date import format_into_utc_date
@@ -361,20 +362,20 @@ class GetIndividualOfferResponseModel(BaseModel, AccessibilityComplianceMixin):
         use_enum_values = True
 
 
-class GetStocksResponseModel(BaseModel):
+class GetStocksResponseModel(ConfiguredBaseModel):
     stocks: list[GetOfferStockResponseModel]
-    stockCount: int
-    hasStocks: bool
+    stock_count: int
+    has_stocks: bool
 
     class Config:
         json_encoders = {datetime.datetime: format_into_utc_date}
 
 
-class StockStatsResponseModel(BaseModel):
-    oldestStock: datetime.datetime | None
-    newestStock: datetime.datetime | None
-    stockCount: int | None
-    remainingQuantity: int | None
+class StockStatsResponseModel(ConfiguredBaseModel):
+    oldest_stock: datetime.datetime | None
+    newest_stock: datetime.datetime | None
+    stock_count: int | None
+    remaining_quantity: int | None
 
     class Config:
         json_encoders = {datetime.datetime: format_into_utc_date}
