@@ -37,14 +37,10 @@ export const initializeSentry = () => {
     // List of common errors to ignore
     // https://docs.sentry.io/platforms/javascript/configuration/filtering/#decluttering-sentry
     ignoreErrors: [
-      // Browser extensions
-      'webkit-masked-url://hidden/',
-      'safari-web-extension://',
-      '_avast_submit',
-      '?(<unknown module>)',
-      'beamer-embed',
       // Random plugins/extensions
+      '_avast_submit',
       'top.GLOBALS',
+      '__AutoFillPopupClose__', // create by a random chinese web extension for mobile safari
       // See: http://blog.errorception.com/2012/03/tale-of-unfindable-js-error.html
       'originalCreateNotification',
       'canvas.contentDocument',
@@ -64,6 +60,11 @@ export const initializeSentry = () => {
       'EBCallBackMessageReceived',
       // See http://toolbar.conduit.com/Developer/HtmlAndGadget/Methods/JSInjection.aspx
       'conduitPage',
+      // See https://stackoverflow.com/questions/49384120/resizeobserver-loop-limit-exceeded/50387233#50387233
+      'ResizeObserver loop limit exceeded',
+      'ResizeObserver loop completed with undelivered notifications',
+      // Firebase fails install when user lost connectivity for a moment
+      'Could not process request. Application offline',
     ],
     denyUrls: [
       // Facebook flakiness
@@ -73,10 +74,13 @@ export const initializeSentry = () => {
       // Woopra flakiness
       /eatdifferent\.com\.woopra-ns\.com/i,
       /static\.woopra\.com\/js\/woopra\.js/i,
-      // Chrome extensions
+      // Browser extensions
       /extensions\//i,
       /^chrome:\/\//i,
       /^chrome-extension:\/\//i,
+      /safari-(web-)?extension:/i,
+      /webkit-masked-url:/i,
+      /<unknown module>/i,
       // Other plugins
       /127\.0\.0\.1:4001\/isrunning/i, // Cacaoweb
       /webappstoolbarba\.texthelp\.com\//i,
