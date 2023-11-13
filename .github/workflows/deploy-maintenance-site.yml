@@ -1,0 +1,54 @@
+name: Deploy maintenance site
+on:
+  push:
+    paths:
+      - "maintenance-site/**"
+    branches:
+      - master
+
+permissions:
+  id-token: write
+  contents: write
+
+jobs:
+  deploy:
+    runs-on: [self-hosted, linux, x64]
+    environment: production
+    container:
+      image: node:18
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+
+      - name: 'Authenticate to Google Cloud'
+        uses: 'google-github-actions/auth@v1'
+        with:
+          workload_identity_provider: ${{ secrets.GCP_EHP_WORKLOAD_IDENTITY_PROVIDER }}
+          service_account: ${{ secrets.GCP_EHP_SERVICE_ACCOUNT }}
+
+      - name: Get Secret
+        id: 'secrets'
+        uses: 'google-github-actions/get-secretmanager-secrets@v1'
+        with:
+          secrets: |-
+            MAINTENANCE_SITE_DEPLOY_SA:passculture-metier-ehp/passculture-main-production-maintenance-site-deploy-service-account
+            MAINTENANCE_SITE_BUCKET:passculture-metier-ehp/passculture-main-production-maintenance-site-bucket
+
+      - name: 'Set up Cloud SDK'
+        uses: 'google-github-actions/setup-gcloud@v1'
+
+      - name: 'Authenticate to Google Cloud'
+        uses: 'google-github-actions/auth@v1'
+        with:
+          workload_identity_provider: ${{ secrets.METIER_GCP_WORKLOAD_IDENTITY_PROVIDER }}
+          service_account: ${{ steps.secrets.outputs.MAINTENANCE_SITE_DEPLOY_SA }}
+
+      - name: 'Set up Cloud SDK'
+        uses: 'google-github-actions/setup-gcloud@v1'
+
+      - name: 'Push web site files to bucket'
+        working-directory: ./maintenance-site
+        run:  gsutil rsync  -x '.*/\..*|^\..*' -r . gs://passculture-metier-prod-production-maintenance
+
+      - name: 'Invalidate cache'
+        run: gcloud compute url-maps invalidate-cdn-cache production-maintenance-url-map --path "/*"
