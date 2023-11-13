@@ -1,24 +1,10 @@
 import './styles/index.scss'
-import { init as SentryInit } from '@sentry/browser'
-import * as Sentry from '@sentry/react'
-import { Integrations as TracingIntegrations } from '@sentry/tracing'
 import React from 'react'
 import { createRoot } from 'react-dom/client'
-import {
-  createRoutesFromChildren,
-  matchRoutes,
-  useLocation,
-  useNavigationType,
-} from 'react-router-dom'
 
 import Root from 'Root'
-import {
-  ENVIRONMENT_NAME,
-  SENTRY_SAMPLE_RATE,
-  SENTRY_SERVER_URL,
-} from 'utils/config'
-
-import config from '../package.json'
+import { initializeSentry } from 'sentry'
+import { ENVIRONMENT_NAME, SENTRY_SERVER_URL } from 'utils/config'
 
 import { unregister } from './registerServiceWorker'
 
@@ -26,23 +12,7 @@ const isAdageIframe = window.location.href.includes('adage-iframe')
 
 // Initialize sentry
 if (SENTRY_SERVER_URL) {
-  SentryInit({
-    dsn: SENTRY_SERVER_URL,
-    environment: ENVIRONMENT_NAME,
-    release: config.version,
-    integrations: [
-      new TracingIntegrations.BrowserTracing({
-        routingInstrumentation: Sentry.reactRouterV6Instrumentation(
-          React.useEffect,
-          useLocation,
-          useNavigationType,
-          createRoutesFromChildren,
-          matchRoutes
-        ),
-      }),
-    ],
-    tracesSampleRate: parseFloat(SENTRY_SAMPLE_RATE),
-  })
+  initializeSentry()
 }
 
 // load and initialise hotjar library for all pc pro except adage-iframe
