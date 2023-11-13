@@ -1,26 +1,13 @@
 from datetime import datetime
-from decimal import Decimal
-from decimal import InvalidOperation
 import logging
 from pprint import pprint
 import re
 import typing
-import uuid
 
 from sqlalchemy import BigInteger
-from sqlalchemy import DateTime
-from sqlalchemy import Float
-from sqlalchemy import Integer
-from sqlalchemy import Numeric
-from sqlalchemy import String
-from sqlalchemy.dialects.postgresql import UUID
 import sqlalchemy.exc as sa_exc
 import sqlalchemy.orm as sa_orm
 from sqlalchemy.sql.schema import Column
-
-from pcapi.models.api_errors import DateTimeCastError
-from pcapi.models.api_errors import DecimalCastError
-from pcapi.models.api_errors import UuidCastError
 
 
 logger = logging.getLogger(__name__)
@@ -41,7 +28,7 @@ class PcObject:
     def __init__(self, **kwargs: typing.Any) -> None:
         from_dict = kwargs.pop("from_dict", None)
         if from_dict:
-            self.populate_from_dict(from_dict)
+            raise NotImplementedError()
         super().__init__(**kwargs)
 
     def __repr__(self) -> str:
@@ -50,35 +37,6 @@ class PcObject:
 
     def dump(self) -> None:
         pprint(vars(self))
-
-    def populate_from_dict(self, data: dict, skipped_keys: typing.Iterable[str] = ()) -> None:
-        self._check_not_soft_deleted()
-        mapper: sa_orm.Mapper = self.__mapper__  # type: ignore [attr-defined]
-        columns = mapper.all_orm_descriptors
-        keys_to_populate = self._get_keys_to_populate(columns.keys(), data, skipped_keys)
-
-        for key in keys_to_populate:
-            column = mapper.column_attrs.get(key)
-            if not column:  # key is not a column, so probably an hybrid property
-                setattr(self, key, data.get(key))
-                continue
-
-            value = data.get(key)
-            if isinstance(value, str):
-                if isinstance(column.expression.type, Integer):
-                    self._try_to_set_attribute_with_decimal_value(column, key, value, "integer")
-                elif isinstance(column.expression.type, (Float, Numeric)):
-                    self._try_to_set_attribute_with_decimal_value(column, key, value, "float")
-                elif isinstance(column.expression.type, String):
-                    setattr(self, key, value.strip() if value else value)
-                elif isinstance(column.expression.type, DateTime):
-                    self._try_to_set_attribute_with_deserialized_datetime(column, key, value)
-                elif isinstance(column.expression.type, UUID):
-                    self._try_to_set_attribute_with_uuid(column, key, value)
-            elif not isinstance(value, datetime) and isinstance(column.expression.type, DateTime):
-                self._try_to_set_attribute_with_deserialized_datetime(column, key, value)
-            else:
-                setattr(self, key, value)
 
     def is_soft_deleted(self) -> bool:
         return getattr(self, "isSoftDeleted", False)
@@ -146,64 +104,6 @@ class PcObject:
                 " doit être dans cette liste : " + ",".join(map(lambda x: '"' + x + '"', value_error.args[3])),
             )
         return PcObject.restize_global_error(value_error)
-
-    @staticmethod
-    def _get_keys_to_populate(
-        columns: typing.Iterable[str],
-        data: dict,
-        skipped_keys: typing.Iterable[str],
-    ) -> set[str]:
-        requested_columns_to_update = set(data.keys())
-        forbidden_columns = {"id", "deleted"} | set(skipped_keys)
-        allowed_columns_to_update = requested_columns_to_update - forbidden_columns
-        keys_to_populate = set(columns).intersection(allowed_columns_to_update)
-        return keys_to_populate
-
-    def _try_to_set_attribute_with_deserialized_datetime(
-        self,
-        col: sa_orm.ColumnProperty,
-        key: str,
-        value: typing.Any,
-    ) -> None:
-        try:
-            datetime_value = _deserialize_datetime(value)
-            setattr(self, key, datetime_value)
-        except TypeError:
-            error = DateTimeCastError()
-            error.add_error(col.expression.name, "Invalid value for %s (datetime): %r" % (key, value))
-            raise error
-
-    def _try_to_set_attribute_with_uuid(
-        self,
-        col: sa_orm.ColumnProperty,
-        key: str,
-        value: typing.Any,
-    ) -> None:
-        try:
-            uuid.UUID(value)
-            setattr(self, key, value)
-        except ValueError:
-            error = UuidCastError()
-            error.add_error(col.expression.name, "Invalid value for %s (uuid): %r" % (key, value))
-            raise error
-
-    def _try_to_set_attribute_with_decimal_value(
-        self,
-        col: sa_orm.ColumnProperty,
-        key: str,
-        value: typing.Any,
-        expected_format: str,
-    ) -> None:
-        try:
-            setattr(self, key, Decimal(value))
-        except InvalidOperation:
-            error = DecimalCastError()
-            error.add_error(col.expression.name, "Invalid value for {} ({}): '{}'".format(key, expected_format, value))
-            raise error
-
-    def _check_not_soft_deleted(self) -> None:
-        if self.is_soft_deleted():
-            raise DeletedRecordException
 
 
 def _deserialize_datetime(value: str | None) -> datetime | None:

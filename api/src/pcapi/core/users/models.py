@@ -327,11 +327,6 @@ class User(PcObject, Base, Model, NeedsValidationMixin, DeactivableMixin):
             return self.email in settings.SUPER_ADMIN_EMAIL_ADDRESSES
         return self.has_admin_role
 
-    def populate_from_dict(self, data: dict, skipped_keys: typing.Iterable[str] = ()) -> None:
-        super().populate_from_dict(data, skipped_keys=skipped_keys)
-        if data.get("password"):
-            self.setPassword(data["password"])
-
     def remove_admin_role(self) -> None:
         if self.has_admin_role:
             self.roles.remove(UserRole.ADMIN)
