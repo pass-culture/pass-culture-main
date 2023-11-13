@@ -53,7 +53,9 @@ const OffererStatsScreen = ({ offererOptions }: OffererStatsScreenProps) => {
         )
         setVenueOptions([ALL_VENUES_OPTION, ...sortedVenueOptions])
 
-        setSelectedVenueId(sortedVenueOptions[0].value.toString())
+        if (sortedVenueOptions[0].value.toString()) {
+          setSelectedVenueId(sortedVenueOptions[0].value.toString())
+        }
       } else {
         setVenueOptions([])
       }
