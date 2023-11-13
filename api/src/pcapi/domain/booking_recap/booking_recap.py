@@ -1,5 +1,6 @@
 from datetime import datetime
 from enum import Enum
+import typing
 
 from pcapi.core.bookings import models as bookings_models
 from pcapi.domain.booking_recap import utils
@@ -85,7 +86,7 @@ class BookingRecap:
         self.event_beginning_datetime = event_beginning_datetime
         self.stock_identifier = stock_identifier
 
-    def __new__(cls, *args, **kwargs):  # type: ignore [no-untyped-def]
+    def __new__(cls, *args: typing.Any, **kwargs: typing.Any) -> "BookingRecap":
         return object.__new__(cls)
 
     def _get_booking_token(self) -> str | None:

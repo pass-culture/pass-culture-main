@@ -1,3 +1,5 @@
+import typing
+
 from pcapi import settings
 import pcapi.core.bookings.models as bookings_models
 import pcapi.core.criteria.models as criteria_models
@@ -20,7 +22,7 @@ from pcapi.models.feature import Feature
 from pcapi.models.feature import install_feature_flags
 
 
-def clean_all_database(*args, **kwargs):  # type: ignore [no-untyped-def]
+def clean_all_database(*args: typing.Any, **kwargs: typing.Any) -> None:
     """Order of deletions matters because of foreign key constraints"""
     if settings.ENV not in ("development", "testing"):
         raise ValueError(f"You cannot do this on this environment: '{settings.ENV}'")
