@@ -28,7 +28,7 @@ CHUNK_MAX_SIZE = 1000
 
 
 class LocalProvider(Iterator):
-    def __init__(self, venue_provider=None, **options):  # type: ignore [no-untyped-def]
+    def __init__(self, venue_provider: providers_models.VenueProvider | None = None, **options: typing.Any) -> None:
         self.venue_provider = venue_provider
         self.updatedObjects = 0
         self.createdObjects = 0
@@ -42,11 +42,11 @@ class LocalProvider(Iterator):
 
     @property
     @abstractmethod
-    def can_create(self):  # type: ignore [no-untyped-def]
+    def can_create(self) -> bool:
         pass
 
     @abstractmethod
-    def fill_object_attributes(self, obj):  # type: ignore [no-untyped-def]
+    def fill_object_attributes(self, obj: Model) -> None:
         pass
 
     def create_providable_info(
@@ -78,7 +78,7 @@ class LocalProvider(Iterator):
 
     @property
     @abstractmethod
-    def name(self):  # type: ignore [no-untyped-def]
+    def name(self) -> str:
         pass
 
     def _handle_thumb(self, pc_object: HasThumbMixin) -> None:
@@ -102,7 +102,7 @@ class LocalProvider(Iterator):
         pc_object = providable_info.type()
         pc_object.idAtProviders = providable_info.id_at_providers
         pc_object.idAtProvider = providable_info.new_id_at_provider
-        pc_object.lastProviderId = self.provider.id
+        pc_object.lastProviderId = self.provider.id  # type: ignore [assignment]
 
         self.fill_object_attributes(pc_object)
         pc_object.dateModifiedAtLastProvider = providable_info.date_modified_at_provider
@@ -116,7 +116,7 @@ class LocalProvider(Iterator):
         self.createdObjects += 1
         return pc_object
 
-    def _handle_update(self, pc_object, providable_info):  # type: ignore [no-untyped-def]
+    def _handle_update(self, pc_object: Model, providable_info: ProvidableInfo) -> None:
         self.fill_object_attributes(pc_object)
 
         pc_object.lastProviderId = self.provider.id
@@ -133,7 +133,9 @@ class LocalProvider(Iterator):
 
         self.updatedObjects += 1
 
-    def log_provider_event(self, event_type, event_payload=None):  # type: ignore [no-untyped-def]
+    def log_provider_event(
+        self, event_type: providers_models.LocalProviderEventType, event_payload: str | int | None = None
+    ) -> None:
         local_provider_event = providers_models.LocalProviderEvent()
         local_provider_event.type = event_type
         local_provider_event.payload = str(event_payload)
@@ -141,7 +143,7 @@ class LocalProvider(Iterator):
         db.session.add(local_provider_event)
         db.session.commit()
 
-    def _print_objects_summary(self):  # type: ignore [no-untyped-def]
+    def _print_objects_summary(self) -> None:
         # FIXME (dbaty, 2020-02-05): I don't know how we could end up
         # here with no venue_provider, but there are checks elsewhere
         # so I do the same here.
@@ -163,7 +165,7 @@ class LocalProvider(Iterator):
             self.erroredThumbs,
         )
 
-    def updateObjects(self, limit=None):  # type: ignore [no-untyped-def]
+    def updateObjects(self, limit: int | None = None) -> None:
         # pylint: disable=too-many-nested-blocks
         if self.venue_provider and not self.venue_provider.isActive:
             logger.info("Venue provider %s is inactive", self.venue_provider)
@@ -177,8 +179,8 @@ class LocalProvider(Iterator):
         # TODO (asaunier,2021-03-18): We may replace this log in BDD with logs in the monitoring system
         self.log_provider_event(providers_models.LocalProviderEventType.SyncStart)
 
-        chunk_to_insert = {}
-        chunk_to_update = {}
+        chunk_to_insert: dict[str, Model] = {}
+        chunk_to_update: dict[str, Model] = {}
 
         for providable_infos in self:
             objects_limit_reached = limit and self.checkedObjects >= limit
@@ -279,7 +281,7 @@ def _upload_thumb(
     )
 
 
-def _reindex_offers(created_or_updated_objects):  # type: ignore [no-untyped-def]
+def _reindex_offers(created_or_updated_objects: list[offers_models.Stock | offers_models.Offer]) -> None:
     offer_ids = set()
     for obj in created_or_updated_objects:
         if isinstance(obj, offers_models.Stock):

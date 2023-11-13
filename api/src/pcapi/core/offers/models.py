@@ -324,7 +324,7 @@ class Stock(PcObject, Base, Model, ProvidableMixin, SoftDeletableMixin):
 
 
 @sa.event.listens_for(Stock, "before_insert")
-def before_insert(mapper, configuration, self):  # type: ignore [no-untyped-def]
+def before_insert(mapper: sa.orm.Mapper, configuration: sa.engine.Connection, self: Stock) -> None:
     if self.beginningDatetime and not self.bookingLimitDatetime:
         self.bookingLimitDatetime = self.beginningDatetime.replace(hour=23).replace(minute=59) - datetime.timedelta(
             days=3

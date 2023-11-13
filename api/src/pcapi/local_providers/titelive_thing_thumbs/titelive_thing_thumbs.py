@@ -13,6 +13,7 @@ import pcapi.core.providers.repository as providers_repository
 from pcapi.domain.titelive import get_date_from_filename
 from pcapi.local_providers.local_provider import LocalProvider
 from pcapi.local_providers.providable_info import ProvidableInfo
+from pcapi.models import Model
 
 
 DATE_REGEXP = re.compile(r"livres_tl(\d+).zip")
@@ -88,5 +89,5 @@ class TiteLiveThingThumbs(LocalProvider):
         payload = int(latest_sync_part_end_event.payload)
         return iter(filter(lambda z: get_date_from_filename(z, DATE_REGEXP) > payload, all_zips))
 
-    def fill_object_attributes(self, obj):  # type: ignore [no-untyped-def]
+    def fill_object_attributes(self, obj: Model) -> None:
         pass
