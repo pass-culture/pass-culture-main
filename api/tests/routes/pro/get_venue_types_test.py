@@ -3,14 +3,12 @@ import pytest
 from pcapi.core.offerers.models import VenueTypeCode
 from pcapi.core.users.factories import UserFactory
 
-from tests.conftest import TestClient
-
 
 class Returns401Test:
     @pytest.mark.usefixtures("db_session")
-    def when_the_user_is_not_authenticated(self, app):
+    def when_the_user_is_not_authenticated(self, client):
         # When
-        response = TestClient(app.test_client()).get("/venue-types")
+        response = client.get("/venue-types")
 
         # then
         assert response.status_code == 401

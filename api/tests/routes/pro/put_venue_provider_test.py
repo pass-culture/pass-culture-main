@@ -5,12 +5,10 @@ import pcapi.core.providers.factories as providers_factories
 import pcapi.core.providers.models as provider_models
 import pcapi.core.users.factories as user_factories
 
-from tests.conftest import TestClient
-
 
 class Returns200Test:
     @pytest.mark.usefixtures("db_session")
-    def test_allocine_venue_provider_is_successfully_updated(self, app):
+    def test_allocine_venue_provider_is_successfully_updated(self, client):
         # Given
         user_offerer = offerers_factories.UserOffererFactory()
         user = user_offerer.user
@@ -35,7 +33,7 @@ class Returns200Test:
             "isActive": False,
         }
 
-        auth_request = TestClient(app.test_client()).with_session_auth(email=user.email)
+        auth_request = client.with_session_auth(email=user.email)
 
         # When
         response = auth_request.put("/venueProviders", json=updated_venue_provider_data)
@@ -50,7 +48,7 @@ class Returns200Test:
         assert response.json["isActive"] == updated_venue_provider_data["isActive"]
 
     @pytest.mark.usefixtures("db_session")
-    def test_cinema_venue_provider_is_successfully_updated(self, app):
+    def test_cinema_venue_provider_is_successfully_updated(self, client):
         user_offerer = offerers_factories.UserOffererFactory()
         user = user_offerer.user
         offerer = user_offerer.offerer
@@ -64,7 +62,7 @@ class Returns200Test:
             "isDuo": True,
             "isActive": True,
         }
-        auth_request = TestClient(app.test_client()).with_session_auth(email=user.email)
+        auth_request = client.with_session_auth(email=user.email)
 
         response = auth_request.put("/venueProviders", json=updated_venue_provider_data)
 
@@ -75,7 +73,7 @@ class Returns200Test:
         assert response.json["isActive"] == updated_venue_provider_data["isActive"]
 
     @pytest.mark.usefixtures("db_session")
-    def test_provider_is_not_allocine_and_not_cinema_provider(self, app):
+    def test_provider_is_not_allocine_and_not_cinema_provider(self, client):
         # Given
         user_offerer = offerers_factories.UserOffererFactory()
         user = user_offerer.user
@@ -90,7 +88,7 @@ class Returns200Test:
             "isActive": False,
         }
 
-        auth_request = TestClient(app.test_client()).with_session_auth(email=user.email)
+        auth_request = client.with_session_auth(email=user.email)
 
         # When
         response = auth_request.put("/venueProviders", json=updated_venue_provider_data)
@@ -102,9 +100,9 @@ class Returns200Test:
 
 class Returns401Test:
     @pytest.mark.usefixtures("db_session")
-    def test_user_is_not_logged_in(self, app):
+    def test_user_is_not_logged_in(self, client):
         # when
-        response = TestClient(app.test_client()).put("/venueProviders")
+        response = client.put("/venueProviders")
 
         # then
         assert response.status_code == 401
@@ -112,7 +110,7 @@ class Returns401Test:
 
 class Returns403Test:
     @pytest.mark.usefixtures("db_session")
-    def test_user_has_right_on_venue(self, app):
+    def test_user_has_right_on_venue(self, client):
         # Given
         user = user_factories.ProFactory()
         owner_offerer = offerers_factories.UserOffererFactory()
@@ -135,7 +133,7 @@ class Returns403Test:
             "price": 64,
         }
 
-        auth_request = TestClient(app.test_client()).with_session_auth(email=user.email)
+        auth_request = client.with_session_auth(email=user.email)
 
         # When
         response = auth_request.put("/venueProviders", json=updated_venue_provider_data)

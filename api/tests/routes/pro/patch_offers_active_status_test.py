@@ -7,12 +7,10 @@ from pcapi.core.offers.models import Offer
 from pcapi.core.offers.models import OfferValidationStatus
 import pcapi.core.providers.factories as providers_factories
 
-from tests.conftest import TestClient
-
 
 @pytest.mark.usefixtures("db_session")
 class Returns204Test:
-    def when_activating_existing_offers(self, app):
+    def when_activating_existing_offers(self, client):
         # Given
         offer1 = offers_factories.OfferFactory(isActive=False)
         venue = offer1.venue
@@ -21,7 +19,7 @@ class Returns204Test:
         offerers_factories.UserOffererFactory(user__email="pro@example.com", offerer=offerer)
 
         # When
-        client = TestClient(app.test_client()).with_session_auth("pro@example.com")
+        client = client.with_session_auth("pro@example.com")
         data = {"ids": [offer1.id, offer2.id], "isActive": True}
         response = client.patch("/offers/active-status", json=data)
 
@@ -30,7 +28,7 @@ class Returns204Test:
         assert Offer.query.get(offer1.id).isActive
         assert Offer.query.get(offer2.id).isActive
 
-    def when_deactivating_existing_offers(self, app):
+    def when_deactivating_existing_offers(self, client):
         # Given
         venue = offerers_factories.VenueFactory()
         offer = offers_factories.OfferFactory(venue=venue)
@@ -40,7 +38,7 @@ class Returns204Test:
         offerers_factories.UserOffererFactory(user__email="pro@example.com", offerer=venue.managingOfferer)
 
         # When
-        client = TestClient(app.test_client()).with_session_auth("pro@example.com")
+        client = client.with_session_auth("pro@example.com")
         data = {"ids": [offer.id, synchronized_offer.id], "isActive": False}
         with testing.assert_no_duplicated_queries():
             response = client.patch("/offers/active-status", json=data)
@@ -50,7 +48,7 @@ class Returns204Test:
         assert not Offer.query.get(offer.id).isActive
         assert not Offer.query.get(synchronized_offer.id).isActive
 
-    def test_only_approved_offers_patch(self, app):
+    def test_only_approved_offers_patch(self, client):
         approved_offer = offers_factories.OfferFactory(isActive=False)
         venue = approved_offer.venue
         pending_offer = offers_factories.OfferFactory(venue=venue, validation=OfferValidationStatus.PENDING)
@@ -58,7 +56,7 @@ class Returns204Test:
         offerer = venue.managingOfferer
         offerers_factories.UserOffererFactory(user__email="pro@example.com", offerer=offerer)
 
-        client = TestClient(app.test_client()).with_session_auth("pro@example.com")
+        client = client.with_session_auth("pro@example.com")
         data = {
             "ids": [approved_offer.id, pending_offer.id, rejected_offer.id],
             "isActive": True,
@@ -70,7 +68,7 @@ class Returns204Test:
         assert not pending_offer.isActive
         assert not rejected_offer.isActive
 
-    def when_activating_synchronized_offer(self, app):
+    def when_activating_synchronized_offer(self, client):
         # Given
         venue = offerers_factories.VenueFactory()
         offer = offers_factories.OfferFactory(venue=venue, isActive=False)
@@ -84,7 +82,7 @@ class Returns204Test:
         offerers_factories.UserOffererFactory(user__email="pro@example.com", offerer=venue.managingOfferer)
 
         # When
-        client = TestClient(app.test_client()).with_session_auth("pro@example.com")
+        client = client.with_session_auth("pro@example.com")
         response = client.patch(
             "/offers/active-status",
             json={"ids": [offer_that_should_stay_deactivated.id, offer.id], "isActive": True},

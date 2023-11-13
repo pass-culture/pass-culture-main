@@ -15,10 +15,6 @@ from pcapi.core.users.models import Favorite
 from pcapi.notifications.push import testing as push_testing
 from pcapi.utils.human_ids import humanize
 
-from tests.conftest import TestClient
-
-from . import utils
-
 
 pytestmark = pytest.mark.usefixtures("db_session")
 
@@ -28,23 +24,23 @@ FAVORITES_COUNT_URL = "/native/v1/me/favorites/count"
 
 class GetTest:
     class Returns200Test:
-        def when_user_is_logged_in_but_has_no_favorites(self, app):
+        def when_user_is_logged_in_but_has_no_favorites(self, client):
             # Given
-            _, test_client = utils.create_user_and_test_client(app)
+            user = users_factories.UserFactory()
 
             # When
-            response = test_client.get(FAVORITES_URL)
+            response = client.with_token(user.email).get(FAVORITES_URL)
 
             # Then
             assert response.status_code == 200
             assert response.json == {"page": 1, "nbFavorites": 0, "favorites": []}
 
-        def when_user_is_logged_in_and_has_favorite_offers(self, app):
+        def when_user_is_logged_in_and_has_favorite_offers(self, client):
             # Given
             today = datetime.utcnow() + timedelta(hours=3)  # offset a bit to make sure it's > now()
             yesterday = today - timedelta(days=1)
             tomorow = today + timedelta(days=1)
-            user, test_client = utils.create_user_and_test_client(app)
+            user = users_factories.UserFactory()
             offerer = offerers_factories.OffererFactory()
             venue = offerers_factories.VenueFactory(managingOfferer=offerer, publicName="Le Petit Rintintin")
 
@@ -93,12 +89,14 @@ class GetTest:
             offers_factories.EventStockFactory(offer=offer6, beginningDatetime=tomorow, price=30)
             offers_factories.EventStockFactory(offer=offer6, beginningDatetime=tomorow, price=30)
 
+            client.with_token(user.email)
+
             # When
             # QUERY_COUNT:
             # 1: Fetch the user for auth
             # 1: Fetch the favorites
             with assert_num_queries(2):
-                response = test_client.get(FAVORITES_URL)
+                response = client.get(FAVORITES_URL)
 
             # Then
             assert response.status_code == 200
@@ -184,36 +182,36 @@ class GetTest:
             assert favorites[0]["offer"]["subcategoryId"] == "SEANCE_CINE"
             assert favorites[0]["offer"]["venueName"] == "Le Petit Rintintin"
 
-        def test_offer_venue_name_is_common_name_for_non_digital_offer(self, app):
-            user, test_client = utils.create_user_and_test_client(app)
+        def test_offer_venue_name_is_common_name_for_non_digital_offer(self, client):
+            user = users_factories.UserFactory()
             offerer = offerers_factories.OffererFactory(name="Pathé Gaumont")
             venue = offerers_factories.VenueFactory(managingOfferer=offerer, publicName="Ciné Pathé")
             offer = offers_factories.EventOfferFactory(venue=venue)
             users_factories.FavoriteFactory(offer=offer, user=user)
 
-            response = test_client.get(FAVORITES_URL)
+            response = client.with_token(user.email).get(FAVORITES_URL)
             favorites = response.json["favorites"]
 
             assert favorites[0]["offer"]["venueName"] == "Ciné Pathé"
 
-        def test_offer_venue_name_is_offerer_name_for_digital_offer(self, app):
-            user, test_client = utils.create_user_and_test_client(app)
+        def test_offer_venue_name_is_offerer_name_for_digital_offer(self, client):
+            user = users_factories.UserFactory()
             offerer = offerers_factories.OffererFactory(name="Pathé Gaumont")
             venue = offerers_factories.VenueFactory(managingOfferer=offerer, publicName="Ciné Pathé")
             offer = offers_factories.DigitalOfferFactory(venue=venue)
             users_factories.FavoriteFactory(offer=offer, user=user)
 
-            response = test_client.get(FAVORITES_URL)
+            response = client.with_token(user.email).get(FAVORITES_URL)
             favorites = response.json["favorites"]
 
             assert favorites[0]["offer"]["venueName"] == "Pathé Gaumont"
 
-        def test_expired_offer(self, app):
+        def test_expired_offer(self, client):
             # Given
             today = datetime.utcnow() + timedelta(hours=3)  # offset a bit to make sure it's > now()
             yesterday = today - timedelta(days=1)
             tomorow = today + timedelta(days=1)
-            user, test_client = utils.create_user_and_test_client(app)
+            user = users_factories.UserFactory()
             user.add_beneficiary_role()
             users_factories.DepositGrantFactory(user=user)
             offerer = offerers_factories.OffererFactory()
@@ -264,12 +262,14 @@ class GetTest:
             stock8 = offers_factories.EventStockFactory(offer=offer8, beginningDatetime=tomorow, quantity=1, price=10)
             bookings_factories.BookingFactory(stock=stock8, user=user)
 
+            client.with_token(user.email)
+
             # When
             # QUERY_COUNT:
             # 1: Fetch the user for auth
             # 1: Fetch the favorites
             with assert_num_queries(2):
-                response = test_client.get(FAVORITES_URL)
+                response = client.get(FAVORITES_URL)
 
             # Then
             assert response.status_code == 200
@@ -321,9 +321,9 @@ class GetTest:
             ]
 
     class Returns401Test:
-        def when_user_is_not_logged_in(self, app):
+        def when_user_is_not_logged_in(self, client):
             # When
-            response = TestClient(app.test_client()).get(FAVORITES_URL)
+            response = client.get(FAVORITES_URL)
 
             # Then
             assert response.status_code == 401
@@ -331,16 +331,16 @@ class GetTest:
 
 class PostTest:
     class Returns200Test:
-        def when_user_creates_a_favorite(self, app):
+        def when_user_creates_a_favorite(self, client):
             # Given
-            user, test_client = utils.create_user_and_test_client(app)
+            user = users_factories.UserFactory()
             stock = offers_factories.EventStockFactory()
             offer1 = stock.offer
 
             assert Favorite.query.count() == 0
 
             # When
-            response = test_client.post(FAVORITES_URL, json={"offerId": offer1.id})
+            response = client.with_token(user.email).post(FAVORITES_URL, json={"offerId": offer1.id})
 
             # Then
             assert response.status_code == 200, response.data
@@ -358,18 +358,20 @@ class PostTest:
             sendinblue_data = users_testing.sendinblue_requests[0]
             assert sendinblue_data["attributes"]["LAST_FAVORITE_CREATION_DATE"] is not None
 
-        def when_user_creates_a_favorite_twice(self, app):
+        def when_user_creates_a_favorite_twice(self, client):
             # Given
-            _, test_client = utils.create_user_and_test_client(app)
+            user = users_factories.UserFactory()
             offerer = offerers_factories.OffererFactory()
             venue = offerers_factories.VenueFactory(managingOfferer=offerer)
             offer1 = offers_factories.EventOfferFactory(venue=venue)
             assert Favorite.query.count() == 0
 
+            client.with_token(user.email)
+
             # When
-            response = test_client.post(FAVORITES_URL, json={"offerId": offer1.id})
+            response = client.post(FAVORITES_URL, json={"offerId": offer1.id})
             assert response.status_code == 200
-            response = test_client.post(FAVORITES_URL, json={"offerId": offer1.id})
+            response = client.post(FAVORITES_URL, json={"offerId": offer1.id})
 
             # Then
             assert response.status_code == 200
@@ -383,17 +385,19 @@ class PostTest:
 
     class Returns400Test:
         @override_settings(MAX_FAVORITES=1)
-        def when_user_creates_one_favorite_above_the_limit(self, app):
-            _, test_client = utils.create_user_and_test_client(app)
+        def when_user_creates_one_favorite_above_the_limit(self, client):
+            user = users_factories.UserFactory()
             offer = offers_factories.EventOfferFactory()
             assert Favorite.query.count() == 0
 
-            response = test_client.post(FAVORITES_URL, json={"offerId": offer.id})
+            client.with_token(user.email)
+
+            response = client.post(FAVORITES_URL, json={"offerId": offer.id})
 
             assert response.status_code == 200, response.data
             assert Favorite.query.count() == 1
 
-            response = test_client.post(FAVORITES_URL, json={"offerId": offer.id})
+            response = client.post(FAVORITES_URL, json={"offerId": offer.id})
 
             assert response.status_code == 400, response.data
             assert response.json == {"code": "MAX_FAVORITES_REACHED"}
@@ -402,9 +406,9 @@ class PostTest:
 
 class DeleteTest:
     class Returns204Test:
-        def when_user_delete_its_favorite(self, app):
+        def when_user_delete_its_favorite(self, client):
             # Given
-            user, test_client = utils.create_user_and_test_client(app)
+            user = users_factories.UserFactory()
             offerer = offerers_factories.OffererFactory()
             venue = offerers_factories.VenueFactory(managingOfferer=offerer)
             offer = offers_factories.ThingOfferFactory(venue=venue)
@@ -412,15 +416,15 @@ class DeleteTest:
             assert Favorite.query.count() == 1
 
             # When
-            response = test_client.delete(f"{FAVORITES_URL}/{favorite.id}")
+            response = client.with_token(user.email).delete(f"{FAVORITES_URL}/{favorite.id}")
 
             # Then
             assert response.status_code == 204
             assert Favorite.query.count() == 0
 
-        def when_user_delete_another_user_favorite(self, app):
+        def when_user_delete_another_user_favorite(self, client):
             # Given
-            _, test_client = utils.create_user_and_test_client(app)
+            user = users_factories.UserFactory()
             other_beneficiary = users_factories.BeneficiaryGrant18Factory()
             offerer = offerers_factories.OffererFactory()
             venue = offerers_factories.VenueFactory(managingOfferer=offerer)
@@ -429,18 +433,18 @@ class DeleteTest:
             assert Favorite.query.count() == 1
 
             # When
-            response = test_client.delete(f"{FAVORITES_URL}/{favorite.id}")
+            response = client.with_token(user.email).delete(f"{FAVORITES_URL}/{favorite.id}")
 
             # Then
             assert response.status_code == 404
             assert Favorite.query.count() == 1
 
-        def when_user_delete_non_existent_favorite(self, app):
+        def when_user_delete_non_existent_favorite(self, client):
             # Given
-            _, test_client = utils.create_user_and_test_client(app)
+            user = users_factories.UserFactory()
 
             # When
-            response = test_client.delete(f"{FAVORITES_URL}/1203481310")
+            response = client.with_token(user.email).delete(f"{FAVORITES_URL}/1203481310")
 
             # Then
             assert response.status_code == 404
@@ -448,28 +452,30 @@ class DeleteTest:
 
 class GetCountTest:
     class Returns200Test:
-        def when_user_is_logged_in_but_has_no_favorites(self, app):
+        def when_user_is_logged_in_but_has_no_favorites(self, client):
             # Given
-            _, test_client = utils.create_user_and_test_client(app)
+            user = users_factories.UserFactory()
 
             # When
-            response = test_client.get(FAVORITES_COUNT_URL)
+            response = client.with_token(user.email).get(FAVORITES_COUNT_URL)
 
             # Then
             assert response.status_code == 200
             assert response.json == {"count": 0}
 
-        def when_user_is_logged_in_and_has_favorite_offers(self, app):
+        def when_user_is_logged_in_and_has_favorite_offers(self, client):
             # Given
-            user, test_client = utils.create_user_and_test_client(app)
+            user = users_factories.UserFactory()
             users_factories.FavoriteFactory.create_batch(size=3, user=user)
+
+            client.with_token(user.email)
 
             # When
             # QUERY_COUNT:
             # 1: Fetch the user for auth
             # 1: Fetch the favorites count
             with assert_num_queries(2):
-                response = test_client.get(FAVORITES_COUNT_URL)
+                response = client.get(FAVORITES_COUNT_URL)
 
             # Then
             assert response.status_code == 200

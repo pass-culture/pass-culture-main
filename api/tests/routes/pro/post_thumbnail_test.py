@@ -11,7 +11,6 @@ from pcapi.core.offers.models import Mediation
 from pcapi.utils.human_ids import humanize
 
 import tests
-from tests.conftest import TestClient
 
 
 IMAGES_DIR = Path(tests.__path__[0]) / "files"
@@ -34,9 +33,9 @@ def offerer_fixture(offer):
 
 @pytest.mark.usefixtures("db_session")
 class CreateThumbnailWithoutImageTest:
-    def test_no_image(self, app, offer, offerer):
+    def test_no_image(self, client, offer, offerer):
         # given
-        client = TestClient(app.test_client()).with_session_auth(email="user@example.com")
+        client = client.with_session_auth(email="user@example.com")
         data = {
             "offerId": offer.id,
         }
@@ -51,9 +50,9 @@ class CreateThumbnailWithoutImageTest:
 
 @pytest.mark.usefixtures("db_session")
 class CreateThumbnailFromFileTest:
-    def test_import_from_file(self, app, offer, offerer):
+    def test_import_from_file(self, client, offer, offerer):
         # given
-        client = TestClient(app.test_client()).with_session_auth(email="user@example.com")
+        client = client.with_session_auth(email="user@example.com")
         thumb = (IMAGES_DIR / "mouette_full_size.jpg").read_bytes()
         data = {
             "offerId": offer.id,
@@ -74,9 +73,9 @@ class CreateThumbnailFromFileTest:
             "url": f"http://localhost/storage/thumbs/mediations/{humanize(mediation.id)}",
         }
 
-    def test_wrong_content_type_from_file(self, app, offer, offerer):
+    def test_wrong_content_type_from_file(self, client, offer, offerer):
         # given
-        client = TestClient(app.test_client()).with_session_auth(email="user@example.com")
+        client = client.with_session_auth(email="user@example.com")
         thumb = (IMAGES_DIR / "mouette_fake_jpg.jpg").read_bytes()
         data = {
             "offerId": offer.id,
@@ -91,10 +90,10 @@ class CreateThumbnailFromFileTest:
         assert response.json == {"errors": ["Le fichier fourni n'est pas une image valide"]}
 
     @mock.patch("pcapi.core.offers.validation.check_image")
-    def test_image_too_small(self, mock_check_image, app, offer, offerer):
+    def test_image_too_small(self, mock_check_image, client, offer, offerer):
         # given
         mock_check_image.side_effect = exceptions.ImageTooSmall(min_width=400, min_height=400)
-        client = TestClient(app.test_client()).with_session_auth(email="user@example.com")
+        client = client.with_session_auth(email="user@example.com")
         thumb = (IMAGES_DIR / "mouette_small.jpg").read_bytes()
         data = {
             "offerId": offer.id,
@@ -110,10 +109,10 @@ class CreateThumbnailFromFileTest:
         assert response.json == {"errors": ["Utilisez une image plus grande (supérieure à 400px par 400px)"]}
 
     @mock.patch("pcapi.core.offers.validation.check_image")
-    def test_content_too_large(self, mock_check_image, app, offer, offerer):
+    def test_content_too_large(self, mock_check_image, client, offer, offerer):
         # given
         mock_check_image.side_effect = exceptions.FileSizeExceeded(max_size=10_000_000)
-        client = TestClient(app.test_client()).with_session_auth(email="user@example.com")
+        client = client.with_session_auth(email="user@example.com")
         thumb = (IMAGES_DIR / "mouette_full_size.jpg").read_bytes()
         data = {
             "offerId": offer.id,
