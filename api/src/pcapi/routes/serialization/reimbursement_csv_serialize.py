@@ -265,17 +265,17 @@ def find_all_offerers_reimbursement_details(
 
 def validate_reimbursement_period(
     reimbursement_period_field_names: tuple[str, str], get_query_param: Callable
-) -> list[None] | list[datetime.date]:
+) -> tuple[None, ...] | tuple[datetime.date, ...]:
     api_errors = ApiErrors()
-    reimbursement_period_dates = []
+    reimbursement_period_dates: tuple[datetime.date, ...] = tuple()
     for field_name in reimbursement_period_field_names:
         try:
-            reimbursement_period_dates.append(datetime.date.fromisoformat(get_query_param(field_name)))
+            reimbursement_period_dates += (datetime.date.fromisoformat(get_query_param(field_name)),)
         except (TypeError, ValueError):
             api_errors.add_error(field_name, "Vous devez renseigner une date au format ISO (ex. 2021-12-24)")
     if len(api_errors.errors) > 0:
         raise api_errors
-    return reimbursement_period_dates or [None, None]  # type: ignore [list-item]
+    return reimbursement_period_dates or (None, None)
 
 
 class ReimbursementCsvQueryModel(BaseModel):
