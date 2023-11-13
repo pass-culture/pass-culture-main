@@ -44,7 +44,7 @@ class CDSStocks(LocalProvider):
         self.accountId = cinema_details.accountId
         self.isDuo = venue_provider.isDuoOffers if venue_provider.isDuoOffers else False
         self.client_cds = CineDigitalServiceAPI(
-            cinema_id=self.venue_provider.venueIdAtOfferProvider,
+            cinema_id=venue_provider.venueIdAtOfferProvider,
             account_id=self.accountId,
             api_url=self.apiUrl,
             cinema_api_token=self.apiToken,
