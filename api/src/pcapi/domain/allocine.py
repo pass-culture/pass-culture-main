@@ -1,5 +1,6 @@
 import logging
 from typing import Callable
+from typing import Iterator
 
 from pcapi.connectors.api_allocine import get_movie_poster_from_allocine
 from pcapi.connectors.api_allocine import get_movies_showtimes_from_allocine
@@ -13,7 +14,7 @@ MOVIE_SPECIAL_EVENT = "SPECIAL_EVENT"
 
 def get_movies_showtimes(
     api_key: str, theater_id: str, get_movies_showtimes_from_api: Callable = get_movies_showtimes_from_allocine
-) -> iter:  # type: ignore [valid-type]
+) -> Iterator:
     api_response = get_movies_showtimes_from_api(api_key, theater_id)
     movies_showtimes = api_response["movieShowtimeList"]["edges"]
     movies_number = api_response["movieShowtimeList"]["totalCount"]
