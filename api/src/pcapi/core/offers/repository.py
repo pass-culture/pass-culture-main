@@ -482,6 +482,7 @@ def get_offers_map_by_id_at_provider(id_at_provider_list: list[str], venue: offe
 
 def get_offers_map_by_venue_reference(id_at_provider_list: list[str], venue_id: int) -> dict[str, int]:
     offers_map = {}
+    offer_id: int
     for offer_id, offer_id_at_provider in (
         db.session.query(models.Offer.id, models.Offer.idAtProvider)
         .filter(models.Offer.venueId == venue_id, models.Offer.idAtProvider.in_(id_at_provider_list))
@@ -489,7 +490,7 @@ def get_offers_map_by_venue_reference(id_at_provider_list: list[str], venue_id: 
     ):
         offers_map[custom_keys.compute_venue_reference(offer_id_at_provider, venue_id)] = offer_id
 
-    return offers_map  # type: ignore [return-value]
+    return offers_map
 
 
 def get_stocks_by_id_at_providers(id_at_providers: list[str]) -> dict:

@@ -84,7 +84,7 @@ def _build_stock_details_from_raw_stocks(
             products_provider_reference=stock["ref"],
             offers_provider_reference=stock["ref"],
             stocks_provider_reference=stock["ref"] + "@" + venue_siret,
-            venue_reference=compute_venue_reference(stock["ref"], venue_id),  # type: ignore [arg-type]
+            venue_reference=compute_venue_reference(stock["ref"], venue_id),
             available_quantity=stock["available"],
             price=price,
         )
