@@ -5,8 +5,6 @@ from flask_login import current_user
 from flask_login import login_required
 from flask_login import login_user
 from flask_login import logout_user
-from jwt import InvalidTokenError
-import pydantic.v1 as pydantic_v1
 
 from pcapi.core import token as token_utils
 import pcapi.core.mails.transactional as transactional_mails
@@ -101,27 +99,7 @@ def patch_validate_email(body: users_serializers.ChangeProEmailBody) -> None:
         users_api.change_pro_user_email(
             current_email=token.data["current_email"], new_email=token.data["new_email"], user_id=token.user_id
         )
-    except users_exceptions.InvalidToken:
-        # TODO (yacine-pc) this bloc is maintained to support existed tokens, it will be removed in PC-25024
-        try:
-            payload = users_serializers.ChangeEmailTokenContent.from_token(body.token)
-            users_api.change_pro_user_email(
-                current_email=payload.current_email, new_email=payload.new_email, user_id=payload.user_id
-            )
-        except pydantic_v1.ValidationError as exc:
-            errors.add_error("global", "Adresse email invalide")
-            raise errors from exc
-        except InvalidTokenError as exc:
-            errors.add_error("global", "Token invalide")
-            raise errors from exc
-        except users_exceptions.UserDoesNotExist as exc:
-            errors.add_error("global", "Token invalide")
-            raise errors from exc
-        except users_exceptions.EmailExistsError:
-            # Returning an error message might help the end client find
-            # existing email addresses.
-            pass
-    except users_exceptions.UserDoesNotExist as exc:
+    except (users_exceptions.InvalidToken, users_exceptions.UserDoesNotExist) as exc:
         errors.add_error("global", "Token invalide")
         raise errors from exc
     except users_exceptions.EmailExistsError:
