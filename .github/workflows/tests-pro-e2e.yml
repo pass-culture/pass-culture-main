@@ -6,6 +6,11 @@ on:
         type: string
         required: true
 
+env:
+  region: europe-west1
+  tests_docker_image: europe-west1-docker.pkg.dev/passculture-infra-prod/pass-culture-artifact-registry/pcapi-tests:${{ github.sha }}
+        
+
 defaults:
   run:
     working-directory: pro
@@ -17,14 +22,68 @@ permissions:
 jobs:
   tests-pro-e2e-tests:
     name: "E2E tests"
+    env:
+      RUN_ENV: tests
+      DATABASE_URL_TEST: postgresql://pytest:pytest@postgres:5432/pass_culture
+      REDIS_URL: redis://redis:6379
     runs-on: [self-hosted, linux, x64]
+    services:
+      redis:
+        image: redis:7-alpine
+        ports:
+          - 6379:6379
+        options: >-
+          --health-cmd "redis-cli ping"
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+      postgres:
+        image: cimg/postgres:12.9-postgis
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd pg_isready
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+        env:
+          POSTGRES_USER: pytest
+          POSTGRES_PASSWORD: pytest
+          POSTGRES_DB: pass_culture
+
     steps:
       - uses: actions/checkout@v3
       - uses: actions/setup-node@v3
         with:
           node-version-file: "pro/.nvmrc"
-      - name: Run API server
-        run: docker-compose -f ../docker-compose-backend.yml up flask postgres redis --build -d
+      - name: Authentification to Google
+        uses: 'google-github-actions/auth@v1'
+        with:
+          workload_identity_provider: ${{ secrets.GCP_EHP_WORKLOAD_IDENTITY_PROVIDER }}
+          service_account: ${{ secrets.GCP_EHP_SERVICE_ACCOUNT }}
+      - name: Get Secret
+        id: 'secrets'
+        uses: 'google-github-actions/get-secretmanager-secrets@v1'
+        with:
+          secrets: |-
+            INFRA_PROD_GCP_WORKLOAD_IDENTITY_PROVIDER:passculture-metier-ehp/passculture-main-gcp-workload-identity-provider
+            ARTIFACT_REGISTRY_SERVICE_ACCOUNT:passculture-metier-ehp/passculture-main-artifact-registry-service-account
+            SLACK_BOT_TOKEN:passculture-metier-ehp/passculture-ci-slack-bot-token
+
+      - id: openid-auth
+        name: "OpenID Connect Authentication"
+        uses: "google-github-actions/auth@v1"
+        with:
+          create_credentials_file: false
+          token_format: "access_token"
+          workload_identity_provider: ${{ steps.secrets.outputs.INFRA_PROD_GCP_WORKLOAD_IDENTITY_PROVIDER }}
+          service_account: ${{ steps.secrets.outputs.ARTIFACT_REGISTRY_SERVICE_ACCOUNT }}
+      - uses: docker/login-action@v2
+        with:
+          registry: "${{ env.region }}-docker.pkg.dev"
+          username: oauth2accesstoken
+          password: ${{ steps.openid-auth.outputs.access_token }}
+      - run: docker pull ${{ env.tests_docker_image }}
       - name: Wait for migrations to be run
         uses: iFaxity/wait-on-action@v1
         with:
@@ -43,12 +102,6 @@ jobs:
           wait-on: "http://localhost:3001,http://localhost:5001/health/api,http://localhost:5001/health/database"
           wait-on-timeout: 600
           working-directory: pro
-      - name: "OpenID Connect Authentication"
-        if: always()
-        uses: "google-github-actions/auth@v1"
-        with:
-          workload_identity_provider: ${{ secrets.GCP_EHP_WORKLOAD_IDENTITY_PROVIDER }}
-          service_account: ${{ secrets.GCP_EHP_SERVICE_ACCOUNT }}
       - name: Archive E2E results
         if: always()
         uses: google-github-actions/upload-cloud-storage@v1
