@@ -20,6 +20,8 @@ import pcapi.core.providers.exceptions as providers_exceptions
 import pcapi.core.providers.models as providers_models
 import pcapi.core.providers.repository as providers_repository
 import pcapi.core.users.models as users_models
+from pcapi.models import db
+from pcapi.models import feature
 from pcapi.utils import requests
 from pcapi.utils.queue import add_to_queue
 
@@ -28,6 +30,13 @@ from . import serialize
 
 
 logger = logging.getLogger(__name__)
+
+EXTERNAL_BOOKINGS_FF = (
+    feature.FeatureToggle.DISABLE_BOOST_EXTERNAL_BOOKINGS,
+    feature.FeatureToggle.DISABLE_CDS_EXTERNAL_BOOKINGS,
+    feature.FeatureToggle.DISABLE_CGR_EXTERNAL_BOOKINGS,
+    feature.FeatureToggle.DISABLE_EMS_EXTERNAL_BOOKINGS,
+)
 
 
 def get_shows_stock(venue_id: int, shows_id: list[int]) -> dict[int, int]:
@@ -50,6 +59,13 @@ def book_cinema_ticket(
 ) -> list[external_bookings_models.Ticket]:
     client = _get_external_bookings_client_api(venue_id)
     return client.book_ticket(show_id, booking, beneficiary)
+
+
+def disable_external_bookings() -> None:
+    feature.Feature.query.filter(feature.Feature.name.in_(EXTERNAL_BOOKINGS_FF)).update(
+        {"isActive": True}, synchronize_session=False
+    )
+    db.session.commit()
 
 
 def _get_external_bookings_client_api(venue_id: int) -> external_bookings_models.ExternalBookingsClientAPI:
