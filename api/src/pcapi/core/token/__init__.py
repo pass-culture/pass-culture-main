@@ -160,7 +160,7 @@ class SixDigitsToken(AbstractToken):
         return f"pcapi:token:data:{type_.value}_{user_id}"
 
     @classmethod
-    def load_without_checking(  # type: ignore [override]
+    def load_without_checking(
         cls,
         encoded_token: str,
         type_: TokenType,
