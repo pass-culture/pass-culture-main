@@ -8,7 +8,6 @@ import pcapi.core.token as token_utils
 from pcapi.core.users import api as users_api
 from pcapi.core.users import exceptions as users_exceptions
 from pcapi.core.users import models as users_models
-from pcapi.core.users import repository as users_repo
 from pcapi.core.users.api import update_password_and_external_user
 from pcapi.core.users.repository import find_user_by_email
 from pcapi.domain.password import check_password_strength
@@ -62,11 +61,8 @@ def post_new_password(body: NewPasswordBodyModel) -> None:
         token.expire()
         user = users_models.User.query.get(token.user_id)
     except users_exceptions.InvalidToken:
-        try:
-            user = users_repo.get_user_with_valid_token(token_value, [users_models.TokenType.RESET_PASSWORD])
-        except users_exceptions.InvalidToken:
-            errors = ApiErrors()
-            errors.add_error("token", "Votre lien de changement de mot de passe est invalide.")
-            raise errors
+        errors = ApiErrors()
+        errors.add_error("token", "Votre lien de changement de mot de passe est invalide.")
+        raise errors
 
     update_password_and_external_user(user, new_password)
