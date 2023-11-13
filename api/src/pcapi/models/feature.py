@@ -62,9 +62,6 @@ class FeatureToggle(enum.Enum):
     ENABLE_NATIVE_CULTURAL_SURVEY = (
         "Active le Questionnaire des pratiques initiales natif (non TypeForm) sur l'app native et décli web"
     )
-    ENABLE_NATIVE_ID_CHECK_VERBOSE_DEBUGGING = (
-        "Active le mode debug Firebase pour l'Id Check intégrée à l'application native"
-    )
     ENABLE_PHONE_VALIDATION = "Active la validation du numéro de téléphone"
     ENABLE_PRO_ACCOUNT_CREATION = "Permettre l'inscription des comptes professionels"
     ENABLE_PRO_BOOKINGS_V2 = "Activer l'affichage de la page booking avec la nouvelle architecture."
@@ -170,7 +167,6 @@ FEATURES_DISABLED_BY_DEFAULT: tuple[FeatureToggle, ...] = (
     FeatureToggle.ENABLE_EMS_INTEGRATION,
     FeatureToggle.ENABLE_FRONT_IMAGE_RESIZING,
     FeatureToggle.ENABLE_IOS_OFFERS_LINK_WITH_REDIRECTION,
-    FeatureToggle.ENABLE_NATIVE_ID_CHECK_VERBOSE_DEBUGGING,
     FeatureToggle.ENABLE_PRO_BOOKINGS_V2,
     FeatureToggle.ENABLE_UBBLE_SUBSCRIPTION_LIMITATION,
     FeatureToggle.ID_CHECK_ADDRESS_AUTOCOMPLETION,
