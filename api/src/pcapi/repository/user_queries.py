@@ -1,6 +1,6 @@
-from sqlalchemy import Column
+from sqlalchemy import Boolean
 from sqlalchemy import func
-from sqlalchemy.sql.elements import BinaryExpression
+from sqlalchemy.sql.elements import ColumnElement
 from sqlalchemy.sql.functions import Function
 
 from pcapi.core.users.models import User
@@ -20,8 +20,8 @@ def find_by_validation_token(token: str) -> User:
     return User.query.filter_by(validationToken=token).one_or_none()
 
 
-def matching(column: Column, search_value: str) -> BinaryExpression:
-    return _sanitized_string(column) == _sanitized_string(search_value)  # type: ignore [arg-type, return-value]
+def matching(column: str, search_value: str) -> ColumnElement[Boolean]:
+    return _sanitized_string(column) == _sanitized_string(search_value)
 
 
 def _sanitized_string(value: str) -> Function:
