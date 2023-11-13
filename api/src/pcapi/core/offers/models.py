@@ -169,7 +169,7 @@ class Stock(PcObject, Base, Model, ProvidableMixin, SoftDeletableMixin):
     MAX_STOCK_QUANTITY = 1_000_000
 
     activationCodes: sa_orm.Mapped["ActivationCode"] = sa.orm.relationship("ActivationCode", back_populates="stock")
-    beginningDatetime = sa.Column(sa.DateTime, nullable=True)
+    beginningDatetime: datetime.datetime | None = sa.Column(sa.DateTime, nullable=True)
     bookingLimitDatetime = sa.Column(sa.DateTime, nullable=True)
     dateCreated: datetime.datetime = sa.Column(
         sa.DateTime, nullable=False, default=datetime.datetime.utcnow, server_default=sa.func.now()

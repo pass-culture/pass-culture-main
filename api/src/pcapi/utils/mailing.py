@@ -42,6 +42,8 @@ def get_event_datetime(stock: CollectiveStock | Stock) -> datetime:
         departement_code = stock.collectiveOffer.venue.departementCode
     if departement_code is not None:
         date_in_utc = stock.beginningDatetime
+        if date_in_utc is None:
+            raise ValueError("Can't convert None to local timezone")
         date_in_tz = utc_datetime_to_department_timezone(date_in_utc, departement_code)
     else:
         date_in_tz = stock.beginningDatetime  # type: ignore [assignment]

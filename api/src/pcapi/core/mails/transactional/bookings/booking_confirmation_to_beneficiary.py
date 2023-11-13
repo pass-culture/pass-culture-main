@@ -46,6 +46,8 @@ def get_booking_confirmation_to_beneficiary_email_data(
     stock_price = f"{booking.total_amount} €" if stock.price > 0 else "Gratuit"
 
     if offer.isEvent:
+        if stock.beginningDatetime is None:
+            raise ValueError("Can't convert None to local timezone")
         event_beginning_date_in_tz = utc_datetime_to_department_timezone(stock.beginningDatetime, department_code)
         formatted_event_beginning_time = get_time_formatted_for_email(event_beginning_date_in_tz)
         formatted_event_beginning_date = get_date_formatted_for_email(event_beginning_date_in_tz)
