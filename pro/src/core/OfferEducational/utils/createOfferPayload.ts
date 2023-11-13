@@ -55,32 +55,34 @@ export const createCollectiveOfferPayload = (
   isTemplate: boolean,
   offerTemplateId?: number,
   isFormatActive?: boolean
-): PostCollectiveOfferTemplateBodyModel => ({
-  venueId: Number(offer.venueId),
-  subcategoryId: isFormatActive ? null : offer.subCategory,
-  name: offer.title,
-  bookingEmails: offer.notificationEmails,
-  description: offer.description,
-  durationMinutes: parseDuration(offer.duration),
-  ...disabilityCompliances(offer.accessibility),
-  students: serializeParticipants(offer.participants),
-  offerVenue: {
-    ...offer.eventAddress,
-    venueId: Number(offer.eventAddress.venueId),
-  },
-  contactEmail: offer.email,
-  contactPhone: offer.phone,
-  domains: offer.domains.map((domainIdString) => Number(domainIdString)),
-  interventionArea:
-    offer.eventAddress.addressType === OfferAddressType.OFFERER_VENUE
-      ? []
-      : offer.interventionArea,
-  templateId: offerTemplateId,
-  priceDetail: isTemplate ? offer.priceDetail : undefined,
-  nationalProgramId: Number(offer.nationalProgramId),
-  dates:
-    offer.beginningDate && offer.endingDate
-      ? serializeDates(offer.beginningDate, offer.endingDate, offer.hour)
-      : undefined,
-  formats: isFormatActive ? offer.formats : null,
-})
+): PostCollectiveOfferTemplateBodyModel => {
+  return {
+    venueId: Number(offer.venueId),
+    subcategoryId: isFormatActive ? null : offer.subCategory,
+    name: offer.title,
+    bookingEmails: offer.notificationEmails,
+    description: offer.description,
+    durationMinutes: parseDuration(offer.duration),
+    ...disabilityCompliances(offer.accessibility),
+    students: serializeParticipants(offer.participants),
+    offerVenue: {
+      ...offer.eventAddress,
+      venueId: Number(offer.eventAddress.venueId),
+    },
+    contactEmail: offer.email,
+    contactPhone: offer.phone,
+    domains: offer.domains.map((domainIdString) => Number(domainIdString)),
+    interventionArea:
+      offer.eventAddress.addressType === OfferAddressType.OFFERER_VENUE
+        ? []
+        : offer.interventionArea,
+    templateId: offerTemplateId,
+    priceDetail: isTemplate ? offer.priceDetail : undefined,
+    nationalProgramId: Number(offer.nationalProgramId),
+    dates:
+      isTemplate && offer.beginningDate && offer.endingDate
+        ? serializeDates(offer.beginningDate, offer.endingDate, offer.hour)
+        : undefined,
+    formats: isFormatActive ? offer.formats : null,
+  }
+}
