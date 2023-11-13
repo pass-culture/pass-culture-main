@@ -108,7 +108,6 @@ class FeatureToggle(enum.Enum):
     WIP_ENABLE_REMINDER_MARKETING_MAIL_METADATA_DISPLAY = "Changer le template d'email de confirmation de réservation"
     WIP_ENABLE_TRUSTED_DEVICE = "Active la fonctionnalité d'appareil de confiance"
     WIP_ENABLE_SUSPICIOUS_EMAIL_SEND = "Active l'envoie d'email lors de la détection d'une connexion suspicieuse"
-    WIP_EAC_ENABLE_NEW_AUTHENTICATION_PUBLIC_API = "Active la gestion des providers dans l'api publique EAC"
     WIP_ENABLE_COLLECTIVE_REQUEST = "Active la demande de création d'offre collective de la part des utilisateurs adage"
     WIP_ENABLE_COOKIES_BANNER = "Active la nouvelle bannière de cookies"
     WIP_ENABLE_SATISFACTION_SURVEY = "Activer l'affichage du questionnaire de satisfaction adage"
@@ -181,7 +180,6 @@ FEATURES_DISABLED_BY_DEFAULT: tuple[FeatureToggle, ...] = (
     FeatureToggle.SYNCHRONIZE_TITELIVE_API_MUSIC_PRODUCTS,
     FeatureToggle.ENABLE_SWITCH_ALLOCINE_SYNC_TO_EMS_SYNC,
     FeatureToggle.WIP_CATEGORY_SELECTION,
-    FeatureToggle.WIP_EAC_ENABLE_NEW_AUTHENTICATION_PUBLIC_API,
     FeatureToggle.WIP_ENABLE_ADAGE_GEO_LOCATION,
     FeatureToggle.WIP_ENABLE_BOOST_PREFIXED_EXTERNAL_BOOKING,
     FeatureToggle.WIP_ENABLE_COLLECTIVE_REQUEST,
