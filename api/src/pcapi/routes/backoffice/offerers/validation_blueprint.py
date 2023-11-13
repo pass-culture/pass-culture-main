@@ -34,7 +34,7 @@ validation_blueprint = utils.child_backoffice_blueprint(
     "validation",
     __name__,
     url_prefix="/pro/validation",
-    permission=perm_models.Permissions.VALIDATE_OFFERER,
+    permission=perm_models.Permissions.READ_PRO_ENTITY,
 )
 
 
@@ -100,6 +100,7 @@ def list_offerers_to_validate() -> utils.BackofficeResponse:
 
 
 @validation_blueprint.route("/offerer/<int:offerer_id>/validate", methods=["POST"])
+@utils.permission_required(perm_models.Permissions.VALIDATE_OFFERER)
 def validate_offerer(offerer_id: int) -> utils.BackofficeResponse:
     offerer = offerers_models.Offerer.query.get_or_404(offerer_id)
 
@@ -114,6 +115,7 @@ def validate_offerer(offerer_id: int) -> utils.BackofficeResponse:
 
 
 @validation_blueprint.route("/offerer/<int:offerer_id>/reject", methods=["GET"])
+@utils.permission_required(perm_models.Permissions.VALIDATE_OFFERER)
 def get_reject_offerer_form(offerer_id: int) -> utils.BackofficeResponse:
     offerer = offerers_models.Offerer.query.get_or_404(offerer_id)
 
@@ -130,6 +132,7 @@ def get_reject_offerer_form(offerer_id: int) -> utils.BackofficeResponse:
 
 
 @validation_blueprint.route("/offerer/<int:offerer_id>/reject", methods=["POST"])
+@utils.permission_required(perm_models.Permissions.VALIDATE_OFFERER)
 def reject_offerer(offerer_id: int) -> utils.BackofficeResponse:
     offerer = offerers_models.Offerer.query.get_or_404(offerer_id)
 
@@ -149,6 +152,7 @@ def reject_offerer(offerer_id: int) -> utils.BackofficeResponse:
 
 
 @validation_blueprint.route("/offerer/<int:offerer_id>/pending", methods=["GET"])
+@utils.permission_required(perm_models.Permissions.VALIDATE_OFFERER)
 def get_offerer_pending_form(offerer_id: int) -> utils.BackofficeResponse:
     offerer = offerers_models.Offerer.query.get_or_404(offerer_id)
 
@@ -165,6 +169,7 @@ def get_offerer_pending_form(offerer_id: int) -> utils.BackofficeResponse:
 
 
 @validation_blueprint.route("/offerer/<int:offerer_id>/pending", methods=["POST"])
+@utils.permission_required(perm_models.Permissions.VALIDATE_OFFERER)
 def set_offerer_pending(offerer_id: int) -> utils.BackofficeResponse:
     offerer = offerers_models.Offerer.query.get_or_404(offerer_id)
 
@@ -187,6 +192,7 @@ def set_offerer_pending(offerer_id: int) -> utils.BackofficeResponse:
 
 
 @validation_blueprint.route("/offerer/<int:offerer_id>/top-actor", methods=["POST"])
+@utils.permission_required(perm_models.Permissions.VALIDATE_OFFERER)
 def toggle_top_actor(offerer_id: int) -> utils.BackofficeResponse:
     offerer = offerers_models.Offerer.query.get_or_404(offerer_id)
 
@@ -255,6 +261,7 @@ def _offerer_batch_action(
 
 
 @validation_blueprint.route("/offerer/batch-validate", methods=["POST"])
+@utils.permission_required(perm_models.Permissions.VALIDATE_OFFERER)
 def batch_validate_offerer() -> utils.BackofficeResponse:
     try:
         return _offerer_batch_action(
@@ -268,6 +275,7 @@ def batch_validate_offerer() -> utils.BackofficeResponse:
 
 
 @validation_blueprint.route("/offerer/batch-pending-form", methods=["GET", "POST"])
+@utils.permission_required(perm_models.Permissions.VALIDATE_OFFERER)
 def get_batch_offerer_pending_form() -> utils.BackofficeResponse:
     form = offerer_forms.BatchCommentAndTagOffererForm()
     if form.object_ids.data:
@@ -301,6 +309,7 @@ def get_batch_offerer_pending_form() -> utils.BackofficeResponse:
 
 
 @validation_blueprint.route("/offerer/batch-pending", methods=["POST"])
+@utils.permission_required(perm_models.Permissions.VALIDATE_OFFERER)
 def batch_set_offerer_pending() -> utils.BackofficeResponse:
     return _offerer_batch_action(
         offerers_api.set_offerer_pending,
@@ -310,6 +319,7 @@ def batch_set_offerer_pending() -> utils.BackofficeResponse:
 
 
 @validation_blueprint.route("/offerer/batch-reject-form", methods=["GET"])
+@utils.permission_required(perm_models.Permissions.VALIDATE_OFFERER)
 def get_batch_reject_offerer_form() -> utils.BackofficeResponse:
     form = offerer_forms.BatchOptionalCommentForm()
     return render_template(
@@ -323,6 +333,7 @@ def get_batch_reject_offerer_form() -> utils.BackofficeResponse:
 
 
 @validation_blueprint.route("/offerer/batch-reject", methods=["POST"])
+@utils.permission_required(perm_models.Permissions.VALIDATE_OFFERER)
 def batch_reject_offerer() -> utils.BackofficeResponse:
     try:
         return _offerer_batch_action(
@@ -463,6 +474,7 @@ def _load_user_offerer(user_offerer_id: int) -> offerers_models.UserOfferer:
 
 
 @validation_blueprint.route("/user-offerer/<int:user_offerer_id>/validate", methods=["POST"])
+@utils.permission_required(perm_models.Permissions.VALIDATE_OFFERER)
 def validate_user_offerer(user_offerer_id: int) -> utils.BackofficeResponse:
     user_offerer = _load_user_offerer(user_offerer_id)
 
@@ -483,6 +495,7 @@ def validate_user_offerer(user_offerer_id: int) -> utils.BackofficeResponse:
 
 
 @validation_blueprint.route("/user-offerer/batch-reject", methods=["GET"])
+@utils.permission_required(perm_models.Permissions.VALIDATE_OFFERER)
 def get_batch_reject_user_offerer_form() -> utils.BackofficeResponse:
     form = offerer_forms.BatchOptionalCommentForm()
     return render_template(
@@ -496,6 +509,7 @@ def get_batch_reject_user_offerer_form() -> utils.BackofficeResponse:
 
 
 @validation_blueprint.route("/user-offerer/batch-pending", methods=["GET"])
+@utils.permission_required(perm_models.Permissions.VALIDATE_OFFERER)
 def get_batch_user_offerer_pending_form() -> utils.BackofficeResponse:
     form = offerer_forms.BatchOptionalCommentForm()
     return render_template(
@@ -509,6 +523,7 @@ def get_batch_user_offerer_pending_form() -> utils.BackofficeResponse:
 
 
 @validation_blueprint.route("/user-offerer/<int:user_offerer_id>/reject", methods=["GET"])
+@utils.permission_required(perm_models.Permissions.VALIDATE_OFFERER)
 def get_reject_user_offerer_form(user_offerer_id: int) -> utils.BackofficeResponse:
     user_offerer = _load_user_offerer(user_offerer_id)
 
@@ -525,6 +540,7 @@ def get_reject_user_offerer_form(user_offerer_id: int) -> utils.BackofficeRespon
 
 
 @validation_blueprint.route("/user-offerer/<int:user_offerer_id>/reject", methods=["POST"])
+@utils.permission_required(perm_models.Permissions.VALIDATE_OFFERER)
 def reject_user_offerer(user_offerer_id: int) -> utils.BackofficeResponse:
     user_offerer = _load_user_offerer(user_offerer_id)
 
@@ -543,6 +559,7 @@ def reject_user_offerer(user_offerer_id: int) -> utils.BackofficeResponse:
 
 
 @validation_blueprint.route("/user-offerer/<int:user_offerer_id>/pending", methods=["GET"])
+@utils.permission_required(perm_models.Permissions.VALIDATE_OFFERER)
 def get_user_offerer_pending_form(user_offerer_id: int) -> utils.BackofficeResponse:
     user_offerer = _load_user_offerer(user_offerer_id)
 
@@ -559,6 +576,7 @@ def get_user_offerer_pending_form(user_offerer_id: int) -> utils.BackofficeRespo
 
 
 @validation_blueprint.route("/user-offerer/<int:user_offerer_id>/pending", methods=["POST"])
+@utils.permission_required(perm_models.Permissions.VALIDATE_OFFERER)
 def set_user_offerer_pending(user_offerer_id: int) -> utils.BackofficeResponse:
     user_offerer = _load_user_offerer(user_offerer_id)
 
@@ -597,6 +615,7 @@ def _user_offerer_batch_action(
 
 
 @validation_blueprint.route("/user-offerer/batch-pending", methods=["POST"])
+@utils.permission_required(perm_models.Permissions.VALIDATE_OFFERER)
 def batch_set_user_offerer_pending() -> utils.BackofficeResponse:
     return _user_offerer_batch_action(
         offerers_api.set_offerer_attachment_pending, "Les rattachements ont été mis en attente avec succès"
@@ -604,6 +623,7 @@ def batch_set_user_offerer_pending() -> utils.BackofficeResponse:
 
 
 @validation_blueprint.route("/user-offerer/batch-reject", methods=["POST"])
+@utils.permission_required(perm_models.Permissions.VALIDATE_OFFERER)
 def batch_reject_user_offerer() -> utils.BackofficeResponse:
     try:
         return _user_offerer_batch_action(
@@ -615,6 +635,7 @@ def batch_reject_user_offerer() -> utils.BackofficeResponse:
 
 
 @validation_blueprint.route("/user-offerer/batch-validate", methods=["POST"])
+@utils.permission_required(perm_models.Permissions.VALIDATE_OFFERER)
 def batch_validate_user_offerer() -> utils.BackofficeResponse:
     try:
         return _user_offerer_batch_action(

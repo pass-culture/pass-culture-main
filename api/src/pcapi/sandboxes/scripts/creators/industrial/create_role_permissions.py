@@ -73,7 +73,11 @@ ROLE_PERMISSIONS: dict[str, list[perm_models.Permissions]] = {
         perm_models.Permissions.READ_OFFERS,
         perm_models.Permissions.MULTIPLE_OFFERS_ACTIONS,
     ],
-    "homologation": [],
+    "homologation": [
+        perm_models.Permissions.READ_PRO_ENTITY,
+        perm_models.Permissions.MANAGE_PRO_ENTITY,
+        perm_models.Permissions.VALIDATE_OFFERER,
+    ],
     "product_management": [
         perm_models.Permissions.FEATURE_FLIPPING,
     ],
