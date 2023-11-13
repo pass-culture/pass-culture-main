@@ -98,7 +98,11 @@ ROLE_PERMISSIONS: dict[str, list[perm_models.Permissions]] = {
         perm_models.Permissions.READ_OFFERS,
         perm_models.Permissions.MULTIPLE_OFFERS_ACTIONS,
     ],
-    "homologation": [],
+    "homologation": [
+        perm_models.Permissions.READ_PRO_ENTITY,
+        perm_models.Permissions.MANAGE_PRO_ENTITY,
+        perm_models.Permissions.VALIDATE_OFFERER,
+    ],
     "product_management": [perm_models.Permissions.FEATURE_FLIPPING],
     "charge_developpement": [],
     "lecture_seule": [
@@ -176,6 +180,15 @@ def legit_user_fixture(roles_with_permissions: None) -> users_models.User:
 @pytest.fixture(scope="function", name="authenticated_client")
 def authenticated_client_fixture(client, legit_user) -> "TestClient":
     return client.with_bo_session_auth(legit_user)
+
+
+@pytest.fixture(scope="function", name="read_only_bo_user")
+def read_only_bo_user_fixture(roles_with_permissions: None) -> users_models.User:
+    user = users_factories.UserFactory(roles=["ADMIN"])
+    user.backoffice_profile = perm_models.BackOfficeUserProfile(user=user)
+    backoffice_api.upsert_roles(user, {perm_models.Roles.LECTURE_SEULE})
+    db.session.commit()
+    return user
 
 
 @pytest.fixture(name="offerer")
