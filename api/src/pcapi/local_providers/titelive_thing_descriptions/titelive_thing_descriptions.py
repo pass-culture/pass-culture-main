@@ -74,7 +74,7 @@ class TiteLiveThingDescriptions(LocalProvider):
 
         self.date_modified = read_description_date(str(new_file_date))
 
-    def get_remaining_files_to_check(self, all_zips) -> iter:  # type: ignore [no-untyped-def, valid-type]
+    def get_remaining_files_to_check(self, all_zips: list[str]) -> Iterator:
         latest_sync_part_end_event = providers_repository.find_latest_sync_part_end_event(self.provider)
 
         if latest_sync_part_end_event is None:
