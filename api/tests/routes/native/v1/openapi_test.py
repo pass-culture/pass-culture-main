@@ -1268,10 +1268,6 @@ def test_public_api(client):
                         "displayDmsRedirection": {"title": "Displaydmsredirection", "type": "boolean"},
                         "enableFrontImageResizing": {"title": "Enablefrontimageresizing", "type": "boolean"},
                         "enableNativeCulturalSurvey": {"title": "Enablenativeculturalsurvey", "type": "boolean"},
-                        "enableNativeIdCheckVerboseDebugging": {
-                            "title": "Enablenativeidcheckverbosedebugging",
-                            "type": "boolean",
-                        },
                         "enablePhoneValidation": {"title": "Enablephonevalidation", "type": "boolean"},
                         "idCheckAddressAutocompletion": {"title": "Idcheckaddressautocompletion", "type": "boolean"},
                         "isRecaptchaEnabled": {"title": "Isrecaptchaenabled", "type": "boolean"},
@@ -1283,7 +1279,6 @@ def test_public_api(client):
                         "displayDmsRedirection",
                         "enableFrontImageResizing",
                         "enableNativeCulturalSurvey",
-                        "enableNativeIdCheckVerboseDebugging",
                         "enablePhoneValidation",
                         "idCheckAddressAutocompletion",
                         "isRecaptchaEnabled",
