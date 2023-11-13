@@ -12,12 +12,10 @@ from pcapi.core.educational.models import CollectiveOfferTemplate
 import pcapi.core.offerers.factories as offerers_factories
 from pcapi.core.offers.models import OfferValidationStatus
 
-from tests.conftest import TestClient
-
 
 @pytest.mark.usefixtures("db_session")
 class Returns204Test:
-    def when_activating_all_existing_offers(self, app):
+    def when_activating_all_existing_offers(self, client):
         # Given
         offer1 = CollectiveOfferFactory(isActive=False)
         venue = offer1.venue
@@ -27,7 +25,7 @@ class Returns204Test:
         offerers_factories.UserOffererFactory(user__email="pro@example.com", offerer=offerer)
 
         # When
-        client = TestClient(app.test_client()).with_session_auth("pro@example.com")
+        client = client.with_session_auth("pro@example.com")
         data = {"isActive": True, "page": 1, "venueId": venue.id}
         with patch("pcapi.routes.pro.collective_offers.offerers_api.can_offerer_create_educational_offer"):
             response = client.patch("/collective/offers/all-active-status", json=data)
@@ -38,7 +36,7 @@ class Returns204Test:
         assert CollectiveOffer.query.get(offer2.id).isActive
         assert CollectiveOfferTemplate.query.get(offer3.id).isActive
 
-    def when_deactivating_all_existing_offers(self, app):
+    def when_deactivating_all_existing_offers(self, client):
         # Given
         offer1 = CollectiveOfferFactory()
         venue = offer1.venue
@@ -48,7 +46,7 @@ class Returns204Test:
         offerers_factories.UserOffererFactory(user__email="pro@example.com", offerer=offerer)
 
         # When
-        client = TestClient(app.test_client()).with_session_auth("pro@example.com")
+        client = client.with_session_auth("pro@example.com")
         data = {"isActive": False}
         with patch("pcapi.routes.pro.collective_offers.offerers_api.can_offerer_create_educational_offer"):
             response = client.patch("/collective/offers/all-active-status", json=data)
@@ -59,7 +57,7 @@ class Returns204Test:
         assert not CollectiveOffer.query.get(offer2.id).isActive
         assert not CollectiveOfferTemplate.query.get(offer3.id).isActive
 
-    def should_update_offers_by_given_filters(self, app):
+    def should_update_offers_by_given_filters(self, client):
         # Given
         user_offerer = offerers_factories.UserOffererFactory()
         venue = offerers_factories.VenueFactory(managingOfferer=user_offerer.offerer)
@@ -84,7 +82,7 @@ class Returns204Test:
             "periodBeginningDate": "2020-10-09T00:00:00Z",
             "periodEndingDate": "2020-10-11T23:59:59Z",
         }
-        client = TestClient(app.test_client()).with_session_auth(user_offerer.user.email)
+        client = client.with_session_auth(user_offerer.user.email)
 
         # When
         with patch("pcapi.routes.pro.collective_offers.offerers_api.can_offerer_create_educational_offer"):
@@ -98,7 +96,7 @@ class Returns204Test:
         assert CollectiveOffer.query.get(offer_on_other_venue.id).isActive
         assert CollectiveOffer.query.get(offer_with_not_matching_name.id).isActive
 
-    def test_only_approved_offers_patch(self, app):
+    def test_only_approved_offers_patch(self, client):
         approved_offer = CollectiveOfferFactory(isActive=False)
         venue = approved_offer.venue
         pending_offer = CollectiveOfferFactory(venue=venue, validation=OfferValidationStatus.PENDING)
@@ -106,7 +104,7 @@ class Returns204Test:
         offerer = venue.managingOfferer
         offerers_factories.UserOffererFactory(user__email="pro@example.com", offerer=offerer)
 
-        client = TestClient(app.test_client()).with_session_auth("pro@example.com")
+        client = client.with_session_auth("pro@example.com")
         data = {"isActive": True, "page": 1, "venueId": venue.id}
         with patch("pcapi.routes.pro.collective_offers.offerers_api.can_offerer_create_educational_offer"):
             response = client.patch("/collective/offers/all-active-status", json=data)

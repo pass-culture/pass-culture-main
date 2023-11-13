@@ -15,31 +15,27 @@ import pcapi.core.users.factories as users_factories
 from pcapi.repository import repository
 from pcapi.utils.human_ids import humanize
 
-from tests.conftest import TestClient
-
 
 @pytest.mark.usefixtures("db_session")
 class Returns403Test:
-    def test_access_by_beneficiary(self, app):
+    def test_access_by_beneficiary(self, client):
         # Given
         beneficiary = users_factories.BeneficiaryGrant18Factory()
         offer = offers_factories.ThingOfferFactory(venue__latitude=None, venue__longitude=None)
 
         # When
-        client = TestClient(app.test_client()).with_session_auth(email=beneficiary.email)
-        response = client.get(f"/offers/{offer.id}")
+        response = client.with_session_auth(email=beneficiary.email).get(f"/offers/{offer.id}")
 
         # Then
         assert response.status_code == 403
 
-    def test_access_by_unauthorized_pro_user(self, app):
+    def test_access_by_unauthorized_pro_user(self, client):
         # Given
         pro_user = users_factories.ProFactory()
         offer = offers_factories.ThingOfferFactory(venue__latitude=None, venue__longitude=None)
 
         # When
-        client = TestClient(app.test_client()).with_session_auth(email=pro_user.email)
-        response = client.get(f"/offers/{offer.id}")
+        response = client.with_session_auth(email=pro_user.email).get(f"/offers/{offer.id}")
 
         # Then
         assert response.status_code == 403
@@ -47,7 +43,7 @@ class Returns403Test:
 
 @pytest.mark.usefixtures("db_session")
 class Returns200Test:
-    def test_access_by_pro_user(self, app):
+    def test_access_by_pro_user(self, client):
         # Given
         user_offerer = offerers_factories.UserOffererFactory()
         offer = offers_factories.ThingOfferFactory(
@@ -55,8 +51,7 @@ class Returns200Test:
         )
 
         # When
-        client = TestClient(app.test_client()).with_session_auth(email=user_offerer.user.email)
-        response = client.get(f"/offers/{offer.id}")
+        response = client.with_session_auth(email=user_offerer.user.email).get(f"/offers/{offer.id}")
 
         # Then
         response_json = response.json
@@ -81,7 +76,7 @@ class Returns200Test:
         with testing.assert_no_duplicated_queries():
             client.get(f"/offers/{offer.id}")
 
-    def test_access_even_if_offerer_has_no_siren(self, app):
+    def test_access_even_if_offerer_has_no_siren(self, client):
         # Given
         user_offerer = offerers_factories.UserOffererFactory()
         offer = offers_factories.ThingOfferFactory(
@@ -90,13 +85,12 @@ class Returns200Test:
         )
 
         # When
-        client = TestClient(app.test_client()).with_session_auth(email=user_offerer.user.email)
-        response = client.get(f"/offers/{offer.id}")
+        response = client.with_session_auth(email=user_offerer.user.email).get(f"/offers/{offer.id}")
 
         # Then
         assert response.status_code == 200
 
-    def test_returns_an_active_mediation(self, app):
+    def test_returns_an_active_mediation(self, client):
         # Given
         user_offerer = offerers_factories.UserOffererFactory()
         offer = offers_factories.ThingOfferFactory(venue__managingOfferer=user_offerer.offerer)
@@ -104,15 +98,14 @@ class Returns200Test:
         mediation = offers_factories.MediationFactory(offer=offer)
 
         # When
-        client = TestClient(app.test_client()).with_session_auth(email=user_offerer.user.email)
-        response = client.get(f"/offers/{offer.id}")
+        response = client.with_session_auth(email=user_offerer.user.email).get(f"/offers/{offer.id}")
 
         # Then
         assert response.status_code == 200
         assert f"/thumbs/mediations/{humanize(mediation.id)}" in response.json["activeMediation"]["thumbUrl"]
 
     @freeze_time("2020-10-15 00:00:00")
-    def test_returns_an_event_stock(self, app):
+    def test_returns_an_event_stock(self, client):
         # Given
         now = datetime.utcnow()
         user_offerer = offerers_factories.UserOffererFactory(
@@ -155,8 +148,7 @@ class Returns200Test:
         finance_factories.BankInformationFactory(venue=venue)
 
         # When
-        client = TestClient(app.test_client()).with_session_auth(email=user_offerer.user.email)
-        response = client.get(f"/offers/{offer.id}")
+        response = client.with_session_auth(email=user_offerer.user.email).get(f"/offers/{offer.id}")
 
         # Then
         assert response.status_code == 200
@@ -231,7 +223,7 @@ class Returns200Test:
         }
 
     @freeze_time("2019-10-15 00:00:00")
-    def test_returns_a_thing_stock(self, app):
+    def test_returns_a_thing_stock(self, client):
         # Given
         user_offerer = offerers_factories.UserOffererFactory()
         stock = offers_factories.ThingStockFactory(offer__venue__managingOfferer=user_offerer.offerer)
@@ -240,8 +232,7 @@ class Returns200Test:
         repository.save(offer)
 
         # When
-        client = TestClient(app.test_client()).with_session_auth(email=user_offerer.user.email)
-        response = client.get(f"/offers/{offer.id}")
+        response = client.with_session_auth(email=user_offerer.user.email).get(f"/offers/{offer.id}")
 
         # Then
         assert response.status_code == 200
@@ -249,7 +240,7 @@ class Returns200Test:
         assert data["subcategoryId"] == "LIVRE_PAPIER"
 
     @freeze_time("2019-10-15 00:00:00")
-    def test_returns_a_thing_with_activation_code_stock(self, app):
+    def test_returns_a_thing_with_activation_code_stock(self, client):
         # Given
         user_offerer = offerers_factories.UserOffererFactory()
         offer = offers_factories.OfferFactory(
@@ -260,9 +251,7 @@ class Returns200Test:
         )
 
         # When
-        client = TestClient(app.test_client()).with_session_auth(email=user_offerer.user.email)
-
-        response = client.get(f"/offers/{offer.id}")
+        response = client.with_session_auth(email=user_offerer.user.email).get(f"/offers/{offer.id}")
 
         # Then
         assert response.status_code == 200
@@ -271,21 +260,20 @@ class Returns200Test:
         assert data["stocks"][0]["hasActivationCode"] is True
 
     @freeze_time("2020-10-15 00:00:00")
-    def test_should_not_return_soft_deleted_stock(self, app):
+    def test_should_not_return_soft_deleted_stock(self, client):
         # Given
         user_offerer = offerers_factories.UserOffererFactory()
         offer = offers_factories.EventOfferFactory(venue__managingOfferer=user_offerer.offerer)
         deleted_stock = offers_factories.EventStockFactory(offer=offer, isSoftDeleted=True)
 
         # When
-        client = TestClient(app.test_client()).with_session_auth(email=user_offerer.user.email)
-        response = client.get(f"/offers/{deleted_stock.offer.id}")
+        response = client.with_session_auth(email=user_offerer.user.email).get(f"/offers/{deleted_stock.offer.id}")
 
         # Then
         assert response.status_code == 200
         assert len(response.json["stocks"]) == 0
 
-    def test_returns_positive_booking_count(self, app):
+    def test_returns_positive_booking_count(self, client):
         # Given
         user_offerer = offerers_factories.UserOffererFactory()
         offer = offers_factories.EventOfferFactory(venue__managingOfferer=user_offerer.offerer)
@@ -293,8 +281,7 @@ class Returns200Test:
         bookings_factories.BookingFactory.create_batch(2, stock=stock)
 
         # When
-        client = TestClient(app.test_client()).with_session_auth(email=user_offerer.user.email)
-        response = client.get(f"/offers/{offer.id}")
+        response = client.with_session_auth(email=user_offerer.user.email).get(f"/offers/{offer.id}")
 
         # Then
         assert response.status_code == 200

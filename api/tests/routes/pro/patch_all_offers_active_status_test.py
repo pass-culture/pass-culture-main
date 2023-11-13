@@ -8,12 +8,10 @@ from pcapi.core.offers.models import Offer
 from pcapi.core.offers.models import OfferValidationStatus
 from pcapi.core.providers import factories as providers_factories
 
-from tests.conftest import TestClient
-
 
 @pytest.mark.usefixtures("db_session")
 class Returns204Test:
-    def when_activating_all_existing_offers(self, app):
+    def when_activating_all_existing_offers(self, client):
         # Given
         offer1 = offers_factories.OfferFactory(isActive=False)
         venue = offer1.venue
@@ -22,7 +20,7 @@ class Returns204Test:
         offerers_factories.UserOffererFactory(user__email="pro@example.com", offerer=offerer)
 
         # When
-        client = TestClient(app.test_client()).with_session_auth("pro@example.com")
+        client = client.with_session_auth("pro@example.com")
         data = {"isActive": True, "page": 1, "venueId": venue.id}
         response = client.patch("/offers/all-active-status", json=data)
 
@@ -31,7 +29,7 @@ class Returns204Test:
         assert Offer.query.get(offer1.id).isActive
         assert Offer.query.get(offer2.id).isActive
 
-    def when_deactivating_all_existing_offers(self, app):
+    def when_deactivating_all_existing_offers(self, client):
         # Given
         offer1 = offers_factories.OfferFactory()
         venue = offer1.venue
@@ -40,7 +38,7 @@ class Returns204Test:
         offerers_factories.UserOffererFactory(user__email="pro@example.com", offerer=offerer)
 
         # When
-        client = TestClient(app.test_client()).with_session_auth("pro@example.com")
+        client = client.with_session_auth("pro@example.com")
         data = {"isActive": False}
         response = client.patch("/offers/all-active-status", json=data)
 
@@ -49,7 +47,7 @@ class Returns204Test:
         assert not Offer.query.get(offer1.id).isActive
         assert not Offer.query.get(offer2.id).isActive
 
-    def should_update_offers_by_given_filters(self, app):
+    def should_update_offers_by_given_filters(self, client):
         # Given
         user_offerer = offerers_factories.UserOffererFactory()
         venue = offerers_factories.VenueFactory(managingOfferer=user_offerer.offerer)
@@ -74,7 +72,7 @@ class Returns204Test:
             "periodBeginningDate": "2020-10-09",
             "periodEndingDate": "2020-10-11",
         }
-        client = TestClient(app.test_client()).with_session_auth(user_offerer.user.email)
+        client = client.with_session_auth(user_offerer.user.email)
 
         # When
         response = client.patch("/offers/all-active-status", json=data)
@@ -87,7 +85,7 @@ class Returns204Test:
         assert Offer.query.get(offer_on_other_venue.id).isActive
         assert Offer.query.get(offer_with_not_matching_name.id).isActive
 
-    def test_only_approved_offers_patch(self, app):
+    def test_only_approved_offers_patch(self, client):
         approved_offer = offers_factories.OfferFactory(isActive=False)
         venue = approved_offer.venue
         pending_offer = offers_factories.OfferFactory(venue=venue, validation=OfferValidationStatus.PENDING)
@@ -95,7 +93,7 @@ class Returns204Test:
         offerer = venue.managingOfferer
         offerers_factories.UserOffererFactory(user__email="pro@example.com", offerer=offerer)
 
-        client = TestClient(app.test_client()).with_session_auth("pro@example.com")
+        client = client.with_session_auth("pro@example.com")
         data = {"isActive": True, "page": 1, "venueId": venue.id}
         response = client.patch("/offers/all-active-status", json=data)
 
@@ -104,7 +102,7 @@ class Returns204Test:
         assert not pending_offer.isActive
         assert not rejected_offer.isActive
 
-    def test_only_offers_from_active_venue_provider_are_activated(self, app):
+    def test_only_offers_from_active_venue_provider_are_activated(self, client):
         venue = offerers_factories.VenueFactory()
         active_venue_provider = providers_factories.VenueProviderFactory(isActive=True, venue=venue)
         inactive_venue_provider = providers_factories.VenueProviderFactory(isActive=False, venue=venue)
@@ -121,7 +119,7 @@ class Returns204Test:
 
         offerers_factories.UserOffererFactory(user__email="pro@example.com", offerer=venue.managingOfferer)
 
-        client = TestClient(app.test_client()).with_session_auth("pro@example.com")
+        client = client.with_session_auth("pro@example.com")
         data = {"isActive": True, "venueId": venue.id}
         response = client.patch("/offers/all-active-status", json=data)
 

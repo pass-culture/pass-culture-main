@@ -7,12 +7,10 @@ from pcapi.core.users import factories as users_factories
 from pcapi.core.users import models as users_models
 from pcapi.utils.date import format_into_utc_date
 
-from tests.conftest import TestClient
-
 
 class Returns200Test:
     @pytest.mark.usefixtures("db_session")
-    def when_user_is_logged_in_and_has_no_deposit(self, app):
+    def when_user_is_logged_in_and_has_no_deposit(self, client):
         user = users_factories.BeneficiaryGrant18Factory(
             civility=users_models.GenderEnum.M.value,
             address=None,
@@ -27,7 +25,7 @@ class Returns200Test:
         )
 
         # When
-        response = TestClient(app.test_client()).with_session_auth(email="toto@example.com").get("/users/current")
+        response = client.with_session_auth(email="toto@example.com").get("/users/current")
 
         # Then
         assert response.status_code == 200
@@ -63,9 +61,9 @@ class Returns200Test:
 
 class Returns401Test:
     @pytest.mark.usefixtures("db_session")
-    def when_user_is_not_logged_in(self, app):
+    def when_user_is_not_logged_in(self, client):
         # When
-        response = TestClient(app.test_client()).get("/users/current")
+        response = client.get("/users/current")
 
         # Then
         assert response.status_code == 401

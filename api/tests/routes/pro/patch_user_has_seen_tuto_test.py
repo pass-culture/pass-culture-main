@@ -2,25 +2,21 @@ import pytest
 
 import pcapi.core.users.factories as users_factories
 
-from tests.conftest import TestClient
-
 
 @pytest.mark.usefixtures("db_session")
-def test_mark_as_seen(app):
+def test_mark_as_seen(client):
     user = users_factories.UserFactory(hasSeenProTutorials=False)
 
-    client = TestClient(app.test_client()).with_session_auth(user.email)
-    response = client.patch("/users/tuto-seen")
+    response = client.with_session_auth(user.email).patch("/users/tuto-seen")
 
     assert response.status_code == 204
     assert user.hasSeenProTutorials is True
 
 
 @pytest.mark.usefixtures("db_session")
-def test_mark_as_seen_without_auth(app):
+def test_mark_as_seen_without_auth(client):
     user = users_factories.UserFactory(hasSeenProTutorials=False)
 
-    client = TestClient(app.test_client())
     response = client.patch("/users/tuto-seen")
 
     assert response.status_code == 401

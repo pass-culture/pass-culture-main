@@ -10,15 +10,13 @@ import pcapi.core.offerers.factories as offerer_factories
 import pcapi.core.providers.factories as providers_factories
 import pcapi.core.users.factories as users_factories
 
-from tests.conftest import TestClient
-
 
 random.seed(12)
 
 
 @pytest.mark.usefixtures("db_session")
 class Returns200Test:
-    def test_one_simple_collective_offer(self, app):
+    def test_one_simple_collective_offer(self, client):
         # Given
         user = users_factories.UserFactory()
         offerer = offerer_factories.OffererFactory()
@@ -32,8 +30,7 @@ class Returns200Test:
         educational_factories.CollectiveStockFactory(collectiveOffer=offer, stockId=1)
 
         # When
-        client = TestClient(app.test_client()).with_session_auth(email=user.email)
-        response = client.get("/collective/offers")
+        response = client.with_session_auth(user.email).get("/collective/offers")
 
         # Then
         response_json = response.json
@@ -76,7 +73,7 @@ class Returns200Test:
         assert response_json[0]["isActive"] is False
         assert response_json[0]["status"] == "INACTIVE"
 
-    def test_get_passed_booking_limit_datetime_not_beginning_datetime(self, app):
+    def test_get_passed_booking_limit_datetime_not_beginning_datetime(self, client):
         # Given
         user = users_factories.UserFactory()
         offerer = offerer_factories.OffererFactory()
@@ -89,8 +86,7 @@ class Returns200Test:
         )
 
         # When
-        client = TestClient(app.test_client()).with_session_auth(email=user.email)
-        response = client.get("/collective/offers?status=INACTIVE")
+        response = client.with_session_auth(user.email).get("/collective/offers?status=INACTIVE")
 
         # Then
         response_json = response.json
@@ -99,7 +95,7 @@ class Returns200Test:
         assert response_json[0]["status"] == "INACTIVE"
         assert response_json[0]["id"] == stock.collectiveOffer.id
 
-    def test_if_collective_offer_is_public_api(self, app):
+    def test_if_collective_offer_is_public_api(self, client):
         # Given
         provider = providers_factories.ProviderFactory()
         user = users_factories.UserFactory()
@@ -110,13 +106,12 @@ class Returns200Test:
         educational_factories.CollectiveOfferFactory(venue=venue, offerId=1, institution=institution, provider=provider)
 
         # When
-        client = TestClient(app.test_client()).with_session_auth(email=user.email)
-        response = client.get("/collective/offers")
+        response = client.with_session_auth(user.email).get("/collective/offers")
 
         # Then
         assert response.status_code == 200
 
-    def test_one_simple_collective_offer_template(self, app):
+    def test_one_simple_collective_offer_template(self, client):
         # Given
         user = users_factories.UserFactory()
         offerer = offerer_factories.OffererFactory()
@@ -125,8 +120,7 @@ class Returns200Test:
         offer = educational_factories.CollectiveOfferTemplateFactory(venue=venue, offerId=1)
 
         # When
-        client = TestClient(app.test_client()).with_session_auth(email=user.email)
-        response = client.get("/collective/offers")
+        response = client.with_session_auth(user.email).get("/collective/offers")
 
         # Then
         response_json = response.json
@@ -140,7 +134,7 @@ class Returns200Test:
         assert response_json[0]["imageCredit"] is None
         assert response_json[0]["imageUrl"] is None
 
-    def test_mix_collective_offer_and_template(self, app):
+    def test_mix_collective_offer_and_template(self, client):
         # Given
         user = users_factories.UserFactory()
         offerer = offerer_factories.OffererFactory()
@@ -165,8 +159,7 @@ class Returns200Test:
         educational_factories.CollectiveStockFactory(collectiveOffer=offer, stockId=1)
 
         # When
-        client = TestClient(app.test_client()).with_session_auth(email=user.email)
-        response = client.get("/collective/offers")
+        response = client.with_session_auth(user.email).get("/collective/offers")
 
         # Then
         response_json = response.json
@@ -210,7 +203,7 @@ class Returns200Test:
         assert response_json[0]["templateId"] == str(template.id)
 
     @pytest.mark.skip(reason="Too long to be played each time")
-    def test_max_offers_limit_mix_template(self, app):
+    def test_max_offers_limit_mix_template(self, client):
         # Given
         offers = []
         user = users_factories.UserFactory()
@@ -232,8 +225,7 @@ class Returns200Test:
             offers.append(offer)
 
         # When
-        client = TestClient(app.test_client()).with_session_auth(email=user.email)
-        response = client.get("/collective/offers")
+        response = client.with_session_auth(user.email).get("/collective/offers")
 
         # Then
         response_json = response.json
@@ -244,7 +236,7 @@ class Returns200Test:
             assert response_json[i]["id"] == offers[-(i + 1)].id
             assert response_json[i]["isShowcase"] != isinstance(offers[-(i + 1)], educational_models.CollectiveOffer)
 
-    def test_mix_collective_offer_and_template_no_user(self, app):
+    def test_mix_collective_offer_and_template_no_user(self, client):
         # Given
         user = users_factories.UserFactory()
         offerer = offerer_factories.OffererFactory()
@@ -258,8 +250,7 @@ class Returns200Test:
         educational_factories.CollectiveStockFactory(collectiveOffer=offer, stockId=1)
 
         # When
-        client = TestClient(app.test_client()).with_session_auth(email=user.email)
-        response = client.get("/collective/offers")
+        response = client.with_session_auth(user.email).get("/collective/offers")
 
         # Then
         response_json = response.json
@@ -267,7 +258,7 @@ class Returns200Test:
         assert isinstance(response_json, list)
         assert len(response_json) == 0
 
-    def test_with_filters(self, app):
+    def test_with_filters(self, client):
         # Given
         user = users_factories.UserFactory()
         offerer = offerer_factories.OffererFactory()
@@ -292,8 +283,9 @@ class Returns200Test:
         )
 
         # When
-        client = TestClient(app.test_client()).with_session_auth(email=user.email)
-        response = client.get("/collective/offers?periodBeginningDate=2022-10-10&periodEndingDate=2022-10-11")
+        response = client.with_session_auth(user.email).get(
+            "/collective/offers?periodBeginningDate=2022-10-10&periodEndingDate=2022-10-11"
+        )
 
         # Then
         response_json = response.json
@@ -302,7 +294,7 @@ class Returns200Test:
         assert len(response_json) == 1
         assert response_json[0]["id"] == offer.id
 
-    def test_select_only_collective_offer(self, app):
+    def test_select_only_collective_offer(self, client):
         # Given
         user = users_factories.UserFactory()
         offerer = offerer_factories.OffererFactory()
@@ -313,8 +305,7 @@ class Returns200Test:
         educational_factories.CollectiveOfferTemplateFactory(venue=venue, offerId=1)
 
         # When
-        client = TestClient(app.test_client()).with_session_auth(email=user.email)
-        response = client.get("/collective/offers?collectiveOfferType=offer")
+        response = client.with_session_auth(user.email).get("/collective/offers?collectiveOfferType=offer")
 
         # Then
         response_json = response.json
@@ -326,7 +317,7 @@ class Returns200Test:
         assert len(response_json[0]["stocks"]) == 1
         assert response_json[0]["isShowcase"] is False
 
-    def test_select_only_collective_offer_template(self, app):
+    def test_select_only_collective_offer_template(self, client):
         # Given
         user = users_factories.UserFactory()
         offerer = offerer_factories.OffererFactory()
@@ -341,8 +332,7 @@ class Returns200Test:
         educational_factories.CollectiveStockFactory(collectiveOffer=offer, stockId=1)
 
         # When
-        client = TestClient(app.test_client()).with_session_auth(email=user.email)
-        response = client.get("/collective/offers?collectiveOfferType=template")
+        response = client.with_session_auth(user.email).get("/collective/offers?collectiveOfferType=template")
 
         # Then
         response_json = response.json
@@ -357,15 +347,14 @@ class Returns200Test:
 
 @pytest.mark.usefixtures("db_session")
 class Return400Test:
-    def test_return_error_when_status_is_wrong(self, app):
+    def test_return_error_when_status_is_wrong(self, client):
         # Given
         user = users_factories.UserFactory()
         offerer = offerer_factories.OffererFactory()
         offerer_factories.UserOffererFactory(user=user, offerer=offerer)
 
         # When
-        client = TestClient(app.test_client()).with_session_auth(email=user.email)
-        response = client.get("/collective/offers?status=NOT_A_VALID_STATUS")
+        response = client.with_session_auth(user.email).get("/collective/offers?status=NOT_A_VALID_STATUS")
 
         # Then
         assert response.status_code == 400

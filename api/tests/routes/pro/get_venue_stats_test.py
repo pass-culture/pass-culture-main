@@ -10,12 +10,10 @@ import pcapi.core.offerers.factories as offerers_factories
 import pcapi.core.users.factories as users_factories
 from pcapi.models.offer_mixin import OfferValidationStatus
 
-from tests.conftest import TestClient
-
 
 class Returns200Test:
     @pytest.mark.usefixtures("db_session")
-    def when_pro_user_has_rights_on_managing_offerer(self, app):
+    def when_pro_user_has_rights_on_managing_offerer(self, client):
         # given
         booking = bookings_factories.BookingFactory()
         bookings_factories.UsedBookingFactory(stock=booking.stock)
@@ -51,7 +49,7 @@ class Returns200Test:
         # active offer
         CollectiveOfferTemplateFactory(venue=venue)
 
-        auth_request = TestClient(app.test_client()).with_session_auth(email=venue_owner.email)
+        auth_request = client.with_session_auth(email=venue_owner.email)
 
         # when
         response = auth_request.get("/venues/%s/stats" % venue.id)
@@ -67,12 +65,12 @@ class Returns200Test:
 
 class Returns403Test:
     @pytest.mark.usefixtures("db_session")
-    def when_pro_user_does_not_have_rights(self, app):
+    def when_pro_user_does_not_have_rights(self, client):
         # given
         pro_user = users_factories.ProFactory()
         venue = offerers_factories.VenueFactory()
 
-        auth_request = TestClient(app.test_client()).with_session_auth(email=pro_user.email)
+        auth_request = client.with_session_auth(email=pro_user.email)
 
         # when
         response = auth_request.get("/venues/%s/stats" % venue.id)

@@ -8,11 +8,9 @@ import pcapi.core.finance.models as finance_models
 import pcapi.core.offerers.factories as offerers_factories
 import pcapi.core.users.factories as users_factories
 
-from tests.conftest import TestClient
-
 
 @pytest.mark.usefixtures("db_session")
-def test_with_venue_filter(app):
+def test_with_venue_filter(client):
     beginning_date_iso_format = (date.today() - timedelta(days=2)).isoformat()
     ending_date_iso_format = (date.today() + timedelta(days=2)).isoformat()
     offerer = offerers_factories.OffererFactory()
@@ -28,8 +26,7 @@ def test_with_venue_filter(app):
     offerers_factories.UserOffererFactory(user=pro, offerer=offerer)
 
     # When
-    client = TestClient(app.test_client()).with_session_auth(pro.email)
-    response = client.get(
+    response = client.with_session_auth(pro.email).get(
         f"/reimbursements/csv?reimbursementPeriodBeginningDate={beginning_date_iso_format}&reimbursementPeriodEndingDate={ending_date_iso_format}&venueId={venue1.id}"
     )
 
@@ -42,7 +39,7 @@ def test_with_venue_filter(app):
 
 
 @pytest.mark.usefixtures("db_session")
-def test_with_reimbursement_period_filter(app):
+def test_with_reimbursement_period_filter(client):
     beginning_date_iso_format = (date.today() - timedelta(days=2)).isoformat()
     ending_date_iso_format = (date.today() + timedelta(days=2)).isoformat()
     user_offerer = offerers_factories.UserOffererFactory()
@@ -74,8 +71,7 @@ def test_with_reimbursement_period_filter(app):
     )
 
     # When
-    client = TestClient(app.test_client()).with_session_auth(pro.email)
-    response = client.get(
+    response = client.with_session_auth(pro.email).get(
         f"/reimbursements/csv?reimbursementPeriodBeginningDate={beginning_date_iso_format}&reimbursementPeriodEndingDate={ending_date_iso_format}"
     )
 
@@ -88,13 +84,12 @@ def test_with_reimbursement_period_filter(app):
 
 
 @pytest.mark.usefixtures("db_session")
-def test_with_non_given_reimbursement_period(app):
+def test_with_non_given_reimbursement_period(client):
     user_offerer = offerers_factories.UserOffererFactory()
     pro = user_offerer.user
 
     # When
-    client = TestClient(app.test_client()).with_session_auth(pro.email)
-    response = client.get("/reimbursements/csv")
+    response = client.with_session_auth(pro.email).get("/reimbursements/csv")
 
     # Then
     assert response.status_code == 400

@@ -10,8 +10,6 @@ from pcapi.core.testing import assert_no_duplicated_queries
 import pcapi.core.users.factories as users_factories
 from pcapi.models.offer_mixin import OfferStatus
 
-from tests.conftest import TestClient
-
 
 pytestmark = pytest.mark.usefixtures("db_session")
 
@@ -249,14 +247,14 @@ class Returns200Test:
         )
 
     @patch("pcapi.routes.pro.offers.offers_api.list_offers_for_pro_user")
-    def should_filter_offers_by_given_category_id(self, mocked_list_offers, app, db_session):
+    def should_filter_offers_by_given_category_id(self, mocked_list_offers, client, db_session):
         # given
         pro = users_factories.ProFactory()
         offerer = offerers_factories.OffererFactory()
         offerers_factories.UserOffererFactory(user=pro, offerer=offerer)
 
         # when
-        response = TestClient(app.test_client()).with_session_auth(email=pro.email).get("/offers?categoryId=LIVRE")
+        response = client.with_session_auth(email=pro.email).get("/offers?categoryId=LIVRE")
 
         # then
         assert response.status_code == 200
@@ -324,20 +322,20 @@ class Returns200Test:
 
 
 class Returns404Test:
-    def should_return_no_offers_when_user_has_no_rights_on_requested_venue(self, app, db_session):
+    def should_return_no_offers_when_user_has_no_rights_on_requested_venue(self, client, db_session):
         # Given
         pro = users_factories.ProFactory()
         offerer = offerers_factories.OffererFactory()
         venue = offerers_factories.VenueFactory(managingOfferer=offerer)
 
         # when
-        response = TestClient(app.test_client()).with_session_auth(email=pro.email).get(f"/offers?venueId={venue.id}")
+        response = client.with_session_auth(email=pro.email).get(f"/offers?venueId={venue.id}")
 
         # then
         assert response.status_code == 200
         assert response.json == []
 
-    def should_return_no_offers_when_user_offerer_is_not_validated(self, app, db_session):
+    def should_return_no_offers_when_user_offerer_is_not_validated(self, client, db_session):
         # Given
         pro = users_factories.ProFactory()
         offerer = offerers_factories.OffererFactory()
@@ -346,7 +344,7 @@ class Returns404Test:
         offers_factories.ThingOfferFactory(venue=venue)
 
         # when
-        response = TestClient(app.test_client()).with_session_auth(email=pro.email).get(f"/offers?venueId={venue.id}")
+        response = client.with_session_auth(email=pro.email).get(f"/offers?venueId={venue.id}")
 
         # then
         assert response.status_code == 200
@@ -354,12 +352,12 @@ class Returns404Test:
 
 
 class Returns400Test:
-    def should_return_error_if_status_is_not_valid(self, app, db_session):
+    def should_return_error_if_status_is_not_valid(self, client, db_session):
         # Given
         pro = users_factories.ProFactory()
 
         # when
-        response = TestClient(app.test_client()).with_session_auth(email=pro.email).get("/offers?status=NOPENOPENOPE")
+        response = client.with_session_auth(email=pro.email).get("/offers?status=NOPENOPENOPE")
 
         # then
         msg = response.json["status"][0]

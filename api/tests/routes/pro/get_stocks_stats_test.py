@@ -8,8 +8,6 @@ import pcapi.core.offerers.factories as offerers_factories
 import pcapi.core.offers.factories as offers_factories
 import pcapi.core.users.factories as users_factories
 
-from tests.conftest import TestClient
-
 
 @pytest.mark.usefixtures("db_session")
 class Returns403Test:
@@ -24,14 +22,13 @@ class Returns403Test:
         # Then
         assert response.status_code == 403
 
-    def test_access_by_unauthorized_pro_user(self, app):
+    def test_access_by_unauthorized_pro_user(self, client):
         # Given
         pro_user = users_factories.ProFactory()
         offer = offers_factories.ThingOfferFactory(venue__latitude=None, venue__longitude=None)
 
         # When
-        client = TestClient(app.test_client()).with_session_auth(email=pro_user.email)
-        response = client.get(f"/offers/{offer.id}/stocks-stats")
+        response = client.with_session_auth(email=pro_user.email).get(f"/offers/{offer.id}/stocks-stats")
 
         # Then
         assert response.status_code == 403

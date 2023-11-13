@@ -10,8 +10,6 @@ from pcapi.models import db
 from pcapi.utils.date import format_into_utc_date
 from pcapi.utils.image_conversion import DO_NOT_CROP
 
-from tests.conftest import TestClient
-
 
 @pytest.mark.usefixtures("db_session")
 class Returns200Test:
@@ -367,13 +365,13 @@ class Returns200Test:
 
 class Returns403Test:
     @pytest.mark.usefixtures("db_session")
-    def when_current_user_doesnt_have_rights(self, app):
+    def when_current_user_doesnt_have_rights(self, client):
         # given
         pro = users_factories.ProFactory(email="user.pro@example.com")
         venue = offerers_factories.VenueFactory(name="L'encre et la plume")
 
         # when
-        auth_request = TestClient(app.test_client()).with_session_auth(email=pro.email)
+        auth_request = client.with_session_auth(email=pro.email)
         response = auth_request.get("/venues/%s" % venue.id)
 
         # then

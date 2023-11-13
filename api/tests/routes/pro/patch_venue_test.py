@@ -8,7 +8,6 @@ import pcapi.core.offerers.factories as offerers_factories
 import pcapi.core.offerers.models as offerers_models
 from pcapi.core.users import testing as external_testing
 
-from tests.conftest import TestClient
 from tests.routes.pro.post_venue_test import venue_malformed_test_data
 
 
@@ -36,14 +35,14 @@ def populate_missing_data_from_venue(venue_data: dict, venue: offerers_models.Ve
 
 
 class Returns200Test:
-    def test_should_update_venue(self, app) -> None:
+    def test_should_update_venue(self, client) -> None:
         # given
         user_offerer = offerers_factories.UserOffererFactory()
         venue = offerers_factories.VenueFactory(name="old name", managingOfferer=user_offerer.offerer)
 
         venue_label = offerers_factories.VenueLabelFactory(label="CAC - Centre d'art contemporain d'intérêt national")
 
-        auth_request = TestClient(app.test_client()).with_session_auth(email=user_offerer.user.email)
+        auth_request = client.with_session_auth(email=user_offerer.user.email)
         venue_id = venue.id
 
         # when
@@ -86,13 +85,15 @@ class Returns200Test:
         }
 
     @patch("pcapi.routes.pro.venues.update_all_venue_offers_email_job.delay")
-    def test_edit_venue_booking_email_with_applied_on_all_offers(self, mocked_update_all_venue_offers_email_job, app):
+    def test_edit_venue_booking_email_with_applied_on_all_offers(
+        self, mocked_update_all_venue_offers_email_job, client
+    ):
         user_offerer = offerers_factories.UserOffererFactory()
         venue = offerers_factories.VenueFactory(
             name="old name", managingOfferer=user_offerer.offerer, bookingEmail="old.venue@email.com"
         )
 
-        auth_request = TestClient(app.test_client()).with_session_auth(email=user_offerer.user.email)
+        auth_request = client.with_session_auth(email=user_offerer.user.email)
 
         venue_data = populate_missing_data_from_venue(
             {
@@ -139,7 +140,7 @@ class Returns200Test:
 
     @patch("pcapi.routes.pro.venues.update_all_venue_offers_withdrawal_details_job.delay")
     def test_edit_venue_withdrawal_details_with_applied_on_all_offers(
-        self, mocked_update_all_venue_offers_withdrawal_details_job, app
+        self, mocked_update_all_venue_offers_withdrawal_details_job, client
     ):
         user_offerer = offerers_factories.UserOffererFactory()
         venue = offerers_factories.VenueFactory(
@@ -147,7 +148,7 @@ class Returns200Test:
             managingOfferer=user_offerer.offerer,
         )
 
-        auth_request = TestClient(app.test_client()).with_session_auth(email=user_offerer.user.email)
+        auth_request = client.with_session_auth(email=user_offerer.user.email)
 
         venue_data = populate_missing_data_from_venue(
             {
@@ -178,7 +179,7 @@ class Returns200Test:
 
     @patch("pcapi.routes.pro.venues.update_all_venue_offers_withdrawal_details_job.delay")
     def test_edit_venue_withdrawal_details_with_no_email_notif(
-        self, mocked_update_all_venue_offers_withdrawal_details_job, app
+        self, mocked_update_all_venue_offers_withdrawal_details_job, client
     ):
         user_offerer = offerers_factories.UserOffererFactory()
         venue = offerers_factories.VenueFactory(
@@ -186,7 +187,7 @@ class Returns200Test:
             managingOfferer=user_offerer.offerer,
         )
 
-        auth_request = TestClient(app.test_client()).with_session_auth(email=user_offerer.user.email)
+        auth_request = client.with_session_auth(email=user_offerer.user.email)
 
         venue_data = populate_missing_data_from_venue(
             {
@@ -208,7 +209,7 @@ class Returns200Test:
 
     @patch("pcapi.routes.pro.venues.update_all_venue_offers_accessibility_job.delay")
     def test_edit_venue_accessibility_with_applied_on_all_offers(
-        self, mocked_update_all_venue_offers_accessibility_job, app
+        self, mocked_update_all_venue_offers_accessibility_job, client
     ):
         user_offerer = offerers_factories.UserOffererFactory()
         venue = offerers_factories.VenueFactory(
@@ -217,7 +218,7 @@ class Returns200Test:
             contact=None,
         )
 
-        auth_request = TestClient(app.test_client()).with_session_auth(email=user_offerer.user.email)
+        auth_request = client.with_session_auth(email=user_offerer.user.email)
 
         venue_data = populate_missing_data_from_venue(
             {
@@ -251,14 +252,14 @@ class Returns200Test:
             "audioDisabilityCompliant": {"new_info": True, "old_info": False},
         }
 
-    def when_siret_does_not_change(self, app) -> None:
+    def when_siret_does_not_change(self, client) -> None:
         # Given
         user_offerer = offerers_factories.UserOffererFactory()
         venue = offerers_factories.VenueFactory(
             managingOfferer=user_offerer.offerer,
         )
         venue_data = populate_missing_data_from_venue({}, venue)
-        auth_request = TestClient(app.test_client()).with_session_auth(email=user_offerer.user.email)
+        auth_request = client.with_session_auth(email=user_offerer.user.email)
 
         # when
         response = auth_request.patch("/venues/%s" % venue.id, json=venue_data)
