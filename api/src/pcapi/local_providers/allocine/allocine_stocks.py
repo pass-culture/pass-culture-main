@@ -237,8 +237,8 @@ class AllocineStocks(LocalProvider):
         raise AllocineStocksPriceRule("Aucun prix par défaut n'a été trouvé")
 
     def get_object_thumb(self) -> bytes:
-        if "poster_url" in self.movie_information:  # type: ignore [operator]
-            image_url = self.movie_information["poster_url"]  # type: ignore [index]
+        if self.movie_information and "poster_url" in self.movie_information:
+            image_url = self.movie_information["poster_url"]
             return get_movie_poster(image_url)
         return bytes()
 

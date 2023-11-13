@@ -92,7 +92,7 @@ class Booking(PcObject, Base, Model):
     dateCreated: datetime = Column(DateTime, nullable=False, default=datetime.utcnow)
     Index("ix_booking_date_created", dateCreated)
 
-    dateUsed = Column(DateTime, nullable=True, index=True)
+    dateUsed: datetime | None = Column(DateTime, nullable=True, index=True)
 
     stockId: int = Column(BigInteger, ForeignKey("stock.id"), index=True, nullable=False)
 

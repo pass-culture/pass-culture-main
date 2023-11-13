@@ -21,18 +21,18 @@ def soft_equals(a: object, b: object) -> bool:
     return a == b
 
 
-def less(a: object, b: object, *args: typing.Any) -> bool:
+def less(a: typing.Any, b: typing.Any, *args: typing.Any) -> bool:
     types = set([type(a), type(b)])
     if float in types or int in types:
         try:
-            a, b = float(a), float(b)  # type: ignore [arg-type]
+            a, b = float(a), float(b)
         except TypeError:
             # NaN
             return False
-    return a < b and (not args or less(b, *args))  # type: ignore [operator]
+    return a < b and (not args or less(b, *args))
 
 
-def less_or_equal(a: object, b: object, *args: typing.Any) -> bool:
+def less_or_equal(a: typing.Any, b: typing.Any, *args: typing.Any) -> bool:
     return (less(a, b) or soft_equals(a, b)) and (not args or less_or_equal(b, *args))
 
 
