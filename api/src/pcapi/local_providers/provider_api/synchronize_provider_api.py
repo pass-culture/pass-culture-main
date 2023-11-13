@@ -5,6 +5,7 @@ import time
 from typing import Counter
 from typing import Generator
 
+from pcapi import settings
 from pcapi.core.providers.api import synchronize_stocks
 from pcapi.core.providers.models import Provider
 from pcapi.core.providers.models import StockDetail
@@ -24,6 +25,9 @@ def synchronize_venue_provider(venue_provider: VenueProvider) -> None:
 
     start = time.perf_counter()
     logger.info("Starting synchronization of venue=%s provider=%s", venue.id, provider.name)
+    if not settings.IS_TESTING:
+        return
+
     provider_api = provider.getProviderAPI()
 
     stats: Counter = Counter()
@@ -49,6 +53,7 @@ def synchronize_venue_provider(venue_provider: VenueProvider) -> None:
             **stats,
         },
     )
+    return
 
 
 def _get_stocks_by_batch(siret: str, provider_api: ProviderAPI, modified_since: datetime | None) -> Generator:
