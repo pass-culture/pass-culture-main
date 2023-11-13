@@ -26,6 +26,8 @@ def get_booking_cancellation_by_beneficiary_email_data(
         can_book_again = True
 
     if offer.isEvent:
+        if stock.beginningDatetime is None:
+            raise ValueError("Can't convert None to local timezone")
         beginning_date_time_in_tz = utc_datetime_to_department_timezone(
             stock.beginningDatetime, offer.venue.departementCode
         )

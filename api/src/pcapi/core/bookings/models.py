@@ -122,7 +122,7 @@ class Booking(PcObject, Base, Model):
 
     priceCategoryLabel: str | None = Column(Text, nullable=True)
 
-    cancellationDate = Column(DateTime, nullable=True)
+    cancellationDate: datetime | None = Column(DateTime, nullable=True)
 
     displayAsEnded = Column(Boolean, nullable=True)
 
