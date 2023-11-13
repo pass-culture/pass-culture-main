@@ -9,7 +9,6 @@ import sqlalchemy as sa
 from sqlalchemy.sql.functions import func
 
 import pcapi.core.offerers.models as offerers_models
-from pcapi.repository import repository
 from pcapi.utils import crypto
 import pcapi.utils.email as email_utils
 
@@ -74,28 +73,6 @@ def find_user_by_email(email: str) -> models.User | None:
 
 def find_pro_user_by_email_query(email: str) -> BaseQuery:
     return _find_user_by_email_query(email).filter(models.User.has_pro_role.is_(True))  # type: ignore [attr-defined]
-
-
-def get_user_with_valid_token(
-    token_value: str, token_types: list[models.TokenType], use_token: bool = True
-) -> models.User:
-    token = models.Token.query.filter(
-        models.Token.value == token_value,
-        models.Token.type.in_(token_types),
-        sa.not_(models.Token.isUsed),
-    ).one_or_none()
-
-    if not token:
-        raise exceptions.InvalidToken()
-
-    if token.expirationDate and token.expirationDate < datetime.utcnow():
-        raise exceptions.ExpiredToken(user=token.user)
-
-    if use_token:
-        token.isUsed = True
-        repository.save(token)
-
-    return token.user
 
 
 def get_newly_eligible_age_18_users(since: date) -> list[models.User]:

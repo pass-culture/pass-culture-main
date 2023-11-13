@@ -36,8 +36,6 @@ from pcapi.core.users import factories as users_factories
 from pcapi.core.users import models as users_models
 from pcapi.core.users import testing as sendinblue_testing
 from pcapi.core.users.email import update as email_update
-from pcapi.core.users.repository import get_user_with_valid_token
-from pcapi.core.users.utils import encode_jwt_payload
 from pcapi.models import db
 from pcapi.notifications.push import testing as batch_testing
 from pcapi.routes.native.v1.serialization import account as account_serialization
@@ -83,82 +81,6 @@ class GenerateAndSaveTokenTest:
 
         with pytest.raises(AttributeError):
             users_api.generate_and_save_token(user, token_type)
-
-
-class ValidateJwtTokenTest:
-    token_value = encode_jwt_payload({"pay": "load"})
-
-    def test_get_user_with_valid_token(self):
-        user = users_factories.UserFactory()
-        token_type = users_models.TokenType.RESET_PASSWORD
-        expiration_date = datetime.datetime.utcnow() + datetime.timedelta(hours=24)
-
-        saved_token = users_factories.TokenFactory(
-            user=user, value=self.token_value, type=token_type, expirationDate=expiration_date
-        )
-
-        associated_user = get_user_with_valid_token(self.token_value, [token_type, "other-allowed-type"])
-
-        assert associated_user.id == user.id
-        assert users_models.Token.query.get(saved_token.id)
-
-    def test_get_user_and_mark_token_as_used(self):
-        user = users_factories.UserFactory()
-        token_type = users_models.TokenType.RESET_PASSWORD
-        expiration_date = datetime.datetime.utcnow() + datetime.timedelta(hours=24)
-
-        saved_token = users_factories.TokenFactory(
-            user=user, value=self.token_value, type=token_type, expirationDate=expiration_date
-        )
-
-        associated_user = get_user_with_valid_token(self.token_value, [token_type])
-
-        assert associated_user.id == user.id
-
-        token = users_models.Token.query.get(saved_token.id)
-        assert token.isUsed
-
-    def test_get_user_with_valid_token_without_expiration_date(self):
-        user = users_factories.UserFactory()
-        token_type = users_models.TokenType.RESET_PASSWORD
-
-        users_factories.TokenFactory(user=user, value=self.token_value, type=token_type)
-
-        associated_user = get_user_with_valid_token(self.token_value, [token_type])
-
-        assert associated_user.id == user.id
-
-    def test_get_user_with_valid_token_wrong_token(self):
-        user = users_factories.UserFactory()
-        token_type = users_models.TokenType.RESET_PASSWORD
-
-        users_factories.TokenFactory(user=user, value=self.token_value, type=token_type)
-
-        with pytest.raises(users_exceptions.InvalidToken):
-            get_user_with_valid_token("wrong-token-value", [token_type])
-
-    def test_get_user_with_valid_token_wrong_type(self):
-        user = users_factories.UserFactory()
-        token_type = users_models.TokenType.RESET_PASSWORD
-
-        users_factories.TokenFactory(user=user, value=self.token_value, type=token_type)
-
-        assert users_models.Token.query.filter_by(value=self.token_value).first() is not None
-
-        with pytest.raises(users_exceptions.InvalidToken):
-            get_user_with_valid_token(self.token_value, ["other_type"])
-
-    def test_get_user_with_valid_token_with_expired_date(self):
-        user = users_factories.UserFactory()
-        token_type = users_models.TokenType.RESET_PASSWORD
-
-        expiration_date = datetime.datetime.utcnow() - datetime.timedelta(hours=24)
-        users_factories.TokenFactory(user=user, value=self.token_value, type=token_type, expirationDate=expiration_date)
-
-        assert users_models.Token.query.filter_by(value=self.token_value).first() is not None
-
-        with pytest.raises(users_exceptions.InvalidToken):
-            get_user_with_valid_token(self.token_value, [token_type])
 
 
 class DeleteExpiredTokensTest:
