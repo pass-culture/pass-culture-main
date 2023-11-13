@@ -1,5 +1,7 @@
 import logging
 
+import pytest
+
 from pcapi.routes.adage_iframe.serialization.adage_authentication import AdageFrontRoles
 
 from tests.routes.adage_iframe.utils_create_test_token import create_adage_valid_token_with_email
@@ -29,6 +31,51 @@ class LogsTest:
             "uai": "EAU123",
             "user_role": AdageFrontRoles.READONLY,
             "userId": "f0e2a21bcf499cbc713c47d8f034d66e90a99f9ffcfe96466c9971dfdc5c9816",
+        }
+
+    @pytest.mark.parametrize(
+        "playlist_type,element_id,offer_id,venue_id,domain_id",
+        [
+            ("offer", 34, 34, None, None),
+            ("venue", 45, None, 45, None),
+            ("domain", 56, None, None, 56),
+        ],
+    )
+    def test_log_consult_playlist_element(
+        self, client, caplog, playlist_type, element_id, offer_id, venue_id, domain_id
+    ):
+        # given
+        adage_jwt_fake_valid_token = create_adage_valid_token_with_email(email="test@mail.com")
+        client.auth_header = {"Authorization": f"Bearer {adage_jwt_fake_valid_token}"}
+
+        # when
+        with caplog.at_level(logging.INFO):
+            response = client.post(
+                "/adage-iframe/logs/consult-playlist-element",
+                json={
+                    "source": "partnersMap",
+                    "iframeFrom": "for_my_institution",
+                    "queryId": "1234a",
+                    "elementId": element_id,
+                    "playlistId": 99,
+                    "playlistType": playlist_type,
+                },
+            )
+
+        # then
+        assert response.status_code == 204
+        assert caplog.records[0].message == "ConsultPlaylistElement"
+        assert caplog.records[0].extra == {
+            "analyticsSource": "adage",
+            "queryId": "1234a",
+            "from": "for_my_institution",
+            "uai": "EAU123",
+            "user_role": AdageFrontRoles.READONLY,
+            "userId": "f0e2a21bcf499cbc713c47d8f034d66e90a99f9ffcfe96466c9971dfdc5c9816",
+            "playlistId": 99,
+            "offerId": offer_id,
+            "venueId": venue_id,
+            "domainId": domain_id,
         }
 
     def test_log_search_button(self, client, caplog):

@@ -9,6 +9,12 @@ class AdageBaseModel(BaseModel):
     isFromNoResult: bool | None
 
 
+class AdagePlaylistType(enum.Enum):
+    OFFER = "offer"
+    VENUE = "venue"
+    DOMAIN = "domain"
+
+
 class CatalogViewBody(AdageBaseModel):
     source: str
 
@@ -24,6 +30,12 @@ class OfferIdBody(AdageBaseModel):
 class OfferFavoriteBody(AdageBaseModel):
     offerId: int
     isFavorite: bool
+
+
+class PlaylistBody(AdageBaseModel):
+    playlistType: AdagePlaylistType
+    playlistId: int
+    elementId: int
 
 
 class SearchBody(AdageBaseModel):
