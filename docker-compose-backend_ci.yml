@@ -15,8 +15,7 @@ services:
     command: postgres -c logging_collector=on -c log_destination=stderr -c log_min_duration_statement=0 -c log_statement=all -c log_duration=on
 
   flask:
-    image: europe-west1-docker.pkg.dev/passculture-infra-prod/pass-culture-artifact-registry/pcapi:${DOCKER_TAG}
-    working_dir: /usr/src/app
+    image: europe-west1-docker.pkg.dev/passculture-infra-prod/pass-culture-artifact-registry/pcapi-tests:${DOCKER_TAG}
     container_name: pc-api
     command: ["./start-api-when-database-is-ready.sh"]
     volumes:
@@ -58,7 +57,7 @@ services:
       - postgres
       - redis
     ports:
-      - 5002:5001
+      - 5001:5001
     stdin_open: true
     tty: true
 
