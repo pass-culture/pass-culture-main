@@ -144,7 +144,7 @@ def get_ordering_clauses(
 def get_ordering_clauses_from_json(
     model: typing.Type[Model],
     sorts: str,
-) -> list[sqla.sql.ColumnElement | sqla.sql.expression.UnaryExpression]:  # type: ignore [name-defined]
+) -> list[sqla.sql.ColumnElement | sqla.sql.elements.UnaryExpression]:
     """
     `sorts` should contain a JSON string specifying a list of dicts containing the following keys:
     - field: the name of a field
