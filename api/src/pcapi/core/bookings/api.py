@@ -245,7 +245,9 @@ def book_offer(
                 stock.priceCategory.priceCategoryLabel.label if getattr(stock, "priceCategory") else None
             ),
             status=BookingStatus.CONFIRMED,
-            depositId=beneficiary.deposit.id if beneficiary.has_active_deposit else None,  # type: ignore [union-attr]
+            depositId=beneficiary.deposit.id
+            if (beneficiary.has_active_deposit and beneficiary.deposit is not None)
+            else None,
         )
 
         booking.dateCreated = datetime.datetime.utcnow()
