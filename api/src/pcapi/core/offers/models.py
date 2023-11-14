@@ -7,7 +7,7 @@ import typing
 from typing import TYPE_CHECKING
 from typing import Union
 
-from flask_sqlalchemy import BaseQuery
+from flask_sqlalchemy.query import Query 
 import sqlalchemy as sa
 from sqlalchemy.dialects import postgresql
 import sqlalchemy.exc as sa_exc
@@ -291,7 +291,7 @@ class Stock(PcObject, Base, Model, ProvidableMixin, SoftDeletableMixin):
         )
 
     @classmethod
-    def queryNotSoftDeleted(cls) -> BaseQuery:
+    def queryNotSoftDeleted(cls) -> Query:
         return Stock.query.filter_by(isSoftDeleted=False)
 
     @staticmethod
