@@ -55,9 +55,9 @@
       <th scope="col"></th>
       <th scope="col">ID</th>
       <th scope="col">Statut</th>
-      <th scope="col">Nom</th>
-      <th scope="col">Prénom</th>
+      <th scope="col">Prénom / Nom</th>
       <th scope="col">Email</th>
+      <th scope="col">Invitation</th>
     </tr>
   </thead>
   <tbody>
@@ -65,65 +65,84 @@
       {% set user_offerer = row.UserOfferer %}
       <tr>
         <td class="fw-bolder">
-          <div class="dropdown">
-            <button type="button"
-                    data-bs-toggle="dropdown"
-                    aria-expanded="false"
-                    class="btn p-0">
-              <i class="bi bi-three-dots-vertical"></i>
-            </button>
-            <ul class="dropdown-menu">
-              {% if has_permission("VALIDATE_OFFERER") %}
-                <li class="dropdown-item p-0">
-                  <form action="{{ url_for("backoffice_web.validation.validate_user_offerer",user_offerer_id=user_offerer.id) }}"
-                        name="{{ url_for("backoffice_web.validation.validate_user_offerer",user_offerer_id=user_offerer.id) | action_to_name }}"
-                        method="post">
-                    {{ csrf_token }}
-                    <button type="submit"
-                            class="btn btn-sm d-block w-100 text-start px-3">Valider</button>
-                  </form>
-                </li>
-                <li class="dropdown-item p-0">
-                  <a class="btn btn-sm d-block w-100 text-start px-3"
-                     data-bs-toggle="modal"
-                     data-bs-target="#reject-modal-{{ user_offerer.id }}">Rejeter</a>
-                </li>
-                <li class="dropdown-item p-0">
-                  <a class="btn btn-sm d-block w-100 text-start px-3"
-                     data-bs-toggle="modal"
-                     data-bs-target="#pending-modal-{{ user_offerer.id }}">Mettre en attente</a>
-                </li>
-              {% endif %}
-              {% if has_permission("MANAGE_PRO_ENTITY") %}
-                <li class="dropdown-item p-0">
-                  <a class="btn btn-sm d-block w-100 text-start px-3"
-                     data-bs-toggle="modal"
-                     data-bs-target="#delete-modal-{{ user_offerer.id }}">Supprimer</a>
-                </li>
-              {% endif %}
-            </ul>
-          </div>
+          {% if row.id %}
+            <div class="dropdown">
+              <button type="button"
+                      data-bs-toggle="dropdown"
+                      aria-expanded="false"
+                      class="btn p-0">
+                <i class="bi bi-three-dots-vertical"></i>
+              </button>
+              <ul class="dropdown-menu">
+                {% if has_permission("VALIDATE_OFFERER") %}
+                  <li class="dropdown-item p-0">
+                    <form action="{{ url_for("backoffice_web.validation.validate_user_offerer",user_offerer_id=user_offerer.id) }}"
+                          name="{{ url_for("backoffice_web.validation.validate_user_offerer",user_offerer_id=user_offerer.id) | action_to_name }}"
+                          method="post">
+                      {{ csrf_token }}
+                      <button type="submit"
+                              class="btn btn-sm d-block w-100 text-start px-3">Valider</button>
+                    </form>
+                  </li>
+                  <li class="dropdown-item p-0">
+                    <a class="btn btn-sm d-block w-100 text-start px-3"
+                       data-bs-toggle="modal"
+                       data-bs-target="#reject-modal-{{ user_offerer.id }}">Rejeter</a>
+                  </li>
+                  <li class="dropdown-item p-0">
+                    <a class="btn btn-sm d-block w-100 text-start px-3"
+                       data-bs-toggle="modal"
+                       data-bs-target="#pending-modal-{{ user_offerer.id }}">Mettre en attente</a>
+                  </li>
+                {% endif %}
+                {% if has_permission("MANAGE_PRO_ENTITY") %}
+                  <li class="dropdown-item p-0">
+                    <a class="btn btn-sm d-block w-100 text-start px-3"
+                       data-bs-toggle="modal"
+                       data-bs-target="#delete-modal-{{ user_offerer.id }}">Supprimer</a>
+                  </li>
+                {% endif %}
+              </ul>
+            </div>
+          {% endif %}
         </td>
-        <td class="fw-bolder">{{ links.build_pro_user_name_to_details_link(row.id) }}</td>
-        <td class="text-muted">{{ build_user_offerer_status_badge(user_offerer) }}</td>
-        <td class="fw-bolder text-break">{{ row.lastName | empty_string_if_null }}</td>
-        <td class="text-muted">{{ row.firstName | empty_string_if_null }}</td>
+        <td class="fw-bolder">
+          {% if row.id %}
+            {{ links.build_pro_user_name_to_details_link(row.id) }}
+          {% endif %}
+        </td>
+        <td class="text-muted">
+          {% if row.id %}
+            {{ build_user_offerer_status_badge(user_offerer) }}
+          {% else %}
+            <span class="me-1 pb-1 badge rounded-pill text-bg-light">Invité</span>
+          {% endif %}
+        </td>
+        <td class="fw-bolder text-break">{{ row.full_name | empty_string_if_null }}</td>
         <td class="fw-bolder">
           {{ row.email | empty_string_if_null }}<span class="ms-1">{{ clipboard.copy_to_clipboard(row.email, "Copier l'email du compte") }}</span>
+        </td>
+        <td class="fw-bolder">
+          {% set offerer_invitation = row.OffererInvitation %}
+          {% if offerer_invitation %}
+            Invité le {{ offerer_invitation.dateCreated | format_date_time }} par {{ links.build_pro_user_name_to_details_link(offerer_invitation.id, offerer_invitation.user.full_name) }}
+          {% endif %}
         </td>
       </tr>
     {% endfor %}
   </tbody>
 </table>
 {% for user_offerer in rows | map(attribute="UserOfferer") %}
-  {{ build_lazy_modal(
-  url_for("backoffice_web.validation.get_reject_user_offerer_form", user_offerer_id=user_offerer.id),
-  "reject-modal-" + user_offerer.id|string) }}
-  {{ build_lazy_modal(
-  url_for("backoffice_web.validation.get_user_offerer_pending_form", user_offerer_id=user_offerer.id),
-  "pending-modal-" + user_offerer.id|string) }}
-  {{ build_lazy_modal(
-  url_for("backoffice_web.offerer.get_delete_user_offerer_form", offerer_id=user_offerer.offerer.id, user_offerer_id=user_offerer.id),
-  "delete-modal-" + user_offerer.id|string) }}
+  {% if user_offerer %}
+    {{ build_lazy_modal(
+    url_for("backoffice_web.validation.get_reject_user_offerer_form", user_offerer_id=user_offerer.id),
+    "reject-modal-" + user_offerer.id|string) }}
+    {{ build_lazy_modal(
+    url_for("backoffice_web.validation.get_user_offerer_pending_form", user_offerer_id=user_offerer.id),
+    "pending-modal-" + user_offerer.id|string) }}
+    {{ build_lazy_modal(
+    url_for("backoffice_web.offerer.get_delete_user_offerer_form", offerer_id=user_offerer.offerer.id, user_offerer_id=user_offerer.id),
+    "delete-modal-" + user_offerer.id|string) }}
+  {% endif %}
 {% endfor %}
 </turbo-frame>
