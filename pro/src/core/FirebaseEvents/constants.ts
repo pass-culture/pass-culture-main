@@ -112,6 +112,10 @@ export enum OffererLinkEvents {
   CLICKED_SEND_INVITATION = 'hasSentInvitation',
 }
 
+export enum BankAccountEvents {
+  CLICKED_ADD_BANK_ACCOUNT = 'hasClickedAddBankAccount',
+}
+
 export enum OFFER_FORM_NAVIGATION_OUT {
   PREVIEW = 'AppPreview',
 }
