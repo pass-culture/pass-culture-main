@@ -134,7 +134,7 @@ class VenueProvider(PcObject, Base, Model, DeactivableMixin):
     isDuoOffers = Column(Boolean, nullable=True)
 
     isFromAllocineProvider = column_property(  # type: ignore [misc]
-        exists(select([Provider.id]).where(and_(Provider.id == providerId, Provider.localClass == "AllocineStocks")))
+        exists(select(Provider.id).where(and_(Provider.id == providerId, Provider.localClass == "AllocineStocks")))
     )
 
     isFromCinemaProvider = column_property(  # type: ignore [misc]
