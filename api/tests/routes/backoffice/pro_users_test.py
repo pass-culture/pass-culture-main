@@ -493,6 +493,7 @@ class DeleteProUserTest(PostEndpointHelper):
 
     def test_delete_pro_user_with_related_objects(self, authenticated_client):
         user = users_factories.NonAttachedProFactory()
+        users_factories.FavoriteFactory(user=user)
         offers_factories.MediationFactory(author=user)
 
         user_id = user.id
@@ -503,4 +504,5 @@ class DeleteProUserTest(PostEndpointHelper):
         assert response.status_code == 303
 
         assert users_models.User.query.filter(users_models.User.id == user_id).count() == 0
+        assert users_models.Favorite.query.filter(users_models.Favorite.userId == user_id).count() == 0
         assert offers_models.Mediation.query.one().authorId is None
