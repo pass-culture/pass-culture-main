@@ -1,4 +1,5 @@
 import datetime
+import json
 import logging
 import typing
 
@@ -104,8 +105,12 @@ def book_event_ticket(
     _check_external_booking_response_is_ok(response)
     try:
         parsed_response = pydantic_v1.parse_obj_as(serialize.ExternalEventBookingResponse, response.json())
-    except pydantic_v1.ValidationError as err:
-        raise exceptions.ExternalBookingException(f"External booking failed. Could not parse response: {err}")
+    except (pydantic_v1.ValidationError, json.JSONDecodeError) as err:
+        logger.exception(
+            "Could not parse external booking response",
+            extra={"status_code": response.status_code, "response": response.text, "error": err},
+        )
+        raise exceptions.ExternalBookingException("External booking failed.")
     parsed_response.tickets = _verify_and_return_tickets_with_same_quantity_as_booking(
         parsed_response.tickets, booking, stock
     )
