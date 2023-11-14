@@ -206,7 +206,7 @@ def acquire_lock(name: str) -> None:
     # int type), and turn it back into an integer.
     lock_bytestring = name.encode()
     lock_id = int(hashlib.sha256(lock_bytestring).hexdigest()[:14], 16)
-    db.session.execute(sqla.select([sqla.func.pg_advisory_xact_lock(lock_id)]))
+    db.session.execute(sqla.select(sqla.func.pg_advisory_xact_lock(lock_id)))
 
 
 @blueprint.cli.command("detect_invalid_indexes")
