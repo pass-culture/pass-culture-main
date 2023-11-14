@@ -33,6 +33,14 @@ def get_mime_type(stream) -> str:
     return None
 
 
+@app.route("/version")
+def version() -> str:
+    with open("version.txt", "r", encoding="utf-8") as version_file:
+        version = version_file.read()
+
+    return version, 200
+
+
 @app.route("/")
 def root():
     filename = request.args.get("filename")
