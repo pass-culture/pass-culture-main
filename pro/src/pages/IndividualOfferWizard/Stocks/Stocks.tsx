@@ -6,6 +6,7 @@ import { useOfferWizardMode } from 'hooks'
 import IndivualOfferLayout from 'screens/IndividualOffer/IndivualOfferLayout/IndivualOfferLayout'
 import { getTitle } from 'screens/IndividualOffer/IndivualOfferLayout/utils/getTitle'
 import { StocksEventCreation } from 'screens/IndividualOffer/StocksEventCreation/StocksEventCreation'
+import StocksEventEdition from 'screens/IndividualOffer/StocksEventEdition/StocksEventEdition'
 import StocksThing from 'screens/IndividualOffer/StocksThing/StocksThing'
 import Spinner from 'ui-kit/Spinner/Spinner'
 
@@ -33,13 +34,7 @@ const Stocks = (): JSX.Element | null => {
         mode === OFFER_WIZARD_MODE.CREATION ? (
           <StocksEventCreation offer={offer} />
         ) : (
-          <div />
-          // TODO: implement edition
-          // <StocksEventEdition
-          //   offer={offer}
-          //   stocks={stockEvents}
-          //   setStocks={setStockEvents}
-          // />
+          <StocksEventEdition offer={offer} />
         )
       ) : (
         <StocksThing offer={offer} />
