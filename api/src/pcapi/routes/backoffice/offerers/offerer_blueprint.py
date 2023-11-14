@@ -386,6 +386,13 @@ def get_pro_users(offerer_id: int) -> utils.BackofficeResponse:
         .distinct()
     )
 
+    options = sa.orm.joinedload(offerers_models.OffererInvitation.user).load_only(
+        users_models.User.id,
+        users_models.User.firstName,
+        users_models.User.lastName,
+        users_models.User.email,
+    )
+
     rows = (
         db.session.query(
             users_models.User.id,
@@ -394,6 +401,7 @@ def get_pro_users(offerer_id: int) -> utils.BackofficeResponse:
             users_models.User.full_name,
             users_models.User.email,
             offerers_models.UserOfferer,
+            offerers_models.OffererInvitation,
         )
         .select_from(users_models.User)
         .outerjoin(
@@ -403,8 +411,24 @@ def get_pro_users(offerer_id: int) -> utils.BackofficeResponse:
                 offerers_models.UserOfferer.offererId == offerer_id,
             ),
         )
+        .outerjoin(
+            offerers_models.OffererInvitation,
+            sa.and_(
+                offerers_models.OffererInvitation.offererId == offerers_models.UserOfferer.offererId,
+                offerers_models.OffererInvitation.email == users_models.User.email,
+            ),
+        )
+        .options(options)
         .filter(users_models.User.id.in_(user_ids_subquery))
         .order_by(offerers_models.UserOfferer.id, users_models.User.full_name)
+        .all()
+    )
+
+    users_invited = (
+        offerers_models.OffererInvitation.query.options(options)
+        .filter(offerers_models.OffererInvitation.offererId == offerer_id)
+        .filter(~sa.exists().where(users_models.User.email == offerers_models.OffererInvitation.email))
+        .order_by(offerers_models.OffererInvitation.id)
         .all()
     )
 
@@ -426,9 +450,23 @@ def get_pro_users(offerer_id: int) -> utils.BackofficeResponse:
                 }
             )
 
+    users_pro = [row for row in rows if row.UserOfferer is not None]
+
+    users_invited_formatted = [
+        {
+            "id": None,
+            "firstName": None,
+            "lastName": None,
+            "full_name": None,
+            "email": user_invited.email,
+            "UserOfferer": None,
+            "OffererInvitation": user_invited,
+        }
+        for user_invited in users_invited
+    ]
     return render_template(
         "offerer/get/details/users.html",
-        rows=[row for row in rows if row.UserOfferer is not None],
+        rows=users_pro + users_invited_formatted,
         **kwargs,
     )
 

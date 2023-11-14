@@ -801,7 +801,8 @@ class GetOffererUsersTest(GetEndpointHelper):
 
     # - session + authenticated user (2 queries)
     # - users with joined data (1 query)
-    expected_num_queries = 3
+    # - offerer_invitation data
+    expected_num_queries = 4
 
     def test_get_pro_users(self, authenticated_client, offerer):
         uo1 = offerers_factories.UserOffererFactory(
@@ -824,21 +825,92 @@ class GetOffererUsersTest(GetEndpointHelper):
 
         assert rows[0]["ID"] == str(uo1.user.id)
         assert rows[0]["Statut"] == "Validé"
-        assert rows[0]["Nom"] == ""
-        assert rows[0]["Prénom"] == ""
+        assert rows[0]["Prénom / Nom"] == uo1.user.full_name
         assert rows[0]["Email"] == uo1.user.email
+        assert rows[0]["Invitation"] == ""
 
         assert rows[1]["ID"] == str(uo2.user.id)
         assert rows[1]["Statut"] == "Validé"
-        assert rows[1]["Nom"] == uo2.user.lastName
-        assert rows[1]["Prénom"] == uo2.user.firstName
+        assert rows[1]["Prénom / Nom"] == uo2.user.full_name
         assert rows[1]["Email"] == uo2.user.email
+        assert rows[1]["Invitation"] == ""
 
         assert rows[2]["ID"] == str(uo3.user.id)
         assert rows[2]["Statut"] == "Nouveau"
-        assert rows[2]["Nom"] == uo3.user.lastName
-        assert rows[2]["Prénom"] == uo3.user.firstName
+        assert rows[2]["Prénom / Nom"] == uo3.user.full_name
         assert rows[2]["Email"] == uo3.user.email
+        assert rows[2]["Invitation"] == ""
+
+    def test_get_pro_users_with_one_offerer_invitation_without_user_account(self, authenticated_client, offerer):
+        uo1 = offerers_factories.UserOffererFactory(offerer=offerer)
+        guest = offerers_factories.OffererInvitationFactory(offerer=offerer)
+
+        # other invitation on another offerer for test not conflict
+        offerers_factories.OffererInvitationFactory()
+
+        url = url_for(self.endpoint, offerer_id=offerer.id)
+        with assert_num_queries(self.expected_num_queries):
+            response = authenticated_client.get(url)
+            assert response.status_code == 200
+
+        rows = html_parser.extract_table_rows(response.data)
+        assert len(rows) == 2
+
+        assert rows[0]["ID"] == str(uo1.user.id)
+        assert rows[0]["Statut"] == "Validé"
+        assert rows[0]["Prénom / Nom"] == uo1.user.full_name
+        assert rows[0]["Email"] == uo1.user.email
+        assert rows[0]["Invitation"] == ""
+
+        assert rows[1]["ID"] == ""
+        assert rows[1]["Statut"] == "Invité"
+        assert rows[1]["Prénom / Nom"] == ""
+        assert rows[1]["Email"] == guest.email
+        assert rows[1]["Invitation"].startswith("Invité le ")
+        assert rows[1]["Invitation"].endswith("par " + guest.user.full_name)
+
+    def test_get_pro_users_with_one_offerer_invitation_with_user_account(self, authenticated_client, offerer):
+        uo1 = offerers_factories.UserOffererFactory(offerer=offerer)
+        pro = users_factories.ProFactory()
+        uo2 = offerers_factories.UserOffererFactory(offerer=offerer, user=pro)
+        guest1 = offerers_factories.OffererInvitationFactory(
+            user=users_factories.ProFactory(firstName="Pro1", lastName="lastName"), offerer=offerer, email=pro.email
+        )
+        guest2 = offerers_factories.OffererInvitationFactory(
+            offerer=offerer, user=users_factories.ProFactory(firstName="Jean", lastName="SansPeur")
+        )
+
+        # other invitation on another offerer for test not conflict
+        offerers_factories.OffererInvitationFactory()
+
+        url = url_for(self.endpoint, offerer_id=offerer.id)
+
+        with assert_num_queries(self.expected_num_queries):
+            response = authenticated_client.get(url)
+            assert response.status_code == 200
+
+        rows = html_parser.extract_table_rows(response.data)
+        assert len(rows) == 3
+
+        assert rows[0]["ID"] == str(uo1.user.id)
+        assert rows[0]["Statut"] == "Validé"
+        assert rows[0]["Prénom / Nom"] == uo1.user.full_name
+        assert rows[0]["Email"] == uo1.user.email
+        assert rows[0]["Invitation"] == ""
+
+        assert rows[1]["ID"] == str(uo2.user.id)
+        assert rows[1]["Statut"] == "Validé"
+        assert rows[1]["Prénom / Nom"] == uo2.user.full_name
+        assert rows[1]["Email"] == uo2.user.email
+        assert rows[1]["Invitation"].startswith("Invité le ")
+        assert rows[1]["Invitation"].endswith("par " + guest1.user.full_name)
+
+        assert rows[2]["ID"] == ""
+        assert rows[2]["Statut"] == "Invité"
+        assert rows[2]["Prénom / Nom"] == ""
+        assert rows[2]["Email"] == guest2.email
+        assert rows[2]["Invitation"].startswith("Invité le ")
+        assert rows[2]["Invitation"].endswith("par " + guest2.user.full_name)
 
     def test_add_pro_user_choices(self, authenticated_client, legit_user, offerer):
         user1 = offerers_factories.UserOffererFactory(offerer=offerer)
