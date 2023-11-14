@@ -10,6 +10,7 @@ import pcapi.core.offerers.factories as offerers_factories
 import pcapi.core.offers.factories as offers_factories
 import pcapi.core.users.factories as users_factories
 from pcapi.models import db
+from pcapi.routes.backoffice.finance import finance_incidents_blueprint as incident_blueprint
 
 
 logger = logging.getLogger(__name__)
@@ -80,6 +81,51 @@ def create_specific_invoice() -> None:
     special_user.deposit.amount = 20000
     db.session.add(special_user)
     db.session.commit()
+
+    # Add finance incidents to invoice
+
+    booking_with_total_incident = bookings_factories.ReimbursedBookingFactory(
+        stock=offers_factories.StockFactory(offer=thing_offer1, price=30),
+        quantity=1,
+        amount=30,
+        user__deposit__source="create_specific_invoice() in industrial sandbox",
+    )
+    booking_with_partial_incident = bookings_factories.ReimbursedBookingFactory(
+        stock=offers_factories.StockFactory(offer=book_offer1, price=30),
+        quantity=1,
+        amount=30,
+        user__deposit__source="create_specific_invoice() in industrial sandbox",
+    )
+    bookings_with_incident = [booking_with_total_incident, booking_with_partial_incident]
+
+    for booking in bookings_with_incident:
+        event = finance_factories.UsedBookingFinanceEventFactory(booking=booking)
+        pricing = finance_api.price_event(event)
+        if pricing:
+            pricing.status = finance_models.PricingStatus.INVOICED
+
+    total_booking_finance_incident = finance_factories.IndividualBookingFinanceIncidentFactory(
+        booking=booking_with_total_incident,
+        newTotalAmount=0,
+        incident__venue=venue,
+        incident__status=finance_models.IncidentStatus.VALIDATED,
+    )
+    partial_booking_finance_incident = finance_factories.IndividualBookingFinanceIncidentFactory(
+        booking=booking_with_partial_incident,
+        newTotalAmount=2000,
+        incident__venue=venue,
+        incident__status=finance_models.IncidentStatus.VALIDATED,
+    )
+    booking_incidents = [total_booking_finance_incident, partial_booking_finance_incident]
+
+    incident_events = []
+    for booking_finance_incident in booking_incidents:
+        incident_events += incident_blueprint._create_finance_events_from_incident(
+            booking_finance_incident, incident_validation_date=datetime.utcnow(), save=True
+        )
+
+    for event in incident_events:
+        finance_api.price_event(event)
 
     bookings = [
         bookings_factories.UsedBookingFactory(
