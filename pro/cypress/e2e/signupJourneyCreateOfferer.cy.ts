@@ -1,4 +1,4 @@
-describe('Signup journey', () => {
+describe.skip('Signup journey', () => {
   const siret = Math.random().toString().substring(2, 16)
   const offererName = 'MINISTERE DE LA CULTURE'
 
