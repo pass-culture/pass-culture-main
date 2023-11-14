@@ -3290,10 +3290,10 @@
     algoliasearch ">=4"
     algoliasearch-helper ">=3"
 
-"@types/react-instantsearch-dom@^6.12.5":
-  version "6.12.5"
-  resolved "https://registry.yarnpkg.com/@types/react-instantsearch-dom/-/react-instantsearch-dom-6.12.5.tgz#16c7ed48f76fa4feda601420d76000af0626db02"
-  integrity sha512-By+i8qih27ku557LRtNzBNQDOyb7bB0P4ihnh7BDj7eGeZ60XTjoTzJpezGueXSlOWHR0YQgoY5Y+fFfHb+AIQ==
+"@types/react-instantsearch-dom@^6.12.6":
+  version "6.12.6"
+  resolved "https://registry.yarnpkg.com/@types/react-instantsearch-dom/-/react-instantsearch-dom-6.12.6.tgz#0d7a2bfc03f8ae1ba11cd106181e25260ba83a6e"
+  integrity sha512-y1Xc6FMViD3Q3bUzBWvP8tMOZCtyOmzetE+5czZYG/nFKEDxqeM+rDGV1l2WA41Ljy3etuNICTwYHdsMe8lpBw==
   dependencies:
     "@types/react" "*"
     "@types/react-instantsearch-core" "*"
