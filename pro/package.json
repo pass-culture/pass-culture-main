@@ -96,7 +96,7 @@
     "@types/react-redux": "^7.1.27",
     "@types/react-router-dom": "^5.1.8",
     "@types/react-select": "^5.0.1",
-    "@types/react-table": "^7.7.17",
+    "@types/react-table": "^7.7.18",
     "@typescript-eslint/eslint-plugin": "^6.11.0",
     "@typescript-eslint/parser": "^6.11.0",
     "@vitejs/plugin-react": "^4.1.1",
