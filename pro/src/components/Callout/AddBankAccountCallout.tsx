@@ -1,9 +1,12 @@
 import React from 'react'
+import { useLocation } from 'react-router-dom'
 
 import { GetOffererResponseModel } from 'apiClient/v1'
 import Callout from 'components/Callout/Callout'
 import { CalloutVariant } from 'components/Callout/types'
+import { BankAccountEvents } from 'core/FirebaseEvents/constants'
 import useActiveFeature from 'hooks/useActiveFeature'
+import useAnalytics from 'hooks/useAnalytics'
 
 export interface AddBankAccountCalloutProps {
   offerer?: GetOffererResponseModel | null
@@ -14,6 +17,8 @@ const AddBankAccountCallout = ({
   offerer = null,
   titleOnly = false,
 }: AddBankAccountCalloutProps): JSX.Element | null => {
+  const { logEvent } = useAnalytics()
+  const location = useLocation()
   const displayBankAccountBanner =
     offerer &&
     !offerer.hasValidBankAccount &&
@@ -35,6 +40,12 @@ const AddBankAccountCallout = ({
           linkTitle: 'Ajouter un compte bancaire',
           targetLink: '',
           isExternal: false,
+          onClick: () => {
+            logEvent?.(BankAccountEvents.CLICKED_ADD_BANK_ACCOUNT, {
+              from: location.pathname,
+              offererId: offerer.id,
+            })
+          },
         },
       ]}
       type={CalloutVariant.ERROR}
