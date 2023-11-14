@@ -673,7 +673,7 @@ class DomainsCredit:
 class Favorite(PcObject, Base, Model):
     __tablename__ = "favorite"
 
-    userId: int = sa.Column(sa.BigInteger, sa.ForeignKey("user.id"), index=True, nullable=False)
+    userId: int = sa.Column(sa.BigInteger, sa.ForeignKey("user.id", ondelete="CASCADE"), index=True, nullable=False)
 
     user: orm.Mapped["User"] = orm.relationship("User", foreign_keys=[userId], backref="favorites")
 
