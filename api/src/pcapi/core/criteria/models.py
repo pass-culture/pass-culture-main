@@ -11,7 +11,7 @@ class Criterion(PcObject, Base, Model):
     startDateTime = sqla.Column(sqla.DateTime, nullable=True)
     endDateTime = sqla.Column(sqla.DateTime, nullable=True)
 
-    categories: list["CriterionCategory"] = sqla.orm.relationship(
+    categories: sqla.orm.Mapped[list["CriterionCategory"]] = sqla.orm.relationship(
         "CriterionCategory", secondary="criterion_category_mapping"
     )
 

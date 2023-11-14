@@ -432,7 +432,7 @@ class Offer(PcObject, Base, Model, DeactivableMixin, ValidationMixin, Accessibil
     fieldsUpdated: list[str] = sa.Column(
         postgresql.ARRAY(sa.String(100)), nullable=False, default=[], server_default="{}"
     )
-    flaggingValidationRules: list["OfferValidationRule"] = sa.orm.relationship(
+    flaggingValidationRules: sa_orm.Mapped[list["OfferValidationRule"]] = sa.orm.relationship(
         "OfferValidationRule", secondary="validation_rule_offer_link", back_populates="offers"
     )
     # This field replaces the idAtProviders coming from ProvidableMixin
@@ -448,7 +448,7 @@ class Offer(PcObject, Base, Model, DeactivableMixin, ValidationMixin, Accessibil
     isNational: bool = sa.Column(sa.Boolean, default=False, nullable=False)
     name: str = sa.Column(sa.String(140), nullable=False)
     priceCategories: sa_orm.Mapped[list["PriceCategory"]] = sa.orm.relationship("PriceCategory", back_populates="offer")
-    product: Product = sa.orm.relationship(Product, backref="offers")
+    product: sa_orm.Mapped["Product"] = sa.orm.relationship(Product, backref="offers")
     productId: int = sa.Column(sa.BigInteger, sa.ForeignKey("product.id"), index=True, nullable=True)
     rankingWeight = sa.Column(sa.Integer, nullable=True)
     subcategoryId: str = sa.Column(sa.Text, nullable=False, index=True)
@@ -918,13 +918,13 @@ class OfferValidationRule(PcObject, Base, Model):
     dateModified: datetime.datetime = sa.Column(sa.DateTime, nullable=False, default=datetime.datetime.utcnow)
     latestAuthorId: int = sa.Column(sa.BigInteger, sa.ForeignKey("user.id"), nullable=False)
     latestAuthor: sa_orm.Mapped["User"] = sa.orm.relationship("User", foreign_keys=[latestAuthorId])
-    offers: list["Offer"] = sa.orm.relationship(
+    offers: sa_orm.Mapped[list["Offer"]] = sa.orm.relationship(
         "Offer", secondary="validation_rule_offer_link", back_populates="flaggingValidationRules"
     )
-    collectiveOffers: list["CollectiveOffer"] = sa.orm.relationship(
+    collectiveOffers: sa_orm.Mapped[list["CollectiveOffer"]] = sa.orm.relationship(
         "CollectiveOffer", secondary="validation_rule_collective_offer_link", back_populates="flaggingValidationRules"
     )
-    collectiveOfferTemplates: list["CollectiveOfferTemplate"] = sa.orm.relationship(
+    collectiveOfferTemplates: sa_orm.Mapped[list["CollectiveOfferTemplate"]] = sa.orm.relationship(
         "CollectiveOfferTemplate",
         secondary="validation_rule_collective_offer_template_link",
         back_populates="flaggingValidationRules",

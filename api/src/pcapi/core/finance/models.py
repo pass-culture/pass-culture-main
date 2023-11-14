@@ -44,9 +44,13 @@ class Deposit(PcObject, Base, Model):
 
     userId: int = sqla.Column(sqla.BigInteger, sqla.ForeignKey("user.id"), index=True, nullable=False)
 
-    user: "users_models.User" = sqla_orm.relationship("User", foreign_keys=[userId], backref="deposits")
+    user: sqla_orm.Mapped["users_models.User"] = sqla_orm.relationship(
+        "User", foreign_keys=[userId], backref="deposits"
+    )
 
-    bookings: list["bookings_models.Booking"] = sqla_orm.relationship("Booking", back_populates="deposit")
+    bookings: sqla_orm.Mapped[list["bookings_models.Booking"]] = sqla_orm.relationship(
+        "Booking", back_populates="deposit"
+    )
 
     source: str = sqla.Column(sqla.String(300), nullable=False)
 
@@ -64,7 +68,7 @@ class Deposit(PcObject, Base, Model):
         server_default=DepositType.GRANT_18.value,
     )
 
-    recredits: list["Recredit"] = sqla_orm.relationship(
+    recredits: sqla_orm.Mapped[list["Recredit"]] = sqla_orm.relationship(
         "Recredit", order_by="Recredit.dateCreated.desc()", back_populates="deposit"
     )
 
@@ -116,7 +120,9 @@ class RecreditType(enum.Enum):
 class Recredit(PcObject, Base, Model):
     depositId: int = sqla.Column(sqla.BigInteger, sqla.ForeignKey("deposit.id"), nullable=False)
 
-    deposit: Deposit = sqla_orm.relationship("Deposit", foreign_keys=[depositId], back_populates="recredits")
+    deposit: sqla_orm.Mapped["Deposit"] = sqla_orm.relationship(
+        "Deposit", foreign_keys=[depositId], back_populates="recredits"
+    )
 
     dateCreated: datetime.datetime = sqla.Column(sqla.DateTime, nullable=False, server_default=sqla.func.now())
 
@@ -386,13 +392,13 @@ class Pricing(Base, Model):
     # It is zero or positive.
     revenue: int = sqla.Column(sqla.Integer, nullable=False)
 
-    cashflows: list["Cashflow"] = sqla_orm.relationship(
+    cashflows: sqla_orm.Mapped[list["Cashflow"]] = sqla_orm.relationship(
         "Cashflow", secondary="cashflow_pricing", back_populates="pricings"
     )
-    lines: list["PricingLine"] = sqla_orm.relationship(
+    lines: sqla_orm.Mapped[list["PricingLine"]] = sqla_orm.relationship(
         "PricingLine", back_populates="pricing", order_by="PricingLine.id"
     )
-    logs: list["PricingLog"] = sqla_orm.relationship("PricingLog", back_populates="pricing")
+    logs: sqla_orm.Mapped[list["PricingLog"]] = sqla_orm.relationship("PricingLog", back_populates="pricing")
 
     __table_args__ = (
         sqla.Index("idx_uniq_booking_id", bookingId, postgresql_where=status != PricingStatus.CANCELLED, unique=True),
@@ -427,7 +433,9 @@ class PricingLine(Base, Model):
     id: int = sqla.Column(sqla.BigInteger, primary_key=True, autoincrement=True)
 
     pricingId = sqla.Column(sqla.BigInteger, sqla.ForeignKey("pricing.id"), index=True, nullable=True)
-    pricing: Pricing = sqla_orm.relationship("Pricing", foreign_keys=[pricingId], back_populates="lines")
+    pricing: sqla_orm.Mapped["Pricing"] = sqla_orm.relationship(
+        "Pricing", foreign_keys=[pricingId], back_populates="lines"
+    )
 
     # See the note about `amount` at the beginning of this module.
     amount: int = sqla.Column(sqla.Integer, nullable=False)
@@ -443,7 +451,9 @@ class PricingLog(Base, Model):
     id: int = sqla.Column(sqla.BigInteger, primary_key=True, autoincrement=True)
 
     pricingId: int = sqla.Column(sqla.BigInteger, sqla.ForeignKey("pricing.id"), index=True, nullable=False)
-    pricing: Pricing = sqla_orm.relationship("Pricing", foreign_keys=[pricingId], back_populates="logs")
+    pricing: sqla_orm.Mapped[Pricing] = sqla_orm.relationship(
+        "Pricing", foreign_keys=[pricingId], back_populates="logs"
+    )
 
     timestamp: datetime.datetime = sqla.Column(sqla.DateTime, nullable=False, server_default=sqla.func.now())
     statusBefore: PricingStatus = sqla.Column(db_utils.MagicEnum(PricingStatus), nullable=False)
@@ -623,14 +633,18 @@ class Cashflow(Base, Model):
     bankAccountId: int = sqla.Column(
         sqla.BigInteger, sqla.ForeignKey("bank_information.id"), index=True, nullable=False
     )
-    bankAccount: BankInformation = sqla_orm.relationship(BankInformation, foreign_keys=[bankAccountId])
+    bankAccount: sqla_orm.Mapped["BankInformation"] = sqla_orm.relationship(
+        BankInformation, foreign_keys=[bankAccountId]
+    )
     reimbursementPointId = sqla.Column(sqla.BigInteger, sqla.ForeignKey("venue.id"), index=True, nullable=False)
     reimbursementPoint: sqla_orm.Mapped["offerers_models.Venue"] = sqla_orm.relationship(
         "Venue", foreign_keys=[reimbursementPointId]
     )
 
     batchId: int = sqla.Column(sqla.BigInteger, sqla.ForeignKey("cashflow_batch.id"), index=True, nullable=False)
-    batch: "CashflowBatch" = sqla_orm.relationship("CashflowBatch", foreign_keys=[batchId], backref="cashflows")
+    batch: sqla_orm.Mapped["CashflowBatch"] = sqla_orm.relationship(
+        "CashflowBatch", foreign_keys=[batchId], backref="cashflows"
+    )
 
     # See the note about `amount` at the beginning of this module.
     # The amount cannot be zero.
@@ -638,11 +652,13 @@ class Cashflow(Base, Model):
     # generated. Positive (incoming) cashflows are manually created.
     amount: int = sqla.Column(sqla.Integer, nullable=False)
 
-    logs: list["CashflowLog"] = sqla_orm.relationship(
+    logs: sqla_orm.Mapped[list["CashflowLog"]] = sqla_orm.relationship(
         "CashflowLog", back_populates="cashflow", order_by="CashflowLog.timestamp"
     )
-    pricings: list[Pricing] = sqla_orm.relationship("Pricing", secondary="cashflow_pricing", back_populates="cashflows")
-    invoices: list["Invoice"] = sqla_orm.relationship(
+    pricings: sqla_orm.Mapped[list[Pricing]] = sqla_orm.relationship(
+        "Pricing", secondary="cashflow_pricing", back_populates="cashflows"
+    )
+    invoices: sqla_orm.Mapped[list["Invoice"]] = sqla_orm.relationship(
         "Invoice", secondary="invoice_cashflow", back_populates="cashflows"
     )
 
@@ -656,7 +672,9 @@ class CashflowLog(Base, Model):
 
     id: int = sqla.Column(sqla.BigInteger, primary_key=True, autoincrement=True)
     cashflowId: int = sqla.Column(sqla.BigInteger, sqla.ForeignKey("cashflow.id"), index=True, nullable=False)
-    cashflow: list[Cashflow] = sqla_orm.relationship("Cashflow", foreign_keys=[cashflowId], back_populates="logs")
+    cashflow: sqla_orm.Mapped[list[Cashflow]] = sqla_orm.relationship(
+        "Cashflow", foreign_keys=[cashflowId], back_populates="logs"
+    )
     timestamp: datetime.datetime = sqla.Column(sqla.DateTime, nullable=False, server_default=sqla.func.now())
     statusBefore: CashflowStatus = sqla.Column(db_utils.MagicEnum(CashflowStatus), nullable=False)
     statusAfter: CashflowStatus = sqla.Column(db_utils.MagicEnum(CashflowStatus), nullable=False)
@@ -697,7 +715,9 @@ class CashflowBatch(Base, Model):
 class InvoiceLine(Base, Model):
     id: int = sqla.Column(sqla.BigInteger, primary_key=True, autoincrement=True)
     invoiceId: int = sqla.Column(sqla.BigInteger, sqla.ForeignKey("invoice.id"), index=True, nullable=False)
-    invoice: "Invoice" = sqla_orm.relationship("Invoice", foreign_keys=[invoiceId], back_populates="lines")
+    invoice: sqla_orm.Mapped["Invoice"] = sqla_orm.relationship(
+        "Invoice", foreign_keys=[invoiceId], back_populates="lines"
+    )
     label: str = sqla.Column(sqla.Text, nullable=False)
     # a group is a dict of label and position, as defined in ..conf.InvoiceLineGroup
     group: dict = sqla.Column(sqla_psql.JSONB, nullable=False)
@@ -745,8 +765,8 @@ class Invoice(Base, Model):
     # See the note about `amount` at the beginning of this module.
     amount: int = sqla.Column(sqla.Integer, nullable=False)
     token: str = sqla.Column(sqla.Text, unique=True, nullable=False)
-    lines: list[InvoiceLine] = sqla_orm.relationship("InvoiceLine", back_populates="invoice")
-    cashflows: list[Cashflow] = sqla_orm.relationship(
+    lines: sqla_orm.Mapped[list[InvoiceLine]] = sqla_orm.relationship("InvoiceLine", back_populates="invoice")
+    cashflows: sqla_orm.Mapped[list[Cashflow]] = sqla_orm.relationship(
         "Cashflow", secondary="invoice_cashflow", back_populates="invoices"
     )
 
@@ -786,11 +806,13 @@ class InvoiceCashflow(Base, Model):
 class Payment(Base, Model):
     id: int = sqla.Column(sqla.BigInteger, primary_key=True, autoincrement=True)
     bookingId = sqla.Column(sqla.BigInteger, sqla.ForeignKey("booking.id"), index=True, nullable=True)
-    booking: "bookings_models.Booking" = sqla_orm.relationship("Booking", foreign_keys=[bookingId], backref="payments")
+    booking: sqla_orm.Mapped["bookings_models.Booking"] = sqla_orm.relationship(
+        "Booking", foreign_keys=[bookingId], backref="payments"
+    )
     collectiveBookingId = sqla.Column(
         sqla.BigInteger, sqla.ForeignKey("collective_booking.id"), index=True, nullable=True
     )
-    collectiveBooking: "educational_models.CollectiveBooking" = sqla_orm.relationship(
+    collectiveBooking: sqla_orm.Mapped["educational_models.CollectiveBooking"] = sqla_orm.relationship(
         "CollectiveBooking",
         foreign_keys=[collectiveBookingId],
         backref="payments",
@@ -803,7 +825,7 @@ class Payment(Base, Model):
         sqla.BigInteger,
         sqla.ForeignKey("custom_reimbursement_rule.id"),
     )
-    customReimbursementRule: CustomReimbursementRule | None = sqla_orm.relationship(
+    customReimbursementRule: sqla_orm.Mapped["CustomReimbursementRule | None"] = sqla_orm.relationship(
         "CustomReimbursementRule", foreign_keys=[customReimbursementRuleId], backref="payments"
     )
     recipientName: str = sqla.Column(sqla.String(140), nullable=False)
@@ -822,7 +844,7 @@ class Payment(Base, Model):
     transactionEndToEndId: UUID = sqla.Column(sqla_psql.UUID(as_uuid=True), nullable=True)
     transactionLabel = sqla.Column(sqla.String(140), nullable=True)
     paymentMessageId = sqla.Column(sqla.BigInteger, sqla.ForeignKey("payment_message.id"), nullable=True)
-    paymentMessage: "PaymentMessage" = sqla_orm.relationship(
+    paymentMessage: sqla_orm.Mapped["PaymentMessage"] = sqla_orm.relationship(
         "PaymentMessage", foreign_keys=[paymentMessageId], backref=sqla_orm.backref("payments")
     )
     batchDate = sqla.Column(sqla.DateTime, nullable=True, index=True)
@@ -861,7 +883,7 @@ class TransactionStatus(enum.Enum):
 class PaymentStatus(Base, Model):
     id: int = sqla.Column(sqla.BigInteger, primary_key=True, autoincrement=True)
     paymentId: int = sqla.Column(sqla.BigInteger, sqla.ForeignKey("payment.id"), index=True, nullable=False)
-    payment: Payment = sqla_orm.relationship("Payment", foreign_keys=[paymentId], backref="statuses")
+    payment: sqla_orm.Mapped["Payment"] = sqla_orm.relationship("Payment", foreign_keys=[paymentId], backref="statuses")
     date: datetime.datetime = sqla.Column(
         sqla.DateTime, nullable=False, default=datetime.datetime.utcnow, server_default=sqla.func.now()
     )

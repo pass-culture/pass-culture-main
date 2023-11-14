@@ -216,22 +216,24 @@ class User(PcObject, Base, Model, NeedsValidationMixin, DeactivableMixin):
     phoneValidationStatus = sa.Column(sa.Enum(PhoneValidationStatusType, create_constraint=False), nullable=True)
     postalCode = sa.Column(sa.String(5), nullable=True)
     recreditAmountToShow = sa.Column(sa.Numeric(10, 2), nullable=True)
-    UserOfferers: list["UserOfferer"] = orm.relationship("UserOfferer", back_populates="user")
+    UserOfferers: orm.Mapped[list["UserOfferer"]] = orm.relationship("UserOfferer", back_populates="user")
     roles: list[UserRole] = sa.Column(
         MutableList.as_mutable(postgresql.ARRAY(sa.Enum(UserRole, native_enum=False, create_constraint=False))),
         nullable=False,
         server_default="{}",
     )
     schoolType = sa.Column(sa.Enum(SchoolTypeEnum, create_constraint=False), nullable=True)
-    trusted_devices: list["TrustedDevice"] = orm.relationship("TrustedDevice", back_populates="user")
-    login_device_history: list["LoginDeviceHistory"] = orm.relationship("LoginDeviceHistory", back_populates="user")
-    single_sign_ons: list["SingleSignOn"] = orm.relationship("SingleSignOn", back_populates="user")
+    trusted_devices: orm.Mapped[list["TrustedDevice"]] = orm.relationship("TrustedDevice", back_populates="user")
+    login_device_history: orm.Mapped[list["LoginDeviceHistory"]] = orm.relationship(
+        "LoginDeviceHistory", back_populates="user"
+    )
+    single_sign_ons: orm.Mapped[list["SingleSignOn"]] = orm.relationship("SingleSignOn", back_populates="user")
     validatedBirthDate = sa.Column(sa.Date, nullable=True)  # validated by an Identity Provider
     backoffice_profile: orm.Mapped["BackOfficeUserProfile"] = orm.relationship(
         "BackOfficeUserProfile", uselist=False, back_populates="user"
     )
     sa.Index("ix_user_validatedBirthDate", validatedBirthDate)
-    pro_flags: UserProFlags = orm.relationship("UserProFlags", back_populates="user", uselist=False)
+    pro_flags: orm.Mapped[UserProFlags] = orm.relationship("UserProFlags", back_populates="user", uselist=False)
 
     def __init__(self, **kwargs: typing.Any) -> None:
         kwargs.setdefault("roles", [])
@@ -805,14 +807,14 @@ class UserProFlags(PcObject, Base, Model):
         unique=True,
         nullable=False,
     )
-    user: User = orm.relationship(User, foreign_keys=[userId], back_populates="pro_flags", uselist=False)
+    user: orm.Mapped["User"] = orm.relationship(User, foreign_keys=[userId], back_populates="pro_flags", uselist=False)
 
 
 class TrustedDevice(PcObject, Base, Model):
     __tablename__ = "trusted_device"
 
     userId: int = sa.Column(sa.BigInteger, sa.ForeignKey("user.id", ondelete="CASCADE"), nullable=False, index=True)
-    user: User = orm.relationship(User, foreign_keys=[userId], back_populates="trusted_devices")
+    user: orm.Mapped["User"] = orm.relationship(User, foreign_keys=[userId], back_populates="trusted_devices")
 
     deviceId: str = sa.Column(sa.Text, nullable=False, index=True)
 
@@ -825,7 +827,7 @@ class LoginDeviceHistory(PcObject, Base, Model):
     __tablename__ = "login_device_history"
 
     userId: int = sa.Column(sa.BigInteger, sa.ForeignKey("user.id", ondelete="CASCADE"), nullable=False, index=True)
-    user: User = orm.relationship(User, foreign_keys=[userId], back_populates="login_device_history")
+    user: orm.Mapped["User"] = orm.relationship(User, foreign_keys=[userId], back_populates="login_device_history")
 
     deviceId: str = sa.Column(sa.Text, nullable=False, index=True)
 
@@ -839,7 +841,7 @@ class SingleSignOn(PcObject, Base, Model):
     __tablename__ = "single_sign_on"
 
     userId: int = sa.Column(sa.BigInteger, sa.ForeignKey("user.id", ondelete="CASCADE"), nullable=False, index=True)
-    user: User = orm.relationship(User, foreign_keys=[userId], back_populates="single_sign_ons")
+    user: orm.Mapped["User"] = orm.relationship(User, foreign_keys=[userId], back_populates="single_sign_ons")
 
     ssoProvider: str = sa.Column(sa.Text, nullable=False)
     ssoUserId: str = sa.Column(sa.Text, nullable=False)
