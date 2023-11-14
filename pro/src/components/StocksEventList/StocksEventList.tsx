@@ -91,21 +91,31 @@ const StocksEventList = ({
   useEffect(() => {
     if (dateFilter) {
       searchParams.set('date', dateFilter)
+    } else {
+      searchParams.delete('date')
     }
     if (timeFilter) {
       searchParams.set('time', timeFilter)
+    } else {
+      searchParams.delete('time')
     }
     if (priceCategoryIdFilter) {
       searchParams.set('priceCategoryId', priceCategoryIdFilter)
+    } else {
+      searchParams.delete('priceCategoryId')
     }
     if (currentSortingColumn) {
       searchParams.set('orderBy', currentSortingColumn)
+    } else {
+      searchParams.delete('orderBy')
     }
     if (currentSortingMode) {
       if (currentSortingMode === SortingMode.DESC) {
         searchParams.set('orderByDesc', '1')
       } else if (currentSortingMode === SortingMode.ASC) {
         searchParams.set('orderByDesc', '0')
+      } else {
+        searchParams.delete('orderByDesc')
       }
     }
     setSearchParams(searchParams)
@@ -114,7 +124,9 @@ const StocksEventList = ({
       const response = await api.getStocks(
         offerId,
         dateFilter ? dateFilter : undefined,
-        timeFilter ? timeFilter : undefined,
+        timeFilter
+          ? convertLocalTimeToUTCTime(timeFilter, departmentCode)
+          : null,
         priceCategoryIdFilter ? Number(priceCategoryIdFilter) : undefined,
         currentSortingColumn ?? undefined,
         currentSortingMode
