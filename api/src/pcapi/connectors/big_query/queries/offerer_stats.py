@@ -50,14 +50,18 @@ class TopOffersData(pydantic_v1.BaseModel):
 class OffersData(BaseQuery):
     @property
     def raw_query(self) -> str:
+        # FIXME(ghaliela, 2023-11-17): this is to be fixed when the data will be available
+        # The execution_date is not the right one, we should use the CURRENT_DATE() instead of the day before
         return f"""
         SELECT
-            offer_id as offerId,
-            nb_consult_last_30_days as numberOfViews
+            DISTINCT offer_id as offerId,
+            nb_consult_last_30_days as numberOfViews,
         FROM
             `{settings.BIG_QUERY_NOTIFICATIONS_TABLE_BASENAME}.{TOP_3_MOST_CONSULTED_OFFERS_LAST_30_DAYS_TABLE}`
         WHERE
             offerer_id = @offerer_id
+        AND
+            DATE(execution_date) = DATE_SUB(CURRENT_DATE(), INTERVAL 1 DAY)
         ORDER BY numberOfViews DESC
         LIMIT 3
         """
