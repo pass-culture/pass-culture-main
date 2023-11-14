@@ -58,7 +58,7 @@ class OffersData(BaseQuery):
             `{settings.BIG_QUERY_NOTIFICATIONS_TABLE_BASENAME}.{TOP_3_MOST_CONSULTED_OFFERS_LAST_30_DAYS_TABLE}`
         WHERE
             offerer_id = @offerer_id
-        ORDER BY consult_rank DESC
+        ORDER BY numberOfViews DESC
         LIMIT 3
         """
 
