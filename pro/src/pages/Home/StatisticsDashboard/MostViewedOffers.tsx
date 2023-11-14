@@ -3,6 +3,7 @@ import React from 'react'
 
 import { OffererViewsModel, TopOffersResponseData } from 'apiClient/v1'
 import { Thumb } from 'ui-kit'
+import { pluralizeString } from 'utils/pluralize'
 
 import styles from './MostViewedOffers.module.scss'
 
@@ -49,7 +50,8 @@ export const MostViewedOffers = ({
               <span className={styles['offer-title']}>
                 {topOffer.offerName}
               </span>
-              <br /> {topOffer.numberOfViews.toLocaleString('fr-FR')} vues
+              <br /> {topOffer.numberOfViews.toLocaleString('fr-FR')}{' '}
+              {pluralizeString('vue', topOffer.numberOfViews)}
             </div>
           </li>
         ))}
