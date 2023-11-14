@@ -20,6 +20,7 @@ const VenueCreationLinks = ({
   offererId,
 }: VenueCreationLinksProps) => {
   const isVenueCreationAvailable = useActiveFeature('API_SIRENE_AVAILABLE')
+  const isStatisticsDashboardEnabled = useActiveFeature('WIP_HOME_STATS')
   const { logEvent } = useAnalytics()
   const location = useLocation()
 
@@ -45,15 +46,17 @@ const VenueCreationLinks = ({
         >
           {!hasPhysicalVenue ? 'Créer un lieu' : 'Ajouter un lieu'}
         </ButtonLink>
-        <ButtonLink
-          variant={ButtonVariant.SECONDARY}
-          link={{
-            to: `/offre/creation?structure=${offererId}`,
-            isExternal: false,
-          }}
-        >
-          Créer une offre
-        </ButtonLink>
+        {!isStatisticsDashboardEnabled && (
+          <ButtonLink
+            variant={ButtonVariant.SECONDARY}
+            link={{
+              to: `/offre/creation?structure=${offererId}`,
+              isExternal: false,
+            }}
+          >
+            Créer une offre
+          </ButtonLink>
+        )}
       </div>
     )
   }
