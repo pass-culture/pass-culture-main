@@ -470,7 +470,7 @@ class PostBookingTest:
         assert response.status_code == 400
         assert response.json == {
             "code": "EXTERNAL_EVENT_PROVIDER_BOOKING_FAILED",
-            "message": "External booking failed. Could not parse response: 2 validation errors for ParsingModel[ExternalEventBookingResponse]\n__root__ -> tickets -> 0 -> barcode\n  ensure this value has at most 100 characters (type=value_error.any_str.max_length; limit_value=100)\n__root__ -> tickets -> 0 -> seat\n  ensure this value has at most 100 characters (type=value_error.any_str.max_length; limit_value=100)",
+            "message": "External booking failed.",
         }
 
     @override_features(ENABLE_EMS_INTEGRATION=True)
@@ -549,6 +549,46 @@ class PostBookingTest:
             "was returned for duo reservation",
         }
         assert stock.quantity == 15
+        assert len(bookings_models.ExternalBooking.query.all()) == 0
+        assert len(bookings_models.Booking.query.all()) == 0
+
+    @override_features(ENABLE_CHARLIE_BOOKINGS_API=True)
+    @freeze_time("2022-10-12 17:09:25")
+    def test_bookings_with_external_event_api_return_nothing(self, client, requests_mock):
+        external_booking_url = "https://book_my_offer.com/confirm"
+        cancel_booking_url = "https://book_my_offer.com/cancel"
+        users_factories.BeneficiaryGrant18Factory(
+            email=self.identifier, dateOfBirth=datetime(2007, 1, 1), phoneNumber="+33101010101", deposit__amount=500
+        )
+        provider = providers_factories.ProviderFactory(
+            name="Technical provider",
+            localClass=None,
+            bookingExternalUrl=external_booking_url,
+            cancelExternalUrl=cancel_booking_url,
+        )
+        providers_factories.OffererProviderFactory(provider=provider)
+        stock = EventStockFactory(
+            lastProvider=provider,
+            offer__lastProvider=provider,
+            offer__withdrawalType=offer_models.WithdrawalTypeEnum.IN_APP,
+            idAtProviders="",
+        )
+
+        requests_mock.post(
+            external_booking_url,
+            json=None,
+            status_code=201,
+        )
+
+        response = client.with_token(self.identifier).post(
+            "/native/v1/bookings", json={"stockId": stock.id, "quantity": 1}
+        )
+
+        assert response.status_code == 400
+        assert response.json == {
+            "code": "EXTERNAL_EVENT_PROVIDER_BOOKING_FAILED",
+            "message": "External booking failed.",
+        }
         assert len(bookings_models.ExternalBooking.query.all()) == 0
         assert len(bookings_models.Booking.query.all()) == 0
 
