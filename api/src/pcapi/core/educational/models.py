@@ -117,7 +117,6 @@ class HasImageMixin:
     BASE_URL = f"{settings.OBJECT_STORAGE_URL}/{settings.THUMBS_FOLDER_NAME}"
     FOLDER = settings.THUMBS_FOLDER_NAME
 
-    id: sa.orm.Mapped[int]
     imageId = sa.Column(sa.Text, nullable=True)
     imageCrop: sa.orm.Mapped["dict | None"] = sa.Column(MutableDict.as_mutable(postgresql.json.JSONB), nullable=True)
     imageCredit = sa.Column(sa.Text, nullable=True)

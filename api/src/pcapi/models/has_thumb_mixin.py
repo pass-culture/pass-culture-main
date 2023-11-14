@@ -9,12 +9,7 @@ from pcapi.utils.human_ids import humanize
 
 @declarative_mixin
 class HasThumbMixin:
-    # Let mypy know that classes that use this mixin have an id
-    # (possibly through another mixin), and that this mixin can use it
-    # in its own functions.
-    id: sa_orm.Mapped[int]
-
-    thumbCount: int = Column(Integer(), nullable=False, default=0)
+    thumbCount: sa_orm.Mapped[int] = Column(Integer(), nullable=False, default=0)
 
     @property
     def thumb_path_component(self) -> str:
