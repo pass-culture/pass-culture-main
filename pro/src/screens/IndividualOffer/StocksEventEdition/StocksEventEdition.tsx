@@ -1,29 +1,45 @@
-import { FormikProvider, useFormik } from 'formik'
+import cn from 'classnames'
+import { FieldArray, FormikProvider, useFormik } from 'formik'
 import isEqual from 'lodash/isEqual'
 import React, { useRef, useState } from 'react'
-import { useNavigate } from 'react-router-dom'
+import { Pagination } from 'react-instantsearch'
+import { useNavigate, useSearchParams } from 'react-router-dom'
 
 import { api } from 'apiClient/api'
+import { StocksOrderedBy } from 'apiClient/v1'
 import DialogBox from 'components/DialogBox'
 import FormLayout from 'components/FormLayout'
 import { OFFER_WIZARD_STEP_IDS } from 'components/IndividualOfferNavigation/constants'
 import { RouteLeavingGuardIndividualOffer } from 'components/RouteLeavingGuardIndividualOffer/RouteLeavingGuardIndividualOffer'
-import { StocksEvent } from 'components/StocksEventList/StocksEventList'
+import { StockFormActions } from 'components/StockFormActions'
+import { FilterResultsRow } from 'components/StocksEventList/FilterResultsRow'
+import { NoResultsRow } from 'components/StocksEventList/NoResultsRow'
+import { SortArrow } from 'components/StocksEventList/SortArrow'
+import {
+  STOCKS_PER_PAGE,
+  StocksEvent,
+} from 'components/StocksEventList/StocksEventList'
 import { OFFER_WIZARD_MODE } from 'core/Offers/constants'
 import { IndividualOffer } from 'core/Offers/types'
 import { isOfferDisabled } from 'core/Offers/utils'
 import { getIndividualOfferUrl } from 'core/Offers/utils/getIndividualOfferUrl'
 import { useOfferWizardMode } from 'hooks'
+import { SortingMode, useColumnSorting } from 'hooks/useColumnSorting'
 import useNotification from 'hooks/useNotification'
+import { usePaginationWithSearchParams } from 'hooks/usePagination'
 import fullMoreIcon from 'icons/full-more.svg'
 import { onSubmit as onRecurrenceSubmit } from 'screens/IndividualOffer/StocksEventCreation/form/onSubmit'
-import { Button } from 'ui-kit'
+import { Button, DatePicker, Select, TextInput, TimePicker } from 'ui-kit'
 import { ButtonVariant } from 'ui-kit/Button/types'
+import { BaseDatePicker } from 'ui-kit/form/DatePicker/BaseDatePicker'
+import SelectInput from 'ui-kit/form/Select/SelectInput'
+import { BaseTimePicker } from 'ui-kit/form/TimePicker/BaseTimePicker'
 import { getToday } from 'utils/date'
 import { hasErrorCode } from 'utils/error'
 import { getLocalDepartementDateTimeFromUtc } from 'utils/timezone'
 
 import ActionBar from '../ActionBar/ActionBar'
+import DialogStockEventDeleteConfirm from '../DialogStockDeleteConfirm/DialogStockEventDeleteConfirm'
 import DialogStocksEventEditConfirm from '../DialogStocksEventEditConfirm/DialogStocksEventEditConfirm'
 import useNotifyFormError from '../hooks/useNotifyFormError'
 import { RecurrenceFormValues } from '../StocksEventCreation/form/types'
@@ -34,7 +50,7 @@ import { EventCancellationBanner } from './EventCancellationBanner'
 import { getPriceCategoryOptions } from './getPriceCategoryOptions'
 import { hasChangesOnStockWithBookings } from './hasChangesOnStockWithBookings'
 import { STOCK_EVENT_FORM_DEFAULT_VALUES } from './StockFormList/constants'
-import StockFormList from './StockFormList/StockFormList'
+import { StocksEventFormSortingColumn } from './StockFormList/stocksFiltering'
 import {
   StockEventFormValues,
   StocksEventFormValues,
@@ -75,23 +91,37 @@ const hasStocksChanged = (
 }
 export interface StocksEventEditionProps {
   offer: IndividualOffer
-  stocks: StocksEvent[]
-  setStocks: (stocks: StocksEvent[]) => void
 }
 
 const StocksEventEdition = ({
   offer,
-  stocks,
-  setStocks,
 }: StocksEventEditionProps): JSX.Element => {
+  // utilities
   const mode = useOfferWizardMode()
   const navigate = useNavigate()
   const notify = useNotification()
-  const [showStocksEventConfirmModal, setShowStocksEventConfirmModal] =
+  const [searchParams, setSearchParams] = useSearchParams()
+
+  // states
+  const [isStocksEventConfirmModal, setIsStocksEventConfirmModal] =
     useState(false)
+  const [isDeleteStockConfirmModalOpen, setIsDeleteConfirmModalOpen] =
+    useState(false)
+  const [stocks, setStocks] = useState<StocksEvent[]>([])
+  const [isRecurrenceModalOpen, setIsRecurrenceModalOpen] = useState(false)
+  const [stocksCount, setStocksCount] = useState<number>(0)
+  const [dateFilter, setDateFilter] = useState(searchParams.get('date'))
+  const [timeFilter, setTimeFilter] = useState(searchParams.get('time'))
+  const [priceCategoryIdFilter, setPriceCategoryIdFilter] = useState(
+    searchParams.get('priceCategoryId')
+  )
+  const { currentSortingColumn, currentSortingMode, onColumnHeaderClick } =
+    useColumnSorting<StocksEventFormSortingColumn>()
+  const { page, previousPage, nextPage, pageCount, firstPage } =
+    usePaginationWithSearchParams(STOCKS_PER_PAGE, stocksCount)
+
   const priceCategoriesOptions = getPriceCategoryOptions(offer.priceCategories)
 
-  const [isRecurrenceModalOpen, setIsRecurrenceModalOpen] = useState(false)
   const onCancel = () => setIsRecurrenceModalOpen(false)
   const today = getLocalDepartementDateTimeFromUtc(
     getToday(),
@@ -150,8 +180,8 @@ const StocksEventEdition = ({
       editedStocks,
       formik.initialValues.stocks
     )
-    if (!showStocksEventConfirmModal && changesOnStockWithBookings) {
-      setShowStocksEventConfirmModal(true)
+    if (!isStocksEventConfirmModal && changesOnStockWithBookings) {
+      setIsStocksEventConfirmModal(true)
       return
     }
 
@@ -171,14 +201,13 @@ const StocksEventEdition = ({
 
     navigate(nextStepUrl)
     notify.success(getSuccessMessage(mode))
-    setShowStocksEventConfirmModal(false)
+    setIsStocksEventConfirmModal(false)
   }
 
   const handleRecurrenceSubmit = async (values: RecurrenceFormValues) => {
     const newStocks = await onRecurrenceSubmit(
       values,
       offer.venue.departementCode ?? '',
-      stocks,
       offer.id,
       notify
     )
@@ -278,13 +307,27 @@ const StocksEventEdition = ({
 
   const isDisabled = isOfferDisabled(offer.status)
   const isSynchronized = Boolean(offer.lastProvider)
+  const onFilterChange = () => {
+    firstPage()
+  }
+  const areFiltersActive = Boolean(
+    dateFilter || timeFilter || priceCategoryIdFilter
+  )
+
+  const computeMaxBookingLimitDatetime = (beginningDate: string) => {
+    const [year, month, day] = beginningDate.split('-')
+
+    return beginningDate !== ''
+      ? new Date(parseInt(year), parseInt(month) - 1, parseInt(day))
+      : undefined
+  }
 
   return (
     <FormikProvider value={formik}>
-      {showStocksEventConfirmModal && (
+      {isStocksEventConfirmModal && (
         <DialogStocksEventEditConfirm
           onConfirm={formik.submitForm}
-          onCancel={() => setShowStocksEventConfirmModal(false)}
+          onCancel={() => setIsStocksEventConfirmModal(false)}
         />
       )}
 
@@ -319,11 +362,409 @@ const StocksEventEdition = ({
               </DialogBox>
             )}
 
-            <StockFormList
-              offer={offer}
-              onDeleteStock={onDeleteStock}
-              priceCategoriesOptions={priceCategoriesOptions}
-              hiddenStocksRef={hiddenStocksRef}
+            <FieldArray
+              name="stocks"
+              render={() => (
+                <>
+                  <table className={styles['stock-table']}>
+                    <caption className="visually-hidden">
+                      Tableau d'édition des stocks
+                    </caption>
+
+                    <thead
+                      className={cn({
+                        [styles['filters-active']]: areFiltersActive,
+                      })}
+                    >
+                      <tr>
+                        <th
+                          className={cn(
+                            styles['table-head'],
+                            styles['head-date']
+                          )}
+                          scope="col"
+                        >
+                          <span className={styles['header-name']}>Date</span>
+
+                          <SortArrow
+                            onClick={() =>
+                              onColumnHeaderClick(
+                                StocksEventFormSortingColumn.DATE
+                              )
+                            }
+                            sortingMode={
+                              currentSortingColumn ===
+                              StocksEventFormSortingColumn.DATE
+                                ? currentSortingMode
+                                : SortingMode.NONE
+                            }
+                          />
+
+                          <div className={cn(styles['filter-input'])}>
+                            <BaseDatePicker
+                              onChange={(event) => {
+                                setDateFilter(event.target.value)
+                                onFilterChange()
+                              }}
+                              value={dateFilter ?? ''}
+                              filterVariant
+                              aria-label="Filtrer par date"
+                            />
+                          </div>
+                        </th>
+
+                        <th
+                          className={cn(
+                            styles['table-head'],
+                            styles['head-time']
+                          )}
+                          scope="col"
+                        >
+                          <span className={styles['header-name']}>Horaire</span>
+
+                          <SortArrow
+                            onClick={() =>
+                              onColumnHeaderClick(
+                                StocksEventFormSortingColumn.HOUR
+                              )
+                            }
+                            sortingMode={
+                              currentSortingColumn ===
+                              StocksEventFormSortingColumn.HOUR
+                                ? currentSortingMode
+                                : SortingMode.NONE
+                            }
+                          />
+                          <div className={cn(styles['filter-input'])}>
+                            <BaseTimePicker
+                              onChange={(event) => {
+                                setTimeFilter(event.target.value)
+                                onFilterChange()
+                              }}
+                              value={timeFilter ?? ''}
+                              filterVariant
+                              aria-label="Filtrer par horaire"
+                            />
+                          </div>
+                        </th>
+
+                        <th
+                          className={cn(
+                            styles['table-head'],
+                            styles['head-price']
+                          )}
+                          scope="col"
+                        >
+                          <span className={styles['header-name']}>Tarif</span>
+
+                          <SortArrow
+                            onClick={() =>
+                              onColumnHeaderClick(
+                                StocksEventFormSortingColumn.PRICE_CATEGORY
+                              )
+                            }
+                            sortingMode={
+                              currentSortingColumn ===
+                              StocksEventFormSortingColumn.PRICE_CATEGORY
+                                ? currentSortingMode
+                                : SortingMode.NONE
+                            }
+                          />
+                          <div className={cn(styles['filter-input'])}>
+                            <SelectInput
+                              name="priceCategoryIdFilter"
+                              defaultOption={{ label: '', value: '' }}
+                              options={priceCategoriesOptions}
+                              value={priceCategoryIdFilter ?? ''}
+                              onChange={(event) => {
+                                setPriceCategoryIdFilter(event.target.value)
+                                onFilterChange()
+                              }}
+                              filterVariant
+                              aria-label="Filtrer par tarif"
+                            />
+                          </div>
+                        </th>
+
+                        <th
+                          className={cn(
+                            styles['table-head'],
+                            styles['head-booking-limit-datetime']
+                          )}
+                          scope="col"
+                        >
+                          <span className={styles['header-name']}>
+                            Date limite
+                            <br />
+                            de réservation
+                          </span>
+
+                          <SortArrow
+                            onClick={() =>
+                              onColumnHeaderClick(
+                                StocksEventFormSortingColumn.BOOKING_LIMIT_DATETIME
+                              )
+                            }
+                            sortingMode={
+                              currentSortingColumn ===
+                              StocksEventFormSortingColumn.BOOKING_LIMIT_DATETIME
+                                ? currentSortingMode
+                                : SortingMode.NONE
+                            }
+                          />
+                          <div className={cn(styles['filter-input'])}>
+                            &nbsp;
+                          </div>
+                        </th>
+
+                        <th
+                          className={cn(
+                            styles['table-head'],
+                            styles['head-remaining-quantity']
+                          )}
+                          scope="col"
+                        >
+                          <span className={styles['header-name']}>
+                            Quantité restante
+                          </span>
+
+                          <SortArrow
+                            onClick={() =>
+                              onColumnHeaderClick(
+                                StocksEventFormSortingColumn.REMAINING_QUANTITY
+                              )
+                            }
+                            sortingMode={
+                              currentSortingColumn ===
+                              StocksEventFormSortingColumn.REMAINING_QUANTITY
+                                ? currentSortingMode
+                                : SortingMode.NONE
+                            }
+                          />
+                          <div className={cn(styles['filter-input'])}>
+                            &nbsp;
+                          </div>
+                        </th>
+
+                        <th
+                          className={cn(
+                            styles['table-head'],
+                            styles['head-booking-quantity']
+                          )}
+                          scope="col"
+                        >
+                          <span className={styles['header-name']}>
+                            Réservations
+                          </span>
+
+                          <SortArrow
+                            onClick={() =>
+                              onColumnHeaderClick(
+                                StocksEventFormSortingColumn.BOOKINGS_QUANTITY
+                              )
+                            }
+                            sortingMode={
+                              currentSortingColumn ===
+                              StocksEventFormSortingColumn.BOOKINGS_QUANTITY
+                                ? currentSortingMode
+                                : SortingMode.NONE
+                            }
+                          />
+                          <div className={cn(styles['filter-input'])}>
+                            &nbsp;
+                          </div>
+                        </th>
+
+                        <th className={styles['head-actions']}></th>
+                      </tr>
+                    </thead>
+
+                    <tbody className={styles['table-body']}>
+                      {areFiltersActive && (
+                        <FilterResultsRow
+                          colSpan={7}
+                          onFiltersReset={() => {
+                            setDateFilter('')
+                            setTimeFilter('')
+                            setPriceCategoryIdFilter('')
+                            onFilterChange()
+                          }}
+                          resultsCount={values.stocks.length}
+                        />
+                      )}
+
+                      {currentPageItems.map(
+                        (stockValues: StockEventFormValues, indexInPage) => {
+                          const index =
+                            (page - 1) * STOCKS_PER_PAGE + indexInPage
+
+                          const stockFormValues = values.stocks[index]
+
+                          const { readOnlyFields } = stockFormValues
+
+                          const beginningDate = stockFormValues.beginningDate
+                          const actions = [
+                            {
+                              callback: async () => {
+                                if (stockValues.bookingsQuantity > 0) {
+                                  setDeletingStockData({
+                                    deletingStock: stockValues,
+                                    deletingIndex: index,
+                                  })
+                                  setIsDeleteConfirmModalOpen(true)
+                                } else {
+                                  /* istanbul ignore next: DEBT, TO FIX */
+                                  await onDeleteStock(stockValues, index)
+                                }
+                              },
+                              label: 'Supprimer le stock',
+                              disabled: !stockValues.isDeletable || isDisabled,
+                              icon: fullTrashIcon,
+                            },
+                          ]
+
+                          return (
+                            <tr className={styles['table-row']} key={index}>
+                              <td className={styles['data']}>
+                                <DatePicker
+                                  smallLabel
+                                  name={`stocks[${index}]beginningDate`}
+                                  label="Date"
+                                  isLabelHidden
+                                  minDate={today}
+                                  disabled={readOnlyFields.includes(
+                                    'beginningDate'
+                                  )}
+                                  hideFooter
+                                />
+                              </td>
+
+                              <td className={styles['data']}>
+                                <TimePicker
+                                  smallLabel
+                                  label="Horaire"
+                                  isLabelHidden
+                                  name={`stocks[${index}]beginningTime`}
+                                  disabled={readOnlyFields.includes(
+                                    'beginningTime'
+                                  )}
+                                  hideFooter
+                                />
+                              </td>
+
+                              <td className={styles['data']}>
+                                <Select
+                                  name={`stocks[${index}]priceCategoryId`}
+                                  options={priceCategoriesOptions}
+                                  smallLabel
+                                  label="Tarif"
+                                  isLabelHidden
+                                  defaultOption={{
+                                    label: 'Sélectionner un tarif',
+                                    value: '',
+                                  }}
+                                  disabled={
+                                    priceCategoriesOptions.length === 1 ||
+                                    readOnlyFields.includes('priceCategoryId')
+                                  }
+                                  hideFooter
+                                />
+                              </td>
+
+                              <td className={styles['data']}>
+                                <DatePicker
+                                  smallLabel
+                                  name={`stocks[${index}]bookingLimitDatetime`}
+                                  label="Date limite de réservation"
+                                  isLabelHidden
+                                  minDate={today}
+                                  maxDate={computeMaxBookingLimitDatetime(
+                                    beginningDate
+                                  )}
+                                  disabled={readOnlyFields.includes(
+                                    'bookingLimitDatetime'
+                                  )}
+                                  hideFooter
+                                />
+                              </td>
+
+                              <td className={styles['data']}>
+                                <TextInput
+                                  smallLabel
+                                  name={`stocks[${index}]remainingQuantity`}
+                                  label={
+                                    mode === OFFER_WIZARD_MODE.EDITION
+                                      ? 'Quantité restante'
+                                      : 'Quantité'
+                                  }
+                                  isLabelHidden
+                                  placeholder="Illimité"
+                                  disabled={readOnlyFields.includes(
+                                    'remainingQuantity'
+                                  )}
+                                  type="number"
+                                  hasDecimal={false}
+                                  hideFooter
+                                />
+                              </td>
+
+                              <td className={styles['data']}>
+                                <TextInput
+                                  name={`stocks[${index}]bookingsQuantity`}
+                                  value={
+                                    values.stocks[index].bookingsQuantity || 0
+                                  }
+                                  readOnly
+                                  label="Réservations"
+                                  isLabelHidden
+                                  smallLabel
+                                  hideFooter
+                                />
+                              </td>
+
+                              {actions && actions.length > 0 && (
+                                <td className={styles['stock-actions']}>
+                                  <StockFormActions
+                                    actions={actions}
+                                    disabled={false}
+                                  />
+                                </td>
+                              )}
+                            </tr>
+                          )
+                        }
+                      )}
+
+                      {values.stocks.length === 0 && (
+                        <NoResultsRow colSpan={7} />
+                      )}
+                    </tbody>
+                  </table>
+
+                  <Pagination
+                    currentPage={page}
+                    pageCount={pageCount}
+                    onPreviousPageClick={previousPage}
+                    onNextPageClick={nextPage}
+                  />
+
+                  {isDeleteStockConfirmModalOpen && (
+                    <DialogStockEventDeleteConfirm
+                      /* istanbul ignore next: DEBT, TO FIX */
+                      onConfirm={async () => {
+                        /* istanbul ignore next: DEBT, TO FIX */
+                        if (deletingStockData !== null) {
+                          const { deletingStock, deletingIndex } =
+                            deletingStockData
+                          await onDeleteStock(deletingStock, deletingIndex)
+                        }
+                        setIsDeleteConfirmModalOpen(false)
+                      }}
+                      onCancel={() => setIsDeleteConfirmModalOpen(false)}
+                    />
+                  )}
+                </>
+              )}
             />
 
             <ActionBar

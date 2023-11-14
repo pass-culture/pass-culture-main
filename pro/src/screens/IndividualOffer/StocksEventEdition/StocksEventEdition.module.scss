@@ -1,7 +1,85 @@
 @use "styles/mixins/_rem.scss" as rem;
+@use "styles/mixins/_fonts.scss" as fonts;
 
 .add-dates-button {
   display: flex;
   justify-content: center;
   margin-bottom: rem.torem(32px);
+}
+
+.stock-table {
+  margin-top: rem.torem(16px);
+  table-layout: fixed;
+  width: 100%;
+}
+
+.table-head {
+  @include fonts.caption;
+
+  text-align: left;
+  padding-bottom: rem.torem(16px);
+  padding-right: rem.torem(16px);
+}
+
+// Cancel additional padding from the filter results row
+.filters-active .table-head {
+  padding-bottom: 0;
+}
+
+.header-name {
+  @include fonts.caption;
+}
+
+.filter-input {
+  margin-top: rem.torem(4px);
+  min-height: rem.torem(24px);
+
+  // Resets the cascading style of <th> otherwise
+  // the font-weight is applied to the datepicker dropdown
+  font-weight: initial;
+}
+
+.table-body {
+  padding-bottom: rem.torem(16px);
+}
+
+.table-row {
+  vertical-align: top;
+}
+
+.head-date {
+  width: rem.torem(160px);
+}
+
+.head-time {
+  width: rem.torem(105px);
+}
+
+.head-booking-limit-datetime {
+  width: rem.torem(160px);
+
+  // force header to break line
+  padding-right: rem.torem(4px);
+}
+
+.head-remaining-quantity {
+  width: rem.torem(90px);
+}
+
+.head-booking-quantity {
+  white-space: nowrap;
+  width: rem.torem(120px);
+}
+
+.head-actions {
+  width: rem.torem(20px);
+}
+
+.data {
+  padding-right: rem.torem(12px);
+  padding-bottom: rem.torem(8px);
+}
+
+.stock-actions {
+  padding-top: rem.torem(8px);
 }
