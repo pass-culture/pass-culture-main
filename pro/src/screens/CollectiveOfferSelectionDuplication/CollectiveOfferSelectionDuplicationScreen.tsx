@@ -8,6 +8,7 @@ import { createOfferFromTemplate } from 'core/OfferEducational'
 import { DEFAULT_SEARCH_FILTERS } from 'core/Offers/constants'
 import { Offer } from 'core/Offers/types'
 import { computeOffersUrl } from 'core/Offers/utils'
+import useActiveFeature from 'hooks/useActiveFeature'
 import useNotification from 'hooks/useNotification'
 import strokeSearchIcon from 'icons/stroke-search.svg'
 import { getFilteredCollectiveOffersAdapter } from 'pages/CollectiveOffers/adapters'
@@ -32,6 +33,7 @@ const CollectiveOfferSelectionDuplication = (): JSX.Element => {
   const [showAll, setShowAll] = useState(true)
   const notify = useNotification()
   const navigate = useNavigate()
+  const isFormatActive = useActiveFeature('WIP_ENABLE_FORMAT')
   const formikSearch = useFormik({
     initialValues: { searchFilter: '' },
     onSubmit: (formValues) =>
@@ -86,7 +88,12 @@ const CollectiveOfferSelectionDuplication = (): JSX.Element => {
         'Vous devez séléctionner une offre vitrine à dupliquer'
       )
     }
-    createOfferFromTemplate(navigate, notify, Number(templateOfferId))
+    createOfferFromTemplate(
+      navigate,
+      notify,
+      Number(templateOfferId),
+      isFormatActive
+    )
   }
 
   return (

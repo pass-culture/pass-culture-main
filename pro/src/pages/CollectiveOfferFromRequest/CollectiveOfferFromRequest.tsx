@@ -10,6 +10,7 @@ import {
   createOfferFromTemplate,
 } from 'core/OfferEducational'
 import getCollectiveOfferTemplateAdapter from 'core/OfferEducational/adapters/getCollectiveOfferTemplateAdapter'
+import useActiveFeature from 'hooks/useActiveFeature'
 import useAnalytics from 'hooks/useAnalytics'
 import useNotification from 'hooks/useNotification'
 import { Button, Title } from 'ui-kit'
@@ -29,6 +30,8 @@ const CollectiveOfferFromRequest = (): JSX.Element => {
   const [offerTemplate, setOfferTemplate] = useState<CollectiveOfferTemplate>()
   const [isLoading, setIsLoading] = useState(true)
 
+  const isFormatActive = useActiveFeature('WIP_ENABLE_FORMAT')
+
   const { offerId, requestId } = useParams<{
     offerId: string
     requestId: string
@@ -40,7 +43,13 @@ const CollectiveOfferFromRequest = (): JSX.Element => {
       requestId,
       templateOfferId: offerId,
     })
-    createOfferFromTemplate(navigate, notify, Number(offerId), requestId)
+    createOfferFromTemplate(
+      navigate,
+      notify,
+      Number(offerId),
+      isFormatActive,
+      requestId
+    )
   }
 
   const fetchOfferTemplateDetails = async () => {
