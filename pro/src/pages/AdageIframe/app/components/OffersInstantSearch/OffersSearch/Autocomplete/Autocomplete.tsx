@@ -206,6 +206,8 @@ export const Autocomplete = ({
         async onSelect({ item }) {
           const venueDisplayName = item.venue.publicName || item.venue.name
           autocomplete.setQuery('')
+          refine('')
+          setCurrentSearch('')
           await formik.setFieldValue('venue', { ...item.venue, relative: [] })
           await formik.submitForm()
 
