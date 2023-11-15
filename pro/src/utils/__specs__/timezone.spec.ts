@@ -1,4 +1,8 @@
-import { formatLocalTimeDateString, getDepartmentTimezone } from '../timezone'
+import {
+  convertFromLocalTimeToVenueTimezoneInUtc,
+  formatLocalTimeDateString,
+  getDepartmentTimezone,
+} from '../timezone'
 
 describe('formatLocalTimeDateString', () => {
   it('should return a formatted date with Paris departement code and specified format', () => {
@@ -62,5 +66,29 @@ describe('getDepartmentTimezone', () => {
     const timezone = getDepartmentTimezone(departementCode)
 
     expect(timezone).toBe('Indian/Reunion')
+  })
+})
+
+// I don't find a way to change the timezone used in the test
+// so the test is incomplete
+// if it was possible we would have prefered to test with TZ=Europe/Paris, TZ=America/Cayenne, etc.
+describe('convertFromLocalTimeToVenueTimezoneInUtc', () => {
+  it('should convert from my locale to departement timezone and give result in utc', () => {
+    const timeInVersailles = convertFromLocalTimeToVenueTimezoneInUtc(
+      '12:00',
+      '78'
+    )
+    const timeInTahiti = convertFromLocalTimeToVenueTimezoneInUtc(
+      '12:00',
+      '987'
+    )
+    const timeInGuadeloupe = convertFromLocalTimeToVenueTimezoneInUtc(
+      '12:00',
+      '971'
+    )
+
+    expect(timeInVersailles).toBe('11:00')
+    expect(timeInTahiti).toBe('22:00')
+    expect(timeInGuadeloupe).toBe('16:00')
   })
 })

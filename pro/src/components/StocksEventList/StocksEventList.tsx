@@ -10,7 +10,6 @@ import { SortingMode, useColumnSorting } from 'hooks/useColumnSorting'
 import useNotification from 'hooks/useNotification'
 import { usePagination } from 'hooks/usePagination'
 import fullTrashIcon from 'icons/full-trash.svg'
-import { convertLocalTimeToUTCTime } from 'screens/IndividualOffer/StocksEventEdition/adapters/serializers'
 import { getPriceCategoryOptions } from 'screens/IndividualOffer/StocksEventEdition/getPriceCategoryOptions'
 import { Button } from 'ui-kit'
 import { ButtonVariant } from 'ui-kit/Button/types'
@@ -21,7 +20,10 @@ import { BaseTimePicker } from 'ui-kit/form/TimePicker/BaseTimePicker'
 import { Pagination } from 'ui-kit/Pagination'
 import { formatPrice } from 'utils/formatPrice'
 import { pluralizeString } from 'utils/pluralize'
-import { formatLocalTimeDateString } from 'utils/timezone'
+import {
+  convertFromLocalTimeToVenueTimezoneInUtc,
+  formatLocalTimeDateString,
+} from 'utils/timezone'
 
 import { FilterResultsRow } from './FilterResultsRow'
 import { NoResultsRow } from './NoResultsRow'
@@ -92,7 +94,8 @@ const StocksEventList = ({
     priceCategories,
     currentSortingColumn,
     currentSortingMode,
-    { dateFilter, hourFilter, priceCategoryFilter }
+    { dateFilter, hourFilter, priceCategoryFilter },
+    departmentCode
   )
   const { page, setPage, previousPage, nextPage, pageCount, currentPageItems } =
     usePagination(filteredStocks, STOCKS_PER_PAGE)
@@ -159,7 +162,10 @@ const StocksEventList = ({
           time:
             hourFilter === ''
               ? null
-              : convertLocalTimeToUTCTime(hourFilter, departmentCode),
+              : convertFromLocalTimeToVenueTimezoneInUtc(
+                  hourFilter,
+                  departmentCode
+                ),
           price_category_id:
             priceCategoryFilter === '' ? null : parseInt(priceCategoryFilter),
         })

@@ -33,7 +33,7 @@ const renderStocksEventList = (props: Partial<StocksEventListProps>) => {
         priceCategoryFactory({ label: 'Label', price: 5.5, id: 2 }),
         priceCategoryFactory({ label: 'Label', price: 30.5, id: 3 }),
       ]}
-      departmentCode="78"
+      departmentCode={props.departmentCode ?? '78'}
       setStocks={mockSetSotcks}
       offerId={1}
     />
@@ -296,7 +296,7 @@ describe('StocksEventList', () => {
     expect(screen.queryByText('2 dates sélectionnées')).not.toBeInTheDocument()
   })
 
-  it('should bulk delete lines with filters and use UTC for hour filter when clicking on button on action bar', async () => {
+  it('should bulk delete lines with filters, use local for hour filter when clicking on button on action bar but send UTC to the api', async () => {
     renderStocksEventList({
       stocks: [
         individualStockEventFactory({
@@ -309,11 +309,16 @@ describe('StocksEventList', () => {
         }),
         individualStockEventFactory({
           priceCategoryId: 1,
-          beginningDatetime: '2021-10-15T11:00:00.000Z',
+          beginningDatetime: '2021-10-15T15:00:00.000Z',
         }),
       ],
+      // let's test for Pacific/Pitcairn !
+      departmentCode: '989',
     })
-    await userEvent.type(screen.getByLabelText('Filtrer par horaire'), '10:00')
+
+    // In the component we show the hour in the venue timezone
+    // So this will change each time you change department code
+    await userEvent.type(screen.getByLabelText('Filtrer par horaire'), '02:00')
     expect(
       screen.getAllByText('12,5 € - Label', { selector: 'td' })
     ).toHaveLength(2)
@@ -326,10 +331,62 @@ describe('StocksEventList', () => {
     expect(api.deleteStock).not.toHaveBeenCalled()
     expect(api.deleteStocks).not.toHaveBeenCalled()
     expect(api.deleteAllFilteredStocks).toBeCalledTimes(1)
+
+    // We wanna send it in UTC to the api
+    // So if you change department code
+    // this doesn't impact the hour filter
+    // you should see the same time as in the beginnning datetime (because it's already in utc)
     expect(api.deleteAllFilteredStocks).toHaveBeenCalledWith(1, {
       date: null,
       price_category_id: null,
-      time: '09:00',
+      time: '10:00',
+    })
+
+    expect(screen.queryByText('2 dates sélectionnées')).not.toBeInTheDocument()
+  })
+
+  it('should filter and bulk delete with another timezone', async () => {
+    renderStocksEventList({
+      stocks: [
+        // exactly the same utc dates as in the previous test
+        individualStockEventFactory({
+          priceCategoryId: 1,
+          beginningDatetime: '2021-09-15T10:00:00.000Z',
+        }),
+        individualStockEventFactory({
+          priceCategoryId: 1,
+          beginningDatetime: '2021-10-15T10:00:00.000Z',
+        }),
+        individualStockEventFactory({
+          priceCategoryId: 1,
+          beginningDatetime: '2021-10-15T15:00:00.000Z',
+        }),
+      ],
+      // let's test for America/Martinique !
+      departmentCode: '972',
+    })
+
+    // In the component we show the hour in the venue timezone
+    // So this will change each time you change department code
+    await userEvent.type(screen.getByLabelText('Filtrer par horaire'), '06:00')
+    expect(
+      screen.getAllByText('12,5 € - Label', { selector: 'td' })
+    ).toHaveLength(2)
+
+    const checkboxes = screen.getAllByRole('checkbox')
+    await userEvent.click(checkboxes[0])
+    expect(screen.getByText('2 dates sélectionnées')).toBeInTheDocument()
+
+    await userEvent.click(screen.getByText('Supprimer ces dates'))
+
+    // We wanna send it in UTC to the api
+    // So if you change department code
+    // this doesn't impact the hour filter
+    // you should see the same time as in the beginnning datetime (because it's already in utc)
+    expect(api.deleteAllFilteredStocks).toHaveBeenCalledWith(1, {
+      date: null,
+      price_category_id: null,
+      time: '10:00',
     })
 
     expect(screen.queryByText('2 dates sélectionnées')).not.toBeInTheDocument()

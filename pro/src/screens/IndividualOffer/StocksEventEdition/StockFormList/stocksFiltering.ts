@@ -6,6 +6,7 @@ import {
   sortColumnByNumber,
 } from 'hooks/useColumnSorting'
 import { isDateValid } from 'utils/date'
+import { getLocalDepartementDateTimeFromUtc } from 'utils/timezone'
 
 import { StockEventFormValues } from './types'
 
@@ -27,11 +28,15 @@ export const filterAndSortStocks = (
     dateFilter: string
     hourFilter: string
     priceCategoryFilter: string
-  }
+  },
+  departmentCode?: string | null
 ): StockEventFormValues[] => {
   const { dateFilter, hourFilter, priceCategoryFilter } = filters
   const filteredStocks = stocks.filter((stock) => {
-    const stockDate = new Date(stock.beginningDate)
+    const stockDate = getLocalDepartementDateTimeFromUtc(
+      new Date(stock.beginningDate),
+      departmentCode
+    )
 
     const date = new Date(dateFilter)
     if (isDateValid(date) && isDateValid(stockDate)) {
