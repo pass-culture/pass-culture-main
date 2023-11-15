@@ -198,7 +198,7 @@ const StocksEventEdition = ({
       isEqual(val, STOCK_EVENT_FORM_DEFAULT_VALUES)
     )
 
-    if (isFormEmpty) {
+    if (isFormEmpty || !formik.dirty) {
       navigate(nextStepUrl)
       notify.success(getSuccessMessage(mode))
       return
