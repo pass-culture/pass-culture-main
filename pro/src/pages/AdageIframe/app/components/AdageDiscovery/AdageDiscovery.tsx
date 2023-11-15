@@ -10,7 +10,7 @@ import styles from './AdageDiscovery.module.scss'
 import CardOfferComponent, { CardOfferModel } from './CardOffer/CardOffer'
 import CardVenue from './CardVenue/CardVenue'
 
-const mockOffer: CardOfferModel = {
+export const mockOffer: CardOfferModel = {
   id: 479,
   name: 'Une chouette à la mer',
   description: 'Une offre vraiment chouette',

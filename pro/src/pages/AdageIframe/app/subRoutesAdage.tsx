@@ -3,6 +3,7 @@
 import { AdageDiscovery } from './components/AdageDiscovery/AdageDiscovery'
 import { OffersFavorites } from './components/OffersFavorites/OffersFavorites'
 import OffersForMyInstitution from './components/OffersForInstitution/OffersForMyInstitution'
+import { OffersInfos } from './components/OffersInfos/OffersInfos'
 import { OffersInstantSearch } from './components/OffersInstantSearch/OffersInstantSearch'
 
 // TODO: delete when ff WIP_ENABLE_DISCOVERY is deleted
@@ -57,5 +58,11 @@ export const routesAdage = [
     parentPath: '/adage-iframe',
     path: '/mes-favoris',
     title: 'Mes Favoris',
+  },
+  {
+    element: OffersInfos,
+    parentPath: '/adage-iframe',
+    path: '/decouverte/offre/:offerId',
+    title: 'Découvrir une offre',
   },
 ]

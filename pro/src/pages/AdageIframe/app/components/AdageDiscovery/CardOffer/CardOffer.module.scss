@@ -6,10 +6,11 @@ $offer-image-height: rem.torem(273px);
 $offer-image-width: rem.torem(216px);
 
 .container {
+  position: relative;
   display: flex;
   flex-direction: column;
   width: $offer-image-width;
-  gap: 16px;
+  gap: rem.torem(16px);
 }
 
 .offer-image-container {
