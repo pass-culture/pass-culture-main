@@ -50,6 +50,8 @@ class ProviderFactory(BaseFactory):
 
 
 class APIProviderFactory(BaseFactory):
+    # This factory creates legacy providers.
+    # The API they uses will be dropped, do not use this factory unless you specifically want to.
     class Meta:
         model = models.Provider
 
@@ -57,6 +59,16 @@ class APIProviderFactory(BaseFactory):
     apiUrl = factory.Sequence("https://{}.example.org/stocks".format)
     enabledForPro = True
     isActive = True
+
+
+class PublicApiProviderFactory(BaseFactory):
+    class Meta:
+        model = models.Provider
+
+    name = factory.Sequence("Public API Provider {}".format)
+    enabledForPro = True
+    isActive = True
+    hmacKey = "secret"
 
 
 class VenueProviderFactory(BaseFactory):
