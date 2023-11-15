@@ -379,7 +379,7 @@ def clean_temporary_files(test_function: typing.Callable) -> typing.Callable:
 
 @contextlib.contextmanager
 def assert_model_count_delta(
-    model: flask_sqlalchemy.Model,
+    model: flask_sqlalchemy.model.Model,
     delta: int,
 ) -> collections.abc.Generator[None, None, None]:
     start_count = model.query.count()
