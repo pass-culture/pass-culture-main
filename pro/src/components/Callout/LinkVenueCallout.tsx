@@ -1,9 +1,12 @@
 import React from 'react'
+import { useLocation } from 'react-router-dom'
 
 import { GetOffererResponseModel } from 'apiClient/v1'
 import Callout from 'components/Callout/Callout'
 import { CalloutVariant } from 'components/Callout/types'
+import { BankAccountEvents } from 'core/FirebaseEvents/constants'
 import useActiveFeature from 'hooks/useActiveFeature'
+import useAnalytics from 'hooks/useAnalytics'
 
 export interface LinkVenueCalloutProps {
   offerer?: GetOffererResponseModel | null
@@ -14,6 +17,9 @@ const LinkVenueCallout = ({
   offerer,
   titleOnly = false,
 }: LinkVenueCalloutProps): JSX.Element | null => {
+  const { logEvent } = useAnalytics()
+  const location = useLocation()
+
   const displayCallout =
     offerer &&
     offerer.hasValidBankAccount &&
@@ -40,6 +46,12 @@ const LinkVenueCallout = ({
           linkTitle: 'Gérer le rattachement de mes lieux',
           targetLink: '',
           isExternal: false,
+          onClick: () => {
+            logEvent?.(BankAccountEvents.CLICKED_ADD_VENUE_TO_BANK_ACCOUNT, {
+              from: location.pathname,
+              offererId: offerer.id,
+            })
+          },
         },
       ]}
       type={CalloutVariant.ERROR}
