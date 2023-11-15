@@ -1,4 +1,5 @@
 import React from 'react'
+import { useSearchParams } from 'react-router-dom'
 
 import {
   CollectiveOfferOfferVenue,
@@ -32,6 +33,9 @@ export interface CardComponentProps {
 }
 
 const CardOfferComponent = ({ offer }: CardComponentProps) => {
+  const [searchParams] = useSearchParams()
+  const adageAuthToken = searchParams.get('token')
+
   const tagInfos = {
     [OfferAddressType.SCHOOL]: [{ logo: logoSchool, text: 'En classe' }],
     [OfferAddressType.OFFERER_VENUE]: [
@@ -45,52 +49,60 @@ const CardOfferComponent = ({ offer }: CardComponentProps) => {
   }
 
   return (
-    <div className={styles.container}>
-      <div className={styles['offer-image-container']}>
-        {offer.imageUrl ? (
-          <img
-            alt=""
-            className={styles['offer-image']}
-            loading="lazy"
-            src={offer.imageUrl}
-          />
-        ) : (
-          <div className={styles['offer-image']}>
-            <SvgIcon src={strokeOfferIcon} alt="" />
-          </div>
-        )}
-        <OfferFavoriteButton
-          offer={offer}
-          className={styles['offer-favorite-button']}
-        />
-      </div>
+    <div className={styles['container']}>
+      <a
+        data-testid="card-offer-link"
+        href={`/adage-iframe/decouverte/offre/${offer.id}?token=${adageAuthToken}`}
+      >
+        <div className={styles['offer-image-container']}>
+          {offer.imageUrl ? (
+            <img
+              alt=""
+              className={styles['offer-image']}
+              loading="lazy"
+              src={offer.imageUrl}
+            />
+          ) : (
+            <div className={styles['offer-image']}>
+              <SvgIcon src={strokeOfferIcon} alt="" />
+            </div>
+          )}
+        </div>
 
-      <div className={styles['offer-tag-container']}>
-        <Tag variant={TagVariant.LIGHT_GREY} className={styles['offer-tag']}>
-          <img
-            alt=""
-            src={tagInfos[offer.offerVenue.addressType][0].logo}
-            className={styles['offer-tag-image']}
-          />
-          <span>{tagInfos[offer.offerVenue.addressType][0].text}</span>
-        </Tag>
-        {tagInfos[offer.offerVenue.addressType].length > 1 && (
+        <div className={styles['offer-tag-container']}>
           <Tag variant={TagVariant.LIGHT_GREY} className={styles['offer-tag']}>
-            <span>{tagInfos[offer.offerVenue.addressType][1].text}</span>
+            <img
+              alt=""
+              src={tagInfos[offer.offerVenue.addressType][0].logo}
+              className={styles['offer-tag-image']}
+            />
+            <span>{tagInfos[offer.offerVenue.addressType][0].text}</span>
           </Tag>
-        )}
-      </div>
+          {tagInfos[offer.offerVenue.addressType].length > 1 && (
+            <Tag
+              variant={TagVariant.LIGHT_GREY}
+              className={styles['offer-tag']}
+            >
+              <span>{tagInfos[offer.offerVenue.addressType][1].text}</span>
+            </Tag>
+          )}
+        </div>
 
-      <div className={styles['offer-name']} title={offer.name}>
-        {offer.name}
-      </div>
+        <div className={styles['offer-name']} title={offer.name}>
+          {offer.name}
+        </div>
 
-      <div className="offer-venue">
-        <div className={styles['offer-venue-name']}>{offer.venue.name}</div>
-        <div
-          className={styles['offer-venue-distance']}
-        >{`à ${offer.venue.distance} km - ${offer.venue.city}`}</div>
-      </div>
+        <div className="offer-venue">
+          <div className={styles['offer-venue-name']}>{offer.venue.name}</div>
+          <div
+            className={styles['offer-venue-distance']}
+          >{`à ${offer.venue.distance} km - ${offer.venue.city}`}</div>
+        </div>
+      </a>
+      <OfferFavoriteButton
+        offer={offer}
+        className={styles['offer-favorite-button']}
+      />
     </div>
   )
 }
