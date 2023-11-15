@@ -1,3 +1,4 @@
+import datetime
 import random
 
 from factory.faker import faker
@@ -7,7 +8,7 @@ from pcapi.core.offerers import factories as offerers_factories
 from pcapi.core.offerers import models as offerers_models
 from pcapi.core.offers import factories as offers_factories
 from pcapi.core.providers.titelive_gtl import GTLS
-from pcapi.sandboxes.scripts.creators.test_cases.venues_mock import venues
+from pcapi.sandboxes.scripts.creators.test_cases import venues_mock
 
 
 Fake = faker.Faker(locale="fr_FR")
@@ -16,6 +17,7 @@ Fake = faker.Faker(locale="fr_FR")
 def save_test_cases_sandbox() -> None:
     create_offers_with_gtls()
     create_offers_with_same_ean()
+    create_venues_across_cities()
 
 
 def create_offers_with_gtls() -> None:
@@ -93,7 +95,7 @@ def create_offers_with_same_ean() -> None:
             "author": author,
         },
     )
-    for venue_data in venues:
+    for venue_data in venues_mock.venues:
         offers.append(
             offers_factories.OfferFactory(
                 product=product,
@@ -134,3 +136,53 @@ def create_offer_with_ean(ean: str, venue: offerers_models.Venue, author: str) -
         venue=venue,
     )
     offers_factories.StockFactory(quantity=random.randint(10, 100), offer=offer)
+
+
+def create_venues_across_cities() -> None:
+    venues_by_city = [venues_mock.paris_venues, venues_mock.lyon_venues, venues_mock.mayotte_venues]
+    for venues_list in venues_by_city:
+        for venue, venue_type_code in zip(venues_list, offerers_models.VenueTypeCode):
+            venue = offerers_factories.VenueFactory(
+                name=venue["city"] + "-" + venue["name"],
+                venueTypeCode=venue_type_code,
+                isPermanent=True,
+                latitude=venue["latitude"],
+                longitude=venue["longitude"],
+                address=venue["address"],
+                postalCode=venue["postalCode"],
+                city=venue["city"],
+                departementCode=venue["departementCode"],
+            )
+            for _ in range(7):
+                offer = offers_factories.OfferFactory(
+                    venue=venue,
+                    product=None,
+                    subcategoryId=random.choice(subcategories_v2.ALL_SUBCATEGORIES).id,
+                    name=Fake.sentence(nb_words=3, variable_nb_words=True)[:-1],
+                    description=Fake.paragraph(nb_sentences=5, variable_nb_sentences=True),
+                    url=None,
+                )
+                for _ in range(random.randint(1, 10)):
+                    offers_factories.StockFactory(quantity=random.randint(10, 100), offer=offer)
+
+            for _ in range(3):
+                offers_factories.EventOfferFactory(
+                    venue=venue,
+                    product=None,
+                    subcategoryId=random.choice(list(subcategories_v2.EVENT_SUBCATEGORIES)),
+                    name=Fake.sentence(nb_words=3, variable_nb_words=True)[:-1],
+                    description=Fake.paragraph(nb_sentences=5, variable_nb_sentences=True),
+                    url=None,
+                )
+                for _ in range(random.randint(1, 10)):
+                    offers_factories.EventStockFactory(
+                        quantity=random.randint(10, 100),
+                        offer=offer,
+                        beginningDatetime=datetime.datetime.utcnow()
+                        + datetime.timedelta(
+                            days=random.randint(30, 59),
+                            hours=random.randint(1, 23),
+                            minutes=random.randint(1, 59),
+                            seconds=random.randint(1, 59),
+                        ),
+                    )
