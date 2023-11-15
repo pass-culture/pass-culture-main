@@ -94,6 +94,7 @@ export const GetIndividualOfferFactory = (
     isNational: true,
     subcategoryId: SubcategoryIdEnum.SEANCE_CINE,
     lastProvider: null,
+    bookingsCount: 0,
     ...customOffer,
   }
 }

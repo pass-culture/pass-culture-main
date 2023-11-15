@@ -466,6 +466,9 @@ class Offer(PcObject, Base, Model, DeactivableMixin, ValidationMixin, Accessibil
     #  can be used by PostgreSQL when filtering on the `venueId` column only.
     sa.Index("venueId_idAtProvider_index", venueId, idAtProvider, unique=True)
 
+    isNonFreeOffer: sa_orm.Mapped["bool"] = sa_orm.query_expression()
+    bookingsCount: sa_orm.Mapped["int"] = sa_orm.query_expression()
+
     @property
     def isEducational(self) -> bool:
         return False
