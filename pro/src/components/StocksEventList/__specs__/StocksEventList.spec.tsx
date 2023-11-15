@@ -1,55 +1,74 @@
-import { screen, within } from '@testing-library/react'
+import { screen, waitFor, within } from '@testing-library/react'
 import { userEvent } from '@testing-library/user-event'
 import React from 'react'
 
 import { api } from 'apiClient/api'
+import { GetOfferStockResponseModel, StocksOrderedBy } from 'apiClient/v1'
 import {
-  individualStockEventFactory,
+  individualGetOfferStockResponseModelFactory,
   priceCategoryFactory,
 } from 'utils/individualApiFactories'
 import { renderWithProviders } from 'utils/renderWithProviders'
 
-import StocksEventList, {
-  STOCKS_PER_PAGE,
-  StocksEventListProps,
-} from '../StocksEventList'
-
-const mockSetSotcks = vi.fn()
+import StocksEventList, { StocksEventListProps } from '../StocksEventList'
 
 vi.mock('apiClient/api', () => ({
   api: {
+    getStocks: vi.fn(),
     deleteAllFilteredStocks: vi.fn(),
     deleteStocks: vi.fn(),
     deleteStock: vi.fn(),
   },
 }))
 
-const renderStocksEventList = (props: Partial<StocksEventListProps>) => {
+const offerId = 1
+const filteredPriceCategoryId = 3
+const stock1 = individualGetOfferStockResponseModelFactory({
+  beginningDatetime: new Date('2021-10-15T12:00:00Z').toISOString(),
+  priceCategoryId: 1,
+})
+const stock2 = individualGetOfferStockResponseModelFactory({
+  beginningDatetime: new Date('2021-10-14T13:00:00Z').toISOString(),
+  priceCategoryId: 2,
+})
+const stock3 = individualGetOfferStockResponseModelFactory({
+  beginningDatetime: new Date('2021-10-14T12:00:00Z').toISOString(),
+  priceCategoryId: filteredPriceCategoryId,
+})
+
+const renderStocksEventList = async (
+  stocks: GetOfferStockResponseModel[],
+  props: Partial<StocksEventListProps> = {}
+) => {
+  vi.spyOn(api, 'getStocks').mockResolvedValueOnce({
+    stocks,
+    stockCount: stocks.length,
+    hasStocks: true,
+  })
   renderWithProviders(
     <StocksEventList
-      stockCount={props.stocks?.length ?? 0}
-      stocks={props.stocks ?? []}
       priceCategories={[
         priceCategoryFactory({ label: 'Label', price: 12.5, id: 1 }),
         priceCategoryFactory({ label: 'Label', price: 5.5, id: 2 }),
         priceCategoryFactory({ label: 'Label', price: 30.5, id: 3 }),
       ]}
       departmentCode={props.departmentCode ?? '78'}
-      setStocks={mockSetSotcks}
-      offerId={1}
+      offerId={offerId}
+      {...props}
     />
   )
+  await waitFor(() => {
+    expect(api.getStocks).toHaveBeenCalledTimes(1)
+  })
 }
 
 describe('StocksEventList', () => {
-  it('should render a table with header and data', () => {
-    renderStocksEventList({
-      stocks: [individualStockEventFactory({ priceCategoryId: 1 })],
-    })
+  it('should render a table with header and data', async () => {
+    await renderStocksEventList([stock1])
 
     expect(screen.getByText('Date')).toBeInTheDocument()
 
-    expect(screen.getByText('ven')).toBeInTheDocument()
+    expect(await screen.findByText('ven')).toBeInTheDocument()
     expect(screen.getByLabelText('Filtrer par date')).toBeInTheDocument()
     expect(screen.getByLabelText('Filtrer par horaire')).toBeInTheDocument()
     expect(screen.getByText('18')).toBeInTheDocument()
@@ -59,33 +78,19 @@ describe('StocksEventList', () => {
     expect(screen.getByText('15/09/2021')).toBeInTheDocument()
   })
 
-  it('should render Illimité', () => {
-    renderStocksEventList({
-      stocks: [
-        individualStockEventFactory({ priceCategoryId: 1, quantity: null }),
-      ],
-    })
+  it('should render Illimité', async () => {
+    await renderStocksEventList([
+      individualGetOfferStockResponseModelFactory({
+        priceCategoryId: 1,
+        quantity: null,
+      }),
+    ])
 
-    expect(screen.getByText('Illimité')).toBeInTheDocument()
+    expect(await screen.findByText('Illimité')).toBeInTheDocument()
   })
 
   it('should sort stocks', async () => {
-    renderStocksEventList({
-      stocks: [
-        individualStockEventFactory({
-          beginningDatetime: new Date('2021-10-13T12:00:00Z').toISOString(),
-          priceCategoryId: 1,
-        }),
-        individualStockEventFactory({
-          beginningDatetime: new Date('2021-10-14T12:00:00Z').toISOString(),
-          priceCategoryId: 2,
-        }),
-        individualStockEventFactory({
-          beginningDatetime: new Date('2021-10-15T12:00:00Z').toISOString(),
-          priceCategoryId: 3,
-        }),
-      ],
-    })
+    await renderStocksEventList([stock1, stock2, stock3])
 
     expect(screen.getAllByRole('row')).toHaveLength(4) // 1 header + 3 rows
     expect(
@@ -97,107 +102,187 @@ describe('StocksEventList', () => {
     within(screen.getAllByRole('row')[2]).getByText('5,5 € - Label')
     within(screen.getAllByRole('row')[3]).getByText('30,5 € - Label')
 
+    vi.spyOn(api, 'getStocks').mockResolvedValueOnce({
+      stocks: [stock2, stock1, stock3],
+      stockCount: 3,
+      hasStocks: true,
+    })
     await userEvent.click(
       screen.getAllByRole('img', { name: 'Trier par ordre croissant' })[2]
     )
+    await waitFor(() => {
+      expect(api.getStocks).toHaveBeenCalledWith(
+        offerId,
+        undefined,
+        undefined,
+        undefined,
+        StocksOrderedBy.PRICE_CATEGORY_ID,
+        false,
+        1
+      )
+    })
     within(screen.getAllByRole('row')[1]).getByText('5,5 € - Label')
     within(screen.getAllByRole('row')[2]).getByText('12,5 € - Label')
     within(screen.getAllByRole('row')[3]).getByText('30,5 € - Label')
 
+    vi.spyOn(api, 'getStocks').mockResolvedValueOnce({
+      stocks: [stock3, stock1, stock2],
+      stockCount: 3,
+      hasStocks: true,
+    })
     await userEvent.click(
       screen.getByRole('img', { name: 'Trier par ordre décroissant' })
     )
+    await waitFor(() => {
+      expect(api.getStocks).toHaveBeenCalledWith(
+        offerId,
+        undefined,
+        undefined,
+        undefined,
+        StocksOrderedBy.PRICE_CATEGORY_ID,
+        true,
+        1
+      )
+    })
     within(screen.getAllByRole('row')[1]).getByText('30,5 € - Label')
     within(screen.getAllByRole('row')[2]).getByText('12,5 € - Label')
     within(screen.getAllByRole('row')[3]).getByText('5,5 € - Label')
 
+    vi.spyOn(api, 'getStocks').mockResolvedValueOnce({
+      stocks: [stock1, stock2, stock3],
+      stockCount: 3,
+      hasStocks: true,
+    })
     await userEvent.click(screen.getByRole('img', { name: 'Ne plus trier' }))
+    await waitFor(() => {
+      expect(api.getStocks).toHaveBeenCalledWith(
+        offerId,
+        undefined,
+        undefined,
+        undefined,
+        StocksOrderedBy.PRICE_CATEGORY_ID,
+        false,
+        1
+      )
+    })
     within(screen.getAllByRole('row')[1]).getByText('12,5 € - Label')
     within(screen.getAllByRole('row')[2]).getByText('5,5 € - Label')
     within(screen.getAllByRole('row')[3]).getByText('30,5 € - Label')
   })
 
   it('should filter stocks', async () => {
-    const filteredPriceCategoryId = 3
-
-    renderStocksEventList({
-      stocks: [
-        individualStockEventFactory({
-          beginningDatetime: new Date('2021-10-15T12:00:00Z').toISOString(),
-          priceCategoryId: 1,
-        }),
-        individualStockEventFactory({
-          beginningDatetime: new Date('2021-10-14T13:00:00Z').toISOString(),
-          priceCategoryId: 2,
-        }),
-        individualStockEventFactory({
-          beginningDatetime: new Date('2021-10-14T12:00:00Z').toISOString(),
-          priceCategoryId: filteredPriceCategoryId,
-        }),
-      ],
-    })
+    await renderStocksEventList([stock1, stock2, stock3])
 
     expect(screen.getAllByRole('row')).toHaveLength(4) // 1 header + 3 stock rows
 
+    vi.spyOn(api, 'getStocks').mockResolvedValueOnce({
+      stocks: [stock2, stock3],
+      stockCount: 3,
+      hasStocks: true,
+    })
     await userEvent.type(
       screen.getByLabelText('Filtrer par date'),
       '2021-10-14'
     )
+    await waitFor(() => {
+      expect(api.getStocks).toHaveBeenCalledWith(
+        offerId,
+        '2021-10-14',
+        undefined,
+        undefined,
+        undefined,
+        false,
+        1
+      )
+    })
     expect(
       screen.getByText('Résultat de recherche', { exact: false })
     ).toBeInTheDocument()
     expect(screen.getAllByRole('row')).toHaveLength(4) // 1 header + 1 filter result row + 2 stock rows
 
+    vi.spyOn(api, 'getStocks').mockResolvedValueOnce({
+      stocks: [stock2],
+      stockCount: 3,
+      hasStocks: true,
+    })
     await userEvent.type(screen.getByLabelText('Filtrer par horaire'), '12:00')
+    await waitFor(() => {
+      expect(api.getStocks).toHaveBeenCalledWith(
+        offerId,
+        '2021-10-14',
+        '11:00',
+        undefined,
+        undefined,
+        false,
+        1
+      )
+    })
     expect(screen.getAllByRole('row')).toHaveLength(3) // 1 header + 1 filter result row + 1 stock rows
 
+    vi.spyOn(api, 'getStocks').mockResolvedValueOnce({
+      stocks: [stock2],
+      stockCount: 3,
+      hasStocks: true,
+    })
     await userEvent.selectOptions(
       screen.getByLabelText('Filtrer par tarif'),
       String(filteredPriceCategoryId)
     )
+    await waitFor(() => {
+      expect(api.getStocks).toHaveBeenCalledWith(
+        offerId,
+        '2021-10-14',
+        '11:00',
+        filteredPriceCategoryId,
+        undefined,
+        false,
+        1
+      )
+    })
     expect(screen.getAllByRole('row')).toHaveLength(3) // 1 header + 1 filter result row + 1 stock rows
   })
 
   it('should clear filters', async () => {
-    const filteredPriceCategoryId = 3
+    await renderStocksEventList([stock1, stock2, stock3])
 
-    renderStocksEventList({
-      stocks: [
-        individualStockEventFactory({
-          beginningDatetime: new Date('2021-10-15T12:00:00Z').toISOString(),
-          priceCategoryId: 1,
-        }),
-        individualStockEventFactory({
-          beginningDatetime: new Date('2021-10-14T13:00:00Z').toISOString(),
-          priceCategoryId: 2,
-        }),
-        individualStockEventFactory({
-          beginningDatetime: new Date('2021-10-14T12:00:00Z').toISOString(),
-          priceCategoryId: filteredPriceCategoryId,
-        }),
-      ],
+    vi.spyOn(api, 'getStocks').mockResolvedValueOnce({
+      stocks: [],
+      stockCount: 0,
+      hasStocks: true,
     })
-
     await userEvent.type(
       screen.getByLabelText('Filtrer par date'),
       '2021-10-14'
     )
-    expect(screen.getByText('Réinitialiser les filtres')).toBeInTheDocument()
+    expect(
+      await screen.findByText('Réinitialiser les filtres')
+    ).toBeInTheDocument()
 
+    vi.spyOn(api, 'getStocks').mockResolvedValueOnce({
+      stocks: [stock1, stock2, stock3],
+      stockCount: 3,
+      hasStocks: true,
+    })
     await userEvent.click(screen.getByText('Réinitialiser les filtres'))
     expect(
       screen.queryByText('Réinitialiser les filtres')
     ).not.toBeInTheDocument()
+    await waitFor(() => {
+      expect(api.getStocks).toHaveBeenCalledWith(
+        offerId,
+        undefined,
+        undefined,
+        undefined,
+        undefined,
+        false,
+        1
+      )
+    })
     expect(screen.getByLabelText('Filtrer par date')).toHaveValue('')
   })
 
   it('should change checkbox states', async () => {
-    renderStocksEventList({
-      stocks: [
-        individualStockEventFactory({ priceCategoryId: 1 }),
-        individualStockEventFactory({ priceCategoryId: 1 }),
-      ],
-    })
+    await renderStocksEventList([stock1, stock2])
     const selectAllCheckbox = screen.getByLabelText('Tout sélectionner')
     const allCheckboxes = screen.getAllByRole('checkbox')
 
@@ -226,18 +311,37 @@ describe('StocksEventList', () => {
     expect(allCheckboxes[2]).not.toBeChecked()
   })
 
-  it('should bulk delete lines with filters when clicking on button on action bar', async () => {
-    renderStocksEventList({
-      stocks: [
-        individualStockEventFactory({ priceCategoryId: 1 }),
-        individualStockEventFactory({ priceCategoryId: 1 }),
-        individualStockEventFactory({ priceCategoryId: 2 }),
-      ],
+  it('should bulk delete lines with filters and use UTC for hour filter when clicking on button on action bar', async () => {
+    const stockTime1 = individualGetOfferStockResponseModelFactory({
+      priceCategoryId: 1,
+      beginningDatetime: '2021-09-15T10:00:00.000Z',
     })
-    await userEvent.selectOptions(
-      screen.getByLabelText('Filtrer par tarif'),
-      '1'
-    )
+    const stockTime2 = individualGetOfferStockResponseModelFactory({
+      priceCategoryId: 1,
+      beginningDatetime: '2021-10-15T10:00:00.000Z',
+    })
+    const stockTime3 = individualGetOfferStockResponseModelFactory({
+      priceCategoryId: 1,
+      beginningDatetime: '2021-10-15T11:00:00.000Z',
+    })
+    await renderStocksEventList([stockTime1, stockTime2, stockTime3])
+    vi.spyOn(api, 'getStocks').mockResolvedValueOnce({
+      stocks: [stockTime1, stockTime2],
+      stockCount: 2,
+      hasStocks: true,
+    })
+    await userEvent.type(screen.getByLabelText('Filtrer par horaire'), '11:00')
+    await waitFor(() => {
+      expect(api.getStocks).toHaveBeenCalledWith(
+        offerId,
+        undefined,
+        '10:00',
+        undefined,
+        undefined,
+        false,
+        1
+      )
+    })
     expect(
       screen.getAllByText('12,5 € - Label', { selector: 'td' })
     ).toHaveLength(2)
@@ -250,97 +354,6 @@ describe('StocksEventList', () => {
     expect(api.deleteStock).not.toHaveBeenCalled()
     expect(api.deleteStocks).not.toHaveBeenCalled()
     expect(api.deleteAllFilteredStocks).toBeCalledTimes(1)
-    expect(api.deleteAllFilteredStocks).toHaveBeenCalledWith(1, {
-      date: null,
-      price_category_id: 1,
-      time: null,
-    })
-
-    expect(screen.queryByText('2 dates sélectionnées')).not.toBeInTheDocument()
-  })
-
-  it('should bulk delete lines with filters, use local for hour filter when clicking on button on action bar but send UTC to the api', async () => {
-    renderStocksEventList({
-      stocks: [
-        individualStockEventFactory({
-          priceCategoryId: 1,
-          beginningDatetime: '2021-09-15T10:00:00.000Z',
-        }),
-        individualStockEventFactory({
-          priceCategoryId: 1,
-          beginningDatetime: '2021-10-15T10:00:00.000Z',
-        }),
-        individualStockEventFactory({
-          priceCategoryId: 1,
-          beginningDatetime: '2021-10-15T15:00:00.000Z',
-        }),
-      ],
-      // let's test for Pacific/Pitcairn !
-      departmentCode: '989',
-    })
-
-    // In the component we show the hour in the venue timezone
-    // So this will change each time you change department code
-    await userEvent.type(screen.getByLabelText('Filtrer par horaire'), '02:00')
-    expect(
-      screen.getAllByText('12,5 € - Label', { selector: 'td' })
-    ).toHaveLength(2)
-
-    const checkboxes = screen.getAllByRole('checkbox')
-    await userEvent.click(checkboxes[0])
-    expect(screen.getByText('2 dates sélectionnées')).toBeInTheDocument()
-
-    await userEvent.click(screen.getByText('Supprimer ces dates'))
-    expect(api.deleteStock).not.toHaveBeenCalled()
-    expect(api.deleteStocks).not.toHaveBeenCalled()
-    expect(api.deleteAllFilteredStocks).toBeCalledTimes(1)
-
-    // We wanna send it in UTC to the api
-    // So if you change department code
-    // this doesn't impact the hour filter
-    // you should see the same time as in the beginnning datetime (because it's already in utc)
-    expect(api.deleteAllFilteredStocks).toHaveBeenCalledWith(1, {
-      date: null,
-      price_category_id: null,
-      time: '10:00',
-    })
-
-    expect(screen.queryByText('2 dates sélectionnées')).not.toBeInTheDocument()
-  })
-
-  it('should filter and bulk delete with another timezone', async () => {
-    renderStocksEventList({
-      stocks: [
-        // exactly the same utc dates as in the previous test
-        individualStockEventFactory({
-          priceCategoryId: 1,
-          beginningDatetime: '2021-09-15T10:00:00.000Z',
-        }),
-        individualStockEventFactory({
-          priceCategoryId: 1,
-          beginningDatetime: '2021-10-15T10:00:00.000Z',
-        }),
-        individualStockEventFactory({
-          priceCategoryId: 1,
-          beginningDatetime: '2021-10-15T15:00:00.000Z',
-        }),
-      ],
-      // let's test for America/Martinique !
-      departmentCode: '972',
-    })
-
-    // In the component we show the hour in the venue timezone
-    // So this will change each time you change department code
-    await userEvent.type(screen.getByLabelText('Filtrer par horaire'), '06:00')
-    expect(
-      screen.getAllByText('12,5 € - Label', { selector: 'td' })
-    ).toHaveLength(2)
-
-    const checkboxes = screen.getAllByRole('checkbox')
-    await userEvent.click(checkboxes[0])
-    expect(screen.getByText('2 dates sélectionnées')).toBeInTheDocument()
-
-    await userEvent.click(screen.getByText('Supprimer ces dates'))
 
     // We wanna send it in UTC to the api
     // So if you change department code
@@ -356,13 +369,7 @@ describe('StocksEventList', () => {
   })
 
   it('should bulk delete lines with ids when clicking on each stock', async () => {
-    const stock1 = individualStockEventFactory({ priceCategoryId: 1 })
-    const stock2 = individualStockEventFactory({ priceCategoryId: 1 })
-    const stock3 = individualStockEventFactory({ priceCategoryId: 2 })
-
-    renderStocksEventList({
-      stocks: [stock1, stock2, stock3],
-    })
+    await renderStocksEventList([stock1, stock2, stock3])
 
     const checkboxes = screen.getAllByRole('checkbox')
     await userEvent.click(checkboxes[1])
@@ -380,119 +387,16 @@ describe('StocksEventList', () => {
     expect(screen.queryByText('2 dates sélectionnées')).not.toBeInTheDocument()
   })
 
-  // test added because pagination has created a bug
-  // where the last page was not changed when needed
-  // user could have been to an empty page
-  it('should bring me on new last page when deleting more than one page by action bar', async () => {
-    const stocks = []
-    for (let i = 0; i < STOCKS_PER_PAGE * 2 + 1; i++) {
-      const stock = individualStockEventFactory({ id: i, priceCategoryId: 1 })
-      stocks.push(stock)
-    }
-
-    renderStocksEventList({
-      stocks: stocks,
-    })
-
-    // select all lines but not first page
-    const firstPageCheckboxes = screen.getAllByRole('checkbox')
-    for (let i = 0; i <= STOCKS_PER_PAGE; i++) {
-      await userEvent.click(firstPageCheckboxes[i])
-    }
-    expect(
-      screen.getByText(`${STOCKS_PER_PAGE + 1} dates sélectionnées`)
-    ).toBeInTheDocument()
-
-    // going page 2 ...and select one less line
-    await userEvent.click(screen.getByRole('button', { name: 'Page suivante' }))
-    expect(screen.getByText('Page 2/3')).toBeInTheDocument()
-    const secondPageCheckboxes = screen.getAllByRole('checkbox')
-    await userEvent.click(secondPageCheckboxes[1])
-    expect(
-      screen.getByText(`${STOCKS_PER_PAGE} dates sélectionnées`)
-    ).toBeInTheDocument()
-
-    await userEvent.click(screen.getByRole('button', { name: 'Page suivante' }))
-    expect(screen.getByText('Page 3/3')).toBeInTheDocument()
-
-    // delete by action bar
-    await userEvent.click(screen.getByText('Supprimer ces dates'))
-    expect(mockSetSotcks).toBeCalledTimes(1)
-    expect(mockSetSotcks).toHaveBeenNthCalledWith(
-      1,
-      Array(STOCKS_PER_PAGE + 1).fill({
-        beginningDatetime: '2021-10-15T12:00:00.000Z',
-        bookingLimitDatetime: '2021-09-15T12:00:00.000Z',
-        isEventDeletable: true,
-        bookingsQuantity: 0,
-        priceCategoryId: 1,
-        quantity: 18,
-        id: expect.any(Number),
-      })
-    )
-
-    // we are on page 2 now (setStocks is mocked so lines are still here)
-    expect(screen.getByText('Page 2/3')).toBeInTheDocument()
-  })
-
   it('should delete line when clicking on trash icon', async () => {
-    renderStocksEventList({
-      stocks: [
-        individualStockEventFactory({
-          id: 2,
-          priceCategoryId: 1,
-        }),
-        individualStockEventFactory({
-          id: 1,
-          priceCategoryId: 1,
-        }),
-      ],
-    })
-    expect(
-      screen.getAllByText('12,5 € - Label', { selector: 'td' })
-    ).toHaveLength(2)
+    await renderStocksEventList([stock1, stock2, stock3])
 
     const checkboxes = screen.getAllByRole('checkbox')
     await userEvent.click(checkboxes[0])
-    expect(screen.getByText('2 dates sélectionnées')).toBeInTheDocument()
+    expect(screen.getByText('3 dates sélectionnées')).toBeInTheDocument()
 
     await userEvent.click(screen.getAllByText('Supprimer')[0])
-    expect(screen.getByText('1 date sélectionnée')).toBeInTheDocument()
-    expect(mockSetSotcks).toBeCalledTimes(1)
-    expect(mockSetSotcks).toHaveBeenNthCalledWith(1, [
-      {
-        beginningDatetime: '2021-10-15T12:00:00.000Z',
-        bookingLimitDatetime: '2021-09-15T12:00:00.000Z',
-        bookingsQuantity: 0,
-        priceCategoryId: 1,
-        quantity: 18,
-        id: 1,
-        isEventDeletable: true,
-      },
-    ])
-  })
-
-  // test added because pagination has created a bug
-  // where several lines where deleted at the same time
-  // and the last page was not changed when needed
-  it('should bring me on previous page when deleting only one line by trash icon', async () => {
-    renderStocksEventList({
-      stocks: Array(STOCKS_PER_PAGE * 2 + 1).fill(
-        individualStockEventFactory({ id: 1, priceCategoryId: 1 })
-      ),
+    await waitFor(() => {
+      expect(api.deleteStock).toHaveBeenCalledWith(stock1.id)
     })
-
-    // going page 3 (last page)
-    await userEvent.click(screen.getByRole('button', { name: 'Page suivante' }))
-    await userEvent.click(screen.getByRole('button', { name: 'Page suivante' }))
-    expect(screen.getByText('Page 3/3')).toBeInTheDocument()
-    // delete by trash icon
-    await userEvent.click(screen.getAllByText('Supprimer')[0])
-
-    // only one line has been removed, last page is full
-    expect(screen.getByText('Page 2/2')).toBeInTheDocument()
-    expect(
-      screen.getAllByText('12,5 € - Label', { selector: 'td' })
-    ).toHaveLength(STOCKS_PER_PAGE)
   })
 })

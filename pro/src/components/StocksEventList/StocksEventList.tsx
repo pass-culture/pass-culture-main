@@ -50,7 +50,7 @@ export interface StocksEventListProps {
   departmentCode?: string | null
   offerId: number
   readonly?: boolean
-  onStocksLoad: (hasStocks: boolean) => void
+  onStocksLoad?: (hasStocks: boolean) => void
 }
 
 const DELETE_STOCKS_CHUNK_SIZE = 50
@@ -126,7 +126,7 @@ const StocksEventList = ({
         dateFilter ? dateFilter : undefined,
         timeFilter
           ? convertLocalTimeToUTCTime(timeFilter, departmentCode)
-          : null,
+          : undefined,
         priceCategoryIdFilter ? Number(priceCategoryIdFilter) : undefined,
         currentSortingColumn ?? undefined,
         currentSortingMode
@@ -138,7 +138,9 @@ const StocksEventList = ({
       if (!ignore) {
         setStocks(serializeStockEvents(response.stocks))
         setStocksCount(response.stockCount)
-        onStocksLoad(true)
+        if (onStocksLoad) {
+          onStocksLoad(true)
+        }
         setIsCheckedArray(response.stocks.map(() => false))
       }
     }
