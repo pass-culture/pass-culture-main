@@ -1504,12 +1504,12 @@ export class DefaultService {
   /**
    * patch_publish_offer <PATCH>
    * @param requestBody
-   * @returns void
+   * @returns GetIndividualOfferResponseModel OK
    * @throws ApiError
    */
   public patchPublishOffer(
     requestBody?: PatchOfferPublishBodyModel,
-  ): CancelablePromise<void> {
+  ): CancelablePromise<GetIndividualOfferResponseModel> {
     return this.httpRequest.request({
       method: 'PATCH',
       url: '/offers/publish',

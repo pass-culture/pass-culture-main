@@ -703,6 +703,26 @@ def get_available_activation_code(stock: models.Stock) -> models.ActivationCode 
     return activable_code
 
 
+def get_bookings_count_subquery(offer_id: int) -> sa.sql.selectable.ScalarSelect:
+    return (
+        sa.select(sa.func.coalesce(sa.func.sum(models.Stock.dnBookedQuantity), 0))
+        .select_from(models.Stock)
+        .where(models.Stock.offerId == models.Offer.id)
+        .correlate(models.Offer)
+        .scalar_subquery()
+    )
+
+
+def is_non_free_offer_subquery(offer_id: int) -> sa.sql.selectable.Exists:
+    return (
+        sa.select(1)
+        .select_from(models.Stock)
+        .where(sa.and_(models.Stock.offerId == models.Offer.id, models.Stock.price > 0))
+        .correlate(models.Offer)
+        .exists()
+    )
+
+
 def get_offer_by_id(offer_id: int) -> models.Offer:
     try:
         return (
@@ -720,10 +740,25 @@ def get_offer_by_id(offer_id: int) -> models.Offer:
                     innerjoin=True,
                 )
             )
+            .options(sa_orm.with_expression(models.Offer.bookingsCount, get_bookings_count_subquery(offer_id)))
             .one()
         )
     except sa_orm.exc.NoResultFound:
         raise exceptions.OfferNotFound()
+
+
+def get_offer_and_extradata(offer_id: int) -> models.Offer | None:
+    return (
+        db.session.query(models.Offer)
+        .filter(models.Offer.id == offer_id)
+        .outerjoin(models.Stock, sa.and_(models.Stock.offerId == offer_id, sa.not_(models.Stock.isSoftDeleted)))
+        .options(sa_orm.contains_eager(models.Offer.stocks))
+        .options(sa_orm.joinedload(models.Offer.mediations))
+        .options(sa_orm.joinedload(models.Offer.priceCategories).joinedload(models.PriceCategory.priceCategoryLabel))
+        .options(sa_orm.with_expression(models.Offer.isNonFreeOffer, is_non_free_offer_subquery(offer_id)))
+        .options(sa_orm.with_expression(models.Offer.bookingsCount, get_bookings_count_subquery(offer_id)))
+        .one_or_none()
+    )
 
 
 def offer_has_stocks(offer_id: int) -> bool:

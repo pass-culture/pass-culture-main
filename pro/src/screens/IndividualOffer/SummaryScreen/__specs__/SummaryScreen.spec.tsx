@@ -21,7 +21,11 @@ import {
 import { OFFER_WIZARD_MODE } from 'core/Offers/constants'
 import { getIndividualOfferPath } from 'core/Offers/utils/getIndividualOfferUrl'
 import * as useAnalytics from 'hooks/useAnalytics'
-import { offerVenueFactory, offererFactory } from 'utils/apiFactories'
+import {
+  offerVenueFactory,
+  offererFactory,
+  GetIndividualOfferFactory,
+} from 'utils/apiFactories'
 import {
   individualOfferCategoryFactory,
   individualOfferContextFactory,
@@ -139,7 +143,9 @@ describe('Summary', () => {
     vi.spyOn(useAnalytics, 'default').mockImplementation(() => ({
       logEvent: mockLogEvent,
     }))
-    vi.spyOn(api, 'patchPublishOffer').mockResolvedValue()
+    vi.spyOn(api, 'patchPublishOffer').mockResolvedValue(
+      GetIndividualOfferFactory()
+    )
     vi.spyOn(api, 'getOffer').mockResolvedValue({
       status: OfferStatus.ACTIVE,
     } as GetIndividualOfferResponseModel)
@@ -288,11 +294,12 @@ describe('Summary', () => {
       })
       expect(buttonPublish).not.toBeDisabled()
 
-      const mockResponse = new CancelablePromise<void>((resolve) =>
-        setTimeout(() => {
-          resolve(undefined)
-        }, 200)
-      )
+      const mockResponse =
+        new CancelablePromise<GetIndividualOfferResponseModel>((resolve) =>
+          setTimeout(() => {
+            resolve(GetIndividualOfferFactory())
+          }, 200)
+        )
       vi.spyOn(api, 'patchPublishOffer').mockImplementationOnce(
         () => mockResponse
       )
