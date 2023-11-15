@@ -1,4 +1,8 @@
-import { screen, waitForElementToBeRemoved } from '@testing-library/react'
+import {
+  screen,
+  waitFor,
+  waitForElementToBeRemoved,
+} from '@testing-library/react'
 import { userEvent } from '@testing-library/user-event'
 import format from 'date-fns/format'
 import React from 'react'
@@ -23,6 +27,7 @@ import {
   getIndividualOfferUrl,
 } from 'core/Offers/utils/getIndividualOfferUrl'
 import Stocks from 'pages/IndividualOfferWizard/Stocks/Stocks'
+import { ButtonLink } from 'ui-kit'
 import { FORMAT_ISO_DATE_ONLY } from 'utils/date'
 import { individualGetOfferStockResponseModelFactory } from 'utils/individualApiFactories'
 import { renderWithProviders } from 'utils/renderWithProviders'
@@ -92,6 +97,9 @@ const renderStockEventScreen = async (
           element={
             <IndividualOfferContextProvider isUserAdmin={false} offerId="BQ">
               <Stocks />
+              <ButtonLink link={{ to: '/outside', isExternal: false }}>
+                Go outside !
+              </ButtonLink>
             </IndividualOfferContextProvider>
           }
         />
@@ -101,6 +109,10 @@ const renderStockEventScreen = async (
             mode: OFFER_WIZARD_MODE.READ_ONLY,
           })}
           element={<div>This is the read only route content</div>}
+        />
+        <Route
+          path="/outside"
+          element={<div>This is outside stock form</div>}
         />
       </Routes>
       <Notification />
@@ -118,6 +130,9 @@ const renderStockEventScreen = async (
   )
 
   await waitForElementToBeRemoved(() => screen.queryAllByTestId('spinner'))
+  await waitFor(() => {
+    expect(api.getStocks).toHaveBeenCalledTimes(1)
+  })
 }
 
 const priceCategoryId = '1'
@@ -345,39 +360,6 @@ describe('screens:StocksEventEdition', () => {
     ).toBeInTheDocument()
   })
 
-  it('should only call api with edited stocks', async () => {
-    vi.spyOn(api, 'upsertStocks').mockResolvedValueOnce({
-      stocks: [],
-    })
-    await renderStockEventScreen(apiOffer, [
-      individualGetOfferStockResponseModelFactory({ id: 42 }),
-      individualGetOfferStockResponseModelFactory({
-        id: 666,
-        quantity: 642,
-      }),
-    ])
-
-    await userEvent.type(screen.getByDisplayValue('642'), '31')
-
-    await userEvent.click(screen.getByText('Enregistrer les modifications'))
-
-    expect(
-      screen.getByText('Vos modifications ont bien été enregistrées')
-    ).toBeInTheDocument()
-    expect(api.upsertStocks).toHaveBeenCalledWith({
-      offerId: apiOffer.id,
-      stocks: [
-        {
-          beginningDatetime: '2021-10-15T12:00:00Z',
-          bookingLimitDatetime: '2021-09-15T21:59:59Z',
-          id: 666,
-          priceCategoryId: 2,
-          quantity: 64231,
-        },
-      ],
-    })
-  })
-
   it('should not allow user to add a date for a synchronized offer', async () => {
     apiOffer.lastProvider = {
       ...apiOffer.lastProvider,
@@ -523,5 +505,38 @@ describe('screens:StocksEventEdition', () => {
     expect(
       screen.getByText('This is the read only route content')
     ).toBeInTheDocument()
+  })
+
+  it('should not block when going outside and form is not touched', async () => {
+    vi.spyOn(api, 'upsertStocks').mockResolvedValue({
+      stocks: [],
+    })
+
+    await renderStockEventScreen(apiOffer, apiStocks)
+
+    await userEvent.click(screen.getByText('Go outside !'))
+
+    expect(screen.getByText('This is outside stock form')).toBeInTheDocument()
+  })
+
+  it('should be able to quit without submitting from RouteLeavingGuard', async () => {
+    vi.spyOn(api, 'upsertStocks').mockResolvedValue({
+      stocks: [],
+    })
+
+    await renderStockEventScreen(apiOffer, apiStocks)
+    await userEvent.selectOptions(
+      screen.getByLabelText('Tarif'),
+      priceCategoryId
+    )
+
+    await userEvent.click(screen.getByText('Go outside !'))
+    expect(
+      screen.getByText('Les informations non enregistrées seront perdues')
+    ).toBeInTheDocument()
+    await userEvent.click(screen.getByText('Quitter la page'))
+
+    expect(api.upsertStocks).toHaveBeenCalledTimes(0)
+    expect(screen.getByText('This is outside stock form')).toBeInTheDocument()
   })
 })
