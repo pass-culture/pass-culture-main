@@ -125,7 +125,7 @@
         <td class="fw-bolder">
           {% set offerer_invitation = row.OffererInvitation %}
           {% if offerer_invitation %}
-            Invité le {{ offerer_invitation.dateCreated | format_date_time }} par {{ links.build_pro_user_name_to_details_link(offerer_invitation.id, offerer_invitation.user.full_name) }}
+            Invité le {{ offerer_invitation.dateCreated | format_date_time }} par {{ links.build_pro_user_name_to_details_link(offerer_invitation.user.id, offerer_invitation.user.full_name) }}
           {% endif %}
         </td>
       </tr>
