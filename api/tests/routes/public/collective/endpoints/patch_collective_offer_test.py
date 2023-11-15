@@ -7,6 +7,7 @@ from freezegun import freeze_time
 import pytest
 
 from pcapi import settings
+import pcapi.core.categories.subcategories_v2 as subcategories
 from pcapi.core.educational import factories as educational_factories
 from pcapi.core.educational import models as educational_models
 from pcapi.core.offerers import factories as offerers_factories
@@ -59,7 +60,7 @@ class CollectiveOffersPublicPatchOfferTest:
         payload = {
             "name": "Un nom en français ævœc des diàcrtîtïqués",
             "description": "une description d'offre",
-            "subcategoryId": "EVENEMENT_CINE",
+            "formats": [subcategories.EacFormat.PROJECTION_AUDIOVISUELLE.value],
             "venueId": venue2.id,
             "bookingEmails": ["offerer-email@example.com", "offerer-email2@example.com"],
             "contactEmail": "offerer-contact@example.com",
@@ -103,7 +104,7 @@ class CollectiveOffersPublicPatchOfferTest:
         assert offer.name == payload["name"]
         assert offer.description == payload["description"]
         assert offer.venueId == venue2.id
-        assert offer.subcategoryId == payload["subcategoryId"]
+        assert offer.formats == [subcategories.EacFormat.PROJECTION_AUDIOVISUELLE]
         assert offer.bookingEmails == payload["bookingEmails"]
         assert offer.contactEmail == payload["contactEmail"]
         assert offer.contactPhone == "+33100992798"

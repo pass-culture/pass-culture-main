@@ -164,6 +164,20 @@ def test_public_api(client, app):
                     "title": "CollectiveOffersSubCategoryResponseModel",
                     "type": "object",
                 },
+                "EacFormat": {
+                    "description": "An enumeration.",
+                    "enum": [
+                        "Atelier de pratique",
+                        "Concert",
+                        "Conférence, rencontre",
+                        "Festival, salon, congrès",
+                        "Projection audiovisuelle",
+                        "Représentation",
+                        "Visite guidée",
+                        "Visite libre",
+                    ],
+                    "title": "EacFormat",
+                },
                 "ErrorResponseModel": {
                     "properties": {
                         "errors": {
@@ -517,6 +531,11 @@ def test_public_api(client, app):
                             "title": "Educationalpricedetail",
                             "type": "string",
                         },
+                        "formats": {
+                            "items": {"$ref": "#/components/schemas/EacFormat"},
+                            "nullable": True,
+                            "type": "array",
+                        },
                         "imageCredit": {"nullable": True, "title": "Imagecredit", "type": "string"},
                         "imageFile": {"nullable": True, "title": "Imagefile", "type": "string"},
                         "interventionArea": {
@@ -597,6 +616,11 @@ def test_public_api(client, app):
                             "title": "Educationalpricedetail",
                             "type": "string",
                         },
+                        "formats": {
+                            "items": {"$ref": "#/components/schemas/EacFormat"},
+                            "nullable": True,
+                            "type": "array",
+                        },
                         "imageCredit": {"nullable": True, "title": "Imagecredit", "type": "string"},
                         "imageFile": {"nullable": True, "title": "Imagefile", "type": "string"},
                         "isActive": {"title": "Isactive", "type": "boolean"},
@@ -615,7 +639,7 @@ def test_public_api(client, app):
                         "numberOfTickets": {"title": "Numberoftickets", "type": "integer"},
                         "offerVenue": {"$ref": "#/components/schemas/OfferVenueModel"},
                         "students": {"items": {"type": "string"}, "title": "Students", "type": "array"},
-                        "subcategoryId": {"title": "Subcategoryid", "type": "string"},
+                        "subcategoryId": {"nullable": True, "title": "Subcategoryid", "type": "string"},
                         "totalPrice": {"title": "Totalprice", "type": "number"},
                         "venueId": {"title": "Venueid", "type": "integer"},
                         "visualDisabilityCompliant": {
@@ -628,7 +652,6 @@ def test_public_api(client, app):
                         "venueId",
                         "name",
                         "description",
-                        "subcategoryId",
                         "bookingEmails",
                         "contactEmail",
                         "contactPhone",
