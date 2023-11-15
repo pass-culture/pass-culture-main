@@ -38,6 +38,7 @@ export interface OfferProps {
   position: number
   afterFavoriteChange?: (isFavorite: boolean) => void
   isInSuggestions?: boolean
+  openDetails?: boolean
 }
 
 const Offer = ({
@@ -46,8 +47,9 @@ const Offer = ({
   position,
   afterFavoriteChange,
   isInSuggestions,
+  openDetails = false,
 }: OfferProps): JSX.Element => {
-  const [displayDetails, setDisplayDetails] = useState(false)
+  const [displayDetails, setDisplayDetails] = useState(openDetails)
   const isLikeActive = useActiveFeature('WIP_ENABLE_LIKE_IN_ADAGE')
   const isGeolocationActive = useActiveFeature('WIP_ENABLE_ADAGE_GEO_LOCATION')
   const { adageUser } = useAdageUser()

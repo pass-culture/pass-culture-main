@@ -1,4 +1,5 @@
 import { screen } from '@testing-library/react'
+import * as router from 'react-router-dom'
 
 import { OfferAddressType } from 'apiClient/adage'
 import { AdageUserContextProvider } from 'pages/AdageIframe/app/providers/AdageUserContext'
@@ -71,5 +72,21 @@ describe('CardOffer component', () => {
 
     expect(screen.getByText('Sortie')).toBeInTheDocument()
     expect(screen.getByText('Lieu à définir')).toBeInTheDocument()
+  })
+
+  it('should redirect on click in offer card', async () => {
+    vi.spyOn(router, 'useSearchParams').mockReturnValue([
+      new URLSearchParams({ token: '123' }),
+      vi.fn(),
+    ])
+
+    renderCardOfferComponent({ offer: mockOffer })
+
+    const offerElement = screen.getByTestId('card-offer-link')
+
+    expect(offerElement).toHaveAttribute(
+      'href',
+      '/adage-iframe/decouverte/offre/479?token=123'
+    )
   })
 })
