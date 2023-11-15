@@ -647,7 +647,6 @@ def handle_stocks_edition(edited_stocks: list[typing.Tuple[models.Stock, bool]])
 
 
 def publish_offer(offer: models.Offer, user: users_models.User | None) -> models.Offer:
-    offer.isActive = True
     update_offer_fraud_information(offer, user)
     search.async_index_offer_ids([offer.id])
     logger.info(
