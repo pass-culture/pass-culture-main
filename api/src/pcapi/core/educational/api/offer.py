@@ -520,6 +520,7 @@ def create_collective_offer_public(
         institution=institution,
         providerId=requested_id,
         nationalProgramId=body.nationalProgramId,
+        formats=body.formats,
     )
 
     collective_offer.bookingEmails = body.booking_emails

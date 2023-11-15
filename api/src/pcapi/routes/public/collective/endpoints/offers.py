@@ -1,3 +1,5 @@
+from contextlib import suppress
+
 from pcapi.core.educational import exceptions as educational_exceptions
 from pcapi.core.educational import repository as educational_repository
 from pcapi.core.educational import validation as educational_validation
@@ -331,6 +333,12 @@ def patch_collective_offer_public(
             )
 
     new_values["priceDetail"] = new_values.pop("educationalPriceDetail", None)
+
+    with suppress(KeyError):
+        if not new_values["formats"] and not new_values["subcategoryId"]:
+            raise ApiErrors(
+                errors={"formats & subcategoryId": ["Au moins l'un des deux doit être renseigné"]}, status_code=400
+            )
 
     # access control
     try:
