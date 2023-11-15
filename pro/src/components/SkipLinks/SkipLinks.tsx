@@ -19,6 +19,7 @@ const SkipLinks = ({ displayMenu = false }: SkipLinksProps): JSX.Element => {
     <>
       <a tabIndex={-1} href="#" id="top-page" className="visually-hidden" />
       <nav aria-label="Accès rapide" className={styles['skip-links']}>
+        <div id="orejime"></div>
         {buttons.length > 1 ? (
           <ul className={styles['skip-list']}>
             {buttons.map((button) => {
