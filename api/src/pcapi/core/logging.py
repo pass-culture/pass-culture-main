@@ -3,6 +3,7 @@ import contextlib
 import datetime
 import decimal
 import enum
+from io import TextIOWrapper
 import json
 import logging
 import sys
@@ -221,7 +222,7 @@ def install_logging() -> None:
 
     handler = logging.StreamHandler(stream=sys.stdout)
     handler.setFormatter(JsonFormatter())
-    handlers = [handler]
+    handlers: list[logging.StreamHandler] = [handler]
     # We want to log on stdout. We could choose `sys.stdout` and that
     # would work for our Kubernetes-based infrastructure... except
     # when we run `kubectl exec ... -- python`, where `sys.stdout` is
@@ -235,7 +236,7 @@ def install_logging() -> None:
         # pylint: disable=consider-using-with
         handler2 = logging.StreamHandler(stream=open("/proc/1/fd/1", "w", encoding="utf-8"))
         handler2.setFormatter(JsonFormatter())
-        handlers.append(handler2)  # type: ignore [arg-type]
+        handlers.append(handler2)
     logging.basicConfig(level=settings.LOG_LEVEL, handlers=handlers, force=True)
 
     _internal_logger = logging.getLogger(__name__)

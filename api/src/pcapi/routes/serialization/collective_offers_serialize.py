@@ -464,7 +464,7 @@ class PostCollectiveOfferBodyModel(BaseModel):
     nationalProgramId: int | None
     # TODO(jeremieb): when subcategory_id is removed, formats becomes
     # mandatory
-    formats: typing.Sequence[subcategories.EacFormat] | None
+    formats: list[subcategories.EacFormat] | None
 
     @root_validator
     def validate_formats_and_subcategory(cls, values: dict) -> dict:

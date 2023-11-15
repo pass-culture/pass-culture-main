@@ -135,7 +135,7 @@ def add_custom_offer_reimbursement_rule(
 
     rule = finance_api.create_offer_reimbursement_rule(
         offer_id=offer.id,
-        amount=reimbursed_amount,  # type: ignore [arg-type]
+        amount=decimal.Decimal(reimbursed_amount),
         start_date=valid_from_dt,
         end_date=valid_until_dt,
     )
