@@ -1,5 +1,10 @@
 import { fr } from 'date-fns/locale'
-import { format, utcToZonedTime, zonedTimeToUtc } from 'date-fns-tz'
+import {
+  format,
+  formatInTimeZone,
+  utcToZonedTime,
+  zonedTimeToUtc,
+} from 'date-fns-tz'
 
 export const formatLocalTimeDateString = (
   dateIsoString: string | number | Date,
@@ -71,4 +76,23 @@ export const getDepartmentTimezone = (
     default:
       return 'Europe/Paris'
   }
+}
+
+export function convertFromLocalTimeToVenueTimezoneInUtc(
+  departementTime: string,
+  departmentCode?: string | null
+) {
+  const [hours, minutes] = departementTime.split(':')
+
+  // get a date in user timezone, we set hours and minutes
+  const userDate = new Date()
+  userDate.setHours(parseInt(hours))
+  userDate.setMinutes(parseInt(minutes))
+
+  // translate it in venue timezone
+  const venueTimeZone = getDepartmentTimezone(departmentCode)
+  const utcDate = zonedTimeToUtc(userDate, venueTimeZone)
+
+  // get hours and minutes, now in UTC
+  return formatInTimeZone(utcDate, 'Etc/UTC', 'HH:mm')
 }

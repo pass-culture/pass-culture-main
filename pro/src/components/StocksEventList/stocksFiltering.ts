@@ -5,6 +5,7 @@ import {
   sortColumnByNumber,
 } from 'hooks/useColumnSorting'
 import { isDateValid } from 'utils/date'
+import { getLocalDepartementDateTimeFromUtc } from 'utils/timezone'
 
 import { StocksEvent } from './StocksEventList'
 
@@ -51,11 +52,16 @@ export const filterAndSortStocks = (
     dateFilter: string
     hourFilter: string
     priceCategoryFilter: string
-  }
+  },
+  departmentCode?: string | null
 ): StocksEvent[] => {
   const { dateFilter, hourFilter, priceCategoryFilter } = filters
   const filteredStocks = stocks.filter((stock) => {
-    const stockDate = new Date(stock.beginningDatetime)
+    const stockDate = getLocalDepartementDateTimeFromUtc(
+      new Date(stock.beginningDatetime),
+      departmentCode
+    )
+
     const [year, month, day] = dateFilter.split('-')
     const date = new Date(parseInt(year), parseInt(month) - 1, parseInt(day))
 

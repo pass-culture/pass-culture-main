@@ -81,7 +81,8 @@ const StockFormList = ({
       offer.priceCategories ?? [],
       currentSortingColumn,
       currentSortingMode,
-      { dateFilter, hourFilter, priceCategoryFilter }
+      { dateFilter, hourFilter, priceCategoryFilter },
+      offer.venue.departementCode
     )
     hiddenStocksRef.current = allStocks.filter(
       (stock) => filteredStocks.indexOf(stock) === -1
