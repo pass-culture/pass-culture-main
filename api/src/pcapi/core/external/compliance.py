@@ -26,7 +26,7 @@ def update_offer_compliance_score(offer: offers_models.Offer, is_primary: bool) 
 
 
 def make_update_offer_compliance_score(payload: GetComplianceScoreRequest) -> None:
-    data_score = compliance_backend.get_score_from_compliance_api(payload)
+    data_score, data_reasons = compliance_backend.get_score_from_compliance_api(payload)
 
     if data_score:
         offer = offers_models.Offer.query.with_for_update().get(payload.offer_id)
@@ -34,6 +34,7 @@ def make_update_offer_compliance_score(payload: GetComplianceScoreRequest) -> No
             return
         offer.extraData = offer.extraData or {}
         offer.extraData["complianceScore"] = data_score
+        offer.extraData["complianceReasons"] = data_reasons
         db.session.add(offer)
         db.session.commit()
 

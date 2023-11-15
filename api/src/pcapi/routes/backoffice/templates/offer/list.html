@@ -155,7 +155,19 @@
                   <td>
                     {% if row.rules %}{{ row.rules | join(", ") | escape }}{% endif %}
                   </td>
-                  <td>{{ offer.extraData.get("complianceScore","") if offer.extraData else "" | safe }}</td>
+                  <td>
+                    {% set compliance_score = offer.extraData.get("complianceScore","") if offer.extraData else "" %}
+                    {{ compliance_score | safe }}
+                    {% set compliance_reasons = offer.extraData.get("complianceReasons") if offer.extraData else none %}
+                    {% if compliance_reasons %}
+                      <i class="bi bi-info-circle"
+                         data-bs-toggle="tooltip"
+                         data-bs-placement="top"
+                         data-bs-custom-class="primary-tooltip"
+                         data-bs-html="true"
+                         data-bs-title="Raison de score faible : {{ compliance_reasons | format_compliance_reasons }}"></i>
+                    {% endif %}
+                  </td>
                 {% endif %}
                 {% if has_permission("MANAGE_OFFERS_AND_VENUES_TAGS") %}
                   <td>{{ row.tags | format_as_badges | safe }}</td>
