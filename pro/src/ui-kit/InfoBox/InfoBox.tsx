@@ -13,7 +13,7 @@ interface InfoBoxLinkProps extends LinkProps {
   text: string
 }
 
-export interface InfoBoxProps {
+interface InfoBoxProps {
   children: ReactNode
   link?: InfoBoxLinkProps
 }
