@@ -30,6 +30,10 @@ def test_get_siren():
         assert siren_info.address.city == "PARIS"
         assert siren_info.active
 
+    # Test cache, no HTTP request
+    siren_info = sirene.get_siren(siren)
+    assert siren_info.siren == siren
+
 
 @override_settings(SIRENE_BACKEND="pcapi.connectors.sirene.InseeBackend")
 def test_get_siren_of_entreprise_individuelle():
@@ -95,6 +99,10 @@ def test_get_siret():
         assert siret_info.address.city == "PARIS"
         assert siret_info.ape_code == "47.61Z"
         assert siret_info.legal_category_code == "5499"
+
+    # Test cache, no HTTP request
+    siret_info = sirene.get_siret(siret)
+    assert siret_info.siret == siret
 
 
 @override_settings(SIRENE_BACKEND="pcapi.connectors.sirene.InseeBackend")
