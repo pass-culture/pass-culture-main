@@ -61,6 +61,7 @@ const StocksThing = ({ offer }: StocksThingProps): JSX.Element => {
     async function loadStocks() {
       const response = await api.getStocks(offer.id)
       setStocks(response.stocks)
+      formik.resetForm({ values: buildInitialValues(offer, response.stocks) })
     }
 
     // eslint-disable-next-line @typescript-eslint/no-floating-promises
@@ -130,8 +131,7 @@ const StocksThing = ({ offer }: StocksThingProps): JSX.Element => {
   }
 
   const formik = useFormik({
-    initialValues: buildInitialValues(offer, stocks),
-    enableReinitialize: true, // use fetched stocks after loading
+    initialValues: buildInitialValues(offer, []),
     onSubmit,
     validationSchema: getValidationSchema(minQuantity),
   })

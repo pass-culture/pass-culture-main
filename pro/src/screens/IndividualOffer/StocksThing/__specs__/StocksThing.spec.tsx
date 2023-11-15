@@ -5,7 +5,11 @@ import React from 'react'
 import { Route, Routes } from 'react-router-dom'
 
 import { api } from 'apiClient/api'
-import { ApiError, GetIndividualOfferResponseModel } from 'apiClient/v1'
+import {
+  ApiError,
+  GetIndividualOfferResponseModel,
+  GetOfferStockResponseModel,
+} from 'apiClient/v1'
 import { ApiRequestOptions } from 'apiClient/v1/core/ApiRequestOptions'
 import { ApiResult } from 'apiClient/v1/core/ApiResult'
 import { OFFER_WIZARD_STEP_IDS } from 'components/IndividualOfferNavigation/constants'
@@ -23,6 +27,7 @@ import {
   getIndividualOfferPath,
   getIndividualOfferUrl,
 } from 'core/Offers/utils/getIndividualOfferUrl'
+import { ButtonLink } from 'ui-kit'
 import { offerVenueFactory } from 'utils/apiFactories'
 import { FORMAT_ISO_DATE_ONLY } from 'utils/date'
 import {
@@ -45,10 +50,16 @@ vi.mock('utils/date', async () => {
   }
 })
 
-const renderStockThingScreen = (
+const renderStockThingScreen = async (
+  stocks: GetOfferStockResponseModel[],
   props: StocksThingProps,
   contextValue: IndividualOfferContextValues
-) =>
+) => {
+  vi.spyOn(api, 'getStocks').mockResolvedValueOnce({
+    stocks,
+    stockCount: stocks.length,
+    hasStocks: true,
+  })
   renderWithProviders(
     <>
       <Routes>
@@ -60,6 +71,9 @@ const renderStockThingScreen = (
           element={
             <IndividualOfferContext.Provider value={contextValue}>
               <StocksThing {...props} />
+              <ButtonLink link={{ to: '/outside', isExternal: false }}>
+                Go outside !
+              </ButtonLink>
             </IndividualOfferContext.Provider>
           }
         />
@@ -69,6 +83,10 @@ const renderStockThingScreen = (
             mode: OFFER_WIZARD_MODE.CREATION,
           })}
           element={<div>Next page</div>}
+        />
+        <Route
+          path="/outside"
+          element={<div>This is outside stock form</div>}
         />
       </Routes>
       <Notification />
@@ -83,6 +101,10 @@ const renderStockThingScreen = (
       ],
     }
   )
+  await waitFor(() => {
+    expect(api.getStocks).toHaveBeenCalledTimes(1)
+  })
+}
 
 describe('screens:StocksThing', () => {
   let props: StocksThingProps
@@ -96,13 +118,11 @@ describe('screens:StocksThing', () => {
       venue: offerVenueFactory({
         departementCode: '75',
       }),
-      stocks: [],
       lastProviderName: 'Ciné Office',
       subcategoryId: 'CANBEDUO',
     })
     props = {
       offer,
-      stocks: [],
     }
     contextValue = individualOfferContextFactory({
       offerId: offerId,
@@ -119,13 +139,13 @@ describe('screens:StocksThing', () => {
     )
   })
 
-  it('should render physical stock thing', () => {
+  it('should render physical stock thing', async () => {
     props.offer = {
       ...offer,
       isDigital: false,
     }
 
-    renderStockThingScreen(props, contextValue)
+    await renderStockThingScreen([], props, contextValue)
     expect(screen.getByTestId('stock-thing-form')).toBeInTheDocument()
     expect(
       screen.getByText(
@@ -140,13 +160,13 @@ describe('screens:StocksThing', () => {
     expect(screen.getByLabelText('Quantité')).toBeInTheDocument()
   })
 
-  it('should render digital stock thing', () => {
+  it('should render digital stock thing', async () => {
     props.offer = {
       ...offer,
       subcategoryId: 'TESTID',
       isDigital: true,
     }
-    renderStockThingScreen(props, contextValue)
+    await renderStockThingScreen([], props, contextValue)
     expect(
       screen.getByText(
         /Les bénéficiaires ont 30 jours pour annuler leurs réservations d’offres numériques. Dans le cas d’offres avec codes d’activation, les bénéficiaires ne peuvent pas annuler leurs réservations. Toute réservation est définitive et sera immédiatement validée. Pour ajouter des codes d’activation, veuillez passer par le menu ··· et choisir l’option correspondante./
@@ -157,13 +177,13 @@ describe('screens:StocksThing', () => {
     ).not.toBeInTheDocument()
   })
 
-  it('should render digital book', () => {
+  it('should render digital book', async () => {
     props.offer = {
       ...offer,
       subcategoryId: LIVRE_PAPIER_SUBCATEGORY_ID,
       isDigital: false,
     }
-    renderStockThingScreen(props, contextValue)
+    await renderStockThingScreen([], props, contextValue)
     expect(
       screen.getByText(
         'Les bénéficiaires ont 10 jours pour faire valider leur contremarque. Passé ce délai, la réservation est automatiquement annulée et l’offre remise en vente.'
@@ -178,7 +198,7 @@ describe('screens:StocksThing', () => {
     vi.spyOn(api, 'upsertStocks').mockResolvedValue({
       stocks: [],
     })
-    renderStockThingScreen(props, contextValue)
+    await renderStockThingScreen([], props, contextValue)
     const nextButton = screen.getByRole('button', {
       name: 'Enregistrer et continuer',
     })
@@ -205,7 +225,7 @@ describe('screens:StocksThing', () => {
     vi.spyOn(api, 'upsertStocks').mockResolvedValue({
       stocks: [],
     })
-    renderStockThingScreen(props, contextValue)
+    await renderStockThingScreen([], props, contextValue)
     const nextButton = screen.getByRole('button', {
       name: 'Enregistrer et continuer',
     })
@@ -230,7 +250,7 @@ describe('screens:StocksThing', () => {
       stocks: [],
     })
 
-    renderStockThingScreen(props, contextValue)
+    await renderStockThingScreen([], props, contextValue)
 
     await userEvent.click(screen.getByRole('button', { name: 'Retour' }))
     expect(api.upsertStocks).not.toHaveBeenCalled()
@@ -256,7 +276,7 @@ describe('screens:StocksThing', () => {
       )
     )
 
-    renderStockThingScreen(props, contextValue)
+    await renderStockThingScreen([], props, contextValue)
 
     await userEvent.type(screen.getByLabelText('Prix'), '20')
     await userEvent.click(
@@ -281,7 +301,7 @@ describe('screens:StocksThing', () => {
         ...offer,
         isDigital: true,
       }
-      renderStockThingScreen(props, contextValue)
+      await renderStockThingScreen([], props, contextValue)
 
       await userEvent.type(screen.getByLabelText('Prix'), '20')
 
@@ -353,7 +373,7 @@ describe('screens:StocksThing', () => {
         ...offer,
         isDigital: true,
       }
-      renderStockThingScreen(props, contextValue)
+      await renderStockThingScreen([], props, contextValue)
 
       await userEvent.click(
         screen.getByTestId('stock-form-actions-button-open')
@@ -385,20 +405,23 @@ describe('screens:StocksThing', () => {
       expect(title).not.toBeInTheDocument()
     })
 
-    it('should display an expiration field disabled when activationCodesExpirationDatetime is provided', () => {
+    it('should display an expiration field disabled when activationCodesExpirationDatetime is provided', async () => {
       props.offer = {
         ...offer,
         isDigital: true,
       }
-      props.stocks = [
-        individualGetOfferStockResponseModelFactory({
-          bookingsQuantity: 1,
-          price: 12,
-          hasActivationCode: true,
-          activationCodesExpirationDatetime: '2020-12-15T12:00:00Z',
-        }),
-      ]
-      renderStockThingScreen(props, contextValue)
+      await renderStockThingScreen(
+        [
+          individualGetOfferStockResponseModelFactory({
+            bookingsQuantity: 1,
+            price: 12,
+            hasActivationCode: true,
+            activationCodesExpirationDatetime: '2020-12-15T12:00:00Z',
+          }),
+        ],
+        props,
+        contextValue
+      )
 
       expect(screen.getByLabelText('Quantité')).toBeDisabled()
       const expirationInput = screen.getByLabelText("Date d'expiration")
@@ -417,7 +440,7 @@ describe('screens:StocksThing', () => {
   it.each(setNumberPriceValue)(
     'should only type numbers for price input',
     async ({ value, expectedNumber }) => {
-      renderStockThingScreen(props, contextValue)
+      await renderStockThingScreen([], props, contextValue)
 
       const priceInput = screen.getByLabelText('Prix', {
         exact: false,
@@ -437,7 +460,7 @@ describe('screens:StocksThing', () => {
   it.each(setNumberQuantityValue)(
     'should only type numbers for quantity input',
     async ({ value, expectedNumber }) => {
-      renderStockThingScreen(props, contextValue)
+      await renderStockThingScreen([], props, contextValue)
 
       const quantityInput = screen.getByLabelText('Quantité', {
         exact: false,
@@ -446,4 +469,50 @@ describe('screens:StocksThing', () => {
       expect(quantityInput).toHaveValue(expectedNumber)
     }
   )
+
+  it('should not block when going outside and form is not touched', async () => {
+    vi.spyOn(api, 'upsertStocks').mockResolvedValue({
+      stocks: [],
+    })
+
+    await renderStockThingScreen([], props, contextValue)
+
+    await userEvent.click(screen.getByText('Go outside !'))
+
+    expect(screen.getByText('This is outside stock form')).toBeInTheDocument()
+  })
+
+  it('should be able to stay on stock form after click on "Rester sur la page"', async () => {
+    vi.spyOn(api, 'upsertStocks').mockResolvedValue({
+      stocks: [],
+    })
+
+    await renderStockThingScreen([], props, contextValue)
+    await userEvent.type(screen.getByLabelText('Quantité'), '20')
+
+    await userEvent.click(screen.getByText('Go outside !'))
+
+    await userEvent.click(screen.getByText('Rester sur la page'))
+
+    expect(screen.getByTestId('stock-thing-form')).toBeInTheDocument()
+  })
+
+  it('should be able to quit without submitting from RouteLeavingGuard', async () => {
+    vi.spyOn(api, 'upsertStocks').mockResolvedValue({
+      stocks: [],
+    })
+
+    await renderStockThingScreen([], props, contextValue)
+    await userEvent.type(screen.getByLabelText('Quantité'), '20')
+
+    await userEvent.click(screen.getByText('Go outside !'))
+    expect(
+      screen.getByText('Les informations non enregistrées seront perdues')
+    ).toBeInTheDocument()
+
+    await userEvent.click(screen.getByText('Quitter la page'))
+    expect(api.upsertStocks).toHaveBeenCalledTimes(0)
+
+    expect(screen.getByText('This is outside stock form')).toBeInTheDocument()
+  })
 })
