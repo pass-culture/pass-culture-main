@@ -7,7 +7,7 @@ from pydantic.v1 import Field
 from pydantic.v1 import root_validator
 from pydantic.v1 import validator
 
-from pcapi.core.categories import subcategories_v2
+import pcapi.core.categories.subcategories_v2 as subcategories
 from pcapi.core.educational.models import CollectiveBookingStatus
 from pcapi.core.educational.models import CollectiveOffer
 from pcapi.core.educational.models import StudentLevels
@@ -238,7 +238,7 @@ class CollectiveOffersSubCategoryResponseModel(BaseModel):
         orm_mode = True
 
     @classmethod
-    def from_orm(cls, subcategory: subcategories_v2.Subcategory) -> "CollectiveOffersSubCategoryResponseModel":
+    def from_orm(cls, subcategory: subcategories.Subcategory) -> "CollectiveOffersSubCategoryResponseModel":
         return cls(
             id=subcategory.id,
             label=subcategory.pro_label,
@@ -355,7 +355,8 @@ class PostCollectiveOfferBodyModel(BaseModel):
     venue_id: int
     name: str
     description: str
-    subcategory_id: str
+    subcategory_id: str | None
+    formats: list[subcategories.EacFormat] | None
     booking_emails: list[str]
     contact_email: str
     contact_phone: str
@@ -391,6 +392,24 @@ class PostCollectiveOfferBodyModel(BaseModel):
     _validate_booking_emails = emails_validator("booking_emails")
     _validate_contact_email = email_validator("contact_email")
     _validate_image_file = image_file_validator("image_file")
+
+    @root_validator
+    def validate_formats_and_subcategory(cls, values: dict) -> dict:
+        formats = values.get("formats")
+        if formats:
+            return values
+
+        subcategory_id = values.get("subcategory_id")
+        if not subcategory_id:
+            raise ValueError("subcategory_id & formats: at least one should not be null")
+
+        try:
+            subcategory = subcategories.COLLECTIVE_SUBCATEGORIES[subcategory_id]
+        except KeyError:
+            raise ValueError("Unknown subcategory id")
+
+        values["formats"] = subcategory.formats
+        return values
 
     @validator("name", pre=True)
     def validate_name(cls, name: str) -> str:
@@ -440,6 +459,7 @@ class PatchCollectiveOfferBodyModel(BaseModel):
     description: str | None
     venueId: int | None
     subcategoryId: str | None
+    formats: list[subcategories.EacFormat] | None
     bookingEmails: list[str] | None
     contactEmail: str | None
     contactPhone: str | None
