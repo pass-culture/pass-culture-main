@@ -3,6 +3,7 @@ from sqlalchemy import CHAR
 from sqlalchemy import Float
 from sqlalchemy import Integer
 from sqlalchemy import String
+from sqlalchemy.sql.elements import Label
 
 from pcapi.models import Model
 from pcapi.models.api_errors import ApiErrors
@@ -14,6 +15,15 @@ def validate_generic(model: Model) -> ApiErrors:
 
     for key in columns.keys():
         if key.startswith("_sa_"):
+            continue
+        if isinstance(columns[key].expression, Label):
+            # Not a Column.
+            # Mapped column using `query_expression` filled
+            # at runtime during a query.
+            # Nothing to validate as it's not part of the table and
+            # there is nothing to commit regarding it.
+            # If we go further we could it an `InvalidRequestError`
+            # trying to access it if it wasn't define in this context
             continue
 
         column = columns[key]

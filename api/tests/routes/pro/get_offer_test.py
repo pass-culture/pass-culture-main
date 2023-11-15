@@ -179,6 +179,7 @@ class Returns200Test:
             "name": "Derrick",
             "id": stock.offer.id,
             "status": "ACTIVE",
+            "isNonFreeOffer": None,
             "stocks": [
                 {
                     "activationCodesExpirationDatetime": None,

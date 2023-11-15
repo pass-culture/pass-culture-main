@@ -187,6 +187,7 @@ describe('screens:StocksEventEdition', () => {
       status: OfferStatus.EXPIRED,
       withdrawalType: null,
       withdrawalDelay: null,
+      bookingsCount: 0,
     }
   })
 

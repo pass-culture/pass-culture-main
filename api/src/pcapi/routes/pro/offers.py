@@ -256,11 +256,14 @@ def post_offer(body: offers_serialize.PostOfferBodyModel) -> offers_serialize.Ge
 @private_api.route("/offers/publish", methods=["PATCH"])
 @login_required
 @spectree_serialize(
-    on_success_status=204,
+    on_success_status=200,
     on_error_statuses=[404, 403],
     api=blueprint.pro_private_schema,
+    response_model=offers_serialize.GetIndividualOfferResponseModel,
 )
-def patch_publish_offer(body: offers_serialize.PatchOfferPublishBodyModel) -> None:
+def patch_publish_offer(
+    body: offers_serialize.PatchOfferPublishBodyModel,
+) -> offers_serialize.GetIndividualOfferResponseModel:
     with repository.transaction():
         try:
             offerer = offerers_repository.get_by_offer_id(body.id)
@@ -271,8 +274,11 @@ def patch_publish_offer(body: offers_serialize.PatchOfferPublishBodyModel) -> No
 
         rest.check_user_has_access_to_offerer(current_user, offerer.id)
 
-        offer = offers_repository.get_offer_by_id(body.id)
+        offer = offers_repository.get_offer_and_extradata(body.id)
+        if offer is None:
+            raise api_errors.ApiErrors({"offer": ["Cette offre n’existe pas"]}, status_code=404)
         offers_api.publish_offer(offer, current_user)
+        return offers_serialize.GetIndividualOfferResponseModel.from_orm(offer)
 
 
 @private_api.route("/offers/active-status", methods=["PATCH"])

@@ -26,7 +26,7 @@ class Returns404Test:
 
 @patch("pcapi.core.search.async_index_offer_ids")
 @pytest.mark.usefixtures("db_session")
-class Returns204Test:
+class Returns200Test:
     @patch("pcapi.core.mails.transactional.send_first_venue_approved_offer_email_to_pro")
     def test_patch_publish_offer(
         self,
@@ -43,9 +43,11 @@ class Returns204Test:
         client = client.with_session_auth("user@example.com")
         response = client.patch("/offers/publish", json={"id": stock.offerId})
 
-        assert response.status_code == 204
+        assert response.status_code == 200
+        content = response.json
         offer = offers_models.Offer.query.get(stock.offer.id)
-        assert offer.isActive is True
         assert offer.validation == OfferValidationStatus.APPROVED
+        assert content["isActive"] is True
+        assert content["isNonFreeOffer"] is True
         mock_async_index_offer_ids.assert_called_once()
         mocked_send_first_venue_approved_offer_email_to_pro.assert_called_once_with(offer)

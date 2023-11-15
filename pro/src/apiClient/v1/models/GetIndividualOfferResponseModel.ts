@@ -17,7 +17,7 @@ export type GetIndividualOfferResponseModel = {
   audioDisabilityCompliant?: boolean | null;
   bookingContact?: string | null;
   bookingEmail?: string | null;
-  bookingsCount?: number;
+  bookingsCount?: number | null;
   dateCreated: string;
   description?: string | null;
   durationMinutes?: number | null;
@@ -32,6 +32,7 @@ export type GetIndividualOfferResponseModel = {
   isEditable: boolean;
   isEvent: boolean;
   isNational: boolean;
+  isNonFreeOffer?: boolean | null;
   isThing: boolean;
   lastProvider?: GetOfferLastProviderResponseModel | null;
   mentalDisabilityCompliant?: boolean | null;

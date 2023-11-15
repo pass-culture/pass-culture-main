@@ -149,6 +149,7 @@ describe('screens:StocksThing', () => {
       status: OfferStatus.EXPIRED,
       withdrawalType: null,
       withdrawalDelay: null,
+      bookingsCount: 0,
     }
     storeOverride = {
       user: {
