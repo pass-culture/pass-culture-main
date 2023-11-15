@@ -66,7 +66,7 @@ const computeMaxBookingLimitDatetime = (beginningDate: string) => {
     : undefined
 }
 
-export interface StocksEventEditionProps {
+interface StocksEventEditionProps {
   offer: IndividualOffer
 }
 
