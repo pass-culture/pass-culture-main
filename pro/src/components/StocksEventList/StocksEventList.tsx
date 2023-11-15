@@ -125,7 +125,7 @@ const StocksEventList = ({
         offerId,
         dateFilter ? dateFilter : undefined,
         timeFilter
-          ? convertLocalTimeToUTCTime(timeFilter, departmentCode)
+          ? convertFromLocalTimeToVenueTimezoneInUtc(timeFilter, departmentCode)
           : undefined,
         priceCategoryIdFilter ? Number(priceCategoryIdFilter) : undefined,
         currentSortingColumn ?? undefined,
@@ -248,7 +248,7 @@ const StocksEventList = ({
                 timeFilter,
                 departmentCode
               )
-            : null,
+            : undefined,
           price_category_id:
             priceCategoryIdFilter === null
               ? null

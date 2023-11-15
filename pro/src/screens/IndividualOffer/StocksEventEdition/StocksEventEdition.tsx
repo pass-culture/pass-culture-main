@@ -34,7 +34,10 @@ import { BaseTimePicker } from 'ui-kit/form/TimePicker/BaseTimePicker'
 import { Pagination } from 'ui-kit/Pagination'
 import { getToday } from 'utils/date'
 import { hasErrorCode } from 'utils/error'
-import { getLocalDepartementDateTimeFromUtc } from 'utils/timezone'
+import {
+  convertFromLocalTimeToVenueTimezoneInUtc,
+  getLocalDepartementDateTimeFromUtc,
+} from 'utils/timezone'
 
 import ActionBar from '../ActionBar/ActionBar'
 import DialogStockEventDeleteConfirm from '../DialogStockDeleteConfirm/DialogStockEventDeleteConfirm'
@@ -44,7 +47,6 @@ import { RecurrenceFormValues } from '../StocksEventCreation/form/types'
 import { RecurrenceForm } from '../StocksEventCreation/RecurrenceForm'
 import { getSuccessMessage } from '../utils/getSuccessMessage'
 
-import { convertLocalTimeToUTCTime } from './adapters/serializers'
 import { EventCancellationBanner } from './EventCancellationBanner'
 import { getPriceCategoryOptions } from './getPriceCategoryOptions'
 import { hasChangesOnStockWithBookings } from './hasChangesOnStockWithBookings'
@@ -107,7 +109,10 @@ const StocksEventEdition = ({
       offer.id,
       dateFilter ? dateFilter : undefined,
       timeFilter
-        ? convertLocalTimeToUTCTime(timeFilter, offer.venue.departementCode)
+        ? convertFromLocalTimeToVenueTimezoneInUtc(
+            timeFilter,
+            offer.venue.departementCode
+          )
         : undefined,
       priceCategoryIdFilter ? Number(priceCategoryIdFilter) : undefined,
       currentSortingColumn ?? undefined,
