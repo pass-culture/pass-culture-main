@@ -35,7 +35,7 @@ class OfferFavoriteBody(AdageBaseModel):
 class PlaylistBody(AdageBaseModel):
     playlistType: AdagePlaylistType
     playlistId: int
-    elementId: int
+    elementId: int | None
 
 
 class SearchBody(AdageBaseModel):
