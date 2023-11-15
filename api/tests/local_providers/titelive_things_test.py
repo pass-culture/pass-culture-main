@@ -849,3 +849,53 @@ class TiteliveThingsTest:
 
         offers = offers_models.Offer.query.all()
         assert all(offer.validation == OfferValidationStatus.APPROVED for offer in offers)
+
+    @pytest.mark.usefixtures("db_session")
+    @patch("pcapi.local_providers.titelive_things.titelive_things.get_files_to_process_from_titelive_ftp")
+    @patch("pcapi.local_providers.titelive_things.titelive_things.get_lines_from_thing_file")
+    def test_update_offers_extra_data_from_thing(
+        self, get_lines_from_thing_file, get_files_to_process_from_titelive_ftp, app
+    ):
+        # Given
+        get_files_to_process_from_titelive_ftp.return_value = ["Quotidien30.tit"]
+
+        data_line = "~".join(BASE_DATA_LINE_PARTS)
+        get_lines_from_thing_file.return_value = iter([data_line])
+
+        titelive_things_provider = get_provider_by_local_class("TiteLiveThings")
+
+        product = offers_factories.ProductFactory(
+            name="Old name",
+            description="old description",
+            idAtProviders=EAN_TEST,
+            dateModifiedAtLastProvider=datetime(2001, 1, 1),
+            lastProviderId=titelive_things_provider.id,
+            isGcuCompatible=False,
+            extraData={
+                "ean": EAN_TEST,
+            },
+        )
+
+        offers_factories.OfferFactory(product=product, extraData={"gtl_id": "01223344"})
+
+        # When
+        run_titelive_things()
+
+        # Then
+        offer = offers_models.Offer.query.one()
+
+        assert offer.name == "Secret wars : marvel zombies n.1"
+        assert offer.description.startswith("A passionate description of offer")
+        assert offer.extraData["gtl_id"] == "03030400"
+        assert offer.extraData["csr_id"] == "1901"
+        assert offer.extraData["code_clil"] == "4300"
+        assert not offer.extraData.get("isbn")
+        assert not offer.extraData.get("dewey")
+        assert offer.extraData["rayon"] == "Bandes dessinées adultes / Comics"
+        assert offer.extraData["author"] == "Collectif"
+        assert offer.extraData["bookFormat"] == "BEAUX LIVRES"
+        assert offer.extraData["prix_livre"] == "4.90"
+        assert offer.extraData["editeur"] == "Panini Comics Mag"
+        assert not offer.extraData.get("comic_series")
+        assert offer.extraData["distributeur"] == "Makassar"
+        assert offer.extraData["date_parution"] == "24/12/2015"
