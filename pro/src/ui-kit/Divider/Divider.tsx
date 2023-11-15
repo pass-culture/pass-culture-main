@@ -5,7 +5,7 @@ import styles from './Divider.module.scss'
 
 type Size = 'medium' | 'large'
 
-export interface DividerProps {
+interface DividerProps {
   size?: Size
   className?: string
 }
