@@ -1723,7 +1723,8 @@ def create_from_onboarding_data(
     user_offerer = create_offerer(user, offerer_creation_info, new_onboarding_info)
 
     # Create Venue with siret if it's not in DB yet, or Venue without siret if requested
-    if not offerers_repository.find_venue_by_siret(onboarding_data.siret) or onboarding_data.createVenueWithoutSiret:
+    venue = offerers_repository.find_venue_by_siret(onboarding_data.siret)
+    if not venue or onboarding_data.createVenueWithoutSiret:
         common_kwargs = dict(
             address=onboarding_data.address or "n/d",  # handle empty VoieEtablissement from Sirene API
             bookingEmail=user.email,
