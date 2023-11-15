@@ -588,7 +588,10 @@ class ListOffersTest(GetEndpointHelper):
         offers_factories.OfferFactory(
             validation=offers_models.OfferValidationStatus.PENDING,
             flaggingValidationRules=[rule_1, rule_2],
-            extraData={"complianceScore": 50},
+            extraData={
+                "complianceScore": 50,
+                "complianceReasons": ["stock_price", "offer_subcategoryid", "offer_description"],
+            },
         )
 
         query_args = {
@@ -609,6 +612,16 @@ class ListOffersTest(GetEndpointHelper):
         rows = html_parser.extract_table_rows(response.data)
         assert rows[0]["Règles de conformité"] == ", ".join([rule_1.name, rule_2.name])
         assert rows[0]["Score data"] == "50"
+
+        # Check tooltip associated with "Score data"
+        tooltip = html_parser.get_soup(response.data).find(
+            "i", class_="bi-info-circle", attrs={"data-bs-toggle": "tooltip", "data-bs-html": "true"}
+        )
+        tooltip_html_content = tooltip.attrs.get("data-bs-title")
+        assert (
+            html_parser.content_as_text(tooltip_html_content, from_encoding=None)
+            == "Raison de score faible : Prix Sous-catégorie Description de l'offre"
+        )
 
     def test_list_offers_advanced_search_by_no_tags(self, authenticated_client, offers):
         query_args = {
@@ -1108,7 +1121,12 @@ class GetOfferDetailsTest(GetEndpointHelper):
     expected_num_queries = 3
 
     def test_get_detail_offer(self, legit_user, authenticated_client):
-        offer = offers_factories.OfferFactory(extraData={"complianceScore": 55})
+        offer = offers_factories.OfferFactory(
+            extraData={
+                "complianceScore": 55,
+                "complianceReasons": ["stock_price", "offer_subcategoryid", "offer_description"],
+            }
+        )
 
         url = url_for(self.endpoint, offer_id=offer.id, _external=True)
         with assert_num_queries(self.expected_num_queries):
@@ -1124,6 +1142,7 @@ class GetOfferDetailsTest(GetEndpointHelper):
         assert "Statut : Épuisée" in card_text
         assert "État : Validée" in card_text
         assert "Score data : 55 " in card_text
+        assert "Raison de score faible : Prix Sous-catégorie Description de l'offre " in card_text
         assert "Structure : Le Petit Rintintin Management" in card_text
         assert "Lieu : Le Petit Rintintin" in card_text
         assert "Utilisateur de la dernière validation" not in card_text

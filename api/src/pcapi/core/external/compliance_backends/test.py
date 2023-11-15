@@ -9,6 +9,6 @@ logger = logging.getLogger(__name__)
 
 
 class TestBackend(BaseBackend):
-    def get_score_from_compliance_api(self, payload: GetComplianceScoreRequest) -> int | None:
+    def get_score_from_compliance_api(self, payload: GetComplianceScoreRequest) -> tuple[int | None, list[str]]:
         logger.info("A request to Compliance API would be sent to get the score of the offer.")
-        return None
+        return None, []

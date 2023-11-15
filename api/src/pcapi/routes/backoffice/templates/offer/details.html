@@ -56,6 +56,12 @@
                     <p class="mb-1">
                       <span class="fw-bold">Score data :</span> {{ compliance_score | safe }}
                     </p>
+                    {% set compliance_reasons = offer.extraData.get("complianceReasons") if offer.extraData else none %}
+                    {% if compliance_reasons %}
+                      <p class="mb-1">
+                        <span class="fw-bold">Raison de score faible :</span> {{ compliance_reasons | format_compliance_reasons | safe }}
+                      </p>
+                    {% endif %}
                   {% endif %}
                 {% endif %}
                 {% if offer.lastValidationDate %}

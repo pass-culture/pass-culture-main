@@ -21,12 +21,14 @@ class GetDataComplianceScoringTest:
     @mock.patch("pcapi.core.auth.api.get_id_token_from_google", return_value="Good token")
     def test_get_data_compliance_scoring(self, mock_get_id_token_from_google, requests_mock):
         requests_mock.post(
-            "https://compliance.passculture.team/latest/model/compliance/scoring", json={"probability_validated": 50}
+            "https://compliance.passculture.team/latest/model/compliance/scoring",
+            json={"probability_validated": 50, "rejection_main_features": ["stock_price", "offer_description"]},
         )
         offer = offers_factories.OfferFactory(name="Hello la data")
         payload = compliance._get_payload_for_compliance_api(offer)
         compliance.make_update_offer_compliance_score(payload)
         assert offer.extraData["complianceScore"] == 50
+        assert offer.extraData["complianceReasons"] == ["stock_price", "offer_description"]
 
     @mock.patch("pcapi.core.external.compliance.compliance_backend", ComplianceBackend())
     @mock.patch("pcapi.core.auth.api.get_id_token_from_google", return_value="Good token")
@@ -43,6 +45,7 @@ class GetDataComplianceScoringTest:
         assert caplog.records[0].message == "Connection to Compliance API was refused"
         assert caplog.records[0].extra == {"status_code": 401}
         assert "complianceScore" not in offer.extraData
+        assert "complianceReasons" not in offer.extraData
 
     @mock.patch("pcapi.core.external.compliance.compliance_backend", ComplianceBackend())
     @mock.patch("pcapi.core.auth.api.get_id_token_from_google", return_value="Good token")
@@ -59,6 +62,7 @@ class GetDataComplianceScoringTest:
         assert caplog.records[0].message == "Data sent to Compliance API is faulty"
         assert caplog.records[0].extra == {"status_code": 422}
         assert "complianceScore" not in offer.extraData
+        assert "complianceReasons" not in offer.extraData
 
     @mock.patch("pcapi.core.external.compliance.compliance_backend", ComplianceBackend())
     @mock.patch("pcapi.core.auth.api.get_id_token_from_google", return_value="Good token")
@@ -75,6 +79,7 @@ class GetDataComplianceScoringTest:
         assert caplog.records[0].message == "Response from Compliance API is not ok"
         assert caplog.records[0].extra == {"status_code": 500}
         assert "complianceScore" not in offer.extraData
+        assert "complianceReasons" not in offer.extraData
 
 
 @pytest.mark.usefixtures("db_session")
