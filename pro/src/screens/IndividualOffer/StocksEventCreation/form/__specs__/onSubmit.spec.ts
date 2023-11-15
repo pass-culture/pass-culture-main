@@ -350,9 +350,8 @@ describe('onSubmit', () => {
             ),
           ],
         })
-        const newStocks = await onSubmit(formValues, '75', [], 66, notify)
+        await onSubmit(formValues, '75', 66, notify)
 
-        expect(newStocks).toEqual(expectedStocks)
         expect(api.upsertStocks).toBeCalledWith({
           offerId: 66,
           stocks: expectedStocks.map(
@@ -387,39 +386,11 @@ describe('onSubmit', () => {
     }
 
     vi.spyOn(api, 'upsertStocks').mockRejectedValueOnce({})
-    await onSubmit(formValues, '75', [], 66, notify)
+    await onSubmit(formValues, '75', 66, notify)
 
     expect(mockErrorNotification).toBeCalledWith(
       "Une erreur est survenue lors de l'enregistrement de vos stocks."
     )
-  })
-
-  it(`should deduplicate stock when an existing stock with same beggining date and price exist`, async () => {
-    const formValues = {
-      recurrenceType: RecurrenceType.UNIQUE,
-      days: [],
-      startingDate: '2023-05-26T00:00:00Z',
-      endingDate: '',
-      beginningTimes: ['08:00'],
-      quantityPerPriceCategories: [{ quantity: 5, priceCategory: '1' }],
-      bookingLimitDateInterval: 2,
-      monthlyOption: null,
-    }
-
-    const existingStock = individualStockEventFactory({
-      id: 2,
-      beginningDatetime: '2023-05-26T06:00:00Z',
-      bookingLimitDatetime: '2023-05-24T08:00:00Z',
-      priceCategoryId: 1,
-    })
-
-    vi.spyOn(api, 'upsertStocks').mockResolvedValueOnce({ stocks: [] })
-
-    const result = await onSubmit(formValues, '75', [existingStock], 66, notify)
-
-    expect(api.upsertStocks).not.toHaveBeenCalled()
-    expect(mockSuccessNotification).not.toHaveBeenCalled()
-    expect(result).toEqual(undefined)
   })
 
   it(`should create nothing when creation limit is reach`, async () => {
@@ -427,23 +398,16 @@ describe('onSubmit', () => {
       recurrenceType: RecurrenceType.MONTHLY,
       days: [],
       startingDate: '2020-03-03',
-      endingDate: '2020-07-20',
+      endingDate: '2023-07-20',
       beginningTimes: ['08:00'],
       quantityPerPriceCategories: [{ quantity: 5, priceCategory: '1' }],
       bookingLimitDateInterval: 2,
       monthlyOption: MonthlyOption.BY_FIRST_DAY,
     }
 
-    const existingStock = individualStockEventFactory({
-      id: 2,
-      beginningDatetime: '2023-05-26T06:00:00Z',
-      bookingLimitDatetime: '2023-05-24T08:00:00Z',
-      priceCategoryId: 1,
-    })
-
     vi.spyOn(api, 'upsertStocks').mockResolvedValueOnce({ stocks: [] })
 
-    const result = await onSubmit(formValues, '75', [existingStock], 66, notify)
+    const result = await onSubmit(formValues, '75', 66, notify)
 
     expect(api.upsertStocks).not.toHaveBeenCalled()
     expect(mockErrorNotification).toHaveBeenCalledWith(
