@@ -108,7 +108,7 @@ const StocksEventEdition = ({
       dateFilter ? dateFilter : undefined,
       timeFilter
         ? convertLocalTimeToUTCTime(timeFilter, offer.venue.departementCode)
-        : null,
+        : undefined,
       priceCategoryIdFilter ? Number(priceCategoryIdFilter) : undefined,
       currentSortingColumn ?? undefined,
       currentSortingMode ? currentSortingMode === SortingMode.DESC : undefined,
@@ -254,8 +254,21 @@ const StocksEventEdition = ({
     try {
       await api.deleteStock(stockId)
 
-      const response = await loadStocksFromCurrentFilters()
-      resetFormWithNewPage(response)
+      const newStocks = formik.values.stocks.filter(
+        (initialStock) => initialStock.stockId !== stockId
+      )
+
+      if (newStocks.length > 0) {
+        formik.resetForm({ values: { stocks: newStocks } })
+      } else {
+        if (page === pageCount && page !== 1) {
+          previousPage()
+        } else {
+          // Reload this current page
+          const response = await loadStocksFromCurrentFilters()
+          resetFormWithNewPage(response)
+        }
+      }
 
       notify.success('Le stock a été supprimé.')
     } catch (error) {
