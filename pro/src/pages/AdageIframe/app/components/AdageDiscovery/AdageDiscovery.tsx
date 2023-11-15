@@ -21,7 +21,7 @@ import squares from './DomainsCard/assets/squares.svg'
 import triangles from './DomainsCard/assets/triangles.svg'
 import DomainsCard from './DomainsCard/DomainsCard'
 
-const mockOffer: CardOfferModel = {
+export const mockOffer: CardOfferModel = {
   id: 479,
   name: 'Une chouette à la mer',
   description: 'Une offre vraiment chouette',

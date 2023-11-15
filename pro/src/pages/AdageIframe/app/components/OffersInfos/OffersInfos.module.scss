@@ -1,0 +1,6 @@
+@use "styles/mixins/_rem.scss" as rem;
+
+
+.container {
+    margin-top: rem.torem(32px)
+}
