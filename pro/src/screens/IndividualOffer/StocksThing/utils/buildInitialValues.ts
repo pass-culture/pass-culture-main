@@ -15,6 +15,7 @@ const buildInitialValues = (
   if (stocks.length === 0) {
     return STOCK_THING_FORM_DEFAULT_VALUES
   }
+
   return {
     stockId: stocks[0].id,
     remainingQuantity: stocks[0].remainingQuantity?.toString() || 'unlimited',
