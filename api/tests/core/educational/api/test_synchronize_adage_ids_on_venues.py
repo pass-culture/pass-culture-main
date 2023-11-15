@@ -82,4 +82,5 @@ def test_synchronize_adage_ids_on_venues(db_session):
     assert venue5.adageInscriptionDate is None
     assert venue6.adageId is None
     assert venue6.adageInscriptionDate is None
-    mock_activation_mail.assert_called_with(venue2, list(email2))
+    assert mock_activation_mail.call_args.args[0] == venue2
+    assert set(mock_activation_mail.call_args.args[1]) == set(email2)
