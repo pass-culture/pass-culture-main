@@ -17,6 +17,7 @@ import {
 } from 'core/OfferEducational'
 import { computeURLCollectiveOfferId } from 'core/OfferEducational/utils/computeURLCollectiveOfferId'
 import { computeCollectiveOffersUrl } from 'core/Offers/utils'
+import useActiveFeature from 'hooks/useActiveFeature'
 import useAnalytics from 'hooks/useAnalytics'
 import useNotification from 'hooks/useNotification'
 import { Button, ButtonLink } from 'ui-kit'
@@ -39,6 +40,7 @@ const CollectiveOfferSummaryEdition = ({
 }: CollectiveOfferSummaryEditionProps) => {
   const notify = useNotification()
   const navigate = useNavigate()
+  const isFormatActive = useActiveFeature('WIP_ENABLE_FORMAT')
 
   const offerEditLink = `/offre/${computeURLCollectiveOfferId(
     offer.id,
@@ -82,7 +84,12 @@ const CollectiveOfferSummaryEdition = ({
               logEvent?.(Events.CLICKED_DUPLICATE_TEMPLATE_OFFER, {
                 from: OFFER_FROM_TEMPLATE_ENTRIES.OFFER_TEMPLATE_RECAP,
               })
-              createOfferFromTemplate(navigate, notify, offer.id)
+              createOfferFromTemplate(
+                navigate,
+                notify,
+                offer.id,
+                isFormatActive
+              )
             }}
           >
             Créer une offre réservable pour un établissement scolaire

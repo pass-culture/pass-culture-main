@@ -734,6 +734,7 @@ def duplicate_offer_and_stock(
         imageHasOriginal=original_offer.imageHasOriginal,
         institutionId=original_offer.institutionId,
         nationalProgramId=original_offer.nationalProgramId,
+        formats=original_offer.formats,
     )
     educational_models.CollectiveStock(
         beginningDatetime=original_offer.collectiveStock.beginningDatetime,
