@@ -113,7 +113,7 @@ def sync_db_permissions(session: sa.orm.Session) -> None:
     return sync_enum_with_db_field(session, Permissions, "name", Permission)
 
 
-class RolePermission(PcObject, Base, Model):
+class RolePermission(PcObject, Base):
     """
     An association table between roles and permission for their
     many-to-many relationship
@@ -124,7 +124,7 @@ class RolePermission(PcObject, Base, Model):
     __table_args__ = (sa.UniqueConstraint("roleId", "permissionId", name="role_permission_roleId_permissionId_key"),)
 
 
-class Permission(PcObject, Base, Model):
+class Permission(PcObject, Base):
     __tablename__ = "permission"
 
     name: str = sa.Column(sa.String(length=140), nullable=False, unique=True)
@@ -179,7 +179,7 @@ role_backoffice_profile_table = sa.Table(
 )
 
 
-class Role(PcObject, Base, Model):
+class Role(PcObject, Base):
     __tablename__ = "role"
 
     name: str = sa.Column(sa.String(140), nullable=False, unique=True)
@@ -197,7 +197,7 @@ class Role(PcObject, Base, Model):
         return False
 
 
-class BackOfficeUserProfile(Base, Model):
+class BackOfficeUserProfile(Base):
     __tablename__ = "backoffice_user_profile"
 
     id: int = sa.Column(sa.BigInteger, primary_key=True, autoincrement=True)

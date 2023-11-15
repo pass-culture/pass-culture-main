@@ -8,7 +8,7 @@ from pcapi.models import Model
 from . import exceptions
 
 
-class ReferenceScheme(Base, Model):
+class ReferenceScheme(Base):
     """This table holds the next reference number (and other related
     parameters) for our invoices and possibly other entities.
 

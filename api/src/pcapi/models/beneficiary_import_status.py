@@ -33,7 +33,7 @@ class ImportStatus(enum.Enum):
     WITHOUT_CONTINUATION = "WITHOUT_CONTINUATION"
 
 
-class BeneficiaryImportStatus(PcObject, Base, Model):
+class BeneficiaryImportStatus(PcObject, Base):
     """
     THIS MODEL IS DEPRECATED - DO NOT USE
 

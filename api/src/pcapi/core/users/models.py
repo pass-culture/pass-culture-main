@@ -62,7 +62,7 @@ class TokenExtraData:
     phone_number: str | None
 
 
-class Token(PcObject, Base, Model):
+class Token(PcObject, Base):
     __tablename__ = "token"
 
     userId: int = sa.Column(sa.BigInteger, sa.ForeignKey("user.id", ondelete="CASCADE"), index=True, nullable=False)
@@ -175,7 +175,7 @@ class AccountState(enum.Enum):
         return self == AccountState.DELETED
 
 
-class User(PcObject, Base, Model, NeedsValidationMixin, DeactivableMixin):
+class User(PcObject, Base, NeedsValidationMixin, DeactivableMixin):
     __tablename__ = "user"
 
     activity = sa.Column(sa.String(128), nullable=True)
@@ -672,7 +672,7 @@ class DomainsCredit:
     physical: Credit | None = None
 
 
-class Favorite(PcObject, Base, Model):
+class Favorite(PcObject, Base):
     __tablename__ = "favorite"
 
     userId: int = sa.Column(sa.BigInteger, sa.ForeignKey("user.id", ondelete="CASCADE"), index=True, nullable=False)
@@ -713,7 +713,7 @@ class EmailHistoryEventTypeEnum(enum.Enum):
     ADMIN_UPDATE = "ADMIN_UPDATE"
 
 
-class UserEmailHistory(PcObject, Base, Model):
+class UserEmailHistory(PcObject, Base):
     __tablename__ = "user_email_history"
 
     userId = sa.Column(sa.BigInteger, sa.ForeignKey("user.id", ondelete="SET NULL"), index=True, nullable=True)
@@ -790,12 +790,12 @@ class UserEmailHistory(PcObject, Base, Model):
         return func.concat(cls.newUserEmail, "@", cls.newDomainEmail)
 
 
-class UserSession(PcObject, Base, Model):
+class UserSession(PcObject, Base):
     userId: int = sa.Column(sa.BigInteger, nullable=False)
     uuid: UUID = sa.Column(postgresql.UUID(as_uuid=True), unique=True, nullable=False)
 
 
-class UserProFlags(PcObject, Base, Model):
+class UserProFlags(PcObject, Base):
     __tablename__ = "user_pro_flags"
 
     firebase: dict = sa.Column(
@@ -810,7 +810,7 @@ class UserProFlags(PcObject, Base, Model):
     user: orm.Mapped["User"] = orm.relationship(User, foreign_keys=[userId], back_populates="pro_flags", uselist=False)
 
 
-class TrustedDevice(PcObject, Base, Model):
+class TrustedDevice(PcObject, Base):
     __tablename__ = "trusted_device"
 
     userId: int = sa.Column(sa.BigInteger, sa.ForeignKey("user.id", ondelete="CASCADE"), nullable=False, index=True)
@@ -823,7 +823,7 @@ class TrustedDevice(PcObject, Base, Model):
     dateCreated: datetime = sa.Column(sa.DateTime, nullable=False, default=datetime.utcnow)
 
 
-class LoginDeviceHistory(PcObject, Base, Model):
+class LoginDeviceHistory(PcObject, Base):
     __tablename__ = "login_device_history"
 
     userId: int = sa.Column(sa.BigInteger, sa.ForeignKey("user.id", ondelete="CASCADE"), nullable=False, index=True)
@@ -837,7 +837,7 @@ class LoginDeviceHistory(PcObject, Base, Model):
     dateCreated: datetime = sa.Column(sa.DateTime, nullable=False, default=datetime.utcnow)
 
 
-class SingleSignOn(PcObject, Base, Model):
+class SingleSignOn(PcObject, Base):
     __tablename__ = "single_sign_on"
 
     userId: int = sa.Column(sa.BigInteger, sa.ForeignKey("user.id", ondelete="CASCADE"), nullable=False, index=True)

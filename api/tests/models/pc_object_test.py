@@ -19,12 +19,12 @@ from pcapi.models.api_errors import UuidCastError
 from pcapi.models.pc_object import PcObject
 
 
-class TimeInterval(PcObject, Base, Model):
+class TimeInterval(PcObject, Base):
     start = Column(DateTime)
     end = Column(DateTime)
 
 
-class TestPcObject(PcObject, Base, Model):
+class TestPcObject(PcObject, Base):
     date_attribute = Column(DateTime, nullable=True)
     entityId = Column(BigInteger, nullable=True)
     float_attribute = Column(Float, nullable=True)

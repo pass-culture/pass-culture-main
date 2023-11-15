@@ -512,7 +512,7 @@ class FraudCheckStatus(enum.Enum):
     SUSPICIOUS = "suspiscious"
 
 
-class BeneficiaryFraudCheck(PcObject, Base, Model):
+class BeneficiaryFraudCheck(PcObject, Base):
     __tablename__ = "beneficiary_fraud_check"
 
     dateCreated: datetime.datetime = sa.Column(
@@ -587,7 +587,7 @@ class BeneficiaryFraudCheck(PcObject, Base, Model):
         return [self.eligibilityType] if self.eligibilityType else []
 
 
-class OrphanDmsApplication(PcObject, Base, Model):
+class OrphanDmsApplication(PcObject, Base):
     # This model is used to store fraud checks that were not associated with a user.
     # This is mainly used for the DMS fraud check, when the user is not yet created, or in case of a failure.
     application_id: int = sa.Column(sa.BigInteger, primary_key=True)  # refers to DMS application "number"
@@ -601,7 +601,7 @@ class OrphanDmsApplication(PcObject, Base, Model):
     process_id = sa.Column(sa.BigInteger)
 
 
-class BeneficiaryFraudReview(PcObject, Base, Model):
+class BeneficiaryFraudReview(PcObject, Base):
     __tablename__ = "beneficiary_fraud_review"
     authorId: int = sa.Column(sa.BigInteger, sa.ForeignKey("user.id"), index=True, nullable=False)
     author: sa_orm.Mapped["users_models.User"] = sa.orm.relationship(
@@ -633,7 +633,7 @@ class FraudItem:
         return self.extra_data.get("duplicate_id")
 
 
-class BlacklistedDomainName(PcObject, Base, Model):
+class BlacklistedDomainName(PcObject, Base):
     """
     Track all blacklisted domain names. Any account creation or update
     using an email from one of those domain names should be blocked.
@@ -648,7 +648,7 @@ class BlacklistedDomainName(PcObject, Base, Model):
     )
 
 
-class ProductWhitelist(PcObject, Base, Model):
+class ProductWhitelist(PcObject, Base):
     """
     Contains the whitelisted EAN
     """

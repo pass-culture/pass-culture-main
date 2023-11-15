@@ -58,7 +58,7 @@ class ActionType(enum.Enum):
 ACTION_HISTORY_ORDER_BY = "ActionHistory.actionDate.asc().nulls_first()"
 
 
-class ActionHistory(PcObject, Base, Model):
+class ActionHistory(PcObject, Base):
     """
     This table aims at logging all actions that should appear in a resource history for support, fraud team, etc.
 

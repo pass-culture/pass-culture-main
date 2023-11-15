@@ -136,7 +136,7 @@ class FeatureToggle(enum.Enum):
         return Feature.query.filter_by(name=self.name).one().isActive
 
 
-class Feature(PcObject, Base, Model, DeactivableMixin):
+class Feature(PcObject, Base, DeactivableMixin):
     name: str = Column(Text, unique=True, nullable=False)
     description: str = Column(String(300), nullable=False)
 

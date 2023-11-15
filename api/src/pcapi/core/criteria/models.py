@@ -5,7 +5,7 @@ from pcapi.models import Model
 from pcapi.models.pc_object import PcObject
 
 
-class Criterion(PcObject, Base, Model):
+class Criterion(PcObject, Base):
     name: str = sqla.Column(sqla.String(140), nullable=False, unique=True)
     description = sqla.Column(sqla.Text, nullable=True)
     startDateTime = sqla.Column(sqla.DateTime, nullable=True)
@@ -19,7 +19,7 @@ class Criterion(PcObject, Base, Model):
         return self.name
 
 
-class VenueCriterion(PcObject, Base, Model):
+class VenueCriterion(PcObject, Base):
     venueId: int = sqla.Column(
         sqla.BigInteger, sqla.ForeignKey("venue.id", ondelete="CASCADE"), index=True, nullable=False
     )
@@ -36,7 +36,7 @@ class VenueCriterion(PcObject, Base, Model):
     )
 
 
-class OfferCriterion(PcObject, Base, Model):
+class OfferCriterion(PcObject, Base):
     __table_name__ = "offer_criterion"
     offerId: int = sqla.Column(
         sqla.BigInteger, sqla.ForeignKey("offer.id", ondelete="CASCADE"), index=True, nullable=False
@@ -52,7 +52,7 @@ class OfferCriterion(PcObject, Base, Model):
     )
 
 
-class CriterionCategory(PcObject, Base, Model):
+class CriterionCategory(PcObject, Base):
     """
     Criterion categories used for partners counting, reporting, etc.
     """
@@ -65,7 +65,7 @@ class CriterionCategory(PcObject, Base, Model):
         return self.label
 
 
-class CriterionCategoryMapping(PcObject, Base, Model):
+class CriterionCategoryMapping(PcObject, Base):
     __tablename__ = "criterion_category_mapping"
 
     criterionId: int = sqla.Column(

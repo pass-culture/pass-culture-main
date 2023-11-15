@@ -115,7 +115,7 @@ class OfferExtraData(typing.TypedDict, total=False):
     code_clil: str | None
 
 
-class Product(PcObject, Base, Model, HasThumbMixin, ProvidableMixin):
+class Product(PcObject, Base, HasThumbMixin, ProvidableMixin):
     description = sa.Column(sa.Text, nullable=True)
     durationMinutes = sa.Column(sa.Integer, nullable=True)
     extraData: OfferExtraData | None = sa.Column("jsonData", sa_mutable.MutableDict.as_mutable(postgresql.JSONB))
@@ -151,7 +151,7 @@ class Product(PcObject, Base, Model, HasThumbMixin, ProvidableMixin):
         )
 
 
-class Mediation(PcObject, Base, Model, HasThumbMixin, ProvidableMixin, DeactivableMixin):
+class Mediation(PcObject, Base, HasThumbMixin, ProvidableMixin, DeactivableMixin):
     __tablename__ = "mediation"
 
     author: sa_orm.Mapped["User"] | None = sa.orm.relationship("User", backref="mediations")
@@ -163,7 +163,7 @@ class Mediation(PcObject, Base, Model, HasThumbMixin, ProvidableMixin, Deactivab
     thumb_path_component = "mediations"
 
 
-class Stock(PcObject, Base, Model, ProvidableMixin, SoftDeletableMixin):
+class Stock(PcObject, Base, ProvidableMixin, SoftDeletableMixin):
     __tablename__ = "stock"
 
     MAX_STOCK_QUANTITY = 1_000_000
@@ -406,7 +406,7 @@ class WithdrawalTypeEnum(enum.Enum):
     ON_SITE = "on_site"
 
 
-class Offer(PcObject, Base, Model, DeactivableMixin, ValidationMixin, AccessibilityMixin):
+class Offer(PcObject, Base, DeactivableMixin, ValidationMixin, AccessibilityMixin):
     __tablename__ = "offer"
 
     MAX_STOCKS_PER_OFFER = 2_500
@@ -742,7 +742,7 @@ class Offer(PcObject, Base, Model, DeactivableMixin, ValidationMixin, Accessibil
         return True
 
 
-class ActivationCode(PcObject, Base, Model):
+class ActivationCode(PcObject, Base):
     __tablename__ = "activation_code"
 
     booking: sa.orm.Mapped["Booking | None"] = sa.orm.relationship("Booking", back_populates="activationCode")
@@ -894,7 +894,7 @@ class OfferValidationSubRuleField(enum.Enum):
     }
 
 
-class OfferValidationSubRule(PcObject, Base, Model):
+class OfferValidationSubRule(PcObject, Base):
     __tablename__ = "offer_validation_sub_rule"
     validationRule: sa.orm.Mapped["OfferValidationRule"] = sa.orm.relationship(
         "OfferValidationRule", backref="subRules"
@@ -912,7 +912,7 @@ class OfferValidationSubRule(PcObject, Base, Model):
     comparated: dict = sa.Column("comparated", MutableDict.as_mutable(postgresql.json.JSONB), nullable=False)
 
 
-class OfferValidationRule(PcObject, Base, Model):
+class OfferValidationRule(PcObject, Base):
     __tablename__ = "offer_validation_rule"
     name: str = sa.Column(sa.Text, nullable=False)
     dateModified: datetime.datetime = sa.Column(sa.DateTime, nullable=False, default=datetime.datetime.utcnow)
@@ -931,7 +931,7 @@ class OfferValidationRule(PcObject, Base, Model):
     )
 
 
-class ValidationRuleOfferLink(PcObject, Base, Model):
+class ValidationRuleOfferLink(PcObject, Base):
     __tablename__ = "validation_rule_offer_link"
     ruleId: int = sa.Column(
         sa.BigInteger, sa.ForeignKey("offer_validation_rule.id", ondelete="CASCADE"), nullable=False
@@ -990,7 +990,7 @@ OR (
 """
 
 
-class OfferReport(PcObject, Base, Model):
+class OfferReport(PcObject, Base):
     __tablename__ = "offer_report"
 
     __table_args__ = (
@@ -1018,14 +1018,14 @@ class OfferReport(PcObject, Base, Model):
         return f"{self.__class__.__name__}#{self.id} userId={self.userId}, offerId={self.offerId}, when={self.when}"
 
 
-class BookMacroSection(PcObject, Base, Model):
+class BookMacroSection(PcObject, Base):
     __tablename__ = "book_macro_section"
 
     macroSection: str = sa.Column(sa.Text, nullable=False)
     section: str = sa.Column(sa.Text, nullable=False, unique=True)
 
 
-class PriceCategoryLabel(PcObject, Base, Model):
+class PriceCategoryLabel(PcObject, Base):
     label: str = sa.Column(sa.Text(), nullable=False)
     priceCategory: sa_orm.Mapped["PriceCategory"] = sa.orm.relationship(
         "PriceCategory", back_populates="priceCategoryLabel"
@@ -1042,7 +1042,7 @@ class PriceCategoryLabel(PcObject, Base, Model):
     )
 
 
-class PriceCategory(PcObject, Base, Model):
+class PriceCategory(PcObject, Base):
     offerId: int = sa.Column(sa.BigInteger, sa.ForeignKey("offer.id", ondelete="CASCADE"), index=True, nullable=False)
     offer: sa_orm.Mapped["Offer"] = sa.orm.relationship("Offer", back_populates="priceCategories")
     price: decimal.Decimal = sa.Column(

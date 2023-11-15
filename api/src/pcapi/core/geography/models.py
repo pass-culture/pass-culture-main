@@ -7,7 +7,7 @@ from pcapi.models import Model
 from pcapi.models.pc_object import PcObject
 
 
-class IrisFrance(PcObject, Base, Model):
+class IrisFrance(PcObject, Base):
     __tablename__ = "iris_france"
     code = sa.Column(sa.String(9), nullable=False, unique=True)
     shape: str | Geometry = sa.Column("shape", Geometry(srid=WGS_SPATIAL_REFERENCE_IDENTIFIER), nullable=False)

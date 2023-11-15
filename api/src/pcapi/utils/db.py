@@ -35,7 +35,7 @@ class MagicEnum(sqla_types.TypeDecorator):
              RED = "red"
              BLUE = "blue"
 
-         class Wall(Base, Model):
+         class Wall(Base):
              color = sqla.Column(MagicEnum(Color))
 
          wall = Wall(color=Color.RED)  # not `Color.RED.value`

@@ -4,7 +4,7 @@ import typing
 
 import flask_sqlalchemy
 import pydantic.v1 as pydantic_v1
-from sqlalchemy.orm import DeclarativeBase 
+from sqlalchemy.orm import DeclarativeBase, declared_attr
 
 from pcapi import settings
 
@@ -50,6 +50,10 @@ if _db_options:
     _engine_options["connect_args"] = {"options": " ".join(_db_options)}
 
 class Base(DeclarativeBase):
+    @declared_attr.directive
+    def __tablename__(cls) -> str:
+        return cls.__name__.lower()
+
     __allow_unmapped__ = True
 
 db = flask_sqlalchemy.SQLAlchemy(engine_options=_engine_options)

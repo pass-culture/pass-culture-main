@@ -11,7 +11,7 @@ from pcapi.models import Model
 from pcapi.models.pc_object import PcObject
 
 
-class LatestDmsImport(PcObject, Base, Model):
+class LatestDmsImport(PcObject, Base):
     procedureId = sa.Column(sa.Integer, nullable=False)
     latestImportDatetime: datetime.datetime = sa.Column(sa.DateTime, nullable=False)
     isProcessing = sa.Column(sa.Boolean, nullable=False)

@@ -25,7 +25,7 @@ class BeneficiaryImportSources(Enum):
     ubble = "ubble"
 
 
-class BeneficiaryImport(PcObject, Base, Model):
+class BeneficiaryImport(PcObject, Base):
     """
     THIS MODEL IS DEPRECATED - DO NOT USE
 

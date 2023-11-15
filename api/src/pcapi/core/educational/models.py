@@ -259,7 +259,7 @@ class StatusMixin:
 
 
 class CollectiveOffer(
-    PcObject, Base, offer_mixin.ValidationMixin, AccessibilityMixin, StatusMixin, HasImageMixin, Model
+    PcObject, Base, offer_mixin.ValidationMixin, AccessibilityMixin, StatusMixin, HasImageMixin 
 ):
     __tablename__ = "collective_offer"
 
@@ -539,7 +539,7 @@ class CollectiveOffer(
 
 
 class CollectiveOfferTemplate(
-    PcObject, offer_mixin.ValidationMixin, AccessibilityMixin, StatusMixin, HasImageMixin, Base, Model
+    PcObject, offer_mixin.ValidationMixin, AccessibilityMixin, StatusMixin, HasImageMixin, Base
 ):
     __tablename__ = "collective_offer_template"
 
@@ -796,7 +796,7 @@ class CollectiveOfferTemplate(
         )
 
 
-class CollectiveStock(PcObject, Base, Model):
+class CollectiveStock(PcObject, Base):
     __tablename__ = "collective_stock"
 
     stockId = sa.Column(sa.BigInteger, nullable=True)
@@ -894,7 +894,7 @@ class CollectiveStock(PcObject, Base, Model):
         return False
 
 
-class EducationalInstitution(PcObject, Base, Model):
+class EducationalInstitution(PcObject, Base):
     __tablename__ = "educational_institution"
 
     institutionId: str = sa.Column(sa.String(30), nullable=False, unique=True, index=True)
@@ -922,7 +922,7 @@ class EducationalInstitution(PcObject, Base, Model):
     )
 
 
-class EducationalYear(PcObject, Base, Model):
+class EducationalYear(PcObject, Base):
     __tablename__ = "educational_year"
 
     adageId: str = sa.Column(sa.String(30), unique=True, nullable=False)
@@ -932,7 +932,7 @@ class EducationalYear(PcObject, Base, Model):
     expirationDate: datetime = sa.Column(sa.DateTime, nullable=False)
 
 
-class EducationalDeposit(PcObject, Base, Model):
+class EducationalDeposit(PcObject, Base):
     __tablename__ = "educational_deposit"
 
     TEMPORARY_FUND_AVAILABLE_RATIO = 0.8
@@ -985,7 +985,7 @@ class EducationalDeposit(PcObject, Base, Model):
                 raise exceptions.InsufficientTemporaryFund()
 
 
-class EducationalRedactor(PcObject, Base, Model):
+class EducationalRedactor(PcObject, Base):
     __tablename__ = "educational_redactor"
 
     email: str = sa.Column(sa.String(120), nullable=False, unique=True, index=True)
@@ -1023,7 +1023,7 @@ class EducationalRedactor(PcObject, Base, Model):
     )
 
 
-class CollectiveBooking(PcObject, Base, Model):
+class CollectiveBooking(PcObject, Base):
     __tablename__ = "collective_booking"
 
     bookingId = sa.Column(sa.BigInteger)
@@ -1239,7 +1239,7 @@ class CollectiveBooking(PcObject, Base, Model):
         return Decimal(self.collectiveStock.price)
 
 
-class CollectiveOfferTemplateDomain(Base, Model):
+class CollectiveOfferTemplateDomain(Base):
     """An association table between CollectiveOfferTemplate and
     EducationalDomain for their many-to-many relationship.
     """
@@ -1254,7 +1254,7 @@ class CollectiveOfferTemplateDomain(Base, Model):
     )
 
 
-class CollectiveOfferDomain(Base, Model):
+class CollectiveOfferDomain(Base):
     """An association table between CollectiveOffer and
     EducationalDomain for their many-to-many relationship.
     """
@@ -1269,7 +1269,7 @@ class CollectiveOfferDomain(Base, Model):
     )
 
 
-class EducationalDomainVenue(Base, Model):
+class EducationalDomainVenue(Base):
     __tablename__ = "educational_domain_venue"
     id: int = sa.Column(sa.BigInteger, primary_key=True, autoincrement=True)
     educationalDomainId: int = sa.Column(
@@ -1286,7 +1286,7 @@ class EducationalDomainVenue(Base, Model):
     )
 
 
-class EducationalDomain(PcObject, Base, Model):
+class EducationalDomain(PcObject, Base):
     __tablename__ = "educational_domain"
 
     name: str = sa.Column(sa.Text, nullable=False)
@@ -1302,7 +1302,7 @@ class EducationalDomain(PcObject, Base, Model):
     )
 
 
-class CollectiveDmsApplication(PcObject, Base, Model):
+class CollectiveDmsApplication(PcObject, Base):
     __tablename__ = "collective_dms_application"
     state: str = sa.Column(sa.String(30), nullable=False)
     procedure: int = sa.Column(sa.BigInteger, nullable=False)
@@ -1345,7 +1345,7 @@ sa.event.listen(
 )
 
 
-class CollectiveOfferRequest(PcObject, Base, Model):
+class CollectiveOfferRequest(PcObject, Base):
     _phoneNumber: str | None = sa.Column(sa.String(30), nullable=True, name="phoneNumber")
 
     requestedDate: date | None = sa.Column(sa.Date, nullable=True)
@@ -1397,7 +1397,7 @@ class CollectiveOfferRequest(PcObject, Base, Model):
         return cls._phoneNumber
 
 
-class ValidationRuleCollectiveOfferLink(PcObject, Base, Model):
+class ValidationRuleCollectiveOfferLink(PcObject, Base):
     __tablename__ = "validation_rule_collective_offer_link"
     ruleId: int = sa.Column(
         sa.BigInteger, sa.ForeignKey("offer_validation_rule.id", ondelete="CASCADE"), nullable=False
@@ -1407,7 +1407,7 @@ class ValidationRuleCollectiveOfferLink(PcObject, Base, Model):
     )
 
 
-class ValidationRuleCollectiveOfferTemplateLink(PcObject, Base, Model):
+class ValidationRuleCollectiveOfferTemplateLink(PcObject, Base):
     __tablename__ = "validation_rule_collective_offer_template_link"
     ruleId: int = sa.Column(
         sa.BigInteger, sa.ForeignKey("offer_validation_rule.id", ondelete="CASCADE"), nullable=False
@@ -1417,7 +1417,7 @@ class ValidationRuleCollectiveOfferTemplateLink(PcObject, Base, Model):
     )
 
 
-class NationalProgram(PcObject, Base, Model):
+class NationalProgram(PcObject, Base):
     """
     Keep a track of existing national program that are used to highlight
     collective offers (templates) within a coherent frame.
@@ -1427,7 +1427,7 @@ class NationalProgram(PcObject, Base, Model):
     dateCreated: datetime = sa.Column(sa.DateTime, nullable=False, default=datetime.utcnow)
 
 
-class NationalProgramOfferLinkHistory(PcObject, Base, Model):
+class NationalProgramOfferLinkHistory(PcObject, Base):
     """
     Keep a track on national program and collective offer links.
     It might be useful to find if an offer has been part of a given
@@ -1443,7 +1443,7 @@ class NationalProgramOfferLinkHistory(PcObject, Base, Model):
     )
 
 
-class NationalProgramOfferTemplateLinkHistory(PcObject, Base, Model):
+class NationalProgramOfferTemplateLinkHistory(PcObject, Base):
     """
     Keep a track on national program and collective offer template links.
     It might be useful to find if an offer has been part of a given
@@ -1459,7 +1459,7 @@ class NationalProgramOfferTemplateLinkHistory(PcObject, Base, Model):
     )
 
 
-class CollectiveOfferEducationalRedactor(PcObject, Base, Model):
+class CollectiveOfferEducationalRedactor(PcObject, Base):
     """Allow adding to favorite the collective offer for adage user"""
 
     __tablename__ = "collective_offer_educational_redactor"
@@ -1472,7 +1472,7 @@ class CollectiveOfferEducationalRedactor(PcObject, Base, Model):
     __table_args__ = (UniqueConstraint("educationalRedactorId", "collectiveOfferId", name="unique_redactorId_offer"),)
 
 
-class CollectiveOfferTemplateEducationalRedactor(PcObject, Base, Model):
+class CollectiveOfferTemplateEducationalRedactor(PcObject, Base):
     """Allow adding to favorite the offer template for adage user"""
 
     __tablename__ = "collective_offer_template_educational_redactor"

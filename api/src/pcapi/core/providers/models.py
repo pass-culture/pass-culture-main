@@ -44,7 +44,7 @@ if typing.TYPE_CHECKING:
     import pcapi.core.offerers.models as offerers_models
 
 
-class Provider(PcObject, Base, Model, DeactivableMixin):
+class Provider(PcObject, Base, DeactivableMixin):
     name: str = Column(String(90), index=True, nullable=False)
 
     localClass = Column(
@@ -115,7 +115,7 @@ class Provider(PcObject, Base, Model, DeactivableMixin):
         )
 
 
-class VenueProvider(PcObject, Base, Model, ProvidableMixin, DeactivableMixin):
+class VenueProvider(PcObject, Base, ProvidableMixin, DeactivableMixin):
     """Stores specific sync settings for a Venue, and whether it is active"""
 
     venueId: int = Column(BigInteger, ForeignKey("venue.id"), nullable=False)
@@ -177,7 +177,7 @@ class VenueProvider(PcObject, Base, Model, ProvidableMixin, DeactivableMixin):
         ).count()
 
 
-class CinemaProviderPivot(PcObject, Base, Model):
+class CinemaProviderPivot(PcObject, Base):
     """Stores whether a Venue has requested to be synced with a Provider"""
 
     venueId = Column(BigInteger, ForeignKey("venue.id"), index=False, nullable=True, unique=True)
@@ -208,7 +208,7 @@ class CinemaProviderPivot(PcObject, Base, Model):
     )
 
 
-class CDSCinemaDetails(PcObject, Base, Model):
+class CDSCinemaDetails(PcObject, Base):
     """Stores info on the specific login details of a cinema synced with CDS"""
 
     cinemaProviderPivotId = Column(
@@ -240,7 +240,7 @@ class AllocineVenueProvider(VenueProvider):
     }
 
 
-class AllocineVenueProviderPriceRule(PcObject, Base, Model):
+class AllocineVenueProviderPriceRule(PcObject, Base):
     priceRule: PriceRule = Column(Enum(PriceRule), nullable=False)
 
     allocineVenueProviderId: int = Column(
@@ -294,7 +294,7 @@ class StockDetail:
     price: decimal.Decimal
 
 
-class AllocinePivot(PcObject, Base, Model):
+class AllocinePivot(PcObject, Base):
     venueId: int = Column(BigInteger, ForeignKey("venue.id"), index=False, nullable=False, unique=True)
 
     venue: sa_orm.Mapped["Venue"] = relationship(Venue, foreign_keys=[venueId], backref="allocinePivot")
@@ -304,7 +304,7 @@ class AllocinePivot(PcObject, Base, Model):
     internalId: str = Column(Text, nullable=False, unique=True)
 
 
-class AllocineTheater(PcObject, Base, Model):
+class AllocineTheater(PcObject, Base):
     siret = Column(String(14), nullable=True, unique=True)
 
     theaterId: str = Column(String(20), nullable=False, unique=True)
@@ -322,7 +322,7 @@ class LocalProviderEventType(enum.Enum):
     SyncEnd = "SyncEnd"
 
 
-class LocalProviderEvent(PcObject, Base, Model):
+class LocalProviderEvent(PcObject, Base):
     providerId: int = Column(BigInteger, ForeignKey("provider.id"), nullable=False)
     provider: sa_orm.Mapped["Provider"] = relationship("Provider", foreign_keys=[providerId])
     date: datetime.datetime = Column(DateTime, nullable=False, default=datetime.datetime.utcnow)
@@ -330,7 +330,7 @@ class LocalProviderEvent(PcObject, Base, Model):
     payload = Column(String(50), nullable=True)
 
 
-class BoostCinemaDetails(PcObject, Base, Model):
+class BoostCinemaDetails(PcObject, Base):
     """Stores info on the specific login details of a cinema synced with Boost"""
 
     cinemaProviderPivotId = Column(
@@ -346,7 +346,7 @@ class BoostCinemaDetails(PcObject, Base, Model):
     tokenExpirationDate: datetime.datetime | None = Column(DateTime, nullable=True)
 
 
-class CGRCinemaDetails(PcObject, Base, Model):
+class CGRCinemaDetails(PcObject, Base):
     """Stores info on the specific login details of a cinema synced with CGR"""
 
     cinemaProviderPivotId = Column(
@@ -361,7 +361,7 @@ class CGRCinemaDetails(PcObject, Base, Model):
     encryptedPassword: str = Column(Text, nullable=False)
 
 
-class EMSCinemaDetails(PcObject, Base, Model):
+class EMSCinemaDetails(PcObject, Base):
     """Stores info on the specific login details of a cinema synced with EMS"""
 
     cinemaProviderPivotId = Column(

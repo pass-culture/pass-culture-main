@@ -39,7 +39,7 @@ if typing.TYPE_CHECKING:
     from . import conf
 
 
-class Deposit(PcObject, Base, Model):
+class Deposit(PcObject, Base):
     amount: decimal.Decimal = sqla.Column(sqla.Numeric(10, 2), nullable=False)
 
     userId: int = sqla.Column(sqla.BigInteger, sqla.ForeignKey("user.id"), index=True, nullable=False)
@@ -117,7 +117,7 @@ class RecreditType(enum.Enum):
     MANUAL_MODIFICATION = "ManualModification"
 
 
-class Recredit(PcObject, Base, Model):
+class Recredit(PcObject, Base):
     depositId: int = sqla.Column(sqla.BigInteger, sqla.ForeignKey("deposit.id"), nullable=False)
 
     deposit: sqla_orm.Mapped["Deposit"] = sqla_orm.relationship(
@@ -217,7 +217,7 @@ class BankAccountApplicationStatus(enum.Enum):
     WITHOUT_CONTINUATION = "sans_suite"
 
 
-class BankInformation(PcObject, Base, Model):
+class BankInformation(PcObject, Base):
     offererId = sqla.Column(sqla.BigInteger, sqla.ForeignKey("offerer.id"), index=True, nullable=True, unique=True)
     offerer: sqla_orm.Mapped["offerers_models.Offerer | None"] = sqla_orm.relationship(
         "Offerer", foreign_keys=[offererId], backref=sqla_orm.backref("bankInformation", uselist=False)
@@ -233,7 +233,7 @@ class BankInformation(PcObject, Base, Model):
     dateModified = sqla.Column(sqla.DateTime, nullable=True)
 
 
-class BankAccount(PcObject, Base, Model, DeactivableMixin):
+class BankAccount(PcObject, Base, DeactivableMixin):
     label: str = sqla.Column(sqla.String(100), nullable=False)
     offererId: int = sqla.Column(
         sqla.BigInteger, sqla.ForeignKey("offerer.id", ondelete="CASCADE"), index=True, nullable=False
@@ -252,7 +252,7 @@ class BankAccount(PcObject, Base, Model, DeactivableMixin):
     )
 
 
-class FinanceEvent(Base, Model):
+class FinanceEvent(Base):
     id: int = sqla.Column(sqla.BigInteger, primary_key=True, autoincrement=True)
 
     creationDate: datetime.datetime = sqla.Column(sqla.DateTime, nullable=False, server_default=sqla.func.now())
@@ -337,7 +337,7 @@ class FinanceEvent(Base, Model):
     )
 
 
-class Pricing(Base, Model):
+class Pricing(Base):
     id: int = sqla.Column(sqla.BigInteger, primary_key=True, autoincrement=True)
 
     status: PricingStatus = sqla.Column(db_utils.MagicEnum(PricingStatus), index=True, nullable=False)
@@ -429,7 +429,7 @@ class Pricing(Base, Model):
         return self.cashflows[0]
 
 
-class PricingLine(Base, Model):
+class PricingLine(Base):
     id: int = sqla.Column(sqla.BigInteger, primary_key=True, autoincrement=True)
 
     pricingId = sqla.Column(sqla.BigInteger, sqla.ForeignKey("pricing.id"), index=True, nullable=True)
@@ -443,7 +443,7 @@ class PricingLine(Base, Model):
     category: PricingLineCategory = sqla.Column(db_utils.MagicEnum(PricingLineCategory), nullable=False)
 
 
-class PricingLog(Base, Model):
+class PricingLog(Base):
     """A pricing log is created whenever the status of a pricing
     changes.
     """
@@ -526,7 +526,7 @@ class ReimbursementRule:
         raise NotImplementedError()
 
 
-class CustomReimbursementRule(ReimbursementRule, Base, Model):
+class CustomReimbursementRule(ReimbursementRule, Base):
     """Some offers are linked to custom reimbursement rules that overrides
     standard reimbursement rules.
 
@@ -616,7 +616,7 @@ class CustomReimbursementRule(ReimbursementRule, Base, Model):
         return RuleGroup.CUSTOM
 
 
-class Cashflow(Base, Model):
+class Cashflow(Base):
     """A cashflow represents a specific amount money that is transferred
     between us and a third party. It may be outgoing or incoming.
 
@@ -665,7 +665,7 @@ class Cashflow(Base, Model):
     __table_args__ = (sqla.CheckConstraint('("amount" != 0)', name="non_zero_amount_check"),)
 
 
-class CashflowLog(Base, Model):
+class CashflowLog(Base):
     """A cashflow log is created whenever the status of a cashflow
     changes.
     """
@@ -683,7 +683,7 @@ class CashflowLog(Base, Model):
     )
 
 
-class CashflowPricing(Base, Model):
+class CashflowPricing(Base):
     """An association table between cashflows and pricings for their
     many-to-many relationship.
 
@@ -701,7 +701,7 @@ class CashflowPricing(Base, Model):
     pricingId: int = sqla.Column(sqla.BigInteger, sqla.ForeignKey("pricing.id"), index=True, primary_key=True)
 
 
-class CashflowBatch(Base, Model):
+class CashflowBatch(Base):
     """A cashflow batch groups cashflows that are sent to the bank at the
     same time (in a single file).
     """
@@ -712,7 +712,7 @@ class CashflowBatch(Base, Model):
     label: str = sqla.Column(sqla.Text, nullable=False, unique=True)
 
 
-class InvoiceLine(Base, Model):
+class InvoiceLine(Base):
     id: int = sqla.Column(sqla.BigInteger, primary_key=True, autoincrement=True)
     invoiceId: int = sqla.Column(sqla.BigInteger, sqla.ForeignKey("invoice.id"), index=True, nullable=False)
     invoice: sqla_orm.Mapped["Invoice"] = sqla_orm.relationship(
@@ -750,7 +750,7 @@ class InvoiceLineGroup:
     reimbursed_amount_subtotal: float
 
 
-class Invoice(Base, Model):
+class Invoice(Base):
     """An invoice is linked to one or more cashflows and shows a summary
     of their related pricings.
     """
@@ -784,7 +784,7 @@ class Invoice(Base, Model):
         return f"{settings.OBJECT_STORAGE_URL}/invoices/{self.storage_object_id}"
 
 
-class InvoiceCashflow(Base, Model):
+class InvoiceCashflow(Base):
     """An association table between invoices and cashflows for their many-to-many relationship."""
 
     invoiceId: int = sqla.Column(sqla.BigInteger, sqla.ForeignKey("invoice.id"), index=True, primary_key=True)
@@ -803,7 +803,7 @@ class InvoiceCashflow(Base, Model):
 # were used in the "old" reimbursement system. No new data is created
 # with these models since 2022-01-01. These models have been replaced
 # by `Pricing`, `Cashflow` and other models listed above.
-class Payment(Base, Model):
+class Payment(Base):
     id: int = sqla.Column(sqla.BigInteger, primary_key=True, autoincrement=True)
     bookingId = sqla.Column(sqla.BigInteger, sqla.ForeignKey("booking.id"), index=True, nullable=True)
     booking: sqla_orm.Mapped["bookings_models.Booking"] = sqla_orm.relationship(
@@ -880,7 +880,7 @@ class TransactionStatus(enum.Enum):
 
 # `PaymentStatus` is deprecated. See comment above `Payment` model for
 # further details.
-class PaymentStatus(Base, Model):
+class PaymentStatus(Base):
     id: int = sqla.Column(sqla.BigInteger, primary_key=True, autoincrement=True)
     paymentId: int = sqla.Column(sqla.BigInteger, sqla.ForeignKey("payment.id"), index=True, nullable=False)
     payment: sqla_orm.Mapped["Payment"] = sqla_orm.relationship("Payment", foreign_keys=[paymentId], backref="statuses")
@@ -893,7 +893,7 @@ class PaymentStatus(Base, Model):
 
 # `PaymentMessage` is deprecated. See comment above `Payment` model
 # for further details.
-class PaymentMessage(Base, Model):
+class PaymentMessage(Base):
     id: int = sqla.Column(sqla.BigInteger, primary_key=True, autoincrement=True)
     name: str = sqla.Column(sqla.String(50), unique=True, nullable=False)
     checksum: bytes = sqla.Column(sqla.LargeBinary(32), unique=True, nullable=False)
@@ -915,7 +915,7 @@ class IncidentType(enum.Enum):
     FRAUD = "fraud"
 
 
-class FinanceIncident(Base, Model):
+class FinanceIncident(Base):
     id: int = sqla.Column(sqla.BigInteger, primary_key=True, autoincrement=True)
     kind: IncidentType = sqla.Column(
         sqla.Enum(IncidentType, native_enum=False, create_contraint=False),
@@ -955,7 +955,7 @@ class FinanceIncident(Base, Model):
         )
 
 
-class BookingFinanceIncident(Base, Model):
+class BookingFinanceIncident(Base):
     id: int = sqla.Column(sqla.BigInteger, primary_key=True, autoincrement=True)
 
     bookingId = sqla.Column(sqla.BigInteger, sqla.ForeignKey("booking.id"), index=True, nullable=True)

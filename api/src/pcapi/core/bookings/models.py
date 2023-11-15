@@ -74,7 +74,7 @@ class BookingExportType(enum.Enum):
     EXCEL = "excel"
 
 
-class ExternalBooking(PcObject, Base, Model):
+class ExternalBooking(PcObject, Base):
     bookingId: int = Column(BigInteger, ForeignKey("booking.id"), index=True, nullable=False)
 
     booking: Mapped["Booking"] = relationship("Booking", foreign_keys=[bookingId], backref="externalBookings")
@@ -86,7 +86,7 @@ class ExternalBooking(PcObject, Base, Model):
     additional_information: dict | None = Column(postgresql.JSONB)
 
 
-class Booking(PcObject, Base, Model):
+class Booking(PcObject, Base):
     __tablename__ = "booking"
 
     dateCreated: datetime = Column(DateTime, nullable=False, default=datetime.utcnow)

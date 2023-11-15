@@ -237,7 +237,7 @@ class InvitationStatus(enum.Enum):
     ACCEPTED = "ACCEPTED"
 
 
-class Venue(PcObject, Base, Model, HasThumbMixin, ProvidableMixin, AccessibilityMixin):
+class Venue(PcObject, Base, HasThumbMixin, ProvidableMixin, AccessibilityMixin):
     __tablename__ = "venue"
 
     name: str = Column(String(140), nullable=False)
@@ -656,12 +656,12 @@ class Venue(PcObject, Base, Model, HasThumbMixin, ProvidableMixin, Accessibility
         return self.registration.target if self.registration else None
 
 
-class VenueLabel(PcObject, Base, Model):
+class VenueLabel(PcObject, Base):
     __tablename__ = "venue_label"
     label: str = Column(String(100), nullable=False)
 
 
-class VenueContact(PcObject, Base, Model):
+class VenueContact(PcObject, Base):
     __tablename__ = "venue_contact"
 
     venueId: int = Column(
@@ -711,7 +711,7 @@ def _fill_departement_code_and_timezone(venue: Venue) -> None:
     venue.store_timezone()
 
 
-class VenuePricingPointLink(Base, Model):
+class VenuePricingPointLink(Base):
     """At any given time, the bookings of a venue are priced against a
     particular venue that we call the "pricing point" of the venue.
     There should only ever be one pricing point for each venue, but
@@ -742,7 +742,7 @@ class VenuePricingPointLink(Base, Model):
         super().__init__(**kwargs)
 
 
-class VenueReimbursementPointLink(Base, Model):
+class VenueReimbursementPointLink(Base):
     """At any given time, all bookings of a venue are reimbursed to a bank
     account that is attached to a particular venue that we call the
     "reimbursement point" of the venue. It may be the venue itself or
@@ -774,7 +774,7 @@ class VenueReimbursementPointLink(Base, Model):
         super().__init__(**kwargs)
 
 
-class VenueBankAccountLink(PcObject, Base, Model):
+class VenueBankAccountLink(PcObject, Base):
     """
     Professionnal users can link as many venues as they want to a given bank account.
     However, we want to keep tracks of the history, hence that table.
@@ -802,14 +802,14 @@ class VenueBankAccountLink(PcObject, Base, Model):
         super().__init__(**kwargs)
 
 
-class VenueEducationalStatus(Base, Model):
+class VenueEducationalStatus(Base):
     __tablename__ = "venue_educational_status"
     id: int = Column(BigInteger, primary_key=True, autoincrement=False, nullable=False)
     name: str = Column(String(256), nullable=False)
     venues: sa_orm.Mapped[list["Venue"]] = relationship(Venue, back_populates="venueEducationalStatus", uselist=True)
 
 
-class VenueRegistration(PcObject, Base, Model):
+class VenueRegistration(PcObject, Base):
     __tablename__ = "venue_registration"
 
     id: int = Column("id", BigInteger, sa.Identity(), primary_key=True)
@@ -828,7 +828,6 @@ class VenueRegistration(PcObject, Base, Model):
 class Offerer(
     PcObject,
     Base,
-    Model,
     HasAddressMixin,
     ValidationStatusMixin,
     DeactivableMixin,
@@ -953,7 +952,7 @@ class Offerer(
         )
 
 
-class UserOfferer(PcObject, Base, Model, ValidationStatusMixin):
+class UserOfferer(PcObject, Base, ValidationStatusMixin):
     __table_name__ = "user_offerer"
     userId: int = Column(BigInteger, ForeignKey("user.id"), primary_key=True)
     user: sa_orm.Mapped["users_models.User"] = relationship(
@@ -974,7 +973,7 @@ class UserOfferer(PcObject, Base, Model, ValidationStatusMixin):
     dateCreated: datetime = Column(DateTime, nullable=True, default=datetime.utcnow)
 
 
-class ApiKey(PcObject, Base, Model):
+class ApiKey(PcObject, Base):
     offererId: int = Column(BigInteger, ForeignKey("offerer.id"), index=True, nullable=False)
     offerer: sa_orm.Mapped["Offerer"] = relationship("Offerer", foreign_keys=[offererId], backref=backref("apiKeys"))
     providerId: int = Column(BigInteger, ForeignKey("provider.id", ondelete="CASCADE"), index=True)
@@ -989,7 +988,7 @@ class ApiKey(PcObject, Base, Model):
         return crypto.check_password(clear_text, self.secret)
 
 
-class OffererTag(PcObject, Base, Model):
+class OffererTag(PcObject, Base):
     """
     Tags on offerers are only used in backoffice, set to help for filtering and analytics in metabase.
     There is currently no display or impact in mobile and web apps.
@@ -1009,7 +1008,7 @@ class OffererTag(PcObject, Base, Model):
         return self.label or self.name
 
 
-class OffererTagCategory(PcObject, Base, Model):
+class OffererTagCategory(PcObject, Base):
     """
     Tag categories can be considered as "tags on tags", which aims at filtering tags depending on the projet:
     tags used for partners counting, tags used for offerer validation, etc.
@@ -1025,7 +1024,7 @@ class OffererTagCategory(PcObject, Base, Model):
         return self.label or self.name
 
 
-class OffererTagCategoryMapping(PcObject, Base, Model):
+class OffererTagCategoryMapping(PcObject, Base):
     __tablename__ = "offerer_tag_category_mapping"
 
     tagId: int = Column(BigInteger, ForeignKey("offerer_tag.id", ondelete="CASCADE"), index=True, nullable=False)
@@ -1036,7 +1035,7 @@ class OffererTagCategoryMapping(PcObject, Base, Model):
     __table_args__ = (UniqueConstraint("tagId", "categoryId", name="unique_offerer_tag_category"),)
 
 
-class OffererTagMapping(PcObject, Base, Model):
+class OffererTagMapping(PcObject, Base):
     __tablename__ = "offerer_tag_mapping"
 
     offererId: int = Column(BigInteger, ForeignKey("offerer.id", ondelete="CASCADE"), index=True, nullable=False)
@@ -1045,7 +1044,7 @@ class OffererTagMapping(PcObject, Base, Model):
     __table_args__ = (UniqueConstraint("offererId", "tagId", name="unique_offerer_tag"),)
 
 
-class OffererProvider(PcObject, Base, Model):
+class OffererProvider(PcObject, Base):
     __tablename__ = "offerer_provider"
     offererId: int = Column(BigInteger, ForeignKey("offerer.id", ondelete="CASCADE"), index=True, nullable=False)
     offerer: sa_orm.Mapped["Offerer"] = relationship(
@@ -1059,7 +1058,7 @@ class OffererProvider(PcObject, Base, Model):
     __table_args__ = (UniqueConstraint("offererId", "providerId", name="unique_offerer_provider"),)
 
 
-class OffererInvitation(PcObject, Base, Model):
+class OffererInvitation(PcObject, Base):
     __tablename__ = "offerer_invitation"
     offererId: int = Column(BigInteger, ForeignKey("offerer.id", ondelete="CASCADE"), index=True, nullable=False)
     offerer: sa_orm.Mapped["Offerer"] = relationship("Offerer", foreign_keys=[offererId])
@@ -1072,7 +1071,7 @@ class OffererInvitation(PcObject, Base, Model):
     __table_args__ = (UniqueConstraint("offererId", "email", name="unique_offerer_invitation"),)
 
 
-class IndividualOffererSubscription(PcObject, Base, Model):
+class IndividualOffererSubscription(PcObject, Base):
     __tablename__ = "individual_offerer_subscription"
 
     offererId: int = Column(BigInteger, ForeignKey("offerer.id", ondelete="CASCADE"), unique=True, nullable=False)
@@ -1112,7 +1111,7 @@ class OffererStatsData(typing.TypedDict, total=False):
     top_offers: list[TopOffersData] | None
 
 
-class OffererStats(PcObject, Base, Model):
+class OffererStats(PcObject, Base):
     __tablename__ = "offerer_stats"
 
     offererId: int = Column(BigInteger, ForeignKey("offerer.id", ondelete="CASCADE"), nullable=False)
