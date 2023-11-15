@@ -128,10 +128,6 @@ const StocksEventEdition = ({
     setStocksCount(response.stockCount)
   }
   useEffect(() => {
-    // Do not run pagination when the modal opens, only when it closes
-    if (isRecurrenceModalOpen === true) {
-      return
-    }
     if (dateFilter) {
       searchParams.set('date', dateFilter)
     } else {
@@ -187,7 +183,6 @@ const StocksEventEdition = ({
     currentSortingColumn,
     currentSortingMode,
     page,
-    isRecurrenceModalOpen,
   ])
 
   const onCancel = () => setIsRecurrenceModalOpen(false)
@@ -245,7 +240,8 @@ const StocksEventEdition = ({
       offer.id,
       notify
     )
-    firstPage()
+    const response = await loadStocksFromCurrentFilters()
+    resetFormWithNewPage(response)
     setIsRecurrenceModalOpen(false)
   }
 
