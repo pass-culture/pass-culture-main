@@ -35,9 +35,8 @@ def create_offerer_provider(
     if with_charlie_url:
         booking_url = settings.CHARLIE_BOOKING_URL
         cancel_booking_url = settings.CHARLIE_CANCEL_BOOKING_URL
-    provider = providers_factories.ProviderFactory(
+    provider = providers_factories.PublicApiProviderFactory(
         name=provider_name,
-        localClass=None,
         isActive=isActive,
         enabledForPro=enabledForPro,
         bookingExternalUrl=booking_url,
