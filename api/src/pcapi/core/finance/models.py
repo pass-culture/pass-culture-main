@@ -234,6 +234,8 @@ class BankInformation(PcObject, Base):
 
 
 class BankAccount(PcObject, Base, DeactivableMixin):
+    __tablename__ = "bank_account"
+
     label: str = sqla.Column(sqla.String(100), nullable=False)
     offererId: int = sqla.Column(
         sqla.BigInteger, sqla.ForeignKey("offerer.id", ondelete="CASCADE"), index=True, nullable=False
@@ -253,6 +255,8 @@ class BankAccount(PcObject, Base, DeactivableMixin):
 
 
 class FinanceEvent(Base):
+    __tablename__ = "finance_event"
+
     id: int = sqla.Column(sqla.BigInteger, primary_key=True, autoincrement=True)
 
     creationDate: datetime.datetime = sqla.Column(sqla.DateTime, nullable=False, server_default=sqla.func.now())
@@ -533,6 +537,7 @@ class CustomReimbursementRule(ReimbursementRule, Base):
     An offer may be linked to more than one reimbursement rules, but
     only one rule can be valid at a time.
     """
+    __tablename__ = "custom_reimbursement_rule"
 
     id: int = sqla.Column(sqla.BigInteger, primary_key=True, autoincrement=True)
 
@@ -655,7 +660,7 @@ class Cashflow(Base):
     logs: sqla_orm.Mapped[list["CashflowLog"]] = sqla_orm.relationship(
         "CashflowLog", back_populates="cashflow", order_by="CashflowLog.timestamp"
     )
-    pricings: sqla_orm.Mapped[list[Pricing]] = sqla_orm.relationship(
+    pricings: sqla_orm.Mapped[list["Pricing"]] = sqla_orm.relationship(
         "Pricing", secondary="cashflow_pricing", back_populates="cashflows"
     )
     invoices: sqla_orm.Mapped[list["Invoice"]] = sqla_orm.relationship(
@@ -956,6 +961,8 @@ class FinanceIncident(Base):
 
 
 class BookingFinanceIncident(Base):
+    __tablename__ = "booking_finance_incident"
+
     id: int = sqla.Column(sqla.BigInteger, primary_key=True, autoincrement=True)
 
     bookingId = sqla.Column(sqla.BigInteger, sqla.ForeignKey("booking.id"), index=True, nullable=True)
