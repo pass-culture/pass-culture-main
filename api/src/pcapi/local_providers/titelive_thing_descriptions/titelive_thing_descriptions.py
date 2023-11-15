@@ -1,4 +1,5 @@
 import datetime
+import logging
 from pathlib import PurePath
 import re
 from typing import Iterator
@@ -7,6 +8,9 @@ from zipfile import ZipInfo
 
 from pcapi.connectors.ftp_titelive import get_files_to_process_from_titelive_ftp
 from pcapi.connectors.ftp_titelive import get_zip_file_from_ftp
+import pcapi.core.offers.api as offers_api
+from pcapi.core.offers.exceptions import NotUpdateProductOrOffers
+from pcapi.core.offers.exceptions import ProductNotFound
 import pcapi.core.offers.models as offers_models
 import pcapi.core.providers.models as providers_models
 import pcapi.core.providers.repository as providers_repository
@@ -14,6 +18,9 @@ from pcapi.domain.titelive import get_date_from_filename
 from pcapi.domain.titelive import read_description_date
 from pcapi.local_providers.local_provider import LocalProvider
 from pcapi.local_providers.providable_info import ProvidableInfo
+
+
+logger = logging.getLogger(__name__)
 
 
 DATE_REGEXP = re.compile(r"Resume(\d{6}).zip")
@@ -34,6 +41,7 @@ class TiteLiveThingDescriptions(LocalProvider):
         self.description_zip_infos: Iterator[ZipInfo] | None = None
         self.zip_file: ZipFile | None = None
         self.date_modified: datetime.datetime | None = None
+        self.product_updated_ids: list[int] = []
 
     def __next__(self) -> list[ProvidableInfo]:
         if self.description_zip_infos is None:
@@ -59,6 +67,9 @@ class TiteLiveThingDescriptions(LocalProvider):
         with self.zip_file.open(self.description_zip_info) as f:
             description = f.read().decode("iso-8859-1")
         product.description = description.replace("\x00", "")
+
+        if product.id is not None:
+            self.product_updated_ids.append(product.id)
 
     def open_next_file(self) -> None:
         if self.zip_file:
@@ -88,3 +99,12 @@ class TiteLiveThingDescriptions(LocalProvider):
         sorted_files = sorted(self.zip_file.infolist(), key=lambda f: f.filename)
         filtered_files = filter(lambda f: f.filename.lower().endswith(END_FILE_IDENTIFIER), sorted_files)
         return iter(filtered_files)
+
+    def postTreatment(self) -> None:
+        for product_id in self.product_updated_ids:
+            try:
+                offers_api.update_offers_description_from_product_description(product_id)
+            except ProductNotFound as exception:
+                logger.error("Imported product not found", extra={"product_id": product_id, "exc": str(exception)})
+            except NotUpdateProductOrOffers as exception:
+                logger.error("Offers cannot be updated", extra={"product_id": product_id, "exc": str(exception)})

@@ -225,6 +225,7 @@ class TiteLiveThings(LocalProvider):
         self.data_lines: Iterator[str] | None = None
         self.products_file = None
         self.product_approved_eans: list[str | None] = []
+        self.product_updated_ids: list[int] = []
         self.product_extra_data = offers_models.OfferExtraData()
         self.product_whitelist_eans = {
             ean for ean, in fraud_models.ProductWhitelist.query.with_entities(fraud_models.ProductWhitelist.ean).all()
@@ -382,6 +383,9 @@ class TiteLiveThings(LocalProvider):
         if product.isGcuCompatible is False and product.extraData:
             self.product_approved_eans.append(product.extraData.get("ean"))
 
+        if product.extraData and product.id is not None:
+            self.product_updated_ids.append(product.id)
+
     def open_next_file(self) -> None:
         if self.products_file:
             file_date = get_date_from_filename(self.products_file, DATE_REGEXP)
@@ -421,6 +425,14 @@ class TiteLiveThings(LocalProvider):
                 logger.error("Imported product with ean not found", extra={"ean": ean, "exc": str(exception)})
             except NotUpdateProductOrOffers as exception:
                 logger.error("Product with ean cannot be approved", extra={"ean": ean, "exc": str(exception)})
+
+        for product_id in self.product_updated_ids:
+            try:
+                offers_api.fill_offer_extra_data_from_product_data(product_id)
+            except ProductNotFound as exception:
+                logger.error("Imported product not found", extra={"product_id": product_id, "exc": str(exception)})
+            except NotUpdateProductOrOffers as exception:
+                logger.error("Offers cannot be updated", extra={"product_id": product_id, "exc": str(exception)})
 
 
 def get_lines_from_thing_file(thing_file: str) -> Iterator[str]:
