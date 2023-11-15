@@ -261,15 +261,17 @@ def post_offer(body: offers_serialize.PostOfferBodyModel) -> offers_serialize.Ge
     api=blueprint.pro_private_schema,
 )
 def patch_publish_offer(body: offers_serialize.PatchOfferPublishBodyModel) -> None:
-    try:
-        offerer = offerers_repository.get_by_offer_id(body.id)
-    except offerers_exceptions.CannotFindOffererForOfferId:
-        raise api_errors.ApiErrors({"offerer": ["Aucune structure trouvée à partir de cette offre"]}, status_code=404)
-
-    rest.check_user_has_access_to_offerer(current_user, offerer.id)
-
-    offer = offers_repository.get_offer_by_id(body.id)
     with repository.transaction():
+        try:
+            offerer = offerers_repository.get_by_offer_id(body.id)
+        except offerers_exceptions.CannotFindOffererForOfferId:
+            raise api_errors.ApiErrors(
+                {"offerer": ["Aucune structure trouvée à partir de cette offre"]}, status_code=404
+            )
+
+        rest.check_user_has_access_to_offerer(current_user, offerer.id)
+
+        offer = offers_repository.get_offer_by_id(body.id)
         offers_api.publish_offer(offer, current_user)
 
 
