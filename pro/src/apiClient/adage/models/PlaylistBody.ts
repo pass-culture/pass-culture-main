@@ -6,7 +6,7 @@
 import type { AdagePlaylistType } from './AdagePlaylistType';
 
 export type PlaylistBody = {
-  elementId: number;
+  elementId?: number | null;
   iframeFrom: string;
   isFromNoResult?: boolean | null;
   playlistId: number;
