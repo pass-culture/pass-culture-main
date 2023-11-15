@@ -20,6 +20,7 @@ import { ApiRequestOptions } from 'apiClient/v1/core/ApiRequestOptions'
 import { ApiResult } from 'apiClient/v1/core/ApiResult'
 import { OFFER_WIZARD_STEP_IDS } from 'components/IndividualOfferBreadcrumb/constants'
 import Notification from 'components/Notification/Notification'
+import { STOCKS_PER_PAGE } from 'components/StocksEventList/StocksEventList'
 import { IndividualOfferContextProvider } from 'context/IndividualOfferContext'
 import { OFFER_WIZARD_MODE } from 'core/Offers/constants'
 import {
@@ -41,7 +42,9 @@ vi.mock('utils/date', async () => {
 
 const renderStockEventScreen = async (
   apiOffer: GetIndividualOfferResponseModel,
-  apiStocks: GetOfferStockResponseModel[] = []
+  apiStocks: GetOfferStockResponseModel[] = [],
+  stocksCount?: number,
+  searchParams = ''
 ) => {
   vi.spyOn(api, 'getOffer').mockResolvedValue(apiOffer)
   vi.spyOn(api, 'getCategories').mockResolvedValue({
@@ -52,7 +55,7 @@ const renderStockEventScreen = async (
   vi.spyOn(api, 'listOfferersNames').mockResolvedValue({ offerersNames: [] })
   vi.spyOn(api, 'getStocks').mockResolvedValue({
     stocks: apiStocks,
-    stockCount: apiStocks.length,
+    stockCount: stocksCount ?? apiStocks.length,
     hasStocks: true,
   })
   vi.spyOn(api, 'listOffers').mockResolvedValue([
@@ -124,7 +127,7 @@ const renderStockEventScreen = async (
           step: OFFER_WIZARD_STEP_IDS.STOCKS,
           mode: OFFER_WIZARD_MODE.EDITION,
           offerId: 12,
-        }),
+        }) + searchParams,
       ],
     }
   )
@@ -224,7 +227,11 @@ describe('screens:StocksEventEdition', () => {
   })
 
   it('should allow user to delete a stock', async () => {
-    await renderStockEventScreen(apiOffer, apiStocks)
+    const stock1 = individualGetOfferStockResponseModelFactory()
+    const stock2 = individualGetOfferStockResponseModelFactory()
+
+    await renderStockEventScreen(apiOffer, [stock1, stock2])
+    vi.clearAllMocks()
     vi.spyOn(api, 'deleteStock').mockResolvedValue({ id: 1 })
 
     await userEvent.click(
@@ -232,23 +239,76 @@ describe('screens:StocksEventEdition', () => {
     )
     // userEvent.dblClick to fix @reach/menu-button update, to delete after refactor
     await userEvent.dblClick(screen.getAllByText('Supprimer le stock')[0])
-    expect(
-      await screen.findByText('Voulez-vous supprimer cette occurrence ?')
-    ).toBeInTheDocument()
-    await userEvent.click(
-      screen.getByText('Confirmer la suppression', { selector: 'button' })
-    )
 
     expect(
       await screen.findByText('Le stock a été supprimé.')
     ).toBeInTheDocument()
-    expect(api.deleteStock).toHaveBeenCalledWith(apiStocks[0].id)
+    expect(api.deleteStock).toHaveBeenCalledWith(stock1.id)
+    expect(api.getStocks).not.toHaveBeenCalled()
 
     vi.spyOn(api, 'upsertStocks')
     await userEvent.click(
       screen.getByRole('button', { name: 'Enregistrer les modifications' })
     )
     expect(api.upsertStocks).not.toHaveBeenCalled()
+  })
+
+  it('should reload the page if deleting last stock of the page', async () => {
+    await renderStockEventScreen(
+      apiOffer,
+      [individualGetOfferStockResponseModelFactory()],
+      STOCKS_PER_PAGE * 5 + 10,
+      '?page=3'
+    )
+    vi.spyOn(api, 'deleteStock').mockResolvedValue({ id: 1 })
+
+    await userEvent.click(
+      screen.getAllByTestId('stock-form-actions-button-open')[0]
+    )
+    // userEvent.dblClick to fix @reach/menu-button update, to delete after refactor
+    await userEvent.dblClick(screen.getAllByText('Supprimer le stock')[0])
+
+    await waitFor(() => {
+      expect(api.deleteStock).toHaveBeenCalled()
+    })
+    expect(api.getStocks).toHaveBeenCalledWith(
+      apiOffer.id,
+      undefined,
+      undefined,
+      undefined,
+      undefined,
+      false,
+      3
+    )
+  })
+
+  it('should go to previous page if deleting last stock of the last page', async () => {
+    await renderStockEventScreen(
+      apiOffer,
+      [individualGetOfferStockResponseModelFactory()],
+      STOCKS_PER_PAGE * 5 + 1,
+      '?page=6'
+    )
+    vi.spyOn(api, 'deleteStock').mockResolvedValue({ id: 1 })
+
+    await userEvent.click(
+      screen.getAllByTestId('stock-form-actions-button-open')[0]
+    )
+    // userEvent.dblClick to fix @reach/menu-button update, to delete after refactor
+    await userEvent.dblClick(screen.getAllByText('Supprimer le stock')[0])
+
+    await waitFor(() => {
+      expect(api.deleteStock).toHaveBeenCalled()
+    })
+    expect(api.getStocks).toHaveBeenCalledWith(
+      apiOffer.id,
+      undefined,
+      undefined,
+      undefined,
+      undefined,
+      false,
+      5
+    )
   })
 
   it('should not allow user to delete a stock undeletable', async () => {
