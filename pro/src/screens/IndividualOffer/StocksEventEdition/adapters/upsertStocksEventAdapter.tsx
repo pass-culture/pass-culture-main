@@ -1,11 +1,7 @@
 import { api } from 'apiClient/api'
-import {
-  StockCreationBodyModel,
-  StockEditionBodyModel,
-  StocksResponseModel,
-} from 'apiClient/v1'
+import { StockCreationBodyModel, StockEditionBodyModel } from 'apiClient/v1'
 
-type SuccessPayload = StocksResponseModel
+type SuccessPayload = null
 type FailurePayload = { errors: string }
 type UpdateStocksAdapter = Adapter<
   {
@@ -21,16 +17,14 @@ const upsertStocksEventAdapter: UpdateStocksAdapter = async ({
   stocks,
 }) => {
   try {
-    const response = await api.upsertStocks({
+    await api.upsertStocks({
       offerId: offerId,
       stocks: stocks,
     })
     return {
       isOk: true,
       message: 'Vos modifications ont bien été prises en compte',
-      payload: {
-        stocks: response.stocks,
-      },
+      payload: null,
     }
   } catch (error) {
     return {
