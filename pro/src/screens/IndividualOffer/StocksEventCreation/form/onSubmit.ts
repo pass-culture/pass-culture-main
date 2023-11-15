@@ -29,13 +29,6 @@ export const onSubmit = async (
   const dates = getRecurrenceDates(values)
   const generatedStocks = generateStocksForDates(values, dates, departmentCode)
 
-  if (generatedStocks.length > MAX_STOCKS_PER_OFFER) {
-    notify.error(
-      `Veuillez créer moins de ${MAX_STOCKS_PER_OFFER} occurrences par offre.`
-    )
-    return
-  }
-
   const serializedStocksToAdd = generatedStocks
     // keep only the fields that are needed for the API
     .map(
@@ -68,7 +61,7 @@ export const onSubmit = async (
       )
     } else {
       notify.error(
-        "Une erreur est survenue lors de l'enregistrement de vos stocks."
+        `Veuillez créer moins de ${MAX_STOCKS_PER_OFFER} occurrences par offre.`
       )
     }
   }

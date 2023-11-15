@@ -373,26 +373,6 @@ describe('onSubmit', () => {
     }
   )
 
-  it(`should when an error occured during stocks saving`, async () => {
-    const formValues = {
-      recurrenceType: RecurrenceType.UNIQUE,
-      days: [],
-      startingDate: '2020-03-03',
-      endingDate: '',
-      beginningTimes: ['10:00', '10:30'],
-      quantityPerPriceCategories: [{ quantity: 5, priceCategory: '1' }],
-      bookingLimitDateInterval: 2,
-      monthlyOption: null,
-    }
-
-    vi.spyOn(api, 'upsertStocks').mockRejectedValueOnce({})
-    await onSubmit(formValues, '75', 66, notify)
-
-    expect(mockErrorNotification).toBeCalledWith(
-      "Une erreur est survenue lors de l'enregistrement de vos stocks."
-    )
-  })
-
   it(`should create nothing when creation limit is reach`, async () => {
     const formValues = {
       recurrenceType: RecurrenceType.MONTHLY,
@@ -405,11 +385,10 @@ describe('onSubmit', () => {
       monthlyOption: MonthlyOption.BY_FIRST_DAY,
     }
 
-    vi.spyOn(api, 'upsertStocks').mockResolvedValueOnce({ stocks: [] })
+    vi.spyOn(api, 'upsertStocks').mockRejectedValueOnce({ stocks: ['Erreur'] })
 
     const result = await onSubmit(formValues, '75', 66, notify)
 
-    expect(api.upsertStocks).not.toHaveBeenCalled()
     expect(mockErrorNotification).toHaveBeenCalledWith(
       `Veuillez créer moins de 5 occurrences par offre.`
     )
