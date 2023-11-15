@@ -114,6 +114,7 @@ export enum OffererLinkEvents {
 
 export enum BankAccountEvents {
   CLICKED_ADD_BANK_ACCOUNT = 'hasClickedAddBankAccount',
+  CLICKED_ADD_VENUE_TO_BANK_ACCOUNT = 'HasClickedAddVenueToBankAccount',
 }
 
 export enum OFFER_FORM_NAVIGATION_OUT {
