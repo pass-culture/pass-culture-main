@@ -410,6 +410,38 @@ def format_criteria(criteria: list[criteria_models.OfferCriterion]) -> str:
     return format_as_badges([criterion.name for criterion in criteria])
 
 
+def format_compliance_reason(feature: str) -> str:
+    match feature:
+        case "offer_name":
+            return "Nom de l'offre"
+        case "offer_description":
+            return "Description de l'offre"
+        case "offer_subcategoryid":
+            return "Sous-catégorie"
+        case "rayon":
+            return "Rayon"
+        case "macro_rayon":
+            return "Macro-rayon"
+        case "stock_price":
+            return "Prix"
+        case "thumb_url":
+            return "Image de l'offre"
+        case "offer_type_label":
+            return "Genre musical / type de spectacle"
+        case "offer_sub_type_label":
+            return "Sous-genre"
+        case "author":
+            return "Auteur"
+        case "performer":
+            return "Interprète"
+        case _:
+            return feature
+
+
+def format_compliance_reasons(features: list[str]) -> str:
+    return format_as_badges([format_compliance_reason(feature) for feature in features])
+
+
 def format_fraud_check_url(id_check_item: serialization_accounts.IdCheckItemModel) -> str:
     if id_check_item.type == fraud_models.FraudCheckType.UBBLE.value:
         return f"https://dashboard.ubble.ai/identifications/{id_check_item.thirdPartyId}"
@@ -888,6 +920,7 @@ def install_template_filters(app: Flask) -> None:
     app.jinja_env.filters["format_offer_category"] = format_offer_category
     app.jinja_env.filters["format_subcategories"] = format_subcategories
     app.jinja_env.filters["format_as_badges"] = format_as_badges
+    app.jinja_env.filters["format_compliance_reasons"] = format_compliance_reasons
     app.jinja_env.filters["format_criteria"] = format_criteria
     app.jinja_env.filters["format_tag_object_list"] = format_tag_object_list
     app.jinja_env.filters["format_fraud_review_status"] = format_fraud_review_status

@@ -11,12 +11,12 @@ logger = logging.getLogger(__name__)
 
 
 class ComplianceBackend(BaseBackend):
-    def get_score_from_compliance_api(self, payload: GetComplianceScoreRequest) -> int | None:
+    def get_score_from_compliance_api(self, payload: GetComplianceScoreRequest) -> tuple[int | None, list[str]]:
         client_id = settings.COMPLIANCE_API_CLIENT_ID
 
         id_token = self.get_id_token_for_compliance(client_id)
         if not id_token:  # only possible in development
-            return None
+            return None, []
 
         data = payload.to_dict()
         try:
@@ -64,8 +64,8 @@ class ComplianceBackend(BaseBackend):
             )
             raise requests.ExternalAPIException(is_retryable=True)
 
-        data_score = api_response.json()["probability_validated"]
-        return data_score
+        data = api_response.json()
+        return data["probability_validated"], data.get("rejection_main_features", [])
 
     def get_id_token_for_compliance(self, client_id: str) -> str | None:
         return auth_api.get_id_token_from_google(client_id)

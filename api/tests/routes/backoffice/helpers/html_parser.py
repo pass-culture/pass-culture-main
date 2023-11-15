@@ -7,12 +7,12 @@ def _filter_whitespaces(text: str) -> str:
     return re.sub(r"\s+", " ", text.strip())
 
 
-def get_soup(html_content: str) -> BeautifulSoup:
-    return BeautifulSoup(html_content, features="html5lib", from_encoding="utf-8")
+def get_soup(html_content: str, from_encoding: str = "utf-8") -> BeautifulSoup:
+    return BeautifulSoup(html_content, features="html5lib", from_encoding=from_encoding)
 
 
-def content_as_text(html_content: str) -> str:
-    soup = get_soup(html_content)
+def content_as_text(html_content: str, from_encoding: str = "utf-8") -> str:
+    soup = get_soup(html_content, from_encoding=from_encoding)
     return _filter_whitespaces(soup.text)
 
 
