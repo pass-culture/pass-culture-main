@@ -1,5 +1,5 @@
 """
-Ensure that the BaseQuery runs well: data is fetched, rows are
+Ensure that the Query runs well: data is fetched, rows are
 properly serialized and yielded.
 """
 from unittest.mock import patch

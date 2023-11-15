@@ -6,7 +6,7 @@ from flask import render_template
 from flask import request
 from flask import url_for
 from flask_login import current_user
-from flask_sqlalchemy import BaseQuery
+from flask_sqlalchemy.query import Query
 
 from pcapi.core.offerers import api as offerers_api
 from pcapi.core.permissions import models as perm_models
@@ -24,8 +24,8 @@ class Context:
     and venues. Each one has its own context to handle its specificities
     """
 
-    fetch_rows_func: typing.Callable[[str, list[str]], BaseQuery]
-    get_item_base_query: typing.Callable[[int], BaseQuery]
+    fetch_rows_func: typing.Callable[[str, list[str]], Query]
+    get_item_base_query: typing.Callable[[int], Query]
     endpoint: str
     row_id_name: str
 

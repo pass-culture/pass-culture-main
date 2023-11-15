@@ -5,7 +5,7 @@ from io import BytesIO
 from io import StringIO
 import typing
 
-from flask_sqlalchemy import BaseQuery
+from flask_sqlalchemy.query import Query
 from pydantic.v1 import root_validator
 import xlsxwriter
 
@@ -331,7 +331,7 @@ COLLECTIVE_BOOKING_EXPORT_HEADER = [
 ]
 
 
-def serialize_collective_booking_csv_report(query: BaseQuery) -> str:
+def serialize_collective_booking_csv_report(query: Query) -> str:
     output = StringIO()
     writer = csv.writer(output, dialect=csv.excel, delimiter=";", quoting=csv.QUOTE_NONNUMERIC)
     writer.writerow(COLLECTIVE_BOOKING_EXPORT_HEADER)
@@ -358,7 +358,7 @@ def serialize_collective_booking_csv_report(query: BaseQuery) -> str:
     return output.getvalue()
 
 
-def serialize_collective_booking_excel_report(query: BaseQuery) -> bytes:
+def serialize_collective_booking_excel_report(query: Query) -> bytes:
     output = BytesIO()
     workbook = xlsxwriter.Workbook(output)
 

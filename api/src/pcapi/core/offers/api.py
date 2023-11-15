@@ -4,7 +4,7 @@ import enum
 import logging
 import typing
 
-from flask_sqlalchemy import BaseQuery
+from flask_sqlalchemy.query import Query
 from psycopg2.errorcodes import CHECK_VIOLATION
 from psycopg2.errorcodes import UNIQUE_VIOLATION
 from psycopg2.extras import DateTimeRange
@@ -390,7 +390,7 @@ def _update_collective_offer(offer: AnyOffer, new_values: dict) -> list[str]:
     return updated_fields
 
 
-def batch_update_offers(query: BaseQuery, update_fields: dict, send_email_notification: bool = False) -> None:
+def batch_update_offers(query: Query, update_fields: dict, send_email_notification: bool = False) -> None:
     query = query.filter(models.Offer.validation == models.OfferValidationStatus.APPROVED)
     raw_results = query.with_entities(models.Offer.id, models.Offer.venueId).all()
     offer_ids: typing.Sequence[int] = []
@@ -432,7 +432,7 @@ def batch_update_offers(query: BaseQuery, update_fields: dict, send_email_notifi
                 transactional_mails.send_email_for_each_ongoing_booking(offer)
 
 
-def batch_update_collective_offers(query: BaseQuery, update_fields: dict) -> None:
+def batch_update_collective_offers(query: Query, update_fields: dict) -> None:
     collective_offer_ids_tuples = query.filter(
         educational_models.CollectiveOffer.validation == models.OfferValidationStatus.APPROVED
     ).with_entities(educational_models.CollectiveOffer.id)
@@ -455,7 +455,7 @@ def batch_update_collective_offers(query: BaseQuery, update_fields: dict) -> Non
         search.async_index_collective_offer_ids(collective_offer_ids_batch)
 
 
-def batch_update_collective_offers_template(query: BaseQuery, update_fields: dict) -> None:
+def batch_update_collective_offers_template(query: Query, update_fields: dict) -> None:
     collective_offer_ids_tuples = query.filter(
         educational_models.CollectiveOfferTemplate.validation == models.OfferValidationStatus.APPROVED
     ).with_entities(educational_models.CollectiveOfferTemplate.id)
@@ -1221,7 +1221,7 @@ def fetch_or_update_product_with_titelive_data(titelive_product: models.Product)
     return product
 
 
-def batch_delete_draft_offers(query: BaseQuery) -> None:
+def batch_delete_draft_offers(query: Query) -> None:
     offer_ids = [id_ for id_, in query.with_entities(models.Offer.id)]
     filters = (models.Offer.validation == models.OfferValidationStatus.DRAFT, models.Offer.id.in_(offer_ids))
     models.Mediation.query.filter(models.Mediation.offerId == models.Offer.id).filter(*filters).delete(

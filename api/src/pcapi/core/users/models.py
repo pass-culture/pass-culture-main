@@ -217,7 +217,7 @@ class User(PcObject, Base, NeedsValidationMixin, DeactivableMixin):
     postalCode = sa.Column(sa.String(5), nullable=True)
     recreditAmountToShow = sa.Column(sa.Numeric(10, 2), nullable=True)
     UserOfferers: orm.Mapped[list["UserOfferer"]] = orm.relationship("UserOfferer", back_populates="user")
-    roles: list[UserRole] = sa.Column(
+    roles: orm.Mapped[list["UserRole"]] = sa.Column(
         MutableList.as_mutable(postgresql.ARRAY(sa.Enum(UserRole, native_enum=False, create_constraint=False))),
         nullable=False,
         server_default="{}",
@@ -233,7 +233,7 @@ class User(PcObject, Base, NeedsValidationMixin, DeactivableMixin):
         "BackOfficeUserProfile", uselist=False, back_populates="user"
     )
     sa.Index("ix_user_validatedBirthDate", validatedBirthDate)
-    pro_flags: orm.Mapped[UserProFlags] = orm.relationship("UserProFlags", back_populates="user", uselist=False)
+    pro_flags: orm.Mapped["UserProFlags"] = orm.relationship("UserProFlags", back_populates="user", uselist=False)
 
     def __init__(self, **kwargs: typing.Any) -> None:
         kwargs.setdefault("roles", [])

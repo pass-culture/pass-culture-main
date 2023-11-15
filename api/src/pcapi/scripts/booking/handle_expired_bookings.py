@@ -3,7 +3,7 @@ from itertools import groupby
 import logging
 from operator import attrgetter
 
-from flask_sqlalchemy import BaseQuery
+from flask_sqlalchemy.query import Query
 
 from pcapi import settings
 from pcapi.core.bookings.api import recompute_dnBookedQuantity
@@ -65,7 +65,7 @@ def cancel_expired_individual_bookings(batch_size: int = 500) -> None:
     logger.info("[cancel_expired_individual_bookings] End")
 
 
-def cancel_expired_bookings(query: BaseQuery, batch_size: int = 500) -> None:
+def cancel_expired_bookings(query: Query, batch_size: int = 500) -> None:
     updated_total = 0
     expiring_booking_ids = [b[0] for b in query.with_entities(Booking.id).all()]
 

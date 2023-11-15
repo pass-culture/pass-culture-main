@@ -4,7 +4,7 @@ from typing import Iterable
 from typing import Sequence
 from typing import cast
 
-from flask_sqlalchemy import BaseQuery
+from flask_sqlalchemy.query import Query
 from sqlalchemy import func
 import sqlalchemy.orm as sqla_orm
 
@@ -50,7 +50,7 @@ def get_provider_by_name(name: str) -> models.Provider:
     return models.Provider.query.filter_by(name=name).one()
 
 
-def get_available_providers(venue: Venue) -> BaseQuery:
+def get_available_providers(venue: Venue) -> Query:
     from pcapi.local_providers import AllocineStocks
 
     query = models.Provider.query.filter_by(isActive=True, enabledForPro=True).options(
@@ -97,7 +97,7 @@ def get_cds_cinema_details(cinema_id: str) -> models.CDSCinemaDetails:
     return cinema_details
 
 
-def get_cinema_venue_provider_query(venue_id: int) -> BaseQuery:
+def get_cinema_venue_provider_query(venue_id: int) -> Query:
     return models.VenueProvider.query.filter(
         models.VenueProvider.venueId == venue_id,
         models.VenueProvider.isFromCinemaProvider,
@@ -241,5 +241,5 @@ def is_event_external_ticket_applicable(offer: offers_models.Offer) -> bool:
     )
 
 
-def get_providers_venues(provider_id: int) -> BaseQuery:
+def get_providers_venues(provider_id: int) -> Query:
     return Venue.query.join(models.VenueProvider).filter(models.VenueProvider.providerId == provider_id)

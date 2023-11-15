@@ -9,7 +9,7 @@ from flask import render_template
 from flask import request
 from flask import url_for
 from flask_login import current_user
-from flask_sqlalchemy import BaseQuery
+from flask_sqlalchemy.query import Query
 import sqlalchemy as sa
 from werkzeug.exceptions import NotFound
 
@@ -71,7 +71,7 @@ def list_offerers_to_validate() -> utils.BackofficeResponse:
         date_utils.date_to_localized_datetime(form.to_date.data, datetime.datetime.max.time()),
     )
 
-    sorted_offerers: BaseQuery = offerers.order_by(
+    sorted_offerers: Query = offerers.order_by(
         getattr(getattr(offerers_models.Offerer, form.sort.data), form.order.data)()
     )
 
@@ -399,7 +399,7 @@ def list_offerers_attachments_to_validate() -> utils.BackofficeResponse:
         date_utils.date_to_localized_datetime(form.to_date.data, datetime.datetime.max.time()),
     )
 
-    sorted_users_offerers: BaseQuery = users_offerers.order_by(
+    sorted_users_offerers: Query = users_offerers.order_by(
         getattr(getattr(offerers_models.UserOfferer, form.sort.data), form.order.data)()
     )
 

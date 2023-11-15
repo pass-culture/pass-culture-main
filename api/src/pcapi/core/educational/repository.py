@@ -6,7 +6,7 @@ from decimal import Decimal
 from typing import Iterable
 from typing import Tuple
 
-from flask_sqlalchemy import BaseQuery
+from flask_sqlalchemy.query import Query
 import sqlalchemy as sa
 import sqlalchemy.orm as sa_orm
 from sqlalchemy.sql.expression import extract
@@ -331,7 +331,7 @@ def get_paginated_collective_bookings_for_educational_year(
     return query.all()
 
 
-def get_expired_collective_offers(interval: tuple[datetime, datetime]) -> BaseQuery:
+def get_expired_collective_offers(interval: tuple[datetime, datetime]) -> Query:
     """Return a query of collective offers whose latest booking limit occurs within
     the given interval.
 
@@ -351,7 +351,7 @@ def get_expired_collective_offers(interval: tuple[datetime, datetime]) -> BaseQu
     )
 
 
-def find_expiring_collective_bookings_query() -> BaseQuery:
+def find_expiring_collective_bookings_query() -> Query:
     today_at_midnight = datetime.combine(date.today(), time(0, 0))
 
     return educational_models.CollectiveBooking.query.filter(
@@ -697,7 +697,7 @@ def get_filtered_collective_booking_report(
     status_filter: educational_models.CollectiveBookingStatusFilter | None,
     event_date: datetime | None = None,
     venue_id: int | None = None,
-) -> BaseQuery:
+) -> Query:
     bookings_query = _get_filtered_collective_bookings_query(
         pro_user,
         period,
@@ -884,7 +884,7 @@ def get_collective_offer_template_by_id_for_adage(offer_id: int) -> educational_
     )
 
 
-def get_query_for_collective_offers_by_ids_for_user(user: User, ids: Iterable[int]) -> BaseQuery:
+def get_query_for_collective_offers_by_ids_for_user(user: User, ids: Iterable[int]) -> Query:
     query = educational_models.CollectiveOffer.query
     if not user.has_admin_role:
         query = query.join(offerers_models.Venue, educational_models.CollectiveOffer.venue)
@@ -895,7 +895,7 @@ def get_query_for_collective_offers_by_ids_for_user(user: User, ids: Iterable[in
     return query
 
 
-def get_query_for_collective_offers_template_by_ids_for_user(user: User, ids: Iterable[int]) -> BaseQuery:
+def get_query_for_collective_offers_template_by_ids_for_user(user: User, ids: Iterable[int]) -> Query:
     query = educational_models.CollectiveOfferTemplate.query
     if not user.has_admin_role:
         query = query.join(offerers_models.Venue, educational_models.CollectiveOfferTemplate.venue)

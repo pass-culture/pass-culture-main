@@ -6,7 +6,7 @@ from flask import render_template
 from flask import request
 from flask import url_for
 from flask_login import current_user
-from flask_sqlalchemy import BaseQuery
+from flask_sqlalchemy.query import Query
 import sqlalchemy as sa
 from werkzeug.exceptions import NotFound
 
@@ -65,7 +65,7 @@ def list_blacklisted_domain_names() -> utils.BackofficeResponse:
     return render_domain_names_list()
 
 
-def _filter_non_pro_by_domain_name_query(domain_name: str) -> BaseQuery:
+def _filter_non_pro_by_domain_name_query(domain_name: str) -> Query:
     return users_models.User.query.filter(
         sa.not_(users_models.User.isActive.is_(False)),
         sa.not_(users_models.User.has_pro_role),

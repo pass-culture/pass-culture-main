@@ -4,7 +4,7 @@ from datetime import timedelta
 import logging
 from typing import Iterable
 
-from flask_sqlalchemy import BaseQuery
+from flask_sqlalchemy.query import Query
 import sqlalchemy as sqla
 import sqlalchemy.orm as sqla_orm
 
@@ -230,7 +230,7 @@ def find_offerer_by_id(offerer_id: int) -> models.Offerer | None:
     return models.Offerer.query.filter_by(id=offerer_id).one_or_none()
 
 
-def filter_query_where_user_is_user_offerer_and_is_validated(query: BaseQuery, user: users_models.User) -> BaseQuery:
+def filter_query_where_user_is_user_offerer_and_is_validated(query: Query, user: users_models.User) -> Query:
     return query.join(models.UserOfferer).filter_by(user=user).filter(models.UserOfferer.isValidated)
 
 
@@ -286,7 +286,7 @@ def find_virtual_venue_by_offerer_id(offerer_id: int) -> models.Venue | None:
 
 def find_venues_of_offerers_with_no_offer_and_at_least_one_physical_venue_and_validated_x_days_ago(
     days: int,
-) -> BaseQuery:
+) -> Query:
     validated_x_days_ago_with_physical_venue_offerers_ids_subquery = (
         sqla.select(models.Offerer.id)
         .join(models.Venue, models.Offerer.id == models.Venue.managingOffererId)

@@ -2,7 +2,7 @@ import datetime
 import typing
 from typing import Union
 
-from flask_sqlalchemy import BaseQuery
+from flask_sqlalchemy.query import Query
 
 from pcapi.core.bookings import models as bookings_models
 from pcapi.core.categories import subcategories_v2
@@ -16,7 +16,7 @@ from pcapi.utils import email as email_utils
 
 
 def get_bookings(
-    base_query: BaseQuery,
+    base_query: Query,
     form: BaseBookingListForm,
     stock_class: typing.Type[educational_models.CollectiveStock | offers_models.Stock],
     booking_class: typing.Type[educational_models.CollectiveBooking | bookings_models.Booking],

@@ -11,7 +11,7 @@ from flask import current_app as app
 from flask import request
 from flask_jwt_extended import create_access_token
 from flask_jwt_extended import create_refresh_token
-from flask_sqlalchemy import BaseQuery
+from flask_sqlalchemy.query import Query
 import sqlalchemy as sa
 from sqlalchemy.orm import Query
 
@@ -971,7 +971,7 @@ def is_user_age_compatible_with_eligibility(user_age: int | None, eligibility: m
     return False
 
 
-def _filter_user_accounts(accounts: BaseQuery, search_term: str) -> BaseQuery:
+def _filter_user_accounts(accounts: Query, search_term: str) -> Query:
     filters = []
     name_term = None
 
@@ -1031,13 +1031,13 @@ def _filter_user_accounts(accounts: BaseQuery, search_term: str) -> BaseQuery:
     return accounts
 
 
-def search_public_account(search_query: str) -> BaseQuery:
+def search_public_account(search_query: str) -> Query:
     public_accounts = get_public_account_base_query()
 
     return _filter_user_accounts(public_accounts, search_query)
 
 
-def search_public_account_in_history_email(search_query: str) -> BaseQuery:
+def search_public_account_in_history_email(search_query: str) -> Query:
     if not email_utils.is_valid_email_or_email_domain(email_utils.sanitize_email(search_query)):
         raise ValueError(f"Unsupported email search on invalid email or email domain : {search_query}")
 
@@ -1087,7 +1087,7 @@ def search_public_account_in_history_email(search_query: str) -> BaseQuery:
     return accounts.order_by(models.User.id)
 
 
-def get_public_account_base_query() -> BaseQuery:
+def get_public_account_base_query() -> Query:
     # There is no fully reliable condition to be sure that a user account is used as a public account (vs only pro).
     # In Flask-Admin backoffice, the difference was made from user_offerer table, which turns the user into a "pro"
     # account ; the same filter is kept here.
@@ -1112,7 +1112,7 @@ def get_public_account_base_query() -> BaseQuery:
 
 
 # TODO (prouzet, 2023-11-02) This function should be moved in backoffice and use common _join_suspension_history()
-def search_pro_account(search_query: str, *_: typing.Any) -> BaseQuery:
+def search_pro_account(search_query: str, *_: typing.Any) -> Query:
     pro_accounts = models.User.query.filter(
         models.User.has_non_attached_pro_role.is_(True) | models.User.has_pro_role.is_(True)  # type: ignore [attr-defined]
     )
@@ -1136,13 +1136,13 @@ def search_pro_account(search_query: str, *_: typing.Any) -> BaseQuery:
     )
 
 
-def get_pro_account_base_query(pro_id: int) -> BaseQuery:
+def get_pro_account_base_query(pro_id: int) -> Query:
     return models.User.query.filter(
         models.User.id == pro_id and (models.User.has_non_attached_pro_role.is_(True) | models.User.has_pro_role.is_(True))  # type: ignore [attr-defined]
     )
 
 
-def search_backoffice_accounts(search_query: str) -> BaseQuery:
+def search_backoffice_accounts(search_query: str) -> Query:
     bo_accounts = models.User.query.outerjoin(users_models.User.backoffice_profile).filter(
         perm_models.BackOfficeUserProfile.id.is_not(None),
     )

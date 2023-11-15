@@ -10,7 +10,7 @@ from flask import flash
 from flask import request
 from flask import url_for
 from flask_login import current_user
-from flask_sqlalchemy import BaseQuery
+from flask_sqlalchemy.query import Query
 from flask_wtf import FlaskForm
 from sqlalchemy import func
 import werkzeug
@@ -209,13 +209,13 @@ def get_regions_choices() -> list[tuple]:
 
 
 def generate_search_query(
-    query: BaseQuery,
+    query: Query,
     *,
     search_parameters: typing.Iterable[dict[str, typing.Any]],
     fields_definition: dict[str, dict[str, typing.Any]],
     joins_definition: dict[str, list[dict[str, typing.Any]]],
     operators_definition: typing.Dict[str, typing.Dict[str, typing.Any]] | None = None,
-) -> tuple[BaseQuery, set[str], set[str], set[str]]:
+) -> tuple[Query, set[str], set[str], set[str]]:
     """
     Generate a search query from a list of dict (from a ListField of FormFields).
 
@@ -276,11 +276,11 @@ def generate_search_query(
 
 
 def _manage_joins(
-    query: BaseQuery,
+    query: Query,
     joins: set,
     joins_definition: dict[str, list[dict[str, typing.Any]]],
     join_type: str = "inner_join",
-) -> tuple[BaseQuery, set[str]]:
+) -> tuple[Query, set[str]]:
     join_log = set()
     join_containers = sorted((joins_definition[join] for join in joins), key=len, reverse=True)
     for join_container in join_containers:

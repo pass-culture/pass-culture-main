@@ -12,7 +12,7 @@ from flask import render_template
 from flask import request
 from flask import url_for
 from flask_login import current_user
-from flask_sqlalchemy import BaseQuery
+from flask_sqlalchemy.query import Query
 import sqlalchemy as sa
 from werkzeug.exceptions import NotFound
 
@@ -60,7 +60,7 @@ public_accounts_blueprint = utils.child_backoffice_blueprint(
 )
 
 
-def _join_suspension_history(query: BaseQuery) -> BaseQuery:
+def _join_suspension_history(query: Query) -> Query:
     # Joinedload with ActionHistory avoids N+1 query to show suspension reason.
     # Join only suspension actions to limit the number of fetched rows.
     # It should be OK because per_page is 20 on this search page and can not be set to thousands

@@ -4,7 +4,7 @@ import logging
 import operator
 import typing
 
-import flask_sqlalchemy
+from flask_sqlalchemy.query import Query 
 import sqlalchemy as sa
 from sqlalchemy.dialects import postgresql
 import sqlalchemy.orm as sa_orm
@@ -94,7 +94,7 @@ def get_capped_offers_for_filters(
     )
 
 
-def get_offers_by_ids(user: users_models.User, offer_ids: list[int]) -> flask_sqlalchemy.BaseQuery:
+def get_offers_by_ids(user: users_models.User, offer_ids: list[int]) -> Query:
     query = models.Offer.query
     if not user.has_admin_role:
         query = query.join(offerers_models.Venue, offerers_models.Offerer, offerers_models.UserOfferer).filter(
@@ -115,7 +115,7 @@ def get_offers_by_filters(
     creation_mode: str | None = None,
     period_beginning_date: datetime.date | None = None,
     period_ending_date: datetime.date | None = None,
-) -> flask_sqlalchemy.BaseQuery:
+) -> Query:
     query = models.Offer.query
 
     if not user_is_admin:
@@ -200,7 +200,7 @@ def get_collective_offers_by_filters(
     period_beginning_date: datetime.date | None = None,
     period_ending_date: datetime.date | None = None,
     formats: list[subcategories.EacFormat] | None = None,
-) -> flask_sqlalchemy.BaseQuery:
+) -> Query:
     query = educational_models.CollectiveOffer.query.filter(
         educational_models.CollectiveOffer.validation != models.OfferValidationStatus.DRAFT
     )
@@ -371,7 +371,7 @@ def get_collective_offers_template_by_filters(
     period_beginning_date: datetime.date | None = None,
     period_ending_date: datetime.date | None = None,
     formats: list[subcategories.EacFormat] | None = None,
-) -> flask_sqlalchemy.BaseQuery:
+) -> Query:
     query = educational_models.CollectiveOfferTemplate.query.filter(
         educational_models.CollectiveOfferTemplate.validation != models.OfferValidationStatus.DRAFT
     )
@@ -433,7 +433,7 @@ def get_collective_offers_template_by_filters(
     return query
 
 
-def _filter_by_creation_mode(query: flask_sqlalchemy.BaseQuery, creation_mode: str) -> flask_sqlalchemy.BaseQuery:
+def _filter_by_creation_mode(query: Query, creation_mode: str) -> Query:
     if creation_mode == MANUAL_CREATION_MODE:
         query = query.filter(models.Offer.lastProviderId.is_(None))
     if creation_mode == IMPORTED_CREATION_MODE:
@@ -442,7 +442,7 @@ def _filter_by_creation_mode(query: flask_sqlalchemy.BaseQuery, creation_mode: s
     return query
 
 
-def _filter_by_status(query: flask_sqlalchemy.BaseQuery, status: str) -> flask_sqlalchemy.BaseQuery:
+def _filter_by_status(query: Query, status: str) -> Query:
     return query.filter(models.Offer.status == offer_mixin.OfferStatus[status].name)
 
 
@@ -597,7 +597,7 @@ def get_bookings_count_by_offer(offer_id: int) -> int:
     )
 
 
-def find_event_stocks_happening_in_x_days(number_of_days: int) -> flask_sqlalchemy.BaseQuery:
+def find_event_stocks_happening_in_x_days(number_of_days: int) -> Query:
     target_day = datetime.datetime.utcnow() + datetime.timedelta(days=number_of_days)
     start = datetime.datetime.combine(target_day, datetime.time.min)
     end = datetime.datetime.combine(target_day, datetime.time.max)
@@ -605,7 +605,7 @@ def find_event_stocks_happening_in_x_days(number_of_days: int) -> flask_sqlalche
     return find_event_stocks_day(start, end)
 
 
-def find_event_stocks_day(start: datetime.datetime, end: datetime.datetime) -> flask_sqlalchemy.BaseQuery:
+def find_event_stocks_day(start: datetime.datetime, end: datetime.datetime) -> Query:
     return (
         models.Stock.query.filter(models.Stock.beginningDatetime.between(start, end))
         .join(bookings_models.Booking)
@@ -614,7 +614,7 @@ def find_event_stocks_day(start: datetime.datetime, end: datetime.datetime) -> f
     )
 
 
-def get_expired_offers(interval: typing.List[datetime.datetime]) -> flask_sqlalchemy.BaseQuery:
+def get_expired_offers(interval: typing.List[datetime.datetime]) -> Query:
     """Return a query of offers whose latest booking limit occurs within
     the given interval.
 
@@ -733,8 +733,8 @@ def offer_has_stocks(offer_id: int) -> bool:
 
 
 def _order_stocks_by(
-    query: flask_sqlalchemy.BaseQuery, order_by: StocksOrderedBy, order_by_desc: bool
-) -> flask_sqlalchemy.BaseQuery:
+    query: Query, order_by: StocksOrderedBy, order_by_desc: bool
+) -> Query:
     column: sa_orm.Mapped[int] | sa.cast[sa.Date | sa.Time, sa_orm.Mapped[datetime.datetime | None]]
     match order_by:
         case StocksOrderedBy.DATE:
@@ -763,7 +763,7 @@ def get_filtered_stocks(
     price_category_id: int | None = None,
     order_by: StocksOrderedBy = StocksOrderedBy.BEGINNING_DATETIME,
     order_by_desc: bool = False,
-) -> flask_sqlalchemy.BaseQuery:
+) -> Query:
     query = models.Stock.query.filter(
         models.Stock.offerId == offer_id,
         models.Stock.isSoftDeleted == False,
@@ -781,16 +781,16 @@ def get_filtered_stocks(
 
 
 def get_paginated_stocks(
-    stocks_query: flask_sqlalchemy.BaseQuery,
+    stocks_query: Query,
     stocks_limit_per_page: int = LIMIT_STOCKS_PER_PAGE,
     page: int = 1,
-) -> flask_sqlalchemy.BaseQuery:
+) -> Query:
     if not FeatureToggle.WIP_PRO_STOCK_PAGINATION.is_active():
         return stocks_query
     return stocks_query.offset((page - 1) * stocks_limit_per_page).limit(stocks_limit_per_page)
 
 
-def get_synchronized_offers_with_provider_for_venue(venue_id: int, provider_id: int) -> flask_sqlalchemy.BaseQuery:
+def get_synchronized_offers_with_provider_for_venue(venue_id: int, provider_id: int) -> Query:
     return models.Offer.query.filter(models.Offer.venueId == venue_id).filter(
         models.Offer.lastProviderId == provider_id  # pylint: disable=comparison-with-callable
     )
@@ -825,7 +825,7 @@ def get_paginated_offer_ids_by_venue_id(venue_id: int, limit: int, page: int = 0
     return [offer_id for offer_id, in query]
 
 
-def exclude_offers_from_inactive_venue_provider(query: flask_sqlalchemy.BaseQuery) -> flask_sqlalchemy.BaseQuery:
+def exclude_offers_from_inactive_venue_provider(query: Query) -> Query:
     return (
         query.outerjoin(models.Offer.lastProvider)
         .outerjoin(

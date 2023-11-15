@@ -2,7 +2,7 @@ import datetime
 import logging
 import typing
 
-from flask_sqlalchemy import BaseQuery
+from flask_sqlalchemy.query import Query
 from psycopg2.extras import DateTimeRange
 
 from pcapi import settings
@@ -377,11 +377,11 @@ def get_collective_offer_template_by_id_for_adage(
     return educational_repository.get_collective_offer_template_by_id_for_adage(offer_id)
 
 
-def get_query_for_collective_offers_by_ids_for_user(user: User, ids: typing.Iterable[int]) -> BaseQuery:
+def get_query_for_collective_offers_by_ids_for_user(user: User, ids: typing.Iterable[int]) -> Query:
     return educational_repository.get_query_for_collective_offers_by_ids_for_user(user=user, ids=ids)
 
 
-def get_query_for_collective_offers_template_by_ids_for_user(user: User, ids: typing.Iterable[int]) -> BaseQuery:
+def get_query_for_collective_offers_template_by_ids_for_user(user: User, ids: typing.Iterable[int]) -> Query:
     return educational_repository.get_query_for_collective_offers_template_by_ids_for_user(user=user, ids=ids)
 
 

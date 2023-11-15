@@ -8,7 +8,7 @@ from flask import render_template
 from flask import request
 from flask import url_for
 from flask_login import current_user
-from flask_sqlalchemy import BaseQuery
+from flask_sqlalchemy.query import Query
 import sqlalchemy as sa
 from werkzeug.exceptions import NotFound
 
@@ -169,7 +169,7 @@ OPERATOR_DICT: typing.Dict[str, typing.Dict[str, typing.Any]] = {
 }
 
 
-def _get_offer_ids_query(form: forms.InternalSearchForm) -> BaseQuery:
+def _get_offer_ids_query(form: forms.InternalSearchForm) -> Query:
     query = offers_models.Offer.query
 
     if not forms.GetOfferAdvancedSearchForm.is_search_empty(form.search.data):

@@ -1,6 +1,6 @@
 from datetime import datetime
 
-from flask_sqlalchemy import BaseQuery
+from flask_sqlalchemy.query import Query
 
 from pcapi.core.users import constants
 from pcapi.core.users.models import EmailHistoryEventTypeEnum
@@ -8,7 +8,7 @@ from pcapi.core.users.models import User
 from pcapi.core.users.models import UserEmailHistory
 
 
-def _query_ordered_email_update_entry(user: User) -> BaseQuery:
+def _query_ordered_email_update_entry(user: User) -> Query:
     latest_entries = UserEmailHistory.query.filter_by(user=user).order_by(UserEmailHistory.creationDate.desc())
     return latest_entries
 

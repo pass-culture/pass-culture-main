@@ -5,7 +5,7 @@ import logging
 import typing
 from typing import Iterable
 
-from flask_sqlalchemy import BaseQuery
+from flask_sqlalchemy.query import Query 
 import sqlalchemy as sa
 
 from pcapi import settings
@@ -388,7 +388,7 @@ def index_offers_of_venues_in_queue() -> None:
         logger.exception("Could not index offers of venues from queue")
 
 
-def get_base_query_for_collective_offer_indexation() -> BaseQuery:
+def get_base_query_for_collective_offer_indexation() -> Query:
     return educational_models.CollectiveOffer.query.options(
         sa.orm.joinedload(educational_models.CollectiveOffer.collectiveStock).joinedload(
             educational_models.CollectiveStock.collectiveBookings
@@ -399,7 +399,7 @@ def get_base_query_for_collective_offer_indexation() -> BaseQuery:
     )
 
 
-def get_base_query_for_collective_template_offer_indexation() -> BaseQuery:
+def get_base_query_for_collective_template_offer_indexation() -> Query:
     return educational_models.CollectiveOfferTemplate.query.options(
         sa.orm.joinedload(educational_models.CollectiveOfferTemplate.venue, innerjoin=True).joinedload(
             offerers_models.Venue.managingOfferer, innerjoin=True
@@ -407,7 +407,7 @@ def get_base_query_for_collective_template_offer_indexation() -> BaseQuery:
     )
 
 
-def get_base_query_for_offer_indexation() -> BaseQuery:
+def get_base_query_for_offer_indexation() -> Query:
     return (
         offers_models.Offer.query.options(
             sa.orm.joinedload(offers_models.Offer.venue).joinedload(offerers_models.Venue.managingOfferer)

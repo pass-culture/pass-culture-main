@@ -4,7 +4,7 @@ import logging
 import typing
 
 from dateutil.relativedelta import relativedelta
-from flask_sqlalchemy import BaseQuery
+from flask_sqlalchemy.query import Query
 import sqlalchemy as sa
 from sqlalchemy.sql.functions import func
 
@@ -62,7 +62,7 @@ def get_user_with_credentials(identifier: str, password: str, allow_inactive: bo
     return typing.cast(models.User, user)
 
 
-def _find_user_by_email_query(email: str) -> BaseQuery:
+def _find_user_by_email_query(email: str) -> Query:
     # FIXME (dbaty, 2021-05-02): remove call to `func.lower()` once
     # all emails have been sanitized in the database.
     return models.User.query.filter(func.lower(models.User.email) == email_utils.sanitize_email(email))
@@ -72,7 +72,7 @@ def find_user_by_email(email: str) -> models.User | None:
     return _find_user_by_email_query(email).one_or_none()
 
 
-def find_pro_user_by_email_query(email: str) -> BaseQuery:
+def find_pro_user_by_email_query(email: str) -> Query:
     return _find_user_by_email_query(email).filter(models.User.has_pro_role.is_(True))  # type: ignore [attr-defined]
 
 

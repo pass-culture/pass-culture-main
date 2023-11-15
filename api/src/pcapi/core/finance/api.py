@@ -40,7 +40,7 @@ import zipfile
 from dateutil.relativedelta import relativedelta
 from flask import current_app as app
 from flask import render_template
-from flask_sqlalchemy import BaseQuery
+from flask_sqlalchemy.query import Query
 import pytz
 import sqlalchemy as sqla
 import sqlalchemy.orm as sqla_orm
@@ -293,9 +293,9 @@ def price_bookings(
     loops = math.ceil(max(booking_query.count(), collective_booking_query.count()) / batch_size)
 
     def _get_loop_query(
-        query: BaseQuery,
+        query: Query,
         last_booking: bookings_models.Booking | educational_models.CollectiveBooking | None,
-    ) -> BaseQuery:
+    ) -> Query:
         # We cannot use OFFSET and LIMIT because the loop "consumes"
         # bookings that have been priced (so the query will not return
         # them in the next loop), but keeps bookings that cannot be
@@ -391,9 +391,9 @@ def price_events(
     loops = math.ceil(event_query.count() / batch_size)
 
     def _get_loop_query(
-        query: BaseQuery,
+        query: Query,
         last_event: models.FinanceEvent | None,
-    ) -> BaseQuery:
+    ) -> Query:
         # We cannot use OFFSET and LIMIT because the loop "consumes"
         # events that have been priced (so the query will not return
         # them in the next loop), but keeps events that cannot be
@@ -476,7 +476,7 @@ def _get_pricing_point_link(
 def _get_bookings_to_price(
     model: typing.Type[bookings_models.Booking] | typing.Type[educational_models.CollectiveBooking],
     window: tuple[datetime.datetime, datetime.datetime],
-) -> BaseQuery:
+) -> Query:
     bookings_with_right_pricing_point = model.query
     if model == bookings_models.Booking:
         bookings_with_right_pricing_point = bookings_with_right_pricing_point.filter(
@@ -550,7 +550,7 @@ def _get_bookings_to_price(
     return query
 
 
-def _get_events_to_price(window: tuple[datetime.datetime, datetime.datetime]) -> BaseQuery:
+def _get_events_to_price(window: tuple[datetime.datetime, datetime.datetime]) -> Query:
     return (
         models.FinanceEvent.query.filter(
             models.FinanceEvent.pricingPointId.is_not(None),
@@ -1854,7 +1854,7 @@ def _make_invoice_line(
     return invoice_line, reimbursed_amount
 
 
-def _filter_invoiceable_cashflows(query: BaseQuery) -> BaseQuery:
+def _filter_invoiceable_cashflows(query: Query) -> Query:
     return (
         query.filter(models.Cashflow.status == models.CashflowStatus.UNDER_REVIEW).outerjoin(
             models.InvoiceCashflow,
