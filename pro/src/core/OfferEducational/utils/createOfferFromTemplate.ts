@@ -13,6 +13,7 @@ export const createOfferFromTemplate = async (
   navigate: ReturnType<typeof useNavigate>,
   notify: ReturnType<typeof useNotification>,
   templateOfferId: number,
+  isFormatActive: boolean,
   requestId?: string
 ) => {
   const offerTemplateResponse =
@@ -43,6 +44,7 @@ export const createOfferFromTemplate = async (
   const { isOk, message, payload } = await postCollectiveOfferAdapter({
     offer: initialValues,
     offerTemplateId: templateOfferId,
+    isFormatActive,
   })
 
   if (!isOk) {

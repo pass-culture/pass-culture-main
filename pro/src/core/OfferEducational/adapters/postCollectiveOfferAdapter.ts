@@ -7,7 +7,7 @@ import { createCollectiveOfferPayload } from '../utils/createOfferPayload'
 type Params = {
   offer: OfferEducationalFormValues
   offerTemplateId?: number
-  isFormatActive?: boolean
+  isFormatActive: boolean
 }
 
 type PayloadSuccess = { id: number }
@@ -40,8 +40,8 @@ const postCollectiveOfferAdapter: PostOfferAdapter = async ({
     const payload = createCollectiveOfferPayload(
       offer,
       false,
-      offerTemplateId,
-      isFormatActive
+      isFormatActive,
+      offerTemplateId
     )
 
     const response = await api.createCollectiveOffer(payload)

@@ -11,6 +11,7 @@ describe('createOfferPayload', () => {
           beginningDate: '2021-09-01',
           endingDate: '2021-09-10',
         },
+        false,
         false
       )
     ).toEqual(expect.objectContaining({ dates: undefined }))
@@ -24,7 +25,8 @@ describe('createOfferPayload', () => {
           beginningDate: '2021-09-01',
           endingDate: '2021-09-10',
         },
-        true
+        true,
+        false
       ).dates
     ).toBeTruthy()
   })
@@ -37,7 +39,8 @@ describe('createOfferPayload', () => {
           beginningDate: undefined,
           endingDate: undefined,
         },
-        true
+        true,
+        false
       )
     ).toEqual(expect.objectContaining({ dates: undefined }))
   })
