@@ -139,7 +139,7 @@ const StocksEventList = ({
         setStocks(serializeStockEvents(response.stocks))
         setStocksCount(response.stockCount)
         if (onStocksLoad) {
-          onStocksLoad(true)
+          onStocksLoad(response.hasStocks)
         }
         setIsCheckedArray(response.stocks.map(() => false))
       }
