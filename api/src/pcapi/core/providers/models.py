@@ -227,7 +227,7 @@ class CDSCinemaDetails(PcObject, Base):
 class AllocineVenueProvider(VenueProvider):
     __tablename__ = "allocine_venue_provider"
 
-    id: int = Column(BigInteger, ForeignKey("venue_provider.id"), primary_key=True)
+    id: int = Column(BigInteger, ForeignKey(VenueProvider.id), primary_key=True)
 
     isDuo: bool = Column(Boolean, default=True, server_default=true(), nullable=False)
 
@@ -237,6 +237,7 @@ class AllocineVenueProvider(VenueProvider):
 
     __mapper_args__ = {
         "polymorphic_identity": "allocine_venue_provider",
+        "inherit_condition": (id == VenueProvider.id),
     }
 
 
