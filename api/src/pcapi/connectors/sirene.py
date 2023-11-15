@@ -4,6 +4,7 @@ Documentation of the API: https://api.insee.fr/catalogue/site/themes/wso2/subthe
 """
 
 from collections import defaultdict
+import datetime
 import json
 import logging
 import re
@@ -13,11 +14,14 @@ import pydantic.v1 as pydantic_v1
 
 from pcapi import settings
 from pcapi.models import feature
+from pcapi.utils import cache as cache_utils
 from pcapi.utils import module_loading
 from pcapi.utils import requests
 
 
 logger = logging.getLogger(__name__)
+
+CACHE_DURATION = datetime.timedelta(minutes=15)
 
 
 class SireneException(Exception):
@@ -216,6 +220,16 @@ class InseeBackend(BaseBackend):
         except json.JSONDecodeError:
             raise SireneApiException(f"Unexpected non-JSON response from Sirene API: {url}")
 
+    def _cached_get(self, subpath: str) -> dict:
+        key_template = f"cache:sirene:{subpath}"
+        cached = cache_utils.get_from_cache(
+            retriever=lambda: json.dumps(self._get(subpath)),
+            key_template=key_template,
+            expire=CACHE_DURATION.seconds,
+        )
+        assert isinstance(cached, str)  # help mypy
+        return json.loads(cached)
+
     def _check_non_public_data(self, info: SirenInfo | SiretInfo) -> None:
         # If the data is not public (which is known as "non diffusibles"
         # in Insee jargon), some fields are populated with "[ND]".
@@ -278,7 +292,7 @@ class InseeBackend(BaseBackend):
 
     def get_siren(self, siren: str, with_address: bool = True) -> SirenInfo:
         subpath = f"/siren/{siren}"
-        data = self._get(subpath)["uniteLegale"]
+        data = self._cached_get(subpath)["uniteLegale"]
         head_office = self._get_head_office(data)
         head_office_siret = siren + head_office["nicSiegeUniteLegale"]
         address = self.get_siret(head_office_siret).address if with_address else None
@@ -296,7 +310,7 @@ class InseeBackend(BaseBackend):
 
     def get_siret(self, siret: str) -> SiretInfo:
         subpath = f"/siret/{siret}"
-        data = self._get(subpath)["etablissement"]
+        data = self._cached_get(subpath)["etablissement"]
         legal_unit_block = data["uniteLegale"]
         try:
             block = [_b for _b in data["periodesEtablissement"] if _b["dateFin"] is None][0]
