@@ -147,7 +147,7 @@ def get_music_types() -> serialization.GetMusicTypesResponse:
 @rate_limiting.api_key_high_rate_limiter()
 def post_product_offer(body: serialization.BatchProductOfferCreation) -> serialization.BatchProductOfferResponse:
     """
-    Create in batch (1-50) CD or vinyl products.
+    Create in batch (1-50) products in authorized categories
     """
     created_offers: list[offers_models.Offer] = []
     venue = utils.retrieve_venue_from_location(body.location)
@@ -556,7 +556,7 @@ def _check_offer_can_be_edited(offer: offers_models.Offer) -> None:
 @rate_limiting.api_key_high_rate_limiter()
 def edit_product(body: serialization.BatchProductOfferEdition) -> serialization.BatchProductOfferResponse:
     """
-    Edit in batch (1 to 50) CD or vinyl products.
+    Edit in batch (1-50) products in authorized categories
 
     Leave fields undefined to keep their current value.
     """
