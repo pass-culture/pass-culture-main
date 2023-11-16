@@ -43,7 +43,7 @@ describe('screens | OfferEducational : creation offer type step', () => {
     expect(descriptionTextArea).toBeEnabled()
     expect(descriptionTextArea).toHaveValue('')
     expect(descriptionTextArea.getAttribute('placeholder')).toBe(
-      'Détaillez ici votre projet et son interêt pédagogique'
+      'Détaillez ici votre projet et son interêt pédagogique.'
     )
     expect(await screen.findByTestId('counter-description')).toHaveTextContent(
       '0/1000'

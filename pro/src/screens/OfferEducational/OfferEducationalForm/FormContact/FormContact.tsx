@@ -13,7 +13,7 @@ const FormContact = ({
   disableForm: boolean
 }): JSX.Element => (
   <FormLayout.Section
-    description={`Ces informations sont affichées sur votre offre.\n Elles permettent aux enseignants et aux chefs d’établissement scolaires de vous contacter.`}
+    description={`Ces informations sont affichées sur votre offre.\n Elles permettent aux enseignants et aux chefs d’établissement de vous contacter.`}
     title="Contact"
   >
     <FormLayout.Row className={styles['phone-number-row']}>
