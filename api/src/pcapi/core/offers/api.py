@@ -478,9 +478,7 @@ def batch_update_collective_offers_template(query: BaseQuery, update_fields: dic
         search.async_index_collective_offer_template_ids(collective_offer_template_ids_batch)
 
 
-def _notify_pro_upon_stock_edit_for_event_offer(
-    stock: models.Stock, bookings: typing.List[bookings_models.Booking]
-) -> None:
+def _notify_pro_upon_stock_edit_for_event_offer(stock: models.Stock, bookings: list[bookings_models.Booking]) -> None:
     if stock.offer.isEvent:
         if not transactional_mails.send_event_offer_postponement_confirmation_email_to_pro(stock, len(bookings)):
             logger.warning(
@@ -489,7 +487,7 @@ def _notify_pro_upon_stock_edit_for_event_offer(
             )
 
 
-def _notify_beneficiaries_upon_stock_edit(stock: models.Stock, bookings: typing.List[bookings_models.Booking]) -> None:
+def _notify_beneficiaries_upon_stock_edit(stock: models.Stock, bookings: list[bookings_models.Booking]) -> None:
     if bookings:
         if stock.beginningDatetime is None:
             logger.error(
@@ -579,7 +577,7 @@ def edit_stock(
     booking_limit_datetime: datetime.datetime | None | T_UNCHANGED = UNCHANGED,
     editing_provider: providers_models.Provider | None = None,
     price_category: models.PriceCategory | None | T_UNCHANGED = UNCHANGED,
-) -> typing.Tuple[models.Stock, bool]:
+) -> tuple[models.Stock, bool]:
     validation.check_stock_is_updatable(stock, editing_provider)
 
     modifications: dict[str, typing.Any] = {}
@@ -638,7 +636,7 @@ def edit_stock(
     return stock, is_beginning_updated
 
 
-def handle_stocks_edition(edited_stocks: list[typing.Tuple[models.Stock, bool]]) -> None:
+def handle_stocks_edition(edited_stocks: list[tuple[models.Stock, bool]]) -> None:
     for stock, is_beginning_datetime_updated in edited_stocks:
         if is_beginning_datetime_updated:
             bookings = bookings_repository.find_not_cancelled_bookings_by_stock(stock)

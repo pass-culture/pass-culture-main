@@ -1,5 +1,3 @@
-import typing
-
 from werkzeug.exceptions import NotFound
 
 from .allocine import AllocineContext
@@ -10,7 +8,7 @@ from .cineoffice import CineofficeContext
 from .ems import EMSContext
 
 
-def get_context(provider_name: str) -> typing.Type[PivotContext]:
+def get_context(provider_name: str) -> type[PivotContext]:
     context = {
         "allocine": AllocineContext,
         "boost": BoostContext,

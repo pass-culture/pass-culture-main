@@ -614,7 +614,7 @@ def find_event_stocks_day(start: datetime.datetime, end: datetime.datetime) -> f
     )
 
 
-def get_expired_offers(interval: typing.List[datetime.datetime]) -> flask_sqlalchemy.BaseQuery:
+def get_expired_offers(interval: list[datetime.datetime]) -> flask_sqlalchemy.BaseQuery:
     """Return a query of offers whose latest booking limit occurs within
     the given interval.
 

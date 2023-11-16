@@ -1,7 +1,6 @@
 from abc import ABC
 import logging
-from typing import TYPE_CHECKING
-from typing import Type
+import typing
 
 from pcapi import settings
 from pcapi.connectors import sirene
@@ -28,7 +27,7 @@ from pcapi.models.api_errors import ApiErrors
 from pcapi.utils import urls
 
 
-if TYPE_CHECKING:
+if typing.TYPE_CHECKING:
     from pcapi.core.offerers.models import Venue
 
 
@@ -481,5 +480,5 @@ class SaveVenueBankInformationsFactory:
     }
 
     @classmethod
-    def get(cls, procedure_id: str) -> "Type[AbstractSaveBankInformations]":
+    def get(cls, procedure_id: str) -> "type[AbstractSaveBankInformations]":
         return cls.procedure_to_class[PROCEDURE_ID_VERSION_MAP[procedure_id]]

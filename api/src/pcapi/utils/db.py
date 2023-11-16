@@ -45,7 +45,7 @@ class MagicEnum(sqla_types.TypeDecorator):
 
     cache_ok = True
 
-    def __init__(self, enum_class: typing.Type[enum.Enum]):  # pylint: disable=super-init-not-called
+    def __init__(self, enum_class: type[enum.Enum]):  # pylint: disable=super-init-not-called
         # WARNING: The attribute MUST have the same name as the
         # argument in `__init__()` for SQLAlchemy to produce a valid
         # cache key. See https://docs.sqlalchemy.org/en/14/core/type_api.html#sqlalchemy.types.ExternalType.cache_ok
@@ -63,7 +63,7 @@ class MagicEnum(sqla_types.TypeDecorator):
     process_literal_param = sqla_types.TypeDecorator.process_literal_param
 
     @property
-    def python_type(self) -> typing.Type[enum.Enum]:
+    def python_type(self) -> type[enum.Enum]:
         return self.enum_class
 
     def copy(self, **kwargs: typing.Any) -> "MagicEnum":
@@ -105,7 +105,7 @@ class BadSortError(Exception):
 
 
 def get_ordering_clauses(
-    model: typing.Type[Model],
+    model: type[Model],
     sorts: typing.Iterable[str],
 ) -> list[sqla.sql.elements.ColumnElement | sqla.sql.elements.UnaryExpression]:
     """
@@ -142,7 +142,7 @@ def get_ordering_clauses(
 
 
 def get_ordering_clauses_from_json(
-    model: typing.Type[Model],
+    model: type[Model],
     sorts: str,
 ) -> list[sqla.sql.ColumnElement | sqla.sql.elements.UnaryExpression]:
     """

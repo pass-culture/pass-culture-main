@@ -1,6 +1,5 @@
 from datetime import datetime
 import enum
-import typing
 
 import pydantic.v1 as pydantic_v1
 
@@ -89,4 +88,4 @@ class GetFilteredBookingsRequest(IndexPaginationQueryParams):
 
 
 class GetFilteredBookingsResponse(serialization.ConfiguredBaseModel):
-    bookings: typing.List[GetBookingResponse]
+    bookings: list[GetBookingResponse]

@@ -1,8 +1,6 @@
 from copy import deepcopy
 from typing import Any
 from typing import Callable
-from typing import Dict
-from typing import Type
 
 from pydantic.v1 import BaseModel
 from spectree import Response
@@ -11,11 +9,11 @@ from spectree import SpecTree
 from pcapi import settings
 
 
-def get_model_key(model: Type[BaseModel]) -> str:
+def get_model_key(model: type[BaseModel]) -> str:
     return model.__name__
 
 
-def get_model_schema(model: Type[BaseModel]) -> dict:
+def get_model_schema(model: type[BaseModel]) -> dict:
     assert issubclass(model, BaseModel)
     return model.schema(ref_template="#/components/schemas/{model}")
 
@@ -52,7 +50,7 @@ class ExtendedSpecTree(SpecTree):
                     spec["servers"] = [{"url": settings.API_URL}]
         return spec
 
-    def _add_model(self, model: Type[BaseModel]) -> str:
+    def _add_model(self, model: type[BaseModel]) -> str:
         model_key = get_model_key(model=model)
         self.models[model_key] = deepcopy(get_model_schema(model=model))
 
@@ -70,5 +68,5 @@ class ExtendedSpecTree(SpecTree):
 
 
 class ExtendResponse(Response):
-    def generate_spec(self, _naming_strategy: Callable[[Type[BaseModel]], str] | None = None) -> Dict[str, Any]:
+    def generate_spec(self, _naming_strategy: Callable[[type[BaseModel]], str] | None = None) -> dict[str, Any]:
         return super().generate_spec(naming_strategy=get_model_key)

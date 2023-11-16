@@ -134,7 +134,7 @@ def search_pro() -> utils.BackofficeResponse:
     )
 
 
-def get_context(pro_type: search_forms.TypeOptions) -> typing.Type[Context]:
+def get_context(pro_type: search_forms.TypeOptions) -> type[Context]:
     return {
         search_forms.TypeOptions.USER: UserContext,
         search_forms.TypeOptions.OFFERER: OffererContext,

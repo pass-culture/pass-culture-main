@@ -128,7 +128,7 @@ def has_completed_profile_for_given_eligibility(
     return False
 
 
-def get_declared_names(user: users_models.User) -> typing.Tuple[str, str] | None:
+def get_declared_names(user: users_models.User) -> tuple[str, str] | None:
     profile_completion_check = repository.get_completed_profile_check(user, user.eligibility)
     if profile_completion_check and profile_completion_check.resultContent:
         profile_data = typing.cast(fraud_models.ProfileCompletionContent, profile_completion_check.source_data())

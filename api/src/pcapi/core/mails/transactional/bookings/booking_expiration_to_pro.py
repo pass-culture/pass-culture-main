@@ -1,6 +1,3 @@
-from typing import List
-from typing import Tuple
-
 from pcapi.core import mails
 from pcapi.core.bookings import constants as booking_constants
 from pcapi.core.bookings.models import Booking
@@ -66,7 +63,7 @@ def send_bookings_expiration_to_pro_email(offerer: Offerer, bookings: list[Booki
     return success
 
 
-def _filter_books_bookings(bookings: list[Booking]) -> Tuple[List[Booking], List[Booking]]:
+def _filter_books_bookings(bookings: list[Booking]) -> tuple[list[Booking], list[Booking]]:
     books_bookings = []
     other_bookings = []
 

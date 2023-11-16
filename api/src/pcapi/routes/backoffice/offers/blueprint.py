@@ -162,7 +162,7 @@ JOIN_DICT: dict[str, list[dict[str, typing.Any]]] = {
     ],
 }
 
-OPERATOR_DICT: typing.Dict[str, typing.Dict[str, typing.Any]] = {
+OPERATOR_DICT: dict[str, dict[str, typing.Any]] = {
     **utils.OPERATOR_DICT,
     "NAME_EQUALS": {"function": lambda x, y: x.ilike(y)},
     "NAME_NOT_EQUALS": {"function": lambda x, y: ~x.ilike(y)},

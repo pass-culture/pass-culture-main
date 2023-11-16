@@ -1,7 +1,6 @@
 import datetime
 import json
 import logging
-import typing
 
 import pydantic.v1 as pydantic_v1
 
@@ -104,7 +103,7 @@ def book_event_ticket(
     booking: bookings_models.Booking,
     stock: offers_models.Stock,
     beneficiary: users_models.User,
-) -> typing.Tuple[list[external_bookings_models.Ticket], int | None]:
+) -> tuple[list[external_bookings_models.Ticket], int | None]:
     provider = providers_repository.get_provider_enabled_for_pro_by_id(stock.offer.lastProviderId)
     if not provider:
         raise providers_exceptions.InactiveProvider()

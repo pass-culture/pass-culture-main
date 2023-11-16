@@ -16,7 +16,7 @@ class ReferenceSchemeFactory(BaseFactory):
     @classmethod
     def _create(
         cls,
-        model_class: typing.Type[models.ReferenceScheme],
+        model_class: type[models.ReferenceScheme],
         *args: typing.Any,
         **kwargs: typing.Any,
     ) -> models.ReferenceScheme:

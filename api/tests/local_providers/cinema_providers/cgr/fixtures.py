@@ -1,9 +1,7 @@
 import json
-from typing import Dict
-from typing import List
 
 
-def cgr_response_template(films_info: List[Dict]) -> str:
+def cgr_response_template(films_info: list[dict]) -> str:
     return f"""
        <?xml version="1.0" encoding="UTF-8"?>
         <SOAP-ENV:Envelope
@@ -29,7 +27,7 @@ def cgr_response_template(films_info: List[Dict]) -> str:
         """.strip()
 
 
-def cgr_reservation_response_template(ticket_response: Dict) -> str:
+def cgr_reservation_response_template(ticket_response: dict) -> str:
     return f"""
        <?xml version="1.0" encoding="UTF-8"?>
         <SOAP-ENV:Envelope
@@ -75,7 +73,7 @@ def cgr_annulation_response_template(success: bool = True, message_error: str = 
         """.strip()
 
 
-def film(films_info: List[Dict]) -> List[Dict]:
+def film(films_info: list[dict]) -> list[dict]:
     if not films_info:
         return []
 

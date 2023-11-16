@@ -2,7 +2,6 @@ import logging
 import time
 from typing import Any
 from typing import Iterable
-from typing import Type
 
 import click
 import redis
@@ -30,7 +29,7 @@ low_queue = Queue(
 logger = logging.getLogger(__name__)
 
 
-def log_worker_error(job: Job, exception_type: Type, exception_value: Exception, traceback: Any | None = None) -> None:
+def log_worker_error(job: Job, exception_type: type, exception_value: Exception, traceback: Any | None = None) -> None:
     # This handler is called by `rq.Worker.handle_exception()` from an
     # `except` clause, so we can (and should) use `logger.exception`.
     logger.exception(

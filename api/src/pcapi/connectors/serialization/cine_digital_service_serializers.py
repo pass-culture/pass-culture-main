@@ -163,7 +163,7 @@ class CancelBookingCDS(BaseModel):
 
 
 class CancelBookingsErrorsCDS(BaseModel):
-    __root__: typing.Dict[str, str]
+    __root__: dict[str, str]
 
 
 class TicketSaleCDS(BaseModel):

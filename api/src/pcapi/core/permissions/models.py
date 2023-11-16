@@ -2,7 +2,6 @@ import enum
 import logging
 import typing
 from typing import TYPE_CHECKING
-from typing import Type
 
 import sqlalchemy as sa
 
@@ -78,7 +77,7 @@ class Permissions(enum.Enum):
 
 
 def sync_enum_with_db_field(
-    session: sa.orm.Session, py_enum: Type[enum.Enum], py_attr: str, db_class: Type[Model]
+    session: sa.orm.Session, py_enum: type[enum.Enum], py_attr: str, db_class: type[Model]
 ) -> None:
     db_values = set(p.name for p in session.query(db_class.name).all())
     py_values = set(getattr(e, py_attr) for e in py_enum)
