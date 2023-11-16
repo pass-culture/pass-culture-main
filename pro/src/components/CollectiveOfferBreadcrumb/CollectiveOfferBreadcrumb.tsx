@@ -106,35 +106,30 @@ const CollectiveOfferBreadcrumb = ({
     switch (activeStep) {
       // @ts-expect-error switch fallthrough
       case CollectiveOfferBreadcrumbStep.CONFIRMATION:
-        stepList[
-          CollectiveOfferBreadcrumbStep.SUMMARY
-        ].url = `/offre/${offerId}/collectif/creation/recapitulatif`
+        stepList[CollectiveOfferBreadcrumbStep.SUMMARY].url =
+          `/offre/${offerId}/collectif/creation/recapitulatif`
 
       // @ts-expect-error switch fallthrough
       case CollectiveOfferBreadcrumbStep.SUMMARY:
         if (!isTemplate) {
-          stepList[
-            CollectiveOfferBreadcrumbStep.VISIBILITY
-          ].url = `/offre/${offerId}/collectif/visibilite`
+          stepList[CollectiveOfferBreadcrumbStep.VISIBILITY].url =
+            `/offre/${offerId}/collectif/visibilite`
         }
 
       // @ts-expect-error switch fallthrough
       case CollectiveOfferBreadcrumbStep.VISIBILITY:
         if (!isTemplate) {
-          stepList[
-            CollectiveOfferBreadcrumbStep.STOCKS
-          ].url = `/offre/${offerId}/collectif/stocks`
+          stepList[CollectiveOfferBreadcrumbStep.STOCKS].url =
+            `/offre/${offerId}/collectif/stocks`
         }
 
       case CollectiveOfferBreadcrumbStep.STOCKS:
         if (isTemplate) {
-          stepList[
-            CollectiveOfferBreadcrumbStep.DETAILS
-          ].url = `/offre/collectif/vitrine/${offerId}/creation`
+          stepList[CollectiveOfferBreadcrumbStep.DETAILS].url =
+            `/offre/collectif/vitrine/${offerId}/creation`
         } else {
-          stepList[
-            CollectiveOfferBreadcrumbStep.DETAILS
-          ].url = `/offre/collectif/${offerId}/creation${requestIdUrl}`
+          stepList[CollectiveOfferBreadcrumbStep.DETAILS].url =
+            `/offre/collectif/${offerId}/creation${requestIdUrl}`
         }
     }
   }
