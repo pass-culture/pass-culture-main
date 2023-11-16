@@ -12,7 +12,6 @@ import useActiveFeature from 'hooks/useActiveFeature'
 
 import styles from './CollectiveOfferSummary.module.scss'
 import CollectiveOfferAccessibilitySection from './components/CollectiveOfferAccessibilitySection'
-import CollectiveOfferArtisticSection from './components/CollectiveOfferArtisticSection/CollectiveOfferArtisticSection'
 import CollectiveOfferContactSection from './components/CollectiveOfferContactSection'
 import CollectiveOfferDateSection from './components/CollectiveOfferDateSection/CollectiveOfferDateSection'
 import CollectiveOfferImagePreview from './components/CollectiveOfferImagePreview'
@@ -67,7 +66,6 @@ const CollectiveOfferSummary = ({
           >
             <CollectiveOfferVenueSection venue={offer.venue} />
             <CollectiveOfferTypeSection offer={offer} categories={categories} />
-            <CollectiveOfferArtisticSection offer={offer} />
             <CollectiveOfferImagePreview offer={offer} />
             {offer.isTemplate && isTemplateOfferDatesActive && (
               <CollectiveOfferDateSection offer={offer} />
