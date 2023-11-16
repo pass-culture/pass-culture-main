@@ -1,3 +1,4 @@
+import enum
 import typing
 
 from pcapi.utils.clean_accents import clean_accents
@@ -6,6 +7,8 @@ from pcapi.utils.clean_accents import clean_accents
 def sanitize_str(a: typing.Any) -> typing.Any:
     if isinstance(a, str):
         return clean_accents(a.lower())
+    if isinstance(a, enum.Enum):
+        return clean_accents(a.name.lower())
     return a
 
 
@@ -64,6 +67,17 @@ def contains_exact(a: str, b: list[str]) -> bool:
     return any(element in split_a for element in b)
 
 
+def intersects(a: list, b: list) -> bool:
+    """Check if any item from b can be found inside a"""
+    if not a or not b:
+        return False
+
+    sanitized_a = set(sanitize_list(a))
+    sanitized_b = set(sanitize_list(b))
+
+    return bool(sanitized_a.intersection(sanitized_b))
+
+
 OPERATIONS = {
     "==": soft_equals,
     "!=": lambda a, b: not soft_equals(a, b),
@@ -75,4 +89,6 @@ OPERATIONS = {
     "not in": lambda a, b: (sanitize_str(a) not in sanitize_list(b)) if "__contains__" in dir(b) else True,
     "contains": contains,
     "contains-exact": contains_exact,
+    "intersects": intersects,
+    "not intersects": lambda a, b: not intersects(a, b),
 }

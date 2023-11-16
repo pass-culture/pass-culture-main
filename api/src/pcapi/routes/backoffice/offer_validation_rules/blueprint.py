@@ -184,6 +184,7 @@ def create_rule() -> utils.BackofficeResponse:
                 or sub_rule_data["subcategories"]
                 or sub_rule_data["categories"]
                 or sub_rule_data["show_sub_type"]
+                or sub_rule_data["formats"]
             )
             sub_rule = offers_models.OfferValidationSubRule(
                 validationRule=new_rule,
@@ -306,6 +307,7 @@ def edit_rule(rule_id: int) -> utils.BackofficeResponse:
                 or sub_rule_data["subcategories"]
                 or sub_rule_data["categories"]
                 or sub_rule_data["show_sub_type"]
+                or sub_rule_data["formats"]
             )
 
             # edit existing subrule
