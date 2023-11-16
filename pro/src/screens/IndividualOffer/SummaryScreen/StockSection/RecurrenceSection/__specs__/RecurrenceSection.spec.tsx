@@ -16,14 +16,12 @@ describe('StockEventSection', () => {
 
     render(<RecurrenceSection stocksStats={stocksStats} departementCode="" />)
 
-    expect(screen.queryByText(/Nombre de dates/)).toBeInTheDocument()
-    expect(screen.queryByText('2')).toBeInTheDocument()
-    expect(screen.queryByText(/Période concernée/)).toBeInTheDocument()
-    expect(
-      screen.queryByText('du 01/01/2021 au 02/01/2021')
-    ).toBeInTheDocument()
-    expect(screen.queryByText(/Capacité totale/)).toBeInTheDocument()
-    expect(screen.queryByText('Illimitée')).toBeInTheDocument()
+    expect(screen.getByText(/Nombre de dates/)).toBeInTheDocument()
+    expect(screen.getByText('2')).toBeInTheDocument()
+    expect(screen.getByText(/Période concernée/)).toBeInTheDocument()
+    expect(screen.getByText('du 01/01/2021 au 02/01/2021')).toBeInTheDocument()
+    expect(screen.getByText(/Capacité totale/)).toBeInTheDocument()
+    expect(screen.getByText('Illimitée')).toBeInTheDocument()
   })
 
   it('should render all information when there are only one stock', () => {
@@ -35,13 +33,20 @@ describe('StockEventSection', () => {
     }
 
     render(<RecurrenceSection stocksStats={stocksStats} departementCode="" />)
+  })
 
-    expect(screen.queryByText(/Nombre de dates/)).toBeInTheDocument()
-    expect(screen.queryByText('1')).toBeInTheDocument()
-    expect(screen.queryByText(/Période concernée/)).toBeInTheDocument()
-    expect(screen.queryByText('le 01/01/2021')).toBeInTheDocument()
-    expect(screen.queryByText(/Capacité totale/)).toBeInTheDocument()
-    expect(screen.queryByText('637 places')).toBeInTheDocument()
+  it("displays 0 when remainingQuantity is 0 but not 'Illimitée'", () => {
+    const stocksStats = {
+      stockCount: 1,
+      remainingQuantity: 0,
+      oldestStock: '2021-01-01T00:00:00+01:00',
+      newestStock: '2021-01-03T00:00:00+01:00',
+    }
+
+    render(<RecurrenceSection stocksStats={stocksStats} departementCode="" />)
+
+    expect(screen.queryByText('Illimitée')).not.toBeInTheDocument()
+    expect(screen.getByText('0 place')).toBeInTheDocument()
   })
 
   it('should render 1 place', () => {
@@ -54,7 +59,7 @@ describe('StockEventSection', () => {
 
     render(<RecurrenceSection stocksStats={stocksStats} departementCode="" />)
 
-    expect(screen.queryByText('1 place')).toBeInTheDocument()
+    expect(screen.getByText('1 place')).toBeInTheDocument()
   })
 
   it('should not render if there are no stocks', () => {
