@@ -772,6 +772,8 @@ class OfferValidationRuleOperator(enum.Enum):
     NOT_IN = "not in"
     CONTAINS = "contains"
     CONTAINS_EXACTLY = "contains-exact"
+    INTERSECTS = "intersects"
+    NOT_INTERSECTS = "not intersects"
 
 
 class OfferValidationModel(enum.Enum):
@@ -797,6 +799,7 @@ class OfferValidationAttribute(enum.Enum):
     PRICE_DETAIL = "priceDetail"
     SHOW_SUB_TYPE = "showSubType"
     TEXT = "visibleText"
+    FORMATS = "formats"
 
 
 class OfferValidationSubRuleField(enum.Enum):
@@ -883,6 +886,14 @@ class OfferValidationSubRuleField(enum.Enum):
     CATEGORY_COLLECTIVE_OFFER_TEMPLATE = {
         "model": OfferValidationModel.COLLECTIVE_OFFER_TEMPLATE,
         "attribute": OfferValidationAttribute.CATEGORY_ID,
+    }
+    FORMATS_COLLECTIVE_OFFER = {
+        "model": OfferValidationModel.COLLECTIVE_OFFER,
+        "attribute": OfferValidationAttribute.FORMATS,
+    }
+    FORMATS_COLLECTIVE_OFFER_TEMPLATE = {
+        "model": OfferValidationModel.COLLECTIVE_OFFER_TEMPLATE,
+        "attribute": OfferValidationAttribute.FORMATS,
     }
     SHOW_SUB_TYPE_OFFER = {
         "model": OfferValidationModel.OFFER,
