@@ -31,9 +31,9 @@ from . import blueprint
 logger = logging.getLogger(__name__)
 
 # perhaps one day we will be able to define it as str | tuple[str, int]
-BackofficeResponse = typing.Union[str, typing.Tuple[str, int], WerkzeugResponse, Forbidden]
+BackofficeResponse = str | tuple[str, int] | WerkzeugResponse | Forbidden
 
-OPERATOR_DICT: typing.Dict[str, typing.Dict[str, typing.Any]] = {
+OPERATOR_DICT: dict[str, dict[str, typing.Any]] = {
     "EQUALS": {"function": op.eq},
     "NOT_EQUALS": {"function": op.ne},
     "STR_EQUALS": {"function": lambda x, y: func.lower(x) == y.lower()},
@@ -214,7 +214,7 @@ def generate_search_query(
     search_parameters: typing.Iterable[dict[str, typing.Any]],
     fields_definition: dict[str, dict[str, typing.Any]],
     joins_definition: dict[str, list[dict[str, typing.Any]]],
-    operators_definition: typing.Dict[str, typing.Dict[str, typing.Any]] | None = None,
+    operators_definition: dict[str, dict[str, typing.Any]] | None = None,
 ) -> tuple[BaseQuery, set[str], set[str], set[str]]:
     """
     Generate a search query from a list of dict (from a ListField of FormFields).

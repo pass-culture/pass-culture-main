@@ -251,7 +251,7 @@ class ApiKeyFactory(BaseFactory):
     @classmethod
     def _create(
         cls,
-        model_class: typing.Type[models.ApiKey],
+        model_class: type[models.ApiKey],
         *args: typing.Any,
         **kwargs: typing.Any,
     ) -> models.ApiKey:

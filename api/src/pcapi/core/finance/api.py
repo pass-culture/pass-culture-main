@@ -474,7 +474,7 @@ def _get_pricing_point_link(
 
 
 def _get_bookings_to_price(
-    model: typing.Type[bookings_models.Booking] | typing.Type[educational_models.CollectiveBooking],
+    model: type[bookings_models.Booking | educational_models.CollectiveBooking],
     window: tuple[datetime.datetime, datetime.datetime],
 ) -> BaseQuery:
     bookings_with_right_pricing_point = model.query
@@ -760,7 +760,7 @@ def price_event(event: models.FinanceEvent) -> models.Pricing | None:
     return pricing
 
 
-def _get_revenue_period(value_date: datetime.datetime) -> typing.Tuple[datetime.datetime, datetime.datetime]:
+def _get_revenue_period(value_date: datetime.datetime) -> tuple[datetime.datetime, datetime.datetime]:
     """Return a datetime (year) period for the given value date, i.e. the
     first and last seconds of the year of the ``value_date``.
     """
@@ -782,7 +782,7 @@ def _get_revenue_period(value_date: datetime.datetime) -> typing.Tuple[datetime.
 
 def _get_pricing_point_id_and_current_revenue(
     booking: bookings_models.Booking,
-) -> typing.Tuple[int, int]:
+) -> tuple[int, int]:
     """Return the id of the pricing point to use for the requested
     booking, and the current year revenue for this pricing point, NOT
     including the requested booking.
@@ -2145,7 +2145,7 @@ def _generate_invoice(
 
 def get_invoice_period(
     batch_cutoff_date: datetime.datetime,
-) -> typing.Tuple[datetime.date, datetime.date]:
+) -> tuple[datetime.date, datetime.date]:
     if batch_cutoff_date.day < 16:
         start_date = batch_cutoff_date.replace(day=1)
     else:

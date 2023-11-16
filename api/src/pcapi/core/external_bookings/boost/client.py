@@ -129,7 +129,7 @@ class BoostClientAPI(external_bookings_models.ExternalBookingsClientAPI):
     def get_collection_items(
         self,
         resource: boost.ResourceBoost,
-        collection_class: typing.Type[boost_serializers.Collection],
+        collection_class: type[boost_serializers.Collection],
         per_page: int = 30,
         pattern_values: dict[str, typing.Any] | None = None,
         params: dict[str, typing.Any] | None = None,
@@ -166,7 +166,7 @@ class BoostClientAPI(external_bookings_models.ExternalBookingsClientAPI):
             "dateStart": start_date.strftime("%Y-%m-%d"),
             "dateEnd": (start_date + datetime.timedelta(days=interval_days)).strftime("%Y-%m-%d"),
         }
-        params: typing.Dict[str, str | int | None] | None = None
+        params: dict[str, str | int | None] | None = None
         if FeatureToggle.WIP_ENABLE_BOOST_SHOWTIMES_FILTER.is_active():
             params = {
                 "paymentMethod": constants.BOOST_PASS_CULTURE_PAYMENT_METHOD,

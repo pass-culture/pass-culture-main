@@ -1,5 +1,4 @@
 import datetime
-from typing import ByteString
 from typing import Optional
 
 from flask import url_for
@@ -25,7 +24,7 @@ class AuthenticateTest:
         "uai": "EAU123",
     }
 
-    def _create_adage_valid_token(self, uai_code: Optional[str]) -> ByteString:
+    def _create_adage_valid_token(self, uai_code: Optional[str]) -> bytes:
         return create_adage_jwt_default_fake_valid_token(
             civility=self.valid_user.get("civilite"),
             lastname=self.valid_user.get("nom"),
@@ -142,9 +141,7 @@ class AuthenticateTest:
         "uai": "EAU123",
     }
 
-    def _create_adage_valid_token_from_expiration_date(
-        self, expiration_date: Optional[datetime.datetime]
-    ) -> ByteString:
+    def _create_adage_valid_token_from_expiration_date(self, expiration_date: Optional[datetime.datetime]) -> bytes:
         return create_adage_jwt_fake_valid_token(
             civility=self.valid_user.get("civilite"),
             lastname=self.valid_user.get("nom"),
@@ -157,7 +154,7 @@ class AuthenticateTest:
         )
 
     @staticmethod
-    def _create_adage_invalid_token() -> ByteString:
+    def _create_adage_invalid_token() -> bytes:
         return create_adage_jwt_fake_invalid_token(
             civility="M.", lastname="TESTABLE", firstname="Pascal", email="pascal.testable@example.com", uai="321UAE"
         )

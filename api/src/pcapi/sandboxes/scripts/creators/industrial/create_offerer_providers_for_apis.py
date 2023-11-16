@@ -1,7 +1,6 @@
 import datetime
 import logging
 import random
-import typing
 
 from pcapi import settings
 from pcapi.core.bookings import factories as bookings_factories
@@ -26,7 +25,7 @@ def create_offerer_provider(
     enabledForPro: bool = True,
     provider_name: str | None = None,
     with_charlie_url: bool = False,
-) -> typing.Tuple[offerers_models.Offerer, providers_models.Provider]:
+) -> tuple[offerers_models.Offerer, providers_models.Provider]:
     offerer = offerers_factories.OffererFactory(name=name)
     if provider_name is None:
         provider_name = name

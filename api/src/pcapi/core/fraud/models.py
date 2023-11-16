@@ -425,18 +425,18 @@ class UserProfilingFraudData(pydantic_v1.BaseModel):
     digital_id_confidence_rating: str
     digital_id_result: str
     digital_id_trust_score_rating: str
-    digital_id_trust_score_reason_code: typing.List[str]
+    digital_id_trust_score_reason_code: list[str]
     digital_id_trust_score: float
     digital_id: str
     event_datetime: datetime.datetime
     policy_score: int
-    reason_code: typing.List[str]
+    reason_code: list[str]
     request_id: str
     risk_rating: UserProfilingRiskRating
     session_id: str
     summary_risk_score: int
     tmx_risk_rating: str
-    tmx_summary_reason_code: typing.List[str] | None
+    tmx_summary_reason_code: list[str] | None
     unknown_session: str | None
 
 

@@ -18,7 +18,7 @@ class PCForm(FlaskForm):
 
 
 def choices_from_enum(
-    enum_cls: typing.Type[enum.Enum],
+    enum_cls: type[enum.Enum],
     formatter: typing.Callable[[typing.Any], str] | None = None,
     exclude_opts: typing.Iterable[enum.Enum] = (),
 ) -> list[tuple]:

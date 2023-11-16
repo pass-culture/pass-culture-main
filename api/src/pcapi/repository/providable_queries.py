@@ -1,5 +1,4 @@
 import datetime
-import typing
 
 import pcapi.core.offers.models as offers_models
 from pcapi.models import Base
@@ -41,9 +40,7 @@ def _extract_dict_values_from_chunk(matching_tuples_in_chunk: list[tuple[str, Mo
 
 
 def get_existing_object(
-    model_type: typing.Type[offers_models.Product]
-    | typing.Type[offers_models.Offer]
-    | typing.Type[offers_models.Stock],
+    model_type: type[offers_models.Product | offers_models.Offer | offers_models.Stock],
     id_at_providers: str,
 ) -> offers_models.Product | offers_models.Offer | offers_models.Stock | None:
     # exception to the ProvidableMixin because Offer no longer extends this class

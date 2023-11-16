@@ -2,7 +2,6 @@ import datetime
 import json
 import logging
 import time
-import typing
 from unittest import mock
 from unittest.mock import patch
 import uuid
@@ -1475,7 +1474,7 @@ class UbbleWebhookTest:
 
     def _init_decision_test(
         self,
-    ) -> typing.Tuple[users_models.User, fraud_models.BeneficiaryFraudCheck, ubble_routes.WebhookRequest]:
+    ) -> tuple[users_models.User, fraud_models.BeneficiaryFraudCheck, ubble_routes.WebhookRequest]:
         birth_date = datetime.datetime.utcnow().date() - relativedelta.relativedelta(years=18, months=6)
         user = users_factories.UserFactory(dateOfBirth=datetime.datetime.combine(birth_date, datetime.time(0, 0)))
         identification_id = str(uuid.uuid4())

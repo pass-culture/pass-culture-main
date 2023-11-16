@@ -4,7 +4,6 @@
 
 from datetime import datetime
 import re
-import typing
 
 import sqlalchemy as sa
 
@@ -37,7 +36,7 @@ def _apply_query_filters(
     dms_adage_status: list[GraphQLApplicationStates] | None,
     from_datetime: datetime | None,
     to_datetime: datetime | None,
-    cls: typing.Type[offerers_models.Offerer | offerers_models.UserOfferer],
+    cls: type[offerers_models.Offerer | offerers_models.UserOfferer],
     offerer_id_column: sa.orm.InstrumentedAttribute,
 ) -> sa.orm.Query:
     is_venue_table_joined = False

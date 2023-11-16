@@ -1,9 +1,8 @@
 from importlib import import_module
-from typing import Type
 
 
 # Taken from django.utils.module_loading
-def import_string(dotted_path: str | None) -> Type:
+def import_string(dotted_path: str | None) -> type:
     """
     Import a dotted module path and return the attribute/class designated by the
     last name in the path. Raise ImportError if the import failed.

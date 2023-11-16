@@ -78,11 +78,11 @@ class GetOffererVenuesResponse(serialization.ConfiguredBaseModel):
     offerer: OffererResponse = pydantic_v1.Field(
         ..., description="Offerer to which the venues belong. Entity linked to the api key used."
     )
-    venues: typing.List[VenueResponse]
+    venues: list[VenueResponse]
 
 
 class GetOfferersVenuesResponse(serialization.BaseModel):
-    __root__: typing.List[GetOffererVenuesResponse]
+    __root__: list[GetOffererVenuesResponse]
 
     class Config:
         json_encoders = {datetime.datetime: date_utils.format_into_utc_date}

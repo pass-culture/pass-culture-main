@@ -1,5 +1,4 @@
 from datetime import datetime
-import typing
 
 import pydantic.v1 as pydantic_v1
 from pydantic.v1 import EmailStr
@@ -177,7 +176,7 @@ class SharedCurrentUserResponseModel(BaseModel):
     dateOfBirth: datetime | None
     departementCode: str | None
     email: str
-    externalIds: typing.Dict | None
+    externalIds: dict | None
     firstName: str | None
     hasPhysicalVenues: bool | None
     hasSeenProTutorials: bool | None
@@ -189,7 +188,7 @@ class SharedCurrentUserResponseModel(BaseModel):
     lastConnectionDate: datetime | None
     lastName: str | None
     needsToFillCulturalSurvey: bool | None
-    notificationSubscriptions: typing.Dict | None
+    notificationSubscriptions: dict | None
     phoneNumber: str | None
     phoneValidationStatus: users_models.PhoneValidationStatusType | None
     postalCode: str | None

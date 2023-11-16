@@ -50,7 +50,7 @@ class CollectiveOfferFactory(BaseFactory):
     @classmethod
     def _create(
         cls,
-        model_class: typing.Type[models.CollectiveOffer],
+        model_class: type[models.CollectiveOffer],
         *args: typing.Any,
         **kwargs: typing.Any,
     ) -> models.CollectiveOffer:
@@ -109,7 +109,7 @@ class CollectiveOfferTemplateFactory(BaseFactory):
     @classmethod
     def _create(
         cls,
-        model_class: typing.Type[models.CollectiveOfferTemplate],
+        model_class: type[models.CollectiveOfferTemplate],
         *args: typing.Any,
         **kwargs: typing.Any,
     ) -> models.CollectiveOfferTemplate:

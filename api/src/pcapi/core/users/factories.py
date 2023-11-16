@@ -56,7 +56,7 @@ class BaseUserFactory(BaseFactory):
     @classmethod
     def _create(
         cls,
-        model_class: typing.Type[models.User],
+        model_class: type[models.User],
         *args: typing.Any,
         **kwargs: typing.Any,
     ) -> models.User:
@@ -69,7 +69,7 @@ class BaseUserFactory(BaseFactory):
     @classmethod
     def _build(
         cls,
-        model_class: typing.Type[models.User],
+        model_class: type[models.User],
         *args: typing.Any,
         **kwargs: typing.Any,
     ) -> models.User:
@@ -391,7 +391,7 @@ class UserFactory(BaseFactory):
     @classmethod
     def _create(
         cls,
-        model_class: typing.Type[models.User],
+        model_class: type[models.User],
         *args: typing.Any,
         **kwargs: typing.Any,
     ) -> models.User:
@@ -404,7 +404,7 @@ class UserFactory(BaseFactory):
     @classmethod
     def _build(
         cls,
-        model_class: typing.Type[models.User],
+        model_class: type[models.User],
         *args: typing.Any,
         **kwargs: typing.Any,
     ) -> models.User:
@@ -455,7 +455,7 @@ class AdminFactory(BaseFactory):
     @classmethod
     def _create(
         cls,
-        model_class: typing.Type[models.User],
+        model_class: type[models.User],
         *args: typing.Any,
         **kwargs: typing.Any,
     ) -> models.User:
@@ -468,7 +468,7 @@ class AdminFactory(BaseFactory):
     @classmethod
     def _build(
         cls,
-        model_class: typing.Type[models.User],
+        model_class: type[models.User],
         *args: typing.Any,
         **kwargs: typing.Any,
     ) -> models.User:
@@ -502,7 +502,7 @@ class BeneficiaryGrant18Factory(BaseFactory):
     @classmethod
     def _create(
         cls,
-        model_class: typing.Type[models.User],
+        model_class: type[models.User],
         *args: typing.Any,
         **kwargs: typing.Any,
     ) -> models.User:
@@ -517,7 +517,7 @@ class BeneficiaryGrant18Factory(BaseFactory):
     @classmethod
     def _build(
         cls,
-        model_class: typing.Type[models.User],
+        model_class: type[models.User],
         *args: typing.Any,
         **kwargs: typing.Any,
     ) -> models.User:
@@ -830,7 +830,7 @@ class ProFactory(BaseFactory):
     @classmethod
     def _create(
         cls,
-        model_class: typing.Type[models.User],
+        model_class: type[models.User],
         *args: typing.Any,
         **kwargs: typing.Any,
     ) -> models.User:
@@ -843,7 +843,7 @@ class ProFactory(BaseFactory):
     @classmethod
     def _build(
         cls,
-        model_class: typing.Type[models.User],
+        model_class: type[models.User],
         *args: typing.Any,
         **kwargs: typing.Any,
     ) -> models.User:
@@ -879,7 +879,7 @@ class UserSessionFactory(BaseFactory):
     @classmethod
     def _create(
         cls,
-        model_class: typing.Type[models.UserSession],
+        model_class: type[models.UserSession],
         *args: typing.Any,
         **kwargs: typing.Any,
     ) -> models.UserSession:
@@ -911,7 +911,7 @@ class DepositGrantFactory(BaseFactory):
     @classmethod
     def _create(
         cls,
-        model_class: typing.Type[finance_models.Deposit],
+        model_class: type[finance_models.Deposit],
         *args: typing.Any,
         **kwargs: typing.Any,
     ) -> finance_models.Deposit:

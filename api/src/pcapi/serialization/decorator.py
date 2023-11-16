@@ -4,7 +4,6 @@ import logging
 from typing import Any
 from typing import Callable
 from typing import Sequence
-from typing import Type
 
 from flask import Response
 from flask import make_response
@@ -61,9 +60,9 @@ def _make_string_response(content: BaseModel | None, status_code: int, headers: 
 # - form : the form data
 # You should type these arguments as pydantic models.
 def spectree_serialize(
-    headers: Type[BaseModel] | None = None,
-    cookies: Type[BaseModel] | None = None,
-    response_model: Type[BaseModel] | None = None,
+    headers: type[BaseModel] | None = None,
+    cookies: type[BaseModel] | None = None,
+    response_model: type[BaseModel] | None = None,
     tags: Sequence = (),
     before: Callable | None = None,
     after: Callable | None = None,

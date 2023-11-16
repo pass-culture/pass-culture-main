@@ -1,6 +1,5 @@
 from datetime import datetime
 from datetime import timedelta
-from typing import ByteString
 from typing import Optional
 
 import jwt
@@ -23,7 +22,7 @@ def create_adage_jwt_default_fake_valid_token(
     uai: Optional[str],
     lat: float | None = None,
     lon: float | None = None,
-) -> ByteString:
+) -> bytes:
     return create_adage_jwt_fake_valid_token(
         civility=civility,
         lastname=lastname,
@@ -45,7 +44,7 @@ def create_adage_jwt_fake_valid_token(
     expiration_date: datetime,
     lat: float | None = None,
     lon: float | None = None,
-) -> ByteString:
+) -> bytes:
     with open(VALID_RSA_PRIVATE_KEY_PATH, "rb") as reader:
         authenticated_informations = {
             "civilite": civility,
@@ -74,7 +73,7 @@ def create_adage_valid_token_with_email(
     uai: str = "EAU123",
     lat: float | None = None,
     lon: float | None = None,
-) -> ByteString:
+) -> bytes:
     return create_adage_jwt_fake_valid_token(
         civility=civility,
         lastname=lastname,
@@ -95,7 +94,7 @@ def create_adage_jwt_fake_invalid_token(
     uai: str,
     lat: float | None = None,
     lon: float | None = None,
-) -> ByteString:
+) -> bytes:
     now = datetime.utcnow()
     with open(INVALID_RSA_PRIVATE_KEY_PATH, "rb") as reader:
         return jwt.encode(

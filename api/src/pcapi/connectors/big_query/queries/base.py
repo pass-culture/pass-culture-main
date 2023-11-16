@@ -11,7 +11,7 @@ RowIterator = typing.Generator[Row, None, None]
 
 
 class MalformedRow(Exception):
-    def __init__(self, msg: str, index: int, model: typing.Type[pydantic_v1.BaseModel], raw_query: str):
+    def __init__(self, msg: str, index: int, model: type[pydantic_v1.BaseModel], raw_query: str):
         self.index = index
         self.model = model
         self.raw_query = raw_query
@@ -38,5 +38,5 @@ class BaseQuery:
         raise NotImplementedError()
 
     @property
-    def model(self) -> typing.Type[pydantic_v1.BaseModel]:
+    def model(self) -> type[pydantic_v1.BaseModel]:
         raise NotImplementedError()

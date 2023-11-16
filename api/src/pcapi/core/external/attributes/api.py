@@ -3,7 +3,6 @@ from collections import defaultdict
 from datetime import datetime
 from decimal import Decimal
 from operator import attrgetter
-from typing import List
 from typing import Literal
 
 from sqlalchemy import or_
@@ -289,8 +288,8 @@ def get_user_attributes(user: users_models.User) -> models.UserAttributes:
     is_pro_user: bool = user.has_pro_role or user.has_non_attached_pro_role
 
     if is_pro_user:
-        user_bookings: List[bookings_models.Booking] = []
-        favorites: List[users_models.Favorite] = []
+        user_bookings: list[bookings_models.Booking] = []
+        favorites: list[users_models.Favorite] = []
     else:
         user_bookings = get_user_bookings(user) if not is_pro_user else []
         favorites = (
@@ -458,7 +457,7 @@ def get_booking_attributes_2022(
     return amount_spent, first_booked_offer, last_booked_offer
 
 
-def get_user_bookings(user: users_models.User) -> List[bookings_models.Booking]:
+def get_user_bookings(user: users_models.User) -> list[bookings_models.Booking]:
     return (
         bookings_models.Booking.query.options(
             joinedload(bookings_models.Booking.venue).load_only(offerers_models.Venue.isVirtual)

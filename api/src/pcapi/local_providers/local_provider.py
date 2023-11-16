@@ -51,9 +51,7 @@ class LocalProvider(Iterator):
 
     def create_providable_info(
         self,
-        pc_object: typing.Type[offers_models.Product]
-        | typing.Type[offers_models.Offer]
-        | typing.Type[offers_models.Stock],
+        pc_object: type[offers_models.Product | offers_models.Offer | offers_models.Stock],
         id_at_providers: str,
         date_modified_at_provider: datetime,
         new_id_at_provider: str,
