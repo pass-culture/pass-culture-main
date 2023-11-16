@@ -1,5 +1,4 @@
 from dataclasses import dataclass
-from typing import Optional
 
 import pcapi.core.bookings.models as bookings_models
 import pcapi.core.users.models as users_models
@@ -8,7 +7,7 @@ import pcapi.core.users.models as users_models
 @dataclass
 class Ticket:
     barcode: str
-    seat_number: Optional[str]
+    seat_number: str | None
     additional_information: dict | None = None
 
 

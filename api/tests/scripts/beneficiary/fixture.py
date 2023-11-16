@@ -2,7 +2,6 @@ import datetime
 import random
 import string
 from typing import Iterable
-from typing import Optional
 
 import babel.dates
 from dateutil.relativedelta import relativedelta
@@ -29,23 +28,23 @@ def make_graphql_application(  # pylint: disable=dangerous-default-value
     application_number: int,
     state: str,
     activity: str = "Étudiant",
-    birth_date: Optional[datetime.datetime] = AGE18_ELIGIBLE_BIRTH_DATE,
+    birth_date: datetime.datetime | None = AGE18_ELIGIBLE_BIRTH_DATE,
     civility: str = "Mme",
-    city: Optional[str] = None,
+    city: str | None = None,
     construction_datetime: str = "2020-05-13T09:09:46+02:00",
     last_modification_date: str = "2020-05-13T10:41:23+02:00",
-    email: Optional[str] = "young.individual@example.com",
+    email: str | None = "young.individual@example.com",
     first_name: str = "John",
     full_graphql_response: bool = False,
     has_next_page: bool = False,
-    id_piece_number: Optional[str] = "123123123",
+    id_piece_number: str | None = "123123123",
     last_name: str = "Doe",
     postal_code: int = 67200,
-    processed_datetime: Optional[str] = "2020-05-13T10:41:21+02:00",
-    messages: Optional[list] = None,
-    application_techid: Optional[str] = None,
-    procedure_number: Optional[int] = 8888,
-    labels: Optional[dict] = {},
+    processed_datetime: str | None = "2020-05-13T10:41:21+02:00",
+    messages: list | None = None,
+    application_techid: str | None = None,
+    procedure_number: int | None = 8888,
+    labels: dict | None = {},
 ) -> dict:
     if messages is None:
         messages = DEFAULT_MESSAGES
