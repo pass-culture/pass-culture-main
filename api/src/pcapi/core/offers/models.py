@@ -4,8 +4,6 @@ import decimal
 import enum
 import logging
 import typing
-from typing import TYPE_CHECKING
-from typing import Union
 
 from flask_sqlalchemy import BaseQuery
 import sqlalchemy as sa
@@ -40,7 +38,7 @@ from pcapi.models.soft_deletable_mixin import SoftDeletableMixin
 
 logger = logging.getLogger(__name__)
 
-if TYPE_CHECKING:
+if typing.TYPE_CHECKING:
     from pcapi.core.bookings.models import Booking
     from pcapi.core.criteria.models import Criterion
     from pcapi.core.educational.models import CollectiveOffer
@@ -230,7 +228,7 @@ class Stock(PcObject, Base, Model, ProvidableMixin, SoftDeletableMixin):
 
     # TODO(fseguin, 2021-03-25): replace unlimited by None (also in the front-end)
     @hybrid_property
-    def remainingQuantity(self) -> Union[int, str]:
+    def remainingQuantity(self) -> int | str:
         return "unlimited" if self.quantity is None else self.quantity - self.dnBookedQuantity
 
     @remainingQuantity.expression  # type: ignore [no-redef]
