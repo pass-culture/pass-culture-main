@@ -43,7 +43,13 @@
                            data-id="{{ incident.id }}" />
                   </td>
                   <td>{{ links.build_finance_incident_to_details_link(incident) }}</td>
-                  <td>{{ incident.status | format_finance_incident_status | safe }}</td>
+                  <td>
+                    {% if incident.isClosed %}
+                      <span class="badge text-bg-light">Terminé</span>
+                    {% else %}
+                      {{ incident.status | format_finance_incident_status | safe }}
+                    {% endif %}
+                  </td>
                   <td>{{ incident.kind | format_finance_incident_type | safe }}</td>
                   <td>{{ "Collective" if incident.relates_to_collective_bookings else "Individuelle" }}</td>
                   <td>{{ incident.booking_finance_incidents | length }}</td>
