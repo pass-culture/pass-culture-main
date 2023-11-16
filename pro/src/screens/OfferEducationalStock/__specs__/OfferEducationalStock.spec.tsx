@@ -103,10 +103,10 @@ describe('OfferEducationalStock', () => {
       renderWithProviders(<OfferEducationalStock {...testProps} />)
 
       const descriptionInput = screen.getByPlaceholderText(
-        'Détaillez ici des informations complémentaires'
+        'Détaillez ici des informations complémentaires.'
       )
       const priceInput = screen.getByLabelText('Prix global TTC')
-      const placeInput = screen.getByLabelText('Nombre de places')
+      const placeInput = screen.getByLabelText('Nombre de participants')
 
       expect(descriptionInput).not.toBeDisabled()
       expect(priceInput).not.toBeDisabled()
@@ -135,10 +135,10 @@ describe('OfferEducationalStock', () => {
       renderWithProviders(<OfferEducationalStock {...testProps} />)
 
       const descriptionInput = screen.getByPlaceholderText(
-        'Détaillez ici des informations complémentaires'
+        'Détaillez ici des informations complémentaires.'
       )
       const priceInput = screen.getByLabelText('Prix global TTC')
-      const placeInput = screen.getByLabelText('Nombre de places')
+      const placeInput = screen.getByLabelText('Nombre de participants')
 
       expect(descriptionInput).toBeDisabled()
       expect(priceInput).toBeDisabled()
