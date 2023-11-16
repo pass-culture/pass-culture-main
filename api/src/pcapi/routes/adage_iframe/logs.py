@@ -273,3 +273,24 @@ def log_tracking_map(
         user_email=authenticated_information.email,
     )
     return
+
+
+@blueprint.adage_iframe.route("/logs/playlist", methods=["POST"])
+@spectree_serialize(api=blueprint.api, on_error_statuses=[404], on_success_status=204)
+@adage_jwt_required
+def log_has_seen_all_playlist(
+    authenticated_information: AuthenticatedInformation,
+    body: serialization.AdageBaseModel,
+) -> None:
+    institution = find_educational_institution_by_uai_code(authenticated_information.uai)  # type: ignore [arg-type]
+    educational_utils.log_information_for_data_purpose(
+        event_name="HasSeenAllPlaylist",
+        extra_data={
+            "from": body.iframeFrom,
+            "queryId": body.queryId,
+        },
+        uai=authenticated_information.uai,
+        user_role=AdageFrontRoles.REDACTOR if institution else AdageFrontRoles.READONLY,
+        user_email=authenticated_information.email,
+    )
+    return
