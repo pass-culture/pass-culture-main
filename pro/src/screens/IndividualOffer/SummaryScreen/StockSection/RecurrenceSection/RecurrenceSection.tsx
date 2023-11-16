@@ -14,17 +14,18 @@ const RecurrenceSection = ({
   stocksStats,
   departementCode,
 }: RecurrenceSectionProps) => {
-  if (!stocksStats?.stockCount) {
+  if (!stocksStats?.stockCount && stocksStats?.stockCount !== 0) {
     return null
   }
 
   function formatCapacity(capacity: number): string {
-    return capacity === 1 ? `${capacity} place` : `${capacity} places`
+    return capacity <= 1 ? `${capacity} place` : `${capacity} places`
   }
 
-  const totalCapacity = stocksStats.remainingQuantity
-    ? formatCapacity(stocksStats.remainingQuantity)
-    : 'Illimitée'
+  const totalCapacity =
+    stocksStats.remainingQuantity || stocksStats.remainingQuantity === 0
+      ? formatCapacity(stocksStats.remainingQuantity)
+      : 'Illimitée'
 
   let periodText = ''
   const { oldestStock, newestStock } = stocksStats
