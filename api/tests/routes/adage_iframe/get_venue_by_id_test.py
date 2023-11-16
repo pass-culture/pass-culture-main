@@ -88,15 +88,6 @@ class VenueByIdTest:
             "departementCode": "75",
         }
 
-    def _create_adage_valid_token(self) -> bytes:
-        return create_adage_jwt_default_fake_valid_token(
-            civility="M.",
-            lastname="POINTÉ",
-            firstname="Vincent",
-            email="vincent.pointé@example.com",
-            uai=None,
-        )
-
     def test_return_error_if_venue_does_not_exist(self, client):
         # Given
         offerers_factories.VenueFactory(isPermanent=True)
