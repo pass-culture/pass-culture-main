@@ -1,11 +1,13 @@
 import React, { useEffect, useState } from 'react'
-import { useSearchParams } from 'react-router-dom'
+import { useSearchParams, useLocation } from 'react-router-dom'
 
 import { api } from 'apiClient/api'
 import { GetOffererBankAccountsResponseModel } from 'apiClient/v1'
 import ReimbursementBankAccount from 'components/ReimbursementBankAccount/ReimbursementBankAccount'
 import { useReimbursementContext } from 'context/ReimbursementContext/ReimbursementContext'
+import { BankAccountEvents } from 'core/FirebaseEvents/constants'
 import { SelectOption } from 'custom_types/form'
+import useAnalytics from 'hooks/useAnalytics'
 import useNotification from 'hooks/useNotification'
 import fullLinkIcon from 'icons/full-link.svg'
 import fullMoreIcon from 'icons/full-more.svg'
@@ -20,6 +22,8 @@ import styles from './BankInformations.module.scss'
 
 const BankInformations = (): JSX.Element => {
   const notify = useNotification()
+  const { logEvent } = useAnalytics()
+  const location = useLocation()
 
   const [showAddBankInformationsDialog, setShowAddBankInformationsDialog] =
     useState(false)
@@ -171,6 +175,10 @@ const BankInformations = (): JSX.Element => {
         }
         onClick={() => {
           setShowAddBankInformationsDialog(true)
+          logEvent?.(BankAccountEvents.CLICKED_ADD_BANK_ACCOUNT, {
+            from: location.pathname,
+            offererId: selectedOfferer?.id,
+          })
         }}
       >
         Ajouter un compte bancaire

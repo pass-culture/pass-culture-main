@@ -9,12 +9,15 @@ import {
   ReimbursementContext,
   ReimbursementContextValues,
 } from 'context/ReimbursementContext/ReimbursementContext'
+import { BankAccountEvents } from 'core/FirebaseEvents/constants'
+import * as useAnalytics from 'hooks/useAnalytics'
 import BankInformations from 'pages/Reimbursements/BankInformations/BankInformations'
 import { defaultGetOffererResponseModel } from 'utils/apiFactories'
 import { renderWithProviders } from 'utils/renderWithProviders'
 
 const renderBankInformations = (
   customContext: Partial<ReimbursementContextValues> = {},
+  storeOverrides: any,
   initialRouterEntriesOverrides = '/remboursements/informations-bancaires'
 ) => {
   const contextValues: ReimbursementContextValues = {
@@ -33,10 +36,13 @@ const renderBankInformations = (
       <Notification />
     </>,
     {
+      storeOverrides,
       initialRouterEntries: [initialRouterEntriesOverrides],
     }
   )
 }
+
+const mockLogEvent = vi.fn()
 
 describe('BankInformations page', () => {
   let store: any
@@ -190,6 +196,7 @@ describe('BankInformations page', () => {
   it('should render select input with correct offerer if url has offerer parameter', async () => {
     renderBankInformations(
       customContext,
+      store,
       '/remboursements/informations-bancaires?structure=2'
     )
     await waitForElementToBeRemoved(() => screen.queryByTestId('spinner'))
@@ -245,6 +252,7 @@ describe('BankInformations page', () => {
     })
     renderBankInformations(
       customContext,
+      store,
       '/remboursements/informations-bancaires?structure=2'
     )
     await waitForElementToBeRemoved(() => screen.queryByTestId('spinner'))
@@ -279,5 +287,22 @@ describe('BankInformations page', () => {
         'Vous allez être redirigé vers le site demarches-simplifiees.fr'
       )
     ).not.toBeInTheDocument()
+  })
+
+  it('should track add bank account button', async () => {
+    vi.spyOn(useAnalytics, 'default').mockImplementation(() => ({
+      logEvent: mockLogEvent,
+    }))
+    renderBankInformations(customContext, store)
+    await waitForElementToBeRemoved(() => screen.queryByTestId('spinner'))
+
+    await userEvent.click(screen.getByText('Ajouter un compte bancaire'))
+    expect(mockLogEvent).toHaveBeenCalledWith(
+      BankAccountEvents.CLICKED_ADD_BANK_ACCOUNT,
+      {
+        from: '/remboursements/informations-bancaires',
+        offererId: 0,
+      }
+    )
   })
 })
