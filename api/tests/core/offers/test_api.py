@@ -1683,6 +1683,62 @@ class ResolveOfferValidationRuleTest:
         assert models.ValidationRuleOfferLink.query.filter_by(ruleId=offer_price_rule.id).count() == 1
         assert models.ValidationRuleOfferLink.query.count() == 3
 
+    @pytest.mark.parametrize(
+        "formats, excluded_formats, expected_status",
+        [
+            (
+                [subcategories.EacFormat.VISITE_LIBRE],
+                [subcategories.EacFormat.CONCERT, subcategories.EacFormat.REPRESENTATION],
+                models.OfferValidationStatus.PENDING,
+            ),
+            (
+                [
+                    subcategories.EacFormat.CONCERT,
+                    subcategories.EacFormat.VISITE_LIBRE,
+                    subcategories.EacFormat.REPRESENTATION,
+                ],
+                [subcategories.EacFormat.CONCERT, subcategories.EacFormat.VISITE_LIBRE],
+                models.OfferValidationStatus.APPROVED,
+            ),
+        ],
+    )
+    def test_offer_validation_with_not_intersects(self, formats, excluded_formats, expected_status):
+        collective_offer = educational_factories.CollectiveOfferFactory(formats=formats)
+        factories.OfferValidationSubRuleFactory(
+            model=models.OfferValidationModel.COLLECTIVE_OFFER,
+            attribute=models.OfferValidationAttribute.FORMATS,
+            operator=models.OfferValidationRuleOperator.NOT_INTERSECTS,
+            comparated={"comparated": [fmt.name for fmt in excluded_formats]},
+        )
+
+        assert api.set_offer_status_based_on_fraud_criteria(collective_offer) == expected_status
+
+    @pytest.mark.parametrize(
+        "formats, excluded_formats, expected_status",
+        [
+            (
+                [subcategories.EacFormat.VISITE_LIBRE],
+                [subcategories.EacFormat.CONCERT],
+                models.OfferValidationStatus.APPROVED,
+            ),
+            (
+                [subcategories.EacFormat.CONCERT, subcategories.EacFormat.VISITE_LIBRE],
+                [subcategories.EacFormat.CONCERT],
+                models.OfferValidationStatus.PENDING,
+            ),
+        ],
+    )
+    def test_offer_validation_with_intersects(self, formats, excluded_formats, expected_status):
+        collective_offer = educational_factories.CollectiveOfferFactory(formats=formats)
+        factories.OfferValidationSubRuleFactory(
+            model=models.OfferValidationModel.COLLECTIVE_OFFER,
+            attribute=models.OfferValidationAttribute.FORMATS,
+            operator=models.OfferValidationRuleOperator.INTERSECTS,
+            comparated={"comparated": [fmt.name for fmt in excluded_formats]},
+        )
+
+        assert api.set_offer_status_based_on_fraud_criteria(collective_offer) == expected_status
+
 
 @pytest.mark.usefixtures("db_session")
 class LoadProductByEan:

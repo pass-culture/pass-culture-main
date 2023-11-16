@@ -65,6 +65,8 @@ OFFER_VALIDATION_SUB_RULE_FORM_FIELD_CONFIGURATION = {
     "CATEGORY_OFFER": {"field": "categories", "operator": ["IN", "NOT_IN"]},
     "CATEGORY_COLLECTIVE_OFFER": {"field": "categories", "operator": ["IN", "NOT_IN"]},
     "CATEGORY_COLLECTIVE_OFFER_TEMPLATE": {"field": "categories", "operator": ["IN", "NOT_IN"]},
+    "FORMATS_COLLECTIVE_OFFER": {"field": "formats", "operator": ["INTERSECTS", "NOT_INTERSECTS"]},
+    "FORMATS_COLLECTIVE_OFFER_TEMPLATE": {"field": "formats", "operator": ["INTERSECTS", "NOT_INTERSECTS"]},
     "SHOW_SUB_TYPE_OFFER": {"field": "show_sub_type", "operator": ["IN", "NOT_IN"]},
     "ID_OFFERER": {"field": "offerer", "operator": ["IN", "NOT_IN"]},
 }
@@ -152,6 +154,9 @@ class OfferValidationSubRuleForm(FlaskForm):
         "Sous-type de spectacle",
         choices=[(str(s), SHOW_SUB_TYPES_LABEL_BY_CODE[s]) for s in SHOW_SUB_TYPES_LABEL_BY_CODE],
         field_list_compatibility=True,
+    )
+    formats = fields.PCSelectMultipleField(
+        "Formats", choices=utils.choices_from_enum(subcategories_v2.EacFormat), field_list_compatibility=True
     )
 
     form_field_configuration = OFFER_VALIDATION_SUB_RULE_FORM_FIELD_CONFIGURATION
@@ -245,6 +250,14 @@ class OfferValidationSubRuleForm(FlaskForm):
         if operator.data not in self.form_field_configuration.get(self.sub_rule_type.data, {}).get("operator", []):
             raise wtforms.validators.ValidationError("L'opérateur doit être conforme au type de sous-règle choisi")
         return operator
+
+    def validate_formats(self, formats_field: fields.PCSelectMultipleField) -> fields.PCSelectMultipleField:
+        formats_field.data = (
+            formats_field.data
+            if self.form_field_configuration.get(self.sub_rule_type.data, {}).get("field") == "formats"
+            else []
+        )
+        return formats_field
 
 
 class CreateOfferValidationRuleForm(FlaskForm):
