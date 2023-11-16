@@ -113,7 +113,7 @@ describe('TimePicker', () => {
     })
 
     const priceInput = screen.getByLabelText('Prix global TTC')
-    const placeInput = screen.getByLabelText('Nombre de places')
+    const placeInput = screen.getByLabelText('Nombre de participants')
 
     expect(priceInput).toBeDisabled()
     expect(placeInput).toBeDisabled()
