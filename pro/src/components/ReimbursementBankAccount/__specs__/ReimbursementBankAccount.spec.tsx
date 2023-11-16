@@ -1,12 +1,45 @@
-import { render, screen } from '@testing-library/react'
+import { screen } from '@testing-library/react'
+import { userEvent } from '@testing-library/user-event'
 import React from 'react'
+import { Route, Routes } from 'react-router-dom'
 
 import {
   BankAccountApplicationStatus,
   BankAccountResponseModel,
 } from 'apiClient/v1'
+import { BankAccountEvents } from 'core/FirebaseEvents/constants'
+import * as useAnalytics from 'hooks/useAnalytics'
+import { renderWithProviders } from 'utils/renderWithProviders'
 
 import ReimbursementBankAccount from '../ReimbursementBankAccount'
+
+const mockLogEvent = vi.fn()
+
+const renderReimbursementBankAccount = (
+  bankAccount: BankAccountResponseModel,
+  venuesNotLinkedLength = 0,
+  bankAccountsNumber = 1,
+  offererId = 0
+) =>
+  renderWithProviders(
+    <Routes>
+      <Route
+        path="/remboursements/informations-bancaires"
+        element={
+          <ReimbursementBankAccount
+            bankAccount={bankAccount}
+            venuesNotLinkedLength={venuesNotLinkedLength}
+            bankAccountsNumber={bankAccountsNumber}
+            offererId={offererId}
+          />
+        }
+      />
+    </Routes>,
+    {
+      storeOverrides: {},
+      initialRouterEntries: ['/remboursements/informations-bancaires'],
+    }
+  )
 
 describe('ReimbursementBankAccount', () => {
   let bankAccount: BankAccountResponseModel
@@ -28,13 +61,7 @@ describe('ReimbursementBankAccount', () => {
 
   it('should render with pending bank account if status is in draft', () => {
     bankAccount.status = BankAccountApplicationStatus.EN_CONSTRUCTION
-    render(
-      <ReimbursementBankAccount
-        bankAccount={bankAccount}
-        venuesNotLinkedLength={0}
-        bankAccountsNumber={1}
-      />
-    )
+    renderReimbursementBankAccount(bankAccount)
 
     expect(screen.getByText('Bank account label')).toBeInTheDocument()
     expect(screen.getByText('IBAN : **** 0637')).toBeInTheDocument()
@@ -52,13 +79,7 @@ describe('ReimbursementBankAccount', () => {
 
   it('should render with pending bank account if status is on going', () => {
     bankAccount.status = BankAccountApplicationStatus.EN_INSTRUCTION
-    render(
-      <ReimbursementBankAccount
-        bankAccount={bankAccount}
-        venuesNotLinkedLength={0}
-        bankAccountsNumber={1}
-      />
-    )
+    renderReimbursementBankAccount(bankAccount)
 
     expect(screen.getByText('Bank account label')).toBeInTheDocument()
     expect(screen.getByText('IBAN : **** 0637')).toBeInTheDocument()
@@ -76,13 +97,7 @@ describe('ReimbursementBankAccount', () => {
 
   it('should not render venues linked to bank account with only one bank account', () => {
     bankAccount.linkedVenues = []
-    render(
-      <ReimbursementBankAccount
-        bankAccount={bankAccount}
-        venuesNotLinkedLength={1}
-        bankAccountsNumber={1}
-      />
-    )
+    renderReimbursementBankAccount(bankAccount, 1)
 
     expect(
       screen.queryByText(
@@ -99,19 +114,13 @@ describe('ReimbursementBankAccount', () => {
     ).toBeInTheDocument()
 
     expect(
-      screen.getByRole('button', { name: 'Rattacher' })
+      screen.getByRole('button', { name: 'Rattacher un lieu' })
     ).toBeInTheDocument()
   })
 
   it('should render without venues linked to bank account and with all venues linked to another account', () => {
     bankAccount.linkedVenues = []
-    render(
-      <ReimbursementBankAccount
-        bankAccount={bankAccount}
-        venuesNotLinkedLength={0}
-        bankAccountsNumber={2}
-      />
-    )
+    renderReimbursementBankAccount(bankAccount, 0, 2)
 
     expect(
       screen.getByText(
@@ -121,13 +130,7 @@ describe('ReimbursementBankAccount', () => {
   })
 
   it('should render with one venue not linked to bank account', () => {
-    render(
-      <ReimbursementBankAccount
-        bankAccount={bankAccount}
-        venuesNotLinkedLength={1}
-        bankAccountsNumber={2}
-      />
-    )
+    renderReimbursementBankAccount(bankAccount, 1, 2)
 
     expect(
       screen.getByText("Un de vos lieux n'est pas rattaché.")
@@ -142,13 +145,7 @@ describe('ReimbursementBankAccount', () => {
   })
 
   it('should render with several venues not linked to bank account', () => {
-    render(
-      <ReimbursementBankAccount
-        bankAccount={bankAccount}
-        venuesNotLinkedLength={2}
-        bankAccountsNumber={1}
-      />
-    )
+    renderReimbursementBankAccount(bankAccount, 2, 1)
 
     expect(
       screen.queryByText("Aucun lieu n'est rattaché à ce compte bancaire.")
@@ -168,13 +165,7 @@ describe('ReimbursementBankAccount', () => {
   })
 
   it('should render with several venues not linked to bank account', () => {
-    render(
-      <ReimbursementBankAccount
-        bankAccount={bankAccount}
-        venuesNotLinkedLength={2}
-        bankAccountsNumber={1}
-      />
-    )
+    renderReimbursementBankAccount(bankAccount, 2, 1)
 
     expect(
       screen.getByText('Certains de vos lieux ne sont pas rattachés')
@@ -183,13 +174,7 @@ describe('ReimbursementBankAccount', () => {
 
   it('should display error icon if one or more venues are not linked to an account', () => {
     bankAccount.linkedVenues = []
-    render(
-      <ReimbursementBankAccount
-        bankAccount={bankAccount}
-        venuesNotLinkedLength={2}
-        bankAccountsNumber={1}
-      />
-    )
+    renderReimbursementBankAccount(bankAccount, 2, 1)
 
     expect(
       screen.getByRole('img', { name: 'Une action est requise' })
@@ -197,13 +182,7 @@ describe('ReimbursementBankAccount', () => {
   })
 
   it('should not render error and warning messages when all venues are linked', () => {
-    render(
-      <ReimbursementBankAccount
-        bankAccount={bankAccount}
-        venuesNotLinkedLength={0}
-        bankAccountsNumber={1}
-      />
-    )
+    renderReimbursementBankAccount(bankAccount)
 
     expect(
       screen.queryByRole('img', { name: 'Une action est requise' })
@@ -226,5 +205,25 @@ describe('ReimbursementBankAccount', () => {
     expect(
       screen.queryByText('Certains de vos lieux ne sont pas rattachés')
     ).not.toBeInTheDocument()
+  })
+
+  it('should track attach venue button click', async () => {
+    vi.spyOn(useAnalytics, 'default').mockImplementation(() => ({
+      logEvent: mockLogEvent,
+    }))
+
+    bankAccount.linkedVenues = []
+    renderReimbursementBankAccount(bankAccount, 1)
+
+    await userEvent.click(
+      screen.getByRole('button', { name: 'Rattacher un lieu' })
+    )
+    expect(mockLogEvent).toHaveBeenCalledWith(
+      BankAccountEvents.CLICKED_ADD_VENUE_TO_BANK_ACCOUNT,
+      {
+        from: '/remboursements/informations-bancaires',
+        offererId: 0,
+      }
+    )
   })
 })
