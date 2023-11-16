@@ -1,7 +1,6 @@
 import dataclasses
 from datetime import date
 from datetime import datetime
-import typing
 from unittest.mock import MagicMock
 from unittest.mock import patch
 
@@ -1403,7 +1402,6 @@ class ActivateBeneficiaryIfNoMissingStepTest:
         self,
         validate_phone: bool,
         city: str | None = "Quito",
-        activity: users_models.ActivityEnum | None = "Étudiant",
         is_underage: bool = False,
     ):
         phone_validation_status = users_models.PhoneValidationStatusType.VALIDATED if validate_phone else None
@@ -1411,7 +1409,7 @@ class ActivateBeneficiaryIfNoMissingStepTest:
             dateOfBirth=self.AGE18_ELIGIBLE_BIRTH_DATE if not is_underage else self.UNDERAGE_ELIGIBLE_BIRTH_DATE,
             phoneValidationStatus=phone_validation_status,
             city=city,
-            activity=activity,
+            activity=users_models.ActivityEnum.STUDENT.value,
         )
 
     def test_activation_success_underage(self):
