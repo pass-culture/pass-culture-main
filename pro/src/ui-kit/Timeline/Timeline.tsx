@@ -23,7 +23,7 @@ export interface TimelineStep {
   content: ReactNode
 }
 
-export interface TimelineProps {
+interface TimelineProps {
   steps: TimelineStep[]
 }
 
