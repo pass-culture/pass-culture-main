@@ -48,7 +48,7 @@ const CollectiveOfferStockSection = ({
         }
       />
       <SummaryLayout.Row
-        title="Nombre de places"
+        title="Nombre de participants"
         description={stock?.numberOfTickets || DEFAULT_RECAP_VALUE}
       />
       <SummaryLayout.Row
