@@ -9,7 +9,6 @@ import math
 from operator import and_
 import typing
 from typing import Iterable
-from typing import List
 
 from flask_sqlalchemy import BaseQuery
 from sqlalchemy import Column
@@ -211,7 +210,7 @@ def generate_booking_token() -> str:
     raise ValueError("Could not generate new booking token")
 
 
-def find_user_ids_with_expired_individual_bookings(expired_on: date | None = None) -> List[int]:
+def find_user_ids_with_expired_individual_bookings(expired_on: date | None = None) -> list[int]:
     expired_on = expired_on or date.today()
     return [
         user_id

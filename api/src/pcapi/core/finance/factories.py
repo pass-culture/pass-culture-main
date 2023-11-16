@@ -70,7 +70,7 @@ class _BaseFinanceEventFactory(BaseFactory):
     @classmethod
     def _create(
         cls,
-        model_class: typing.Type[models.FinanceEvent],
+        model_class: type[models.FinanceEvent],
         *args: typing.Any,
         **kwargs: typing.Any,
     ) -> models.FinanceEvent:
@@ -129,7 +129,7 @@ class _BasePricingFactory(BaseFactory):
     @classmethod
     def _create(
         cls,
-        model_class: typing.Type[models.Pricing],
+        model_class: type[models.Pricing],
         *args: typing.Any,
         **kwargs: typing.Any,
     ) -> models.Pricing:
@@ -203,7 +203,7 @@ class CustomReimbursementRuleFactory(BaseFactory):
     @classmethod
     def _create(
         cls,
-        model_class: typing.Type[models.CustomReimbursementRule],
+        model_class: type[models.CustomReimbursementRule],
         *args: typing.Any,
         **kwargs: typing.Any,
     ) -> models.CustomReimbursementRule:

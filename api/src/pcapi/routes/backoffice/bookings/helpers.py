@@ -1,5 +1,4 @@
 import datetime
-import typing
 from typing import Union
 
 from flask_sqlalchemy import BaseQuery
@@ -18,9 +17,9 @@ from pcapi.utils import email as email_utils
 def get_bookings(
     base_query: BaseQuery,
     form: BaseBookingListForm,
-    stock_class: typing.Type[educational_models.CollectiveStock | offers_models.Stock],
-    booking_class: typing.Type[educational_models.CollectiveBooking | bookings_models.Booking],
-    offer_class: typing.Type[educational_models.CollectiveOffer | offers_models.Offer],
+    stock_class: type[educational_models.CollectiveStock | offers_models.Stock],
+    booking_class: type[educational_models.CollectiveBooking | bookings_models.Booking],
+    offer_class: type[educational_models.CollectiveOffer | offers_models.Offer],
     search_by_email: bool = False,
     id_filters: list | None = None,
     name_filters: list | None = None,

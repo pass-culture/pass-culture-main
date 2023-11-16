@@ -4,7 +4,7 @@ import typing
 
 
 def retry(
-    exception: typing.Type[Exception],
+    exception: type[Exception],
     exception_handler: typing.Callable | None = None,
     max_attempts: int = 1,
     logger: Logger | None = None,

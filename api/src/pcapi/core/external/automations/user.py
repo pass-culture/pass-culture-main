@@ -2,7 +2,6 @@ from collections.abc import Iterable
 from datetime import date
 from datetime import datetime
 from math import ceil
-from typing import List
 
 from dateutil.relativedelta import relativedelta
 from flask_sqlalchemy import BaseQuery
@@ -55,7 +54,7 @@ def users_turned_eighteen_automation() -> bool:
     )
 
 
-def get_users_beneficiary_credit_expiration_within_next_3_months() -> List[User]:
+def get_users_beneficiary_credit_expiration_within_next_3_months() -> list[User]:
     return (
         db.session.query(User.email)
         .yield_per(YIELD_COUNT_PER_DB_QUERY)
@@ -83,7 +82,7 @@ def users_beneficiary_credit_expiration_within_next_3_months_automation() -> boo
     return add_contacts_to_list(user_emails, settings.SENDINBLUE_AUTOMATION_YOUNG_EXPIRATION_M3_ID)
 
 
-def get_users_ex_beneficiary() -> List[User]:
+def get_users_ex_beneficiary() -> list[User]:
     return (
         db.session.query(User.email)
         .join(User.deposits)
@@ -171,7 +170,7 @@ def users_one_year_with_pass_automation() -> bool:
     )
 
 
-def get_users_whose_credit_expired_today() -> List[User]:
+def get_users_whose_credit_expired_today() -> list[User]:
     return (
         db.session.query(User)
         .join(User.deposits)
@@ -187,7 +186,7 @@ def get_users_whose_credit_expired_today() -> List[User]:
     )
 
 
-def get_ex_underage_beneficiaries_who_can_no_longer_recredit() -> List[User]:
+def get_ex_underage_beneficiaries_who_can_no_longer_recredit() -> list[User]:
     # No need to be updated on the exact birthday date, but ensure that we don't miss users born one day in leap years.
     days_19y = ceil(365.25 * 19)
     return (

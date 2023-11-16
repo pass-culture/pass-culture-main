@@ -230,7 +230,7 @@ class Method(enum.Enum):
 
 def compute_category_fields_model(
     subcategory: subcategories.Subcategory, method: Method
-) -> typing.Type[CategoryRelatedFields]:
+) -> type[CategoryRelatedFields]:
     """
     Create dynamic pydantic_v1 models to indicate which fields are available for the chosen subcategory,
     without duplicating categories declaration.
@@ -496,7 +496,7 @@ class PriceCategoryCreation(serialization.ConfiguredBaseModel):
 
 
 class PriceCategoriesCreation(serialization.ConfiguredBaseModel):
-    price_categories: typing.List[PriceCategoryCreation] = PRICE_CATEGORIES_FIELD
+    price_categories: list[PriceCategoryCreation] = PRICE_CATEGORIES_FIELD
 
     @pydantic_v1.validator("price_categories")
     def get_unique_price_categories(
@@ -519,7 +519,7 @@ class EventOfferCreation(OfferCreationBase):
     duration_minutes: int | None = DURATION_MINUTES_FIELD
     location: PhysicalLocation | DigitalLocation = LOCATION_FIELD
     has_ticket: bool = HAS_TICKET_FIELD
-    price_categories: typing.List[PriceCategoryCreation] | None = PRICE_CATEGORIES_FIELD
+    price_categories: list[PriceCategoryCreation] | None = PRICE_CATEGORIES_FIELD
 
     @pydantic_v1.validator("price_categories")
     def get_unique_price_categories(
@@ -627,7 +627,7 @@ class DateCreation(BaseStockCreation):
 
 
 class DatesCreation(serialization.ConfiguredBaseModel):
-    dates: typing.List[DateCreation] = pydantic_v1.Field(
+    dates: list[DateCreation] = pydantic_v1.Field(
         description="Dates to add to the event. If there are different prices and quantity for the same date, you must add several date objects",
     )
 
@@ -640,7 +640,7 @@ class PriceCategoryResponse(PriceCategoryCreation):
 
 
 class PriceCategoriesResponse(serialization.ConfiguredBaseModel):
-    price_categories: typing.List[PriceCategoryResponse] = PRICE_CATEGORIES_FIELD
+    price_categories: list[PriceCategoryResponse] = PRICE_CATEGORIES_FIELD
 
     @classmethod
     def build_price_categories(cls, price_categories: list[offers_models.PriceCategory]) -> "PriceCategoriesResponse":
@@ -682,7 +682,7 @@ class DateResponse(BaseStockResponse):
 
 
 class PostDatesResponse(serialization.ConfiguredBaseModel):
-    dates: typing.List[DateResponse] = pydantic_v1.Field(description="Dates of the event.")
+    dates: list[DateResponse] = pydantic_v1.Field(description="Dates of the event.")
 
 
 class OfferResponse(serialization.ConfiguredBaseModel):
@@ -802,19 +802,19 @@ class GetDatesQueryParams(IndexPaginationQueryParams):
 
 
 class ProductOffersResponse(serialization.ConfiguredBaseModel):
-    products: typing.List[ProductOfferResponse]
+    products: list[ProductOfferResponse]
 
 
 class ProductOffersByEanResponse(serialization.ConfiguredBaseModel):
-    products: typing.List[ProductOfferResponse]
+    products: list[ProductOfferResponse]
 
 
 class EventOffersResponse(serialization.ConfiguredBaseModel):
-    events: typing.List[EventOfferResponse]
+    events: list[EventOfferResponse]
 
 
 class GetDatesResponse(serialization.ConfiguredBaseModel):
-    dates: typing.List[DateResponse]
+    dates: list[DateResponse]
 
     class Config:
         json_encoders = {datetime.datetime: date_utils.format_into_utc_date}

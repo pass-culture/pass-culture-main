@@ -2,7 +2,6 @@ from datetime import datetime
 from datetime import timezone
 import logging
 from typing import Any
-from typing import Dict
 
 from pydantic.v1 import Field
 from pydantic.v1 import validator
@@ -34,7 +33,7 @@ def validate_price(price: float | None) -> float:
     return price
 
 
-def validate_booking_limit_datetime(booking_limit_datetime: datetime | None, values: Dict[str, Any]) -> datetime | None:
+def validate_booking_limit_datetime(booking_limit_datetime: datetime | None, values: dict[str, Any]) -> datetime | None:
     if (
         booking_limit_datetime
         and "beginning_datetime" in values
@@ -44,7 +43,7 @@ def validate_booking_limit_datetime(booking_limit_datetime: datetime | None, val
     return booking_limit_datetime
 
 
-def validate_beginning_datetime(beginning_datetime: datetime, values: Dict[str, Any], field: ModelField) -> datetime:
+def validate_beginning_datetime(beginning_datetime: datetime, values: dict[str, Any], field: ModelField) -> datetime:
     # we need a datetime with timezone information which is not provided by datetime.utcnow.
     if beginning_datetime < datetime.now(timezone.utc):  # pylint: disable=datetime-now
         raise ValueError("L'évènement ne peut commencer dans le passé.")
@@ -112,7 +111,7 @@ class CollectiveStockEditionBodyModel(BaseModel):
     # we can use the same interface as for creation and thus reuse the validator defined above.
     @validator("bookingLimitDatetime")
     def validate_booking_limit_datetime(
-        cls, booking_limit_datetime: datetime | None, values: Dict[str, Any]
+        cls, booking_limit_datetime: datetime | None, values: dict[str, Any]
     ) -> datetime | None:
         if (
             booking_limit_datetime

@@ -62,7 +62,7 @@ def task(
 def _define_handler(
     f: typing.Callable,
     path: str,
-    payload_type: typing.Type[pydantic_v1.BaseModel],
+    payload_type: type[pydantic_v1.BaseModel],
 ) -> None:
     @cloud_task_api.route(path, methods=["POST"], endpoint=path)
     @spectree_serialize(on_success_status=204)

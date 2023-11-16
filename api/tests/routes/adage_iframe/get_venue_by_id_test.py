@@ -1,5 +1,3 @@
-from typing import ByteString
-
 import pytest
 
 import pcapi.core.offerers.factories as offerers_factories
@@ -11,7 +9,7 @@ pytestmark = pytest.mark.usefixtures("db_session")
 
 
 class VenueByIdTest:
-    def _create_adage_valid_token(self) -> ByteString:
+    def _create_adage_valid_token(self) -> bytes:
         return create_adage_jwt_default_fake_valid_token(
             civility="Mme.",
             lastname="GRIS",
@@ -90,7 +88,7 @@ class VenueByIdTest:
             "departementCode": "75",
         }
 
-    def _create_adage_valid_token(self) -> ByteString:
+    def _create_adage_valid_token(self) -> bytes:
         return create_adage_jwt_default_fake_valid_token(
             civility="M.",
             lastname="POINTÉ",

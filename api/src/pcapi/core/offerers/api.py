@@ -1471,7 +1471,7 @@ def get_offerer_total_revenue(offerer_id: int) -> float:
 
 
 def get_offerer_offers_stats(offerer_id: int, max_offer_count: int = 0) -> dict:
-    def _get_query(offer_class: typing.Type[offers_api.AnyOffer]) -> BaseQuery:
+    def _get_query(offer_class: type[offers_api.AnyOffer]) -> BaseQuery:
         return sa.select(sa.func.jsonb_object_agg(sa.text("status"), sa.text("number"))).select_from(
             sa.select(
                 sa.case(
@@ -1508,7 +1508,7 @@ def get_offerer_offers_stats(offerer_id: int, max_offer_count: int = 0) -> dict:
             .subquery()
         )
 
-    def _max_count_query(offer_class: typing.Type[offers_api.AnyOffer]) -> BaseQuery:
+    def _max_count_query(offer_class: type[offers_api.AnyOffer]) -> BaseQuery:
         return sa.select(sa.func.count(sa.text("offer_id"))).select_from(
             sa.select(offer_class.id.label("offer_id"))  # type: ignore [attr-defined]
             .join(offerers_models.Venue, offer_class.venue)
@@ -1517,7 +1517,7 @@ def get_offerer_offers_stats(offerer_id: int, max_offer_count: int = 0) -> dict:
             .subquery()
         )
 
-    def _get_stats_for_offer_type(offer_class: typing.Type[offers_api.AnyOffer]) -> dict:
+    def _get_stats_for_offer_type(offer_class: type[offers_api.AnyOffer]) -> dict:
         if max_offer_count and db.session.execute(_max_count_query(offer_class)).scalar() >= max_offer_count:
             return {
                 "active": -1,
@@ -1569,7 +1569,7 @@ def get_venue_total_revenue(venue_id: int) -> float:
 
 
 def get_venue_offers_stats(venue_id: int, max_offer_count: int = 0) -> dict:
-    def _get_query(offer_class: typing.Type[offers_api.AnyOffer]) -> BaseQuery:
+    def _get_query(offer_class: type[offers_api.AnyOffer]) -> BaseQuery:
         return sa.select(sa.func.jsonb_object_agg(sa.text("status"), sa.text("number"))).select_from(
             sa.select(
                 sa.case(
@@ -1607,7 +1607,7 @@ def get_venue_offers_stats(venue_id: int, max_offer_count: int = 0) -> dict:
             .subquery()
         )
 
-    def _max_count_query(offer_class: typing.Type[offers_api.AnyOffer]) -> BaseQuery:
+    def _max_count_query(offer_class: type[offers_api.AnyOffer]) -> BaseQuery:
         return sa.select(sa.func.count(sa.text("offer_id"))).select_from(
             sa.select(offer_class.id.label("offer_id"))  # type: ignore [attr-defined]
             .filter(offer_class.venueId == venue_id)
@@ -1615,7 +1615,7 @@ def get_venue_offers_stats(venue_id: int, max_offer_count: int = 0) -> dict:
             .subquery()
         )
 
-    def _get_stats_for_offer_type(offer_class: typing.Type[offers_api.AnyOffer]) -> dict:
+    def _get_stats_for_offer_type(offer_class: type[offers_api.AnyOffer]) -> dict:
         if max_offer_count and db.session.execute(_max_count_query(offer_class)).scalar() >= max_offer_count:
             return {
                 "active": -1,
@@ -1943,7 +1943,7 @@ def invite_member(offerer: models.Offerer, email: str, current_user: users_model
     transactional_mails.send_offerer_attachment_invitation([email], offerer=offerer, user=existing_user)
 
 
-def get_offerer_members(offerer: models.Offerer) -> list[typing.Tuple[str, OffererMemberStatus]]:
+def get_offerer_members(offerer: models.Offerer) -> list[tuple[str, OffererMemberStatus]]:
     users_offerers = (
         models.UserOfferer.query.filter(
             models.UserOfferer.offererId == offerer.id, sa.not_(models.UserOfferer.isRejected)

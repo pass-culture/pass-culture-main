@@ -1,5 +1,3 @@
-from typing import Tuple
-
 from pcapi.core.offerers.models import VenueLabel
 from pcapi.repository import repository
 
@@ -46,7 +44,7 @@ def create_venue_labels(sandbox: bool = False) -> None:
     save_new_venue_labels(venue_label_strings, sandbox)
 
 
-def save_new_venue_labels(venue_label_strings: list[Tuple[str, int]], sandbox: bool = False) -> None:
+def save_new_venue_labels(venue_label_strings: list[tuple[str, int]], sandbox: bool = False) -> None:
     venue_label_list = []
     for label_string, label_id in venue_label_strings:
         venue_label = VenueLabel()

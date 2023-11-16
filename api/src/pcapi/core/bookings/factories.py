@@ -61,7 +61,7 @@ class BookingFactory(BaseFactory):
     @classmethod
     def _create(
         cls,
-        model_class: typing.Type[models.Booking],
+        model_class: type[models.Booking],
         *args: typing.Any,
         **kwargs: typing.Any,
     ) -> models.Booking:

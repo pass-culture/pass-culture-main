@@ -26,7 +26,7 @@ class ProductFactory(BaseFactory):
     @classmethod
     def _create(
         cls,
-        model_class: typing.Type[models.Product],
+        model_class: type[models.Product],
         *args: typing.Any,
         **kwargs: typing.Any,
     ) -> models.Product:
@@ -69,7 +69,7 @@ class OfferFactory(BaseFactory):
     @classmethod
     def _create(
         cls,
-        model_class: typing.Type[models.Offer],
+        model_class: type[models.Offer],
         *args: typing.Any,
         **kwargs: typing.Any,
     ) -> models.Offer:
@@ -110,7 +110,7 @@ class PriceCategoryLabelFactory(BaseFactory):
     @classmethod
     def _create(
         cls,
-        model_class: typing.Type[models.PriceCategoryLabel],
+        model_class: type[models.PriceCategoryLabel],
         *args: typing.Any,
         **kwargs: typing.Any,
     ) -> models.PriceCategoryLabel:
