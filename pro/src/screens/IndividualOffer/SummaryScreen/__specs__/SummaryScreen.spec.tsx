@@ -18,9 +18,7 @@ import {
   IndividualOfferContextValues,
   IndividualOfferContext,
 } from 'context/IndividualOfferContext'
-import * as getIndividualOfferAdapter from 'core/Offers/adapters/getIndividualOfferAdapter/getIndividualOfferAdapter'
 import { OFFER_WIZARD_MODE } from 'core/Offers/constants'
-import { IndividualOffer } from 'core/Offers/types'
 import { getIndividualOfferPath } from 'core/Offers/utils/getIndividualOfferUrl'
 import * as useAnalytics from 'hooks/useAnalytics'
 import {
@@ -149,9 +147,6 @@ describe('Summary', () => {
     vi.spyOn(api, 'patchPublishOffer').mockResolvedValue(
       GetIndividualOfferFactory()
     )
-    vi.spyOn(api, 'getOffer').mockResolvedValue({
-      status: OfferStatus.ACTIVE,
-    } as GetIndividualOfferResponseModel)
   })
 
   const expectOfferFields = () => {
@@ -424,20 +419,15 @@ describe('Summary', () => {
         },
       }
 
-      vi.spyOn(getIndividualOfferAdapter, 'default').mockResolvedValue({
-        isOk: true,
-        message: '',
-        payload: {
-          status: OfferStatus.ACTIVE,
-          stocks: [individualStockFactory()],
-        } as IndividualOffer,
-      })
-
       vi.spyOn(api, 'getOfferer').mockResolvedValue({
         ...defaultGetOffererResponseModel,
         hasValidBankAccount: false,
         hasPendingBankAccount: false,
       })
+
+      vi.spyOn(api, 'patchPublishOffer').mockResolvedValue(
+        GetIndividualOfferFactory({ isNonFreeOffer: false })
+      )
 
       renderSummary(
         context,
