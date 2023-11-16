@@ -6,6 +6,7 @@ import {
   StudentLevels,
 } from 'apiClient/adage'
 import { api, apiAdage } from 'apiClient/api'
+import Carousel from 'components/Carousel/Carousel'
 import { GET_DATA_ERROR_MESSAGE } from 'core/shared/constants'
 import useIsElementVisible from 'hooks/useIsElementVisible'
 import useNotification from 'hooks/useNotification'
@@ -157,14 +158,15 @@ export const AdageDiscovery = () => {
         alt="Bannière pour la découverte"
         width="100%"
       />
-      <div className={styles['discovery-playlist']}>
-        <div>
-          <h1 className={styles['section-title']}>
-            Les nouvelles offres publiées
-          </h1>
-          <div className={styles['section-todo']}>
-            <div>TODO: Playlist nouvelle offres publiées à ajouter </div>
-            <div className={styles['section-todo-playlist']}>
+      <div className={styles['discovery-playlists']}>
+        <div className={styles['discovery-playlist']}>
+          <Carousel
+            title={
+              <h1 className={styles['section-title']}>
+                Les nouvelles offres publiées
+              </h1>
+            }
+            elements={[
               <CardOfferComponent
                 handlePlaylistElementTracking={() =>
                   trackPlaylistElementClicked({
@@ -183,7 +185,7 @@ export const AdageDiscovery = () => {
                   },
                   imageUrl: 'https://picsum.photos/201/',
                 }}
-              />
+              />,
               <CardOfferComponent
                 handlePlaylistElementTracking={() =>
                   trackPlaylistElementClicked({
@@ -201,7 +203,7 @@ export const AdageDiscovery = () => {
                   },
                   imageUrl: 'https://picsum.photos/202/',
                 }}
-              />
+              />,
               <CardOfferComponent
                 handlePlaylistElementTracking={() =>
                   trackPlaylistElementClicked({
@@ -219,16 +221,73 @@ export const AdageDiscovery = () => {
                   },
                   imageUrl: 'https://picsum.photos/203/',
                 }}
-              />
-            </div>
-          </div>
+              />,
+              <CardOfferComponent
+                offer={{
+                  ...mockOffer,
+                  id: 1,
+                  name: 'Ma super offre 2',
+                  offerVenue: {
+                    ...mockOffer.offerVenue,
+                    addressType: OfferAddressType.OFFERER_VENUE,
+                  },
+                  imageUrl: 'https://picsum.photos/201/',
+                }}
+                handlePlaylistElementTracking={() =>
+                  trackPlaylistElementClicked({
+                    playlistId: 1,
+                    playlistType: AdagePlaylistType.DOMAIN,
+                    elementId: 4, // TODO: change elementId with real value
+                  })
+                }
+              />,
+              <CardOfferComponent
+                handlePlaylistElementTracking={() =>
+                  trackPlaylistElementClicked({
+                    playlistId: 0,
+                    playlistType: AdagePlaylistType.OFFER,
+                    elementId: 5, // TODO: change elementId with real value
+                  })
+                }
+                offer={{
+                  ...mockOffer,
+                  id: 2,
+                  offerVenue: {
+                    ...mockOffer.offerVenue,
+                    addressType: OfferAddressType.SCHOOL,
+                  },
+                  imageUrl: 'https://picsum.photos/202/',
+                }}
+              />,
+              <CardOfferComponent
+                handlePlaylistElementTracking={() =>
+                  trackPlaylistElementClicked({
+                    playlistId: 0,
+                    playlistType: AdagePlaylistType.OFFER,
+                    elementId: 6, // TODO: change elementId with real value
+                  })
+                }
+                offer={{
+                  ...mockOffer,
+                  id: 3,
+                  offerVenue: {
+                    ...mockOffer.offerVenue,
+                    addressType: OfferAddressType.OTHER,
+                  },
+                  imageUrl: 'https://picsum.photos/203/',
+                }}
+              />,
+            ]}
+          ></Carousel>
         </div>
-        <div>
-          <h1 className={styles['section-title']}>
-            Explorez les domaines artistiques
-          </h1>
-          <div className={styles['section-domains-card']}>
-            {domainsOptions.map((elm, key) => {
+        <div className={styles['discovery-playlist']}>
+          <Carousel
+            title={
+              <h1 className={styles['section-title']}>
+                Explorez les domaines artistiques
+              </h1>
+            }
+            elements={domainsOptions.map((elm, key) => {
               const colorAndMotif =
                 colorAndMotifOrder[key % colorAndMotifOrder.length]
 
@@ -249,21 +308,26 @@ export const AdageDiscovery = () => {
                 />
               )
             })}
-          </div>
+          ></Carousel>
         </div>
-        <div>
-          <h1 className={styles['section-title']}>
-            Ces interventions peuvent avoir lieu dans votre classe
-          </h1>
-          <div>TODO: Playlist intervention à ajouter</div>
+        <div className={styles['discovery-playlist']}>
+          <Carousel
+            title={
+              <h1 className={styles['section-title']}>
+                Ces interventions peuvent avoir lieu dans votre classe
+              </h1>
+            }
+            elements={[]}
+          ></Carousel>
         </div>
-        <div>
-          <h1 className={styles['section-title']}>
-            À moins de 30 minutes à pieds
-          </h1>
-          <div className={styles['section-todo']}>
-            <div>TODO: Playlist à moins de 30 minutes à pieds à ajouter</div>
-            <div className={styles['section-todo-playlist']}>
+        <div className={styles['discovery-playlist']}>
+          <Carousel
+            title={
+              <h1 className={styles['section-title']}>
+                À moins de 30 minutes à pieds
+              </h1>
+            }
+            elements={[
               <CardVenue
                 handlePlaylistElementTracking={() =>
                   trackPlaylistElementClicked({
@@ -272,18 +336,18 @@ export const AdageDiscovery = () => {
                     elementId: 1, // TODO: change elementId with real value
                   })
                 }
-                venue={mockVenue}
-              />
-            </div>
-          </div>
+                venue={{ ...mockVenue, imageUrl: 'https://picsum.photos/201/' }}
+              />,
+            ]}
+          ></Carousel>
         </div>
       </div>
-      <div className={styles['suggestion']}>
-        <h1 className={styles['section-title']} ref={footerSuggestion}>
+      <div className={styles['discovery-suggestion']}>
+        <h1 className={styles['section-title']}>
           Une idée de rubrique ? Soumettez-la nous !
         </h1>
         <ButtonLink
-          className={styles['footer-link']}
+          className={styles['discovery-suggestion-link']}
           variant={ButtonVariant.TERNARYPINK}
           link={{
             to: '#', // TODO:  Lien FAQ à ajouter quand il sera disponible

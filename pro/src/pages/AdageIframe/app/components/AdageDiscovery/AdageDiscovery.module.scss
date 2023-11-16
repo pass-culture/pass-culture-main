@@ -3,55 +3,46 @@
 @use "styles/variables/_colors.scss" as colors;
 
 .discovery {
-  &-playlist {
-    margin: rem.torem(24px);
-  }
-}
-
-.section-title {
-  @include fonts.title3;
-}
-
-.section-todo {
-  display: flex;
-  flex-direction: column;
-  gap: rem.torem(16px);
-  margin-bottom: rem.torem(24px);
-
-  &-playlist {
+  &-playlists {
     display: flex;
-    gap: rem.torem(16px);
+    flex-direction: column;
+    gap: rem.torem(40px);
+
+    .discovery-playlist {
+      padding: rem.torem(32px) 0;
+    }
   }
-}
 
-.suggestion {
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-  background-color: colors.$light-pink;
-  width: auto;
-  height: rem.torem(158px);
-  padding-left: rem.torem(24px);
+  .section-title {
+    @include fonts.title3;
 
-  h1 {
-    margin-bottom: rem.torem(8px);
+    margin-bottom: unset;
   }
-}
 
-.footer-link {
-  @include fonts.caption;
+  &-suggestion {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    background-color: colors.$light-pink;
+    width: auto;
+    height: rem.torem(158px);
+    padding-left: rem.torem(24px);
 
-  align-items: center;
-  width: max-content;
-  margin: 0;
+    h1.section-title {
+      margin-bottom: rem.torem(8px);
+    }
 
-  svg {
-    max-width: rem.torem(16px);
-    margin-right: rem.torem(4px) !important;
+    &-link {
+      @include fonts.caption;
+
+      align-items: center;
+      width: max-content;
+      margin: 0;
+
+      svg {
+        max-width: rem.torem(16px);
+        margin-right: rem.torem(4px) !important;
+      }
+    }
   }
-}
-
-.section-domains-card {
-  display: inline-flex;
-  gap: rem.torem(32px);
 }
