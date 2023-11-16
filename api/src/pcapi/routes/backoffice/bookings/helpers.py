@@ -1,5 +1,4 @@
 import datetime
-from typing import Union
 
 from flask_sqlalchemy import BaseQuery
 
@@ -24,7 +23,7 @@ def get_bookings(
     id_filters: list | None = None,
     name_filters: list | None = None,
     or_filters: list | None = None,
-) -> Union[list[bookings_models.Booking], list[educational_models.CollectiveBooking]]:
+) -> list[bookings_models.Booking] | list[educational_models.CollectiveBooking]:
     if or_filters is None:
         or_filters = []
 
