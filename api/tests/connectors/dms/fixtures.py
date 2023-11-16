@@ -1,5 +1,3 @@
-from typing import Optional
-
 import pydantic.v1 as pydantic_v1
 
 
@@ -11,16 +9,16 @@ demarche_default_date_creation = "2020-03-25T12:35:51+01:00"
 class Address(pydantic_v1.BaseModel):
     cityCode: str = "75001"
     cityName: str = "Paris"
-    departmentCode: Optional[str] = None
-    departmentName: Optional[str] = None
-    geometry: Optional[str] = None
+    departmentCode: str | None = None
+    departmentName: str | None = None
+    geometry: str | None = None
     label: str = "1 rue de la République, 75001 Paris"
     postalCode: str = "75001"
-    regionCode: Optional[str] = None
-    regionName: Optional[str] = None
-    streetAddress: Optional[str] = None
-    streetName: Optional[str] = None
-    streetNumber: Optional[str] = None
+    regionCode: str | None = None
+    regionName: str | None = None
+    streetAddress: str | None = None
+    streetName: str | None = None
+    streetNumber: str | None = None
     type: str = "housenumber"
 
 
@@ -32,7 +30,7 @@ class File(pydantic_v1.BaseModel):
 class Champ(pydantic_v1.BaseModel):
     id: int
     label: str
-    stringValue: Optional[str]
+    stringValue: str | None
 
 
 class AddressChamp(Champ):
@@ -48,8 +46,8 @@ class DossierLinkChamp(Champ):
 
 
 class LinkedDropDownListChamp(Champ):
-    primaryValue: Optional[str]
-    secondaryValue: Optional[str]
+    primaryValue: str | None
+    secondaryValue: str | None
 
 
 class MultipleDropDownListChamp(Champ):
@@ -85,10 +83,10 @@ class Service(pydantic_v1.BaseModel):
 
 
 class PageInfo(pydantic_v1.BaseModel):
-    endCursor: Optional[str]
+    endCursor: str | None
     hasNextPage: bool = False
     hasPreviousPage: bool = False
-    startCursor: Optional[str]
+    startCursor: str | None
 
 
 class DossierConnection(pydantic_v1.BaseModel):
@@ -101,11 +99,11 @@ class Demarche(pydantic_v1.BaseModel):
     annotationDescriptors: list = []
     champDescriptors: list = []
     dateCreation: str = demarche_default_date_creation
-    dateDepublication: Optional[str] = None
+    dateDepublication: str | None = None
     dateDerniereModification: str = demarche_default_date_creation
-    dateFermeture: Optional[str] = None
-    datePublication: Optional[str] = None
-    declarative: Optional[str] = None
+    dateFermeture: str | None = None
+    datePublication: str | None = None
+    declarative: str | None = None
     deletedDossiers: list = []
     description: str = "description de la démarche"
     dossiers: DossierConnection = DossierConnection()
@@ -147,25 +145,25 @@ class Dossier(pydantic_v1.BaseModel):
     ]
     dateDepot: str = dossier_default_date_depot
     dateDerniereModification: str = dossier_default_date_depot
-    dateExpiration: Optional[str] = None
+    dateExpiration: str | None = None
     datePassageEnConstruction: str = dossier_default_passage_en_construction
-    datePassageEnInstruction: Optional[str] = None
-    dateSuppressionParAdministration: Optional[str] = None
-    dateSuppressionParUsager: Optional[str] = None
-    dateTraitement: Optional[str] = None
+    datePassageEnInstruction: str | None = None
+    dateSuppressionParAdministration: str | None = None
+    dateSuppressionParUsager: str | None = None
+    dateTraitement: str | None = None
     demandeur: Demandeur = PersonnePhysique(
         id="personne_id", civilite="M", dateDeNaissance="2020-03-25", nom="Stiles", prenom="John"
     )
     demarche: Demarche = Demarche(id="demarche_id", number=1, title="titre de la démarche")
-    geojson: Optional[str] = None
+    geojson: str | None = None
     groupeInstructeur: GroupeInstructeur = GroupeInstructeur(id="groupe_instructeur_id", number=1, label="défaut")
     id: str = "RandomGeneratedId"
     instructeurs: list[Profile] = [Profile()]
     messages: list[Message] = [Message()]
-    motivation: Optional[str] = None
-    motivationAttachment: Optional[File] = None
+    motivation: str | None = None
+    motivationAttachment: File | None = None
     number: int = 1
-    pdf: Optional[str] = None
+    pdf: str | None = None
     revision: Revision = Revision()
     state: str = "en_construction"
     traitements: list = []

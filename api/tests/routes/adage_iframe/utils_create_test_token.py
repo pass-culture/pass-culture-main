@@ -1,6 +1,5 @@
 from datetime import datetime
 from datetime import timedelta
-from typing import Optional
 
 import jwt
 
@@ -19,7 +18,7 @@ def create_adage_jwt_default_fake_valid_token(
     lastname: str,
     firstname: str,
     email: str,
-    uai: Optional[str],
+    uai: str | None,
     lat: float | None = None,
     lon: float | None = None,
 ) -> bytes:
@@ -40,7 +39,7 @@ def create_adage_jwt_fake_valid_token(
     lastname: str,
     firstname: str,
     email: str,
-    uai: Optional[str],
+    uai: str | None,
     expiration_date: datetime,
     lat: float | None = None,
     lon: float | None = None,

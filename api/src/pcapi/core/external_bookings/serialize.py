@@ -1,5 +1,4 @@
 import datetime
-from typing import Optional
 
 import pydantic.v1 as pydantic_v1
 
@@ -80,12 +79,12 @@ class ExternalEventTicket(pydantic_v1.BaseModel):
 
 class ExternalEventBookingResponse(pydantic_v1.BaseModel):
     tickets: list[ExternalEventTicket]
-    remainingQuantity: Optional[int] = pydantic_v1.Field(...)
+    remainingQuantity: int | None = pydantic_v1.Field(...)
 
 
 class ExternalEventBookingErrorResponse(pydantic_v1.BaseModel):
     error: str
-    remainingQuantity: Optional[int] = pydantic_v1.Field(...)
+    remainingQuantity: int | None = pydantic_v1.Field(...)
 
 
 class ExternalEventCancelBookingRequest(pydantic_v1.BaseModel):
@@ -98,4 +97,4 @@ class ExternalEventCancelBookingRequest(pydantic_v1.BaseModel):
 
 class ExternalEventCancelBookingResponse(pydantic_v1.BaseModel):
     error: str | None
-    remainingQuantity: Optional[int] = pydantic_v1.Field(...)
+    remainingQuantity: int | None = pydantic_v1.Field(...)
