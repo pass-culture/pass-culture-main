@@ -8,8 +8,6 @@ import logging
 import secrets
 import typing
 from typing import Any
-from typing import Type
-from typing import TypeVar
 
 from flask import current_app as app
 import jwt
