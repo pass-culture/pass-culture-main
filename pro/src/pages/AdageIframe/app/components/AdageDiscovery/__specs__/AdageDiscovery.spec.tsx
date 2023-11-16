@@ -26,7 +26,7 @@ vi.mock('apiClient/api', () => ({
 }))
 
 vi.mock('hooks/useIsElementVisible', () => ({
-  default: vi.fn().mockImplementation(() => false),
+  default: vi.fn().mockImplementation(() => [false, false]),
 }))
 
 const renderAdageDiscovery = (user: AuthenticatedResponse) => {
@@ -93,7 +93,7 @@ describe('AdageDiscovery', () => {
   })
 
   it('should call tracker when footer suggestion is visible', () => {
-    vi.spyOn(useIsElementVisible, 'default').mockReturnValueOnce(true)
+    vi.spyOn(useIsElementVisible, 'default').mockReturnValueOnce([true])
 
     renderAdageDiscovery(user)
 
