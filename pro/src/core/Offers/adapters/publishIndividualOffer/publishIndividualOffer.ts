@@ -1,6 +1,7 @@
 import { api } from 'apiClient/api'
+import { GetIndividualOfferResponseModel } from 'apiClient/v1'
 
-type SuccessPayload = null
+type SuccessPayload = GetIndividualOfferResponseModel
 type FailurePayload = null
 type PublishIndividualOffer = Adapter<
   { offerId: number },
@@ -10,11 +11,11 @@ type PublishIndividualOffer = Adapter<
 
 const publishIndividualOffer: PublishIndividualOffer = async ({ offerId }) => {
   try {
-    await api.patchPublishOffer({ id: offerId })
+    const publishedOffer = await api.patchPublishOffer({ id: offerId })
     return {
       isOk: true,
       message: '',
-      payload: null,
+      payload: publishedOffer,
     }
   } catch (error) {
     return {

@@ -13,10 +13,9 @@ import {
   OFFER_FORM_NAVIGATION_OUT,
   VenueEvents,
 } from 'core/FirebaseEvents/constants'
-import { getIndividualOfferAdapter } from 'core/Offers/adapters'
+import { serializeOfferApi } from 'core/Offers/adapters/getIndividualOfferAdapter/serializers'
 import { publishIndividualOffer } from 'core/Offers/adapters/publishIndividualOffer'
 import { OFFER_WIZARD_MODE } from 'core/Offers/constants'
-import { IndividualOffer } from 'core/Offers/types'
 import { getIndividualOfferUrl } from 'core/Offers/utils/getIndividualOfferUrl'
 import { useOfferWizardMode } from 'hooks'
 import useActiveFeature from 'hooks/useActiveFeature'
@@ -71,20 +70,15 @@ const SummaryScreen = () => {
     mode,
   })
 
-  const checkFirstNonFreeOfferPopin = async (
-    getIndividualOfferResponse: IndividualOffer
-  ) => {
-    const isNonFreeOffer = getIndividualOfferResponse.stocks.some((stock) => {
-      return stock.price > 0
-    })
-    if (!isNonFreeOffer) {
+  const checkFirstNonFreeOfferPopin = async (isNonFreeOffer: boolean) => {
+    if (isNonFreeOffer) {
       navigate(offerConfirmationStepUrl)
     }
 
     const offererResponse = await api.getOfferer(offer.offererId)
     if (
-      offererResponse.hasPendingBankAccount === false &&
-      offererResponse.hasValidBankAccount === false
+      !offererResponse.hasPendingBankAccount &&
+      !offererResponse.hasValidBankAccount
     ) {
       setDisplayRedirectDialog(true)
     } else {
@@ -104,19 +98,12 @@ const SummaryScreen = () => {
       offerId: offer.id,
     })
     if (publishIndividualOfferResponse.isOk) {
-      const getIndividualOfferResponse = await getIndividualOfferAdapter(
-        offer.id
-      )
-      if (getIndividualOfferResponse.isOk) {
-        setOffer?.(getIndividualOfferResponse.payload)
-      }
+      setOffer?.(serializeOfferApi(publishIndividualOfferResponse.payload))
 
-      if (
-        isNewBankDetailsJourneyEnabled &&
-        getIndividualOfferResponse.isOk &&
-        showFirstNonFreeOfferPopin
-      ) {
-        await checkFirstNonFreeOfferPopin(getIndividualOfferResponse.payload)
+      if (isNewBankDetailsJourneyEnabled && showFirstNonFreeOfferPopin) {
+        await checkFirstNonFreeOfferPopin(
+          publishIndividualOfferResponse.payload.isNonFreeOffer ?? true
+        )
       } else if (
         !isNewBankDetailsJourneyEnabled &&
         showVenuePopin[venueId || '']
