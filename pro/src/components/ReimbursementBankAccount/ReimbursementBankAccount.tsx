@@ -1,9 +1,12 @@
 import React from 'react'
+import { useLocation } from 'react-router-dom'
 
 import {
   BankAccountApplicationStatus,
   BankAccountResponseModel,
 } from 'apiClient/v1'
+import { BankAccountEvents } from 'core/FirebaseEvents/constants'
+import useAnalytics from 'hooks/useAnalytics'
 import fullErrorIcon from 'icons/full-error.svg'
 import fullLinkIcon from 'icons/full-link.svg'
 import fullWaitIcon from 'icons/full-wait.svg'
@@ -17,14 +20,18 @@ interface ReimbursementBankAccountProps {
   bankAccount: BankAccountResponseModel
   venuesNotLinkedLength: number
   bankAccountsNumber: number
+  offererId?: number
 }
 
 const ReimbursementBankAccount = ({
   bankAccount,
   venuesNotLinkedLength,
   bankAccountsNumber,
+  offererId,
 }: ReimbursementBankAccountProps): JSX.Element => {
   const hasLinkedVenues = bankAccount.linkedVenues.length > 0
+  const { logEvent } = useAnalytics()
+  const location = useLocation()
 
   return (
     <div className={styles['bank-account']}>
@@ -101,7 +108,19 @@ const ReimbursementBankAccount = ({
               </>
             )}
             {!hasLinkedVenues && venuesNotLinkedLength > 0 && (
-              <Button>Rattacher</Button> // TODO: handle onClick
+              <Button
+                onClick={() => {
+                  logEvent?.(
+                    BankAccountEvents.CLICKED_ADD_VENUE_TO_BANK_ACCOUNT,
+                    {
+                      from: location.pathname,
+                      offererId,
+                    }
+                  )
+                }}
+              >
+                Rattacher un lieu
+              </Button>
             )}
           </div>
         </div>
