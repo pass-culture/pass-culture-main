@@ -95,6 +95,7 @@ export const GetIndividualOfferFactory = (
     subcategoryId: SubcategoryIdEnum.SEANCE_CINE,
     lastProvider: null,
     bookingsCount: 0,
+    isNonFreeOffer: true,
     ...customOffer,
   }
 }
