@@ -20,6 +20,7 @@ import {
   OfferEducationalStockFormValues,
 } from 'core/OfferEducational'
 import { isOfferDisabled } from 'core/Offers/utils'
+import { NBSP } from 'core/shared'
 import { Banner, ButtonLink, SubmitButton, TextArea } from 'ui-kit'
 import { ButtonVariant } from 'ui-kit/Button/types'
 
@@ -151,8 +152,8 @@ const OfferEducationalStock = <
                     personnes qui y participeront.
                     <br />
                     <span className={styles['description-text-italic']}>
-                      (Exemple : j’accueille 30 élèves à 5€ la place, le prix
-                      global de mon offre s'élève à 150€ TTC)
+                      (Exemple : j’accueille 30 élèves à 5{NBSP}€ la place, le
+                      prix global de mon offre s'élève à 150{NBSP}€ TTC.)
                     </span>
                   </p>
                   <FormStock
@@ -173,7 +174,7 @@ const OfferEducationalStock = <
                   label={DETAILS_PRICE_LABEL}
                   maxLength={MAX_DETAILS_LENGTH}
                   name="priceDetail"
-                  placeholder="Détaillez ici des informations complémentaires"
+                  placeholder="Détaillez ici des informations complémentaires."
                 />
               </FormLayout.Row>
             </FormLayout.Section>
