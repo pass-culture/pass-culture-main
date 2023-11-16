@@ -9,6 +9,7 @@ import {
 import useActiveFeature from 'hooks/useActiveFeature'
 
 import { DEFAULT_RECAP_VALUE } from '../constants'
+import { formatDuration } from '../utils/formatDuration'
 
 interface CollectiveOfferSummaryProps {
   offer: CollectiveOfferTemplate | CollectiveOffer
@@ -58,12 +59,21 @@ export default function CollectiveOfferTypeSection({
       )}
 
       <SummaryLayout.Row
-        title="Domaine artistiques et culturels"
+        title="Domaine artistique et culturel"
         description={offer.domains.map((domain) => domain.name).join(', ')}
       />
       <SummaryLayout.Row
         title="Dispositif national"
         description={offer.nationalProgram?.name || DEFAULT_RECAP_VALUE}
+      />
+      <SummaryLayout.Row title="Titre de l’offre" description={offer.name} />
+      <SummaryLayout.Row
+        title="Description"
+        description={offer.description || DEFAULT_RECAP_VALUE}
+      />
+      <SummaryLayout.Row
+        title="Durée"
+        description={formatDuration(offer.durationMinutes)}
       />
     </SummaryLayout.SubSection>
   )

@@ -36,7 +36,7 @@ const CollectiveOfferStockSection = ({
   return (
     <>
       <SummaryLayout.Row
-        title="Établissement scolaire qui peut voir votre offre"
+        title="Établissement scolaire auquel vous adressez votre offre"
         description={getVisibilityDescription(institution)}
       />
       {teacher && (
