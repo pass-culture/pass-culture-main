@@ -192,8 +192,8 @@ const CollectiveOfferType = ({
                   values.collectiveOfferSubtypeDuplicate ===
                   COLLECTIVE_OFFER_SUBTYPE_DUPLICATE.DUPLICATE
                 }
-                label="Dupliquer les informations d’une d’offre vitrine"
-                description="Créez une offre réservable en dupliquant les informations d’une offre vitrine existante."
+                label="Dupliquer les informations d’une offre vitrine"
+                description="Créer une offre réservable en dupliquant les informations d’une offre vitrine existante."
                 onChange={handleChange}
                 value={COLLECTIVE_OFFER_SUBTYPE_DUPLICATE.DUPLICATE}
               />
