@@ -471,6 +471,28 @@ export class DefaultService {
   }
 
   /**
+   * log_has_seen_all_playlist <POST>
+   * @param requestBody
+   * @returns void
+   * @throws ApiError
+   */
+  public logHasSeenAllPlaylist(
+    requestBody?: AdageBaseModel,
+  ): CancelablePromise<void> {
+    return this.httpRequest.request({
+      method: 'POST',
+      url: '/adage-iframe/logs/playlist',
+      body: requestBody,
+      mediaType: 'application/json',
+      errors: {
+        403: `Forbidden`,
+        404: `Not Found`,
+        422: `Unprocessable Entity`,
+      },
+    });
+  }
+
+  /**
    * log_request_form_popin_dismiss <POST>
    * @param requestBody
    * @returns void
