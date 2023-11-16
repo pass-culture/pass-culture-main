@@ -1,5 +1,3 @@
-from typing import Optional
-
 from pcapi.core.categories import categories
 from pcapi.core.categories import subcategories_v2
 from pcapi.routes.serialization import BaseModel
@@ -24,7 +22,7 @@ class SubcategoryResponseModelv2(BaseModel):
 
 class SearchGroupResponseModelv2(BaseModel):
     name: subcategories_v2.SearchGroupNameEnumv2
-    value: Optional[str]
+    value: str | None
 
     class Config:
         alias_generator = to_camel
@@ -34,7 +32,7 @@ class SearchGroupResponseModelv2(BaseModel):
 
 class HomepageLabelResponseModelv2(BaseModel):
     name: subcategories_v2.HomepageLabelNameEnumv2
-    value: Optional[str]
+    value: str | None
 
     class Config:
         alias_generator = to_camel
@@ -44,7 +42,7 @@ class HomepageLabelResponseModelv2(BaseModel):
 
 class NativeCategoryResponseModelv2(BaseModel):
     name: subcategories_v2.NativeCategoryIdEnumv2
-    value: Optional[str]
+    value: str | None
     genre_type: subcategories_v2.GenreType | None
 
     class Config:

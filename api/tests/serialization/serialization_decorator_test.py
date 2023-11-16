@@ -1,4 +1,3 @@
-from typing import Optional
 from unittest.mock import Mock
 from unittest.mock import patch
 
@@ -10,17 +9,17 @@ from pcapi.serialization.decorator import spectree_serialize
 
 class TestBodyModel(BaseModel):
     compulsory_int_body: int
-    optional_string_body: Optional[str]
+    optional_string_body: str | None
 
 
 class TestQueryModel(BaseModel):
     compulsory_int_query: int
-    optinal_string_query: Optional[str]
+    optinal_string_query: str | None
 
 
 class TestResponseModel(BaseModel):
     compulsory_int_response: int
-    optional_string_response: Optional[str]
+    optional_string_response: str | None
 
 
 endpoint_method = Mock()

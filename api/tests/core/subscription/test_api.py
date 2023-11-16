@@ -1402,8 +1402,8 @@ class ActivateBeneficiaryIfNoMissingStepTest:
     def eligible_user(
         self,
         validate_phone: bool,
-        city: typing.Optional[str] = "Quito",
-        activity: typing.Optional[users_models.ActivityEnum] = "Étudiant",
+        city: str | None = "Quito",
+        activity: users_models.ActivityEnum | None = "Étudiant",
         is_underage: bool = False,
     ):
         phone_validation_status = users_models.PhoneValidationStatusType.VALIDATED if validate_phone else None
