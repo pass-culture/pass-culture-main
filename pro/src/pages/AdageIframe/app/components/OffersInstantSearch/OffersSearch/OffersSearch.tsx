@@ -179,8 +179,7 @@ export const OffersSearch = ({
     useState<LocalisationFilterStates>(getActiveLocalisationFilter())
 
   const offerFilterRef = useRef<HTMLDivElement>(null)
-  const isOfferFiltersVisible = useIsElementVisible(offerFilterRef)
-
+  const [isOfferFiltersVisible] = useIsElementVisible(offerFilterRef)
   return (
     <>
       <FormikContext.Provider value={formik}>
