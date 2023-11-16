@@ -42,13 +42,13 @@ export default function Carousel({
 
   function handleOnClickArrowLeft() {
     if (listRef?.current) {
-      listRef.current.scrollLeft -= 800
+      listRef.current.scrollLeft -= 400
     }
   }
 
   function handleOnClickArrowRight() {
     if (listRef?.current) {
-      listRef.current.scrollLeft += 800
+      listRef.current.scrollLeft += 400
     }
   }
 
