@@ -197,7 +197,7 @@ const FormOfferType = ({
           label={DESCRIPTION_LABEL}
           maxLength={MAX_DETAILS_LENGTH}
           name="description"
-          placeholder="Détaillez ici votre projet et son interêt pédagogique"
+          placeholder="Détaillez ici votre projet et son interêt pédagogique."
           disabled={disableForm}
         />
       </FormLayout.Row>
