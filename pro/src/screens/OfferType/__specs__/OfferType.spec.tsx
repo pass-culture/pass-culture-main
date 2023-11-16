@@ -357,7 +357,7 @@ describe('OfferType', () => {
 
     await userEvent.click(
       screen.getByRole('radio', {
-        name: 'Dupliquer les informations d’une d’offre vitrine Créez une offre réservable en dupliquant les informations d’une offre vitrine existante.',
+        name: 'Dupliquer les informations d’une offre vitrine Créer une offre réservable en dupliquant les informations d’une offre vitrine existante.',
       })
     )
 
@@ -390,7 +390,7 @@ describe('OfferType', () => {
 
     await userEvent.click(
       screen.getByRole('radio', {
-        name: 'Dupliquer les informations d’une d’offre vitrine Créez une offre réservable en dupliquant les informations d’une offre vitrine existante.',
+        name: 'Dupliquer les informations d’une offre vitrine Créer une offre réservable en dupliquant les informations d’une offre vitrine existante.',
       })
     )
 
