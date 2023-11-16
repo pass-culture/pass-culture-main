@@ -248,8 +248,8 @@ const CollectiveOfferVisibility = ({
             )}
             <FormLayout.Section title="Établissement scolaire et enseignant">
               <p className={styles['description-text']}>
-                L’établissement scolaire et l’enseignant renseignés seront les
-                seuls à pouvoir visualiser et préréserver votre offre sur ADAGE.
+                L’établissement et l’enseignant renseignés sont les seuls à
+                pouvoir visualiser et préréserver votre offre sur ADAGE.
               </p>
               {institutionsOptions && (
                 <FormLayout.Row className={styles['row-layout']}>
