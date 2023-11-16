@@ -61,13 +61,6 @@ const ReimbursementPoint = ({
   const [venue, setVenue] = useState(initialVenue)
   const [isDmsDialogOpen, setIsDmsDialogOpen] = useState(false)
 
-  const reimbursementPointDisplayName = (
-    reimbursementPoint: ReimbursementPoint
-  ) =>
-    reimbursementPoint
-      ? `${reimbursementPoint.venueName} - ${reimbursementPoint.iban}`
-      : ''
-
   const modifyReimbursementPointLabel = () => {
     if (isNewBankDetailsJourneyEnabled) {
       return 'Ajouter un compte bancaire'
@@ -113,7 +106,7 @@ const ReimbursementPoint = ({
       setReimbursementPointOptions(
         reimbursementPointsResponse.map((reimbursementPoint) => ({
           key: `venue-reimbursement-point-${reimbursementPoint.venueId}`,
-          displayName: reimbursementPointDisplayName(reimbursementPoint),
+          displayName: `${reimbursementPoint.venueName} - ${reimbursementPoint.iban}`,
           id: reimbursementPoint.venueId,
         }))
       )

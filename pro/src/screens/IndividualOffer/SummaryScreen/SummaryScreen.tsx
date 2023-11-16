@@ -51,9 +51,9 @@ const SummaryScreen = () => {
     venueId,
     offerOfferer,
     showVenuePopin,
-    showFirstNonFreeOfferPopin,
     offer,
     subCategories,
+    venueList,
   } = useIndividualOfferContext()
   const { logEvent } = useAnalytics()
 
@@ -94,15 +94,21 @@ const SummaryScreen = () => {
     }
 
     setIsDisabled(true)
+    const venueHasCreatedNonFreeOffer = isNewBankDetailsJourneyEnabled
+      ? venueList.some((venue) => {
+          return venue.hasNonFreeOffers
+        })
+      : undefined
+
     const publishIndividualOfferResponse = await publishIndividualOffer({
       offerId: offer.id,
     })
     if (publishIndividualOfferResponse.isOk) {
       setOffer?.(serializeOfferApi(publishIndividualOfferResponse.payload))
 
-      if (isNewBankDetailsJourneyEnabled && showFirstNonFreeOfferPopin) {
+      if (isNewBankDetailsJourneyEnabled && !venueHasCreatedNonFreeOffer) {
         await checkFirstNonFreeOfferPopin(
-          publishIndividualOfferResponse.payload.isNonFreeOffer ?? true
+          publishIndividualOfferResponse.payload.isNonFreeOffer ?? false
         )
       } else if (
         !isNewBankDetailsJourneyEnabled &&
