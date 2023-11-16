@@ -407,6 +407,32 @@ class CreateOfferValidationRuleTest(PostEndpointHelper):
                     "comparated": {"comparated": ["1101"]},
                 },
             ),
+            (
+                {
+                    "sub_rules-0-sub_rule_type": "FORMATS_COLLECTIVE_OFFER",
+                    "sub_rules-0-operator": "INTERSECTS",
+                    "sub_rules-0-formats": ["CONCERT", "VISITE_LIBRE"],
+                },
+                {
+                    "model": offers_models.OfferValidationModel.COLLECTIVE_OFFER,
+                    "attribute": offers_models.OfferValidationAttribute.FORMATS,
+                    "operator": offers_models.OfferValidationRuleOperator.INTERSECTS,
+                    "comparated": {"comparated": ["CONCERT", "VISITE_LIBRE"]},
+                },
+            ),
+            (
+                {
+                    "sub_rules-0-sub_rule_type": "FORMATS_COLLECTIVE_OFFER_TEMPLATE",
+                    "sub_rules-0-operator": "NOT_INTERSECTS",
+                    "sub_rules-0-formats": ["CONCERT", "VISITE_LIBRE"],
+                },
+                {
+                    "model": offers_models.OfferValidationModel.COLLECTIVE_OFFER_TEMPLATE,
+                    "attribute": offers_models.OfferValidationAttribute.FORMATS,
+                    "operator": offers_models.OfferValidationRuleOperator.NOT_INTERSECTS,
+                    "comparated": {"comparated": ["CONCERT", "VISITE_LIBRE"]},
+                },
+            ),
         ],
     )
     def test_create_offer_validation_rule_with_one_rule(

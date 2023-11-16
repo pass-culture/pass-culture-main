@@ -598,6 +598,10 @@ def format_offer_validation_sub_rule_field(sub_rule_field: offers_models.OfferVa
             return "Le sous-type de spectacle de l'offre individuelle"
         case offers_models.OfferValidationSubRuleField.ID_OFFERER:
             return "La structure proposant l'offre"
+        case offers_models.OfferValidationSubRuleField.FORMATS_COLLECTIVE_OFFER:
+            return "Les formats de l'offre collective"
+        case offers_models.OfferValidationSubRuleField.FORMATS_COLLECTIVE_OFFER_TEMPLATE:
+            return "Les formats de l'offre vitrine"
         case _:
             return sub_rule_field.value
 
@@ -624,6 +628,10 @@ def format_offer_validation_operator(operator: offers_models.OfferValidationRule
             return "contient"
         case offers_models.OfferValidationRuleOperator.CONTAINS_EXACTLY:
             return "contient exactement"
+        case offers_models.OfferValidationRuleOperator.INTERSECTS:
+            return "contiennent"
+        case offers_models.OfferValidationRuleOperator.NOT_INTERSECTS:
+            return "ne contiennent pas"
         case _:
             return operator.value
 
