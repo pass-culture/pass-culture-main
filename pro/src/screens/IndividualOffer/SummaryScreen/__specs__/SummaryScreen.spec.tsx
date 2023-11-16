@@ -32,6 +32,7 @@ import {
   individualOfferContextFactory,
   individualOfferFactory,
   individualOfferSubCategoryFactory,
+  individualOfferVenueItemFactory,
   individualStockFactory,
 } from 'utils/individualApiFactories'
 import { renderWithProviders } from 'utils/renderWithProviders'
@@ -401,7 +402,7 @@ describe('Summary', () => {
         ),
         offerOfferer: { name: 'offerOffererName', id: 1 },
         venueId: 1,
-        showFirstNonFreeOfferPopin: true,
+        venueList: [individualOfferVenueItemFactory()],
       }
       const storeOverride = {
         features: {
@@ -456,11 +457,67 @@ describe('Summary', () => {
       )
     })
 
+    it('should not display redirect modal if hasPendingBankAccount is true', async () => {
+      const context = {
+        offer: individualOfferFactory(
+          individualStockFactory({ price: 2, quantity: null })
+        ),
+        offerOfferer: { name: 'offerOffererName', id: 1 },
+        venueId: 1,
+        venueList: [individualOfferVenueItemFactory()],
+      }
+      const storeOverride = {
+        features: {
+          initialized: true,
+          list: [
+            {
+              isActive: true,
+              nameKey: 'WIP_ENABLE_NEW_OFFER_CREATION_JOURNEY',
+            },
+            {
+              isActive: true,
+              nameKey: 'WIP_ENABLE_NEW_BANK_DETAILS_JOURNEY',
+            },
+          ],
+        },
+      }
+
+      vi.spyOn(api, 'getOfferer').mockResolvedValue({
+        ...defaultGetOffererResponseModel,
+        hasValidBankAccount: true,
+        hasPendingBankAccount: false,
+      })
+
+      vi.spyOn(api, 'patchPublishOffer').mockResolvedValue(
+        GetIndividualOfferFactory({ isNonFreeOffer: false })
+      )
+
+      renderSummary(
+        context,
+        generatePath(
+          getIndividualOfferPath({
+            step: OFFER_WIZARD_STEP_IDS.SUMMARY,
+            mode: OFFER_WIZARD_MODE.CREATION,
+          }),
+          { offerId: 'AA' }
+        ),
+        storeOverride
+      )
+
+      await userEvent.click(
+        screen.getByRole('button', { name: /Publier l’offre/ })
+      )
+
+      expect(
+        screen.queryByText('Félicitations, vous avez créé votre offre !')
+      ).not.toBeInTheDocument()
+    })
+
     it('should not display redirect modal if offer is free', async () => {
       const context = {
         offer: individualOfferFactory(),
         venueId: 1,
-        showFirstNonFreeOfferPopin: true,
+        venueList: [individualOfferVenueItemFactory()],
       }
       const storeOverride = {
         features: {
@@ -499,11 +556,11 @@ describe('Summary', () => {
       ).not.toBeInTheDocument()
     })
 
-    it('should not display redirect modal if showFirstNonFreeOfferPopin is false', async () => {
+    it('should not display redirect modal if venue hasNonFreeOffers', async () => {
       const context = {
         offer: individualOfferFactory(),
         venueId: 1,
-        showFirstNonFreeOfferPopin: false,
+        venueList: [individualOfferVenueItemFactory()],
       }
       const storeOverride = {
         features: {

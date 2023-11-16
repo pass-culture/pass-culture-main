@@ -294,7 +294,6 @@ export const individualOfferContextFactory = (
     setOffer: () => {},
     setSubcategory: () => {},
     showVenuePopin: {},
-    showFirstNonFreeOfferPopin: false,
     ...customContext,
   }
 }
