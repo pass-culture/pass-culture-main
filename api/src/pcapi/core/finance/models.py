@@ -959,6 +959,21 @@ class FinanceIncident(Base, Model):
             for booking_incident in self.booking_finance_incidents
         )
 
+    @property
+    def isClosed(self) -> bool:
+        # FOR REVIEW (to remove): We could have simply started from cashflow to simplify the code,
+        # but this would have caused an additional request for each call
+        return self.status == IncidentStatus.VALIDATED and all(
+            all(
+                any(
+                    pricing.cashflow and pricing.cashflow.status == CashflowStatus.ACCEPTED
+                    for pricing in event.pricings
+                )
+                for event in booking_incident.finance_events
+            )
+            for booking_incident in self.booking_finance_incidents
+        )
+
 
 class BookingFinanceIncident(Base, Model):
     id: int = sqla.Column(sqla.BigInteger, primary_key=True, autoincrement=True)
