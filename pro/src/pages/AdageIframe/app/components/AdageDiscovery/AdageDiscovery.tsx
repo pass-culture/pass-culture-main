@@ -1,8 +1,9 @@
-import React, { useEffect, useState } from 'react'
+import React, { useEffect, useRef, useState } from 'react'
 
 import { OfferAddressType, StudentLevels } from 'apiClient/adage'
-import { api } from 'apiClient/api'
+import { api, apiAdage } from 'apiClient/api'
 import { GET_DATA_ERROR_MESSAGE } from 'core/shared/constants'
+import useIsElementVisible from 'hooks/useIsElementVisible'
 import useNotification from 'hooks/useNotification'
 import bannerDiscovery from 'icons/banner-discovery-adage.svg'
 import fullLinkIcon from 'icons/full-link.svg'
@@ -85,11 +86,21 @@ const mockVenue = {
 }
 
 export const AdageDiscovery = () => {
+  const hasSeenAllPlaylist = useRef<boolean>(false)
   const params = new URLSearchParams(location.search)
   const [domainsOptions, setDomainsOptions] = useState<Option<number>[]>([])
 
+  const footerSuggestion = useRef<HTMLDivElement | null>(null)
+  const isFooterSuggestionVisible = useIsElementVisible(footerSuggestion)
+
   const notification = useNotification()
   const adageAuthToken = params.get('token')
+
+  if (isFooterSuggestionVisible && !hasSeenAllPlaylist.current) {
+    // eslint-disable-next-line @typescript-eslint/no-floating-promises
+    apiAdage.logHasSeenAllPlaylist({ iframeFrom: location.pathname })
+    hasSeenAllPlaylist.current = true
+  }
 
   useEffect(() => {
     const getAllDomains = async () => {
@@ -209,7 +220,7 @@ export const AdageDiscovery = () => {
         </div>
       </div>
       <div className={styles['suggestion']}>
-        <h1 className={styles['section-title']}>
+        <h1 className={styles['section-title']} ref={footerSuggestion}>
           Une idée de rubrique ? Soumettez-la nous !
         </h1>
         <ButtonLink

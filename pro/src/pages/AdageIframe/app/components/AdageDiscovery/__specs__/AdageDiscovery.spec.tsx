@@ -2,8 +2,9 @@
 import { screen, waitFor } from '@testing-library/react'
 
 import { AdageFrontRoles, AuthenticatedResponse } from 'apiClient/adage'
-import { api } from 'apiClient/api'
+import { api, apiAdage } from 'apiClient/api'
 import { GET_DATA_ERROR_MESSAGE } from 'core/shared'
+import * as useIsElementVisible from 'hooks/useIsElementVisible'
 import * as useNotification from 'hooks/useNotification'
 import { AdageUserContextProvider } from 'pages/AdageIframe/app/providers/AdageUserContext'
 import { renderWithProviders } from 'utils/renderWithProviders'
@@ -11,12 +12,19 @@ import { renderWithProviders } from 'utils/renderWithProviders'
 import { AdageDiscovery } from '../AdageDiscovery'
 
 vi.mock('apiClient/api', () => ({
+  apiAdage: {
+    logHasSeenAllPlaylist: vi.fn(),
+  },
   api: {
     listEducationalDomains: vi.fn(() => [
       { id: 1, name: 'Danse' },
       { id: 2, name: 'Architecture' },
     ]),
   },
+}))
+
+vi.mock('hooks/useIsElementVisible', () => ({
+  default: vi.fn().mockImplementation(() => false),
 }))
 
 const renderAdageDiscovery = (user: AuthenticatedResponse) => {
@@ -74,5 +82,19 @@ describe('AdageDiscovery', () => {
     await waitFor(() => expect(api.listEducationalDomains).toHaveBeenCalled())
 
     expect(notifyError).toHaveBeenNthCalledWith(1, GET_DATA_ERROR_MESSAGE)
+  })
+
+  it('should not call tracker when footer suggestion is not visible', () => {
+    renderAdageDiscovery(user)
+
+    expect(apiAdage.logHasSeenAllPlaylist).toHaveBeenCalledTimes(0)
+  })
+
+  it('should call tracker when footer suggestion is visible', () => {
+    vi.spyOn(useIsElementVisible, 'default').mockReturnValueOnce(true)
+
+    renderAdageDiscovery(user)
+
+    expect(apiAdage.logHasSeenAllPlaylist).toHaveBeenCalledTimes(1)
   })
 })
