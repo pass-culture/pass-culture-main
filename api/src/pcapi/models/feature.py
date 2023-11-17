@@ -70,7 +70,6 @@ class FeatureToggle(enum.Enum):
     INCLUDE_LEGACY_PAYMENTS_FOR_REIMBURSEMENTS = (
         "Inclure les anciens modèles de données pour le téléchargement des remboursements "
     )
-    PRICE_BOOKINGS = "Active la valorisation des réservations"
     PRICE_FINANCE_EVENTS = "Active la valorisation des évènements de finance"
     SYNCHRONIZE_ALLOCINE = "Permettre la synchronisation journalière avec Allociné"
     SYNCHRONIZE_TITELIVE_PRODUCTS = "Permettre limport journalier du référentiel des livres"

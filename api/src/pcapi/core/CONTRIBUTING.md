@@ -87,14 +87,14 @@ Ces fichiers contiennent des commandes que l'on peut appeler depuis l'extérieur
 
 Par exemple la commande :
 ```python
-@blueprint.cli.command("price_bookings")
+@blueprint.cli.command("price_finance_events")
 @cron_decorators.log_cron_with_transaction
-@cron_decorators.cron_require_feature(FeatureToggle.PRICE_BOOKINGS)
-def price_bookings() -> None:
-    finance_api.price_bookings()
+@cron_decorators.cron_require_feature(FeatureToggle.PRICE_FINANCE_EVENTS)
+def price_finance_events() -> None:
+    finance_api.price_events()
 ```
 
-peut être appelée en lançant : `flask price_bookings` depuis le pod console.
+peut être appelée en lançant : `flask price_finance_events` depuis le pod console.
 
 
 Le décorateur `@log_cron_with_transaction` permet de logguer l'exécution des crons sous un format standard afin de profiter des outils de monitoring.
