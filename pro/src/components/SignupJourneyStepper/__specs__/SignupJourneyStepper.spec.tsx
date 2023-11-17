@@ -13,7 +13,7 @@ import {
 import { DEFAULT_OFFERER_FORM_VALUES } from 'screens/SignupJourneyForm/Offerer/constants'
 import { renderWithProviders } from 'utils/renderWithProviders'
 
-import SignupBreadcrumb from '../SignupJourneyBreadcrumb'
+import SignupBreadcrumb from '../SignupJourneyStepper'
 
 const renderSignupBreadcrumb = (
   contextValue: SignupJourneyContextValues,
@@ -139,7 +139,7 @@ describe('test SignupBreadcrumb', () => {
     expect(screen.getByText('Validation screen')).toBeInTheDocument()
   })
 
-  it('should not render breadcrumb when step is not included in breadcrumb step', async () => {
+  it('should not render breadcrumb when step is not included in breadcrumb step', () => {
     const { tabAuthentication, tabActivity, tabValidation } =
       renderSignupBreadcrumb(contextValue, '/parcours-inscription/structure')
 

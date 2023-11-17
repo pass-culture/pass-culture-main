@@ -2,8 +2,8 @@ import { screen } from '@testing-library/react'
 import { userEvent } from '@testing-library/user-event'
 import React from 'react'
 
-import { SIGNUP_JOURNEY_STEP_IDS } from 'components/SignupJourneyBreadcrumb/constants'
 import { OnboardingFormNavigationAction } from 'components/SignupJourneyFormLayout/constants'
+import { SIGNUP_JOURNEY_STEP_IDS } from 'components/SignupJourneyStepper/constants'
 import {
   SignupJourneyContext,
   SignupJourneyContextValues,

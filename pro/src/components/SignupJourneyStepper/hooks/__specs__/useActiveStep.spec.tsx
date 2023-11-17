@@ -11,7 +11,7 @@ vi.mock('react-router-dom', () => ({
 }))
 
 describe('useActiveStep', () => {
-  it('should return empty string if location is wrong', async () => {
+  it('should return empty string if location is wrong', () => {
     vi.spyOn(router, 'useLocation').mockReturnValue({
       pathname: '',
       search: '',
@@ -23,7 +23,7 @@ describe('useActiveStep', () => {
     expect(result.current).toEqual('')
   })
 
-  it('should return last part of url path', async () => {
+  it('should return last part of url path', () => {
     vi.spyOn(router, 'useLocation').mockReturnValue({
       pathname: '/offre/individuelle/creation/informations',
       search: '',
@@ -35,7 +35,7 @@ describe('useActiveStep', () => {
     expect(result.current).toEqual('informations')
   })
 
-  it('should return first allowed step if requested step is not allowed', async () => {
+  it('should return first allowed step if requested step is not allowed', () => {
     vi.spyOn(router, 'useLocation').mockReturnValue({
       pathname: '/offre/individuelle/creation/stocks',
       search: '',
