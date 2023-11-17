@@ -20,6 +20,7 @@ interface ReimbursementBankAccountProps {
   bankAccount: BankAccountResponseModel
   venuesNotLinkedLength: number
   bankAccountsNumber: number
+  onUpdateButtonClick?: (id: number) => void
   offererId?: number
 }
 
@@ -27,6 +28,7 @@ const ReimbursementBankAccount = ({
   bankAccount,
   venuesNotLinkedLength,
   bankAccountsNumber,
+  onUpdateButtonClick,
   offererId,
 }: ReimbursementBankAccountProps): JSX.Element => {
   const hasLinkedVenues = bankAccount.linkedVenues.length > 0
@@ -107,6 +109,7 @@ const ReimbursementBankAccount = ({
                 <Button
                   variant={ButtonVariant.SECONDARY}
                   onClick={() => {
+                    onUpdateButtonClick?.(bankAccount.id)
                     logEvent?.(
                       BankAccountEvents.CLICKED_CHANGE_VENUE_TO_BANK_ACCOUNT,
                       {
@@ -130,6 +133,7 @@ const ReimbursementBankAccount = ({
                       offererId,
                     }
                   )
+                  onUpdateButtonClick?.(bankAccount.id)
                 }}
               >
                 Rattacher un lieu

@@ -1,0 +1,51 @@
+@use "styles/variables/_forms.scss" as forms;
+@use "styles/mixins/_rem.scss" as rem;
+@use "styles/mixins/_fonts.scss" as fonts;
+@use "styles/variables/_colors.scss" as colors;
+@use "styles/variables/_size.scss" as size;
+
+.dialog {
+  width: rem.torem(592px);
+
+  &-title {
+    margin-bottom: rem.torem(16px);
+    padding-right: rem.torem(32px);
+  }
+
+  &-subtitle {
+    margin-bottom: rem.torem(24px);
+
+  }
+
+  &-checkboxes {
+    max-height: rem.torem(200px);
+    overflow-y: auto
+  }
+
+  &-select-all {
+    display: flex;
+    justify-content: space-between;
+    border-bottom: 1px solid colors.$grey-semi-dark;
+    padding-bottom: rem.torem(16px);
+    margin-bottom: rem.torem(16px);
+    align-items: center;
+
+    &-count {
+      @include fonts.caption
+    }
+  }
+
+  &-checkbox {
+    margin-bottom: rem.torem(24px);
+
+    &:last-of-type {
+      margin-bottom: rem.torem(32px);
+    }
+  }
+
+  &-actions {
+    display: flex;
+    justify-content: flex-end;
+    gap: rem.torem(24px);
+  }
+}

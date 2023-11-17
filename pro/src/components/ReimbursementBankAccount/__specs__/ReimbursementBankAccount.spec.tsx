@@ -14,6 +14,7 @@ import { renderWithProviders } from 'utils/renderWithProviders'
 import ReimbursementBankAccount from '../ReimbursementBankAccount'
 
 const mockLogEvent = vi.fn()
+const mockUpdateButtonClick = vi.fn()
 
 const renderReimbursementBankAccount = (
   bankAccount: BankAccountResponseModel,
@@ -31,6 +32,7 @@ const renderReimbursementBankAccount = (
             venuesNotLinkedLength={venuesNotLinkedLength}
             bankAccountsNumber={bankAccountsNumber}
             offererId={offererId}
+            onUpdateButtonClick={mockUpdateButtonClick}
           />
         }
       />
@@ -246,5 +248,19 @@ describe('ReimbursementBankAccount', () => {
         }
       )
     })
+  })
+
+  it('should call the onUpdateButtonClick function when clicking the action button', async () => {
+    vi.spyOn(useAnalytics, 'default').mockImplementation(() => ({
+      logEvent: mockLogEvent,
+    }))
+
+    bankAccount.linkedVenues = []
+    renderReimbursementBankAccount(bankAccount, 1)
+
+    await userEvent.click(
+      screen.getByRole('button', { name: 'Rattacher un lieu' })
+    )
+    expect(mockUpdateButtonClick).toHaveBeenCalled()
   })
 })
