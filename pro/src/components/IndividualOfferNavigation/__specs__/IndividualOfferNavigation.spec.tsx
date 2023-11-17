@@ -17,12 +17,12 @@ import {
 import { renderWithProviders } from 'utils/renderWithProviders'
 
 import { OFFER_WIZARD_STEP_IDS } from '../constants'
-import { IndividualOfferBreadcrumb } from '../IndividualOfferBreadcrumb'
+import { IndividualOfferNavigation } from '../IndividualOfferNavigation'
 
 const offerId = 12
 const stockId = 55
 
-const renderIndividualOfferBreadcrumb = (
+const renderIndividualOfferNavigation = (
   contextOverride: Partial<IndividualOfferContextValues> = {},
   url = getIndividualOfferPath({
     step: OFFER_WIZARD_STEP_IDS.INFORMATIONS,
@@ -34,7 +34,7 @@ const renderIndividualOfferBreadcrumb = (
 
   renderWithProviders(
     <IndividualOfferContext.Provider value={contextValues}>
-      <IndividualOfferBreadcrumb />
+      <IndividualOfferNavigation />
       <Routes>
         {[OFFER_WIZARD_MODE.CREATION, OFFER_WIZARD_MODE.EDITION].map((mode) => (
           <React.Fragment key={mode}>
@@ -85,16 +85,16 @@ const renderIndividualOfferBreadcrumb = (
   )
 }
 
-describe('test IndividualOfferBreadcrumb', () => {
+describe('test IndividualOfferNavigation', () => {
   describe('in creation', () => {
     it('should render stepper breadcrumb in creation', () => {
-      renderIndividualOfferBreadcrumb()
+      renderIndividualOfferNavigation()
 
       expect(screen.getByTestId('stepper')).toBeInTheDocument()
     })
 
     it('should render steps when no offer is given', async () => {
-      renderIndividualOfferBreadcrumb({
+      renderIndividualOfferNavigation({
         offer: individualOfferFactory({ isEvent: false }),
       })
 
@@ -118,7 +118,7 @@ describe('test IndividualOfferBreadcrumb', () => {
         isEvent: false,
       })
 
-      renderIndividualOfferBreadcrumb({ offer })
+      renderIndividualOfferNavigation({ offer })
 
       expect(screen.getByText('Détails de l’offre')).toBeInTheDocument()
       expect(screen.getByText('Stock & Prix')).toBeInTheDocument()
@@ -140,7 +140,7 @@ describe('test IndividualOfferBreadcrumb', () => {
         isEvent: false,
       })
 
-      renderIndividualOfferBreadcrumb({ offer })
+      renderIndividualOfferNavigation({ offer })
 
       expect(screen.getByText('Détails de l’offre')).toBeInTheDocument()
       expect(screen.getByText('Stock & Prix')).toBeInTheDocument()
@@ -158,7 +158,7 @@ describe('test IndividualOfferBreadcrumb', () => {
     })
 
     it('should render steps on Information', () => {
-      renderIndividualOfferBreadcrumb(
+      renderIndividualOfferNavigation(
         { offer: individualOfferFactory({ isEvent: false }) },
         generatePath(
           getIndividualOfferPath({
@@ -177,7 +177,7 @@ describe('test IndividualOfferBreadcrumb', () => {
     })
 
     it('should render steps on Stocks', () => {
-      renderIndividualOfferBreadcrumb(
+      renderIndividualOfferNavigation(
         { offer: individualOfferFactory({ isEvent: false }) },
         generatePath(
           getIndividualOfferPath({
@@ -196,7 +196,7 @@ describe('test IndividualOfferBreadcrumb', () => {
     })
 
     it('should render steps on Summary', () => {
-      renderIndividualOfferBreadcrumb(
+      renderIndividualOfferNavigation(
         { offer: individualOfferFactory({ isEvent: false }) },
         generatePath(
           getIndividualOfferPath({
@@ -215,7 +215,7 @@ describe('test IndividualOfferBreadcrumb', () => {
     })
 
     it('should render steps on tarif', () => {
-      renderIndividualOfferBreadcrumb(
+      renderIndividualOfferNavigation(
         {
           offer: {
             ...individualOfferFactory(),
@@ -242,7 +242,7 @@ describe('test IndividualOfferBreadcrumb', () => {
     })
 
     it('should not render tarif step when offer is not an event', () => {
-      renderIndividualOfferBreadcrumb(
+      renderIndividualOfferNavigation(
         {
           offer: {
             ...individualOfferFactory(),
@@ -275,7 +275,7 @@ describe('test IndividualOfferBreadcrumb', () => {
         stocks: [individualStockFactory({ id: stockId })],
       })
 
-      renderIndividualOfferBreadcrumb(
+      renderIndividualOfferNavigation(
         { offer },
         generatePath(
           getIndividualOfferPath({
@@ -287,7 +287,9 @@ describe('test IndividualOfferBreadcrumb', () => {
       )
 
       expect(screen.getByText('Informations screen')).toBeInTheDocument()
-      expect(screen.getByTestId('bc-tab')).toBeInTheDocument()
+      expect(
+        screen.getByRole('link', { name: 'Dates & Capacités' })
+      ).toBeInTheDocument()
     })
 
     it('should render steps on Information', () => {
@@ -297,7 +299,7 @@ describe('test IndividualOfferBreadcrumb', () => {
         isEvent: false,
       })
 
-      renderIndividualOfferBreadcrumb(
+      renderIndividualOfferNavigation(
         { offer },
         generatePath(
           getIndividualOfferPath({
@@ -324,7 +326,7 @@ describe('test IndividualOfferBreadcrumb', () => {
         isEvent: false,
       })
 
-      renderIndividualOfferBreadcrumb(
+      renderIndividualOfferNavigation(
         { offer },
         generatePath(
           getIndividualOfferPath({

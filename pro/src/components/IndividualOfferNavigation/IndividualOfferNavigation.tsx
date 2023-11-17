@@ -1,12 +1,8 @@
-import cn from 'classnames'
 import React from 'react'
 import { generatePath, useLocation } from 'react-router-dom'
 
-import Breadcrumb, {
-  BreadcrumbStyle,
-  StepPattern,
-  Step,
-} from 'components/Breadcrumb'
+import Stepper from 'components/Stepper'
+import { Step, StepPattern } from 'components/Stepper/Stepper'
 import { useIndividualOfferContext } from 'context/IndividualOfferContext'
 import { OFFER_WIZARD_MODE } from 'core/Offers/constants'
 import { getIndividualOfferPath } from 'core/Offers/utils/getIndividualOfferUrl'
@@ -16,11 +12,12 @@ import {
   getOfferSubtypeFromParam,
   isOfferSubtypeEvent,
 } from 'screens/IndividualOffer/InformationsScreen/utils/filterCategories/filterCategories'
+import Tabs from 'ui-kit/Tabs'
 
 import { OFFER_WIZARD_STEP_IDS } from './constants'
-import styles from './IndividualOfferBreadcrumb.module.scss'
+import styles from './IndividualOfferNavigation.module.scss'
 
-export const IndividualOfferBreadcrumb = () => {
+export const IndividualOfferNavigation = () => {
   const { offer, subcategory } = useIndividualOfferContext()
   const activeStep = useActiveStep(Object.values(OFFER_WIZARD_STEP_IDS))
   const mode = useOfferWizardMode()
@@ -144,19 +141,25 @@ export const IndividualOfferBreadcrumb = () => {
     return step
   })
 
+  const tabs = stepList.map(({ id, label, url }) => ({
+    key: id,
+    label,
+    url,
+  }))
+
   return (
-    <Breadcrumb
-      activeStep={activeStep}
-      steps={stepList}
-      styleType={
-        mode === OFFER_WIZARD_MODE.CREATION
-          ? BreadcrumbStyle.STEPPER
-          : BreadcrumbStyle.TAB
-      }
-      className={cn(styles['stepper'], {
-        [styles['stepper-creation']]: mode === OFFER_WIZARD_MODE.CREATION,
-        [styles['stepper-readonly']]: mode === OFFER_WIZARD_MODE.READ_ONLY,
-      })}
-    />
+    <>
+      {mode === OFFER_WIZARD_MODE.CREATION ? (
+        <Stepper
+          activeStep={activeStep}
+          steps={stepList}
+          className={styles['stepper']}
+        />
+      ) : (
+        <div className={styles['tabs']}>
+          <Tabs tabs={tabs} selectedKey={activeStep}></Tabs>
+        </div>
+      )}
+    </>
   )
 }

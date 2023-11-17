@@ -2,7 +2,7 @@ import React from 'react'
 import { useSelector } from 'react-redux'
 
 import ActionsBarSticky from 'components/ActionsBarSticky'
-import { OFFER_WIZARD_STEP_IDS } from 'components/IndividualOfferBreadcrumb/constants'
+import { OFFER_WIZARD_STEP_IDS } from 'components/IndividualOfferNavigation/constants'
 import { OFFER_WIZARD_MODE } from 'core/Offers/constants'
 import { computeOffersUrl } from 'core/Offers/utils'
 import { useOfferWizardMode } from 'hooks'

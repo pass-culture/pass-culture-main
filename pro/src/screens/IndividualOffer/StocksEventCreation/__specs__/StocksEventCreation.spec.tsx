@@ -6,7 +6,7 @@ import React from 'react'
 import { Route, Routes } from 'react-router-dom'
 
 import { api } from 'apiClient/api'
-import { OFFER_WIZARD_STEP_IDS } from 'components/IndividualOfferBreadcrumb/constants'
+import { OFFER_WIZARD_STEP_IDS } from 'components/IndividualOfferNavigation/constants'
 import Notification from 'components/Notification/Notification'
 import { OFFER_WIZARD_MODE } from 'core/Offers/constants'
 import {

@@ -1,7 +1,7 @@
 import cn from 'classnames'
 import React from 'react'
 
-import { IndividualOfferBreadcrumb } from 'components/IndividualOfferBreadcrumb/IndividualOfferBreadcrumb'
+import { IndividualOfferNavigation } from 'components/IndividualOfferNavigation/IndividualOfferNavigation'
 import { OFFER_WIZARD_MODE } from 'core/Offers/constants'
 import { IndividualOffer } from 'core/Offers/types'
 
@@ -65,7 +65,7 @@ const IndivualOfferLayout = ({
         />
       )}
 
-      {withStepper && <IndividualOfferBreadcrumb />}
+      {withStepper && <IndividualOfferNavigation />}
 
       <div className={styles['content']}>{children}</div>
     </>

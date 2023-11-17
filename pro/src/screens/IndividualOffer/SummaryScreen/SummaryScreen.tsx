@@ -2,7 +2,7 @@ import React, { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 
 import RedirectDialog from 'components/Dialog/RedirectDialog'
-import { OFFER_WIZARD_STEP_IDS } from 'components/IndividualOfferBreadcrumb/constants'
+import { OFFER_WIZARD_STEP_IDS } from 'components/IndividualOfferNavigation/constants'
 import { OfferAppPreview } from 'components/OfferAppPreview'
 import { SummaryLayout } from 'components/SummaryLayout'
 import { useIndividualOfferContext } from 'context/IndividualOfferContext'

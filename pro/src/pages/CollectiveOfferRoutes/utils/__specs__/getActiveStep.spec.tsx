@@ -1,20 +1,20 @@
-import { CollectiveOfferBreadcrumbStep } from 'components/CollectiveOfferBreadcrumb'
+import { CollectiveOfferNavigationStep } from 'components/CollectiveOfferNavigation'
 
 import { getActiveStep } from '../getActiveStep'
 
 describe('getActiveStep', () => {
   it('getActiveStep', () => {
     expect(getActiveStep('/blablabla/stocks')).toBe(
-      CollectiveOfferBreadcrumbStep.STOCKS
+      CollectiveOfferNavigationStep.STOCKS
     )
     expect(getActiveStep('/blablabla/visibilite')).toBe(
-      CollectiveOfferBreadcrumbStep.VISIBILITY
+      CollectiveOfferNavigationStep.VISIBILITY
     )
     expect(getActiveStep('/blablabla/recapitulatif')).toBe(
-      CollectiveOfferBreadcrumbStep.SUMMARY
+      CollectiveOfferNavigationStep.SUMMARY
     )
     expect(getActiveStep('/blablabla')).toBe(
-      CollectiveOfferBreadcrumbStep.DETAILS
+      CollectiveOfferNavigationStep.DETAILS
     )
   })
 })
