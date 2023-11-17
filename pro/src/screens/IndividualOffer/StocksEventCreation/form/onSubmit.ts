@@ -56,12 +56,12 @@ export const onSubmit = async (
     if (isOk) {
       notify.success(
         serializedStocksToAdd.length === 1
-          ? '1 nouvelle occurrence a été ajoutée'
-          : `${serializedStocksToAdd.length} nouvelles occurrences ont été ajoutées`
+          ? '1 nouvelle date a été ajoutée'
+          : `${serializedStocksToAdd.length} nouvelles dates ont été ajoutées`
       )
     } else {
       notify.error(
-        `Veuillez créer moins de ${MAX_STOCKS_PER_OFFER} occurrences par offre.`
+        `Veuillez créer moins de ${MAX_STOCKS_PER_OFFER} dates par offre.`
       )
     }
   }

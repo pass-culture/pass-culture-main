@@ -97,7 +97,7 @@ describe('PriceCategories', () => {
 
     expect(
       await screen.findByText(
-        'Cette modification de tarif s’appliquera à l’ensemble des occurrences qui y sont associées.'
+        'Cette modification de tarif s’appliquera à l’ensemble des dates qui y sont associées.'
       )
     ).toBeInTheDocument()
     expect(
@@ -133,7 +133,7 @@ describe('PriceCategories', () => {
 
     expect(
       await screen.findByText(
-        'Cette modification de tarif s’appliquera à l’ensemble des occurrences qui y sont associées.'
+        'Cette modification de tarif s’appliquera à l’ensemble des dates qui y sont associées.'
       )
     ).toBeInTheDocument()
     expect(

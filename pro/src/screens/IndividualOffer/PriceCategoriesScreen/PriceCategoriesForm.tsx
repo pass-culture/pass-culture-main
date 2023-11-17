@@ -56,15 +56,6 @@ export const PriceCategoriesForm = ({
     (priceCategory) => priceCategory.price === 0
   )
 
-  const onChangeFree =
-    (index: number) => (e: React.ChangeEvent<HTMLInputElement>) => {
-      if (e.target.checked) {
-        setFieldValue(`priceCategories[${index}].price`, 0)
-      } else {
-        setFieldValue(`priceCategories[${index}].price`, '')
-      }
-    }
-
   const onDeletePriceCategory = async (
     index: number,
     arrayHelpers: FieldArrayRenderProps,
@@ -104,7 +95,7 @@ export const PriceCategoriesForm = ({
     }
 
     if (values.priceCategories.length === 2) {
-      setFieldValue(`priceCategories[0].label`, UNIQUE_PRICE)
+      await setFieldValue(`priceCategories[0].label`, UNIQUE_PRICE)
       const otherPriceCategory = priceCategories.filter(
         (pC) => pC.id !== priceCategoryId
       )
@@ -127,7 +118,7 @@ export const PriceCategoriesForm = ({
       if (response.isOk) {
         const updatedOffer = response.payload
         setOffer && setOffer(updatedOffer)
-        setValues({
+        await setValues({
           ...values,
           priceCategories: computeInitialValues(updatedOffer).priceCategories,
         })
@@ -154,7 +145,7 @@ export const PriceCategoriesForm = ({
                       values.priceCategories[currentDeletionIndex].id
                     )
                   }
-                  title="En supprimant ce tarif vous allez aussi supprimer l’ensemble des occurrences qui lui sont associées."
+                  title="En supprimant ce tarif vous allez aussi supprimer l’ensemble des dates qui lui sont associées."
                   confirmText="Confirmer la supression"
                   cancelText="Annuler"
                 />
@@ -196,7 +187,19 @@ export const PriceCategoriesForm = ({
                       label="Gratuit"
                       checked={isFreeCheckboxSelectedArray[index]}
                       name={`priceCategories[${index}].free`}
-                      onChange={onChangeFree(index)}
+                      onChange={async (e) => {
+                        if (e.target.checked) {
+                          await setFieldValue(
+                            `priceCategories[${index}].price`,
+                            0
+                          )
+                        } else {
+                          await setFieldValue(
+                            `priceCategories[${index}].price`,
+                            ''
+                          )
+                        }
+                      }}
                       disabled={isDisabled}
                     />
                     {mode === OFFER_WIZARD_MODE.CREATION && (
@@ -233,10 +236,10 @@ export const PriceCategoriesForm = ({
               <Button
                 variant={ButtonVariant.TERNARY}
                 icon={fullMoreIcon}
-                onClick={() => {
+                onClick={async () => {
                   arrayHelpers.push(INITIAL_PRICE_CATEGORY)
                   if (values.priceCategories[0].label === UNIQUE_PRICE) {
-                    setFieldValue(`priceCategories[0].label`, '')
+                    await setFieldValue(`priceCategories[0].label`, '')
                   }
                 }}
                 disabled={
