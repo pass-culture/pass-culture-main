@@ -8,6 +8,7 @@ declare global {
       options?: ImageBitmapOptions
     ) => Promise<ImageBitmap>
 
+    beamer_config: Record<string, unknown>
     Beamer: {
       init: () => void
       update: (config: any) => void
