@@ -114,7 +114,7 @@ def get_all_bookings_per_year(
     api=blueprint.api,
     on_success_status=204,
     on_error_statuses=[404, 422],
-    tags=("merge institution"),
+    tags=("merge institution",),
 )
 @adage_api_key_required
 def merge_institution_prebookings(body: prebooking_serialization.MergeInstitutionPrebookingsQueryModel) -> None:
