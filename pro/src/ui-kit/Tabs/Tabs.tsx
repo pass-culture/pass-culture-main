@@ -1,5 +1,5 @@
 import cn from 'classnames'
-import React from 'react'
+import React, { ReactNode } from 'react'
 import { Link, useLocation } from 'react-router-dom'
 
 import { Button } from 'ui-kit/Button'
@@ -8,11 +8,11 @@ import { SvgIcon } from 'ui-kit/SvgIcon/SvgIcon'
 
 import styles from './Tabs.module.scss'
 
-interface Tab {
-  label: string
+export interface Tab {
+  label: string | ReactNode
   key: string
   url?: string
-  onClick?: () => void
+  onClick?: (e: React.MouseEvent) => void
   icon?: string
 }
 

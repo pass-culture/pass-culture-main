@@ -1,11 +1,12 @@
 import React from 'react'
 
-import Breadcrumb, { BreadcrumbStyle } from 'components/Breadcrumb'
 import { useReimbursementContext } from 'context/ReimbursementContext/ReimbursementContext'
 import useActiveFeature from 'hooks/useActiveFeature'
 import useActiveStep from 'hooks/useActiveStep'
 import fullErrorIcon from 'icons/full-error.svg'
 import { SvgIcon } from 'ui-kit/SvgIcon/SvgIcon'
+import Tabs from 'ui-kit/Tabs'
+import { Tab } from 'ui-kit/Tabs/Tabs'
 
 import {
   OLD_STEP_LIST,
@@ -15,9 +16,9 @@ import {
   STEP_ID_INVOICES,
   STEP_NAMES,
 } from './constants'
-import styles from './ReimbursmentsBreadcrumb.module.scss'
+import styles from './ReimbursementsTabs.module.scss'
 
-const ReimbursementsBreadcrumb = () => {
+const ReimbursementsTabs = () => {
   const isNewBankDetailsJourneyEnabled = useActiveFeature(
     'WIP_ENABLE_NEW_BANK_DETAILS_JOURNEY'
   )
@@ -63,13 +64,11 @@ const ReimbursementsBreadcrumb = () => {
     ]
   }
 
-  return (
-    <Breadcrumb
-      activeStep={activeStep}
-      steps={isNewBankDetailsJourneyEnabled ? getSteps() : OLD_STEP_LIST}
-      styleType={BreadcrumbStyle.TAB}
-    />
-  )
+  const tabs: Tab[] = (
+    isNewBankDetailsJourneyEnabled ? getSteps() : OLD_STEP_LIST
+  ).map(({ id, label, url }) => ({ key: id, label, url }))
+
+  return <Tabs tabs={tabs} selectedKey={activeStep}></Tabs>
 }
 
-export default ReimbursementsBreadcrumb
+export default ReimbursementsTabs
