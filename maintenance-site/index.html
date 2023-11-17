@@ -125,11 +125,11 @@
       try {
         const sourceUrl = new URL(source)
         if (sourceUrl.protocol != 'https:') {
-          return
+           sourceDomain = ""
         }
         sourceDomain = sourceUrl.host
       } catch (error) {
-        return
+        sourceDomain = ""
       }
 
       var blockClassToShow = "from-pro"
