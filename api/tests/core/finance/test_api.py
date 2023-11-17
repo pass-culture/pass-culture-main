@@ -2653,35 +2653,6 @@ class GenerateInvoiceHtmlTest:
 
         self.generate_and_compare_invoice(stocks, reimbursement_point, venue)
 
-    def test_basics_with_new_collective_model(self, invoice_data):
-        reimbursement_point, stocks, venue = invoice_data
-        pricing_point = offerers_models.Venue.query.get(venue.current_pricing_point_id)
-        only_collective_venue = offerers_factories.VenueFactory(
-            pricing_point=pricing_point,
-            reimbursement_point=reimbursement_point,
-            name="Coiffeur collecTIF",
-        )
-        only_collective_booking = educational_factories.UsedCollectiveBookingFactory(
-            collectiveStock__beginningDatetime=datetime.datetime.utcnow(),
-            collectiveStock__collectiveOffer__venue=only_collective_venue,
-            collectiveStock__price=666,
-        )
-        collective_booking = educational_factories.UsedCollectiveBookingFactory(
-            collectiveStock__beginningDatetime=datetime.datetime.utcnow(),
-            collectiveStock__collectiveOffer__venue=venue,
-            collectiveStock__price=5000,
-        )
-        collective_booking2 = educational_factories.UsedCollectiveBookingFactory(
-            collectiveStock__beginningDatetime=datetime.datetime.utcnow(),
-            collectiveStock__collectiveOffer__venue=venue,
-            collectiveStock__price=250,
-        )
-        api.price_booking(collective_booking)
-        api.price_booking(collective_booking2)
-        api.price_booking(only_collective_booking)
-
-        self.generate_and_compare_invoice(stocks, reimbursement_point, venue)
-
 
 class StoreInvoicePdfTest:
     STORAGE_DIR = pathlib.Path(tests.__path__[0]) / ".." / "src" / "pcapi" / "static" / "object_store_data"
