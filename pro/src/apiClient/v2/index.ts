@@ -28,6 +28,7 @@ export type { CollectiveOffersListVenuesResponseModel } from './models/Collectiv
 export type { CollectiveOffersResponseModel } from './models/CollectiveOffersResponseModel';
 export type { CollectiveOffersStudentLevelResponseModel } from './models/CollectiveOffersStudentLevelResponseModel';
 export type { CollectiveOffersSubCategoryResponseModel } from './models/CollectiveOffersSubCategoryResponseModel';
+export { EacFormat } from './models/EacFormat';
 export type { ErrorResponseModel } from './models/ErrorResponseModel';
 export type { GetBookingResponse } from './models/GetBookingResponse';
 export type { GetListEducationalInstitutionsQueryModel } from './models/GetListEducationalInstitutionsQueryModel';
