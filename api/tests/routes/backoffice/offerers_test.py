@@ -869,7 +869,7 @@ class GetOffererUsersTest(GetEndpointHelper):
         assert rows[1]["Invitation"].startswith("Invité le ")
         assert rows[1]["Invitation"].endswith("par " + guest.user.full_name)
 
-    def test_get_pro_users_with_one_offerer_invitation_with_user_account(self, authenticated_client, offerer):
+    def test_get_pro_users_with_one_offerer_invitation_with_validated_user_account(self, authenticated_client, offerer):
         uo1 = offerers_factories.UserOffererFactory(offerer=offerer)
         pro = users_factories.ProFactory()
         uo2 = offerers_factories.UserOffererFactory(offerer=offerer, user=pro)
@@ -911,6 +911,29 @@ class GetOffererUsersTest(GetEndpointHelper):
         assert rows[2]["Email"] == guest2.email
         assert rows[2]["Invitation"].startswith("Invité le ")
         assert rows[2]["Invitation"].endswith("par " + guest2.user.full_name)
+
+    def test_get_pro_users_with_one_offerer_invitation_with_not_validated_user_account(
+        self, authenticated_client, offerer
+    ):
+        pro = users_factories.ProFactory()
+        guest2 = offerers_factories.OffererInvitationFactory(offerer=offerer, user=pro, email=pro.email)
+        # no UserOfferer when the user has not validated their user account
+
+        url = url_for(self.endpoint, offerer_id=offerer.id)
+
+        with assert_num_queries(self.expected_num_queries):
+            response = authenticated_client.get(url)
+            assert response.status_code == 200
+
+        rows = html_parser.extract_table_rows(response.data)
+        assert len(rows) == 1
+
+        assert rows[0]["ID"] == ""
+        assert rows[0]["Statut"] == "Invité"
+        assert rows[0]["Prénom / Nom"] == ""
+        assert rows[0]["Email"] == guest2.email
+        assert rows[0]["Invitation"].startswith("Invité le ")
+        assert rows[0]["Invitation"].endswith("par " + guest2.user.full_name)
 
     def test_add_pro_user_choices(self, authenticated_client, legit_user, offerer):
         user1 = offerers_factories.UserOffererFactory(offerer=offerer)
