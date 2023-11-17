@@ -2,7 +2,7 @@ import cn from 'classnames'
 import React from 'react'
 import { useLocation, useParams } from 'react-router-dom'
 
-import CollectiveOfferBreadcrumb from 'components/CollectiveOfferBreadcrumb'
+import CollectiveOfferNavigation from 'components/CollectiveOfferNavigation'
 import HelpLink from 'components/HelpLink'
 import { getActiveStep } from 'pages/CollectiveOfferRoutes/utils/getActiveStep'
 import { Tag, TagVariant } from 'ui-kit/Tag/Tag'
@@ -77,7 +77,7 @@ const CollectiveOfferLayout = ({
       {
         /* istanbul ignore next: DEBT, TO FIX */
         breadCrumpProps && (
-          <CollectiveOfferBreadcrumb
+          <CollectiveOfferNavigation
             activeStep={breadCrumpProps.activeStep}
             className={cn(styles['eac-layout-breadcrumb'], {
               [styles['stepper-breadcrumb']]: breadCrumpProps.isCreatingOffer,

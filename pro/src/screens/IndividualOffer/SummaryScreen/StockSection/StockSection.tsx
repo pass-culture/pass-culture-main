@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react'
 
 import { api } from 'apiClient/api'
 import { OfferStatus, StockStatsResponseModel } from 'apiClient/v1'
-import { OFFER_WIZARD_STEP_IDS } from 'components/IndividualOfferBreadcrumb/constants'
+import { OFFER_WIZARD_STEP_IDS } from 'components/IndividualOfferNavigation/constants'
 import { SummaryLayout } from 'components/SummaryLayout'
 import { OFFER_WIZARD_MODE } from 'core/Offers/constants'
 import { IndividualOffer } from 'core/Offers/types'
