@@ -343,7 +343,7 @@ describe('screens:StocksEventEdition', () => {
     )
     await userEvent.dblClick(screen.getAllByText('Supprimer le stock')[0])
     expect(
-      screen.getByText('Voulez-vous supprimer cette occurrence ?')
+      screen.getByText('Voulez-vous supprimer cette date ?')
     ).toBeInTheDocument()
     await userEvent.click(
       screen.getByText('Confirmer la suppression', { selector: 'button' })
@@ -381,7 +381,7 @@ describe('screens:StocksEventEdition', () => {
     )
     await userEvent.dblClick(screen.getAllByText('Supprimer le stock')[0])
     expect(
-      screen.getByText('Voulez-vous supprimer cette occurrence ?')
+      screen.getByText('Voulez-vous supprimer cette date ?')
     ).toBeInTheDocument()
     await userEvent.click(
       screen.getByText('Confirmer la suppression', { selector: 'button' })
@@ -416,7 +416,7 @@ describe('screens:StocksEventEdition', () => {
     await userEvent.click(screen.getByText('Valider'))
 
     expect(
-      screen.getByText('1 nouvelle occurrence a été ajoutée')
+      screen.getByText('1 nouvelle date a été ajoutée')
     ).toBeInTheDocument()
   })
 

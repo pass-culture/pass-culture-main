@@ -246,7 +246,7 @@ export const PriceCategoriesScreen = ({
         <ConfirmDialog
           onCancel={() => setPopinType(null)}
           onConfirm={formik.submitForm}
-          title="Cette modification de tarif s’appliquera à l’ensemble des occurrences qui y sont associées."
+          title="Cette modification de tarif s’appliquera à l’ensemble des dates qui y sont associées."
           confirmText="Confirmer la modification"
           cancelText="Annuler"
         />
@@ -256,7 +256,7 @@ export const PriceCategoriesScreen = ({
         <ConfirmDialog
           onCancel={() => setPopinType(null)}
           onConfirm={formik.submitForm}
-          title="Cette modification de tarif s’appliquera à l’ensemble des occurrences qui y sont associées."
+          title="Cette modification de tarif s’appliquera à l’ensemble des dates qui y sont associées."
           confirmText="Confirmer la modification"
           cancelText="Annuler"
         >

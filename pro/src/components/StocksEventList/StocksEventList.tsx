@@ -218,7 +218,7 @@ const StocksEventList = ({
     if (stocks.length % STOCKS_PER_PAGE === 0 && page === pageCount) {
       previousPage()
     }
-    notify.success('1 occurrence a été supprimée')
+    notify.success('1 date a été supprimée')
   }
 
   const onBulkDelete = async () => {
@@ -271,8 +271,8 @@ const StocksEventList = ({
     }
     notify.success(
       stocksIdToDelete.length === 1
-        ? '1 occurrence a été supprimée'
-        : `${stocksIdToDelete.length} occurrences ont été supprimées`
+        ? '1 date a été supprimée'
+        : `${stocksIdToDelete.length} dates ont été supprimées`
     )
   }
 
@@ -294,7 +294,7 @@ const StocksEventList = ({
 
         <div className={styles['stocks-count']}>
           {new Intl.NumberFormat('fr-FR').format(stocksCount)}{' '}
-          {pluralizeString('occurrence', stocksCount)}
+          {pluralizeString('date', stocksCount)}
         </div>
       </div>
 

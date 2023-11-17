@@ -189,7 +189,7 @@ describe('PriceCategories', () => {
     )
     expect(
       screen.getByText(
-        'En supprimant ce tarif vous allez aussi supprimer l’ensemble des occurrences qui lui sont associées.'
+        'En supprimant ce tarif vous allez aussi supprimer l’ensemble des dates qui lui sont associées.'
       )
     ).toBeInTheDocument()
     await userEvent.click(screen.getByText('Annuler'))
