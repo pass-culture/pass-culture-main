@@ -5,6 +5,7 @@ from flask import request
 from flask import url_for
 from flask_login import current_user
 import sqlalchemy as sa
+from werkzeug.exceptions import NotFound
 
 from pcapi.core import mails as mails_api
 from pcapi.core.external.attributes import api as external_attributes_api
@@ -39,12 +40,7 @@ pro_user_blueprint = utils.child_backoffice_blueprint(
 def get(user_id: int) -> utils.BackofficeResponse:
     # Make sure user is pro
     user = (
-        users_models.User.query.filter(
-            sa.and_(
-                users_models.User.id == user_id,
-                (users_models.User.has_non_attached_pro_role.is_(True) | users_models.User.has_pro_role.is_(True)),  # type: ignore [attr-defined]
-            )
-        )
+        users_api.get_pro_account_base_query(user_id)
         .options(
             sa.orm.joinedload(users_models.User.UserOfferers).load_only(offerers_models.UserOfferer.validationStatus)
         )
@@ -90,7 +86,10 @@ def get(user_id: int) -> utils.BackofficeResponse:
 
 @pro_user_blueprint.route("/details", methods=["GET"])
 def get_details(user_id: int) -> utils.BackofficeResponse:
-    user = users_models.User.query.get_or_404(user_id)
+    user = users_api.get_pro_account_base_query(user_id).one_or_none()
+    if not user:
+        raise NotFound()
+
     actions = history_repository.find_all_actions_by_user(user_id)
     can_add_comment = utils.has_current_user_permission(perm_models.Permissions.MANAGE_PRO_ENTITY)
     user_offerers = (
@@ -118,7 +117,9 @@ def get_details(user_id: int) -> utils.BackofficeResponse:
 @pro_user_blueprint.route("/update", methods=["POST"])
 @utils.permission_required(perm_models.Permissions.MANAGE_PRO_ENTITY)
 def update_pro_user(user_id: int) -> utils.BackofficeResponse:
-    user = users_models.User.query.get_or_404(user_id)
+    user = users_api.get_pro_account_base_query(user_id).one_or_none()
+    if not user:
+        raise NotFound()
 
     form = pro_users_forms.EditProUserForm()
     if not form.validate():
@@ -158,7 +159,9 @@ def update_pro_user(user_id: int) -> utils.BackofficeResponse:
 @pro_user_blueprint.route("/delete", methods=["POST"])
 @utils.permission_required(perm_models.Permissions.MANAGE_PRO_ENTITY)
 def delete(user_id: int) -> utils.BackofficeResponse:
-    user = users_models.User.query.get_or_404(user_id)
+    user = users_api.get_pro_account_base_query(user_id).one_or_none()
+    if not user:
+        raise NotFound()
 
     if not _user_can_be_deleted(user):
         flash("Le compte est rattaché à une structure", "warning")
@@ -190,7 +193,9 @@ def delete(user_id: int) -> utils.BackofficeResponse:
 @pro_user_blueprint.route("/comment", methods=["POST"])
 @utils.permission_required(perm_models.Permissions.MANAGE_PRO_ENTITY)
 def comment_pro_user(user_id: int) -> utils.BackofficeResponse:
-    user = users_models.User.query.get_or_404(user_id)
+    user = users_api.get_pro_account_base_query(user_id).one_or_none()
+    if not user:
+        raise NotFound()
 
     form = pro_users_forms.CommentForm()
     if not form.validate():
@@ -206,7 +211,10 @@ def comment_pro_user(user_id: int) -> utils.BackofficeResponse:
 @pro_user_blueprint.route("/validate-email", methods=["POST"])
 @utils.permission_required(perm_models.Permissions.MANAGE_PRO_ENTITY)
 def validate_pro_user_email(user_id: int) -> utils.BackofficeResponse:
-    user = users_models.User.query.get_or_404(user_id)
+    user = users_api.get_pro_account_base_query(user_id).one_or_none()
+    if not user:
+        raise NotFound()
+
     if user.isEmailValidated:
         flash(f"L'email {user.email} est déjà validé !", "warning")
     else:
