@@ -4,7 +4,7 @@ import React from 'react'
 import { generatePath, Route, Routes } from 'react-router-dom'
 
 import { api } from 'apiClient/api'
-import { OFFER_WIZARD_STEP_IDS } from 'components/IndividualOfferBreadcrumb/constants'
+import { OFFER_WIZARD_STEP_IDS } from 'components/IndividualOfferNavigation/constants'
 import {
   IndividualOfferContext,
   IndividualOfferContextValues,

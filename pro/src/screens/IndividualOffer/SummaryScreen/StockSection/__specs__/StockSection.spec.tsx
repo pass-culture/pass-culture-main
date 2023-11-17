@@ -5,7 +5,7 @@ import { generatePath, Route, Routes } from 'react-router-dom'
 
 import { api } from 'apiClient/api'
 import { OfferStatus } from 'apiClient/v1'
-import { OFFER_WIZARD_STEP_IDS } from 'components/IndividualOfferBreadcrumb/constants'
+import { OFFER_WIZARD_STEP_IDS } from 'components/IndividualOfferNavigation/constants'
 import { OFFER_WIZARD_MODE } from 'core/Offers/constants'
 import { getIndividualOfferPath } from 'core/Offers/utils/getIndividualOfferUrl'
 import {

@@ -1,6 +1,6 @@
 import React from 'react'
 
-import { OFFER_WIZARD_STEP_IDS } from 'components/IndividualOfferBreadcrumb/constants'
+import { OFFER_WIZARD_STEP_IDS } from 'components/IndividualOfferNavigation/constants'
 import {
   Events,
   OFFER_FORM_NAVIGATION_OUT,

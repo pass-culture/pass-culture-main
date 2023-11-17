@@ -1,11 +1,12 @@
 import React from 'react'
 
-import type { Step } from 'components/Breadcrumb'
-import Breadcrumb, { BreadcrumbStyle } from 'components/Breadcrumb/Breadcrumb'
+import Stepper from 'components/Stepper'
+import { Step } from 'components/Stepper/Stepper'
 import useActiveFeature from 'hooks/useActiveFeature'
 import { useOfferStockEditionURL } from 'hooks/useOfferEditionURL'
+import Tabs from 'ui-kit/Tabs'
 
-export enum CollectiveOfferBreadcrumbStep {
+export enum CollectiveOfferNavigationStep {
   DETAILS = 'details',
   STOCKS = 'stocks',
   VISIBILITY = 'visibility',
@@ -13,8 +14,8 @@ export enum CollectiveOfferBreadcrumbStep {
   CONFIRMATION = 'confirmation',
 }
 
-export interface OfferBreadcrumbProps {
-  activeStep: CollectiveOfferBreadcrumbStep
+export interface CollectiveOfferNavigationProps {
+  activeStep: CollectiveOfferNavigationStep
   isCreatingOffer: boolean
   isCompletingDraft?: boolean
   offerId?: number
@@ -25,7 +26,7 @@ export interface OfferBreadcrumbProps {
   requestId?: string | null
 }
 
-const CollectiveOfferBreadcrumb = ({
+const CollectiveOfferNavigation = ({
   activeStep,
   isCreatingOffer,
   isTemplate = false,
@@ -34,7 +35,7 @@ const CollectiveOfferBreadcrumb = ({
   className,
   haveStock = false,
   requestId = null,
-}: OfferBreadcrumbProps): JSX.Element => {
+}: CollectiveOfferNavigationProps): JSX.Element => {
   const stockEditionUrl = useOfferStockEditionURL(true, offerId)
   const isEditingExistingOffer = !(isCreatingOffer || isCompletingDraft)
   const isOfferToInstitutionActive = useActiveFeature(
@@ -46,19 +47,19 @@ const CollectiveOfferBreadcrumb = ({
   const requestIdUrl = requestId ? `?requete=${requestId}` : ''
 
   if (isEditingExistingOffer) {
-    stepList[CollectiveOfferBreadcrumbStep.DETAILS] = {
-      id: CollectiveOfferBreadcrumbStep.DETAILS,
+    stepList[CollectiveOfferNavigationStep.DETAILS] = {
+      id: CollectiveOfferNavigationStep.DETAILS,
       label: 'Détails de l’offre',
       url: `/offre/${offerId}/collectif/edition`,
     }
     if (!isTemplate) {
-      stepList[CollectiveOfferBreadcrumbStep.STOCKS] = {
-        id: CollectiveOfferBreadcrumbStep.STOCKS,
+      stepList[CollectiveOfferNavigationStep.STOCKS] = {
+        id: CollectiveOfferNavigationStep.STOCKS,
         label: 'Date et prix',
         url: stockEditionUrl,
       }
-      stepList[CollectiveOfferBreadcrumbStep.VISIBILITY] = {
-        id: CollectiveOfferBreadcrumbStep.VISIBILITY,
+      stepList[CollectiveOfferNavigationStep.VISIBILITY] = {
+        id: CollectiveOfferNavigationStep.VISIBILITY,
         label: isOfferToInstitutionActive
           ? 'Établissement et enseignant'
           : 'Visibilité',
@@ -66,18 +67,18 @@ const CollectiveOfferBreadcrumb = ({
       }
     }
   } else {
-    stepList[CollectiveOfferBreadcrumbStep.DETAILS] = {
-      id: CollectiveOfferBreadcrumbStep.DETAILS,
+    stepList[CollectiveOfferNavigationStep.DETAILS] = {
+      id: CollectiveOfferNavigationStep.DETAILS,
       label: 'Détails de l’offre',
     }
     if (!isTemplate) {
-      stepList[CollectiveOfferBreadcrumbStep.STOCKS] = {
-        id: CollectiveOfferBreadcrumbStep.STOCKS,
+      stepList[CollectiveOfferNavigationStep.STOCKS] = {
+        id: CollectiveOfferNavigationStep.STOCKS,
         label: 'Date et prix',
         url: offerId ? `/offre/${offerId}/collectif/stocks${requestIdUrl}` : '',
       }
-      stepList[CollectiveOfferBreadcrumbStep.VISIBILITY] = {
-        id: CollectiveOfferBreadcrumbStep.VISIBILITY,
+      stepList[CollectiveOfferNavigationStep.VISIBILITY] = {
+        id: CollectiveOfferNavigationStep.VISIBILITY,
         label: isOfferToInstitutionActive
           ? 'Établissement et enseignant'
           : 'Visibilité',
@@ -87,16 +88,16 @@ const CollectiveOfferBreadcrumb = ({
             : '',
       }
     }
-    stepList[CollectiveOfferBreadcrumbStep.SUMMARY] = {
-      id: CollectiveOfferBreadcrumbStep.SUMMARY,
+    stepList[CollectiveOfferNavigationStep.SUMMARY] = {
+      id: CollectiveOfferNavigationStep.SUMMARY,
       label: 'Récapitulatif',
       url:
         offerId && haveStock
           ? `/offre/${offerId}/collectif/creation/recapitulatif`
           : '',
     }
-    stepList[CollectiveOfferBreadcrumbStep.CONFIRMATION] = {
-      id: CollectiveOfferBreadcrumbStep.CONFIRMATION,
+    stepList[CollectiveOfferNavigationStep.CONFIRMATION] = {
+      id: CollectiveOfferNavigationStep.CONFIRMATION,
       label: 'Confirmation',
     }
 
@@ -105,47 +106,47 @@ const CollectiveOfferBreadcrumb = ({
     /* eslint-disable no-fallthrough */
     switch (activeStep) {
       // @ts-expect-error switch fallthrough
-      case CollectiveOfferBreadcrumbStep.CONFIRMATION:
-        stepList[CollectiveOfferBreadcrumbStep.SUMMARY].url =
+      case CollectiveOfferNavigationStep.CONFIRMATION:
+        stepList[CollectiveOfferNavigationStep.SUMMARY].url =
           `/offre/${offerId}/collectif/creation/recapitulatif`
 
       // @ts-expect-error switch fallthrough
-      case CollectiveOfferBreadcrumbStep.SUMMARY:
+      case CollectiveOfferNavigationStep.SUMMARY:
         if (!isTemplate) {
-          stepList[CollectiveOfferBreadcrumbStep.VISIBILITY].url =
+          stepList[CollectiveOfferNavigationStep.VISIBILITY].url =
             `/offre/${offerId}/collectif/visibilite`
         }
 
       // @ts-expect-error switch fallthrough
-      case CollectiveOfferBreadcrumbStep.VISIBILITY:
+      case CollectiveOfferNavigationStep.VISIBILITY:
         if (!isTemplate) {
-          stepList[CollectiveOfferBreadcrumbStep.STOCKS].url =
+          stepList[CollectiveOfferNavigationStep.STOCKS].url =
             `/offre/${offerId}/collectif/stocks`
         }
 
-      case CollectiveOfferBreadcrumbStep.STOCKS:
+      case CollectiveOfferNavigationStep.STOCKS:
         if (isTemplate) {
-          stepList[CollectiveOfferBreadcrumbStep.DETAILS].url =
+          stepList[CollectiveOfferNavigationStep.DETAILS].url =
             `/offre/collectif/vitrine/${offerId}/creation`
         } else {
-          stepList[CollectiveOfferBreadcrumbStep.DETAILS].url =
+          stepList[CollectiveOfferNavigationStep.DETAILS].url =
             `/offre/collectif/${offerId}/creation${requestIdUrl}`
         }
     }
   }
 
   const steps = Object.values(stepList)
+  const tabs = steps.map(({ id, label, url }) => ({
+    key: id,
+    label,
+    url,
+  }))
 
-  return (
-    <Breadcrumb
-      activeStep={activeStep}
-      className={className}
-      steps={steps}
-      styleType={
-        isEditingExistingOffer ? BreadcrumbStyle.TAB : BreadcrumbStyle.STEPPER
-      }
-    />
+  return isEditingExistingOffer ? (
+    <Tabs tabs={tabs} selectedKey={activeStep} />
+  ) : (
+    <Stepper activeStep={activeStep} className={className} steps={steps} />
   )
 }
 
-export default CollectiveOfferBreadcrumb
+export default CollectiveOfferNavigation

@@ -2,7 +2,7 @@ import React, { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 
 import DialogBox from 'components/DialogBox'
-import { OFFER_WIZARD_STEP_IDS } from 'components/IndividualOfferBreadcrumb/constants'
+import { OFFER_WIZARD_STEP_IDS } from 'components/IndividualOfferNavigation/constants'
 import StocksEventList from 'components/StocksEventList'
 import { StocksEvent } from 'components/StocksEventList/StocksEventList'
 import { IndividualOffer } from 'core/Offers/types'

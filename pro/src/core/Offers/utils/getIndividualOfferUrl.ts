@@ -1,6 +1,6 @@
 import { generatePath } from 'react-router-dom'
 
-import { OFFER_WIZARD_STEP_IDS } from 'components/IndividualOfferBreadcrumb/constants'
+import { OFFER_WIZARD_STEP_IDS } from 'components/IndividualOfferNavigation/constants'
 import { OFFER_WIZARD_MODE } from 'core/Offers/constants'
 
 interface GetIndividualOfferPathArgs {

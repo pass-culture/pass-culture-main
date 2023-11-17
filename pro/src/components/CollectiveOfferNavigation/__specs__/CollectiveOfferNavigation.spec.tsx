@@ -3,21 +3,22 @@ import React from 'react'
 
 import { renderWithProviders } from 'utils/renderWithProviders'
 
-import CollectiveOfferBreadcrumb, {
-  CollectiveOfferBreadcrumbStep,
-  OfferBreadcrumbProps,
-} from '../CollectiveOfferBreadcrumb'
+import CollectiveOfferNavigation, {
+  CollectiveOfferNavigationStep,
+  CollectiveOfferNavigationProps,
+} from '../CollectiveOfferNavigation'
 
-const renderCollectiveOfferBreadcrumb = (props: OfferBreadcrumbProps) =>
-  renderWithProviders(<CollectiveOfferBreadcrumb {...props} />)
+const renderCollectiveOfferNavigation = (
+  props: CollectiveOfferNavigationProps
+) => renderWithProviders(<CollectiveOfferNavigation {...props} />)
 
-describe('CollectiveOfferBreadcrumb', () => {
-  let props: OfferBreadcrumbProps
+describe('CollectiveOfferNavigation', () => {
+  let props: CollectiveOfferNavigationProps
   const offerId = 1
 
   beforeEach(() => {
     props = {
-      activeStep: CollectiveOfferBreadcrumbStep.DETAILS,
+      activeStep: CollectiveOfferNavigationStep.DETAILS,
       isCreatingOffer: true,
       offerId: offerId,
       isOfferEducational: true,
@@ -27,7 +28,7 @@ describe('CollectiveOfferBreadcrumb', () => {
 
   it('should display breadcrumb for collective offer in creation', async () => {
     props.offerId = 0
-    renderCollectiveOfferBreadcrumb(props)
+    renderCollectiveOfferNavigation(props)
 
     expect(screen.getByTestId('stepper')).toBeInTheDocument()
 
@@ -40,31 +41,31 @@ describe('CollectiveOfferBreadcrumb', () => {
     expect(listItems[3]).toHaveTextContent('Récapitulatif')
     expect(listItems[4]).toHaveTextContent('Confirmation')
 
-    const links = await screen.queryAllByRole('link')
+    const links = screen.queryAllByRole('link')
     expect(links).toHaveLength(0)
   })
 
   it('should show different links if offer is template', async () => {
     props.isTemplate = true
-    props.activeStep = CollectiveOfferBreadcrumbStep.SUMMARY
-    renderCollectiveOfferBreadcrumb(props)
+    props.activeStep = CollectiveOfferNavigationStep.SUMMARY
+    renderCollectiveOfferNavigation(props)
 
     const listItems = await screen.findAllByRole('listitem')
     expect(listItems).toHaveLength(3)
     expect(screen.queryByText('Date et prix')).not.toBeInTheDocument()
     expect(screen.queryByText('Visibilité')).not.toBeInTheDocument()
 
-    const links = await screen.queryAllByRole('link')
+    const links = screen.queryAllByRole('link')
     expect(links).toHaveLength(1)
     expect(links[0].getAttribute('href')).toBe(
       `/offre/collectif/vitrine/${offerId}/creation`
     )
   })
 
-  it('should show links if stocks is the active step', async () => {
-    props.activeStep = CollectiveOfferBreadcrumbStep.STOCKS
-    renderCollectiveOfferBreadcrumb(props)
-    const links = await screen.queryAllByRole('link')
+  it('should show links if stocks is the active step', () => {
+    props.activeStep = CollectiveOfferNavigationStep.STOCKS
+    renderCollectiveOfferNavigation(props)
+    const links = screen.queryAllByRole('link')
     expect(links).toHaveLength(2)
     expect(links[0].getAttribute('href')).toBe(
       `/offre/collectif/${offerId}/creation`
@@ -74,10 +75,10 @@ describe('CollectiveOfferBreadcrumb', () => {
     )
   })
 
-  it('should show links if visibility is the active step', async () => {
-    props.activeStep = CollectiveOfferBreadcrumbStep.VISIBILITY
-    renderCollectiveOfferBreadcrumb(props)
-    const links = await screen.queryAllByRole('link')
+  it('should show links if visibility is the active step', () => {
+    props.activeStep = CollectiveOfferNavigationStep.VISIBILITY
+    renderCollectiveOfferNavigation(props)
+    const links = screen.queryAllByRole('link')
     expect(links).toHaveLength(2)
     expect(links[0].getAttribute('href')).toBe(
       `/offre/collectif/${offerId}/creation`
@@ -87,10 +88,10 @@ describe('CollectiveOfferBreadcrumb', () => {
     )
   })
 
-  it('should show links if summary is the active step', async () => {
-    props.activeStep = CollectiveOfferBreadcrumbStep.SUMMARY
-    renderCollectiveOfferBreadcrumb(props)
-    const links = await screen.queryAllByRole('link')
+  it('should show links if summary is the active step', () => {
+    props.activeStep = CollectiveOfferNavigationStep.SUMMARY
+    renderCollectiveOfferNavigation(props)
+    const links = screen.queryAllByRole('link')
     expect(links).toHaveLength(3)
     expect(links[0].getAttribute('href')).toBe(
       `/offre/collectif/${offerId}/creation`
@@ -103,10 +104,10 @@ describe('CollectiveOfferBreadcrumb', () => {
     )
   })
 
-  it('should show links if summary is the active step', async () => {
-    props.activeStep = CollectiveOfferBreadcrumbStep.CONFIRMATION
-    renderCollectiveOfferBreadcrumb(props)
-    const links = await screen.queryAllByRole('link')
+  it('should show links if summary is the active step', () => {
+    props.activeStep = CollectiveOfferNavigationStep.CONFIRMATION
+    renderCollectiveOfferNavigation(props)
+    const links = screen.queryAllByRole('link')
     expect(links).toHaveLength(4)
     expect(links[0].getAttribute('href')).toBe(
       `/offre/collectif/${offerId}/creation`
@@ -124,9 +125,11 @@ describe('CollectiveOfferBreadcrumb', () => {
 
   it('should generate link with offerId when user is editing an offer', async () => {
     props.isCreatingOffer = false
-    renderCollectiveOfferBreadcrumb(props)
+    renderCollectiveOfferNavigation(props)
 
-    expect(screen.getByTestId('bc-tab')).toBeInTheDocument()
+    expect(
+      screen.getByRole('link', { name: 'Date et prix' })
+    ).toBeInTheDocument()
 
     const linkItems = await screen.findAllByRole('link')
 
@@ -144,7 +147,7 @@ describe('CollectiveOfferBreadcrumb', () => {
 
   it('should generate link for visibility and summary if offer has a stock', async () => {
     props.haveStock = true
-    renderCollectiveOfferBreadcrumb(props)
+    renderCollectiveOfferNavigation(props)
 
     const links = await screen.findAllByRole('link')
 

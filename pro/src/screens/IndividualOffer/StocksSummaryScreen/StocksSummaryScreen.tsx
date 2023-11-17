@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react'
 
 import { api } from 'apiClient/api'
-import { OFFER_WIZARD_STEP_IDS } from 'components/IndividualOfferBreadcrumb/constants'
+import { OFFER_WIZARD_STEP_IDS } from 'components/IndividualOfferNavigation/constants'
 import { StocksEvent } from 'components/StocksEventList/StocksEventList'
 import { SummaryLayout } from 'components/SummaryLayout'
 import { useIndividualOfferContext } from 'context/IndividualOfferContext'
