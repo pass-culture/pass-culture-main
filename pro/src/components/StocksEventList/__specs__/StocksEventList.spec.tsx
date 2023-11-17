@@ -376,6 +376,11 @@ describe('StocksEventList', () => {
     await userEvent.click(checkboxes[3])
     expect(screen.getByText('2 dates sélectionnées')).toBeInTheDocument()
 
+    vi.spyOn(api, 'getStocks').mockResolvedValueOnce({
+      stocks: [stock2],
+      stockCount: 1,
+      hasStocks: true,
+    })
     await userEvent.click(screen.getByText('Supprimer ces dates'))
     expect(api.deleteStock).not.toHaveBeenCalled()
     expect(api.deleteAllFilteredStocks).not.toHaveBeenCalled()
@@ -383,6 +388,7 @@ describe('StocksEventList', () => {
     expect(api.deleteStocks).toHaveBeenCalledWith(1, {
       ids_to_delete: [stock1.id, stock3.id],
     })
+    expect(api.getStocks).toHaveBeenCalledTimes(1)
 
     expect(screen.queryByText('2 dates sélectionnées')).not.toBeInTheDocument()
   })
@@ -394,9 +400,15 @@ describe('StocksEventList', () => {
     await userEvent.click(checkboxes[0])
     expect(screen.getByText('3 dates sélectionnées')).toBeInTheDocument()
 
+    vi.spyOn(api, 'getStocks').mockResolvedValueOnce({
+      stocks: [stock2, stock3],
+      stockCount: 2,
+      hasStocks: true,
+    })
     await userEvent.click(screen.getAllByText('Supprimer')[0])
     await waitFor(() => {
       expect(api.deleteStock).toHaveBeenCalledWith(stock1.id)
     })
+    expect(api.getStocks).toHaveBeenCalledTimes(1)
   })
 })

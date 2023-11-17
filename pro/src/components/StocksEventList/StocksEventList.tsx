@@ -3,7 +3,11 @@ import React, { useEffect, useState } from 'react'
 import { useSearchParams } from 'react-router-dom'
 
 import { api } from 'apiClient/api'
-import { PriceCategoryResponseModel, StocksOrderedBy } from 'apiClient/v1'
+import {
+  GetStocksResponseModel,
+  PriceCategoryResponseModel,
+  StocksOrderedBy,
+} from 'apiClient/v1'
 import ActionsBarSticky from 'components/ActionsBarSticky'
 import { Events } from 'core/FirebaseEvents/constants'
 import useAnalytics from 'hooks/useAnalytics'
@@ -84,10 +88,29 @@ const StocksEventList = ({
   )
   const { currentSortingColumn, currentSortingMode, onColumnHeaderClick } =
     useColumnSorting<StocksOrderedBy>()
-  const { page, previousPage, nextPage, pageCount, firstPage, lastPage } =
+  const { page, previousPage, nextPage, pageCount, firstPage } =
     usePaginationWithSearchParams(STOCKS_PER_PAGE, stocksCount)
 
   // Effects
+  const loadStocksFromCurrentFilters = () =>
+    api.getStocks(
+      offerId,
+      dateFilter ? dateFilter : undefined,
+      timeFilter
+        ? convertFromLocalTimeToVenueTimezoneInUtc(timeFilter, departmentCode)
+        : undefined,
+      priceCategoryIdFilter ? Number(priceCategoryIdFilter) : undefined,
+      currentSortingColumn ?? undefined,
+      currentSortingMode ? currentSortingMode === SortingMode.DESC : undefined,
+      Number(page || 1)
+    )
+  const handleStocksResponse = (response: GetStocksResponseModel) => {
+    setStocks(serializeStockEvents(response.stocks))
+    setStocksCount(response.stockCount)
+    if (onStocksLoad) {
+      onStocksLoad(response.hasStocks)
+    }
+  }
   useEffect(() => {
     if (dateFilter) {
       searchParams.set('date', dateFilter)
@@ -121,26 +144,10 @@ const StocksEventList = ({
     setSearchParams(searchParams)
 
     async function loadStocks() {
-      const response = await api.getStocks(
-        offerId,
-        dateFilter ? dateFilter : undefined,
-        timeFilter
-          ? convertFromLocalTimeToVenueTimezoneInUtc(timeFilter, departmentCode)
-          : undefined,
-        priceCategoryIdFilter ? Number(priceCategoryIdFilter) : undefined,
-        currentSortingColumn ?? undefined,
-        currentSortingMode
-          ? currentSortingMode === SortingMode.DESC
-          : undefined,
-        Number(page || 1)
-      )
+      const response = await loadStocksFromCurrentFilters()
 
       if (!ignore) {
-        setStocks(serializeStockEvents(response.stocks))
-        setStocksCount(response.stockCount)
-        if (onStocksLoad) {
-          onStocksLoad(response.hasStocks)
-        }
+        handleStocksResponse(response)
         setIsCheckedArray(response.stocks.map(() => false))
       }
     }
@@ -199,25 +206,26 @@ const StocksEventList = ({
   }
 
   const onDeleteStock = async (selectIndex: number, stockId: number) => {
-    // handle checkbox selection
-    const newArray = [...isCheckedArray]
-    newArray.splice(selectIndex, 1)
-    setIsCheckedArray(newArray)
-    const stockIndex = stocks.findIndex((stock) => stock.id === stockId)
-
-    stocks.splice(stockIndex, 1)
-    setStocks?.([...stocks])
     await api.deleteStock(stockId)
     logEvent?.(Events.CLICKED_DELETE_STOCK, {
       offerId: offerId,
       stockId: stockId,
     })
 
-    // FIX ME: this is broken
-    // if it's still here in pull request, please block it :)
-    if (stocks.length % STOCKS_PER_PAGE === 0 && page === pageCount) {
+    // If it was the last stock of the page, go to previous page
+    if (stocks.length === 1 && page > 1) {
       previousPage()
+    } else {
+      // Reload current page
+      const response = await loadStocksFromCurrentFilters()
+      handleStocksResponse(response)
+
+      // handle checkbox selection
+      const newArray = [...isCheckedArray]
+      newArray.splice(selectIndex, 1)
+      setIsCheckedArray(newArray)
     }
+
     notify.success('1 date a été supprimée')
   }
 
@@ -226,15 +234,6 @@ const StocksEventList = ({
       .filter((stock, index) => isCheckedArray[index])
       .map((stock) => stock.id)
 
-    const newStocks = stocks.filter(
-      (stock) => !stocksIdToDelete.includes(stock.id)
-    )
-
-    logEvent?.(Events.CLICKED_BULK_DELETE_STOCK, {
-      offerId: offerId,
-      deletionCount: stocksIdToDelete.length,
-    })
-    setStocks?.([...newStocks])
     setIsCheckedArray(stocks.map(() => false))
 
     if (stocksIdToDelete.length > 0) {
@@ -254,6 +253,9 @@ const StocksEventList = ({
               ? null
               : parseInt(priceCategoryIdFilter),
         })
+        // We don't know how many stocks are left after the deletion,
+        // so we reload the first page
+        firstPage()
       } else {
         // Otherwise, use the bulk delete stocks by id route
         await Promise.all(
@@ -261,14 +263,21 @@ const StocksEventList = ({
             api.deleteStocks(offerId, { ids_to_delete: ids })
           )
         )
+        // If it was the last stock of the page, go to previous page
+        if (stocks.length === stocksIdToDelete.length && page > 1) {
+          previousPage()
+        } else {
+          // Reload current page
+          const response = await loadStocksFromCurrentFilters()
+          handleStocksResponse(response)
+        }
       }
+      logEvent?.(Events.CLICKED_BULK_DELETE_STOCK, {
+        offerId: offerId,
+        deletionCount: stocksIdToDelete.length,
+      })
     }
 
-    const newLastPage = Math.ceil(newStocks.length / STOCKS_PER_PAGE)
-    if (page > newLastPage) {
-      // FIX ME: this is broken
-      lastPage()
-    }
     notify.success(
       stocksIdToDelete.length === 1
         ? '1 date a été supprimée'
