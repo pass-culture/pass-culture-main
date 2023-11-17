@@ -8,6 +8,7 @@ from flask import render_template
 from flask import request
 from flask import url_for
 from flask_login import current_user
+from flask_sqlalchemy import BaseQuery
 import sqlalchemy as sa
 from werkzeug.exceptions import NotFound
 
@@ -32,6 +33,10 @@ bo_users_blueprint = utils.child_backoffice_blueprint(
     url_prefix="/admin/bo-users",
     permission=perm_models.Permissions.READ_ADMIN_ACCOUNTS,
 )
+
+
+def _get_bo_user_query(user_id: int) -> BaseQuery:
+    return users_models.User.query.filter_by(id=user_id).join(users_models.User.backoffice_profile)
 
 
 def get_admin_account_link(user_id: int, form: forms.BOUserSearchForm | None, **kwargs: typing.Any) -> str:
@@ -90,7 +95,7 @@ def get_bo_user_history(user: users_models.User) -> list[serialization.AccountAc
 
 def render_bo_user_page(user_id: int, edit_form: forms.EditBOUserForm | None = None) -> str:
     user = (
-        users_models.User.query.filter_by(id=user_id)
+        _get_bo_user_query(user_id)
         .options(
             sa.orm.joinedload(users_models.User.action_history)
             .joinedload(history_models.ActionHistory.authorUser)
@@ -136,7 +141,10 @@ def get_bo_user(user_id: int) -> utils.BackofficeResponse:
 @bo_users_blueprint.route("/<int:user_id>", methods=["POST"])
 @utils.permission_required(perm_models.Permissions.MANAGE_ADMIN_ACCOUNTS)
 def update_bo_user(user_id: int) -> utils.BackofficeResponse:
-    user = users_models.User.query.get_or_404(user_id)
+    user = _get_bo_user_query(user_id).one_or_none()
+
+    if not user:
+        raise NotFound()
 
     form = forms.EditBOUserForm()
     if not form.validate():
