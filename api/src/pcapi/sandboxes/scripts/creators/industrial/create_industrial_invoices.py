@@ -10,7 +10,6 @@ import pcapi.core.offerers.factories as offerers_factories
 import pcapi.core.offers.factories as offers_factories
 import pcapi.core.users.factories as users_factories
 from pcapi.models import db
-from pcapi.routes.backoffice.finance import finance_incidents_blueprint as incident_blueprint
 
 
 logger = logging.getLogger(__name__)
@@ -120,8 +119,8 @@ def create_specific_invoice() -> None:
 
     incident_events = []
     for booking_finance_incident in booking_incidents:
-        incident_events += incident_blueprint._create_finance_events_from_incident(
-            booking_finance_incident, incident_validation_date=datetime.utcnow(), save=True
+        incident_events += finance_api._create_finance_events_from_incident(
+            booking_finance_incident, incident_validation_date=datetime.utcnow()
         )
 
     for event in incident_events:
