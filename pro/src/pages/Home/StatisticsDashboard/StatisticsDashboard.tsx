@@ -13,8 +13,6 @@ import { ButtonVariant } from 'ui-kit/Button/types'
 import { SvgIcon } from 'ui-kit/SvgIcon/SvgIcon'
 import { FORMAT_DD_MM_YYYY_HH_mm } from 'utils/date'
 
-import { STEP_HOME_STATS_HASH } from '../HomepageBreadcrumb'
-
 import { CumulatedViews } from './CumulatedViews'
 import { MostViewedOffers } from './MostViewedOffers'
 import styles from './StatisticsDashboard.module.scss'
@@ -46,9 +44,7 @@ export const StatisticsDashboard = ({ offerer }: StatisticsDashboardProps) => {
   return (
     <section className={styles['section']}>
       <div className={styles['header']}>
-        <h2 className={styles['title']} id={STEP_HOME_STATS_HASH}>
-          Présence sur le pass Culture
-        </h2>
+        <h2 className={styles['title']}>Présence sur le pass Culture</h2>
 
         <ButtonLink
           variant={ButtonVariant.PRIMARY}

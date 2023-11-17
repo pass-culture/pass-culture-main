@@ -17,10 +17,10 @@ import { INITIAL_OFFERER_VENUES } from 'pages/Home/OffererVenues'
 import { HTTP_STATUS } from 'repository/pcapi/pcapiClient'
 
 import styles from './Homepage.module.scss'
-import HomepageBreadcrumb, {
-  STEP_ID_HOME_STATS,
-  STEP_ID_OFFERERS,
-} from './HomepageBreadcrumb'
+import HomepageTabs, {
+  TAB_ID_HOME_STATS,
+  TAB_ID_OFFERERS,
+} from './HomepageTabs/HomepageTabs'
 import { OffererBanners } from './Offerers/OffererBanners'
 import Offerers from './Offerers/Offerers'
 import { OffererStats } from './OffererStats'
@@ -29,8 +29,9 @@ import { StatisticsDashboard } from './StatisticsDashboard/StatisticsDashboard'
 import { VenueOfferSteps } from './VenueOfferSteps'
 
 const Homepage = (): JSX.Element => {
-  const profileRef = useRef(null)
-  const statsRef = useRef(null)
+  const profileRef = useRef<HTMLElement>(null)
+  const statsRef = useRef<HTMLElement>(null)
+  const offerersRef = useRef<HTMLElement>(null)
 
   const [receivedOffererNames, setReceivedOffererNames] =
     useState<GetOfferersNamesResponseModel | null>(null)
@@ -138,12 +139,13 @@ const Homepage = (): JSX.Element => {
           <LinkVenueCallout offerer={selectedOfferer} />
           <PendingBankAccountCallout offerer={selectedOfferer} />
         </div>
-        <HomepageBreadcrumb
-          activeStep={
-            isStatisticsDashboardEnabled ? STEP_ID_HOME_STATS : STEP_ID_OFFERERS
+        <HomepageTabs
+          initialActiveTab={
+            isStatisticsDashboardEnabled ? TAB_ID_HOME_STATS : TAB_ID_OFFERERS
           }
           isOffererStatsActive={isOffererStatsActive}
           profileRef={profileRef}
+          offerersRef={offerersRef}
           statsRef={statsRef}
         />
 
@@ -158,7 +160,7 @@ const Homepage = (): JSX.Element => {
           </>
         )}
 
-        <section className="h-section">
+        <section className="h-section" ref={offerersRef}>
           <Offerers
             selectedOfferer={selectedOfferer}
             isLoading={isLoading}

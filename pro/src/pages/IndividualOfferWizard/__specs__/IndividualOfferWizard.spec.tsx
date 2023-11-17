@@ -360,16 +360,16 @@ describe('IndividualOfferWizard', () => {
       ).toBeInTheDocument()
 
       const tabInformations = screen.queryByText('Informations', {
-        selector: 'span',
+        selector: 'button',
       })
       const tabStocks = screen.queryByText('Stock & Prix', {
-        selector: 'span',
+        selector: 'button',
       })
       const tabSummary = screen.queryByText('Récapitulatif', {
-        selector: 'span',
+        selector: 'button',
       })
       const tabConfirmation = screen.queryByText('Confirmation', {
-        selector: 'span',
+        selector: 'button',
       })
 
       expect(tabInformations).not.toBeInTheDocument()

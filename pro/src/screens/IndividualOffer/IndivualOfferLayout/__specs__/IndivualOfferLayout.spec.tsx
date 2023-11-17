@@ -104,7 +104,9 @@ describe('IndivualOfferLayout', () => {
     })
 
     expect(screen.getByTestId('status')).toBeInTheDocument()
-    expect(screen.queryByRole('button')).not.toBeInTheDocument()
+    expect(
+      screen.queryByRole('button', { name: 'Désactiver' })
+    ).not.toBeInTheDocument()
   })
 
   it('should not display status in creation', () => {
@@ -119,7 +121,9 @@ describe('IndivualOfferLayout', () => {
     })
 
     expect(screen.queryByTestId('status')).not.toBeInTheDocument()
-    expect(screen.queryByRole('button')).not.toBeInTheDocument()
+    expect(
+      screen.queryByRole('button', { name: 'Désactiver' })
+    ).not.toBeInTheDocument()
   })
 
   it('should display provider banner', () => {

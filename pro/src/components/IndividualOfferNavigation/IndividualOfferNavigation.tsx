@@ -157,7 +157,7 @@ export const IndividualOfferNavigation = () => {
         />
       ) : (
         <div className={styles['tabs']}>
-          <Tabs tabs={tabs} selectedKey={activeStep}></Tabs>
+          <Tabs tabs={tabs} selectedKey={activeStep} />
         </div>
       )}
     </>

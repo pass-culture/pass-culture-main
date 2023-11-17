@@ -11,8 +11,6 @@ import { ButtonLink } from 'ui-kit'
 import { ButtonVariant } from 'ui-kit/Button/types'
 import SelectInput from 'ui-kit/form/Select/SelectInput'
 
-import { STEP_OFFERER_HASH } from '../HomepageBreadcrumb'
-
 import { OffererBanners } from './OffererBanners'
 
 interface OffererDetailsProps {
@@ -79,7 +77,6 @@ const OffererDetails = ({
           <div className="venue-select">
             <SelectInput
               onChange={handleChangeOfferer}
-              id={STEP_OFFERER_HASH}
               name="offererId"
               options={offererOptions}
               value={selectedOfferer.id.toString()}

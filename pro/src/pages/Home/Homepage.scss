@@ -3,11 +3,6 @@
 @use "styles/mixins/_fonts.scss" as fonts;
 
 .homepage {
-  .pc-breadcrumb {
-    margin-bottom: rem.torem(32px);
-    margin-top: rem.torem(24px);
-  }
-
   .h-description-list {
     margin-top: rem.torem(16px);
 
