@@ -380,9 +380,7 @@ class Pricing(Base, Model):
     collectiveBooking: sqla_orm.Mapped["educational_models.CollectiveBooking | None"] = sqla_orm.relationship(
         "CollectiveBooking", foreign_keys=[collectiveBookingId], backref="pricings"
     )
-    # FIXME (dbaty, 2023-06-14): make NOT NULLable once
-    # "finance_event" table has been populated.
-    eventId = sqla.Column(sqla.BigInteger, sqla.ForeignKey("finance_event.id"), index=True, nullable=True)
+    eventId = sqla.Column(sqla.BigInteger, sqla.ForeignKey("finance_event.id"), index=True, nullable=False)
     event: sqla_orm.Mapped[FinanceEvent] = sqla_orm.relationship(
         "FinanceEvent", foreign_keys=[eventId], backref="pricings"
     )

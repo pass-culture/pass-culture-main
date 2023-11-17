@@ -531,20 +531,22 @@ class EditStockTest:
 
         pricing_point = offerers_factories.VenueFactory()
         oldest_event = _generate_finance_event_context(
-            pricing_point, datetime.utcnow() + timedelta(days=2), datetime.utcnow()
+            pricing_point, stock_date=datetime.utcnow() + timedelta(days=2), used_date=datetime.utcnow()
         )
         older_event = _generate_finance_event_context(
-            pricing_point, datetime.utcnow() + timedelta(days=6), datetime.utcnow()
+            pricing_point, stock_date=datetime.utcnow() + timedelta(days=6), used_date=datetime.utcnow()
         )
         changing_event = _generate_finance_event_context(
-            pricing_point, datetime.utcnow() + timedelta(days=8), datetime.utcnow()
+            pricing_point, datetime.utcnow() + timedelta(days=8), used_date=datetime.utcnow()
         )
         newest_event = _generate_finance_event_context(
-            pricing_point, datetime.utcnow() + timedelta(days=10), datetime.utcnow()
+            pricing_point, stock_date=datetime.utcnow() + timedelta(days=10), used_date=datetime.utcnow()
         )
 
         unrelated_event = _generate_finance_event_context(
-            offerers_factories.VenueFactory(), datetime.utcnow() + timedelta(days=8), datetime.utcnow()
+            offerers_factories.VenueFactory(),
+            stock_date=datetime.utcnow() + timedelta(days=8),
+            used_date=datetime.utcnow(),
         )
 
         # When
@@ -623,15 +625,15 @@ class EditStockTest:
 
 
 def _generate_finance_event_context(
-    pricing_point: offerers_models.Venue, stock_beginning_datetime: datetime, booking_date_used: datetime
+    pricing_point: offerers_models.Venue, stock_date: datetime, used_date: datetime
 ) -> finance_models.FinanceEvent:
     venue = offerers_factories.VenueFactory(pricing_point=pricing_point)
     stock = factories.EventStockFactory(
         offer__venue=venue,
-        beginningDatetime=stock_beginning_datetime,
-        bookingLimitDatetime=booking_date_used - timedelta(days=1),
+        beginningDatetime=stock_date,
+        bookingLimitDatetime=used_date - timedelta(days=1),
     )
-    booking = bookings_factories.UsedBookingFactory(stock=stock, dateUsed=booking_date_used)
+    booking = bookings_factories.UsedBookingFactory(stock=stock, dateUsed=used_date)
     event = finance_factories.FinanceEventFactory(
         booking=booking,
         pricingOrderingDate=stock.beginningDatetime,
