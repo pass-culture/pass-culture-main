@@ -1,4 +1,3 @@
-from datetime import datetime
 import typing
 
 from flask import Response
@@ -23,8 +22,6 @@ from pcapi.core.offerers import models as offerer_models
 from pcapi.core.offers import models as offers_models
 from pcapi.core.permissions import models as perm_models
 from pcapi.core.users import models as users_models
-from pcapi.models import db
-from pcapi.repository import repository
 from pcapi.routes.backoffice import filters
 from pcapi.routes.backoffice import utils
 from pcapi.routes.backoffice.finance import forms
@@ -108,25 +105,6 @@ def get_finance_incident_cancellation_form(finance_incident_id: int) -> utils.Ba
     )
 
 
-def _cancel_finance_incident(incident: finance_models.FinanceIncident, comment: str) -> None:
-    if incident.status == finance_models.IncidentStatus.CANCELLED:
-        raise finance_exceptions.FinanceIncidentAlreadyCancelled
-    if incident.status == finance_models.IncidentStatus.VALIDATED:
-        raise finance_exceptions.FinanceIncidentAlreadyValidated
-
-    incident.status = finance_models.IncidentStatus.CANCELLED
-
-    action = history_api.log_action(
-        history_models.ActionType.FINANCE_INCIDENT_CANCELLED,
-        author=current_user,
-        finance_incident=incident,
-        comment=comment,
-        save=False,
-    )
-
-    repository.save(incident, action)
-
-
 @finance_incidents_blueprint.route("/<int:finance_incident_id>/cancel", methods=["POST"])
 @utils.permission_required(perm_models.Permissions.MANAGE_INCIDENTS)
 def cancel_finance_incident(finance_incident_id: int) -> utils.BackofficeResponse:
@@ -138,7 +116,7 @@ def cancel_finance_incident(finance_incident_id: int) -> utils.BackofficeRespons
         return render_finance_incident(incident)
 
     try:
-        _cancel_finance_incident(incident, form.comment.data)
+        finance_api.cancel_finance_incident(incident, form.comment.data)
     except finance_exceptions.FinanceIncidentAlreadyCancelled:
         flash("L'incident a déjà été annulé", "warning")
         return render_finance_incident(incident)
@@ -297,25 +275,12 @@ def create_individual_booking_incident() -> utils.BackofficeResponse:
     ):
         return redirect(request.referrer or url_for("backoffice_web.individual_bookings.list_individual_bookings"), 303)
 
-    incident = _create_incident_with_log(form.kind.data, bookings[0].venueId, form.origin.data)
-    booking_finance_incidents_to_create = []
-
-    for booking in bookings:
-        booking_finance_incidents_to_create.append(
-            finance_models.BookingFinanceIncident(
-                bookingId=booking.id,
-                incidentId=incident.id,
-                beneficiaryId=booking.userId,
-                newTotalAmount=finance_utils.to_eurocents(
-                    # Only total overpayment if multiple bookings are selected
-                    booking.total_amount - form.total_amount.data
-                    if len(bookings) == 1
-                    else 0
-                ),
-            )
-        )
-    db.session.add_all(booking_finance_incidents_to_create)
-    db.session.commit()
+    finance_api.create_finance_incident(
+        form.kind.data,
+        bookings,
+        form.total_amount.data,
+        form.origin.data,
+    )
 
     flash(f"Un incident a bien été créé pour {len(bookings)} réservation(s)", "success")
     return redirect(request.referrer or url_for("backoffice_web.individual_bookings.list_individual_bookings"), 303)
@@ -344,42 +309,10 @@ def create_collective_booking_incident(collective_booking_id: int) -> utils.Back
     if not (booking_has_no_incident and is_valid_amount):
         return redirect(redirect_url, 303)
 
-    incident = _create_incident_with_log(form.kind.data, collective_booking.venueId, form.origin.data)
-
-    collective_booking_incident = finance_models.BookingFinanceIncident(
-        collectiveBookingId=collective_booking_id,
-        incidentId=incident.id,
-        newTotalAmount=0,
-    )
-    repository.save(collective_booking_incident)
+    finance_api.create_finance_incident(kind=form.kind.data, bookings=[collective_booking], origin=form.origin.data)
 
     flash("L'incident a bien été créé.", "success")
     return redirect(redirect_url, 303)
-
-
-def _create_incident_with_log(
-    kind: finance_models.IncidentType, venue_id: int, origin: str
-) -> finance_models.FinanceIncident:
-    incident = finance_models.FinanceIncident(
-        kind=kind,
-        status=finance_models.IncidentStatus.CREATED,
-        venueId=venue_id,
-        details={
-            "origin": origin,
-            "author": current_user.full_name,
-            "createdAt": datetime.utcnow().isoformat(),
-        },
-    )
-    action = history_api.log_action(
-        history_models.ActionType.FINANCE_INCIDENT_CREATED,
-        author=current_user,
-        finance_incident=incident,
-        comment=origin,
-        save=False,
-    )
-    repository.save(incident, action)
-
-    return incident
 
 
 def _initialize_additional_data(bookings: list[bookings_models.Booking]) -> dict:
@@ -516,112 +449,12 @@ def validate_finance_incident(finance_incident_id: int) -> utils.BackofficeRespo
             303,
         )
 
-    _validate_finance_incident(
+    finance_api.validate_finance_incident(
         finance_incident, form.compensation_mode.data == forms.IncidentCompensationModes.FORCE_DEBIT_NOTE.name
     )
 
     flash("L'incident a été validé avec succès.", "success")
     return render_finance_incident(finance_incident)
-
-
-def _create_finance_events_from_incident(
-    booking_finance_incident: finance_models.BookingFinanceIncident,
-    incident_validation_date: datetime | None = None,
-    save: bool = True,
-) -> list[finance_models.FinanceEvent]:
-    finance_events = []
-    assert booking_finance_incident.incident
-    # In the case of commercial gesture, only one finance event will be created with the new price (incident amount)
-    if booking_finance_incident.incident.kind == finance_models.IncidentType.COMMERCIAL_GESTURE:
-        finance_events.append(
-            finance_api.add_event(
-                finance_models.FinanceEventMotive.INCIDENT_COMMERCIAL_GESTURE,
-                booking_incident=booking_finance_incident,
-                incident_validation_date=incident_validation_date,
-                commit=False,
-            )
-        )
-    else:
-        # Retrieve initial amount of the booking
-        finance_events.append(
-            finance_api.add_event(
-                finance_models.FinanceEventMotive.INCIDENT_REVERSAL_OF_ORIGINAL_EVENT,
-                booking_incident=booking_finance_incident,
-                incident_validation_date=incident_validation_date,
-                commit=False,
-            )
-        )
-
-        if booking_finance_incident.is_partial:
-            # Declare new amount (equivalent to booking incident new total amount)
-            finance_events.append(
-                finance_api.add_event(
-                    finance_models.FinanceEventMotive.INCIDENT_NEW_PRICE,
-                    booking_incident=booking_finance_incident,
-                    incident_validation_date=incident_validation_date,
-                    commit=False,
-                )
-            )
-
-    if save:
-        repository.save(*finance_events)
-
-    return finance_events
-
-
-def _validate_finance_incident(finance_incident: finance_models.FinanceIncident, force_debit_note: bool) -> None:
-    # TODO (cmorel): send mail to beneficiary / educational redactor
-    incident_validation_date = datetime.utcnow()
-    finance_events = []
-    for booking_incident in finance_incident.booking_finance_incidents:
-        finance_events.extend(
-            _create_finance_events_from_incident(
-                booking_incident, incident_validation_date=incident_validation_date, save=False
-            )
-        )
-        if not booking_incident.is_partial:
-            if booking_incident.booking:
-                booking_incident.booking.cancel_booking(
-                    bookings_models.BookingCancellationReasons.FINANCE_INCIDENT, cancel_even_if_reimbursed=True
-                )
-            elif booking_incident.collectiveBooking:
-                booking_incident.collectiveBooking.cancel_booking(
-                    educational_models.CollectiveBookingCancellationReasons.FINANCE_INCIDENT,
-                    cancel_even_if_reimbursed=True,
-                )
-
-    beneficiaries_actions = []
-    if not finance_incident.relates_to_collective_bookings:
-        beneficiaries = set(
-            booking_incident.beneficiary for booking_incident in finance_incident.booking_finance_incidents
-        )
-        for beneficiary in beneficiaries:
-            beneficiaries_actions.append(
-                history_api.log_action(
-                    history_models.ActionType.FINANCE_INCIDENT_USER_RECREDIT,
-                    author=current_user,
-                    user=beneficiary,
-                    save=False,
-                    linked_incident_id=finance_incident.id,
-                )
-            )
-
-    finance_incident.status = finance_models.IncidentStatus.VALIDATED
-    finance_incident.forceDebitNote = force_debit_note
-
-    validation_action = history_api.log_action(
-        history_models.ActionType.FINANCE_INCIDENT_VALIDATED,
-        author=current_user,
-        venue=finance_incident.venue,
-        finance_incident=finance_incident,
-        comment="Génération d'une note de débit à la prochaine échéance."
-        if force_debit_note
-        else "Récupération sur les prochaines réservations.",
-        save=False,
-        linked_incident_id=finance_incident.id,
-    )
-
-    repository.save(finance_incident, *finance_events, validation_action, *beneficiaries_actions)
 
 
 def _get_incident(finance_incident_id: int) -> finance_models.FinanceIncident:

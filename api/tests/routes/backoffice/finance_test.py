@@ -7,6 +7,7 @@ import pytest
 from pcapi.core import testing
 from pcapi.core.bookings import factories as bookings_factories
 from pcapi.core.educational import factories as educational_factories
+from pcapi.core.finance import api
 from pcapi.core.finance import factories as finance_factories
 from pcapi.core.finance import models as finance_models
 from pcapi.core.finance import utils as finance_utils
@@ -20,8 +21,6 @@ from pcapi.routes.backoffice import filters
 from pcapi.routes.backoffice.filters import format_booking_status
 from pcapi.routes.backoffice.filters import format_date_time
 from pcapi.routes.backoffice.finance import forms as finance_forms
-from pcapi.routes.backoffice.finance.finance_incidents_blueprint import _cancel_finance_incident
-from pcapi.routes.backoffice.finance.finance_incidents_blueprint import _create_finance_events_from_incident
 
 from .helpers import html_parser
 from .helpers.get import GetEndpointHelper
@@ -256,7 +255,7 @@ class CreateIncidentFinanceEventTest:
             newTotalAmount=0,
         )
         validation_date = datetime.datetime.utcnow()
-        finance_events = _create_finance_events_from_incident(total_booking_incident, validation_date)
+        finance_events = api._create_finance_events_from_incident(total_booking_incident, validation_date)
 
         assert len(finance_events) == 1
         assert finance_events[0].bookingFinanceIncidentId == total_booking_incident.id
@@ -283,7 +282,7 @@ class CreateIncidentFinanceEventTest:
         )
 
         validation_date = datetime.datetime.utcnow()
-        finance_events = _create_finance_events_from_incident(total_booking_incident, validation_date)
+        finance_events = api._create_finance_events_from_incident(total_booking_incident, validation_date)
 
         assert len(finance_events) == 1
 
@@ -311,7 +310,7 @@ class CreateIncidentFinanceEventTest:
         )
 
         validation_date = datetime.datetime.utcnow()
-        finance_events = _create_finance_events_from_incident(partial_booking_incident, validation_date)
+        finance_events = api._create_finance_events_from_incident(partial_booking_incident, validation_date)
 
         assert len(finance_events) == 2
 
@@ -345,7 +344,7 @@ class CreateIncidentFinanceEventTest:
         )
 
         validation_date = datetime.datetime.utcnow()
-        finance_events = _create_finance_events_from_incident(partial_booking_incident, validation_date)
+        finance_events = api._create_finance_events_from_incident(partial_booking_incident, validation_date)
 
         assert len(finance_events) == 2
 
@@ -371,7 +370,7 @@ class CreateIncidentFinanceEventTest:
         )
         validation_date = datetime.datetime.utcnow()
 
-        finance_events = _create_finance_events_from_incident(booking_incident, validation_date)
+        finance_events = api._create_finance_events_from_incident(booking_incident, validation_date)
 
         assert len(finance_events) == 1
 
@@ -391,7 +390,7 @@ class CreateIncidentFinanceEventTest:
         )
 
         validation_date = datetime.datetime.utcnow()
-        finance_events = _create_finance_events_from_incident(booking_incident, validation_date)
+        finance_events = api._create_finance_events_from_incident(booking_incident, validation_date)
 
         assert len(finance_events) == 1
 
@@ -725,7 +724,7 @@ class GetIncidentHistoryTest(GetEndpointHelper):
             actionType=history_models.ActionType.FINANCE_INCIDENT_CREATED,
             actionDate=datetime.datetime.utcnow() + datetime.timedelta(days=-1),
         )
-        _cancel_finance_incident(finance_incident, comment="Je décide d'annuler l'incident")
+        api.cancel_finance_incident(finance_incident, comment="Je décide d'annuler l'incident")
 
         finance_incident_id = finance_incident.id
         with assert_num_queries(self.expected_num_queries):
