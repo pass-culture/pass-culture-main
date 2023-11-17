@@ -378,6 +378,15 @@ class GetBoUserTest(GetEndpointHelper):
             perm_models.Roles.SUPPORT_PRO.value,
         ]
 
+    @pytest.mark.parametrize("user_factory", [users_factories.BeneficiaryGrant18Factory, users_factories.ProFactory])
+    def test_get_non_bo_user(self, authenticated_client, user_factory):
+        user = user_factory()
+
+        user_id = user.id
+        with assert_num_queries(self.expected_num_queries):
+            response = authenticated_client.get(url_for(self.endpoint, user_id=user_id))
+            assert response.status_code == 404
+
 
 class SuspendButtonTest(button_helpers.ButtonHelper):
     needed_permission = perm_models.Permissions.MANAGE_ADMIN_ACCOUNTS
@@ -449,4 +458,20 @@ class UpdateBoUserTest(PostEndpointHelper):
         assert response.status_code == 400
         assert html_parser.extract_alert(response.data) == "L'email est déjà associé à un autre utilisateur"
 
+        assert history_models.ActionHistory.query.count() == 0
+
+    @pytest.mark.parametrize("user_factory", [users_factories.BeneficiaryGrant18Factory, users_factories.ProFactory])
+    def test_update_non_bo_user(self, authenticated_client, user_factory):
+        user = user_factory()
+
+        response = self.post_to_endpoint(
+            authenticated_client,
+            user_id=user.id,
+            form={"first_name": "Hacked", "last_name": "Hacked", "email": user.email},
+        )
+
+        assert response.status_code == 404
+
+        db.session.refresh(user)
+        assert "Hacked" not in user.full_name
         assert history_models.ActionHistory.query.count() == 0
