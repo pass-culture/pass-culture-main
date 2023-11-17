@@ -3,6 +3,7 @@
 /* tslint:disable */
 /* eslint-disable */
 
+import type { EacFormat } from './EacFormat';
 import type { OfferVenueModel } from './OfferVenueModel';
 
 export type PatchCollectiveOfferBodyModel = {
@@ -18,6 +19,7 @@ export type PatchCollectiveOfferBodyModel = {
   educationalInstitution?: string | null;
   educationalInstitutionId?: number | null;
   educationalPriceDetail?: string | null;
+  formats?: Array<EacFormat> | null;
   imageCredit?: string | null;
   imageFile?: string | null;
   interventionArea?: Array<string> | null;
