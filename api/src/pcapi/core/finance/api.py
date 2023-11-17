@@ -40,6 +40,7 @@ import zipfile
 from dateutil.relativedelta import relativedelta
 from flask import current_app as app
 from flask import render_template
+from flask_login import current_user
 from flask_sqlalchemy import BaseQuery
 import pytz
 import sqlalchemy as sqla
@@ -51,7 +52,7 @@ from pcapi.connectors import googledrive
 import pcapi.core.bookings.models as bookings_models
 import pcapi.core.educational.models as educational_models
 import pcapi.core.external.attributes.api as external_attributes_api
-import pcapi.core.history.api as history_api
+from pcapi.core.history import api as history_api
 import pcapi.core.history.models as history_models
 from pcapi.core.logging import log_elapsed
 import pcapi.core.mails.transactional as transactional_mails
@@ -2231,3 +2232,186 @@ def update_bank_account_venues_links(
             history_models.ActionHistory,
             action_history_bulk_insert_mapping,
         )
+
+
+def create_finance_incident(
+    kind: models.IncidentType,
+    bookings: list[bookings_models.Booking | educational_models.CollectiveBooking],
+    amount: int | None = None,
+    origin: str | None = None,
+) -> None:
+    incident = models.FinanceIncident(
+        kind=kind,
+        status=models.IncidentStatus.CREATED,
+        venueId=bookings[0].venueId,
+        details={
+            "origin": origin,
+            "author": current_user.full_name,
+            "createdAt": datetime.datetime.utcnow().isoformat(),
+        },
+    )
+    db.session.add(incident)
+    db.session.commit()
+
+    booking_finance_incidents_to_create = []
+    if isinstance(bookings[0], educational_models.CollectiveBooking):
+        collective_booking = bookings[0]
+        booking_finance_incidents_to_create.append(
+            models.BookingFinanceIncident(
+                collectiveBookingId=collective_booking.id,
+                incidentId=incident.id,
+                newTotalAmount=0,
+            )
+        )
+    else:
+        for booking in bookings:
+            booking_finance_incidents_to_create.append(
+                models.BookingFinanceIncident(
+                    bookingId=booking.id,
+                    incidentId=incident.id,
+                    beneficiaryId=booking.userId,
+                    newTotalAmount=utils.to_eurocents(
+                        # Only total overpayment if multiple bookings are selected
+                        booking.total_amount - amount
+                        if amount and len(bookings) == 1
+                        else 0
+                    ),
+                )
+            )
+    db.session.add_all(booking_finance_incidents_to_create)
+
+    action = history_api.log_action(
+        history_models.ActionType.FINANCE_INCIDENT_CREATED,
+        author=current_user,
+        finance_incident=incident,
+        comment=origin,
+        save=False,
+    )
+    db.session.add(action)
+
+    db.session.commit()
+
+
+def _create_finance_events_from_incident(
+    booking_finance_incident: models.BookingFinanceIncident,
+    incident_validation_date: datetime.datetime | None = None,
+    commit: bool = True,
+) -> list[models.FinanceEvent]:
+    finance_events = []
+    assert booking_finance_incident.incident
+    # In the case of commercial gesture, only one finance event will be created with the new price (incident amount)
+    if booking_finance_incident.incident.kind == models.IncidentType.COMMERCIAL_GESTURE:
+        finance_events.append(
+            add_event(
+                models.FinanceEventMotive.INCIDENT_COMMERCIAL_GESTURE,
+                booking_incident=booking_finance_incident,
+                incident_validation_date=incident_validation_date,
+                commit=False,
+            )
+        )
+    else:
+        # Retrieve initial amount of the booking
+        finance_events.append(
+            add_event(
+                models.FinanceEventMotive.INCIDENT_REVERSAL_OF_ORIGINAL_EVENT,
+                booking_incident=booking_finance_incident,
+                incident_validation_date=incident_validation_date,
+                commit=False,
+            )
+        )
+
+        if booking_finance_incident.is_partial:
+            # Declare new amount (equivalent to booking incident new total amount)
+            finance_events.append(
+                add_event(
+                    models.FinanceEventMotive.INCIDENT_NEW_PRICE,
+                    booking_incident=booking_finance_incident,
+                    incident_validation_date=incident_validation_date,
+                    commit=False,
+                )
+            )
+    db.session.add_all(finance_events)
+    if commit:
+        db.session.commit()
+
+    return finance_events
+
+
+def validate_finance_incident(finance_incident: models.FinanceIncident, force_debit_note: bool) -> None:
+    # TODO (cmorel): send mail to beneficiary / educational redactor
+    incident_validation_date = datetime.datetime.utcnow()
+    finance_events = []
+    for booking_incident in finance_incident.booking_finance_incidents:
+        finance_events.extend(
+            _create_finance_events_from_incident(
+                booking_incident, incident_validation_date=incident_validation_date, commit=False
+            )
+        )
+        if not booking_incident.is_partial:
+            if booking_incident.booking:
+                booking_incident.booking.cancel_booking(
+                    bookings_models.BookingCancellationReasons.FINANCE_INCIDENT, cancel_even_if_reimbursed=True
+                )
+            elif booking_incident.collectiveBooking:
+                booking_incident.collectiveBooking.cancel_booking(
+                    educational_models.CollectiveBookingCancellationReasons.FINANCE_INCIDENT,
+                    cancel_even_if_reimbursed=True,
+                )
+    db.session.add_all(finance_events)
+
+    beneficiaries_actions = []
+    if not finance_incident.relates_to_collective_bookings:
+        beneficiaries = set(
+            booking_incident.beneficiary for booking_incident in finance_incident.booking_finance_incidents
+        )
+        for beneficiary in beneficiaries:
+            beneficiaries_actions.append(
+                history_api.log_action(
+                    history_models.ActionType.FINANCE_INCIDENT_USER_RECREDIT,
+                    author=current_user,
+                    user=beneficiary,
+                    save=False,
+                    linked_incident_id=finance_incident.id,
+                )
+            )
+    db.session.add_all(beneficiaries_actions)
+
+    finance_incident.status = models.IncidentStatus.VALIDATED
+    finance_incident.forceDebitNote = force_debit_note
+    db.session.add(finance_incident)
+
+    validation_action = history_api.log_action(
+        history_models.ActionType.FINANCE_INCIDENT_VALIDATED,
+        author=current_user,
+        venue=finance_incident.venue,
+        finance_incident=finance_incident,
+        comment="Génération d'une note de débit à la prochaine échéance."
+        if force_debit_note
+        else "Récupération sur les prochaines réservations.",
+        save=False,
+        linked_incident_id=finance_incident.id,
+    )
+    db.session.add(validation_action)
+
+    db.session.commit()
+
+
+def cancel_finance_incident(incident: models.FinanceIncident, comment: str) -> None:
+    if incident.status == models.IncidentStatus.CANCELLED:
+        raise exceptions.FinanceIncidentAlreadyCancelled
+    if incident.status == models.IncidentStatus.VALIDATED:
+        raise exceptions.FinanceIncidentAlreadyValidated
+
+    incident.status = models.IncidentStatus.CANCELLED
+    db.session.add(incident)
+
+    action = history_api.log_action(
+        history_models.ActionType.FINANCE_INCIDENT_CANCELLED,
+        author=current_user,
+        finance_incident=incident,
+        comment=comment,
+        save=False,
+    )
+    db.session.add(action)
+
+    db.session.commit()

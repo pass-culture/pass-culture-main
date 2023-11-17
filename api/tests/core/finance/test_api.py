@@ -846,9 +846,7 @@ class GenerateCashflowsTest:
 
         booking_finance_incident = factories.IndividualBookingFinanceIncidentFactory(booking=reimbursed_booking)
 
-        from pcapi.routes.backoffice.finance import finance_incidents_blueprint
-
-        finance_incident_events = finance_incidents_blueprint._create_finance_events_from_incident(
+        finance_incident_events = api._create_finance_events_from_incident(
             booking_finance_incident=booking_finance_incident,
             incident_validation_date=datetime.datetime.utcnow(),
         )
