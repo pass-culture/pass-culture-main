@@ -9136,10 +9136,10 @@ scheduler@^0.23.0:
   dependencies:
     loose-envify "^1.1.0"
 
-search-insights@^2.10.0, search-insights@^2.6.0:
-  version "2.10.0"
-  resolved "https://registry.yarnpkg.com/search-insights/-/search-insights-2.10.0.tgz#248053863f09f8adfb002b5645dbf21098127576"
-  integrity sha512-pQGrOE56QuTRmq4NzliRZe9rv914hBMBjOviuDliDHoIhmBGoyZRlFsPd4RprGGNC4PKdD2Jz54YN4Cmkb44mA==
+search-insights@^2.11.0, search-insights@^2.6.0:
+  version "2.11.0"
+  resolved "https://registry.yarnpkg.com/search-insights/-/search-insights-2.11.0.tgz#0512ae3b801fed5ff3a2ae82840bf20ba29d82e5"
+  integrity sha512-Uin2J8Bpm3xaZi9Y8QibSys6uJOFZ+REMrf42v20AA3FUDUrshKkMEP6liJbMAHCm71wO6ls4mwAf7a3gFVxLw==
 
 "semver@2 || 3 || 4 || 5", semver@^5.6.0:
   version "5.7.2"
