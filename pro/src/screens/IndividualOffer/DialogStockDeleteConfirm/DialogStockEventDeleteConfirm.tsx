@@ -18,7 +18,7 @@ const DialogStockEventDeleteConfirm = ({
     <ConfirmDialog
       onCancel={onCancel}
       onConfirm={onConfirm}
-      title="Voulez-vous supprimer cette occurrence ?"
+      title="Voulez-vous supprimer cette date ?"
       confirmText="Confirmer la suppression"
       cancelText="Annuler"
       icon={strokeTrashIcon}

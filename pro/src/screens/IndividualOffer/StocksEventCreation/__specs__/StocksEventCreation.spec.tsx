@@ -157,7 +157,7 @@ describe('StocksEventCreation', () => {
     })
 
     expect(
-      screen.getByText('2 nouvelles occurrences ont été ajoutées')
+      screen.getByText('2 nouvelles dates ont été ajoutées')
     ).toBeInTheDocument()
   })
 

@@ -40,7 +40,7 @@ export const HelpSection = ({ className }: Props): JSX.Element => (
       <Step
         stepNumber={2}
         image={step2}
-        content="Visualisez les occurrences créées"
+        content="Visualisez les dates créées"
       />
 
       <Step

@@ -25,7 +25,7 @@ export const FilterResultsRow = ({
           Résultat de recherche :{' '}
           <span className={styles['search-result']}>
             {new Intl.NumberFormat('fr-FR').format(resultsCount)}{' '}
-            {pluralizeString('occurrence', resultsCount)}
+            {pluralizeString('date', resultsCount)}
           </span>
         </div>
 
