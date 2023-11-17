@@ -76,7 +76,7 @@ describe('onSubmit', () => {
           quantity: null,
         }),
       ],
-      expectedNotification: '4 nouvelles occurrences ont été ajoutées',
+      expectedNotification: '4 nouvelles dates ont été ajoutées',
     },
     {
       description: 'generate stocks on a daily basis',
@@ -116,7 +116,7 @@ describe('onSubmit', () => {
           quantity: 5,
         }),
       ],
-      expectedNotification: '4 nouvelles occurrences ont été ajoutées',
+      expectedNotification: '4 nouvelles dates ont été ajoutées',
     },
     {
       description: 'generate stocks on a weekly basis',
@@ -156,7 +156,7 @@ describe('onSubmit', () => {
           quantity: 5,
         }),
       ],
-      expectedNotification: '4 nouvelles occurrences ont été ajoutées',
+      expectedNotification: '4 nouvelles dates ont été ajoutées',
     },
     {
       description:
@@ -197,7 +197,7 @@ describe('onSubmit', () => {
           quantity: 5,
         }),
       ],
-      expectedNotification: '4 nouvelles occurrences ont été ajoutées',
+      expectedNotification: '4 nouvelles dates ont été ajoutées',
     },
     {
       description: 'generate stocks on a monthly basis every end of month',
@@ -225,7 +225,7 @@ describe('onSubmit', () => {
           quantity: 5,
         }),
       ],
-      expectedNotification: '2 nouvelles occurrences ont été ajoutées',
+      expectedNotification: '2 nouvelles dates ont été ajoutées',
     },
 
     {
@@ -267,7 +267,7 @@ describe('onSubmit', () => {
           quantity: 5,
         }),
       ],
-      expectedNotification: '4 nouvelles occurrences ont été ajoutées',
+      expectedNotification: '4 nouvelles dates ont été ajoutées',
     },
     {
       description:
@@ -302,7 +302,7 @@ describe('onSubmit', () => {
           quantity: 5,
         }),
       ],
-      expectedNotification: '3 nouvelles occurrences ont été ajoutées',
+      expectedNotification: '3 nouvelles dates ont été ajoutées',
     },
     {
       description: 'generate stocks on a monthly basis by last day',
@@ -336,7 +336,7 @@ describe('onSubmit', () => {
           quantity: 5,
         }),
       ],
-      expectedNotification: '3 nouvelles occurrences ont été ajoutées',
+      expectedNotification: '3 nouvelles dates ont été ajoutées',
     },
   ]
 
@@ -390,7 +390,7 @@ describe('onSubmit', () => {
     const result = await onSubmit(formValues, '75', 66, notify)
 
     expect(mockErrorNotification).toHaveBeenCalledWith(
-      `Veuillez créer moins de 5 occurrences par offre.`
+      `Veuillez créer moins de 5 dates par offre.`
     )
     expect(result).toEqual(undefined)
   })
