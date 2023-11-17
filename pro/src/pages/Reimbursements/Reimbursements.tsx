@@ -7,7 +7,7 @@ import {
   oldRoutesReimbursements,
   routesReimbursements,
 } from 'app/AppRouter/subroutesReimbursements'
-import { ReimbursementsBreadcrumb } from 'components/ReimbursementsBreadcrumb'
+import { ReimbursementsTabs } from 'components/ReimbursementsTabs'
 import { ReimbursementContextProvider } from 'context/ReimbursementContext/ReimbursementContext'
 import useActiveFeature from 'hooks/useActiveFeature'
 
@@ -28,7 +28,7 @@ const Reimbursements = (): JSX.Element => {
       <div className={styles['reimbursements-container']}>
         <h1 className={styles['title']}>Remboursements</h1>
         <ReimbursementsBanners />
-        <ReimbursementsBreadcrumb />
+        <ReimbursementsTabs />
         <div>
           <Routes>
             {routes.map(({ path, element }) => (
