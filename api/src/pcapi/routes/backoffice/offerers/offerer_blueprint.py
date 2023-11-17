@@ -437,7 +437,14 @@ def get_pro_users(offerer_id: int) -> utils.BackofficeResponse:
     users_invited = (
         offerers_models.OffererInvitation.query.options(options)
         .filter(offerers_models.OffererInvitation.offererId == offerer_id)
-        .filter(~sa.exists().where(users_models.User.email == offerers_models.OffererInvitation.email))
+        .filter(
+            ~sa.exists().where(
+                sa.and_(
+                    users_models.User.email == offerers_models.OffererInvitation.email,
+                    users_models.User.id.in_(user_ids_subquery),
+                )
+            )
+        )
         .order_by(offerers_models.OffererInvitation.id)
         .all()
     )
