@@ -2,10 +2,9 @@ import { screen } from '@testing-library/react'
 import { userEvent } from '@testing-library/user-event'
 import React from 'react'
 
-import type { Step } from 'components/Breadcrumb'
 import { renderWithProviders } from 'utils/renderWithProviders'
 
-import Stepper, { StepperProps } from '../Stepper'
+import Stepper, { Step, StepperProps } from '../Stepper'
 
 const renderStepper = (props: StepperProps) => {
   return renderWithProviders(<Stepper {...props} />)
@@ -62,7 +61,7 @@ describe('Stepper', () => {
     expect(listItems[3]).toHaveTextContent('Confirmation')
   })
 
-  it('should render link when needed', async () => {
+  it('should render link when needed', () => {
     renderStepper(props)
 
     const informationLink = screen.getByText('Informations').closest('a')

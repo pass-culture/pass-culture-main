@@ -2,7 +2,7 @@ import type { ComponentStory } from '@storybook/react'
 import React from 'react'
 import { withRouter } from 'storybook-addon-react-router-v6'
 
-import type { Step } from 'components/Breadcrumb'
+import { Step } from './Stepper'
 
 import Stepper from '.'
 

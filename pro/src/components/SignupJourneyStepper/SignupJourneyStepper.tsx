@@ -1,8 +1,9 @@
 import React from 'react'
 import { useLocation } from 'react-router-dom'
 
-import Breadcrumb, { BreadcrumbStyle, Step } from 'components/Breadcrumb'
 import { OnboardingFormNavigationAction } from 'components/SignupJourneyFormLayout/constants'
+import Stepper from 'components/Stepper'
+import { Step } from 'components/Stepper/Stepper'
 import {
   DEFAULT_ACTIVITY_VALUES,
   useSignupJourneyContext,
@@ -13,9 +14,9 @@ import useAnalytics from 'hooks/useAnalytics'
 import { DEFAULT_OFFERER_FORM_VALUES } from 'screens/SignupJourneyForm/Offerer/constants'
 
 import { SIGNUP_JOURNEY_STEP_IDS } from './constants'
-import styles from './SignupJourneyBreadcrumb.module.scss'
+import styles from './SignupJourneyStepper.module.scss'
 
-const SignupJourneyBreadcrumb = () => {
+const SignupJourneyStepper = () => {
   const { activity, offerer } = useSignupJourneyContext()
 
   const { logEvent } = useAnalytics()
@@ -90,13 +91,12 @@ const SignupJourneyBreadcrumb = () => {
   }
 
   return (
-    <Breadcrumb
+    <Stepper
       activeStep={activeStep}
       steps={signupJourneyBreadcrumbSteps}
-      styleType={BreadcrumbStyle.STEPPER}
       className={styles['signup-breadcrumb']}
     />
   )
 }
 
-export default SignupJourneyBreadcrumb
+export default SignupJourneyStepper
