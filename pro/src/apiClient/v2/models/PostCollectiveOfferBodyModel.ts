@@ -3,6 +3,7 @@
 /* tslint:disable */
 /* eslint-disable */
 
+import type { EacFormat } from './EacFormat';
 import type { OfferVenueModel } from './OfferVenueModel';
 
 export type PostCollectiveOfferBodyModel = {
@@ -18,6 +19,7 @@ export type PostCollectiveOfferBodyModel = {
   educationalInstitution?: string | null;
   educationalInstitutionId?: number | null;
   educationalPriceDetail?: string | null;
+  formats?: Array<EacFormat> | null;
   imageCredit?: string | null;
   imageFile?: string | null;
   isActive: boolean;
@@ -28,7 +30,7 @@ export type PostCollectiveOfferBodyModel = {
   numberOfTickets: number;
   offerVenue: OfferVenueModel;
   students: Array<string>;
-  subcategoryId: string;
+  subcategoryId?: string | null;
   totalPrice: number;
   venueId: number;
   visualDisabilityCompliant?: boolean;
