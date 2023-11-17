@@ -124,6 +124,7 @@ class _BasePricingFactory(BaseFactory):
     class Meta:
         model = models.Pricing
 
+    event = None  # see `_create()` below
     pricingPoint = None  # see `_create()` below
 
     @classmethod
@@ -154,6 +155,15 @@ class _BasePricingFactory(BaseFactory):
                 )
                 pricing_point = venue
             kwargs["pricingPoint"] = pricing_point
+        if not kwargs["event"]:
+            booking = kwargs.get("booking")
+            if booking:
+                event = UsedBookingFinanceEventFactory(booking=booking)
+            else:
+                collective_booking = kwargs.get("collectiveBooking")
+                assert collective_booking
+                event = UsedCollectiveBookingFinanceEventFactory(collectiveBooking=collective_booking)
+            kwargs["event"] = event
         return super()._create(model_class, *args, **kwargs)
 
 

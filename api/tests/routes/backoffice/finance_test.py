@@ -200,6 +200,7 @@ class ValidateIncidentTest(PostEndpointHelper):
             status=finance_models.PricingStatus.INVOICED,
             amount=-1000,
         )
+        used_finance_event = finance_models.FinanceEvent.query.one()
 
         assert booking_incident.incident.venue.current_reimbursement_point
 
@@ -242,9 +243,10 @@ class ValidateIncidentTest(PostEndpointHelper):
             and beneficiary_action.actionType == history_models.ActionType.FINANCE_INCIDENT_USER_RECREDIT
         )
 
-        finance_events = finance_models.FinanceEvent.query.all()
-        assert len(finance_events) == 1
-        assert finance_events[0].motive == finance_models.FinanceEventMotive.INCIDENT_REVERSAL_OF_ORIGINAL_EVENT
+        last_finance_event = finance_models.FinanceEvent.query.filter(
+            finance_models.FinanceEvent.id != used_finance_event.id
+        ).one()
+        assert last_finance_event.motive == finance_models.FinanceEventMotive.INCIDENT_REVERSAL_OF_ORIGINAL_EVENT
 
         if force_debit_note:
             assert len(mails_testing.outbox) == 1
