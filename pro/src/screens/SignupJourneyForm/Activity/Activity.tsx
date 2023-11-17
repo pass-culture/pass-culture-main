@@ -4,7 +4,7 @@ import { useNavigate } from 'react-router-dom'
 
 import { Target } from 'apiClient/v1'
 import FormLayout from 'components/FormLayout'
-import { SIGNUP_JOURNEY_STEP_IDS } from 'components/SignupJourneyBreadcrumb/constants'
+import { SIGNUP_JOURNEY_STEP_IDS } from 'components/SignupJourneyStepper/constants'
 import { useSignupJourneyContext } from 'context/SignupJourneyContext'
 import { ActivityContext } from 'context/SignupJourneyContext/SignupJourneyContext'
 import { FORM_ERROR_MESSAGE } from 'core/shared'

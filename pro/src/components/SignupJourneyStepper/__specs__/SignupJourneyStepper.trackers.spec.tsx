@@ -5,8 +5,8 @@ import { Route, Routes } from 'react-router-dom'
 
 import { Target } from 'apiClient/v1'
 import { DEFAULT_ADDRESS_FORM_VALUES } from 'components/Address'
-import { SIGNUP_JOURNEY_STEP_IDS } from 'components/SignupJourneyBreadcrumb/constants'
 import { OnboardingFormNavigationAction } from 'components/SignupJourneyFormLayout/constants'
+import { SIGNUP_JOURNEY_STEP_IDS } from 'components/SignupJourneyStepper/constants'
 import {
   DEFAULT_ACTIVITY_VALUES,
   SignupJourneyContext,
@@ -17,7 +17,7 @@ import * as useAnalytics from 'hooks/useAnalytics'
 import { DEFAULT_OFFERER_FORM_VALUES } from 'screens/SignupJourneyForm/Offerer/constants'
 import { renderWithProviders } from 'utils/renderWithProviders'
 
-import SignupBreadcrumb from '../SignupJourneyBreadcrumb'
+import SignupBreadcrumb from '../SignupJourneyStepper'
 
 const mockLogEvent = vi.fn()
 

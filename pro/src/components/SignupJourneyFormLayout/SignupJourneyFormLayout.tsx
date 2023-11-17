@@ -1,6 +1,6 @@
 import React from 'react'
 
-import { SignupJourneyBreadcrumb } from 'components/SignupJourneyBreadcrumb'
+import { SignupJourneyStepper } from 'components/SignupJourneyStepper'
 
 import styles from './SignupJourneyFormLayoutContent.module.scss'
 
@@ -13,7 +13,7 @@ const SignupJourneyFormLayout = ({
   children,
 }: SignupOffererFormLayoutProps): JSX.Element => (
   <div className={styles['signup-offerer-layout-wrapper']}>
-    <SignupJourneyBreadcrumb />
+    <SignupJourneyStepper />
     {children}
   </div>
 )

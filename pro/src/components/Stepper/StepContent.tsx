@@ -1,8 +1,7 @@
 import React from 'react'
 import { Link } from 'react-router-dom'
 
-import type { Step } from 'components/Breadcrumb'
-
+import { Step } from './Stepper'
 import styles from './Stepper.module.scss'
 
 interface StepContent {
