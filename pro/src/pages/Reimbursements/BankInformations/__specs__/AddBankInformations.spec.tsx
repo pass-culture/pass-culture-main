@@ -1,11 +1,17 @@
 import { render, screen } from '@testing-library/react'
+import { userEvent } from '@testing-library/user-event'
 import React from 'react'
+
+import { BankAccountEvents } from 'core/FirebaseEvents/constants'
+import * as useAnalytics from 'hooks/useAnalytics'
 
 import AddBankInformationsDialog from '../AddBankInformationsDialog'
 
+const mockLogEvent = vi.fn()
+
 describe('AddBankInformations', () => {
   it('should render dialog', () => {
-    render(<AddBankInformationsDialog closeDialog={vi.fn()} />)
+    render(<AddBankInformationsDialog closeDialog={vi.fn()} offererId={0} />)
 
     expect(
       screen.getByText(
@@ -20,5 +26,24 @@ describe('AddBankInformations', () => {
     expect(
       screen.getByText('Continuer sur demarches-simplifiees.fr')
     ).toBeInTheDocument()
+  })
+
+  it('should track continue to ds', async () => {
+    vi.spyOn(useAnalytics, 'default').mockImplementation(() => ({
+      logEvent: mockLogEvent,
+    }))
+
+    render(<AddBankInformationsDialog closeDialog={vi.fn()} offererId={0} />)
+
+    await userEvent.click(
+      screen.getByText('Continuer sur demarches-simplifiees.fr')
+    )
+
+    expect(mockLogEvent).toHaveBeenCalledWith(
+      BankAccountEvents.CLICKED_CONTINUE_TO_DS,
+      {
+        offererId: 0,
+      }
+    )
   })
 })
