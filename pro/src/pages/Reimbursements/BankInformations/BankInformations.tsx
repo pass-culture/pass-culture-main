@@ -189,6 +189,7 @@ const BankInformations = (): JSX.Element => {
           closeDialog={() => {
             setShowAddBankInformationsDialog(false)
           }}
+          offererId={selectedOfferer?.id}
         />
       )}
     </>
