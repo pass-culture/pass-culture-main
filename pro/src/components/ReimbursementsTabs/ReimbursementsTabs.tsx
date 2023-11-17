@@ -68,7 +68,7 @@ const ReimbursementsTabs = () => {
     isNewBankDetailsJourneyEnabled ? getSteps() : OLD_STEP_LIST
   ).map(({ id, label, url }) => ({ key: id, label, url }))
 
-  return <Tabs tabs={tabs} selectedKey={activeStep}></Tabs>
+  return <Tabs tabs={tabs} selectedKey={activeStep} />
 }
 
 export default ReimbursementsTabs

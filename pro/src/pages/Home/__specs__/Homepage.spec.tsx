@@ -156,7 +156,7 @@ describe('homepage', () => {
       it('should smooth scroll to section if user doesnt prefer reduced motion', async () => {
         // when
         await userEvent.click(
-          screen.getByRole('link', { name: 'Profil et aide' })
+          screen.getByRole('button', { name: 'Profil et aide' })
         )
 
         // then
@@ -171,7 +171,7 @@ describe('homepage', () => {
 
         // when
         await userEvent.click(
-          screen.getByRole('link', { name: 'Structures et lieux' })
+          screen.getByRole('button', { name: 'Structures et lieux' })
         )
 
         // then
@@ -196,7 +196,7 @@ describe('homepage', () => {
         expect(screen.getByText('Aide et support')).toBeInTheDocument()
       })
 
-      it('should contains a link to access profile form', async () => {
+      it('should contains a link to access profile form', () => {
         // when
         expect(screen.getAllByRole('link')[10]).toBeInTheDocument()
       })
@@ -231,10 +231,9 @@ describe('homepage', () => {
       })
 
       describe('when clicking on anchor link to stats', () => {
-        let scrollIntoViewMock: any
+        const scrollIntoViewMock = vi.fn()
 
         beforeEach(async () => {
-          scrollIntoViewMock = vi.fn()
           Element.prototype.scrollIntoView = scrollIntoViewMock
           renderHomePage(store)
           await waitForElementToBeRemoved(() => screen.queryByTestId('spinner'))
@@ -242,9 +241,10 @@ describe('homepage', () => {
 
         it('should smooth scroll to section if user doesnt prefer reduced motion', async () => {
           // when
-          const statLink = await screen.findByRole('link', {
+          const statLink = await screen.findByRole('button', {
             name: 'Statistiques',
           })
+
           await userEvent.click(statLink)
 
           // then

@@ -7,8 +7,6 @@ import fullEditIcon from 'icons/full-edit.svg'
 import { ButtonLink } from 'ui-kit'
 import { ButtonVariant } from 'ui-kit/Button/types'
 
-import { STEP_PROFILE_HASH } from '../HomepageBreadcrumb'
-
 import Support from './Support'
 
 /**
@@ -58,9 +56,7 @@ const ProfileAndSupport = () => {
   const { currentUser: user } = useCurrentUser()
   return (
     <>
-      <h2 className="h-section-title" id={STEP_PROFILE_HASH}>
-        Profil et aide
-      </h2>
+      <h2 className="h-section-title">Profil et aide</h2>
 
       <div className="h-section-row">
         <div
