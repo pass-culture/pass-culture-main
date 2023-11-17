@@ -17,11 +17,9 @@ import pcapi.core.bookings.factories as bookings_factories
 import pcapi.core.bookings.models as bookings_models
 from pcapi.core.categories import subcategories_v2 as subcategories
 import pcapi.core.educational.factories as educational_factories
-from pcapi.core.educational.factories import CollectiveBookingFactory
 from pcapi.core.educational.factories import EducationalDepositFactory
 from pcapi.core.educational.factories import EducationalInstitutionFactory
 from pcapi.core.educational.factories import EducationalYearFactory
-from pcapi.core.educational.factories import UsedCollectiveBookingFactory
 import pcapi.core.educational.models as educational_models
 from pcapi.core.educational.models import Ministry
 from pcapi.core.finance import api
@@ -120,205 +118,6 @@ def collective_stock_factory(**kwargs):
     if create_bank_info:
         factories.BankInformationFactory(venue=stock.collectiveOffer.venue)
     return stock
-
-
-class PriceBookingTest:
-    def test_basics(self):
-        booking = bookings_factories.UsedBookingFactory(
-            amount=10,
-            stock=individual_stock_factory(),
-        )
-        pricing = api.price_booking(booking)
-        assert models.Pricing.query.count() == 1
-        assert pricing.booking == booking
-        assert pricing.venue == booking.venue
-        assert pricing.pricingPointId == booking.venue.id
-        assert pricing.valueDate == booking.dateUsed
-        assert pricing.amount == -1000
-        assert pricing.standardRule == "Remboursement total pour les offres physiques"
-        assert pricing.customRule is None
-        assert pricing.revenue == 1000
-
-    def test_migration_to_finance_events(self):
-        event = factories.UsedBookingFinanceEventFactory(booking__stock=individual_stock_factory())
-        booking = event.booking
-        pricing = api.price_booking(booking)
-
-        assert models.Pricing.query.count() == 1
-        assert pricing.booking == booking
-        assert pricing.event == event
-        assert event.status == models.FinanceEventStatus.PRICED
-
-    def test_link_to_finance_event(self):
-        booking = bookings_factories.BookingFactory(stock=individual_stock_factory())
-        bookings_api.mark_as_used(booking)
-        pricing = api.price_booking(booking)
-        assert pricing.event is not None
-        assert pricing.event.booking == booking
-
-    def test_pricing_lines(self):
-        user = users_factories.RichBeneficiaryFactory()
-        booking1 = bookings_factories.UsedBookingFactory(
-            amount=19_999,
-            user=user,
-            stock=individual_stock_factory(),
-        )
-        api.price_booking(booking1)
-        pricing1 = models.Pricing.query.one()
-        assert pricing1.amount == -(19_999 * 100)
-        assert pricing1.lines[0].category == models.PricingLineCategory.OFFERER_REVENUE
-        assert pricing1.lines[0].amount == -(19_999 * 100)
-        assert pricing1.lines[1].category == models.PricingLineCategory.OFFERER_CONTRIBUTION
-        assert pricing1.lines[1].amount == 0
-
-        booking2 = bookings_factories.UsedBookingFactory(
-            amount=100,
-            user=user,
-            stock=booking1.stock,
-        )
-        api.price_booking(booking2)
-        pricing2 = models.Pricing.query.filter_by(booking=booking2).one()
-        assert pricing2.amount == -(95 * 100)
-        assert pricing2.lines[0].category == models.PricingLineCategory.OFFERER_REVENUE
-        assert pricing2.lines[0].amount == -(100 * 100)
-        assert pricing2.lines[1].category == models.PricingLineCategory.OFFERER_CONTRIBUTION
-        assert pricing2.lines[1].amount == 5 * 100
-
-    def test_price_free_booking(self):
-        booking = bookings_factories.UsedBookingFactory(
-            amount=0,
-            stock=individual_stock_factory(),
-        )
-        pricing = api.price_booking(booking)
-        assert models.Pricing.query.count() == 1
-        assert pricing.amount == 0
-
-    def test_accrue_revenue(self):
-        booking1 = bookings_factories.UsedBookingFactory(
-            amount=10,
-            stock=individual_stock_factory(),
-        )
-        booking2 = bookings_factories.UsedBookingFactory(
-            amount=40,
-            stock=individual_stock_factory(offer__venue=booking1.venue),
-        )
-        pricing1 = api.price_booking(booking1)
-        pricing2 = api.price_booking(booking2)
-        assert pricing1.revenue == 1000
-        assert pricing2.revenue == 5000
-
-    def test_price_with_dependent_booking(self):
-        booking1 = bookings_factories.UsedBookingFactory(stock=individual_stock_factory())
-        _pricing1 = factories.PricingFactory(booking=booking1)
-        before = booking1.dateUsed - datetime.timedelta(seconds=60)
-        booking2 = bookings_factories.UsedBookingFactory(
-            dateUsed=before,
-            stock=individual_stock_factory(offer__venue=booking1.venue),
-        )
-        api.price_booking(booking2)
-        # Pricing of `booking1` has been deleted.
-        single_pricing = models.Pricing.query.one()
-        assert single_pricing.booking == booking2
-
-    def test_price_booking_that_is_already_priced(self):
-        booking = bookings_factories.UsedBookingFactory(stock=individual_stock_factory())
-        existing = factories.PricingFactory(booking=booking)
-        pricing = api.price_booking(booking)
-        assert pricing == existing
-
-    def test_price_booking_that_has_been_unused_and_then_used_again(self):
-        booking = bookings_factories.UsedBookingFactory(stock=individual_stock_factory())
-        factories.PricingFactory(booking=booking, status=models.PricingStatus.CANCELLED)
-        pricing = api.price_booking(booking)
-        assert len(booking.pricings) == 2
-        assert pricing.status == models.PricingStatus.VALIDATED
-
-    def test_price_booking_that_is_not_used(self):
-        bookings_factories.BookingFactory()
-        api.price_bookings(datetime.datetime(1970, 1, 1), batch_size=100)
-
-    def test_price_booking_checks_pricing_point(self):
-        booking = bookings_factories.UsedBookingFactory()
-        assert booking.venue.current_pricing_point_id is None
-        # We're not interested in the error details. The exception is
-        # a safety belt, we should not call `price_booking()` if there
-        # is no pricing point.
-        with pytest.raises(ValueError):
-            api.price_booking(booking)
-
-    def test_num_queries(self):
-        booking = bookings_factories.UsedBookingFactory(stock=individual_stock_factory())
-        window = (booking.dateUsed - datetime.timedelta(days=1), booking.dateUsed + datetime.timedelta(days=1))
-        booking = api._get_bookings_to_price(bookings_models.Booking, window).first()
-
-        queries = 0
-        queries += 1  # select feature flag PRICE_EVENTS
-        queries += 1  # select for update on Venue (lock)
-        queries += 1  # fetch booking again with multiple joinedload
-        queries += 1  # select existing Pricing (if any)
-        queries += 1  # select dependent pricings
-        queries += 1  # calculate revenue
-        queries += 1  # select all CustomReimbursementRule
-        queries += 1  # select FinanceEvent
-        queries += 1  # insert 1 Pricing
-        queries += 1  # insert 2 PricingLine
-        queries += 1  # commit
-        with assert_num_queries(queries):
-            api.price_booking(booking)
-
-
-class PriceCollectiveBookingTest:
-    def test_basics(self):
-        collective_booking = UsedCollectiveBookingFactory(collectiveStock=collective_stock_factory(price=10))
-        pricing = api.price_booking(collective_booking)
-        assert models.Pricing.query.count() == 1
-        assert pricing.collectiveBooking == collective_booking
-        assert pricing.venue == collective_booking.venue
-        assert pricing.pricingPointId == collective_booking.venue.id
-        assert pricing.valueDate == collective_booking.dateUsed
-        assert pricing.amount == -1000
-        assert pricing.standardRule == "Remboursement total pour les offres éducationnelles"
-        assert pricing.customRule is None
-        assert pricing.revenue == 0
-
-    def test_link_to_finance_event(self):
-        booking = UsedCollectiveBookingFactory(collectiveStock=collective_stock_factory())
-        api.add_event(models.FinanceEventMotive.BOOKING_USED, booking=booking)
-        pricing = api.price_booking(booking)
-        assert pricing.event is not None
-        assert pricing.event.collectiveBooking == booking
-
-    def test_pricing_lines(self):
-        stock = collective_stock_factory(price=19_999)
-        booking1 = UsedCollectiveBookingFactory(collectiveStock=stock)
-        api.price_booking(booking1)
-        pricing1 = models.Pricing.query.one()
-        assert pricing1.amount == -(19_999 * 100)
-        assert pricing1.lines[0].category == models.PricingLineCategory.OFFERER_REVENUE
-        assert pricing1.lines[0].amount == -(19_999 * 100)
-        assert pricing1.lines[1].category == models.PricingLineCategory.OFFERER_CONTRIBUTION
-        assert pricing1.lines[1].amount == 0
-
-        stock.price = 100
-        booking2 = UsedCollectiveBookingFactory(collectiveStock=stock)
-        api.price_booking(booking2)
-        pricing2 = models.Pricing.query.filter_by(collectiveBooking=booking2).one()
-        assert pricing2.amount == -(100 * 100)
-        assert pricing2.lines[0].category == models.PricingLineCategory.OFFERER_REVENUE
-        assert pricing2.lines[0].amount == -(100 * 100)
-        assert pricing2.lines[1].category == models.PricingLineCategory.OFFERER_CONTRIBUTION
-        assert pricing2.lines[1].amount == 0
-
-    def test_price_free_booking(self):
-        booking = UsedCollectiveBookingFactory(collectiveStock=collective_stock_factory(price=0))
-        pricing = api.price_booking(booking)
-        assert models.Pricing.query.count() == 1
-        assert pricing.amount == 0
-
-    def test_do_not_accrue_revenue(self):
-        booking = UsedCollectiveBookingFactory(collectiveStock=collective_stock_factory(price=10))
-        pricing = api.price_booking(booking)
-        assert pricing.revenue == 0
 
 
 class PriceEventTest:
@@ -939,515 +738,6 @@ class GetRevenuePeriodTest:
         assert period == (start, end)
 
 
-class GetPricingPointIdAndCurrentRevenueTest:
-    def test_basics(self):
-        pricing_point = offerers_factories.VenueFactory()
-        offerer = pricing_point.managingOfferer
-        venue = offerers_factories.VenueFactory(
-            managingOfferer=offerer,
-            pricing_point=pricing_point,
-        )
-        booking1 = bookings_factories.UsedBookingFactory(
-            stock__offer__venue=venue,
-            amount=20,
-        )
-        _pricing1 = factories.PricingFactory(booking=booking1)
-        booking2 = bookings_factories.UsedBookingFactory(stock__offer__venue=venue)
-        _pricing_other = factories.PricingFactory()
-
-        pricing_point_id, current_revenue = api._get_pricing_point_id_and_current_revenue(booking2)
-        assert pricing_point_id == pricing_point.id
-        assert current_revenue == 2000
-
-    def test_use_booking_quantity(self):
-        venue = offerers_factories.VenueFactory(pricing_point="self")
-        factories.PricingFactory(
-            booking__stock__offer__venue=venue,
-            booking__amount=20,
-            booking__quantity=2,
-        )
-        booking = bookings_factories.UsedBookingFactory(stock__offer__venue=venue)
-        pricing_point_id, current_revenue = api._get_pricing_point_id_and_current_revenue(booking)
-        assert pricing_point_id == venue.id
-        assert current_revenue == 4000
-
-    def test_consider_booking_date_used(self):
-        in_2020 = datetime.datetime(2020, 7, 1)
-        in_2021 = datetime.datetime(2021, 7, 1)
-        venue = offerers_factories.VenueFactory(pricing_point="self")
-        _pricing_2020 = factories.PricingFactory(
-            booking__stock__offer__venue=venue,
-            valueDate=in_2020,
-            booking__amount=10,
-        )
-        _pricing_1_2021 = factories.PricingFactory(
-            booking__stock__offer__venue=venue,
-            valueDate=in_2021,
-            booking__amount=20,
-        )
-        _pricing_2_2021 = factories.PricingFactory(
-            booking__stock__offer__venue=venue,
-            valueDate=in_2021,
-            booking__amount=40,
-        )
-        booking = bookings_factories.UsedBookingFactory(
-            stock__offer__venue=venue,
-            dateCreated=in_2020,
-            dateUsed=in_2021,
-        )
-
-        pricing_point_id, current_revenue = api._get_pricing_point_id_and_current_revenue(booking)
-        assert pricing_point_id == venue.id
-        assert current_revenue == 6000
-
-    def test_handle_duplicate_value_date(self):
-        # Check that we're not trying to be too clever in the
-        # implementation. See commit 8e5b7c9e688 for further details.
-        value_date = datetime.datetime.utcnow()
-        venue = offerers_factories.VenueFactory(pricing_point="self")
-        booking = bookings_factories.UsedBookingFactory(stock__offer__venue=venue)
-        for amount in (10, 20):
-            factories.PricingFactory(
-                valueDate=value_date,
-                booking__amount=amount,
-                booking__stock__offer__venue=venue,
-            )
-        pricing_point_id, current_revenue = api._get_pricing_point_id_and_current_revenue(booking)
-        assert pricing_point_id == venue.id
-        assert current_revenue == 3000
-
-
-class CancelPricingTest:
-    def test_basics(self):
-        pricing = factories.PricingFactory(booking__stock=individual_stock_factory())
-        reason = models.PricingLogReason.MARK_AS_UNUSED
-        pricing = api.cancel_pricing(pricing.booking, reason)
-        assert pricing.status == models.PricingStatus.CANCELLED
-        assert pricing.logs[0].reason == reason
-
-    def test_cancel_when_no_pricing(self):
-        booking = bookings_factories.BookingFactory(stock=individual_stock_factory())
-        pricing = api.cancel_pricing(booking, models.PricingLogReason.MARK_AS_UNUSED)
-        assert pricing is None
-
-    def test_cancel_when_already_cancelled(self):
-        pricing = factories.PricingFactory(
-            booking__stock=individual_stock_factory(),
-            status=models.PricingStatus.CANCELLED,
-        )
-        assert api.cancel_pricing(pricing.booking, models.PricingLogReason.MARK_AS_UNUSED) is None
-        assert pricing.status == models.PricingStatus.CANCELLED  # unchanged
-
-    def test_cancel_when_not_cancellable(self):
-        pricing = factories.PricingFactory(
-            booking__stock=individual_stock_factory(),
-            status=models.PricingStatus.PROCESSED,
-        )
-        with pytest.raises(exceptions.NonCancellablePricingError):
-            api.cancel_pricing(pricing.booking, models.PricingLogReason.MARK_AS_UNUSED)
-        pricing = models.Pricing.query.one()
-        assert pricing.status == models.PricingStatus.PROCESSED  # unchanged
-
-    def test_cancel_with_dependent_booking(self):
-        booking = bookings_factories.UsedBookingFactory(stock=individual_stock_factory())
-        pricing = factories.PricingFactory(booking=booking)
-        _dependent_pricing = factories.PricingFactory(
-            booking__stock__offer__venue=booking.venue,
-            valueDate=pricing.valueDate + datetime.timedelta(seconds=1),
-        )
-        pricing = api.cancel_pricing(booking, models.PricingLogReason.MARK_AS_UNUSED)
-        assert pricing.status == models.PricingStatus.CANCELLED
-        assert models.Pricing.query.one() == pricing
-
-
-class CancelCollectivePricingTest:
-    def test_basics(self):
-        pricing = factories.CollectivePricingFactory(collectiveBooking__collectiveStock=collective_stock_factory())
-        reason = models.PricingLogReason.MARK_AS_UNUSED
-        pricing = api.cancel_pricing(pricing.collectiveBooking, reason)
-        assert pricing.status == models.PricingStatus.CANCELLED
-        assert pricing.logs[0].reason == reason
-
-    def test_cancel_when_no_pricing(self):
-        booking = CollectiveBookingFactory(collectiveStock=collective_stock_factory())
-        pricing = api.cancel_pricing(booking, models.PricingLogReason.MARK_AS_UNUSED)
-        assert pricing is None
-
-    def test_cancel_when_already_cancelled(self):
-        pricing = factories.CollectivePricingFactory(
-            status=models.PricingStatus.CANCELLED,
-            collectiveBooking__collectiveStock=collective_stock_factory(),
-        )
-        assert api.cancel_pricing(pricing.collectiveBooking, models.PricingLogReason.MARK_AS_UNUSED) is None
-        assert pricing.status == models.PricingStatus.CANCELLED  # unchanged
-
-    def test_cancel_when_not_cancellable(self):
-        pricing = factories.CollectivePricingFactory(
-            status=models.PricingStatus.PROCESSED,
-            collectiveBooking__collectiveStock=collective_stock_factory(),
-        )
-        with pytest.raises(exceptions.NonCancellablePricingError):
-            api.cancel_pricing(pricing.collectiveBooking, models.PricingLogReason.MARK_AS_UNUSED)
-        pricing = models.Pricing.query.one()
-        assert pricing.status == models.PricingStatus.PROCESSED  # unchanged
-
-
-class DeleteDependentPricingsTest:
-    def test_basics(self):
-        used_date = datetime.datetime(2022, 1, 15)
-        booking = bookings_factories.UsedBookingFactory(
-            dateUsed=used_date,
-            stock__offer__venue__pricing_point="self",
-        )
-        earlier_pricing = factories.PricingFactory(
-            booking__stock__offer__venue=booking.venue,
-            booking__dateUsed=booking.dateUsed - datetime.timedelta(seconds=1),
-        )
-        earlier_pricing_previous_year = factories.PricingFactory(
-            booking__stock__offer__venue=booking.venue,
-            booking__dateUsed=booking.dateUsed - datetime.timedelta(days=365),
-            booking__stock__beginningDatetime=booking.dateUsed + datetime.timedelta(seconds=1),
-        )
-        later_pricing = factories.PricingFactory(
-            booking__stock__offer__venue=booking.venue,
-            booking__dateUsed=booking.dateUsed + datetime.timedelta(seconds=1),
-        )
-        later_event = factories.UsedBookingFinanceEventFactory(
-            booking=later_pricing.booking,
-            status=models.FinanceEventStatus.PRICED,
-        )
-        later_pricing.eventId = later_event.id
-        db.session.commit()
-        later_pricing_another_year = factories.PricingFactory(
-            booking__stock__offer__venue=booking.venue,
-            booking__dateUsed=used_date + datetime.timedelta(days=365),
-        )
-        factories.PricingLineFactory(pricing=later_pricing)
-        factories.PricingLogFactory(pricing=later_pricing)
-        _same_date_pricing_but_greater_booking_id = factories.PricingFactory(
-            booking__stock__offer__venue=booking.venue,
-            valueDate=booking.dateUsed,
-        )
-        api._delete_dependent_pricings(booking, "some log message")
-
-        expected_kept = {earlier_pricing_previous_year, earlier_pricing, later_pricing_another_year}
-        assert set(models.Pricing.query.all()) == expected_kept
-        db.session.refresh(later_event)
-        assert later_event.status == models.FinanceEventStatus.READY
-
-    def test_scenario1(self):
-        # 0. V2 is linked to a BU, V1 is not.
-        # 1. B1 is marked as used. It cannot be priced yet.
-        # 2. B2 is marked as used. It is priced.
-        # 3. V1 is linked to a BU, this makes B1 priceable. B1 should
-        #    be priced after B2, even though its used date predates
-        #    B2's used date).
-        datetimes = datetime_iterator(datetime.datetime(2022, 1, 1))
-        v2 = offerers_factories.VenueFactory(pricing_point=None)
-        offerer = v2.managingOfferer
-        offerers_api.link_venue_to_pricing_point(v2, pricing_point_id=v2.id, timestamp=next(datetimes))
-        v1 = offerers_factories.VirtualVenueFactory(pricing_point=None, managingOfferer=offerer)
-        b1 = bookings_factories.UsedBookingFactory(stock__offer__venue=v1, dateUsed=next(datetimes))
-        b2 = bookings_factories.UsedBookingFactory(stock__offer__venue=v2, dateUsed=next(datetimes))
-        offerers_api.link_venue_to_pricing_point(v1, pricing_point_id=v2.id, timestamp=next(datetimes))
-
-        # Suppose that we priced b1 first (which we should not).
-        factories.PricingFactory(booking=b1)
-        # If we were to price b2 now, that should delete b1's pricing
-        # because b2 must be priced before b1.
-        api._delete_dependent_pricings(b2, "dummy")
-        assert not b1.pricings
-
-    def test_scenario2(self):
-        # 0. Venue has 2 bookings.
-        # 1. B1 is a booking for event/stock S1.
-        # 2. B2 is a booking for event/stock S2 (which happens after S1).
-        # 3. B2 is marked as used before the event date.
-        # 4. B1 is also marked used before the event date.
-        # 5. S1 happens, B1 can then be invoiced.
-        # 6. S2 does not happen, B2 should be cancelled. This should
-        #    not have any effect on B1.
-        datetimes = datetime_iterator(datetime.datetime(2022, 1, 1))
-        venue = offerers_factories.VenueFactory(pricing_point=None)
-        offerers_api.link_venue_to_pricing_point(venue, venue.id, next(datetimes))
-        b2_used = next(datetimes)
-        b1_used = next(datetimes)
-        s1_date = next(datetimes)
-        s2_date = next(datetimes)
-        b1 = bookings_factories.UsedBookingFactory(
-            stock__beginningDatetime=s1_date,
-            stock__offer__venue=venue,
-            dateUsed=b1_used,
-        )
-        b2 = bookings_factories.UsedBookingFactory(
-            stock__beginningDatetime=s2_date,
-            stock__offer__venue=venue,
-            dateUsed=b2_used,
-        )
-
-        # Suppose that we priced b2 first (which we should not).
-        factories.PricingFactory(booking=b2)
-        # If we were to price b1 now, that should delete b2's pricing
-        # because b1 must be priced before b2.
-        api._delete_dependent_pricings(b1, "dummy")
-        assert not b2.pricings
-
-    def test_scenario3(self):
-        # 0. Venue has 2 bookings.
-        # 1. B1 is a booking for a thing.
-        # 2. B2 is a booking for an event that happened before B1's used date.
-        # 3. But B2 has been marked as used after B1.
-        # B2 should be priced after B1.
-        datetimes = datetime_iterator(datetime.datetime(2022, 1, 1))
-        venue = offerers_factories.VenueFactory(pricing_point=None)
-        offerers_api.link_venue_to_pricing_point(venue, venue.id, next(datetimes))
-        s2_date = next(datetimes)
-        b1_used = next(datetimes)
-        b2_used = next(datetimes)
-        b1 = bookings_factories.UsedBookingFactory(
-            stock__offer__venue=venue,
-            dateUsed=b1_used,
-        )
-        b2 = bookings_factories.UsedBookingFactory(
-            stock__beginningDatetime=s2_date,
-            stock__offer__venue=venue,
-            dateUsed=b2_used,
-        )
-
-        # Suppose that we priced b2 first (which we should not).
-        factories.PricingFactory(booking=b2)
-        # If we were to price b1 now, that should delete b2's pricing
-        # because b1 must be priced before b2.
-        api._delete_dependent_pricings(b1, "dummy")
-        assert not b2.pricings
-
-    def test_scenario4(self):
-        # 0. Venue has 2 bookings.
-        # 1. B1 is a booking for E1 (that happens on 15/02).
-        # 2. B2 is a booking for E2 (that happens on 20/02).
-        # 3. B2 is marked as used on 13/02 (_before_ the event date,
-        #    it's allowed).
-        # 4. B1 is marked as used on 14/02, _after_ B2 but also before
-        #    the event date.
-        # 5. On 16/02, a cashflow is generated for B1 only, because
-        #    it's the only event that has happened yet.
-        # 6. The venue cancels E2. We should be able to cancel B2's
-        #    pricing.
-        # In other words, B2 should be priced after B1.
-        venue = offerers_factories.VenueFactory(pricing_point=None)
-        offerers_api.link_venue_to_pricing_point(venue, venue.id, datetime.datetime(2022, 1, 1))
-        b1 = bookings_factories.UsedBookingFactory(
-            stock__beginningDatetime=datetime.datetime(2022, 2, 15),
-            stock__offer__venue=venue,
-            dateUsed=datetime.datetime(2022, 2, 14),
-        )
-        b2 = bookings_factories.UsedBookingFactory(
-            stock__beginningDatetime=datetime.datetime(2022, 2, 20),  # after s1
-            stock__offer__venue=venue,
-            dateUsed=datetime.datetime(2022, 2, 13),  # before b1
-        )
-
-        # Suppose that we priced b2 first (which we should not).
-        factories.PricingFactory(booking=b2)
-        # If we were to price b1 now, that should delete b2's pricing
-        # because b1 must be priced before b2.
-        api._delete_dependent_pricings(b1, "dummy")
-        assert not b2.pricings
-
-    def test_raise_if_a_pricing_is_not_deletable(self):
-        # Simulate a venue that changed its pricing point. There was a
-        # bug in that case in the handling of
-        # FINANCE_OVERRIDE_PRICING_ORDERING_ON_PRICING_POINTS.
-        pricing_point1 = offerers_factories.VenueFactory()
-        offerer = pricing_point1.managingOfferer
-        venue = offerers_factories.VenueWithoutSiretFactory(managingOfferer=offerer, pricing_point=pricing_point1)
-        pricing_point2 = offerers_factories.VenueFactory(managingOfferer=offerer)
-        offerers_api.link_venue_to_pricing_point(venue, pricing_point2.id, force_link=True)
-
-        booking = create_booking_with_undeletable_dependent(stock__offer__venue=venue)
-        pricing = models.Pricing.query.one()
-        with pytest.raises(exceptions.NonCancellablePricingError):
-            api._delete_dependent_pricings(booking, "some log message")
-        assert models.Pricing.query.one() == pricing
-
-        # With the appropriate setting, don't raise and don't
-        # delete the pricing.
-        with override_settings(FINANCE_OVERRIDE_PRICING_ORDERING_ON_PRICING_POINTS=[pricing_point2.id]):
-            api._delete_dependent_pricings(booking, "some log message")
-        assert models.Pricing.query.one() == pricing
-
-    def test_scenario5(self):
-        # 0. Venue is linked to pricing point 1.
-        # 1. Booking B1 and B2 are used on 2022-12-15.
-        # 2. Venue is linked to pricing point 2.
-        # B2 should be priced after B1 (orderer by their id).
-        venue = offerers_factories.VenueWithoutSiretFactory()
-        offerer = venue.managingOfferer
-        ppoint1 = offerers_factories.VenueFactory(managingOfferer=offerer)
-        offerers_api.link_venue_to_pricing_point(
-            venue,
-            ppoint1.id,
-            datetime.datetime(2022, 1, 1),
-        )
-        ppoint2 = offerers_factories.VenueFactory(managingOfferer=offerer)
-        offerers_api.link_venue_to_pricing_point(
-            venue,
-            ppoint2.id,
-            datetime.datetime(2022, 12, 20),
-            force_link=True,
-        )
-
-        used_at = datetime.datetime(2022, 12, 15)  # during ppoint1 link period
-        b1 = bookings_factories.UsedBookingFactory(stock__offer__venue=venue, dateUsed=used_at)
-        b2 = bookings_factories.UsedBookingFactory(stock__offer__venue=venue, dateUsed=used_at)
-
-        # Suppose that we priced b2 first (which we should not).
-        factories.PricingFactory(booking=b2, pricingPoint=ppoint1)
-        # If we were to price b1 now, that should delete b2's pricing
-        # because b1 must be priced before b2.
-        api.price_booking(b1)
-        assert b1.pricings
-        assert not b2.pricings
-        # Now price b2...
-        api.price_booking(b2)
-        assert b2.pricings
-        # The pricing of b1 should not be deleted.
-        assert b1.pricings
-
-
-class PriceBookingsTest:
-    few_minutes_ago = datetime.datetime.utcnow() - datetime.timedelta(minutes=5)
-
-    def test_basics(self):
-        unused_booking = bookings_factories.BookingFactory(
-            stock=individual_stock_factory(),
-        )
-        used_booking = bookings_factories.UsedBookingFactory(
-            dateUsed=self.few_minutes_ago,
-            stock=individual_stock_factory(),
-        )
-        unused_then_used_booking = bookings_factories.UsedBookingFactory(
-            dateUsed=self.few_minutes_ago,
-            stock=individual_stock_factory(),
-        )
-        factories.PricingFactory(
-            booking=unused_then_used_booking,
-            status=models.PricingStatus.CANCELLED,
-        )
-        used_collective_booking = UsedCollectiveBookingFactory(
-            dateUsed=self.few_minutes_ago,
-            collectiveStock=collective_stock_factory(),
-        )
-        api.price_bookings(min_date=self.few_minutes_ago)
-
-        assert len(unused_booking.pricings) == 0
-        assert len(used_booking.pricings) == 1
-        assert len(unused_then_used_booking.pricings) == 2
-        assert {p.status for p in unused_then_used_booking.pricings} == {
-            models.PricingStatus.CANCELLED,
-            models.PricingStatus.VALIDATED,
-        }
-        assert len(used_collective_booking.pricings) == 1
-
-    def test_loop(self):
-        bookings_factories.UsedBookingFactory(
-            id=2,
-            dateUsed=self.few_minutes_ago - datetime.timedelta(minutes=1),
-            stock=individual_stock_factory(),
-        )
-        bookings_factories.UsedBookingFactory(
-            id=1,
-            dateUsed=self.few_minutes_ago,
-            stock=individual_stock_factory(),
-        )
-        UsedCollectiveBookingFactory.create_batch(
-            3,
-            dateUsed=self.few_minutes_ago,
-            collectiveStock=collective_stock_factory(),
-        )
-        api.price_bookings(
-            min_date=self.few_minutes_ago - datetime.timedelta(minutes=1),
-            batch_size=1,
-        )
-        assert models.Pricing.query.count() == 2 + 3
-
-    @mock.patch("pcapi.core.finance.api.price_booking", lambda booking: None)
-    def test_num_queries(self):
-        bookings_factories.UsedBookingFactory(
-            dateUsed=self.few_minutes_ago,
-            stock=individual_stock_factory(),
-        )
-        educational_factories.UsedCollectiveBookingFactory(
-            dateUsed=self.few_minutes_ago,
-            collectiveStock=collective_stock_factory(),
-        )
-        n_queries = 0
-        n_queries += 1  # select feature flag PRICE_EVENTS
-        n_queries += 1  # count of individual bookings to price
-        n_queries += 1  # count of collective bookings to price
-        n_queries += 1  # select individual bookings
-        n_queries += 1  # select collective bookings
-        with assert_num_queries(n_queries):
-            api.price_bookings(self.few_minutes_ago)
-
-    def test_error_on_a_booking_does_not_block_other_bookings(self):
-        booking1 = create_booking_with_undeletable_dependent(
-            date_used=self.few_minutes_ago,
-            stock=individual_stock_factory(),
-        )
-        booking2 = bookings_factories.UsedBookingFactory(
-            dateUsed=self.few_minutes_ago,
-            stock=individual_stock_factory(),
-        )
-
-        api.price_bookings(self.few_minutes_ago)
-
-        assert not booking1.pricings
-        assert len(booking2.pricings) == 1
-
-    def test_order_on_event_date(self):
-        event_day1 = datetime.datetime.utcnow() - datetime.timedelta(days=3)
-        event_day2 = datetime.datetime.utcnow() - datetime.timedelta(days=2)
-
-        used_date1 = datetime.datetime.utcnow() - datetime.timedelta(days=10)
-        used_date2 = datetime.datetime.utcnow() - datetime.timedelta(days=9)
-        used_date3 = datetime.datetime.utcnow() - datetime.timedelta(days=8)
-        used_date4 = datetime.datetime.utcnow() - datetime.timedelta(days=7)
-
-        # Use the same venue so that we only consider the event date
-        # and the used date.
-        venue = offerers_factories.VenueFactory(pricing_point="self")
-
-        booking1 = bookings_factories.UsedBookingFactory(
-            # non-event, created first, marked as used first
-            dateUsed=used_date1,
-            stock__offer__venue=venue,
-        )
-        booking2 = bookings_factories.UsedBookingFactory(
-            # event, marked as used before the event date
-            dateUsed=used_date3,
-            stock__beginningDatetime=event_day2,
-            stock__offer__venue=venue,
-        )
-        booking3 = bookings_factories.UsedBookingFactory(
-            # event, marked as used after booking2, but with an event
-            # date *before* booking2 event date.
-            dateUsed=used_date4,
-            stock__beginningDatetime=event_day1,
-            stock__offer__venue=venue,
-        )
-        booking4 = bookings_factories.UsedBookingFactory(
-            # non-event, created last, marked as used second
-            dateUsed=used_date2,
-            stock__offer__venue=venue,
-        )
-
-        api.price_bookings()
-        pricings = models.Pricing.query.order_by(models.Pricing.id).all()
-        ordered_bookings = [pricing.booking for pricing in pricings]
-        assert ordered_bookings == [booking1, booking4, booking3, booking2]
-
-
 def test_get_next_cashflow_batch_label():
     label = api._get_next_cashflow_batch_label()
     assert label == "VIR1"
@@ -1662,31 +952,31 @@ class GenerateCashflowsTest:
         # Price an individual and a collective booking.
         venue1 = offerers_factories.VenueFactory()
         factories.BankInformationFactory(venue=venue1)
-        booking1 = bookings_factories.UsedBookingFactory(
-            stock__offer__venue__pricing_point=venue1,
-            stock__offer__venue__reimbursement_point=venue1,
+        finance_event1 = factories.UsedBookingFinanceEventFactory(
+            booking__stock__offer__venue__pricing_point=venue1,
+            booking__stock__offer__venue__reimbursement_point=venue1,
         )
-        api.price_booking(booking1)
+        api.price_event(finance_event1)
         venue2 = offerers_factories.VenueFactory()
         factories.BankInformationFactory(venue=venue2)
         past = datetime.datetime.utcnow() - datetime.timedelta(days=2)
-        booking2 = educational_factories.UsedCollectiveBookingFactory(
-            collectiveStock__beginningDatetime=past,
-            collectiveStock__collectiveOffer__venue__pricing_point=venue2,
-            collectiveStock__collectiveOffer__venue__reimbursement_point=venue2,
+        finance_event2 = factories.UsedCollectiveBookingFinanceEventFactory(
+            collectiveBooking__collectiveStock__beginningDatetime=past,
+            collectiveBooking__collectiveStock__collectiveOffer__venue__pricing_point=venue2,
+            collectiveBooking__collectiveStock__collectiveOffer__venue__reimbursement_point=venue2,
         )
-        api.price_booking(booking2)
+        api.price_event(finance_event2)
 
         # Do something terrible: change amount of the individual
         # booking and the collective stock without re-pricing
         # bookings.
-        booking1.amount -= 1
-        booking2.collectiveStock.price -= 1
-        db.session.commit()
+        finance_event1.booking.amount -= 1
+        finance_event2.collectiveBooking.collectiveStock.price -= 1
+        db.session.flush()
 
         api.generate_cashflows(cutoff=datetime.datetime.utcnow())
 
-        assert models.Cashflow.query.count() == 0
+        assert models.Cashflow.query.count() == 0  # not 2!
 
     def test_assert_num_queries(self):
         venue1 = offerers_factories.VenueFactory(reimbursement_point="self")
@@ -2112,14 +1402,16 @@ class GenerateInvoicesTest:
     @mock.patch("pcapi.core.finance.api._store_invoice_pdf")
     @clean_temporary_files
     def test_basics(self, _mocked1, _mocked2):
-        booking1 = bookings_factories.UsedBookingFactory(stock=individual_stock_factory())
-        booking2 = bookings_factories.UsedBookingFactory(stock=individual_stock_factory())
-        for booking in (booking1, booking2):
-            factories.BankInformationFactory(venue=booking.venue)
+        finance_event1 = factories.UsedBookingFinanceEventFactory(booking__stock=individual_stock_factory())
+        booking1 = finance_event1.booking
+        finance_event2 = factories.UsedBookingFinanceEventFactory(booking__stock=individual_stock_factory())
+        booking2 = finance_event2.booking
+        for finance_event in (finance_event1, finance_event2):
+            factories.BankInformationFactory(venue=finance_event.booking.venue)
 
         # Cashflows for booking1 and booking2 will be UNDER_REVIEW.
-        api.price_booking(booking1)
-        api.price_booking(booking2)
+        api.price_event(finance_event1)
+        api.price_event(finance_event2)
         batch = api.generate_cashflows_and_payment_files(datetime.datetime.utcnow())
 
         api.generate_invoices(batch)
@@ -2181,10 +1473,10 @@ class GenerateInvoiceTest:
 
         offer = offers_factories.ThingOfferFactory(venue=venue)
         stock = offers_factories.ThingStockFactory(offer=offer, price=20)
-        booking1 = bookings_factories.UsedBookingFactory(stock=stock)
-        booking2 = bookings_factories.UsedBookingFactory(stock=stock)
-        api.price_booking(booking1)
-        api.price_booking(booking2)
+        finance_event1 = factories.UsedBookingFinanceEventFactory(booking__stock=stock)
+        finance_event2 = factories.UsedBookingFinanceEventFactory(booking__stock=stock)
+        api.price_event(finance_event1)
+        api.price_event(finance_event2)
         batch = api.generate_cashflows(datetime.datetime.utcnow())
         api.generate_payment_files(batch)  # mark cashflows as UNDER_REVIEW
         cashflow_ids = [c.id for c in models.Cashflow.query.all()]
@@ -2221,13 +1513,13 @@ class GenerateInvoiceTest:
         stock1 = offers_factories.ThingStockFactory(offer=offer, price=19_850)
         stock2 = offers_factories.ThingStockFactory(offer=offer, price=160)
         user = users_factories.RichBeneficiaryFactory()
-        booking1 = bookings_factories.UsedBookingFactory(
-            stock=stock1,
-            user=user,
+        finance_event1 = factories.UsedBookingFinanceEventFactory(
+            booking__stock=stock1,
+            booking__user=user,
         )
-        booking2 = bookings_factories.UsedBookingFactory(stock=stock2)
-        api.price_booking(booking1)
-        api.price_booking(booking2)
+        finance_event2 = factories.UsedBookingFinanceEventFactory(booking__stock=stock2)
+        api.price_event(finance_event1)
+        api.price_event(finance_event2)
         batch = api.generate_cashflows(datetime.datetime.utcnow())
         api.generate_payment_files(batch)  # mark cashflows as UNDER_REVIEW
         cashflow_ids = [c.id for c in models.Cashflow.query.all()]
@@ -2270,10 +1562,10 @@ class GenerateInvoiceTest:
         offer = offers_factories.ThingOfferFactory(venue=venue)
         stock = offers_factories.ThingStockFactory(offer=offer, price=23)
         factories.CustomReimbursementRuleFactory(amount=2200, offer=offer)
-        booking1 = bookings_factories.UsedBookingFactory(stock=stock)
-        booking2 = bookings_factories.UsedBookingFactory(stock=stock)
-        api.price_booking(booking1)
-        api.price_booking(booking2)
+        finance_event1 = factories.UsedBookingFinanceEventFactory(booking__stock=stock)
+        finance_event2 = factories.UsedBookingFinanceEventFactory(booking__stock=stock)
+        api.price_event(finance_event1)
+        api.price_event(finance_event2)
         batch = api.generate_cashflows(datetime.datetime.utcnow())
         api.generate_payment_files(batch)  # mark cashflows as UNDER_REVIEW
         cashflow_ids = [c.id for c in models.Cashflow.query.all()]
@@ -2297,20 +1589,20 @@ class GenerateInvoiceTest:
 
     def test_many_rules_and_rates_two_cashflows(self, invoice_data):
         reimbursement_point, stocks, _venue = invoice_data
-        bookings = []
+        finance_events = []
         user = users_factories.RichBeneficiaryFactory()
         for stock in stocks:
-            booking = bookings_factories.UsedBookingFactory(
-                stock=stock,
-                user=user,
+            finance_event = factories.UsedBookingFinanceEventFactory(
+                booking__stock=stock,
+                booking__user=user,
             )
-            bookings.append(booking)
-        for booking in bookings[:3]:
-            api.price_booking(booking)
+            finance_events.append(finance_event)
+        for finance_event in finance_events[:3]:
+            api.price_event(finance_event)
         batch = api.generate_cashflows(cutoff=datetime.datetime.utcnow())
         api.generate_payment_files(batch)  # mark cashflows as UNDER_REVIEW
-        for booking in bookings[3:]:
-            api.price_booking(booking)
+        for finance_event in finance_events[3:]:
+            api.price_event(finance_event)
         batch = api.generate_cashflows(cutoff=datetime.datetime.utcnow())
         api.generate_payment_files(batch)  # mark cashflows as UNDER_REVIEW
         cashflow_ids = [c.id for c in models.Cashflow.query.all()]
@@ -2395,15 +1687,15 @@ class GenerateInvoiceTest:
             subcategoryId=subcategories.SUPPORT_PHYSIQUE_FILM.id,
         )
         stock1 = offers_factories.StockFactory(offer=offer1, price=20)
-        booking1 = bookings_factories.UsedBookingFactory(stock=stock1)
+        finance_event1 = factories.UsedBookingFinanceEventFactory(booking__stock=stock1)
         offer2 = offers_factories.ThingOfferFactory(
             venue=venue,
             subcategoryId=subcategories.TELECHARGEMENT_MUSIQUE.id,
         )
         stock2 = offers_factories.StockFactory(offer=offer2, price=0)
-        booking2 = bookings_factories.UsedBookingFactory(stock=stock2)
-        api.price_booking(booking1)
-        api.price_booking(booking2)
+        finance_event2 = factories.UsedBookingFinanceEventFactory(booking__stock=stock2)
+        api.price_event(finance_event1)
+        api.price_event(finance_event2)
         batch = api.generate_cashflows(datetime.datetime.utcnow())
         api.generate_payment_files(batch)  # mark cashflows as UNDER_REVIEW
         cashflow_ids = [c.id for c in models.Cashflow.query.all()]
@@ -2432,24 +1724,30 @@ class GenerateInvoiceTest:
 
     def test_update_statuses_and_booking_reimbursement_date(self):
         stock = individual_stock_factory()
-        booking1 = bookings_factories.UsedBookingFactory(stock=stock)
-        booking2 = bookings_factories.UsedBookingFactory(stock=stock)
+        indiv_finance_event1 = factories.UsedBookingFinanceEventFactory(booking__stock=stock)
+        indiv_booking1 = indiv_finance_event1.booking
+        indiv_finance_event2 = factories.UsedBookingFinanceEventFactory(booking__stock=stock)
+        indiv_booking2 = indiv_finance_event2.booking
         venue = stock.offer.venue
         past = datetime.datetime.utcnow() - datetime.timedelta(days=1)
-        collective_booking1 = educational_factories.UsedCollectiveBookingFactory(
-            collectiveStock__beginningDatetime=past, collectiveStock__collectiveOffer__venue=venue
+        collective_finance_event1 = factories.UsedCollectiveBookingFinanceEventFactory(
+            collectiveBooking__collectiveStock__beginningDatetime=past,
+            collectiveBooking__collectiveStock__collectiveOffer__venue=venue,
         )
-        collective_booking2 = educational_factories.UsedCollectiveBookingFactory(
-            collectiveStock__beginningDatetime=past, collectiveStock__collectiveOffer__venue=venue
+        collective_booking1 = collective_finance_event1.collectiveBooking
+        collective_finance_event2 = factories.UsedCollectiveBookingFinanceEventFactory(
+            collectiveBooking__collectiveStock__beginningDatetime=past,
+            collectiveBooking__collectiveStock__collectiveOffer__venue=venue,
         )
-        for b in (booking1, booking2, collective_booking1, collective_booking2):
-            api.price_booking(b)
+        collective_booking2 = collective_finance_event2.collectiveBooking
+        for e in (collective_finance_event1, collective_finance_event2, indiv_finance_event1, indiv_finance_event2):
+            api.price_event(e)
         batch = api.generate_cashflows(datetime.datetime.utcnow())
-        api.generate_payment_files(batch)  # mark cashflows as UNDER_REVIWE
+        api.generate_payment_files(batch)  # mark cashflows as UNDER_REVIEW
         cashflow_ids = {cf.id for cf in models.Cashflow.query.all()}
-        booking2.status = bookings_models.BookingStatus.CANCELLED
+        indiv_booking2.status = bookings_models.BookingStatus.CANCELLED
         collective_booking2.status = educational_models.CollectiveBookingStatus.CANCELLED
-        db.session.commit()
+        db.session.flush()
 
         invoice = api._generate_invoice(
             reimbursement_point_id=venue.current_reimbursement_point_id,
@@ -2461,10 +1759,10 @@ class GenerateInvoiceTest:
         assert cashflow_statuses == {models.CashflowStatus.ACCEPTED}
         pricing_statuses = get_statuses(models.Pricing)
         assert pricing_statuses == {models.PricingStatus.INVOICED}
-        assert booking1.status == bookings_models.BookingStatus.REIMBURSED  # updated
-        assert booking1.reimbursementDate == invoice.date  # updated
-        assert booking2.status == bookings_models.BookingStatus.CANCELLED  # not updated
-        assert booking2.reimbursementDate == invoice.date  # updated
+        assert indiv_booking1.status == bookings_models.BookingStatus.REIMBURSED  # updated
+        assert indiv_booking1.reimbursementDate == invoice.date  # updated
+        assert indiv_booking2.status == bookings_models.BookingStatus.CANCELLED  # not updated
+        assert indiv_booking2.reimbursementDate == invoice.date  # updated
         assert collective_booking1.status == educational_models.CollectiveBookingStatus.REIMBURSED  # updated
         assert collective_booking1.reimbursementDate == invoice.date  # updated
         assert collective_booking2.status == educational_models.CollectiveBookingStatus.CANCELLED  # not updated
@@ -2474,16 +1772,13 @@ class GenerateInvoiceTest:
 class PrepareInvoiceContextTest:
     def test_context(self, invoice_data):
         reimbursement_point, stocks, _venue = invoice_data
-        bookings = []
         user = users_factories.RichBeneficiaryFactory()
         for stock in stocks:
-            booking = bookings_factories.UsedBookingFactory(
-                stock=stock,
-                user=user,
+            finance_event = factories.UsedBookingFinanceEventFactory(
+                booking__stock=stock,
+                booking__user=user,
             )
-            bookings.append(booking)
-        for booking in bookings:
-            api.price_booking(booking)
+            api.price_event(finance_event)
         batch = api.generate_cashflows(cutoff=datetime.datetime.utcnow())
         api.generate_payment_files(batch)  # mark cashflows as UNDER_REVIEW
         cashflow_ids = [c.id for c in models.Cashflow.query.all()]
@@ -2549,11 +1844,11 @@ class PrepareInvoiceContextTest:
         stock = offers_factories.StockFactory(offer=thing_offer, price=30)
 
         user = users_factories.RichBeneficiaryFactory()
-        booking = bookings_factories.UsedBookingFactory(
-            stock=stock,
-            user=user,
+        finance_event = factories.UsedBookingFinanceEventFactory(
+            booking__stock=stock,
+            booking__user=user,
         )
-        api.price_booking(booking)
+        api.price_event(finance_event)
         batch = api.generate_cashflows(cutoff=datetime.datetime.utcnow())
         api.generate_payment_files(batch)  # mark cashflows as UNDER_REVIEW
         cashflow_ids = [c.id for c in models.Cashflow.query.all()]
@@ -2574,20 +1869,18 @@ class GenerateInvoiceHtmlTest:
     TEST_FILES_PATH = pathlib.Path(tests.__path__[0]) / "files"
 
     def generate_and_compare_invoice(self, stocks, reimbursement_point, venue):
-        bookings = []
         user = users_factories.RichBeneficiaryFactory()
         for stock in stocks:
-            booking = bookings_factories.UsedBookingFactory(
-                stock=stock,
-                user=user,
+            finance_event = factories.UsedBookingFinanceEventFactory(
+                booking__stock=stock,
+                booking__user=user,
             )
-            bookings.append(booking)
-        for booking in bookings:
-            api.price_booking(booking)
+            api.price_event(finance_event)
         duo_offer = offers_factories.OfferFactory(venue=venue, isDuo=True)
         duo_stock = offers_factories.StockFactory(offer=duo_offer, price=1)
         duo_booking = bookings_factories.UsedBookingFactory(stock=duo_stock, quantity=2)
-        api.price_booking(duo_booking)
+        duo_finance_event = factories.UsedBookingFinanceEventFactory(booking=duo_booking)
+        api.price_event(duo_finance_event)
         batch = api.generate_cashflows(cutoff=datetime.datetime.utcnow())
         api.generate_payment_files(batch)  # mark cashflows as UNDER_REVIEW
         cashflows = models.Cashflow.query.order_by(models.Cashflow.id).all()
@@ -2632,24 +1925,27 @@ class GenerateInvoiceHtmlTest:
             pricing_point=pricing_point,
             reimbursement_point=reimbursement_point,
         )
-        only_collective_booking = UsedCollectiveBookingFactory(
-            collectiveStock__price=666,
-            collectiveStock__collectiveOffer__venue=only_educational_venue,
-            collectiveStock__beginningDatetime=datetime.datetime.utcnow() - datetime.timedelta(days=1),
+        only_collective_booking_finance_event = factories.UsedCollectiveBookingFinanceEventFactory(
+            collectiveBooking__collectiveStock__price=666,
+            collectiveBooking__collectiveStock__collectiveOffer__venue=only_educational_venue,
+            collectiveBooking__collectiveStock__beginningDatetime=datetime.datetime.utcnow()
+            - datetime.timedelta(days=1),
         )
-        collective_booking1 = UsedCollectiveBookingFactory(
-            collectiveStock__price=5000,
-            collectiveStock__collectiveOffer__venue=venue,
-            collectiveStock__beginningDatetime=datetime.datetime.utcnow() - datetime.timedelta(days=1),
+        collective_booking_finance_event1 = factories.UsedCollectiveBookingFinanceEventFactory(
+            collectiveBooking__collectiveStock__price=5000,
+            collectiveBooking__collectiveStock__collectiveOffer__venue=venue,
+            collectiveBooking__collectiveStock__beginningDatetime=datetime.datetime.utcnow()
+            - datetime.timedelta(days=1),
         )
-        collective_booking2 = UsedCollectiveBookingFactory(
-            collectiveStock__price=250,
-            collectiveStock__collectiveOffer__venue=venue,
-            collectiveStock__beginningDatetime=datetime.datetime.utcnow() - datetime.timedelta(days=1),
+        collective_booking_finance_event2 = factories.UsedCollectiveBookingFinanceEventFactory(
+            collectiveBooking__collectiveStock__price=250,
+            collectiveBooking__collectiveStock__collectiveOffer__venue=venue,
+            collectiveBooking__collectiveStock__beginningDatetime=datetime.datetime.utcnow()
+            - datetime.timedelta(days=1),
         )
-        api.price_booking(collective_booking1)
-        api.price_booking(collective_booking2)
-        api.price_booking(only_collective_booking)
+        api.price_event(only_collective_booking_finance_event)
+        api.price_event(collective_booking_finance_event1)
+        api.price_event(collective_booking_finance_event2)
 
         self.generate_and_compare_invoice(stocks, reimbursement_point, venue)
 

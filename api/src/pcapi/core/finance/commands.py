@@ -23,14 +23,6 @@ blueprint = Blueprint(__name__, __name__)
 logger = logging.getLogger(__name__)
 
 
-@blueprint.cli.command("price_bookings")
-@cron_decorators.log_cron_with_transaction
-@cron_decorators.cron_require_feature(FeatureToggle.PRICE_BOOKINGS)
-def price_bookings() -> None:
-    """Price bookings that have been recently marked as used."""
-    finance_api.price_bookings()
-
-
 @blueprint.cli.command("price_finance_events")
 @cron_decorators.log_cron_with_transaction
 @cron_decorators.cron_require_feature(FeatureToggle.PRICE_FINANCE_EVENTS)

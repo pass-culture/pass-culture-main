@@ -373,12 +373,6 @@ def cancel_collective_booking(
         db.session.refresh(collective_booking)
         if finance_repository.has_reimbursement(collective_booking):
             raise exceptions.BookingIsAlreadyRefunded()
-
-        finance_api.cancel_pricing(
-            collective_booking,
-            finance_models.PricingLogReason.MARK_AS_UNUSED,
-            commit=False,
-        )
         cancelled_event = finance_api.cancel_latest_event(collective_booking)
         collective_booking.cancel_booking(reason=reason, cancel_even_if_used=True)
         if cancelled_event:
