@@ -206,14 +206,33 @@ class UpdateProUserTest(PostEndpointHelper):
         assert f"{old_email} => {user_to_edit.email}" in content
         assert f"{old_postal_code} => {user_to_edit.postalCode}" in content
 
+    @pytest.mark.parametrize("user_factory", [users_factories.BeneficiaryGrant18Factory, users_factories.AdminFactory])
+    def test_update_non_pro_user(self, authenticated_client, user_factory):
+        user = user_factory()
+
+        response = self.post_to_endpoint(
+            authenticated_client,
+            user_id=user.id,
+            form={
+                "first_name": "Hacked",
+                "last_name": "Hacked",
+                "email": user.email,
+                "postal_code": user.postalCode,
+                "phone_number": user.phoneNumber,
+            },
+        )
+        assert response.status_code == 404
+        assert "Hacked" not in user.full_name
+        assert history_models.ActionHistory.query.count() == 0
+
 
 class GetProUserHistoryTest(GetEndpointHelper):
     endpoint = "backoffice_web.pro_user.get_details"
     endpoint_kwargs = {"user_id": 1}
     needed_permission = perm_models.Permissions.READ_PRO_ENTITY
 
-    # session + current user + actions + former user_offerer
-    expected_num_queries = 4
+    # session + current user + user + actions + former user_offerer
+    expected_num_queries = 5
 
     class CommentButtonTest(button_helpers.ButtonHelper):
         needed_permission = perm_models.Permissions.MANAGE_PRO_ENTITY
@@ -266,6 +285,12 @@ class GetProUserHistoryTest(GetEndpointHelper):
 
         assert html_parser.count_table_rows(response.data, parent_class="history-tab-pane") == 0
 
+    @pytest.mark.parametrize("user_factory", [users_factories.BeneficiaryGrant18Factory, users_factories.AdminFactory])
+    def test_non_pro_user_history(self, authenticated_client, user_factory):
+        user = user_factory()
+        response = authenticated_client.get(url_for(self.endpoint, user_id=user.id))
+        assert response.status_code == 404
+
 
 class CommentProUserTest(PostEndpointHelper):
     endpoint = "backoffice_web.pro_user.comment_pro_user"
@@ -292,14 +317,24 @@ class CommentProUserTest(PostEndpointHelper):
         assert response.status_code == 302
         assert not pro_user.action_history
 
+    def test_add_comment_to_non_pro_user(self, authenticated_client):
+        user = users_factories.UserFactory()
+
+        response = self.post_to_endpoint(
+            authenticated_client, user_id=user.id, form={"comment": "Commentaire interdit"}
+        )
+
+        assert response.status_code == 404
+        assert len(user.action_history) == 0
+
 
 class GetProUserOfferersTest(GetEndpointHelper):
     endpoint = "backoffice_web.pro_user.get_details"
     endpoint_kwargs = {"user_id": 1}
     needed_permission = perm_models.Permissions.READ_PRO_ENTITY
 
-    # session + current user + actions + user_offerer objects
-    expected_num_queries = 4
+    # session + current user + user + actions + user_offerer objects
+    expected_num_queries = 5
 
     def test_get_user_offerers(self, authenticated_client, pro_user):
         user_offerer_validated = offerers_factories.UserOffererFactory(user=pro_user)
@@ -363,6 +398,14 @@ class ValidateProEmailTest(PostEndpointHelper):
         response_redirect = authenticated_client.get(response.location)
         assert f"L'email {pro_user.email} est validé !" in response_redirect.data.decode("utf-8")
         assert len(mails_testing.outbox) == 0
+
+    def test_validate_non_pro_user_email(self, authenticated_client):
+        user = users_factories.UserFactory(validationToken=False, isEmailValidated=False)
+        assert not user.isEmailValidated
+
+        response = self.post_to_endpoint(authenticated_client, user_id=user.id)
+        assert response.status_code == 404
+        assert not user.isEmailValidated
 
 
 class DeleteProUserTest(PostEndpointHelper):
@@ -471,10 +514,16 @@ class DeleteProUserTest(PostEndpointHelper):
     @patch("pcapi.routes.backoffice.pro_users.blueprint.mails_api")
     @patch("pcapi.routes.backoffice.pro_users.blueprint.DeleteBatchUserAttributesRequest", return_value="canary")
     @patch("pcapi.routes.backoffice.pro_users.blueprint.delete_user_attributes_task")
+    @pytest.mark.parametrize("user_factory", [users_factories.BeneficiaryGrant18Factory, users_factories.AdminFactory])
     def test_delete_pro_user_with_wrong_role(
-        self, delete_user_attributes_task, DeleteBatchUserAttributesRequest, mails_api, authenticated_client
+        self,
+        delete_user_attributes_task,
+        DeleteBatchUserAttributesRequest,
+        mails_api,
+        authenticated_client,
+        user_factory,
     ):
-        user = users_factories.UserFactory(roles=[users_models.UserRole.BENEFICIARY])
+        user = user_factory()
         user_id = user.id
         history_factories.SuspendedUserActionHistoryFactory(user=user)
 
@@ -482,8 +531,7 @@ class DeleteProUserTest(PostEndpointHelper):
 
         response = self.post_to_endpoint(authenticated_client, user_id=user.id, form=form)
 
-        assert response.status_code == 303
-        assert response.location == url_for("backoffice_web.pro_user.get", user_id=user.id, _external=True)
+        assert response.status_code == 404
 
         mails_api.delete_contact.assert_not_called()
         DeleteBatchUserAttributesRequest.assert_not_called()
