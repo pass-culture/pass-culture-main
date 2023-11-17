@@ -1,5 +1,6 @@
 import logging
 
+from flask import request
 from flask_jwt_extended import get_jwt_identity
 from flask_jwt_extended import jwt_required
 import pydantic.v1 as pydantic_v1
@@ -225,7 +226,7 @@ def validate_email(body: ValidateEmailRequest) -> ValidateEmailResponse:
 def google_auth(body: authentication.GoogleSigninRequest) -> authentication.SigninResponse:
     # postmessage is needed when the app uses a popup to fetch the authorization code
     # see https://stackoverflow.com/questions/71968377
-    redirect_uri = "postmessage"
+    redirect_uri = "postmessage" if request.headers.get("platform") == "web" else None
     token = oauth.google.fetch_access_token(code=body.authorization_code, redirect_uri=redirect_uri)
     google_user = pydantic_v1.parse_obj_as(authentication.GoogleUser, oauth.google.parse_id_token(token))
     email = google_user.email
