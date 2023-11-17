@@ -569,6 +569,44 @@ class Returns201Test:
         assert response.json["ongoing_bookings"][0]["id"] == booking.id
         assert not response.json["ended_bookings"]
 
+    def should_not_create_duplicated_offer(self, client):
+        offer = offers_factories.EventOfferFactory()
+        beginning = datetime.datetime.utcnow() + relativedelta(days=10)
+        price_cat_label = offers_factories.PriceCategoryLabelFactory(venue=offer.venue, label="Tarif 1")
+        price_category = offers_factories.PriceCategoryFactory(
+            offer=offer, priceCategoryLabel=price_cat_label, price=10
+        )
+        offers_factories.EventStockFactory(
+            offer=offer,
+            beginningDatetime=beginning,
+            bookingLimitDatetime=beginning,
+            priceCategory=price_category,
+            price=10,
+            quantity=10,
+        )
+        offerers_factories.UserOffererFactory(
+            user__email="user@example.com",
+            offerer=offer.venue.managingOfferer,
+        )
+        stock_data = {
+            "offerId": offer.id,
+            "stocks": [
+                {
+                    "priceCategoryId": price_category.id,
+                    "price": 10,
+                    "quantity": 10,
+                    "beginningDatetime": format_into_utc_date(beginning),
+                    "bookingLimitDatetime": format_into_utc_date(beginning),
+                }
+            ],
+        }
+        response = client.with_session_auth("user@example.com").post("/stocks/bulk/", json=stock_data)
+        assert response.status_code == 201
+        assert len(Stock.query.all()) == 1
+        # check that the expected_to_be_created_stock is not in the response
+        with pytest.raises(IndexError):
+            expected_to_be_created_stock = Stock.query.get(response.json["stocks"][0]["id"])
+
 
 @pytest.mark.usefixtures("db_session")
 class Returns400Test:

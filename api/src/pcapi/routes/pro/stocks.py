@@ -26,6 +26,19 @@ from . import blueprint
 logger = logging.getLogger(__name__)
 
 
+def _stock_exists(offer_id: int, stock_payload: serialization.StockCreationBodyModel) -> bool:
+    existing_stock = offers_models.Stock.query.filter(
+        offers_models.Stock.offerId == offer_id,
+        offers_models.Stock.isSoftDeleted == False,
+        offers_models.Stock.beginningDatetime == stock_payload.beginning_datetime.replace(tzinfo=None),
+        offers_models.Stock.bookingLimitDatetime == stock_payload.booking_limit_datetime.replace(tzinfo=None),
+        offers_models.Stock.price == stock_payload.price,
+        offers_models.Stock.priceCategoryId == stock_payload.price_category_id,
+        offers_models.Stock.quantity == stock_payload.quantity,
+    ).all()
+    return bool(existing_stock)
+
+
 def _get_existing_stocks(
     offer_id: int, stocks_payload: list[serialization.StockEditionBodyModel]
 ) -> dict[int, offers_models.Stock]:
@@ -120,18 +133,23 @@ def upsert_stocks(
                 edited_stocks_with_update_info.append((edited_stock, is_beginning_updated))
 
             for stock_to_create in stocks_to_create:
-                offers_validation.check_stock_has_price_or_price_category(offer, stock_to_create, price_categories)
-                created_stock = offers_api.create_stock(
-                    offer,
-                    price=stock_to_create.price,
-                    activation_codes=stock_to_create.activation_codes,
-                    activation_codes_expiration_datetime=stock_to_create.activation_codes_expiration_datetime,
-                    quantity=stock_to_create.quantity,
-                    beginning_datetime=stock_to_create.beginning_datetime,
-                    booking_limit_datetime=stock_to_create.booking_limit_datetime,
-                    price_category=price_categories.get(stock_to_create.price_category_id, None),
-                )
-                upserted_stocks.append(created_stock)
+                if not _stock_exists(body.offer_id, stock_to_create):
+                    print("creating stock")
+                    offers_validation.check_stock_has_price_or_price_category(offer, stock_to_create, price_categories)
+
+                    created_stock = offers_api.create_stock(
+                        offer,
+                        price=stock_to_create.price,
+                        activation_codes=stock_to_create.activation_codes,
+                        activation_codes_expiration_datetime=stock_to_create.activation_codes_expiration_datetime,
+                        quantity=stock_to_create.quantity,
+                        beginning_datetime=stock_to_create.beginning_datetime,
+                        booking_limit_datetime=stock_to_create.booking_limit_datetime,
+                        price_category=price_categories.get(stock_to_create.price_category_id, None),
+                    )
+                    upserted_stocks.append(created_stock)
+                else:
+                    print("stock already exists")
 
     except offers_exceptions.BookingLimitDatetimeTooLate:
         raise ApiErrors(
