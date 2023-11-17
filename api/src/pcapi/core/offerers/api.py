@@ -2072,4 +2072,4 @@ def _update_offerer_stats_data(offerer_id: int) -> None:
         else:
             top_offers_stats.jsonData = offerers_models.OffererStatsData(top_offers=list(top_offers_data))
             top_offers_stats.syncDate = datetime.utcnow()
-        repository.save(daily_views_stats, top_offers_stats)
+        db.session.add_all([daily_views_stats, top_offers_stats])
