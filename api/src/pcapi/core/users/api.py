@@ -1145,7 +1145,11 @@ def search_pro_account(search_query: str, *_: typing.Any) -> BaseQuery:
 
 def get_pro_account_base_query(pro_id: int) -> BaseQuery:
     return models.User.query.filter(
-        models.User.id == pro_id and (models.User.has_non_attached_pro_role.is_(True) | models.User.has_pro_role.is_(True))  # type: ignore [attr-defined]
+        models.User.id == pro_id,
+        sa.or_(
+            models.User.has_non_attached_pro_role.is_(True),  # type: ignore [attr-defined]
+            models.User.has_pro_role.is_(True),  # type: ignore [attr-defined]
+        ),
     )
 
 
