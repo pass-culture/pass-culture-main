@@ -11,8 +11,6 @@ import { ButtonLink } from 'ui-kit'
 import { ButtonVariant } from 'ui-kit/Button/types'
 import { IconLinkBox } from 'ui-kit/IconLinkBox'
 
-import { STEP_STATS_HASH } from '../HomepageBreadcrumb'
-
 import styles from './OffererStats.module.scss'
 
 const OffererStats = () => {
@@ -33,7 +31,7 @@ const OffererStats = () => {
   }
 
   return (
-    <div id={STEP_STATS_HASH}>
+    <>
       <h2 className="h-section-title">Statistiques</h2>
       <div className={styles['offerer-stats']}>
         <div className={styles['offerer-stats-boxes']}>
@@ -70,7 +68,7 @@ const OffererStats = () => {
           </ButtonLink>
         </div>
       </div>
-    </div>
+    </>
   )
 }
 
