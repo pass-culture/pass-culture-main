@@ -207,23 +207,44 @@ describe('ReimbursementBankAccount', () => {
     ).not.toBeInTheDocument()
   })
 
-  it('should track attach venue button click', async () => {
-    vi.spyOn(useAnalytics, 'default').mockImplementation(() => ({
-      logEvent: mockLogEvent,
-    }))
+  describe('trackers', () => {
+    beforeEach(() => {
+      vi.spyOn(useAnalytics, 'default').mockImplementation(() => ({
+        logEvent: mockLogEvent,
+      }))
+    })
 
-    bankAccount.linkedVenues = []
-    renderReimbursementBankAccount(bankAccount, 1)
+    it('should track attach venue button click', async () => {
+      vi.spyOn(useAnalytics, 'default').mockImplementation(() => ({
+        logEvent: mockLogEvent,
+      }))
 
-    await userEvent.click(
-      screen.getByRole('button', { name: 'Rattacher un lieu' })
-    )
-    expect(mockLogEvent).toHaveBeenCalledWith(
-      BankAccountEvents.CLICKED_ADD_VENUE_TO_BANK_ACCOUNT,
-      {
-        from: '/remboursements/informations-bancaires',
-        offererId: 0,
-      }
-    )
+      bankAccount.linkedVenues = []
+      renderReimbursementBankAccount(bankAccount, 1)
+
+      await userEvent.click(
+        screen.getByRole('button', { name: 'Rattacher un lieu' })
+      )
+      expect(mockLogEvent).toHaveBeenCalledWith(
+        BankAccountEvents.CLICKED_ADD_VENUE_TO_BANK_ACCOUNT,
+        {
+          from: '/remboursements/informations-bancaires',
+          offererId: 0,
+        }
+      )
+    })
+
+    it('should track attach venue button click', async () => {
+      renderReimbursementBankAccount(bankAccount, 1, 2)
+
+      await userEvent.click(screen.getByRole('button', { name: 'Modifier' }))
+      expect(mockLogEvent).toHaveBeenCalledWith(
+        BankAccountEvents.CLICKED_CHANGE_VENUE_TO_BANK_ACCOUNT,
+        {
+          from: '/remboursements/informations-bancaires',
+          offererId: 0,
+        }
+      )
+    })
   })
 })

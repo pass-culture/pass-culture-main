@@ -104,7 +104,20 @@ const ReimbursementBankAccount = ({
                     </div>
                   ))}
                 </div>
-                <Button variant={ButtonVariant.SECONDARY}>Modifier</Button>
+                <Button
+                  variant={ButtonVariant.SECONDARY}
+                  onClick={() => {
+                    logEvent?.(
+                      BankAccountEvents.CLICKED_CHANGE_VENUE_TO_BANK_ACCOUNT,
+                      {
+                        from: location.pathname,
+                        offererId,
+                      }
+                    )
+                  }}
+                >
+                  Modifier
+                </Button>
               </>
             )}
             {!hasLinkedVenues && venuesNotLinkedLength > 0 && (
