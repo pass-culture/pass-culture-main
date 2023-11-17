@@ -1,11 +1,25 @@
 import cn from 'classnames'
 import React from 'react'
 
-import type { Step } from 'components/Breadcrumb'
 import StepContent from 'components/Stepper/StepContent'
 import { findLastIndex } from 'utils/findLastIndex'
 
 import styles from './Stepper.module.scss'
+
+export type Step = {
+  id: string
+  label: React.ReactNode
+  onClick?: (e: React.MouseEvent) => void
+  url?: string
+  hash?: string
+}
+
+export interface StepPattern {
+  id: string
+  label: string
+  path?: string
+  isActive: boolean
+}
 
 export interface StepperProps {
   activeStep: string
