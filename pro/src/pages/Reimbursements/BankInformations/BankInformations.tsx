@@ -2,7 +2,10 @@ import React, { useEffect, useState } from 'react'
 import { useSearchParams, useLocation } from 'react-router-dom'
 
 import { api } from 'apiClient/api'
-import { GetOffererBankAccountsResponseModel } from 'apiClient/v1'
+import {
+  BankAccountResponseModel,
+  GetOffererBankAccountsResponseModel,
+} from 'apiClient/v1'
 import ReimbursementBankAccount from 'components/ReimbursementBankAccount/ReimbursementBankAccount'
 import { useReimbursementContext } from 'context/ReimbursementContext/ReimbursementContext'
 import { BankAccountEvents } from 'core/FirebaseEvents/constants'
@@ -11,6 +14,7 @@ import useAnalytics from 'hooks/useAnalytics'
 import useNotification from 'hooks/useNotification'
 import fullLinkIcon from 'icons/full-link.svg'
 import fullMoreIcon from 'icons/full-more.svg'
+import LinkVenuesDialog from 'pages/Reimbursements/BankInformations/LinkVenuesDialog'
 import { Button, ButtonLink } from 'ui-kit'
 import { ButtonVariant } from 'ui-kit/Button/types'
 import SelectInput from 'ui-kit/form/Select/SelectInput'
@@ -32,12 +36,13 @@ const BankInformations = (): JSX.Element => {
 
   const [isOffererBankAccountsLoading, setIsOffererBankAccountsLoading] =
     useState<boolean>(false)
-  // TODO: use bank accounts
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const [selectedOffererBankAccounts, setSelectedOffererBankAccounts] =
     useState<GetOffererBankAccountsResponseModel | null>(null)
   const [searchParams, setSearchParams] = useSearchParams()
   const [isOffererLoading, setIsOffererLoading] = useState<boolean>(false)
+
+  const [selectedBankAccount, setSelectedBankAccount] =
+    useState<BankAccountResponseModel | null>(null)
   const { structure: offererId } = Object.fromEntries(searchParams)
 
   const offererOptions: SelectOption[] =
@@ -160,6 +165,13 @@ const BankInformations = (): JSX.Element => {
                 }
                 offererId={selectedOfferer?.id}
                 key={bankAccount.id}
+                onUpdateButtonClick={(bankAccountId) => {
+                  setSelectedBankAccount(
+                    selectedOffererBankAccounts?.bankAccounts.find(
+                      (bankAccount) => bankAccount.id === bankAccountId
+                    ) ?? null
+                  )
+                }}
               />
             ))}
           </div>
@@ -190,6 +202,18 @@ const BankInformations = (): JSX.Element => {
             setShowAddBankInformationsDialog(false)
           }}
           offererId={selectedOfferer?.id}
+        />
+      )}
+      {selectedBankAccount !== null && selectedOfferer !== null && (
+        <LinkVenuesDialog
+          offererId={selectedOfferer.id}
+          selectedBankAccount={selectedBankAccount}
+          managedVenues={selectedOffererBankAccounts?.managedVenues}
+          closeDialog={() => {
+            // eslint-disable-next-line @typescript-eslint/no-floating-promises
+            updateOfferer(selectedOfferer.id.toString())
+            setSelectedBankAccount(null)
+          }}
         />
       )}
     </>
