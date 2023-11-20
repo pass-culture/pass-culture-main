@@ -8,6 +8,7 @@ from pcapi.workers.decorators import job
 def batch_delete_filtered_stocks_job(filters: dict) -> None:
     stocks = offers_repository.get_filtered_stocks(
         offer_id=filters["offer_id"],
+        venue=filters["venue"],
         date=filters["date"],
         time=filters["time"],
         price_category_id=filters["price_category_id"],
