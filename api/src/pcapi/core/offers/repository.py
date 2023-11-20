@@ -5,6 +5,7 @@ import operator
 import typing
 
 import flask_sqlalchemy
+import pytz
 import sqlalchemy as sa
 from sqlalchemy.dialects import postgresql
 import sqlalchemy.orm as sa_orm
@@ -793,24 +794,46 @@ def _order_stocks_by(
 
 def get_filtered_stocks(
     offer_id: int,
+    venue: offerers_models.Venue,
     date: datetime.date | None = None,
     time: datetime.time | None = None,
     price_category_id: int | None = None,
     order_by: StocksOrderedBy = StocksOrderedBy.BEGINNING_DATETIME,
     order_by_desc: bool = False,
 ) -> flask_sqlalchemy.BaseQuery:
-    query = models.Stock.query.filter(
-        models.Stock.offerId == offer_id,
-        models.Stock.isSoftDeleted == False,
+    query = (
+        models.Stock.query.join(models.Offer)
+        .join(offerers_models.Venue)
+        .filter(
+            models.Stock.offerId == offer_id,
+            models.Stock.isSoftDeleted == False,
+        )
     )
     if price_category_id is not None:
         query = query.filter(models.Stock.priceCategoryId == price_category_id)
     if date is not None:
         query = query.filter(sa.cast(models.Stock.beginningDatetime, sa.Date) == date)
     if time is not None:
+        # Transform user time input into the venue timezone
+        dt = datetime.datetime.combine(datetime.datetime.today(), time)
+        venue_timezone = pytz.timezone(venue.timezone)  # type: ignore [arg-type]
+        venue_time = dt.replace(tzinfo=pytz.utc).astimezone(venue_timezone).time()
+
         query = query.filter(
-            sa.cast(models.Stock.beginningDatetime, sa.Time) >= time.replace(second=0),
-            sa.cast(models.Stock.beginningDatetime, sa.Time) <= time.replace(second=59),
+            sa.cast(
+                sa.func.timezone(
+                    offerers_models.Venue.timezone, sa.func.timezone("UTC", models.Stock.beginningDatetime)
+                ),
+                sa.Time,
+            )
+            >= venue_time.replace(second=0),
+            sa.cast(
+                sa.func.timezone(
+                    offerers_models.Venue.timezone, sa.func.timezone("UTC", models.Stock.beginningDatetime)
+                ),
+                sa.Time,
+            )
+            <= venue_time.replace(second=59),
         )
     return _order_stocks_by(query, order_by, order_by_desc)
 

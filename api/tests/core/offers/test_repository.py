@@ -1522,6 +1522,7 @@ class GetStocksListFiltersTest:
 
         # When
         stocks = repository.get_filtered_stocks(
+            venue=stock.offer.venue,
             offer_id=stock.offer.id,
         )
 
@@ -1535,6 +1536,7 @@ class GetStocksListFiltersTest:
 
         # When
         stocks = repository.get_filtered_stocks(
+            venue=stock.offer.venue,
             offer_id=stock.offer.id,
             price_category_id=stock.priceCategoryId,
         )
@@ -1550,6 +1552,7 @@ class GetStocksListFiltersTest:
         factories.EventStockFactory(offer=offer, beginningDatetime=beginning_datetime + datetime.timedelta(days=1))
         # When
         stocks = repository.get_filtered_stocks(
+            venue=offer.venue,
             offer_id=offer.id,
             date=beginning_datetime.date(),
         )
@@ -1565,7 +1568,8 @@ class GetStocksListFiltersTest:
         same_day_other_hour = datetime.datetime(2020, 10, 15, 0, 0, 0)
         same_day_same_hour_other_minutes = datetime.datetime(2020, 10, 15, 12, 45, 0)
 
-        offer = factories.OfferFactory()
+        venue = offerers_factories.VenueFactory(timezone="Pacific/Tahiti", departementCode="987", postalCode="98700")
+        offer = factories.OfferFactory(venue=venue)
         factories.EventStockFactory(offer=offer, beginningDatetime=beginning_datetime)
         factories.EventStockFactory(offer=offer, beginningDatetime=same_hour_other_day)
         factories.EventStockFactory(offer=offer, beginningDatetime=same_hour_other_minutes_other_day)
@@ -1573,7 +1577,7 @@ class GetStocksListFiltersTest:
         factories.EventStockFactory(offer=offer, beginningDatetime=same_day_same_hour_other_minutes)
 
         # When
-        stocks = repository.get_filtered_stocks(offer_id=offer.id, time=beginning_datetime.time())
+        stocks = repository.get_filtered_stocks(venue=venue, offer_id=offer.id, time=beginning_datetime.time())
 
         # Then
         assert stocks.count() == 2
@@ -1581,13 +1585,17 @@ class GetStocksListFiltersTest:
     def test_filtered_stock_by_minutes(self):
         # Given
         beginning_datetime = datetime.datetime(2020, 10, 15, 0, 0, 0)
-        offer = factories.OfferFactory()
+        venue = offerers_factories.VenueFactory(
+            timezone="America/Martinique", departementCode="972", postalCode="97200"
+        )
+        offer = factories.OfferFactory(venue=venue)
         factories.EventStockFactory(offer=offer, beginningDatetime=beginning_datetime)
         factories.EventStockFactory(offer=offer, beginningDatetime=beginning_datetime + datetime.timedelta(hours=1))
         factories.EventStockFactory(offer=offer, beginningDatetime=beginning_datetime + datetime.timedelta(minutes=1))
 
         # When
         stocks = repository.get_filtered_stocks(
+            venue=venue,
             offer_id=offer.id,
             time=beginning_datetime.time(),
         )
@@ -1597,20 +1605,88 @@ class GetStocksListFiltersTest:
 
     def test_filtered_stock_by_seconds(self):
         # Given
-        beginning_datetime = datetime.datetime(2020, 10, 15, 0, 0, 0)
-        offer = factories.OfferFactory()
+        beginning_datetime = datetime.datetime(2020, 10, 20, 1, 0, 0)
+        venue = offerers_factories.VenueFactory(timezone="Indian/Reunion", departementCode="974", postalCode="97400")
+        offer = factories.OfferFactory(venue=venue)
         factories.EventStockFactory(offer=offer, beginningDatetime=beginning_datetime)
-        factories.EventStockFactory(offer=offer, beginningDatetime=beginning_datetime + datetime.timedelta(seconds=1))
-        factories.EventStockFactory(offer=offer, beginningDatetime=beginning_datetime + datetime.timedelta(seconds=60))
+        factories.EventStockFactory(
+            offer=offer,
+            beginningDatetime=beginning_datetime + datetime.timedelta(seconds=1),
+        )
+        factories.EventStockFactory(
+            offer=offer,
+            beginningDatetime=beginning_datetime + datetime.timedelta(seconds=60),
+        )
 
         # When
         stocks = repository.get_filtered_stocks(
+            venue=venue,
             offer_id=offer.id,
             time=beginning_datetime.time(),
         )
 
         # Then
         assert stocks.count() == 2
+
+    @freeze_time("2020-02-20 01:00:00")
+    def test_filtered_stock_by_time_find_summer_and_winter_time_when_launch_in_winter(self):
+        # Given
+        beginning_datetime_1 = datetime.datetime(2021, 3, 27, 2, 0, 0)
+        beginning_datetime_2 = datetime.datetime(2021, 3, 28, 1, 0, 0)
+        beginning_datetime_3 = datetime.datetime(2021, 3, 29, 1, 0, 0)
+
+        venue = offerers_factories.VenueFactory(timezone="Europe/Paris", departementCode="78", postalCode="78220")
+
+        offer = factories.OfferFactory(venue=venue)
+        factories.EventStockFactory(offer=offer, beginningDatetime=beginning_datetime_1)
+        factories.EventStockFactory(
+            offer=offer,
+            beginningDatetime=beginning_datetime_2,
+        )
+        factories.EventStockFactory(
+            offer=offer,
+            beginningDatetime=beginning_datetime_3,
+        )
+
+        # When
+        stocks = repository.get_filtered_stocks(
+            venue=venue,
+            offer_id=offer.id,
+            time=datetime.time(2, 0, 0),
+        )
+
+        # Then
+        assert stocks.count() == 3
+
+    @freeze_time("2020-06-20 01:00:00")
+    def test_filtered_stock_by_time_find_summer_and_winter_time_when_launch_in_summer(self):
+        # Given
+        beginning_datetime_1 = datetime.datetime(2021, 3, 13, 11, 0, 0)
+        beginning_datetime_2 = datetime.datetime(2021, 3, 14, 10, 0, 0)
+        beginning_datetime_3 = datetime.datetime(2021, 3, 15, 10, 0, 0)
+
+        venue = offerers_factories.VenueFactory(timezone="America/Miquelon", departementCode="97", postalCode="97500")
+
+        offer = factories.OfferFactory(venue=venue)
+        factories.EventStockFactory(offer=offer, beginningDatetime=beginning_datetime_1)
+        factories.EventStockFactory(
+            offer=offer,
+            beginningDatetime=beginning_datetime_2,
+        )
+        factories.EventStockFactory(
+            offer=offer,
+            beginningDatetime=beginning_datetime_3,
+        )
+
+        # When
+        stocks = repository.get_filtered_stocks(
+            venue=venue,
+            offer_id=offer.id,
+            time=datetime.time(10, 0, 0),
+        )
+
+        # Then
+        assert stocks.count() == 3
 
     @override_features(WIP_PRO_STOCK_PAGINATION=False)
     def test_filtered_stocks_query_by_default(self):
@@ -1626,7 +1702,7 @@ class GetStocksListFiltersTest:
         )
 
         # When
-        stocks = repository.get_filtered_stocks(offer_id=offer.id)
+        stocks = repository.get_filtered_stocks(venue=offer.venue, offer_id=offer.id)
 
         # Then
         assert stocks.count() == 3
@@ -1647,6 +1723,7 @@ class GetStocksListFiltersTest:
 
         # When
         filtered_stocks = repository.get_filtered_stocks(
+            venue=offer.venue,
             offer_id=offer.id,
             order_by="BEGINNING_DATETIME",
         )
@@ -1674,6 +1751,7 @@ class GetStocksListFiltersTest:
 
         # When
         stocks = repository.get_filtered_stocks(
+            venue=offer.venue,
             offer_id=offer.id,
             order_by="BEGINNING_DATETIME",
             order_by_desc=True,
@@ -1702,6 +1780,7 @@ class GetStocksListFiltersTest:
 
         # When
         stocks = repository.get_filtered_stocks(
+            venue=offer.venue,
             offer_id=offer.id,
             order_by="DATE",
         )
@@ -1731,6 +1810,7 @@ class GetStocksListFiltersTest:
 
         # When
         stocks = repository.get_filtered_stocks(
+            venue=offer.venue,
             offer_id=offer.id,
             order_by="TIME",
             order_by_desc=True,
@@ -1756,6 +1836,7 @@ class GetStocksListFiltersTest:
 
         # When
         stocks = repository.get_filtered_stocks(
+            venue=offer.venue,
             offer_id=offer.id,
             order_by="PRICE_CATEGORY_ID",
         )
@@ -1782,6 +1863,7 @@ class GetStocksListFiltersTest:
 
         # When
         stocks = repository.get_filtered_stocks(
+            venue=offer.venue,
             offer_id=offer.id,
             order_by="BOOKING_LIMIT_DATETIME",
         )
@@ -1802,6 +1884,7 @@ class GetStocksListFiltersTest:
 
         # When
         stocks = repository.get_filtered_stocks(
+            venue=offer.venue,
             offer_id=offer.id,
             order_by="REMAINING_QUANTITY",
             order_by_desc=True,
@@ -1820,6 +1903,7 @@ class GetStocksListFiltersTest:
 
         # When
         stocks = repository.get_filtered_stocks(
+            venue=offer.venue,
             offer_id=offer.id,
             order_by="DN_BOOKED_QUANTITY",
         )

@@ -4,6 +4,7 @@ from datetime import timedelta
 from freezegun import freeze_time
 import pytest
 
+from pcapi.core import testing
 import pcapi.core.offerers.factories as offerers_factories
 import pcapi.core.offers.factories as offers_factories
 from pcapi.core.testing import override_features
@@ -288,3 +289,19 @@ class Returns200Test:
         assert response.status_code == 200
         assert response.json["stockCount"] == 3
         assert len(response.json["stocks"]) == 3
+
+    @freeze_time("2020-10-15 22:37:00")
+    @override_features(WIP_PRO_STOCK_PAGINATION=True)
+    def test_performance(self, client):
+        # Given
+        date_1 = datetime.utcnow()
+        date_2 = datetime.utcnow() + timedelta(days=1)
+        user_offerer = offerers_factories.UserOffererFactory()
+        offer = offers_factories.OfferFactory(venue__managingOfferer=user_offerer.offerer)
+        offers_factories.StockFactory.create_batch(3, beginningDatetime=date_1, dateCreated=date_1, offer=offer)
+        offers_factories.StockFactory.create_batch(2, beginningDatetime=date_2, dateCreated=date_2, offer=offer)
+
+        # When
+        client = client.with_session_auth(email=user_offerer.user.email)
+        with testing.assert_no_duplicated_queries():
+            client.get(f"/offers/{offer.id}/stocks?date={date_1.date()}&time=22:37")

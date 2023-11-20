@@ -1933,6 +1933,7 @@ class DeleteStocksTest:
         stocks = offers_repository.get_filtered_stocks(
             offer_id=offer.id,
             date=beginning_datetime.date(),
+            venue=offer.venue,
         )
         api.batch_delete_stocks(stocks)
 
@@ -1952,6 +1953,7 @@ class DeleteStocksTest:
         stocks = offers_repository.get_filtered_stocks(
             offer_id=offer.id,
             time=beginning_datetime.time(),
+            venue=offer.venue,
         )
         api.batch_delete_stocks(stocks)
 
@@ -1973,6 +1975,7 @@ class DeleteStocksTest:
         stocks = offers_repository.get_filtered_stocks(
             offer_id=offer.id,
             price_category_id=stock_1.priceCategoryId,
+            venue=offer.venue,
         )
         api.batch_delete_stocks(stocks)
 
