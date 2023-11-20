@@ -1,5 +1,6 @@
 // @vitest-environment happy-dom
 import { screen, waitFor } from '@testing-library/react'
+import { userEvent } from '@testing-library/user-event'
 
 import { AdageFrontRoles, AuthenticatedResponse } from 'apiClient/adage'
 import { api, apiAdage } from 'apiClient/api'
@@ -14,6 +15,7 @@ import { AdageDiscovery } from '../AdageDiscovery'
 vi.mock('apiClient/api', () => ({
   apiAdage: {
     logHasSeenAllPlaylist: vi.fn(),
+    logConsultPlaylistElement: vi.fn(),
   },
   api: {
     listEducationalDomains: vi.fn(() => [
@@ -96,5 +98,54 @@ describe('AdageDiscovery', () => {
     renderAdageDiscovery(user)
 
     expect(apiAdage.logHasSeenAllPlaylist).toHaveBeenCalledTimes(1)
+  })
+
+  it('should call tracker for new offer playlist element', async () => {
+    renderAdageDiscovery(user)
+
+    const newOfferPlaylistElement = screen.getByText('Ma super offre')
+
+    await userEvent.click(newOfferPlaylistElement)
+
+    expect(apiAdage.logConsultPlaylistElement).toHaveBeenCalledWith({
+      elementId: 1,
+      iframeFrom: '/',
+      playlistId: 0,
+      playlistType: 'offer',
+    })
+  })
+
+  it('should call tracker for venue playlist element', async () => {
+    renderAdageDiscovery(user)
+
+    const venuePlaylistElement = screen.getByText(
+      'Mon super lieu sur vraiment beaucoup de super lignes'
+    )
+
+    await userEvent.click(venuePlaylistElement)
+
+    expect(apiAdage.logConsultPlaylistElement).toHaveBeenCalledWith({
+      elementId: 1,
+      iframeFrom: '/',
+      playlistId: 3,
+      playlistType: 'venue',
+    })
+  })
+
+  it('should call tracker for domains playlist element', async () => {
+    renderAdageDiscovery(user)
+
+    const domainPlaylistElement = await screen.findByRole('link', {
+      name: 'Danse',
+    })
+
+    await userEvent.click(domainPlaylistElement)
+
+    expect(apiAdage.logConsultPlaylistElement).toHaveBeenCalledWith({
+      elementId: 1,
+      iframeFrom: '/',
+      playlistId: 1,
+      playlistType: 'domain',
+    })
   })
 })

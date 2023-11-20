@@ -1,6 +1,10 @@
 import React, { useEffect, useRef, useState } from 'react'
 
-import { OfferAddressType, StudentLevels } from 'apiClient/adage'
+import {
+  AdagePlaylistType,
+  OfferAddressType,
+  StudentLevels,
+} from 'apiClient/adage'
 import { api, apiAdage } from 'apiClient/api'
 import { GET_DATA_ERROR_MESSAGE } from 'core/shared/constants'
 import useIsElementVisible from 'hooks/useIsElementVisible'
@@ -128,6 +132,24 @@ export const AdageDiscovery = () => {
     { color: 'blue', src: circles },
   ]
 
+  const trackPlaylistElementClicked = ({
+    playlistId,
+    playlistType,
+    elementId,
+  }: {
+    playlistId: number
+    playlistType: AdagePlaylistType
+    elementId: number | null
+  }) => {
+    // eslint-disable-next-line @typescript-eslint/no-floating-promises
+    apiAdage.logConsultPlaylistElement({
+      iframeFrom: location.pathname,
+      playlistId,
+      playlistType,
+      elementId,
+    })
+  }
+
   return (
     <div className={styles['discovery']}>
       <img
@@ -144,6 +166,13 @@ export const AdageDiscovery = () => {
             <div>TODO: Playlist nouvelle offres publiées à ajouter </div>
             <div className={styles['section-todo-playlist']}>
               <CardOfferComponent
+                handlePlaylistElementTracking={() =>
+                  trackPlaylistElementClicked({
+                    playlistId: 0, // TODO: change all playlistId with real value
+                    playlistType: AdagePlaylistType.OFFER,
+                    elementId: 1, // TODO: change elementId with real value
+                  })
+                }
                 offer={{
                   ...mockOffer,
                   id: 1,
@@ -156,6 +185,13 @@ export const AdageDiscovery = () => {
                 }}
               />
               <CardOfferComponent
+                handlePlaylistElementTracking={() =>
+                  trackPlaylistElementClicked({
+                    playlistId: 0,
+                    elementId: 2, // TODO: change elementId with real value
+                    playlistType: AdagePlaylistType.OFFER,
+                  })
+                }
                 offer={{
                   ...mockOffer,
                   id: 2,
@@ -167,6 +203,13 @@ export const AdageDiscovery = () => {
                 }}
               />
               <CardOfferComponent
+                handlePlaylistElementTracking={() =>
+                  trackPlaylistElementClicked({
+                    playlistId: 0,
+                    playlistType: AdagePlaylistType.OFFER,
+                    elementId: 3, // TODO: change elementId with real value
+                  })
+                }
                 offer={{
                   ...mockOffer,
                   id: 3,
@@ -191,6 +234,13 @@ export const AdageDiscovery = () => {
 
               return (
                 <DomainsCard
+                  handlePlaylistElementTracking={() =>
+                    trackPlaylistElementClicked({
+                      playlistId: 1,
+                      playlistType: AdagePlaylistType.DOMAIN,
+                      elementId: 1, // TODO: change elementId with real value
+                    })
+                  }
                   key={`domains-${elm.value}`}
                   title={elm.label}
                   color={colorAndMotif.color}
@@ -214,7 +264,16 @@ export const AdageDiscovery = () => {
           <div className={styles['section-todo']}>
             <div>TODO: Playlist à moins de 30 minutes à pieds à ajouter</div>
             <div className={styles['section-todo-playlist']}>
-              <CardVenue venue={mockVenue} />
+              <CardVenue
+                handlePlaylistElementTracking={() =>
+                  trackPlaylistElementClicked({
+                    playlistId: 3,
+                    playlistType: AdagePlaylistType.VENUE,
+                    elementId: 1, // TODO: change elementId with real value
+                  })
+                }
+                venue={mockVenue}
+              />
             </div>
           </div>
         </div>

@@ -7,8 +7,17 @@ const renderDomainsCardComponent = ({
   color,
   src,
   href,
+  handlePlaylistElementTracking,
 }: DomainsCardProps) => {
-  render(<DomainsCard title={title} color={color} src={src} href={href} />)
+  render(
+    <DomainsCard
+      title={title}
+      color={color}
+      src={src}
+      href={href}
+      handlePlaylistElementTracking={handlePlaylistElementTracking}
+    />
+  )
 }
 
 describe('CardOffer component', () => {
@@ -18,6 +27,7 @@ describe('CardOffer component', () => {
       color: 'green',
       src: 'src',
       href: 'href',
+      handlePlaylistElementTracking: vi.fn(),
     })
 
     expect(screen.getByText('Test domains card')).toBeInTheDocument()

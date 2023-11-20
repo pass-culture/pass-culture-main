@@ -1,6 +1,8 @@
 import { render, screen } from '@testing-library/react'
-import { userEvent } from '@testing-library/user-event'
 import * as router from 'react-router-dom'
+
+import { AdageUserContextProvider } from 'pages/AdageIframe/app/providers/AdageUserContext'
+import { defaultAdageUser } from 'utils/adageFactories'
 
 import CardVenue, { CardVenueProps } from '../CardVenue'
 
@@ -13,31 +15,48 @@ const mockVenue = {
   city: 'Paris',
 }
 
-vi.mock('react-router-dom', async () => ({
-  ...((await vi.importActual('react-router-dom')) ?? {}),
-  useNavigate: vi.fn(),
-}))
-
-const renderCardVenue = ({ venue }: CardVenueProps) => {
-  render(<CardVenue venue={venue} />)
+const renderCardVenue = ({
+  venue,
+  handlePlaylistElementTracking,
+}: CardVenueProps) => {
+  render(
+    <AdageUserContextProvider adageUser={defaultAdageUser}>
+      <CardVenue
+        venue={venue}
+        handlePlaylistElementTracking={handlePlaylistElementTracking}
+      />
+    </AdageUserContextProvider>
+  )
 }
 
 describe('CardVenue', () => {
+  beforeEach(() => {
+    vi.spyOn(router, 'useSearchParams').mockReturnValueOnce([
+      new URLSearchParams({ token: '123' }),
+      vi.fn(),
+    ])
+  })
+
   it('should display venue name if publicName is not defined', () => {
-    renderCardVenue({ venue: { ...mockVenue, publicName: undefined } })
+    renderCardVenue({
+      venue: { ...mockVenue, publicName: undefined },
+      handlePlaylistElementTracking: vi.fn(),
+    })
 
     expect(screen.getByText(mockVenue.name)).toBeInTheDocument()
   })
 
-  it('should navigate to search with venue filter when clicking the card', async () => {
-    const mockNavigate = vi.fn()
-    vi.spyOn(router, 'useNavigate').mockReturnValue(mockNavigate)
-    renderCardVenue({ venue: mockVenue })
+  it('should redirect on click in offer card', () => {
+    renderCardVenue({
+      venue: mockVenue,
+      handlePlaylistElementTracking: vi.fn(),
+    })
 
-    await userEvent.click(screen.getByText(mockVenue.publicName))
+    const offerElement = screen.getByTestId('card-venue-link')
 
-    expect(mockNavigate).toHaveBeenCalledWith(
-      '/adage-iframe/venue/28?token=null'
+    expect(offerElement).toHaveAttribute(
+      'href',
+      '/adage-iframe/venue/28?token=123'
     )
   })
 })
