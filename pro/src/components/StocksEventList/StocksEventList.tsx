@@ -308,9 +308,11 @@ const StocksEventList = ({
       deletionCount: deletionCount,
     })
     notify.success(
-      deletionCount === 1
+      stocksIdToDelete.length === 1
         ? '1 date a été supprimée'
-        : `${deletionCount} dates ont été supprimées`
+        : `${new Intl.NumberFormat('fr-FR').format(
+            stocksIdToDelete.length
+          )} dates ont été supprimées`
     )
   }
 
