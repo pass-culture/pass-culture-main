@@ -34,9 +34,11 @@
         "virtual(PRODUCTION Top offres)"
     ],
     "attributesForFaceting": [
+        "searchable(offer.artist)",
         "offer.bookMacroSection",
         "filterOnly(offer.category)",
         "filterOnly(offer.dates)",
+        "searchable(offer.ean)",
         "filterOnly(offer.isDigital)",
         "filterOnly(offer.isDuo)",
         "filterOnly(offer.isEducational)",
