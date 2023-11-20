@@ -92,7 +92,9 @@ describe('StocksEventList', () => {
   it('should sort stocks', async () => {
     await renderStocksEventList([stock1, stock2, stock3])
 
-    expect(screen.getAllByRole('row')).toHaveLength(4) // 1 header + 3 rows
+    await waitFor(() => {
+      expect(screen.getAllByRole('row')).toHaveLength(4) // 1 header + 3 rows
+    })
     expect(
       screen.queryAllByRole('img', { name: 'Trier par ordre croissant' })
     ).toHaveLength(
@@ -173,7 +175,9 @@ describe('StocksEventList', () => {
   it('should filter stocks', async () => {
     await renderStocksEventList([stock1, stock2, stock3])
 
-    expect(screen.getAllByRole('row')).toHaveLength(4) // 1 header + 3 stock rows
+    await waitFor(() => {
+      expect(screen.getAllByRole('row')).toHaveLength(4) // 1 header + 3 stock rows
+    })
 
     vi.spyOn(api, 'getStocks').mockResolvedValueOnce({
       stocks: [stock2, stock3],
@@ -195,9 +199,7 @@ describe('StocksEventList', () => {
         1
       )
     })
-    expect(
-      screen.getByText('Résultat de recherche', { exact: false })
-    ).toBeInTheDocument()
+    expect(screen.getByText('Réinitialiser les filtres')).toBeInTheDocument()
     expect(screen.getAllByRole('row')).toHaveLength(4) // 1 header + 1 filter result row + 2 stock rows
 
     vi.spyOn(api, 'getStocks').mockResolvedValueOnce({
