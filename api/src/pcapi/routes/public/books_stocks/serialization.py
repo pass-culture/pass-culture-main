@@ -19,7 +19,9 @@ logger = logging.getLogger(__name__)
 
 
 class StocksResponseModel(BaseModel):
-    stocks: list[offers_serialize.GetOfferStockResponseModel]
+    # FIXME : ogeber 20.11.2023 change stocks: list[...] -> stocks_count: int
+    # when removing the WIP_PRO_STOCK_PAGINATION FF
+    stocks: list[offers_serialize.GetOfferStockResponseModel] | int
 
     class Config:
         json_encoders = {datetime: format_into_utc_date}
@@ -36,6 +38,7 @@ class StockCreationBodyModel(BaseModel):
 
     class Config:
         alias_generator = to_camel
+        json_encoders = {datetime: format_into_utc_date}
         extra = "forbid"
 
 
