@@ -43,6 +43,9 @@ from pcapi.sandboxes.scripts.creators.industrial.create_industrial_thing_offers 
 from pcapi.sandboxes.scripts.creators.industrial.create_industrial_thing_products import *
 from pcapi.sandboxes.scripts.creators.industrial.create_industrial_thing_stocks import *
 from pcapi.sandboxes.scripts.creators.industrial.create_industrial_venues import *
+from pcapi.sandboxes.scripts.creators.industrial.create_industrial_venues_with_timezone import (
+    create_industrial_venues_with_timezone,
+)
 from pcapi.sandboxes.scripts.creators.industrial.create_offer_with_thousand_stocks import (
     create_offer_with_thousand_stocks,
 )
@@ -157,3 +160,5 @@ def save_industrial_sandbox() -> None:
     create_industrial_individual_offerers()
 
     create_industrial_bank_accounts()
+
+    create_industrial_venues_with_timezone()
