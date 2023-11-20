@@ -78,8 +78,7 @@ def create_offers_with_gtl_id(gtl_id: str, size_per_gtl: int, venue: offerers_mo
         extraData={"gtl_id": gtl_id, "author": Fake.name()},
     )
     for offer in offers:
-        offers_factories.StockFactory.create_batch(
-            size=random.randint(1, 10),
+        offers_factories.StockFactory(
             offer=offer,
         )
 
