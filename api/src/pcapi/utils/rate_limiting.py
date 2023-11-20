@@ -42,6 +42,13 @@ class Limiter(flask_limiter.Limiter):
     feature flag is enabled.
     """
 
+    def __init__(self, **kwargs: typing.Any) -> None:
+        # Distinct rate limite on a per method basis
+        # This way, even if a user is being rate limited
+        # The back still allow (for a while) OPTIONS requests
+        kwargs["default_limits_per_method"] = True
+        super().__init__(**kwargs)
+
     # pylint: disable=unused-private-member
     def __check_request_limit(self, in_middleware: bool = True) -> None:
         if not settings.IS_RUNNING_TESTS and not FeatureToggle.WIP_ENABLE_RATE_LIMITING.is_active():
