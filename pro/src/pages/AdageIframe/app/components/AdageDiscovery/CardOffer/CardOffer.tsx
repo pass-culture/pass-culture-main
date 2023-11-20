@@ -30,9 +30,13 @@ export interface CardOfferModel extends CollectiveOfferResponseModel {
 
 export interface CardComponentProps {
   offer: CardOfferModel
+  handlePlaylistElementTracking: () => void
 }
 
-const CardOfferComponent = ({ offer }: CardComponentProps) => {
+const CardOfferComponent = ({
+  offer,
+  handlePlaylistElementTracking,
+}: CardComponentProps) => {
   const [searchParams] = useSearchParams()
   const adageAuthToken = searchParams.get('token')
 
@@ -53,6 +57,9 @@ const CardOfferComponent = ({ offer }: CardComponentProps) => {
       <a
         data-testid="card-offer-link"
         href={`/adage-iframe/decouverte/offre/${offer.id}?token=${adageAuthToken}`}
+        onClick={() => {
+          handlePlaylistElementTracking()
+        }}
       >
         <div className={styles['offer-image-container']}>
           {offer.imageUrl ? (
