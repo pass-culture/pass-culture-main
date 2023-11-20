@@ -19,6 +19,7 @@ def save_test_cases_sandbox() -> None:
     create_offers_with_same_ean()
     create_venues_across_cities()
     create_offers_for_each_subcategory()
+    create_offers_with_same_author()
 
 
 def create_offers_with_gtls() -> None:
@@ -211,3 +212,115 @@ def create_offers_for_each_subcategory() -> None:
                 offer__subcategoryId=subcategory.id,
                 quantity=random.randint(10, 100),
             )
+
+
+def create_offers_with_same_author() -> None:
+    venues = [
+        offerers_factories.VenueFactory(
+            name="same author " + str(venue["name"]),
+            venueTypeCode=offerers_models.VenueTypeCode.BOOKSTORE,
+            isPermanent=True,
+            latitude=venue["latitude"],
+            longitude=venue["longitude"],
+            address=venue["address"],
+            postalCode=venue["postalCode"],
+            city=venue["city"],
+            departementCode=venue["departementCode"],
+        )
+        for venue in random.choices(venues_mock.venues, k=4)
+    ]
+    create_books_with_same_author(venues)
+    create_single_book_author(venues)
+    create_book_in_multiple_venues(venues)
+    create_books_with_the_same_author_duplicated_in_multiple_venues(venues)
+    create_multiauthors_books(venues)
+
+
+def create_books_with_same_author(venues: list[offerers_models.Venue]) -> None:
+    # an author with 16 different books
+    author = Fake.name()
+    for venue in venues:
+        for _ in range(4):
+            create_offer_with_ean(Fake.ean13(), venue, author=author)
+
+
+def create_single_book_author(venues: list[offerers_models.Venue]) -> None:
+    # an author with a single book in  a single venue
+    author = Fake.name()
+    create_offer_with_ean(Fake.ean13(), venues[0], author=author)
+
+
+def create_book_in_multiple_venues(venues: list[offerers_models.Venue]) -> None:
+    # an author with 1 book in multiple venues
+    author = Fake.name()
+    ean = Fake.ean13()
+    product = offers_factories.ProductFactory(
+        subcategoryId=subcategories_v2.LIVRE_PAPIER.id,
+        extraData={"ean": ean, "author": author},
+    )
+    for venue in venues[:3]:
+        offer = offers_factories.OfferFactory(
+            product=product,
+            extraData={"ean": ean, "author": author},
+            venue=venue,
+        )
+        offers_factories.StockFactory(quantity=random.randint(10, 100), offer=offer)
+
+
+def create_books_with_the_same_author_duplicated_in_multiple_venues(venues: list[offerers_models.Venue]) -> None:
+    # an author with multiple books but some in all venues
+    author = Fake.name()
+    for tome in range(1, 11):
+        ean = Fake.ean13()
+        product = offers_factories.ProductFactory(
+            name="One Piece tome " + str(tome),
+            subcategoryId=subcategories_v2.LIVRE_PAPIER.id,
+            extraData={"ean": ean, "author": author},
+        )
+        for venue in venues:
+            offer = offers_factories.OfferFactory(
+                product=product,
+                extraData={"ean": ean, "author": author},
+                venue=venue,
+            )
+            offers_factories.StockFactory(quantity=random.randint(10, 100), offer=offer)
+
+    for tome in range(11, 16):
+        ean = Fake.ean13()
+        product = offers_factories.ProductFactory(
+            name="One Piece tome " + str(tome),
+            subcategoryId=subcategories_v2.LIVRE_PAPIER.id,
+            extraData={"ean": ean, "author": author},
+        )
+        offer = offers_factories.OfferFactory(
+            product=product,
+            extraData={"ean": ean, "author": author},
+            venue=venues[3],
+        )
+        offers_factories.StockFactory(quantity=random.randint(10, 100), offer=offer)
+
+
+def create_multiauthors_books(venues: list[offerers_models.Venue]) -> None:
+    # multiple authors
+    authors = [Fake.name() for _ in range(4)]
+    ean = Fake.ean13()
+    product = offers_factories.ProductFactory(
+        name="multiauth",
+        subcategoryId=subcategories_v2.LIVRE_PAPIER.id,
+        extraData={"ean": ean, "author": ", ".join(authors)},
+    )
+    offer = offers_factories.OfferFactory(
+        product=product,
+        extraData={"ean": ean, "author": ", ".join(authors)},
+        venue=venues[0],
+    )
+    offers_factories.StockFactory(quantity=random.randint(10, 100), offer=offer)
+
+    for author in authors:
+        for _ in range(4):
+            create_offer_with_ean(Fake.ean13(), random.choice(venues), author=author)
+
+    # author "collectif"
+    author = "collectif"
+    for _ in range(3):
+        create_offer_with_ean(Fake.ean13(), random.choice(venues), author=author)
