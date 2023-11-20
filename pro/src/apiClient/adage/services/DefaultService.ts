@@ -18,6 +18,7 @@ import type { EacFormatsResponseModel } from '../models/EacFormatsResponseModel'
 import type { EducationalInstitutionWithBudgetResponseModel } from '../models/EducationalInstitutionWithBudgetResponseModel';
 import type { FavoritesResponseModel } from '../models/FavoritesResponseModel';
 import type { ListCollectiveOffersResponseModel } from '../models/ListCollectiveOffersResponseModel';
+import type { ListCollectiveOfferTemplateResponseModel } from '../models/ListCollectiveOfferTemplateResponseModel';
 import type { ListFeatureResponseModel } from '../models/ListFeatureResponseModel';
 import type { OfferFavoriteBody } from '../models/OfferFavoriteBody';
 import type { OfferIdBody } from '../models/OfferIdBody';
@@ -712,6 +713,23 @@ export class DefaultService {
       url: '/adage-iframe/playlists/classroom',
       errors: {
         403: `Forbidden`,
+        422: `Unprocessable Entity`,
+      },
+    });
+  }
+
+  /**
+   * new_template_offers_playlist <GET>
+   * @returns ListCollectiveOfferTemplateResponseModel OK
+   * @throws ApiError
+   */
+  public newTemplateOffersPlaylist(): CancelablePromise<ListCollectiveOfferTemplateResponseModel> {
+    return this.httpRequest.request({
+      method: 'GET',
+      url: '/adage-iframe/playlists/new_template_offers',
+      errors: {
+        403: `Forbidden`,
+        404: `Not Found`,
         422: `Unprocessable Entity`,
       },
     });
