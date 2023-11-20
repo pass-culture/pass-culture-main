@@ -18,6 +18,7 @@ def save_test_cases_sandbox() -> None:
     create_offers_with_gtls()
     create_offers_with_same_ean()
     create_venues_across_cities()
+    create_offers_for_each_subcategory()
 
 
 def create_offers_with_gtls() -> None:
@@ -186,3 +187,28 @@ def create_venues_across_cities() -> None:
                             seconds=random.randint(1, 59),
                         ),
                     )
+
+
+def create_offers_for_each_subcategory() -> None:
+    for subcategory in subcategories_v2.ALL_SUBCATEGORIES:
+        if subcategory.id in subcategories_v2.EVENT_SUBCATEGORIES:
+            offers_factories.EventStockFactory.create_batch(
+                size=10,
+                offer__product=None,
+                offer__subcategoryId=subcategory.id,
+                quantity=random.randint(10, 100),
+                beginningDatetime=datetime.datetime.utcnow()
+                + datetime.timedelta(
+                    days=random.randint(30, 59),
+                    hours=random.randint(1, 23),
+                    minutes=random.randint(1, 59),
+                    seconds=random.randint(1, 59),
+                ),
+            )
+        else:
+            offers_factories.StockFactory.create_batch(
+                size=10,
+                offer__product=None,
+                offer__subcategoryId=subcategory.id,
+                quantity=random.randint(10, 100),
+            )
