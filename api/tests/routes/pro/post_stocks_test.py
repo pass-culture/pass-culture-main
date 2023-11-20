@@ -65,6 +65,7 @@ class Returns201Test:
         first_price_cat = offers_factories.PriceCategoryFactory(offer=offer, priceCategoryLabel=first_label, price=20)
         second_price_cat = offers_factories.PriceCategoryFactory(offer=offer, priceCategoryLabel=second_label, price=30)
         beginning = datetime.datetime.utcnow() + relativedelta(days=10)
+        another_beginning = datetime.datetime.utcnow() + relativedelta(days=12)
 
         # When
         stock_data = {
@@ -72,16 +73,26 @@ class Returns201Test:
             "stocks": [
                 {
                     "priceCategoryId": first_price_cat.id,
+                    "price": 20,
+                    "beginningDatetime": format_into_utc_date(beginning),
+                    "bookingLimitDatetime": format_into_utc_date(beginning),
+                },
+                # This duplicated stock should be skipped
+                {
+                    "priceCategoryId": first_price_cat.id,
+                    "price": 20,
                     "beginningDatetime": format_into_utc_date(beginning),
                     "bookingLimitDatetime": format_into_utc_date(beginning),
                 },
                 {
                     "priceCategoryId": first_price_cat.id,
-                    "beginningDatetime": format_into_utc_date(beginning),
-                    "bookingLimitDatetime": format_into_utc_date(beginning),
+                    "price": 20,
+                    "beginningDatetime": format_into_utc_date(another_beginning),
+                    "bookingLimitDatetime": format_into_utc_date(another_beginning),
                 },
                 {
                     "priceCategoryId": second_price_cat.id,
+                    "price": 30,
                     "beginningDatetime": format_into_utc_date(beginning),
                     "bookingLimitDatetime": format_into_utc_date(beginning),
                 },
@@ -92,7 +103,7 @@ class Returns201Test:
         assert response.status_code == 201
 
         response_dict = response.json
-        assert len(response_dict["stocks"]) == len(stock_data["stocks"])
+        assert len(response_dict["stocks"]) == 3
 
         created_stocks = Stock.query.order_by(Stock.price).all()
         assert len(created_stocks) == 3
@@ -124,6 +135,7 @@ class Returns201Test:
         unique_label = offers_factories.PriceCategoryLabelFactory(label="unique", venue=offer.venue)
         second_price_cat = offers_factories.PriceCategoryFactory(offer=offer, priceCategoryLabel=unique_label, price=30)
         beginning = datetime.datetime.utcnow() + relativedelta(days=10)
+        another_beginning = datetime.datetime.utcnow() + relativedelta(days=12)
 
         # When
         stock_data = {
@@ -131,16 +143,26 @@ class Returns201Test:
             "stocks": [
                 {
                     "priceCategoryId": first_price_cat.id,
+                    "price": 20,
                     "beginningDatetime": format_into_utc_date(beginning),
                     "bookingLimitDatetime": format_into_utc_date(beginning),
                 },
                 {
                     "priceCategoryId": second_price_cat.id,
+                    "price": 30,
                     "beginningDatetime": format_into_utc_date(beginning),
                     "bookingLimitDatetime": format_into_utc_date(beginning),
                 },
                 {
                     "priceCategoryId": first_price_cat.id,
+                    "price": 20,
+                    "beginningDatetime": format_into_utc_date(another_beginning),
+                    "bookingLimitDatetime": format_into_utc_date(another_beginning),
+                },
+                # This duplicated stock should be skipped
+                {
+                    "priceCategoryId": first_price_cat.id,
+                    "price": 20,
                     "beginningDatetime": format_into_utc_date(beginning),
                     "bookingLimitDatetime": format_into_utc_date(beginning),
                 },
@@ -605,7 +627,7 @@ class Returns201Test:
         assert len(Stock.query.all()) == 1
         # check that the expected_to_be_created_stock is not in the response
         with pytest.raises(IndexError):
-            expected_to_be_created_stock = Stock.query.get(response.json["stocks"][0]["id"])
+            Stock.query.get(response.json["stocks"][0]["id"])
 
 
 @pytest.mark.usefixtures("db_session")
@@ -675,7 +697,6 @@ class Returns400Test:
         }
 
         response = client.with_session_auth("user@example.com").post("/stocks/bulk/", json=stock_data)
-        print(response.json)
 
         assert response.json["stocks.0.quantity"] == [
             "ensure this value is less than or equal to 1000000",

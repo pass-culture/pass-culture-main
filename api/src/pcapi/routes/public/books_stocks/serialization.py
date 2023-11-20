@@ -36,6 +36,7 @@ class StockCreationBodyModel(BaseModel):
 
     class Config:
         alias_generator = to_camel
+        json_encoders = {datetime: format_into_utc_date}
         extra = "forbid"
 
 

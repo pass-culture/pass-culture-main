@@ -44,7 +44,6 @@ class Returns200Test:
 
         # When
         response = client.with_session_auth(email=user_offerer.user.email).get(f"/offers/{offer.id}/stocks-stats")
-        print(response.json)
 
         # Then
         assert response.status_code == 200

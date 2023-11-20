@@ -1,3 +1,4 @@
+import decimal
 import logging
 
 from flask_login import current_user
@@ -27,11 +28,13 @@ logger = logging.getLogger(__name__)
 
 
 def _stock_exists(offer_id: int, stock_payload: serialization.StockCreationBodyModel) -> bool:
+    if not stock_payload.price:
+        stock_payload.price = decimal.Decimal(0)
     existing_stock = offers_models.Stock.query.filter(
         offers_models.Stock.offerId == offer_id,
         offers_models.Stock.isSoftDeleted == False,
-        offers_models.Stock.beginningDatetime == stock_payload.beginning_datetime.replace(tzinfo=None),
-        offers_models.Stock.bookingLimitDatetime == stock_payload.booking_limit_datetime.replace(tzinfo=None),
+        offers_models.Stock.beginningDatetime == stock_payload.beginning_datetime,
+        offers_models.Stock.bookingLimitDatetime == stock_payload.booking_limit_datetime,
         offers_models.Stock.price == stock_payload.price,
         offers_models.Stock.priceCategoryId == stock_payload.price_category_id,
         offers_models.Stock.quantity == stock_payload.quantity,
@@ -134,7 +137,6 @@ def upsert_stocks(
 
             for stock_to_create in stocks_to_create:
                 if not _stock_exists(body.offer_id, stock_to_create):
-                    print("creating stock")
                     offers_validation.check_stock_has_price_or_price_category(offer, stock_to_create, price_categories)
 
                     created_stock = offers_api.create_stock(
@@ -148,8 +150,6 @@ def upsert_stocks(
                         price_category=price_categories.get(stock_to_create.price_category_id, None),
                     )
                     upserted_stocks.append(created_stock)
-                else:
-                    print("stock already exists")
 
     except offers_exceptions.BookingLimitDatetimeTooLate:
         raise ApiErrors(
@@ -160,7 +160,6 @@ def upsert_stocks(
         raise ApiErrors(error.errors, status_code=400)
 
     offers_api.handle_stocks_edition(edited_stocks_with_update_info)
-
     return serialization.StocksResponseModel(
         stocks=[offers_serialize.GetOfferStockResponseModel.from_orm(stock) for stock in upserted_stocks]
     )
