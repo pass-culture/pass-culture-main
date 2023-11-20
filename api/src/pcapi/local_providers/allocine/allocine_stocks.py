@@ -64,7 +64,6 @@ class AllocineStocks(LocalProvider):
 
         self.movie_information: dict | None = None
         self.filtered_movie_showtimes: list[dict] | None = None
-        self.last_product_id: int | None = None
         self.label: offers_models.PriceCategoryLabel = offers_api.get_or_create_label("Tarif unique", self.venue)
         self.price_categories_by_offer: dict[offers_models.Offer, list[offers_models.PriceCategory]] = {}
 
