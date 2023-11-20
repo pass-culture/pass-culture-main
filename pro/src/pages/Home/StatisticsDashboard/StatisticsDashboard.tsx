@@ -65,7 +65,8 @@ export const StatisticsDashboard = ({ offerer }: StatisticsDashboardProps) => {
       {!isLoading && (
         <div className="h-card">
           <div className="h-card-inner">
-            {stats?.jsonData?.topOffers && stats.jsonData.dailyViews ? (
+            {stats?.jsonData.topOffers?.length ||
+            stats?.jsonData.dailyViews?.length ? (
               <div className={styles['data-container']}>
                 <MostViewedOffers
                   topOffers={stats.jsonData.topOffers}
