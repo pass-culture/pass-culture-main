@@ -32,5 +32,9 @@ export const pluralize = (
   string: string,
   pluralizeWith?: string
 ): string => {
-  return `${number} ${pluralizeString(string, number, pluralizeWith)}`
+  return `${new Intl.NumberFormat('fr-FR').format(number)} ${pluralizeString(
+    string,
+    number,
+    pluralizeWith
+  )}`
 }

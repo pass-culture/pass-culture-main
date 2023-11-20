@@ -14,15 +14,12 @@ const OfferRemainingStockCell = ({ stocks }: { stocks: Stock[] }) => {
       }
       totalRemainingStock += Number(stock.remainingQuantity)
     }
-
-    return totalRemainingStock
+    return new Intl.NumberFormat('fr-FR').format(totalRemainingStock)
   }
-
   return (
     <td className={styles['stock-column']}>
       {computeRemainingStockValue(stocks)}
     </td>
   )
 }
-
 export default OfferRemainingStockCell
