@@ -4,8 +4,56 @@ from unittest.mock import patch
 import pytest
 
 from pcapi.connectors.api_allocine import AllocineException
+from pcapi.connectors.api_allocine import get_movie_list_from_allocine
 from pcapi.connectors.api_allocine import get_movie_poster_from_allocine
 from pcapi.connectors.api_allocine import get_movies_showtimes_from_allocine
+
+
+class GetMovieListTest:
+    @patch("pcapi.connectors.api_allocine.requests.get")
+    def should_return_request_response_from_api(self, request_get):
+        # Given
+        token = "test"
+        expected_result = {"toto"}
+        response_return_value = MagicMock(status_code=200, text="")
+        response_return_value.json = MagicMock(return_value=expected_result)
+        request_get.return_value = response_return_value
+
+        # When
+        api_response = get_movie_list_from_allocine(token)
+
+        # Then
+        request_get.assert_called_once_with(
+            f"https://graph-api-proxy.allocine.fr/api/query/movieList?" f"token={token}"
+        )
+        assert api_response == expected_result
+
+    @patch("pcapi.connectors.api_allocine.requests.get")
+    def test_should_raise_exception_when_api_call_fails(self, request_get):
+        # Given
+        token = "test"
+        response_return_value = MagicMock(status_code=400, text="")
+        response_return_value.json = MagicMock(return_value={})
+        request_get.return_value = response_return_value
+
+        # When
+        with pytest.raises(AllocineException) as exception:
+            get_movie_list_from_allocine(token)
+
+        # Then
+        assert str(exception.value) == "Error getting API Allocine data to get movie list"
+
+    @patch("pcapi.connectors.api_allocine.requests.get", side_effect=Exception)
+    def test_should_raise_exception_when_api_call_fails_with_connection_error(self, mocked_requests_get):
+        # Given
+        token = "test"
+
+        # When
+        with pytest.raises(AllocineException) as allocine_exception:
+            get_movie_list_from_allocine(token)
+
+        # Then
+        assert str(allocine_exception.value) == "Error connecting Allocine API to get movie list"
 
 
 class GetMovieShowtimeListTest:
