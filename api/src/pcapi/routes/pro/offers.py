@@ -104,6 +104,7 @@ def get_stocks(offer_id: int, query: offers_serialize.StocksQueryModel) -> offer
             price_category_id=query.price_category_id,
             order_by=query.order_by,
             order_by_desc=query.order_by_desc,
+            venue=offer.venue,
         )
         stocks_count = filtered_stocks.count()
         filtered_and_paginated_stocks = offers_repository.get_paginated_stocks(
@@ -162,6 +163,7 @@ def delete_all_filtered_stocks(offer_id: int, body: offers_serialize.DeleteFilte
     rest.check_user_has_access_to_offerer(current_user, offer.venue.managingOffererId)
     filters = {
         "offer_id": offer_id,
+        "venue": offer.venue,
         "date": body.date,
         "time": body.time,
         "price_category_id": body.price_category_id,
