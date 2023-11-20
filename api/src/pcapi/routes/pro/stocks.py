@@ -1,7 +1,10 @@
+import decimal
 import logging
 
 from flask_login import current_user
 from flask_login import login_required
+from sqlalchemy import and_
+from sqlalchemy import or_
 import sqlalchemy.orm as sqla_orm
 
 from pcapi.core.offerers import exceptions as offerers_exceptions
@@ -12,6 +15,7 @@ import pcapi.core.offers.api as offers_api
 import pcapi.core.offers.models as offers_models
 import pcapi.core.offers.validation as offers_validation
 from pcapi.models.api_errors import ApiErrors
+from pcapi.models.feature import FeatureToggle
 from pcapi.repository import transaction
 from pcapi.routes.apis import private_api
 from pcapi.routes.public.books_stocks import serialization
@@ -26,7 +30,50 @@ from . import blueprint
 logger = logging.getLogger(__name__)
 
 
-def _get_existing_stocks(
+def _stock_exists(
+    offer_id: int,
+    stock_to_create: serialization.StockCreationBodyModel | serialization.StockEditionBodyModel,
+    existing_stocks: list[offers_models.Stock],
+) -> bool:
+    for stock in existing_stocks:
+        if (
+            # pylint: disable=too-many-boolean-expressions
+            stock.offerId == offer_id
+            and stock.price == (stock_to_create.price or decimal.Decimal(0))
+            and stock.beginningDatetime
+            == (stock_to_create.beginning_datetime.replace(tzinfo=None) if stock_to_create.beginning_datetime else None)
+            and stock.bookingLimitDatetime
+            == (
+                stock_to_create.booking_limit_datetime.replace(tzinfo=None)
+                if stock_to_create.booking_limit_datetime
+                else None
+            )
+            and stock.priceCategoryId == stock_to_create.price_category_id
+            and stock.quantity == stock_to_create.quantity
+        ):
+            return True
+    return False
+
+
+def _get_existing_stocks_by_fields(
+    offer_id: int, stock_payload: list[serialization.StockCreationBodyModel] | list[serialization.StockEditionBodyModel]
+) -> list[offers_models.Stock]:
+    combinaisons_to_check = [
+        and_(
+            offers_models.Stock.offerId == offer_id,
+            offers_models.Stock.isSoftDeleted == False,
+            offers_models.Stock.beginningDatetime == stock.beginning_datetime,
+            offers_models.Stock.bookingLimitDatetime == stock.booking_limit_datetime,
+            offers_models.Stock.price == (stock.price or decimal.Decimal(0)),
+            offers_models.Stock.priceCategoryId == stock.price_category_id,
+            offers_models.Stock.quantity == stock.quantity,
+        )
+        for stock in stock_payload
+    ]
+    return offers_models.Stock.query.filter(or_(*combinaisons_to_check)).all()
+
+
+def _get_existing_stocks_by_id(
     offer_id: int, stocks_payload: list[serialization.StockEditionBodyModel]
 ) -> dict[int, offers_models.Stock]:
     existing_stocks = offers_models.Stock.query.filter(
@@ -70,8 +117,28 @@ def upsert_stocks(
         .one()
     )
 
-    stocks_to_edit = [stock for stock in body.stocks if isinstance(stock, serialization.StockEditionBodyModel)]
-    stocks_to_create = [stock for stock in body.stocks if isinstance(stock, serialization.StockCreationBodyModel)]
+    if FeatureToggle.WIP_PRO_STOCK_PAGINATION.is_active():
+        matching_stocks = _get_existing_stocks_by_fields(body.offer_id, body.stocks)
+        stocks_to_edit = [
+            stock
+            for stock in body.stocks
+            if (
+                isinstance(stock, serialization.StockEditionBodyModel)
+                and not _stock_exists(body.offer_id, stock, matching_stocks)
+            )
+        ]
+        stocks_to_create = [
+            stock
+            for stock in body.stocks
+            if (
+                isinstance(stock, serialization.StockCreationBodyModel)
+                and not _stock_exists(body.offer_id, stock, matching_stocks)
+            )
+        ]
+    else:
+        stocks_to_edit = [stock for stock in body.stocks if isinstance(stock, serialization.StockEditionBodyModel)]
+        stocks_to_create = [stock for stock in body.stocks if isinstance(stock, serialization.StockCreationBodyModel)]
+
     offers_validation.check_stocks_price(stocks_to_edit, offer)
     offers_validation.check_stocks_price(stocks_to_create, offer)
     if stocks_to_create:
@@ -85,8 +152,9 @@ def upsert_stocks(
                 },
                 status_code=400,
             )
+
     if stocks_to_edit:
-        existing_stocks = _get_existing_stocks(body.offer_id, stocks_to_edit)
+        existing_stocks = _get_existing_stocks_by_id(body.offer_id, stocks_to_edit)
 
     price_categories = {price_category.id: price_category for price_category in offer.priceCategories}
 
@@ -100,6 +168,7 @@ def upsert_stocks(
                         {"stock_id": ["Le stock avec l'id %s n'existe pas" % stock_to_edit.id]},
                         status_code=400,
                     )
+
                 offers_validation.check_stock_has_price_or_price_category(offer, stock_to_edit, price_categories)
 
                 edited_stock, is_beginning_updated = offers_api.edit_stock(
@@ -121,6 +190,7 @@ def upsert_stocks(
 
             for stock_to_create in stocks_to_create:
                 offers_validation.check_stock_has_price_or_price_category(offer, stock_to_create, price_categories)
+
                 created_stock = offers_api.create_stock(
                     offer,
                     price=stock_to_create.price,
@@ -142,10 +212,11 @@ def upsert_stocks(
         raise ApiErrors(error.errors, status_code=400)
 
     offers_api.handle_stocks_edition(edited_stocks_with_update_info)
-
-    return serialization.StocksResponseModel(
-        stocks=[offers_serialize.GetOfferStockResponseModel.from_orm(stock) for stock in upserted_stocks]
-    )
+    if not FeatureToggle.WIP_PRO_STOCK_PAGINATION.is_active():
+        return serialization.StocksResponseModel(
+            stocks=[offers_serialize.GetOfferStockResponseModel.from_orm(stock) for stock in upserted_stocks]
+        )
+    return serialization.StocksResponseModel(stocks=len(upserted_stocks))
 
 
 @private_api.route("/stocks/<int:stock_id>", methods=["DELETE"])
