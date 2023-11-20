@@ -97,6 +97,9 @@ def _get_venues(form: forms.GetVenuesListForm) -> list[offerers_models.Venue]:
     if form.offerer.data:
         base_query = base_query.filter(offerers_models.Venue.managingOffererId.in_(form.offerer.data))
 
+    if form.only_validated_offerers.data:
+        base_query = base_query.join(offerers_models.Venue.managingOfferer).filter(offerers_models.Offerer.isValidated)
+
     if form.order.data:
         base_query = base_query.order_by(getattr(getattr(offerers_models.Venue, "id"), form.order.data)())
     # +1 to check if there are more results than requested
@@ -205,6 +208,7 @@ def render_venue_details(
 @utils.permission_required(perm_models.Permissions.MANAGE_PRO_ENTITY)
 def list_venues() -> utils.BackofficeResponse:
     form = forms.GetVenuesListForm(formdata=utils.get_query_params())
+
     if not form.validate():
         return render_template("venue/list.html", rows=[], form=form), 400
 

@@ -223,6 +223,21 @@ class ListVenuesTest(GetEndpointHelper):
         venues.sort(key=attrgetter("id"), reverse=(order == "desc"))
         assert [row[row_key] for row in rows] == [venue.dateCreated.strftime("%d/%m/%Y") for venue in venues]
 
+    def test_list_venues_by_only_validated_offerer(self, authenticated_client):
+        offerer = offerers_factories.OffererFactory()
+        not_validated_offerer = offerers_factories.NotValidatedOffererFactory()
+        venue = offerers_factories.VenueFactory(managingOfferer=offerer, postalCode="62000", departementCode="62")
+        offerers_factories.VenueFactory(managingOfferer=not_validated_offerer, postalCode="62000", departementCode="62")
+
+        with assert_num_queries(self.expected_num_queries):
+            response = authenticated_client.get(url_for(self.endpoint, only_validated_offerers="on", department="62"))
+            assert response.status_code == 200
+
+        rows = html_parser.extract_table_rows(response.data)
+        assert len(rows) == 1
+        assert rows[0]["ID"] == str(venue.id)
+        assert rows[0]["Structure"] == offerer.name
+
 
 class GetVenueTest(GetEndpointHelper):
     endpoint = "backoffice_web.venue.get"
