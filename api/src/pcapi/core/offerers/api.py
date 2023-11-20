@@ -2039,6 +2039,20 @@ def get_offerer_stats_data(offerer_id: int) -> list[offerers_models.OffererStats
     return offerer_stats
 
 
+def get_latest_published_offer_ids(offerer_id: int, top_offers_ids: list[int], limit: int) -> list[offers_models.Offer]:
+    return (
+        db.session.query(offers_models.Offer.id)
+        .join(offerers_models.Venue)
+        .filter(offerers_models.Venue.managingOffererId == offerer_id)
+        .filter(offers_models.Offer.id.notin_(top_offers_ids))
+        .filter(offers_models.Offer.isActive)
+        .filter(offers_models.Offer.validation == offers_models.OfferValidationStatus.APPROVED.value)
+        .order_by(offers_models.Offer.id.desc())
+        .limit(limit)
+        .all()
+    )
+
+
 @job(worker.low_queue)
 def _update_offerer_stats_data(offerer_id: int) -> None:
     with transaction():
@@ -2058,7 +2072,14 @@ def _update_offerer_stats_data(offerer_id: int) -> None:
             daily_views_stats.jsonData = offerers_models.OffererStatsData(daily_views=list(daily_views_data_list))
             daily_views_stats.syncDate = datetime.utcnow()
 
-        top_offers_data = OffersData().execute(offerer_id=str(offerer_id))
+        top_offers = list(OffersData().execute(offerer_id=str(offerer_id)))
+        top_offers_ids = [offer.offerId for offer in top_offers]
+
+        if len(top_offers) < 3:
+            latest_published_offers = get_latest_published_offer_ids(offerer_id, top_offers_ids, 3 - len(top_offers))
+            for offer in latest_published_offers:
+                top_offers.append({"offerId": offer.id, "numberOfViews": 0})
+
         top_offers_stats = offerers_models.OffererStats.query.filter_by(
             offererId=offerer_id, table=TOP_3_MOST_CONSULTED_OFFERS_LAST_30_DAYS_TABLE
         ).one_or_none()
@@ -2066,10 +2087,10 @@ def _update_offerer_stats_data(offerer_id: int) -> None:
             top_offers_stats = offerers_models.OffererStats(
                 offererId=offerer_id,
                 table=TOP_3_MOST_CONSULTED_OFFERS_LAST_30_DAYS_TABLE,
-                jsonData=offerers_models.OffererStatsData(top_offers=list(top_offers_data)),
+                jsonData=offerers_models.OffererStatsData(top_offers=top_offers),
                 syncDate=datetime.utcnow(),
             )
         else:
-            top_offers_stats.jsonData = offerers_models.OffererStatsData(top_offers=list(top_offers_data))
+            top_offers_stats.jsonData = offerers_models.OffererStatsData(top_offers=top_offers)
             top_offers_stats.syncDate = datetime.utcnow()
         db.session.add_all([daily_views_stats, top_offers_stats])
