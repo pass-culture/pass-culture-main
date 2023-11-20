@@ -38,6 +38,7 @@ const AddBankInformationsDialog = ({
         icon={fullLinkIcon}
         className={styles['link-button']}
         variant={ButtonVariant.PRIMARY}
+        svgAlt="Nouvelle fenêtre"
         onClick={() => {
           logEvent?.(BankAccountEvents.CLICKED_CONTINUE_TO_DS, {
             offererId,
