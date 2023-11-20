@@ -135,6 +135,7 @@ class GetVenuesListForm(utils.PCForm):
     )
     regions = fields.PCSelectMultipleField("Régions", choices=get_regions_choices())
     department = fields.PCSelectMultipleField("Départements", choices=area_choices)
+    only_validated_offerers = fields.PCSwitchBooleanField("Uniquement les structures validées")
     limit = fields.PCSelectField(
         "Nombre maximum",
         choices=((100, "100"), (500, "500"), (1000, "1000"), (3000, "3000")),
@@ -145,6 +146,12 @@ class GetVenuesListForm(utils.PCForm):
     order = wtforms.HiddenField(
         "order", default="desc", validators=(wtforms.validators.Optional(), wtforms.validators.AnyOf(("asc", "desc")))
     )
+
+    def __init__(self, *args: typing.Any, **kwargs: typing.Any) -> None:
+        super().__init__(*args, **kwargs)
+        if self.is_empty():
+            # default value checked does not work in wtforms.BooleanField
+            self.only_validated_offerers.data = True
 
     def is_empty(self) -> bool:
         return not any(
