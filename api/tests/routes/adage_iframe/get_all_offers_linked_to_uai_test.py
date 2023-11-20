@@ -74,9 +74,9 @@ class AllOffersByUaiTest:
                         "postalCode": collective_offer.venue.postalCode,
                         "publicName": collective_offer.venue.publicName,
                         "coordinates": {"latitude": 48.87004, "longitude": 2.3785},
+                        "distance": None,
                         "managingOfferer": {"name": collective_offer.venue.managingOfferer.name},
                         "adageId": None,
-                        "distance": None,
                     },
                     "students": ["Lycée - Seconde"],
                     "offerVenue": {
@@ -184,9 +184,9 @@ class AllOffersByUaiTest:
                         "postalCode": collective_offer.venue.postalCode,
                         "publicName": collective_offer.venue.publicName,
                         "coordinates": {"latitude": 48.87004, "longitude": 2.3785},
+                        "distance": None,
                         "managingOfferer": {"name": collective_offer.venue.managingOfferer.name},
                         "adageId": None,
-                        "distance": None,
                     },
                     "students": ["Lycée - Seconde"],
                     "offerVenue": {

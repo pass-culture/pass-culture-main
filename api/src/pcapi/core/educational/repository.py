@@ -836,6 +836,22 @@ def get_collective_offer_template_by_id(offer_id: int) -> educational_models.Col
         raise educational_exceptions.CollectiveOfferTemplateNotFound()
 
 
+def get_collective_offer_template_by_ids(offer_ids: list[int]) -> list[educational_models.CollectiveOfferTemplate]:
+    query = educational_models.CollectiveOfferTemplate.query
+    query = query.filter(educational_models.CollectiveOfferTemplate.id.in_(offer_ids))
+    query = query.options(
+        sa.orm.joinedload(
+            educational_models.CollectiveOfferTemplate.venue,
+            innerjoin=True,
+        ).joinedload(
+            offerers_models.Venue.managingOfferer,
+            innerjoin=True,
+        )
+    )
+    query = query.options(sa.orm.joinedload(educational_models.CollectiveOfferTemplate.domains))
+    return query
+
+
 def user_has_bookings(user: User) -> bool:
     bookings_query = educational_models.CollectiveBooking.query.join(educational_models.CollectiveBooking.offerer).join(
         offerers_models.Offerer.UserOfferers

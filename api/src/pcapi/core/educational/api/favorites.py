@@ -19,6 +19,17 @@ def get_redactors_favorites_subset(
     return {row.collectiveOfferId for row in query}
 
 
+def get_redactors_favorite_templates_subset(
+    redactor: educational_models.EducationalRedactor, offer_ids: typing.Collection[int]
+) -> typing.Collection[int]:
+    query = educational_models.CollectiveOfferTemplateEducationalRedactor.query.filter(
+        educational_models.CollectiveOfferTemplateEducationalRedactor.educationalRedactorId == redactor.id,
+        educational_models.CollectiveOfferTemplateEducationalRedactor.collectiveOfferTemplateId.in_(offer_ids),
+    ).options(sa.orm.load_only(educational_models.CollectiveOfferTemplateEducationalRedactor.collectiveOfferTemplateId))
+
+    return {row.collectiveOfferTemplateId for row in query}
+
+
 def add_offer_to_favorite_adage(
     redactorId: int,
     offerId: int,
