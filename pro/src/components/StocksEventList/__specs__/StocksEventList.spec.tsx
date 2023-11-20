@@ -288,28 +288,22 @@ describe('StocksEventList', () => {
     const selectAllCheckbox = screen.getByLabelText('Tout sélectionner')
     const allCheckboxes = screen.getAllByRole('checkbox')
 
-    // "all checkbox" check everithing
+    // "all checkbox" checks everything
     await userEvent.click(selectAllCheckbox)
     expect(selectAllCheckbox).toBeChecked()
     expect(allCheckboxes[1]).toBeChecked()
     expect(allCheckboxes[2]).toBeChecked()
 
-    // line checkbox partial check "all checkbox"
-    await userEvent.click(allCheckboxes[1])
-    expect(selectAllCheckbox).toBeChecked()
-    expect(allCheckboxes[1]).not.toBeChecked()
-    expect(allCheckboxes[2]).toBeChecked()
-
-    // line checkbox check "all checkbox"
-    await userEvent.click(allCheckboxes[1])
-    expect(selectAllCheckbox).toBeChecked()
-    expect(allCheckboxes[1]).toBeChecked()
-    expect(allCheckboxes[2]).toBeChecked()
-
-    // "all checkbox" uncheck everything
+    // "all checkbox" again unchecks everything
     await userEvent.click(selectAllCheckbox)
     expect(selectAllCheckbox).not.toBeChecked()
     expect(allCheckboxes[1]).not.toBeChecked()
+    expect(allCheckboxes[2]).not.toBeChecked()
+
+    // line checkbox partial checks "all checkbox"
+    await userEvent.click(allCheckboxes[1])
+    expect(selectAllCheckbox).toBeChecked()
+    expect(allCheckboxes[1]).toBeChecked()
     expect(allCheckboxes[2]).not.toBeChecked()
   })
 
@@ -352,7 +346,23 @@ describe('StocksEventList', () => {
     await userEvent.click(checkboxes[0])
     expect(screen.getByText('2 dates sélectionnées')).toBeInTheDocument()
 
+    vi.spyOn(api, 'getStocks').mockResolvedValueOnce({
+      stocks: [],
+      stockCount: 0,
+      hasStocks: true,
+    })
     await userEvent.click(screen.getByText('Supprimer ces dates'))
+    await waitFor(() => {
+      expect(api.getStocks).toHaveBeenCalledWith(
+        offerId,
+        undefined,
+        '10:00',
+        undefined,
+        undefined,
+        false,
+        1
+      )
+    })
     expect(api.deleteStock).not.toHaveBeenCalled()
     expect(api.deleteStocks).not.toHaveBeenCalled()
     expect(api.deleteAllFilteredStocks).toBeCalledTimes(1)
@@ -362,7 +372,7 @@ describe('StocksEventList', () => {
     // this doesn't impact the hour filter
     // you should see the same time as in the beginnning datetime (because it's already in utc)
     expect(api.deleteAllFilteredStocks).toHaveBeenCalledWith(1, {
-      date: null,
+      date: undefined,
       price_category_id: null,
       time: '10:00',
     })

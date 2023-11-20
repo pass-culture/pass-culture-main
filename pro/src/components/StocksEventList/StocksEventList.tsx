@@ -64,6 +64,12 @@ function* chunks<T>(array: T[], n: number): Generator<T[], void> {
   }
 }
 
+enum PartialCheck {
+  CHECKED = 'checked',
+  PARTIAL = 'partial',
+  UNCHECKED = 'unchecked',
+}
+
 const StocksEventList = ({
   priceCategories,
   className,
@@ -78,7 +84,10 @@ const StocksEventList = ({
   const [searchParams, setSearchParams] = useSearchParams()
 
   // states
-  const [isCheckedArray, setIsCheckedArray] = useState<boolean[]>([])
+  const [allStocksChecked, setAllStocksChecked] = useState<PartialCheck>(
+    PartialCheck.UNCHECKED
+  )
+  const [checkedStocks, setCheckedStocks] = useState<boolean[]>([])
   const [stocks, setStocks] = useState<StocksEvent[]>([])
   const [stocksCount, setStocksCount] = useState<number>(0)
   const [dateFilter, setDateFilter] = useState(searchParams.get('date'))
@@ -148,7 +157,8 @@ const StocksEventList = ({
 
       if (!ignore) {
         handleStocksResponse(response)
-        setIsCheckedArray(response.stocks.map(() => false))
+        setCheckedStocks(response.stocks.map(() => false))
+        setAllStocksChecked(PartialCheck.UNCHECKED)
       }
     }
 
@@ -172,36 +182,41 @@ const StocksEventList = ({
 
   // Derived data
   const priceCategoryOptions = getPriceCategoryOptions(priceCategories)
-  const areAllChecked =
-    stocksCount > 0 && isCheckedArray.every((isChecked) => isChecked)
-  const selectedDateText = areAllChecked
-    ? pluralize(stocksCount, 'dates sélectionnées')
-    : pluralize(
-        isCheckedArray.filter((e) => e === true).length,
-        'dates sélectionnées'
-      )
-  const isAtLeastOneStockChecked = isCheckedArray.some((e) => e)
+  const selectedDateText =
+    allStocksChecked === PartialCheck.CHECKED
+      ? pluralize(stocksCount, 'dates sélectionnées')
+      : pluralize(
+          checkedStocks.filter((e) => e === true).length,
+          'dates sélectionnées'
+        )
+  const isAtLeastOneStockChecked = checkedStocks.some((e) => e)
   const areFiltersActive = Boolean(
     dateFilter || timeFilter || priceCategoryIdFilter
   )
 
   // Handlers
   const onFilterChange = () => {
-    setIsCheckedArray(stocks.map(() => false))
     firstPage()
   }
 
-  const handleOnChangeSelected = (index: number) => {
-    const newArray = isCheckedArray.map((isChecked) => isChecked)
+  const onStockCheckChange = (index: number) => {
+    const newArray = checkedStocks.map((isChecked) => isChecked)
     newArray[index] = !newArray[index]
-    setIsCheckedArray(newArray)
+    setCheckedStocks(newArray)
+    setAllStocksChecked(
+      newArray.some((check) => check)
+        ? PartialCheck.PARTIAL
+        : PartialCheck.UNCHECKED
+    )
   }
 
-  const handleOnChangeSelectAll = () => {
-    if (areAllChecked) {
-      setIsCheckedArray(stocks.map(() => false))
+  const onAllStocksCheckChange = () => {
+    if (allStocksChecked === PartialCheck.CHECKED) {
+      setAllStocksChecked(PartialCheck.UNCHECKED)
+      setCheckedStocks(stocks.map(() => false))
     } else {
-      setIsCheckedArray(stocks.map(() => true))
+      setAllStocksChecked(PartialCheck.CHECKED)
+      setCheckedStocks(stocks.map(() => true))
     }
   }
 
@@ -221,9 +236,9 @@ const StocksEventList = ({
       handleStocksResponse(response)
 
       // handle checkbox selection
-      const newArray = [...isCheckedArray]
+      const newArray = [...checkedStocks]
       newArray.splice(selectIndex, 1)
-      setIsCheckedArray(newArray)
+      setCheckedStocks(newArray)
     }
 
     notify.success('1 date a été supprimée')
@@ -231,33 +246,38 @@ const StocksEventList = ({
 
   const onBulkDelete = async () => {
     const stocksIdToDelete = stocks
-      .filter((stock, index) => isCheckedArray[index])
+      .filter((stock, index) => checkedStocks[index])
       .map((stock) => stock.id)
+    const deletionCount =
+      allStocksChecked === PartialCheck.CHECKED
+        ? stocksCount
+        : stocksIdToDelete.length
 
-    setIsCheckedArray(stocks.map(() => false))
-
-    if (stocksIdToDelete.length > 0) {
-      // If all stocks are checked without any stock unchecked,
-      // use the delete all route with filters
-      if (areAllChecked) {
-        await api.deleteAllFilteredStocks(offerId, {
-          date: dateFilter,
-          time: timeFilter
-            ? convertFromLocalTimeToVenueTimezoneInUtc(
-                timeFilter,
-                departmentCode
-              )
-            : undefined,
-          price_category_id:
-            priceCategoryIdFilter === null
-              ? null
-              : parseInt(priceCategoryIdFilter),
-        })
-        // We don't know how many stocks are left after the deletion,
-        // so we reload the first page
+    // If all stocks are checked without any stock unchecked,
+    // use the delete all route with filters
+    if (allStocksChecked === PartialCheck.CHECKED) {
+      await api.deleteAllFilteredStocks(offerId, {
+        date: dateFilter ? dateFilter : undefined,
+        time: timeFilter
+          ? convertFromLocalTimeToVenueTimezoneInUtc(timeFilter, departmentCode)
+          : undefined,
+        price_category_id:
+          priceCategoryIdFilter === null
+            ? null
+            : parseInt(priceCategoryIdFilter),
+      })
+      // We don't know how many stocks are left after the deletion,
+      // so we reload the first page
+      if (page !== 1) {
         firstPage()
       } else {
-        // Otherwise, use the bulk delete stocks by id route
+        // Reload current page
+        const response = await loadStocksFromCurrentFilters()
+        handleStocksResponse(response)
+      }
+    } else {
+      // Otherwise, use the bulk delete stocks by id route
+      if (stocksIdToDelete.length > 0) {
         await Promise.all(
           [...chunks(stocksIdToDelete, DELETE_STOCKS_CHUNK_SIZE)].map((ids) =>
             api.deleteStocks(offerId, { ids_to_delete: ids })
@@ -272,21 +292,24 @@ const StocksEventList = ({
           handleStocksResponse(response)
         }
       }
-      logEvent?.(Events.CLICKED_BULK_DELETE_STOCK, {
-        offerId: offerId,
-        deletionCount: stocksIdToDelete.length,
-      })
     }
 
+    setCheckedStocks(stocks.map(() => false))
+    setAllStocksChecked(PartialCheck.UNCHECKED)
+    logEvent?.(Events.CLICKED_BULK_DELETE_STOCK, {
+      offerId: offerId,
+      deletionCount: deletionCount,
+    })
     notify.success(
-      stocksIdToDelete.length === 1
+      deletionCount === 1
         ? '1 date a été supprimée'
-        : `${stocksIdToDelete.length} dates ont été supprimées`
+        : `${deletionCount} dates ont été supprimées`
     )
   }
 
   const onCancelClick = () => {
-    setIsCheckedArray(stocks.map(() => false))
+    setCheckedStocks(stocks.map(() => false))
+    setAllStocksChecked(PartialCheck.UNCHECKED)
   }
 
   return (
@@ -295,9 +318,9 @@ const StocksEventList = ({
         {!readonly && (
           <BaseCheckbox
             label="Tout sélectionner"
-            checked={areAllChecked || isAtLeastOneStockChecked}
-            partialCheck={!areAllChecked && isAtLeastOneStockChecked}
-            onChange={handleOnChangeSelectAll}
+            checked={allStocksChecked !== PartialCheck.UNCHECKED}
+            partialCheck={allStocksChecked === PartialCheck.PARTIAL}
+            onChange={onAllStocksCheckChange}
           />
         )}
 
@@ -531,8 +554,8 @@ const StocksEventList = ({
                   >
                     {!readonly && (
                       <BaseCheckbox
-                        checked={isCheckedArray[stockIndex]}
-                        onChange={() => handleOnChangeSelected(stockIndex)}
+                        checked={checkedStocks[stockIndex]}
+                        onChange={() => onStockCheckChange(stockIndex)}
                         label=""
                       />
                     )}
