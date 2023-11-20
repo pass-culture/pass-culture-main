@@ -15,6 +15,7 @@ from pcapi.core.offers import models as offers_models
 import pcapi.core.offers.factories as offers_factories
 from pcapi.core.offers.models import OfferValidationStatus
 from pcapi.core.offers.models import Stock
+from pcapi.core.testing import override_features
 import pcapi.core.users.factories as users_factories
 from pcapi.utils.date import format_into_utc_date
 
@@ -124,6 +125,7 @@ class Returns201Test:
         unique_label = offers_factories.PriceCategoryLabelFactory(label="unique", venue=offer.venue)
         second_price_cat = offers_factories.PriceCategoryFactory(offer=offer, priceCategoryLabel=unique_label, price=30)
         beginning = datetime.datetime.utcnow() + relativedelta(days=10)
+        beginning_later = datetime.datetime.utcnow() + relativedelta(days=11)
 
         # When
         stock_data = {
@@ -141,8 +143,8 @@ class Returns201Test:
                 },
                 {
                     "priceCategoryId": first_price_cat.id,
-                    "beginningDatetime": format_into_utc_date(beginning),
-                    "bookingLimitDatetime": format_into_utc_date(beginning),
+                    "beginningDatetime": format_into_utc_date(beginning_later),
+                    "bookingLimitDatetime": format_into_utc_date(beginning_later),
                 },
             ],
         }
@@ -187,6 +189,43 @@ class Returns201Test:
         assert offers_models.PriceCategory.query.count() == 0
         assert offers_models.PriceCategoryLabel.query.count() == 0
         mocked_async_index_offer_ids.assert_called_once_with([offer.id])
+
+    @override_features(WIP_PRO_STOCK_PAGINATION=True)
+    def test_do_not_edit_one_stock_when_duplicated(self, client):
+        offer = offers_factories.EventOfferFactory()
+        beginning = datetime.datetime.utcnow()
+        price_cat_label = offers_factories.PriceCategoryLabelFactory(venue=offer.venue, label="Tarif 1")
+        price_category = offers_factories.PriceCategoryFactory(
+            offer=offer, priceCategoryLabel=price_cat_label, price=10
+        )
+        existing_stock = offers_factories.EventStockFactory(
+            offer=offer,
+            beginningDatetime=format_into_utc_date(beginning),
+            bookingLimitDatetime=format_into_utc_date(beginning),
+            priceCategory=price_category,
+            price=10,
+            quantity=10,
+        )
+        offerers_factories.UserOffererFactory(
+            user__email="user@example.com",
+            offerer=offer.venue.managingOfferer,
+        )
+        # First stock should be skipped
+        stock_data = {
+            "offerId": offer.id,
+            "stocks": [
+                {
+                    "id": existing_stock.id,
+                    "priceCategoryId": price_category.id,
+                    "price": 10,
+                    "quantity": 10,
+                    "beginningDatetime": format_into_utc_date(beginning),
+                    "bookingLimitDatetime": format_into_utc_date(beginning),
+                }
+            ],
+        }
+        response = client.with_session_auth("user@example.com").post("/stocks/bulk/", json=stock_data)
+        assert response.json["stocks"] == 0
 
     @patch("pcapi.core.search.async_index_offer_ids")
     def test_edit_one_event_stock_using_price_category(self, mocked_async_index_offer_ids, client):
@@ -569,6 +608,82 @@ class Returns201Test:
         assert response.json["ongoing_bookings"][0]["id"] == booking.id
         assert not response.json["ended_bookings"]
 
+    @override_features(WIP_PRO_STOCK_PAGINATION=True)
+    def should_not_create_duplicated_stock(self, client):
+        # Given
+        offer = offers_factories.EventOfferFactory()
+        beginning = datetime.datetime.utcnow()
+        beginning_later = beginning + relativedelta(days=10)
+        price_cat_label_1 = offers_factories.PriceCategoryLabelFactory(venue=offer.venue, label="Tarif 1")
+        price_cat_label_2 = offers_factories.PriceCategoryLabelFactory(venue=offer.venue, label="Tarif 2")
+        price_category_1 = offers_factories.PriceCategoryFactory(
+            offer=offer, priceCategoryLabel=price_cat_label_1, price=10
+        )
+        price_category_2 = offers_factories.PriceCategoryFactory(
+            offer=offer, priceCategoryLabel=price_cat_label_2, price=10
+        )
+        offers_factories.EventStockFactory(
+            offer=offer,
+            beginningDatetime=format_into_utc_date(beginning),
+            bookingLimitDatetime=format_into_utc_date(beginning),
+            priceCategory=price_category_1,
+            price=10,
+            quantity=10,
+        )
+        offers_factories.EventStockFactory(
+            offer=offer,
+            beginningDatetime=format_into_utc_date(beginning_later),
+            bookingLimitDatetime=format_into_utc_date(beginning_later),
+            priceCategory=price_category_2,
+            price=20,
+            quantity=20,
+        )
+        offerers_factories.UserOffererFactory(
+            user__email="user@example.com",
+            offerer=offer.venue.managingOfferer,
+        )
+        # First stock should be skipped
+        stock_data = {
+            "offerId": offer.id,
+            "stocks": [
+                {
+                    "priceCategoryId": price_category_1.id,
+                    "price": 10,
+                    "quantity": 10,
+                    "beginningDatetime": format_into_utc_date(beginning),
+                    "bookingLimitDatetime": format_into_utc_date(beginning),
+                },
+                {
+                    "priceCategoryId": price_category_1.id,
+                    "price": 10,
+                    "quantity": 10,
+                    "beginningDatetime": format_into_utc_date(beginning_later),
+                    "bookingLimitDatetime": format_into_utc_date(beginning_later),
+                },
+                {
+                    "priceCategoryId": price_category_2.id,
+                    "price": 20,
+                    "quantity": 10,
+                    "beginningDatetime": format_into_utc_date(beginning),
+                    "bookingLimitDatetime": format_into_utc_date(beginning),
+                },
+                {
+                    "priceCategoryId": price_category_2.id,
+                    "price": 20,
+                    "quantity": 20,
+                    "beginningDatetime": format_into_utc_date(beginning_later),
+                    "bookingLimitDatetime": format_into_utc_date(beginning_later),
+                },
+            ],
+        }
+
+        # When
+        response = client.with_session_auth("user@example.com").post("/stocks/bulk/", json=stock_data)
+
+        # Then
+        assert response.status_code == 201
+        assert response.json["stocks"] == 2
+
 
 @pytest.mark.usefixtures("db_session")
 class Returns400Test:
@@ -637,7 +752,6 @@ class Returns400Test:
         }
 
         response = client.with_session_auth("user@example.com").post("/stocks/bulk/", json=stock_data)
-        print(response.json)
 
         assert response.json["stocks.0.quantity"] == [
             "ensure this value is less than or equal to 1000000",
