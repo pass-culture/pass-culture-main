@@ -481,7 +481,6 @@ const StocksEventList = ({
                 setPriceCategoryIdFilter('')
                 onFilterChange()
               }}
-              resultsCount={stocks.length}
             />
           )}
 
