@@ -57,7 +57,7 @@ def get_boost_external_booking_barcode(barcode: str) -> str:
 
 class BoostClientAPI(external_bookings_models.ExternalBookingsClientAPI):
     def __init__(self, cinema_str_id: str):
-        self.cinema_str_id = cinema_str_id
+        self.cinema_id = cinema_str_id
 
     # FIXME: define those later
     def get_shows_remaining_places(self, shows_id: list[int]) -> dict[int, int]:
@@ -80,7 +80,7 @@ class BoostClientAPI(external_bookings_models.ExternalBookingsClientAPI):
             sale_cancel_items.append(sale_cancel_item)
 
         sale_cancel = boost_serializers.SaleCancel(sales=sale_cancel_items)
-        boost.put_resource(self.cinema_str_id, boost.ResourceBoost.CANCEL_ORDER_SALE, sale_cancel)
+        boost.put_resource(self.cinema_id, boost.ResourceBoost.CANCEL_ORDER_SALE, sale_cancel)
 
     def book_ticket(
         self, show_id: int, booking: bookings_models.Booking, beneficiary: users_models.User
@@ -96,7 +96,7 @@ class BoostClientAPI(external_bookings_models.ExternalBookingsClientAPI):
             codePayment=constants.BOOST_PASS_CULTURE_CODE_PAYMENT,
             basketItems=basket_items,
         )
-        sale_response = boost.post_resource(self.cinema_str_id, boost.ResourceBoost.COMPLETE_SALE, sale_body)
+        sale_response = boost.post_resource(self.cinema_id, boost.ResourceBoost.COMPLETE_SALE, sale_body)
         sale_confirmation_response = parse_obj_as(boost_serializers.SaleConfirmationResponse, sale_response)
         add_to_queue(
             bookings_constants.REDIS_EXTERNAL_BOOKINGS_NAME,
@@ -144,7 +144,7 @@ class BoostClientAPI(external_bookings_models.ExternalBookingsClientAPI):
                 params["per_page"] = per_page
             else:
                 params = {"page": current_page, "per_page": per_page}
-            json_data = boost.get_resource(self.cinema_str_id, resource, params=params, pattern_values=pattern_values)
+            json_data = boost.get_resource(self.cinema_id, resource, params=params, pattern_values=pattern_values)
             collection = parse_obj_as(collection_class, json_data)
             items.extend(collection.data)
             total_pages = collection.totalPages
@@ -185,7 +185,7 @@ class BoostClientAPI(external_bookings_models.ExternalBookingsClientAPI):
 
     def get_showtime(self, showtime_id: int) -> boost_serializers.ShowTime4:
         json_data = boost.get_resource(
-            self.cinema_str_id,
+            self.cinema_id,
             boost.ResourceBoost.SHOWTIME,
             pattern_values={"id": showtime_id},
         )
@@ -197,7 +197,7 @@ class BoostClientAPI(external_bookings_models.ExternalBookingsClientAPI):
 
     def get_cinemas_attributs(self) -> list[boost_serializers.CinemaAttribut]:
         json_data = boost.get_resource(
-            self.cinema_str_id,
+            self.cinema_id,
             boost.ResourceBoost.CINEMAS_ATTRIBUTS,
         )
         attributs = parse_obj_as(boost_serializers.CinemaAttributCollection, json_data)
