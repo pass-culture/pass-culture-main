@@ -1,5 +1,5 @@
 import React from 'react'
-import { useNavigate } from 'react-router-dom'
+import { useSearchParams } from 'react-router-dom'
 
 import styles from './CardVenue.module.scss'
 
@@ -14,18 +14,22 @@ interface CardVenueModel {
 
 export interface CardVenueProps {
   venue: CardVenueModel
+  handlePlaylistElementTracking: () => void
 }
 
-const CardVenue = ({ venue }: CardVenueProps) => {
-  const params = new URLSearchParams(location.search)
-  const adageAuthToken = params.get('token')
-  const navigate = useNavigate()
+const CardVenue = ({
+  venue,
+  handlePlaylistElementTracking,
+}: CardVenueProps) => {
+  const [searchParams] = useSearchParams()
+  const adageAuthToken = searchParams.get('token')
+
   return (
-    <button
+    <a
+      data-testid="card-venue-link"
       className={styles.container}
-      onClick={() =>
-        navigate(`/adage-iframe/venue/${venue.id}?token=${adageAuthToken}`)
-      }
+      href={`/adage-iframe/venue/${venue.id}?token=${adageAuthToken}`}
+      onClick={() => handlePlaylistElementTracking()}
     >
       <img
         alt=""
@@ -41,7 +45,7 @@ const CardVenue = ({ venue }: CardVenueProps) => {
           className={styles['venue-infos-distance']}
         >{`à ${venue.distance} km - ${venue.city}`}</div>
       </div>
-    </button>
+    </a>
   )
 }
 
