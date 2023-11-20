@@ -16,7 +16,9 @@ export const MostViewedOffers = ({
   topOffers,
   dailyViews,
 }: MostViewedOffersProps) => {
-  const viewsToday = dailyViews[dailyViews.length - 1].numberOfViews
+  const viewsToday = dailyViews.length
+    ? dailyViews[dailyViews.length - 1].numberOfViews
+    : 0
   const last30daysViews =
     dailyViews.length >= 30
       ? viewsToday - dailyViews[dailyViews.length - 30].numberOfViews

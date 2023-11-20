@@ -309,25 +309,25 @@ class TopOffersResponseData(offerers_models.TopOffersData):
         return cls(offerId=offer_id, offerName=offer.name, image=offer.image, numberOfViews=number_of_views)
 
 
-class OffererStatsData(BaseModel):
-    topOffers: list[TopOffersResponseData] | None
-    dailyViews: list[offerers_models.OffererViewsModel] | None
+class OffererStatsDataModel(BaseModel):
+    topOffers: list[TopOffersResponseData]
+    dailyViews: list[offerers_models.OffererViewsModel]
 
 
 class GetOffererStatsResponseModel(BaseModel):
     offererId: int
     syncDate: datetime | None
-    jsonData: OffererStatsData | None
+    jsonData: OffererStatsDataModel
 
     @classmethod
     def build(
         cls,
         offerer_id: int,
         syncDate: datetime,
-        dailyViews: list[offerers_models.OffererViewsModel] | None,
-        topOffers: list[offerers_models.TopOffersData] | None,
+        dailyViews: list[offerers_models.OffererViewsModel],
+        topOffers: list[offerers_models.TopOffersData],
     ) -> "GetOffererStatsResponseModel":
-        top_offers_response = None
+        top_offers_response = []
         if topOffers:
             top_offers_response = [
                 TopOffersResponseData.build(topOffer["offerId"], topOffer["numberOfViews"]) for topOffer in topOffers  # type: ignore
@@ -336,7 +336,7 @@ class GetOffererStatsResponseModel(BaseModel):
         return cls(
             offererId=offerer_id,
             syncDate=syncDate,
-            jsonData=OffererStatsData(topOffers=top_offers_response, dailyViews=dailyViews),
+            jsonData=OffererStatsDataModel(topOffers=top_offers_response, dailyViews=dailyViews),
         )
 
 

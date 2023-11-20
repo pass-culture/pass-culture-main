@@ -3,10 +3,10 @@
 /* tslint:disable */
 /* eslint-disable */
 
-import type { OffererStatsData } from './OffererStatsData';
+import type { OffererStatsDataModel } from './OffererStatsDataModel';
 
 export type GetOffererStatsResponseModel = {
-  jsonData?: OffererStatsData | null;
+  jsonData: OffererStatsDataModel;
   offererId: number;
   syncDate?: string | null;
 };

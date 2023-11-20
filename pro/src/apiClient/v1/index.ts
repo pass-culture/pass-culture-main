@@ -153,7 +153,7 @@ export type { OffererApiKey } from './models/OffererApiKey';
 export { OffererMemberStatus } from './models/OffererMemberStatus';
 export type { OffererReimbursementPointListResponseModel } from './models/OffererReimbursementPointListResponseModel';
 export type { OffererReimbursementPointResponseModel } from './models/OffererReimbursementPointResponseModel';
-export type { OffererStatsData } from './models/OffererStatsData';
+export type { OffererStatsDataModel } from './models/OffererStatsDataModel';
 export type { OffererStatsResponseModel } from './models/OffererStatsResponseModel';
 export type { OffererViewsModel } from './models/OffererViewsModel';
 export type { OfferImage } from './models/OfferImage';

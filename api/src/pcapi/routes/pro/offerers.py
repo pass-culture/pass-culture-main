@@ -282,7 +282,11 @@ def get_offerer_stats(offerer_id: int) -> offerers_serialize.GetOffererStatsResp
     check_user_has_access_to_offerer(current_user, offerer_id)
     stats = api.get_offerer_stats_data(offerer_id)
     if not stats:
-        return offerers_serialize.GetOffererStatsResponseModel(offererId=offerer_id, syncDate=None, jsonData=None)
+        return offerers_serialize.GetOffererStatsResponseModel(
+            offererId=offerer_id,
+            syncDate=None,
+            jsonData=offerers_serialize.OffererStatsDataModel(dailyViews=[], topOffers=[]),
+        )
     top_offers = next(el for el in stats if el.table == TOP_3_MOST_CONSULTED_OFFERS_LAST_30_DAYS_TABLE)
     daily_offerer_views = next(el for el in stats if el.table == DAILY_CONSULT_PER_OFFERER_LAST_180_DAYS_TABLE)
     top_offers_data = top_offers.jsonData["top_offers"]
