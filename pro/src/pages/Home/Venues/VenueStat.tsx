@@ -18,7 +18,7 @@ interface VenueStatProps {
 }
 
 const VenueStat = ({ count, label, link, onClick }: VenueStatProps) => (
-  <div className="h-card-col" data-testid="venue-stat">
+  <li className="h-card-col" data-testid="venue-stat">
     {
       /* istanbul ignore next: DEBT, TO FIX */ count ? (
         <div className="venue-stat-count">{count}</div>
@@ -38,7 +38,7 @@ const VenueStat = ({ count, label, link, onClick }: VenueStatProps) => (
     >
       Voir
     </ButtonLink>
-  </div>
+  </li>
 )
 
 export default VenueStat
