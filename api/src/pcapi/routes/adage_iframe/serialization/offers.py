@@ -331,6 +331,10 @@ class CollectiveOfferTemplateResponseModel(BaseModel, common_models.Accessibilit
         use_enum_values = True
 
 
+class ListCollectiveOfferTemplateResponseModel(BaseModel):
+    collectiveOffers: list[CollectiveOfferTemplateResponseModel]
+
+
 class CollectiveRequestResponseModel(BaseModel):
     id: int
     email: str
