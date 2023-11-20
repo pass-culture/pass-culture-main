@@ -1,6 +1,6 @@
 import cn from 'classnames'
 import { addDays, isBefore } from 'date-fns'
-import React, { Fragment, useEffect, useState } from 'react'
+import React, { useEffect, useState } from 'react'
 
 import { api } from 'apiClient/api'
 import { DMSApplicationForEAC, DMSApplicationstatus } from 'apiClient/v1'
@@ -355,12 +355,12 @@ const Venue = ({
                   />
 
                   <div className="venue-stats">
-                    {venueStatData.map((stat) => (
-                      <Fragment key={stat.label}>
-                        <VenueStat {...stat} />
-                      </Fragment>
-                    ))}
-                    <div className="h-card-col v-add-offer-link">
+                    <ul className="venue-stats-list">
+                      {venueStatData.map((stat) => (
+                        <VenueStat {...stat} key={stat.label} />
+                      ))}
+                    </ul>
+                    <div className="v-add-offer-link">
                       <ButtonLink
                         variant={ButtonVariant.TERNARY}
                         iconPosition={IconPositionEnum.CENTER}
