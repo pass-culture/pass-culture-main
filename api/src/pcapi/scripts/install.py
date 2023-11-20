@@ -8,6 +8,7 @@ def install_commands(app: flask.Flask) -> None:
         "pcapi.core.bookings.commands",
         "pcapi.core.educational.commands",
         "pcapi.core.external.commands",
+        "pcapi.core.external_bookings.commands",
         "pcapi.core.finance.commands",
         "pcapi.core.geography.commands",
         "pcapi.core.providers.commands",
