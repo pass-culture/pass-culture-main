@@ -4,7 +4,7 @@
 // 20px is a magical value to visually align the stepper labels
 // TODO (alberict): refactor the stepper component CSS so that the labels
 // can't overflow the container (should be possible with flexbox and/or ::before pseudo-elements)
-.stepper-breadcrumb {
+.stepper-navigation {
   padding-left: rem.torem(20px);
   padding-right: rem.torem(20px);
 }
@@ -29,7 +29,7 @@
     font-weight: 500;
   }
 
-  &-breadcrumb {
+  &-navigation {
     margin-bottom: rem.torem(32px);
   }
 }

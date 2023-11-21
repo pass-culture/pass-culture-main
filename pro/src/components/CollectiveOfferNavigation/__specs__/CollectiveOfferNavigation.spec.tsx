@@ -26,7 +26,7 @@ describe('CollectiveOfferNavigation', () => {
     }
   })
 
-  it('should display breadcrumb for collective offer in creation', async () => {
+  it('should display navigation for collective offer in creation', async () => {
     props.offerId = 0
     renderCollectiveOfferNavigation(props)
 
