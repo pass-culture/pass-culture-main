@@ -27,47 +27,40 @@ describe('src | components | pages | Signup', () => {
     }
   })
 
-  it('should render logo and sign-up form', async () => {
-    // when
+  it('should render logo and sign-up form', () => {
     renderWithProviders(<Signup />, {
       storeOverrides,
       initialRouterEntries: ['/'], // /inscription
     })
 
-    // then
     expect(
       screen.getByRole('heading', { name: /Créer votre compte/ })
     ).toBeInTheDocument()
   })
 
-  it('should render logo and confirmation page', async () => {
-    // when
+  it('should render logo and confirmation page', () => {
     renderWithProviders(<Signup />, {
       storeOverrides,
       initialRouterEntries: ['/confirmation'], // /inscription/confirmation
     })
 
-    // then
     expect(
       screen.getByText(/Votre compte est en cours de création./)
     ).toBeInTheDocument()
   })
 
-  it('should render maintenance page when signup is unavailable', async () => {
-    // given
+  it('should render maintenance page when signup is unavailable', () => {
     const storeOverrides = {
       features: {
         list: [{ isActive: false, nameKey: 'ENABLE_PRO_ACCOUNT_CREATION' }],
       },
     }
 
-    // when
     renderWithProviders(<Signup />, {
       storeOverrides,
       initialRouterEntries: ['/inscription'],
     })
 
-    // then
     expect(
       screen.getByRole('heading', { name: /Inscription indisponible/ })
     ).toBeInTheDocument()

@@ -27,18 +27,18 @@ describe('Description', () => {
     }
   })
 
-  it('should render the description as text', async () => {
+  it('should render the description as text', () => {
     renderFormLayoutDescription(descriptionProps)
     expect(screen.getByText('This is a description')).toBeInTheDocument()
   })
 
-  it('should render the description as a banner', async () => {
+  it('should render the description as a banner', () => {
     descriptionProps.isBanner = true
     renderFormLayoutDescription(descriptionProps)
     expect(screen.getByText('This is a description')).toBeInTheDocument()
   })
 
-  it('should not render component', async () => {
+  it('should not render component', () => {
     descriptionProps.description = undefined
     renderFormLayoutDescription(descriptionProps)
     expect(screen.queryByText('This is a description')).not.toBeInTheDocument()

@@ -128,7 +128,7 @@ describe('CollectiveOfferVisibility', () => {
     expect(screen.getByText(/Valider et enregistrer l’offre/)).toBeDisabled()
   })
 
-  it('should disable submit button if the user did not select an institution', async () => {
+  it('should disable submit button if the user did not select an institution', () => {
     renderVisibilityStep(props)
     expect(
       screen.getByRole('button', { name: /Étape suivante/ })

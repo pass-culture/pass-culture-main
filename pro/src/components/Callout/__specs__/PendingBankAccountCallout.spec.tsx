@@ -35,7 +35,7 @@ describe('PendingBankAccountCallout', () => {
       },
     }
 
-    it('should not render the pending bank account banner if the offerer has no pending bank account', async () => {
+    it('should not render the pending bank account banner if the offerer has no pending bank account', () => {
       props.offerer = {
         ...defaultGetOffererResponseModel,
         hasPendingBankAccount: false,

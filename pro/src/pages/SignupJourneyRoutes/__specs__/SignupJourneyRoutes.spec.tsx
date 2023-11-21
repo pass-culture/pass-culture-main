@@ -14,9 +14,7 @@ vi.mock('apiClient/api', () => ({
   },
 }))
 
-const renderSignupJourneyRoutes = async (
-  storeOverrides: Partial<RootState> = {}
-) => {
+const renderSignupJourneyRoutes = (storeOverrides: Partial<RootState> = {}) => {
   renderWithProviders(
     <Routes>
       <Route path="/parcours-inscription/*" element={<SignupJourneyRoutes />} />

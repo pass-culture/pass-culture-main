@@ -43,7 +43,7 @@ describe('Contacts', () => {
     initialValues = { ...DEFAULT_ACTIVITY_FORM_VALUES }
   })
 
-  it('Should by default display contact section', async () => {
+  it('Should by default display contact section', () => {
     renderContact({ initialValues, onSubmit, props })
 
     expect(
@@ -55,7 +55,7 @@ describe('Contacts', () => {
     expect(screen.getByText('Contact')).toBeInTheDocument()
   })
 
-  it('Should display less fields and infos when venue is virtual', async () => {
+  it('Should display less fields and infos when venue is virtual', () => {
     props = { isVenueVirtual: true }
     renderContact({ initialValues, onSubmit, props })
 

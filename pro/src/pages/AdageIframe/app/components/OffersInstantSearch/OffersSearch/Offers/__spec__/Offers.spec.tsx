@@ -522,7 +522,7 @@ describe('offers', () => {
     expect(surveySatisfaction).not.toBeInTheDocument()
   })
 
-  it('should not display survey satisfaction', async () => {
+  it('should not display survey satisfaction', () => {
     // Given
     vi.spyOn(apiAdage, 'getCollectiveOffer').mockResolvedValueOnce(offerInParis)
     vi.spyOn(apiAdage, 'getCollectiveOffer').mockResolvedValueOnce(
@@ -544,9 +544,7 @@ describe('offers', () => {
     )
 
     // Then
-    const surveySatisfaction = await screen.queryByText(
-      'Enquête de satisfaction'
-    )
+    const surveySatisfaction = screen.queryByText('Enquête de satisfaction')
     expect(surveySatisfaction).not.toBeInTheDocument()
   })
 
@@ -611,7 +609,7 @@ describe('offers', () => {
       expect(listItemsInOffer).toHaveLength(0)
     })
 
-    it('should log filters on new search', async () => {
+    it('should log filters on new search', () => {
       const mockLogTrackingFilter = vi.fn()
       vi.spyOn(apiAdage, 'getCollectiveOffer').mockResolvedValueOnce(
         offerInParis
@@ -647,7 +645,7 @@ describe('offers', () => {
         name: 'Voir plus d’offres',
       })
 
-      userEvent.click(loadMoreButton)
+      await userEvent.click(loadMoreButton)
 
       await waitFor(() => expect(showMoreMock).toHaveBeenCalledTimes(1))
     })
@@ -679,7 +677,7 @@ describe('offers', () => {
         name: 'Voir plus d’offres',
       })
 
-      userEvent.click(loadMoreButton)
+      await userEvent.click(loadMoreButton)
 
       expect(apiAdage.getCollectiveOffer).toHaveBeenCalledTimes(1)
     })

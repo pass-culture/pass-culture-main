@@ -12,7 +12,7 @@ import ButtonDownloadCSV, { DownloadButtonProps } from '../ButtonDownloadCSV'
 const fetchMock = createFetchMock(vi)
 fetchMock.enableMocks()
 
-const renderButtonDownloadCSV = async (
+const renderButtonDownloadCSV = (
   props: DownloadButtonProps,
   storeOverrides?: any
 ) =>

@@ -58,7 +58,7 @@ const renderusePageTitleRoutes = (url = '/accueil') => {
 }
 
 describe('usePageTitle', () => {
-  it('should set initial page title', async () => {
+  it('should set initial page title', () => {
     renderusePageTitleRoutes()
     expect(document.title).toEqual(
       'Espace acteurs culturels - pass Culture Pro'

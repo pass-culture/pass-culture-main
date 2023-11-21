@@ -11,7 +11,7 @@ import Notification from 'components/Notification/Notification'
 import { renderWithProviders } from 'utils/renderWithProviders'
 
 import OffererCreation from '../OffererCreation'
-const renderOffererCreation = async (storeOverrides: any) =>
+const renderOffererCreation = (storeOverrides: any) =>
   renderWithProviders(
     <>
       <Routes>
@@ -31,7 +31,7 @@ vi.mock('apiClient/api', () => ({
 }))
 
 describe('src | components | OffererCreation', () => {
-  it('should render a OffererCreationUnavailable component when pro offerer creation is disabled', async () => {
+  it('should render a OffererCreationUnavailable component when pro offerer creation is disabled', () => {
     const store = {
       features: {
         initialized: true,

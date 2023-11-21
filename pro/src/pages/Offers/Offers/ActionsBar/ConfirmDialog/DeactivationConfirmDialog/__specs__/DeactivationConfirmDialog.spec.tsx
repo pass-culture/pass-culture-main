@@ -42,7 +42,7 @@ describe('DeactivationConfirmDialog', () => {
     expect(onConfirmDialogMock).toHaveBeenCalled()
   })
 
-  it('should render text for one offer', async () => {
+  it('should render text for one offer', () => {
     renderDeactivationConfirmDialog({ ...props, nbSelectedOffers: 1 })
 
     expect(
@@ -58,7 +58,7 @@ describe('DeactivationConfirmDialog', () => {
     ).toBeInTheDocument()
   })
 
-  it('should render text for multiple offers', async () => {
+  it('should render text for multiple offers', () => {
     renderDeactivationConfirmDialog({ ...props, nbSelectedOffers: 2 })
 
     expect(

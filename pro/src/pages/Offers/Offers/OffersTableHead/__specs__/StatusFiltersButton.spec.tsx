@@ -17,7 +17,7 @@ const defaultProps: StatusFiltersButtonProps = {
 }
 
 describe('StatusFiltersButton', () => {
-  it('should add an hidden message with the active status', async () => {
+  it('should add an hidden message with the active status', () => {
     render(
       <StatusFiltersButton
         {...{ ...defaultProps, status: CollectiveOfferStatus.BOOKED }}
@@ -29,7 +29,7 @@ describe('StatusFiltersButton', () => {
     ).toBeInTheDocument()
   })
 
-  it('should not add an hidden message if no active status', async () => {
+  it('should not add an hidden message if no active status', () => {
     render(
       <StatusFiltersButton
         {...{ ...defaultProps, audience: Audience.INDIVIDUAL }}

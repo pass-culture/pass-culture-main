@@ -22,7 +22,7 @@ const renderCookiesFooter = () => {
 }
 
 describe('CookiesFooter', () => {
-  it('should render cookies footer links', async () => {
+  it('should render cookies footer links', () => {
     renderCookiesFooter()
 
     expect(screen.getByText(/CGU professionnels/)).toBeInTheDocument()

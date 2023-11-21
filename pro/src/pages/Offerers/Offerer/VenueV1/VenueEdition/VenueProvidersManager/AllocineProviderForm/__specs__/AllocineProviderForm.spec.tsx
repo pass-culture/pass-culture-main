@@ -33,7 +33,7 @@ describe('AllocineProviderForm', () => {
   const offererId = 36
   const provider = { id: providerId, name: 'Allociné', isDuo: true }
 
-  beforeEach(async () => {
+  beforeEach(() => {
     props = {
       venueId: venueId,
       saveVenueProvider: vi.fn().mockReturnValue(true),

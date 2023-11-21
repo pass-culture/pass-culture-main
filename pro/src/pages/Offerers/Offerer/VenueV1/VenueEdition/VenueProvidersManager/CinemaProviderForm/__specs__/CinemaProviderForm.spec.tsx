@@ -26,7 +26,7 @@ describe('CinemaProviderForm', () => {
   const venueId = 1
   const offererId = 3
 
-  beforeEach(async () => {
+  beforeEach(() => {
     props = {
       saveVenueProvider: vi.fn().mockReturnValue(true),
       providerId: providerId,

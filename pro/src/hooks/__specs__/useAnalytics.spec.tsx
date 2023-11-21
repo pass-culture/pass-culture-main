@@ -38,11 +38,7 @@ const FakeApp = ({
   return <h1>Fake App</h1>
 }
 
-const renderFakeApp = async ({
-  isCookieEnabled,
-}: {
-  isCookieEnabled: boolean
-}) => {
+const renderFakeApp = ({ isCookieEnabled }: { isCookieEnabled: boolean }) => {
   return renderWithProviders(<FakeApp isCookieEnabled={isCookieEnabled} />)
 }
 
@@ -70,7 +66,7 @@ describe('useAnalytics', () => {
       },
     })
 
-    await renderFakeApp({ isCookieEnabled: true })
+    renderFakeApp({ isCookieEnabled: true })
 
     await waitFor(() => {
       expect(firebaseAnalytics.isSupported).toHaveBeenCalledTimes(1)
@@ -106,7 +102,7 @@ describe('useAnalytics', () => {
   })
 
   it('should not load if cookie is disabled', async () => {
-    await renderFakeApp({ isCookieEnabled: false })
+    renderFakeApp({ isCookieEnabled: false })
 
     await waitFor(() => {
       expect(firebaseAnalytics.initializeAnalytics).not.toHaveBeenCalled()

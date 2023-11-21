@@ -38,7 +38,7 @@ describe('StocksProviderForm', () => {
     }))
   })
 
-  it('should display an import button', async () => {
+  it('should display an import button', () => {
     renderStocksProviderForm(props)
 
     expect(

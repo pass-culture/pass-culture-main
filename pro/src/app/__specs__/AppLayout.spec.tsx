@@ -5,11 +5,7 @@ import { renderWithProviders } from 'utils/renderWithProviders'
 
 import AppLayout, { AppLayoutProps } from '../AppLayout'
 
-const renderApp = async (
-  props: AppLayoutProps,
-  storeOverrides: any,
-  url = '/'
-) =>
+const renderApp = (props: AppLayoutProps, storeOverrides: any, url = '/') =>
   renderWithProviders(
     <AppLayout {...props}>
       <p>Sub component</p>

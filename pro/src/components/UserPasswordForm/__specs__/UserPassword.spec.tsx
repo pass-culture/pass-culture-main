@@ -37,16 +37,20 @@ describe('components:UserPasswordForm', () => {
       postPasswordAdapter: postPasswordAdapterMock,
     }
   })
+
   it('renders component successfully', () => {
     renderUserPasswordForm(props)
+
     expect(screen.getByLabelText(/Mot de passe actuel/)).toBeInTheDocument()
     expect(screen.getByLabelText(/Nouveau mot de passe/)).toBeInTheDocument()
     expect(
       screen.getByLabelText(/Confirmer votre nouveau mot de passe/)
     ).toBeInTheDocument()
   })
+
   it('should trigger onSubmit callback when submitting', async () => {
     renderUserPasswordForm(props)
+
     await userEvent.type(
       screen.getByLabelText(/Mot de passe actuel/),
       'MyCurrentSuper1Password,'
@@ -61,7 +65,7 @@ describe('components:UserPasswordForm', () => {
     )
     await userEvent.tab()
     await userEvent.click(screen.getByText('Enregistrer'))
-    await expect(postPasswordAdapterMock).toHaveBeenNthCalledWith(1, {
+    expect(postPasswordAdapterMock).toHaveBeenNthCalledWith(1, {
       newConfirmationPassword: 'MyNewSuper1Password,',
       newPassword: 'MyNewSuper1Password,',
       oldPassword: 'MyCurrentSuper1Password,',

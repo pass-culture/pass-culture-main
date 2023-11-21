@@ -49,10 +49,7 @@ describe('IndividualOffer section: TicketWithdrawal', () => {
   })
 
   it('should display "withdrawalDelay" fields depending of withdrawalType selected value.', async () => {
-    await renderTicketWithdrawal({
-      initialValues,
-      onSubmit,
-    })
+    renderTicketWithdrawal({ initialValues, onSubmit })
 
     // should contain sent date information when tickets are sent by mail
     await userEvent.click(
@@ -69,8 +66,8 @@ describe('IndividualOffer section: TicketWithdrawal', () => {
     await userEvent.click(
       await screen.findByText('Aucun billet n’est nécessaire')
     )
-    expect(await screen.queryByText('Date d’envoi')).not.toBeInTheDocument()
-    expect(await screen.queryByText('Heure de retrait')).not.toBeInTheDocument()
+    expect(screen.queryByText('Date d’envoi')).not.toBeInTheDocument()
+    expect(screen.queryByText('Heure de retrait')).not.toBeInTheDocument()
   })
 
   it('should display an error when withdrawalType is empty', async () => {

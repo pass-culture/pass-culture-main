@@ -62,7 +62,7 @@ describe('Accessibility', () => {
         [AccessiblityEnum.NONE]: false,
       },
     }
-    await renderAccessibility({ initialValues, onSubmit })
+    renderAccessibility({ initialValues, onSubmit })
 
     expect(
       await screen.findByRole('heading', { name: 'Accessibilité' })
@@ -85,7 +85,7 @@ describe('Accessibility', () => {
   })
 
   it('should submit valid form', async () => {
-    await renderAccessibility({ initialValues, onSubmit })
+    renderAccessibility({ initialValues, onSubmit })
 
     const checkboxVisuel = screen.getByLabelText('Visuel', { exact: false })
     await userEvent.click(checkboxVisuel)
@@ -120,7 +120,7 @@ describe('Accessibility', () => {
         [AccessiblityEnum.NONE]: false,
       },
     }
-    await renderAccessibility({ initialValues, onSubmit })
+    renderAccessibility({ initialValues, onSubmit })
     await screen.findByRole('heading', { name: 'Accessibilité' })
 
     const checkboxNone = screen.getByLabelText('Non accessible', {
@@ -172,7 +172,7 @@ describe('Accessibility', () => {
         [AccessiblityEnum.NONE]: false,
       },
     }
-    await renderAccessibility({ initialValues, onSubmit })
+    renderAccessibility({ initialValues, onSubmit })
 
     await screen.findByRole('heading', { name: 'Accessibilité' })
     // tab to focus the first accessibility checkbox

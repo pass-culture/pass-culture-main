@@ -109,7 +109,7 @@ describe('route VenueCreation', () => {
       'Enregistrer et créer le lieu'
     )
     await userEvent.click(homeNavBarButton)
-    const modal = await screen.queryByText(
+    const modal = screen.queryByText(
       'Voulez-vous quitter la création de lieu ?'
     )
     expect(modal).not.toBeInTheDocument()

@@ -17,17 +17,17 @@ const renderUseOfferWizardMode = (url: string) => {
 }
 
 describe('useOfferWizardMode', () => {
-  it('should return mode "creation"', async () => {
+  it('should return mode "creation"', () => {
     const { result } = renderUseOfferWizardMode('/test/creation/test')
     expect(result.current).toEqual(OFFER_WIZARD_MODE.CREATION)
   })
 
-  it('should return mode "read only"', async () => {
+  it('should return mode "read only"', () => {
     const { result } = renderUseOfferWizardMode('/test/test')
     expect(result.current).toEqual(OFFER_WIZARD_MODE.READ_ONLY)
   })
 
-  it('should return mode "edition"', async () => {
+  it('should return mode "edition"', () => {
     const { result } = renderUseOfferWizardMode('/test/edition/test')
     expect(result.current).toEqual(OFFER_WIZARD_MODE.EDITION)
   })

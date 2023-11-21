@@ -22,10 +22,9 @@ describe('AppPreviewOffer', () => {
     }
   })
 
-  it('should render app preview offer', async () => {
-    await renderAppPreviewOffer({
-      props,
-    })
+  it('should render app preview offer', () => {
+    renderAppPreviewOffer({ props })
+
     expect(screen.getByTestId('app-preview-offer-img-home')).toBeInTheDocument()
     expect(screen.getByTestId('app-preview-offer-img')).toBeInTheDocument()
   })

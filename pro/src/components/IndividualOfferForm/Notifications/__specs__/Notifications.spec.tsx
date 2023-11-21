@@ -58,10 +58,8 @@ describe('IndividualOffer section: Notifications', () => {
   })
 
   it('should submit valid form', async () => {
-    await renderNotifications({
-      initialValues,
-      onSubmit,
-    })
+    renderNotifications({ initialValues, onSubmit })
+
     await userEvent.click(
       screen.getByText('Être notifié par email des réservations')
     )
@@ -75,10 +73,8 @@ describe('IndividualOffer section: Notifications', () => {
   })
 
   it('should display bookingEmail field with default user mail value depending of receiveNotificationEmails.', async () => {
-    await renderNotifications({
-      initialValues,
-      onSubmit,
-    })
+    renderNotifications({ initialValues, onSubmit })
+
     expect(await screen.findByText('Notifications')).toBeInTheDocument()
     expect(
       await screen.findByText('Être notifié par email des réservations')
@@ -97,11 +93,12 @@ describe('IndividualOffer section: Notifications', () => {
   })
 
   it('should display bookingEmail field with venueBookingMail default value depending of receiveNotificationEmails.', async () => {
-    await renderNotifications({
+    renderNotifications({
       initialValues,
       onSubmit,
       venueBookingEmail: 'venue@exemple.com',
     })
+
     expect(await screen.findByText('Notifications')).toBeInTheDocument()
     expect(
       await screen.findByText('Être notifié par email des réservations')
@@ -121,11 +118,12 @@ describe('IndividualOffer section: Notifications', () => {
 
   it('should display bookingEmail field with value already set depending of receiveNotificationEmails.', async () => {
     initialValues.bookingEmail = 'customMail@exemple.com'
-    await renderNotifications({
+    renderNotifications({
       initialValues,
       onSubmit,
       venueBookingEmail: 'venue@exemple.com',
     })
+
     expect(await screen.findByText('Notifications')).toBeInTheDocument()
     expect(
       await screen.findByText('Être notifié par email des réservations')

@@ -26,7 +26,7 @@ describe('SurveySatisfaction', () => {
 
     const closeButton = screen.getByTitle('Masquer le bandeau')
 
-    userEvent.click(closeButton)
+    await userEvent.click(closeButton)
 
     await waitFor(() => {
       expect(
@@ -52,7 +52,7 @@ describe('SurveySatisfaction', () => {
 
     const closeButton = screen.getByTitle('Masquer le bandeau')
 
-    userEvent.click(closeButton)
+    await userEvent.click(closeButton)
 
     await waitFor(() => expect(notifyError).toHaveBeenCalledTimes(1))
   })
