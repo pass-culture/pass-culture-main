@@ -7,7 +7,7 @@ import { SvgIcon } from 'ui-kit/SvgIcon/SvgIcon'
 
 import styles from './Select.module.scss'
 
-export interface SelectInputProps extends ComponentProps<'select'> {
+interface SelectInputProps extends ComponentProps<'select'> {
   name: string
   defaultOption?: SelectOption | null
   options: SelectOption[]

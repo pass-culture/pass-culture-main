@@ -2,11 +2,11 @@ import { StoryObj } from '@storybook/react'
 import { Formik } from 'formik'
 import React from 'react'
 
-import Select from './Select'
+import SelectInput from './SelectInput'
 
 export default {
-  title: 'ui-kit/forms/Select',
-  component: Select,
+  title: 'ui-kit/forms/SelectInput',
+  component: SelectInput,
 }
 
 const mockCategoriesOptions = [
@@ -15,29 +15,20 @@ const mockCategoriesOptions = [
   { value: 'musique', label: 'Musique' },
 ]
 
-export const Default: StoryObj<typeof Select> = {
+export const Default: StoryObj<typeof SelectInput> = {
   args: {
-    label: 'Catégorie',
+    name: 'select',
+    hasError: false,
     options: mockCategoriesOptions,
     disabled: false,
-    name: 'select',
   },
-  decorators: [
-    (Story) => (
-      <Formik initialValues={{ category: 'theatre' }} onSubmit={() => {}}>
-        <Story />
-      </Formik>
-    ),
-  ],
 }
 
-export const SelectInline: StoryObj<typeof Select> = {
+export const SelectInputFilter: StoryObj<typeof SelectInput> = {
   args: {
-    label: 'Catégorie',
-    options: mockCategoriesOptions,
-    disabled: false,
     name: 'select',
-    description: 'super select inline',
+    options: mockCategoriesOptions,
+    filterVariant: true,
   },
   decorators: [
     (Story) => (
