@@ -39,6 +39,7 @@ const ReimbursementsBanners = (): JSX.Element => {
       }
     }
     if (isNewBankDetailsJourneyEnabled) {
+      // eslint-disable-next-line @typescript-eslint/no-floating-promises
       fetchData()
     }
   }, [])

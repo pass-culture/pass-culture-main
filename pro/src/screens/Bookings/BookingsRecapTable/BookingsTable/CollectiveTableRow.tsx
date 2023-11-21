@@ -52,6 +52,7 @@ export const CollectiveTableRow = ({
     }
 
     if (isExpanded && bookingDetails === null) {
+      // eslint-disable-next-line @typescript-eslint/no-floating-promises
       fetchBookingDetails()
     }
   }, [isExpanded])

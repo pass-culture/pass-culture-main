@@ -41,6 +41,7 @@ export const AdageHeader = () => {
 
   useEffect(() => {
     if (adageUser.role !== AdageFrontRoles.READONLY) {
+      // eslint-disable-next-line @typescript-eslint/no-floating-promises
       getEducationalInstitutionBudget()
     }
   }, [adageUser.role])

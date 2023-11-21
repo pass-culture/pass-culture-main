@@ -37,12 +37,15 @@ const ContactButton = ({
 
   const handleButtonClick = () => {
     setIsModalOpen(true)
+
+    // eslint-disable-next-line @typescript-eslint/no-floating-promises
     apiAdage.logContactModalButtonClick({
       iframeFrom: removeParamsFromUrl(location.pathname),
       offerId,
       queryId: queryId,
       isFromNoResult: isInSuggestions,
     })
+    // eslint-disable-next-line @typescript-eslint/no-floating-promises
     logClickOnOffer(offerId.toString(), position, queryId)
   }
 

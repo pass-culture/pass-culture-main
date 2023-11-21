@@ -85,6 +85,7 @@ const CollectiveOfferFromRequest = (): JSX.Element => {
       requestId && (await getOfferRequestInformation())
     }
 
+    // eslint-disable-next-line @typescript-eslint/no-floating-promises
     fetchData()
   }, [])
 

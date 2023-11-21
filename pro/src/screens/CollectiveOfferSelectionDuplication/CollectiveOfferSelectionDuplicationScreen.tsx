@@ -78,6 +78,7 @@ const CollectiveOfferSelectionDuplication = (): JSX.Element => {
   )
 
   useEffect(() => {
+    // eslint-disable-next-line @typescript-eslint/no-floating-promises
     filterTemplateOfferByName(formikSearch.initialValues.searchFilter)
   }, [formikSearch.initialValues.searchFilter])
 

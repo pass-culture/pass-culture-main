@@ -218,6 +218,7 @@ const Bookings = <
       setIsLocalLoading(false)
     }
 
+    // eslint-disable-next-line @typescript-eslint/no-floating-promises
     fetchVenues()
   }, [setIsLocalLoading, setVenues, notify, getVenuesAdapter])
 

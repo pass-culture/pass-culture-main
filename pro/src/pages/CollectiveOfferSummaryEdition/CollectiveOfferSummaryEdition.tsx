@@ -36,6 +36,7 @@ const CollectiveOfferSummaryEdition = ({
       setCategories(categoriesResponse.payload)
     }
 
+    // eslint-disable-next-line @typescript-eslint/no-floating-promises
     loadData()
   }, [])
 

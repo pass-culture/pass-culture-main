@@ -32,10 +32,10 @@ const props: ImageUploaderProps = {
     },
   },
   mode: UploaderModeEnum.OFFER,
-  onImageDelete: async () => {
+  onImageDelete: () => {
     alert('onDelete have been called.')
   },
-  onImageUpload: async () => {
+  onImageUpload: () => {
     alert('onImageUpload have been called.')
   },
 }
