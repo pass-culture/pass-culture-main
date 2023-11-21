@@ -37,7 +37,7 @@ const StatusToggleButton = ({
   const toggleOfferActiveStatus = async () => {
     try {
       await api.patchOffersActiveStatus({ ids: [offerId], isActive: !isActive })
-      reloadOffer()
+      await reloadOffer()
       notification.success(
         `L’offre a bien été ${isActive ? 'désactivée' : 'publiée'}.`
       )

@@ -91,52 +91,41 @@ const ActionsBar = ({
     areAllOffersSelected && toggleSelectAllCheckboxes()
   }, [clearSelectedOfferIds, areAllOffersSelected, toggleSelectAllCheckboxes])
 
-  const handleUpdateOffersStatus = useCallback(
-    async (isActivating: boolean) => {
-      const adapter = getUpdateActiveStatusAdapter(
-        areAllOffersSelected,
-        searchFilters,
-        isActivating,
-        nbSelectedOffers,
-        selectedOfferIds,
-        audience
-      )
-
-      const { isOk, message } = await adapter()
-      refreshOffers()
-
-      if (!isOk) {
-        notify.error(message)
-      }
-
-      areAllOffersSelected ? notify.pending(message) : notify.success(message)
-      handleClose()
-    },
-    [
-      searchFilters,
+  const handleUpdateOffersStatus = async (isActivating: boolean) => {
+    const adapter = getUpdateActiveStatusAdapter(
       areAllOffersSelected,
-      refreshOffers,
+      searchFilters,
+      isActivating,
       nbSelectedOffers,
       selectedOfferIds,
-      handleClose,
-      notify,
-    ]
-  )
+      audience
+    )
 
-  const handleActivate = useCallback(() => {
+    const { isOk, message } = await adapter()
+    refreshOffers()
+
+    if (!isOk) {
+      notify.error(message)
+    }
+
+    areAllOffersSelected ? notify.pending(message) : notify.success(message)
+    handleClose()
+  }
+
+  const handleActivate = async () => {
     const updateOfferStatusMessage =
       getUpdateOffersStatusMessage(selectedOfferIds)
     if (!updateOfferStatusMessage) {
-      handleUpdateOffersStatus(true)
+      await handleUpdateOffersStatus(true)
     } else {
       notify.error(updateOfferStatusMessage)
     }
-  }, [handleUpdateOffersStatus])
+  }
 
-  const handleDeactivate = useCallback(() => {
-    handleUpdateOffersStatus(false)
+  const handleDeactivate = async () => {
+    await handleUpdateOffersStatus(false)
     setIsConfirmDialogOpen(false)
-  }, [handleUpdateOffersStatus])
+  }
 
   const computeSelectedOffersLabel = () => {
     if (nbSelectedOffers > 1) {

@@ -68,11 +68,11 @@ const MultiDownloadButtonsModal = ({
             variant={ButtonVariant.TERNARY}
             icon={fullDownloadIcon}
             className={style['inside-modal-button']}
-            onClick={() => {
+            onClick={async () => {
+              await downloadFunction(filters, 'XLS')
               logEvent?.(Events.CLICKED_DOWNLOAD_BOOKINGS_XLS, {
                 from: location.pathname,
               })
-              downloadFunction(filters, 'XLS')
               setIsDownloadModalOptionOpen(!isDownloadModalOptionOpen)
             }}
           >
@@ -83,11 +83,11 @@ const MultiDownloadButtonsModal = ({
             variant={ButtonVariant.TERNARY}
             icon={fullDownloadIcon}
             className={style['inside-modal-button']}
-            onClick={() => {
+            onClick={async () => {
+              await downloadFunction(filters, 'CSV')
               logEvent?.(Events.CLICKED_DOWNLOAD_BOOKINGS_CSV, {
                 from: location.pathname,
               })
-              downloadFunction(filters, 'CSV')
               setIsDownloadModalOptionOpen(!isDownloadModalOptionOpen)
             }}
           >

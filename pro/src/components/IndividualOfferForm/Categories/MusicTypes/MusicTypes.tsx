@@ -1,5 +1,5 @@
 import { useFormikContext } from 'formik'
-import React, { useEffect, useState } from 'react'
+import React from 'react'
 
 import FormLayout from 'components/FormLayout'
 import {
@@ -14,51 +14,39 @@ interface MusicTypesProps {
   readOnly?: boolean
 }
 
-const MusicTypes = ({ readOnly = false }: MusicTypesProps): JSX.Element => {
-  const [musicTypesOptions, setMusicTypesOptions] = useState<{
-    musicType: SelectOption[]
-    musicSubType: SelectOption[]
-  }>({
-    musicType: musicOptionsTree
-      .map((data) => ({
-        value: data.code.toString(),
-        label: data.label,
-      }))
-      .sort((a, b) => a.label.localeCompare(b.label, 'fr')),
-    musicSubType: [],
-  })
+const getMusicSubTypeOptions = (musicType: string): SelectOption[] => {
+  if (musicType === FORM_DEFAULT_VALUES.musicType) {
+    return []
+  }
 
+  const selectedMusicTypeChildren = musicOptionsTree.find(
+    (musicTypeOption) => musicTypeOption.code === parseInt(musicType)
+  )?.children
+
+  if (!selectedMusicTypeChildren) {
+    return []
+  }
+
+  return selectedMusicTypeChildren
+    .map((data) => ({
+      value: data.code.toString(),
+      label: data.label,
+    }))
+    .sort((a, b) => a.label.localeCompare(b.label, 'fr'))
+}
+
+const MusicTypes = ({ readOnly = false }: MusicTypesProps): JSX.Element => {
   const {
     values: { musicType },
-    initialValues,
-    setFieldValue,
   } = useFormikContext<IndividualOfferFormValues>()
 
-  useEffect(() => {
-    setFieldValue('musicSubType', initialValues.musicSubType)
-    let newMusicSubTypeOptions: SelectOption[] = []
-    if (musicType !== FORM_DEFAULT_VALUES.musicType) {
-      const selectedMusicTypeChildren = musicOptionsTree.find(
-        (musicTypeOption) => musicTypeOption.code === parseInt(musicType)
-      )?.children
-
-      if (selectedMusicTypeChildren) {
-        newMusicSubTypeOptions = selectedMusicTypeChildren
-          .map((data) => ({
-            value: data.code.toString(),
-            label: data.label,
-          }))
-          .sort((a, b) => a.label.localeCompare(b.label, 'fr'))
-      }
-    }
-
-    setMusicTypesOptions((prevOptions) => {
-      return {
-        ...prevOptions,
-        musicSubType: newMusicSubTypeOptions,
-      }
-    })
-  }, [musicType])
+  const musicTypeOptions = musicOptionsTree
+    .map((data) => ({
+      value: data.code.toString(),
+      label: data.label,
+    }))
+    .sort((a, b) => a.label.localeCompare(b.label, 'fr'))
+  const musicSubTypeOptions = getMusicSubTypeOptions(musicType)
 
   return (
     <>
@@ -66,7 +54,7 @@ const MusicTypes = ({ readOnly = false }: MusicTypesProps): JSX.Element => {
         <Select
           label="Genre musical"
           name="musicType"
-          options={musicTypesOptions.musicType}
+          options={musicTypeOptions}
           defaultOption={{
             label: 'Choisir un genre musical',
             value: FORM_DEFAULT_VALUES.musicType,
@@ -75,12 +63,12 @@ const MusicTypes = ({ readOnly = false }: MusicTypesProps): JSX.Element => {
         />
       </FormLayout.Row>
 
-      {musicTypesOptions.musicSubType.length > 0 && (
+      {musicSubTypeOptions.length > 0 && (
         <FormLayout.Row>
           <Select
             label="Sous-genre"
             name="musicSubType"
-            options={musicTypesOptions.musicSubType}
+            options={musicSubTypeOptions}
             defaultOption={{
               label: 'Choisir un sous-genre',
               value: FORM_DEFAULT_VALUES.musicSubType,
