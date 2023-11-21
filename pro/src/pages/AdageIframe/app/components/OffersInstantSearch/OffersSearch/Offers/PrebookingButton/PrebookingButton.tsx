@@ -37,6 +37,7 @@ const PrebookingButton = ({
 
   const handleBookingModalButtonClick = (stockId: number) => {
     if (LOGS_DATA) {
+      // eslint-disable-next-line @typescript-eslint/no-floating-promises
       apiAdage.logBookingModalButtonClick({
         iframeFrom: removeParamsFromUrl(location.pathname),
         stockId,
@@ -52,6 +53,7 @@ const PrebookingButton = ({
   }
 
   const preBookCurrentStock = useCallback(async () => {
+    // eslint-disable-next-line @typescript-eslint/no-floating-promises
     logOfferConversion(offerId.toString(), queryId)
     const { isOk, message } = await postBookingAdapater(stock.id)
 

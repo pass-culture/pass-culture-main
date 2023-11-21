@@ -25,7 +25,7 @@ const ToggleVenueProviderStatusButton = ({
   const [isLoading, setIsLoading] = useState(false)
   const notification = useNotification()
 
-  const updateVenueProviderStatus = useCallback(async () => {
+  const updateVenueProviderStatus = useCallback(() => {
     setIsLoading(true)
     const payload = {
       ...venueProvider,

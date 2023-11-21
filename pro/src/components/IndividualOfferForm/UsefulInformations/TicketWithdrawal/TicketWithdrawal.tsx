@@ -40,14 +40,12 @@ const TicketWithdrawal = ({
     }
   }
 
-  useEffect(
-    function onWithdrawalTypeChange() {
-      if (dirty) {
-        setFieldValue('withdrawalDelay', getFirstWithdrawalTypeEnumValue())
-      }
-    },
-    [withdrawalType]
-  )
+  useEffect(() => {
+    if (dirty) {
+      // eslint-disable-next-line @typescript-eslint/no-floating-promises
+      setFieldValue('withdrawalDelay', getFirstWithdrawalTypeEnumValue())
+    }
+  }, [withdrawalType])
 
   return (
     <>

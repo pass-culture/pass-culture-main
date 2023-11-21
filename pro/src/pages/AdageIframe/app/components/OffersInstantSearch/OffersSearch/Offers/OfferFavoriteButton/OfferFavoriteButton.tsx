@@ -47,6 +47,8 @@ const OfferFavoriteButton = ({
       setFavoriteCount?.((count) => count - 1)
 
       notify.success('Supprimé de vos favoris')
+
+      // eslint-disable-next-line @typescript-eslint/no-floating-promises
       apiAdage.logFavOfferButtonClick({
         offerId: offer.id,
         queryId: queryId,
@@ -73,6 +75,8 @@ const OfferFavoriteButton = ({
       setFavoriteCount?.((count) => count + 1)
 
       notify.success('Ajouté à vos favoris')
+
+      // eslint-disable-next-line @typescript-eslint/no-floating-promises
       apiAdage.logFavOfferButtonClick({
         offerId: offer.id,
         queryId: queryId,

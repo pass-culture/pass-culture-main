@@ -29,6 +29,7 @@ const Notifications = ({
       receiveNotificationEmails &&
       bookingEmail === NOTIFICATIONS_DEFAULT_VALUES.bookingEmail
     ) {
+      // eslint-disable-next-line @typescript-eslint/no-floating-promises
       setFieldValue('bookingEmail', venueBookingEmail ?? currentUser.email)
     }
   }, [receiveNotificationEmails])

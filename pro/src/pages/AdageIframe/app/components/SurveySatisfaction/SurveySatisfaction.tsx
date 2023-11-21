@@ -33,7 +33,8 @@ export const SurveySatisfaction = ({
     }
   }
 
-  const logOpenSatisfactionSurvey = async () => {
+  const logOpenSatisfactionSurvey = () => {
+    // eslint-disable-next-line @typescript-eslint/no-floating-promises
     apiAdage.logOpenSatisfactionSurvey({
       iframeFrom: location.pathname,
       queryId: queryId,

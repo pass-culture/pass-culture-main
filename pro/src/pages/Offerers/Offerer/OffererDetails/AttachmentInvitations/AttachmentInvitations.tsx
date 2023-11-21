@@ -75,6 +75,7 @@ const AttachmentInvitations = ({ offererId }: AttachmentInvitationsProps) => {
       const { members } = await api.getOffererMembers(offererId)
       setMembers(members ?? [])
     }
+    // eslint-disable-next-line @typescript-eslint/no-floating-promises
     fetchOffererMembers()
   }, [])
 

@@ -20,7 +20,8 @@ export const imageConstraints = {
     }
   },
   size: (maxSize: number): Constraint => {
-    const isTooBig: FileChecker = async (file) => file.size <= maxSize
+    const isTooBig: FileChecker = (file) =>
+      Promise.resolve(file.size <= maxSize)
 
     return {
       id: 'size',

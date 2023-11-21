@@ -14,7 +14,7 @@ export const initAlgoliaAnalytics = (uniqueId: string) => {
   })
 }
 
-export const logOfferConversion = async (objectID: string, queryID: string) => {
+export const logOfferConversion = (objectID: string, queryID: string) => {
   if (queryID === undefined) {
     return
   }
@@ -27,7 +27,7 @@ export const logOfferConversion = async (objectID: string, queryID: string) => {
   })
 }
 
-export const logClickOnOffer = async (
+export const logClickOnOffer = (
   objectID: string,
   position: number,
   queryID: string

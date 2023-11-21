@@ -7,6 +7,7 @@ export const useGetImageBitmap = (file: File) => {
   const [height, setHeight] = useState<number>(0)
 
   useEffect(() => {
+    // eslint-disable-next-line @typescript-eslint/no-floating-promises
     getImageBitmap(file).then((data) => {
       /* istanbul ignore next: DEBT, TO FIX */
       if (data) {

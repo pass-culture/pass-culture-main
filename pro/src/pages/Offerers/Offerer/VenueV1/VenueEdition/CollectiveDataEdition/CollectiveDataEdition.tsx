@@ -117,6 +117,7 @@ const CollectiveDataEdition = (): JSX.Element | null => {
       setIsLoading(false)
     }
     if (venueId && offererId) {
+      // eslint-disable-next-line @typescript-eslint/no-floating-promises
       fetchData()
     }
   }, [])

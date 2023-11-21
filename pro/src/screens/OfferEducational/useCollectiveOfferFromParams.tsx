@@ -60,6 +60,7 @@ const useCollectiveOfferFromParams = (
   }, [offerId])
 
   useEffect(() => {
+    // eslint-disable-next-line @typescript-eslint/no-floating-promises
     loadCollectiveOffer()
   }, [])
 

@@ -31,6 +31,8 @@ export const OffersFavorites = () => {
         setFavoriteOffers(response.payload)
       })
     }
+
+    // eslint-disable-next-line @typescript-eslint/no-floating-promises
     fetchFavorites()
   }, [])
 

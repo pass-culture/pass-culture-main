@@ -13,7 +13,7 @@ const getValidationSchema = ({ constraints }: GetValidationSchemaArgs) => {
         ...acc,
         [constraint.id]: yup.mixed().test({
           message: constraint.description,
-          test: async (_image, context: yup.TestContext) =>
+          test: (_image, context: yup.TestContext) =>
             constraint.asyncValidator(context.parent.image),
         }),
       }

@@ -113,6 +113,8 @@ const ReimbursementPoint = ({
       )
       setIsLoading(false)
     }
+
+    // eslint-disable-next-line @typescript-eslint/no-floating-promises
     loadReimbursementPoints(offerer.id)
   }, [isCreatingVenue, offerer.id, venue])
   const { logEvent } = useAnalytics()

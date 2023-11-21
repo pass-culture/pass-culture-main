@@ -36,6 +36,7 @@ export const AdageHeaderMenu = ({ adageUser }: AdageHeaderMenuProps) => {
   const isDiscoveryActive = useActiveFeature('WIP_ENABLE_DISCOVERY')
 
   const logAdageLinkClick = (headerLinkName: AdageHeaderLink) => {
+    // eslint-disable-next-line @typescript-eslint/no-floating-promises
     apiAdage.logHeaderLinkClick({
       iframeFrom: removeParamsFromUrl(location.pathname),
       header_link_name: headerLinkName,
