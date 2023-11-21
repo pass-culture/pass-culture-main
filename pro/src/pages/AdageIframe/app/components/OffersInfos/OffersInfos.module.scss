@@ -1,6 +1,9 @@
 @use "styles/mixins/_rem.scss" as rem;
 
+.offers-info {
+  padding: rem.torem(32px) rem.torem(24px);
 
-.container {
-    margin-top: rem.torem(32px)
+  &-breadcrumb {
+    margin-bottom: rem.torem(32px);
+  }
 }
