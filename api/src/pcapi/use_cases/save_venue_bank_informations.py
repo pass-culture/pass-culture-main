@@ -83,6 +83,31 @@ class SaveVenueBankInformationsMixin(AbstractSaveBankInformations):
             new_bank_informations.bic = None
         return new_bank_informations
 
+    def annotate_application(self, application_detail: ApplicationDetailOldJourney, message: str) -> None:
+        """
+        Annotate the application with the rightfull message at the end of the automated process.
+        Do nothing if private annotation already exists (Don’t overwrite compliance annotations)
+        """
+        if not application_detail.error_annotation_value:
+            update_demarches_simplifiees_text_annotations(
+                dossier_id=application_detail.dossier_id,
+                annotation_id=application_detail.error_annotation_id,
+                message=message,
+            )
+
+    def annotate_application_with_errors(self, application_detail: ApplicationDetailOldJourney) -> None:
+        """
+        Annotate the application with errors raised while processing it.
+        Do nothing if private annotations already exists (Don’t overwrite compliance annotations)
+        """
+        if not application_detail.error_annotation_value:
+            message = format_error_to_demarches_simplifiees_text(self.api_errors)
+            update_demarches_simplifiees_text_annotations(
+                dossier_id=application_detail.dossier_id,
+                annotation_id=application_detail.error_annotation_id,
+                message=message,
+            )
+
 
 class SaveVenueBankInformationsV2(SaveVenueBankInformationsMixin):
     def __init__(
@@ -107,11 +132,7 @@ class SaveVenueBankInformationsV2(SaveVenueBankInformationsMixin):
         if self.api_errors.errors:
             if application_details.error_annotation_id is not None:
                 if application_details.status != finance_models.BankInformationStatus.REJECTED:
-                    update_demarches_simplifiees_text_annotations(
-                        application_details.dossier_id,
-                        application_details.error_annotation_id,
-                        format_error_to_demarches_simplifiees_text(self.api_errors),
-                    )
+                    self.annotate_application_with_errors(application_detail=application_details)
                 return None
             if application_details.status == finance_models.BankInformationStatus.ACCEPTED:
                 raise self.api_errors
@@ -142,11 +163,7 @@ class SaveVenueBankInformationsV2(SaveVenueBankInformationsMixin):
 
         if self.api_errors.errors:
             if application_details.error_annotation_id is not None:
-                update_demarches_simplifiees_text_annotations(
-                    application_details.dossier_id,
-                    application_details.error_annotation_id,
-                    format_error_to_demarches_simplifiees_text(self.api_errors),
-                )
+                self.annotate_application_with_errors(application_detail=application_details)
                 return None
             if application_details.status == finance_models.BankInformationStatus.DRAFT:
                 return None
@@ -178,17 +195,11 @@ class SaveVenueBankInformationsV2(SaveVenueBankInformationsMixin):
         update_external_pro(venue.bookingEmail)
         if application_details.error_annotation_id is not None:
             if application_details.status == finance_models.BankInformationStatus.ACCEPTED:
-                update_demarches_simplifiees_text_annotations(
-                    application_details.dossier_id,
-                    application_details.error_annotation_id,
-                    "Dossier successfully imported",
+                self.annotate_application(
+                    application_detail=application_details, message="Dossier successfully imported"
                 )
             if application_details.status == finance_models.BankInformationStatus.DRAFT:
-                update_demarches_simplifiees_text_annotations(
-                    application_details.dossier_id,
-                    application_details.error_annotation_id,
-                    "Valid dossier",
-                )
+                self.annotate_application(application_detail=application_details, message="Valid dossier")
         if application_details.status != finance_models.BankInformationStatus.DRAFT:
             archive_dossier(application_details.dossier_id)
         return bank_information
@@ -241,11 +252,7 @@ class SaveVenueBankInformationsV4(SaveVenueBankInformationsMixin):
         if self.api_errors.errors:
             if application_details.error_annotation_id is not None:
                 if application_details.status != finance_models.BankInformationStatus.REJECTED:
-                    update_demarches_simplifiees_text_annotations(
-                        application_details.dossier_id,
-                        application_details.error_annotation_id,
-                        format_error_to_demarches_simplifiees_text(self.api_errors),
-                    )
+                    self.annotate_application_with_errors(application_detail=application_details)
                 return None
             if application_details.status == finance_models.BankInformationStatus.ACCEPTED:
                 raise self.api_errors
@@ -278,11 +285,7 @@ class SaveVenueBankInformationsV4(SaveVenueBankInformationsMixin):
 
         if self.api_errors.errors:
             if application_details.error_annotation_id is not None:
-                update_demarches_simplifiees_text_annotations(
-                    application_details.dossier_id,
-                    application_details.error_annotation_id,
-                    format_error_to_demarches_simplifiees_text(self.api_errors),
-                )
+                self.annotate_application_with_errors(application_detail=application_details)
                 return None
             if application_details.status == finance_models.BankInformationStatus.DRAFT:
                 return None
@@ -303,17 +306,11 @@ class SaveVenueBankInformationsV4(SaveVenueBankInformationsMixin):
         update_external_pro(venue.bookingEmail)
         if application_details.error_annotation_id is not None:
             if application_details.status == finance_models.BankInformationStatus.ACCEPTED:
-                update_demarches_simplifiees_text_annotations(
-                    application_details.dossier_id,
-                    application_details.error_annotation_id,
-                    "Dossier successfully imported",
+                self.annotate_application(
+                    application_detail=application_details, message="Dossier successfully imported"
                 )
             if application_details.status == finance_models.BankInformationStatus.DRAFT:
-                update_demarches_simplifiees_text_annotations(
-                    application_details.dossier_id,
-                    application_details.error_annotation_id,
-                    "Valid dossier",
-                )
+                self.annotate_application(application_detail=application_details, message="Valid dossier")
         if application_details.status != finance_models.BankInformationStatus.DRAFT:
             archive_dossier(application_details.dossier_id)
         return bank_information
@@ -397,11 +394,7 @@ class SaveVenueBankInformationsV5(SaveVenueBankInformationsMixin):
 
         if self.api_errors.errors:
             if application_details.error_annotation_id is not None:
-                update_demarches_simplifiees_text_annotations(
-                    application_details.dossier_id,
-                    application_details.error_annotation_id,
-                    format_error_to_demarches_simplifiees_text(self.api_errors),
-                )
+                self.annotate_application_with_errors(application_detail=application_details)
                 return None
             if application_details.status == finance_models.BankInformationStatus.DRAFT:
                 return None
@@ -422,17 +415,11 @@ class SaveVenueBankInformationsV5(SaveVenueBankInformationsMixin):
         update_external_pro(venue.bookingEmail)
         if application_details.error_annotation_id is not None:
             if application_details.status == finance_models.BankInformationStatus.ACCEPTED:
-                update_demarches_simplifiees_text_annotations(
-                    application_details.dossier_id,
-                    application_details.error_annotation_id,
-                    "Dossier successfully imported",
+                self.annotate_application(
+                    application_detail=application_details, message="Dossier successfully imported"
                 )
             if application_details.status == finance_models.BankInformationStatus.DRAFT:
-                update_demarches_simplifiees_text_annotations(
-                    application_details.dossier_id,
-                    application_details.error_annotation_id,
-                    "Valid dossier",
-                )
+                self.annotate_application(application_detail=application_details, message="Valid dossier")
         if application_details.status != finance_models.BankInformationStatus.DRAFT:
             archive_dossier(application_details.dossier_id)
         return bank_information

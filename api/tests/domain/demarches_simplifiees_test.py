@@ -30,6 +30,7 @@ EXPECTED_RESULT_WITH_SIRET_V3 = {
     "iban": "FR7630001007941234567890185",
     "bic": "QSDFGH8Z",
     "error_annotation_id": "InterestingId",
+    "error_annotation_value": "",
     "dossier_id": "Q2zzbXAtNzgyODAw",
     "venue_url_annotation_id": None,
 }
@@ -44,6 +45,7 @@ EXPECTED_RESULT_V4 = {
     "iban": "FR7630001007941234567890185",
     "bic": "QSDFGH8Z",
     "error_annotation_id": "InterestingId",
+    "error_annotation_value": "",
     "venue_url_annotation_id": "AnotherInterestingId",
     "dossier_id": "Q2zzbXAtNzgyODAw",
 }
@@ -158,7 +160,7 @@ class ParseRawBankInfoDataTest:
             "state": "en_construction",
             "annotations": [
                 {"label": "Nouvelle annotation texte", "id": "OtherId"},
-                {"label": "Erreur traitement pass Culture", "id": "InterestingId"},
+                {"label": "Erreur traitement pass Culture", "id": "InterestingId", "stringValue": ""},
             ],
         }
         if procedure_version == 4:
