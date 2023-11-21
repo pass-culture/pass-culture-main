@@ -93,7 +93,7 @@ const Offer = ({
   const venueAndOffererName = getOfferVenueAndOffererName(offer.venue)
 
   return (
-    <li className={style['offer']} data-testid="offer-listitem">
+    <div className={style['offer']}>
       {offer.venue.coordinates.latitude &&
         offer.venue.coordinates.longitude &&
         (adageUser.lat || adageUser.lat === 0) &&
@@ -260,7 +260,7 @@ const Offer = ({
           {displayDetails && <OfferDetails offer={offer} />}
         </div>
       </div>
-    </li>
+    </div>
   )
 }
 export default Offer
