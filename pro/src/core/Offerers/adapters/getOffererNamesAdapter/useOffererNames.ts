@@ -20,13 +20,12 @@ const getOffererNamesAdapter: OffererNamesAdapterGetterName = (
   isAdmin = false,
   offererId = null
 ) => {
-  const emptyOffererNamesAdapter: GetOffererNamesAdapter = async () => {
-    return {
+  const emptyOffererNamesAdapter: GetOffererNamesAdapter = () =>
+    Promise.resolve({
       isOk: true,
       message: null,
       payload: [],
-    }
-  }
+    })
 
   const offererNamesAdapter: GetOffererNamesAdapter = async () => {
     try {

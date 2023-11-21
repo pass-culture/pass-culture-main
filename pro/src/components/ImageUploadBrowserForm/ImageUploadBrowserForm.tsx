@@ -36,7 +36,7 @@ const ImageUploadBrowserForm = ({
   const validationSchema = getValidationSchema({ constraints })
 
   /* istanbul ignore next: DEBT, TO FIX */
-  const onChange = async (event: React.ChangeEvent<HTMLInputElement>) => {
+  const onChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     const newFile: File | null =
       (event.currentTarget.files && event.currentTarget.files[0]) || null
     if (newFile) {

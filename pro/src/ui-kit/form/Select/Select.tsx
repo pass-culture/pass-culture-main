@@ -35,7 +35,7 @@ const Select = ({
   const [field, meta] = useField({ name, type: 'select' })
 
   const onCustomChange = useCallback(
-    async (e: React.ChangeEvent<HTMLSelectElement>) => {
+    (e: React.ChangeEvent<HTMLSelectElement>) => {
       field.onChange(e)
       if (onChange) {
         onChange(e)

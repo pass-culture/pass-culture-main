@@ -38,7 +38,10 @@ export const useConfigureFirebase = ({
     async function initializeIfNeeded() {
       setIsFirebaseSupported(await isSupported())
     }
-    isCookieEnabled && initializeIfNeeded()
+    if (isCookieEnabled) {
+      // eslint-disable-next-line @typescript-eslint/no-floating-promises
+      initializeIfNeeded()
+    }
   }, [isCookieEnabled])
 
   useEffect(() => {
