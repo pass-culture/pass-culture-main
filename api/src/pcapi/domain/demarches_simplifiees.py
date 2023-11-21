@@ -42,8 +42,9 @@ def parse_raw_bank_info_data(data: dict, procedure_version: int) -> dict:
     result["venue_url_annotation_id"] = None
     for annotation in data["annotations"]:
         match annotation["label"]:
-            case "Erreur traitement pass Culture":
+            case "Erreur traitement pass Culture" | "Annotation technique (réservée à pcapi)":
                 result["error_annotation_id"] = annotation["id"]
+                result["error_annotation_value"] = annotation["stringValue"]
             case "URL du lieu":
                 result["venue_url_annotation_id"] = annotation["id"]
 
