@@ -16,7 +16,7 @@ export interface VenueProps {
   readOnlyFields?: string[]
 }
 
-export const onVenueChange = (
+export const onVenueChange = async (
   setFieldValue: IndividualOfferForm['setFieldValue'],
   venueList: IndividualOfferVenueItem[],
   venueId: string
@@ -26,13 +26,14 @@ export const onVenueChange = (
   if (!newVenue) {
     return
   }
-  setFieldValue('isVenueVirtual', newVenue.isVirtual)
-  setFieldValue('withdrawalDetails', newVenue?.withdrawalDetails || '')
+  await setFieldValue('isVenueVirtual', newVenue.isVirtual)
+  await setFieldValue('withdrawalDetails', newVenue?.withdrawalDetails || '')
 
   // update offer accessibility from venue when venue accessibility is defined.
   // set accessibility value after isVenueVirtual and withdrawalDetails otherwise the error message doesn't hide
-  Object.values(newVenue.accessibility).includes(true) &&
-    setFieldValue('accessibility', newVenue.accessibility)
+  if (Object.values(newVenue.accessibility).includes(true)) {
+    await setFieldValue('accessibility', newVenue.accessibility)
+  }
 }
 
 const Venue = ({
@@ -50,14 +51,20 @@ const Venue = ({
     venueList
   )
 
-  const onOffererChange = (event: React.ChangeEvent<HTMLSelectElement>) => {
+  const onOffererChange = async (
+    event: React.ChangeEvent<HTMLSelectElement>
+  ) => {
     const { venueOptions: newVenueOptions } = buildVenueOptions(
       event.target.value,
       venueList
     )
     if (newVenueOptions.length === 1) {
-      setFieldValue('venueId', newVenueOptions[0].value)
-      onVenueChange(setFieldValue, venueList, String(newVenueOptions[0].value))
+      await setFieldValue('venueId', newVenueOptions[0].value)
+      await onVenueChange(
+        setFieldValue,
+        venueList,
+        String(newVenueOptions[0].value)
+      )
     }
   }
 

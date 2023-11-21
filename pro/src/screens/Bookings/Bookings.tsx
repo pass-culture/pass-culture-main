@@ -90,9 +90,9 @@ const Bookings = <
     updateUrl({ ...DEFAULT_PRE_FILTERS })
   }, [resetPreFilters])
 
-  const applyPreFilters = (filters: PreFiltersParams) => {
+  const applyPreFilters = async (filters: PreFiltersParams) => {
     setAppliedPreFilters(filters)
-    loadBookingsRecap(filters)
+    await loadBookingsRecap(filters)
   }
 
   const loadBookingsRecap = async (preFilters: PreFiltersParams) => {
@@ -120,60 +120,66 @@ const Bookings = <
     }
   }
 
-  const reloadBookings = () => {
-    loadBookingsRecap(appliedPreFilters)
+  const reloadBookings = async () => {
+    await loadBookingsRecap(appliedPreFilters)
   }
 
-  const checkUserHasBookings = useCallback(async () => {
-    if (!user.isAdmin) {
-      const { payload } = await getUserHasBookingsAdapter()
-      setHasBooking(payload)
-    }
-  }, [user.isAdmin, setHasBooking, getUserHasBookingsAdapter])
-
   useEffect(() => {
-    checkUserHasBookings()
-  }, [checkUserHasBookings])
+    const loadHasBookings = async () => {
+      if (!user.isAdmin) {
+        const { payload } = await getUserHasBookingsAdapter()
+        setHasBooking(payload)
+      }
+    }
+
+    // eslint-disable-next-line @typescript-eslint/no-floating-promises
+    loadHasBookings()
+  }, [user.isAdmin, setHasBooking, getUserHasBookingsAdapter])
 
   const location = useLocation()
   const navigate = useNavigate()
 
   useEffect(() => {
-    const params = new URLSearchParams(location.search)
+    const applyFilters = async () => {
+      const params = new URLSearchParams(location.search)
 
-    if (
-      params.has('offerVenueId') ||
-      params.has('bookingStatusFilter') ||
-      params.has('bookingBeginningDate') ||
-      params.has('bookingEndingDate') ||
-      params.has('offerType') ||
-      params.has('offerEventDate')
-    ) {
-      const filterToLoad: PreFiltersParams = {
-        offerVenueId:
-          params.get('offerVenueId') ?? DEFAULT_PRE_FILTERS.offerVenueId,
-        // TODO typeguard this to remove the `as`
-        bookingStatusFilter:
-          (params.get('bookingStatusFilter') as BookingStatusFilter) ??
-          DEFAULT_PRE_FILTERS.bookingStatusFilter,
-        bookingBeginningDate:
-          params.get('bookingBeginningDate') ??
-          (params.has('offerEventDate')
-            ? ''
-            : DEFAULT_PRE_FILTERS.bookingBeginningDate),
-        bookingEndingDate:
-          params.get('bookingEndingDate') ??
-          (params.has('offerEventDate')
-            ? ''
-            : DEFAULT_PRE_FILTERS.bookingEndingDate),
-        offerType: params.get('offerType') ?? DEFAULT_PRE_FILTERS.offerType,
-        offerEventDate:
-          params.get('offerEventDate') ?? DEFAULT_PRE_FILTERS.offerEventDate,
+      if (
+        params.has('offerVenueId') ||
+        params.has('bookingStatusFilter') ||
+        params.has('bookingBeginningDate') ||
+        params.has('bookingEndingDate') ||
+        params.has('offerType') ||
+        params.has('offerEventDate')
+      ) {
+        const filterToLoad: PreFiltersParams = {
+          offerVenueId:
+            params.get('offerVenueId') ?? DEFAULT_PRE_FILTERS.offerVenueId,
+          // TODO typeguard this to remove the `as`
+          bookingStatusFilter:
+            (params.get('bookingStatusFilter') as BookingStatusFilter) ??
+            DEFAULT_PRE_FILTERS.bookingStatusFilter,
+          bookingBeginningDate:
+            params.get('bookingBeginningDate') ??
+            (params.has('offerEventDate')
+              ? ''
+              : DEFAULT_PRE_FILTERS.bookingBeginningDate),
+          bookingEndingDate:
+            params.get('bookingEndingDate') ??
+            (params.has('offerEventDate')
+              ? ''
+              : DEFAULT_PRE_FILTERS.bookingEndingDate),
+          offerType: params.get('offerType') ?? DEFAULT_PRE_FILTERS.offerType,
+          offerEventDate:
+            params.get('offerEventDate') ?? DEFAULT_PRE_FILTERS.offerEventDate,
+        }
+
+        await loadBookingsRecap(filterToLoad)
+        setAppliedPreFilters(filterToLoad)
       }
-
-      loadBookingsRecap(filterToLoad)
-      setAppliedPreFilters(filterToLoad)
     }
+
+    // eslint-disable-next-line @typescript-eslint/no-floating-promises
+    applyFilters()
   }, [location])
 
   const updateUrl = (filter: PreFiltersParams) => {
