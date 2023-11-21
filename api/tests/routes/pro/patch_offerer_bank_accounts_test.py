@@ -461,3 +461,70 @@ class OffererPatchBankAccountsTest:
             assert action_logged.authorUserId == action_occured.authorUserId
             assert action_logged.venueId == action_occured.venueId
             assert action_logged.bankAccountId == action_occured.bankAccountId
+
+    def test_user_linking_venue_to_bank_account_doesnt_alter_foreign_offerers(self, db_session, client):
+        actions_occured = []
+
+        offerer = offerers_factories.OffererFactory()
+        pro_user = users_factories.ProFactory()
+        offerers_factories.UserOffererFactory(user=pro_user, offerer=offerer)
+        bank_account = finance_factories.BankAccountFactory(offerer=offerer)
+        venue = offerers_factories.VenueFactory(managingOfferer=offerer)
+
+        foreign_offerer = offerers_factories.OffererFactory()
+        foreign_bank_account = finance_factories.BankAccountFactory(offerer=foreign_offerer)
+        foreign_venue = offerers_factories.VenueFactory(managingOfferer=foreign_offerer)
+        foreign_link = offerers_factories.VenueBankAccountLinkFactory(
+            venueId=foreign_venue.id, bankAccountId=foreign_bank_account.id, timespan=(datetime.datetime.utcnow(),)
+        )
+
+        assert not bank_account.venueLinks
+
+        http_client = client.with_session_auth(pro_user.email)
+
+        response = http_client.patch(
+            f"/offerers/{offerer.id}/bank-accounts/{bank_account.id}", json={"venues_ids": [venue.id]}
+        )
+
+        assert response.status_code == 204
+
+        actions_occured.append(
+            ActionOccured(
+                type=history_models.ActionType.LINK_VENUE_BANK_ACCOUNT_CREATED,
+                authorUserId=pro_user.id,
+                venueId=venue.id,
+                offererId=offerer.id,
+                bankAccountId=bank_account.id,
+            )
+        )
+
+        response = http_client.get(f"/offerers/{offerer.id}/bank-accounts/")
+
+        assert response.status_code == 200
+        assert len(response.json["bankAccounts"]) == 1
+        bank_account_response = response.json["bankAccounts"].pop()
+        assert len(bank_account_response["linkedVenues"]) == 1
+        linked_venue = bank_account_response["linkedVenues"].pop()
+        assert linked_venue["id"] == venue.id
+        assert linked_venue["commonName"] == venue.common_name
+
+        # Should not alter any other offerer data
+        db_session.refresh(foreign_link)
+        assert foreign_link.timespan.upper is None
+        assert foreign_link.bankAccount == foreign_bank_account
+
+        db_session.refresh(bank_account)
+
+        assert len(bank_account.venueLinks) == 1
+
+        actions_logged = history_models.ActionHistory.query.order_by(
+            history_models.ActionHistory.actionDate, history_models.ActionHistory.venueId
+        ).all()
+
+        assert len(actions_logged) == len(actions_occured)
+
+        for action_logged, action_occured in zip(actions_logged, sorted(actions_occured, key=lambda a: a.venueId)):
+            assert action_logged.actionType == action_occured.type
+            assert action_logged.authorUserId == action_occured.authorUserId
+            assert action_logged.venueId == action_occured.venueId
+            assert action_logged.bankAccountId == action_occured.bankAccountId

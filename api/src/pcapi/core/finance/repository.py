@@ -497,7 +497,10 @@ def get_bank_account_with_current_venues_links(
         )
         .outerjoin(
             offerers_models.VenueBankAccountLink,
-            offerers_models.VenueBankAccountLink.timespan.contains(datetime.datetime.utcnow()),
+            sqla.and_(
+                offerers_models.VenueBankAccountLink.bankAccountId == finance_models.BankAccount.id,
+                offerers_models.VenueBankAccountLink.timespan.contains(datetime.datetime.utcnow()),
+            ),
         )
         .join(offerers_models.Offerer)
         .outerjoin(offerers_models.Venue, offerers_models.Venue.managingOffererId == offerers_models.Offerer.id)
