@@ -142,7 +142,10 @@ export const Offers = ({
       )}
       <ul className={styles['offers-list']}>
         {offers.map((offer, index) => (
-          <div key={`${offer.isTemplate ? 'T' : ''}${offer.id}`}>
+          <li
+            key={`${offer.isTemplate ? 'T' : ''}${offer.id}`}
+            data-testid="offer-listitem"
+          >
             <Offer
               offer={offer}
               position={index}
@@ -159,7 +162,7 @@ export const Offers = ({
             {index === 1 && showSurveySatisfaction && (
               <SurveySatisfaction queryId={results?.queryID} />
             )}
-          </div>
+          </li>
         ))}
         {displayShowMore && (
           <div className={styles['offers-load-more']}>

@@ -31,7 +31,6 @@ export const OffersFavorites = () => {
         setFavoriteOffers(response.payload)
       })
     }
-
     // eslint-disable-next-line @typescript-eslint/no-floating-promises
     fetchFavorites()
   }, [])
@@ -58,15 +57,16 @@ export const OffersFavorites = () => {
         <ul className={styles['favorite-list']}>
           {favoriteOffers.map((offer, i) => {
             return (
-              <Offer
-                offer={offer}
-                queryId=""
-                position={i}
-                key={offer.id}
-                afterFavoriteChange={(isFavorite) => {
-                  favoriteChangeHandler(isFavorite, offer.id)
-                }}
-              ></Offer>
+              <li key={offer.id} data-testid="offer-listitem">
+                <Offer
+                  offer={offer}
+                  queryId=""
+                  position={i}
+                  afterFavoriteChange={(isFavorite) => {
+                    favoriteChangeHandler(isFavorite, offer.id)
+                  }}
+                ></Offer>
+              </li>
             )
           })}
         </ul>
