@@ -48,7 +48,7 @@ const CollectiveOfferLayout = ({
     }
   }
 
-  const breadCrumpProps = isSummaryPage
+  const navigationProps = isSummaryPage
     ? undefined
     : {
         activeStep: getActiveStep(location.pathname),
@@ -76,15 +76,15 @@ const CollectiveOfferLayout = ({
 
       {
         /* istanbul ignore next: DEBT, TO FIX */
-        breadCrumpProps && (
+        navigationProps && (
           <CollectiveOfferNavigation
-            activeStep={breadCrumpProps.activeStep}
-            className={cn(styles['eac-layout-breadcrumb'], {
-              [styles['stepper-breadcrumb']]: breadCrumpProps.isCreatingOffer,
+            activeStep={navigationProps.activeStep}
+            className={cn(styles['eac-layout-navigation'], {
+              [styles['stepper-navigation']]: navigationProps.isCreatingOffer,
             })}
-            isCreatingOffer={breadCrumpProps.isCreatingOffer}
+            isCreatingOffer={navigationProps.isCreatingOffer}
             isOfferEducational
-            offerId={breadCrumpProps.offerId}
+            offerId={navigationProps.offerId}
             isTemplate={isTemplate}
             haveStock={haveStock}
             requestId={requestId}

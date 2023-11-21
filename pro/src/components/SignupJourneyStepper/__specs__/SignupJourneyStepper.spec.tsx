@@ -13,9 +13,9 @@ import {
 import { DEFAULT_OFFERER_FORM_VALUES } from 'screens/SignupJourneyForm/Offerer/constants'
 import { renderWithProviders } from 'utils/renderWithProviders'
 
-import SignupBreadcrumb from '../SignupJourneyStepper'
+import SignupJourneyStepper from '../SignupJourneyStepper'
 
-const renderSignupBreadcrumb = (
+const renderSignupStepper = (
   contextValue: SignupJourneyContextValues,
   url = '/parcours-inscription/identification'
 ) => {
@@ -30,7 +30,7 @@ const renderSignupBreadcrumb = (
   }
   const rtlReturns = renderWithProviders(
     <SignupJourneyContext.Provider value={contextValue}>
-      <SignupBreadcrumb />
+      <SignupJourneyStepper />
       <Routes>
         <Route
           path={'/parcours-inscription/identification'}
@@ -61,7 +61,7 @@ const renderSignupBreadcrumb = (
   }
 }
 
-describe('test SignupBreadcrumb', () => {
+describe('test SignupJourneyStepper', () => {
   let contextValue: SignupJourneyContextValues
   beforeEach(() => {
     contextValue = {
@@ -73,7 +73,7 @@ describe('test SignupBreadcrumb', () => {
   })
   it('should render authentication step', async () => {
     const { tabAuthentication, tabActivity, tabValidation } =
-      renderSignupBreadcrumb(contextValue)
+      renderSignupStepper(contextValue)
 
     expect(tabAuthentication).toBeInTheDocument()
     expect(tabActivity).toBeInTheDocument()
@@ -95,7 +95,7 @@ describe('test SignupBreadcrumb', () => {
       hasVenueWithSiret: false,
       ...DEFAULT_ADDRESS_FORM_VALUES,
     }
-    const { tabAuthentication, tabValidation } = renderSignupBreadcrumb(
+    const { tabAuthentication, tabValidation } = renderSignupStepper(
       contextValue,
       '/parcours-inscription/activite'
     )
@@ -122,7 +122,7 @@ describe('test SignupBreadcrumb', () => {
       targetCustomer: Target.INDIVIDUAL,
     }
     const { tabAuthentication, tabActivity, tabValidation } =
-      renderSignupBreadcrumb(contextValue, '/parcours-inscription/validation')
+      renderSignupStepper(contextValue, '/parcours-inscription/validation')
 
     expect(screen.getByText('Validation screen')).toBeInTheDocument()
 
@@ -139,9 +139,9 @@ describe('test SignupBreadcrumb', () => {
     expect(screen.getByText('Validation screen')).toBeInTheDocument()
   })
 
-  it('should not render breadcrumb when step is not included in breadcrumb step', () => {
+  it('should not render stepper when step is not included in steps', () => {
     const { tabAuthentication, tabActivity, tabValidation } =
-      renderSignupBreadcrumb(contextValue, '/parcours-inscription/structure')
+      renderSignupStepper(contextValue, '/parcours-inscription/structure')
 
     expect(tabAuthentication).not.toBeInTheDocument()
     expect(tabActivity).not.toBeInTheDocument()

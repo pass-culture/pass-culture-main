@@ -17,11 +17,11 @@ import * as useAnalytics from 'hooks/useAnalytics'
 import { DEFAULT_OFFERER_FORM_VALUES } from 'screens/SignupJourneyForm/Offerer/constants'
 import { renderWithProviders } from 'utils/renderWithProviders'
 
-import SignupBreadcrumb from '../SignupJourneyStepper'
+import SignupJourneyStepper from '../SignupJourneyStepper'
 
 const mockLogEvent = vi.fn()
 
-const renderSignupBreadcrumb = (
+const renderSignupJourneyStepper = (
   contextValue: SignupJourneyContextValues,
   url = '/parcours-inscription/authentification'
 ) => {
@@ -36,7 +36,7 @@ const renderSignupBreadcrumb = (
   }
   const rtlReturns = renderWithProviders(
     <SignupJourneyContext.Provider value={contextValue}>
-      <SignupBreadcrumb />
+      <SignupJourneyStepper />
       <Routes>
         <Route
           path="/parcours-inscription/authentification"
@@ -67,7 +67,7 @@ const renderSignupBreadcrumb = (
   }
 }
 
-describe('test SignupBreadcrumb', () => {
+describe('test renderSignupJourneyStepper', () => {
   let contextValue: SignupJourneyContextValues
   beforeEach(() => {
     vi.spyOn(useAnalytics, 'default').mockImplementation(() => ({
@@ -82,7 +82,7 @@ describe('test SignupBreadcrumb', () => {
   })
   it('Should not log current tab click and disabled ones', async () => {
     const { tabAuthentication, tabActivity, tabValidation } =
-      renderSignupBreadcrumb(contextValue)
+      renderSignupJourneyStepper(contextValue)
 
     tabAuthentication && (await userEvent.click(tabAuthentication))
 
@@ -102,7 +102,7 @@ describe('test SignupBreadcrumb', () => {
       hasVenueWithSiret: false,
       ...DEFAULT_ADDRESS_FORM_VALUES,
     }
-    const { tabAuthentication } = renderSignupBreadcrumb(
+    const { tabAuthentication } = renderSignupJourneyStepper(
       contextValue,
       '/parcours-inscription/activite'
     )
@@ -127,7 +127,7 @@ describe('test SignupBreadcrumb', () => {
       hasVenueWithSiret: false,
       ...DEFAULT_ADDRESS_FORM_VALUES,
     }
-    const { tabActivity } = renderSignupBreadcrumb(
+    const { tabActivity } = renderSignupJourneyStepper(
       contextValue,
       '/parcours-inscription/activite'
     )
@@ -149,7 +149,10 @@ describe('test SignupBreadcrumb', () => {
       targetCustomer: Target.INDIVIDUAL,
     }
     const { tabAuthentication, tabActivity, tabValidation } =
-      renderSignupBreadcrumb(contextValue, '/parcours-inscription/validation')
+      renderSignupJourneyStepper(
+        contextValue,
+        '/parcours-inscription/validation'
+      )
 
     expect(screen.getByText('Validation screen')).toBeInTheDocument()
 

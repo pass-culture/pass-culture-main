@@ -87,7 +87,7 @@ const renderIndividualOfferNavigation = (
 
 describe('test IndividualOfferNavigation', () => {
   describe('in creation', () => {
-    it('should render stepper breadcrumb in creation', () => {
+    it('should render stepper in creation', () => {
       renderIndividualOfferNavigation()
 
       expect(screen.getByTestId('stepper')).toBeInTheDocument()
@@ -269,7 +269,7 @@ describe('test IndividualOfferNavigation', () => {
   })
 
   describe('in edition', () => {
-    it('should render default breadcrumb in edition', () => {
+    it('should render tabs navigation in edition', () => {
       const offer = individualOfferFactory({
         id: offerId,
         stocks: [individualStockFactory({ id: stockId })],

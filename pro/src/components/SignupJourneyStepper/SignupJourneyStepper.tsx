@@ -84,9 +84,9 @@ const SignupJourneyStepper = () => {
     },
   ]
 
-  const breadcrumbStepIds = signupJourneyBreadcrumbSteps.map((step) => step.id)
+  const stepsIds = signupJourneyBreadcrumbSteps.map((step) => step.id)
 
-  if (!breadcrumbStepIds.includes(activeStep)) {
+  if (!stepsIds.includes(activeStep)) {
     return <></>
   }
 
@@ -94,7 +94,7 @@ const SignupJourneyStepper = () => {
     <Stepper
       activeStep={activeStep}
       steps={signupJourneyBreadcrumbSteps}
-      className={styles['signup-breadcrumb']}
+      className={styles['signup-stepper']}
     />
   )
 }
