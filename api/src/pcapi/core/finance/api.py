@@ -709,6 +709,7 @@ def _delete_dependent_event_pricings(event: models.FinanceEvent, log_message: st
     logs.delete(synchronize_session=False)
     pricings = models.Pricing.query.filter(models.Pricing.id.in_(pricing_ids))
     pricings.delete(synchronize_session=False)
+
     models.FinanceEvent.query.filter(
         models.FinanceEvent.id.in_(events_already_priced),
         models.FinanceEvent.status == models.FinanceEventStatus.PRICED,
@@ -2493,3 +2494,7 @@ def cancel_finance_incident(incident: models.FinanceIncident, comment: str) -> N
     db.session.add(action)
 
     db.session.commit()
+
+
+def are_cashflows_being_generated() -> bool:
+    return app.redis_client.exists(conf.REDIS_GENERATE_CASHFLOW_LOCK)  # type: ignore [attr-defined]
