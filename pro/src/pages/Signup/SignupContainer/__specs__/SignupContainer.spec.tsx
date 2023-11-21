@@ -198,7 +198,7 @@ describe('Signup', () => {
           // We simulate onBlur to have email field touched
           await userEvent.tab()
 
-          await unmount()
+          unmount()
           expect(mockLogEvent).toHaveBeenCalledTimes(1)
           expect(mockLogEvent).toHaveBeenNthCalledWith(
             1,
@@ -209,13 +209,13 @@ describe('Signup', () => {
             }
           )
         })
-        it('should not trigger an event if no field has been touched', async () => {
+        it('should not trigger an event if no field has been touched', () => {
           const { unmount } = renderSignUp(store)
-          await unmount()
+          unmount()
           expect(mockLogEvent).toHaveBeenCalledTimes(0)
         })
       })
-      it('should have an beforeunload event listener attached to the window', async () => {
+      it('should have an beforeunload event listener attached to the window', () => {
         const spyAddEvent = vi.fn()
         const spyRemoveEvent = vi.fn()
         window.addEventListener = spyAddEvent
@@ -233,7 +233,7 @@ describe('Signup', () => {
             .map((args) => args[0] === 'beforeunload')
             .filter(Boolean).length
         ).toEqual(0)
-        await unmount()
+        unmount()
         expect(
           spyRemoveEvent.mock.calls
             .map((args) => args[0] === 'beforeunload')

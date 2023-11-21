@@ -127,7 +127,7 @@ describe('components | BookingsRecapTable', () => {
     )
   })
 
-  it('should filter bookings collective on render', async () => {
+  it('should filter bookings collective on render', () => {
     vi.spyOn(bookingDetailsAdapter, 'default').mockResolvedValue({
       isOk: true,
       message: '',
@@ -210,7 +210,7 @@ describe('components | BookingsRecapTable', () => {
     expect(cells[5]).toHaveTextContent('Détails')
   })
 
-  it('should not render a Header component when there is no filtered booking', async () => {
+  it('should not render a Header component when there is no filtered booking', () => {
     // given
     const props: Props = {
       ...defaultProps,

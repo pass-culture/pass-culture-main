@@ -89,12 +89,8 @@ describe('IndividualOffer section: venue', () => {
     }
   })
 
-  it('should not automatically select a structure', async () => {
-    renderVenue({
-      initialValues,
-      onSubmit,
-      props,
-    })
+  it('should not automatically select a structure', () => {
+    renderVenue({ initialValues, onSubmit, props })
 
     const selectOfferer = screen.getByLabelText('Structure')
 
@@ -103,12 +99,9 @@ describe('IndividualOffer section: venue', () => {
     expect(selectOfferer.childNodes.length).toBe(4)
   })
 
-  it('should not automatically select an offerer when the structure is not defined', async () => {
-    renderVenue({
-      initialValues,
-      onSubmit,
-      props,
-    })
+  it('should not automatically select an offerer when the structure is not defined', () => {
+    renderVenue({ initialValues, onSubmit, props })
+
     const selectVenue = screen.getByLabelText('Lieu')
 
     expect(selectVenue).toBeInTheDocument()

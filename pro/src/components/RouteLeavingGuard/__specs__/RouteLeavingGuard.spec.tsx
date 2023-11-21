@@ -20,7 +20,7 @@ const MiniAppTest = () => (
   </div>
 )
 
-const renderRouteLeavingGuard = async (props: RouteLeavingGuardProps) => {
+const renderRouteLeavingGuard = (props: RouteLeavingGuardProps) => {
   renderWithProviders(
     <>
       <MiniAppTest />

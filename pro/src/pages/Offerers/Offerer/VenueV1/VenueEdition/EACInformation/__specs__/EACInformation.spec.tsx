@@ -58,7 +58,7 @@ describe('EACInformation', () => {
       ).toBeInTheDocument()
     })
 
-    it('when venue has no collective data', async () => {
+    it('when venue has no collective data', () => {
       const venueId = 1
       const offererId = 1
       const venue = {

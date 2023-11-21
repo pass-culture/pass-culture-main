@@ -22,8 +22,8 @@ const renderImageUploadBrowserForm = (
 }
 
 describe('ImageUploadBrowserForm', () => {
-  it('render', async () => {
-    await renderImageUploadBrowserForm()
+  it('render', () => {
+    renderImageUploadBrowserForm()
     const fileInput = screen.getByLabelText(
       'Importer une image depuis l’ordinateur'
     )
@@ -31,7 +31,7 @@ describe('ImageUploadBrowserForm', () => {
   })
 
   it('should call onSubmit when file is valid', async () => {
-    await renderImageUploadBrowserForm()
+    renderImageUploadBrowserForm()
     const fileInput = screen.getByLabelText(
       'Importer une image depuis l’ordinateur'
     )
@@ -50,7 +50,7 @@ describe('ImageUploadBrowserForm', () => {
   })
 
   it('should display error when file is too big', async () => {
-    await renderImageUploadBrowserForm()
+    renderImageUploadBrowserForm()
     const fileInput = screen.getByLabelText(
       'Importer une image depuis l’ordinateur'
     )
@@ -67,7 +67,7 @@ describe('ImageUploadBrowserForm', () => {
   })
 
   it("should display error when file's width is too small", async () => {
-    await renderImageUploadBrowserForm()
+    renderImageUploadBrowserForm()
     const fileInput = screen.getByLabelText(
       'Importer une image depuis l’ordinateur'
     )
@@ -84,7 +84,7 @@ describe('ImageUploadBrowserForm', () => {
   })
 
   it("should display error when file's type is refused", async () => {
-    await renderImageUploadBrowserForm()
+    renderImageUploadBrowserForm()
     const fileInput = screen.getByLabelText(
       'Importer une image depuis l’ordinateur'
     )
@@ -101,7 +101,7 @@ describe('ImageUploadBrowserForm', () => {
   })
 
   it("should display error when file's height and width is too small for portrait", async () => {
-    await renderImageUploadBrowserForm()
+    renderImageUploadBrowserForm()
     const fileInput = screen.getByLabelText(
       'Importer une image depuis l’ordinateur'
     )

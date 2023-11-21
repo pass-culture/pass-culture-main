@@ -14,7 +14,7 @@ enum SomeColumns {
 }
 
 describe('useColumnSorting', () => {
-  it('should change sorting mode on callback call', async () => {
+  it('should change sorting mode on callback call', () => {
     const { result } = renderHook(() => useColumnSorting<SomeColumns>())
 
     expect(result.current.currentSortingColumn).toBeNull()

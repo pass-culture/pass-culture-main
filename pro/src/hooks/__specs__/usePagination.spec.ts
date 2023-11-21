@@ -6,7 +6,7 @@ const itemsList = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10]
 const itemsPerPage = 3
 
 describe('usePagination', () => {
-  it('should paginate list', async () => {
+  it('should paginate list', () => {
     const { result } = renderHook(() => usePagination(itemsList, itemsPerPage))
 
     expect(result.current.page).toBe(1)

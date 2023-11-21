@@ -74,7 +74,7 @@ describe('CardOffer component', () => {
     expect(screen.getByText('Lieu à définir')).toBeInTheDocument()
   })
 
-  it('should redirect on click in offer card', async () => {
+  it('should redirect on click in offer card', () => {
     vi.spyOn(router, 'useSearchParams').mockReturnValue([
       new URLSearchParams({ token: '123' }),
       vi.fn(),

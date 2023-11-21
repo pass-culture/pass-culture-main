@@ -8,7 +8,7 @@ import { renderWithProviders } from 'utils/renderWithProviders'
 
 import EACInformation from '../EACInformation'
 
-const renderEACInformation = async ({
+const renderEACInformation = ({
   venue,
   isCreatingVenue,
 }: {
@@ -26,11 +26,8 @@ describe('components | EACInformation', () => {
     )
   })
 
-  it('should not be able to access information page when creating a venue', async () => {
-    await renderEACInformation({
-      isCreatingVenue: true,
-      venue: null,
-    })
+  it('should not be able to access information page when creating a venue', () => {
+    renderEACInformation({ isCreatingVenue: true, venue: null })
 
     expect(screen.queryByText(/Renseigner mes informations/)).toHaveAttribute(
       'aria-disabled',
@@ -38,33 +35,23 @@ describe('components | EACInformation', () => {
     )
   })
 
-  it('should be able to access information page when updating a venue', async () => {
-    const venue = {
-      id: 'V1',
-    } as unknown as Venue
+  it('should be able to access information page when updating a venue', () => {
+    const venue = { id: 'V1' } as unknown as Venue
 
-    await renderEACInformation({
-      isCreatingVenue: false,
-      venue: venue,
-    })
+    renderEACInformation({ isCreatingVenue: false, venue: venue })
 
     expect(
       screen.queryByText(/Renseigner mes informations/)
     ).not.toHaveAttribute('aria-disabled', 'true')
   })
 
-  it('should have the information banner', async () => {
-    await renderEACInformation({
-      isCreatingVenue: true,
-      venue: null,
-    })
+  it('should have the information banner', () => {
+    renderEACInformation({ isCreatingVenue: true, venue: null })
 
-    expect(
-      await screen.queryByText(/Une fois votre lieu créé/)
-    ).toBeInTheDocument()
+    expect(screen.queryByText(/Une fois votre lieu créé/)).toBeInTheDocument()
   })
 
-  it('should not have the information banner', async () => {
+  it('should not have the information banner', () => {
     const venue = {
       id: 'V1',
       collectiveAccessInformation: 'test',
@@ -72,13 +59,10 @@ describe('components | EACInformation', () => {
       collectiveEmail: 'email@email.email',
     } as unknown as Venue
 
-    await renderEACInformation({
-      isCreatingVenue: false,
-      venue: venue,
-    })
+    renderEACInformation({ isCreatingVenue: false, venue: venue })
 
     expect(
-      await screen.queryByText(/Une fois votre lieu créé/)
+      screen.queryByText(/Une fois votre lieu créé/)
     ).not.toBeInTheDocument()
   })
 })

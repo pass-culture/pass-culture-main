@@ -17,8 +17,9 @@ describe('AppPreviewVenue', () => {
     }
   })
 
-  it('should render app preview venue', async () => {
-    await renderAppPreviewVenue(props)
+  it('should render app preview venue', () => {
+    renderAppPreviewVenue(props)
+
     expect(screen.getByTestId('app-preview-venue-img-home')).toBeInTheDocument()
     expect(screen.getByTestId('app-preview-venue-img')).toBeInTheDocument()
   })

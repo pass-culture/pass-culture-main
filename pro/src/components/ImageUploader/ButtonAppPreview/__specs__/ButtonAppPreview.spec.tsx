@@ -25,10 +25,9 @@ describe('ButtonAppPreview', () => {
     }
   })
 
-  it('should render ButtonAppPreview', async () => {
-    await renderButtonAppPreview({
-      props,
-    })
+  it('should render ButtonAppPreview', () => {
+    renderButtonAppPreview({ props })
+
     expect(
       screen.getByRole('button', { name: /Prévisualiser/i })
     ).toBeInTheDocument()
@@ -39,9 +38,8 @@ describe('ButtonAppPreview', () => {
   })
 
   it('should open/close ModalAppPreview on click', async () => {
-    await renderButtonAppPreview({
-      props,
-    })
+    renderButtonAppPreview({ props })
+
     await userEvent.click(
       screen.getByRole('button', { name: /Prévisualiser/i })
     )

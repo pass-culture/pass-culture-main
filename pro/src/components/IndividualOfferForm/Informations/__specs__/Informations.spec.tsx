@@ -50,7 +50,7 @@ describe('IndividualOffer section: UsefulInformations', () => {
     props = {}
   })
 
-  it('should render non sub categories fields', async () => {
+  it('should render non sub categories fields', () => {
     renderInformations({ props, initialValues, onSubmit })
     expect(screen.getByLabelText('Titre de l’offre')).toBeInTheDocument()
     expect(
@@ -80,7 +80,7 @@ describe('IndividualOffer section: UsefulInformations', () => {
     ).not.toBeInTheDocument()
   })
 
-  it('should also render sub categories fields', async () => {
+  it('should also render sub categories fields', () => {
     initialValues.subCategoryFields = [
       'author',
       'ean',

@@ -102,7 +102,7 @@ describe('AppLayout', () => {
 
   it('should render new header if FF is active', async () => {
     renderAppLayout()
-    waitForElementToBeRemoved(() => screen.getByTestId('spinner'))
+    await waitForElementToBeRemoved(() => screen.getByTestId('spinner'))
 
     expect(screen.getByRole('link', { name: 'Rechercher' })).toBeInTheDocument()
     expect(

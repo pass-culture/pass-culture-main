@@ -134,7 +134,7 @@ describe('OfferEducationalActions', () => {
     expect(screen.getByText('terminée')).toBeInTheDocument()
   })
 
-  it('should not display booking link for cancelled booking', async () => {
+  it('should not display booking link for cancelled booking', () => {
     renderOfferEducationalActions({
       ...defaultValues,
       offer: collectiveOfferFactory({

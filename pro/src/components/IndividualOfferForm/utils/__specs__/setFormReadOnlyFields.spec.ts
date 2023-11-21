@@ -8,6 +8,7 @@ import {
   OFFER_STATUS_REJECTED,
 } from 'core/Offers/constants'
 import { IndividualOffer } from 'core/Offers/types'
+import { individualOfferFactory } from 'utils/individualApiFactories'
 
 import { FORM_DEFAULT_VALUES } from '../../constants'
 import setFormReadOnlyFields from '../setFormReadOnlyFields'
@@ -21,10 +22,8 @@ describe('setFormReadOnlyFields', () => {
   const fullBlockedStatus = [OFFER_STATUS_PENDING, OFFER_STATUS_REJECTED]
   it.each(fullBlockedStatus)(
     'should return all form fields for %s offer status',
-    async (status) => {
-      const offer = {
-        status,
-      } as IndividualOffer
+    (status) => {
+      const offer = individualOfferFactory({ status })
       const readOnlyFields = setFormReadOnlyFields(offer)
       expect(readOnlyFields.sort()).toStrictEqual(
         Object.keys(FORM_DEFAULT_VALUES).sort()
@@ -40,10 +39,8 @@ describe('setFormReadOnlyFields', () => {
   ]
   it.each(blockedStatus)(
     'should return standard blocked field for %s offer status',
-    async (status) => {
-      const offer = {
-        status,
-      } as IndividualOffer
+    (status) => {
+      const offer = individualOfferFactory({ status })
       const readOnlyFields = setFormReadOnlyFields(offer)
       expect(readOnlyFields).toStrictEqual([
         'categoryId',
@@ -59,11 +56,9 @@ describe('setFormReadOnlyFields', () => {
       (field: string) =>
         !['accessibility', 'externalTicketOfficeUrl', 'isDuo'].includes(field)
     )
-    const offer = {
-      lastProvider: {
-        name: 'AlLocINé',
-      },
-    } as IndividualOffer
+    const offer = individualOfferFactory({
+      lastProvider: { name: 'AlLocINé' },
+    })
     const readOnlyFields = setFormReadOnlyFields(offer)
     expect(readOnlyFields.sort()).toStrictEqual(expectedReadOnlyFields.sort())
   })
