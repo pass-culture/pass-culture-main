@@ -6,7 +6,7 @@ import useActiveFeature from 'hooks/useActiveFeature'
 import { useOfferStockEditionURL } from 'hooks/useOfferEditionURL'
 import Tabs from 'ui-kit/Tabs'
 
-export enum CollectiveOfferNavigationStep {
+export enum CollectiveOfferStep {
   DETAILS = 'details',
   STOCKS = 'stocks',
   VISIBILITY = 'visibility',
@@ -15,7 +15,7 @@ export enum CollectiveOfferNavigationStep {
 }
 
 export interface CollectiveOfferNavigationProps {
-  activeStep: CollectiveOfferNavigationStep
+  activeStep: CollectiveOfferStep
   isCreatingOffer: boolean
   isCompletingDraft?: boolean
   offerId?: number
@@ -47,19 +47,19 @@ const CollectiveOfferNavigation = ({
   const requestIdUrl = requestId ? `?requete=${requestId}` : ''
 
   if (isEditingExistingOffer) {
-    stepList[CollectiveOfferNavigationStep.DETAILS] = {
-      id: CollectiveOfferNavigationStep.DETAILS,
+    stepList[CollectiveOfferStep.DETAILS] = {
+      id: CollectiveOfferStep.DETAILS,
       label: 'Détails de l’offre',
       url: `/offre/${offerId}/collectif/edition`,
     }
     if (!isTemplate) {
-      stepList[CollectiveOfferNavigationStep.STOCKS] = {
-        id: CollectiveOfferNavigationStep.STOCKS,
+      stepList[CollectiveOfferStep.STOCKS] = {
+        id: CollectiveOfferStep.STOCKS,
         label: 'Date et prix',
         url: stockEditionUrl,
       }
-      stepList[CollectiveOfferNavigationStep.VISIBILITY] = {
-        id: CollectiveOfferNavigationStep.VISIBILITY,
+      stepList[CollectiveOfferStep.VISIBILITY] = {
+        id: CollectiveOfferStep.VISIBILITY,
         label: isOfferToInstitutionActive
           ? 'Établissement et enseignant'
           : 'Visibilité',
@@ -67,18 +67,18 @@ const CollectiveOfferNavigation = ({
       }
     }
   } else {
-    stepList[CollectiveOfferNavigationStep.DETAILS] = {
-      id: CollectiveOfferNavigationStep.DETAILS,
+    stepList[CollectiveOfferStep.DETAILS] = {
+      id: CollectiveOfferStep.DETAILS,
       label: 'Détails de l’offre',
     }
     if (!isTemplate) {
-      stepList[CollectiveOfferNavigationStep.STOCKS] = {
-        id: CollectiveOfferNavigationStep.STOCKS,
+      stepList[CollectiveOfferStep.STOCKS] = {
+        id: CollectiveOfferStep.STOCKS,
         label: 'Date et prix',
         url: offerId ? `/offre/${offerId}/collectif/stocks${requestIdUrl}` : '',
       }
-      stepList[CollectiveOfferNavigationStep.VISIBILITY] = {
-        id: CollectiveOfferNavigationStep.VISIBILITY,
+      stepList[CollectiveOfferStep.VISIBILITY] = {
+        id: CollectiveOfferStep.VISIBILITY,
         label: isOfferToInstitutionActive
           ? 'Établissement et enseignant'
           : 'Visibilité',
@@ -88,16 +88,16 @@ const CollectiveOfferNavigation = ({
             : '',
       }
     }
-    stepList[CollectiveOfferNavigationStep.SUMMARY] = {
-      id: CollectiveOfferNavigationStep.SUMMARY,
+    stepList[CollectiveOfferStep.SUMMARY] = {
+      id: CollectiveOfferStep.SUMMARY,
       label: 'Récapitulatif',
       url:
         offerId && haveStock
           ? `/offre/${offerId}/collectif/creation/recapitulatif`
           : '',
     }
-    stepList[CollectiveOfferNavigationStep.CONFIRMATION] = {
-      id: CollectiveOfferNavigationStep.CONFIRMATION,
+    stepList[CollectiveOfferStep.CONFIRMATION] = {
+      id: CollectiveOfferStep.CONFIRMATION,
       label: 'Confirmation',
     }
 
@@ -106,30 +106,30 @@ const CollectiveOfferNavigation = ({
     /* eslint-disable no-fallthrough */
     switch (activeStep) {
       // @ts-expect-error switch fallthrough
-      case CollectiveOfferNavigationStep.CONFIRMATION:
-        stepList[CollectiveOfferNavigationStep.SUMMARY].url =
+      case CollectiveOfferStep.CONFIRMATION:
+        stepList[CollectiveOfferStep.SUMMARY].url =
           `/offre/${offerId}/collectif/creation/recapitulatif`
 
       // @ts-expect-error switch fallthrough
-      case CollectiveOfferNavigationStep.SUMMARY:
+      case CollectiveOfferStep.SUMMARY:
         if (!isTemplate) {
-          stepList[CollectiveOfferNavigationStep.VISIBILITY].url =
+          stepList[CollectiveOfferStep.VISIBILITY].url =
             `/offre/${offerId}/collectif/visibilite`
         }
 
       // @ts-expect-error switch fallthrough
-      case CollectiveOfferNavigationStep.VISIBILITY:
+      case CollectiveOfferStep.VISIBILITY:
         if (!isTemplate) {
-          stepList[CollectiveOfferNavigationStep.STOCKS].url =
+          stepList[CollectiveOfferStep.STOCKS].url =
             `/offre/${offerId}/collectif/stocks`
         }
 
-      case CollectiveOfferNavigationStep.STOCKS:
+      case CollectiveOfferStep.STOCKS:
         if (isTemplate) {
-          stepList[CollectiveOfferNavigationStep.DETAILS].url =
+          stepList[CollectiveOfferStep.DETAILS].url =
             `/offre/collectif/vitrine/${offerId}/creation`
         } else {
-          stepList[CollectiveOfferNavigationStep.DETAILS].url =
+          stepList[CollectiveOfferStep.DETAILS].url =
             `/offre/collectif/${offerId}/creation${requestIdUrl}`
         }
     }

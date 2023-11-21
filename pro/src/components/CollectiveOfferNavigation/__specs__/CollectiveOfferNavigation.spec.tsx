@@ -4,7 +4,7 @@ import React from 'react'
 import { renderWithProviders } from 'utils/renderWithProviders'
 
 import CollectiveOfferNavigation, {
-  CollectiveOfferNavigationStep,
+  CollectiveOfferStep,
   CollectiveOfferNavigationProps,
 } from '../CollectiveOfferNavigation'
 
@@ -18,7 +18,7 @@ describe('CollectiveOfferNavigation', () => {
 
   beforeEach(() => {
     props = {
-      activeStep: CollectiveOfferNavigationStep.DETAILS,
+      activeStep: CollectiveOfferStep.DETAILS,
       isCreatingOffer: true,
       offerId: offerId,
       isOfferEducational: true,
@@ -47,7 +47,7 @@ describe('CollectiveOfferNavigation', () => {
 
   it('should show different links if offer is template', async () => {
     props.isTemplate = true
-    props.activeStep = CollectiveOfferNavigationStep.SUMMARY
+    props.activeStep = CollectiveOfferStep.SUMMARY
     renderCollectiveOfferNavigation(props)
 
     const listItems = await screen.findAllByRole('listitem')
@@ -63,7 +63,7 @@ describe('CollectiveOfferNavigation', () => {
   })
 
   it('should show links if stocks is the active step', () => {
-    props.activeStep = CollectiveOfferNavigationStep.STOCKS
+    props.activeStep = CollectiveOfferStep.STOCKS
     renderCollectiveOfferNavigation(props)
     const links = screen.queryAllByRole('link')
     expect(links).toHaveLength(2)
@@ -76,7 +76,7 @@ describe('CollectiveOfferNavigation', () => {
   })
 
   it('should show links if visibility is the active step', () => {
-    props.activeStep = CollectiveOfferNavigationStep.VISIBILITY
+    props.activeStep = CollectiveOfferStep.VISIBILITY
     renderCollectiveOfferNavigation(props)
     const links = screen.queryAllByRole('link')
     expect(links).toHaveLength(2)
@@ -89,7 +89,7 @@ describe('CollectiveOfferNavigation', () => {
   })
 
   it('should show links if summary is the active step', () => {
-    props.activeStep = CollectiveOfferNavigationStep.SUMMARY
+    props.activeStep = CollectiveOfferStep.SUMMARY
     renderCollectiveOfferNavigation(props)
     const links = screen.queryAllByRole('link')
     expect(links).toHaveLength(3)
@@ -105,7 +105,7 @@ describe('CollectiveOfferNavigation', () => {
   })
 
   it('should show links if summary is the active step', () => {
-    props.activeStep = CollectiveOfferNavigationStep.CONFIRMATION
+    props.activeStep = CollectiveOfferStep.CONFIRMATION
     renderCollectiveOfferNavigation(props)
     const links = screen.queryAllByRole('link')
     expect(links).toHaveLength(4)
