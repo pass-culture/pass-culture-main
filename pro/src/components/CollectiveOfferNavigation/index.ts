@@ -1,4 +1,1 @@
-export {
-  default,
-  CollectiveOfferNavigationStep,
-} from './CollectiveOfferNavigation'
+export { default, CollectiveOfferStep } from './CollectiveOfferNavigation'

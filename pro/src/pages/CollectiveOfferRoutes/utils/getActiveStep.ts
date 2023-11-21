@@ -1,19 +1,19 @@
-import { CollectiveOfferNavigationStep } from 'components/CollectiveOfferNavigation'
+import { CollectiveOfferStep } from 'components/CollectiveOfferNavigation'
 
 export const getActiveStep = (
   locationPathname: string
-): CollectiveOfferNavigationStep => {
+): CollectiveOfferStep => {
   if (locationPathname.includes('stocks')) {
-    return CollectiveOfferNavigationStep.STOCKS
+    return CollectiveOfferStep.STOCKS
   }
 
   if (locationPathname.includes('visibilite')) {
-    return CollectiveOfferNavigationStep.VISIBILITY
+    return CollectiveOfferStep.VISIBILITY
   }
 
   if (locationPathname.includes('recapitulatif')) {
-    return CollectiveOfferNavigationStep.SUMMARY
+    return CollectiveOfferStep.SUMMARY
   }
 
-  return CollectiveOfferNavigationStep.DETAILS
+  return CollectiveOfferStep.DETAILS
 }
