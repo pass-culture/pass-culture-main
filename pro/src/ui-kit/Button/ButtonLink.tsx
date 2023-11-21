@@ -14,6 +14,7 @@ export type LinkProps = {
   rel?: string
   target?: string
   'aria-label'?: string
+  'aria-current'?: 'page'
   type?: string
   download?: boolean
 }
@@ -127,6 +128,7 @@ const ButtonLink = ({
       to={absoluteUrl}
       {...disabled}
       aria-label={linkProps['aria-label']}
+      aria-current={linkProps['aria-current']}
     >
       {body}
     </Link>
