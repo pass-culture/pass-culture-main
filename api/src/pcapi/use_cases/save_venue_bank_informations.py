@@ -120,13 +120,6 @@ class SaveVenueBankInformationsV2(SaveVenueBankInformationsMixin):
         assert venue  # for typing purposes
         venue_sql_entity = offerers_models.Venue.query.get(venue.identifier)
 
-        if application_details.venue_url_annotation_id is not None:
-            update_demarches_simplifiees_text_annotations(
-                application_details.dossier_id,
-                application_details.venue_url_annotation_id,
-                urls.build_pc_pro_venue_link(venue_sql_entity),
-            )
-
         bank_information = self.bank_informations_repository.get_by_application(application_details.application_id)
         if not bank_information:
             bank_information = self.bank_informations_repository.find_by_venue(venue.identifier)
@@ -261,12 +254,7 @@ class SaveVenueBankInformationsV4(SaveVenueBankInformationsMixin):
         assert venue  # for typing purposes
         venue_sql_entity = offerers_models.Venue.query.get(venue.identifier)
 
-        if application_details.venue_url_annotation_id is not None:
-            update_demarches_simplifiees_text_annotations(
-                application_details.dossier_id,
-                application_details.venue_url_annotation_id,
-                urls.build_pc_pro_venue_link(venue_sql_entity),
-            )
+        self.fill_venue_url_application_field(application_details=application_details, venue=venue_sql_entity)
 
         bank_information = self.bank_informations_repository.get_by_application(application_details.application_id)
         if not bank_information:
@@ -346,6 +334,19 @@ class SaveVenueBankInformationsV4(SaveVenueBankInformationsMixin):
         assert venue or self.api_errors.errors
         return venue
 
+    def fill_venue_url_application_field(
+        self, application_details: ApplicationDetailOldJourney, venue: "Venue"
+    ) -> None:
+        if application_details.venue_url_annotation_id is None:
+            logger.error("venue_url_annotation_id cannot be None in DSv4 context")
+            return
+
+        update_demarches_simplifiees_text_annotations(
+            application_details.dossier_id,
+            application_details.venue_url_annotation_id,
+            urls.build_pc_pro_venue_link(venue),
+        )
+
 
 class SaveVenueBankInformationsV5(SaveVenueBankInformationsMixin):
     def __init__(
@@ -375,13 +376,6 @@ class SaveVenueBankInformationsV5(SaveVenueBankInformationsMixin):
             newly_bank_information = self.create_new_bank_informations(application_details, offerer_id=offerer_id)
             self.bank_informations_repository.save(newly_bank_information)
             return None
-
-        if application_details.venue_url_annotation_id is not None:
-            update_demarches_simplifiees_text_annotations(
-                application_details.dossier_id,
-                application_details.venue_url_annotation_id,
-                urls.build_pc_pro_venue_link(venue),
-            )
 
         bank_information = self.bank_informations_repository.get_by_application(application_details.application_id)
 
