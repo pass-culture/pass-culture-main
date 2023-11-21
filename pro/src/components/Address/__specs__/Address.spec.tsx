@@ -40,7 +40,7 @@ vi.mock('apiClient/adresse', async () => {
   }
 })
 
-const renderAddress = async ({
+const renderAddress = ({
   initialValues,
   onSubmit = vi.fn(),
 }: {
@@ -89,10 +89,7 @@ describe('AddressSelect', () => {
   })
 
   it('should submit form without errors', async () => {
-    const { buttonSubmit } = await renderAddress({
-      initialValues,
-      onSubmit,
-    })
+    const { buttonSubmit } = renderAddress({ initialValues, onSubmit })
     const adressInput = screen.getByLabelText('Adresse postale')
 
     await userEvent.type(adressInput, '12 rue ')
@@ -123,10 +120,7 @@ describe('AddressSelect', () => {
     vi.spyOn(apiAdresse, 'getDataFromAddress').mockRejectedValue(
       'Erreur lors de la récupération des données'
     )
-    await renderAddress({
-      initialValues,
-      onSubmit,
-    })
+    renderAddress({ initialValues, onSubmit })
     const adressInput = screen.getByLabelText('Adresse postale')
 
     await userEvent.type(adressInput, '12 rue')

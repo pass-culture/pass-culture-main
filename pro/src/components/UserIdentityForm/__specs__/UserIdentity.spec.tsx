@@ -47,9 +47,10 @@ describe('components:UserIdentityForm', () => {
   })
   it('should trigger onSubmit callback when submitting', async () => {
     renderUserIdentityForm(props)
+
     await userEvent.type(screen.getByLabelText('Prénom'), 'Harry')
     await userEvent.tab()
     await userEvent.click(screen.getByText('Enregistrer'))
-    await expect(patchIdentityAdapterMock).toHaveBeenCalledTimes(1)
+    expect(patchIdentityAdapterMock).toHaveBeenCalledTimes(1)
   })
 })

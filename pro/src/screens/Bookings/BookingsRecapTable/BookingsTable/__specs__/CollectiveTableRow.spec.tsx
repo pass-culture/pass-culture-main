@@ -54,7 +54,7 @@ describe('CollectiveTableRow', () => {
     )
   })
 
-  it('should not render booking details if row is not expanded', async () => {
+  it('should not render booking details if row is not expanded', () => {
     const props: CollectiveTableRowProps = {
       booking: collectiveBookingRecapFactory({
         stock: collectiveBookingCollectiveStockFactory(),

@@ -36,10 +36,12 @@ describe('components:UserEmailForm', () => {
       getPendingEmailRequest: vi.fn(),
     }
   })
+
   it('renders component successfully', () => {
     renderUserEmailForm(props)
     expect(screen.getAllByRole('textbox').length).toBe(1)
   })
+
   it('should trigger onSubmit callback when submitting', async () => {
     renderUserEmailForm(props)
     await userEvent.type(
@@ -52,6 +54,6 @@ describe('components:UserEmailForm', () => {
     )
     await userEvent.tab()
     await userEvent.click(screen.getByText('Enregistrer'))
-    await expect(postEmailAdapterMock).toHaveBeenCalledTimes(1)
+    expect(postEmailAdapterMock).toHaveBeenCalledTimes(1)
   })
 })

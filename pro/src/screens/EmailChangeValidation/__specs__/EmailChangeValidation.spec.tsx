@@ -1,5 +1,3 @@
-// react-testing-library doc: https://testing-library.com/docs/react-testing-library/api
-
 import { screen } from '@testing-library/react'
 import React from 'react'
 
@@ -8,7 +6,7 @@ import { renderWithProviders } from 'utils/renderWithProviders'
 import { EmailChangeValidationScreen } from '../'
 
 describe('screens:EmailChangeValidation', () => {
-  it('renders component successfully when success', async () => {
+  it('renders component successfully when success', () => {
     renderWithProviders(<EmailChangeValidationScreen isSuccess={true} />)
 
     expect(
@@ -17,6 +15,7 @@ describe('screens:EmailChangeValidation', () => {
       })
     ).toBeInTheDocument()
   })
+
   it('renders component successfully when not success', () => {
     renderWithProviders(<EmailChangeValidationScreen isSuccess={false} />)
     expect(

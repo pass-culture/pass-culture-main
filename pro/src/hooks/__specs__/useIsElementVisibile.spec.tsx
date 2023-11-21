@@ -33,7 +33,7 @@ describe('useIsElementVisible', () => {
     expect(observe).toHaveBeenNthCalledWith(1, element)
   })
 
-  it('should unobserve  on unmount', async () => {
+  it('should unobserve  on unmount', () => {
     const { unmount } = render(<TestComponent />)
     unmount()
     expect(disconnect).toHaveBeenCalledTimes(1)

@@ -88,7 +88,7 @@ describe('AdageButtonFilter', () => {
     ).not.toBeInTheDocument()
   })
 
-  it('should render adageButtonFilter disabled', async () => {
+  it('should render adageButtonFilter disabled', () => {
     renderAdageButtonFilter({
       ...props,
       children: <div>Test adagebuttonfilter</div>,
@@ -102,7 +102,7 @@ describe('AdageButtonFilter', () => {
     expect(filterButton).toBeDisabled()
   })
 
-  it('should render adageButtonFilter with number of item selected', async () => {
+  it('should render adageButtonFilter with number of item selected', () => {
     renderAdageButtonFilter({
       ...props,
       isActive: true,
@@ -118,7 +118,7 @@ describe('AdageButtonFilter', () => {
     ).toBeInTheDocument()
   })
 
-  it('should not display the dialog when the button modal was not opened or was closed', async () => {
+  it('should not display the dialog when the button modal was not opened or was closed', () => {
     renderAdageButtonFilter({
       ...props,
       children: <div>Test adagebuttonfilter</div>,

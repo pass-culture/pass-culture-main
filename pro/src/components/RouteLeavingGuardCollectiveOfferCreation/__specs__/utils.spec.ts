@@ -123,7 +123,7 @@ describe('components | RouteLeavingGuardCollectiveOfferCreation', () => {
 
   cases.forEach(
     ({ description, currentLocation, nextLocation, expectedShouldBlock }) => {
-      it(description, async () => {
+      it(description, () => {
         expect(
           shouldBlockNavigation({
             currentLocation: { pathname: currentLocation } as Location,

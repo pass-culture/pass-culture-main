@@ -38,17 +38,20 @@ describe('components:UserPhoneForm', () => {
       patchPhoneAdapter: patchPhoneAdapterMock,
     }
   })
+
   it('renders component successfully', () => {
     renderUserPhoneForm(props)
     expect(screen.getAllByRole('textbox').length).toBe(1)
   })
+
   it('should trigger onSubmit callback when submitting', async () => {
     renderUserPhoneForm(props)
+
     await userEvent.clear(screen.getByLabelText('Téléphone'))
     await userEvent.type(screen.getByLabelText('Téléphone'), '0692790350')
     await userEvent.tab()
     await userEvent.click(screen.getByText('Enregistrer'))
-    await expect(patchPhoneAdapterMock).toHaveBeenNthCalledWith(1, {
+    expect(patchPhoneAdapterMock).toHaveBeenNthCalledWith(1, {
       phoneNumber: '+262692790350',
     })
   })

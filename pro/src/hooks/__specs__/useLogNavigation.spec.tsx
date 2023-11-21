@@ -46,7 +46,7 @@ const renderLogNavigation = (initialEntries: string = '') => {
 }
 
 describe('useLogNavigation', () => {
-  it('should log an event on page load', async () => {
+  it('should log an event on page load', () => {
     vi.spyOn(useAnalytics, 'default').mockImplementation(() => ({
       logEvent: mockLogEvent,
     }))
@@ -95,7 +95,7 @@ describe('useLogNavigation', () => {
     )
   })
 
-  it('should log an event containing query string and url parameters', async () => {
+  it('should log an event containing query string and url parameters', () => {
     vi.spyOn(useAnalytics, 'default').mockImplementation(() => ({
       logEvent: mockLogEvent,
     }))

@@ -188,7 +188,7 @@ describe('AdageHeader', () => {
       })
     }
   )
-  it('should not display budget when user is readonly ', async () => {
+  it('should not display budget when user is readonly ', () => {
     vi.spyOn(apiAdage, 'getEducationalInstitutionWithBudget')
 
     renderAdageHeader({ ...user, role: AdageFrontRoles.READONLY })
@@ -196,7 +196,7 @@ describe('AdageHeader', () => {
     expect(apiAdage.getEducationalInstitutionWithBudget).not.toHaveBeenCalled()
   })
 
-  it('should not display adage link when user is readonly ', async () => {
+  it('should not display adage link when user is readonly ', () => {
     vi.spyOn(apiAdage, 'getEducationalInstitutionWithBudget')
 
     renderAdageHeader({ ...user, role: AdageFrontRoles.READONLY })
@@ -206,7 +206,7 @@ describe('AdageHeader', () => {
     ).not.toBeInTheDocument()
   })
 
-  it('should not display help download link when user is readonly ', async () => {
+  it('should not display help download link when user is readonly ', () => {
     vi.spyOn(apiAdage, 'getEducationalInstitutionWithBudget')
 
     renderAdageHeader({ ...user, role: AdageFrontRoles.READONLY })
@@ -216,7 +216,7 @@ describe('AdageHeader', () => {
     ).not.toBeInTheDocument()
   })
 
-  it('should not display favorites tab if the feature flag is disabled', async () => {
+  it('should not display favorites tab if the feature flag is disabled', () => {
     vi.spyOn(apiAdage, 'getEducationalInstitutionWithBudget')
 
     renderAdageHeader(user)
@@ -226,7 +226,7 @@ describe('AdageHeader', () => {
     ).not.toBeInTheDocument()
   })
 
-  it('should display favorites tab if the feature flag is enabled', async () => {
+  it('should display favorites tab if the feature flag is enabled', () => {
     vi.spyOn(apiAdage, 'getEducationalInstitutionWithBudget')
 
     renderAdageHeader(user, isFavoritesActive)
@@ -236,7 +236,7 @@ describe('AdageHeader', () => {
     ).toBeInTheDocument()
   })
 
-  it('should display the user favorite count after the favorite tab name', async () => {
+  it('should display the user favorite count after the favorite tab name', () => {
     vi.spyOn(apiAdage, 'getEducationalInstitutionWithBudget')
 
     renderAdageHeader(

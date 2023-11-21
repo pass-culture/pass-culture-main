@@ -22,7 +22,7 @@ describe('serializeStockThingList', () => {
     departementCode = '75'
   })
 
-  it('should serialize data for stock thing creation', async () => {
+  it('should serialize data for stock thing creation', () => {
     const expectedApiStockThing: StockCreationBodyModel = {
       bookingLimitDatetime: '2022-10-26T21:59:59Z',
       price: 10,
@@ -33,7 +33,7 @@ describe('serializeStockThingList', () => {
     expect(serializedData).toStrictEqual([expectedApiStockThing])
   })
 
-  it('should fill bookingLimitDatetime with beginningDatetime when not provided', async () => {
+  it('should fill bookingLimitDatetime with beginningDatetime when not provided', () => {
     const expectedApiStockThing: StockCreationBodyModel = {
       bookingLimitDatetime: null,
       price: 10,
@@ -50,7 +50,7 @@ describe('serializeStockThingList', () => {
     expect(serializedData).toStrictEqual([expectedApiStockThing])
   })
 
-  it('should serialize data for stock thing edition', async () => {
+  it('should serialize data for stock thing edition', () => {
     const expectedApiStockThing: StockEditionBodyModel = {
       id: 1,
       bookingLimitDatetime: '2022-10-26T21:59:59Z',
@@ -68,7 +68,7 @@ describe('serializeStockThingList', () => {
     expect(serializedData).toStrictEqual([expectedApiStockThing])
   })
 
-  it('should not set null when quantity value is 0', async () => {
+  it('should not set null when quantity value is 0', () => {
     const serializedData = serializeStockThingList(
       {
         stockId: 1,
@@ -80,7 +80,7 @@ describe('serializeStockThingList', () => {
     expect(serializedData[0].quantity).toStrictEqual(0)
   })
 
-  it('should set null when quantity field is empty', async () => {
+  it('should set null when quantity field is empty', () => {
     const serializedData = serializeStockThingList(
       {
         stockId: 1,
@@ -93,7 +93,7 @@ describe('serializeStockThingList', () => {
     expect(serializedData[0].quantity).toStrictEqual(null)
   })
 
-  it('should set null when quantity field is ""', async () => {
+  it('should set null when quantity field is ""', () => {
     const serializedData = serializeStockThingList(
       {
         stockId: 1,

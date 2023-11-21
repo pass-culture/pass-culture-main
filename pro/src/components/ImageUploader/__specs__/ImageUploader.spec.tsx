@@ -31,7 +31,7 @@ describe('ImageUploader', () => {
     }
   })
 
-  it('should render image uploader for existing file', async () => {
+  it('should render image uploader for existing file', () => {
     renderImageUploader(props)
     expect(
       screen.getByAltText('Prévisualisation de l’image')
@@ -51,7 +51,7 @@ describe('ImageUploader', () => {
     ).not.toBeInTheDocument()
   })
 
-  it('should render image uploader without file', async () => {
+  it('should render image uploader without file', () => {
     props = {
       onImageUpload: async () => {},
       onImageDelete: async () => {},

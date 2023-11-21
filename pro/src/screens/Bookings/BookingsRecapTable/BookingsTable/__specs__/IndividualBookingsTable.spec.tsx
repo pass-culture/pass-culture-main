@@ -35,7 +35,7 @@ describe('CollectiveTableRow', () => {
     )
   })
 
-  it('should render message to empty the filters when no bookings', async () => {
+  it('should render message to empty the filters when no bookings', () => {
     const props: IndividualBookingsTableProps = {
       bookings: [],
       bookingStatuses: [],

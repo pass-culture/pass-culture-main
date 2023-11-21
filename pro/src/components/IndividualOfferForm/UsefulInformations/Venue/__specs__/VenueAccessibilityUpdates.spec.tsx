@@ -19,7 +19,7 @@ interface InitialValues {
   accessibility: AccessibiltyFormValues
 }
 
-const renderVenue = async ({
+const renderVenue = ({
   initialValues,
   onSubmit = vi.fn(),
   venueProps,
@@ -126,11 +126,8 @@ describe('IndividualOffer section: venue', () => {
       checkboxMental,
       checkboxMoteur,
       checkboxAuditif,
-    } = await renderVenue({
-      initialValues,
-      onSubmit,
-      venueProps,
-    })
+    } = renderVenue({ initialValues, onSubmit, venueProps })
+
     await screen.findByRole('heading', { name: 'Accessibilité' })
 
     await userEvent.selectOptions(selectVenue, venueAccessible.id.toString())

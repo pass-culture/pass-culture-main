@@ -10,7 +10,7 @@ import {
   WithdrawalDetails,
 } from '../../WithdrawalDetails'
 
-const renderWithdrawalDetails = async ({
+const renderWithdrawalDetails = ({
   isCreatedEntity,
   initialValues,
   onSubmit = vi.fn(),
@@ -39,15 +39,15 @@ describe('components | WithdrawalDetails', () => {
   let initialValues: Partial<VenueFormValues>
   const onSubmit = vi.fn()
 
-  it('should not display checkbox', async () => {
-    await renderWithdrawalDetails({
+  it('should not display checkbox', () => {
+    renderWithdrawalDetails({
       isCreatedEntity: true,
       initialValues,
       onSubmit,
     })
 
     expect(
-      await screen.queryByLabelText(/Appliquer le changement/)
+      screen.queryByLabelText(/Appliquer le changement/)
     ).not.toBeInTheDocument()
   })
 
@@ -56,7 +56,7 @@ describe('components | WithdrawalDetails', () => {
       withdrawalDetails: 'Tototata',
       isWithdrawalAppliedOnAllOffers: false,
     }
-    await renderWithdrawalDetails({
+    renderWithdrawalDetails({
       isCreatedEntity: false,
       initialValues,
       onSubmit,

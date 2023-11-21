@@ -157,16 +157,14 @@ describe('SignIn', () => {
 
   describe("when user clicks on 'Créer un compte'", () => {
     it('should redirect to the creation page when the API sirene is available', () => {
-      // when
       renderSignIn()
 
-      // then
       expect(
         screen.getByRole('link', { name: 'Créer un compte' })
       ).toHaveAttribute('href', '/inscription')
     })
 
-    it('should redirect to the unavailable error page when the API sirene feature is disabled', async () => {
+    it('should redirect to the unavailable error page when the API sirene feature is disabled', () => {
       renderSignIn({
         features: {
           list: [
@@ -282,10 +280,10 @@ describe('SignIn', () => {
     )
 
     expect(
-      await screen.getAllByText('Identifiant ou mot de passe incorrect.')
+      screen.getAllByText('Identifiant ou mot de passe incorrect.')
     ).toHaveLength(3)
 
-    expect(await screen.getByLabelText('Adresse email')).toHaveFocus()
+    expect(screen.getByLabelText('Adresse email')).toHaveFocus()
   })
 
   it('should display an error message when login rate limit exceeded', async () => {
@@ -337,7 +335,7 @@ describe('SignIn', () => {
       },
     }
 
-    it('should not call listOfferersNames if user is admin', async () => {
+    it('should not call listOfferersNames if user is admin', () => {
       const listOfferersNamesRequest = vi
         .spyOn(api, 'listOfferersNames')
         .mockResolvedValueOnce({

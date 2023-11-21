@@ -33,7 +33,7 @@ vi.spyOn(useNotification, 'default').mockImplementation(
 )
 
 describe('useCollectiveOfferImageUpload', () => {
-  it('should initialize with current image', async () => {
+  it('should initialize with current image', () => {
     const offer = collectiveOfferFactory()
 
     const { result } = renderHook(() => useCollectiveOfferImageUpload(offer))

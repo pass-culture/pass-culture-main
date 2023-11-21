@@ -12,7 +12,7 @@ interface RenderButtonImageDeleteProps {
   props: ButtonImageDeleteProps
 }
 const renderButtonImageDelete = ({ props }: RenderButtonImageDeleteProps) => {
-  return render(
+  render(
     <StoreProvider isDev>
       <ButtonImageDelete {...props} />
     </StoreProvider>
@@ -30,10 +30,9 @@ describe('ButtonImageDelete', () => {
     }
   })
 
-  it('should render ButtonImageDelete', async () => {
-    await renderButtonImageDelete({
-      props,
-    })
+  it('should render ButtonImageDelete', () => {
+    renderButtonImageDelete({ props })
+
     expect(
       screen.getByRole('button', { name: /Supprimer/i })
     ).toBeInTheDocument()
@@ -42,9 +41,8 @@ describe('ButtonImageDelete', () => {
   })
 
   it('should open/close ModalImageDelete on click', async () => {
-    await renderButtonImageDelete({
-      props,
-    })
+    renderButtonImageDelete({ props })
+
     await userEvent.click(screen.getByRole('button', { name: /Supprimer/i }))
 
     const modalPreview = await screen.findByText('Supprimer l’image')

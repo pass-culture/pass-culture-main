@@ -86,7 +86,7 @@ describe('IndividualOffer::ActionBar', () => {
       expect(onClickNextMock).toHaveBeenCalled()
     })
 
-    it('should show draft saved indicator', async () => {
+    it('should show draft saved indicator', () => {
       props.dirtyForm = false
 
       renderActionBar({ props })
@@ -96,7 +96,7 @@ describe('IndividualOffer::ActionBar', () => {
       ).not.toBeInTheDocument()
     })
 
-    it('should show draft not saved indicator', async () => {
+    it('should show draft not saved indicator', () => {
       props.dirtyForm = true
 
       renderActionBar({ props })
@@ -132,7 +132,7 @@ describe('IndividualOffer::ActionBar', () => {
       expect(onClickNextMock).toHaveBeenCalled()
     })
 
-    it('should render the component for summary page', async () => {
+    it('should render the component for summary page', () => {
       props.step = OFFER_WIZARD_STEP_IDS.SUMMARY
 
       renderActionBar({ props, url: '/edition/url' })

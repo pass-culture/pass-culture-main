@@ -10,7 +10,7 @@ import { SubmitButton } from 'ui-kit'
 import Informations, { InformationsProps } from '../Informations'
 import { validationSchema } from '../validationSchema'
 
-const renderInformations = async ({
+const renderInformations = ({
   props,
   initialValues,
   onSubmit = vi.fn(),
@@ -73,7 +73,7 @@ describe('IndividualOffer section: UsefulInformations', () => {
   })
 
   it('should submit valid form', async () => {
-    const { buttonSubmit } = await renderInformations({
+    const { buttonSubmit } = renderInformations({
       props,
       initialValues,
       onSubmit,
@@ -111,7 +111,7 @@ describe('IndividualOffer section: UsefulInformations', () => {
   })
 
   it('should display errors for mandatory fields', async () => {
-    const { buttonSubmit } = await renderInformations({
+    const { buttonSubmit } = renderInformations({
       props,
       initialValues,
       onSubmit,
@@ -143,7 +143,7 @@ describe('IndividualOffer section: UsefulInformations', () => {
       'test valid format (durationMinutes ="%s")',
       async (durationMinutesValue) => {
         initialValues.subCategoryFields = ['durationMinutes']
-        const { buttonSubmit } = await renderInformations({
+        const { buttonSubmit } = renderInformations({
           props,
           initialValues,
           onSubmit,

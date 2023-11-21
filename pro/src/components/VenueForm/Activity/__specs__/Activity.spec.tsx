@@ -82,7 +82,7 @@ describe('Activity', () => {
     ).toBeInTheDocument()
   })
 
-  it('Should display less fields and infos when venue is virtual', async () => {
+  it('Should display less fields and infos when venue is virtual', () => {
     props.isVenueVirtual = true
     renderInformations({
       initialValues,

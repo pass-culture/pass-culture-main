@@ -4,7 +4,7 @@ import useLogEventOnUnload from 'hooks/useLogEventOnUnload'
 
 describe('useBeforeUnload', () => {
   describe('When the hook is initialised', () => {
-    test('It should register the correct event listener and unregister on unmount', async () => {
+    test('It should register the correct event listener and unregister on unmount', () => {
       const spyAddEvent = vi.fn()
       const spyRemoveEvent = vi.fn()
       const mockLogEvent = vi.fn()
@@ -20,7 +20,7 @@ describe('useBeforeUnload', () => {
           .map((args) => args[0] === 'beforeunload')
           .filter(Boolean).length
       ).toEqual(0)
-      await renderHook(() => useLogEventOnUnload(mockLogEvent))
+      renderHook(() => useLogEventOnUnload(mockLogEvent))
       expect(
         spyAddEvent.mock.calls
           .map((args) => args[0] === 'beforeunload')

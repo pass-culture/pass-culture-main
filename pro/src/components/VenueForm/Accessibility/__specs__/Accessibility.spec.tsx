@@ -53,7 +53,7 @@ describe('Accessibility', () => {
   })
 
   it('should display initial component', async () => {
-    await renderAccessibility({ initialValues, isCreatingVenue, onSubmit })
+    renderAccessibility({ initialValues, isCreatingVenue, onSubmit })
 
     expect(
       await screen.findByRole('heading', { name: 'Accessibilité du lieu' })
@@ -76,11 +76,7 @@ describe('Accessibility', () => {
   })
 
   it('should submit valid form', async () => {
-    await renderAccessibility({
-      initialValues,
-      isCreatingVenue,
-      onSubmit,
-    })
+    renderAccessibility({ initialValues, isCreatingVenue, onSubmit })
 
     const checkboxVisuel = screen.getByLabelText('Visuel', { exact: false })
     await userEvent.click(checkboxVisuel)
@@ -102,7 +98,7 @@ describe('Accessibility', () => {
   })
 
   it('should check accessibilities on click', async () => {
-    await renderAccessibility({ initialValues, isCreatingVenue, onSubmit })
+    renderAccessibility({ initialValues, isCreatingVenue, onSubmit })
 
     const checkboxNone = screen.getByLabelText('Non accessible', {
       exact: false,
@@ -143,7 +139,7 @@ describe('Accessibility', () => {
   })
 
   it('should display an error on submit if accessibility is empty for non virtual venues', async () => {
-    await renderAccessibility({ initialValues, isCreatingVenue, onSubmit })
+    renderAccessibility({ initialValues, isCreatingVenue, onSubmit })
 
     // tab to focus the first accessibility checkbox
     // then the form is touched and errors will be displayed.
@@ -159,7 +155,7 @@ describe('Accessibility', () => {
 
   it('should not display an error on submit if accessibility is empty for virtual venues', async () => {
     initialValues.isVenueVirtual = true
-    await renderAccessibility({ initialValues, isCreatingVenue, onSubmit })
+    renderAccessibility({ initialValues, isCreatingVenue, onSubmit })
 
     // tab to focus the first accessibility checkbox
     // then the form is touched and errors will be displayed.
@@ -184,7 +180,7 @@ describe('Accessibility', () => {
         [AccessiblityEnum.NONE]: true,
       },
     }
-    await renderAccessibility({ initialValues, isCreatingVenue, onSubmit })
+    renderAccessibility({ initialValues, isCreatingVenue, onSubmit })
     const checkboxVisuel = screen.getByLabelText('Visuel', { exact: false })
 
     await userEvent.click(checkboxVisuel)

@@ -20,29 +20,29 @@ vi.mock('apiClient/api', () => ({
 
 const mockLogEvent = vi.fn()
 
-const renderAttachmentInvitations = () => {
+const renderAttachmentInvitations = async () => {
   renderWithProviders(
     <>
       <AttachmentInvitations offererId={1} />
       <Notification />
     </>
   )
+  await waitFor(() => {
+    expect(api.getOffererMembers).toHaveBeenCalled()
+  })
 }
 
 describe('AttachmentInvitations', () => {
   beforeEach(() => {
     vi.spyOn(api, 'getOffererMembers').mockResolvedValueOnce({ members: [] })
-    waitFor(() => {
-      expect(api.getOffererMembers).toHaveBeenCalled()
-    })
-
     vi.spyOn(useAnalytics, 'default').mockImplementation(() => ({
       logEvent: mockLogEvent,
     }))
   })
 
   it('The user should see a button to display the invite form', async () => {
-    renderAttachmentInvitations()
+    await renderAttachmentInvitations()
+
     expect(screen.getByText('Ajouter un collaborateur')).toBeInTheDocument()
     expect(
       screen.queryByText(
@@ -56,8 +56,10 @@ describe('AttachmentInvitations', () => {
   })
 
   it('Should display the invite form on click', async () => {
-    renderAttachmentInvitations()
+    await renderAttachmentInvitations()
+
     await userEvent.click(screen.getByText('Ajouter un collaborateur'))
+
     expect(
       screen.queryByText('Ajouter un collaborateur')
     ).not.toBeInTheDocument()
@@ -69,7 +71,8 @@ describe('AttachmentInvitations', () => {
   })
 
   it('Should display the form error on invalid email', async () => {
-    renderAttachmentInvitations()
+    await renderAttachmentInvitations()
+
     await userEvent.click(screen.getByText('Ajouter un collaborateur'))
     await userEvent.type(screen.getByLabelText('Adresse email'), '123456')
     await userEvent.click(screen.getByText('Inviter'))
@@ -79,7 +82,8 @@ describe('AttachmentInvitations', () => {
   })
 
   it('Should display add the email on success and trigger buttons event', async () => {
-    renderAttachmentInvitations()
+    await renderAttachmentInvitations()
+
     await userEvent.click(screen.getByText('Ajouter un collaborateur'))
 
     expect(mockLogEvent).toHaveBeenCalledWith('hasClickedAddCollaborator', {
@@ -106,7 +110,8 @@ describe('AttachmentInvitations', () => {
   })
 
   it('Should display email error message if user is already invited', async () => {
-    renderAttachmentInvitations()
+    await renderAttachmentInvitations()
+
     await userEvent.click(screen.getByText('Ajouter un collaborateur'))
 
     await userEvent.type(screen.getByLabelText('Adresse email'), 'test@test.fr')
@@ -134,7 +139,8 @@ describe('AttachmentInvitations', () => {
   })
 
   it('Should display default error message if error with server', async () => {
-    renderAttachmentInvitations()
+    await renderAttachmentInvitations()
+
     await userEvent.click(screen.getByText('Ajouter un collaborateur'))
 
     await userEvent.type(screen.getByLabelText('Adresse email'), 'test@test.fr')
@@ -164,7 +170,7 @@ describe('AttachmentInvitations', () => {
       ],
     })
 
-    renderAttachmentInvitations()
+    await renderAttachmentInvitations()
 
     await waitFor(() => {
       expect(screen.getByText('email1@gmail.com')).toBeInTheDocument()

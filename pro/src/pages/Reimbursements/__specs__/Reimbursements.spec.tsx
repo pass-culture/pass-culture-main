@@ -12,7 +12,7 @@ import { renderWithProviders } from 'utils/renderWithProviders'
 
 import Reimbursements from '../Reimbursements'
 
-const renderReimbursements = async (storeOverrides: any) => {
+const renderReimbursements = (storeOverrides: any) => {
   renderWithProviders(
     <ReimbursementContextProvider>
       <Reimbursements />
@@ -44,7 +44,7 @@ describe('Reimbursement page', () => {
     }
   })
 
-  it('should render reimbursement page with FF WIP_ENABLE_NEW_BANK_DETAILS_JOURNEY off', async () => {
+  it('should render reimbursement page with FF WIP_ENABLE_NEW_BANK_DETAILS_JOURNEY off', () => {
     renderReimbursements(store)
 
     expect(

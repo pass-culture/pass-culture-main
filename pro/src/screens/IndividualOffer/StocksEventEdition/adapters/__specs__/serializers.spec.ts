@@ -32,7 +32,7 @@ describe('serializeStockEventEdition', () => {
     departementCode = '75'
   })
 
-  it('should serialize data for stock event creation', async () => {
+  it('should serialize data for stock event creation', () => {
     const expectedApiStockEvent: StockCreationBodyModel = {
       beginningDatetime: '2022-10-26T13:00:00Z',
       bookingLimitDatetime: '2022-10-26T13:00:00Z',
@@ -47,7 +47,7 @@ describe('serializeStockEventEdition', () => {
     expect(serializedData).toStrictEqual([expectedApiStockEvent])
   })
 
-  it('should serialize data for stock event with "bookingLimitDatetime" even if not provided', async () => {
+  it('should serialize data for stock event with "bookingLimitDatetime" even if not provided', () => {
     const expectedApiStockEvent: StockCreationBodyModel = {
       beginningDatetime: '2022-10-26T13:00:00Z',
       bookingLimitDatetime: '2022-10-26T13:00:00Z',
@@ -67,7 +67,7 @@ describe('serializeStockEventEdition', () => {
     expect(serializedData).toStrictEqual([expectedApiStockEvent])
   })
 
-  it('should serialize data for stock event edition', async () => {
+  it('should serialize data for stock event edition', () => {
     const expectedApiStockEvent: StockEditionBodyModel = {
       id: 1,
       beginningDatetime: '2022-10-11T13:00:00Z',

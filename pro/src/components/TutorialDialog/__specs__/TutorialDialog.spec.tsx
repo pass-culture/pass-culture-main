@@ -54,7 +54,7 @@ describe('tutorial modal', () => {
     expect(mockLogEvent).toHaveBeenCalledTimes(2)
   })
 
-  it('should show tutorial dialog if user has not seen it yet', async () => {
+  it('should show tutorial dialog if user has not seen it yet', () => {
     storeOverrides = {
       user: {
         currentUser: {
@@ -64,12 +64,12 @@ describe('tutorial modal', () => {
       },
     }
 
-    await renderTutorialDialog(storeOverrides)
+    renderTutorialDialog(storeOverrides)
 
     expect(screen.getByText(stepTitles[0])).toBeInTheDocument()
   })
 
-  it("shouldn't show tutorial dialog if user has already seen it", async () => {
+  it("shouldn't show tutorial dialog if user has already seen it", () => {
     storeOverrides = {
       user: {
         currentUser: {
@@ -79,14 +79,14 @@ describe('tutorial modal', () => {
       },
     }
 
-    await renderTutorialDialog(storeOverrides)
+    renderTutorialDialog(storeOverrides)
 
     expect(screen.queryByText(stepTitles[0])).not.toBeInTheDocument()
   })
 
   describe('interacting with navigation buttons', () => {
     let buttonNext: HTMLElement
-    beforeEach(async () => {
+    beforeEach(() => {
       storeOverrides = {
         user: {
           currentUser: {
@@ -101,12 +101,12 @@ describe('tutorial modal', () => {
         },
       }
 
-      await renderTutorialDialog(storeOverrides)
+      renderTutorialDialog(storeOverrides)
       buttonNext = screen.getByText('Suivant')
     })
 
     describe('from first step', () => {
-      it('should disabled "previous" button', async () => {
+      it('should disabled "previous" button', () => {
         const buttonPrevious = screen.getByText('Précédent')
         expect(buttonPrevious).toHaveAttribute('disabled')
       })
@@ -235,7 +235,7 @@ describe('tutorial modal', () => {
       },
     }
 
-    await renderTutorialDialog(storeOverrides)
+    renderTutorialDialog(storeOverrides)
 
     await userEvent.click(screen.getByText('Suivant'))
 

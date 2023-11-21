@@ -39,12 +39,12 @@ const renderVanueFormActionBar = ({
 }
 
 describe('VenueFormActionBar', () => {
-  it('should display right message on edition', async () => {
+  it('should display right message on edition', () => {
     renderVanueFormActionBar({ isCreatingVenue: false })
     expect(screen.getByText('Enregistrer et quitter')).toBeInTheDocument()
   })
 
-  it('should display right message on creation', async () => {
+  it('should display right message on creation', () => {
     renderVanueFormActionBar({ isCreatingVenue: true })
     expect(screen.getByText('Enregistrer et créer le lieu')).toBeInTheDocument()
   })
