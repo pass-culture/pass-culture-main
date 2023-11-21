@@ -31,6 +31,7 @@ pytestmark = pytest.mark.usefixtures("db_session")
 
 
 class SaveVenueBankInformationsTest:
+    @patch("pcapi.use_cases.save_venue_bank_informations.update_demarches_simplifiees_text_annotations")
     class GetReferentVenueTest:
         def setup_method(self):
             SaveVenueBankInformationsV3 = SaveVenueBankInformationsFactory.get(settings.DMS_VENUE_PROCEDURE_ID_V3)
@@ -44,7 +45,7 @@ class SaveVenueBankInformationsTest:
                 bank_informations_repository=BankInformationsSQLRepository(),
             )
 
-        def test_v3_raises_an_error_if_siret_is_absent(self):
+        def test_v3_raises_an_error_if_siret_is_absent(self, mock_update_text_annotation):
             application_details = ApplicationDetailOldJourney(
                 application_type=3,
                 siren="999999999",
@@ -55,7 +56,7 @@ class SaveVenueBankInformationsTest:
                 bic="YYY",
                 updated_at=datetime.utcnow().isoformat(),
                 siret=None,
-                error_annotation_id=None,
+                error_annotation_id="Q2hhbXAtMTIzNDUK",
                 venue_url_annotation_id=None,
             )
 
@@ -64,7 +65,7 @@ class SaveVenueBankInformationsTest:
             )
             assert self.save_venue_bank_informations_v3.api_errors.errors["Venue"] == ["Venue not found"]
 
-        def test_v3_raises_an_error_if_no_venue_found_by_siret(self):
+        def test_v3_raises_an_error_if_no_venue_found_by_siret(self, mock_update_text_annotation):
             application_details = ApplicationDetailOldJourney(
                 application_type=3,
                 siren="999999999",
@@ -75,7 +76,7 @@ class SaveVenueBankInformationsTest:
                 bic="YYY",
                 updated_at=datetime.utcnow().isoformat(),
                 siret="99999999900000",
-                error_annotation_id=None,
+                error_annotation_id="Q2hhbXAtMTIzNDUK",
                 venue_url_annotation_id=None,
             )
 
@@ -84,7 +85,7 @@ class SaveVenueBankInformationsTest:
             )
             assert self.save_venue_bank_informations_v3.api_errors.errors["Venue"] == ["Venue not found"]
 
-        def test_v4_raises_an_error_if_dms_token_is_absent(self):
+        def test_v4_raises_an_error_if_dms_token_is_absent(self, mock_update_text_annotation):
             application_details = ApplicationDetailOldJourney(
                 application_type=4,
                 status=GraphQLApplicationStates.accepted.value,
@@ -94,7 +95,7 @@ class SaveVenueBankInformationsTest:
                 bic="YYY",
                 updated_at=datetime.utcnow().isoformat(),
                 dms_token=None,
-                error_annotation_id=None,
+                error_annotation_id="Q2hhbXAtOTE1NDg5",
                 venue_url_annotation_id=None,
             )
 
@@ -103,7 +104,7 @@ class SaveVenueBankInformationsTest:
             )
             assert self.save_venue_bank_informations_v4.api_errors.errors["Venue"] == ["Venue not found"]
 
-        def test_v4_raises_an_error_if_no_venue_found_by_dms_token(self):
+        def test_v4_raises_an_error_if_no_venue_found_by_dms_token(self, mock_update_text_annotation):
             application_details = ApplicationDetailOldJourney(
                 application_type=4,
                 status=GraphQLApplicationStates.accepted.value,
@@ -113,7 +114,7 @@ class SaveVenueBankInformationsTest:
                 bic="YYY",
                 updated_at=datetime.utcnow().isoformat(),
                 dms_token="1234567890abcdef",
-                error_annotation_id=None,
+                error_annotation_id="Q2hhbXAtOTE1NDg5",
                 venue_url_annotation_id=None,
             )
 
@@ -123,7 +124,7 @@ class SaveVenueBankInformationsTest:
             assert self.save_venue_bank_informations_v4.api_errors.errors["Venue"] == ["Venue not found"]
 
         @patch("pcapi.connectors.sirene.siret_is_active", side_effect=sirene.UnknownEntityException())
-        def test_v3_raises_an_error_if_sirene_api_errored(self, siret_is_active):
+        def test_v3_raises_an_error_if_sirene_api_errored(self, siret_is_active, mock_update_text_annotation):
             offerer = offerers_factories.OffererFactory()
             offerers_factories.VenueFactory(managingOfferer=offerer, siret="99999999900000")
             application_details = ApplicationDetailOldJourney(
@@ -136,7 +137,7 @@ class SaveVenueBankInformationsTest:
                 bic="YYY",
                 updated_at=datetime.utcnow().isoformat(),
                 siret="99999999900000",
-                error_annotation_id=None,
+                error_annotation_id="Q2hhbXAtMTIzNDUK",
                 venue_url_annotation_id=None,
             )
 
@@ -147,6 +148,7 @@ class SaveVenueBankInformationsTest:
                 "Error while checking SIRET on Sirene API"
             ]
 
+    @patch("pcapi.use_cases.save_venue_bank_informations.update_demarches_simplifiees_text_annotations")
     @patch("pcapi.use_cases.save_venue_bank_informations.archive_dossier")
     class SaveBankInformationV4ProcedureTest:
         def setup_method(self):
@@ -156,7 +158,7 @@ class SaveVenueBankInformationsTest:
                 bank_informations_repository=BankInformationsSQLRepository(),
             )
 
-        def test_draft_application(self, mock_archive_dossier, app):
+        def test_draft_application(self, mock_archive_dossier, mock_update_text_annotation, app):
             venue = offerers_factories.VenueFactory(pricing_point="self")
             application_raw_data = dms_creators.get_bank_info_response_procedure_v4(
                 state=GraphQLApplicationStates.draft.value, dms_token=venue.dmsToken
@@ -175,7 +177,7 @@ class SaveVenueBankInformationsTest:
             assert bank_information.status == finance_models.BankInformationStatus.DRAFT
             mock_archive_dossier.assert_not_called()
 
-        def test_draft_application_without_dms_token(self, mock_archive_dossier):
+        def test_draft_application_without_dms_token(self, mock_archive_dossier, mock_update_text_annotation):
             application_raw_data = dms_creators.get_bank_info_response_procedure_v4(
                 state=GraphQLApplicationStates.draft.value, dms_token=""
             )
@@ -187,7 +189,7 @@ class SaveVenueBankInformationsTest:
 
             assert finance_models.BankInformation.query.count() == 0
 
-        def test_on_going_application(self, mock_archive_dossier, app):
+        def test_on_going_application(self, mock_archive_dossier, mock_update_text_annotation, app):
             venue = offerers_factories.VenueFactory(pricing_point="self")
             application_raw_data = dms_creators.get_bank_info_response_procedure_v4(
                 state=GraphQLApplicationStates.on_going.value, dms_token=venue.dmsToken
@@ -205,7 +207,7 @@ class SaveVenueBankInformationsTest:
             assert bank_information.status == finance_models.BankInformationStatus.DRAFT
             mock_archive_dossier.assert_not_called()
 
-        def test_accepted_application(self, mock_archive_dossier, app):
+        def test_accepted_application(self, mock_archive_dossier, mock_update_text_annotation, app):
             venue = offerers_factories.VenueFactory(pricing_point="self")
             application_raw_data = dms_creators.get_bank_info_response_procedure_v4(
                 state=GraphQLApplicationStates.accepted.value, dms_token=venue.dmsToken
@@ -224,7 +226,7 @@ class SaveVenueBankInformationsTest:
             assert venue.current_reimbursement_point_id == venue.id
             mock_archive_dossier.assert_called_once_with("Q2zzbXAtNzgyODAw")
 
-        def test_refused_application(self, mock_archive_dossier, app):
+        def test_refused_application(self, mock_archive_dossier, mock_update_text_annotation, app):
             venue = offerers_factories.VenueFactory(pricing_point="self")
             application_raw_data = dms_creators.get_bank_info_response_procedure_v4(
                 state=GraphQLApplicationStates.refused.value, dms_token=venue.dmsToken
@@ -242,7 +244,7 @@ class SaveVenueBankInformationsTest:
             assert bank_information.status == finance_models.BankInformationStatus.REJECTED
             mock_archive_dossier.assert_called_once_with("Q2zzbXAtNzgyODAw")
 
-        def test_without_continuation_application(self, mock_archive_dossier, app):
+        def test_without_continuation_application(self, mock_archive_dossier, mock_update_text_annotation, app):
             venue = offerers_factories.VenueFactory(pricing_point="self")
             application_raw_data = dms_creators.get_bank_info_response_procedure_v4(
                 state=GraphQLApplicationStates.without_continuation.value, dms_token=venue.dmsToken
@@ -260,6 +262,7 @@ class SaveVenueBankInformationsTest:
             assert bank_information.status == finance_models.BankInformationStatus.REJECTED
             mock_archive_dossier.assert_called_once_with("Q2zzbXAtNzgyODAw")
 
+    @patch("pcapi.use_cases.save_venue_bank_informations.update_demarches_simplifiees_text_annotations")
     @patch("pcapi.use_cases.save_venue_bank_informations.archive_dossier")
     class UpdateBankInformationV4ProcedureTest:
         def setup_method(self):
@@ -269,7 +272,7 @@ class SaveVenueBankInformationsTest:
                 bank_informations_repository=BankInformationsSQLRepository(),
             )
 
-        def test_update_bank_info_with_new_iban_bic(self, mock_archive_dossier, app):
+        def test_update_bank_info_with_new_iban_bic(self, mock_archive_dossier, mock_update_text_annotation, app):
             venue_with_accpeted_bank_info = offerers_factories.VenueFactory(pricing_point="self")
             bank_information = finance_factories.BankInformationFactory(
                 applicationId=8,
@@ -293,7 +296,7 @@ class SaveVenueBankInformationsTest:
             assert bank_information.venueId == venue_with_accpeted_bank_info.id
             mock_archive_dossier.assert_called_once_with("Q2zzbXAtNzgyODAw")
 
-        def test_update_bank_info_with_draft_application(self, mock_archive_dossier, app):
+        def test_update_bank_info_with_draft_application(self, mock_archive_dossier, mock_update_text_annotation, app):
             venue_with_accpeted_bank_info = offerers_factories.VenueFactory(pricing_point="self")
             finance_factories.BankInformationFactory(
                 bic="SCROOGEBANK",
@@ -317,7 +320,9 @@ class SaveVenueBankInformationsTest:
             assert bank_information.status == finance_models.BankInformationStatus.DRAFT
             mock_archive_dossier.assert_not_called()
 
-        def test_when_overriding_another_bank_information_should_raise(self, mock_archive_dossier, app):
+        def test_when_overriding_another_bank_information_should_raise(
+            self, mock_archive_dossier, mock_update_text_annotation, app
+        ):
             venue = offerers_factories.VenueFactory(
                 siret="79387503012345",
                 managingOfferer__siren="793875030",
@@ -399,7 +404,7 @@ class SaveVenueBankInformationsTest:
             )
 
             mock_update_text_annotation.assert_called_once_with(
-                self.dossier_id, self.annotation_id, "Venue: Venue not found"
+                dossier_id=self.dossier_id, annotation_id=self.annotation_id, message="Venue: Venue not found"
             )
 
         def test_update_text_application_details_older_than_saved(self, mock_update_text_annotation, app):
@@ -415,9 +420,9 @@ class SaveVenueBankInformationsTest:
             )
 
             mock_update_text_annotation.assert_called_once_with(
-                self.dossier_id,
-                self.annotation_id,
-                "BankInformation: Received application details are older than saved one",
+                dossier_id=self.dossier_id,
+                annotation_id=self.annotation_id,
+                message="BankInformation: Received application details are older than saved one",
             )
 
         def test_update_text_application_details_has_more_advanced_status(self, mock_update_text_annotation, app):
@@ -433,9 +438,9 @@ class SaveVenueBankInformationsTest:
             )
 
             mock_update_text_annotation.assert_called_once_with(
-                self.dossier_id,
-                self.annotation_id,
-                "BankInformation: Received dossier is in draft state. Move it to 'Accepté' to save it.",
+                dossier_id=self.dossier_id,
+                annotation_id=self.annotation_id,
+                message="BankInformation: Received dossier is in draft state. Move it to 'Accepté' to save it.",
             )
 
         def test_update_text_application_details_is_rejected_status(self, mock_update_text_annotation, app):
@@ -451,9 +456,9 @@ class SaveVenueBankInformationsTest:
             )
 
             mock_update_text_annotation.assert_called_once_with(
-                self.dossier_id,
-                self.annotation_id,
-                "BankInformation: Received application details state does not allow to change bank information",
+                dossier_id=self.dossier_id,
+                annotation_id=self.annotation_id,
+                message="BankInformation: Received application details state does not allow to change bank information",
             )
 
         def test_update_text_application_details_on_bank_information_error(self, mock_update_text_annotation, app):
@@ -465,7 +470,9 @@ class SaveVenueBankInformationsTest:
             )
 
             mock_update_text_annotation.assert_called_once_with(
-                self.dossier_id, self.annotation_id, 'iban: L’IBAN renseigné ("INVALID") est invalide'
+                dossier_id=self.dossier_id,
+                annotation_id=self.annotation_id,
+                message='iban: L’IBAN renseigné ("INVALID") est invalide',
             )
 
     @patch("pcapi.use_cases.save_venue_bank_informations.update_demarches_simplifiees_text_annotations")
@@ -508,9 +515,9 @@ class SaveVenueBankInformationsTest:
             bank_information_count = finance_models.BankInformation.query.count()
             assert bank_information_count == 1
             mock_update_text_annotation.assert_called_once_with(
-                "DOSSIER_ID",
-                "ANNOTATION_ID",
-                "Dossier successfully imported",
+                dossier_id="DOSSIER_ID",
+                annotation_id="ANNOTATION_ID",
+                message="Dossier successfully imported",
             )
             mock_archive_dossier.asserrt_called_once_with("DOSSIER_ID")
 
@@ -540,9 +547,9 @@ class SaveVenueBankInformationsTest:
             bank_information_count = finance_models.BankInformation.query.count()
             assert bank_information_count == 1
             mock_update_text_annotation.assert_called_once_with(
-                "DOSSIER_ID",
-                "ANNOTATION_ID",
-                "Valid dossier",
+                dossier_id="DOSSIER_ID",
+                annotation_id="ANNOTATION_ID",
+                message="Valid dossier",
             )
             mock_archive_dossier.assert_not_called()
 
@@ -579,6 +586,43 @@ class DSV4InOldBankInformationsJourneyTest:
         assert bank_information.status == finance_models.BankInformationStatus.ACCEPTED
         mock_archive_dossier.assert_called_once_with(self.b64_encoded_application_id)
         mock_update_text_annotation.assert_any_call(
+            dossier_id=self.b64_encoded_application_id,
+            annotation_id="Q2hhbXAtOTE1NDg5",
+            message="Dossier successfully imported",
+        )
+        mock_update_text_annotation.assert_any_call(
+            self.b64_encoded_application_id, "Q2hhbXAtMjc1NzMyOQ==", build_pc_pro_venue_link(venue)
+        )
+        # New journey is not active, should not create BankAccount nor links
+        assert not finance_models.BankAccount.query.count()
+        assert not offerers_models.VenueBankAccountLink.query.count()
+
+    def test_dont_write_annotations_if_any_exists(
+        self, mock_archive_dossier, mock_update_text_annotation, mock_dms_graphql_client
+    ):
+        venue = offerers_factories.VenueFactory(pricing_point="self", dmsToken=self.dms_token)
+        mock_dms_graphql_client.return_value = dms_creators.get_bank_info_response_procedure_v4_as_batch(
+            state=GraphQLApplicationStates.accepted.value,
+            annotations=[
+                {
+                    "id": "Q2hhbXAtOTE1NDg5",
+                    "label": "Erreur traitement pass Culture",
+                    "stringValue": "Quelque chose ne va pas",
+                    "value": "Quelque chose ne va pas",
+                },
+                {"id": "Q2hhbXAtMjc1NzMyOQ==", "label": "URL du lieu", "stringValue": "", "value": None},
+            ],
+        )
+
+        update_ds_applications_for_procedure(settings.DMS_VENUE_PROCEDURE_ID_V4, since=None)
+
+        bank_information = finance_models.BankInformation.query.one()
+        assert bank_information.venue == venue
+        assert bank_information.bic == "SOGEFRPP"
+        assert bank_information.iban == "FR7630007000111234567890144"
+        assert bank_information.status == finance_models.BankInformationStatus.ACCEPTED
+        mock_archive_dossier.assert_called_once_with(self.b64_encoded_application_id)
+        mock_update_text_annotation.assert_called_once_with(
             self.b64_encoded_application_id, "Q2hhbXAtMjc1NzMyOQ==", build_pc_pro_venue_link(venue)
         )
         # New journey is not active, should not create BankAccount nor links
@@ -587,6 +631,7 @@ class DSV4InOldBankInformationsJourneyTest:
 
 
 @patch("pcapi.connectors.dms.api.DMSGraphQLClient.execute_query")
+@patch("pcapi.use_cases.save_venue_bank_informations.update_demarches_simplifiees_text_annotations")
 @patch("pcapi.use_cases.save_venue_bank_informations.archive_dossier")
 class DSV5InOldBankInformationsJourneyTest:
     application_id = "14742654"
@@ -600,7 +645,7 @@ class DSV5InOldBankInformationsJourneyTest:
         )
 
     def test_creation_and_association_bank_information_to_a_venue_in_DSv5_context(
-        self, mock_archive_dossier, mock_dms_graphql_client
+        self, mock_archive_dossier, mock_update_text_annotation, mock_dms_graphql_client
     ):
         siret = "85331845900049"
         siren = siret[:9]
@@ -621,7 +666,9 @@ class DSV5InOldBankInformationsJourneyTest:
         assert not finance_models.BankAccount.query.count()
         assert not offerers_models.VenueBankAccountLink.query.count()
 
-    def test_updated_status_successfully_update_bank_informations(self, mock_archive_dossier, mock_dms_graphql_client):
+    def test_updated_status_successfully_update_bank_informations(
+        self, mock_archive_dossier, mock_update_text_annotation, mock_dms_graphql_client
+    ):
         siret = "85331845900049"
         siren = siret[:9]
         venue = offerers_factories.VenueFactory(pricing_point="self", managingOfferer__siren=siren)
@@ -655,7 +702,7 @@ class DSV5InOldBankInformationsJourneyTest:
         assert not offerers_models.VenueBankAccountLink.query.count()
 
     def test_bank_information_is_not_linked_to_a_venue_if_many_exists(
-        self, mock_archive_dossier, mock_dms_graphql_client
+        self, mock_archive_dossier, mock_update_text_annotation, mock_dms_graphql_client
     ):
         siret = "85331845900049"
         siren = siret[:9]
