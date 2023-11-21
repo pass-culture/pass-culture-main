@@ -95,7 +95,7 @@ def get_bank_info_response_procedure_v4_as_batch(
     dms_token: str = "1234567890abcdef",
     etablissement: dict | None = None,
     state: str = GraphQLApplicationStates.accepted.value,
-    annotations: dict | None = None,
+    annotations: list | None = None,
     dossier_id: str = "Q2zzbXAtNzgyODAw",
     application_id: int = 9,
 ) -> dict:
@@ -108,7 +108,16 @@ def get_bank_info_response_procedure_v4_as_batch(
         "label": "SIRET",
         "stringValue": None,
     }
-    annotations = annotations or [{"label": "Nouvelle annotation Texte", "id": "OTHERID"}]
+    if annotations is None:
+        annotations = [
+            {
+                "id": "Q2hhbXAtOTE1NDg5",
+                "label": "Erreur traitement pass Culture",
+                "stringValue": "",
+                "value": None,
+            },
+            {"id": "Q2hhbXAtMjc1NzMyOQ==", "label": "URL du lieu", "stringValue": "", "value": None},
+        ]
     result = {
         "demarche": {
             "dossiers": {
