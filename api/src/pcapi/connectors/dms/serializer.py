@@ -179,7 +179,8 @@ class ApplicationDetail(BaseModel):
     bic: str
     siret: str | None = None
     dms_token: str | None = None
-    error_annotation_id: str | None = None
+    error_annotation_id: str
+    error_annotation_value: str | None = None
     venue_url_annotation_id: str | None = None
 
     @root_validator(pre=True)
@@ -197,6 +198,7 @@ class ApplicationDetail(BaseModel):
             datetime.fromisoformat(obj["updated_at"]).astimezone().replace(tzinfo=None)
         )
         to_representation["error_annotation_id"] = obj["error_annotation_id"]
+        to_representation["error_annotation_value"] = obj.get("error_annotation_value")
         to_representation["venue_url_annotation_id"] = obj["venue_url_annotation_id"]
 
         return to_representation
