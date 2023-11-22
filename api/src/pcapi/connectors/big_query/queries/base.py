@@ -30,7 +30,7 @@ class BaseQuery:
         for index, row in enumerate(rows):
             try:
                 yield self.model(**typing.cast(Mapping, row))
-            except pydantic_v1.ValidationError as err:
+            except (pydantic_v1.ValidationError, TypeError) as err:
                 raise MalformedRow(msg=str(row), index=index, model=self.model, raw_query=self.raw_query) from err
 
     @property
