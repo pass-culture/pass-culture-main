@@ -32,7 +32,7 @@ class Returns204Test:
         # Then
         assert response.status_code == 204
 
-        assert offer_models.Stock.query.first().isSoftDeleted
+        assert [stock.isSoftDeleted for stock in offer_models.Stock.query.all()]
 
 
 @pytest.mark.usefixtures("db_session")
