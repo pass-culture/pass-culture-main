@@ -826,11 +826,10 @@ class CancelByBeneficiaryTest:
             name="Technical provider", localClass=None, notificationExternalUrl="http://external.api.com/notify"
         )
         providers_factories.OffererProviderFactory(provider=provider)
-        stock = offers_factories.EventStockFactory(
+        stock = offers_factories.StockFactory(
             offer__lastProvider=provider,
             offer__venue__address="1 boulevard Poissonniere",
             offer__extraData={"ean": "1234567890123"},
-            offer__withdrawalType=offers_models.WithdrawalTypeEnum.NO_TICKET,
             dnBookedQuantity=1,
             idAtProviders="",
             lastProvider=provider,

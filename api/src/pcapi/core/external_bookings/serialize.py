@@ -36,8 +36,6 @@ class ExternalEventBookingRequest(pydantic_v1.BaseModel):
         booking: bookings_models.Booking,
         user: users_models.User,
     ) -> "ExternalEventBookingRequest":
-        if booking.cancellationLimitDate is None:
-            raise ValueError("cancellationLimitDate is None")
         if user.firstName is None:
             raise ValueError("firstName is None")
         if user.lastName is None:
