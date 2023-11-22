@@ -53,7 +53,7 @@ const UserEmail = ({
           <>
             <BoxFormLayout.Header
               subtitle={initialValues.email}
-              title="Adresse email"
+              title="Adresse email de connexion"
             />
             {pendingEmailValidation && (
               <BoxFormLayout.Banner
