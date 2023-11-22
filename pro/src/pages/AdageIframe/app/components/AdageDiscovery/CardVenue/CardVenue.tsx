@@ -1,5 +1,5 @@
 import React from 'react'
-import { useSearchParams } from 'react-router-dom'
+import { NavLink, useSearchParams } from 'react-router-dom'
 
 import styles from './CardVenue.module.scss'
 
@@ -25,10 +25,10 @@ const CardVenue = ({
   const adageAuthToken = searchParams.get('token')
 
   return (
-    <a
+    <NavLink
       data-testid="card-venue-link"
       className={styles.container}
-      href={`/adage-iframe/venue/${venue.id}?token=${adageAuthToken}`}
+      to={`/adage-iframe/recherche?token=${adageAuthToken}&venue=${venue.id}`}
       onClick={() => handlePlaylistElementTracking()}
     >
       <img
@@ -45,7 +45,7 @@ const CardVenue = ({
           className={styles['venue-infos-distance']}
         >{`à ${venue.distance} km - ${venue.city}`}</div>
       </div>
-    </a>
+    </NavLink>
   )
 }
 

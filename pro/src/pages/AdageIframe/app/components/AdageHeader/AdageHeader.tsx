@@ -26,7 +26,7 @@ export const AdageHeader = () => {
   const [institutionBudget, setInstitutionBudget] = useState(0)
   const { pathname } = useLocation()
 
-  const isDiscoveryPage = pathname.includes('decouverte')
+  const isDiscoveryPage = pathname === '/adage-iframe'
 
   const getEducationalInstitutionBudget = async () => {
     const { isOk, payload, message } =

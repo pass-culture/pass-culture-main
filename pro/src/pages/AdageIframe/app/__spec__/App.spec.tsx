@@ -98,6 +98,7 @@ vi.mock('apiClient/api', () => ({
     logCatalogView: vi.fn(),
     logTrackingFilter: vi.fn(),
     getCollectiveOffer: vi.fn(),
+    logHasSeenAllPlaylist: vi.fn(),
   },
 }))
 
@@ -167,12 +168,12 @@ describe('app', () => {
     it('should display venue tag when siret is provided and public name exists', async () => {
       const mockLocation = {
         ...window.location,
-        search: '?siret=123456789',
+        search: '?siret=123456789&venue=1436',
       }
 
       window.location = mockLocation
 
-      renderApp(venue)
+      renderApp(venue, '/recherche?siret=123456789&venue=1436')
       await waitForElementToBeRemoved(() => screen.queryAllByTestId('spinner'))
 
       expect(
@@ -181,16 +182,8 @@ describe('app', () => {
     })
 
     it('should venue tag when venueId is provided and public name exists', async () => {
-      // Given
-      const mockLocation = {
-        ...window.location,
-        search: '?venue=123456789',
-      }
-
-      window.location = mockLocation
-
       // When
-      renderApp(venue)
+      renderApp(venue, '/recherche?venue=1436')
 
       await waitForElementToBeRemoved(() => screen.queryAllByTestId('spinner'))
 
@@ -200,7 +193,14 @@ describe('app', () => {
     })
 
     it('should display venue when venueId is provided in url', async () => {
-      renderApp(venue, '/venue/1436', isDiscoveryActive)
+      const mockLocation = {
+        ...window.location,
+        search: '?venue=1436',
+      }
+
+      window.location = mockLocation
+
+      renderApp(venue, '/recherche?venue=1436')
 
       await waitForElementToBeRemoved(() => screen.queryAllByTestId('spinner'))
 
@@ -209,13 +209,19 @@ describe('app', () => {
       ).toBeInTheDocument()
     })
     it('should display error messagee when venueId does not exist', async () => {
-      renderApp(venue, '/venue/999', isDiscoveryActive)
+      const mockLocation = {
+        ...window.location,
+        search: '?venue=999',
+      }
+
+      window.location = mockLocation
+      renderApp(venue, '/', isDiscoveryActive)
       vi.spyOn(apiAdage, 'getVenueById').mockRejectedValue(null)
 
-      await waitForElementToBeRemoved(() => screen.queryAllByTestId('spinner'))
-
       expect(
-        screen.getByText('Lieu inconnu. Tous les résultats sont affichés.')
+        await screen.findByText(
+          'Lieu inconnu. Tous les résultats sont affichés.'
+        )
       ).toBeInTheDocument()
     })
 
@@ -229,7 +235,7 @@ describe('app', () => {
         lat: 48.856614,
         lon: 2.3522219,
       })
-      renderApp(null)
+      renderApp(null, '/recherche')
 
       await screen.findByRole('button', { name: 'Rechercher' })
 

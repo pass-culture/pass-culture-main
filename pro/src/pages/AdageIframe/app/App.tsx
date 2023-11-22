@@ -26,7 +26,6 @@ export const App = (): JSX.Element => {
   const [user, setUser] = useState<AuthenticatedResponse | null>()
   const [isLoading, setIsLoading] = useState<boolean>(true)
   const [venueFilter, setVenueFilter] = useState<VenueResponse | null>(null)
-  const domainId = Number(params.get('domain'))
 
   const notification = useNotification()
 
@@ -98,16 +97,12 @@ export const App = (): JSX.Element => {
   return (
     <AdageUserContextProvider adageUser={user}>
       <FiltersContextProvider venueFilter={venueFilter}>
-        <FacetFiltersContextProvider
-          uai={user?.uai}
-          venueFilter={venueFilter}
-          domainFilter={domainId}
-        >
+        <FacetFiltersContextProvider uai={user?.uai} venueFilter={venueFilter}>
           {user?.role &&
           [AdageFrontRoles.READONLY, AdageFrontRoles.REDACTOR].includes(
             user.role
           ) ? (
-            <AppLayout venueFilter={venueFilter} domainFilter={domainId} />
+            <AppLayout venueFilter={venueFilter} />
           ) : (
             <UnauthenticatedError />
           )}

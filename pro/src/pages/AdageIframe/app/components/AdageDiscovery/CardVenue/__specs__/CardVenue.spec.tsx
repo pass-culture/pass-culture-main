@@ -1,8 +1,9 @@
-import { render, screen } from '@testing-library/react'
+import { screen } from '@testing-library/react'
 import * as router from 'react-router-dom'
 
 import { AdageUserContextProvider } from 'pages/AdageIframe/app/providers/AdageUserContext'
 import { defaultAdageUser } from 'utils/adageFactories'
+import { renderWithProviders } from 'utils/renderWithProviders'
 
 import CardVenue, { CardVenueProps } from '../CardVenue'
 
@@ -19,7 +20,7 @@ const renderCardVenue = ({
   venue,
   handlePlaylistElementTracking,
 }: CardVenueProps) => {
-  render(
+  renderWithProviders(
     <AdageUserContextProvider adageUser={defaultAdageUser}>
       <CardVenue
         venue={venue}
@@ -56,7 +57,7 @@ describe('CardVenue', () => {
 
     expect(offerElement).toHaveAttribute(
       'href',
-      '/adage-iframe/venue/28?token=123'
+      '/adage-iframe/recherche?token=123&venue=28'
     )
   })
 })
