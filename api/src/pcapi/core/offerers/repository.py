@@ -77,52 +77,41 @@ def get_all_offerers_for_user(
 def get_ids_of_venues_with_offers(offererIds: list[int]) -> Iterable[int]:
     """Return a list with ids of venues with non-draft offers.
 
-    Venues that do not have any offers are not included."""
-
-    venues_with_individual_offers = (
-        db.session.query(models.Venue.id)
-        .filter(models.Venue.managingOffererId.in_(offererIds))
-        .filter(
-            Offer.query.filter(Offer.venueId == models.Venue.id, Offer.validation != OfferValidationStatus.DRAFT)
-            .limit(1)
-            .exists()
+    Venues that do not have any offers are not included.
+    """
+    venues = (
+        db.session.query(models.Venue).filter(
+            models.Venue.managingOffererId.in_(offererIds),
+            sqla.or_(
+                # Does the venue has Offers
+                sqla.select(1)
+                .select_from(Offer)
+                .where(sqla.and_(Offer.venueId == models.Venue.id, Offer.validation != OfferValidationStatus.DRAFT))
+                .exists(),
+                # Does the venue has CollectiveOffers
+                sqla.select(1)
+                .select_from(CollectiveOffer)
+                .where(
+                    sqla.and_(
+                        CollectiveOffer.venueId == models.Venue.id,
+                        CollectiveOffer.validation != OfferValidationStatus.DRAFT,
+                    )
+                )
+                .exists(),
+                # Does the venue has CollectiveOfferTemplates
+                sqla.select(1)
+                .select_from(CollectiveOfferTemplate)
+                .where(
+                    sqla.and_(
+                        CollectiveOfferTemplate.venueId == models.Venue.id,
+                        CollectiveOfferTemplate.validation != OfferValidationStatus.DRAFT,
+                    )
+                )
+                .exists(),
+            ),
         )
-        .all()
-    )
-
-    venues_with_collective_offers = (
-        db.session.query(models.Venue.id)
-        .filter(models.Venue.managingOffererId.in_(offererIds))
-        .filter(
-            CollectiveOffer.query.filter(
-                CollectiveOffer.venueId == models.Venue.id, CollectiveOffer.validation != OfferValidationStatus.DRAFT
-            )
-            .limit(1)
-            .exists()
-        )
-        .all()
-    )
-
-    venues_with_collective_offers_template = (
-        db.session.query(models.Venue.id)
-        .filter(models.Venue.managingOffererId.in_(offererIds))
-        .filter(
-            CollectiveOfferTemplate.query.filter(
-                CollectiveOfferTemplate.venueId == models.Venue.id,
-                CollectiveOfferTemplate.validation != OfferValidationStatus.DRAFT,
-            )
-            .limit(1)
-            .exists()
-        )
-        .all()
-    )
-
-    return [
-        row.id
-        for row in list(
-            venues_with_individual_offers + venues_with_collective_offers + venues_with_collective_offers_template
-        )
-    ]
+    ).with_entities(models.Venue.id)
+    return [venue_id for venue_id, in venues]
 
 
 def get_filtered_venues(
