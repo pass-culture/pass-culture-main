@@ -4,6 +4,7 @@ import random
 from pcapi.core.categories import subcategories_v2
 import pcapi.core.offers.factories as offers_factories
 import pcapi.core.offers.models as offers_models
+import pcapi.core.providers.factories as providers_factories
 from pcapi.core.providers.titelive_gtl import GTLS
 from pcapi.domain.music_types import MUSIC_SUB_TYPES_BY_SLUG
 from pcapi.domain.music_types import MUSIC_TYPES_BY_SLUG
@@ -32,7 +33,7 @@ def create_industrial_thing_products() -> dict[str, offers_models.Product]:
     thing_subcategories = [s for s in subcategories_v2.ALL_SUBCATEGORIES if not s.is_event]
 
     id_at_providers = 1234
-
+    provider = providers_factories.PublicApiProviderFactory(name="ThingMusicProvider")
     base_ean = 1234567890123
 
     for product_creation_counter in range(0, THINGS_PER_SUBCATEGORY):
@@ -44,6 +45,7 @@ def create_industrial_thing_products() -> dict[str, offers_models.Product]:
             url = "https://ilestencoretemps.fr/" if is_online_only else None
 
             thing_product = offers_factories.ProductFactory(
+                lastProvider=provider,
                 extraData={"author": MOCK_AUTHOR_NAMES[mock_index]},
                 description=MOCK_DESCRIPTIONS[mock_index],
                 idAtProviders=str(id_at_providers),
@@ -105,9 +107,11 @@ def create_industrial_thing_products() -> dict[str, offers_models.Product]:
 
 
 def create_titelive_synced_music_products() -> list[offers_models.Product]:
+    provider = providers_factories.PublicApiProviderFactory(name="ThingMusicProvider")
     logger.info("create_titelive_synced_music_products")
 
     unavailable_cd = offers_factories.ProductFactory(
+        lastProvider=provider,
         description=None,
         extraData=offers_models.OfferExtraData(
             artist="Queen",
@@ -130,6 +134,7 @@ def create_titelive_synced_music_products() -> list[offers_models.Product]:
     )
 
     soon_released_cd = offers_factories.ProductFactory(
+        lastProvider=provider,
         description="Après les récentes rééditions de The Who 'Sell Out', 'My Generation', 'Tommy' et 'Quadrophenia', voici enfin Who's Next, considéré par de nombreux fans comme le plus grand album du groupe ! Découvrez cette nouvelle réédition déclinée en plusieurs supports : CD Cristal, 2CD Digipack, LP, Coffret 10CD+Blu-ray Audio ainsi qu'un coffret 4LP (album rematerisé Who's Next et le Live At The Civic Auditorium, San Francisco -1971).\n\nLe processus de création de l'album fut à l'époque révolutionnaire. Au début des années 70, The Who, et en particulier leur principal auteur-compositeur Pete Townshend, ont été confrontés à un immense défi : Comment succéder au succès international de Tommy ? La réponse a été un projet ambitieux, futuriste et prémonitoire nommé 'Life House'. Life House prédisait un monde dystopique qui semble aujourd'hui familier. Les thèmes abordés étaient ceux de la pollution, des entreprises trop puissantes et de la technologie. Le projet en deux volets réunissait un film et une performance live au Young Vic Theatre de Londres.\n\nEt comme l'écrit Pete Townshend « La fiction et l'expérience Live étaient toutes deux imparfaites, et aucune n'a été correctement réalisée. Mais une musique merveilleuse est sortie du projet, et l'idée m'a toujours hantée, car de nombreux éléments de la fiction semblent se réaliser »\n",
         extraData=offers_models.OfferExtraData(
             artist="The who",
@@ -153,6 +158,7 @@ def create_titelive_synced_music_products() -> list[offers_models.Product]:
     )
 
     available_rap_cd_1 = offers_factories.ProductFactory(
+        lastProvider=provider,
         description='GIMS revient avec " Les dernières volontés de Mozart ", un album de tubes.\n\n" Les dernières volontés de Mozart " est un album phénomène.\nWolfgang Amadeus Mozart ne rentrait dans aucune case, il a composé et excellé dans tous les registres de son époque. Son audace, sa virtuosité et son génie sont inégalables et traversent le temps.\nD\'une créativité rare, GIMS relève encore une fois le défi : celui d\'avoir composé des morceaux aux univers tous différents, à la fois populaires et toujours innovants. Ce nouvel opus est d\'une qualité redoutable, rassemblant 20 titres qui sont autant de tubes en devenir.\nEt pour que la surprise soit totale, l\'album offre des collaborations aussi réussies qu\'inattendues...\nInclus le tube " Maintenant ".\n',
         extraData=offers_models.OfferExtraData(
             artist="Gims",
@@ -175,6 +181,7 @@ def create_titelive_synced_music_products() -> list[offers_models.Product]:
     )
 
     available_rap_cd_2 = offers_factories.ProductFactory(
+        lastProvider=provider,
         description='.Après l\'immense succès de " Civilisation " (déjà plus de 600.000 ventes) et de la nouvelle saison de la série-documentaire " Montre jamais ça à personne ", OrelSan revient avec une version augmentée de 10 nouveaux titres de son album déjà culte : "Civilisation Edition Ultime".\n\nAvec près de 2,5 millions d\'albums vendus en cumulé et 9 Victoires de la Musique, OrelSan occupe une place à part dans le paysage français. La voix d\'une génération.\n\nOrelSan " Civilisation Edition Ultime ", double album CD.\n',
         extraData=offers_models.OfferExtraData(
             artist="Orelsan",
@@ -198,6 +205,7 @@ def create_titelive_synced_music_products() -> list[offers_models.Product]:
     )
 
     available_multiple_discs_cd = offers_factories.ProductFactory(
+        lastProvider=provider,
         description="PROJET CARITATIF, A BUT NON LUCRATIF :\n\nTOUS LES PROFITS SERONT REVERSES A L’ASSOCIATION LES RESTOS DU COEUR\n  \nFidèles à l’appel lancé par Coluche dès 1985, et après 2 ans de concerts sans public, les plus grands artistes de la scène musicale française se réunissent pour la cause des Restos du Coeur.\n\nPlus que jamais, les Restos du Coeur ont besoin de vous !\nEt rappelez-vous que « CHAQUE CD OU DVD VENDU = 17 REPAS OFFERTS AUX RESTOS DU COEUR ».\n\nRetrouvez L’INTEGRALITE DU SPECTACLE « 2023 Enfoirés un jour, toujours ».\nInclus le single « Rêvons » écrit et composé par Amir, Nazim et Nyadjiko.",
         extraData=offers_models.OfferExtraData(
             artist="Les enfoirés",
@@ -220,6 +228,7 @@ def create_titelive_synced_music_products() -> list[offers_models.Product]:
     )
 
     available_french_cd = offers_factories.ProductFactory(
+        lastProvider=provider,
         description="'Coeur Encore' est la nouvelle édition limitée du dernier album de Clara Luciani, déjà certifié triple disque de platine. Après deux Victoires de la Musique en 2022 (Artiste féminine et Meilleur album) l'artiste rend hommage au son qui a bercé la création de son album 'Coeur', en reprenant en français 4 titres légendaires du disco funk dont 'Celebration' en featuring avec Kool & The Gang.",
         extraData=offers_models.OfferExtraData(
             artist="Clara luciani",
@@ -242,6 +251,7 @@ def create_titelive_synced_music_products() -> list[offers_models.Product]:
     )
 
     available_pop_vinyl_1 = offers_factories.ProductFactory(
+        lastProvider=provider,
         description="LE GROUPE INTERNATIONAL N°1 DE RETOUR AVEC UN ALBUM DE TUBES POP ! NEUVIÈME ALBUM STUDIO DU QUATUOR BRITANNIQUE, PRODUIT PAR MAX MARTIN ET PORTÉ PAR LE SINGLE 'HIGHER POWER' LANCÉ AU PRINTEMPS 2021 DEPUIS LA STATION SPATIALE INTERNATIONALE AVEC L'AIDE DE THOMAS PESQUET.\nLe quatuor britannique s'apprête à sortir leur neuvième album studio, 'Music Of The Spheres', produit par le producteur star de nombreuses fois récompensé Max Martin, et introduit avec le single \"Higher Power\", ritournelle pop optimiste et entraînante lancée depuis la Station Spatiale Internationale par Thomas Pesquet. Sur le thème graphique de l'espace, Coldplay livre un nouvel opus pop taillé pour les stades, fait à la fois d'hymnes entraînants et de ballades chaleureuses.",
         extraData=offers_models.OfferExtraData(
             artist="Coldplay",
@@ -264,6 +274,7 @@ def create_titelive_synced_music_products() -> list[offers_models.Product]:
     )
 
     available_pop_vinyl_2 = offers_factories.ProductFactory(
+        lastProvider=provider,
         description="Ce huitième album studio de Gorillaz est une collection énergique, optimiste et riche en genres de 10 titres mettant en vedette un line-up stellaire de collaborateurs : Thundercat, Tame Impala, Bad Bunny, Stevie Nicks, Adeleye Omotayo, Bootie Brown et Beck. Enregistré à Londres et à Los Angeles plus tôt, il est produit par Gorillaz, Remi Kabaka jr. et le producteur de multiples fois récompensé Greg Kurstin.",
         extraData=offers_models.OfferExtraData(
             artist="Gorillaz",
@@ -286,6 +297,7 @@ def create_titelive_synced_music_products() -> list[offers_models.Product]:
     )
 
     available_rock_vinyl = offers_factories.ProductFactory(
+        lastProvider=provider,
         description='" The Hightlights " la compilation de ses plus grands tubes !\n\nAprès une année 2020 interstellaire ! The Weeknd nous livre ses plus grands HITS dans une compilation exceptionnelle !\n',
         extraData=offers_models.OfferExtraData(
             artist="The weeknd",
@@ -308,6 +320,7 @@ def create_titelive_synced_music_products() -> list[offers_models.Product]:
     )
 
     available_multiple_discs_vinyl = offers_factories.ProductFactory(
+        lastProvider=provider,
         description="LONDON GRAMMAR EST UN TRÈS JEUNE TRIO ANGLAIS FORMÉ SUR LES BANCS DE L'UNIVERSITÉ.\nAUTEURS-COMPOSITEURS-INTERPRÈTES : HANNAH REID, DOT MAJOR & DAN ROTHMAN SUSCITENT L'ENTHOUSIASME DE PART ET D'AUTRE DE LA MANCHE.\nPORTÉ PAR LA VOIX PUISSANTE ET BLUFFANTE DE HANNAH, LONDON GRAMMAR EST DÉJÀ CONSIDÉRÉ COMME LE PENDANT POP DE THE XX.",
         extraData=offers_models.OfferExtraData(
             artist="London grammar",
