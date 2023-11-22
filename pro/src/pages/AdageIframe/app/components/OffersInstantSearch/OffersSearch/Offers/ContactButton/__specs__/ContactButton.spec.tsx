@@ -3,24 +3,18 @@ import { userEvent } from '@testing-library/user-event'
 import React from 'react'
 
 import { AdageFrontRoles } from 'apiClient/adage'
+import { apiAdage } from 'apiClient/api'
 import { renderWithProviders } from 'utils/renderWithProviders'
 
 import ContactButton, { ContactButtonProps } from '../ContactButton'
 
-const renderContactButton = (
-  props: ContactButtonProps,
-  features?: { list: { isActive: true; nameKey: string }[] }
-) => {
-  const storeOverrides = {
-    features: features,
-  }
-  return renderWithProviders(<ContactButton {...props} />, {
-    storeOverrides: storeOverrides,
-  })
+const renderContactButton = (props: ContactButtonProps) => {
+  return renderWithProviders(<ContactButton {...props} />)
 }
 vi.mock('apiClient/api', () => ({
   apiAdage: {
     logContactModalButtonClick: vi.fn(),
+    logRequestFormPopinDismiss: vi.fn(),
   },
 }))
 
@@ -33,37 +27,24 @@ describe('ContactButton', () => {
     queryId: 'test',
     userRole: AdageFrontRoles.REDACTOR,
   }
-  it('should display modal on click', async () => {
-    renderContactButton(defaultProps)
-    const contactButton = screen.getByRole('button', { name: 'Contacter' })
-    await userEvent.click(contactButton)
 
-    expect(
-      screen.getByText(
-        /Afin de personnaliser cette offre, nous vous invitons à entrer en contact avec votre partenaire culturel :/
-      )
-    ).toBeInTheDocument()
-  })
-
-  it('should close modal on click', async () => {
+  it('should call tracking on close modal', async () => {
     renderContactButton(defaultProps)
 
     const contactButton = screen.getByRole('button', { name: 'Contacter' })
     await userEvent.click(contactButton)
 
-    const closeButton = screen.getByRole('button', { name: 'Fermer' })
+    const closeButton = screen.getByRole('button', { name: 'Annuler' })
     await userEvent.click(closeButton)
 
+    expect(apiAdage.logRequestFormPopinDismiss).toBeCalledTimes(1)
+
     expect(
-      screen.queryByText(
-        /Afin de personnaliser cette offre, nous vous invitons à entrer en contact avec votre partenaire culturel :/
-      )
+      screen.queryByText('Contacter le partenaire culturel')
     ).not.toBeInTheDocument()
   })
-  it('should display request form on click if ff active', async () => {
-    renderContactButton(defaultProps, {
-      list: [{ isActive: true, nameKey: 'WIP_ENABLE_COLLECTIVE_REQUEST' }],
-    })
+  it('should display request form on click', async () => {
+    renderContactButton(defaultProps)
 
     const contactButton = screen.getByRole('button', { name: 'Contacter' })
     await userEvent.click(contactButton)

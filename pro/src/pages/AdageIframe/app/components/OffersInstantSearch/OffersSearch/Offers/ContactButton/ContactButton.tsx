@@ -2,12 +2,10 @@ import React, { useState } from 'react'
 
 import { AdageFrontRoles } from 'apiClient/adage'
 import { apiAdage } from 'apiClient/api'
-import useActiveFeature from 'hooks/useActiveFeature'
 import { logClickOnOffer } from 'pages/AdageIframe/libs/initAlgoliaAnalytics'
 import { Button } from 'ui-kit'
 import { removeParamsFromUrl } from 'utils/removeParamsFromUrl'
 
-import ContactDialog from './ContactDialog'
 import RequestFormDialog from './RequestFormDialog'
 
 export interface ContactButtonProps {
@@ -52,9 +50,6 @@ const ContactButton = ({
   const closeModal = () => {
     setIsModalOpen(false)
   }
-  const isCollectiveRequestActive = useActiveFeature(
-    'WIP_ENABLE_COLLECTIVE_REQUEST'
-  )
 
   return (
     <>
@@ -63,14 +58,7 @@ const ContactButton = ({
           Contacter
         </Button>
       </div>
-      {isModalOpen && !isCollectiveRequestActive && (
-        <ContactDialog
-          closeModal={closeModal}
-          contactEmail={contactEmail}
-          contactPhone={contactPhone}
-        />
-      )}
-      {isModalOpen && isCollectiveRequestActive && (
+      {isModalOpen && (
         <RequestFormDialog
           closeModal={closeModal}
           contactEmail={contactEmail}
