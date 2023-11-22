@@ -9,6 +9,7 @@ from sqlalchemy import func
 import sqlalchemy.orm as sqla_orm
 
 from pcapi.core.categories import subcategories_v2 as subcategories
+from pcapi.core.external_bookings import exceptions as external_bookings_exceptions
 from pcapi.core.offerers.models import Venue
 import pcapi.core.offers.models as offers_models
 from pcapi.models import db
@@ -233,12 +234,13 @@ def is_cinema_external_ticket_applicable(offer: offers_models.Offer) -> bool:
 
 
 def is_event_external_ticket_applicable(offer: offers_models.Offer) -> bool:
-    return (
-        offer.isEvent
-        and offer.lastProviderId
-        and offer.lastProvider.hasProviderEnableCharlie
-        and offer.withdrawalType == offers_models.WithdrawalTypeEnum.IN_APP
-    )
+    if offer.isEvent and offer.withdrawalType == offers_models.WithdrawalTypeEnum.IN_APP:
+        if not (offer.lastProviderId and offer.lastProvider.isActive and offer.lastProvider.hasProviderEnableCharlie):
+            raise external_bookings_exceptions.ExternalBookingException(
+                "Offer provider is inactive or not charlie enabled"
+            )
+        return True
+    return False
 
 
 def get_providers_venues(provider_id: int) -> BaseQuery:
