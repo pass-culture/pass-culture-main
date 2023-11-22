@@ -1,4 +1,4 @@
-import type { Story } from '@storybook/react'
+import type { StoryObj } from '@storybook/react'
 import { Formik } from 'formik'
 import React from 'react'
 
@@ -7,26 +7,24 @@ import TextArea from './TextArea'
 export default {
   title: 'ui-kit/forms/TextArea',
   component: TextArea,
+  decorators: [
+    (Story: any) => (
+      <Formik initialValues={{ description: '' }} onSubmit={() => {}}>
+        <Story />
+      </Formik>
+    ),
+  ],
 }
 
-const Template: Story<{ label: string; disabled: boolean }> = ({
-  label,
-  disabled,
-}) => (
-  <Formik initialValues={{ description: '' }} onSubmit={() => {}}>
-    {({ getFieldProps }) => {
-      return (
-        <TextArea
-          {...getFieldProps('description')}
-          disabled={disabled}
-          label={label}
-          placeholder="Description placeholder"
-        />
-      )
-    }}
-  </Formik>
-)
+export const WithoutLabel: StoryObj<typeof TextArea> = {
+  args: {
+    name: 'description',
+  },
+}
 
-export const WithoutLabel = Template.bind({})
-export const WithLabel = Template.bind({})
-WithLabel.args = { label: 'Description', disabled: false }
+export const WithLabel: StoryObj<typeof TextArea> = {
+  args: {
+    name: 'description',
+    label: 'Description',
+  },
+}
