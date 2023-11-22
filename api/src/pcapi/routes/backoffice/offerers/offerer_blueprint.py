@@ -126,7 +126,11 @@ def _load_offerer_data(offerer_id: int) -> sa.engine.Row:
         )
     )
 
-    return offerer_query.one_or_none()
+    row = offerer_query.one_or_none()
+    if not row:
+        raise NotFound()
+
+    return row
 
 
 def _render_offerer_details(offerer_id: int, edit_offerer_form: offerer_forms.EditOffererForm | None = None) -> str:
