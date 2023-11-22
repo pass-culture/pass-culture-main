@@ -1,4 +1,6 @@
-import { render, screen } from '@testing-library/react'
+import { screen } from '@testing-library/react'
+
+import { renderWithProviders } from 'utils/renderWithProviders'
 
 import DomainsCard, { DomainsCardProps } from '../DomainsCard'
 
@@ -9,7 +11,7 @@ const renderDomainsCardComponent = ({
   href,
   handlePlaylistElementTracking,
 }: DomainsCardProps) => {
-  render(
+  renderWithProviders(
     <DomainsCard
       title={title}
       color={color}

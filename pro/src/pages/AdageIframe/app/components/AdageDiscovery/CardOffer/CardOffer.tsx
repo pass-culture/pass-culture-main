@@ -1,5 +1,5 @@
 import React from 'react'
-import { useSearchParams } from 'react-router-dom'
+import { NavLink, useSearchParams } from 'react-router-dom'
 
 import {
   CollectiveOfferOfferVenue,
@@ -54,10 +54,9 @@ const CardOfferComponent = ({
 
   return (
     <div className={styles['container']}>
-      <a
+      <NavLink
         data-testid="card-offer-link"
-        className={styles['container-link']}
-        href={`/adage-iframe/decouverte/offre/${offer.id}?token=${adageAuthToken}`}
+        to={`/adage-iframe/decouverte/offre/${offer.id}?token=${adageAuthToken}`}
         onClick={() => {
           handlePlaylistElementTracking()
         }}
@@ -106,7 +105,7 @@ const CardOfferComponent = ({
             className={styles['offer-venue-distance']}
           >{`à ${offer.venue.distance} km - ${offer.venue.city}`}</div>
         </div>
-      </a>
+      </NavLink>
       <OfferFavoriteButton
         offer={offer}
         className={styles['offer-favorite-button']}

@@ -128,7 +128,9 @@ const renderOffersSearchComponent = (
       </AdageUserContextProvider>
       <Notification />
     </>,
-    { storeOverrides: storeOverrides }
+    {
+      storeOverrides: storeOverrides,
+    }
   )
 }
 
@@ -185,7 +187,6 @@ describe('offersSearch component', () => {
   beforeEach(() => {
     props = {
       venueFilter: null,
-      domainFilter: null,
       setGeoRadius: setGeoRadiusMock,
     }
     vi.spyOn(apiAdage, 'getEducationalOffersCategories').mockResolvedValue({
@@ -388,13 +389,14 @@ describe('offersSearch component', () => {
   })
 
   it('should filters with artistic domains id if provided in url', async () => {
-    renderOffersSearchComponent(
-      {
-        ...props,
-        domainFilter: 1,
-      },
-      user
-    )
+    const mockLocation = {
+      ...window.location,
+      search: '?domain=1',
+    }
+
+    window.location = mockLocation
+
+    renderOffersSearchComponent(props, user)
 
     const tagDomain = await screen.findByRole('button', {
       name: /Danse/,

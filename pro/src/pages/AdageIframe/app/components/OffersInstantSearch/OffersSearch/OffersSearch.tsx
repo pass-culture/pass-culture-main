@@ -36,7 +36,6 @@ export enum LocalisationFilterStates {
 
 export interface SearchProps {
   venueFilter: VenueResponse | null
-  domainFilter: number | null
   setGeoRadius: (geoRadius: number) => void
 }
 
@@ -54,12 +53,13 @@ export interface SearchFormValues {
 
 export const OffersSearch = ({
   venueFilter,
-  domainFilter,
   setGeoRadius,
 }: SearchProps): JSX.Element => {
   const { setFacetFilters } = useContext(FacetFiltersContext)
   const { adageUser } = useAdageUser()
+  const params = new URLSearchParams(window.location.search)
   const isUserAdmin = adageUser.role === AdageFrontRoles.READONLY
+  const domainId = Number(params.get('domain'))
 
   const [categoriesOptions, setCategoriesOptions] = useState<
     Option<string[]>[]
@@ -91,8 +91,7 @@ export const OffersSearch = ({
       try {
         const result = await api.listEducationalDomains()
 
-        const domainFromPath =
-          domainFilter && result.find((elm) => elm.id === domainFilter)
+        const domainFromPath = result.find((elm) => elm.id === domainId)
 
         domainFromPath &&
           (await formik.setFieldValue('domains', [domainFromPath.id]))
