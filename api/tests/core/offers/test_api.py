@@ -2924,6 +2924,59 @@ class FillOffersExtraDataFromProductExtraDataTest:
             idAtProviders=ean,
             name="title",
         )
+        offer = factories.OfferFactory(product=product)
+
+        # When
+        api.fill_offer_extra_data_from_product_data(product.id)
+
+        # Then
+        offer = models.Offer.query.filter_by(id=offer.id).one()
+        assert offer.name == "title"
+        assert offer.extraData["gtl_id"] == "12345678"
+        assert offer.extraData["csr_id"] == "1901"
+        assert offer.extraData["code_clil"] == "4300"
+        assert not offer.extraData["isbn"]
+        assert not offer.extraData["dewey"]
+        assert offer.extraData["rayon"] == "Bandes dessinées adultes / Comics"
+        assert offer.extraData["author"] == "Collectif"
+        assert offer.extraData["bookFormat"] == "BEAUX LIVRES"
+        assert offer.extraData["prix_livre"] == "4.90"
+        assert offer.extraData["editeur"] == "Panini Comics Mag"
+        assert not offer.extraData["comic_series"]
+        assert offer.extraData["distributeur"] == "Makassar"
+        assert offer.extraData["date_parution"] == "24/12/2015"
+
+        mocked_async_index_offer_ids.assert_called()
+        assert set(mocked_async_index_offer_ids.call_args[0][0]) == set([offer.id])
+
+    @mock.patch("pcapi.core.search.async_index_offer_ids")
+    def test_should_fill_offer_extra_data_from_product_data_when_offer_have_empty_extra_data(
+        self, mocked_async_index_offer_ids
+    ):
+        # Given
+        provider = providers_factories.APIProviderFactory()
+        ean = "ean-de-test"
+        product = factories.ThingProductFactory(
+            subcategoryId=subcategories.LIVRE_PAPIER.id,
+            extraData={
+                "gtl_id": "12345678",
+                "csr_id": "1901",
+                "code_clil": "4300",
+                "isbn": None,
+                "dewey": None,
+                "rayon": "Bandes dessinées adultes / Comics",
+                "author": "Collectif",
+                "bookFormat": "BEAUX LIVRES",
+                "prix_livre": "4.90",
+                "editeur": "Panini Comics Mag",
+                "comic_series": None,
+                "distributeur": "Makassar",
+                "date_parution": "24/12/2015",
+            },
+            lastProvider=provider,
+            idAtProviders=ean,
+            name="title",
+        )
         offer = factories.OfferFactory(product=product, extraData={})
 
         # When

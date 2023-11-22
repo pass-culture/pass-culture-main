@@ -1405,6 +1405,7 @@ def fill_offer_extra_data_from_product_data(product_id: int) -> None:
 
             for offer in offers:
                 offer.name = product.name
+                offer.extraData = offer.extraData or {}
                 offer.extraData.update(product.extraData)
                 db.session.add(offer)
                 logger.info(
