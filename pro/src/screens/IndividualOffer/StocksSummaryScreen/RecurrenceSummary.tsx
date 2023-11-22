@@ -21,7 +21,7 @@ export const RecurrenceSummary = ({
         <StocksEventList
           priceCategories={offer.priceCategories}
           departmentCode={offer.venue.departementCode}
-          offerId={offer.id}
+          offer={offer}
           readonly
         />
       )}

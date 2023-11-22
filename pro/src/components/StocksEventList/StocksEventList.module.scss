@@ -12,6 +12,11 @@
 
 .select-all-container {
   display: flex;
+  width: 100%;
+}
+
+.add-recurrences-button {
+  margin-bottom: rem.torem(32px);
 }
 
 .stocks-count {
