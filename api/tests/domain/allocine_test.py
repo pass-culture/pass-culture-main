@@ -23,13 +23,12 @@ class GetMovieListFromAllocineTest:
 
     def test_get_all_pages(self, requests_mock):
         self._configure_api_responses(requests_mock)
-        print(settings.ALLOCINE_API_KEY)
         movies = get_movie_list()
         assert len(movies) == 4
-        assert movies[0]["internalId"] == 131136
-        assert movies[1]["internalId"] == 41324
-        assert movies[2]["internalId"] == 2161
-        assert movies[3]["internalId"] == 4076
+        assert movies[0].internalId == 131136
+        assert movies[1].internalId == 41324
+        assert movies[2].internalId == 2161
+        assert movies[3].internalId == 4076
 
 
 class GetMovieShowtimeListFromAllocineTest:
