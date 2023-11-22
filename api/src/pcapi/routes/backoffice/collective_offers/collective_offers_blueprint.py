@@ -1,6 +1,5 @@
 import datetime
 
-from flask import current_app as app
 from flask import flash
 from flask import redirect
 from flask import render_template
@@ -15,7 +14,6 @@ from pcapi.core.educational import adage_backends as adage_client
 from pcapi.core.educational import models as educational_models
 from pcapi.core.educational.adage_backends.serialize import serialize_collective_offer
 from pcapi.core.finance import api as finance_api
-from pcapi.core.finance import conf as finance_conf
 from pcapi.core.finance import exceptions as finance_exceptions
 from pcapi.core.finance import models as finance_models
 from pcapi.core.mails import transactional as transactional_mails
@@ -336,7 +334,7 @@ def _is_collective_offer_price_editable(collective_offer: educational_models.Col
         return False
 
     # cannot update an offer's price while the cashflow generation script is running
-    if app.redis_client.exists(finance_conf.REDIS_GENERATE_CASHFLOW_LOCK):  # type: ignore [attr-defined]
+    if finance_api.are_cashflows_being_generated():
         return False
 
     # cannot update an offer's stock if it already has a pricing

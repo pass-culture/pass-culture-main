@@ -134,6 +134,7 @@
             <table class="table mb-4 my-4">
               <thead>
                 <tr>
+                  <th scope="col"></th>
                   <th scope="col">Stock ID</th>
                   <th scope="col" class="col-2">Stock réservé</th>
                   <th scope="col" class="col-2">Stock restant</th>
@@ -144,6 +145,25 @@
               <tbody>
                 {% for stock in offer.stocks | sort(attribute='id') %}
                   <tr>
+                    <td>
+                      {% if stock.id in editable_stock_ids and has_permission("MANAGE_OFFERS") %}
+                        <div class="dropdown">
+                          <button type="button"
+                                  data-bs-toggle="dropdown"
+                                  aria-expanded="false"
+                                  class="btn p-0">
+                            <i class="bi bi-three-dots-vertical"></i>
+                          </button>
+                          <ul class="dropdown-menu">
+                            <li class="dropdown-item">
+                              <a class="btn btn-sm d-block w-100 text-start px-3"
+                                 data-bs-toggle="modal"
+                                 data-bs-target="#edit-offer-modal-{{ stock.id }}">Modifier</a>
+                            </li>
+                          </ul>
+                        </div>
+                      {% endif %}
+                    </td>
                     <td>{{ stock.id }}</td>
                     <td>{{ stock.dnBookedQuantity }}</td>
                     <td>
@@ -163,5 +183,10 @@
         {% endcall %}
       </div>
     </div>
+    {% if has_permission("MANAGE_OFFERS") %}
+      {% for stock_id in editable_stock_ids %}
+        {{ build_lazy_modal(url_for('backoffice_web.offer.get_offer_stock_edit_form', offer_id=offer.id, stock_id=stock_id), "edit-offer-modal-" + stock_id|string) }}
+      {% endfor %}
+    {% endif %}
   </div>
 {% endblock main_content %}
