@@ -44,8 +44,10 @@ class GeneratePdfFromHtmlTest:
     # output is different.
     @mock.patch.dict(os.environ, {"SOURCE_DATE_EPOCH": "0"}, clear=True)
     def test_cache(self, example_html, css_font_http_request_mock):
-        pdf.url_cache.delete_cache()
-        pdf.url_cache.create_cache()
+        # Force recreation of the cache.
+        fetcher = pdf._get_url_fetcher()
+        fetcher.delete_cache()
+        fetcher.create_cache()
         metadata = pdf.PdfMetadata(created=datetime.datetime.utcnow())
         out1 = pdf.generate_pdf_from_html(example_html, metadata)
         out2 = pdf.generate_pdf_from_html(example_html, metadata)

@@ -4,12 +4,14 @@ import json
 import pathlib
 import shutil
 import tempfile
+import threading
 import urllib.parse
 
 import weasyprint
 
 
 PDF_AUTHOR = "Pass Culture"
+url_fetcher_container = threading.local()
 
 
 @dataclass
@@ -71,11 +73,15 @@ class CachingUrlFetcher:
         return result
 
 
-url_cache = CachingUrlFetcher()
+def _get_url_fetcher() -> CachingUrlFetcher:
+    if not hasattr(url_fetcher_container, "fetcher"):
+        url_fetcher_container.fetcher = CachingUrlFetcher()
+    return url_fetcher_container.fetcher
 
 
 def generate_pdf_from_html(html_content: str, metadata: PdfMetadata | None = None) -> bytes:
-    document = weasyprint.HTML(string=html_content, url_fetcher=url_cache.fetch_url).render()
+    fetcher = _get_url_fetcher()
+    document = weasyprint.HTML(string=html_content, url_fetcher=fetcher.fetch_url).render()
     metadata = metadata or PdfMetadata()
     # a W3C date, as expected by Weasyprint
     document.metadata.created = (metadata.created or datetime.utcnow()).strftime("%Y-%m-%dT%H:%M:%SZ")
