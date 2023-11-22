@@ -182,7 +182,11 @@ def render_venue_details(
     delete_form = empty_forms.EmptyForm()
 
     search_form = search_forms.CompactProSearchForm(
-        q=request.args.get("q"), pro_type=TypeOptions.VENUE.name, departments=request.args.getlist("departments")
+        q=request.args.get("q"),
+        pro_type=TypeOptions.VENUE.name,
+        departments=request.args.getlist("departments")
+        if request.args.get("q") or request.args.getlist("departments")
+        else current_user.backoffice_profile.preferences.get("departments", []),
     )
 
     return render_template(
