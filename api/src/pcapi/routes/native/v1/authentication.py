@@ -1,11 +1,10 @@
 import logging
 
-from flask import request
 from flask_jwt_extended import get_jwt_identity
 from flask_jwt_extended import jwt_required
-import pydantic.v1 as pydantic_v1
 
 from pcapi.connectors import api_recaptcha
+from pcapi.connectors import google_oauth
 from pcapi.core.external.attributes import api as external_attributes_api
 import pcapi.core.mails.transactional as transactional_mails
 from pcapi.core.subscription.dms import api as dms_subscription_api
@@ -17,7 +16,6 @@ from pcapi.core.users import repository as users_repo
 from pcapi.core.users.models import User
 from pcapi.core.users.repository import find_user_by_email
 from pcapi.domain.password import check_password_strength
-from pcapi.flask_app import oauth
 from pcapi.models import api_errors
 from pcapi.models import db
 from pcapi.models.api_errors import ApiErrors
@@ -224,11 +222,7 @@ def validate_email(body: ValidateEmailRequest) -> ValidateEmailResponse:
 @ip_rate_limiter()
 @feature_required(FeatureToggle.WIP_ENABLE_GOOGLE_SSO)
 def google_auth(body: authentication.GoogleSigninRequest) -> authentication.SigninResponse:
-    # postmessage is needed when the app uses a popup to fetch the authorization code
-    # see https://stackoverflow.com/questions/71968377
-    redirect_uri = "postmessage" if request.headers.get("platform") == "web" else None
-    token = oauth.google.fetch_access_token(code=body.authorization_code, redirect_uri=redirect_uri)
-    google_user = pydantic_v1.parse_obj_as(authentication.GoogleUser, oauth.google.parse_id_token(token))
+    google_user = google_oauth.get_google_user(body.authorization_code)
     email = google_user.email
     sso_user_id = google_user.sub
 
