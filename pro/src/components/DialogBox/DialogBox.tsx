@@ -7,7 +7,7 @@ import React, { FunctionComponent } from 'react'
 import CloseButton from './CloseButton'
 import styles from './DialogBox.module.scss'
 
-export interface DialogProps {
+interface DialogProps {
   extraClassNames?: string
   hasCloseButton?: boolean
   labelledBy: string
