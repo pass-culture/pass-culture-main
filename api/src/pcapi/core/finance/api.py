@@ -2125,10 +2125,7 @@ def _generate_invoice(
         "reimbursementDate" = now()
         FROM pricing, cashflow_pricing
         WHERE
-        (
-            collective_booking.id = pricing."collectiveBookingId" OR
-            (pricing."bookingId" is not null AND collective_booking."bookingId" = pricing."bookingId")
-        )
+            collective_booking.id = pricing."collectiveBookingId"
         AND pricing.id = cashflow_pricing."pricingId"
         AND cashflow_pricing."cashflowId" IN :cashflow_ids
         """,
