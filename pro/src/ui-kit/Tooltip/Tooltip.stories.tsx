@@ -1,26 +1,23 @@
-import type { Story } from '@storybook/react'
+import type { StoryObj } from '@storybook/react'
 import React from 'react'
 
-import Tooltip, { TooltipProps } from './Tooltip'
+import Tooltip from './Tooltip'
 
 export default {
   title: 'ui-kit/Tooltip',
   component: Tooltip,
+  decorators: [
+    (Story: any) => (
+      <div style={{ padding: '4rem' }}>
+        <Story />
+      </div>
+    ),
+  ],
 }
 
-const Template: Story<TooltipProps> = ({ content, children }) => {
-  return (
-    <div style={{ padding: '4rem' }}>
-      <Tooltip visuallyHidden={false} content={content}>
-        {children}
-      </Tooltip>
-    </div>
-  )
-}
-
-export const Default = Template.bind({})
-
-Default.args = {
-  content: 'Contenu du tooltip',
-  children: 'Hover me!',
+export const Default: StoryObj<typeof Tooltip> = {
+  args: {
+    content: 'Contenu du tooltip',
+    children: 'Hover me!',
+  },
 }
