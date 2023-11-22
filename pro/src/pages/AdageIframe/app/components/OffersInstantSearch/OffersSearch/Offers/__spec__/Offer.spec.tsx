@@ -246,13 +246,10 @@ describe('offer', () => {
     })
 
     it('should display request form modal', async () => {
-      renderOffer(
-        {
-          ...offerProps,
-          offer: { ...defaultCollectiveTemplateOffer, isTemplate: true },
-        },
-        [{ nameKey: 'WIP_ENABLE_COLLECTIVE_REQUEST', isActive: true }]
-      )
+      renderOffer({
+        ...offerProps,
+        offer: { ...defaultCollectiveTemplateOffer, isTemplate: true },
+      })
 
       const contactButton = screen.getByRole('button', {
         name: 'Contacter',
