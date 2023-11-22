@@ -2,6 +2,7 @@ import copy
 from datetime import date
 from datetime import datetime
 from datetime import timedelta
+import decimal
 import logging
 import os
 import pathlib
@@ -3231,3 +3232,98 @@ class FillOffersExtraDataFromProductExtraDataTest:
         with pytest.raises(NotUpdateProductOrOffers):
             with patch("pcapi.models.db.session.commit", side_effect=Exception):
                 api.fill_offer_extra_data_from_product_data(product.id)
+
+
+@pytest.mark.usefixtures("db_session")
+class UpdateUsedStockPriceTest:
+    def test_update_used_stock_price_should_raise_on_non_event(self):
+        booking = bookings_factories.UsedBookingFactory()
+
+        with pytest.raises(ValueError):
+            api.update_used_stock_price(booking.stock, new_price=booking.stock.price - 1)
+
+    def test_update_used_stock_price_should_delete_pricings_on_used_event(self):
+        offer = factories.OfferFactory(subcategoryId=subcategories.CONFERENCE.id)
+        venue = offer.venue
+        stock_to_edit = factories.StockFactory(
+            offer=offer,
+            price=decimal.Decimal("123.45"),
+        )
+        booking_to_edit = bookings_factories.UsedBookingFactory(
+            stock=stock_to_edit,
+            amount=decimal.Decimal("123.45"),
+            venue=venue,
+        )
+        stock_untouched = factories.StockFactory(
+            offer=offer,
+            price=decimal.Decimal("123.45"),
+        )
+        booking_untouched = bookings_factories.UsedBookingFactory(
+            stock=stock_untouched,
+            amount=decimal.Decimal("123.45"),
+            venue=venue,
+        )
+        cancelled_event = finance_factories.FinanceEventFactory(
+            booking=booking_to_edit, venue=venue, pricingPoint=venue
+        )
+        cancelled_pricing = finance_factories.PricingFactory(
+            event=cancelled_event,
+            pricingPoint=venue,
+        )
+        later_booking = bookings_factories.UsedBookingFactory(
+            stock__offer__venue=venue,
+            stock__offer__subcategoryId=subcategories.CONFERENCE.id,
+            stock__beginningDatetime=datetime.utcnow() + timedelta(hours=2),
+        )
+        later_event = finance_factories.FinanceEventFactory(
+            booking=later_booking,
+            venue=venue,
+            pricingPoint=venue,
+            pricingOrderingDate=later_booking.stock.beginningDatetime,
+        )
+        later_pricing = finance_factories.PricingFactory(
+            event=later_event,
+            pricingPoint=venue,
+        )
+        later_pricing_id = later_pricing.id
+
+        api.update_used_stock_price(booking_to_edit.stock, 50.1)
+
+        db.session.refresh(booking_to_edit)
+        db.session.refresh(booking_untouched)
+        db.session.refresh(stock_to_edit)
+        db.session.refresh(stock_untouched)
+        db.session.refresh(cancelled_event)
+        db.session.refresh(later_event)
+
+        assert stock_untouched.price == decimal.Decimal("123.45")
+        assert booking_untouched.amount == decimal.Decimal("123.45")
+        assert cancelled_event.status == finance_models.FinanceEventStatus.READY
+        assert cancelled_pricing.status == finance_models.PricingStatus.CANCELLED
+
+        assert stock_to_edit.price == decimal.Decimal("50.1")
+        assert booking_to_edit.amount == decimal.Decimal("50.1")
+        assert later_event.status == finance_models.FinanceEventStatus.READY
+        assert finance_models.Pricing.query.filter_by(id=later_pricing_id).count() == 0
+
+    def test_update_used_stock_price_should_update_confirmed_events(self):
+        offer = factories.OfferFactory(subcategoryId=subcategories.CONFERENCE.id)
+        venue = offer.venue
+        stock_to_edit = factories.StockFactory(
+            offer=offer,
+            price=decimal.Decimal("123.45"),
+        )
+        booking_to_edit = bookings_factories.BookingFactory(
+            status=bookings_models.BookingStatus.CONFIRMED,
+            stock=stock_to_edit,
+            amount=decimal.Decimal("123.45"),
+            venue=venue,
+        )
+
+        api.update_used_stock_price(booking_to_edit.stock, 50.1)
+
+        db.session.refresh(booking_to_edit)
+        db.session.refresh(stock_to_edit)
+
+        assert stock_to_edit.price == decimal.Decimal("50.1")
+        assert booking_to_edit.amount == decimal.Decimal("50.1")

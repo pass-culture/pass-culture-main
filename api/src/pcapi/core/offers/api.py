@@ -1654,3 +1654,37 @@ def move_event_offer(
 
     if notify_beneficiary:
         transactional_mails.send_email_for_each_ongoing_booking(offer)
+
+
+def update_used_stock_price(stock: models.Stock, new_price: float) -> None:
+    if not stock.offer.isEvent:
+        raise ValueError("Only stocks associated with an event offer can be edited with used bookings")
+
+    stock.price = new_price
+    bookings_models.Booking.query.filter(
+        bookings_models.Booking.stockId == stock.id,
+    ).update({bookings_models.Booking.amount: new_price})
+
+    first_finance_event = (
+        finance_models.FinanceEvent.query.join(bookings_models.Booking, finance_models.FinanceEvent.booking)
+        .filter(
+            finance_models.FinanceEvent.status != finance_models.FinanceEventStatus.CANCELLED,
+            bookings_models.Booking.stockId == stock.id,
+        )
+        .order_by(
+            finance_models.FinanceEvent.pricingOrderingDate,
+            finance_models.FinanceEvent.id,
+        )
+        .options(
+            sa.orm.joinedload(finance_models.FinanceEvent.booking),
+        )
+        .first()
+    )
+
+    if first_finance_event:
+        finance_api._cancel_event_pricing(
+            event=first_finance_event,
+            reason=finance_models.PricingLogReason.CHANGE_AMOUNT,
+        )
+        first_finance_event.status = finance_models.FinanceEventStatus.READY
+        db.session.add(first_finance_event)
