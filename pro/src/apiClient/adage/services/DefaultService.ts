@@ -702,6 +702,22 @@ export class DefaultService {
   }
 
   /**
+   * get_classroom_playlist <GET>
+   * @returns ListCollectiveOffersResponseModel OK
+   * @throws ApiError
+   */
+  public getClassroomPlaylist(): CancelablePromise<ListCollectiveOffersResponseModel> {
+    return this.httpRequest.request({
+      method: 'GET',
+      url: '/adage-iframe/playlists/classroom',
+      errors: {
+        403: `Forbidden`,
+        422: `Unprocessable Entity`,
+      },
+    });
+  }
+
+  /**
    * save_redactor_preferences <POST>
    * @param requestBody
    * @returns void
