@@ -1,8 +1,21 @@
+import typing
+
 import sqlalchemy as sa
 
 from pcapi.core.educational import models as educational_models
 from pcapi.core.offerers import models as offerers_models
 from pcapi.repository import repository
+
+
+def get_redactors_favorites_subset(
+    redactor: educational_models.EducationalRedactor, offer_ids: typing.Collection[int]
+) -> typing.Collection[int]:
+    query = educational_models.CollectiveOfferEducationalRedactor.query.filter(
+        educational_models.CollectiveOfferEducationalRedactor.educationalRedactorId == redactor.id,
+        educational_models.CollectiveOfferEducationalRedactor.collectiveOfferId.in_(offer_ids),
+    ).options(sa.orm.load_only(educational_models.CollectiveOfferEducationalRedactor.collectiveOfferId))
+
+    return {row.collectiveOfferId for row in query}
 
 
 def add_offer_to_favorite_adage(

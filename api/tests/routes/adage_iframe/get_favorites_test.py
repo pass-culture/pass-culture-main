@@ -81,6 +81,7 @@ class GetFavoriteOfferTest:
                         "coordinates": {"latitude": 48.87004, "longitude": 2.3785},
                         "managingOfferer": {"name": stock.collectiveOffer.venue.managingOfferer.name},
                         "adageId": None,
+                        "distance": None,
                     },
                     "students": ["Lycée - Seconde"],
                     "offerVenue": {
@@ -147,6 +148,7 @@ class GetFavoriteOfferTest:
                         "coordinates": {"latitude": 48.87004, "longitude": 2.3785},
                         "managingOfferer": {"name": collective_offer_template.venue.managingOfferer.name},
                         "adageId": None,
+                        "distance": None,
                     },
                     "students": ["Lycée - Seconde"],
                     "offerVenue": {
