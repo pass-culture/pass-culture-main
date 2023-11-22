@@ -1,5 +1,4 @@
-import type { Story } from '@storybook/react'
-import React from 'react'
+import type { StoryObj } from '@storybook/react'
 
 import strokeUserIcon from 'icons/stroke-user.svg'
 
@@ -10,12 +9,10 @@ export default {
   component: SvgIcon,
 }
 
-const Template: Story<SvgIconProps> = (args) => {
-  return <SvgIcon {...args} />
-}
-
-export const Default = Template.bind({})
-Default.args = {
-  src: strokeUserIcon,
-  alt: 'A user',
+export const Default: StoryObj<SvgIconProps> = {
+  args: {
+    src: strokeUserIcon,
+    alt: 'A user',
+    width: '50',
+  },
 }
