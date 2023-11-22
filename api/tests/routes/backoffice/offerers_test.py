@@ -211,6 +211,10 @@ class GetOffererTest(GetEndpointHelper):
 
         assert html_parser.get_soup(response.data).find(class_="subscription-tab-pane")
 
+    def test_get_offerer_which_does_not_exist(self, authenticated_client):
+        response = authenticated_client.get(url_for(self.endpoint, offerer_id=12345))
+        assert response.status_code == 404
+
 
 class SuspendOffererTest(PostEndpointHelper):
     endpoint = "backoffice_web.offerer.suspend_offerer"
