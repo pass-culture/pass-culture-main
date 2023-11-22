@@ -13,6 +13,7 @@ import pytest
 from pcapi import settings
 from pcapi.connectors.dms import api as api_dms
 from pcapi.connectors.dms import models as dms_models
+from pcapi.connectors.google_oauth import GoogleUser
 from pcapi.core import token as token_utils
 from pcapi.core.fraud import factories as fraud_factories
 from pcapi.core.history import factories as history_factories
@@ -236,33 +237,19 @@ class SigninTest:
 
 
 class SSOSigninTest:
-    valid_user = {
-        "iss": "https://accounts.google.com",
-        "azp": "427121120704-5r71oe05dt37jlsbg2d19hmhtk79bqat.apps.googleusercontent.com",
-        "aud": "427121120704-5r71oe05dt37jlsbg2d19hmhtk79bqat.apps.googleusercontent.com",
-        "sub": "100428144463745704968",
-        "hd": "passculture.app",
-        "email": "docteur.cuesta@passculture.app",
-        "email_verified": True,
-        "at_hash": "i8lKXlAVDYjKc6Krwsledg",
-        "nonce": "k5Iy6eENx1AsYy20W405",
-        "name": "Docteur Cuesta",
-        "picture": "https://lh3.googleusercontent.com/a/ACg8ocKymVDJZjhFOcIEmgMMKs8h5hnzP3R6K64Qz3m4eEtf=s96-c",
-        "given_name": "Docteur",
-        "family_name": "Cuesta",
-        "locale": "fr",
-        "iat": 1697811815,
-        "exp": 1697815415,
-    }
+    valid_google_user = GoogleUser(
+        sub="100428144463745704968",
+        email="docteur.cuesta@passculture.app",
+        email_verified=True,
+    )
 
-    @patch("pcapi.routes.native.v1.authentication.oauth.google.parse_id_token")
-    @patch("pcapi.routes.native.v1.authentication.oauth.google.fetch_access_token")
+    @patch("pcapi.connectors.google_oauth.get_google_user")
     @override_features(WIP_ENABLE_GOOGLE_SSO=True)
-    def test_account_is_active(self, _mock_fetch_access_token, mock_parse_id_token, client, caplog):
+    def test_account_is_active(self, mocked_google_oauth, client, caplog):
         users_factories.SingleSignOnFactory(
-            ssoUserId=self.valid_user["sub"], user__email=self.valid_user["email"], user__isActive=True
+            ssoUserId=self.valid_google_user.sub, user__email=self.valid_google_user.email, user__isActive=True
         )
-        mock_parse_id_token.return_value = self.valid_user
+        mocked_google_oauth.return_value = self.valid_google_user
 
         with caplog.at_level(logging.INFO):
             response = client.post("/native/v1/oauth/google/authorize", json={"authorizationCode": "4/google_code"})
@@ -271,25 +258,23 @@ class SSOSigninTest:
         assert response.json["accountState"] == AccountState.ACTIVE.value
         assert "Successful authentication attempt" in caplog.messages
 
-    @patch("pcapi.routes.native.v1.authentication.oauth.google.parse_id_token")
-    @patch("pcapi.routes.native.v1.authentication.oauth.google.fetch_access_token")
+    @patch("pcapi.connectors.google_oauth.get_google_user")
     @override_features(WIP_ENABLE_GOOGLE_SSO=True)
-    def test_account_is_deleted(self, _mock_fetch_access_token, mock_parse_id_token, client):
-        user = users_factories.UserFactory(email=self.valid_user["email"], isActive=False)
-        users_factories.SingleSignOnFactory(user=user, ssoUserId=self.valid_user["sub"])
+    def test_account_is_deleted(self, mocked_google_oauth, client):
+        user = users_factories.UserFactory(email=self.valid_google_user.email, isActive=False)
+        users_factories.SingleSignOnFactory(user=user, ssoUserId=self.valid_google_user.sub)
         history_factories.SuspendedUserActionHistoryFactory(user=user, reason=users_constants.SuspensionReason.DELETED)
-        mock_parse_id_token.return_value = self.valid_user
+        mocked_google_oauth.return_value = self.valid_google_user
 
         response = client.post("/native/v1/oauth/google/authorize", json={"authorizationCode": "4/google_code"})
 
         assert response.status_code == 400
         assert response.json["code"] == "ACCOUNT_DELETED"
 
-    @patch("pcapi.routes.native.v1.authentication.oauth.google.parse_id_token")
-    @patch("pcapi.routes.native.v1.authentication.oauth.google.fetch_access_token")
+    @patch("pcapi.connectors.google_oauth.get_google_user")
     @override_features(WIP_ENABLE_GOOGLE_SSO=True)
-    def test_account_does_not_exist(self, _mock_fetch_access_token, mock_parse_id_token, client, caplog):
-        mock_parse_id_token.return_value = self.valid_user
+    def test_account_does_not_exist(self, mocked_google_oauth, client, caplog):
+        mocked_google_oauth.return_value = self.valid_google_user
 
         with caplog.at_level(logging.INFO):
             response = client.post("/native/v1/oauth/google/authorize", json={"authorizationCode": "4/google_code"})
@@ -298,72 +283,63 @@ class SSOSigninTest:
         assert response.json == {"email": "unknown"}
         assert "Failed authentication attempt" in caplog.messages
 
-    @patch("pcapi.routes.native.v1.authentication.oauth.google.parse_id_token")
-    @patch("pcapi.routes.native.v1.authentication.oauth.google.fetch_access_token")
+    @patch("pcapi.connectors.google_oauth.get_google_user")
     @override_features(WIP_ENABLE_GOOGLE_SSO=True)
-    def test_single_sign_on_ignores_email_if_found(self, _mock_fetch_access_token, mock_parse_id_token, client):
+    def test_single_sign_on_ignores_email_if_found(self, mocked_google_oauth, client):
         user = users_factories.UserFactory(email="another@email.com", isActive=True)
-        users_factories.SingleSignOnFactory(user=user, ssoUserId=self.valid_user["sub"])
-        mock_parse_id_token.return_value = self.valid_user
+        users_factories.SingleSignOnFactory(user=user, ssoUserId=self.valid_google_user.sub)
+        mocked_google_oauth.return_value = self.valid_google_user
 
         response = client.post("/native/v1/oauth/google/authorize", json={"authorizationCode": "4/google_code"})
 
         assert response.status_code == 200
 
-    @patch("pcapi.routes.native.v1.authentication.oauth.google.parse_id_token")
-    @patch("pcapi.routes.native.v1.authentication.oauth.google.fetch_access_token")
+    @patch("pcapi.connectors.google_oauth.get_google_user")
     @override_features(WIP_ENABLE_GOOGLE_SSO=True)
-    def test_single_sign_on_inserts_sso_method_if_email_found(
-        self, _mock_fetch_access_token, mock_parse_id_token, client
-    ):
-        user = users_factories.UserFactory(email=self.valid_user["email"], isActive=True)
-        mock_parse_id_token.return_value = self.valid_user
+    def test_single_sign_on_inserts_sso_method_if_email_found(self, mocked_google_oauth, client):
+        user = users_factories.UserFactory(email=self.valid_google_user.email, isActive=True)
+        mocked_google_oauth.return_value = self.valid_google_user
 
         response = client.post("/native/v1/oauth/google/authorize", json={"authorizationCode": "4/google_code"})
 
         assert response.status_code == 200
 
         created_sso = SingleSignOn.query.filter(SingleSignOn.user == user, SingleSignOn.ssoProvider == "google").one()
-        assert created_sso.ssoUserId == self.valid_user["sub"]
+        assert created_sso.ssoUserId == self.valid_google_user.sub
 
-    @patch("pcapi.routes.native.v1.authentication.oauth.google.parse_id_token")
-    @patch("pcapi.routes.native.v1.authentication.oauth.google.fetch_access_token")
+    @patch("pcapi.connectors.google_oauth.get_google_user")
     @override_features(WIP_ENABLE_GOOGLE_SSO=True)
-    def test_single_sign_on_raises_if_email_not_validated(self, _mock_fetch_access_token, mock_parse_id_token, client):
-        users_factories.UserFactory(email=self.valid_user["email"], isActive=True)
-        unvalidated_email_google_user = copy.deepcopy(self.valid_user)
-        unvalidated_email_google_user["email_verified"] = False
-        mock_parse_id_token.return_value = unvalidated_email_google_user
+    def test_single_sign_on_raises_if_email_not_validated(self, mocked_google_oauth, client):
+        users_factories.UserFactory(email=self.valid_google_user.email, isActive=True)
+        unvalidated_email_google_user = copy.deepcopy(self.valid_google_user)
+        unvalidated_email_google_user.email_verified = False
+        mocked_google_oauth.return_value = unvalidated_email_google_user
 
         response = client.post("/native/v1/oauth/google/authorize", json={"authorizationCode": "4/google_code"})
 
         assert response.status_code == 400
 
-    @patch("pcapi.routes.native.v1.authentication.oauth.google.parse_id_token")
-    @patch("pcapi.routes.native.v1.authentication.oauth.google.fetch_access_token")
+    @patch("pcapi.connectors.google_oauth.get_google_user")
     @override_features(WIP_ENABLE_GOOGLE_SSO=True)
-    def test_single_sign_on_does_not_duplicate_ssos(self, _mock_fetch_access_token, mock_parse_id_token, client):
-        single_sign_on = users_factories.SingleSignOnFactory(ssoUserId=self.valid_user["sub"])
-        mock_parse_id_token.return_value = self.valid_user
+    def test_single_sign_on_does_not_duplicate_ssos(self, mocked_google_oauth, client):
+        single_sign_on = users_factories.SingleSignOnFactory(ssoUserId=self.valid_google_user.sub)
+        mocked_google_oauth.return_value = self.valid_google_user
 
         response = client.post("/native/v1/oauth/google/authorize", json={"authorizationCode": "4/google_code"})
 
         assert response.status_code == 200
         assert SingleSignOn.query.filter(SingleSignOn.user == single_sign_on.user).count() == 1
 
-    @patch("pcapi.routes.native.v1.authentication.oauth.google.parse_id_token")
-    @patch("pcapi.routes.native.v1.authentication.oauth.google.fetch_access_token")
+    @patch("pcapi.connectors.google_oauth.get_google_user")
     @override_features(WIP_ENABLE_GOOGLE_SSO=True)
-    def test_single_sign_on_raises_if_another_sso_is_already_configured(
-        self, _mock_fetch_access_token, mock_parse_id_token, client
-    ):
-        users_factories.SingleSignOnFactory(user__email=self.valid_user["email"])
-        mock_parse_id_token.return_value = self.valid_user
+    def test_single_sign_on_raises_if_another_sso_is_already_configured(self, mocked_google_oauth, client):
+        users_factories.SingleSignOnFactory(user__email=self.valid_google_user.email)
+        mocked_google_oauth.return_value = self.valid_google_user
 
         response = client.post("/native/v1/oauth/google/authorize", json={"authorizationCode": "4/google_code"})
 
         assert response.status_code == 400
-        assert SingleSignOn.query.filter(SingleSignOn.ssoUserId == self.valid_user["sub"]).count() == 0
+        assert SingleSignOn.query.filter(SingleSignOn.ssoUserId == self.valid_google_user.sub).count() == 0
 
     def test_sso_is_feature_flagged(self, client):
         response = client.post("/native/v1/oauth/google/authorize", json={"code": "4/google_code"})
