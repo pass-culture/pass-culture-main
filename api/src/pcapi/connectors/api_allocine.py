@@ -1,3 +1,4 @@
+from pcapi import settings
 from pcapi.utils import requests
 
 
@@ -8,22 +9,21 @@ class AllocineException(Exception):
 ALLOCINE_API_URL = "https://graph-api-proxy.allocine.fr/api/query"
 
 
-def get_movie_list_from_allocine(api_key: str) -> dict:
-    url = f"{ALLOCINE_API_URL}/movieList?token={api_key}"
-
+def get_movie_list_page(after: str = "") -> dict:
+    url = f"{ALLOCINE_API_URL}/movieList?after={after}&token={settings.ALLOCINE_API_KEY}"
     try:
         response = requests.get(url)
     except Exception:
         raise AllocineException("Error connecting Allocine API to get movie list")
 
-    if response.status_code != 200:
-        raise AllocineException("Error getting API Allocine data to get movie list")
+    if not response.ok:
+        raise AllocineException(f"Error getting API Allocine data to get movie list, error={response.status_code}")
 
     return response.json()
 
 
-def get_movies_showtimes_from_allocine(api_key: str, theater_id: str) -> dict:
-    url = f"{ALLOCINE_API_URL}/movieShowtimeList?token={api_key}&theater={theater_id}"
+def get_movies_showtimes_from_allocine(theater_id: str) -> dict:
+    url = f"{ALLOCINE_API_URL}/movieShowtimeList?token={settings.ALLOCINE_API_KEY}&theater={theater_id}"
 
     try:
         response = requests.get(url)

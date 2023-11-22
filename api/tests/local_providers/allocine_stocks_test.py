@@ -103,7 +103,7 @@ class AllocineStocksTest:
             AllocineStocks(allocine_venue_provider)
 
             # Then
-            mock_call_allocine_api.assert_called_once_with("token", theater_token)
+            mock_call_allocine_api.assert_called_once_with(theater_token)
 
     class NextTest:
         @patch("pcapi.local_providers.allocine.allocine_stocks.get_movies_showtimes")
