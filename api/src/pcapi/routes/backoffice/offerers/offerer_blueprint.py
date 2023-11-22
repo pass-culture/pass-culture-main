@@ -157,7 +157,11 @@ def _render_offerer_details(offerer_id: int, edit_offerer_form: offerer_forms.Ed
         )
 
     search_form = search_forms.CompactProSearchForm(
-        q=request.args.get("q"), pro_type=TypeOptions.OFFERER.name, departments=request.args.getlist("departments")
+        q=request.args.get("q"),
+        pro_type=TypeOptions.OFFERER.name,
+        departments=request.args.getlist("departments")
+        if request.args.get("q") or request.args.getlist("departments")
+        else current_user.backoffice_profile.preferences.get("departments", []),
     )
 
     show_subscription_tab = (

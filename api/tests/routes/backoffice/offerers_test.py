@@ -108,6 +108,20 @@ class GetOffererTest(GetEndpointHelper):
         selected_departments = html_parser.extract_select_options(response.data, "departments", selected_only=True)
         assert set(selected_departments.keys()) == {"75", "77"}
 
+    def test_search_have_departements_preference_parameters_on_top(self, authenticated_client, legit_user, offerer):
+        url = url_for(self.endpoint, offerer_id=offerer.id)
+        legit_user.backoffice_profile.preferences = {"departments": ["04", "05", "06"]}
+        db.session.flush()
+
+        response = authenticated_client.get(url)
+        assert response.status_code == 200
+
+        assert html_parser.extract_input_value(response.data, "q") == ""
+        selected_type = html_parser.extract_select_options(response.data, "pro_type", selected_only=True)
+        assert set(selected_type.keys()) == {TypeOptions.OFFERER.name}
+        selected_departments = html_parser.extract_select_options(response.data, "departments", selected_only=True)
+        assert set(selected_departments.keys()) == {"04", "05", "06"}
+
     def test_get_offerer(self, authenticated_client, offerer, offerer_tags):
         offerers_factories.OffererTagMappingFactory(tagId=offerer_tags[0].id, offererId=offerer.id)
         offerers_factories.OffererTagMappingFactory(tagId=offerer_tags[1].id, offererId=offerer.id)
