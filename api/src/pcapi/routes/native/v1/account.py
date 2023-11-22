@@ -6,6 +6,7 @@ import pydantic.v1 as pydantic_v1
 import sqlalchemy as sa
 
 from pcapi.connectors import api_recaptcha
+from pcapi.connectors import google_oauth
 from pcapi.core import token as token_utils
 import pcapi.core.bookings.exceptions as bookings_exceptions
 from pcapi.core.external.attributes import api as external_attributes_api
@@ -208,6 +209,44 @@ def create_account(body: serializers.AccountRequest) -> None:
             api.handle_create_account_with_existing_email(user)
         except exceptions.EmailNotSent:
             raise api_errors.ApiErrors({"email": ["L'email n'a pas pu être envoyé"]})
+
+    except exceptions.UnderAgeUserException:
+        raise api_errors.ApiErrors({"dateOfBirth": "The birthdate is invalid"})
+
+
+@blueprint.native_v1.route("/oauth/google/account", methods=["POST"])
+@spectree_serialize(on_success_status=204, api=blueprint.api, on_error_statuses=[400])
+def create_account_with_google_sso(body: serializers.GoogleAccountRequest) -> None:
+    if FeatureToggle.ENABLE_NATIVE_APP_RECAPTCHA.is_active():
+        try:
+            api_recaptcha.check_native_app_recaptcha_token(body.token)
+        except api_recaptcha.ReCaptchaException:
+            raise api_errors.ApiErrors({"token": "The given token is not valid"})
+
+    google_user = google_oauth.get_google_user(body.authorization_code)
+
+    if not google_user.email_verified:
+        raise api_errors.ApiErrors({"code": "EMAIL_NOT_VALIDATED", "general": ["L'email n'a pas été validé."]})
+
+    try:
+        created_user = api.create_account(
+            email=google_user.email,
+            password=None,
+            sso_provider="google",
+            sso_user_id=google_user.sub,
+            birthdate=body.birthdate,
+            marketing_email_subscription=bool(body.marketing_email_subscription),
+            is_email_validated=True,
+            apps_flyer_user_id=body.apps_flyer_user_id,
+            apps_flyer_platform=body.apps_flyer_platform,
+            firebase_pseudo_id=body.firebase_pseudo_id,
+        )
+
+        if FeatureToggle.WIP_ENABLE_TRUSTED_DEVICE.is_active() and body.trusted_device is not None:
+            api.save_trusted_device(device_info=body.trusted_device, user=created_user)
+
+    except exceptions.UserAlreadyExistsException:
+        raise api_errors.ApiErrors({"email": [f"Un compte existe déjà pour l'adresse mail Google {google_user.email}"]})
 
     except exceptions.UnderAgeUserException:
         raise api_errors.ApiErrors({"dateOfBirth": "The birthdate is invalid"})

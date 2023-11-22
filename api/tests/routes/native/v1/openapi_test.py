@@ -29,7 +29,7 @@ def test_public_api(client):
                             "title": "TrustedDevice",
                         },
                     },
-                    "required": ["email", "password", "birthdate", "token"],
+                    "required": ["birthdate", "token", "email", "password"],
                     "title": "AccountRequest",
                     "type": "object",
                 },
@@ -733,6 +733,30 @@ def test_public_api(client):
                     },
                     "required": ["name", "values"],
                     "title": "GenreTypeModel",
+                    "type": "object",
+                },
+                "GoogleAccountRequest": {
+                    "properties": {
+                        "appsFlyerPlatform": {"nullable": True, "title": "Appsflyerplatform", "type": "string"},
+                        "appsFlyerUserId": {"nullable": True, "title": "Appsflyeruserid", "type": "string"},
+                        "authorizationCode": {"title": "Authorizationcode", "type": "string"},
+                        "birthdate": {"format": "date", "title": "Birthdate", "type": "string"},
+                        "firebasePseudoId": {"nullable": True, "title": "Firebasepseudoid", "type": "string"},
+                        "marketingEmailSubscription": {
+                            "default": False,
+                            "nullable": True,
+                            "title": "Marketingemailsubscription",
+                            "type": "boolean",
+                        },
+                        "token": {"title": "Token", "type": "string"},
+                        "trustedDevice": {
+                            "anyOf": [{"$ref": "#/components/schemas/TrustedDevice"}],
+                            "nullable": True,
+                            "title": "TrustedDevice",
+                        },
+                    },
+                    "required": ["birthdate", "token", "authorizationCode"],
+                    "title": "GoogleAccountRequest",
                     "type": "object",
                 },
                 "GoogleSigninRequest": {
@@ -2544,6 +2568,31 @@ def test_public_api(client):
                     },
                     "security": [{"JWTAuth": []}],
                     "summary": "delete_favorite <DELETE>",
+                    "tags": [],
+                }
+            },
+            "/native/v1/oauth/google/account": {
+                "post": {
+                    "description": "",
+                    "operationId": "post__native_v1_oauth_google_account",
+                    "parameters": [],
+                    "requestBody": {
+                        "content": {
+                            "application/json": {"schema": {"$ref": "#/components/schemas/GoogleAccountRequest"}}
+                        }
+                    },
+                    "responses": {
+                        "204": {"description": "No " "Content"},
+                        "400": {"description": "Bad " "Request"},
+                        "403": {"description": "Forbidden"},
+                        "422": {
+                            "content": {
+                                "application/json": {"schema": {"$ref": "#/components/schemas/ValidationError"}}
+                            },
+                            "description": "Unprocessable " "Entity",
+                        },
+                    },
+                    "summary": "create_account_with_google_sso " "<POST>",
                     "tags": [],
                 }
             },

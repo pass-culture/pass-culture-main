@@ -215,7 +215,7 @@ class User(PcObject, Base, Model, NeedsValidationMixin, DeactivableMixin):
         default=asdict(NotificationSubscriptions()),
         server_default="""{"marketing_push": true, "marketing_email": true}""",
     )
-    password: bytes = sa.Column(sa.LargeBinary(60), nullable=False)
+    password: bytes = sa.Column(sa.LargeBinary(60), nullable=True)
     _phoneNumber = sa.Column(sa.String(20), nullable=True, index=True, name="phoneNumber")
     phoneValidationStatus = sa.Column(sa.Enum(PhoneValidationStatusType, create_constraint=False), nullable=True)
     postalCode = sa.Column(sa.String(5), nullable=True)
@@ -656,6 +656,36 @@ class User(PcObject, Base, Model, NeedsValidationMixin, DeactivableMixin):
     @has_test_role.expression  # type: ignore [no-redef]
     def has_test_role(cls) -> bool:  # pylint: disable=no-self-argument
         return cls.roles.contains([UserRole.TEST])
+
+
+User.trig_ensure_password_or_sso_exists_ddl = sa.DDL(
+    """
+    CREATE OR REPLACE FUNCTION ensure_password_or_sso_exists()
+    RETURNS TRIGGER AS $$
+    BEGIN
+        IF NEW.password IS NULL THEN
+            IF NOT EXISTS (SELECT 1 FROM single_sign_on WHERE "userId" = NEW.id) THEN
+                RAISE EXCEPTION 'missingLoginMethod' USING HINT = 'User must have either a password or a single sign-on';
+            END IF;
+        END IF;
+        RETURN NEW;
+    END;
+    $$ LANGUAGE plpgsql;
+
+    DROP TRIGGER IF EXISTS ensure_password_or_sso_exists ON "user";
+    CREATE CONSTRAINT TRIGGER ensure_password_or_sso_exists
+    AFTER INSERT OR UPDATE OF password ON "user"
+    DEFERRABLE INITIALLY DEFERRED
+    FOR EACH ROW EXECUTE PROCEDURE ensure_password_or_sso_exists();
+    """
+)
+
+
+sa.event.listen(
+    User.__table__,
+    "after_create",
+    User.trig_ensure_password_or_sso_exists_ddl,
+)
 
 
 class ExpenseDomain(enum.Enum):

@@ -143,7 +143,7 @@ def delete_all_users_phone_validation_tokens(user: models.User) -> None:
 
 def create_account(
     email: str,
-    password: str,
+    password: str | None,
     birthdate: datetime.date,
     marketing_email_subscription: bool = False,
     is_email_validated: bool = False,
@@ -153,6 +153,8 @@ def create_account(
     apps_flyer_user_id: str | None = None,
     apps_flyer_platform: str | None = None,
     firebase_pseudo_id: str | None = None,
+    sso_provider: str | None = None,
+    sso_user_id: str | None = None,
 ) -> models.User:
     email = email_utils.sanitize_email(email)
     if users_repository.find_user_by_email(email):
@@ -172,7 +174,7 @@ def create_account(
     if not user.age or user.age < constants.ACCOUNT_CREATION_MINIMUM_AGE:
         raise exceptions.UnderAgeUserException()
 
-    user.setPassword(password)
+    setup_login(user, password, sso_provider, sso_user_id)
 
     if user.externalIds is None:
         user.externalIds = {}
@@ -195,6 +197,20 @@ def create_account(
         request_email_confirmation(user)
 
     return user
+
+
+def setup_login(
+    user: models.User, password: str | None, sso_provider: str | None = None, sso_user_id: str | None = None
+) -> None:
+    if password:
+        user.setPassword(password)
+        return
+
+    if not sso_provider or not sso_user_id:
+        raise exceptions.MissingLoginMethod()
+
+    single_sign_on = users_repository.create_single_sign_on(user, sso_provider, sso_user_id)
+    db.session.add(single_sign_on)
 
 
 def update_user_information(

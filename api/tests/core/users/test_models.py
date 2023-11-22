@@ -22,11 +22,12 @@ from pcapi.core.users.exceptions import InvalidUserRoleException
 from pcapi.models import db
 from pcapi.models.validation_status_mixin import ValidationStatus
 from pcapi.repository import repository
+from pcapi.repository import transaction
+
+from tests.conftest import clean_database
 
 
-pytestmark = pytest.mark.usefixtures("db_session")
-
-
+@pytest.mark.usefixtures("db_session")
 class UserTest:
     class DepositTest:
         def test_return_none_if_no_deposits_exists(self):
@@ -345,6 +346,7 @@ class UserTest:
         assert user.proValidationStatus == ValidationStatus.VALIDATED
 
 
+@pytest.mark.usefixtures("db_session")
 class HasAccessTest:
     def test_does_not_have_access_if_not_attached(self):
         offerer = offerers_factories.OffererFactory()
@@ -373,6 +375,7 @@ class HasAccessTest:
         assert admin.has_access(offerer.id)
 
 
+@pytest.mark.usefixtures("db_session")
 class CalculateAgeTest:
     @freeze_time("2018-06-01")
     def test_user_age(self):
@@ -383,6 +386,7 @@ class CalculateAgeTest:
         assert users_factories.UserFactory.build(dateOfBirth=datetime(1999, 5, 1)).age == 19
 
 
+@pytest.mark.usefixtures("db_session")
 class UserDepositVersionTest:
     def test_return_the_deposit(self):
         user = users_factories.BeneficiaryGrant18Factory(deposit__version=1)
@@ -394,6 +398,7 @@ class UserDepositVersionTest:
         assert user.deposit_version is None
 
 
+@pytest.mark.usefixtures("db_session")
 class UserWalletBalanceTest:
     def test_balance_is_0_with_no_deposits_and_no_bookings(self):
         user = users_factories.UserFactory()
@@ -429,6 +434,7 @@ class UserWalletBalanceTest:
         assert user.wallet_balance == 0
 
 
+@pytest.mark.usefixtures("db_session")
 class SQLFunctionsTest:
     def test_wallet_balance(self):
         with freeze_time(datetime.utcnow() - relativedelta(years=2, days=2)):
@@ -489,6 +495,7 @@ class SQLFunctionsTest:
         assert "the deposit was not found" in str(exc)
 
 
+@pytest.mark.usefixtures("db_session")
 class SuperAdminTest:
     @override_settings(SUPER_ADMIN_EMAIL_ADDRESSES=["super@admin.user"], IS_PROD=True)
     def test_super_user_prod(self):
@@ -509,3 +516,53 @@ class SuperAdminTest:
     def test_super_user_not_prod_is_admin_is_super_admin(self):
         user = users_factories.AdminFactory()
         assert user.is_super_admin()
+
+
+class UserLoginTest:
+    # Since we are testing a deferred trigger on the User table,
+    # we cannot have the db_session fixture tampering with the
+    # transaction lifecycle.
+    @clean_database
+    def test_empty_password_update(self):
+        with pytest.raises(sa_exc.InternalError) as exc:
+            with transaction():
+                user = users_factories.UserFactory()
+                user.password = None
+                db.session.add(user)
+
+        assert "missingLoginMethod" in str(exc.value)
+        assert user.password is not None
+
+    @clean_database
+    def test_empty_password_insert(self):
+        with pytest.raises(sa_exc.InternalError) as exc:
+            with transaction():
+                new_user = user_models.User(email="test@example.com")
+                db.session.add(new_user)
+
+        assert "missingLoginMethod" in str(exc.value)
+        assert user_models.User.query.count() == 0
+
+    @clean_database
+    def test_empty_password_update_with_sso(self):
+        user = users_factories.UserFactory()
+        users_factories.SingleSignOnFactory(user=user)
+
+        with transaction():
+            user.password = None
+            db.session.add(user)
+
+        assert user.password is None
+
+    @clean_database
+    def test_empty_password_insert_with_sso(self):
+        new_user = user_models.User(email="test@example.com")
+        single_sign_on = user_models.SingleSignOn(user=new_user, ssoProvider="google", ssoUserId="user_id")
+
+        with transaction():
+            new_user.password = None
+            db.session.add(new_user)
+            db.session.add(single_sign_on)
+
+        saved_user = user_models.User.query.one()
+        assert saved_user.password is None
