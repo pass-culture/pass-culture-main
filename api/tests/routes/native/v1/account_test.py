@@ -15,6 +15,7 @@ import jwt
 import pytest
 
 from pcapi import settings
+from pcapi.connectors.google_oauth import GoogleUser
 from pcapi.core import testing
 from pcapi.core import token as token_utils
 from pcapi.core.bookings import factories as booking_factories
@@ -560,6 +561,148 @@ class AccountCreationEmailExistsTest:
         )
         response = client.post("/native/v1/account", json=self.data)
         self.assert_email_sent(response, user)
+
+
+class AccountCreationWithSSOTest:
+    identifier = "email@example.com"
+
+    @patch("pcapi.connectors.api_recaptcha.check_recaptcha_token_is_valid")
+    @patch("pcapi.connectors.google_oauth.get_google_user")
+    def test_account_creation(self, mocked_google_oauth, mocked_check_recaptcha_token_is_valid, client):
+        mocked_google_oauth.side_effect = [
+            GoogleUser(sub="google_user_identifier", email="docteur.cuesta@passculture.app", email_verified=True)
+        ]
+
+        response = client.post(
+            "/native/v1/oauth/google/account",
+            json={
+                "authorizationCode": "4/google_code",
+                "birthdate": "1960-12-31",
+                "notifications": True,
+                "token": "recaptcha token",
+                "marketingEmailSubscription": True,
+                "appsFlyerUserId": "apps_flyer_user_id",
+                "appsFlyerPlatform": "iOS",
+                "firebasePseudoId": "firebase_pseudo_id",
+            },
+        )
+        assert response.status_code == 204, response.json
+
+        user = users_models.User.query.one()
+        assert user is not None
+        assert user.email == "docteur.cuesta@passculture.app"
+        assert user.get_notification_subscriptions().marketing_email
+        assert user.isEmailValidated
+        assert user.password is None
+        assert user.externalIds == {
+            "apps_flyer": {"user": "apps_flyer_user_id", "platform": "IOS"},
+            "firebase_pseudo_id": "firebase_pseudo_id",
+        }
+
+        mocked_check_recaptcha_token_is_valid.assert_called()
+        assert len(mails_testing.outbox) == 0  # no email verification
+        assert len(push_testing.requests) == 2
+        assert len(users_testing.sendinblue_requests) == 1
+
+    @patch("pcapi.connectors.api_recaptcha.check_recaptcha_token_is_valid")
+    @patch("pcapi.connectors.google_oauth.get_google_user")
+    def test_account_already_present(self, mocked_google_oauth, mocked_check_recaptcha_token_is_valid, client):
+        users_factories.UserFactory(email="docteur.cuesta@passculture.app")
+        mocked_google_oauth.side_effect = [
+            GoogleUser(sub="google_user_identifier", email="docteur.cuesta@passculture.app", email_verified=True)
+        ]
+
+        response = client.post(
+            "/native/v1/oauth/google/account",
+            json={
+                "authorizationCode": "4/google_code",
+                "birthdate": (datetime.utcnow() - relativedelta(years=15, days=-1)).date().isoformat(),
+                "notifications": True,
+                "token": "gnagna",
+                "marketingEmailSubscription": True,
+            },
+        )
+
+        assert response.status_code == 400
+        assert "email" in response.json
+        assert users_models.User.query.filter(users_models.User.email == "docteur.cuesta@passculture.app").count() == 1
+
+    @patch("pcapi.connectors.api_recaptcha.check_recaptcha_token_is_valid")
+    @patch("pcapi.connectors.google_oauth.get_google_user")
+    def test_too_young_account_creation(self, mocked_google_oauth, mocked_check_recaptcha_token_is_valid, client):
+        mocked_google_oauth.side_effect = [
+            GoogleUser(sub="google_user_identifier", email="docteur.cuesta@passculture.app", email_verified=True)
+        ]
+
+        response = client.post(
+            "/native/v1/oauth/google/account",
+            json={
+                "authorizationCode": "4/google_code",
+                "birthdate": (datetime.utcnow() - relativedelta(years=15, days=-1)).date().isoformat(),
+                "notifications": True,
+                "token": "gnagna",
+                "marketingEmailSubscription": True,
+            },
+        )
+
+        assert response.status_code == 400
+        assert "dateOfBirth" in response.json
+        assert not push_testing.requests
+
+    @patch("pcapi.connectors.api_recaptcha.check_recaptcha_token_is_valid")
+    @patch("pcapi.connectors.google_oauth.get_google_user")
+    @override_features(WIP_ENABLE_TRUSTED_DEVICE=True)
+    def test_save_trusted_device(self, mocked_google_oauth, mocked_check_recaptcha_token_is_valid, client):
+        mocked_google_oauth.side_effect = [
+            GoogleUser(sub="google_user_identifier", email="docteur.cuesta@passculture.app", email_verified=True)
+        ]
+
+        response = client.post(
+            "/native/v1/oauth/google/account",
+            json={
+                "authorizationCode": "4/google_code",
+                "birthdate": "1960-12-31",
+                "notifications": True,
+                "token": "gnagna",
+                "marketingEmailSubscription": True,
+                "trustedDevice": {
+                    "deviceId": "2E429592-2446-425F-9A62-D6983F375B3B",
+                    "source": "iPhone 13",
+                    "os": "iOS",
+                },
+            },
+        )
+
+        assert response.status_code == 204, response.json
+
+        trusted_device = users_models.TrustedDevice.query.one()
+        assert trusted_device.deviceId == "2E429592-2446-425F-9A62-D6983F375B3B"
+        assert trusted_device.source == "iPhone 13"
+        assert trusted_device.os == "iOS"
+
+    @patch("pcapi.connectors.api_recaptcha.check_recaptcha_token_is_valid")
+    @patch("pcapi.connectors.google_oauth.get_google_user")
+    @override_features(WIP_ENABLE_TRUSTED_DEVICE=True)
+    def should_not_save_trusted_device_when_no_device_info(
+        self, mocked_google_oauth, mocked_check_recaptcha_token_is_valid, client
+    ):
+        mocked_google_oauth.side_effect = [
+            GoogleUser(sub="google_user_identifier", email="docteur.cuesta@passculture.app", email_verified=True)
+        ]
+
+        response = client.post(
+            "/native/v1/oauth/google/account",
+            json={
+                "authorizationCode": "4/google_code",
+                "birthdate": "1960-12-31",
+                "notifications": True,
+                "token": "gnagna",
+                "marketingEmailSubscription": True,
+            },
+        )
+
+        assert response.status_code == 204, response.json
+        assert users_models.TrustedDevice.query.count() == 0
 
 
 class UserProfileUpdateTest:

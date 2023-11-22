@@ -91,3 +91,7 @@ class ExpiredToken(InvalidToken):
 
 class UserGenerationForbiddenException(Exception):
     pass
+
+
+class MissingLoginMethod(Exception):
+    pass
