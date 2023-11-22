@@ -1,4 +1,5 @@
 from pcapi import settings
+from pcapi.connectors.serialization import allocine_serializers
 from pcapi.utils import requests
 
 
@@ -9,7 +10,7 @@ class AllocineException(Exception):
 ALLOCINE_API_URL = "https://graph-api-proxy.allocine.fr/api/query"
 
 
-def get_movie_list_page(after: str = "") -> dict:
+def get_movie_list_page(after: str = "") -> allocine_serializers.AllocineMovieListResponse:
     url = f"{ALLOCINE_API_URL}/movieList?after={after}&token={settings.ALLOCINE_API_KEY}"
     try:
         response = requests.get(url)
@@ -19,7 +20,7 @@ def get_movie_list_page(after: str = "") -> dict:
     if not response.ok:
         raise AllocineException(f"Error getting API Allocine data to get movie list, error={response.status_code}")
 
-    return response.json()
+    return allocine_serializers.AllocineMovieListResponseAdapter.validate_python(response.json())
 
 
 def get_movies_showtimes_from_allocine(theater_id: str) -> dict:
