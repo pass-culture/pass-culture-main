@@ -6,6 +6,7 @@ import { api } from 'apiClient/api'
 import { GetOfferStockResponseModel, StocksOrderedBy } from 'apiClient/v1'
 import {
   individualGetOfferStockResponseModelFactory,
+  individualOfferFactory,
   priceCategoryFactory,
 } from 'utils/individualApiFactories'
 import { renderWithProviders } from 'utils/renderWithProviders'
@@ -53,7 +54,7 @@ const renderStocksEventList = async (
         priceCategoryFactory({ label: 'Label', price: 30.5, id: 3 }),
       ]}
       departmentCode={props.departmentCode ?? '78'}
-      offerId={offerId}
+      offer={individualOfferFactory({ id: offerId })}
       {...props}
     />
   )
