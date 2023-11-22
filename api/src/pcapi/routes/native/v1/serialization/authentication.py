@@ -53,9 +53,3 @@ class ValidateEmailResponse(ConfiguredBaseModel):
 
 class GoogleSigninRequest(ConfiguredBaseModel):
     authorization_code: str
-
-
-class GoogleUser(ConfiguredBaseModel):
-    sub: str
-    email: str
-    email_verified: bool
