@@ -393,3 +393,12 @@ class EditOfferVenueForm(FlaskForm):
 
     def set_venue_choices(self, venues: list[offerers_models.Venue]) -> None:
         self.venue.choices = [(venue.id, venue.name) for venue in venues]
+
+
+class EditStockForm(FlaskForm):
+    price = fields.PCDecimalField(
+        "Prix",
+        validators=[
+            wtforms.validators.NumberRange(min=0, max=300, message="Le prix doit être positif et inférieur à 300 €.")
+        ],
+    )

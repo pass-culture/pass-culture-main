@@ -398,9 +398,9 @@ Booking.trig_ddl = f"""
         OLD IS NULL
         -- If we're updating an existing booking...
         OR (
-            -- Check the wallet if we are changing the quantity or the amount
+            -- Check the wallet if we are changing the quantity or increasing the amount
             -- The backend should never do that, but let's be defensive.
-            (NEW."quantity" != OLD."quantity" OR NEW."amount" != OLD."amount")
+            (NEW."quantity" != OLD."quantity" OR NEW."amount" > OLD."amount")
             -- If amount and quantity are unchanged, we want to check the wallet
             -- only if we are UNcancelling a booking. (Users with no credits left
             -- should be able to cancel their booking. Also, their booking can
