@@ -409,12 +409,12 @@ class AccountCreationTest:
         assert email_validation_token_exists
 
     @patch("pcapi.connectors.api_recaptcha.check_recaptcha_token_is_valid")
-    def test_too_young_account_creation(self, mocked_check_recaptcha_token_is_valid, client, app):
+    def test_too_young_account_creation(self, mocked_check_recaptcha_token_is_valid, client):
         assert users_models.User.query.first() is None
         data = {
             "email": "John.doe@example.com",
             "password": "Aazflrifaoi6@",
-            "birthdate": (datetime.utcnow() - relativedelta(years=15)).date(),
+            "birthdate": (datetime.utcnow() - relativedelta(years=15, days=-1)).date().isoformat(),
             "notifications": True,
             "token": "gnagna",
             "marketingEmailSubscription": True,
@@ -422,6 +422,7 @@ class AccountCreationTest:
 
         response = client.post("/native/v1/account", json=data)
         assert response.status_code == 400
+        assert "dateOfBirth" in response.json
         assert not push_testing.requests
 
     @patch("pcapi.connectors.api_recaptcha.check_recaptcha_token_is_valid")
