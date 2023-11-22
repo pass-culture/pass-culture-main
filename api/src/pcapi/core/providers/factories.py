@@ -64,11 +64,15 @@ class APIProviderFactory(BaseFactory):
 class PublicApiProviderFactory(BaseFactory):
     class Meta:
         model = models.Provider
+        sqlalchemy_get_or_create = ["name"]
 
     name = factory.Sequence("Public API Provider {}".format)
     enabledForPro = True
     isActive = True
     hmacKey = "secret"
+    bookingExternalUrl = factory.Sequence("https://{}.example.org/booking".format)
+    cancelExternalUrl = factory.Sequence("https://{}.example.org/booking".format)
+    notificationExternalUrl = factory.Sequence("https://{}.example.org/booking".format)
 
 
 class VenueProviderFactory(BaseFactory):

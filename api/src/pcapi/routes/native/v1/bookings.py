@@ -10,7 +10,6 @@ from pcapi.core.offers.exceptions import StockDoesNotExist
 from pcapi.core.offers.exceptions import UnexpectedCinemaProvider
 from pcapi.core.offers.models import Stock
 from pcapi.core.providers.exceptions import InactiveProvider
-import pcapi.core.providers.repository as providers_repository
 from pcapi.core.users.models import User
 from pcapi.models.api_errors import ApiErrors
 from pcapi.repository import repository
@@ -83,7 +82,7 @@ def book_offer(user: User, body: BookOfferRequest) -> BookOfferResponse:
         )
         raise ApiErrors({"code": "CINEMA_PROVIDER_INACTIVE"})
     except external_bookings_exceptions.ExternalBookingException as error:
-        if providers_repository.is_event_external_ticket_applicable(stock.offer):
+        if stock.offer.lastProvider.hasProviderEnableCharlie:
             logger.info(
                 "Could not book offer: Error when booking external ticket. Message: %s",
                 str(error),

@@ -7,6 +7,7 @@ from pcapi.core.categories import subcategories_v2
 from pcapi.core.offerers import factories as offerers_factories
 from pcapi.core.offerers import models as offerers_models
 from pcapi.core.offers import factories as offers_factories
+from pcapi.core.providers import factories as providers_factory
 from pcapi.core.providers.titelive_gtl import GTLS
 from pcapi.sandboxes.scripts.creators.test_cases import venues_mock
 
@@ -68,15 +69,18 @@ def create_offers_for_each_gtl_level_1(size_per_gtl_level_1: int, venue: offerer
 
 
 def create_offers_with_gtl_id(gtl_id: str, size_per_gtl: int, venue: offerers_models.Venue) -> None:
+    ean = Fake.ean13()
     product = offers_factories.ProductFactory(
         subcategoryId=subcategories_v2.LIVRE_PAPIER.id,
-        extraData={"gtl_id": gtl_id, "author": Fake.name()},
+        lastProvider=providers_factory.PublicApiProviderFactory(name="BookProvider"),
+        idAtProviders=ean,
+        extraData={"gtl_id": gtl_id, "author": Fake.name(), "ean": ean},
     )
     offers = offers_factories.OfferFactory.create_batch(
         product=product,
         size=size_per_gtl,
         venue=venue,
-        extraData={"gtl_id": gtl_id, "author": Fake.name()},
+        extraData={"gtl_id": gtl_id, "author": Fake.name(), "ean": ean},
     )
     for offer in offers:
         offers_factories.StockFactory(
@@ -91,6 +95,8 @@ def create_offers_with_same_ean() -> None:
     product = offers_factories.ProductFactory(
         name="Le livre du pass Culture",
         subcategoryId=subcategories_v2.LIVRE_PAPIER.id,
+        lastProvider=providers_factory.PublicApiProviderFactory(name="BookProvider"),
+        idAtProviders=ean,
         extraData={
             "ean": ean,
             "author": author,
@@ -129,6 +135,8 @@ def create_offers_with_same_ean() -> None:
 def create_offer_with_ean(ean: str, venue: offerers_models.Venue, author: str) -> None:
     product = offers_factories.ProductFactory(
         subcategoryId=subcategories_v2.LIVRE_PAPIER.id,
+        lastProvider=providers_factory.PublicApiProviderFactory(name="BookProvider"),
+        idAtProviders=ean,
         extraData={"ean": ean, "author": author},
     )
     offer = offers_factories.OfferFactory(
