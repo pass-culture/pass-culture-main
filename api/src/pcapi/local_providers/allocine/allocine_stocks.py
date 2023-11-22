@@ -4,7 +4,6 @@ import re
 
 from dateutil.parser import parse
 
-from pcapi import settings
 from pcapi.core.categories import subcategories_v2 as subcategories
 from pcapi.core.offerers.models import Venue
 from pcapi.core.offers import api as offers_api
@@ -44,10 +43,9 @@ class AllocineStocks(LocalProvider):
 
     def __init__(self, allocine_venue_provider: providers_models.AllocineVenueProvider):
         super().__init__(allocine_venue_provider)
-        self.api_key = settings.ALLOCINE_API_KEY
         self.venue = allocine_venue_provider.venue
         self.theater_id = allocine_venue_provider.venueIdAtOfferProvider
-        self.movies_showtimes = get_movies_showtimes(self.api_key, self.theater_id)
+        self.movies_showtimes = get_movies_showtimes(self.theater_id)
         self.isDuo = allocine_venue_provider.isDuo
         self.quantity = allocine_venue_provider.quantity
         self.room_internal_id = allocine_venue_provider.internalId

@@ -1,4 +1,4 @@
-from unittest.mock import Mock
+from unittest.mock import patch
 
 from pcapi.domain.allocine import _exclude_movie_showtimes_with_special_event_type
 from pcapi.domain.allocine import get_movie_poster
@@ -8,10 +8,9 @@ from pcapi.domain.allocine import get_movies_showtimes
 class GetMovieShowtimeListFromAllocineTest:
     def setup_method(self):
         self.theater_id = "123456789"
-        self.token = "AZERTY123/@.,!é"
-        self.mock_get_movies_showtimes = Mock()
 
-    def test_should_retrieve_result_from_api_connector_with_token_and_theater_id_parameter(self):
+    @patch("pcapi.domain.allocine.get_movies_showtimes_from_allocine")
+    def test_should_retrieve_result_from_api_connector_with_theater_id_parameter(self, mock_get_movies_showtimes):
         # Given
         movies_list = [
             {
@@ -25,14 +24,15 @@ class GetMovieShowtimeListFromAllocineTest:
                 }
             }
         ]
-        self.mock_get_movies_showtimes.return_value = {"movieShowtimeList": {"totalCount": 1, "edges": movies_list}}
+        mock_get_movies_showtimes.return_value = {"movieShowtimeList": {"totalCount": 1, "edges": movies_list}}
 
         # When
-        get_movies_showtimes(self.token, self.theater_id, get_movies_showtimes_from_api=self.mock_get_movies_showtimes)
+        get_movies_showtimes(self.theater_id)
         # Then
-        self.mock_get_movies_showtimes.assert_called_once_with(self.token, self.theater_id)
+        mock_get_movies_showtimes.assert_called_once_with(self.theater_id)
 
-    def test_should_extract_movies_from_api_result(self):
+    @patch("pcapi.domain.allocine.get_movies_showtimes_from_allocine")
+    def test_should_extract_movies_from_api_result(self, mock_get_movies_showtimes):
         # Given
         given_movies = [
             {
@@ -81,12 +81,10 @@ class GetMovieShowtimeListFromAllocineTest:
                 }
             },
         ]
-        self.mock_get_movies_showtimes.return_value = {"movieShowtimeList": {"totalCount": 4, "edges": given_movies}}
+        mock_get_movies_showtimes.return_value = {"movieShowtimeList": {"totalCount": 4, "edges": given_movies}}
 
         # When
-        movies = get_movies_showtimes(
-            self.token, self.theater_id, get_movies_showtimes_from_api=self.mock_get_movies_showtimes
-        )
+        movies = get_movies_showtimes(self.theater_id)
         # Then
         assert any(expected_movie == next(movies) for expected_movie in expected_movies)
 
