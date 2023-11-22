@@ -1,9 +1,12 @@
 import logging
 from typing import Iterator
 
+import pydantic
+
 from pcapi.connectors.api_allocine import get_movie_list_page
 from pcapi.connectors.api_allocine import get_movie_poster_from_allocine
 from pcapi.connectors.api_allocine import get_movies_showtimes_from_allocine
+from pcapi.connectors.serialization import allocine_serializers
 
 
 logger = logging.getLogger(__name__)
@@ -12,15 +15,16 @@ logger = logging.getLogger(__name__)
 MOVIE_SPECIAL_EVENT = "SPECIAL_EVENT"
 
 
-def get_movie_list() -> list[dict]:
+def get_movie_list() -> list[allocine_serializers.AllocineMovie]:
     movie_list = []
     has_next_page = True
     end_cursor = ""
     while has_next_page:
-        response = get_movie_list_page(end_cursor)
-        movie_list += [item["node"] for item in response["movieList"]["edges"]]
-        end_cursor = response["movieList"]["pageInfo"]["endCursor"]
-        has_next_page = response["movieList"]["pageInfo"]["hasNextPage"]
+        raw_response = get_movie_list_page(end_cursor)
+        response = allocine_serializers.dict_to_obj(raw_response)
+        movie_list += response.movieList.movies
+        end_cursor = response.movieList.pageInfo.endCursor
+        has_next_page = response.movieList.pageInfo.hasNextPage
 
     return movie_list
 
