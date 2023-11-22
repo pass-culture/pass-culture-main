@@ -38,9 +38,7 @@ class TrustedDevice(BaseModel):
         anystr_strip_whitespace = True
 
 
-class AccountRequest(BaseModel):
-    email: str
-    password: str
+class BaseAccountRequest(BaseModel):
     birthdate: datetime.date
     marketing_email_subscription: bool | None = False
     token: str
@@ -51,6 +49,15 @@ class AccountRequest(BaseModel):
 
     class Config:
         alias_generator = to_camel
+
+
+class AccountRequest(BaseAccountRequest):
+    email: str
+    password: str
+
+
+class GoogleAccountRequest(BaseAccountRequest):
+    authorization_code: str
 
 
 class NotificationSubscriptions(BaseModel):

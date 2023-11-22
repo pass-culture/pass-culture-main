@@ -102,6 +102,7 @@ def clean_all_database(*args: typing.Any, **kwargs: typing.Any) -> None:
     users_models.Token.query.delete()
     offers_models.OfferValidationSubRule.query.delete()
     offers_models.OfferValidationRule.query.delete()
+    users_models.SingleSignOn.query.delete()
     users_models.User.query.delete()
     users_models.UserSession.query.delete()
     providers_models.Provider.query.delete()
