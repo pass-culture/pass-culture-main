@@ -328,7 +328,7 @@ export const AdageDiscovery = () => {
                   title={elm.label}
                   color={colorAndMotif.color}
                   src={colorAndMotif.src}
-                  href={`/adage-iframe?token=${adageAuthToken}&domain=${elm.value}`}
+                  href={`/adage-iframe/recherche?token=${adageAuthToken}&domain=${elm.value}`}
                 />
               )
             })}

@@ -1,7 +1,7 @@
 import algoliasearch from 'algoliasearch/lite'
 import * as React from 'react'
 import { Configure, InstantSearch } from 'react-instantsearch'
-import { Route, Routes, useLocation } from 'react-router-dom'
+import { Navigate, Route, Routes, useLocation } from 'react-router-dom'
 
 import { VenueResponse } from 'apiClient/adage'
 import useActiveFeature from 'hooks/useActiveFeature'
@@ -12,25 +12,27 @@ import {
 } from 'utils/config'
 
 import useAdageUser from '../../hooks/useAdageUser'
-import { routesAdage, oldRoutesAdage } from '../../subRoutesAdage'
+import { AdageDiscovery } from '../AdageDiscovery/AdageDiscovery'
 import { AdageHeader } from '../AdageHeader/AdageHeader'
+import { OffersFavorites } from '../OffersFavorites/OffersFavorites'
+import OffersForMyInstitution from '../OffersForInstitution/OffersForMyInstitution'
+import { OffersInfos } from '../OffersInfos/OffersInfos'
+import { OffersInstantSearch } from '../OffersInstantSearch/OffersInstantSearch'
 
 import styles from './AppLayout.module.scss'
 
 export const AppLayout = ({
   venueFilter,
-  domainFilter,
 }: {
   venueFilter: VenueResponse | null
-  domainFilter: number | null
 }): JSX.Element => {
   const { adageUser } = useAdageUser()
-  const { pathname } = useLocation()
+  const { pathname, search } = useLocation()
+  const params = new URLSearchParams(search)
 
-  const isDiscoveryPage = pathname.includes('decouverte')
+  const isDiscoveryPage = pathname === '/adage-iframe'
   const isDiscoveryActive = useActiveFeature('WIP_ENABLE_DISCOVERY')
-
-  const allRoutesAdage = isDiscoveryActive ? routesAdage : oldRoutesAdage
+  const venueId = params.get('venue')
 
   return (
     <div>
@@ -55,22 +57,26 @@ export const AppLayout = ({
         id="content"
       >
         <Routes>
-          {allRoutesAdage.map(({ path, element }) => {
-            // FIX ME : we pass props to routesAdage until we put those props in a context or store
-            const Component = element
-            return (
-              <Route
-                key={path}
-                path={path}
-                element={
-                  <Component
-                    venueFilter={venueFilter}
-                    domainFilter={domainFilter}
-                  />
-                }
-              />
-            )
-          })}
+          <Route
+            path=""
+            element={
+              isDiscoveryActive && !venueId ? (
+                <AdageDiscovery />
+              ) : (
+                <Navigate to={`recherche${search}`} />
+              )
+            }
+          />
+          <Route
+            path="recherche"
+            element={<OffersInstantSearch venueFilter={venueFilter} />}
+          />
+          <Route
+            path="mon-etablissement"
+            element={<OffersForMyInstitution />}
+          />
+          <Route path="mes-favoris" element={<OffersFavorites />} />
+          <Route path="decouverte/offre/:offerId" element={<OffersInfos />} />
         </Routes>
       </main>
     </div>

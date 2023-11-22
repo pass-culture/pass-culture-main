@@ -38,10 +38,8 @@ export const DEFAULT_GEO_RADIUS = 30000000 // 30 000 km ensure we get all result
 
 export const OffersInstantSearch = ({
   venueFilter,
-  domainFilter,
 }: {
   venueFilter: VenueResponse | null
-  domainFilter: number | null
 }): JSX.Element => {
   const { facetFilters, setFacetFilters } = useContext(FacetFiltersContext)
 
@@ -99,7 +97,6 @@ export const OffersInstantSearch = ({
           <OffersSearch
             venueFilter={venueFilter || venueFilterFromParam}
             setGeoRadius={setGeoRadius}
-            domainFilter={domainFilter}
           />
         </AnalyticsContextProvider>
       </Index>
