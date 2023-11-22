@@ -82,6 +82,7 @@ class CollectiveOfferTemplateTest:
                 "publicName": offer.venue.publicName,
                 "managingOfferer": {"name": offer.venue.managingOfferer.name},
                 "adageId": None,
+                "distance": None,
             },
             "interventionArea": offer.interventionArea,
             "audioDisabilityCompliant": False,

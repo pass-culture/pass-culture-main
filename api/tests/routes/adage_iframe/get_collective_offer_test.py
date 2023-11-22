@@ -92,6 +92,7 @@ class CollectiveOfferTest:
                 "publicName": offer.venue.publicName,
                 "managingOfferer": {"name": offer.venue.managingOfferer.name},
                 "adageId": None,
+                "distance": None,
             },
             "audioDisabilityCompliant": False,
             "mentalDisabilityCompliant": False,
