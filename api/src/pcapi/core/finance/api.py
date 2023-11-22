@@ -2075,67 +2075,74 @@ def _generate_invoice(
         {"status": models.CashflowStatus.ACCEPTED},
         synchronize_session=False,
     )
+
     # Pricing.status: PROCESSED -> INVOICED
     # SQLAlchemy ORM cannot call `update()` if a query has been JOINed.
-    db.session.execute(
-        """
-        UPDATE pricing
-        SET status = :status
-        FROM cashflow_pricing
-        WHERE
-          cashflow_pricing."pricingId" = pricing.id
-          AND cashflow_pricing."cashflowId" IN :cashflow_ids
-        """,
-        {"status": models.PricingStatus.INVOICED.value, "cashflow_ids": tuple(cashflow_ids)},
-    )
-    # Booking.status: USED -> REIMBURSED (but keep CANCELLED as is)
-    db.session.execute(
-        """
-        UPDATE booking
-        SET
-          status =
-            CASE WHEN booking.status = CAST(:cancelled AS booking_status)
-            THEN CAST(:cancelled AS booking_status)
-            ELSE CAST(:reimbursed AS booking_status)
-            END,
-          "reimbursementDate" = now()
-        FROM pricing, cashflow_pricing
-        WHERE
-          booking.id = pricing."bookingId"
-          AND pricing.id = cashflow_pricing."pricingId"
-          AND cashflow_pricing."cashflowId" IN :cashflow_ids
-        """,
-        {
-            "cancelled": bookings_models.BookingStatus.CANCELLED.value,
-            "reimbursed": bookings_models.BookingStatus.REIMBURSED.value,
-            "cashflow_ids": tuple(cashflow_ids),
-            "reimbursement_date": datetime.datetime.utcnow(),
-        },
-    )
+    with log_elapsed(logger, "Updating status of pricings"):
+        db.session.execute(
+            """
+            UPDATE pricing
+            SET status = :status
+            FROM cashflow_pricing
+            WHERE
+              cashflow_pricing."pricingId" = pricing.id
+              AND cashflow_pricing."cashflowId" IN :cashflow_ids
+            """,
+            {"status": models.PricingStatus.INVOICED.value, "cashflow_ids": tuple(cashflow_ids)},
+        )
 
-    db.session.execute(
-        """
-        UPDATE collective_booking
-        SET
-        status =
-            CASE WHEN collective_booking.status = CAST(:cancelled AS bookingstatus)
-            THEN CAST(:cancelled AS bookingstatus)
-            ELSE CAST(:reimbursed AS bookingstatus)
-            END,
-        "reimbursementDate" = now()
-        FROM pricing, cashflow_pricing
-        WHERE
-            collective_booking.id = pricing."collectiveBookingId"
-        AND pricing.id = cashflow_pricing."pricingId"
-        AND cashflow_pricing."cashflowId" IN :cashflow_ids
-        """,
-        {
-            "cancelled": bookings_models.BookingStatus.CANCELLED.value,
-            "reimbursed": bookings_models.BookingStatus.REIMBURSED.value,
-            "cashflow_ids": tuple(cashflow_ids),
-            "reimbursement_date": datetime.datetime.utcnow(),
-        },
-    )
+    # Booking.status: USED -> REIMBURSED (but keep CANCELLED as is)
+    with log_elapsed(logger, "Updating status of individual bookings"):
+        db.session.execute(
+            """
+            UPDATE booking
+            SET
+              status =
+                CASE WHEN booking.status = CAST(:cancelled AS booking_status)
+                THEN CAST(:cancelled AS booking_status)
+                ELSE CAST(:reimbursed AS booking_status)
+                END,
+              "reimbursementDate" = now()
+            FROM pricing, cashflow_pricing
+            WHERE
+              booking.id = pricing."bookingId"
+              AND pricing.id = cashflow_pricing."pricingId"
+              AND cashflow_pricing."cashflowId" IN :cashflow_ids
+            """,
+            {
+                "cancelled": bookings_models.BookingStatus.CANCELLED.value,
+                "reimbursed": bookings_models.BookingStatus.REIMBURSED.value,
+                "cashflow_ids": tuple(cashflow_ids),
+                "reimbursement_date": datetime.datetime.utcnow(),
+            },
+        )
+
+    # CollectiveBooking.status: USED -> REIMBURSED (but keep CANCELLED as is)
+    with log_elapsed(logger, "Updating status of collective bookings"):
+        db.session.execute(
+            """
+            UPDATE collective_booking
+            SET
+            status =
+                CASE WHEN collective_booking.status = CAST(:cancelled AS bookingstatus)
+                THEN CAST(:cancelled AS bookingstatus)
+                ELSE CAST(:reimbursed AS bookingstatus)
+                END,
+            "reimbursementDate" = now()
+            FROM pricing, cashflow_pricing
+            WHERE
+                collective_booking.id = pricing."collectiveBookingId"
+            AND pricing.id = cashflow_pricing."pricingId"
+            AND cashflow_pricing."cashflowId" IN :cashflow_ids
+            """,
+            {
+                "cancelled": bookings_models.BookingStatus.CANCELLED.value,
+                "reimbursed": bookings_models.BookingStatus.REIMBURSED.value,
+                "cashflow_ids": tuple(cashflow_ids),
+                "reimbursement_date": datetime.datetime.utcnow(),
+            },
+        )
+
     db.session.commit()
     return invoice
 

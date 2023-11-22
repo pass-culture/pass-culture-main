@@ -1,11 +1,17 @@
+import logging
+
 import psycopg2.errors
 import sqlalchemy as sqla
 import sqlalchemy.exc as sqla_exc
 
+from pcapi.core.logging import log_elapsed
 from pcapi.models import Base
 from pcapi.models import Model
 
 from . import exceptions
+
+
+logger = logging.getLogger(__name__)
 
 
 class ReferenceScheme(Base, Model):
@@ -64,15 +70,16 @@ class ReferenceScheme(Base, Model):
         # lock, that's fine: we'll wait for that other transaction to
         # commit and release the lock, so that we get the latest,
         # updated reference.
-        return (
-            cls.query.populate_existing()
-            .with_for_update(nowait=False)
-            .filter_by(
-                name=name,
-                year=year,
+        with log_elapsed(logger, "Waited to acquire lock to update ReferenceScheme"):
+            return (
+                cls.query.populate_existing()
+                .with_for_update(nowait=False)
+                .filter_by(
+                    name=name,
+                    year=year,
+                )
+                .one()
             )
-            .one()
-        )
 
     def increment_after_use(self) -> None:
         # Here we do NOT wait for the lock to be available. If we're
