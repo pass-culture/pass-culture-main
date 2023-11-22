@@ -77,13 +77,24 @@ class OfferExtraData(typing.TypedDict, total=False):
     visa: str | None
 
     # allocine
-    cast: str | None
+    allocineId: int | None
+    backlink: str | None
+    cast: list[str] | None
     companies: list[dict] | None
-    countries: str | None
+    countries: list[str] | None
+    credits: list[dict] | None
     diffusionVersion: str | None
+    eidr: str | None
     genres: list[str] | None
+    originalTitle: str | None
+    posterUrl: str | None
+    productionYear: int | None
     releaseDate: str | None
+    releases: list[dict] | None
+    runtime: int | None
+    synopsis: str | None
     theater: dict | None
+    title: str | None
     type: str | None
 
     # titelive prior gtl (csr)
@@ -129,6 +140,7 @@ class Product(PcObject, Base, Model, HasThumbMixin, ProvidableMixin):
     url = sa.Column(sa.String(255), nullable=True)
 
     sa.Index("product_ean_idx", extraData["ean"].astext)
+    sa.Index("product_allocineId_idx", extraData["allocineId"].cast(sa.Integer))
 
     @property
     def subcategory(self) -> subcategories_v2.Subcategory:
