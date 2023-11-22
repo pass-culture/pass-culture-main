@@ -21,16 +21,16 @@ environments:
       - chartVersion: 0.21.14
   staging:
     values:
-      - chartVersion: 0.21.13
+      - chartVersion: 0.21.14
   integration:
     values:
-      - chartVersion: 0.21.13
+      - chartVersion: 0.21.14
   production:
     values:
-      - chartVersion: 0.21.12
+      - chartVersion: 0.21.14
   ops:
     values:
-      - chartVersion: 0.21.13
+      - chartVersion: 0.21.14
   perf:
     values:
-      - chartVersion: 0.21.13
+      - chartVersion: 0.21.14
