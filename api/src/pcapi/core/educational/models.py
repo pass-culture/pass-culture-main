@@ -1044,8 +1044,6 @@ class EducationalRedactor(PcObject, Base, Model):
 class CollectiveBooking(PcObject, Base, Model):
     __tablename__ = "collective_booking"
 
-    bookingId = sa.Column(sa.BigInteger)
-
     dateCreated: datetime = sa.Column(sa.DateTime, nullable=False, default=datetime.utcnow)
     Index("ix_collective_booking_date_created", dateCreated)
 
