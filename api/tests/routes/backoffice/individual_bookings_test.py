@@ -18,6 +18,7 @@ from pcapi.core.testing import assert_no_duplicated_queries
 from pcapi.core.testing import assert_num_queries
 from pcapi.core.users import factories as users_factories
 from pcapi.models import db
+from pcapi.routes.backoffice.bookings import forms
 
 from .helpers import html_parser
 from .helpers.get import GetEndpointHelper
@@ -35,6 +36,7 @@ def bookings_fixture() -> tuple:
     user1 = users_factories.BeneficiaryGrant18Factory(firstName="Napoléon", lastName="Bonaparte", email="napo@leon.com")
     user2 = users_factories.UnderageBeneficiaryFactory(firstName="Joséphine", lastName="de Beauharnais")
     user3 = users_factories.UnderageBeneficiaryFactory(firstName="Marie-Louise", lastName="d'Autriche")
+    user4 = users_factories.UnderageBeneficiaryFactory(firstName="Marie-Louise", lastName="d'Autriche")
     used = bookings_factories.UsedBookingFactory(
         user=user1,
         quantity=2,
@@ -65,6 +67,7 @@ def bookings_fixture() -> tuple:
         stock__offer__name="Guide Ile d'Elbe 1814 Petit Futé",
         stock__offer__subcategoryId=subcategories_v2.LIVRE_PAPIER.id,
         dateCreated=datetime.datetime.utcnow() - datetime.timedelta(days=2),
+        cancellation_limit_date=datetime.datetime.utcnow() - datetime.timedelta(days=1),
     )
     reimbursed = bookings_factories.ReimbursedBookingFactory(
         user=user3,
@@ -73,8 +76,18 @@ def bookings_fixture() -> tuple:
         stock__beginningDatetime=datetime.datetime.utcnow() + datetime.timedelta(days=12),
         dateCreated=datetime.datetime.utcnow() - datetime.timedelta(days=1),
     )
+    booked = bookings_factories.BookingFactory(
+        user=user4,
+        quantity=1,
+        token="ADFTH9",
+        stock__price=12.34,
+        stock__quantity="1",
+        stock__offer__name="Guide Ile d'Elbe 1814 Petit Futé",
+        stock__offer__subcategoryId=subcategories_v2.LIVRE_PAPIER.id,
+        dateCreated=datetime.datetime.utcnow(),
+    )
 
-    return used, cancelled, confirmed, reimbursed
+    return used, cancelled, confirmed, reimbursed, booked
 
 
 class ListIndividualBookingsTest(GetEndpointHelper):
@@ -304,12 +317,13 @@ class ListIndividualBookingsTest(GetEndpointHelper):
     @pytest.mark.parametrize(
         "status, expected_tokens",
         [
-            ([bookings_models.BookingStatus.CONFIRMED.name], {"ELBEIT"}),
-            ([bookings_models.BookingStatus.USED.name], {"WTRL00"}),
-            ([bookings_models.BookingStatus.CANCELLED.name], {"CNCL02"}),
-            ([bookings_models.BookingStatus.REIMBURSED.name], {"REIMB3"}),
+            ([forms.BookingStatus.CONFIRMED.name], {"ELBEIT"}),
+            ([forms.BookingStatus.USED.name], {"WTRL00"}),
+            ([forms.BookingStatus.CANCELLED.name], {"CNCL02"}),
+            ([forms.BookingStatus.REIMBURSED.name], {"REIMB3"}),
+            ([forms.BookingStatus.BOOKED.name], {"ADFTH9"}),
             (
-                [bookings_models.BookingStatus.CONFIRMED.name, bookings_models.BookingStatus.USED.name],
+                [forms.BookingStatus.CONFIRMED.name, forms.BookingStatus.USED.name],
                 {"ELBEIT", "WTRL00"},
             ),
         ],
