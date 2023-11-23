@@ -26,17 +26,17 @@ export const extractInitialVisibilityValues = (
   'search-institution': institution
     ? formatInstitutionDisplayName(institution)
     : requestInformations
-      ? formatInstitutionDisplayName(requestInformations.institution)
-      : '',
+    ? formatInstitutionDisplayName(requestInformations.institution)
+    : '',
   teacher: teacher
     ? `${teacher.email}`
     : requestInformations
-      ? `${requestInformations.redactor.email}`
-      : null,
+    ? `${requestInformations.redactor.email}`
+    : null,
   visibility: institution || requestInformations ? 'one' : 'all',
   'search-teacher': teacher
     ? `${teacher.firstName} ${teacher.lastName}`
     : requestInformations
-      ? `${requestInformations.redactor.firstName} ${requestInformations.redactor.lastName}`
-      : '',
+    ? `${requestInformations.redactor.firstName} ${requestInformations.redactor.lastName}`
+    : '',
 })

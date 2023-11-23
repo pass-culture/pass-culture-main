@@ -195,8 +195,8 @@ const InformationsScreen = ({
       mode === OFFER_WIZARD_MODE.EDITION
         ? OFFER_WIZARD_STEP_IDS.SUMMARY
         : isEvent
-          ? OFFER_WIZARD_STEP_IDS.TARIFS
-          : OFFER_WIZARD_STEP_IDS.STOCKS
+        ? OFFER_WIZARD_STEP_IDS.TARIFS
+        : OFFER_WIZARD_STEP_IDS.STOCKS
 
     logEvent?.(Events.CLICKED_OFFER_FORM_NAVIGATION, {
       from: OFFER_WIZARD_STEP_IDS.INFORMATIONS,
@@ -253,8 +253,8 @@ const InformationsScreen = ({
             queryOffererId && queryVenueId
               ? `lieu=${queryVenueId}&structure=${queryOffererId}`
               : queryOffererId && !queryVenueId
-                ? `structure=${queryOffererId}`
-                : '',
+              ? `structure=${queryOffererId}`
+              : '',
         })
   }
 

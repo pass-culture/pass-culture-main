@@ -107,30 +107,35 @@ const CollectiveOfferNavigation = ({
     switch (activeStep) {
       // @ts-expect-error switch fallthrough
       case CollectiveOfferStep.CONFIRMATION:
-        stepList[CollectiveOfferStep.SUMMARY].url =
-          `/offre/${offerId}/collectif/creation/recapitulatif`
+        stepList[
+          CollectiveOfferStep.SUMMARY
+        ].url = `/offre/${offerId}/collectif/creation/recapitulatif`
 
       // @ts-expect-error switch fallthrough
       case CollectiveOfferStep.SUMMARY:
         if (!isTemplate) {
-          stepList[CollectiveOfferStep.VISIBILITY].url =
-            `/offre/${offerId}/collectif/visibilite`
+          stepList[
+            CollectiveOfferStep.VISIBILITY
+          ].url = `/offre/${offerId}/collectif/visibilite`
         }
 
       // @ts-expect-error switch fallthrough
       case CollectiveOfferStep.VISIBILITY:
         if (!isTemplate) {
-          stepList[CollectiveOfferStep.STOCKS].url =
-            `/offre/${offerId}/collectif/stocks`
+          stepList[
+            CollectiveOfferStep.STOCKS
+          ].url = `/offre/${offerId}/collectif/stocks`
         }
 
       case CollectiveOfferStep.STOCKS:
         if (isTemplate) {
-          stepList[CollectiveOfferStep.DETAILS].url =
-            `/offre/collectif/vitrine/${offerId}/creation`
+          stepList[
+            CollectiveOfferStep.DETAILS
+          ].url = `/offre/collectif/vitrine/${offerId}/creation`
         } else {
-          stepList[CollectiveOfferStep.DETAILS].url =
-            `/offre/collectif/${offerId}/creation${requestIdUrl}`
+          stepList[
+            CollectiveOfferStep.DETAILS
+          ].url = `/offre/collectif/${offerId}/creation${requestIdUrl}`
         }
     }
   }

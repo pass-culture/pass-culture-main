@@ -420,8 +420,8 @@ export const OfferFilters = ({
                         return isSelected1 === isSelected2
                           ? 0
                           : isSelected1 && !isSelected2
-                            ? -1
-                            : 1
+                          ? -1
+                          : 1
                       })
                     }}
                   />

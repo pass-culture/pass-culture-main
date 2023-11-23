@@ -56,8 +56,8 @@ const ReimbursementsTableHead = ({
             column.selfDirection === 'default'
               ? SortingMode.NONE
               : column.selfDirection === 'desc'
-                ? SortingMode.DESC
-                : SortingMode.ASC
+              ? SortingMode.DESC
+              : SortingMode.ASC
 
           return column.selfDirection !== 'None' ? (
             <th key={column.title}>
