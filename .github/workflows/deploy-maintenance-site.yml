@@ -49,6 +49,3 @@ jobs:
       - name: 'Push web site files to bucket'
         working-directory: ./maintenance-site
         run:  gsutil rsync  -x '.*/\..*|^\..*' -r . gs://passculture-metier-prod-production-maintenance
-
-      - name: 'Invalidate cache'
-        run: gcloud compute url-maps invalidate-cdn-cache production-maintenance-url-map --path "/*"
