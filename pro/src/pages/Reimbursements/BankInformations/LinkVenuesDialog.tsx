@@ -17,7 +17,8 @@ export interface LinkVenuesDialogProps {
   offererId: number
   selectedBankAccount: BankAccountResponseModel
   managedVenues?: Array<ManagedVenues>
-  closeDialog: () => void
+  closeDialog: (update?: boolean) => void
+  showConfirmDiscardChanges: () => void
 }
 
 const LinkVenuesDialog = ({
@@ -25,6 +26,7 @@ const LinkVenuesDialog = ({
   selectedBankAccount,
   managedVenues,
   closeDialog,
+  showConfirmDiscardChanges,
 }: LinkVenuesDialogProps) => {
   const notification = useNotification()
 
@@ -49,7 +51,7 @@ const LinkVenuesDialog = ({
           venues_ids: selectedVenuesIds,
         })
         notification.success('Vos modifications ont bien été prises en compte.')
-        closeDialog()
+        closeDialog(true)
       } catch (e) {
         notification.error(
           'Un erreur est survenue. Vos modifications n’ont pas été prises en compte.'
@@ -123,7 +125,7 @@ const LinkVenuesDialog = ({
                 <BaseCheckbox
                   key={venue.id}
                   className={styles['dialog-checkbox']}
-                  disabled={Boolean(venue.bankAccountId)} // TODO: replace with venue.hasPricingPoint
+                  disabled={false} // TODO: replace with venue.hasPricingPoint
                   label={venue.commonName}
                   name={venue.id.toString()}
                   value={venue.id}
@@ -136,7 +138,13 @@ const LinkVenuesDialog = ({
           <div className={styles['dialog-actions']}>
             <Button
               variant={ButtonVariant.SECONDARY}
-              onClick={() => closeDialog()}
+              onClick={() => {
+                if (isEqual(selectedVenuesIds, initialVenuesIds)) {
+                  closeDialog()
+                } else {
+                  showConfirmDiscardChanges()
+                }
+              }}
             >
               Annuler
             </Button>
