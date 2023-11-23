@@ -1,10 +1,6 @@
 name: Deploy maintenance site
 on:
   push:
-    paths:
-      - "maintenance-site/**"
-    branches:
-      - master
 
 permissions:
   id-token: write
