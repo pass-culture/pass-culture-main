@@ -56,6 +56,7 @@ const CardOfferComponent = ({
     <div className={styles['container']}>
       <a
         data-testid="card-offer-link"
+        className={styles['container-link']}
         href={`/adage-iframe/decouverte/offre/${offer.id}?token=${adageAuthToken}`}
         onClick={() => {
           handlePlaylistElementTracking()
