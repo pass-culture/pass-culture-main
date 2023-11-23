@@ -195,7 +195,7 @@
                 <td>{{ (offer.isDuo and booking.quantity == 2) | format_bool }}</td>
                 <td>{{ booking.stock.quantity }}</td>
                 <td>{{ booking.total_amount | format_amount }}</td>
-                <td>{{ booking.status | format_booking_status(with_badge=True) | safe }}</td>
+                <td>{{ booking | format_booking_status(with_badge=True) | safe }}</td>
                 <td class="text-center">
                   {% if booking.incidents %}
                     {% for booking_incident in booking.incidents %}

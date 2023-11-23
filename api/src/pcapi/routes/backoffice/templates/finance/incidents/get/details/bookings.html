@@ -24,7 +24,7 @@
               {{ links.build_booking_token_to_booking_details_link(booking_finance_incident.booking.token) }}
             {% endif %}
           </td>
-          <td>{{ booking_finance_incident.booking.status | format_booking_status_long | safe }}</td>
+          <td>{{ booking_finance_incident.booking | format_booking_status_long | safe }}</td>
           <td>{{ links.build_offer_name_to_pc_pro_link(booking_finance_incident.booking.stock.offer) }}</td>
           <td>{{ booking_finance_incident.booking.dateCreated | format_date("Le %d/%m/%Y à %Hh%M") }}</td>
         </tr>

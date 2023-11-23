@@ -389,7 +389,7 @@ def _initialize_additional_data(bookings: list[bookings_models.Booking]) -> dict
         booking = bookings[0]
 
         additional_data["ID de la réservation"] = booking.id
-        additional_data["Statut de la réservation"] = filters.format_booking_status(booking.status)
+        additional_data["Statut de la réservation"] = filters.format_booking_status(booking)
         additional_data["Contremarque"] = booking.token
         additional_data["Nom de l'offre"] = booking.stock.offer.name
         additional_data["Bénéficiaire"] = booking.user.full_name
@@ -412,7 +412,7 @@ def _initialize_additional_data(bookings: list[bookings_models.Booking]) -> dict
 def _initialize_collective_booking_additional_data(collective_booking: educational_models.CollectiveBooking) -> dict:
     additional_data = {
         "ID de la réservation": collective_booking.id,
-        "Statut de la réservation": filters.format_booking_status(collective_booking.status),
+        "Statut de la réservation": filters.format_booking_status(collective_booking),
         "Nom de l'offre": collective_booking.collectiveStock.collectiveOffer.name,
         "Date de l'offre": filters.format_date_time(collective_booking.collectiveStock.beginningDatetime),
         "Établissement": collective_booking.educationalInstitution.name,

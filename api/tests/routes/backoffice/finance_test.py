@@ -464,7 +464,7 @@ class GetIncidentCreationFormTest(PostEndpointHelper):
         additional_data_text = html_parser.extract_cards_text(response.data)[0]
         assert f"Lieu : {venue.name}" in additional_data_text
         assert f"ID de la réservation : {booking.id}" in additional_data_text
-        assert f"Statut de la réservation : {format_booking_status(booking.status)}" in additional_data_text
+        assert f"Statut de la réservation : {format_booking_status(booking)}" in additional_data_text
         assert f"Contremarque : {booking.token}" in additional_data_text
         assert f"Nom de l'offre : {offer.name}" in additional_data_text
         assert f"Bénéficiaire : {booking.user.full_name}" in additional_data_text
