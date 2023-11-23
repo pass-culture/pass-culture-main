@@ -197,38 +197,56 @@ def format_booking_cancellation_reason(
             return reason.value
 
 
-def format_booking_status_long(
-    status: bookings_models.BookingStatus | educational_models.CollectiveBookingStatus,
-) -> str:
-    match status:
-        case bookings_models.BookingStatus.CONFIRMED | educational_models.CollectiveBookingStatus.CONFIRMED:
-            return "Réservation confirmée"
-        case bookings_models.BookingStatus.USED | educational_models.CollectiveBookingStatus.USED:
-            return '<span class="badge text-bg-success">Le jeune a consommé l\'offre</span>'
-        case bookings_models.BookingStatus.CANCELLED | educational_models.CollectiveBookingStatus.CANCELLED:
-            return "<span class=\"badge text-bg-danger\">L'offre n'a pas eu lieu</span>"
-        case bookings_models.BookingStatus.REIMBURSED | educational_models.CollectiveBookingStatus.REIMBURSED:
-            return '<span class="badge text-bg-success">AC remboursé</span>'
-        case _:
-            return status.value
+def format_booking_status_long(booking: bookings_models.Booking | educational_models.CollectiveBooking) -> str:
+    if booking.status in (
+        bookings_models.BookingStatus.REIMBURSED,
+        educational_models.CollectiveBookingStatus.REIMBURSED,
+    ):
+        return '<span class="badge text-bg-success">AC remboursé</span>'
+    if booking.status in (
+        bookings_models.BookingStatus.CANCELLED,
+        educational_models.CollectiveBookingStatus.CANCELLED,
+    ):
+        return "<span class=\"badge text-bg-danger\">L'offre n'a pas eu lieu</span>"
+    if booking.status in (bookings_models.BookingStatus.USED, educational_models.CollectiveBookingStatus.USED):
+        return '<span class="badge text-bg-success">Le jeune a consommé l\'offre</span>'
+    if isinstance(booking, bookings_models.Booking) and booking.isConfirmed:
+        return '<span class="badge text-bg-success">Le jeune ne peut plus annuler</span>'
+    if (
+        isinstance(booking, educational_models.CollectiveBooking)
+        and booking.status == educational_models.CollectiveBookingStatus.CONFIRMED
+    ):
+        return '<span class="badge text-bg-success">Le chef d\'établissement a validé la réservation</span>'
+    if booking.status == educational_models.CollectiveBookingStatus.PENDING:
+        return '<span class="badge text-bg-success">L\'enseignant a posé une option</span>'
+    return '<span class="badge text-bg-success">Le jeune a réservé l\'offre</span>'
 
 
 def format_booking_status(
-    status: bookings_models.BookingStatus | educational_models.CollectiveBookingStatus, with_badge: bool = False
+    booking: bookings_models.Booking | educational_models.CollectiveBooking, with_badge: bool = False
 ) -> str:
-    match status:
-        case educational_models.CollectiveBookingStatus.PENDING:
-            return '<span class="text-nowrap">Pré-réservée</span>' if with_badge else "Pré-réservée"
-        case bookings_models.BookingStatus.CONFIRMED | educational_models.CollectiveBookingStatus.CONFIRMED:
-            return "Confirmée"
-        case bookings_models.BookingStatus.USED | educational_models.CollectiveBookingStatus.USED:
-            return '<span class="badge text-bg-success">Validée</span>' if with_badge else "Validée"
-        case bookings_models.BookingStatus.CANCELLED | educational_models.CollectiveBookingStatus.CANCELLED:
-            return '<span class="badge text-bg-danger">Annulée</span>' if with_badge else "Annulée"
-        case bookings_models.BookingStatus.REIMBURSED | educational_models.CollectiveBookingStatus.REIMBURSED:
-            return '<span class="badge text-bg-success">Remboursée</span>' if with_badge else "Remboursée"
-        case _:
-            return status.value
+    if booking.status in (
+        bookings_models.BookingStatus.REIMBURSED,
+        educational_models.CollectiveBookingStatus.REIMBURSED,
+    ):
+        return '<span class="badge text-bg-success">Remboursée</span>' if with_badge else "Remboursée"
+    if booking.status in (
+        bookings_models.BookingStatus.CANCELLED,
+        educational_models.CollectiveBookingStatus.CANCELLED,
+    ):
+        return '<span class="badge text-bg-danger">Annulée</span>' if with_badge else "Annulée"
+    if booking.status in (bookings_models.BookingStatus.USED, educational_models.CollectiveBookingStatus.USED):
+        return '<span class="badge text-bg-success">Validée</span>' if with_badge else "Validée"
+    if isinstance(booking, bookings_models.Booking) and booking.isConfirmed:
+        return "Confirmée"
+    if (
+        isinstance(booking, educational_models.CollectiveBooking)
+        and booking.status == educational_models.CollectiveBookingStatus.CONFIRMED
+    ):
+        return "Confirmée"
+    if booking.status == educational_models.CollectiveBookingStatus.PENDING:
+        return '<span class="text-nowrap">Pré-réservée</span>' if with_badge else "Pré-réservée"
+    return "Réservée"
 
 
 def format_validation_status(status: validation_status_mixin.ValidationStatus) -> str:
