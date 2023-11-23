@@ -42,7 +42,6 @@ from pcapi.core.testing import override_settings
 import pcapi.core.users.factories as users_factories
 import pcapi.core.users.models as users_models
 from pcapi.models import db
-from pcapi.routes.backoffice.finance import finance_incidents_blueprint
 from pcapi.utils import human_ids
 import pcapi.utils.db as db_utils
 
@@ -265,7 +264,7 @@ class PriceEventTest:
 
         assert len(created_pricing.lines) == 1
         assert created_pricing.lines[0].amount == -1000
-        assert created_pricing.lines[0].category == models.PricingLineCategory.OFFERER_RETRIEVAL
+        assert created_pricing.lines[0].category == models.PricingLineCategory.OFFERER_REVENUE
 
     @pytest.mark.parametrize(
         "event_motive",
@@ -289,9 +288,11 @@ class PriceEventTest:
         assert created_pricing.valueDate == validation_date
         assert created_pricing.revenue == original_pricing.revenue + 800
 
-        assert len(created_pricing.lines) == 1
-        assert created_pricing.lines[0].amount == 800
+        assert len(created_pricing.lines) == 2
+        assert created_pricing.lines[0].amount == -800
         assert created_pricing.lines[0].category == models.PricingLineCategory.OFFERER_REVENUE
+        assert created_pricing.lines[1].amount == 0
+        assert created_pricing.lines[1].category == models.PricingLineCategory.OFFERER_CONTRIBUTION
 
     def test_price_free_booking(self):
         event = self._make_individual_event(price=0)
@@ -1886,7 +1887,6 @@ class GenerateInvoiceHtmlTest:
         duo_finance_event = factories.UsedBookingFinanceEventFactory(booking=duo_booking)
         api.price_event(duo_finance_event)
 
-
         incident_booking1_event = factories.UsedBookingFinanceEventFactory(
             booking__stock=offers_factories.StockFactory(offer=book_offer, price=30, quantity=1),
             booking__user=user,
@@ -1914,8 +1914,8 @@ class GenerateInvoiceHtmlTest:
             booking=incident_booking1_event.booking,
             newTotalAmount=-incident_booking1_event.booking.total_amount * 100,
         )
-        incident_events += finance_incidents_blueprint._create_finance_events_from_incident(
-            booking_total_incident, datetime.datetime.utcnow(), save=True
+        incident_events += api._create_finance_events_from_incident(
+            booking_total_incident, datetime.datetime.utcnow(), commit=True
         )
 
         # create partial overpayment incident
@@ -1924,8 +1924,8 @@ class GenerateInvoiceHtmlTest:
             booking=incident_booking2_event.booking,
             newTotalAmount=2000,
         )
-        incident_events += finance_incidents_blueprint._create_finance_events_from_incident(
-            booking_partial_incident, datetime.datetime.utcnow(), save=True
+        incident_events += api._create_finance_events_from_incident(
+            booking_partial_incident, datetime.datetime.utcnow(), commit=True
         )
 
         for event in incident_events:
