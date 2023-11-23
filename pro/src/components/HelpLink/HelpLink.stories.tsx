@@ -1,4 +1,3 @@
-import type { Story } from '@storybook/react'
 import React from 'react'
 
 import HelpLink from './HelpLink'
@@ -6,11 +5,13 @@ import HelpLink from './HelpLink'
 export default {
   title: 'components/HelpLink',
   component: HelpLink,
+  decorators: [
+    (Story: any) => (
+      <div style={{ width: 500, height: 500 }}>
+        <Story />
+      </div>
+    ),
+  ],
 }
-const Template: Story = (args) => (
-  <div style={{ width: 500, height: 500 }}>
-    <HelpLink {...args} />
-  </div>
-)
 
-export const Default = Template.bind({})
+export const Default = {}
