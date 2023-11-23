@@ -61,7 +61,7 @@ describe('AdageDiscovery', () => {
     await waitFor(() => expect(api.listEducationalDomains).toHaveBeenCalled())
 
     expect(
-      screen.getByText('Les nouvelles offres publiées')
+      screen.getByText('Les offres publiées récemment')
     ).toBeInTheDocument()
   })
 

@@ -10,7 +10,6 @@ import Carousel from 'components/Carousel/Carousel'
 import { GET_DATA_ERROR_MESSAGE } from 'core/shared/constants'
 import useIsElementVisible from 'hooks/useIsElementVisible'
 import useNotification from 'hooks/useNotification'
-import bannerDiscovery from 'icons/banner-discovery-adage.svg'
 import fullLinkIcon from 'icons/full-link.svg'
 import { Option } from 'pages/AdageIframe/app/types'
 import { ButtonLink } from 'ui-kit'
@@ -165,18 +164,19 @@ export const AdageDiscovery = () => {
 
   return (
     <div className={styles['discovery']}>
-      <img
-        src={bannerDiscovery}
-        alt="Bannière pour la découverte"
-        width="100%"
-      />
+      <div className={styles['discovery-banner']}>
+        <h1 className={styles['discovery-banner-title']}>
+          Découvrez <span>la part collective</span> du pass Culture
+        </h1>
+      </div>
+
       <div className={styles['discovery-playlists']}>
         <div className={styles['discovery-playlist']}>
           <Carousel
             title={
-              <h1 className={styles['section-title']}>
-                Les nouvelles offres publiées
-              </h1>
+              <h2 className={styles['section-title']}>
+                Les offres publiées récemment
+              </h2>
             }
             onLastCarouselElementVisible={() =>
               onWholePlaylistSeen(0, AdagePlaylistType.OFFER)
@@ -304,9 +304,9 @@ export const AdageDiscovery = () => {
         <div className={styles['discovery-playlist']}>
           <Carousel
             title={
-              <h1 className={styles['section-title']}>
-                Explorez les domaines artistiques
-              </h1>
+              <h2 className={styles['section-title']}>
+                Explorez les domaines artistiques et culturels
+              </h2>
             }
             onLastCarouselElementVisible={() =>
               onWholePlaylistSeen(1, AdagePlaylistType.DOMAIN)
@@ -337,22 +337,139 @@ export const AdageDiscovery = () => {
         <div className={styles['discovery-playlist']}>
           <Carousel
             title={
-              <h1 className={styles['section-title']}>
+              <h2 className={styles['section-title']}>
                 Ces interventions peuvent avoir lieu dans votre classe
-              </h1>
+              </h2>
             }
             onLastCarouselElementVisible={() =>
               onWholePlaylistSeen(2, AdagePlaylistType.OFFER)
             }
-            elements={[]}
+            elements={[
+              <CardOfferComponent
+                handlePlaylistElementTracking={() =>
+                  trackPlaylistElementClicked({
+                    playlistId: 0, // TODO: change all playlistId with real value
+                    playlistType: AdagePlaylistType.OFFER,
+                    elementId: 1, // TODO: change elementId with real value
+                  })
+                }
+                key={`card-offer-class-1`}
+                offer={{
+                  ...mockOffer,
+                  id: 1,
+                  name: 'Ma super offre 3',
+                  offerVenue: {
+                    ...mockOffer.offerVenue,
+                    addressType: OfferAddressType.OFFERER_VENUE,
+                  },
+                  imageUrl: 'https://picsum.photos/201/',
+                }}
+              />,
+              <CardOfferComponent
+                handlePlaylistElementTracking={() =>
+                  trackPlaylistElementClicked({
+                    playlistId: 0,
+                    elementId: 2, // TODO: change elementId with real value
+                    playlistType: AdagePlaylistType.OFFER,
+                  })
+                }
+                key={`card-offer-class-2`}
+                offer={{
+                  ...mockOffer,
+                  id: 2,
+                  offerVenue: {
+                    ...mockOffer.offerVenue,
+                    addressType: OfferAddressType.SCHOOL,
+                  },
+                  imageUrl: 'https://picsum.photos/202/',
+                }}
+              />,
+              <CardOfferComponent
+                handlePlaylistElementTracking={() =>
+                  trackPlaylistElementClicked({
+                    playlistId: 0,
+                    playlistType: AdagePlaylistType.OFFER,
+                    elementId: 3, // TODO: change elementId with real value
+                  })
+                }
+                key={`card-offer-class-3`}
+                offer={{
+                  ...mockOffer,
+                  id: 3,
+                  offerVenue: {
+                    ...mockOffer.offerVenue,
+                    addressType: OfferAddressType.OTHER,
+                  },
+                  imageUrl: 'https://picsum.photos/203/',
+                }}
+              />,
+              <CardOfferComponent
+                key={`card-offer-class-4`}
+                offer={{
+                  ...mockOffer,
+                  id: 1,
+                  name: 'Ma super offre 4',
+                  offerVenue: {
+                    ...mockOffer.offerVenue,
+                    addressType: OfferAddressType.OFFERER_VENUE,
+                  },
+                  imageUrl: 'https://picsum.photos/201/',
+                }}
+                handlePlaylistElementTracking={() =>
+                  trackPlaylistElementClicked({
+                    playlistId: 1,
+                    playlistType: AdagePlaylistType.DOMAIN,
+                    elementId: 4, // TODO: change elementId with real value
+                  })
+                }
+              />,
+              <CardOfferComponent
+                handlePlaylistElementTracking={() =>
+                  trackPlaylistElementClicked({
+                    playlistId: 0,
+                    playlistType: AdagePlaylistType.OFFER,
+                    elementId: 5, // TODO: change elementId with real value
+                  })
+                }
+                key={`card-offer-class-5`}
+                offer={{
+                  ...mockOffer,
+                  id: 2,
+                  offerVenue: {
+                    ...mockOffer.offerVenue,
+                    addressType: OfferAddressType.SCHOOL,
+                  },
+                  imageUrl: 'https://picsum.photos/202/',
+                }}
+              />,
+              <CardOfferComponent
+                handlePlaylistElementTracking={() =>
+                  trackPlaylistElementClicked({
+                    playlistId: 0,
+                    playlistType: AdagePlaylistType.OFFER,
+                    elementId: 6, // TODO: change elementId with real value
+                  })
+                }
+                key={`card-offer-class-6`}
+                offer={{
+                  ...mockOffer,
+                  id: 3,
+                  offerVenue: {
+                    ...mockOffer.offerVenue,
+                    addressType: OfferAddressType.OTHER,
+                  },
+                  imageUrl: 'https://picsum.photos/203/',
+                }}
+              />,
+            ]}
           ></Carousel>
         </div>
         <div className={styles['discovery-playlist']}>
           <Carousel
             title={
-              <h1 className={styles['section-title']}>
-                À moins de 30 minutes à pieds
-              </h1>
+              <h2 className={styles['section-title']}>
+                À moins de 30 minutes à pied de votre établissement
+              </h2>
             }
             onLastCarouselElementVisible={() =>
               onWholePlaylistSeen(3, AdagePlaylistType.VENUE)
@@ -374,9 +491,9 @@ export const AdageDiscovery = () => {
         </div>
       </div>
       <div className={styles['discovery-suggestion']}>
-        <h1 className={styles['section-title']}>
+        <h2 className={styles['section-title']}>
           Une idée de rubrique ? Soumettez-la nous !
-        </h1>
+        </h2>
         <ButtonLink
           className={styles['discovery-suggestion-link']}
           variant={ButtonVariant.TERNARYPINK}
