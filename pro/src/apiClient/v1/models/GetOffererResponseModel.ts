@@ -15,6 +15,7 @@ export type GetOffererResponseModel = {
   dsToken?: string | null;
   hasAvailablePricingPoints: boolean;
   hasDigitalVenueAtLeastOneOffer: boolean;
+  hasNonFreeOffer: boolean;
   hasPendingBankAccount: boolean;
   hasValidBankAccount: boolean;
   id: number;

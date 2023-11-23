@@ -513,25 +513,83 @@ def find_venues_of_offerer_from_siret(siret: str) -> tuple[models.Offerer | None
 def get_offerer_and_extradata(offerer_id: int) -> models.Offerer | None:
     """
     Return and offerer and some extra data regarding it.
-    Needed for the following Offerer properties:
         - hasValidBankAccount
         - hasPendingBankAccount
+        - hasNonFreeOffers
     """
-    return (
-        models.Offerer.query.filter_by(id=offerer_id)
-        .outerjoin(
-            finance_models.BankAccount,
+    has_non_free_offers_subquery = (
+        sqla.select(1)
+        .select_from(offers_models.Stock)
+        .join(models.Venue, models.Venue.managingOffererId == models.Offerer.id)
+        .join(
+            offers_models.Offer,
+            sqla.and_(
+                offers_models.Stock.offerId == Offer.id,
+                offers_models.Stock.price > 0,
+                offers_models.Stock.isSoftDeleted.is_(False),
+                offers_models.Offer.isActive.is_(True),
+                offers_models.Offer.venueId == models.Venue.id,
+            ),
+        )
+        .correlate(models.Offerer)
+        .exists()
+    )
+
+    has_non_free_collective_offers_subquery = (
+        sqla.select(1)
+        .select_from(CollectiveStock)
+        .join(models.Venue, models.Venue.managingOffererId == models.Offerer.id)
+        .join(
+            CollectiveOffer,
+            sqla.and_(
+                CollectiveStock.collectiveOfferId == CollectiveOffer.id,
+                CollectiveStock.price > 0,
+                CollectiveOffer.isActive.is_(True),
+                CollectiveOffer.venueId == models.Venue.id,
+            ),
+        )
+        .correlate(models.Offerer)
+        .exists()
+    )
+
+    has_valid_bank_account_subquery = (
+        sqla.select(1)
+        .select_from(finance_models.BankAccount)
+        .join(
+            models.Offerer,
             sqla.and_(
                 finance_models.BankAccount.offererId == models.Offerer.id,
                 finance_models.BankAccount.isActive.is_(True),
-                finance_models.BankAccount.status.in_(
-                    (
-                        finance_models.BankAccountApplicationStatus.ON_GOING,
-                        finance_models.BankAccountApplicationStatus.ACCEPTED,
-                    )
-                ),
+                finance_models.BankAccount.status == finance_models.BankAccountApplicationStatus.ACCEPTED,
             ),
         )
+        .correlate(models.Offerer)
+        .exists()
+    )
+
+    has_pending_bank_account_subquery = (
+        sqla.select(1)
+        .select_from(finance_models.BankAccount)
+        .join(
+            models.Offerer,
+            sqla.and_(
+                finance_models.BankAccount.offererId == models.Offerer.id,
+                finance_models.BankAccount.isActive.is_(True),
+                finance_models.BankAccount.status == finance_models.BankAccountApplicationStatus.ON_GOING,
+            ),
+        )
+        .correlate(models.Offerer)
+        .exists()
+    )
+
+    return (
+        db.session.query(
+            models.Offerer,
+            sqla.or_(has_non_free_offers_subquery, has_non_free_collective_offers_subquery).label("hasNonFreeOffer"),
+            has_valid_bank_account_subquery.label("hasValidBankAccount"),
+            has_pending_bank_account_subquery.label("hasPendingBankAccount"),
+        )
+        .filter(models.Offerer.id == offerer_id)
         .outerjoin(models.Venue, models.Venue.managingOffererId == models.Offerer.id)
         .options(
             sqla_orm.contains_eager(models.Offerer.managedVenues).load_only(

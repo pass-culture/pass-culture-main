@@ -35,6 +35,7 @@ describe('src | components | pages | Offerer | OffererDetails', () => {
       hasValidBankAccount: true,
       hasPendingBankAccount: false,
       venuesWithNonFreeOffersWithoutBankAccounts: [],
+      hasNonFreeOffer: true,
       isValidated: true,
       isActive: true,
       managedVenues: [
