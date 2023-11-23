@@ -172,7 +172,6 @@ class PricingLineCategory(enum.Enum):
     OFFERER_REVENUE = "offerer revenue"
     OFFERER_CONTRIBUTION = "offerer contribution"
     PASS_CULTURE_COMMISSION = "pass culture commission"
-    OFFERER_RETRIEVAL = "offerer retrieval"
 
 
 class PricingLogReason(enum.Enum):
