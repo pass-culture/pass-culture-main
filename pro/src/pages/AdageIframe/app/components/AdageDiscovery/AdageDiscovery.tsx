@@ -124,6 +124,18 @@ export const AdageDiscovery = () => {
     getAllDomains()
   }, [])
 
+  function onWholePlaylistSeen(
+    playlistId: number,
+    playlistType: AdagePlaylistType
+  ) {
+    // eslint-disable-next-line @typescript-eslint/no-floating-promises
+    apiAdage.logHasSeenWholePlaylist({
+      iframeFrom: location.pathname,
+      playlistId,
+      playlistType,
+    })
+  }
+
   const colorAndMotifOrder = [
     { color: 'orange', src: squares },
     { color: 'purple', src: pills },
@@ -165,6 +177,9 @@ export const AdageDiscovery = () => {
               <h1 className={styles['section-title']}>
                 Les nouvelles offres publiées
               </h1>
+            }
+            onLastCarouselElementVisible={() =>
+              onWholePlaylistSeen(0, AdagePlaylistType.OFFER)
             }
             elements={[
               <CardOfferComponent
@@ -287,6 +302,9 @@ export const AdageDiscovery = () => {
                 Explorez les domaines artistiques
               </h1>
             }
+            onLastCarouselElementVisible={() =>
+              onWholePlaylistSeen(1, AdagePlaylistType.DOMAIN)
+            }
             elements={domainsOptions.map((elm, key) => {
               const colorAndMotif =
                 colorAndMotifOrder[key % colorAndMotifOrder.length]
@@ -317,6 +335,9 @@ export const AdageDiscovery = () => {
                 Ces interventions peuvent avoir lieu dans votre classe
               </h1>
             }
+            onLastCarouselElementVisible={() =>
+              onWholePlaylistSeen(2, AdagePlaylistType.OFFER)
+            }
             elements={[]}
           ></Carousel>
         </div>
@@ -326,6 +347,9 @@ export const AdageDiscovery = () => {
               <h1 className={styles['section-title']}>
                 À moins de 30 minutes à pieds
               </h1>
+            }
+            onLastCarouselElementVisible={() =>
+              onWholePlaylistSeen(3, AdagePlaylistType.VENUE)
             }
             elements={[
               <CardVenue
