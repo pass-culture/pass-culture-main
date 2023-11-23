@@ -117,6 +117,7 @@ class FeatureToggle(enum.Enum):
     WIP_ENABLE_BOOST_SHOWTIMES_FILTER = "Activer le filtre pour les requêtes showtimes Boost"
     WIP_ENABLE_DATES_OFFER_TEMPLATE = "Active la possibilité d'ajouter des dates pour les offres vitrines"
     WIP_HOME_STATS = "Active la possibilité de voir les stats de consultation sur la page d'accueil"
+    WIP_HOME_STATS_V2 = "Active la V2 des stats de publication d'offres sur la page d'accueil"
     WIP_ENABLE_FORMAT = "Activer le remplacement des catégories/sous-catégories par les formats"
     WIP_ENABLE_DISCOVERY = "Activer la page de découverte dans adage"
     WIP_ENABLE_GOOGLE_SSO = "Activer la connexion SSO pour les jeunes"
@@ -186,6 +187,7 @@ FEATURES_DISABLED_BY_DEFAULT: tuple[FeatureToggle, ...] = (
     FeatureToggle.WIP_ENABLE_BOOST_SHOWTIMES_FILTER,
     FeatureToggle.WIP_ENABLE_DATES_OFFER_TEMPLATE,
     FeatureToggle.WIP_HOME_STATS,
+    FeatureToggle.WIP_HOME_STATS_V2,
     FeatureToggle.WIP_BEHIND_L7_LOAD_BALANCER,
     FeatureToggle.WIP_ENABLE_FORMAT,
     FeatureToggle.WIP_ENABLE_DISCOVERY,
