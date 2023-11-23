@@ -1,11 +1,12 @@
 import React, { useEffect, useState } from 'react'
-import { useSearchParams, useLocation } from 'react-router-dom'
+import { useLocation, useSearchParams } from 'react-router-dom'
 
 import { api } from 'apiClient/api'
 import {
   BankAccountResponseModel,
   GetOffererBankAccountsResponseModel,
 } from 'apiClient/v1'
+import ConfirmDialog from 'components/Dialog/ConfirmDialog'
 import ReimbursementBankAccount from 'components/ReimbursementBankAccount/ReimbursementBankAccount'
 import { useReimbursementContext } from 'context/ReimbursementContext/ReimbursementContext'
 import { BankAccountEvents } from 'core/FirebaseEvents/constants'
@@ -14,6 +15,7 @@ import useAnalytics from 'hooks/useAnalytics'
 import useNotification from 'hooks/useNotification'
 import fullLinkIcon from 'icons/full-link.svg'
 import fullMoreIcon from 'icons/full-more.svg'
+import strokeWarningIcon from 'icons/stroke-warning.svg'
 import LinkVenuesDialog from 'pages/Reimbursements/BankInformations/LinkVenuesDialog'
 import { Button, ButtonLink } from 'ui-kit'
 import { ButtonVariant } from 'ui-kit/Button/types'
@@ -40,6 +42,8 @@ const BankInformations = (): JSX.Element => {
     useState<GetOffererBankAccountsResponseModel | null>(null)
   const [searchParams, setSearchParams] = useSearchParams()
   const [isOffererLoading, setIsOffererLoading] = useState<boolean>(false)
+  const [showDiscadChangesDialog, setShowDiscardChangesDialog] =
+    useState<boolean>(false)
 
   const [selectedBankAccount, setSelectedBankAccount] =
     useState<BankAccountResponseModel | null>(null)
@@ -209,11 +213,29 @@ const BankInformations = (): JSX.Element => {
           offererId={selectedOfferer.id}
           selectedBankAccount={selectedBankAccount}
           managedVenues={selectedOffererBankAccounts?.managedVenues}
-          closeDialog={() => {
-            // eslint-disable-next-line @typescript-eslint/no-floating-promises
-            updateOfferer(selectedOfferer.id.toString())
+          closeDialog={(update?: boolean) => {
+            if (update) {
+              // eslint-disable-next-line @typescript-eslint/no-floating-promises
+              updateOfferer(selectedOfferer.id.toString())
+            }
             setSelectedBankAccount(null)
           }}
+          showConfirmDiscardChanges={() => {
+            setShowDiscardChangesDialog(true)
+          }}
+        />
+      )}
+      {showDiscadChangesDialog && (
+        <ConfirmDialog
+          icon={strokeWarningIcon}
+          onCancel={() => setShowDiscardChangesDialog(false)}
+          title="Les informations non sauvegardées ne seront pas prises en compte"
+          onConfirm={() => {
+            setShowDiscardChangesDialog(false)
+            setSelectedBankAccount(null)
+          }}
+          confirmText="Quitter sans enregistrer "
+          cancelText="Annuler"
         />
       )}
     </>

@@ -16,7 +16,8 @@ export interface LinkVenuesDialogProps {
   offererId: number
   selectedBankAccount: BankAccountResponseModel
   managedVenues?: Array<ManagedVenues>
-  closeDialog: () => void
+  closeDialog: (update?: boolean) => void
+  showConfirmDiscardChanges: () => void
 }
 
 const LinkVenuesDialog = ({
@@ -24,6 +25,7 @@ const LinkVenuesDialog = ({
   selectedBankAccount,
   managedVenues,
   closeDialog,
+  showConfirmDiscardChanges,
 }: LinkVenuesDialogProps) => {
   const availableManagedVenuesIds = managedVenues
     ?.filter((venue) => !venue.bankAccountId)
@@ -44,7 +46,7 @@ const LinkVenuesDialog = ({
       await api.linkVenueToBankAccount(offererId, selectedBankAccount.id, {
         venues_ids: selectedVenuesIds,
       })
-      closeDialog()
+      closeDialog(true)
     },
   })
 
@@ -126,7 +128,13 @@ const LinkVenuesDialog = ({
           <div className={styles['dialog-actions']}>
             <Button
               variant={ButtonVariant.SECONDARY}
-              onClick={() => closeDialog()}
+              onClick={() => {
+                if (isEqual(selectedVenuesIds, initialVenuesIds)) {
+                  closeDialog()
+                } else {
+                  showConfirmDiscardChanges()
+                }
+              }}
             >
               Annuler
             </Button>
