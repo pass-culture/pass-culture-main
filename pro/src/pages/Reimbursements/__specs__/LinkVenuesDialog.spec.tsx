@@ -17,6 +17,7 @@ vi.mock('apiClient/api', () => ({
 }))
 
 const mockClose = vi.fn()
+const mockDiscard = vi.fn()
 
 const storeOverrides = {
   user: {
@@ -30,6 +31,7 @@ const storeOverrides = {
 
 const props: LinkVenuesDialogProps = {
   closeDialog: mockClose,
+  showConfirmDiscardChanges: mockDiscard,
   managedVenues: [
     {
       bankAccountId: 6877,
@@ -162,5 +164,39 @@ describe('LinkVenueDialog', () => {
         /Un erreur est survenue. Vos modifications n’ont pas été prises en compte/
       )
     ).toBeInTheDocument()
+  })
+
+  it('Should close the dialog on cancel click', async () => {
+    renderWithProviders(<LinkVenuesDialog {...props} />, {
+      storeOverrides,
+    })
+
+    await userEvent.click(
+      screen.getByRole('button', {
+        name: 'Annuler',
+      })
+    )
+
+    expect(mockClose).toHaveBeenCalled()
+  })
+
+  it('Should show the discard dialog on cancel click', async () => {
+    renderWithProviders(<LinkVenuesDialog {...props} />, {
+      storeOverrides,
+    })
+
+    await userEvent.click(
+      screen.getByRole('checkbox', {
+        name: 'Lieu 2',
+      })
+    )
+
+    await userEvent.click(
+      screen.getByRole('button', {
+        name: 'Annuler',
+      })
+    )
+
+    expect(mockDiscard).toHaveBeenCalled()
   })
 })
