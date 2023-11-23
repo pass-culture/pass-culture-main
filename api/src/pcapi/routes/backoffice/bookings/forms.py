@@ -1,17 +1,34 @@
 import datetime
+import enum
 import typing
 
 from flask_wtf import FlaskForm
 import wtforms
 
 from pcapi.core.bookings import models as bookings_models
-from pcapi.core.bookings.models import BookingStatus
 from pcapi.core.categories import categories
 from pcapi.core.educational import models as educational_models
 from pcapi.routes.backoffice import filters
 from pcapi.routes.backoffice.forms import fields
 from pcapi.routes.backoffice.forms import utils
 from pcapi.routes.backoffice.forms.empty import BatchForm
+
+
+class BookingStatus(enum.Enum):
+    BOOKED = "Réservée"
+    CONFIRMED = "Confirmée"
+    USED = "Validée"
+    CANCELLED = "Annulée"
+    REIMBURSED = "Remboursée"
+
+
+# same keys as educational_models.CollectiveBookingStatus but with different values to display the status in french
+class CollectiveBookingStatus(enum.Enum):
+    PENDING = "Pré-réservée"
+    CONFIRMED = "Confirmée"
+    USED = "Validée"
+    CANCELLED = "Annulée"
+    REIMBURSED = "Remboursée"
 
 
 class BaseBookingListForm(FlaskForm):
@@ -113,16 +130,14 @@ class GetCollectiveBookingListForm(BaseBookingListForm):
     def __init__(self, *args: typing.Any, **kwargs: typing.Any) -> None:
         super().__init__(*args, **kwargs)
         self.q.label.text = "ID réservation collective, ID offre, Nom ou ID de l'établissement"
-        self.status.choices = utils.choices_from_enum(
-            educational_models.CollectiveBookingStatus, formatter=filters.format_booking_status
-        )
+        self.status.choices = utils.choices_from_enum(CollectiveBookingStatus)
 
 
 class GetIndividualBookingListForm(BaseBookingListForm):
     def __init__(self, *args: typing.Any, **kwargs: typing.Any) -> None:
         super().__init__(*args, **kwargs)
         self.q.label.text = "Code contremarque ou liste, Nom, email ou ID (offre, bénéficiaire ou résa)"
-        self.status.choices = utils.choices_from_enum(BookingStatus, formatter=filters.format_booking_status)
+        self.status.choices = utils.choices_from_enum(BookingStatus)
 
 
 class CancelCollectiveBookingForm(FlaskForm):

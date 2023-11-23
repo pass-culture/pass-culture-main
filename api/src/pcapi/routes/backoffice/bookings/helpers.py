@@ -1,6 +1,8 @@
 import datetime
 
 from flask_sqlalchemy import BaseQuery
+from sqlalchemy import and_
+from sqlalchemy import or_
 
 from pcapi.core.bookings import models as bookings_models
 from pcapi.core.categories import subcategories_v2
@@ -9,6 +11,7 @@ from pcapi.core.finance import models as finance_models
 from pcapi.core.offers import models as offers_models
 from pcapi.core.users import models as users_models
 from pcapi.routes.backoffice.bookings.forms import BaseBookingListForm
+from pcapi.routes.backoffice.bookings.forms import BookingStatus
 from pcapi.utils import date as date_utils
 from pcapi.utils import email as email_utils
 
@@ -60,7 +63,36 @@ def get_bookings(
         )
 
     if form.status.data:
-        base_query = base_query.filter(booking_class.status.in_(form.status.data))  # type: ignore [union-attr]
+        if booking_class is bookings_models.Booking:
+            status_filters = []
+            status_in = []
+            for status in form.status.data:
+                if status == BookingStatus.CONFIRMED.name:
+                    status_filters.append(
+                        and_(  # type: ignore [type-var]
+                            booking_class.isConfirmed,
+                            booking_class.status == BookingStatus.CONFIRMED.name,
+                        )
+                    )
+                elif status == BookingStatus.BOOKED.name:
+                    status_filters.append(
+                        and_(
+                            ~booking_class.isConfirmed,  # type: ignore [operator]
+                            booking_class.status == BookingStatus.CONFIRMED.name,
+                        )
+                    )
+                else:
+                    status_in.append(status)
+
+            if status_in:
+                status_filters.append(booking_class.status.in_(status_in))  # type: ignore [union-attr]
+
+            if len(status_filters) > 1:
+                base_query = base_query.filter(or_(*status_filters))
+            else:
+                base_query = base_query.filter(status_filters[0])
+        else:
+            base_query = base_query.filter(booking_class.status.in_(form.status.data))  # type: ignore [union-attr]
 
     if form.cashflow_batches.data:
         base_query = (

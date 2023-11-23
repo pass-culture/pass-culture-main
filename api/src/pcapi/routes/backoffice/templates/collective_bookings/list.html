@@ -168,7 +168,7 @@
                 <td>{{ links.build_offer_name_to_pc_pro_link(collective_offer) }}</td>
                 <td>{{ collective_offer.id }}</td>
                 <td>{{ collective_booking.total_amount | format_amount }}</td>
-                <td>{{ collective_booking.status | format_booking_status(with_badge=True) | safe }}</td>
+                <td>{{ collective_booking | format_booking_status(with_badge=True) | safe }}</td>
                 {% if is_feature_active("WIP_ENABLE_FINANCE_INCIDENT") %}
                   <td class="text-center">
                     {% for booking_incident in collective_booking.incidents %}
