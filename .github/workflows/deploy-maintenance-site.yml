@@ -13,7 +13,6 @@ permissions:
 jobs:
   deploy:
     runs-on: [self-hosted, linux, x64]
-    environment: production
     container:
       image: node:18
     steps:
@@ -33,6 +32,7 @@ jobs:
           secrets: |-
             MAINTENANCE_SITE_DEPLOY_SA:passculture-metier-ehp/passculture-main-production-maintenance-site-deploy-service-account
             MAINTENANCE_SITE_BUCKET:passculture-metier-ehp/passculture-main-production-maintenance-site-bucket
+            GCP_WORKLOAD_IDENTITY_PRODVIDER:passculture-metier-ehp/gcp_metier_prod_workload_identity_provider
 
       - name: 'Set up Cloud SDK'
         uses: 'google-github-actions/setup-gcloud@v1'
@@ -40,7 +40,7 @@ jobs:
       - name: 'Authenticate to Google Cloud'
         uses: 'google-github-actions/auth@v1'
         with:
-          workload_identity_provider: ${{ secrets.METIER_GCP_WORKLOAD_IDENTITY_PROVIDER }}
+          workload_identity_provider: ${{ steps.secrets.outputs.GCP_WORKLOAD_IDENTITY_PROVIDER }}
           service_account: ${{ steps.secrets.outputs.MAINTENANCE_SITE_DEPLOY_SA }}
 
       - name: 'Set up Cloud SDK'
