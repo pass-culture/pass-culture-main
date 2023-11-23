@@ -529,7 +529,7 @@ def _price_event(event: models.FinanceEvent) -> models.Pricing:
         amount = -original_pricing.amount  # inverse the original pricing amount (positive)
         lines = [
             models.PricingLine(
-                category=models.PricingLineCategory.OFFERER_RETRIEVAL,
+                category=original_line.category,
                 amount=-original_line.amount,
             )
             for original_line in original_pricing.lines
@@ -538,10 +538,16 @@ def _price_event(event: models.FinanceEvent) -> models.Pricing:
         amount = -rule.apply(booking, event.bookingFinanceIncident.newTotalAmount)  # outgoing, thus negative
         lines = [
             models.PricingLine(
-                amount=-amount,
+                amount=-event.bookingFinanceIncident.newTotalAmount,
                 category=models.PricingLineCategory.OFFERER_REVENUE,
             )
         ]
+        lines.append(
+            models.PricingLine(
+                amount=amount - lines[0].amount,
+                category=models.PricingLineCategory.OFFERER_CONTRIBUTION,
+            )
+        )
     else:
         is_booking_collective = isinstance(booking, educational_models.CollectiveBooking)
         amount = -rule.apply(booking)  # outgoing, thus negative
