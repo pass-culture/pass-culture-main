@@ -19,6 +19,7 @@ describe('transformOffererResponseModelToOfferer', () => {
       hasDigitalVenueAtLeastOneOffer: true,
       hasValidBankAccount: true,
       hasPendingBankAccount: false,
+      hasNonFreeOffer: true,
       venuesWithNonFreeOffersWithoutBankAccounts: [],
       isValidated: true,
       isActive: true,

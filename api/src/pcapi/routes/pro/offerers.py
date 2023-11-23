@@ -85,10 +85,10 @@ def list_educational_offerers(
 @spectree_serialize(response_model=offerers_serialize.GetOffererResponseModel, api=blueprint.pro_private_schema)
 def get_offerer(offerer_id: int) -> offerers_serialize.GetOffererResponseModel:
     check_user_has_access_to_offerer(current_user, offerer_id)
-    offerer = repository.get_offerer_and_extradata(offerer_id)
-    if not offerer:
+    row = repository.get_offerer_and_extradata(offerer_id)
+    if not row:
         raise ResourceNotFoundError()
-    return offerers_serialize.GetOffererResponseModel.from_orm(offerer)
+    return offerers_serialize.GetOffererResponseModel.from_orm(row)
 
 
 @private_api.route("/offerers/<int:offerer_id>/invite", methods=["POST"])

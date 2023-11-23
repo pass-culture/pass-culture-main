@@ -3,6 +3,7 @@ import enum
 from typing import Iterable
 
 import pydantic.v1 as pydantic_v1
+from sqlalchemy.engine import Row
 import sqlalchemy.orm as sqla_orm
 
 from pcapi import settings
@@ -105,10 +106,13 @@ class GetOffererResponseModel(BaseModel):
     dsToken: str | None
     hasValidBankAccount: bool
     hasPendingBankAccount: bool
+    hasNonFreeOffer: bool
     venuesWithNonFreeOffersWithoutBankAccounts: list[int]
 
     @classmethod
-    def from_orm(cls, offerer: offerers_models.Offerer) -> "GetOffererResponseModel":
+    def from_orm(cls, row: Row) -> "GetOffererResponseModel":
+        offerer: offerers_models.Offerer = row.Offerer
+
         offerer.dsToken = DMS_TOKEN_PRO_PREFIX + offerer.dsToken
         offerer.apiKey = {
             "maxAllowed": settings.MAX_API_KEY_PER_OFFERER,
@@ -131,6 +135,9 @@ class GetOffererResponseModel(BaseModel):
         offerer.venuesWithNonFreeOffersWithoutBankAccounts = (
             offerers_repository.get_venues_with_non_free_offers_without_bank_accounts(offerer.id)
         )
+        offerer.hasValidBankAccount = row.hasValidBankAccount
+        offerer.hasPendingBankAccount = row.hasPendingBankAccount
+        offerer.hasNonFreeOffer = row.hasNonFreeOffer
 
         # We would like the response attribute to be called
         # `managedVenues` but we don't want to use the
