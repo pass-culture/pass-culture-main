@@ -20,6 +20,7 @@ const selectedOfferer: GetOffererResponseModel = {
   hasDigitalVenueAtLeastOneOffer: false,
   hasValidBankAccount: false,
   hasPendingBankAccount: false,
+  hasNonFreeOffer: true,
   venuesWithNonFreeOffersWithoutBankAccounts: [],
   isActive: false,
   isValidated: false,

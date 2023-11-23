@@ -203,6 +203,7 @@ export const defaultGetOffererResponseModel: GetOffererResponseModel = {
   hasDigitalVenueAtLeastOneOffer: false,
   hasValidBankAccount: true,
   hasPendingBankAccount: false,
+  hasNonFreeOffer: true,
   venuesWithNonFreeOffersWithoutBankAccounts: [],
   isActive: false,
   isValidated: false,

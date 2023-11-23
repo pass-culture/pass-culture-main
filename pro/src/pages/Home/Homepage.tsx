@@ -78,6 +78,7 @@ const Homepage = (): JSX.Element => {
             hasDigitalVenueAtLeastOneOffer: false,
             hasValidBankAccount: true,
             hasPendingBankAccount: false,
+            hasNonFreeOffer: true,
             venuesWithNonFreeOffersWithoutBankAccounts: [],
             isActive: false,
             isValidated: false,
