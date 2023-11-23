@@ -637,10 +637,8 @@ def edit_stock(
             booking_limit_datetime,
         )
 
-    is_beginning_updated = False
     if beginning_datetime not in (UNCHANGED, stock.beginningDatetime):
         modifications["beginningDatetime"] = beginning_datetime
-        is_beginning_updated = True
 
     if stock.offer.isFromAllocine:
         updated_fields = set(modifications)
@@ -667,7 +665,7 @@ def edit_stock(
             "stock_dnBookedQuantity": stock.dnBookedQuantity,
         },
     )
-    return stock, is_beginning_updated
+    return stock, "beginningDatetime" in modifications
 
 
 def handle_stocks_edition(edited_stocks: list[tuple[models.Stock, bool]]) -> None:
