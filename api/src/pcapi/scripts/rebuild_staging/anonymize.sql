@@ -292,3 +292,8 @@ UPDATE venue_provider SET "isActive" = false;
 UPDATE collective_offer_request
 SET
     "phoneNumber" =  pg_temp.fake_phone_number_from_id(id);
+
+UPDATE "offerer_invitation"
+SET
+    "email" = 'user' || "id" || '@anonymized.email'
+WHERE email NOT LIKE '%@passculture.app';
