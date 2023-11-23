@@ -16,6 +16,7 @@ vi.mock('apiClient/api', () => ({
   apiAdage: {
     logHasSeenAllPlaylist: vi.fn(),
     logConsultPlaylistElement: vi.fn(),
+    logHasSeenWholePlaylist: vi.fn(),
   },
   api: {
     listEducationalDomains: vi.fn(() => [
@@ -147,5 +148,18 @@ describe('AdageDiscovery', () => {
       playlistId: 1,
       playlistType: 'domain',
     })
+  })
+
+  it('should trigger a log wheen the last element of a playlist is seen', async () => {
+    renderAdageDiscovery(user)
+
+    //  Once for the footer visibility, and twice for one playlist to reach the end of the scroll (first and last elements visibility used in Carousel)
+    vi.spyOn(useIsElementVisible, 'default').mockReturnValueOnce([true, true])
+    vi.spyOn(useIsElementVisible, 'default').mockReturnValueOnce([true, true])
+    vi.spyOn(useIsElementVisible, 'default').mockReturnValueOnce([true, true])
+
+    await waitFor(() => expect(api.listEducationalDomains).toHaveBeenCalled())
+
+    expect(apiAdage.logHasSeenWholePlaylist).toHaveBeenCalledTimes(1)
   })
 })
