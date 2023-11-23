@@ -15,17 +15,17 @@ import { ApiResult } from 'apiClient/v1/core/ApiResult'
 import { OFFER_WIZARD_STEP_IDS } from 'components/IndividualOfferNavigation/constants'
 import Notification from 'components/Notification/Notification'
 import {
-  IndividualOfferContextValues,
   IndividualOfferContext,
+  IndividualOfferContextValues,
 } from 'context/IndividualOfferContext'
 import { OFFER_WIZARD_MODE } from 'core/Offers/constants'
 import { getIndividualOfferPath } from 'core/Offers/utils/getIndividualOfferUrl'
 import * as useAnalytics from 'hooks/useAnalytics'
 import {
-  GetIndividualOfferFactory,
   defaultGetOffererResponseModel,
-  offerVenueFactory,
+  GetIndividualOfferFactory,
   offererFactory,
+  offerVenueFactory,
 } from 'utils/apiFactories'
 import {
   individualOfferCategoryFactory,
@@ -450,7 +450,7 @@ describe('Summary', () => {
         await screen.findByText('Félicitations, vous avez créé votre offre !')
       ).toBeInTheDocument()
       expect(
-        screen.getByRole('link', { name: 'Renseigner un compte bancaire' })
+        screen.getByRole('link', { name: 'Ajouter un compte bancaire' })
       ).toHaveAttribute(
         'href',
         '/remboursements/informations-bancaires?structure=1'

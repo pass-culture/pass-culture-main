@@ -237,7 +237,7 @@ const SummaryScreen = () => {
           title="Félicitations, vous avez créé votre offre !"
           redirectText={
             isNewBankDetailsJourneyEnabled
-              ? 'Renseigner un compte bancaire'
+              ? 'Ajouter un compte bancaire'
               : 'Renseigner des coordonnées bancaires'
           }
           redirectLink={{
@@ -257,10 +257,10 @@ const SummaryScreen = () => {
           withRedirectLinkIcon={false}
         >
           <p>
-            Vous pouvez dès à présent renseigner{' '}
+            Vous pouvez dès à présent{' '}
             {isNewBankDetailsJourneyEnabled
-              ? 'un compte bancaire'
-              : 'des coordonnées bancaires'}
+              ? 'ajouter un compte bancaire'
+              : 'renseigner des coordonnées bancaires'}
             .
           </p>
           <p>
