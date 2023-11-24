@@ -2037,6 +2037,17 @@ class LinkVenueToReimbursementPointTest:
         msg = f"Le lieu {reimbursement_point.name} ne peut pas être utilisé pour les remboursements car il n'a pas de coordonnées bancaires validées."
         assert error.value.errors == {"reimbursementPointId": [msg]}
 
+    def test_to_same_existing_link(self):
+        venue = offerers_factories.VenueFactory(reimbursement_point="self", pricing_point="self")
+        finance_factories.BankInformationFactory(venue=venue)
+
+        offerers_api.link_venue_to_reimbursement_point(venue, venue.id)
+
+        former_link = offerers_models.VenueReimbursementPointLink.query.one()
+        assert former_link.venue == venue
+        assert former_link.reimbursementPoint == venue
+        assert former_link.timespan.upper is None
+
 
 class HasVenueAtLeastOneBookableOfferTest:
     @override_features(ENABLE_VENUE_STRICT_SEARCH=True)
