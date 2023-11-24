@@ -3,7 +3,7 @@ from re import search as re_search
 
 def get_cds_show_id_from_uuid(uuid: str | None) -> int | None:
     """
-    Parses the uuid with this pattern: "<movie.id>%<venue.siret>#<show.id>/<showtime>"
+    Parses the uuid with this pattern: "<movie.id>%<venue.id>#<show.id>/<showtime>"
     and returns the show_id as int, or None if it cannot
     """
     if uuid:

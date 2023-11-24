@@ -261,7 +261,7 @@ def _get_showtimes_uuid_by_idAtProvider(id_at_provider: str) -> str:
 
 def _build_movie_uuid(movie_information_id: str, venue: Venue) -> str:
     """This must be unique, among all Providers and Venues"""
-    return f"{movie_information_id}%{venue.siret}%CDS"
+    return f"{movie_information_id}%{venue.id}%CDS"
 
 
 def _build_showtime_uuid(showtime_details: ShowCDS) -> str:
