@@ -666,6 +666,29 @@ class DSV5InOldBankInformationsJourneyTest:
         assert not finance_models.BankAccount.query.count()
         assert not offerers_models.VenueBankAccountLink.query.count()
 
+    def test_association_to_physical_venue_if_both_virtual_and_physical_exists(
+        self, mock_archive_dossier, mock_update_text_annotation, mock_dms_graphql_client
+    ):
+        siret = "85331845900049"
+        siren = siret[:9]
+        venue = offerers_factories.VenueFactory(pricing_point="self", managingOfferer__siren=siren)
+        offerers_factories.VirtualVenueFactory(managingOfferer=venue.managingOfferer)
+        mock_dms_graphql_client.return_value = dms_creators.get_bank_info_response_procedure_v5(
+            state=GraphQLApplicationStates.draft.value
+        )
+
+        update_ds_applications_for_procedure(settings.DS_BANK_ACCOUNT_PROCEDURE_ID, since=None)
+
+        bank_information = finance_models.BankInformation.query.one()
+        assert bank_information.venue == venue
+        assert bank_information.bic is None
+        assert bank_information.iban is None
+        assert bank_information.status == finance_models.BankInformationStatus.DRAFT
+        mock_archive_dossier.assert_not_called()
+        # New journey is not active, should not create BankAccount nor links
+        assert not finance_models.BankAccount.query.count()
+        assert not offerers_models.VenueBankAccountLink.query.count()
+
     def test_updated_status_successfully_update_bank_informations(
         self, mock_archive_dossier, mock_update_text_annotation, mock_dms_graphql_client
     ):
