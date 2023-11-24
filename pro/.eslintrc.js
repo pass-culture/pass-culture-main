@@ -69,7 +69,6 @@ module.exports = {
         'require-await': 'warn',
         'react/no-unescaped-entities': 'warn',
         'react/no-children-prop': 'warn',
-        'react/jsx-key': 'warn',
         'react/prop-types': 'warn',
         'react-hooks/exhaustive-deps': 'warn',
       },
