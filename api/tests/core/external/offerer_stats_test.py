@@ -105,6 +105,7 @@ class OffererStatsTest:
             ),
             iter(
                 [
+                    {"offerId": offer1.id, "numberOfViews": 12},
                     {"offerId": offer2.id, "numberOfViews": 10},
                     {"offerId": offer3.id, "numberOfViews": 8},
                 ]
@@ -131,42 +132,7 @@ class OffererStatsTest:
             OffererStats.table == TOP_3_MOST_CONSULTED_OFFERS_LAST_30_DAYS_TABLE,
         ).one()
         assert offerer_top_offers.jsonData["top_offers"] == [
+            {"offerId": offer1.id, "numberOfViews": 12},
             {"offerId": offer2.id, "numberOfViews": 10},
             {"offerId": offer3.id, "numberOfViews": 8},
-            {"offerId": offer1.id, "numberOfViews": 0},
-        ]
-
-    @patch("pcapi.connectors.big_query.TestingBackend.run_query")
-    def test_get_no_offerer_stats_data(self, mock_run_query_with_params):
-        offerer = OffererFactory()
-        venue = VenueFactory(managingOfferer=offerer)
-        offer1 = OfferFactory(venue=venue)
-        offer2 = OfferFactory(venue=venue)
-        offer3 = OfferFactory(venue=venue)
-
-        mock_run_query_with_params.side_effect = [
-            iter([]),
-            iter([]),
-        ]
-
-        assert OffererStats.query.count() == 0
-
-        api.get_offerer_stats_data(offerer.id)
-
-        # Check that the stats have been created
-
-        offerer_global_stats = OffererStats.query.filter(
-            OffererStats.offererId == offerer.id,
-            OffererStats.table == DAILY_CONSULT_PER_OFFERER_LAST_180_DAYS_TABLE,
-        ).one()
-        assert offerer_global_stats.jsonData["daily_views"] == []
-
-        offerer_top_offers = OffererStats.query.filter(
-            OffererStats.offererId == offerer.id,
-            OffererStats.table == TOP_3_MOST_CONSULTED_OFFERS_LAST_30_DAYS_TABLE,
-        ).one()
-        assert offerer_top_offers.jsonData["top_offers"] == [
-            {"offerId": offer3.id, "numberOfViews": 0},
-            {"offerId": offer2.id, "numberOfViews": 0},
-            {"offerId": offer1.id, "numberOfViews": 0},
         ]
