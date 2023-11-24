@@ -1,5 +1,6 @@
 import { useFormikContext } from 'formik'
 import React, { useEffect, useState } from 'react'
+import { useLocation } from 'react-router-dom'
 
 import {
   SharedCurrentUserResponseModel,
@@ -89,6 +90,7 @@ const VenueForm = ({
   )
   const shouldDisplayImageVenueUploaderSection = isPermanent
   useScrollToFirstErrorAfterSubmit()
+  const location = useLocation()
   const user = useCurrentUser()
 
   const [canOffererCreateCollectiveOffer, setCanOffererCreateCollectiveOffer] =
@@ -174,7 +176,15 @@ const VenueForm = ({
           )}
         {((!isNewBankDetailsJourneyEnabled && !isCreatingVenue) ||
           (isNewBankDetailsJourneyEnabled && !venue?.siret)) &&
-          venue && <ReimbursementFields offerer={offerer} venue={venue} />}
+          venue && (
+            <ReimbursementFields
+              offerer={offerer}
+              scrollToSection={
+                Boolean(location.state) || Boolean(location.hash)
+              }
+              venue={venue}
+            />
+          )}
         <RouteLeavingGuard
           shouldBlockNavigation={shouldBlockVenueNavigation({
             isCreatingVenue,
