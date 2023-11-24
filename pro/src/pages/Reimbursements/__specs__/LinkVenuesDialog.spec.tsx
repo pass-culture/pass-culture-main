@@ -17,7 +17,6 @@ vi.mock('apiClient/api', () => ({
 }))
 
 const mockClose = vi.fn()
-const mockDiscard = vi.fn()
 
 const storeOverrides = {
   user: {
@@ -31,7 +30,6 @@ const storeOverrides = {
 
 const props: LinkVenuesDialogProps = {
   closeDialog: mockClose,
-  showConfirmDiscardChanges: mockDiscard,
   managedVenues: [
     {
       bankAccountId: 6877,
@@ -197,6 +195,10 @@ describe('LinkVenueDialog', () => {
       })
     )
 
-    expect(mockDiscard).toHaveBeenCalled()
+    expect(
+      screen.getByText(
+        /Les informations non sauvegardées ne seront pas prises en compte/
+      )
+    ).toBeInTheDocument()
   })
 })
