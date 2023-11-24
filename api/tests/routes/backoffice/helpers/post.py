@@ -14,7 +14,7 @@ class PostEndpointWithoutPermissionHelper(base.BaseHelper):
 
     # Number of queries to fetch csrf token from homepage
     # Same as expected_num_queries in HomePageTest
-    fetch_csrf_num_queries = 4
+    fetch_csrf_num_queries = 3
 
     @property
     def method(self) -> str:

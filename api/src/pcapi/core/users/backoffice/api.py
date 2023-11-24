@@ -30,6 +30,10 @@ def fetch_user_with_profile(user_id: int) -> models.User | None:
             .joinedload(perm_models.BackOfficeUserProfile.roles)
             .joinedload(perm_models.Role.permissions)
         )
-        .options(orm.load_only(models.User.id, models.User.email, models.User.roles))
+        .options(
+            orm.load_only(
+                models.User.id, models.User.email, models.User.firstName, models.User.lastName, models.User.roles
+            )
+        )
         .one_or_none()
     )
