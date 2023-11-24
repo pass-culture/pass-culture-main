@@ -34,7 +34,7 @@ export const BookingStatusCellHistory = ({
     )
 
     if (!displayInfoFromStatus) {
-      return <li />
+      return null
     }
 
     return (
