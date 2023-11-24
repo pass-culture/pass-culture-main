@@ -584,9 +584,7 @@ def cancel_booking_by_offerer(booking: Booking) -> None:
 
 
 def cancel_bookings_from_stock_by_offerer(stock: offers_models.Stock) -> list[Booking]:
-    cancelled_bookings = _cancel_bookings_from_stock(stock, BookingCancellationReasons.OFFERER)
-    search.async_index_offer_ids([stock.offerId])
-    return cancelled_bookings
+    return _cancel_bookings_from_stock(stock, BookingCancellationReasons.OFFERER)
 
 
 def cancel_bookings_from_rejected_offer(offer: offers_models.Offer) -> list[Booking]:
