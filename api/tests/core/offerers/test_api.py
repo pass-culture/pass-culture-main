@@ -11,6 +11,7 @@ import pytest
 import sqlalchemy as sa
 
 from pcapi.connectors import sirene
+from pcapi.core import search
 from pcapi.core.bookings import factories as bookings_factories
 from pcapi.core.bookings import models as bookings_models
 from pcapi.core.criteria import factories as criteria_factories
@@ -400,7 +401,11 @@ class EditVenueTest:
         offerers_api.update_venue(venue, author=user, **json_data)
 
         # Then
-        mocked_async_index_offers_of_venue_ids.assert_called_once_with([venue.id])
+        mocked_async_index_offers_of_venue_ids.assert_called_once_with(
+            [venue.id],
+            reason=search.IndexationReason.VENUE_UPDATE,
+            log_extra={"changes": {"publicName"}},
+        )
 
     @patch("pcapi.core.search.async_index_offers_of_venue_ids")
     def when_changes_on_city_algolia_indexing_is_triggered(self, mocked_async_index_offers_of_venue_ids):
@@ -417,7 +422,11 @@ class EditVenueTest:
         offerers_api.update_venue(venue, author=user, **json_data)
 
         # Then
-        mocked_async_index_offers_of_venue_ids.assert_called_once_with([venue.id])
+        mocked_async_index_offers_of_venue_ids.assert_called_once_with(
+            [venue.id],
+            reason=search.IndexationReason.VENUE_UPDATE,
+            log_extra={"changes": {"city"}},
+        )
 
     @patch("pcapi.core.search.async_index_offers_of_venue_ids")
     def when_changes_are_not_on_algolia_fields_it_should_not_trigger_indexing(
@@ -1815,7 +1824,10 @@ class VenueBannerTest:
                 "updated_at": "2020-10-15T00:00:00",
             }
 
-            mock_search_async_index_venue_ids.assert_called_once_with([venue.id])
+            mock_search_async_index_venue_ids.assert_called_once_with(
+                [venue.id],
+                reason=search.IndexationReason.VENUE_BANNER_UPDATE,
+            )
 
     @freeze_time("2020-10-15 00:00:00")
     @patch("pcapi.core.search.async_index_venue_ids")
@@ -1841,7 +1853,10 @@ class VenueBannerTest:
                 "updated_at": "2020-10-15T00:00:00",
             }
 
-            mock_search_async_index_venue_ids.assert_called_once_with([venue.id])
+            mock_search_async_index_venue_ids.assert_called_once_with(
+                [venue.id],
+                reason=search.IndexationReason.VENUE_BANNER_UPDATE,
+            )
 
     @patch("pcapi.core.search.async_index_venue_ids")
     def test_replace_venue_banner(self, mock_search_async_index_venue_ids, tmpdir):

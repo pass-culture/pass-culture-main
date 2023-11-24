@@ -1,8 +1,8 @@
 from collections.abc import Collection
 import dataclasses
 import datetime
+import enum
 import logging
-import typing
 from typing import Iterable
 
 from flask_sqlalchemy import BaseQuery
@@ -24,18 +24,78 @@ from pcapi.utils.module_loading import import_string
 logger = logging.getLogger(__name__)
 
 
+class IndexationReason(enum.Enum):
+    BOOKING_CANCELLATION = "booking-cancellation"
+    BOOKING_COUNT_CHANGE = "booking-count-change"
+    BOOKING_CREATION = "booking-creation"
+    BOOKING_UNCANCELLATION = "booking-uncancellation"
+    CINEMA_STOCK_QUANTITY_UPDATE = "cinema-stock-quantity-update"
+    CRITERIA_LINK = "criteria-link"
+    MEDIATION_CREATION = "mediation-creation"
+    MEDIATION_DELETION = "mediation-deletion"
+    # Offer-related reasons apply to individual and collective offers and templates
+    OFFER_BATCH_UPDATE = "offer-batch-update"
+    OFFER_BATCH_VALIDATION = "offer-batch-validation"
+    OFFER_CREATION = "offer-publication"
+    OFFER_PUBLICATION = "offer-publication"
+    OFFER_MANUAL_REINDEXATION = "offer-manual-reindexation"
+    OFFER_REINDEXATION = "offer-reindexation"  # reason for the reindexation of venues
+    OFFER_UPDATE = "offer-update"
+    OFFERER_VALIDATION = "offerer-validation"
+    PRODUCT_DEACTIVATION = "product-deactivation"
+    PRODUCT_REJECTION = "product-rejection"
+    PRODUCT_UPDATE = "product-update"
+    PRODUCT_WHITELIST_ADDITION = "product-whitelist-addition"
+    STOCK_CREATION = "stock-creation"
+    STOCK_DELETION = "stock-deletion"
+    STOCK_SYNCHRONIZATION = "stock-synchronization"
+    STOCK_UPDATE = "stock-update"
+    VENUE_BATCH_UPDATE = "venue-batch-update"
+    VENUE_CREATION = "venue-creation"
+    VENUE_UPDATE = "venue-update"
+    VENUE_BANNER_DELETION = "venue-banner-deletion"
+    VENUE_BANNER_UPDATE = "venue-banner-update"
+    VENUE_PROVIDER_CREATION = "venue-provider-creation"
+
+
 def _get_backend() -> base.SearchBackend:
     backend_class = import_string(settings.SEARCH_BACKEND)
     return backend_class()
 
 
-def async_index_offer_ids(offer_ids: Iterable[int]) -> None:
+def _log(
+    resource_type: str,
+    ids: Iterable[int],
+    reason: IndexationReason,
+    extra: dict | None,
+) -> None:
+    extra = extra or {}
+    logger.info(
+        "Request to asynchronously reindex %s",
+        resource_type,
+        extra={
+            "resource_type": resource_type,
+            "reason": reason.value,
+            # FIXME (dbaty, 2023-11-24) change `ids` to be a `Sequence[int]`
+            "count": len(ids),  # type: ignore [arg-type]
+            "partial_ids": list(ids)[:50],  # avoid huge log
+        }
+        | extra,
+    )
+
+
+def async_index_offer_ids(
+    offer_ids: Iterable[int],
+    reason: IndexationReason,
+    log_extra: dict | None = None,
+) -> None:
     """Ask for an asynchronous reindexation of the given list of
     ``Offer.id``.
 
     This function returns quickly. The "real" reindexation will be
     done later through a cron job.
     """
+    _log("offers", offer_ids, reason, log_extra)
     backend = _get_backend()
     try:
         backend.enqueue_offer_ids(offer_ids)
@@ -45,13 +105,18 @@ def async_index_offer_ids(offer_ids: Iterable[int]) -> None:
         logger.exception("Could not enqueue offer ids to index", extra={"offers": offer_ids})
 
 
-def async_index_collective_offer_ids(collective_offer_ids: Iterable[int]) -> None:
+def async_index_collective_offer_ids(
+    collective_offer_ids: Iterable[int],
+    reason: IndexationReason,
+    log_extra: dict | None = None,
+) -> None:
     """Ask for an asynchronous reindexation of the given list of
     ``CollectiveOffer.id``.
 
     This function returns quickly. The "real" reindexation will be
     done later through a cron job.
     """
+    _log("collective offers", collective_offer_ids, reason, log_extra)
     backend = _get_backend()
     try:
         backend.enqueue_collective_offer_ids(collective_offer_ids)
@@ -66,13 +131,18 @@ def async_index_collective_offer_ids(collective_offer_ids: Iterable[int]) -> Non
         )
 
 
-def async_index_collective_offer_template_ids(collective_offer_template_ids: Iterable[int]) -> None:
+def async_index_collective_offer_template_ids(
+    collective_offer_template_ids: Iterable[int],
+    reason: IndexationReason,
+    log_extra: dict | None = None,
+) -> None:
     """Ask for an asynchronous reindexation of the given list of
     ``CollectiveOfferTemplate.id``.
 
     This function returns quickly. The "real" reindexation will be
     done later through a cron job.
     """
+    _log("collective offer templates", collective_offer_template_ids, reason, log_extra)
     backend = _get_backend()
     try:
         backend.enqueue_collective_offer_template_ids(collective_offer_template_ids)
@@ -87,13 +157,18 @@ def async_index_collective_offer_template_ids(collective_offer_template_ids: Ite
         )
 
 
-def async_index_venue_ids(venue_ids: Iterable[int]) -> None:
+def async_index_venue_ids(
+    venue_ids: Iterable[int],
+    reason: IndexationReason,
+    log_extra: dict | None = None,
+) -> None:
     """Ask for an asynchronous reindexation of the given list of
     permanent ``Venue`` ids.
 
     This function returns quickly. The "real" reindexation will be
     done later through a cron job.
     """
+    _log("venues", venue_ids, reason, log_extra)
     backend = _get_backend()
     try:
         backend.enqueue_venue_ids(venue_ids)
@@ -103,13 +178,18 @@ def async_index_venue_ids(venue_ids: Iterable[int]) -> None:
         logger.exception("Could not enqueue venue ids to index", extra={"venues": venue_ids})
 
 
-def async_index_offers_of_venue_ids(venue_ids: Iterable[int]) -> None:
+def async_index_offers_of_venue_ids(
+    venue_ids: Iterable[int],
+    reason: IndexationReason,
+    log_extra: dict | None = None,
+) -> None:
     """Ask for an asynchronous reindexation of the offers attached to venues
     from the list of ``Venue.id``.
 
     This function returns quickly. The "real" reindexation will be
     done later through a cron job.
     """
+    _log("offers of venues", venue_ids, reason, log_extra)
     backend = _get_backend()
     try:
         backend.enqueue_venue_ids_for_offers(venue_ids)
@@ -569,7 +649,7 @@ def _reindex_venues_from_offers(offer_ids: Iterable[int]) -> None:
     venue_ids = [row[0] for row in query]
 
     logger.info("Starting to reindex venues from offers", extra={"venues_count": len(venue_ids)})
-    async_index_venue_ids(venue_ids)
+    async_index_venue_ids(venue_ids, reason=IndexationReason.OFFER_REINDEXATION)
 
 
 def reindex_venue_ids(venue_ids: Collection[int]) -> None:
@@ -700,7 +780,10 @@ def update_products_booking_count(since: datetime.datetime) -> None:
     logger.info(
         "Starting to reindex offers with ean booked recently", extra={"offers_count": len(offer_ids_to_reindex)}
     )
-    async_index_offer_ids(offer_ids_to_reindex)
+    async_index_offer_ids(
+        offer_ids_to_reindex,
+        reason=IndexationReason.BOOKING_COUNT_CHANGE,
+    )
 
 
 def update_product_last_30_days_bookings(since: datetime.datetime) -> list[offers_models.Product]:

@@ -94,7 +94,11 @@ class EMSStocks:
         offer_ids = set()
         for offer in self.created_offers:
             offer_ids.add(offer.id)
-        search.async_index_offer_ids(offer_ids)
+        search.async_index_offer_ids(
+            offer_ids,
+            reason=search.IndexationReason.STOCK_SYNCHRONIZATION,
+            log_extra={"provider": "ems"},
+        )
 
         logger.info(
             "Synchronization of objects of venue=%s, created=%d, updated=%d, errors=%s",

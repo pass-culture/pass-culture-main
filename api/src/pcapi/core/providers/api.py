@@ -65,7 +65,10 @@ def create_venue_provider(
     ):
         venue.isPermanent = True
         repository.save(venue)
-        search.async_index_venue_ids([venue.id])
+        search.async_index_venue_ids(
+            [venue.id],
+            reason=search.IndexationReason.VENUE_PROVIDER_CREATION,
+        )
 
     logger.info(
         "La synchronisation d'offre a été activée",
@@ -310,9 +313,17 @@ def synchronize_stocks(
 
     db.session.commit()
 
-    search.async_index_offer_ids(offer_ids)
+    search.async_index_offer_ids(
+        offer_ids,
+        reason=search.IndexationReason.STOCK_SYNCHRONIZATION,
+        log_extra={"provider_id": provider_id},
+    )
 
-    return {"new_offers": len(new_offers), "new_stocks": len(new_stocks), "updated_stocks": len(update_stock_mapping)}
+    return {
+        "new_offers": len(new_offers),
+        "new_stocks": len(new_stocks),
+        "updated_stocks": len(update_stock_mapping),
+    }
 
 
 def _build_new_offers_from_stock_details(

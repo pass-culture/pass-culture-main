@@ -316,7 +316,10 @@ def book_offer(
     if not transactional_mails.send_individual_booking_confirmation_email_to_beneficiary(booking):
         logger.warning("Could not send booking=%s confirmation email to beneficiary", booking.id)
 
-    search.async_index_offer_ids([stock.offerId])
+    search.async_index_offer_ids(
+        [stock.offerId],
+        reason=search.IndexationReason.BOOKING_CREATION,
+    )
 
     update_external_user(booking.user)
     update_external_pro(stock.offer.venue.bookingEmail)
@@ -434,7 +437,10 @@ def _cancel_booking(
 
     update_external_user(booking.user)
     update_external_pro(booking.venue.bookingEmail)
-    search.async_index_offer_ids([booking.stock.offerId])
+    search.async_index_offer_ids(
+        [booking.stock.offerId],
+        reason=search.IndexationReason.BOOKING_CANCELLATION,
+    )
     return True
 
 

@@ -30,7 +30,10 @@ def create_industrial_search_indexed_objects() -> None:
                 educational_models.CollectiveOffer.id
             )
         ]
-        search.async_index_collective_offer_ids(collective_offer_ids)
+        search.async_index_collective_offer_ids(
+            collective_offer_ids,
+            reason=search.IndexationReason.OFFER_CREATION,
+        )
 
         collective_offer_template_ids = [
             collective_offer_template_id
@@ -38,4 +41,7 @@ def create_industrial_search_indexed_objects() -> None:
                 educational_models.CollectiveOfferTemplate.id
             )
         ]
-        search.async_index_collective_offer_template_ids(collective_offer_template_ids)
+        search.async_index_collective_offer_template_ids(
+            collective_offer_template_ids,
+            reason=search.IndexationReason.OFFER_CREATION,
+        )

@@ -2,6 +2,7 @@ from unittest.mock import patch
 
 import pytest
 
+from pcapi.core import search
 import pcapi.core.offerers.factories as offerers_factories
 import pcapi.core.offers.factories as offers_factories
 from pcapi.core.offers.models import Mediation
@@ -28,7 +29,10 @@ class OfferMediationTest:
         assert mock_delete_public_object.call_args_list == [
             (("thumbs", expected_thumb_path),),
         ]
-        mock_search_async_index_offer_ids.assert_called_once_with([offer.id])
+        mock_search_async_index_offer_ids.assert_called_once_with(
+            [offer.id],
+            reason=search.IndexationReason.MEDIATION_DELETION,
+        )
 
     @patch("pcapi.core.object_storage.backends.local.LocalBackend.delete_public_object")
     def test_delete_no_mediation(self, mock_delete_public_object, client):

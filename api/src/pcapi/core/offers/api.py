@@ -287,7 +287,11 @@ def update_offer(
     if shouldSendMail and withdrawal_updated:
         transactional_mails.send_email_for_each_ongoing_booking(offer)
 
-    search.async_index_offer_ids([offer.id])
+    search.async_index_offer_ids(
+        [offer.id],
+        reason=search.IndexationReason.OFFER_UPDATE,
+        log_extra={"changes": set(modifications.keys())},
+    )
 
     return offer
 
@@ -328,7 +332,10 @@ def update_collective_offer(
 
     updated_fields = _update_collective_offer(offer=offer_to_update, new_values=new_values)
 
-    search.async_index_collective_offer_ids([offer_to_update.id])
+    search.async_index_collective_offer_ids(
+        [offer_to_update.id],
+        reason=search.IndexationReason.OFFER_UPDATE,
+    )
 
     educational_api_offer.notify_educational_redactor_on_collective_offer_or_stock_edit(
         offer_to_update.id,
@@ -363,7 +370,10 @@ def update_collective_offer_template(offer_id: int, new_values: dict) -> None:
 
     _update_collective_offer(offer=offer_to_update, new_values=new_values)
 
-    search.async_index_collective_offer_template_ids([offer_to_update.id])
+    search.async_index_collective_offer_template_ids(
+        [offer_to_update.id],
+        reason=search.IndexationReason.OFFER_UPDATE,
+    )
 
 
 def _update_collective_offer(offer: AnyOffer, new_values: dict) -> list[str]:
@@ -422,7 +432,11 @@ def batch_update_offers(query: BaseQuery, update_fields: dict, send_email_notifi
         query_to_update.update(update_fields, synchronize_session=False)
         db.session.commit()
 
-        search.async_index_offer_ids(offer_ids_batch)
+        search.async_index_offer_ids(
+            offer_ids_batch,
+            reason=search.IndexationReason.OFFER_BATCH_UPDATE,
+            log_extra={"changes": set(update_fields.keys())},
+        )
 
         withdrawal_updated = {"withdrawalDetails", "withdrawalType", "withdrawalDelay"}.intersection(
             update_fields.keys()
@@ -452,7 +466,11 @@ def batch_update_collective_offers(query: BaseQuery, update_fields: dict) -> Non
         query_to_update.update(update_fields, synchronize_session=False)
         db.session.commit()
 
-        search.async_index_collective_offer_ids(collective_offer_ids_batch)
+        search.async_index_collective_offer_ids(
+            collective_offer_ids_batch,
+            reason=search.IndexationReason.OFFER_BATCH_UPDATE,
+            log_extra={"changes": set(update_fields.keys())},
+        )
 
 
 def batch_update_collective_offers_template(query: BaseQuery, update_fields: dict) -> None:
@@ -475,7 +493,11 @@ def batch_update_collective_offers_template(query: BaseQuery, update_fields: dic
         query_to_update.update(update_fields, synchronize_session=False)
         db.session.commit()
 
-        search.async_index_collective_offer_template_ids(collective_offer_template_ids_batch)
+        search.async_index_collective_offer_template_ids(
+            collective_offer_template_ids_batch,
+            reason=search.IndexationReason.OFFER_BATCH_UPDATE,
+            log_extra={"changes": set(update_fields.keys())},
+        )
 
 
 def _notify_pro_upon_stock_edit_for_event_offer(stock: models.Stock, bookings: list[bookings_models.Booking]) -> None:
@@ -564,7 +586,10 @@ def create_stock(
             )
         )
     repository.add_to_session(created_stock, *created_activation_codes)
-    search.async_index_offer_ids([offer.id])
+    search.async_index_offer_ids(
+        [offer.id],
+        reason=search.IndexationReason.STOCK_CREATION,
+    )
 
     return created_stock
 
@@ -624,7 +649,11 @@ def edit_stock(
         setattr(stock, model_attr, value)
 
     repository.add_to_session(stock)
-    search.async_index_offer_ids([stock.offerId])
+    search.async_index_offer_ids(
+        [stock.offerId],
+        reason=search.IndexationReason.STOCK_UPDATE,
+        log_extra={"changes": set(modifications.keys())},
+    )
     logger.info(
         "Successfully updated stock",
         extra={
@@ -646,7 +675,10 @@ def handle_stocks_edition(edited_stocks: list[tuple[models.Stock, bool]]) -> Non
 
 def publish_offer(offer: models.Offer, user: users_models.User | None) -> models.Offer:
     update_offer_fraud_information(offer, user)
-    search.async_index_offer_ids([offer.id])
+    search.async_index_offer_ids(
+        [offer.id],
+        reason=search.IndexationReason.OFFER_PUBLICATION,
+    )
     logger.info(
         "Offer has been published",
         extra={"offer_id": offer.id, "venue_id": offer.venueId, "offer_status": offer.status},
@@ -714,7 +746,10 @@ def _delete_stock(stock: models.Stock) -> None:
             )
 
         push_notification_job.send_cancel_booking_notification.delay([booking.id for booking in cancelled_bookings])
-    search.async_index_offer_ids([stock.offerId])
+    search.async_index_offer_ids(
+        [stock.offerId],
+        reason=search.IndexationReason.STOCK_DELETION,
+    )
 
 
 def delete_stock(stock: models.Stock) -> None:
@@ -770,7 +805,10 @@ def create_mediation(
     )
     _delete_mediations_and_thumbs(previous_mediations)
 
-    search.async_index_offer_ids([offer.id])
+    search.async_index_offer_ids(
+        [offer.id],
+        reason=search.IndexationReason.MEDIATION_CREATION,
+    )
 
     return mediation
 
@@ -780,7 +818,10 @@ def delete_mediation(offer: models.Offer) -> None:
 
     _delete_mediations_and_thumbs(mediations)
 
-    search.async_index_offer_ids([offer.id])
+    search.async_index_offer_ids(
+        [offer.id],
+        reason=search.IndexationReason.MEDIATION_DELETION,
+    )
 
 
 def _delete_mediations_and_thumbs(mediations: list[models.Mediation]) -> None:
@@ -859,7 +900,11 @@ def add_criteria_to_offers(
     db.session.bulk_save_objects(offer_criteria)
     db.session.commit()
 
-    search.async_index_offer_ids(offer_ids)
+    search.async_index_offer_ids(
+        offer_ids,
+        reason=search.IndexationReason.CRITERIA_LINK,
+        log_extra={"criterion_ids": criterion_ids},
+    )
 
     return True
 
@@ -919,7 +964,11 @@ def reject_inappropriate_product(
     if offer_ids:
         favorites = users_models.Favorite.query.filter(users_models.Favorite.offerId.in_(offer_ids)).all()
         repository.delete(*favorites)
-        search.async_index_offer_ids(set(offer_ids))
+        search.async_index_offer_ids(
+            offer_ids,
+            reason=search.IndexationReason.PRODUCT_REJECTION,
+            log_extra={"ean": ean},
+        )
 
     return True
 
@@ -952,7 +1001,11 @@ def deactivate_permanently_unavailable_products(ean: str) -> bool:
         extra={"ean": ean, "products": [p.id for p in products], "offers": offer_ids},
     )
 
-    search.async_index_offer_ids(offer_ids)
+    search.async_index_offer_ids(
+        offer_ids,
+        reason=search.IndexationReason.PRODUCT_DEACTIVATION,
+        log_extra={"ean": ean},
+    )
 
     return True
 
@@ -1088,7 +1141,11 @@ def update_stock_quantity_to_match_cinema_venue_provider_remaining_places(offer:
     except (exceptions.UnexpectedCinemaProvider, providers_exceptions.InactiveProvider):
         offer.isActive = False
         repository.save(offer)
-        search.async_index_offer_ids([offer.id])
+        search.async_index_offer_ids(
+            [offer.id],
+            reason=search.IndexationReason.CINEMA_STOCK_QUANTITY_UPDATE,
+            log_extra={"active": False},
+        )
         return
 
     sentry_sdk.set_tag("cinema-venue-provider", venue_provider.provider.localClass)
@@ -1184,7 +1241,11 @@ def update_stock_quantity_to_match_cinema_venue_provider_remaining_places(offer:
         )
 
     if offer_has_new_sold_out_stock:
-        search.async_index_offer_ids([offer.id])
+        search.async_index_offer_ids(
+            [offer.id],
+            reason=search.IndexationReason.CINEMA_STOCK_QUANTITY_UPDATE,
+            log_extra={"sold_out": True},
+        )
 
 
 def whitelist_product(idAtProviders: str) -> models.Product | None:
@@ -1347,7 +1408,10 @@ def approves_provider_product_and_rejected_offers(ean: str) -> None:
             )
 
         if offer_ids:
-            search.async_index_offer_ids(set(offer_ids))
+            search.async_index_offer_ids(
+                set(offer_ids),
+                reason=search.IndexationReason.CINEMA_STOCK_QUANTITY_UPDATE,
+            )
 
     except Exception as exception:
         logger.exception(
@@ -1415,7 +1479,11 @@ def fill_offer_extra_data_from_product_data(product_id: int) -> None:
                 )
 
         if offer_ids:
-            search.async_index_offer_ids(set(offer_ids))
+            search.async_index_offer_ids(
+                set(offer_ids),
+                reason=search.IndexationReason.PRODUCT_UPDATE,
+                log_extra={"product_id": product_id, "updated_extra_data": True},
+            )
 
     except Exception as exception:
         logger.exception(
@@ -1448,7 +1516,11 @@ def update_offers_description_from_product_description(product_id: int) -> None:
                 )
 
         if offer_ids:
-            search.async_index_offer_ids(set(offer_ids))
+            search.async_index_offer_ids(
+                set(offer_ids),
+                reason=search.IndexationReason.PRODUCT_UPDATE,
+                log_extra={"product_id": product_id, "updated_description": True},
+            )
 
     except Exception as exception:
         logger.exception(

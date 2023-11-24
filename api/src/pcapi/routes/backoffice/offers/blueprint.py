@@ -544,7 +544,10 @@ def batch_edit_offer() -> utils.BackofficeResponse:
 
         repository.save(offer)
 
-    search.async_index_offer_ids(form.object_ids_list)
+    search.async_index_offer_ids(
+        form.object_ids_list,
+        reason=search.IndexationReason.OFFER_BATCH_UPDATE,
+    )
 
     flash("Les offres ont été modifiées avec succès", "success")
     return redirect(request.referrer or url_for("backoffice_web.offer.list_offers"), 303)
@@ -655,7 +658,10 @@ def _batch_validate_offers(offer_ids: list[int]) -> None:
                 offer, old_validation, new_validation, recipients
             )
 
-    search.async_index_offer_ids(offer_ids)
+    search.async_index_offer_ids(
+        offer_ids,
+        reason=search.IndexationReason.OFFER_BATCH_VALIDATION,
+    )
 
 
 def _batch_reject_offers(offer_ids: list[int]) -> None:
@@ -699,7 +705,10 @@ def _batch_reject_offers(offer_ids: list[int]) -> None:
     if len(offer_ids) > 0:
         favorites = users_models.Favorite.query.filter(users_models.Favorite.offerId.in_(offer_ids)).all()
         repository.delete(*favorites)
-        search.async_index_offer_ids(offer_ids)
+        search.async_index_offer_ids(
+            offer_ids,
+            reason=search.IndexationReason.OFFER_BATCH_VALIDATION,
+        )
 
 
 @list_offers_blueprint.route("/<int:offer_id>/details", methods=["GET"])
@@ -738,7 +747,10 @@ def get_offer_details(offer_id: int) -> utils.BackofficeResponse:
 @list_offers_blueprint.route("/<int:offer_id>/reindex", methods=["POST"])
 @utils.permission_required(perm_models.Permissions.ADVANCED_PRO_SUPPORT)
 def reindex(offer_id: int) -> utils.BackofficeResponse:
-    search.async_index_offer_ids({offer_id})
+    search.async_index_offer_ids(
+        {offer_id},
+        reason=search.IndexationReason.OFFER_MANUAL_REINDEXATION,
+    )
 
     flash("La resynchronisation de l'offre a été demandée.", "success")
 

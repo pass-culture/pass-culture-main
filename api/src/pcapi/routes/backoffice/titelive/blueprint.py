@@ -140,7 +140,11 @@ def add_product_whitelist(ean: str, title: str) -> utils.BackofficeResponse:
                         synchronize_session=False,
                     )
                     db.session.commit()
-                    search.async_index_offer_ids(offer_ids)
+                    search.async_index_offer_ids(
+                        offer_ids,
+                        reason=search.IndexationReason.PRODUCT_WHITELIST_ADDITION,
+                        log_extra={"ean": ean},
+                    )
 
     return redirect(url_for(".search_titelive", ean=ean), code=303)
 

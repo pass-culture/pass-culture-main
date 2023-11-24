@@ -12,6 +12,7 @@ from unittest.mock import patch
 from freezegun import freeze_time
 import pytest
 
+from pcapi.core import search
 import pcapi.core.bookings.factories as bookings_factories
 import pcapi.core.bookings.models as bookings_models
 from pcapi.core.categories import subcategories_v2 as subcategories
@@ -532,7 +533,10 @@ class DeleteStockTest:
 
         stock = models.Stock.query.one()
         assert stock.isSoftDeleted
-        mocked_async_index_offer_ids.assert_called_once_with([stock.offerId])
+        mocked_async_index_offer_ids.assert_called_once_with(
+            [stock.offerId],
+            reason=search.IndexationReason.STOCK_DELETION,
+        )
 
     def test_delete_stock_cancel_bookings_and_send_emails(self):
         offerer_email = "offerer@example.com"
@@ -645,7 +649,10 @@ class CreateMediationV2Test:
         assert models.mediation.credit == "©Photographe"
         assert models.mediation.thumbCount == 1
         assert models.Mediation.query.filter(models.Mediation.offerId == offer.id).count() == 1
-        mocked_async_index_offer_ids.assert_called_once_with([offer.id])
+        mocked_async_index_offer_ids.assert_called_once_with(
+            [offer.id],
+            reason=search.IndexationReason.MEDIATION_CREATION,
+        )
 
     @override_settings(LOCAL_STORAGE_DIR=BASE_THUMBS_DIR)
     @pytest.mark.usefixtures("db_session")
@@ -793,7 +800,11 @@ class UpdateOfferTest:
 
         assert offer.isDuo
         assert offer.bookingEmail == "new@example.com"
-        mocked_async_index_offer_ids.assert_called_once_with([offer.id])
+        mocked_async_index_offer_ids.assert_called_once_with(
+            [offer.id],
+            reason=search.IndexationReason.OFFER_UPDATE,
+            log_extra={"changes": {"bookingEmail", "isDuo"}},
+        )
 
     def test_update_extra_data_should_raise_error_when_mandatory_field_not_provided(self):
         offer = factories.OfferFactory(subcategoryId=subcategories.SPECTACLE_REPRESENTATION.id)
@@ -1041,7 +1052,7 @@ class BatchUpdateOffersTest:
         assert not models.Offer.query.get(offer2.id).isActive
         assert models.Offer.query.get(offer3.id).isActive
 
-        assert len(caplog.records) == 2
+        assert len(caplog.records) == 3
         first_record = caplog.records[0]
         second_record = caplog.records[1]
 
@@ -1103,7 +1114,11 @@ class AddCriterionToOffersTest:
         assert set(offer21.criteria) == {criterion1, criterion2}
         assert not inactive_offer.criteria
         assert not unmatched_offer.criteria
-        mocked_async_index_offer_ids.assert_called_once_with({offer11.id, offer12.id, offer21.id})
+        mocked_async_index_offer_ids.assert_called_once_with(
+            {offer11.id, offer12.id, offer21.id},
+            reason=search.IndexationReason.CRITERIA_LINK,
+            log_extra={"criterion_ids": [criterion1.id, criterion2.id]},
+        )
 
     @mock.patch("pcapi.core.search.async_index_offer_ids")
     def test_add_criteria_from_ean_when_one_has_criteria(self, mocked_async_index_offer_ids):
@@ -1129,7 +1144,11 @@ class AddCriterionToOffersTest:
         assert set(offer21.criteria) == {criterion1, criterion2}
         assert not inactive_offer.criteria
         assert not unmatched_offer.criteria
-        mocked_async_index_offer_ids.assert_called_once_with({offer11.id, offer12.id, offer21.id})
+        mocked_async_index_offer_ids.assert_called_once_with(
+            {offer11.id, offer12.id, offer21.id},
+            reason=search.IndexationReason.CRITERIA_LINK,
+            log_extra={"criterion_ids": [criterion1.id, criterion2.id]},
+        )
 
     @mock.patch("pcapi.core.search.async_index_offer_ids")
     def test_add_criteria_from_visa(self, mocked_async_index_offer_ids):
@@ -1155,7 +1174,11 @@ class AddCriterionToOffersTest:
         assert set(offer21.criteria) == {criterion1, criterion2}
         assert not inactive_offer.criteria
         assert not unmatched_offer.criteria
-        mocked_async_index_offer_ids.assert_called_once_with({offer11.id, offer12.id, offer21.id})
+        mocked_async_index_offer_ids.assert_called_once_with(
+            {offer11.id, offer12.id, offer21.id},
+            reason=search.IndexationReason.CRITERIA_LINK,
+            log_extra={"criterion_ids": [criterion1.id, criterion2.id]},
+        )
 
     @mock.patch("pcapi.core.search.async_index_offer_ids")
     def test_add_criteria_when_no_offers_is_found(self, mocked_async_index_offer_ids):
@@ -2053,7 +2076,11 @@ class UpdateStockQuantityToMatchCinemaVenueProviderRemainingPlacesTest:
 
         assert stock.remainingQuantity == expected_remaining_quantity
         if expected_remaining_quantity == 0:
-            mocked_async_index_offer_ids.assert_called_once_with([offer.id])
+            mocked_async_index_offer_ids.assert_called_once_with(
+                [offer.id],
+                reason=search.IndexationReason.CINEMA_STOCK_QUANTITY_UPDATE,
+                log_extra={"sold_out": True},
+            )
         else:
             mocked_async_index_offer_ids.assert_not_called()
 
@@ -2178,7 +2205,11 @@ class UpdateStockQuantityToMatchCinemaVenueProviderRemainingPlacesTest:
 
         assert stock.remainingQuantity == expected_remaining_quantity
         if expected_remaining_quantity == 0:
-            mocked_async_index_offer_ids.assert_called_once_with([offer.id])
+            mocked_async_index_offer_ids.assert_called_once_with(
+                [offer.id],
+                reason=search.IndexationReason.CINEMA_STOCK_QUANTITY_UPDATE,
+                log_extra={"sold_out": True},
+            )
         else:
             mocked_async_index_offer_ids.assert_not_called()
 
@@ -2303,7 +2334,11 @@ class UpdateStockQuantityToMatchCinemaVenueProviderRemainingPlacesTest:
 
         assert stock.remainingQuantity == expected_remaining_quantity
         if expected_remaining_quantity == 0:
-            mocked_async_index_offer_ids.assert_called_once_with([offer.id])
+            mocked_async_index_offer_ids.assert_called_once_with(
+                [offer.id],
+                reason=search.IndexationReason.CINEMA_STOCK_QUANTITY_UPDATE,
+                log_extra={"sold_out": True},
+            )
         else:
             mocked_async_index_offer_ids.assert_not_called()
 
@@ -2502,7 +2537,11 @@ class UpdateStockQuantityToMatchCinemaVenueProviderRemainingPlacesTest:
         assert stock.remainingQuantity == 0
         assert stock.quantity == stock.dnBookedQuantity
 
-        mocked_async_index_offer_ids.assert_called_once_with([offer.id])
+        mocked_async_index_offer_ids.assert_called_once_with(
+            [offer.id],
+            reason=search.IndexationReason.CINEMA_STOCK_QUANTITY_UPDATE,
+            log_extra={"sold_out": True},
+        )
 
     @override_features(ENABLE_CGR_INTEGRATION=True)
     @patch("pcapi.core.search.async_index_offer_ids")
@@ -2546,7 +2585,11 @@ class UpdateStockQuantityToMatchCinemaVenueProviderRemainingPlacesTest:
         assert stock.remainingQuantity == 0
         assert stock.quantity == stock.dnBookedQuantity
 
-        mocked_async_index_offer_ids.assert_called_once_with([offer.id])
+        mocked_async_index_offer_ids.assert_called_once_with(
+            [offer.id],
+            reason=search.IndexationReason.CINEMA_STOCK_QUANTITY_UPDATE,
+            log_extra={"sold_out": True},
+        )
 
     @override_features(ENABLE_BOOST_API_INTEGRATION=True)
     @patch("pcapi.core.search.async_index_offer_ids")
@@ -2577,7 +2620,11 @@ class UpdateStockQuantityToMatchCinemaVenueProviderRemainingPlacesTest:
         api.update_stock_quantity_to_match_cinema_venue_provider_remaining_places(offer)
 
         assert stock.remainingQuantity == 0
-        mocked_async_index_offer_ids.assert_called_once_with([offer.id])
+        mocked_async_index_offer_ids.assert_called_once_with(
+            [offer.id],
+            reason=search.IndexationReason.CINEMA_STOCK_QUANTITY_UPDATE,
+            log_extra={"sold_out": True},
+        )
 
 
 @pytest.mark.usefixtures("db_session")

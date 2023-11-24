@@ -316,7 +316,11 @@ def _create_or_update_ean_offers(serialized_products_stocks: dict, venue_id: int
             logger.exception("Error while creating offer by ean", extra={"exc": exc})
             continue
     db.session.commit()
-    search.async_index_offer_ids(offers_to_index)
+    search.async_index_offer_ids(
+        offers_to_index,
+        reason=search.IndexationReason.OFFER_UPDATE,
+        log_extra={"venue_id": venue_id, "source": "offers_public_api"},
+    )
 
 
 def _get_existing_products(ean_to_create: set[str]) -> list[offers_models.Product]:

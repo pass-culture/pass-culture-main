@@ -16,6 +16,7 @@ from sqlalchemy.sql import text
 
 from pcapi.analytics.amplitude.backends.amplitude_connector import AmplitudeEventType
 import pcapi.analytics.amplitude.testing as amplitude_testing
+from pcapi.core import search
 from pcapi.core.bookings import api
 from pcapi.core.bookings import exceptions
 from pcapi.core.bookings import factories as bookings_factories
@@ -179,7 +180,10 @@ class BookOfferTest:
         assert booking.priceCategoryLabel is None
         assert stock.dnBookedQuantity == 7
 
-        mocked_async_index_offer_ids.assert_called_once_with([stock.offer.id])
+        mocked_async_index_offer_ids.assert_called_once_with(
+            [stock.offer.id],
+            reason=search.IndexationReason.BOOKING_CREATION,
+        )
 
         assert len(mails_testing.outbox) == 2
         email_data1 = mails_testing.outbox[0].sent_data

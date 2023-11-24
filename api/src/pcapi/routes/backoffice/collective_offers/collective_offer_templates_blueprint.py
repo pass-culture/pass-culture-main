@@ -245,7 +245,10 @@ def _batch_validate_or_reject_collective_offer_templates(
             collective_offer_template, old_validation_status, new_validation_status, recipients
         )
 
-    search.async_index_collective_offer_template_ids(collective_offer_template_update_succeed_ids)
+    search.async_index_collective_offer_template_ids(
+        collective_offer_template_update_succeed_ids,
+        reason=search.IndexationReason.OFFER_BATCH_VALIDATION,
+    )
 
     if len(collective_offer_template_update_succeed_ids) == 1:
         flash(

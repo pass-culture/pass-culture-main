@@ -58,12 +58,12 @@ def fail(*args, **kwargs):
 
 
 def test_async_index_offer_ids(app):
-    search.async_index_offer_ids({1, 2})
+    search.async_index_offer_ids({1, 2}, reason=search.IndexationReason.OFFER_UPDATE)
     assert app.redis_client.smembers("search:algolia:offer_ids") == {"1", "2"}
 
 
 def test_async_index_offers_of_venue_ids(app):
-    search.async_index_offers_of_venue_ids({1, 2})
+    search.async_index_offers_of_venue_ids({1, 2}, reason=search.IndexationReason.VENUE_UPDATE)
     assert app.redis_client.smembers("search:algolia:venue_ids_for_offers") == {"1", "2"}
 
 
@@ -75,7 +75,10 @@ def test_async_index_venue_ids(app):
     permanent_venue = offerers_factories.VenueFactory(isPermanent=True)
     other_venue = offerers_factories.VenueFactory(isPermanent=False)
 
-    search.async_index_venue_ids([permanent_venue.id, other_venue.id])
+    search.async_index_venue_ids(
+        [permanent_venue.id, other_venue.id],
+        search.IndexationReason.VENUE_CREATION,
+    )
 
     enqueued_ids = app.redis_client.smembers("search:algolia:venue-ids-to-index")
     enqueued_ids = {int(venue_id) for venue_id in enqueued_ids}
