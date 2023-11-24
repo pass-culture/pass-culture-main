@@ -1,4 +1,4 @@
-import React, { useState } from 'react'
+import React, { useCallback, useState } from 'react'
 
 import { GetOffererResponseModel } from 'apiClient/v1'
 import FormLayout from 'components/FormLayout'
@@ -11,10 +11,15 @@ import PricingPoint from '../PricingPoint'
 
 export interface ReimbursementFieldsProps {
   offerer: GetOffererResponseModel
+  scrollToSection?: boolean
   venue: Venue
 }
 
-const ReimbursementFields = ({ offerer, venue }: ReimbursementFieldsProps) => {
+const ReimbursementFields = ({
+  offerer,
+  scrollToSection,
+  venue,
+}: ReimbursementFieldsProps) => {
   const isNewBankDetailsJourneyEnabled = useActiveFeature(
     'WIP_ENABLE_NEW_BANK_DETAILS_JOURNEY'
   )
@@ -24,9 +29,17 @@ const ReimbursementFields = ({ offerer, venue }: ReimbursementFieldsProps) => {
     !!venue.pricingPoint
   )
 
+  const scrollToReimbursementSection = useCallback((node: any) => {
+    if (scrollToSection) {
+      setTimeout(() => {
+        node.scrollIntoView()
+      }, 200)
+    }
+  }, [])
+
   return (
     <>
-      <div id="reimbursement-section">
+      <div ref={scrollToReimbursementSection} id="reimbursement-section">
         <FormLayout.Section
           title={
             isNewBankDetailsJourneyEnabled
