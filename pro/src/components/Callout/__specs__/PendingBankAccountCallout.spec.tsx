@@ -1,9 +1,11 @@
 import { screen } from '@testing-library/react'
+import { userEvent } from '@testing-library/user-event'
 import React from 'react'
 
 import PendingBankAccountCallout, {
   PendingBankAccountCalloutProps,
 } from 'components/Callout/PendingBankAccountCallout'
+import * as useAnalytics from 'hooks/useAnalytics'
 import { defaultGetOffererResponseModel } from 'utils/apiFactories'
 import { renderWithProviders } from 'utils/renderWithProviders'
 
@@ -70,6 +72,39 @@ describe('PendingBankAccountCallout', () => {
           name: 'Suivre mon dossier de compte bancaire',
         })
       ).toBeInTheDocument()
+    })
+
+    it('should log  pending bank account click on when callout link is clicked', async () => {
+      const mockLogEvent = vi.fn()
+      vi.spyOn(useAnalytics, 'default').mockImplementation(() => ({
+        logEvent: mockLogEvent,
+      }))
+      renderWithProviders(
+        <PendingBankAccountCallout
+          titleOnly={props.titleOnly}
+          offerer={{
+            ...defaultGetOffererResponseModel,
+            id: 123,
+            hasPendingBankAccount: true,
+          }}
+        />,
+        {
+          storeOverrides,
+        }
+      )
+      await userEvent.click(
+        screen.getByRole('link', {
+          name: 'Suivre mon dossier de compte bancaire',
+        })
+      )
+
+      expect(mockLogEvent).toHaveBeenCalledWith(
+        'HasClickedBankDetailsRecordFollowUp',
+        {
+          from: '/',
+          offererId: 123,
+        }
+      )
     })
   })
 })
