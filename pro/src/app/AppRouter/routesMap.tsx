@@ -98,7 +98,7 @@ const routes: RouteConfig[] = [
   {
     element: <Unavailable />,
     path: UNAVAILABLE_ERROR_PAGE,
-    title: 'Erreur 404 - Page indisponible',
+    title: 'Page indisponible',
     meta: {
       public: true,
       withoutLayout: true,

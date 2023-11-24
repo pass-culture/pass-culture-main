@@ -3,13 +3,13 @@
 /* istanbul ignore file */
 /* tslint:disable */
 /* eslint-disable */
+import { URL_FOR_MAINTENANCE } from 'utils/config'
 import { ApiError } from './ApiError'
 import type { ApiRequestOptions } from './ApiRequestOptions'
 import type { ApiResult } from './ApiResult'
-import { CancelablePromise } from './CancelablePromise'
 import type { OnCancel } from './CancelablePromise'
+import { CancelablePromise } from './CancelablePromise'
 import type { OpenAPIConfig } from './OpenAPI'
-import { URL_FOR_MAINTENANCE } from 'utils/config'
 
 const isDefined = <T>(
   value: T | null | undefined
@@ -60,7 +60,7 @@ const getQueryString = (params: Record<string, any>): string => {
   const process = (key: string, value: any) => {
     if (isDefined(value)) {
       if (Array.isArray(value)) {
-        value.forEach(v => {
+        value.forEach((v) => {
           process(key, v)
         })
       } else if (typeof value === 'object') {
@@ -119,7 +119,7 @@ const getFormData = (options: ApiRequestOptions): FormData | undefined => {
       .filter(([_, value]) => isDefined(value))
       .forEach(([key, value]) => {
         if (Array.isArray(value)) {
-          value.forEach(v => process(key, v))
+          value.forEach((v) => process(key, v))
         } else {
           process(key, value)
         }
@@ -346,10 +346,24 @@ export const request = <T>(
         resolve(result.body)
       }
     } catch (error) {
-      if(error instanceof Error &&  (error.message === 'Failed to fetch' || error.message.includes('NetworkError'))) {
-        console.error(error)
+      if (error instanceof ApiError && error.status === 401) {
+        // A call to users/current is made on all routes
+        // including public routes
+        // when user is not connected we always recieve a 401 error
+        // so in that case we don't redirect to the login page (since the route is public)
+        // when navigating in private routes, others calls will throw a 401
+        // and redirect the user to the login page
+        if (!error.url.includes('/users/current')) {
+          window.location.href = '/connexion'
+        }
       }
-      else {
+      if (
+        error instanceof Error &&
+        (error.message === 'Failed to fetch' ||
+          error.message.includes('NetworkError'))
+      ) {
+        console.error(error)
+      } else {
         reject(error)
       }
     }
