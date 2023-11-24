@@ -6,6 +6,8 @@ import { api } from 'apiClient/api'
 import { BankAccountResponseModel, ManagedVenues } from 'apiClient/v1'
 import ConfirmDialog from 'components/Dialog/ConfirmDialog'
 import DialogBox from 'components/DialogBox'
+import { BankAccountEvents } from 'core/FirebaseEvents/constants'
+import useAnalytics from 'hooks/useAnalytics'
 import useNotification from 'hooks/useNotification'
 import strokeWarningIcon from 'icons/stroke-warning.svg'
 import { Button, SubmitButton } from 'ui-kit'
@@ -34,6 +36,7 @@ const LinkVenuesDialog = ({
     useState<boolean>(false)
 
   const notification = useNotification()
+  const { logEvent } = useAnalytics()
 
   const availableManagedVenuesIds = managedVenues
     ?.filter((venue) => !venue.bankAccountId)
@@ -48,10 +51,14 @@ const LinkVenuesDialog = ({
     (venue) => selectedVenuesIds.indexOf(venue.id) >= 0
   )
 
-  async function submitForm() {
+  async function submitForm(hasUncheckedVenue = false) {
     try {
       await api.linkVenueToBankAccount(offererId, selectedBankAccount.id, {
         venues_ids: selectedVenuesIds,
+      })
+      logEvent?.(BankAccountEvents.CLICKED_ADD_VENUE_TO_BANK_ACCOUNT, {
+        id: offererId,
+        HasUncheckedVenue: hasUncheckedVenue,
       })
       notification.success('Vos modifications ont bien été prises en compte.')
       closeDialog(true)
@@ -194,7 +201,7 @@ const LinkVenuesDialog = ({
           onConfirm={() => {
             setShowUnlinkVenuesDialog(false)
             // eslint-disable-next-line @typescript-eslint/no-floating-promises
-            submitForm()
+            submitForm(true)
           }}
           confirmText="Confirmer"
           cancelText="Retour"
