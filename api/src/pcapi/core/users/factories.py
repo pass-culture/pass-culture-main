@@ -483,7 +483,7 @@ class BeneficiaryGrant18Factory(BaseFactory):
     class Meta:
         model = models.User
 
-    email = factory.Sequence("jeanne.doux{}@example.com".format)
+    email = factory.LazyFunction(lambda: f"jeanne.doux_{uuid.uuid4()}@example.com")
     address = factory.Sequence("{} rue des machines".format)
     city = "Paris"
     dateCreated = LazyAttribute(lambda _: datetime.utcnow())
