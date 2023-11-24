@@ -6,7 +6,6 @@ import {
   BankAccountResponseModel,
   GetOffererBankAccountsResponseModel,
 } from 'apiClient/v1'
-import ConfirmDialog from 'components/Dialog/ConfirmDialog'
 import ReimbursementBankAccount from 'components/ReimbursementBankAccount/ReimbursementBankAccount'
 import { useReimbursementContext } from 'context/ReimbursementContext/ReimbursementContext'
 import { BankAccountEvents } from 'core/FirebaseEvents/constants'
@@ -15,7 +14,6 @@ import useAnalytics from 'hooks/useAnalytics'
 import useNotification from 'hooks/useNotification'
 import fullLinkIcon from 'icons/full-link.svg'
 import fullMoreIcon from 'icons/full-more.svg'
-import strokeWarningIcon from 'icons/stroke-warning.svg'
 import LinkVenuesDialog from 'pages/Reimbursements/BankInformations/LinkVenuesDialog'
 import { Button, ButtonLink } from 'ui-kit'
 import { ButtonVariant } from 'ui-kit/Button/types'
@@ -42,9 +40,6 @@ const BankInformations = (): JSX.Element => {
     useState<GetOffererBankAccountsResponseModel | null>(null)
   const [searchParams, setSearchParams] = useSearchParams()
   const [isOffererLoading, setIsOffererLoading] = useState<boolean>(false)
-  const [showDiscardChangesDialog, setShowDiscardChangesDialog] =
-    useState<boolean>(false)
-
   const [selectedBankAccount, setSelectedBankAccount] =
     useState<BankAccountResponseModel | null>(null)
   const { structure: offererId } = Object.fromEntries(searchParams)
@@ -223,22 +218,6 @@ const BankInformations = (): JSX.Element => {
           selectedBankAccount={selectedBankAccount}
           managedVenues={selectedOffererBankAccounts?.managedVenues}
           closeDialog={closeDialog}
-          showConfirmDiscardChanges={() => {
-            setShowDiscardChangesDialog(true)
-          }}
-        />
-      )}
-      {showDiscardChangesDialog && (
-        <ConfirmDialog
-          icon={strokeWarningIcon}
-          onCancel={() => setShowDiscardChangesDialog(false)}
-          title="Les informations non sauvegardées ne seront pas prises en compte"
-          onConfirm={() => {
-            setShowDiscardChangesDialog(false)
-            setSelectedBankAccount(null)
-          }}
-          confirmText="Quitter sans enregistrer"
-          cancelText="Annuler"
         />
       )}
     </>

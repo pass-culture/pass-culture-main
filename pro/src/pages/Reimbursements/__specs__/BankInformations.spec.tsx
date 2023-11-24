@@ -125,4 +125,28 @@ describe('BankInformations', () => {
       )
     ).toBeInTheDocument()
   })
+
+  it('should should display unlink venues dialog', async () => {
+    renderBankInformations()
+
+    await userEvent.click(
+      await screen.findByRole('button', {
+        name: 'Modifier',
+      })
+    )
+
+    await userEvent.click(screen.getByText('wanted'))
+
+    await userEvent.click(
+      screen.getByRole('button', {
+        name: 'Enregistrer',
+      })
+    )
+
+    expect(
+      screen.queryByText(
+        /Attention : le ou les lieux désélectionnés ne seront plus remboursés sur ce compte bancaire/
+      )
+    ).toBeInTheDocument()
+  })
 })
