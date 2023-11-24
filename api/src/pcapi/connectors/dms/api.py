@@ -300,18 +300,34 @@ def get_dms_stats(dms_application_id: int | None, api_v4: bool = False) -> DmsSt
         requests.exceptions.RequestException,
     ):
         return None
+
+    state = dms_stats["dossier"]["state"]  # pylint: disable=unsubscriptable-object
+    match state:
+        # Be careful, "dateDerniereModification" is updated when the "dossier" is archived; this update should not be
+        # considered as the validation date
+        case "en_construction":
+            date_field = "datePassageEnConstruction"
+        case "en_instruction":
+            date_field = "datePassageEnInstruction"
+        case "accepte" | "refuse" | "sans_suite":
+            date_field = "dateTraitement"
+        case _:
+            # This case should never happen except if a new state is added in GraphQL schema
+            # https://www.demarches-simplifiees.fr/graphql/schema/dossierstate.doc.html
+            date_field = "dateDerniereModification"
+
     if api_v4:
         api_url = f"https://www.demarches-simplifiees.fr/procedures/{settings.DMS_VENUE_PROCEDURE_ID_V4}/dossiers/{dms_application_id}"
     else:
         api_url = f"https://www.demarches-simplifiees.fr/procedures/{settings.DS_BANK_ACCOUNT_PROCEDURE_ID}/dossiers/{dms_application_id}"
+
     return DmsStats(
-        status=dms_stats["dossier"]["state"],  # pylint: disable=unsubscriptable-object
+        status=state,
         subscriptionDate=datetime.datetime.fromisoformat(
             dms_stats["dossier"]["dateDepot"]  # pylint: disable=unsubscriptable-object
         ),
-        # validation date of the dossier
         lastChangeDate=datetime.datetime.fromisoformat(
-            dms_stats["dossier"]["dateDerniereModification"]  # pylint: disable=unsubscriptable-object
+            dms_stats["dossier"][date_field]  # pylint: disable=unsubscriptable-object
         ),
         url=api_url,
     )
