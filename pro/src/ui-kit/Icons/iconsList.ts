@@ -101,6 +101,7 @@ import strokeRepaymentIcon from 'icons/stroke-repayment.svg'
 import strokeRightIcon from 'icons/stroke-right.svg'
 import strokeSearchIcon from 'icons/stroke-search.svg'
 import strokeShowIcon from 'icons/stroke-show.svg'
+import strokeTeacherIcon from 'icons/stroke-teacher.svg'
 import strokeTemplateOfferIcon from 'icons/stroke-template-offer.svg'
 import strokeThingIcon from 'icons/stroke-thing.svg'
 import strokeTrashIcon from 'icons/stroke-trash.svg'
@@ -208,6 +209,7 @@ export const strokeIcons: IconListItem[] = [
   { src: strokeSearchIcon },
   { src: strokeTrashIcon },
   { src: strokeDraftIcon },
+  { src: strokeTeacherIcon },
   { src: strokeNewIcon },
   { src: strokeCodeIcon },
   { src: strokeAccessibilityEyeIcon },
