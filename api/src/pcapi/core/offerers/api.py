@@ -2068,6 +2068,7 @@ def _update_offerer_stats_data(offerer_id: int) -> None:
                 jsonData=offerers_models.OffererStatsData(daily_views=list(daily_views_data_list)),
                 syncDate=datetime.utcnow(),
             )
+            db.session.add(daily_views_stats)
         else:
             daily_views_stats.jsonData = offerers_models.OffererStatsData(daily_views=list(daily_views_data_list))
             daily_views_stats.syncDate = datetime.utcnow()
@@ -2090,7 +2091,7 @@ def _update_offerer_stats_data(offerer_id: int) -> None:
                 jsonData=offerers_models.OffererStatsData(top_offers=top_offers),
                 syncDate=datetime.utcnow(),
             )
+            db.session.add(top_offers_stats)
         else:
             top_offers_stats.jsonData = offerers_models.OffererStatsData(top_offers=top_offers)
             top_offers_stats.syncDate = datetime.utcnow()
-        db.session.add_all([daily_views_stats, top_offers_stats])
