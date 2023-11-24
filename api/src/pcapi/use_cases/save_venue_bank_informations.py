@@ -9,7 +9,6 @@ from pcapi.core.external.attributes.api import update_external_pro
 from pcapi.core.finance import models as finance_models
 from pcapi.core.offerers import api as offerers_api
 from pcapi.core.offerers import models as offerers_models
-from pcapi.core.offerers import repository as offerers_repository
 from pcapi.domain.bank_information import CannotRegisterBankInformation
 from pcapi.domain.bank_information import check_new_bank_information_has_a_more_advanced_status
 from pcapi.domain.bank_information import check_new_bank_information_older_than_saved_one
@@ -355,20 +354,19 @@ class SaveVenueBankInformationsV5(SaveVenueBankInformationsMixin):
         self.procedure_version = 5
 
     def execute(self, application_details: ApplicationDetailOldJourney) -> BankInformations | None:
+        if application_details.siret is None:
+            logger.info(
+                "siret cannot be None at this point in the DSv5 context.",
+                extra={"application_id": application_details.application_id},
+            )
+            return None
+
         venue = self.get_referent_venue(application_details)
 
-        if venue is None:
-            # None or more than one venue, we can’t know what to do
-            # Creating bank information and returning earlier
-            assert application_details.siret  # helps mypy
-            siren = application_details.siret[:9]
-            offerer_id, *_ = (
-                offerers_models.Offerer.query.filter_by(siren=siren)
-                .with_entities(offerers_models.Offerer.id)
-                .one_or_none()
-            )
-            if offerer_id is None:
-                logger.error("Can't find an offerer by siren: %s", siren)
+        if not venue:
+            offerer_id = self.get_offerer_id(application_details)
+            if not offerer_id:
+                logger.info("Can't find an offerer by siret: %s", extra={"siret": application_details.siret})
                 return None
             newly_bank_information = self.create_new_bank_informations(application_details, offerer_id=offerer_id)
             self.bank_informations_repository.save(newly_bank_information)
@@ -435,10 +433,14 @@ class SaveVenueBankInformationsV5(SaveVenueBankInformationsMixin):
         (because we can’t know to which Venue the user might
         want to link this bank account.)
         """
-        if application_details.siret is None:
-            logger.error("siret cannot be None at this point in the DSv5 context.")
-            return None
-        _, venues = offerers_repository.find_venues_of_offerer_from_siret(application_details.siret)
+        assert application_details.siret  # helps mypy
+        venues = (
+            offerers_models.Venue.query.join(offerers_models.Venue.managingOfferer)
+            .filter(
+                offerers_models.Offerer.siren == application_details.siret[:9], offerers_models.Venue.isVirtual == False
+            )
+            .all()
+        )
         if not venues or len(venues) > 1:
             logger.warning(
                 "Can't link a BankInformation to a venue",
@@ -450,6 +452,17 @@ class SaveVenueBankInformationsV5(SaveVenueBankInformationsMixin):
             )
             return None
         return venues[0]
+
+    def get_offerer_id(self, application_details: ApplicationDetailOldJourney) -> int | None:
+        assert application_details.siret  # helps mypy
+        offerer_id = (
+            offerers_models.Offerer.query.filter_by(siren=application_details.siret[:9])
+            .with_entities(offerers_models.Offerer.id)
+            .one_or_none()
+        )
+        if offerer_id:
+            return offerer_id[0]
+        return None
 
 
 class SaveVenueBankInformationsFactory:
