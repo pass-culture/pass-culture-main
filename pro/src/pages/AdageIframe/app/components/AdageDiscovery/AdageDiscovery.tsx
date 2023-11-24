@@ -183,6 +183,7 @@ export const AdageDiscovery = () => {
             }
             elements={[
               <CardOfferComponent
+                key="card-offer-1"
                 handlePlaylistElementTracking={() =>
                   trackPlaylistElementClicked({
                     playlistId: 0, // TODO: change all playlistId with real value
@@ -202,6 +203,7 @@ export const AdageDiscovery = () => {
                 }}
               />,
               <CardOfferComponent
+                key="card-offer-2"
                 handlePlaylistElementTracking={() =>
                   trackPlaylistElementClicked({
                     playlistId: 0,
@@ -220,6 +222,7 @@ export const AdageDiscovery = () => {
                 }}
               />,
               <CardOfferComponent
+                key="card-offer-3"
                 handlePlaylistElementTracking={() =>
                   trackPlaylistElementClicked({
                     playlistId: 0,
@@ -238,6 +241,7 @@ export const AdageDiscovery = () => {
                 }}
               />,
               <CardOfferComponent
+                key="card-offer-4"
                 offer={{
                   ...mockOffer,
                   id: 1,
@@ -257,6 +261,7 @@ export const AdageDiscovery = () => {
                 }
               />,
               <CardOfferComponent
+                key="card-offer-5"
                 handlePlaylistElementTracking={() =>
                   trackPlaylistElementClicked({
                     playlistId: 0,
@@ -275,6 +280,7 @@ export const AdageDiscovery = () => {
                 }}
               />,
               <CardOfferComponent
+                key="card-offer-7"
                 handlePlaylistElementTracking={() =>
                   trackPlaylistElementClicked({
                     playlistId: 0,
@@ -353,6 +359,7 @@ export const AdageDiscovery = () => {
             }
             elements={[
               <CardVenue
+                key="card-venue-1"
                 handlePlaylistElementTracking={() =>
                   trackPlaylistElementClicked({
                     playlistId: 3,

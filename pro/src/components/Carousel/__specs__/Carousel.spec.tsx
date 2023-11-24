@@ -11,7 +11,7 @@ vi.mock('hooks/useIsElementVisible', () => ({
 
 const mockCarouselElements = Array(20)
   .fill(null)
-  .map((el, i) => <div>Element {i}</div>)
+  .map((el, i) => <div key={i}>Element {i}</div>)
 
 describe('Carousel', () => {
   it('should display the list of elements in the carousel', () => {
