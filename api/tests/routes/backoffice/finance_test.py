@@ -447,7 +447,7 @@ class GetIncidentCreationFormTest(PostEndpointHelper):
 
     error_message = "Seules les réservations ayant le statut 'remboursée' et correspondant au même lieu peuvent faire l'objet d'un incident"
 
-    expected_num_queries = 7
+    expected_num_queries = 6
 
     def test_get_incident_creation_for_one_booking_form(self, authenticated_client, invoiced_pricing):
         venue = offerers_factories.VenueFactory()
@@ -533,7 +533,7 @@ class GetCollectiveBookingIncidentFormTest(PostEndpointHelper):
     endpoint_kwargs = {"collective_booking_id": 1}
     needed_permission = perm_models.Permissions.MANAGE_INCIDENTS
 
-    expected_num_queries = 11
+    expected_num_queries = 10
 
     def test_get_form(self, authenticated_client, invoiced_collective_pricing):
         collective_booking = educational_factories.ReimbursedCollectiveBookingFactory(
