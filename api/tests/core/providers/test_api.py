@@ -6,6 +6,7 @@ from unittest.mock import patch
 from freezegun.api import freeze_time
 import pytest
 
+from pcapi.core import search
 from pcapi.core.bookings.factories import BookingFactory
 from pcapi.core.bookings.factories import CancelledBookingFactory
 from pcapi.core.categories import subcategories_v2 as subcategories
@@ -206,7 +207,9 @@ class SynchronizeStocksTest:
 
         # Test offer reindexation
         mock_async_index_offer_ids.assert_called_with(
-            {stock.offer.id, offer.id, stock_with_booking.offer.id, created_offer.id, second_created_offer.id}
+            {stock.offer.id, offer.id, stock_with_booking.offer.id, created_offer.id, second_created_offer.id},
+            reason=search.IndexationReason.STOCK_SYNCHRONIZATION,
+            log_extra={"provider_id": provider.id},
         )
 
     def test_build_new_offers_from_stock_details(self, db_session):

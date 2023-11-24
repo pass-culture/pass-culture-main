@@ -7,6 +7,7 @@ from flask import g
 from flask import url_for
 import pytest
 
+from pcapi.core import search
 from pcapi.core.bookings import factories as bookings_factories
 from pcapi.core.bookings.models import BookingStatus
 from pcapi.core.categories import categories
@@ -979,7 +980,10 @@ class BatchEditOfferTest(PostEndpointHelper):
             assert criteria[0] in offer.criteria
             assert criteria[2] not in offer.criteria
 
-        mock_async_index.assert_called_once_with([offer.id for offer in offers])
+        mock_async_index.assert_called_once_with(
+            [offer.id for offer in offers],
+            reason=search.IndexationReason.OFFER_BATCH_UPDATE,
+        )
 
 
 class ValidateOfferTest(PostEndpointHelper):

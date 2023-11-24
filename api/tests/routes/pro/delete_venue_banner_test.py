@@ -3,6 +3,7 @@ from unittest.mock import patch
 import pytest
 
 from pcapi import settings
+from pcapi.core import search
 import pcapi.core.offerers.factories as offerers_factories
 from pcapi.utils.human_ids import humanize
 
@@ -32,7 +33,10 @@ class VenueBannerTest:
             (("thumbs", expected_original_thumb_base_path),),
         ]
 
-        mock_search_async_index_venue_ids.assert_called_once_with([venue.id])
+        mock_search_async_index_venue_ids.assert_called_once_with(
+            [venue.id],
+            reason=search.IndexationReason.VENUE_BANNER_DELETION,
+        )
 
     @patch("pcapi.core.object_storage.backends.local.LocalBackend.delete_public_object")
     @patch("pcapi.core.search.async_index_venue_ids")
@@ -51,7 +55,10 @@ class VenueBannerTest:
 
         mock_delete_public_object.assert_called_once_with("thumbs", expected_thumb_base_path)
 
-        mock_search_async_index_venue_ids.assert_called_once_with([venue.id])
+        mock_search_async_index_venue_ids.assert_called_once_with(
+            [venue.id],
+            reason=search.IndexationReason.VENUE_BANNER_DELETION,
+        )
 
     @patch("pcapi.core.object_storage.backends.local.LocalBackend.delete_public_object")
     def test_delete_no_banner(self, mock_delete_public_object, client):

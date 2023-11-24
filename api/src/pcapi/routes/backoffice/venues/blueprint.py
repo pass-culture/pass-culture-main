@@ -687,7 +687,10 @@ def batch_edit_venues() -> utils.BackofficeResponse:
     updated_venues = list(set(updated_criteria_venues + updated_permanent_venues))
 
     repository.save(*updated_venues)
-    search.async_index_venue_ids([v.id for v in updated_venues])
+    search.async_index_venue_ids(
+        [v.id for v in updated_venues],
+        reason=search.IndexationReason.VENUE_BATCH_UPDATE,
+    )
 
     flash("Les lieux ont été modifiés avec succès", "success")
     return redirect(request.referrer or url_for(".list_venues"), code=303)

@@ -17,7 +17,7 @@ def test_offer_indexation_on_booking_cycle(app):
     offer = stock.offer
     assert search_testing.search_store["offers"] == {}
 
-    search.async_index_offer_ids([offer.id])
+    search.async_index_offer_ids([offer.id], reason=search.IndexationReason.OFFER_UPDATE)
     assert search_testing.search_store["offers"] == {}
 
     search.index_offers_in_queue()
@@ -38,7 +38,7 @@ def test_offer_indexation_on_venue_cycle(app):
     venue = offer.venue
     assert search_testing.search_store["offers"] == {}
 
-    search.async_index_offers_of_venue_ids([venue.id])
+    search.async_index_offers_of_venue_ids([venue.id], reason=search.IndexationReason.VENUE_UPDATE)
     assert search_testing.search_store["offers"] == {}
 
     search.index_offers_of_venues_in_queue()
@@ -49,7 +49,7 @@ def test_venue_indexation_cycle(app):
     venue = offerers_factories.VenueFactory(isPermanent=True)
     assert search_testing.search_store["venues"] == {}
 
-    search.async_index_venue_ids([venue.id])
+    search.async_index_venue_ids([venue.id], search.IndexationReason.VENUE_CREATION)
     assert search_testing.search_store["venues"] == {}
 
     search.index_venues_in_queue()

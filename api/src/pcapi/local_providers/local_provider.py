@@ -244,13 +244,19 @@ class LocalProvider(Iterator):
 
                 if len(chunk_to_insert) + len(chunk_to_update) >= CHUNK_MAX_SIZE:
                     save_chunks(chunk_to_insert, chunk_to_update)
-                    _reindex_offers(list(chunk_to_insert.values()) + list(chunk_to_update.values()))
+                    _reindex_offers(
+                        list(chunk_to_insert.values()) + list(chunk_to_update.values()),
+                        self.venue_provider,
+                    )
                     chunk_to_insert = {}
                     chunk_to_update = {}
 
         if len(chunk_to_insert) + len(chunk_to_update) > 0:
             save_chunks(chunk_to_insert, chunk_to_update)
-            _reindex_offers(list(chunk_to_insert.values()) + list(chunk_to_update.values()))
+            _reindex_offers(
+                list(chunk_to_insert.values()) + list(chunk_to_update.values()),
+                self.venue_provider,
+            )
 
         self._print_objects_summary()
         self.log_provider_event(providers_models.LocalProviderEventType.SyncEnd)
@@ -279,11 +285,22 @@ def _upload_thumb(
     )
 
 
-def _reindex_offers(created_or_updated_objects: list[offers_models.Stock | offers_models.Offer]) -> None:
+def _reindex_offers(
+    created_or_updated_objects: list[offers_models.Stock | offers_models.Offer],
+    venue_provider: providers_models.VenueProvider | None,
+) -> None:
     offer_ids = set()
     for obj in created_or_updated_objects:
         if isinstance(obj, offers_models.Stock):
             offer_ids.add(obj.offerId)
         elif isinstance(obj, offers_models.Offer):
             offer_ids.add(obj.id)
-    search.async_index_offer_ids(offer_ids)
+    search.async_index_offer_ids(
+        offer_ids,
+        reason=search.IndexationReason.STOCK_UPDATE,
+        log_extra={
+            "source": "provider_api",
+            "venue_id": venue_provider.venueId if venue_provider else None,
+            "provider_id": venue_provider.providerId if venue_provider else None,
+        },
+    )

@@ -221,7 +221,10 @@ def _batch_validate_or_reject_collective_offers(
         if collective_offer.institutionId is not None:
             adage_client.notify_institution_association(serialize_collective_offer(collective_offer))
 
-    search.async_index_collective_offer_ids(collective_offer_update_succeed_ids)
+    search.async_index_collective_offer_ids(
+        collective_offer_update_succeed_ids,
+        reason=search.IndexationReason.OFFER_BATCH_VALIDATION,
+    )
 
     if len(collective_offer_update_succeed_ids) == 1:
         flash(

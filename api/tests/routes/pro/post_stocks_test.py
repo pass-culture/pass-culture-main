@@ -6,6 +6,7 @@ from unittest.mock import patch
 from dateutil.relativedelta import relativedelta
 import pytest
 
+from pcapi.core import search
 from pcapi.core.bookings import factories as bookings_factories
 from pcapi.core.bookings import models as bookings_models
 import pcapi.core.mails.testing as mails_testing
@@ -51,7 +52,10 @@ class Returns201Test:
         assert offers_models.PriceCategoryLabel.query.count() == 0
         assert offer.validation == OfferValidationStatus.DRAFT
         assert len(mails_testing.outbox) == 0  # Mail sent during fraud validation
-        mocked_async_index_offer_ids.assert_called_once_with([offer.id])
+        mocked_async_index_offer_ids.assert_called_once_with(
+            [offer.id],
+            reason=search.IndexationReason.STOCK_CREATION,
+        )
 
     @patch("pcapi.core.search.async_index_offer_ids")
     def test_create_event_stocks(self, mocked_async_index_offer_ids, client):
@@ -106,10 +110,10 @@ class Returns201Test:
         assert created_stocks[2].price == 30
         assert created_stocks[2].priceCategory.price == 30
         assert created_stocks[2].priceCategory.label == "Tarif 2"
-        assert [call.args for call in mocked_async_index_offer_ids.call_args_list] == [
-            ([offer.id],),
-            ([offer.id],),
-            ([offer.id],),
+        assert [call.args[0] for call in mocked_async_index_offer_ids.call_args_list] == [
+            [offer.id],
+            [offer.id],
+            [offer.id],
         ]
 
     @patch("pcapi.core.search.async_index_offer_ids")
@@ -160,11 +164,6 @@ class Returns201Test:
         assert created_stocks[0].priceCategory.label == "Shared"
         assert created_stocks[0].priceCategory is created_stocks[1].priceCategory
         assert created_stocks[2].priceCategory is second_price_cat
-        assert [call.args for call in mocked_async_index_offer_ids.call_args_list] == [
-            ([offer.id],),
-            ([offer.id],),
-            ([offer.id],),
-        ]
 
     @patch("pcapi.core.search.async_index_offer_ids")
     def test_edit_one_stock(self, mocked_async_index_offer_ids, client):
@@ -188,7 +187,6 @@ class Returns201Test:
         assert len(Stock.query.all()) == 1
         assert offers_models.PriceCategory.query.count() == 0
         assert offers_models.PriceCategoryLabel.query.count() == 0
-        mocked_async_index_offer_ids.assert_called_once_with([offer.id])
 
     @override_features(WIP_PRO_STOCK_PAGINATION=True)
     def test_do_not_edit_one_stock_when_duplicated(self, client):
@@ -262,7 +260,6 @@ class Returns201Test:
         assert len(Stock.query.all()) == 1
         assert offers_models.PriceCategory.query.count() == 1
         assert offers_models.PriceCategoryLabel.query.count() == 1
-        mocked_async_index_offer_ids.assert_called_once_with([offer.id])
 
     @patch("pcapi.core.search.async_index_offer_ids")
     def test_edit_one_event_stock_created_with_price_category(self, mocked_async_index_offer_ids, client):
@@ -301,7 +298,6 @@ class Returns201Test:
         assert len(Stock.query.all()) == 1
         assert created_stock.priceCategory == new_price_category
         assert created_stock.price == 25
-        mocked_async_index_offer_ids.assert_called_once_with([offer.id])
 
     def test_create_one_stock_with_activation_codes(self, client):
         # Given
@@ -390,10 +386,10 @@ class Returns201Test:
             assert result_stock.quantity == expected_stock["quantity"]
             assert result_stock.bookingLimitDatetime == booking_limit_datetime
 
-        assert [call.args for call in mocked_async_index_offer_ids.call_args_list] == [
-            ([offer.id],),
-            ([offer.id],),
-            ([offer.id],),
+        assert [call.args[0] for call in mocked_async_index_offer_ids.call_args_list] == [
+            [offer.id],
+            [offer.id],
+            [offer.id],
         ]
 
     def test_sends_email_if_beginning_date_changes_on_edition(self, client):

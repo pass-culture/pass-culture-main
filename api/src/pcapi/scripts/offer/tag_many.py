@@ -60,6 +60,9 @@ def create_missing_mappings(offer_ids: Ids, criterion_names: CriterionNames, dry
 
     if not dry_run:
         db.session.commit()
-        search.async_index_offer_ids(offer_ids)
+        search.async_index_offer_ids(
+            offer_ids,
+            reason=search.IndexationReason.CRITERIA_LINK,
+        )
     else:
         db.session.rollback()

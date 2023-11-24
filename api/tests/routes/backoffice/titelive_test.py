@@ -5,6 +5,7 @@ from unittest.mock import patch
 from flask import url_for
 import pytest
 
+from pcapi.core import search
 from pcapi.core.fraud import models as fraud_models
 from pcapi.core.fraud.factories import ProductWhitelistFactory
 from pcapi.core.offers import factories as offers_factories
@@ -211,7 +212,11 @@ class AddProductWhitelistTest(PostEndpointHelper):
             ).strftime("%d/%m/%Y")
             assert not offer.lastValidationType == OfferValidationType.MANUAL
 
-        mocked_async_index_offer_ids.assert_called_once_with([o.id for o in offers_to_restore])
+        mocked_async_index_offer_ids.assert_called_once_with(
+            [o.id for o in offers_to_restore],
+            reason=search.IndexationReason.PRODUCT_WHITELIST_ADDITION,
+            log_extra={"ean": "9782070455379"},
+        )
 
     @patch("pcapi.routes.backoffice.titelive.blueprint.get_by_ean13")
     @patch("pcapi.routes.backoffice.titelive.blueprint.offers_api.whitelist_product")
@@ -306,7 +311,11 @@ class AddProductWhitelistTest(PostEndpointHelper):
         assert offer.lastValidationDate.strftime("%d/%m/%Y") == datetime.date.today().strftime("%d/%m/%Y")
         assert offer.lastValidationType == OfferValidationType.MANUAL
         assert offer.lastValidationAuthor == legit_user
-        mocked_async_index_offer_ids.assert_called_once_with([offer.id])
+        mocked_async_index_offer_ids.assert_called_once_with(
+            [offer.id],
+            reason=search.IndexationReason.PRODUCT_WHITELIST_ADDITION,
+            log_extra={"ean": "9782070455379"},
+        )
 
 
 class DeleteProductWhitelistTest(GetEndpointHelper):

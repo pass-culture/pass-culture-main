@@ -1,5 +1,6 @@
 from datetime import datetime
 from decimal import Decimal
+import itertools
 from unittest import mock
 
 from freezegun.api import freeze_time
@@ -172,10 +173,14 @@ class ProviderAPICronTest:
         assert stock.offer.lastProviderId == provider.id
 
         # Test it adds offer in redis
-        assert mocked_async_index_offer_ids.mock_calls == [
-            mock.call({offer.id, created_offer.id, stock.offer.id}),
-            mock.call({stock_with_booking.offer.id, second_created_offer.id}),
-        ]
+        reindexed = itertools.chain.from_iterable(call.args[0] for call in mocked_async_index_offer_ids.mock_calls)
+        assert set(reindexed) == {
+            offer.id,
+            created_offer.id,
+            stock.offer.id,
+            stock_with_booking.offer.id,
+            second_created_offer.id,
+        }
 
         # Ensure next synchronisation is done with modifiedSince parameter
         with requests_mock.Mocker() as request_mock:

@@ -153,11 +153,19 @@ def update_venue(
     else:
         repository.save(venue)
 
-    search.async_index_venue_ids([venue.id])
+    search.async_index_venue_ids(
+        [venue.id],
+        reason=search.IndexationReason.VENUE_UPDATE,
+        log_extra={"changes": set(modifications.keys())},
+    )
 
     indexing_modifications_fields = set(modifications.keys()) & set(VENUE_ALGOLIA_INDEXED_FIELDS)
     if indexing_modifications_fields:
-        search.async_index_offers_of_venue_ids([venue.id])
+        search.async_index_offers_of_venue_ids(
+            [venue.id],
+            reason=search.IndexationReason.VENUE_UPDATE,
+            log_extra={"changes": set(indexing_modifications_fields)},
+        )
 
     # Former booking email address shall no longer receive emails about data related to this venue.
     # If booking email was only in this object, this will clear all columns here and it will never be updated later.
@@ -241,7 +249,10 @@ def create_venue(
     if venue.siret:
         link_venue_to_pricing_point(venue, pricing_point_id=venue.id)
 
-    search.async_index_venue_ids([venue.id])
+    search.async_index_venue_ids(
+        [venue.id],
+        reason=search.IndexationReason.VENUE_CREATION,
+    )
 
     external_attributes_api.update_external_pro(venue.bookingEmail)
     zendesk_sell.create_venue(venue)
@@ -957,7 +968,10 @@ def validate_offerer(offerer: models.Offerer, author_user: users_models.User) ->
     )
 
     repository.save(offerer, action, *applicants)
-    search.async_index_offers_of_venue_ids([venue.id for venue in managed_venues])
+    search.async_index_offers_of_venue_ids(
+        [venue.id for venue in managed_venues],
+        reason=search.IndexationReason.OFFERER_VALIDATION,
+    )
 
     for applicant in applicants:
         external_attributes_api.update_external_pro(applicant.email)
@@ -1141,13 +1155,19 @@ def save_venue_banner(
 
     repository.save(venue)
 
-    search.async_index_venue_ids([venue.id])
+    search.async_index_venue_ids(
+        [venue.id],
+        reason=search.IndexationReason.VENUE_BANNER_UPDATE,
+    )
 
 
 def delete_venue_banner(venue: models.Venue) -> None:
     rm_previous_venue_thumbs(venue)
     repository.save(venue)
-    search.async_index_venue_ids([venue.id])
+    search.async_index_venue_ids(
+        [venue.id],
+        reason=search.IndexationReason.VENUE_BANNER_DELETION,
+    )
 
 
 def can_offerer_create_educational_offer(offerer_id: int) -> None:
