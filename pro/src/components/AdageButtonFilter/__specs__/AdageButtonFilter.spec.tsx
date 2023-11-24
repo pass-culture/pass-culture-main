@@ -22,14 +22,15 @@ const renderAdageButtonFilter = ({
       <AdageButtonFilter
         title={title}
         isActive={isActive}
-        children={children}
         disabled={disabled}
         itemsLength={itemsLength}
         isOpen={isOpen}
         setIsOpen={setIsOpen}
         filterName={filterName}
         handleSubmit={handleSubmit}
-      />
+      >
+        {children}
+      </AdageButtonFilter>
       <div>Click outside</div>
     </>
   )
