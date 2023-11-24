@@ -72,7 +72,6 @@ module.exports = {
         'react/jsx-key': 'warn',
         'react/prop-types': 'warn',
         'react-hooks/exhaustive-deps': 'warn',
-        'react-hooks/rules-of-hooks': 'warn',
       },
     },
   ],
