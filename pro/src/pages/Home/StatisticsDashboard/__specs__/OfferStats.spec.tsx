@@ -34,16 +34,16 @@ describe('OfferStats', () => {
 
     expect(screen.getByText('Vos offres publiées')).toBeInTheDocument()
     expect(screen.queryByText('Vos offres en attente')).not.toBeInTheDocument()
-    const individualOffers = await screen.findByText(
-      'à destination du grand public'
+    const publishedIndividualOffers = await screen.findByText(
+      'Voir les offres individuelles publiées'
     )
-    expect(individualOffers.textContent).toContain(
+    expect(publishedIndividualOffers.parentElement?.textContent).toContain(
       '0 à destination du grand public'
     )
-    const collectiveOffers = await screen.findByText(
-      'à destination de groupes scolaires'
+    const publishedCollectiveOffers = await screen.findByText(
+      'Voir les offres collectives publiées'
     )
-    expect(collectiveOffers.textContent).toContain(
+    expect(publishedCollectiveOffers.parentElement?.textContent).toContain(
       '0 à destination de groupes scolaires'
     )
   })
@@ -60,19 +60,30 @@ describe('OfferStats', () => {
 
     expect(screen.getByText('Vos offres publiées')).toBeInTheDocument()
     expect(screen.queryByText('Vos offres en attente')).not.toBeInTheDocument()
-    const individualOffers = await screen.findByText(
-      'à destination du grand public'
+    const publishedIndividualOffers = await screen.findByText(
+      'Voir les offres individuelles publiées'
     )
-    expect(individualOffers.textContent).toContain(
+    expect(publishedIndividualOffers.parentElement?.textContent).toContain(
       '10 à destination du grand public'
     )
-    const collectiveOffers = await screen.findByText(
-      'à destination de groupes scolaires'
+    const publishedCollectiveOffers = await screen.findByText(
+      'Voir les offres collectives publiées'
     )
-    expect(collectiveOffers.textContent).toContain(
+    expect(publishedCollectiveOffers.parentElement?.textContent).toContain(
       '0 à destination de groupes scolaires'
     )
 
-    // TODO add pending offers
+    const pendingIndividualOffers = await screen.findByText(
+      'Voir les offres individuelles en attente'
+    )
+    expect(pendingIndividualOffers.parentElement?.textContent).toContain(
+      '0 à destination du grand public'
+    )
+    const pendingCollectiveOffers = await screen.findByText(
+      'Voir les offres collectives en attente'
+    )
+    expect(pendingCollectiveOffers.parentElement?.textContent).toContain(
+      '5 à destination de groupes scolaires'
+    )
   })
 })
