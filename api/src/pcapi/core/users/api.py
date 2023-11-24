@@ -331,12 +331,12 @@ def increment_email_validation_resends_count(user: models.User) -> None:
         app.redis_client.expire(email_validation_resends_key, settings.EMAIL_VALIDATION_RESENDS_TTL)  # type: ignore [attr-defined]
 
 
-def request_password_reset(user: models.User | None) -> None:
+def request_password_reset(user: models.User | None, reason: constants.SuspensionReason | None = None) -> None:
     if not user:
         return
 
     token = create_reset_password_token(user)
-    is_email_sent = transactional_mails.send_reset_password_email_to_user(token)
+    is_email_sent = transactional_mails.send_reset_password_email_to_user(token, reason)
 
     if not is_email_sent:
         logger.error("Email service failure when user requested password reset for email '%s'", user.email)
@@ -495,7 +495,7 @@ def unsuspend_account(
         transactional_mails.send_unsuspension_email(user)
 
     if suspension_reason == constants.SuspensionReason.SUSPICIOUS_LOGIN_REPORTED_BY_USER:
-        request_password_reset(user)
+        request_password_reset(user, constants.SuspensionReason.SUSPICIOUS_LOGIN_REPORTED_BY_USER)
 
 
 def change_email(

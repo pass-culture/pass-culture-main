@@ -2,13 +2,21 @@ from pcapi.core import mails
 from pcapi.core import token as token_utils
 from pcapi.core.mails import models
 from pcapi.core.mails.transactional.sendinblue_template_ids import TransactionalEmail
+from pcapi.core.users import constants
 import pcapi.core.users.models as users_models
 from pcapi.utils.urls import generate_firebase_dynamic_link
 
 
-def send_reset_password_email_to_user(token: token_utils.Token) -> bool:
+def send_reset_password_email_to_user(
+    token: token_utils.Token, reason: constants.SuspensionReason | None = None
+) -> bool:
     user = users_models.User.query.get(token.user_id)
-    data = get_reset_password_email_data(user, token, TransactionalEmail.NEW_PASSWORD_REQUEST.value)
+    email_template = (
+        TransactionalEmail.NEW_PASSWORD_REQUEST_FOR_SUSPICIOUS_LOGIN
+        if reason == constants.SuspensionReason.SUSPICIOUS_LOGIN_REPORTED_BY_USER
+        else TransactionalEmail.NEW_PASSWORD_REQUEST
+    )
+    data = get_reset_password_email_data(user, token, email_template.value)
     return mails.send(recipients=[user.email], data=data)
 
 
