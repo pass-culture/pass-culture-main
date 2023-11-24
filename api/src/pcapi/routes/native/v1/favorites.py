@@ -24,7 +24,7 @@ from pcapi.repository import transaction
 from pcapi.routes.native.security import authenticated_and_active_user_required
 from pcapi.serialization.decorator import spectree_serialize
 
-from . import blueprint
+from .. import blueprint
 from .serialization import favorites as serializers
 
 
@@ -72,7 +72,7 @@ def _fill_favorite_offer(
     _fill_offer_expired(offer, non_expired_count, active_count)
 
 
-@blueprint.native_v1.route("/me/favorites/count", methods=["GET"])
+@blueprint.native_route("/me/favorites/count", methods=["GET"])
 @spectree_serialize(response_model=serializers.FavoritesCountResponse, api=blueprint.api)
 @authenticated_and_active_user_required
 def get_favorites_count(user: User) -> serializers.FavoritesCountResponse:
@@ -164,7 +164,7 @@ def get_favorites_for(user: User, favorite_id: int | None = None) -> list[Favori
     return favorites
 
 
-@blueprint.native_v1.route("/me/favorites", methods=["GET"])
+@blueprint.native_route("/me/favorites", methods=["GET"])
 @spectree_serialize(response_model=serializers.PaginatedFavoritesResponse, api=blueprint.api)
 @authenticated_and_active_user_required
 def get_favorites(user: User) -> serializers.PaginatedFavoritesResponse:
@@ -178,7 +178,7 @@ def get_favorites(user: User) -> serializers.PaginatedFavoritesResponse:
     return serializers.PaginatedFavoritesResponse(**paginated_favorites)  # type: ignore [arg-type]
 
 
-@blueprint.native_v1.route("/me/favorites", methods=["POST"])
+@blueprint.native_route("/me/favorites", methods=["POST"])
 @spectree_serialize(response_model=serializers.FavoriteResponse, on_error_statuses=[400], api=blueprint.api)
 @authenticated_and_active_user_required
 def create_favorite(user: User, body: serializers.FavoriteRequest) -> serializers.FavoriteResponse:
@@ -207,7 +207,7 @@ def create_favorite(user: User, body: serializers.FavoriteRequest) -> serializer
     return serializers.FavoriteResponse.from_orm(favorite)
 
 
-@blueprint.native_v1.route("/me/favorites/<int:favorite_id>", methods=["DELETE"])
+@blueprint.native_route("/me/favorites/<int:favorite_id>", methods=["DELETE"])
 @spectree_serialize(on_success_status=204, api=blueprint.api)
 @authenticated_and_active_user_required
 def delete_favorite(user: User, favorite_id: int) -> None:

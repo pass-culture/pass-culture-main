@@ -10,14 +10,14 @@ from pcapi.serialization.decorator import spectree_serialize
 from pcapi.tasks.cultural_survey_tasks import upload_answers_task
 from pcapi.tasks.serialization.cultural_survey_tasks import CulturalSurveyAnswersForData
 
-from . import blueprint
+from .. import blueprint
 from .serialization import cultural_survey as serializers
 
 
 logger = logging.getLogger(__name__)
 
 
-@blueprint.native_v1.route("/cultural_survey/questions", methods=["GET"])
+@blueprint.native_route("/cultural_survey/questions", methods=["GET"])
 @spectree_serialize(
     response_model=serializers.CulturalSurveyQuestionsResponse,
     on_success_status=200,
@@ -30,7 +30,7 @@ def get_cultural_survey_questions(user: users_models.User) -> serializers.Cultur
     )
 
 
-@blueprint.native_v1.route("/cultural_survey/answers", methods=["POST"])
+@blueprint.native_route("/cultural_survey/answers", methods=["POST"])
 @spectree_serialize(
     on_success_status=204,
     on_error_statuses=[400],

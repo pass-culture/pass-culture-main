@@ -11,7 +11,7 @@ import sentry_sdk
 from pcapi.core.users.models import User
 from pcapi.core.users.repository import find_user_by_email
 from pcapi.models.api_errors import ForbiddenError
-from pcapi.routes.native.v1.blueprint import JWT_AUTH
+from pcapi.routes.native.blueprint import JWT_AUTH
 from pcapi.serialization.spec_tree import add_security_scheme
 
 

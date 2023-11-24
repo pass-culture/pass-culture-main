@@ -3,7 +3,7 @@ import json
 
 
 def test_public_api(client):
-    response = client.get("/native/v1/openapi.json")
+    response = client.get("/native/openapi.json")
     assert response.status_code == 200
     expected = {
         "components": {

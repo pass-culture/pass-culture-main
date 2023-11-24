@@ -34,14 +34,14 @@ from pcapi.utils.feature import feature_required
 from pcapi.utils.rate_limiting import email_rate_limiter
 from pcapi.utils.rate_limiting import ip_rate_limiter
 
-from . import blueprint
+from .. import blueprint
 from .serialization import authentication
 
 
 logger = logging.getLogger(__name__)
 
 
-@blueprint.native_v1.route("/signin", methods=["POST"])
+@blueprint.native_route("/signin", methods=["POST"])
 @spectree_serialize(
     response_model=authentication.SigninResponse,
     on_success_status=200,
@@ -80,7 +80,7 @@ def signin(body: authentication.SigninRequest) -> authentication.SigninResponse:
     )
 
 
-@blueprint.native_v1.route("/refresh_access_token", methods=["POST"])
+@blueprint.native_route("/refresh_access_token", methods=["POST"])
 @jwt_required(refresh=True)
 @spectree_serialize(response_model=authentication.RefreshResponse, api=blueprint.api, on_error_statuses=[401])
 def refresh() -> authentication.RefreshResponse:
@@ -92,7 +92,7 @@ def refresh() -> authentication.RefreshResponse:
     return authentication.RefreshResponse(access_token=users_api.create_user_access_token(user))
 
 
-@blueprint.native_v1.route("/request_password_reset", methods=["POST"])
+@blueprint.native_route("/request_password_reset", methods=["POST"])
 @spectree_serialize(on_success_status=204, api=blueprint.api, on_error_statuses=[400])
 def request_password_reset(body: RequestPasswordResetRequest) -> None:
     if FeatureToggle.ENABLE_NATIVE_APP_RECAPTCHA.is_active():
@@ -104,7 +104,7 @@ def request_password_reset(body: RequestPasswordResetRequest) -> None:
     users_api.request_password_reset(user)
 
 
-@blueprint.native_v1.route("/reset_password", methods=["POST"])
+@blueprint.native_route("/reset_password", methods=["POST"])
 @spectree_serialize(
     response_model=ResetPasswordResponse, on_success_status=200, api=blueprint.api, on_error_statuses=[400]
 )
@@ -137,7 +137,7 @@ def reset_password(body: ResetPasswordRequest) -> ResetPasswordResponse:
     )
 
 
-@blueprint.native_v1.route("/change_password", methods=["POST"])
+@blueprint.native_route("/change_password", methods=["POST"])
 @spectree_serialize(on_success_status=204, api=blueprint.api, on_error_statuses=[400])
 @authenticated_and_active_user_required
 def change_password(user: User, body: ChangePasswordRequest) -> None:
@@ -157,7 +157,7 @@ def change_password(user: User, body: ChangePasswordRequest) -> None:
     repository.save(user)
 
 
-@blueprint.native_v1.route("/validate_email", methods=["POST"])
+@blueprint.native_route("/validate_email", methods=["POST"])
 @spectree_serialize(on_success_status=200, api=blueprint.api, response_model=ValidateEmailResponse)
 def validate_email(body: ValidateEmailRequest) -> ValidateEmailResponse:
     try:
@@ -187,7 +187,7 @@ def validate_email(body: ValidateEmailRequest) -> ValidateEmailResponse:
     return response
 
 
-@blueprint.native_v1.route("/oauth/state", methods=["GET"])
+@blueprint.native_route("/oauth/state", methods=["GET"])
 @spectree_serialize(response_model=authentication.OauthStateResponse, on_success_status=200, api=blueprint.api)
 @ip_rate_limiter()
 @feature_required(FeatureToggle.WIP_ENABLE_GOOGLE_SSO)
@@ -196,7 +196,7 @@ def google_oauth_state() -> authentication.OauthStateResponse:
     return authentication.OauthStateResponse(oauth_state_token=encoded_oauth_state_token)
 
 
-@blueprint.native_v1.route("/oauth/google/authorize", methods=["POST"])
+@blueprint.native_route("/oauth/google/authorize", methods=["POST"])
 @spectree_serialize(
     response_model=authentication.SigninResponse,
     on_success_status=200,
