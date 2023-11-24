@@ -5,6 +5,7 @@ import React, { useState } from 'react'
 import { api } from 'apiClient/api'
 import { BankAccountResponseModel, ManagedVenues } from 'apiClient/v1'
 import DialogBox from 'components/DialogBox'
+import useNotification from 'hooks/useNotification'
 import { Button, SubmitButton } from 'ui-kit'
 import { ButtonVariant } from 'ui-kit/Button/types'
 import { BaseCheckbox } from 'ui-kit/form/shared'
@@ -25,6 +26,8 @@ const LinkVenuesDialog = ({
   managedVenues,
   closeDialog,
 }: LinkVenuesDialogProps) => {
+  const notification = useNotification()
+
   const availableManagedVenuesIds = managedVenues
     ?.filter((venue) => !venue.bankAccountId)
     ?.map((venue) => venue.id)
@@ -41,10 +44,17 @@ const LinkVenuesDialog = ({
   const formik = useFormik({
     initialValues: {},
     onSubmit: async () => {
-      await api.linkVenueToBankAccount(offererId, selectedBankAccount.id, {
-        venues_ids: selectedVenuesIds,
-      })
-      closeDialog()
+      try {
+        await api.linkVenueToBankAccount(offererId, selectedBankAccount.id, {
+          venues_ids: selectedVenuesIds,
+        })
+        notification.success('Vos modifications ont bien été prises en compte.')
+        closeDialog()
+      } catch (e) {
+        notification.error(
+          'Un erreur est survenue. Vos modifications n’ont pas été prises en compte.'
+        )
+      }
     },
   })
 
