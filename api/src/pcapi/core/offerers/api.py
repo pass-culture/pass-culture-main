@@ -516,6 +516,8 @@ def link_venue_to_reimbursement_point(
         models.VenueReimbursementPointLink.timespan.contains(timestamp),
     ).one_or_none()
     if current_link:
+        if current_link.reimbursementPointId == reimbursement_point_id:
+            return
         current_link.timespan = db_utils.make_timerange(
             current_link.timespan.lower,
             timestamp,
