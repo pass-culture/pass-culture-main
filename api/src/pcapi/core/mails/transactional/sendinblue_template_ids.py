@@ -55,6 +55,9 @@ class TransactionalEmail(Enum):
     NEW_PASSWORD_REQUEST = models.Template(
         id_prod=141, id_not_prod=26, tags=["jeunes_nouveau_mdp"], use_priority_queue=True
     )
+    NEW_PASSWORD_REQUEST_FOR_SUSPICIOUS_LOGIN = models.Template(
+        id_prod=1108, id_not_prod=155, tags=["jeunes_nouveau_mdp_connexion_suspicieuse"], use_priority_queue=True
+    )
     OFFER_WEBAPP_LINK_TO_IOS_USER = models.Template(
         id_prod=476, id_not_prod=45, tags=["redirect_ios"], use_priority_queue=True
     )
