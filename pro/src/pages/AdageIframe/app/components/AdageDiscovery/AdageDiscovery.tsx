@@ -350,7 +350,7 @@ export const AdageDiscovery = () => {
           className={styles['discovery-suggestion-link']}
           variant={ButtonVariant.TERNARYPINK}
           link={{
-            to: '#', // TODO:  Lien FAQ à ajouter quand il sera disponible
+            to: 'https://passculture.qualtrics.com/jfe/form/SV_6GsfVHSIYQZqdM2',
             isExternal: true,
           }}
           icon={fullLinkIcon}
