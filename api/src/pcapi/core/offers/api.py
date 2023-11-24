@@ -714,6 +714,7 @@ def _delete_stock(stock: models.Stock) -> None:
             )
 
         push_notification_job.send_cancel_booking_notification.delay([booking.id for booking in cancelled_bookings])
+    search.async_index_offer_ids([stock.offerId])
 
 
 def delete_stock(stock: models.Stock) -> None:
