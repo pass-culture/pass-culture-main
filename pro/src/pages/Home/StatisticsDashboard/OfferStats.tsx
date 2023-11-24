@@ -6,6 +6,7 @@ import {
   GetOffererResponseModel,
   GetOffererV2StatsResponseModel,
 } from 'apiClient/v1'
+import fullLinkIcon from 'icons/full-link.svg'
 import fullShowIcon from 'icons/full-show.svg'
 import strokePhoneIcon from 'icons/stroke-phone.svg'
 import strokeTeacherIcon from 'icons/stroke-teacher.svg'
@@ -94,12 +95,55 @@ export const OfferStats = ({ offerer, className }: OfferStatsProps) => {
                 icon={strokeTeacherIcon}
                 count={stats.publishedEducationalOffers}
                 label="à destination de groupes scolaires"
-                link=""
+                link={`/offres/collectives?structure=${offerer.id}&status=active`}
                 linkLabel="Voir les offres collectives publiées"
               />
             </>
           )}
         </div>
+
+        {stats !== null &&
+          (stats.pendingEducationalOffers > 0 ||
+            stats.pendingPublicOffers > 0) && (
+            <div className={styles['pending-offers']}>
+              <h3 className={styles['title']}>Vos offres en attente</h3>
+
+              <p className={styles['pending-description']}>
+                Le contrôle de conformité peut prendre jusqu'à 72 heures. En cas
+                de validation, l'offre sera automatiquement publiée.
+                <br />
+                <ButtonLink
+                  variant={ButtonVariant.QUATERNARY}
+                  link={{
+                    to: 'https://aide.passculture.app/hc/fr/articles/4412007222289--Acteurs-Culturels-Quelles-sont-les-raisons-possibles-de-refus-de-votre-offre-',
+                    isExternal: true,
+                  }}
+                  icon={fullLinkIcon}
+                  svgAlt="Nouvelle fenêtre"
+                >
+                  En savoir plus sur les règles de conformité.
+                </ButtonLink>
+              </p>
+
+              <div className={styles['container']}>
+                <StatBlock
+                  icon={strokePhoneIcon}
+                  count={stats.pendingPublicOffers}
+                  label="à destination du grand public"
+                  link={`/offres?structure=${offerer.id}&status=en-attente`}
+                  linkLabel="Voir les offres individuelles en attente"
+                />
+
+                <StatBlock
+                  icon={strokeTeacherIcon}
+                  count={stats.pendingEducationalOffers}
+                  label="à destination de groupes scolaires"
+                  link={`/offres/collectives?structure=${offerer.id}&status=en-attente`}
+                  linkLabel="Voir les offres collectives en attente"
+                />
+              </div>
+            </div>
+          )}
       </div>
     </div>
   )
