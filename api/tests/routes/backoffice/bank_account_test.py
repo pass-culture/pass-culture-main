@@ -61,7 +61,8 @@ class GetBankAccountTest(GetEndpointHelper):
                 "dossier": {
                     "state": "en_construction",
                     "dateDepot": "2022-09-21T16:30:22+02:00",
-                    "dateDerniereModification": "2022-09-22T16:30:22+02:00",
+                    "dateDerniereModification": "2022-09-23T16:30:22+02:00",
+                    "datePassageEnConstruction": "2022-09-22T16:30:22+02:00",
                 }
             }
             bank_account = finance_factories.BankAccountFactory()
@@ -84,7 +85,10 @@ class GetBankAccountTest(GetEndpointHelper):
                 "dossier": {
                     "state": "accepte",
                     "dateDepot": "2022-09-21T16:30:22+02:00",
-                    "dateDerniereModification": "2022-09-23T16:30:22+02:00",
+                    "dateDerniereModification": "2022-09-25T16:30:22+02:00",
+                    "datePassageEnConstruction": "2022-09-22T16:30:22+02:00",
+                    "datePassageEnInstruction": "2022-09-23T16:30:22+02:00",
+                    "dateTraitement": "2022-09-24T16:30:22+02:00",
                 }
             }
             bank_account = finance_factories.BankAccountFactory()
@@ -97,7 +101,7 @@ class GetBankAccountTest(GetEndpointHelper):
 
         response_text = html_parser.content_as_text(response.data)
         assert "Statut DMS CB : Accepté" in response_text
-        assert "Date de validation du dossier DMS CB : 23/09/2022" in response_text
+        assert "Date de validation du dossier DMS CB : 24/09/2022" in response_text
         assert "Date de dépôt du dossier DMS CB" not in response_text
         assert "ACCÉDER AU DOSSIER DMS CB" in response_text
 
