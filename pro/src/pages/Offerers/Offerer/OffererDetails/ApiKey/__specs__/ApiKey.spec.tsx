@@ -102,7 +102,7 @@ describe('ApiKey', () => {
     expect(showNotificationSpy).toHaveBeenCalledWith({
       type: 'error',
       duration: 5000,
-      text: "Une erreur s'est produite, veuillez réessayer",
+      text: 'Une erreur s’est produite, veuillez réessayer',
     })
   })
 

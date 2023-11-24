@@ -41,7 +41,7 @@ const CinemaProviderParameters = ({
       })
       .catch(() => {
         isSucess = false
-        notification.error("Une erreur s'est produite, veuillez réessayer")
+        notification.error('Une erreur s’est produite, veuillez réessayer')
       })
 
     return isSucess

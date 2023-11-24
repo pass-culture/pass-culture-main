@@ -64,7 +64,7 @@ const Activity = ({
                   ...venueLabels,
                 ]}
                 name="venueLabel"
-                label="Label du ministère de la Culture ou du Centre national du cinéma et de l'image animée"
+                label="Label du ministère de la Culture ou du Centre national du cinéma et de l’image animée"
                 isOptional
               />
             </FormLayout.Row>

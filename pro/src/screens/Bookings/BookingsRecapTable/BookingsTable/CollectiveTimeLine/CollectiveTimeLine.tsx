@@ -328,7 +328,7 @@ const CollectiveTimeLine = ({
           Remboursement à venir
         </div>
         <div>
-          À compter du jour de l'évènement, le virement sera exécuté dans un
+          À compter du jour de l’évènement, le virement sera exécuté dans un
           délai de 2 à 3 semaines.
         </div>
         <ButtonLink
@@ -372,7 +372,7 @@ const CollectiveTimeLine = ({
             {bookingRecap.bookingCancellationReason ===
               CollectiveBookingCancellationReasons.FRAUD && (
               <>
-                Pour plus d'informations, vous pouvez contacter{' '}
+                Pour plus d’informations, vous pouvez contacter{' '}
                 <a
                   className={styles['contact-link']}
                   href="mailto:support@passculture.app"

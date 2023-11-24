@@ -30,7 +30,7 @@ const OfferAppPreview = ({ offer }: OfferAppPreviewProps): JSX.Element => {
             alt="Image de l’offre"
           />
         ) : (
-          <p>Pas d'image</p>
+          <p>Pas d’image</p>
         )}
       </div>
 

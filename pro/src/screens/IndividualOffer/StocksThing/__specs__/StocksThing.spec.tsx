@@ -314,7 +314,7 @@ describe('screens:StocksThing', () => {
         screen.getByText("Ajouter des codes d'activation")
       )
       const uploadButton = screen.getByText(
-        "Importer un fichier .csv depuis l'ordinateur"
+        'Importer un fichier .csv depuis l’ordinateur'
       )
 
       const file = new File(
@@ -382,7 +382,7 @@ describe('screens:StocksThing', () => {
         screen.getByText("Ajouter des codes d'activation")
       )
       const uploadButton = screen.getByText(
-        "Importer un fichier .csv depuis l'ordinateur"
+        'Importer un fichier .csv depuis l’ordinateur'
       )
       const title = screen.getByText(/Ajouter des codes d’activation/)
 
@@ -397,7 +397,7 @@ describe('screens:StocksThing', () => {
 
       await expect(
         screen.findByText(
-          "Une erreur s'est produite lors de l’import de votre fichier."
+          'Une erreur s’est produite lors de l’import de votre fichier.'
         )
       ).resolves.toBeInTheDocument()
 

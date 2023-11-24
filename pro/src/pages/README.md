@@ -10,7 +10,7 @@ Comme leur nom l’indique, ils ont pour responsablitilé d'associer une page av
 
 ### Les composants de page
 
-Les composants ont pour responsabilité de charger toutes les données nécéssaires à l'affichage de la page, de structurer ces données puis d'hydrater le screen lié, tout en l’intégrant au layout général. Si l’écran en question est un formulaire, la page à aussi la responsabilité de récupérer la donnée saisie, et de communiquer avec le serveur pour mener les opération.
+Les composants ont pour responsabilité de charger toutes les données nécéssaires à l’affichage de la page, de structurer ces données puis d'hydrater le screen lié, tout en l’intégrant au layout général. Si l’écran en question est un formulaire, la page à aussi la responsabilité de récupérer la donnée saisie, et de communiquer avec le serveur pour mener les opération.
 
 ## Objectif
 
@@ -59,7 +59,7 @@ Ici nous testons les I/O API => UI et UI => API On peut importer des actions au 
 - Reproduire la structure de l'URL en utilisant la structure des dossiers
 - Créer des `formaters` pour traiter la donnée avant d'hydrater les pages, ou de la retourner aux APIs
 - N'afficher l’écran qu'une fois la page hydratée
-- Si votre page est très complexe (beaucoup de composants imbriqués), afin de diminuer le nombre de passage de props à travers les composants, il est possible de faire usage d'un contexte pour faire passer les données et méthodes nécéssaires.
+- Si votre page est très complexe (beaucoup de composants imbriqués), afin de diminuer le nombre de passage de props à travers les composants, il est possible de faire usage d’un contexte pour faire passer les données et méthodes nécéssaires.
 
 ## Retour vers la doc
 

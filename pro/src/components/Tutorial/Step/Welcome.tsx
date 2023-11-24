@@ -19,7 +19,7 @@ const Welcome = ({
     <section className={contentClassName}>
       <div className={styles['tw-description']}>
         Le pass Culture est un dispositif gouvernemental permettant aux jeunes
-        âgés de 15 à 20 ans de bénéficier d'une enveloppe de 300€ utilisable
+        âgés de 15 à 20 ans de bénéficier d’une enveloppe de 300€ utilisable
         pour réserver vos offres culturelles.
       </div>
       <div className={styles['tw-strong']}>

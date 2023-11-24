@@ -67,7 +67,7 @@ describe('CollectiveStatusLabel', () => {
       status: 'toto',
     })
     expect(() => renderCollectiveStatusLabel(collectiveOffer)).toThrowError(
-      "Le statut de l'offre n'est pas valide"
+      'Le statut de l’offre n’est pas valide'
     )
   })
 })

@@ -3,7 +3,6 @@ import sub from 'date-fns/sub'
 
 import { StocksEvent } from 'components/StocksEventList/StocksEventList'
 import useNotification from 'hooks/useNotification'
-import { MAX_STOCKS_PER_OFFER } from 'screens/IndividualOffer/constants'
 import { serializeBeginningDateTime } from 'screens/IndividualOffer/StocksEventEdition/adapters/serializers'
 import upsertStocksEventAdapter from 'screens/IndividualOffer/StocksEventEdition/adapters/upsertStocksEventAdapter'
 import {
@@ -61,7 +60,7 @@ export const onSubmit = async (
       )
     } else {
       notify.error(
-        `Veuillez créer moins de ${MAX_STOCKS_PER_OFFER} dates par offre.`
+        'Une erreur est survenue lors de l’enregistrement de vos stocks.'
       )
     }
   }

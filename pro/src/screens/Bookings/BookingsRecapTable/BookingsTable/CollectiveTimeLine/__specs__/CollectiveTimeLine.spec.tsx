@@ -158,7 +158,7 @@ describe('collective timeline', () => {
       renderCollectiveTimeLine(bookingRecap, bookingDetails)
       expect(
         screen.getByText(
-          "À compter du jour de l'évènement, le virement sera exécuté dans un délai de 2 à 3 semaines."
+          'À compter du jour de l’évènement, le virement sera exécuté dans un délai de 2 à 3 semaines.'
         )
       ).toBeInTheDocument()
       expect(

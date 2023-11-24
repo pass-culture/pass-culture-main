@@ -214,7 +214,7 @@ describe('CollectiveOfferSummary', () => {
 
     await userEvent.click(duplicateOffer)
 
-    expect(notifyError).toHaveBeenCalledWith("Impossible de dupliquer l'image")
+    expect(notifyError).toHaveBeenCalledWith('Impossible de dupliquer l’image')
   })
 
   it('should return an error when trying to get offerer image blob', async () => {
@@ -235,6 +235,6 @@ describe('CollectiveOfferSummary', () => {
 
     await userEvent.click(duplicateOffer)
 
-    expect(notifyError).toHaveBeenCalledWith("Impossible de dupliquer l'image")
+    expect(notifyError).toHaveBeenCalledWith('Impossible de dupliquer l’image')
   })
 })

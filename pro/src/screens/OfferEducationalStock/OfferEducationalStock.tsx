@@ -153,7 +153,7 @@ const OfferEducationalStock = <
                     <br />
                     <span className={styles['description-text-italic']}>
                       (Exemple : j’accueille 30 élèves à 5{NBSP}€ la place, le
-                      prix global de mon offre s'élève à 150{NBSP}€ TTC.)
+                      prix global de mon offre s’élève à 150{NBSP}€ TTC.)
                     </span>
                   </p>
                   <FormStock

@@ -52,7 +52,7 @@ const AddBankAccountCallout = ({
       titleOnly={titleOnly}
     >
       <div>
-        Rendez-vous dans l'onglet informations bancaires de votre page
+        Rendez-vous dans l’onglet informations bancaires de votre page
         Remboursements.
       </div>
     </Callout>

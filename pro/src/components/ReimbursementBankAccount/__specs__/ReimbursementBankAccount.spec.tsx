@@ -112,7 +112,7 @@ describe('ReimbursementBankAccount', () => {
     ).toBeInTheDocument()
 
     expect(
-      screen.getByText("Aucun lieu n'est rattaché à ce compte bancaire.")
+      screen.getByText('Aucun lieu n’est rattaché à ce compte bancaire.')
     ).toBeInTheDocument()
 
     expect(
@@ -126,7 +126,7 @@ describe('ReimbursementBankAccount', () => {
 
     expect(
       screen.getByText(
-        "Aucun lieu n'est rattaché à ce compte bancaire. Désélectionnez un lieu déjà rattaché et rattachez-le à ce compte bancaire."
+        'Aucun lieu n’est rattaché à ce compte bancaire. Désélectionnez un lieu déjà rattaché et rattachez-le à ce compte bancaire.'
       )
     ).toBeInTheDocument()
   })
@@ -135,7 +135,7 @@ describe('ReimbursementBankAccount', () => {
     renderReimbursementBankAccount(bankAccount, 1, 2)
 
     expect(
-      screen.getByText("Un de vos lieux n'est pas rattaché.")
+      screen.getByText('Un de vos lieux n’est pas rattaché.')
     ).toBeInTheDocument()
 
     expect(
@@ -150,11 +150,11 @@ describe('ReimbursementBankAccount', () => {
     renderReimbursementBankAccount(bankAccount, 2, 1)
 
     expect(
-      screen.queryByText("Aucun lieu n'est rattaché à ce compte bancaire.")
+      screen.queryByText('Aucun lieu n’est rattaché à ce compte bancaire.')
     ).not.toBeInTheDocument()
     expect(
       screen.queryByText(
-        "Aucun lieu n'est rattaché à ce compte bancaire. Désélectionnez un lieu déjà rattaché et rattachez-le à ce compte bancaire."
+        'Aucun lieu n’est rattaché à ce compte bancaire. Désélectionnez un lieu déjà rattaché et rattachez-le à ce compte bancaire.'
       )
     ).not.toBeInTheDocument()
 
@@ -191,17 +191,17 @@ describe('ReimbursementBankAccount', () => {
     ).not.toBeInTheDocument()
 
     expect(
-      screen.queryByText("Aucun lieu n'est rattaché à ce compte bancaire.")
+      screen.queryByText('Aucun lieu n’est rattaché à ce compte bancaire.')
     ).not.toBeInTheDocument()
 
     expect(
       screen.queryByText(
-        "Aucun lieu n'est rattaché à ce compte bancaire. Désélectionnez un lieu déjà rattaché et rattachez-le à ce compte bancaire."
+        'Aucun lieu n’est rattaché à ce compte bancaire. Désélectionnez un lieu déjà rattaché et rattachez-le à ce compte bancaire.'
       )
     ).not.toBeInTheDocument()
 
     expect(
-      screen.queryByText("Un de vos lieux n'est pas rattaché.")
+      screen.queryByText('Un de vos lieux n’est pas rattaché.')
     ).not.toBeInTheDocument()
 
     expect(

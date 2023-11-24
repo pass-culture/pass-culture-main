@@ -152,7 +152,7 @@ describe('AttachmentInvitations', () => {
     await waitFor(() => {
       expect(
         screen.getByText(
-          "Une erreur est survenue lors de l'envoi de l'invitation."
+          'Une erreur est survenue lors de l’envoi de l’invitation.'
         )
       ).toBeInTheDocument()
     })

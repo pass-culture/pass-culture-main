@@ -111,12 +111,12 @@ const OfferNameCell = ({
                 alt="Attention"
               />
               <span className={styles['sold-out-dates']}>
-                La date limite de réservation par le chef d'établissement est
+                La date limite de réservation par le chef d’établissement est
                 dans{' '}
                 {`${
                   getRemainingTime(offer.stocks[0]) >= 1
                     ? pluralize(getRemainingTime(offer.stocks[0]), 'jour')
-                    : "moins d'un jour"
+                    : 'moins d’un jour'
                 } (${getDate(offer.stocks[0])})`}
               </span>
             </div>

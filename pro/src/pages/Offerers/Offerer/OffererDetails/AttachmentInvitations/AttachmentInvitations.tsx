@@ -26,7 +26,7 @@ interface AttachmentInvitationsProps {
 
 const SECTION_ID = '#attachment-invitations-section'
 const SUCCESS_MESSAGE = "L'invitation a bien été envoyée."
-const ERROR_MESSAGE = "Une erreur est survenue lors de l'envoi de l'invitation."
+const ERROR_MESSAGE = 'Une erreur est survenue lors de l’envoi de l’invitation.'
 
 const AttachmentInvitations = ({ offererId }: AttachmentInvitationsProps) => {
   const { logEvent } = useAnalytics()

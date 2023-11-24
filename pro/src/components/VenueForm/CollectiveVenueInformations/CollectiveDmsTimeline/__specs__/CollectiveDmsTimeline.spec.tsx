@@ -58,7 +58,7 @@ describe('CollectiveDmsTimeline', () => {
         ...defaultCollectiveDmsApplication,
         state: DMSApplicationstatus.EN_INSTRUCTION,
       },
-      expectedLabel: "Votre dossier est en cours d'instruction",
+      expectedLabel: 'Votre dossier est en cours d’instruction',
     },
     {
       collectiveDmsApplication: {

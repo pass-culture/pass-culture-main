@@ -56,17 +56,17 @@ const renderSignIn = (
       <Routes>
         <Route
           path="/accueil"
-          element={<span>I'm logged standard user redirect route</span>}
+          element={<span>I’m logged standard user redirect route</span>}
         />
         <Route
           path="/inscription"
-          element={<span>I'm the inscription page</span>}
+          element={<span>I’m the inscription page</span>}
         />
         <Route
           path="/parcours-inscription"
-          element={<span>I'm the onboarding page</span>}
+          element={<span>I’m the onboarding page</span>}
         />
-        <Route path="/offres" element={<span>I'm the offer page</span>} />
+        <Route path="/offres" element={<span>I’m the offer page</span>} />
       </Routes>
       <Notification />
     </>,
@@ -247,7 +247,7 @@ describe('SignIn', () => {
 
       await waitFor(() =>
         expect(
-          screen.getByText("I'm logged standard user redirect route")
+          screen.getByText('I’m logged standard user redirect route')
         ).toBeInTheDocument()
       )
     })
@@ -387,7 +387,7 @@ describe('SignIn', () => {
       )
 
       expect(listOfferersNamesRequest).toHaveBeenCalledTimes(1)
-      expect(screen.getByText("I'm the onboarding page")).toBeInTheDocument()
+      expect(screen.getByText('I’m the onboarding page')).toBeInTheDocument()
     })
 
     it('should not redirect user to onboarding page if use has an offerer', async () => {
@@ -419,7 +419,7 @@ describe('SignIn', () => {
       )
 
       expect(
-        screen.getByText("I'm logged standard user redirect route")
+        screen.getByText('I’m logged standard user redirect route')
       ).toBeInTheDocument()
     })
 
@@ -438,7 +438,7 @@ describe('SignIn', () => {
         })
       )
 
-      expect(screen.getByText("I'm the offer page")).toBeInTheDocument()
+      expect(screen.getByText('I’m the offer page')).toBeInTheDocument()
     })
   })
 

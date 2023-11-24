@@ -83,7 +83,7 @@ const CollectiveDmsTimeline = ({
     content: (
       <>
         <div className={styles['timeline-step-title']}>
-          Votre dossier est en attente d'instruction
+          Votre dossier est en attente d’instruction
         </div>
         <div>
           <div className={styles['timeline-step-description']}>
@@ -124,13 +124,13 @@ const CollectiveDmsTimeline = ({
     content: (
       <>
         <div className={styles['timeline-step-title']}>
-          Votre dossier est en cours d'instruction
+          Votre dossier est en cours d’instruction
         </div>
         <div>
           {instructionDate}
           <br />
           <div className={styles['timeline-step-description']}>
-            Votre dossier est en cours d'instruction par la commission de
+            Votre dossier est en cours d’instruction par la commission de
             référencement de votre territoire. Si votre dossier concerne un
             établissement public, il est traité par le Ministère de la Culture.
           </div>
@@ -174,7 +174,7 @@ const CollectiveDmsTimeline = ({
           <br />
           <div className={styles['timeline-step-description']}>
             Votre lieu doit encore être référencé dans ADAGE par les équipes du
-            ministère de l'Éducation nationale et de la jeunesse. Vous recevrez
+            ministère de l’Éducation nationale et de la jeunesse. Vous recevrez
             un mail lorsque votre référencement sera effectif.
           </div>
         </div>

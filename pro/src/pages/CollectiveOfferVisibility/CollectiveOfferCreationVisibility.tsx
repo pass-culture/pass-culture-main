@@ -60,7 +60,7 @@ export const CollectiveOfferVisibility = ({
 
   if (isCollectiveOfferTemplate(offer)) {
     throw new Error(
-      "Impossible de mettre à jour la visibilité d'une offre vitrine."
+      'Impossible de mettre à jour la visibilité d’une offre vitrine.'
     )
   }
 

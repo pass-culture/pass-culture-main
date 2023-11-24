@@ -29,7 +29,7 @@ const CollectiveOfferStockEdition = ({
   const navigate = useNavigate()
 
   if (isCollectiveOfferTemplate(offer)) {
-    throw new Error("Impossible de mettre à jour le stock d'une offre vitrine.")
+    throw new Error('Impossible de mettre à jour le stock d’une offre vitrine.')
   }
 
   const initialValues = extractInitialStockValues(offer)

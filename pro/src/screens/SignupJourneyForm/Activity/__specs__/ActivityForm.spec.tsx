@@ -193,7 +193,7 @@ describe('screens:SignupJourney::ActivityForm', () => {
     expect(screen.getAllByText('Site internet, réseau social')).toHaveLength(2)
 
     const trashButtons = screen.getAllByRole('button', {
-      name: "Supprimer l'url",
+      name: 'Supprimer l’url',
     })
 
     await userEvent.click(trashButtons[0])

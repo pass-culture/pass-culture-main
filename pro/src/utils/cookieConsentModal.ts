@@ -62,7 +62,7 @@ export const initCookieConsent = () => {
           : 'NODEVICEID',
       }
 
-      // l'api orejime n'est pas asynchrone
+      // l’api orejime n’est pas asynchrone
       // eslint-disable-next-line @typescript-eslint/no-floating-promises
       api.cookiesConsent(cookieConsent)
 
@@ -83,7 +83,7 @@ export const initCookieConsent = () => {
         consentNotice: {
           title: 'Respect de votre vie privée',
           description:
-            "Nous utilisons des cookies et traceurs afin d’analyser l'utilisation de la plateforme et vous proposer la meilleure expérience possible. Vous pouvez accepter ou refuser l’activation de leur suivi. À tout moment, vous pouvez consulter et modifier vos choix à partir de la page « Gérer les cookies » dans la rubrique « Aide et support ».",
+            'Nous utilisons des cookies et traceurs afin d’analyser l’utilisation de la plateforme et vous proposer la meilleure expérience possible. Vous pouvez accepter ou refuser l’activation de leur suivi. À tout moment, vous pouvez consulter et modifier vos choix à partir de la page « Gérer les cookies » dans la rubrique « Aide et support ».',
           learnMore: 'Choisir les cookies',
         },
         consentModal: {

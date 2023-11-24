@@ -29,7 +29,6 @@ export const BookingStatusCell = ({
     const lastBookingStatus = booking.bookingStatusHistory.slice(-1)[0].status
     const bookingDisplayInfo =
       getCollectiveBookingStatusDisplayInformations(lastBookingStatus)
-    console.log('BookingStatusCell', bookingDisplayInfo)
     if (!bookingDisplayInfo) {
       return null
     }

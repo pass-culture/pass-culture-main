@@ -45,7 +45,7 @@ const ResetPassword = (): JSX.Element => {
         <SvgIcon
           className="logo-unlogged"
           viewBox="0 0 282 120"
-          alt="Pass Culture pro, l'espace des acteurs culturels"
+          alt="Pass Culture pro, l’espace des acteurs culturels"
           src={logoPassCultureProFullIcon}
           width="135"
         />

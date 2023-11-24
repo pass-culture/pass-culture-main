@@ -88,7 +88,7 @@ const OfferSummary = ({ offer }: OfferSummaryProps): JSX.Element => {
     if (offerVenue.addressType === OfferAddressType.OTHER) {
       offerVenueLabel = offerVenue.otherAddress
     } else if (offerVenue.addressType === OfferAddressType.SCHOOL) {
-      offerVenueLabel = "Dans l'établissement scolaire"
+      offerVenueLabel = 'Dans l’établissement scolaire'
     }
   }
 

@@ -22,7 +22,7 @@ describe('validationSchema', () => {
     {
       description: 'partial form',
       formValues: { priceCategories: [priceCategoryFormFactory()] },
-      expectedErrors: ["Le formulaire n'est pas complet"],
+      expectedErrors: ['Le formulaire n’est pas complet'],
     },
     {
       description: 'negative price',

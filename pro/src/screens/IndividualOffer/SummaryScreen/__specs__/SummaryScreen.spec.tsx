@@ -163,7 +163,7 @@ describe('Summary', () => {
       screen.getByText('URL d’accès à l’offre', { exact: false })
     ).toBeInTheDocument()
     expect(screen.getByText('Lien pour le grand public')).toBeInTheDocument()
-    expect(screen.getByText("Aperçu dans l'app")).toBeInTheDocument()
+    expect(screen.getByText('Aperçu dans l’app')).toBeInTheDocument()
 
     expect(screen.getByText(categories[0].proLabel)).toBeInTheDocument()
     expect(screen.getByText(subCategories[0].proLabel)).toBeInTheDocument()
@@ -341,7 +341,7 @@ describe('Summary', () => {
         })
       )
       expect(
-        await screen.findByText("Une erreur s'est produite, veuillez réessayer")
+        await screen.findByText('Une erreur s’est produite, veuillez réessayer')
       ).toBeInTheDocument()
     })
 
