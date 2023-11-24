@@ -261,7 +261,7 @@ const CollectiveOfferVisibility = ({
                         name="institution"
                         type="search"
                         options={institutionsOptions}
-                        label="Nom de l'établissement scolaire ou code UAI"
+                        label="Nom de l’établissement scolaire ou code UAI"
                         placeholder="Ex : Lycee General Simone Weil ou 010456E ou Le Havre"
                         hideArrow
                         onReset={async () => {

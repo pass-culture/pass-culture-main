@@ -20,7 +20,7 @@ const CreateOffer = ({
         <h2>Du grand public</h2>
         <p>
           Les offres seront publiées et réservables par les jeunes via
-          l'application pass Culture.
+          l’application pass Culture.
           <br />
           <br />
           Vous pourrez proposer des offres numériques, physiques et

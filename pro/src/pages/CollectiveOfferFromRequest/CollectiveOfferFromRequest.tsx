@@ -99,11 +99,11 @@ const CollectiveOfferFromRequest = (): JSX.Element => {
         <Title level={1}>Récapitulatif de la demande</Title>
       </div>
       <div className={styles['eac-section']}>
-        Vous avez reçu une demande de création d'offres de la part d'un
+        Vous avez reçu une demande de création d’offres de la part d’un
         établissement scolaire. Vous pouvez créer une offre à partir des
-        informations saisies par l'enseignant. Toutes les informations sont
+        informations saisies par l’enseignant. Toutes les informations sont
         modifiables.
-        <br /> L'offre sera visible par l'enseignant sur Adage.
+        <br /> L’offre sera visible par l’enseignant sur Adage.
       </div>
       <SummaryLayout.Section title="Détails de la demande">
         <div className={styles['eac-section']}>
@@ -132,7 +132,7 @@ const CollectiveOfferFromRequest = (): JSX.Element => {
             }
           />
           <SummaryLayout.Row
-            title="Prénom et nom de l'enseignant"
+            title="Prénom et nom de l’enseignant"
             description={`${informations?.redactor.firstName} ${informations?.redactor.lastName} `}
           />
           <SummaryLayout.Row

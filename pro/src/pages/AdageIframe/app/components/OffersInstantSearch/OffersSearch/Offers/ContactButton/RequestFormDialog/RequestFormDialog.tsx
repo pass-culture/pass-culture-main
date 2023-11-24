@@ -142,7 +142,7 @@ const RequestFormDialog = ({
                     label="Que souhaitez vous organiser ?"
                     maxLength={1000}
                     name="description"
-                    placeholder="Décrivez le projet que vous souhaiteriez co-construire avec l'acteur culturel (Ex : Je souhaite organiser une visite que vous proposez dans votre théâtre pour un projet pédagogique autour du théâtre et de l'expression corporelle avec ma classe de 30 élèves entre janvier et mars. Je suis joignable par téléphone ou par mail.)"
+                    placeholder="Décrivez le projet que vous souhaiteriez co-construire avec l’acteur culturel (Ex : Je souhaite organiser une visite que vous proposez dans votre théâtre pour un projet pédagogique autour du théâtre et de l’expression corporelle avec ma classe de 30 élèves entre janvier et mars. Je suis joignable par téléphone ou par mail.)"
                   />
                 </FormLayout.Row>
                 <div className={styles['buttons-container']}>

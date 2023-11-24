@@ -93,7 +93,7 @@ const ReimbursementBankAccount = ({
           <div className={styles['linked-venues-content']}>
             {!hasLinkedVenues && (
               <div className={styles['issue-text']}>
-                Aucun lieu n'est rattaché à ce compte bancaire.
+                Aucun lieu n’est rattaché à ce compte bancaire.
                 {venuesNotLinkedLength === 0 &&
                   bankAccountsNumber > 1 &&
                   ' Désélectionnez un lieu déjà rattaché et rattachez-le à ce compte bancaire.'}
@@ -103,7 +103,7 @@ const ReimbursementBankAccount = ({
               <div className={styles['issue-text']}>
                 {venuesNotLinkedLength > 1
                   ? 'Certains de vos lieux ne sont pas rattachés'
-                  : "Un de vos lieux n'est pas rattaché."}
+                  : 'Un de vos lieux n’est pas rattaché.'}
               </div>
             )}
             {hasLinkedVenues && (

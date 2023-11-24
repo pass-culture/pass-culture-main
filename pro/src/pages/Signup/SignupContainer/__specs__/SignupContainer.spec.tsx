@@ -31,11 +31,11 @@ const renderSignUp = (storeOverrides: any) =>
       <Route path="/inscription" element={<SignupContainer />} />
       <Route
         path="/accueil"
-        element={<span>I'm logged in as a pro user</span>}
+        element={<span>I’m logged in as a pro user</span>}
       />
       <Route
         path="/inscription/confirmation"
-        element={<span>I'm the confirmation page</span>}
+        element={<span>I’m the confirmation page</span>}
       />
     </Routes>,
     { storeOverrides, initialRouterEntries: ['/inscription'] }
@@ -82,7 +82,7 @@ describe('Signup', () => {
     }
     renderSignUp(store)
     await expect(
-      screen.findByText("I'm logged in as a pro user")
+      screen.findByText('I’m logged in as a pro user')
     ).resolves.toBeInTheDocument()
   })
 
@@ -300,7 +300,7 @@ describe('Signup', () => {
             token: 'token',
           })
           await expect(
-            screen.findByText("I'm the confirmation page")
+            screen.findByText('I’m the confirmation page')
           ).resolves.toBeInTheDocument()
           expect(mockLogEvent).toHaveBeenNthCalledWith(
             1,

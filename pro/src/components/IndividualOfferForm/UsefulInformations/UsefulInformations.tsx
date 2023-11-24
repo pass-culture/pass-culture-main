@@ -131,7 +131,7 @@ const UsefulInformations = ({
           sideComponent={
             <InfoBox>
               Lien vers lequel seront renvoyés les bénéficiaires ayant réservé
-              votre offre sur l'application pass Culture.
+              votre offre sur l’application pass Culture.
             </InfoBox>
           }
         >

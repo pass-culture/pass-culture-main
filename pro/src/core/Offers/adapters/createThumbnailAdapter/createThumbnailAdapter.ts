@@ -10,7 +10,7 @@ type CreateThumbnailAdapter = Adapter<Params, IndividualOfferImage, null>
 
 const FAILING_RESPONSE: AdapterFailure<null> = {
   isOk: false,
-  message: "Une erreur est survenue lors de l'envoi de votre image",
+  message: 'Une erreur est survenue lors de l’envoi de votre image',
   payload: null,
 }
 

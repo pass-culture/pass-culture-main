@@ -14,7 +14,7 @@ const Template: Story<ImageEditorProps> = (props) => (
   <>
     <ImageEditor {...props} ref={null} />
     <h1>
-      Ne pas cliquer sur l'onglet "DOCS" de ce storybook, car il ne fonctionne
+      Ne pas cliquer sur l’onglet "DOCS" de ce storybook, car il ne fonctionne
       pas.
     </h1>
   </>

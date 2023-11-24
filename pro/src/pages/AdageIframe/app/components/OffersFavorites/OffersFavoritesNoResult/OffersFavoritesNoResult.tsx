@@ -20,7 +20,7 @@ export const OffersFavoritesNoResult = () => {
       />
       <div>
         <h2 className={styles['no-results-title']}>
-          Vous n'avez pas d'offres en favoris
+          Vous n’avez pas d’offres en favoris
         </h2>
         <p className={styles['no-results-text']}>
           Explorez le catalogue et ajoutez les offres en favori pour les

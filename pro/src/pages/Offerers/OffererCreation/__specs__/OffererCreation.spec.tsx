@@ -16,7 +16,7 @@ const renderOffererCreation = (storeOverrides: any) =>
     <>
       <Routes>
         <Route path="/" element={<OffererCreation />} />
-        <Route path="/accueil" element={<div>I'm on homepage</div>} />
+        <Route path="/accueil" element={<div>I’m on homepage</div>} />
       </Routes>
       <Notification />
     </>,
@@ -108,7 +108,7 @@ describe('src | components | OffererCreation', () => {
       apeCode: '',
     })
 
-    expect(screen.getByText("I'm on homepage")).toBeInTheDocument()
+    expect(screen.getByText('I’m on homepage')).toBeInTheDocument()
   })
 
   it('should display error on submit fail response', async () => {

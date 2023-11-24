@@ -142,7 +142,7 @@ const Offerer = (): JSX.Element => {
               ]}
             >
               <strong>
-                Vous êtes un équipement d’une collectivité ou d'un établissement
+                Vous êtes un équipement d’une collectivité ou d’un établissement
                 public ?
               </strong>
               <p className={styles['banner-content-info']}>

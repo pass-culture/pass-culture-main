@@ -135,7 +135,7 @@ export const getCollectiveStatusLabel = (
         />
       )
     default:
-      throw Error("Le statut de l'offre n'est pas valide")
+      throw Error('Le statut de l’offre n’est pas valide')
   }
 }
 

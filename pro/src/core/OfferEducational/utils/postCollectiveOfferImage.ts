@@ -15,7 +15,7 @@ export const postCollectiveOfferImage = async ({
   payload,
 }: PostCollectiveOfferImageProps) => {
   const { imageUrl, imageCredit } = initialValues
-  const imageErrorMessage = "Impossible de dupliquer l'image"
+  const imageErrorMessage = 'Impossible de dupliquer l’image'
   /* istanbul ignore next: DEBT to fix */
   if (imageUrl) {
     const imageResponse = await fetch(imageUrl)

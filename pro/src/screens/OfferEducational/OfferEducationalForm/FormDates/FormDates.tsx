@@ -29,7 +29,7 @@ const FormDates = ({
       description="Indiquez la date et l'heure ou la période pendant laquelle votre offre peut avoir lieu."
     >
       <Callout type={CalloutVariant.INFO} className={styles.banner}>
-        Votre offre sera désactivée automatiquement à l'issue des dates
+        Votre offre sera désactivée automatiquement à l’issue des dates
         précisées ci-dessous.
       </Callout>
       <FormLayout.Row className={styles.container}>

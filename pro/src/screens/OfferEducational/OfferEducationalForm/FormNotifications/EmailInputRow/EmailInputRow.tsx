@@ -38,7 +38,7 @@ const EmailInputRow = ({
             variant={ButtonVariant.TERNARY}
             hasTooltip
           >
-            Supprimer l'email
+            Supprimer l’email
           </Button>
         </div>
       )}

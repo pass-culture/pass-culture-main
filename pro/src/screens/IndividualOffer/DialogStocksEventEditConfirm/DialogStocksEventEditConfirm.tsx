@@ -20,7 +20,7 @@ const DialogStocksEventEditConfirm = ({
       cancelText="Annuler"
     >
       <p>
-        Si vous avez changé la date ou l'heure de l'évènement, les bénéficiaires
+        Si vous avez changé la date ou l’heure de l’évènement, les bénéficiaires
         ayant déjà réservé en seront automatiquement informés par email.
       </p>
       <p>
@@ -28,7 +28,7 @@ const DialogStocksEventEditConfirm = ({
       </p>
       <br />
       <p>
-        Si vous avez changé le tarif de cette offre, celui-ci ne s'appliquera
+        Si vous avez changé le tarif de cette offre, celui-ci ne s’appliquera
         que pour les prochaines réservations.
       </p>
     </ConfirmDialog>

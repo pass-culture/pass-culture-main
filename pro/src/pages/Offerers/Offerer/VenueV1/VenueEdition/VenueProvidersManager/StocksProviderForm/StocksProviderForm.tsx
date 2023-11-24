@@ -106,9 +106,9 @@ const StocksProviderForm = ({
           icon={strokeConnectIcon}
         >
           <p>
-            En sélectionnant un logiciel, vous l'autorisez à créer des offres
+            En sélectionnant un logiciel, vous l’autorisez à créer des offres
             automatiquement et/ou à gérer les réservations. Chaque
-            synchronisation par API est spécifique et dépend de l'intégration
+            synchronisation par API est spécifique et dépend de l’intégration
             développée par l’éditeur du logiciel.
           </p>
           <ButtonLink

@@ -17,7 +17,7 @@ export const routesSignupJourney: RouteConfig[] = [
     element: <Welcome />,
     parentPath: '/parcours-inscription',
     path: '/',
-    title: "Parcours d'inscription",
+    title: 'Parcours d’inscription',
   },
   {
     element: <Offerer />,

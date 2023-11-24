@@ -83,7 +83,7 @@ export const AdageHeader = () => {
       </nav>
       {adageUser.role !== AdageFrontRoles.READONLY && !isDiscoveryPage && (
         <div className={styles['adage-header-help']}>
-          Besoin d'aide pour réserver des offres pass Culture ?
+          Besoin d’aide pour réserver des offres pass Culture ?
           <ButtonLink
             variant={ButtonVariant.TERNARY}
             link={{
@@ -95,7 +95,7 @@ export const AdageHeader = () => {
             }}
             icon={fullDownloadIcon}
           >
-            Télécharger l'aide
+            Télécharger l’aide
           </ButtonLink>
         </div>
       )}

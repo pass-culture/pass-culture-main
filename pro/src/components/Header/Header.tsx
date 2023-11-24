@@ -42,7 +42,7 @@ const Header = () => {
             }}
           >
             <SvgIcon
-              alt="Pass Culture pro, l'espace des acteurs culturels"
+              alt="Pass Culture pro, l’espace des acteurs culturels"
               src={logoPassCultureProIcon}
               viewBox="0 0 119 40"
               width="119"

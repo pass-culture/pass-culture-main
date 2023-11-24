@@ -5,8 +5,8 @@
   - [x] relier la div help à l’input: ajouter les attributs aria
   - [x] créer un champ select caché
   - [x] creer une liste pour le menu déroulant
-  - [x] gérer le hovered (l'appeler focused ?)
-- [x] vérifier si on peut remplacer le style par l'attribut `hidden`
+  - [x] gérer le hovered (l’appeler focused ?)
+- [x] vérifier si on peut remplacer le style par l’attribut `hidden`
 - [x] réaligner les éléments
 - [x] gérer le multi-select et le simple-select dans le même composant
 - [x] ajouter la nav clavier
@@ -17,11 +17,11 @@
 - [x] rendre clickable le multiselect via label
 - [x] selected gras
 - [x] enlever la checkbox lorsque le composant n’est pas multi
-- [ ] revérifier l'a11y du composant
+- [ ] revérifier l’a11y du composant
 - [ ] remplacer le composant TextInputAutocomplete
 - [ ] remplacer le composant SelectAutocomplete
 - [ ] remplacer le composant MultiSelectAutocomplete
-- [ ] `className={hovered === index ? styles['option-hovered'] : ''}` ne pas utiliser `index` sinon, un machin qui était `hovered` ne l'est plus lorsqu'on tape un truc pour filtrer les résultats
+- [ ] `className={hovered === index ? styles['option-hovered'] : ''}` ne pas utiliser `index` sinon, un machin qui était `hovered` ne l’est plus lorsqu'on tape un truc pour filtrer les résultats
 - [ ] le scroll ne suit pas la navigation clavier
 - [ ] l’index hovered va en deça de zéro et au delà du nombre d'éléments
 - [ ] le label contient une div, peut etre qu'il faudrait le remplacer par un span ? US a créer

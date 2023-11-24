@@ -2,7 +2,7 @@
 
 ## Description
 
-Ce dossier contiens tous les écrans. Un `screen` est le résultat d'une page une fois hydratée par les données du back-end à l'exclusion du layout général et des éléments récurents dans toutes les pages.
+Ce dossier contiens tous les écrans. Un `screen` est le résultat d’une page une fois hydratée par les données du back-end à l’exclusion du layout général et des éléments récurents dans toutes les pages.
 
 Un screen compose et orcherstre les éléments de la page (`components` et `ui-kit`).
 

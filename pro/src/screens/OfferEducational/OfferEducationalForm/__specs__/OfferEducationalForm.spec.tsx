@@ -66,7 +66,7 @@ describe('OfferEducationalForm', () => {
     await waitFor(() => {
       expect(
         screen.queryByText(
-          /Pour proposer des offres à destination d'un groupe scolaire, vous devez renseigner un lieu pour pouvoir être remboursé./
+          /Pour proposer des offres à destination d’un groupe scolaire, vous devez renseigner un lieu pour pouvoir être remboursé./
         )
       ).not.toBeInTheDocument()
     })

@@ -44,7 +44,7 @@ const ApiKey = ({
       )
       setIsGeneratingKey(false)
     } catch {
-      notification.error("Une erreur s'est produite, veuillez réessayer")
+      notification.error('Une erreur s’est produite, veuillez réessayer')
       setIsGeneratingKey(false)
     }
   }, [offererId, notification])
@@ -58,7 +58,7 @@ const ApiKey = ({
       await api.deleteApiKey(apiKeyToDelete)
       reloadOfferer(offererId)
     } catch (e) {
-      notification.error("Une erreur s'est produite, veuillez réessayer")
+      notification.error('Une erreur s’est produite, veuillez réessayer')
     }
 
     setApiKeyToDelete(null)

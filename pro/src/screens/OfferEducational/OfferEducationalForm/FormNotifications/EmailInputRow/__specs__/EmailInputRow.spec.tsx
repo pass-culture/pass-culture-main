@@ -12,7 +12,7 @@ describe('EmailInputRow', () => {
       </Formik>
     )
     const removeInputIcon = screen.getByRole('button', {
-      name: "Supprimer l'email",
+      name: 'Supprimer l’email',
     })
     expect(removeInputIcon).toBeInTheDocument()
   })
