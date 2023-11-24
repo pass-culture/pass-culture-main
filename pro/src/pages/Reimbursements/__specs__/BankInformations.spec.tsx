@@ -10,6 +10,7 @@ import {
   ManagedVenues,
 } from 'apiClient/v1'
 import { ReimbursementContext } from 'context/ReimbursementContext/ReimbursementContext'
+import * as useAnalytics from 'hooks/useAnalytics'
 import BankInformations from 'pages/Reimbursements/BankInformations/BankInformations'
 import { defaultGetOffererResponseModel } from 'utils/apiFactories'
 import { renderWithProviders } from 'utils/renderWithProviders'
@@ -35,6 +36,8 @@ const defaultManagedVenues: ManagedVenues = {
   id: 1,
   siret: 'costume',
 }
+
+const mockLogEvent = vi.fn()
 
 function renderBankInformations() {
   const storeOverrides = {
@@ -127,6 +130,9 @@ describe('BankInformations', () => {
   })
 
   it('should should display unlink venues dialog', async () => {
+    vi.spyOn(useAnalytics, 'default').mockImplementation(() => ({
+      logEvent: mockLogEvent,
+    }))
     renderBankInformations()
 
     await userEvent.click(
@@ -148,5 +154,18 @@ describe('BankInformations', () => {
         /Attention : le ou les lieux désélectionnés ne seront plus remboursés sur ce compte bancaire/
       )
     ).toBeInTheDocument()
+
+    await userEvent.click(
+      screen.getByRole('button', {
+        name: 'Confirmer',
+      })
+    )
+    expect(mockLogEvent).toHaveBeenCalledWith(
+      'HasClickedAddVenueToBankAccount',
+      expect.objectContaining({
+        id: 1,
+        HasUncheckedVenue: true,
+      })
+    )
   })
 })

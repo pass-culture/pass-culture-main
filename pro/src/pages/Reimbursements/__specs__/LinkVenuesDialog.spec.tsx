@@ -5,6 +5,7 @@ import React from 'react'
 import { api } from 'apiClient/api'
 import { BankAccountApplicationStatus } from 'apiClient/v1'
 import Notification from 'components/Notification/Notification'
+import * as useAnalytics from 'hooks/useAnalytics'
 import LinkVenuesDialog, {
   LinkVenuesDialogProps,
 } from 'pages/Reimbursements/BankInformations/LinkVenuesDialog'
@@ -63,10 +64,13 @@ const props: LinkVenuesDialogProps = {
     status: BankAccountApplicationStatus.ACCEPTE,
   },
 }
-
+const mockLogEvent = vi.fn()
 describe('LinkVenueDialog', () => {
   beforeEach(() => {
     vi.spyOn(api, 'linkVenueToBankAccount').mockResolvedValue()
+    vi.spyOn(useAnalytics, 'default').mockImplementation(() => ({
+      logEvent: mockLogEvent,
+    }))
   })
 
   it('Should display the dialog', async () => {
@@ -130,6 +134,16 @@ describe('LinkVenueDialog', () => {
     expect(
       await screen.findByText(/Vos modifications ont bien été prises en compte/)
     ).toBeInTheDocument()
+
+    expect(mockLogEvent).toHaveBeenCalledTimes(1)
+    expect(mockLogEvent).toHaveBeenNthCalledWith(
+      1,
+      'HasClickedAddVenueToBankAccount',
+      expect.objectContaining({
+        id: 1,
+        HasUncheckedVenue: false,
+      })
+    )
   })
 
   it('Should handle update failure', async () => {

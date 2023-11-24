@@ -118,6 +118,7 @@ export enum BankAccountEvents {
   CLICKED_CHANGE_VENUE_TO_BANK_ACCOUNT = 'HasClickedChangeVenueToBankAccount',
   CLICKED_CONTINUE_TO_DS = 'HasClickedContinueToDS',
   CLICKED_BANK_DETAILS_RECORD_FOLLOW_UP = 'HasClickedBankDetailsRecordFollowUp',
+  CLICKED_SAVE_VENUE_TO_BANK_ACCOUNT = 'HasClickedSaveVenueToBankAccount',
 }
 
 export enum OFFER_FORM_NAVIGATION_OUT {
