@@ -41,11 +41,11 @@ def reset_password(body: ResetPasswordBodyModel) -> None:
 
     token = users_api.create_reset_password_token(user)
     if user.is_beneficiary:
-        send_email = transactional_mails.send_reset_password_email_to_user
+        successful_email_send = transactional_mails.send_reset_password_email_to_user(token)
     else:
-        send_email = transactional_mails.send_reset_password_email_to_pro
+        successful_email_send = transactional_mails.send_reset_password_email_to_pro(token)
 
-    if not send_email(token):
+    if not successful_email_send:
         logger.warning("Could not send reset password email", extra={"user": user.id})
 
 

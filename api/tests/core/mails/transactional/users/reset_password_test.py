@@ -7,8 +7,8 @@ from pcapi.core.mails import testing as mails_testing
 from pcapi.core.mails.transactional.sendinblue_template_ids import TransactionalEmail
 from pcapi.core.mails.transactional.users.reset_password import get_reset_password_email_data
 from pcapi.core.mails.transactional.users.reset_password import send_reset_password_email_to_user
-from pcapi.core.users import constants
 from pcapi.core.users import factories as users_factories
+from pcapi.core.users.models import constants
 
 
 pytestmark = pytest.mark.usefixtures("db_session")
@@ -31,6 +31,22 @@ class SendinblueSendResetPasswordToUserEmailTest:
         reset_password_link = mails_testing.outbox[0].sent_data["params"]["RESET_PASSWORD_LINK"]
         assert token.encoded_token in reset_password_link
         assert mails_testing.outbox[0].sent_data["template"] == asdict(TransactionalEmail.NEW_PASSWORD_REQUEST.value)
+        assert mails_testing.outbox[0].sent_data["To"] == user.email
+        assert mails_testing.outbox[0].sent_data["params"]["FIRSTNAME"] == user.firstName
+
+    def test_send_email_for_suspicious_login(self) -> None:
+        user = users_factories.UserFactory()
+        token = token_utils.Token.create(
+            token_utils.TokenType.RESET_PASSWORD, constants.RESET_PASSWORD_TOKEN_LIFE_TIME, user.id
+        )
+
+        send_reset_password_email_to_user(token, constants.SuspensionReason.SUSPICIOUS_LOGIN_REPORTED_BY_USER)
+
+        assert len(mails_testing.outbox) == 1
+        assert token.encoded_token in mails_testing.outbox[0].sent_data["params"]["RESET_PASSWORD_LINK"]
+        assert mails_testing.outbox[0].sent_data["template"] == asdict(
+            TransactionalEmail.NEW_PASSWORD_REQUEST_FOR_SUSPICIOUS_LOGIN.value
+        )
         assert mails_testing.outbox[0].sent_data["To"] == user.email
         assert mails_testing.outbox[0].sent_data["params"]["FIRSTNAME"] == user.firstName
 

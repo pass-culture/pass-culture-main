@@ -1,3 +1,4 @@
+import dataclasses
 import datetime
 from decimal import Decimal
 import logging
@@ -24,6 +25,7 @@ from pcapi.core.geography import models as geography_models
 from pcapi.core.history import factories as history_factories
 from pcapi.core.history import models as history_models
 import pcapi.core.mails.testing as mails_testing
+from pcapi.core.mails.transactional.sendinblue_template_ids import TransactionalEmail
 from pcapi.core.offerers import factories as offerers_factories
 from pcapi.core.subscription import api as subscription_api
 from pcapi.core.testing import assert_num_queries
@@ -357,6 +359,9 @@ class UnsuspendAccountTest:
         users_api.unsuspend_account(user, author)
 
         assert len(mails_testing.outbox) == 1
+        assert mails_testing.outbox[0].sent_data["template"] == dataclasses.asdict(
+            TransactionalEmail.NEW_PASSWORD_REQUEST_FOR_SUSPICIOUS_LOGIN.value
+        )
         assert mails_testing.outbox[0].sent_data["params"]["RESET_PASSWORD_LINK"]
 
     @pytest.mark.parametrize(
