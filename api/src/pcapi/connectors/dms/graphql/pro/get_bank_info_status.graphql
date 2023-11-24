@@ -3,6 +3,8 @@ query get_banking_info_status($dossierNumber: Int!) {
     state
     dateDepot
     dateDerniereModification
+    datePassageEnConstruction
+    datePassageEnInstruction
+    dateTraitement
   }
 }
-
