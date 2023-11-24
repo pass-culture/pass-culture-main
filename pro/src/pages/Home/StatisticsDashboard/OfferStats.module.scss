@@ -1,0 +1,64 @@
+@use "styles/mixins/_rem.scss" as rem;
+@use "styles/mixins/_fonts.scss" as fonts;
+@use "styles/variables/_colors.scss" as colors;
+@use "styles/variables/_size.scss" as size;
+
+.title {
+  @include fonts.title4;
+
+  margin-bottom: rem.torem(8px);
+}
+
+.container {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: rem.torem(8px);
+}
+
+.skeleton {
+  height: rem.torem(80px);
+  border-radius: rem.torem(8px);
+  box-shadow: 0 3px 4px rgb(103 104 107 / 10%);
+
+  // The trick is to "slide" the gradient with background-position
+  // while the actual background is 3x the size of the actual block
+  background: linear-gradient(191deg, #e1e1e7, #f1f2f4, #e1e1e7);
+  background-size: 300% 300%;
+  animation: loadinggradient 2s ease infinite;
+}
+
+@keyframes loadinggradient {
+  0% {
+    background-position: 0% 50%;
+  }
+
+  50% {
+    background-position: 100% 50%;
+  }
+
+  100% {
+    background-position: 0% 50%;
+  }
+}
+
+.stat-block {
+  display: flex;
+  padding: rem.torem(16px) rem.torem(8px);
+  border-radius: rem.torem(8px);
+  box-shadow: 0 3px 4px rgb(103 104 107 / 10%);
+
+  @include fonts.preview-text;
+
+  &-icon {
+    width: rem.torem(48px);
+    height: rem.torem(48px);
+    color: colors.$tertiary;
+    margin-right: rem.torem(8px);
+  }
+
+  &-count {
+    font-size: rem.torem(24px);
+    font-weight: 600;
+    line-height: rem.torem(22px);
+  }
+}
