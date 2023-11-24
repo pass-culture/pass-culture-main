@@ -13,6 +13,7 @@ import {
 vi.mock('apiClient/api', () => ({
   api: {
     getOffererStats: vi.fn(),
+    getOffererV2Stats: vi.fn(),
   },
 }))
 
@@ -33,6 +34,12 @@ describe('StatisticsDashboard', () => {
       syncDate: null,
       offererId: 1,
     })
+    vi.spyOn(api, 'getOffererV2Stats').mockResolvedValueOnce({
+      publishedPublicOffers: 0,
+      publishedEducationalOffers: 0,
+      pendingPublicOffers: 0,
+      pendingEducationalOffers: 0,
+    })
 
     renderStatisticsDashboard()
 
@@ -43,5 +50,7 @@ describe('StatisticsDashboard', () => {
       )
     ).toBeInTheDocument()
     expect(screen.getByText('Dernière mise à jour :')).toBeInTheDocument()
+
+    expect(screen.getByText('Vos offres publiées')).toBeInTheDocument()
   })
 })

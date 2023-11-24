@@ -15,6 +15,7 @@ import { FORMAT_DD_MM_YYYY_HH_mm } from 'utils/date'
 
 import { CumulatedViews } from './CumulatedViews'
 import { MostViewedOffers } from './MostViewedOffers'
+import { OfferStats } from './OfferStats'
 import styles from './StatisticsDashboard.module.scss'
 
 export interface StatisticsDashboardProps {
@@ -98,6 +99,8 @@ export const StatisticsDashboard = ({ offerer }: StatisticsDashboardProps) => {
           </div>
         </div>
       )}
+
+      <OfferStats offerer={offerer} className={styles['offer-stats']} />
     </section>
   )
 }
