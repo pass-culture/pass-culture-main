@@ -4,7 +4,7 @@ from pcapi.repository import feature_queries
 from pcapi.serialization.decorator import spectree_serialize
 from pcapi.settings import OBJECT_STORAGE_URL
 
-from . import blueprint
+from .. import blueprint
 from .serialization import settings as serializers
 
 
@@ -17,7 +17,7 @@ def _get_features(*requested_features: FeatureToggle) -> dict[FeatureToggle, boo
     }
 
 
-@blueprint.native_v1.route("/settings", methods=["GET"])
+@blueprint.native_route("/settings", methods=["GET"])
 @spectree_serialize(api=blueprint.api, response_model=serializers.SettingsResponse)
 def get_settings() -> serializers.SettingsResponse:
     features = _get_features(

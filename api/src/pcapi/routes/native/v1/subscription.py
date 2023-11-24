@@ -17,14 +17,14 @@ from pcapi.routes.native.security import authenticated_and_active_user_required
 from pcapi.serialization.decorator import spectree_serialize
 from pcapi.utils import requests as requests_utils
 
-from . import blueprint
+from .. import blueprint
 from .serialization import subscription as serializers
 
 
 logger = logging.getLogger(__name__)
 
 
-@blueprint.native_v1.route("/subscription/next_step", methods=["GET"])
+@blueprint.native_route("/subscription/next_step", methods=["GET"])
 @spectree_serialize(
     response_model=serializers.NextSubscriptionStepResponse,
     on_success_status=200,
@@ -52,7 +52,7 @@ def next_subscription_step(
     )
 
 
-@blueprint.native_v1.route("/subscription/stepper", methods=["GET"])
+@blueprint.native_route("/subscription/stepper", methods=["GET"])
 @spectree_serialize(
     response_model=serializers.SubscriptionStepperResponse,
     on_success_status=200,
@@ -86,7 +86,7 @@ def get_subscription_stepper(user: users_models.User) -> serializers.Subscriptio
     )
 
 
-@blueprint.native_v1.route("/subscription/profile", methods=["GET"])
+@blueprint.native_route("/subscription/profile", methods=["GET"])
 @spectree_serialize(on_success_status=200, on_error_statuses=[404], api=blueprint.api)
 @authenticated_and_active_user_required
 def get_profile(user: users_models.User) -> serializers.ProfileResponse | None:
@@ -100,7 +100,7 @@ def get_profile(user: users_models.User) -> serializers.ProfileResponse | None:
     raise api_errors.ResourceNotFoundError()
 
 
-@blueprint.native_v1.route("/subscription/profile", methods=["POST"])
+@blueprint.native_route("/subscription/profile", methods=["POST"])
 @spectree_serialize(on_success_status=204, api=blueprint.api)
 @authenticated_and_active_user_required
 def complete_profile(user: users_models.User, body: serializers.ProfileUpdateRequest) -> None:
@@ -120,7 +120,7 @@ def complete_profile(user: users_models.User, body: serializers.ProfileUpdateReq
         external_attributes_api.update_external_user(user)
 
 
-@blueprint.native_v1.route("/subscription/activity_types", methods=["GET"])
+@blueprint.native_route("/subscription/activity_types", methods=["GET"])
 @spectree_serialize(
     response_model=serializers.ActivityTypesResponse,
     on_success_status=200,
@@ -136,7 +136,7 @@ def get_activity_types(user: users_models.User) -> serializers.ActivityTypesResp
     return serializers.ActivityTypesResponse(activities=activities)
 
 
-@blueprint.native_v1.route("/subscription/honor_statement", methods=["POST"])
+@blueprint.native_route("/subscription/honor_statement", methods=["POST"])
 @spectree_serialize(on_success_status=204, api=blueprint.api)
 @authenticated_and_active_user_required
 def create_honor_statement_fraud_check(user: users_models.User) -> None:
@@ -148,7 +148,7 @@ def create_honor_statement_fraud_check(user: users_models.User) -> None:
         external_attributes_api.update_external_user(user)
 
 
-@blueprint.native_v1.route("/ubble_identification", methods=["POST"])
+@blueprint.native_route("/ubble_identification", methods=["POST"])
 @spectree_serialize(api=blueprint.api, response_model=serializers.IdentificationSessionResponse)
 @authenticated_and_active_user_required
 def start_identification_session(

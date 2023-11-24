@@ -10,8 +10,8 @@ from pcapi.core.fraud.ubble import models as ubble_fraud_models
 from pcapi.core.subscription import api as subscription_api
 from pcapi.core.users import models as users_models
 from pcapi.repository import repository
+from pcapi.routes.native import blueprint
 from pcapi.routes.native.security import authenticated_and_active_user_required
-from pcapi.routes.native.v1 import blueprint
 from pcapi.routes.serialization import BaseModel
 from pcapi.serialization.decorator import spectree_serialize
 
@@ -30,7 +30,7 @@ class E2EUbbleIdCheck(BaseModel):
     errors: list[UbbleError] | None = None
 
 
-@blueprint.native_v1.route("/ubble_identification/e2e", methods=["POST"])
+@blueprint.native_route("/ubble_identification/e2e", methods=["POST"])
 @spectree_serialize(on_success_status=204, api=blueprint.api)
 @authenticated_and_active_user_required
 def ubble_identification(user: users_models.User, body: E2EUbbleIdCheck) -> None:
