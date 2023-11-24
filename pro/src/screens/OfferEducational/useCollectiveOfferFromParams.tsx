@@ -29,6 +29,32 @@ const useCollectiveOfferFromParams = (
 ) => {
   const location = useLocation()
   const pathNameIncludesTemplate = location.pathname.includes('vitrine')
+
+  const [offer, setOffer] = useState<
+    CollectiveOffer | CollectiveOfferTemplate
+  >()
+
+  const { offerId, isTemplateId } = extractOfferIdAndOfferTypeFromRouteParams(
+    offerIdFromParams || ''
+  )
+
+  const isTemplate = isTemplateId || pathNameIncludesTemplate
+
+  const loadCollectiveOffer = useCallback(async () => {
+    const adapter = isTemplate
+      ? getCollectiveOfferTemplateAdapter
+      : getCollectiveOfferAdapter
+    const response = await adapter(offerId)
+    if (response.isOk) {
+      setOffer(response.payload)
+    }
+  }, [offerId, isTemplate])
+
+  useEffect(() => {
+    // eslint-disable-next-line @typescript-eslint/no-floating-promises
+    loadCollectiveOffer()
+  }, [])
+
   if (offerIdFromParams === undefined) {
     if (isOfferMandatory) {
       throw new Error('useOffer hook called on a page without offerId')
@@ -41,28 +67,6 @@ const useCollectiveOfferFromParams = (
       }
     }
   }
-
-  const { offerId, isTemplateId } =
-    extractOfferIdAndOfferTypeFromRouteParams(offerIdFromParams)
-  const isTemplate = isTemplateId || pathNameIncludesTemplate
-  const [offer, setOffer] = useState<
-    CollectiveOffer | CollectiveOfferTemplate
-  >()
-
-  const loadCollectiveOffer = useCallback(async () => {
-    const adapter = isTemplate
-      ? getCollectiveOfferTemplateAdapter
-      : getCollectiveOfferAdapter
-    const response = await adapter(offerId)
-    if (response.isOk) {
-      setOffer(response.payload)
-    }
-  }, [offerId])
-
-  useEffect(() => {
-    // eslint-disable-next-line @typescript-eslint/no-floating-promises
-    loadCollectiveOffer()
-  }, [])
 
   return {
     offer,

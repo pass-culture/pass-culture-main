@@ -6,6 +6,19 @@ import React from 'react'
 import { useAccessibilityOptions } from 'hooks'
 import { CheckboxGroup } from 'ui-kit'
 const mockSetFieldValue = vi.fn()
+
+function TestCheckboxGroup() {
+  const group = useAccessibilityOptions(mockSetFieldValue)
+
+  return (
+    <CheckboxGroup
+      group={group}
+      groupName="accessibility"
+      legend="accessibility"
+    />
+  )
+}
+
 const renderUseAccessibilityOptions = () => {
   return render(
     <Formik
@@ -18,11 +31,7 @@ const renderUseAccessibilityOptions = () => {
       }}
       onSubmit={vi.fn()}
     >
-      <CheckboxGroup
-        group={useAccessibilityOptions(mockSetFieldValue)}
-        groupName="accessibility"
-        legend="accessibility"
-      />
+      <TestCheckboxGroup />
     </Formik>
   )
 }
