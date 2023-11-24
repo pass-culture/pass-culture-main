@@ -4,6 +4,7 @@ import React from 'react'
 
 import { api } from 'apiClient/api'
 import { BankAccountApplicationStatus } from 'apiClient/v1'
+import Notification from 'components/Notification/Notification'
 import LinkVenuesDialog, {
   LinkVenuesDialogProps,
 } from 'pages/Reimbursements/BankInformations/LinkVenuesDialog'
@@ -63,7 +64,7 @@ const props: LinkVenuesDialogProps = {
   },
 }
 
-describe('reimbursementsWithFilters', () => {
+describe('LinkVenueDialog', () => {
   beforeEach(() => {
     vi.spyOn(api, 'linkVenueToBankAccount').mockResolvedValue()
   })
@@ -85,10 +86,16 @@ describe('reimbursementsWithFilters', () => {
     expect(screen.getByLabelText('Lieu 2')).not.toBeChecked()
   })
 
-  it('Should display the dialog', async () => {
-    renderWithProviders(<LinkVenuesDialog {...props} />, {
-      storeOverrides,
-    })
+  it('Should be able to submit the form', async () => {
+    renderWithProviders(
+      <>
+        <LinkVenuesDialog {...props} />
+        <Notification />
+      </>,
+      {
+        storeOverrides,
+      }
+    )
 
     expect(
       screen.getByRole('button', {
@@ -119,5 +126,41 @@ describe('reimbursementsWithFilters', () => {
     expect(api.linkVenueToBankAccount).toHaveBeenCalledWith(1, 6877, {
       venues_ids: [1, 2],
     })
+
+    expect(
+      await screen.findByText(/Vos modifications ont bien été prises en compte/)
+    ).toBeInTheDocument()
+  })
+
+  it('Should handle update failure', async () => {
+    vi.spyOn(api, 'linkVenueToBankAccount').mockRejectedValueOnce({})
+
+    renderWithProviders(
+      <>
+        <LinkVenuesDialog {...props} />
+        <Notification />
+      </>,
+      {
+        storeOverrides,
+      }
+    )
+
+    await userEvent.click(
+      screen.getByRole('checkbox', {
+        name: 'Lieu 2',
+      })
+    )
+
+    await userEvent.click(
+      screen.getByRole('button', {
+        name: 'Enregistrer',
+      })
+    )
+
+    expect(
+      await screen.findByText(
+        /Un erreur est survenue. Vos modifications n’ont pas été prises en compte/
+      )
+    ).toBeInTheDocument()
   })
 })
