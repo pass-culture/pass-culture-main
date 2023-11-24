@@ -78,6 +78,9 @@ def create_offers_with_gtl_id(gtl_id: str, size_per_gtl: int, venue: offerers_mo
     )
     offers = offers_factories.OfferFactory.create_batch(
         product=product,
+        name=product.name,
+        subcategoryId=product.subcategoryId,
+        description=product.description,
         size=size_per_gtl,
         venue=venue,
         extraData={"gtl_id": gtl_id, "author": Fake.name(), "ean": ean},
@@ -141,6 +144,9 @@ def create_offer_with_ean(ean: str, venue: offerers_models.Venue, author: str) -
     )
     offer = offers_factories.OfferFactory(
         product=product,
+        name=product.name,
+        subcategoryId=product.subcategoryId,
+        description=product.description,
         extraData={"ean": ean, "author": author},
         venue=venue,
     )
@@ -269,6 +275,9 @@ def create_book_in_multiple_venues(venues: list[offerers_models.Venue]) -> None:
     for venue in venues[:3]:
         offer = offers_factories.OfferFactory(
             product=product,
+            name=product.name,
+            description=product.description,
+            subcategoryId=product.subcategoryId,
             extraData={"ean": ean, "author": author},
             venue=venue,
         )
@@ -288,6 +297,9 @@ def create_books_with_the_same_author_duplicated_in_multiple_venues(venues: list
         for venue in venues:
             offer = offers_factories.OfferFactory(
                 product=product,
+                name=product.name,
+                subcategoryId=product.subcategoryId,
+                description=product.description,
                 extraData={"ean": ean, "author": author},
                 venue=venue,
             )
@@ -302,6 +314,9 @@ def create_books_with_the_same_author_duplicated_in_multiple_venues(venues: list
         )
         offer = offers_factories.OfferFactory(
             product=product,
+            name=product.name,
+            subcategoryId=product.subcategoryId,
+            description=product.description,
             extraData={"ean": ean, "author": author},
             venue=venues[3],
         )
@@ -319,6 +334,9 @@ def create_multiauthors_books(venues: list[offerers_models.Venue]) -> None:
     )
     offer = offers_factories.OfferFactory(
         product=product,
+        name=product.name,
+        subcategoryId=product.subcategoryId,
+        description=product.description,
         extraData={"ean": ean, "author": ", ".join(authors)},
         venue=venues[0],
     )
