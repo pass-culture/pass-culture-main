@@ -20,13 +20,13 @@ from pcapi.routes.native.security import authenticated_and_active_user_required
 from pcapi.serialization.decorator import spectree_serialize
 from pcapi.workers import push_notification_job
 
-from . import blueprint
+from .. import blueprint
 from .serialization import offers as serializers
 from .serialization import subcategories_v2 as subcategories_v2_serializers
 
 
 # WebApp v2 proxy expects endpoint to be at "/offer/<int:offer_id>". This path MUST NOT be changed. Its reponse can be changed, though.
-@blueprint.native_v1.route("/offer/<int:offer_id>", methods=["GET"])
+@blueprint.native_route("/offer/<int:offer_id>", methods=["GET"])
 @spectree_serialize(response_model=serializers.OfferResponse, api=blueprint.api, on_error_statuses=[404])
 def get_offer(offer_id: str) -> serializers.OfferResponse:
     offer: Offer = (
@@ -50,7 +50,7 @@ def get_offer(offer_id: str) -> serializers.OfferResponse:
     return serializers.OfferResponse.from_orm(offer)
 
 
-@blueprint.native_v1.route("/offer/<int:offer_id>/report", methods=["POST"])
+@blueprint.native_route("/offer/<int:offer_id>/report", methods=["POST"])
 @spectree_serialize(on_success_status=204, api=blueprint.api)
 @authenticated_and_active_user_required
 def report_offer(user: User, offer_id: int, body: serializers.OfferReportRequest) -> None:
@@ -65,21 +65,21 @@ def report_offer(user: User, offer_id: int, body: serializers.OfferReportRequest
         raise ApiErrors({"code": error.code}, status_code=400)
 
 
-@blueprint.native_v1.route("/offer/report/reasons", methods=["GET"])
+@blueprint.native_route("/offer/report/reasons", methods=["GET"])
 @spectree_serialize(api=blueprint.api, response_model=serializers.OfferReportReasons)
 @authenticated_and_active_user_required
 def report_offer_reasons(user: User) -> serializers.OfferReportReasons:
     return serializers.OfferReportReasons(reasons=Reason.get_full_meta())
 
 
-@blueprint.native_v1.route("/offers/reports", methods=["GET"])
+@blueprint.native_route("/offers/reports", methods=["GET"])
 @spectree_serialize(on_success_status=200, api=blueprint.api, response_model=serializers.UserReportedOffersResponse)
 @authenticated_and_active_user_required
 def user_reported_offers(user: User) -> serializers.UserReportedOffersResponse:
     return serializers.UserReportedOffersResponse(reportedOffers=user.reported_offers)  # type: ignore [call-arg]
 
 
-@blueprint.native_v1.route("/send_offer_webapp_link_by_email/<int:offer_id>", methods=["POST"])
+@blueprint.native_route("/send_offer_webapp_link_by_email/<int:offer_id>", methods=["POST"])
 @spectree_serialize(on_success_status=204, api=blueprint.api)
 @authenticated_and_active_user_required
 def send_offer_app_link(user: User, offer_id: int) -> None:
@@ -95,7 +95,7 @@ def send_offer_app_link(user: User, offer_id: int) -> None:
     transactional_mails.send_offer_link_to_ios_user_email(user, offer)
 
 
-@blueprint.native_v1.route("/send_offer_link_by_push/<int:offer_id>", methods=["POST"])
+@blueprint.native_route("/send_offer_link_by_push/<int:offer_id>", methods=["POST"])
 @spectree_serialize(on_success_status=204, api=blueprint.api)
 @authenticated_and_active_user_required
 def send_offer_link_by_push(user: User, offer_id: int) -> None:
@@ -105,7 +105,7 @@ def send_offer_link_by_push(user: User, offer_id: int) -> None:
     push_notification_job.send_offer_link_by_push_job.delay(user.id, offer_id)
 
 
-@blueprint.native_v1.route("/subcategories/v2", methods=["GET"])
+@blueprint.native_route("/subcategories/v2", methods=["GET"])
 @spectree_serialize(api=blueprint.api, response_model=subcategories_v2_serializers.SubcategoriesResponseModelv2)
 def get_subcategories_v2() -> subcategories_v2_serializers.SubcategoriesResponseModelv2:
     return subcategories_v2_serializers.SubcategoriesResponseModelv2(

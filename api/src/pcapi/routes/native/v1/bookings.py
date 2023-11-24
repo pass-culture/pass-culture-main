@@ -24,10 +24,10 @@ from pcapi.serialization.decorator import spectree_serialize
 
 logger = logging.getLogger(__name__)
 
-from . import blueprint
+from .. import blueprint
 
 
-@blueprint.native_v1.route("/bookings", methods=["POST"])
+@blueprint.native_route("/bookings", methods=["POST"])
 @spectree_serialize(api=blueprint.api, response_model=BookOfferResponse, on_error_statuses=[400])
 @authenticated_and_active_user_required
 def book_offer(user: User, body: BookOfferRequest) -> BookOfferResponse:
@@ -115,7 +115,7 @@ def book_offer(user: User, body: BookOfferRequest) -> BookOfferResponse:
     return BookOfferResponse(bookingId=booking.id)
 
 
-@blueprint.native_v1.route("/bookings", methods=["GET"])
+@blueprint.native_route("/bookings", methods=["GET"])
 @spectree_serialize(api=blueprint.api, response_model=BookingsResponse)
 @authenticated_and_active_user_required
 def get_bookings(user: User) -> BookingsResponse:
@@ -133,7 +133,7 @@ def get_bookings(user: User) -> BookingsResponse:
     )
 
 
-@blueprint.native_v1.route("/bookings/<int:booking_id>/cancel", methods=["POST"])
+@blueprint.native_route("/bookings/<int:booking_id>/cancel", methods=["POST"])
 @spectree_serialize(api=blueprint.api, on_success_status=204, on_error_statuses=[400, 404])
 @authenticated_and_active_user_required
 def cancel_booking(user: User, booking_id: int) -> None:
@@ -161,7 +161,7 @@ def cancel_booking(user: User, booking_id: int) -> None:
         )
 
 
-@blueprint.native_v1.route("/bookings/<int:booking_id>/toggle_display", methods=["POST"])
+@blueprint.native_route("/bookings/<int:booking_id>/toggle_display", methods=["POST"])
 @spectree_serialize(api=blueprint.api, on_success_status=204, on_error_statuses=[400])
 @authenticated_and_active_user_required
 def flag_booking_as_used(user: User, booking_id: int, body: BookingDisplayStatusRequest) -> None:
