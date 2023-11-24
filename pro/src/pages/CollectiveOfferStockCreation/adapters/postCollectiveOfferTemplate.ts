@@ -14,9 +14,9 @@ type PostCollectiveOfferTemplateAdapter = Adapter<Params, { id: number }, null>
 
 const KNOWN_BAD_REQUEST_CODES: Record<string, string> = {
   EDUCATIONAL_STOCK_ALREADY_EXISTS:
-    "Une erreur s'est produite. Les informations date et prix existent déjà pour cette offre.",
+    'Une erreur s’est produite. Les informations date et prix existent déjà pour cette offre.',
   COLLECTIVE_OFFER_NOT_FOUND:
-    "Une erreur s'est produite. L’offre n’a pas été trouvée.",
+    'Une erreur s’est produite. L’offre n’a pas été trouvée.',
 }
 
 const BAD_REQUEST_FAILING_RESPONSE: AdapterFailure<null> = {

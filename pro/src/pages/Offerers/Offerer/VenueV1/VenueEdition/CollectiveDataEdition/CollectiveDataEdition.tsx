@@ -144,8 +144,8 @@ const CollectiveDataEdition = (): JSX.Element | null => {
         Ce formulaire vous permet de renseigner des informations complémentaires
         concernant votre établissement et les actions menées auprès du public
         scolaire. Ces informations seront visibles par les enseignants et chefs
-        d'établissement sur ADAGE. Cela leur permettra de mieux comprendre votre
-        démarche d'éducation artistique et culturelle.
+        d’établissement sur ADAGE. Cela leur permettra de mieux comprendre votre
+        démarche d’éducation artistique et culturelle.
       </Banner>
       <MandatoryInfo className={styles.mandatory} />
       {isLoading ? (

@@ -25,7 +25,7 @@ fetchMock.enableMocks()
 
 vi.spyOn(sirenApiValidate, 'default').mockResolvedValue(undefined)
 
-// Mock l'appel à https://api-adresse.data.gouv.fr/search/?limit=${limit}&q=${address}
+// Mock l’appel à https://api-adresse.data.gouv.fr/search/?limit=${limit}&q=${address}
 // Appel fait dans apiAdresse.getDataFromAddress
 vi.mock('apiClient/adresse', () => ({
   apiAdresse: {
@@ -130,7 +130,7 @@ describe('Offerer', () => {
 
     expect(
       screen.getByText(
-        "Vous êtes un équipement d’une collectivité ou d'un établissement public ?"
+        'Vous êtes un équipement d’une collectivité ou d’un établissement public ?'
       )
     ).toBeInTheDocument()
 

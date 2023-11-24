@@ -30,13 +30,13 @@ export default function CollectiveOfferLocationSection({
   }
 
   return (
-    <SummaryLayout.SubSection title="Lieu de l'évènement">
+    <SummaryLayout.SubSection title="Lieu de l’évènement">
       <SummaryLayout.Row
         description={formatOfferEventAddress(offer.offerVenue, venue)}
       />
       {interventionAreas && (
         <SummaryLayout.Row
-          title="Zone de mobilité pour l'évènement"
+          title="Zone de mobilité pour l’évènement"
           description={interventionAreas}
         />
       )}

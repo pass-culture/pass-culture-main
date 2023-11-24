@@ -18,8 +18,8 @@ const SignupConfirmation = () => (
       </div>
       <Banner type="notification-info">
         <p>
-          Si vous ne recevez pas d'email de notre part d'ici 5 minutes, vérifiez
-          que le message n'est pas dans le dossier “indésirables” ou “spam” de
+          Si vous ne recevez pas d’email de notre part d’ici 5 minutes, vérifiez
+          que le message n’est pas dans le dossier “indésirables” ou “spam” de
           votre messagerie.
         </p>
         <p className={styles['banner-text-gap']}>

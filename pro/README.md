@@ -1,18 +1,18 @@
 # pass-culture-pro
 
-C'est la version (browser) de l'application PRO frontend du pass Culture. Ce repo contient également [un storybook](https://pass-culture.github.io/pass-culture-main/) des éléments graphiques
+C'est la version (browser) de l’application PRO frontend du pass Culture. Ce repo contient également [un storybook](https://pass-culture.github.io/pass-culture-main/) des éléments graphiques
 
 Il faut aller voir le README dans https://github.com/pass-culture/pass-culture-main pour être informé des différentes lignes de commande associées à ce repo.
 
 ## Note sur Yarn
 
-Yarn est prometteur, on vous conseille de l'utiliser. Tâchez de l'installer globalement sur votre ordinateur (https://yarnpkg.com/en/docs/install), puis:
+Yarn est prometteur, on vous conseille de l’utiliser. Tâchez de l’installer globalement sur votre ordinateur (https://yarnpkg.com/en/docs/install), puis:
 
 ```bash
   yarn
 ```
 
-## Installation et Lancement de l'application Pro
+## Installation et Lancement de l’application Pro
 
 - ```shell
   yarn install
@@ -21,7 +21,7 @@ Yarn est prometteur, on vous conseille de l'utiliser. Tâchez de l'installer glo
 
 #### Troubleshooting:
 
-Sur linux + chrome / chromium l'application peut se charger indéfiniment
+Sur linux + chrome / chromium l’application peut se charger indéfiniment
 un workaround est de changer de navigateur,
 une solution est proposée ici : https://vitejs.dev/guide/troubleshooting.html#dev-server
 
@@ -44,7 +44,7 @@ une solution est proposée ici : https://vitejs.dev/guide/troubleshooting.html#d
 
 Nous intégrons une sous-route du portail Pro (`/adage-iframe/`) dans une iframe au sein d'Adage, la plateforme des établissements scolaires permettant de gérer leurs activités culturelles.
 
-### Accès à l'iframe Adage
+### Accès à l’iframe Adage
 
 Application web pour les rédacteurs de projets scolaires, leur permettant de réserver des offres sur le pass Culture pour leurs élèves.
 
@@ -60,24 +60,24 @@ $ pc bash
 flask generate_fake_adage_token
 ```
 
-3. Copier l'url générée dans le navigateur pour accéder à l'app
+3. Copier l’url générée dans le navigateur pour accéder à l’app
 
 ### Affichage d'offres en local
 
-Comme le local est branché sur algolia de testing, les ids qui sont remontés d'algolia sont ceux de testing, et il n'est pas certain qu'on ait les mêmes en local.
+Comme le local est branché sur algolia de testing, les ids qui sont remontés d'algolia sont ceux de testing, et il n’est pas certain qu'on ait les mêmes en local.
 
 Pour récupérer les ids de certaines offres en local, on peut utiliser un index local. Pour cela, il faut :
 
 - Créer un nouvel index sur la sandbox algolia : `<votre_nom>-collective-offers`
 
-- Créer un fichier `.env.development.local` dans le dossier `pro/src` et renseigner le nom de l'index dans la variable `VITE_ALGOLIA_COLLECTIVE_OFFERS_INDEX`
+- Créer un fichier `.env.development.local` dans le dossier `pro/src` et renseigner le nom de l’index dans la variable `VITE_ALGOLIA_COLLECTIVE_OFFERS_INDEX`
 
 - Créer un fichier `.env.local.secret`
 
 ```
 ALGOLIA_COLLECTIVE_OFFERS_INDEX_NAME=<votre_nom>-collective-offers
 ALGOLIA_TRIGGER_INDEXATION=1
-ALGOLIA_API_KEY=<demander l'api key>
+ALGOLIA_API_KEY=<demander l’api key>
 ALGOLIA_APPLICATION_ID=testingHXXTDUE7H0
 SEARCH_BACKEND=pcapi.core.search.backends.algolia.AlgoliaBackend
 ```

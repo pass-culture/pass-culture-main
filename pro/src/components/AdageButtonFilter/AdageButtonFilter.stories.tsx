@@ -15,7 +15,7 @@ export const AdageButton = Template.bind({})
 
 AdageButton.args = {
   title: 'Lieu de l’intervention',
-  children: <div>lieu de l'intervention modal</div>,
+  children: <div>lieu de l’intervention modal</div>,
   isActive: false,
   disabled: false,
 }

@@ -101,7 +101,7 @@ const SummaryScreen = () => {
         navigate(offerConfirmationStepUrl)
       }
     } else {
-      notification.error("Une erreur s'est produite, veuillez réessayer")
+      notification.error('Une erreur s’est produite, veuillez réessayer')
     }
     setIsDisabled(false)
   }
@@ -176,7 +176,7 @@ const SummaryScreen = () => {
               alt=""
               className={styles['icon-info-phone']}
             />
-            <span>Aperçu dans l'app</span>
+            <span>Aperçu dans l’app</span>
           </div>
 
           <OfferAppPreview offer={offer} />

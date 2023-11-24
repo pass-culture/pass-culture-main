@@ -42,7 +42,7 @@ describe('CollectiveOfferLocationSection', () => {
     const loadingMessage = screen.queryByText(/Chargement en cours/)
     await waitFor(() => expect(loadingMessage).not.toBeInTheDocument())
 
-    expect(await screen.findByText("Lieu de l'évènement")).toBeInTheDocument()
+    expect(await screen.findByText('Lieu de l’évènement')).toBeInTheDocument()
     expect(
       screen.getByText('Dans l’établissement scolaire')
     ).toBeInTheDocument()

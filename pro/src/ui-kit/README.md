@@ -10,7 +10,7 @@ On y trouvera notament :
 - éléments typographiques
 - éléments de formulaire
 - boutons
-- jeux d'icônes
+- jeux d’icônes
 - grilles de mise ne page 
 - etc... 
 
@@ -54,12 +54,12 @@ import { Heading1, Heading2, Grid, InputText } from 'ui-kit'
 
 ## DO
 
-- toujours prévoir une prop pour l'ajout d'une classe sur le wrapper de l’élément
+- toujours prévoir une prop pour l’ajout d’une classe sur le wrapper de l’élément
 - nommer l’élément d'`ui-kit` principal comme le dossier
 - exporter par defaut le l’élément d'`ui-kit` principal depuis l’index
 - créer une story pour l’élément d'`ui-kit`
 - nommer les sous-composant en utilisant le nom principal comme préfixe
-- exporter aussi l’élément depuis l’index du dossier principal (il y aura généralement beaucoup d'imports depuis l'`ui-kit`)
+- exporter aussi l’élément depuis l’index du dossier principal (il y aura généralement beaucoup d’imports depuis l'`ui-kit`)
 
 
 ## DON'T

@@ -26,7 +26,7 @@ Pour en décider, plusieurs critères :
 
 Pour aléger et simplifier les tests du `screen`, on préfèrera alors déléguer une partie des tests au composant. Il est possible d'exporter des `tests-utils` depuis le `component` vers le `screen` s'il est cohérent de partager de la logique :
 
-Par exemple au sein d'un fichier `Components/MonComposant/test-utils/fillFormAndSubmit.tsx`, nous pourrions exporter une action complexe pour remplir un formulaire et le soumettre. Cette action peut ainsi être utilisée à la fois dans le test du composant, mais aussi dans celui du `screen` dont il dépend.
+Par exemple au sein d’un fichier `Components/MonComposant/test-utils/fillFormAndSubmit.tsx`, nous pourrions exporter une action complexe pour remplir un formulaire et le soumettre. Cette action peut ainsi être utilisée à la fois dans le test du composant, mais aussi dans celui du `screen` dont il dépend.
 
 ## structure
 
@@ -83,7 +83,7 @@ const MonComposant(props: MonComposantProps): JSX.Element => {}
 - exporter depuis l’index tous les éléments publiques
 - nommer les sous-composant en utilisant le nom principal comme préfixe
 - ne jamais exporter un sous-composant depuis l’index (préférer extraire le sous-composant dans ce cas)
-- pour regrouper des composants liés, préférer en général l’usage d'un prefix à la création d'un dossier
+- pour regrouper des composants liés, préférer en général l’usage d’un prefix à la création d’un dossier
 - regrouper les Screens liés entre eux alphabétiquement en utilisant un préfixe
   - `OfferCreation`
   - `OfferEdition`

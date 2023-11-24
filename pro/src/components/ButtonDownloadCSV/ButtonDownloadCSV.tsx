@@ -33,8 +33,8 @@ const ButtonDownloadCSV = ({
         const date = new Date().toISOString()
 
         // Ce n’est pas terrible mais nous n’avons pas trouvé mieux.
-        // Aucun code d'avant ne faisait que l'on téléchargeait un fichier
-        // avec l'extension CSV.
+        // Aucun code d'avant ne faisait que l’on téléchargeait un fichier
+        // avec l’extension CSV.
         fakeLink.href = URL.createObjectURL(blob)
         fakeLink.setAttribute('download', `${filename}-${date}.csv`)
         document.body.appendChild(fakeLink)

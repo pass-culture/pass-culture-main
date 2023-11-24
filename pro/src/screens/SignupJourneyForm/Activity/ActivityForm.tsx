@@ -79,7 +79,7 @@ const ActivityForm = ({ venueTypes }: ActivityFormProps): JSX.Element => {
                     disabled={values.socialUrls.length <= 1}
                     className={styles['delete-button']}
                   >
-                    Supprimer l'url
+                    Supprimer l’url
                   </ListIconButton>
                 </div>
               </FormLayout.Row>

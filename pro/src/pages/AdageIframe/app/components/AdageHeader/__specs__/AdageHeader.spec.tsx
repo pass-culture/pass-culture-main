@@ -215,7 +215,7 @@ describe('AdageHeader', () => {
     renderAdageHeader({ ...user, role: AdageFrontRoles.READONLY })
 
     expect(
-      screen.queryByRole('link', { name: "Télécharger l'aide" })
+      screen.queryByRole('link', { name: 'Télécharger l’aide' })
     ).not.toBeInTheDocument()
   })
 

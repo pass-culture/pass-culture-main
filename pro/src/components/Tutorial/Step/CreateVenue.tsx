@@ -40,10 +40,10 @@ const CreateVenue = ({
           <SvgIcon src={strokeBuildingIcon} alt="" />
           <h2>Ajoutez des lieux</h2>
           <p>
-            Vous ne disposez pas d'un lieu physique ?
+            Vous ne disposez pas d’un lieu physique ?
             <br />
             Ajoutez des lieux et publiez vos offres. Ces offres seront
-            géolocalisées à l'adresse du lieu rattaché.
+            géolocalisées à l’adresse du lieu rattaché.
           </p>
         </div>
       </section>

@@ -24,7 +24,7 @@ const priceCategoryValidationSchema = yup.object().shape({
           !isPriceCategoriesFormValues(allFormValues) ||
           !isPriceCategoriesForm(currentPriceCategoryFormValues)
         ) {
-          throw new yup.ValidationError("Le formulaire n'est pas complet")
+          throw new yup.ValidationError('Le formulaire n’est pas complet')
         }
 
         if (

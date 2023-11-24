@@ -77,7 +77,7 @@ export const CollectiveOfferStockCreation = ({
 
   if (isCollectiveOfferTemplate(offer)) {
     throw new Error(
-      "Impossible de mettre à jour les stocks d'une offre vitrine."
+      'Impossible de mettre à jour les stocks d’une offre vitrine.'
     )
   }
 

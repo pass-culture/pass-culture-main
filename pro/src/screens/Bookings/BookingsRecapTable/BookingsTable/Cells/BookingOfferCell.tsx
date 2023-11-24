@@ -80,12 +80,12 @@ export const BookingOfferCell = ({ booking }: BookingOfferCellProps) => {
                     alt="Attention"
                   />
                   <span className={styles['sold-out-dates']}>
-                    La date limite de réservation par le chef d'établissement
+                    La date limite de réservation par le chef d’établissement
                     est dans{' '}
                     {`${
                       getRemainingTime(booking.stock) >= 1
                         ? pluralize(getRemainingTime(booking.stock), 'jour')
-                        : "moins d'un jour"
+                        : 'moins d’un jour'
                     } (${getDate(booking.stock)})`}
                   </span>
                 </span>

@@ -472,7 +472,7 @@ describe('IndividualOffer section: UsefulInformations', () => {
           'https://aide.passculture.app/hc/fr/articles/4413389597329--Acteurs-Culturels-Quelles-modalit%C3%A9s-de-retrait-indiquer-pour-ma-structure-'
         )
         const infoBoxUrl = screen.getByText(
-          "Lien vers lequel seront renvoyés les bénéficiaires ayant réservé votre offre sur l'application pass Culture."
+          'Lien vers lequel seront renvoyés les bénéficiaires ayant réservé votre offre sur l’application pass Culture.'
         )
         expect(infoBoxUrl).toBeInTheDocument()
       })

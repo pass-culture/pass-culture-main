@@ -30,9 +30,9 @@ const EACInformation = ({ venue, isCreatingVenue }: EACInformationProps) => {
         </h4>
       )}
       <p className={styles['eac-description-info']}>
-        Il s'agit d'un formulaire vous permettant de renseigner vos informations
+        Il s’agit d’un formulaire vous permettant de renseigner vos informations
         EAC. Les informations renseignées seront visibles par les enseignants et
-        chefs d'établissement sur Adage (Application dédiée à la
+        chefs d’établissement sur Adage (Application dédiée à la
         généralisation....)
       </p>
       {isCreatingVenue && (

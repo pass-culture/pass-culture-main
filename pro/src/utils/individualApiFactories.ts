@@ -53,7 +53,7 @@ export const individualOfferFactory = (
     offererId: customVenue.managingOfferer.id,
     offererName: 'Chuck Norris',
     performer: 'Le Poing de Chuck',
-    ean: "Chuck n'est pas identifiable par un EAN",
+    ean: 'Chuck n’est pas identifiable par un EAN',
     showType: 'Cinéma',
     showSubType: 'PEGI 18',
     stageDirector: 'JCVD',

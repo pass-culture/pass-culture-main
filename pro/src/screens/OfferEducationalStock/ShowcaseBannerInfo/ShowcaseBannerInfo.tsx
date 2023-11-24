@@ -23,7 +23,7 @@ const ShowcaseBannerInfo = (): JSX.Element => (
     l’établissement vus avec l’enseignant
     <br />
     4) Une fois cette nouvelle offre publiée, elle sera préréservable sur ADAGE
-    par l'enseignant
+    par l’enseignant
     <br />
   </Banner>
 )

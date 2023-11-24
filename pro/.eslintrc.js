@@ -63,11 +63,21 @@ module.exports = {
         '@typescript-eslint/no-empty-function': 'off',
         'react/react-in-jsx-scope': 'off',
         '@typescript-eslint/prefer-ts-expect-error': 'error',
+        'react/no-unescaped-entities': [
+          'error',
+          {
+            forbid: [
+              {
+                char: "'",
+                alternatives: ['’'],
+              },
+            ],
+          },
+        ],
         // TODO turn into errors
         '@typescript-eslint/no-floating-promises': 'warn',
         '@typescript-eslint/await-thenable': 'warn',
         'require-await': 'warn',
-        'react/no-unescaped-entities': 'warn',
         'react/prop-types': 'warn',
         'react-hooks/exhaustive-deps': 'warn',
       },

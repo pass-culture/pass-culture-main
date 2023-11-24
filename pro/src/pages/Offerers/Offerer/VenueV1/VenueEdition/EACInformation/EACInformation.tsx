@@ -27,10 +27,10 @@ const EACInformation = ({
         <CollectiveData venue={venue} />
       ) : (
         <p className={styles['description']}>
-          Il s'agit d'un formulaire vous permettant de renseigner vos
+          Il s’agit d’un formulaire vous permettant de renseigner vos
           informations à destination du public scolaire. Les informations
           renseignées seront visibles par les enseignants et chefs
-          d'établissement sur Adage (Application dédiée à la généralisation de
+          d’établissement sur Adage (Application dédiée à la généralisation de
           l’éducation artistique et culturelle).
         </p>
       )}

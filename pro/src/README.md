@@ -30,8 +30,8 @@ La structure des composants visuels suit une organisation par couches :
 
 ### Chacunes de ces couches obéissent à des règles simples :
 
-- Un élément d'une couche donnée peut importer un élément de même niveau ou de niveau inferieur.
-- Un élément d'une couche donnée ne peut jamais importer un élément de niveau supérieur.
+- Un élément d’une couche donnée peut importer un élément de même niveau ou de niveau inferieur.
+- Un élément d’une couche donnée ne peut jamais importer un élément de niveau supérieur.
 - Chaque couche possède un rôle et des règles propres (voir les Readme associés)
 
 ## Philosophie / Mantras :
@@ -47,7 +47,7 @@ Garder un code simple et lisible avant tout. Optimiser le code avant de rencontr
 
 ### Garder des fichiers de petite taille
 
-Un fichier est une unité de travail, un développeur devrait pouvoir lire un fichier dans sa totalité et comprendre le fonctionnement général. Si il est dificile de mémoriser l'ensemble des règles et fonctionnement d'un fichier, c'est le signe qu'il faut découper.
+Un fichier est une unité de travail, un développeur devrait pouvoir lire un fichier dans sa totalité et comprendre le fonctionnement général. Si il est dificile de mémoriser l’ensemble des règles et fonctionnement d’un fichier, c'est le signe qu'il faut découper.
 
 ## Styles :
 
@@ -58,8 +58,8 @@ Un fichier est une unité de travail, un développeur devrait pouvoir lire un fi
 - créer des composants de mise en page (typographie, boutons, grilles etc...) au lieu de classes globales
 - préférer l’usage de variables, mixins ou fonctions pour partager des styles à travers les différents éléments.
 
-À travers l’usage de feuilles de styles globales, il est difficile de déterminer le code utilisé ou mort et de quantifier l’impact d'un changement sur le produit.
+À travers l’usage de feuilles de styles globales, il est difficile de déterminer le code utilisé ou mort et de quantifier l’impact d’un changement sur le produit.
 
 ### Eviter la surcharge
 
-Ne pas surcharger un élément depuis la feuille de style d'un parent. Cela crée au sein du code base de nombreux couplages qui peuvent avoir des effets de bord sur le long terme. Préférer des composants et l’usage de props pour créer les variantes nécéssaires. (principe Ouvert/fermé)
+Ne pas surcharger un élément depuis la feuille de style d’un parent. Cela crée au sein du code base de nombreux couplages qui peuvent avoir des effets de bord sur le long terme. Préférer des composants et l’usage de props pour créer les variantes nécéssaires. (principe Ouvert/fermé)

@@ -46,7 +46,7 @@ const SignupJourneyRoutes = () => {
         <div className={styles['header-content']}>
           <SvgIcon
             className={styles['header-logo']}
-            alt="Pass Culture pro, l'espace des acteurs culturels"
+            alt="Pass Culture pro, l’espace des acteurs culturels"
             src={logoPassCultureProIcon}
             viewBox="0 0 119 40"
           />

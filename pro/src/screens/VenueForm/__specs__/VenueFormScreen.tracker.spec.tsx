@@ -26,7 +26,7 @@ const venueLabels: SelectOption[] = [
   { value: 'AE', label: 'Architecture contemporaine remarquable' },
   {
     value: 'A9',
-    label: "CAC - Centre d'art contemporain d'int\u00e9r\u00eat national",
+    label: "CAC - Centre d'art contemporain d’int\u00e9r\u00eat national",
   },
 ]
 
@@ -128,7 +128,7 @@ vi.mock('core/Venue/siretApiValidate', () => ({
   default: () => Promise.resolve(),
 }))
 
-// Mock l'appel à https://api-adresse.data.gouv.fr/search/?limit=${limit}&q=${address}
+// Mock l’appel à https://api-adresse.data.gouv.fr/search/?limit=${limit}&q=${address}
 // Appel fait dans apiAdresse.getDataFromAddress
 fetchMock.mockResponse(
   JSON.stringify({

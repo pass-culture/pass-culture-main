@@ -1,7 +1,7 @@
 import cn from 'classnames'
 import { FieldArray, FormikProvider, useFormik } from 'formik'
 import isEqual from 'lodash/isEqual'
-import React, { useEffect, useState } from 'react'
+import { useEffect, useState } from 'react'
 import { useNavigate, useSearchParams } from 'react-router-dom'
 
 import { api } from 'apiClient/api'
@@ -372,7 +372,7 @@ const StocksEventEdition = ({
                 <>
                   <table className={styles['stock-table']}>
                     <caption className="visually-hidden">
-                      Tableau d'édition des stocks
+                      Tableau d’édition des stocks
                     </caption>
 
                     <thead

@@ -151,7 +151,7 @@ const ModalImageCrop = ({
             <TextInput
               countCharacters
               className={style['modal-image-crop-credit']}
-              label="Crédit de l'image"
+              label="Crédit de l’image"
               maxLength={255}
               name="credit"
               placeholder="Photographe..."

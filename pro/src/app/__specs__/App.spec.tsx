@@ -91,7 +91,7 @@ describe('src | App', () => {
       renderApp(store)
       expect(
         await screen.findByText(
-          /Nous utilisons des cookies et traceurs afin d’analyser l'utilisation de la plateforme et vous proposer la meilleure expérience possible/
+          /Nous utilisons des cookies et traceurs afin d’analyser l’utilisation de la plateforme et vous proposer la meilleure expérience possible/
         )
       ).toBeInTheDocument()
     })
