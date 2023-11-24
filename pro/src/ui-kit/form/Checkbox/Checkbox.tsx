@@ -5,8 +5,7 @@ import React from 'react'
 import { BaseCheckbox, FieldError } from '../shared'
 
 import styles from './Checkbox.module.scss'
-
-export interface CheckboxProps {
+interface CheckboxProps {
   name: string
   value?: string
   label: string
