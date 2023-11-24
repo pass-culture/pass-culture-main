@@ -48,7 +48,21 @@ def get_user_profile(user: users_models.User) -> serializers.UserProfileResponse
     return serializers.UserProfileResponse.from_orm(user)
 
 
+@blueprint.native_v1.route("/test", methods=["GET"])
+@spectree_serialize(response_model=serializers.TestResponse, api=blueprint.api)
+@blueprint.api.validate(deprecated=True)
+def test_versioned_route() -> serializers.TestResponse:
+    return serializers.TestResponse(test="yes")
+
+
+@blueprint.native_v2.route("/test", methods=["GET"])
+@spectree_serialize(response_model=serializers.TestResponsev2, api=blueprint.api)
+def test_versioned_route_v2() -> serializers.TestResponsev2:  # pylint: disable=function-redefined
+    return serializers.TestResponsev2(test="yes", test2="yes2")
+
+
 @blueprint.native_v1.route("/profile", methods=["POST"])
+@blueprint.native_v2.route("/profile", methods=["POST"])
 @spectree_serialize(
     response_model=serializers.UserProfileResponse,
     on_success_status=200,

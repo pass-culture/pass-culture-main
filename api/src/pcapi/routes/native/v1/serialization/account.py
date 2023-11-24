@@ -179,6 +179,7 @@ class UserProfileResponse(BaseModel):
         use_enum_values = True
 
     @validator("firstName", pre=True)
+    @classmethod
     def format_first_name(cls, firstName: str | None) -> str | None:
         return firstName if firstName != users_models.VOID_FIRST_NAME else None
 
@@ -300,3 +301,12 @@ class UserSuspensionStatusResponse(BaseModel):
 
 class SuspendAccountForSuspiciousLoginRequest(BaseModel):
     token: str
+
+
+class TestResponse(BaseModel):
+    test: str
+
+
+class TestResponsev2(BaseModel):
+    test: str
+    test2: str
