@@ -22,10 +22,10 @@ const BookingLinkCell = ({
   bookingStatus,
   offerEventDate,
 }: BookingLinkCellProps) => {
+  const { logEvent } = useAnalytics()
   if (!offerEventDate) {
     return null
   }
-  const { logEvent } = useAnalytics()
   const eventDateFormated = formatBrowserTimezonedDateAsUTC(
     offerEventDate,
     FORMAT_ISO_DATE_ONLY
