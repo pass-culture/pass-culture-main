@@ -2,6 +2,7 @@ import logging
 
 from flask_login import current_user
 from flask_login import login_required
+from flask_sse import sse
 import sqlalchemy.orm as sqla_orm
 
 from pcapi.core.offerers import exceptions as offerers_exceptions
@@ -93,6 +94,10 @@ def upsert_stocks(
     upserted_stocks = []
     edited_stocks_with_update_info: list[tuple[offers_models.Stock, bool]] = []
     try:
+        sse.publish(
+            {"message": "Ouf la création des stocks a commencée !"},
+            type="has_start_created_stocks",
+        )
         with transaction():
             for stock_to_edit in stocks_to_edit:
                 if stock_to_edit.id not in existing_stocks:
@@ -143,9 +148,14 @@ def upsert_stocks(
 
     offers_api.handle_stocks_edition(edited_stocks_with_update_info)
 
-    return serialization.StocksResponseModel(
+    serialized_stocks = serialization.StocksResponseModel(
         stocks=[offers_serialize.GetOfferStockResponseModel.from_orm(stock) for stock in upserted_stocks]
     )
+    sse.publish(
+        {"message": "Ouf la création des stocks est terminée !"},
+        type="has_created_stocks",
+    )
+    return serialized_stocks
 
 
 @private_api.route("/stocks/<int:stock_id>", methods=["DELETE"])

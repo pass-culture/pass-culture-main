@@ -23,6 +23,8 @@ Flask-Limiter==1.4
 Flask-Login==0.5.0
 flask-shell-ipython
 Flask-SQLAlchemy==2.5.*
+flask-sse==1.0.0
+gevent==23.9.1
 freezegun==1.2.2
 google-auth==2.6.2
 google-api-python-client==2.41.0

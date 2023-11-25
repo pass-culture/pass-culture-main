@@ -97,6 +97,7 @@ const StocksEventList = ({
     { dateFilter, hourFilter, priceCategoryFilter },
     departmentCode
   )
+
   const { page, setPage, previousPage, nextPage, pageCount, currentPageItems } =
     usePagination(filteredStocks, STOCKS_PER_PAGE)
 

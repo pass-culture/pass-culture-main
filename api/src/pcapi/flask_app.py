@@ -11,8 +11,10 @@ from flask import jsonify
 from flask import request
 from flask.logging import default_handler
 import flask.wrappers
+from flask_cors import CORS
 from flask_login import LoginManager
 from flask_login import current_user
+from flask_sse import sse
 import prometheus_flask_exporter.multiprocess
 import redis
 import sentry_sdk
@@ -44,6 +46,9 @@ init_sentry_sdk()
 
 
 app = Flask(__name__, static_url_path="/static")
+app.config["REDIS_URL"] = settings.REDIS_URL  # for sse
+app.register_blueprint(sse, url_prefix="/stream")
+CORS(app)
 
 
 def setup_metrics(app_: Flask) -> None:

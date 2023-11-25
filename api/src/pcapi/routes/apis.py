@@ -10,6 +10,7 @@ public_api = Blueprint("Public API", __name__)
 CORS(public_api, resources={r"/*": {"origins": "*"}}, supports_credentials=True)
 
 private_api = Blueprint("Private API", __name__)
+
 CORS(
     private_api,
     origins=settings.CORS_ALLOWED_ORIGINS,

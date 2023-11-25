@@ -1,4 +1,4 @@
-import React, { useState } from 'react'
+import React, { useEffect, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 
 import DialogBox from 'components/DialogBox'
@@ -12,6 +12,7 @@ import useNotification from 'hooks/useNotification'
 import fullMoreIcon from 'icons/full-more.svg'
 import { Button } from 'ui-kit'
 import { ButtonVariant } from 'ui-kit/Button/types'
+import Spinner from 'ui-kit/Spinner/Spinner'
 
 import ActionBar from '../ActionBar/ActionBar'
 
@@ -35,11 +36,24 @@ export const StocksEventCreation = ({
   const navigate = useNavigate()
   const mode = useOfferWizardMode()
   const notify = useNotification()
+  const [isWaitingApi, setIsWaitingApi] = useState(false)
+
+  useEffect(() => {
+    const sse = new EventSource('//localhost:5001/stream')
+    sse.addEventListener('has_start_created_stocks', () => {
+      setIsWaitingApi(true)
+    })
+
+    sse.addEventListener('has_created_stocks', () => {
+      setIsWaitingApi(false)
+    })
+  }, [])
 
   const [isRecurrenceModalOpen, setIsRecurrenceModalOpen] = useState(false)
   const onCancel = () => setIsRecurrenceModalOpen(false)
 
   const handleSubmit = async (values: RecurrenceFormValues) => {
+    setIsRecurrenceModalOpen(false)
     const newStocks = await onSubmit(
       values,
       offer.venue.departementCode ?? '',
@@ -50,7 +64,6 @@ export const StocksEventCreation = ({
     if (newStocks?.length) {
       setStocks(newStocks)
     }
-    setIsRecurrenceModalOpen(false)
   }
 
   const handlePreviousStep = () => {
@@ -77,6 +90,17 @@ export const StocksEventCreation = ({
         step: OFFER_WIZARD_STEP_IDS.SUMMARY,
         mode,
       })
+    )
+  }
+
+  if (isWaitingApi) {
+    return (
+      <div className={styles['container']}>
+        <p>
+          l'api s'occupe de traiter votre demande, soyez patient nom didiou !!!
+        </p>
+        <Spinner />
+      </div>
     )
   }
 

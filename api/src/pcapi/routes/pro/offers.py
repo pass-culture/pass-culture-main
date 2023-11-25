@@ -3,6 +3,7 @@ import logging
 from flask import request
 from flask_login import current_user
 from flask_login import login_required
+import redis
 import sqlalchemy as sqla
 
 from pcapi import repository
@@ -32,6 +33,14 @@ from . import blueprint
 
 
 logger = logging.getLogger(__name__)
+
+
+def is_redis_running(host="172.20.0.3", port=6379):
+    try:
+        r = redis.Redis(host=host, port=port)
+        return r.ping()
+    except redis.ConnectionError:
+        return False
 
 
 @private_api.route("/offers", methods=["GET"])
@@ -168,6 +177,7 @@ def delete_all_filtered_stocks(offer_id: int, body: offers_serialize.DeleteFilte
         "time": body.time,
         "price_category_id": body.price_category_id,
     }
+
     batch_delete_filtered_stocks_job.delay(filters)
 
 
