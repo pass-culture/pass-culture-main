@@ -23,7 +23,6 @@ import { EmailChangeValidation } from 'pages/EmailChangeValidation'
 import Unavailable from 'pages/Errors/Unavailable/Unavailable'
 import Homepage from 'pages/Home/Homepage'
 import IndividualOfferWizard from 'pages/IndividualOfferWizard/IndividualOfferWizard'
-import { Logout } from 'pages/Logout'
 import LostPassword from 'pages/LostPassword'
 import OffererDetails from 'pages/Offerers/Offerer/OffererDetails/OffererDetails'
 import CollectiveDataEdition from 'pages/Offerers/Offerer/VenueV1/VenueEdition/CollectiveDataEdition'
@@ -71,11 +70,6 @@ const routes: RouteConfig[] = [
   {
     element: <RedirectToConnexionComponent />,
     path: '/',
-    meta: { withoutLayout: true },
-  },
-  {
-    element: <Logout />,
-    path: '/logout',
     meta: { withoutLayout: true },
   },
   {

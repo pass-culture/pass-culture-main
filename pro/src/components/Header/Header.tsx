@@ -5,6 +5,7 @@ import { NavLink, useLocation, useNavigate } from 'react-router-dom'
 import { Events } from 'core/FirebaseEvents/constants'
 import useActiveFeature from 'hooks/useActiveFeature'
 import useAnalytics from 'hooks/useAnalytics'
+import { useLogout } from 'hooks/useLogout'
 import logoPassCultureProIcon from 'icons/logo-pass-culture-pro.svg'
 import strokeCalendarIcon from 'icons/stroke-calendar.svg'
 import deskIcon from 'icons/stroke-desk.svg'
@@ -19,14 +20,16 @@ const NAV_ITEM_ICON_SIZE = '24'
 
 const Header = () => {
   const navigate = useNavigate()
+  const logout = useLogout()
   const { logEvent } = useAnalytics()
   const location = useLocation()
   const isOffererStatsActive = useActiveFeature('ENABLE_OFFERER_STATS')
 
-  const onSignoutClick = useCallback(() => {
+  const onSignoutClick = useCallback(async () => {
     logEvent?.(Events.CLICKED_LOGOUT, { from: location.pathname })
-    navigate('/logout')
+    await logout()
   }, [navigate, logEvent, location.pathname])
+
   return (
     <header className="menu-v2" id="header-navigation">
       <nav aria-label="Menu principal">
