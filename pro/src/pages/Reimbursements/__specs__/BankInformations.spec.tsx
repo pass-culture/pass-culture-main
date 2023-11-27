@@ -34,6 +34,7 @@ const defaultManagedVenues: ManagedVenues = {
   commonName: 'wanted',
   id: 1,
   siret: 'costume',
+  hasPricingPoint: true,
 }
 
 function renderBankInformations() {

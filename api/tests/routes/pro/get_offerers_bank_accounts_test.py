@@ -90,7 +90,7 @@ class OfferersBankAccountTest:
         pro_user = users_factories.ProFactory()
         offerer = offerers_factories.OffererFactory()
         offerers_factories.UserOffererFactory(user=pro_user, offerer=offerer)
-        expected_venue = offerers_factories.VenueFactory(managingOfferer=offerer)
+        expected_venue = offerers_factories.VenueFactory(pricing_point="self", managingOfferer=offerer)
         expected_venue_without_siret = offerers_factories.VenueWithoutSiretFactory(managingOfferer=offerer)
         expected_bank_account = finance_factories.BankAccountFactory(offerer=offerer)
 
@@ -124,9 +124,11 @@ class OfferersBankAccountTest:
         assert venues[0]["id"] == expected_venue.id
         assert venues[0]["commonName"] == expected_venue.common_name
         assert venues[0]["siret"] == expected_venue.siret
+        assert venues[0]["hasPricingPoint"] is True
         assert not venues[0]["bankAccountId"]
         assert venues[1]["id"] == expected_venue_without_siret.id
         assert venues[1]["commonName"] == expected_venue_without_siret.common_name
+        assert venues[1]["hasPricingPoint"] is False
         assert not venues[1]["siret"]
         assert not venues[1]["bankAccountId"]
 
@@ -251,8 +253,8 @@ class OfferersBankAccountTest:
             offerer=offerer, isActive=True, dateCreated=datetime.datetime.utcnow()
         )
 
-        venue_linked = offerers_factories.VenueFactory(managingOfferer=offerer)
-        offerers_factories.VenueFactory(managingOfferer=offerer)
+        venue_linked = offerers_factories.VenueFactory(pricing_point="self", managingOfferer=offerer)
+        offerers_factories.VenueFactory(pricing_point="self", managingOfferer=offerer)
         offerers_factories.VenueBankAccountLinkFactory(
             venueId=venue_linked.id,
             bankAccountId=first_bank_account.id,
@@ -265,7 +267,7 @@ class OfferersBankAccountTest:
             venueId=venue_linked.id, bankAccountId=second_bank_account.id, timespan=(datetime.datetime.utcnow(), None)
         )
 
-        venue_not_linked_with_free_offer = offerers_factories.VenueFactory(managingOfferer=offerer)
+        venue_not_linked_with_free_offer = offerers_factories.VenueWithoutSiretFactory(managingOfferer=offerer)
         offer = offers_factories.OfferFactory(venue=venue_not_linked_with_free_offer)
         offers_factories.StockFactory(offer=offer, price=0)
 
@@ -285,6 +287,7 @@ class OfferersBankAccountTest:
 
         bank_accounts = offerer["bankAccounts"]
         managed_venues = sorted(offerer["managedVenues"], key=lambda venue: venue["id"])
+        assert len(managed_venues) == 3
 
         assert len(bank_accounts) == 2
         assert bank_accounts[0]["id"] == first_bank_account.id
@@ -294,3 +297,7 @@ class OfferersBankAccountTest:
 
         assert managed_venues[0]["bankAccountId"] == second_bank_account.id
         assert not managed_venues[1]["bankAccountId"]
+
+        assert managed_venues[0]["hasPricingPoint"] is True
+        assert managed_venues[1]["hasPricingPoint"] is True
+        assert managed_venues[2]["hasPricingPoint"] is False
