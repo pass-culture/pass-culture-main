@@ -1103,7 +1103,7 @@ class AddCriterionToOffersTest:
         assert set(offer21.criteria) == {criterion1, criterion2}
         assert not inactive_offer.criteria
         assert not unmatched_offer.criteria
-        mocked_async_index_offer_ids.called_once_with([offer11.id, offer12.id, offer21.id])
+        mocked_async_index_offer_ids.assert_called_once_with({offer11.id, offer12.id, offer21.id})
 
     @mock.patch("pcapi.core.search.async_index_offer_ids")
     def test_add_criteria_from_ean_when_one_has_criteria(self, mocked_async_index_offer_ids):
@@ -1129,7 +1129,7 @@ class AddCriterionToOffersTest:
         assert set(offer21.criteria) == {criterion1, criterion2}
         assert not inactive_offer.criteria
         assert not unmatched_offer.criteria
-        mocked_async_index_offer_ids.called_once_with([offer11.id, offer12.id, offer21.id])
+        mocked_async_index_offer_ids.assert_called_once_with({offer11.id, offer12.id, offer21.id})
 
     @mock.patch("pcapi.core.search.async_index_offer_ids")
     def test_add_criteria_from_visa(self, mocked_async_index_offer_ids):
@@ -1155,7 +1155,7 @@ class AddCriterionToOffersTest:
         assert set(offer21.criteria) == {criterion1, criterion2}
         assert not inactive_offer.criteria
         assert not unmatched_offer.criteria
-        mocked_async_index_offer_ids.called_once_with([offer11.id, offer12.id, offer21.id])
+        mocked_async_index_offer_ids.assert_called_once_with({offer11.id, offer12.id, offer21.id})
 
     @mock.patch("pcapi.core.search.async_index_offer_ids")
     def test_add_criteria_when_no_offers_is_found(self, mocked_async_index_offer_ids):

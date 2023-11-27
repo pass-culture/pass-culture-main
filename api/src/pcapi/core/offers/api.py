@@ -832,7 +832,7 @@ def add_criteria_to_offers(
     offer_ids_query = models.Offer.query.filter(
         models.Offer.productId.in_(p.id for p in products), models.Offer.isActive.is_(True)
     ).with_entities(models.Offer.id)
-    offer_ids = [offer_id for offer_id, in offer_ids_query.all()]
+    offer_ids = {offer_id for offer_id, in offer_ids_query.all()}
 
     if not offer_ids:
         return False

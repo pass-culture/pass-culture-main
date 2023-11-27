@@ -429,7 +429,7 @@ class DeleteProUserTest(PostEndpointHelper):
         assert response.status_code == 303
         assert response.location == url_for("backoffice_web.search_pro", _external=True)
 
-        mails_api.delete_contact.called_once_with(user.email)
+        mails_api.delete_contact.assert_called_once_with(user.email)
         DeleteBatchUserAttributesRequest.assert_called_once_with(user_id=user_id)
         delete_user_attributes_task.delay.assert_called_once_with("canary")
         assert users_models.User.query.filter(users_models.User.id == user_id).count() == 0

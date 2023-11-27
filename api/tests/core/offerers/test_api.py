@@ -400,7 +400,7 @@ class EditVenueTest:
         offerers_api.update_venue(venue, author=user, **json_data)
 
         # Then
-        mocked_async_index_offers_of_venue_ids.called_once_with([venue.id])
+        mocked_async_index_offers_of_venue_ids.assert_called_once_with([venue.id])
 
     @patch("pcapi.core.search.async_index_offers_of_venue_ids")
     def when_changes_on_city_algolia_indexing_is_triggered(self, mocked_async_index_offers_of_venue_ids):
