@@ -44,6 +44,11 @@ def get_department_code_from_postal_code(postal_code: str) -> str:
     if postal_code[:2] == "20":
         return "2A"
 
+    # Use a fake but distinguishable code for Monaco, used in
+    # `core.educational.academis.ACADEMIES`.
+    if postal_code[:3] == "980":
+        return "98"
+
     if postal_code[:2] > "95":
         return postal_code[:3]
 

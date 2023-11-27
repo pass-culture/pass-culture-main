@@ -365,6 +365,14 @@ def test_serialize_collective_offer_without_institution():
     assert serialized["offer"]["educationalInstitutionUAICode"] == "all"
 
 
+def test_serialize_collective_offer_in_monaco():
+    collective_offer = educational_factories.CollectiveStockFactory(
+        collectiveOffer__venue__postalCode="98000",
+    ).collectiveOffer
+    serialized = algolia.AlgoliaBackend().serialize_collective_offer(collective_offer)
+    assert serialized["venue"]["academy"] == "Nice"
+
+
 def test_serialize_collective_offer_template():
     domain1 = educational_factories.EducationalDomainFactory(name="Danse")
     domain2 = educational_factories.EducationalDomainFactory(name="Architecture")
