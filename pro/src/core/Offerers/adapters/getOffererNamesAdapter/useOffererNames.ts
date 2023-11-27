@@ -2,7 +2,6 @@ import { api } from 'apiClient/api'
 import { OffererName } from 'core/Offerers/types'
 import { GET_DATA_ERROR_MESSAGE } from 'core/shared'
 import { useAdapter } from 'hooks'
-import { dehumanizeId } from 'utils/dehumanize'
 
 type GetOffererNamesAdapter = Adapter<void, OffererName[], OffererName[]>
 
@@ -16,6 +15,7 @@ type OffererNamesAdapterGetterName = (
   isAdmin?: boolean,
   offererId?: string | null
 ) => GetOffererNamesAdapter
+
 const getOffererNamesAdapter: OffererNamesAdapterGetterName = (
   isAdmin = false,
   offererId = null
@@ -29,11 +29,10 @@ const getOffererNamesAdapter: OffererNamesAdapterGetterName = (
 
   const offererNamesAdapter: GetOffererNamesAdapter = async () => {
     try {
-      const dehumanizedId = offererId ? dehumanizeId(offererId) : undefined
       const response = await api.listOfferersNames(
         null, // validated
         null, // validatedForUser
-        isAdmin ? dehumanizedId : null // offererId
+        isAdmin && offererId ? parseInt(offererId) : null // offererId
       )
       return {
         isOk: true,
@@ -51,6 +50,7 @@ interface UseAdapterArgs {
   isAdmin?: boolean
   offererId?: string | null
 }
+
 const useGetOffererNames = ({
   isAdmin = false,
   offererId = null,
