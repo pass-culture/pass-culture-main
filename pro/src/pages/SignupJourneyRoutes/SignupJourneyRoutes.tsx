@@ -1,5 +1,5 @@
 import React, { useEffect } from 'react'
-import { Route, Routes, useLocation, useNavigate } from 'react-router-dom'
+import { Route, Routes, useLocation } from 'react-router-dom'
 
 import AppLayout from 'app/AppLayout'
 import { routesSignupJourney } from 'app/AppRouter/subroutesSignupJourneyMap'
@@ -8,6 +8,7 @@ import SkipLinks from 'components/SkipLinks'
 import { SignupJourneyContextProvider } from 'context/SignupJourneyContext'
 import { Events } from 'core/FirebaseEvents/constants'
 import useAnalytics from 'hooks/useAnalytics'
+import { useLogout } from 'hooks/useLogout'
 import fullLogoutIcon from 'icons/full-logout.svg'
 import logoPassCultureProIcon from 'icons/logo-pass-culture-pro.svg'
 import { Button } from 'ui-kit'
@@ -19,10 +20,11 @@ import styles from './SignupJourney.module.scss'
 const SignupJourneyRoutes = () => {
   const { logEvent } = useAnalytics()
   const location = useLocation()
-  const navigate = useNavigate()
-  const onSignoutClick = () => {
+  const logout = useLogout()
+
+  const onSignoutClick = async () => {
     logEvent?.(Events.CLICKED_LOGOUT, { from: location.pathname })
-    navigate('/logout')
+    await logout()
   }
 
   useEffect(() => {
