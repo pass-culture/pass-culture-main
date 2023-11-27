@@ -2,6 +2,7 @@ from pcapi.core.finance.models import BankInformation as BankInformationsSQLEnti
 from pcapi.domain.bank_informations.bank_informations import BankInformations
 from pcapi.domain.bank_informations.bank_informations_repository import BankInformationsRepository
 from pcapi.infrastructure.repository.bank_informations import bank_informations_domain_converter
+from pcapi.models import db
 from pcapi.repository import repository
 
 
@@ -22,8 +23,12 @@ class BankInformationsSQLRepository(BankInformationsRepository):
 
     def save(self, bank_informations: BankInformations) -> BankInformations:
         bank_informations_sql_entity = bank_informations_domain_converter.to_model(bank_informations)
-        repository.save(bank_informations_sql_entity)
-        bank_informations.id = bank_informations_sql_entity.id  # type: ignore [assignment]
+        # We need to do this here, because of the DDD implementation
+        # Because the instance that is going to be saved (this line upper) is not the same
+        # that the instance that is already in the session (fetch by `get_by_application` for example)
+        # id(instance_to_be_saved) != id(instance_in_the_session)
+        bank_information = db.session.merge(bank_informations_sql_entity)
+        repository.save(bank_information)
         return bank_informations
 
     def update_by_application_id(self, bank_informations: BankInformations) -> BankInformations | None:

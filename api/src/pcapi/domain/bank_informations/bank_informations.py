@@ -6,6 +6,7 @@ from pcapi.core.finance.models import BankInformationStatus
 class BankInformations:
     def __init__(
         self,
+        _id: int | None = None,
         application_id: int | None = None,
         status: BankInformationStatus | None = None,
         iban: str | None = None,
@@ -14,7 +15,7 @@ class BankInformations:
         venue_id: int | None = None,
         date_modified: datetime | None = None,
     ):
-        self.id = None
+        self.id = _id
         self.application_id = application_id
         self.status = status
         self.iban = iban

@@ -4,6 +4,7 @@ from pcapi.domain.bank_informations.bank_informations import BankInformations
 
 def to_domain(bank_informations_sql_entity: BankInformationsSQLEntity) -> BankInformations:
     return BankInformations(
+        _id=bank_informations_sql_entity.id,
         application_id=bank_informations_sql_entity.applicationId,
         status=bank_informations_sql_entity.status,
         iban=bank_informations_sql_entity.iban,
@@ -15,6 +16,7 @@ def to_domain(bank_informations_sql_entity: BankInformationsSQLEntity) -> BankIn
 
 def to_model(bank_informations: BankInformations) -> BankInformationsSQLEntity:
     bank_informations_sql_entity = BankInformationsSQLEntity()
+    bank_informations_sql_entity.id = bank_informations.id
     bank_informations_sql_entity.applicationId = bank_informations.application_id
     bank_informations_sql_entity.status = bank_informations.status
     bank_informations_sql_entity.iban = bank_informations.iban
