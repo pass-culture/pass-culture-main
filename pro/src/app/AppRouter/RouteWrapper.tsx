@@ -1,7 +1,6 @@
 import React, { ComponentType, ReactNode } from 'react'
 import { Navigate, useLocation, useMatches } from 'react-router-dom'
 
-import App from 'app/App/App'
 import AppLayout from 'app/AppLayout'
 import { RouteConfig } from 'app/AppRouter/routesMap'
 import useCurrentUser from 'hooks/useCurrentUser'
@@ -46,7 +45,7 @@ export const RouteWrapper = ({ children, routeMeta }: RouteWrapperProps) => {
       jsx = <Navigate to={newLocation} replace />
     }
   }
-  return <App>{jsx}</App>
+  return jsx
 }
 
 export const withRouteWrapper = <Props extends object>(

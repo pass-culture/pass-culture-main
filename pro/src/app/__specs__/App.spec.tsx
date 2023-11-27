@@ -17,12 +17,13 @@ const renderApp = (storeOverrides: any, url = '/') =>
   renderWithProviders(
     <>
       <div id="root"></div>
-      <App>
-        <Routes>
+
+      <Routes>
+        <Route path="/" element={<App />}>
           <Route path="/" element={<p>Sub component</p>} />
           <Route path="/connexion" element={<p>Login page</p>} />
-        </Routes>
-      </App>
+        </Route>
+      </Routes>
     </>,
     { storeOverrides, initialRouterEntries: [url] }
   )
@@ -35,7 +36,7 @@ Object.defineProperty(window, 'location', {
   writable: true,
 })
 
-describe('src | App', () => {
+describe('App', () => {
   let store: any
 
   beforeEach(() => {

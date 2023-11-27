@@ -1,7 +1,7 @@
 import { setUser as setSentryUser } from '@sentry/browser'
-import React, { ReactNode, useEffect, useState } from 'react'
+import React, { useEffect, useState } from 'react'
 import { useSelector } from 'react-redux'
-import { useLocation } from 'react-router-dom'
+import { Outlet, useLocation } from 'react-router-dom'
 
 import Notification from 'components/Notification/Notification'
 import useActiveFeature from 'hooks/useActiveFeature'
@@ -14,13 +14,9 @@ import { maintenanceSelector } from 'store/selectors/maintenanceSelector'
 import { URL_FOR_MAINTENANCE } from 'utils/config'
 import { Consents, initCookieConsent } from 'utils/cookieConsentModal'
 
-interface AppProps {
-  children: ReactNode
-}
-
 window.beamer_config = { product_id: 'vjbiYuMS52566', lazy: true }
 
-const App = ({ children }: AppProps): JSX.Element | null => {
+const App = (): JSX.Element | null => {
   const isBeamerEnabled = useActiveFeature('ENABLE_BEAMER')
   const location = useLocation()
   const { currentUser } = useCurrentUser()
@@ -106,7 +102,7 @@ const App = ({ children }: AppProps): JSX.Element | null => {
   }
   return (
     <>
-      {children}
+      <Outlet />
       <Notification />
     </>
   )
