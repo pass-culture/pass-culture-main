@@ -2,17 +2,20 @@ import logging
 import typing
 
 from pcapi.connectors.big_query.queries import ClassroomPlaylistQuery
+from pcapi.connectors.big_query.queries import LocalOfferersQuery
 from pcapi.connectors.big_query.queries.adage_playlists import NewTemplateOffersPlaylist
 import pcapi.connectors.big_query.queries.base as queries_base
 from pcapi.core.educational import exceptions as educational_exceptions
 from pcapi.core.educational import models as educational_models
 from pcapi.core.educational import repository
 import pcapi.core.educational.api.favorites as favorites_api
+import pcapi.core.offerers.api as offerers_api
 from pcapi.core.offerers.repository import get_venue_by_id
 from pcapi.models.api_errors import ApiErrors
 from pcapi.routes.adage_iframe import blueprint
 from pcapi.routes.adage_iframe.security import adage_jwt_required
 from pcapi.routes.adage_iframe.serialization import offers as serializers
+from pcapi.routes.adage_iframe.serialization import playlists as playlists_serializers
 from pcapi.routes.adage_iframe.serialization.adage_authentication import (
     get_redactor_information_from_adage_authentication,
 )
@@ -150,5 +153,42 @@ def new_template_offers_playlist(
                 ),
             )
             for offer in offers
+        ]
+    )
+
+
+@blueprint.adage_iframe.route("/playlists/local-offerers", methods=["GET"])
+@spectree_serialize(response_model=playlists_serializers.LocalOfferersPlaylist, api=blueprint.api)
+@adage_jwt_required
+def get_local_offerers_playlist(
+    authenticated_information: AuthenticatedInformation,
+) -> playlists_serializers.LocalOfferersPlaylist:
+    if not authenticated_information.uai:
+        raise ApiErrors({"message": "institutionId is mandatory"}, status_code=403)
+
+    institution = repository.get_educational_institution_public(institution_id=None, uai=authenticated_information.uai)
+    if not institution:
+        raise ApiErrors({"message": "institutionId is mandatory"}, status_code=403)
+
+    try:
+        rows = {
+            row.venue_id: row.distance_in_km for row in LocalOfferersQuery().execute(institution_id=str(institution.id))
+        }
+    except queries_base.MalformedRow:
+        return playlists_serializers.LocalOfferersPlaylist(venues=[])
+
+    venues = offerers_api.get_venues_by_ids(set(rows))
+
+    return playlists_serializers.LocalOfferersPlaylist(
+        venues=[
+            playlists_serializers.LocalOfferersPlaylistOffer(
+                img_url=venue.bannerUrl,
+                public_name=venue.publicName,
+                name=venue.name,
+                distance=rows[str(venue.id)],
+                city=venue.city,
+                id=venue.id,
+            )
+            for venue in venues
         ]
     )

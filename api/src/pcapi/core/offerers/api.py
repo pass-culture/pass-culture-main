@@ -2167,3 +2167,7 @@ def get_offerer_v2_stats(offerer_id: int) -> OffererV2Stats:
             offerer_id=offerer_id
         ),
     )
+
+
+def get_venues_by_ids(ids: typing.Collection[int]) -> BaseQuery:
+    return offerers_models.Venue.query.filter(offerers_models.Venue.id.in_(ids))
