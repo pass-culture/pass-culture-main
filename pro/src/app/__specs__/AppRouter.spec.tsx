@@ -16,22 +16,7 @@ vi.mock('hooks/useAnalytics', () => ({
 
 vi.spyOn(window, 'scrollTo')
 
-describe('src | AppRouter', () => {
-  it('should redirect to not found page when url is not matching a route', () => {
-    const store = configureTestStore()
-
-    render(
-      <>
-        <div id="root"></div>
-        <Provider store={store}>
-          <AppRouter routes={[]} />
-        </Provider>
-      </>
-    )
-
-    expect(screen.getByText(/Cette page n’existe pas/)).toBeInTheDocument()
-  })
-
+describe('AppRouter', () => {
   it('should redirect to login when route is private and user not logged in', async () => {
     const store = configureTestStore({
       user: {

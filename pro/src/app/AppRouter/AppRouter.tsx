@@ -3,6 +3,7 @@ import React from 'react'
 import { useSelector } from 'react-redux'
 import { createBrowserRouter, RouterProvider } from 'react-router-dom'
 
+import App from 'app/App/App'
 import { RouteConfig } from 'app/AppRouter/routesMap'
 import NotFound from 'pages/Errors/NotFound/NotFound'
 import { selectActiveFeatures } from 'store/features/selectors'
@@ -28,8 +29,11 @@ const AppRouter = ({ routes }: { routes: RouteConfig[] }): JSX.Element => {
     }))
 
   const router = sentryCreateBrowserRouter([
-    ...activeRoutes,
-    { path: '*', element: <NotFound /> },
+    {
+      path: '/',
+      element: <App />,
+      children: [...activeRoutes, { path: '*', element: <NotFound /> }],
+    },
   ])
 
   return <RouterProvider router={router} />
