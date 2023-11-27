@@ -62,25 +62,28 @@ class AbstractSaveBankInformations(ABC):
 
 
 class SaveVenueBankInformationsMixin(AbstractSaveBankInformations):
-    def create_new_bank_informations(
+    def get_or_create_new_bank_informations(
         self,
         application_details: ApplicationDetailOldJourney,
         venue_id: int | None = None,
         offerer_id: int | None = None,
     ) -> BankInformations:
-        new_bank_informations = BankInformations()
-        new_bank_informations.application_id = application_details.application_id
-        new_bank_informations.venue_id = venue_id
-        new_bank_informations.offerer_id = offerer_id
-        new_bank_informations.status = application_details.status
-        new_bank_informations.date_modified = application_details.modification_date
+        bank_information = self.bank_informations_repository.get_by_application(application_details.application_id)
+        if not bank_information:
+            bank_information = BankInformations()
+
+        bank_information.application_id = application_details.application_id
+        bank_information.venue_id = venue_id
+        bank_information.offerer_id = offerer_id
+        bank_information.status = application_details.status
+        bank_information.date_modified = application_details.modification_date
         if application_details.status == finance_models.BankInformationStatus.ACCEPTED:
-            new_bank_informations.iban = application_details.iban
-            new_bank_informations.bic = application_details.bic
+            bank_information.iban = application_details.iban
+            bank_information.bic = application_details.bic
         else:
-            new_bank_informations.iban = None
-            new_bank_informations.bic = None
-        return new_bank_informations
+            bank_information.iban = None
+            bank_information.bic = None
+        return bank_information
 
     def annotate_application(self, application_detail: ApplicationDetailOldJourney, message: str) -> None:
         """
@@ -156,7 +159,7 @@ class SaveVenueBankInformationsV2(SaveVenueBankInformationsMixin):
                     bank_information, application_details.status, self.api_errors
                 )
 
-        new_bank_informations = self.create_new_bank_informations(application_details, venue.identifier)
+        new_bank_informations = self.get_or_create_new_bank_informations(application_details, venue.identifier)
 
         check_new_bank_information_valid(new_bank_informations, self.api_errors)
 
@@ -278,7 +281,7 @@ class SaveVenueBankInformationsV4(SaveVenueBankInformationsMixin):
                     bank_information, application_details.status, self.api_errors
                 )
 
-        new_bank_informations = self.create_new_bank_informations(application_details, venue.identifier)
+        new_bank_informations = self.get_or_create_new_bank_informations(application_details, venue.identifier)
 
         check_new_bank_information_valid(new_bank_informations, self.api_errors)
 
@@ -368,7 +371,9 @@ class SaveVenueBankInformationsV5(SaveVenueBankInformationsMixin):
             if not offerer_id:
                 logger.info("Can't find an offerer by siret: %s", extra={"siret": application_details.siret})
                 return None
-            newly_bank_information = self.create_new_bank_informations(application_details, offerer_id=offerer_id)
+            newly_bank_information = self.get_or_create_new_bank_informations(
+                application_details, offerer_id=offerer_id
+            )
             self.bank_informations_repository.save(newly_bank_information)
             return None
 
@@ -386,7 +391,7 @@ class SaveVenueBankInformationsV5(SaveVenueBankInformationsMixin):
                     bank_information, application_details.status, self.api_errors
                 )
 
-        new_bank_informations = self.create_new_bank_informations(application_details, venue.id)
+        new_bank_informations = self.get_or_create_new_bank_informations(application_details, venue.id)
 
         check_new_bank_information_valid(new_bank_informations, self.api_errors)
 
