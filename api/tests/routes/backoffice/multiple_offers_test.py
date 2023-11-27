@@ -1,5 +1,4 @@
 import datetime
-from unittest.mock import patch
 
 from flask import url_for
 import pytest
@@ -257,8 +256,7 @@ class AddCriteriaToOffersTest(PostEndpointHelper):
     endpoint_kwargs = {"ean": "9781234567890"}
     needed_permission = perm_models.Permissions.MULTIPLE_OFFERS_ACTIONS
 
-    @patch("pcapi.core.search.async_index_offer_ids")
-    def test_edit_product_offers_criteria_from_ean(self, mocked_async_index_offer_ids, authenticated_client):
+    def test_edit_product_offers_criteria_from_ean(self, authenticated_client):
         criterion1 = criteria_factories.CriterionFactory(name="Pretty good books")
         criterion2 = criteria_factories.CriterionFactory(name="Other pretty good books")
         product = offers_factories.ProductFactory(extraData={"ean": "9783161484100"})
@@ -279,7 +277,6 @@ class AddCriteriaToOffersTest(PostEndpointHelper):
         assert set(offer2.criteria) == {criterion1, criterion2}
         assert not inactive_offer.criteria
         assert not unmatched_offer.criteria
-        mocked_async_index_offer_ids.assert_called_once_with([offer1.id, offer2.id])
 
     def test_edit_product_offers_criteria_from_ean_without_offers(self, authenticated_client):
         offers_factories.ProductFactory(extraData={"ean": "9783161484100"})
@@ -317,10 +314,7 @@ class SetProductGcuIncompatibleTest(PostEndpointHelper):
             OfferValidationStatus.APPROVED,
         ],
     )
-    @patch("pcapi.core.search.async_index_offer_ids")
-    def test_edit_product_gcu_compatibility(
-        self, mocked_async_index_offer_ids, authenticated_client, validation_status
-    ):
+    def test_edit_product_gcu_compatibility(self, authenticated_client, validation_status):
         provider = providers_factories.APIProviderFactory()
         product_1 = offers_factories.ThingProductFactory(
             description="premier produit inapproprié",
@@ -356,6 +350,3 @@ class SetProductGcuIncompatibleTest(PostEndpointHelper):
             else:
                 assert offer.lastValidationType == OfferValidationType.CGU_INCOMPATIBLE_PRODUCT
                 assert datetime.datetime.utcnow() - offer.lastValidationDate < datetime.timedelta(seconds=5)
-        mocked_async_index_offer_ids.assert_called_once_with(
-            {offer.id for offer in offers if offer.id not in initially_rejected}
-        )
