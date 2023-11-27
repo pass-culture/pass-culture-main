@@ -32,6 +32,4 @@ export const IndividualOfferWizard = () => {
 
 // Lazy-loaded by react-router-dom
 // ts-unused-exports:disable-next-line
-export const Component = withRouteWrapper(IndividualOfferWizard, {
-  shouldRedirect: true,
-})
+export const Component = withRouteWrapper(IndividualOfferWizard)
