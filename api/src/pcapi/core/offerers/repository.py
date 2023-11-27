@@ -625,6 +625,13 @@ def get_offerer_bank_accounts(offerer_id: int) -> models.Offerer | None:
         )
         .outerjoin(models.Venue, models.Venue.managingOffererId == models.Offerer.id)
         .outerjoin(
+            models.VenuePricingPointLink,
+            sqla.and_(
+                models.VenuePricingPointLink.venueId == models.Venue.id,
+                models.VenuePricingPointLink.timespan.contains(datetime.utcnow()),
+            ),
+        )
+        .outerjoin(
             models.VenueBankAccountLink,
             sqla.and_(
                 finance_models.BankAccount.id == models.VenueBankAccountLink.bankAccountId,
@@ -639,6 +646,11 @@ def get_offerer_bank_accounts(offerer_id: int) -> models.Offerer | None:
             sqla_orm.contains_eager(models.Offerer.managedVenues)
             .load_only(models.Venue.id, models.Venue.siret, models.Venue.publicName, models.Venue.name)
             .contains_eager(models.Venue.bankAccountLinks)
+        )
+        .options(
+            sqla_orm.contains_eager(models.Offerer.managedVenues)
+            .contains_eager(models.Venue.pricing_point_links)
+            .load_only(models.VenuePricingPointLink.id)
         )
         .options(sqla_orm.load_only(models.Offerer.id, models.Offerer.name))
         .order_by(finance_models.BankAccount.dateCreated)

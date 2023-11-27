@@ -86,6 +86,7 @@ class ManagedVenues(BaseModel):
     commonName: str
     siret: str | None
     bankAccountId: int | None
+    hasPricingPoint: bool
 
     class Config:
         orm_mode = True
@@ -102,6 +103,7 @@ class ManagedVenues(BaseModel):
         if venue.bankAccountLinks:
             venue.bankAccountId = venue.bankAccountLinks[0].bankAccountId
         venue.commonName = venue.common_name
+        venue.hasPricingPoint = bool(venue.pricing_point_links)
 
         return super().from_orm(venue)
 
