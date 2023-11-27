@@ -5,6 +5,7 @@ import pytest
 
 from pcapi.core.educational import factories as educational_factories
 from pcapi.core.educational import models as educational_models
+import pcapi.core.offerers.factories as offerers_factories
 from pcapi.core.testing import assert_num_queries
 from pcapi.models import db
 from pcapi.routes.serialization import collective_offers_serialize
@@ -13,7 +14,21 @@ from pcapi.routes.serialization import collective_offers_serialize
 pytestmark = pytest.mark.usefixtures("db_session")
 
 
-class GetClassroomPlaylistTest:
+class SharedPlaylistsErrorTests:
+    def test_no_uai(self, client):
+        iframe_client = _get_iframe_client(client, uai="")
+        response = iframe_client.get(url_for(self.endpoint))
+        assert response.status_code == 403
+        assert "message" in response.json
+
+    def test_unknown_institution(self, client):
+        iframe_client = _get_iframe_client(client, uai="UAI123")
+        response = iframe_client.get(url_for(self.endpoint))
+        assert response.status_code == 403
+        assert "message" in response.json
+
+
+class GetClassroomPlaylistTest(SharedPlaylistsErrorTests):
     endpoint = "adage_iframe.get_classroom_playlist"
 
     def test_get_classroom_playlist(self, client):
@@ -58,18 +73,6 @@ class GetClassroomPlaylistTest:
             assert response.status_code == 200
             assert response.json == {"collectiveOffers": []}
 
-    def test_no_uai(self, client):
-        iframe_client = _get_iframe_client(client, uai="")
-        response = iframe_client.get(url_for(self.endpoint))
-        assert response.status_code == 403
-        assert "message" in response.json
-
-    def test_unknown_institution(self, client):
-        iframe_client = _get_iframe_client(client, uai="UAI123")
-        response = iframe_client.get(url_for(self.endpoint))
-        assert response.status_code == 403
-        assert "message" in response.json
-
     def test_unknown_redactor(self, client):
         iframe_client = _get_iframe_client(client, email="unknown@example.com")
         response = iframe_client.get(url_for(self.endpoint))
@@ -77,7 +80,7 @@ class GetClassroomPlaylistTest:
         assert "auth" in response.json
 
 
-class GetNewTemplateOffersPlaylistTest:
+class GetNewTemplateOffersPlaylistTest(SharedPlaylistsErrorTests):
     endpoint = "adage_iframe.new_template_offers_playlist"
 
     def test_new_template_offers_playlist(self, client):
@@ -145,23 +148,51 @@ class GetNewTemplateOffersPlaylistTest:
             assert response.status_code == 200
             assert response.json == {"collectiveOffers": []}
 
-    def test_no_uai(self, client):
-        iframe_client = _get_iframe_client(client, uai="")
-        response = iframe_client.get(url_for(self.endpoint))
-        assert response.status_code == 403
-        assert "message" in response.json
-
-    def test_unknown_institution(self, client):
-        iframe_client = _get_iframe_client(client, uai="UAI123")
-        response = iframe_client.get(url_for(self.endpoint))
-        assert response.status_code == 403
-        assert "message" in response.json
-
     def test_unknown_redactor(self, client):
         iframe_client = _get_iframe_client(client, email="unknown@example.com")
         response = iframe_client.get(url_for(self.endpoint))
         assert response.status_code == 403
         assert "auth" in response.json
+
+
+class GetLocalOfferersPlaylistTest(SharedPlaylistsErrorTests):
+    endpoint = "adage_iframe.get_local_offerers_playlist"
+
+    def test_get_local_offerers_playlist(self, client):
+        venues = sorted(offerers_factories.VenueFactory.create_batch(2), key=lambda v: v.id)
+        expected_distance = 10
+
+        iframe_client = _get_iframe_client(client)
+
+        mock_path = "pcapi.connectors.big_query.TestingBackend.run_query"
+        with patch(mock_path) as mock_run_query:
+            mock_run_query.return_value = [
+                {"venue_id": venues[0].id, "distance_in_km": expected_distance},
+                {"venue_id": venues[1].id, "distance_in_km": expected_distance},
+            ]
+
+            # fetch the institution (1 query)
+            # fetch venues data (1 query)
+            with assert_num_queries(2):
+                response = iframe_client.get(url_for(self.endpoint))
+
+            assert response.status_code == 200
+            assert len(response.json["venues"]) == 2
+
+            for idx, response_venue in enumerate(sorted(response.json["venues"], key=lambda v: v["id"])):
+                assert response_venue["id"] == venues[idx].id
+                assert response_venue["distance"] == expected_distance
+
+    def test_no_rows(self, client):
+        iframe_client = _get_iframe_client(client)
+
+        mock_path = "pcapi.connectors.big_query.TestingBackend.run_query"
+        with patch(mock_path) as mock_run_query:
+            mock_run_query.return_value = []
+            response = iframe_client.get(url_for(self.endpoint))
+
+            assert response.status_code == 200
+            assert response.json == {"venues": []}
 
 
 def _get_iframe_client(client, email=None, uai=None):

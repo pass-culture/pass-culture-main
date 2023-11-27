@@ -48,3 +48,25 @@ class NewTemplateOffersPlaylist(BaseQuery):
     """
 
     model = NewTemplateOffersPlaylistModel
+
+
+class LocalOfferersModel(pydantic_v1.BaseModel):
+    venue_id: str
+    distance_in_km: float
+
+
+class LocalOfferersQuery(BaseQuery):
+    raw_query = f"""
+        SELECT
+            venue_id,
+            distance_in_km
+        FROM
+            `{settings.BIG_QUERY_TABLE_BASENAME}.adage_home_playlist_local_offerers`
+        WHERE
+            distance_in_km <= 60
+            and institution_id = @institution_id
+        LIMIT
+            10
+    """
+
+    model = LocalOfferersModel
