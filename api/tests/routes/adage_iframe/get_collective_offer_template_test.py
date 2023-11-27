@@ -149,6 +149,36 @@ class CollectiveOfferTemplateTest:
         assert response.status_code == 200
         assert offer.status == offer_mixin.OfferStatus.INACTIVE.value
 
+    def test_get_collective_offer_template_without_date_range(self, eac_client, redactor):
+        venue = offerers_factories.VenueFactory()
+        offer = educational_factories.CollectiveOfferTemplateFactory(
+            subcategoryId=subcategories.SEANCE_CINE.id,
+            name="offer name",
+            description="offer description",
+            priceDetail="détail du prix",
+            students=[StudentLevels.GENERAL2],
+            offerVenue={
+                "venueId": venue.id,
+                "addressType": "offererVenue",
+                "otherAddress": "",
+            },
+            nationalProgramId=educational_factories.NationalProgramFactory().id,
+            dateCreated=datetime.datetime.utcnow() - datetime.timedelta(days=9),
+            dateRange=None,
+        )
+
+        url = url_for("adage_iframe.get_collective_offer_template", offer_id=offer.id)
+
+        # 1. fetch redactor
+        # 2. fetch collective offer and related data
+        # 3. fetch the offerVenue's details (Venue)
+        # 4. find out if its a redactor's favorite
+        with assert_num_queries(4):
+            response = eac_client.get(url)
+
+        assert response.status_code == 200
+        assert offer.status == offer_mixin.OfferStatus.ACTIVE.value
+
     def test_is_a_redactors_favorite(self, eac_client):
         """Ensure that the isFavorite field is true only if the
         redactor added it to its favorites.
