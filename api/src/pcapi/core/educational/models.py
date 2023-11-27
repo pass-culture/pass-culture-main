@@ -702,6 +702,8 @@ class CollectiveOfferTemplate(
 
     @hybrid_property
     def hasEndDatePassed(self) -> bool:
+        if not self.end:
+            return False
         return self.end <= datetime.combine(datetime.utcnow(), time.max)
 
     @hasEndDatePassed.expression  # type: ignore[no-redef]
