@@ -1,15 +1,42 @@
 from unittest.mock import patch
 
+from pcapi import settings
+from pcapi.connectors.api_allocine import ALLOCINE_API_URL
 from pcapi.domain.allocine import _exclude_movie_showtimes_with_special_event_type
+from pcapi.domain.allocine import get_movie_list
 from pcapi.domain.allocine import get_movie_poster
 from pcapi.domain.allocine import get_movies_showtimes
+
+from tests.domain.fixtures import ALLOCINE_MOVIE_LIST_PAGES
+
+
+class GetMovieListFromAllocineTest:
+    def _configure_api_responses(self, requests_mock):
+        requests_mock.get(
+            f"{ALLOCINE_API_URL}/movieList?after=&token={settings.ALLOCINE_API_KEY}",
+            json=ALLOCINE_MOVIE_LIST_PAGES[""],
+        )
+        requests_mock.get(
+            f"{ALLOCINE_API_URL}/movieList?after=YXJyYXljb25uZWN0aW9uOjQ5&token={settings.ALLOCINE_API_KEY}",
+            json=ALLOCINE_MOVIE_LIST_PAGES["YXJyYXljb25uZWN0aW9uOjQ5"],
+        )
+
+    def test_get_all_pages(self, requests_mock):
+        self._configure_api_responses(requests_mock)
+        print(settings.ALLOCINE_API_KEY)
+        movies = get_movie_list()
+        assert len(movies) == 4
+        assert movies[0]["internalId"] == 131136
+        assert movies[1]["internalId"] == 41324
+        assert movies[2]["internalId"] == 2161
+        assert movies[3]["internalId"] == 4076
 
 
 class GetMovieShowtimeListFromAllocineTest:
     def setup_method(self):
         self.theater_id = "123456789"
 
-    @patch("pcapi.domain.allocine.get_movies_showtimes_from_allocine")
+    @patch("pcapi.domain.allocine.api_allocine.get_movies_showtimes_from_allocine")
     def test_should_retrieve_result_from_api_connector_with_theater_id_parameter(self, mock_get_movies_showtimes):
         # Given
         movies_list = [
@@ -31,7 +58,7 @@ class GetMovieShowtimeListFromAllocineTest:
         # Then
         mock_get_movies_showtimes.assert_called_once_with(self.theater_id)
 
-    @patch("pcapi.domain.allocine.get_movies_showtimes_from_allocine")
+    @patch("pcapi.domain.allocine.api_allocine.get_movies_showtimes_from_allocine")
     def test_should_extract_movies_from_api_result(self, mock_get_movies_showtimes):
         # Given
         given_movies = [

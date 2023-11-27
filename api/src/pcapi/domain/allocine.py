@@ -10,6 +10,19 @@ logger = logging.getLogger(__name__)
 MOVIE_SPECIAL_EVENT = "SPECIAL_EVENT"
 
 
+def get_movie_list() -> list[dict]:
+    movie_list = []
+    has_next_page = True
+    end_cursor = ""
+    while has_next_page:
+        response = api_allocine.get_movie_list_page(end_cursor)
+        movie_list += [item["node"] for item in response["movieList"]["edges"]]
+        end_cursor = response["movieList"]["pageInfo"]["endCursor"]
+        has_next_page = response["movieList"]["pageInfo"]["hasNextPage"]
+
+    return movie_list
+
+
 def get_movies_showtimes(theater_id: str) -> Iterator:
     api_response = api_allocine.get_movies_showtimes_from_allocine(theater_id)
     movies_showtimes = api_response["movieShowtimeList"]["edges"]
