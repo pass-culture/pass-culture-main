@@ -57,6 +57,10 @@ class OffererAlreadyRejectedException(Exception):
     pass
 
 
+class OffererNotFound(Exception):
+    pass
+
+
 class UserOffererAlreadyValidatedException(Exception):
     pass
 

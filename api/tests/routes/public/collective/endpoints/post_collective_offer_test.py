@@ -133,6 +133,34 @@ class CollectiveOffersPublicPostOfferTest:
         assert (UPLOAD_FOLDER / offer._get_image_storage_id()).exists()
         assert offer.formats == [subcategories.EacFormat.CONCERT]
 
+    def test_post_offers_with_invalid_venue_id(
+        self, public_client, payload, venue_provider, api_key, domain, institution, national_program, venue
+    ):
+        payload["venueId"] = 0
+        with patch("pcapi.core.offerers.api.can_venue_create_educational_offer"):
+            response = public_client.post("/v2/collective/offers/", json=payload)
+
+        assert response.status_code == 200
+
+        offer = educational_models.CollectiveOffer.query.filter_by(id=response.json["id"]).one()
+        assert offer.students == [educational_models.StudentLevels.COLLEGE4]
+        assert offer.venueId == venue.id
+        assert offer.name == payload["name"]
+        assert offer.domains == [domain]
+        assert offer.institutionId == institution.id
+        assert offer.interventionArea == []
+        assert offer.offerVenue == {
+            "venueId": venue.id,
+            "addressType": "offererVenue",
+            "otherAddress": "",
+        }
+        assert offer.providerId == venue_provider.providerId
+        assert offer.hasImage is True
+        assert offer.isPublicApi
+        assert offer.nationalProgramId == national_program.id
+        assert (UPLOAD_FOLDER / offer._get_image_storage_id()).exists()
+        assert offer.formats == [subcategories.EacFormat.CONCERT]
+
     def test_post_offers_6_5_only(self, payload, public_client, api_key):
         payload["students"] = [
             educational_models.StudentLevels.COLLEGE6.name,

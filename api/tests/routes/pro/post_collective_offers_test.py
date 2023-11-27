@@ -349,6 +349,44 @@ class Returns400Test:
         assert response.status_code == 400
         assert CollectiveOffer.query.count() == 0
 
+    def test_create_collective_offer_unknown_offerer(self, client):
+        # Given
+        user = users_factories.UserFactory()
+        venue = offerers_factories.VenueFactory()
+        offerer = venue.managingOfferer
+        offerers_factories.UserOffererFactory(offerer=offerer, user=user)
+        data = {
+            "venueId": 0,
+            "bookingEmails": ["offer1@example.com", "offer2@example.com"],
+            "durationMinutes": 60,
+            "description": "Ma super description",
+            "name": "La pièce de théâtre",
+            "subcategoryId": "Pouet",
+            "contactEmail": "pouet@example.com",
+            "contactPhone": "01 99 00 25 68",
+            "offerVenue": {
+                "addressType": "school",
+                "venueId": 0,
+                "otherAddress": "17 rue aléatoire",
+            },
+            "students": ["Lycée - Seconde", "Lycée - Première"],
+            "audioDisabilityCompliant": False,
+            "mentalDisabilityCompliant": True,
+            "motorDisabilityCompliant": False,
+            "visualDisabilityCompliant": False,
+            "interventionArea": ["75", "92", "93"],
+            "templateId": None,
+            "domains": [1],
+            "formats": ["Concert"],
+        }
+
+        # When
+        response = client.with_session_auth(user.email).post("/collective/offers", json=data)
+
+        # Then
+        assert response.status_code == 400
+        assert CollectiveOffer.query.count() == 0
+
     def test_create_collective_offer_unselectable_category(self, client):
         # Given
         user = users_factories.UserFactory()

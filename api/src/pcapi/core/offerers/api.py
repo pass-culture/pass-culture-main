@@ -44,7 +44,6 @@ import pcapi.core.users.models as users_models
 import pcapi.core.users.repository as users_repository
 from pcapi.models import db
 from pcapi.models import feature
-from pcapi.models.api_errors import ApiErrors
 from pcapi.models.validation_status_mixin import ValidationStatus
 from pcapi.repository import repository
 from pcapi.repository import transaction
@@ -1183,10 +1182,7 @@ def can_venue_create_educational_offer(venue_id: int) -> None:
         .one_or_none()
     )
     if offerer is None:
-        raise ApiErrors(
-            {"offerer": "can't find offerer with provided venue_id"},
-            status_code=404,
-        )
+        raise exceptions.OffererNotFound()
 
     if offerers_repository.offerer_has_venue_with_adage_id(offerer.id):
         return
