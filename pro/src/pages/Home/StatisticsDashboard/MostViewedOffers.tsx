@@ -1,29 +1,21 @@
 import cn from 'classnames'
 import React from 'react'
 
-import { OffererViewsModel, TopOffersResponseData } from 'apiClient/v1'
+import { TopOffersResponseData } from 'apiClient/v1'
 import { Thumb } from 'ui-kit'
 import { pluralizeString } from 'utils/pluralize'
 
 import styles from './MostViewedOffers.module.scss'
 
 export interface MostViewedOffersProps {
+  last30daysViews: number
   topOffers: TopOffersResponseData[]
-  dailyViews: OffererViewsModel[]
 }
 
 export const MostViewedOffers = ({
+  last30daysViews,
   topOffers,
-  dailyViews,
 }: MostViewedOffersProps) => {
-  const viewsToday = dailyViews.length
-    ? dailyViews[dailyViews.length - 1].numberOfViews
-    : 0
-  const last30daysViews =
-    dailyViews.length >= 30
-      ? viewsToday - dailyViews[dailyViews.length - 30].numberOfViews
-      : viewsToday
-
   return (
     <div className={styles['container']}>
       <div>
