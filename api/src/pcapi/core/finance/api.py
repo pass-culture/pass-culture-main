@@ -110,7 +110,6 @@ def add_event(
     booking: bookings_models.Booking | educational_models.CollectiveBooking | None = None,
     booking_incident: models.BookingFinanceIncident | None = None,
     incident_validation_date: datetime.datetime | None = None,
-    commit: bool = True,
 ) -> models.FinanceEvent:
     if booking_incident:
         booking = booking_incident.booking or booking_incident.collectiveBooking
@@ -179,8 +178,6 @@ def add_event(
         pricingOrderingDate=pricing_ordering_date,
     )
     db.session.add(event)
-    if commit:
-        db.session.commit()
     return event
 
 
@@ -2349,7 +2346,6 @@ def _create_finance_events_from_incident(
                 models.FinanceEventMotive.INCIDENT_COMMERCIAL_GESTURE,
                 booking_incident=booking_finance_incident,
                 incident_validation_date=incident_validation_date,
-                commit=False,
             )
         )
     else:
@@ -2359,7 +2355,6 @@ def _create_finance_events_from_incident(
                 models.FinanceEventMotive.INCIDENT_REVERSAL_OF_ORIGINAL_EVENT,
                 booking_incident=booking_finance_incident,
                 incident_validation_date=incident_validation_date,
-                commit=False,
             )
         )
 
@@ -2370,7 +2365,6 @@ def _create_finance_events_from_incident(
                     models.FinanceEventMotive.INCIDENT_NEW_PRICE,
                     booking_incident=booking_finance_incident,
                     incident_validation_date=incident_validation_date,
-                    commit=False,
                 )
             )
     db.session.add_all(finance_events)

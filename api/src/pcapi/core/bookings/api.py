@@ -288,7 +288,10 @@ def book_offer(
         repository.save(booking, stock)
 
         if booking.status == BookingStatus.USED:
-            finance_api.add_event(finance_models.FinanceEventMotive.BOOKING_USED, booking=booking)
+            finance_api.add_event(
+                finance_models.FinanceEventMotive.BOOKING_USED,
+                booking=booking,
+            )
 
     logger.info(
         "Beneficiary booked an offer",
@@ -469,7 +472,6 @@ def _execute_cancel_booking(
                     finance_api.add_event(
                         finance_models.FinanceEventMotive.BOOKING_CANCELLED_AFTER_USE,
                         booking=booking,
-                        commit=False,
                     )
                 _cancel_external_booking(booking, stock)
             except (
@@ -644,7 +646,10 @@ def cancel_booking_on_user_requested_account_suspension(booking: Booking) -> Non
 def mark_as_used(booking: Booking) -> None:
     validation.check_is_usable(booking)
     booking.mark_as_used()
-    finance_api.add_event(finance_models.FinanceEventMotive.BOOKING_USED, booking=booking, commit=False)
+    finance_api.add_event(
+        finance_models.FinanceEventMotive.BOOKING_USED,
+        booking=booking,
+    )
     repository.save(booking)
 
     logger.info(
@@ -681,7 +686,6 @@ def mark_as_used_with_uncancelling(booking: Booking) -> None:
     finance_api.add_event(
         finance_models.FinanceEventMotive.BOOKING_USED_AFTER_CANCELLATION,
         booking=booking,
-        commit=False,
     )
     db.session.commit()
     logger.info("Booking was uncancelled and marked as used", extra={"bookingId": booking.id})
@@ -710,7 +714,10 @@ def mark_as_cancelled(booking: Booking, reason: BookingCancellationReasons) -> N
 def mark_as_unused(booking: Booking) -> None:
     validation.check_can_be_mark_as_unused(booking)
     finance_api.cancel_latest_event(booking)
-    finance_api.add_event(finance_models.FinanceEventMotive.BOOKING_UNUSED, booking=booking, commit=False)
+    finance_api.add_event(
+        finance_models.FinanceEventMotive.BOOKING_UNUSED,
+        booking=booking,
+    )
     booking.mark_as_unused_set_confirmed()
     repository.save(booking)
 
@@ -867,7 +874,6 @@ def auto_mark_as_used_after_event() -> None:
         finance_api.add_event(
             finance_models.FinanceEventMotive.BOOKING_USED,
             booking=booking,
-            commit=False,
         )
         n_individual_bookings_updated += 1
 
@@ -893,7 +899,6 @@ def auto_mark_as_used_after_event() -> None:
         finance_api.add_event(
             finance_models.FinanceEventMotive.BOOKING_USED,
             booking=booking,
-            commit=False,
         )
         n_collective_bookings_updated += 1
         educational_utils.log_information_for_data_purpose(

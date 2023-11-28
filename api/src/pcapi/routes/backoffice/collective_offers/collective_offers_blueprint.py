@@ -453,7 +453,6 @@ def edit_collective_offer_price(collective_offer_id: int) -> utils.BackofficeRes
                 finance_api.add_event(
                     motive=finance_models.FinanceEventMotive.BOOKING_USED,
                     booking=collective_booking,
-                    commit=False,
                 )
             db.session.commit()
         except finance_exceptions.NonCancellablePricingError:
