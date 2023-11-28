@@ -14,11 +14,9 @@ import pcapi.core.offers.api as offers_api
 import pcapi.core.offers.models as offers_models
 import pcapi.core.offers.validation as offers_validation
 from pcapi.models.api_errors import ApiErrors
-from pcapi.models.feature import FeatureToggle
 from pcapi.repository import transaction
 from pcapi.routes.apis import private_api
 from pcapi.routes.public.books_stocks import serialization
-from pcapi.routes.serialization import offers_serialize
 from pcapi.serialization import utils as serialization_utils
 from pcapi.serialization.decorator import spectree_serialize
 from pcapi.utils.rest import check_user_has_access_to_offerer
@@ -113,27 +111,23 @@ def upsert_stocks(
         .one()
     )
 
-    if FeatureToggle.WIP_PRO_STOCK_PAGINATION.is_active():
-        matching_stocks = _get_existing_stocks_by_fields(body.offer_id, body.stocks)
-        stocks_to_edit = [
-            stock
-            for stock in body.stocks
-            if (
-                isinstance(stock, serialization.StockEditionBodyModel)
-                and not _stock_exists(body.offer_id, stock, matching_stocks)
-            )
-        ]
-        stocks_to_create = [
-            stock
-            for stock in body.stocks
-            if (
-                isinstance(stock, serialization.StockCreationBodyModel)
-                and not _stock_exists(body.offer_id, stock, matching_stocks)
-            )
-        ]
-    else:
-        stocks_to_edit = [stock for stock in body.stocks if isinstance(stock, serialization.StockEditionBodyModel)]
-        stocks_to_create = [stock for stock in body.stocks if isinstance(stock, serialization.StockCreationBodyModel)]
+    matching_stocks = _get_existing_stocks_by_fields(body.offer_id, body.stocks)
+    stocks_to_edit = [
+        stock
+        for stock in body.stocks
+        if (
+            isinstance(stock, serialization.StockEditionBodyModel)
+            and not _stock_exists(body.offer_id, stock, matching_stocks)
+        )
+    ]
+    stocks_to_create = [
+        stock
+        for stock in body.stocks
+        if (
+            isinstance(stock, serialization.StockCreationBodyModel)
+            and not _stock_exists(body.offer_id, stock, matching_stocks)
+        )
+    ]
 
     offers_validation.check_stocks_price(stocks_to_edit, offer)
     offers_validation.check_stocks_price(stocks_to_create, offer)
@@ -208,11 +202,7 @@ def upsert_stocks(
         raise ApiErrors(error.errors, status_code=400)
 
     offers_api.handle_stocks_edition(edited_stocks_with_update_info)
-    if not FeatureToggle.WIP_PRO_STOCK_PAGINATION.is_active():
-        return serialization.StocksResponseModel(
-            stocks=[offers_serialize.GetOfferStockResponseModel.from_orm(stock) for stock in upserted_stocks]
-        )
-    return serialization.StocksResponseModel(stocks=len(upserted_stocks))
+    return serialization.StocksResponseModel(stocks_count=len(upserted_stocks))
 
 
 @private_api.route("/stocks/<int:stock_id>", methods=["DELETE"])

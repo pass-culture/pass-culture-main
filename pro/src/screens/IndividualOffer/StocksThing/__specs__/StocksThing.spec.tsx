@@ -196,7 +196,7 @@ describe('screens:StocksThing', () => {
 
   it('should submit stock form when click on "Enregistrer et continuer"', async () => {
     vi.spyOn(api, 'upsertStocks').mockResolvedValue({
-      stocks: [],
+      stocks_count: 0,
     })
     await renderStockThingScreen([], props, contextValue)
     const nextButton = screen.getByRole('button', {
@@ -223,7 +223,7 @@ describe('screens:StocksThing', () => {
 
   it('should submit stock form with duo informations when clicking on on "Enregistrer et continuer"', async () => {
     vi.spyOn(api, 'upsertStocks').mockResolvedValue({
-      stocks: [],
+      stocks_count: 0,
     })
     await renderStockThingScreen([], props, contextValue)
     const nextButton = screen.getByRole('button', {
@@ -247,7 +247,7 @@ describe('screens:StocksThing', () => {
 
   it('should not submit stock form when click on "Retour"', async () => {
     vi.spyOn(api, 'upsertStocks').mockResolvedValue({
-      stocks: [],
+      stocks_count: 0,
     })
 
     await renderStockThingScreen([], props, contextValue)
@@ -295,7 +295,7 @@ describe('screens:StocksThing', () => {
   describe('activation codes', () => {
     it('should submit activation codes and freeze quantity when a csv is provided', async () => {
       vi.spyOn(api, 'upsertStocks').mockResolvedValue({
-        stocks: [],
+        stocks_count: 0,
       })
       props.offer = {
         ...offer,
@@ -367,7 +367,7 @@ describe('screens:StocksThing', () => {
 
     it('should display an error when activation code file is incorrect', async () => {
       vi.spyOn(api, 'upsertStocks').mockResolvedValue({
-        stocks: [],
+        stocks_count: 0,
       })
       props.offer = {
         ...offer,
@@ -472,7 +472,7 @@ describe('screens:StocksThing', () => {
 
   it('should not block when going outside and form is not touched', async () => {
     vi.spyOn(api, 'upsertStocks').mockResolvedValue({
-      stocks: [],
+      stocks_count: 0,
     })
 
     await renderStockThingScreen([], props, contextValue)
@@ -484,7 +484,7 @@ describe('screens:StocksThing', () => {
 
   it('should be able to stay on stock form after click on "Rester sur la page"', async () => {
     vi.spyOn(api, 'upsertStocks').mockResolvedValue({
-      stocks: [],
+      stocks_count: 0,
     })
 
     await renderStockThingScreen([], props, contextValue)
@@ -499,7 +499,7 @@ describe('screens:StocksThing', () => {
 
   it('should be able to quit without submitting from RouteLeavingGuard', async () => {
     vi.spyOn(api, 'upsertStocks').mockResolvedValue({
-      stocks: [],
+      stocks_count: 0,
     })
 
     await renderStockThingScreen([], props, contextValue)

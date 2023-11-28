@@ -21,7 +21,6 @@ from pcapi.domain.pro_offers import offers_recap
 from pcapi.infrastructure.repository.pro_offers import offers_recap_domain_converter
 from pcapi.models import db
 from pcapi.models import offer_mixin
-from pcapi.models.feature import FeatureToggle
 from pcapi.utils import custom_keys
 
 from . import exceptions
@@ -856,8 +855,6 @@ def get_paginated_stocks(
     stocks_limit_per_page: int = LIMIT_STOCKS_PER_PAGE,
     page: int = 1,
 ) -> flask_sqlalchemy.BaseQuery:
-    if not FeatureToggle.WIP_PRO_STOCK_PAGINATION.is_active():
-        return stocks_query
     return stocks_query.offset((page - 1) * stocks_limit_per_page).limit(stocks_limit_per_page)
 
 

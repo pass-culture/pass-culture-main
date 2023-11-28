@@ -10,7 +10,6 @@ from pydantic.v1.types import NonNegativeInt
 
 from pcapi.core.offers import models
 from pcapi.routes.serialization import BaseModel
-from pcapi.routes.serialization import offers_serialize
 from pcapi.serialization.utils import to_camel
 from pcapi.utils.date import format_into_utc_date
 
@@ -19,9 +18,7 @@ logger = logging.getLogger(__name__)
 
 
 class StocksResponseModel(BaseModel):
-    # FIXME : ogeber 20.11.2023 change stocks: list[...] -> stocks_count: int
-    # when removing the WIP_PRO_STOCK_PAGINATION FF
-    stocks: list[offers_serialize.GetOfferStockResponseModel] | int
+    stocks_count: int
 
     class Config:
         json_encoders = {datetime: format_into_utc_date}
