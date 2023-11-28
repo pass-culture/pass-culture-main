@@ -497,3 +497,31 @@ class GetOffererTest:
         assert response.json["hasPendingBankAccount"] is False
         assert response.json["venuesWithNonFreeOffersWithoutBankAccounts"] == []
         assert response.json["hasNonFreeOffer"] is False
+
+    @pytest.mark.usefixtures("db_session")
+    def test_offerer_properties_rely_only_on_the_offerer_data(self, client):
+        foreign_pro_user = users_factories.ProFactory()
+        foreign_offerer = offerers_factories.OffererFactory()
+        offerers_factories.UserOffererFactory(user=foreign_pro_user, offerer=foreign_offerer)
+        foreign_venue = offerers_factories.VenueFactory(managingOfferer=foreign_offerer)
+        finance_factories.BankAccountFactory(
+            offerer=foreign_offerer, status=finance_models.BankAccountApplicationStatus.ACCEPTED
+        )
+        finance_factories.BankAccountFactory(
+            offerer=foreign_offerer, status=finance_models.BankAccountApplicationStatus.ON_GOING
+        )
+        offers_factories.StockFactory(offer__venue=foreign_venue)
+
+        pro_user = users_factories.ProFactory()
+        offerer = offerers_factories.OffererFactory()
+        offerers_factories.UserOffererFactory(user=pro_user, offerer=offerer)
+
+        offerer_id = offerer.id
+        client = client.with_session_auth(pro_user.email)
+
+        response = client.get(f"/offerers/{offerer_id}")
+        assert response.status_code == 200
+        assert response.json["hasValidBankAccount"] is False
+        assert response.json["hasPendingBankAccount"] is False
+        assert response.json["venuesWithNonFreeOffersWithoutBankAccounts"] == []
+        assert response.json["hasNonFreeOffer"] is False
