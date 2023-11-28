@@ -101,7 +101,7 @@ def test_install_feature_flags(app, caplog):
 
     db.session.add(declared_and_installed)
     db.session.add(not_declared_but_installed)
-    db.session.commit()
+    db.session.flush()
 
     install_feature_flags()
 

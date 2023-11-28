@@ -52,7 +52,6 @@ class GetOffererTest:
 
         offerer_id = offerer.id
         client = client.with_session_auth(pro.email)
-        db.session.commit()
 
         with testing.assert_no_duplicated_queries():
             response = client.get(f"/offerers/{offerer_id}")

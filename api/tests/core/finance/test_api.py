@@ -666,7 +666,8 @@ class GetPricingPointLinkTest:
             datetime.datetime.utcnow() - datetime.timedelta(days=5),
             datetime.datetime.utcnow() - datetime.timedelta(days=2),
         )
-        db.session.commit()
+        db.session.flush()
+        db.session.refresh(link)  # otherwise `link.timespan.lower` is seen as a string
 
         with pytest.raises(ValueError):
             api._get_pricing_point_link(booking)
@@ -683,7 +684,8 @@ class GetPricingPointLinkTest:
             link.timespan.lower,
             datetime.datetime.utcnow(),
         )
-        db.session.commit()
+        db.session.flush()
+        db.session.refresh(link)  # otherwise `link.timespan.lower` is seen as a string
 
         with pytest.raises(ValueError):
             api._get_pricing_point_link(booking)

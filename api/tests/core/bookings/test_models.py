@@ -35,24 +35,27 @@ def test_reimbursement_rate():
 
 
 def test_save_cancellation_date_postgresql_function():
-    # In this test, we manually COMMIT so that save_cancellation_date
-    # PotsgreSQL function is triggered.
+    # In this test, we manually perform an `INSERT` so that the
+    # `save_cancellation_date` PotsgreSQL function is triggered.
     booking = factories.BookingFactory()
     assert booking.cancellationDate is None
 
     booking.status = BookingStatus.CANCELLED
-    db.session.commit()
+    db.session.flush()
+    db.session.refresh(booking)
     assert booking.cancellationDate is not None
 
     # `cancellationDate` should not be changed when another attribute
     # is updated.
     previous = booking.cancellationDate
     booking.cancellationReason = "FRAUD"
-    db.session.commit()
+    db.session.flush()
+    db.session.refresh(booking)
     assert booking.cancellationDate == previous
 
     booking.status = BookingStatus.CONFIRMED
-    db.session.commit()
+    db.session.flush()
+    db.session.refresh(booking)
     assert booking.cancellationDate is None
 
 
