@@ -59,7 +59,7 @@ def list_offerers_to_validate() -> utils.BackofficeResponse:
 
     # new and pending attachements by default
     if not form.status.data:
-        form.status.data = [ValidationStatus.NEW.value, ValidationStatus.PENDING.value]
+        form.status.data = [ValidationStatus.NEW.value]
 
     offerers = validation_repository.list_offerers_to_be_validated(
         form.q.data,
@@ -387,7 +387,7 @@ def list_offerers_attachments_to_validate() -> utils.BackofficeResponse:
 
     # new and pending attachements by default
     if not form.status.data:
-        form.status.data = [ValidationStatus.NEW.value, ValidationStatus.PENDING.value]
+        form.status.data = [ValidationStatus.NEW.value]
 
     users_offerers = validation_repository.list_users_offerers_to_be_validated(
         form.q.data,
