@@ -67,3 +67,24 @@ class OffersData(BaseQuery):
         """
 
     model = TopOffersData
+
+
+class OffererTotalViewsLast30Days(pydantic_v1.BaseModel):
+    totalViews: int
+
+
+class OffererTotalViewsLast30DaysQuery(BaseQuery):
+    @property
+    def raw_query(self) -> str:
+        return f"""
+        SELECT
+            IFNULL(SUM(nb_daily_consult), 0) as totalViews
+        FROM
+            `{settings.BIG_QUERY_NOTIFICATIONS_TABLE_BASENAME}.{DAILY_CONSULT_PER_OFFERER_LAST_180_DAYS_TABLE}`
+        WHERE
+            offerer_id = @offerer_id
+        AND
+            day_seniority <= 30
+        """
+
+    model = OffererTotalViewsLast30Days

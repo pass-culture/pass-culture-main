@@ -18,6 +18,7 @@ import sqlalchemy.orm as sa_orm
 from pcapi import settings
 from pcapi.connectors import sirene
 from pcapi.connectors.big_query.queries.offerer_stats import DAILY_CONSULT_PER_OFFERER_LAST_180_DAYS_TABLE
+from pcapi.connectors.big_query.queries.offerer_stats import OffererTotalViewsLast30DaysQuery
 from pcapi.connectors.big_query.queries.offerer_stats import OffererViewsPerDay
 from pcapi.connectors.big_query.queries.offerer_stats import OffersData
 from pcapi.connectors.big_query.queries.offerer_stats import TOP_3_MOST_CONSULTED_OFFERS_LAST_30_DAYS_TABLE
@@ -2085,14 +2086,21 @@ def _update_offerer_stats_data(offerer_id: int) -> None:
         top_offers_stats = offerers_models.OffererStats.query.filter_by(
             offererId=offerer_id, table=TOP_3_MOST_CONSULTED_OFFERS_LAST_30_DAYS_TABLE
         ).one_or_none()
+        number_of_total_views_last_30_days = next(
+            OffererTotalViewsLast30DaysQuery().execute(offerer_id=str(offerer_id))
+        )
         if not top_offers_stats:
             top_offers_stats = offerers_models.OffererStats(
                 offererId=offerer_id,
                 table=TOP_3_MOST_CONSULTED_OFFERS_LAST_30_DAYS_TABLE,
-                jsonData=offerers_models.OffererStatsData(top_offers=top_offers),
+                jsonData=offerers_models.OffererStatsData(
+                    top_offers=top_offers, total_views_last_30_days=number_of_total_views_last_30_days.totalViews
+                ),
                 syncDate=datetime.utcnow(),
             )
             db.session.add(top_offers_stats)
         else:
-            top_offers_stats.jsonData = offerers_models.OffererStatsData(top_offers=top_offers)
+            top_offers_stats.jsonData = offerers_models.OffererStatsData(
+                top_offers=top_offers, total_views_last_30_days=number_of_total_views_last_30_days.totalViews
+            )
             top_offers_stats.syncDate = datetime.utcnow()
