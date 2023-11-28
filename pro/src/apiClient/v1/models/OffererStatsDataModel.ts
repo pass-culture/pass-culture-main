@@ -9,5 +9,6 @@ import type { TopOffersResponseData } from './TopOffersResponseData';
 export type OffererStatsDataModel = {
   dailyViews: Array<OffererViewsModel>;
   topOffers: Array<TopOffersResponseData>;
+  totalViewsLast30Days: number;
 };
 
