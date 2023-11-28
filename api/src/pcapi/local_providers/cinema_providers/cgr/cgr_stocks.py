@@ -1,8 +1,10 @@
 import datetime
 import decimal
+import logging
 from typing import Iterator
 
 from pcapi.connectors.cgr.cgr import get_movie_poster_from_api
+import pcapi.connectors.cgr.exceptions as cgr_connector_exceptions
 from pcapi.connectors.serialization import cgr_serializers
 from pcapi.core.categories import subcategories_v2 as subcategories
 from pcapi.core.external_bookings.cgr.client import CGRClientAPI
@@ -22,6 +24,8 @@ from pcapi.utils.date import local_datetime_to_default_timezone
 
 PREVIEW_SHOW = "avant première"
 ICE_CINE_SHOW = "salle ICE"
+
+logger = logging.getLogger(__name__)
 
 
 class CGRStocks(LocalProvider):
@@ -100,7 +104,18 @@ class CGRStocks(LocalProvider):
         ):
             if self.film_infos.Affiche:
                 image_url = self.film_infos.Affiche
-                if image := get_movie_poster_from_api(image_url):
+                try:
+                    image = get_movie_poster_from_api(image_url)
+                except cgr_connector_exceptions.CGRAPIException:
+                    image = None
+                    logger.info(
+                        "Could not fetch movie poster",
+                        extra={
+                            "provider": "cgr",
+                            "url": image_url,
+                        },
+                    )
+                if image:
                     offers_api.create_mediation(
                         user=None,
                         offer=offer,
