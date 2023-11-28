@@ -37,9 +37,10 @@ class ExternalAPIException(Exception):
 def _redact_url(url: str | bytes) -> str:
     if isinstance(url, bytes):
         return str(url)
-    # Cine Digital Service (CDS) wants authentication token to appear in GET
+    # Allociné and Cine Digital Service (CDS) want authentication token to appear in GET
     # requests. We don't want to log them.
-    return re.sub("api_token=[^&^$]+", "api_token=[REDACTED]", url)
+    # For Allociné, the query param name is 'token'. For CDS, the name is 'api_token'
+    return re.sub("token=[^&^$]+", "token=[REDACTED]", url)
 
 
 def _wrapper(
