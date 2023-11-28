@@ -194,7 +194,17 @@ class BoostClientAPI(external_bookings_models.ExternalBookingsClientAPI):
         return showtime_details.data
 
     def get_movie_poster(self, image_url: str) -> bytes:
-        return boost.get_movie_poster_from_api(image_url)
+        try:
+            return boost.get_movie_poster_from_api(image_url)
+        except exceptions.BoostAPIException:
+            logger.info(
+                "Could not fetch movie poster",
+                extra={
+                    "provider": "boost",
+                    "url": image_url,
+                },
+            )
+            return bytes()
 
     def get_cinemas_attributs(self) -> list[boost_serializers.CinemaAttribut]:
         json_data = boost.get_resource(
