@@ -53,7 +53,6 @@ const SummaryScreen = () => {
     showVenuePopin,
     offer,
     subCategories,
-    venueList,
   } = useIndividualOfferContext()
   const { logEvent } = useAnalytics()
 
@@ -70,22 +69,6 @@ const SummaryScreen = () => {
     mode,
   })
 
-  const checkFirstNonFreeOfferPopin = async (isNonFreeOffer: boolean) => {
-    if (isNonFreeOffer) {
-      navigate(offerConfirmationStepUrl)
-    }
-
-    const offererResponse = await api.getOfferer(offer.offererId)
-    if (
-      !offererResponse.hasPendingBankAccount &&
-      !offererResponse.hasValidBankAccount
-    ) {
-      setDisplayRedirectDialog(true)
-    } else {
-      navigate(offerConfirmationStepUrl)
-    }
-  }
-
   const publishOffer = async () => {
     // edition mode offers are already publish
     /* istanbul ignore next: DEBT, TO FIX */
@@ -94,26 +77,25 @@ const SummaryScreen = () => {
     }
 
     setIsDisabled(true)
-    const venueHasCreatedNonFreeOffer = isNewBankDetailsJourneyEnabled
-      ? venueList.some((venue) => {
-          return venue.hasNonFreeOffers
-        })
-      : undefined
-
+    const offererResponse = isNewBankDetailsJourneyEnabled
+      ? await api.getOfferer(offer.offererId)
+      : null
     const publishIndividualOfferResponse = await publishIndividualOffer({
       offerId: offer.id,
     })
+
     if (publishIndividualOfferResponse.isOk) {
       setOffer?.(serializeOfferApi(publishIndividualOfferResponse.payload))
+      const shouldDisplayRedirectDialog =
+        (isNewBankDetailsJourneyEnabled &&
+          publishIndividualOfferResponse.payload.isNonFreeOffer &&
+          offererResponse &&
+          !offererResponse.hasNonFreeOffer &&
+          !offererResponse.hasValidBankAccount &&
+          !offererResponse.hasPendingBankAccount) ||
+        (!isNewBankDetailsJourneyEnabled && showVenuePopin[venueId || ''])
 
-      if (isNewBankDetailsJourneyEnabled && !venueHasCreatedNonFreeOffer) {
-        await checkFirstNonFreeOfferPopin(
-          publishIndividualOfferResponse.payload.isNonFreeOffer ?? false
-        )
-      } else if (
-        !isNewBankDetailsJourneyEnabled &&
-        showVenuePopin[venueId || '']
-      ) {
+      if (shouldDisplayRedirectDialog) {
         setDisplayRedirectDialog(true)
       } else {
         navigate(offerConfirmationStepUrl)
