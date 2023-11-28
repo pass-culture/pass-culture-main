@@ -2,7 +2,7 @@ import datetime
 import decimal
 import logging
 
-from pcapi.connectors.ems import EMSScheduleConnector
+import pcapi.connectors.ems as ems_connector
 from pcapi.connectors.serialization import ems_serializers
 from pcapi.core import search
 from pcapi.core.categories import subcategories_v2 as subcategories
@@ -28,7 +28,7 @@ ACCEPTED_FEATURES_MAPPING = {
 class EMSStocks:
     def __init__(
         self,
-        connector: EMSScheduleConnector,
+        connector: ems_connector.EMSScheduleConnector,
         venue_provider: providers_models.VenueProvider,
         site: ems_serializers.SiteWithEvents,
     ):
@@ -84,7 +84,18 @@ class EMSStocks:
             poster_url = self.poster_urls_map.get(movie_id)
             if not poster_url:
                 continue
-            thumb = self.connector.get_movie_poster_from_api(poster_url.replace("/120/", "/600/"))
+            poster_url = poster_url.replace("/120/", "/600/")
+            try:
+                thumb = self.connector.get_movie_poster_from_api(poster_url)
+            except ems_connector.EMSAPIException:
+                logger.info(
+                    "Could not fetch movie poster",
+                    extra={
+                        "provider": "ems",
+                        "url": poster_url,
+                    },
+                )
+                thumb = None
             if not thumb:
                 continue
             offers_api.create_mediation(

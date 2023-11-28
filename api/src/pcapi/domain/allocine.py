@@ -2,8 +2,7 @@ import logging
 from typing import Callable
 from typing import Iterator
 
-from pcapi.connectors.api_allocine import get_movie_poster_from_allocine
-from pcapi.connectors.api_allocine import get_movies_showtimes_from_allocine
+from pcapi.connectors import api_allocine
 
 
 logger = logging.getLogger(__name__)
@@ -13,7 +12,9 @@ MOVIE_SPECIAL_EVENT = "SPECIAL_EVENT"
 
 
 def get_movies_showtimes(
-    api_key: str, theater_id: str, get_movies_showtimes_from_api: Callable = get_movies_showtimes_from_allocine
+    api_key: str,
+    theater_id: str,
+    get_movies_showtimes_from_api: Callable = api_allocine.get_movies_showtimes_from_allocine,
 ) -> Iterator:
     api_response = get_movies_showtimes_from_api(api_key, theater_id)
     movies_showtimes = api_response["movieShowtimeList"]["edges"]
@@ -26,8 +27,20 @@ def get_movies_showtimes(
     return iter(filtered_movies_showtimes)
 
 
-def get_movie_poster(poster_url: str, get_movie_poster_from_api: Callable = get_movie_poster_from_allocine) -> bytes:
-    return get_movie_poster_from_api(poster_url)
+def get_movie_poster(
+    poster_url: str, get_movie_poster_from_api: Callable = api_allocine.get_movie_poster_from_allocine
+) -> bytes:
+    try:
+        return get_movie_poster_from_api(poster_url)
+    except api_allocine.AllocineException:
+        logger.info(
+            "Could not fetch movie poster",
+            extra={
+                "provider": "allociné",
+                "url": poster_url,
+            },
+        )
+        return bytes()
 
 
 def _ignore_empty_movies(movies_showtime: list) -> list:

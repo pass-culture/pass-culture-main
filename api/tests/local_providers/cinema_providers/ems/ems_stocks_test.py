@@ -113,6 +113,24 @@ class EMSStocksTest:
         )
         assert len(created_offer.mediations) == 1
 
+    def test_handle_error_on_movie_poster(self, requests_mock):
+        connector = EMSScheduleConnector()
+        requests_mock.get("https://fake_url.com?version=0", json=fixtures.DATA_VERSION_0)
+
+        ems_provider = get_provider_by_local_class("EMSStocks")
+        venue_provider = providers_factories.VenueProviderFactory(provider=ems_provider, venueIdAtOfferProvider="0063")
+        requests_mock.get("https://example.com/FR/poster/982D31BE/600/CDFG5.jpg", status_code=404)
+
+        ems_stocks = EMSStocks(
+            connector=connector,
+            venue_provider=venue_provider,
+            site=connector.get_schedules().sites[1],
+        )
+        ems_stocks.synchronize()
+
+        created_offer = offers_models.Offer.query.one()
+        assert created_offer.image is None
+
     def test_successive_version_syncs(self, requests_mock):
         requests_mock.get("https://fake_url.com?version=0", json=fixtures.DATA_VERSION_0)
         requests_mock.get("https://example.com/FR/poster/5F988F1C/600/SHJRH.jpg", content=bytes())

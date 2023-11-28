@@ -97,6 +97,11 @@ class GetMoviePosterTest:
         requests_mock.get(url, content=b"poster data")
         assert get_movie_poster(url) == b"poster data"
 
+    def test_handle_error_on_movie_poster(self, requests_mock):
+        url = "https://allocine.example.com/movie/poster.jpg"
+        requests_mock.get(url, status_code=404)
+        assert get_movie_poster(url) == b""
+
 
 class RemoveMovieShowsWithSpecialEventTypeTest:
     def test_should_remove_movie_shows_with_special_event_type(self):

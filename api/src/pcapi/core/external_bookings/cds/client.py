@@ -1,6 +1,7 @@
 import datetime
 from functools import lru_cache
 import json
+import logging
 import math
 from operator import attrgetter
 import typing
@@ -26,6 +27,7 @@ from pcapi.utils.queue import add_to_queue
 from . import constants
 
 
+logger = logging.getLogger(__name__)
 CDS_DATE_FORMAT = "%Y-%m-%dT%H:%M:%S.%f%z"
 
 
@@ -94,7 +96,17 @@ class CineDigitalServiceAPI(external_bookings_models.ExternalBookingsClientAPI):
         return [cds_movie.to_generic_movie() for cds_movie in cds_movies]
 
     def get_movie_poster(self, image_url: str) -> bytes:
-        return get_movie_poster_from_api(image_url)
+        try:
+            return get_movie_poster_from_api(image_url)
+        except cds_exceptions.CineDigitalServiceAPIException:
+            logger.info(
+                "Could not fetch movie poster",
+                extra={
+                    "provider": "cds",
+                    "url": image_url,
+                },
+            )
+            return bytes()
 
     def get_voucher_payment_type(self) -> cds_serializers.PaymentTypeCDS:
         data = get_resource(self.api_url, self.account_id, self.token, ResourceCDS.PAYMENT_TYPE)
