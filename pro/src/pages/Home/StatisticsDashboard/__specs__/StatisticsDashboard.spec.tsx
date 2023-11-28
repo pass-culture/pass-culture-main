@@ -29,7 +29,7 @@ const renderStatisticsDashboard = (
 describe('StatisticsDashboard', () => {
   it('should render empty state when no statistics', async () => {
     vi.spyOn(api, 'getOffererStats').mockResolvedValueOnce({
-      jsonData: { dailyViews: [], topOffers: [] },
+      jsonData: { dailyViews: [], topOffers: [], totalViewsLast30Days: 0 },
       syncDate: null,
       offererId: 1,
     })
