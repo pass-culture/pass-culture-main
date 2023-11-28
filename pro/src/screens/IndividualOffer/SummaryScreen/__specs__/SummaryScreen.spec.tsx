@@ -424,10 +424,11 @@ describe('Summary', () => {
         ...defaultGetOffererResponseModel,
         hasValidBankAccount: false,
         hasPendingBankAccount: false,
+        hasNonFreeOffer: false,
       })
 
       vi.spyOn(api, 'patchPublishOffer').mockResolvedValue(
-        GetIndividualOfferFactory({ isNonFreeOffer: false })
+        GetIndividualOfferFactory({ isNonFreeOffer: true })
       )
 
       renderSummary(
