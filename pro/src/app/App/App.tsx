@@ -18,6 +18,8 @@ interface AppProps {
   children: JSX.Element
 }
 
+window.beamer_config = { product_id: 'vjbiYuMS52566', lazy: true }
+
 const App = ({ children }: AppProps): JSX.Element | null => {
   const isCookieBannerEnabled = useActiveFeature('WIP_ENABLE_COOKIES_BANNER')
   const isBeamerEnabled = useActiveFeature('ENABLE_BEAMER')
