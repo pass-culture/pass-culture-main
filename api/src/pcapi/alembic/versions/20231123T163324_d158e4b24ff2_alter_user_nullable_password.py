@@ -1,6 +1,4 @@
-"""
-Make user password nullable.
-Add not null password or existing single sign-on trigger check.
+"""Add NOT NULL contraint and contraint trigger on `user.password`
 """
 from alembic import op
 from sqlalchemy.dialects import postgresql
