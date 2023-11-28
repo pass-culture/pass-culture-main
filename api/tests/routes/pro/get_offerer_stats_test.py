@@ -45,6 +45,7 @@ class OffererStatsTest:
             offerer=offerer,
             table=TOP_3_MOST_CONSULTED_OFFERS_LAST_30_DAYS_TABLE,
             jsonData={
+                "total_views_last_30_days": 6,
                 "top_offers": [
                     {
                         "offerId": offer_1.id,
@@ -58,7 +59,7 @@ class OffererStatsTest:
                         "offerId": offer_3.id,
                         "numberOfViews": 3,
                     },
-                ]
+                ],
             },
         )
 
@@ -77,6 +78,7 @@ class OffererStatsTest:
                     {"image": None, "numberOfViews": 2, "offerId": offer_2.id, "offerName": offer_2.name},
                     {"image": None, "numberOfViews": 3, "offerId": offer_3.id, "offerName": offer_3.name},
                 ],
+                "totalViewsLast30Days": 6,
             },
             "offererId": offerer.id,
             "syncDate": "2021-01-01T00:00:00",
