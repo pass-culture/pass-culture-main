@@ -6,6 +6,8 @@ import {
   GetOffererResponseModel,
   GetOffererV2StatsResponseModel,
 } from 'apiClient/v1'
+import { Events } from 'core/FirebaseEvents/constants'
+import useAnalytics from 'hooks/useAnalytics'
 import fullLinkIcon from 'icons/full-link.svg'
 import fullShowIcon from 'icons/full-show.svg'
 import strokePhoneIcon from 'icons/stroke-phone.svg'
@@ -57,6 +59,7 @@ export const OfferStats = ({ offerer, className }: OfferStatsProps) => {
     null
   )
   const [isLoading, setIsLoading] = useState(false)
+  const { logEvent } = useAnalytics()
 
   useEffect(() => {
     const loadStats = async () => {
@@ -120,6 +123,9 @@ export const OfferStats = ({ offerer, className }: OfferStatsProps) => {
                   }}
                   icon={fullLinkIcon}
                   svgAlt="Nouvelle fenêtre"
+                  onClick={() =>
+                    logEvent?.(Events.CLICKED_HOME_STATS_PENDING_OFFERS_FAQ)
+                  }
                 >
                   En savoir plus sur les règles de conformité.
                 </ButtonLink>
