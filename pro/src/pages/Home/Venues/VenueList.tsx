@@ -10,6 +10,7 @@ interface VenueListProps {
   selectedOffererId: number
   virtualVenue: GetOffererVenueResponseModel | null
   offererHasBankAccount: boolean
+  hasNonFreeOffer: boolean
 }
 
 const VenueList = ({
@@ -17,7 +18,12 @@ const VenueList = ({
   selectedOffererId,
   virtualVenue,
   offererHasBankAccount,
+  hasNonFreeOffer,
 }: VenueListProps) => {
+  const offererHasCreatedOffer =
+    virtualVenue?.hasCreatedOffer ||
+    physicalVenues.some((venue) => venue.hasCreatedOffer)
+  const indexLastPhysicalVenues = physicalVenues.length - 1
   return (
     <div className="h-venue-list">
       {virtualVenue && (
@@ -29,7 +35,8 @@ const VenueList = ({
           hasMissingReimbursementPoint={
             virtualVenue.hasMissingReimbursementPoint
           }
-          hasCreatedOffer={virtualVenue.hasCreatedOffer}
+          venueHasCreatedOffer={virtualVenue.hasCreatedOffer}
+          offererHasCreatedOffer={offererHasCreatedOffer}
           dmsInformations={getLastCollectiveDmsApplication(
             virtualVenue.collectiveDmsApplications
           )}
@@ -43,10 +50,12 @@ const VenueList = ({
             virtualVenue.demarchesSimplifieesApplicationId
           }
           offererHasBankAccount={offererHasBankAccount}
+          hasNonFreeOffer={hasNonFreeOffer}
+          isFirstVenue={true}
         />
       )}
 
-      {physicalVenues?.map((venue) => (
+      {physicalVenues?.map((venue, index) => (
         <Venue
           venueId={venue.id}
           key={selectedOffererId + '-' + venue.id}
@@ -54,7 +63,8 @@ const VenueList = ({
           offererId={selectedOffererId}
           publicName={venue.publicName}
           hasMissingReimbursementPoint={venue.hasMissingReimbursementPoint}
-          hasCreatedOffer={venue.hasCreatedOffer}
+          offererHasCreatedOffer={offererHasCreatedOffer}
+          venueHasCreatedOffer={venue.hasCreatedOffer}
           dmsInformations={getLastCollectiveDmsApplication(
             venue.collectiveDmsApplications
           )}
@@ -68,6 +78,8 @@ const VenueList = ({
             venue.demarchesSimplifieesApplicationId
           }
           offererHasBankAccount={offererHasBankAccount}
+          hasNonFreeOffer={hasNonFreeOffer}
+          isFirstVenue={index === indexLastPhysicalVenues}
         />
       ))}
     </div>

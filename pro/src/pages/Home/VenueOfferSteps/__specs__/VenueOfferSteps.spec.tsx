@@ -62,9 +62,10 @@ describe('VenueOfferSteps', () => {
       screen.queryByText('Renseigner des coordonnées bancaires')
     ).not.toBeInTheDocument()
   })
-  it('Should display bank account link if user has no bank account and no offer on offerer', () => {
+  it('Should display bank account link on first venue if user has no bank account and no offer on offerer', () => {
     props.offererHasBankAccount = false
-    props.hasCreatedOffer = false
+    props.offererHasCreatedOffer = false
+    props.isFirstVenue = true
     renderVenueOfferSteps(props, {
       list: [
         { isActive: true, nameKey: 'WIP_ENABLE_NEW_BANK_DETAILS_JOURNEY' },
@@ -73,6 +74,48 @@ describe('VenueOfferSteps', () => {
     expect(screen.getByText('Ajouter un compte bancaire')).toBeInTheDocument()
     expect(
       screen.queryByText('Renseigner des coordonnées bancaires')
+    ).not.toBeInTheDocument()
+  })
+  it('Should display bank account link on second venue if user has no bank account and no paid offer', () => {
+    props.offererHasBankAccount = false
+    props.offererHasCreatedOffer = false
+    props.hasNonFreeOffer = false
+    props.isFirstVenue = false
+    renderVenueOfferSteps(props, {
+      list: [
+        { isActive: true, nameKey: 'WIP_ENABLE_NEW_BANK_DETAILS_JOURNEY' },
+      ],
+    })
+    expect(screen.getByText('Ajouter un compte bancaire')).toBeInTheDocument()
+    expect(
+      screen.queryByText('Renseigner des coordonnées bancaires')
+    ).not.toBeInTheDocument()
+  })
+  it('Should not display bank account link on second venue if user has no bank account with paid offer', () => {
+    props.offererHasBankAccount = false
+    props.offererHasCreatedOffer = false
+    props.hasNonFreeOffer = true
+    props.isFirstVenue = false
+    renderVenueOfferSteps(props, {
+      list: [
+        { isActive: true, nameKey: 'WIP_ENABLE_NEW_BANK_DETAILS_JOURNEY' },
+      ],
+    })
+    expect(
+      screen.queryByText('Ajouter un compte bancaire')
+    ).not.toBeInTheDocument()
+  })
+  it('Should not display bank account link on first venue if user has bank account', () => {
+    props.offererHasBankAccount = false
+    props.offererHasCreatedOffer = true
+    props.isFirstVenue = true
+    renderVenueOfferSteps(props, {
+      list: [
+        { isActive: true, nameKey: 'WIP_ENABLE_NEW_BANK_DETAILS_JOURNEY' },
+      ],
+    })
+    expect(
+      screen.queryByText('Ajouter un compte bancaire')
     ).not.toBeInTheDocument()
   })
   it('Should not display account link if user has bank account on offerer', () => {
@@ -171,7 +214,7 @@ describe('VenueOfferSteps', () => {
   })
 
   it('should not display venueOfferSteps if no condition to display informations', () => {
-    props.hasCreatedOffer = true
+    props.venueHasCreatedOffer = true
     props.hasPendingBankInformationApplication = false
     props.shouldDisplayEACInformationSection = false
     renderVenueOfferSteps(props)
@@ -181,7 +224,7 @@ describe('VenueOfferSteps', () => {
   })
 
   it('should display venueOfferSteps if condition to display it', () => {
-    props.hasCreatedOffer = true
+    props.venueHasCreatedOffer = true
     props.shouldDisplayEACInformationSection = true
     renderVenueOfferSteps(props)
     expect(screen.getByText('Prochaines étapes :')).toBeInTheDocument()

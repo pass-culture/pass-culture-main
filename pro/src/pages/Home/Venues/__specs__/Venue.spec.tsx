@@ -33,6 +33,8 @@ describe('venues', () => {
       offererId: offererId,
       dmsInformations: null,
       offererHasBankAccount: false,
+      hasNonFreeOffer: false,
+      isFirstVenue: false,
     }
   })
 
@@ -52,7 +54,8 @@ describe('venues', () => {
 
     it('should display add bank information when venue does not have a reimbursement point', () => {
       props.hasMissingReimbursementPoint = true
-      props.hasCreatedOffer = true
+      props.offererHasCreatedOffer = true
+      props.venueHasCreatedOffer = true
 
       renderVenue(props)
 
@@ -66,7 +69,8 @@ describe('venues', () => {
 
     it('should not display add bank information when for the new bank details journey is enabled', () => {
       props.hasMissingReimbursementPoint = true
-      props.hasCreatedOffer = true
+      props.offererHasCreatedOffer = true
+      props.venueHasCreatedOffer = true
 
       renderVenue(props, {
         list: [

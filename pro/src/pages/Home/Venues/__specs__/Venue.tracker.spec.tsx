@@ -26,6 +26,8 @@ describe('venue create offer link', () => {
       offererId: offererId,
       dmsInformations: null,
       offererHasBankAccount: false,
+      hasNonFreeOffer: false,
+      isFirstVenue: false,
     }
     vi.spyOn(useAnalytics, 'default').mockImplementation(() => ({
       logEvent: mockLogEvent,
@@ -50,7 +52,8 @@ describe('venue create offer link', () => {
   it('should track Add RIB button', async () => {
     props.isVirtual = false
     props.hasMissingReimbursementPoint = true
-    props.hasCreatedOffer = true
+    props.venueHasCreatedOffer = true
+    props.offererHasCreatedOffer = true
 
     renderVenue(props)
     await userEvent.click(screen.getByRole('link', { name: 'Ajouter un RIB' }))
