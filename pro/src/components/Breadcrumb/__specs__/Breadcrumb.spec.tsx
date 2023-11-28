@@ -19,7 +19,7 @@ describe('Breadcrumb', () => {
     renderWithProviders(<Breadcrumb crumbs={crumbs} />)
 
     expect(
-      screen.getByRole('navigation', { name: "Fil d'ariane" })
+      screen.getByRole('navigation', { name: 'Vous êtes ici:' })
     ).toBeInTheDocument()
     expect(screen.getByRole('link', { name: 'Link 1' })).toBeInTheDocument()
     expect(screen.getByRole('link', { name: 'Link 3' })).toBeInTheDocument()
