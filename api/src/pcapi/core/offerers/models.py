@@ -1116,6 +1116,7 @@ class IndividualOffererSubscription(PcObject, Base, Model):
 class OffererStatsData(typing.TypedDict, total=False):
     daily_views: list[OffererViewsModel]
     top_offers: list[TopOffersData]
+    total_views_last_30_days: int
 
 
 class OffererStats(PcObject, Base, Model):
