@@ -12,17 +12,35 @@ from pcapi.core.offers.models import Offer
 from pcapi.core.offers.models import PriceCategory
 from pcapi.core.offers.models import PriceCategoryLabel
 from pcapi.core.offers.models import Stock
-from pcapi.core.providers.factories import CDSCinemaDetailsFactory
-from pcapi.core.providers.factories import CDSCinemaProviderPivotFactory
-from pcapi.core.providers.factories import VenueProviderFactory
-from pcapi.core.providers.models import Provider
-from pcapi.core.providers.repository import get_provider_by_local_class
+import pcapi.core.providers.factories as providers_factories
+import pcapi.core.providers.models as providers_models
 from pcapi.local_providers.cinema_providers.cds.cds_stocks import CDSStocks
 from pcapi.utils.human_ids import humanize
 
 import tests
 
 from . import fixtures
+
+
+def setup_cinema() -> tuple[providers_models.CDSCinemaDetails, providers_models.VenueProvider]:
+    cds_provider = providers_models.Provider.query.filter(
+        providers_models.Provider.localClass == "CDSStocks",
+    ).one()
+    venue_provider = providers_factories.VenueProviderFactory(
+        provider=cds_provider,
+        isDuoOffers=True,
+        venueIdAtOfferProvider="cinema_id_test",
+    )
+    cinema_provider_pivot = providers_factories.CDSCinemaProviderPivotFactory(
+        venue=venue_provider.venue,
+        idAtProvider=venue_provider.venueIdAtOfferProvider,
+    )
+    cds_details = providers_factories.CDSCinemaDetailsFactory(
+        cinemaProviderPivot=cinema_provider_pivot,
+        accountId="account_id",
+        cinemaApiToken="token",
+    )
+    return cds_details, venue_provider
 
 
 @pytest.mark.usefixtures("db_session")
@@ -32,12 +50,7 @@ class CDSStocksTest:
     @patch("pcapi.settings.CDS_API_URL", "fakeUrl/")
     def should_get_venue_movies(self, mock_get_venue_movies, mock_get_shows, requests_mock):
         # Given
-        cds_provider = Provider.query.filter(Provider.localClass == "CDSStocks").one()
-        venue_provider = VenueProviderFactory(provider=cds_provider)
-        cinema_provider_pivot = CDSCinemaProviderPivotFactory(
-            venue=venue_provider.venue, idAtProvider=venue_provider.venueIdAtOfferProvider
-        )
-        cds_details = CDSCinemaDetailsFactory(cinemaProviderPivot=cinema_provider_pivot)
+        cds_details, venue_provider = setup_cinema()
         mocked_movies = [fixtures.MOVIE_1, fixtures.MOVIE_2]
         mock_get_venue_movies.return_value = mocked_movies
         mocked_shows = [{"show_information": fixtures.MOVIE_1_SHOW_1, "price": 5}]
@@ -59,12 +72,7 @@ class CDSStocksTest:
     @patch("pcapi.settings.CDS_API_URL", "fakeUrl/")
     def should_return_providable_info_on_next(self, mock_get_venue_movies, mock_get_shows, requests_mock):
         # Given
-        cds_provider = Provider.query.filter(Provider.localClass == "CDSStocks").one()
-        venue_provider = VenueProviderFactory(provider=cds_provider)
-        cinema_provider_pivot = CDSCinemaProviderPivotFactory(
-            venue=venue_provider.venue, idAtProvider=venue_provider.venueIdAtOfferProvider
-        )
-        cds_details = CDSCinemaDetailsFactory(cinemaProviderPivot=cinema_provider_pivot)
+        cds_details, venue_provider = setup_cinema()
         mocked_movies = [fixtures.MOVIE_1]
         mock_get_venue_movies.return_value = mocked_movies
         mocked_shows = [
@@ -101,12 +109,7 @@ class CDSStocksTest:
         self, mock_get_venue_movies, mock_get_shows, requests_mock
     ):
         # Given
-        cds_provider = Provider.query.filter(Provider.localClass == "CDSStocks").one()
-        venue_provider = VenueProviderFactory(provider=cds_provider)
-        cinema_provider_pivot = CDSCinemaProviderPivotFactory(
-            venue=venue_provider.venue, idAtProvider=venue_provider.venueIdAtOfferProvider
-        )
-        cds_details = CDSCinemaDetailsFactory(cinemaProviderPivot=cinema_provider_pivot)
+        cds_details, venue_provider = setup_cinema()
         mocked_movies = [fixtures.MOVIE_1]
         mock_get_venue_movies.return_value = mocked_movies
         requests_mock.get(
@@ -132,15 +135,7 @@ class CDSStocksTest:
     @patch("pcapi.settings.CDS_API_URL", "fakeUrl/")
     def should_create_offers_for_each_movie(self, mock_get_venue_movies, mock_get_shows, requests_mock):
         # Given
-        cds_provider = Provider.query.filter(Provider.localClass == "CDSStocks").one()
-        venue_provider = VenueProviderFactory(provider=cds_provider, venueIdAtOfferProvider="cinema_id_test")
-        cinema_provider_pivot = CDSCinemaProviderPivotFactory(
-            venue=venue_provider.venue, idAtProvider=venue_provider.venueIdAtOfferProvider
-        )
-        CDSCinemaDetailsFactory(
-            cinemaProviderPivot=cinema_provider_pivot, accountId="account_id", cinemaApiToken="token"
-        )
-
+        cds_details, venue_provider = setup_cinema()
         requests_mock.get(
             "https://account_id.fakeurl/cinemas?api_token=token",
             json=[fixtures.CINEMA_WITH_INTERNET_SALE_GAUGE_ACTIVE_TRUE],
@@ -169,17 +164,7 @@ class CDSStocksTest:
     @patch("pcapi.settings.CDS_API_URL", "fakeUrl/")
     def should_fill_offer_and_stock_informations_for_each_movie(self, mock_get_venue_movies, requests_mock):
         # Given
-        cds_provider = Provider.query.filter(Provider.localClass == "CDSStocks").one()
-        venue_provider = VenueProviderFactory(
-            provider=cds_provider, isDuoOffers=True, venueIdAtOfferProvider="cinema_id_test"
-        )
-        cinema_provider_pivot = CDSCinemaProviderPivotFactory(
-            venue=venue_provider.venue, idAtProvider=venue_provider.venueIdAtOfferProvider
-        )
-        CDSCinemaDetailsFactory(
-            cinemaProviderPivot=cinema_provider_pivot, accountId="account_id", cinemaApiToken="token"
-        )
-
+        cds_details, venue_provider = setup_cinema()
         get_cinemas_adapter = requests_mock.get(
             "https://account_id.fakeurl/cinemas?api_token=token",
             json=[fixtures.CINEMA_WITH_INTERNET_SALE_GAUGE_ACTIVE_FALSE],
@@ -262,16 +247,7 @@ class CDSStocksTest:
     @patch("pcapi.settings.CDS_API_URL", "fakeUrl/")
     def should_fill_stocks_and_price_categories_for_a_movie(self, mock_get_venue_movies, mock_get_shows, requests_mock):
         # Given
-        cds_provider = Provider.query.filter(Provider.localClass == "CDSStocks").one()
-        venue_provider = VenueProviderFactory(
-            provider=cds_provider, isDuoOffers=True, venueIdAtOfferProvider="cinema_id_test"
-        )
-        cinema_provider_pivot = CDSCinemaProviderPivotFactory(
-            venue=venue_provider.venue, idAtProvider=venue_provider.venueIdAtOfferProvider
-        )
-        CDSCinemaDetailsFactory(
-            cinemaProviderPivot=cinema_provider_pivot, accountId="account_id", cinemaApiToken="token"
-        )
+        cds_details, venue_provider = setup_cinema()
 
         requests_mock.get(
             "https://account_id.fakeurl/cinemas?api_token=token",
@@ -344,17 +320,7 @@ class CDSStocksTest:
     @patch("pcapi.settings.CDS_API_URL", "fakeUrl/")
     def should_reuse_price_category(self, mock_get_venue_movies, mock_get_shows, requests_mock):
         # Given
-        cds_provider = Provider.query.filter(Provider.localClass == "CDSStocks").one()
-        venue_provider = VenueProviderFactory(
-            provider=cds_provider, isDuoOffers=True, venueIdAtOfferProvider="cinema_id_test"
-        )
-        cinema_provider_pivot = CDSCinemaProviderPivotFactory(
-            venue=venue_provider.venue, idAtProvider=venue_provider.venueIdAtOfferProvider
-        )
-        CDSCinemaDetailsFactory(
-            cinemaProviderPivot=cinema_provider_pivot, accountId="account_id", cinemaApiToken="token"
-        )
-
+        cds_details, venue_provider = setup_cinema()
         requests_mock.get(
             "https://account_id.fakeurl/cinemas?api_token=token",
             json=[fixtures.CINEMA_WITH_INTERNET_SALE_GAUGE_ACTIVE_FALSE],
@@ -386,17 +352,7 @@ class CDSStocksTest:
         self, mock_get_venue_movies, mocked_get_movie_poster, mock_get_shows, requests_mock
     ):
         # Given
-        cds_provider = Provider.query.filter(Provider.localClass == "CDSStocks").one()
-        venue_provider = VenueProviderFactory(
-            provider=cds_provider, isDuoOffers=True, venueIdAtOfferProvider="cinema_id_test"
-        )
-        cinema_provider_pivot = CDSCinemaProviderPivotFactory(
-            venue=venue_provider.venue, idAtProvider=venue_provider.venueIdAtOfferProvider
-        )
-        CDSCinemaDetailsFactory(
-            cinemaProviderPivot=cinema_provider_pivot, accountId="account_id", cinemaApiToken="token"
-        )
-
+        cds_details, venue_provider = setup_cinema()
         requests_mock.get(
             "https://account_id.fakeurl/cinemas?api_token=token",
             json=[fixtures.CINEMA_WITH_INTERNET_SALE_GAUGE_ACTIVE_TRUE],
@@ -448,17 +404,7 @@ class CDSStocksTest:
     def should_not_update_thumbnail_more_then_once_a_day(
         self, mock_get_venue_movies, mocked_get_movie_poster, mock_get_shows, requests_mock
     ):
-        cds_provider = Provider.query.filter(Provider.localClass == "CDSStocks").one()
-        venue_provider = VenueProviderFactory(
-            provider=cds_provider, isDuoOffers=True, venueIdAtOfferProvider="cinema_id_test"
-        )
-        cinema_provider_pivot = CDSCinemaProviderPivotFactory(
-            venue=venue_provider.venue, idAtProvider=venue_provider.venueIdAtOfferProvider
-        )
-        CDSCinemaDetailsFactory(
-            cinemaProviderPivot=cinema_provider_pivot, accountId="account_id", cinemaApiToken="token"
-        )
-
+        cds_details, venue_provider = setup_cinema()
         requests_mock.get(
             "https://account_id.fakeurl/cinemas?api_token=token",
             json=[fixtures.CINEMA_WITH_INTERNET_SALE_GAUGE_ACTIVE_TRUE],
@@ -482,14 +428,7 @@ class CDSStocksTest:
 
     @patch("pcapi.settings.CDS_API_URL", "fakeUrl/")
     def should_use_new_cache_for_each_synchronisation(self, requests_mock):
-        cds_provider = get_provider_by_local_class("CDSStocks")
-        venue_provider = VenueProviderFactory(provider=cds_provider, venueIdAtOfferProvider="cinema_id_test")
-        cinema_provider_pivot = CDSCinemaProviderPivotFactory(
-            venue=venue_provider.venue, idAtProvider=venue_provider.venueIdAtOfferProvider
-        )
-        CDSCinemaDetailsFactory(
-            cinemaProviderPivot=cinema_provider_pivot, accountId="account_id", cinemaApiToken="token"
-        )
+        cds_details, venue_provider = setup_cinema()
 
         requests_mock.get("https://account_id.fakeurl/media?api_token=token", json=[fixtures.MOVIE_3])
         requests_mock.get("https://account_id.fakeurl/shows?api_token=token", json=[fixtures.SHOW_1])
@@ -523,15 +462,7 @@ class CDSStocksQuantityTest:
     @patch("pcapi.settings.CDS_API_URL", "fakeUrl/")
     def should_update_cds_stock_with_correct_stock_quantity(self, mock_get_venue_movies, mock_get_shows, requests_mock):
         # Given
-        cds_provider = Provider.query.filter(Provider.localClass == "CDSStocks").one()
-        cds_venue_provider = VenueProviderFactory(provider=cds_provider, venueIdAtOfferProvider="cinema_id_test")
-        cinema_provider_pivot = CDSCinemaProviderPivotFactory(
-            venue=cds_venue_provider.venue, idAtProvider=cds_venue_provider.venueIdAtOfferProvider
-        )
-        CDSCinemaDetailsFactory(
-            cinemaProviderPivot=cinema_provider_pivot, accountId="account_id", cinemaApiToken="token"
-        )
-
+        cds_details, venue_provider = setup_cinema()
         requests_mock.get(
             "https://account_id.fakeurl/cinemas?api_token=token",
             json=[fixtures.CINEMA_WITH_INTERNET_SALE_GAUGE_ACTIVE_TRUE],
@@ -543,7 +474,7 @@ class CDSStocksQuantityTest:
         mock_get_shows.return_value = mocked_shows
         requests_mock.get("https://example.com/coupez.png", content=bytes())
         # When
-        cds_stocks_provider = CDSStocks(venue_provider=cds_venue_provider)
+        cds_stocks_provider = CDSStocks(venue_provider=venue_provider)
         cds_stocks_provider.updateObjects()
 
         created_stock = Stock.query.one()
@@ -559,7 +490,7 @@ class CDSStocksQuantityTest:
             {"show_information": fixtures.MOVIE_1_SHOW_1_SOLD_OUT, "price": 5, "price_label": "pass Culture"}
         ]
         mock_get_shows.return_value = mocked_shows
-        cds_stocks_provider = CDSStocks(venue_provider=cds_venue_provider)
+        cds_stocks_provider = CDSStocks(venue_provider=venue_provider)
         cds_stocks_provider.updateObjects()
 
         created_stock = Stock.query.one()
