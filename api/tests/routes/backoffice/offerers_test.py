@@ -1210,10 +1210,10 @@ class ListOfferersToValidateTest(GetEndpointHelper):
                 offerer.dateCreated.strftime("%d/%m/%Y") for offerer in to_be_validated_offerers
             ]
 
-        def _test_payload_content(self, auth_client, validation_status, expected_status, top_acteur_column_expected):
+        def _test_payload_content(self, auth_client, top_acteur_column_expected):
             user_offerer = offerers_factories.UserNotValidatedOffererFactory(
                 offerer__dateCreated=datetime.datetime(2022, 10, 3, 11, 59),
-                offerer__validationStatus=validation_status,
+                offerer__validationStatus=ValidationStatus.NEW,
                 user__phoneNumber="+33610203040",
             )
             tag = offerers_factories.OffererTagFactory(label="Magic Tag")
@@ -1263,7 +1263,7 @@ class ListOfferersToValidateTest(GetEndpointHelper):
             assert len(rows) == 1
             assert rows[0]["ID"] == str(user_offerer.offerer.id)
             assert rows[0]["Nom de la structure"] == user_offerer.offerer.name
-            assert rows[0]["État"] == expected_status
+            assert rows[0]["État"] == "Nouvelle"
             if top_acteur_column_expected:
                 assert rows[0]["Top Acteur"] == ""  # no text
             else:
@@ -1279,19 +1279,12 @@ class ListOfferersToValidateTest(GetEndpointHelper):
             dms_adage_data = html_parser.extract(response.data, tag="tr", class_="collapse accordion-collapse")
             assert dms_adage_data == []
 
-        @pytest.mark.parametrize(
-            "validation_status,expected_status",
-            [
-                (ValidationStatus.NEW, "Nouvelle"),
-                (ValidationStatus.PENDING, "En attente"),
-            ],
-        )
-        def test_payload_content(self, authenticated_client, validation_status, expected_status, top_acteur_tag):
-            self._test_payload_content(authenticated_client, validation_status, expected_status, True)
+        def test_payload_content(self, authenticated_client, top_acteur_tag):
+            self._test_payload_content(authenticated_client, True)
 
         def test_payload_content_as_read_only_user(self, client, read_only_bo_user, offerer_tags):
             auth_client = client.with_bo_session_auth(read_only_bo_user)
-            self._test_payload_content(auth_client, ValidationStatus.NEW, "Nouvelle", False)
+            self._test_payload_content(auth_client, False)
 
         def test_payload_content_no_action(self, authenticated_client):
             user_offerer = offerers_factories.UserNotValidatedOffererFactory(
@@ -1381,7 +1374,11 @@ class ListOfferersToValidateTest(GetEndpointHelper):
         ):
             with assert_num_queries(self.expected_num_queries):
                 response = authenticated_client.get(
-                    url_for("backoffice_web.validation.list_offerers_to_validate", regions=region_filter)
+                    url_for(
+                        "backoffice_web.validation.list_offerers_to_validate",
+                        regions=region_filter,
+                        status=["NEW", "PENDING"],
+                    )
                 )
                 assert response.status_code == 200
 
@@ -1409,7 +1406,9 @@ class ListOfferersToValidateTest(GetEndpointHelper):
 
             with assert_num_queries(self.expected_num_queries):
                 response = authenticated_client.get(
-                    url_for("backoffice_web.validation.list_offerers_to_validate", tags=tags_ids)
+                    url_for(
+                        "backoffice_web.validation.list_offerers_to_validate", tags=tags_ids, status=["NEW", "PENDING"]
+                    )
                 )
                 assert response.status_code == 200
 
@@ -1463,7 +1462,7 @@ class ListOfferersToValidateTest(GetEndpointHelper):
         def test_list_search_by_siren(self, authenticated_client, offerers_to_be_validated, search):
             with assert_num_queries(self.expected_num_queries):
                 response = authenticated_client.get(
-                    url_for("backoffice_web.validation.list_offerers_to_validate", q=search)
+                    url_for("backoffice_web.validation.list_offerers_to_validate", q=search, status="PENDING")
                 )
                 assert response.status_code == 200
 
@@ -1498,7 +1497,7 @@ class ListOfferersToValidateTest(GetEndpointHelper):
             # Search "quimper" => results include "Quimper" and "Quimperlé"
             with assert_num_queries(self.expected_num_queries):
                 response = authenticated_client.get(
-                    url_for("backoffice_web.validation.list_offerers_to_validate", q="quimper")
+                    url_for("backoffice_web.validation.list_offerers_to_validate", q="quimper", status="PENDING")
                 )
                 assert response.status_code == 200
 
@@ -1522,7 +1521,9 @@ class ListOfferersToValidateTest(GetEndpointHelper):
         def test_list_search_by_email(self, authenticated_client, offerers_to_be_validated):
             with assert_num_queries(self.expected_num_queries):
                 response = authenticated_client.get(
-                    url_for("backoffice_web.validation.list_offerers_to_validate", q="sadi@example.com")
+                    url_for(
+                        "backoffice_web.validation.list_offerers_to_validate", q="sadi@example.com", status="PENDING"
+                    )
                 )
                 assert response.status_code == 200
 
@@ -1574,7 +1575,7 @@ class ListOfferersToValidateTest(GetEndpointHelper):
                 (["NEW", "PENDING"], 200, {"A", "B", "C", "D", "E", "F"}),
                 ("VALIDATED", 200, {"G"}),
                 ("REJECTED", 200, {"H"}),
-                (None, 200, {"A", "B", "C", "D", "E", "F"}),  # same as default
+                (None, 200, {"C", "A", "E"}),  # status NEW as default
                 ("OTHER", 400, set()),  # unknown value
                 (["REJECTED", "OTHER"], 400, set()),
             ),
@@ -1624,7 +1625,11 @@ class ListOfferersToValidateTest(GetEndpointHelper):
             )
             with assert_num_queries(expected_num_queries):
                 response = authenticated_client.get(
-                    url_for("backoffice_web.validation.list_offerers_to_validate", dms_adage_status=dms_status_filter)
+                    url_for(
+                        "backoffice_web.validation.list_offerers_to_validate",
+                        dms_adage_status=dms_status_filter,
+                        status=["NEW", "PENDING"],
+                    )
                 )
                 assert response.status_code == expected_status
 
@@ -2008,10 +2013,6 @@ class ListUserOffererToValidateTest(GetEndpointHelper):
             validated_user_offerer = offerers_factories.UserOffererFactory()
             new_user_offerer = offerers_factories.NotValidatedUserOffererFactory(offerer=validated_user_offerer.offerer)
             to_be_validated.append(new_user_offerer)
-            pending_user_offerer = offerers_factories.NotValidatedUserOffererFactory(
-                offerer=validated_user_offerer.offerer, validationStatus=ValidationStatus.PENDING
-            )
-            to_be_validated.append(pending_user_offerer)
 
         with assert_num_queries(self.expected_num_queries):
             response = authenticated_client.get(url_for(self.endpoint, order=order, sort=sort))
@@ -2027,7 +2028,7 @@ class ListUserOffererToValidateTest(GetEndpointHelper):
                 user_offerer.dateCreated.strftime("%d/%m/%Y") for user_offerer in to_be_validated
             ]
 
-    def _test_payload_content(self, auth_client, validation_status, expected_status, offerer_tags):
+    def _test_payload_content(self, auth_client, offerer_tags):
         owner_user_offerer = offerers_factories.UserOffererFactory(
             offerer__dateCreated=datetime.datetime(2022, 11, 2, 11, 30),
             offerer__tags=[offerer_tags[1]],
@@ -2035,7 +2036,7 @@ class ListUserOffererToValidateTest(GetEndpointHelper):
         )
         new_user_offerer = offerers_factories.NotValidatedUserOffererFactory(
             offerer=owner_user_offerer.offerer,
-            validationStatus=validation_status,
+            validationStatus=ValidationStatus.NEW,
             dateCreated=datetime.datetime(2022, 11, 3, 11, 59),
             user__phoneNumber="+33612345678",
         )
@@ -2054,17 +2055,16 @@ class ListUserOffererToValidateTest(GetEndpointHelper):
             authorUser=commenter,
             offerer=new_user_offerer.offerer,
             user=new_user_offerer.user,
-            comment="Bla blabla" if validation_status == ValidationStatus.NEW else "Premier",
+            comment="Bla blabla",
         )
-        if validation_status == ValidationStatus.PENDING:
-            history_factories.ActionHistoryFactory(
-                actionDate=datetime.datetime(2022, 11, 5, 14, 2),
-                actionType=history_models.ActionType.USER_OFFERER_PENDING,
-                authorUser=commenter,
-                offerer=new_user_offerer.offerer,
-                user=new_user_offerer.user,
-                comment="Bla blabla",
-            )
+        history_factories.ActionHistoryFactory(
+            actionDate=datetime.datetime(2022, 11, 5, 14, 2),
+            actionType=history_models.ActionType.USER_OFFERER_PENDING,
+            authorUser=commenter,
+            offerer=new_user_offerer.offerer,
+            user=new_user_offerer.user,
+            comment="Bla blabla",
+        )
 
         with assert_num_queries(self.expected_num_queries):
             response = auth_client.get(url_for(self.endpoint))
@@ -2075,26 +2075,19 @@ class ListUserOffererToValidateTest(GetEndpointHelper):
         assert rows[0]["ID Compte pro"] == str(new_user_offerer.user.id)
         assert rows[0]["Email Compte pro"] == new_user_offerer.user.email
         assert rows[0]["Nom Compte pro"] == new_user_offerer.user.full_name
-        assert rows[0]["État"] == expected_status
+        assert rows[0]["État"] == "Nouveau"
         assert rows[0]["Tags Structure"] == offerer_tags[1].label
         assert rows[0]["Date de la demande"] == "03/11/2022"
         assert rows[0]["Nom Structure"] == owner_user_offerer.offerer.name
         assert rows[0]["Email Responsable"] == owner_user_offerer.user.email
         assert rows[0]["Dernier commentaire"] == "Bla blabla"
 
-    @pytest.mark.parametrize(
-        "validation_status,expected_status",
-        [
-            (ValidationStatus.NEW, "Nouveau"),
-            (ValidationStatus.PENDING, "En attente"),
-        ],
-    )
-    def test_payload_content(self, authenticated_client, validation_status, expected_status, offerer_tags):
-        self._test_payload_content(authenticated_client, validation_status, expected_status, offerer_tags)
+    def test_payload_content(self, authenticated_client, offerer_tags):
+        self._test_payload_content(authenticated_client, offerer_tags)
 
     def test_payload_content_as_read_only_user(self, client, read_only_bo_user, offerer_tags):
         auth_client = client.with_bo_session_auth(read_only_bo_user)
-        self._test_payload_content(auth_client, ValidationStatus.NEW, "Nouveau", offerer_tags)
+        self._test_payload_content(auth_client, offerer_tags)
 
     def test_payload_content_no_action(self, authenticated_client, offerer_tags):
         owner_user_offerer = offerers_factories.UserOffererFactory(
@@ -2169,8 +2162,8 @@ class ListUserOffererToValidateTest(GetEndpointHelper):
             (
                 None,
                 200,
-                {"a@example.com", "b@example.com", "c@example.com", "d@example.com", "e@example.com", "f@example.com"},
-            ),  # same as default
+                {"a@example.com", "e@example.com", "c@example.com"},
+            ),  # status NEW as default
             ("OTHER", 400, set()),  # unknown value
         ),
     )
@@ -2219,10 +2212,7 @@ class ListUserOffererToValidateTest(GetEndpointHelper):
     ):
         with assert_num_queries(self.expected_num_queries if expected_status == 200 else self.expected_num_queries - 2):
             response = authenticated_client.get(
-                url_for(
-                    self.endpoint,
-                    offerer_status=offerer_status_filter,
-                )
+                url_for(self.endpoint, offerer_status=offerer_status_filter, status=["NEW", "PENDING"])
             )
             assert response.status_code == expected_status
 
@@ -2243,7 +2233,9 @@ class ListUserOffererToValidateTest(GetEndpointHelper):
         self, authenticated_client, region_filter, expected_users_emails, user_offerer_to_be_validated
     ):
         with assert_num_queries(self.expected_num_queries):
-            response = authenticated_client.get(url_for(self.endpoint, regions=region_filter))
+            response = authenticated_client.get(
+                url_for(self.endpoint, regions=region_filter, status=["NEW", "PENDING"])
+            )
             assert response.status_code == 200
 
         rows = html_parser.extract_table_rows(response.data)
@@ -2269,7 +2261,7 @@ class ListUserOffererToValidateTest(GetEndpointHelper):
         tags_ids = [_id for _id, in tags]
 
         with assert_num_queries(self.expected_num_queries):
-            response = authenticated_client.get(url_for(self.endpoint, tags=tags_ids))
+            response = authenticated_client.get(url_for(self.endpoint, tags=tags_ids, status=["NEW", "PENDING"]))
             assert response.status_code == 200
 
         rows = html_parser.extract_table_rows(response.data)
@@ -2305,7 +2297,7 @@ class ListUserOffererToValidateTest(GetEndpointHelper):
     @pytest.mark.parametrize("postal_code", ["97100", "97 100"])
     def test_list_search_by_postal_code(self, authenticated_client, user_offerer_to_be_validated, postal_code):
         with assert_num_queries(self.expected_num_queries):
-            response = authenticated_client.get(url_for(self.endpoint, q=postal_code))
+            response = authenticated_client.get(url_for(self.endpoint, q=postal_code, status="PENDING"))
             assert response.status_code == 200
 
         rows = html_parser.extract_table_rows(response.data)
@@ -2317,7 +2309,7 @@ class ListUserOffererToValidateTest(GetEndpointHelper):
             assert response.status_code == 200
 
         rows = html_parser.extract_table_rows(response.data)
-        assert {row["Email Compte pro"] for row in rows} == {"a@example.com", "d@example.com"}
+        assert {row["Email Compte pro"] for row in rows} == {"a@example.com"}
 
     def test_list_search_by_city(self, authenticated_client, user_offerer_to_be_validated):
         with assert_num_queries(self.expected_num_queries):
@@ -2329,11 +2321,11 @@ class ListUserOffererToValidateTest(GetEndpointHelper):
 
     def test_list_search_by_email(self, authenticated_client, user_offerer_to_be_validated):
         with assert_num_queries(self.expected_num_queries):
-            response = authenticated_client.get(url_for(self.endpoint, q="b@example.com"))
+            response = authenticated_client.get(url_for(self.endpoint, q="a@example.com"))
             assert response.status_code == 200
 
         rows = html_parser.extract_table_rows(response.data)
-        assert {row["Email Compte pro"] for row in rows} == {"b@example.com"}
+        assert {row["Email Compte pro"] for row in rows} == {"a@example.com"}
 
 
 class ValidateOffererAttachmentTest(PostEndpointHelper):
