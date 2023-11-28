@@ -28,7 +28,8 @@ export interface VenueProps {
   name: string
   offererId: number
   publicName?: string | null
-  hasCreatedOffer?: boolean
+  offererHasCreatedOffer?: boolean
+  venueHasCreatedOffer?: boolean
   hasProvider?: boolean
   dmsInformations?: DMSApplicationForEAC | null
   hasAdageId?: boolean
@@ -36,6 +37,8 @@ export interface VenueProps {
   hasPendingBankInformationApplication?: boolean | null
   demarchesSimplifieesApplicationId?: number | null
   offererHasBankAccount: boolean
+  hasNonFreeOffer: boolean
+  isFirstVenue: boolean
 }
 
 const Venue = ({
@@ -46,7 +49,8 @@ const Venue = ({
   offererId,
   hasProvider,
   publicName,
-  hasCreatedOffer,
+  offererHasCreatedOffer,
+  venueHasCreatedOffer,
   dmsInformations,
   hasAdageId,
   adageInscriptionDate,
@@ -75,7 +79,7 @@ const Venue = ({
 
   const shouldShowVenueOfferSteps =
     shouldDisplayEACInformationSection ||
-    !hasCreatedOffer ||
+    !venueHasCreatedOffer ||
     hasPendingBankInformationApplication
 
   const [prevInitialOpenState, setPrevInitialOpenState] = useState(
@@ -187,7 +191,7 @@ const Venue = ({
               {!isNewBankDetailsJourneyEnabled &&
                 hasMissingReimbursementPoint &&
                 !isVirtual &&
-                hasCreatedOffer && (
+                venueHasCreatedOffer && (
                   <>
                     <ButtonLink
                       variant={ButtonVariant.TERNARYPINK}
@@ -232,7 +236,8 @@ const Venue = ({
               venueId={venueId}
               hasVenue={true}
               offererId={offererId}
-              hasCreatedOffer={hasCreatedOffer}
+              venueHasCreatedOffer={venueHasCreatedOffer}
+              offererHasCreatedOffer={offererHasCreatedOffer}
               hasMissingReimbursementPoint={hasMissingReimbursementPoint}
               hasAdageId={hasAdageId}
               shouldDisplayEACInformationSection={

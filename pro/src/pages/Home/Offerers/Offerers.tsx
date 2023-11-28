@@ -181,6 +181,7 @@ const Offerers = ({
                 selectedOfferer.hasPendingBankAccount ||
                   selectedOfferer.hasValidBankAccount
               )}
+              hasNonFreeOffer={selectedOfferer.hasNonFreeOffer}
             />
           )}
         </>
