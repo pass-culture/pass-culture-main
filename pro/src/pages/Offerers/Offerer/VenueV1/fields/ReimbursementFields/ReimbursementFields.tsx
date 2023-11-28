@@ -30,7 +30,7 @@ const ReimbursementFields = ({
   )
 
   const scrollToReimbursementSection = useCallback((node: any) => {
-    if (scrollToSection) {
+    if (node !== null && scrollToSection) {
       setTimeout(() => {
         node.scrollIntoView()
       }, 200)
