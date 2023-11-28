@@ -157,7 +157,7 @@ def roles_with_permissions_fixture():
         role.permissions = [perms_in_db[perm.name] for perm in perms]
         db.session.add(role)
 
-    db.session.commit()
+    db.session.flush()
     return roles
 
 
@@ -172,7 +172,7 @@ def legit_user_fixture(roles_with_permissions: None) -> users_models.User:
     user.backoffice_profile = perm_models.BackOfficeUserProfile(user=user)
     backoffice_api.upsert_roles(user, list(perm_models.Roles))
 
-    db.session.commit()
+    db.session.flush()
 
     return user
 
@@ -187,7 +187,7 @@ def read_only_bo_user_fixture(roles_with_permissions: None) -> users_models.User
     user = users_factories.UserFactory(roles=["ADMIN"])
     user.backoffice_profile = perm_models.BackOfficeUserProfile(user=user)
     backoffice_api.upsert_roles(user, {perm_models.Roles.LECTURE_SEULE})
-    db.session.commit()
+    db.session.flush()
     return user
 
 

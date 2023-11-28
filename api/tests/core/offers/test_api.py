@@ -795,8 +795,7 @@ class UpdateOfferTest:
         )
 
         offer = api.update_offer(offer, isDuo=True, bookingEmail="new@example.com")
-        # update_offer does not commit. This helps pytest-flask to rollback the transaction
-        db.session.commit()
+        db.session.flush()
 
         assert offer.isDuo
         assert offer.bookingEmail == "new@example.com"
@@ -836,8 +835,7 @@ class UpdateOfferTest:
         )
 
         offer = api.update_offer(offer, name="New name", description="new Description")
-        # update_offer does not commit. This helps pytest-flask to rollback the transaction
-        db.session.commit()
+        db.session.flush()
 
         assert offer.name == "New name"
         assert offer.description == "new Description"
@@ -855,8 +853,7 @@ class UpdateOfferTest:
             description="new Description",
             extraData={"ean": "1234567890124", "musicType": 520, "musicSubType": 524},
         )
-        # update_offer does not commit. This helps pytest-flask to rollback the transaction
-        db.session.commit()
+        db.session.flush()
 
         assert offer.name == "New name"
         assert offer.description == "new Description"

@@ -29,7 +29,7 @@ def beneficiary_fraud_admin_fixture(roles_with_permissions: None) -> users_model
     user = users_factories.UserFactory(roles=["ADMIN"])
     user.backoffice_profile = perm_models.BackOfficeUserProfile(user=user)
     backoffice_api.upsert_roles(user, {perm_models.Roles.FRAUDE_JEUNES})
-    db.session.commit()
+    db.session.flush()
     return user
 
 
@@ -38,7 +38,7 @@ def pro_fraud_admin_fixture(roles_with_permissions: None) -> users_models.User:
     user = users_factories.UserFactory(roles=["ADMIN"])
     user.backoffice_profile = perm_models.BackOfficeUserProfile(user=user)
     backoffice_api.upsert_roles(user, {perm_models.Roles.FRAUDE_CONFORMITE})
-    db.session.commit()
+    db.session.flush()
     return user
 
 
@@ -47,7 +47,7 @@ def fraude_jeunes_admin_fixture(roles_with_permissions: None) -> users_models.Us
     user = users_factories.UserFactory(roles=["ADMIN"])
     user.backoffice_profile = perm_models.BackOfficeUserProfile(user=user)
     backoffice_api.upsert_roles(user, {perm_models.Roles.FRAUDE_JEUNES})
-    db.session.commit()
+    db.session.flush()
     return user
 
 
@@ -56,7 +56,7 @@ def support_n2_fixture(roles_with_permissions: None) -> users_models.User:
     user = users_factories.UserFactory(roles=["ADMIN"])
     user.backoffice_profile = perm_models.BackOfficeUserProfile(user=user)
     backoffice_api.upsert_roles(user, {perm_models.Roles.SUPPORT_N2})
-    db.session.commit()
+    db.session.flush()
     return user
 
 
@@ -65,7 +65,7 @@ def super_admin_fixture(roles_with_permissions: None) -> users_models.User:
     user = users_factories.UserFactory(roles=["ADMIN"])
     user.backoffice_profile = perm_models.BackOfficeUserProfile(user=user)
     backoffice_api.upsert_roles(user, {perm_models.Roles.ADMIN})
-    db.session.commit()
+    db.session.flush()
     return user
 
 

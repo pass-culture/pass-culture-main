@@ -26,7 +26,7 @@ class ReferenceSchemeTest:
         scheme = factories.ReferenceSchemeFactory()
         scheme.nextNumber = 1
         db.session.add(scheme)
-        db.session.commit()
+        db.session.flush()
 
         scheme.increment_after_use()
         db.session.refresh(scheme)
@@ -37,11 +37,11 @@ class ReferenceSchemeTest:
         scheme = factories.ReferenceSchemeFactory(name="x", year=2023)
         scheme.nextNumber = 1
         db.session.add(scheme)
-        db.session.commit()
+        db.session.flush()
 
         scheme = models.ReferenceScheme.get_and_lock("x", 2023)
         scheme.increment_after_use()
-        db.session.commit()
+        db.session.flush()
 
         db.session.refresh(scheme)
         assert scheme.nextNumber == 2
@@ -51,7 +51,7 @@ class ReferenceSchemeTest:
         scheme = factories.ReferenceSchemeFactory()
         scheme.nextNumber = 1
         db.session.add(scheme)
-        db.session.commit()
+        db.session.flush()
 
         # Simulate another transaction locking the reference.
         engine = sqla.create_engine(app.config["SQLALCHEMY_DATABASE_URI"])
