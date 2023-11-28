@@ -1,4 +1,3 @@
-import datetime
 import logging
 import typing
 
@@ -239,15 +238,14 @@ def _reindex_all_venues(algolia_batch_size: int, max_venues: int) -> None:
 
 
 @blueprint.cli.command("update_products_booking_count_and_reindex_offers")
-@click.option("--since", help="the number of days to consider in the booking count", type=int, default=30)
-def update_products_booking_count_and_reindex_offers(since: int) -> None:
+def update_products_booking_count_and_reindex_offers() -> None:
     """
     update last 30 days booking count for all products,
     if the value changes for the product reindex all associated offers.
 
     This command is needed to have to have last30daysBookings count by EAN in Algolia.
     """
-    search.update_products_booking_count(datetime.datetime.utcnow() - datetime.timedelta(days=since))
+    search.update_products_last_30_days_booking_count()
 
 
 @blueprint.cli.command("index_offers_staging")

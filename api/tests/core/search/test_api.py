@@ -3,7 +3,6 @@ import itertools
 import random
 from unittest import mock
 
-from dateutil.relativedelta import relativedelta
 import pytest
 
 from pcapi.core import search
@@ -308,52 +307,24 @@ class UpdateProductBookingCountTest:
         product = offers_factories.ProductFactory(extraData={"ean": str(random.randint(1000000000000, 9999999999999))})
         return offers_factories.StockFactory(offer__product=product).offer
 
-    def test_product_booking_count_updated(self):
-        last_month = datetime.datetime.utcnow() - relativedelta(days=30)
-        product = offers_factories.ProductFactory(extraData={"ean": "1234567890987"})
-        bookings_factories.BookingFactory(stock__offer__product=product)
-
-        search.update_product_last_30_days_bookings(since=last_month)
-
-        assert product.last_30_days_booking == 1
-
-    def test_product_with_multiple_offers_booking_count_updated(self):
-        last_month = datetime.datetime.utcnow() - relativedelta(days=30)
-        product = offers_factories.ProductFactory(extraData={"ean": "1234567890987"})
-        bookings_factories.BookingFactory(stock__offer__product=product)
-        bookings_factories.BookingFactory(stock__offer__product=product)
-
-        search.update_product_last_30_days_bookings(since=last_month)
-
-        assert product.last_30_days_booking == 2
-
-    def test_old_booking_is_ignored(self):
-        last_month = datetime.datetime.utcnow() - relativedelta(days=30)
-        last_month_and_a_day = datetime.datetime.utcnow() - relativedelta(days=31)
-        product = offers_factories.ProductFactory(extraData={"ean": "1234567890987"})
-        bookings_factories.BookingFactory(stock__offer__product=product, dateCreated=last_month_and_a_day)
-
-        search.update_product_last_30_days_bookings(since=last_month)
-
-        assert product.last_30_days_booking == 0
-
-    def test_booking_on_product_without_ean(self):
-        last_month = datetime.datetime.utcnow() - relativedelta(days=30)
+    @mock.patch("pcapi.core.search.get_last_30_days_bookings_for_eans", return_value={})
+    def test_booking_on_product_without_ean(self, _mock):
         product = offers_factories.ProductFactory()
         bookings_factories.BookingFactory(stock__offer__product=product)
 
-        search.update_product_last_30_days_bookings(since=last_month)
+        search.update_product_last_30_days_bookings()
 
         assert product.last_30_days_booking == None
 
-    def test_no_unexpected_query_made(self):
+    @mock.patch("pcapi.core.search.get_last_30_days_bookings_for_eans")
+    def test_no_unexpected_query_made(self, _mock):
         offers = [make_bookable_offer() for _ in range(3)]
         bookings_factories.BookingFactory.create_batch(3, stock__offer=offers[0])
         bookings_factories.BookingFactory.create_batch(3, stock__offer=offers[1])
         bookings_factories.BookingFactory.create_batch(3, stock__offer=offers[2])
 
         with assert_no_duplicated_queries():
-            search.update_products_booking_count(since=datetime.datetime.utcnow() - datetime.timedelta(days=30))
+            search.update_products_last_30_days_booking_count()
 
 
 class ReadProductBookingCountTest:
@@ -365,13 +336,13 @@ class ReadProductBookingCountTest:
 
         assert search_testing.search_store["offers"][stock.offer.id]["offer"].get("last30DaysBookings") == 1
 
-    def test_reindex_latest_computed_booking_count_only(self):
-        last_month = datetime.datetime.utcnow() - relativedelta(days=30)
+    @mock.patch("pcapi.core.search.get_last_30_days_bookings_for_eans", return_value={"1234567890987": 1})
+    def test_reindex_latest_computed_booking_count_only(self, _mock):
         product = offers_factories.ProductFactory(extraData={"ean": "1234567890987"})
         offer = offers_factories.OfferFactory(product=product)
         bookings_factories.BookingFactory(stock__offer=offer)
 
-        search.update_product_last_30_days_bookings(since=last_month)
+        search.update_product_last_30_days_bookings()
         bookings_factories.BookingFactory(stock__offer=offer)
         search.reindex_offer_ids([offer.id])
 
