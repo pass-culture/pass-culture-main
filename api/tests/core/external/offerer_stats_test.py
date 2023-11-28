@@ -41,11 +41,12 @@ class OffererStatsTest:
             syncDate="2023-10-14",
             table=TOP_3_MOST_CONSULTED_OFFERS_LAST_30_DAYS_TABLE,
             jsonData={
+                "total_views": 50,
                 "top_offers": [
                     {"numberOfViews": 7, "offerId": offer1.id},
                     {"numberOfViews": 6, "offerId": offer2.id},
                     {"numberOfViews": 4, "offerId": offer3.id},
-                ]
+                ],
             },
         )
 
@@ -54,6 +55,8 @@ class OffererStatsTest:
                 [
                     {"eventDate": "2023-10-16", "numberOfViews": 15},
                     {"eventDate": "2023-10-15", "numberOfViews": 10},
+                    {"eventDate": "2023-10-14", "numberOfViews": 3},
+                    {"eventDate": "2023-10-13", "numberOfViews": 2},
                 ]
             ),
             iter(
@@ -61,6 +64,11 @@ class OffererStatsTest:
                     {"offerId": offer1.id, "numberOfViews": 12},
                     {"offerId": offer2.id, "numberOfViews": 10},
                     {"offerId": offer3.id, "numberOfViews": 8},
+                ]
+            ),
+            iter(
+                [
+                    {"totalViews": 30},
                 ]
             ),
         ]
@@ -74,6 +82,8 @@ class OffererStatsTest:
             OffererStats.table == DAILY_CONSULT_PER_OFFERER_LAST_180_DAYS_TABLE,
         ).one()
         assert offerer_global_stats.jsonData["daily_views"] == [
+            {"eventDate": "2023-10-13", "numberOfViews": 2},
+            {"eventDate": "2023-10-14", "numberOfViews": 3},
             {"eventDate": "2023-10-15", "numberOfViews": 10},
             {"eventDate": "2023-10-16", "numberOfViews": 15},
         ]
@@ -87,6 +97,7 @@ class OffererStatsTest:
             {"offerId": offer2.id, "numberOfViews": 10},
             {"offerId": offer3.id, "numberOfViews": 8},
         ]
+        assert offerer_top_offers.jsonData["total_views_last_30_days"] == 30
 
     @patch("pcapi.connectors.big_query.TestingBackend.run_query")
     def test_create_offerer_stats_data(self, mock_run_query_with_params):
@@ -101,6 +112,7 @@ class OffererStatsTest:
                 [
                     {"eventDate": "2023-10-16", "numberOfViews": 15},
                     {"eventDate": "2023-10-15", "numberOfViews": 10},
+                    {"eventDate": "2023-10-14", "numberOfViews": 5},
                 ]
             ),
             iter(
@@ -108,6 +120,11 @@ class OffererStatsTest:
                     {"offerId": offer1.id, "numberOfViews": 12},
                     {"offerId": offer2.id, "numberOfViews": 10},
                     {"offerId": offer3.id, "numberOfViews": 8},
+                ]
+            ),
+            iter(
+                [
+                    {"totalViews": 30},
                 ]
             ),
         ]
@@ -123,6 +140,7 @@ class OffererStatsTest:
             OffererStats.table == DAILY_CONSULT_PER_OFFERER_LAST_180_DAYS_TABLE,
         ).one()
         assert offerer_global_stats.jsonData["daily_views"] == [
+            {"eventDate": "2023-10-14", "numberOfViews": 5},
             {"eventDate": "2023-10-15", "numberOfViews": 10},
             {"eventDate": "2023-10-16", "numberOfViews": 15},
         ]
@@ -136,3 +154,4 @@ class OffererStatsTest:
             {"offerId": offer2.id, "numberOfViews": 10},
             {"offerId": offer3.id, "numberOfViews": 8},
         ]
+        assert offerer_top_offers.jsonData["total_views_last_30_days"] == 30

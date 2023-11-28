@@ -317,6 +317,7 @@ class TopOffersResponseData(offerers_models.TopOffersData):
 
 
 class OffererStatsDataModel(BaseModel):
+    totalViewsLast30Days: int
     topOffers: list[TopOffersResponseData]
     dailyViews: list[offerers_models.OffererViewsModel]
 
@@ -333,6 +334,7 @@ class GetOffererStatsResponseModel(BaseModel):
         syncDate: datetime,
         dailyViews: list[offerers_models.OffererViewsModel],
         topOffers: list[offerers_models.TopOffersData],
+        total_views_last_30_days: int,
     ) -> "GetOffererStatsResponseModel":
         top_offers_response = []
         if topOffers:
@@ -343,7 +345,9 @@ class GetOffererStatsResponseModel(BaseModel):
         return cls(
             offererId=offerer_id,
             syncDate=syncDate,
-            jsonData=OffererStatsDataModel(topOffers=top_offers_response, dailyViews=dailyViews),
+            jsonData=OffererStatsDataModel(
+                topOffers=top_offers_response, totalViewsLast30Days=total_views_last_30_days, dailyViews=dailyViews
+            ),
         )
 
 
