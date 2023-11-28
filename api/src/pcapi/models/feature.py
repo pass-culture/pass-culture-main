@@ -114,7 +114,6 @@ class FeatureToggle(enum.Enum):
     WIP_ENABLE_SEARCH_HISTORY_ADAGE = "Activer la possibilité de voir l'historique des recherches sur adage"
     WIP_ENABLE_COMPLIANCE_CALL = "Activer les appels à l'API Compliance pour donner un score aux offres"
     WIP_ENABLE_MOCK_UBBLE = "Utiliser le mock Ubble à la place du vrai Ubble"
-    WIP_PRO_STOCK_PAGINATION = "Active la pagination pour les stocks"
     WIP_ENABLE_BOOST_SHOWTIMES_FILTER = "Activer le filtre pour les requêtes showtimes Boost"
     WIP_ENABLE_DATES_OFFER_TEMPLATE = "Active la possibilité d'ajouter des dates pour les offres vitrines"
     WIP_HOME_STATS = "Active la possibilité de voir les stats de consultation sur la page d'accueil"
@@ -184,7 +183,6 @@ FEATURES_DISABLED_BY_DEFAULT: tuple[FeatureToggle, ...] = (
     FeatureToggle.WIP_ENABLE_SUSPICIOUS_EMAIL_SEND,
     FeatureToggle.WIP_ENABLE_TRUSTED_DEVICE,
     FeatureToggle.WIP_OFFER_TO_INSTITUTION,
-    FeatureToggle.WIP_PRO_STOCK_PAGINATION,
     FeatureToggle.WIP_ENABLE_BOOST_SHOWTIMES_FILTER,
     FeatureToggle.WIP_ENABLE_DATES_OFFER_TEMPLATE,
     FeatureToggle.WIP_HOME_STATS,

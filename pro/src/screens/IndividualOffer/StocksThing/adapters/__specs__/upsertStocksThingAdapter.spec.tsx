@@ -9,7 +9,7 @@ import upsertStocksThingAdapter from '../upsertStocksThingAdapter'
 describe('upsertStocksThingAdapter', () => {
   it('should send StockCreationBodyModel to api', async () => {
     vi.spyOn(api, 'upsertStocks').mockResolvedValue({
-      stocks: [],
+      stocks_count: 0,
     })
     await upsertStocksThingAdapter({
       offerId: 1,
@@ -39,7 +39,7 @@ describe('upsertStocksThingAdapter', () => {
 
   it('should send StockEditionBodyModel to api', async () => {
     vi.spyOn(api, 'upsertStocks').mockResolvedValue({
-      stocks: [],
+      stocks_count: 0,
     })
     await upsertStocksThingAdapter({
       offerId: 1,

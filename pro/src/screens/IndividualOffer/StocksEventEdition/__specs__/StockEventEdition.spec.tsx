@@ -399,7 +399,7 @@ describe('screens:StocksEventEdition', () => {
 
   it('should display new stocks notification when creating new stock', async () => {
     vi.spyOn(api, 'upsertStocks').mockResolvedValueOnce({
-      stocks: apiStocks.length,
+      stocks_count: apiStocks.length,
     })
     await renderStockEventScreen(apiOffer, apiStocks)
 
@@ -438,7 +438,7 @@ describe('screens:StocksEventEdition', () => {
     }
     await renderStockEventScreen(apiOffer, apiStocks)
     vi.spyOn(api, 'upsertStocks').mockResolvedValue({
-      stocks: apiStocks.length,
+      stocks_count: apiStocks.length,
     })
 
     await userEvent.type(screen.getByLabelText('Quantité restante'), '30')
@@ -488,7 +488,7 @@ describe('screens:StocksEventEdition', () => {
 
     await renderStockEventScreen(apiOffer, [testedStock])
     vi.spyOn(api, 'upsertStocks').mockResolvedValue({
-      stocks: 1,
+      stocks_count: 1,
     })
 
     await userEvent.selectOptions(
@@ -506,7 +506,7 @@ describe('screens:StocksEventEdition', () => {
 
   it('should show a warning on click on "Enregistrer les modifications" when stock has already been booked', async () => {
     vi.spyOn(api, 'upsertStocks').mockResolvedValueOnce({
-      stocks: apiStocks.length,
+      stocks_count: apiStocks.length,
     })
     await renderStockEventScreen(apiOffer, apiStocks)
 
@@ -572,7 +572,7 @@ describe('screens:StocksEventEdition', () => {
 
   it('should not block when going outside and form is not touched', async () => {
     vi.spyOn(api, 'upsertStocks').mockResolvedValue({
-      stocks: 0,
+      stocks_count: 0,
     })
 
     await renderStockEventScreen(apiOffer, apiStocks)
@@ -584,7 +584,7 @@ describe('screens:StocksEventEdition', () => {
 
   it('should be able to quit without submitting from RouteLeavingGuard', async () => {
     vi.spyOn(api, 'upsertStocks').mockResolvedValue({
-      stocks: 0,
+      stocks_count: 0,
     })
 
     await renderStockEventScreen(apiOffer, apiStocks)
