@@ -641,7 +641,10 @@ class PostEditCollectiveOfferPriceTest(PostEndpointHelper):
             venue=venue,
             dateUsed=date_used,
         )
-        finance_api.add_event(finance_models.FinanceEventMotive.BOOKING_USED, booking=collective_booking, commit=True)
+        finance_api.add_event(
+            finance_models.FinanceEventMotive.BOOKING_USED,
+            booking=collective_booking,
+        )
 
         response = self.post_to_endpoint(
             authenticated_client,

@@ -173,9 +173,11 @@ class PriceEventTest:
             lines=[factories.PricingLineFactory(amount=1000)],
         )
 
-        return api.add_event(
+        event = api.add_event(
             incident_motive, booking_incident=booking_incident, incident_validation_date=validation_date
         )
+        db.session.flush()
+        return event
 
     def test_pricing_individual(self):
         user = users_factories.RichBeneficiaryFactory()
@@ -411,6 +413,7 @@ class AddEventTest:
         )
 
         event = api.add_event(motive=motive, booking=booking)
+        db.session.flush()  # setup relations
 
         assert event.booking == booking
         assert event.status == models.FinanceEventStatus.READY
@@ -845,7 +848,11 @@ class GenerateCashflowsTest:
         )
         reimbursed_booking = bookings_factories.ReimbursedBookingFactory(stock=stock, venue=reimbursement_point1)
 
-        event = api.add_event(motive=models.FinanceEventMotive.BOOKING_USED, booking=reimbursed_booking, commit=True)
+        event = api.add_event(
+            motive=models.FinanceEventMotive.BOOKING_USED,
+            booking=reimbursed_booking,
+        )
+        db.session.flush()
         pricing = api.price_event(event)
         pricing.status = models.PricingStatus.INVOICED
 
