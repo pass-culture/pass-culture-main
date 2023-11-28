@@ -555,8 +555,7 @@ def get_offerer_and_extradata(offerer_id: int) -> models.Offerer | None:
     has_valid_bank_account_subquery = (
         sqla.select(1)
         .select_from(finance_models.BankAccount)
-        .join(
-            models.Offerer,
+        .where(
             sqla.and_(
                 finance_models.BankAccount.offererId == models.Offerer.id,
                 finance_models.BankAccount.isActive.is_(True),
@@ -570,8 +569,7 @@ def get_offerer_and_extradata(offerer_id: int) -> models.Offerer | None:
     has_pending_bank_account_subquery = (
         sqla.select(1)
         .select_from(finance_models.BankAccount)
-        .join(
-            models.Offerer,
+        .where(
             sqla.and_(
                 finance_models.BankAccount.offererId == models.Offerer.id,
                 finance_models.BankAccount.isActive.is_(True),
