@@ -2,19 +2,21 @@ import cn from 'classnames'
 import React, { useEffect, useState } from 'react'
 import { useLocation } from 'react-router-dom'
 
-import { AdageFrontRoles } from 'apiClient/adage'
+import { AdageFrontRoles, AdageHeaderLink } from 'apiClient/adage'
+import { apiAdage } from 'apiClient/api'
 import useNotification from 'hooks/useNotification'
 import fullDownloadIcon from 'icons/full-download.svg'
 import logoPassCultureIcon from 'icons/logo-pass-culture.svg'
 import { ButtonLink } from 'ui-kit'
 import { ButtonVariant } from 'ui-kit/Button/types'
 import { SvgIcon } from 'ui-kit/SvgIcon/SvgIcon'
-import { formatPrice } from 'utils/formatPrice'
+import { removeParamsFromUrl } from 'utils/removeParamsFromUrl'
 
 import { getEducationalInstitutionWithBudgetAdapter } from '../../adapters/getEducationalInstitutionWithBudgetAdapter'
 import useAdageUser from '../../hooks/useAdageUser'
 
 import styles from './AdageHeader.module.scss'
+import AdageHeaderBudget from './AdageHeaderBudget/AdageHeaderBudget'
 import { AdageHeaderMenu } from './AdageHeaderMenu/AdageHeaderMenu'
 
 export const AdageHeader = () => {
@@ -39,6 +41,14 @@ export const AdageHeader = () => {
     setIsLoading(false)
   }
 
+  function logAdageLinkClick(headerLinkName: AdageHeaderLink) {
+    // eslint-disable-next-line @typescript-eslint/no-floating-promises
+    apiAdage.logHeaderLinkClick({
+      iframeFrom: removeParamsFromUrl(location.pathname),
+      header_link_name: headerLinkName,
+    })
+  }
+
   useEffect(() => {
     if (adageUser.role !== AdageFrontRoles.READONLY) {
       // eslint-disable-next-line @typescript-eslint/no-floating-promises
@@ -57,21 +67,19 @@ export const AdageHeader = () => {
           <SvgIcon
             src={logoPassCultureIcon}
             alt="Logo du pass Culture"
-            width="120"
+            width="109"
             viewBox="0 0 71 24"
           />
         </div>
-        <AdageHeaderMenu adageUser={adageUser} />
+        <AdageHeaderMenu
+          adageUser={adageUser}
+          logAdageLinkClick={logAdageLinkClick}
+        />
         {!isLoading && (
-          <div className={styles['adage-header-nav-menu-budget']}>
-            <div className={styles['adage-header-separator']}></div>
-            <div className={styles['adage-budget-text']}>
-              Solde prévisionnel
-              <span className={styles['adage-header-budget']}>
-                {formatPrice(institutionBudget)}
-              </span>
-            </div>
-          </div>
+          <AdageHeaderBudget
+            institutionBudget={institutionBudget}
+            logAdageLinkClick={logAdageLinkClick}
+          />
         )}
       </nav>
       {adageUser.role !== AdageFrontRoles.READONLY && !isDiscoveryPage && (

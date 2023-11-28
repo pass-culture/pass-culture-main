@@ -110,7 +110,7 @@ describe('AdageHeader', () => {
     expect(
       screen.queryByRole('link', { name: 'Découvrir' })
     ).not.toBeInTheDocument()
-    expect(screen.getByText('Suivi')).toBeInTheDocument()
+    screen.queryByRole('link', { name: /Solde prévisionnel/ })
   })
 
   it('should render adage header with link for discovery', async () => {
@@ -142,7 +142,7 @@ describe('AdageHeader', () => {
       expect(screen.getByText('Solde prévisionnel')).toBeInTheDocument()
     )
 
-    expect(screen.getByText('1000 €')).toBeInTheDocument()
+    expect(screen.getByText('1 000 €')).toBeInTheDocument()
   })
 
   it('should return an error when the institution budget could not be retrieved', async () => {
@@ -168,7 +168,10 @@ describe('AdageHeader', () => {
       headerLinkLabel: 'Pour mon établissement 0',
       headerLinkName: AdageHeaderLink.MY_INSTITUTION_OFFERS,
     },
-    { headerLinkLabel: 'Suivi', headerLinkName: AdageHeaderLink.ADAGE_LINK },
+    {
+      headerLinkLabel: 'Nouvelle fenêtre Solde prévisionnel',
+      headerLinkName: AdageHeaderLink.ADAGE_LINK,
+    },
   ]
   it.each(headerLinks)(
     'should log click on header link',
@@ -202,7 +205,7 @@ describe('AdageHeader', () => {
     renderAdageHeader({ ...user, role: AdageFrontRoles.READONLY })
 
     expect(
-      screen.queryByRole('link', { name: 'Suivi' })
+      screen.queryByRole('link', { name: /Solde prévisionnel/ })
     ).not.toBeInTheDocument()
   })
 
