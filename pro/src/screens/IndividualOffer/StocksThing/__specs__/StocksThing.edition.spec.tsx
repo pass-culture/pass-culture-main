@@ -202,7 +202,7 @@ describe('screens:StocksThing', () => {
     vi.spyOn(api, 'patchOffer').mockResolvedValue(
       {} as GetIndividualOfferResponseModel
     )
-    vi.spyOn(api, 'upsertStocks').mockResolvedValue({ stocks: [] })
+    vi.spyOn(api, 'upsertStocks').mockResolvedValue({ stocks_count: 0 })
   })
 
   it.skip('should allow user to delete a stock', async () => {

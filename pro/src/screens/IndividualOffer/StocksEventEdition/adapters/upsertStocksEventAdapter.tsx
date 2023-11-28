@@ -24,8 +24,7 @@ const upsertStocksEventAdapter: UpdateStocksAdapter = async ({
     return {
       isOk: true,
       message: 'Vos modifications ont bien été prises en compte',
-      // "as" can be deleted once the WIP_PRO_STOCK_PAGINATION FF is removed
-      payload: response.stocks as number,
+      payload: response.stocks_count,
     }
   } catch (error) {
     return {

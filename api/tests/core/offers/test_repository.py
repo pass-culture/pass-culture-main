@@ -15,7 +15,6 @@ from pcapi.core.offers import models
 from pcapi.core.offers import repository
 import pcapi.core.providers.constants as providers_constants
 import pcapi.core.providers.factories as providers_factories
-from pcapi.core.testing import override_features
 from pcapi.core.users import factories as users_factories
 from pcapi.domain.pro_offers.offers_recap import OffersRecap
 from pcapi.models import db
@@ -1688,7 +1687,6 @@ class GetStocksListFiltersTest:
         # Then
         assert stocks.count() == 3
 
-    @override_features(WIP_PRO_STOCK_PAGINATION=False)
     def test_filtered_stocks_query_by_default(self):
         # Given
         beginning_datetime = datetime.datetime(2020, 10, 15, 0, 0, 0)
@@ -1710,7 +1708,6 @@ class GetStocksListFiltersTest:
         assert stocks[1] == second_stock
         assert stocks[2] == third_stock
 
-    @override_features(WIP_PRO_STOCK_PAGINATION=True)
     def test_stock_pagination_limit_per_page(self):
         # Given
         beginning_datetime = datetime.datetime(2020, 10, 15, 0, 0, 0)

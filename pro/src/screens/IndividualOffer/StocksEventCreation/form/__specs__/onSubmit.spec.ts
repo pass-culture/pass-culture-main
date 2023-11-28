@@ -341,7 +341,7 @@ describe('onSubmit', () => {
     ({ description, formValues, expectedStocks, expectedNotification }) => {
       it(`should ${description}`, async () => {
         vi.spyOn(api, 'upsertStocks').mockResolvedValueOnce({
-          stocks: expectedStocks.length,
+          stocks_count: expectedStocks.length,
         })
         await onSubmit(formValues, '75', 66, notify)
 

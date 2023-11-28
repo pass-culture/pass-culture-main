@@ -16,7 +16,6 @@ from pcapi.core.offers import models as offers_models
 import pcapi.core.offers.factories as offers_factories
 from pcapi.core.offers.models import OfferValidationStatus
 from pcapi.core.offers.models import Stock
-from pcapi.core.testing import override_features
 import pcapi.core.users.factories as users_factories
 from pcapi.utils.date import format_into_utc_date
 
@@ -40,11 +39,10 @@ class Returns201Test:
 
         response = client.with_session_auth("user@example.com").post("/stocks/bulk/", json=stock_data)
         assert response.status_code == 201
+        assert response.json["stocks_count"] == 1
+        assert len(Stock.query.all()) == len(stock_data["stocks"])
+        created_stock = Stock.query.first()
 
-        response_dict = response.json
-        assert len(response_dict["stocks"]) == len(stock_data["stocks"])
-
-        created_stock = Stock.query.get(response_dict["stocks"][0]["id"])
         assert offer.id == created_stock.offerId
         assert created_stock.price == 20
         assert offer.isActive is False
@@ -96,8 +94,7 @@ class Returns201Test:
         response = client.with_session_auth("user@example.com").post("/stocks/bulk/", json=stock_data)
         assert response.status_code == 201
 
-        response_dict = response.json
-        assert len(response_dict["stocks"]) == len(stock_data["stocks"])
+        assert response.json["stocks_count"] == len(stock_data["stocks"])
 
         created_stocks = Stock.query.order_by(Stock.price).all()
         assert len(created_stocks) == 3
@@ -180,15 +177,14 @@ class Returns201Test:
             "stocks": [{"id": existing_stock.id, "price": 20}],
         }
 
-        response = client.with_session_auth("user@example.com").post("/stocks/bulk/", json=stock_data)
-        created_stock = Stock.query.get(response.json["stocks"][0]["id"])
+        client.with_session_auth("user@example.com").post("/stocks/bulk/", json=stock_data)
+        created_stock = Stock.query.first()
         assert offer.id == created_stock.offerId
         assert created_stock.price == 20
         assert len(Stock.query.all()) == 1
         assert offers_models.PriceCategory.query.count() == 0
         assert offers_models.PriceCategoryLabel.query.count() == 0
 
-    @override_features(WIP_PRO_STOCK_PAGINATION=True)
     def test_do_not_edit_one_stock_when_duplicated(self, client):
         offer = offers_factories.EventOfferFactory()
         beginning = datetime.datetime.utcnow()
@@ -223,7 +219,7 @@ class Returns201Test:
             ],
         }
         response = client.with_session_auth("user@example.com").post("/stocks/bulk/", json=stock_data)
-        assert response.json["stocks"] == 0
+        assert response.json["stocks_count"] == 0
 
     @patch("pcapi.core.search.async_index_offer_ids")
     def test_edit_one_event_stock_using_price_category(self, mocked_async_index_offer_ids, client):
@@ -254,7 +250,8 @@ class Returns201Test:
             ],
         }
         response = client.with_session_auth("user@example.com").post("/stocks/bulk/", json=stock_data)
-        created_stock = Stock.query.get(response.json["stocks"][0]["id"])
+        assert response.json["stocks_count"] == len(stock_data["stocks"])
+        created_stock = Stock.query.first()
         assert offer.id == created_stock.offerId
         assert price_category.price == created_stock.price
         assert len(Stock.query.all()) == 1
@@ -292,8 +289,8 @@ class Returns201Test:
                 }
             ],
         }
-        response = client.with_session_auth("user@example.com").post("/stocks/bulk/", json=stock_data)
-        created_stock = Stock.query.get(response.json["stocks"][0]["id"])
+        client.with_session_auth("user@example.com").post("/stocks/bulk/", json=stock_data)
+        created_stock = Stock.query.first()
         assert offer.id == created_stock.offerId
         assert len(Stock.query.all()) == 1
         assert created_stock.priceCategory == new_price_category
@@ -327,10 +324,9 @@ class Returns201Test:
         # Then
         assert response.status_code == 201
 
-        response_dict = response.json
-        assert len(response_dict["stocks"]) == len(stock_data["stocks"])
+        assert response.json["stocks_count"] == len(stock_data["stocks"])
 
-        created_stock: Stock = Stock.query.get(response_dict["stocks"][0]["id"])
+        created_stock: Stock = Stock.query.first()
         assert offer.id == created_stock.offerId
         assert created_stock.price == 20
         assert created_stock.quantity == 2  # Same as the activation codes length
@@ -377,11 +373,11 @@ class Returns201Test:
         assert response.status_code == 201
 
         response_dict = response.json
-        assert len(response_dict["stocks"]) == len(stock_data["stocks"])
-
-        for idx, result_stock_id in enumerate(response_dict["stocks"]):
+        assert response_dict["stocks_count"] == len(stock_data["stocks"])
+        created_stocks = Stock.query.all()
+        for idx, result_stock_id in enumerate(created_stocks):
             expected_stock = stock_data["stocks"][idx]
-            result_stock = Stock.query.get(result_stock_id["id"])
+            result_stock = Stock.query.get(result_stock_id.id)
             assert result_stock.price == expected_stock["price"]
             assert result_stock.quantity == expected_stock["quantity"]
             assert result_stock.bookingLimitDatetime == booking_limit_datetime
@@ -570,9 +566,9 @@ class Returns201Test:
             "stocks": [{"price": 20, "id": existing_stock.id}],
         }
 
-        response = client.with_session_auth("user@example.com").post("/stocks/bulk/", json=stock_data)
+        client.with_session_auth("user@example.com").post("/stocks/bulk/", json=stock_data)
 
-        created_stock = Stock.query.get(response.json["stocks"][0]["id"])
+        created_stock = Stock.query.first()
         assert offer.id == created_stock.offerId
         assert created_stock.price == 20
         assert created_stock.bookingLimitDatetime is None
@@ -604,7 +600,6 @@ class Returns201Test:
         assert response.json["ongoing_bookings"][0]["id"] == booking.id
         assert not response.json["ended_bookings"]
 
-    @override_features(WIP_PRO_STOCK_PAGINATION=True)
     def should_not_create_duplicated_stock(self, client):
         # Given
         offer = offers_factories.EventOfferFactory()
@@ -671,7 +666,7 @@ class Returns201Test:
         response = client.with_session_auth("user@example.com").post("/stocks/bulk/", json=stock_data)
         # Then
         assert response.status_code == 201
-        assert response.json["stocks"] == 2
+        assert response.json["stocks_count"] == 2
 
 
 @pytest.mark.usefixtures("db_session")
