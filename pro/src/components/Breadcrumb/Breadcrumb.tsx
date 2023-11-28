@@ -18,7 +18,7 @@ type BreadcrumbProps = {
 
 export default function Breadcrumb({ crumbs }: BreadcrumbProps) {
   return (
-    <nav aria-label="Fil d'ariane" className={styles['breadcrumb']}>
+    <nav aria-label="Vous êtes ici:" className={styles['breadcrumb']}>
       <ol className={styles['breadcrumb-list']}>
         {crumbs.map((crumb, i) => {
           const isLast = i === crumbs.length - 1
