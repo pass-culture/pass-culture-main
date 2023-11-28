@@ -57,7 +57,7 @@ export const routesAdage = [
     element: OffersFavorites,
     parentPath: '/adage-iframe',
     path: '/mes-favoris',
-    title: 'Mes Favoris',
+    title: 'Mes favoris',
   },
   {
     element: OffersInfos,
