@@ -108,21 +108,21 @@ describe('reimbursementsWithFilters', () => {
       'First reimbursement point',
       'J987654321',
       'VIR9, VIR12',
-      '75&nbsp;€',
+      '75,00&nbsp;€',
     ]
     const secondLine = [
       '11-03-2022',
       'Second reimbursement point',
       'J666666666',
       'VIR4',
-      '50&nbsp;€',
+      '50,00&nbsp;€',
     ]
     const thirdLine = [
       '13-02-2022',
       'First reimbursement point',
       'J123456789',
       'VIR7',
-      '100&nbsp;€',
+      '100,00&nbsp;€',
     ]
 
     await waitFor(() => {

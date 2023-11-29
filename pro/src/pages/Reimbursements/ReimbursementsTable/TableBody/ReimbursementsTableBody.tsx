@@ -4,6 +4,7 @@ import { InvoiceResponseModel } from 'apiClient/v1'
 import fullDownloadIcon from 'icons/full-download.svg'
 import { ButtonLink } from 'ui-kit'
 import { ButtonVariant } from 'ui-kit/Button/types'
+import { formatPrice } from 'utils/formatPrice'
 
 import styles from './ReimbursementsTableBody.module.scss'
 
@@ -24,7 +25,7 @@ const ReimbursementsTableBody = ({ invoices }: TableBody): JSX.Element => {
             <td className={styles['reference']}>{invoice.reference}</td>
             {/* For now only one label is possible by invoice. */}
             <td className={styles['label']}>{invoice.cashflowLabels[0]}</td>
-            <td className={styles['amount']}>{invoice.amount}&nbsp;€</td>
+            <td className={styles['amount']}>{formatPrice(invoice.amount)}</td>
             <td className={styles['invoice']}>
               <ButtonLink
                 link={{

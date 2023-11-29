@@ -76,7 +76,7 @@ describe('BookingsStatusCell', () => {
     expect(title).toBeInTheDocument()
     const offer = screen.getByText('Matrix', { selector: 'div' })
     expect(offer).toBeInTheDocument()
-    const amount = screen.getByText(`Prix : 10 €`, { selector: 'div' })
+    const amount = screen.getByText(`Prix : 10,00 €`, { selector: 'div' })
     expect(amount).toBeInTheDocument()
   })
 
@@ -111,7 +111,7 @@ describe('BookingsStatusCell', () => {
 
     const offer = screen.getByText('Matrix', { selector: 'div' })
     expect(offer).toBeInTheDocument()
-    const amount = screen.getByText('Prix : 10 €', { selector: 'div' })
+    const amount = screen.getByText('Prix : 10,00 €', { selector: 'div' })
     expect(amount).toBeInTheDocument()
   })
 
