@@ -165,7 +165,7 @@ def _redirect_after_individual_booking_action() -> utils.BackofficeResponse:
     if request.referrer:
         return redirect(request.referrer)
 
-    return redirect(url_for("backoffice_web.individual_bookings.list_individual_bookings"))
+    return redirect(url_for("backoffice_web.individual_bookings.list_individual_bookings"), code=303)
 
 
 @individual_bookings_blueprint.route("/download-csv", methods=["GET"])

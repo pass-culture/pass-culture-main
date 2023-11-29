@@ -214,4 +214,4 @@ def confirm_batch_suspend_users() -> utils.BackofficeResponse:
     else:
         flash(f"{len(users)} compte d'utilisateur a été suspendu", "success")
 
-    return redirect(url_for("backoffice_web.fraud.list_blacklisted_domain_names"))
+    return redirect(url_for("backoffice_web.fraud.list_blacklisted_domain_names"), code=303)

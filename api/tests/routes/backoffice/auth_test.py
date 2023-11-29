@@ -148,7 +148,7 @@ class LogoutTest(PostEndpointWithoutPermissionHelper):
     def test_logout_success(self, authenticated_client):
         response = self.post_to_endpoint(authenticated_client)
 
-        assert response.status_code == 302
+        assert response.status_code == 303
         assert response.location == url_for("backoffice_web.home", _external=True)
 
 
