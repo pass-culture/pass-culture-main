@@ -6,6 +6,7 @@ import {
   CollectiveBookingResponseModel,
 } from 'apiClient/v1'
 import { SvgIcon } from 'ui-kit/SvgIcon/SvgIcon'
+import { formatPrice } from 'utils/formatPrice'
 
 import {
   getBookingStatusDisplayInformations,
@@ -60,8 +61,7 @@ export const BookingStatusCell = ({
   const amount = computeBookingAmount(booking.bookingAmount)
   function computeBookingAmount(amount: number) {
     const FREE_AMOUNT = 'Gratuit'
-    const AMOUNT_SUFFIX = '\u00a0€'
-    return amount ? `${amount}${AMOUNT_SUFFIX}` : FREE_AMOUNT
+    return amount ? formatPrice(amount) : FREE_AMOUNT
   }
 
   return (
@@ -83,9 +83,7 @@ export const BookingStatusCell = ({
       <span>{statusName}</span>
       <div className={styles['bs-tooltip']}>
         <div className={styles['bs-offer-title']}>{offerName}</div>
-        <div className={styles['bs-offer-amount']}>
-          {`Prix : ${amount.replace('.', ',')}`}
-        </div>
+        <div className={styles['bs-offer-amount']}>{`Prix : ${amount}`}</div>
         <div className={styles['bs-history-title']}>Historique</div>
         <BookingStatusCellHistory
           bookingStatusHistory={booking.bookingStatusHistory}

@@ -70,7 +70,6 @@ const ReimbursementsTable = ({
   return (
     <table className={styles['reimbursement-table']}>
       <ReimbursementsTableHead columns={columns} sortBy={targetedColumn} />
-
       <ReimbursementsTableBody invoices={sortedInvoices} />
     </table>
   )
