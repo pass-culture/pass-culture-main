@@ -140,7 +140,7 @@ describe('LinkVenueDialog', () => {
     expect(mockLogEvent).toHaveBeenCalledTimes(1)
     expect(mockLogEvent).toHaveBeenNthCalledWith(
       1,
-      'HasClickedAddVenueToBankAccount',
+      'HasClickedSaveVenueToBankAccount',
       expect.objectContaining({
         id: 1,
         HasUncheckedVenue: false,

@@ -162,7 +162,7 @@ describe('BankInformations', () => {
       })
     )
     expect(mockLogEvent).toHaveBeenCalledWith(
-      'HasClickedAddVenueToBankAccount',
+      'HasClickedSaveVenueToBankAccount',
       expect.objectContaining({
         id: 1,
         HasUncheckedVenue: true,
