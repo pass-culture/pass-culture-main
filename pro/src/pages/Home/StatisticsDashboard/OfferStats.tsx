@@ -41,8 +41,9 @@ const StatBlock = ({ icon, count, label, link, linkLabel }: StatBlockProps) => (
     />
 
     <div className={styles['stat-block-text']}>
-      <span className={styles['stat-block-count']}>{count}</span> {label}
-      <br />
+      <p>
+        <span className={styles['stat-block-count']}>{count}</span> {label}
+      </p>
       <ButtonLink
         variant={ButtonVariant.QUATERNARY}
         icon={fullShowIcon}
@@ -111,10 +112,12 @@ export const OfferStats = ({ offerer, className }: OfferStatsProps) => {
             <div className={styles['pending-offers']}>
               <h3 className={styles['title']}>Vos offres en attente</h3>
 
-              <p className={styles['pending-description']}>
-                Le contrôle de conformité peut prendre jusqu'à 72 heures. En cas
-                de validation, l'offre sera automatiquement publiée.
-                <br />
+              <div className={styles['pending-description']}>
+                <p>
+                  Le contrôle de conformité peut prendre jusqu'à 72 heures. En
+                  cas de validation, l'offre sera automatiquement publiée.
+                </p>
+
                 <ButtonLink
                   variant={ButtonVariant.QUATERNARY}
                   link={{
@@ -129,7 +132,7 @@ export const OfferStats = ({ offerer, className }: OfferStatsProps) => {
                 >
                   En savoir plus sur les règles de conformité.
                 </ButtonLink>
-              </p>
+              </div>
 
               <div className={styles['container']}>
                 <StatBlock
