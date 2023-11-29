@@ -6,6 +6,7 @@ from flask import render_template
 from flask import request
 from flask import url_for
 from flask_login import current_user
+from markupsafe import Markup
 from sqlalchemy.orm import joinedload
 from sqlalchemy.orm import load_only
 from werkzeug.exceptions import Forbidden
@@ -73,7 +74,12 @@ def suspend_user(user_id: int) -> utils.BackofficeResponse:
         users_api.suspend_account(
             user, users_constants.SuspensionReason[form.reason.data], current_user, comment=form.comment.data
         )
-        flash(f"Le compte de l'utilisateur {user.email} ({user.id}) a été suspendu", "success")
+        flash(
+            Markup("Le compte de l'utilisateur {email} ({user_id}) a été suspendu").format(
+                email=user.email, user_id=user.id
+            ),
+            "success",
+        )
     else:
         flash("Les données envoyées sont invalides", "warning")
 
@@ -95,7 +101,12 @@ def unsuspend_user(user_id: int) -> utils.BackofficeResponse:
     form = forms.UnsuspendUserForm()
     if form.validate():
         users_api.unsuspend_account(user, current_user, comment=form.comment.data)
-        flash(f"Le compte de l'utilisateur {user.email} ({user.id}) a été réactivé", "success")
+        flash(
+            Markup("Le compte de l'utilisateur {email} ({user_id}) a été réactivé").format(
+                email=user.email, user_id=user.id
+            ),
+            "success",
+        )
     else:
         flash("Les données envoyées sont invalides", "warning")
 

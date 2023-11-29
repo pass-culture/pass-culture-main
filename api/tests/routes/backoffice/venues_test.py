@@ -870,6 +870,16 @@ class DeleteVenueTest(PostEndpointHelper):
             == "Impossible d'effacer un lieu utilisé comme point de remboursement d'un autre lieu"
         )
 
+    def test_no_script_injection_in_venue_name(self, legit_user, authenticated_client):
+        venue_id = offerers_factories.VenueFactory(name="Lieu <script>alert('coucou')</script>").id
+
+        response = self.post_to_endpoint(authenticated_client, venue_id=venue_id)
+        assert response.status_code == 303
+        assert (
+            html_parser.extract_alert(authenticated_client.get(response.location).data)
+            == f"Le lieu Lieu <script>alert('coucou')</script> ({venue_id}) a été supprimé"
+        )
+
 
 class UpdateVenueTest(PostEndpointHelper):
     endpoint = "backoffice_web.venue.update_venue"

@@ -2,6 +2,7 @@ import logging
 import typing
 
 from flask import flash
+from markupsafe import Markup
 
 from pcapi import settings
 from pcapi.connectors import cine_digital_service
@@ -53,11 +54,14 @@ class CineofficeContext(PivotContext):
 
         venue = offerers_models.Venue.query.get(venue_id)
         if not venue:
-            flash(f"Lieu id={venue_id} n'existe pas", "warning")
+            flash(Markup("Le lieu id={venue_id} n'existe pas").format(venue_id=venue_id), "warning")
             return False
         pivot = providers_models.CinemaProviderPivot.query.filter_by(venueId=venue_id).one_or_none()
         if pivot:
-            flash(f"Des identifiants cinéma existent déjà pour ce lieu id={venue_id}", "warning")
+            flash(
+                Markup("Des identifiants cinéma existent déjà pour ce lieu id={venue_id}").format(venue_id=venue_id),
+                "warning",
+            )
             return False
 
         cinema_provider_pivot = providers_models.CinemaProviderPivot(

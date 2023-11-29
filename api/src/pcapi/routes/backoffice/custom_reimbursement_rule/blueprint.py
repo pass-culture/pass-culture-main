@@ -152,7 +152,7 @@ def create_custom_reimbursement_rule() -> utils.BackofficeResponse:
         flash(get_error_message(exc), "warning")
     except sa.exc.IntegrityError as err:
         db.session.rollback()
-        flash(f"Une erreur s'est produite : {err}", "warning")
+        flash(Markup("Une erreur s'est produite : {message}").format(message=str(err)), "warning")
     else:
         flash("Le tarif dérogatoire a été créé", "success")
 
@@ -222,7 +222,7 @@ def edit_custom_reimbursement_rule(reimbursement_rule_id: int) -> utils.Backoffi
         flash(get_error_message(exc), "warning")
     except sa.exc.IntegrityError as err:
         db.session.rollback()
-        flash(f"Une erreur s'est produite : {err}", "warning")
+        flash(Markup("Une erreur s'est produite : {message}").format(message=str(err)), "warning")
     else:
         flash("Le tarif dérogatoire a été mis à jour", "success")
 

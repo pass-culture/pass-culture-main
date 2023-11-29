@@ -7,6 +7,7 @@ from flask import render_template
 from flask import request
 from flask import url_for
 from flask_login import current_user
+from markupsafe import Markup
 import sqlalchemy as sa
 from werkzeug.exceptions import NotFound
 
@@ -112,7 +113,7 @@ def cancel_finance_incident(finance_incident_id: int) -> utils.BackofficeRespons
 
     form = offerer_forms.CommentForm()
     if not form.validate():
-        flash("Les données envoyées comportent des erreurs", "warning")
+        flash(utils.build_form_error_msg(form), "warning")
         return render_finance_incident(incident)
 
     try:
@@ -282,7 +283,12 @@ def create_individual_booking_incident() -> utils.BackofficeResponse:
         form.origin.data,
     )
 
-    flash(f"Un incident a bien été créé pour {len(bookings)} réservation(s)", "success")
+    flash(
+        Markup("Un incident a bien été créé pour {count} réservation{s}").format(
+            count=len(bookings), s="" if is_one_booking_incident else "s"
+        ),
+        "success",
+    )
     return redirect(request.referrer or url_for("backoffice_web.individual_bookings.list_individual_bookings"), 303)
 
 
@@ -438,7 +444,7 @@ def validate_finance_incident(finance_incident_id: int) -> utils.BackofficeRespo
     form = forms.IncidentValidationForm()
 
     if not form.validate():
-        flash("Les données envoyées comportent des erreurs", "warning")
+        flash(utils.build_form_error_msg(form), "warning")
         return render_finance_incident(finance_incident)
 
     if finance_incident.status != finance_models.IncidentStatus.CREATED:

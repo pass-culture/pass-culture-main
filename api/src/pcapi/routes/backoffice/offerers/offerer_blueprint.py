@@ -269,14 +269,19 @@ def suspend_offerer(offerer_id: int) -> utils.BackofficeResponse:
     form = offerer_forms.SuspendOffererForm()
 
     if not form.validate():
-        flash("Les données envoyées comportent des erreurs", "warning")
+        flash(utils.build_form_error_msg(form), "warning")
     else:
         try:
             offerers_api.suspend_offerer(offerer, current_user, form.comment.data)
         except offerers_exceptions.CannotSuspendOffererWithBookingsException:
             flash("Impossible de suspendre une structure juridique pour laquelle il existe des réservations", "warning")
         else:
-            flash(f"La structure {offerer.name} ({offerer_id}) a été suspendue", "success")
+            flash(
+                Markup("La structure <b>{offerer_name}</b> ({offerer_id}) a été suspendue").format(
+                    offerer_name=offerer.name, offerer_id=offerer_id
+                ),
+                "success",
+            )
 
     return _self_redirect(offerer.id)
 
@@ -288,10 +293,15 @@ def unsuspend_offerer(offerer_id: int) -> utils.BackofficeResponse:
     form = offerer_forms.SuspendOffererForm()
 
     if not form.validate():
-        flash("Les données envoyées comportent des erreurs", "warning")
+        flash(utils.build_form_error_msg(form), "warning")
     else:
         offerers_api.unsuspend_offerer(offerer, current_user, form.comment.data)
-        flash(f"La structure {offerer.name} ({offerer_id}) a été réactivée", "success")
+        flash(
+            Markup("La structure <b>{offerer_name}</b> ({offerer_id}) a été réactivée").format(
+                offerer_name=offerer.name, offerer_id=offerer_id
+            ),
+            "success",
+        )
 
     return _self_redirect(offerer.id)
 
@@ -315,7 +325,12 @@ def delete_offerer(offerer_id: int) -> utils.BackofficeResponse:
     for email in emails:
         external_attributes_api.update_external_pro(email)
 
-    flash(f"La structure {offerer_name} ({offerer_id}) a été supprimée", "success")
+    flash(
+        Markup("La structure <b>{offerer_name}</b> ({offerer_id}) a été supprimée").format(
+            offerer_name=offerer_name, offerer_id=offerer_id
+        ),
+        "success",
+    )
     return redirect(url_for("backoffice_web.search_pro"), code=303)
 
 
@@ -546,7 +561,7 @@ def delete_user_offerer(offerer_id: int, user_offerer_id: int) -> utils.Backoffi
 
     form = offerer_forms.OptionalCommentForm()
     if not form.validate():
-        flash("Les données envoyées comportent des erreurs", "warning")
+        flash(utils.build_form_error_msg(form), "warning")
         return _self_redirect(offerer_id, active_tab="users", anchor="offerer_details_frame")
     user_email = user_offerer.user.email
     offerer_name = user_offerer.offerer.name
@@ -567,7 +582,7 @@ def add_user_offerer_and_validate(offerer_id: int) -> utils.BackofficeResponse:
 
     form = offerer_forms.AddProUserForm()
     if not form.validate():
-        flash("Les données envoyées comportent des erreurs", "warning")
+        flash(utils.build_form_error_msg(form), "warning")
         return _self_redirect(offerer.id, active_tab="users", anchor="offerer_details_frame")
 
     # Single request to get User object and check that the id is within the list of previously attached users, which
@@ -600,7 +615,12 @@ def add_user_offerer_and_validate(offerer_id: int) -> utils.BackofficeResponse:
     new_user_offerer = offerers_models.UserOfferer(offerer=offerer, user=user, validationStatus=ValidationStatus.NEW)
     offerers_api.validate_offerer_attachment(new_user_offerer, current_user, form.comment.data)
 
-    flash(f"Le rattachement de {user.email} à la structure {offerer.name} a été ajouté", "success")
+    flash(
+        Markup("Le rattachement de <b>{email}</b> à la structure <b>{offerer_name}</b> a été ajouté").format(
+            email=user.email, offerer_name=offerer.name
+        ),
+        "success",
+    )
     return _self_redirect(offerer.id, active_tab="users", anchor="offerer_details_frame")
 
 
@@ -665,7 +685,7 @@ def comment_offerer(offerer_id: int) -> utils.BackofficeResponse:
 
     form = offerer_forms.CommentForm()
     if not form.validate():
-        flash("Les données envoyées comportent des erreurs", "warning")
+        flash(utils.build_form_error_msg(form), "warning")
     else:
         offerers_api.add_comment_to_offerer(offerer, current_user, comment=form.comment.data)
         flash("Commentaire enregistré", "success")

@@ -342,6 +342,16 @@ class DeleteOffererTest(PostEndpointHelper):
             == "Impossible d'effacer une structure juridique pour laquelle il existe des réservations"
         )
 
+    def test_no_script_injection_in_offerer_name(self, legit_user, authenticated_client):
+        offerer_id = offerers_factories.NotValidatedOffererFactory(name="<script>alert('coucou')</script>").id
+
+        response = self.post_to_endpoint(authenticated_client, offerer_id=offerer_id)
+        assert response.status_code == 303
+        assert (
+            html_parser.extract_alert(authenticated_client.get(response.location).data)
+            == f"La structure <script>alert('coucou')</script> ({offerer_id}) a été supprimée"
+        )
+
 
 class UpdateOffererTest(PostEndpointHelper):
     endpoint = "backoffice_web.offerer.update_offerer"
@@ -1758,8 +1768,10 @@ class ValidateOffererTest(PostEndpointHelper):
 
         assert response.status_code == 303
 
-        redirected_response = authenticated_client.get(response.headers["location"])
-        assert "est déjà validée" in redirected_response.data.decode("utf8")
+        assert (
+            html_parser.extract_alert(authenticated_client.get(response.location).data)
+            == f"La structure {user_offerer.offerer.name} est déjà validée"
+        )
 
 
 class GetRejectOffererFormTest(GetEndpointHelper):
@@ -1849,6 +1861,16 @@ class RejectOffererTest(PostEndpointHelper):
 
         redirected_response = authenticated_client.get(response.headers["location"])
         assert "est déjà rejetée" in redirected_response.data.decode("utf8")
+
+    def test_no_script_injection_in_offerer_name(self, legit_user, authenticated_client):
+        offerer = offerers_factories.NotValidatedOffererFactory(name="<script>alert('coucou')</script>")
+
+        response = self.post_to_endpoint(authenticated_client, offerer_id=offerer.id)
+        assert response.status_code == 303
+        assert (
+            html_parser.extract_alert(authenticated_client.get(response.location).data)
+            == "La structure <script>alert('coucou')</script> a été rejetée"
+        )
 
 
 class GetOffererPendingFormTest(GetEndpointHelper):
@@ -2581,7 +2603,10 @@ class AddUserOffererAndValidateTest(PostEndpointHelper):
 
         assert response.status_code == 303
         redirected_response = authenticated_client.get(response.headers["location"])
-        assert html_parser.extract_alert(redirected_response.data) == "Les données envoyées comportent des erreurs"
+        assert (
+            html_parser.extract_alert(redirected_response.data)
+            == "Les données envoyées comportent des erreurs. Compte pro : Aucun compte pro n'est sélectionné ;"
+        )
 
 
 class BatchOffererValidateTest(PostEndpointHelper):

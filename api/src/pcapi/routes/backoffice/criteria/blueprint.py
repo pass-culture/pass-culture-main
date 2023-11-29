@@ -6,6 +6,7 @@ from flask import redirect
 from flask import render_template
 from flask import request
 from flask import url_for
+from markupsafe import Markup
 import sqlalchemy as sa
 
 from pcapi.core.criteria import models as criteria_models
@@ -86,8 +87,7 @@ def create_tag() -> utils.BackofficeResponse:
     form.categories.choices = [(cat.id, cat.label) for cat in get_tags_categories()]
 
     if not form.validate():
-        error_msg = utils.build_form_error_msg(form)
-        flash(error_msg, "warning")
+        flash(utils.build_form_error_msg(form), "warning")
         return redirect(url_for("backoffice_web.tags.list_tags"), code=303)
 
     try:
@@ -132,8 +132,7 @@ def update_tag(tag_id: int) -> utils.BackofficeResponse:
     form.categories.choices = [(cat.id, cat.label) for cat in get_tags_categories()]
 
     if not form.validate():
-        error_msg = utils.build_form_error_msg(form)
-        flash(error_msg, "warning")
+        flash(utils.build_form_error_msg(form), "warning")
         return redirect(url_for("backoffice_web.tags.list_tags"), code=303)
 
     tag.name = form.name.data
@@ -187,7 +186,7 @@ def delete_tag(tag_id: int) -> utils.BackofficeResponse:
         db.session.commit()
     except sa.exc.DBAPIError as exception:
         db.session.rollback()
-        flash(f"Une erreur s'est produite : {str(exception)}", "warning")
+        flash(Markup("Une erreur s'est produite : {message}").format(message=str(exception)), "warning")
 
     flash("Le tag a bien été supprimé", "success")
     return redirect(url_for("backoffice_web.tags.list_tags"), code=303)

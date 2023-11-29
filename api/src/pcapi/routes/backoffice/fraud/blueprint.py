@@ -7,6 +7,7 @@ from flask import request
 from flask import url_for
 from flask_login import current_user
 from flask_sqlalchemy import BaseQuery
+from markupsafe import Markup
 import sqlalchemy as sa
 from werkzeug.exceptions import NotFound
 
@@ -180,7 +181,10 @@ def blacklist_domain_name() -> utils.BackofficeResponse:
     else:
         cancelled_bookings_msg = "L'action n'a annulé aucune réservation."
 
-    flash(f"{deactivated_accounts_msg} {cancelled_bookings_msg}", "success")
+    flash(
+        Markup("{message1} {message2}").format(message1=deactivated_accounts_msg, message2=cancelled_bookings_msg),
+        "success",
+    )
     return redirect(url_for(".list_blacklisted_domain_names"))
 
 
@@ -202,5 +206,5 @@ def remove_blacklisted_domain_name(domain: str) -> utils.BackofficeResponse:
 
     repository.save(action)
 
-    flash(f"Le nom de domaine {domain} a été retiré de la liste", "success")
+    flash(Markup("Le nom de domaine {domain} a été retiré de la liste").format(domain=domain), "success")
     return redirect(url_for(".list_blacklisted_domain_names"))

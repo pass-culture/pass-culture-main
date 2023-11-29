@@ -238,7 +238,7 @@ def _batch_validate_or_reject_collective_offers(
         flash(
             f"Les offres collectives {', '.join(map(str, collective_offer_update_succeed_ids))} ont bien été validées"
             if validation is offer_mixin.OfferValidationStatus.APPROVED
-            else f"Les offres collectives {','.join(map(str, collective_offer_update_succeed_ids))} ont bien été rejetées",
+            else f"Les offres collectives {', '.join(map(str, collective_offer_update_succeed_ids))} ont bien été rejetées",
             "success",
         )
 
@@ -310,7 +310,7 @@ def batch_validate_collective_offers() -> utils.BackofficeResponse:
     form = empty_forms.BatchForm()
 
     if not form.validate():
-        flash("L'un des identifiants sélectionnés est invalide", "warning")
+        flash(utils.build_form_error_msg(form), "warning")
         return redirect(request.referrer or url_for("backoffice_web.collective_offer.list_collective_offers"), 303)
 
     _batch_validate_or_reject_collective_offers(offer_mixin.OfferValidationStatus.APPROVED, form.object_ids_list)
@@ -323,7 +323,7 @@ def batch_reject_collective_offers() -> utils.BackofficeResponse:
     form = empty_forms.BatchForm()
 
     if not form.validate():
-        flash("L'un des identifiants sélectionnés est invalide", "warning")
+        flash(utils.build_form_error_msg(form), "warning")
         return redirect(request.referrer or url_for("backoffice_web.collective_offer.list_collective_offers"), 303)
 
     _batch_validate_or_reject_collective_offers(offer_mixin.OfferValidationStatus.REJECTED, form.object_ids_list)

@@ -3,6 +3,7 @@ from flask import redirect
 from flask import render_template
 from flask import request
 from flask import url_for
+from markupsafe import Markup
 import sqlalchemy as sa
 
 from pcapi.core.permissions import models as perm_models
@@ -79,7 +80,7 @@ def create_pivot(name: str) -> utils.BackofficeResponse:
             db.session.commit()
     except sa.exc.IntegrityError as exc:
         db.session.rollback()
-        flash(f"Une erreur s'est produite : {exc}", "warning")
+        flash(Markup("Une erreur s'est produite : {message}").format(message=str(exc)), "warning")
     else:
         if can_create_pivot:
             flash("Le pivot a été créé", "success")
@@ -120,7 +121,7 @@ def update_pivot(name: str, pivot_id: int) -> utils.BackofficeResponse:
             db.session.commit()
     except sa.exc.IntegrityError as exc:
         db.session.rollback()
-        flash(f"Une erreur s'est produite : {exc}", "warning")
+        flash(Markup("Une erreur s'est produite : {message}").format(message=str(exc)), "warning")
     else:
         if can_update_pivot:
             flash("Le pivot a été mis à jour", "success")
@@ -151,7 +152,7 @@ def delete_pivot(name: str, pivot_id: int) -> utils.BackofficeResponse:
             db.session.commit()
     except sa.exc.IntegrityError as exc:
         db.session.rollback()
-        flash(f"Une erreur s'est produite : {exc}", "warning")
+        flash(Markup("Une erreur s'est produite : {message}").format(message=str(exc)), "warning")
     else:
         if can_delete_pivot:
             flash("Le pivot a été supprimé", "success")

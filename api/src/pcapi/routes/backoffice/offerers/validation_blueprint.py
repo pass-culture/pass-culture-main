@@ -10,6 +10,7 @@ from flask import request
 from flask import url_for
 from flask_login import current_user
 from flask_sqlalchemy import BaseQuery
+from markupsafe import Markup
 import sqlalchemy as sa
 from werkzeug.exceptions import NotFound
 
@@ -107,10 +108,10 @@ def validate_offerer(offerer_id: int) -> utils.BackofficeResponse:
     try:
         offerers_api.validate_offerer(offerer, current_user)
     except offerers_exceptions.OffererAlreadyValidatedException:
-        flash(f"La structure {offerer.name} est déjà validée", "warning")
+        flash(Markup("La structure <b>{name}</b> est déjà validée").format(name=offerer.name), "warning")
         return _redirect_after_offerer_validation_action()
 
-    flash(f"La structure {offerer.name} a été validée", "success")
+    flash(Markup("La structure <b>{name}</b> a été validée").format(name=offerer.name), "success")
     return _redirect_after_offerer_validation_action()
 
 
@@ -138,16 +139,16 @@ def reject_offerer(offerer_id: int) -> utils.BackofficeResponse:
 
     form = offerer_forms.OptionalCommentForm()
     if not form.validate():
-        flash("Les données envoyées comportent des erreurs", "warning")
+        flash(utils.build_form_error_msg(form), "warning")
         return _redirect_after_offerer_validation_action()
 
     try:
         offerers_api.reject_offerer(offerer, current_user, comment=form.comment.data)
     except offerers_exceptions.OffererAlreadyRejectedException:
-        flash(f"La structure {offerer.name} est déjà rejetée", "warning")
+        flash(Markup("La structure <b>{name}</b> est déjà rejetée").format(name=offerer.name), "warning")
         return _redirect_after_offerer_validation_action()
 
-    flash(f"La structure {offerer.name} a été rejetée", "success")
+    flash(Markup("La structure <b>{name}</b> a été rejetée").format(name=offerer.name), "success")
     return _redirect_after_offerer_validation_action()
 
 
@@ -175,7 +176,7 @@ def set_offerer_pending(offerer_id: int) -> utils.BackofficeResponse:
 
     form = offerer_forms.CommentAndTagOffererForm()
     if not form.validate():
-        flash("Les données envoyées comportent des erreurs", "warning")
+        flash(utils.build_form_error_msg(form), "warning")
         return _redirect_after_offerer_validation_action()
 
     # Don't pass directly form.tags.data to set_offerer_pending() because this would remove non-homologation tags
@@ -187,7 +188,7 @@ def set_offerer_pending(offerer_id: int) -> utils.BackofficeResponse:
         offerer, current_user, comment=form.comment.data, tags_to_add=tags_to_add, tags_to_remove=tags_to_remove
     )
 
-    flash(f"La structure {offerer.name} a été mise en attente", "success")
+    flash(Markup("La structure <b>{name}</b> a été mise en attente").format(name=offerer.name), "success")
     return _redirect_after_offerer_validation_action()
 
 
@@ -204,7 +205,7 @@ def toggle_top_actor(offerer_id: int) -> utils.BackofficeResponse:
 
     form = offerer_forms.TopActorForm()
     if not form.validate():
-        flash("Les données envoyées comportent des erreurs", "warning")
+        flash(utils.build_form_error_msg(form), "warning")
         return _redirect_after_offerer_validation_action()
 
     if form.is_top_actor.data and form.is_top_actor.data == "on":
@@ -482,13 +483,17 @@ def validate_user_offerer(user_offerer_id: int) -> utils.BackofficeResponse:
         offerers_api.validate_offerer_attachment(user_offerer, current_user)
     except offerers_exceptions.UserOffererAlreadyValidatedException:
         flash(
-            f"Le rattachement de {user_offerer.user.email} à la structure {user_offerer.offerer.name} est déjà validé",
+            Markup("Le rattachement de <b>{email}</b> à la structure <b>{offerer_name}</b> est déjà validé").format(
+                email=user_offerer.user.email, offerer_name=user_offerer.offerer.name
+            ),
             "warning",
         )
         return _redirect_after_user_offerer_validation_action(user_offerer.offerer.id)
 
     flash(
-        f"Le rattachement de {user_offerer.user.email} à la structure {user_offerer.offerer.name} a été validé",
+        Markup("Le rattachement de <b>{email}</b> à la structure <b>{offerer_name}</b> a été validé").format(
+            email=user_offerer.user.email, offerer_name=user_offerer.offerer.name
+        ),
         "success",
     )
     return _redirect_after_user_offerer_validation_action(user_offerer.offerer.id)
@@ -546,13 +551,15 @@ def reject_user_offerer(user_offerer_id: int) -> utils.BackofficeResponse:
 
     form = offerer_forms.OptionalCommentForm()
     if not form.validate():
-        flash("Les données envoyées comportent des erreurs", "warning")
+        flash(utils.build_form_error_msg(form), "warning")
         return _redirect_after_user_offerer_validation_action(user_offerer.offerer.id)
 
     offerers_api.reject_offerer_attachment(user_offerer, current_user, form.comment.data)
 
     flash(
-        f"Le rattachement de {user_offerer.user.email} à la structure {user_offerer.offerer.name} a été rejeté",
+        Markup("Le rattachement de <b>{email}</b> à la structure <b>{offerer_name}</b> a été rejeté").format(
+            email=user_offerer.user.email, offerer_name=user_offerer.offerer.name
+        ),
         "success",
     )
     return _redirect_after_user_offerer_validation_action(user_offerer.offerer.id)
@@ -582,12 +589,14 @@ def set_user_offerer_pending(user_offerer_id: int) -> utils.BackofficeResponse:
 
     form = offerer_forms.OptionalCommentForm()
     if not form.validate():
-        flash("Les données envoyées comportent des erreurs", "warning")
+        flash(utils.build_form_error_msg(form), "warning")
         return _redirect_after_user_offerer_validation_action(user_offerer.offerer.id)
 
     offerers_api.set_offerer_attachment_pending(user_offerer, current_user, form.comment.data)
     flash(
-        f"Le rattachement de {user_offerer.user.email} à la structure {user_offerer.offerer.name} a été mis en attente",
+        Markup("Le rattachement de <b>{email}</b> à la structure <b>{offerer_name}</b> a été mis en attente").format(
+            email=user_offerer.user.email, offerer_name=user_offerer.offerer.name
+        ),
         "success",
     )
 

@@ -3,6 +3,7 @@ from flask import redirect
 from flask import render_template
 from flask import request
 from flask import url_for
+from markupsafe import Markup
 import sqlalchemy as sa
 
 from pcapi.core.offerers import api as offerers_api
@@ -72,8 +73,7 @@ def create_offerer_tag() -> utils.BackofficeResponse:
     form.categories.choices = [(cat.id, cat.label) for cat in categories]
 
     if not form.validate():
-        error_msg = utils.build_form_error_msg(form)
-        flash(error_msg, "warning")
+        flash(utils.build_form_error_msg(form), "warning")
         return redirect(url_for("backoffice_web.offerer_tag.list_offerer_tags"), code=303)
 
     new_categories = [cat for cat in categories if cat.id in form.categories.data]
@@ -86,7 +86,7 @@ def create_offerer_tag() -> utils.BackofficeResponse:
         )
         db.session.add(tag)
         db.session.commit()
-        flash("Tag structure créé", "success")
+        flash("Le tag structure a été créé", "success")
 
     except sa.exc.IntegrityError:
         db.session.rollback()
@@ -103,8 +103,7 @@ def update_offerer_tag(offerer_tag_id: int) -> utils.BackofficeResponse:
     form.categories.choices = [(cat.id, cat.label or cat.name) for cat in categories]
 
     if not form.validate():
-        error_msg = utils.build_form_error_msg(form)
-        flash(error_msg, "warning")
+        flash(utils.build_form_error_msg(form), "warning")
         return redirect(url_for("backoffice_web.offerer_tag.list_offerer_tags"), code=303)
 
     new_categories = [cat for cat in categories if cat.id in form.categories.data]
@@ -116,7 +115,7 @@ def update_offerer_tag(offerer_tag_id: int) -> utils.BackofficeResponse:
             description=form.description.data,
             categories=new_categories,
         )
-        flash("Informations mises à jour", "success")
+        flash("Les informations ont été mises à jour", "success")
     except sa.exc.IntegrityError:
         db.session.rollback()
         flash("Ce nom de tag existe déjà", "warning")
@@ -134,7 +133,7 @@ def delete_offerer_tag(offerer_tag_id: int) -> utils.BackofficeResponse:
         db.session.commit()
     except sa.exc.DBAPIError as exception:
         db.session.rollback()
-        flash(f"Une erreur s'est produite : {str(exception)}", "warning")
+        flash(Markup("Une erreur s'est produite : {message}").format(message=str(exception)), "warning")
 
     return redirect(url_for("backoffice_web.offerer_tag.list_offerer_tags"), code=303)
 

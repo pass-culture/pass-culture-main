@@ -48,7 +48,7 @@ def update_role(role_id: int) -> utils.BackofficeResponse:
     perm_form = forms.EditPermissionForm()
 
     if not perm_form.validate():
-        flash("Les données envoyées comportent des erreurs", "warning")
+        flash(utils.build_form_error_msg(perm_form), "warning")
         return render_template("admin/roles.html"), 400
 
     for perm in permissions:
