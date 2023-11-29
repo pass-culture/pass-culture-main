@@ -25,7 +25,9 @@
                 <b>Titre du produit :</b> {{ name }}
               </p>
               <p>
-                <b>Catégorie :</b> {{ category.pro_label }}
+                {% if category %}
+                    <b>Catégorie :</b> {{ category.pro_label }}
+                {% endif %}
               </p>
               <p>
                 <b>Nombre d'offres associées :</b> {{ offers_count }}
