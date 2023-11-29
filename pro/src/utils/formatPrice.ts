@@ -1,4 +1,7 @@
-import { NBSP } from 'core/shared'
-
-export const formatPrice = (price: number) =>
-  `${price.toString().replace('.', ',')}${NBSP}€`
+export function formatPrice(price: number, options?: Intl.NumberFormatOptions) {
+  return Intl.NumberFormat('fr-FR', {
+    style: 'currency',
+    currency: 'EUR',
+    ...options,
+  }).format(price)
+}

@@ -74,7 +74,7 @@ describe('StocksEventList', () => {
     expect(screen.getByLabelText('Filtrer par horaire')).toBeInTheDocument()
     expect(screen.getByText('18')).toBeInTheDocument()
     expect(
-      screen.getByText('12,5 € - Label', { selector: 'td' })
+      screen.getByText('12,50 € - Label', { selector: 'td' })
     ).toBeInTheDocument()
     expect(screen.getByText('15/09/2021')).toBeInTheDocument()
   })
@@ -101,9 +101,9 @@ describe('StocksEventList', () => {
     ).toHaveLength(
       5 // Number of sortable columns
     )
-    within(screen.getAllByRole('row')[1]).getByText('12,5 € - Label')
-    within(screen.getAllByRole('row')[2]).getByText('5,5 € - Label')
-    within(screen.getAllByRole('row')[3]).getByText('30,5 € - Label')
+    within(screen.getAllByRole('row')[1]).getByText('12,50 € - Label')
+    within(screen.getAllByRole('row')[2]).getByText('5,50 € - Label')
+    within(screen.getAllByRole('row')[3]).getByText('30,50 € - Label')
 
     vi.spyOn(api, 'getStocks').mockResolvedValueOnce({
       stocks: [stock2, stock1, stock3],
@@ -124,9 +124,9 @@ describe('StocksEventList', () => {
         1
       )
     })
-    within(screen.getAllByRole('row')[1]).getByText('5,5 € - Label')
-    within(screen.getAllByRole('row')[2]).getByText('12,5 € - Label')
-    within(screen.getAllByRole('row')[3]).getByText('30,5 € - Label')
+    within(screen.getAllByRole('row')[1]).getByText('5,50 € - Label')
+    within(screen.getAllByRole('row')[2]).getByText('12,50 € - Label')
+    within(screen.getAllByRole('row')[3]).getByText('30,50 € - Label')
 
     vi.spyOn(api, 'getStocks').mockResolvedValueOnce({
       stocks: [stock3, stock1, stock2],
@@ -147,9 +147,9 @@ describe('StocksEventList', () => {
         1
       )
     })
-    within(screen.getAllByRole('row')[1]).getByText('30,5 € - Label')
-    within(screen.getAllByRole('row')[2]).getByText('12,5 € - Label')
-    within(screen.getAllByRole('row')[3]).getByText('5,5 € - Label')
+    within(screen.getAllByRole('row')[1]).getByText('30,50 € - Label')
+    within(screen.getAllByRole('row')[2]).getByText('12,50 € - Label')
+    within(screen.getAllByRole('row')[3]).getByText('5,50 € - Label')
 
     vi.spyOn(api, 'getStocks').mockResolvedValueOnce({
       stocks: [stock1, stock2, stock3],
@@ -168,9 +168,9 @@ describe('StocksEventList', () => {
         1
       )
     })
-    within(screen.getAllByRole('row')[1]).getByText('12,5 € - Label')
-    within(screen.getAllByRole('row')[2]).getByText('5,5 € - Label')
-    within(screen.getAllByRole('row')[3]).getByText('30,5 € - Label')
+    within(screen.getAllByRole('row')[1]).getByText('12,50 € - Label')
+    within(screen.getAllByRole('row')[2]).getByText('5,50 € - Label')
+    within(screen.getAllByRole('row')[3]).getByText('30,50 € - Label')
   })
 
   it('should filter stocks', async () => {
@@ -340,7 +340,7 @@ describe('StocksEventList', () => {
       )
     })
     expect(
-      screen.getAllByText('12,5 € - Label', { selector: 'td' })
+      screen.getAllByText('12,50 € - Label', { selector: 'td' })
     ).toHaveLength(2)
 
     const checkboxes = screen.getAllByRole('checkbox')

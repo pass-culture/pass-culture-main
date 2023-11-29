@@ -139,6 +139,6 @@ describe('bookings offer cell', () => {
       booking,
     })
 
-    expect(screen.getByText('Plein tarif - 12 €')).toBeInTheDocument()
+    expect(screen.getByText('Plein tarif - 12,00 €')).toBeInTheDocument()
   })
 })
