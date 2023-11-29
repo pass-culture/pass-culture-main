@@ -92,8 +92,9 @@ const StocksEventList = ({
   )
   const [checkedStocks, setCheckedStocks] = useState<boolean[]>([])
   const [stocks, setStocks] = useState<StocksEvent[]>([])
-  const [hasStocks, setHasStocks] = useState<boolean | null>(null)
-  const [stocksCount, setStocksCount] = useState<number>(0)
+  const [offerHasStocks, setOfferHasStocks] = useState<boolean | null>(null)
+  const [stocksCountWithFilters, setStocksCountWithFilters] =
+    useState<number>(0)
   const [isDeleteAllLoading, setIsDeleteAllLoading] = useState(false)
   const [dateFilter, setDateFilter] = useState(searchParams.get('date'))
   const [timeFilter, setTimeFilter] = useState(searchParams.get('time'))
@@ -103,7 +104,7 @@ const StocksEventList = ({
   const { currentSortingColumn, currentSortingMode, onColumnHeaderClick } =
     useColumnSorting<StocksOrderedBy>()
   const { page, previousPage, nextPage, pageCount, firstPage } =
-    usePaginationWithSearchParams(STOCKS_PER_PAGE, stocksCount)
+    usePaginationWithSearchParams(STOCKS_PER_PAGE, stocksCountWithFilters)
 
   // Effects
   const loadStocksFromCurrentFilters = () =>
@@ -120,8 +121,8 @@ const StocksEventList = ({
     )
   const handleStocksResponse = (response: GetStocksResponseModel) => {
     setStocks(serializeStockEvents(response.stocks))
-    setHasStocks(response.hasStocks)
-    setStocksCount(response.stockCount)
+    setOfferHasStocks(response.hasStocks)
+    setStocksCountWithFilters(response.stockCount)
     if (onStocksLoad) {
       onStocksLoad(response.hasStocks)
     }
@@ -194,7 +195,7 @@ const StocksEventList = ({
   const priceCategoryOptions = getPriceCategoryOptions(priceCategories)
   const selectedDateText =
     allStocksChecked === PartialCheck.CHECKED
-      ? pluralize(stocksCount, 'dates sélectionnées')
+      ? pluralize(stocksCountWithFilters, 'dates sélectionnées')
       : pluralize(
           checkedStocks.filter((e) => e === true).length,
           'dates sélectionnées'
@@ -259,7 +260,7 @@ const StocksEventList = ({
       .map((stock) => stock.id)
     const deletionCount =
       allStocksChecked === PartialCheck.CHECKED
-        ? stocksCount
+        ? stocksCountWithFilters
         : stocksIdToDelete.length
 
     // If all stocks are checked without any stock unchecked,
@@ -318,7 +319,7 @@ const StocksEventList = ({
     setAllStocksChecked(PartialCheck.UNCHECKED)
   }
 
-  if (hasStocks === null) {
+  if (offerHasStocks === null) {
     return <Spinner />
   }
 
@@ -332,7 +333,7 @@ const StocksEventList = ({
         />
       )}
 
-      {(!canAddStocks || hasStocks) && (
+      {(!canAddStocks || offerHasStocks) && (
         <>
           <div className={styles['select-all-container']}>
             {!readonly && (
@@ -345,8 +346,8 @@ const StocksEventList = ({
             )}
 
             <div className={styles['stocks-count']}>
-              {new Intl.NumberFormat('fr-FR').format(stocksCount)}{' '}
-              {pluralizeString('date', stocksCount)}
+              {new Intl.NumberFormat('fr-FR').format(stocksCountWithFilters)}{' '}
+              {pluralizeString('date', stocksCountWithFilters)}
             </div>
           </div>
 
