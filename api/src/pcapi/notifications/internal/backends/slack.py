@@ -22,6 +22,6 @@ class SlackBackend:
             )
         except SlackApiError as exc:
             logger.exception(
-                "Une erreur s'est produite lors de l'envoie d'un message slack",
+                "Une erreur s'est produite lors de l'envoi d'un message slack",
                 extra={"error": str(exc), "channel": channel, "blocks": str(blocks)},
             )
