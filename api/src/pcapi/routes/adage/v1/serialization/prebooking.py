@@ -198,7 +198,7 @@ def serialize_collective_booking(collective_booking: CollectiveBooking) -> Educa
         yearId=collective_booking.educationalYearId,  # type: ignore [arg-type]
         status=get_collective_booking_status(collective_booking),  # type: ignore [arg-type]
         venueTimezone=venue.timezone,  # type: ignore [arg-type]
-        subcategoryLabel=offer.subcategory.app_label,
+        subcategoryLabel=offer.subcategory.app_label if offer.subcategory else "",
         totalAmount=stock.price,
         url=offer_app_link(offer),
         withdrawalDetails=None,
@@ -320,7 +320,7 @@ def serialize_reibursement_notification(
         yearId=collective_booking.educationalYearId,  # type: ignore [arg-type]
         status=get_collective_booking_status(collective_booking),  # type: ignore [arg-type]
         venueTimezone=venue.timezone,  # type: ignore [arg-type]
-        subcategoryLabel=offer.subcategory.app_label,
+        subcategoryLabel=offer.subcategory.app_label if offer.subcategory else "",
         totalAmount=stock.price,
         url=offer_app_link(offer),
         withdrawalDetails=None,
