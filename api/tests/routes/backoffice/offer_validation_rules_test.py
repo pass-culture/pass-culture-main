@@ -602,9 +602,11 @@ class CreateOfferValidationRuleTest(PostEndpointHelper):
 
 
 class GetDeleteOfferValidationRuleFormTest(GetEndpointHelper):
-    endpoint = "backoffice_web.offer_validation_rules.delete_rule"
+    endpoint = "backoffice_web.offer_validation_rules.get_delete_offer_validation_rule_form"
     endpoint_kwargs = {"rule_id": 1}
     needed_permission = perm_models.Permissions.PRO_FRAUD_ACTIONS
+
+    expected_num_queries = 2  # session + current user
 
     def test_get_delete_form_test(self, legit_user, authenticated_client):
         rule = offers_factories.OfferValidationRuleFactory(name="First rule of robotics")
@@ -617,9 +619,22 @@ class GetDeleteOfferValidationRuleFormTest(GetEndpointHelper):
         )
         form_url = url_for(self.endpoint, rule_id=rule.id)
 
-        with assert_num_queries(2):  # session + current user
+        with assert_num_queries(self.expected_num_queries):
             response = authenticated_client.get(form_url)
             assert response.status_code == 200
+
+    def test_no_script_injection_in_rule_name(self, legit_user, authenticated_client):
+        rule = offers_factories.OfferValidationRuleFactory(name="<script>alert('coucou')</script>")
+        form_url = url_for(self.endpoint, rule_id=rule.id)
+
+        with assert_num_queries(self.expected_num_queries):
+            response = authenticated_client.get(form_url)
+            assert response.status_code == 200
+
+        assert (
+            "La règle <script>alert('coucou')</script> et ses sous-règles seront définitivement supprimées de la base "
+            "de données. Veuillez confirmer ce choix." in html_parser.content_as_text(response.data)
+        )
 
 
 class DeleteOfferValidationRuleTest(PostEndpointHelper):
