@@ -39,6 +39,8 @@ export type { GetRelativeVenuesQueryModel } from './models/GetRelativeVenuesQuer
 export type { ListCollectiveOffersResponseModel } from './models/ListCollectiveOffersResponseModel';
 export type { ListCollectiveOfferTemplateResponseModel } from './models/ListCollectiveOfferTemplateResponseModel';
 export type { ListFeatureResponseModel } from './models/ListFeatureResponseModel';
+export type { LocalOfferersPlaylist } from './models/LocalOfferersPlaylist';
+export type { LocalOfferersPlaylistOffer } from './models/LocalOfferersPlaylistOffer';
 export type { NationalProgramModel } from './models/NationalProgramModel';
 export { OfferAddressType } from './models/OfferAddressType';
 export type { OfferDomain } from './models/OfferDomain';

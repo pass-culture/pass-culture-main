@@ -20,6 +20,7 @@ import type { FavoritesResponseModel } from '../models/FavoritesResponseModel';
 import type { ListCollectiveOffersResponseModel } from '../models/ListCollectiveOffersResponseModel';
 import type { ListCollectiveOfferTemplateResponseModel } from '../models/ListCollectiveOfferTemplateResponseModel';
 import type { ListFeatureResponseModel } from '../models/ListFeatureResponseModel';
+import type { LocalOfferersPlaylist } from '../models/LocalOfferersPlaylist';
 import type { OfferFavoriteBody } from '../models/OfferFavoriteBody';
 import type { OfferIdBody } from '../models/OfferIdBody';
 import type { PlaylistBody } from '../models/PlaylistBody';
@@ -711,6 +712,22 @@ export class DefaultService {
     return this.httpRequest.request({
       method: 'GET',
       url: '/adage-iframe/playlists/classroom',
+      errors: {
+        403: `Forbidden`,
+        422: `Unprocessable Entity`,
+      },
+    });
+  }
+
+  /**
+   * get_local_offerers_playlist <GET>
+   * @returns LocalOfferersPlaylist OK
+   * @throws ApiError
+   */
+  public getLocalOfferersPlaylist(): CancelablePromise<LocalOfferersPlaylist> {
+    return this.httpRequest.request({
+      method: 'GET',
+      url: '/adage-iframe/playlists/local-offerers',
       errors: {
         403: `Forbidden`,
         422: `Unprocessable Entity`,
