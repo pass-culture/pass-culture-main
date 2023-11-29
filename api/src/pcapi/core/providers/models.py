@@ -360,7 +360,6 @@ class CGRCinemaDetails(PcObject, Base, Model):
     cinemaUrl: str = Column(Text, nullable=False)
     numCinema: int = Column(Integer, nullable=True)
     password: str = Column(Text, nullable=False)
-    encryptedPassword: str = Column(Text, nullable=False)
 
 
 class EMSCinemaDetails(PcObject, Base, Model):
