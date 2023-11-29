@@ -248,6 +248,27 @@ describe('ReimbursementBankAccount', () => {
         }
       )
     })
+
+    it('should track follow up bank account link click', async () => {
+      renderReimbursementBankAccount(
+        {
+          ...bankAccount,
+          status: BankAccountApplicationStatus.EN_CONSTRUCTION,
+        },
+        1,
+        2
+      )
+      await userEvent.click(
+        screen.getByRole('link', { name: 'Suivre le dossier' })
+      )
+      expect(mockLogEvent).toHaveBeenCalledWith(
+        BankAccountEvents.CLICKED_BANK_DETAILS_RECORD_FOLLOW_UP,
+        {
+          from: '/remboursements/informations-bancaires',
+          offererId: 0,
+        }
+      )
+    })
   })
 
   it('should call the onUpdateButtonClick function when clicking the action button', async () => {

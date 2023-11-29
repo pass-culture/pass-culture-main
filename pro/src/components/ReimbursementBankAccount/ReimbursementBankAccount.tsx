@@ -61,6 +61,15 @@ const ReimbursementBankAccount = ({
               to: '', // TODO: change when link is available.
               isExternal: true,
             }}
+            onClick={() => {
+              logEvent?.(
+                BankAccountEvents.CLICKED_BANK_DETAILS_RECORD_FOLLOW_UP,
+                {
+                  from: location.pathname,
+                  offererId: offererId,
+                }
+              )
+            }}
             icon={fullLinkIcon}
             className={styles['ds-link-button']}
           >
