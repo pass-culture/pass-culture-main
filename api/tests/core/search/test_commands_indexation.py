@@ -3,6 +3,7 @@ from unittest import mock
 
 import pytest
 
+from pcapi.core import search
 import pcapi.core.bookings.factories as bookings_factories
 from pcapi.core.categories.subcategories_v2 import ALL_SUBCATEGORIES
 import pcapi.core.educational.factories as educational_factories
@@ -10,7 +11,6 @@ import pcapi.core.offerers.factories as offerers_factories
 from pcapi.core.offers import models as offers_models
 import pcapi.core.offers.factories as offers_factories
 from pcapi.core.providers.titelive_gtl import GTLS
-from pcapi.core.search import staging_indexation
 import pcapi.core.search.testing as search_testing
 from pcapi.repository import repository
 
@@ -50,7 +50,8 @@ def test_partially_index_offers(app):
 
 
 @clean_database
-def test_update_products_booking_count_and_reindex_offers(app):
+@mock.patch("pcapi.core.search.async_index_offer_ids")
+def test_update_products_booking_count_and_reindex_offers(mocked_async_index_offer_ids, app):
     ean = "1234567890123"
     product = offers_factories.ProductFactory(extraData={"ean": ean})
     offer_with_ean = offers_factories.OfferFactory(extraData={"ean": ean}, product=product)
@@ -59,20 +60,22 @@ def test_update_products_booking_count_and_reindex_offers(app):
     bookings_factories.BookingFactory(stock=offers_factories.StockFactory(offer=offer_with_ean))
     bookings_factories.BookingFactory(stock=offers_factories.StockFactory(offer=offer_with_no_ean))
 
-    expected_to_be_reindexed = {
-        str(offer_with_ean.id),
-    }
+    expected_to_be_reindexed = {offer_with_ean.id}
 
     rows = [{"id": 1, "ean": ean, "booking_count": 1}]
     with mock.patch("pcapi.connectors.big_query.TestingBackend.run_query") as mock_run_query:
         mock_run_query.return_value = rows
         run_command(app, "update_products_booking_count_and_reindex_offers")
 
-    assert app.redis_client.smembers("search:algolia:offer_ids") == expected_to_be_reindexed
+    mocked_async_index_offer_ids.assert_called_once_with(
+        expected_to_be_reindexed,
+        reason=search.IndexationReason.BOOKING_COUNT_CHANGE,
+    )
 
 
 @clean_database
-def test_update_products_booking_count_and_reindex_offers_if_same_ean(app):
+@mock.patch("pcapi.core.search.async_index_offer_ids")
+def test_update_products_booking_count_and_reindex_offers_if_same_ean(mocked_async_index_offer_ids, app):
     ean_1 = "1234567890123"
     ean_2 = "9876543219876"
     product1 = offers_factories.ProductFactory(extraData={"ean": ean_1})
@@ -89,8 +92,8 @@ def test_update_products_booking_count_and_reindex_offers_if_same_ean(app):
     offers_factories.StockFactory(offer=offer_with_different_ean)
 
     expected_to_be_reindexed = {
-        str(offer_with_ean.id),
-        str(offer_not_booked_with_same_ean_in_offer.id),
+        offer_with_ean.id,
+        offer_not_booked_with_same_ean_in_offer.id,
     }
 
     rows = [{"id": 1, "ean": ean_1, "booking_count": 1}]
@@ -98,7 +101,10 @@ def test_update_products_booking_count_and_reindex_offers_if_same_ean(app):
         mock_run_query.return_value = rows
         run_command(app, "update_products_booking_count_and_reindex_offers")
 
-    assert app.redis_client.smembers("search:algolia:offer_ids") == expected_to_be_reindexed
+    mocked_async_index_offer_ids.assert_called_once_with(
+        expected_to_be_reindexed,
+        reason=search.IndexationReason.BOOKING_COUNT_CHANGE,
+    )
 
 
 @clean_database
@@ -221,7 +227,7 @@ class StagingIndexationTest:
             offers_factories.StockFactory.create_batch(
                 size=20, offer__subcategoryId=subcategory.id, offer__isActive=True
             )
-        offers = staging_indexation.get_offers_for_each_subcategory(10)
+        offers = search.staging_indexation.get_offers_for_each_subcategory(10)
         assert len(offers) == len(ALL_SUBCATEGORIES[:4]) * 10
 
     def test_get_offers_with_gtl(self):
@@ -230,7 +236,7 @@ class StagingIndexationTest:
         )
         offers_factories.StockFactory.create_batch(size=20, offer__isActive=True)
 
-        offer_ids = staging_indexation.get_offers_with_gtl(10)
+        offer_ids = search.staging_indexation.get_offers_with_gtl(10)
 
         assert len(offer_ids) == 10
         offer_ids_with_gtl = [stock.offer.id for stock in stock_with_gtl]
@@ -256,7 +262,7 @@ class StagingIndexationTest:
             )
         offers_factories.StockFactory.create_batch(size=20, offer__isActive=True)
 
-        offer_ids = staging_indexation.get_offers_for_each_gtl_level_1(2)
+        offer_ids = search.staging_indexation.get_offers_for_each_gtl_level_1(2)
         offers = offers_models.Offer.query.filter(offers_models.Offer.id.in_(offer_ids)).all()
 
         assert len(offer_ids) == 26
@@ -283,7 +289,7 @@ class StagingIndexationTest:
         )
         offers_factories.StockFactory.create_batch(size=20, offer__isActive=True)
 
-        offer_ids = staging_indexation.get_offers_with_visa_number(10)
+        offer_ids = search.staging_indexation.get_offers_with_visa_number(10)
 
         assert len(offer_ids) == 10
         offer_ids_with_visa_number = [stock.offer.id for stock in stock_with_visa_number]
@@ -292,7 +298,7 @@ class StagingIndexationTest:
     def test_get_random_offers(self):
         offers_factories.StockFactory.create_batch(size=20, offer__isActive=True)
 
-        offer_ids = staging_indexation.get_random_offers(10, {})
+        offer_ids = search.staging_indexation.get_random_offers(10, {})
 
         assert len(offer_ids) == 10
 
@@ -301,7 +307,7 @@ class StagingIndexationTest:
         stocks_not_to_reindex = offers_factories.StockFactory.create_batch(size=5, offer__isActive=True)
 
         offers_not_to_reindex = {stock.offer.id for stock in stocks_not_to_reindex}
-        offer_ids = staging_indexation.get_random_offers(10, offers_not_to_reindex)
+        offer_ids = search.staging_indexation.get_random_offers(10, offers_not_to_reindex)
 
         assert len(offer_ids) == 5
         assert all(offer_id not in offers_not_to_reindex for offer_id in offer_ids)
