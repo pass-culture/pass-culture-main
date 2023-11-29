@@ -1,6 +1,5 @@
 from functools import partial
 
-from flask import escape
 from flask import flash
 from flask import redirect
 from flask import render_template
@@ -197,12 +196,10 @@ def delete_tag(tag_id: int) -> utils.BackofficeResponse:
 def get_delete_tag_form(tag_id: int) -> utils.BackofficeResponse:
     tag = criteria_models.Criterion.query.get_or_404(tag_id)
 
-    escaped_name = escape(tag.name)
-    information = f"""
-Le tag <strong>{escaped_name}</strong> sera définitivement
-supprimé de la base de données et retiré de toutes les offres et lieux 
-auxquels il est associé. Veuillez confirmer ce choix.
-"""
+    information = Markup(
+        "Le tag <strong>{name}</strong> sera définitivement supprimé de la base de données et retiré de toutes les "
+        "offres et lieux auxquels il est associé. Veuillez confirmer ce choix."
+    ).format(name=tag.name)
 
     return render_template(
         "components/turbo/modal_form.html",
