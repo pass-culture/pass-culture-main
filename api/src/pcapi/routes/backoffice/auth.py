@@ -112,7 +112,7 @@ def authorize() -> utils.BackofficeResponse:
 @utils.custom_login_required(redirect_to=".home")
 def logout() -> utils.BackofficeResponse:
     logout_user()
-    return redirect(url_for(".home"))
+    return redirect(url_for(".home"), code=303)
 
 
 @blueprint.backoffice_web.route("/user-not-found", methods=["GET"])

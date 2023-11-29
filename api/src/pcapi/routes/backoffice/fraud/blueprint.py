@@ -185,7 +185,7 @@ def blacklist_domain_name() -> utils.BackofficeResponse:
         Markup("{message1} {message2}").format(message1=deactivated_accounts_msg, message2=cancelled_bookings_msg),
         "success",
     )
-    return redirect(url_for(".list_blacklisted_domain_names"))
+    return redirect(url_for(".list_blacklisted_domain_names"), code=303)
 
 
 @fraud_blueprint.route("/blacklist-domain-name/remove/<string:domain>", methods=["POST"])
@@ -207,4 +207,4 @@ def remove_blacklisted_domain_name(domain: str) -> utils.BackofficeResponse:
     repository.save(action)
 
     flash(Markup("Le nom de domaine {domain} a été retiré de la liste").format(domain=domain), "success")
-    return redirect(url_for(".list_blacklisted_domain_names"))
+    return redirect(url_for(".list_blacklisted_domain_names"), code=303)

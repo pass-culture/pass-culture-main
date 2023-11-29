@@ -432,7 +432,7 @@ class MarkBookingAsUsedTest(PostEndpointHelper):
 
         response = self.post_to_endpoint(authenticated_client, booking_id=cancelled.id)
 
-        assert response.status_code == 302
+        assert response.status_code == 303
 
         db.session.refresh(cancelled)
         assert cancelled.status is bookings_models.BookingStatus.USED
@@ -446,7 +446,7 @@ class MarkBookingAsUsedTest(PostEndpointHelper):
 
         response = self.post_to_endpoint(authenticated_client, booking_id=non_cancelled.id)
 
-        assert response.status_code == 302
+        assert response.status_code == 303
 
         db.session.refresh(non_cancelled)
         assert non_cancelled.status == old_status
@@ -464,7 +464,7 @@ class MarkBookingAsUsedTest(PostEndpointHelper):
 
         response = self.post_to_endpoint(authenticated_client, booking_id=cancelled_booking.id)
 
-        assert response.status_code == 302
+        assert response.status_code == 303
 
         db.session.refresh(cancelled_booking)
         assert cancelled_booking.status == bookings_models.BookingStatus.CANCELLED
@@ -478,7 +478,7 @@ class MarkBookingAsUsedTest(PostEndpointHelper):
 
         response = self.post_to_endpoint(authenticated_client, booking_id=cancelled_booking.id)
 
-        assert response.status_code == 302
+        assert response.status_code == 303
 
         db.session.refresh(cancelled_booking)
         assert cancelled_booking.status == bookings_models.BookingStatus.CANCELLED
@@ -503,7 +503,7 @@ class CancelBookingTest(PostEndpointHelper):
             form={"reason": bookings_models.BookingCancellationReasons.BACKOFFICE.value},
         )
 
-        assert response.status_code == 302
+        assert response.status_code == 303
 
         db.session.refresh(confirmed)
         assert confirmed.status is bookings_models.BookingStatus.CANCELLED
@@ -526,7 +526,7 @@ class CancelBookingTest(PostEndpointHelper):
             form={"reason": bookings_models.BookingCancellationReasons.BENEFICIARY.value},
         )
 
-        assert response.status_code == 302
+        assert response.status_code == 303
         db.session.refresh(booking_to_cancel)
         assert booking_to_cancel.status == bookings_models.BookingStatus.CANCELLED
         assert booking_to_cancel.cancellationReason == bookings_models.BookingCancellationReasons.BENEFICIARY
@@ -542,7 +542,7 @@ class CancelBookingTest(PostEndpointHelper):
             form={"reason": bookings_models.BookingCancellationReasons.BACKOFFICE.value},
         )
 
-        assert response.status_code == 302
+        assert response.status_code == 303
 
         db.session.refresh(pricing)
         assert pricing.booking.status == bookings_models.BookingStatus.USED
@@ -563,7 +563,7 @@ class CancelBookingTest(PostEndpointHelper):
             form={"reason": bookings_models.BookingCancellationReasons.BACKOFFICE.value},
         )
 
-        assert response.status_code == 302
+        assert response.status_code == 303
 
         db.session.refresh(reimbursed)
         assert reimbursed.status == old_status
@@ -584,7 +584,7 @@ class CancelBookingTest(PostEndpointHelper):
             form={"reason": bookings_models.BookingCancellationReasons.BACKOFFICE.value},
         )
 
-        assert response.status_code == 302
+        assert response.status_code == 303
 
         db.session.refresh(cancelled)
         assert cancelled.status == old_status
@@ -599,7 +599,7 @@ class CancelBookingTest(PostEndpointHelper):
 
         response = self.post_to_endpoint(authenticated_client, booking_id=confirmed.id)
 
-        assert response.status_code == 302
+        assert response.status_code == 303
 
         db.session.refresh(confirmed)
         assert confirmed.status == bookings_models.BookingStatus.CONFIRMED
@@ -634,7 +634,7 @@ class BatchMarkBookingAsUsedTest(PostEndpointHelper):
         parameter_ids = ",".join(str(booking.id) for booking in bookings)
         response = self.post_to_endpoint(authenticated_client, form={"object_ids": parameter_ids})
 
-        assert response.status_code == 302
+        assert response.status_code == 303
         for booking in bookings:
             db.session.refresh(booking)
             assert booking.status is bookings_models.BookingStatus.USED
@@ -644,7 +644,7 @@ class BatchMarkBookingAsUsedTest(PostEndpointHelper):
         parameter_ids = ",".join(str(booking.id) for booking in bookings)
         response = self.post_to_endpoint(authenticated_client, form={"object_ids": parameter_ids})
 
-        assert response.status_code == 302
+        assert response.status_code == 303
         for booking in bookings:
             db.session.refresh(booking)
             assert booking.status is bookings_models.BookingStatus.USED
@@ -675,7 +675,7 @@ class BatchOfferCancelTest(PostEndpointHelper):
             form={"object_ids": parameter_ids, "reason": bookings_models.BookingCancellationReasons.BACKOFFICE.value},
         )
 
-        assert response.status_code == 302
+        assert response.status_code == 303
         for booking in bookings:
             db.session.refresh(booking)
             assert booking.status is bookings_models.BookingStatus.CANCELLED

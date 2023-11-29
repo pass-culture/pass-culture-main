@@ -496,7 +496,7 @@ class ConfirmBatchSuspendUsersTest(BatchSuspendUsersReturns400Helper):
             },
         )
 
-        assert response.status_code == 302
+        assert response.status_code == 303
 
         for user in users:
             db.session.refresh(user)
@@ -536,7 +536,7 @@ class ConfirmBatchSuspendUsersTest(BatchSuspendUsersReturns400Helper):
             },
         )
 
-        assert response.status_code == 302
+        assert response.status_code == 303
         redirected_response = authenticated_client.get(response.location)
         assert "2 comptes d'utilisateurs ont été suspendus" in html_parser.extract_alert(redirected_response.data)
 

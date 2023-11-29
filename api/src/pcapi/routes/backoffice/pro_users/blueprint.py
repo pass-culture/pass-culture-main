@@ -201,7 +201,7 @@ def comment_pro_user(user_id: int) -> utils.BackofficeResponse:
     form = pro_users_forms.CommentForm()
     if not form.validate():
         flash(utils.build_form_error_msg(form), "warning")
-        return redirect(url_for("backoffice_web.pro_user.get", user_id=user_id), code=302)
+        return redirect(url_for("backoffice_web.pro_user.get", user_id=user_id), code=303)
 
     users_api.add_comment_to_user(user=user, author_user=current_user, comment=form.comment.data)
     flash("Commentaire enregistré", "success")
