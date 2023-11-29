@@ -175,7 +175,7 @@ def find_educational_year_by_date(date_searched: datetime) -> educational_models
     ).one_or_none()
 
 
-def find_educational_institution_by_uai_code(uai_code: str) -> educational_models.EducationalInstitution | None:
+def find_educational_institution_by_uai_code(uai_code: str | None) -> educational_models.EducationalInstitution | None:
     return educational_models.EducationalInstitution.query.filter_by(institutionId=uai_code).one_or_none()
 
 
