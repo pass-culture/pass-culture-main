@@ -5,4 +5,3 @@ import{j as t}from"./jsx-runtime-ffb262ed.js";import{s}from"./stroke-accessibili
   </div>`,...(h=(l=r.parameters)==null?void 0:l.docs)==null?void 0:h.source}}};var m,p,b;a.parameters={...a.parameters,docs:{...(m=a.parameters)==null?void 0:m.docs,source:{originalSource:`args => <div>
     <BaseCheckbox {...args} />
   </div>`,...(b=(p=a.parameters)==null?void 0:p.docs)==null?void 0:b.source}}};const j=["Default","WithPartialCheck","WithBorder"];export{e as Default,a as WithBorder,r as WithPartialCheck,j as __namedExportsOrder,E as default};
-//# sourceMappingURL=BaseCheckbox.stories-cd16b5f6.js.map

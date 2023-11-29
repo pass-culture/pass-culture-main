@@ -4,4 +4,3 @@ import{j as e}from"./jsx-runtime-ffb262ed.js";import{f as b}from"./full-trash-98
 }}>
     <ListIconButton {...props}>{props.children}</ListIconButton>
   </div>`,...(_=(f=o.parameters)==null?void 0:f.docs)==null?void 0:_.source}}};const Z=["Default"];export{o as Default,Z as __namedExportsOrder,M as default};
-//# sourceMappingURL=ListIconButton.stories-d440e96c.js.map

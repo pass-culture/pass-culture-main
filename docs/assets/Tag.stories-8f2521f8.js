@@ -4,4 +4,3 @@ import{j as u}from"./jsx-runtime-ffb262ed.js";import{c}from"./index-a587463d.js"
     variant: TagVariant.SMALL_OUTLINE
   }
 }`,...(i=(s=l.parameters)==null?void 0:s.docs)==null?void 0:i.source}}};const N=["Default"];export{l as Default,N as __namedExportsOrder,E as default};
-//# sourceMappingURL=Tag.stories-8f2521f8.js.map

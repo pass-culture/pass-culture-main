@@ -7,4 +7,3 @@ import{j as r}from"./jsx-runtime-ffb262ed.js";import{D as t}from"./DialogBox-3c3
     children: <p>lorem ipsum dolor sit amet</p>
   }
 }`,...(a=(o=s.parameters)==null?void 0:o.docs)==null?void 0:a.source}}};const D=["Default"];export{s as Default,D as __namedExportsOrder,f as default};
-//# sourceMappingURL=DialogBox.stories-eed1c44a.js.map

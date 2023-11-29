@@ -4,4 +4,3 @@ import{j as t}from"./jsx-runtime-ffb262ed.js";import{T as i}from"./Tooltip-7f0a1
     children: 'Hover me!'
   }
 }`,...(s=(r=o.parameters)==null?void 0:r.docs)==null?void 0:s.source}}};const u=["Default"];export{o as Default,u as __namedExportsOrder,l as default};
-//# sourceMappingURL=Tooltip.stories-35c20b50.js.map

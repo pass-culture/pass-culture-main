@@ -3,4 +3,3 @@ import{j as r}from"./jsx-runtime-ffb262ed.js";import{D as a}from"./Divider-7c035
     size: 'medium'
   }
 }`,...(i=(t=e.parameters)==null?void 0:t.docs)==null?void 0:i.source}}};const x=["Default"];export{e as Default,x as __namedExportsOrder,u as default};
-//# sourceMappingURL=Divider.stories-0f3a0f15.js.map

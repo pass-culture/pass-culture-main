@@ -7,4 +7,3 @@ import{j as e}from"./jsx-runtime-ffb262ed.js";import{r as c}from"./index-76fb7be
   const nextPage = useCallback(() => setPage(page => page + 1), []);
   return <Pagination currentPage={page} pageCount={pageCount} onPreviousPageClick={previousPage} onNextPageClick={nextPage} />;
 }`,...(d=(p=n.parameters)==null?void 0:p.docs)==null?void 0:d.source}}};const S=["Default"];export{n as Default,S as __namedExportsOrder,h as default};
-//# sourceMappingURL=Pagination.stories-2be453d9.js.map

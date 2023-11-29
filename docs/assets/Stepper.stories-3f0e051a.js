@@ -3,4 +3,3 @@ import{j as e}from"./jsx-runtime-ffb262ed.js";import{K as S}from"./index-b5da178
 }}>
     <Stepper {...args} />
   </div>`,...(u=(m=i.parameters)==null?void 0:m.docs)==null?void 0:u.source}}};const O=["Default"];export{i as Default,O as __namedExportsOrder,T as default};
-//# sourceMappingURL=Stepper.stories-3f0e051a.js.map

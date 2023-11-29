@@ -5,4 +5,3 @@ import{s as e}from"./stroke-user-4375f005.js";import{S as a}from"./SvgIcon-c0bf3
     width: '50'
   }
 }`,...(t=(s=r.parameters)==null?void 0:s.docs)==null?void 0:t.source}}};const d=["Default"];export{r as Default,d as __namedExportsOrder,u as default};
-//# sourceMappingURL=SvgIcon.stories-8ea8c475.js.map

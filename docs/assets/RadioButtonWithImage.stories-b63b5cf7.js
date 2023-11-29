@@ -23,4 +23,3 @@ import{j as e}from"./jsx-runtime-ffb262ed.js";import{r as T}from"./index-76fb7be
       <RadioButtonWithImage name="offerType" label="Offre Collective" description={description} isChecked={offerType == 'collective'} onChange={handleChange} icon={strokeProfIcon} value="collective" />
     </div>;
 }`,...(y=(g=i.parameters)==null?void 0:g.docs)==null?void 0:y.source}}};const D=["Default","WithDescription"];export{s as Default,i as WithDescription,D as __namedExportsOrder,L as default};
-//# sourceMappingURL=RadioButtonWithImage.stories-b63b5cf7.js.map

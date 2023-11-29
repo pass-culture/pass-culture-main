@@ -3,4 +3,3 @@ import{j as e}from"./jsx-runtime-ffb262ed.js";import{B as c,a as n}from"./BaseRa
   </div>`,...(i=(o=a.parameters)==null?void 0:o.docs)==null?void 0:i.source}}};var t,d,l;r.parameters={...r.parameters,docs:{...(t=r.parameters)==null?void 0:t.docs,source:{originalSource:`args => <div>
     <BaseRadio {...args} />
   </div>`,...(l=(d=r.parameters)==null?void 0:d.docs)==null?void 0:l.source}}};const g=["Default","WithBorder"];export{a as Default,r as WithBorder,g as __namedExportsOrder,b as default};
-//# sourceMappingURL=BaseRadio.stories-ad8f2798.js.map
