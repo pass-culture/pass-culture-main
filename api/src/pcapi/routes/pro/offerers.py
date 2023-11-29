@@ -290,7 +290,7 @@ def get_offerer_stats(offerer_id: int) -> offerers_serialize.GetOffererStatsResp
     top_offers = next(el for el in stats if el.table == TOP_3_MOST_CONSULTED_OFFERS_LAST_30_DAYS_TABLE)
     daily_offerer_views = next(el for el in stats if el.table == DAILY_CONSULT_PER_OFFERER_LAST_180_DAYS_TABLE)
     top_offers_data = top_offers.jsonData["top_offers"]
-    total_views_last_30_days = top_offers.jsonData["total_views_last_30_days"]
+    total_views_last_30_days = top_offers.jsonData.get("total_views_last_30_days", 0)
     daily_offerer_views_data = daily_offerer_views.jsonData["daily_views"]
     return offerers_serialize.GetOffererStatsResponseModel.build(
         offerer_id,
