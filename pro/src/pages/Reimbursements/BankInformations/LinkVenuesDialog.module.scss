@@ -4,8 +4,13 @@
 @use "styles/variables/_colors.scss" as colors;
 @use "styles/variables/_size.scss" as size;
 
+$modal-width: rem.torem(592px);
+$modal-height: rem.torem(336px);
+
+
 .dialog {
-  width: rem.torem(592px);
+  height: $modal-height;
+  width: $modal-width;
 
   &-title {
     margin-bottom: rem.torem(16px);
@@ -18,7 +23,7 @@
   }
 
   &-checkboxes {
-    max-height: rem.torem(200px);
+    height: rem.torem(200px);
     overflow-y: auto
   }
 
@@ -48,4 +53,9 @@
     justify-content: flex-end;
     gap: rem.torem(24px);
   }
+}
+
+.discard-dialog {
+  width: $modal-width;
+  height: $modal-height;
 }
