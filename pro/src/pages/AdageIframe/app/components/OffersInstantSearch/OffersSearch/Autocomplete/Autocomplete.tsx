@@ -42,7 +42,6 @@ import {
   ALGOLIA_COLLECTIVE_OFFERS_SUGGESTIONS_INDEX,
 } from 'utils/config'
 import { localStorageAvailable } from 'utils/localStorageAvailable'
-import { removeParamsFromUrl } from 'utils/removeParamsFromUrl'
 
 import styles from './Autocomplete.module.scss'
 import { Highlight } from './Highlight'
@@ -148,7 +147,7 @@ export const Autocomplete = ({
     suggestionValue: string
   ) => {
     await apiAdage.logTrackingAutocompleteSuggestionClick({
-      iframeFrom: removeParamsFromUrl(location.pathname),
+      iframeFrom: location.pathname,
       suggestionType,
       suggestionValue,
     })

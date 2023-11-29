@@ -4,7 +4,6 @@ import { AdageFrontRoles } from 'apiClient/adage'
 import { apiAdage } from 'apiClient/api'
 import { logClickOnOffer } from 'pages/AdageIframe/libs/initAlgoliaAnalytics'
 import { Button } from 'ui-kit'
-import { removeParamsFromUrl } from 'utils/removeParamsFromUrl'
 
 import RequestFormDialog from './RequestFormDialog'
 
@@ -38,7 +37,7 @@ const ContactButton = ({
 
     // eslint-disable-next-line @typescript-eslint/no-floating-promises
     apiAdage.logContactModalButtonClick({
-      iframeFrom: removeParamsFromUrl(location.pathname),
+      iframeFrom: location.pathname,
       offerId,
       queryId: queryId,
       isFromNoResult: isInSuggestions,

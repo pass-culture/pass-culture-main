@@ -10,7 +10,6 @@ import { logOfferConversion } from 'pages/AdageIframe/libs/initAlgoliaAnalytics'
 import { Button } from 'ui-kit'
 import { SvgIcon } from 'ui-kit/SvgIcon/SvgIcon'
 import { LOGS_DATA } from 'utils/config'
-import { removeParamsFromUrl } from 'utils/removeParamsFromUrl'
 
 import { postBookingAdapater } from './adapters/postBookingAdapter'
 import PrebookingModal from './PrebookingModal'
@@ -39,7 +38,7 @@ const PrebookingButton = ({
     if (LOGS_DATA) {
       // eslint-disable-next-line @typescript-eslint/no-floating-promises
       apiAdage.logBookingModalButtonClick({
-        iframeFrom: removeParamsFromUrl(location.pathname),
+        iframeFrom: location.pathname,
         stockId,
         queryId: queryId,
         isFromNoResult: isInSuggestions,

@@ -12,7 +12,6 @@ import {
 } from 'pages/AdageIframe/app/types/offers'
 import { Button } from 'ui-kit'
 import { ButtonVariant } from 'ui-kit/Button/types'
-import { removeParamsFromUrl } from 'utils/removeParamsFromUrl'
 
 import styles from './OfferFavoriteButton.module.scss'
 
@@ -52,7 +51,7 @@ const OfferFavoriteButton = ({
       apiAdage.logFavOfferButtonClick({
         offerId: offer.id,
         queryId: queryId,
-        iframeFrom: removeParamsFromUrl(location.pathname),
+        iframeFrom: location.pathname,
         isFavorite: false,
         isFromNoResult: isInSuggestions,
       })
@@ -80,7 +79,7 @@ const OfferFavoriteButton = ({
       apiAdage.logFavOfferButtonClick({
         offerId: offer.id,
         queryId: queryId,
-        iframeFrom: removeParamsFromUrl(location.pathname),
+        iframeFrom: location.pathname,
         isFavorite: true,
         isFromNoResult: isInSuggestions,
       })
