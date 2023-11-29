@@ -123,9 +123,7 @@ def _partially_index(
     batch_size: int = 10000,
     starting_page: int = 1,
     last_page: int | None = None,
-    indexation_callback_kwargs: dict | None = None,
 ) -> None:
-    backend = search._get_backend()
     page = starting_page
     while True:
         if last_page and page > last_page:
@@ -135,10 +133,8 @@ def _partially_index(
             break
         indexation_callback_arguments = [ids]
         if "backend" in indexation_callback.__annotations__:
-            indexation_callback_arguments.insert(0, backend)
-        if indexation_callback_kwargs is None:
-            indexation_callback_kwargs = {}
-        indexation_callback(*indexation_callback_arguments, **indexation_callback_kwargs)
+            indexation_callback_arguments.insert(0, search._get_backend())
+        indexation_callback(*indexation_callback_arguments)
         logger.info("Indexed %d %s from page %d", len(ids), what, page)
         page += 1
 
