@@ -9,7 +9,6 @@ import {
 import { apiAdage } from 'apiClient/api'
 import useNotification from 'hooks/useNotification'
 import { LOGS_DATA } from 'utils/config'
-import { removeParamsFromUrl } from 'utils/removeParamsFromUrl'
 
 import { initAlgoliaAnalytics } from '../libs/initAlgoliaAnalytics'
 
@@ -75,7 +74,7 @@ export const App = (): JSX.Element => {
         if (LOGS_DATA) {
           // eslint-disable-next-line @typescript-eslint/no-floating-promises
           apiAdage.logCatalogView({
-            iframeFrom: removeParamsFromUrl(location.pathname),
+            iframeFrom: location.pathname,
             source: siret || venueId ? 'partnersMap' : 'homepage',
           })
         }

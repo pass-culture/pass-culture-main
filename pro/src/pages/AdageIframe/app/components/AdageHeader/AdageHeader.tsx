@@ -10,7 +10,6 @@ import logoPassCultureIcon from 'icons/logo-pass-culture.svg'
 import { ButtonLink } from 'ui-kit'
 import { ButtonVariant } from 'ui-kit/Button/types'
 import { SvgIcon } from 'ui-kit/SvgIcon/SvgIcon'
-import { removeParamsFromUrl } from 'utils/removeParamsFromUrl'
 
 import { getEducationalInstitutionWithBudgetAdapter } from '../../adapters/getEducationalInstitutionWithBudgetAdapter'
 import useAdageUser from '../../hooks/useAdageUser'
@@ -44,7 +43,7 @@ export const AdageHeader = () => {
   function logAdageLinkClick(headerLinkName: AdageHeaderLink) {
     // eslint-disable-next-line @typescript-eslint/no-floating-promises
     apiAdage.logHeaderLinkClick({
-      iframeFrom: removeParamsFromUrl(location.pathname),
+      iframeFrom: location.pathname,
       header_link_name: headerLinkName,
     })
   }
