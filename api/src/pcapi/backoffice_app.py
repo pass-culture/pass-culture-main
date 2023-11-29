@@ -51,7 +51,7 @@ with app.app_context():
     import pcapi.routes.backoffice.error_handlers  # pylint: disable=unused-import
     import pcapi.utils.login_manager
 
-    preprocess_scss(settings.IS_DEV)
+    preprocess_scss(settings.WATCH_SCSS_CHANGE)
     install_routes(app)
     app.register_blueprint(backoffice_web, url_prefix="/")
 
@@ -62,7 +62,7 @@ with app.app_context():
 
 if __name__ == "__main__":
     port = settings.FLASK_PORT
-    if settings.IS_DEV and settings.DEBUG_ACTIVATED:
+    if settings.DEBUG_ACTIVATED:
         import debugpy
 
         if not debugpy.is_client_connected():
