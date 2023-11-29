@@ -322,9 +322,7 @@ const StocksThing = ({ offer }: StocksThingProps): JSX.Element => {
                   smallLabel
                   name="price"
                   label="Prix"
-                  className={cn({
-                    [styles['input-price']]: !showExpirationDate,
-                  })}
+                  className={styles['input-price']}
                   classNameFooter={styles['field-layout-footer']}
                   disabled={readOnlyFields.includes('price')}
                   type="number"
@@ -336,10 +334,7 @@ const StocksThing = ({ offer }: StocksThingProps): JSX.Element => {
                   smallLabel
                   name="bookingLimitDatetime"
                   label="Date limite de réservation"
-                  className={cn({
-                    [styles['input-booking-limit-datetime']]:
-                      !showExpirationDate,
-                  })}
+                  className={styles['input-booking-limit-datetime']}
                   classNameFooter={styles['field-layout-footer']}
                   minDate={today}
                   maxDate={getMaximumBookingDatetime(maxDateTime)}
@@ -361,9 +356,7 @@ const StocksThing = ({ offer }: StocksThingProps): JSX.Element => {
                   name="quantity"
                   label="Quantité"
                   placeholder="Illimité"
-                  className={cn({
-                    [styles['input-quantity']]: !showExpirationDate,
-                  })}
+                  className={styles['input-quantity']}
                   classNameFooter={styles['field-layout-footer']}
                   disabled={readOnlyFields.includes('quantity')}
                   type="number"
