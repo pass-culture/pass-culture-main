@@ -12,7 +12,6 @@ import useAdageUser from 'pages/AdageIframe/app/hooks/useAdageUser'
 import { FacetFiltersContext } from 'pages/AdageIframe/app/providers'
 import { Option } from 'pages/AdageIframe/app/types'
 import { filterEducationalSubCategories } from 'utils/collectiveCategories'
-import { removeParamsFromUrl } from 'utils/removeParamsFromUrl'
 
 import { DEFAULT_GEO_RADIUS, MAIN_INDEX_ID } from '../OffersInstantSearch'
 import {
@@ -141,7 +140,7 @@ export const OffersSearch = ({
     /* istanbul ignore next: TO FIX the current structure make it hard to test, we probably should not mock Offers in OfferSearch tests */
     if (formik.submitCount > 0 || currentSearch !== null) {
       await apiAdage.logTrackingFilter({
-        iframeFrom: removeParamsFromUrl(location.pathname),
+        iframeFrom: location.pathname,
         resultNumber: nbHits,
         queryId: queryId ?? null,
         filterValues: formik

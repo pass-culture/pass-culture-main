@@ -21,7 +21,6 @@ import { SvgIcon } from 'ui-kit/SvgIcon/SvgIcon'
 import { Tag, TagVariant } from 'ui-kit/Tag/Tag'
 import { LOGS_DATA } from 'utils/config'
 import { getHumanizeRelativeDistance } from 'utils/getDistance'
-import { removeParamsFromUrl } from 'utils/removeParamsFromUrl'
 
 import ContactButton from './ContactButton'
 import style from './Offer.module.scss'
@@ -69,14 +68,14 @@ const Offer = ({
 
     if (!offer.isTemplate) {
       void apiAdage.logOfferDetailsButtonClick({
-        iframeFrom: removeParamsFromUrl(location.pathname),
+        iframeFrom: location.pathname,
         stockId: offer.stock.id,
         queryId: queryId,
         isFromNoResult: isInSuggestions,
       })
     } else {
       void apiAdage.logOfferTemplateDetailsButtonClick({
-        iframeFrom: removeParamsFromUrl(location.pathname),
+        iframeFrom: location.pathname,
         offerId: offer.id,
         queryId: queryId,
         isFromNoResult: isInSuggestions,
@@ -86,7 +85,7 @@ const Offer = ({
 
   function offerVenueLinkClicked() {
     void apiAdage.logTrackingMap({
-      iframeFrom: removeParamsFromUrl(location.pathname),
+      iframeFrom: location.pathname,
     })
   }
 

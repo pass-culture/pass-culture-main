@@ -12,7 +12,6 @@ import { Button, DatePicker, SubmitButton, TextArea, TextInput } from 'ui-kit'
 import { ButtonVariant, IconPositionEnum } from 'ui-kit/Button/types'
 import PhoneNumberInput from 'ui-kit/form/PhoneNumberInput'
 import { isDateValid } from 'utils/date'
-import { removeParamsFromUrl } from 'utils/removeParamsFromUrl'
 
 import { createCollectiveRequestAdapter } from './adapter/createCollectiveRequestAdapter'
 import styles from './RequestFormDialog.module.scss'
@@ -57,7 +56,7 @@ const RequestFormDialog = ({
   }
   const closeRequestFormDialog = async () => {
     await apiAdage.logRequestFormPopinDismiss({
-      iframeFrom: removeParamsFromUrl(location.pathname),
+      iframeFrom: location.pathname,
       collectiveOfferTemplateId: offerId,
       comment: formik.values.description,
       phoneNumber: formik.values.teacherPhone,
