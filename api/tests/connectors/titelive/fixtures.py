@@ -225,7 +225,7 @@ NO_RESULT_BY_EAN_FIXTURE = {
 MUSIC_SEARCH_FIXTURE = {
     "type": 4,
     "magid": "7",
-    "nombre": 10,
+    "nombre": 25,
     "page": 1,
     "result": [
         {
@@ -661,3 +661,5 @@ MUSIC_SEARCH_FIXTURE = {
     "changeEncodingTo": "UTF-8",
     "ws": 1,
 }
+
+EMPTY_MUSIC_SEARCH_FIXTURE = {"type": 4, "magid": "7", "nombre": 25, "page": 2, "result": []}
