@@ -52,20 +52,24 @@ const LinkVenuesDialog = ({
   )
 
   async function submitForm(hasUncheckedVenue = false) {
-    try {
-      await api.linkVenueToBankAccount(offererId, selectedBankAccount.id, {
-        venues_ids: selectedVenuesIds,
-      })
-      logEvent?.(BankAccountEvents.CLICKED_SAVE_VENUE_TO_BANK_ACCOUNT, {
-        id: offererId,
-        HasUncheckedVenue: hasUncheckedVenue,
-      })
-      notification.success('Vos modifications ont bien été prises en compte.')
-      closeDialog(true)
-    } catch (e) {
-      notification.error(
-        'Un erreur est survenue. Vos modifications n’ont pas été prises en compte.'
-      )
+    if (isEqual(selectedVenuesIds, initialVenuesIds)) {
+      closeDialog(false)
+    } else {
+      try {
+        await api.linkVenueToBankAccount(offererId, selectedBankAccount.id, {
+          venues_ids: selectedVenuesIds,
+        })
+        logEvent?.(BankAccountEvents.CLICKED_SAVE_VENUE_TO_BANK_ACCOUNT, {
+          id: offererId,
+          HasUncheckedVenue: hasUncheckedVenue,
+        })
+        notification.success('Vos modifications ont bien été prises en compte.')
+        closeDialog(true)
+      } catch (e) {
+        notification.error(
+          'Un erreur est survenue. Vos modifications n’ont pas été prises en compte.'
+        )
+      }
     }
   }
 
@@ -120,10 +124,9 @@ const LinkVenuesDialog = ({
                   partialCheck={
                     selectedVenuesIds.length >= 1 && !allVenuesSelected
                   }
-                  disabled={availableManagedVenuesIds?.length === 0}
                   onChange={() => {
                     if (allVenuesSelected) {
-                      setSelectedVenuesIds(initialVenuesIds)
+                      setSelectedVenuesIds([])
                     } else {
                       setSelectedVenuesIds([
                         ...(availableManagedVenuesIds ?? []),
@@ -171,11 +174,7 @@ const LinkVenuesDialog = ({
               >
                 Annuler
               </Button>
-              <SubmitButton
-                disabled={isEqual(selectedVenuesIds, initialVenuesIds)}
-              >
-                Enregistrer
-              </SubmitButton>
+              <SubmitButton>Enregistrer</SubmitButton>
             </div>
           </form>
         </FormikProvider>
