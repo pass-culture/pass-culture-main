@@ -8,10 +8,10 @@ from pcapi.flask_app import setup_metrics
 
 
 app.config["SESSION_COOKIE_HTTPONLY"] = True
-app.config["SESSION_COOKIE_SECURE"] = not settings.IS_DEV
+app.config["SESSION_COOKIE_SECURE"] = settings.SESSION_COOKIE_SECURE
 app.config["SESSION_COOKIE_SAMESITE"] = settings.SESSION_COOKIE_SAMESITE
 app.config["REMEMBER_COOKIE_HTTPONLY"] = True
-app.config["REMEMBER_COOKIE_SECURE"] = not settings.IS_DEV
+app.config["REMEMBER_COOKIE_SECURE"] = settings.SESSION_COOKIE_SECURE
 app.config["REMEMBER_COOKIE_DURATION"] = 90 * 24 * 3600
 app.config["PERMANENT_SESSION_LIFETIME"] = 90 * 24 * 3600
 app.config["FLASK_ADMIN_SWATCH"] = "flatly"
@@ -35,8 +35,7 @@ with app.app_context():
 
 if __name__ == "__main__":
     port = settings.FLASK_PORT
-    is_debugger_enabled = settings.IS_DEV and settings.DEBUG_ACTIVATED
-    if is_debugger_enabled:
+    if settings.DEBUG_ACTIVATED:
         import debugpy
 
         if not debugpy.is_client_connected():
@@ -50,4 +49,4 @@ if __name__ == "__main__":
             print("🎉 Code debugger attached, enjoy debugging 🎉", flush=True)
 
     set_tag("pcapi.app_type", "app")
-    app.run(host="0.0.0.0", port=port, debug=True, use_reloader=not is_debugger_enabled)
+    app.run(host="0.0.0.0", port=port, debug=True, use_reloader=not settings.DEBUG_ACTIVATED)
