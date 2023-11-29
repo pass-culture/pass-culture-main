@@ -102,7 +102,7 @@
                 <td>{{ collective_offer_template.subcategoryId | format_offer_category }}</td>
                 <td>{{ collective_offer_template.subcategoryId | format_offer_subcategory }}</td>
                 {% if has_permission("PRO_FRAUD_ACTIONS") %}
-                  <td>{{ collective_offer_template.flaggingValidationRules | format_offer_validation_rule_list | safe }}</td>
+                  <td>{{ collective_offer_template.flaggingValidationRules | format_offer_validation_rule_list }}</td>
                 {% endif %}
                 <td>{{ collective_offer_template.validation | format_offer_validation_status }}</td>
                 <td>{{ collective_offer_template.dateCreated | format_date("%d/%m/%Y") }}</td>

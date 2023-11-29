@@ -88,7 +88,7 @@
                   {% set compliance_score = offer.extraData.get("complianceScore", "") if offer.extraData else "" %}
                   {% if compliance_score %}
                     <p class="mb-1">
-                      <span class="fw-bold">Score data :</span> {{ compliance_score | safe }}
+                      <span class="fw-bold">Score data :</span> {{ compliance_score }}
                     </p>
                     {% set compliance_reasons = offer.extraData.get("complianceReasons") if offer.extraData else none %}
                     {% if compliance_reasons %}
