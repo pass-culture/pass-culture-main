@@ -124,7 +124,7 @@ def add_security_headers(response: flask.wrappers.Response) -> flask.wrappers.Re
     return response
 
 
-if not settings.IS_DEV or settings.IS_RUNNING_TESTS:
+if settings.REMOVE_LOGGER_HANDLER:
     # Remove default logger/handler, since we use our own (see pcapi.core.logging)
     app.logger.removeHandler(default_handler)
 
