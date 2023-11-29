@@ -105,7 +105,7 @@
     "prettier": "^3.1.0",
     "rollup-plugin-visualizer": "^5.9.3",
     "sass": "^1.69.5",
-    "storybook": "^7.5.3",
+    "storybook": "^7.6.0",
     "storybook-addon-react-router-v6": "^2.0.10",
     "stylelint": "^15.11.0",
     "stylelint-a11y": "^1.2.3",
