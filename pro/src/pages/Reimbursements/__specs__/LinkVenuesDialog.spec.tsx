@@ -1,4 +1,4 @@
-import { screen, waitFor } from '@testing-library/react'
+import { screen } from '@testing-library/react'
 import { userEvent } from '@testing-library/user-event'
 import React from 'react'
 
@@ -92,6 +92,32 @@ describe('LinkVenueDialog', () => {
     expect(screen.getByLabelText('Lieu 2')).not.toBeChecked()
   })
 
+  it('Should be able to submit the form but only close the modal if no changes were made', async () => {
+    renderWithProviders(
+      <>
+        <LinkVenuesDialog {...props} />
+        <Notification />
+      </>,
+      {
+        storeOverrides,
+      }
+    )
+
+    await userEvent.click(
+      screen.getByRole('button', {
+        name: 'Enregistrer',
+      })
+    )
+
+    expect(api.linkVenueToBankAccount).not.toHaveBeenCalled()
+
+    expect(
+      screen.queryByText(/Vos modifications ont bien été prises en compte/)
+    ).not.toBeInTheDocument()
+
+    expect(mockLogEvent).not.toHaveBeenCalled()
+  })
+
   it('Should be able to submit the form', async () => {
     renderWithProviders(
       <>
@@ -103,24 +129,10 @@ describe('LinkVenueDialog', () => {
       }
     )
 
-    expect(
-      screen.getByRole('button', {
-        name: 'Enregistrer',
-      })
-    ).toBeDisabled()
-
     await userEvent.click(
       screen.getByRole('checkbox', {
         name: 'Lieu 2',
       })
-    )
-
-    await waitFor(() =>
-      expect(
-        screen.getByRole('button', {
-          name: 'Enregistrer',
-        })
-      ).not.toBeDisabled()
     )
 
     await userEvent.click(
