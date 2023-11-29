@@ -105,7 +105,7 @@
                 <td>{{ collective_offer.subcategoryId | format_offer_subcategory }}</td>
                 <td>{{ collective_offer.formats | format_collective_offer_formats }}</td>
                 {% if has_permission("PRO_FRAUD_ACTIONS") %}
-                  <td>{{ collective_offer.flaggingValidationRules | format_offer_validation_rule_list | safe }}</td>
+                  <td>{{ collective_offer.flaggingValidationRules | format_offer_validation_rule_list }}</td>
                 {% endif %}
                 <td>{{ collective_offer.validation | format_offer_validation_status }}</td>
                 <td>{{ collective_offer.dateCreated | format_date }}</td>
