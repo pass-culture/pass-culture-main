@@ -608,7 +608,7 @@ class CancelBookingTest(PostEndpointHelper):
         redirected_response = authenticated_client.get(response.headers["location"])
 
         assert (
-            "Les données envoyées comportent des erreurs. Raison: Information obligatoire"
+            "Les données envoyées comportent des erreurs. Raison : Information obligatoire"
             in html_parser.extract_alert(redirected_response.data)
         )
 

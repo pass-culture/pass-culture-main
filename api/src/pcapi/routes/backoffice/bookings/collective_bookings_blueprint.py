@@ -9,6 +9,7 @@ from flask import request
 from flask import send_file
 from flask import url_for
 from flask_login import current_user
+from markupsafe import Markup
 import sqlalchemy as sa
 
 from pcapi import settings
@@ -186,7 +187,7 @@ def mark_booking_as_used(collective_booking_id: int) -> utils.BackofficeResponse
     try:
         educational_api_booking.uncancel_collective_booking(collective_booking)
     except Exception as exc:  # pylint: disable=broad-except
-        flash(f"Une erreur s'est produite : {str(exc)}", "warning")
+        flash(Markup("Une erreur s'est produite : {message}").format(message=str(exc)), "warning")
     else:
         flash(f"La réservation {collective_booking.id} a été validée", "success")
 
@@ -214,7 +215,7 @@ def mark_booking_as_cancelled(collective_booking_id: int) -> utils.BackofficeRes
     except educational_exceptions.BookingIsAlreadyRefunded:
         flash("Impossible d'annuler une réservation remboursée", "warning")
     except Exception as exc:  # pylint: disable=broad-except
-        flash(f"Une erreur s'est produite : {str(exc)}", "warning")
+        flash(Markup("Une erreur s'est produite : {message}").format(message=str(exc)), "warning")
     else:
         flash(f"La réservation {collective_booking.id} a été annulée", "success")
 

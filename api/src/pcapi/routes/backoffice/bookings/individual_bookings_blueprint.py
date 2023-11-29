@@ -10,6 +10,7 @@ from flask import request
 from flask import send_file
 from flask import url_for
 from flask_login import current_user
+from markupsafe import Markup
 import sqlalchemy as sa
 
 from pcapi import settings
@@ -102,9 +103,11 @@ def _get_individual_bookings(
 
             if all(NO_DIGIT_RE.match(term) for term in terms):
                 flash(
-                    f"Le critère de recherche « {search_query} » peut correspondre à un nom. Cependant, la recherche "
-                    "n'a porté que sur les codes contremarques afin de répondre rapidement. Veuillez inclure prénom et "
-                    "nom dans le cas d'un nom de 6 lettres.",
+                    Markup(
+                        "Le critère de recherche « {search_query} » peut correspondre à un nom. Cependant, la recherche "
+                        "n'a porté que sur les codes contremarques afin de répondre rapidement. Veuillez inclure prénom et "
+                        "nom dans le cas d'un nom de 6 lettres."
+                    ).format(search_query=search_query),
                     "info",
                 )
 
@@ -209,9 +212,9 @@ def mark_booking_as_used(booking_id: int) -> utils.BackofficeResponse:
     try:
         bookings_api.mark_as_used_with_uncancelling(booking)
     except Exception as exc:  # pylint: disable=broad-except
-        flash(f"Une erreur s'est produite : {str(exc)}", "warning")
+        flash(Markup("Une erreur s'est produite : {message}").format(message=str(exc)), "warning")
     else:
-        flash(f"La réservation {booking.token} a été validée", "success")
+        flash(Markup("La réservation <b>{token}</b> a été validée").format(token=booking.token), "success")
 
     return _redirect_after_individual_booking_action()
 
@@ -236,9 +239,9 @@ def mark_booking_as_cancelled(booking_id: int) -> utils.BackofficeResponse:
     except bookings_exceptions.BookingIsAlreadyUsed:
         flash("Impossible d'annuler une réservation déjà utilisée", "warning")
     except Exception as exc:  # pylint: disable=broad-except
-        flash(f"Une erreur s'est produite : {str(exc)}", "warning")
+        flash(Markup("Une erreur s'est produite : {message}").format(message=str(exc)), "warning")
     else:
-        flash(f"La réservation {booking.token} a été annulée", "success")
+        flash(Markup("La réservation <b>{token}</b> a été annulée").format(token=booking.token), "success")
 
     return _redirect_after_individual_booking_action()
 

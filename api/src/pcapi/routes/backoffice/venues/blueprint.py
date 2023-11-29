@@ -500,7 +500,10 @@ def delete_venue(venue_id: int) -> utils.BackofficeResponse:
     for email in emails:
         external_attributes_api.update_external_pro(email)
 
-    flash(f"Le lieu {venue_name} ({venue_id}) a été supprimé", "success")
+    flash(
+        Markup("Le lieu {venue_name} ({venue_id}) a été supprimé").format(venue_name=venue_name, venue_id=venue_id),
+        "success",
+    )
     return redirect(url_for("backoffice_web.search_pro"), code=303)
 
 
@@ -557,7 +560,7 @@ def update_venue(venue_id: int) -> utils.BackofficeResponse:
             attrs["comment"] = None
 
         if new_siret and offerers_repository.find_venue_by_siret(new_siret):
-            flash(f"Un autre lieu existe déjà avec le SIRET {new_siret}", "warning")
+            flash(Markup("Un autre lieu existe déjà avec le SIRET {siret}").format(siret=new_siret), "warning")
             return render_venue_details(venue, form), 400
 
         existing_pricing_point_id = venue.current_pricing_point_id
@@ -602,7 +605,10 @@ def update_venue(venue_id: int) -> utils.BackofficeResponse:
     except ApiErrors as api_errors:
         for error_key, error_details in api_errors.errors.items():
             for error_detail in error_details:
-                flash(f"[{error_key}] {error_detail}", "warning")
+                flash(
+                    Markup("[{error_key}] {error_detail}").format(error_key=error_key, error_detail=error_detail),
+                    "warning",
+                )
         return render_venue_details(venue, form), 400
 
     if not venue_was_permanent and new_permanent and venue.thumbCount == 0:
@@ -625,7 +631,7 @@ def comment_venue(venue_id: int) -> utils.BackofficeResponse:
 
     form = forms.CommentForm()
     if not form.validate():
-        flash("Les données envoyées comportent des erreurs", "warning")
+        flash(utils.build_form_error_msg(form), "warning")
     else:
         offerers_api.add_comment_to_venue(venue, current_user, comment=form.comment.data)
         flash("Commentaire enregistré", "success")

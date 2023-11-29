@@ -13,6 +13,7 @@ from flask import request
 from flask import url_for
 from flask_login import current_user
 from flask_sqlalchemy import BaseQuery
+from markupsafe import escape
 import sqlalchemy as sa
 from werkzeug.exceptions import NotFound
 
@@ -903,7 +904,7 @@ def review_public_account(user_id: int) -> utils.BackofficeResponse:
 
     form = account_forms.ManualReviewForm()
     if not form.validate():
-        flash("Les données envoyées comportent des erreurs", "warning")
+        flash(utils.build_form_error_msg(form), "warning")
         return redirect(url_for("backoffice_web.public_accounts.get_public_account", user_id=user_id), code=303)
 
     eligibility = users_models.EligibilityType[form.eligibility.data]
@@ -932,7 +933,7 @@ def review_public_account(user_id: int) -> utils.BackofficeResponse:
         # A rollback is therefore needed to prevent some unexpected
         # objects to be persisted into database.
         db.session.rollback()
-        flash(str(err), "warning")
+        flash(escape(str(err)), "warning")
     else:
         flash("Validation réussie", "success")
 
@@ -946,7 +947,7 @@ def comment_public_account(user_id: int) -> utils.BackofficeResponse:
 
     form = account_forms.CommentForm()
     if not form.validate():
-        flash("Les données envoyées comportent des erreurs", "warning")
+        flash(utils.build_form_error_msg(form), "warning")
     else:
         users_api.add_comment_to_user(user=user, author_user=current_user, comment=form.comment.data)
         flash("Commentaire enregistré", "success")

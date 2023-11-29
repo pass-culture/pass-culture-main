@@ -12,6 +12,7 @@ from flask import url_for
 from flask_login import current_user
 from flask_sqlalchemy import BaseQuery
 from flask_wtf import FlaskForm
+from markupsafe import Markup
 from sqlalchemy import func
 import werkzeug
 from werkzeug.datastructures import ImmutableMultiDict
@@ -170,11 +171,11 @@ def is_visa_valid(visa: str) -> bool:
 
 
 def build_form_error_msg(form: FlaskForm) -> str:
-    error_msg = "Les données envoyées comportent des erreurs."
+    error_msg = Markup("Les données envoyées comportent des erreurs.")
     for field in form:
         if field.errors:
+            field_errors = []
             for error in field.errors:
-                field_errors = []
                 # form field errors are a dict, where keys are the failing field's name, and
                 # the value is a list of all error messages
                 if isinstance(error, dict):
@@ -183,7 +184,9 @@ def build_form_error_msg(form: FlaskForm) -> str:
                     ]
                 else:
                     field_errors.append(error)
-            error_msg += f" {field.label.text}: {', '.join(error for error in field_errors)};"
+            error_msg += Markup(" {label} : {errors} ;").format(
+                label=field.label.text, errors=", ".join(error for error in field_errors)
+            )
     return error_msg
 
 
@@ -299,8 +302,10 @@ def _manage_joins(
 def limit_rows(rows: list[typing.Any], limit: int) -> list[typing.Any]:
     if len(rows) > limit:
         flash(
-            f"Il y a plus de {limit} résultats dans la base de données, la liste ci-dessous n'en donne donc "
-            "qu'une partie. Veuillez affiner les filtres de recherche.",
+            Markup(
+                "Il y a plus de {limit} résultats dans la base de données, la liste ci-dessous n'en donne donc "
+                "qu'une partie. Veuillez affiner les filtres de recherche."
+            ).format(limit=limit),
             "info",
         )
         rows = rows[:limit]

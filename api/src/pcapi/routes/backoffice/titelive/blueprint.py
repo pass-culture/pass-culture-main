@@ -6,6 +6,7 @@ from flask import render_template
 from flask import request
 from flask import url_for
 from flask_login import current_user
+from markupsafe import Markup
 import sqlalchemy as sa
 from sqlalchemy import orm
 
@@ -104,7 +105,7 @@ def add_product_whitelist(ean: str, title: str) -> utils.BackofficeResponse:
     try:
         product = offers_api.whitelist_product(ean)
     except offers_exceptions.TiteLiveAPINotExistingEAN:
-        flash(f"L'EAN \"{ean}\" n'existe pas chez Titelive", "warning")
+        flash(Markup("L'EAN \"{ean}\" n'existe pas chez Titelive").format(ean=ean), "warning")
     else:
         try:
             product_whitelist = fraud_models.ProductWhitelist(
@@ -114,12 +115,20 @@ def add_product_whitelist(ean: str, title: str) -> utils.BackofficeResponse:
             db.session.commit()
         except sa.exc.IntegrityError as error:
             db.session.rollback()
-            flash(f"L'EAN \"{ean}\" n'a pas été rajouté dans la whitelist : {error}", "warning")
+            flash(
+                Markup("L'EAN \"{ean}\" n'a pas été rajouté dans la whitelist : {error}").format(ean=ean, error=error),
+                "warning",
+            )
         except GtlIdError as gtl_error:
             db.session.rollback()
-            flash(f"L'EAN \"{ean}\" n'a pas été rajouté dans la whitelist : {gtl_error}", "warning")
+            flash(
+                Markup("L'EAN \"{ean}\" n'a pas été rajouté dans la whitelist : {gtl_error}").format(
+                    ean=ean, gtl_error=gtl_error
+                ),
+                "warning",
+            )
         else:
-            flash(f'L\'EAN "{ean}" a été ajouté dans la whitelist', "success")
+            flash(Markup('L\'EAN "{ean}" a été ajouté dans la whitelist').format(ean=ean), "success")
 
             if product:
                 offers_query = offers_models.Offer.query.filter(
@@ -156,7 +165,7 @@ def delete_product_whitelist(ean: str) -> utils.BackofficeResponse:
             fraud_models.ProductWhitelist.ean == ean
         ).one_or_none()
         if not product_whitelist:
-            flash(f"L'EAN \"{ean}\" n'existe pas dans la whitelist", "warning")
+            flash(Markup("L'EAN \"{ean}\" n'existe pas dans la whitelist").format(ean=ean), "warning")
         else:
             db.session.delete(product_whitelist)
             db.session.commit()
@@ -164,6 +173,6 @@ def delete_product_whitelist(ean: str) -> utils.BackofficeResponse:
         db.session.rollback()
         flash("Impossible de supprimer l'EAN de la whitelist", "warning")
     else:
-        flash(f'L\'EAN "{ean}" a été supprimé de la whitelist', "success")
+        flash(Markup('L\'EAN "{ean}" a été supprimé de la whitelist').format(ean=ean), "success")
 
     return redirect(url_for(".search_titelive", ean=ean), code=303)

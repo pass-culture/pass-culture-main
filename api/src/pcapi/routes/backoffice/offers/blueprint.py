@@ -10,6 +10,7 @@ from flask import url_for
 from flask_login import current_user
 from flask_sqlalchemy import BaseQuery
 from markupsafe import Markup
+from markupsafe import escape
 import sqlalchemy as sa
 from werkzeug.exceptions import NotFound
 
@@ -184,7 +185,7 @@ def _get_offer_ids_query(form: forms.InternalSearchForm) -> BaseQuery:
             operators_definition=OPERATOR_DICT,
         )
         for warning in warnings:
-            flash(warning, "warning")
+            flash(escape(warning), "warning")
 
         if form.only_validated_offerers.data:
             if "venue" not in inner_joins:
