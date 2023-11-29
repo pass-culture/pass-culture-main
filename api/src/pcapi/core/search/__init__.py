@@ -63,7 +63,7 @@ def _get_backend() -> base.SearchBackend:
     return backend_class()
 
 
-def _log(
+def _log_async_request(
     resource_type: str,
     ids: Iterable[int],
     reason: IndexationReason,
@@ -95,7 +95,7 @@ def async_index_offer_ids(
     This function returns quickly. The "real" reindexation will be
     done later through a cron job.
     """
-    _log("offers", offer_ids, reason, log_extra)
+    _log_async_request("offers", offer_ids, reason, log_extra)
     backend = _get_backend()
     try:
         backend.enqueue_offer_ids(offer_ids)
@@ -116,7 +116,7 @@ def async_index_collective_offer_ids(
     This function returns quickly. The "real" reindexation will be
     done later through a cron job.
     """
-    _log("collective offers", collective_offer_ids, reason, log_extra)
+    _log_async_request("collective offers", collective_offer_ids, reason, log_extra)
     backend = _get_backend()
     try:
         backend.enqueue_collective_offer_ids(collective_offer_ids)
@@ -142,7 +142,7 @@ def async_index_collective_offer_template_ids(
     This function returns quickly. The "real" reindexation will be
     done later through a cron job.
     """
-    _log("collective offer templates", collective_offer_template_ids, reason, log_extra)
+    _log_async_request("collective offer templates", collective_offer_template_ids, reason, log_extra)
     backend = _get_backend()
     try:
         backend.enqueue_collective_offer_template_ids(collective_offer_template_ids)
@@ -168,7 +168,7 @@ def async_index_venue_ids(
     This function returns quickly. The "real" reindexation will be
     done later through a cron job.
     """
-    _log("venues", venue_ids, reason, log_extra)
+    _log_async_request("venues", venue_ids, reason, log_extra)
     backend = _get_backend()
     try:
         backend.enqueue_venue_ids(venue_ids)
@@ -189,7 +189,7 @@ def async_index_offers_of_venue_ids(
     This function returns quickly. The "real" reindexation will be
     done later through a cron job.
     """
-    _log("offers of venues", venue_ids, reason, log_extra)
+    _log_async_request("offers of venues", venue_ids, reason, log_extra)
     backend = _get_backend()
     try:
         backend.enqueue_venue_ids_for_offers(venue_ids)
