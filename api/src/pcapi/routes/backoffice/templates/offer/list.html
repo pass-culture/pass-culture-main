@@ -157,7 +157,7 @@
                   </td>
                   <td>
                     {% set compliance_score = offer.extraData.get("complianceScore","") if offer.extraData else "" %}
-                    {{ compliance_score | safe }}
+                    {{ compliance_score }}
                     {% set compliance_reasons = offer.extraData.get("complianceReasons") if offer.extraData else none %}
                     {% if compliance_reasons %}
                       <i class="bi bi-info-circle"
