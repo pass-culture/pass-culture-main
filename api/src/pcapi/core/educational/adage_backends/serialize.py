@@ -73,7 +73,7 @@ def serialize_collective_offer(collective_offer: models.CollectiveOffer) -> Adag
         price=stock.price,
         priceDetail=stock.priceDetail,
         quantity=1,
-        subcategoryLabel=collective_offer.subcategory.app_label,
+        subcategoryLabel=collective_offer.subcategory.app_label if collective_offer.subcategory else "",
         totalAmount=stock.price,
         venueName=venue.name,
         venueTimezone=venue.timezone,
