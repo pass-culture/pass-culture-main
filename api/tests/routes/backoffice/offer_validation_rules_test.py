@@ -655,6 +655,16 @@ class DeleteOfferValidationRuleTest(PostEndpointHelper):
         assert not offers_models.OfferValidationRule.query.filter_by(id=sub_rule_1.id).one_or_none()
         assert not offers_models.OfferValidationRule.query.filter_by(id=sub_rule_2.id).one_or_none()
 
+    def test_no_script_injection_in_rule_name(self, legit_user, authenticated_client):
+        rule = offers_factories.OfferValidationRuleFactory(name="<script>alert('coucou')</script>")
+
+        response = self.post_to_endpoint(authenticated_client, rule_id=rule.id)
+        assert response.status_code == 303
+        assert (
+            html_parser.extract_alert(authenticated_client.get(response.location).data)
+            == "La règle <script>alert('coucou')</script> et ses sous-règles ont été supprimées"
+        )
+
 
 class GetEditOfferValidationRuleFormTest(GetEndpointHelper):
     endpoint = "backoffice_web.offer_validation_rules.edit_rule"

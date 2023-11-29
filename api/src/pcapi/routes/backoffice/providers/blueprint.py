@@ -5,6 +5,7 @@ from flask import redirect
 from flask import render_template
 from flask import url_for
 from flask_login import current_user
+from markupsafe import Markup
 import sqlalchemy as sa
 
 from pcapi.core.external import zendesk_sell
@@ -63,8 +64,7 @@ def create_provider() -> utils.BackofficeResponse:
     form = forms.CreateProviderForm()
 
     if not form.validate():
-        error_msg = utils.build_form_error_msg(form)
-        flash(error_msg, "warning")
+        flash(utils.build_form_error_msg(form), "warning")
         return redirect(url_for("backoffice_web.providers.get_providers"), code=303)
 
     def generate_hmac_key() -> str:
@@ -102,11 +102,15 @@ def create_provider() -> utils.BackofficeResponse:
         if is_offerer_new:
             zendesk_sell.create_offerer(offerer)
         flash(
-            f"Le partenaire {provider.name} a été créé. La Clé API ne peut être régénérée ni ré-affichée, veillez à la sauvegarder immédiatement : {clear_secret}",
+            Markup(
+                "Le partenaire {name} a été créé. La Clé API ne peut être régénérée ni ré-affichée, veillez à la sauvegarder immédiatement : {clear_secret}"
+            ).format(name=provider.name, clear_secret=clear_secret),
             "success",
         )
         flash(
-            f"La clé de chiffrage des requêtes entre le partenaire et le pass Culture dans le cadre de l'api Charlie est: {provider.hmacKey}",
+            Markup(
+                "La clé de chiffrage des requêtes entre le partenaire et le pass Culture dans le cadre de l'api Charlie est: {key}"
+            ).format(key=provider.hmacKey),
             "success",
         )
 
@@ -159,8 +163,7 @@ def update_provider(provider_id: int) -> utils.BackofficeResponse:
 
     form = forms.EditProviderForm()
     if not form.validate():
-        error_msg = utils.build_form_error_msg(form)
-        flash(error_msg, "warning")
+        flash(utils.build_form_error_msg(form), "warning")
         return redirect(url_for("backoffice_web.providers.get_providers"), code=303)
 
     provider.name = form.name.data
@@ -178,6 +181,6 @@ def update_provider(provider_id: int) -> utils.BackofficeResponse:
         db.session.rollback()
         flash("Ce partenaire existe déjà", "warning")
     else:
-        flash(f"Le partenaire {provider.name} a été modifié.", "success")
+        flash(Markup("Le partenaire {name} a été modifié.").format(name=provider.name), "success")
 
     return redirect(url_for("backoffice_web.providers.get_providers"), code=303)

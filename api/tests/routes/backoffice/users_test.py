@@ -274,6 +274,27 @@ class SuspendUserTest(PostEndpointHelper):
         assert user.backoffice_profile.roles
         assert len(user.action_history) == 0
 
+    def test_no_injection_in_flash_message(self, authenticated_client):
+        # email should be filtered in POST endpoints but is still valid in database
+        email = "<script>alert('coucou')</script>@example.com"
+        user_id = users_factories.UserFactory(email=email).id
+
+        response = self.post_to_endpoint(
+            authenticated_client,
+            user_id=user_id,
+            form={
+                "reason": users_constants.SuspensionReason.FRAUD_HACK.name,
+                "comment": "Hacker",
+            },
+        )
+
+        assert response.status_code == 303
+        assert (
+            # check that tags are escaped properly, since real tags are stripped in this helper
+            html_parser.extract_alert(authenticated_client.get(response.location).data)
+            == f"Le compte de l'utilisateur {email} ({user_id}) a été suspendu"
+        )
+
 
 class UnsuspendUserTest(PostEndpointHelper):
     endpoint = "backoffice_web.users.unsuspend_user"

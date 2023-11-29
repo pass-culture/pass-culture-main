@@ -4,6 +4,7 @@ from flask import render_template
 from flask import request
 from flask import url_for
 from flask_login import current_user
+from markupsafe import Markup
 import sqlalchemy as sa
 from werkzeug.exceptions import NotFound
 
@@ -199,7 +200,7 @@ def comment_pro_user(user_id: int) -> utils.BackofficeResponse:
 
     form = pro_users_forms.CommentForm()
     if not form.validate():
-        flash("Les données envoyées comportent des erreurs", "warning")
+        flash(utils.build_form_error_msg(form), "warning")
         return redirect(url_for("backoffice_web.pro_user.get", user_id=user_id), code=302)
 
     users_api.add_comment_to_user(user=user, author_user=current_user, comment=form.comment.data)
@@ -216,10 +217,10 @@ def validate_pro_user_email(user_id: int) -> utils.BackofficeResponse:
         raise NotFound()
 
     if user.isEmailValidated:
-        flash(f"L'email {user.email} est déjà validé !", "warning")
+        flash(Markup("L'email {email} est déjà validé !").format(email=user.email), "warning")
     else:
         users_api.validate_pro_user_email(user=user, author_user=current_user)
-        flash(f"L'email {user.email} est validé !", "success")
+        flash(Markup("L'email {email} est validé !").format(email=user.email), "success")
     return redirect(url_for("backoffice_web.pro_user.get", user_id=user_id), code=303)
 
 

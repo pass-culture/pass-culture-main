@@ -40,7 +40,12 @@ def _get_parent_organization_id(venue: offerers_models.Venue) -> int:
         flash("La structure parente n'a pas été trouvée dans Zendesk Sell", "warning")
         return zendesk_sell.SEARCH_PARENT
     except requests.exceptions.HTTPError as http_error:
-        flash(f"Une erreur {http_error.response} s'est produite : {http_error}", "warning")
+        flash(
+            Markup("Une erreur {response} s'est produite : {error}").format(
+                response=str(http_error.response), error=str(http_error)
+            ),
+            "warning",
+        )
         return zendesk_sell.SEARCH_PARENT
 
     return zendesk_offerer_data["id"]
@@ -73,14 +78,24 @@ def update_offerer(offerer_id: int) -> utils.BackofficeResponse:
         flash("La structure n'a pas été trouvée dans Zendesk Sell", "warning")
         return redirect(url, code=303)
     except requests.exceptions.HTTPError as http_error:
-        flash(f"Une erreur {http_error.response} s'est produite : {http_error}", "warning")
+        flash(
+            Markup("Une erreur {response} s'est produite : {error}").format(
+                response=str(http_error.response), error=str(http_error)
+            ),
+            "warning",
+        )
         return redirect(url, code=303)
 
     try:
         offerer_zendesk_id = zendesk_offerer_data["id"]
         zendesk_sell_backend.update_offerer(offerer_zendesk_id, offerer)
     except requests.exceptions.HTTPError as http_error:
-        flash(f"Une erreur {http_error.response} s'est produite : {http_error}", "warning")
+        flash(
+            Markup("Une erreur {response} s'est produite : {error}").format(
+                response=str(http_error.response), error=str(http_error)
+            ),
+            "warning",
+        )
         return redirect(url, code=303)
 
     flash("La mise a jour a été effectuée avec succès", "success")
@@ -111,10 +126,15 @@ def update_venue(venue_id: int) -> utils.BackofficeResponse:
         flash(Markup(message), "warning")  # pylint: disable=markupsafe-uncontrolled-string
         return redirect(url, code=303)
     except zendesk_sell.ContactNotFoundError:
-        flash("Le lieu n'a pas été trouvé", "warning")
+        flash("Le lieu n'a pas été trouvé dans Zendesk Sell", "warning")
         return redirect(url, code=303)
     except requests.exceptions.HTTPError as http_error:
-        flash(f"Une erreur {http_error.response} s'est produite : {http_error}", "warning")
+        flash(
+            Markup("Une erreur {response} s'est produite : {error}").format(
+                response=str(http_error.response), error=str(http_error)
+            ),
+            "warning",
+        )
         return redirect(url, code=303)
 
     try:
@@ -127,7 +147,12 @@ def update_venue(venue_id: int) -> utils.BackofficeResponse:
         flash("La structure parente n'a pas été trouvée dans Zendesk Sell", "warning")
         return redirect(url, code=303)
     except requests.exceptions.HTTPError as http_error:
-        flash(f"Une erreur {http_error.response} s'est produite : {http_error}", "warning")
+        flash(
+            Markup("Une erreur {response} s'est produite : {error}").format(
+                response=str(http_error.response), error=str(http_error)
+            ),
+            "warning",
+        )
         return redirect(url, code=303)
 
     flash("La mise a jour a été effectuée avec succès", "success")

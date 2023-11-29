@@ -3,6 +3,8 @@ from flask import redirect
 from flask import render_template
 from flask import url_for
 from flask_login import current_user
+from markupsafe import Markup
+from markupsafe import escape
 
 from pcapi.core.finance import siret_api
 from pcapi.core.offerers import models as offerers_models
@@ -33,20 +35,34 @@ def _validate_move_siret_form() -> (
 
     source_venue = offerers_models.Venue.query.filter_by(id=form.source_venue.data).one_or_none()
     if not source_venue:
-        flash(f"Aucun lieu n'a été trouvé avec l'ID {form.source_venue.data}", "warning")
+        flash(
+            Markup("Aucun lieu n'a été trouvé avec l'ID {venue_id}").format(venue_id=form.source_venue.data), "warning"
+        )
         return form, None, None
 
     target_venue = offerers_models.Venue.query.filter_by(id=form.target_venue.data).one_or_none()
     if not target_venue:
-        flash(f"Aucun lieu n'a été trouvé avec l'ID {form.target_venue.data}", "warning")
+        flash(
+            Markup("Aucun lieu n'a été trouvé avec l'ID {venue_id}").format(venue_id=form.target_venue.data), "warning"
+        )
         return form, None, None
 
     if source_venue.siret != form.siret.data:
-        flash(f"Le SIRET {form.siret.data} ne correspond pas au lieu {form.source_venue.data}", "warning")
+        flash(
+            Markup("Le SIRET {siret} ne correspond pas au lieu {venue_id}").format(
+                siret=form.siret.data, venue_id=form.source_venue.data
+            ),
+            "warning",
+        )
         return form, None, None
 
     if target_venue.isVirtual:
-        flash(f"Le lieu cible {target_venue.name} (ID {target_venue.id}) est un lieu virtuel", "warning")
+        flash(
+            Markup("Le lieu cible {venue_name} (ID {venue_id}) est un lieu virtuel").format(
+                venue_name=target_venue.name, venue_id=target_venue.id
+            ),
+            "warning",
+        )
         return form, None, None
 
     return form, source_venue, target_venue
@@ -95,7 +111,7 @@ def post_move_siret() -> utils.BackofficeResponse:
             bool(form.override_revenue_check.data),
         )
     except siret_api.CheckError as exc:
-        flash(str(exc), "warning")
+        flash(escape(str(exc)), "warning")
         return _render_form_page(form, code=400)
 
     return _render_confirmation_page(form, source_venue, target_venue)
@@ -118,15 +134,22 @@ def apply_move_siret() -> utils.BackofficeResponse:
             author_user_id=current_user.id,
         )
     except siret_api.CheckError as exc:
-        flash(f"La vérification a échoué : {str(exc)}", "warning")
+        flash(Markup("La vérification a échoué : {message}").format(message=str(exc)), "warning")
         return _render_confirmation_page(form, source_venue, target_venue, code=400)
     except Exception as exc:  # pylint: disable=broad-except
-        flash(f"Une erreur s'est produite : {str(exc)}", "warning")
+        flash(Markup("Une erreur s'est produite : {message}").format(message=str(exc)), "warning")
         return _render_confirmation_page(form, source_venue, target_venue, code=400)
 
     flash(
-        f"Le SIRET {form.siret.data} a été déplacé de {source_venue.name} ({source_venue.id}) "
-        f"vers {target_venue.name} ({target_venue.id})",
+        Markup(
+            "Le SIRET <b>{siret}</b> a été déplacé de <b>{source_name}</b> ({source_id}) vers <b>{target_name}</b> ({target_id})",
+        ).format(
+            siret=form.siret.data,
+            source_name=source_venue.name,
+            source_id=source_venue.id,
+            target_name=target_venue.name,
+            target_id=target_venue.id,
+        ),
         "success",
     )
     return redirect(url_for(".move_siret"), code=303)

@@ -5,6 +5,7 @@ from flask import redirect
 from flask import render_template
 from flask import url_for
 from flask_login import current_user
+from markupsafe import Markup
 import sqlalchemy as sa
 
 from pcapi.core.offerers import models as offerers_models
@@ -168,8 +169,7 @@ def create_rule() -> utils.BackofficeResponse:
     form = forms.CreateOfferValidationRuleForm()
 
     if not form.validate():
-        error_msg = utils.build_form_error_msg(form)
-        flash(error_msg, "warning")
+        flash(utils.build_form_error_msg(form), "warning")
         return redirect(url_for("backoffice_web.offer_validation_rules.list_rules"), code=303)
 
     try:
@@ -199,7 +199,7 @@ def create_rule() -> utils.BackofficeResponse:
 
     except sa.exc.IntegrityError as err:
         db.session.rollback()
-        flash(f"Erreur dans la création de la règle : {err}", "warning")
+        flash(Markup("Erreur dans la création de la règle : {message}").format(message=str(err)), "warning")
 
     return redirect(url_for("backoffice_web.offer_validation_rules.list_rules"), code=303)
 
@@ -232,9 +232,12 @@ def delete_rule(rule_id: int) -> utils.BackofficeResponse:
             db.session.commit()
         except sa.exc.IntegrityError as exc:
             db.session.rollback()
-            flash(f"Une erreur s'est produite : {exc}", "warning")
+            flash(Markup("Une erreur s'est produite : {message}").format(message=str(exc)), "warning")
         else:
-            flash(f"La règle {rule_to_delete.name} et ses sous-règles ont été supprimées", "success")
+            flash(
+                Markup("La règle {name} et ses sous-règles ont été supprimées").format(name=rule_to_delete.name),
+                "success",
+            )
 
     return redirect(url_for("backoffice_web.offer_validation_rules.list_rules"), code=303)
 
@@ -286,8 +289,7 @@ def edit_rule(rule_id: int) -> utils.BackofficeResponse:
 
     form = forms.CreateOfferValidationRuleForm()
     if not form.validate():
-        error_msg = utils.build_form_error_msg(form)
-        flash(error_msg, "warning")
+        flash(utils.build_form_error_msg(form), "warning")
         return redirect(url_for("backoffice_web.offer_validation_rules.list_rules"), code=303)
 
     try:
@@ -346,8 +348,11 @@ def edit_rule(rule_id: int) -> utils.BackofficeResponse:
 
     except sa.exc.IntegrityError as exc:
         db.session.rollback()
-        flash(f"Une erreur s'est produite : {exc}", "warning")
+        flash(Markup("Une erreur s'est produite : {message}").format(message=str(exc)), "warning")
     else:
-        flash(f"La règle {rule_to_update.name} et ses sous-règles ont été modifiées", "success")
+        flash(
+            Markup("La règle <b>{name}</b> et ses sous-règles ont été modifiées").format(name=rule_to_update.name),
+            "success",
+        )
 
     return redirect(url_for("backoffice_web.offer_validation_rules.list_rules"), code=303)
