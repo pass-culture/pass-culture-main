@@ -28,7 +28,7 @@ def book_collective_offer(
     body: BookCollectiveOfferRequest,
     authenticated_information: AuthenticatedInformation,
 ) -> BookCollectiveOfferResponse:
-    institution = find_educational_institution_by_uai_code(authenticated_information.uai)  # type: ignore [arg-type]
+    institution = find_educational_institution_by_uai_code(authenticated_information.uai)
     educational_utils.log_information_for_data_purpose(
         event_name="BookingConfirmationButtonClick",
         extra_data={"stockId": body.stockId},
