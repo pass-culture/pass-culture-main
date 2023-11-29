@@ -152,7 +152,6 @@ class CGRCinemaDetailsFactory(BaseFactory):
     cinemaUrl = factory.Sequence("https://cgr-cinema-{}.example.com/".format)
     numCinema = factory.Sequence(int)
     password = factory.LazyAttribute(lambda _: encrypt("a great password"))
-    encryptedPassword = factory.SelfAttribute("password")
 
 
 class EMSCinemaDetailsFactory(BaseFactory):
