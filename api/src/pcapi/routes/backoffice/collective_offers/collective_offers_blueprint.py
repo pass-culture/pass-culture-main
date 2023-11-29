@@ -51,6 +51,7 @@ def _get_collective_offers(
             educational_models.CollectiveOffer.subcategoryId,
             educational_models.CollectiveOffer.dateCreated,
             educational_models.CollectiveOffer.validation,
+            educational_models.CollectiveOffer.formats,
         ),
         sa.orm.joinedload(educational_models.CollectiveOffer.collectiveStock).load_only(
             educational_models.CollectiveStock.beginningDatetime

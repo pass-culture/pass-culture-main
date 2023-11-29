@@ -734,6 +734,7 @@ def _get_incident(finance_incident_id: int) -> finance_models.FinanceIncident:
                 educational_models.CollectiveOffer.id,
                 educational_models.CollectiveOffer.name,
                 educational_models.CollectiveOffer.subcategoryId,
+                educational_models.CollectiveOffer.formats,
             ),
             sa.orm.joinedload(
                 finance_models.BookingFinanceIncident, finance_models.FinanceIncident.booking_finance_incidents

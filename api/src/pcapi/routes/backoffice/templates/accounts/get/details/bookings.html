@@ -67,6 +67,10 @@
                 {{ booking.stock.offer.subcategoryId | format_offer_category }}
               </p>
               <p class="mb-1">
+                <span class="fw-bold">Formats :</span>
+                {{ booking.stock.offer.formats | format_collective_offer_formats }}
+              </p>
+              <p class="mb-1">
                 <span class="fw-bold">Crédit utilisé par le jeune :</span>
                 {{ booking.deposit.type | format_deposit_type | safe }}
               </p>
