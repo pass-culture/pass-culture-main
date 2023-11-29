@@ -287,6 +287,22 @@ def format_offer_category(subcategory_id: str) -> str:
     return ""
 
 
+def format_offer_subcategory(subcategory_id: str) -> str:
+    subcategory = subcategories_v2.ALL_SUBCATEGORIES_DICT.get(subcategory_id)
+    if subcategory:
+        return subcategory.pro_label
+    return ""
+
+
+def format_collective_offer_formats(formats: typing.Sequence[subcategories_v2.EacFormat] | None) -> str:
+    if not formats:
+        return ""
+    try:
+        return ", ".join([fmt.value for fmt in formats])
+    except Exception:  # pylint: disable=broad-exception-caught
+        return "<inconnus>"
+
+
 def format_subcategories(subcategories: list[str]) -> str:
     if subcategories == []:
         return ""
@@ -584,16 +600,8 @@ def format_offer_validation_sub_rule_field(sub_rule_field: offers_models.OfferVa
             return "La description de l'offre collective vitrine"
         case offers_models.OfferValidationSubRuleField.SUBCATEGORY_OFFER:
             return "La sous-catégorie de l'offre individuelle"
-        case offers_models.OfferValidationSubRuleField.SUBCATEGORY_COLLECTIVE_OFFER:
-            return "La sous-catégorie de l'offre collective"
-        case offers_models.OfferValidationSubRuleField.SUBCATEGORY_COLLECTIVE_OFFER_TEMPLATE:
-            return "La sous-catégorie de l'offre collective vitrine"
         case offers_models.OfferValidationSubRuleField.CATEGORY_OFFER:
             return "La catégorie de l'offre individuelle"
-        case offers_models.OfferValidationSubRuleField.CATEGORY_COLLECTIVE_OFFER:
-            return "La catégorie de l'offre collective"
-        case offers_models.OfferValidationSubRuleField.CATEGORY_COLLECTIVE_OFFER_TEMPLATE:
-            return "La catégorie de l'offre collective vitrine"
         case offers_models.OfferValidationSubRuleField.SHOW_SUB_TYPE_OFFER:
             return "Le sous-type de spectacle de l'offre individuelle"
         case offers_models.OfferValidationSubRuleField.ID_OFFERER:
@@ -672,6 +680,8 @@ def get_comparated_format_function(
             return lambda subcategory_id: subcategories_v2.ALL_SUBCATEGORIES_DICT[subcategory_id].pro_label
         if sub_rule.attribute == offers_models.OfferValidationAttribute.SHOW_SUB_TYPE:
             return lambda show_sub_type_code: SHOW_SUB_TYPES_LABEL_BY_CODE[int(show_sub_type_code)]
+        if sub_rule.attribute == offers_models.OfferValidationAttribute.FORMATS:
+            return lambda fmt: subcategories_v2.EacFormat[fmt].value
     except ValueError as err:
         logger.error(
             "Unhandled object in the formatter of the offer validation rules list page",
@@ -926,6 +936,8 @@ def install_template_filters(app: Flask) -> None:
     app.jinja_env.filters["format_offer_validation_status"] = format_offer_validation_status
     app.jinja_env.filters["format_offer_status"] = format_offer_status
     app.jinja_env.filters["format_offer_category"] = format_offer_category
+    app.jinja_env.filters["format_offer_subcategory"] = format_offer_subcategory
+    app.jinja_env.filters["format_collective_offer_formats"] = format_collective_offer_formats
     app.jinja_env.filters["format_subcategories"] = format_subcategories
     app.jinja_env.filters["format_as_badges"] = format_as_badges
     app.jinja_env.filters["format_compliance_reasons"] = format_compliance_reasons
