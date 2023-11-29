@@ -2,13 +2,13 @@
 
 .input-price,
 .input-quantity {
-  flex: 1 0 rem.torem(146px);
-  max-width: 146px;
+  flex: 1 0 rem.torem(102px);
+  max-width: 102px;
 }
 
 .input-booking-limit-datetime {
-  flex: 1 1 rem.torem(316px);
-  max-width: 316px;
+  flex: 1 1 rem.torem(170px);
+  min-width: 162px;
 
   svg {
     width: rem.torem(20px);
@@ -16,7 +16,8 @@
 }
 
 .input-activation-code {
-  flex: 1 0 rem.torem(160px);
+  flex: 1 0 rem.torem(122px);
+  max-width: 122px;
 }
 
 .field-layout-footer {
