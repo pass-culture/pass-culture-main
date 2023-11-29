@@ -99,8 +99,8 @@
                 </td>
                 <td>{{ collective_offer_template.id }}</td>
                 <td>{{ links.build_offer_name_to_pc_pro_link(collective_offer_template) }}</td>
-                <td>{{ collective_offer_template.subcategory.category.pro_label }}</td>
-                <td>{{ collective_offer_template.subcategory.pro_label }}</td>
+                <td>{{ collective_offer_template.subcategoryId | format_offer_category }}</td>
+                <td>{{ collective_offer_template.subcategoryId | format_offer_subcategory }}</td>
                 {% if has_permission("PRO_FRAUD_ACTIONS") %}
                   <td>{{ collective_offer_template.flaggingValidationRules | format_offer_validation_rule_list | safe }}</td>
                 {% endif %}

@@ -147,8 +147,8 @@
                 </td>
                 <td>{{ links.build_offer_details_link(offer) }}</td>
                 <td>{{ links.build_offer_name_to_pc_pro_link(offer) }}</td>
-                <td>{{ offer.category.pro_label }}</td>
-                <td>{{ offer.subcategory.pro_label }}</td>
+                <td>{{ offer.subcategoryId | format_offer_category }}</td>
+                <td>{{ offer.subcategoryId | format_offer_subcategory }}</td>
                 <td class="text-nowrap text-center">{{ row.booked_quantity }}</td>
                 <td class="text-nowrap text-center">{{ row.remaining_quantity }}</td>
                 {% if has_permission("PRO_FRAUD_ACTIONS") %}
