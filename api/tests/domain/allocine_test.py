@@ -1,6 +1,5 @@
 from unittest.mock import patch
 
-from pcapi import settings
 from pcapi.connectors.api_allocine import ALLOCINE_API_URL
 from pcapi.domain.allocine import _exclude_movie_showtimes_with_special_event_type
 from pcapi.domain.allocine import get_movie_list
@@ -13,11 +12,11 @@ from tests.domain.fixtures import ALLOCINE_MOVIE_LIST_PAGES
 class GetMovieListFromAllocineTest:
     def _configure_api_responses(self, requests_mock):
         requests_mock.get(
-            f"{ALLOCINE_API_URL}/movieList?after=&token={settings.ALLOCINE_API_KEY}",
+            f"{ALLOCINE_API_URL}/movieList?after=",
             json=ALLOCINE_MOVIE_LIST_PAGES[""],
         )
         requests_mock.get(
-            f"{ALLOCINE_API_URL}/movieList?after=YXJyYXljb25uZWN0aW9uOjQ5&token={settings.ALLOCINE_API_KEY}",
+            f"{ALLOCINE_API_URL}/movieList?after=YXJyYXljb25uZWN0aW9uOjQ5",
             json=ALLOCINE_MOVIE_LIST_PAGES["YXJyYXljb25uZWN0aW9uOjQ5"],
         )
 
