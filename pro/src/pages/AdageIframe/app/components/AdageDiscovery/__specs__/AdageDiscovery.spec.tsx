@@ -55,8 +55,10 @@ describe('AdageDiscovery', () => {
     }))
   })
 
-  it('should render adage discovery', () => {
+  it('should render adage discovery', async () => {
     renderAdageDiscovery(user)
+
+    await waitFor(() => expect(api.listEducationalDomains).toHaveBeenCalled())
 
     expect(
       screen.getByText('Les nouvelles offres publiées')
@@ -87,16 +89,20 @@ describe('AdageDiscovery', () => {
     expect(notifyError).toHaveBeenNthCalledWith(1, GET_DATA_ERROR_MESSAGE)
   })
 
-  it('should not call tracker when footer suggestion is not visible', () => {
+  it('should not call tracker when footer suggestion is not visible', async () => {
     renderAdageDiscovery(user)
+
+    await waitFor(() => expect(api.listEducationalDomains).toHaveBeenCalled())
 
     expect(apiAdage.logHasSeenAllPlaylist).toHaveBeenCalledTimes(0)
   })
 
-  it('should call tracker when footer suggestion is visible', () => {
+  it('should call tracker when footer suggestion is visible', async () => {
     vi.spyOn(useIsElementVisible, 'default').mockReturnValueOnce([true])
 
     renderAdageDiscovery(user)
+
+    await waitFor(() => expect(api.listEducationalDomains).toHaveBeenCalled())
 
     expect(apiAdage.logHasSeenAllPlaylist).toHaveBeenCalledTimes(1)
   })
@@ -151,15 +157,23 @@ describe('AdageDiscovery', () => {
   })
 
   it('should trigger a log wheen the last element of a playlist is seen', async () => {
-    renderAdageDiscovery(user)
+    //  Once for the footer visibility and twice for each playlist (4*2+1=9)
+    vi.spyOn(useIsElementVisible, 'default')
+      .mockReturnValueOnce([true, true])
+      .mockReturnValueOnce([true, true])
+      .mockReturnValueOnce([true, true])
+      .mockReturnValueOnce([true, true])
+      .mockReturnValueOnce([true, true])
+      .mockReturnValueOnce([true, true])
+      .mockReturnValueOnce([true, true])
+      .mockReturnValueOnce([true, true])
+      .mockReturnValueOnce([true, true])
 
-    //  Once for the footer visibility, and twice for one playlist to reach the end of the scroll (first and last elements visibility used in Carousel)
-    vi.spyOn(useIsElementVisible, 'default').mockReturnValueOnce([true, true])
-    vi.spyOn(useIsElementVisible, 'default').mockReturnValueOnce([true, true])
-    vi.spyOn(useIsElementVisible, 'default').mockReturnValueOnce([true, true])
+    renderAdageDiscovery(user)
 
     await waitFor(() => expect(api.listEducationalDomains).toHaveBeenCalled())
 
-    expect(apiAdage.logHasSeenWholePlaylist).toHaveBeenCalledTimes(1)
+    //  Log called once for each playlist
+    expect(apiAdage.logHasSeenWholePlaylist).toHaveBeenCalledTimes(4)
   })
 })
