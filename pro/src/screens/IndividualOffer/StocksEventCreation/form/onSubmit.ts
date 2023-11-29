@@ -49,15 +49,15 @@ export const onSubmit = async (
 
   // Upsert stocks if there are stocks to upsert
   if (serializedStocksToAdd.length > 0) {
-    const { isOk } = await upsertStocksEventAdapter({
+    const { isOk, payload } = await upsertStocksEventAdapter({
       offerId: offerId,
       stocks: serializedStocksToAdd,
     })
     if (isOk) {
       notify.success(
-        serializedStocksToAdd.length === 1
+        payload === 1
           ? '1 nouvelle date a été ajoutée'
-          : `${serializedStocksToAdd.length} nouvelles dates ont été ajoutées`
+          : `${payload} nouvelles dates ont été ajoutées`
       )
     } else {
       notify.error(

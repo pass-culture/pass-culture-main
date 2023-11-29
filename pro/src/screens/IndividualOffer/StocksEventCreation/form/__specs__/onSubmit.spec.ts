@@ -1,9 +1,6 @@
 import { api } from 'apiClient/api'
 import { StocksEvent } from 'components/StocksEventList/StocksEventList'
-import {
-  individualGetOfferStockResponseModelFactory,
-  individualStockEventFactory,
-} from 'utils/individualApiFactories'
+import { individualStockEventFactory } from 'utils/individualApiFactories'
 
 import { onSubmit } from '../onSubmit'
 import {
@@ -344,11 +341,7 @@ describe('onSubmit', () => {
     ({ description, formValues, expectedStocks, expectedNotification }) => {
       it(`should ${description}`, async () => {
         vi.spyOn(api, 'upsertStocks').mockResolvedValueOnce({
-          stocks: [
-            ...expectedStocks.map((s) =>
-              individualGetOfferStockResponseModelFactory(s)
-            ),
-          ],
+          stocks: expectedStocks.length,
         })
         await onSubmit(formValues, '75', 66, notify)
 
