@@ -35,7 +35,7 @@ class CGRContext(PivotContext):
             venue_id=[pivot.cinemaProviderPivot.venue.id],
             cinema_id=pivot.cinemaProviderPivot.idAtProvider,
             cinema_url=pivot.cinemaUrl,
-            password=decrypt(pivot.encryptedPassword),
+            password=decrypt(pivot.password),
         )
         form.venue_id.readonly = True
         return form
@@ -51,7 +51,6 @@ class CGRContext(PivotContext):
         cinema_id = form.cinema_id.data
         cinema_url = form.cinema_url.data.rstrip("/")
         cinema_password = form.password.data
-        encrypted_password = encrypt(cinema_password)
 
         venue = offerers_models.Venue.query.get(venue_id)
         if not venue:
@@ -68,8 +67,7 @@ class CGRContext(PivotContext):
         cinema_pivot = providers_models.CGRCinemaDetails(
             cinemaProviderPivot=cinema_provider_pivot,
             cinemaUrl=cinema_url,
-            password=encrypted_password,
-            encryptedPassword=encrypted_password,
+            password=encrypt(cinema_password),
         )
 
         num_cinema = cls.check_if_api_call_is_ok(cinema_pivot)
@@ -90,7 +88,6 @@ class CGRContext(PivotContext):
         pivot.cinemaProviderPivot.idAtProvider = form.cinema_id.data
         pivot.cinemaUrl = form.cinema_url.data.rstrip("/")
         pivot.password = encrypt(form.password.data)
-        pivot.encryptedPassword = pivot.password
         num_cinema = cls.check_if_api_call_is_ok(pivot)
 
         if num_cinema:
