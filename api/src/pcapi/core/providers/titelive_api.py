@@ -99,14 +99,16 @@ class TiteliveSearch(abc.ABC, typing.Generic[TiteliveSearchResultType]):
         self,
         from_date: datetime.date,
     ) -> typing.Iterator[TiteliveProductSearchResponse[TiteliveSearchResultType]]:
-        page_index = 1
-        titelive_product_page = None
-        while titelive_product_page is None or len(titelive_product_page.result) == titelive.MAX_RESULTS_PER_PAGE:
+        page_index = 0
+        has_next_page = True
+        while has_next_page:
+            page_index += 1
             titelive_json_response = titelive.search_products(self.titelive_base, from_date, page_index)
             titelive_product_page = self.deserialize_titelive_search_json(titelive_json_response)
             allowed_product_page = self.filter_allowed_products(titelive_product_page)
             yield allowed_product_page
-            page_index += 1
+            # sometimes titelive returns a partially filled page while having a next page in store for us
+            has_next_page = bool(titelive_product_page.result)
 
     @abc.abstractmethod
     def deserialize_titelive_search_json(
