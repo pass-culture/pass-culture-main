@@ -9,6 +9,7 @@ import { OFFER_WIZARD_MODE } from 'core/Offers/constants'
 import { getIndividualOfferUrl } from 'core/Offers/utils/getIndividualOfferUrl'
 import useNotification from 'hooks/useNotification'
 import { serializeStockEvents } from 'pages/IndividualOfferWizard/Stocks/serializeStockEvents'
+import Spinner from 'ui-kit/Spinner/Spinner'
 
 import { getStockWarningText } from '../SummaryScreen/StockSection/StockSection'
 import StockThingSection from '../SummaryScreen/StockSection/StockThingSection/StockThingSection'
@@ -43,7 +44,7 @@ export const StocksSummaryScreen = () => {
   }, [])
 
   if (offer === null || isLoading) {
-    return null
+    return <Spinner />
   }
 
   const editLink = getIndividualOfferUrl({

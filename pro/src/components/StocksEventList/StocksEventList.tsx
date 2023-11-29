@@ -26,6 +26,7 @@ import SelectInput from 'ui-kit/form/Select/SelectInput'
 import { BaseCheckbox } from 'ui-kit/form/shared'
 import { BaseTimePicker } from 'ui-kit/form/TimePicker/BaseTimePicker'
 import { Pagination } from 'ui-kit/Pagination'
+import Spinner from 'ui-kit/Spinner/Spinner'
 import { formatPrice } from 'utils/formatPrice'
 import { pluralize, pluralizeString } from 'utils/pluralize'
 import {
@@ -91,6 +92,7 @@ const StocksEventList = ({
   )
   const [checkedStocks, setCheckedStocks] = useState<boolean[]>([])
   const [stocks, setStocks] = useState<StocksEvent[]>([])
+  const [hasStocks, setHasStocks] = useState<boolean | null>(null)
   const [stocksCount, setStocksCount] = useState<number>(0)
   const [isDeleteAllLoading, setIsDeleteAllLoading] = useState(false)
   const [dateFilter, setDateFilter] = useState(searchParams.get('date'))
@@ -118,6 +120,7 @@ const StocksEventList = ({
     )
   const handleStocksResponse = (response: GetStocksResponseModel) => {
     setStocks(serializeStockEvents(response.stocks))
+    setHasStocks(response.hasStocks)
     setStocksCount(response.stockCount)
     if (onStocksLoad) {
       onStocksLoad(response.hasStocks)
@@ -315,6 +318,10 @@ const StocksEventList = ({
     setAllStocksChecked(PartialCheck.UNCHECKED)
   }
 
+  if (hasStocks === null) {
+    return <Spinner />
+  }
+
   return (
     <>
       {canAddStocks && (
@@ -325,7 +332,7 @@ const StocksEventList = ({
         />
       )}
 
-      {(!canAddStocks || stocksCount > 0) && (
+      {(!canAddStocks || hasStocks) && (
         <>
           <div className={styles['select-all-container']}>
             {!readonly && (
@@ -632,7 +639,6 @@ const StocksEventList = ({
           />
         </>
       )}
-
       {isAtLeastOneStockChecked && (
         <ActionsBarSticky className={styles['actions']}>
           <ActionsBarSticky.Left>{selectedDateText}</ActionsBarSticky.Left>
