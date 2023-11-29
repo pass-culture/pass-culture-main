@@ -32,6 +32,7 @@ import { BaseDatePicker } from 'ui-kit/form/DatePicker/BaseDatePicker'
 import SelectInput from 'ui-kit/form/Select/SelectInput'
 import { BaseTimePicker } from 'ui-kit/form/TimePicker/BaseTimePicker'
 import { Pagination } from 'ui-kit/Pagination'
+import Spinner from 'ui-kit/Spinner/Spinner'
 import { getToday } from 'utils/date'
 import { hasErrorCode } from 'utils/error'
 import {
@@ -92,7 +93,7 @@ const StocksEventEdition = ({
   const [stockToDeleteWithConfirmation, setStockToDeleteWithConfirmation] =
     useState<StockEventFormValues | null>(null)
   const [isRecurrenceModalOpen, setIsRecurrenceModalOpen] = useState(false)
-  const [stocksCount, setStocksCount] = useState<number>(0)
+  const [stocksCount, setStocksCount] = useState<number | null>(null)
   const [dateFilter, setDateFilter] = useState(searchParams.get('date'))
   const [timeFilter, setTimeFilter] = useState(searchParams.get('time'))
   const [priceCategoryIdFilter, setPriceCategoryIdFilter] = useState(
@@ -101,7 +102,7 @@ const StocksEventEdition = ({
   const { currentSortingColumn, currentSortingMode, onColumnHeaderClick } =
     useColumnSorting<StocksOrderedBy>()
   const { page, previousPage, nextPage, pageCount, firstPage } =
-    usePaginationWithSearchParams(STOCKS_PER_PAGE, stocksCount)
+    usePaginationWithSearchParams(STOCKS_PER_PAGE, stocksCount ?? 0)
 
   // Effects
   const loadStocksFromCurrentFilters = () =>
@@ -320,6 +321,10 @@ const StocksEventEdition = ({
   const areFiltersActive = Boolean(
     dateFilter || timeFilter || priceCategoryIdFilter
   )
+
+  if (stocksCount === null) {
+    return <Spinner />
+  }
 
   return (
     <FormikProvider value={formik}>
