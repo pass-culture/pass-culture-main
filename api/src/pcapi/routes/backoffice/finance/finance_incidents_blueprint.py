@@ -166,7 +166,7 @@ def get_history(finance_incident_id: int) -> utils.BackofficeResponse:
 def get_incident_creation_form() -> utils.BackofficeResponse:
     form = forms.BookingIncidentForm(kind=finance_models.IncidentType.OVERPAYMENT.name)
     additional_data = {}
-    information = ""
+    information = None
 
     if form.object_ids.data:
         bookings = (
@@ -432,8 +432,13 @@ def get_finance_incident_validation_form(finance_incident_id: int) -> utils.Back
         div_id=f"finance-incident-validation-modal-{finance_incident_id}",
         title="Valider l'incident",
         button_text="Confirmer",
-        information=f"Vous allez valider un incident de {filters.format_amount(incident_total_amount_euros)} "
-        f"sur le point de remboursement {current_reimbursement_point.name}. Voulez-vous continuer ?",
+        information=Markup(
+            "Vous allez valider un incident de {amount} sur le point de remboursement {reimbursement_point_name}. "
+            "Voulez-vous continuer ?"
+        ).format(
+            amount=filters.format_amount(incident_total_amount_euros),
+            reimbursement_point_name=current_reimbursement_point.name,
+        ),
     )
 
 

@@ -90,7 +90,7 @@ class GetIncidentValidationFormTest(GetEndpointHelper):
     expected_num_queries = 2
     expected_num_queries += 1  # get incident info
 
-    def test_get_incident_validation_form(self, legit_user, authenticated_client):
+    def test_get_incident_validation_form(self, authenticated_client):
         booking_incident = finance_factories.IndividualBookingFinanceIncidentFactory()
         url = url_for(self.endpoint, finance_incident_id=booking_incident.incident.id)
 
@@ -100,8 +100,23 @@ class GetIncidentValidationFormTest(GetEndpointHelper):
 
         text_content = html_parser.content_as_text(response.data)
         assert (
-            f"Vous allez valider un incident de {filters.format_amount(finance_utils.to_euros(booking_incident.incident.due_amount_by_offerer))}"
-            in text_content
+            f"Vous allez valider un incident de {filters.format_amount(finance_utils.to_euros(booking_incident.incident.due_amount_by_offerer))} "
+            f"sur le point de remboursement {booking_incident.incident.venue.name}." in text_content
+        )
+
+    def test_no_script_injection_in_venue_name(self, authenticated_client):
+        venue = offerers_factories.VenueFactory(name="<script>alert('coucou')</script>")
+        booking_incident = finance_factories.IndividualBookingFinanceIncidentFactory(incident__venue=venue)
+        url = url_for(self.endpoint, finance_incident_id=booking_incident.incident.id)
+
+        with assert_num_queries(self.expected_num_queries):
+            response = authenticated_client.get(url)
+            assert response.status_code == 200
+
+        text_content = html_parser.content_as_text(response.data)
+        assert (
+            f"Vous allez valider un incident de {filters.format_amount(finance_utils.to_euros(booking_incident.incident.due_amount_by_offerer))} "
+            f"sur le point de remboursement {venue.name}." in text_content
         )
 
 

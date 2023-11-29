@@ -215,7 +215,10 @@ def get_delete_offer_validation_rule_form(rule_id: int) -> utils.BackofficeRespo
         div_id=f"delete-offer-validation-rule-{rule_id}",  # must be consistent with parameter passed to build_lazy_modal
         title="Supprimer une règle de validation d'offre",
         button_text="Supprimer la règle",
-        information=f"La règle {rule_to_delete.name} et ses sous-règles seront définitivement supprimées de la base de données. Veuillez confirmer ce choix.",
+        information=Markup(
+            "La règle {name} et ses sous-règles seront définitivement supprimées de la base de données. "
+            "Veuillez confirmer ce choix."
+        ).format(name=rule_to_delete.name),
     )
 
 
