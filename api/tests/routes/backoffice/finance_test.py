@@ -892,7 +892,7 @@ class GenerateInvoicesTest(PostEndpointHelper):
                 generate_invoices_mock.return_value = None
                 response = self.post_to_endpoint(authenticated_client)
                 generate_invoices_mock.assert_called_with(should_be_called_batch)
-                assert response.status_code == 302
+                assert response.status_code == 303
                 assert (
                     html_parser.extract_alert(authenticated_client.get(response.location).data)
                     == "La tâche de génération des justificatifs a été lancée"
@@ -904,7 +904,7 @@ class GenerateInvoicesTest(PostEndpointHelper):
             queue_empty_mock.return_value = False
 
             response = self.post_to_endpoint(authenticated_client)
-            assert response.status_code == 302
+            assert response.status_code == 303
             assert (
                 html_parser.extract_alert(authenticated_client.get(response.location).data)
                 == "La tâche de génération des justificatifs est déjà en cours"

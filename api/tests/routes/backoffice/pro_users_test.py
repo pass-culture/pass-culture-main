@@ -314,7 +314,7 @@ class CommentProUserTest(PostEndpointHelper):
     def test_add_invalid_comment(self, authenticated_client, pro_user):
         response = self.post_to_endpoint(authenticated_client, user_id=pro_user.id, form={"comment": ""})
 
-        assert response.status_code == 302
+        assert response.status_code == 303
         assert not pro_user.action_history
 
     def test_add_comment_to_non_pro_user(self, authenticated_client):

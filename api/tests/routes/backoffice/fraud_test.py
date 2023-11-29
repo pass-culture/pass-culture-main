@@ -92,7 +92,7 @@ class BlacklistDomainNameTest(PostEndpointHelper):
 
         response = self.post_to_endpoint(authenticated_client, form={"domain": domain}, domain=domain)
 
-        assert response.status_code == 302
+        assert response.status_code == 303
 
         expected_url = url_for("backoffice_web.fraud.list_blacklisted_domain_names", _external=True)
         assert response.location == expected_url
@@ -133,7 +133,7 @@ class RemoveBlacklistedDomainNameTest(PostEndpointHelper):
 
         response = self.post_to_endpoint(authenticated_client, domain=domain)
 
-        assert response.status_code == 302
+        assert response.status_code == 303
 
         expected_url = url_for("backoffice_web.fraud.list_blacklisted_domain_names", _external=True)
         assert response.location == expected_url
