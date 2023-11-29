@@ -180,7 +180,7 @@ class GetMovieListTest:
         }
 
         requests_mock.get(
-            f"https://graph-api-proxy.allocine.fr/api/query/movieList?after=&token={settings.ALLOCINE_API_KEY}",
+            "https://graph-api-proxy.allocine.fr/api/query/movieList?after=",
             json=expected_result,
         )
 
@@ -193,7 +193,7 @@ class GetMovieListTest:
     def test_should_raise_exception_when_api_call_fails(self, requests_mock):
         # Given
         requests_mock.get(
-            f"https://graph-api-proxy.allocine.fr/api/query/movieList?after=&token={settings.ALLOCINE_API_KEY}",
+            "https://graph-api-proxy.allocine.fr/api/query/movieList?after=",
             json={},
             status_code=400,
         )
@@ -207,7 +207,7 @@ class GetMovieListTest:
 
     def test_should_raise_exception_when_api_call_fails_with_connection_error(self, requests_mock):
         requests_mock.get(
-            f"https://graph-api-proxy.allocine.fr/api/query/movieList?after=&token={settings.ALLOCINE_API_KEY}",
+            "https://graph-api-proxy.allocine.fr/api/query/movieList?after=",
             exc=Exception,
         )
         # When
@@ -233,8 +233,8 @@ class GetMovieShowtimeListTest:
 
         # Then
         request_get.assert_called_once_with(
-            f"https://graph-api-proxy.allocine.fr/api/query/movieShowtimeList?"
-            f"token={settings.ALLOCINE_API_KEY}&theater={theater_id}"
+            f"https://graph-api-proxy.allocine.fr/api/query/movieShowtimeList?theater={theater_id}",
+            headers={"Authorization": "Bearer " + settings.ALLOCINE_API_KEY},
         )
         assert api_response == expected_result
 
