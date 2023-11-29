@@ -182,6 +182,7 @@ const LinkVenuesDialog = ({
       </DialogBox>
       {showDiscardChangesDialog && (
         <ConfirmDialog
+          extraClassNames={styles['discard-dialog']}
           icon={strokeWarningIcon}
           onCancel={() => setShowDiscardChangesDialog(false)}
           title="Les informations non sauvegardées ne seront pas prises en compte"
