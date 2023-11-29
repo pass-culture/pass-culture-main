@@ -99,7 +99,7 @@ const renderStockEventCreation = async (
 const tomorrow = format(addDays(new Date(), 1), FORMAT_ISO_DATE_ONLY)
 describe('StocksEventCreation', () => {
   beforeEach(() => {
-    vi.spyOn(api, 'upsertStocks').mockResolvedValue({ stocks: [] })
+    vi.spyOn(api, 'upsertStocks').mockResolvedValue({ stocks: 0 })
   })
 
   it('should show help section if there are not stocks', async () => {
@@ -143,6 +143,7 @@ describe('StocksEventCreation', () => {
     await userEvent.click(screen.getByText('Ajouter un créneau'))
     await userEvent.type(screen.getByLabelText('Horaire 2'), '12:30')
 
+    vi.spyOn(api, 'upsertStocks').mockResolvedValue({ stocks: 2 })
     vi.spyOn(api, 'getStocks').mockResolvedValueOnce({
       stocks: [
         individualGetOfferStockResponseModelFactory(),
