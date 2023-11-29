@@ -11,9 +11,9 @@ ALLOCINE_API_URL = "https://graph-api-proxy.allocine.fr/api/query"
 
 
 def get_movie_list_page(after: str = "") -> allocine_serializers.AllocineMovieListResponse:
-    url = f"{ALLOCINE_API_URL}/movieList?after={after}&token={settings.ALLOCINE_API_KEY}"
+    url = f"{ALLOCINE_API_URL}/movieList?after={after}"
     try:
-        response = requests.get(url)
+        response = requests.get(url, headers={"Authorization": "Bearer " + settings.ALLOCINE_API_KEY})
     except Exception:
         raise AllocineException("Error connecting Allocine API to get movie list")
 
@@ -24,10 +24,10 @@ def get_movie_list_page(after: str = "") -> allocine_serializers.AllocineMovieLi
 
 
 def get_movies_showtimes_from_allocine(theater_id: str) -> dict:
-    url = f"{ALLOCINE_API_URL}/movieShowtimeList?token={settings.ALLOCINE_API_KEY}&theater={theater_id}"
+    url = f"{ALLOCINE_API_URL}/movieShowtimeList?theater={theater_id}"
 
     try:
-        response = requests.get(url)
+        response = requests.get(url, headers={"Authorization": "Bearer " + settings.ALLOCINE_API_KEY})
     except Exception:
         raise AllocineException(f"Error connecting Allocine API for theater {theater_id}")
 
