@@ -29,11 +29,7 @@ logger = logging.getLogger(__name__)
 
 @blueprint.backoffice_web.route("/login", methods=["GET"])
 def login() -> utils.BackofficeResponse:
-    is_testing_or_dev_without_google_credentials = (settings.IS_TESTING or settings.IS_DEV) and (
-        not settings.GOOGLE_CLIENT_ID or not settings.GOOGLE_CLIENT_SECRET
-    )
-
-    if is_testing_or_dev_without_google_credentials:
+    if (not settings.GOOGLE_CLIENT_ID or not settings.GOOGLE_CLIENT_SECRET) and settings.BACKOFFICE_USE_LOCAL_ADMIN:
         from pcapi.utils import login_manager
 
         local_admin_email = "admin@passculture.local"
