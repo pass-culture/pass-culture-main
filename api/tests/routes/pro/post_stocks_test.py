@@ -616,14 +616,13 @@ class Returns201Test:
             offer=offer, priceCategoryLabel=price_cat_label_1, price=10
         )
         price_category_2 = offers_factories.PriceCategoryFactory(
-            offer=offer, priceCategoryLabel=price_cat_label_2, price=10
+            offer=offer, priceCategoryLabel=price_cat_label_2, price=20
         )
         offers_factories.EventStockFactory(
             offer=offer,
             beginningDatetime=format_into_utc_date(beginning),
             bookingLimitDatetime=format_into_utc_date(beginning),
             priceCategory=price_category_1,
-            price=10,
             quantity=10,
         )
         offers_factories.EventStockFactory(
@@ -631,7 +630,6 @@ class Returns201Test:
             beginningDatetime=format_into_utc_date(beginning_later),
             bookingLimitDatetime=format_into_utc_date(beginning_later),
             priceCategory=price_category_2,
-            price=20,
             quantity=20,
         )
         offerers_factories.UserOffererFactory(
@@ -644,28 +642,24 @@ class Returns201Test:
             "stocks": [
                 {
                     "priceCategoryId": price_category_1.id,
-                    "price": 10,
                     "quantity": 10,
                     "beginningDatetime": format_into_utc_date(beginning),
                     "bookingLimitDatetime": format_into_utc_date(beginning),
                 },
                 {
                     "priceCategoryId": price_category_1.id,
-                    "price": 10,
                     "quantity": 10,
                     "beginningDatetime": format_into_utc_date(beginning_later),
                     "bookingLimitDatetime": format_into_utc_date(beginning_later),
                 },
                 {
                     "priceCategoryId": price_category_2.id,
-                    "price": 20,
                     "quantity": 10,
                     "beginningDatetime": format_into_utc_date(beginning),
                     "bookingLimitDatetime": format_into_utc_date(beginning),
                 },
                 {
                     "priceCategoryId": price_category_2.id,
-                    "price": 20,
                     "quantity": 20,
                     "beginningDatetime": format_into_utc_date(beginning_later),
                     "bookingLimitDatetime": format_into_utc_date(beginning_later),
@@ -675,7 +669,6 @@ class Returns201Test:
 
         # When
         response = client.with_session_auth("user@example.com").post("/stocks/bulk/", json=stock_data)
-
         # Then
         assert response.status_code == 201
         assert response.json["stocks"] == 2
