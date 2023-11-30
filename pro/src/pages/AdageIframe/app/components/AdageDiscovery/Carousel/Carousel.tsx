@@ -87,34 +87,22 @@ export default function Carousel({
         </div>
       </div>
 
-      <div className={styles['carousel-list']}>
-        {!firstElementVisible && (
-          <div className={styles['carousel-list-fade-left']}></div>
-        )}
-        <ul className={styles['carousel-list-ul']} ref={listRef}>
-          {elements.map((el, i) => {
-            const isFirst = i === 0
-            const isLast = i === elements.length - 1
-            return (
-              <li
-                key={i}
-                ref={
-                  isFirst
-                    ? firstElementRef
-                    : isLast
-                      ? lastElementRef
-                      : undefined
-                }
-              >
-                {el}
-              </li>
-            )
-          })}
-        </ul>
-        {!lastElementVisible && (
-          <div className={styles['carousel-list-fade-right']}></div>
-        )}
-      </div>
+      <ul className={styles['carousel-list']} ref={listRef}>
+        {elements.map((el, i) => {
+          const isFirst = i === 0
+          const isLast = i === elements.length - 1
+          return (
+            <li
+              key={i}
+              ref={
+                isFirst ? firstElementRef : isLast ? lastElementRef : undefined
+              }
+            >
+              {el}
+            </li>
+          )
+        })}
+      </ul>
     </div>
   )
 }
