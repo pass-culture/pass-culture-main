@@ -61,9 +61,9 @@ class OffersData(BaseQuery):
         WHERE
             offerer_id = @offerer_id
         AND
-            DATE(execution_date) = DATE_SUB(CURRENT_DATE(), INTERVAL 1 DAY)
+            DATE(execution_date) > DATE_SUB(CURRENT_DATE(), INTERVAL 30 DAY)
+        QUALIFY RANK() OVER(PARTITION BY offerer_id ORDER BY execution_date DESC) = 1
         ORDER BY numberOfViews DESC
-        LIMIT 3
         """
 
     model = TopOffersData
