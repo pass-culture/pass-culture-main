@@ -1,1 +1,0 @@
-export const MAX_STOCKS_PER_OFFER = 2500
