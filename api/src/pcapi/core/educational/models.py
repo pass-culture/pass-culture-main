@@ -494,20 +494,26 @@ class CollectiveOffer(
     def get_formats(self) -> typing.Sequence[subcategories.EacFormat] | None:
         if self.formats:
             return self.formats
-        return self.subcategory.formats
+        if self.subcategory:
+            return self.subcategory.formats
+        return None
 
     @property
-    def subcategory(self) -> subcategories.Subcategory:
+    def subcategory(self) -> subcategories.Subcategory | None:
         if self.subcategoryId not in subcategories.ALL_SUBCATEGORIES_DICT:
-            raise ValueError(f"Unexpected subcategoryId '{self.subcategoryId}' for collective offer {self.id}")
+            return None
         return subcategories.ALL_SUBCATEGORIES_DICT[self.subcategoryId]
 
     @property
-    def category(self) -> categories.Category:
+    def category(self) -> categories.Category | None:
+        if not self.subcategory:
+            return None
         return self.subcategory.category
 
     @property
     def categoryId(self) -> str:  # used in validation rule, do not remove
+        if not self.subcategory:
+            return ""
         return self.subcategory.category.id
 
     @property
@@ -752,19 +758,23 @@ class CollectiveOfferTemplate(
 
     is_eligible_for_search = isReleased
 
-    def get_formats(self) -> typing.Sequence[subcategories.EacFormat]:
+    def get_formats(self) -> typing.Sequence[subcategories.EacFormat] | None:
         if self.formats:
             return self.formats
-        return self.subcategory.formats
+        if self.subcategory:
+            return self.subcategory.formats
+        return None
 
     @property
-    def subcategory(self) -> subcategories.Subcategory:
+    def subcategory(self) -> subcategories.Subcategory | None:
         if self.subcategoryId not in subcategories.ALL_SUBCATEGORIES_DICT:
-            raise ValueError(f"Unexpected subcategoryId '{self.subcategoryId}' for collective offer template {self.id}")
+            return None
         return subcategories.ALL_SUBCATEGORIES_DICT[self.subcategoryId]
 
     @property
     def categoryId(self) -> str:  # used in validation rule, do not remove
+        if not self.subcategory:
+            return ""
         return self.subcategory.category.id
 
     @property
