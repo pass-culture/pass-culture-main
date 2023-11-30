@@ -122,6 +122,7 @@ class FeatureToggle(enum.Enum):
     WIP_ENABLE_DISCOVERY = "Activer la page de découverte dans adage"
     WIP_ENABLE_GOOGLE_SSO = "Activer la connexion SSO pour les jeunes"
     WIP_ENABLE_FINANCE_INCIDENT = "Active les incidents de finance"
+    WIP_ENABLE_MARSEILLE = "Activer Marseille en grand"
 
     def is_active(self) -> bool:
         if flask.has_request_context():
@@ -192,6 +193,7 @@ FEATURES_DISABLED_BY_DEFAULT: tuple[FeatureToggle, ...] = (
     FeatureToggle.WIP_ENABLE_FORMAT,
     FeatureToggle.WIP_ENABLE_DISCOVERY,
     FeatureToggle.WIP_ENABLE_GOOGLE_SSO,
+    FeatureToggle.WIP_ENABLE_MARSEILLE,
 )
 
 if settings.IS_PROD or settings.IS_STAGING:
