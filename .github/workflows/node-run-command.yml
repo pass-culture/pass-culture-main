@@ -36,7 +36,7 @@ jobs:
           service_account: ${{ secrets.GCP_EHP_SERVICE_ACCOUNT }}
       - name: Cache the node_modules
         id: yarn-modules-cache
-        uses: kopax-polyconseil/gcs-cache-action@v1.0.1
+        uses: kopax-polyconseil/gcs-cache-action@v1.0.2
         with:
           compression-method: gzip
           bucket: ${{ env.CACHE_BUCKET_NAME }}
