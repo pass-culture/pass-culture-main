@@ -2074,12 +2074,14 @@ def _update_offerer_stats_data(offerer_id: int) -> None:
             daily_views_stats = offerers_models.OffererStats(
                 offererId=offerer_id,
                 table=DAILY_CONSULT_PER_OFFERER_LAST_180_DAYS_TABLE,
-                jsonData=offerers_models.OffererStatsData(daily_views=list(daily_views_data_list)),
+                # Convert OffererStats (which is a TypedDict) to dict to please mypy.
+                jsonData=dict(offerers_models.OffererStatsData(daily_views=list(daily_views_data_list))),
                 syncDate=datetime.utcnow(),
             )
             db.session.add(daily_views_stats)
         else:
-            daily_views_stats.jsonData = offerers_models.OffererStatsData(daily_views=list(daily_views_data_list))
+            # Convert OffererStats (which is a TypedDict) to dict to please mypy.
+            daily_views_stats.jsonData = dict(offerers_models.OffererStatsData(daily_views=list(daily_views_data_list)))
             daily_views_stats.syncDate = datetime.utcnow()
 
         top_offers = list(OffersData().execute(offerer_id=str(offerer_id)))
@@ -2093,8 +2095,12 @@ def _update_offerer_stats_data(offerer_id: int) -> None:
             top_offers_stats = offerers_models.OffererStats(
                 offererId=offerer_id,
                 table=TOP_3_MOST_CONSULTED_OFFERS_LAST_30_DAYS_TABLE,
-                jsonData=offerers_models.OffererStatsData(
-                    top_offers=top_offers, total_views_last_30_days=number_of_total_views_last_30_days.totalViews
+                # Convert OffererStats (which is a TypedDict) to dict to please mypy.
+                jsonData=dict(
+                    offerers_models.OffererStatsData(
+                        top_offers=top_offers,
+                        total_views_last_30_days=number_of_total_views_last_30_days.totalViews,
+                    )
                 ),
                 syncDate=datetime.utcnow(),
             )
