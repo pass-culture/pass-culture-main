@@ -1321,30 +1321,28 @@ def get_recent_suspicious_logins(user: users_models.User) -> list[users_models.L
     return recent_suspicious_logins
 
 
-def create_suspicious_login_email_token(
-    login_info: users_models.LoginDeviceHistory | None, user_id: int
-) -> token_utils.Token:
+def create_suspicious_login_email_token(login_info: users_models.LoginDeviceHistory | None, user_id: int) -> str:
+    current_datetime = datetime.datetime.utcnow()
+    expiration_date = current_datetime + datetime.timedelta(weeks=1)
+
     if login_info is None:
-        return token_utils.Token.create(
-            token_utils.TokenType.SUSPENSION_SUSPICIOUS_LOGIN,
-            users_constants.SUSPICIOUS_LOGIN_EMAIL_TOKEN_LIFE_TIME,
-            user_id,
-            {"dateCreated": datetime.datetime.utcnow().strftime(date_utils.DATE_ISO_FORMAT)},
+        return users_utils.encode_jwt_payload(
+            token_payload={
+                "userId": user_id,
+                "dateCreated": current_datetime.strftime(date_utils.DATE_ISO_FORMAT),
+            },
+            expiration_date=expiration_date,
         )
 
-    passed_ttl = datetime.datetime.utcnow() - login_info.dateCreated
-    remaining_ttl = users_constants.SUSPICIOUS_LOGIN_EMAIL_TOKEN_LIFE_TIME - passed_ttl
-
-    return token_utils.Token.create(
-        token_utils.TokenType.SUSPENSION_SUSPICIOUS_LOGIN,
-        remaining_ttl,
-        user_id,
-        {
+    return users_utils.encode_jwt_payload(
+        token_payload={
+            "userId": user_id,
             "dateCreated": login_info.dateCreated.strftime(date_utils.DATE_ISO_FORMAT),
             "location": login_info.location,
             "os": login_info.os,
             "source": login_info.source,
         },
+        expiration_date=expiration_date,
     )
 
 

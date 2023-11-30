@@ -9,6 +9,7 @@ from dateutil.relativedelta import relativedelta
 import fakeredis
 from flask_jwt_extended.utils import decode_token
 from freezegun import freeze_time
+import jwt
 import pytest
 import requests_mock
 
@@ -38,6 +39,7 @@ from pcapi.core.users import factories as users_factories
 from pcapi.core.users import models as users_models
 from pcapi.core.users import testing as sendinblue_testing
 from pcapi.core.users.email import update as email_update
+from pcapi.core.users.utils import ALGORITHM_HS_256
 from pcapi.models import db
 from pcapi.notifications.push import testing as batch_testing
 from pcapi.routes.native.v1.serialization import account as account_serialization
@@ -1437,38 +1439,41 @@ class RecentSuspiciousLoginsTest:
 class CreateSuspiciousLoginEmailTokenTest:
     @freeze_time("2023-06-19 10:30:00")
     def should_encode_login_info_in_token(self):
-        with mock.patch("flask.current_app.redis_client", fakeredis.FakeStrictRedis()):
-            user = users_factories.UserFactory()
-            login_info = users_models.LoginDeviceHistory(
-                deviceId="2E429592-2446-425F-9A62-D6983F375B3B",
-                source="iPhone 13",
-                os="iOS",
-                location="Paris",
-                dateCreated=datetime.datetime(2023, 6, 19, 10, 30),
-            )
+        user = users_factories.UserFactory()
+        login_info = users_models.LoginDeviceHistory(
+            deviceId="2E429592-2446-425F-9A62-D6983F375B3B",
+            source="iPhone 13",
+            os="iOS",
+            location="Paris",
+            dateCreated=datetime.datetime(2023, 6, 19, 10, 30),
+        )
 
-            token = users_api.create_suspicious_login_email_token(login_info, user.id)
+        jwt_token = users_api.create_suspicious_login_email_token(login_info, user.id)
 
-            assert token.data == {
-                "dateCreated": "2023-06-19T10:30:00.000000Z",
-                "location": "Paris",
-                "source": "iPhone 13",
-                "os": "iOS",
-            }
-            assert token.get_expiration_date_from_token() == datetime.datetime(2023, 6, 26, 10, 30)
+        decoded = jwt.decode(jwt_token, settings.JWT_SECRET_KEY, algorithms=ALGORITHM_HS_256)
 
-            assert token.user_id == user.id
+        assert decoded == {
+            "userId": user.id,
+            "dateCreated": "2023-06-19T10:30:00.000000Z",
+            "location": "Paris",
+            "source": "iPhone 13",
+            "os": "iOS",
+            "exp": datetime.datetime(2023, 6, 26, 10, 30).timestamp(),
+        }
 
     @freeze_time("2023-06-02 16:10:00")
     def should_encode_date_and_user_id_in_token_when_no_login_info(self):
         user = users_factories.UserFactory()
 
-        token = users_api.create_suspicious_login_email_token(None, user.id)
+        jwt_token = users_api.create_suspicious_login_email_token(None, user.id)
 
-        assert token.data == {
+        decoded = jwt.decode(jwt_token, settings.JWT_SECRET_KEY, algorithms=ALGORITHM_HS_256)
+
+        assert decoded == {
+            "userId": user.id,
             "dateCreated": "2023-06-02T16:10:00.000000Z",
+            "exp": datetime.datetime(2023, 6, 9, 16, 10).timestamp(),
         }
-        assert token.user_id == user.id
 
 
 class DeleteOldTrustedDevicesTest:
