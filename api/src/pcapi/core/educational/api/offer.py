@@ -1,4 +1,5 @@
 import datetime
+from decimal import Decimal
 import logging
 import typing
 
@@ -825,11 +826,8 @@ def create_offer_request(
     return request
 
 
-def get_offer_coordinates(offer: AnyCollectiveOffer) -> tuple[float, float] | tuple[None, None]:
-    """
-    Return the offer's coordinates to use. Use the specified venue
-    if any or use the offer's billing address as the default.
-    """
+def get_offer_event_venue(offer: AnyCollectiveOffer) -> offerers_models.Venue:
+    """Get the venue where the event occurs"""
     address_type = offer.offerVenue.get("addressType")
     offerer_venue_id = offer.offerVenue.get("venueId")
 
@@ -843,6 +841,16 @@ def get_offer_coordinates(offer: AnyCollectiveOffer) -> tuple[float, float] | tu
     # anymore
     if not venue:
         venue = offer.venue
+
+    return venue
+
+
+def get_offer_coordinates(offer: AnyCollectiveOffer) -> tuple[float | Decimal, float | Decimal] | tuple[None, None]:
+    """
+    Return the offer's coordinates to use. Use the specified venue
+    if any or use the offer's billing address as the default.
+    """
+    venue = get_offer_event_venue(offer)
 
     # we should return a coherent value: either latitude AND
     # longitude or empty coordinates.
