@@ -285,7 +285,8 @@ def book_offer(
             },
         )
 
-        repository.save(booking, stock)
+        db.session.add_all((booking, stock))
+        db.session.flush()  # to setup relations on `booking` for `add_event()` below.
 
         if booking.status == BookingStatus.USED:
             finance_api.add_event(
