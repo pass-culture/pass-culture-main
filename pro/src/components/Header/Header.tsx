@@ -1,6 +1,5 @@
 import classnames from 'classnames'
-import React, { useCallback } from 'react'
-import { NavLink, useLocation, useNavigate } from 'react-router-dom'
+import { NavLink, useLocation } from 'react-router-dom'
 
 import { Events } from 'core/FirebaseEvents/constants'
 import useActiveFeature from 'hooks/useActiveFeature'
@@ -19,16 +18,18 @@ import { SvgIcon } from 'ui-kit/SvgIcon/SvgIcon'
 const NAV_ITEM_ICON_SIZE = '24'
 
 const Header = () => {
-  const navigate = useNavigate()
   const logout = useLogout()
   const { logEvent } = useAnalytics()
   const location = useLocation()
   const isOffererStatsActive = useActiveFeature('ENABLE_OFFERER_STATS')
+  const isFinanceIncidentActive = useActiveFeature(
+    'WIP_ENABLE_FINANCE_INCIDENT'
+  )
 
-  const onSignoutClick = useCallback(async () => {
+  async function onSignoutClick() {
     logEvent?.(Events.CLICKED_LOGOUT, { from: location.pathname })
     await logout()
-  }, [navigate, logEvent, location.pathname])
+  }
 
   return (
     <header className="menu-v2" id="header-navigation">
@@ -135,7 +136,9 @@ const Header = () => {
                 alt=""
                 width={NAV_ITEM_ICON_SIZE}
               />
-              Remboursements
+              {isFinanceIncidentActive
+                ? 'Gestion financière'
+                : 'Remboursements'}
             </NavLink>
           </li>
           {isOffererStatsActive && (
