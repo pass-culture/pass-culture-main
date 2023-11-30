@@ -838,6 +838,19 @@ def get_filtered_stocks(
     return _order_stocks_by(query, order_by, order_by_desc)
 
 
+def hard_delete_filtered_stocks(
+    offer_id: int,
+    venue: offerers_models.Venue,
+    date: datetime.date | None = None,
+    time: datetime.time | None = None,
+    price_category_id: int | None = None,
+) -> None:
+    subquery = get_filtered_stocks(offer_id, venue, date, time, price_category_id)
+    subquery = subquery.with_entities(models.Stock.id)
+    models.Stock.query.filter(models.Stock.id.in_(subquery)).delete(synchronize_session=False)
+    db.session.commit()
+
+
 def get_paginated_stocks(
     stocks_query: flask_sqlalchemy.BaseQuery,
     stocks_limit_per_page: int = LIMIT_STOCKS_PER_PAGE,

@@ -26,7 +26,6 @@ from pcapi.routes.serialization.thumbnails_serialize import CreateThumbnailRespo
 from pcapi.serialization.decorator import spectree_serialize
 from pcapi.utils import rest
 from pcapi.workers.update_all_offers_active_status_job import update_all_offers_active_status_job
-from pcapi.workers.update_stocks_job import batch_delete_filtered_stocks_job
 
 from . import blueprint
 
@@ -161,14 +160,13 @@ def delete_all_filtered_stocks(offer_id: int, body: offers_serialize.DeleteFilte
         )
 
     rest.check_user_has_access_to_offerer(current_user, offer.venue.managingOffererId)
-    filters = {
-        "offer_id": offer_id,
-        "venue": offer.venue,
-        "date": body.date,
-        "time": body.time,
-        "price_category_id": body.price_category_id,
-    }
-    batch_delete_filtered_stocks_job.delay(filters)
+    offers_repository.hard_delete_filtered_stocks(
+        offer_id=offer_id,
+        venue=offer.venue,
+        date=body.date,
+        time=body.time,
+        price_category_id=body.price_category_id,
+    )
 
 
 @private_api.route("/offers/<int:offer_id>/stocks-stats", methods=["GET"])
