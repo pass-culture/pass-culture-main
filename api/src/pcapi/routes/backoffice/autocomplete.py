@@ -53,13 +53,21 @@ def prefill_offerers_choices(autocomplete_field: fields.PCTomSelectField) -> Non
 def autocomplete_offerers() -> AutocompleteResponse:
     query_string = request.args.get("q", "").strip()
 
-    if len(query_string) < 2:
+    is_numeric_query = query_string.isnumeric()
+    if not is_numeric_query and len(query_string) < 2:
         return AutocompleteResponse(items=[])
 
-    filters = sa.func.unaccent(offerers_models.Offerer.name).ilike(f"%{clean_accents(query_string)}%")
+    if is_numeric_query and len(query_string) == 1:
+        filters = offerers_models.Offerer.id == int(query_string)
+    else:
+        filters = sa.func.unaccent(offerers_models.Offerer.name).ilike(f"%{clean_accents(query_string)}%")
 
-    if query_string.isnumeric() and len(query_string) <= 9:
-        filters = sa.or_(filters, offerers_models.Offerer.siren.like(f"{query_string}%"))
+        if is_numeric_query and len(query_string) <= 9:
+            filters = sa.or_(
+                filters,
+                offerers_models.Offerer.id == int(query_string),
+                offerers_models.Offerer.siren.like(f"{query_string}%"),
+            )
 
     offerers = _get_offerers_base_query().filter(filters).limit(NUM_RESULTS)
 
@@ -97,13 +105,21 @@ def prefill_venues_choices(autocomplete_field: fields.PCTomSelectField) -> None:
 def autocomplete_venues() -> AutocompleteResponse:
     query_string = request.args.get("q", "").strip()
 
-    if not query_string or len(query_string) < 2:
+    is_numeric_query = query_string.isnumeric()
+    if not is_numeric_query and len(query_string) < 2:
         return AutocompleteResponse(items=[])
 
-    filters = sa.func.unaccent(offerers_models.Venue.name).ilike(f"%{clean_accents(query_string)}%")
+    if is_numeric_query and len(query_string) == 1:
+        filters = offerers_models.Venue.id == int(query_string)
+    else:
+        filters = sa.func.unaccent(offerers_models.Venue.name).ilike(f"%{clean_accents(query_string)}%")
 
-    if query_string.isnumeric() and len(query_string) <= 14:
-        filters = sa.or_(filters, offerers_models.Venue.siret.like(f"{query_string}%"))
+        if is_numeric_query and len(query_string) <= 14:
+            filters = sa.or_(
+                filters,
+                offerers_models.Venue.id == int(query_string),
+                offerers_models.Venue.siret.like(f"{query_string}%"),
+            )
 
     venues = _get_venues_base_query().filter(filters).limit(NUM_RESULTS)
 
