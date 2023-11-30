@@ -574,7 +574,7 @@ class CollectiveOfferTemplate(
 
     name: str = sa.Column(sa.String(140), nullable=False)
 
-    description = sa.Column(sa.Text, nullable=False, server_default="", default="")
+    description: str = sa.Column(sa.Text, nullable=False, server_default="", default="")
 
     durationMinutes = sa.Column(sa.Integer, nullable=True)
 

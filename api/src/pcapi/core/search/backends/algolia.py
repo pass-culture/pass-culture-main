@@ -595,7 +595,7 @@ class AlgoliaBackend(base.SearchBackend):
                 else None,
                 "eventAddressType": collective_offer_template.offerVenue.get("addressType"),
                 "beginningDatetime": date_created,  # this hack is needed to make the order keeps working
-                "description": remove_stopwords(collective_offer_template.description),  # type: ignore
+                "description": remove_stopwords(collective_offer_template.description),
             },
             "offerer": {
                 "name": offerer.name,
