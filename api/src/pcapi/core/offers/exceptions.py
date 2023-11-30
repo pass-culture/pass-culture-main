@@ -270,3 +270,43 @@ class OfferEditionBaseException(ClientError):
 class RejectedOrPendingOfferNotEditable(OfferEditionBaseException):
     def __init__(self) -> None:
         super().__init__("global", "Les offres refusées ou en attente de validation ne sont pas modifiables")
+
+
+class MoveOfferBaseException(Exception):
+    pass
+
+
+class OfferIsNotEvent(MoveOfferBaseException):
+    def __init__(self) -> None:
+        super().__init__("L'offre n'est pas un évènement")
+
+
+class OfferEventInThePast(MoveOfferBaseException):
+    def __init__(self, count_past_stocks: int) -> None:
+        super().__init__(
+            f"L'évènement a déjà eu lieu pour {count_past_stocks} stock{'s' if count_past_stocks > 1 else ''}"
+        )
+
+
+class OfferHasReimbursedBookings(MoveOfferBaseException):
+    def __init__(self, count_reimbursed_bookings: int) -> None:
+        super().__init__(
+            f"{count_reimbursed_bookings} {'réservations sont déjà remboursées' if count_reimbursed_bookings > 1 else 'réservation est déjà remboursée'} sur cette offre"
+        )
+
+
+class NoDestinationVenue(MoveOfferBaseException):
+    def __init__(self) -> None:
+        super().__init__("Il n'existe aucun lieu avec point de valorisation vers lequel transférer l'offre")
+
+
+class ForbiddenDestinationVenue(MoveOfferBaseException):
+    def __init__(self) -> None:
+        super().__init__("Ce lieu n'est pas éligible au transfert de l'offre")
+
+
+class BookingsHaveOtherPricingPoint(MoveOfferBaseException):
+    def __init__(self) -> None:
+        super().__init__(
+            "Il existe des réservations valorisées sur un autre point de valorisation que celui du nouveau lieu"
+        )

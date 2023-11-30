@@ -32,6 +32,8 @@ import pcapi.core.educational.api.national_program as national_program_api
 from pcapi.core.external import compliance
 from pcapi.core.external.attributes.api import update_external_pro
 import pcapi.core.external_bookings.api as external_bookings_api
+from pcapi.core.finance import api as finance_api
+from pcapi.core.finance import models as finance_models
 import pcapi.core.finance.conf as finance_conf
 import pcapi.core.mails.transactional as transactional_mails
 from pcapi.core.mails.transactional import send_booking_cancellation_emails_to_user_and_offerer
@@ -1528,3 +1530,128 @@ def update_offers_description_from_product_description(product_id: int) -> None:
             extra={"product": product_id, "offers": offer_ids, "exc": str(exception)},
         )
         raise exceptions.NotUpdateProductOrOffers(exception)
+
+
+def check_can_move_event_offer(offer: models.Offer) -> list[offerers_models.Venue]:
+    if not offer.isEvent:
+        raise exceptions.OfferIsNotEvent()
+
+    count_past_stocks = (
+        models.Stock.query.with_entities(models.Stock.id)
+        .filter(models.Stock.beginningDatetime < datetime.datetime.utcnow())
+        .count()
+    )
+    if count_past_stocks > 0:
+        raise exceptions.OfferEventInThePast(count_past_stocks)
+
+    count_reimbursed_bookings = (
+        bookings_models.Booking.query.with_entities(bookings_models.Booking.id)
+        .join(bookings_models.Booking.stock)
+        .filter(models.Stock.offerId == offer.id, bookings_models.Booking.isReimbursed)
+        .count()
+    )
+    if count_reimbursed_bookings > 0:
+        raise exceptions.OfferHasReimbursedBookings(count_reimbursed_bookings)
+
+    venues_choices = (
+        offerers_models.Venue.query.filter(
+            offerers_models.Venue.managingOffererId == offer.venue.managingOffererId,
+            offerers_models.Venue.id != offer.venueId,
+        )
+        .join(
+            offerers_models.VenuePricingPointLink,
+            sa.and_(
+                offerers_models.VenuePricingPointLink.venueId == offerers_models.Venue.id,
+                offerers_models.VenuePricingPointLink.timespan.contains(datetime.datetime.utcnow()),
+            ),
+        )
+        .options(
+            sa.orm.load_only(offerers_models.Venue.id, offerers_models.Venue.name),
+            sa.orm.contains_eager(offerers_models.Venue.pricing_point_links).load_only(
+                offerers_models.VenuePricingPointLink.pricingPointId, offerers_models.VenuePricingPointLink.timespan
+            ),
+        )
+        .all()
+    )
+    if not venues_choices:
+        raise exceptions.NoDestinationVenue()
+
+    return venues_choices
+
+
+def move_event_offer(
+    offer: models.Offer, destination_venue: offerers_models.Venue, notify_beneficiary: bool = False
+) -> None:
+    offer_id = offer.id
+
+    venue_choices = check_can_move_event_offer(offer)
+
+    if destination_venue not in venue_choices:
+        raise exceptions.ForbiddenDestinationVenue()
+
+    destination_pricing_point_link = destination_venue.current_pricing_point_link
+    assert destination_pricing_point_link  # for mypy - it would not be in venue_choices without link
+    destination_pricing_point_id = destination_pricing_point_link.pricingPointId
+
+    bookings = (
+        bookings_models.Booking.query.join(bookings_models.Booking.stock)
+        .outerjoin(
+            # max 1 row joined thanks to idx_uniq_individual_booking_id
+            finance_models.FinanceEvent,
+            sa.and_(
+                finance_models.FinanceEvent.bookingId == bookings_models.Booking.id,
+                finance_models.FinanceEvent.status.in_(
+                    (finance_models.FinanceEventStatus.PENDING, finance_models.FinanceEventStatus.READY)
+                ),
+            ),
+        )
+        .outerjoin(
+            # max 1 row joined thanks to idx_uniq_booking_id
+            finance_models.Pricing,
+            sa.and_(
+                finance_models.Pricing.bookingId == bookings_models.Booking.id,
+                finance_models.Pricing.status != finance_models.PricingStatus.CANCELLED,
+            ),
+        )
+        .options(
+            sa.orm.load_only(bookings_models.Booking.status),
+            sa.orm.contains_eager(bookings_models.Booking.finance_events).load_only(finance_models.FinanceEvent.status),
+            sa.orm.contains_eager(bookings_models.Booking.pricings).load_only(
+                finance_models.Pricing.pricingPointId, finance_models.Pricing.status
+            ),
+        )
+        .filter(models.Stock.offerId == offer.id)
+        .all()
+    )
+
+    with transaction():
+        offer.venue = destination_venue
+        db.session.add(offer)
+
+        for booking in bookings:
+            assert not booking.isReimbursed
+            booking.venueId = destination_venue.id
+
+            # when offer has priced bookings, pricing point for destination venue must be the same as pricing point
+            # used for pricing (same as venue pricing point at the time pricing was processed)
+            pricing = booking.pricings[0] if booking.pricings else None
+            if pricing and pricing.pricingPointId != destination_pricing_point_id:
+                raise exceptions.BookingsHaveOtherPricingPoint()
+
+            finance_event = booking.finance_events[0] if booking.finance_events else None
+            if finance_event:
+                finance_event.venueId = destination_venue.id
+                finance_event.pricingPointId = destination_pricing_point_id
+                if finance_event.status == finance_models.FinanceEventStatus.PENDING:
+                    finance_event.status = finance_models.FinanceEventStatus.READY
+                    finance_event.pricingOrderingDate = finance_api.get_pricing_ordering_date(booking)
+                db.session.add(finance_event)
+
+            db.session.add(booking)
+
+    search.async_index_offer_ids(
+        {offer_id}, reason=search.IndexationReason.OFFER_UPDATE, log_extra={"changes": {"venueId"}}
+    )
+
+    if notify_beneficiary:
+        transactional_mails.send_email_for_each_ongoing_booking(offer)
