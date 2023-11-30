@@ -16,7 +16,7 @@ class ClassroomPlaylistQuery(BaseQuery):
             offer_id,
             distance_in_km
         FROM
-            `{settings.BIG_QUERY_EDUCATIONAL_TABLE_BASE_NAME}.adage_home_playlist_moving_offerers`
+            `{settings.BIG_QUERY_TABLE_BASENAME}.adage_home_playlist_moving_offerers`
         WHERE
             institution_id = @institution_id
             distance_in_km <= 60

@@ -9,7 +9,7 @@ class ChurnedProEmail(BaseQuery):
         select
             distinct venue_booking_email
         from
-            `{settings.BIG_QUERY_NOTIFICATIONS_TABLE_BASENAME}.marketing_pro_email_churned_40_days_ago`
+            `{settings.BIG_QUERY_TABLE_BASENAME}.marketing_pro_email_churned_40_days_ago`
         where
             cast(execution_date as date) = current_date()
     """
