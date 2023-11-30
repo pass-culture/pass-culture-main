@@ -88,7 +88,7 @@ class _BaseFinanceEventFactory(BaseFactory):
         if kwargs["pricingPointId"]:
             kwargs.setdefault(
                 "pricingOrderingDate",
-                api._get_pricing_ordering_date(booking),
+                api.get_pricing_ordering_date(booking),
             )
         return super()._create(model_class, *args, **kwargs)
 

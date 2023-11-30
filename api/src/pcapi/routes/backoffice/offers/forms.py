@@ -11,6 +11,7 @@ import wtforms
 
 from pcapi.core.categories import categories
 from pcapi.core.categories import subcategories_v2 as subcategories
+from pcapi.core.offerers import models as offerers_models
 from pcapi.models.offer_mixin import OfferStatus
 from pcapi.models.offer_mixin import OfferValidationStatus
 from pcapi.routes.backoffice import autocomplete
@@ -384,3 +385,11 @@ class EditOfferForm(FlaskForm):
 
 class BatchEditOfferForm(empty_forms.BatchForm, EditOfferForm):
     pass
+
+
+class EditOfferVenueForm(FlaskForm):
+    venue = fields.PCSelectWithPlaceholderValueField("Nouveau lieu", choices=[], validate_choice=False)
+    notify_beneficiary = fields.PCSwitchBooleanField("Notifier les jeunes", full_row=True)
+
+    def set_venue_choices(self, venues: list[offerers_models.Venue]) -> None:
+        self.venue.choices = [(venue.id, venue.name) for venue in venues]

@@ -9,6 +9,7 @@ from flask import request
 from flask import url_for
 from flask_login import current_user
 from flask_sqlalchemy import BaseQuery
+from markupsafe import Markup
 import sqlalchemy as sa
 from werkzeug.exceptions import NotFound
 
@@ -18,6 +19,8 @@ from pcapi.core.categories import subcategories_v2
 from pcapi.core.criteria import models as criteria_models
 from pcapi.core.mails import transactional as transactional_mails
 from pcapi.core.offerers import models as offerers_models
+from pcapi.core.offers import api as offers_api
+from pcapi.core.offers import exceptions as offers_exceptions
 from pcapi.core.offers import models as offers_models
 from pcapi.core.permissions import models as perm_models
 from pcapi.core.users import models as users_models
@@ -719,6 +722,7 @@ def get_offer_details(offer_id: int) -> utils.BackofficeResponse:
         .load_only(
             offerers_models.Venue.id,
             offerers_models.Venue.name,
+            offerers_models.Venue.managingOffererId,
         )
         .joinedload(offerers_models.Venue.managingOfferer)
         .load_only(
@@ -736,11 +740,23 @@ def get_offer_details(offer_id: int) -> utils.BackofficeResponse:
     if not offer:
         raise NotFound()
 
+    is_advanced_pro_support = utils.has_current_user_permission(perm_models.Permissions.ADVANCED_PRO_SUPPORT)
+
+    edit_offer_venue_form = None
+    if is_advanced_pro_support:
+        try:
+            venue_choices = offers_api.check_can_move_event_offer(offer)
+            edit_offer_venue_form = forms.EditOfferVenueForm()
+            edit_offer_venue_form.set_venue_choices(venue_choices)
+        except offers_exceptions.MoveOfferBaseException:
+            pass
+
     return render_template(
         "offer/details.html",
         offer=offer,
         active_tab=request.args.get("active_tab", "stock"),
-        reindex_offer_form=empty_forms.EmptyForm(),
+        reindex_offer_form=empty_forms.EmptyForm() if is_advanced_pro_support else None,
+        edit_offer_venue_form=edit_offer_venue_form,
     )
 
 
@@ -753,8 +769,59 @@ def reindex(offer_id: int) -> utils.BackofficeResponse:
     )
 
     flash("La resynchronisation de l'offre a été demandée.", "success")
+    return redirect(url_for("backoffice_web.offer.get_offer_details", offer_id=offer_id), 303)
 
-    if request.referrer:
-        return redirect(request.referrer)
 
-    return redirect(url_for("backoffice_web.offer.get_offer_details", offer_id=offer_id))
+@list_offers_blueprint.route("/<int:offer_id>/edit-venue", methods=["POST"])
+@utils.permission_required(perm_models.Permissions.ADVANCED_PRO_SUPPORT)
+def edit_offer_venue(offer_id: int) -> utils.BackofficeResponse:
+    offer_url = url_for("backoffice_web.offer.get_offer_details", offer_id=offer_id)
+
+    offer = (
+        offers_models.Offer.query.filter_by(id=offer_id)
+        .options(sa.orm.joinedload(offers_models.Offer.venue))
+        .one_or_none()
+    )
+    if not offer:
+        raise NotFound()
+
+    try:
+        form = forms.EditOfferVenueForm()
+        if not form.validate():
+            flash(utils.build_form_error_msg(form), "warning")
+            return redirect(offer_url, 303)
+
+        destination_venue = (
+            offerers_models.Venue.query.filter_by(id=int(form.venue.data))
+            .outerjoin(
+                offerers_models.VenuePricingPointLink,
+                sa.and_(
+                    offerers_models.VenuePricingPointLink.venueId == offerers_models.Venue.id,
+                    offerers_models.VenuePricingPointLink.timespan.contains(datetime.datetime.utcnow()),
+                ),
+            )
+            .outerjoin(
+                offerers_models.VenueReimbursementPointLink,
+                sa.and_(
+                    offerers_models.VenueReimbursementPointLink.venueId == offerers_models.Venue.id,
+                    offerers_models.VenueReimbursementPointLink.timespan.contains(datetime.datetime.utcnow()),
+                ),
+            )
+            .options(
+                sa.orm.contains_eager(offerers_models.Venue.pricing_point_links).load_only(
+                    offerers_models.VenuePricingPointLink.pricingPointId, offerers_models.VenuePricingPointLink.timespan
+                ),
+            )
+        ).one()
+
+        offers_api.move_event_offer(offer, destination_venue, notify_beneficiary=form.notify_beneficiary.data)
+
+    except offers_exceptions.MoveOfferBaseException as exc:
+        flash(Markup("Le lieu de cette offre ne peut pas être modifié : {reason}").format(reason=str(exc)), "warning")
+        return redirect(offer_url, 303)
+
+    flash(
+        Markup("L'offre a été déplacée vers le lieu <b>{venue_name}</b>").format(venue_name=destination_venue.name),
+        "success",
+    )
+    return redirect(offer_url, 303)
