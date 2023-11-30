@@ -288,7 +288,7 @@ class FinanceEvent(Base, Model):
 
     bookingId = sqla.Column(sqla.BigInteger, sqla.ForeignKey("booking.id"), index=True, nullable=True)
     booking: sqla_orm.Mapped["bookings_models.Booking | None"] = sqla_orm.relationship(
-        "Booking", foreign_keys=[bookingId]
+        "Booking", foreign_keys=[bookingId], backref="finance_events"
     )
     collectiveBookingId = sqla.Column(
         sqla.BigInteger, sqla.ForeignKey("collective_booking.id"), index=True, nullable=True

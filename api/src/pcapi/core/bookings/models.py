@@ -289,6 +289,8 @@ class Booking(PcObject, Base, Model):
 
     @property
     def pricing(self) -> finance_models.Pricing | None:
+        # WARNING: this property returns most recent INVOICED pricing only
+        # Do not use for any expected status!
         processed_pricings = [
             pricing for pricing in self.pricings if pricing.status == finance_models.PricingStatus.INVOICED
         ]

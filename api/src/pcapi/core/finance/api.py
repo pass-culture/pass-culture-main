@@ -90,7 +90,7 @@ PRICE_EVENTS_BATCH_SIZE = 100
 CASHFLOW_BATCH_LABEL_PREFIX = "VIR"
 
 
-def _get_pricing_ordering_date(
+def get_pricing_ordering_date(
     booking: bookings_models.Booking | educational_models.CollectiveBooking,
 ) -> datetime.datetime:
     stock: offers_models.Stock | educational_models.CollectiveStock = (
@@ -160,7 +160,7 @@ def add_event(
             ):
                 pricing_ordering_date = incident_validation_date
             else:
-                pricing_ordering_date = _get_pricing_ordering_date(booking)
+                pricing_ordering_date = get_pricing_ordering_date(booking)
         else:
             status = models.FinanceEventStatus.PENDING
             pricing_ordering_date = None

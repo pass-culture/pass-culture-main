@@ -13,7 +13,10 @@ from pcapi.core.bookings.models import BookingStatus
 from pcapi.core.categories import categories
 from pcapi.core.categories import subcategories_v2 as subcategories
 from pcapi.core.criteria import factories as criteria_factories
+from pcapi.core.finance import factories as finance_factories
+from pcapi.core.mails import testing as mails_testing
 from pcapi.core.offerers import factories as offerers_factories
+from pcapi.core.offerers import models as offerers_models
 from pcapi.core.offers import factories as offers_factories
 from pcapi.core.offers import models as offers_models
 from pcapi.core.permissions import models as perm_models
@@ -1152,6 +1155,7 @@ class GetOfferDetailsTest(GetEndpointHelper):
         assert "Utilisateur de la dernière validation" not in card_text
         assert "Date de dernière validation" not in card_text
         assert "Resynchroniser l'offre dans Algolia" in card_text
+        assert "Modifier le lieu" not in card_text
 
         assert html_parser.count_table_rows(response.data) == 0
 
@@ -1278,14 +1282,45 @@ class GetOfferDetailsTest(GetEndpointHelper):
         assert stocks_rows[0]["Prix"] == "10,10 €"
         assert stocks_rows[0]["Date / Heure"] == format_date(stock.beginningDatetime, "%d/%m/%Y à %Hh%M")
 
-    class IndexOfferButtonTest(button_helpers.ButtonHelper):
-        needed_permission = perm_models.Permissions.ADVANCED_PRO_SUPPORT
-        button_label = "Resynchroniser l'offre dans Algolia"
+    def test_get_event_offer(self, legit_user, authenticated_client):
+        venue = offerers_factories.VenueFactory()
+        offerers_factories.VenueFactory.create_batch(2, managingOfferer=venue.managingOfferer, pricing_point=venue)
+        offer = offers_factories.EventOfferFactory(venue=venue)
 
-        @property
-        def path(self):
-            offer = offers_factories.OfferFactory()
-            return url_for("backoffice_web.offer.get_offer_details", offer_id=offer.id)
+        url = url_for(self.endpoint, offer_id=offer.id, _external=True)
+        # Additional queries to check if "Modifier le lieu" should be displayed or not":
+        # - count stocks with beginningDatetime in the past
+        # - count reimbursed bookings
+        # - fetch destination venue candidates
+        with assert_num_queries(self.expected_num_queries + 3):
+            response = authenticated_client.get(url)
+            assert response.status_code == 200
+
+        cards_text = html_parser.extract_cards_text(response.data)
+        assert len(cards_text) == 1
+        assert "Modifier le lieu" in cards_text[0]
+
+
+class IndexOfferButtonTest(button_helpers.ButtonHelper):
+    needed_permission = perm_models.Permissions.ADVANCED_PRO_SUPPORT
+    button_label = "Resynchroniser l'offre dans Algolia"
+
+    @property
+    def path(self):
+        offer = offers_factories.OfferFactory()
+        return url_for("backoffice_web.offer.get_offer_details", offer_id=offer.id)
+
+
+class MoveOfferVenueButtonTest(button_helpers.ButtonHelper):
+    needed_permission = perm_models.Permissions.ADVANCED_PRO_SUPPORT
+    button_label = "Modifier le lieu"
+
+    @property
+    def path(self):
+        venue = offerers_factories.VenueFactory()
+        offerers_factories.VenueFactory(managingOfferer=venue.managingOfferer, pricing_point=venue)
+        offer = offers_factories.EventOfferFactory(venue=venue)
+        return url_for("backoffice_web.offer.get_offer_details", offer_id=offer.id)
 
 
 class IndexOfferTest(PostEndpointHelper):
@@ -1298,10 +1333,201 @@ class IndexOfferTest(PostEndpointHelper):
         offer = offers_factories.OfferFactory()
 
         response = self.post_to_endpoint(authenticated_client, offer_id=offer.id)
-        assert response.status_code == 302
+        assert response.status_code == 303
 
         redirected_response = authenticated_client.get(response.headers["location"])
         assert "La resynchronisation de l'offre a été demandée." in html_parser.extract_alert(redirected_response.data)
 
         mocked_async_index_offer_ids.assert_called()
         assert set(mocked_async_index_offer_ids.call_args[0][0]) == {offer.id}
+
+
+@pytest.fixture(scope="function", name="venues_in_same_offerer")
+def venues_in_same_offerer_fixture() -> tuple[offerers_models.Venue]:
+    offerer = offerers_factories.OffererFactory()
+    source_venue = offerers_factories.VenueFactory(
+        managingOfferer=offerer, pricing_point="self", reimbursement_point="self"
+    )
+    venue_with_same_pricing_point = offerers_factories.VenueFactory(
+        managingOfferer=offerer, pricing_point=source_venue, reimbursement_point=source_venue
+    )
+    venue_with_own_pricing_point = offerers_factories.VenueFactory(
+        managingOfferer=offerer, pricing_point="self", reimbursement_point="self"
+    )
+    venue_without_pricing_point = offerers_factories.VenueFactory(managingOfferer=offerer, pricing_point=None)
+    return source_venue, venue_with_same_pricing_point, venue_with_own_pricing_point, venue_without_pricing_point
+
+
+class EditOfferVenueTest(PostEndpointHelper):
+    endpoint = "backoffice_web.offer.edit_offer_venue"
+    endpoint_kwargs = {"offer_id": 1}
+    needed_permission = perm_models.Permissions.ADVANCED_PRO_SUPPORT
+
+    def _test_move_event(
+        self,
+        mocked_async_index_offer_ids,
+        authenticated_client,
+        source_venue: offerers_models.Venue,
+        destination_venue: offerers_models.Venue,
+        notify_beneficiary: bool,
+        with_pricings: bool = True,
+        expected_error: str | None = None,
+    ):
+        offer = offers_factories.EventOfferFactory(venue=source_venue)
+
+        stock1 = offers_factories.EventStockFactory(offer=offer)
+        booking1_1 = bookings_factories.BookingFactory(stock=stock1)
+        booking1_2 = bookings_factories.UsedBookingFactory(stock=stock1)
+        finance_event1_2 = finance_factories.UsedBookingFinanceEventFactory(booking=booking1_2)
+        if with_pricings:
+            finance_factories.PricingFactory(event=finance_event1_2, booking=booking1_2)
+
+        stock2 = offers_factories.EventStockFactory(offer=offer)
+        booking2_1 = bookings_factories.UsedBookingFactory(stock=stock2)
+        finance_event2_1 = finance_factories.UsedBookingFinanceEventFactory(booking=booking2_1)
+        if with_pricings:
+            finance_factories.PricingFactory(event=finance_event2_1, booking=booking2_1)
+        booking2_2 = bookings_factories.CancelledBookingFactory(stock=stock2)
+
+        response = self.post_to_endpoint(
+            authenticated_client,
+            offer_id=offer.id,
+            form={"venue": destination_venue.id, "notify_beneficiary": "on" if notify_beneficiary else ""},
+        )
+        assert response.status_code == 303
+
+        if not expected_error:
+            assert (
+                html_parser.extract_alert(authenticated_client.get(response.location).data)
+                == f"L'offre a été déplacée vers le lieu {destination_venue.name}"
+            )
+
+            mocked_async_index_offer_ids.assert_called_once_with(
+                {offer.id}, reason=search.IndexationReason.OFFER_UPDATE, log_extra={"changes": {"venueId"}}
+            )
+
+            # Mail is sent only for in-going booking
+            assert len(mails_testing.outbox) == (1 if notify_beneficiary else 0)
+
+            expected_venue = destination_venue
+        else:
+            assert html_parser.extract_alert(authenticated_client.get(response.location).data) == expected_error
+
+            mocked_async_index_offer_ids.assert_not_called()
+            assert len(mails_testing.outbox) == 0
+
+            expected_venue = source_venue
+
+        assert offer.venueId == expected_venue.id
+        assert booking1_1.venueId == expected_venue.id
+        assert booking1_2.venueId == expected_venue.id
+        assert booking2_1.venueId == expected_venue.id
+        assert booking2_2.venueId == expected_venue.id
+        assert finance_event1_2.venueId == expected_venue.id
+        assert finance_event1_2.pricingPointId == expected_venue.current_pricing_point.id
+        assert finance_event2_1.venueId == expected_venue.id
+        assert finance_event2_1.pricingPointId == expected_venue.current_pricing_point.id
+
+    @pytest.mark.parametrize("notify_beneficiary", [False, True])
+    @patch("pcapi.core.search.async_index_offer_ids")
+    def test_move_event_offer_when_venue_has_same_pricing_point(
+        self, mocked_async_index_offer_ids, authenticated_client, venues_in_same_offerer, notify_beneficiary
+    ):
+        source_venue, venue_with_same_pricing_point, _, _ = venues_in_same_offerer
+        self._test_move_event(
+            mocked_async_index_offer_ids,
+            authenticated_client,
+            source_venue,
+            venue_with_same_pricing_point,
+            notify_beneficiary,
+        )
+
+    @patch("pcapi.core.search.async_index_offer_ids")
+    def test_move_event_offer_without_pricing_when_venue_has_different_pricing_point(
+        self, mocked_async_index_offer_ids, authenticated_client, venues_in_same_offerer
+    ):
+        source_venue, _, venue_with_own_pricing_point, _ = venues_in_same_offerer
+        self._test_move_event(
+            mocked_async_index_offer_ids,
+            authenticated_client,
+            source_venue,
+            venue_with_own_pricing_point,
+            True,
+            with_pricings=False,
+        )
+
+    @patch("pcapi.core.search.async_index_offer_ids")
+    def test_move_event_offer_with_pricings_when_venue_has_different_pricing_point(
+        self, mocked_async_index_offer_ids, authenticated_client, venues_in_same_offerer
+    ):
+        source_venue, _, venue_with_own_pricing_point, _ = venues_in_same_offerer
+        self._test_move_event(
+            mocked_async_index_offer_ids,
+            authenticated_client,
+            source_venue,
+            venue_with_own_pricing_point,
+            True,
+            expected_error="Le lieu de cette offre ne peut pas être modifié : "
+            "Il existe des réservations valorisées sur un autre point de valorisation que celui du nouveau lieu",
+        )
+
+    @patch("pcapi.core.search.async_index_offer_ids")
+    def test_cant_move_when_destination_venue_has_no_pricing_point(
+        self, mocked_async_index_offer_ids, authenticated_client, venues_in_same_offerer
+    ):
+        # This case should not happen if the user only selects from venues dropdown list
+        source_venue, _, _, venue_without_pricing_point = venues_in_same_offerer
+        self._test_move_event(
+            mocked_async_index_offer_ids,
+            authenticated_client,
+            source_venue,
+            venue_without_pricing_point,
+            True,
+            with_pricings=False,
+            expected_error="Le lieu de cette offre ne peut pas être modifié : Ce lieu n'est pas éligible au transfert de l'offre",
+        )
+
+    def test_cant_move_when_offer_is_not_an_event(self, authenticated_client, venues_in_same_offerer):
+        source_venue, destination_venue, _, _ = venues_in_same_offerer
+        offer = offers_factories.ThingStockFactory(offer__venue=source_venue).offer
+
+        response = self.post_to_endpoint(authenticated_client, offer_id=offer.id, form={"venue": destination_venue.id})
+
+        assert response.status_code == 303
+        assert (
+            html_parser.extract_alert(authenticated_client.get(response.location).data)
+            == "Le lieu de cette offre ne peut pas être modifié : L'offre n'est pas un évènement"
+        )
+
+    def test_cant_move_when_event_is_in_the_past(self, authenticated_client, venues_in_same_offerer):
+        source_venue, destination_venue, _, _ = venues_in_same_offerer
+        offer = offers_factories.EventOfferFactory(venue=source_venue)
+        offers_factories.EventStockFactory.create_batch(
+            2, offer=offer, beginningDatetime=datetime.datetime.utcnow() - datetime.timedelta(days=1)
+        )
+        offers_factories.EventStockFactory(
+            offer=offer, beginningDatetime=datetime.datetime.utcnow() + datetime.timedelta(days=1)
+        )
+
+        response = self.post_to_endpoint(authenticated_client, offer_id=offer.id, form={"venue": destination_venue.id})
+
+        assert response.status_code == 303
+        assert (
+            html_parser.extract_alert(authenticated_client.get(response.location).data)
+            == "Le lieu de cette offre ne peut pas être modifié : L'évènement a déjà eu lieu pour 2 stocks"
+        )
+
+    def test_cant_move_when_reimbursed_bookings(self, authenticated_client, venues_in_same_offerer):
+        source_venue, destination_venue, _, _ = venues_in_same_offerer
+        stock = offers_factories.EventStockFactory(offer__venue=source_venue)
+        bookings_factories.ReimbursedBookingFactory(stock=stock)
+
+        response = self.post_to_endpoint(
+            authenticated_client, offer_id=stock.offer.id, form={"venue": destination_venue.id}
+        )
+
+        assert response.status_code == 303
+        assert (
+            html_parser.extract_alert(authenticated_client.get(response.location).data)
+            == "Le lieu de cette offre ne peut pas être modifié : 1 réservation est déjà remboursée sur cette offre"
+        )
