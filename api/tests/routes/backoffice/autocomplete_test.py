@@ -16,7 +16,7 @@ pytestmark = [
 
 def _test_autocomplete(authenticated_client, endpoint: str, search_query: str, expected_texts: list[str]):
     # user + session + data requested
-    expected_num_queries = 3 if len(search_query) >= 2 else 2
+    expected_num_queries = 3 if search_query.isnumeric() or len(search_query) >= 2 else 2
 
     with assert_num_queries(expected_num_queries):
         response = authenticated_client.get(url_for(endpoint, q=search_query))
@@ -34,7 +34,7 @@ class AutocompleteOffererTest:
         "search_query, expected_texts",
         [
             ("", set()),
-            ("1", set()),
+            ("1", {"La scène (100200000)"}),
             ("12", {"Le Cinéma (123456789)", "La Librairie (123444556)"}),
             ("1234", {"Le Cinéma (123456789)", "La Librairie (123444556)"}),
             ("12345", {"Le Cinéma (123456789)"}),
@@ -44,13 +44,17 @@ class AutocompleteOffererTest:
             ("ciné", {"Le Cinéma (123456789)", "Cinéma concurrent (561234789)"}),
             ("cinema", {"Le Cinéma (123456789)", "Cinéma concurrent (561234789)"}),
             ("ciné théâtre", set()),
+            ("666666", set()),
+            ("666666001", {"Le Théâtre (100200300)"}),
+            ("12344", {"Cinéma concurrent (561234789)", "La Librairie (123444556)"}),
         ],
     )
     def test_autocomplete_offerers(self, authenticated_client, search_query, expected_texts):
-        offerers_factories.OffererFactory(siren="100200300", name="Le Théâtre")
-        offerers_factories.OffererFactory(siren="123456789", name="Le Cinéma")
-        offerers_factories.OffererFactory(siren="123444556", name="La Librairie")
-        offerers_factories.OffererFactory(siren="561234789", name="Cinéma concurrent")
+        offerers_factories.OffererFactory(id=1, siren="100200000", name="La scène")
+        offerers_factories.OffererFactory(id=666666001, siren="100200300", name="Le Théâtre")
+        offerers_factories.OffererFactory(id=666666002, siren="123456789", name="Le Cinéma")
+        offerers_factories.OffererFactory(id=666666003, siren="123444556", name="La Librairie")
+        offerers_factories.OffererFactory(id=12344, siren="561234789", name="Cinéma concurrent")
 
         _test_autocomplete(authenticated_client, "backoffice_web.autocomplete_offerers", search_query, expected_texts)
 
@@ -60,7 +64,7 @@ class AutocompleteVenueTest:
         "search_query, expected_texts",
         [
             ("", set()),
-            ("1", set()),
+            ("1", {"La scène (10020030000000)"}),
             ("12", {"Le Cinéma (12345678900018)", "La Librairie (12344455600012)", "La Médiathèque (12345678900011)"}),
             (
                 "1234",
@@ -74,14 +78,18 @@ class AutocompleteVenueTest:
             ("ciné", {"Le Cinéma (12345678900018)", "Cinéma concurrent (56123478900023)"}),
             ("cinema", {"Le Cinéma (12345678900018)", "Cinéma concurrent (56123478900023)"}),
             ("ciné théâtre", set()),
+            ("666666", set()),
+            ("666666001", {"Le Théâtre (10020030000021)"}),
+            ("12344", {"Cinéma concurrent (56123478900023)", "La Librairie (12344455600012)"}),
         ],
     )
     def test_autocomplete_venues(self, authenticated_client, search_query, expected_texts):
-        offerers_factories.VenueFactory(siret="10020030000021", name="Le Théâtre")
-        offerers_factories.VenueFactory(siret="12345678900018", name="Le Cinéma")
-        offerers_factories.VenueFactory(siret="12344455600012", name="La Librairie")
-        offerers_factories.VenueFactory(siret="12345678900011", name="La Médiathèque")
-        offerers_factories.VenueFactory(siret="56123478900023", name="Cinéma concurrent")
+        offerers_factories.VenueFactory(id=1, siret="10020030000000", name="La scène")
+        offerers_factories.VenueFactory(id=666666001, siret="10020030000021", name="Le Théâtre")
+        offerers_factories.VenueFactory(id=666666002, siret="12345678900018", name="Le Cinéma")
+        offerers_factories.VenueFactory(id=666666003, siret="12344455600012", name="La Librairie")
+        offerers_factories.VenueFactory(id=666666004, siret="12345678900011", name="La Médiathèque")
+        offerers_factories.VenueFactory(id=12344, siret="56123478900023", name="Cinéma concurrent")
 
         _test_autocomplete(authenticated_client, "backoffice_web.autocomplete_venues", search_query, expected_texts)
 
