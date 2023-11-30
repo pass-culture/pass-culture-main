@@ -4,7 +4,6 @@ import typing
 from dateutil.relativedelta import relativedelta
 import factory
 
-from pcapi.core.categories.subcategories_v2 import COLLECTIVE_SUBCATEGORIES
 from pcapi.core.educational import models
 from pcapi.core.educational import utils
 from pcapi.core.factories import BaseFactory
@@ -27,7 +26,6 @@ class CollectiveOfferFactory(BaseFactory):
     class Meta:
         model = models.CollectiveOffer
 
-    subcategoryId = factory.Iterator(COLLECTIVE_SUBCATEGORIES)
     name = factory.Sequence("CollectiveOffer {}".format)
     description = factory.Sequence("A passionate description of collectiveoffer {}".format)
     venue = factory.SubFactory(offerers_factories.VenueFactory)
@@ -82,7 +80,6 @@ class CollectiveOfferTemplateFactory(BaseFactory):
     class Meta:
         model = models.CollectiveOfferTemplate
 
-    subcategoryId = factory.Iterator(COLLECTIVE_SUBCATEGORIES)
     name = factory.Sequence("CollectiveOffer {}".format)
     description = factory.Sequence("A passionate description of collectiveoffer {}".format)
     venue = factory.SubFactory(offerers_factories.VenueFactory)
