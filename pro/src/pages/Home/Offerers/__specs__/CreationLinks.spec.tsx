@@ -122,12 +122,6 @@ describe('creationLinks', () => {
       offerersNames: baseOfferersNames,
     })
     vi.spyOn(api, 'getOfferer').mockResolvedValue(baseOfferers[0])
-    vi.spyOn(api, 'getVenueStats').mockResolvedValue({
-      activeBookingsQuantity: 4,
-      activeOffersCount: 2,
-      soldOutOffersCount: 3,
-      validatedBookingsQuantity: 3,
-    })
     vi.spyOn(api, 'postProFlags').mockResolvedValue()
   })
 

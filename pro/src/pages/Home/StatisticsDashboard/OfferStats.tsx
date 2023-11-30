@@ -114,8 +114,8 @@ export const OfferStats = ({ offerer, className }: OfferStatsProps) => {
 
               <div className={styles['pending-description']}>
                 <p>
-                  Le contrôle de conformité peut prendre jusqu'à 72 heures. En
-                  cas de validation, l'offre sera automatiquement publiée.
+                  Le contrôle de conformité peut prendre jusqu’à 72 heures. En
+                  cas de validation, l’offre sera automatiquement publiée.
                 </p>
 
                 <ButtonLink
