@@ -10,10 +10,6 @@ import {
   RecurrenceType,
 } from '../types'
 
-vi.mock('screens/IndividualOffer/constants', () => ({
-  MAX_STOCKS_PER_OFFER: 5,
-}))
-
 const mockSuccessNotification = vi.fn()
 const mockErrorNotification = vi.fn()
 
@@ -383,7 +379,7 @@ describe('onSubmit', () => {
     const result = await onSubmit(formValues, '75', 66, notify)
 
     expect(mockErrorNotification).toHaveBeenCalledWith(
-      `Veuillez créer moins de 5 dates par offre.`
+      `Une erreur est survenue lors de l’enregistrement de vos stocks.`
     )
     expect(result).toEqual(undefined)
   })
