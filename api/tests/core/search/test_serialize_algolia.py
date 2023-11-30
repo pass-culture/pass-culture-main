@@ -314,6 +314,7 @@ def test_serialize_collective_offer():
         venue__departementCode="86",
         venue__latitude=algolia.DEFAULT_LATITUDE,
         venue__longitude=algolia.DEFAULT_LONGITUDE,
+        venue__adageId="123456",
         educational_domains=[domain1, domain2],
         institution=educational_institution,
         interventionArea=["1", "90", "94"],
@@ -349,6 +350,7 @@ def test_serialize_collective_offer():
             "id": collective_offer.venue.id,
             "name": "La Moyenne Librairie SA",
             "publicName": "La Moyenne Librairie",
+            "adageId": collective_offer.venue.adageId,
         },
         "_geoloc": {
             "lat": float(collective_offer.venue.latitude),
@@ -403,6 +405,7 @@ def test_serialize_collective_offer_template():
         venue__publicName="La Moyenne Librairie",
         venue__managingOfferer__name="Les Librairies Associées",
         venue__departementCode="86",
+        venue__adageId="123456",
         educational_domains=[domain1, domain2],
         interventionArea=None,
         offerVenue={"addressType": OfferAddressType.OFFERER_VENUE, "venueId": venue.id, "otherAddress": ""},
@@ -433,6 +436,7 @@ def test_serialize_collective_offer_template():
             "id": collective_offer_template.venue.id,
             "name": "La Moyenne Librairie SA",
             "publicName": "La Moyenne Librairie",
+            "adageId": collective_offer_template.venue.adageId,
         },
         "_geoloc": {
             "lat": float(venue.latitude),
