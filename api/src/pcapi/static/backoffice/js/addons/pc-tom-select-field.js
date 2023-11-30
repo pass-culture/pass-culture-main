@@ -105,6 +105,7 @@ class PcTomSelectField extends PcAddOn {
     return {
       valueField: 'id',
       labelField: 'text',
+      searchField: ['id','text'],
       load: (query, callback) => {
         const url = `${tomselectAutocompleteUrl}?q=${encodeURIComponent(query)}`;
         fetch(url)
