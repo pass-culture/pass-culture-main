@@ -26,7 +26,7 @@ class OffererViewsPerDay(BaseQuery):
             event_date as eventDate,
             cum_consult as numberOfViews
         FROM
-            `{settings.BIG_QUERY_NOTIFICATIONS_TABLE_BASENAME}.{DAILY_CONSULT_PER_OFFERER_LAST_180_DAYS_TABLE}`
+            `{settings.BIG_QUERY_TABLE_BASENAME}.{DAILY_CONSULT_PER_OFFERER_LAST_180_DAYS_TABLE}`
         WHERE
             offerer_id = @offerer_id
         ORDER BY event_date DESC
@@ -57,7 +57,7 @@ class OffersData(BaseQuery):
             DISTINCT offer_id as offerId,
             nb_consult_last_30_days as numberOfViews,
         FROM
-            `{settings.BIG_QUERY_NOTIFICATIONS_TABLE_BASENAME}.{TOP_3_MOST_CONSULTED_OFFERS_LAST_30_DAYS_TABLE}`
+            `{settings.BIG_QUERY_TABLE_BASENAME}.{TOP_3_MOST_CONSULTED_OFFERS_LAST_30_DAYS_TABLE}`
         WHERE
             offerer_id = @offerer_id
         AND
@@ -80,7 +80,7 @@ class OffererTotalViewsLast30DaysQuery(BaseQuery):
         SELECT
             IFNULL(SUM(nb_daily_consult), 0) as totalViews
         FROM
-            `{settings.BIG_QUERY_NOTIFICATIONS_TABLE_BASENAME}.{DAILY_CONSULT_PER_OFFERER_LAST_180_DAYS_TABLE}`
+            `{settings.BIG_QUERY_TABLE_BASENAME}.{DAILY_CONSULT_PER_OFFERER_LAST_180_DAYS_TABLE}`
         WHERE
             offerer_id = @offerer_id
         AND
