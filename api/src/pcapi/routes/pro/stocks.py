@@ -1,4 +1,3 @@
-import decimal
 import logging
 
 from flask_login import current_user
@@ -37,9 +36,7 @@ def _stock_exists(
 ) -> bool:
     for stock in existing_stocks:
         if (
-            # pylint: disable=too-many-boolean-expressions
             stock.offerId == offer_id
-            and stock.price == (stock_to_create.price or decimal.Decimal(0))
             and stock.beginningDatetime
             == (stock_to_create.beginning_datetime.replace(tzinfo=None) if stock_to_create.beginning_datetime else None)
             and stock.bookingLimitDatetime
@@ -64,7 +61,6 @@ def _get_existing_stocks_by_fields(
             offers_models.Stock.isSoftDeleted == False,
             offers_models.Stock.beginningDatetime == stock.beginning_datetime,
             offers_models.Stock.bookingLimitDatetime == stock.booking_limit_datetime,
-            offers_models.Stock.price == (stock.price or decimal.Decimal(0)),
             offers_models.Stock.priceCategoryId == stock.price_category_id,
             offers_models.Stock.quantity == stock.quantity,
         )
