@@ -179,12 +179,6 @@ describe('offererDetailsLegacy', () => {
     vi.spyOn(api, 'getOfferer').mockResolvedValue(
       firstOffererByAlphabeticalOrder
     )
-    vi.spyOn(api, 'getVenueStats').mockResolvedValue({
-      activeBookingsQuantity: 4,
-      activeOffersCount: 2,
-      soldOutOffersCount: 3,
-      validatedBookingsQuantity: 3,
-    })
     vi.spyOn(useAnalytics, 'default').mockImplementation(() => ({
       logEvent: mockLogEvent,
     }))
