@@ -1077,16 +1077,14 @@ def search_public_account_in_history_email(search_query: str) -> BaseQuery:
 
         # including old emails: look for validated email updates inside user_email_history
         accounts = accounts.filter(
-            sa.and_(
-                models.UserEmailHistory.oldEmail == sanitized_term,
-                models.UserEmailHistory.eventType.in_(
-                    {
-                        models.EmailHistoryEventTypeEnum.VALIDATION,
-                        models.EmailHistoryEventTypeEnum.ADMIN_VALIDATION,
-                        models.EmailHistoryEventTypeEnum.ADMIN_UPDATE,
-                    }
-                ),
-            ),  # type: ignore
+            models.UserEmailHistory.oldEmail == sanitized_term,
+            models.UserEmailHistory.eventType.in_(
+                {
+                    models.EmailHistoryEventTypeEnum.VALIDATION,
+                    models.EmailHistoryEventTypeEnum.ADMIN_VALIDATION,
+                    models.EmailHistoryEventTypeEnum.ADMIN_UPDATE,
+                }
+            ),
         ).from_self()
     elif email_utils.is_valid_email_domain(sanitized_term):
         accounts = accounts.join(models.UserEmailHistory)
