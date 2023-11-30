@@ -1110,8 +1110,12 @@ class OffererStats(PcObject, Base, Model):
 
     syncDate: datetime = Column(DateTime, nullable=False)
     table: str = Column(String(120), nullable=False)
-    jsonData: OffererStatsData = sa.Column(
-        "jsonData", sa_mutable.MutableDict.as_mutable(sa_psql.JSONB), default={}, server_default="{}", nullable=False
+    jsonData: dict = sa.Column(  # serialized from `OffererStatsData`
+        "jsonData",
+        sa_mutable.MutableDict.as_mutable(sa_psql.JSONB),
+        default={},
+        server_default="{}",
+        nullable=False,
     )
 
     __table_args__ = (UniqueConstraint("offererId", "table", name="offerer_stats_unique"),)

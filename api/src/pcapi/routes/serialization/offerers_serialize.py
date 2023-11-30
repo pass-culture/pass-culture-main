@@ -332,21 +332,23 @@ class GetOffererStatsResponseModel(BaseModel):
         cls,
         offerer_id: int,
         syncDate: datetime,
-        dailyViews: list[offerers_models.OffererViewsModel],
-        topOffers: list[offerers_models.TopOffersData],
+        dailyViews: list[dict],  # dicts are serialized from offerers_models.OffererViewsModel
+        topOffers: list[dict],  # dicts are serialized from offerers_models.TopOffersData
         total_views_last_30_days: int,
     ) -> "GetOffererStatsResponseModel":
         top_offers_response = []
         if topOffers:
             top_offers_response = [
-                TopOffersResponseData.build(topOffer["offerId"], topOffer["numberOfViews"]) for topOffer in topOffers  # type: ignore
+                TopOffersResponseData.build(topOffer["offerId"], topOffer["numberOfViews"]) for topOffer in topOffers
             ]
 
         return cls(
             offererId=offerer_id,
             syncDate=syncDate,
             jsonData=OffererStatsDataModel(
-                topOffers=top_offers_response, totalViewsLast30Days=total_views_last_30_days, dailyViews=dailyViews
+                topOffers=top_offers_response,
+                totalViewsLast30Days=total_views_last_30_days,
+                dailyViews=[offerers_models.OffererViewsModel(**_v) for _v in dailyViews],
             ),
         )
 
