@@ -22,7 +22,7 @@ class FavoritesNotBooked(BaseQuery):
             offer_name,
             ARRAY_AGG(user_id) AS user_ids
         FROM
-            `{settings.BIG_QUERY_NOTIFICATIONS_TABLE_BASENAME}.favorites_not_booked`
+            `{settings.BIG_QUERY_TABLE_BASENAME}.favorites_not_booked`
         WHERE
             execution_date >= CURRENT_DATE()
         GROUP BY
