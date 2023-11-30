@@ -51,7 +51,8 @@ def _stock_exists(
 
 
 def _get_existing_stocks_by_fields(
-    offer_id: int, stock_payload: list[serialization.StockCreationBodyModel] | list[serialization.StockEditionBodyModel]
+    offer_id: int,
+    stock_payload: list[serialization.StockCreationBodyModel | serialization.StockEditionBodyModel],
 ) -> list[offers_models.Stock]:
     combinaisons_to_check = [
         and_(

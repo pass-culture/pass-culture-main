@@ -63,9 +63,12 @@ class StockIdResponseModel(BaseModel):
 
 class StocksUpsertBodyModel(BaseModel):
     offer_id: int
-    stocks: pydantic_v1.conlist(  # type: ignore
-        StockCreationBodyModel | StockEditionBodyModel, min_items=1, max_items=models.Offer.MAX_STOCKS_PER_OFFER
-    )
+    if typing.TYPE_CHECKING:
+        stocks: list[StockCreationBodyModel | StockEditionBodyModel]
+    else:
+        stocks: pydantic_v1.conlist(
+            StockCreationBodyModel | StockEditionBodyModel, min_items=1, max_items=models.Offer.MAX_STOCKS_PER_OFFER
+        )
 
     class Config:
         alias_generator = to_camel
