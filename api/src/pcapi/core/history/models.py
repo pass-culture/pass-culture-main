@@ -53,6 +53,7 @@ class ActionType(enum.Enum):
     FINANCE_INCIDENT_USER_RECREDIT = "Compte re-crédité suite à un incident"
     FINANCE_INCIDENT_WAIT_FOR_PAYMENT = "Attente de la prochaine échéance de remboursement"
     FINANCE_INCIDENT_GENERATE_DEBIT_NOTE = "Une note de débit va être générée"
+    FINANCE_INCIDENT_CHOOSE_DEBIT_NOTE = "Choix note de débit"
     # Bank accounts changes:
     LINK_VENUE_BANK_ACCOUNT_DEPRECATED = "Lieu dissocié d'un compte bancaire"
     LINK_VENUE_BANK_ACCOUNT_CREATED = "Lieu associé à un compte bancaire"

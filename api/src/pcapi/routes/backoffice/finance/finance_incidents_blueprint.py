@@ -19,6 +19,7 @@ from pcapi.core.finance import models as finance_models
 from pcapi.core.finance import utils as finance_utils
 from pcapi.core.history import api as history_api
 from pcapi.core.history import models as history_models
+from pcapi.core.mails.transactional.finance_incidents.finance_incident_notification import send_finance_incident_emails
 from pcapi.core.offerers import models as offerer_models
 from pcapi.core.offers import models as offers_models
 from pcapi.core.permissions import models as perm_models
@@ -28,6 +29,7 @@ from pcapi.routes.backoffice import filters
 from pcapi.routes.backoffice import utils
 from pcapi.routes.backoffice.finance import forms
 from pcapi.routes.backoffice.finance import validation
+from pcapi.routes.backoffice.forms import empty as empty_forms
 from pcapi.routes.backoffice.offerers import forms as offerer_forms
 from pcapi.utils.human_ids import humanize
 
@@ -510,6 +512,108 @@ def validate_finance_incident(finance_incident_id: int) -> utils.BackofficeRespo
     )
 
     flash("L'incident a été validé avec succès.", "success")
+    return render_finance_incident(finance_incident)
+
+
+@finance_incidents_blueprint.route("/<int:finance_incident_id>/force-debit-note", methods=["GET"])
+@utils.permission_required(perm_models.Permissions.MANAGE_INCIDENTS)
+def get_finance_incident_force_debit_note_form(finance_incident_id: int) -> utils.BackofficeResponse:
+    finance_incident = finance_models.FinanceIncident.query.filter_by(id=finance_incident_id).one_or_none()
+
+    if not finance_incident:
+        raise NotFound()
+
+    return render_template(
+        "components/turbo/modal_form.html",
+        form=empty_forms.EmptyForm(),
+        dst=url_for("backoffice_web.finance_incidents.force_debit_note", finance_incident_id=finance_incident_id),
+        div_id=f"finance-incident-force-debit-note-modal-{finance_incident_id}",
+        title="Générer une note de débit",
+        button_text="Confirmer",
+        information='Vous allez choisir le mode de compensation "Note de débit", une note de débit sera envoyée à l\'acteur culturel à la prochaine échéance. Voulez-vous continuer ?',
+    )
+
+
+@finance_incidents_blueprint.route("/<int:finance_incident_id>/force-debit-note", methods=["POST"])
+@utils.permission_required(perm_models.Permissions.MANAGE_INCIDENTS)
+def force_debit_note(finance_incident_id: int) -> utils.BackofficeResponse:
+    finance_incident = _get_incident(finance_incident_id)
+
+    if finance_incident.status != finance_models.IncidentStatus.VALIDATED or finance_incident.isClosed:
+        flash("Cette action ne peut être effectuée que sur un incident validé non terminé.", "warning")
+        return redirect(
+            request.referrer
+            or url_for("backoffice_web.finance_incidents.get_incident", finance_incident_id=finance_incident.id),
+            303,
+        )
+
+    finance_incident.forceDebitNote = True
+    db.session.add(finance_incident)
+
+    history_api.add_action(
+        history_models.ActionType.FINANCE_INCIDENT_CHOOSE_DEBIT_NOTE,
+        author=current_user,
+        finance_incident=finance_incident,
+        modified_info={
+            "force_debit_note": {"old_info": False, "new_info": True},
+        },
+    )
+
+    db.session.commit()
+
+    flash("Une note de débit sera générée à la prochaine échéance.", "success")
+    return render_finance_incident(finance_incident)
+
+
+@finance_incidents_blueprint.route("/<int:finance_incident_id>/cancel-debit-note", methods=["GET"])
+@utils.permission_required(perm_models.Permissions.MANAGE_INCIDENTS)
+def get_finance_incident_cancel_debit_note_form(finance_incident_id: int) -> utils.BackofficeResponse:
+    finance_incident = finance_models.FinanceIncident.query.filter_by(id=finance_incident_id).one_or_none()
+
+    if not finance_incident:
+        raise NotFound()
+
+    return render_template(
+        "components/turbo/modal_form.html",
+        form=empty_forms.EmptyForm(),
+        dst=url_for("backoffice_web.finance_incidents.cancel_debit_note", finance_incident_id=finance_incident_id),
+        div_id=f"finance-incident-cancel-debit-note-modal-{finance_incident_id}",
+        title="Récupérer l'argent sur les prochaines réservations",
+        button_text="Confirmer",
+        information='Vous allez choisir le mode de compensation "Récupération sur les prochaines réservations", un mail sera envoyé à la suite de la confirmation. Voulez-vous continuer ?',
+    )
+
+
+@finance_incidents_blueprint.route("/<int:finance_incident_id>/cancel-debit-note", methods=["POST"])
+@utils.permission_required(perm_models.Permissions.MANAGE_INCIDENTS)
+def cancel_debit_note(finance_incident_id: int) -> utils.BackofficeResponse:
+    finance_incident = _get_incident(finance_incident_id)
+
+    if finance_incident.status != finance_models.IncidentStatus.VALIDATED or finance_incident.isClosed:
+        flash("Cette action ne peut être effectuée que sur un incident validé non terminé.", "warning")
+        return redirect(
+            request.referrer
+            or url_for("backoffice_web.finance_incidents.get_incident", finance_incident_id=finance_incident.id),
+            303,
+        )
+
+    finance_incident.forceDebitNote = False
+    db.session.add(finance_incident)
+
+    history_api.add_action(
+        history_models.ActionType.FINANCE_INCIDENT_CHOOSE_DEBIT_NOTE,
+        author=current_user,
+        finance_incident=finance_incident,
+        modified_info={
+            "force_debit_note": {"old_info": True, "new_info": False},
+        },
+    )
+
+    db.session.commit()
+
+    send_finance_incident_emails(finance_incident)
+
+    flash("Vous avez fait le choix de récupérer l'argent sur les prochaines réservations de l'acteur.", "success")
     return render_finance_incident(finance_incident)
 
 

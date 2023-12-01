@@ -525,6 +525,8 @@ def format_modified_info_values(modified_info: typing.Any, name: str | None = No
 
 def format_modified_info_name(info_name: str) -> str:
     match info_name:
+        case "force_debit_note":
+            return "Génération d'une note de débit"
         case "comment":
             return "Commentaire"
         case "email":
