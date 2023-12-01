@@ -15,6 +15,7 @@ pytestmark = pytest.mark.usefixtures("db_session")
 REQUEST_BODY = {
     "address": "3 RUE DE VALOIS",
     "city": "Paris",
+    "banId": "75101_9575_00003",
     "createVenueWithoutSiret": False,
     "latitude": 2.30829,
     "longitude": 48.87171,

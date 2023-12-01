@@ -53,6 +53,7 @@ class VenueFactory(BaseFactory):
     longitude: float | None = 2.37850
     managingOfferer = factory.SubFactory(OffererFactory)
     address = factory.LazyAttribute(lambda o: None if o.isVirtual else "1 boulevard Poissonnière")
+    banId = factory.LazyAttribute(lambda o: None if o.isVirtual else "75102_7560_00001")
     postalCode = factory.LazyAttribute(lambda o: None if o.isVirtual else "75000")
     city = factory.LazyAttribute(lambda o: None if o.isVirtual else "Paris")
     publicName = factory.SelfAttribute("name")

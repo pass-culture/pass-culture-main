@@ -8,6 +8,7 @@ const setInitialFormValues = (venue: Venue): VenueFormValues => {
     reimbursementPointId: venue.reimbursementPointId,
     accessibility: venue.accessibility,
     address: venue.address,
+    banId: venue.banId,
     addressAutocomplete: `${venue.address} ${venue.postalCode} ${venue.city}`,
     'search-addressAutocomplete': `${venue.address} ${venue.postalCode} ${venue.city}`,
     bannerMeta: venue.bannerMeta,

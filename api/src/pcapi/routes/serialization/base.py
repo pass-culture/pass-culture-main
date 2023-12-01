@@ -79,6 +79,11 @@ class VenueAddress(RequiredStrippedString):
     max_length = 200
 
 
+class VenueBanId(pydantic_v1.ConstrainedStr):
+    strip_whitespace = True
+    max_length = 20
+
+
 class VenueCity(RequiredStrippedString):
     max_length = 200
 

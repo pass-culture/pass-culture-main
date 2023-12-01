@@ -268,6 +268,11 @@ class Venue(PcObject, Base, Model, HasThumbMixin, ProvidableMixin, Accessibility
 
     city = Column(String(50), nullable=True)
 
+    # banId is a unique interoperability key for French addresses registered in the
+    # Base Adresse Nationale. See "cle_interop" here:
+    # https://doc.adresse.data.gouv.fr/mettre-a-jour-sa-base-adresse-locale/le-format-base-adresse-locale
+    banId = Column(String(20), nullable=True)
+
     timezone = Column(String(50), nullable=False, default=METROPOLE_TIMEZONE, server_default=METROPOLE_TIMEZONE)
 
     publicName = Column(String(255), nullable=True)
@@ -394,6 +399,14 @@ class Venue(PcObject, Base, Model, HasThumbMixin, ProvidableMixin, Accessibility
     bankAccountLinks: list["VenueBankAccountLink"] = relationship(
         "VenueBankAccountLink", back_populates="venue", passive_deletes=True
     )
+
+    # FIXME: ogeber 27.11 uncomment once all permanent venues have a ban_id (cf ticket 25999)
+    # __table_args__ = (
+    #     CheckConstraint(
+    #         "(isPermanent = FALSE OR (isPermanent = TRUE AND banId IS NOT NULL))",
+    #         name="check_ban_id_is_non_nullable_when_venue_is_permanent"
+    #     ),
+    # )
 
     def _get_type_banner_url(self) -> str | None:
         elligible_banners: tuple[str, ...] = VENUE_TYPE_DEFAULT_BANNERS.get(self.venueTypeCode, tuple())

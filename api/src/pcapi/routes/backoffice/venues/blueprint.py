@@ -169,6 +169,7 @@ def render_venue_details(
                 else None,
                 postal_code=venue.postalCode,
                 address=venue.address,
+                ban_id=venue.banId,
                 booking_email=venue.bookingEmail,
                 phone_number=venue.contact.phone_number if venue.contact else None,
                 is_permanent=venue.isPermanent,

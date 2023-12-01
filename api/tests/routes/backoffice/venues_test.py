@@ -895,6 +895,7 @@ class UpdateVenueTest(PostEndpointHelper):
             "city": venue.city or "",
             "postal_code": venue.postalCode or "",
             "address": venue.address or "",
+            "ban_id": venue.banId or "",
             "booking_email": venue.bookingEmail or "",
             "phone_number": venue.contact.phone_number or "",
             "longitude": venue.longitude,
@@ -1261,6 +1262,32 @@ class UpdateVenueTest(PostEndpointHelper):
         db.session.refresh(venue)
         assert venue.publicName == "Ma boutique"
         assert venue.siret == original_siret
+
+    def test_update_venue_ban_id(self, authenticated_client):
+        bo_user = users_factories.AdminFactory()
+        backoffice_api.upsert_roles(bo_user, [perm_models.Roles.SUPPORT_PRO])
+
+        venue = offerers_factories.VenueFactory()
+
+        data = self._get_current_data(venue)
+        data["is_permanent"] = True
+        data["ban_id"] = "15152_0024_00003"
+
+        response = self.post_to_endpoint(authenticated_client, venue_id=venue.id, form=data)
+
+        assert response.status_code == 303
+
+        db.session.refresh(venue)
+
+        assert venue.address == data["address"]
+        assert venue.banId == data["ban_id"]
+        assert venue.isPermanent == data["is_permanent"]
+        assert venue.action_history[0].extraData == {
+            "modified_info": {
+                "banId": {"new_info": "15152_0024_00003", "old_info": "75102_7560_00001"},
+                "isPermanent": {"new_info": True, "old_info": False},
+            }
+        }
 
 
 class GetVenueHistoryTest(GetEndpointHelper):

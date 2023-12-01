@@ -262,6 +262,7 @@ describe('VenueFormScreen', () => {
       venueLabel: 'EM',
       departmentCode: '',
       address: 'PARIS',
+      banId: '35288_7283_00001',
       addressAutocomplete: 'Allee Rene Omnes 35400 Saint-Malo',
       'search-addressAutocomplete': 'PARIS',
       city: 'Saint-Malo',
@@ -303,6 +304,7 @@ describe('VenueFormScreen', () => {
         none: true,
       },
       address: 'Address',
+      banId: 'ban_id',
       bannerMeta: null,
       bannerUrl: '',
       city: 'city',
@@ -678,6 +680,7 @@ describe('VenueFormScreen', () => {
     beforeEach(() => {
       expectedEditVenue = {
         address: 'PARIS',
+        banId: '35288_7283_00001',
         audioDisabilityCompliant: false,
         bookingEmail: 'em@ail.fr',
         city: 'Saint-Malo',

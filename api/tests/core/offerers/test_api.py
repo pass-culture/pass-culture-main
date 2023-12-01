@@ -81,6 +81,7 @@ class CreateVenueTest:
             "address": "rue du test",
             "city": "Paris",
             "postalCode": "75000",
+            "banId": "75113_1834_00007",
             "latitude": 1,
             "longitude": 1,
             "managingOffererId": offerer.id,
@@ -101,6 +102,7 @@ class CreateVenueTest:
 
         venue = offerers_models.Venue.query.one()
         assert venue.address == "rue du test"
+        assert venue.banId == "75113_1834_00007"
         assert venue.city == "Paris"
         assert venue.postalCode == "75000"
         assert venue.latitude == 1
@@ -2173,6 +2175,7 @@ class UpdateOffererTagTest:
 class CreateFromOnboardingDataTest:
     def assert_common_venue_attrs(self, venue: offerers_models.Venue) -> None:
         assert venue.address == "3 RUE DE VALOIS"
+        assert venue.banId == "75101_9575_00003"
         assert venue.bookingEmail == "pro@example.com"
         assert venue.city == "Paris"
         assert not venue.current_reimbursement_point_id
@@ -2215,6 +2218,7 @@ class CreateFromOnboardingDataTest:
     ) -> offerers_serialize.SaveNewOnboardingDataQueryModel:
         return offerers_serialize.SaveNewOnboardingDataQueryModel(
             address="3 RUE DE VALOIS",
+            banId="75101_9575_00003",
             city="Paris",
             createVenueWithoutSiret=create_venue_without_siret,
             latitude=2.30829,
