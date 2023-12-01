@@ -51,6 +51,14 @@ const LinkVenuesDialog = ({
     (venue) => selectedVenuesIds.indexOf(venue.id) >= 0
   )
 
+  function onCancel() {
+    if (isEqual(selectedVenuesIds, initialVenuesIds)) {
+      closeDialog()
+    } else {
+      setShowDiscardChangesDialog(true)
+    }
+  }
+
   async function submitForm(hasUncheckedVenue = false) {
     if (isEqual(selectedVenuesIds, initialVenuesIds)) {
       closeDialog(false)
@@ -104,9 +112,7 @@ const LinkVenuesDialog = ({
         labelledBy="link-venues-dialog"
         extraClassNames={styles['dialog']}
         hasCloseButton={true}
-        onDismiss={() => {
-          closeDialog()
-        }}
+        onDismiss={onCancel}
       >
         <h3 className={styles['dialog-title']}>
           Compte bancaire : {selectedBankAccount.label}
@@ -164,13 +170,7 @@ const LinkVenuesDialog = ({
             <div className={styles['dialog-actions']}>
               <Button
                 variant={ButtonVariant.SECONDARY}
-                onClick={() => {
-                  if (isEqual(selectedVenuesIds, initialVenuesIds)) {
-                    closeDialog()
-                  } else {
-                    setShowDiscardChangesDialog(true)
-                  }
-                }}
+                onClick={onCancel}
               >
                 Annuler
               </Button>
