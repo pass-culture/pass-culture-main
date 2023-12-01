@@ -29,6 +29,8 @@ class OffererViewsPerDay(BaseQuery):
             `{settings.BIG_QUERY_NOTIFICATIONS_TABLE_BASENAME}.{DAILY_CONSULT_PER_OFFERER_LAST_180_DAYS_TABLE}`
         WHERE
             offerer_id = @offerer_id
+        AND
+            DATE(event_date) >= DATE_SUB(CURRENT_DATE(), INTERVAL 180 DAY)
         ORDER BY event_date DESC
         LIMIT 180
         """
