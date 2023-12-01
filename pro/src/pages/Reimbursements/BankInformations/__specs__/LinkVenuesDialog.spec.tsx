@@ -152,4 +152,16 @@ describe('LinkVenueDialog', () => {
       'Une erreur est survenue. Merci de réessayer plus tard'
     )
   })
+  it('should display banner if at least one venue has no pricing point', () => {
+    const managedVenues = [
+      { ...defaultManagedVenues, id: 1, hasPricingPoint: true },
+      { ...defaultManagedVenues, id: 2, hasPricingPoint: false },
+    ]
+
+    renderLinkVenuesDialog(1, defaultBankAccountResponseModel, managedVenues)
+
+    expect(
+      screen.getByText('Certains de vos lieux n’ont pas de SIRET')
+    ).toBeInTheDocument()
+  })
 })
