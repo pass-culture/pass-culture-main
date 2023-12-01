@@ -21,7 +21,6 @@ $venue-image-width: rem.torem(276px);
       box-shadow: none;
     }
 
-
     .venue-infos-name,
     .venue-infos-distance {
       text-decoration: none;
@@ -52,6 +51,14 @@ $venue-image-width: rem.torem(276px);
   height: $venue-image-height;
   border-radius: rem.torem(16px);
   object-fit: cover;
+
+  &.venue-image-fallback {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background-color: colors.$grey-light;
+    color: colors.$grey-semi-dark;
+  }
 }
 
 .venue-infos {
