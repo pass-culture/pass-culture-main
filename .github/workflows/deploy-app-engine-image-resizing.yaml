@@ -47,6 +47,7 @@ jobs:
       - name: 'Set up Cloud SDK'
         uses: 'google-github-actions/setup-gcloud@v1'
       - name: Add sha to image-resizing
+        if: ${{ inputs.environment == 'testing' }}
         run: |
           cd ./app-engine/image-resizing
           echo "${{ github.sha }}" > version.txt
