@@ -1190,8 +1190,7 @@ def validate_pro_user_email(user: users_models.User, author_user: users_models.U
     else:
         repository.save(user)
 
-    if feature.FeatureToggle.WIP_ENABLE_NEW_USER_OFFERER_LINK.is_active():
-        offerers_api.accept_offerer_invitation_if_exists(user)
+    offerers_api.accept_offerer_invitation_if_exists(user)
 
 
 def save_firebase_flags(user: models.User, firebase_value: dict) -> None:
