@@ -52,6 +52,7 @@ const Validation = (): JSX.Element => {
     if (activity === null || activity == DEFAULT_ACTIVITY_VALUES) {
       navigate('/parcours-inscription/activite')
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [activity, offerer])
 
   if (isLoadingVenueTypes) {
