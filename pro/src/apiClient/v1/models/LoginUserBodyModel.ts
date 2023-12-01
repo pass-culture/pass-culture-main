@@ -6,5 +6,6 @@
 export type LoginUserBodyModel = {
   identifier: string;
   password: string;
+  token: string;
 };
 
