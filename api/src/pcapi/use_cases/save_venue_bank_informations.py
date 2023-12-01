@@ -98,27 +98,35 @@ class SaveVenueBankInformationsMixin(AbstractSaveBankInformations):
     def annotate_application(self, application_detail: ApplicationDetailOldJourney, message: str) -> None:
         """
         Annotate the application with the rightfull message at the end of the automated process.
-        Do nothing if private annotation already exists (Don’t overwrite compliance annotations)
+        Prepend if private annotation already exists
         """
-        if not application_detail.error_annotation_value:
-            update_demarches_simplifiees_text_annotations(
-                dossier_id=application_detail.dossier_id,
-                annotation_id=application_detail.error_annotation_id,
-                message=message,
-            )
+        if application_detail.error_annotation_value:
+            if message in application_detail.error_annotation_value:
+                return
+            message = f"{message}, {application_detail.error_annotation_value}"
+
+        update_demarches_simplifiees_text_annotations(
+            dossier_id=application_detail.dossier_id,
+            annotation_id=application_detail.error_annotation_id,
+            message=message,
+        )
 
     def annotate_application_with_errors(self, application_detail: ApplicationDetailOldJourney) -> None:
         """
         Annotate the application with errors raised while processing it.
-        Do nothing if private annotations already exists (Don’t overwrite compliance annotations)
+        Prepend if private annotation already exists
         """
-        if not application_detail.error_annotation_value:
-            message = format_error_to_demarches_simplifiees_text(self.api_errors)
-            update_demarches_simplifiees_text_annotations(
-                dossier_id=application_detail.dossier_id,
-                annotation_id=application_detail.error_annotation_id,
-                message=message,
-            )
+        message = format_error_to_demarches_simplifiees_text(self.api_errors)
+        if application_detail.error_annotation_value:
+            if message in application_detail.error_annotation_value:
+                return
+            message = f"{message}, {application_detail.error_annotation_value}"
+
+        update_demarches_simplifiees_text_annotations(
+            dossier_id=application_detail.dossier_id,
+            annotation_id=application_detail.error_annotation_id,
+            message=message,
+        )
 
 
 class SaveVenueBankInformationsV2(SaveVenueBankInformationsMixin):
