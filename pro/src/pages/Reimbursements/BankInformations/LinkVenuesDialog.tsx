@@ -1,9 +1,12 @@
+import cn from 'classnames'
 import { FormikProvider, useFormik } from 'formik'
 import isEqual from 'lodash.isequal'
 import React, { useState } from 'react'
 
 import { api } from 'apiClient/api'
 import { BankAccountResponseModel, ManagedVenues } from 'apiClient/v1'
+import Callout from 'components/Callout/Callout'
+import { CalloutVariant } from 'components/Callout/types'
 import ConfirmDialog from 'components/Dialog/ConfirmDialog'
 import DialogBox from 'components/DialogBox'
 import { BankAccountEvents } from 'core/FirebaseEvents/constants'
@@ -41,9 +44,8 @@ const LinkVenuesDialog = ({
   const [venuesToLink, setVenuesToLink] =
     useState<ManagedVenues[]>(managedVenues)
   const availableManagedVenuesIds = venuesToLink
-    ?.filter((venue) => !venue.bankAccountId)
+    .filter((venue) => !venue.bankAccountId && venue.hasPricingPoint)
     ?.map((venue) => venue.id)
-
   const notification = useNotification()
   const { logEvent } = useAnalytics()
 
@@ -53,8 +55,8 @@ const LinkVenuesDialog = ({
   const [selectedVenuesIds, setSelectedVenuesIds] = useState(
     initialVenuesIds ?? []
   )
-  const allVenuesSelected = managedVenues?.every(
-    (venue) => selectedVenuesIds.indexOf(venue.id) >= 0
+  const allVenuesSelected = availableManagedVenuesIds.every(
+    (venueId) => selectedVenuesIds.indexOf(venueId) >= 0
   )
 
   function onCancel() {
@@ -66,7 +68,7 @@ const LinkVenuesDialog = ({
   }
 
   const updateVenuePricingPoint = (venueId: number) => {
-    const venue = managedVenues?.find((venue) => venue.id === venueId)
+    const venue = managedVenues.find((venue) => venue.id === venueId)
     if (venue) {
       setVenuesToLink([
         ...venuesToLink.filter((item) => item.id !== venueId),
@@ -121,18 +123,33 @@ const LinkVenuesDialog = ({
       )
     }
   }
-  const venuesForPricingPoint = managedVenues?.filter((x) => Boolean(x.siret))
+  const venuesForPricingPoint = managedVenues.filter((x) => Boolean(x.siret))
+  const hasVenuesWithoutPricingPoint = managedVenues.some(
+    (venue) => !venue.hasPricingPoint
+  )
   return (
     <>
       <DialogBox
         labelledBy="link-venues-dialog"
-        extraClassNames={styles['dialog']}
+        extraClassNames={cn(styles['dialog'], {
+          [styles['dialog-with-banner']]: hasVenuesWithoutPricingPoint,
+        })}
         hasCloseButton={true}
         onDismiss={onCancel}
       >
         <h3 className={styles['dialog-title']}>
           Compte bancaire : {selectedBankAccount.label}
         </h3>
+        {hasVenuesWithoutPricingPoint && (
+          <Callout
+            title="Certains de vos lieux n’ont pas de SIRET"
+            type={CalloutVariant.ERROR}
+            className={styles['dialog-callout']}
+          >
+            Sélectionnez un SIRET pour chacun de ces lieux avant de pouvoir les
+            rattacher à ce compte bancaire.
+          </Callout>
+        )}
         <div className={styles['dialog-subtitle']}>
           Sélectionnez les lieux dont les offres seront remboursées sur ce
           compte bancaire.
@@ -168,7 +185,7 @@ const LinkVenuesDialog = ({
                 </span>
               </div>
 
-              {venuesToLink?.map((venue) => {
+              {venuesToLink.map((venue) => {
                 return (
                   <div
                     key={venue.id}
@@ -209,7 +226,10 @@ const LinkVenuesDialog = ({
       </DialogBox>
       {showDiscardChangesDialog && (
         <ConfirmDialog
-          extraClassNames={styles['discard-dialog']}
+          extraClassNames={cn(styles['discard-dialog'], {
+            [styles['discard-dialog-with-banner']]:
+              hasVenuesWithoutPricingPoint,
+          })}
           icon={strokeWarningIcon}
           onCancel={() => setShowDiscardChangesDialog(false)}
           title="Les informations non sauvegardées ne seront pas prises en compte"
@@ -223,7 +243,10 @@ const LinkVenuesDialog = ({
       )}
       {showUnlinkVenuesDialog && (
         <ConfirmDialog
-          extraClassNames={styles['unlink-dialog']}
+          extraClassNames={cn(styles['discard-dialog'], {
+            [styles['discard-dialog-with-banner']]:
+              hasVenuesWithoutPricingPoint,
+          })}
           icon={strokeWarningIcon}
           onCancel={() => setShowUnlinkVenuesDialog(false)}
           title="Attention : le ou les lieux désélectionnés ne seront plus remboursés sur ce compte bancaire"
