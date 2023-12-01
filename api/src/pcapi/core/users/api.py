@@ -74,6 +74,7 @@ class T_UNCHANGED(enum.Enum):
 
 UNCHANGED = T_UNCHANGED.TOKEN
 
+
 logger = logging.getLogger(__name__)
 
 
@@ -1346,6 +1347,31 @@ def create_suspicious_login_email_token(
             "source": login_info.source,
         },
     )
+
+
+def save_device_info_and_notify_user(
+    user: models.User, device_info: "account_serialization.TrustedDevice | None"
+) -> None:
+    login_history = None
+    if device_info is not None:
+        if should_save_login_device_as_trusted_device(device_info, user):
+            save_trusted_device(device_info, user)
+
+        login_history = update_login_device_history(device_info, user)
+
+    should_send_suspicious_login_email = (
+        (user.is_active or user.is_account_suspended_upon_user_request)
+        and not is_login_device_a_trusted_device(device_info, user)
+        and feature.FeatureToggle.WIP_ENABLE_SUSPICIOUS_EMAIL_SEND.is_active()
+        and len(get_recent_suspicious_logins(user)) <= constants.MAX_SUSPICIOUS_LOGIN_EMAILS
+    )
+
+    if should_send_suspicious_login_email:
+        account_suspension_token = create_suspicious_login_email_token(login_history, user.id)
+        reset_password_token = create_reset_password_token(user)
+        transactional_mails.send_suspicious_login_email(
+            user, login_history, account_suspension_token, reset_password_token
+        )
 
 
 def delete_old_trusted_devices() -> None:

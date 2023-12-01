@@ -6,7 +6,6 @@ from flask_jwt_extended import jwt_required
 from pcapi.connectors import api_recaptcha
 from pcapi.connectors import google_oauth
 from pcapi.core.external.attributes import api as external_attributes_api
-import pcapi.core.mails.transactional as transactional_mails
 from pcapi.core.subscription.dms import api as dms_subscription_api
 import pcapi.core.token as token_utils
 from pcapi.core.users import api as users_api
@@ -41,8 +40,6 @@ from .serialization import authentication
 
 logger = logging.getLogger(__name__)
 
-MAX_SUSPICIOUS_LOGIN_EMAILS = 5
-
 
 @blueprint.native_v1.route("/signin", methods=["POST"])
 @spectree_serialize(
@@ -70,26 +67,7 @@ def signin(body: authentication.SigninRequest) -> authentication.SigninResponse:
         raise ApiErrors({"code": "ACCOUNT_DELETED", "general": ["Le compte a été supprimé"]})
 
     if FeatureToggle.WIP_ENABLE_TRUSTED_DEVICE.is_active():
-        login_history = None
-        if body.device_info is not None:
-            if users_api.should_save_login_device_as_trusted_device(body.device_info, user):
-                users_api.save_trusted_device(body.device_info, user)
-
-            login_history = users_api.update_login_device_history(body.device_info, user)
-
-        should_send_suspicious_login_email = (
-            (user.is_active or user.is_account_suspended_upon_user_request)
-            and not users_api.is_login_device_a_trusted_device(body.device_info, user)
-            and FeatureToggle.WIP_ENABLE_SUSPICIOUS_EMAIL_SEND.is_active()
-            and len(users_api.get_recent_suspicious_logins(user)) <= MAX_SUSPICIOUS_LOGIN_EMAILS
-        )
-
-        if should_send_suspicious_login_email:
-            account_suspension_token = users_api.create_suspicious_login_email_token(login_history, user.id)
-            reset_password_token = users_api.create_reset_password_token(user)
-            transactional_mails.send_suspicious_login_email(
-                user, login_history, account_suspension_token, reset_password_token
-            )
+        users_api.save_device_info_and_notify_user(user, body.device_info)
 
     users_api.update_last_connection_date(user)
     return authentication.SigninResponse(
@@ -265,6 +243,9 @@ def google_auth(body: authentication.GoogleSigninRequest) -> authentication.Sign
             single_sign_on = users_repo.create_single_sign_on(user, "google", sso_user_id)
             db.session.add(single_sign_on)
 
+    if FeatureToggle.WIP_ENABLE_TRUSTED_DEVICE.is_active():
+        users_api.save_device_info_and_notify_user(user, body.device_info)
+
     users_api.update_last_connection_date(user)
     logger.info(
         "Successful authentication attempt",
@@ -280,6 +261,6 @@ def google_auth(body: authentication.GoogleSigninRequest) -> authentication.Sign
     )
     return authentication.SigninResponse(
         access_token=users_api.create_user_access_token(user),
-        refresh_token=users_api.create_user_refresh_token(user, device_info=None),
+        refresh_token=users_api.create_user_refresh_token(user, body.device_info),
         account_state=user.account_state,
     )
