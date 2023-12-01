@@ -25,6 +25,7 @@ from pcapi.core.finance import utils as finance_utils
 from pcapi.core.fraud import models as fraud_models
 from pcapi.core.offerers import models as offerers_models
 from pcapi.core.offers import models as offers_models
+from pcapi.core.permissions import models as perm_models
 from pcapi.core.users import constants as users_constants
 from pcapi.core.users import models as users_models
 from pcapi.domain.show_types import SHOW_SUB_TYPES_LABEL_BY_CODE
@@ -566,6 +567,13 @@ def format_modified_info_name(info_name: str) -> str:
             return info_name.replace("_", " ").capitalize()
 
 
+def format_permission_name(permission_name: str) -> str:
+    try:
+        return perm_models.Permissions[permission_name].value
+    except KeyError:
+        return permission_name
+
+
 def format_offer_validation_sub_rule_field(sub_rule_field: offers_models.OfferValidationSubRuleField) -> str:
     match sub_rule_field:
         case offers_models.OfferValidationSubRuleField.OFFER_TYPE:
@@ -957,6 +965,7 @@ def install_template_filters(app: Flask) -> None:
     app.jinja_env.filters["format_reason_label"] = format_reason_label
     app.jinja_env.filters["format_modified_info_values"] = format_modified_info_values
     app.jinja_env.filters["format_modified_info_name"] = format_modified_info_name
+    app.jinja_env.filters["format_permission_name"] = format_permission_name
     app.jinja_env.filters["format_gtl_id"] = format_gtl_id
     app.jinja_env.filters["format_gtl_as_csr"] = format_gtl_as_csr
     app.jinja_env.filters["format_offer_validation_rule_list"] = format_offer_validation_rule_list

@@ -2,8 +2,12 @@ import typing
 
 from sqlalchemy.orm import joinedload
 
+from pcapi.core.history import api as history_api
+from pcapi.core.history import models as history_models
 from pcapi.core.permissions import models as perm_models
-from pcapi.repository import repository
+from pcapi.core.users import models as users_models
+from pcapi.models import db
+from pcapi.repository import transaction
 
 
 def raise_error_on_empty_role_name(name: str) -> None:
@@ -21,13 +25,39 @@ def list_permissions() -> list[perm_models.Permission]:
     return permissions
 
 
-def update_role(id_: int, name: str, permission_ids: typing.Iterable[int]) -> perm_models.Role:
+def update_role(
+    id_: int, name: str, permission_ids: typing.Iterable[int], author: users_models.User
+) -> perm_models.Role:
     raise_error_on_empty_role_name(name)
-    permissions = perm_models.Permission.query.filter(perm_models.Permission.id.in_(permission_ids))
+
+    permissions = perm_models.Permission.query.filter(perm_models.Permission.id.in_(permission_ids)).all()
     role = perm_models.Role.query.get(id_)
-    role.name = name
-    role.permissions = permissions.all()
-    repository.save(role)
+
+    added_roles = set(permissions) - set(role.permissions)
+    removed_roles = set(role.permissions) - set(permissions)
+    if not (added_roles or removed_roles):
+        return role
+
+    modified_info = {}
+    for permission in added_roles:
+        modified_info[permission.name] = {"old_info": False, "new_info": True}
+    for permission in removed_roles:
+        modified_info[permission.name] = {"old_info": True, "new_info": False}
+
+    with transaction():
+        role.name = name
+        role.permissions = permissions
+
+        db.session.add(
+            history_api.log_action(
+                action_type=history_models.ActionType.ROLE_PERMISSIONS_CHANGED,
+                author=author,
+                role_name=role.name,
+                modified_info=modified_info,
+                save=False,
+            )
+        )
+
     return role
 
 
