@@ -2,7 +2,6 @@ import React from 'react'
 import { useLocation } from 'react-router-dom'
 
 import { Events } from 'core/FirebaseEvents/constants'
-import useActiveFeature from 'hooks/useActiveFeature'
 import useAnalytics from 'hooks/useAnalytics'
 import fullLinkIcon from 'icons/full-link.svg'
 import fullMailIcon from 'icons/full-mail.svg'
@@ -14,8 +13,6 @@ import { initCookieConsent } from 'utils/cookieConsentModal'
 import styles from './Support.module.scss'
 
 const Support: () => JSX.Element | null = () => {
-  const isCookieBannerEnabled = useActiveFeature('WIP_ENABLE_COOKIES_BANNER')
-
   const { logEvent } = useAnalytics()
   const location = useLocation()
   return (
@@ -104,20 +101,18 @@ const Support: () => JSX.Element | null = () => {
                 Conditions Générales d’Utilisation
               </ButtonLink>
             </li>
-            {isCookieBannerEnabled && (
-              <li>
-                <Button
-                  variant={ButtonVariant.TERNARY}
-                  icon={fullParametersIcon}
-                  onClick={() => {
-                    /* istanbul ignore next : library should be tested */
-                    initCookieConsent().show()
-                  }}
-                >
-                  Gestion des cookies
-                </Button>
-              </li>
-            )}
+            <li>
+              <Button
+                variant={ButtonVariant.TERNARY}
+                icon={fullParametersIcon}
+                onClick={() => {
+                  /* istanbul ignore next : library should be tested */
+                  initCookieConsent().show()
+                }}
+              >
+                Gestion des cookies
+              </Button>
+            </li>
           </ul>
         </div>
       </div>

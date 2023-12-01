@@ -19,7 +19,7 @@ const renderSupport = (storeOverrides: any = {}) => {
 
 describe('homepage: ProfileAndSupport: Support', () => {
   describe('render', () => {
-    it('should display help links', () => {
+    it('should display help links', async () => {
       renderSupport()
       const contactLink = screen.getByText(
         'Contacter le support par mail à support-pro@passculture.app'
@@ -45,6 +45,7 @@ describe('homepage: ProfileAndSupport: Support', () => {
       expect(bestPracticesLink.getAttribute('href')).toBe(
         'https://passcultureapp.notion.site/pass-Culture-Documentation-323b1a0ec309406192d772e7d803fbd0'
       )
+      expect(await screen.findByText(/Gestion des cookies/)).toBeInTheDocument()
     })
 
     it('should trigger events when clicking on link', async () => {
@@ -85,22 +86,6 @@ describe('homepage: ProfileAndSupport: Support', () => {
         Events.CLICKED_BEST_PRACTICES_STUDIES,
         { from: '/accueil' }
       )
-    })
-
-    it('should be able to see the button to reopen cookies modal', async () => {
-      const store = {
-        features: {
-          list: [
-            {
-              nameKey: 'WIP_ENABLE_COOKIES_BANNER',
-              isActive: true,
-            },
-          ],
-          initialized: true,
-        },
-      }
-      renderSupport(store)
-      expect(await screen.findByText(/Gestion des cookies/)).toBeInTheDocument()
     })
   })
 })
