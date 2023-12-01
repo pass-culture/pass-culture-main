@@ -11,7 +11,7 @@ import { ButtonVariant } from 'ui-kit/Button/types'
 
 import styles from './PricingPointDialog.module.scss'
 
-type PricingPointFormValus = {
+type PricingPointFormValues = {
   pricingPointId?: string
 }
 
@@ -29,7 +29,7 @@ const PricingPointDialog = ({
   updateVenuePricingPoint,
 }: PricingPointDialogProps) => {
   const notification = useNotification()
-  const formik = useFormik<PricingPointFormValus>({
+  const formik = useFormik<PricingPointFormValues>({
     initialValues: {
       pricingPointId: undefined,
     },

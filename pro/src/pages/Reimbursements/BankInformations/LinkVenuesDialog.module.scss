@@ -6,14 +6,23 @@
 
 $modal-width: rem.torem(592px);
 $modal-height: rem.torem(336px);
+$banner-height: rem.torem(100px);
 
 .dialog {
   height: $modal-height;
   width: $modal-width;
 
+  &-with-banner {
+    height: $modal-height + $banner-height;
+  }
+
   &-title {
     margin-bottom: rem.torem(16px);
     padding-right: rem.torem(32px);
+  }
+
+  &-callout {
+    margin-bottom: rem.torem(16px);
   }
 
   &-subtitle {
@@ -59,9 +68,8 @@ $modal-height: rem.torem(336px);
 .discard-dialog {
   width: $modal-width;
   height: $modal-height;
-}
 
-.unlink-dialog {
-  width: $modal-width;
-  height: $modal-height;
+  &-with-banner {
+    height: $modal-height + $banner-height;
+  }
 }
