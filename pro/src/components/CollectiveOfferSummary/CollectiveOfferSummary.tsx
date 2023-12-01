@@ -40,9 +40,6 @@ const CollectiveOfferSummary = ({
   visibilityEditLink,
 }: CollectiveOfferSummaryProps) => {
   const offerManuallyCreated = isCollectiveOffer(offer) && !offer.isPublicApi
-  const isOfferToInstitutionActive = useActiveFeature(
-    'WIP_OFFER_TO_INSTITUTION'
-  )
 
   const isTemplateOfferDatesActive = useActiveFeature(
     'WIP_ENABLE_DATES_OFFER_TEMPLATE'
@@ -101,11 +98,7 @@ const CollectiveOfferSummary = ({
 
           {!offer.isTemplate && (
             <SummaryLayout.Section
-              title={
-                isOfferToInstitutionActive
-                  ? 'Établissement et enseignant'
-                  : 'Visibilité'
-              }
+              title={'Établissement et enseignant'}
               editLink={
                 offerManuallyCreated || offer.isTemplate
                   ? visibilityEditLink

@@ -12,14 +12,12 @@ import {
   isCollectiveOfferTemplate,
 } from 'core/OfferEducational'
 import { extractInitialVisibilityValues } from 'core/OfferEducational/utils/extractInitialVisibilityValues'
-import useActiveFeature from 'hooks/useActiveFeature'
 import { queryParamsFromOfferer } from 'pages/Offers/utils/queryParamsFromOfferer'
 import CollectiveOfferVisibilityScreen from 'screens/CollectiveOfferVisibility'
 import {
   MandatoryCollectiveOfferFromParamsProps,
   withCollectiveOfferFromParams,
 } from 'screens/OfferEducational/useCollectiveOfferFromParams'
-import OldCollectiveOfferVisibility from 'screens/OldCollectiveOfferVisibility'
 
 import getEducationalInstitutionsAdapter from './adapters/getEducationalInstitutionsAdapter'
 import patchEducationalInstitutionAdapter from './adapters/patchEducationalInstitutionAdapter'
@@ -50,12 +48,18 @@ export const CollectiveOfferVisibility = ({
   }
 
   useEffect(() => {
-    getEducationalInstitutionsAdapter().then((result) => {
-      if (result.isOk) {
-        setInstitutions(result.payload.institutions)
-        setIsLoadingInstitutions(false)
+    async function getEducationalInstitutions() {
+      const result = await getEducationalInstitutionsAdapter()
+      if (!result.isOk) {
+        return
       }
-    })
+
+      setInstitutions(result.payload.institutions)
+      setIsLoadingInstitutions(false)
+    }
+
+    // eslint-disable-next-line @typescript-eslint/no-floating-promises
+    getEducationalInstitutions()
   }, [])
 
   if (isCollectiveOfferTemplate(offer)) {
@@ -63,8 +67,6 @@ export const CollectiveOfferVisibility = ({
       'Impossible de mettre à jour la visibilité d’une offre vitrine.'
     )
   }
-
-  const isOfferInstitutionActive = useActiveFeature('WIP_OFFER_TO_INSTITUTION')
 
   const initialValues = offer
     ? extractInitialVisibilityValues(offer.institution)
@@ -78,29 +80,16 @@ export const CollectiveOfferVisibility = ({
       isCreation={isCreation}
       requestId={requestId}
     >
-      {isOfferInstitutionActive ? (
-        <CollectiveOfferVisibilityScreen
-          mode={Mode.CREATION}
-          patchInstitution={patchEducationalInstitutionAdapter}
-          initialValues={initialValues}
-          onSuccess={onSuccess}
-          institutions={institutions}
-          isLoadingInstitutions={isLoadingInstitutions}
-          offer={offer}
-          requestId={requestId}
-        />
-      ) : (
-        <OldCollectiveOfferVisibility
-          mode={Mode.CREATION}
-          patchInstitution={patchEducationalInstitutionAdapter}
-          initialValues={initialValues}
-          onSuccess={onSuccess}
-          institutions={institutions}
-          isLoadingInstitutions={isLoadingInstitutions}
-          offer={offer}
-          requestId={requestId}
-        />
-      )}
+      <CollectiveOfferVisibilityScreen
+        mode={Mode.CREATION}
+        patchInstitution={patchEducationalInstitutionAdapter}
+        initialValues={initialValues}
+        onSuccess={onSuccess}
+        institutions={institutions}
+        isLoadingInstitutions={isLoadingInstitutions}
+        offer={offer}
+        requestId={requestId}
+      />
       <RouteLeavingGuardCollectiveOfferCreation />
     </CollectiveOfferLayout>
   )
