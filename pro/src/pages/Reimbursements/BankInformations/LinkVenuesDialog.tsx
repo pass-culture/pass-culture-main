@@ -17,11 +17,12 @@ import { BaseCheckbox } from 'ui-kit/form/shared'
 import { pluralize, pluralizeString } from 'utils/pluralize'
 
 import styles from './LinkVenuesDialog.module.scss'
+import PricingPointDialog from './PricingPointDialog'
 
 export interface LinkVenuesDialogProps {
   offererId: number
   selectedBankAccount: BankAccountResponseModel
-  managedVenues?: Array<ManagedVenues>
+  managedVenues: Array<ManagedVenues>
   closeDialog: (update?: boolean) => void
 }
 
@@ -35,13 +36,17 @@ const LinkVenuesDialog = ({
     useState<boolean>(false)
   const [showUnlinkVenuesDialog, setShowUnlinkVenuesDialog] =
     useState<boolean>(false)
+  const [selectedVenue, setSelectedVenue] = useState<ManagedVenues | null>(null)
+
+  const [venuesToLink, setVenuesToLink] =
+    useState<ManagedVenues[]>(managedVenues)
+  const availableManagedVenuesIds = venuesToLink
+    ?.filter((venue) => !venue.bankAccountId)
+    ?.map((venue) => venue.id)
 
   const notification = useNotification()
   const { logEvent } = useAnalytics()
 
-  const availableManagedVenuesIds = managedVenues
-    ?.filter((venue) => !venue.bankAccountId)
-    ?.map((venue) => venue.id)
   const initialVenuesIds = selectedBankAccount.linkedVenues.map(
     (venue) => venue.id
   )
@@ -57,6 +62,16 @@ const LinkVenuesDialog = ({
       closeDialog()
     } else {
       setShowDiscardChangesDialog(true)
+    }
+  }
+
+  const updateVenuePricingPoint = (venueId: number) => {
+    const venue = managedVenues?.find((venue) => venue.id === venueId)
+    if (venue) {
+      setVenuesToLink([
+        ...venuesToLink.filter((item) => item.id !== venueId),
+        { ...venue, hasPricingPoint: true },
+      ])
     }
   }
 
@@ -106,7 +121,7 @@ const LinkVenuesDialog = ({
       )
     }
   }
-
+  const venuesForPricingPoint = managedVenues?.filter((x) => Boolean(x.siret))
   return (
     <>
       <DialogBox
@@ -136,7 +151,7 @@ const LinkVenuesDialog = ({
                       setSelectedVenuesIds([])
                     } else {
                       setSelectedVenuesIds([
-                        ...(availableManagedVenuesIds ?? []),
+                        ...availableManagedVenuesIds,
                         ...initialVenuesIds,
                       ])
                     }
@@ -153,7 +168,7 @@ const LinkVenuesDialog = ({
                 </span>
               </div>
 
-              {managedVenues?.map((venue) => {
+              {venuesToLink?.map((venue) => {
                 return (
                   <div
                     key={venue.id}
@@ -172,6 +187,9 @@ const LinkVenuesDialog = ({
                         variant={ButtonVariant.QUATERNARY}
                         icon={fullEditIcon}
                         iconPosition={IconPositionEnum.LEFT}
+                        onClick={() => {
+                          setSelectedVenue(venue)
+                        }}
                       >
                         Sélectionner un SIRET
                       </Button>
@@ -216,6 +234,14 @@ const LinkVenuesDialog = ({
           }}
           confirmText="Confirmer"
           cancelText="Retour"
+        />
+      )}
+      {selectedVenue && venuesForPricingPoint && (
+        <PricingPointDialog
+          selectedVenue={selectedVenue}
+          venues={venuesForPricingPoint}
+          closeDialog={() => setSelectedVenue(null)}
+          updateVenuePricingPoint={updateVenuePricingPoint}
         />
       )}
     </>

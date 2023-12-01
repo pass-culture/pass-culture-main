@@ -312,7 +312,7 @@ export const defaultBankAccountResponseModel: BankAccountResponseModel = {
   label: 'Mon compte bancaire',
   linkedVenues: [
     {
-      commonName: 'mon super lieu',
+      commonName: 'Mon super lieu',
       id: 1,
     },
   ],
@@ -321,7 +321,7 @@ export const defaultBankAccountResponseModel: BankAccountResponseModel = {
 }
 
 export const defaultManagedVenues: ManagedVenues = {
-  commonName: 'my venue',
+  commonName: 'Mon super lieu',
   id: 1,
   siret: '123456789',
   hasPricingPoint: true,

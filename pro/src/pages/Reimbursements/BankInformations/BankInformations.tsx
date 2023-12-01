@@ -214,14 +214,16 @@ const BankInformations = (): JSX.Element => {
           offererId={selectedOfferer?.id}
         />
       )}
-      {selectedBankAccount !== null && selectedOfferer !== null && (
-        <LinkVenuesDialog
-          offererId={selectedOfferer.id}
-          selectedBankAccount={selectedBankAccount}
-          managedVenues={selectedOffererBankAccounts?.managedVenues}
-          closeDialog={closeDialog}
-        />
-      )}
+      {selectedBankAccount !== null &&
+        selectedOfferer !== null &&
+        selectedOffererBankAccounts?.managedVenues && (
+          <LinkVenuesDialog
+            offererId={selectedOfferer.id}
+            selectedBankAccount={selectedBankAccount}
+            managedVenues={selectedOffererBankAccounts?.managedVenues}
+            closeDialog={closeDialog}
+          />
+        )}
     </>
   )
 }
