@@ -615,11 +615,11 @@ class GetCollectiveOfferPriceFormTest(GetEndpointHelper):
     endpoint_kwargs = {"collective_offer_id": 1}
     needed_permission = perm_models.Permissions.ADVANCED_PRO_SUPPORT
 
-    # session + current user + stock
-    expected_num_queries = 3
+    # session + current user + offer + stock
+    expected_num_queries = 4
 
     def test_get_collective_offer_price_form(self, legit_user, authenticated_client):
-        collective_offer_id = educational_factories.CollectiveStockFactory().collectiveOffer.id
+        collective_offer_id = educational_factories.CollectiveStockFactory().collectiveOfferId
 
         with assert_num_queries(self.expected_num_queries):
             response = authenticated_client.get(url_for(self.endpoint, collective_offer_id=collective_offer_id))
