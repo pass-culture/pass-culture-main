@@ -951,9 +951,9 @@ class NewBankAccountJourneyTest:
         assert bank_account.dsApplicationId == self.dsv4_application_id
         mock_archive_dossier.assert_not_called()
 
-        assert offerers_models.VenueBankAccountLink.query.count() == 1
+        assert not offerers_models.VenueBankAccountLink.query.count()
 
-        assert history_models.ActionHistory.query.count() == 1
+        assert not history_models.ActionHistory.query.count()
         on_going_status_history = finance_models.BankAccountStatusHistory.query.one()
 
         assert on_going_status_history.status == bank_account.status
@@ -1028,7 +1028,7 @@ class NewBankAccountJourneyTest:
         assert bank_account.iban == "FR7630006000011234567890189"
         assert bank_account.offerer == offerer
         assert bank_account.status == finance_models.BankAccountApplicationStatus.ACCEPTED
-        assert bank_account.label == venue.common_name
+        assert bank_account.label == "Intitulé du compte bancaire"
         assert bank_account.dsApplicationId == self.dsv5_application_id
         bank_account_link = offerers_models.VenueBankAccountLink.query.one()
         assert bank_account_link.venue == venue
@@ -1065,7 +1065,7 @@ class NewBankAccountJourneyTest:
         assert bank_account.iban == "FR7630006000011234567890189"
         assert bank_account.offerer == venue.managingOfferer
         assert bank_account.status == finance_models.BankAccountApplicationStatus.ACCEPTED
-        assert bank_account.label == f"XXXX XXXX XXXX {bank_account.iban[-4:]}"
+        assert bank_account.label == "Intitulé du compte bancaire"
         assert bank_account.dsApplicationId == self.dsv5_application_id
         mock_archive_dossier.assert_called_once_with("RG9zc2llci0xNDc0MjY1NA==")
 
@@ -1100,10 +1100,15 @@ class NewBankAccountJourneyTest:
         assert bank_account.iban == "FR7630006000011234567890189"
         assert bank_account.offerer == venue.managingOfferer
         assert bank_account.status == finance_models.BankAccountApplicationStatus.DRAFT
-        assert bank_account.label == venue.publicName
-        assert bank_account.venueLinks
+        assert bank_account.label == "Intitulé du compte bancaire"
+        assert not bank_account.venueLinks
         assert bank_account.dsApplicationId == self.dsv5_application_id
         mock_archive_dossier.assert_not_called()
+
+        assert not offerers_models.VenueBankAccountLink.query.count()
+        assert not history_models.ActionHistory.query.count()
+
+        assert finance_models.BankAccountStatusHistory.query.count() == 1
 
     @override_features(WIP_ENABLE_DOUBLE_MODEL_WRITING=True)
     def test_on_going_dossier_are_not_archived(
@@ -1132,7 +1137,7 @@ class NewBankAccountJourneyTest:
         assert bank_account.iban == "FR7630006000011234567890189"
         assert bank_account.offerer == venue.managingOfferer
         assert bank_account.status == finance_models.BankAccountApplicationStatus.ON_GOING
-        assert bank_account.label == f"XXXX XXXX XXXX {bank_account.iban[-4:]}"
+        assert bank_account.label == "Intitulé du compte bancaire"
         assert bank_account.dsApplicationId == self.dsv5_application_id
         mock_archive_dossier.assert_not_called()
 
@@ -1168,16 +1173,13 @@ class NewBankAccountJourneyTest:
         assert bank_account.iban == "FR7630006000011234567890189"
         assert bank_account.offerer == venue.managingOfferer
         assert bank_account.status == finance_models.BankAccountApplicationStatus.ON_GOING
-        assert bank_account.label == venue.name
+        assert bank_account.label == "Intitulé du compte bancaire"
         assert bank_account.dsApplicationId == self.dsv5_application_id
         mock_archive_dossier.assert_not_called()
 
-        link = offerers_models.VenueBankAccountLink.query.one()
+        assert not offerers_models.VenueBankAccountLink.query.count()
+        assert not history_models.ActionHistory.query.count()
 
-        assert link.bankAccount == bank_account
-        assert link.venue == venue
-
-        assert history_models.ActionHistory.query.count() == 1
         on_going_status_history = finance_models.BankAccountStatusHistory.query.one()
 
         assert on_going_status_history.status == bank_account.status
@@ -1204,7 +1206,7 @@ class NewBankAccountJourneyTest:
         assert bank_account.iban == "FR7630006000011234567890189"
         assert bank_account.offerer == venue.managingOfferer
         assert bank_account.status == finance_models.BankAccountApplicationStatus.ACCEPTED
-        assert bank_account.label == venue.name
+        assert bank_account.label == "Intitulé du compte bancaire"
         mock_archive_dossier.assert_has_calls([call("RG9zc2llci0xNDc0MjY1NA=="), call("RG9zc2llci0xNDc0MjY1NA==")])
 
         link = offerers_models.VenueBankAccountLink.query.one()
@@ -1255,7 +1257,7 @@ class NewBankAccountJourneyTest:
         assert bank_account.iban == "FR7630006000011234567890189"
         assert bank_account.offerer == venue.managingOfferer
         assert bank_account.status == finance_models.BankAccountApplicationStatus.ACCEPTED
-        assert bank_account.label == venue.common_name
+        assert bank_account.label == "Intitulé du compte bancaire"
         assert bank_account.dsApplicationId == self.dsv5_application_id
 
         link = offerers_models.VenueBankAccountLink.query.one()

@@ -60,7 +60,6 @@ def test_fr_currency_opposite_filter():
 
 
 def test_format_raw_iban_and_bic():
-    assert utils.format_raw_iban_and_bic(None) is None
     assert utils.format_raw_iban_and_bic(" Space and Mixed Case  ") == "SPACEANDMIXEDCASE"
     assert utils.format_raw_iban_and_bic("1234 5678") == "12345678"
 

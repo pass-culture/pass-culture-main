@@ -206,8 +206,8 @@ def get_bank_info_response_procedure_v5(
                             {
                                 "id": "Q2hhbXAtMzU3MzQ1Mw==",
                                 "label": "Intitulé du compte bancaire",
-                                "stringValue": "Test",
-                                "value": "Test",
+                                "stringValue": "Intitulé du compte bancaire",
+                                "value": "Intitulé du compte bancaire",
                             },
                             {
                                 "id": "Q2hhbXAtMzUyNzI3",
