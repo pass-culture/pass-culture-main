@@ -2,6 +2,9 @@ name: Deploy app engine image resizing
 on:
   workflow_call:
     inputs:
+      image_resizing_url:
+        required: true
+        type: string
       base_ref:
         required: true
         type: string
@@ -13,10 +16,21 @@ on:
         required: true
 
 jobs:
+  check-image-resizing-deployed-version:
+    runs-on: ubuntu-latest
+    outputs:
+      image_resizing_deployed_version: ${{ steps.curl_version.outputs.version }}
+    steps:
+      - id: curl_version
+        name: "Check image resizing ${{ inputs.environment }} deployed version"
+        # add prefix v to version if contains dot (otherwise it is sha)
+        run: echo "version=$(curl -Ss ${{ inputs.image_resizing_url }}/version | sed 's/.*\./v&/')" >> $GITHUB_OUTPUT
+
   check-image-resizing-folder-changes:
     name: "Check if folder changed"
     uses: ./.github/workflows/check-folder-changes.yml
     with:
+      base_sha: ${{ needs.check-image-resizing-deployed-version.outputs.image_resizing_deployed_version }}
       folder: app-engine/image-resizing
 
   deploy-image-resizing:
