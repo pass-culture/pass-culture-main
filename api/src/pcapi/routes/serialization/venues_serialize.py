@@ -67,6 +67,7 @@ class DMSApplicationForEAC(BaseModel):
 
 class PostVenueBodyModel(BaseModel, AccessibilityComplianceMixin):
     address: base.VenueAddress
+    banId: base.VenueBanId | None
     bookingEmail: base.VenueBookingEmail
     city: base.VenueCity
     comment: base.VenueComment | None
@@ -304,6 +305,7 @@ class GetCollectiveVenueResponseModel(BaseModel):
 class EditVenueBodyModel(BaseModel, AccessibilityComplianceMixin):
     name: base.VenueName | None
     address: base.VenueAddress | None
+    banId: base.VenueBanId | None
     siret: base.VenueSiret | None
     latitude: float | str | None
     longitude: float | str | None

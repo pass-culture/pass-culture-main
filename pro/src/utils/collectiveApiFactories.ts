@@ -331,6 +331,7 @@ export const defaultCollectiveDmsApplication: DMSApplicationForEAC = {
 export const defaultVenue: Venue = {
   name: 'Lieu de test',
   address: '1 rue de test',
+  banId: '75108_2259_00002',
   city: 'Paris',
   postalCode: '75000',
   latitude: 48.856614,

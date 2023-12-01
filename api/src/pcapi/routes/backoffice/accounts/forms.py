@@ -27,6 +27,7 @@ class EditAccountForm(utils.PCForm):
     postal_address_autocomplete = fields.PcPostalAddressAutocomplete(
         "Adresse",
         address="address",
+        ban_id="ban_id",
         city="city",
         postal_code="postal_code",
         latitude=None,

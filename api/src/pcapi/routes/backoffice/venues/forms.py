@@ -36,6 +36,7 @@ class EditVenueForm(EditVirtualVenueForm):
     postal_address_autocomplete = fields.PcPostalAddressAutocomplete(
         "Adresse",
         address="address",
+        ban_id="ban_id",
         city="city",
         postal_code="postal_code",
         latitude="latitude",
@@ -58,6 +59,7 @@ class EditVenueForm(EditVirtualVenueForm):
     postal_code = fields.PCPostalCodeHiddenField("Code postal")  # match Venue.postalCode case
     latitude = fields.PCOptHiddenField("Latitude")
     longitude = fields.PCOptHiddenField("Longitude")
+    ban_id = fields.PCOptHiddenField("Identifiant Base Adresse Nationale")
     venue_type_code = fields.PCSelectWithPlaceholderValueField(
         "Activité principale", choices=utils.choices_from_enum(offerers_models.VenueTypeCode)
     )
