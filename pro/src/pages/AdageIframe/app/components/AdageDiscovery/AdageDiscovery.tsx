@@ -362,7 +362,7 @@ export const AdageDiscovery = () => {
                     ...mockOffer.offerVenue,
                     addressType: OfferAddressType.OFFERER_VENUE,
                   },
-                  imageUrl: 'https://picsum.photos/201/',
+                  imageUrl: null,
                 }}
               />,
               <CardOfferComponent
@@ -485,6 +485,21 @@ export const AdageDiscovery = () => {
                   })
                 }
                 venue={{ ...mockVenue, imageUrl: 'https://picsum.photos/201/' }}
+              />,
+              <CardVenue
+                key="card-venue-1"
+                handlePlaylistElementTracking={() =>
+                  trackPlaylistElementClicked({
+                    playlistId: 3,
+                    playlistType: AdagePlaylistType.VENUE,
+                    elementId: 1, // TODO: change elementId with real value
+                  })
+                }
+                venue={{
+                  ...mockVenue,
+                  publicName: 'Mon super 2eme lieu',
+                  imageUrl: null,
+                }}
               />,
             ]}
           ></Carousel>

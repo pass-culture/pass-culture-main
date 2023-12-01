@@ -70,8 +70,10 @@ const CardOfferComponent = ({
               src={offer.imageUrl}
             />
           ) : (
-            <div className={styles['offer-image']}>
-              <SvgIcon src={strokeOfferIcon} alt="" />
+            <div
+              className={`${styles['offer-image']} ${styles['offer-image-fallback']}`}
+            >
+              <SvgIcon src={strokeOfferIcon} alt="" width="80" />
             </div>
           )}
         </div>
