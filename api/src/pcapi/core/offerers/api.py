@@ -19,6 +19,7 @@ from pcapi import settings
 from pcapi.connectors import sirene
 from pcapi.connectors.big_query.queries.offerer_stats import DAILY_CONSULT_PER_OFFERER_LAST_180_DAYS_TABLE
 from pcapi.connectors.big_query.queries.offerer_stats import OffererTotalViewsLast30DaysQuery
+from pcapi.connectors.big_query.queries.offerer_stats import OffererViewsModel
 from pcapi.connectors.big_query.queries.offerer_stats import OffererViewsPerDay
 from pcapi.connectors.big_query.queries.offerer_stats import OffersData
 from pcapi.connectors.big_query.queries.offerer_stats import TOP_3_MOST_CONSULTED_OFFERS_LAST_30_DAYS_TABLE
@@ -2070,6 +2071,37 @@ def _update_offerer_stats_data(offerer_id: int) -> None:
         daily_views_stats = offerers_models.OffererStats.query.filter_by(
             offererId=offerer_id, table=DAILY_CONSULT_PER_OFFERER_LAST_180_DAYS_TABLE
         ).one_or_none()
+
+        # this code is to fill the missing dates in the list
+        if len(daily_views_data_list) > 0:
+            current_date = daily_views_data_list[0].eventDate
+            current_views = daily_views_data_list[0].numberOfViews
+
+            counter = 1
+            while counter < len(daily_views_data_list):
+                if daily_views_data_list[counter].eventDate != current_date + timedelta(days=1):
+                    daily_views_data_list.insert(
+                        counter,
+                        OffererViewsModel(eventDate=current_date + timedelta(days=1), numberOfViews=current_views),
+                    )
+                else:
+                    current_views = daily_views_data_list[counter].numberOfViews
+                current_date = daily_views_data_list[counter].eventDate
+                counter += 1
+
+            # This code is to fill the missing dates at the end of the list
+            yesterday = datetime.utcnow().date() - timedelta(days=1)
+            latest_date = daily_views_data_list[-1].eventDate
+            if latest_date < yesterday:
+                for _ in range((yesterday - latest_date).days):
+                    daily_views_data_list.append(
+                        OffererViewsModel(
+                            eventDate=latest_date + timedelta(days=1),
+                            numberOfViews=daily_views_data_list[-1].numberOfViews,
+                        )
+                    )
+                    latest_date = daily_views_data_list[-1].eventDate
+
         if not daily_views_stats:
             daily_views_stats = offerers_models.OffererStats(
                 offererId=offerer_id,
