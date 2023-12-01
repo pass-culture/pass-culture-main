@@ -103,6 +103,110 @@ class UpdateRoleTest(PostEndpointHelper):
         db.session.refresh(role)
         assert role.permissions == []
 
+    def test_log_update_role(self, legit_user, authenticated_client):
+        permissions = (
+            perm_models.Permission.query.filter(
+                perm_models.Permission.name.in_(
+                    (
+                        perm_models.Permissions.FEATURE_FLIPPING.name,
+                        perm_models.Permissions.MANAGE_PERMISSIONS.name,
+                        perm_models.Permissions.READ_ADMIN_ACCOUNTS.name,
+                    )
+                )
+            )
+            .order_by(perm_models.Permission.name)
+            .all()
+        )
+        role_to_edit = perm_factories.RoleFactory(permissions=permissions[:2])
+
+        response = self.post_to_endpoint(
+            authenticated_client,
+            role_id=role_to_edit.id,
+            form={
+                perm_models.Permissions.MANAGE_PERMISSIONS.name: "on",
+                perm_models.Permissions.READ_ADMIN_ACCOUNTS.name: "on",
+            },
+        )
+        assert response.status_code == 303
+
+        action = history_models.ActionHistory.query.one()
+        assert action.actionType == history_models.ActionType.ROLE_PERMISSIONS_CHANGED
+        assert action.authorUserId == legit_user.id
+        assert action.extraData == {
+            "role_name": role_to_edit.name,
+            "modified_info": {
+                perm_models.Permissions.FEATURE_FLIPPING.name: {"old_info": True, "new_info": False},
+                perm_models.Permissions.READ_ADMIN_ACCOUNTS.name: {"old_info": False, "new_info": True},
+            },
+        }
+
+    def test_log_update_role_no_modification(self, legit_user, authenticated_client):
+        permissions = perm_models.Permission.query.filter(
+            perm_models.Permission.name.in_(
+                (
+                    perm_models.Permissions.MANAGE_PERMISSIONS.name,
+                    perm_models.Permissions.READ_ADMIN_ACCOUNTS.name,
+                )
+            )
+        ).all()
+
+        role = perm_factories.RoleFactory(permissions=permissions)
+
+        response = self.post_to_endpoint(
+            authenticated_client,
+            role_id=role.id,
+            form={
+                perm_models.Permissions.MANAGE_PERMISSIONS.name: "on",
+                perm_models.Permissions.READ_ADMIN_ACCOUNTS.name: "on",
+            },
+        )
+        assert response.status_code == 303
+
+        assert history_models.ActionHistory.query.count() == 0
+
+
+class GetRolesHistoryTest(GetEndpointHelper):
+    endpoint = "backoffice_web.get_roles_history"
+    needed_permission = perm_models.Permissions.MANAGE_PERMISSIONS
+
+    # session + current user + history
+    expected_num_queries = 3
+
+    def test_get_log_history_admin(self, legit_user, authenticated_client):
+        permission1 = perm_models.Permission.query.filter_by(name=perm_models.Permissions.MANAGE_PERMISSIONS.name).one()
+        permission2 = perm_models.Permission.query.filter_by(
+            name=perm_models.Permissions.READ_ADMIN_ACCOUNTS.name
+        ).one()
+
+        role = perm_factories.RoleFactory(permissions=[permission1, permission2])
+
+        action = history_factories.ActionHistoryFactory(
+            actionType=history_models.ActionType.ROLE_PERMISSIONS_CHANGED,
+            authorUser=legit_user,
+            comment=None,
+            extraData={
+                "role_name": role.name,
+                "modified_info": {
+                    permission1.name: {"new_info": False, "old_info": True},
+                    permission2.name: {"new_info": True, "old_info": False},
+                },
+            },
+        )
+
+        with assert_num_queries(self.expected_num_queries):
+            response = authenticated_client.get(url_for(self.endpoint))
+            assert response.status_code == 200
+
+        history_rows = html_parser.extract_table_rows(response.data)
+        assert len(history_rows) == 1
+        assert history_rows[0]["Type"] == history_models.ActionType.ROLE_PERMISSIONS_CHANGED.value
+        assert (
+            history_rows[0]["Commentaire"] == f"Rôle : {role.name} "
+            f"Informations modifiées : {perm_models.Permissions.MANAGE_PERMISSIONS.value} : Oui => Non "
+            f"{perm_models.Permissions.READ_ADMIN_ACCOUNTS.value} : Non => Oui"
+        )
+        assert history_rows[0]["Auteur"] == action.authorUser.full_name
+
 
 class ListFeatureFlagsTest(GetEndpointHelper):
     endpoint = "backoffice_web.list_feature_flags"

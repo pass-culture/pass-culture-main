@@ -3,10 +3,13 @@ from flask import redirect
 from flask import render_template
 from flask import url_for
 from flask_login import current_user
+import sqlalchemy as sa
 
 from pcapi import settings
+from pcapi.core.history import models as history_models
 from pcapi.core.permissions import api as perm_api
 from pcapi.core.permissions import models as perm_models
+from pcapi.core.users import models as users_models
 from pcapi.models import feature as feature_models
 from pcapi.notifications.internal.transactional import change_feature_flip as change_feature_flip_internal_message
 from pcapi.repository import repository
@@ -37,6 +40,23 @@ def get_roles() -> utils.BackofficeResponse:
     return render_template("admin/roles.html", forms=perm_forms)
 
 
+@blueprint.backoffice_web.route("/admin/roles-history", methods=["GET"])
+@utils.permission_required(perm_models.Permissions.MANAGE_PERMISSIONS)
+def get_roles_history() -> utils.BackofficeResponse:
+    actions_history = (
+        history_models.ActionHistory.query.filter_by(actionType=history_models.ActionType.ROLE_PERMISSIONS_CHANGED)
+        .order_by(history_models.ActionHistory.actionDate.desc())
+        .options(
+            sa.orm.joinedload(history_models.ActionHistory.authorUser).load_only(
+                users_models.User.id, users_models.User.firstName, users_models.User.lastName
+            ),
+        )
+        .all()
+    )
+
+    return render_template("admin/roles_history.html", actions=actions_history)
+
+
 @blueprint.backoffice_web.route("/admin/roles/<int:role_id>", methods=["POST"])
 @utils.permission_required(perm_models.Permissions.MANAGE_PERMISSIONS)
 def update_role(role_id: int) -> utils.BackofficeResponse:
@@ -44,13 +64,12 @@ def update_role(role_id: int) -> utils.BackofficeResponse:
 
     forms.EditPermissionForm.setup_form_fields(permissions)
 
-    new_permissions_ids = []
     perm_form = forms.EditPermissionForm()
-
     if not perm_form.validate():
         flash(utils.build_form_error_msg(perm_form), "warning")
         return render_template("admin/roles.html"), 400
 
+    new_permissions_ids = []
     for perm in permissions:
         if perm_form._fields[perm.name].data:
             new_permissions_ids.append(perm.id)
@@ -58,7 +77,7 @@ def update_role(role_id: int) -> utils.BackofficeResponse:
     roles = {role.id: role for role in perm_api.list_roles()}
     role_name = roles[role_id].name
 
-    perm_api.update_role(role_id, role_name, tuple(new_permissions_ids))
+    perm_api.update_role(role_id, role_name, tuple(new_permissions_ids), author=current_user)
     flash("Informations mises à jour", "success")
 
     return redirect(url_for(".get_roles"), code=303)

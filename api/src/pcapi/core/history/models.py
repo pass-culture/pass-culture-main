@@ -57,6 +57,8 @@ class ActionType(enum.Enum):
     LINK_VENUE_BANK_ACCOUNT_CREATED = "Lieu associé à un compte bancaire"
     # Venue provider changes:
     LINK_VENUE_PROVIDER_DELETED = "Suppression du lien avec le provider"
+    # Permissions role changes:
+    ROLE_PERMISSIONS_CHANGED = "Modification des permissions du rôle"
     # RGPD scripts
     USER_ANONYMIZED = "Le compte a été anonymisé conformément au RGPD"
 
@@ -152,7 +154,9 @@ class ActionHistory(PcObject, Base, Model):
     __table_args__ = (
         sa.CheckConstraint(
             (
-                'num_nonnulls("userId", "offererId", "venueId", "financeIncidentId", "bankAccountId") >= 1 OR actionType = "BLACKLIST_DOMAIN_NAME" OR actionType = "REMOVE_BLACKLISTED_DOMAIN_NAME"'
+                'num_nonnulls("userId", "offererId", "venueId", "financeIncidentId", "bankAccountId") >= 1 '
+                'OR actionType = "BLACKLIST_DOMAIN_NAME" OR actionType = "REMOVE_BLACKLISTED_DOMAIN_NAME" '
+                'OR actionType = "ROLE_PERMISSIONS_CHANGED"'
             ),
             name="check_at_least_one_resource_or_is_fraud_action",
         ),
