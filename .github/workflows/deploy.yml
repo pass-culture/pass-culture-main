@@ -243,14 +243,30 @@ jobs:
             kubectl exec -it -n ${{ inputs.environment }} ${POD_NAME} -- flask set_algolia_settings collective_offers --dry-run=false
             kubectl exec -it -n ${{ inputs.environment }} ${POD_NAME} -- flask set_algolia_settings venues --dry-run=false
 
-  deploy-image-resizing:
-    name: "Deploy image-resizing"
+  deploy-image-resizing-ehp:
+    name: "Deploy image-resizing EHP"
     permissions:
       contents: 'read'
       id-token: 'write'
     uses: ./.github/workflows/deploy-app-engine-image-resizing.yaml
+    if: ${{ inputs.environment != 'production' }}
     with:
-      environment: ${{ inputs.environment == 'production' && 'production' || 'testing' }}
-      google_project: ${{ inputs.environment == 'production' && 'passculture-metier-prod' || 'passculture-metier-ehp' }}
+      image_resizing_url: https://image-resizing.testing.passculture.team
+      environment: testing
+      google_project: passculture-metier-ehp
+      base_ref: ${{ github.ref }}
+    secrets: inherit
+
+  deploy-image-resizing-production:
+    name: "Deploy image-resizing production"
+    permissions:
+      contents: 'read'
+      id-token: 'write'
+    uses: ./.github/workflows/deploy-app-engine-image-resizing.yaml
+    if: ${{ inputs.environment == 'production' }}
+    with:
+      image_resizing_url: https://image-resizing.passculture.app
+      environment: production
+      google_project: passculture-metier-prod
       base_ref: ${{ github.ref }}
     secrets: inherit
