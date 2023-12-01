@@ -102,7 +102,6 @@ class FeatureToggle(enum.Enum):
     WIP_ENABLE_SATISFACTION_SURVEY = "Activer l'affichage du questionnaire de satisfaction adage"
     WIP_MANDATORY_BOOKING_CONTACT = "Rend obligatoire offer.bookingContact pour les offres retirables"
     WIP_ENABLE_BOOST_PREFIXED_EXTERNAL_BOOKING = "Active les réservations externes boost avec préfixe"
-    WIP_ENABLE_NEW_USER_OFFERER_LINK = "Activer le nouvel ajout des collaborateurs"
     WIP_ENABLE_DIFFUSE_HELP = "Activer l'affichage de l'aide diffuse adage"
     WIP_ENABLE_EVENTS_WITH_TICKETS_FOR_PUBLIC_API = "Activer la création d'évènements avec tickets dans l'API publique"
     WIP_ENABLE_NEW_BANK_DETAILS_JOURNEY = "Activer le nouveau parcours de dépôt de coordonnées bancaires"
@@ -176,7 +175,6 @@ FEATURES_DISABLED_BY_DEFAULT: tuple[FeatureToggle, ...] = (
     FeatureToggle.WIP_ENABLE_LIKE_IN_ADAGE,
     FeatureToggle.WIP_ENABLE_MOCK_UBBLE,
     FeatureToggle.WIP_ENABLE_NEW_BANK_DETAILS_JOURNEY,
-    FeatureToggle.WIP_ENABLE_NEW_USER_OFFERER_LINK,
     FeatureToggle.WIP_ENABLE_REMINDER_MARKETING_MAIL_METADATA_DISPLAY,
     FeatureToggle.WIP_ENABLE_SATISFACTION_SURVEY,
     FeatureToggle.WIP_ENABLE_SEARCH_HISTORY_ADAGE,
@@ -204,7 +202,6 @@ if settings.IS_TESTING:
         FeatureToggle.WIP_CATEGORY_SELECTION,
         FeatureToggle.WIP_ENABLE_EVENTS_WITH_TICKETS_FOR_PUBLIC_API,
         FeatureToggle.WIP_ENABLE_OFFER_CREATION_API_V1,
-        FeatureToggle.WIP_ENABLE_NEW_USER_OFFERER_LINK,
     }
 
     FEATURES_DISABLED_BY_DEFAULT = tuple(testing_features_disabled_by_default - features_to_enable)

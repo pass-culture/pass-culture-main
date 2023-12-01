@@ -2,13 +2,11 @@ import pytest
 
 import pcapi.core.offerers.factories as offerers_factories
 import pcapi.core.offerers.models as offerers_models
-from pcapi.core.testing import override_features
 import pcapi.core.users.factories as users_factories
 
 
 @pytest.mark.usefixtures("db_session")
 class Returns200Test:
-    @override_features(WIP_ENABLE_NEW_USER_OFFERER_LINK=True)
     def test_post_invite_member(self, client):
         pro_user = users_factories.ProFactory(email="pro.user@example.com")
         offerer = offerers_factories.OffererFactory()
@@ -27,7 +25,6 @@ class Returns200Test:
 
 @pytest.mark.usefixtures("db_session")
 class Returns400Test:
-    @override_features(WIP_ENABLE_NEW_USER_OFFERER_LINK=True)
     def test_inivitation_already_exists(self, client):
         pro_user = users_factories.ProFactory(email="pro.user@example.com")
         offerer = offerers_factories.OffererFactory()

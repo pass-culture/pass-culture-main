@@ -2,14 +2,12 @@ import pytest
 
 import pcapi.core.offerers.factories as offerers_factories
 import pcapi.core.offerers.models as offerers_models
-from pcapi.core.testing import override_features
 import pcapi.core.users.factories as users_factories
 from pcapi.models.validation_status_mixin import ValidationStatus
 
 
 @pytest.mark.usefixtures("db_session")
 class Returns200Test:
-    @override_features(WIP_ENABLE_NEW_USER_OFFERER_LINK=True)
     def test_get_offerer_members_by_pro(self, client):
         pro = users_factories.ProFactory(email="offerer@example.com")
         offerer = offerers_factories.OffererFactory()
@@ -39,7 +37,6 @@ class Returns200Test:
 
 @pytest.mark.usefixtures("db_session")
 class Returns400Test:
-    @override_features(WIP_ENABLE_NEW_USER_OFFERER_LINK=True)
     def test_access_by_unauthorized_pro_user(self, client):
         pro_user = users_factories.ProFactory()
         offerer = offerers_factories.OffererFactory()
