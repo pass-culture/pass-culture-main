@@ -600,7 +600,7 @@ class DSV4InOldBankInformationsJourneyTest:
         assert not finance_models.BankAccount.query.count()
         assert not offerers_models.VenueBankAccountLink.query.count()
 
-    def test_dont_write_annotations_if_any_exists(
+    def test_should_prepend_annotation_if_any_exists(
         self, mock_archive_dossier, mock_update_text_annotation, mock_dms_graphql_client
     ):
         venue = offerers_factories.VenueFactory(pricing_point="self", dmsToken=self.dms_token)
@@ -612,6 +612,43 @@ class DSV4InOldBankInformationsJourneyTest:
                     "label": "Erreur traitement pass Culture",
                     "stringValue": "Quelque chose ne va pas",
                     "value": "Quelque chose ne va pas",
+                },
+                {"id": "Q2hhbXAtMjc1NzMyOQ==", "label": "URL du lieu", "stringValue": "", "value": None},
+            ],
+        )
+
+        update_ds_applications_for_procedure(settings.DMS_VENUE_PROCEDURE_ID_V4, since=None)
+
+        bank_information = finance_models.BankInformation.query.one()
+        assert bank_information.venue == venue
+        assert bank_information.bic == "SOGEFRPP"
+        assert bank_information.iban == "FR7630007000111234567890144"
+        assert bank_information.status == finance_models.BankInformationStatus.ACCEPTED
+        mock_archive_dossier.assert_called_once_with(self.b64_encoded_application_id)
+        mock_update_text_annotation.assert_any_call(
+            dossier_id=self.b64_encoded_application_id,
+            annotation_id="Q2hhbXAtOTE1NDg5",
+            message="Dossier successfully imported, Quelque chose ne va pas",
+        )
+        mock_update_text_annotation.assert_any_call(
+            self.b64_encoded_application_id, "Q2hhbXAtMjc1NzMyOQ==", build_pc_pro_venue_link(venue)
+        )
+        # New journey is not active, should not create BankAccount nor links
+        assert not finance_models.BankAccount.query.count()
+        assert not offerers_models.VenueBankAccountLink.query.count()
+
+    def test_should_not_write_same_message_annotation_twice(
+        self, mock_archive_dossier, mock_update_text_annotation, mock_dms_graphql_client
+    ):
+        venue = offerers_factories.VenueFactory(pricing_point="self", dmsToken=self.dms_token)
+        mock_dms_graphql_client.return_value = dms_creators.get_bank_info_response_procedure_v4_as_batch(
+            state=GraphQLApplicationStates.accepted.value,
+            annotations=[
+                {
+                    "id": "Q2hhbXAtOTE1NDg5",
+                    "label": "Erreur traitement pass Culture",
+                    "stringValue": "Dossier successfully imported, Quelque chose ne va pas",
+                    "value": "Dossier successfully imported, Quelque chose ne va pas",
                 },
                 {"id": "Q2hhbXAtMjc1NzMyOQ==", "label": "URL du lieu", "stringValue": "", "value": None},
             ],
