@@ -7,7 +7,6 @@
 $modal-width: rem.torem(592px);
 $modal-height: rem.torem(336px);
 
-
 .dialog {
   height: $modal-height;
   width: $modal-width;
@@ -19,12 +18,11 @@ $modal-height: rem.torem(336px);
 
   &-subtitle {
     margin-bottom: rem.torem(24px);
-
   }
 
   &-checkboxes {
     height: rem.torem(200px);
-    overflow-y: auto
+    overflow-y: auto;
   }
 
   &-select-all {
@@ -36,11 +34,14 @@ $modal-height: rem.torem(336px);
     align-items: center;
 
     &-count {
-      @include fonts.caption
+      @include fonts.caption;
     }
   }
 
-  &-checkbox {
+  &-checkbox-container {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
     margin-bottom: rem.torem(24px);
 
     &:last-of-type {

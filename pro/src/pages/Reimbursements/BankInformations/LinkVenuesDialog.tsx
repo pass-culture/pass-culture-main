@@ -9,9 +9,10 @@ import DialogBox from 'components/DialogBox'
 import { BankAccountEvents } from 'core/FirebaseEvents/constants'
 import useAnalytics from 'hooks/useAnalytics'
 import useNotification from 'hooks/useNotification'
+import fullEditIcon from 'icons/full-edit.svg'
 import strokeWarningIcon from 'icons/stroke-warning.svg'
 import { Button, SubmitButton } from 'ui-kit'
-import { ButtonVariant } from 'ui-kit/Button/types'
+import { ButtonVariant, IconPositionEnum } from 'ui-kit/Button/types'
 import { BaseCheckbox } from 'ui-kit/form/shared'
 import { pluralize, pluralizeString } from 'utils/pluralize'
 
@@ -154,16 +155,28 @@ const LinkVenuesDialog = ({
 
               {managedVenues?.map((venue) => {
                 return (
-                  <BaseCheckbox
+                  <div
                     key={venue.id}
-                    className={styles['dialog-checkbox']}
-                    disabled={false} // TODO: replace with venue.hasPricingPoint
-                    label={venue.commonName}
-                    name={venue.id.toString()}
-                    value={venue.id}
-                    checked={selectedVenuesIds.indexOf(venue.id) >= 0}
-                    onChange={handleVenueChange}
-                  />
+                    className={styles['dialog-checkbox-container']}
+                  >
+                    <BaseCheckbox
+                      disabled={!venue.hasPricingPoint}
+                      label={venue.commonName}
+                      name={venue.id.toString()}
+                      value={venue.id}
+                      checked={selectedVenuesIds.indexOf(venue.id) >= 0}
+                      onChange={handleVenueChange}
+                    />
+                    {!venue.hasPricingPoint && (
+                      <Button
+                        variant={ButtonVariant.QUATERNARY}
+                        icon={fullEditIcon}
+                        iconPosition={IconPositionEnum.LEFT}
+                      >
+                        Sélectionner un SIRET
+                      </Button>
+                    )}
+                  </div>
                 )
               })}
             </div>
