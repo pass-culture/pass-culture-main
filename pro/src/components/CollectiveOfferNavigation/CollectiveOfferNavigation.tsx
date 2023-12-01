@@ -2,7 +2,6 @@ import React from 'react'
 
 import Stepper from 'components/Stepper'
 import { Step } from 'components/Stepper/Stepper'
-import useActiveFeature from 'hooks/useActiveFeature'
 import { useOfferStockEditionURL } from 'hooks/useOfferEditionURL'
 import Tabs from 'ui-kit/Tabs'
 
@@ -38,9 +37,6 @@ const CollectiveOfferNavigation = ({
 }: CollectiveOfferNavigationProps): JSX.Element => {
   const stockEditionUrl = useOfferStockEditionURL(true, offerId)
   const isEditingExistingOffer = !(isCreatingOffer || isCompletingDraft)
-  const isOfferToInstitutionActive = useActiveFeature(
-    'WIP_OFFER_TO_INSTITUTION'
-  )
 
   const stepList: { [key: string]: Step } = {}
 
@@ -60,9 +56,7 @@ const CollectiveOfferNavigation = ({
       }
       stepList[CollectiveOfferStep.VISIBILITY] = {
         id: CollectiveOfferStep.VISIBILITY,
-        label: isOfferToInstitutionActive
-          ? 'Établissement et enseignant'
-          : 'Visibilité',
+        label: 'Établissement et enseignant',
         url: `/offre/${offerId}/collectif/visibilite/edition`,
       }
     }
@@ -79,9 +73,7 @@ const CollectiveOfferNavigation = ({
       }
       stepList[CollectiveOfferStep.VISIBILITY] = {
         id: CollectiveOfferStep.VISIBILITY,
-        label: isOfferToInstitutionActive
-          ? 'Établissement et enseignant'
-          : 'Visibilité',
+        label: 'Établissement et enseignant',
         url:
           offerId && haveStock
             ? `/offre/${offerId}/collectif/visibilite${requestIdUrl}`

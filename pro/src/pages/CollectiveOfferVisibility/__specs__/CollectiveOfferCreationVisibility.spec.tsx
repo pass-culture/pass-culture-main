@@ -45,21 +45,17 @@ describe('CollectiveOfferVisibility', () => {
         name: 'Créer une nouvelle offre collective',
       })
     ).toBeInTheDocument()
+
     expect(
       screen.getByRole('heading', {
-        name: 'Visibilité de l’offre',
+        name: 'Établissement scolaire et enseignant',
       })
     ).toBeInTheDocument()
   })
   it('should render new collective offer visibility form if ff active', async () => {
     renderCollectiveOfferCreationVisibility(
       '/offre/A1/collectif/visibilite',
-      defaultProps,
-      {
-        features: {
-          list: [{ isActive: true, nameKey: 'WIP_OFFER_TO_INSTITUTION' }],
-        },
-      }
+      defaultProps
     )
 
     expect(

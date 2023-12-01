@@ -37,7 +37,7 @@ describe('CollectiveOfferNavigation', () => {
     expect(listItems).toHaveLength(5)
     expect(listItems[0]).toHaveTextContent('Détails de l’offre')
     expect(listItems[1]).toHaveTextContent('Date et prix')
-    expect(listItems[2]).toHaveTextContent('Visibilité')
+    expect(listItems[2]).toHaveTextContent('Établissement et enseignant')
     expect(listItems[3]).toHaveTextContent('Récapitulatif')
     expect(listItems[4]).toHaveTextContent('Confirmation')
 
