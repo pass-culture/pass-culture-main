@@ -524,3 +524,58 @@ class GetOffererTest:
         assert response.json["hasPendingBankAccount"] is False
         assert response.json["venuesWithNonFreeOffersWithoutBankAccounts"] == []
         assert response.json["hasNonFreeOffer"] is False
+
+    @pytest.mark.usefixtures("db_session")
+    def test_user_can_correctly_see_if_there_is_venues_without_bank_account_left(self, client):
+        # Given
+        pro_user = users_factories.ProFactory()
+        offerer = offerers_factories.OffererFactory()
+        offerer_id = offerer.id
+        offerers_factories.UserOffererFactory(user=pro_user, offerer=offerer)
+
+        bank_account = finance_factories.BankAccountFactory(
+            offerer=offerer, isActive=True, dateCreated=datetime.datetime.utcnow() - datetime.timedelta(days=1)
+        )
+
+        first_venue = offerers_factories.VenueFactory(pricing_point="self", managingOfferer=offerer)
+        offers_factories.StockFactory(offer__venue=first_venue)
+        second_venue = offerers_factories.VenueFactory(pricing_point="self", managingOfferer=offerer)
+        offers_factories.StockFactory(offer__venue=second_venue)
+        third_venue = offerers_factories.VenueFactory(pricing_point="self", managingOfferer=offerer)
+        offers_factories.StockFactory(offer__venue=third_venue)
+
+        # When
+        http_client = client.with_session_auth(pro_user.email)
+
+        # Link all offerer venues to this bank_account
+        response = http_client.patch(
+            f"/offerers/{offerer.id}/bank-accounts/{bank_account.id}",
+            json={"venues_ids": [first_venue.id, second_venue.id, third_venue.id]},
+        )
+        assert response.status_code == 204
+
+        # Finally unlink all the venues
+        response = http_client.patch(f"/offerers/{offerer.id}/bank-accounts/{bank_account.id}", json={"venues_ids": []})
+        assert response.status_code == 204
+
+        # User changed his mind
+        response = http_client.patch(
+            f"/offerers/{offerer.id}/bank-accounts/{bank_account.id}",
+            json={"venues_ids": [first_venue.id, second_venue.id, third_venue.id]},
+        )
+        assert response.status_code == 204
+
+        # User changed his mind, again, backward
+        response = http_client.patch(f"/offerers/{offerer.id}/bank-accounts/{bank_account.id}", json={"venues_ids": []})
+        assert response.status_code == 204
+
+        # We now have plenty of VenueBankAccountLink
+        # But the user should still receive distinct `venuesWithNonFreeOffersWithoutBankAccounts`, not a cartesian product between Venues and VenueBankAccountLink
+        response = http_client.get(f"/offerers/{offerer_id}")
+        assert response.status_code == 200
+
+        assert response.json["venuesWithNonFreeOffersWithoutBankAccounts"] == [
+            first_venue.id,
+            second_venue.id,
+            third_venue.id,
+        ]

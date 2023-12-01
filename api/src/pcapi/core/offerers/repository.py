@@ -629,11 +629,9 @@ def get_venues_with_non_free_offers_without_bank_accounts(offerer_id: int) -> li
     venue_with_non_free_offers = (
         models.Venue.query.filter(
             models.Venue.managingOffererId == offerer_id,
-            sqla.or_(
-                models.VenueBankAccountLink.timespan
-                == None,  # Because as we LEFT OUTER JOIN on VenueReimbursementPointLink, timespan column can be NULL
-                ~models.VenueBankAccountLink.timespan.contains(datetime.utcnow()),
-            ),
+            models.VenueBankAccountLink.timespan
+            == None,  # Because as we LEFT OUTER JOIN on VenueReimbursementPointLink, timespan column can be NULL
+            # i.e. only Venue without any VenueBankAccountLink or only deprecated ones.
             sqla.or_(
                 offers_models.Stock.query.join(
                     offers_models.Offer,
@@ -654,7 +652,13 @@ def get_venues_with_non_free_offers_without_bank_accounts(offerer_id: int) -> li
             ),
         )
         .join(models.Offerer)
-        .outerjoin(models.VenueBankAccountLink, models.VenueBankAccountLink.venueId == models.Venue.id)
+        .outerjoin(
+            models.VenueBankAccountLink,
+            sqla.and_(
+                models.VenueBankAccountLink.venueId == models.Venue.id,
+                models.VenueBankAccountLink.timespan.contains(datetime.utcnow()),
+            ),
+        )
         .with_entities(models.Venue.id)
     )
     return [venue.id for venue in venue_with_non_free_offers]
