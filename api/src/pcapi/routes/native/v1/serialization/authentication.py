@@ -53,3 +53,4 @@ class ValidateEmailResponse(ConfiguredBaseModel):
 
 class GoogleSigninRequest(ConfiguredBaseModel):
     authorization_code: str
+    device_info: TrustedDevice | None = None

@@ -760,7 +760,14 @@ def test_public_api(client):
                     "type": "object",
                 },
                 "GoogleSigninRequest": {
-                    "properties": {"authorizationCode": {"title": "Authorizationcode", "type": "string"}},
+                    "properties": {
+                        "authorizationCode": {"title": "Authorizationcode", "type": "string"},
+                        "deviceInfo": {
+                            "anyOf": [{"$ref": "#/components/schemas/TrustedDevice"}],
+                            "nullable": True,
+                            "title": "TrustedDevice",
+                        },
+                    },
                     "required": ["authorizationCode"],
                     "title": "GoogleSigninRequest",
                     "type": "object",
