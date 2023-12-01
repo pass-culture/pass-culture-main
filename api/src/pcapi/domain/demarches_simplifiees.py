@@ -16,6 +16,7 @@ FIELD_NAME_TO_INTERNAL_NAME_MAPPING = {
     ("Mon numéro de téléphone",): "phone_number",
     ("IBAN",): "iban",
     ("BIC",): "bic",
+    ("Intitulé du compte bancaire",): "label",
 }
 DMS_TOKEN_ID = "Q2hhbXAtMjY3NDMyMQ=="
 ACCEPTED_DMS_STATUS = (dms_models.DmsApplicationStates.closed,)
