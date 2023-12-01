@@ -33,7 +33,6 @@ from pcapi.core.users.models import Token
 from pcapi.core.users.models import TrustedDevice
 from pcapi.models import db
 import pcapi.notifications.push.testing as bash_testing
-from pcapi.routes.native.v1 import authentication
 from pcapi.utils import crypto
 
 from tests.scripts.beneficiary.fixture import make_single_application
@@ -348,267 +347,372 @@ class SSOSigninTest:
 
 
 class TrustedDeviceFeatureTest:
-    data = {
-        "identifier": "user@test.com",
-        "password": settings.TEST_DEFAULT_PASSWORD,
-        "deviceInfo": {
-            "deviceId": "2E429592-2446-425F-9A62-D6983F375B3B",
-            "source": "iPhone 13",
-            "os": "iOS",
-        },
-    }
-    headers = {"X-City": "Paris", "X-Country": "France"}
-    one_month_in_seconds = 31 * 24 * 60 * 60
-    one_year_in_seconds = 366 * 24 * 60 * 60
-
-    @override_features(WIP_ENABLE_TRUSTED_DEVICE=True)
-    def test_save_login_device_history_on_signin(self, client):
-        users_factories.UserFactory(email=self.data["identifier"], password=self.data["password"], isActive=True)
-
-        client.post("/native/v1/signin", json=self.data, headers=self.headers)
-
-        login_device = LoginDeviceHistory.query.one()
-
-        assert login_device.deviceId == self.data["deviceInfo"]["deviceId"]
-        assert login_device.source == "iPhone 13"
-        assert login_device.os == "iOS"
-        assert login_device.location == "Paris, France"
-
-    @override_features(WIP_ENABLE_TRUSTED_DEVICE=True)
-    def should_not_save_login_device_history_on_signin_when_no_device_info(self, client):
-        users_factories.UserFactory(email=self.data["identifier"], password=self.data["password"], isActive=True)
-
-        client.post("/native/v1/signin", json={**self.data, "deviceInfo": None})
-
-        assert LoginDeviceHistory.query.count() == 0
-
-    @override_features(WIP_ENABLE_TRUSTED_DEVICE=False)
-    def should_not_save_login_device_history_when_feature_flag_is_disabled(self, client):
-        users_factories.UserFactory(email=self.data["identifier"], password=self.data["password"], isActive=True)
-
-        client.post("/native/v1/signin", json=self.data)
-
-        assert LoginDeviceHistory.query.count() == 0
-
-    @override_features(WIP_ENABLE_TRUSTED_DEVICE=True)
-    def test_save_login_device_as_trusted_device_on_second_signin_with_same_device(self, client):
-        user = users_factories.UserFactory(email=self.data["identifier"], password=self.data["password"], isActive=True)
-
-        client.post("/native/v1/signin", json=self.data)
-        client.post("/native/v1/signin", json=self.data)
-
-        trusted_device = TrustedDevice.query.filter(TrustedDevice.deviceId == self.data["deviceInfo"]["deviceId"]).one()
-        assert user.trusted_devices == [trusted_device]
-
-    @override_features(WIP_ENABLE_TRUSTED_DEVICE=False)
-    def should_not_save_login_device_as_trusted_device_on_second_signin_when_feature_flag_is_inactive(
-        self,
-        client,
-    ):
-        user = users_factories.UserFactory(email=self.data["identifier"], password=self.data["password"], isActive=True)
-
-        client.post("/native/v1/signin", json=self.data)
-        client.post("/native/v1/signin", json=self.data)
-
-        assert TrustedDevice.query.count() == 0
-        assert user.trusted_devices == []
-
-    @override_features(WIP_ENABLE_TRUSTED_DEVICE=True)
-    def should_not_save_login_device_as_trusted_device_on_second_signin_when_using_different_devices(self, client):
-        first_device = {
-            "deviceId": "2E429592-2446-425F-9A62-D6983F375B3B",
-            "source": "iPhone 13",
-            "os": "iOS",
-        }
-        second_device = {
-            "deviceId": "5F810092-1832-9A32-5B30-P2112F375G3G",
-            "source": "Chrome",
-            "os": "Mac OS",
-        }
-        user = users_factories.UserFactory(email=self.data["identifier"], password=self.data["password"], isActive=True)
-
-        client.post("/native/v1/signin", json={**self.data, "deviceInfo": first_device})
-        client.post("/native/v1/signin", json={**self.data, "deviceInfo": second_device})
-
-        assert TrustedDevice.query.count() == 0
-        assert user.trusted_devices == []
-
-    @override_features(
-        WIP_ENABLE_TRUSTED_DEVICE=True,
-        WIP_ENABLE_SUSPICIOUS_EMAIL_SEND=True,
-    )
-    def should_send_email_when_login_is_suspicious(self, client):
-        users_factories.UserFactory(email=self.data["identifier"], password=self.data["password"], isActive=True)
-
-        client.post("/native/v1/signin", json=self.data, headers=self.headers)
-
-        assert len(mails_testing.outbox) == 1
-        assert mails_testing.outbox[0].sent_data["template"] == TransactionalEmail.SUSPICIOUS_LOGIN.value.__dict__
-        assert mails_testing.outbox[0].sent_data["params"]["LOCATION"] == "Paris, France"
-        assert mails_testing.outbox[0].sent_data["params"]["OS"] == "iOS"
-        assert mails_testing.outbox[0].sent_data["params"]["SOURCE"] == "iPhone 13"
-        assert mails_testing.outbox[0].sent_data["params"]["LOGIN_DATE"]
-        assert mails_testing.outbox[0].sent_data["params"]["LOGIN_TIME"]
-        assert mails_testing.outbox[0].sent_data["params"]["ACCOUNT_SECURING_LINK"]
-
-    @override_features(
-        WIP_ENABLE_TRUSTED_DEVICE=True,
-        WIP_ENABLE_SUSPICIOUS_EMAIL_SEND=True,
-    )
-    def should_send_limited_number_of_emails_when_login_is_suspicious(self, client):
-        users_factories.UserFactory(email=self.data["identifier"], password=self.data["password"], isActive=True)
-
-        for _ in range(authentication.MAX_SUSPICIOUS_LOGIN_EMAILS + 1):
-            data = copy.deepcopy(self.data)
-            data["deviceInfo"]["deviceId"] = str(uuid.uuid4()).upper()
-            client.post("/native/v1/signin", json=data, headers=self.headers)
-
-        assert len(mails_testing.outbox) == authentication.MAX_SUSPICIOUS_LOGIN_EMAILS
-
-    @override_features(
-        WIP_ENABLE_TRUSTED_DEVICE=True,
-        WIP_ENABLE_SUSPICIOUS_EMAIL_SEND=True,
-    )
-    def should_send_suspicious_login_email_to_user_suspended_upon_request(self, client):
-        user = users_factories.UserFactory(email=self.data["identifier"], password=self.data["password"])
-        history_factories.SuspendedUserActionHistoryFactory(
-            user=user, reason=users_constants.SuspensionReason.UPON_USER_REQUEST
-        )
-
-        client.post("/native/v1/signin", json=self.data, headers=self.headers)
-
-        assert len(mails_testing.outbox) == 1
-        assert mails_testing.outbox[0].sent_data["template"] == TransactionalEmail.SUSPICIOUS_LOGIN.value.__dict__
-
-    @override_features(
-        WIP_ENABLE_TRUSTED_DEVICE=True,
-        WIP_ENABLE_SUSPICIOUS_EMAIL_SEND=True,
-    )
     @pytest.mark.parametrize(
-        "reason",
+        "signin_route,data",
         [
-            users_constants.SuspensionReason.FRAUD_SUSPICION,
-            users_constants.SuspensionReason.FRAUD_HACK,
-            users_constants.SuspensionReason.SUSPENSION_FOR_INVESTIGATION_TEMP,
-            users_constants.SuspensionReason.FRAUD_USURPATION,
+            (
+                "signin",
+                {
+                    "identifier": "user@test.com",
+                    "password": settings.TEST_DEFAULT_PASSWORD,
+                    "deviceInfo": {
+                        "deviceId": "2E429592-2446-425F-9A62-D6983F375B3B",
+                        "source": "iPhone 13",
+                        "os": "iOS",
+                    },
+                },
+            ),
+            (
+                "oauth/google/authorize",
+                {
+                    "authorizationCode": "4/google_code",
+                    "deviceInfo": {
+                        "deviceId": "2E429592-2446-425F-9A62-D6983F375B3B",
+                        "source": "iPhone 13",
+                        "os": "iOS",
+                    },
+                },
+            ),
         ],
     )
-    def should_not_send_suspicious_login_email_to_suspended_user(self, client, reason):
-        user = users_factories.UserFactory(
-            email=self.data["identifier"], password=self.data["password"], isActive=False
-        )
-        history_factories.SuspendedUserActionHistoryFactory(user=user, reason=reason)
-
-        client.post("/native/v1/signin", json=self.data, headers=self.headers)
-
-        assert len(mails_testing.outbox) == 0
-
-    @override_features(
-        WIP_ENABLE_TRUSTED_DEVICE=True,
-        WIP_ENABLE_SUSPICIOUS_EMAIL_SEND=True,
-    )
-    def should_extend_refresh_token_lifetime_when_logging_in_with_a_trusted_device(self, client):
-        user = users_factories.UserFactory(email=self.data["identifier"], password=self.data["password"], isActive=True)
-        users_factories.TrustedDeviceFactory(user=user, deviceId=self.data["deviceInfo"]["deviceId"])
-
-        response = client.post("/native/v1/signin", json=self.data)
-
-        decoded_refresh_token = decode_token(response.json["refreshToken"])
-        token_issue_date = decoded_refresh_token["iat"]
-        token_expiration_date = decoded_refresh_token["exp"]
-        refresh_token_lifetime = token_expiration_date - token_issue_date
-
-        assert refresh_token_lifetime == settings.JWT_REFRESH_TOKEN_EXTENDED_EXPIRES
-
-    @override_features(
-        WIP_ENABLE_TRUSTED_DEVICE=True,
-        WIP_ENABLE_SUSPICIOUS_EMAIL_SEND=True,
-    )
-    def should_not_extend_refresh_token_lifetime_when_logging_in_from_unknown_device(self, client):
-        users_factories.UserFactory(email=self.data["identifier"], password=self.data["password"], isActive=True)
-
-        response = client.post("/native/v1/signin", json=self.data)
-
-        decoded_refresh_token = decode_token(response.json["refreshToken"])
-        token_issue_date = decoded_refresh_token["iat"]
-        token_expiration_date = decoded_refresh_token["exp"]
-        refresh_token_lifetime = token_expiration_date - token_issue_date
-
-        assert refresh_token_lifetime == settings.JWT_REFRESH_TOKEN_EXPIRES
-
-    @override_features(
-        WIP_ENABLE_TRUSTED_DEVICE=True,
-        WIP_ENABLE_SUSPICIOUS_EMAIL_SEND=True,
-    )
-    def should_extend_refresh_token_lifetime_on_email_validation_when_device_is_trusted(self, client):
-        user = users_factories.UserFactory(isEmailValidated=False)
-        users_factories.TrustedDeviceFactory(user=user, deviceId=self.data["deviceInfo"]["deviceId"])
-        token = token_utils.Token.create(
-            type_=token_utils.TokenType.EMAIL_VALIDATION,
-            ttl=users_constants.EMAIL_VALIDATION_TOKEN_LIFE_TIME,
-            user_id=user.id,
-        ).encoded_token
-
-        response = client.post(
-            "/native/v1/validate_email",
-            json={"email_validation_token": token, "deviceInfo": self.data["deviceInfo"]},
+    class TrustedDeviceSigninTest:
+        headers = {"X-City": "Paris", "X-Country": "France"}
+        one_month_in_seconds = 31 * 24 * 60 * 60
+        one_year_in_seconds = 366 * 24 * 60 * 60
+        valid_google_user = GoogleUser(
+            sub="100428144463745704968",
+            email="user@test.com",
+            email_verified=True,
         )
 
-        decoded_refresh_token = decode_token(response.json["refreshToken"])
-        token_issue_date = decoded_refresh_token["iat"]
-        token_expiration_date = decoded_refresh_token["exp"]
-        refresh_token_lifetime = token_expiration_date - token_issue_date
+        @patch("pcapi.connectors.google_oauth.get_google_user")
+        @override_features(WIP_ENABLE_GOOGLE_SSO=True, WIP_ENABLE_TRUSTED_DEVICE=True)
+        def test_save_login_device_history_on_signin(
+            self,
+            mocked_google_oauth,
+            client,
+            signin_route,
+            data,
+        ):
+            mocked_google_oauth.return_value = self.valid_google_user
+            users_factories.UserFactory(email="user@test.com", password=settings.TEST_DEFAULT_PASSWORD, isActive=True)
 
-        assert refresh_token_lifetime == settings.JWT_REFRESH_TOKEN_EXTENDED_EXPIRES
+            client.post(f"/native/v1/{signin_route}", json=data, headers=self.headers)
 
-    @override_features(
-        WIP_ENABLE_TRUSTED_DEVICE=True,
-        WIP_ENABLE_SUSPICIOUS_EMAIL_SEND=True,
-    )
-    def should_not_extend_refresh_token_lifetime_on_email_validation_when_device_is_unknown(self, client):
-        user = users_factories.UserFactory(isEmailValidated=False)
-        token = token_utils.Token.create(
-            type_=token_utils.TokenType.EMAIL_VALIDATION,
-            ttl=users_constants.EMAIL_VALIDATION_TOKEN_LIFE_TIME,
-            user_id=user.id,
-        ).encoded_token
+            login_device = LoginDeviceHistory.query.one()
 
-        response = client.post("/native/v1/validate_email", json={"email_validation_token": token})
+            assert login_device.deviceId == data["deviceInfo"]["deviceId"]
+            assert login_device.source == "iPhone 13"
+            assert login_device.os == "iOS"
+            assert login_device.location == "Paris, France"
 
-        decoded_refresh_token = decode_token(response.json["refreshToken"])
-        token_issue_date = decoded_refresh_token["iat"]
-        token_expiration_date = decoded_refresh_token["exp"]
-        refresh_token_lifetime = token_expiration_date - token_issue_date
+        @patch("pcapi.connectors.google_oauth.get_google_user")
+        @override_features(WIP_ENABLE_GOOGLE_SSO=True, WIP_ENABLE_TRUSTED_DEVICE=True)
+        def should_not_save_login_device_history_on_signin_when_no_device_info(
+            self, mocked_google_oauth, client, signin_route, data
+        ):
+            mocked_google_oauth.return_value = self.valid_google_user
+            users_factories.UserFactory(email="user@test.com", password=settings.TEST_DEFAULT_PASSWORD, isActive=True)
 
-        assert refresh_token_lifetime == settings.JWT_REFRESH_TOKEN_EXPIRES
+            client.post(f"/native/v1/{signin_route}", json={**data, "deviceInfo": None})
 
-    @override_features(WIP_ENABLE_TRUSTED_DEVICE=True)
-    def should_not_send_email_when_logging_in_from_a_trusted_device(self, client):
-        user = users_factories.UserFactory(email=self.data["identifier"], password=self.data["password"], isActive=True)
-        users_factories.TrustedDeviceFactory(user=user)
+            assert LoginDeviceHistory.query.count() == 0
 
-        client.post("/native/v1/signin", json=self.data)
+        @patch("pcapi.connectors.google_oauth.get_google_user")
+        @override_features(WIP_ENABLE_GOOGLE_SSO=True, WIP_ENABLE_TRUSTED_DEVICE=False)
+        def should_not_save_login_device_history_when_feature_flag_is_disabled(
+            self, mocked_google_oauth, client, signin_route, data
+        ):
+            mocked_google_oauth.return_value = self.valid_google_user
+            users_factories.UserFactory(email="user@test.com", password=settings.TEST_DEFAULT_PASSWORD, isActive=True)
 
-        assert len(mails_testing.outbox) == 0
+            client.post(f"/native/v1/{signin_route}", json=data)
 
-    @override_features(WIP_ENABLE_TRUSTED_DEVICE=False)
-    def should_not_send_email_when_feature_flag_is_inactive(self, client):
-        users_factories.UserFactory(email=self.data["identifier"], password=self.data["password"], isActive=True)
+            assert LoginDeviceHistory.query.count() == 0
 
-        client.post("/native/v1/signin", json=self.data)
+        @patch("pcapi.connectors.google_oauth.get_google_user")
+        @override_features(WIP_ENABLE_GOOGLE_SSO=True, WIP_ENABLE_TRUSTED_DEVICE=True)
+        def test_save_login_device_as_trusted_device_on_second_signin_with_same_device(
+            self, mocked_google_oauth, client, signin_route, data
+        ):
+            mocked_google_oauth.return_value = self.valid_google_user
+            user = users_factories.UserFactory(
+                email="user@test.com", password=settings.TEST_DEFAULT_PASSWORD, isActive=True
+            )
 
-        assert len(mails_testing.outbox) == 0
+            client.post(f"/native/v1/{signin_route}", json=data)
+            client.post(f"/native/v1/{signin_route}", json=data)
 
-    @override_features(
-        WIP_ENABLE_TRUSTED_DEVICE=True,
-        WIP_ENABLE_SUSPICIOUS_EMAIL_SEND=False,
-    )
-    def should_not_send_email_when_feature_flag_is_active_but_email_is_inactive(self, client):
-        users_factories.UserFactory(email=self.data["identifier"], password=self.data["password"], isActive=True)
+            trusted_device = TrustedDevice.query.filter(TrustedDevice.deviceId == data["deviceInfo"]["deviceId"]).one()
+            assert user.trusted_devices == [trusted_device]
 
-        client.post("/native/v1/signin", json=self.data)
+        @patch("pcapi.connectors.google_oauth.get_google_user")
+        @override_features(WIP_ENABLE_GOOGLE_SSO=True, WIP_ENABLE_TRUSTED_DEVICE=False)
+        def should_not_save_login_device_as_trusted_device_on_second_signin_when_feature_flag_is_inactive(
+            self, mocked_google_oauth, client, signin_route, data
+        ):
+            mocked_google_oauth.return_value = self.valid_google_user
+            user = users_factories.UserFactory(
+                email="user@test.com", password=settings.TEST_DEFAULT_PASSWORD, isActive=True
+            )
 
-        assert len(mails_testing.outbox) == 0
+            client.post(f"/native/v1/{signin_route}", json=data)
+            client.post(f"/native/v1/{signin_route}", json=data)
+
+            assert TrustedDevice.query.count() == 0
+            assert user.trusted_devices == []
+
+        @patch("pcapi.connectors.google_oauth.get_google_user")
+        @override_features(WIP_ENABLE_GOOGLE_SSO=True, WIP_ENABLE_TRUSTED_DEVICE=True)
+        def should_not_save_login_device_as_trusted_device_on_second_signin_when_using_different_devices(
+            self, mocked_google_oauth, client, signin_route, data
+        ):
+            mocked_google_oauth.return_value = self.valid_google_user
+            first_device = {
+                "deviceId": "2E429592-2446-425F-9A62-D6983F375B3B",
+                "source": "iPhone 13",
+                "os": "iOS",
+            }
+            second_device = {
+                "deviceId": "5F810092-1832-9A32-5B30-P2112F375G3G",
+                "source": "Chrome",
+                "os": "Mac OS",
+            }
+            user = users_factories.UserFactory(
+                email="user@test.com", password=settings.TEST_DEFAULT_PASSWORD, isActive=True
+            )
+
+            client.post(f"/native/v1/{signin_route}", json={**data, "deviceInfo": first_device})
+            client.post(f"/native/v1/{signin_route}", json={**data, "deviceInfo": second_device})
+
+            assert TrustedDevice.query.count() == 0
+            assert user.trusted_devices == []
+
+        @patch("pcapi.connectors.google_oauth.get_google_user")
+        @override_features(
+            WIP_ENABLE_GOOGLE_SSO=True,
+            WIP_ENABLE_TRUSTED_DEVICE=True,
+            WIP_ENABLE_SUSPICIOUS_EMAIL_SEND=True,
+        )
+        def should_send_email_when_login_is_suspicious(self, mocked_google_oauth, client, signin_route, data):
+            mocked_google_oauth.return_value = self.valid_google_user
+            users_factories.UserFactory(email="user@test.com", password=settings.TEST_DEFAULT_PASSWORD, isActive=True)
+
+            client.post(f"/native/v1/{signin_route}", json=data, headers=self.headers)
+
+            assert len(mails_testing.outbox) == 1
+            assert mails_testing.outbox[0].sent_data["template"] == TransactionalEmail.SUSPICIOUS_LOGIN.value.__dict__
+            assert mails_testing.outbox[0].sent_data["params"]["LOCATION"] == "Paris, France"
+            assert mails_testing.outbox[0].sent_data["params"]["OS"] == "iOS"
+            assert mails_testing.outbox[0].sent_data["params"]["SOURCE"] == "iPhone 13"
+            assert mails_testing.outbox[0].sent_data["params"]["LOGIN_DATE"]
+            assert mails_testing.outbox[0].sent_data["params"]["LOGIN_TIME"]
+            assert mails_testing.outbox[0].sent_data["params"]["ACCOUNT_SECURING_LINK"]
+
+        @patch("pcapi.connectors.google_oauth.get_google_user")
+        @override_features(
+            WIP_ENABLE_GOOGLE_SSO=True,
+            WIP_ENABLE_TRUSTED_DEVICE=True,
+            WIP_ENABLE_SUSPICIOUS_EMAIL_SEND=True,
+        )
+        def should_send_limited_number_of_emails_when_login_is_suspicious(
+            self, mocked_google_oauth, client, signin_route, data
+        ):
+            mocked_google_oauth.return_value = self.valid_google_user
+            users_factories.UserFactory(email="user@test.com", password=settings.TEST_DEFAULT_PASSWORD, isActive=True)
+
+            for _ in range(users_constants.MAX_SUSPICIOUS_LOGIN_EMAILS + 1):
+                data = copy.deepcopy(data)
+                data["deviceInfo"]["deviceId"] = str(uuid.uuid4()).upper()
+                client.post(f"/native/v1/{signin_route}", json=data, headers=self.headers)
+
+            assert len(mails_testing.outbox) == users_constants.MAX_SUSPICIOUS_LOGIN_EMAILS
+
+        @patch("pcapi.connectors.google_oauth.get_google_user")
+        @override_features(
+            WIP_ENABLE_GOOGLE_SSO=True,
+            WIP_ENABLE_TRUSTED_DEVICE=True,
+            WIP_ENABLE_SUSPICIOUS_EMAIL_SEND=True,
+        )
+        def should_send_suspicious_login_email_to_user_suspended_upon_request(
+            self, mocked_google_oauth, client, signin_route, data
+        ):
+            mocked_google_oauth.return_value = self.valid_google_user
+            user = users_factories.UserFactory(email="user@test.com", password=settings.TEST_DEFAULT_PASSWORD)
+            history_factories.SuspendedUserActionHistoryFactory(
+                user=user, reason=users_constants.SuspensionReason.UPON_USER_REQUEST
+            )
+
+            client.post(f"/native/v1/{signin_route}", json=data, headers=self.headers)
+
+            assert len(mails_testing.outbox) == 1
+            assert mails_testing.outbox[0].sent_data["template"] == TransactionalEmail.SUSPICIOUS_LOGIN.value.__dict__
+
+        @patch("pcapi.connectors.google_oauth.get_google_user")
+        @override_features(
+            WIP_ENABLE_GOOGLE_SSO=True,
+            WIP_ENABLE_TRUSTED_DEVICE=True,
+            WIP_ENABLE_SUSPICIOUS_EMAIL_SEND=True,
+        )
+        @pytest.mark.parametrize(
+            "reason",
+            [
+                users_constants.SuspensionReason.FRAUD_SUSPICION,
+                users_constants.SuspensionReason.FRAUD_HACK,
+                users_constants.SuspensionReason.SUSPENSION_FOR_INVESTIGATION_TEMP,
+                users_constants.SuspensionReason.FRAUD_USURPATION,
+            ],
+        )
+        def should_not_send_suspicious_login_email_to_suspended_user(
+            self, mocked_google_oauth, client, signin_route, data, reason
+        ):
+            mocked_google_oauth.return_value = self.valid_google_user
+            user = users_factories.UserFactory(
+                email="user@test.com", password=settings.TEST_DEFAULT_PASSWORD, isActive=False
+            )
+            history_factories.SuspendedUserActionHistoryFactory(user=user, reason=reason)
+
+            client.post(f"/native/v1/{signin_route}", json=data, headers=self.headers)
+
+            assert len(mails_testing.outbox) == 0
+
+        @patch("pcapi.connectors.google_oauth.get_google_user")
+        @override_features(
+            WIP_ENABLE_GOOGLE_SSO=True,
+            WIP_ENABLE_TRUSTED_DEVICE=True,
+            WIP_ENABLE_SUSPICIOUS_EMAIL_SEND=True,
+        )
+        def should_extend_refresh_token_lifetime_when_logging_in_with_a_trusted_device(
+            self, mocked_google_oauth, client, signin_route, data
+        ):
+            mocked_google_oauth.return_value = self.valid_google_user
+            user = users_factories.UserFactory(
+                email="user@test.com", password=settings.TEST_DEFAULT_PASSWORD, isActive=True
+            )
+            users_factories.TrustedDeviceFactory(user=user, deviceId=data["deviceInfo"]["deviceId"])
+
+            response = client.post(f"/native/v1/{signin_route}", json=data)
+
+            decoded_refresh_token = decode_token(response.json["refreshToken"])
+            token_issue_date = decoded_refresh_token["iat"]
+            token_expiration_date = decoded_refresh_token["exp"]
+            refresh_token_lifetime = token_expiration_date - token_issue_date
+
+            assert refresh_token_lifetime == settings.JWT_REFRESH_TOKEN_EXTENDED_EXPIRES
+
+        @patch("pcapi.connectors.google_oauth.get_google_user")
+        @override_features(
+            WIP_ENABLE_GOOGLE_SSO=True,
+            WIP_ENABLE_TRUSTED_DEVICE=True,
+            WIP_ENABLE_SUSPICIOUS_EMAIL_SEND=True,
+        )
+        def should_not_extend_refresh_token_lifetime_when_logging_in_from_unknown_device(
+            self, mocked_google_oauth, client, signin_route, data
+        ):
+            mocked_google_oauth.return_value = self.valid_google_user
+            users_factories.UserFactory(email="user@test.com", password=settings.TEST_DEFAULT_PASSWORD, isActive=True)
+
+            response = client.post(f"/native/v1/{signin_route}", json=data)
+
+            decoded_refresh_token = decode_token(response.json["refreshToken"])
+            token_issue_date = decoded_refresh_token["iat"]
+            token_expiration_date = decoded_refresh_token["exp"]
+            refresh_token_lifetime = token_expiration_date - token_issue_date
+
+            assert refresh_token_lifetime == settings.JWT_REFRESH_TOKEN_EXPIRES
+
+        @patch("pcapi.connectors.google_oauth.get_google_user")
+        @override_features(WIP_ENABLE_GOOGLE_SSO=True, WIP_ENABLE_TRUSTED_DEVICE=True)
+        def should_not_send_email_when_logging_in_from_a_trusted_device(
+            self, mocked_google_oauth, client, signin_route, data
+        ):
+            mocked_google_oauth.return_value = self.valid_google_user
+            user = users_factories.UserFactory(
+                email="user@test.com", password=settings.TEST_DEFAULT_PASSWORD, isActive=True
+            )
+            users_factories.TrustedDeviceFactory(user=user)
+
+            client.post(f"/native/v1/{signin_route}", json=data)
+
+            assert len(mails_testing.outbox) == 0
+
+        @patch("pcapi.connectors.google_oauth.get_google_user")
+        @override_features(WIP_ENABLE_GOOGLE_SSO=True, WIP_ENABLE_TRUSTED_DEVICE=False)
+        def should_not_send_email_when_feature_flag_is_inactive(self, mocked_google_oauth, client, signin_route, data):
+            mocked_google_oauth.return_value = self.valid_google_user
+            users_factories.UserFactory(email="user@test.com", password=settings.TEST_DEFAULT_PASSWORD, isActive=True)
+
+            client.post(f"/native/v1/{signin_route}", json=data)
+
+            assert len(mails_testing.outbox) == 0
+
+        @patch("pcapi.connectors.google_oauth.get_google_user")
+        @override_features(
+            WIP_ENABLE_GOOGLE_SSO=True,
+            WIP_ENABLE_TRUSTED_DEVICE=True,
+            WIP_ENABLE_SUSPICIOUS_EMAIL_SEND=False,
+        )
+        def should_not_send_email_when_feature_flag_is_active_but_email_is_inactive(
+            self, mocked_google_oauth, client, signin_route, data
+        ):
+            mocked_google_oauth.return_value = self.valid_google_user
+            users_factories.UserFactory(email="user@test.com", password=settings.TEST_DEFAULT_PASSWORD, isActive=True)
+
+            client.post(f"/native/v1/{signin_route}", json=data)
+
+            assert len(mails_testing.outbox) == 0
+
+    class TrustedDeviceEmailValidationTest:
+        @override_features(
+            WIP_ENABLE_TRUSTED_DEVICE=True,
+            WIP_ENABLE_SUSPICIOUS_EMAIL_SEND=True,
+        )
+        def should_extend_refresh_token_lifetime_on_email_validation_when_device_is_trusted(self, client):
+            device_info = {
+                "deviceId": "2E429592-2446-425F-9A62-D6983F375B3B",
+                "source": "iPhone 13",
+                "os": "iOS",
+            }
+            user = users_factories.UserFactory(isEmailValidated=False)
+            users_factories.TrustedDeviceFactory(user=user, deviceId=device_info["deviceId"])
+            token = token_utils.Token.create(
+                type_=token_utils.TokenType.EMAIL_VALIDATION,
+                ttl=users_constants.EMAIL_VALIDATION_TOKEN_LIFE_TIME,
+                user_id=user.id,
+            ).encoded_token
+
+            response = client.post(
+                "/native/v1/validate_email",
+                json={"email_validation_token": token, "deviceInfo": device_info},
+            )
+
+            decoded_refresh_token = decode_token(response.json["refreshToken"])
+            token_issue_date = decoded_refresh_token["iat"]
+            token_expiration_date = decoded_refresh_token["exp"]
+            refresh_token_lifetime = token_expiration_date - token_issue_date
+
+            assert refresh_token_lifetime == settings.JWT_REFRESH_TOKEN_EXTENDED_EXPIRES
+
+        @override_features(
+            WIP_ENABLE_TRUSTED_DEVICE=True,
+            WIP_ENABLE_SUSPICIOUS_EMAIL_SEND=True,
+        )
+        def should_not_extend_refresh_token_lifetime_on_email_validation_when_device_is_unknown(self, client):
+            user = users_factories.UserFactory(isEmailValidated=False)
+            token = token_utils.Token.create(
+                type_=token_utils.TokenType.EMAIL_VALIDATION,
+                ttl=users_constants.EMAIL_VALIDATION_TOKEN_LIFE_TIME,
+                user_id=user.id,
+            ).encoded_token
+
+            response = client.post("/native/v1/validate_email", json={"email_validation_token": token})
+
+            decoded_refresh_token = decode_token(response.json["refreshToken"])
+            token_issue_date = decoded_refresh_token["iat"]
+            token_expiration_date = decoded_refresh_token["exp"]
+            refresh_token_lifetime = token_expiration_date - token_issue_date
+
+            assert refresh_token_lifetime == settings.JWT_REFRESH_TOKEN_EXPIRES
 
 
 class RequestResetPasswordTest:
