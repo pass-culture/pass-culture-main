@@ -190,7 +190,7 @@ def signin(body: users_serializers.LoginUserBodyModel) -> users_serializers.Shar
     try:
         check_webapp_recaptcha_token(
             body.token,
-            original_action="saveNewOnboardingData",
+            original_action="loginUser",
             minimal_score=settings.RECAPTCHA_RESET_PASSWORD_MINIMAL_SCORE,
         )
     except ReCaptchaException:
