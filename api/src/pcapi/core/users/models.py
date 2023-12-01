@@ -283,7 +283,7 @@ class User(PcObject, Base, Model, NeedsValidationMixin, DeactivableMixin):
     def add_test_role(self) -> None:
         self._add_role(UserRole.TEST)
 
-    def add_anonymized_role(self) -> None:
+    def replace_roles_by_anonymized_role(self) -> None:
         self.roles = [UserRole.ANONYMIZED]
 
     def checkPassword(self, passwordToCheck: str) -> bool:
