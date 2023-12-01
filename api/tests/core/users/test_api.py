@@ -1772,12 +1772,12 @@ class AnonymizeNonProNonBeneficiaryUsersTest:
     def test_anonymize_non_pro_non_beneficiary_users(self) -> None:
         user_to_anonymize = users_factories.UserFactory(
             firstName="user_to_anonymize",
-            lastConnectionDate=datetime.datetime.utcnow() - datetime.timedelta(days=((3 * 365) + 1)),
+            lastConnectionDate=datetime.datetime.utcnow() - relativedelta(years=3, days=1),
             validatedBirthDate=datetime.date.today(),
         )
         user_too_new = users_factories.UserFactory(
             firstName="user_too_new",
-            lastConnectionDate=datetime.datetime.utcnow() - datetime.timedelta(days=((3 * 365) - 1)),
+            lastConnectionDate=datetime.datetime.utcnow() - relativedelta(years=3, days=-11),
         )
         user_never_connected = users_factories.UserFactory(firstName="user_never_connected", lastConnectionDate=None)
         user_beneficiary = users_factories.BeneficiaryGrant18Factory(
@@ -1863,12 +1863,11 @@ class AnonymizeNonProNonBeneficiaryUsersTest:
         assert len(user_to_anonymize.action_history) == 1
         assert user_to_anonymize.action_history[0].actionType == history_models.ActionType.USER_ANONYMIZED
         assert user_to_anonymize.action_history[0].authorUserId == None
-        assert user_to_anonymize.action_history[0].actionType == history_models.ActionType.USER_ANONYMIZED
 
     def test_anonymize_non_pro_non_beneficiary_user_force_iris_not_found(self) -> None:
         user_to_anonymize = users_factories.UserFactory(
             firstName="user_to_anonymize",
-            lastConnectionDate=datetime.datetime.utcnow() - datetime.timedelta(days=((3 * 365) + 1)),
+            lastConnectionDate=datetime.datetime.utcnow() - relativedelta(years=3, days=1),
         )
 
         users_api.anonymize_non_pro_non_beneficiary_users(force=True)
@@ -1880,10 +1879,10 @@ class AnonymizeNonProNonBeneficiaryUsersTest:
         assert batch_testing.requests[0]["user_id"] == user_to_anonymize.id
         assert user_to_anonymize.firstName == f"Anonymous_{user_to_anonymize.id}"
 
-    def test_anonymize_non_pro_non_beneficiary_user_keep_history_on_offere(self) -> None:
+    def test_anonymize_non_pro_non_beneficiary_user_keep_history_on_offerer(self) -> None:
         user_to_anonymize = users_factories.UserFactory(
             firstName="user_to_anonymize",
-            lastConnectionDate=datetime.datetime.utcnow() - datetime.timedelta(days=((3 * 365) + 1)),
+            lastConnectionDate=datetime.datetime.utcnow() - relativedelta(years=3, days=1),
         )
         history_factories.ActionHistoryFactory(
             authorUser=user_to_anonymize,
@@ -1907,7 +1906,7 @@ class AnonymizeNonProNonBeneficiaryUsersTest:
     def test_anonymize_non_pro_non_beneficiary_user_iris_not_found(self) -> None:
         user_to_anonymize = users_factories.UserFactory(
             firstName="user_to_anonymize",
-            lastConnectionDate=datetime.datetime.utcnow() - datetime.timedelta(days=((3 * 365) + 1)),
+            lastConnectionDate=datetime.datetime.utcnow() - relativedelta(years=3, days=1),
         )
 
         users_api.anonymize_non_pro_non_beneficiary_users(force=False)
@@ -1920,7 +1919,7 @@ class AnonymizeNonProNonBeneficiaryUsersTest:
     def test_anonymize_non_pro_non_beneficiary_user_no_addr_api(self) -> None:
         user_to_anonymize = users_factories.UserFactory(
             firstName="user_to_anonymize",
-            lastConnectionDate=datetime.datetime.utcnow() - datetime.timedelta(days=((3 * 365) + 1)),
+            lastConnectionDate=datetime.datetime.utcnow() - relativedelta(years=3, days=1),
         )
 
         users_api.anonymize_non_pro_non_beneficiary_users(force=False)
@@ -1932,7 +1931,7 @@ class AnonymizeNonProNonBeneficiaryUsersTest:
     def test_anonymize_non_pro_non_beneficiary_user_keep_email_in_brevo_if_used_for_venue(self) -> None:
         user_to_anonymize = users_factories.UserFactory(
             firstName="user_to_anonymize",
-            lastConnectionDate=datetime.datetime.utcnow() - datetime.timedelta(days=((3 * 365) + 1)),
+            lastConnectionDate=datetime.datetime.utcnow() - relativedelta(years=3, days=1),
         )
         offerers_factories.VenueFactory(bookingEmail=user_to_anonymize.email)
 
@@ -1942,3 +1941,193 @@ class AnonymizeNonProNonBeneficiaryUsersTest:
         assert user_to_anonymize.firstName == f"Anonymous_{user_to_anonymize.id}"
         assert user_to_anonymize.email == f"anonymous_{user_to_anonymize.id}@anonymized.passculture"
         assert sendinblue_testing.sendinblue_requests[0]["attributes"]["FIRSTNAME"] == ""
+
+
+class AnonymizeBeneficiaryUsersTest:
+    def import_iris(self):
+        path = DATA_DIR / "iris_min.7z"
+        geography_api.import_iris_from_7z(str(path))
+
+    def test_anonymize_beneficiary_users(self) -> None:
+        user_beneficiary_to_anonymize = users_factories.BeneficiaryFactory(
+            firstName="user_beneficiary_to_anonymize",
+            age=18,
+            lastConnectionDate=datetime.datetime.utcnow() - relativedelta(years=3, days=1),
+            deposit__expirationDate=datetime.datetime.utcnow() - relativedelta(years=5, days=1),
+        )
+        user_underage_beneficiary_to_anonymize = users_factories.BeneficiaryFactory(
+            firstName="user_underage_beneficiary_to_anonymize",
+            age=17,
+            lastConnectionDate=datetime.datetime.utcnow() - relativedelta(years=3, days=1),
+            deposit__expirationDate=datetime.datetime.utcnow() - relativedelta(years=5, days=1),
+        )
+        user_too_new = users_factories.BeneficiaryFactory(
+            firstName="user_too_new",
+            age=18,
+            lastConnectionDate=datetime.datetime.utcnow() - relativedelta(years=3, days=-11),
+            deposit__expirationDate=datetime.datetime.utcnow() - relativedelta(years=5, days=1),
+        )
+        user_deposit_too_new = users_factories.BeneficiaryFactory(
+            firstName="user_deposit_too_new",
+            age=18,
+            lastConnectionDate=datetime.datetime.utcnow() - relativedelta(years=3, days=1),
+            deposit__expirationDate=datetime.datetime.utcnow() - relativedelta(years=5, days=-11),
+        )
+        user_never_connected = users_factories.UserFactory(firstName="user_never_connected", lastConnectionDate=None)
+        user_no_role = users_factories.UserFactory(
+            firstName="user_no_role",
+        )
+        user_pro = users_factories.ProFactory(
+            firstName="user_pro",
+        )
+        user_pass_culture = users_factories.ProFactory(
+            firstName="user_pass_culture", email="user_pass_culture@passculture.app"
+        )
+        user_anonymized = users_factories.ProFactory(
+            firstName="user_anonymized", email="user_anonymized@anonymized.passculture"
+        )
+
+        self.import_iris()
+        iris = geography_models.IrisFrance.query.first()
+
+        with mock.patch("pcapi.core.users.api.get_iris_from_address", return_value=iris):
+            users_api.anonymize_beneficiary_users(force=False)
+
+        db.session.refresh(user_beneficiary_to_anonymize)
+        db.session.refresh(user_underage_beneficiary_to_anonymize)
+        db.session.refresh(user_too_new)
+        db.session.refresh(user_deposit_too_new)
+        db.session.refresh(user_never_connected)
+        db.session.refresh(user_no_role)
+        db.session.refresh(user_pro)
+        db.session.refresh(user_pass_culture)
+        db.session.refresh(user_anonymized)
+
+        assert len(sendinblue_testing.sendinblue_requests) == 2
+        assert len(batch_testing.requests) == 2
+        user_id_set = set(request["user_id"] for request in batch_testing.requests)
+        assert user_id_set == {user_beneficiary_to_anonymize.id, user_underage_beneficiary_to_anonymize.id}
+
+        # these profiles should not have been anonymized
+        assert user_too_new.firstName == "user_too_new"
+        assert user_deposit_too_new.firstName == "user_deposit_too_new"
+        assert user_never_connected.firstName == "user_never_connected"
+        assert user_no_role.firstName == "user_no_role"
+        assert user_pro.firstName == "user_pro"
+        assert user_pass_culture.firstName == "user_pass_culture"
+        assert user_anonymized.firstName == "user_anonymized"
+
+        for user_to_anonymize in [user_beneficiary_to_anonymize, user_underage_beneficiary_to_anonymize]:
+            for beneficiary_fraud_check in user_to_anonymize.beneficiaryFraudChecks:
+                assert beneficiary_fraud_check.resultContent == None
+                assert beneficiary_fraud_check.reason == "Anonymized"
+                assert beneficiary_fraud_check.dateCreated.day == 1
+                assert beneficiary_fraud_check.dateCreated.month == 1
+                assert beneficiary_fraud_check.updatedAt.day == 1
+                assert beneficiary_fraud_check.updatedAt.month == 1
+
+            for beneficiary_fraud_review in user_to_anonymize.beneficiaryFraudReviews:
+                assert beneficiary_fraud_review.reason == "Anonymized"
+                assert beneficiary_fraud_review.dateReviewed.day == 1
+                assert beneficiary_fraud_review.dateReviewed.month == 1
+
+            for deposit in user_to_anonymize.deposits:
+                assert deposit.source == "Anonymized"
+
+            assert user_to_anonymize.email == f"anonymous_{user_to_anonymize.id}@anonymized.passculture"
+            assert user_to_anonymize.password == b"Anonymized"
+            assert user_to_anonymize.firstName == f"Anonymous_{user_to_anonymize.id}"
+            assert user_to_anonymize.lastName == f"Anonymous_{user_to_anonymize.id}"
+            assert user_to_anonymize.married_name == None
+            assert user_to_anonymize.postalCode == None
+            assert user_to_anonymize.phoneNumber == None
+            assert user_to_anonymize.dateOfBirth.day == 1
+            assert user_to_anonymize.dateOfBirth.month == 1
+            assert user_to_anonymize.address == None
+            assert user_to_anonymize.city == None
+            assert user_to_anonymize.externalIds == []
+            assert user_to_anonymize.idPieceNumber == None
+            assert user_to_anonymize.login_device_history == []
+            assert user_to_anonymize.user_email_history == []
+            assert user_to_anonymize.isActive == False
+            assert user_to_anonymize.irisFrance == iris
+            assert user_to_anonymize.validatedBirthDate.day == 1
+            assert user_to_anonymize.validatedBirthDate.month == 1
+            assert user_to_anonymize.roles == [users_models.UserRole.ANONYMIZED]
+            assert user_to_anonymize.login_device_history == []
+            assert user_to_anonymize.trusted_devices == []
+            assert len(user_to_anonymize.action_history) == 1
+            assert user_to_anonymize.action_history[0].actionType == history_models.ActionType.USER_ANONYMIZED
+            assert user_to_anonymize.action_history[0].authorUserId == None
+
+    def test_anonymize_beneficiary_user_force_iris_not_found(self) -> None:
+        user_to_anonymize = users_factories.BeneficiaryFactory(
+            firstName="user_to_anonymize",
+            age=18,
+            lastConnectionDate=datetime.datetime.utcnow() - relativedelta(years=3, days=1),
+            deposit__expirationDate=datetime.datetime.utcnow() - relativedelta(years=5, days=1),
+        )
+
+        users_api.anonymize_beneficiary_users(force=True)
+
+        db.session.refresh(user_to_anonymize)
+
+        assert len(sendinblue_testing.sendinblue_requests) == 1
+        assert len(batch_testing.requests) == 1
+        assert batch_testing.requests[0]["user_id"] == user_to_anonymize.id
+        assert user_to_anonymize.firstName == f"Anonymous_{user_to_anonymize.id}"
+
+    def test_anonymize_beneficiary_user_iris_not_found(self) -> None:
+        user_to_anonymize = users_factories.BeneficiaryFactory(
+            firstName="user_to_anonymize",
+            age=18,
+            lastConnectionDate=datetime.datetime.utcnow() - relativedelta(years=3, days=1),
+            deposit__expirationDate=datetime.datetime.utcnow() - relativedelta(years=5, days=1),
+        )
+
+        users_api.anonymize_beneficiary_users(force=False)
+
+        db.session.refresh(user_to_anonymize)
+
+        assert len(sendinblue_testing.sendinblue_requests) == 0
+        assert user_to_anonymize.firstName == "user_to_anonymize"
+
+    def test_anonymize_beneficiary_user_no_addr_api(self) -> None:
+        user_to_anonymize = users_factories.BeneficiaryFactory(
+            firstName="user_to_anonymize",
+            age=18,
+            lastConnectionDate=datetime.datetime.utcnow() - relativedelta(years=3, days=1),
+            deposit__expirationDate=datetime.datetime.utcnow() - relativedelta(years=5, days=1),
+        )
+
+        users_api.anonymize_beneficiary_users(force=False)
+        db.session.refresh(user_to_anonymize)
+
+        assert len(sendinblue_testing.sendinblue_requests) == 0
+        assert user_to_anonymize.firstName == "user_to_anonymize"
+
+
+@freeze_time("2021-05-27")
+class AnonymizeUserDepositsTest:
+    def test_anonymize_user_deposits(self) -> None:
+        user_recent_deposit = users_factories.BeneficiaryFactory(
+            deposit__dateCreated=datetime.datetime.utcnow() - relativedelta(years=6),
+            deposit__expirationDate=datetime.datetime.utcnow() - relativedelta(years=5, days=1),
+        )
+        user_old_deposit = users_factories.BeneficiaryFactory(
+            deposit__dateCreated=datetime.datetime.utcnow() - relativedelta(years=11, days=1),
+            deposit__expirationDate=datetime.datetime.utcnow() - relativedelta(years=10, days=1),
+        )
+
+        users_api.anonymize_user_deposits()
+
+        db.session.refresh(user_recent_deposit)
+        db.session.refresh(user_old_deposit)
+
+        for deposit in user_recent_deposit.deposits:
+            assert deposit.dateCreated == datetime.datetime(2015, 5, 27, 0, 0)
+            assert deposit.expirationDate == datetime.datetime(2016, 5, 26, 0, 0)
+
+        for deposit in user_old_deposit.deposits:
+            assert deposit.dateCreated == datetime.datetime(2010, 1, 1, 0, 0)
+            assert deposit.expirationDate == datetime.datetime(2011, 1, 1, 0, 0)

@@ -33,7 +33,7 @@ def delete_suspended_accounts_after_withdrawal_period() -> None:
     type=click.Choice(("pro", "beneficiary", "neither", "all"), case_sensitive=False),
     help="""Choose which users to anonymize:
     pro: anonymize pro users afer X years [not implemented]
-    beneficiary: anonymize beneficiary users 5 years after their last connection or the expiration of their deposits (whichever is the later) [not implemented]
+    beneficiary: anonymize beneficiary users 3 years after their last connection, starting from the 5 years after the expiration of their deposits; also anonymize deposits 10 years after their expiration
     neither: anonymize users that have never been pro or beneficiaries 3 years after their last connection
     all: anonymize all the users respecting their time rules
     """,
@@ -49,7 +49,9 @@ def delete_suspended_accounts_after_withdrawal_period() -> None:
 @cron_decorators.log_cron_with_transaction
 def anonymize_inactive_users(category: str, force: bool) -> None:
     if category in ("beneficiary", "all"):
-        print("Anonymize beneficiary users after 5 years [not implemented]")
+        print("Anonymize beneficiary users after 5 years")
+        user_api.anonymize_beneficiary_users(force=force)
+        user_api.anonymize_user_deposits()
     if category in ("neither", "all"):
         print("Anonymising users that are neither beneficiaries nor pro 3 years after their last connection")
         user_api.anonymize_non_pro_non_beneficiary_users(force=force)
