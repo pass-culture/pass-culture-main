@@ -5,7 +5,7 @@ from sqlalchemy.orm import exc as orm_exc
 import pcapi.core.categories.subcategories_v2 as subcategories
 from pcapi.core.educational import exceptions as educational_exceptions
 from pcapi.core.educational import repository as educational_repository
-from pcapi.core.educational.api import favorite as educational_api_favorite
+from pcapi.core.educational.api import favorites as educational_api_favorites
 from pcapi.core.educational.api import offer as educational_api_offer
 from pcapi.core.educational.api.categories import get_educational_categories
 from pcapi.core.educational.models import CollectiveOffer
@@ -99,7 +99,7 @@ def get_collective_offer(
 
     redactor = _get_redactor(authenticated_information)
     if redactor:
-        is_favorite = educational_api_favorite.is_offer_a_redactor_favorite(offer.id, redactor.id)
+        is_favorite = educational_api_favorites.is_offer_a_redactor_favorite(offer.id, redactor.id)
     else:
         is_favorite = False
 
@@ -126,7 +126,7 @@ def get_collective_offer_template(
 
     redactor = _get_redactor(authenticated_information)
     if redactor:
-        is_favorite = educational_api_favorite.is_offer_template_a_redactor_favorite(offer.id, redactor.id)
+        is_favorite = educational_api_favorites.is_offer_template_a_redactor_favorite(offer.id, redactor.id)
     else:
         is_favorite = False
 
