@@ -16,6 +16,7 @@ import { ApiResult } from 'apiClient/v1/core/ApiResult'
 import Notification from 'components/Notification/Notification'
 import { Events } from 'core/FirebaseEvents/constants'
 import * as useAnalytics from 'hooks/useAnalytics'
+import * as utils from 'utils/recaptcha'
 import { renderWithProviders } from 'utils/renderWithProviders'
 
 import SignIn from '../SignIn'
@@ -86,6 +87,10 @@ describe('SignIn', () => {
     vi.spyOn(api, 'signin').mockResolvedValue(
       {} as SharedLoginUserResponseModel
     )
+    vi.spyOn(utils, 'initReCaptchaScript').mockReturnValue({
+      remove: vi.fn(),
+    } as unknown as HTMLScriptElement)
+    vi.spyOn(utils, 'getReCaptchaToken').mockResolvedValue('token')
 
     vi.spyOn(api, 'listOfferersNames').mockResolvedValue({
       offerersNames: [
@@ -217,6 +222,7 @@ describe('SignIn', () => {
     expect(api.signin).toHaveBeenCalledWith({
       identifier: 'MonPetitEmail@exemple.com',
       password: 'MCSolar85',
+      token: 'token',
     })
   })
 
