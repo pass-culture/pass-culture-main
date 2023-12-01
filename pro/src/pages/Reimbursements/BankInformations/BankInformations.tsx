@@ -75,6 +75,7 @@ const BankInformations = (): JSX.Element => {
       searchParams.delete('structure')
       setSearchParams(searchParams)
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [])
 
   useEffect(() => {
@@ -97,6 +98,7 @@ const BankInformations = (): JSX.Element => {
     }
 
     selectedOfferer && void getSelectedOffererBankAccounts(selectedOfferer.id)
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [selectedOfferer])
 
   if (isOffererBankAccountsLoading || isOffererLoading) {

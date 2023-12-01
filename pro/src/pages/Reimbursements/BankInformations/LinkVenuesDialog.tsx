@@ -168,10 +168,7 @@ const LinkVenuesDialog = ({
               })}
             </div>
             <div className={styles['dialog-actions']}>
-              <Button
-                variant={ButtonVariant.SECONDARY}
-                onClick={onCancel}
-              >
+              <Button variant={ButtonVariant.SECONDARY} onClick={onCancel}>
                 Annuler
               </Button>
               <SubmitButton>Enregistrer</SubmitButton>
