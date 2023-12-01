@@ -195,6 +195,7 @@ const LinkVenuesDialog = ({
       )}
       {showUnlinkVenuesDialog && (
         <ConfirmDialog
+          extraClassNames={styles['unlink-dialog']}
           icon={strokeWarningIcon}
           onCancel={() => setShowUnlinkVenuesDialog(false)}
           title="Attention : le ou les lieux désélectionnés ne seront plus remboursés sur ce compte bancaire"
