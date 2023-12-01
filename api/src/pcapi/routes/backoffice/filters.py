@@ -543,6 +543,8 @@ def format_modified_info_name(info_name: str) -> str:
             return "Ville"
         case "address":
             return "Adresse"
+        case "banId":
+            return "Identifiant Base Adresse Nationale"
         case "bookingEmail":
             return "Email"
         case "contact.email":

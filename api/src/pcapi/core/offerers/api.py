@@ -1751,6 +1751,7 @@ def create_from_onboarding_data(
     if not venue or onboarding_data.createVenueWithoutSiret:
         common_kwargs = dict(
             address=onboarding_data.address or "n/d",  # handle empty VoieEtablissement from Sirene API
+            banId=onboarding_data.banId,
             bookingEmail=user.email,
             city=onboarding_data.city,
             latitude=onboarding_data.latitude,

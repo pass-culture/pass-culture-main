@@ -88,6 +88,7 @@ describe('useGetVenue', () => {
         [AccessiblityEnum.NONE]: true,
       },
       address: '12 rue du pilas',
+      banId: '',
       bannerMeta: {
         image_credit: '',
         original_image_url:

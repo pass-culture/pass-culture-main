@@ -251,6 +251,7 @@ class CreateOffererQueryModel(BaseModel):
 
 class SaveNewOnboardingDataQueryModel(BaseModel):
     address: str | None
+    banId: str | None
     city: str
     createVenueWithoutSiret: bool = False
     latitude: float

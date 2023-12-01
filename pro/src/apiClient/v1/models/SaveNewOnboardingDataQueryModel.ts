@@ -7,6 +7,7 @@ import type { Target } from './Target';
 
 export type SaveNewOnboardingDataQueryModel = {
   address?: string | null;
+  banId?: string | null;
   city: string;
   createVenueWithoutSiret?: boolean;
   latitude: number;

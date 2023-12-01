@@ -7,6 +7,7 @@ export interface VenueFormValues {
   accessibility: AccessibiltyFormValues
   address: string
   addressAutocomplete: string
+  banId: string | null
   bannerMeta: VenueBannerMetaProps | undefined | null
   bannerUrl: string | undefined
   city: string

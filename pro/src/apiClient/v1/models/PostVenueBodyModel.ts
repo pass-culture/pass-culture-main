@@ -8,6 +8,7 @@ import type { VenueContactModel } from './VenueContactModel';
 export type PostVenueBodyModel = {
   address: string;
   audioDisabilityCompliant?: boolean | null;
+  banId?: string | null;
   bookingEmail: string;
   city: string;
   comment?: string | null;

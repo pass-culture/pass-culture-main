@@ -9,6 +9,7 @@ import type { VenueTypeCode } from './VenueTypeCode';
 export type EditVenueBodyModel = {
   address?: string | null;
   audioDisabilityCompliant?: boolean | null;
+  banId?: string | null;
   bookingEmail?: string | null;
   city?: string | null;
   comment?: string | null;
