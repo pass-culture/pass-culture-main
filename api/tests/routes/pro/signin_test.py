@@ -26,7 +26,7 @@ class Returns200Test:
             lastConnectionDate=datetime.datetime(2019, 1, 1),
         )
 
-        data = {"identifier": user.email, "password": user.clearTextPassword}
+        data = {"identifier": user.email, "password": user.clearTextPassword, "token": "token"}
 
         # when
         with caplog.at_level(logging.INFO):
@@ -64,7 +64,7 @@ class Returns200Test:
     def when_user_has_no_departement_code(self, client):
         # given
         user = users_factories.UserFactory(email="USER@example.COM")
-        data = {"identifier": user.email, "password": user.clearTextPassword}
+        data = {"identifier": user.email, "password": user.clearTextPassword, "token": "token"}
 
         # when
         response = client.post("/users/signin", json=data)
@@ -76,7 +76,7 @@ class Returns200Test:
     def when_account_is_known_with_mixed_case_email(self, client):
         # given
         user = users_factories.UserFactory(email="USER@example.COM")
-        data = {"identifier": "uSeR@EXAmplE.cOm", "password": user.clearTextPassword}
+        data = {"identifier": "uSeR@EXAmplE.cOm", "password": user.clearTextPassword, "token": "token"}
 
         # when
         response = client.post("/users/signin", json=data)
@@ -88,7 +88,7 @@ class Returns200Test:
     def when_account_is_known_with_trailing_spaces_in_email(self, client):
         # given
         user = users_factories.UserFactory(email="user@example.com")
-        data = {"identifier": "  user@example.com  ", "password": user.clearTextPassword}
+        data = {"identifier": "  user@example.com  ", "password": user.clearTextPassword, "token": "token"}
 
         # when
         response = client.post("/users/signin", json=data)
@@ -100,7 +100,7 @@ class Returns200Test:
     def expect_a_new_user_session_to_be_recorded(self, client):
         # given
         user = users_factories.UserFactory(email="user@example.com")
-        data = {"identifier": user.email, "password": user.clearTextPassword}
+        data = {"identifier": user.email, "password": user.clearTextPassword, "token": "token"}
 
         # when
         response = client.post("/users/signin", json=data)
@@ -117,7 +117,7 @@ class Returns401Test:
     def when_identifier_is_missing(self, client, caplog):
         # Given
         user = users_factories.UserFactory()
-        data = {"identifier": None, "password": user.clearTextPassword}
+        data = {"identifier": None, "password": user.clearTextPassword, "token": "token"}
 
         # When
         with caplog.at_level(logging.INFO):
@@ -132,7 +132,7 @@ class Returns401Test:
     def when_identifier_is_incorrect(self, client, caplog):
         # Given
         user = users_factories.UserFactory()
-        data = {"identifier": "random.email@test.com", "password": user.clearTextPassword}
+        data = {"identifier": "random.email@test.com", "password": user.clearTextPassword, "token": "token"}
 
         # When
         with caplog.at_level(logging.INFO):
@@ -147,7 +147,7 @@ class Returns401Test:
     def when_password_is_missing(self, client):
         # Given
         user = users_factories.UserFactory()
-        data = {"identifier": user.email, "password": None}
+        data = {"identifier": user.email, "password": None, "token": "token"}
 
         # When
         response = client.post("/users/signin", json=data)
@@ -160,7 +160,7 @@ class Returns401Test:
     def when_password_is_incorrect(self, client, caplog):
         # Given
         user = users_factories.UserFactory()
-        data = {"identifier": user.email, "password": "wr0ng_p455w0rd"}
+        data = {"identifier": user.email, "password": "wr0ng_p455w0rd", "token": "token"}
 
         # When
         with caplog.at_level(logging.INFO):
@@ -177,7 +177,7 @@ class Returns401Test:
         user = users_factories.UserFactory.build()
         user.generate_validation_token()
         repository.save(user)
-        data = {"identifier": user.email, "password": user.clearTextPassword}
+        data = {"identifier": user.email, "password": user.clearTextPassword, "token": "token"}
 
         # When
         response = client.post("/users/signin", json=data)
