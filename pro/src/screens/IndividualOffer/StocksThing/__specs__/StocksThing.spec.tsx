@@ -195,6 +195,10 @@ describe('screens:StocksThing', () => {
   })
 
   it('should submit stock form when click on "Enregistrer et continuer"', async () => {
+    const reloadOfferMock = vi.fn()
+    contextValue.reloadOffer = reloadOfferMock
+    reloadOfferMock.mockResolvedValue(individualOfferFactory())
+
     vi.spyOn(api, 'upsertStocks').mockResolvedValue({
       stocks_count: 0,
     })
@@ -203,6 +207,12 @@ describe('screens:StocksThing', () => {
       name: 'Enregistrer et continuer',
     })
     await userEvent.type(screen.getByLabelText('Prix'), '20')
+
+    vi.spyOn(api, 'getStocks').mockResolvedValue({
+      stocks: [],
+      hasStocks: false,
+      stockCount: 0,
+    })
     await userEvent.click(nextButton)
 
     await waitFor(() => {
@@ -218,10 +228,14 @@ describe('screens:StocksThing', () => {
       })
     })
     expect(screen.getByText('Next page')).toBeInTheDocument()
-    expect(api.getOffer).toHaveBeenCalledWith(offer.id)
+    expect(reloadOfferMock).toHaveBeenCalledTimes(1)
   })
 
   it('should submit stock form with duo informations when clicking on on "Enregistrer et continuer"', async () => {
+    const reloadOfferMock = vi.fn()
+    contextValue.reloadOffer = reloadOfferMock
+    reloadOfferMock.mockResolvedValue(individualOfferFactory())
+
     vi.spyOn(api, 'upsertStocks').mockResolvedValue({
       stocks_count: 0,
     })
@@ -233,6 +247,12 @@ describe('screens:StocksThing', () => {
     await userEvent.click(
       screen.getByLabelText('Accepter les réservations “Duo“')
     )
+
+    vi.spyOn(api, 'getStocks').mockResolvedValue({
+      stocks: [],
+      hasStocks: false,
+      stockCount: 0,
+    })
     await userEvent.click(nextButton)
 
     await waitFor(() => {
@@ -242,7 +262,7 @@ describe('screens:StocksThing', () => {
       )
     })
     expect(screen.getByText('Next page')).toBeInTheDocument()
-    expect(api.getOffer).toHaveBeenCalledWith(offer.id)
+    expect(reloadOfferMock).toHaveBeenCalledTimes(1)
   })
 
   it('should not submit stock form when click on "Retour"', async () => {

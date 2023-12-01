@@ -7,10 +7,12 @@ import { api } from 'apiClient/api'
 import { GetIndividualOfferResponseModel } from 'apiClient/v1'
 import { OFFER_WIZARD_STEP_IDS } from 'components/IndividualOfferNavigation/constants'
 import Notification from 'components/Notification/Notification'
+import { IndividualOfferContext } from 'context/IndividualOfferContext'
 import { OFFER_WIZARD_MODE } from 'core/Offers/constants'
 import { getIndividualOfferPath } from 'core/Offers/utils/getIndividualOfferUrl'
 import { GetIndividualOfferFactory } from 'utils/apiFactories'
 import {
+  individualOfferContextFactory,
   individualOfferFactory,
   individualStockFactory,
   priceCategoryFactory,
@@ -41,7 +43,13 @@ const renderPriceCategories = (
               step: OFFER_WIZARD_STEP_IDS.TARIFS,
               mode,
             })}
-            element={<PriceCategoriesScreen {...props} />}
+            element={
+              <IndividualOfferContext.Provider
+                value={individualOfferContextFactory()}
+              >
+                <PriceCategoriesScreen {...props} />
+              </IndividualOfferContext.Provider>
+            }
             key={mode}
           />
         ))}

@@ -50,6 +50,7 @@ vi.mock('utils/windowMatchMedia', () => ({
 vi.mock('repository/pcapi/pcapi', () => ({
   postThumbnail: vi.fn(),
 }))
+const reloadOffer = vi.fn()
 
 const renderInformationsScreen = (
   props: InformationsScreenProps,
@@ -66,7 +67,10 @@ const renderInformationsScreen = (
     },
     features: features,
   }
-  const contextValue = individualOfferContextFactory(contextOverride)
+  const contextValue = individualOfferContextFactory({
+    reloadOffer,
+    ...contextOverride,
+  })
 
   return renderWithProviders(
     <>
@@ -205,6 +209,7 @@ describe('screens:IndividualOffer::Informations:edition', () => {
       {} as GetIndividualOfferResponseModel
     )
     vi.spyOn(api, 'deleteThumbnail').mockResolvedValue()
+    reloadOffer.mockResolvedValue(individualOfferFactory())
   })
 
   it('should submit minimal physical offer and redirect to summary', async () => {

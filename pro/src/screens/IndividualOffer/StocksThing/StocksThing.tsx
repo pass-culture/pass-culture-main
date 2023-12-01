@@ -11,7 +11,6 @@ import { RouteLeavingGuardIndividualOffer } from 'components/RouteLeavingGuardIn
 import { StockFormActions } from 'components/StockFormActions'
 import { StockFormRowAction } from 'components/StockFormActions/types'
 import { useIndividualOfferContext } from 'context/IndividualOfferContext'
-import { getIndividualOfferAdapter } from 'core/Offers/adapters'
 import {
   LIVRE_PAPIER_SUBCATEGORY_ID,
   OFFER_WIZARD_MODE,
@@ -50,7 +49,7 @@ const StocksThing = ({ offer }: StocksThingProps): JSX.Element => {
   const mode = useOfferWizardMode()
   const navigate = useNavigate()
   const notify = useNotification()
-  const { setOffer, subCategories } = useIndividualOfferContext()
+  const { reloadOffer, subCategories } = useIndividualOfferContext()
 
   const [stocks, setStocks] = useState<GetOfferStockResponseModel[]>([])
   const [isActivationCodeFormVisible, setIsActivationCodeFormVisible] =
@@ -113,7 +112,7 @@ const StocksThing = ({ offer }: StocksThingProps): JSX.Element => {
       await submitToApi(
         values,
         offer,
-        setOffer,
+        reloadOffer,
         formik.resetForm,
         formik.setErrors
       )
@@ -168,11 +167,7 @@ const StocksThing = ({ offer }: StocksThingProps): JSX.Element => {
     }
     try {
       await api.deleteStock(formik.values.stockId)
-      const response = await getIndividualOfferAdapter(offer.id)
-      /* istanbul ignore next: DEBT, TO FIX */
-      if (response.isOk) {
-        setOffer && setOffer(response.payload)
-      }
+      await reloadOffer()
       formik.resetForm({ values: STOCK_THING_FORM_DEFAULT_VALUES })
       notify.success('Le stock a été supprimé.')
     } catch {

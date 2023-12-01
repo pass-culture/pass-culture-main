@@ -1,9 +1,17 @@
-import React, { createContext, useContext, useEffect, useState } from 'react'
+import React, {
+  createContext,
+  useCallback,
+  useContext,
+  useEffect,
+  useState,
+} from 'react'
 import { useNavigate } from 'react-router-dom'
 
+import { api } from 'apiClient/api'
 import { CategoryResponseModel, SubcategoryResponseModel } from 'apiClient/v1'
 import { OffererName } from 'core/Offerers/types'
 import { getIndividualOfferAdapter } from 'core/Offers/adapters'
+import { serializeOfferApi } from 'core/Offers/adapters/getIndividualOfferAdapter/serializers'
 import { IndividualOffer } from 'core/Offers/types'
 import { GET_DATA_ERROR_MESSAGE } from 'core/shared'
 import { IndividualOfferVenueItem } from 'core/Venue/types'
@@ -22,6 +30,7 @@ export interface IndividualOfferContextValues {
   subcategory?: SubcategoryResponseModel
   setSubcategory: (p?: SubcategoryResponseModel) => void
   offererNames: OffererName[]
+  reloadOffer: () => Promise<IndividualOffer>
   venueList: IndividualOfferVenueItem[]
   venueId?: number | undefined
   offerOfferer?: OffererName | null
@@ -37,6 +46,7 @@ export const IndividualOfferContext =
     subCategories: [],
     offererNames: [],
     venueList: [],
+    reloadOffer: () => Promise.reject(),
     showVenuePopin: {},
     setSubcategory: () => {},
   })
@@ -85,6 +95,13 @@ export function IndividualOfferContextProvider({
     setOfferState(offer)
     setOfferOfferer(offer ? offer.venue.managingOfferer : null)
   }
+
+  const reloadOffer = useCallback(async () => {
+    const response = await api.getOffer(Number(offerId))
+    const offer = serializeOfferApi(response)
+    setOffer(offer)
+    return offer
+  }, [])
 
   useEffect(() => {
     async function loadOffer() {
@@ -166,6 +183,7 @@ export function IndividualOfferContextProvider({
         venueList,
         venueId,
         offerOfferer,
+        reloadOffer,
         showVenuePopin: showVenuePopin,
         subcategory,
         setSubcategory,

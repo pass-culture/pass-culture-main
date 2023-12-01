@@ -14,7 +14,6 @@ const renderIndivualOfferLayout = ({
   title = 'layout title',
   withStepper = true,
   offer = individualOfferFactory(),
-  setOffer = vi.fn(),
   mode = OFFER_WIZARD_MODE.EDITION,
   children = <div>Template child</div>,
 }: Partial<IndivualOfferLayoutProps>) => {
@@ -23,7 +22,6 @@ const renderIndivualOfferLayout = ({
       title={title}
       withStepper={withStepper}
       offer={offer}
-      setOffer={setOffer}
       mode={mode}
     >
       {children}

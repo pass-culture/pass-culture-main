@@ -1,7 +1,4 @@
-import {
-  getIndividualOfferAdapter,
-  updateIndividualOffer,
-} from 'core/Offers/adapters'
+import { updateIndividualOffer } from 'core/Offers/adapters'
 import { serializePatchOffer } from 'core/Offers/adapters/updateIndividualOffer/serializers'
 import { IndividualOffer } from 'core/Offers/types'
 
@@ -14,7 +11,7 @@ import { PriceCategoriesFormValues, PriceCategoryFormik } from './types'
 export const submitToApi = async (
   values: PriceCategoriesFormValues,
   offer: IndividualOffer,
-  setOffer: ((offer: IndividualOffer | null) => void) | null,
+  reloadOffer: () => Promise<IndividualOffer>,
   resetForm: PriceCategoryFormik['resetForm']
 ) => {
   const serializedOffer = serializePatchOffer({
@@ -39,12 +36,6 @@ export const submitToApi = async (
     throw new Error(priceCategoriesMessage)
   }
 
-  const response = await getIndividualOfferAdapter(offer.id)
-  if (response.isOk) {
-    const updatedOffer = response.payload
-    setOffer && setOffer(updatedOffer)
-    resetForm({
-      values: computeInitialValues(updatedOffer),
-    })
-  }
+  const updatedOffer = await reloadOffer()
+  resetForm({ values: computeInitialValues(updatedOffer) })
 }

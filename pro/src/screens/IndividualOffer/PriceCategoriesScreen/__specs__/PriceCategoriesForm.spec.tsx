@@ -5,9 +5,14 @@ import React from 'react'
 
 import { api } from 'apiClient/api'
 import { GetIndividualOfferResponseModel } from 'apiClient/v1'
+import { IndividualOfferContext } from 'context/IndividualOfferContext'
 import { OFFER_WIZARD_MODE } from 'core/Offers/constants'
 import { GetIndividualOfferFactory } from 'utils/apiFactories'
-import { individualStockFactory } from 'utils/individualApiFactories'
+import {
+  individualOfferContextFactory,
+  individualOfferFactory,
+  individualStockFactory,
+} from 'utils/individualApiFactories'
 import { renderWithProviders } from 'utils/renderWithProviders'
 
 import {
@@ -26,6 +31,7 @@ const defaultValues: PriceCategoriesFormValues = {
   ],
   isDuo: false,
 }
+const reloadOffer = vi.fn()
 
 const renderPriceCategoriesForm = (
   customValues?: Partial<PriceCategoriesFormValues>,
@@ -33,16 +39,19 @@ const renderPriceCategoriesForm = (
 ) => {
   const values = { ...defaultValues, ...customValues }
   return renderWithProviders(
-    <Formik initialValues={values} onSubmit={vi.fn()}>
-      <PriceCategoriesForm
-        offerId={42}
-        mode={OFFER_WIZARD_MODE.CREATION}
-        stocks={[individualStockFactory({ priceCategoryId: 144 })]}
-        setOffer={vi.fn()}
-        isDisabled={false}
-        canBeDuo={canBeDuo}
-      />
-    </Formik>
+    <IndividualOfferContext.Provider
+      value={individualOfferContextFactory({ reloadOffer })}
+    >
+      <Formik initialValues={values} onSubmit={vi.fn()}>
+        <PriceCategoriesForm
+          offerId={42}
+          mode={OFFER_WIZARD_MODE.CREATION}
+          stocks={[individualStockFactory({ priceCategoryId: 144 })]}
+          isDisabled={false}
+          canBeDuo={canBeDuo}
+        />
+      </Formik>
+    </IndividualOfferContext.Provider>
   )
 }
 
@@ -52,6 +61,7 @@ describe('PriceCategories', () => {
       {} as GetIndividualOfferResponseModel
     )
     vi.spyOn(api, 'getOffer').mockResolvedValue(GetIndividualOfferFactory())
+    reloadOffer.mockResolvedValue(individualOfferFactory())
   })
 
   it('should render without error', () => {
@@ -223,7 +233,6 @@ describe('PriceCategories', () => {
     await userEvent.click(
       screen.getAllByRole('button', { name: 'Supprimer le tarif' })[1]
     )
-    expect(nameFields[0]).toHaveValue('Tarif unique')
-    expect(nameFields[0]).toBeDisabled()
+    expect(reloadOffer).toHaveBeenCalledTimes(1)
   })
 })

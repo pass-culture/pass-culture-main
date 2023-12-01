@@ -2,8 +2,7 @@ import React from 'react'
 
 import { api } from 'apiClient/api'
 import { OfferStatus } from 'apiClient/v1'
-import { getIndividualOfferAdapter } from 'core/Offers/adapters'
-import { IndividualOffer } from 'core/Offers/types'
+import { useIndividualOfferContext } from 'context/IndividualOfferContext'
 import useNotification from 'hooks/useNotification'
 import fullHideIcon from 'icons/full-hide.svg'
 import strokeCheckIcon from 'icons/stroke-check.svg'
@@ -14,25 +13,15 @@ export interface StatusToggleButtonProps {
   offerId: number
   isActive: boolean
   status: OfferStatus
-  setOffer: ((offer: IndividualOffer) => void) | null
 }
 
 const StatusToggleButton = ({
   offerId,
   isActive,
   status,
-  setOffer,
 }: StatusToggleButtonProps) => {
   const notification = useNotification()
-
-  const reloadOffer = async () => {
-    const response = await getIndividualOfferAdapter(offerId)
-    if (response.isOk) {
-      setOffer && setOffer(response.payload)
-    } else {
-      notification.error(response.message)
-    }
-  }
+  const { reloadOffer } = useIndividualOfferContext()
 
   const toggleOfferActiveStatus = async () => {
     try {

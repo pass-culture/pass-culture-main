@@ -292,6 +292,7 @@ export const individualOfferContextFactory = (
     categories: [],
     subCategories: [],
     setOffer: () => {},
+    reloadOffer: () => Promise.resolve(offer),
     setSubcategory: () => {},
     showVenuePopin: {},
     ...customContext,

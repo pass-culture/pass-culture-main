@@ -1,8 +1,5 @@
 import { api } from 'apiClient/api'
-import {
-  getIndividualOfferAdapter,
-  updateIndividualOffer,
-} from 'core/Offers/adapters'
+import { updateIndividualOffer } from 'core/Offers/adapters'
 import { serializePatchOffer } from 'core/Offers/adapters/updateIndividualOffer/serializers'
 import { IndividualOffer } from 'core/Offers/types'
 
@@ -13,7 +10,7 @@ import buildInitialValues from './utils/buildInitialValues'
 export const submitToApi = async (
   values: StockThingFormValues,
   offer: IndividualOffer,
-  setOffer: ((offer: IndividualOffer | null) => void) | null,
+  reloadOffer: () => Promise<IndividualOffer>,
   resetForm: StockThingFormik['resetForm'],
   setErrors: StockThingFormik['setErrors']
 ) => {
@@ -45,13 +42,8 @@ export const submitToApi = async (
   }
 
   const [offerResponse, stockResponse] = await Promise.all([
-    getIndividualOfferAdapter(offer.id),
+    reloadOffer(),
     api.getStocks(offer.id),
   ])
-  if (offerResponse.isOk) {
-    setOffer && setOffer(offerResponse.payload)
-    resetForm({
-      values: buildInitialValues(offerResponse.payload, stockResponse.stocks),
-    })
-  }
+  resetForm({ values: buildInitialValues(offerResponse, stockResponse.stocks) })
 }

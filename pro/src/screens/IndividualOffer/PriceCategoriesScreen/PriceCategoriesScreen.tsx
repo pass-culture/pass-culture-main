@@ -151,7 +151,7 @@ export const getPopinType = (
 export const PriceCategoriesScreen = ({
   offer,
 }: PriceCategoriesScreenProps): JSX.Element => {
-  const { setOffer, subCategories } = useIndividualOfferContext()
+  const { reloadOffer, subCategories } = useIndividualOfferContext()
   const navigate = useNavigate()
   const mode = useOfferWizardMode()
   const notify = useNotification()
@@ -199,7 +199,7 @@ export const PriceCategoriesScreen = ({
 
     // Submit
     try {
-      await submitToApi(values, offer, setOffer, formik.resetForm)
+      await submitToApi(values, offer, reloadOffer, formik.resetForm)
     } catch (error) {
       if (error instanceof Error) {
         notify.error(error?.message)
@@ -270,7 +270,6 @@ export const PriceCategoriesScreen = ({
           offerId={offer.id}
           mode={mode}
           stocks={offer.stocks}
-          setOffer={setOffer}
           isDisabled={isDisabled}
           canBeDuo={canBeDuo}
         />

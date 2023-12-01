@@ -5,9 +5,9 @@ import React, { useState } from 'react'
 
 import ConfirmDialog from 'components/Dialog/ConfirmDialog'
 import FormLayout from 'components/FormLayout'
-import { getIndividualOfferAdapter } from 'core/Offers/adapters'
+import { useIndividualOfferContext } from 'context/IndividualOfferContext'
 import { OFFER_WIZARD_MODE } from 'core/Offers/constants'
-import { IndividualOffer, IndividualOfferStock } from 'core/Offers/types'
+import { IndividualOfferStock } from 'core/Offers/types'
 import useNotification from 'hooks/useNotification'
 import fullMoreIcon from 'icons/full-more.svg'
 import fullTrashIcon from 'icons/full-trash.svg'
@@ -33,7 +33,6 @@ interface PriceCategoriesFormProps {
   offerId: number
   stocks: IndividualOfferStock[]
   mode: OFFER_WIZARD_MODE
-  setOffer: ((offer: IndividualOffer | null) => void) | null
   isDisabled: boolean
   canBeDuo?: boolean
 }
@@ -42,10 +41,10 @@ export const PriceCategoriesForm = ({
   offerId,
   stocks,
   mode,
-  setOffer,
   isDisabled,
   canBeDuo,
 }: PriceCategoriesFormProps): JSX.Element => {
+  const { reloadOffer } = useIndividualOfferContext()
   const { setFieldValue, setValues, values } =
     useFormikContext<PriceCategoriesFormValues>()
   const notify = useNotification()
@@ -81,11 +80,7 @@ export const PriceCategoriesForm = ({
       })
       if (isOk) {
         arrayHelpers.remove(index)
-        const response = await getIndividualOfferAdapter(offerId)
-        if (response.isOk) {
-          const updatedOffer = response.payload
-          setOffer && setOffer(updatedOffer)
-        }
+        await reloadOffer()
         notify.success(message)
       } else {
         notify.error(message)
@@ -114,15 +109,11 @@ export const PriceCategoriesForm = ({
           requestBody: requestBody,
         })
       }
-      const response = await getIndividualOfferAdapter(offerId)
-      if (response.isOk) {
-        const updatedOffer = response.payload
-        setOffer && setOffer(updatedOffer)
-        await setValues({
-          ...values,
-          priceCategories: computeInitialValues(updatedOffer).priceCategories,
-        })
-      }
+      const updatedOffer = await reloadOffer()
+      await setValues({
+        ...values,
+        priceCategories: computeInitialValues(updatedOffer).priceCategories,
+      })
     }
   }
 

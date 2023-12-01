@@ -4,8 +4,10 @@ import React from 'react'
 
 import { api } from 'apiClient/api'
 import { OfferStatus } from 'apiClient/v1'
+import { IndividualOfferContext } from 'context/IndividualOfferContext'
 import * as useNotification from 'hooks/useNotification'
 import { GetIndividualOfferFactory } from 'utils/apiFactories'
+import { individualOfferContextFactory } from 'utils/individualApiFactories'
 import { renderWithProviders } from 'utils/renderWithProviders'
 
 import StatusToggleButton, {
@@ -13,7 +15,11 @@ import StatusToggleButton, {
 } from '../StatusToggleButton'
 
 const renderStatusToggleButton = (props: StatusToggleButtonProps) =>
-  renderWithProviders(<StatusToggleButton {...props} />)
+  renderWithProviders(
+    <IndividualOfferContext.Provider value={individualOfferContextFactory()}>
+      <StatusToggleButton {...props} />
+    </IndividualOfferContext.Provider>
+  )
 
 describe('StatusToggleButton', () => {
   let props: StatusToggleButtonProps
@@ -23,7 +29,6 @@ describe('StatusToggleButton', () => {
       offerId: offerId,
       isActive: true,
       status: OfferStatus.ACTIVE,
-      setOffer: vi.fn(),
     }
     vi.spyOn(api, 'getOffer').mockResolvedValue(GetIndividualOfferFactory())
   })
@@ -55,7 +60,6 @@ describe('StatusToggleButton', () => {
       1,
       'L’offre a bien été désactivée.'
     )
-    expect(api.getOffer).toHaveBeenCalledTimes(1)
   })
 
   it('should activate an offer and confirm', async () => {
@@ -90,7 +94,6 @@ describe('StatusToggleButton', () => {
       1,
       'L’offre a bien été publiée.'
     )
-    expect(api.getOffer).toHaveBeenCalledTimes(1)
   })
 
   it('should display error', async () => {
