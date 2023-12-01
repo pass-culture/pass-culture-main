@@ -16,6 +16,8 @@ from pcapi.core.finance import models as finance_models
 from pcapi.core.finance import utils as finance_utils
 from pcapi.core.history import factories as history_factories
 from pcapi.core.history import models as history_models
+from pcapi.core.mails import testing as mails_testing
+from pcapi.core.mails.transactional.sendinblue_template_ids import TransactionalEmail
 from pcapi.core.offerers import factories as offerers_factories
 from pcapi.core.offers import factories as offers_factories
 from pcapi.core.permissions import models as perm_models
@@ -1086,3 +1088,216 @@ class GenerateInvoicesTest(PostEndpointHelper):
                 html_parser.extract_alert(authenticated_client.get(response.location).data)
                 == "La tâche de génération des justificatifs est déjà en cours"
             )
+
+
+class ForceDebitNoteTest(PostEndpointHelper):
+    endpoint = "backoffice_web.finance_incidents.force_debit_note"
+    endpoint_kwargs = {"finance_incident_id": 1}
+    needed_permission = perm_models.Permissions.MANAGE_INCIDENTS
+
+    def test_force_debit_note(self, authenticated_client):
+        venue = offerers_factories.VenueFactory(pricing_point="self", reimbursement_point="self")
+        booking = bookings_factories.ReimbursedBookingFactory(venue=venue, stock__offer__venue=venue)
+        original_event = finance_factories.UsedBookingFinanceEventFactory(booking=booking)
+        original_pricing = api.price_event(original_event)
+        original_pricing.status = finance_models.PricingStatus.INVOICED
+
+        now = datetime.datetime.utcnow()
+        finance_incident = finance_factories.IndividualBookingFinanceIncidentFactory(
+            booking=booking, incident__status=finance_models.IncidentStatus.VALIDATED, incident__forceDebitNote=False
+        ).incident
+        api._create_finance_events_from_incident(
+            finance_incident.booking_finance_incidents[0], incident_validation_date=now
+        )
+
+        response = self.post_to_endpoint(
+            authenticated_client,
+            finance_incident_id=finance_incident.id,
+        )
+
+        assert response.status_code == 200
+        assert "Une note de débit sera générée à la prochaine échéance." in html_parser.extract_alert(response.data)
+        updated_finance_incident = finance_models.FinanceIncident.query.get(finance_incident.id)
+        assert updated_finance_incident.forceDebitNote is True
+
+    @pytest.mark.parametrize(
+        "incident_status",
+        [
+            finance_models.IncidentStatus.CANCELLED,
+            finance_models.IncidentStatus.CREATED,
+        ],
+    )
+    def test_not_force_debit_note(self, authenticated_client, incident_status):
+        original_finance_incident = finance_factories.FinanceIncidentFactory(status=incident_status)
+
+        response = self.post_to_endpoint(
+            authenticated_client,
+            finance_incident_id=original_finance_incident.id,
+        )
+        redirected_response = authenticated_client.get(response.location)
+
+        alert = html_parser.extract_alert(redirected_response.data)
+        assert "Cette action ne peut être effectuée que sur un incident validé non terminé." == alert
+        finance_incident = finance_models.FinanceIncident.query.get(original_finance_incident.id)
+        assert finance_incident.forceDebitNote is False
+
+    def test_force_debit_note_on_finished_incident(self, authenticated_client):
+        venue = offerers_factories.VenueFactory(pricing_point="self", reimbursement_point="self")
+        finance_factories.BankInformationFactory(venue=venue)
+        booking = bookings_factories.ReimbursedBookingFactory(venue=venue, stock__offer__venue=venue)
+        original_event = finance_factories.UsedBookingFinanceEventFactory(booking=booking)
+        original_pricing = api.price_event(original_event)
+        original_pricing.status = finance_models.PricingStatus.INVOICED
+
+        original_finance_incident = finance_factories.IndividualBookingFinanceIncidentFactory(
+            booking=booking, incident__status=finance_models.IncidentStatus.VALIDATED, incident__venue=venue
+        ).incident
+        events_to_price = []
+        events_to_price.extend(
+            api._create_finance_events_from_incident(
+                original_finance_incident.booking_finance_incidents[0],
+                incident_validation_date=datetime.datetime.utcnow(),
+            )
+        )
+        booking = bookings_factories.UsedBookingFactory(venue=venue, stock__offer__venue=venue, amount=20)
+        events_to_price.append(
+            finance_factories.FinanceEventFactory(
+                venue=venue, booking=booking, status=finance_models.FinanceEventStatus.READY
+            )
+        )
+
+        for event in events_to_price:
+            api.price_event(event)
+
+        cashflow_batch = api.generate_cashflows_and_payment_files(datetime.datetime.utcnow())
+        generated_cashflow = cashflow_batch.cashflows[0]
+        generated_cashflow.status = finance_models.CashflowStatus.ACCEPTED
+
+        response = self.post_to_endpoint(
+            authenticated_client,
+            finance_incident_id=original_finance_incident.id,
+        )
+        redirected_response = authenticated_client.get(response.location)
+
+        alert = html_parser.extract_alert(redirected_response.data)
+        assert "Cette action ne peut être effectuée que sur un incident validé non terminé." == alert
+        finance_incident = finance_models.FinanceIncident.query.get(original_finance_incident.id)
+        assert finance_incident.forceDebitNote is False
+
+
+class CancelDebitNoteTest(PostEndpointHelper):
+    endpoint = "backoffice_web.finance_incidents.cancel_debit_note"
+    endpoint_kwargs = {"finance_incident_id": 1}
+    needed_permission = perm_models.Permissions.MANAGE_INCIDENTS
+
+    def test_cancel_debit_note(self, authenticated_client):
+        reimbursement_point = offerers_factories.VenueFactory(bookingEmail="pro@example.com")
+        venue = offerers_factories.VenueFactory(pricing_point="self", reimbursement_point=reimbursement_point)
+        booking = bookings_factories.ReimbursedBookingFactory(venue=venue, stock__offer__venue=venue)
+        original_event = finance_factories.UsedBookingFinanceEventFactory(booking=booking)
+        original_pricing = api.price_event(original_event)
+        original_pricing.status = finance_models.PricingStatus.INVOICED
+
+        now = datetime.datetime.utcnow()
+        finance_incident = finance_factories.IndividualBookingFinanceIncidentFactory(
+            booking=booking,
+            incident__status=finance_models.IncidentStatus.VALIDATED,
+            incident__forceDebitNote=True,
+            incident__venue=venue,
+        ).incident
+        api._create_finance_events_from_incident(
+            finance_incident.booking_finance_incidents[0], incident_validation_date=now
+        )
+
+        response = self.post_to_endpoint(
+            authenticated_client,
+            finance_incident_id=finance_incident.id,
+        )
+
+        assert response.status_code == 200
+        assert (
+            "Vous avez fait le choix de récupérer l'argent sur les prochaines réservations de l'acteur."
+            in html_parser.content_as_text(response.data)
+        )
+
+        assert len(mails_testing.outbox) == 1
+        assert (
+            mails_testing.outbox[0].sent_data["template"]
+            == TransactionalEmail.RETRIEVE_INCIDENT_AMOUNT_ON_INDIVIDUAL_BOOKINGS.value.__dict__
+        )
+        assert mails_testing.outbox[0].sent_data["To"] == "pro@example.com"
+        assert mails_testing.outbox[0].sent_data["params"] == {
+            "VENUE_NAME": venue.publicName,
+            "OFFER_NAME": booking.stock.offer.name,
+        }
+        updated_finance_incident = finance_models.FinanceIncident.query.get(finance_incident.id)
+        assert updated_finance_incident.forceDebitNote is False
+
+    @pytest.mark.parametrize(
+        "incident_status",
+        [
+            finance_models.IncidentStatus.CANCELLED,
+            finance_models.IncidentStatus.CREATED,
+        ],
+    )
+    def test_not_cancel_debit_note(self, authenticated_client, incident_status):
+        original_finance_incident = finance_factories.FinanceIncidentFactory(
+            status=incident_status, forceDebitNote=True
+        )
+
+        response = self.post_to_endpoint(
+            authenticated_client,
+            finance_incident_id=original_finance_incident.id,
+        )
+        redirected_response = authenticated_client.get(response.location)
+
+        alert = html_parser.extract_alert(redirected_response.data)
+        assert "Cette action ne peut être effectuée que sur un incident validé non terminé." == alert
+        finance_incident = finance_models.FinanceIncident.query.get(original_finance_incident.id)
+        assert finance_incident.forceDebitNote == original_finance_incident.forceDebitNote
+
+    def test_cancel_debit_note_on_finished_incident(self, authenticated_client):
+        venue = offerers_factories.VenueFactory(pricing_point="self", reimbursement_point="self")
+        finance_factories.BankInformationFactory(venue=venue)
+        booking = bookings_factories.ReimbursedBookingFactory(venue=venue, stock__offer__venue=venue)
+        original_event = finance_factories.UsedBookingFinanceEventFactory(booking=booking)
+        original_pricing = api.price_event(original_event)
+        original_pricing.status = finance_models.PricingStatus.INVOICED
+
+        original_finance_incident = finance_factories.IndividualBookingFinanceIncidentFactory(
+            booking=booking,
+            incident__status=finance_models.IncidentStatus.VALIDATED,
+            incident__venue=venue,
+            incident__forceDebitNote=True,
+        ).incident
+        events_to_price = []
+        events_to_price.extend(
+            api._create_finance_events_from_incident(
+                original_finance_incident.booking_finance_incidents[0],
+                incident_validation_date=datetime.datetime.utcnow(),
+            )
+        )
+        booking = bookings_factories.UsedBookingFactory(venue=venue, stock__offer__venue=venue, amount=20)
+        events_to_price.append(
+            finance_factories.FinanceEventFactory(
+                venue=venue, booking=booking, status=finance_models.FinanceEventStatus.READY
+            )
+        )
+
+        for event in events_to_price:
+            api.price_event(event)
+
+        cashflow_batch = api.generate_cashflows_and_payment_files(datetime.datetime.utcnow())
+        generated_cashflow = cashflow_batch.cashflows[0]
+        generated_cashflow.status = finance_models.CashflowStatus.ACCEPTED
+
+        response = self.post_to_endpoint(
+            authenticated_client,
+            finance_incident_id=original_finance_incident.id,
+        )
+        redirected_response = authenticated_client.get(response.location)
+
+        alert = html_parser.extract_alert(redirected_response.data)
+        assert "Cette action ne peut être effectuée que sur un incident validé non terminé." == alert
+        finance_incident = finance_models.FinanceIncident.query.get(original_finance_incident.id)
+        assert finance_incident.forceDebitNote == original_finance_incident.forceDebitNote
