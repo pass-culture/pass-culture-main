@@ -52,7 +52,7 @@ const Tabs = ({ nav, selectedKey, tabs }: FilterTabsProps): JSX.Element => {
                     width={NAV_ITEM_ICON_SIZE}
                   />
                 )}
-                <span>{label}</span>
+                <span className={styles['tabs-tab-label']}>{label}</span>
               </Link>
             ) : (
               <Button
