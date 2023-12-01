@@ -10,14 +10,12 @@ import {
 import { computeURLCollectiveOfferId } from 'core/OfferEducational/utils/computeURLCollectiveOfferId'
 import { extractInitialVisibilityValues } from 'core/OfferEducational/utils/extractInitialVisibilityValues'
 import { useAdapter } from 'hooks'
-import useActiveFeature from 'hooks/useActiveFeature'
 import useNotification from 'hooks/useNotification'
 import CollectiveOfferVisibilityScreen from 'screens/CollectiveOfferVisibility'
 import {
   MandatoryCollectiveOfferFromParamsProps,
   withCollectiveOfferFromParams,
 } from 'screens/OfferEducational/useCollectiveOfferFromParams'
-import OldCollectiveOfferVisibility from 'screens/OldCollectiveOfferVisibility'
 import Spinner from 'ui-kit/Spinner/Spinner'
 
 import getEducationalInstitutionsAdapter from './adapters/getEducationalInstitutionsAdapter'
@@ -30,7 +28,6 @@ const CollectiveOfferVisibility = ({
 }: MandatoryCollectiveOfferFromParamsProps) => {
   const notify = useNotification()
   const navigate = useNavigate()
-  const isOfferInstitutionActive = useActiveFeature('WIP_OFFER_TO_INSTITUTION')
   const {
     error,
     data: institutionsPayload,
@@ -50,6 +47,7 @@ const CollectiveOfferVisibility = ({
     message: string
     payload: CollectiveOffer
   }) => {
+    // eslint-disable-next-line @typescript-eslint/no-floating-promises
     reloadCollectiveOffer()
     navigate(
       `/offre/${computeURLCollectiveOfferId(
@@ -70,35 +68,19 @@ const CollectiveOfferVisibility = ({
 
   return (
     <CollectiveOfferLayout subTitle={offer.name} isTemplate={isTemplate}>
-      {isOfferInstitutionActive ? (
-        <CollectiveOfferVisibilityScreen
-          mode={offer.isVisibilityEditable ? Mode.EDITION : Mode.READ_ONLY}
-          patchInstitution={patchEducationalInstitutionAdapter}
-          initialValues={extractInitialVisibilityValues(
-            offer.institution,
-            offer.teacher
-          )}
-          onSuccess={onSuccess}
-          institutions={institutionsPayload.institutions}
-          isLoadingInstitutions={isLoading}
-          offer={offer}
-          reloadCollectiveOffer={reloadCollectiveOffer}
-        />
-      ) : (
-        <OldCollectiveOfferVisibility
-          mode={offer.isVisibilityEditable ? Mode.EDITION : Mode.READ_ONLY}
-          patchInstitution={patchEducationalInstitutionAdapter}
-          initialValues={extractInitialVisibilityValues(
-            offer.institution,
-            offer.teacher
-          )}
-          onSuccess={onSuccess}
-          institutions={institutionsPayload.institutions}
-          isLoadingInstitutions={isLoading}
-          offer={offer}
-          reloadCollectiveOffer={reloadCollectiveOffer}
-        />
-      )}
+      <CollectiveOfferVisibilityScreen
+        mode={offer.isVisibilityEditable ? Mode.EDITION : Mode.READ_ONLY}
+        patchInstitution={patchEducationalInstitutionAdapter}
+        initialValues={extractInitialVisibilityValues(
+          offer.institution,
+          offer.teacher
+        )}
+        onSuccess={onSuccess}
+        institutions={institutionsPayload.institutions}
+        isLoadingInstitutions={isLoading}
+        offer={offer}
+        reloadCollectiveOffer={reloadCollectiveOffer}
+      />
     </CollectiveOfferLayout>
   )
 }

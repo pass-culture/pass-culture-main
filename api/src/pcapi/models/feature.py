@@ -106,7 +106,6 @@ class FeatureToggle(enum.Enum):
     WIP_ENABLE_NEW_USER_OFFERER_LINK = "Activer le nouvel ajout des collaborateurs"
     WIP_ENABLE_DIFFUSE_HELP = "Activer l'affichage de l'aide diffuse adage"
     WIP_ENABLE_EVENTS_WITH_TICKETS_FOR_PUBLIC_API = "Activer la création d'évènements avec tickets dans l'API publique"
-    WIP_OFFER_TO_INSTITUTION = "Activer le fléchage d'une offre à un établissement"
     WIP_ENABLE_NEW_BANK_DETAILS_JOURNEY = "Activer le nouveau parcours de dépôt de coordonnées bancaires"
     WIP_CATEGORY_SELECTION = "Activer la nouvelle sélection de catégories"
     WIP_ENABLE_ADAGE_GEO_LOCATION = "Activer le filtre d'offres adage par géolocalisation"
@@ -184,7 +183,6 @@ FEATURES_DISABLED_BY_DEFAULT: tuple[FeatureToggle, ...] = (
     FeatureToggle.WIP_ENABLE_SEARCH_HISTORY_ADAGE,
     FeatureToggle.WIP_ENABLE_SUSPICIOUS_EMAIL_SEND,
     FeatureToggle.WIP_ENABLE_TRUSTED_DEVICE,
-    FeatureToggle.WIP_OFFER_TO_INSTITUTION,
     FeatureToggle.WIP_ENABLE_BOOST_SHOWTIMES_FILTER,
     FeatureToggle.WIP_ENABLE_DATES_OFFER_TEMPLATE,
     FeatureToggle.WIP_HOME_STATS,
