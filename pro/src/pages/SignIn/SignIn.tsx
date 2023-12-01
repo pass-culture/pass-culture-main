@@ -7,12 +7,14 @@ import { api } from 'apiClient/api'
 import { HTTP_STATUS, isErrorAPIError } from 'apiClient/helpers'
 import AppLayout from 'app/AppLayout'
 import SkipLinks from 'components/SkipLinks'
+import useInitReCaptcha from 'hooks/useInitReCaptcha'
 import useNotification from 'hooks/useNotification'
 import useRedirectLoggedUser from 'hooks/useRedirectLoggedUser'
 import logoPassCultureProFullIcon from 'icons/logo-pass-culture-pro-full.svg'
 import CookiesFooter from 'pages/CookiesFooter/CookiesFooter'
 import { setCurrentUser } from 'store/user/actions'
 import { SvgIcon } from 'ui-kit/SvgIcon/SvgIcon'
+import { getReCaptchaToken } from 'utils/recaptcha'
 
 import { SIGNIN_FORM_DEFAULT_VALUES } from './constants'
 import styles from './Signin.module.scss'
@@ -36,6 +38,7 @@ const SignIn = (): JSX.Element => {
   const notify = useNotification()
   const dispatch = useDispatch()
   const [searchParams, setSearchParams] = useSearchParams()
+  useInitReCaptcha()
 
   useEffect(() => {
     if (searchParams.get('accountValidation') === 'true') {
@@ -53,9 +56,10 @@ const SignIn = (): JSX.Element => {
   }, [searchParams])
 
   const onSubmit = async (values: SigninFormValues) => {
+    const token = await getReCaptchaToken('loginUser')
     const { email, password } = values
     try {
-      const user = await api.signin({ identifier: email, password })
+      const user = await api.signin({ identifier: email, password, token })
       dispatch(setCurrentUser(user))
     } catch (error) {
       if (isErrorAPIError(error)) {
