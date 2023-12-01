@@ -1,5 +1,7 @@
 /* istanbul ignore file */
 import {
+  BankAccountApplicationStatus,
+  BankAccountResponseModel,
   BookingRecapResponseModel,
   GetIndividualOfferResponseModel,
   GetOfferManagingOffererResponseModel,
@@ -9,6 +11,7 @@ import {
   ListOffersOfferResponseModel,
   ListOffersStockResponseModel,
   ListOffersVenueResponseModel,
+  ManagedVenues,
   OfferStatus,
   SubcategoryIdEnum,
   VenueListItemResponseModel,
@@ -299,3 +302,27 @@ const listOffersVenueResponseModelFactory = (
   departementCode: '75',
   ...customVenue,
 })
+
+export const defaultBankAccountResponseModel: BankAccountResponseModel = {
+  bic: 'CCOPFRPP',
+  dateCreated: '2020-05-07',
+  dsApplicationId: 1,
+  id: 1,
+  isActive: true,
+  label: 'Mon compte bancaire',
+  linkedVenues: [
+    {
+      commonName: 'mon super lieu',
+      id: 1,
+    },
+  ],
+  obfuscatedIban: 'XXXX-123',
+  status: BankAccountApplicationStatus.ACCEPTE,
+}
+
+export const defaultManagedVenues: ManagedVenues = {
+  commonName: 'my venue',
+  id: 1,
+  siret: '123456789',
+  hasPricingPoint: true,
+}
