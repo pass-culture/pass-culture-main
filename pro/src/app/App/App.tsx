@@ -21,7 +21,6 @@ interface AppProps {
 window.beamer_config = { product_id: 'vjbiYuMS52566', lazy: true }
 
 const App = ({ children }: AppProps): JSX.Element | null => {
-  const isCookieBannerEnabled = useActiveFeature('WIP_ENABLE_COOKIES_BANNER')
   const isBeamerEnabled = useActiveFeature('ENABLE_BEAMER')
   const location = useLocation()
   const { currentUser } = useCurrentUser()
@@ -30,10 +29,7 @@ const App = ({ children }: AppProps): JSX.Element | null => {
 
   useEffect(() => {
     // Initialize cookie consent modal
-    if (
-      isCookieBannerEnabled &&
-      location.pathname.indexOf('/adage-iframe') === -1
-    ) {
+    if (location.pathname.indexOf('/adage-iframe') === -1) {
       setTimeout(() => {
         const orejime = initCookieConsent()
         // Set the consent on consent change

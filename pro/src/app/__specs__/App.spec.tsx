@@ -75,19 +75,7 @@ describe('src | App', () => {
   })
 
   describe('cookies banner', () => {
-    beforeEach(() => {})
-    it('should render the cookie banner when the feature flag is enabled', async () => {
-      store = {
-        features: {
-          list: [
-            {
-              nameKey: 'WIP_ENABLE_COOKIES_BANNER',
-              isActive: true,
-            },
-          ],
-          initialized: true,
-        },
-      }
+    it('should render the cookie banner', async () => {
       renderApp(store)
       expect(
         await screen.findByText(
