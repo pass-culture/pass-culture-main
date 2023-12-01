@@ -220,6 +220,7 @@ class ApplicationDetailOldJourney(ApplicationDetail):
 
 class ApplicationDetailNewJourney(ApplicationDetail):
     status: finance_models.BankAccountApplicationStatus
+    label: str | None = None
 
     @root_validator(pre=True)
     def to_representation(cls: "ApplicationDetailNewJourney", obj: dict) -> dict:
@@ -227,4 +228,5 @@ class ApplicationDetailNewJourney(ApplicationDetail):
         to_representation["status"] = finance_models.BankAccountApplicationStatus(obj["status"])
         if to_representation["procedure_version"] == 5:
             to_representation["siren"] = to_representation["siret"][:9]
+            to_representation["label"] = obj["label"]
         return to_representation

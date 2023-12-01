@@ -547,7 +547,9 @@ class ImportBankAccountMixin:
             .one_or_none()
         )
         if bank_account is None:
-            label = venue.common_name if venue is not None else self.application_details.obfuscatedIban
+            label = self.application_details.label
+            if label is None:
+                label = venue.common_name if venue is not None else self.application_details.obfuscatedIban
             bank_account = finance_models.BankAccount(
                 iban=self.application_details.iban,
                 bic=self.application_details.bic,
@@ -563,10 +565,13 @@ class ImportBankAccountMixin:
         self, bank_account: finance_models.BankAccount, venue: "Venue"
     ) -> offerers_models.VenueBankAccountLink | None:
         """
-        Link a venue to a bankAccount.
+        Link a venue to a bankAccount only if it was accepted by the compliance.
         Do nothing if the link is already up to date.
         (The bankAccount might have been fetched because of a status update but already processed before)
         """
+        if bank_account.status != BankAccountApplicationStatus.ACCEPTED:
+            return None
+
         if bank_account.venueLinks:
             current_link = bank_account.current_link
             assert current_link  # helps mypy
@@ -631,6 +636,7 @@ class ImportBankAccountMixin:
         if self.application_details.status not in (
             BankAccountApplicationStatus.DRAFT,
             BankAccountApplicationStatus.ON_GOING,
+            BankAccountApplicationStatus.WITH_PENDING_CORRECTIONS,
         ):
             archive_dossier(self.application_details.dossier_id)
 
