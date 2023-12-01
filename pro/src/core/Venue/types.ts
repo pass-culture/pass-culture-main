@@ -19,7 +19,6 @@ export type IndividualOfferVenueItem = {
   bookingEmail?: string | null
   hasMissingReimbursementPoint: boolean
   hasCreatedOffer: boolean
-  hasNonFreeOffers: boolean
   venueType: string
 }
 

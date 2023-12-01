@@ -9,7 +9,6 @@ from PIL import Image
 import pydantic.v1 as pydantic_v1
 from pydantic.v1 import root_validator
 from pydantic.v1 import validator
-from sqlalchemy.engine.row import Row
 
 from pcapi.core.categories import subcategories_v2
 from pcapi.core.educational import models as educational_models
@@ -366,16 +365,13 @@ class VenueListItemResponseModel(BaseModel, AccessibilityComplianceMixin):
     hasCreatedOffer: bool
     collectiveSubCategoryId: str | None
     venueTypeCode: offerers_models.VenueTypeCode
-    hasNonFreeOffers: bool
 
     @classmethod
     def from_orm(
         cls,
-        row: Row,
+        venue: offerers_models.Venue,
         ids_of_venues_with_offers: typing.Iterable[int] = (),
     ) -> "VenueListItemResponseModel":
-        venue = row.Venue
-        venue.hasNonFreeOffers = row.hasNonFreeOffers
         now = datetime.utcnow()
         venue.offererName = venue.managingOfferer.name
         venue.hasMissingReimbursementPoint = not (

@@ -42,7 +42,6 @@ const getIndividualOfferVenuesAdapter: GetIndividualOfferVenuesAdapter =
           bookingEmail: venue.bookingEmail || null,
           hasMissingReimbursementPoint: venue.hasMissingReimbursementPoint,
           hasCreatedOffer: venue.hasCreatedOffer,
-          hasNonFreeOffers: venue.hasNonFreeOffers,
           venueType: venue.venueTypeCode,
         }
       }
