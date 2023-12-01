@@ -1,10 +1,13 @@
 import React from 'react'
 import { useSearchParams } from 'react-router-dom'
 
+import strokeVenueIcon from 'icons/stroke-venue.svg'
+import { SvgIcon } from 'ui-kit/SvgIcon/SvgIcon'
+
 import styles from './CardVenue.module.scss'
 
 interface CardVenueModel {
-  imageUrl: string
+  imageUrl?: string | null
   name: string
   publicName?: string
   distance: number
@@ -31,12 +34,20 @@ const CardVenue = ({
       href={`/adage-iframe/venue/${venue.id}?token=${adageAuthToken}`}
       onClick={() => handlePlaylistElementTracking()}
     >
-      <img
-        alt=""
-        className={styles['venue-image']}
-        loading="lazy"
-        src={venue.imageUrl}
-      />
+      {venue.imageUrl ? (
+        <img
+          alt=""
+          className={styles['venue-image']}
+          loading="lazy"
+          src={venue.imageUrl}
+        />
+      ) : (
+        <div
+          className={`${styles['venue-image']} ${styles['venue-image-fallback']}`}
+        >
+          <SvgIcon src={strokeVenueIcon} width="80" alt="" />
+        </div>
+      )}
       <div className={styles['venue-infos']}>
         <div className={styles['venue-infos-name']}>
           {venue.publicName || venue.name}

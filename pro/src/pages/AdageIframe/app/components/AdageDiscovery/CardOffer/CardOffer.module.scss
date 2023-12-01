@@ -56,6 +56,14 @@ $offer-image-width: rem.torem(216px);
   height: $offer-image-height;
   border-radius: rem.torem(16px);
   border: rem.torem(1px) solid colors.$white;
+
+  &.offer-image-fallback {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background-color: colors.$grey-light;
+    color: colors.$grey-semi-dark;
+  }
 }
 
 .offer-favorite-button {
