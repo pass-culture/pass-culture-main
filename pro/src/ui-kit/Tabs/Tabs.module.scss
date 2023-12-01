@@ -13,6 +13,10 @@
     border-bottom: rem.torem(2px) solid transparent;
     padding-bottom: rem.torem(8px);
 
+    &-label {
+      display: flex;
+    }
+
     &-icon {
       fill: colors.$black;
       color: colors.$black;
