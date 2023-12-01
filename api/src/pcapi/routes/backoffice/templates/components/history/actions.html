@@ -32,6 +32,13 @@
               </p>
             {% endif %}
             {% if action.extraData %}
+              {% set role_name = action.extraData.get('role_name') %}
+              {% if role_name %}
+                <div>
+                  <span class="fw-bold">Rôle :</span>
+                  {{ role_name }}
+                </div>
+              {% endif %}
               {% set modified_info = action.extraData.get('modified_info', {}) %}
               {% if modified_info %}
                 {# INFO_MODIFIED but also tags modified in OFFERER_PENDING #}
@@ -44,7 +51,13 @@
                 </div>
                 {% for info_name, modified_info in modified_info.items() %}
                   <div>
-                    <span class="text-decoration-underline">{{ info_name | format_modified_info_name | escape }} :</span>
+                    <span class="text-decoration-underline">
+                      {% if action.actionType.name == "ROLE_PERMISSIONS_CHANGED" %}
+                        {{ info_name | format_permission_name }} :
+                      {% else %}
+                        {{ info_name | format_modified_info_name | escape }} :
+                      {% endif %}
+                    </span>
                     {{ modified_info | format_modified_info_values(info_name) }}
                   </div>
                 {% endfor %}
