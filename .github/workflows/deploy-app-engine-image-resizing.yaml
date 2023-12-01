@@ -49,7 +49,7 @@ jobs:
       - name: Add sha to image-resizing
         run: |
           cd ./app-engine/image-resizing
-          echo "${{ inputs.base_ref }}" > version.txt
+          echo "${{ github.sha }}" > version.txt
       - name: 'Deploy the image-resizing service to the given environment'
         working-directory: ./app-engine/image-resizing
         run:  gcloud app deploy --user-output-enabled=false --quiet --service-account=${{ steps.secret.outputs.APP_ENGINE_IMAGE_RESIZING_SERVICE_ACCOUNT }} --project ${{ inputs.google_project }} --version=$(echo ${{ inputs.base_ref }}| tr '.' '-'| tr '/' '-'| tr '[:upper:]' '[:lower:]' | cut -c1-25)
