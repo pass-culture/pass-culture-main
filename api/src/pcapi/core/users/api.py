@@ -1471,6 +1471,9 @@ def anonymize_user(user: users_models.User, *, force: bool = False) -> None:
         beneficiary_fraud_review.reason = "Anonymized"
         beneficiary_fraud_review.dateReviewed = beneficiary_fraud_review.dateReviewed.replace(day=1, month=1)
 
+    for deposit in user.deposits:
+        deposit.source = "Anonymized"
+
     user.password = b"Anonymized"
     user.firstName = f"Anonymous_{user.id}"
     user.lastName = f"Anonymous_{user.id}"
@@ -1497,7 +1500,7 @@ def anonymize_user(user: users_models.User, *, force: bool = False) -> None:
     ).delete()
 
     if external_email_anonymized:
-        user.add_anonymized_role()
+        user.replace_roles_by_anonymized_role()
         user.email = f"anonymous_{user.id}@anonymized.passculture"
         db.session.add(
             history_models.ActionHistory(
@@ -1544,7 +1547,7 @@ def _anonymise_external_user_email(user: users_models.User) -> bool:
 def anonymize_non_pro_non_beneficiary_users(*, force: bool = False) -> None:
     """
     Anonymize user accounts that have never been beneficiary (no deposits), are not pro (no pro role) and which have
-    not connected for at lest 3 years.
+    not connected for at least 3 years.
     """
     users = (
         users_models.User.query.outerjoin(
@@ -1555,10 +1558,58 @@ def anonymize_non_pro_non_beneficiary_users(*, force: bool = False) -> None:
             ~users_models.User.email.like("%@passculture.app"),  # people who work or worked in the company
             func.array_length(users_models.User.roles, 1).is_(None),  # no role, not already anonymized
             finance_models.Deposit.userId.is_(None),  # no deposit
-            users_models.User.lastConnectionDate < datetime.datetime.utcnow() - datetime.timedelta(days=3 * 365),
+            users_models.User.lastConnectionDate < datetime.datetime.utcnow() - relativedelta(years=3),
         )
         .all()
     )
     for user in users:
         anonymize_user(user, force=force)
+    db.session.commit()
+
+
+def anonymize_beneficiary_users(*, force: bool = False) -> None:
+    """
+    Anonymize user accounts that have been beneficiaries which have not connected for at least 3 years, and
+    whose deposit has been expired for at least 5 years.
+    """
+    users = (
+        users_models.User.query.outerjoin(
+            finance_models.Deposit,
+            users_models.User.deposits,
+        )
+        .filter(
+            users_models.User.is_beneficiary.is_(True),  # type: ignore [attr-defined]
+            sa.and_(
+                users_models.User.lastConnectionDate < datetime.datetime.utcnow() - relativedelta(years=3),
+                finance_models.Deposit.expirationDate < datetime.datetime.utcnow() - relativedelta(years=5),
+            ),
+        )
+        .all()
+    )
+    for user in users:
+        anonymize_user(user, force=force)
+    db.session.commit()
+
+
+def anonymize_user_deposits() -> None:
+    """
+    Anonymize deposits that have been expired for at least 10 years.
+    """
+    deposits_query = finance_models.Deposit.query.filter(
+        finance_models.Deposit.expirationDate < datetime.datetime.utcnow() - relativedelta(years=10),
+        ~sa.and_(  # ignore already anonymized deposits
+            sa.func.extract("month", finance_models.Deposit.expirationDate) == 1,
+            sa.func.extract("day", finance_models.Deposit.expirationDate) == 1,
+            sa.func.extract("month", finance_models.Deposit.dateCreated) == 1,
+            sa.func.extract("day", finance_models.Deposit.dateCreated) == 1,
+        ),
+    )
+    deposits_query.update(
+        {
+            "expirationDate": sa.func.date_trunc("year", finance_models.Deposit.expirationDate),
+            "dateCreated": sa.func.date_trunc("year", finance_models.Deposit.dateCreated),
+        },
+        synchronize_session=False,
+    )
+
     db.session.commit()
