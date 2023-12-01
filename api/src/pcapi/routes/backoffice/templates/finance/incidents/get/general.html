@@ -16,8 +16,8 @@
             {% endif %}
           </div>
           <div class="h5 me-1 align-middle">{{ incident.kind | format_finance_incident_type | safe }}</div>
-          {% if has_permission("MANAGE_INCIDENTS") and incident.status.value == 'created' %}
-            <div class="d-flex justify-content-end flex-grow-1 gap-2">
+          <div class="d-flex justify-content-end flex-grow-1 gap-2">
+            {% if has_permission("MANAGE_INCIDENTS") and incident.status.value == 'created' %}
               <button class="btn btn-outline-primary"
                       data-bs-toggle="modal"
                       data-bs-target="#reject-finance-incident-modal-{{ incident.id }}">Annuler l'incident</button>
@@ -26,8 +26,22 @@
                       data-bs-toggle="modal"
                       data-bs-target="#finance-incident-validation-modal-{{ incident.id }}">Valider l'incident</button>
               {{ build_lazy_modal(url_for('backoffice_web.finance_incidents.get_finance_incident_validation_form', finance_incident_id=incident.id), "finance-incident-validation-modal-" + incident.id|string) }}
-            </div>
-          {% endif %}
+            {% elif has_permission("MANAGE_INCIDENTS") and incident.status.value == 'validated' and not incident.isClosed %}
+              {% if incident.forceDebitNote %}
+                <button class="btn btn-outline-primary"
+                        data-bs-toggle="modal"
+                        data-bs-target="#finance-incident-cancel-debit-note-modal-{{ incident.id }}">
+                  Annuler la note de débit, récupérer l'argent sur les justificatifs
+                </button>
+                {{ build_lazy_modal(url_for('backoffice_web.finance_incidents.get_finance_incident_cancel_debit_note_form', finance_incident_id=incident.id), "finance-incident-cancel-debit-note-modal-" + incident.id|string) }}
+              {% else %}
+                <button class="btn btn-outline-primary"
+                        data-bs-toggle="modal"
+                        data-bs-target="#finance-incident-force-debit-note-modal-{{ incident.id }}">Demander la note de débit</button>
+                {{ build_lazy_modal(url_for('backoffice_web.finance_incidents.get_finance_incident_force_debit_note_form', finance_incident_id=incident.id), "finance-incident-force-debit-note-modal-" + incident.id|string) }}
+              {% endif %}
+            {% endif %}
+          </div>
         </div>
         <h6 class="card-subtitle text-muted">ID : {{ incident.id }}</h6>
         <div class="d-flex justify-content-start">
