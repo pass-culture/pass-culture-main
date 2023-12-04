@@ -164,6 +164,14 @@ def confirm_collective_booking(educational_booking_id: int) -> educational_model
         db.session.add(collective_booking)
         db.session.commit()
 
+    # re-fetch collective booking with some joinedload that will
+    # very-likely be useful later
+    collective_booking = educational_repository.find_collective_booking_by_id(collective_booking.id)
+    if not collective_booking:
+        # this should not happen
+        logger.exception("Confirmed booking not found", extra={"booking": educational_booking_id})
+        raise exceptions.EducationalBookingNotFound()
+
     logger.info(
         "Head of institution confirmed an educational offer",
         extra={
@@ -205,6 +213,14 @@ def refuse_collective_booking(educational_booking_id: int) -> educational_models
             raise exception
 
         repository.save(collective_booking)
+
+    # re-fetch collective booking with some joinedload that will
+    # very-likely be useful later
+    collective_booking = educational_repository.find_collective_booking_by_id(educational_booking_id)
+    if collective_booking is None:
+        # this should not happen
+        logger.exception("Refused booking not found", extra={"booking": educational_booking_id})
+        raise exceptions.EducationalBookingNotFound()
 
     logger.info(
         "Collective Booking has been cancelled",

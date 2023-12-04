@@ -14,6 +14,7 @@ from pcapi.core.educational.models import CollectiveBookingStatus
 from pcapi.core.educational.models import CollectiveStock
 import pcapi.core.mails.testing as mails_testing
 from pcapi.core.mails.transactional.sendinblue_template_ids import TransactionalEmail
+from pcapi.core.testing import assert_num_queries
 
 
 @pytest.mark.usefixtures("db_session")
@@ -40,7 +41,14 @@ class Returns200Test:
         )
 
         client = client.with_eac_token()
-        response = client.post(f"/adage/v1/prebookings/{collective_booking.id}/refuse")
+        booking_id = collective_booking.id
+
+        # 1. re-fetch collective booking with related data (1 query)
+        # 2. update booking (1 query)
+        # 3. savepoint (1 query)
+        # 4. re-fetch collective booking with related data (1 query)
+        with assert_num_queries(4):
+            response = client.post(f"/adage/v1/prebookings/{booking_id}/refuse")
 
         refused_collective_booking = CollectiveBooking.query.filter(
             CollectiveBooking.id == collective_booking.id
