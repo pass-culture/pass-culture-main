@@ -21,10 +21,6 @@ main {
       margin: rem.torem(12px) 0;
       padding-bottom: rem.torem(8px);
 
-      .main-list-title-text {
-        @include fonts.title4;
-      }
-
       span {
         margin-top: rem.torem(3.5px);
       }
