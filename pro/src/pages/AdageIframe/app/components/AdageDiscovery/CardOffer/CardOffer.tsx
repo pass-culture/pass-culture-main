@@ -55,6 +55,7 @@ const CardOfferComponent = ({
   return (
     <div className={styles['container']}>
       <NavLink
+        className={styles['offer-link']}
         data-testid="card-offer-link"
         to={`/adage-iframe/decouverte/offre/${offer.id}?token=${adageAuthToken}`}
         onClick={() => {

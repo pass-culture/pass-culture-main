@@ -20,6 +20,9 @@
   &:disabled,
   &.button-disabled {
     cursor: default;
+  }
+
+  &.button-disabled {
     pointer-events: none;
   }
 
