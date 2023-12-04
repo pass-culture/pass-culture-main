@@ -45,6 +45,7 @@
               <th scope="col">Nom de l'offre</th>
               <th scope="col">Catégorie</th>
               <th scope="col">Sous-catégorie</th>
+              <th scope="col">Formats</th>
               {% if has_permission("PRO_FRAUD_ACTIONS") %}<th scope="col">Règles de conformité</th>{% endif %}
               <th scope="col">État</th>
               <th scope="col">
@@ -101,6 +102,7 @@
                 <td>{{ links.build_offer_name_to_pc_pro_link(collective_offer_template) }}</td>
                 <td>{{ collective_offer_template.subcategoryId | format_offer_category }}</td>
                 <td>{{ collective_offer_template.subcategoryId | format_offer_subcategory }}</td>
+                <td>{{ collective_offer_template.formats | format_collective_offer_formats }}</td>
                 {% if has_permission("PRO_FRAUD_ACTIONS") %}
                   <td>{{ collective_offer_template.flaggingValidationRules | format_offer_validation_rule_list }}</td>
                 {% endif %}
