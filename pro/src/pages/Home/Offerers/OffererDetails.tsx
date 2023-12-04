@@ -1,3 +1,4 @@
+import cn from 'classnames'
 import React, { useMemo } from 'react'
 
 import { GetOffererResponseModel } from 'apiClient/v1'
@@ -12,6 +13,7 @@ import { ButtonVariant } from 'ui-kit/Button/types'
 import SelectInput from 'ui-kit/form/Select/SelectInput'
 
 import { OffererBanners } from './OffererBanners'
+import styles from './OffererDetails.module.scss'
 
 interface OffererDetailsProps {
   handleChangeOfferer: (event: React.ChangeEvent<HTMLSelectElement>) => void
@@ -70,8 +72,8 @@ const OffererDetails = ({
   return (
     <div className="h-card h-card-secondary" data-testid="offerrer-wrapper">
       <div className="h-card-inner h-no-bottom">
-        <div className="od-header-large">
-          <div className="venue-select">
+        <div className={styles['container']}>
+          <div className={styles['venue-select']}>
             <SelectInput
               onChange={handleChangeOfferer}
               name="offererId"
@@ -81,7 +83,7 @@ const OffererDetails = ({
           </div>
 
           <>
-            <div className="od-separator vertical" />
+            <div className={cn(styles['separator'], styles['vertical'])} />
             <ButtonLink
               variant={ButtonVariant.TERNARY}
               link={{
@@ -100,7 +102,7 @@ const OffererDetails = ({
             </ButtonLink>
           </>
 
-          <div className="od-separator vertical" />
+          <div className={cn(styles['separator'], styles['vertical'])} />
           <ButtonLink
             variant={ButtonVariant.TERNARY}
             link={{
@@ -121,7 +123,7 @@ const OffererDetails = ({
 
         {isExpanded && !isStatisticsDashboardEnabled && (
           <>
-            <div className="od-separator horizontal" />
+            <div className={cn(styles['separator'], styles['horizontal'])} />
             <OffererBanners
               selectedOfferer={selectedOfferer}
               isUserOffererValidated={isUserOffererValidated}
