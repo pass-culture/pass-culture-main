@@ -18,6 +18,7 @@ module.exports = {
     '**/*.md',
     '**/*.jpg',
     '**/*.png',
+    'src/index.html',
   ],
   overrides: [
     {
