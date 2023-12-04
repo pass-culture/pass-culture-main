@@ -2,6 +2,12 @@ name: Deploy app engine image resizing
 on:
   workflow_call:
     inputs:
+      workload_identity_provider_secret_name:
+        required: true
+        type: string
+      service_account_secret_name:
+        required: true
+        type: string
       image_resizing_url:
         required: true
         type: string
@@ -49,22 +55,30 @@ jobs:
       - name: 'Authenticate to Google Cloud'
         uses: 'google-github-actions/auth@v1'
         with:
-          token_format: 'access_token'
           workload_identity_provider: ${{ secrets.GCP_EHP_WORKLOAD_IDENTITY_PROVIDER }}
           service_account: ${{ secrets.GCP_EHP_SERVICE_ACCOUNT }}
+      - name: 'Set up Cloud SDK'
+        uses: 'google-github-actions/setup-gcloud@v1'
       - name: Get Secret
         id: 'secrets'
         uses: 'google-github-actions/get-secretmanager-secrets@v1'
         with:
           secrets: |-
-            APP_ENGINE_IMAGE_RESIZING_SERVICE_ACCOUNT:passculture-metier-ehp/app_engine_image_resizing_service_account
-      - name: 'Set up Cloud SDK'
+            APP_ENGINE_WORKLOAD_IDENTITY_PROVIDER:${{ inputs.workload_identity_provider_secret_name }}
+            APP_ENGINE_IMAGE_RESIZING_SERVICE_ACCOUNT:${{ inputs.service_account_secret_name }}
+      - name: 'Authenticate to Google Cloud with ${{ inputs.environment }} App Engine service account'
+        uses: 'google-github-actions/auth@v1'
+        with:
+          token_format: 'access_token'
+          workload_identity_provider: ${{ steps.secrets.outputs.APP_ENGINE_WORKLOAD_IDENTITY_PROVIDER }}
+          service_account: ${{ steps.secrets.outputs.APP_ENGINE_IMAGE_RESIZING_SERVICE_ACCOUNT }}
+      - name: 'Set up Cloud SDK ${{ inputs.environment }} App Engine'
         uses: 'google-github-actions/setup-gcloud@v1'
       - name: Add sha to image-resizing
         if: ${{ inputs.environment == 'testing' }}
         run: |
           cd ./app-engine/image-resizing
           echo "${{ github.sha }}" > version.txt
-      - name: 'Deploy the image-resizing service to the given environment'
+      - name: 'Deploy the image-resizing service to ${{ inputs.environment }} environment'
         working-directory: ./app-engine/image-resizing
-        run:  gcloud app deploy --user-output-enabled=false --quiet --service-account=${{ steps.secret.outputs.APP_ENGINE_IMAGE_RESIZING_SERVICE_ACCOUNT }} --project ${{ inputs.google_project }} --version=$(echo ${{ inputs.base_ref }}| tr '.' '-'| tr '/' '-'| tr '[:upper:]' '[:lower:]' | cut -c1-25)
+        run:  gcloud app deploy --user-output-enabled=false --quiet --service-account=${{ steps.secrets.outputs.APP_ENGINE_IMAGE_RESIZING_SERVICE_ACCOUNT }} --project ${{ inputs.google_project }} --version=$(echo ${{ inputs.base_ref }}| tr '.' '-'| tr '/' '-'| tr '[:upper:]' '[:lower:]' | cut -c1-25)
