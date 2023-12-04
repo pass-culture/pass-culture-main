@@ -20,7 +20,7 @@ class TokenTest:
     data = {"key1": "value1", "key2": "value2"}
     user_id = 4597
 
-    def test_creat_token_then_get_data(self):
+    def test_create_token_then_get_data(self):
         """testing the creation of a token and getting the data"""
         with freeze_time("2021-01-01"):
             token = token_tools.Token.create(self.token_type, self.ttl, self.user_id, self.data)
