@@ -63,7 +63,7 @@ const VenueOfferSteps = ({
 
   const shouldShowVenueOfferSteps =
     shouldDisplayEACInformationSection ||
-    !hasCreatedOffer ||
+    !venueHasCreatedOffer ||
     hasPendingBankInformationApplication
 
   if (!shouldShowVenueOfferSteps) {
@@ -71,124 +71,43 @@ const VenueOfferSteps = ({
   }
 
   return (
-    <>
-      {(!venueHasCreatedOffer ||
-        shouldDisplayEACInformationSection) && (
-        <div
-          className={cn(styles['card-wrapper'], 'h-card', {
-            [styles['no-shadow']]: hasVenue,
-          })}
-          data-testid={hasVenue ? 'venue-offer-steps' : 'home-offer-steps'}
-        >
-          {(!venueHasCreatedOffer || shouldDisplayEACInformationSection) && (
-            <div className="h-card-inner">
-              <h3 className={styles['card-title']}>Prochaines étapes : </h3>
+    <div
+      className={cn(styles['card-wrapper'], 'h-card', {
+        [styles['no-shadow']]: hasVenue,
+      })}
+      data-testid={hasVenue ? 'venue-offer-steps' : 'home-offer-steps'}
+    >
+      {(!venueHasCreatedOffer || shouldDisplayEACInformationSection) && (
+        <div className="h-card-inner">
+          <h3 className={styles['card-title']}>Prochaines étapes : </h3>
 
-              <div className={styles['venue-offer-steps']}>
-                {!hasVenue && (
-                  <div className={styles['step-venue-creation']}>
-                    <ButtonLink
-                      className={cn(
-                        styles['step-button-width-info'],
-                        styles['step-button-with-info']
-                      )}
-                      variant={ButtonVariant.BOX}
-                      icon={fullNextIcon}
-                      link={{
-                        to: venueCreationUrl,
-                        isExternal: false,
-                      }}
-                      onClick={() => {
-                        logEvent?.(Events.CLICKED_CREATE_VENUE, {
-                          from: location.pathname,
-                          is_first_venue: true,
-                        })
-                      }}
-                    >
-                      Créer un lieu
-                    </ButtonLink>
-                    <ButtonLink
-                      className={cn(
-                        styles['step-button-width-info'],
-                        styles['step-button-info']
-                      )}
-                      variant={ButtonVariant.QUATERNARY}
-                      link={{
-                        to: 'https://aide.passculture.app/hc/fr/articles/4411992075281--Acteurs-Culturels-Comment-cr%C3%A9er-un-lieu-',
-                        isExternal: true,
-                        rel: 'noopener noreferrer',
-                        target: '_blank',
-                      }}
-                      icon={fullInfoIcon}
-                      onClick={() => {
-                        logEvent?.(Events.CLICKED_NO_VENUE, {
-                          from: location.pathname,
-                        })
-                      }}
-                    >
-                      <span className={styles['step-button-info-text']}>
-                        Je ne dispose pas de lieu propre, quel type de lieu
-                        créer ?
-                      </span>
-                    </ButtonLink>
-                  </div>
-                )}
-                {!venueHasCreatedOffer && (
-                  <ButtonLink
-                    className={styles['step-button-width']}
-                    isDisabled={!hasVenue}
-                    variant={ButtonVariant.BOX}
-                    icon={fullNextIcon}
-                    link={{
-                      to: `/offre/creation?lieu=${venueId}&structure=${offererId}`,
-                      isExternal: false,
-                    }}
-                  >
-                    Créer une offre
-                  </ButtonLink>
-                )}
-                {!isNewBankDetailsJourneyEnabled &&
-                  hasMissingReimbursementPoint && (
-                    <ButtonLink
-                      className={styles['step-button-width']}
-                      isDisabled={!hasVenue}
-                      variant={ButtonVariant.BOX}
-                      icon={fullNextIcon}
-                      link={{
-                        to: `/structures/${offererId}/lieux/${venueId}#reimbursement`,
-                        isExternal: false,
-                      }}
-                      onClick={() => {
-                        logEvent?.(VenueEvents.CLICKED_VENUE_ADD_RIB_BUTTON, {
-                          venue_id: venueId || '',
-                          from: OFFER_FORM_NAVIGATION_IN.HOME,
-                        })
-                      }}
-                    >
-                      Renseigner des coordonnées bancaires
-                    </ButtonLink>
+          <div className={styles['venue-offer-steps']}>
+            {!hasVenue && (
+              <div className={styles['step-venue-creation']}>
+                <ButtonLink
+                  className={cn(
+                    styles['step-button-width-info'],
+                    styles['step-button-with-info']
                   )}
-                {isNewBankDetailsJourneyEnabled &&
-                  !offererHasBankAccount &&
-                  displayButtonDependingVenue && (
-                    <ButtonLink
-                      className={styles['step-button-width']}
-                      isDisabled={!hasVenue}
-                      variant={ButtonVariant.BOX}
-                      icon={fullNextIcon}
-                      link={{
-                        to: `remboursements/informations-bancaires?structure=${offererId}`,
-                        isExternal: false,
-                      }}
-                      onClick={() => {
-                        logEvent?.(VenueEvents.CLICKED_VENUE_ADD_RIB_BUTTON, {
-                          venue_id: venueId ?? '',
-                          from: OFFER_FORM_NAVIGATION_IN.HOME,
-                        })
-                      }}
-                    >
-                      Ajouter un compte bancaire
-                    </ButtonLink>
+                  variant={ButtonVariant.BOX}
+                  icon={fullNextIcon}
+                  link={{
+                    to: venueCreationUrl,
+                    isExternal: false,
+                  }}
+                  onClick={() => {
+                    logEvent?.(Events.CLICKED_CREATE_VENUE, {
+                      from: location.pathname,
+                      is_first_venue: true,
+                    })
+                  }}
+                >
+                  Créer un lieu
+                </ButtonLink>
+                <ButtonLink
+                  className={cn(
+                    styles['step-button-width-info'],
+                    styles['step-button-info']
                   )}
                   variant={ButtonVariant.QUATERNARY}
                   link={{
@@ -210,7 +129,7 @@ const VenueOfferSteps = ({
                 </ButtonLink>
               </div>
             )}
-            {!hasCreatedOffer && (
+            {!venueHasCreatedOffer && (
               <ButtonLink
                 className={styles['step-button-width']}
                 isDisabled={!hasVenue}
@@ -246,8 +165,8 @@ const VenueOfferSteps = ({
                 </ButtonLink>
               )}
             {isNewBankDetailsJourneyEnabled &&
-              !hasCreatedOffer &&
-              !offererHasBankAccount && (
+              !offererHasBankAccount &&
+              displayButtonDependingVenue && (
                 <ButtonLink
                   className={styles['step-button-width']}
                   isDisabled={!hasVenue}
