@@ -57,6 +57,8 @@ const Venue = ({
   demarchesSimplifieesApplicationId,
   hasPendingBankInformationApplication = false,
   offererHasBankAccount,
+  hasNonFreeOffer,
+  isFirstVenue,
 }: VenueProps) => {
   const hasAdageIdForMoreThan30Days =
     hasAdageId &&
@@ -250,6 +252,8 @@ const Venue = ({
                 demarchesSimplifieesApplicationId
               }
               offererHasBankAccount={offererHasBankAccount}
+              hasNonFreeOffer={hasNonFreeOffer}
+              isFirstVenue={isFirstVenue}
             />
           )}
         </div>
