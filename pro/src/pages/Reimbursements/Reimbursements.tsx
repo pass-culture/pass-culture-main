@@ -28,8 +28,8 @@ const Reimbursements = (): JSX.Element => {
       <div className={styles['reimbursements-container']}>
         <h1 className={styles['title']}>Remboursements</h1>
         <ReimbursementsBanners />
-        <ReimbursementsTabs />
         <div>
+          <ReimbursementsTabs />
           <Routes>
             {routes.map(({ path, element }) => (
               <Route key={path} path={path} element={element} />
