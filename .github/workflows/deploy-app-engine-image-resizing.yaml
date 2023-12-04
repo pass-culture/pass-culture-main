@@ -13,15 +13,15 @@ on:
         required: true
 
 jobs:
-  check-image-resizing-folder-changes:
-    name: "Check if folder changed"
-    uses: ./.github/workflows/check-folder-changes.yml
-    with:
-      folder: app-engine/image-resizing
+  # check-image-resizing-folder-changes:
+  #   name: "Check if folder changed"
+  #   uses: ./.github/workflows/check-folder-changes.yml
+  #   with:
+  #     folder: app-engine/image-resizing
 
   deploy-image-resizing:
-    needs: check-image-resizing-folder-changes
-    if: ${{ needs.check-image-resizing-folder-changes.outputs.folder_changed == 'true' }}
+    # needs: check-image-resizing-folder-changes
+    # if: ${{ needs.check-image-resizing-folder-changes.outputs.folder_changed == 'true' }}
     environment: ${{ inputs.environment }}
     runs-on: [self-hosted, linux, x64]
     permissions:
@@ -35,15 +35,31 @@ jobs:
       - name: 'Authenticate to Google Cloud'
         uses: 'google-github-actions/auth@v1'
         with:
-          token_format: 'access_token'
+          # token_format: 'access_token'
           workload_identity_provider: ${{ secrets.GCP_EHP_WORKLOAD_IDENTITY_PROVIDER }}
           service_account: ${{ secrets.GCP_EHP_SERVICE_ACCOUNT }}
+      - name: 'Set up Cloud SDK'
+        uses: 'google-github-actions/setup-gcloud@v1'
+      # - name: Get Secret
+      #   id: 'secrets'
+      #   uses: 'google-github-actions/get-secretmanager-secrets@v1'
+      #   with:
+      #     secrets: |-
+      #       APP_ENGINE_WORKLOAD_IDENTITY_PROVIDER:passculture-metier-ehp/gcp_metier_ehp_workload_identity_provider
+      #       APP_ENGINE_IMAGE_RESIZING_SERVICE_ACCOUNT:passculture-metier-ehp/app_engine_image_resizing_service_account
       - name: Get Secret
         id: 'secrets'
         uses: 'google-github-actions/get-secretmanager-secrets@v1'
         with:
           secrets: |-
-            APP_ENGINE_IMAGE_RESIZING_SERVICE_ACCOUNT:passculture-metier-ehp/app_engine_image_resizing_service_account
+            APP_ENGINE_WORKLOAD_IDENTITY_PROVIDER:passculture-metier-ehp/gcp_metier_prod_workload_identity_provider
+            APP_ENGINE_IMAGE_RESIZING_SERVICE_ACCOUNT:passculture-metier-ehp/app_engine_prod_image_resizing_service_account
+      - name: 'Authenticate to Google Cloud'
+        uses: 'google-github-actions/auth@v1'
+        with:
+          token_format: 'access_token'
+          workload_identity_provider: ${{ steps.secrets.outputs.APP_ENGINE_WORKLOAD_IDENTITY_PROVIDER }}
+          service_account: ${{ steps.secrets.outputs.APP_ENGINE_IMAGE_RESIZING_SERVICE_ACCOUNT }}
       - name: 'Set up Cloud SDK'
         uses: 'google-github-actions/setup-gcloud@v1'
       - name: Add sha to image-resizing
@@ -51,6 +67,7 @@ jobs:
         run: |
           cd ./app-engine/image-resizing
           echo "${{ github.sha }}" > version.txt
+      # - run: sleep 3600
       - name: 'Deploy the image-resizing service to the given environment'
         working-directory: ./app-engine/image-resizing
-        run:  gcloud app deploy --user-output-enabled=false --quiet --service-account=${{ steps.secret.outputs.APP_ENGINE_IMAGE_RESIZING_SERVICE_ACCOUNT }} --project ${{ inputs.google_project }} --version=$(echo ${{ inputs.base_ref }}| tr '.' '-'| tr '/' '-'| tr '[:upper:]' '[:lower:]' | cut -c1-25)
+        run:  gcloud app deploy --user-output-enabled=false --quiet --service-account=${{ steps.secrets.outputs.APP_ENGINE_IMAGE_RESIZING_SERVICE_ACCOUNT }} --project ${{ inputs.google_project }} --version=$(echo ${{ inputs.base_ref }}| tr '.' '-'| tr '/' '-'| tr '[:upper:]' '[:lower:]' | cut -c1-25)
