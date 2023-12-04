@@ -3,7 +3,6 @@
 @use "styles/mixins/_fonts.scss" as fonts;
 
 .h-card {
-  .od-header,
   .od-header-large {
     align-items: center;
     display: flex;
@@ -15,14 +14,6 @@
 
     .venue-select {
       flex-grow: 1;
-    }
-
-    .od-primary {
-      color: colors.$primary;
-
-      svg {
-        fill: colors.$primary;
-      }
     }
   }
 
@@ -39,17 +30,7 @@
       align-self: stretch;
       margin: rem.torem(-8px) rem.torem(24px);
       width: rem.torem(1px);
-
-      &.small {
-        align-self: center;
-        height: rem.torem(20px);
-      }
     }
-    
-  }
-
-  .od-address {
-    margin-left: rem.torem(8px);
   }
 
   .banner {
