@@ -30,9 +30,6 @@ const OffererDetails = ({
 }: OffererDetailsProps) => {
   const { logEvent } = useAnalytics()
   const isStatisticsDashboardEnabled = useActiveFeature('WIP_HOME_STATS')
-  const isNewOffererLinkEnabled = useActiveFeature(
-    'WIP_ENABLE_NEW_USER_OFFERER_LINK'
-  )
 
   const hasMissingReimbursementPoints = useMemo(() => {
     if (!selectedOfferer) {
@@ -83,27 +80,25 @@ const OffererDetails = ({
             />
           </div>
 
-          {isNewOffererLinkEnabled && (
-            <>
-              <div className="od-separator vertical" />
-              <ButtonLink
-                variant={ButtonVariant.TERNARY}
-                link={{
-                  to: `/structures/${selectedOfferer.id}`,
-                  isExternal: false,
-                }}
-                icon={fullAddUserIcon}
-                isDisabled={!isUserOffererValidated}
-                onClick={() => {
-                  logEvent?.(OffererLinkEvents.CLICKED_INVITE_COLLABORATOR, {
-                    offererId: selectedOfferer.id,
-                  })
-                }}
-              >
-                Inviter
-              </ButtonLink>
-            </>
-          )}
+          <>
+            <div className="od-separator vertical" />
+            <ButtonLink
+              variant={ButtonVariant.TERNARY}
+              link={{
+                to: `/structures/${selectedOfferer.id}`,
+                isExternal: false,
+              }}
+              icon={fullAddUserIcon}
+              isDisabled={!isUserOffererValidated}
+              onClick={() => {
+                logEvent?.(OffererLinkEvents.CLICKED_INVITE_COLLABORATOR, {
+                  offererId: selectedOfferer.id,
+                })
+              }}
+            >
+              Inviter
+            </ButtonLink>
+          </>
 
           <div className="od-separator vertical" />
           <ButtonLink

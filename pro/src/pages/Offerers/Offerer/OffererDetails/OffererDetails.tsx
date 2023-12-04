@@ -3,7 +3,6 @@ import { useParams } from 'react-router-dom'
 
 import { api } from 'apiClient/api'
 import { GetOffererVenueResponseModel } from 'apiClient/v1'
-import useActiveFeature from 'hooks/useActiveFeature'
 import fullBackIcon from 'icons/full-back.svg'
 import { HTTP_STATUS } from 'repository/pcapi/pcapiClient'
 import { ButtonLink } from 'ui-kit'
@@ -33,10 +32,6 @@ const OffererDetails = () => {
     setOfferer(null)
     setPhysicalVenues([])
   }, [])
-
-  const isNewOffererLinkEnabled = useActiveFeature(
-    'WIP_ENABLE_NEW_USER_OFFERER_LINK'
-  )
 
   const loadOfferer = useCallback(
     async (id: number) => {
@@ -129,9 +124,7 @@ const OffererDetails = () => {
           </div>
         </div>
 
-        {isNewOffererLinkEnabled && (
-          <AttachmentInvitations offererId={offerer.id} />
-        )}
+        <AttachmentInvitations offererId={offerer.id} />
 
         <ApiKey
           maxAllowedApiKeys={offerer.apiKey.maxAllowed}
