@@ -107,6 +107,7 @@ class Returns200Test:
             "id": duplicate.id,
             "name": offer.name,
             "subcategoryId": offer.subcategoryId,
+            "isNonFreeOffer": None,
             "venue": {
                 "departementCode": "75",
                 "managingOfferer": {
