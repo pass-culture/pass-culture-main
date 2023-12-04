@@ -820,6 +820,7 @@ class ConfirmUpdateUserEmailTest:
         user = users_factories.BeneficiaryGrant18Factory()
         expiration_date = datetime.utcnow() + users_constants.EMAIL_CHANGE_TOKEN_LIFE_TIME
         token = encode_jwt_payload({"current_email": user.email, "new_email": "exemple@exemple.com"}, expiration_date)
+
         client.with_token(user.email)
         response = client.post("/native/v1/profile/email_update/confirm", json={"token": token})
 
@@ -1189,7 +1190,7 @@ class GetEMailUpdateStatusTest:
         user = users_factories.UserFactory(email=self.old_email)
         request_email_update(user, self.new_email, settings.TEST_DEFAULT_PASSWORD)
 
-        redis_key = token_utils.Token._get_redis_key(token_utils.TokenType.EMAIL_CHANGE_CONFIRMATION, user.id)
+        redis_key = token_utils.Token.get_redis_key(token_utils.TokenType.EMAIL_CHANGE_CONFIRMATION, user.id)
         redis_value = app.redis_client.get(redis_key)
         redis_expiration = app.redis_client.ttl(redis_key)
         app.redis_client.delete(redis_key)
@@ -1523,7 +1524,7 @@ class SendPhoneValidationCodeTest:
         assert int(app.redis_client.get(f"sent_SMS_counter_user_{user.id}")) == 1
 
         encoded_token = app.redis_client.get(
-            token_utils.SixDigitsToken._get_redis_key(token_utils.TokenType.PHONE_VALIDATION, user.id)
+            token_utils.SixDigitsToken.get_redis_key(token_utils.TokenType.PHONE_VALIDATION, user.id)
         )
         assert encoded_token is not None
         token = token_utils.SixDigitsToken.load_without_checking(
