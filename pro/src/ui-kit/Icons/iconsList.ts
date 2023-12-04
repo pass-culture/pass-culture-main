@@ -2,7 +2,6 @@ import fullAddUserIcon from 'icons/full-add-user.svg'
 import fullArrowLeftIcon from 'icons/full-arrow-left.svg'
 import fullArrowRightIcon from 'icons/full-arrow-right.svg'
 import fullBackIcon from 'icons/full-back.svg'
-import fullBookmarkIcon from 'icons/full-bookmark.svg'
 import fullClearIcon from 'icons/full-clear.svg'
 import fullCodeIcon from 'icons/full-code.svg'
 import fullDisclosureCloseIcon from 'icons/full-disclosure-close.svg'
@@ -33,6 +32,7 @@ import fullRefreshIcon from 'icons/full-refresh.svg'
 import fullRightIcon from 'icons/full-right.svg'
 import fullShowIcon from 'icons/full-show.svg'
 import fullSortIcon from 'icons/full-sort.svg'
+import fullStarIcon from 'icons/full-star.svg'
 import fullTrashIcon from 'icons/full-trash.svg'
 import fullUpIcon from 'icons/full-up.svg'
 import fullValidateIcon from 'icons/full-validate.svg'
@@ -52,7 +52,6 @@ import strokeAccessibilityEyeIcon from 'icons/stroke-accessibility-eye.svg'
 import strokeAccessibilityLegIcon from 'icons/stroke-accessibility-leg.svg'
 import strokeBookedIcon from 'icons/stroke-booked.svg'
 import strokeBookingHold from 'icons/stroke-booking-hold.svg'
-import strokeBookmarkIcon from 'icons/stroke-bookmark.svg'
 import strokeBuildingIcon from 'icons/stroke-building.svg'
 import strokeCalendarIcon from 'icons/stroke-calendar.svg'
 import strokeCheckIcon from 'icons/stroke-check.svg'
@@ -101,6 +100,7 @@ import strokeRepaymentIcon from 'icons/stroke-repayment.svg'
 import strokeRightIcon from 'icons/stroke-right.svg'
 import strokeSearchIcon from 'icons/stroke-search.svg'
 import strokeShowIcon from 'icons/stroke-show.svg'
+import strokeStarIcon from 'icons/stroke-star.svg'
 import strokeTeacherIcon from 'icons/stroke-teacher.svg'
 import strokeTemplateOfferIcon from 'icons/stroke-template-offer.svg'
 import strokeThingIcon from 'icons/stroke-thing.svg'
@@ -159,7 +159,7 @@ export const fullIcons: IconListItem[] = [
   { src: fullArrowRightIcon },
   { src: fullArrowLeftIcon },
   { src: fullAddUserIcon },
-  { src: fullBookmarkIcon },
+  { src: fullStarIcon },
   { src: fullDisclosureCloseIcon, viewBox: '0 0 16 16' }, // TODO clean viewbox
   { src: fullDisclosureOpenIcon, viewBox: '0 0 16 16' }, // TODO clean viewbox
 ]
@@ -229,7 +229,7 @@ export const strokeIcons: IconListItem[] = [
   { src: strokePassIcon },
   { src: strokeLibraryIcon },
   { src: strokeVenueIcon },
-  { src: strokeBookmarkIcon },
+  { src: strokeStarIcon },
   { src: strokeWipIcon, viewBox: '0 0 200 156' }, // TODO standardize viewbox
   { src: strokeNoBookingIcon, viewBox: '0 0 200 156' }, // TODO standardize viewbox
   { src: strokeBookingHold, viewBox: '0 0 200 156' }, // TODO standardize viewbox
