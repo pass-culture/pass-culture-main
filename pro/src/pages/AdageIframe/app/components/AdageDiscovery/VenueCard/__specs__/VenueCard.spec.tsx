@@ -1,28 +1,29 @@
 import { screen } from '@testing-library/react'
 import * as router from 'react-router-dom'
 
+import { LocalOfferersPlaylistOffer } from 'apiClient/adage'
 import { AdageUserContextProvider } from 'pages/AdageIframe/app/providers/AdageUserContext'
 import { defaultAdageUser } from 'utils/adageFactories'
 import { renderWithProviders } from 'utils/renderWithProviders'
 
-import CardVenue, { CardVenueProps } from '../CardVenue'
+import VenueCard, { VenueCardProps } from '../VenueCard'
 
-const mockVenue = {
-  imageUrl: 'testImageUrl.com',
+const mockVenue: LocalOfferersPlaylistOffer = {
+  imgUrl: 'testImageUrl.com',
   name: 'Le nom administratif du lieu',
   publicName: 'Mon super lieu',
   distance: 2,
-  id: '28',
+  id: 28,
   city: 'Paris',
 }
 
-const renderCardVenue = ({
+const renderVenueCard = ({
   venue,
   handlePlaylistElementTracking,
-}: CardVenueProps) => {
+}: VenueCardProps) => {
   renderWithProviders(
     <AdageUserContextProvider adageUser={defaultAdageUser}>
-      <CardVenue
+      <VenueCard
         venue={venue}
         handlePlaylistElementTracking={handlePlaylistElementTracking}
       />
@@ -30,7 +31,7 @@ const renderCardVenue = ({
   )
 }
 
-describe('CardVenue', () => {
+describe('VenueCard', () => {
   beforeEach(() => {
     vi.spyOn(router, 'useSearchParams').mockReturnValueOnce([
       new URLSearchParams({ token: '123' }),
@@ -39,7 +40,7 @@ describe('CardVenue', () => {
   })
 
   it('should display venue name if publicName is not defined', () => {
-    renderCardVenue({
+    renderVenueCard({
       venue: { ...mockVenue, publicName: undefined },
       handlePlaylistElementTracking: vi.fn(),
     })
@@ -48,7 +49,7 @@ describe('CardVenue', () => {
   })
 
   it('should redirect on click in offer card', () => {
-    renderCardVenue({
+    renderVenueCard({
       venue: mockVenue,
       handlePlaylistElementTracking: vi.fn(),
     })

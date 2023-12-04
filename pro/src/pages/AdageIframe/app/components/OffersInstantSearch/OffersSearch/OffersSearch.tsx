@@ -93,8 +93,10 @@ export const OffersSearch = ({
 
         const domainFromPath = result.find((elm) => elm.id === domainId)
 
-        domainFromPath &&
-          (await formik.setFieldValue('domains', [domainFromPath.id]))
+        if (domainFromPath) {
+          await formik.setFieldValue('domains', [domainFromPath.id])
+          formik.handleSubmit()
+        }
 
         return setDomainsOptions(
           result.map(({ id, name }) => ({ value: id, label: name }))

@@ -1,45 +1,37 @@
 import React from 'react'
-import { NavLink, useSearchParams } from 'react-router-dom'
+import { useSearchParams } from 'react-router-dom'
 
+import { LocalOfferersPlaylistOffer } from 'apiClient/adage'
 import strokeVenueIcon from 'icons/stroke-venue.svg'
 import { SvgIcon } from 'ui-kit/SvgIcon/SvgIcon'
 
-import styles from './CardVenue.module.scss'
+import styles from './VenueCard.module.scss'
 
-interface CardVenueModel {
-  imageUrl?: string | null
-  name: string
-  publicName?: string
-  distance: number
-  id: string
-  city: string
-}
-
-export interface CardVenueProps {
-  venue: CardVenueModel
+export interface VenueCardProps {
+  venue: LocalOfferersPlaylistOffer
   handlePlaylistElementTracking: () => void
 }
 
-const CardVenue = ({
+const VenueCard = ({
   venue,
   handlePlaylistElementTracking,
-}: CardVenueProps) => {
+}: VenueCardProps) => {
   const [searchParams] = useSearchParams()
   const adageAuthToken = searchParams.get('token')
 
   return (
-    <NavLink
+    <a
       data-testid="card-venue-link"
       className={styles.container}
-      to={`/adage-iframe/recherche?token=${adageAuthToken}&venue=${venue.id}`}
+      href={`/adage-iframe/recherche?token=${adageAuthToken}&venue=${venue.id}`}
       onClick={() => handlePlaylistElementTracking()}
     >
-      {venue.imageUrl ? (
+      {venue.imgUrl ? (
         <img
           alt=""
           className={styles['venue-image']}
           loading="lazy"
-          src={venue.imageUrl}
+          src={venue.imgUrl}
         />
       ) : (
         <div
@@ -56,8 +48,8 @@ const CardVenue = ({
           className={styles['venue-infos-distance']}
         >{`à ${venue.distance} km - ${venue.city}`}</div>
       </div>
-    </NavLink>
+    </a>
   )
 }
 
-export default CardVenue
+export default VenueCard
