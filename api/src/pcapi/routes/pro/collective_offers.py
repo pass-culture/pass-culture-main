@@ -284,7 +284,7 @@ def edit_collective_offer(
     except offers_exceptions.OfferEditionBaseException as error:
         raise ApiErrors(error.errors, status_code=400)
 
-    offer = educational_api_offer.get_collective_offer_by_id(offer_id)
+    offer = educational_repository.get_collective_offer_by_id(offer_id)
     if offer.template and (not offer.template.domains or not offer.template.interventionArea):
         offers_api.update_collective_offer_template(
             offer_id=offer.template.id,
@@ -505,7 +505,7 @@ def patch_collective_offers_educational_institution(
 )
 def patch_collective_offer_publication(offer_id: int) -> collective_offers_serialize.GetCollectiveOfferResponseModel:
     try:
-        offer = educational_api_offer.get_collective_offer_by_id(offer_id)
+        offer = educational_repository.get_collective_offer_by_id(offer_id)
     except educational_exceptions.CollectiveOfferNotFound:
         raise ApiErrors({"offerer": ["Acune offre trouvée pour cet id"]}, status_code=404)
 
@@ -638,7 +638,7 @@ def attach_offer_image(
     offer_id: int, form: collective_offers_serialize.AttachImageFormModel
 ) -> collective_offers_serialize.AttachImageResponseModel:
     try:
-        offer = educational_api_offer.get_collective_offer_by_id(offer_id)
+        offer = educational_repository.get_collective_offer_by_id(offer_id)
     except offerers_exceptions.CannotFindOffererForOfferId:
         raise ApiErrors({"offerer": ["Aucune offre trouvée pour cet id."]}, status_code=404)
 
@@ -723,7 +723,7 @@ def delete_offer_image(
     offer_id: int,
 ) -> None:
     try:
-        offer = educational_api_offer.get_collective_offer_by_id(offer_id)
+        offer = educational_repository.get_collective_offer_by_id(offer_id)
     except educational_exceptions.CollectiveOfferNotFound:
         raise ApiErrors({"offerer": ["Aucune offre trouvée pour cet id."]}, status_code=404)
 
@@ -794,7 +794,7 @@ def duplicate_collective_offer(
     check_user_has_access_to_offerer(current_user, offerer.id)
 
     try:
-        original_offer = educational_api_offer.get_collective_offer_by_id(offer_id)
+        original_offer = educational_repository.get_collective_offer_by_id(offer_id)
     except offerers_exceptions.CannotFindOffererForOfferId:
         raise ApiErrors({"offerer": ["Aucune offre trouvée pour cet id."]}, status_code=404)
 
