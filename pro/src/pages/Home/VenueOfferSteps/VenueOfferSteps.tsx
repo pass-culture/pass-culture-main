@@ -57,6 +57,11 @@ const VenueOfferSteps = ({
     ? `/structures/${offererId}/lieux/creation`
     : UNAVAILABLE_ERROR_PAGE
   const { logEvent } = useAnalytics()
+
+  /* Condition linked to add bank account banner
+    display button if this is the first venue and the offerer has no offer at all,
+    or if the offerer has no paid offerer
+  */
   const displayButtonDependingVenue =
     (!isFirstVenue && !hasNonFreeOffer) ||
     (isFirstVenue && !offererHasCreatedOffer)
