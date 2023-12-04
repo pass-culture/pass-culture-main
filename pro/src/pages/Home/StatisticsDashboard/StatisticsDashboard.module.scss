@@ -44,8 +44,10 @@
   grid-template-columns: 1fr;
   margin-top: rem.torem(8px);
 
-  @media (min-width: size.$tablet) {
-    grid-template-columns: 1fr rem.torem(255px);
+  &.has-top-offers {
+    @media (min-width: size.$tablet) {
+      grid-template-columns: 1fr rem.torem(255px);
+    }
   }
 }
 
