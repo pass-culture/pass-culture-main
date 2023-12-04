@@ -517,7 +517,7 @@ class GetIncidentCreationFormTest(PostEndpointHelper):
             in additional_data_text
         )
         assert (
-            f"Montant remboursé à l'acteur : {filters.format_amount(finance_utils.to_euros(-sum(booking.pricing.amount for booking in selected_bookings)))}"
+            f"Montant remboursé à l'acteur : {filters.format_amount(finance_utils.to_euros(-sum(booking.reimbursement_pricing.amount for booking in selected_bookings)))}"
             in additional_data_text
         )
 
@@ -575,7 +575,7 @@ class GetCollectiveBookingIncidentFormTest(PostEndpointHelper):
             in additional_data_text
         )
         assert (
-            f"Montant remboursé à l'acteur : {filters.format_amount(finance_utils.to_euros(-collective_booking.pricing.amount))}"
+            f"Montant remboursé à l'acteur : {filters.format_amount(finance_utils.to_euros(-collective_booking.reimbursement_pricing.amount))}"
             in additional_data_text
         )
 

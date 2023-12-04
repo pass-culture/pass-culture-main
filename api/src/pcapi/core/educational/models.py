@@ -1230,12 +1230,19 @@ class CollectiveBooking(PcObject, Base, Model):
         )
 
     @property
-    def pricing(self) -> finance_models.Pricing | None:
-        processed_pricings = [
-            pricing for pricing in self.pricings if pricing.status == finance_models.PricingStatus.INVOICED
+    def reimbursement_pricing(self) -> finance_models.Pricing | None:
+        """Return related pricing if this booking has been reimbursed."""
+        pricings = [
+            pricing
+            for pricing in self.pricings
+            if pricing.status
+            in (
+                finance_models.PricingStatus.PROCESSED,
+                finance_models.PricingStatus.INVOICED,
+            )
         ]
 
-        pricings = sorted(processed_pricings, key=lambda x: x.creationDate, reverse=True)
+        pricings = sorted(pricings, key=lambda x: x.creationDate, reverse=True)
         if pricings:
             return pricings[0]
 
@@ -1243,10 +1250,13 @@ class CollectiveBooking(PcObject, Base, Model):
 
     @property
     def cashflow_batch(self) -> finance_models.CashflowBatch | None:
-        if not self.pricing:
+        """Return cashflow batch in which this booking has been
+        reimbursed (if any).
+        """
+        if not self.reimbursement_pricing:
             return None
 
-        cashflow = self.pricing.cashflow
+        cashflow = self.reimbursement_pricing.cashflow
         if not cashflow:
             return None
 
@@ -1254,13 +1264,13 @@ class CollectiveBooking(PcObject, Base, Model):
 
     @property
     def reimbursement_rate(self) -> float | None:
-        if not self.pricing:
+        if not self.reimbursement_pricing:
             return None
 
         try:
             # pricing.amount is in cents, amount in euros
             # -> the result is a percentage
-            return float("{:.2f}".format((-self.pricing.amount / self.total_amount)))
+            return float("{:.2f}".format((-self.reimbursement_pricing.amount / self.total_amount)))
         except (decimal.DivisionByZero, decimal.InvalidOperation):  # raised when both values are 0
             return None
 
