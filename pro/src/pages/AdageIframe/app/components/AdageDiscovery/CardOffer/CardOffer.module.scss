@@ -11,7 +11,9 @@ $offer-image-width: rem.torem(216px);
   flex-direction: column;
   width: $offer-image-width;
   gap: rem.torem(16px);
+}
 
+.offer-link {
   &:active {
     opacity: 0.64;
 
@@ -38,12 +40,10 @@ $offer-image-width: rem.torem(216px);
     }
   }
 
-  &-link {
-    &:focus-visible {
-      outline: rem.torem(1px) solid colors.$input-text-color;
-      outline-offset: rem.torem(4px);
-      border-radius: rem.torem(18px);
-    }
+  &:focus-visible {
+    outline: rem.torem(1px) solid colors.$input-text-color;
+    outline-offset: rem.torem(4px);
+    border-radius: rem.torem(18px);
   }
 }
 
