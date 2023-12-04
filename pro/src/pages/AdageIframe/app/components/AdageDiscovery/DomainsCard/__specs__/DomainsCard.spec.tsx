@@ -22,7 +22,7 @@ const renderDomainsCardComponent = ({
   )
 }
 
-describe('CardOffer component', () => {
+describe('OfferCard component', () => {
   it('should render domains card', () => {
     renderDomainsCardComponent({
       title: 'Test domains card',

@@ -1,3 +1,4 @@
+import cn from 'classnames'
 import { createRef } from 'react'
 
 import useIsElementVisible from 'hooks/useIsElementVisible'
@@ -87,7 +88,12 @@ export default function Carousel({
         </div>
       </div>
 
-      <ul className={styles['carousel-list']} ref={listRef}>
+      <ul
+        className={cn([styles['carousel-list']], {
+          [styles['carousel-list-empty']]: elements.length < 1,
+        })}
+        ref={listRef}
+      >
         {elements.map((el, i) => {
           const isFirst = i === 0
           const isLast = i === elements.length - 1

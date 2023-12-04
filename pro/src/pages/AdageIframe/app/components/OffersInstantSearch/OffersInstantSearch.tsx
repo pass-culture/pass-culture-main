@@ -48,6 +48,7 @@ export const OffersInstantSearch = ({
   const { venueId } = useParams<{
     venueId: string
   }>()
+
   const [venueFilterFromParam, setVenueFilterFromParam] =
     useState<VenueResponse | null>(null)
 
