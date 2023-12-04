@@ -705,8 +705,6 @@ def update_offer_fraud_information(offer: AnyOffer, user: users_models.User | No
     else:
         offer.isActive = True
 
-    db.session.add(offer)
-
     if (
         offer.validation == models.OfferValidationStatus.APPROVED
         and not venue_already_has_validated_offer
