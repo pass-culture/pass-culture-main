@@ -3,54 +3,62 @@
 @use "styles/variables/_colors.scss" as colors;
 
 .container {
-    display: flex;
-    align-items: flex-end;
-    position: relative;
-    width: rem.torem(186px);
-    min-height: rem.torem(96px);
+  display: flex;
+  align-items: flex-end;
+  position: relative;
+  width: rem.torem(186px);
+  min-height: rem.torem(96px);
+  border-radius: rem.torem(16px);
+  color: colors.$white;
+
+  &:focus-visible {
+    outline: rem.torem(2px) solid colors.$input-text-color;
+    outline-offset: rem.torem(2px);
     border-radius: rem.torem(16px);
+  }
 
-    &:focus-visible {
-        outline: rem.torem(2px) solid colors.$input-text-color;
-        outline-offset: rem.torem(2px);
-        border-radius: rem.torem(16px);
-    }
+  &:hover {
+    text-decoration: underline;
+  }
 
-    &-img {
-        position: absolute;
-        width: 100%;
-        height: 100%;
-    }
+  &:active {
+    opacity: 0.64;
+  }
 
-    &-title {
-        @include fonts.button;
+  &-img {
+    position: absolute;
+    width: 100%;
+    height: 100%;
+  }
 
-        color: colors.$white;
-        padding: 0 rem.torem(12px) rem.torem(12px) rem.torem(12px);
-    }
+  &-title {
+    @include fonts.button;
 
-    &-orange {
-        background: linear-gradient(rgb(250 159 22 / 100%), rgb(184 89 1 / 100%));
-    }
+    position: relative;
+    padding: 0 rem.torem(12px) rem.torem(12px) rem.torem(12px);
+  }
 
-    &-purple {
-        background: linear-gradient(rgb(173 135 255 / 100%), rgb(131 55 233 / 100%))
-    }
+  &-orange {
+    background: linear-gradient(#fa9f16, #b85901);
+  }
 
-    &-pink {
-        background: linear-gradient(rgb(236 52 120 / 100%), rgb(192 19 113 / 100%));
-    }
+  &-purple {
+    background: linear-gradient(#ad87ff, #8337e9);
+  }
 
-    &-green {
-        background: linear-gradient(rgb(39 220 168 / 100%), rgb(14 132 116 / 100%));
-    }
+  &-pink {
+    background: linear-gradient(#ec3478, #c01371);
+  }
 
-    &-red {
-        background: linear-gradient(rgb(248 115 61 / 100%), rgb(202 63 19 / 100%));
-    }
+  &-green {
+    background: linear-gradient(#27dca8, #0e8474);
+  }
 
-    &-blue {
-        background: linear-gradient(rgb(31 197 233 / 100%), rgb(14 120 183 / 100%));
-    }
+  &-red {
+    background: linear-gradient(#f8733d, #ca3f13);
+  }
+
+  &-blue {
+    background: linear-gradient(#1fc5e9, #0e78b7);
+  }
 }
-
