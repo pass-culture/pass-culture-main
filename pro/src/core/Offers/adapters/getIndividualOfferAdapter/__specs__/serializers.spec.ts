@@ -190,8 +190,9 @@ describe('serializer', () => {
   })
 
   it('serializeOfferApi', () => {
-    const offerApi: GetIndividualOfferResponseModel =
-      GetIndividualOfferFactory()
+    const offerApi: GetIndividualOfferResponseModel = GetIndividualOfferFactory(
+      { bookingsCount: 123 }
+    )
     const offerSerialized: IndividualOffer = {
       accessibility: {
         audio: false,
@@ -203,6 +204,7 @@ describe('serializer', () => {
       author: '',
       bookingEmail: '',
       bookingContact: '',
+      bookingsCount: 123,
       description: '',
       durationMinutes: null,
       ean: '',
