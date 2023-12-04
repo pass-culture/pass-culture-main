@@ -69,12 +69,16 @@ def render_finance_incident(incident: finance_models.FinanceIncident) -> utils.B
 
     total_amount = (
         sum(
-            booking_incident.collectiveBooking.pricing.amount if booking_incident.collectiveBooking.pricing else 0
+            booking_incident.collectiveBooking.reimbursement_pricing.amount
+            if booking_incident.collectiveBooking.reimbursement_pricing
+            else 0
             for booking_incident in booking_incidents
         )
         if incident.relates_to_collective_bookings
         else sum(
-            booking_incident.booking.pricing.amount if booking_incident.booking.pricing else 0
+            booking_incident.booking.reimbursement_pricing.amount
+            if booking_incident.booking.reimbursement_pricing
+            else 0
             for booking_incident in booking_incidents
         )
     )
@@ -334,7 +338,7 @@ def _initialize_additional_data(bookings: list[bookings_models.Booking]) -> dict
         additional_data["Bénéficiaire"] = booking.user.full_name
         additional_data["Montant de la réservation"] = filters.format_amount(booking.total_amount)
         additional_data["Montant remboursé à l'acteur"] = filters.format_amount(
-            -finance_utils.to_euros(booking.pricing.amount) if booking.pricing else 0
+            -finance_utils.to_euros(booking.reimbursement_pricing.amount) if booking.reimbursement_pricing else 0
         )
     else:
         additional_data["Nombre de réservations"] = len(bookings)
@@ -342,7 +346,9 @@ def _initialize_additional_data(bookings: list[bookings_models.Booking]) -> dict
             sum(booking.total_amount for booking in bookings)
         )
         additional_data["Montant remboursé à l'acteur"] = filters.format_amount(
-            -finance_utils.to_euros(sum(booking.pricing.amount for booking in bookings if booking.pricing))
+            -finance_utils.to_euros(
+                sum(booking.reimbursement_pricing.amount for booking in bookings if booking.reimbursement_pricing)
+            )
         )
 
     return additional_data
@@ -359,9 +365,9 @@ def _initialize_collective_booking_additional_data(collective_booking: education
         "Montant de la réservation": filters.format_amount(collective_booking.total_amount),
     }
 
-    if collective_booking.pricing:
+    if collective_booking.reimbursement_pricing:
         additional_data["Montant remboursé à l'acteur"] = filters.format_amount(
-            -finance_utils.to_euros(collective_booking.pricing.amount)
+            -finance_utils.to_euros(collective_booking.reimbursement_pricing.amount)
         )
 
     return additional_data
