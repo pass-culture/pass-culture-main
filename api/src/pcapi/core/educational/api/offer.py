@@ -366,10 +366,6 @@ def create_collective_offer_template_from_collective_offer(
     return collective_offer_template
 
 
-def get_collective_offer_by_id(offer_id: int) -> educational_models.CollectiveOffer:
-    return educational_repository.get_collective_offer_by_id(offer_id)
-
-
 def get_collective_offer_request_by_id(request_id: int) -> educational_models.CollectiveOfferRequest:
     return educational_repository.get_collective_offer_request_by_id(request_id)
 
