@@ -779,6 +779,47 @@ def get_collective_offer_by_id(offer_id: int) -> educational_models.CollectiveOf
         raise educational_exceptions.CollectiveOfferNotFound()
 
 
+def get_collective_offer_and_extra_data(offer_id: int) -> educational_models.CollectiveOffer | None:
+    is_non_free_offer_subquery = (
+        sa.select(1)
+        .select_from(educational_models.CollectiveStock)
+        .where(
+            educational_models.CollectiveStock.collectiveOfferId == educational_models.CollectiveOffer.id,
+            educational_models.CollectiveStock.price > 0,
+        )
+        .correlate(educational_models.CollectiveOffer)
+        .exists()
+    )
+
+    collective_offer = (
+        db.session.query(educational_models.CollectiveOffer)
+        .filter(educational_models.CollectiveOffer.id == offer_id)
+        .outerjoin(educational_models.CollectiveStock, educational_models.CollectiveStock.collectiveOfferId == offer_id)
+        .options(
+            sa.orm.joinedload(
+                educational_models.CollectiveOffer.venue,
+                innerjoin=True,
+            )
+            .load_only(offerers_models.Venue.id)
+            .joinedload(
+                offerers_models.Venue.managingOfferer,
+                innerjoin=True,
+            )
+            .load_only(offerers_models.Offerer.id)
+        )
+        .options(sa.orm.joinedload(educational_models.CollectiveOffer.domains))
+        .options(
+            sa.orm.joinedload(educational_models.CollectiveOffer.collectiveStock)
+            .joinedload(educational_models.CollectiveStock.collectiveBookings)
+            .load_only(educational_models.CollectiveBooking.id)
+        )
+        .options(sa.orm.with_expression(educational_models.CollectiveOffer.isNonFreeOffer, is_non_free_offer_subquery))
+        .one_or_none()
+    )
+
+    return collective_offer
+
+
 def get_collective_offer_request_by_id(request_id: int) -> educational_models.CollectiveOfferRequest:
     try:
         query = educational_models.CollectiveOfferRequest.query.filter(

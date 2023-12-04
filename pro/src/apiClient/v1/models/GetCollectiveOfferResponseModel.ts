@@ -37,6 +37,7 @@ export type GetCollectiveOfferResponseModel = {
   isBookable: boolean;
   isCancellable: boolean;
   isEditable: boolean;
+  isNonFreeOffer?: boolean | null;
   isPublicApi: boolean;
   isVisibilityEditable: boolean;
   lastBookingId?: number | null;

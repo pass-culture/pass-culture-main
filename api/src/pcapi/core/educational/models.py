@@ -382,6 +382,8 @@ class CollectiveOffer(
         postgresql.ARRAY(sa.Enum(subcategories.EacFormat, create_constraint=False, native_enum=False)), nullable=True
     )
 
+    isNonFreeOffer: sa_orm.Mapped["bool | None"] = sa.orm.query_expression()
+
     # TODO(jeremieb): remove this property once the front end client
     # does not need this field anymore.
     @property

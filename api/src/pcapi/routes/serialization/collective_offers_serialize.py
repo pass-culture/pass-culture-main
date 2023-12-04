@@ -299,6 +299,7 @@ class GetCollectiveOfferBaseResponseModel(BaseModel, AccessibilityComplianceMixi
     imageUrl: str | None
     nationalProgram: NationalProgramModel | None
     formats: typing.Sequence[subcategories.EacFormat] | None
+    isNonFreeOffer: bool | None
 
     class Config:
         allow_population_by_field_name = True

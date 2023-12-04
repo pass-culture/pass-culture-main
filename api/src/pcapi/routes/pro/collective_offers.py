@@ -14,6 +14,7 @@ from pcapi.core.offerers import exceptions as offerers_exceptions
 from pcapi.core.offers import api as offers_api
 from pcapi.core.offers import exceptions as offers_exceptions
 from pcapi.core.offers import validation as offers_validation
+from pcapi.models import db
 from pcapi.models.api_errors import ApiErrors
 from pcapi.repository import transaction
 from pcapi.routes.apis import private_api
@@ -506,19 +507,19 @@ def patch_collective_offers_educational_institution(
 )
 def patch_collective_offer_publication(offer_id: int) -> collective_offers_serialize.GetCollectiveOfferResponseModel:
     with transaction():
-        try:
-            offer = educational_repository.get_collective_offer_by_id(offer_id)
-        except educational_exceptions.CollectiveOfferNotFound:
-            raise ApiErrors({"offerer": ["Acune offre trouvée pour cet id"]}, status_code=404)
+        with db.session.no_autoflush:
+            offer = educational_repository.get_collective_offer_and_extra_data(offer_id)
+            if offer is None:
+                raise ApiErrors({"offerer": ["Acune offre trouvée pour cet id"]}, status_code=404)
 
-        check_user_has_access_to_offerer(current_user, offer.venue.managingOffererId)
+            check_user_has_access_to_offerer(current_user, offer.venue.managingOffererId)
 
-        offer = educational_api_offer.publish_collective_offer(
-            offer=offer,
-            user=current_user,
-        )
+            offer = educational_api_offer.publish_collective_offer(
+                offer=offer,
+                user=current_user,
+            )
 
-        return collective_offers_serialize.GetCollectiveOfferResponseModel.from_orm(offer)
+            return collective_offers_serialize.GetCollectiveOfferResponseModel.from_orm(offer)
 
 
 @private_api.route("/collective/offers-template/<int:offer_id>/publish", methods=["PATCH"])
