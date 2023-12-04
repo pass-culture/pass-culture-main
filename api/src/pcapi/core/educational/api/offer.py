@@ -664,7 +664,6 @@ def publish_collective_offer(
             [offer.id],
             reason=search.IndexationReason.OFFER_PUBLICATION,
         )
-        db.session.commit()
 
     return offer
 
