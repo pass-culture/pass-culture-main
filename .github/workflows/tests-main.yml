@@ -36,7 +36,8 @@ jobs:
       - check-pro-folder-changes
     if: |
       needs.check-api-folder-changes.outputs.folder_changed == 'true' ||
-      needs.check-pro-folder-changes.outputs.folder_changed == 'true'
+      needs.check-pro-folder-changes.outputs.folder_changed == 'true' ||
+      github.ref == 'refs/heads/master' 
     uses: ./.github/workflows/build-and-push-docker-images.yml
     with:
       ref: ${{ github.event_name == 'pull_request' && github.event.pull_request.head.sha || github.sha }}
@@ -48,7 +49,7 @@ jobs:
       # Extra when tests are run on master before deployment on testing.
       console: ${{ github.ref == 'refs/heads/master' }}
       # Needed to run backend tests.
-      tests: ${{ needs.check-api-folder-changes.outputs.folder_changed == 'true' }}
+      tests: ${{ needs.check-api-folder-changes.outputs.folder_changed == 'true' || github.ref == 'refs/heads/master' }}
     secrets: inherit
 
   test-api:
@@ -56,13 +57,17 @@ jobs:
     needs:
       - check-api-folder-changes
       - build-api
-    if: needs.check-api-folder-changes.outputs.folder_changed == 'true'
+    if: |
+      needs.check-api-folder-changes.outputs.folder_changed == 'true' ||
+      github.ref == 'refs/heads/master' 
     uses: ./.github/workflows/tests-api.yml
     secrets: inherit
 
   test-pro:
     needs: check-pro-folder-changes
-    if: needs.check-pro-folder-changes.outputs.folder_changed == 'true'
+    if: |
+      needs.check-pro-folder-changes.outputs.folder_changed == 'true' ||
+      github.ref == 'refs/heads/master' 
     name: Tests pro
     uses: ./.github/workflows/tests-pro.yml
     secrets: inherit
@@ -76,7 +81,8 @@ jobs:
       - build-api
     if: |
       needs.check-api-folder-changes.outputs.folder_changed == 'true' ||
-      needs.check-pro-folder-changes.outputs.folder_changed == 'true'
+      needs.check-pro-folder-changes.outputs.folder_changed == 'true' ||
+      github.ref == 'refs/heads/master' 
     name: Tests pro E2E
     uses: ./.github/workflows/tests-pro-e2e.yml
     secrets: inherit
