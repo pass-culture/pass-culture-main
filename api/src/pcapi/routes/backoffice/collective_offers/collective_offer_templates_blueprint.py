@@ -42,6 +42,7 @@ def _get_collective_offer_templates(
             educational_models.CollectiveOfferTemplate.id,
             educational_models.CollectiveOfferTemplate.name,
             educational_models.CollectiveOfferTemplate.subcategoryId,
+            educational_models.CollectiveOfferTemplate.formats,
             educational_models.CollectiveOfferTemplate.dateCreated,
             educational_models.CollectiveOfferTemplate.validation,
         ),
