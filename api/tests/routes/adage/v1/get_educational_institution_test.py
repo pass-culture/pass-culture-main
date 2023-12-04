@@ -8,7 +8,7 @@ from pcapi.core.educational.factories import EducationalInstitutionFactory
 from pcapi.core.educational.factories import EducationalRedactorFactory
 from pcapi.core.educational.factories import EducationalYearFactory
 from pcapi.core.offers.utils import offer_app_link
-from pcapi.core.testing import assert_no_duplicated_queries
+from pcapi.core.testing import assert_num_queries
 from pcapi.utils.date import format_into_utc_date
 
 
@@ -155,8 +155,13 @@ class Returns200Test:
         adage_id = educational_year.adageId
         institution_id = educational_institution.institutionId
 
-        with assert_no_duplicated_queries():
-            client.with_eac_token().get(f"/adage/v1/years/{adage_id}/educational_institution/{institution_id}")
+        dst = f"/adage/v1/years/{adage_id}/educational_institution/{institution_id}"
+
+        # fetch the institution (1 query)
+        # fetch the prebookings (1 query)
+        # fetch the deposit (1 query)
+        with assert_num_queries(3):
+            client.with_eac_token().get(dst)
 
     def test_get_educational_institution_without_deposit(self, client: Any) -> None:
         educational_year = EducationalYearFactory()
