@@ -16,6 +16,7 @@ import Tabs from 'ui-kit/Tabs'
 
 import { OFFER_WIZARD_STEP_IDS } from './constants'
 import styles from './IndividualOfferNavigation.module.scss'
+import { LabelBooking } from './LabelBooking/LabelBooking'
 
 export const IndividualOfferNavigation = () => {
   const { offer, subcategory } = useIndividualOfferContext()
@@ -119,7 +120,7 @@ export const IndividualOfferNavigation = () => {
   ) {
     steps.push({
       id: OFFER_WIZARD_STEP_IDS.BOOKINGS,
-      label: 'Réservations',
+      label: <LabelBooking bookingsCount={offer?.bookingsCount} />,
       path: getIndividualOfferPath({
         step: OFFER_WIZARD_STEP_IDS.BOOKINGS,
         mode: OFFER_WIZARD_MODE.READ_ONLY,

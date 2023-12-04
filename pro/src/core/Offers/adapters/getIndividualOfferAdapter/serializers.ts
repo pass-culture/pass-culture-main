@@ -85,6 +85,7 @@ export const serializeOfferApi = (
     id: apiOffer.id,
     bookingEmail: apiOffer.bookingEmail || '',
     bookingContact: apiOffer.bookingContact || '',
+    bookingsCount: apiOffer.bookingsCount || 0,
     description: apiOffer.description || '',
     durationMinutes: apiOffer.durationMinutes || null,
     isActive: apiOffer.isActive,

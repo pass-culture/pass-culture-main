@@ -121,6 +121,7 @@ export interface IndividualOffer {
   id: number
   author: string
   bookingEmail: string
+  bookingsCount: number
   description: string
   durationMinutes: number | null
   isActive: boolean

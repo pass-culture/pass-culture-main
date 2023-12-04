@@ -16,7 +16,7 @@ export type Step = {
 
 export interface StepPattern {
   id: string
-  label: string
+  label: string | React.ReactNode
   path?: string
   isActive: boolean
 }
