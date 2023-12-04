@@ -3,7 +3,7 @@ import * as React from 'react'
 import { Configure, InstantSearch } from 'react-instantsearch'
 import { Navigate, Route, Routes, useLocation } from 'react-router-dom'
 
-import { VenueResponse } from 'apiClient/adage'
+import { AdageFrontRoles, VenueResponse } from 'apiClient/adage'
 import useActiveFeature from 'hooks/useActiveFeature'
 import {
   ALGOLIA_API_KEY,
@@ -60,7 +60,9 @@ export const AppLayout = ({
           <Route
             path=""
             element={
-              isDiscoveryActive && !venueId ? (
+              adageUser.role === AdageFrontRoles.REDACTOR &&
+              isDiscoveryActive &&
+              !venueId ? (
                 <AdageDiscovery />
               ) : (
                 <Navigate to={`recherche${search}`} />

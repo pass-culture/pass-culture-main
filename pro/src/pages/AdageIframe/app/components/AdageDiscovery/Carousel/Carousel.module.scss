@@ -29,6 +29,10 @@
     gap: rem.torem(16px);
     scroll-behavior: smooth;
     padding: rem.torem(20px) rem.torem(24px);
+
+    &-empty {
+      min-height: 422px;
+    }
   }
 }
 

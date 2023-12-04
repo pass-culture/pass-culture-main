@@ -1,15 +1,19 @@
 import React from 'react'
-import { useSearchParams } from 'react-router-dom'
+import { useLocation, useSearchParams } from 'react-router-dom'
 
 import Breadcrumb from 'components/Breadcrumb/Breadcrumb'
 import strokePassIcon from 'icons/stroke-pass.svg'
 
-import { mockOffer } from '../AdageDiscovery/AdageDiscovery'
 import Offer from '../OffersInstantSearch/OffersSearch/Offers/Offer'
 
 import styles from './OffersInfos.module.scss'
 
 export const OffersInfos = () => {
+  const {
+    state: { offer: offer },
+  } = useLocation()
+
+  console.log('ici', useLocation())
   const [searchParams] = useSearchParams()
   const adageAuthToken = searchParams.get('token')
 
@@ -22,12 +26,12 @@ export const OffersInfos = () => {
               title: 'Découvrir',
               link: {
                 isExternal: false,
-                to: `/adage-iframe/decouverte?token=${adageAuthToken}`,
+                to: `/adage-iframe?token=${adageAuthToken}`,
               },
               icon: strokePassIcon,
             },
             {
-              title: mockOffer.name,
+              title: offer.name,
               link: {
                 isExternal: true,
                 to: '#',
@@ -36,7 +40,12 @@ export const OffersInfos = () => {
           ]}
         />
       </div>
-      <Offer offer={mockOffer} position={0} queryId="" openDetails={true} />
+      <Offer
+        offer={{ ...offer, isTemplate: true }}
+        position={0}
+        queryId=""
+        openDetails={true}
+      />
     </div>
   )
 }

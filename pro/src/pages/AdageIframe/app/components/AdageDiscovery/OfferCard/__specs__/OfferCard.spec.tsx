@@ -8,10 +8,7 @@ import { AdageUserContextProvider } from 'pages/AdageIframe/app/providers/AdageU
 import { defaultAdageUser, defaultCollectiveOffer } from 'utils/adageFactories'
 import { renderWithProviders } from 'utils/renderWithProviders'
 
-import CardOfferComponent, {
-  CardComponentProps,
-  CardOfferModel,
-} from '../CardOffer'
+import OfferCardComponent, { CardComponentProps } from '../OfferCard'
 
 vi.mock('apiClient/api', () => ({
   apiAdage: {
@@ -19,7 +16,7 @@ vi.mock('apiClient/api', () => ({
   },
 }))
 
-const mockOffer: CardOfferModel = {
+const mockOffer = {
   ...defaultCollectiveOffer,
   venue: {
     ...defaultCollectiveOffer.venue,
@@ -32,13 +29,13 @@ const mockOffer: CardOfferModel = {
   isTemplate: false,
 }
 
-const renderCardOfferComponent = ({
+const renderOfferCardComponent = ({
   offer,
   handlePlaylistElementTracking,
 }: CardComponentProps) => {
   renderWithProviders(
     <AdageUserContextProvider adageUser={defaultAdageUser}>
-      <CardOfferComponent
+      <OfferCardComponent
         offer={offer}
         handlePlaylistElementTracking={handlePlaylistElementTracking}
       />
@@ -46,7 +43,7 @@ const renderCardOfferComponent = ({
   )
 }
 
-describe('CardOffer component', () => {
+describe('OfferCard component', () => {
   it('should render school tag when offer will happens in school', () => {
     const offer = {
       ...mockOffer,
@@ -55,7 +52,7 @@ describe('CardOffer component', () => {
         addressType: OfferAddressType.SCHOOL,
       },
     }
-    renderCardOfferComponent({ offer, handlePlaylistElementTracking: vi.fn() })
+    renderOfferCardComponent({ offer, handlePlaylistElementTracking: vi.fn() })
 
     expect(screen.getByText('En classe')).toBeInTheDocument()
   })
@@ -68,7 +65,7 @@ describe('CardOffer component', () => {
         addressType: OfferAddressType.OFFERER_VENUE,
       },
     }
-    renderCardOfferComponent({ offer, handlePlaylistElementTracking: vi.fn() })
+    renderOfferCardComponent({ offer, handlePlaylistElementTracking: vi.fn() })
 
     expect(screen.getByText('Sortie')).toBeInTheDocument()
     expect(screen.getByText('À 10 km')).toBeInTheDocument()
@@ -82,7 +79,7 @@ describe('CardOffer component', () => {
         addressType: OfferAddressType.OTHER,
       },
     }
-    renderCardOfferComponent({ offer, handlePlaylistElementTracking: vi.fn() })
+    renderOfferCardComponent({ offer, handlePlaylistElementTracking: vi.fn() })
 
     expect(screen.getByText('Sortie')).toBeInTheDocument()
     expect(screen.getByText('Lieu à définir')).toBeInTheDocument()
@@ -94,7 +91,7 @@ describe('CardOffer component', () => {
       vi.fn(),
     ])
 
-    renderCardOfferComponent({
+    renderOfferCardComponent({
       offer: mockOffer,
       handlePlaylistElementTracking: vi.fn(),
     })
@@ -111,7 +108,7 @@ describe('CardOffer component', () => {
     const mockhandlePlaylistElementTracking = vi.fn()
     vi.spyOn(apiAdage, 'logConsultPlaylistElement')
 
-    renderCardOfferComponent({
+    renderOfferCardComponent({
       offer: mockOffer,
       handlePlaylistElementTracking: mockhandlePlaylistElementTracking,
     })
