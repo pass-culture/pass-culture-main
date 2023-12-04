@@ -3,6 +3,7 @@ import React, { useEffect, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 
 import { BannerInvisibleSiren } from 'components/Banner'
+import Callout from 'components/Callout/Callout'
 import FormLayout from 'components/FormLayout'
 import { OnboardingFormNavigationAction } from 'components/SignupJourneyFormLayout/constants'
 import { SIGNUP_JOURNEY_STEP_IDS } from 'components/SignupJourneyStepper/constants'
@@ -13,9 +14,9 @@ import getSiretData from 'core/Venue/adapters/getSiretDataAdapter'
 import { getVenuesOfOffererFromSiretAdapter } from 'core/Venue/adapters/getVenuesOfOffererFromSiretAdapter'
 import useAnalytics from 'hooks/useAnalytics'
 import useNotification from 'hooks/useNotification'
+import fullLinkIcon from 'icons/full-link.svg'
 import { MAYBE_APP_USER_APE_CODE } from 'pages/Signup/SignupContainer/constants'
 import MaybeAppUserDialog from 'pages/Signup/SignupContainer/MaybeAppUserDialog'
-import { Banner } from 'ui-kit'
 
 import { ActionBar } from '../ActionBar'
 
@@ -131,13 +132,12 @@ const Offerer = (): JSX.Element => {
             {showInvisibleBanner && (
               <BannerInvisibleSiren isNewOnboarding={true} />
             )}
-            <Banner
-              type="notification-info"
-              className={styles['siret-banner']}
+            <Callout
               links={[
                 {
                   href: 'https://aide.passculture.app/hc/fr/articles/4633420022300--Acteurs-Culturels-Collectivit%C3%A9-Lieu-rattach%C3%A9-%C3%A0-une-collectivit%C3%A9-S-inscrire-et-param%C3%A9trer-son-compte-pass-Culture-',
                   linkTitle: 'En savoir plus',
+                  icon: fullLinkIcon,
                 },
               ]}
             >
@@ -145,11 +145,11 @@ const Offerer = (): JSX.Element => {
                 Vous êtes un équipement d’une collectivité ou d’un établissement
                 public ?
               </strong>
-              <p className={styles['banner-content-info']}>
+              <p className={styles['callout-content-info']}>
                 Renseignez le SIRET de la structure à laquelle vous êtes
                 rattaché.
               </p>
-            </Banner>
+            </Callout>
             <ActionBar
               onClickNext={handleNextStep}
               isDisabled={formik.isSubmitting}
