@@ -15,6 +15,7 @@ from pcapi.sandboxes.scripts.creators.industrial.create_industrial_event_occurre
 from pcapi.sandboxes.scripts.creators.industrial.create_industrial_event_offers import *
 from pcapi.sandboxes.scripts.creators.industrial.create_industrial_event_products import *
 from pcapi.sandboxes.scripts.creators.industrial.create_industrial_event_stocks import *
+from pcapi.sandboxes.scripts.creators.industrial.create_industrial_gdpr_users import create_industrial_gdpr_users
 from pcapi.sandboxes.scripts.creators.industrial.create_industrial_incidents import create_industrial_incidents
 from pcapi.sandboxes.scripts.creators.industrial.create_industrial_individual_offerers import (
     create_industrial_individual_offerers,
@@ -162,3 +163,5 @@ def save_industrial_sandbox() -> None:
     create_industrial_bank_accounts()
 
     create_industrial_venues_with_timezone()
+
+    create_industrial_gdpr_users()

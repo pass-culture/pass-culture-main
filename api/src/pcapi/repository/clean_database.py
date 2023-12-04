@@ -26,7 +26,6 @@ def clean_all_database(*args: typing.Any, **kwargs: typing.Any) -> None:
     """Order of deletions matters because of foreign key constraints"""
     if settings.ENV not in ("development", "testing"):
         raise ValueError(f"You cannot do this on this environment: '{settings.ENV}'")
-    geography_models.IrisFrance.query.delete()
     providers_models.LocalProviderEvent.query.delete()
     offers_models.ActivationCode.query.delete()
     providers_models.AllocineVenueProviderPriceRule.query.delete()
@@ -105,6 +104,7 @@ def clean_all_database(*args: typing.Any, **kwargs: typing.Any) -> None:
     users_models.SingleSignOn.query.delete()
     users_models.User.query.delete()
     users_models.UserSession.query.delete()
+    geography_models.IrisFrance.query.delete()  # must be after User
     providers_models.Provider.query.delete()
     offerers_models.VenueLabel.query.delete()
     educational_models.EducationalDeposit.query.delete()
