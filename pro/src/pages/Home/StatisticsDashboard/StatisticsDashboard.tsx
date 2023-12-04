@@ -65,12 +65,12 @@ export const StatisticsDashboard = ({ offerer }: StatisticsDashboardProps) => {
             {stats?.jsonData.topOffers?.length ||
             stats?.jsonData.dailyViews?.length ? (
               <div className={styles['data-container']}>
+                <CumulatedViews dailyViews={stats.jsonData.dailyViews} />
+
                 <MostViewedOffers
                   last30daysViews={stats.jsonData.totalViewsLast30Days}
                   topOffers={stats.jsonData.topOffers}
                 />
-
-                <CumulatedViews dailyViews={stats.jsonData.dailyViews} />
               </div>
             ) : (
               <div className={styles['no-data']}>
