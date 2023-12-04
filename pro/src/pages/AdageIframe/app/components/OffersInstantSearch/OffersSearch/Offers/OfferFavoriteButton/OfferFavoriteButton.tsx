@@ -3,8 +3,8 @@ import { useState } from 'react'
 
 import { apiAdage } from 'apiClient/api'
 import useNotification from 'hooks/useNotification'
-import fullBookmarkIcon from 'icons/full-bookmark.svg'
-import strokeBookmarkIcon from 'icons/stroke-bookmark.svg'
+import fullStarIcon from 'icons/full-star.svg'
+import strokeStarIcon from 'icons/stroke-star.svg'
 import useAdageUser from 'pages/AdageIframe/app/hooks/useAdageUser'
 import {
   HydratedCollectiveOffer,
@@ -95,8 +95,10 @@ const OfferFavoriteButton = ({
     setIsLoading(true)
 
     if (isFavorite) {
+      // eslint-disable-next-line @typescript-eslint/no-floating-promises
       removeFromFavorites()
     } else {
+      // eslint-disable-next-line @typescript-eslint/no-floating-promises
       addToFavorites()
     }
   }
@@ -107,7 +109,7 @@ const OfferFavoriteButton = ({
 
   return (
     <Button
-      icon={isFavorite ? fullBookmarkIcon : strokeBookmarkIcon}
+      icon={isFavorite ? fullStarIcon : strokeStarIcon}
       className={cn(styles['favorite-button'], className, {
         [styles['favorite-button-active']]: isFavorite,
       })}

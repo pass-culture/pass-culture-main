@@ -8,9 +8,9 @@ import {
   AuthenticatedResponse,
 } from 'apiClient/adage'
 import useActiveFeature from 'hooks/useActiveFeature'
-import strokeBookmarkIcon from 'icons/stroke-bookmark.svg'
 import strokePassIcon from 'icons/stroke-pass.svg'
 import strokeSearchIcon from 'icons/stroke-search.svg'
+import strokeStarIcon from 'icons/stroke-star.svg'
 import strokeVenueIcon from 'icons/stroke-venue.svg'
 import useAdageUser from 'pages/AdageIframe/app/hooks/useAdageUser'
 import { SvgIcon } from 'ui-kit/SvgIcon/SvgIcon'
@@ -106,7 +106,7 @@ export const AdageHeaderMenu = ({
                 onClick={() => logAdageLinkClick(AdageHeaderLink.MY_FAVORITES)}
               >
                 <SvgIcon
-                  src={strokeBookmarkIcon}
+                  src={strokeStarIcon}
                   alt=""
                   className={styles['adage-header-link-icon']}
                 />
