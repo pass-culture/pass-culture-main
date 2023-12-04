@@ -65,8 +65,8 @@ class TestingBackend(BaseBackend):
             id="75101_9575_00003",
             label="3 Rue de Valois 75001 Paris",
             score=0.9651727272727272,
-            latitude=2.308289,
-            longitude=48.87171,
+            latitude=48.87171,
+            longitude=2.308289,
         )
 
 
@@ -162,12 +162,14 @@ class ApiAdresseBackend(BaseBackend):
         return len(result["features"]) == 0
 
     def _format_result(self, data: dict) -> AddressInfo:
+        # GeoJSON defines Point as [longitude, latitude]
+        # https://datatracker.ietf.org/doc/html/rfc7946#appendix-A.1
         coordinates = data["features"][0]["geometry"]["coordinates"]
         properties = data["features"][0]["properties"]
         return AddressInfo(
             id=properties["id"],
-            latitude=coordinates[0],
-            longitude=coordinates[1],
+            latitude=coordinates[1],
+            longitude=coordinates[0],
             score=properties["score"],
             label=properties["label"],
         )
