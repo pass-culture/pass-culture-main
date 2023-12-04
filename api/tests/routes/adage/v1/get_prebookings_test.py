@@ -8,6 +8,7 @@ from pcapi.core.educational.factories import EducationalRedactorFactory
 from pcapi.core.educational.factories import EducationalYearFactory
 from pcapi.core.educational.models import StudentLevels
 from pcapi.core.offers.utils import offer_app_link
+from pcapi.core.testing import assert_num_queries
 from pcapi.utils.date import format_into_utc_date
 
 
@@ -49,9 +50,10 @@ class Returns200Test:
         CollectiveBookingFactory(educationalYear=other_educational_year)
         CollectiveBookingFactory(educationalInstitution=other_educational_institution)
 
-        response = client.with_eac_token().get(
-            f"/adage/v1/years/{booking.educationalYear.adageId}/educational_institution/{booking.educationalInstitution.institutionId}/prebookings"
-        )
+        dst = f"/adage/v1/years/{booking.educationalYear.adageId}/educational_institution/{booking.educationalInstitution.institutionId}/prebookings"
+
+        with assert_num_queries(1):
+            response = client.with_eac_token().get(dst)
 
         assert response.status_code == 200
 
@@ -145,9 +147,10 @@ class Returns200Test:
             collectiveStock__collectiveOffer__subcategoryId="SEANCE_CINE",
         )
 
-        response = client.with_eac_token().get(
-            f"/adage/v1/years/{booking.educationalYear.adageId}/educational_institution/{booking.educationalInstitution.institutionId}/prebookings?redactorEmail={redactor.email}"
-        )
+        dst = f"/adage/v1/years/{booking.educationalYear.adageId}/educational_institution/{booking.educationalInstitution.institutionId}/prebookings?redactorEmail={redactor.email}"
+
+        with assert_num_queries(1):
+            response = client.with_eac_token().get(dst)
 
         assert response.status_code == 200
         stock = booking.collectiveStock
