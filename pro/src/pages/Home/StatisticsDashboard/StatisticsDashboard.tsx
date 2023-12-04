@@ -1,3 +1,4 @@
+import cn from 'classnames'
 import { format } from 'date-fns'
 import React, { useEffect, useState } from 'react'
 
@@ -64,13 +65,20 @@ export const StatisticsDashboard = ({ offerer }: StatisticsDashboardProps) => {
           <div className="h-card-inner">
             {stats?.jsonData.topOffers?.length ||
             stats?.jsonData.dailyViews?.length ? (
-              <div className={styles['data-container']}>
+              <div
+                className={cn(styles['data-container'], {
+                  [styles['has-top-offers']]:
+                    stats.jsonData.topOffers.length > 0,
+                })}
+              >
                 <CumulatedViews dailyViews={stats.jsonData.dailyViews} />
 
-                <MostViewedOffers
-                  last30daysViews={stats.jsonData.totalViewsLast30Days}
-                  topOffers={stats.jsonData.topOffers}
-                />
+                {stats.jsonData.topOffers.length > 0 && (
+                  <MostViewedOffers
+                    last30daysViews={stats.jsonData.totalViewsLast30Days}
+                    topOffers={stats.jsonData.topOffers}
+                  />
+                )}
               </div>
             ) : (
               <div className={styles['no-data']}>
