@@ -47,6 +47,7 @@ export const individualOfferFactory = (
     description: 'Ça va faire mal',
     author: 'Chuck Norris',
     bookingEmail: 'chuck@nofucks.given',
+    bookingsCount: 18,
     musicType: 'douleur',
     musicSubType: 'cassage de genoux',
     durationMinutes: 3,
