@@ -38,7 +38,7 @@ jobs:
       needs.check-api-folder-changes.outputs.folder_changed == 'true' ||
       needs.check-pro-folder-changes.outputs.folder_changed == 'true' ||
       github.ref == 'refs/heads/master'  ||
-      startsWith(github.ref,'refs/heads/test/v') == 'true'
+      startsWith(github.ref,'refs/heads/test/v')
     uses: ./.github/workflows/build-and-push-docker-images.yml
     with:
       ref: ${{ github.event_name == 'pull_request' && github.event.pull_request.head.sha || github.sha }}
@@ -53,7 +53,7 @@ jobs:
       tests: |
         ${{ needs.check-api-folder-changes.outputs.folder_changed == 'true' }} ||
         github.ref == 'refs/heads/master' ||
-        startsWith(github.ref,'refs/heads/test/v') == 'true'
+        startsWith(github.ref,'refs/heads/test/v')
     secrets: inherit
 
   test-api:
@@ -63,7 +63,7 @@ jobs:
       - build-api
     if: |
       github.ref == 'refs/heads/master'  ||
-      startsWith(github.ref,'refs/heads/test/v') == 'true'
+      startsWith(github.ref,'refs/heads/test/v')
     uses: ./.github/workflows/tests-api.yml
     secrets: inherit
 
@@ -72,7 +72,7 @@ jobs:
     if: |
       needs.check-pro-folder-changes.outputs.folder_changed == 'true' ||
       github.ref == 'refs/heads/master'  ||
-      startsWith(github.ref,'refs/heads/test/v') == 'true'
+      startsWith(github.ref,'refs/heads/test/v')
     name: Tests pro
     uses: ./.github/workflows/tests-pro.yml
     secrets: inherit
@@ -88,7 +88,7 @@ jobs:
       needs.check-api-folder-changes.outputs.folder_changed == 'true' ||
       needs.check-pro-folder-changes.outputs.folder_changed == 'true' ||
       github.ref == 'refs/heads/master'  ||
-      startsWith(github.ref,'refs/heads/test/v') == 'true'
+      startsWith(github.ref,'refs/heads/test/v')
     name: Tests pro E2E
     uses: ./.github/workflows/tests-pro-e2e.yml
     secrets: inherit
