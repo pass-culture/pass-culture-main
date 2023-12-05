@@ -1,5 +1,5 @@
 import { format, subMonths } from 'date-fns'
-import React, { useEffect, useMemo, useState } from 'react'
+import { useCallback, useEffect, useMemo, useState } from 'react'
 
 import { api } from 'apiClient/api'
 import { InvoiceResponseModel } from 'apiClient/v1'
@@ -8,8 +8,6 @@ import { SelectOption } from 'custom_types/form'
 import useActiveFeature from 'hooks/useActiveFeature'
 import useCurrentUser from 'hooks/useCurrentUser'
 import strokeNoBookingIcon from 'icons/stroke-no-booking.svg'
-import { Button } from 'ui-kit'
-import { ButtonVariant } from 'ui-kit/Button/types'
 import Spinner from 'ui-kit/Spinner/Spinner'
 import { SvgIcon } from 'ui-kit/SvgIcon/SvgIcon'
 import { FORMAT_ISO_DATE_ONLY, getToday } from 'utils/date'
@@ -17,7 +15,6 @@ import { sortByLabel } from 'utils/strings'
 
 import { DEFAULT_INVOICES_FILTERS } from '../_constants'
 
-import InvoicesAdminMustFilter from './InvoicesAdminMustFilter'
 import InvoicesFilters from './InvoicesFilters'
 import InvoicesNoResult from './InvoicesNoResult'
 import InvoicesServerError from './InvoicesServerError'
@@ -42,82 +39,59 @@ const ReimbursementsInvoices = (): JSX.Element => {
 
   const [filters, setFilters] = useState(INITIAL_FILTERS)
   const [invoices, setInvoices] = useState<InvoiceResponseModel[]>([])
-  const [noInvoices, setNoInvoices] = useState<boolean>(false)
   const [isLoading, setIsLoading] = useState(true)
   const [hasError, setHasError] = useState(false)
   const [areFiltersDefault, setAreFiltersDefault] = useState(true)
-  const [hasSearchedOnce, setHasSearchedOnce] = useState(false)
   const [reimbursementPointsOptions, setReimbursementPointsOptions] = useState<
     SelectOption[]
   >([])
 
-  const {
-    reimbursementPoint: selectedReimbursementPoint,
-    periodStart: selectedPeriodStart,
-    periodEnd: selectedPeriodEnd,
-  } = filters
-
-  const isPeriodFilterSelected = selectedPeriodStart && selectedPeriodEnd
-  const requireBUFilterForAdmin =
-    currentUser.isAdmin &&
-    selectedReimbursementPoint === ALL_REIMBURSEMENT_POINT_OPTION_ID
-
-  const hasNoSearchResult =
-    !hasError && invoices.length === 0 && (hasSearchedOnce || !noInvoices)
-
-  const shouldDisplayAdminInfo =
-    !hasError && currentUser.isAdmin && !hasSearchedOnce
+  const hasNoSearchResult = !hasError && invoices.length === 0
 
   const hasNoInvoicesYetForNonAdmin =
-    !hasError &&
-    !currentUser.isAdmin &&
-    invoices.length === 0 &&
-    noInvoices &&
-    !hasSearchedOnce
+    !hasError && !currentUser.isAdmin && invoices.length === 0
 
-  const shouldDisableButton =
-    !isPeriodFilterSelected ||
-    requireBUFilterForAdmin ||
-    hasNoInvoicesYetForNonAdmin
+  const loadInvoices = useCallback(
+    async (shouldReset?: boolean) => {
+      const reimbursmentPoint = shouldReset
+        ? INITIAL_FILTERS.reimbursementPoint
+        : filters.reimbursementPoint
+      const periodStart = shouldReset
+        ? INITIAL_FILTERS.periodStart
+        : filters.periodStart
+      const periodEnd = shouldReset
+        ? INITIAL_FILTERS.periodEnd
+        : filters.periodEnd
 
-  const loadInvoices = async (shouldReset?: boolean) => {
-    if (shouldReset) {
-      setHasSearchedOnce(false)
-    }
-    const reimbursmentPoint = shouldReset
-      ? INITIAL_FILTERS.reimbursementPoint
-      : filters.reimbursementPoint
-    const periodStart = shouldReset
-      ? INITIAL_FILTERS.periodStart
-      : filters.periodStart
-    const periodEnd = shouldReset
-      ? INITIAL_FILTERS.periodEnd
-      : filters.periodEnd
+      try {
+        const invoices = await api.getInvoices(
+          periodStart,
+          periodEnd,
+          reimbursmentPoint !== DEFAULT_INVOICES_FILTERS.reimbursementPointId
+            ? parseInt(reimbursmentPoint)
+            : undefined
+        )
 
-    try {
-      const invoices = await api.getInvoices(
-        periodStart,
-        periodEnd,
-        reimbursmentPoint !== DEFAULT_INVOICES_FILTERS.reimbursementPointId
-          ? parseInt(reimbursmentPoint)
-          : undefined
-      )
-
-      setInvoices(invoices)
-      setIsLoading(false)
-      setHasError(false)
-      // FIXME: api route getInvoices() should give us this information: does the user have at least one invoice in the database?
-      setNoInvoices(false)
-    } catch (error) {
-      setIsLoading(false)
-      setHasError(true)
-    }
-  }
+        setInvoices(invoices)
+        setIsLoading(false)
+        setHasError(false)
+      } catch (error) {
+        setIsLoading(false)
+        setHasError(true)
+      }
+    },
+    [
+      INITIAL_FILTERS,
+      filters.periodEnd,
+      filters.periodStart,
+      filters.reimbursementPoint,
+    ]
+  )
 
   useEffect(() => {
     // eslint-disable-next-line @typescript-eslint/no-floating-promises
     loadInvoices()
-  }, [])
+  }, [loadInvoices])
 
   useEffect(() => {
     const getReimbursementPointsResult = async () => {
@@ -133,7 +107,8 @@ const ReimbursementsInvoices = (): JSX.Element => {
       )
     }
 
-    void getReimbursementPointsResult()
+    // eslint-disable-next-line @typescript-eslint/no-floating-promises
+    getReimbursementPointsResult()
   }, [])
 
   if (isLoading) {
@@ -172,20 +147,7 @@ const ReimbursementsInvoices = (): JSX.Element => {
         selectableOptions={reimbursementPointsOptions}
         setAreFiltersDefault={setAreFiltersDefault}
         setFilters={setFilters}
-      >
-        <Button
-          variant={ButtonVariant.PRIMARY}
-          className="search-button"
-          disabled={shouldDisableButton}
-          onClick={async () => {
-            setHasSearchedOnce(true)
-            await loadInvoices()
-          }}
-        >
-          Lancer la recherche
-        </Button>
-      </InvoicesFilters>
-      {isLoading && <Spinner />}
+      />
       {hasError && <InvoicesServerError />}
       {hasNoInvoicesYetForNonAdmin && <NoInvoicesYet />}
       {hasNoSearchResult && (
@@ -197,7 +159,6 @@ const ReimbursementsInvoices = (): JSX.Element => {
           setFilters={setFilters}
         />
       )}
-      {shouldDisplayAdminInfo && <InvoicesAdminMustFilter />}
       {invoices.length > 0 && <InvoiceTable invoices={invoices} />}
     </>
   )
