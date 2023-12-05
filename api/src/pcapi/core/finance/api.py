@@ -2243,7 +2243,7 @@ def update_bank_account_venues_links(
     venues_ids: set[int],
 ) -> None:
     offerer = bank_account.offerer
-    managed_venues_ids = {venue.id for venue in offerer.managedVenues}
+    managed_venues_ids = {venue.id for venue in offerer.managedVenues if venue.current_pricing_point_link}
     current_links_by_venue_id = {link.venueId: link for link in bank_account.venueLinks}
 
     venues_already_linked = set(current_links_by_venue_id.keys())
@@ -2281,7 +2281,7 @@ def update_bank_account_venues_links(
         for venue_id in venues_links_to_create:
             if venue_id not in managed_venues_ids:
                 logger.warning(
-                    "Attempt of a user to link a venue that doesn't depend on its offerer to a bank account.",
+                    "Attempt of a user to link a venue that does not meet criteria (venue without pricing point or belonging to another offerer)",
                     extra={
                         "venue_id": venue_id,
                         "bank_account_id": bank_account.id,
