@@ -120,6 +120,7 @@ class CollectiveOfferOfferVenue(BaseModel):
     address: str | None
     postalCode: str | None
     city: str | None
+    distance: float | None
 
     _validated_venue_id = validator("venueId", pre=True, allow_reuse=True)(validate_venue_id)
 

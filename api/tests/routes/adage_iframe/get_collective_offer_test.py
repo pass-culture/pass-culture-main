@@ -105,6 +105,7 @@ class CollectiveOfferTest:
                 "addressType": "offererVenue",
                 "address": venue.address,
                 "city": venue.city,
+                "distance": None,
                 "name": venue.name,
                 "otherAddress": "",
                 "postalCode": venue.postalCode,

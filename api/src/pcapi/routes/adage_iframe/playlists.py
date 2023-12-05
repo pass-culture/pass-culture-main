@@ -63,9 +63,9 @@ def get_classroom_playlist(
                 serializers.CollectiveOfferResponseModel,
                 serialize_collective_offer(
                     offer=offer,
-                    is_favorite=offer.id in favorite_ids,
-                    distance=rows[offer.id],
                     serializer=serializers.CollectiveOfferResponseModel,
+                    is_favorite=offer.id in favorite_ids,
+                    venue_distance=rows[offer.id],
                 ),
             )
             for offer in offers
@@ -75,9 +75,10 @@ def get_classroom_playlist(
 
 def serialize_collective_offer(
     offer: educational_models.CollectiveOffer,
-    is_favorite: bool,
-    distance: int,
     serializer: type[serializers.CollectiveOfferResponseModel] | type[serializers.CollectiveOfferTemplateResponseModel],
+    is_favorite: bool,
+    venue_distance: int | None = None,
+    event_distance: int | None = None,
 ) -> serializers.CollectiveOfferResponseModel | serializers.CollectiveOfferTemplateResponseModel:
     offer_venue_id = offer.offerVenue.get("venueId")
     if offer_venue_id:
@@ -86,7 +87,8 @@ def serialize_collective_offer(
         offer_venue = None
 
     serialized_offer = serializer.build(offer=offer, offerVenue=offer_venue, is_favorite=is_favorite)
-    serialized_offer.venue.distance = distance
+    serialized_offer.venue.distance = venue_distance
+    serialized_offer.offerVenue.distance = event_distance
 
     return serialized_offer
 
@@ -136,9 +138,9 @@ def new_template_offers_playlist(
                 serializers.CollectiveOfferTemplateResponseModel,
                 serialize_collective_offer(
                     offer=offer,
-                    is_favorite=offer.id in favorite_ids,
-                    distance=rows[offer.id],
                     serializer=serializers.CollectiveOfferTemplateResponseModel,
+                    is_favorite=offer.id in favorite_ids,
+                    event_distance=rows[offer.id],
                 ),
             )
             for offer in offers
