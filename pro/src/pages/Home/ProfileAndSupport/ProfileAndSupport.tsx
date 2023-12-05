@@ -75,6 +75,7 @@ const ProfileAndSupport = () => {
                 Modifier
               </ButtonLink>
             </div>
+
             <div className="h-card-content">
               <ul className="h-description-list">
                 <li className="h-dl-row">

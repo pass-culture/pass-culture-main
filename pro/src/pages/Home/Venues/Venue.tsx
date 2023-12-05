@@ -123,11 +123,7 @@ const Venue = ({
         )}
       >
         <div className="h-card-inner">
-          <div
-            className={cn('h-card-header-row', {
-              'h-card-is-open': isToggleOpen,
-            })}
-          >
+          <div className={cn('h-card-header-row')}>
             <h3 className="h-card-title">
               {shouldShowVenueOfferSteps ? (
                 <button
@@ -159,10 +155,10 @@ const Venue = ({
                 </div>
               )}
 
-              {true && (
+              {shouldShowVenueOfferSteps && !isVirtual && (
                 <Button
                   icon={fullErrorIcon}
-                  className="needs-payment-icon"
+                  className={styles['needs-payment-icon']}
                   variant={ButtonVariant.TERNARY}
                   hasTooltip
                   onClick={() => {
@@ -188,7 +184,7 @@ const Venue = ({
               )}
             </h3>
 
-            <div className="button-group">
+            <div className={styles['button-group']}>
               {/*Delete when WIP_ENABLE_NEW_BANK_DETAILS_JOURNEY is deleted*/}
               {!isNewBankDetailsJourneyEnabled &&
                 hasMissingReimbursementPoint &&
@@ -211,7 +207,7 @@ const Venue = ({
                     >
                       Ajouter un RIB
                     </ButtonLink>
-                    <span className="button-group-separator" />
+                    <span className={styles['button-group-separator']} />
                   </>
                 )}
               <ButtonLink
@@ -234,27 +230,29 @@ const Venue = ({
           </div>
 
           {isToggleOpen && shouldShowVenueOfferSteps && (
-            <VenueOfferSteps
-              venueId={venueId}
-              hasVenue={true}
-              offererId={offererId}
-              venueHasCreatedOffer={venueHasCreatedOffer}
-              offererHasCreatedOffer={offererHasCreatedOffer}
-              hasMissingReimbursementPoint={hasMissingReimbursementPoint}
-              hasAdageId={hasAdageId}
-              shouldDisplayEACInformationSection={
-                shouldDisplayEACInformationSection
-              }
-              hasPendingBankInformationApplication={
-                hasPendingBankInformationApplication
-              }
-              demarchesSimplifieesApplicationId={
-                demarchesSimplifieesApplicationId
-              }
-              offererHasBankAccount={offererHasBankAccount}
-              hasNonFreeOffer={hasNonFreeOffer}
-              isFirstVenue={isFirstVenue}
-            />
+            <div className={styles['offer-steps']}>
+              <VenueOfferSteps
+                venueId={venueId}
+                hasVenue={true}
+                offererId={offererId}
+                venueHasCreatedOffer={venueHasCreatedOffer}
+                offererHasCreatedOffer={offererHasCreatedOffer}
+                hasMissingReimbursementPoint={hasMissingReimbursementPoint}
+                hasAdageId={hasAdageId}
+                shouldDisplayEACInformationSection={
+                  shouldDisplayEACInformationSection
+                }
+                hasPendingBankInformationApplication={
+                  hasPendingBankInformationApplication
+                }
+                demarchesSimplifieesApplicationId={
+                  demarchesSimplifieesApplicationId
+                }
+                offererHasBankAccount={offererHasBankAccount}
+                hasNonFreeOffer={hasNonFreeOffer}
+                isFirstVenue={isFirstVenue}
+              />
+            </div>
           )}
         </div>
       </div>
