@@ -1,4 +1,5 @@
 @use "styles/mixins/_rem.scss" as rem;
+@use "styles/variables/_colors.scss" as colors;
 
 .api-tag {
   margin-left: rem.torem(16px);
@@ -15,4 +16,28 @@
   height: rem.torem(12px);
   width: rem.torem(12px);
   margin-right: rem.torem(8px);
+}
+
+.needs-payment-icon {
+  margin-left: rem.torem(10px);
+  color: colors.$primary;
+}
+
+.button-group {
+  display: flex;
+  flex-wrap: nowrap;
+  align-items: center;
+  flex-shrink: 0;
+
+  // Delete when WIP_ENABLE_NEW_BANK_DETAILS_JOURNEY is deleted
+  &-separator {
+    height: rem.torem(20px);
+    border-left: solid rem.torem(1px) colors.$grey-medium;
+    margin-left: rem.torem(16px);
+    margin-right: rem.torem(12px);
+  }
+}
+
+.offer-steps {
+  margin-top: rem.torem(16px);
 }
