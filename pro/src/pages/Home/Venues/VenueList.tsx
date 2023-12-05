@@ -1,9 +1,11 @@
+import cn from 'classnames'
 import React from 'react'
 
 import { GetOffererVenueResponseModel } from 'apiClient/v1'
 import { getLastCollectiveDmsApplication } from 'utils/getLastCollectiveDmsApplication'
 
 import Venue from './Venue'
+import styles from './Venue.module.scss'
 
 interface VenueListProps {
   physicalVenues: GetOffererVenueResponseModel[]
@@ -25,7 +27,7 @@ const VenueList = ({
     physicalVenues.some((venue) => venue.hasCreatedOffer)
   const indexLastPhysicalVenues = physicalVenues.length - 1
   return (
-    <div className="h-venue-list">
+    <div className={cn('h-venue-list', styles['venue-list'])}>
       {virtualVenue && (
         <Venue
           venueId={virtualVenue.id}

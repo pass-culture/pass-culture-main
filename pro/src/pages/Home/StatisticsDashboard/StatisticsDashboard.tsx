@@ -9,7 +9,7 @@ import {
 } from 'apiClient/v1'
 import fullMoreIcon from 'icons/full-more.svg'
 import strokeNoBookingIcon from 'icons/stroke-no-booking.svg'
-import { ButtonLink } from 'ui-kit'
+import { ButtonLink } from 'ui-kit/Button'
 import { ButtonVariant } from 'ui-kit/Button/types'
 import { SvgIcon } from 'ui-kit/SvgIcon/SvgIcon'
 import { FORMAT_DD_MM_YYYY_HH_mm } from 'utils/date'
@@ -44,7 +44,7 @@ export const StatisticsDashboard = ({ offerer }: StatisticsDashboardProps) => {
   )
 
   return (
-    <section className={styles['section']}>
+    <>
       <div className={styles['header']}>
         <h2 className={styles['title']}>Présence sur le pass Culture</h2>
 
@@ -109,6 +109,6 @@ export const StatisticsDashboard = ({ offerer }: StatisticsDashboardProps) => {
       )}
 
       <OfferStats offerer={offerer} className={styles['offer-stats']} />
-    </section>
+    </>
   )
 }
