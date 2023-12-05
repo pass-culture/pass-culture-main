@@ -34,7 +34,8 @@
 }
 
 .step-button-info {
-  & > svg, &-text {
+  & > svg,
+  &-text {
     display: flex;
     align-self: flex-start;
   }
