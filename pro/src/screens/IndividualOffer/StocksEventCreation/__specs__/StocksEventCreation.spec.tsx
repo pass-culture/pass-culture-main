@@ -104,7 +104,7 @@ describe('StocksEventCreation', () => {
 
   it('should show help section if there are not stocks', async () => {
     await renderStockEventCreation([], {
-      offer: individualOfferFactory({ stocks: [] }),
+      offer: individualOfferFactory(),
     })
 
     expect(screen.getByText('Comment faire ?')).toBeInTheDocument()
@@ -112,7 +112,7 @@ describe('StocksEventCreation', () => {
 
   it('should notify when clicking on Enregistrer et continuer without stock', async () => {
     await renderStockEventCreation([], {
-      offer: individualOfferFactory({ stocks: [] }),
+      offer: individualOfferFactory(),
     })
 
     await userEvent.click(screen.getByText('Enregistrer et continuer'))

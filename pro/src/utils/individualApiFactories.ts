@@ -82,7 +82,6 @@ export const individualOfferFactory = (
     status: OfferStatus.ACTIVE,
     subcategoryId: SubcategoryIdEnum.CINE_PLEIN_AIR,
     venueId: customVenue.id,
-    stocks: stock ? [stock] : [],
     priceCategories: priceCategory ? [priceCategory] : [],
     ...customOffer,
   }

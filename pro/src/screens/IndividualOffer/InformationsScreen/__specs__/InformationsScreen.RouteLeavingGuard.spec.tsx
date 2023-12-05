@@ -158,7 +158,6 @@ describe('screens:IndividualOffer::Informations::creation', () => {
       withdrawalDetails: 'Offer withdrawalDetails',
       withdrawalDelay: 140,
       withdrawalType: WithdrawalTypeEnum.ON_SITE,
-      stocks: [],
       lastProviderName: null,
       lastProvider: null,
       status: OfferStatus.DRAFT,

@@ -9,31 +9,6 @@ import {
 } from 'core/Offers/types'
 import { AccessiblityEnum } from 'core/shared'
 
-export const serializeStockApi = (
-  apiStock: GetOfferStockResponseModel
-): IndividualOfferStock => {
-  // null or undefined -> 'unlimited', 0 -> 0
-  const remainingQuantity = apiStock.remainingQuantity ?? 'unlimited'
-
-  return {
-    beginningDatetime: apiStock.beginningDatetime ?? null,
-    bookingLimitDatetime: apiStock.bookingLimitDatetime ?? null,
-    bookingsQuantity: apiStock.bookingsQuantity,
-    hasActivationCode: apiStock.hasActivationCode,
-    id: apiStock.id,
-    isEventDeletable: apiStock.isEventDeletable,
-    price: apiStock.price,
-    priceCategoryId: apiStock.priceCategoryId,
-    quantity: apiStock.quantity,
-    remainingQuantity: remainingQuantity,
-    activationCodesExpirationDatetime:
-      apiStock.activationCodesExpirationDatetime
-        ? new Date(apiStock.activationCodesExpirationDatetime)
-        : null,
-    activationCodes: [],
-  }
-}
-
 export const serializeOfferApiExtraData = (
   apiOffer: GetIndividualOfferResponseModel
 ) => ({
@@ -112,7 +87,6 @@ export const serializeOfferApi = (
       ...baseAccessibility,
       [AccessiblityEnum.NONE]: !Object.values(baseAccessibility).includes(true),
     },
-    stocks: apiOffer.stocks.map(serializeStockApi),
     lastProviderName: apiOffer.lastProvider?.name || null,
     lastProvider: apiOffer.lastProvider,
     status: apiOffer.status,

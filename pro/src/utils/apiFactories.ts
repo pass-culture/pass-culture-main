@@ -73,10 +73,8 @@ const collectiveStockFactory = (customStock = {}) => {
 
 export const GetIndividualOfferFactory = (
   customOffer = {},
-  customStock = individualGetOfferStockResponseModelFactory() || null,
   customVenue = offerVenueFactory()
 ): GetIndividualOfferResponseModel => {
-  const stocks = customStock === null ? [] : [customStock]
   const currentOfferId = offerId++
 
   return {
@@ -88,7 +86,6 @@ export const GetIndividualOfferFactory = (
     isThing: true,
     id: currentOfferId,
     status: OfferStatus.ACTIVE,
-    stocks,
     venue: customVenue,
     hasBookingLimitDatetimesPassed: false,
     dateCreated: '2020-04-12T19:31:12Z',

@@ -127,7 +127,6 @@ describe('Summary stock section', () => {
         offer: individualOfferFactory({
           status: OfferStatus.SOLD_OUT,
           isEvent: false,
-          stocks: [],
         }),
       }
       renderStockSection(
@@ -263,7 +262,6 @@ describe('Summary stock section', () => {
         offer: individualOfferFactory({
           status: OfferStatus.ACTIVE,
           isEvent: true,
-          stocks: [],
         }),
       }
 
@@ -305,7 +303,6 @@ describe('Summary stock section', () => {
         offer: individualOfferFactory({
           status: OfferStatus.ACTIVE,
           isEvent: true,
-          stocks: [],
         }),
       }
 

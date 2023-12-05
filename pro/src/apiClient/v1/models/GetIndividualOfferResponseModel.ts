@@ -5,7 +5,6 @@
 
 import type { GetOfferLastProviderResponseModel } from './GetOfferLastProviderResponseModel';
 import type { GetOfferMediationResponseModel } from './GetOfferMediationResponseModel';
-import type { GetOfferStockResponseModel } from './GetOfferStockResponseModel';
 import type { GetOfferVenueResponseModel } from './GetOfferVenueResponseModel';
 import type { OfferStatus } from './OfferStatus';
 import type { PriceCategoryResponseModel } from './PriceCategoryResponseModel';
@@ -40,7 +39,6 @@ export type GetIndividualOfferResponseModel = {
   name: string;
   priceCategories?: Array<PriceCategoryResponseModel> | null;
   status: OfferStatus;
-  stocks: Array<GetOfferStockResponseModel>;
   subcategoryId: SubcategoryIdEnum;
   thumbUrl?: string | null;
   url?: string | null;
