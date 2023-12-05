@@ -1,6 +1,16 @@
 @use "styles/variables/_colors.scss" as colors;
+@use "styles/variables/_size.scss" as size;
 @use "styles/mixins/_rem.scss" as rem;
 @use "styles/mixins/_fonts.scss" as fonts;
+
+
+.venue-card {
+  border: rem.torem(1px) solid colors.$grey-medium;
+  border-radius: rem.torem(8px);
+  box-shadow: 0 rem.torem(2px) rem.torem(6px) 0 rgba(colors.$black, 0.15);
+  overflow: hidden;
+  margin-top: rem.torem(16px);
+}
 
 .container {
   align-items: center;
@@ -9,25 +19,59 @@
   justify-content: space-between;
   margin-top: rem.torem(-8px);
   padding-bottom: rem.torem(8px);
+
+  @media (max-width: size.$tablet) {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+    width: 100%;
+    margin: 0.5rem 0;
+  }
+}
+
+.venue-buttons {
+  display: flex;
+  
+  @media (max-width: size.$tablet) { 
+    justify-content: center;
+    width: 100%;
+
+    & > a {
+      width: 100%;
+    }
+  }
 }
 
 .venue-select {
   flex-grow: 1;
+  @media (max-width: size.$tablet) { 
+    width: 100%;
+  }
 }
 
-.separator {
-  background-color: colors.$grey-medium;
-
-  // The horizontal separator can be deleted when WIP_HOME_STATS is removed
-  &.horizontal {
-    height: rem.torem(1px);
-    margin-left: rem.torem(-16px);
-    margin-right: rem.torem(-16px);
+@media (min-width: size.$tablet) {
+  .separator {
+    background-color: colors.$grey-medium;
+  
+    // The horizontal separator can be deleted when WIP_HOME_STATS is removed
+    &.horizontal {
+      height: rem.torem(1px);
+      margin-left: rem.torem(-16px);
+      margin-right: rem.torem(-16px);
+    }
+  
+    &.vertical {
+      align-self: stretch;
+      margin: rem.torem(-24px) rem.torem(24px);
+      width: rem.torem(1px);
+    }
   }
+}
 
-  &.vertical {
-    align-self: stretch;
-    margin: rem.torem(-8px) rem.torem(24px);
-    width: rem.torem(1px);
+.offerer-content {
+  padding: rem.torem(16px) rem.torem(16px) 0;
+
+  @media (max-width: size.$tablet) {
+    padding-top: rem.torem(4px);
   }
 }
