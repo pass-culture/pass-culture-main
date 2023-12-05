@@ -7,6 +7,7 @@ import fullEditIcon from 'icons/full-edit.svg'
 import { ButtonLink } from 'ui-kit'
 import { ButtonVariant } from 'ui-kit/Button/types'
 
+import styles from './ProfileAndSupport.module.scss'
 import Support from './Support'
 
 /**
@@ -77,28 +78,40 @@ const ProfileAndSupport = () => {
             </div>
 
             <div className="h-card-content">
-              <ul className="h-description-list">
-                <li className="h-dl-row">
-                  <span className="h-dl-title">Nom :</span>
-                  <span className="h-dl-description">{user.lastName}</span>
+              <ul className={styles['description-list']}>
+                <li className={styles['description-item']}>
+                  <span className={styles['description-label']}>Nom :</span>
+                  <span className={styles['description-value']}>
+                    {user.lastName}
+                  </span>
                 </li>
-                <li className="h-dl-row">
-                  <span className="h-dl-title">Prénom :</span>
-                  <span className="h-dl-description">{user.firstName}</span>
+                <li className={styles['description-item']}>
+                  <span className={styles['description-label']}>Prénom :</span>
+                  <span className={styles['description-value']}>
+                    {user.firstName}
+                  </span>
                 </li>
-                <li className="h-dl-row">
-                  <span className="h-dl-title">Email :</span>
-                  <span className="h-dl-description">{user.email}</span>
+                <li className={styles['description-item']}>
+                  <span className={styles['description-label']}>Email :</span>
+                  <span className={styles['description-value']}>
+                    {user.email}
+                  </span>
                 </li>
-                <li className="h-dl-row">
-                  <span className="h-dl-title">Téléphone :</span>
-                  <span className="h-dl-description">
+                <li className={styles['description-item']}>
+                  <span className={styles['description-label']}>
+                    Téléphone :
+                  </span>
+                  <span className={styles['description-value']}>
                     {formatPhoneNumber(user.phoneNumber)}
                   </span>
                 </li>
-                <li className="h-dl-row">
-                  <span className="h-dl-title">Mot de passe :</span>
-                  <span className="h-dl-description">***************</span>
+                <li className={styles['description-item']}>
+                  <span className={styles['description-label']}>
+                    Mot de passe :
+                  </span>
+                  <span className={styles['description-value']}>
+                    ***************
+                  </span>
                 </li>
               </ul>
             </div>
