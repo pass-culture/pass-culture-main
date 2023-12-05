@@ -1,7 +1,7 @@
 // react hooks and usages doc : https://reactjs.org/docs/hooks-intro.html
 import React from 'react'
 
-import AppLayout from 'app/AppLayout'
+import { AppLayout } from 'app/AppLayout'
 import SkipLinks from 'components/SkipLinks'
 import logoPassCultureProFullIcon from 'icons/logo-pass-culture-pro-full.svg'
 import { ButtonLink } from 'ui-kit'
@@ -20,6 +20,7 @@ const EmailChangeValidation = ({
   return (
     <>
       <SkipLinks displayMenu={false} />
+
       <div className={styles['email-validation']}>
         <header className={styles['logo-side']}>
           <SvgIcon
@@ -30,12 +31,8 @@ const EmailChangeValidation = ({
             width="135"
           />
         </header>
-        <AppLayout
-          layoutConfig={{
-            fullscreen: true,
-            pageName: 'sign-up',
-          }}
-        >
+
+        <AppLayout fullscreen pageName="sign-up">
           {isSuccess && (
             <section className={styles['content']}>
               <h1>Et voilà !</h1>

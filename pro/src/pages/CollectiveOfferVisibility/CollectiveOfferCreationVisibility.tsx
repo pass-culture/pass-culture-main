@@ -2,6 +2,7 @@ import React, { useEffect, useState } from 'react'
 import { useLocation, useNavigate } from 'react-router-dom'
 
 import { EducationalInstitutionResponseModel } from 'apiClient/v1'
+import { AppLayout } from 'app/AppLayout'
 import CollectiveOfferLayout from 'components/CollectiveOfferLayout'
 import RouteLeavingGuardCollectiveOfferCreation from 'components/RouteLeavingGuardCollectiveOfferCreation'
 import {
@@ -73,25 +74,27 @@ export const CollectiveOfferVisibility = ({
     : DEFAULT_VISIBILITY_FORM_VALUES
 
   return (
-    <CollectiveOfferLayout
-      subTitle={offer?.name}
-      isFromTemplate={isCollectiveOffer(offer) && Boolean(offer.templateId)}
-      isTemplate={isTemplate}
-      isCreation={isCreation}
-      requestId={requestId}
-    >
-      <CollectiveOfferVisibilityScreen
-        mode={Mode.CREATION}
-        patchInstitution={patchEducationalInstitutionAdapter}
-        initialValues={initialValues}
-        onSuccess={onSuccess}
-        institutions={institutions}
-        isLoadingInstitutions={isLoadingInstitutions}
-        offer={offer}
+    <AppLayout>
+      <CollectiveOfferLayout
+        subTitle={offer?.name}
+        isFromTemplate={isCollectiveOffer(offer) && Boolean(offer.templateId)}
+        isTemplate={isTemplate}
+        isCreation={isCreation}
         requestId={requestId}
-      />
-      <RouteLeavingGuardCollectiveOfferCreation />
-    </CollectiveOfferLayout>
+      >
+        <CollectiveOfferVisibilityScreen
+          mode={Mode.CREATION}
+          patchInstitution={patchEducationalInstitutionAdapter}
+          initialValues={initialValues}
+          onSuccess={onSuccess}
+          institutions={institutions}
+          isLoadingInstitutions={isLoadingInstitutions}
+          offer={offer}
+          requestId={requestId}
+        />
+        <RouteLeavingGuardCollectiveOfferCreation />
+      </CollectiveOfferLayout>
+    </AppLayout>
   )
 }
 

@@ -1,7 +1,6 @@
 import React, { ComponentType, ReactNode } from 'react'
 import { Navigate, useLocation } from 'react-router-dom'
 
-import AppLayout from 'app/AppLayout'
 import { RouteConfig } from 'app/AppRouter/routesMap'
 import useCurrentUser from 'hooks/useCurrentUser'
 
@@ -15,14 +14,6 @@ export const RouteWrapper = ({ children, routeMeta }: RouteWrapperProps) => {
   const location = useLocation()
   const fromUrl = encodeURIComponent(`${location.pathname}${location.search}`)
   let jsx: ReactNode = children
-
-  if (!routeMeta?.withoutLayout) {
-    jsx = (
-      <AppLayout layoutConfig={routeMeta && routeMeta.layoutConfig}>
-        {jsx}
-      </AppLayout>
-    )
-  }
 
   if (!routeMeta?.public && currentUser === null) {
     const loginUrl = fromUrl.includes('logout')

@@ -1,7 +1,6 @@
 import { screen, waitForElementToBeRemoved } from '@testing-library/react'
 import React from 'react'
 import { Route, Routes } from 'react-router-dom'
-import * as router from 'react-router-dom'
 
 import { api } from 'apiClient/api'
 import {
@@ -175,7 +174,7 @@ describe('route VenueEdition', () => {
     ).not.toBeChecked()
   })
 
-  it('should not render reimbursement fields when FF bank details is enable and venue has no siret', async () => {
+  it('should not render reimbursement fields when FF bank details is enabled and venue has no siret', async () => {
     vi.spyOn(api, 'getVenue').mockResolvedValueOnce({
       ...venue,
       siret: '11111111111111',
@@ -193,7 +192,9 @@ describe('route VenueEdition', () => {
       name: 'Cinéma des iles',
     })
 
-    expect(screen.queryByText(/Remboursement/)).not.toBeInTheDocument()
+    expect(
+      screen.queryByText(/Barème de remboursement/)
+    ).not.toBeInTheDocument()
   })
 
   it('should return to home when not able to get venue informations', async () => {
@@ -209,15 +210,11 @@ describe('route VenueEdition', () => {
         ''
       )
     )
-    const mockNavigate = vi.fn()
-    vi.spyOn(router, 'useNavigate').mockReturnValue(mockNavigate)
-    // When
     renderVenueEdition(venue.id, offerer.id)
 
     await waitForElementToBeRemoved(screen.getByTestId('spinner'))
-    // Then
     expect(api.getVenue).toHaveBeenCalledTimes(1)
 
-    expect(mockNavigate).toHaveBeenCalledWith('/accueil')
+    expect(await screen.findByText('Home')).toBeInTheDocument()
   })
 })

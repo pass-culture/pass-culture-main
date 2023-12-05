@@ -6,7 +6,6 @@ import { api } from 'apiClient/api'
 import { GetOffererResponseModel } from 'apiClient/v1'
 import { renderWithProviders } from 'utils/renderWithProviders'
 
-import AppLayout from '../../../app/AppLayout'
 import VenueCreation from '../VenueCreation'
 
 const renderVenueCreation = async (offererId: string) => {
@@ -25,15 +24,10 @@ const renderVenueCreation = async (offererId: string) => {
     },
   }
 
-  renderWithProviders(
-    <AppLayout>
-      <VenueCreation />
-    </AppLayout>,
-    {
-      storeOverrides,
-      initialRouterEntries: [`/structures/${offererId}/lieux/creation`],
-    }
-  )
+  renderWithProviders(<VenueCreation />, {
+    storeOverrides,
+    initialRouterEntries: [`/structures/${offererId}/lieux/creation`],
+  })
   await waitFor(() => {
     expect(api.canOffererCreateEducationalOffer).toHaveBeenCalled()
   })

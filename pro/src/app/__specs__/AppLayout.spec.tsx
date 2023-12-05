@@ -3,7 +3,7 @@ import React from 'react'
 
 import { renderWithProviders } from 'utils/renderWithProviders'
 
-import AppLayout, { AppLayoutProps } from '../AppLayout'
+import { AppLayout, AppLayoutProps } from '../AppLayout'
 
 const renderApp = (props: AppLayoutProps, storeOverrides: any, url = '/') =>
   renderWithProviders(

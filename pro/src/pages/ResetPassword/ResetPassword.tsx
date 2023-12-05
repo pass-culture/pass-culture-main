@@ -3,7 +3,7 @@ import React, { useState } from 'react'
 import { useLocation } from 'react-router-dom'
 
 import { api } from 'apiClient/api'
-import AppLayout from 'app/AppLayout'
+import { AppLayout } from 'app/AppLayout'
 import useRedirectLoggedUser from 'hooks/useRedirectLoggedUser'
 import logoPassCultureProFullIcon from 'icons/logo-pass-culture-pro-full.svg'
 import Hero from 'ui-kit/Hero'
@@ -50,12 +50,8 @@ const ResetPassword = (): JSX.Element => {
           width="135"
         />
       </header>
-      <AppLayout
-        layoutConfig={{
-          fullscreen: true,
-          pageName: 'reset-password',
-        }}
-      >
+
+      <AppLayout fullscreen pageName="reset-password">
         <div className={styles['content']}>
           {passwordChanged && !isBadToken && (
             <Hero

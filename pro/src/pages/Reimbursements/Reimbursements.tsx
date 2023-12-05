@@ -3,6 +3,7 @@ import './Reimbursement.scss'
 import React from 'react'
 import { Route, Routes } from 'react-router-dom'
 
+import { AppLayout } from 'app/AppLayout'
 import {
   oldRoutesReimbursements,
   routesReimbursements,
@@ -24,20 +25,22 @@ const Reimbursements = (): JSX.Element => {
     : oldRoutesReimbursements
 
   return (
-    <ReimbursementContextProvider>
-      <div className={styles['reimbursements-container']}>
-        <h1 className={styles['title']}>Remboursements</h1>
-        <ReimbursementsBanners />
-        <div>
-          <ReimbursementsTabs />
-          <Routes>
-            {routes.map(({ path, element }) => (
-              <Route key={path} path={path} element={element} />
-            ))}
-          </Routes>
+    <AppLayout pageName="reimbursements">
+      <ReimbursementContextProvider>
+        <div className={styles['reimbursements-container']}>
+          <h1 className={styles['title']}>Remboursements</h1>
+          <ReimbursementsBanners />
+          <div>
+            <ReimbursementsTabs />
+            <Routes>
+              {routes.map(({ path, element }) => (
+                <Route key={path} path={path} element={element} />
+              ))}
+            </Routes>
+          </div>
         </div>
-      </div>
-    </ReimbursementContextProvider>
+      </ReimbursementContextProvider>
+    </AppLayout>
   )
 }
 

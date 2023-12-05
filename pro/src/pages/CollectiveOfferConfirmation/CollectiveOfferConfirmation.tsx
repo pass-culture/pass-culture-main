@@ -1,5 +1,6 @@
 import React from 'react'
 
+import { AppLayout } from 'app/AppLayout'
 import RouteLeavingGuardCollectiveOfferCreation from 'components/RouteLeavingGuardCollectiveOfferCreation'
 import CollectiveOfferConfirmationScreen from 'screens/CollectiveOfferConfirmation'
 import {
@@ -25,7 +26,7 @@ const CollectiveOfferConfirmation = ({
   }
 
   return (
-    <>
+    <AppLayout>
       <CollectiveOfferConfirmationScreen
         isShowcase={offer.isTemplate}
         offerStatus={offer?.status}
@@ -33,7 +34,7 @@ const CollectiveOfferConfirmation = ({
         institutionDisplayName={getInstitutionDisplayName()}
       />
       <RouteLeavingGuardCollectiveOfferCreation />
-    </>
+    </AppLayout>
   )
 }
 

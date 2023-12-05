@@ -5,6 +5,7 @@ import { useNavigate } from 'react-router-dom'
 import { api } from 'apiClient/api'
 import { isErrorAPIError } from 'apiClient/helpers'
 import { CreateOffererQueryModel } from 'apiClient/v1'
+import { AppLayout } from 'app/AppLayout'
 import FormLayout from 'components/FormLayout/FormLayout'
 import { getSirenDataAdapter } from 'core/Offerers/adapters'
 import useActiveFeature from 'hooks/useActiveFeature'
@@ -69,62 +70,64 @@ const OffererCreation = (): JSX.Element => {
   })
 
   return (
-    <div className={styles['offerer-page']}>
-      <ButtonLink
-        link={{ to: '/accueil', isExternal: false }}
-        variant={ButtonVariant.TERNARY}
-        icon={fullBackIcon}
-        className={styles['offerer-page-go-back-link']}
-      >
-        Accueil
-      </ButtonLink>
-      <Titles title="Structure" />
-      {isEntrepriseApiDisabled ? (
-        <OffererCreationUnavailable />
-      ) : (
-        <FormikProvider value={formik}>
-          <form onSubmit={formik.handleSubmit}>
-            <FormLayout.Row>
-              <SirenInput label="SIREN" onValidSiren={getSirenAPIData} />
-            </FormLayout.Row>
-            <FormLayout.Row>
-              <div className={styles['op-detail-creation-form']}>
-                <span>Siège social : </span>
-                {offerer?.postalCode && (
-                  <span>
-                    {`${offerer?.address} - ${offerer?.postalCode} ${offerer?.city}`}
-                  </span>
-                )}
+    <AppLayout>
+      <div className={styles['offerer-page']}>
+        <ButtonLink
+          link={{ to: '/accueil', isExternal: false }}
+          variant={ButtonVariant.TERNARY}
+          icon={fullBackIcon}
+          className={styles['offerer-page-go-back-link']}
+        >
+          Accueil
+        </ButtonLink>
+        <Titles title="Structure" />
+        {isEntrepriseApiDisabled ? (
+          <OffererCreationUnavailable />
+        ) : (
+          <FormikProvider value={formik}>
+            <form onSubmit={formik.handleSubmit}>
+              <FormLayout.Row>
+                <SirenInput label="SIREN" onValidSiren={getSirenAPIData} />
+              </FormLayout.Row>
+              <FormLayout.Row>
+                <div className={styles['op-detail-creation-form']}>
+                  <span>Siège social : </span>
+                  {offerer?.postalCode && (
+                    <span>
+                      {`${offerer?.address} - ${offerer?.postalCode} ${offerer?.city}`}
+                    </span>
+                  )}
+                </div>
+              </FormLayout.Row>
+              <FormLayout.Row>
+                <div className={styles['op-detail-creation-form']}>
+                  <span>Désignation : </span>
+                  {offerer?.name && <span>{offerer?.name}</span>}
+                </div>
+              </FormLayout.Row>
+              <div className={styles['offerer-form-validation']}>
+                <div>
+                  <ButtonLink
+                    variant={ButtonVariant.SECONDARY}
+                    link={{
+                      to: '/accueil',
+                      isExternal: false,
+                    }}
+                  >
+                    Retour
+                  </ButtonLink>
+                </div>
+                <div>
+                  <SubmitButton variant={ButtonVariant.PRIMARY}>
+                    Créer
+                  </SubmitButton>
+                </div>
               </div>
-            </FormLayout.Row>
-            <FormLayout.Row>
-              <div className={styles['op-detail-creation-form']}>
-                <span>Désignation : </span>
-                {offerer?.name && <span>{offerer?.name}</span>}
-              </div>
-            </FormLayout.Row>
-            <div className={styles['offerer-form-validation']}>
-              <div>
-                <ButtonLink
-                  variant={ButtonVariant.SECONDARY}
-                  link={{
-                    to: '/accueil',
-                    isExternal: false,
-                  }}
-                >
-                  Retour
-                </ButtonLink>
-              </div>
-              <div>
-                <SubmitButton variant={ButtonVariant.PRIMARY}>
-                  Créer
-                </SubmitButton>
-              </div>
-            </div>
-          </form>
-        </FormikProvider>
-      )}
-    </div>
+            </form>
+          </FormikProvider>
+        )}
+      </div>
+    </AppLayout>
   )
 }
 
