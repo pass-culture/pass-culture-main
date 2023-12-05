@@ -81,6 +81,7 @@ class AllOffersByUaiTest:
                     "students": ["Lycée - Seconde"],
                     "offerVenue": {
                         "addressType": "other",
+                        "distance": None,
                         "otherAddress": "1 rue des polissons, Paris 75017",
                         "venueId": None,
                         "name": None,
@@ -191,6 +192,7 @@ class AllOffersByUaiTest:
                     "students": ["Lycée - Seconde"],
                     "offerVenue": {
                         "addressType": "other",
+                        "distance": None,
                         "otherAddress": "1 rue des polissons, Paris 75017",
                         "venueId": None,
                         "name": None,
