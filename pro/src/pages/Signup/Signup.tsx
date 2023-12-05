@@ -1,7 +1,7 @@
 import React from 'react'
 import { Route, Routes } from 'react-router-dom'
 
-import AppLayout from 'app/AppLayout'
+import { AppLayout } from 'app/AppLayout'
 import { routesSignup } from 'app/AppRouter/subroutesSignupMap'
 import SkipLinks from 'components/SkipLinks'
 import useActiveFeature from 'hooks/useActiveFeature'
@@ -18,6 +18,7 @@ const Signup = () => {
   return (
     <>
       <SkipLinks displayMenu={false} />
+
       <div className={styles['sign-up']}>
         <header className={styles['logo-side']}>
           <SvgIcon
@@ -28,12 +29,8 @@ const Signup = () => {
             width="135"
           />
         </header>
-        <AppLayout
-          layoutConfig={{
-            fullscreen: true,
-            pageName: 'sign-up',
-          }}
-        >
+
+        <AppLayout fullscreen pageName="sign-up">
           {isProAccountCreationEnabled ? (
             <Routes>
               {routesSignup.map(({ path, element }) => (

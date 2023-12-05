@@ -3,6 +3,7 @@ import { useDispatch } from 'react-redux'
 import { useNavigate } from 'react-router-dom'
 
 import { api } from 'apiClient/api'
+import { AppLayout } from 'app/AppLayout'
 import { getOffererAdapter } from 'core/Offers/adapters'
 import { DEFAULT_PAGE, DEFAULT_SEARCH_FILTERS } from 'core/Offers/constants'
 import { useQuerySearchFilters } from 'core/Offers/hooks/useQuerySearchFilters'
@@ -158,26 +159,28 @@ const OffersRoute = (): JSX.Element => {
     loadAllVenuesByProUser()
   }, [offerer?.id])
 
-  if (!initialSearchFilters) {
-    return <Spinner />
-  }
-
   return (
-    <OffersScreen
-      audience={Audience.INDIVIDUAL}
-      categories={categories}
-      currentPageNumber={currentPageNumber}
-      currentUser={currentUser}
-      initialSearchFilters={initialSearchFilters}
-      isLoading={isLoading}
-      loadAndUpdateOffers={loadAndUpdateOffers}
-      offerer={offerer}
-      offers={offers}
-      redirectWithUrlFilters={redirectWithUrlFilters}
-      setOfferer={setOfferer}
-      urlSearchFilters={urlSearchFilters}
-      venues={venues}
-    />
+    <AppLayout>
+      {!initialSearchFilters ? (
+        <Spinner />
+      ) : (
+        <OffersScreen
+          audience={Audience.INDIVIDUAL}
+          categories={categories}
+          currentPageNumber={currentPageNumber}
+          currentUser={currentUser}
+          initialSearchFilters={initialSearchFilters}
+          isLoading={isLoading}
+          loadAndUpdateOffers={loadAndUpdateOffers}
+          offerer={offerer}
+          offers={offers}
+          redirectWithUrlFilters={redirectWithUrlFilters}
+          setOfferer={setOfferer}
+          urlSearchFilters={urlSearchFilters}
+          venues={venues}
+        />
+      )}
+    </AppLayout>
   )
 }
 

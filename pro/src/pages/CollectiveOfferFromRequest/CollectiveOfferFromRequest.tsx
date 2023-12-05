@@ -2,6 +2,7 @@ import React, { useEffect, useState } from 'react'
 import { useNavigate, useParams } from 'react-router-dom'
 
 import { GetCollectiveOfferRequestResponseModel } from 'apiClient/v1'
+import { AppLayout } from 'app/AppLayout'
 import ActionsBarSticky from 'components/ActionsBarSticky'
 import { SummaryLayout } from 'components/SummaryLayout'
 import { Events } from 'core/FirebaseEvents/constants'
@@ -89,91 +90,93 @@ const CollectiveOfferFromRequest = (): JSX.Element => {
     fetchData()
   }, [])
 
-  if (isLoading) {
-    return <Spinner />
-  }
-
   return (
-    <>
-      <div className={styles['eac-section']}>
-        <Title level={1}>Récapitulatif de la demande</Title>
-      </div>
-      <div className={styles['eac-section']}>
-        Vous avez reçu une demande de création d’offres de la part d’un
-        établissement scolaire. Vous pouvez créer une offre à partir des
-        informations saisies par l’enseignant. Toutes les informations sont
-        modifiables.
-        <br /> L’offre sera visible par l’enseignant sur Adage.
-      </div>
-      <SummaryLayout.Section title="Détails de la demande">
-        <div className={styles['eac-section']}>
-          <SummaryLayout.Row
-            title="Demande reçue le"
-            description={
-              informations?.dateCreated
-                ? getDateToFrenchText(informations?.dateCreated)
-                : '-'
-            }
-          />
-          <SummaryLayout.Row
-            title="Offre concernée"
-            description={offerTemplate?.name}
-          />
-        </div>
-        <div className={styles['eac-section']}>
-          <SummaryLayout.Row
-            title="Etablissement scolaire"
-            description={
-              <div>
-                {`${informations?.institution.institutionType} ${informations?.institution.name}`.trim()}
-                <br />
-                {`${informations?.institution.postalCode} ${informations?.institution.city}`}
-              </div>
-            }
-          />
-          <SummaryLayout.Row
-            title="Prénom et nom de l’enseignant"
-            description={`${informations?.redactor.firstName} ${informations?.redactor.lastName} `}
-          />
-          <SummaryLayout.Row
-            title="Téléphone"
-            description={informations?.phoneNumber ?? '-'}
-          />
-          <SummaryLayout.Row
-            title="Email"
-            description={informations?.redactor.email}
-          />
-        </div>
+    <AppLayout>
+      {isLoading ? (
+        <Spinner />
+      ) : (
+        <>
+          <div className={styles['eac-section']}>
+            <Title level={1}>Récapitulatif de la demande</Title>
+          </div>
+          <div className={styles['eac-section']}>
+            Vous avez reçu une demande de création d’offres de la part d’un
+            établissement scolaire. Vous pouvez créer une offre à partir des
+            informations saisies par l’enseignant. Toutes les informations sont
+            modifiables.
+            <br /> L’offre sera visible par l’enseignant sur Adage.
+          </div>
+          <SummaryLayout.Section title="Détails de la demande">
+            <div className={styles['eac-section']}>
+              <SummaryLayout.Row
+                title="Demande reçue le"
+                description={
+                  informations?.dateCreated
+                    ? getDateToFrenchText(informations?.dateCreated)
+                    : '-'
+                }
+              />
+              <SummaryLayout.Row
+                title="Offre concernée"
+                description={offerTemplate?.name}
+              />
+            </div>
+            <div className={styles['eac-section']}>
+              <SummaryLayout.Row
+                title="Etablissement scolaire"
+                description={
+                  <div>
+                    {`${informations?.institution.institutionType} ${informations?.institution.name}`.trim()}
+                    <br />
+                    {`${informations?.institution.postalCode} ${informations?.institution.city}`}
+                  </div>
+                }
+              />
+              <SummaryLayout.Row
+                title="Prénom et nom de l’enseignant"
+                description={`${informations?.redactor.firstName} ${informations?.redactor.lastName} `}
+              />
+              <SummaryLayout.Row
+                title="Téléphone"
+                description={informations?.phoneNumber ?? '-'}
+              />
+              <SummaryLayout.Row
+                title="Email"
+                description={informations?.redactor.email}
+              />
+            </div>
 
-        <SummaryLayout.Row
-          title="Nombre d'élèves"
-          description={informations?.totalStudents ?? '-'}
-        />
-        <SummaryLayout.Row
-          title="Nombre d'accompagnateurs"
-          description={informations?.totalTeachers ?? '-'}
-        />
-        <SummaryLayout.Row
-          title="Date souhaitée"
-          description={
-            informations?.requestedDate
-              ? getDateToFrenchText(informations?.requestedDate)
-              : '-'
-          }
-        />
-        <SummaryLayout.Row
-          title="Descriptif de la demande"
-          description={informations?.comment}
-        />
-      </SummaryLayout.Section>
-      <ActionsBarSticky>
-        <ActionsBarSticky.Right>
-          <Button onClick={handleButtonClick}>
-            Créer l’offre pour l’enseignant
-          </Button>
-        </ActionsBarSticky.Right>
-      </ActionsBarSticky>
-    </>
+            <SummaryLayout.Row
+              title="Nombre d'élèves"
+              description={informations?.totalStudents ?? '-'}
+            />
+            <SummaryLayout.Row
+              title="Nombre d'accompagnateurs"
+              description={informations?.totalTeachers ?? '-'}
+            />
+            <SummaryLayout.Row
+              title="Date souhaitée"
+              description={
+                informations?.requestedDate
+                  ? getDateToFrenchText(informations?.requestedDate)
+                  : '-'
+              }
+            />
+            <SummaryLayout.Row
+              title="Descriptif de la demande"
+              description={informations?.comment}
+            />
+          </SummaryLayout.Section>
+          <ActionsBarSticky>
+            <ActionsBarSticky.Right>
+              <Button onClick={handleButtonClick}>
+                Créer l’offre pour l’enseignant
+              </Button>
+            </ActionsBarSticky.Right>
+          </ActionsBarSticky>
+        </>
+      )}
+    </AppLayout>
   )
 }
 

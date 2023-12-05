@@ -5,7 +5,7 @@ import { useSearchParams } from 'react-router-dom'
 
 import { api } from 'apiClient/api'
 import { HTTP_STATUS, isErrorAPIError } from 'apiClient/helpers'
-import AppLayout from 'app/AppLayout'
+import { AppLayout } from 'app/AppLayout'
 import SkipLinks from 'components/SkipLinks'
 import useInitReCaptcha from 'hooks/useInitReCaptcha'
 import useNotification from 'hooks/useNotification'
@@ -97,6 +97,7 @@ const SignIn = (): JSX.Element => {
   return (
     <>
       <SkipLinks displayMenu={false} />
+
       <div className={styles['sign-in']}>
         <header className={styles['logo-side']}>
           <SvgIcon
@@ -107,12 +108,8 @@ const SignIn = (): JSX.Element => {
             width="135"
           />
         </header>
-        <AppLayout
-          layoutConfig={{
-            fullscreen: true,
-            pageName: 'sign-in',
-          }}
-        >
+
+        <AppLayout fullscreen pageName="sign-in">
           <section className={styles['content']}>
             <h1>Bienvenue sur l’espace dédié aux acteurs culturels</h1>
             <div className={styles['mandatory']}>

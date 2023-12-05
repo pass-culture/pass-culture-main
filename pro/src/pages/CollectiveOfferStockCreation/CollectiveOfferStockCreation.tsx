@@ -2,6 +2,7 @@ import React, { useEffect, useState } from 'react'
 import { useLocation, useNavigate } from 'react-router-dom'
 
 import { GetCollectiveOfferRequestResponseModel } from 'apiClient/v1/models/GetCollectiveOfferRequestResponseModel'
+import { AppLayout } from 'app/AppLayout'
 import CollectiveOfferLayout from 'components/CollectiveOfferLayout'
 import RouteLeavingGuardCollectiveOfferCreation from 'components/RouteLeavingGuardCollectiveOfferCreation'
 import {
@@ -153,22 +154,24 @@ export const CollectiveOfferStockCreation = ({
   }
 
   return (
-    <CollectiveOfferLayout
-      subTitle={offer?.name}
-      isFromTemplate={isCollectiveOffer(offer) && Boolean(offer.templateId)}
-      isTemplate={isTemplate}
-      isCreation={isCreation}
-      requestId={requestId}
-    >
-      <OfferEducationalStockScreen
-        initialValues={initialValues}
-        mode={Mode.CREATION}
-        offer={offer}
-        onSubmit={handleSubmitStock}
+    <AppLayout>
+      <CollectiveOfferLayout
+        subTitle={offer?.name}
+        isFromTemplate={isCollectiveOffer(offer) && Boolean(offer.templateId)}
+        isTemplate={isTemplate}
+        isCreation={isCreation}
         requestId={requestId}
-      />
-      <RouteLeavingGuardCollectiveOfferCreation />
-    </CollectiveOfferLayout>
+      >
+        <OfferEducationalStockScreen
+          initialValues={initialValues}
+          mode={Mode.CREATION}
+          offer={offer}
+          onSubmit={handleSubmitStock}
+          requestId={requestId}
+        />
+        <RouteLeavingGuardCollectiveOfferCreation />
+      </CollectiveOfferLayout>
+    </AppLayout>
   )
 }
 

@@ -1,6 +1,7 @@
 import React from 'react'
 import { useLocation, Route, Routes, useParams } from 'react-router-dom'
 
+import { AppLayout } from 'app/AppLayout'
 import { withRouteWrapper } from 'app/AppRouter/RouteWrapper'
 import { routesIndividualOfferWizard } from 'app/AppRouter/subroutesIndividualOfferWizardMap'
 import { IndividualOfferContextProvider } from 'context/IndividualOfferContext'
@@ -15,18 +16,20 @@ export const IndividualOfferWizard = () => {
     parse(search)
 
   return (
-    <IndividualOfferContextProvider
-      isUserAdmin={currentUser.isAdmin}
-      offerId={offerId === 'creation' ? undefined : offerId}
-      queryOffererId={offererId}
-      querySubcategoryId={querySubcategoryId}
-    >
-      <Routes>
-        {routesIndividualOfferWizard.map(({ path, element }) => (
-          <Route key={path} path={path} element={element} />
-        ))}
-      </Routes>
-    </IndividualOfferContextProvider>
+    <AppLayout>
+      <IndividualOfferContextProvider
+        isUserAdmin={currentUser.isAdmin}
+        offerId={offerId === 'creation' ? undefined : offerId}
+        queryOffererId={offererId}
+        querySubcategoryId={querySubcategoryId}
+      >
+        <Routes>
+          {routesIndividualOfferWizard.map(({ path, element }) => (
+            <Route key={path} path={path} element={element} />
+          ))}
+        </Routes>
+      </IndividualOfferContextProvider>
+    </AppLayout>
   )
 }
 

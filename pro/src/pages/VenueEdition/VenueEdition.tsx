@@ -1,7 +1,8 @@
 import React from 'react'
-import { useNavigate, useParams } from 'react-router-dom'
+import { Navigate, useParams } from 'react-router-dom'
 
 import { OfferStatus } from 'apiClient/v1'
+import { AppLayout } from 'app/AppLayout'
 import { setInitialFormValues } from 'components/VenueForm'
 import useGetOfferer from 'core/Offerers/getOffererAdapter/useGetOfferer'
 import { DEFAULT_SEARCH_FILTERS } from 'core/Offers/constants'
@@ -24,7 +25,6 @@ import { offerHasBookingQuantity } from './utils'
 
 const VenueEdition = (): JSX.Element | null => {
   const homePath = '/accueil'
-  const navigate = useNavigate()
   const { offererId, venueId } = useParams<{
     offererId: string
     venueId: string
@@ -75,18 +75,6 @@ const VenueEdition = (): JSX.Element | null => {
   const hasBookingQuantity = offerHasBookingQuantity(venueOffers?.offers)
 
   if (
-    isLoadingVenue ||
-    isLoadingVenueTypes ||
-    isLoadingVenueLabels ||
-    isLoadingProviders ||
-    isLoadingVenueProviders ||
-    isLoadingOfferer ||
-    isLoadingVenueOffers
-  ) {
-    return <Spinner />
-  }
-
-  if (
     errorOfferer ||
     errorVenue ||
     errorVenueTypes ||
@@ -101,27 +89,37 @@ const VenueEdition = (): JSX.Element | null => {
       errorVenueLabels,
     ].find((error) => error !== undefined)
     if (loadingError !== undefined) {
-      navigate(homePath)
       notify.error(loadingError.message)
-      return null
+      return <Navigate to={homePath} />
     }
     /* istanbul ignore next: Never */
     return null
   }
 
-  const initialValues = setInitialFormValues(venue)
   return (
-    <VenueFormScreen
-      initialValues={initialValues}
-      isCreatingVenue={false}
-      offerer={offerer}
-      venueTypes={venueTypes}
-      venueLabels={venueLabels}
-      providers={providers}
-      venue={venue}
-      venueProviders={venueProviders}
-      hasBookingQuantity={venue?.id ? hasBookingQuantity : false}
-    />
+    <AppLayout>
+      {isLoadingVenue ||
+      isLoadingVenueTypes ||
+      isLoadingVenueLabels ||
+      isLoadingProviders ||
+      isLoadingVenueProviders ||
+      isLoadingOfferer ||
+      isLoadingVenueOffers ? (
+        <Spinner />
+      ) : (
+        <VenueFormScreen
+          initialValues={setInitialFormValues(venue)}
+          isCreatingVenue={false}
+          offerer={offerer}
+          venueTypes={venueTypes}
+          venueLabels={venueLabels}
+          providers={providers}
+          venue={venue}
+          venueProviders={venueProviders}
+          hasBookingQuantity={venue?.id ? hasBookingQuantity : false}
+        />
+      )}
+    </AppLayout>
   )
 }
 

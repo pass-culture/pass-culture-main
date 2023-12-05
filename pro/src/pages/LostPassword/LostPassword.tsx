@@ -2,7 +2,7 @@ import { Formik } from 'formik'
 import React, { useState } from 'react'
 
 import { api } from 'apiClient/api'
-import AppLayout from 'app/AppLayout'
+import { AppLayout } from 'app/AppLayout'
 import SkipLinks from 'components/SkipLinks'
 import useInitReCaptcha from 'hooks/useInitReCaptcha'
 import useNotification from 'hooks/useNotification'
@@ -40,6 +40,7 @@ const LostPassword = (): JSX.Element => {
   return (
     <>
       <SkipLinks displayMenu={false} />
+
       <div className={styles['lost-password']}>
         <header className={styles['logo-side']}>
           <SvgIcon
@@ -50,12 +51,8 @@ const LostPassword = (): JSX.Element => {
             width="135"
           />
         </header>
-        <AppLayout
-          layoutConfig={{
-            fullscreen: true,
-            pageName: 'lost-password',
-          }}
-        >
+
+        <AppLayout fullscreen pageName="lost-password">
           <div className={styles['content']}>
             {mailSent ? (
               <Hero

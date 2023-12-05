@@ -1,5 +1,6 @@
 import React from 'react'
 
+import { AppLayout } from 'app/AppLayout'
 import useCurrentUser from 'hooks/useCurrentUser'
 import { UserProfile as UserProfileScreen } from 'screens/UserProfile'
 
@@ -13,11 +14,13 @@ const Profile = (): JSX.Element => {
   const { currentUser } = useCurrentUser()
 
   return (
-    <UserProfileScreen
-      userIdentityInitialValues={serializeUserIdentity(currentUser)}
-      userPhoneInitialValues={serializeUserPhone(currentUser)}
-      userEmailInitialValues={serializeUserEmail(currentUser)}
-    />
+    <AppLayout>
+      <UserProfileScreen
+        userIdentityInitialValues={serializeUserIdentity(currentUser)}
+        userPhoneInitialValues={serializeUserPhone(currentUser)}
+        userEmailInitialValues={serializeUserEmail(currentUser)}
+      />
+    </AppLayout>
   )
 }
 

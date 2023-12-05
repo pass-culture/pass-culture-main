@@ -39,12 +39,12 @@ describe('AppRouter', () => {
                     <Link to={{ pathname: '/offers' }}>Go to private page</Link>
                   </p>
                 ),
-                meta: { public: true, withoutLayout: true },
+                meta: { public: true },
               },
               {
                 path: '/connexion',
                 element: <p>Login page</p>,
-                meta: { public: true, withoutLayout: true },
+                meta: { public: true },
               },
               { path: '/offers', element: <p>Offers page</p> },
             ]}

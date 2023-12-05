@@ -2,6 +2,7 @@ import React, { useEffect, useState } from 'react'
 import { useParams } from 'react-router-dom'
 
 import { GetCollectiveVenueResponseModel } from 'apiClient/v1'
+import { AppLayout } from 'app/AppLayout'
 import MandatoryInfo from 'components/FormLayout/FormLayoutMandatoryInfo'
 import {
   EducationalCategories,
@@ -125,7 +126,7 @@ const CollectiveDataEdition = (): JSX.Element | null => {
     return null
   }
   return (
-    <div>
+    <AppLayout>
       <ButtonLink
         link={{
           to: `/structures/${offererId}/lieux/${venueId}#venue-collective-data`,
@@ -162,7 +163,7 @@ const CollectiveDataEdition = (): JSX.Element | null => {
           categories={categories}
         />
       )}
-    </div>
+    </AppLayout>
   )
 }
 

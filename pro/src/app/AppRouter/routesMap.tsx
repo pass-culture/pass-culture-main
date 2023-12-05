@@ -40,15 +40,8 @@ import { VenueEdition } from 'pages/VenueEdition'
 import CollectiveOfferSelectionDuplication from 'screens/CollectiveOfferSelectionDuplication'
 import { UNAVAILABLE_ERROR_PAGE } from 'utils/routes'
 
-export interface LayoutConfig {
-  pageName?: string
-  fullscreen?: boolean
-}
-
 interface RouteMeta {
   public?: boolean
-  layoutConfig?: LayoutConfig
-  withoutLayout?: boolean
 }
 
 export interface RouteConfig {
@@ -70,14 +63,12 @@ const routes: RouteConfig[] = [
   {
     element: <RedirectToConnexionComponent />,
     path: '/',
-    meta: { withoutLayout: true },
   },
   {
     element: <AdageIframe />,
     path: '/adage-iframe/*',
     meta: {
       public: true,
-      withoutLayout: true,
     },
   },
   {
@@ -86,14 +77,12 @@ const routes: RouteConfig[] = [
     title: 'Créer un compte',
     meta: {
       public: true,
-      withoutLayout: true,
     },
   },
   {
     element: <CsvTable />,
     path: '/remboursements-details',
     title: 'Remboursements',
-    meta: { withoutLayout: true },
   },
   {
     element: <Unavailable />,
@@ -101,7 +90,6 @@ const routes: RouteConfig[] = [
     title: 'Page indisponible',
     meta: {
       public: true,
-      withoutLayout: true,
     },
   },
   {
@@ -130,20 +118,13 @@ const routes: RouteConfig[] = [
     title: 'Se connecter',
     meta: {
       public: true,
-      withoutLayout: true,
     },
   },
   {
     element: <EmailChangeValidation />,
     path: '/email_validation',
     title: 'Valider l’adresse email',
-    meta: {
-      public: true,
-      layoutConfig: {
-        fullscreen: true,
-        pageName: 'sign-in',
-      },
-    },
+    meta: { public: true },
   },
   {
     element: <OffererCreation />,
@@ -269,19 +250,13 @@ const routes: RouteConfig[] = [
     element: <ResetPassword />,
     path: '/mot-de-passe-perdu',
     title: 'Définir un nouveau mot de passe',
-    meta: {
-      public: true,
-      withoutLayout: true,
-    },
+    meta: { public: true },
   },
   {
     element: <LostPassword />,
     path: '/demande-mot-de-passe',
     title: 'Demander un nouveau mot de passe',
-    meta: {
-      public: true,
-      withoutLayout: true,
-    },
+    meta: { public: true },
   },
   {
     path: '/offre/individuelle/:offerId/*',
@@ -292,11 +267,6 @@ const routes: RouteConfig[] = [
     element: <Reimbursements />,
     path: '/remboursements/*',
     title: 'Remboursements',
-    meta: {
-      layoutConfig: {
-        pageName: 'reimbursements',
-      },
-    },
   },
   {
     element: <UserProfile />,
@@ -313,7 +283,6 @@ const routes: RouteConfig[] = [
     element: <SignupJourneyRoutes />,
     path: '/parcours-inscription/*',
     title: 'Parcours de souscription',
-    meta: { withoutLayout: true },
   },
 ]
 

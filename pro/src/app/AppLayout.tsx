@@ -5,59 +5,49 @@ import DomainNameBanner from 'components/DomainNameBanner'
 import Header from 'components/Header/Header'
 import SkipLinks from 'components/SkipLinks'
 
-import { LayoutConfig } from './AppRouter/routesMap'
-
 export interface AppLayoutProps {
   children?: React.ReactNode
-  layoutConfig?: LayoutConfig
+  pageName?: string
+  fullscreen?: boolean
   className?: string
 }
 
-const AppLayout = ({ children, layoutConfig, className }: AppLayoutProps) => {
-  const defaultConfig: LayoutConfig = {
-    fullscreen: false,
-    pageName: 'Accueil',
-  }
+export const AppLayout = ({
+  children,
+  className,
+  pageName = 'Accueil',
+  fullscreen = false,
+}: AppLayoutProps) => (
+  <>
+    {!fullscreen && (
+      <>
+        <SkipLinks />
+        <Header />
+      </>
+    )}
 
-  const { fullscreen, pageName } = {
-    ...defaultConfig,
-    ...layoutConfig,
-  }
-
-  return (
-    <>
-      {!fullscreen && (
-        <>
-          <SkipLinks />
-          <Header />
-        </>
+    <main
+      id="content"
+      className={classnames(
+        {
+          page: true,
+          [`${pageName}-page`]: true,
+          container: !fullscreen,
+          fullscreen,
+        },
+        className
       )}
-
-      <main
-        id="content"
-        className={classnames(
-          {
-            page: true,
-            [`${pageName}-page`]: true,
-            container: !fullscreen,
-            fullscreen,
-          },
-          className
-        )}
-      >
-        {fullscreen ? (
-          children
-        ) : (
-          <div className="page-content">
-            <div className={classnames('after-notification-content')}>
-              <DomainNameBanner />
-              {children}
-            </div>
+    >
+      {fullscreen ? (
+        children
+      ) : (
+        <div className="page-content">
+          <div className={classnames('after-notification-content')}>
+            <DomainNameBanner />
+            {children}
           </div>
-        )}
-      </main>
-    </>
-  )
-}
-
-export default AppLayout
+        </div>
+      )}
+    </main>
+  </>
+)
