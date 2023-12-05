@@ -29,29 +29,6 @@
     }
   }
 
-  .h-card-title-button {
-    overflow: hidden;
-    cursor: pointer;
-    background: none;
-    border: none;
-    text-align: left;
-    word-break: break-all;
-
-    .h-card-title-ico {
-      flex-shrink: 0;
-      margin-left: 0;
-      margin-right: rem.torem(8px);
-      height: rem.torem(12px);
-      vertical-align: middle;
-      width: rem.torem(12px);
-    }
-
-    .align-baseline {
-      display: flex;
-      align-self: baseline;
-    }
-  }
-
   .needs-payment-icon {
     display: flex;
     margin-left: rem.torem(10px);
