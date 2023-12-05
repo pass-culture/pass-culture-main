@@ -16,7 +16,7 @@ interface Notification {
   duration?: number
 }
 
-export interface NotificationToasterProps {
+interface NotificationToasterProps {
   notification: Notification
   isVisible: boolean
   isStickyBarOpen: boolean
