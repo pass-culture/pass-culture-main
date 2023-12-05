@@ -67,49 +67,23 @@
     }
   }
 
-  .h-section {
-    margin-top: rem.torem(32px);
+  .h-section-row {
+    display: flex;
+    flex-flow: row wrap;
+    justify-content: space-between;
+    gap: rem.torem(
+      24px
+    ); // in case it's inside a section-row with multiple cards
 
-    &:first-child {
-      margin-top: 0;
+    .h-card {
+      flex: 1 1;
+      min-width: rem.torem(236px);
     }
+  }
 
-    .h-section-title {
-      @include fonts.title3;
-    }
-
-    > .h-card,
-    > .h-section {
-      margin-top: rem.torem(16px); // in case it's just after section title
-
-      &:first-child {
-        margin-top: 0;
-      }
-    }
-
-    .h-section-row {
-      display: flex;
-      flex-flow: row wrap;
-      justify-content: space-between;
-      margin-top: rem.torem(16px);
-      gap: rem.torem(
-        24px
-      ); // in case it's inside a section-row with multiple cards
-
-      &:first-child {
-        margin-top: 0;
-      }
-
-      .h-card {
-        flex: 1 1;
-        min-width: rem.torem(236px);
-      }
-    }
-
-    .newsletter {
-      position: relative;
-      margin-top: rem.torem(16px);
-    }
+  .newsletter {
+    position: relative;
+    margin-top: rem.torem(16px);
   }
 
   .venue-banner,
@@ -145,8 +119,6 @@
   }
 
   .h-venue-list {
-    margin-top: rem.torem(16px);
-
     .loading-spinner {
       img {
         margin-bottom: 0;

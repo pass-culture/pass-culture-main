@@ -19,6 +19,7 @@ import { sortByLabel } from 'utils/strings'
 
 import OffererCreationLinks from './OffererCreationLinks'
 import OffererDetails from './OffererDetails'
+import styles from './Offerers.module.scss'
 import VenueCreationLinks from './VenueCreationLinks'
 
 const CREATE_OFFERER_SELECT_ID = 'creation'
@@ -158,7 +159,7 @@ const Offerers = ({
             </RedirectDialog>
           )}
 
-          <h2 className="h-section-title">Structures et lieux</h2>
+          <h2 className={styles['title']}>Structures et lieux</h2>
 
           <OffererDetails
             handleChangeOfferer={handleChangeOfferer}
