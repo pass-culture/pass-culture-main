@@ -3,28 +3,6 @@
 @use "styles/mixins/_fonts.scss" as fonts;
 
 .homepage {
-  .h-description-list {
-    margin-top: rem.torem(16px);
-
-    .h-dl-row {
-      display: flex;
-      flex-direction: row;
-      margin-top: rem.torem(8px);
-    }
-
-    .h-dl-title {
-      color: colors.$grey-dark;
-      flex-shrink: 0;
-    }
-
-    .h-dl-description {
-      margin-left: rem.torem(8px);
-      overflow: hidden;
-      text-overflow: ellipsis;
-      white-space: nowrap;
-    }
-  }
-
   .h-card {
     border: rem.torem(1px) solid colors.$grey-medium;
     border-radius: rem.torem(8px);
