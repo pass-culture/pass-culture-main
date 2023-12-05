@@ -267,8 +267,7 @@ def _create_or_update_ean_offers(serialized_products_stocks: dict, venue_id: int
                 created_offers.append(created_offer)
 
             except (offers_exceptions.OfferCreationBaseException, offers_exceptions.OfferEditionBaseException) as exc:
-                logger.exception("Error while creating offer by ean", extra={"exc": exc})
-                continue
+                logger.info("Error while creating offer by ean", extra={"ean": ean, "venue_id": venue_id, "exc": exc})
 
         db.session.bulk_save_objects(created_offers)
 
@@ -288,7 +287,7 @@ def _create_or_update_ean_offers(serialized_products_stocks: dict, venue_id: int
                     creating_provider=provider,
                 )
             except (offers_exceptions.OfferCreationBaseException, offers_exceptions.OfferEditionBaseException) as exc:
-                logger.exception("Error while creating offer by ean", extra={"exc": exc})
+                logger.info("Error while creating offer by ean", extra={"ean": ean, "venue_id": venue_id, "exc": exc})
 
     for offer in offers_to_update:
         try:
@@ -313,8 +312,8 @@ def _create_or_update_ean_offers(serialized_products_stocks: dict, venue_id: int
             )
             offers_to_index.append(offer_to_update_by_ean[ean].id)
         except (offers_exceptions.OfferCreationBaseException, offers_exceptions.OfferEditionBaseException) as exc:
-            logger.exception("Error while creating offer by ean", extra={"exc": exc})
-            continue
+            logger.info("Error while creating offer by ean", extra={"exc": exc})
+
     db.session.commit()
     search.async_index_offer_ids(
         offers_to_index,
