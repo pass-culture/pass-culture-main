@@ -131,7 +131,7 @@ const Venue = ({
             <h3 className="h-card-title">
               {shouldShowVenueOfferSteps ? (
                 <button
-                  className="h-card-title h-card-title-button"
+                  className={cn('h-card-title', styles['toggle-wrapper'])}
                   type="button"
                   onClick={() => {
                     setIsToggleOpen((prev) => !prev)
@@ -145,21 +145,21 @@ const Venue = ({
                     alt={`${
                       isToggleOpen ? 'Masquer' : 'Afficher'
                     } les statistiques`}
-                    className="h-card-title-ico align-baseline"
+                    className={styles['toggle-icon']}
                     viewBox="0 0 16 16"
                     src={
                       isToggleOpen ? fullDisclosureOpen : fullDisclosureClose
                     }
                   />
-                  <span className="align-baseline">{publicName || name}</span>
+                  <span>{publicName || name}</span>
                 </button>
               ) : (
-                <div className="h-card-title h-card-title-button">
-                  <span className="align-baseline">{publicName || name}</span>
+                <div className={cn('h-card-title', styles['toggle-wrapper'])}>
+                  {publicName || name}
                 </div>
               )}
 
-              {shouldShowVenueOfferSteps && !isVirtual && (
+              {true && (
                 <Button
                   icon={fullErrorIcon}
                   className="needs-payment-icon"
