@@ -47,6 +47,7 @@ EXPECTED_RESULT_V4 = {
     "error_annotation_id": "InterestingId",
     "error_annotation_value": "",
     "venue_url_annotation_id": "AnotherInterestingId",
+    "venue_url_annotation_value": "",
     "dossier_id": "Q2zzbXAtNzgyODAw",
 }
 
@@ -164,7 +165,7 @@ class ParseRawBankInfoDataTest:
             ],
         }
         if procedure_version == 4:
-            input_data["annotations"].append({"label": "URL du lieu", "id": "AnotherInterestingId"})
+            input_data["annotations"].append({"label": "URL du lieu", "id": "AnotherInterestingId", "stringValue": ""})
 
         result = parse_raw_bank_info_data(input_data, procedure_version)
 

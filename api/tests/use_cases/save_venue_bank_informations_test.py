@@ -669,6 +669,37 @@ class DSV4InOldBankInformationsJourneyTest:
         assert not finance_models.BankAccount.query.count()
         assert not offerers_models.VenueBankAccountLink.query.count()
 
+    def test_should_not_rewrite_url_venue_if_exists(
+        self, mock_archive_dossier, mock_update_text_annotation, mock_dms_graphql_client
+    ):
+        venue = offerers_factories.VenueFactory(pricing_point="self", dmsToken=self.dms_token)
+        venue_url = build_pc_pro_venue_link(venue)
+        mock_dms_graphql_client.return_value = dms_creators.get_bank_info_response_procedure_v4_as_batch(
+            state=GraphQLApplicationStates.accepted.value,
+            annotations=[
+                {
+                    "id": "Q2hhbXAtOTE1NDg5",
+                    "label": "Erreur traitement pass Culture",
+                    "stringValue": "Dossier successfully imported, Quelque chose ne va pas",
+                    "value": "Dossier successfully imported",
+                },
+                {"id": "Q2hhbXAtMjc1NzMyOQ==", "label": "URL du lieu", "stringValue": venue_url, "value": None},
+            ],
+        )
+
+        update_ds_applications_for_procedure(settings.DMS_VENUE_PROCEDURE_ID_V4, since=None)
+
+        bank_information = finance_models.BankInformation.query.one()
+        assert bank_information.venue == venue
+        assert bank_information.bic == "SOGEFRPP"
+        assert bank_information.iban == "FR7630007000111234567890144"
+        assert bank_information.status == finance_models.BankInformationStatus.ACCEPTED
+        mock_archive_dossier.assert_called_once_with(self.b64_encoded_application_id)
+        mock_update_text_annotation.assert_not_called()
+        # New journey is not active, should not create BankAccount nor links
+        assert not finance_models.BankAccount.query.count()
+        assert not offerers_models.VenueBankAccountLink.query.count()
+
 
 @patch("pcapi.connectors.dms.api.DMSGraphQLClient.execute_query")
 @patch("pcapi.use_cases.save_venue_bank_informations.update_demarches_simplifiees_text_annotations")
