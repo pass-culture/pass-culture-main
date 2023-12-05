@@ -20,15 +20,15 @@ class GetClassroomPlaylistTest:
         stocks = educational_factories.CollectiveStockFactory.create_batch(2)
         offers = sorted([stock.collectiveOffer for stock in stocks], key=lambda o: o.id)
 
-        expected_distance = 10
+        expected_distance = 10.0
 
         iframe_client = _get_iframe_client(client)
 
         mock_path = "pcapi.connectors.big_query.TestingBackend.run_query"
         with patch(mock_path) as mock_run_query:
             mock_run_query.return_value = [
-                {"offer_id": offers[0].id, "distance_in_km": expected_distance},
-                {"offer_id": offers[1].id, "distance_in_km": expected_distance},
+                {"offer_id": str(offers[0].id), "distance_in_km": expected_distance},
+                {"offer_id": str(offers[1].id), "distance_in_km": expected_distance},
             ]
 
             # fetch institution (1 query)
@@ -90,7 +90,7 @@ class GetNewTemplateOffersPlaylistTest:
             }
         redactor = educational_factories.EducationalRedactorFactory()
 
-        expected_distance = 10
+        expected_distance = 10.0
 
         iframe_client = _get_iframe_client(client, email=redactor.email)
 
@@ -111,9 +111,9 @@ class GetNewTemplateOffersPlaylistTest:
         mock_path = "pcapi.connectors.big_query.TestingBackend.run_query"
         with patch(mock_path) as mock_run_query:
             mock_run_query.return_value = [
-                {"collective_offer_id": offers[0].id, "distance_in_km": expected_distance},
-                {"collective_offer_id": offers[1].id, "distance_in_km": expected_distance},
-                {"collective_offer_id": offers[2].id, "distance_in_km": expected_distance},
+                {"collective_offer_id": str(offers[0].id), "distance_in_km": expected_distance},
+                {"collective_offer_id": str(offers[1].id), "distance_in_km": expected_distance},
+                {"collective_offer_id": str(offers[2].id), "distance_in_km": expected_distance},
             ]
 
             # fetch institution (1 query)

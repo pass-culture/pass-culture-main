@@ -6,7 +6,7 @@ from .base import BaseQuery
 
 
 class ClassroomPlaylistModel(pydantic_v1.BaseModel):
-    offer_id: int
+    offer_id: str
     distance_in_km: float
 
 
@@ -27,7 +27,7 @@ class ClassroomPlaylistQuery(BaseQuery):
 
 
 class NewTemplateOffersPlaylistModel(pydantic_v1.BaseModel):
-    collective_offer_id: int
+    collective_offer_id: str
     distance_in_km: float
 
 
