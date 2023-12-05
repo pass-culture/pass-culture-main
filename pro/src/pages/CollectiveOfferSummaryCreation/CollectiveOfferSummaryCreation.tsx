@@ -1,5 +1,6 @@
 import React from 'react'
 
+import { AppLayout } from 'app/AppLayout'
 import CollectiveOfferLayout from 'components/CollectiveOfferLayout'
 import RouteLeavingGuardCollectiveOfferCreation from 'components/RouteLeavingGuardCollectiveOfferCreation'
 import {
@@ -33,22 +34,26 @@ export const CollectiveOfferSummaryCreation = ({
     return <></>
   }
 
-  return isLoading ? (
-    <Spinner />
-  ) : (
-    <CollectiveOfferLayout
-      subTitle={offer?.name}
-      isFromTemplate={isCollectiveOffer(offer) && Boolean(offer.templateId)}
-      isTemplate={isTemplate}
-      isCreation={true}
-    >
-      <CollectiveOfferSummaryCreationScreen
-        offer={offer}
-        categories={categories}
-        setOffer={setOffer}
-      />
-      <RouteLeavingGuardCollectiveOfferCreation />
-    </CollectiveOfferLayout>
+  return (
+    <AppLayout>
+      {isLoading ? (
+        <Spinner />
+      ) : (
+        <CollectiveOfferLayout
+          subTitle={offer?.name}
+          isFromTemplate={isCollectiveOffer(offer) && Boolean(offer.templateId)}
+          isTemplate={isTemplate}
+          isCreation={true}
+        >
+          <CollectiveOfferSummaryCreationScreen
+            offer={offer}
+            categories={categories}
+            setOffer={setOffer}
+          />
+          <RouteLeavingGuardCollectiveOfferCreation />
+        </CollectiveOfferLayout>
+      )}
+    </AppLayout>
   )
 }
 

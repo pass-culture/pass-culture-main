@@ -3,6 +3,7 @@ import { useParams } from 'react-router-dom'
 
 import { api } from 'apiClient/api'
 import { GetOffererVenueResponseModel } from 'apiClient/v1'
+import { AppLayout } from 'app/AppLayout'
 import fullBackIcon from 'icons/full-back.svg'
 import { HTTP_STATUS } from 'repository/pcapi/pcapiClient'
 import { ButtonLink } from 'ui-kit'
@@ -80,64 +81,70 @@ const OffererDetails = () => {
     return <Spinner />
   }
 
-  return offerer ? (
-    <div className={styles['offerer-page']}>
-      <ButtonLink
-        link={{
-          to: `/accueil?structure=${offerer.id}`,
-          isExternal: false,
-        }}
-        variant={ButtonVariant.TERNARY}
-        icon={fullBackIcon}
-        className={styles['offerer-page-go-back-link']}
-      >
-        Accueil
-      </ButtonLink>
+  return (
+    <AppLayout>
+      {offerer ? (
+        <div className={styles['offerer-page']}>
+          <ButtonLink
+            link={{
+              to: `/accueil?structure=${offerer.id}`,
+              isExternal: false,
+            }}
+            variant={ButtonVariant.TERNARY}
+            icon={fullBackIcon}
+            className={styles['offerer-page-go-back-link']}
+          >
+            Accueil
+          </ButtonLink>
 
-      <div className={styles['offerer-form-heading']}>
-        <div className={styles['title-page']}>
-          <h1>Structure</h1>
-        </div>
-        <h2 className={styles['offerer-name']}>{offerer.name}</h2>
-        <div className={styles['description']}>
-          Détails de la structure rattachée, des collaborateurs, des lieux et
-          des fournisseurs de ses offres
-        </div>
-      </div>
-
-      <div className={styles['offerer-page-container']}>
-        <div className={styles['section']}>
-          <h2 className={styles['main-list-title']}>Informations structure</h2>
-          <div className={styles['op-detail']}>
-            <span>{'SIREN : '}</span>
-            <span>{formatSiren(offerer.siren)}</span>
+          <div className={styles['offerer-form-heading']}>
+            <div className={styles['title-page']}>
+              <h1>Structure</h1>
+            </div>
+            <h2 className={styles['offerer-name']}>{offerer.name}</h2>
+            <div className={styles['description']}>
+              Détails de la structure rattachée, des collaborateurs, des lieux
+              et des fournisseurs de ses offres
+            </div>
           </div>
-          <div className={styles['op-detail']}>
-            <span>{'Désignation : '}</span>
-            <span>{offerer.name}</span>
-          </div>
-          <div className={styles['op-detail']}>
-            <span>{'Siège social : '}</span>
-            <span>
-              {`${offerer.address} - ${offerer.postalCode} ${offerer.city}`}
-            </span>
+
+          <div className={styles['offerer-page-container']}>
+            <div className={styles['section']}>
+              <h2 className={styles['main-list-title']}>
+                Informations structure
+              </h2>
+              <div className={styles['op-detail']}>
+                <span>{'SIREN : '}</span>
+                <span>{formatSiren(offerer.siren)}</span>
+              </div>
+              <div className={styles['op-detail']}>
+                <span>{'Désignation : '}</span>
+                <span>{offerer.name}</span>
+              </div>
+              <div className={styles['op-detail']}>
+                <span>{'Siège social : '}</span>
+                <span>
+                  {`${offerer.address} - ${offerer.postalCode} ${offerer.city}`}
+                </span>
+              </div>
+            </div>
+
+            <AttachmentInvitations offererId={offerer.id} />
+
+            <ApiKey
+              maxAllowedApiKeys={offerer.apiKey.maxAllowed}
+              offererId={offerer.id}
+              reloadOfferer={loadOfferer}
+              savedApiKeys={offerer.apiKey.savedApiKeys}
+            />
+
+            <Venues offererId={offerer.id} venues={physicalVenues} />
           </div>
         </div>
-
-        <AttachmentInvitations offererId={offerer.id} />
-
-        <ApiKey
-          maxAllowedApiKeys={offerer.apiKey.maxAllowed}
-          offererId={offerer.id}
-          reloadOfferer={loadOfferer}
-          savedApiKeys={offerer.apiKey.savedApiKeys}
-        />
-
-        <Venues offererId={offerer.id} venues={physicalVenues} />
-      </div>
-    </div>
-  ) : (
-    <></>
+      ) : (
+        <></>
+      )}
+    </AppLayout>
   )
 }
 

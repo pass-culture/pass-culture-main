@@ -1,6 +1,7 @@
 import React from 'react'
-import { useNavigate, useParams } from 'react-router-dom'
+import { Navigate, useParams } from 'react-router-dom'
 
+import { AppLayout } from 'app/AppLayout'
 import { setDefaultInitialFormValues } from 'components/VenueForm'
 import useGetOfferer from 'core/Offerers/getOffererAdapter/useGetOfferer'
 import { useGetVenueLabels } from 'core/Venue/adapters/getVenueLabelsAdapter'
@@ -13,7 +14,6 @@ const VenueCreation = (): JSX.Element | null => {
   const homePath = '/accueil'
   const { offererId } = useParams<{ offererId: string }>()
   const notify = useNotification()
-  const navigate = useNavigate()
 
   const initialValues = setDefaultInitialFormValues()
 
@@ -33,29 +33,30 @@ const VenueCreation = (): JSX.Element | null => {
     data: venueLabels,
   } = useGetVenueLabels()
 
-  if (isLoadingOfferer || isLoadingVenueTypes || isLoadingVenueLabels) {
-    return <Spinner />
-  }
-
   if (errorOfferer || errorVenueTypes || errorVenueLabels) {
     const loadingError = [errorOfferer, errorVenueTypes, errorVenueLabels].find(
       (error) => error !== undefined
     )
     if (loadingError !== undefined) {
-      navigate(homePath)
       notify.error(loadingError.message)
     }
-    return null
+    return <Navigate to={homePath} />
   }
 
   return (
-    <VenueFormScreen
-      initialValues={initialValues}
-      isCreatingVenue
-      offerer={offerer}
-      venueTypes={venueTypes}
-      venueLabels={venueLabels}
-    />
+    <AppLayout>
+      {isLoadingOfferer || isLoadingVenueTypes || isLoadingVenueLabels ? (
+        <Spinner />
+      ) : (
+        <VenueFormScreen
+          initialValues={initialValues}
+          isCreatingVenue
+          offerer={offerer}
+          venueTypes={venueTypes}
+          venueLabels={venueLabels}
+        />
+      )}
+    </AppLayout>
   )
 }
 

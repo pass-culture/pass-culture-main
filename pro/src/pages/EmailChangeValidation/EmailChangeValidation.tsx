@@ -4,6 +4,7 @@ import { useDispatch } from 'react-redux'
 import { useLocation } from 'react-router-dom'
 
 import { api } from 'apiClient/api'
+import { AppLayout } from 'app/AppLayout'
 import { EmailChangeValidationScreen } from 'screens/EmailChangeValidation'
 import { resetIsInitialized } from 'store/user/actions'
 import { parse } from 'utils/query-string'
@@ -32,7 +33,12 @@ const EmailChangeValidation = (): JSX.Element => {
   if (isSuccess === undefined) {
     return <></>
   }
-  return <EmailChangeValidationScreen isSuccess={isSuccess} />
+
+  return (
+    <AppLayout fullscreen pageName="sign-in">
+      <EmailChangeValidationScreen isSuccess={isSuccess} />
+    </AppLayout>
+  )
 }
 
 export default EmailChangeValidation

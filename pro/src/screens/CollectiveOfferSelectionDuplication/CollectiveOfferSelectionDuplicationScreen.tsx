@@ -3,6 +3,7 @@ import { Form, FormikProvider, useFormik } from 'formik'
 import React, { useCallback, useEffect, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 
+import { AppLayout } from 'app/AppLayout'
 import ActionsBarSticky from 'components/ActionsBarSticky'
 import { createOfferFromTemplate } from 'core/OfferEducational'
 import { DEFAULT_SEARCH_FILTERS } from 'core/Offers/constants'
@@ -98,96 +99,98 @@ const CollectiveOfferSelectionDuplication = (): JSX.Element => {
   }
 
   return (
-    <div className="container">
-      <Titles title="Créer une offre réservable" />
-      <Title as="h3" className="sub-title" level={4}>
-        Séléctionner l’offre vitrine à dupliquer
-      </Title>
+    <AppLayout>
+      <div className="container">
+        <Titles title="Créer une offre réservable" />
+        <Title as="h3" className="sub-title" level={4}>
+          Séléctionner l’offre vitrine à dupliquer
+        </Title>
 
-      <div className={styles['search-container']}>
-        <FormikProvider value={formikSearch}>
-          <Form className={styles['search-input-container']}>
-            <TextInput
-              label="Offre vitrine à dupliquer"
-              isLabelHidden
-              name="searchFilter"
-              placeholder="Rechercher une offre vitrine"
-              className={styles['search-input']}
-            />
-            <SubmitButton
-              className={styles['search-button']}
-              isLoading={isLoading}
-              aria-label="Button de recherche"
-              icon={strokeSearchIcon}
-            >
-              Rechercher
-            </SubmitButton>
-          </Form>
-        </FormikProvider>
-        <FormikProvider value={formikSelection}>
-          <Form>
-            <p className={styles['offer-info']}>
-              {showAll
-                ? 'Les dernières offres vitrines créées'
-                : `${pluralize(offers.length, 'offre')} vitrine`}
-            </p>
-            {offers?.slice(0, 5).map((offer) => (
-              <div
-                key={offer.id}
-                className={cn(styles['offer-selection'], {
-                  [styles['offer-selected']]:
-                    formikSelection.values.templateOfferId ===
-                    offer.id.toString(),
-                })}
+        <div className={styles['search-container']}>
+          <FormikProvider value={formikSearch}>
+            <Form className={styles['search-input-container']}>
+              <TextInput
+                label="Offre vitrine à dupliquer"
+                isLabelHidden
+                name="searchFilter"
+                placeholder="Rechercher une offre vitrine"
+                className={styles['search-input']}
+              />
+              <SubmitButton
+                className={styles['search-button']}
+                isLoading={isLoading}
+                aria-label="Button de recherche"
+                icon={strokeSearchIcon}
               >
-                <RadioButton
-                  name="templateOfferId"
-                  value={offer.id.toString()}
-                  label={
-                    <div className={styles['offer-selection-label']}>
-                      <Thumb
-                        url={offer.thumbUrl}
-                        className={styles['img-offer']}
-                      />
-                      <p className={styles['offer-title']}>
-                        <strong>{offer.name}</strong>
-                        {offer.venue.name}
-                      </p>
-                    </div>
-                  }
-                />
-              </div>
-            ))}
-            {offers?.length < 1 && (
-              <div className={styles['search-no-results']}>
-                <SvgIcon
-                  src={strokeSearchIcon}
-                  alt="Illustration de recherche"
-                  className={styles['search-no-results-icon']}
-                  width="124"
-                />
-                <p className={styles['search-no-results-text']}>
-                  Aucune offre trouvée pour votre recherche
-                </p>
-              </div>
-            )}
-            <ActionsBarSticky>
-              <ActionsBarSticky.Left>
-                <ButtonLink
-                  variant={ButtonVariant.SECONDARY}
-                  link={{ isExternal: false, to: computeOffersUrl({}) }}
+                Rechercher
+              </SubmitButton>
+            </Form>
+          </FormikProvider>
+          <FormikProvider value={formikSelection}>
+            <Form>
+              <p className={styles['offer-info']}>
+                {showAll
+                  ? 'Les dernières offres vitrines créées'
+                  : `${pluralize(offers.length, 'offre')} vitrine`}
+              </p>
+              {offers?.slice(0, 5).map((offer) => (
+                <div
+                  key={offer.id}
+                  className={cn(styles['offer-selection'], {
+                    [styles['offer-selected']]:
+                      formikSelection.values.templateOfferId ===
+                      offer.id.toString(),
+                  })}
                 >
-                  Annuler et quitter
-                </ButtonLink>
-              </ActionsBarSticky.Left>
-              <ActionsBarSticky.Right>
-                <SubmitButton disabled={false}>Étape suivante</SubmitButton>
-              </ActionsBarSticky.Right>
-            </ActionsBarSticky>
-          </Form>
-        </FormikProvider>
+                  <RadioButton
+                    name="templateOfferId"
+                    value={offer.id.toString()}
+                    label={
+                      <div className={styles['offer-selection-label']}>
+                        <Thumb
+                          url={offer.thumbUrl}
+                          className={styles['img-offer']}
+                        />
+                        <p className={styles['offer-title']}>
+                          <strong>{offer.name}</strong>
+                          {offer.venue.name}
+                        </p>
+                      </div>
+                    }
+                  />
+                </div>
+              ))}
+              {offers?.length < 1 && (
+                <div className={styles['search-no-results']}>
+                  <SvgIcon
+                    src={strokeSearchIcon}
+                    alt="Illustration de recherche"
+                    className={styles['search-no-results-icon']}
+                    width="124"
+                  />
+                  <p className={styles['search-no-results-text']}>
+                    Aucune offre trouvée pour votre recherche
+                  </p>
+                </div>
+              )}
+              <ActionsBarSticky>
+                <ActionsBarSticky.Left>
+                  <ButtonLink
+                    variant={ButtonVariant.SECONDARY}
+                    link={{ isExternal: false, to: computeOffersUrl({}) }}
+                  >
+                    Annuler et quitter
+                  </ButtonLink>
+                </ActionsBarSticky.Left>
+                <ActionsBarSticky.Right>
+                  <SubmitButton disabled={false}>Étape suivante</SubmitButton>
+                </ActionsBarSticky.Right>
+              </ActionsBarSticky>
+            </Form>
+          </FormikProvider>
+        </div>
       </div>
-    </div>
+    </AppLayout>
   )
 }
 

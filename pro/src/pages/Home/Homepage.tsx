@@ -5,6 +5,7 @@ import {
   GetOffererResponseModel,
   GetOfferersNamesResponseModel,
 } from 'apiClient/v1'
+import { AppLayout } from 'app/AppLayout'
 import AddBankAccountCallout from 'components/Callout/AddBankAccountCallout'
 import LinkVenueCallout from 'components/Callout/LinkVenueCallout'
 import PendingBankAccountCallout from 'components/Callout/PendingBankAccountCallout'
@@ -131,7 +132,7 @@ const Homepage = (): JSX.Element => {
     ) ?? false
 
   return (
-    <>
+    <AppLayout>
       <div className="homepage">
         <h1>Bienvenue dans l’espace acteurs culturels</h1>
 
@@ -201,7 +202,7 @@ const Homepage = (): JSX.Element => {
         </section>
       </div>
       <TutorialDialog />
-    </>
+    </AppLayout>
   )
 }
 

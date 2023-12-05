@@ -3,6 +3,7 @@ import { FormikProvider, useFormik } from 'formik'
 import React, { useState } from 'react'
 
 import { GetBookingResponse } from 'apiClient/v2'
+import { AppLayout } from 'app/AppLayout'
 import { Banner, SubmitButton, TextInput } from 'ui-kit'
 import Titles from 'ui-kit/Titles/Titles'
 
@@ -122,7 +123,7 @@ const Desk = (): JSX.Element => {
   }
 
   return (
-    <div className={styles['desk-screen']}>
+    <AppLayout>
       <Titles title="Guichet" />
       <p className="advice">
         Saisissez les contremarques présentées par les bénéficiaires afin de les
@@ -185,7 +186,7 @@ const Desk = (): JSX.Element => {
           </Banner>
         </form>
       </FormikProvider>
-    </div>
+    </AppLayout>
   )
 }
 

@@ -1,6 +1,7 @@
 import React from 'react'
 import { useNavigate } from 'react-router-dom'
 
+import { AppLayout } from 'app/AppLayout'
 import CollectiveOfferLayout from 'components/CollectiveOfferLayout'
 import {
   Mode,
@@ -69,19 +70,21 @@ const CollectiveOfferStockEdition = ({
   }
 
   return (
-    <CollectiveOfferLayout subTitle={offer.name} isTemplate={isTemplate}>
-      <OfferEducationalStockScreen
-        initialValues={initialValues}
-        mode={
-          offer.collectiveStock?.isEducationalStockEditable
-            ? Mode.EDITION
-            : Mode.READ_ONLY
-        }
-        offer={offer}
-        onSubmit={handleSubmitStock}
-        reloadCollectiveOffer={reloadCollectiveOffer}
-      />
-    </CollectiveOfferLayout>
+    <AppLayout>
+      <CollectiveOfferLayout subTitle={offer.name} isTemplate={isTemplate}>
+        <OfferEducationalStockScreen
+          initialValues={initialValues}
+          mode={
+            offer.collectiveStock?.isEducationalStockEditable
+              ? Mode.EDITION
+              : Mode.READ_ONLY
+          }
+          offer={offer}
+          onSubmit={handleSubmitStock}
+          reloadCollectiveOffer={reloadCollectiveOffer}
+        />
+      </CollectiveOfferLayout>
+    </AppLayout>
   )
 }
 

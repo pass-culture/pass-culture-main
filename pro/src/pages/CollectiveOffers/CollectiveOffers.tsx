@@ -3,6 +3,7 @@ import { useDispatch } from 'react-redux'
 import { useNavigate } from 'react-router-dom'
 
 import { api } from 'apiClient/api'
+import { AppLayout } from 'app/AppLayout'
 import { filterEducationalCategories } from 'core/OfferEducational'
 import { getOffererAdapter } from 'core/Offers/adapters'
 import { DEFAULT_PAGE, DEFAULT_SEARCH_FILTERS } from 'core/Offers/constants'
@@ -156,26 +157,28 @@ const CollectiveOffers = (): JSX.Element => {
     dispatch(savePageNumber(currentPageNumber))
   }, [dispatch, currentPageNumber, urlSearchFilters])
 
-  if (!initialSearchFilters) {
-    return <Spinner />
-  }
-
   return (
-    <OffersScreen
-      audience={Audience.COLLECTIVE}
-      categories={categories}
-      currentPageNumber={currentPageNumber}
-      currentUser={currentUser}
-      initialSearchFilters={initialSearchFilters}
-      isLoading={isLoading}
-      loadAndUpdateOffers={loadAndUpdateOffers}
-      offerer={offerer}
-      offers={offers}
-      redirectWithUrlFilters={redirectWithUrlFilters}
-      setOfferer={setOfferer}
-      urlSearchFilters={urlSearchFilters}
-      venues={venues}
-    />
+    <AppLayout>
+      {!initialSearchFilters ? (
+        <Spinner />
+      ) : (
+        <OffersScreen
+          audience={Audience.COLLECTIVE}
+          categories={categories}
+          currentPageNumber={currentPageNumber}
+          currentUser={currentUser}
+          initialSearchFilters={initialSearchFilters}
+          isLoading={isLoading}
+          loadAndUpdateOffers={loadAndUpdateOffers}
+          offerer={offerer}
+          offers={offers}
+          redirectWithUrlFilters={redirectWithUrlFilters}
+          setOfferer={setOfferer}
+          urlSearchFilters={urlSearchFilters}
+          venues={venues}
+        />
+      )}
+    </AppLayout>
   )
 }
 

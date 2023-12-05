@@ -1,7 +1,7 @@
 import React, { useEffect } from 'react'
 import { Route, Routes, useLocation } from 'react-router-dom'
 
-import AppLayout from 'app/AppLayout'
+import { AppLayout } from 'app/AppLayout'
 import { routesSignupJourney } from 'app/AppRouter/subroutesSignupJourneyMap'
 import { SignupJourneyFormLayout } from 'components/SignupJourneyFormLayout'
 import SkipLinks from 'components/SkipLinks'
@@ -42,6 +42,7 @@ const SignupJourneyRoutes = () => {
   return (
     <>
       <SkipLinks displayMenu={false} />
+
       <header className={styles['header']}>
         <div className={styles['header-content']}>
           <SvgIcon
@@ -59,11 +60,10 @@ const SignupJourneyRoutes = () => {
           </Button>
         </div>
       </header>
+
       <AppLayout
-        layoutConfig={{
-          fullscreen: true,
-          pageName: 'sign-up-journey',
-        }}
+        fullscreen
+        pageName="sign-up-journey"
         className={styles['sign-up-journey']}
       >
         <SignupJourneyContextProvider>

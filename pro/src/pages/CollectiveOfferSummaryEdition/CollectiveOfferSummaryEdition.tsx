@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from 'react'
 
+import { AppLayout } from 'app/AppLayout'
 import CollectiveOfferLayout from 'components/CollectiveOfferLayout'
 import {
   getEducationalCategoriesAdapter,
@@ -42,17 +43,21 @@ const CollectiveOfferSummaryEdition = ({
 
   const isReady = offer !== null && categories !== null
 
-  return !isReady ? (
-    <Spinner />
-  ) : (
-    <CollectiveOfferLayout subTitle={offer.name} isTemplate={isTemplate}>
-      <CollectiveOfferSummaryEditionScreen
-        offer={offer}
-        categories={categories}
-        reloadCollectiveOffer={reloadCollectiveOffer}
-        mode={Mode.EDITION}
-      />
-    </CollectiveOfferLayout>
+  return (
+    <AppLayout>
+      {!isReady ? (
+        <Spinner />
+      ) : (
+        <CollectiveOfferLayout subTitle={offer.name} isTemplate={isTemplate}>
+          <CollectiveOfferSummaryEditionScreen
+            offer={offer}
+            categories={categories}
+            reloadCollectiveOffer={reloadCollectiveOffer}
+            mode={Mode.EDITION}
+          />
+        </CollectiveOfferLayout>
+      )}
+    </AppLayout>
   )
 }
 
