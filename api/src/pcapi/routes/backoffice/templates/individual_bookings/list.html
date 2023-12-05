@@ -84,7 +84,7 @@
               <th scope="col">Stock</th>
               <th scope="col">Montant</th>
               <th scope="col">Statut</th>
-              <th scope="col">Évènement comptable</th>
+              {% if is_feature_active("WIP_ENABLE_FINANCE_INCIDENT") %}<th scope="col">Évènement comptable</th>{% endif %}
               <th scope="col">Date de réservation</th>
               <th scope="col">Date de l'évènement</th>
               <th scope="col">Structure</th>
