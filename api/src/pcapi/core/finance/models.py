@@ -213,7 +213,7 @@ class BankAccountApplicationStatus(enum.Enum):
 
 
 class BankInformation(PcObject, Base, Model):
-    offererId = sqla.Column(sqla.BigInteger, sqla.ForeignKey("offerer.id"), index=True, nullable=True, unique=True)
+    offererId = sqla.Column(sqla.BigInteger, sqla.ForeignKey("offerer.id"), index=True, nullable=True)
     offerer: sqla_orm.Mapped["offerers_models.Offerer | None"] = sqla_orm.relationship(
         "Offerer", foreign_keys=[offererId], backref=sqla_orm.backref("bankInformation", uselist=False)
     )

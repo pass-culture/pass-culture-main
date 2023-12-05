@@ -180,6 +180,10 @@ def get_bank_info_response_procedure_v4_as_batch(
 def get_bank_info_response_procedure_v5(
     state: str = GraphQLApplicationStates.accepted.value,
     annotations: dict | None = None,
+    b64_encoded_application_id: str | None = None,
+    application_id: int | None = None,
+    bic: str | None = None,
+    iban: str | None = None,
 ) -> dict:
     return {
         "demarche": {
@@ -191,8 +195,8 @@ def get_bank_info_response_procedure_v5(
                 },
                 "nodes": [
                     {
-                        "id": "RG9zc2llci0xNDc0MjY1NA==",
-                        "number": 14742654,
+                        "id": b64_encoded_application_id or "RG9zc2llci0xNDc0MjY1NA==",
+                        "number": application_id or 14742654,
                         "state": state,
                         "dateDerniereModification": "2023-10-26T14:51:09+02:00",
                         "demandeur": {"siret": "85331845900049"},
@@ -212,14 +216,14 @@ def get_bank_info_response_procedure_v5(
                             {
                                 "id": "Q2hhbXAtMzUyNzI3",
                                 "label": "BIC",
-                                "stringValue": "BICAGRIFRPP",
-                                "value": "BICAGRIFRPP",
+                                "stringValue": bic or "BICAGRIFRPP",
+                                "value": bic or "BICAGRIFRPP",
                             },
                             {
                                 "id": "Q2hhbXAtMzUyNzIy",
                                 "label": "IBAN",
-                                "stringValue": "FR7630006000011234567890189",
-                                "value": "FR76 3000 6000 0112 3456 7890 189",
+                                "stringValue": iban or "FR7630006000011234567890189",
+                                "value": iban or "FR76 3000 6000 0112 3456 7890 189",
                             },
                             {
                                 "id": "Q2hhbXAtODU2ODE4",
