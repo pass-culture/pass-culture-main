@@ -19,6 +19,7 @@ class ClassroomPlaylistQuery(BaseQuery):
             `{settings.BIG_QUERY_TABLE_BASENAME}.adage_home_playlist_moving_offerers`
         WHERE
             institution_id = @institution_id
+        AND
             distance_in_km <= 60
         LIMIT 10
     """
