@@ -504,11 +504,20 @@ def get_bank_account_with_current_venues_links(
         )
         .join(offerers_models.Offerer)
         .outerjoin(offerers_models.Venue, offerers_models.Venue.managingOffererId == offerers_models.Offerer.id)
+        .outerjoin(
+            offerers_models.VenuePricingPointLink,
+            sqla.and_(
+                offerers_models.VenuePricingPointLink.venueId == offerers_models.Venue.id,
+                offerers_models.VenuePricingPointLink.timespan.contains(datetime.datetime.utcnow()),
+            ),
+        )
         .options(sqla_orm.contains_eager(finance_models.BankAccount.venueLinks))
         .options(
             sqla_orm.contains_eager(finance_models.BankAccount.offerer)
             .contains_eager(offerers_models.Offerer.managedVenues)
             .load_only(offerers_models.Venue.id)
+            .contains_eager(offerers_models.Venue.pricing_point_links)
+            .load_only(offerers_models.VenuePricingPointLink.timespan)
         )
         .one_or_none()
     )
