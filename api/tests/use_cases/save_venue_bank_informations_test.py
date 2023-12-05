@@ -1,9 +1,11 @@
+from base64 import b64encode
 from datetime import datetime
 from datetime import timedelta
 from unittest.mock import call
 from unittest.mock import patch
 
 import pytest
+import schwifty
 
 from pcapi import settings
 from pcapi.connectors import sirene
@@ -1293,3 +1295,86 @@ class NewBankAccountJourneyTest:
 
         assert history_models.ActionHistory.query.count() == 1
         assert finance_models.BankAccountStatusHistory.query.count() == 1  # One status change recorded
+
+    @override_features(WIP_ENABLE_DOUBLE_MODEL_WRITING=True)
+    def test_offerer_can_have_several_bank_informations(
+        self, mock_archive_dossier, mock_update_text_annotation, mock_grapqhl_client
+    ):
+        siret = "85331845900049"
+        siren = siret[:9]
+        venue = offerers_factories.VenueFactory(pricing_point="self", managingOfferer__siren=siren)
+        offerers_factories.VenueFactory(pricing_point="self", managingOfferer=venue.managingOfferer)
+
+        mock_grapqhl_client.return_value = dms_creators.get_bank_info_response_procedure_v5(
+            state=GraphQLApplicationStates.accepted.value,
+        )
+        update_ds_applications_for_procedure(settings.DS_BANK_ACCOUNT_PROCEDURE_ID, since=None)
+
+        # Old journey
+        bank_information = finance_models.BankInformation.query.one()
+        assert not bank_information.venue
+        assert bank_information.bic == "BICAGRIFRPP"
+        assert bank_information.iban == "FR7630006000011234567890189"
+        assert bank_information.status == finance_models.BankInformationStatus.ACCEPTED
+
+        # New journey
+        bank_account = finance_models.BankAccount.query.one()
+        assert bank_account.bic == "BICAGRIFRPP"
+        assert bank_account.iban == "FR7630006000011234567890189"
+        assert bank_account.offerer == venue.managingOfferer
+        assert bank_account.status == finance_models.BankAccountApplicationStatus.ACCEPTED
+        assert bank_account.label == "Intitulé du compte bancaire"
+        assert bank_account.dsApplicationId == self.dsv5_application_id
+        mock_archive_dossier.assert_called_once_with("RG9zc2llci0xNDc0MjY1NA==")
+
+        assert not offerers_models.VenueBankAccountLink.query.count()
+
+        assert not history_models.ActionHistory.query.count()
+        assert finance_models.BankAccountStatusHistory.query.count() == 1  # One status change recorded
+
+        fake_bic = str(schwifty.BIC.from_bank_code("FR", bank_code="30004"))
+        fake_iban = str(schwifty.IBAN.generate("FR", bank_code="30004", account_code="12345"))
+
+        mock_grapqhl_client.return_value = dms_creators.get_bank_info_response_procedure_v5(
+            state=GraphQLApplicationStates.accepted.value,
+            b64_encoded_application_id=b64encode("Champ-123".encode()),
+            application_id=123,
+            bic=fake_bic,
+            iban=fake_iban,
+        )
+        update_ds_applications_for_procedure(settings.DS_BANK_ACCOUNT_PROCEDURE_ID, since=None)
+
+        # Old journey
+        bank_informations = finance_models.BankInformation.query.order_by(finance_models.BankInformation.id).all()
+        assert len(bank_informations) == 2
+        assert not bank_informations[0].venue
+        assert bank_informations[0].bic == "BICAGRIFRPP"
+        assert bank_informations[0].iban == "FR7630006000011234567890189"
+        assert bank_informations[0].status == finance_models.BankInformationStatus.ACCEPTED
+
+        assert not bank_informations[1].venue
+        assert bank_informations[1].bic == fake_bic
+        assert bank_informations[1].iban == fake_iban
+        assert bank_informations[1].status == finance_models.BankInformationStatus.ACCEPTED
+
+        # New journey
+        bank_accounts = finance_models.BankAccount.query.order_by(finance_models.BankAccount.id).all()
+        assert len(bank_accounts) == 2
+        assert bank_accounts[0].bic == "BICAGRIFRPP"
+        assert bank_accounts[0].iban == "FR7630006000011234567890189"
+        assert bank_accounts[0].offerer == venue.managingOfferer
+        assert bank_accounts[0].status == finance_models.BankAccountApplicationStatus.ACCEPTED
+        assert bank_accounts[0].label == "Intitulé du compte bancaire"
+        assert bank_accounts[0].dsApplicationId == self.dsv5_application_id
+
+        assert bank_accounts[1].bic == fake_bic
+        assert bank_accounts[1].iban == fake_iban
+        assert bank_accounts[1].offerer == venue.managingOfferer
+        assert bank_accounts[1].status == finance_models.BankAccountApplicationStatus.ACCEPTED
+        assert bank_accounts[1].label == "Intitulé du compte bancaire"
+        assert bank_accounts[1].dsApplicationId == 123
+
+        assert not offerers_models.VenueBankAccountLink.query.count()
+
+        assert not history_models.ActionHistory.query.count()
+        assert finance_models.BankAccountStatusHistory.query.count() == 2

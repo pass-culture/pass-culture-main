@@ -124,25 +124,6 @@ class BankInformationsSQLRepositoryTest:
         ]
 
     @pytest.mark.usefixtures("db_session")
-    def test_should_not_create_bank_informations_on_save_when_bank_infos_is_already_associated_to_an_offerer_in_database(
-        self, app
-    ):
-        # given
-        offerer = offerers_factories.OffererFactory()
-        finance_factories.BankInformationFactory(offerer=offerer)
-        bank_informations_to_save = BankInformations(offerer_id=offerer.id, status="ACCEPTED", application_id=8)
-
-        # when
-        with pytest.raises(ApiErrors) as error:
-            self.bank_informations_sql_repository.save(bank_informations_to_save)
-
-        # then
-        assert BankInformationsSQLEntity.query.count() == 1
-        assert error.value.errors['"offererId"'] == [
-            "Une entrée avec cet identifiant existe déjà dans notre base de données"
-        ]
-
-    @pytest.mark.usefixtures("db_session")
     def test_should_update_bank_informations_when_bank_informations_already_exist_for_application(self, app):
         # given
         offerer = offerers_factories.OffererFactory()
