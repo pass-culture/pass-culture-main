@@ -65,7 +65,7 @@ def get_classroom_playlist(
                     offer=offer,
                     serializer=serializers.CollectiveOfferResponseModel,
                     is_favorite=offer.id in favorite_ids,
-                    venue_distance=rows[offer.id],
+                    venue_distance=rows[str(offer.id)],
                 ),
             )
             for offer in offers
@@ -140,7 +140,7 @@ def new_template_offers_playlist(
                     offer=offer,
                     serializer=serializers.CollectiveOfferTemplateResponseModel,
                     is_favorite=offer.id in favorite_ids,
-                    event_distance=rows[offer.id],
+                    event_distance=rows[str(offer.id)],
                 ),
             )
             for offer in offers
