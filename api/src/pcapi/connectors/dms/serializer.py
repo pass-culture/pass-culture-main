@@ -183,6 +183,7 @@ class ApplicationDetail(BaseModel):
     error_annotation_id: str
     error_annotation_value: str | None = None
     venue_url_annotation_id: str | None = None
+    venue_url_annotation_value: str | None = None
 
     @root_validator(pre=True)
     def to_representation(cls: "ApplicationDetail", obj: dict) -> dict:
@@ -202,6 +203,7 @@ class ApplicationDetail(BaseModel):
         to_representation["error_annotation_id"] = obj["error_annotation_id"]
         to_representation["error_annotation_value"] = obj.get("error_annotation_value")
         to_representation["venue_url_annotation_id"] = obj["venue_url_annotation_id"]
+        to_representation["venue_url_annotation_value"] = obj.get("venue_url_annotation_value")
 
         return to_representation
 

@@ -357,11 +357,16 @@ class SaveVenueBankInformationsV4(SaveVenueBankInformationsMixin):
         if application_details.venue_url_annotation_id is None:
             logger.error("venue_url_annotation_id cannot be None in DSv4 context")
             return
+        venue_link = urls.build_pc_pro_venue_link(venue)
+
+        if application_details.venue_url_annotation_value == venue_link:
+            logger.info("venue link annotation already filled")
+            return
 
         update_demarches_simplifiees_text_annotations(
             application_details.dossier_id,
             application_details.venue_url_annotation_id,
-            urls.build_pc_pro_venue_link(venue),
+            venue_link,
         )
 
 

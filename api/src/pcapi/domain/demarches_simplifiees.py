@@ -48,6 +48,7 @@ def parse_raw_bank_info_data(data: dict, procedure_version: int) -> dict:
                 result["error_annotation_value"] = annotation["stringValue"]
             case "URL du lieu":
                 result["venue_url_annotation_id"] = annotation["id"]
+                result["venue_url_annotation_value"] = annotation["stringValue"]
 
     match procedure_version:
         case 2 | 3:
