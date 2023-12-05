@@ -70,8 +70,8 @@ const OffererDetails = ({
     showOffererNotValidatedAndPhysicalVenue
 
   return (
-    <div className="h-card h-card-secondary" data-testid="offerrer-wrapper">
-      <div className="h-card-inner h-no-bottom">
+    <div className={styles['venue-card']} data-testid="offerrer-wrapper">
+      <div className={styles['offerer-content']}>
         <div className={styles['container']}>
           <div className={styles['venue-select']}>
             <SelectInput
@@ -82,7 +82,7 @@ const OffererDetails = ({
             />
           </div>
 
-          <>
+          <div className={styles['venue-buttons']}>
             <div className={cn(styles['separator'], styles['vertical'])} />
             <ButtonLink
               variant={ButtonVariant.TERNARY}
@@ -100,27 +100,25 @@ const OffererDetails = ({
             >
               Inviter
             </ButtonLink>
-          </>
-
-          <div className={cn(styles['separator'], styles['vertical'])} />
-          <ButtonLink
-            variant={ButtonVariant.TERNARY}
-            link={{
-              to: `/structures/${selectedOfferer.id}`,
-              isExternal: false,
-            }}
-            icon={fullEditIcon}
-            isDisabled={!isUserOffererValidated}
-            onClick={() =>
-              logEvent?.(Events.CLICKED_MODIFY_OFFERER, {
-                offerer_id: selectedOfferer.id,
-              })
-            }
-          >
-            Modifier
-          </ButtonLink>
+            <div className={cn(styles['separator'], styles['vertical'])} />
+            <ButtonLink
+              variant={ButtonVariant.TERNARY}
+              link={{
+                to: `/structures/${selectedOfferer.id}`,
+                isExternal: false,
+              }}
+              icon={fullEditIcon}
+              isDisabled={!isUserOffererValidated}
+              onClick={() =>
+                logEvent?.(Events.CLICKED_MODIFY_OFFERER, {
+                  offerer_id: selectedOfferer.id,
+                })
+              }
+            >
+              Modifier
+            </ButtonLink>
+          </div>
         </div>
-
         {isExpanded && !isStatisticsDashboardEnabled && (
           <>
             <div className={cn(styles['separator'], styles['horizontal'])} />
