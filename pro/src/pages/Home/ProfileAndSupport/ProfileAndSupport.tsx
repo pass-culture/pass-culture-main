@@ -57,7 +57,7 @@ const ProfileAndSupport = () => {
   const { currentUser: user } = useCurrentUser()
   return (
     <>
-      <h2 className="h-section-title">Profil et aide</h2>
+      <h2 className={styles['title']}>Profil et aide</h2>
 
       <div className="h-section-row">
         <div

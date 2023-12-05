@@ -32,7 +32,8 @@ const OffererStats = () => {
 
   return (
     <>
-      <h2 className="h-section-title">Statistiques</h2>
+      <h2 className={styles['title']}>Statistiques</h2>
+
       <div className={styles['offerer-stats']}>
         <div className={styles['offerer-stats-boxes']}>
           <IconLinkBox

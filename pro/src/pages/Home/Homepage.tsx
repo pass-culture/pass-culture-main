@@ -157,11 +157,14 @@ const Homepage = (): JSX.Element => {
               selectedOfferer={selectedOfferer}
               hasAtLeastOnePhysicalVenue={hasAtLeastOnePhysicalVenue}
             />
-            <StatisticsDashboard offerer={selectedOfferer} />
+
+            <section className={styles['section']}>
+              <StatisticsDashboard offerer={selectedOfferer} />
+            </section>
           </>
         )}
 
-        <section className="h-section" ref={offerersRef}>
+        <section className={styles['section']} ref={offerersRef}>
           <Offerers
             selectedOfferer={selectedOfferer}
             isLoading={isLoading}
@@ -188,12 +191,12 @@ const Homepage = (): JSX.Element => {
         )}
 
         {isOffererStatsActive && (
-          <section className="h-section" ref={statsRef}>
+          <section className={styles['section']} ref={statsRef}>
             <OffererStats />
           </section>
         )}
 
-        <section className="h-section" ref={profileRef}>
+        <section className={styles['section']} ref={profileRef}>
           <ProfileAndSupport />
           <div className="newsletter">
             <Newsletter />
