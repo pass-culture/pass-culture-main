@@ -7,6 +7,7 @@ from pcapi.core.educational import factories as educational_factories
 from pcapi.core.educational import models as educational_models
 from pcapi.core.testing import assert_num_queries
 from pcapi.models import db
+from pcapi.routes.serialization import collective_offers_serialize
 
 
 pytestmark = pytest.mark.usefixtures("db_session")
@@ -81,6 +82,12 @@ class GetNewTemplateOffersPlaylistTest:
 
     def test_new_template_offers_playlist(self, client):
         offers = educational_factories.CollectiveOfferTemplateFactory.create_batch(3)
+        for offer in offers:
+            offer.offerVenue = {
+                "addressType": collective_offers_serialize.OfferAddressType.OFFERER_VENUE.value,
+                "otherAddress": "",
+                "venueId": offer.venueId,
+            }
         redactor = educational_factories.EducationalRedactorFactory()
 
         expected_distance = 10
@@ -123,7 +130,8 @@ class GetNewTemplateOffersPlaylistTest:
 
                 for idx, response_offer in enumerate(response_offers):
                     assert response_offer["id"] == offers[idx].id
-                    assert response_offer["venue"]["distance"] == expected_distance
+                    assert response_offer["venue"]["distance"] == None
+                    assert response_offer["offerVenue"]["distance"] == expected_distance
                     assert response_offer["isFavorite"] == bool(idx)
 
     def test_no_rows(self, client):

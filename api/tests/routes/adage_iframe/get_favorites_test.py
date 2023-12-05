@@ -93,6 +93,7 @@ class GetFavoriteOfferTest:
                         "address": None,
                         "postalCode": None,
                         "city": None,
+                        "distance": None,
                     },
                     "contactEmail": "collectiveofferfactory+contact@example.com",
                     "contactPhone": "+33199006328",
@@ -153,6 +154,7 @@ class GetFavoriteOfferTest:
                     "students": ["Lycée - Seconde"],
                     "offerVenue": {
                         "addressType": "other",
+                        "distance": None,
                         "otherAddress": "1 rue des polissons, Paris 75017",
                         "venueId": None,
                         "name": None,
