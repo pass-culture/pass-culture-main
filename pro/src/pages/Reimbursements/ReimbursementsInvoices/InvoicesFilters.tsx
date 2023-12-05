@@ -15,7 +15,6 @@ import { FiltersType } from './types'
 
 interface ReimbursementsSectionHeaderProps {
   areFiltersDefault: boolean
-  children: React.ReactNode | React.ReactNode[]
   filters: FiltersType
   disable: boolean
   initialFilters: FiltersType
@@ -27,7 +26,6 @@ interface ReimbursementsSectionHeaderProps {
 
 const InvoicesFilters = ({
   areFiltersDefault,
-  children,
   filters,
   disable,
   initialFilters,
@@ -135,7 +133,6 @@ const InvoicesFilters = ({
 
       <div className="button-group">
         <span className="button-group-separator" />
-        <div className="button-group-buttons">{children}</div>
       </div>
     </>
   )
