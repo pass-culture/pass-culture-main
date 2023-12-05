@@ -22,7 +22,7 @@ class OffererPatchBankAccountsTest:
         pro_user = users_factories.ProFactory()
         offerers_factories.UserOffererFactory(user=pro_user, offerer=offerer)
         bank_account = finance_factories.BankAccountFactory(offerer=offerer)
-        venue = offerers_factories.VenueFactory(managingOfferer=offerer)
+        venue = offerers_factories.VenueFactory(managingOfferer=offerer, pricing_point="self")
 
         assert not bank_account.venueLinks
 
@@ -70,7 +70,6 @@ class OffererPatchBankAccountsTest:
             assert action_logged.venueId == action_occured.venueId
             assert action_logged.bankAccountId == action_occured.bankAccountId
 
-    @pytest.mark.usefixtures("db_session")
     def test_user_cannot_link_venue_to_a_bank_account_that_doesnt_depend_on_its_offerer(self, db_session, client):
         actions_occured = []
 
@@ -81,7 +80,7 @@ class OffererPatchBankAccountsTest:
         bank_account = finance_factories.BankAccountFactory(offerer=offerer)
         bank_account_of_another_offerer = finance_factories.BankAccountFactory(offerer=another_offerer)
         bank_account_of_another_offerer_id = bank_account_of_another_offerer.id
-        venue = offerers_factories.VenueFactory(managingOfferer=offerer)
+        venue = offerers_factories.VenueFactory(managingOfferer=offerer, pricing_point="self")
 
         assert not bank_account.venueLinks
 
@@ -121,7 +120,9 @@ class OffererPatchBankAccountsTest:
         bank_account = finance_factories.BankAccountFactory(offerer=offerer)
         bank_account_id = bank_account.id
         offerers_factories.VenueFactory(managingOfferer=offerer)
-        venue_of_another_offerer = offerers_factories.VenueFactory(managingOfferer=another_offerer)
+        venue_of_another_offerer = offerers_factories.VenueFactory(
+            managingOfferer=another_offerer, pricing_point="self"
+        )
         venue_of_another_offerer_id = venue_of_another_offerer.id
 
         assert not bank_account.venueLinks
@@ -161,7 +162,7 @@ class OffererPatchBankAccountsTest:
         bank_account = finance_factories.BankAccountFactory(offerer=offerer)
         bank_account_id = bank_account.id
         first_venue, second_venue, third_venue = offerers_factories.VenueFactory.create_batch(
-            3, managingOfferer=offerer
+            3, managingOfferer=offerer, pricing_point="self"
         )
         offerers_factories.VenueBankAccountLinkFactory(venueId=first_venue.id, bankAccountId=bank_account.id)
         offerers_factories.VenueBankAccountLinkFactory(venueId=second_venue.id, bankAccountId=bank_account.id)
@@ -250,7 +251,7 @@ class OffererPatchBankAccountsTest:
         offerers_factories.UserOffererFactory(user=pro_user, offerer=offerer)
         bank_account = finance_factories.BankAccountFactory(offerer=offerer)
         first_venue, second_venue, third_venue, fourth_venue = offerers_factories.VenueFactory.create_batch(
-            4, managingOfferer=offerer
+            4, managingOfferer=offerer, pricing_point="self"
         )
 
         first_history_link = offerers_factories.VenueBankAccountLinkFactory(
@@ -364,7 +365,7 @@ class OffererPatchBankAccountsTest:
         offerers_factories.UserOffererFactory(user=pro_user, offerer=offerer)
         bank_account = finance_factories.BankAccountFactory(offerer=offerer)
         first_venue, second_venue, third_venue, fourth_venue = offerers_factories.VenueFactory.create_batch(
-            4, managingOfferer=offerer
+            4, managingOfferer=offerer, pricing_point="self"
         )
 
         first_current_link = offerers_factories.VenueBankAccountLinkFactory(
@@ -469,11 +470,11 @@ class OffererPatchBankAccountsTest:
         pro_user = users_factories.ProFactory()
         offerers_factories.UserOffererFactory(user=pro_user, offerer=offerer)
         bank_account = finance_factories.BankAccountFactory(offerer=offerer)
-        venue = offerers_factories.VenueFactory(managingOfferer=offerer)
+        venue = offerers_factories.VenueFactory(managingOfferer=offerer, pricing_point="self")
 
         foreign_offerer = offerers_factories.OffererFactory()
         foreign_bank_account = finance_factories.BankAccountFactory(offerer=foreign_offerer)
-        foreign_venue = offerers_factories.VenueFactory(managingOfferer=foreign_offerer)
+        foreign_venue = offerers_factories.VenueFactory(managingOfferer=foreign_offerer, pricing_point="self")
         foreign_link = offerers_factories.VenueBankAccountLinkFactory(
             venueId=foreign_venue.id, bankAccountId=foreign_bank_account.id, timespan=(datetime.datetime.utcnow(),)
         )
@@ -528,3 +529,34 @@ class OffererPatchBankAccountsTest:
             assert action_logged.authorUserId == action_occured.authorUserId
             assert action_logged.venueId == action_occured.venueId
             assert action_logged.bankAccountId == action_occured.bankAccountId
+
+    def test_user_cannot_link_venue_to_bank_account_if_no_pricing_point(self, db_session, client):
+        offerer = offerers_factories.OffererFactory()
+        pro_user = users_factories.ProFactory()
+        offerers_factories.UserOffererFactory(user=pro_user, offerer=offerer)
+        bank_account = finance_factories.BankAccountFactory(offerer=offerer)
+        bank_account_id = bank_account.id
+        venue = offerers_factories.VenueFactory(managingOfferer=offerer)
+        venue_id = venue.id
+        venue_with_pp = offerers_factories.VenueFactory(managingOfferer=offerer, pricing_point="self")
+        venue_with_pp_id = venue_with_pp.id
+
+        assert not bank_account.venueLinks
+
+        http_client = client.with_session_auth(pro_user.email)
+
+        response = http_client.patch(
+            f"/offerers/{offerer.id}/bank-accounts/{bank_account_id}",
+            json={"venues_ids": [venue_id, venue_with_pp_id]},
+        )
+
+        assert response.status_code == 204
+
+        response = http_client.get(f"/offerers/{offerer.id}/bank-accounts/")
+
+        assert response.status_code == 200
+        assert len(response.json["bankAccounts"]) == 1
+        bank_account_response = response.json["bankAccounts"].pop()
+        assert bank_account_response["linkedVenues"] == [
+            {"commonName": venue_with_pp.commonName, "id": venue_with_pp_id}
+        ]
