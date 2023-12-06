@@ -560,3 +560,32 @@ class OffererPatchBankAccountsTest:
         assert bank_account_response["linkedVenues"] == [
             {"commonName": venue_with_pp.commonName, "id": venue_with_pp_id}
         ]
+
+    def test_user_cannot_link_venue_to_bank_account_if_not_right_status(self, db_session, client):
+        offerer = offerers_factories.OffererFactory()
+        pro_user = users_factories.ProFactory()
+        offerers_factories.UserOffererFactory(user=pro_user, offerer=offerer)
+        bank_account = finance_factories.BankAccountFactory(
+            offerer=offerer, status=finance_models.BankAccountApplicationStatus.DRAFT
+        )
+        bank_account_id = bank_account.id
+        venue = offerers_factories.VenueFactory(managingOfferer=offerer)
+        venue_id = venue.id
+
+        assert not bank_account.venueLinks
+
+        http_client = client.with_session_auth(pro_user.email)
+
+        response = http_client.patch(
+            f"/offerers/{offerer.id}/bank-accounts/{bank_account_id}",
+            json={"venues_ids": [venue_id]},
+        )
+
+        assert response.status_code == 404
+
+        response = http_client.get(f"/offerers/{offerer.id}/bank-accounts/")
+
+        assert response.status_code == 200
+        assert len(response.json["bankAccounts"]) == 1
+        bank_account_response = response.json["bankAccounts"].pop()
+        assert not bank_account_response["linkedVenues"]
