@@ -1,11 +1,12 @@
 import datetime
 
 from flask_sqlalchemy import BaseQuery
+import sqlalchemy as sa
 from sqlalchemy import and_
 from sqlalchemy import or_
 
 from pcapi.core.bookings import models as bookings_models
-from pcapi.core.categories import subcategories_v2
+from pcapi.core.categories import subcategories_v2 as subcategories
 from pcapi.core.educational import models as educational_models
 from pcapi.core.finance import models as finance_models
 from pcapi.core.offers import models as offers_models
@@ -53,13 +54,17 @@ def get_bookings(
     if form.venue.data:
         base_query = base_query.filter(booking_class.venueId.in_(form.venue.data))  # type: ignore [attr-defined]
 
-    if form.category.data and offer_class.subcategoryId:
+    if getattr(offer_class, "subcategoryId", None) and hasattr(form, "category") and form.category.data:
         base_query = base_query.filter(
-            offer_class.subcategoryId.in_(  # type: ignore[attr-defined]
+            offer_class.subcategoryId.in_(  # type: ignore[union-attr]
                 subcategory.id
-                for subcategory in subcategories_v2.ALL_SUBCATEGORIES
+                for subcategory in subcategories.ALL_SUBCATEGORIES
                 if subcategory.category.id in form.category.data
             )
+        )
+    elif hasattr(offer_class, "formats") and hasattr(form, "formats") and form.formats.data:
+        base_query = base_query.filter(
+            offer_class.formats.overlap(sa.dialects.postgresql.array((fmt for fmt in form.formats.data)))  # type: ignore[union-attr]
         )
 
     if form.status.data:
