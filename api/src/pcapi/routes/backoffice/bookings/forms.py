@@ -7,6 +7,7 @@ import wtforms
 
 from pcapi.core.bookings import models as bookings_models
 from pcapi.core.categories import categories
+from pcapi.core.categories import subcategories_v2 as subcategories
 from pcapi.core.educational import models as educational_models
 from pcapi.routes.backoffice import filters
 from pcapi.routes.backoffice.forms import fields
@@ -61,9 +62,6 @@ class BaseBookingListForm(FlaskForm):
     venue = fields.PCTomSelectField(
         "Lieux", multiple=True, choices=[], validate_choice=False, endpoint="backoffice_web.autocomplete_venues"
     )
-    category = fields.PCSelectMultipleField(
-        "Catégories", choices=utils.choices_from_enum(categories.CategoryIdLabelEnum)
-    )
     status = fields.PCSelectMultipleField("États")
     cashflow_batches = fields.PCTomSelectField(
         "Virements",
@@ -79,7 +77,6 @@ class BaseBookingListForm(FlaskForm):
                 self.q.data,
                 self.offerer.data,
                 self.venue.data,
-                self.category.data,
                 self.status.data,
                 self.from_to_date.data,
                 self.event_from_date.data,
@@ -94,7 +91,6 @@ class BaseBookingListForm(FlaskForm):
             (
                 self.q.data,
                 self.offerer.data,
-                self.category.data,
                 self.status.data,
                 self.event_from_date.data,
                 self.event_to_date.data,
@@ -136,12 +132,46 @@ class GetCollectiveBookingListForm(BaseBookingListForm):
         self.q.label.text = "ID réservation collective, ID offre, Nom ou ID de l'établissement"
         self.status.choices = utils.choices_from_enum(CollectiveBookingStatus)
 
+        self._fields.move_to_end("offerer")
+        self._fields.move_to_end("venue")
+        self._fields.move_to_end("formats")
+        self._fields.move_to_end("status")
+        self._fields.move_to_end("cashflow_batches")
+
+    def is_empty(self) -> bool:
+        return super().is_empty() and not self.formats.data
+
+    @property
+    def is_single_venue_with_optional_dates(self) -> bool:
+        return super().is_single_venue_with_optional_dates and not self.formats.data
+
+    formats = fields.PCSelectMultipleField(
+        "Formats", choices=utils.choices_from_enum(subcategories.EacFormat), field_list_compatibility=True
+    )
+
 
 class GetIndividualBookingListForm(BaseBookingListForm):
     def __init__(self, *args: typing.Any, **kwargs: typing.Any) -> None:
         super().__init__(*args, **kwargs)
         self.q.label.text = "Code contremarque ou liste, Nom, email ou ID (offre, bénéficiaire ou résa)"
         self.status.choices = utils.choices_from_enum(BookingStatus)
+
+        self._fields.move_to_end("offerer")
+        self._fields.move_to_end("venue")
+        self._fields.move_to_end("category")
+        self._fields.move_to_end("status")
+        self._fields.move_to_end("cashflow_batches")
+
+    def is_empty(self) -> bool:
+        return super().is_empty() and not self.category.data
+
+    @property
+    def is_single_venue_with_optional_dates(self) -> bool:
+        return super().is_single_venue_with_optional_dates and not self.category.data
+
+    category = fields.PCSelectMultipleField(
+        "Catégories", choices=utils.choices_from_enum(categories.CategoryIdLabelEnum)
+    )
 
 
 class CancelCollectiveBookingForm(FlaskForm):

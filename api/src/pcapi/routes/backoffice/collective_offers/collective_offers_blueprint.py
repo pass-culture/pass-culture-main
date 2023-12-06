@@ -9,7 +9,6 @@ from flask_login import current_user
 import sqlalchemy as sa
 
 from pcapi.core import search
-from pcapi.core.categories import subcategories_v2 as subcategories
 from pcapi.core.educational import adage_backends as adage_client
 from pcapi.core.educational import models as educational_models
 from pcapi.core.educational.adage_backends.serialize import serialize_collective_offer
@@ -79,12 +78,10 @@ def _get_collective_offers(
         to_datetime = date_utils.date_to_localized_datetime(form.to_date.data, datetime.datetime.max.time())
         base_query = base_query.filter(educational_models.CollectiveOffer.dateCreated <= to_datetime)
 
-    if form.category.data:
+    if form.formats.data:
         base_query = base_query.filter(
-            educational_models.CollectiveOffer.subcategoryId.in_(
-                subcategory.id
-                for subcategory in subcategories.ALL_SUBCATEGORIES
-                if subcategory.category.id in form.category.data
+            educational_models.CollectiveOffer.formats.overlap(
+                sa.dialects.postgresql.array((fmt for fmt in form.formats.data))
             )
         )
 

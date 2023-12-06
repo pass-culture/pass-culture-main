@@ -59,7 +59,7 @@ def _get_collective_bookings(
             .load_only(
                 educational_models.CollectiveOffer.id,
                 educational_models.CollectiveOffer.name,
-                educational_models.CollectiveOffer.subcategoryId,
+                educational_models.CollectiveOffer.formats,
             ),
             sa.orm.joinedload(educational_models.CollectiveBooking.educationalInstitution).load_only(
                 educational_models.EducationalInstitution.id, educational_models.EducationalInstitution.name

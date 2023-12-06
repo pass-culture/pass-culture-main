@@ -4,7 +4,7 @@ import typing
 from flask_wtf import FlaskForm
 import wtforms
 
-from pcapi.core.categories import categories
+from pcapi.core.categories import subcategories_v2 as subcategories
 from pcapi.models.offer_mixin import OfferValidationStatus
 from pcapi.routes.backoffice import filters
 from pcapi.routes.backoffice.forms import fields
@@ -46,9 +46,7 @@ class GetCollectiveOffersListForm(GetOffersBaseFields):
     to_date = fields.PCDateField("Jusqu'au", validators=(wtforms.validators.Optional(),))
     only_validated_offerers = fields.PCSwitchBooleanField("Uniquement les offres des structures validées")
     q = fields.PCOptSearchField("ID, nom de l'offre")
-    category = fields.PCSelectMultipleField(
-        "Catégories", choices=utils.choices_from_enum(categories.CategoryIdLabelEnum)
-    )
+    formats = fields.PCSelectMultipleField("Formats", choices=utils.choices_from_enum(subcategories.EacFormat))
     offerer = fields.PCTomSelectField(
         "Structures",
         multiple=True,
@@ -79,7 +77,7 @@ class GetCollectiveOffersListForm(GetOffersBaseFields):
         # 'only_validated_offerers', 'sort' must be combined with other filters
         return not any(
             (
-                self.category.data,
+                self.formats.data,
                 self.venue.data,
                 self.offerer.data,
                 self.status.data,
