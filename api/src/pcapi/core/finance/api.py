@@ -1190,8 +1190,8 @@ def _generate_reimbursement_points_file(cutoff: datetime.datetime) -> pathlib.Pa
 def _clean_for_accounting(value: str) -> str:
     if not isinstance(value, str):
         return value
-    # Accounting software dislikes quotes and newline characters.
-    return value.strip().replace('"', "").replace("\n", "")
+    # Accounting software can't read CSV files properly
+    return value.strip().replace('"', "").replace(";", "").replace("\n", "")
 
 
 def _generate_payments_file(batch_id: int) -> pathlib.Path:

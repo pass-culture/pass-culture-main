@@ -91,6 +91,11 @@ class CleanStringTest:
         result = api._clean_for_accounting(name)
         assert result == "saut  de ligne"
 
+    def test_remove_semicolon_within_string(self):
+        name = "point-virgule ; au milieu ; de la ligne"
+        result = api._clean_for_accounting(name)
+        assert result == "point-virgule  au milieu  de la ligne"
+
     def test_return_value_sent_if_not_string(self):
         number = 1
         result = api._clean_for_accounting(number)
