@@ -168,7 +168,7 @@ class Returns201Test:
     @patch("pcapi.core.search.async_index_offer_ids")
     def test_edit_one_stock(self, mocked_async_index_offer_ids, client):
         offer = offers_factories.ThingOfferFactory(isActive=False, validation=OfferValidationStatus.DRAFT)
-        existing_stock = offers_factories.StockFactory(offer=offer, price=10)
+        existing_stock = offers_factories.StockFactory(offer=offer, price=10, quantity=10)
         offerers_factories.UserOffererFactory(
             user__email="user@example.com",
             offerer=offer.venue.managingOfferer,
@@ -177,7 +177,7 @@ class Returns201Test:
         # When
         stock_data = {
             "offerId": offer.id,
-            "stocks": [{"id": existing_stock.id, "price": 20}],
+            "stocks": [{"id": existing_stock.id, "price": 20, "quantity": 10}],
         }
 
         response = client.with_session_auth("user@example.com").post("/stocks/bulk/", json=stock_data)
