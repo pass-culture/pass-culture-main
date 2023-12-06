@@ -62,7 +62,7 @@ class FraudReasonCode(enum.Enum):
     DOCUMENT_DAMAGED = "document_damaged"
     ELIGIBILITY_CHANGED = "eligibility_changed"  # The user's eligibility detected by ubble is different from the eligibility declared by the user
     ID_CHECK_BLOCKED_OTHER = (
-        "id_check_bocked_other"  # Default reason code when the user's ID check is blocked for an unhandled reason
+        "id_check_blocked_other"  # Default reason code when the user's ID check is blocked for an unhandled reason
     )
     ID_CHECK_DATA_MATCH = "id_check_data_match"  # Ubble check did not match the data declared in the app (profile step)
     ID_CHECK_EXPIRED = "id_check_expired"
