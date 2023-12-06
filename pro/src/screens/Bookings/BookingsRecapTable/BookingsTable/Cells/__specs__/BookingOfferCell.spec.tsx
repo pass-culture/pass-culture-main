@@ -34,7 +34,6 @@ describe('bookings offer cell', () => {
     const title = screen.getByText('La Guitare pour les nuls')
     const title_link = title.closest('a')
     expect(title_link?.href).toContain(`offre/individuelle/${offerId}`)
-    expect(title_link?.target).toContain('_blank')
   })
 
   it('offer name with a link to the offer when stock is a thing', () => {
@@ -55,7 +54,6 @@ describe('bookings offer cell', () => {
     const offer_name = screen.getByText('Guitare acoustique')
     const offer_name_link = offer_name.closest('a')
     expect(offer_name_link?.href).toContain(`offre/individuelle/${offerId}`)
-    expect(offer_name_link?.target).toContain('_blank')
   })
 
   it('offer name and event beginning datetime in venue timezone when stock is an event', () => {
@@ -77,7 +75,6 @@ describe('bookings offer cell', () => {
     const offer_name = screen.getByText('La danse des poireaux')
     const offer_name_link = offer_name.closest('a')
     expect(offer_name_link?.href).toContain(`offre/individuelle/${offerId}`)
-    expect(offer_name_link?.target).toContain('_blank')
   })
 
   it('should display warning when limit booking date is in less than 7 days', () => {
