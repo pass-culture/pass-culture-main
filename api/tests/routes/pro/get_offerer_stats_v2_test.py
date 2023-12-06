@@ -19,7 +19,9 @@ def test_get_offerer_stats(client):
     offer = offers_factories.OfferFactory(
         venue__managingOfferer=user_offerer.offerer, validation=OfferValidationStatus.APPROVED
     )
-    offers_factories.StockFactory(offer=offer)
+    for _ in range(3):
+        offers_factories.StockFactory(offer=offer)
+
     for _ in range(2):
         educational_factories.CollectiveOfferFactory(
             venue__managingOfferer=user_offerer.offerer, validation=OfferValidationStatus.APPROVED
