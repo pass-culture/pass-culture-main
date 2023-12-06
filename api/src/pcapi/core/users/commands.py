@@ -53,7 +53,7 @@ def anonymize_inactive_users(category: str, force: bool) -> None:
         user_api.anonymize_beneficiary_users(force=force)
         user_api.anonymize_user_deposits()
     if category in ("neither", "all"):
-        print("Anonymising users that are neither beneficiaries nor pro 3 years after their last connection")
+        print("Anonymizing users that are neither beneficiaries nor pro 3 years after their last connection")
         user_api.anonymize_non_pro_non_beneficiary_users(force=force)
     if category in ("pro", "all"):
-        print("Anonymising pro users X years after their last connection [not implemented]")
+        print("Anonymizing pro users X years after their last connection [not implemented]")

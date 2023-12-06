@@ -181,6 +181,7 @@ def create_industrial_gdpr_users() -> None:
         address="1w Place Charles de Gaulle",
         postalCode="75016",
         city="Paris",
+        departementCode="75",
         irisFrance=geography_factories.IrisFranceFactory(
             # lat=48.873437, lon=2.294899
             code="751166409",
@@ -201,6 +202,7 @@ def create_industrial_gdpr_users() -> None:
         address="15 L'Ortille",
         postalCode="60200",
         city="Compiègne",
+        departementCode="60",
         irisFrance=geography_factories.IrisFranceFactory(
             # lat=49.49421, lon=2.811936
             code="601591901",

@@ -1444,7 +1444,7 @@ def anonymize_user(user: users_models.User, *, force: bool = False) -> None:
         try:
             iris = get_iris_from_address(address=user.address, postcode=user.postalCode)
         except (api_adresse.AdresseApiException, api_adresse.InvalidFormatException) as exc:
-            logger.error("Could not anonymize user", extra={"user_id": user.id, "exc": exc})
+            logger.error("Could not anonymize user", extra={"user_id": user.id, "exc": str(exc)})
             return
 
         if not iris and not force:
@@ -1455,10 +1455,10 @@ def anonymize_user(user: users_models.User, *, force: bool = False) -> None:
     except ExternalAPIException as exc:
         # If is_retryable it is a real error. If this flag is False then it means the email is unknown for brevo.
         if exc.is_retryable:
-            logger.error("Could not anonymize user", extra={"user_id": user.id, "exc": exc})
+            logger.error("Could not anonymize user", extra={"user_id": user.id, "exc": str(exc)})
             return
     except Exception as exc:  # pylint: disable=broad-exception-caught
-        logger.error("Could not anonymize user", extra={"user_id": user.id, "exc": exc})
+        logger.error("Could not anonymize user", extra={"user_id": user.id, "exc": str(exc)})
         return
 
     for beneficiary_fraud_check in user.beneficiaryFraudChecks:
@@ -1490,7 +1490,7 @@ def anonymize_user(user: users_models.User, *, force: bool = False) -> None:
     user.irisFrance = iris
     user.validatedBirthDate = user.validatedBirthDate.replace(day=1, month=1) if user.validatedBirthDate else None
 
-    external_email_anonymized = _anonymise_external_user_email(user)
+    external_email_anonymized = _anonymize_external_user_email(user)
 
     users_models.TrustedDevice.query.filter(users_models.TrustedDevice.userId == user.id).delete()
     users_models.LoginDeviceHistory.query.filter(users_models.LoginDeviceHistory.userId == user.id).delete()
@@ -1511,7 +1511,7 @@ def anonymize_user(user: users_models.User, *, force: bool = False) -> None:
     return
 
 
-def _anonymise_external_user_email(user: users_models.User) -> bool:
+def _anonymize_external_user_email(user: users_models.User) -> bool:
     # check if this email is used in booking_email (it should not be)
     is_email_used = (
         db.session.query(
@@ -1534,11 +1534,10 @@ def _anonymise_external_user_email(user: users_models.User) -> bool:
     except ExternalAPIException as exc:
         # If is_retryable it is a real error. If this flag is False then it means the email is unknown for brevo.
         if exc.is_retryable:
-            logger.error("Could not anonymize user", extra={"user_id": user.id, "exc": exc})
+            logger.error("Could not anonymize user", extra={"user_id": user.id, "exc": str(exc)})
             return False
     except Exception as exc:  # pylint: disable=broad-exception-caught
-        print(exc)
-        logger.error("Could not anonymize user", extra={"user_id": user.id, "exc": exc})
+        logger.error("Could not anonymize user", extra={"user_id": user.id, "exc": str(exc)})
         return False
 
     return True
