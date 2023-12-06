@@ -4,7 +4,10 @@
 
 .no-match {
   align-items: center;
-  background: linear-gradient(125deg, colors.$primary, colors.$secondary);
+  background-image: url("/icons/linear-gradient.jpg");
+  background-color: colors.$secondary;
+  background-size:cover;
+  background-position:center;
   color: colors.$white;
   display: flex;
   flex-direction: column;
@@ -19,21 +22,10 @@
   }
 
   p {
-    @include fonts.title2;
+    @include fonts.title4;
   }
 
   .nm-redirection-link {
-    @include fonts.button;
-
-    align-items: center;
-    background-color: transparent;
-    border: rem.torem(2px) solid colors.$white;
-    border-radius: rem.torem(24px);
-    color: colors.$white;
-    justify-content: center;
-    margin-top: rem.torem(48px);
-    max-height: rem.torem(50px);
-    outline: none;
-    padding: rem.torem(12px) rem.torem(52px);
+    margin:40px auto;
   }
 }
