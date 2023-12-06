@@ -212,7 +212,7 @@ def google_auth(body: authentication.GoogleSigninRequest) -> authentication.Sign
 
     if not user:
         logger.info(
-            "Failed authentication attempt",
+            "Successful SSO authentication but no matching email found, sending account creation token",
             extra={
                 "identifier": email,
                 "sso_provider": "google",
@@ -223,7 +223,16 @@ def google_auth(body: authentication.GoogleSigninRequest) -> authentication.Sign
             },
             technical_message_id="users.login.sso.google",
         )
-        raise ApiErrors({"email": "unknown"}, status_code=401)
+        encoded_account_creation_token = users_api.create_account_creation_token(google_user)
+        # the frontends (web, ios & android app) will handle this error and redirect to the account creation form
+        raise ApiErrors(
+            {
+                "code": "SSO_EMAIL_NOT_FOUND",
+                "accountCreationToken": encoded_account_creation_token,
+                "general": [f"Aucun compte pass Culture lié à {email} n'a été trouvé"],
+            },
+            status_code=401,
+        )
 
     user_ssos = user.single_sign_ons if user else []
     user_has_another_google_account_linked = user_ssos and sso_user_id not in [sso.ssoUserId for sso in user_ssos]
