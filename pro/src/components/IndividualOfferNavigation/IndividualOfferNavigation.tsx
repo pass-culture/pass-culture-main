@@ -120,7 +120,7 @@ export const IndividualOfferNavigation = () => {
   ) {
     steps.push({
       id: OFFER_WIZARD_STEP_IDS.BOOKINGS,
-      label: <LabelBooking bookingsCount={offer?.bookingsCount} />,
+      label: <LabelBooking bookingsCount={offer?.bookingsCount || 0} />,
       path: getIndividualOfferPath({
         step: OFFER_WIZARD_STEP_IDS.BOOKINGS,
         mode: OFFER_WIZARD_MODE.READ_ONLY,

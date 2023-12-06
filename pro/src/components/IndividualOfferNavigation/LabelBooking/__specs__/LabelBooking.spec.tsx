@@ -9,4 +9,10 @@ describe('LabelBooking', () => {
     expect(screen.getByText('Réservations')).toBeInTheDocument()
     expect(screen.getByText('123')).toBeInTheDocument()
   })
+
+  it('should not display 0', () => {
+    render(<LabelBooking bookingsCount={0} />)
+
+    expect(screen.queryByText(/0/)).not.toBeInTheDocument()
+  })
 })

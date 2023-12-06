@@ -3,7 +3,7 @@
 @use "styles/variables/_colors.scss" as colors;
 
 .bookings-count {
-  @include fonts.body-important;
+  @include fonts.mini-highlight;
 
   padding: 0 rem.torem(8px);
   background-color: colors.$primary;
