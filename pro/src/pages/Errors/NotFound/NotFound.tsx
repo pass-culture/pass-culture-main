@@ -1,10 +1,12 @@
 import React from 'react'
-import { Link } from 'react-router-dom'
 
 import stroke404Icon from 'icons/stroke-404.svg'
+import ButtonLink from 'ui-kit/Button/ButtonLink'
+import { ButtonVariant } from 'ui-kit/Button/types'
 import { SvgIcon } from 'ui-kit/SvgIcon/SvgIcon'
 
 import styles from './NotFound.module.scss'
+
 interface Props {
   redirect?: string
 }
@@ -20,9 +22,13 @@ const NotFound = ({ redirect = '/accueil' }: Props) => (
     />
     <h1>Oh non !</h1>
     <p>Cette page n’existe pas.</p>
-    <Link className={styles['nm-redirection-link']} to={redirect}>
+    <ButtonLink
+      className={styles['nm-redirection-link']}
+      variant={ButtonVariant.SECONDARY}
+      link={{ to: redirect, isExternal: false }}
+    >
       Retour à la page d’accueil
-    </Link>
+    </ButtonLink>
   </main>
 )
 
