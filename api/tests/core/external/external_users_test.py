@@ -8,8 +8,10 @@ import pytest
 from pcapi.core.bookings.factories import BookingFactory
 from pcapi.core.bookings.factories import CancelledBookingFactory
 from pcapi.core.bookings.models import BookingStatus
+from pcapi.core.categories import categories
 from pcapi.core.categories import subcategories_v2 as subcategories
 from pcapi.core.external.attributes.api import TRACKED_PRODUCT_IDS
+from pcapi.core.external.attributes.api import get_booking_attributes_2023
 from pcapi.core.external.attributes.api import get_bookings_categories_and_subcategories
 from pcapi.core.external.attributes.api import get_most_favorite_subcategories
 from pcapi.core.external.attributes.api import get_user_attributes
@@ -20,6 +22,7 @@ from pcapi.core.external.attributes.models import UserAttributes
 import pcapi.core.finance.conf as finance_conf
 from pcapi.core.fraud import factories as fraud_factories
 from pcapi.core.fraud import models as fraud_models
+from pcapi.core.offers.factories import EventOfferFactory
 from pcapi.core.offers.factories import OfferFactory
 from pcapi.core.offers.factories import ProductFactory
 from pcapi.core.subscription import api as subscription_api
@@ -85,7 +88,7 @@ def test_update_external_pro_user():
     assert len(sendinblue_testing.sendinblue_requests) == 1
 
 
-@freeze_time("2022-12-06 10:00:00")  # Keep time frozen in 2022 as long as we send *_2022 attributes
+@freeze_time("2023-12-06 10:00:00")  # Keep time frozen in 2023 as long as we send *_2023 attributes
 def test_get_user_attributes_beneficiary_with_v1_deposit():
     user = BeneficiaryGrant18Factory(
         deposit__version=1,
@@ -99,16 +102,17 @@ def test_get_user_attributes_beneficiary_with_v1_deposit():
         subcategoryId=subcategories.SEANCE_CINE.id,
         extraData={"genres": ["THRILLER"]},
     )
-    b1 = BookingFactory(user=user, amount=10, dateCreated=datetime(2022, 12, 6, 10), stock__offer=offer)
+    b1 = BookingFactory(user=user, amount=10, dateCreated=datetime(2023, 12, 6, 10), stock__offer=offer)
     b2 = BookingFactory(
         user=user,
         amount=10,
-        dateCreated=datetime(2022, 12, 6, 11),
-        dateUsed=datetime(2022, 12, 7),
+        dateCreated=datetime(2023, 12, 6, 11),
+        dateUsed=datetime(2023, 12, 7),
         stock__offer=offer,
     )
+    b3 = BookingFactory(user=user, amount=5, dateCreated=datetime(2023, 12, 6, 11), stock__offer__venue=offer.venue)
     BookingFactory(
-        user=user, amount=100, dateCreated=datetime(2022, 12, 6, 12), status=BookingStatus.CANCELLED
+        user=user, amount=100, dateCreated=datetime(2023, 12, 6, 12), status=BookingStatus.CANCELLED
     )  # should be ignored
     FavoriteFactory(
         user=user,
@@ -133,12 +137,12 @@ def test_get_user_attributes_beneficiary_with_v1_deposit():
 
     assert attributes == UserAttributes(
         domains_credit=DomainsCredit(
-            all=Credit(initial=Decimal("500"), remaining=Decimal("480.00")),
+            all=Credit(initial=Decimal("500"), remaining=Decimal("475.00")),
             digital=Credit(initial=Decimal("200"), remaining=Decimal("200")),
-            physical=Credit(initial=200, remaining=Decimal("200.00")),
+            physical=Credit(initial=200, remaining=Decimal("195.00")),
         ),
-        booking_categories=["CINEMA"],
-        booking_venues_count=1,  # twice the same offer, same venue
+        booking_categories=["CINEMA", "FILM"],
+        booking_venues_count=1,  # three bookings on the same venue
         city="Paris",
         date_created=user.dateCreated,
         date_of_birth=user.dateOfBirth,
@@ -157,9 +161,9 @@ def test_get_user_attributes_beneficiary_with_v1_deposit():
         marketing_push_subscription=True,
         phone_number="+33746050403",
         postal_code=None,
-        products_use_date={"product_brut_x_use": datetime(2022, 12, 7, 0, 0)},
-        booking_count=2,
-        booking_subcategories=["SEANCE_CINE"],
+        products_use_date={"product_brut_x_use": datetime(2023, 12, 7, 0, 0)},
+        booking_count=3,
+        booking_subcategories=["SEANCE_CINE", "SUPPORT_PHYSIQUE_FILM"],
         deposit_activation_date=user.deposit_activation_date,
         has_completed_id_check=True,
         user_id=user.id,
@@ -176,9 +180,16 @@ def test_get_user_attributes_beneficiary_with_v1_deposit():
         roles=[UserRole.BENEFICIARY.value],
         suspension_date=None,
         suspension_reason=None,
-        amount_spent_2022=Decimal("20.00"),
-        first_booked_offer_2022=offer.name,
-        last_booked_offer_2022=offer.name,
+        amount_spent_2023=Decimal("25.00"),
+        booking_venues_count_2023=1,
+        duo_booking_count_2023=0,
+        event_booking_count_2023=2,  # 2 x SEANCE_CINE
+        first_booked_offer_2023=offer.name,
+        last_booked_offer_2023=b3.stock.offer.name,
+        most_booked_category_2023="CINEMA",
+        most_booked_movie_genre_2023="THRILLER",
+        most_booked_music_type_2023=None,
+        most_booked_rayon_2023=None,
     )
 
 
@@ -238,13 +249,20 @@ def test_get_user_attributes_ex_beneficiary_because_of_expiration():
         roles=[UserRole.BENEFICIARY.value],
         suspension_date=None,
         suspension_reason=None,
-        amount_spent_2022=0.0,
-        first_booked_offer_2022=None,
-        last_booked_offer_2022=None,
+        amount_spent_2023=0.0,
+        first_booked_offer_2023=None,
+        last_booked_offer_2023=None,
+        booking_venues_count_2023=0,
+        duo_booking_count_2023=0,
+        event_booking_count_2023=0,
+        most_booked_category_2023=None,
+        most_booked_movie_genre_2023=None,
+        most_booked_music_type_2023=None,
+        most_booked_rayon_2023=None,
     )
 
 
-@freeze_time("2022-12-06 10:00:00")  # Keep time frozen in 2022 as long as we send *_2022 attributes
+@freeze_time("2023-12-06 10:00:00")  # Keep time frozen in 2023 as long as we send *_2023 attributes
 def test_get_user_attributes_beneficiary_because_of_credit():
     user = BeneficiaryGrant18Factory(
         departementCode="75",
@@ -252,11 +270,11 @@ def test_get_user_attributes_beneficiary_because_of_credit():
         phoneValidationStatus=PhoneValidationStatusType.VALIDATED,
     )
     offer1 = OfferFactory(product=ProductFactory(id=list(TRACKED_PRODUCT_IDS.keys())[0]))
-    offer2 = OfferFactory(venue=offer1.venue)
+    offer2 = EventOfferFactory(venue=offer1.venue, isDuo=True)
     offer3 = OfferFactory()
     BookingFactory(user=user, amount=100, dateCreated=datetime(2022, 12, 6, 11), stock__offer=offer1)
-    BookingFactory(user=user, amount=120, dateCreated=datetime(2022, 12, 6, 12), stock__offer=offer2)
-    last_booking = BookingFactory(user=user, amount=80, dateCreated=datetime(2022, 12, 6, 13), stock__offer=offer3)
+    BookingFactory(user=user, amount=120, dateCreated=datetime(2023, 12, 6, 12), stock__offer=offer2)
+    last_booking = BookingFactory(user=user, amount=80, dateCreated=datetime(2023, 12, 6, 13), stock__offer=offer3)
     favorite = FavoriteFactory(user=user, offer=OfferFactory(subcategoryId=subcategories.CONCERT.id))
 
     with assert_no_duplicated_queries():
@@ -268,7 +286,7 @@ def test_get_user_attributes_beneficiary_because_of_credit():
             digital=Credit(initial=Decimal("100"), remaining=Decimal("0.00")),
             physical=None,
         ),
-        booking_categories=["FILM"],
+        booking_categories=["CINEMA", "FILM"],
         booking_venues_count=2,
         city=user.city,
         date_created=user.dateCreated,
@@ -290,7 +308,7 @@ def test_get_user_attributes_beneficiary_because_of_credit():
         postal_code=None,
         products_use_date={},
         booking_count=3,
-        booking_subcategories=["SUPPORT_PHYSIQUE_FILM"],
+        booking_subcategories=["SEANCE_CINE", "SUPPORT_PHYSIQUE_FILM"],
         deposit_activation_date=user.deposit_activation_date,
         has_completed_id_check=True,
         user_id=user.id,
@@ -307,9 +325,16 @@ def test_get_user_attributes_beneficiary_because_of_credit():
         roles=[UserRole.BENEFICIARY.value],
         suspension_date=None,
         suspension_reason=None,
-        amount_spent_2022=Decimal("300.00"),
-        first_booked_offer_2022=offer1.name,
-        last_booked_offer_2022=offer3.name,
+        amount_spent_2023=Decimal("200.00"),
+        booking_venues_count_2023=2,
+        duo_booking_count_2023=0,  # offer is duo but booking is not duo
+        event_booking_count_2023=1,
+        first_booked_offer_2023=offer2.name,
+        last_booked_offer_2023=offer3.name,
+        most_booked_category_2023="CINEMA",
+        most_booked_movie_genre_2023=None,
+        most_booked_music_type_2023=None,
+        most_booked_rayon_2023=None,
     )
 
 
@@ -444,9 +469,16 @@ def test_get_user_attributes_not_beneficiary():
         roles=[],
         suspension_date=None,
         suspension_reason=None,
-        amount_spent_2022=0.0,
-        first_booked_offer_2022=None,
-        last_booked_offer_2022=None,
+        amount_spent_2023=0.0,
+        booking_venues_count_2023=0,
+        duo_booking_count_2023=0,
+        event_booking_count_2023=0,
+        first_booked_offer_2023=None,
+        last_booked_offer_2023=None,
+        most_booked_category_2023=None,
+        most_booked_movie_genre_2023=None,
+        most_booked_music_type_2023=None,
+        most_booked_rayon_2023=None,
     )
 
 
@@ -592,4 +624,222 @@ def test_get_most_favorite_subcategories_two_equal():
     assert set(get_most_favorite_subcategories(favorites)) == {
         subcategories.SEANCE_CINE.id,
         subcategories.FESTIVAL_MUSIQUE.id,
+    }
+
+
+def test_get_booking_attributes_2023_cinema_most_booked():
+    user = BeneficiaryGrant18Factory()
+    bookings = [
+        BookingFactory(
+            user=user,
+            dateCreated=datetime(2023, 1, 1, 1),
+            stock__offer__subcategoryId=subcategories.CINE_PLEIN_AIR.id,
+            stock__offer__extraData={"genres": ["DRAMA", "HISTORICAL"]},
+            stock__price=10.00,
+            stock__offer__isDuo=True,
+            quantity=2,
+        ),
+        BookingFactory(
+            user=user,
+            dateCreated=datetime(2023, 5, 5, 5),
+            stock__offer__subcategoryId=subcategories.SEANCE_CINE.id,
+            stock__offer__extraData={"genres": ["THRILLER", "HISTORICAL"]},
+            stock__price=7.00,
+        ),
+        BookingFactory(
+            user=user,
+            dateCreated=datetime(2023, 2, 2, 2),
+            stock__offer__subcategoryId=subcategories.EVENEMENT_MUSIQUE.id,
+            stock__offer__extraData={"musicType": "800"},
+            stock__price=15.00,
+            stock__offer__isDuo=True,
+            quantity=1,
+        ),
+    ]
+
+    attributes_2023 = get_booking_attributes_2023(bookings)
+
+    assert attributes_2023 == {
+        "amount_spent_2023": 2 * 10 + 7 + 15,
+        "booking_venues_count_2023": 3,
+        "duo_booking_count_2023": 1,
+        "event_booking_count_2023": 3,
+        "first_booked_offer_2023": bookings[0].stock.offer.name,
+        "last_booked_offer_2023": bookings[1].stock.offer.name,
+        "most_booked_category_2023": categories.CINEMA.id,
+        "most_booked_movie_genre_2023": "HISTORICAL",
+        "most_booked_music_type_2023": None,  # not the most booked category
+        "most_booked_rayon_2023": None,  # not the most booked category
+    }
+
+
+def test_get_booking_attributes_2023_music_most_booked():
+    user = BeneficiaryGrant18Factory()
+    bookings = [
+        BookingFactory(
+            user=user,
+            dateCreated=datetime(2023, 1, 1, 1),
+            stock__offer__subcategoryId=subcategories.LIVESTREAM_MUSIQUE.id,
+            stock__offer__extraData={"musicType": "700"},
+            stock__price=7.00,
+        ),
+        BookingFactory(
+            user=user,
+            dateCreated=datetime(2023, 2, 2, 2),
+            stock__offer__subcategoryId=subcategories.EVENEMENT_MUSIQUE.id,
+            stock__offer__extraData={"musicType": "600"},
+            stock__price=15.00,
+            stock__offer__isDuo=True,
+            quantity=2,
+        ),
+        BookingFactory(
+            user=user,
+            dateCreated=datetime(2023, 3, 3, 3),
+            stock__offer__subcategoryId=subcategories.CONCERT.id,
+            stock__offer__extraData={"musicType": "700"},
+            stock__price=50.00,
+        ),
+        BookingFactory(
+            user=user,
+            dateCreated=datetime(2023, 4, 4, 4),
+            stock__offer__subcategoryId=subcategories.LIVRE_PAPIER.id,
+            stock__offer__extraData={"rayon": "Bandes dessinées adultes / Comics"},
+            stock__price=17.00,
+        ),
+    ]
+
+    attributes_2023 = get_booking_attributes_2023(bookings)
+
+    assert attributes_2023 == {
+        "amount_spent_2023": 7 + 2 * 15 + 50 + 17,
+        "booking_venues_count_2023": 4,
+        "duo_booking_count_2023": 1,
+        "event_booking_count_2023": 3,
+        "first_booked_offer_2023": bookings[0].stock.offer.name,
+        "last_booked_offer_2023": bookings[3].stock.offer.name,
+        "most_booked_category_2023": categories.MUSIQUE_LIVE.id,
+        "most_booked_movie_genre_2023": None,  # not the most booked category
+        "most_booked_music_type_2023": "700",
+        "most_booked_rayon_2023": None,  # not the most booked category
+    }
+
+
+def test_get_booking_attributes_2023_books_most_booked():
+    user = BeneficiaryGrant18Factory()
+    bookings = [
+        BookingFactory(
+            user=user,
+            dateCreated=datetime(2022, 1, 1, 1),
+            stock__offer__subcategoryId=subcategories.LIVRE_PAPIER.id,
+            stock__offer__extraData={"rayon": "Bandes dessinées adultes / Comics"},
+            stock__price=15.00,
+        ),
+        BookingFactory(
+            user=user,
+            dateCreated=datetime(2022, 12, 12, 12),
+            stock__offer__subcategoryId=subcategories.LIVRE_PAPIER.id,
+            stock__offer__extraData={"rayon": "Bandes dessinées adultes / Comics"},
+            stock__price=15.00,
+        ),
+        BookingFactory(
+            user=user,
+            dateCreated=datetime(2023, 2, 2, 2),
+            stock__offer__subcategoryId=subcategories.LIVRE_NUMERIQUE.id,
+            stock__offer__extraData={"rayon": "Littérature française"},
+            stock__price=8.00,
+        ),
+        BookingFactory(
+            user=user,
+            dateCreated=datetime(2023, 3, 3, 3),
+            stock__offer__subcategoryId=subcategories.LIVRE_PAPIER.id,
+            stock__offer__extraData={"rayon": "Littérature française"},
+            stock__price=9.00,
+        ),
+        BookingFactory(
+            user=user,
+            dateCreated=datetime(2023, 4, 4, 4),
+            stock__offer__subcategoryId=subcategories.LIVRE_PAPIER.id,
+            stock__offer__extraData={"rayon": "Bandes dessinées adultes / Comics"},
+            stock__price=10.00,
+        ),
+    ]
+
+    attributes_2023 = get_booking_attributes_2023(bookings)
+
+    assert attributes_2023 == {
+        "amount_spent_2023": 8 + 9 + 10,
+        "booking_venues_count_2023": 3,
+        "duo_booking_count_2023": 0,
+        "event_booking_count_2023": 0,
+        "first_booked_offer_2023": bookings[2].stock.offer.name,
+        "last_booked_offer_2023": bookings[4].stock.offer.name,
+        "most_booked_category_2023": categories.LIVRE.id,
+        "most_booked_movie_genre_2023": None,  # not the most booked category
+        "most_booked_music_type_2023": None,  # not the most booked category
+        "most_booked_rayon_2023": "Littérature française",
+    }
+
+
+def test_get_booking_attributes_2023_other_most_booked():
+    user = BeneficiaryGrant18Factory()
+    bookings = [
+        BookingFactory(
+            user=user,
+            dateCreated=datetime(2023, 1, 1, 1),
+            stock__offer__subcategoryId=subcategories.CINE_PLEIN_AIR.id,
+            stock__offer__extraData={"genres": ["DRAMA", "HISTORICAL"]},
+            stock__price=10.00,
+            stock__offer__isDuo=True,
+            quantity=2,
+        ),
+        BookingFactory(
+            user=user,
+            dateCreated=datetime(2023, 5, 5, 5),
+            stock__offer__subcategoryId=subcategories.DECOUVERTE_METIERS.id,
+            stock__price=3.00,
+        ),
+        BookingFactory(
+            user=user,
+            dateCreated=datetime(2023, 2, 2, 2),
+            stock__offer__subcategoryId=subcategories.EVENEMENT_MUSIQUE.id,
+            stock__offer__extraData={"musicType": "800"},
+            stock__price=15.00,
+            stock__offer__isDuo=True,
+            quantity=1,
+        ),
+        BookingFactory(
+            user=user,
+            dateCreated=datetime(2022, 12, 12, 12),
+            stock__offer__subcategoryId=subcategories.EVENEMENT_MUSIQUE.id,
+            stock__offer__extraData={"musicType": "1000"},
+            stock__price=50.00,
+        ),
+        BookingFactory(
+            user=user,
+            dateCreated=datetime(2023, 3, 3, 3),
+            stock__offer__subcategoryId=subcategories.LIVRE_PAPIER.id,
+            stock__offer__extraData={"rayon": "Bandes dessinées adultes / Comics"},
+            stock__price=17.00,
+        ),
+        BookingFactory(
+            user=user,
+            dateCreated=datetime(2023, 4, 4, 4),
+            stock__offer__subcategoryId=subcategories.RENCONTRE.id,
+            stock__price=5.00,
+        ),
+    ]
+
+    attributes_2023 = get_booking_attributes_2023(bookings)
+
+    assert attributes_2023 == {
+        "amount_spent_2023": 2 * 10 + 15 + 17 + 5 + 3,
+        "booking_venues_count_2023": 5,  # one is in 2022
+        "duo_booking_count_2023": 1,
+        "event_booking_count_2023": 4,
+        "first_booked_offer_2023": bookings[0].stock.offer.name,
+        "last_booked_offer_2023": bookings[1].stock.offer.name,
+        "most_booked_category_2023": categories.CONFERENCE_RENCONTRE.id,
+        "most_booked_movie_genre_2023": None,  # not the most booked category
+        "most_booked_music_type_2023": None,  # not the most booked category
+        "most_booked_rayon_2023": None,  # not the most booked category
     }

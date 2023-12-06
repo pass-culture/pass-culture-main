@@ -113,10 +113,10 @@ def test_format_batch_user():
 
 
 @pytest.mark.usefixtures("db_session")
-@freeze_time("2022-12-06 10:00:00")  # Keep time frozen in 2022 as long as we send *_2022 attributes
+@freeze_time("2023-12-06 10:00:00")  # Keep time frozen in 2023 as long as we send *_2023 attributes
 def test_format_sendinblue_user():
     user = BeneficiaryGrant18Factory(departementCode="75")
-    booking = BookingFactory(user=user, dateCreated=datetime.datetime(2022, 12, 6, 10))
+    booking = BookingFactory(user=user, dateCreated=datetime.datetime(2023, 12, 6, 10))
     favorite = FavoriteFactory(user=user)
 
     res = format_sendinblue_users([user])
@@ -141,6 +141,7 @@ def test_format_sendinblue_user():
         "ELIGIBILITY": user.eligibility,
         "FIRSTNAME": "Jeanne",
         "HAS_BOOKINGS": None,
+        "HAS_COLLECTIVE_OFFERS": None,
         "HAS_COMPLETED_ID_CHECK": True,
         "HAS_OFFERS": None,
         "INITIAL_CREDIT": Decimal("300.00"),
@@ -177,8 +178,15 @@ def test_format_sendinblue_user():
         "VENUE_LABEL": None,
         "VENUE_NAME": None,
         "VENUE_TYPE": None,
-        "AMOUNT_SPENT_2022": Decimal("10.10"),
-        "FIRST_BOOKED_OFFER_2022": booking.stock.offer.name,
-        "LAST_BOOKED_OFFER_2022": booking.stock.offer.name,
-        "HAS_COLLECTIVE_OFFERS": None,
+        "AMOUNT_SPENT_2023": Decimal("10.10"),
+        # Specific for December 2023 emailing campaign:
+        "BOOKING_VENUES_COUNT_2023": 1,
+        "DUO_BOOKING_COUNT_2023": 0,
+        "EVENT_BOOKING_COUNT_2023": 0,
+        "FIRST_BOOKED_OFFER_2023": booking.stock.offer.name,
+        "LAST_BOOKED_OFFER_2023": booking.stock.offer.name,
+        "MOST_BOOKED_CATEGORY_2023": "FILM",
+        "MOST_BOOKED_MOVIE_GENRE_2023": None,
+        "MOST_BOOKED_MUSIC_TYPE_2023": None,
+        "MOST_BOOKED_RAYON_2023": None,
     }
