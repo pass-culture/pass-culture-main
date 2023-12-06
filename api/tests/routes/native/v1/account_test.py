@@ -564,19 +564,20 @@ class AccountCreationEmailExistsTest:
 
 
 class AccountCreationWithSSOTest:
-    identifier = "email@example.com"
+    google_user = GoogleUser(sub="google_user_identifier", email="docteur.cuesta@passculture.app", email_verified=True)
 
     @patch("pcapi.connectors.api_recaptcha.check_recaptcha_token_is_valid")
-    @patch("pcapi.connectors.google_oauth.get_google_user")
-    def test_account_creation(self, mocked_google_oauth, mocked_check_recaptcha_token_is_valid, client):
-        mocked_google_oauth.side_effect = [
-            GoogleUser(sub="google_user_identifier", email="docteur.cuesta@passculture.app", email_verified=True)
-        ]
+    def test_account_creation(self, mocked_check_recaptcha_token_is_valid, client):
+        account_creation_token = token_utils.UUIDToken.create(
+            token_utils.TokenType.ACCOUNT_CREATION,
+            users_constants.ACCOUNT_CREATION_TOKEN_LIFE_TIME,
+            data=self.google_user.model_dump(),
+        )
 
         response = client.post(
             "/native/v1/oauth/google/account",
             json={
-                "authorizationCode": "4/google_code",
+                "accountCreationToken": account_creation_token.encoded_token,
                 "birthdate": "1960-12-31",
                 "notifications": True,
                 "token": "recaptcha token",
@@ -605,17 +606,18 @@ class AccountCreationWithSSOTest:
         assert len(users_testing.sendinblue_requests) == 1
 
     @patch("pcapi.connectors.api_recaptcha.check_recaptcha_token_is_valid")
-    @patch("pcapi.connectors.google_oauth.get_google_user")
-    def test_account_already_present(self, mocked_google_oauth, mocked_check_recaptcha_token_is_valid, client):
+    def test_account_already_present(self, mocked_check_recaptcha_token_is_valid, client):
         users_factories.UserFactory(email="docteur.cuesta@passculture.app")
-        mocked_google_oauth.side_effect = [
-            GoogleUser(sub="google_user_identifier", email="docteur.cuesta@passculture.app", email_verified=True)
-        ]
+        account_creation_token = token_utils.UUIDToken.create(
+            token_utils.TokenType.ACCOUNT_CREATION,
+            users_constants.ACCOUNT_CREATION_TOKEN_LIFE_TIME,
+            data=self.google_user.model_dump(),
+        )
 
         response = client.post(
             "/native/v1/oauth/google/account",
             json={
-                "authorizationCode": "4/google_code",
+                "accountCreationToken": account_creation_token.encoded_token,
                 "birthdate": (datetime.utcnow() - relativedelta(years=15, days=-1)).date().isoformat(),
                 "notifications": True,
                 "token": "gnagna",
@@ -628,16 +630,17 @@ class AccountCreationWithSSOTest:
         assert users_models.User.query.filter(users_models.User.email == "docteur.cuesta@passculture.app").count() == 1
 
     @patch("pcapi.connectors.api_recaptcha.check_recaptcha_token_is_valid")
-    @patch("pcapi.connectors.google_oauth.get_google_user")
-    def test_too_young_account_creation(self, mocked_google_oauth, mocked_check_recaptcha_token_is_valid, client):
-        mocked_google_oauth.side_effect = [
-            GoogleUser(sub="google_user_identifier", email="docteur.cuesta@passculture.app", email_verified=True)
-        ]
+    def test_too_young_account_creation(self, mocked_check_recaptcha_token_is_valid, client):
+        account_creation_token = token_utils.UUIDToken.create(
+            token_utils.TokenType.ACCOUNT_CREATION,
+            users_constants.ACCOUNT_CREATION_TOKEN_LIFE_TIME,
+            data=self.google_user.model_dump(),
+        )
 
         response = client.post(
             "/native/v1/oauth/google/account",
             json={
-                "authorizationCode": "4/google_code",
+                "accountCreationToken": account_creation_token.encoded_token,
                 "birthdate": (datetime.utcnow() - relativedelta(years=15, days=-1)).date().isoformat(),
                 "notifications": True,
                 "token": "gnagna",
@@ -650,17 +653,18 @@ class AccountCreationWithSSOTest:
         assert not push_testing.requests
 
     @patch("pcapi.connectors.api_recaptcha.check_recaptcha_token_is_valid")
-    @patch("pcapi.connectors.google_oauth.get_google_user")
     @override_features(WIP_ENABLE_TRUSTED_DEVICE=True)
-    def test_save_trusted_device(self, mocked_google_oauth, mocked_check_recaptcha_token_is_valid, client):
-        mocked_google_oauth.side_effect = [
-            GoogleUser(sub="google_user_identifier", email="docteur.cuesta@passculture.app", email_verified=True)
-        ]
+    def test_save_trusted_device(self, mocked_check_recaptcha_token_is_valid, client):
+        account_creation_token = token_utils.UUIDToken.create(
+            token_utils.TokenType.ACCOUNT_CREATION,
+            users_constants.ACCOUNT_CREATION_TOKEN_LIFE_TIME,
+            data=self.google_user.model_dump(),
+        )
 
         response = client.post(
             "/native/v1/oauth/google/account",
             json={
-                "authorizationCode": "4/google_code",
+                "accountCreationToken": account_creation_token.encoded_token,
                 "birthdate": "1960-12-31",
                 "notifications": True,
                 "token": "gnagna",
@@ -681,19 +685,18 @@ class AccountCreationWithSSOTest:
         assert trusted_device.os == "iOS"
 
     @patch("pcapi.connectors.api_recaptcha.check_recaptcha_token_is_valid")
-    @patch("pcapi.connectors.google_oauth.get_google_user")
     @override_features(WIP_ENABLE_TRUSTED_DEVICE=True)
-    def should_not_save_trusted_device_when_no_device_info(
-        self, mocked_google_oauth, mocked_check_recaptcha_token_is_valid, client
-    ):
-        mocked_google_oauth.side_effect = [
-            GoogleUser(sub="google_user_identifier", email="docteur.cuesta@passculture.app", email_verified=True)
-        ]
+    def should_not_save_trusted_device_when_no_device_info(self, mocked_check_recaptcha_token_is_valid, client):
+        account_creation_token = token_utils.UUIDToken.create(
+            token_utils.TokenType.ACCOUNT_CREATION,
+            users_constants.ACCOUNT_CREATION_TOKEN_LIFE_TIME,
+            data=self.google_user.model_dump(),
+        )
 
         response = client.post(
             "/native/v1/oauth/google/account",
             json={
-                "authorizationCode": "4/google_code",
+                "accountCreationToken": account_creation_token.encoded_token,
                 "birthdate": "1960-12-31",
                 "notifications": True,
                 "token": "gnagna",
@@ -703,6 +706,76 @@ class AccountCreationWithSSOTest:
 
         assert response.status_code == 204, response.json
         assert users_models.TrustedDevice.query.count() == 0
+
+    @patch("pcapi.connectors.api_recaptcha.check_recaptcha_token_is_valid")
+    def test_account_creation_token_past_expiration_date(self, mocked_check_recaptcha_token_is_valid, client):
+        with freeze_time("2022-01-01"):
+            account_creation_token = token_utils.UUIDToken.create(
+                token_utils.TokenType.ACCOUNT_CREATION,
+                users_constants.ACCOUNT_CREATION_TOKEN_LIFE_TIME,
+                data=self.google_user.model_dump(),
+            )
+
+        response = client.post(
+            "/native/v1/oauth/google/account",
+            json={
+                "accountCreationToken": account_creation_token.encoded_token,
+                "birthdate": "1960-12-31",
+                "notifications": True,
+                "token": "gnagna",
+                "marketingEmailSubscription": True,
+            },
+        )
+
+        assert response.status_code == 400, response.json
+        assert response.json["code"] == "SSO_ACCOUNT_CREATION_TIMEOUT"
+
+    @patch("pcapi.connectors.api_recaptcha.check_recaptcha_token_is_valid")
+    def test_account_creation_token_already_expired(self, mocked_check_recaptcha_token_is_valid, client):
+        account_creation_token = token_utils.UUIDToken.create(
+            token_utils.TokenType.ACCOUNT_CREATION,
+            users_constants.ACCOUNT_CREATION_TOKEN_LIFE_TIME,
+            data=self.google_user.model_dump(),
+        )
+        account_creation_token.expire()
+
+        response = client.post(
+            "/native/v1/oauth/google/account",
+            json={
+                "accountCreationToken": account_creation_token.encoded_token,
+                "birthdate": "1960-12-31",
+                "notifications": True,
+                "token": "gnagna",
+                "marketingEmailSubscription": True,
+            },
+        )
+
+        assert response.status_code == 400, response.json
+        assert response.json["code"] == "SSO_INVALID_ACCOUNT_CREATION"
+
+    @patch("pcapi.connectors.api_recaptcha.check_recaptcha_token_is_valid")
+    def test_account_creation_expires_token(self, mocked_check_recaptcha_token_is_valid, client):
+        account_creation_token = token_utils.UUIDToken.create(
+            token_utils.TokenType.ACCOUNT_CREATION,
+            users_constants.ACCOUNT_CREATION_TOKEN_LIFE_TIME,
+            data=self.google_user.model_dump(),
+        )
+
+        response = client.post(
+            "/native/v1/oauth/google/account",
+            json={
+                "accountCreationToken": account_creation_token.encoded_token,
+                "birthdate": "1960-12-31",
+                "notifications": True,
+                "token": "gnagna",
+                "marketingEmailSubscription": True,
+            },
+        )
+
+        assert response.status_code == 204, response.json
+        assert not token_utils.UUIDToken.token_exists(
+            token_utils.TokenType.ACCOUNT_CREATION, account_creation_token.key_suffix
+        )
 
 
 class UserProfileUpdateTest:

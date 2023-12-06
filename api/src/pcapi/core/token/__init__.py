@@ -204,6 +204,17 @@ class SixDigitsToken(AbstractToken):
 
 class UUIDToken(AbstractToken):
     @classmethod
+    def load_and_check(
+        cls,
+        encoded_token: str,
+        type_: TokenType,
+        key_suffix: int | str | None = None,
+    ) -> "UUIDToken":
+        token = cls.load_without_checking(encoded_token)
+        token.check(type_, token.key_suffix)
+        return token
+
+    @classmethod
     def load_without_checking(
         cls,
         encoded_token: str,
