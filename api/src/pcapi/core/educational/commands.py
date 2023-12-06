@@ -67,7 +67,7 @@ def generate_fake_adage_token(readonly: bool) -> None:
 @click.option("--final", type=bool, is_flag=True, default=False, help="Flag deposits as final.")
 def import_deposit_csv(path: str, year: int, ministry: str, conflict: str, final: bool) -> None:
     """
-    import CSV depostis and update institution according to adage data.
+    import CSV deposits and update institution according to adage data.
 
     CSV format change every time we try to work with it.
     """
