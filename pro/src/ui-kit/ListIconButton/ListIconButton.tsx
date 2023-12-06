@@ -9,8 +9,7 @@ import { useTooltipProps } from 'ui-kit/Tooltip/useTooltipProps'
 
 import styles from './ListIconButton.module.scss'
 
-export interface ListIconButtonProps
-  extends React.HTMLProps<HTMLButtonElement> {
+interface ListIconButtonProps extends React.HTMLProps<HTMLButtonElement> {
   icon: string
   innerRef?: React.RefObject<HTMLButtonElement>
   className?: string
