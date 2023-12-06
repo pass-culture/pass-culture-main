@@ -60,6 +60,7 @@ const PricingPointDialog = ({
     <DialogBox
       labelledBy="Sélectionner un SIRET"
       extraClassNames={styles.dialog}
+      hasCloseButton
     >
       <h3 className={styles['callout-title']}>
         Sélectionnez un SIRET pour le lieu “{selectedVenue.commonName}”{' '}
@@ -82,7 +83,7 @@ const PricingPointDialog = ({
         ne pourrez plus modifier votre choix après validation.{' '}
       </Callout>
       <FormikProvider value={formik}>
-        <form onSubmit={formik.handleSubmit}>
+        <form onSubmit={formik.handleSubmit} className={styles['dialog-form']}>
           <Select
             id="pricingPointId"
             name="pricingPointId"
@@ -91,7 +92,6 @@ const PricingPointDialog = ({
             }
             placeholder="Sélectionnez le SIRET dans la liste"
             options={venuesOptions}
-            hideFooter
             className={styles['venues-select']}
           />
           <div className={styles['dialog-actions']}>

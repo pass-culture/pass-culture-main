@@ -207,6 +207,7 @@ const LinkVenuesDialog = ({
                         onClick={() => {
                           setSelectedVenue(venue)
                         }}
+                        className={styles['dialog-checkbox-button']}
                       >
                         Sélectionner un SIRET
                       </Button>
