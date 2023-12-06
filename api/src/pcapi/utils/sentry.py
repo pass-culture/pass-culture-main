@@ -29,4 +29,5 @@ def init_sentry_sdk() -> None:
         environment=settings.ENV,
         traces_sample_rate=settings.SENTRY_SAMPLE_RATE,
         before_send=ignore_flask_shell_event,
+        max_value_length=8192,
     )
