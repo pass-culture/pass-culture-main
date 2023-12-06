@@ -4,7 +4,10 @@
 
 .unavailable-page {
   align-items: center;
-  background: linear-gradient(125deg, colors.$primary, colors.$secondary);
+  background-image: url("/icons/linear-gradient.jpg");
+  background-color: colors.$secondary;
+  background-size:cover;
+  background-position:center;
   color: colors.$white;
   display: flex;
   flex-direction: column;
@@ -20,16 +23,10 @@
   }
 
   p {
-    @include fonts.title2;
+    @include fonts.title4;
   }
 
   .error-icon {
     width: rem.torem(350px);
-  }
-
-  .brand-logo {
-    bottom: rem.torem(40px);
-    position: fixed;
-    width: rem.torem(110px);
   }
 }
