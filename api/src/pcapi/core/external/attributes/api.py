@@ -120,7 +120,7 @@ def get_anonymized_attributes(user: users_models.User) -> models.UserAttributes 
         suspension_date=None,
         suspension_reason=None,
         # Specific for December 2023 emailing campaign:
-        amount_spent_2023=Decimal(0),
+        amount_spent_2023=0,
         booking_venues_count_2023=0,
         duo_booking_count_2023=0,
         event_booking_count_2023=0,
