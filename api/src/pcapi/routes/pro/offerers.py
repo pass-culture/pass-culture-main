@@ -7,7 +7,7 @@ import sqlalchemy.orm as sqla_orm
 from pcapi import settings
 from pcapi.connectors import sirene
 from pcapi.connectors.api_recaptcha import ReCaptchaException
-from pcapi.connectors.api_recaptcha import check_webapp_recaptcha_token
+from pcapi.connectors.api_recaptcha import check_web_recaptcha_token
 from pcapi.connectors.big_query.queries.offerer_stats import DAILY_CONSULT_PER_OFFERER_LAST_180_DAYS_TABLE
 from pcapi.connectors.big_query.queries.offerer_stats import TOP_3_MOST_CONSULTED_OFFERS_LAST_30_DAYS_TABLE
 import pcapi.core.educational.exceptions as educational_exceptions
@@ -225,10 +225,10 @@ def save_new_onboarding_data(
     body: offerers_serialize.SaveNewOnboardingDataQueryModel,
 ) -> offerers_serialize.PostOffererResponseModel:
     try:
-        check_webapp_recaptcha_token(
+        check_web_recaptcha_token(
             body.token,
             original_action="saveNewOnboardingData",
-            minimal_score=settings.RECAPTCHA_RESET_PASSWORD_MINIMAL_SCORE,
+            minimal_score=settings.RECAPTCHA_MINIMAL_SCORE,
         )
     except ReCaptchaException:
         raise ApiErrors({"token": "The given token is invalid"})
