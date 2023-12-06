@@ -49,10 +49,17 @@ class UserAttributes:
     roles: list[str]
     suspension_date: datetime.datetime | None  # Added for Zendesk
     suspension_reason: users_constants.SuspensionReason | None  # Added for Zendesk
-    # Specific for Dec 2022 emailing campaign:
-    amount_spent_2022: Decimal | typing.Literal[0]  # Amount of credit spent in year 2022 (non-canceled offers)
-    first_booked_offer_2022: str | None  # First booked offer name in 2022 (non-canceled)
-    last_booked_offer_2022: str | None  # Last booked offer name in 2022 (non-canceled)
+    # Specific for December 2023 emailing campaign:
+    amount_spent_2023: Decimal | typing.Literal[0]  # Amount of credit spent in year 2023 (non-canceled offers)
+    booking_venues_count_2023: int  # unique venues in which user has made at least one non-canceled booking in 2023
+    duo_booking_count_2023: int  # count non-canceled bookings in 2023 where isDuo is True
+    event_booking_count_2023: int  # count non-canceled bookings in 2023 where isEvent is True
+    first_booked_offer_2023: str | None  # First booked offer name in 2023 (non-canceled)
+    last_booked_offer_2023: str | None  # Last booked offer name in 2023 (non-canceled)
+    most_booked_category_2023: str | None  # Single category most frequently booked by the user in 2023
+    most_booked_movie_genre_2023: str | None
+    most_booked_music_type_2023: str | None
+    most_booked_rayon_2023: str | None
 
 
 @dataclass

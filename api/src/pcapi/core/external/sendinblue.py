@@ -49,6 +49,7 @@ class SendinblueAttributes(Enum):
     ELIGIBILITY = "ELIGIBILITY"
     FIRSTNAME = "FIRSTNAME"
     HAS_BOOKINGS = "HAS_BOOKINGS"
+    HAS_COLLECTIVE_OFFERS = "HAS_COLLECTIVE_OFFERS"
     HAS_COMPLETED_ID_CHECK = "HAS_COMPLETED_ID_CHECK"
     HAS_OFFERS = "HAS_OFFERS"
     INITIAL_CREDIT = "INITIAL_CREDIT"
@@ -85,10 +86,17 @@ class SendinblueAttributes(Enum):
     VENUE_NAME = "VENUE_NAME"
     VENUE_TYPE = "VENUE_TYPE"
     IS_EAC = "IS_EAC"
-    AMOUNT_SPENT_2022 = "AMOUNT_SPENT_2022"
-    FIRST_BOOKED_OFFER_2022 = "FIRST_BOOKED_OFFER_2022"
-    LAST_BOOKED_OFFER_2022 = "LAST_BOOKED_OFFER_2022"
-    HAS_COLLECTIVE_OFFERS = "HAS_COLLECTIVE_OFFERS"
+    # Specific for December 2023 emailing campaign:
+    AMOUNT_SPENT_2023 = "AMOUNT_SPENT_2023"
+    BOOKING_VENUES_COUNT_2023 = "BOOKING_VENUES_COUNT_2023"
+    DUO_BOOKING_COUNT_2023 = "DUO_BOOKING_COUNT_2023"
+    EVENT_BOOKING_COUNT_2023 = "EVENT_BOOKING_COUNT_2023"
+    FIRST_BOOKED_OFFER_2023 = "FIRST_BOOKED_OFFER_2023"
+    LAST_BOOKED_OFFER_2023 = "LAST_BOOKED_OFFER_2023"
+    MOST_BOOKED_CATEGORY_2023 = "MOST_BOOKED_CATEGORY_2023"
+    MOST_BOOKED_MOVIE_GENRE_2023 = "MOST_BOOKED_MOVIE_GENRE_2023"
+    MOST_BOOKED_MUSIC_TYPE_2023 = "MOST_BOOKED_MUSIC_TYPE_2023"
+    MOST_BOOKED_RAYON_2023 = "MOST_BOOKED_RAYON_2023"
 
     @classmethod
     def list(cls) -> list[str]:
@@ -193,6 +201,7 @@ def format_user_attributes(attributes: attributes_models.UserAttributes | attrib
         SendinblueAttributes.ELIGIBILITY.value: _get_attr(attributes, "eligibility"),
         SendinblueAttributes.FIRSTNAME.value: _get_attr(attributes, "first_name"),
         SendinblueAttributes.HAS_BOOKINGS.value: _get_attr(attributes, "has_bookings"),
+        SendinblueAttributes.HAS_COLLECTIVE_OFFERS.value: _get_attr(attributes, "has_collective_offers"),
         SendinblueAttributes.HAS_COMPLETED_ID_CHECK.value: _get_attr(attributes, "has_completed_id_check"),
         SendinblueAttributes.HAS_OFFERS.value: _get_attr(attributes, "has_offers"),
         SendinblueAttributes.INITIAL_CREDIT.value: _get_attr(attributes, "domains_credit", lambda v: v.all.initial),
@@ -239,10 +248,17 @@ def format_user_attributes(attributes: attributes_models.UserAttributes | attrib
         SendinblueAttributes.VENUE_NAME.value: _get_attr(attributes, "venues_names", format_list),
         SendinblueAttributes.VENUE_TYPE.value: _get_attr(attributes, "venues_types", format_list),
         SendinblueAttributes.IS_EAC.value: _get_attr(attributes, "is_eac"),
-        SendinblueAttributes.AMOUNT_SPENT_2022.value: _get_attr(attributes, "amount_spent_2022"),
-        SendinblueAttributes.FIRST_BOOKED_OFFER_2022.value: _get_attr(attributes, "first_booked_offer_2022"),
-        SendinblueAttributes.LAST_BOOKED_OFFER_2022.value: _get_attr(attributes, "last_booked_offer_2022"),
-        SendinblueAttributes.HAS_COLLECTIVE_OFFERS.value: _get_attr(attributes, "has_collective_offers"),
+        # Specific for December 2023 emailing campaign:
+        SendinblueAttributes.AMOUNT_SPENT_2023.value: _get_attr(attributes, "amount_spent_2023"),
+        SendinblueAttributes.BOOKING_VENUES_COUNT_2023.value: _get_attr(attributes, "booking_venues_count_2023"),
+        SendinblueAttributes.DUO_BOOKING_COUNT_2023.value: _get_attr(attributes, "duo_booking_count_2023"),
+        SendinblueAttributes.EVENT_BOOKING_COUNT_2023.value: _get_attr(attributes, "event_booking_count_2023"),
+        SendinblueAttributes.FIRST_BOOKED_OFFER_2023.value: _get_attr(attributes, "first_booked_offer_2023"),
+        SendinblueAttributes.LAST_BOOKED_OFFER_2023.value: _get_attr(attributes, "last_booked_offer_2023"),
+        SendinblueAttributes.MOST_BOOKED_CATEGORY_2023.value: _get_attr(attributes, "most_booked_category_2023"),
+        SendinblueAttributes.MOST_BOOKED_MOVIE_GENRE_2023.value: _get_attr(attributes, "most_booked_movie_genre_2023"),
+        SendinblueAttributes.MOST_BOOKED_MUSIC_TYPE_2023.value: _get_attr(attributes, "most_booked_music_type_2023"),
+        SendinblueAttributes.MOST_BOOKED_RAYON_2023.value: _get_attr(attributes, "most_booked_rayon_2023"),
     }
 
 
