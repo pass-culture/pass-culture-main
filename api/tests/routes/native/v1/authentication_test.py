@@ -11,6 +11,7 @@ from freezegun import freeze_time
 import pytest
 
 from pcapi import settings
+from pcapi.connectors import google_oauth
 from pcapi.connectors.dms import api as api_dms
 from pcapi.connectors.dms import models as dms_models
 from pcapi.connectors.google_oauth import GoogleUser
@@ -272,15 +273,24 @@ class SSOSigninTest:
 
     @patch("pcapi.connectors.google_oauth.get_google_user")
     @override_features(WIP_ENABLE_GOOGLE_SSO=True)
-    def test_account_does_not_exist(self, mocked_google_oauth, client, caplog):
+    def test_account_creation_token_if_account_does_not_exist(self, mocked_google_oauth, client, caplog):
         mocked_google_oauth.return_value = self.valid_google_user
 
         with caplog.at_level(logging.INFO):
             response = client.post("/native/v1/oauth/google/authorize", json={"authorizationCode": "4/google_code"})
 
         assert response.status_code == 401
-        assert response.json == {"email": "unknown"}
-        assert "Failed authentication attempt" in caplog.messages
+        assert set(["code", "accountCreationToken", "general"]) == response.json.keys()
+        assert response.json["code"] == "SSO_EMAIL_NOT_FOUND"
+
+        decoded_account_creation_token = token_utils.UUIDToken.load_without_checking(
+            response.json["accountCreationToken"]
+        )
+        assert uuid.UUID(decoded_account_creation_token.key_suffix)
+        assert google_oauth.GoogleUser.model_validate(decoded_account_creation_token.data)
+        assert not decoded_account_creation_token.check(
+            token_utils.TokenType.ACCOUNT_CREATION, decoded_account_creation_token.key_suffix
+        )
 
     @patch("pcapi.connectors.google_oauth.get_google_user")
     @override_features(WIP_ENABLE_GOOGLE_SSO=True)
