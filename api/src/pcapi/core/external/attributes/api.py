@@ -302,37 +302,31 @@ def get_pro_attributes(email: str) -> models.ProAttributes:
 
 
 def _check_if_pro_attribute_has_collective_offers(user: users_models.User) -> bool:
-    collective_offer_query = db.session.query(educational_models.CollectiveOffer.id)
-    collective_offer_query = collective_offer_query.join(
-        offerers_models.Venue, educational_models.CollectiveOffer.venue
+    collective_offer_query = (
+        db.session.query(educational_models.CollectiveOffer.id)
+        .join(offerers_models.Venue, educational_models.CollectiveOffer.venue)
+        .join(offerers_models.Offerer, offerers_models.Venue.managingOfferer)
+        .join(offerers_models.UserOfferer, offerers_models.Offerer.UserOfferers)
+        .filter(
+            offerers_models.UserOfferer.isValidated,
+            offerers_models.UserOfferer.userId == user.id,
+            educational_models.CollectiveOffer.status.in_([OfferStatus.ACTIVE, OfferStatus.SOLD_OUT]),  # type: ignore [attr-defined]
+        )
+        .exists()
     )
-    collective_offer_query = collective_offer_query.join(offerers_models.Offerer, offerers_models.Venue.managingOfferer)
-    collective_offer_query = collective_offer_query.join(
-        offerers_models.UserOfferer, offerers_models.Offerer.UserOfferers
-    )
-    collective_offer_query = collective_offer_query.filter(
-        offerers_models.UserOfferer.isValidated,
-        offerers_models.UserOfferer.user == user,
-        educational_models.CollectiveOffer.status.in_([OfferStatus.ACTIVE, OfferStatus.SOLD_OUT]),  # type: ignore [attr-defined]
-    )
-    collective_offer_query = collective_offer_query.exists()
 
-    collective_offer_template_query = db.session.query(educational_models.CollectiveOfferTemplate.id)
-    collective_offer_template_query = collective_offer_template_query.join(
-        offerers_models.Venue, educational_models.CollectiveOfferTemplate.venue
+    collective_offer_template_query = (
+        db.session.query(educational_models.CollectiveOfferTemplate.id)
+        .join(offerers_models.Venue, educational_models.CollectiveOfferTemplate.venue)
+        .join(offerers_models.Offerer, offerers_models.Venue.managingOfferer)
+        .join(offerers_models.UserOfferer, offerers_models.Offerer.UserOfferers)
+        .filter(
+            offerers_models.UserOfferer.isValidated,
+            offerers_models.UserOfferer.userId == user.id,
+            educational_models.CollectiveOfferTemplate.status == OfferStatus.ACTIVE,
+        )
+        .exists()
     )
-    collective_offer_template_query = collective_offer_template_query.join(
-        offerers_models.Offerer, offerers_models.Venue.managingOfferer
-    )
-    collective_offer_template_query = collective_offer_template_query.join(
-        offerers_models.UserOfferer, offerers_models.Offerer.UserOfferers
-    )
-    collective_offer_template_query = collective_offer_template_query.filter(
-        offerers_models.UserOfferer.isValidated,
-        offerers_models.UserOfferer.user == user,
-        educational_models.CollectiveOfferTemplate.status == OfferStatus.ACTIVE,
-    )
-    collective_offer_template_query = collective_offer_template_query.exists()
 
     result = db.session.query(or_(collective_offer_query, collective_offer_template_query)).scalar()
     return bool(result)
