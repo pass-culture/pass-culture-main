@@ -6,14 +6,14 @@ from .base import BaseQuery
 
 
 class ClassroomPlaylistModel(pydantic_v1.BaseModel):
-    offer_id: str
+    collective_offer_id: str
     distance_in_km: float
 
 
 class ClassroomPlaylistQuery(BaseQuery):
     raw_query = f"""
         SELECT
-            offer_id,
+            distinct collective_offer_id,
             distance_in_km
         FROM
             `{settings.BIG_QUERY_TABLE_BASENAME}.adage_home_playlist_moving_offerers`

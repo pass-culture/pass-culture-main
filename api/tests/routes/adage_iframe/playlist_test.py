@@ -27,8 +27,8 @@ class GetClassroomPlaylistTest:
         mock_path = "pcapi.connectors.big_query.TestingBackend.run_query"
         with patch(mock_path) as mock_run_query:
             mock_run_query.return_value = [
-                {"offer_id": str(offers[0].id), "distance_in_km": expected_distance},
-                {"offer_id": str(offers[1].id), "distance_in_km": expected_distance},
+                {"collective_offer_id": str(offers[0].id), "distance_in_km": expected_distance},
+                {"collective_offer_id": str(offers[1].id), "distance_in_km": expected_distance},
             ]
 
             # fetch institution (1 query)
@@ -130,7 +130,7 @@ class GetNewTemplateOffersPlaylistTest:
 
                 for idx, response_offer in enumerate(response_offers):
                     assert response_offer["id"] == offers[idx].id
-                    assert response_offer["venue"]["distance"] == None
+                    assert response_offer["venue"]["distance"] == expected_distance
                     assert response_offer["offerVenue"]["distance"] == expected_distance
                     assert response_offer["isFavorite"] == bool(idx)
 
