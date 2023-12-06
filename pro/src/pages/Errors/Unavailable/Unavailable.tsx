@@ -1,6 +1,5 @@
 import React from 'react'
 
-import logoPassCultureIcon from 'icons/logo-pass-culture.svg'
 import strokeWipIcon from 'icons/stroke-wip.svg'
 import { SvgIcon } from 'ui-kit/SvgIcon/SvgIcon'
 
@@ -17,12 +16,6 @@ const Unavailable = () => {
       />
       <h1>Page indisponible</h1>
       <p>Veuillez rééssayer plus tard</p>
-      <SvgIcon
-        className={styles['brand-logo']}
-        src={logoPassCultureIcon}
-        alt=""
-        viewBox="0 0 71 24"
-      />
     </main>
   )
 }
