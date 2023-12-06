@@ -2,9 +2,20 @@
 @use "styles/mixins/_fonts.scss" as fonts;
 
 $modal-width: rem.torem(592px);
+$modal-height: rem.torem(484px);
 
 .dialog {
   width: $modal-width;
+  height: $modal-height;
+  display: flex;
+  flex-direction: column;
+
+  &-form {
+    display: flex;
+    flex-direction: column;
+    flex: 1;
+    justify-content: space-between;
+  }
 
   &-actions {
     display: flex;
@@ -24,5 +35,5 @@ $modal-width: rem.torem(592px);
 }
 
 .venues-select {
-  margin-bottom: rem.torem(32px);
+  margin-bottom: rem.torem(24px);
 }

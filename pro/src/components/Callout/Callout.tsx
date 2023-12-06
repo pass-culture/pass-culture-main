@@ -51,12 +51,14 @@ const Callout = ({
       calloutIconSrc = strokeInfoIcon
       break
   }
+
+  const hasNoBottomSpace = (titleOnly || !title) && !links
   return (
     <div
       className={cn(
         styles['callout'],
         styles[`callout-${type}`],
-        titleOnly || !title ? styles['small-callout'] : '',
+        hasNoBottomSpace ? styles['small-callout'] : '',
         className
       )}
     >
