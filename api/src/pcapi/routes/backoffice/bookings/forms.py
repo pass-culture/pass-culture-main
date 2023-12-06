@@ -89,9 +89,8 @@ class BaseBookingListForm(FlaskForm):
         )
 
     @property
-    def pro_view_args(self) -> str:
-        output = ""
-        if len(self.venue.data) == 1 and not any(
+    def is_single_venue_with_optional_dates(self) -> bool:
+        return len(self.venue.data) == 1 and not any(
             (
                 self.q.data,
                 self.offerer.data,
@@ -101,7 +100,12 @@ class BaseBookingListForm(FlaskForm):
                 self.event_to_date.data,
                 self.cashflow_batches.data,
             )
-        ):
+        )
+
+    @property
+    def pro_view_args(self) -> str:
+        output = ""
+        if self.is_single_venue_with_optional_dates:
             from_date = self.from_to_date.data[0].date() if self.from_to_date.data else datetime.date.today()
             to_date = (
                 self.from_to_date.data[1].date() if self.from_to_date.data else from_date - datetime.timedelta(days=30)
@@ -117,7 +121,7 @@ class GetDownloadBookingsForm(FlaskForm):
     class Meta:
         csrf = False
 
-    venue = fields.PCIntegerField("Lieux")
+    venue = fields.PCIntegerField("Lieu")
     from_to_date = fields.PCDateRangeField(
         "Créées entre",
         validators=(wtforms.validators.Optional(),),
