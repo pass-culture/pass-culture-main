@@ -49,7 +49,7 @@ export const BookingsSummaryScreen = ({
     }
     // eslint-disable-next-line @typescript-eslint/no-floating-promises
     loadBookings()
-  }, [setBookings])
+  }, [setBookings, offer.id])
 
   if (bookings?.length === 0) {
     return (
