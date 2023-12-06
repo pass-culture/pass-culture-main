@@ -493,7 +493,9 @@ def get_bank_account_with_current_venues_links(
 ) -> finance_models.BankAccount | None:
     return (
         finance_models.BankAccount.query.filter(
-            finance_models.BankAccount.id == bank_account_id, finance_models.BankAccount.offererId == offerer_id
+            finance_models.BankAccount.id == bank_account_id,
+            finance_models.BankAccount.offererId == offerer_id,
+            finance_models.BankAccount.status == finance_models.BankAccountApplicationStatus.ACCEPTED,
         )
         .outerjoin(
             offerers_models.VenueBankAccountLink,
