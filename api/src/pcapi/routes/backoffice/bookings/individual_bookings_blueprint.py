@@ -12,6 +12,7 @@ from flask import url_for
 from flask_login import current_user
 from markupsafe import Markup
 import sqlalchemy as sa
+from werkzeug.exceptions import BadRequest
 
 from pcapi import settings
 from pcapi.core.bookings import api as bookings_api
@@ -171,6 +172,9 @@ def _redirect_after_individual_booking_action() -> utils.BackofficeResponse:
 @individual_bookings_blueprint.route("/download-csv", methods=["GET"])
 def get_individual_booking_csv_download() -> utils.BackofficeResponse:
     form = booking_forms.GetDownloadBookingsForm(formdata=utils.get_query_params())
+    if not form.validate():
+        raise BadRequest()
+
     export_data = booking_repository.get_export(
         user=current_user,
         booking_period=typing.cast(tuple[datetime.date, datetime.date], form.from_to_date.data),
@@ -185,6 +189,9 @@ def get_individual_booking_csv_download() -> utils.BackofficeResponse:
 @individual_bookings_blueprint.route("/download-xlsx", methods=["GET"])
 def get_individual_booking_xlsx_download() -> utils.BackofficeResponse:
     form = booking_forms.GetDownloadBookingsForm(formdata=utils.get_query_params())
+    if not form.validate():
+        raise BadRequest()
+
     export_data = booking_repository.get_export(
         user=current_user,
         booking_period=typing.cast(tuple[datetime.date, datetime.date], form.from_to_date.data),

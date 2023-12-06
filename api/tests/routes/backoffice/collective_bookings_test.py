@@ -602,7 +602,7 @@ class GetCollectiveBookingCSVDownloadTest(GetEndpointHelper):
         venue_id = collective_bookings[0].venueId
 
         with assert_num_queries(self.expected_num_queries):
-            response = authenticated_client.get(url_for(self.endpoint, venue_id=venue_id))
+            response = authenticated_client.get(url_for(self.endpoint, venue=venue_id))
             assert response.status_code == 200
 
         expected_length = 1  # headers
@@ -627,7 +627,7 @@ class GetCollectiveBookingXLSXDownloadTest(GetEndpointHelper):
         venue_id = collective_bookings[0].venueId
 
         with assert_num_queries(self.expected_num_queries):
-            response = authenticated_client.get(url_for(self.endpoint, venue_id=venue_id))
+            response = authenticated_client.get(url_for(self.endpoint, venue=venue_id))
             assert response.status_code == 200
 
         sheet = self.reader_from_response(response)

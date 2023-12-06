@@ -707,7 +707,7 @@ class GetIndividualBookingCSVDownloadTest(GetEndpointHelper):
         venue_id = bookings[0].venueId
 
         with assert_num_queries(self.expected_num_queries):
-            response = authenticated_client.get(url_for(self.endpoint, venue_id=venue_id))
+            response = authenticated_client.get(url_for(self.endpoint, venue=venue_id))
             assert response.status_code == 200
 
         assert len(response.data.split(b"\n")) == 4
@@ -728,7 +728,7 @@ class GetIndividualBookingXLSXDownloadTest(GetEndpointHelper):
         venue_id = bookings[0].venueId
 
         with assert_num_queries(self.expected_num_queries):
-            response = authenticated_client.get(url_for(self.endpoint, venue_id=venue_id))
+            response = authenticated_client.get(url_for(self.endpoint, venue=venue_id))
             assert response.status_code == 200
 
         sheet = self.reader_from_response(response)
