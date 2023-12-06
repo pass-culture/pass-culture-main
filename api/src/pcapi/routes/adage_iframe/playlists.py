@@ -17,6 +17,7 @@ from pcapi.routes.adage_iframe.serialization.adage_authentication import (
     get_redactor_information_from_adage_authentication,
 )
 from pcapi.routes.adage_iframe.serialization.adage_authentication import AuthenticatedInformation
+from pcapi.routes.serialization import collective_offers_serialize
 from pcapi.serialization.decorator import spectree_serialize
 
 
@@ -47,7 +48,8 @@ def get_classroom_playlist(
 
     try:
         rows = {
-            row.offer_id: row.distance_in_km for row in ClassroomPlaylistQuery().execute(institution_id=institution.id)
+            row.collective_offer_id: row.distance_in_km
+            for row in ClassroomPlaylistQuery().execute(institution_id=str(institution.id))
         }
     except queries_base.MalformedRow:
         return serializers.ListCollectiveOffersResponseModel(collectiveOffers=[])
@@ -122,7 +124,7 @@ def new_template_offers_playlist(
     try:
         rows = {
             row.collective_offer_id: row.distance_in_km
-            for row in NewTemplateOffersPlaylist().execute(institution_id=institution.id)
+            for row in NewTemplateOffersPlaylist().execute(institution_id=str(institution.id))
         }
     except queries_base.MalformedRow:
         return serializers.ListCollectiveOfferTemplateResponseModel(collectiveOffers=[])
@@ -140,7 +142,11 @@ def new_template_offers_playlist(
                     offer=offer,
                     serializer=serializers.CollectiveOfferTemplateResponseModel,
                     is_favorite=offer.id in favorite_ids,
-                    event_distance=rows[str(offer.id)],
+                    event_distance=rows[str(offer.id)]
+                    if offer.offerVenue["addressType"]
+                    == collective_offers_serialize.OfferAddressType.OFFERER_VENUE.value
+                    else None,
+                    venue_distance=rows[str(offer.id)],
                 ),
             )
             for offer in offers
