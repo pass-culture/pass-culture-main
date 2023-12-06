@@ -5,7 +5,6 @@ from decimal import Decimal
 from flask import url_for
 import pytest
 
-from pcapi.core.categories import categories
 from pcapi.core.categories import subcategories_v2 as subcategories
 from pcapi.core.educational import factories as educational_factories
 from pcapi.core.educational import models as educational_models
@@ -43,6 +42,7 @@ def collective_offers_fixture() -> tuple:
         beginningDatetime=datetime.date.today(),
         collectiveOffer__subcategoryId=subcategories.ATELIER_PRATIQUE_ART.id,
         collectiveOffer__author=user_factory.UserFactory(),
+        collectiveOffer__formats=[subcategories.EacFormat.ATELIER_DE_PRATIQUE],
     ).collectiveOffer
     collective_offer_2 = educational_factories.CollectiveStockFactory(
         beginningDatetime=datetime.date.today(),
@@ -92,13 +92,12 @@ class ListCollectiveOffersTest(GetEndpointHelper):
         assert len(rows) == 1
         assert rows[0]["ID"] == searched_id
         assert rows[0]["Nom de l'offre"] == collective_offers[0].name
-        assert rows[0]["Catégorie"] == collective_offers[0].category.pro_label
-        assert rows[0]["Sous-catégorie"] == collective_offers[0].subcategory.pro_label
-        assert rows[0]["Formats"] == ""
         assert rows[0]["Créateur de l'offre"] == collective_offers[0].author.full_name
+        assert rows[0]["Formats"] == ", ".join([fmt.value for fmt in collective_offers[0].formats])
         assert rows[0]["État"] == "Validée"
         assert rows[0]["Date de création"] == (datetime.date.today() - datetime.timedelta(days=5)).strftime("%d/%m/%Y")
         assert rows[0]["Date de l'évènement"] == datetime.date.today().strftime("%d/%m/%Y")
+        assert rows[0]["Formats"] == ", ".join([fmt.value for fmt in collective_offers[0].formats])
         assert rows[0]["Structure"] == collective_offers[0].venue.managingOfferer.name
         assert rows[0]["Lieu"] == collective_offers[0].venue.name
 
@@ -113,8 +112,6 @@ class ListCollectiveOffersTest(GetEndpointHelper):
         assert len(rows) == 2
         assert rows[0]["ID"] == str(collective_offers[1].id)
         assert rows[0]["Nom de l'offre"] == collective_offers[1].name
-        assert rows[0]["Catégorie"] == collective_offers[1].category.pro_label
-        assert rows[0]["Sous-catégorie"] == collective_offers[1].subcategory.pro_label
         assert rows[0]["Formats"] == ", ".join([fmt.value for fmt in collective_offers[1].formats])
         assert rows[0]["État"] == "Validée"
         assert rows[0]["Date de création"] == (datetime.date.today() - datetime.timedelta(days=5)).strftime("%d/%m/%Y")
@@ -135,14 +132,6 @@ class ListCollectiveOffersTest(GetEndpointHelper):
 
         rows = html_parser.extract_table_rows(response.data)
         assert set(int(row["ID"]) for row in rows) == {collective_offers[2].id}
-
-    def test_list_collective_offers_by_category(self, authenticated_client, collective_offers):
-        with assert_num_queries(self.expected_num_queries):
-            response = authenticated_client.get(url_for(self.endpoint, category=[categories.CINEMA.id]))
-            assert response.status_code == 200
-
-        rows = html_parser.extract_table_rows(response.data)
-        assert set(int(row["ID"]) for row in rows) == {collective_offers[1].id, collective_offers[2].id}
 
     def test_list_collective_offers_by_venue(self, authenticated_client, collective_offers):
         venue_id = collective_offers[1].venueId
@@ -173,13 +162,15 @@ class ListCollectiveOffersTest(GetEndpointHelper):
         assert rows[0]["État"] == "Rejetée"
 
     def test_list_offers_by_all_filters(self, authenticated_client, collective_offers):
-        venue_id = collective_offers[2].venueId
+        offer = collective_offers[2]
+        venue_id = offer.venueId
+
         with assert_num_queries(self.expected_num_queries + 1):  # +1 because of reloading selected venue
             response = authenticated_client.get(
                 url_for(
                     self.endpoint,
                     q="specific name",
-                    category=[categories.CINEMA.id],
+                    formats=str(offer.formats[0].name),
                     venue=[venue_id],
                 )
             )
@@ -243,6 +234,21 @@ class ListCollectiveOffersTest(GetEndpointHelper):
 
         rows = html_parser.extract_table_rows(response.data)
         assert rows[0]["Règles de conformité"] == ", ".join([rule_1.name, rule_2.name])
+
+    def test_list_collective_offers_by_format(self, authenticated_client):
+        target_format = subcategories.EacFormat.CONCERT
+
+        target_offer = educational_factories.CollectiveOfferFactory(formats=[target_format])
+        educational_factories.CollectiveOfferFactory(formats=[subcategories.EacFormat.ATELIER_DE_PRATIQUE])
+
+        with assert_num_queries(self.expected_num_queries):
+            response = authenticated_client.get(url_for(self.endpoint, formats=str(target_format.name)))
+            assert response.status_code == 200
+
+        rows = html_parser.extract_table_rows(response.data)
+        assert len(rows) == 1
+
+        assert rows[0]["ID"] == str(target_offer.id)
 
 
 class ValidateCollectiveOfferTest(PostEndpointHelper):

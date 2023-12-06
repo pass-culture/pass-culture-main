@@ -9,7 +9,6 @@ from flask_login import current_user
 import sqlalchemy as sa
 
 from pcapi.core import search
-from pcapi.core.categories import subcategories_v2 as subcategories
 from pcapi.core.educational import models as educational_models
 from pcapi.core.mails import transactional as transactional_mails
 from pcapi.core.offerers import models as offerers_models
@@ -72,12 +71,10 @@ def _get_collective_offer_templates(
         to_datetime = date_utils.date_to_localized_datetime(form.to_date.data, datetime.datetime.max.time())
         base_query = base_query.filter(educational_models.CollectiveOfferTemplate.dateCreated <= to_datetime)
 
-    if form.category.data:
+    if form.formats.data:
         base_query = base_query.filter(
-            educational_models.CollectiveOfferTemplate.subcategoryId.in_(
-                subcategory.id
-                for subcategory in subcategories.ALL_SUBCATEGORIES
-                if subcategory.category.id in form.category.data
+            educational_models.CollectiveOfferTemplate.formats.overlap(
+                sa.dialects.postgresql.array((fmt for fmt in form.formats.data))
             )
         )
 

@@ -1,5 +1,5 @@
 {% from "components/bookings/extra_row.html" import build_booking_toggle_extra_row_button with context %}
-{% from "components/bookings/extra_row.html" import build_booking_extra_row with context %}
+{% from "components/bookings/extra_row.html" import build_collective_booking_extra_row with context %}
 {% import "components/forms.html" as forms with context %}
 {% import "components/links.html" as links %}
 {% import "components/clipboard.html" as clipboard %}
@@ -189,7 +189,7 @@
                 <td>{{ links.build_offerer_name_to_details_link(collective_booking.offerer) }}</td>
                 <td>{{ links.build_venue_name_to_details_link(collective_booking.venue) }}</td>
               </tr>
-              {{ build_booking_extra_row(collective_booking, collective_booking.collectiveStock, collective_offer) }}
+              {{ build_collective_booking_extra_row(collective_booking, collective_booking.collectiveStock, collective_offer) }}
             {% endfor %}
           </tbody>
         </table>

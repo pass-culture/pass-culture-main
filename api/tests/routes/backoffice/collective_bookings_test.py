@@ -5,8 +5,7 @@ from flask import url_for
 import openpyxl
 import pytest
 
-from pcapi.core.categories import categories
-from pcapi.core.categories import subcategories_v2
+from pcapi.core.categories import subcategories_v2 as subcategories
 from pcapi.core.educational import factories as educational_factories
 from pcapi.core.educational import models as educational_models
 from pcapi.core.finance import factories as finance_factories
@@ -37,7 +36,7 @@ def collective_bookings_fixture() -> tuple:
     pending = educational_factories.PendingCollectiveBookingFactory(
         educationalInstitution=institution2,
         collectiveStock__collectiveOffer__name="Offer n°1",
-        collectiveStock__collectiveOffer__subcategoryId=subcategories_v2.EVENEMENT_PATRIMOINE.id,
+        collectiveStock__collectiveOffer__formats=[subcategories.EacFormat.CONFERENCE_RENCONTRE],
         collectiveStock__beginningDatetime=datetime.datetime.utcnow() + datetime.timedelta(days=6),
         dateCreated=datetime.datetime.utcnow() - datetime.timedelta(days=4),
         venue=venue,
@@ -49,7 +48,7 @@ def collective_bookings_fixture() -> tuple:
         educationalRedactor=educational_factories.EducationalRedactorFactory(firstName="Pépin", lastName="d'Italie"),
         collectiveStock__price=1234,
         collectiveStock__collectiveOffer__name="Visite des locaux primitifs du pass Culture",
-        collectiveStock__collectiveOffer__subcategoryId=subcategories_v2.VISITE_GUIDEE.id,
+        collectiveStock__collectiveOffer__formats=[subcategories.EacFormat.VISITE_GUIDEE],
         collectiveStock__bookingLimitDatetime=datetime.datetime.utcnow() + datetime.timedelta(days=2),
         collectiveStock__beginningDatetime=datetime.datetime.utcnow() + datetime.timedelta(days=3),
         dateCreated=datetime.datetime.utcnow() - datetime.timedelta(days=3),
@@ -60,7 +59,7 @@ def collective_bookings_fixture() -> tuple:
         educationalRedactor=educational_factories.EducationalRedactorFactory(firstName="Louis", lastName="Le Pieux"),
         collectiveStock__price=567.8,
         collectiveStock__collectiveOffer__name="Offer n°2",
-        collectiveStock__collectiveOffer__subcategoryId=subcategories_v2.DECOUVERTE_METIERS.id,
+        collectiveStock__collectiveOffer__formats=[subcategories.EacFormat.CONCERT],
         collectiveStock__bookingLimitDatetime=datetime.datetime.utcnow() + datetime.timedelta(days=3),
         collectiveStock__beginningDatetime=datetime.datetime.utcnow() + datetime.timedelta(days=7),
         dateCreated=datetime.datetime.utcnow() - datetime.timedelta(days=2),
@@ -70,7 +69,7 @@ def collective_bookings_fixture() -> tuple:
     used = educational_factories.UsedCollectiveBookingFactory(
         educationalInstitution=institution3,
         collectiveStock__collectiveOffer__name="Offer n°3",
-        collectiveStock__collectiveOffer__subcategoryId=subcategories_v2.CONFERENCE.id,
+        collectiveStock__collectiveOffer__formats=[subcategories.EacFormat.PROJECTION_AUDIOVISUELLE],
         collectiveStock__beginningDatetime=datetime.datetime.utcnow() + datetime.timedelta(days=5),
         dateCreated=datetime.datetime.utcnow() - datetime.timedelta(days=1),
     )
@@ -78,7 +77,7 @@ def collective_bookings_fixture() -> tuple:
     reimbursed = educational_factories.ReimbursedCollectiveBookingFactory(
         educationalInstitution=institution3,
         collectiveStock__collectiveOffer__name="Offer n°4",
-        collectiveStock__collectiveOffer__subcategoryId=subcategories_v2.VISITE_GUIDEE.id,
+        collectiveStock__collectiveOffer__formats=[subcategories.EacFormat.ATELIER_DE_PRATIQUE],
         dateCreated=datetime.datetime.utcnow() - datetime.timedelta(days=5),
     )
 
@@ -162,8 +161,7 @@ class ListCollectiveBookingsTest(GetEndpointHelper):
         assert row["Lieu"] == collective_bookings[1].venue.name
 
         extra_data = html_parser.extract(response.data, tag="tr", class_="collapse accordion-collapse")[row_index]
-        assert f"Catégorie : {categories.MUSEE.pro_label}" in extra_data
-        assert f"Sous-catégorie : {subcategories_v2.VISITE_GUIDEE.pro_label}" in extra_data
+        assert f"Formats : {subcategories.EacFormat.VISITE_GUIDEE.value}" in extra_data
         assert "Date de validation" not in extra_data
         assert (
             f"Date de confirmation de réservation : {(datetime.date.today() - datetime.timedelta(days=1)).strftime('%d/%m/%Y')} à "
@@ -248,8 +246,7 @@ class ListCollectiveBookingsTest(GetEndpointHelper):
         assert row["Lieu"] == collective_bookings[2].venue.name
 
         extra_data = html_parser.extract(response.data, tag="tr", class_="collapse accordion-collapse")[row_index]
-        assert f"Catégorie : {categories.CONFERENCE_RENCONTRE.pro_label}" in extra_data
-        assert f"Sous-catégorie : {subcategories_v2.DECOUVERTE_METIERS.pro_label}" in extra_data
+        assert f"Formats : {subcategories.EacFormat.CONCERT.value}" in extra_data
         assert "Date de validation" not in extra_data
         assert (
             f"Date de confirmation de réservation : {(datetime.date.today() - datetime.timedelta(days=1)).strftime('%d/%m/%Y')} à "
@@ -297,14 +294,6 @@ class ListCollectiveBookingsTest(GetEndpointHelper):
 
         rows = html_parser.extract_table_rows(response.data)
         assert set(row["ID résa"] for row in rows) == {str(collective_bookings[idx].id) for idx in expected_idx}
-
-    def test_list_bookings_by_category(self, authenticated_client, collective_bookings):
-        with assert_num_queries(self.expected_num_queries):
-            response = authenticated_client.get(url_for(self.endpoint, category=categories.CONFERENCE_RENCONTRE.id))
-            assert response.status_code == 200
-
-        rows = html_parser.extract_table_rows(response.data)
-        assert set(int(row["ID résa"]) for row in rows) == {collective_bookings[2].id, collective_bookings[3].id}
 
     def test_list_bookings_by_cashflow_batch(self, authenticated_client):
         cashflows = finance_factories.CashflowFactory.create_batch(
@@ -473,6 +462,25 @@ class ListCollectiveBookingsTest(GetEndpointHelper):
         assert "Montant remboursé : 100,00 €" in reimbursement_data
         assert f"N° de virement : {cashflow.batch.label}" in reimbursement_data
         assert "Taux de remboursement : 100,0 %" in reimbursement_data
+
+    def test_list_collective_bookings_by_formats(self, authenticated_client):
+        target_format = subcategories.EacFormat.CONCERT
+        target_booking = educational_factories.CollectiveBookingFactory(
+            collectiveStock__collectiveOffer__formats=[target_format]
+        )
+
+        educational_factories.CollectiveBookingFactory(
+            collectiveStock__collectiveOffer__formats=[subcategories.EacFormat.ATELIER_DE_PRATIQUE]
+        )
+
+        with assert_num_queries(self.expected_num_queries):
+            response = authenticated_client.get(url_for(self.endpoint, formats=str(target_format.name)))
+            assert response.status_code == 200
+
+        rows = html_parser.extract_table_rows(response.data)
+        assert len(rows) == 1
+
+        assert rows[0]["ID résa"] == str(target_booking.id)
 
 
 class MarkCollectiveBookingAsUsedTest(PostEndpointHelper):
