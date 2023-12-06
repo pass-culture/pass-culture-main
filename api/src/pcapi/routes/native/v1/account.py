@@ -220,10 +220,29 @@ def create_account_with_google_sso(body: serializers.GoogleAccountRequest) -> No
     if FeatureToggle.ENABLE_NATIVE_APP_RECAPTCHA.is_active():
         try:
             api_recaptcha.check_native_app_recaptcha_token(body.token)
-        except api_recaptcha.ReCaptchaException:
-            raise api_errors.ApiErrors({"token": "The given token is not valid"})
+        except api_recaptcha.ReCaptchaException as e:
+            raise api_errors.ApiErrors({"token": "The given token is not valid"}) from e
 
-    google_user = google_oauth.get_google_user(body.authorization_code)
+    try:
+        account_creation_token = token_utils.UUIDToken.load_and_check(
+            body.account_creation_token, token_utils.TokenType.ACCOUNT_CREATION
+        )
+        google_user = google_oauth.GoogleUser.model_validate(account_creation_token.data)
+        account_creation_token.expire()
+    except exceptions.ExpiredToken as e:
+        raise api_errors.ApiErrors(
+            {
+                "code": "SSO_ACCOUNT_CREATION_TIMEOUT",
+                "general": ["La demande de création de compte a mis trop de temps."],
+            }
+        ) from e
+    except exceptions.InvalidToken as e:
+        raise api_errors.ApiErrors(
+            {
+                "code": "SSO_INVALID_ACCOUNT_CREATION",
+                "general": ["La demande de création de compte est invalide."],
+            }
+        ) from e
 
     if not google_user.email_verified:
         raise api_errors.ApiErrors({"code": "EMAIL_NOT_VALIDATED", "general": ["L'email n'a pas été validé."]})

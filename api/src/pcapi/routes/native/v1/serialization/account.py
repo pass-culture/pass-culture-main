@@ -57,7 +57,7 @@ class AccountRequest(BaseAccountRequest):
 
 
 class GoogleAccountRequest(BaseAccountRequest):
-    authorization_code: str
+    account_creation_token: str
 
 
 class NotificationSubscriptions(BaseModel):
