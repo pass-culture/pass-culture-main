@@ -30,6 +30,7 @@ const IconLinkBox = ({
           src={iconHeader}
           alt=""
           className={styles['icon-link-box-header-icon']}
+          width="22"
         />
         <h2 className={styles['icon-link-box-title']}>{title}</h2>
       </div>
