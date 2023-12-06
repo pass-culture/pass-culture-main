@@ -17,6 +17,7 @@ import pcapi.core.offers.api as offers_api
 import pcapi.core.offers.repository as offers_repository
 from pcapi.core.offers.validation import check_for_duplicated_price_categories
 from pcapi.models import api_errors
+from pcapi.models import db
 from pcapi.repository import transaction
 from pcapi.routes.apis import private_api
 from pcapi.routes.serialization import offers_serialize
@@ -265,20 +266,21 @@ def patch_publish_offer(
     body: offers_serialize.PatchOfferPublishBodyModel,
 ) -> offers_serialize.GetIndividualOfferResponseModel:
     with repository.transaction():
-        try:
-            offerer = offerers_repository.get_by_offer_id(body.id)
-        except offerers_exceptions.CannotFindOffererForOfferId:
-            raise api_errors.ApiErrors(
-                {"offerer": ["Aucune structure trouvée à partir de cette offre"]}, status_code=404
-            )
+        with db.session.no_autoflush:
+            try:
+                offerer = offerers_repository.get_by_offer_id(body.id)
+            except offerers_exceptions.CannotFindOffererForOfferId:
+                raise api_errors.ApiErrors(
+                    {"offerer": ["Aucune structure trouvée à partir de cette offre"]}, status_code=404
+                )
 
-        rest.check_user_has_access_to_offerer(current_user, offerer.id)
+            rest.check_user_has_access_to_offerer(current_user, offerer.id)
 
-        offer = offers_repository.get_offer_and_extradata(body.id)
-        if offer is None:
-            raise api_errors.ApiErrors({"offer": ["Cette offre n’existe pas"]}, status_code=404)
-        offers_api.publish_offer(offer, current_user)
-        return offers_serialize.GetIndividualOfferResponseModel.from_orm(offer)
+            offer = offers_repository.get_offer_and_extradata(body.id)
+            if offer is None:
+                raise api_errors.ApiErrors({"offer": ["Cette offre n’existe pas"]}, status_code=404)
+            offers_api.publish_offer(offer, current_user)
+            return offers_serialize.GetIndividualOfferResponseModel.from_orm(offer)
 
 
 @private_api.route("/offers/active-status", methods=["PATCH"])
