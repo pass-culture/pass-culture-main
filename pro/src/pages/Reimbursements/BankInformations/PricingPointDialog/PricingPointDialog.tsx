@@ -10,6 +10,7 @@ import { Button, Select, SubmitButton } from 'ui-kit'
 import { ButtonVariant } from 'ui-kit/Button/types'
 
 import styles from './PricingPointDialog.module.scss'
+import validationSchema from './validationSchema'
 
 type PricingPointFormValues = {
   pricingPointId?: string
@@ -46,6 +47,7 @@ const PricingPointDialog = ({
         )
       }
     },
+    validationSchema: validationSchema,
   })
 
   const venuesOptions = [
