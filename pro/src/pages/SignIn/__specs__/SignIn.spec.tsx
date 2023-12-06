@@ -222,7 +222,7 @@ describe('SignIn', () => {
     expect(api.signin).toHaveBeenCalledWith({
       identifier: 'MonPetitEmail@exemple.com',
       password: 'MCSolar85',
-      token: 'token',
+      captchaToken: 'token',
     })
   })
 

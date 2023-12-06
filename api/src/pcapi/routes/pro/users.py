@@ -8,7 +8,7 @@ from flask_login import logout_user
 
 from pcapi import settings
 from pcapi.connectors.api_recaptcha import ReCaptchaException
-from pcapi.connectors.api_recaptcha import check_webapp_recaptcha_token
+from pcapi.connectors.api_recaptcha import check_web_recaptcha_token
 from pcapi.core import token as token_utils
 import pcapi.core.mails.transactional as transactional_mails
 from pcapi.core.users import api as users_api
@@ -188,10 +188,10 @@ def post_change_password(body: users_serializers.ChangePasswordBodyModel) -> Non
 @email_rate_limiter()
 def signin(body: users_serializers.LoginUserBodyModel) -> users_serializers.SharedLoginUserResponseModel:
     try:
-        check_webapp_recaptcha_token(
-            body.token,
+        check_web_recaptcha_token(
+            body.captchaToken,
             original_action="loginUser",
-            minimal_score=settings.RECAPTCHA_RESET_PASSWORD_MINIMAL_SCORE,
+            minimal_score=settings.RECAPTCHA_MINIMAL_SCORE,
         )
     except ReCaptchaException:
         raise ApiErrors({"token": "The given token is invalid"})

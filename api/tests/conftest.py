@@ -395,7 +395,8 @@ class TestClient:
 
     def with_session_auth(self, email: str) -> "TestClient":
         response = self.post(
-            "/users/signin", {"identifier": email, "password": settings.TEST_DEFAULT_PASSWORD, "token": "test_token"}
+            "/users/signin",
+            {"identifier": email, "password": settings.TEST_DEFAULT_PASSWORD, "captchaToken": "test_token"},
         )
         assert response.status_code == 200
 

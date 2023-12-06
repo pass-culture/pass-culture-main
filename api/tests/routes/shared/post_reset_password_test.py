@@ -10,7 +10,7 @@ from pcapi.core.users.models import User
 
 
 class Returns400Test:
-    @patch("pcapi.routes.shared.passwords.check_webapp_recaptcha_token", return_value=None)
+    @patch("pcapi.routes.shared.passwords.check_web_recaptcha_token", return_value=None)
     def when_email_is_empty(self, check_recaptcha_token_is_valid_mock, client, db_session):
         # given
         data = {"email": "", "token": "dumbToken"}
@@ -22,7 +22,7 @@ class Returns400Test:
         assert response.status_code == 400
         assert response.json["email"] == ["L'email renseigné est vide"]
 
-    @patch("pcapi.routes.shared.passwords.check_webapp_recaptcha_token", return_value=None)
+    @patch("pcapi.routes.shared.passwords.check_web_recaptcha_token", return_value=None)
     def when_email_is_missing(self, check_recaptcha_token_is_valid_mock, client, db_session):
         # given
         data = {"token": "dumbToken"}
@@ -45,7 +45,7 @@ class Returns400Test:
         assert response.status_code == 400
         assert response.json["token"] == ["Ce champ est obligatoire"]
 
-    @patch("pcapi.routes.shared.passwords.check_webapp_recaptcha_token", return_value=None)
+    @patch("pcapi.routes.shared.passwords.check_web_recaptcha_token", return_value=None)
     def when_token_is_not_sent(self, check_recaptcha_token_is_valid_mock, client, db_session):
         # given
         data = {"email": "dumbemail"}
@@ -57,7 +57,7 @@ class Returns400Test:
         assert response.status_code == 400
         assert response.json["token"] == ["Ce champ est obligatoire"]
 
-    @patch("pcapi.routes.shared.passwords.check_webapp_recaptcha_token", side_effect=InvalidRecaptchaTokenException())
+    @patch("pcapi.routes.shared.passwords.check_web_recaptcha_token", side_effect=InvalidRecaptchaTokenException())
     def when_token_is_wrong_or_already_used(self, check_recaptcha_token_is_valid_mock, client, db_session):
         # given
         data = {"email": "dumbemail", "token": "dumbToken"}
@@ -71,7 +71,7 @@ class Returns400Test:
 
 
 class Returns204Test:
-    @patch("pcapi.routes.shared.passwords.check_webapp_recaptcha_token", return_value=None)
+    @patch("pcapi.routes.shared.passwords.check_web_recaptcha_token", return_value=None)
     def when_user_email_is_unknown(self, check_recaptcha_token_is_valid_mock, client, db_session):
         # given
         data = {"token": "dumbToken", "email": "unknown.user@test.com"}
@@ -82,7 +82,7 @@ class Returns204Test:
         # then
         assert response.status_code == 204
 
-    @patch("pcapi.routes.shared.passwords.check_webapp_recaptcha_token", return_value=None)
+    @patch("pcapi.routes.shared.passwords.check_web_recaptcha_token", return_value=None)
     def when_account_is_not_valid(self, check_recaptcha_token_is_valid_mock, client, db_session):
         # given
         user = users_factories.UserFactory(isActive=False)
@@ -95,7 +95,7 @@ class Returns204Test:
         assert response.status_code == 204
         user = User.query.get(user.id)
 
-    @patch("pcapi.routes.shared.passwords.check_webapp_recaptcha_token", return_value=None)
+    @patch("pcapi.routes.shared.passwords.check_web_recaptcha_token", return_value=None)
     def when_email_is_known(self, check_recaptcha_token_is_valid_mock, client, db_session):
         # given
         user = users_factories.UserFactory()
@@ -115,7 +115,7 @@ class Returns204Test:
             < (now + timedelta(hours=25))
         )
 
-    @patch("pcapi.routes.shared.passwords.check_webapp_recaptcha_token", return_value=None)
+    @patch("pcapi.routes.shared.passwords.check_web_recaptcha_token", return_value=None)
     def test_should_send_reset_password_email_when_user_is_a_pro(
         self,
         check_recaptcha_token_is_valid_mock,

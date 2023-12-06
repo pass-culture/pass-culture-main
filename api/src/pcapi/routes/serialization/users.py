@@ -125,7 +125,7 @@ class ProUserCreationBodyV2Model(BaseModel):
 class LoginUserBodyModel(BaseModel):
     identifier: str
     password: str
-    token: str
+    captchaToken: str
 
 
 class SharedLoginUserResponseModel(BaseModel):
