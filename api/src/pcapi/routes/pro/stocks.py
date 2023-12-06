@@ -33,7 +33,7 @@ def _stock_exists(
     existing_stocks: list[offers_models.Stock],
 ) -> bool:
     for stock in existing_stocks:
-        if (
+        if (  # pylint: disable=too-many-boolean-expressions
             stock.offerId == offer_id
             and stock.beginningDatetime
             == (stock_to_create.beginning_datetime.replace(tzinfo=None) if stock_to_create.beginning_datetime else None)
@@ -44,6 +44,7 @@ def _stock_exists(
                 else None
             )
             and stock.priceCategoryId == stock_to_create.price_category_id
+            and (stock.price == stock_to_create.price if not stock.priceCategoryId else True)
             and stock.quantity == stock_to_create.quantity
         ):
             return True
