@@ -133,7 +133,7 @@ def create_offerers_with_cinema_venue_providers_and_external_bookings() -> None:
 
         cinema_details_factory(cinemaProviderPivot=cinema_provider_pivot)
         providers_factories.VenueProviderFactory(
-            venue=venue, provider=cinema_provider, venueIdAtOfferProvider=cinema_id_at_provider
+            venue=venue, provider=cinema_provider, venueIdAtOfferProvider=cinema_id_at_provider, isActive=False
         )
         logger.info("created 3 ExternalBookings for synced offers (%s)", local_class)
 
