@@ -52,18 +52,13 @@ export const BookingOfferCell = ({ booking }: BookingOfferCellProps) => {
     <>
       <a
         href={editionUrl}
-        rel="noopener noreferrer"
-        target="_blank"
         title={`${booking.stock.offerName} (ouverture dans un nouvel onglet)`}
+        className={cn(
+          styles['booking-offer-name'],
+          !booking.stock.offerIsEducational && styles['crop-line']
+        )}
       >
-        <div
-          className={cn(
-            styles['booking-offer-name'],
-            !booking.stock.offerIsEducational && styles['crop-line']
-          )}
-        >
-          {booking.stock.offerName}
-        </div>
+        {booking.stock.offerName}
       </a>
 
       {booking.stock.offerIsbn ||
