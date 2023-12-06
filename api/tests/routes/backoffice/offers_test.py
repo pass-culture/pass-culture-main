@@ -1389,6 +1389,10 @@ class EditOfferVenueTest(PostEndpointHelper):
             finance_factories.PricingFactory(event=finance_event2_1, booking=booking2_1)
         booking2_2 = bookings_factories.CancelledBookingFactory(stock=stock2)
 
+        # other objects to validate queries filters
+        offers_factories.EventStockFactory(beginningDatetime=datetime.datetime.utcnow() - datetime.timedelta(days=7))
+        bookings_factories.ReimbursedBookingFactory()
+
         response = self.post_to_endpoint(
             authenticated_client,
             offer_id=offer.id,
