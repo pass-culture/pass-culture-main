@@ -16,7 +16,6 @@ import filterBookingsRecap from 'screens/Bookings/BookingsRecapTable/utils/filte
 import Spinner from 'ui-kit/Spinner/Spinner'
 import { SvgIcon } from 'ui-kit/SvgIcon/SvgIcon'
 import { FORMAT_ISO_DATE_ONLY } from 'utils/date'
-import { pluralize } from 'utils/pluralize'
 
 import styles from './BookingsSummary.module.scss'
 
@@ -87,7 +86,6 @@ export const BookingsSummaryScreen = ({
     <SummaryLayout.Section title="Réservations">
       {bookings !== null ? (
         <>
-          <div>{pluralize(filteredBookings.length, 'réservation')}</div>
           <IndividualBookingsTable
             bookings={filteredBookings}
             bookingStatuses={bookingsStatusFilters}
