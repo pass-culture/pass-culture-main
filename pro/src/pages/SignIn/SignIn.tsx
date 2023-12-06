@@ -56,10 +56,14 @@ const SignIn = (): JSX.Element => {
   }, [searchParams])
 
   const onSubmit = async (values: SigninFormValues) => {
-    const token = await getReCaptchaToken('loginUser')
+    const captchaToken = await getReCaptchaToken('loginUser')
     const { email, password } = values
     try {
-      const user = await api.signin({ identifier: email, password, token })
+      const user = await api.signin({
+        identifier: email,
+        password,
+        captchaToken,
+      })
       dispatch(setCurrentUser(user))
     } catch (error) {
       if (isErrorAPIError(error)) {
