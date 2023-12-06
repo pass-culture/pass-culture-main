@@ -65,6 +65,7 @@ from . import models
 
 
 if typing.TYPE_CHECKING:
+    from pcapi.connectors import google_oauth
     from pcapi.routes.native.v1.serialization import account as account_serialization
 
 
@@ -908,6 +909,15 @@ def create_user_refresh_token(user: models.User, device_info: "account_serializa
         duration = datetime.timedelta(seconds=settings.JWT_REFRESH_TOKEN_EXPIRES)
 
     return create_refresh_token(identity=user.email, expires_delta=duration)
+
+
+def create_account_creation_token(google_user: "google_oauth.GoogleUser") -> str:
+    token = token_utils.UUIDToken.create(
+        token_utils.TokenType.ACCOUNT_CREATION,
+        users_constants.ACCOUNT_CREATION_TOKEN_LIFE_TIME,
+        data=google_user.model_dump(),
+    )
+    return token.encoded_token
 
 
 def update_notification_subscription(

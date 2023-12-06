@@ -26,6 +26,7 @@ class TokenType(enum.Enum):
     PHONE_VALIDATION = "phone_validation"
     SUSPENSION_SUSPICIOUS_LOGIN = "suspension_suspicious_login"
     RESET_PASSWORD = "reset_password"
+    ACCOUNT_CREATION = "account_creation"
 
 
 T = typing.TypeVar("T", bound="AbstractToken")
@@ -199,3 +200,44 @@ class SixDigitsToken(AbstractToken):
         assert isinstance(self.key_suffix, int), "SixDigitsToken key suffix can only be a user id"
         super().expire()
         app.redis_client.delete(self._get_redis_extra_data_key(self.type_, self.key_suffix))
+
+
+class UUIDToken(AbstractToken):
+    @classmethod
+    def load_without_checking(
+        cls,
+        encoded_token: str,
+        *args: typing.Any,
+        **kwargs: typing.Any,
+    ) -> "UUIDToken":
+        try:
+            payload = utils.decode_jwt_token(encoded_token)
+        except jwt.exceptions.ExpiredSignatureError as e:
+            raise users_exceptions.ExpiredToken() from e
+        except (KeyError, ValueError, jwt.PyJWTError) as e:
+            raise users_exceptions.InvalidToken() from e
+
+        data = payload.get("data", {})
+        type_ = TokenType(payload["token_type"])
+        uuid4 = payload["uuid"]
+        return cls(type_, uuid4, encoded_token, data)
+
+    @classmethod
+    def create(cls, type_: TokenType, ttl: timedelta | None, data: dict | None = None) -> "UUIDToken":
+        random_uuid = str(uuid.uuid4())
+        payload: dict[str, typing.Any] = {
+            "token_type": type_.value,
+            "uuid": random_uuid,
+            "data": data,
+        }
+        if ttl:
+            payload["exp"] = (datetime.utcnow() + ttl).timestamp()
+        encoded_token = utils.encode_jwt_payload(payload)
+
+        if ttl is None or ttl > timedelta(0):
+            redis_key = cls.get_redis_key(type_, random_uuid)
+            app.redis_client.set(redis_key, encoded_token, ex=ttl)
+
+        token = UUIDToken.load_without_checking(encoded_token)
+        token._log(cls._TokenAction.CREATE)
+        return token
