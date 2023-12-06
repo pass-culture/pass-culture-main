@@ -5,8 +5,8 @@
 @use "styles/variables/_size.scss" as size;
 
 $modal-width: rem.torem(592px);
-$modal-height: rem.torem(336px);
-$banner-height: rem.torem(100px);
+$modal-height: rem.torem(360px);
+$banner-height: rem.torem(124px);
 
 .dialog {
   height: $modal-height;
@@ -32,6 +32,7 @@ $banner-height: rem.torem(100px);
   &-checkboxes {
     height: rem.torem(200px);
     overflow-y: auto;
+    margin-bottom: rem.torem(24px);
   }
 
   &-select-all {
@@ -47,14 +48,18 @@ $banner-height: rem.torem(100px);
     }
   }
 
+  &-checkbox-button {
+    margin: 0;
+  }
+
   &-checkbox-container {
     display: flex;
     align-items: center;
     justify-content: space-between;
     margin-bottom: rem.torem(24px);
 
-    &:last-of-type {
-      margin-bottom: rem.torem(32px);
+    &:last-child {
+      margin-bottom: 0;
     }
   }
 
