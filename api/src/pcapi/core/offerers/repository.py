@@ -667,6 +667,7 @@ def get_venues_with_non_free_offers_without_bank_accounts(offerer_id: int) -> li
 def get_number_of_bookable_offers_for_offerer(offerer_id: int) -> int:
     return (
         offers_models.Offer.query.with_entities(offers_models.Offer.id)
+        .distinct()
         .join(models.Venue)
         .join(offers_models.Stock)
         .filter(
