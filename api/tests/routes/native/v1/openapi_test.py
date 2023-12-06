@@ -739,7 +739,7 @@ def test_public_api(client):
                     "properties": {
                         "appsFlyerPlatform": {"nullable": True, "title": "Appsflyerplatform", "type": "string"},
                         "appsFlyerUserId": {"nullable": True, "title": "Appsflyeruserid", "type": "string"},
-                        "authorizationCode": {"title": "Authorizationcode", "type": "string"},
+                        "accountCreationToken": {"title": "Accountcreationtoken", "type": "string"},
                         "birthdate": {"format": "date", "title": "Birthdate", "type": "string"},
                         "firebasePseudoId": {"nullable": True, "title": "Firebasepseudoid", "type": "string"},
                         "marketingEmailSubscription": {
@@ -755,7 +755,7 @@ def test_public_api(client):
                             "title": "TrustedDevice",
                         },
                     },
-                    "required": ["birthdate", "token", "authorizationCode"],
+                    "required": ["birthdate", "token", "accountCreationToken"],
                     "title": "GoogleAccountRequest",
                     "type": "object",
                 },
