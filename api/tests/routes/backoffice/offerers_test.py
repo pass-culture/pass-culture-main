@@ -2891,7 +2891,7 @@ class BatchOffererAttachmentRejectTest(PostEndpointHelper):
 
 class ListOffererTagsTest(GetEndpointHelper):
     endpoint = "backoffice_web.offerer_tag.list_offerer_tags"
-    needed_permission = perm_models.Permissions.MANAGE_OFFERER_TAG
+    needed_permission = perm_models.Permissions.READ_TAGS
 
     # - fetch session (1 query)
     # - fetch user (1 query)
@@ -2932,6 +2932,24 @@ class ListOffererTagsTest(GetEndpointHelper):
         assert rows[0]["Libellé"] == "Comptage partenaires"
         assert rows[1]["Nom"] == "homologation"
         assert rows[1]["Libellé"] == "Homologation"
+
+
+class CreateTagButtonTest(button_helpers.ButtonHelper):
+    needed_permission = perm_models.Permissions.MANAGE_OFFERER_TAG
+    button_label = "Créer un tag structure"
+
+    @property
+    def path(self):
+        return url_for("backoffice_web.offerer_tag.list_offerer_tags")
+
+
+class CreateTagCategoryButtonTest(button_helpers.ButtonHelper):
+    needed_permission = perm_models.Permissions.MANAGE_TAGS_N2
+    button_label = "Créer une catégorie"
+
+    @property
+    def path(self):
+        return url_for("backoffice_web.offerer_tag.list_offerer_tags")
 
 
 class UpdateOffererTagTest(PostEndpointHelper):

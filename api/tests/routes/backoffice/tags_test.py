@@ -12,6 +12,7 @@ from pcapi.core.permissions import models as perm_models
 from pcapi.core.testing import assert_num_queries
 from pcapi.models import db
 
+from .helpers import button as button_helpers
 from .helpers import html_parser
 from .helpers.get import GetEndpointHelper
 from .helpers.post import PostEndpointHelper
@@ -25,7 +26,7 @@ pytestmark = [
 
 class CreateTagTest(PostEndpointHelper):
     endpoint = "backoffice_web.tags.create_tag"
-    needed_permission = perm_models.Permissions.MANAGE_OFFERS_AND_VENUES_TAGS
+    needed_permission = perm_models.Permissions.READ_TAGS
 
     def test_create_tag(self, authenticated_client):
         form = {"name": "my-tag", "description": "description"}
@@ -118,7 +119,7 @@ class UpdateTagTest(PostEndpointHelper):
 class ListTagsTest(GetEndpointHelper):
     endpoint = "backoffice_web.tags.list_tags"
     endpoint_kwargs = {"tag_id": 1}
-    needed_permission = perm_models.Permissions.MANAGE_OFFERS_AND_VENUES_TAGS
+    needed_permission = perm_models.Permissions.READ_TAGS
 
     # - fetch session and user (2 queries)
     # - fetch tags: rows and count (2 queries)
@@ -215,6 +216,24 @@ class ListTagsTest(GetEndpointHelper):
             expected_total_pages,
             total_items,
         )
+
+
+class CreateTagButtonTest(button_helpers.ButtonHelper):
+    needed_permission = perm_models.Permissions.MANAGE_OFFERS_AND_VENUES_TAGS
+    button_label = "Créer un tag offres et lieux"
+
+    @property
+    def path(self):
+        return url_for("backoffice_web.tags.list_tags")
+
+
+class CreateTagCategoryButtonTest(button_helpers.ButtonHelper):
+    needed_permission = perm_models.Permissions.MANAGE_TAGS_N2
+    button_label = "Créer une catégorie"
+
+    @property
+    def path(self):
+        return url_for("backoffice_web.tags.list_tags")
 
 
 class CreateTagCategoryTest(PostEndpointHelper):

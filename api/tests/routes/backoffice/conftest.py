@@ -30,6 +30,7 @@ ROLE_PERMISSIONS: dict[str, list[perm_models.Permissions]] = {
         perm_models.Permissions.MANAGE_PERMISSIONS,
         perm_models.Permissions.READ_ADMIN_ACCOUNTS,
         perm_models.Permissions.MANAGE_ADMIN_ACCOUNTS,
+        perm_models.Permissions.READ_TAGS,
         perm_models.Permissions.MANAGE_TAGS_N2,
         perm_models.Permissions.MANAGE_OFFERER_TAG,
         perm_models.Permissions.MANAGE_OFFERS_AND_VENUES_TAGS,
@@ -97,6 +98,7 @@ ROLE_PERMISSIONS: dict[str, list[perm_models.Permissions]] = {
         perm_models.Permissions.MANAGE_OFFERS,
         perm_models.Permissions.READ_OFFERS,
         perm_models.Permissions.MULTIPLE_OFFERS_ACTIONS,
+        perm_models.Permissions.READ_TAGS,
     ],
     "homologation": [
         perm_models.Permissions.READ_PRO_ENTITY,
@@ -111,6 +113,7 @@ ROLE_PERMISSIONS: dict[str, list[perm_models.Permissions]] = {
         perm_models.Permissions.READ_PRO_ENTITY,
         perm_models.Permissions.READ_BOOKINGS,
         perm_models.Permissions.READ_OFFERS,
+        perm_models.Permissions.READ_TAGS,
     ],
     "qa": [],
     "global_access": [
@@ -135,6 +138,7 @@ ROLE_PERMISSIONS: dict[str, list[perm_models.Permissions]] = {
         perm_models.Permissions.MANAGE_OFFERS,
         perm_models.Permissions.MULTIPLE_OFFERS_ACTIONS,
         perm_models.Permissions.VALIDATE_OFFERER,
+        perm_models.Permissions.READ_TAGS,
         perm_models.Permissions.MANAGE_OFFERER_TAG,
         perm_models.Permissions.MANAGE_TAGS_N2,
         perm_models.Permissions.MANAGE_OFFERS_AND_VENUES_TAGS,
