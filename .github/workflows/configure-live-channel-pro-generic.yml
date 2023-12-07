@@ -25,7 +25,10 @@ jobs:
     runs-on: [self-hosted, linux, x64]
     if: ${{ github.actor != 'dependabot[bot]' }}
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v3
+        with:
+          node-version-file: "pro/.nvmrc"
       - id: openid-auth
         name: "OpenID Connect Authentication"
         uses: 'google-github-actions/auth@v1'
@@ -44,6 +47,6 @@ jobs:
           CREDENTIALS: ${{ steps.secrets.outputs.FIREBASE_TOKEN }}
           GOOGLE_APPLICATION_CREDENTIALS: "credentials.json"
         run: |
-          curl -sL https://firebase.tools | bash
+          npm install -g firebase-tools@12.9.1 --fixed
           echo $CREDENTIALS > credentials.json
           firebase hosting:clone pc-pro-${{ inputs.ENV }}:${{ inputs.VERSION }} pc-pro-${{ inputs.ENV }}:live
