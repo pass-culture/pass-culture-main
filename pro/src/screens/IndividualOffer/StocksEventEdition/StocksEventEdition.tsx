@@ -136,6 +136,7 @@ const StocksEventEdition = ({
     })
     setStocksCount(response.stockCount)
   }
+
   useEffect(() => {
     if (dateFilter) {
       searchParams.set('date', dateFilter)
@@ -707,6 +708,9 @@ const StocksEventEdition = ({
                             <td className={styles['data']}>
                               <TextInput
                                 name={`stocks[${index}]bookingsQuantity`}
+                                value={
+                                  formik.values.stocks[index].bookingsQuantity
+                                }
                                 readOnly
                                 label="Réservations"
                                 isLabelHidden
