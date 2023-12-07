@@ -27,6 +27,7 @@ class CollectiveOffersPublicGetOfferTest:
             collectiveStock__collectiveOffer__imageCrop={"data": 2},
             collectiveStock__collectiveOffer__institution=institution,
             collectiveStock__collectiveOffer__nationalProgram=national_program,
+            collectiveStock__collectiveOffer__formats=["CONCERT"],
         )
         offer = booking.collectiveStock.collectiveOffer
         # When
@@ -36,65 +37,7 @@ class CollectiveOffersPublicGetOfferTest:
 
         # Then
         assert response.status_code == 200
-
-        bookings = [
-            {
-                "id": booking.id,
-                "status": booking.status.value,
-                "confirmationDate": booking.confirmationDate.isoformat() if booking.confirmationDate else None,
-                "cancellationLimitDate": booking.cancellationLimitDate.isoformat()
-                if booking.cancellationLimitDate
-                else None,
-                "reimbursementDate": booking.reimbursementDate.isoformat() if booking.reimbursementDate else None,
-                "dateUsed": booking.dateUsed.isoformat() if booking.dateUsed else None,
-                "dateCreated": booking.dateCreated.isoformat() if booking.dateCreated else None,
-            }
-            for booking in offer.collectiveStock.collectiveBookings
-        ]
-        bookings = sorted(bookings, key=itemgetter("id"))
-
-        assert response.json["id"] == offer.id
-        assert response.json["name"] == offer.name
-        assert response.json["description"] == offer.description
-        assert response.json["venueId"] == offer.venue.id
-        assert response.json["audioDisabilityCompliant"] == False
-        assert response.json["beginningDatetime"] == "2022-05-02T15:00:00"
-        assert sorted(response.json["bookingEmails"]) == sorted(
-            [
-                "collectiveofferfactory+booking@example.com",
-                "collectiveofferfactory+booking@example2.com",
-            ]
-        )
-        assert response.json["bookingLimitDatetime"] == "2022-05-02T14:00:00"
-        assert response.json["contactEmail"] == "collectiveofferfactory+contact@example.com"
-        assert response.json["contactPhone"] == "+33199006328"
-        assert response.json["dateCreated"] == "2022-04-26T15:00:00"
-        assert response.json["domains"] == [domain.id]
-        assert response.json["durationMinutes"] == None
-        assert response.json["educationalInstitution"] == "UAI123"
-        assert response.json["educationalInstitutionId"] == institution.id
-        assert response.json["educationalPriceDetail"] == None
-        assert response.json["interventionArea"] == ["93", "94", "95"]
-        assert response.json["isActive"]
-        assert response.json["isSoldOut"]
-        assert response.json["numberOfTickets"] == 25
-        assert response.json["status"] == "SOLD_OUT"
-        assert response.json["students"] == ["GENERAL2"]
-        assert response.json["subcategoryId"] == offer.subcategoryId
-        assert response.json["totalPrice"] == float(offer.collectiveStock.price)
-        assert response.json["hasBookingLimitDatetimesPassed"] == False
-        assert response.json["mentalDisabilityCompliant"] == False
-        assert response.json["motorDisabilityCompliant"] == False
-        assert response.json["visualDisabilityCompliant"] == False
-        assert response.json["offerVenue"] == {
-            "addressType": "other",
-            "otherAddress": "1 rue des polissons, Paris 75017",
-            "venueId": None,
-        }
-        assert response.json["imageCredit"] == offer.imageCredit
-        assert response.json["imageUrl"] == offer.imageUrl
-        assert response.json["nationalProgram"] == {"id": national_program.id, "name": national_program.name}
-        assert sorted(response.json["bookings"], key=itemgetter("id")) == bookings
+        assert sort_response_offer_json(response.json) == expected_serialized_offer(offer)
 
     def test_offer_does_not_exists(self, client):
         # Given
@@ -131,38 +74,18 @@ class CollectiveOffersPublicGetOfferTest:
         assert response.status_code == 404
 
     def test_user_not_logged_in(self, client):
-        # Given
-        venue_provider = provider_factories.VenueProviderFactory()
-
-        offerers_factories.ApiKeyFactory(provider=venue_provider.provider)
-
-        stock = educational_factories.CollectiveStockFactory(
-            collectiveOffer__provider=venue_provider.provider,
-        )
-        offer = stock.collectiveOffer
-
-        # When
+        offer = educational_factories.CollectiveStockFactory().collectiveOffer
         response = client.get(f"/v2/collective/offers/{offer.id}")
-
-        # Then
         assert response.status_code == 401
 
     def test_user_no_access_to_user(self, client):
         # Given
         venue_provider = provider_factories.VenueProviderFactory()
-
         offerers_factories.ApiKeyFactory(provider=venue_provider.provider)
-
-        domain = educational_factories.EducationalDomainFactory()
-        institution = educational_factories.EducationalInstitutionFactory(institutionId="UAI123")
 
         venue_provider2 = provider_factories.VenueProviderFactory()
         stock = educational_factories.CollectiveStockFactory(
-            collectiveOffer__domains=[domain],
             collectiveOffer__provider=venue_provider2.provider,
-            collectiveOffer__imageCredit="Pouet",
-            collectiveOffer__imageCrop={"data": 2},
-            collectiveOffer__institution=institution,
         )
         offer = stock.collectiveOffer
 
@@ -173,3 +96,74 @@ class CollectiveOffersPublicGetOfferTest:
 
         # Then
         assert response.status_code == 403
+
+
+def sort_response_offer_json(response_offer):
+    booking_emails = response_offer["bookingEmails"]
+    if booking_emails:
+        response_offer["bookingEmails"] = sorted(booking_emails)
+
+    bookings = response_offer["bookings"]
+    if bookings:
+        response_offer["bookings"] = sorted(bookings, key=itemgetter("id"))
+
+    return response_offer
+
+
+def expected_serialized_offer(offer):
+    bookings = [
+        {
+            "id": booking.id,
+            "status": booking.status.value,
+            "confirmationDate": booking.confirmationDate.isoformat() if booking.confirmationDate else None,
+            "cancellationLimitDate": booking.cancellationLimitDate.isoformat()
+            if booking.cancellationLimitDate
+            else None,
+            "reimbursementDate": booking.reimbursementDate.isoformat() if booking.reimbursementDate else None,
+            "dateUsed": booking.dateUsed.isoformat() if booking.dateUsed else None,
+            "dateCreated": booking.dateCreated.isoformat() if booking.dateCreated else None,
+        }
+        for booking in offer.collectiveStock.collectiveBookings
+    ]
+    bookings = sorted(bookings, key=itemgetter("id"))
+
+    return {
+        "id": offer.id,
+        "name": offer.name,
+        "description": offer.description,
+        "venueId": offer.venue.id,
+        "audioDisabilityCompliant": offer.audioDisabilityCompliant,
+        "beginningDatetime": offer.collectiveStock.beginningDatetime.replace(microsecond=0).isoformat(),
+        "bookingLimitDatetime": offer.collectiveStock.bookingLimitDatetime.replace(microsecond=0).isoformat(),
+        "bookingEmails": sorted(offer.bookingEmails),
+        "contactEmail": offer.contactEmail,
+        "contactPhone": offer.contactPhone,
+        "dateCreated": offer.dateCreated.replace(microsecond=0).isoformat(),
+        "domains": [domain.id for domain in offer.domains],
+        "durationMinutes": offer.durationMinutes,
+        "educationalInstitution": offer.institution.institutionId if offer.institution else None,
+        "educationalInstitutionId": offer.institutionId,
+        "educationalPriceDetail": offer.collectiveStock.priceDetail,
+        "interventionArea": offer.interventionArea,
+        "isActive": offer.isActive,
+        "isSoldOut": offer.isSoldOut,
+        "numberOfTickets": offer.collectiveStock.numberOfTickets,
+        "status": offer.status.name,
+        "students": [student.name for student in offer.students],
+        "subcategoryId": offer.subcategoryId,
+        "totalPrice": float(offer.collectiveStock.price),
+        "hasBookingLimitDatetimesPassed": offer.hasBookingLimitDatetimesPassed,
+        "mentalDisabilityCompliant": offer.mentalDisabilityCompliant,
+        "motorDisabilityCompliant": offer.motorDisabilityCompliant,
+        "visualDisabilityCompliant": offer.visualDisabilityCompliant,
+        "offerVenue": {
+            "addressType": offer.offerVenue["addressType"],
+            "otherAddress": offer.offerVenue["otherAddress"],
+            "venueId": offer.offerVenue["venueId"],
+        },
+        "imageCredit": offer.imageCredit,
+        "imageUrl": offer.imageUrl,
+        "nationalProgram": {"id": offer.nationalProgram.id, "name": offer.nationalProgram.name},
+        "bookings": bookings,
+        "formats": [fmt.value for fmt in offer.formats] if offer.formats else None,
+    }

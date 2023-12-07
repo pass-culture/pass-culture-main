@@ -333,6 +333,11 @@ def test_public_api(client, app):
                             "title": "Educationalpricedetail",
                             "type": "string",
                         },
+                        "formats": {
+                            "items": {"$ref": "#/components/schemas/EacFormat"},
+                            "nullable": True,
+                            "type": "array",
+                        },
                         "hasBookingLimitDatetimesPassed": {
                             "title": "Hasbookinglimitdatetimespassed",
                             "type": "boolean",
@@ -1335,6 +1340,52 @@ def test_public_api(client, app):
                     },
                     "security": [{"ApiKeyAuth": []}],
                     "summary": "Création d'une offre collective.",
+                    "tags": ["API offres collectives"],
+                },
+            },
+            "/v2/collective/offers/formats": {
+                "get": {
+                    "description": "",
+                    "operationId": "GetOffersFormats",
+                    "parameters": [],
+                    "responses": {
+                        "401": {
+                            "content": {
+                                "application/json": {"schema": {"$ref": "#/components/schemas/AuthErrorResponseModel"}}
+                            },
+                            "description": "Authentification " "nécessaire",
+                        },
+                        "403": {
+                            "content": {
+                                "application/json": {"schema": {"$ref": "#/components/schemas/ErrorResponseModel"}}
+                            },
+                            "description": "Vous "
+                            "n'avez "
+                            "pas "
+                            "les "
+                            "droits "
+                            "nécessaires "
+                            "pour "
+                            "voir "
+                            "cette "
+                            "offre "
+                            "collective",
+                        },
+                        "404": {
+                            "content": {
+                                "application/json": {"schema": {"$ref": "#/components/schemas/ErrorResponseModel"}}
+                            },
+                            "description": "L'offre " "collective " "n'existe " "pas",
+                        },
+                        "422": {
+                            "content": {
+                                "application/json": {"schema": {"$ref": "#/components/schemas/ValidationError"}}
+                            },
+                            "description": "Unprocessable " "Entity",
+                        },
+                    },
+                    "security": [{"ApiKeyAuth": []}],
+                    "summary": "Liste des " "formats " "d'offres " "collectives",
                     "tags": ["API offres collectives"],
                 },
             },
