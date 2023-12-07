@@ -1446,3 +1446,39 @@ class NewBankAccountJourneyTest:
 
         assert not history_models.ActionHistory.query.count()
         assert finance_models.BankAccountStatusHistory.query.count() == 2
+
+    @override_features(WIP_ENABLE_DOUBLE_MODEL_WRITING=True)
+    def test_association_to_physical_venue_if_both_virtual_and_physical_exists(
+        self, mock_archive_dossier, mock_update_text_annotation, mock_dms_graphql_client
+    ):
+        siret = "85331845900049"
+        siren = siret[:9]
+        venue = offerers_factories.VenueFactory(pricing_point="self", managingOfferer__siren=siren)
+        offerers_factories.VirtualVenueFactory(managingOfferer=venue.managingOfferer)
+        mock_dms_graphql_client.return_value = dms_creators.get_bank_info_response_procedure_v5(
+            state=GraphQLApplicationStates.accepted.value
+        )
+
+        update_ds_applications_for_procedure(settings.DS_BANK_ACCOUNT_PROCEDURE_ID, since=None)
+
+        bank_information = finance_models.BankInformation.query.one()
+        assert bank_information.venue == venue
+        assert bank_information.bic == "BICAGRIFRPP"
+        assert bank_information.iban == "FR7630006000011234567890189"
+        assert bank_information.status == finance_models.BankInformationStatus.ACCEPTED
+
+        # New journey
+        bank_account = finance_models.BankAccount.query.one()
+        assert bank_account.bic == "BICAGRIFRPP"
+        assert bank_account.iban == "FR7630006000011234567890189"
+        assert bank_account.offerer == venue.managingOfferer
+        assert bank_account.status == finance_models.BankAccountApplicationStatus.ACCEPTED
+        assert bank_account.label == "Intitulé du compte bancaire"
+        assert bank_account.dsApplicationId == self.dsv5_application_id
+
+        link = offerers_models.VenueBankAccountLink.query.one()
+        assert link.venue == venue
+        assert link.bankAccount == bank_account
+
+        assert history_models.ActionHistory.query.count() == 1
+        assert finance_models.BankAccountStatusHistory.query.count() == 1  # One status change recorded

@@ -651,6 +651,7 @@ class ImportBankAccountMixin:
             BankAccountApplicationStatus.ON_GOING,
             BankAccountApplicationStatus.WITH_PENDING_CORRECTIONS,
         ):
+            logger.info("Archiving application", extra={"application_id": self.application_details.application_id})
             archive_dossier(self.application_details.dossier_id)
 
 
@@ -731,7 +732,10 @@ class ImportBankAccountV5(AbstractImportBankAccount, ImportBankAccountMixin):
         Return None if no existing venues or more than one.
         """
         venues = (
-            offerers_models.Venue.query.filter(offerers_models.Offerer.siren == self.application_details.siren)
+            offerers_models.Venue.query.filter(
+                offerers_models.Offerer.siren == self.application_details.siren,
+                offerers_models.Venue.isVirtual == False,
+            )
             .options(
                 sqla_orm.load_only(
                     offerers_models.Venue.id, offerers_models.Venue.publicName, offerers_models.Venue.name
