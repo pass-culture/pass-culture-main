@@ -123,7 +123,7 @@ const Venue = ({
         )}
       >
         <div className="h-card-inner">
-          <div className={cn('h-card-header-row')}>
+          <div className={styles['card-container']}>
             <h3 className="h-card-title">
               {shouldShowVenueOfferSteps ? (
                 <button

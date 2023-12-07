@@ -161,7 +161,7 @@ const Homepage = (): JSX.Element => {
         </section>
 
         {isUserOffererValidated && hasNoVenueVisible && (
-          <section className="step-section">
+          <section className={styles['step-section']}>
             <VenueOfferSteps
               hasVenue={!hasNoVenueVisible}
               offererId={Number(selectedOffererId)}
