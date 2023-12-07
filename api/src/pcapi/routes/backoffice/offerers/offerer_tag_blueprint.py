@@ -20,7 +20,7 @@ offerer_tag_blueprint = utils.child_backoffice_blueprint(
     "offerer_tag",
     __name__,
     url_prefix="/pro/offerer-tag",
-    permission=perm_models.Permissions.MANAGE_OFFERER_TAG,
+    permission=perm_models.Permissions.READ_TAGS,
 )
 
 
@@ -36,37 +36,43 @@ def list_offerer_tags() -> utils.BackofficeResponse:
         .order_by(offerers_models.OffererTag.name)
         .all()
     )
-    forms = {}
-    for offerer_tag in offerer_tags:
-        forms[offerer_tag.id] = offerer_forms.EditOffererTagForm(
-            name=offerer_tag.name,
-            label=offerer_tag.label,
-            description=offerer_tag.description,
-        )
-        forms[offerer_tag.id].categories.choices = [(cat.id, cat.label or cat.name) for cat in categories]
-        forms[offerer_tag.id].categories.data = [cat.id for cat in offerer_tag.categories]
 
-    create_tag_form = offerer_forms.EditOffererTagForm()
-    create_tag_form.categories.choices = [(cat.id, cat.label or cat.name) for cat in categories]
-    create_category_form = (
-        offerer_forms.CreateOffererTagCategoryForm()
-        if utils.has_current_user_permission(perm_models.Permissions.MANAGE_TAGS_N2)
-        else None
-    )
+    forms = {}
+
+    if utils.has_current_user_permission(perm_models.Permissions.MANAGE_OFFERER_TAG):
+        update_tag_forms = {}
+        categories_choices = [(cat.id, cat.label or cat.name) for cat in categories]
+
+        for offerer_tag in offerer_tags:
+            update_tag_forms[offerer_tag.id] = offerer_forms.EditOffererTagForm(
+                name=offerer_tag.name,
+                label=offerer_tag.label,
+                description=offerer_tag.description,
+            )
+            update_tag_forms[offerer_tag.id].categories.choices = categories_choices
+            update_tag_forms[offerer_tag.id].categories.data = [cat.id for cat in offerer_tag.categories]
+
+        forms["update_tag_forms"] = update_tag_forms
+
+        create_tag_form = offerer_forms.EditOffererTagForm()
+        create_tag_form.categories.choices = categories_choices
+        forms["create_tag_form"] = create_tag_form
+
+    if utils.has_current_user_permission(perm_models.Permissions.MANAGE_TAGS_N2):
+        forms["delete_tag_form"] = empty_forms.EmptyForm()
+        forms["create_category_form"] = offerer_forms.CreateOffererTagCategoryForm()
 
     return render_template(
         "offerer/offerer_tag.html",
         rows=offerer_tags,
-        forms=forms,
-        create_tag_form=create_tag_form,
-        delete_tag_form=empty_forms.EmptyForm(),
         category_rows=categories,
-        create_category_form=create_category_form,
         active_tab=request.args.get("active_tab", "tags"),
+        **forms,
     )
 
 
 @offerer_tag_blueprint.route("/create", methods=["POST"])
+@utils.permission_required(perm_models.Permissions.MANAGE_OFFERER_TAG)
 def create_offerer_tag() -> utils.BackofficeResponse:
     categories = get_offerer_tag_categories()
     form = offerer_forms.EditOffererTagForm()
@@ -96,6 +102,7 @@ def create_offerer_tag() -> utils.BackofficeResponse:
 
 
 @offerer_tag_blueprint.route("/<int:offerer_tag_id>/update", methods=["POST"])
+@utils.permission_required(perm_models.Permissions.MANAGE_OFFERER_TAG)
 def update_offerer_tag(offerer_tag_id: int) -> utils.BackofficeResponse:
     categories = get_offerer_tag_categories()
     offerer_tag_to_update = offerers_models.OffererTag.query.get_or_404(offerer_tag_id)

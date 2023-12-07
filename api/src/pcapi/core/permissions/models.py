@@ -52,9 +52,9 @@ class Permissions(enum.Enum):
 
     VALIDATE_OFFERER = "gérer la validation des structures et des rattachements"
 
+    READ_TAGS = "visualiser les tags structure, offres et lieux"
     MANAGE_OFFERER_TAG = "gérer les tags structure"
     MANAGE_TAGS_N2 = "supprimer un tag (structure, offre, lieu) et créer des catégories"
-
     MANAGE_OFFERS_AND_VENUES_TAGS = "gérer les tags offres et lieux"
 
     READ_REIMBURSEMENT_RULES = "visualiser les tarifs dérogatoires"

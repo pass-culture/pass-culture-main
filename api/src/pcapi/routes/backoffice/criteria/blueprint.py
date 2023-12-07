@@ -23,7 +23,7 @@ tags_blueprint = utils.child_backoffice_blueprint(
     "tags",
     __name__,
     url_prefix="/tags/",
-    permission=perm_models.Permissions.MANAGE_OFFERS_AND_VENUES_TAGS,
+    permission=perm_models.Permissions.READ_TAGS,
 )
 
 
@@ -81,6 +81,7 @@ def list_tags() -> utils.BackofficeResponse:
 
 
 @tags_blueprint.route("/create", methods=["POST"])
+@utils.permission_required(perm_models.Permissions.MANAGE_OFFERS_AND_VENUES_TAGS)
 def create_tag() -> utils.BackofficeResponse:
     form = criteria_forms.EditCriterionForm()
     form.categories.choices = [(cat.id, cat.label) for cat in get_tags_categories()]
@@ -110,6 +111,7 @@ def create_tag() -> utils.BackofficeResponse:
 
 
 @tags_blueprint.route("/tags/new", methods=["GET"])
+@utils.permission_required(perm_models.Permissions.MANAGE_OFFERS_AND_VENUES_TAGS)
 def get_create_tag_form() -> utils.BackofficeResponse:
     form = criteria_forms.EditCriterionForm()
     form.categories.choices = [(cat.id, cat.label) for cat in get_tags_categories()]
@@ -125,6 +127,7 @@ def get_create_tag_form() -> utils.BackofficeResponse:
 
 
 @tags_blueprint.route("/<int:tag_id>/update", methods=["POST"])
+@utils.permission_required(perm_models.Permissions.MANAGE_OFFERS_AND_VENUES_TAGS)
 def update_tag(tag_id: int) -> utils.BackofficeResponse:
     tag = criteria_models.Criterion.query.get_or_404(tag_id)
     form = criteria_forms.EditCriterionForm()
@@ -153,6 +156,7 @@ def update_tag(tag_id: int) -> utils.BackofficeResponse:
 
 
 @tags_blueprint.route("/<int:tag_id>/edit", methods=["GET"])
+@utils.permission_required(perm_models.Permissions.MANAGE_OFFERS_AND_VENUES_TAGS)
 def get_update_tag_form(tag_id: int) -> utils.BackofficeResponse:
     tag = criteria_models.Criterion.query.get_or_404(tag_id)
 
