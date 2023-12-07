@@ -1,5 +1,6 @@
 from contextlib import suppress
 
+from pcapi.core.categories import subcategories_v2 as subcategories
 from pcapi.core.educational import exceptions as educational_exceptions
 from pcapi.core.educational import repository as educational_repository
 from pcapi.core.educational import validation as educational_validation
@@ -563,3 +564,21 @@ def patch_collective_offer_public(
         educational_api_offer.delete_image(obj=offer)
 
     return offers_serialization.GetPublicCollectiveOfferResponseModel.from_orm(offer)
+
+
+@blueprints.v2_prefixed_public_api.route("/collective/offers/formats", methods=["GET"])
+@spectree_serialize(
+    api=blueprints.v2_prefixed_public_api_schema,
+    tags=["API offres collectives"],
+    resp=SpectreeResponse(**(BASE_CODE_DESCRIPTIONS)),
+)
+@api_key_required
+def get_offers_formats() -> offers_serialization.GetCollectiveFormatListModel:
+    # in French, to be used by Swagger for the API documentation
+    """Liste des formats d'offres collectives"""
+    return offers_serialization.GetCollectiveFormatListModel(
+        __root__=[
+            offers_serialization.GetCollectiveFormatModel(id=format.name, name=format.value)
+            for format in subcategories.EacFormat
+        ]
+    )
