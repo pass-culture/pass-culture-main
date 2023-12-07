@@ -294,6 +294,7 @@ class GetPublicCollectiveOfferResponseModel(BaseModel):
     imageUrl: str | None
     bookings: Sequence[CollectiveBookingResponseModel]
     nationalProgram: NationalProgramModel | None
+    formats: list[subcategories.EacFormat] | None
 
     class Config:
         extra = "forbid"
@@ -347,7 +348,17 @@ class GetPublicCollectiveOfferResponseModel(BaseModel):
             imageUrl=offer.imageUrl,
             bookings=bookings,
             nationalProgram=national_program,
+            formats=offer.formats,
         )
+
+
+class GetCollectiveFormatModel(BaseModel):
+    id: str
+    name: str
+
+
+class GetCollectiveFormatListModel(BaseModel):
+    __root__: list[GetCollectiveFormatModel]
 
 
 class PostCollectiveOfferBodyModel(BaseModel):
