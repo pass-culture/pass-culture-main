@@ -13,11 +13,13 @@
       {% endcall %}
       {% call tabs.build_details_tabs_content_wrapper() %}
         {% call tabs.build_details_tab_content("tags", active_tab == 'tags') %}
-          <button class="btn btn-outline-primary lead fw-bold mt-2"
-                  data-bs-toggle="modal"
-                  data-bs-target="#create-offer-venue-tag"
-                  type="button">Créer un tag offres et lieux</button>
-          {{ build_lazy_modal(url_for("backoffice_web.tags.get_create_tag_form"), "create-offer-venue-tag") }}
+          {% if has_permission("MANAGE_OFFERS_AND_VENUES_TAGS") %}
+            <button class="btn btn-outline-primary lead fw-bold my-2"
+                    data-bs-toggle="modal"
+                    data-bs-target="#create-offer-venue-tag"
+                    type="button">Créer un tag offres et lieux</button>
+            {{ build_lazy_modal(url_for("backoffice_web.tags.get_create_tag_form"), "create-offer-venue-tag") }}
+          {% endif %}
           <div class="mt-4">
             <form name="filter-offer-venue-tag"
                   action="{{ dst }}"
@@ -56,32 +58,36 @@
                   {% for tag in rows.items %}
                     <tr>
                       <td>
-                        <div class="dropdown">
-                          <button type="button"
-                                  data-bs-toggle="dropdown"
-                                  aria-expanded="false"
-                                  class="btn p-0">
-                            <i class="bi bi-three-dots-vertical"></i>
-                          </button>
-                          <ul class="dropdown-menu">
-                            <li class="dropdown-item p-0">
-                              <a class="btn btn-sm d-block w-100 text-start px-3"
-                                 data-bs-toggle="modal"
-                                 data-bs-target="#update-offer-venue-tag-{{ tag.id }}">Modifier le tag</a>
-                            </li>
+                        {% if has_permission("MANAGE_OFFERS_AND_VENUES_TAGS") or has_permission("MANAGE_TAGS_N2") %}
+                          <div class="dropdown">
+                            <button type="button"
+                                    data-bs-toggle="dropdown"
+                                    aria-expanded="false"
+                                    class="btn p-0">
+                              <i class="bi bi-three-dots-vertical"></i>
+                            </button>
+                            <ul class="dropdown-menu">
+                              {% if has_permission("MANAGE_OFFERS_AND_VENUES_TAGS") %}
+                                <li class="dropdown-item p-0">
+                                  <a class="btn btn-sm d-block w-100 text-start px-3"
+                                     data-bs-toggle="modal"
+                                     data-bs-target="#update-offer-venue-tag-{{ tag.id }}">Modifier le tag</a>
+                                </li>
+                              {% endif %}
+                              {% if has_permission("MANAGE_TAGS_N2") %}
+                                <li class="dropdown-item p-0">
+                                  <a class="btn btn-sm d-block w-100 text-start px-3"
+                                     data-bs-toggle="modal"
+                                     data-bs-target="#delete-offer-venue-tag-{{ tag.id }}">Supprimer le tag</a>
+                                </li>
+                              {% endif %}
+                            </ul>
+                            {{ build_lazy_modal(url_for("backoffice_web.tags.get_update_tag_form", tag_id=tag.id), "update-offer-venue-tag-" + tag.id | string) }}
                             {% if has_permission("MANAGE_TAGS_N2") %}
-                              <li class="dropdown-item p-0">
-                                <a class="btn btn-sm d-block w-100 text-start px-3"
-                                   data-bs-toggle="modal"
-                                   data-bs-target="#delete-offer-venue-tag-{{ tag.id }}">Supprimer le tag</a>
-                              </li>
+                              {{ build_lazy_modal(url_for("backoffice_web.tags.get_delete_tag_form", tag_id=tag.id), "delete-offer-venue-tag-" + tag.id | string) }}
                             {% endif %}
-                          </ul>
-                          {{ build_lazy_modal(url_for("backoffice_web.tags.get_update_tag_form", tag_id=tag.id), "update-offer-venue-tag-" + tag.id | string) }}
-                          {% if has_permission("MANAGE_TAGS_N2") %}
-                            {{ build_lazy_modal(url_for("backoffice_web.tags.get_delete_tag_form", tag_id=tag.id), "delete-offer-venue-tag-" + tag.id | string) }}
-                          {% endif %}
-                        </div>
+                          </div>
+                        {% endif %}
                       </td>
                       <td>{{ tag.id }}</td>
                       <td>{{ tag.name }}</td>
@@ -100,7 +106,7 @@
         {% endcall %}
         {% call tabs.build_details_tab_content("categories", active_tab == 'categories') %}
           {% if create_category_form %}
-            <button class="btn btn-outline-primary lead fw-bold mt-2"
+            <button class="btn btn-outline-primary lead fw-bold my-2"
                     data-bs-toggle="modal"
                     data-bs-target=".pc-create-tag-category-modal"
                     type="button">Créer une catégorie</button>
