@@ -5,6 +5,7 @@ import { api } from 'apiClient/api'
 import {
   BankAccountResponseModel,
   GetOffererBankAccountsResponseModel,
+  ManagedVenues,
 } from 'apiClient/v1'
 import ReimbursementBankAccount from 'components/ReimbursementBankAccount/ReimbursementBankAccount'
 import { useReimbursementContext } from 'context/ReimbursementContext/ReimbursementContext'
@@ -43,6 +44,9 @@ const BankInformations = (): JSX.Element => {
   const [selectedBankAccount, setSelectedBankAccount] =
     useState<BankAccountResponseModel | null>(null)
   const { structure: offererId } = Object.fromEntries(searchParams)
+  const [bankAccountVenues, setBankAccountVenues] = useState<
+    Array<ManagedVenues>
+  >([])
 
   const offererOptions: SelectOption[] =
     offerers && offerers.length > 1
@@ -87,6 +91,7 @@ const BankInformations = (): JSX.Element => {
         const offererBankAccounts =
           await api.getOffererBankAccountsAndAttachedVenues(selectedOffererId)
         setSelectedOffererBankAccounts(offererBankAccounts)
+        setBankAccountVenues(offererBankAccounts.managedVenues)
         setIsOffererBankAccountsLoading(false)
       } catch (error) {
         notify.error(
@@ -112,6 +117,14 @@ const BankInformations = (): JSX.Element => {
       }
       setSelectedBankAccount(null)
     }
+  }
+
+  const updateBankAccountVenuePricingPoint = (venueId: number) => {
+    setBankAccountVenues(
+      bankAccountVenues.map((venue) =>
+        venue.id === venueId ? { ...venue, hasPricingPoint: true } : venue
+      )
+    )
   }
 
   return (
@@ -216,11 +229,14 @@ const BankInformations = (): JSX.Element => {
       )}
       {selectedBankAccount !== null &&
         selectedOfferer !== null &&
-        selectedOffererBankAccounts?.managedVenues && (
+        bankAccountVenues && (
           <LinkVenuesDialog
             offererId={selectedOfferer.id}
             selectedBankAccount={selectedBankAccount}
-            managedVenues={selectedOffererBankAccounts?.managedVenues}
+            managedVenues={bankAccountVenues}
+            updateBankAccountVenuePricingPoint={
+              updateBankAccountVenuePricingPoint
+            }
             closeDialog={closeDialog}
           />
         )}
