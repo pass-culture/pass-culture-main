@@ -63,6 +63,7 @@ const PricingPointDialog = ({
       labelledBy="Sélectionner un SIRET"
       extraClassNames={styles.dialog}
       hasCloseButton
+      onDismiss={closeDialog}
     >
       <h3 className={styles['callout-title']}>
         Sélectionnez un SIRET pour le lieu “{selectedVenue.commonName}”{' '}
