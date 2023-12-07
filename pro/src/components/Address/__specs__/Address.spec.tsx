@@ -106,6 +106,7 @@ describe('AddressSelect', () => {
           address: '12 rue des tournesols',
           addressAutocomplete: '12 rue des tournesols 75003 Paris',
           city: 'Paris',
+          banId: '2',
           latitude: 22.2,
           longitude: -2.22,
           postalCode: '75003',
