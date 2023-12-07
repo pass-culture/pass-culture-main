@@ -32,7 +32,7 @@ pytestmark = [
 
 class MultipleOffersHomeTest(GetEndpointHelper):
     endpoint = "backoffice_web.multiple_offers.multiple_offers_home"
-    needed_permission = perm_models.Permissions.MULTIPLE_OFFERS_ACTIONS
+    needed_permission = perm_models.Permissions.READ_OFFERS
 
     def test_get_search_form(self, authenticated_client):
         with assert_num_queries(2):
@@ -42,7 +42,7 @@ class MultipleOffersHomeTest(GetEndpointHelper):
 
 class SearchMultipleOffersTest(GetEndpointHelper):
     endpoint = "backoffice_web.multiple_offers.search_multiple_offers"
-    needed_permission = perm_models.Permissions.MULTIPLE_OFFERS_ACTIONS
+    needed_permission = perm_models.Permissions.READ_OFFERS
 
     # - fetch session (1 query)
     # - fetch user (1 query)
@@ -249,6 +249,18 @@ class SearchMultipleOffersTest(GetEndpointHelper):
             assert response.status_code == 400
 
         assert "La recherche ne correspond pas au format d'un EAN" in html_parser.extract_alert(response.data)
+
+
+class AddCriteriaToOffersButtonTest(button_helpers.ButtonHelper):
+    needed_permission = perm_models.Permissions.MULTIPLE_OFFERS_ACTIONS
+    button_label = "Tag des offres"
+
+    @property
+    def path(self):
+        provider = providers_factories.APIProviderFactory()
+        product = offers_factories.ThingProductFactory(extraData={"ean": "9781234567890"}, lastProvider=provider)
+        offers_factories.ThingOfferFactory(product=product)
+        return url_for("backoffice_web.multiple_offers.search_multiple_offers", ean="9781234567890")
 
 
 class AddCriteriaToOffersTest(PostEndpointHelper):

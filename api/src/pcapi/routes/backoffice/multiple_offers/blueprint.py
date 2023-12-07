@@ -22,7 +22,7 @@ multiple_offers_blueprint = utils.child_backoffice_blueprint(
     "multiple_offers",
     __name__,
     url_prefix="/pro/multiple-offers",
-    permission=perm_models.Permissions.MULTIPLE_OFFERS_ACTIONS,
+    permission=perm_models.Permissions.READ_OFFERS,
 )
 
 
@@ -92,6 +92,17 @@ def search_multiple_offers() -> utils.BackofficeResponse:
     pending_offers_count = sum(offer.validation == OfferValidationStatus.PENDING for offer in offers)
     rejected_offers_count = sum(offer.validation == OfferValidationStatus.REJECTED for offer in offers)
 
+    operations_forms = {}
+
+    if utils.has_current_user_permission(perm_models.Permissions.PRO_FRAUD_ACTIONS) and (
+        product.isGcuCompatible
+        or approved_active_offers_count + approved_inactive_offers_count + pending_offers_count > 0
+    ):
+        operations_forms["incompatibility_form"] = forms.HiddenEanForm(ean=ean)
+
+    if utils.has_current_user_permission(perm_models.Permissions.MULTIPLE_OFFERS_ACTIONS):
+        operations_forms["offer_criteria_form"] = forms.OfferCriteriaForm(ean=ean)
+
     return _render_search(
         form,
         name=product.name,
@@ -104,14 +115,14 @@ def search_multiple_offers() -> utils.BackofficeResponse:
         rejected_offers_count=rejected_offers_count,
         ean=ean,
         product_compatibility=product.isGcuCompatible,
-        incompatibility_form=forms.HiddenEanForm(ean=ean),
         current_criteria_on_offers=_get_current_criteria_on_active_offers(offers),
-        offer_criteria_form=forms.OfferCriteriaForm(ean=ean),
         product_synchronisable=product.isSynchronizationCompatible,
+        **operations_forms,
     )
 
 
 @multiple_offers_blueprint.route("/add-criteria", methods=["POST"])
+@utils.permission_required(perm_models.Permissions.MULTIPLE_OFFERS_ACTIONS)
 def add_criteria_to_offers() -> utils.BackofficeResponse:
     form = forms.OfferCriteriaForm()
 
