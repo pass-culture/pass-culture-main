@@ -65,7 +65,9 @@ const props: LinkVenuesDialogProps = {
     obfuscatedIban: 'xxxx-xxxxx-xxxx-xxxx-3a221991fda9',
     status: BankAccountApplicationStatus.ACCEPTE,
   },
+  updateBankAccountVenuePricingPoint: vi.fn(),
 }
+
 const mockLogEvent = vi.fn()
 describe('LinkVenueDialog', () => {
   beforeEach(() => {
