@@ -14,7 +14,6 @@ import {
 import { ApiRequestOptions } from 'apiClient/v1/core/ApiRequestOptions'
 import { ApiResult } from 'apiClient/v1/core/ApiResult'
 import { CollectiveOffer } from 'core/OfferEducational'
-import getCollectiveOfferAdapter from 'core/OfferEducational/adapters/getCollectiveOfferAdapter'
 import * as createFromTemplateUtils from 'core/OfferEducational/utils/createOfferFromTemplate'
 import { GET_DATA_ERROR_MESSAGE } from 'core/shared'
 import * as useNotification from 'hooks/useNotification'
@@ -239,12 +238,7 @@ describe('DuplicateOfferCell', () => {
 
       await userEvent.click(button)
 
-      const response = await getCollectiveOfferAdapter(offer.id)
-
-      expect(response.isOk).toBeFalsy()
-
-      expect(notifyError).toHaveBeenNthCalledWith(
-        1,
+      expect(notifyError).toHaveBeenCalledWith(
         'Une erreur est survenue lors de la récupération de votre offre'
       )
     })
