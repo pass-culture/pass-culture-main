@@ -17,7 +17,10 @@ const renderLinkVenuesDialog = (
   offererId: number,
   selectedBankAccount: BankAccountResponseModel,
   managedVenues: Array<ManagedVenues>,
-  closeDialog: (update?: boolean) => void = vi.fn()
+  closeDialog: (update?: boolean) => void = vi.fn(),
+  updateBankAccountVenuePricingPoint: (
+    venueId: number
+  ) => void = mockUpdateVenuePricingPoint
 ) => {
   renderWithProviders(
     <LinkVenuesDialog
@@ -25,8 +28,8 @@ const renderLinkVenuesDialog = (
       selectedBankAccount={selectedBankAccount}
       managedVenues={managedVenues}
       closeDialog={closeDialog}
-      updateBankAccountVenuePricingPoint={mockUpdateVenuePricingPoint}
-    ></LinkVenuesDialog>
+      updateBankAccountVenuePricingPoint={updateBankAccountVenuePricingPoint}
+    />
   )
 }
 
