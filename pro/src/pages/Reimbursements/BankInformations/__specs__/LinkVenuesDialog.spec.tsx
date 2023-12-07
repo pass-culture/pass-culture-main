@@ -12,6 +12,7 @@ import { renderWithProviders } from 'utils/renderWithProviders'
 
 import LinkVenuesDialog from '../LinkVenuesDialog'
 
+const mockUpdateVenuePricingPoint = vi.fn()
 const renderLinkVenuesDialog = (
   offererId: number,
   selectedBankAccount: BankAccountResponseModel,
@@ -24,6 +25,7 @@ const renderLinkVenuesDialog = (
       selectedBankAccount={selectedBankAccount}
       managedVenues={managedVenues}
       closeDialog={closeDialog}
+      updateBankAccountVenuePricingPoint={mockUpdateVenuePricingPoint}
     ></LinkVenuesDialog>
   )
 }
@@ -76,7 +78,7 @@ describe('LinkVenueDialog', () => {
     ).toBeInTheDocument()
   })
 
-  it('should enable venue selection when selecting pricing point', async () => {
+  it('should update venue selection when selecting pricing point', async () => {
     vi.spyOn(api, 'linkVenueToPricingPoint').mockResolvedValue()
     const managedVenues = [
       { ...defaultManagedVenues, id: 1, hasPricingPoint: true },
@@ -110,7 +112,7 @@ describe('LinkVenueDialog', () => {
       screen.getByRole('button', { name: 'Valider la sélection' })
     )
 
-    expect(venueWithoutSiretCheckBox).toBeEnabled()
+    expect(mockUpdateVenuePricingPoint).toHaveBeenCalled()
   })
 
   it('should display error message when attach pricing point fail', async () => {
