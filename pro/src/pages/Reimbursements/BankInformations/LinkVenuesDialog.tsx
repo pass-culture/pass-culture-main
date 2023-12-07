@@ -27,6 +27,7 @@ export interface LinkVenuesDialogProps {
   selectedBankAccount: BankAccountResponseModel
   managedVenues: Array<ManagedVenues>
   closeDialog: (update?: boolean) => void
+  updateBankAccountVenuePricingPoint: (venueId: number) => void
 }
 
 const LinkVenuesDialog = ({
@@ -34,6 +35,7 @@ const LinkVenuesDialog = ({
   selectedBankAccount,
   managedVenues,
   closeDialog,
+  updateBankAccountVenuePricingPoint,
 }: LinkVenuesDialogProps) => {
   const [showDiscardChangesDialog, setShowDiscardChangesDialog] =
     useState<boolean>(false)
@@ -41,9 +43,7 @@ const LinkVenuesDialog = ({
     useState<boolean>(false)
   const [selectedVenue, setSelectedVenue] = useState<ManagedVenues | null>(null)
 
-  const [venuesToLink, setVenuesToLink] =
-    useState<ManagedVenues[]>(managedVenues)
-  const availableManagedVenuesIds = venuesToLink
+  const availableManagedVenuesIds = managedVenues
     .filter((venue) => !venue.bankAccountId && venue.hasPricingPoint)
     ?.map((venue) => venue.id)
   const notification = useNotification()
@@ -64,16 +64,6 @@ const LinkVenuesDialog = ({
       closeDialog()
     } else {
       setShowDiscardChangesDialog(true)
-    }
-  }
-
-  const updateVenuePricingPoint = (venueId: number) => {
-    const venue = managedVenues.find((venue) => venue.id === venueId)
-    if (venue) {
-      setVenuesToLink([
-        ...venuesToLink.filter((item) => item.id !== venueId),
-        { ...venue, hasPricingPoint: true },
-      ])
     }
   }
 
@@ -185,7 +175,7 @@ const LinkVenuesDialog = ({
                 </span>
               </div>
 
-              {venuesToLink.map((venue) => {
+              {managedVenues.map((venue) => {
                 return (
                   <div
                     key={venue.id}
@@ -265,7 +255,7 @@ const LinkVenuesDialog = ({
           selectedVenue={selectedVenue}
           venues={venuesForPricingPoint}
           closeDialog={() => setSelectedVenue(null)}
-          updateVenuePricingPoint={updateVenuePricingPoint}
+          updateVenuePricingPoint={updateBankAccountVenuePricingPoint}
         />
       )}
     </>
