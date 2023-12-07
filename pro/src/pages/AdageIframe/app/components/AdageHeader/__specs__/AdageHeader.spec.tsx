@@ -34,18 +34,6 @@ const renderAdageHeader = (
   )
 }
 
-const isFavoritesActive = {
-  features: {
-    list: [
-      {
-        nameKey: 'WIP_ENABLE_LIKE_IN_ADAGE',
-        isActive: true,
-      },
-    ],
-    initialized: true,
-  },
-}
-
 const isDiscoveryActive = {
   features: {
     list: [
@@ -219,20 +207,10 @@ describe('AdageHeader', () => {
     ).not.toBeInTheDocument()
   })
 
-  it('should not display favorites tab if the feature flag is disabled', () => {
+  it('should display a favorites tab in the header', () => {
     vi.spyOn(apiAdage, 'getEducationalInstitutionWithBudget')
 
     renderAdageHeader(user)
-
-    expect(
-      screen.queryByRole('link', { name: /Mes Favoris/ })
-    ).not.toBeInTheDocument()
-  })
-
-  it('should display favorites tab if the feature flag is enabled', () => {
-    vi.spyOn(apiAdage, 'getEducationalInstitutionWithBudget')
-
-    renderAdageHeader(user, isFavoritesActive)
 
     expect(
       screen.queryByRole('link', { name: /Mes Favoris/ })
@@ -242,10 +220,7 @@ describe('AdageHeader', () => {
   it('should display the user favorite count after the favorite tab name', () => {
     vi.spyOn(apiAdage, 'getEducationalInstitutionWithBudget')
 
-    renderAdageHeader(
-      { ...user, favoritesCount: 10 } as AuthenticatedResponse,
-      isFavoritesActive
-    )
+    renderAdageHeader({ ...user, favoritesCount: 10 })
 
     expect(
       screen.queryByRole('link', { name: /Mes Favoris (10)/ })

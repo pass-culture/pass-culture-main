@@ -326,29 +326,23 @@ describe('offer', () => {
   })
 
   it('should display the add to favorite button on offers that are not favorite yet', () => {
-    renderOffer(
-      {
-        ...offerProps,
-        offer: { ...defaultCollectiveTemplateOffer, isTemplate: true },
-      },
-      [{ nameKey: 'WIP_ENABLE_LIKE_IN_ADAGE', isActive: true }]
-    )
+    renderOffer({
+      ...offerProps,
+      offer: { ...defaultCollectiveTemplateOffer, isTemplate: true },
+    })
 
     expect(screen.getByText('Enregistrer en favoris')).toBeInTheDocument()
   })
 
   it('should display the remove from favorite button on offers that are already favorite', () => {
-    renderOffer(
-      {
-        ...offerProps,
-        offer: {
-          ...defaultCollectiveTemplateOffer,
-          isFavorite: true,
-          isTemplate: true,
-        },
+    renderOffer({
+      ...offerProps,
+      offer: {
+        ...defaultCollectiveTemplateOffer,
+        isFavorite: true,
+        isTemplate: true,
       },
-      [{ nameKey: 'WIP_ENABLE_LIKE_IN_ADAGE', isActive: true }]
-    )
+    })
 
     expect(screen.getByText('Supprimer des favoris')).toBeInTheDocument()
   })
@@ -357,13 +351,10 @@ describe('offer', () => {
     vi.spyOn(apiAdage, 'postCollectiveOfferFavorites').mockResolvedValue()
     vi.spyOn(apiAdage, 'deleteFavoriteForCollectiveOffer').mockResolvedValue()
 
-    renderOffer(
-      {
-        ...offerProps,
-        offer: { ...defaultCollectiveTemplateOffer, isTemplate: true },
-      },
-      [{ nameKey: 'WIP_ENABLE_LIKE_IN_ADAGE', isActive: true }]
-    )
+    renderOffer({
+      ...offerProps,
+      offer: { ...defaultCollectiveTemplateOffer, isTemplate: true },
+    })
 
     const toFavoriteButton = screen.getByRole('button', {
       name: 'Enregistrer en favoris',
@@ -389,18 +380,15 @@ describe('offer', () => {
       'deleteFavoriteForCollectiveOfferTemplate'
     ).mockResolvedValue()
 
-    renderOffer(
-      {
-        ...offerProps,
-        offer: {
-          ...offerProps.offer,
-          dates: { end: '', start: '' },
-          isTemplate: true,
-        },
-        afterFavoriteChange: () => {},
+    renderOffer({
+      ...offerProps,
+      offer: {
+        ...offerProps.offer,
+        dates: { end: '', start: '' },
+        isTemplate: true,
       },
-      [{ nameKey: 'WIP_ENABLE_LIKE_IN_ADAGE', isActive: true }]
-    )
+      afterFavoriteChange: () => {},
+    })
 
     const toFavoriteButton = screen.getByRole('button', {
       name: 'Enregistrer en favoris',
@@ -424,16 +412,13 @@ describe('offer', () => {
       null
     )
 
-    renderOffer(
-      {
-        ...offerProps,
-        offer: {
-          ...defaultCollectiveTemplateOffer,
-          isTemplate: true,
-        },
+    renderOffer({
+      ...offerProps,
+      offer: {
+        ...defaultCollectiveTemplateOffer,
+        isTemplate: true,
       },
-      [{ nameKey: 'WIP_ENABLE_LIKE_IN_ADAGE', isActive: true }]
-    )
+    })
 
     const toFavoriteButton = screen.getByRole('button', {
       name: 'Enregistrer en favoris',
@@ -444,23 +429,20 @@ describe('offer', () => {
     expect(screen.getByText('Enregistrer en favoris')).toBeInTheDocument()
   })
 
-  it('should not change favorite status when set to favorite request fails', async () => {
+  it('should not change favorite status when remove from favorite request fails', async () => {
     vi.spyOn(
       apiAdage,
       'deleteFavoriteForCollectiveOfferTemplate'
     ).mockRejectedValue(null)
 
-    renderOffer(
-      {
-        ...offerProps,
-        offer: {
-          ...defaultCollectiveTemplateOffer,
-          isFavorite: true,
-          isTemplate: true,
-        },
+    renderOffer({
+      ...offerProps,
+      offer: {
+        ...defaultCollectiveTemplateOffer,
+        isFavorite: true,
+        isTemplate: true,
       },
-      [{ nameKey: 'WIP_ENABLE_LIKE_IN_ADAGE', isActive: true }]
-    )
+    })
 
     const toFavoriteButton = screen.getByRole('button', {
       name: 'Supprimer des favoris',
@@ -480,7 +462,7 @@ describe('offer', () => {
           isTemplate: true,
         },
       },
-      [{ nameKey: 'WIP_ENABLE_LIKE_IN_ADAGE', isActive: true }],
+      undefined,
       { ...user, role: AdageFrontRoles.READONLY }
     )
 
@@ -488,12 +470,9 @@ describe('offer', () => {
   })
 
   it('should not display favorite button when offer is bookable', () => {
-    renderOffer(
-      {
-        ...offerProps,
-      },
-      [{ nameKey: 'WIP_ENABLE_LIKE_IN_ADAGE', isActive: true }]
-    )
+    renderOffer({
+      ...offerProps,
+    })
 
     expect(screen.queryByText('Enregistrer en favoris')).not.toBeInTheDocument()
   })

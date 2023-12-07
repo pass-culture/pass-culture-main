@@ -33,7 +33,6 @@ export const AdageHeaderMenu = ({
 
   const { nbHits } = useStats()
 
-  const areFavoritesActive = useActiveFeature('WIP_ENABLE_LIKE_IN_ADAGE')
   const isDiscoveryActive = useActiveFeature('WIP_ENABLE_DISCOVERY')
 
   return (
@@ -94,29 +93,27 @@ export const AdageHeaderMenu = ({
             </NavLink>
           </li>
 
-          {areFavoritesActive && (
-            <li className={styles['adage-header-menu-item']}>
-              <NavLink
-                to={`/adage-iframe/mes-favoris?token=${adageAuthToken}`}
-                className={({ isActive }) => {
-                  return cn(styles['adage-header-link'], {
-                    [styles['adage-header-link-active']]: isActive,
-                  })
-                }}
-                onClick={() => logAdageLinkClick(AdageHeaderLink.MY_FAVORITES)}
-              >
-                <SvgIcon
-                  src={strokeStarIcon}
-                  alt=""
-                  className={styles['adage-header-link-icon']}
-                />
-                Mes Favoris
-                <div className={styles['adage-header-nb-hits']}>
-                  {favoritesCount ?? 0}
-                </div>
-              </NavLink>
-            </li>
-          )}
+          <li className={styles['adage-header-menu-item']}>
+            <NavLink
+              to={`/adage-iframe/mes-favoris?token=${adageAuthToken}`}
+              className={({ isActive }) => {
+                return cn(styles['adage-header-link'], {
+                  [styles['adage-header-link-active']]: isActive,
+                })
+              }}
+              onClick={() => logAdageLinkClick(AdageHeaderLink.MY_FAVORITES)}
+            >
+              <SvgIcon
+                src={strokeStarIcon}
+                alt=""
+                className={styles['adage-header-link-icon']}
+              />
+              Mes Favoris
+              <div className={styles['adage-header-nb-hits']}>
+                {favoritesCount ?? 0}
+              </div>
+            </NavLink>
+          </li>
         </>
       )}
     </ul>
