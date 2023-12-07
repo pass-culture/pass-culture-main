@@ -721,7 +721,7 @@ def _batch_reject_offers(offer_ids: list[int]) -> None:
         )
 
 
-@list_offers_blueprint.route("/<int:offer_id>/details", methods=["GET"])
+@list_offers_blueprint.route("/<int:offer_id>", methods=["GET"])
 @utils.permission_required(perm_models.Permissions.READ_OFFERS)
 def get_offer_details(offer_id: int) -> utils.BackofficeResponse:
     offer_query = offers_models.Offer.query.filter(offers_models.Offer.id == offer_id).options(
