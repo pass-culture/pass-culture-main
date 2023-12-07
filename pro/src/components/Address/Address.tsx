@@ -101,7 +101,7 @@ export const handleAddressSelect = (
   setFieldValue('city', selectedItem?.extraData.city)
   setFieldValue('latitude', selectedItem?.extraData.latitude)
   setFieldValue('longitude', selectedItem?.extraData.longitude)
-  setFieldValue('banId', selectedItem?.extraData.banId)
+  setFieldValue('banId', selectedItem?.value)
 }
 
 export default AddressSelect
