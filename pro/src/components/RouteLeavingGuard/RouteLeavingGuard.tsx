@@ -1,5 +1,5 @@
 import React, { ReactNode } from 'react'
-import { unstable_useBlocker } from 'react-router-dom'
+import { useBlocker } from 'react-router-dom'
 import type { Location } from 'react-router-dom'
 
 import ConfirmDialog from 'components/Dialog/ConfirmDialog'
@@ -30,7 +30,7 @@ const RouteLeavingGuard = ({
   leftButton = 'Annuler',
   closeModalOnRightButton = false,
 }: RouteLeavingGuardProps) => {
-  const blocker = unstable_useBlocker(shouldBlockNavigation)
+  const blocker = useBlocker(shouldBlockNavigation)
 
   const closeModal = () => {
     if (blocker.state !== 'blocked') {
