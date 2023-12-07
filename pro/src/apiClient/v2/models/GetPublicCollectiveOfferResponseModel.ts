@@ -4,6 +4,7 @@
 /* eslint-disable */
 
 import type { CollectiveBookingResponseModel } from './CollectiveBookingResponseModel';
+import type { EacFormat } from './EacFormat';
 import type { NationalProgramModel } from './NationalProgramModel';
 import type { OfferVenueModel } from './OfferVenueModel';
 
@@ -22,6 +23,7 @@ export type GetPublicCollectiveOfferResponseModel = {
   educationalInstitution?: string | null;
   educationalInstitutionId?: number | null;
   educationalPriceDetail?: string | null;
+  formats?: Array<EacFormat> | null;
   hasBookingLimitDatetimesPassed: boolean;
   id: number;
   imageCredit?: string | null;
