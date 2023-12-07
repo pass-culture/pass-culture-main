@@ -411,15 +411,30 @@ class GetOffererTest:
         pro_user = users_factories.ProFactory()
         offerer = offerers_factories.OffererFactory()
         offerers_factories.UserOffererFactory(user=pro_user, offerer=offerer)
-        _refused_bank_account = finance_factories.BankAccountFactory(
-            offerer=offerer, status=finance_models.BankAccountApplicationStatus.REFUSED
-        )
-        _without_continuation_bank_account = finance_factories.BankAccountFactory(
-            offerer=offerer, status=finance_models.BankAccountApplicationStatus.REFUSED
-        )
         finance_factories.BankAccountFactory(
             offerer=offerer, status=finance_models.BankAccountApplicationStatus.ON_GOING
         )
+        # When
+        http_client = client.with_session_auth(pro_user.email)
+
+        response = http_client.get(f"/offerers/{offerer.id}")
+
+        # Then
+        assert response.status_code == 200
+        offerer = response.json
+
+        assert offerer["hasValidBankAccount"] is False
+        assert offerer["hasPendingBankAccount"] is True
+        assert offerer["venuesWithNonFreeOffersWithoutBankAccounts"] == []
+        assert offerer["hasNonFreeOffer"] is False
+
+    @pytest.mark.usefixtures("db_session")
+    def test_client_can_know_if_have_any_pending_bank_accounts_draft_included(self, client):
+        # Given
+        pro_user = users_factories.ProFactory()
+        offerer = offerers_factories.OffererFactory()
+        offerers_factories.UserOffererFactory(user=pro_user, offerer=offerer)
+        finance_factories.BankAccountFactory(offerer=offerer, status=finance_models.BankAccountApplicationStatus.DRAFT)
         # When
         http_client = client.with_session_auth(pro_user.email)
 

@@ -536,7 +536,12 @@ def get_offerer_and_extradata(offerer_id: int) -> models.Offerer | None:
             sqla.and_(
                 finance_models.BankAccount.offererId == models.Offerer.id,
                 finance_models.BankAccount.isActive.is_(True),
-                finance_models.BankAccount.status == finance_models.BankAccountApplicationStatus.ON_GOING,
+                finance_models.BankAccount.status.in_(
+                    [
+                        finance_models.BankAccountApplicationStatus.DRAFT,
+                        finance_models.BankAccountApplicationStatus.ON_GOING,
+                    ]
+                ),
             ),
         )
         .correlate(models.Offerer)
