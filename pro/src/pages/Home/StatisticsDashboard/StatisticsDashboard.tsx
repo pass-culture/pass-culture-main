@@ -7,6 +7,7 @@ import {
   GetOffererResponseModel,
   GetOffererStatsResponseModel,
 } from 'apiClient/v1'
+import useActiveFeature from 'hooks/useActiveFeature'
 import fullMoreIcon from 'icons/full-more.svg'
 import strokeNoBookingIcon from 'icons/stroke-no-booking.svg'
 import { ButtonLink } from 'ui-kit/Button'
@@ -26,6 +27,7 @@ export interface StatisticsDashboardProps {
 export const StatisticsDashboard = ({ offerer }: StatisticsDashboardProps) => {
   const [stats, setStats] = useState<GetOffererStatsResponseModel | null>(null)
   const [isLoading, setIsLoading] = useState(false)
+  const isStatsV2Enabled = useActiveFeature('WIP_HOME_STATS_V2')
 
   useEffect(() => {
     const loadStats = async () => {
@@ -108,7 +110,9 @@ export const StatisticsDashboard = ({ offerer }: StatisticsDashboardProps) => {
         </div>
       )}
 
-      <OfferStats offerer={offerer} className={styles['offer-stats']} />
+      {isStatsV2Enabled && (
+        <OfferStats offerer={offerer} className={styles['offer-stats']} />
+      )}
     </>
   )
 }
