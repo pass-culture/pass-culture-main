@@ -18,5 +18,6 @@ class NeedsValidationMixin:
         return self.validationToken is None
 
     @isValidated.expression  # type: ignore [no-redef]
-    def isValidated(cls) -> BinaryExpression:  # pylint: disable=no-self-argument
+    @classmethod
+    def isValidated(cls) -> BinaryExpression:
         return cls.validationToken.is_(None)

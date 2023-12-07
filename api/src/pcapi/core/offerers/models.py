@@ -425,7 +425,8 @@ class Venue(PcObject, Base, Model, HasThumbMixin, ProvidableMixin, Accessibility
         self._bannerUrl = value
 
     @bannerUrl.expression  # type: ignore [no-redef]
-    def bannerUrl(cls):  # pylint: disable=no-self-argument
+    @classmethod
+    def bannerUrl(cls):
         return cls._bannerUrl
 
     @property
@@ -479,7 +480,8 @@ class Venue(PcObject, Base, Model, HasThumbMixin, ProvidableMixin, Accessibility
         return self.last_collective_dms_application.state if self.last_collective_dms_application else None
 
     @dms_adage_status.expression  # type: ignore [no-redef]
-    def dms_adage_status(cls) -> str | None:  # pylint: disable=no-self-argument
+    @classmethod
+    def dms_adage_status(cls) -> str | None:
         return (
             db.session.query(educational_models.CollectiveDmsApplication.state)
             .select_from(educational_models.CollectiveDmsApplication)
@@ -593,7 +595,8 @@ class Venue(PcObject, Base, Model, HasThumbMixin, ProvidableMixin, Accessibility
         )
 
     @current_reimbursement_point_id.expression  # type: ignore [no-redef]
-    def current_reimbursement_point_id(cls) -> int | None:  # pylint: disable=no-self-argument # type: ignore[no-redef]
+    @classmethod
+    def current_reimbursement_point_id(cls) -> int | None:
         now = datetime.utcnow()
 
         return (
@@ -667,7 +670,8 @@ class Venue(PcObject, Base, Model, HasThumbMixin, ProvidableMixin, Accessibility
         return self.publicName or self.name
 
     @common_name.expression  # type: ignore [no-redef]
-    def common_name(cls) -> str:  # pylint: disable=no-self-argument
+    @classmethod
+    def common_name(cls) -> str:
         return sqla_func.coalesce(func.nullif(cls.publicName, ""), cls.name)
 
     @property
@@ -914,7 +918,8 @@ class Offerer(
         return postal_code_utils.PostalCode(self.postalCode).get_departement_code()
 
     @departementCode.expression  # type: ignore [no-redef]
-    def departementCode(cls) -> Case:  # pylint: disable=no-self-argument
+    @classmethod
+    def departementCode(cls) -> Case:
         return case(
             [
                 (

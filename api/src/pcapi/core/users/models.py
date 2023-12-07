@@ -376,7 +376,8 @@ class User(PcObject, Base, Model, NeedsValidationMixin, DeactivableMixin):
         return None
 
     @birth_date.expression  # type: ignore [no-redef]
-    def birth_date(cls) -> date | None:  # pylint: disable=no-self-argument
+    @classmethod
+    def birth_date(cls) -> date | None:
         return sa.case(
             [
                 (cls.validatedBirthDate.is_not(None), cls.validatedBirthDate),
@@ -428,7 +429,8 @@ class User(PcObject, Base, Model, NeedsValidationMixin, DeactivableMixin):
         return (f"{self.firstName or ''} {self.lastName or ''}".strip()) or self.email
 
     @full_name.expression  # type: ignore [no-redef]
-    def full_name(cls) -> str:  # pylint: disable=no-self-argument
+    @classmethod
+    def full_name(cls) -> str:
         return sa.func.coalesce(
             sa.func.nullif(
                 sa.func.trim(
@@ -564,7 +566,8 @@ class User(PcObject, Base, Model, NeedsValidationMixin, DeactivableMixin):
         return self.has_beneficiary_role or self.has_underage_beneficiary_role
 
     @is_beneficiary.expression  # type: ignore [no-redef]
-    def is_beneficiary(cls) -> BooleanClauseList:  # pylint: disable=no-self-argument
+    @classmethod
+    def is_beneficiary(cls) -> BooleanClauseList:
         return expression.or_(
             cls.roles.contains([UserRole.BENEFICIARY]), cls.roles.contains([UserRole.UNDERAGE_BENEFICIARY])
         )
@@ -590,7 +593,8 @@ class User(PcObject, Base, Model, NeedsValidationMixin, DeactivableMixin):
             self._phoneNumber = ParsedPhoneNumber(value).phone_number
 
     @phoneNumber.expression  # type: ignore [no-redef]
-    def phoneNumber(cls) -> str | None:  # pylint: disable=no-self-argument
+    @classmethod
+    def phoneNumber(cls) -> str | None:
         return cls._phoneNumber
 
     @hybrid_property
@@ -598,7 +602,8 @@ class User(PcObject, Base, Model, NeedsValidationMixin, DeactivableMixin):
         return self.phoneValidationStatus == PhoneValidationStatusType.VALIDATED
 
     @is_phone_validated.expression  # type: ignore [no-redef]
-    def is_phone_validated(cls) -> BinaryExpression:  # pylint: disable=no-self-argument
+    @classmethod
+    def is_phone_validated(cls) -> BinaryExpression:
         return cls.phoneValidationStatus == PhoneValidationStatusType.VALIDATED
 
     @hybrid_property
@@ -606,7 +611,8 @@ class User(PcObject, Base, Model, NeedsValidationMixin, DeactivableMixin):
         return self.phoneValidationStatus == PhoneValidationStatusType.SKIPPED_BY_SUPPORT
 
     @is_phone_validation_skipped.expression  # type: ignore [no-redef]
-    def is_phone_validation_skipped(cls):  # pylint: disable=no-self-argument
+    @classmethod
+    def is_phone_validation_skipped(cls):
         return cls.phoneValidationStatus == PhoneValidationStatusType.SKIPPED_BY_SUPPORT
 
     @hybrid_property
@@ -614,7 +620,8 @@ class User(PcObject, Base, Model, NeedsValidationMixin, DeactivableMixin):
         return UserRole.ADMIN in self.roles
 
     @has_admin_role.expression  # type: ignore [no-redef]
-    def has_admin_role(cls) -> bool:  # pylint: disable=no-self-argument
+    @classmethod
+    def has_admin_role(cls) -> bool:
         return cls.roles.contains([UserRole.ADMIN])
 
     @hybrid_property
@@ -622,7 +629,8 @@ class User(PcObject, Base, Model, NeedsValidationMixin, DeactivableMixin):
         return UserRole.BENEFICIARY in self.roles
 
     @has_beneficiary_role.expression  # type: ignore [no-redef]
-    def has_beneficiary_role(cls) -> bool:  # pylint: disable=no-self-argument
+    @classmethod
+    def has_beneficiary_role(cls) -> bool:
         return cls.roles.contains([UserRole.BENEFICIARY])
 
     @hybrid_property
@@ -630,7 +638,8 @@ class User(PcObject, Base, Model, NeedsValidationMixin, DeactivableMixin):
         return UserRole.PRO in self.roles
 
     @has_pro_role.expression  # type: ignore [no-redef]
-    def has_pro_role(cls) -> bool:  # pylint: disable=no-self-argument
+    @classmethod
+    def has_pro_role(cls) -> bool:
         return cls.roles.contains([UserRole.PRO])
 
     @hybrid_property
@@ -638,7 +647,8 @@ class User(PcObject, Base, Model, NeedsValidationMixin, DeactivableMixin):
         return UserRole.NON_ATTACHED_PRO in self.roles
 
     @has_non_attached_pro_role.expression  # type: ignore [no-redef]
-    def has_non_attached_pro_role(cls) -> bool:  # pylint: disable=no-self-argument
+    @classmethod
+    def has_non_attached_pro_role(cls) -> bool:
         return cls.roles.contains([UserRole.NON_ATTACHED_PRO])
 
     @hybrid_property
@@ -646,7 +656,8 @@ class User(PcObject, Base, Model, NeedsValidationMixin, DeactivableMixin):
         return UserRole.UNDERAGE_BENEFICIARY in self.roles
 
     @has_underage_beneficiary_role.expression  # type: ignore [no-redef]
-    def has_underage_beneficiary_role(cls) -> bool:  # pylint: disable=no-self-argument
+    @classmethod
+    def has_underage_beneficiary_role(cls) -> bool:
         return cls.roles.contains([UserRole.UNDERAGE_BENEFICIARY])
 
     @hybrid_property
@@ -654,7 +665,8 @@ class User(PcObject, Base, Model, NeedsValidationMixin, DeactivableMixin):
         return UserRole.TEST in self.roles
 
     @has_test_role.expression  # type: ignore [no-redef]
-    def has_test_role(cls) -> bool:  # pylint: disable=no-self-argument
+    @classmethod
+    def has_test_role(cls) -> bool:
         return cls.roles.contains([UserRole.TEST])
 
 
@@ -813,7 +825,8 @@ class UserEmailHistory(PcObject, Base, Model):
         return f"{self.oldUserEmail}@{self.oldDomainEmail}"
 
     @oldEmail.expression  # type: ignore [no-redef]
-    def oldEmail(cls):  # pylint: disable=no-self-argument
+    @classmethod
+    def oldEmail(cls):
         return func.concat(cls.oldUserEmail, "@", cls.oldDomainEmail)
 
     @hybrid_property
@@ -821,7 +834,8 @@ class UserEmailHistory(PcObject, Base, Model):
         return f"{self.newUserEmail}@{self.newDomainEmail}"
 
     @newEmail.expression  # type: ignore [no-redef]
-    def newEmail(cls):  # pylint: disable=no-self-argument
+    @classmethod
+    def newEmail(cls):
         return func.concat(cls.newUserEmail, "@", cls.newDomainEmail)
 
 

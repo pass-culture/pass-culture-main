@@ -229,7 +229,8 @@ class Booking(PcObject, Base, Model):
         return self.cancellationLimitDate is not None and self.cancellationLimitDate <= datetime.utcnow()
 
     @isConfirmed.expression  # type: ignore [no-redef]
-    def isConfirmed(cls) -> BooleanClauseList:  # pylint: disable=no-self-argument
+    @classmethod
+    def isConfirmed(cls) -> BooleanClauseList:
         return and_(cls.cancellationLimitDate.is_not(None), cls.cancellationLimitDate <= datetime.utcnow())
 
     @hybrid_property
@@ -237,7 +238,8 @@ class Booking(PcObject, Base, Model):
         return self.status in [BookingStatus.USED, BookingStatus.REIMBURSED]
 
     @is_used_or_reimbursed.expression  # type: ignore [no-redef]
-    def is_used_or_reimbursed(cls) -> bool:  # pylint: disable=no-self-argument
+    @classmethod
+    def is_used_or_reimbursed(cls) -> bool:
         return cls.status.in_([BookingStatus.USED, BookingStatus.REIMBURSED])
 
     @hybrid_property
@@ -245,7 +247,8 @@ class Booking(PcObject, Base, Model):
         return self.status == BookingStatus.REIMBURSED
 
     @isReimbursed.expression  # type: ignore [no-redef]
-    def isReimbursed(cls) -> bool:  # pylint: disable=no-self-argument
+    @classmethod
+    def isReimbursed(cls) -> bool:
         return cls.status == BookingStatus.REIMBURSED
 
     @hybrid_property
@@ -253,7 +256,8 @@ class Booking(PcObject, Base, Model):
         return self.status == BookingStatus.CANCELLED
 
     @isCancelled.expression  # type: ignore [no-redef]
-    def isCancelled(cls) -> bool:  # pylint: disable=no-self-argument
+    @classmethod
+    def isCancelled(cls) -> bool:
         return cls.status == BookingStatus.CANCELLED
 
     @property
@@ -277,7 +281,8 @@ class Booking(PcObject, Base, Model):
         return any(externalBooking.id for externalBooking in self.externalBookings)
 
     @isExternal.expression  # type: ignore [no-redef]
-    def isExternal(cls) -> Label:  # pylint: disable=no-self-argument
+    @classmethod
+    def isExternal(cls) -> Label:
         return select(
             [
                 case(
@@ -331,7 +336,8 @@ class Booking(PcObject, Base, Model):
         )
 
     @display_even_if_used.expression  # type: ignore [no-redef]
-    def display_even_if_used(cls) -> BooleanClauseList:  # pylint: disable=no-self-argument
+    @classmethod
+    def display_even_if_used(cls) -> BooleanClauseList:
         return and_(
             offers_models.Offer.subcategoryId.in_(offers_models.Stock.AUTOMATICALLY_USED_SUBCATEGORIES),
             cls.amount == 0,
