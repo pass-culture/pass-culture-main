@@ -333,6 +333,7 @@ def get_export(
     status_filter: BookingStatusFilter | None = BookingStatusFilter.BOOKED,
     event_date: date | None = None,
     venue_id: int | None = None,
+    offer_id: int | None = None,
     offer_type: OfferType | None = None,
     export_type: BookingExportType | None = BookingExportType.CSV,
 ) -> str | bytes:
@@ -342,6 +343,7 @@ def get_export(
         status_filter=status_filter,
         event_date=event_date,
         venue_id=venue_id,
+        offer_id=offer_id,
         offer_type=offer_type,
     )
     bookings_query = _duplicate_booking_when_quantity_is_two(bookings_query)

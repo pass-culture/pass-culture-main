@@ -1,5 +1,6 @@
 import datetime
 from functools import partial
+from io import BytesIO
 import logging
 import typing
 
@@ -7,6 +8,7 @@ from flask import flash
 from flask import redirect
 from flask import render_template
 from flask import request
+from flask import send_file
 from flask import url_for
 from flask_login import current_user
 from flask_sqlalchemy import BaseQuery
@@ -18,6 +20,7 @@ from werkzeug.exceptions import NotFound
 from pcapi.core import search
 from pcapi.core.bookings import api as bookings_api
 from pcapi.core.bookings import models as bookings_models
+from pcapi.core.bookings import repository as booking_repository
 from pcapi.core.categories import subcategories_v2
 from pcapi.core.criteria import models as criteria_models
 from pcapi.core.finance import api as finance_api
@@ -949,3 +952,35 @@ def edit_offer_venue(offer_id: int) -> utils.BackofficeResponse:
         "success",
     )
     return redirect(offer_url, 303)
+
+
+@list_offers_blueprint.route("/<int:offer_id>/bookings.csv", methods=["GET"])
+def download_bookings_csv(offer_id: int) -> utils.BackofficeResponse:
+    export_data = booking_repository.get_export(
+        user=current_user,
+        offer_id=offer_id,
+        export_type=bookings_models.BookingExportType.CSV,
+    )
+    buffer = BytesIO(typing.cast(str, export_data).encode("utf-8-sig"))
+    return send_file(
+        buffer,
+        as_attachment=True,
+        download_name=f"reservations_offre_{offer_id}.csv",
+        mimetype="text/csv",
+    )
+
+
+@list_offers_blueprint.route("/<int:offer_id>/bookings.xlsx", methods=["GET"])
+def download_bookings_xlsx(offer_id: int) -> utils.BackofficeResponse:
+    export_data = booking_repository.get_export(
+        user=current_user,
+        offer_id=offer_id,
+        export_type=bookings_models.BookingExportType.EXCEL,
+    )
+    buffer = BytesIO(typing.cast(bytes, export_data))
+    return send_file(
+        buffer,
+        as_attachment=True,
+        download_name=f"reservations_offre_{offer_id}.xlsx",
+        mimetype="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+    )
