@@ -17,6 +17,12 @@ vi.mock('apiClient/api', () => ({
   },
 }))
 
+const storeOverrides = {
+  features: {
+    list: [{ isActive: true, nameKey: 'WIP_HOME_STATS_V2' }],
+  },
+}
+
 const renderStatisticsDashboard = (
   props: Partial<StatisticsDashboardProps> = {}
 ) =>
@@ -24,7 +30,8 @@ const renderStatisticsDashboard = (
     <StatisticsDashboard
       offerer={{ ...defaultGetOffererResponseModel, isValidated: true }}
       {...props}
-    />
+    />,
+    { storeOverrides }
   )
 
 describe('StatisticsDashboard', () => {
