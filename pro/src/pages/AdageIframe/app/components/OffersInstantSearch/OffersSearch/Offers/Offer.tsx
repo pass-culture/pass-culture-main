@@ -49,14 +49,11 @@ const Offer = ({
   openDetails = false,
 }: OfferProps): JSX.Element => {
   const [displayDetails, setDisplayDetails] = useState(openDetails)
-  const isLikeActive = useActiveFeature('WIP_ENABLE_LIKE_IN_ADAGE')
   const isGeolocationActive = useActiveFeature('WIP_ENABLE_ADAGE_GEO_LOCATION')
   const { adageUser } = useAdageUser()
 
   const canAddOfferToFavorites =
-    isLikeActive &&
-    offer.isTemplate &&
-    adageUser.role !== AdageFrontRoles.READONLY
+    offer.isTemplate && adageUser.role !== AdageFrontRoles.READONLY
 
   const openOfferDetails = (
     offer: HydratedCollectiveOffer | HydratedCollectiveOfferTemplate
