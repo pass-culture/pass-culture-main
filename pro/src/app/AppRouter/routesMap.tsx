@@ -21,6 +21,7 @@ import CsvTable from 'pages/CsvTable'
 import Desk from 'pages/Desk'
 import { EmailChangeValidation } from 'pages/EmailChangeValidation'
 import Unavailable from 'pages/Errors/Unavailable/Unavailable'
+import ChatAPL from 'pages/Home/ChatAPL'
 import Homepage from 'pages/Home/Homepage'
 import LostPassword from 'pages/LostPassword'
 import OffererDetails from 'pages/Offerers/Offerer/OffererDetails/OffererDetails'
@@ -88,6 +89,11 @@ const routes: RouteConfig[] = [
       public: true,
       withoutLayout: true,
     },
+  },
+  {
+    element: <ChatAPL />,
+    title: 'ChatAPL',
+    path: '/chatapl',
   },
   {
     element: <CsvTable />,

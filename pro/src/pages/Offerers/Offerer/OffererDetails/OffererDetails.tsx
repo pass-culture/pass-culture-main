@@ -57,6 +57,7 @@ const OffererDetails = () => {
 
   useEffect(() => {
     async function initializeOfferer(id: number) {
+      console.log('initializeOfferer')
       try {
         await loadOfferer(id)
       } catch (error) {

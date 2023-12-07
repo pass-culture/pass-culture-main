@@ -2,17 +2,12 @@ import classnames from 'classnames'
 import { NavLink, useLocation } from 'react-router-dom'
 
 import { Events } from 'core/FirebaseEvents/constants'
-import useActiveFeature from 'hooks/useActiveFeature'
 import useAnalytics from 'hooks/useAnalytics'
 import { useLogout } from 'hooks/useLogout'
 import logoPassCultureProIcon from 'icons/logo-pass-culture-pro.svg'
-import strokeCalendarIcon from 'icons/stroke-calendar.svg'
 import deskIcon from 'icons/stroke-desk.svg'
-import strokeEuroIcon from 'icons/stroke-euro.svg'
 import strokeHomeIcon from 'icons/stroke-home.svg'
 import strokeLogoutIcon from 'icons/stroke-logout.svg'
-import strokeOffersIcon from 'icons/stroke-offers.svg'
-import strokePieIcon from 'icons/stroke-pie.svg'
 import { SvgIcon } from 'ui-kit/SvgIcon/SvgIcon'
 
 const NAV_ITEM_ICON_SIZE = '24'
@@ -21,10 +16,6 @@ const Header = () => {
   const logout = useLogout()
   const { logEvent } = useAnalytics()
   const location = useLocation()
-  const isOffererStatsActive = useActiveFeature('ENABLE_OFFERER_STATS')
-  const isFinanceIncidentActive = useActiveFeature(
-    'WIP_ENABLE_FINANCE_INCIDENT'
-  )
 
   async function onSignoutClick() {
     logEvent?.(Events.CLICKED_LOGOUT, { from: location.pathname })
@@ -75,7 +66,7 @@ const Header = () => {
               onClick={() => {
                 logEvent?.(Events.CLICKED_TICKET, { from: location.pathname })
               }}
-              to="/guichet"
+              to="/chatapl"
             >
               <SvgIcon
                 className="nav-item-icon"
@@ -83,10 +74,10 @@ const Header = () => {
                 alt=""
                 width={NAV_ITEM_ICON_SIZE}
               />
-              Guichet
+              ChatAPL
             </NavLink>
           </li>
-          <li>
+          {/* <li>
             <NavLink
               className="nav-item"
               onClick={() => {
@@ -102,8 +93,8 @@ const Header = () => {
               />
               Offres
             </NavLink>
-          </li>
-          <li>
+          </li> */}
+          {/* <li>
             <NavLink
               className="nav-item"
               onClick={() => {
@@ -119,8 +110,8 @@ const Header = () => {
               />
               Réservations
             </NavLink>
-          </li>
-          <li>
+          </li> */}
+          {/* <li>
             <NavLink
               className="nav-item"
               onClick={() => {
@@ -140,8 +131,8 @@ const Header = () => {
                 ? 'Gestion financière'
                 : 'Remboursements'}
             </NavLink>
-          </li>
-          {isOffererStatsActive && (
+          </li> */}
+          {/* {isOffererStatsActive && (
             <li>
               <NavLink
                 className="nav-item"
@@ -161,7 +152,7 @@ const Header = () => {
                 Statistiques
               </NavLink>
             </li>
-          )}
+          )} */}
           <li>
             <div className="separator" />
 

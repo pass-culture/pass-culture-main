@@ -1,3 +1,4 @@
+import datetime
 import logging
 
 from flask import request
@@ -19,13 +20,15 @@ from pcapi.core.offers.validation import check_for_duplicated_price_categories
 from pcapi.models import api_errors
 from pcapi.models import db
 from pcapi.repository import transaction
-from pcapi.routes.apis import private_api
+from pcapi.routes.apis import private_api, public_api
+from pcapi.routes.native.v1.serialization.offers import OfferResponse
 from pcapi.routes.serialization import offers_serialize
+from pcapi.routes.serialization.base import ListOffersVenueResponseModel
 from pcapi.routes.serialization.offers_recap_serialize import serialize_offers_recap_paginated
 from pcapi.routes.serialization.thumbnails_serialize import CreateThumbnailBodyModel
 from pcapi.routes.serialization.thumbnails_serialize import CreateThumbnailResponseModel
 from pcapi.serialization.decorator import spectree_serialize
-from pcapi.utils import rest
+from pcapi.utils import requests, rest
 from pcapi.workers.update_all_offers_active_status_job import update_all_offers_active_status_job
 
 from . import blueprint
@@ -55,6 +58,161 @@ def list_offers(query: offers_serialize.ListOffersQueryModel) -> offers_serializ
     )
 
     return offers_serialize.ListOffersResponseModel(__root__=serialize_offers_recap_paginated(paginated_offers))  # type: ignore [arg-type]
+
+
+@public_api.route("/old/offers/<int:offer_id>/proxy", methods=["GET"])
+@spectree_serialize(response_model=offers_serialize.GetIndividualOfferResponseModel)
+def _incomplete_get_offer_from_native(offer_id: int) -> offers_serialize.GetIndividualOfferResponseModel:
+    offer_response = requests.get(f"https://backend.staging.passculture.team/native/v1/offer/{offer_id}")
+    logger.warning(f"{offer_response.__dict__ = }")
+    native_offer = offer_response.json()
+    pro_offer = offers_serialize.GetIndividualOfferResponseModel(
+        activeMediation=None,
+        bookingContact=None,
+        bookingsCount=None,
+        dateCreated=datetime.datetime.utcnow() - datetime.timedelta(days=7),
+        description=native_offer["description"],
+        durationMinutes=None,
+        extraData=native_offer["extraData"],
+        hasBookingLimitDatetimesPassed=False,
+        isActive=True,
+        isActivable=False,
+        isDigital=native_offer["isDigital"],
+        isDuo=native_offer["isDuo"],
+        isEditable=False,
+        isEvent=False,
+        isNational=False,
+        isThing=True,
+        id=native_offer["id"],
+        lastProvider=None,
+        name=native_offer["name"],
+        priceCategories=None,
+        stocks=[],
+        subcategoryId=native_offer["subcategoryId"],
+        thumbUrl=native_offer["image"]["url"],
+        venue=native_offer["venue"],
+        externalTicketOfficeUrl=None,
+        url=None,
+        withdrawalDelay=None,
+        withdrawalDetails=None,
+        status=offers_serialize.OfferStatus.ACTIVE,
+        isNonFreeOffer=True,
+    )
+    return pro_offer
+
+
+@public_api.route("/offers/<int:offer_id>/proxy", methods=["GET"])
+@spectree_serialize(response_model=offers_serialize.ListOffersOfferResponseModel)
+def get_offer_from_native(offer_id: int) -> offers_serialize.ListOffersOfferResponseModel:
+    offer_response = requests.get(
+        f"https://backend.staging.passculture.team/offers/{offer_id}",
+        headers={
+            "Cookie": "session=.eJw9zktuwzAMRdGtFBpnQJHUh96MIZkkEiB1CyseBdl7FbTo-D0c3GdY_bBxDYu3-7BLWG8allCwG4KQF4aoqGSoWXum2k0dDCtk6ltmoIhU0aS1kq0qNvcutacsrYhMwVrrDtWLd8atgElOvAGnaVVgwIIWOZmaUEL0jTj1MEO-7fhsu-2PsDyO8512Djt--zIIV-Z5GzbG7Wtfz_M9PMPHOWeKRVSockyVk-dWekHcNCE4JaXwuoR_7M96_QBAq0xb.ZXEADg.ETroNCP6E7mvX8K2Easz1q0S9ro; GCP_IAP_UID=104887186861521821247; _ga_NP5XQ9LKJ6=GS1.1.1696261667.13.1.1696262167.0.0.0; _ga=GA1.1.1982555537.1695724077; amp_e92915_passculture.team=MkvexcJqL1GLjVOQAcJU7g.NTE3MzA=..1hh0hh96b.1hh0hh96b.9.j.s"
+        },
+    )
+    offer_dict = offer_response.json()
+    offer_dict["dateCreated"] = offer_dict["dateCreated"][:-1]
+    for stock in offer_dict["stocks"]:
+        if stock["bookingLimitDatetime"]:
+            stock["bookingLimitDatetime"] = stock["bookingLimitDatetime"][:-1]
+
+    pro_offer = offers_serialize.GetIndividualOfferResponseModel.parse_obj(offer_dict)
+    list_offers_item = offers_serialize.ListOffersOfferResponseModel(
+        hasBookingLimitDatetimesPassed=False,
+        id=pro_offer.id,
+        isActive=pro_offer.isActive,
+        isEditable=pro_offer.isEditable,
+        isEvent=pro_offer.isEvent,
+        isThing=pro_offer.isThing,
+        isEducational=False,
+        name=pro_offer.name,
+        stocks=[
+            offers_serialize.ListOffersStockResponseModel(
+                id=stock.id,
+                hasBookingLimitDatetimePassed=False,
+                remainingQuantity=stock.remainingQuantity,
+                beginningDatetime=stock.beginningDatetime,
+                bookingQuantity=None,
+            )
+            for stock in pro_offer.stocks
+        ],
+        thumbUrl=pro_offer.thumbUrl,
+        productIsbn=None,
+        subcategoryId=pro_offer.subcategoryId,
+        venue=ListOffersVenueResponseModel(
+            id=pro_offer.venue.id,
+            isVirtual=pro_offer.venue.isVirtual,
+            name=pro_offer.venue.name,
+            offererName=pro_offer.venue.managingOfferer.name,
+            publicName=pro_offer.venue.publicName,
+            departementCode=pro_offer.venue.departementCode,
+        ),
+        status=pro_offer.status,
+        isShowcase=False,
+    )
+    return list_offers_item
+
+
+@public_api.route("/old/offers/<int:offer_id>/proxy", methods=["GET"])
+# @spectree_serialize(response_model=offers_serialize.GetIndividualOfferResponseModel)
+def _raw_get_offer_from_native(offer_id: int) -> dict:
+    offer_response = requests.get(f"https://backend.staging.passculture.team/native/v1/offer/{offer_id}")
+    logger.warning(f"{offer_response.__dict__ = }")
+    return offer_response.json()
+
+
+@public_api.route("/proxy/offers/<int:offer_id>", methods=["GET"])
+# @spectree_serialize(response_model=offers_serialize.GetIndividualOfferResponseModel)
+def _old_get_offer_from_native(offer_id: int) -> dict:
+    offer_response = requests.get(f"https://backend.staging.passculture.team/native/v1/offer/{offer_id}")
+    logger.warning(f"{offer_response.__dict__ = }")
+    native_offer = OfferResponse.validate(offer_response.json())
+    pro_offer = offers_serialize.GetIndividualOfferResponseModel(
+        activeMediation=None,
+        bookingContact=None,
+        bookingsCount=None,
+        dateCreated=datetime.datetime.utcnow(),
+        description=native_offer.description,
+        durationMinutes=None,
+        extraData=native_offer.extraData,
+        hasBookingLimitDatetimesPassed=False,
+        isActive=True,
+        isActivable=False,
+        isDigital=native_offer.isDigital,
+        isDuo=native_offer.isDuo,
+        isEditable=False,
+        isEvent=False,
+        isNational=False,
+        isThing=True,
+        id=native_offer.id,
+        lastProvider=None,
+        name=native_offer.name,
+        priceCategories=None,
+        stocks=[],
+        subcategoryId=native_offer.subcategoryId,
+        thumbUrl=native_offer.image.url,
+        venue=native_offer.venue,
+        externalTicketOfficeUrl=None,
+        url=None,
+        withdrawalDelay=None,
+        withdrawalDetails=None,
+        status=None,
+        isNonFreeOffer=True,
+    )
+    return pro_offer
+
+
+@public_api.route("/old/offers/<int:offer_id>/proxy", methods=["GET"])
+def _old_get_offer_from_pro(offer_id: int) -> dict:
+    offer_response = requests.get(
+        f"https://backend.staging.passculture.team/offers/{offer_id}",
+        cookies={
+            "_ga_NP5XQ9LKJ6": "GS1.1.1696261667.13.1.1696262167.0.0.0",
+            "_ga": "GA1.1.1982555537.1695724077",
+        },
+    )
+    print(f"{offer_response.json() = }")
+    return offer_response.json()
 
 
 @private_api.route("/offers/<int:offer_id>", methods=["GET"])

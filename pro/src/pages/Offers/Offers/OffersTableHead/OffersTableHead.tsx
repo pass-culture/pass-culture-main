@@ -1,5 +1,6 @@
 import React from 'react'
 
+import { ALL_STATUS } from 'core/Offers/constants'
 import { SearchFiltersParams } from 'core/Offers/types'
 import { Audience } from 'core/shared'
 
@@ -9,7 +10,7 @@ type OffersTableHeadProps = {
   applyFilters: () => void
   areAllOffersSelected: boolean
   areOffersPresent: boolean
-  filters: SearchFiltersParams
+  filters?: SearchFiltersParams
   isAdminForbidden: (searchFilters: SearchFiltersParams) => boolean
   selectAllOffers: () => void
   updateStatusFilter: (status: SearchFiltersParams['status']) => void
@@ -18,8 +19,6 @@ type OffersTableHeadProps = {
 }
 
 const OffersTableHead = ({
-  filters,
-  isAdminForbidden,
   applyFilters,
   updateStatusFilter,
   audience,
@@ -34,8 +33,8 @@ const OffersTableHead = ({
         <th className="th-with-filter">
           <StatusFiltersButton
             applyFilters={applyFilters}
-            disabled={isAdminForbidden(filters)}
-            status={filters.status}
+            disabled={false}
+            status={ALL_STATUS}
             updateStatusFilter={updateStatusFilter}
             audience={audience}
           />
