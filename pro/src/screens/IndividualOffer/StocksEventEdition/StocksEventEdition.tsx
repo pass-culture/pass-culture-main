@@ -1,7 +1,7 @@
 import cn from 'classnames'
 import { FieldArray, FormikProvider, useFormik } from 'formik'
 import isEqual from 'lodash/isEqual'
-import { useEffect, useState } from 'react'
+import { useCallback, useEffect, useMemo, useState } from 'react'
 import { useNavigate, useSearchParams } from 'react-router-dom'
 
 import { api } from 'apiClient/api'
@@ -84,10 +84,17 @@ const StocksEventEdition = ({
   const navigate = useNavigate()
   const notify = useNotification()
   const [searchParams, setSearchParams] = useSearchParams()
-  const priceCategoriesOptions = getPriceCategoryOptions(offer.priceCategories)
-  const today = getLocalDepartementDateTimeFromUtc(
-    getToday(),
-    offer.venue.departementCode
+  const priceCategoriesOptions = useMemo(
+    () => getPriceCategoryOptions(offer.priceCategories),
+    [offer.priceCategories]
+  )
+  const today = useMemo(
+    () =>
+      getLocalDepartementDateTimeFromUtc(
+        getToday(),
+        offer.venue.departementCode
+      ),
+    [offer.venue.departementCode]
   )
 
   // states
@@ -106,36 +113,70 @@ const StocksEventEdition = ({
     useColumnSorting<StocksOrderedBy>()
   const { page, previousPage, nextPage, pageCount, firstPage } =
     usePaginationWithSearchParams(STOCKS_PER_PAGE, stocksCount ?? 0)
+  const [initialValues, setInitialValues] = useState<StocksEventFormValues>({
+    stocks: [],
+  })
 
   // Effects
-  const loadStocksFromCurrentFilters = () =>
-    api.getStocks(
+  const loadStocksFromCurrentFilters = useCallback(
+    () =>
+      api.getStocks(
+        offer.id,
+        dateFilter ? dateFilter : undefined,
+        timeFilter
+          ? convertFromLocalTimeToVenueTimezoneInUtc(
+              timeFilter,
+              offer.venue.departementCode
+            )
+          : undefined,
+        priceCategoryIdFilter ? Number(priceCategoryIdFilter) : undefined,
+        currentSortingColumn ?? undefined,
+        currentSortingMode
+          ? currentSortingMode === SortingMode.DESC
+          : undefined,
+        Number(page || 1)
+      ),
+    [
+      currentSortingColumn,
+      dateFilter,
       offer.id,
-      dateFilter ? dateFilter : undefined,
-      timeFilter
-        ? convertFromLocalTimeToVenueTimezoneInUtc(
-            timeFilter,
-            offer.venue.departementCode
-          )
-        : undefined,
-      priceCategoryIdFilter ? Number(priceCategoryIdFilter) : undefined,
-      currentSortingColumn ?? undefined,
-      currentSortingMode ? currentSortingMode === SortingMode.DESC : undefined,
-      Number(page || 1)
-    )
-  const resetFormWithNewPage = (response: GetStocksResponseModel) => {
-    formik.resetForm({
-      values: buildInitialValues({
-        departementCode: offer.venue.departementCode,
-        stocks: response.stocks,
-        today,
-        lastProviderName: offer.lastProviderName,
-        offerStatus: offer.status,
-        priceCategoriesOptions,
-      }),
-    })
-    setStocksCount(response.stockCount)
-  }
+      offer.venue.departementCode,
+      page,
+      priceCategoryIdFilter,
+      currentSortingMode,
+      timeFilter,
+    ]
+  )
+
+  const formik = useFormik<StocksEventFormValues>({
+    initialValues,
+    onSubmit,
+    validationSchema: () => getValidationSchema(priceCategoriesOptions),
+    enableReinitialize: true,
+  })
+
+  const resetFormWithNewPage = useCallback(
+    (response: GetStocksResponseModel) => {
+      setInitialValues(
+        buildInitialValues({
+          departementCode: offer.venue.departementCode,
+          stocks: response.stocks,
+          today,
+          lastProviderName: offer.lastProviderName,
+          offerStatus: offer.status,
+          priceCategoriesOptions,
+        })
+      )
+      setStocksCount(response.stockCount)
+    },
+    [
+      offer.lastProviderName,
+      offer.status,
+      offer.venue.departementCode,
+      today,
+      priceCategoriesOptions,
+    ]
+  )
 
   useEffect(() => {
     if (dateFilter) {
@@ -193,11 +234,15 @@ const StocksEventEdition = ({
     currentSortingColumn,
     currentSortingMode,
     page,
+    loadStocksFromCurrentFilters,
+    resetFormWithNewPage,
+    searchParams,
+    setSearchParams,
   ])
 
   const onCancel = () => setIsRecurrenceModalOpen(false)
 
-  const onSubmit = async (values: StocksEventFormValues) => {
+  async function onSubmit(values: StocksEventFormValues) {
     const nextStepUrl = getIndividualOfferUrl({
       offerId: offer.id,
       step: OFFER_WIZARD_STEP_IDS.STOCKS,
@@ -298,12 +343,6 @@ const StocksEventEdition = ({
       }
     }
   }
-
-  const formik = useFormik<StocksEventFormValues>({
-    initialValues: { stocks: [] },
-    onSubmit,
-    validationSchema: getValidationSchema(priceCategoriesOptions),
-  })
 
   useNotifyFormError({
     isSubmitting: formik.isSubmitting,
