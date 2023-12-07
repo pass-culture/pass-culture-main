@@ -1,11 +1,13 @@
 import datetime
 import decimal
+from io import BytesIO
 from operator import itemgetter
 from unittest import mock
 from unittest.mock import patch
 
 from flask import g
 from flask import url_for
+import openpyxl
 import pytest
 
 from pcapi.core import search
@@ -1846,3 +1848,60 @@ class EditOfferStockTest(PostEndpointHelper):
         )
 
         assert event.booking.stock.price == decimal.Decimal("123.45")
+
+
+class DownloadBookingsCSVTest(GetEndpointHelper):
+    endpoint = "backoffice_web.offer.download_bookings_csv"
+    endpoint_kwargs = {"offer_id": 1, "stock_id": 1}
+    needed_permission = perm_models.Permissions.READ_OFFERS
+
+    # session + current user + bookings
+    expected_num_queries = 3
+
+    def test_download_bookings_csv(self, legit_user, authenticated_client):
+        offerer = offerers_factories.UserOffererFactory().offerer  # because of join on UserOfferers
+        offer = offers_factories.ThingOfferFactory(venue__managingOfferer=offerer)
+        bookings_factories.UsedBookingFactory(stock__offer=offer)
+        bookings_factories.ReimbursedBookingFactory(stock__offer=offer)
+        bookings_factories.BookingFactory(stock__offer=offer)
+        bookings_factories.BookingFactory()  # other offer
+
+        url = url_for(self.endpoint, offer_id=offer.id)
+
+        with assert_num_queries(self.expected_num_queries):
+            response = authenticated_client.get(url)
+            assert response.status_code == 200
+
+        assert len(response.data.split(b"\n")) == 1 + 3 + 1
+
+
+class DownloadBookingsXLSXTest(GetEndpointHelper):
+    endpoint = "backoffice_web.offer.download_bookings_xlsx"
+    endpoint_kwargs = {"offer_id": 1, "stock_id": 1}
+    needed_permission = perm_models.Permissions.READ_OFFERS
+
+    # session + current user + bookings
+    expected_num_queries = 3
+
+    def reader_from_response(self, response):
+        wb = openpyxl.load_workbook(BytesIO(response.data))
+        return wb.active
+
+    def test_download_bookings_xlsx(self, authenticated_client):
+        offerer = offerers_factories.UserOffererFactory().offerer  # because of join on UserOfferers
+        offer = offers_factories.EventOfferFactory(venue__managingOfferer=offerer)
+        booking1 = bookings_factories.UsedBookingFactory(stock__offer=offer)
+        booking2 = bookings_factories.ReimbursedBookingFactory(stock__offer=offer)
+        bookings_factories.BookingFactory()  # other offer
+
+        url = url_for(self.endpoint, offer_id=offer.id)
+
+        with assert_num_queries(self.expected_num_queries):
+            response = authenticated_client.get(url)
+            assert response.status_code == 200
+
+        sheet = self.reader_from_response(response)
+        assert sheet.cell(row=1, column=1).value == "Lieu"
+        assert sheet.cell(row=2, column=1).value == booking1.venue.name
+        assert sheet.cell(row=3, column=1).value == booking2.venue.name
+        assert sheet.cell(row=4, column=1).value == None
