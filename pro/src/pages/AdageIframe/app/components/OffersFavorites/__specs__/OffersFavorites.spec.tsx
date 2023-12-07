@@ -18,10 +18,7 @@ const mockOffer: CollectiveOfferTemplateResponseModel = {
   ...defaultCollectiveTemplateOffer,
 }
 
-const renderAdageFavoritesOffers = (
-  user: AuthenticatedResponse,
-  storeOverrides?: any
-) => {
+const renderAdageFavoritesOffers = (user: AuthenticatedResponse) => {
   renderWithProviders(
     <Routes>
       <Route path="/adage-iframe" element={<h1>Accueil</h1>} />
@@ -34,20 +31,8 @@ const renderAdageFavoritesOffers = (
         }
       />
     </Routes>,
-    { storeOverrides, initialRouterEntries: ['/adage-iframe/mes-favoris'] }
+    { initialRouterEntries: ['/adage-iframe/mes-favoris'] }
   )
-}
-
-const isFavoritesActive = {
-  features: {
-    list: [
-      {
-        nameKey: 'WIP_ENABLE_LIKE_IN_ADAGE',
-        isActive: true,
-      },
-    ],
-    initialized: true,
-  },
 }
 
 describe('OffersFavorites', () => {
@@ -60,7 +45,7 @@ describe('OffersFavorites', () => {
   }
 
   it('should render favorites title', async () => {
-    renderAdageFavoritesOffers(user, isFavoritesActive)
+    renderAdageFavoritesOffers(user)
 
     const loadingMessage = screen.queryByText(/Chargement en cours/)
     await waitFor(() => expect(loadingMessage).not.toBeInTheDocument())
@@ -71,7 +56,7 @@ describe('OffersFavorites', () => {
   })
 
   it('should display no results message whenever favorites list is empty', async () => {
-    renderAdageFavoritesOffers(user, isFavoritesActive)
+    renderAdageFavoritesOffers(user)
 
     const loadingMessage = screen.queryByText(/Chargement en cours/)
     await waitFor(() => expect(loadingMessage).not.toBeInTheDocument())
@@ -89,7 +74,7 @@ describe('OffersFavorites', () => {
       favoritesTemplate: [mockOffer],
     })
 
-    renderAdageFavoritesOffers(user, isFavoritesActive)
+    renderAdageFavoritesOffers(user)
 
     const loadingMessage = screen.queryByText(/Chargement en cours/)
     await waitFor(() => expect(loadingMessage).not.toBeInTheDocument())
@@ -102,7 +87,7 @@ describe('OffersFavorites', () => {
   it('should not display the list of favorites if the favorite cannot be fetched', async () => {
     vi.spyOn(apiAdage, 'getCollectiveFavorites').mockRejectedValueOnce({})
 
-    renderAdageFavoritesOffers(user, isFavoritesActive)
+    renderAdageFavoritesOffers(user)
 
     const loadingMessage = screen.queryByText(/Chargement en cours/)
     await waitFor(() => expect(loadingMessage).not.toBeInTheDocument())
@@ -117,7 +102,7 @@ describe('OffersFavorites', () => {
   it('should redirect to main adage page when clicking the catalogue button', async () => {
     vi.spyOn(apiAdage, 'getCollectiveFavorites').mockRejectedValueOnce({})
 
-    renderAdageFavoritesOffers(user, isFavoritesActive)
+    renderAdageFavoritesOffers(user)
 
     await waitFor(() =>
       expect(screen.queryByText(/Chargement en cours/)).not.toBeInTheDocument()
