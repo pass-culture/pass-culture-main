@@ -82,8 +82,6 @@
                     {{ menu_section_item("Offres individuelles", "backoffice_web.offer.list_offers") }}
                     {{ menu_section_item("Offres collectives", "backoffice_web.collective_offer.list_collective_offers") }}
                     {{ menu_section_item("Offres collectives vitrines", "backoffice_web.collective_offer_template.list_collective_offer_templates") }}
-                  {% endif %}
-                  {% if has_permission("MULTIPLE_OFFERS_ACTIONS") %}
                     {{ menu_section_item("Opérations sur plusieurs offres", "backoffice_web.multiple_offers.multiple_offers_home") }}
                   {% endif %}
                   {% if has_permission("PRO_FRAUD_ACTIONS") %}

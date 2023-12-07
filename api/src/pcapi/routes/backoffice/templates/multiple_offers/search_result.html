@@ -25,9 +25,7 @@
                 <b>Titre du produit :</b> {{ name }}
               </p>
               <p>
-                {% if category %}
-                    <b>Catégorie :</b> {{ category.pro_label }}
-                {% endif %}
+                {% if category %}<b>Catégorie :</b> {{ category.pro_label }}{% endif %}
               </p>
               <p>
                 <b>Nombre d'offres associées :</b> {{ offers_count }}
@@ -71,7 +69,7 @@
               <p>
                 <b>EAN-13 :</b> {{ ean }}
               </p>
-              {% if has_permission("PRO_FRAUD_ACTIONS") and (product_compatibility or approved_active_offers_count + approved_inactive_offers_count + pending_offers_count > 0) %}
+              {% if incompatibility_form %}
                 <div>
                   {{ build_modal_form("set-gcu-incompatible", url_for('.set_product_gcu_incompatible'), incompatibility_form,
                   "Rendre le livre et les offres associées incompatibles avec les CGU", "Confirmer",
@@ -97,11 +95,13 @@
                   </div>
                 </div>
               {% endif %}
-              <div class="search-results-modal-container">
-                {{ build_modal_form("add-criteria", url_for('.add_criteria_to_offers'), offer_criteria_form,
-                "Tag des offres", "Enregistrer",
-                "⚠️ " + active_offers_count|string + " offres actives associées à cet EAN-13 seront affectées") }}
-              </div>
+              {% if offer_criteria_form %}
+                <div class="search-results-modal-container">
+                  {{ build_modal_form("add-criteria", url_for('.add_criteria_to_offers'), offer_criteria_form,
+                  "Tag des offres", "Enregistrer",
+                  "⚠️ " + active_offers_count|string + " offres actives associées à cet EAN-13 seront affectées") }}
+                </div>
+              {% endif %}
             </div>
           </div>
         </div>
