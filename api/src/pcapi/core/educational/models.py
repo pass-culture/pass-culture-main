@@ -433,11 +433,13 @@ class CollectiveOffer(
 
     @isSoldOut.expression  # type: ignore[no-redef]
     def isSoldOut(cls) -> Exists:  # pylint: disable=no-self-argument
+        aliased_collective_stock = sa.orm.aliased(CollectiveStock)
+        aliased_collective_booking = sa.orm.aliased(CollectiveBooking)
         return (
             sa.exists()
-            .where(CollectiveStock.collectiveOfferId == cls.id)
-            .where(CollectiveBooking.collectiveStockId == CollectiveStock.id)
-            .where(CollectiveBooking.status != CollectiveBookingStatus.CANCELLED)
+            .where(aliased_collective_stock.collectiveOfferId == cls.id)
+            .where(aliased_collective_booking.collectiveStockId == aliased_collective_stock.id)
+            .where(aliased_collective_booking.status != CollectiveBookingStatus.CANCELLED)
         )
 
     @property
