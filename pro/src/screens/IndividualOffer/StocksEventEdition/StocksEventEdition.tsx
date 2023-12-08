@@ -6,6 +6,7 @@ import { useNavigate, useSearchParams } from 'react-router-dom'
 
 import { api } from 'apiClient/api'
 import { GetStocksResponseModel, StocksOrderedBy } from 'apiClient/v1'
+import { OfferStatus } from 'apiClient/v2'
 import ConfirmDialog from 'components/Dialog/ConfirmDialog'
 import DialogBox from 'components/DialogBox'
 import FormLayout from 'components/FormLayout'
@@ -22,6 +23,7 @@ import { OFFER_WIZARD_MODE } from 'core/Offers/constants'
 import { IndividualOffer } from 'core/Offers/types'
 import { isOfferDisabled } from 'core/Offers/utils'
 import { getIndividualOfferUrl } from 'core/Offers/utils/getIndividualOfferUrl'
+import { SelectOption } from 'custom_types/form'
 import { useOfferWizardMode } from 'hooks'
 import { SortingMode, useColumnSorting } from 'hooks/useColumnSorting'
 import useNotification from 'hooks/useNotification'
@@ -70,6 +72,40 @@ const computeMaxBookingLimitDatetime = (beginningDate: string) => {
   return beginningDate !== ''
     ? new Date(parseInt(year), parseInt(month) - 1, parseInt(day))
     : undefined
+}
+
+type ResetFormWithNewPage = {
+  response: GetStocksResponseModel
+  setInitialValues: (values: StocksEventFormValues) => void
+  setStocksCount: (count: number) => void
+  today: Date
+  lastProviderName: string | null
+  offerStatus: OfferStatus
+  priceCategoriesOptions: SelectOption[]
+  departmentCode?: string | null
+}
+
+function resetFormWithNewPage({
+  response,
+  setInitialValues,
+  setStocksCount,
+  today,
+  lastProviderName,
+  offerStatus,
+  priceCategoriesOptions,
+  departmentCode,
+}: ResetFormWithNewPage) {
+  setInitialValues(
+    buildInitialValues({
+      departementCode: departmentCode,
+      stocks: response.stocks,
+      today,
+      lastProviderName,
+      offerStatus,
+      priceCategoriesOptions,
+    })
+  )
+  setStocksCount(response.stockCount)
 }
 
 interface StocksEventEditionProps {
@@ -126,7 +162,6 @@ const StocksEventEdition = ({
     setShouldBlockPreviousPageNavigationFormIsDirty,
   ] = useState(false)
 
-  // Effects
   const loadStocksFromCurrentFilters = useCallback(
     () =>
       api.getStocks(
@@ -157,36 +192,7 @@ const StocksEventEdition = ({
     ]
   )
 
-  const formik = useFormik<StocksEventFormValues>({
-    initialValues,
-    onSubmit,
-    validationSchema: () => getValidationSchema(priceCategoriesOptions),
-    enableReinitialize: true,
-  })
-
-  const resetFormWithNewPage = useCallback(
-    (response: GetStocksResponseModel) => {
-      setInitialValues(
-        buildInitialValues({
-          departementCode: offer.venue.departementCode,
-          stocks: response.stocks,
-          today,
-          lastProviderName: offer.lastProviderName,
-          offerStatus: offer.status,
-          priceCategoriesOptions,
-        })
-      )
-      setStocksCount(response.stockCount)
-    },
-    [
-      offer.lastProviderName,
-      offer.status,
-      offer.venue.departementCode,
-      today,
-      priceCategoriesOptions,
-    ]
-  )
-
+  // Effect
   useEffect(() => {
     if (dateFilter) {
       searchParams.set('date', dateFilter)
@@ -223,7 +229,16 @@ const StocksEventEdition = ({
       const response = await loadStocksFromCurrentFilters()
 
       if (!ignore) {
-        resetFormWithNewPage(response)
+        resetFormWithNewPage({
+          response,
+          setInitialValues,
+          setStocksCount,
+          today,
+          lastProviderName: offer.lastProviderName,
+          offerStatus: offer.status,
+          priceCategoriesOptions,
+          departmentCode: offer.venue.departementCode,
+        })
       }
     }
 
@@ -244,14 +259,18 @@ const StocksEventEdition = ({
     currentSortingMode,
     page,
     loadStocksFromCurrentFilters,
-    resetFormWithNewPage,
     searchParams,
     setSearchParams,
+    offer.lastProviderName,
+    offer.status,
+    priceCategoriesOptions,
+    today,
+    offer.venue.departementCode,
   ])
 
   const onCancel = () => setIsRecurrenceModalOpen(false)
 
-  async function onSubmit(values: StocksEventFormValues) {
+  const onSubmit = async (values: StocksEventFormValues) => {
     const nextStepUrl = getIndividualOfferUrl({
       offerId: offer.id,
       step: OFFER_WIZARD_STEP_IDS.STOCKS,
@@ -308,8 +327,17 @@ const StocksEventEdition = ({
     if (offerResponse.isOk) {
       setOffer && setOffer(offerResponse.payload)
     }
-    const stocksResponse = await loadStocksFromCurrentFilters()
-    resetFormWithNewPage(stocksResponse)
+    const response = await loadStocksFromCurrentFilters()
+    resetFormWithNewPage({
+      response,
+      setInitialValues,
+      setStocksCount,
+      today,
+      lastProviderName: offer.lastProviderName,
+      offerStatus: offer.status,
+      priceCategoriesOptions,
+      departmentCode: offer.venue.departementCode,
+    })
     setIsRecurrenceModalOpen(false)
   }
 
@@ -334,7 +362,16 @@ const StocksEventEdition = ({
         } else {
           // Reload this current page
           const response = await loadStocksFromCurrentFilters()
-          resetFormWithNewPage(response)
+          resetFormWithNewPage({
+            response,
+            setInitialValues,
+            setStocksCount,
+            today,
+            lastProviderName: offer.lastProviderName,
+            offerStatus: offer.status,
+            priceCategoriesOptions,
+            departmentCode: offer.venue.departementCode,
+          })
         }
       }
 
@@ -352,6 +389,13 @@ const StocksEventEdition = ({
       }
     }
   }
+
+  const formik = useFormik<StocksEventFormValues>({
+    initialValues,
+    onSubmit,
+    validationSchema: () => getValidationSchema(priceCategoriesOptions),
+    enableReinitialize: true,
+  })
 
   useNotifyFormError({
     isSubmitting: formik.isSubmitting,
