@@ -58,8 +58,9 @@ const ReimbursementBankAccount = ({
           <div>Compte bancaire en cours de validation par nos services</div>
           <ButtonLink
             link={{
-              to: '', // TODO: change when link is available.
+              to: `https://www.demarches-simplifiees.fr/dossiers/${bankAccount.dsApplicationId}/messagerie`,
               isExternal: true,
+              'aria-label': 'Nouvelle fenêtre',
             }}
             onClick={() => {
               logEvent?.(
