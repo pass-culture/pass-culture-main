@@ -1,3 +1,6 @@
+import copy
+
+
 ALLOCINE_MOVIE_LIST_PAGE_1 = {
     "movieList": {
         "totalCount": 4,
@@ -134,6 +137,9 @@ ALLOCINE_MOVIE_LIST_PAGE_1 = {
         ],
     }
 }
+
+ALLOCINE_MOVIE_LIST_PAGE_1_UPDATED = copy.deepcopy(ALLOCINE_MOVIE_LIST_PAGE_1)
+ALLOCINE_MOVIE_LIST_PAGE_1_UPDATED["movieList"]["edges"][0]["node"]["title"] = "Nouveau titre pour ceux de chez nous"
 
 ALLOCINE_MOVIE_LIST_PAGE_2 = {
     "movieList": {
@@ -282,9 +288,4 @@ ALLOCINE_MOVIE_LIST_PAGE_2 = {
             },
         ],
     }
-}
-
-ALLOCINE_MOVIE_LIST_PAGES = {
-    "": ALLOCINE_MOVIE_LIST_PAGE_1,
-    "YXJyYXljb25uZWN0aW9uOjQ5": ALLOCINE_MOVIE_LIST_PAGE_2,
 }

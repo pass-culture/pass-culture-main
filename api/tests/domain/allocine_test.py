@@ -6,18 +6,18 @@ from pcapi.domain.allocine import get_movie_list
 from pcapi.domain.allocine import get_movie_poster
 from pcapi.domain.allocine import get_movies_showtimes
 
-from tests.domain.fixtures import ALLOCINE_MOVIE_LIST_PAGES
+from tests.domain import fixtures
 
 
 class GetMovieListFromAllocineTest:
     def _configure_api_responses(self, requests_mock):
         requests_mock.get(
             f"{ALLOCINE_API_URL}/movieList?after=",
-            json=ALLOCINE_MOVIE_LIST_PAGES[""],
+            json=fixtures.ALLOCINE_MOVIE_LIST_PAGE_1,
         )
         requests_mock.get(
             f"{ALLOCINE_API_URL}/movieList?after=YXJyYXljb25uZWN0aW9uOjQ5",
-            json=ALLOCINE_MOVIE_LIST_PAGES["YXJyYXljb25uZWN0aW9uOjQ5"],
+            json=fixtures.ALLOCINE_MOVIE_LIST_PAGE_2,
         )
 
     def test_get_all_pages(self, requests_mock):
