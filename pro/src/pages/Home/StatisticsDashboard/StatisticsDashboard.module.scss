@@ -25,7 +25,7 @@
 .no-data {
   @include fonts.body-important;
 
-  color: colors.$grey-darker;
+  color: colors.$grey-dark;
   display: flex;
   align-items: center;
   justify-content: center;

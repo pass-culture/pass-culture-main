@@ -1,7 +1,7 @@
 @use "styles/variables/_colors.scss" as colors;
 @use "styles/mixins/_rem.scss" as rem;
 
-$input-color-grey-dark: colors.$grey-darker;
+$input-color-grey-dark: colors.$grey-dark;
 $input-border-color: colors.$grey-semi-dark;
 $input-border-color-focus: colors.$black;
 $input-border-width-focus: rem.torem(2px);
