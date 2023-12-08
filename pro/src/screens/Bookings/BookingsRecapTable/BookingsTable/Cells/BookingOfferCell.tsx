@@ -53,10 +53,7 @@ export const BookingOfferCell = ({ booking }: BookingOfferCellProps) => {
       <a
         href={editionUrl}
         title={`${booking.stock.offerName}`}
-        className={cn(
-          styles['booking-offer-name'],
-          !booking.stock.offerIsEducational && styles['crop-line']
-        )}
+        className={cn(styles['booking-offer-name'])}
       >
         {booking.stock.offerName}
       </a>

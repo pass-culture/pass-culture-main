@@ -13,12 +13,6 @@
   }
 }
 
-.crop-line {
-  overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
-}
-
 .booking-offer-additional-info {
   @include fonts.caption;
 
