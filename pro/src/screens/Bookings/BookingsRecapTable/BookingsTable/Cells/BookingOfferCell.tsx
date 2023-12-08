@@ -1,4 +1,3 @@
-import cn from 'classnames'
 import { format } from 'date-fns-tz'
 import React from 'react'
 
@@ -52,8 +51,8 @@ export const BookingOfferCell = ({ booking }: BookingOfferCellProps) => {
     <>
       <a
         href={editionUrl}
-        title={`${booking.stock.offerName}`}
-        className={cn(styles['booking-offer-name'])}
+        title={booking.stock.offerName}
+        className={styles['booking-offer-name']}
       >
         {booking.stock.offerName}
       </a>
