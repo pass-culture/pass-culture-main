@@ -953,6 +953,10 @@ class EducationalInstitution(PcObject, Base, Model):
         "CollectiveOfferRequest", back_populates="educationalInstitution"
     )
 
+    @property
+    def full_name(self) -> str:
+        return f"{self.institutionType} {self.name}".strip()
+
 
 class EducationalYear(PcObject, Base, Model):
     __tablename__ = "educational_year"
