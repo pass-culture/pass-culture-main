@@ -602,4 +602,38 @@ describe('screens:StocksEventEdition', () => {
     expect(api.upsertStocks).toHaveBeenCalledTimes(0)
     expect(screen.getByText('This is outside stock form')).toBeInTheDocument()
   })
+
+  it('should display blocker when form is dirty', async () => {
+    await renderStockEventScreen(
+      apiOffer,
+      [individualGetOfferStockResponseModelFactory()],
+      STOCKS_PER_PAGE * 5 + 10,
+      '?page=3'
+    )
+    await userEvent.type(screen.getByLabelText('Quantité restante'), '30')
+
+    // should block on next page
+    await userEvent.click(screen.getByRole('button', { name: 'Page suivante' }))
+    expect(
+      screen.getByText('Les informations non enregistrées seront perdues')
+    ).toBeInTheDocument()
+    await userEvent.click(screen.getByText('Quitter la page'))
+    expect(screen.getByText('Page 4/6')).toBeInTheDocument()
+
+    // should block on previous page
+    await userEvent.click(
+      screen.getByRole('button', { name: 'Page précédente' })
+    )
+    expect(
+      screen.getByText('Les informations non enregistrées seront perdues')
+    ).toBeInTheDocument()
+    await userEvent.click(screen.getByText('Rester sur la page'))
+    expect(screen.getByText('Page 4/6')).toBeInTheDocument()
+
+    await userEvent.click(
+      screen.getByRole('button', { name: 'Page précédente' })
+    )
+    await userEvent.click(screen.getByText('Quitter la page'))
+    expect(screen.getByText('Page 3/6')).toBeInTheDocument()
+  })
 })
