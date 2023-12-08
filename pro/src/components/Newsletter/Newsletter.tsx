@@ -10,7 +10,6 @@ import styles from './Newsletter.module.scss'
 const Newsletter = () => {
   return (
     <div className={styles['newsletter-container']}>
-      <img src={newsletterImage} alt="" className={styles['newsletter-img']} />
       <ButtonLink
         className={styles['newsletter-link']}
         variant={ButtonVariant.TERNARY}
@@ -23,6 +22,11 @@ const Newsletter = () => {
       >
         Inscrivez-vous à notre newsletter pour recevoir les actualités du pass
         Culture
+        <img
+          src={newsletterImage}
+          alt=""
+          className={styles['newsletter-img']}
+        />
       </ButtonLink>
     </div>
   )
