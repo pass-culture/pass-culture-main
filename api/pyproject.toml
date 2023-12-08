@@ -34,7 +34,7 @@ google-api-python-client = "2.41.0"
 google-cloud-storage = "2.2.1"
 google-cloud-tasks = "2.8.1"
 google-cloud-bigquery = "3.4.2"
-gql = {extras = ["requests"], version = "^3.4.1"}
+gql = { extras = ["requests"], version = "^3.4.1" }
 gunicorn = "20.0.4"
 ipaddress = "^1.0.23"
 itsdangerous = "2.0.1"
@@ -47,8 +47,8 @@ phonenumberslite = "==8.12.*"
 pillow = ">=8.1.1"
 prometheus-flask-exporter = "^0.22.4"
 psycopg2 = "^2.9.9"
-pydantic = {version = "==2.*", extras = ["email"]}
-pyjwt = {version = "2.6.0", extras = ["crypto"]}
+pydantic = { version = "==2.*", extras = ["email"] }
+pyjwt = { version = "2.6.0", extras = ["crypto"] }
 pysaml2 = "^7.4.2"
 python-dotenv = "0.21.1"
 pyyaml = "6.0"
@@ -62,7 +62,7 @@ spectree = "1.2.1"
 # FIXME (dbaty, 2023-01-04): do not use 1.4.46 that has a new
 # deprecation warning for which we're not ready
 # (https://docs.sqlalchemy.org/en/20/changelog/changelog_14.html#change-e67bfa1efbe52ae40aa842124bc40c51).
-sqlalchemy = {version = "1.4.45", extras = ["mypy"]}
+sqlalchemy = { version = "1.4.45", extras = ["mypy"] }
 slack-sdk = "3.13.0"
 weasyprint = "57.2"
 werkzeug = "2.0.3"
@@ -129,13 +129,7 @@ target-version = ['py310']
 
 
 [tool.coverage.report]
-omit = [
-    "tests/*",
-    "venv/*",
-    "alembic/*",
-    "snippets/*",
-    "static/*",
-]
+omit = ["tests/*", "venv/*", "alembic/*", "snippets/*", "static/*"]
 
 
 [tool.isort]
@@ -167,7 +161,7 @@ show_column_numbers = true
 warn_unused_ignores = true
 show_error_codes = true
 warn_redundant_casts = true
-plugins="sqlalchemy.ext.mypy.plugin, pydantic.mypy"
+plugins = "sqlalchemy.ext.mypy.plugin, pydantic.mypy"
 exclude = """
 (?x)(
     tests/.*
@@ -177,64 +171,54 @@ exclude = """
 # FIXME (dbaty, 2022-11-08): this is temporary until we find a
 # solution to type hybrid_property-decorated methods. Otherwise, mypy
 # reports a "truthy-function" error on code that uses these methods.
-disable_error_code = [
-    "truthy-function",
-]
+disable_error_code = ["truthy-function"]
 
 
 [tool.pylint.MASTER]
 # Include info messages into score so that pylint fails if we have
 # such messages (e.g. "useless-suppression").
 evaluation = "max(0, 0 if fatal else 10.0 - ((float(5 * error + warning + refactor + convention + info) / statement) * 10))"
-extension-pkg-whitelist = [
-    "pydantic",
-]
-load-plugins = [
-    "pcapi.utils.pylint",
-    "pylint_pydantic",
-]
+extension-pkg-whitelist = ["pydantic"]
+load-plugins = ["pcapi.utils.pylint", "pylint_pydantic"]
 
 [tool.pylint."MESSAGES CONTROL"]
-enable = [
-    "use-symbolic-message-instead",
-    "useless-suppression",
-]
+enable = ["use-symbolic-message-instead", "useless-suppression"]
 disable = [
-    "arguments-differ",
-    "arguments-renamed",
-    "attribute-defined-outside-init",
-    "consider-using-f-string",
-    "cyclic-import",
-    "duplicate-code",
-    "fixme",
-    "file-ignored",
-    "import-outside-toplevel",
-    "invalid-name",
-    "line-too-long",
-    "locally-disabled",
-    "missing-docstring",
-    "no-member",
-    "protected-access",
-    "raise-missing-from",
-    "singleton-comparison",
-    "superfluous-parens",
-    "too-few-public-methods",
-    "too-many-ancestors",
-    "too-many-arguments",
-    "too-many-branches",
-    "too-many-instance-attributes",
-    "too-many-lines",
-    "too-many-locals",
-    "too-many-public-methods",
-    "too-many-return-statements",
-    "too-many-statements",
-    "ungrouped-imports",
-    "unnecessary-lambda-assignment",
-    "unused-argument",
-    "use-dict-literal",
-    "useless-return",
-    "wrong-import-order",    # we have a custom isort config, which pylint can't grok
-    "wrong-import-position",  # same reason
+  "arguments-differ",
+  "arguments-renamed",
+  "attribute-defined-outside-init",
+  "consider-using-f-string",
+  "cyclic-import",
+  "duplicate-code",
+  "fixme",
+  "file-ignored",
+  "import-outside-toplevel",
+  "invalid-name",
+  "line-too-long",
+  "locally-disabled",
+  "missing-docstring",
+  "no-member",
+  "protected-access",
+  "raise-missing-from",
+  "singleton-comparison",
+  "superfluous-parens",
+  "too-few-public-methods",
+  "too-many-ancestors",
+  "too-many-arguments",
+  "too-many-branches",
+  "too-many-instance-attributes",
+  "too-many-lines",
+  "too-many-locals",
+  "too-many-public-methods",
+  "too-many-return-statements",
+  "too-many-statements",
+  "ungrouped-imports",
+  "unnecessary-lambda-assignment",
+  "unused-argument",
+  "use-dict-literal",
+  "useless-return",
+  "wrong-import-order",             # we have a custom isort config, which pylint can't grok
+  "wrong-import-position",          # same reason
 ]
 
 [tool.pylint.REPORTS]
@@ -246,41 +230,41 @@ max-line-length = 120
 
 [tool.pytest.ini_options]
 addopts = [
-    "--verbose",
-    "--tb=short",
-    "--disable-socket",
-    # FIXME (dbaty, 2022-12-01): use network range 172.16.0.0/12 once pytest-socket
-    # supports it.
-    "--allow-hosts=127.0.0.1,::1,172.18.0.2,172.19.0.2,172.19.0.3,172.20.0.2,172.21.0.2,192.168.16.2",  # allow connections to local Redis
+  "--verbose",
+  "--tb=short",
+  "--disable-socket",
+  # FIXME (dbaty, 2022-12-01): use network range 172.16.0.0/12 once pytest-socket
+  # supports it.
+  "--allow-hosts=127.0.0.1,::1,172.18.0.2,172.19.0.2,172.19.0.3,172.20.0.2,172.21.0.2,192.168.16.2", # allow connections to local Redis
 ]
 filterwarnings = [
-    # Mark warnings as errors
-    "error",
+  # Mark warnings as errors
+  "error",
 
-    # -------------- Temporary ignored warnings due to SLQAlchemy bump to 1.4 -------------- #
-    # FIXME (lixxday, 2022/06/09)
-    # Warning on deprecated sqla function as_scalar()
-    "ignore:The Query.as_scalar\\(\\) method is deprecated and will be removed in a future release:sqlalchemy.exc.SADeprecationWarning",
-    # Warning on SELECT with IN. Fix: pass a select() construct explicitly
-    "ignore:Coercing Subquery object into a select\\(\\) for use in IN\\(\\):sqlalchemy.exc.SAWarning",
-    # ---------------------------- #
+  # -------------- Temporary ignored warnings due to SLQAlchemy bump to 1.4 -------------- #
+  # FIXME (lixxday, 2022/06/09)
+  # Warning on deprecated sqla function as_scalar()
+  "ignore:The Query.as_scalar\\(\\) method is deprecated and will be removed in a future release:sqlalchemy.exc.SADeprecationWarning",
+  # Warning on SELECT with IN. Fix: pass a select() construct explicitly
+  "ignore:Coercing Subquery object into a select\\(\\) for use in IN\\(\\):sqlalchemy.exc.SAWarning",
+  # ---------------------------- #
 
-    # FIXME (rpaoloni, 2022-04-19): some of our dependencies (flask_limiter, at least) use `distutils.version.StrictVersion`,
-    # which emits a deprecation warnings with setuptools >=59.6.0. Remove this when we update or remove those
-    # dependencies.
-    "ignore:distutils Version classes are deprecated. Use packaging.version instead.:DeprecationWarning",
-    "ignore:The distutils package is deprecated and slated for removal in Python 3.12. Use setuptools or check PEP 632 for potential alternatives:DeprecationWarning",
-    # FIXME (jsdupuis, 2022-04-25): flask_admin validators uses tuples for flags (eg. field_flags = ('unique', )),
-    # which emits deprecation warnings in wtforms >=3.0.0a1.
-    # Remove this when we remove flask_admin
-    "ignore:Flags should be stored in dicts and not in tuples. The next version of WTForms will abandon support for flags in tuples.:DeprecationWarning",
-    # FIXME (askorski, 2022-05-02): algoliasearch uses deprecated @coroutine decorator
-    # Remove this when alogliasearch no more uses @coroutine
-    'ignore:"@coroutine" decorator is deprecated since Python 3.8, use \"async def\" instead:DeprecationWarning',
-    # FIXME (francois-seguin, 2022-08-23): requests-toolbelt uses deprecated urllib3.contrib.pyopenssl
-    # see https://github.com/requests/toolbelt/issues/331
-    # Remove this when requests-toolbelt fixes its use
-    "ignore:'urllib3.contrib.pyopenssl' module is deprecated*:DeprecationWarning",
+  # FIXME (rpaoloni, 2022-04-19): some of our dependencies (flask_limiter, at least) use `distutils.version.StrictVersion`,
+  # which emits a deprecation warnings with setuptools >=59.6.0. Remove this when we update or remove those
+  # dependencies.
+  "ignore:distutils Version classes are deprecated. Use packaging.version instead.:DeprecationWarning",
+  "ignore:The distutils package is deprecated and slated for removal in Python 3.12. Use setuptools or check PEP 632 for potential alternatives:DeprecationWarning",
+  # FIXME (jsdupuis, 2022-04-25): flask_admin validators uses tuples for flags (eg. field_flags = ('unique', )),
+  # which emits deprecation warnings in wtforms >=3.0.0a1.
+  # Remove this when we remove flask_admin
+  "ignore:Flags should be stored in dicts and not in tuples. The next version of WTForms will abandon support for flags in tuples.:DeprecationWarning",
+  # FIXME (askorski, 2022-05-02): algoliasearch uses deprecated @coroutine decorator
+  # Remove this when alogliasearch no more uses @coroutine
+  'ignore:"@coroutine" decorator is deprecated since Python 3.8, use \"async def\" instead:DeprecationWarning',
+  # FIXME (francois-seguin, 2022-08-23): requests-toolbelt uses deprecated urllib3.contrib.pyopenssl
+  # see https://github.com/requests/toolbelt/issues/331
+  # Remove this when requests-toolbelt fixes its use
+  "ignore:'urllib3.contrib.pyopenssl' module is deprecated*:DeprecationWarning",
 ]
 testpaths = ["tests"]
 norecursedirs = [".git", "venv", ".pytest_cache"]
@@ -290,6 +274,4 @@ python_functions = ["test_*", "when_*", "expect_*", "should_*"]
 env_files = ["local_test_env_file"]
 mocked-sessions = ["pcapi.models.db.session"]
 junit_family = "xunit1"
-markers = [
-    "backoffice"
-]
+markers = ["backoffice"]
