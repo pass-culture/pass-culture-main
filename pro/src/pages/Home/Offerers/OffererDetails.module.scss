@@ -44,6 +44,7 @@
 
 .venue-select {
   flex-grow: 1;
+  
   @media (max-width: size.$tablet) { 
     width: 100%;
   }
