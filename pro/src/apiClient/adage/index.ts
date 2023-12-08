@@ -36,6 +36,7 @@ export type { EducationalRedactorResponseModel } from './models/EducationalRedac
 export type { FavoritesResponseModel } from './models/FavoritesResponseModel';
 export type { FeatureResponseModel } from './models/FeatureResponseModel';
 export type { GetRelativeVenuesQueryModel } from './models/GetRelativeVenuesQueryModel';
+export { InstitutionRuralLevel } from './models/InstitutionRuralLevel';
 export type { ListCollectiveOffersResponseModel } from './models/ListCollectiveOffersResponseModel';
 export type { ListCollectiveOfferTemplateResponseModel } from './models/ListCollectiveOfferTemplateResponseModel';
 export type { ListFeatureResponseModel } from './models/ListFeatureResponseModel';

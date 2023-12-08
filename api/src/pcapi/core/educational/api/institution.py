@@ -1,6 +1,8 @@
 from datetime import datetime
 from decimal import Decimal
 
+from pcapi.connectors.big_query.queries import InstitutionRuralLevelQuery
+import pcapi.connectors.big_query.queries.base as queries_base
 from pcapi.core.educational import adage_backends as adage_client
 from pcapi.core.educational import exceptions as educational_exceptions
 from pcapi.core.educational import models as educational_models
@@ -178,3 +180,20 @@ def create_educational_institution_from_adage(institution: AdageEducationalInsti
 
     repository.save(educational_institution)
     return educational_institution
+
+
+def get_institution_rural_level(
+    institution: EducationalInstitution | None,
+) -> educational_models.InstitutionRuralLevel | None:
+    if not institution:
+        return None
+
+    try:
+        rows = list(InstitutionRuralLevelQuery().execute(institution_id=str(institution.id)))
+    except queries_base.MalformedRow:
+        return None
+
+    try:
+        return rows[0].institution_rural_level
+    except (IndexError, AttributeError):
+        return None
