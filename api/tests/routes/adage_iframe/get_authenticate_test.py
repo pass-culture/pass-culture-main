@@ -1,8 +1,11 @@
 import datetime
+from unittest.mock import patch
 
 from flask import url_for
 import pytest
 
+from pcapi.core.educational import models
+from pcapi.core.educational.api.institution import get_educational_institution_department_code
 from pcapi.core.educational.factories import CollectiveOfferTemplateFactory
 from pcapi.core.educational.factories import CollectiveStockFactory
 from pcapi.core.educational.factories import EducationalInstitutionFactory
@@ -16,67 +19,83 @@ from tests.routes.adage_iframe.utils_create_test_token import create_adage_jwt_f
 from tests.routes.adage_iframe.utils_create_test_token import create_adage_jwt_fake_valid_token
 
 
-@pytest.mark.usefixtures("db_session")
-class AuthenticateTest:
-    valid_user = {
+pytestmark = pytest.mark.usefixtures("db_session")
+
+
+DEFAULT_UAI = "EAU123"
+DEFAULT_RURAL_LEVEL = models.InstitutionRuralLevel.URBAIN_DENSE.value
+
+
+@pytest.fixture(name="valid_user", scope="module")
+def valid_user_fixture():
+    return {
+        "civilite": "Mme.",
+        "nom": "LAPROF",
+        "prenom": "Sabine",
         "mail": "sabine.laprof@example.com",
-        "uai": "EAU123",
+        "uai": DEFAULT_UAI,
     }
 
-    def _create_adage_valid_token(self, uai_code: str | None) -> bytes:
-        return create_adage_jwt_default_fake_valid_token(
-            civility=self.valid_user.get("civilite"),
-            lastname=self.valid_user.get("nom"),
-            firstname=self.valid_user.get("prenom"),
-            email=self.valid_user.get("mail"),
-            uai=uai_code,
-            lat=DEFAULT_LAT,
-            lon=DEFAULT_LON,
-        )
 
-    def test_should_return_redactor_role_when_token_has_an_uai_code(self, client) -> None:
+def expected_serialized_auth_base(redactor, institution):
+    return {
+        "role": "redactor",
+        "uai": institution.institutionId,
+        "departmentCode": get_educational_institution_department_code(institution),
+        "institutionName": institution.full_name,
+        "institutionCity": institution.city,
+        "email": redactor.email,
+        "preferences": {
+            "feedback_form_closed": redactor.preferences.get("feedback_form_closed"),
+            "broadcast_help_closed": redactor.preferences.get("broadcast_help_closed"),
+        },
+        "lat": DEFAULT_LAT,
+        "lon": DEFAULT_LON,
+        "favoritesCount": 0,
+        "offersCount": 0,
+        "institutionRuralLevel": None,
+    }
+
+
+class AuthenticateTest:
+    def test_should_authenticate_redactor(self, client, valid_user):
+        redactor = EducationalRedactorFactory(email=valid_user.get("mail"))
+        institution = EducationalInstitutionFactory(institutionId=DEFAULT_UAI)
+
+        valid_encoded_token = self._create_adage_valid_token(valid_user, uai_code=DEFAULT_UAI)
+
+        mock_path = "pcapi.connectors.big_query.TestingBackend.run_query"
+        with patch(mock_path) as mock_run_query:
+            mock_run_query.return_value = [{"institution_rural_level": DEFAULT_RURAL_LEVEL}]
+
+            response = client.with_explicit_token(valid_encoded_token).get("/adage-iframe/authenticate")
+
+        assert response.status_code == 200
+        assert response.json == {
+            **expected_serialized_auth_base(redactor, institution),
+            "institutionRuralLevel": DEFAULT_RURAL_LEVEL,
+        }
+
+    def test_should_return_redactor_role_when_token_has_an_uai_code(self, client, valid_user) -> None:
         # Given
-        EducationalRedactorFactory(email=self.valid_user.get("mail"))
-        educational_institution = EducationalInstitutionFactory(
-            institutionId=self.valid_user.get("uai"),
-            name="BELLEVUE",
-            institutionType="COLLEGE",
-            postalCode="30100",
-            city="Ales",
-        )
+        redactor = EducationalRedactorFactory(email=valid_user.get("mail"))
+        institution = EducationalInstitutionFactory(institutionId=valid_user.get("uai"))
         CollectiveStockFactory(
-            collectiveOffer__institution=educational_institution,
-            collectiveOffer__teacher=EducationalRedactorFactory(),
+            collectiveOffer__institution=institution,
         )
         CollectiveStockFactory(
             beginningDatetime=datetime.datetime.utcnow() - datetime.timedelta(days=5),
-            collectiveOffer__institution=educational_institution,
-            collectiveOffer__teacher=EducationalRedactorFactory(),
+            collectiveOffer__institution=institution,
         )
 
-        valid_encoded_token = self._create_adage_valid_token(uai_code=self.valid_user.get("uai"))
+        valid_encoded_token = self._create_adage_valid_token(valid_user, uai_code=valid_user.get("uai"))
 
         # When
         response = client.with_explicit_token(valid_encoded_token).get("/adage-iframe/authenticate")
 
         # Then
         assert response.status_code == 200
-        assert response.json == {
-            "role": "redactor",
-            "uai": "EAU123",
-            "departmentCode": "30",
-            "institutionName": "COLLEGE BELLEVUE",
-            "institutionCity": "Ales",
-            "email": "sabine.laprof@example.com",
-            "preferences": {
-                "feedback_form_closed": None,
-                "broadcast_help_closed": None,
-            },
-            "lat": DEFAULT_LAT,
-            "lon": DEFAULT_LON,
-            "favoritesCount": 0,
-            "offersCount": 1,
-        }
+        assert response.json == {**expected_serialized_auth_base(redactor, institution), "offersCount": 1}
 
     def test_favorites_count(self, client) -> None:
         redactor = EducationalRedactorFactory(
@@ -105,13 +124,12 @@ class AuthenticateTest:
         client = client.with_adage_token(email=educational_redactor.email, uai=educational_institution.institutionId)
         response = client.get("/adage-iframe/authenticate")
 
-        # Then
         assert response.status_code == 200
         assert response.json["preferences"] == {"broadcast_help_closed": True, "feedback_form_closed": True}
 
-    def test_should_return_readonly_role_when_token_has_no_uai_code(self, client) -> None:
+    def test_should_return_readonly_role_when_token_has_no_uai_code(self, client, valid_user) -> None:
         # Given
-        valid_encoded_token = self._create_adage_valid_token(uai_code=None)
+        valid_encoded_token = self._create_adage_valid_token(valid_user, uai_code=None)
 
         # When
         response = client.with_explicit_token(valid_encoded_token).get("/adage-iframe/authenticate")
@@ -130,33 +148,8 @@ class AuthenticateTest:
             "lon": None,
             "favoritesCount": 0,
             "offersCount": 0,
+            "institutionRuralLevel": None,
         }
-
-    valid_user = {
-        "civilite": "Mme.",
-        "nom": "LAPROF",
-        "prenom": "Sabine",
-        "mail": "sabine.laprof@example.com",
-        "uai": "EAU123",
-    }
-
-    def _create_adage_valid_token_from_expiration_date(self, expiration_date: datetime.datetime | None) -> bytes:
-        return create_adage_jwt_fake_valid_token(
-            civility=self.valid_user.get("civilite"),
-            lastname=self.valid_user.get("nom"),
-            firstname=self.valid_user.get("prenom"),
-            email=self.valid_user.get("mail"),
-            uai=self.valid_user.get("uai"),
-            expiration_date=expiration_date,
-            lat=DEFAULT_LAT,
-            lon=DEFAULT_LON,
-        )
-
-    @staticmethod
-    def _create_adage_invalid_token() -> bytes:
-        return create_adage_jwt_fake_invalid_token(
-            civility="M.", lastname="TESTABLE", firstname="Pascal", email="pascal.testable@example.com", uai="321UAE"
-        )
 
     def test_should_return_error_response_when_jwt_invalid(self, client):
         # Given
@@ -169,11 +162,11 @@ class AuthenticateTest:
         assert response.status_code == 403
         assert "Unrecognized token" in response.json["Authorization"]
 
-    def test_should_return_error_response_when_jwt_expired(self, client):
+    def test_should_return_error_response_when_jwt_expired(self, client, valid_user):
         # Given
         now = datetime.datetime.utcnow()
         expired_token = self._create_adage_valid_token_from_expiration_date(
-            expiration_date=now - datetime.timedelta(days=1)
+            valid_user, expiration_date=now - datetime.timedelta(days=1)
         )
 
         # When
@@ -183,9 +176,9 @@ class AuthenticateTest:
         assert response.status_code == 422
         assert "Token expired" in response.json["msg"]
 
-    def test_should_return_error_response_when_no_expiration_date_in_token(self, client):
+    def test_should_return_error_response_when_no_expiration_date_in_token(self, client, valid_user):
         # Given
-        no_expiration_date_token = self._create_adage_valid_token_from_expiration_date(expiration_date=None)
+        no_expiration_date_token = self._create_adage_valid_token_from_expiration_date(valid_user, expiration_date=None)
 
         # When
         response = client.with_explicit_token(no_expiration_date_token).get("/adage-iframe/authenticate")
@@ -193,3 +186,34 @@ class AuthenticateTest:
         # Then
         assert response.status_code == 422
         assert "No expiration date provided" in response.json["msg"]
+
+    def _create_adage_valid_token(self, valid_user, uai_code: str | None) -> bytes:
+        return create_adage_jwt_default_fake_valid_token(
+            civility=valid_user.get("civilite"),
+            lastname=valid_user.get("nom"),
+            firstname=valid_user.get("prenom"),
+            email=valid_user.get("mail"),
+            uai=uai_code,
+            lat=DEFAULT_LAT,
+            lon=DEFAULT_LON,
+        )
+
+    def _create_adage_valid_token_from_expiration_date(
+        self, valid_user, expiration_date: datetime.datetime | None
+    ) -> bytes:
+        return create_adage_jwt_fake_valid_token(
+            civility=valid_user.get("civilite"),
+            lastname=valid_user.get("nom"),
+            firstname=valid_user.get("prenom"),
+            email=valid_user.get("mail"),
+            uai=valid_user.get("uai"),
+            expiration_date=expiration_date,
+            lat=DEFAULT_LAT,
+            lon=DEFAULT_LON,
+        )
+
+    @staticmethod
+    def _create_adage_invalid_token() -> bytes:
+        return create_adage_jwt_fake_invalid_token(
+            civility="M.", lastname="TESTABLE", firstname="Pascal", email="pascal.testable@example.com", uai="321UAE"
+        )
