@@ -11,7 +11,10 @@ interface RouteLeavingGuardIndividualOffer {
 export const RouteLeavingGuardIndividualOffer = ({
   when,
 }: RouteLeavingGuardIndividualOffer): JSX.Element => {
-  const shouldBlockNavigation: BlockerFunction = () => when
+  const shouldBlockNavigation: BlockerFunction = ({
+    currentLocation,
+    nextLocation,
+  }) => when && currentLocation.pathname !== nextLocation.pathname
 
   return (
     <RouteLeavingGuard
