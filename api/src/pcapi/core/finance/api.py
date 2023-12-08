@@ -2141,13 +2141,17 @@ def expire_current_deposit_for_user(user: users_models.User) -> None:
 def _can_be_recredited(user: users_models.User) -> bool:
     return (
         user.age in conf.RECREDIT_TYPE_AGE_MAPPING
-        and _has_celebrated_birthday_since_registration(user)
+        and _has_celebrated_birthday_since_credit_or_registration(user)
         and not _has_been_recredited(user)
     )
 
 
-def _has_celebrated_birthday_since_registration(user: users_models.User) -> bool:
+def _has_celebrated_birthday_since_credit_or_registration(user: users_models.User) -> bool:
     import pcapi.core.subscription.api as subscription_api
+
+    latest_birthday_date = typing.cast(datetime.date, user.latest_birthday)
+    if user.deposit and user.deposit.dateCreated and (user.deposit.dateCreated.date() < latest_birthday_date):
+        return True
 
     first_registration_datetime = subscription_api.get_first_registration_date(
         user, user.validatedBirthDate, users_models.EligibilityType.UNDERAGE
@@ -2156,7 +2160,7 @@ def _has_celebrated_birthday_since_registration(user: users_models.User) -> bool
         logger.error("No registration date for user to be recredited", extra={"user_id": user.id})
         return False
 
-    return first_registration_datetime.date() < typing.cast(datetime.date, user.latest_birthday)
+    return first_registration_datetime.date() < latest_birthday_date
 
 
 def _has_been_recredited(user: users_models.User) -> bool:
