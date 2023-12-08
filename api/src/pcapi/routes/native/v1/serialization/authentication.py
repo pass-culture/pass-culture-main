@@ -51,6 +51,11 @@ class ValidateEmailResponse(ConfiguredBaseModel):
     refresh_token: str
 
 
+class OauthStateResponse(ConfiguredBaseModel):
+    oauth_state_token: str
+
+
 class GoogleSigninRequest(ConfiguredBaseModel):
     authorization_code: str
+    oauth_state_token: str
     device_info: TrustedDevice | None = None

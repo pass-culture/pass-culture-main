@@ -911,6 +911,14 @@ def create_user_refresh_token(user: models.User, device_info: "account_serializa
     return create_refresh_token(identity=user.email, expires_delta=duration)
 
 
+def create_oauth_state_token() -> str:
+    token = token_utils.UUIDToken.create(
+        token_utils.TokenType.OAUTH_STATE,
+        users_constants.OAUTH_STATE_TOKEN_LIFE_TIME,
+    )
+    return token.encoded_token
+
+
 def create_account_creation_token(google_user: "google_oauth.GoogleUser") -> str:
     token = token_utils.UUIDToken.create(
         token_utils.TokenType.ACCOUNT_CREATION,

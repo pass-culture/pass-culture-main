@@ -5,6 +5,7 @@ from pcapi import settings
 
 
 ACCOUNT_CREATION_TOKEN_LIFE_TIME = datetime.timedelta(hours=1)
+OAUTH_STATE_TOKEN_LIFE_TIME = datetime.timedelta(hours=1)
 RESET_PASSWORD_TOKEN_LIFE_TIME = datetime.timedelta(hours=24)
 EMAIL_VALIDATION_TOKEN_LIFE_TIME = datetime.timedelta(minutes=30)
 EMAIL_CHANGE_TOKEN_LIFE_TIME = datetime.timedelta(seconds=settings.EMAIL_CHANGE_TOKEN_LIFE_TIME)
