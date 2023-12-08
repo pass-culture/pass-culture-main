@@ -1,3 +1,4 @@
+// @vitest-environment happy-dom
 import { screen } from '@testing-library/react'
 import { userEvent } from '@testing-library/user-event'
 import React from 'react'
@@ -259,7 +260,7 @@ describe('ReimbursementBankAccount', () => {
         2
       )
       await userEvent.click(
-        screen.getByRole('link', { name: 'Suivre le dossier' })
+        screen.getByRole('link', { name: 'Nouvelle fenêtre' })
       )
       expect(mockLogEvent).toHaveBeenCalledWith(
         BankAccountEvents.CLICKED_BANK_DETAILS_RECORD_FOLLOW_UP,
