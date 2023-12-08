@@ -93,6 +93,14 @@ class VenueModelConstraintsTest:
             repository.save(venue3)
         assert err.value.errors["isVirtual"] == ["Un lieu pour les offres numériques existe déjà pour cette structure"]
 
+    def test_permanent_venue_must_have_a_ban_id(self):
+        venue = factories.VenueFactory(isPermanent=True)
+        with pytest.raises(IntegrityError) as err:
+            venue.banId = None
+            db.session.add(venue)
+            db.session.flush()
+        assert "check_non_virtual_permanent_venues_have_ban_id" in str(err.value)
+
 
 class VenueTimezonePropertyTest:
     def test_europe_paris_is_default_timezone(self):

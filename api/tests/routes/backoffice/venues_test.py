@@ -921,6 +921,7 @@ class UpdateVenueTest(PostEndpointHelper):
             "city": "Umeå",
             "postal_code": "90325",
             "address": "Skolgatan 31A",
+            "ban_id": "12345_5678_91011",
             "booking_email": venue.bookingEmail + ".update",
             "phone_number": "+33102030456",
             "is_permanent": True,

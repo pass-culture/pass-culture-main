@@ -103,6 +103,12 @@ CONSTRAINT_CHECK_HAS_SIRET_XOR_HAS_COMMENT_XOR_IS_VIRTUAL = """
     OR (siret IS NOT NULL AND "isVirtual" IS FALSE)
 """
 
+CONSTRAINT_CHECK_IS_PERMANENT_AND_HAS_BAN_ID_OR_IS_VIRTUAL = """
+    ("isPermanent" IS FALSE)
+    OR ("isVirtual" IS True) 
+    OR ("isPermanent" IS TRUE AND "isVirtual" IS FALSE AND "banId" IS NOT NULL)
+"""
+
 
 class VenueTypeCode(enum.Enum):
     ADMINISTRATIVE = "Lieu administratif"
@@ -400,13 +406,12 @@ class Venue(PcObject, Base, Model, HasThumbMixin, ProvidableMixin, Accessibility
         "VenueBankAccountLink", back_populates="venue", passive_deletes=True
     )
 
-    # FIXME: ogeber 27.11 uncomment once all permanent venues have a ban_id (cf ticket 25999)
-    # __table_args__ = (
-    #     CheckConstraint(
-    #         "(isPermanent = FALSE OR (isPermanent = TRUE AND banId IS NOT NULL))",
-    #         name="check_ban_id_is_non_nullable_when_venue_is_permanent"
-    #     ),
-    # )
+    __table_args__ = (
+        CheckConstraint(
+            CONSTRAINT_CHECK_IS_PERMANENT_AND_HAS_BAN_ID_OR_IS_VIRTUAL,
+            name="check_non_virtual_permanent_venues_have_ban_id",
+        ),
+    )
 
     def _get_type_banner_url(self) -> str | None:
         elligible_banners: tuple[str, ...] = VENUE_TYPE_DEFAULT_BANNERS.get(self.venueTypeCode, tuple())
