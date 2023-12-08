@@ -767,8 +767,9 @@ def test_public_api(client):
                             "nullable": True,
                             "title": "TrustedDevice",
                         },
+                        "oauthStateToken": {"title": "Oauthstatetoken", "type": "string"},
                     },
-                    "required": ["authorizationCode"],
+                    "required": ["authorizationCode", "oauthStateToken"],
                     "title": "GoogleSigninRequest",
                     "type": "object",
                 },
@@ -899,6 +900,12 @@ def test_public_api(client):
                     },
                     "required": ["marketingEmail", "marketingPush"],
                     "title": "NotificationSubscriptions",
+                    "type": "object",
+                },
+                "OauthStateResponse": {
+                    "properties": {"oauthStateToken": {"title": "Oauthstatetoken", "type": "string"}},
+                    "required": ["oauthStateToken"],
+                    "title": "OauthStateResponse",
                     "type": "object",
                 },
                 "OfferAccessibilityResponse": {
@@ -2651,6 +2658,30 @@ def test_public_api(client):
                         },
                     },
                     "summary": "google_auth <POST>",
+                    "tags": [],
+                }
+            },
+            "/native/v1/oauth/state": {
+                "get": {
+                    "description": "",
+                    "operationId": "get__native_v1_oauth_state",
+                    "parameters": [],
+                    "responses": {
+                        "200": {
+                            "content": {
+                                "application/json": {"schema": {"$ref": "#/components/schemas/OauthStateResponse"}}
+                            },
+                            "description": "OK",
+                        },
+                        "403": {"description": "Forbidden"},
+                        "422": {
+                            "content": {
+                                "application/json": {"schema": {"$ref": "#/components/schemas/ValidationError"}}
+                            },
+                            "description": "Unprocessable " "Entity",
+                        },
+                    },
+                    "summary": "google_oauth_state " "<GET>",
                     "tags": [],
                 }
             },

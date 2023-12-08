@@ -193,6 +193,15 @@ def validate_email(body: ValidateEmailRequest) -> ValidateEmailResponse:
     return response
 
 
+@blueprint.native_v1.route("/oauth/state", methods=["GET"])
+@spectree_serialize(response_model=authentication.OauthStateResponse, on_success_status=200, api=blueprint.api)
+@ip_rate_limiter()
+@feature_required(FeatureToggle.WIP_ENABLE_GOOGLE_SSO)
+def google_oauth_state() -> authentication.OauthStateResponse:
+    encoded_oauth_state_token = users_api.create_oauth_state_token()
+    return authentication.OauthStateResponse(oauth_state_token=encoded_oauth_state_token)
+
+
 @blueprint.native_v1.route("/oauth/google/authorize", methods=["POST"])
 @spectree_serialize(
     response_model=authentication.SigninResponse,
@@ -203,6 +212,20 @@ def validate_email(body: ValidateEmailRequest) -> ValidateEmailResponse:
 @ip_rate_limiter()
 @feature_required(FeatureToggle.WIP_ENABLE_GOOGLE_SSO)
 def google_auth(body: authentication.GoogleSigninRequest) -> authentication.SigninResponse:
+    try:
+        oauth_state_token = token_utils.UUIDToken.load_and_check(
+            body.oauth_state_token, token_utils.TokenType.OAUTH_STATE
+        )
+    except (users_exceptions.ExpiredToken, users_exceptions.InvalidToken) as e:
+        raise ApiErrors(
+            {
+                "code": "SSO_LOGIN_TIMEOUT",
+                "general": ["La demande de connexion a mis trop de temps."],
+            },
+            status_code=400,
+        ) from e
+    oauth_state_token.expire()
+
     google_user = google_oauth.get_google_user(body.authorization_code)
     email = google_user.email
     sso_user_id = google_user.sub
