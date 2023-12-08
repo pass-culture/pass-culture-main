@@ -95,7 +95,7 @@ class AbstractToken(abc.ABC):
 
     @classmethod
     def token_exists(cls, type_: TokenType, user_id: int) -> bool:
-        return app.redis_client.exists(cls._get_redis_key(type_, user_id))  # type: ignore [attr-defined]
+        return bool(app.redis_client.exists(cls._get_redis_key(type_, user_id)))  # type: ignore [attr-defined]
 
     def _log(self, action: _TokenAction) -> None:
         logger.info("[TOKEN](%s){%i, %s, %s}", action.value, self.user_id, self.type_.value, self.encoded_token)

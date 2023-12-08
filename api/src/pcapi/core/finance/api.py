@@ -2501,4 +2501,4 @@ def cancel_finance_incident(incident: models.FinanceIncident, comment: str) -> N
 
 
 def are_cashflows_being_generated() -> bool:
-    return app.redis_client.exists(conf.REDIS_GENERATE_CASHFLOW_LOCK)  # type: ignore [attr-defined]
+    return bool(app.redis_client.exists(conf.REDIS_GENERATE_CASHFLOW_LOCK))  # type: ignore [attr-defined]
