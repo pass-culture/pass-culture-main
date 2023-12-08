@@ -575,6 +575,16 @@ def get_offerer_bank_accounts(offerer_id: int) -> models.Offerer | None:
     - Linked venues to its bank accounts (possibly none and only current ones)
     - Managed venues by the offerer (possibly none)
     """
+    venue_has_offers_subquery = db.session.query(
+        sqla.select(1)
+        .select_from(offers_models.Offer)
+        .where(
+            offers_models.Offer.venueId == models.Venue.id,
+            offers_models.Offer.isActive.is_(True),
+        )
+        .correlate(models.Venue)
+        .exists()
+    ).scalar_subquery()
 
     return (
         models.Offerer.query.filter_by(id=offerer_id)
@@ -591,7 +601,19 @@ def get_offerer_bank_accounts(offerer_id: int) -> models.Offerer | None:
                 ),
             ),
         )
-        .outerjoin(models.Venue, models.Venue.managingOffererId == models.Offerer.id)
+        .outerjoin(
+            models.Venue,
+            sqla.and_(
+                models.Offerer.id == models.Venue.managingOffererId,
+                sqla.or_(
+                    models.Venue.isVirtual.is_(False),
+                    sqla.and_(
+                        models.Venue.isVirtual.is_(True),
+                        venue_has_offers_subquery,
+                    ),
+                ),
+            ),
+        )
         .outerjoin(
             models.VenuePricingPointLink,
             sqla.and_(
@@ -622,6 +644,7 @@ def get_offerer_bank_accounts(offerer_id: int) -> models.Offerer | None:
         )
         .options(sqla_orm.load_only(models.Offerer.id, models.Offerer.name))
         .order_by(finance_models.BankAccount.dateCreated)
+        .populate_existing()
         .one_or_none()
     )
 
