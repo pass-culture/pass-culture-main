@@ -1,15 +1,16 @@
 @use "styles/mixins/_rem.scss" as rem;
 @use "styles/mixins/_fonts.scss" as fonts;
 @use "styles/variables/_colors.scss" as colors;
+@use "styles/variables/_size.scss" as size;
 
 .discovery {
-  background-color: #FBFAFC;
+  background-color: #fbfafc;
 
   &-playlists {
     display: flex;
     flex-direction: column;
     gap: rem.torem(40px);
-    margin: rem.torem(32px) 0
+    margin: rem.torem(32px) 0;
   }
 
   &-banner {
@@ -23,17 +24,18 @@
     &-title {
       margin: 0;
       color: colors.$white;
-      font-size: rem.torem(40px);
+      font-size: rem.torem(24px);
       font-style: normal;
       font-weight: 800;
       text-align: center;
       line-height: normal;
 
       span {
-        color: #4613AD;
+        color: #4613ad;
         padding: rem.torem(4px);
         background-color: colors.$white;
         border-radius: rem.torem(8px);
+        white-space: nowrap;
       }
     }
   }
@@ -72,6 +74,8 @@
   }
 }
 
-.parallax-element {
-  transform:scale(2);
+@media (min-width: size.$tablet) {
+  .discovery-banner-title {
+    font-size: rem.torem(32px);
+  }
 }
