@@ -1531,3 +1531,12 @@ class CollectiveOfferTemplateEducationalRedactor(PcObject, Base, Model):
     __table_args__ = (
         UniqueConstraint("educationalRedactorId", "collectiveOfferTemplateId", name="unique_redactorId_template"),
     )
+
+
+class InstitutionRuralLevel(enum.Enum):
+    URBAIN_DENSITE_INTERMEDIAIRE = "urbain densité intermédiaire"
+    RURAL_SOUS_FORTE_INFLUENCE_D_UN_POLE = "rural sous forte influence d'un pôle"
+    URBAIN_DENSE = "urbain dense"
+    RURAL_SOUS_FAIBLE_INFLUENCE_D_UN_POLE = "rural sous faible influence d'un pôle"
+    RURAL_AUTONOME_TRES_PEU_DENSE = "rural autonome très peu dense"
+    RURAL_AUTONOME_PEU_DENSE = "rural autonome peu dense"

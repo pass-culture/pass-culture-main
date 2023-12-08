@@ -1,6 +1,7 @@
 import pydantic.v1 as pydantic_v1
 
 from pcapi import settings
+import pcapi.core.educational.models as educational_models
 
 from .base import BaseQuery
 
@@ -70,3 +71,25 @@ class LocalOfferersQuery(BaseQuery):
     """
 
     model = LocalOfferersModel
+
+
+class InstitutionRuralLevelModel(pydantic_v1.BaseModel):
+    institution_rural_level: educational_models.InstitutionRuralLevel
+
+    class Config:
+        use_enum_values = True
+
+
+class InstitutionRuralLevelQuery(BaseQuery):
+    raw_query = f"""
+        SELECT
+            institution_rural_level,
+        FROM
+            `{settings.BIG_QUERY_TABLE_BASENAME}.adage_home_playlist_moving_offerers`
+        WHERE
+            institution_id = @institution_id
+        LIMIT
+            1
+    """
+
+    model = InstitutionRuralLevelModel
