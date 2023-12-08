@@ -1,6 +1,8 @@
 import logging
+import random
 import typing
 
+from pcapi import settings
 from pcapi.connectors.big_query.queries import ClassroomPlaylistQuery
 from pcapi.connectors.big_query.queries import LocalOfferersQuery
 from pcapi.connectors.big_query.queries.adage_playlists import NewTemplateOffersPlaylist
@@ -10,7 +12,9 @@ from pcapi.core.educational import models as educational_models
 from pcapi.core.educational import repository
 import pcapi.core.educational.api.favorites as favorites_api
 import pcapi.core.offerers.api as offerers_api
+import pcapi.core.offerers.models as offerers_models
 from pcapi.core.offerers.repository import get_venue_by_id
+from pcapi.models import Model
 from pcapi.models.api_errors import ApiErrors
 from pcapi.routes.adage_iframe import blueprint
 from pcapi.routes.adage_iframe.security import adage_jwt_required
@@ -25,6 +29,12 @@ from pcapi.serialization.decorator import spectree_serialize
 
 
 logger = logging.getLogger(__name__)
+
+
+def get_random_results(cls: type[Model]) -> dict[str, float]:
+    offer_ids = [row[0] for row in cls.query.with_entities(cls.id)]
+    offer_ids = random.choices(offer_ids, k=min(len(offer_ids), 10))
+    return {str(offer_id): random.uniform(1.0, 60.0) for offer_id in offer_ids}
 
 
 @blueprint.adage_iframe.route("/playlists/classroom", methods=["GET"])
@@ -56,6 +66,9 @@ def get_classroom_playlist(
         }
     except queries_base.MalformedRow:
         return serializers.ListCollectiveOffersResponseModel(collectiveOffers=[])
+
+    if (settings.IS_TESTING or settings.IS_DEV) and not rows:
+        rows = get_random_results(educational_models.CollectiveOffer)
 
     offer_ids = typing.cast(set[int], set(rows))
 
@@ -132,6 +145,9 @@ def new_template_offers_playlist(
     except queries_base.MalformedRow:
         return serializers.ListCollectiveOfferTemplateResponseModel(collectiveOffers=[])
 
+    if (settings.IS_TESTING or settings.IS_DEV) and not rows:
+        rows = get_random_results(educational_models.CollectiveOfferTemplate)
+
     offer_ids = typing.cast(set[int], set(rows))
 
     offers = repository.get_collective_offer_template_by_ids(list(offer_ids))
@@ -176,6 +192,9 @@ def get_local_offerers_playlist(
         }
     except queries_base.MalformedRow:
         return playlists_serializers.LocalOfferersPlaylist(venues=[])
+
+    if (settings.IS_TESTING or settings.IS_DEV) and not rows:
+        rows = get_random_results(offerers_models.Venue)
 
     venues = offerers_api.get_venues_by_ids(set(rows))
 
