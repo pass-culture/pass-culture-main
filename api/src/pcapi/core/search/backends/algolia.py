@@ -327,7 +327,10 @@ class AlgoliaBackend(base.SearchBackend):
 
     def check_offer_is_indexed(self, offer: offers_models.Offer) -> bool:
         try:
-            return self.redis_client.hexists(REDIS_HASHMAP_INDEXED_OFFERS_NAME, offer.id)
+            return self.redis_client.hexists(
+                REDIS_HASHMAP_INDEXED_OFFERS_NAME,
+                str(offer.id),
+            )
         except redis.exceptions.RedisError:
             if settings.IS_RUNNING_TESTS:
                 raise
@@ -354,7 +357,7 @@ class AlgoliaBackend(base.SearchBackend):
             offer_ids = [offer.id for offer in offers]
             pipeline = self.redis_client.pipeline(transaction=True)
             for offer_id in offer_ids:
-                pipeline.hset(REDIS_HASHMAP_INDEXED_OFFERS_NAME, offer_id, "")
+                pipeline.hset(REDIS_HASHMAP_INDEXED_OFFERS_NAME, str(offer_id), "")
             pipeline.execute()
         except Exception:  # pylint: disable=broad-except
             logger.exception("Could not add to list of indexed offers", extra={"offers": offer_ids})
@@ -393,7 +396,10 @@ class AlgoliaBackend(base.SearchBackend):
             return
         self.algolia_offers_client.delete_objects(offer_ids)
         try:
-            self.redis_client.hdel(REDIS_HASHMAP_INDEXED_OFFERS_NAME, *offer_ids)
+            self.redis_client.hdel(
+                REDIS_HASHMAP_INDEXED_OFFERS_NAME,
+                *(str(offer_id) for offer_id in offer_ids),
+            )
         except redis.exceptions.RedisError:
             if settings.IS_RUNNING_TESTS:
                 raise
