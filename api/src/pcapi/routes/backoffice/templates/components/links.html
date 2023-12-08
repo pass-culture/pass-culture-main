@@ -23,6 +23,11 @@
      class="link-primary"
      target="_top">{{ offerer[text_attr] }}</a>
 {% endmacro %}
+{% macro build_author_name_to_details_link(user_id, text_attr="name") %}
+  <a href="{{ url_for('backoffice_web.pro_user.get', user_id=user_id) }}"
+     class="link-primary"
+     target="_top">{{ text_attr }}</a>
+{% endmacro %}
 {% macro build_finance_incident_to_details_link(finance_incident, text_attr="id", active_tab='bookings') %}
   <a href="{{ url_for('backoffice_web.finance_incidents.get_incident', finance_incident_id=finance_incident.id, active_tab=active_tab) }}"
      class="link-primary"

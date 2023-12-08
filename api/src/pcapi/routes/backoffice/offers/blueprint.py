@@ -323,7 +323,7 @@ def _get_offers(form: forms.InternalSearchForm) -> list[offers_models.Offer]:
             tags_subquery.label("tags"),
             rules_subquery.label("rules"),
         )
-        .filter(offers_models.Offer.id.in_(_get_offer_ids_query(form).subquery()))
+        .filter(offers_models.Offer.id.in_(_get_offer_ids_query(form)))
         # 1-1 relationships so join will not increase the number of SQL rows
         .join(offers_models.Offer.venue)
         .join(offerers_models.Venue.managingOfferer)
@@ -344,6 +344,11 @@ def _get_offers(form: forms.InternalSearchForm) -> list[offers_models.Offer]:
             .load_only(offerers_models.Venue.id, offerers_models.Venue.name, offerers_models.Venue.departementCode)
             .contains_eager(offerers_models.Venue.managingOfferer)
             .load_only(offerers_models.Offerer.id, offerers_models.Offerer.name),
+            sa.orm.joinedload(offers_models.Offer.author).load_only(
+                users_models.User.id,
+                users_models.User.firstName,
+                users_models.User.lastName,
+            ),
         )
     )
 

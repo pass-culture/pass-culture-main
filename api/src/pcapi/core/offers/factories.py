@@ -56,6 +56,7 @@ class OfferFactory(BaseFactory):
         model = models.Offer
 
     venue = factory.SubFactory(offerers_factories.VenueFactory)
+    author = factory.SubFactory(users_factories.ProFactory)
     subcategoryId = subcategories.SUPPORT_PHYSIQUE_FILM.id
     name = factory.Sequence("Offer {}".format)
     description = factory.Sequence("A passionate description of offer {}".format)

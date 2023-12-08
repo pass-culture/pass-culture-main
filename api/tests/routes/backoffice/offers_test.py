@@ -126,6 +126,7 @@ class ListOffersTest(GetEndpointHelper):
         assert rows[0]["Stock réservé"] == "0"
         assert rows[0]["Stock restant"] == "Illimité"
         assert rows[0]["Tag"] == offers[0].criteria[0].name
+        assert rows[0]["Créateur de l'offre"] == offers[0].author.full_name
         assert rows[0]["Pond."] == ""
         assert rows[0]["État"] == "Validée"
         assert rows[0]["Date de création"] == (datetime.date.today()).strftime("%d/%m/%Y")
@@ -160,6 +161,7 @@ class ListOffersTest(GetEndpointHelper):
         assert rows[0]["Stock réservé"] == "5"
         assert rows[0]["Stock restant"] == "15"
         assert rows[0]["Tag"] == ""
+        assert rows[0]["Créateur de l'offre"] == offers[0].author.full_name
         assert rows[0]["Pond."] == ""
         assert rows[0]["État"] == "Validée"
         assert rows[0]["Date de création"] == (datetime.date.today()).strftime("%d/%m/%Y")
