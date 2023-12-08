@@ -27,7 +27,7 @@ def authenticate(authenticated_information: AuthenticatedInformation) -> Authent
     if authenticated_information.uai is not None:
         institution = find_educational_institution_by_uai_code(authenticated_information.uai)
         department_code = get_educational_institution_department_code(institution) if institution else None
-        institution_full_name = f"{institution.institutionType} {institution.name}".strip() if institution else None
+        institution_full_name = institution.full_name if institution else None
 
         redactor = _get_redactor(authenticated_information)
         preferences = _get_preferences(redactor)
