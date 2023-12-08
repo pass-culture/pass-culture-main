@@ -6,6 +6,7 @@ import { useNavigate, useSearchParams } from 'react-router-dom'
 
 import { api } from 'apiClient/api'
 import { GetStocksResponseModel, StocksOrderedBy } from 'apiClient/v1'
+import ConfirmDialog from 'components/Dialog/ConfirmDialog'
 import DialogBox from 'components/DialogBox'
 import FormLayout from 'components/FormLayout'
 import { OFFER_WIZARD_STEP_IDS } from 'components/IndividualOfferNavigation/constants'
@@ -116,6 +117,14 @@ const StocksEventEdition = ({
   const [initialValues, setInitialValues] = useState<StocksEventFormValues>({
     stocks: [],
   })
+  const [
+    shouldBlockNextPageNavigationFormIsDirty,
+    setShouldBlockNextPageNavigationFormIsDirty,
+  ] = useState(false)
+  const [
+    shouldBlockPreviousPageNavigationFormIsDirty,
+    setShouldBlockPreviousPageNavigationFormIsDirty,
+  ] = useState(false)
 
   // Effects
   const loadStocksFromCurrentFilters = useCallback(
@@ -368,6 +377,11 @@ const StocksEventEdition = ({
   const areFiltersActive = Boolean(
     dateFilter || timeFilter || priceCategoryIdFilter
   )
+
+  function resetPageNavigationBlockers() {
+    setShouldBlockNextPageNavigationFormIsDirty(false)
+    setShouldBlockPreviousPageNavigationFormIsDirty(false)
+  }
 
   if (stocksCount === null) {
     return <Spinner />
@@ -779,8 +793,20 @@ const StocksEventEdition = ({
                   <Pagination
                     currentPage={page}
                     pageCount={pageCount}
-                    onPreviousPageClick={previousPage}
-                    onNextPageClick={nextPage}
+                    onPreviousPageClick={() => {
+                      if (formik.dirty) {
+                        setShouldBlockPreviousPageNavigationFormIsDirty(true)
+                        return
+                      }
+                      previousPage()
+                    }}
+                    onNextPageClick={() => {
+                      if (formik.dirty) {
+                        setShouldBlockNextPageNavigationFormIsDirty(true)
+                        return
+                      }
+                      nextPage()
+                    }}
                   />
 
                   {stockToDeleteWithConfirmation !== null && (
@@ -808,6 +834,24 @@ const StocksEventEdition = ({
       <RouteLeavingGuardIndividualOffer
         when={formik.dirty && !formik.isSubmitting}
       />
+      {(shouldBlockNextPageNavigationFormIsDirty ||
+        shouldBlockPreviousPageNavigationFormIsDirty) && (
+        <ConfirmDialog
+          onCancel={resetPageNavigationBlockers}
+          leftButtonAction={() => {
+            resetPageNavigationBlockers()
+            if (shouldBlockPreviousPageNavigationFormIsDirty) {
+              previousPage()
+            } else {
+              nextPage()
+            }
+          }}
+          onConfirm={resetPageNavigationBlockers}
+          title="Les informations non enregistrées seront perdues"
+          confirmText="Rester sur la page"
+          cancelText="Quitter la page"
+        />
+      )}
     </FormikProvider>
   )
 }
