@@ -7,6 +7,7 @@ import sqlalchemy as sa
 from pcapi.core.educational import models as educational_models
 from pcapi.core.educational.exceptions import MissingRequiredRedactorInformation
 from pcapi.routes.serialization import BaseModel
+from pcapi.serialization.utils import to_camel
 
 from .redactor import RedactorPreferences
 
@@ -41,9 +42,12 @@ class AuthenticatedResponse(BaseModel):
     lon: float | None = None
     favoritesCount: int = 0
     offersCount: int = 0
+    institution_rural_level: educational_models.InstitutionRuralLevel | None = None
 
     class Config:
         use_enum_values = True
+        alias_generator = to_camel
+        allow_population_by_field_name = True
 
 
 class RedactorInformation(BaseModel):

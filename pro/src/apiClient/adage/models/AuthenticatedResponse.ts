@@ -4,6 +4,7 @@
 /* eslint-disable */
 
 import type { AdageFrontRoles } from './AdageFrontRoles';
+import type { InstitutionRuralLevel } from './InstitutionRuralLevel';
 import type { RedactorPreferences } from './RedactorPreferences';
 
 export type AuthenticatedResponse = {
@@ -12,6 +13,7 @@ export type AuthenticatedResponse = {
   favoritesCount?: number;
   institutionCity?: string | null;
   institutionName?: string | null;
+  institutionRuralLevel?: InstitutionRuralLevel | null;
   lat?: number | null;
   lon?: number | null;
   offersCount?: number;
