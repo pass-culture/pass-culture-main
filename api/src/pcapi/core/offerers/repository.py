@@ -9,6 +9,8 @@ import sqlalchemy as sqla
 import sqlalchemy.orm as sqla_orm
 
 import pcapi.core.bookings.repository as bookings_repository
+from pcapi.core.educational.models import CollectiveBooking
+from pcapi.core.educational.models import CollectiveBookingStatus
 from pcapi.core.educational.models import CollectiveOffer
 from pcapi.core.educational.models import CollectiveOfferTemplate
 from pcapi.core.educational.models import CollectiveStock
@@ -718,20 +720,25 @@ def get_number_of_pending_offers_for_offerer(offerer_id: int) -> int:
 
 
 def get_number_of_bookable_collective_offers_for_offerer(offerer_id: int) -> int:
+    filters = sqla.or_(  # type: ignore
+        sqla.and_(  # type: ignore
+            CollectiveBooking.status.in_([CollectiveBookingStatus.PENDING, CollectiveBookingStatus.CONFIRMED]),
+            CollectiveOffer.status == OfferStatus.SOLD_OUT,
+        ),
+        CollectiveOffer.status == OfferStatus.ACTIVE,
+    )
     return (
         CollectiveOffer.query.join(models.Venue)
-        .filter(
-            models.Venue.managingOffererId == offerer_id,
-            CollectiveOffer.isActive,
-            CollectiveOffer.validation == OfferValidationStatus.APPROVED,
-        )
+        .join(CollectiveStock)
+        .join(CollectiveBooking)
+        .filter(models.Venue.managingOffererId == offerer_id, CollectiveOffer.isActive, filters)
         .with_entities(CollectiveOffer.id)
         .union_all(
             CollectiveOfferTemplate.query.join(models.Venue)
             .filter(
                 models.Venue.managingOffererId == offerer_id,
                 CollectiveOfferTemplate.isActive,
-                CollectiveOfferTemplate.validation == OfferValidationStatus.APPROVED,
+                CollectiveOfferTemplate.status == OfferStatus.ACTIVE,
             )
             .with_entities(CollectiveOfferTemplate.id)
         )
@@ -744,7 +751,8 @@ def get_number_of_pending_collective_offers_for_offerer(offerer_id: int) -> int:
     return (
         CollectiveOffer.query.join(models.Venue)
         .filter(
-            models.Venue.managingOffererId == offerer_id, CollectiveOffer.validation == OfferValidationStatus.PENDING
+            models.Venue.managingOffererId == offerer_id,
+            CollectiveOffer.validation == OfferValidationStatus.PENDING,
         )
         .with_entities(CollectiveOffer.id)
         .union_all(

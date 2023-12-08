@@ -3,6 +3,7 @@ from unittest.mock import patch
 import pytest
 
 import pcapi.core.educational.factories as educational_factories
+from pcapi.core.educational.models import CollectiveBookingStatus
 import pcapi.core.offerers.factories as offerers_factories
 import pcapi.core.offers.factories as offers_factories
 import pcapi.core.users.factories as users_factories
@@ -22,15 +23,36 @@ def test_get_offerer_stats(client):
     for _ in range(3):
         offers_factories.StockFactory(offer=offer)
 
-    for _ in range(2):
-        educational_factories.CollectiveOfferFactory(
-            venue__managingOfferer=user_offerer.offerer, validation=OfferValidationStatus.APPROVED
-        )
+    collective_offer = educational_factories.CollectiveOfferFactory(
+        venue__managingOfferer=user_offerer.offerer, validation=OfferValidationStatus.APPROVED
+    )
+    collective_stock = educational_factories.CollectiveStockFactory(collectiveOffer=collective_offer)
+    educational_factories.CollectiveBookingFactory(
+        collectiveStock=collective_stock, status=CollectiveBookingStatus.PENDING
+    )
+
+    collective_offer2 = educational_factories.CollectiveOfferFactory(
+        venue__managingOfferer=user_offerer.offerer, validation=OfferValidationStatus.APPROVED
+    )
+    collective_stock2 = educational_factories.CollectiveStockFactory(collectiveOffer=collective_offer2)
+
+    educational_factories.CollectiveBookingFactory(
+        collectiveStock=collective_stock2, status=CollectiveBookingStatus.CONFIRMED
+    )
+
+    collective_offer3 = educational_factories.CollectiveOfferFactory(
+        venue__managingOfferer=user_offerer.offerer, validation=OfferValidationStatus.APPROVED
+    )
+    collective_stock3 = educational_factories.CollectiveStockFactory(collectiveOffer=collective_offer3)
+    educational_factories.CollectiveBookingFactory(
+        collectiveStock=collective_stock3, status=CollectiveBookingStatus.REIMBURSED
+    )
+
     for _ in range(3):
         offers_factories.OfferFactory(
             venue__managingOfferer=user_offerer.offerer, validation=OfferValidationStatus.PENDING
         )
-    for _ in range(4):
+    for _ in range(2):
         educational_factories.CollectiveOfferFactory(
             venue__managingOfferer=user_offerer.offerer, validation=OfferValidationStatus.PENDING
         )
@@ -51,15 +73,19 @@ def test_get_offerer_stats(client):
         "publishedPublicOffers": 1,
         "publishedEducationalOffers": 3,
         "pendingPublicOffers": 3,
-        "pendingEducationalOffers": 5,
+        "pendingEducationalOffers": 3,
     }
 
 
 def test_get_offerer_stats_with_no_public_offers(client):
     user_offerer = offerers_factories.UserOffererFactory()
     for _ in range(2):
-        educational_factories.CollectiveOfferFactory(
+        collective_offer = educational_factories.CollectiveOfferFactory(
             venue__managingOfferer=user_offerer.offerer, validation=OfferValidationStatus.APPROVED
+        )
+        collective_stock = educational_factories.CollectiveStockFactory(collectiveOffer=collective_offer)
+        educational_factories.CollectiveBookingFactory(
+            collectiveStock=collective_stock, status=CollectiveBookingStatus.PENDING
         )
     for _ in range(2):
         educational_factories.CollectiveOfferFactory(
