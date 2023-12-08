@@ -1,12 +1,10 @@
-import React from 'react'
-
 import { ButtonLink } from 'ui-kit'
 import { ButtonVariant } from 'ui-kit/Button/types'
 import { SvgIcon } from 'ui-kit/SvgIcon/SvgIcon'
 
 import styles from './IconLinkBox.module.scss'
 
-export interface IconLinkBoxProps {
+interface IconLinkBoxProps {
   title: string
   linkTitle: string
   linkUrl: string
