@@ -1,6 +1,6 @@
-from flask import Markup
 from flask import flash
 from flask import url_for
+from markupsafe import Markup
 import requests
 import sqlalchemy as sa
 from werkzeug.utils import redirect
