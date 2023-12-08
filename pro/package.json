@@ -115,7 +115,7 @@
     "typescript": "^5.3.3",
     "vite": "^4.5.1",
     "vite-plugin-html": "^3.2.0",
-    "vite-tsconfig-paths": "^4.2.0",
+    "vite-tsconfig-paths": "^4.2.2",
     "vitest": "^0.34.6",
     "vitest-axe": "^0.1.0",
     "vitest-canvas-mock": "^0.3.3",
