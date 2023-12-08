@@ -27,6 +27,7 @@ class TokenType(enum.Enum):
     SUSPENSION_SUSPICIOUS_LOGIN = "suspension_suspicious_login"
     RESET_PASSWORD = "reset_password"
     ACCOUNT_CREATION = "account_creation"
+    OAUTH_STATE = "oauth_state"
 
 
 T = typing.TypeVar("T", bound="AbstractToken")
@@ -239,7 +240,7 @@ class UUIDToken(AbstractToken):
         payload: dict[str, typing.Any] = {
             "token_type": type_.value,
             "uuid": random_uuid,
-            "data": data,
+            "data": data or {},
         }
         if ttl:
             payload["exp"] = (datetime.utcnow() + ttl).timestamp()
