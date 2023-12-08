@@ -2531,7 +2531,9 @@ class UserRecreditTest:
             ("2005-07-01", datetime.datetime(2021, 5, 1), True),
         ],
     )
-    def test_has_celebrated_birthday_since_registration(self, birth_date, registration_datetime, expected_result):
+    def test_has_celebrated_birthday_since_credit_or_registration(
+        self, birth_date, registration_datetime, expected_result
+    ):
         user = users_factories.BeneficiaryGrant18Factory(
             dateOfBirth=birth_date,
         )
@@ -2543,7 +2545,7 @@ class UserRecreditTest:
             dateCreated=registration_datetime,
             eligibilityType=users_models.EligibilityType.UNDERAGE,
         )
-        assert api._has_celebrated_birthday_since_registration(user) == expected_result
+        assert api._has_celebrated_birthday_since_credit_or_registration(user) == expected_result
 
     def test_can_be_recredited(self):
         with freezegun.freeze_time("2020-05-02"):
