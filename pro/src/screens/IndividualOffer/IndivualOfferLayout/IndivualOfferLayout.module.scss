@@ -18,9 +18,11 @@
 
 .title {
   display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  gap: rem.torem(16px);
 
   .right {
     align-self: baseline;
-    margin-left: auto;
   }
 }
