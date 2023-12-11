@@ -60,10 +60,7 @@ def get_from_cache(
         data = retriever()
         if isinstance(data, pydantic_v1.BaseModel):
             data = data.json(exclude_none=False, by_alias=True)
-        if expire is not None:
-            redis_client.set(key, data.encode("utf-8"), ex=expire)
-        else:
-            redis_client.set(key, data.encode("utf-8"))
+        redis_client.set(key, data.encode("utf-8"), ex=expire)
 
     if return_type is str:
         return data
