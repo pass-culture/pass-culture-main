@@ -4,6 +4,6 @@ from pcapi.sandboxes.scripts.creators.test_cases import save_test_cases_sandbox
 
 
 def save_sandbox() -> None:
-    save_industrial_sandbox()
     save_test_cases_sandbox()
+    save_industrial_sandbox()
     disable_external_bookings()

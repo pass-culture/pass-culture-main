@@ -9,7 +9,19 @@ from pcapi.core.offerers import models as offerers_models
 from pcapi.core.offers import factories as offers_factories
 from pcapi.core.providers import factories as providers_factory
 from pcapi.core.providers.titelive_gtl import GTLS
+from pcapi.sandboxes.scripts.creators.industrial.create_industrial_gdpr_users import create_industrial_gdpr_users
+from pcapi.sandboxes.scripts.creators.industrial.create_industrial_invoices import (
+    create_specific_cashflow_batch_without_invoice,
+)
+from pcapi.sandboxes.scripts.creators.industrial.create_industrial_invoices import create_specific_invoice
+from pcapi.sandboxes.scripts.creators.industrial.create_industrial_offer_validation_rules import *
+from pcapi.sandboxes.scripts.creators.industrial.create_industrial_offerer_tags import create_industrial_offerer_tags
+from pcapi.sandboxes.scripts.creators.industrial.create_industrial_offerer_with_custom_reimbursement_rule import (
+    create_industrial_offerer_with_custom_reimbursement_rule,
+)
+from pcapi.sandboxes.scripts.creators.industrial.create_role_permissions import create_roles_with_permissions
 from pcapi.sandboxes.scripts.creators.test_cases import venues_mock
+from pcapi.scripts.venue.venue_label.create_venue_labels import create_venue_labels
 
 
 Fake = faker.Faker(locale="fr_FR")
@@ -21,6 +33,13 @@ def save_test_cases_sandbox() -> None:
     create_venues_across_cities()
     create_offers_for_each_subcategory()
     create_offers_with_same_author()
+    create_roles_with_permissions()
+    create_industrial_offer_validation_rules()
+    create_industrial_gdpr_users()
+    create_industrial_offerer_with_custom_reimbursement_rule()
+    create_specific_invoice()
+    create_specific_cashflow_batch_without_invoice()
+    create_venue_labels(sandbox=True)
 
 
 def create_offers_with_gtls() -> None:
