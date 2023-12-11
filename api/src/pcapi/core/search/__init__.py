@@ -258,28 +258,6 @@ def index_offers_in_queue(stop_only_when_empty: bool = False, from_error_queue: 
             break
 
 
-<<<<<<< HEAD
-=======
-def index_collective_offers_in_queue(from_error_queue: bool = False) -> None:
-    """Pop collective offers from indexation queue and reindex them."""
-    backend = _get_backend()
-    try:
-        chunk_size = settings.REDIS_COLLECTIVE_OFFER_IDS_CHUNK_SIZE
-        with backend.pop_collective_offer_ids_from_queue(
-            count=chunk_size,
-            from_error_queue=from_error_queue,
-        ) as collective_offer_ids:
-            if not collective_offer_ids:
-                return
-            _reindex_collective_offer_ids(backend, collective_offer_ids, from_error_queue)
-
-    except Exception as exc:  # pylint: disable=broad-except
-        if settings.ALGOLIA_RAISE_WHILE_INDEXING:
-            raise
-        logger.exception("Could not index collective offers from queue", extra={"exc": str(exc)})
-
-
->>>>>>> ea67c5b29a ((PC-26116)[API] refactor: add env var to raise exceptions while (un)indexing)
 def index_all_collective_offers_and_templates() -> None:
     """Force reindexation of all collective offers and templates."""
     backend = _get_backend()
@@ -586,7 +564,7 @@ def unindex_offer_ids(offer_ids: Iterable[int]) -> None:
 
 
 def unindex_all_offers() -> None:
-    if settings.IS_PROD:
+    if not settings.ALGOLIA_ENABLE_UNINDEXING_ALL:
         raise ValueError("It is forbidden to unindex all offers on this environment")
     backend = _get_backend()
     try:
@@ -646,8 +624,9 @@ def unindex_venue_ids(venue_ids: Iterable[int]) -> None:
 
 
 def unindex_all_collective_offer_templates() -> None:
-    if settings.IS_PROD:
+    if not settings.ALGOLIA_ENABLE_UNINDEXING_ALL:
         raise ValueError("It is forbidden to unindex all collective offer templates on this environment")
+
     backend = _get_backend()
     try:
         backend.unindex_all_collective_offer_templates()
@@ -657,26 +636,6 @@ def unindex_all_collective_offer_templates() -> None:
         logger.exception("Could not unindex all offers")
 
 
-<<<<<<< HEAD
-=======
-def unindex_all_collective_offer_templates() -> None:
-    # this is a no-op while collective and templates are in the same index
-    pass
-
-
-def unindex_collective_offer_ids(collective_offer_ids: Iterable[int]) -> None:
-    if not collective_offer_ids:
-        return
-    backend = _get_backend()
-    try:
-        backend.unindex_collective_offer_ids(collective_offer_ids)
-    except Exception:  # pylint: disable=broad-except
-        if settings.ALGOLIA_RAISE_WHILE_INDEXING:
-            raise
-        logger.exception("Could not unindex collective offers", extra={"collective_offers": collective_offer_ids})
-
-
->>>>>>> ea67c5b29a ((PC-26116)[API] refactor: add env var to raise exceptions while (un)indexing)
 def unindex_collective_offer_template_ids(collective_offer_template_ids: Iterable[int]) -> None:
     if not collective_offer_template_ids:
         return
@@ -693,7 +652,7 @@ def unindex_collective_offer_template_ids(collective_offer_template_ids: Iterabl
 
 
 def unindex_all_venues() -> None:
-    if settings.IS_PROD:
+    if not settings.ALGOLIA_ENABLE_UNINDEXING_ALL:
         raise ValueError("It is forbidden to unindex all venues on this environment")
     backend = _get_backend()
     try:
