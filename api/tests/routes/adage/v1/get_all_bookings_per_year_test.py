@@ -13,7 +13,7 @@ class Returns200Test:
         educationalYear = EducationalYearFactory()
         educationalInstitution = EducationalInstitutionFactory()
         other_educational_institution = EducationalInstitutionFactory(institutionId="institutionId")
-        other_educational_year = EducationalYearFactory(adageId="adageId")
+        EducationalYearFactory(adageId="adageId")
         booking1 = CollectiveBookingFactory(
             educationalYear=educationalYear,
             educationalInstitution=educationalInstitution,
@@ -24,7 +24,11 @@ class Returns200Test:
             educationalInstitution=other_educational_institution,
             status="PENDING",
         )
-        CollectiveBookingFactory(educationalYear=other_educational_year)
+        booking3 = CollectiveBookingFactory(
+            educationalYear=educationalYear,
+            educationalInstitution=other_educational_institution,
+            status="PENDING",
+        )
 
         client = client.with_eac_token()
         adage_id = booking1.educationalYear.adageId
@@ -61,6 +65,19 @@ class Returns200Test:
                     "redactorEmail": booking2.educationalRedactor.email,
                     "domainIds": [domain.id for domain in booking2.collectiveStock.collectiveOffer.domains],
                     "domainLabels": [domain.name for domain in booking2.collectiveStock.collectiveOffer.domains],
+                },
+                {
+                    "id": booking3.id,
+                    "UAICode": other_educational_institution.institutionId,
+                    "status": "PENDING",
+                    "confirmationLimitDate": format_into_utc_date(booking3.confirmationLimitDate),
+                    "totalAmount": booking3.collectiveStock.price,
+                    "beginningDatetime": format_into_utc_date(booking3.collectiveStock.beginningDatetime),
+                    "venueTimezone": booking3.collectiveStock.collectiveOffer.venue.timezone,
+                    "name": booking3.collectiveStock.collectiveOffer.name,
+                    "redactorEmail": booking3.educationalRedactor.email,
+                    "domainIds": [domain.id for domain in booking3.collectiveStock.collectiveOffer.domains],
+                    "domainLabels": [domain.name for domain in booking3.collectiveStock.collectiveOffer.domains],
                 },
             ],
         }
