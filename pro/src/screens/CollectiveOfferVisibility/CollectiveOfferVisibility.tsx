@@ -6,7 +6,6 @@ import {
   EducationalRedactor,
   GetCollectiveOfferRequestResponseModel,
 } from 'apiClient/v1'
-import { AppLayout } from 'app/AppLayout'
 import ActionsBarSticky from 'components/ActionsBarSticky'
 import BannerPublicApi from 'components/Banner/BannerPublicApi'
 import FormLayout from 'components/FormLayout'
@@ -231,7 +230,7 @@ const CollectiveOfferVisibility = ({
   }
 
   return (
-    <AppLayout>
+    <>
       <FormLayout.MandatoryInfo />
 
       <OfferEducationalActions
@@ -339,7 +338,7 @@ const CollectiveOfferVisibility = ({
           </FormLayout>
         </form>
       </FormikProvider>
-    </AppLayout>
+    </>
   )
 }
 

@@ -1,6 +1,7 @@
 import React from 'react'
 import { useNavigate } from 'react-router-dom'
 
+import { AppLayout } from 'app/AppLayout'
 import CollectiveOfferLayout from 'components/CollectiveOfferLayout'
 import {
   Mode,
@@ -67,21 +68,23 @@ const CollectiveOfferVisibility = ({
   }
 
   return (
-    <CollectiveOfferLayout subTitle={offer.name} isTemplate={isTemplate}>
-      <CollectiveOfferVisibilityScreen
-        mode={offer.isVisibilityEditable ? Mode.EDITION : Mode.READ_ONLY}
-        patchInstitution={patchEducationalInstitutionAdapter}
-        initialValues={extractInitialVisibilityValues(
-          offer.institution,
-          offer.teacher
-        )}
-        onSuccess={onSuccess}
-        institutions={institutionsPayload.institutions}
-        isLoadingInstitutions={isLoading}
-        offer={offer}
-        reloadCollectiveOffer={reloadCollectiveOffer}
-      />
-    </CollectiveOfferLayout>
+    <AppLayout>
+      <CollectiveOfferLayout subTitle={offer.name} isTemplate={isTemplate}>
+        <CollectiveOfferVisibilityScreen
+          mode={offer.isVisibilityEditable ? Mode.EDITION : Mode.READ_ONLY}
+          patchInstitution={patchEducationalInstitutionAdapter}
+          initialValues={extractInitialVisibilityValues(
+            offer.institution,
+            offer.teacher
+          )}
+          onSuccess={onSuccess}
+          institutions={institutionsPayload.institutions}
+          isLoadingInstitutions={isLoading}
+          offer={offer}
+          reloadCollectiveOffer={reloadCollectiveOffer}
+        />
+      </CollectiveOfferLayout>
+    </AppLayout>
   )
 }
 
