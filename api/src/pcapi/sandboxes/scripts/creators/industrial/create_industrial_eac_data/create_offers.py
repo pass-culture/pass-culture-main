@@ -501,3 +501,7 @@ def create_national_programs() -> list[educational_models.NationalProgram]:
 def reset_offer_id_seq() -> None:
     db.session.execute("ALTER SEQUENCE collective_offer_id_seq RESTART WITH 1")
     db.session.execute("ALTER SEQUENCE collective_offer_template_id_seq RESTART WITH 1")
+    db.session.execute("ALTER SEQUENCE offer RESTART WITH 1")
+    db.session.execute("ALTER SEQUENCE venue RESTART WITH 1")
+    db.session.execute("ALTER SEQUENCE offerer RESTART WITH 1")
+    db.session.execute('ALTER SEQUENCE "user" RESTART WITH 1')
