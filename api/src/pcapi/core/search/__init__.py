@@ -131,7 +131,7 @@ def async_index_offer_ids(
     try:
         backend.enqueue_offer_ids(offer_ids)
     except Exception:  # pylint: disable=broad-except
-        if settings.IS_RUNNING_TESTS:
+        if settings.ALGOLIA_RAISE_WHILE_INDEXING:
             raise
         logger.exception("Could not enqueue offer ids to index", extra={"offers": offer_ids})
 
@@ -152,7 +152,7 @@ def async_index_collective_offer_template_ids(
     try:
         backend.enqueue_collective_offer_template_ids(collective_offer_template_ids)
     except Exception:  # pylint: disable=broad-except
-        if settings.IS_RUNNING_TESTS:
+        if settings.ALGOLIA_RAISE_WHILE_INDEXING:
             raise
         logger.exception(
             "Could not enqueue collective offer template ids to index",
@@ -178,7 +178,7 @@ def async_index_venue_ids(
     try:
         backend.enqueue_venue_ids(venue_ids)
     except Exception:  # pylint: disable=broad-except
-        if settings.IS_RUNNING_TESTS:
+        if settings.ALGOLIA_RAISE_WHILE_INDEXING:
             raise
         logger.exception("Could not enqueue venue ids to index", extra={"venues": venue_ids})
 
@@ -199,7 +199,7 @@ def async_index_offers_of_venue_ids(
     try:
         backend.enqueue_venue_ids_for_offers(venue_ids)
     except Exception:  # pylint: disable=broad-except
-        if settings.IS_RUNNING_TESTS:
+        if settings.ALGOLIA_RAISE_WHILE_INDEXING:
             raise
         logger.exception(
             "Could not enqueue venue ids to index their offers",
@@ -241,7 +241,7 @@ def index_offers_in_queue(stop_only_when_empty: bool = False, from_error_queue: 
             try:
                 reindex_offer_ids(offer_ids, from_error_queue=from_error_queue)
             except Exception as exc:  # pylint: disable=broad-except
-                if settings.IS_RUNNING_TESTS:
+                if settings.ALGOLIA_RAISE_WHILE_INDEXING:
                     raise
                 logger.exception(
                     "Exception while reindexing offers, must fix manually",
@@ -258,6 +258,28 @@ def index_offers_in_queue(stop_only_when_empty: bool = False, from_error_queue: 
             break
 
 
+<<<<<<< HEAD
+=======
+def index_collective_offers_in_queue(from_error_queue: bool = False) -> None:
+    """Pop collective offers from indexation queue and reindex them."""
+    backend = _get_backend()
+    try:
+        chunk_size = settings.REDIS_COLLECTIVE_OFFER_IDS_CHUNK_SIZE
+        with backend.pop_collective_offer_ids_from_queue(
+            count=chunk_size,
+            from_error_queue=from_error_queue,
+        ) as collective_offer_ids:
+            if not collective_offer_ids:
+                return
+            _reindex_collective_offer_ids(backend, collective_offer_ids, from_error_queue)
+
+    except Exception as exc:  # pylint: disable=broad-except
+        if settings.ALGOLIA_RAISE_WHILE_INDEXING:
+            raise
+        logger.exception("Could not index collective offers from queue", extra={"exc": str(exc)})
+
+
+>>>>>>> ea67c5b29a ((PC-26116)[API] refactor: add env var to raise exceptions while (un)indexing)
 def index_all_collective_offers_and_templates() -> None:
     """Force reindexation of all collective offers and templates."""
     backend = _get_backend()
@@ -286,7 +308,7 @@ def index_collective_offers_templates_in_queue(from_error_queue: bool = False) -
             _reindex_collective_offer_template_ids(backend, collective_offer_template_ids, from_error_queue)
 
     except Exception as exc:  # pylint: disable=broad-except
-        if settings.IS_RUNNING_TESTS:
+        if settings.ALGOLIA_RAISE_WHILE_INDEXING:
             raise
         logger.exception("Could not index collective offers template from queue", extra={"exc": str(exc)})
 
@@ -305,7 +327,7 @@ def index_venues_in_queue(from_error_queue: bool = False) -> None:
             _reindex_venue_ids(backend, venue_ids, from_error_queue)
 
     except Exception as exc:  # pylint: disable=broad-except
-        if settings.IS_RUNNING_TESTS:
+        if settings.ALGOLIA_RAISE_WHILE_INDEXING:
             raise
         logger.exception("Could not index venues from queue", extra={"exc": str(exc)})
 
@@ -419,7 +441,7 @@ def index_offers_of_venues_in_queue() -> None:
                     page += 1
                 logger.info("Finished indexing offers of venue", extra={"venue": venue_id})
     except Exception:  # pylint: disable=broad-except
-        if settings.IS_RUNNING_TESTS:
+        if settings.ALGOLIA_RAISE_WHILE_INDEXING:
             raise
         logger.exception("Could not index offers of venues from queue")
 
@@ -522,7 +544,7 @@ def reindex_offer_ids(offer_ids: Iterable[int], from_error_queue: bool = False) 
     try:
         backend.index_offers(to_add, last_x_days_bookings_count_by_offer)
     except Exception as exc:  # pylint: disable=broad-except
-        if settings.IS_RUNNING_TESTS:
+        if settings.ALGOLIA_RAISE_WHILE_INDEXING:
             raise
         _log_indexation_error(
             "offers",
@@ -536,7 +558,7 @@ def reindex_offer_ids(offer_ids: Iterable[int], from_error_queue: bool = False) 
     try:
         backend.unindex_offer_ids(to_delete_ids)
     except Exception as exc:  # pylint: disable=broad-except
-        if settings.IS_RUNNING_TESTS:
+        if settings.ALGOLIA_RAISE_WHILE_INDEXING:
             raise
         _log_indexation_error(
             "offers",
@@ -555,7 +577,7 @@ def unindex_offer_ids(offer_ids: Iterable[int]) -> None:
     try:
         backend.unindex_offer_ids(offer_ids)
     except Exception:  # pylint: disable=broad-except
-        if settings.IS_RUNNING_TESTS:
+        if settings.ALGOLIA_RAISE_WHILE_INDEXING:
             raise
         logger.exception("Could not unindex offers", extra={"offers": offer_ids})
 
@@ -570,7 +592,7 @@ def unindex_all_offers() -> None:
     try:
         backend.unindex_all_offers()
     except Exception:  # pylint: disable=broad-except
-        if settings.IS_RUNNING_TESTS:
+        if settings.ALGOLIA_RAISE_WHILE_INDEXING:
             raise
         logger.exception("Could not unindex all offers")
 
@@ -606,7 +628,7 @@ def reindex_venue_ids(venue_ids: Collection[int]) -> None:
     try:
         _reindex_venue_ids(backend, venue_ids, from_error_queue=False)
     except Exception:  # pylint: disable=broad-except
-        if settings.IS_RUNNING_TESTS:
+        if settings.ALGOLIA_RAISE_WHILE_INDEXING:
             raise
         logger.exception("Could not reindex venues", extra={"venues": venue_ids})
 
@@ -618,7 +640,7 @@ def unindex_venue_ids(venue_ids: Iterable[int]) -> None:
     try:
         backend.unindex_venue_ids(venue_ids)
     except Exception:  # pylint: disable=broad-except
-        if settings.IS_RUNNING_TESTS:
+        if settings.ALGOLIA_RAISE_WHILE_INDEXING:
             raise
         logger.exception("Could not unindex venues", extra={"venues": venue_ids})
 
@@ -630,11 +652,31 @@ def unindex_all_collective_offer_templates() -> None:
     try:
         backend.unindex_all_collective_offer_templates()
     except Exception:  # pylint: disable=broad-except
-        if settings.IS_RUNNING_TESTS:
+        if settings.ALGOLIA_RAISE_WHILE_INDEXING:
             raise
         logger.exception("Could not unindex all offers")
 
 
+<<<<<<< HEAD
+=======
+def unindex_all_collective_offer_templates() -> None:
+    # this is a no-op while collective and templates are in the same index
+    pass
+
+
+def unindex_collective_offer_ids(collective_offer_ids: Iterable[int]) -> None:
+    if not collective_offer_ids:
+        return
+    backend = _get_backend()
+    try:
+        backend.unindex_collective_offer_ids(collective_offer_ids)
+    except Exception:  # pylint: disable=broad-except
+        if settings.ALGOLIA_RAISE_WHILE_INDEXING:
+            raise
+        logger.exception("Could not unindex collective offers", extra={"collective_offers": collective_offer_ids})
+
+
+>>>>>>> ea67c5b29a ((PC-26116)[API] refactor: add env var to raise exceptions while (un)indexing)
 def unindex_collective_offer_template_ids(collective_offer_template_ids: Iterable[int]) -> None:
     if not collective_offer_template_ids:
         return
@@ -642,7 +684,7 @@ def unindex_collective_offer_template_ids(collective_offer_template_ids: Iterabl
     try:
         backend.unindex_collective_offer_template_ids(collective_offer_template_ids)
     except Exception:  # pylint: disable=broad-except
-        if settings.IS_RUNNING_TESTS:
+        if settings.ALGOLIA_RAISE_WHILE_INDEXING:
             raise
         logger.exception(
             "Could not unindex collective offer templates",
@@ -657,7 +699,7 @@ def unindex_all_venues() -> None:
     try:
         backend.unindex_all_venues()
     except Exception:  # pylint: disable=broad-except
-        if settings.IS_RUNNING_TESTS:
+        if settings.ALGOLIA_RAISE_WHILE_INDEXING:
             raise
         logger.exception("Could not unindex all venues")
 
