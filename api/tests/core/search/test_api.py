@@ -153,7 +153,7 @@ class ReindexOfferIdsTest:
         offer = make_bookable_offer()
         assert search_testing.search_store["offers"] == {}
 
-        with override_settings(IS_RUNNING_TESTS=False):  # as on prod: don't catch errors
+        with override_settings(ENABLE_INDEXING_EXCEPTIONS=False):  # as on prod: don't catch errors
             search.reindex_offer_ids([offer.id])
 
         assert offer.id not in search_testing.search_store["offers"]
@@ -165,7 +165,7 @@ class ReindexOfferIdsTest:
         offer = make_unbookable_offer()
         search_testing.search_store["offers"][offer.id] = "dummy"
         app.redis_client.hset(algolia.REDIS_HASHMAP_INDEXED_OFFERS_NAME, offer.id, "")
-        with override_settings(IS_RUNNING_TESTS=False):  # as on prod: don't catch errors
+        with override_settings(ENABLE_INDEXING_EXCEPTIONS=False):  # as on prod: don't catch errors
             search.reindex_offer_ids([offer.id])
 
         assert offer.id in search_testing.search_store["offers"]

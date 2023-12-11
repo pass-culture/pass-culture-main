@@ -44,7 +44,7 @@ class SubscribeOrUnsubscribeUserTestHelper:
         data = {"email": "lucy.ellingson@kennet.ca"}
 
         # When
-        with override_settings(IS_DEV=False):  # enforce source IP check
+        with override_settings(SENDINBLUE_LOCAL=False):  # enforce source IP check
             response = client.post(self.endpoint, json=data, headers=headers)
 
         # Then
