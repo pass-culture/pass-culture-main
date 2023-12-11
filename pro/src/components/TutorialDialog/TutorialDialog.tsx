@@ -7,7 +7,7 @@ import { TUTO_DIALOG_LABEL_ID, Tutorial } from 'components/Tutorial'
 import { Events } from 'core/FirebaseEvents/constants'
 import useAnalytics from 'hooks/useAnalytics'
 import useCurrentUser from 'hooks/useCurrentUser'
-import { setCurrentUser } from 'store/user/actions'
+import { updateUser } from 'store/user/reducer'
 
 import styles from './TutorialDialog.module.scss'
 
@@ -24,7 +24,7 @@ const TutorialDialog = (): JSX.Element => {
     api
       .patchUserTutoSeen()
       .then(() => {
-        dispatch(setCurrentUser({ ...currentUser, hasSeenProTutorials: true }))
+        dispatch(updateUser({ ...currentUser, hasSeenProTutorials: true }))
       })
       .finally(() => setAreTutoDisplayed(false))
   }, [currentUser, logEvent])
