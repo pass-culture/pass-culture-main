@@ -15,7 +15,6 @@ from pcapi.sandboxes.scripts.creators.industrial.create_industrial_event_occurre
 from pcapi.sandboxes.scripts.creators.industrial.create_industrial_event_offers import *
 from pcapi.sandboxes.scripts.creators.industrial.create_industrial_event_products import *
 from pcapi.sandboxes.scripts.creators.industrial.create_industrial_event_stocks import *
-from pcapi.sandboxes.scripts.creators.industrial.create_industrial_gdpr_users import create_industrial_gdpr_users
 from pcapi.sandboxes.scripts.creators.industrial.create_industrial_incidents import create_industrial_incidents
 from pcapi.sandboxes.scripts.creators.industrial.create_industrial_individual_offerers import (
     create_industrial_individual_offerers,
@@ -64,8 +63,6 @@ from pcapi.sandboxes.scripts.creators.industrial.create_offers_with_price_catego
     create_offers_with_price_categories,
 )
 from pcapi.sandboxes.scripts.creators.industrial.create_offers_with_status import create_offers_with_status
-from pcapi.sandboxes.scripts.creators.industrial.create_role_permissions import create_roles_with_permissions
-from pcapi.scripts.venue.venue_label.create_venue_labels import create_venue_labels
 
 
 def save_industrial_sandbox() -> None:
@@ -111,8 +108,6 @@ def save_industrial_sandbox() -> None:
 
     create_industrial_bookings(offers_by_name, users_by_name)
 
-    create_venue_labels(sandbox=True)
-
     create_eac_data()
 
     # Now that they booked, we can expire these users' deposit.
@@ -124,10 +119,6 @@ def save_industrial_sandbox() -> None:
 
     create_industrial_invoices()
 
-    create_specific_invoice()
-
-    create_specific_cashflow_batch_without_invoice()
-
     create_industrial_pro_users_api_keys(offerers_by_name)
 
     create_industrial_activation_offers()
@@ -135,8 +126,6 @@ def save_industrial_sandbox() -> None:
     create_industrial_search_indexed_objects()
 
     create_industrial_provider_external_bookings()
-
-    create_roles_with_permissions()
 
     create_industrial_offerer_tags()
 
@@ -148,13 +137,9 @@ def save_industrial_sandbox() -> None:
 
     create_offers_with_price_categories()
 
-    create_industrial_offerer_with_custom_reimbursement_rule()
-
     create_offerer_providers_for_apis()
 
     create_offers_with_ean()
-
-    create_industrial_offer_validation_rules()
 
     create_industrial_incidents()
 
@@ -163,5 +148,3 @@ def save_industrial_sandbox() -> None:
     create_industrial_bank_accounts()
 
     create_industrial_venues_with_timezone()
-
-    create_industrial_gdpr_users()

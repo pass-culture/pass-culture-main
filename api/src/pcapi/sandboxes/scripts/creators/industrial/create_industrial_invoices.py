@@ -35,7 +35,7 @@ def create_specific_invoice() -> None:
     pro = users_factories.ProFactory(email="pctest.pro.justificatif.copieux@example.com")
     offerers_factories.UserOffererFactory(offerer=offerer, user=pro)
     venue = offerers_factories.VenueFactory(
-        name="0 - Lieu avec justificatif copieux",
+        name="Lieu avec justificatif copieux",
         managingOfferer=offerer,
         pricing_point="self",
         reimbursement_point="self",
@@ -49,15 +49,19 @@ def create_specific_invoice() -> None:
     bank_info.venue = venue
     db.session.add(bank_info)
     db.session.commit()
-    thing_offer1 = offers_factories.ThingOfferFactory(venue=venue)
-    thing_offer2 = offers_factories.ThingOfferFactory(venue=venue)
-    book_offer1 = offers_factories.OfferFactory(venue=venue, subcategoryId=subcategories.LIVRE_PAPIER.id)
-    book_offer2 = offers_factories.OfferFactory(venue=venue, subcategoryId=subcategories.LIVRE_PAPIER.id)
-    digital_offer1 = offers_factories.DigitalOfferFactory(venue=virtual_venue)
-    digital_offer2 = offers_factories.DigitalOfferFactory(venue=virtual_venue)
-    custom_rule_offer1 = offers_factories.ThingOfferFactory(venue=venue)
+    thing_offer1 = offers_factories.ThingOfferFactory(name="Specific invoice offer 1", venue=venue)
+    thing_offer2 = offers_factories.ThingOfferFactory(name="Specific invoice offer 2", venue=venue)
+    book_offer1 = offers_factories.OfferFactory(
+        name="Specific invoice book 1", venue=venue, subcategoryId=subcategories.LIVRE_PAPIER.id
+    )
+    book_offer2 = offers_factories.OfferFactory(
+        name="Specific invoice book 2", venue=venue, subcategoryId=subcategories.LIVRE_PAPIER.id
+    )
+    digital_offer1 = offers_factories.DigitalOfferFactory(name="Specific invoice digital offer 1", venue=virtual_venue)
+    digital_offer2 = offers_factories.DigitalOfferFactory(name="Specific invoice digital offer 2", venue=virtual_venue)
+    custom_rule_offer1 = offers_factories.ThingOfferFactory(name="Specific invoice custom rule offer 1", venue=venue)
     finance_factories.CustomReimbursementRuleFactory(rate=0.94, offer=custom_rule_offer1)
-    custom_rule_offer2 = offers_factories.ThingOfferFactory(venue=venue)
+    custom_rule_offer2 = offers_factories.ThingOfferFactory(name="Specific invoice custom rule offer 1", venue=venue)
     finance_factories.CustomReimbursementRuleFactory(amount=2200, offer=custom_rule_offer2)
 
     stocks = [
@@ -161,7 +165,7 @@ def create_specific_cashflow_batch_without_invoice() -> None:
     pro = users_factories.ProFactory(email="pctest.pro.justificatif.copie@example.com")
     offerers_factories.UserOffererFactory(offerer=offerer, user=pro)
     venue = offerers_factories.VenueFactory(
-        name="0 - Lieu avec justificatif",
+        name="Lieu avec justificatif copié",
         managingOfferer=offerer,
         pricing_point="self",
         reimbursement_point="self",
@@ -175,16 +179,20 @@ def create_specific_cashflow_batch_without_invoice() -> None:
     bank_info.venue = venue
     db.session.add(bank_info)
     db.session.commit()
-    thing_offer1 = offers_factories.ThingOfferFactory(venue=venue)
-    thing_offer2 = offers_factories.ThingOfferFactory(venue=venue)
-    book_offer1 = offers_factories.OfferFactory(venue=venue, subcategoryId=subcategories.LIVRE_PAPIER.id)
-    book_offer2 = offers_factories.OfferFactory(venue=venue, subcategoryId=subcategories.LIVRE_PAPIER.id)
-    digital_offer1 = offers_factories.DigitalOfferFactory(venue=virtual_venue)
-    digital_offer2 = offers_factories.DigitalOfferFactory(venue=virtual_venue)
-    custom_rule_offer1 = offers_factories.ThingOfferFactory(venue=venue)
+    thing_offer1 = offers_factories.ThingOfferFactory(name="Specific invoice offer 1", venue=venue)
+    thing_offer2 = offers_factories.ThingOfferFactory(name="Specific invoice offer 2", venue=venue)
+    book_offer1 = offers_factories.OfferFactory(
+        name="Specific invoice book 1", venue=venue, subcategoryId=subcategories.LIVRE_PAPIER.id
+    )
+    book_offer2 = offers_factories.OfferFactory(
+        name="Specific invoice book 2", venue=venue, subcategoryId=subcategories.LIVRE_PAPIER.id
+    )
+    digital_offer1 = offers_factories.DigitalOfferFactory(name="Specific invoice digital offer 1", venue=virtual_venue)
+    digital_offer2 = offers_factories.DigitalOfferFactory(name="Specific invoice digital offer 2", venue=virtual_venue)
+    custom_rule_offer1 = offers_factories.ThingOfferFactory(name="Specific invoice custom rule offer 1", venue=venue)
     finance_factories.CustomReimbursementRuleFactory(rate=0.94, offer=custom_rule_offer1)
-    custom_rule_offer2 = offers_factories.ThingOfferFactory(venue=venue)
-    finance_factories.CustomReimbursementRuleFactory(amount=22, offer=custom_rule_offer2)
+    custom_rule_offer2 = offers_factories.ThingOfferFactory(name="Specific invoice custom rule offer 1", venue=venue)
+    finance_factories.CustomReimbursementRuleFactory(amount=2200, offer=custom_rule_offer2)
 
     stocks = [
         offers_factories.StockFactory(offer=thing_offer1, price=30),
