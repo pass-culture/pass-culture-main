@@ -8,8 +8,7 @@ from flask import current_app
 from rq.job import get_current_job
 from rq.queue import Queue
 
-from pcapi.settings import IS_DEV
-from pcapi.settings import IS_RUNNING_TESTS
+from pcapi.settings import IS_JOB_ASYNC
 from pcapi.workers.logger import job_extra_description
 
 
@@ -21,9 +20,9 @@ def job(queue: Queue) -> typing.Callable:
         @wraps(func)
         def job_func(*args: typing.Any, **kwargs: typing.Any) -> None:
             current_job = get_current_job()
-            if not current_job or IS_RUNNING_TESTS or IS_DEV:
+            if not current_job or not IS_JOB_ASYNC:
                 # in synchronous calls (as wall in TESTS because queued jobs are executed synchronously)
-                # we don't won't to create another session
+                # we don't want to create another session
                 func(*args, **kwargs)
                 return
 
