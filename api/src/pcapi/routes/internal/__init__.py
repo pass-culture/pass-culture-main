@@ -11,5 +11,5 @@ def install_routes(app: Flask) -> None:
         from . import e2e_ubble
     if settings.IS_DEV:
         from . import storage
-    if settings.ENABLE_TEST_ROUTES:
+    if settings.ENABLE_TEST_ROUTES and settings.ENABLE_FEATURE_FLAG_PATCHING:
         from . import testing
