@@ -30,6 +30,7 @@ services:
       - GUNICORN_THREADS=2
       - GUNICORN_TIMEOUT=10
       - GUNICORN_LOG_LEVEL=info
+      - IS_E2E_TESTS=1
     networks:
       - db_nw
     depends_on:
