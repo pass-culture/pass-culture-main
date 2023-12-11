@@ -307,6 +307,12 @@ def get_paginated_collective_bookings_for_educational_year(
                 educational_models.CollectiveBooking.collectiveStockId,
                 educational_models.CollectiveBooking.status,
                 educational_models.CollectiveBooking.confirmationLimitDate,
+                educational_models.CollectiveBooking.dateCreated,
+                educational_models.CollectiveBooking.dateUsed,
+                educational_models.CollectiveBooking.offererId,
+                educational_models.CollectiveBooking.cancellationDate,
+                educational_models.CollectiveBooking.cancellationLimitDate,
+                educational_models.CollectiveBooking.cancellationReason,
             )
             .joinedload(educational_models.CollectiveBooking.collectiveStock, innerjoin=True)
             .load_only(
@@ -317,7 +323,7 @@ def get_paginated_collective_bookings_for_educational_year(
             .joinedload(educational_models.CollectiveStock.collectiveOffer, innerjoin=True)
             .load_only(educational_models.CollectiveOffer.name)
             .joinedload(educational_models.CollectiveOffer.venue, innerjoin=True)
-            .load_only(offerers_models.Venue.timezone)
+            .load_only(offerers_models.Venue.timezone, offerers_models.Venue.id)
         )
         .options(
             sa.orm.joinedload(educational_models.CollectiveBooking.collectiveStock, innerjoin=True)
