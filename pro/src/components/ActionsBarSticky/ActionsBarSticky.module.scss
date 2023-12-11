@@ -16,7 +16,8 @@
   border-top: 1px solid colors.$grey-medium;
 
   .actions-bar-content {
-    width: rem.torem(size.$main-content-width);
+    width: 100%;
+    max-width: rem.torem(size.$main-content-width);
     margin: 0 auto;
     align-items: center;
     display: flex;
@@ -27,11 +28,7 @@
       display: flex;
       align-items: center;
       margin: 1rem;
-
-      button,
-      a {
-        margin-right: rem.torem(16px);
-      }
+      gap: rem.torem(16px);
     }
 
     .right {
@@ -39,12 +36,7 @@
       align-items: center;
       flex-wrap: wrap;
       justify-content: center;
-      gap: rem.torem(10px);
-
-      button,
-      a {
-        margin-left: rem.torem(16px);
-      }
+      gap: rem.torem(16px);
     }
   }
 }
