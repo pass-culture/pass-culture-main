@@ -1,8 +1,9 @@
 import React from 'react'
+import { Provider } from 'react-redux'
 
 import { AppRouter } from 'app/AppRouter'
-import routes from 'app/AppRouter/routesMap'
 import { AnalyticsContextProvider } from 'context/analyticsContext'
+import createStore from 'store'
 import StoreProvider from 'store/StoreProvider/StoreProvider'
 
 import { RemoteContextProvider } from './context/remoteConfigContext'
@@ -12,14 +13,18 @@ interface RootProps {
 }
 
 const Root = ({ isAdageIframe }: RootProps): JSX.Element => {
+  const { store } = createStore()
+
   return (
-    <StoreProvider isAdageIframe={isAdageIframe}>
+    <Provider store={store}>
       <AnalyticsContextProvider>
         <RemoteContextProvider>
-          <AppRouter routes={routes} />
+          <StoreProvider isAdageIframe={isAdageIframe}>
+            <AppRouter />
+          </StoreProvider>
         </RemoteContextProvider>
       </AnalyticsContextProvider>
-    </StoreProvider>
+    </Provider>
   )
 }
 
