@@ -1,16 +1,14 @@
-import { render, screen } from '@testing-library/react'
+import { screen } from '@testing-library/react'
 import React from 'react'
 
 import { api } from 'apiClient/api'
+import { UserRole } from 'apiClient/v1'
+import { renderWithProviders } from 'utils/renderWithProviders'
 
 import StoreProvider from '../StoreProvider'
 
-vi.mock('apiClient/api', () => ({
-  api: { getProfile: vi.fn() },
-}))
-
 const renderStoreProvider = () => {
-  return render(
+  return renderWithProviders(
     <StoreProvider>
       <p>Sub component</p>
     </StoreProvider>
@@ -26,7 +24,14 @@ vi.mock('apiClient/api', () => ({
 
 describe('src | App', () => {
   beforeEach(() => {
-    vi.spyOn(api, 'getProfile').mockRejectedValue(undefined)
+    vi.spyOn(api, 'getProfile').mockResolvedValue({
+      id: 1,
+      email: 'email@example.com',
+      isAdmin: true,
+      roles: [UserRole.ADMIN],
+      isEmailValidated: true,
+      dateCreated: '2022-07-29T12:18:43.087097Z',
+    })
     vi.spyOn(api, 'listFeatures').mockResolvedValue([])
   })
   it('should load current user', async () => {
