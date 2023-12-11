@@ -1,59 +1,55 @@
 import React, { useEffect, useState } from 'react'
-import { Provider } from 'react-redux'
+import { useDispatch } from 'react-redux'
 
 import { api } from 'apiClient/api'
-import {
-  FeatureResponseModel,
-  SharedCurrentUserResponseModel,
-} from 'apiClient/v1'
-import createStore from 'store'
-import { RootState } from 'store/reducers'
+import { updateFeatures } from 'store/features/reducer'
+import { updateUser } from 'store/user/reducer'
 import Spinner from 'ui-kit/Spinner/Spinner'
 
 interface StoreProviderProps {
-  isAdageIframe?: boolean
   children: JSX.Element | JSX.Element[]
+  isAdageIframe?: boolean
 }
 
 const StoreProvider = ({
   children,
   isAdageIframe = false,
 }: StoreProviderProps) => {
-  const [currentUser, setCurrentUser] =
-    useState<SharedCurrentUserResponseModel | null>()
-  const [features, setFeatures] = useState<FeatureResponseModel[]>()
-  const [initialState, setInitialState] =
-    useState<Partial<RootState | null>>(null)
+  const dispatch = useDispatch()
+  const [isStoreInitialized, setIsStoreInitialized] = useState(false)
 
   useEffect(() => {
-    async function getStoreInitialData() {
+    const initializeUser = async () => {
       if (isAdageIframe) {
-        setCurrentUser(null)
-      } else {
-        await api
-          .getProfile()
-          .then((response) => setCurrentUser(response))
-          .catch(() => setCurrentUser(null))
+        return
       }
-      await api
-        .listFeatures()
-        .then((response) => setFeatures(response))
-        .catch(() => setFeatures([]))
+      try {
+        const response = await api.getProfile()
+        dispatch(updateUser(response))
+      } catch {
+        dispatch(updateUser(null))
+      }
     }
+
+    const initializeFeatures = async () => {
+      try {
+        const response = await api.listFeatures()
+        dispatch(updateFeatures(response))
+      } catch {
+        dispatch(updateFeatures([]))
+      }
+    }
+
+    const getStoreInitialState = async () => {
+      await Promise.all([initializeUser(), initializeFeatures()])
+      setIsStoreInitialized(true)
+    }
+
     // eslint-disable-next-line @typescript-eslint/no-floating-promises
-    getStoreInitialData()
-  }, [isAdageIframe])
+    getStoreInitialState()
+  }, [isAdageIframe, dispatch])
 
-  useEffect(() => {
-    if (currentUser !== undefined && features !== undefined) {
-      setInitialState({
-        user: { currentUser },
-        features: { list: features || [] },
-      })
-    }
-  }, [currentUser, features])
-
-  if (initialState === null) {
+  if (!isStoreInitialized) {
     return (
       <main id="content" className="spinner-container">
         <Spinner />
@@ -61,8 +57,7 @@ const StoreProvider = ({
     )
   }
 
-  const { store } = createStore(initialState)
-  return <Provider store={store}>{children}</Provider>
+  return children
 }
 
 export default StoreProvider
