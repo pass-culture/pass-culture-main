@@ -6,7 +6,7 @@ import { useLocation } from 'react-router-dom'
 import { api } from 'apiClient/api'
 import { AppLayout } from 'app/AppLayout'
 import { EmailChangeValidationScreen } from 'screens/EmailChangeValidation'
-import { resetIsInitialized } from 'store/user/actions'
+import { updateUser } from 'store/user/reducer'
 import { parse } from 'utils/query-string'
 
 const EmailChangeValidation = (): JSX.Element => {
@@ -25,7 +25,7 @@ const EmailChangeValidation = (): JSX.Element => {
       .patchValidateEmail({ token: token })
       .then(() => {
         setIsSuccess(true)
-        dispatch(resetIsInitialized())
+        dispatch(updateUser(null))
       })
       .catch(() => setIsSuccess(false))
   }, [])

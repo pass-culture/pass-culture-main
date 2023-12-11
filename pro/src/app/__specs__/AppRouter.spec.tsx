@@ -20,7 +20,6 @@ describe('AppRouter', () => {
   it('should redirect to login when route is private and user not logged in', async () => {
     const store = configureTestStore({
       user: {
-        initialized: false,
         currentUser: null,
       },
     })
