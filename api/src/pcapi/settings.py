@@ -242,6 +242,9 @@ CAN_RUN_SANDBOX = bool(int(os.environ.get("CAN_RUN_SANDBOX", 0)))
 # Sandbox users and unit tests default password - overridden by a secret password on cloud environments
 TEST_DEFAULT_PASSWORD = secrets_utils.get("TEST_DEFAULT_PASSWORD", "user@AZERTY123")
 
+# TESTING FEATURES
+ENABLE_FEATURE_FLAG_PATCHING = bool(int(os.environ.get("ENABLE_FEATURE_FLAG_PATCHING", 0)))
+
 # Test users on staging
 IMPORT_USERS_GOOGLE_DOCUMENT_ID = secrets_utils.get("IMPORT_USERS_GOOGLE_DOCUMENT_ID", "")
 
