@@ -8,7 +8,7 @@ import FormLayout from 'components/FormLayout'
 import { parseAndValidateFrenchPhoneNumber } from 'core/shared/utils/parseAndValidateFrenchPhoneNumber'
 import useCurrentUser from 'hooks/useCurrentUser'
 import { PatchPhoneAdapter } from 'pages/User/adapters/patchPhoneAdapter'
-import { setCurrentUser } from 'store/user/actions'
+import { updateUser } from 'store/user/reducer'
 import { TextInput, Button, SubmitButton } from 'ui-kit'
 import { ButtonVariant } from 'ui-kit/Button/types'
 
@@ -36,7 +36,7 @@ const UserPhoneForm = ({
     patchPhoneAdapter(values).then((response) => {
       if (response.isOk) {
         dispatch(
-          setCurrentUser({
+          updateUser({
             ...currentUser,
             ...response.payload,
           })

@@ -3,7 +3,6 @@ import { userEvent } from '@testing-library/user-event'
 import React from 'react'
 
 import { RootState } from 'store/reducers'
-import StoreProvider from 'store/StoreProvider/StoreProvider'
 
 import ButtonImageDelete, { ButtonImageDeleteProps } from '../ButtonImageDelete'
 
@@ -12,11 +11,7 @@ interface RenderButtonImageDeleteProps {
   props: ButtonImageDeleteProps
 }
 const renderButtonImageDelete = ({ props }: RenderButtonImageDeleteProps) => {
-  render(
-    <StoreProvider isDev>
-      <ButtonImageDelete {...props} />
-    </StoreProvider>
-  )
+  render(<ButtonImageDelete {...props} />)
 }
 
 const mockOnDelete = vi.fn().mockResolvedValue({})

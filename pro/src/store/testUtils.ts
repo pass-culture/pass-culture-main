@@ -39,7 +39,6 @@ export const baseStoreFactory = ({
 
   return {
     user: {
-      initialized: true,
       currentUser: {
         id: 1,
         email: 'email@example.com',
@@ -50,7 +49,6 @@ export const baseStoreFactory = ({
       },
     },
     features: {
-      initialized: true,
       list: featuresList,
     },
   }

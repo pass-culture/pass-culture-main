@@ -11,7 +11,6 @@ import { RootState } from 'store/reducers'
 import Spinner from 'ui-kit/Spinner/Spinner'
 
 interface StoreProviderProps {
-  isDev?: boolean
   isAdageIframe?: boolean
   children: JSX.Element | JSX.Element[]
 }
@@ -19,7 +18,6 @@ interface StoreProviderProps {
 const StoreProvider = ({
   children,
   isAdageIframe = false,
-  isDev = false,
 }: StoreProviderProps) => {
   const [currentUser, setCurrentUser] =
     useState<SharedCurrentUserResponseModel | null>()
@@ -28,11 +26,6 @@ const StoreProvider = ({
     useState<Partial<RootState | null>>(null)
 
   useEffect(() => {
-    function setEmptyInitialData() {
-      setCurrentUser(null)
-      setFeatures([])
-    }
-
     async function getStoreInitialData() {
       if (isAdageIframe) {
         setCurrentUser(null)
@@ -48,17 +41,18 @@ const StoreProvider = ({
         .catch(() => setFeatures([]))
     }
     // eslint-disable-next-line @typescript-eslint/no-floating-promises
-    isDev ? setEmptyInitialData() : getStoreInitialData()
-  }, [])
+    getStoreInitialData()
+  }, [isAdageIframe])
 
   useEffect(() => {
     if (currentUser !== undefined && features !== undefined) {
       setInitialState({
-        user: { currentUser, initialized: true },
-        features: { list: features || [], initialized: true },
+        user: { currentUser },
+        features: { list: features || [] },
       })
     }
   }, [currentUser, features])
+
   if (initialState === null) {
     return (
       <main id="content" className="spinner-container">

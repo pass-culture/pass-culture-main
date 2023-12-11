@@ -1,20 +1,20 @@
 import { useSelector } from 'react-redux'
 
 import { SharedCurrentUserResponseModel } from 'apiClient/v1'
-import { selectCurrentUser, selectUserInitialized } from 'store/user/selectors'
+import { selectCurrentUser } from 'store/user/selectors'
 
 export interface UseCurrentUserReturn {
-  isUserInitialized: boolean
   currentUser: SharedCurrentUserResponseModel
 }
 
 const useCurrentUser = (): UseCurrentUserReturn => {
   const currentUser = useSelector(selectCurrentUser)
-  const isUserInitialized = useSelector(selectUserInitialized)
 
   return {
-    isUserInitialized,
-    currentUser: currentUser as SharedCurrentUserResponseModel,
+    // TODO : handle the null case by redirecting to login
+    // (currently handled by the <RouteWrapper> component)
+    // eslint-disable-next-line
+    currentUser: currentUser!!
   }
 }
 

@@ -12,7 +12,7 @@ import useNotification from 'hooks/useNotification'
 import useRedirectLoggedUser from 'hooks/useRedirectLoggedUser'
 import logoPassCultureProFullIcon from 'icons/logo-pass-culture-pro-full.svg'
 import CookiesFooter from 'pages/CookiesFooter/CookiesFooter'
-import { setCurrentUser } from 'store/user/actions'
+import { updateUser } from 'store/user/reducer'
 import { SvgIcon } from 'ui-kit/SvgIcon/SvgIcon'
 import { getReCaptchaToken } from 'utils/recaptcha'
 
@@ -64,10 +64,10 @@ const SignIn = (): JSX.Element => {
         password,
         captchaToken,
       })
-      dispatch(setCurrentUser(user))
+      dispatch(updateUser(user))
     } catch (error) {
       if (isErrorAPIError(error)) {
-        setCurrentUser(null)
+        updateUser(null)
         onHandleFail({ status: error.status, errors: error.body })
       }
     }

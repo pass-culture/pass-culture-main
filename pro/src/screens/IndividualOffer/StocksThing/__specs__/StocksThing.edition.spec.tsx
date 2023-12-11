@@ -153,7 +153,6 @@ describe('screens:StocksThing', () => {
     }
     storeOverride = {
       user: {
-        initialized: true,
         currentUser: {
           isAdmin: false,
           dateCreated: '2001-01-01',

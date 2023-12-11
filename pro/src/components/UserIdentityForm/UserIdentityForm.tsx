@@ -6,7 +6,7 @@ import { BoxFormLayout } from 'components/BoxFormLayout'
 import FormLayout from 'components/FormLayout'
 import useCurrentUser from 'hooks/useCurrentUser'
 import { PatchIdentityAdapter } from 'pages/User/adapters/patchIdentityAdapter'
-import { setCurrentUser } from 'store/user/actions'
+import { updateUser } from 'store/user/reducer'
 import { TextInput, Button, SubmitButton } from 'ui-kit'
 import { ButtonVariant } from 'ui-kit/Button/types'
 
@@ -32,7 +32,7 @@ const UserIdentityForm = ({
     patchIdentityAdapter(values).then((response) => {
       if (response.isOk) {
         dispatch(
-          setCurrentUser({
+          updateUser({
             ...currentUser,
             ...response.payload,
           })
