@@ -63,11 +63,11 @@ describe.skip('Signup journey', () => {
   })
 
   it('should create offerer', () => {
-    cy.login(
-      'eac_1_lieu@example.com',
-      'user@AZERTY123',
-      '/parcours-inscription'
-    )
+    cy.login({
+      email: 'eac_1_lieu@example.com',
+      password: 'user@AZERTY123',
+      redirectUrl: '/parcours-inscription',
+    })
 
     // Welcome page
     cy.contains('Commencer').click()
@@ -101,11 +101,11 @@ describe.skip('Signup journey', () => {
   })
 
   it('should ask offerer attachment to a user and create new offerer', () => {
-    cy.login(
-      'pctest.pro97.0@example.com',
-      'user@AZERTY123',
-      '/parcours-inscription'
-    )
+    cy.login({
+      email: 'pctest.pro97.0@example.com',
+      password: 'user@AZERTY123',
+      redirectUrl: '/parcours-inscription',
+    })
 
     // Welcome page
     cy.contains('Commencer').click()
@@ -144,11 +144,11 @@ describe.skip('Signup journey', () => {
   })
 
   it('should attach user to an existing offerer', () => {
-    cy.login(
-      'pctest.pro93.0@example.com',
-      'user@AZERTY123',
-      '/parcours-inscription'
-    )
+    cy.login({
+      email: 'pctest.pro93.0@example.com',
+      password: 'user@AZERTY123',
+      redirectUrl: '/parcours-inscription',
+    })
 
     // Welcome page
     cy.contains('Commencer').click()

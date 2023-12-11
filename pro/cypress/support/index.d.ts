@@ -1,7 +1,13 @@
 declare namespace Cypress {
   interface Chainable {
-    login(email: string, password: string, redirectUrl?: string): Chainable
+    login(params: {
+      email: string
+      password: string
+      redirectUrl?: string
+      acceptCookies?: boolean
+    }): Chainable
     setFeatureFlags(features: Feature[]): Chainable
+    acceptCookies(): Chainable
   }
 }
 

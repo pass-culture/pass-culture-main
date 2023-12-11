@@ -1,6 +1,9 @@
 describe('Create an individual offer (event)', () => {
   it('should create an individual offer', () => {
-    cy.login('pctest.pro93.0@example.com', 'user@AZERTY123')
+    cy.login({
+      email: 'pctest.pro93.0@example.com',
+      password: 'user@AZERTY123',
+    })
 
     // Go to offer creation page
     cy.contains('Créer une offre').click()
