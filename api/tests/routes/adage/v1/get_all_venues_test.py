@@ -1,4 +1,5 @@
 from pcapi.core.offerers import factories as offerer_factories
+from pcapi.core.testing import assert_no_duplicated_queries
 
 
 class Returns200Test:
@@ -65,7 +66,8 @@ class Returns200Test:
         last_venues = offerer_factories.VenueFactory.create_batch(8, isPermanent=True)
 
         client.with_eac_token()
-        response = client.get("/adage/v1/venues?per_page=2")
+        with assert_no_duplicated_queries():
+            response = client.get("/adage/v1/venues?per_page=2")
         assert response.status_code == 200
         assert len(response.json["venues"]) == 2
         assert {venue["id"] for venue in response.json["venues"]} == {first_venues[0].id, first_venues[1].id}
