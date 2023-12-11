@@ -2,12 +2,13 @@ import logging
 from unittest import mock
 
 import pytest
+import sqlalchemy as sa
 
 from pcapi.core.categories import subcategories_v2 as subcategories
 from pcapi.core.external import compliance
 from pcapi.core.external.compliance_backends.compliance import ComplianceBackend
 from pcapi.core.offers import factories as offers_factories
-from pcapi.core.offers import repository as offers_repository
+from pcapi.core.offers import models as offers_models
 from pcapi.core.testing import assert_num_queries
 from pcapi.utils import requests
 
@@ -100,8 +101,13 @@ class GetPayloadForComplianceApiTest:
         offers_factories.StockFactory(offer=offer, price=20)
         mediation = offers_factories.MediationFactory(offer=offer)
 
-        offer_in_db = offers_repository.get_offer_by_id(offer.id)
-        with assert_num_queries(0):  # everything is already loaded by get_offer_by_id
+        offer_in_db = (
+            offers_models.Offer.query.filter(offers_models.Offer.id == offer.id)
+            .options(sa.orm.joinedload(offers_models.Offer.stocks), sa.orm.joinedload(offers_models.Offer.mediations))
+            .one()
+        )
+
+        with assert_num_queries(0):  # everything is already loaded in the query
             payload = compliance._get_payload_for_compliance_api(offer_in_db)
 
         assert payload.offer_id == str(offer.id)

@@ -36,6 +36,10 @@ MANUAL_CREATION_MODE = "manual"
 LIMIT_STOCKS_PER_PAGE = 20
 STOCK_LIMIT_TO_DELETE = 50
 
+OFFER_LOAD_OPTIONS = typing.Iterable[
+    typing.Literal["stock", "mediations", "product", "price_category", "venue", "bookings_count"]
+]
+
 
 class StocksOrderedBy(str, enum.Enum):
     DATE = "DATE"
@@ -723,26 +727,34 @@ def is_non_free_offer_subquery(offer_id: int) -> sa.sql.selectable.Exists:
     )
 
 
-def get_offer_by_id(offer_id: int) -> models.Offer:
+def get_offer_by_id(offer_id: int, load_options: OFFER_LOAD_OPTIONS = ()) -> models.Offer:
     try:
-        return (
-            models.Offer.query.filter(models.Offer.id == offer_id)
-            .outerjoin(models.Stock, sa.and_(models.Stock.offerId == offer_id, sa.not_(models.Stock.isSoftDeleted)))
-            .options(sa_orm.contains_eager(models.Offer.stocks))
-            .options(sa_orm.joinedload(models.Offer.mediations))
-            .options(sa_orm.joinedload(models.Offer.product))
-            .options(
+        query = models.Offer.query.filter(models.Offer.id == offer_id)
+        if "stock" in load_options:
+            query = query.outerjoin(
+                models.Stock, sa.and_(models.Stock.offerId == offer_id, sa.not_(models.Stock.isSoftDeleted))
+            ).options(sa_orm.contains_eager(models.Offer.stocks))
+        if "mediations" in load_options:
+            query = query.options(sa_orm.joinedload(models.Offer.mediations))
+        if "product" in load_options:
+            query = query.options(sa_orm.joinedload(models.Offer.product))
+        if "price_category" in load_options:
+            query = query.options(
                 sa_orm.joinedload(models.Offer.priceCategories).joinedload(models.PriceCategory.priceCategoryLabel)
             )
-            .options(
+        if "venue" in load_options:
+            query = query.options(
                 sa_orm.joinedload(models.Offer.venue, innerjoin=True).joinedload(
                     offerers_models.Venue.managingOfferer,
                     innerjoin=True,
                 )
             )
-            .options(sa_orm.with_expression(models.Offer.bookingsCount, get_bookings_count_subquery(offer_id)))
-            .one()
-        )
+        if "bookings_count" in load_options:
+            query = query.options(
+                sa_orm.with_expression(models.Offer.bookingsCount, get_bookings_count_subquery(offer_id))
+            )
+
+        return query.one()
     except sa_orm.exc.NoResultFound:
         raise exceptions.OfferNotFound()
 
