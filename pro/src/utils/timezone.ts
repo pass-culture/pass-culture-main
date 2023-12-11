@@ -78,21 +78,22 @@ export const getDepartmentTimezone = (
   }
 }
 
-export function convertFromLocalTimeToVenueTimezoneInUtc(
+export function convertTimeFromVenueTimezoneToUtc(
   departementTime: string,
   departmentCode?: string | null
 ) {
   const [hours, minutes] = departementTime.split(':')
 
-  // get a date in user timezone, we set hours and minutes
+  // create a fake date to compute time offset for us
   const userDate = new Date()
   userDate.setHours(parseInt(hours))
   userDate.setMinutes(parseInt(minutes))
 
-  // translate it in venue timezone
+  // get venue time zone : ex: 'Pacific/Pitcairn'
   const venueTimeZone = getDepartmentTimezone(departmentCode)
+  // convert time from venue time zone to UTC
   const utcDate = zonedTimeToUtc(userDate, venueTimeZone)
 
-  // get hours and minutes, now in UTC
+  // get hours and minutes, now in UTC from the fake date
   return formatInTimeZone(utcDate, 'Etc/UTC', 'HH:mm')
 }
