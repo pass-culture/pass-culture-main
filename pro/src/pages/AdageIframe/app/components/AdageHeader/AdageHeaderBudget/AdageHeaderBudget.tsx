@@ -40,6 +40,7 @@ export default function AdageHeaderBudget({
           style: 'currency',
           currency: 'EUR',
           maximumFractionDigits: 0,
+          minimumFractionDigits: 0, //  Some browsers need the minimum to be explicit since the defaut min value for currency is 2, in what case min > max
         }).format(institutionBudget)}
       </div>
     </div>
