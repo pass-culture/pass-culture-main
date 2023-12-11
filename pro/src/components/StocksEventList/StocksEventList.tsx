@@ -30,7 +30,7 @@ import Spinner from 'ui-kit/Spinner/Spinner'
 import { formatPrice } from 'utils/formatPrice'
 import { pluralize, pluralizeString } from 'utils/pluralize'
 import {
-  convertFromLocalTimeToVenueTimezoneInUtc,
+  convertTimeFromVenueTimezoneToUtc,
   formatLocalTimeDateString,
 } from 'utils/timezone'
 
@@ -112,7 +112,7 @@ const StocksEventList = ({
       offer.id,
       dateFilter ? dateFilter : undefined,
       timeFilter
-        ? convertFromLocalTimeToVenueTimezoneInUtc(timeFilter, departmentCode)
+        ? convertTimeFromVenueTimezoneToUtc(timeFilter, departmentCode)
         : undefined,
       priceCategoryIdFilter ? Number(priceCategoryIdFilter) : undefined,
       currentSortingColumn ?? undefined,
@@ -269,7 +269,7 @@ const StocksEventList = ({
       await api.deleteAllFilteredStocks(offer.id, {
         date: dateFilter ? dateFilter : undefined,
         time: timeFilter
-          ? convertFromLocalTimeToVenueTimezoneInUtc(timeFilter, departmentCode)
+          ? convertTimeFromVenueTimezoneToUtc(timeFilter, departmentCode)
           : undefined,
         price_category_id:
           priceCategoryIdFilter === null

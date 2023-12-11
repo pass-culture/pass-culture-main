@@ -1,5 +1,5 @@
 import {
-  convertFromLocalTimeToVenueTimezoneInUtc,
+  convertTimeFromVenueTimezoneToUtc,
   formatLocalTimeDateString,
   getDepartmentTimezone,
 } from '../timezone'
@@ -74,21 +74,30 @@ describe('getDepartmentTimezone', () => {
 // if it was possible we would have prefered to test with TZ=Europe/Paris, TZ=America/Cayenne, etc.
 describe('convertFromLocalTimeToVenueTimezoneInUtc', () => {
   it('should convert from my locale to departement timezone and give result in utc', () => {
-    const timeInVersailles = convertFromLocalTimeToVenueTimezoneInUtc(
-      '12:00',
-      '78'
-    )
-    const timeInTahiti = convertFromLocalTimeToVenueTimezoneInUtc(
-      '12:00',
-      '987'
-    )
-    const timeInGuadeloupe = convertFromLocalTimeToVenueTimezoneInUtc(
-      '12:00',
-      '971'
-    )
+    const timeInVersailles = convertTimeFromVenueTimezoneToUtc('12:00', '78')
+    const timeInTahiti = convertTimeFromVenueTimezoneToUtc('12:00', '987')
+    const timeInGuadeloupe = convertTimeFromVenueTimezoneToUtc('12:00', '971')
 
     expect(timeInVersailles).toBe('11:00')
     expect(timeInTahiti).toBe('22:00')
     expect(timeInGuadeloupe).toBe('16:00')
+  })
+
+  it('should convert from my locale to departement timezone and give result in utc with a different local time', () => {
+    //  We change the reference date of the test to make sure it does not influence the time conversion
+    const timezoneOffsetDate = new Date()
+    timezoneOffsetDate.setHours(timezoneOffsetDate.getHours() - 2)
+    vi.useFakeTimers()
+    vi.setSystemTime(timezoneOffsetDate)
+
+    const timeInVersailles = convertTimeFromVenueTimezoneToUtc('12:00', '78')
+    const timeInTahiti = convertTimeFromVenueTimezoneToUtc('12:00', '987')
+    const timeInGuadeloupe = convertTimeFromVenueTimezoneToUtc('12:00', '971')
+
+    expect(timeInVersailles).toBe('11:00')
+    expect(timeInTahiti).toBe('22:00')
+    expect(timeInGuadeloupe).toBe('16:00')
+
+    vi.useRealTimers()
   })
 })

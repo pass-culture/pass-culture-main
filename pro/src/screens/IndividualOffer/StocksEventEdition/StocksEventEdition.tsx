@@ -41,7 +41,7 @@ import Spinner from 'ui-kit/Spinner/Spinner'
 import { getToday } from 'utils/date'
 import { hasErrorCode } from 'utils/error'
 import {
-  convertFromLocalTimeToVenueTimezoneInUtc,
+  convertTimeFromVenueTimezoneToUtc,
   getLocalDepartementDateTimeFromUtc,
 } from 'utils/timezone'
 
@@ -168,7 +168,7 @@ const StocksEventEdition = ({
         offer.id,
         dateFilter ? dateFilter : undefined,
         timeFilter
-          ? convertFromLocalTimeToVenueTimezoneInUtc(
+          ? convertTimeFromVenueTimezoneToUtc(
               timeFilter,
               offer.venue.departementCode
             )
