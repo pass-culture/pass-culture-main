@@ -256,6 +256,8 @@ DAYS_BEFORE_UBBLE_LONG_ACTION_REMINDER = 21 if IS_PROD else 0
 CAN_RUN_SANDBOX = bool(int(os.environ.get("CAN_RUN_SANDBOX", 0)))
 # Sandbox users and unit tests default password - overridden by a secret password on cloud environments
 TEST_DEFAULT_PASSWORD = secrets_utils.get("TEST_DEFAULT_PASSWORD", "user@AZERTY123")
+ENABLE_LOCAL_DEV_MODE_FOR_STORAGE = bool(int(os.environ.get("ENABLE_LOCAL_DEV_MODE_FOR_STORAGE", 0)))
+ENABLE_UBBLE_E2E_TESTING = bool(int(os.environ.get("ENABLE_UBBLE_E2E_TESTING", 0)))
 
 # Test users on staging
 IMPORT_USERS_GOOGLE_DOCUMENT_ID = secrets_utils.get("IMPORT_USERS_GOOGLE_DOCUMENT_ID", "")
