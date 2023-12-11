@@ -160,13 +160,6 @@ const SummaryScreen = () => {
           {mode === OFFER_WIZARD_MODE.CREATION && (
             <StockSection offer={offer} canBeDuo={canBeDuo} />
           )}
-
-          <ActionBar
-            onClickNext={publishOffer}
-            onClickPrevious={handlePreviousStep}
-            step={OFFER_WIZARD_STEP_IDS.SUMMARY}
-            isDisabled={isDisabled}
-          />
         </SummaryLayout.Content>
 
         <SummaryLayout.Side>
@@ -203,6 +196,12 @@ const SummaryScreen = () => {
           )}
         </SummaryLayout.Side>
       </SummaryLayout>
+      <ActionBar
+        onClickNext={publishOffer}
+        onClickPrevious={handlePreviousStep}
+        step={OFFER_WIZARD_STEP_IDS.SUMMARY}
+        isDisabled={isDisabled}
+      />
 
       {displayRedirectDialog && (
         <RedirectDialog
