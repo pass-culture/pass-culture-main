@@ -133,3 +133,10 @@ def save_industrial_sandbox() -> None:
     create_industrial_bank_accounts()
 
     create_industrial_venues_with_timezone()
+
+
+def save_industrial_ci_sandbox() -> None:
+    (offerers_by_name, _) = create_industrial_offerers_with_pro_users()
+    create_industrial_pro_users(offerers_by_name)
+    create_industrial_admin_users()
+    create_industrial_venues(offerers_by_name)
