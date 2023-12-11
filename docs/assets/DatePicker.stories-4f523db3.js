@@ -2,11 +2,11 @@ import{j as e}from"./jsx-runtime-ffb262ed.js";import{b as F}from"./formik.esm-49
   date: ''
 }} onSubmit={() => {}}>
     <DatePicker {...props} name="date" />
-  </Formik>`,...(p=(m=o.parameters)==null?void 0:m.docs)==null?void 0:p.source}}};var s,c,l;r.parameters={...r.parameters,docs:{...(s=r.parameters)==null?void 0:s.docs,source:{originalSource:`props => <Formik initialValues={{
+  </Formik>`,...(p=(m=o.parameters)==null?void 0:m.docs)==null?void 0:p.source}}};var s,n,c;r.parameters={...r.parameters,docs:{...(s=r.parameters)==null?void 0:s.docs,source:{originalSource:`props => <Formik initialValues={{
   date: ''
 }} onSubmit={() => {}}>
     <DatePicker {...props} name="date" />
-  </Formik>`,...(l=(c=r.parameters)==null?void 0:c.docs)==null?void 0:l.source}}};var n,d,u;t.parameters={...t.parameters,docs:{...(n=t.parameters)==null?void 0:n.docs,source:{originalSource:`props => <Formik initialValues={{
+  </Formik>`,...(c=(n=r.parameters)==null?void 0:n.docs)==null?void 0:c.source}}};var l,d,u;t.parameters={...t.parameters,docs:{...(l=t.parameters)==null?void 0:l.docs,source:{originalSource:`props => <Formik initialValues={{
   date: ''
 }} onSubmit={() => {}}>
     <DatePicker {...props} name="date" />

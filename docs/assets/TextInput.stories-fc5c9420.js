@@ -4,13 +4,13 @@ import{j as e}from"./jsx-runtime-ffb262ed.js";import{b as x}from"./formik.esm-49
     {({
     getFieldProps
   }) => <TextInput {...getFieldProps('email')} placeholder="input placeholder" {...props} />}
-  </Formik>`,...(a=(m=t.parameters)==null?void 0:m.docs)==null?void 0:a.source}}};var s,l,c;r.parameters={...r.parameters,docs:{...(s=r.parameters)==null?void 0:s.docs,source:{originalSource:`props => <Formik initialValues={{
+  </Formik>`,...(a=(m=t.parameters)==null?void 0:m.docs)==null?void 0:a.source}}};var s,n,l;r.parameters={...r.parameters,docs:{...(s=r.parameters)==null?void 0:s.docs,source:{originalSource:`props => <Formik initialValues={{
   email: ''
 }} onSubmit={() => {}}>
     {({
     getFieldProps
   }) => <TextInput {...getFieldProps('email')} placeholder="input placeholder" {...props} />}
-  </Formik>`,...(c=(l=r.parameters)==null?void 0:l.docs)==null?void 0:c.source}}};var n,u,d;o.parameters={...o.parameters,docs:{...(n=o.parameters)==null?void 0:n.docs,source:{originalSource:`props => <Formik initialValues={{
+  </Formik>`,...(l=(n=r.parameters)==null?void 0:n.docs)==null?void 0:l.source}}};var c,u,d;o.parameters={...o.parameters,docs:{...(c=o.parameters)==null?void 0:c.docs,source:{originalSource:`props => <Formik initialValues={{
   email: ''
 }} onSubmit={() => {}}>
     {({
