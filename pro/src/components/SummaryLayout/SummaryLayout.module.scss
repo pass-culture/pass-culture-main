@@ -1,13 +1,15 @@
 @use "styles/mixins/_rem.scss" as rem;
 @use "styles/variables/_colors.scss" as colors;
+@use "styles/variables/_size.scss" as size;
 
 .summary-layout {
   display: flex;
-  flex-direction: row;
   justify-content: space-between;
+  flex-direction: column;
+  gap: rem.torem(16px);
 
   &-content {
-    width: rem.torem(485px);
+    flex-grow: 1;
 
     &.full-width {
       width: 100%;
@@ -16,6 +18,8 @@
 
   &-side {
     width: rem.torem(231px);
+    margin: 0 auto;
+    margin-bottom: rem.torem(32px);
   }
 
   &-section {
@@ -74,6 +78,17 @@
 
     &:last-child {
       margin-bottom: 0 !important;
+    }
+  }
+}
+
+@media (min-width: size.$tablet) {
+  .summary-layout {
+    flex-direction: row;
+    gap: rem.torem(112px);
+
+    &-side {
+      margin-bottom: 0;
     }
   }
 }
