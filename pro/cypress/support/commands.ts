@@ -46,7 +46,7 @@ Cypress.on('uncaught:exception', () => {
 
 Cypress.Commands.add(
   'login',
-  (email: string, password: string, redirectUrl?: string) => {
+  ({ email, password, redirectUrl, acceptCookies = true }) => {
     cy.intercept({ method: 'POST', url: '/users/signin' }).as('signinUser')
 
     cy.visit(
@@ -54,6 +54,11 @@ Cypress.Commands.add(
         ? `/connexion?de=${encodeURIComponent(redirectUrl)}`
         : '/connexion'
     )
+
+    if (acceptCookies) {
+      cy.acceptCookies()
+    }
+
     cy.get('#email').type(email)
     cy.get('#password').type(password)
     cy.get('button[type=submit]').click()
@@ -63,18 +68,8 @@ Cypress.Commands.add(
   }
 )
 
-Cypress.Commands.add('setFeatureFlags', (features: Feature[]) => {
-  cy.request({
-    method: 'PATCH',
-    url: 'http://localhost:5001/testing/features',
-    headers: {
-      'Content-Type': 'application/json',
-      Accept: 'application/json',
-    },
-    body: JSON.stringify({
-      features,
-    }),
-  })
+Cypress.Commands.add('acceptCookies', () => {
+  cy.get('button').contains('Tout accepter').click()
 })
 
 export {}

@@ -4,7 +4,10 @@ describe('Create an individual offer (thing)', () => {
     const ean = String(
       Math.floor(1000000000000 + Math.random() * 9000000000000)
     )
-    cy.login('pctest.pro93.0@example.com', 'user@AZERTY123')
+    cy.login({
+      email: 'pctest.pro93.0@example.com',
+      password: 'user@AZERTY123',
+    })
 
     // Go to offer creation page
     cy.contains('Créer une offre').click()
