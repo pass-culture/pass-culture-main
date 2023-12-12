@@ -41,6 +41,9 @@ class GetOffererVenueResponseModel(BaseModel, AccessibilityComplianceMixin):
     withdrawalDetails: str | None
     collectiveDmsApplications: list[DMSApplicationForEAC]
     hasVenueProviders: bool
+    isPermanent: bool
+    bannerUrl: str | None
+    bannerMeta: dict | None
 
     @classmethod
     def from_orm(

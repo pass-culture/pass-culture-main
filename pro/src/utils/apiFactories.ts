@@ -226,6 +226,9 @@ export const defaultGetOffererVenueResponseModel: GetOffererVenueResponseModel =
     id: 0,
     venueTypeCode: VenueTypeCode.LIEU_ADMINISTRATIF,
     hasVenueProviders: false,
+    isPermanent: true,
+    bannerUrl: null,
+    bannerMeta: null,
   }
 
 export const defaultBookingResponse: GetBookingResponse = {
