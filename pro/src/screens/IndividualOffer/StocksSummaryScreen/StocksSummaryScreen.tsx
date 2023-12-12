@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react'
 
 import { api } from 'apiClient/api'
+import { GetOfferStockResponseModel } from 'apiClient/v1'
 import { OFFER_WIZARD_STEP_IDS } from 'components/IndividualOfferNavigation/constants'
 import { StocksEvent } from 'components/StocksEventList/StocksEventList'
 import { SummaryLayout } from 'components/SummaryLayout'
@@ -21,16 +22,21 @@ export const StocksSummaryScreen = () => {
   const { offer, subCategories } = useIndividualOfferContext()
   const [isLoading, setIsLoading] = useState(false)
   const [stocksEvent, setStocksEvent] = useState<StocksEvent[]>([])
+  const [stockThing, setStocksThings] = useState<GetOfferStockResponseModel>()
   const notify = useNotification()
 
   useEffect(() => {
     async function loadStocks() {
-      if (offer?.isEvent) {
+      if (offer) {
         setIsLoading(true)
         try {
           const response = await api.getStocks(offer.id)
 
-          setStocksEvent(serializeStockEvents(response.stocks))
+          if (offer.isEvent) {
+            setStocksEvent(serializeStockEvents(response.stocks))
+          } else {
+            setStocksThings(response.stocks[0])
+          }
         } catch {
           notify.error(
             'Une erreur est survenue lors du chargement de vos stocks.'
@@ -41,7 +47,7 @@ export const StocksSummaryScreen = () => {
     }
     // eslint-disable-next-line @typescript-eslint/no-floating-promises
     loadStocks()
-  }, [])
+  }, [notify, offer])
 
   if (offer === null || isLoading) {
     return <Spinner />
@@ -52,7 +58,6 @@ export const StocksSummaryScreen = () => {
     step: OFFER_WIZARD_STEP_IDS.STOCKS,
     mode: OFFER_WIZARD_MODE.EDITION,
   })
-
   // @ts-expect-error will be implemented in PC-26399
   const stockWarningText = getStockWarningText(offer.status, offer.hasStock)
 
@@ -77,7 +82,7 @@ export const StocksSummaryScreen = () => {
         <RecurrenceSummary offer={offer} stocks={stocksEvent} />
       ) : (
         <StockThingSection
-          stock={offer.stocks[0]}
+          stock={stockThing}
           canBeDuo={canBeDuo}
           isDuo={offer.isDuo}
         />

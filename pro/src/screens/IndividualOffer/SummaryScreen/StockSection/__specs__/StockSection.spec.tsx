@@ -8,7 +8,10 @@ import { OfferStatus } from 'apiClient/v1'
 import { OFFER_WIZARD_STEP_IDS } from 'components/IndividualOfferNavigation/constants'
 import { OFFER_WIZARD_MODE } from 'core/Offers/constants'
 import { getIndividualOfferPath } from 'core/Offers/utils/getIndividualOfferUrl'
-import { individualOfferFactory } from 'utils/individualApiFactories'
+import {
+  individualGetOfferStockResponseModelFactory,
+  individualOfferFactory,
+} from 'utils/individualApiFactories'
 import { renderWithProviders } from 'utils/renderWithProviders'
 
 import StockSection, { StockSectionProps } from '../StockSection'
@@ -57,6 +60,12 @@ const renderStockSection = (
 describe('Summary stock section', () => {
   describe('for general case', () => {
     it('should render sold out warning', () => {
+      vi.spyOn(api, 'getStocks').mockResolvedValueOnce({
+        hasStocks: true,
+        stockCount: 1,
+        stocks: [individualGetOfferStockResponseModelFactory()],
+      })
+
       const props = {
         offer: individualOfferFactory({
           isEvent: false,
@@ -82,6 +91,12 @@ describe('Summary stock section', () => {
     })
 
     it('should render expired warning', () => {
+      vi.spyOn(api, 'getStocks').mockResolvedValueOnce({
+        hasStocks: true,
+        stockCount: 1,
+        stocks: [individualGetOfferStockResponseModelFactory()],
+      })
+
       const props = {
         offer: individualOfferFactory({
           status: OfferStatus.EXPIRED,
@@ -106,6 +121,12 @@ describe('Summary stock section', () => {
     })
 
     it('should render no stock warning', () => {
+      vi.spyOn(api, 'getStocks').mockResolvedValueOnce({
+        hasStocks: true,
+        stockCount: 1,
+        stocks: [individualGetOfferStockResponseModelFactory()],
+      })
+
       const props = {
         offer: individualOfferFactory({
           status: OfferStatus.SOLD_OUT,
@@ -134,6 +155,12 @@ describe('Summary stock section', () => {
 
   describe('for stock thing', () => {
     it('should render creation summary', async () => {
+      vi.spyOn(api, 'getStocks').mockResolvedValueOnce({
+        hasStocks: true,
+        stockCount: 1,
+        stocks: [individualGetOfferStockResponseModelFactory()],
+      })
+
       const props = {
         offer: individualOfferFactory({
           status: OfferStatus.ACTIVE,
@@ -166,6 +193,12 @@ describe('Summary stock section', () => {
     })
 
     it('should render edition summary', async () => {
+      vi.spyOn(api, 'getStocks').mockResolvedValueOnce({
+        hasStocks: true,
+        stockCount: 1,
+        stocks: [individualGetOfferStockResponseModelFactory()],
+      })
+
       const props = {
         offer: individualOfferFactory({
           status: OfferStatus.ACTIVE,
@@ -187,15 +220,32 @@ describe('Summary stock section', () => {
     })
 
     it("should render booking limit date when it's given", () => {
+      vi.spyOn(api, 'getStocks').mockResolvedValueOnce({
+        hasStocks: true,
+        stockCount: 1,
+        stocks: [individualGetOfferStockResponseModelFactory()],
+      })
+
       const props = {
         offer: individualOfferFactory({
           status: OfferStatus.EXPIRED,
         }),
       }
+
       renderStockSection(props)
+
+      expect(screen.getByText(/Date limite de réservation/)).toBeInTheDocument()
     })
 
     it('should render quantity as "Illimité" when quantity is null or undefined', () => {
+      vi.spyOn(api, 'getStocks').mockResolvedValueOnce({
+        hasStocks: true,
+        stockCount: 1,
+        stocks: [
+          individualGetOfferStockResponseModelFactory({ quantity: null }),
+        ],
+      })
+
       const props = {
         offer: individualOfferFactory({
           status: OfferStatus.ACTIVE,
