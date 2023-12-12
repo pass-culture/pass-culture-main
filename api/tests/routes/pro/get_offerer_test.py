@@ -77,6 +77,8 @@ class GetOffererTest:
                     else None,
                     "address": venue.address,
                     "audioDisabilityCompliant": False,
+                    "bannerMeta": venue.bannerMeta,
+                    "bannerUrl": venue.bannerUrl,
                     "bookingEmail": venue.bookingEmail,
                     "city": venue.city,
                     "collectiveDmsApplications": [
@@ -109,6 +111,7 @@ class GetOffererTest:
                     "motorDisabilityCompliant": False,
                     "name": venue.name,
                     "id": venue.id,
+                    "isPermanent": venue.isPermanent,
                     "postalCode": venue.postalCode,
                     "publicName": venue.publicName,
                     "siret": venue.siret,

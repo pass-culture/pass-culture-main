@@ -1,7 +1,7 @@
 import { screen } from '@testing-library/react'
 import React from 'react'
 
-import { VenueTypeCode } from 'apiClient/v1'
+import { defaultGetOffererVenueResponseModel } from 'utils/apiFactories'
 import { renderWithProviders } from 'utils/renderWithProviders'
 
 import VenueItem, { VenueItemProps } from '../VenueItem'
@@ -16,16 +16,9 @@ describe('VenueItem', () => {
   beforeEach(() => {
     props = {
       venue: {
+        ...defaultGetOffererVenueResponseModel,
         id: venueId,
         name: 'fake name',
-        publicName: null,
-        collectiveDmsApplications: [],
-        hasMissingReimbursementPoint: false,
-        hasAdageId: false,
-        hasCreatedOffer: false,
-        isVirtual: false,
-        venueTypeCode: VenueTypeCode.AUTRE,
-        hasVenueProviders: false,
       },
       offererId: offererId,
     }
