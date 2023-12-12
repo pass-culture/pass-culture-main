@@ -3,6 +3,7 @@ import {
   BankAccountApplicationStatus,
   BankAccountResponseModel,
   BookingRecapResponseModel,
+  BookingRecapResponseStockModel,
   GetIndividualOfferResponseModel,
   GetOfferManagingOffererResponseModel,
   GetOfferVenueResponseModel,
@@ -24,13 +25,12 @@ import {
   GetBookingResponse,
 } from 'apiClient/v2'
 
-import { individualGetOfferStockResponseModelFactory } from './individualApiFactories'
-
 let offerId = 1
 let venueId = 1
 let offererId = 1
 let stockId = 1
 let bookingId = 1
+let stockIdentifier = 1
 
 export const collectiveOfferFactory = (
   customCollectiveOffer = {},
@@ -157,10 +157,8 @@ export const offerVenueFactory = (
 
 export const bookingRecapFactory = (
   customBookingRecap = {},
-  customOffer = {}
+  customStock = defaultBookingRecapResponseStockModel
 ): BookingRecapResponseModel => {
-  const offer = GetIndividualOfferFactory(customOffer)
-
   return {
     beneficiary: {
       email: 'user@example.com',
@@ -179,16 +177,19 @@ export const bookingRecapFactory = (
       },
     ],
     bookingToken: `TOKEN${bookingId++}`,
-    stock: {
-      offerId: offer.id,
-      offerName: offer.name,
-      offerIsEducational: false,
-      stockIdentifier: offer.stocks[0].id,
-      offerIsbn: '123456789',
-    },
+    stock: customStock,
     ...customBookingRecap,
   }
 }
+
+export const defaultBookingRecapResponseStockModel: BookingRecapResponseStockModel =
+  {
+    offerId: 12,
+    offerName: 'Les frères Karamazov',
+    offerIsEducational: false,
+    stockIdentifier: stockIdentifier++,
+    offerIsbn: '123456789',
+  }
 
 export const defaultGetOffererResponseModel: GetOffererResponseModel = {
   address: 'Fake Address',

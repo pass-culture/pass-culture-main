@@ -6,39 +6,39 @@ describe('getStockWarningText', () => {
   const testData = [
     {
       offerStatus: OfferStatus.SOLD_OUT,
-      stocksCount: 1,
+      hasStock: true,
       expected: 'Votre stock est épuisé.',
     },
     {
       offerStatus: OfferStatus.EXPIRED,
-      stocksCount: 1,
+      hasStock: true,
       expected: 'Votre stock est expiré.',
     },
     {
       offerStatus: OfferStatus.EXPIRED,
-      stocksCount: 0,
+      hasStock: true,
       expected: 'Vous n’avez aucun stock renseigné.',
     },
     {
       offerStatus: OfferStatus.EXPIRED,
-      stocksCount: null,
+      hasStock: null,
       expected: 'Vous n’avez aucun stock renseigné.',
     },
     {
       offerStatus: OfferStatus.EXPIRED,
-      stocksCount: undefined,
+      hasStock: undefined,
       expected: 'Vous n’avez aucun stock renseigné.',
     },
     {
       offerStatus: OfferStatus.INACTIVE,
-      stocksCount: 1,
+      hasStock: false,
       expected: false,
     },
   ]
   it.each(testData)(
     'should render $expected',
-    ({ offerStatus, stocksCount, expected }) => {
-      const result = getStockWarningText(offerStatus, stocksCount)
+    ({ offerStatus, hasStock, expected }) => {
+      const result = getStockWarningText(offerStatus, hasStock)
 
       expect(result).toStrictEqual(expected)
     }

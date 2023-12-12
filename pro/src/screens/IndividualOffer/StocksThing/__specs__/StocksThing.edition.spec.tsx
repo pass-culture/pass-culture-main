@@ -121,7 +121,6 @@ describe('screens:StocksThing', () => {
       lastProvider: null,
       name: 'Séance ciné duo',
       priceCategories: [{ price: 12.2, label: 'Mon premier tariff', id: 1 }],
-      stocks: [stockToDelete],
       subcategoryId: SubcategoryIdEnum.SEANCE_CINE,
       thumbUrl: null,
       externalTicketOfficeUrl: null,

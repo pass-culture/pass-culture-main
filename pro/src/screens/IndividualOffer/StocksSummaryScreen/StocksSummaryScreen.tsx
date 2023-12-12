@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react'
+import { useEffect, useState } from 'react'
 
 import { api } from 'apiClient/api'
 import { OFFER_WIZARD_STEP_IDS } from 'components/IndividualOfferNavigation/constants'
@@ -53,10 +53,8 @@ export const StocksSummaryScreen = () => {
     mode: OFFER_WIZARD_MODE.EDITION,
   })
 
-  const stockWarningText = getStockWarningText(
-    offer.status,
-    offer.isEvent ? stocksEvent.length : offer.stocks.length
-  )
+  // @ts-expect-error will be implemented in PC-26399
+  const stockWarningText = getStockWarningText(offer.status, offer.hasStock)
 
   const canBeDuo = subCategories.find(
     (subcategory) => subcategory.id === offer.subcategoryId

@@ -4,7 +4,10 @@ import React from 'react'
 import { api } from 'apiClient/api'
 import { IndividualOfferContext } from 'context/IndividualOfferContext'
 import { IndividualOffer } from 'core/Offers/types'
-import { bookingRecapFactory } from 'utils/apiFactories'
+import {
+  bookingRecapFactory,
+  defaultBookingRecapResponseStockModel,
+} from 'utils/apiFactories'
 import {
   individualOfferContextFactory,
   individualOfferFactory,
@@ -29,9 +32,27 @@ describe('BookingsSummary', () => {
 
     vi.spyOn(api, 'getBookingsPro').mockResolvedValue({
       bookingsRecap: [
-        bookingRecapFactory({}, offer),
-        bookingRecapFactory({}, offer),
-        bookingRecapFactory({}, offer),
+        bookingRecapFactory(
+          {},
+          {
+            ...defaultBookingRecapResponseStockModel,
+            offerName: 'Offre de test',
+          }
+        ),
+        bookingRecapFactory(
+          {},
+          {
+            ...defaultBookingRecapResponseStockModel,
+            offerName: 'Offre de test',
+          }
+        ),
+        bookingRecapFactory(
+          {},
+          {
+            ...defaultBookingRecapResponseStockModel,
+            offerName: 'Offre de test',
+          }
+        ),
       ],
       page: 1,
       pages: 1,

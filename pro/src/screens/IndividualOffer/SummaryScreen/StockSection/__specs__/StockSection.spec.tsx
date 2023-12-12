@@ -8,10 +8,7 @@ import { OfferStatus } from 'apiClient/v1'
 import { OFFER_WIZARD_STEP_IDS } from 'components/IndividualOfferNavigation/constants'
 import { OFFER_WIZARD_MODE } from 'core/Offers/constants'
 import { getIndividualOfferPath } from 'core/Offers/utils/getIndividualOfferUrl'
-import {
-  individualOfferFactory,
-  individualStockFactory,
-} from 'utils/individualApiFactories'
+import { individualOfferFactory } from 'utils/individualApiFactories'
 import { renderWithProviders } from 'utils/renderWithProviders'
 
 import StockSection, { StockSectionProps } from '../StockSection'
@@ -61,17 +58,10 @@ describe('Summary stock section', () => {
   describe('for general case', () => {
     it('should render sold out warning', () => {
       const props = {
-        offer: individualOfferFactory(
-          {
-            isEvent: false,
-            status: OfferStatus.SOLD_OUT,
-          },
-          individualStockFactory({
-            quantity: 0,
-            price: 20,
-            bookingLimitDatetime: null,
-          })
-        ),
+        offer: individualOfferFactory({
+          isEvent: false,
+          status: OfferStatus.SOLD_OUT,
+        }),
       }
       renderStockSection(
         props,
@@ -93,17 +83,10 @@ describe('Summary stock section', () => {
 
     it('should render expired warning', () => {
       const props = {
-        offer: individualOfferFactory(
-          {
-            status: OfferStatus.EXPIRED,
-            isEvent: false,
-          },
-          individualStockFactory({
-            quantity: 0,
-            price: 20,
-            bookingLimitDatetime: '12/02/2018',
-          })
-        ),
+        offer: individualOfferFactory({
+          status: OfferStatus.EXPIRED,
+          isEvent: false,
+        }),
       }
       renderStockSection(
         props,
@@ -152,17 +135,10 @@ describe('Summary stock section', () => {
   describe('for stock thing', () => {
     it('should render creation summary', async () => {
       const props = {
-        offer: individualOfferFactory(
-          {
-            status: OfferStatus.ACTIVE,
-            isEvent: false,
-          },
-          individualStockFactory({
-            quantity: 10,
-            price: 20,
-            bookingLimitDatetime: null,
-          })
-        ),
+        offer: individualOfferFactory({
+          status: OfferStatus.ACTIVE,
+          isEvent: false,
+        }),
       }
 
       renderStockSection(
@@ -191,17 +167,10 @@ describe('Summary stock section', () => {
 
     it('should render edition summary', async () => {
       const props = {
-        offer: individualOfferFactory(
-          {
-            status: OfferStatus.ACTIVE,
-            isEvent: false,
-          },
-          individualStockFactory({
-            quantity: 10,
-            price: 20,
-            bookingLimitDatetime: null,
-          })
-        ),
+        offer: individualOfferFactory({
+          status: OfferStatus.ACTIVE,
+          isEvent: false,
+        }),
       }
 
       renderStockSection(props)
@@ -219,33 +188,19 @@ describe('Summary stock section', () => {
 
     it("should render booking limit date when it's given", () => {
       const props = {
-        offer: individualOfferFactory(
-          {
-            status: OfferStatus.EXPIRED,
-          },
-          individualStockFactory({
-            quantity: 10,
-            price: 20,
-            bookingLimitDatetime: '2001-06-12',
-          })
-        ),
+        offer: individualOfferFactory({
+          status: OfferStatus.EXPIRED,
+        }),
       }
       renderStockSection(props)
     })
 
     it('should render quantity as "Illimité" when quantity is null or undefined', () => {
       const props = {
-        offer: individualOfferFactory(
-          {
-            status: OfferStatus.ACTIVE,
-            isEvent: false,
-          },
-          individualStockFactory({
-            quantity: null,
-            price: 20,
-            bookingLimitDatetime: '2001-06-12',
-          })
-        ),
+        offer: individualOfferFactory({
+          status: OfferStatus.ACTIVE,
+          isEvent: false,
+        }),
       }
 
       renderStockSection(props)

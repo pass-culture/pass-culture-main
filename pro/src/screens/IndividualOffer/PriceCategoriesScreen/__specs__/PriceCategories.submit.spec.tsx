@@ -12,7 +12,6 @@ import { getIndividualOfferPath } from 'core/Offers/utils/getIndividualOfferUrl'
 import { GetIndividualOfferFactory } from 'utils/apiFactories'
 import {
   individualOfferFactory,
-  individualStockFactory,
   priceCategoryFactory,
 } from 'utils/individualApiFactories'
 import { renderWithProviders } from 'utils/renderWithProviders'
@@ -82,7 +81,6 @@ describe('PriceCategories', () => {
     renderPriceCategories({
       offer: individualOfferFactory(
         undefined,
-        individualStockFactory({ priceCategoryId: 666, bookingsQuantity: 0 }),
         undefined,
         priceCategoryFactory({ id: 666 })
       ),
@@ -115,10 +113,6 @@ describe('PriceCategories', () => {
     renderPriceCategories({
       offer: individualOfferFactory(
         undefined,
-        individualStockFactory({
-          priceCategoryId: 666,
-          bookingsQuantity: 17,
-        }),
         undefined,
         priceCategoryFactory({ id: 666 })
       ),

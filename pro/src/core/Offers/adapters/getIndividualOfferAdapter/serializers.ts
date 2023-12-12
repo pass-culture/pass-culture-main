@@ -1,12 +1,5 @@
-import {
-  GetIndividualOfferResponseModel,
-  GetOfferStockResponseModel,
-} from 'apiClient/v1'
-import {
-  IndividualOffer,
-  IndividualOfferImage,
-  IndividualOfferStock,
-} from 'core/Offers/types'
+import { GetIndividualOfferResponseModel } from 'apiClient/v1'
+import { IndividualOffer, IndividualOfferImage } from 'core/Offers/types'
 import { AccessiblityEnum } from 'core/shared'
 
 export const serializeOfferApiExtraData = (

@@ -1,5 +1,4 @@
 import { screen, waitFor } from '@testing-library/react'
-import React from 'react'
 
 import { api } from 'apiClient/api'
 import { OfferStatus } from 'apiClient/v1'
@@ -45,7 +44,6 @@ describe('screens:Stocks', () => {
       venue: offerVenueFactory({
         departementCode: '75',
       }),
-      stocks: [],
     })
     storeOverrides = {}
     contextOverride = individualOfferContextFactory({

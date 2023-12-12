@@ -24,7 +24,6 @@ const offerer = offererFactory({ id: 12 })
 const venue = offerVenueFactory(undefined, offerer)
 const apiOffer: GetIndividualOfferResponseModel = GetIndividualOfferFactory(
   undefined,
-  undefined,
   venue
 )
 

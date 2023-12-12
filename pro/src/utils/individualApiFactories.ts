@@ -32,13 +32,11 @@ let offerSubCategoryId = 1
 
 export const individualOfferFactory = (
   customOffer: Partial<IndividualOffer> = {},
-  customStock: IndividualOfferStock = individualStockFactory() || null,
   customVenue: GetOfferVenueResponseModel = offerVenueFactory(),
   customPriceCatgory: PriceCategoryResponseModel = priceCategoryFactory() ||
     null
 ): IndividualOffer => {
   const priceCategory = customPriceCatgory ?? null
-  const stock = customStock === null ? null : customStock
 
   return {
     id: offerId++,

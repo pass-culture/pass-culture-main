@@ -1,6 +1,5 @@
 import { screen, waitFor } from '@testing-library/react'
 import { userEvent } from '@testing-library/user-event'
-import React from 'react'
 import { Route, Routes } from 'react-router-dom'
 
 import { api } from 'apiClient/api'
@@ -175,7 +174,6 @@ describe('screens:IndividualOffer::Informations:edition', () => {
       withdrawalDetails: 'Offer withdrawalDetails',
       withdrawalDelay: 140,
       withdrawalType: WithdrawalTypeEnum.ON_SITE,
-      stocks: [],
       lastProviderName: null,
       lastProvider: null,
       status: OfferStatus.ACTIVE,
@@ -432,13 +430,11 @@ describe('screens:IndividualOffer::Informations:edition', () => {
     })
 
     it('should submit when user click onCancel button, but should not send mail', async () => {
-      const individualStock = individualStockFactory()
       contextOverride.offer = {
         ...offer,
         venueId: virtualVenueId,
         subcategoryId: 'SCID virtual',
         isEvent: false,
-        stocks: [individualStock],
       }
       props = {
         venueId: virtualVenueId.toString(),
@@ -502,13 +498,11 @@ describe('screens:IndividualOffer::Informations:edition', () => {
     })
 
     it('should not submit when user click on close withdrawal dialog button', async () => {
-      const individualStock = individualStockFactory()
       contextOverride.offer = {
         ...offer,
         venueId: virtualVenueId,
         subcategoryId: 'SCID virtual',
         isEvent: false,
-        stocks: [individualStock],
       }
       props = {
         venueId: virtualVenueId.toString(),

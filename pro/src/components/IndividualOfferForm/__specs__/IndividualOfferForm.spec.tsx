@@ -1,7 +1,6 @@
 import { screen } from '@testing-library/react'
 import { userEvent } from '@testing-library/user-event'
 import { Form, Formik } from 'formik'
-import React from 'react'
 
 import { CategoryResponseModel, SubcategoryResponseModel } from 'apiClient/v1'
 import {
@@ -142,9 +141,7 @@ describe('IndividualOfferForm', () => {
   })
 
   const imageSectionDataset: (IndividualOffer | undefined)[] = [
-    individualOfferFactory({
-      stocks: [],
-    }),
+    individualOfferFactory(),
     undefined,
   ]
   it.each(imageSectionDataset)(

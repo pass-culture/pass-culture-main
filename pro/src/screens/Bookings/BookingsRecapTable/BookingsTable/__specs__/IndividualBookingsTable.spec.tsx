@@ -1,8 +1,10 @@
 import { screen } from '@testing-library/react'
 import React from 'react'
 
-import { bookingRecapFactory } from 'utils/apiFactories'
-import { individualOfferFactory } from 'utils/individualApiFactories'
+import {
+  bookingRecapFactory,
+  defaultBookingRecapResponseStockModel,
+} from 'utils/apiFactories'
 import { renderWithProviders } from 'utils/renderWithProviders'
 
 import {
@@ -15,13 +17,29 @@ const renderIndividualBookingTable = (props: IndividualBookingsTableProps) =>
 
 describe('CollectiveTableRow', () => {
   it('should render a table with bookings', () => {
-    const offer = individualOfferFactory({ name: 'Offre de test' })
-
     const props: IndividualBookingsTableProps = {
       bookings: [
-        bookingRecapFactory({}, offer),
-        bookingRecapFactory({}, offer),
-        bookingRecapFactory({}, offer),
+        bookingRecapFactory(
+          {},
+          {
+            ...defaultBookingRecapResponseStockModel,
+            offerName: 'Offre de test',
+          }
+        ),
+        bookingRecapFactory(
+          {},
+          {
+            ...defaultBookingRecapResponseStockModel,
+            offerName: 'Offre de test',
+          }
+        ),
+        bookingRecapFactory(
+          {},
+          {
+            ...defaultBookingRecapResponseStockModel,
+            offerName: 'Offre de test',
+          }
+        ),
       ],
       bookingStatuses: [],
       updateGlobalFilters: vi.fn(),
