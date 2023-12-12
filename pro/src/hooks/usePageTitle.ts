@@ -1,27 +1,14 @@
 import type { LocationListener } from 'history'
 import { useEffect } from 'react'
-import { matchPath, useLocation } from 'react-router-dom'
+import { useLocation } from 'react-router-dom'
 
-import routes, { RouteConfig } from 'app/AppRouter/routesMap'
-import routesIndividualOfferWizardDefinitions from 'app/AppRouter/subroutesIndividualOfferWizardMap'
-import routesSignupJourneyDefinitions from 'app/AppRouter/subroutesSignupJourneyMap'
-import routesSignupDefinitions from 'app/AppRouter/subroutesSignupMap'
+import { findCurrentRoute } from 'app/AppRouter/findCurrentRoute'
 
 const usePageTitle = (): LocationListener | void => {
   const location = useLocation()
 
   useEffect(() => {
-    const currentRoute = [
-      ...routes,
-      ...routesIndividualOfferWizardDefinitions,
-      ...routesSignupDefinitions,
-      ...routesSignupJourneyDefinitions,
-    ]
-      .reverse() // Albéric 09/08/2023 : I don't know why we reverse this list
-      .find(
-        ({ path, parentPath }: RouteConfig) =>
-          matchPath(`${parentPath || ''}${path}`, location.pathname) !== null
-      )
+    const currentRoute = findCurrentRoute(location)
 
     document.title = currentRoute
       ? `${currentRoute.title} - pass Culture Pro`
