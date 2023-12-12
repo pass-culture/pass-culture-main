@@ -7,7 +7,7 @@ import radioOffIcon from './assets/ico-radio-off.svg'
 import radioOnIcon from './assets/ico-radio-on.svg'
 import styles from './RadioButtonWithImage.module.scss'
 
-export interface RadioButtonWithImageProps {
+interface RadioButtonWithImageProps {
   name: string
   isChecked: boolean
   icon: string
