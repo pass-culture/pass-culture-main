@@ -123,7 +123,6 @@ class GetOffererTest:
             "id": offerer.id,
             "postalCode": offerer.postalCode,
             "siren": offerer.siren,
-            "dsToken": offerer.dsToken,
         }
         assert response.status_code == 200
         assert response.json == expected_serialized_offerer

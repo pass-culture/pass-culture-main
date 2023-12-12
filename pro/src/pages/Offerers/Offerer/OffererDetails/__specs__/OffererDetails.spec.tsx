@@ -55,7 +55,6 @@ describe('src | components | pages | Offerer | OffererDetails', () => {
           hasVenueProviders: false,
         },
       ],
-      dsToken: '0123456789abcdef',
     })
   })
 
