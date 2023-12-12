@@ -14,18 +14,21 @@ export const routesSignup: RouteConfig[] = [
     parentPath: '/inscription',
     path: '/',
     title: 'Créer un compte',
+    meta: { public: true },
   },
   {
     element: <SignupConfirmation />,
     parentPath: '/inscription',
     path: '/confirmation',
     title: 'Confirmation de création de compte',
+    meta: { public: true },
   },
   {
     element: <SignUpValidation />,
     parentPath: '/inscription',
     path: '/validation/:token',
     title: 'Confirmation de création de compte',
+    meta: { public: true },
   },
 ]
 

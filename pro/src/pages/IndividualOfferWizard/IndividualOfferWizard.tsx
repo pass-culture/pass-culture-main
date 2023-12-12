@@ -2,7 +2,6 @@ import React from 'react'
 import { useLocation, Route, Routes, useParams } from 'react-router-dom'
 
 import { AppLayout } from 'app/AppLayout'
-import { withRouteWrapper } from 'app/AppRouter/RouteWrapper'
 import { routesIndividualOfferWizard } from 'app/AppRouter/subroutesIndividualOfferWizardMap'
 import { IndividualOfferContextProvider } from 'context/IndividualOfferContext'
 import useCurrentUser from 'hooks/useCurrentUser'
@@ -35,4 +34,4 @@ export const IndividualOfferWizard = () => {
 
 // Lazy-loaded by react-router-dom
 // ts-unused-exports:disable-next-line
-export const Component = withRouteWrapper(IndividualOfferWizard)
+export const Component = IndividualOfferWizard

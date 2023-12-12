@@ -1,7 +1,7 @@
 /* No need to test this file */
 /* istanbul ignore file */
 import React from 'react'
-import { Navigate, useLocation } from 'react-router-dom'
+import { Navigate } from 'react-router-dom'
 
 import AdageIframe from 'pages/AdageIframe/AdageIframe'
 import Bookings from 'pages/Bookings'
@@ -54,30 +54,21 @@ export interface RouteConfig {
   featureName?: string
 }
 
-const RedirectToConnexionComponent = () => {
-  const location = useLocation()
-  return <Navigate to={`/connexion${location.search}`} />
-}
-
 const routes: RouteConfig[] = [
   {
-    element: <RedirectToConnexionComponent />,
+    element: <Navigate to="/accueil" />,
     path: '/',
   },
   {
     element: <AdageIframe />,
     path: '/adage-iframe/*',
-    meta: {
-      public: true,
-    },
+    meta: { public: true },
   },
   {
     element: <Signup />,
     path: '/inscription/*',
     title: 'Créer un compte',
-    meta: {
-      public: true,
-    },
+    meta: { public: true },
   },
   {
     element: <CsvTable />,
@@ -88,9 +79,7 @@ const routes: RouteConfig[] = [
     element: <Unavailable />,
     path: UNAVAILABLE_ERROR_PAGE,
     title: 'Page indisponible',
-    meta: {
-      public: true,
-    },
+    meta: { public: true },
   },
   {
     element: <Homepage />,
@@ -116,9 +105,7 @@ const routes: RouteConfig[] = [
     element: <SignIn />,
     path: '/connexion',
     title: 'Se connecter',
-    meta: {
-      public: true,
-    },
+    meta: { public: true },
   },
   {
     element: <EmailChangeValidation />,
