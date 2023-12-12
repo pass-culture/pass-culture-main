@@ -18,7 +18,7 @@ interface FormValues {
   token: string
 }
 
-const Desk = (): JSX.Element => {
+export const Desk = (): JSX.Element => {
   const [token, setToken] = useState('')
   const [isTokenValidated, setIsTokenValidated] = useState(false)
   const [booking, setBooking] = useState<GetBookingResponse | null>(null)
@@ -190,4 +190,6 @@ const Desk = (): JSX.Element => {
   )
 }
 
-export default Desk
+// Lazy-loaded by react-router-dom
+// ts-unused-exports:disable-next-line
+export const Component = Desk

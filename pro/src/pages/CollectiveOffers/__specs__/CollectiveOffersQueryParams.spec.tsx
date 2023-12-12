@@ -14,7 +14,7 @@ import { Offer, SearchFiltersParams } from 'core/Offers/types'
 import { computeCollectiveOffersUrl } from 'core/Offers/utils'
 import { renderWithProviders } from 'utils/renderWithProviders'
 
-import CollectiveOffers from '../CollectiveOffers'
+import { CollectiveOffers } from '../CollectiveOffers'
 import { collectiveOfferFactory } from '../utils/collectiveOffersFactories'
 
 //FIX ME : extract inital values and constant to reduce code duplication with CollectiveOffers.spec.tsx

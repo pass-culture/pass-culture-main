@@ -21,7 +21,7 @@ import { getDateToFrenchText } from 'utils/date'
 import getOfferRequestInformationsAdapter from './adapters/getOfferRequestInformationsAdapter'
 import styles from './CollectiveOfferFromRequest.module.scss'
 
-const CollectiveOfferFromRequest = (): JSX.Element => {
+export const CollectiveOfferFromRequest = (): JSX.Element => {
   const navigate = useNavigate()
   const notify = useNotification()
   const { logEvent } = useAnalytics()
@@ -180,4 +180,6 @@ const CollectiveOfferFromRequest = (): JSX.Element => {
   )
 }
 
-export default CollectiveOfferFromRequest
+// Lazy-loaded by react-router-dom
+// ts-unused-exports:disable-next-line
+export const Component = CollectiveOfferFromRequest

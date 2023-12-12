@@ -15,7 +15,7 @@ import useActiveFeature from 'hooks/useActiveFeature'
 import styles from './Reimbursement.module.scss'
 import ReimbursementsBanners from './ReimbursementsBanners'
 
-const Reimbursements = (): JSX.Element => {
+export const Reimbursements = (): JSX.Element => {
   const isNewBankDetailsJourneyEnabled = useActiveFeature(
     'WIP_ENABLE_NEW_BANK_DETAILS_JOURNEY'
   )
@@ -44,4 +44,6 @@ const Reimbursements = (): JSX.Element => {
   )
 }
 
-export default Reimbursements
+// Lazy-loaded by react-router-dom
+// ts-unused-exports:disable-next-line
+export const Component = Reimbursements

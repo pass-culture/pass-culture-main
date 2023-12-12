@@ -8,7 +8,7 @@ import * as useNotification from 'hooks/useNotification'
 import { defaultCollectifOfferResponseModel } from 'utils/collectiveApiFactories'
 import { renderWithProviders } from 'utils/renderWithProviders'
 
-import CollectiveOfferFromRequest from '../CollectiveOfferFromRequest'
+import { CollectiveOfferFromRequest } from '../CollectiveOfferFromRequest'
 
 const mockLogEvent = vi.fn()
 const mockNavigate = vi.fn()

@@ -58,4 +58,8 @@ export const CollectiveOfferCreation = ({
   )
 }
 
-export default withOptionalCollectiveOfferFromParams(CollectiveOfferCreation)
+// Lazy-loaded by react-router-dom
+// ts-unused-exports:disable-next-line
+export const Component = withOptionalCollectiveOfferFromParams(
+  CollectiveOfferCreation
+)

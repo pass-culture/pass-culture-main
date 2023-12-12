@@ -10,7 +10,8 @@ import { ApiResult } from 'apiClient/v1/core/ApiResult'
 import Notification from 'components/Notification/Notification'
 import { renderWithProviders } from 'utils/renderWithProviders'
 
-import OffererCreation from '../OffererCreation'
+import { OffererCreation } from '../OffererCreation'
+
 const renderOffererCreation = (storeOverrides: any) =>
   renderWithProviders(
     <>

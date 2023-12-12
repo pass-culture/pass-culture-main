@@ -6,7 +6,7 @@ import { HTTP_STATUS } from 'repository/pcapi/pcapiClient'
 import { defaultGetOffererVenueResponseModel } from 'utils/apiFactories'
 import { renderWithProviders } from 'utils/renderWithProviders'
 
-import OffererDetails from '../OffererDetails'
+import { OffererDetails } from '../OffererDetails'
 
 vi.mock('react-router-dom', async () => ({
   ...((await vi.importActual('react-router-dom')) ?? {}),

@@ -23,7 +23,7 @@ import { sortByLabel } from 'utils/strings'
 
 import { getFilteredCollectiveOffersAdapter } from './adapters'
 
-const CollectiveOffers = (): JSX.Element => {
+export const CollectiveOffers = (): JSX.Element => {
   const urlSearchFilters = useQuerySearchFilters()
   const currentPageNumber = urlSearchFilters.page ?? DEFAULT_PAGE
   const notify = useNotification()
@@ -182,4 +182,6 @@ const CollectiveOffers = (): JSX.Element => {
   )
 }
 
-export default CollectiveOffers
+// Lazy-loaded by react-router-dom
+// ts-unused-exports:disable-next-line
+export const Component = CollectiveOffers

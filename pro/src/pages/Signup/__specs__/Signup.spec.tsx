@@ -3,7 +3,7 @@ import React from 'react'
 
 import { renderWithProviders } from 'utils/renderWithProviders'
 
-import Signup from '../Signup'
+import { Signup } from '../Signup'
 
 vi.mock('apiClient/api', () => ({
   api: {

@@ -14,7 +14,7 @@ import ChangePasswordForm from './ChangePasswordForm/ChangePasswordForm'
 import styles from './ResetPassword.module.scss'
 import { validationSchema } from './validationSchema'
 
-const ResetPassword = (): JSX.Element => {
+export const ResetPassword = (): JSX.Element => {
   const [passwordChanged, setPasswordChanged] = useState(false)
   const [isBadToken, setIsBadToken] = useState(false)
   const location = useLocation()
@@ -85,4 +85,6 @@ const ResetPassword = (): JSX.Element => {
   )
 }
 
-export default ResetPassword
+// Lazy-loaded by react-router-dom
+// ts-unused-exports:disable-next-line
+export const Component = ResetPassword

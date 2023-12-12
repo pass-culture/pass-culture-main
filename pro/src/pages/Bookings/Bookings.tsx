@@ -13,7 +13,7 @@ import {
   getUserHasBookingsAdapter,
 } from './adapters'
 
-const Bookings = (): JSX.Element => {
+export const Bookings = (): JSX.Element => {
   const location = useLocation()
 
   return (
@@ -31,4 +31,6 @@ const Bookings = (): JSX.Element => {
   )
 }
 
-export default Bookings
+// Lazy-loaded by react-router-dom
+// ts-unused-exports:disable-next-line
+export const Component = Bookings

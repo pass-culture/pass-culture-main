@@ -15,7 +15,7 @@ import {
 } from 'utils/apiFactories'
 import { renderWithProviders } from 'utils/renderWithProviders'
 
-import Homepage from '../Homepage'
+import { Homepage } from '../Homepage'
 
 vi.mock('@firebase/remote-config', () => ({
   getValue: () => ({ asString: () => 'GE' }),

@@ -12,4 +12,6 @@ const CsvTable = (): JSX.Element => (
   </>
 )
 
-export default CsvTable
+// Lazy-loaded by react-router-dom
+// ts-unused-exports:disable-next-line
+export const Component = CsvTable
