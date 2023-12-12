@@ -18,10 +18,6 @@ import { INITIAL_OFFERER_VENUES } from 'pages/Home/OffererVenues'
 import { HTTP_STATUS } from 'repository/pcapi/pcapiClient'
 
 import styles from './Homepage.module.scss'
-import HomepageTabs, {
-  TAB_ID_HOME_STATS,
-  TAB_ID_OFFERERS,
-} from './HomepageTabs/HomepageTabs'
 import { OffererBanners } from './Offerers/OffererBanners'
 import Offerers from './Offerers/Offerers'
 import { ProfileAndSupport } from './ProfileAndSupport'
@@ -136,13 +132,6 @@ const Homepage = (): JSX.Element => {
           <LinkVenueCallout offerer={selectedOfferer} />
           <PendingBankAccountCallout offerer={selectedOfferer} />
         </div>
-        <HomepageTabs
-          initialActiveTab={
-            isStatisticsDashboardEnabled ? TAB_ID_HOME_STATS : TAB_ID_OFFERERS
-          }
-          profileRef={profileRef}
-          offerersRef={offerersRef}
-        />
 
         {isStatisticsDashboardEnabled && selectedOfferer !== null && (
           <>
