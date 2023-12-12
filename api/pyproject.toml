@@ -50,7 +50,7 @@ psycopg2 = "^2.9.9"
 pydantic = {version = "==2.*", extras = ["email"]}
 pyjwt = {version = "2.6.0", extras = ["crypto"]}
 pysaml2 = "^7.4.2"
-python-dotenv = "0.21.1"
+python-dotenv = "1.0.0"
 pyyaml = "6.0"
 requests = "2.31.0"
 rq = "1.12.0"
