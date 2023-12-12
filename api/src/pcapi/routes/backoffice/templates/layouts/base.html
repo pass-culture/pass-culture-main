@@ -11,9 +11,10 @@
     <meta name="csrf-token"
           content="{{ csrf_token.current_token }}">
     <title>Backoffice</title>
+    {% set icon_path = get_setting("BACKOFFICE_FAVICON_PATH") if get_setting else "favicon_default.ico" %}
     <link rel="icon"
           type="image/x-icon"
-          href="{{ url_for('static', filename='backoffice/favicon/' + get_setting("BACKOFFICE_FAVICON_PATH") ) }}" />
+          href="{{ url_for('static', filename='backoffice/favicon/' + icon_path ) }}" />
     <!-- Bootstrap icons -->
     <link href="{{ url_for('static', filename='backoffice/css/bootstrap-icons@1.9.1/font/bootstrap-icons.css') }}"
           rel="stylesheet"
