@@ -11,7 +11,6 @@ import pcapi.core.offerers.models as offerers_models
 from pcapi.core.offerers.models import Target
 import pcapi.core.offerers.repository as offerers_repository
 import pcapi.core.offers.models as offers_models
-from pcapi.domain.demarches_simplifiees import DMS_TOKEN_PRO_PREFIX
 from pcapi.routes.native.v1.serialization.common_models import AccessibilityComplianceMixin
 from pcapi.routes.serialization import BaseModel
 from pcapi.routes.serialization import finance_serialize
@@ -103,7 +102,6 @@ class GetOffererResponseModel(BaseModel):
     # FIXME (dbaty, 2020-11-09): optional until we populate the database (PC-5693)
     siren: str | None
     # FIXME (mageoffray, 2023-09-14): optional until we populate the database
-    dsToken: str | None
     hasValidBankAccount: bool
     hasPendingBankAccount: bool
     hasNonFreeOffer: bool
@@ -113,7 +111,6 @@ class GetOffererResponseModel(BaseModel):
     def from_orm(cls, row: Row) -> "GetOffererResponseModel":
         offerer: offerers_models.Offerer = row.Offerer
 
-        offerer.dsToken = DMS_TOKEN_PRO_PREFIX + offerer.dsToken
         offerer.apiKey = {
             "maxAllowed": settings.MAX_API_KEY_PER_OFFERER,
             "prefixes": offerers_repository.get_api_key_prefixes(offerer.id),

@@ -23,7 +23,6 @@ describe('transformOffererResponseModelToOfferer', () => {
       venuesWithNonFreeOffersWithoutBankAccounts: [],
       isValidated: true,
       isActive: true,
-      dsToken: '',
     }
 
     expect(transformOffererResponseModelToOfferer(properties)).toMatchObject({
