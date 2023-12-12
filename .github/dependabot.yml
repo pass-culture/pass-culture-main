@@ -25,3 +25,5 @@ updates:
         update-types: ['version-update:semver-major', 'version-update:semver-minor']
       - dependency-name: 'pydantic'
         update-types: ['version-update:semver-major', 'version-update:semver-minor']
+      # We are not ready to handle upper version of spectree, even for patches
+      - dependency-name: 'spectree'
