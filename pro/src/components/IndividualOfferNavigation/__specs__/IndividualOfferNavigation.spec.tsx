@@ -12,7 +12,6 @@ import { getIndividualOfferPath } from 'core/Offers/utils/getIndividualOfferUrl'
 import {
   individualOfferContextFactory,
   individualOfferFactory,
-  individualStockFactory,
 } from 'utils/individualApiFactories'
 import { renderWithProviders } from 'utils/renderWithProviders'
 
@@ -20,7 +19,6 @@ import { OFFER_WIZARD_STEP_IDS } from '../constants'
 import { IndividualOfferNavigation } from '../IndividualOfferNavigation'
 
 const offerId = 12
-const stockId = 55
 
 const renderIndividualOfferNavigation = (
   contextOverride: Partial<IndividualOfferContextValues> = {},
@@ -114,7 +112,7 @@ describe('test IndividualOfferNavigation', () => {
 
     it('should render steps when offer without stock is given', async () => {
       const offer = individualOfferFactory({
-        stocks: [],
+        hasStocks: false,
         isEvent: false,
       })
 
@@ -272,7 +270,6 @@ describe('test IndividualOfferNavigation', () => {
     it('should render tabs navigation in edition', () => {
       const offer = individualOfferFactory({
         id: offerId,
-        stocks: [individualStockFactory({ id: stockId })],
       })
 
       renderIndividualOfferNavigation(
@@ -295,7 +292,6 @@ describe('test IndividualOfferNavigation', () => {
     it('should render steps on Information', () => {
       const offer = individualOfferFactory({
         id: offerId,
-        stocks: [individualStockFactory({ id: stockId })],
         isEvent: false,
       })
 
@@ -322,7 +318,6 @@ describe('test IndividualOfferNavigation', () => {
     it('should render steps on Stocks', () => {
       const offer = individualOfferFactory({
         id: offerId,
-        stocks: [individualStockFactory({ id: stockId })],
         isEvent: false,
       })
 
