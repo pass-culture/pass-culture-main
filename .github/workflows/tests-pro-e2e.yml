@@ -49,6 +49,10 @@ jobs:
         with:
           workload_identity_provider: ${{ secrets.GCP_EHP_WORKLOAD_IDENTITY_PROVIDER }}
           service_account: ${{ secrets.GCP_EHP_SERVICE_ACCOUNT }}
+      - name: 'Move cypress videos'
+        run: |
+          mkdir -p cypress/videos/${{ github.ref }}/${{ github.sha }} && \
+          mv cypress/videos/*.mp4 cypress/videos/${{ github.ref }}/${{ github.sha }}/
       - name: Archive E2E results
         if: always()
         uses: google-github-actions/upload-cloud-storage@v1
