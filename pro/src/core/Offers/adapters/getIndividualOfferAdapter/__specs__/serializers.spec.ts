@@ -210,6 +210,7 @@ describe('serializer', () => {
       ean: '',
       externalTicketOfficeUrl: '',
       image: undefined,
+      hasStocks: true,
       isActive: true,
       isActivable: true,
       isDigital: false,

@@ -124,6 +124,7 @@ export interface IndividualOffer {
   bookingsCount: number
   description: string
   durationMinutes: number | null
+  hasStocks: boolean
   isActive: boolean
   isActivable: boolean
   isDuo: boolean
