@@ -1,3 +1,4 @@
+from decimal import Decimal
 import logging
 import random
 import typing
@@ -91,12 +92,18 @@ def get_classroom_playlist(
     )
 
 
+def format_distance(distance: float | None) -> Decimal | None:
+    if not distance:
+        return None
+    return Decimal.from_float(distance).quantize(Decimal("1.0"))
+
+
 def serialize_collective_offer(
     offer: educational_models.CollectiveOffer,
     serializer: type[serializers.CollectiveOfferResponseModel] | type[serializers.CollectiveOfferTemplateResponseModel],
     is_favorite: bool,
-    venue_distance: int | None = None,
-    event_distance: int | None = None,
+    venue_distance: float | None = None,
+    event_distance: float | None = None,
 ) -> serializers.CollectiveOfferResponseModel | serializers.CollectiveOfferTemplateResponseModel:
     offer_venue_id = offer.offerVenue.get("venueId")
     if offer_venue_id:
@@ -105,8 +112,9 @@ def serialize_collective_offer(
         offer_venue = None
 
     serialized_offer = serializer.build(offer=offer, offerVenue=offer_venue, is_favorite=is_favorite)
-    serialized_offer.venue.distance = venue_distance
-    serialized_offer.offerVenue.distance = event_distance
+
+    serialized_offer.venue.distance = format_distance(venue_distance)
+    serialized_offer.offerVenue.distance = format_distance(event_distance)
 
     return serialized_offer
 
@@ -204,7 +212,7 @@ def get_local_offerers_playlist(
                 img_url=venue.bannerUrl,
                 public_name=venue.publicName,
                 name=venue.name,
-                distance=rows[str(venue.id)],
+                distance=format_distance(rows[str(venue.id)]),
                 city=venue.city,
                 id=venue.id,
             )
