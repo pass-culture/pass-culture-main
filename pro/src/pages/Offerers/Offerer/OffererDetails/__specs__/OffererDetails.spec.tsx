@@ -2,8 +2,8 @@ import { screen, waitForElementToBeRemoved } from '@testing-library/react'
 import React from 'react'
 
 import { api } from 'apiClient/api'
-import { VenueTypeCode } from 'apiClient/v1'
 import { HTTP_STATUS } from 'repository/pcapi/pcapiClient'
+import { defaultGetOffererVenueResponseModel } from 'utils/apiFactories'
 import { renderWithProviders } from 'utils/renderWithProviders'
 
 import OffererDetails from '../OffererDetails'
@@ -40,19 +40,9 @@ describe('src | components | pages | Offerer | OffererDetails', () => {
       isActive: true,
       managedVenues: [
         {
-          address: '1 fake address',
+          ...defaultGetOffererVenueResponseModel,
           name: 'fake venue',
           publicName: 'fake venue',
-          postalCode: '75000',
-          city: 'Paris',
-          id: 1,
-          collectiveDmsApplications: [],
-          isVirtual: false,
-          hasAdageId: false,
-          hasCreatedOffer: false,
-          hasMissingReimbursementPoint: false,
-          venueTypeCode: VenueTypeCode.AUTRE,
-          hasVenueProviders: false,
         },
       ],
       dsToken: '0123456789abcdef',

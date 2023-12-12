@@ -10,6 +10,8 @@ export type GetOffererVenueResponseModel = {
   adageInscriptionDate?: string | null;
   address?: string | null;
   audioDisabilityCompliant?: boolean | null;
+  bannerMeta?: Record<string, any> | null;
+  bannerUrl?: string | null;
   bookingEmail?: string | null;
   city?: string | null;
   collectiveDmsApplications: Array<DMSApplicationForEAC>;
@@ -22,6 +24,7 @@ export type GetOffererVenueResponseModel = {
   hasPendingBankInformationApplication?: boolean | null;
   hasVenueProviders: boolean;
   id: number;
+  isPermanent: boolean;
   isVirtual: boolean;
   mentalDisabilityCompliant?: boolean | null;
   motorDisabilityCompliant?: boolean | null;
