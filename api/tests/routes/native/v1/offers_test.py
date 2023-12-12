@@ -185,10 +185,6 @@ class OffersTest:
         assert response.json["expenseDomains"] == ["all"]
         assert response.json["extraData"] == {
             "author": "mandibule",
-            # FIXME (mageoffray, 22-06-2023)
-            # ISBN should be replace by EAN. Until next app force update we need
-            # to keep isbn field
-            "isbn": "3838",
             "ean": "3838",
             "durationMinutes": 33,
             "musicSubType": "Acid Jazz",
