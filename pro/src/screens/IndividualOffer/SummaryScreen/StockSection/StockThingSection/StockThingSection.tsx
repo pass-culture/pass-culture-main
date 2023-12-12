@@ -44,7 +44,7 @@ const StockThingSection = ({
               : stock.quantity === 'Illimité'
                 ? 'Illimité'
                 : stock.quantity
-            : 'Illimité' // Afficher undefined si stock.quantity est null ou undefined
+            : 'Illimité'
         }
       />
 
