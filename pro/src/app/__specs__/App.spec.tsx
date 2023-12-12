@@ -21,6 +21,7 @@ const renderApp = (storeOverrides: any, url = '/') =>
       <Routes>
         <Route path="/" element={<App />}>
           <Route path="/" element={<p>Sub component</p>} />
+          <Route path="/offres" element={<p>Offres</p>} />
           <Route path="/connexion" element={<p>Login page</p>} />
         </Route>
       </Routes>
@@ -42,7 +43,6 @@ describe('App', () => {
   beforeEach(() => {
     store = {
       user: {
-        initialized: true,
         currentUser: {
           id: 12,
           isAdmin: false,
@@ -75,14 +75,21 @@ describe('App', () => {
     })
   })
 
-  describe('cookies banner', () => {
-    it('should render the cookie banner', async () => {
-      renderApp(store)
-      expect(
-        await screen.findByText(
-          /Nous utilisons des cookies et traceurs afin d’analyser l’utilisation de la plateforme et vous proposer la meilleure expérience possible/
-        )
-      ).toBeInTheDocument()
-    })
+  it('should render the cookie banner', async () => {
+    renderApp(store)
+    expect(
+      await screen.findByText(
+        /Nous utilisons des cookies et traceurs afin d’analyser l’utilisation de la plateforme et vous proposer la meilleure expérience possible/
+      )
+    ).toBeInTheDocument()
+  })
+
+  it('should redirect to login if not logged in on a private page', async () => {
+    const loggedOutStore = {
+      user: { currentUser: null },
+    }
+    renderApp(loggedOutStore, '/offres')
+
+    expect(await screen.findByText('Login page')).toBeInTheDocument()
   })
 })

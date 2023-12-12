@@ -1,8 +1,9 @@
 import { setUser as setSentryUser } from '@sentry/browser'
 import React, { useEffect, useState } from 'react'
 import { useSelector } from 'react-redux'
-import { Outlet, useLocation } from 'react-router-dom'
+import { Navigate, Outlet, useLocation } from 'react-router-dom'
 
+import { findCurrentRoute } from 'app/AppRouter/findCurrentRoute'
 import Notification from 'components/Notification/Notification'
 import useActiveFeature from 'hooks/useActiveFeature'
 import { useConfigureFirebase } from 'hooks/useAnalytics'
@@ -100,6 +101,17 @@ const App = (): JSX.Element | null => {
   if (isMaintenanceActivated) {
     return null
   }
+
+  const currentRoute = findCurrentRoute(location)
+  if (!currentRoute?.meta?.public && currentUser === null) {
+    const fromUrl = encodeURIComponent(`${location.pathname}${location.search}`)
+    const loginUrl = fromUrl.includes('logout')
+      ? '/connexion'
+      : `/connexion?de=${fromUrl}`
+
+    return <Navigate to={loginUrl} replace />
+  }
+
   return (
     <>
       <Outlet />

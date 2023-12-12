@@ -64,6 +64,7 @@ describe('usePageTitle', () => {
       'Espace acteurs culturels - pass Culture Pro'
     )
   })
+
   it('should update page title when user navigates to another page', async () => {
     renderusePageTitleRoutes()
     await userEvent.click(screen.getByRole('link', { name: 'Guichet' }))
