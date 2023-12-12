@@ -66,6 +66,7 @@ export const individualOfferFactory = (
     lastProviderName: null,
     lastProvider: null,
     externalTicketOfficeUrl: '',
+    hasStocks: true,
     isDuo: true,
     isEvent: true,
     isDigital: false,

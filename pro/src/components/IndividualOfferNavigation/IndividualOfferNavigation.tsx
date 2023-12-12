@@ -26,7 +26,6 @@ export const IndividualOfferNavigation = () => {
   const hasPriceCategories = Boolean(
     offer?.priceCategories && offer?.priceCategories?.length > 0
   )
-  const hasStock = offer !== null && offer.stocks.length > 0
   const { search } = useLocation()
   const queryParams = new URLSearchParams(search)
   const queryOfferType = queryParams.get('offer-type')
@@ -104,7 +103,7 @@ export const IndividualOfferNavigation = () => {
           step: OFFER_WIZARD_STEP_IDS.SUMMARY,
           mode,
         }),
-        isActive: hasStock,
+        isActive: Boolean(offer?.hasStocks),
       },
       {
         id: OFFER_WIZARD_STEP_IDS.CONFIRMATION,

@@ -142,9 +142,7 @@ describe('IndividualOfferForm', () => {
   })
 
   const imageSectionDataset: (IndividualOffer | undefined)[] = [
-    individualOfferFactory({
-      stocks: [],
-    }),
+    individualOfferFactory(),
     undefined,
   ]
   it.each(imageSectionDataset)(
