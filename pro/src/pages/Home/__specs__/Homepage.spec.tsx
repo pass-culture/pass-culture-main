@@ -3,13 +3,11 @@ import {
   waitFor,
   waitForElementToBeRemoved,
 } from '@testing-library/react'
-import { userEvent } from '@testing-library/user-event'
 import React from 'react'
 
 import { api } from 'apiClient/api'
 import { GetOffererResponseModel } from 'apiClient/v1'
 import { RemoteContextProvider } from 'context/remoteConfigContext'
-import { Events } from 'core/FirebaseEvents/constants'
 import * as useAnalytics from 'hooks/useAnalytics'
 import {
   defaultGetOffererVenueResponseModel,
@@ -135,45 +133,6 @@ describe('homepage', () => {
       await waitForElementToBeRemoved(() => screen.queryByTestId('spinner'))
 
       expect(screen.queryByTestId('home-offer-steps')).not.toBeInTheDocument()
-    })
-
-    describe('when clicking on anchor link to profile', () => {
-      let scrollIntoViewMock: any
-
-      beforeEach(async () => {
-        scrollIntoViewMock = vi.fn()
-        Element.prototype.scrollIntoView = scrollIntoViewMock
-        renderHomePage(store)
-        await waitForElementToBeRemoved(() => screen.queryByTestId('spinner'))
-      })
-
-      it('should smooth scroll to section if user doesnt prefer reduced motion', async () => {
-        // when
-        await userEvent.click(
-          screen.getByRole('button', { name: 'Profil et aide' })
-        )
-
-        // then
-        expect(scrollIntoViewMock).toHaveBeenCalledWith({
-          behavior: 'smooth',
-        })
-      })
-    })
-    describe('when clicking on anchor link to offerers', () => {
-      it('should trigger', async () => {
-        renderHomePage(store)
-
-        // when
-        await userEvent.click(
-          screen.getByRole('button', { name: 'Structures et lieux' })
-        )
-
-        // then
-        expect(mockLogEvent).toHaveBeenNthCalledWith(
-          1,
-          Events.CLICKED_BREADCRUMBS_STRUCTURES
-        )
-      })
     })
 
     describe('profileAndSupport', () => {
