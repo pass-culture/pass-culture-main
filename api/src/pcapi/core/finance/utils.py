@@ -38,13 +38,13 @@ def fr_percentage_filter(decimal_rate: decimal.Decimal) -> str:
     return numbers.format_percent(decimal_rate, locale="fr_FR", decimal_quantization=False)
 
 
-def fr_currency_filter(eurocents: int) -> float:
+def fr_currency_filter(eurocents: int) -> str:
     """Returns a localized str without currency symbol"""
     amount_in_euros = to_euros(eurocents)
     return numbers.format_decimal(amount_in_euros, format="#,##0.00", locale="fr_FR")
 
 
-def fr_currency_opposite_filter(eurocents: int) -> float:
+def fr_currency_opposite_filter(eurocents: int) -> str:
     """Returns a localized str without currency symbol"""
     return fr_currency_filter(-eurocents)
 
