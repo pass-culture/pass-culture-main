@@ -16,7 +16,7 @@ describe('getStockWarningText', () => {
     },
     {
       offerStatus: OfferStatus.EXPIRED,
-      hasStock: true,
+      hasStock: false,
       expected: 'Vous n’avez aucun stock renseigné.',
     },
     {
@@ -31,7 +31,7 @@ describe('getStockWarningText', () => {
     },
     {
       offerStatus: OfferStatus.INACTIVE,
-      hasStock: false,
+      hasStock: true,
       expected: false,
     },
   ]

@@ -17,9 +17,9 @@ import StockThingSection from './StockThingSection/StockThingSection'
 
 export const getStockWarningText = (
   offerStatus: OfferStatus,
-  stocksCount?: number | null
+  hasStock?: boolean | null
 ) => {
-  if (!stocksCount) {
+  if (!hasStock) {
     return 'Vous n’avez aucun stock renseigné.'
   }
 
@@ -76,11 +76,8 @@ const StockSection = ({ offer, canBeDuo }: StockSectionProps): JSX.Element => {
     mode:
       mode === OFFER_WIZARD_MODE.READ_ONLY ? OFFER_WIZARD_MODE.EDITION : mode,
   })
-
-  const stockWarningText = getStockWarningText(
-    offer.status,
-    offer.isEvent ? stocksEventsStats?.stockCount : offer.stocks.length
-  )
+  // @ts-expect-error will be implemented in PC-26399
+  const stockWarningText = getStockWarningText(offer.status, offer.hasStock)
 
   return (
     <>

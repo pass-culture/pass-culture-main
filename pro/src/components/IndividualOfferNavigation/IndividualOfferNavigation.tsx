@@ -26,7 +26,8 @@ export const IndividualOfferNavigation = () => {
   const hasPriceCategories = Boolean(
     offer?.priceCategories && offer?.priceCategories?.length > 0
   )
-  const hasStock = offer !== null && offer.stocks.length > 0
+  // @ts-expect-error will be implemented in PC-26399
+  const hasStock = offer?.hasStock
   const { search } = useLocation()
   const queryParams = new URLSearchParams(search)
   const queryOfferType = queryParams.get('offer-type')
