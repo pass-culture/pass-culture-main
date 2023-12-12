@@ -5,7 +5,7 @@
 
 export type LocalOfferersPlaylistOffer = {
   city?: string | null;
-  distance: number;
+  distance?: number | null;
   id: number;
   imgUrl?: string | null;
   name: string;
