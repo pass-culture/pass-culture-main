@@ -6,7 +6,7 @@ license = "MPL-2.0"
 authors = ["Equipe pass Culture <contact@passculture.app>"]
 
 [tool.poetry.dependencies]
-python = "^3.10"
+python = "^3.11"
 alembic = "1.8.0"
 algoliasearch = "2.4.0"
 amplitude-analytics = "^1.1.3"
