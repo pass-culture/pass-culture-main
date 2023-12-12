@@ -29,7 +29,6 @@ const selectedOfferer: GetOffererResponseModel = {
   id: 10,
   postalCode: '123123',
   siren: null,
-  dsToken: '',
 }
 const renderOfferers = (userOffererValidated: boolean) => {
   renderWithProviders(

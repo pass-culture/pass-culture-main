@@ -23,7 +23,6 @@ class OffererFactory(BaseFactory):
     siren = factory.Sequence(lambda n: f"{n + 1:09}")
     isActive = True
     validationStatus = ValidationStatus.VALIDATED
-    dsToken = factory.LazyFunction(api.generate_offerer_ds_token)
 
 
 class NotValidatedOffererFactory(OffererFactory):
