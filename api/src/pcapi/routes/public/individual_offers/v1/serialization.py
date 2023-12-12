@@ -123,7 +123,6 @@ EAN_FIELD = pydantic_v1.Field(example="1234567890123", description="European Art
 class ExtraDataModel(serialization.ConfiguredBaseModel):
     author: str | None = pydantic_v1.Field(example="Jane Doe")
     ean: str | None = EAN_FIELD
-    isbn: str | None = pydantic_v1.Field(None, example="9783140464079")
     musicType: MusicTypeEnum | None  # type: ignore [valid-type]
     performer: str | None = pydantic_v1.Field(example="Jane Doe")
     stageDirector: str | None = pydantic_v1.Field(example="Jane Doe")
