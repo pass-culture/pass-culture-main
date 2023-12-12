@@ -40,11 +40,8 @@ import fullWaitIcon from 'icons/full-wait.svg'
 import logoPassCultureProFullIcon from 'icons/logo-pass-culture-pro-full.svg'
 import logoPassCultureProIcon from 'icons/logo-pass-culture-pro.svg'
 import logoPassCultureIcon from 'icons/logo-pass-culture.svg'
-import shadowCalendarIcon from 'icons/shadow-calendar.svg'
-import shadowEuroIcon from 'icons/shadow-euro.svg'
 import shadowTipsHelpIcon from 'icons/shadow-tips-help.svg'
 import shadowTipsWarningIcon from 'icons/shadow-tips-warning.svg'
-import shadowTrophyIcon from 'icons/shadow-trophy.svg'
 import stroke404Icon from 'icons/stroke-404.svg'
 import strokeAccessibilityBrainIcon from 'icons/stroke-accessibility-brain.svg'
 import strokeAccessibilityEarIcon from 'icons/stroke-accessibility-ear.svg'
@@ -239,9 +236,6 @@ export const strokeIcons: IconListItem[] = [
 export const shadowIcons: IconListItem[] = [
   { src: shadowTipsHelpIcon },
   { src: shadowTipsWarningIcon },
-  { src: shadowTrophyIcon },
-  { src: shadowEuroIcon },
-  { src: shadowCalendarIcon },
 ]
 
 export const otherIcons: IconListItem[] = [
