@@ -1,5 +1,6 @@
 from datetime import date
 from datetime import datetime
+from decimal import Decimal
 import enum
 import logging
 import typing
@@ -63,7 +64,7 @@ class OfferVenueResponse(BaseModel):
     coordinates: common_models.Coordinates
     managingOfferer: OfferManagingOffererResponse
     adageId: str | None
-    distance: float | None
+    distance: Decimal | None
 
     class Config:
         orm_mode = True
@@ -120,7 +121,7 @@ class CollectiveOfferOfferVenue(BaseModel):
     address: str | None
     postalCode: str | None
     city: str | None
-    distance: float | None
+    distance: Decimal | None
 
     _validated_venue_id = validator("venueId", pre=True, allow_reuse=True)(validate_venue_id)
 

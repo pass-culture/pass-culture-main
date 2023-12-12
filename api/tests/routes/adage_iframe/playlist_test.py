@@ -41,9 +41,10 @@ class GetClassroomPlaylistTest(SharedPlaylistsErrorTests):
 
         mock_path = "pcapi.connectors.big_query.TestingBackend.run_query"
         with patch(mock_path) as mock_run_query:
+            # add some decimal digits and ensure that the response removed them
             mock_run_query.return_value = [
-                {"collective_offer_id": str(offers[0].id), "distance_in_km": expected_distance},
-                {"collective_offer_id": str(offers[1].id), "distance_in_km": expected_distance},
+                {"collective_offer_id": str(offers[0].id), "distance_in_km": expected_distance + 0.001234},
+                {"collective_offer_id": str(offers[1].id), "distance_in_km": expected_distance + 0.001234},
             ]
 
             # fetch institution (1 query)
