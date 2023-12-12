@@ -23,7 +23,7 @@ interface OffererCreationFormValues {
   siren: string
 }
 
-const OffererCreation = (): JSX.Element => {
+export const OffererCreation = (): JSX.Element => {
   const isEntrepriseApiDisabled = useActiveFeature('DISABLE_ENTERPRISE_API')
   const navigate = useNavigate()
   const notification = useNotification()
@@ -131,4 +131,6 @@ const OffererCreation = (): JSX.Element => {
   )
 }
 
-export default OffererCreation
+// Lazy-loaded by react-router-dom
+// ts-unused-exports:disable-next-line
+export const Component = OffererCreation

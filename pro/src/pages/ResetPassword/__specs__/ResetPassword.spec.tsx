@@ -5,7 +5,7 @@ import React from 'react'
 import { api } from 'apiClient/api'
 import { renderWithProviders } from 'utils/renderWithProviders'
 
-import ResetPassword from '../ResetPassword'
+import { ResetPassword } from '../ResetPassword'
 
 vi.mock('utils/recaptcha', () => ({
   initReCaptchaScript: vi.fn(() => ({ remove: vi.fn() })),

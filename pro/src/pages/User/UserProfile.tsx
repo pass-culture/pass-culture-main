@@ -24,4 +24,6 @@ const Profile = (): JSX.Element => {
   )
 }
 
-export default Profile
+// Lazy-loaded by react-router-dom
+// ts-unused-exports:disable-next-line
+export const Component = Profile

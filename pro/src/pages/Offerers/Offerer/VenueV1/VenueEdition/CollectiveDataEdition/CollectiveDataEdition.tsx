@@ -57,7 +57,7 @@ const fetchCulturalPartnerIfVenueHasNoCollectiveData = async (
   }
 }
 
-const CollectiveDataEdition = (): JSX.Element | null => {
+export const CollectiveDataEdition = (): JSX.Element | null => {
   const notify = useNotification()
   const { offererId, venueId } = useParams<{
     offererId: string
@@ -167,4 +167,6 @@ const CollectiveDataEdition = (): JSX.Element | null => {
   )
 }
 
-export default CollectiveDataEdition
+// Lazy-loaded by react-router-dom
+// ts-unused-exports:disable-next-line
+export const Component = CollectiveDataEdition

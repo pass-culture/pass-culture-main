@@ -10,7 +10,7 @@ import useNotification from 'hooks/useNotification'
 import { VenueFormScreen } from 'screens/VenueForm'
 import Spinner from 'ui-kit/Spinner/Spinner'
 
-const VenueCreation = (): JSX.Element | null => {
+export const VenueCreation = (): JSX.Element | null => {
   const homePath = '/accueil'
   const { offererId } = useParams<{ offererId: string }>()
   const notify = useNotification()
@@ -60,4 +60,6 @@ const VenueCreation = (): JSX.Element | null => {
   )
 }
 
-export default VenueCreation
+// Lazy-loaded by react-router-dom
+// ts-unused-exports:disable-next-line
+export const Component = VenueCreation

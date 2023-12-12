@@ -13,6 +13,7 @@ const EmailChangeValidation = (): JSX.Element => {
   const [isSuccess, setIsSuccess] = useState<boolean | undefined>(undefined)
   const location = useLocation()
   const dispatch = useDispatch()
+
   useEffect(() => {
     const { expiration_timestamp, token } = parse(location.search)
     const expiration_date = new Date(expiration_timestamp)
@@ -41,4 +42,6 @@ const EmailChangeValidation = (): JSX.Element => {
   )
 }
 
-export default EmailChangeValidation
+// Lazy-loaded by react-router-dom
+// ts-unused-exports:disable-next-line
+export const Component = EmailChangeValidation

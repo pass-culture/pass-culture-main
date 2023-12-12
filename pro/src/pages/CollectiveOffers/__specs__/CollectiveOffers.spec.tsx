@@ -15,7 +15,7 @@ import { Offer, SearchFiltersParams } from 'core/Offers/types'
 import { computeCollectiveOffersUrl } from 'core/Offers/utils'
 import { renderWithProviders } from 'utils/renderWithProviders'
 
-import CollectiveOffers from '../CollectiveOffers'
+import { CollectiveOffers } from '../CollectiveOffers'
 import { collectiveOfferFactory } from '../utils/collectiveOffersFactories'
 
 const categoriesAndSubcategories = {

@@ -1,43 +1,9 @@
 /* No need to test this file */
 /* istanbul ignore file */
+
 import React from 'react'
 import { Navigate } from 'react-router-dom'
 
-import AdageIframe from 'pages/AdageIframe/AdageIframe'
-import Bookings from 'pages/Bookings'
-import CollectiveBookings from 'pages/CollectiveBookings'
-import CollectiveOfferConfirmation from 'pages/CollectiveOfferConfirmation'
-import CollectiveOfferCreation from 'pages/CollectiveOfferCreation'
-import CollectiveOfferEdition from 'pages/CollectiveOfferEdition'
-import CollectiveOfferFromRequest from 'pages/CollectiveOfferFromRequest'
-import CollectiveOffers from 'pages/CollectiveOffers'
-import CollectiveOfferStockCreation from 'pages/CollectiveOfferStockCreation'
-import CollectiveOfferStockEdition from 'pages/CollectiveOfferStockEdition'
-import CollectiveOfferSummaryCreation from 'pages/CollectiveOfferSummaryCreation'
-import CollectiveOfferSummaryEdition from 'pages/CollectiveOfferSummaryEdition'
-import CollectiveOfferVisibilityCreation from 'pages/CollectiveOfferVisibility/CollectiveOfferCreationVisibility'
-import CollectiveOfferVisibility from 'pages/CollectiveOfferVisibility/CollectiveOfferEditionVisibility'
-import CsvTable from 'pages/CsvTable'
-import Desk from 'pages/Desk'
-import { EmailChangeValidation } from 'pages/EmailChangeValidation'
-import Unavailable from 'pages/Errors/Unavailable/Unavailable'
-import Homepage from 'pages/Home/Homepage'
-import LostPassword from 'pages/LostPassword'
-import OffererDetails from 'pages/Offerers/Offerer/OffererDetails/OffererDetails'
-import CollectiveDataEdition from 'pages/Offerers/Offerer/VenueV1/VenueEdition/CollectiveDataEdition'
-import OffererCreation from 'pages/Offerers/OffererCreation'
-import { OffererStats } from 'pages/OffererStats'
-import OffersRoute from 'pages/Offers'
-import OfferType from 'pages/OfferType'
-import Reimbursements from 'pages/Reimbursements'
-import ResetPassword from 'pages/ResetPassword/ResetPassword'
-import SignIn from 'pages/SignIn/SignIn'
-import Signup from 'pages/Signup/Signup'
-import { SignupJourneyRoutes } from 'pages/SignupJourneyRoutes'
-import { UserProfile } from 'pages/User'
-import { VenueCreation } from 'pages/VenueCreation'
-import { VenueEdition } from 'pages/VenueEdition'
-import CollectiveOfferSelectionDuplication from 'screens/CollectiveOfferSelectionDuplication'
 import { UNAVAILABLE_ERROR_PAGE } from 'utils/routes'
 
 interface RouteMeta {
@@ -60,214 +26,240 @@ const routes: RouteConfig[] = [
     path: '/',
   },
   {
-    element: <AdageIframe />,
+    lazy: () => import('pages/AdageIframe/AdageIframe'),
     path: '/adage-iframe/*',
     meta: { public: true },
   },
   {
-    element: <Signup />,
+    lazy: () => import('pages/Signup/Signup'),
     path: '/inscription/*',
     title: 'Créer un compte',
     meta: { public: true },
   },
   {
-    element: <CsvTable />,
+    lazy: () => import('pages/CsvTable/CsvTable'),
     path: '/remboursements-details',
     title: 'Remboursements',
   },
   {
-    element: <Unavailable />,
+    lazy: () => import('pages/Errors/Unavailable/Unavailable'),
     path: UNAVAILABLE_ERROR_PAGE,
     title: 'Page indisponible',
     meta: { public: true },
   },
   {
-    element: <Homepage />,
+    lazy: () => import('pages/Home/Homepage'),
     path: '/accueil',
     title: 'Espace acteurs culturels',
   },
   {
-    element: <Desk />,
+    lazy: () => import('pages/Desk/Desk'),
     path: '/guichet',
     title: 'Guichet',
   },
   {
-    element: <Bookings />,
+    lazy: () => import('pages/Bookings/Bookings'),
     path: '/reservations',
     title: 'Réservations individuelles',
   },
   {
-    element: <CollectiveBookings />,
+    lazy: () => import('pages/CollectiveBookings/CollectiveBookings'),
     path: '/reservations/collectives',
     title: 'Réservations collectives',
   },
   {
-    element: <SignIn />,
+    lazy: () => import('pages/SignIn/SignIn'),
     path: '/connexion',
     title: 'Se connecter',
     meta: { public: true },
   },
   {
-    element: <EmailChangeValidation />,
+    lazy: () => import('pages/EmailChangeValidation/EmailChangeValidation'),
     path: '/email_validation',
     title: 'Valider l’adresse email',
     meta: { public: true },
   },
   {
-    element: <OffererCreation />,
+    lazy: () => import('pages/Offerers/OffererCreation/OffererCreation'),
     path: '/structures/creation',
     title: 'Créer une structure',
   },
   {
-    element: <OffererDetails />,
+    lazy: () => import('pages/Offerers/Offerer/OffererDetails/OffererDetails'),
     path: '/structures/:offererId',
     title: 'Détails de la structure',
   },
   {
-    element: <VenueCreation />,
+    lazy: () => import('pages/VenueCreation/VenueCreation'),
     path: '/structures/:offererId/lieux/creation',
     title: 'Créer un lieu',
   },
   {
-    element: <VenueEdition />,
+    lazy: () => import('pages/VenueEdition/VenueEdition'),
     path: '/structures/:offererId/lieux/:venueId',
     title: 'Modifier un lieu',
   },
   {
-    element: <CollectiveDataEdition />,
+    lazy: () =>
+      import(
+        'pages/Offerers/Offerer/VenueV1/VenueEdition/CollectiveDataEdition/CollectiveDataEdition'
+      ),
     path: '/structures/:offererId/lieux/:venueId/eac',
     title: 'Modifier les informations pour les enseignants d’un lieu',
   },
   {
-    element: <OfferType />,
+    lazy: () => import('pages/OfferType/OfferType'),
     path: '/offre/creation',
     title: 'Selection du type d’offre',
   },
   {
-    element: <OffersRoute />,
+    lazy: () => import('pages/Offers/OffersRoute'),
     path: '/offres',
     title: 'Offres individuelles',
   },
   {
-    element: <CollectiveOffers />,
+    lazy: () => import('pages/CollectiveOffers/CollectiveOffers'),
     path: '/offres/collectives',
     title: 'Offres collectives',
   },
   {
-    element: <CollectiveOfferSelectionDuplication />,
+    lazy: () =>
+      import(
+        'screens/CollectiveOfferSelectionDuplication/CollectiveOfferSelectionDuplicationScreen'
+      ),
     path: '/offre/creation/collectif/selection',
     title: 'Edition d’une offre collective',
   },
   {
-    element: <CollectiveOfferStockCreation />,
+    lazy: () =>
+      import('pages/CollectiveOfferStockCreation/CollectiveOfferStockCreation'),
     path: '/offre/:offerId/collectif/stocks',
     title: 'Date et prix - Créer une offre réservable',
   },
   {
-    element: <CollectiveOfferCreation />,
+    lazy: () => import('pages/CollectiveOfferCreation/CollectiveOfferCreation'),
     path: '/offre/creation/collectif',
     title: 'Détails - Créer une offre réservable',
   },
   {
-    element: <CollectiveOfferCreation />,
+    lazy: () => import('pages/CollectiveOfferCreation/CollectiveOfferCreation'),
     path: '/offre/creation/collectif/vitrine',
     title: 'Détails - Créer une offre collective vitrine',
   },
   {
-    element: <CollectiveOfferCreation />,
+    lazy: () => import('pages/CollectiveOfferCreation/CollectiveOfferCreation'),
     path: '/offre/collectif/:offerId/creation',
     title: 'Détails - Créer une offre collective vitrine',
   },
   {
-    element: <CollectiveOfferCreation />,
+    lazy: () => import('pages/CollectiveOfferCreation/CollectiveOfferCreation'),
     path: '/offre/collectif/vitrine/:offerId/creation',
     title: 'Edition d’une offre collective',
   },
   {
-    element: <CollectiveOfferVisibilityCreation />,
+    lazy: () =>
+      import(
+        'pages/CollectiveOfferVisibility/CollectiveOfferCreationVisibility'
+      ),
     path: '/offre/:offerId/collectif/visibilite',
     title: 'Visibilité - Créer une offre réservable',
   },
   {
-    element: <CollectiveOfferSummaryCreation />,
+    lazy: () =>
+      import(
+        'pages/CollectiveOfferSummaryCreation/CollectiveOfferSummaryCreation'
+      ),
     path: '/offre/:offerId/collectif/creation/recapitulatif',
     title: 'Récapitulatif - Créer une offre réservable',
   },
   {
-    element: <CollectiveOfferSummaryCreation />,
+    lazy: () =>
+      import(
+        'pages/CollectiveOfferSummaryCreation/CollectiveOfferSummaryCreation'
+      ),
     path: '/offre/:offerId/collectif/vitrine/creation/recapitulatif',
     title: 'Récapitulatif - Modifier une offre réservable',
   },
   {
-    element: <CollectiveOfferConfirmation />,
+    lazy: () =>
+      import('pages/CollectiveOfferConfirmation/CollectiveOfferConfirmation'),
     path: '/offre/:offerId/collectif/confirmation',
     title: 'Confirmation - Offre réservable publiée',
   },
   {
-    element: <CollectiveOfferConfirmation />,
+    lazy: () =>
+      import('pages/CollectiveOfferConfirmation/CollectiveOfferConfirmation'),
     path: '/offre/:offerId/collectif/vitrine/confirmation',
     title: 'Confirmation - Offre collective vitrine publiée',
   },
   {
-    element: <CollectiveOfferEdition />,
+    lazy: () => import('pages/CollectiveOfferEdition/CollectiveOfferEdition'),
     path: '/offre/:offerId/collectif/edition',
     title: 'Détails - Modifier une offre réservable',
   },
   {
-    element: <CollectiveOfferSummaryEdition />,
+    lazy: () =>
+      import(
+        'pages/CollectiveOfferSummaryEdition/CollectiveOfferSummaryEdition'
+      ),
     path: '/offre/:offerId/collectif/recapitulatif',
     title: 'Edition d’une offre collective',
   },
   {
-    element: <CollectiveOfferStockEdition />,
+    lazy: () =>
+      import('pages/CollectiveOfferStockEdition/CollectiveOfferStockEdition'),
     path: '/offre/:offerId/collectif/stocks/edition',
     title: 'Date et prix - Modifier une offre réservable',
   },
   {
-    element: <CollectiveOfferVisibility />,
+    lazy: () =>
+      import(
+        'pages/CollectiveOfferVisibility/CollectiveOfferEditionVisibility'
+      ),
     path: '/offre/:offerId/collectif/visibilite/edition',
     title: 'Visibilité - Modifier une offre réservable',
   },
   {
-    element: <CollectiveOfferFromRequest />,
+    lazy: () =>
+      import('pages/CollectiveOfferFromRequest/CollectiveOfferFromRequest'),
     path: '/offre/collectif/creation/:offerId/requete/:requestId',
     title: 'Détails - Créer une offre réservable',
   },
   {
-    element: <ResetPassword />,
+    lazy: () => import('pages/ResetPassword/ResetPassword'),
     path: '/mot-de-passe-perdu',
     title: 'Définir un nouveau mot de passe',
     meta: { public: true },
   },
   {
-    element: <LostPassword />,
+    lazy: () => import('pages/LostPassword/LostPassword'),
     path: '/demande-mot-de-passe',
     title: 'Demander un nouveau mot de passe',
     meta: { public: true },
   },
   {
+    lazy: () => import('pages/IndividualOfferWizard/IndividualOfferWizard'),
     path: '/offre/individuelle/:offerId/*',
     title: 'Offre étape par étape',
-    lazy: () => import('pages/IndividualOfferWizard/IndividualOfferWizard'),
   },
   {
-    element: <Reimbursements />,
+    lazy: () => import('pages/Reimbursements/Reimbursements'),
     path: '/remboursements/*',
     title: 'Remboursements',
   },
   {
-    element: <UserProfile />,
+    lazy: () => import('pages/User/UserProfile'),
     path: '/profil',
     title: 'Profil',
   },
   {
-    element: <OffererStats />,
+    lazy: () => import('pages/OffererStats/OffererStats'),
     path: '/statistiques',
     title: 'Statistiques',
     featureName: 'ENABLE_OFFERER_STATS',
   },
   {
-    element: <SignupJourneyRoutes />,
+    lazy: () => import('pages/SignupJourneyRoutes/SignupJourneyRoutes'),
     path: '/parcours-inscription/*',
     title: 'Parcours de souscription',
   },

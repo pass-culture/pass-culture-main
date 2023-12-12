@@ -15,7 +15,7 @@ import { Providers } from 'core/Venue/types'
 import * as pcapi from 'repository/pcapi/pcapi'
 import { renderWithProviders } from 'utils/renderWithProviders'
 
-import VenueEdition from '../VenueEdition'
+import { VenueEdition } from '../VenueEdition'
 
 const renderVenueEdition = (
   venueId: number,

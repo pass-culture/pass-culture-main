@@ -19,7 +19,7 @@ import * as useAnalytics from 'hooks/useAnalytics'
 import * as utils from 'utils/recaptcha'
 import { renderWithProviders } from 'utils/renderWithProviders'
 
-import SignIn from '../SignIn'
+import { SignIn } from '../SignIn'
 
 vi.mock('apiClient/api', () => ({
   api: {

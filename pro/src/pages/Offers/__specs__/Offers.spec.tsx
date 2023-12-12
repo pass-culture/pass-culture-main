@@ -23,7 +23,7 @@ import {
 } from 'utils/apiFactories'
 import { renderWithProviders } from 'utils/renderWithProviders'
 
-import OffersRoute from '../../../pages/Offers/OffersRoute'
+import { OffersRoute } from '../../../pages/Offers/OffersRoute'
 
 const categoriesAndSubcategories = {
   categories: [

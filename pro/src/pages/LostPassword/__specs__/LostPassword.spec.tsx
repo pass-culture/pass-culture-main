@@ -5,7 +5,7 @@ import React from 'react'
 import * as utils from 'utils/recaptcha'
 import { renderWithProviders } from 'utils/renderWithProviders'
 
-import ResetPassword from '../LostPassword'
+import { LostPassword } from '../LostPassword'
 
 vi.mock('apiClient/api', () => ({
   api: {
@@ -15,7 +15,7 @@ vi.mock('apiClient/api', () => ({
 }))
 
 const renderLostPassword = (url: string) => {
-  renderWithProviders(<ResetPassword />, {
+  renderWithProviders(<LostPassword />, {
     initialRouterEntries: [url],
   })
 }

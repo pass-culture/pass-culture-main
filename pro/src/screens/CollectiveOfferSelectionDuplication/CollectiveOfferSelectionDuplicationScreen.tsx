@@ -28,7 +28,7 @@ import { pluralize } from 'utils/pluralize'
 
 import styles from './CollectiveOfferSelectionDuplication.module.scss'
 
-const CollectiveOfferSelectionDuplication = (): JSX.Element => {
+export const CollectiveOfferSelectionDuplication = (): JSX.Element => {
   const [isLoading, setIsLoading] = useState(false)
   const [offers, setOffers] = useState<Offer[]>([])
   const [showAll, setShowAll] = useState(true)
@@ -194,4 +194,6 @@ const CollectiveOfferSelectionDuplication = (): JSX.Element => {
   )
 }
 
-export default CollectiveOfferSelectionDuplication
+// Lazy-loaded by react-router-dom
+// ts-unused-exports:disable-next-line
+export const Component = CollectiveOfferSelectionDuplication

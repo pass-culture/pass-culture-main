@@ -20,7 +20,7 @@ import {
 } from 'utils/date'
 import { renderWithProviders } from 'utils/renderWithProviders'
 
-import BookingsRecapContainer from '../Bookings'
+import { Bookings } from '../Bookings'
 
 vi.mock('repository/pcapi/pcapi', () => ({
   getFilteredBookingsCSV: vi.fn(),
@@ -57,7 +57,7 @@ const renderBookingsRecap = async (
 ) => {
   const rtlReturn = renderWithProviders(
     <>
-      <BookingsRecapContainer />
+      <Bookings />
       <Notification />
     </>,
     { storeOverrides, initialRouterEntries: [initialEntries] }

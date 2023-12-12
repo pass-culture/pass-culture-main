@@ -7,7 +7,7 @@ import { OffererStatsScreen } from 'screens/OffererStats'
 import Spinner from 'ui-kit/Spinner/Spinner'
 import { sortByLabel } from 'utils/strings'
 
-const OffererStats = (): JSX.Element | null => {
+export const OffererStats = (): JSX.Element | null => {
   const notify = useNotification()
   const { isLoading, error, data: offererNames } = useGetOffererNames({})
 
@@ -34,4 +34,6 @@ const OffererStats = (): JSX.Element | null => {
   )
 }
 
-export default OffererStats
+// Lazy-loaded by react-router-dom
+// ts-unused-exports:disable-next-line
+export const Component = OffererStats

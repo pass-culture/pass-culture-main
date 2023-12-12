@@ -6,7 +6,7 @@ import { GetOffererResponseModel } from 'apiClient/v1'
 import * as useNotification from 'hooks/useNotification'
 import { renderWithProviders } from 'utils/renderWithProviders'
 
-import OffererStats from '../OffererStats'
+import { OffererStats } from '../OffererStats'
 
 vi.mock('apiClient/api', () => ({
   api: {

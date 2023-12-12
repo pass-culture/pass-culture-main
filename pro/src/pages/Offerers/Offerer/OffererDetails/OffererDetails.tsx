@@ -21,7 +21,7 @@ import {
 import styles from './OffererDetails.module.scss'
 import Venues from './Venues/Venues'
 
-const OffererDetails = () => {
+export const OffererDetails = () => {
   const { offererId } = useParams()
   const [offerer, setOfferer] = useState<Offerer | null>(null)
   const [physicalVenues, setPhysicalVenues] = useState<
@@ -148,4 +148,6 @@ const OffererDetails = () => {
   )
 }
 
-export default OffererDetails
+// Lazy-loaded by react-router-dom
+// ts-unused-exports:disable-next-line
+export const Component = OffererDetails
