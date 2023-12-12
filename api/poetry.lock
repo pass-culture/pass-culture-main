@@ -1108,13 +1108,13 @@ graph = ["objgraph (>=1.7.2)"]
 
 [[package]]
 name = "djlint"
-version = "1.25.1"
+version = "1.34.0"
 description = "HTML Template Linter and Formatter"
 optional = false
 python-versions = ">=3.8.0,<4.0.0"
 files = [
-    {file = "djlint-1.25.1-py3-none-any.whl", hash = "sha256:a17e5637f91c1378fe38fffc3cb8738c4efacb76c6eb909ec24e44dc6aa69391"},
-    {file = "djlint-1.25.1.tar.gz", hash = "sha256:179fde940f08facc4ab7cd099a79bb4aaeda231eb20888c68ab54b8240a8c5f4"},
+    {file = "djlint-1.34.0-py3-none-any.whl", hash = "sha256:bdc26cc607dee8b46e262654eb0fbac7862c34d68172c8adc25a0b56fc7d8173"},
+    {file = "djlint-1.34.0.tar.gz", hash = "sha256:60b4f4ca99fd83106603bdd466f35314fda33776f3a6e70ea9d674da9d0ad053"},
 ]
 
 [package.dependencies]
@@ -5797,4 +5797,4 @@ test = ["pytest"]
 [metadata]
 lock-version = "2.0"
 python-versions = "^3.11"
-content-hash = "27238f94e40142bd0e33dc7b6810c7b1d85b425235fc177d7712e1c9c4a62654"
+content-hash = "99ec8019fd4f4eab2ad641727641e273cca55a6ffa47f20477cab4fca4620542"
