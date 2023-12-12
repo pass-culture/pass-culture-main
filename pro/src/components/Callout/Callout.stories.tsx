@@ -14,6 +14,7 @@ export const WithoutLink: StoryObj<typeof Callout> = {
     title: 'Without link warning callout',
   },
 }
+
 export const Closable: StoryObj<typeof Callout> = {
   args: {
     children:
