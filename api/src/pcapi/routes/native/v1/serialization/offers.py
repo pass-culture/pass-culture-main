@@ -1,3 +1,4 @@
+from datetime import date
 from datetime import datetime
 import logging
 from typing import Callable
@@ -15,6 +16,7 @@ from pcapi.core.offers.models import Offer
 from pcapi.core.offers.models import Reason
 from pcapi.core.offers.models import ReasonMeta
 from pcapi.core.offers.models import Stock
+from pcapi.core.providers.titelive_gtl import GTLS
 from pcapi.core.users.models import ExpenseDomain
 from pcapi.domain.music_types import MUSIC_SUB_TYPES_LABEL_BY_CODE
 from pcapi.domain.music_types import MUSIC_TYPES_LABEL_BY_CODE
@@ -132,6 +134,14 @@ def get_id_converter(labels_by_id: dict, field_name: str) -> Callable[[str | Non
     return convert_id_into_label
 
 
+class GtlLabels(BaseModel):
+    label: str
+    level01Label: str | None
+    level02Label: str | None
+    level03Label: str | None
+    level04Label: str | None
+
+
 class OfferExtraData(BaseModel):
     author: str | None
     durationMinutes: int | None
@@ -144,6 +154,11 @@ class OfferExtraData(BaseModel):
     stageDirector: str | None
     speaker: str | None
     visa: str | None
+    releaseDate: date | None
+    cast: list[str] | None
+    editeur: str | None
+    gtlLabels: GtlLabels | None
+    genres: list[str] | None
 
     _convert_music_sub_type = validator("musicSubType", pre=True, allow_reuse=True)(
         get_id_converter(MUSIC_SUB_TYPES_LABEL_BY_CODE, "musicSubType")
@@ -174,6 +189,23 @@ class OfferImageResponse(BaseModel):
         orm_mode = True
 
 
+def get_gtl_labels(gtl_id: str) -> GtlLabels | None:
+    if gtl_id not in GTLS:
+        return None
+    gtl_infos = GTLS[gtl_id]
+    label = gtl_infos.get("label")
+    if label:
+        return GtlLabels(
+            label=label,
+            level01Label=gtl_infos.get("level_01_label"),
+            level02Label=gtl_infos.get("level_02_label"),
+            level03Label=gtl_infos.get("level_03_label"),
+            level04Label=gtl_infos.get("level_04_label"),
+        )
+    logger.error("GTL label not found for id %s", gtl_id)
+    return None
+
+
 class OfferResponse(BaseModel):
     @classmethod
     def from_orm(cls, offer: Offer) -> "OfferResponse":
@@ -191,6 +223,11 @@ class OfferResponse(BaseModel):
 
         if result.extraData:
             result.extraData.durationMinutes = offer.durationMinutes
+
+            if offer.extraData:
+                gtl_id = offer.extraData.get("gtl_id")
+                if gtl_id is not None:
+                    result.extraData.gtlLabels = get_gtl_labels(gtl_id)
         else:
             result.extraData = OfferExtraData(durationMinutes=offer.durationMinutes)  # type: ignore [call-arg]
 

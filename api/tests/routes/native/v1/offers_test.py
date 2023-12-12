@@ -45,6 +45,11 @@ class OffersTest:
             "stageDirector": "metteur en scène",
             "speaker": "intervenant",
             "visa": "vasi",
+            "genres": ["genre1", "genre2"],
+            "cast": ["cast1", "cast2"],
+            "editeur": "editeur",
+            "gtl_id": "01030000",
+            "releaseDate": "2020-01-01",
         }
         offer = offers_factories.OfferFactory(
             subcategoryId=subcategories.SEANCE_CINE.id,
@@ -195,6 +200,17 @@ class OffersTest:
             "speaker": "intervenant",
             "stageDirector": "metteur en scène",
             "visa": "vasi",
+            "genres": ["genre1", "genre2"],
+            "cast": ["cast1", "cast2"],
+            "editeur": "editeur",
+            "gtlLabels": {
+                "label": "Œuvres classiques",
+                "level01Label": "Littérature",
+                "level02Label": "Œuvres classiques",
+                "level03Label": None,
+                "level04Label": None,
+            },
+            "releaseDate": "2020-01-01",
         }
         assert response.json["image"] == {
             "url": "http://localhost/storage/thumbs/mediations/N4",
