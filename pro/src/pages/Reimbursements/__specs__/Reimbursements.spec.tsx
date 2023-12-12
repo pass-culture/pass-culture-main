@@ -10,7 +10,7 @@ import { ReimbursementContextProvider } from 'context/ReimbursementContext/Reimb
 import { defaultGetOffererResponseModel } from 'utils/apiFactories'
 import { renderWithProviders } from 'utils/renderWithProviders'
 
-import Reimbursements from '../Reimbursements'
+import { Reimbursements } from '../Reimbursements'
 
 const renderReimbursements = (storeOverrides: any) => {
   renderWithProviders(

@@ -22,7 +22,7 @@ import { sortByLabel } from 'utils/strings'
 
 import { getFilteredOffersAdapter } from './adapters/getFilteredOffersAdapter'
 
-const OffersRoute = (): JSX.Element => {
+export const OffersRoute = (): JSX.Element => {
   const urlSearchFilters = useQuerySearchFilters()
   const currentPageNumber = urlSearchFilters.page ?? DEFAULT_PAGE
   const notify = useNotification()
@@ -184,4 +184,6 @@ const OffersRoute = (): JSX.Element => {
   )
 }
 
-export default OffersRoute
+// Lazy-loaded by react-router-dom
+// ts-unused-exports:disable-next-line
+export const Component = OffersRoute

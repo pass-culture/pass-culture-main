@@ -18,7 +18,7 @@ import { validationSchema } from './validationSchema'
 
 type FormValues = { email: string }
 
-const LostPassword = (): JSX.Element => {
+export const LostPassword = (): JSX.Element => {
   const [mailSent, setMailSent] = useState(false)
 
   useRedirectLoggedUser()
@@ -77,4 +77,6 @@ const LostPassword = (): JSX.Element => {
   )
 }
 
-export default LostPassword
+// Lazy-loaded by react-router-dom
+// ts-unused-exports:disable-next-line
+export const Component = LostPassword

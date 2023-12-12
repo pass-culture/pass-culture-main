@@ -20,7 +20,7 @@ import {
 } from 'utils/collectiveApiFactories'
 import { renderWithProviders } from 'utils/renderWithProviders'
 
-import CollectiveDataEdition from '../CollectiveDataEdition'
+import { CollectiveDataEdition } from '../CollectiveDataEdition'
 
 // RomainC: we need this mock to accelerate this test
 // it('should select (unselect) "Toute la France" and "France métropolitaine" when selecting (unselecting) all (one) departments'

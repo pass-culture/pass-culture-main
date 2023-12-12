@@ -17,7 +17,7 @@ import { SvgIcon } from 'ui-kit/SvgIcon/SvgIcon'
 
 import styles from './SignupJourney.module.scss'
 
-const SignupJourneyRoutes = () => {
+export const SignupJourneyRoutes = () => {
   const { logEvent } = useAnalytics()
   const location = useLocation()
   const logout = useLogout()
@@ -80,4 +80,6 @@ const SignupJourneyRoutes = () => {
   )
 }
 
-export default SignupJourneyRoutes
+// Lazy-loaded by react-router-dom
+// ts-unused-exports:disable-next-line
+export const Component = SignupJourneyRoutes

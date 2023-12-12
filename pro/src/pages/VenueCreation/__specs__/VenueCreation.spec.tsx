@@ -6,7 +6,7 @@ import { api } from 'apiClient/api'
 import { GetOffererResponseModel } from 'apiClient/v1'
 import { renderWithProviders } from 'utils/renderWithProviders'
 
-import VenueCreation from '../VenueCreation'
+import { VenueCreation } from '../VenueCreation'
 
 const renderVenueCreation = async (offererId: string) => {
   const storeOverrides = {

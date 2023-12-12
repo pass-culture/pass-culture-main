@@ -98,4 +98,8 @@ export const CollectiveOfferVisibility = ({
   )
 }
 
-export default withCollectiveOfferFromParams(CollectiveOfferVisibility)
+// Lazy-loaded by react-router-dom
+// ts-unused-exports:disable-next-line
+export const Component = withCollectiveOfferFromParams(
+  CollectiveOfferVisibility
+)

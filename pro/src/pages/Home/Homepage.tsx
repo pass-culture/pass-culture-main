@@ -24,7 +24,7 @@ import { ProfileAndSupport } from './ProfileAndSupport'
 import { StatisticsDashboard } from './StatisticsDashboard/StatisticsDashboard'
 import { VenueOfferSteps } from './VenueOfferSteps'
 
-const Homepage = (): JSX.Element => {
+export const Homepage = (): JSX.Element => {
   const profileRef = useRef<HTMLElement>(null)
   const offerersRef = useRef<HTMLElement>(null)
 
@@ -185,4 +185,6 @@ const Homepage = (): JSX.Element => {
   )
 }
 
-export default Homepage
+// Lazy-loaded by react-router-dom
+// ts-unused-exports:disable-next-line
+export const Component = Homepage

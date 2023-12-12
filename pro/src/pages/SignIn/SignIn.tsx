@@ -33,7 +33,7 @@ interface SigninApiErrorResponse {
   }
 }
 
-const SignIn = (): JSX.Element => {
+export const SignIn = (): JSX.Element => {
   useRedirectLoggedUser()
   const notify = useNotification()
   const dispatch = useDispatch()
@@ -126,4 +126,6 @@ const SignIn = (): JSX.Element => {
   )
 }
 
-export default SignIn
+// Lazy-loaded by react-router-dom
+// ts-unused-exports:disable-next-line
+export const Component = SignIn

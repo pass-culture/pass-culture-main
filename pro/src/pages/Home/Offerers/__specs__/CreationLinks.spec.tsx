@@ -9,7 +9,7 @@ import {
 } from 'apiClient/v1'
 import { renderWithProviders } from 'utils/renderWithProviders'
 
-import Homepage from '../../Homepage'
+import { Homepage } from '../../Homepage'
 
 const renderHomePage = async () => {
   const storeOverrides = {

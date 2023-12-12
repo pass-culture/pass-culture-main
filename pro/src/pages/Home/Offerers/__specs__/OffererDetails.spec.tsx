@@ -15,7 +15,7 @@ import {
 import * as useAnalytics from 'hooks/useAnalytics'
 import { renderWithProviders } from 'utils/renderWithProviders'
 
-import Homepage from '../../Homepage'
+import { Homepage } from '../../Homepage'
 
 const mockNavigate = vi.fn()
 vi.mock('react-router-dom', async () => ({

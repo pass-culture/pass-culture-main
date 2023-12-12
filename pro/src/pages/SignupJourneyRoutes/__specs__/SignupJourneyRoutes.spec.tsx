@@ -6,7 +6,7 @@ import { api } from 'apiClient/api'
 import { RootState } from 'store/reducers'
 import { renderWithProviders } from 'utils/renderWithProviders'
 
-import SignupJourneyRoutes from '../SignupJourneyRoutes'
+import { SignupJourneyRoutes } from '../SignupJourneyRoutes'
 
 vi.mock('apiClient/api', () => ({
   api: {

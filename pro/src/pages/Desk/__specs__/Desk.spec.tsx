@@ -7,7 +7,7 @@ import { renderWithProviders } from 'utils/renderWithProviders'
 
 import * as getBookingAdapter from '../adapters/getBooking'
 import * as submitTokenAdapter from '../adapters/submitToken'
-import Desk from '../Desk'
+import { Desk } from '../Desk'
 import { MESSAGE_VARIANT } from '../types'
 
 const renderDesk = () => {

@@ -38,4 +38,8 @@ const CollectiveOfferConfirmation = ({
   )
 }
 
-export default withCollectiveOfferFromParams(CollectiveOfferConfirmation)
+// Lazy-loaded by react-router-dom
+// ts-unused-exports:disable-next-line
+export const Component = withCollectiveOfferFromParams(
+  CollectiveOfferConfirmation
+)

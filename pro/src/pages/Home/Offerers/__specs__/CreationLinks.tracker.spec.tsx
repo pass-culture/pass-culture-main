@@ -12,7 +12,7 @@ import { Events } from 'core/FirebaseEvents/constants'
 import * as useAnalytics from 'hooks/useAnalytics'
 import { renderWithProviders } from 'utils/renderWithProviders'
 
-import Homepage from '../../Homepage'
+import { Homepage } from '../../Homepage'
 
 const mockLogEvent = vi.fn()
 const renderHomePage = () => {

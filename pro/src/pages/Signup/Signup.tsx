@@ -11,7 +11,7 @@ import { SvgIcon } from 'ui-kit/SvgIcon/SvgIcon'
 import styles from './Signup.module.scss'
 import SignupUnavailable from './SignupUnavailable/SignupUnavailable'
 
-const Signup = () => {
+export const Signup = () => {
   const isProAccountCreationEnabled = useActiveFeature(
     'ENABLE_PRO_ACCOUNT_CREATION'
   )
@@ -46,4 +46,6 @@ const Signup = () => {
   )
 }
 
-export default Signup
+// Lazy-loaded by react-router-dom
+// ts-unused-exports:disable-next-line
+export const Component = Signup

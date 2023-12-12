@@ -88,4 +88,8 @@ const CollectiveOfferStockEdition = ({
   )
 }
 
-export default withCollectiveOfferFromParams(CollectiveOfferStockEdition)
+// Lazy-loaded by react-router-dom
+// ts-unused-exports:disable-next-line
+export const Component = withCollectiveOfferFromParams(
+  CollectiveOfferStockEdition
+)

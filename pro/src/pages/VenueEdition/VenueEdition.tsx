@@ -23,7 +23,7 @@ import useGetVenueProviders from '../../core/Venue/adapters/getVenueProviderAdap
 
 import { offerHasBookingQuantity } from './utils'
 
-const VenueEdition = (): JSX.Element | null => {
+export const VenueEdition = (): JSX.Element | null => {
   const homePath = '/accueil'
   const { offererId, venueId } = useParams<{
     offererId: string
@@ -123,4 +123,6 @@ const VenueEdition = (): JSX.Element | null => {
   )
 }
 
-export default VenueEdition
+// Lazy-loaded by react-router-dom
+// ts-unused-exports:disable-next-line
+export const Component = VenueEdition

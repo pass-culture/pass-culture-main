@@ -10,7 +10,7 @@ import * as useNotification from 'hooks/useNotification'
 import { collectiveOfferFactory } from 'pages/CollectiveOffers/utils/collectiveOffersFactories'
 import { renderWithProviders } from 'utils/renderWithProviders'
 
-import CollectiveOfferSelectionDuplication from '../CollectiveOfferSelectionDuplicationScreen'
+import { CollectiveOfferSelectionDuplication } from '../CollectiveOfferSelectionDuplicationScreen'
 
 interface InitialValuesProps {
   searchFilter: string
