@@ -79,7 +79,7 @@ describe('homepage', () => {
     name: offerer.name,
   }))
 
-  let store = {
+  const store = {
     user: {
       currentUser: {
         id: 'fake_id',
@@ -193,59 +193,6 @@ describe('homepage', () => {
       it('should contains a link to access profile form', () => {
         // when
         expect(screen.getAllByRole('link')[10]).toBeInTheDocument()
-      })
-    })
-
-    describe('offererStats', () => {
-      beforeEach(() => {
-        store = {
-          user: {
-            currentUser: {
-              id: 'fake_id',
-              firstName: 'John',
-              lastName: 'Do',
-              email: 'john.do@dummy.xyz',
-              phoneNumber: '01 00 00 00 00',
-              hasSeenProTutorials: true,
-            },
-            initialized: true,
-          },
-          features: {
-            list: [{ isActive: true, nameKey: 'ENABLE_OFFERER_STATS' }],
-          },
-        }
-      })
-      it('should display section when ff is active', async () => {
-        renderHomePage(store)
-        await waitForElementToBeRemoved(() => screen.queryByTestId('spinner'))
-
-        expect(
-          screen.getByText('Statistiques', { selector: 'h2' })
-        ).toBeInTheDocument()
-      })
-
-      describe('when clicking on anchor link to stats', () => {
-        const scrollIntoViewMock = vi.fn()
-
-        beforeEach(async () => {
-          Element.prototype.scrollIntoView = scrollIntoViewMock
-          renderHomePage(store)
-          await waitForElementToBeRemoved(() => screen.queryByTestId('spinner'))
-        })
-
-        it('should smooth scroll to section if user doesnt prefer reduced motion', async () => {
-          // when
-          const statLink = await screen.findByRole('button', {
-            name: 'Statistiques',
-          })
-
-          await userEvent.click(statLink)
-
-          // then
-          expect(scrollIntoViewMock).toHaveBeenCalledWith({
-            behavior: 'smooth',
-          })
-        })
       })
     })
   })

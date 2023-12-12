@@ -13,22 +13,17 @@ import styles from './HomepageTabs.module.scss'
 export const TAB_ID_OFFERERS = 'offerers'
 export const TAB_ID_HOME_STATS = 'homeStats'
 const TAB_ID_PROFILE = 'profile'
-const TAB_ID_STATS = 'offererStats'
 
 interface HomepageTabsProps {
   initialActiveTab: string
   offerersRef: RefObject<HTMLElement>
   profileRef: RefObject<HTMLElement>
-  statsRef: RefObject<HTMLElement>
-  isOffererStatsActive?: boolean
 }
 
 const HomepageTabs = ({
   initialActiveTab,
   offerersRef,
   profileRef,
-  statsRef,
-  isOffererStatsActive = false,
 }: HomepageTabsProps) => {
   const { logEvent } = useAnalytics()
   const [activeTab, setActiveTab] = useState(initialActiveTab)
@@ -77,20 +72,6 @@ const HomepageTabs = ({
         offerersRef?.current
       ),
   })
-
-  if (isOffererStatsActive) {
-    tabs.push({
-      key: TAB_ID_STATS,
-      label: 'Statistiques',
-      onClick: (e) =>
-        jumpToSection(
-          e,
-          TAB_ID_STATS,
-          Events.CLICKED_BREADCRUMBS_OFFERER_STATS,
-          statsRef?.current
-        ),
-    })
-  }
 
   tabs.push({
     key: TAB_ID_PROFILE,

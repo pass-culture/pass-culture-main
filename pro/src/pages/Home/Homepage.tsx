@@ -24,14 +24,12 @@ import HomepageTabs, {
 } from './HomepageTabs/HomepageTabs'
 import { OffererBanners } from './Offerers/OffererBanners'
 import Offerers from './Offerers/Offerers'
-import { OffererStats } from './OffererStats'
 import { ProfileAndSupport } from './ProfileAndSupport'
 import { StatisticsDashboard } from './StatisticsDashboard/StatisticsDashboard'
 import { VenueOfferSteps } from './VenueOfferSteps'
 
 const Homepage = (): JSX.Element => {
   const profileRef = useRef<HTMLElement>(null)
-  const statsRef = useRef<HTMLElement>(null)
   const offerersRef = useRef<HTMLElement>(null)
 
   const [receivedOffererNames, setReceivedOffererNames] =
@@ -101,8 +99,6 @@ const Homepage = (): JSX.Element => {
     }
   }, [selectedOffererId])
 
-  const isOffererStatsActive = useActiveFeature('ENABLE_OFFERER_STATS')
-
   useEffect(() => {
     const loadOffererNames = async () => {
       const offererNames = await api.listOfferersNames()
@@ -144,10 +140,8 @@ const Homepage = (): JSX.Element => {
           initialActiveTab={
             isStatisticsDashboardEnabled ? TAB_ID_HOME_STATS : TAB_ID_OFFERERS
           }
-          isOffererStatsActive={isOffererStatsActive}
           profileRef={profileRef}
           offerersRef={offerersRef}
-          statsRef={statsRef}
         />
 
         {isStatisticsDashboardEnabled && selectedOfferer !== null && (
@@ -187,12 +181,6 @@ const Homepage = (): JSX.Element => {
                   selectedOfferer?.hasValidBankAccount
               )}
             />
-          </section>
-        )}
-
-        {isOffererStatsActive && (
-          <section className={styles['section']} ref={statsRef}>
-            <OffererStats />
           </section>
         )}
 
