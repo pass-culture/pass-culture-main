@@ -57,7 +57,7 @@ export const Profile = () => {
   return (
     <div className="h-card" data-testid="card-profile">
       <div className="h-card-inner">
-        <div className="h-card-header-row">
+        <div className={styles['header-row']}>
           <h3 className={styles['title']}>Profil</h3>
 
           <ButtonLink
