@@ -3,6 +3,7 @@ import pathlib
 import pytest
 
 from pcapi.core import testing
+from pcapi.core.external.zendesk_sell_backends import testing as zendesk_testing
 import pcapi.core.offerers.factories as offerers_factories
 from pcapi.core.offerers.models import Venue
 from pcapi.core.testing import override_settings
@@ -89,7 +90,12 @@ class Returns201Test:
 
         assert len(external_testing.sendinblue_requests) == 1
         assert external_testing.zendesk_sell_requests == [
-            {"action": "create", "type": "Venue", "id": response.json["id"]}
+            {
+                "action": "create",
+                "type": "Venue",
+                "id": response.json["id"],
+                "parent_organization_id": zendesk_testing.TESTING_ZENDESK_ID_OFFERER,
+            }
         ]
 
     def test_use_venue_name_retrieved_from_sirene_api(self, client):

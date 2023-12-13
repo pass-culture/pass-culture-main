@@ -192,7 +192,6 @@ def test_create_venue_without_parent_offerer():
 
     posted_venue_json = posted.last_request.json()
     assert posted_venue_json["data"]["is_organization"] is True
-    assert posted_venue_json["data"]["parent_organization_id"] is None  # No parent created
     assert posted_venue_json["data"]["email"] == venue.bookingEmail
     assert posted_venue_json["data"]["phone"] == venue.contact.phone_number
     assert posted_venue_json["data"]["address"] == {
@@ -206,6 +205,8 @@ def test_create_venue_without_parent_offerer():
     assert posted_venue_json["data"]["custom_fields"]["Produit Venue ID"] == venue.id
     assert posted_venue_json["data"]["custom_fields"]["SIRET"] == venue.siret
     assert posted_venue_json["data"]["custom_fields"]["Statut PC Pro"] == "Acteur Inscrit Actif"
+
+    assert "parent_organization_id" not in posted_venue_json["data"]  # No parent created
 
     assert response["id"] == ret_id
 
