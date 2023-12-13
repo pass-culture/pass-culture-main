@@ -140,7 +140,7 @@ describe('ReimbursementBankAccount', () => {
 
   it('should render without venues linked to bank account and with all venues linked to another account', () => {
     bankAccount.linkedVenues = []
-    renderReimbursementBankAccount(bankAccount, [], 2)
+    renderReimbursementBankAccount(bankAccount, managedVenues, 2)
 
     expect(
       screen.getByText(
@@ -168,7 +168,7 @@ describe('ReimbursementBankAccount', () => {
     ).not.toBeInTheDocument()
 
     expect(
-      screen.getByText('Certains de vos lieux ne sont pas rattachés')
+      screen.getByText('Certains de vos lieux ne sont pas rattachés.')
     ).toBeInTheDocument()
     expect(screen.getByText('Le Petit Rintintin')).toBeInTheDocument()
 
@@ -185,7 +185,7 @@ describe('ReimbursementBankAccount', () => {
     renderReimbursementBankAccount(bankAccount, managedVenues)
 
     expect(
-      screen.getByText('Certains de vos lieux ne sont pas rattachés')
+      screen.getByText('Certains de vos lieux ne sont pas rattachés.')
     ).toBeInTheDocument()
   })
 
@@ -222,11 +222,7 @@ describe('ReimbursementBankAccount', () => {
     ).not.toBeInTheDocument()
 
     expect(
-      screen.queryByText('Un de vos lieux n’est pas rattaché.')
-    ).not.toBeInTheDocument()
-
-    expect(
-      screen.queryByText('Certains de vos lieux ne sont pas rattachés')
+      screen.queryByText('Certains de vos lieux ne sont pas rattachés.')
     ).not.toBeInTheDocument()
   })
 
@@ -305,5 +301,36 @@ describe('ReimbursementBankAccount', () => {
       screen.getByRole('button', { name: 'Rattacher un lieu' })
     )
     expect(mockUpdateButtonClick).toHaveBeenCalled()
+  })
+
+  it('should not display bank any wording or button under bank account card if offerer has no venue', () => {
+    bankAccount.linkedVenues = []
+    renderReimbursementBankAccount(bankAccount, [])
+
+    expect(
+      screen.getByText('Lieu(x) rattaché(s) à ce compte bancaire')
+    ).toBeInTheDocument()
+
+    expect(
+      screen.queryByRole('button', { name: 'Rattacher un lieu' })
+    ).not.toBeInTheDocument()
+
+    expect(
+      screen.queryByRole('img', { name: 'Une action est requise' })
+    ).not.toBeInTheDocument()
+
+    expect(
+      screen.queryByText('Aucun lieu n’est rattaché à ce compte bancaire.')
+    ).not.toBeInTheDocument()
+
+    expect(
+      screen.queryByText(
+        'Aucun lieu n’est rattaché à ce compte bancaire. Désélectionnez un lieu déjà rattaché et rattachez-le à ce compte bancaire.'
+      )
+    ).not.toBeInTheDocument()
+
+    expect(
+      screen.queryByText('Certains de vos lieux ne sont pas rattachés.')
+    ).not.toBeInTheDocument()
   })
 })
