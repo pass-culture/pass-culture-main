@@ -575,6 +575,52 @@ class EditStockTest:
         assert unrelated_event.status == finance_models.FinanceEventStatus.PRICED
         assert len(unrelated_event.pricings) == 1
 
+    def test_edited_price_is_tracked(self, caplog):
+        # Given
+        existing_stock = factories.StockFactory(price=10)
+
+        # When
+        with caplog.at_level(logging.INFO):
+            api.edit_stock(stock=existing_stock, price=12.5)
+        db.session.flush()  # otherwise "Failed to add object to the flush context!" in teardown
+
+        # Then
+        assert len(caplog.records) == 2
+        last_record = caplog.records[-1]  # First record is Request to asynchronously reindex
+
+        assert last_record.message == "Successfully updated stock"
+        assert last_record.technical_message_id == "stock.updated"
+        assert last_record.extra == {
+            "offer_id": existing_stock.offerId,
+            "stock_id": existing_stock.id,
+            "old_price": 10,
+            "stock_price": 12.5,
+            "stock_dnBookedQuantity": 0,
+        }
+
+    def test_unchanged_price_is_not_tracked(self, caplog):
+        # Given
+        existing_stock = factories.StockFactory(price=10, quantity=15)
+
+        # When
+        with caplog.at_level(logging.INFO):
+            api.edit_stock(stock=existing_stock, quantity=7)
+        db.session.flush()  # otherwise "Failed to add object to the flush context!" in teardown
+
+        # Then
+        assert len(caplog.records) == 2
+        last_record = caplog.records[-1]  # First record is Request to asynchronously reindex
+
+        assert last_record.message == "Successfully updated stock"
+        assert last_record.technical_message_id == "stock.updated"
+        assert last_record.extra == {
+            "offer_id": existing_stock.offerId,
+            "stock_id": existing_stock.id,
+            "old_quantity": 15,
+            "stock_quantity": 7,
+            "stock_dnBookedQuantity": 0,
+        }
+
 
 def _generate_finance_event_context(
     pricing_point: offerers_models.Venue, stock_beginning_datetime: datetime, booking_date_used: datetime
