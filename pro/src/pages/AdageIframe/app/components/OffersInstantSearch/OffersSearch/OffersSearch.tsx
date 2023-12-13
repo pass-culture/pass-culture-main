@@ -94,8 +94,8 @@ export const OffersSearch = ({
         const domainFromPath = result.find((elm) => elm.id === domainId)
 
         if (domainFromPath) {
-          await formik.setFieldValue('domains', [domainFromPath.id])
-          formik.handleSubmit()
+          // eslint-disable-next-line @typescript-eslint/no-floating-promises
+          formik.setFieldValue('domains', [domainFromPath.id])
         }
 
         return setDomainsOptions(
