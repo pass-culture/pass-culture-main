@@ -179,13 +179,6 @@ const BankInformations = (): JSX.Element => {
             {selectedOffererBankAccounts?.bankAccounts.map((bankAccount) => (
               <ReimbursementBankAccount
                 bankAccount={bankAccount}
-                venuesNotLinkedLength={
-                  selectedOfferer?.venuesWithNonFreeOffersWithoutBankAccounts
-                    .length ?? 0
-                }
-                bankAccountsNumber={
-                  selectedOffererBankAccounts?.bankAccounts.length
-                }
                 offererId={selectedOfferer?.id}
                 key={bankAccount.id}
                 onUpdateButtonClick={(bankAccountId) => {
@@ -195,6 +188,7 @@ const BankInformations = (): JSX.Element => {
                     ) ?? null
                   )
                 }}
+                managedVenues={selectedOffererBankAccounts.managedVenues}
               />
             ))}
           </div>

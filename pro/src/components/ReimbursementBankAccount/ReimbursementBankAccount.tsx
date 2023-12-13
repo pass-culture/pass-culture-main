@@ -4,6 +4,7 @@ import { useLocation } from 'react-router-dom'
 import {
   BankAccountApplicationStatus,
   BankAccountResponseModel,
+  ManagedVenues,
 } from 'apiClient/v1'
 import { BankAccountEvents } from 'core/FirebaseEvents/constants'
 import useAnalytics from 'hooks/useAnalytics'
@@ -18,22 +19,23 @@ import styles from './ReimbursementBankAccount.module.scss'
 
 interface ReimbursementBankAccountProps {
   bankAccount: BankAccountResponseModel
-  venuesNotLinkedLength: number
-  bankAccountsNumber: number
+  managedVenues: ManagedVenues[]
   onUpdateButtonClick?: (id: number) => void
   offererId?: number
 }
 
 const ReimbursementBankAccount = ({
   bankAccount,
-  venuesNotLinkedLength,
-  bankAccountsNumber,
   onUpdateButtonClick,
   offererId,
+  managedVenues,
 }: ReimbursementBankAccountProps): JSX.Element => {
-  const hasLinkedVenues = bankAccount.linkedVenues.length > 0
+  const hasLinkedVenuesWithPaidOffer = bankAccount.linkedVenues.length > 0
   const { logEvent } = useAnalytics()
   const location = useLocation()
+  const venuesNotLinkedToBankAccount = managedVenues.filter(
+    (venue) => !venue.bankAccountId
+  ).length
 
   return (
     <div className={styles['bank-account']}>
@@ -82,8 +84,8 @@ const ReimbursementBankAccount = ({
         <div className={styles['linked-venues-section']}>
           <div className={styles['linked-venues-section-title']}>
             Lieu(x) rattaché(s) à ce compte bancaire
-            {(!hasLinkedVenues ||
-              (hasLinkedVenues && venuesNotLinkedLength > 0)) && (
+            {(bankAccount.linkedVenues.length === 0 ||
+              venuesNotLinkedToBankAccount > 0) && (
               <SvgIcon
                 src={fullErrorIcon}
                 alt="Une action est requise"
@@ -93,22 +95,20 @@ const ReimbursementBankAccount = ({
             )}
           </div>
           <div className={styles['linked-venues-content']}>
-            {!hasLinkedVenues && (
+            {bankAccount.linkedVenues.length === 0 && (
               <div className={styles['issue-text']}>
                 Aucun lieu n’est rattaché à ce compte bancaire.
-                {venuesNotLinkedLength === 0 &&
-                  bankAccountsNumber > 1 &&
+                {venuesNotLinkedToBankAccount === 0 &&
                   ' Désélectionnez un lieu déjà rattaché et rattachez-le à ce compte bancaire.'}
               </div>
             )}
-            {hasLinkedVenues && venuesNotLinkedLength > 0 && (
-              <div className={styles['issue-text']}>
-                {venuesNotLinkedLength > 1
-                  ? 'Certains de vos lieux ne sont pas rattachés'
-                  : 'Un de vos lieux n’est pas rattaché.'}
-              </div>
-            )}
-            {hasLinkedVenues && (
+            {bankAccount.linkedVenues.length > 0 &&
+              venuesNotLinkedToBankAccount > 0 && (
+                <div className={styles['issue-text']}>
+                  Certains de vos lieux ne sont pas rattachés
+                </div>
+              )}
+            {hasLinkedVenuesWithPaidOffer && (
               <>
                 <div className={styles['linked-venues']}>
                   {bankAccount.linkedVenues.map((venue) => (
@@ -134,22 +134,23 @@ const ReimbursementBankAccount = ({
                 </Button>
               </>
             )}
-            {!hasLinkedVenues && venuesNotLinkedLength > 0 && (
-              <Button
-                onClick={() => {
-                  logEvent?.(
-                    BankAccountEvents.CLICKED_ADD_VENUE_TO_BANK_ACCOUNT,
-                    {
-                      from: location.pathname,
-                      offererId,
-                    }
-                  )
-                  onUpdateButtonClick?.(bankAccount.id)
-                }}
-              >
-                Rattacher un lieu
-              </Button>
-            )}
+            {!hasLinkedVenuesWithPaidOffer &&
+              venuesNotLinkedToBankAccount > 0 && (
+                <Button
+                  onClick={() => {
+                    logEvent?.(
+                      BankAccountEvents.CLICKED_ADD_VENUE_TO_BANK_ACCOUNT,
+                      {
+                        from: location.pathname,
+                        offererId,
+                      }
+                    )
+                    onUpdateButtonClick?.(bankAccount.id)
+                  }}
+                >
+                  Rattacher un lieu
+                </Button>
+              )}
           </div>
         </div>
       )}
