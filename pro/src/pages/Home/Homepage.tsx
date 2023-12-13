@@ -20,7 +20,7 @@ import { HTTP_STATUS } from 'repository/pcapi/pcapiClient'
 import styles from './Homepage.module.scss'
 import { OffererBanners } from './Offerers/OffererBanners'
 import Offerers from './Offerers/Offerers'
-import { ProfileAndSupport } from './ProfileAndSupport'
+import { ProfileAndSupport } from './ProfileAndSupport/ProfileAndSupport'
 import { StatisticsDashboard } from './StatisticsDashboard/StatisticsDashboard'
 import { VenueOfferSteps } from './VenueOfferSteps'
 
@@ -175,6 +175,7 @@ export const Homepage = (): JSX.Element => {
 
         <section className={styles['section']} ref={profileRef}>
           <ProfileAndSupport />
+
           <div className="newsletter">
             <Newsletter />
           </div>

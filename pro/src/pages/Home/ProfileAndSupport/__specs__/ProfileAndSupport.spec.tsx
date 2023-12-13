@@ -7,7 +7,7 @@ import { Events } from 'core/FirebaseEvents/constants'
 import * as useAnalytics from 'hooks/useAnalytics'
 import { renderWithProviders } from 'utils/renderWithProviders'
 
-import ProfileAndSupport from '../ProfileAndSupport'
+import { ProfileAndSupport } from '../ProfileAndSupport'
 
 const mockLogEvent = vi.fn()
 
