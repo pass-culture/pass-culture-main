@@ -607,6 +607,8 @@ def edit_stock(
 ) -> tuple[models.Stock, bool]:
     validation.check_stock_is_updatable(stock, editing_provider)
 
+    old_price = stock.price
+    old_quantity = stock.quantity
     modifications: dict[str, typing.Any] = {}
 
     if beginning_datetime is not UNCHANGED or booking_limit_datetime is not UNCHANGED:
@@ -657,14 +659,23 @@ def edit_stock(
         reason=search.IndexationReason.STOCK_UPDATE,
         log_extra={"changes": set(modifications.keys())},
     )
-    logger.info(
-        "Successfully updated stock",
-        extra={
-            "stock_id": stock.id,
-            "stock_quantity": stock.quantity,
-            "stock_dnBookedQuantity": stock.dnBookedQuantity,
-        },
-    )
+
+    log_extra_data: dict[str, typing.Any] = {
+        "offer_id": stock.offerId,
+        "stock_id": stock.id,
+        "stock_dnBookedQuantity": stock.dnBookedQuantity,
+    }
+
+    if (new_price := modifications.get("price", UNCHANGED)) is not UNCHANGED:
+        log_extra_data["old_price"] = old_price
+        log_extra_data["stock_price"] = new_price
+
+    if (new_quantity := modifications.get("quantity", UNCHANGED)) is not UNCHANGED:
+        log_extra_data["old_quantity"] = old_quantity
+        log_extra_data["stock_quantity"] = new_quantity
+
+    logger.info("Successfully updated stock", extra=log_extra_data, technical_message_id="stock.updated")
+
     return stock, "beginningDatetime" in modifications
 
 
