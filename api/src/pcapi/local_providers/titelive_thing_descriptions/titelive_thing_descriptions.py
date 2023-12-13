@@ -32,10 +32,11 @@ class TiteLiveThingDescriptions(LocalProvider):
     name = "TiteLive (Epagine / Place des libraires.com) Descriptions"
     can_create = False
 
-    def __init__(self) -> None:
+    def __init__(self, use_tls: bool=False) -> None:
         super().__init__()
+        self.use_tls = use_tls
 
-        all_zips = get_files_to_process_from_titelive_ftp(DESCRIPTION_FOLDER_NAME_TITELIVE, DATE_REGEXP)
+        all_zips = get_files_to_process_from_titelive_ftp(DESCRIPTION_FOLDER_NAME_TITELIVE, DATE_REGEXP, self.use_tls)
 
         self.zips = self.get_remaining_files_to_check(all_zips)
         self.description_zip_infos: Iterator[ZipInfo] | None = None
@@ -76,7 +77,7 @@ class TiteLiveThingDescriptions(LocalProvider):
             current_file_date = get_date_from_filename(self.zip_file, DATE_REGEXP)
             self.log_provider_event(providers_models.LocalProviderEventType.SyncPartEnd, current_file_date)
         next_zip_file_name = str(next(self.zips))
-        self.zip_file = get_zip_file_from_ftp(next_zip_file_name, DESCRIPTION_FOLDER_NAME_TITELIVE)
+        self.zip_file = get_zip_file_from_ftp(next_zip_file_name, DESCRIPTION_FOLDER_NAME_TITELIVE, self.use_tls)
         new_file_date = get_date_from_filename(self.zip_file, DATE_REGEXP)
 
         self.log_provider_event(providers_models.LocalProviderEventType.SyncPartStart, new_file_date)

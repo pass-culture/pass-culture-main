@@ -25,10 +25,11 @@ class TiteLiveThingThumbs(LocalProvider):
     name = "TiteLive (Epagine / Place des libraires.com) Thumbs"
     can_create = False
 
-    def __init__(self) -> None:
+    def __init__(self, use_tls: bool=False) -> None:
         super().__init__()
+        self.use_tls = use_tls
 
-        all_zips = get_files_to_process_from_titelive_ftp(THUMB_FOLDER_NAME_TITELIVE, DATE_REGEXP)
+        all_zips = get_files_to_process_from_titelive_ftp(THUMB_FOLDER_NAME_TITELIVE, DATE_REGEXP, self.use_tls)
 
         self.zips = self.get_remaining_files_to_check(all_zips)
         self.thumb_zipinfos: Iterator[ZipInfo] | None = None
@@ -62,7 +63,7 @@ class TiteLiveThingThumbs(LocalProvider):
         next_zip_file_name = str(next(self.zips))
         file_date = get_date_from_filename(next_zip_file_name, DATE_REGEXP)
 
-        self.zip = get_zip_file_from_ftp(next_zip_file_name, THUMB_FOLDER_NAME_TITELIVE)
+        self.zip = get_zip_file_from_ftp(next_zip_file_name, THUMB_FOLDER_NAME_TITELIVE, self.use_tls)
         self.log_provider_event(providers_models.LocalProviderEventType.SyncPartStart, file_date)
 
         self.thumb_zipinfos = iter(

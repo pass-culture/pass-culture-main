@@ -216,10 +216,11 @@ class TiteLiveThings(LocalProvider):
     name = "TiteLive (Epagine / Place des libraires.com)"
     can_create = True
 
-    def __init__(self) -> None:
+    def __init__(self, use_tls: bool=False) -> None:
         super().__init__()
+        self.use_tls = use_tls
 
-        ordered_thing_files = get_files_to_process_from_titelive_ftp(THINGS_FOLDER_NAME_TITELIVE, DATE_REGEXP)
+        ordered_thing_files = get_files_to_process_from_titelive_ftp(THINGS_FOLDER_NAME_TITELIVE, DATE_REGEXP, self.use_tls)
         self.thing_files = self.get_remaining_files_to_check(ordered_thing_files)
 
         self.data_lines: Iterator[str] | None = None
@@ -394,7 +395,7 @@ class TiteLiveThings(LocalProvider):
         file_date = get_date_from_filename(self.products_file, DATE_REGEXP)
         self.log_provider_event(providers_models.LocalProviderEventType.SyncPartStart, file_date)
 
-        self.data_lines = get_lines_from_thing_file(str(self.products_file))
+        self.data_lines = get_lines_from_thing_file(str(self.products_file), use_tls=self.use_tls)
 
     def get_remaining_files_to_check(self, ordered_thing_files: list) -> iter:  # type: ignore [valid-type]
         latest_sync_part_end_event = providers_repository.find_latest_sync_part_end_event(self.provider)
@@ -435,7 +436,7 @@ class TiteLiveThings(LocalProvider):
                 logger.error("Offers cannot be updated", extra={"product_id": product_id, "exc": str(exception)})
 
 
-def get_lines_from_thing_file(thing_file: str) -> Iterator[str]:
+def get_lines_from_thing_file(thing_file: str, use_tls: bool) -> Iterator[str]:
     data_file = BytesIO()
     data_wrapper = TextIOWrapper(
         data_file,
@@ -443,7 +444,7 @@ def get_lines_from_thing_file(thing_file: str) -> Iterator[str]:
         line_buffering=True,
     )
     file_path = "RETR " + THINGS_FOLDER_NAME_TITELIVE + "/" + thing_file
-    connect_to_titelive_ftp().retrbinary(file_path, data_file.write)
+    connect_to_titelive_ftp(use_tls).retrbinary(file_path, data_file.write)
     data_wrapper.seek(0, 0)
     return iter(data_wrapper.readlines())
 
