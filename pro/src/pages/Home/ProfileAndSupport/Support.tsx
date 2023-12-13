@@ -12,7 +12,7 @@ import { initCookieConsent } from 'utils/cookieConsentModal'
 
 import styles from './Support.module.scss'
 
-const Support: () => JSX.Element | null = () => {
+export const Support: () => JSX.Element | null = () => {
   const { logEvent } = useAnalytics()
   const location = useLocation()
   return (
@@ -119,5 +119,3 @@ const Support: () => JSX.Element | null = () => {
     </div>
   )
 }
-
-export default Support
