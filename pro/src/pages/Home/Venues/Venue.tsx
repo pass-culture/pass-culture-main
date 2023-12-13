@@ -196,8 +196,9 @@ const Venue = ({
                 <span className={styles['button-group-separator']} />
               </>
             )}
+
           <ButtonLink
-            variant={ButtonVariant.TERNARY}
+            variant={ButtonVariant.SECONDARY}
             link={{
               to: editVenueLink,
               isExternal: false,
@@ -210,7 +211,7 @@ const Venue = ({
               )
             }
           >
-            Éditer le lieu
+            Gérer ma page
           </ButtonLink>
         </div>
       </div>

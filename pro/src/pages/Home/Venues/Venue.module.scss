@@ -53,13 +53,16 @@
 
 .button-group {
   display: flex;
-  flex-wrap: nowrap;
-  align-items: stretch;
-  gap: rem.torem(16px);
+  flex-direction: column;
+  gap: rem.torem(8px);
 
-  // Delete when WIP_ENABLE_NEW_BANK_DETAILS_JOURNEY is deleted
-  &-separator {
-    @media (min-width: size.$tablet) {
+  @media (min-width: size.$tablet) {
+    flex-direction: row;
+    align-items: stretch;
+    gap: rem.torem(16px);
+
+    // Delete when WIP_ENABLE_NEW_BANK_DETAILS_JOURNEY is deleted
+    &-separator {
       margin: rem.torem(-16px) 0;
       border-left: solid rem.torem(1px) colors.$grey-medium;
     }

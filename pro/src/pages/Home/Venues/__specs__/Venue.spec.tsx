@@ -45,7 +45,7 @@ describe('venues', () => {
       renderVenue(props)
 
       expect(
-        screen.getByRole('link', { name: 'Éditer le lieu' })
+        screen.getByRole('link', { name: 'Gérer ma page' })
       ).toHaveAttribute(
         'href',
         `/structures/${offererId}/lieux/${venueId}?modification`
