@@ -6,3 +6,10 @@
 
   margin-bottom: rem.torem(16px);
 }
+
+.loader-container {
+  min-height: rem.torem(205px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}

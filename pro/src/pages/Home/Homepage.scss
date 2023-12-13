@@ -10,17 +10,6 @@
     box-shadow: 0 rem.torem(2px) rem.torem(6px) 0 rgba(colors.$black, 0.15);
     overflow: hidden;
 
-    &.h-card-placeholder {
-      min-height: rem.torem(205px);
-
-      .h-card-inner {
-        align-items: center;
-        display: flex;
-        justify-content: center;
-        min-height: rem.torem(205px);
-      }
-    }
-
     .h-card-inner {
       height: 100%;
       padding: rem.torem(16px) rem.torem(16px) rem.torem(24px);
