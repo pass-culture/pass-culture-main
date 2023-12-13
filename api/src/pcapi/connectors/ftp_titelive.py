@@ -1,7 +1,7 @@
 import ftplib
 from io import BytesIO
 import logging
-from typing import Pattern
+from typing import Pattern, Union
 from zipfile import ZipFile
 
 from pcapi import settings
@@ -11,32 +11,38 @@ from pcapi.domain.titelive import put_today_file_at_end_of_list
 logger = logging.getLogger(__name__)
 
 
-def get_titelive_ftp() -> ftplib.FTP:
+def get_titelive_ftp(use_tls: bool) -> Union[ftplib.FTP, ftplib.FTP_TLS]:
     if settings.TITELIVE_FTP_URI is None:
         raise ValueError("URI du FTP Titelive non spécifiée.")
-    return ftplib.FTP(settings.TITELIVE_FTP_URI)
+    if use_tls:
+        return ftplib.FTP_TLS(settings.TITELIVE_FTP_URI)
+    else:
+        return ftplib.FTP(settings.TITELIVE_FTP_URI)
 
 
-def connect_to_titelive_ftp() -> ftplib.FTP:
-    ftp_titelive = get_titelive_ftp()
+
+def connect_to_titelive_ftp(use_tls: bool) -> Union[ftplib.FTP, ftplib.FTP_TLS]:
+    ftp_titelive = get_titelive_ftp(use_tls)
     if settings.TITELIVE_FTP_USER is None or settings.TITELIVE_FTP_PWD is None:
         raise ValueError("Informations de connexion au FTP Titelive non spécifiée.")
     ftp_titelive.login(settings.TITELIVE_FTP_USER, settings.TITELIVE_FTP_PWD)
+    if use_tls:
+        ftp_titelive.prot_p()
     return ftp_titelive
 
 
-def get_zip_file_from_ftp(zip_file_name: str, folder_name: str) -> ZipFile:
+def get_zip_file_from_ftp(zip_file_name: str, folder_name: str, use_tls: bool) -> ZipFile:
     data_file = BytesIO()
     data_file.name = zip_file_name
     file_path = "RETR " + folder_name + "/" + zip_file_name
     logger.info("Downloading file %s", file_path)
-    connect_to_titelive_ftp().retrbinary(file_path, data_file.write)
+    connect_to_titelive_ftp(use_tls).retrbinary(file_path, data_file.write)
     # FIXME: this should be a with statement. Requires titelive sync to be rewritten
     return ZipFile(data_file, "r")
 
 
-def get_files_to_process_from_titelive_ftp(titelive_folder_name: str, date_regexp: Pattern[str]) -> list[str]:
-    ftp_titelive = connect_to_titelive_ftp()
+def get_files_to_process_from_titelive_ftp(titelive_folder_name: str, date_regexp: Pattern[str], use_tls: bool) -> list[str]:
+    ftp_titelive = connect_to_titelive_ftp(use_tls)
     files_list = ftp_titelive.nlst(titelive_folder_name)
 
     files_list_matching_regex = [file_name for file_name in files_list if date_regexp.search(str(file_name))]
