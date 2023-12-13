@@ -70,8 +70,8 @@ const OffererDetails = ({
     showOffererNotValidatedAndPhysicalVenue
 
   return (
-    <div className={styles['venue-card']} data-testid="offerrer-wrapper">
-      <div className={styles['offerer-content']}>
+    <div className="h-card" data-testid="offerrer-wrapper">
+      <div className="h-card-inner h-no-bottom">
         <div className={styles['container']}>
           <div className={styles['venue-select']}>
             <SelectInput

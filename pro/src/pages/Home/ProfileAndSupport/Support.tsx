@@ -16,7 +16,7 @@ const Support: () => JSX.Element | null = () => {
   const { logEvent } = useAnalytics()
   const location = useLocation()
   return (
-    <div className="h-support h-card h-card-secondary-hover">
+    <div className="h-support h-card">
       <div className={styles['card-inner']}>
         <h3 className="h-card-title">Aide et support</h3>
 

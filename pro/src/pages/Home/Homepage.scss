@@ -34,18 +34,6 @@
       align-items: center;
     }
 
-    &.h-card-primary {
-      .h-card-inner {
-        border-color: colors.$primary;
-      }
-    }
-
-    &.h-card-secondary {
-      .h-card-inner {
-        border-color: colors.$secondary;
-      }
-    }
-
     .h-card-title {
       @include fonts.title4;
 
