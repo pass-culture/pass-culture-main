@@ -18,7 +18,7 @@ export const Support: () => JSX.Element | null = () => {
   return (
     <div className="h-support h-card">
       <div className={styles['card-inner']}>
-        <h3 className="h-card-title">Aide et support</h3>
+        <h3 className={styles['title']}>Aide et support</h3>
 
         <div className={styles['card-content']}>
           <ul>

@@ -67,7 +67,7 @@ const VenueCreationLinks = ({
   const renderCard = () => (
     <div className="h-card" data-testid="offerers-creation-links-card">
       <div className="h-card-inner">
-        <h3 className="h-card-title">Lieux</h3>
+        <h3 className={styles['title']}>Lieux</h3>
 
         <div className={styles['content']}>
           <p>
