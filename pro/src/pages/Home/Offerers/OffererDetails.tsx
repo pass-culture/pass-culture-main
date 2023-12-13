@@ -72,7 +72,7 @@ const OffererDetails = ({
     showOffererNotValidatedAndPhysicalVenue
 
   return (
-    <Card noPaddingBottom data-testid="offerrer-wrapper">
+    <Card className={styles['card']} data-testid="offerrer-wrapper">
       <div className={styles['container']}>
         <div className={styles['venue-select']}>
           <SelectInput

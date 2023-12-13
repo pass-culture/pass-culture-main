@@ -7,8 +7,4 @@
   border-radius: rem.torem(8px);
   box-shadow: 0 rem.torem(2px) rem.torem(6px) 0 rgba(colors.$black, 0.15);
   padding: rem.torem(16px);
-
-  &.no-padding-bottom {
-    padding-bottom: 0;
-  }
 }
