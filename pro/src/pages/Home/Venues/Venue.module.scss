@@ -10,6 +10,13 @@
   gap: rem.torem(16px);
 }
 
+.header-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: rem.torem(12px);
+}
+
 .toggle-wrapper {
   display: flex;
   align-items: center;

@@ -113,7 +113,7 @@ const Venue = ({
     <div data-testid="venue-wrapper">
       <div className="h-card">
         <div className="h-card-inner">
-          <div className="h-card-header-row">
+          <div className={styles['header-row']}>
             <h3 className={styles['toggle-wrapper']}>
               {shouldShowVenueOfferSteps ? (
                 <button
