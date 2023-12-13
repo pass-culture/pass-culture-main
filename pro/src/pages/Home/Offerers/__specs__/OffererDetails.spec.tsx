@@ -207,7 +207,7 @@ describe('offererDetailsLegacy', () => {
     const physicalVenueContainer = physicalVenueTitle.closest('div')
     expect(
       physicalVenueContainer &&
-        within(physicalVenueContainer).getByText('Éditer le lieu', {
+        within(physicalVenueContainer).getByText('Gérer ma page', {
           exact: false,
         })
     ).toBeInTheDocument()
@@ -316,7 +316,7 @@ describe('offererDetailsLegacy', () => {
 
       expect(
         physicalVenueContainer &&
-          within(physicalVenueContainer).getByText('Éditer le lieu', {
+          within(physicalVenueContainer).getByText('Gérer ma page', {
             exact: false,
           })
       ).toBeInTheDocument()
