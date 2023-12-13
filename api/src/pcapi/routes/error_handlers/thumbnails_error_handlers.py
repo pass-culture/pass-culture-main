@@ -17,4 +17,4 @@ def handle_create_a_thumbnail(exception: Exception) -> tuple[Response, int]:
         exception.__class__.__name__,
         error_message,
     )
-    return app.generate_error_response({"errors": [error_message]}), 400  # type: ignore [attr-defined]
+    return app.generate_error_response({"errors": [error_message]}), 400

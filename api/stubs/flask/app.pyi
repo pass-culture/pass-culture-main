@@ -4,7 +4,9 @@
 #   - a `redis_client` attribute has been added. Since we set this
 #     attribute when building the `app` object, accessing it from
 #     many parts of our code causes mypy warnings.
-#   - `name` had to be typed somewhat incorrectly to please mypy.
+#   - ditto for `generate_error_response`.
+#   - cached properties had to be typed somewhat incorrectly to please
+#     mypy: `name`, `logger` and `jinja_env`.
 # All changes appear between `<change>` and `</change>` tags.
 
 import logging
@@ -55,6 +57,13 @@ from werkzeug.routing import Map, MapAdapter as MapAdapter, Rule
 
 iscoroutinefunction: Incomplete
 
+# <change>
+class GenerateErrorResponse(t.Protocol):
+    def __call__(self, errors: dict, backoffice_template_name: str = ...) -> Response:
+        pass
+
+# </change>
+
 class Flask(Scaffold):
     request_class = Request
     response_class = Response
@@ -88,6 +97,7 @@ class Flask(Scaffold):
     subdomain_matching: Incomplete
     # <change>
     redis_client: redis.Redis
+    generate_error_response: GenerateErrorResponse
     # </change>
 
     def __init__(

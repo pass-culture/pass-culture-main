@@ -201,13 +201,15 @@ oauth.register(
 app.url_map.strict_slashes = False
 
 
-def generate_error_response(errors: dict, backoffice_template_name: str = "errors/generic.html") -> Response:
+# The argument `backoffice_template_name` is not used, but it is needed
+# to have the same signature as `backoffice_app.generate_error_response()`.
+def generate_error_response(errors: dict, backoffice_template_name: str = "not used") -> Response:
     return jsonify(errors)
 
 
 with app.app_context():
     app.redis_client = redis.from_url(url=settings.REDIS_URL, decode_responses=True)
-    app.generate_error_response = generate_error_response  # type: ignore [attr-defined]
+    app.generate_error_response = generate_error_response
 
 
 @app.shell_context_processor
