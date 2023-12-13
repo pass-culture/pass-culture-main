@@ -55,6 +55,7 @@ def offers_fixture(criteria) -> tuple:
         venue__postalCode="47000",
         venue__departementCode="47",
         subcategoryId=subcategories.MATERIEL_ART_CREATIF.id,
+        author=users_factories.ProFactory(),
     )
     offer_with_limited_stock = offers_factories.EventOfferFactory(
         name="A Very Specific Name",
@@ -127,6 +128,7 @@ class ListOffersTest(GetEndpointHelper):
         assert rows[0]["Sous-catégorie"] == offers[0].subcategory.pro_label
         assert rows[0]["Stock réservé"] == "0"
         assert rows[0]["Stock restant"] == "Illimité"
+        assert rows[0]["Créateur de l'offre"] == offers[0].author.full_name
         assert rows[0]["Tag"] == offers[0].criteria[0].name
         assert rows[0]["Pond."] == ""
         assert rows[0]["État"] == "Validée"
