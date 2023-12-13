@@ -56,3 +56,7 @@ class NoInvoiceToGenerate(Exception):
 
 class VenueAlreadyLinkedToAnotherBankAccount(Exception):
     pass
+
+
+class CommercialGestureOnMultipleStock(Exception):
+    pass

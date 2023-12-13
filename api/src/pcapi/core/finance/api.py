@@ -2349,7 +2349,7 @@ def update_bank_account_venues_links(
 def create_finance_incident(
     kind: models.IncidentType,
     bookings: list[bookings_models.Booking | educational_models.CollectiveBooking],
-    amount: int | None = None,
+    amount: float | None = None,
     origin: str | None = None,
 ) -> None:
     incident = models.FinanceIncident(
@@ -2376,18 +2376,27 @@ def create_finance_incident(
             )
         )
     else:
+        stock_id = bookings[0].stockId if kind == models.IncidentType.COMMERCIAL_GESTURE.name and bookings else 0
         for booking in bookings:
+            new_total_amount = decimal.Decimal(0)
+            if kind == models.IncidentType.COMMERCIAL_GESTURE.name:
+                # all bookings in a commercial gesture must be from the same stock therefore they all have the same
+                # amount.
+                new_total_amount = amount * booking.quantity
+
+                if booking.stockId != stock_id:
+                    raise exceptions.CommercialGestureOnMultipleStock()
+            else:
+                # Only total overpayment if multiple bookings are selected
+                if amount and len(bookings) == 1:
+                    new_total_amount = booking.total_amount - decimal.Decimal(amount)
+
             booking_finance_incidents_to_create.append(
                 models.BookingFinanceIncident(
                     bookingId=booking.id,
                     incidentId=incident.id,
                     beneficiaryId=booking.userId,
-                    newTotalAmount=utils.to_eurocents(
-                        # Only total overpayment if multiple bookings are selected
-                        booking.total_amount - amount
-                        if amount and len(bookings) == 1
-                        else 0
-                    ),
+                    newTotalAmount=utils.to_eurocents(new_total_amount),
                 )
             )
     db.session.add_all(booking_finance_incidents_to_create)
