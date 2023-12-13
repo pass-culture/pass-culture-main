@@ -101,9 +101,11 @@ const Offerers = ({
 
   if (isLoading) {
     return (
-      <div className="h-card h-card-secondary h-card-placeholder">
+      <div className="h-card">
         <div className="h-card-inner">
-          <Spinner />
+          <div className={styles['loader-container']}>
+            <Spinner />
+          </div>
         </div>
       </div>
     )
