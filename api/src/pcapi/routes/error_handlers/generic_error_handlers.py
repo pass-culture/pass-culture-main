@@ -30,17 +30,17 @@ ApiErrorResponse = tuple[dict | Response, int]
 
 @app.errorhandler(NotFound)
 def restize_not_found_route_errors(error: NotFound) -> ApiErrorResponse | HtmlErrorResponse:
-    return app.generate_error_response({}, backoffice_template_name="errors/not_found.html"), 404  # type: ignore [attr-defined]
+    return app.generate_error_response({}, backoffice_template_name="errors/not_found.html"), 404
 
 
 @app.errorhandler(ApiErrors)
 def restize_api_errors(error: ApiErrors) -> ApiErrorResponse:
-    return app.generate_error_response(error.errors), error.status_code or 400  # type: ignore [attr-defined]
+    return app.generate_error_response(error.errors), error.status_code or 400
 
 
 @app.errorhandler(offers_exceptions.TooLateToDeleteStock)
 def restize_too_late_to_delete_stock(error: offers_exceptions.TooLateToDeleteStock) -> ApiErrorResponse:
-    return app.generate_error_response(error.errors), 400  # type: ignore [attr-defined]
+    return app.generate_error_response(error.errors), 400
 
 
 @app.errorhandler(Exception)
@@ -51,7 +51,7 @@ def internal_error(error: Exception) -> ApiErrorResponse | HTTPException:
     logger.exception("Unexpected error on method=%s url=%s: %s", request.method, request.url, error)
     errors = ApiErrors()
     errors.add_error("global", "Il semble que nous ayons des problèmes techniques :(" + " On répare ça au plus vite.")
-    return app.generate_error_response(errors.errors), 500  # type: ignore [attr-defined]
+    return app.generate_error_response(errors.errors), 500
 
 
 @app.errorhandler(UnauthorizedError)
@@ -69,7 +69,7 @@ def method_not_allowed(error: MethodNotAllowed) -> ApiErrorResponse:
     api_errors = ApiErrors()
     api_errors.add_error("global", "La méthode que vous utilisez n'existe pas sur notre serveur")
     logger.warning("405 %s", error)
-    return app.generate_error_response(api_errors.errors), 405  # type: ignore [attr-defined]
+    return app.generate_error_response(api_errors.errors), 405
 
 
 @app.errorhandler(DecimalCastError)
@@ -78,7 +78,7 @@ def decimal_cast_error(error: DecimalCastError) -> ApiErrorResponse:
     logger.warning(json.dumps(error.errors))
     for field in error.errors.keys():
         api_errors.add_error(field, "Saisissez un nombre valide")
-    return app.generate_error_response(api_errors.errors), 400  # type: ignore [attr-defined]
+    return app.generate_error_response(api_errors.errors), 400
 
 
 @app.errorhandler(DateTimeCastError)
@@ -87,13 +87,13 @@ def date_time_cast_error(error: DateTimeCastError) -> ApiErrorResponse:
     logger.warning(json.dumps(error.errors))
     for field in error.errors.keys():
         api_errors.add_error(field, "Format de date invalide")
-    return app.generate_error_response(api_errors.errors), 400  # type: ignore [attr-defined]
+    return app.generate_error_response(api_errors.errors), 400
 
 
 @app.errorhandler(finance_exceptions.DepositTypeAlreadyGrantedException)
 def already_activated_exception(error: finance_exceptions.DepositTypeAlreadyGrantedException) -> ApiErrorResponse:
     logger.error(json.dumps(error.errors))
-    return app.generate_error_response(error.errors), 405  # type: ignore [attr-defined]
+    return app.generate_error_response(error.errors), 405
 
 
 @app.errorhandler(429)
@@ -123,7 +123,7 @@ def ratelimit_handler(error: Exception) -> ApiErrorResponse:
     logger.warning("Requests ratelimit exceeded on routes url=%s", request.url, extra=extra)
     api_errors = ApiErrors()
     api_errors.add_error("global", "Nombre de tentatives de connexion dépassé, veuillez réessayer dans une minute")
-    return app.generate_error_response(api_errors.errors), 429  # type: ignore [attr-defined]
+    return app.generate_error_response(api_errors.errors), 429
 
 
 @app.errorhandler(DatabaseError)
@@ -147,38 +147,38 @@ def database_error_handler(error: DatabaseError) -> ApiErrorResponse:
     logger.exception("Unexpected database error on method=%s url=%s: %s", request.method, request.url, error)
     errors = ApiErrors()
     errors.add_error("global", "Il semble que nous ayons des problèmes techniques :(" + " On répare ça au plus vite.")
-    return app.generate_error_response(errors.errors), 500  # type: ignore [attr-defined]
+    return app.generate_error_response(errors.errors), 500
 
 
 @app.errorhandler(ImageRatioError)
 def handle_ratio_error(error: ImageRatioError) -> ApiErrorResponse:
     logger.info("Image ratio error: %s", error)
-    return app.generate_error_response({"code": "BAD_IMAGE_RATIO", "extra": str(error)}), 400  # type: ignore [attr-defined]
+    return app.generate_error_response({"code": "BAD_IMAGE_RATIO", "extra": str(error)}), 400
 
 
 @app.errorhandler(sirene.UnknownEntityException)
 def handle_unknown_entity_exception(error: sirene.UnknownEntityException) -> ApiErrorResponse:
     msg = "Le SIREN n’existe pas."
     err = {"global": [msg]}
-    return app.generate_error_response(err), 400  # type: ignore [attr-defined]
+    return app.generate_error_response(err), 400
 
 
 @app.errorhandler(sirene.InvalidFormatException)
 def handle_sirene_invalid_format_exception(error: sirene.InvalidFormatException) -> ApiErrorResponse:
     msg = "Le format de ce SIREN ou SIRET est incorrect."
     err = {"global": [msg]}
-    return app.generate_error_response(err), 400  # type: ignore [attr-defined]
+    return app.generate_error_response(err), 400
 
 
 @app.errorhandler(sirene.NonPublicDataException)
 def handle_sirene_non_public_data_exception(error: sirene.NonPublicDataException) -> ApiErrorResponse:
     msg = "Les informations relatives à ce SIREN ou SIRET ne sont pas accessibles."
     err = {"global": [msg]}
-    return app.generate_error_response(err), 400  # type: ignore [attr-defined]
+    return app.generate_error_response(err), 400
 
 
 @app.errorhandler(sirene.SireneApiException)
 def handle_sirene_api_exception(error: sirene.SireneApiException) -> ApiErrorResponse:
     msg = "Les informations relatives à ce SIREN ou SIRET n'ont pas pu être vérifiées, veuillez réessayer plus tard."
     err = {"global": [msg]}
-    return app.generate_error_response(err), 500  # type: ignore [attr-defined]
+    return app.generate_error_response(err), 500

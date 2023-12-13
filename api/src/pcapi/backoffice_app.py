@@ -53,7 +53,7 @@ with app.app_context():
     install_routes(app)
     app.register_blueprint(backoffice_web, url_prefix="/")
 
-    app.generate_error_response = generate_error_response  # type: ignore [attr-defined]
+    app.generate_error_response = generate_error_response
 
     setup_metrics(app)
 
