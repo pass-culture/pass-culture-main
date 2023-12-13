@@ -61,6 +61,7 @@ const ReimbursementBankAccount = ({
               to: `https://www.demarches-simplifiees.fr/dossiers/${bankAccount.dsApplicationId}/messagerie`,
               isExternal: true,
               'aria-label': 'Nouvelle fenêtre',
+              target: '_blank',
             }}
             onClick={() => {
               logEvent?.(
