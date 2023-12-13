@@ -37,7 +37,11 @@ const StockThingSection = ({
 
       <SummaryLayout.Row
         title="Quantité"
-        description={stock.quantity ?? 'Illimité'}
+        description={
+          stock.quantity !== null && stock.quantity !== undefined
+            ? new Intl.NumberFormat('fr-FR').format(stock.quantity)
+            : 'Illimité'
+        }
       />
 
       {/* Some things offer can be duo like ESCAPE_GAME or CARTE_MUSEE */}
