@@ -1,4 +1,11 @@
 @use "styles/mixins/_rem.scss" as rem;
+@use "styles/mixins/_fonts.scss" as fonts;
+
+.title {
+  @include fonts.title4;
+
+  margin-bottom: rem.torem(8px);
+}
 
 .card-inner {
   padding: rem.torem(16px);

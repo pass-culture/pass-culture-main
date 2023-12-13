@@ -58,7 +58,8 @@ export const Profile = () => {
     <div className="h-card" data-testid="card-profile">
       <div className="h-card-inner">
         <div className="h-card-header-row">
-          <h3 className="h-card-title">Profil</h3>
+          <h3 className={styles['title']}>Profil</h3>
+
           <ButtonLink
             variant={ButtonVariant.TERNARY}
             link={{ to: '/profil', isExternal: false }}

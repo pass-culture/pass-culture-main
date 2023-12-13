@@ -1,4 +1,3 @@
-import cn from 'classnames'
 import { addDays, isBefore } from 'date-fns'
 import React, { useState } from 'react'
 
@@ -118,7 +117,7 @@ const Venue = ({
             <h3 className={styles['toggle-wrapper']}>
               {shouldShowVenueOfferSteps ? (
                 <button
-                  className={cn('h-card-title', styles['venue-name'])}
+                  className={styles['venue-name']}
                   type="button"
                   onClick={() => {
                     setIsToggleOpen((prev) => !prev)
@@ -141,9 +140,7 @@ const Venue = ({
                   <span>{publicName || name}</span>
                 </button>
               ) : (
-                <div className={cn('h-card-title', styles['venue-name'])}>
-                  {publicName || name}
-                </div>
+                <div className={styles['venue-name']}>{publicName || name}</div>
               )}
 
               {shouldShowVenueOfferSteps && !isVirtual && (
