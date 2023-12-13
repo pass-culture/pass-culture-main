@@ -32,7 +32,7 @@ const VenueCreationLinks = ({
 
   const renderLinks = (insideCard: boolean) => {
     return (
-      <div className="actions-container">
+      <div className={styles['actions-container']}>
         <ButtonLink
           variant={insideCard ? ButtonVariant.PRIMARY : ButtonVariant.SECONDARY}
           link={{
@@ -48,6 +48,7 @@ const VenueCreationLinks = ({
         >
           {!hasPhysicalVenue ? 'Créer un lieu' : 'Ajouter un lieu'}
         </ButtonLink>
+
         {!isStatisticsDashboardEnabled && (
           <ButtonLink
             variant={ButtonVariant.SECONDARY}
