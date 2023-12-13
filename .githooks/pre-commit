@@ -50,6 +50,23 @@ if [[ ! -z "$STAGED_FILES" ]]; then
 
     # check vitest exit code
     if [ $VITEST_EXIT_CODE -ne 0 ]; then
+      echo "❌ Please fix the tests"
+      exit 1
+    else
+      echo "✅ tests passing"
+    fi
+  fi
+
+  # run tests related to staged files  with coverage
+  if [[ ! ",${DISABLED_PRO_PRE_COMMIT_CHECKS}," =~ ",testcoverage," ]]; then
+    echo "Running Tests"
+    # The following command will run tests related to the vite root (`src`)
+    # In bash ${string//substring/replacement} replace all occurrences of a string
+    yarn test:unit:hookcoverage ${STAGED_FILES//src\//}
+    VITEST_EXIT_CODE=$?
+
+    # check vitest exit code
+    if [ $VITEST_EXIT_CODE -ne 0 ]; then
       echo "🙏 Please help us fix test coverage"
     else
       echo "✅ coverage 100 %"
