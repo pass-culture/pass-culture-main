@@ -111,10 +111,7 @@ const Venue = ({
   const reimbursementSectionLink = `/structures/${offererId}/lieux/${venueId}?modification#remboursement`
 
   return (
-    <div
-      className="h-section-row nested offerer-venue"
-      data-testid="venue-wrapper"
-    >
+    <div data-testid="venue-wrapper">
       <div className="h-card">
         <div className="h-card-inner">
           <div className={styles['card-container']}>

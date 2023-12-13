@@ -8,3 +8,15 @@
 
   margin-bottom: rem.torem(16px);
 }
+
+.cards-row {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: rem.torem(24px); // in case it's inside a section-row with multiple cards
+}
+
+@media (min-width: size.$tablet) {
+  .cards-row {
+    grid-template-columns: 1fr 1fr;
+  }
+}
