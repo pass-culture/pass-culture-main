@@ -39,7 +39,7 @@ describe('venue create offer link', () => {
 
     renderVenue(props)
 
-    await userEvent.click(screen.getByRole('link', { name: 'Éditer le lieu' }))
+    await userEvent.click(screen.getByRole('link', { name: 'Gérer ma page' }))
 
     expect(mockLogEvent).toHaveBeenCalledWith(
       VenueEvents.CLICKED_VENUE_PUBLISHED_OFFERS_LINK,
@@ -72,9 +72,7 @@ describe('venue create offer link', () => {
 
     renderVenue(props)
 
-    expect(
-      screen.getByRole('link', { name: 'Éditer le lieu' })
-    ).toHaveAttribute(
+    expect(screen.getByRole('link', { name: 'Gérer ma page' })).toHaveAttribute(
       'href',
       `/structures/${offererId}/lieux/${venueId}?modification`
     )
