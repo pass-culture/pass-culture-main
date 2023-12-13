@@ -1675,6 +1675,31 @@ class EditOfferStockTest(PostEndpointHelper):
         assert later_event.status == finance_models.FinanceEventStatus.READY
         assert finance_models.Pricing.query.filter_by(id=later_pricing_id).count() == 0
 
+    def test_offer_stock_edit_with_french_decimal(self, authenticated_client):
+        offer = offers_factories.OfferFactory(subcategoryId=subcategories.CONFERENCE.id)
+        venue = offer.venue
+        stock_to_edit = offers_factories.StockFactory(
+            offer=offer,
+            price=decimal.Decimal("123.45"),
+        )
+        booking_to_edit = bookings_factories.UsedBookingFactory(
+            stock=stock_to_edit,
+            amount=decimal.Decimal("123.45"),
+            venue=venue,
+        )
+
+        response = self.post_to_endpoint(
+            authenticated_client, offer_id=offer.id, stock_id=stock_to_edit.id, form={"price": "50,1"}
+        )
+
+        db.session.refresh(booking_to_edit)
+        db.session.refresh(stock_to_edit)
+
+        assert response.status_code == 303
+
+        assert stock_to_edit.price == decimal.Decimal("50.1")
+        assert booking_to_edit.amount == decimal.Decimal("50.1")
+
     def test_offer_stock_edit_confirmed_booking(self, authenticated_client):
         offer = offers_factories.OfferFactory(subcategoryId=subcategories.CONFERENCE.id)
         venue = offer.venue

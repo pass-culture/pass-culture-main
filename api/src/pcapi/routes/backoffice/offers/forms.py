@@ -396,8 +396,12 @@ class EditOfferVenueForm(FlaskForm):
 
 
 class EditStockForm(FlaskForm):
+    class Meta:
+        locales = ["fr_FR", "fr"]
+
     price = fields.PCDecimalField(
         "Prix",
+        use_locale=True,
         validators=[
             wtforms.validators.NumberRange(min=0, max=300, message="Le prix doit être positif et inférieur à 300 €.")
         ],
