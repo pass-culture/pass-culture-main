@@ -3,6 +3,8 @@ import React from 'react'
 import { ButtonLink } from 'ui-kit'
 import { ButtonVariant } from 'ui-kit/Button/types'
 
+import styles from './OffererCreationLinks.module.scss'
+
 const OffererCreationLinks = () => (
   <div
     className="h-card offerer-banner"
@@ -11,7 +13,7 @@ const OffererCreationLinks = () => (
     <div className="h-card-inner">
       <h3 className="h-card-title">Structures</h3>
 
-      <div className="h-card-content">
+      <div className={styles['content']}>
         <p>
           Votre précédente structure a été supprimée. Pour plus d’informations
           sur la suppression et vos données, veuillez contacter notre support.

@@ -69,7 +69,7 @@ export const Profile = () => {
           </ButtonLink>
         </div>
 
-        <div className="h-card-content">
+        <div>
           <ul className={styles['description-list']}>
             <li className={styles['description-item']}>
               <span className={styles['description-label']}>Nom :</span>

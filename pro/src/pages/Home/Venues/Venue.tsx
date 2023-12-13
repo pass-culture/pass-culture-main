@@ -114,11 +114,11 @@ const Venue = ({
     <div data-testid="venue-wrapper">
       <div className="h-card">
         <div className="h-card-inner">
-          <div className={styles['card-container']}>
-            <h3 className="h-card-title">
+          <div className="h-card-header-row">
+            <h3 className={styles['toggle-wrapper']}>
               {shouldShowVenueOfferSteps ? (
                 <button
-                  className={cn('h-card-title', styles['toggle-wrapper'])}
+                  className={cn('h-card-title', styles['venue-name'])}
                   type="button"
                   onClick={() => {
                     setIsToggleOpen((prev) => !prev)
@@ -141,7 +141,7 @@ const Venue = ({
                   <span>{publicName || name}</span>
                 </button>
               ) : (
-                <div className={cn('h-card-title', styles['toggle-wrapper'])}>
+                <div className={cn('h-card-title', styles['venue-name'])}>
                   {publicName || name}
                 </div>
               )}
