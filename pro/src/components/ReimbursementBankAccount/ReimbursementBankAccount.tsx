@@ -86,7 +86,7 @@ const ReimbursementBankAccount = ({
         <div className={styles['linked-venues-section']}>
           <div className={styles['linked-venues-section-title']}>
             Lieu(x) rattaché(s) à ce compte bancaire
-            {hasWarning && (
+            {hasWarning && managedVenues.length > 0 && (
               <SvgIcon
                 src={fullErrorIcon}
                 alt="Une action est requise"
@@ -95,62 +95,64 @@ const ReimbursementBankAccount = ({
               />
             )}
           </div>
-          <div className={styles['linked-venues-content']}>
-            {!hasLinkedVenues && (
-              <div className={styles['issue-text']}>
-                Aucun lieu n’est rattaché à ce compte bancaire.
-                {venuesNotLinkedToBankAccount === 0 &&
-                  ' Désélectionnez un lieu déjà rattaché et rattachez-le à ce compte bancaire.'}
-              </div>
-            )}
-            {hasLinkedVenues && venuesNotLinkedToBankAccount > 0 && (
-              <div className={styles['issue-text']}>
-                Certains de vos lieux ne sont pas rattachés
-              </div>
-            )}
-            {hasLinkedVenues && (
-              <>
-                <div className={styles['linked-venues']}>
-                  {bankAccount.linkedVenues.map((venue) => (
-                    <div className={styles['linked-venue']} key={venue.id}>
-                      {venue.commonName}
-                    </div>
-                  ))}
+          {managedVenues.length > 0 && (
+            <div className={styles['linked-venues-content']}>
+              {!hasLinkedVenues && (
+                <div className={styles['issue-text']}>
+                  Aucun lieu n’est rattaché à ce compte bancaire.
+                  {venuesNotLinkedToBankAccount === 0 &&
+                    ' Désélectionnez un lieu déjà rattaché et rattachez-le à ce compte bancaire.'}
                 </div>
+              )}
+              {hasLinkedVenues && venuesNotLinkedToBankAccount > 0 && (
+                <div className={styles['issue-text']}>
+                  Certains de vos lieux ne sont pas rattachés.
+                </div>
+              )}
+              {hasLinkedVenues && (
+                <>
+                  <div className={styles['linked-venues']}>
+                    {bankAccount.linkedVenues.map((venue) => (
+                      <div className={styles['linked-venue']} key={venue.id}>
+                        {venue.commonName}
+                      </div>
+                    ))}
+                  </div>
+                  <Button
+                    variant={ButtonVariant.SECONDARY}
+                    onClick={() => {
+                      onUpdateButtonClick?.(bankAccount.id)
+                      logEvent?.(
+                        BankAccountEvents.CLICKED_CHANGE_VENUE_TO_BANK_ACCOUNT,
+                        {
+                          from: location.pathname,
+                          offererId,
+                        }
+                      )
+                    }}
+                  >
+                    Modifier
+                  </Button>
+                </>
+              )}
+              {!hasLinkedVenues && venuesNotLinkedToBankAccount > 0 && (
                 <Button
-                  variant={ButtonVariant.SECONDARY}
                   onClick={() => {
-                    onUpdateButtonClick?.(bankAccount.id)
                     logEvent?.(
-                      BankAccountEvents.CLICKED_CHANGE_VENUE_TO_BANK_ACCOUNT,
+                      BankAccountEvents.CLICKED_ADD_VENUE_TO_BANK_ACCOUNT,
                       {
                         from: location.pathname,
                         offererId,
                       }
                     )
+                    onUpdateButtonClick?.(bankAccount.id)
                   }}
                 >
-                  Modifier
+                  Rattacher un lieu
                 </Button>
-              </>
-            )}
-            {!hasLinkedVenues && venuesNotLinkedToBankAccount > 0 && (
-              <Button
-                onClick={() => {
-                  logEvent?.(
-                    BankAccountEvents.CLICKED_ADD_VENUE_TO_BANK_ACCOUNT,
-                    {
-                      from: location.pathname,
-                      offererId,
-                    }
-                  )
-                  onUpdateButtonClick?.(bankAccount.id)
-                }}
-              >
-                Rattacher un lieu
-              </Button>
-            )}
-          </div>
+              )}
+            </div>
+          )}
         </div>
       )}
     </div>
