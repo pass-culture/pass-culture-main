@@ -3,6 +3,7 @@ from time import time
 
 import click
 
+from pcapi.core.providers import allocine_movie_list
 import pcapi.core.providers.repository as providers_repository
 from pcapi.local_providers import provider_manager
 from pcapi.utils.blueprint import Blueprint
@@ -14,6 +15,11 @@ from .titelive_utils import generate_titelive_gtl_from_file
 
 blueprint = Blueprint(__name__, __name__)
 logger = logging.getLogger(__name__)
+
+
+@blueprint.cli.command("synchronize_allocine_products")
+def synchronize_allocine_products() -> None:
+    allocine_movie_list.synchronize_products()
 
 
 @blueprint.cli.command("synchronize_venue_providers_apis")
