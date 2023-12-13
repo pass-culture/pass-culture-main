@@ -13,7 +13,6 @@ export const OffersInfos = () => {
     state: { offer: offer },
   } = useLocation()
 
-  console.log('ici', useLocation())
   const [searchParams] = useSearchParams()
   const adageAuthToken = searchParams.get('token')
 

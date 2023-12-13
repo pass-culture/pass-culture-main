@@ -28,6 +28,7 @@ export const App = (): JSX.Element => {
   const [venueFilter, setVenueFilter] = useState<VenueResponse | null>(null)
 
   const notification = useNotification()
+  const domainId = Number(params.get('domain'))
 
   useEffect(() => {
     const siret = params.get('siret')
@@ -97,7 +98,11 @@ export const App = (): JSX.Element => {
   return (
     <AdageUserContextProvider adageUser={user}>
       <FiltersContextProvider venueFilter={venueFilter}>
-        <FacetFiltersContextProvider uai={user?.uai} venueFilter={venueFilter}>
+        <FacetFiltersContextProvider
+          uai={user?.uai}
+          venueFilter={venueFilter}
+          domainFilter={domainId}
+        >
           {user?.role &&
           [AdageFrontRoles.READONLY, AdageFrontRoles.REDACTOR].includes(
             user.role
