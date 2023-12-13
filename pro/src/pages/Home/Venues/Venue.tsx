@@ -16,6 +16,7 @@ import { ButtonVariant } from 'ui-kit/Button/types'
 import { SvgIcon } from 'ui-kit/SvgIcon/SvgIcon'
 import { Tag, TagVariant } from 'ui-kit/Tag/Tag'
 
+import { Card } from '../Card'
 import { VenueOfferSteps } from '../VenueOfferSteps'
 
 import styles from './Venue.module.scss'
@@ -110,141 +111,135 @@ const Venue = ({
   const reimbursementSectionLink = `/structures/${offererId}/lieux/${venueId}?modification#remboursement`
 
   return (
-    <div data-testid="venue-wrapper">
-      <div className="h-card">
-        <div className="h-card-inner">
-          <div className={styles['header-row']}>
-            <h3 className={styles['toggle-wrapper']}>
-              {shouldShowVenueOfferSteps ? (
-                <button
-                  className={styles['venue-name']}
-                  type="button"
-                  onClick={() => {
-                    setIsToggleOpen((prev) => !prev)
-                    logEvent?.(
-                      VenueEvents.CLICKED_VENUE_ACCORDION_BUTTON,
-                      venueIdTrackParam
-                    )
-                  }}
-                >
-                  <SvgIcon
-                    alt={`${
-                      isToggleOpen ? 'Masquer' : 'Afficher'
-                    } les statistiques`}
-                    className={styles['toggle-icon']}
-                    viewBox="0 0 16 16"
-                    src={
-                      isToggleOpen ? fullDisclosureOpen : fullDisclosureClose
-                    }
-                  />
-                  <span>{publicName || name}</span>
-                </button>
-              ) : (
-                <div className={styles['venue-name']}>{publicName || name}</div>
-              )}
-
-              {shouldShowVenueOfferSteps && !isVirtual && (
-                <Button
-                  icon={fullErrorIcon}
-                  className={styles['needs-payment-icon']}
-                  variant={ButtonVariant.TERNARY}
-                  hasTooltip
-                  onClick={() => {
-                    setIsToggleOpen((prev) => !prev)
-                    logEvent?.(
-                      VenueEvents.CLICKED_VENUE_ACCORDION_BUTTON,
-                      venueIdTrackParam
-                    )
-                  }}
-                >
-                  Cliquer pour voir les prochaines étapes
-                </Button>
-              )}
-
-              {hasProvider && (
-                <Tag
-                  variant={TagVariant.LIGHT_PURPLE}
-                  className={styles['api-tag']}
-                >
-                  <SvgIcon alt="" src={strokeConnectIcon} />
-                  API
-                </Tag>
-              )}
-            </h3>
-
-            <div className={styles['button-group']}>
-              {/*Delete when WIP_ENABLE_NEW_BANK_DETAILS_JOURNEY is deleted*/}
-              {!isNewBankDetailsJourneyEnabled &&
-                hasMissingReimbursementPoint &&
-                !isVirtual &&
-                venueHasCreatedOffer && (
-                  <>
-                    <ButtonLink
-                      variant={ButtonVariant.TERNARYPINK}
-                      link={{
-                        to: reimbursementSectionLink,
-                        isExternal: false,
-                      }}
-                      onClick={() => {
-                        logEvent?.(VenueEvents.CLICKED_VENUE_ADD_RIB_BUTTON, {
-                          from: location.pathname,
-                          ...venueIdTrackParam,
-                        })
-                      }}
-                      icon={fullMoreIcon}
-                    >
-                      Ajouter un RIB
-                    </ButtonLink>
-                    <span className={styles['button-group-separator']} />
-                  </>
-                )}
-              <ButtonLink
-                variant={ButtonVariant.TERNARY}
-                link={{
-                  to: editVenueLink,
-                  isExternal: false,
-                }}
-                icon={fullEditIcon}
-                onClick={() =>
-                  logEvent?.(
-                    VenueEvents.CLICKED_VENUE_PUBLISHED_OFFERS_LINK,
-                    venueIdTrackParam
-                  )
-                }
-              >
-                Éditer le lieu
-              </ButtonLink>
-            </div>
-          </div>
-
-          {isToggleOpen && shouldShowVenueOfferSteps && (
-            <div className={styles['offer-steps']}>
-              <VenueOfferSteps
-                venueId={venueId}
-                hasVenue={true}
-                offererId={offererId}
-                venueHasCreatedOffer={venueHasCreatedOffer}
-                offererHasCreatedOffer={offererHasCreatedOffer}
-                hasMissingReimbursementPoint={hasMissingReimbursementPoint}
-                hasAdageId={hasAdageId}
-                shouldDisplayEACInformationSection={
-                  shouldDisplayEACInformationSection
-                }
-                hasPendingBankInformationApplication={
-                  hasPendingBankInformationApplication
-                }
-                demarchesSimplifieesApplicationId={
-                  demarchesSimplifieesApplicationId
-                }
-                offererHasBankAccount={offererHasBankAccount}
-                hasNonFreeOffer={hasNonFreeOffer}
-                isFirstVenue={isFirstVenue}
+    <Card data-testid="venue-wrapper">
+      <div className={styles['header-row']}>
+        <h3 className={styles['toggle-wrapper']}>
+          {shouldShowVenueOfferSteps ? (
+            <button
+              className={styles['venue-name']}
+              type="button"
+              onClick={() => {
+                setIsToggleOpen((prev) => !prev)
+                logEvent?.(
+                  VenueEvents.CLICKED_VENUE_ACCORDION_BUTTON,
+                  venueIdTrackParam
+                )
+              }}
+            >
+              <SvgIcon
+                alt={`${
+                  isToggleOpen ? 'Masquer' : 'Afficher'
+                } les statistiques`}
+                className={styles['toggle-icon']}
+                viewBox="0 0 16 16"
+                src={isToggleOpen ? fullDisclosureOpen : fullDisclosureClose}
               />
-            </div>
+              <span>{publicName || name}</span>
+            </button>
+          ) : (
+            <div className={styles['venue-name']}>{publicName || name}</div>
           )}
+
+          {shouldShowVenueOfferSteps && !isVirtual && (
+            <Button
+              icon={fullErrorIcon}
+              className={styles['needs-payment-icon']}
+              variant={ButtonVariant.TERNARY}
+              hasTooltip
+              onClick={() => {
+                setIsToggleOpen((prev) => !prev)
+                logEvent?.(
+                  VenueEvents.CLICKED_VENUE_ACCORDION_BUTTON,
+                  venueIdTrackParam
+                )
+              }}
+            >
+              Cliquer pour voir les prochaines étapes
+            </Button>
+          )}
+
+          {hasProvider && (
+            <Tag
+              variant={TagVariant.LIGHT_PURPLE}
+              className={styles['api-tag']}
+            >
+              <SvgIcon alt="" src={strokeConnectIcon} />
+              API
+            </Tag>
+          )}
+        </h3>
+
+        <div className={styles['button-group']}>
+          {/*Delete when WIP_ENABLE_NEW_BANK_DETAILS_JOURNEY is deleted*/}
+          {!isNewBankDetailsJourneyEnabled &&
+            hasMissingReimbursementPoint &&
+            !isVirtual &&
+            venueHasCreatedOffer && (
+              <>
+                <ButtonLink
+                  variant={ButtonVariant.TERNARYPINK}
+                  link={{
+                    to: reimbursementSectionLink,
+                    isExternal: false,
+                  }}
+                  onClick={() => {
+                    logEvent?.(VenueEvents.CLICKED_VENUE_ADD_RIB_BUTTON, {
+                      from: location.pathname,
+                      ...venueIdTrackParam,
+                    })
+                  }}
+                  icon={fullMoreIcon}
+                >
+                  Ajouter un RIB
+                </ButtonLink>
+                <span className={styles['button-group-separator']} />
+              </>
+            )}
+          <ButtonLink
+            variant={ButtonVariant.TERNARY}
+            link={{
+              to: editVenueLink,
+              isExternal: false,
+            }}
+            icon={fullEditIcon}
+            onClick={() =>
+              logEvent?.(
+                VenueEvents.CLICKED_VENUE_PUBLISHED_OFFERS_LINK,
+                venueIdTrackParam
+              )
+            }
+          >
+            Éditer le lieu
+          </ButtonLink>
         </div>
       </div>
-    </div>
+
+      {isToggleOpen && shouldShowVenueOfferSteps && (
+        <div className={styles['offer-steps']}>
+          <VenueOfferSteps
+            venueId={venueId}
+            hasVenue={true}
+            offererId={offererId}
+            venueHasCreatedOffer={venueHasCreatedOffer}
+            offererHasCreatedOffer={offererHasCreatedOffer}
+            hasMissingReimbursementPoint={hasMissingReimbursementPoint}
+            hasAdageId={hasAdageId}
+            shouldDisplayEACInformationSection={
+              shouldDisplayEACInformationSection
+            }
+            hasPendingBankInformationApplication={
+              hasPendingBankInformationApplication
+            }
+            demarchesSimplifieesApplicationId={
+              demarchesSimplifieesApplicationId
+            }
+            offererHasBankAccount={offererHasBankAccount}
+            hasNonFreeOffer={hasNonFreeOffer}
+            isFirstVenue={isFirstVenue}
+          />
+        </div>
+      )}
+    </Card>
   )
 }
 

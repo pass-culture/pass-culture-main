@@ -17,6 +17,8 @@ import { VenueList } from 'pages/Home/Venues'
 import Spinner from 'ui-kit/Spinner/Spinner'
 import { sortByLabel } from 'utils/strings'
 
+import { Card } from '../Card'
+
 import OffererCreationLinks from './OffererCreationLinks'
 import OffererDetails from './OffererDetails'
 import styles from './Offerers.module.scss'
@@ -101,13 +103,11 @@ const Offerers = ({
 
   if (isLoading) {
     return (
-      <div className="h-card">
-        <div className="h-card-inner">
-          <div className={styles['loader-container']}>
-            <Spinner />
-          </div>
+      <Card>
+        <div className={styles['loader-container']}>
+          <Spinner />
         </div>
-      </div>
+      </Card>
     )
   }
 
