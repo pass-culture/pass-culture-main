@@ -68,10 +68,7 @@ jobs:
           restore-keys: |
             v1-yarn-pro-dependency-cache-${{ runner.os }}-${{ hashFiles('**/yarn.lock') }}
       - run: yarn install --immutable
-      - run: |
-          set -a; 
-          source ../config/run_envs/${{ inputs.ENV }};
-          yarn build:${{ inputs.ENV }};
+      - run: yarn build:${{ inputs.ENV }}
         env:
           # By default NodeJS processes are limited to 512MB of memory
           # This is not enough for the build process when compiling sourcemaps
