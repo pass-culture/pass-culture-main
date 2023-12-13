@@ -12,10 +12,12 @@ from pcapi.scripts.beneficiary import import_test_users
 
 
 AGE18_ELIGIBLE_BIRTH_DATE = datetime.datetime.utcnow() - relativedelta(years=18, months=4)
+AGE17_ELIGIBLE_BIRTH_DATE = datetime.datetime.utcnow() - relativedelta(years=17, months=4)
 
 CSV = f"""Nom,Prénom,Mail,Téléphone,Département,Code postal,Date de naissance,Role,SIREN,Mot de passe,Type
 Doux,Jeanne,jeanne.doux@example.com,0102030405,86,86140,{AGE18_ELIGIBLE_BIRTH_DATE:%Y-%m-%d},BENEFICIARY,,,interne:test
 Smisse,Jean,jean.smisse@example.com,0102030406,44,44000,{AGE18_ELIGIBLE_BIRTH_DATE:%Y-%m-%d},BENEFICIARY,,,interne:test
+Vienne,Jeune17,jeune17.vienne@example.com,0102030407,44,44000,{AGE17_ELIGIBLE_BIRTH_DATE:%Y-%m-%d},UNDERAGE_BENEFICIARY,,,interne:test
 Pro,Pierre,pro@example.com,0123456789,06,06000,2000-01-01,PRO,111222333,PierrePro$123,interne:test
 """
 
@@ -30,9 +32,13 @@ class ReadFileTest:
         csv_file = io.StringIO(CSV)
         users = import_test_users.create_users_from_csv(csv_file, update_if_exists=update_if_exists)
 
-        assert len(users) == 3 if update_if_exists else 2
+        if update_if_exists:
+            assert len(users) == 4
+            jeanne, jean, jeune17, pierre = users  # pylint: disable=unbalanced-tuple-unpacking
+        else:
+            jeanne, jeune17, pierre = users  # pylint: disable=unbalanced-tuple-unpacking
+            jean = None
 
-        jeanne = users[0]
         assert jeanne.firstName == "Jeanne"
         assert jeanne.lastName == "Doux"
         assert jeanne.dateOfBirth.date() == AGE18_ELIGIBLE_BIRTH_DATE.date()
@@ -50,11 +56,12 @@ class ReadFileTest:
         assert jeanne.checkPassword(settings.TEST_DEFAULT_PASSWORD)
 
         if update_if_exists:
-            jean = users[1]
             assert jean.lastName == "Smisse"
             assert len(jean.deposits) == 1
 
-        pierre = users[-1]
+        assert jeune17.firstName == "Jeune17"
+        assert jeune17.has_underage_beneficiary_role
+
         assert pierre.firstName == "Pierre"
         assert pierre.lastName == "Pro"
         assert pierre.email == "pro@example.com"

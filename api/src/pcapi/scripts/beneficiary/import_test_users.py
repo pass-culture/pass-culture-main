@@ -1,5 +1,5 @@
 import csv
-from datetime import datetime
+import datetime
 from io import TextIOWrapper
 import logging
 from typing import Iterable
@@ -30,8 +30,8 @@ logger = logging.getLogger(__name__)
 blueprint = Blueprint("import_test_users", __name__)
 
 
-def _get_birth_date(row: dict) -> datetime:
-    return datetime.strptime(row["Date de naissance"], "%Y-%m-%d")
+def _get_birth_date(row: dict) -> datetime.date:
+    return datetime.datetime.strptime(row["Date de naissance"], "%Y-%m-%d").date()
 
 
 def _get_password(row: dict) -> str:
@@ -83,7 +83,7 @@ def _create_pro_user(row: dict) -> User:
     # Validate offerer
     offerer = user.UserOfferers[0].offerer
     offerer.validationStatus = ValidationStatus.VALIDATED
-    offerer.dateValidated = datetime.utcnow()
+    offerer.dateValidated = datetime.datetime.utcnow()
     action = history_api.log_action(
         history_models.ActionType.OFFERER_VALIDATED,
         None,
@@ -140,7 +140,7 @@ def _add_or_update_admin(update_if_exists: bool) -> None:
         admin = users_api.create_account(
             email="admin@example.com",
             password=settings.TEST_DEFAULT_PASSWORD,
-            birthdate=datetime(1946, 12, 24),
+            birthdate=datetime.date(1946, 12, 24),
             is_email_validated=True,
             send_activation_mail=False,
             remote_updates=False,
