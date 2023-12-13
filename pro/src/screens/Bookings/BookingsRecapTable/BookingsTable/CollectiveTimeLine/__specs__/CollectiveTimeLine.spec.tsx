@@ -5,6 +5,7 @@ import React from 'react'
 
 import {
   CollectiveBookingBankInformationStatus,
+  CollectiveBookingBankAccountStatus,
   CollectiveBookingByIdResponseModel,
   CollectiveBookingResponseModel,
 } from 'apiClient/v1'
@@ -220,7 +221,8 @@ describe('collective timeline', () => {
         bookingStatus: BOOKING_STATUS.VALIDATED,
       })
       bookingDetails = collectiveBookingDetailsFactory({
-        bankInformationStatus: CollectiveBookingBankInformationStatus.MISSING,
+        bankInformationStatus: null,
+        bankAccountStatus: CollectiveBookingBankAccountStatus.MISSING,
       })
       const storeOverrides = {
         features: {

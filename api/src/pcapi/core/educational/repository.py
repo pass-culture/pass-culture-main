@@ -1132,22 +1132,46 @@ def get_paginated_active_collective_offer_template_ids(batch_size: int, page: in
     return [offer_id for offer_id, in query]
 
 
-def get_reimbursement_venue_for_booking(booking_id: int) -> offerers_models.Venue | None:
+def get_booking_related_reimbursement_point(booking_id: int) -> offerers_models.Venue | None:
     reimbursement_point = sa.orm.aliased(offerers_models.Venue)
 
-    query = educational_models.CollectiveBooking.query.join(
-        offerers_models.Venue, educational_models.CollectiveBooking.venue
+    query = (
+        educational_models.CollectiveBooking.query.join(
+            offerers_models.Venue, educational_models.CollectiveBooking.venue
+        )
+        .join(offerers_models.VenueReimbursementPointLink, offerers_models.Venue.reimbursement_point_links)
+        .join(reimbursement_point, offerers_models.VenueReimbursementPointLink.reimbursementPoint)
+        .join(finance_models.BankInformation, reimbursement_point.bankInformation)
+        .filter(
+            offerers_models.VenueReimbursementPointLink.timespan.contains(datetime.utcnow()),
+            educational_models.CollectiveBooking.id == booking_id,
+        )
+        .with_entities(reimbursement_point)
+        .options(
+            sa.orm.joinedload(reimbursement_point.bankInformation).load_only(finance_models.BankInformation.status)
+        )
     )
-    query = query.join(offerers_models.VenueReimbursementPointLink, offerers_models.Venue.reimbursement_point_links)
-    query = query.join(reimbursement_point, offerers_models.VenueReimbursementPointLink.reimbursementPoint)
-    query = query.join(finance_models.BankInformation, reimbursement_point.bankInformation)
-    query = query.filter(
-        sa.func.upper(offerers_models.VenueReimbursementPointLink.timespan).is_(None),
-        educational_models.CollectiveBooking.id == booking_id,
-    )
-    query = query.with_entities(reimbursement_point)
-    query = query.options(sa.orm.joinedload(reimbursement_point.bankInformation))
     return query.one_or_none()
+
+
+def get_booking_related_bank_account(booking_id: int) -> offerers_models.VenueBankAccountLink | None:
+    return (
+        finance_models.BankAccount.query.join(
+            offerers_models.VenueBankAccountLink,
+            sa.and_(
+                offerers_models.VenueBankAccountLink.bankAccountId == finance_models.BankAccount.id,
+                offerers_models.VenueBankAccountLink.timespan.contains(datetime.utcnow()),
+            ),
+        )
+        .join(offerers_models.Venue, offerers_models.VenueBankAccountLink.venueId == offerers_models.Venue.id)
+        .join(
+            educational_models.CollectiveBooking,
+            educational_models.CollectiveBooking.venueId == offerers_models.Venue.id,
+        )
+        .filter(educational_models.CollectiveBooking.id == booking_id)
+        .options(sa.orm.load_only(finance_models.BankAccount.status, finance_models.BankAccount.dsApplicationId))
+        .one_or_none()
+    )
 
 
 def get_educational_institution_public(

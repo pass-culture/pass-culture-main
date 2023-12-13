@@ -210,6 +210,7 @@ export const collectiveBookingDetailsFactory = (
   const currentBookingDetailsId = bookingDetailsId++
   return {
     bankInformationStatus: CollectiveBookingBankInformationStatus.ACCEPTED,
+    bankAccountStatus: null,
     beginningDatetime: new Date().toISOString(),
     educationalInstitution: {
       city: 'Paris',
