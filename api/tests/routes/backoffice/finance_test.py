@@ -1,4 +1,5 @@
 import datetime
+import decimal
 from unittest import mock
 
 from flask import url_for
@@ -460,7 +461,7 @@ class GetIncidentCreationFormTest(PostEndpointHelper):
     endpoint = "backoffice_web.finance_incidents.get_incident_creation_form"
     needed_permission = perm_models.Permissions.MANAGE_INCIDENTS
 
-    error_message = "Seules les réservations ayant le statut 'remboursée' et correspondant au même lieu peuvent faire l'objet d'un incident"
+    error_message = 'Seules les réservations ayant les statuts "remboursée" et "annulée" et correspondant au même lieu peuvent faire l\'objet d\'un incident'
 
     expected_num_queries = 6
 
@@ -665,6 +666,157 @@ class CreateIncidentTest(PostEndpointHelper):
         assert action_history.actionType == history_models.ActionType.FINANCE_INCIDENT_CREATED
         assert action_history.authorUser == legit_user
         assert action_history.comment == "Origine de la demande"
+
+    def test_not_create_overpayment_incident_from_used_booking(self, authenticated_client):
+        booking = bookings_factories.UsedBookingFactory()
+
+        object_ids = str(booking.id)
+
+        response = self.post_to_endpoint(
+            authenticated_client,
+            form={
+                "total_amount": booking.amount,
+                "origin": "Origine de la demande",
+                "kind": finance_models.IncidentType.OVERPAYMENT.name,
+                "object_ids": object_ids,
+            },
+        )
+
+        assert response.status_code == 303
+        assert finance_models.FinanceIncident.query.count() == 0  # didn't create new incident
+        assert history_models.ActionHistory.query.count() == 0
+
+    def test_create_comercial_gesture_incident_from_one_booking_without_deposit_balance(
+        self, legit_user, authenticated_client
+    ):
+        booking = bookings_factories.CancelledBookingFactory(user__deposit__amount=decimal.Decimal(2.0))
+
+        object_ids = str(booking.id)
+        total_amount = 11
+        response = self.post_to_endpoint(
+            authenticated_client,
+            form={
+                "total_amount": total_amount,
+                "origin": "Origine de la demande",
+                "kind": finance_models.IncidentType.COMMERCIAL_GESTURE.name,
+                "object_ids": object_ids,
+            },
+        )
+
+        assert response.status_code == 303
+        assert finance_models.FinanceIncident.query.count() == 1
+        assert finance_models.BookingFinanceIncident.query.count() == 1
+        booking_finance_incident = finance_models.BookingFinanceIncident.query.first()
+        assert booking_finance_incident.newTotalAmount == (total_amount) * 100
+
+        action_history = history_models.ActionHistory.query.one()
+        assert action_history.actionType == history_models.ActionType.FINANCE_INCIDENT_CREATED
+        assert action_history.authorUser == legit_user
+        assert action_history.comment == "Origine de la demande"
+
+    def test_create_comercial_gesture_incident_from_one_booking_with_deposit_balance(
+        self, legit_user, authenticated_client
+    ):
+        booking = bookings_factories.CancelledBookingFactory()
+
+        object_ids = str(booking.id)
+        total_amount = 11
+        response = self.post_to_endpoint(
+            authenticated_client,
+            form={
+                "total_amount": total_amount,
+                "origin": "Origine de la demande",
+                "kind": finance_models.IncidentType.COMMERCIAL_GESTURE.name,
+                "object_ids": object_ids,
+            },
+        )
+
+        assert response.status_code == 303
+        assert finance_models.FinanceIncident.query.count() == 0
+        assert finance_models.BookingFinanceIncident.query.count() == 0
+
+        redirected_response = authenticated_client.get(response.location)
+        assert (
+            "Au moins un des jeunes ayant fait une réservation a encore du crédit pour payer la réservation"
+            in html_parser.extract_alert(redirected_response.data)
+        )
+
+    def test_create_comercial_gesture_incident_from_used_booking(self, legit_user, authenticated_client):
+        booking = bookings_factories.UsedBookingFactory()
+
+        object_ids = str(booking.id)
+        total_amount = 11
+        response = self.post_to_endpoint(
+            authenticated_client,
+            form={
+                "total_amount": total_amount,
+                "origin": "Origine de la demande",
+                "kind": finance_models.IncidentType.COMMERCIAL_GESTURE.name,
+                "object_ids": object_ids,
+            },
+        )
+
+        assert response.status_code == 303
+        assert finance_models.FinanceIncident.query.count() == 0
+        assert finance_models.BookingFinanceIncident.query.count() == 0
+
+        redirected_response = authenticated_client.get(response.location)
+        assert (
+            "Au moins une des réservations sélectionnées est dans un état non compatible avec ce type d'incident"
+            in html_parser.extract_alert(redirected_response.data)
+        )
+
+    def test_not_create_comercial_gesture_incident_too_expensive(self, authenticated_client):
+        booking = bookings_factories.UsedBookingFactory()
+
+        object_ids = str(booking.id)
+
+        response = self.post_to_endpoint(
+            authenticated_client,
+            form={
+                "total_amount": booking.amount * decimal.Decimal(1.21),
+                "origin": "Origine de la demande",
+                "kind": finance_models.IncidentType.COMMERCIAL_GESTURE.name,
+                "object_ids": object_ids,
+            },
+        )
+
+        assert response.status_code == 303
+        assert finance_models.FinanceIncident.query.count() == 0  # didn't create new incident
+        assert history_models.ActionHistory.query.count() == 0
+
+    def test_not_create_commercial_gesture_greater_than_300_per_booking(self, authenticated_client):
+        venue = offerers_factories.VenueFactory()
+        offer = offers_factories.OfferFactory(venue=venue)
+        stock = offers_factories.StockFactory(offer=offer)
+        selected_bookings = [
+            bookings_factories.ReimbursedBookingFactory(
+                stock=stock,
+                pricings=[finance_factories.PricingFactory(status=finance_models.PricingStatus.INVOICED)],
+                amount=300.0,
+            ),
+            bookings_factories.ReimbursedBookingFactory(
+                stock=stock,
+                pricings=[finance_factories.PricingFactory(status=finance_models.PricingStatus.INVOICED)],
+                amount=300.0,
+            ),
+        ]
+        object_ids = ",".join([str(booking.id) for booking in selected_bookings])
+        total_booking_amount = 301.0 * len(selected_bookings)
+
+        response = self.post_to_endpoint(
+            authenticated_client,
+            form={
+                "total_amount": total_booking_amount,
+                "origin": "Origine de la demande",
+                "kind": finance_models.IncidentType.COMMERCIAL_GESTURE.name,
+                "object_ids": object_ids,
+            },
+        )
+
+        assert response.status_code == 303
+        assert finance_models.FinanceIncident.query.count() == 0  # didn't create new incident
+        assert history_models.ActionHistory.query.count() == 0
 
 
 class CreateIncidentOnCollectiveBookingTest(PostEndpointHelper):
