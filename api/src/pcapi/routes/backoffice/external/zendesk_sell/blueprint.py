@@ -23,30 +23,40 @@ zendesk_sell_blueprint = utils.child_backoffice_blueprint(
 zendesk_sell_backend: BaseBackend = import_string(settings.ZENDESK_SELL_BACKEND)()
 
 
-def _get_parent_organization_id(venue: offerers_models.Venue) -> int:
+def _get_parent_organization_id(venue: offerers_models.Venue) -> int | None:
     offerer = venue.managingOfferer
     try:
         zendesk_offerer_data = zendesk_sell_backend.get_offerer_by_id(offerer)
     except zendesk_sell.ContactFoundMoreThanOneError as e:
-        message = "Il y a plusieurs structures trouvées avec cette structure parente. <br/> <ul>"
+        message = Markup(
+            "Attention : Plusieurs structures parentes possibles ont été trouvées pour ce lieu dans Zendesk Sell. <br/> <ul>"
+        )
         for item in e.items:
-            message += f"""<li>Identifiant Zendesk Sell : {item["id"]}, <br/>
-                    PRODUCT_OFFERER_ID: {item["custom_fields"][zendesk_sell.ZendeskCustomFieldsShort.PRODUCT_OFFERER_ID.value]}, <br/>
-                       SIREN: {item["custom_fields"][zendesk_sell.ZendeskCustomFieldsShort.SIREN.value]}</li>"""
-        message += "</ul>"
-        flash(Markup(message), "warning")  # pylint: disable=markupsafe-uncontrolled-string
-        return zendesk_sell.SEARCH_PARENT
+            message += Markup(
+                "<li>Identifiant Zendesk Sell : <b>{item_id}</b>, "
+                "Produit Offerer ID : <b>{product_offerer_id}</b>, "
+                "SIREN : <b>{siren}</b> </li>"
+            ).format(
+                item_id=item["id"],
+                product_offerer_id=item["custom_fields"][
+                    zendesk_sell.ZendeskCustomFieldsShort.PRODUCT_OFFERER_ID.value
+                ],
+                siren=item["custom_fields"][zendesk_sell.ZendeskCustomFieldsShort.SIREN.value],
+            )
+        message += Markup("</ul>")
+        flash(message, "info")
+        return None
     except zendesk_sell.ContactNotFoundError:
-        flash("La structure parente n'a pas été trouvée dans Zendesk Sell", "warning")
-        return zendesk_sell.SEARCH_PARENT
+        # no parent: ignore, nothing to update
+        return None
     except requests.exceptions.HTTPError as http_error:
         flash(
-            Markup("Une erreur {response} s'est produite : {error}").format(
-                response=str(http_error.response), error=str(http_error)
-            ),
+            Markup(
+                "Une erreur {status_code} s'est produite lors de la recherche de la structure parente : {error}"
+            ).format(status_code=str(http_error.response.status_code), error=str(http_error)),
             "warning",
         )
-        return zendesk_sell.SEARCH_PARENT
+        return None
 
     return zendesk_offerer_data["id"]
 
@@ -61,17 +71,28 @@ def update_offerer(offerer_id: int) -> utils.BackofficeResponse:
     url = url_for("backoffice_web.offerer.get", offerer_id=offerer_id)
 
     if zendesk_sell.is_offerer_only_virtual(offerer):
+        flash("Cette structure ne gère que des lieux virtuels", "warning")
         return redirect(url, code=303)
 
     try:
         zendesk_offerer_data = zendesk_sell_backend.get_offerer_by_id(offerer)
     except zendesk_sell.ContactFoundMoreThanOneError as e:
-        message = "Il y a plusieurs structures trouvées avec cette structure parente. <br/> <ul>"
+        message = Markup(
+            "Plusieurs structures ont été trouvées dans Zendesk Sell, aucune ne peut donc être mise à jour : <br/> <ul>"
+        )
         for item in e.items:
-            message += f"""<li>Identifiant Zendesk Sell : {item["id"]}, <br/>
-            PRODUCT_OFFERER_ID: {item["custom_fields"][zendesk_sell.ZendeskCustomFieldsShort.PRODUCT_OFFERER_ID.value]}, <br/>
-               SIREN: {item["custom_fields"][zendesk_sell.ZendeskCustomFieldsShort.SIREN.value]}</li>"""
-        message += "</ul>"
+            message += Markup(
+                "<li>Identifiant Zendesk Sell : <b>{item_id}</b>, "
+                "Produit Offerer ID : <b>{product_offerer_id}</b>, "
+                "SIREN : <b>{siren}</b> </li>"
+            ).format(
+                item_id=item["id"],
+                product_offerer_id=item["custom_fields"][
+                    zendesk_sell.ZendeskCustomFieldsShort.PRODUCT_OFFERER_ID.value
+                ],
+                siren=item["custom_fields"][zendesk_sell.ZendeskCustomFieldsShort.SIREN.value],
+            )
+        message += Markup("</ul>")
         flash(Markup(message), "warning")  # pylint: disable=markupsafe-uncontrolled-string
         return redirect(url, code=303)
     except zendesk_sell.ContactNotFoundError:
@@ -79,8 +100,8 @@ def update_offerer(offerer_id: int) -> utils.BackofficeResponse:
         return redirect(url, code=303)
     except requests.exceptions.HTTPError as http_error:
         flash(
-            Markup("Une erreur {response} s'est produite : {error}").format(
-                response=str(http_error.response), error=str(http_error)
+            Markup("Une erreur {status_code} s'est produite : {error}").format(
+                status_code=str(http_error.response.status_code), error=str(http_error)
             ),
             "warning",
         )
@@ -91,14 +112,14 @@ def update_offerer(offerer_id: int) -> utils.BackofficeResponse:
         zendesk_sell_backend.update_offerer(offerer_zendesk_id, offerer)
     except requests.exceptions.HTTPError as http_error:
         flash(
-            Markup("Une erreur {response} s'est produite : {error}").format(
-                response=str(http_error.response), error=str(http_error)
+            Markup("Une erreur {status_code} s'est produite : {error}").format(
+                status_code=str(http_error.response.status_code), error=str(http_error)
             ),
             "warning",
         )
         return redirect(url, code=303)
 
-    flash("La mise a jour a été effectuée avec succès", "success")
+    flash("La structure a été mise à jour sur Zendesk Sell", "success")
     return redirect(url, code=303)
 
 
@@ -114,24 +135,29 @@ def update_venue(venue_id: int) -> utils.BackofficeResponse:
     try:
         zendesk_venue_data = zendesk_sell_backend.get_venue_by_id(venue)
     except zendesk_sell.ContactFoundMoreThanOneError as e:
-        message = "Il y a plusieurs lieux trouvées avec cette structure parente. <br/> <ul>"
-
+        message = Markup(
+            "Plusieurs lieux ont été trouvés dans Zendesk Sell, aucun ne peut donc être mis à jour : <br/> <ul>"
+        )
         for item in e.items:
-            message += f"""<li>Identifiant Zendesk Sell : {item["id"]}, <br/>
-                    PRODUCT_VENUE_ID: {item["custom_fields"][zendesk_sell.ZendeskCustomFieldsShort.PRODUCT_VENUE_ID.value]}, <br/>
-                       SIRET: {item["custom_fields"][zendesk_sell.ZendeskCustomFieldsShort.SIRET.value]}</li>"""
-
-        message += "</ul>"
-
-        flash(Markup(message), "warning")  # pylint: disable=markupsafe-uncontrolled-string
+            message += Markup(
+                "<li>Identifiant Zendesk Sell : <b>{item_id}</b>, "
+                "Produit Venue ID : <b>{product_venue_id}</b>, "
+                "SIRET : <b>{siret}</b> </li>"
+            ).format(
+                item_id=item["id"],
+                product_venue_id=item["custom_fields"][zendesk_sell.ZendeskCustomFieldsShort.PRODUCT_VENUE_ID.value],
+                siret=item["custom_fields"][zendesk_sell.ZendeskCustomFieldsShort.SIRET.value],
+            )
+        message += Markup("</ul>")
+        flash(message, "warning")
         return redirect(url, code=303)
     except zendesk_sell.ContactNotFoundError:
         flash("Le lieu n'a pas été trouvé dans Zendesk Sell", "warning")
         return redirect(url, code=303)
     except requests.exceptions.HTTPError as http_error:
         flash(
-            Markup("Une erreur {response} s'est produite : {error}").format(
-                response=str(http_error.response), error=str(http_error)
+            Markup("Une erreur {status_code} s'est produite : {error}").format(
+                status_code=str(http_error.response.status_code), error=str(http_error)
             ),
             "warning",
         )
@@ -140,20 +166,15 @@ def update_venue(venue_id: int) -> utils.BackofficeResponse:
     try:
         zendesk_venue_id = zendesk_venue_data["id"]
         parent_organization_id = _get_parent_organization_id(venue)
-        if parent_organization_id == zendesk_sell.SEARCH_PARENT:
-            raise zendesk_sell.ContactNotFoundError
         zendesk_sell_backend.update_venue(zendesk_venue_id, venue, parent_organization_id)
-    except zendesk_sell.ContactNotFoundError:
-        flash("La structure parente n'a pas été trouvée dans Zendesk Sell", "warning")
-        return redirect(url, code=303)
     except requests.exceptions.HTTPError as http_error:
         flash(
-            Markup("Une erreur {response} s'est produite : {error}").format(
-                response=str(http_error.response), error=str(http_error)
+            Markup("Une erreur {status_code} s'est produite : {error}").format(
+                status_code=str(http_error.response.status_code), error=str(http_error)
             ),
             "warning",
         )
         return redirect(url, code=303)
 
-    flash("La mise a jour a été effectuée avec succès", "success")
+    flash("Le lieu a été mis à jour sur Zendesk Sell", "success")
     return redirect(url, code=303)

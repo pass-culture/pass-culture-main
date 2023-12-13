@@ -2,6 +2,7 @@ from unittest.mock import patch
 
 import pytest
 
+from pcapi.core.external.zendesk_sell_backends import testing as zendesk_testing
 import pcapi.core.finance.factories as finance_factories
 from pcapi.core.history import models as history_models
 import pcapi.core.offerers.factories as offerers_factories
@@ -64,7 +65,15 @@ class Returns200Test:
         assert venue.publicName == "Ma librairie"
         assert venue.venueTypeCode == offerers_models.VenueTypeCode.BOOKSTORE
         assert len(external_testing.sendinblue_requests) == 1
-        assert external_testing.zendesk_sell_requests == [{"action": "update", "type": "Venue", "id": venue.id}]
+        assert external_testing.zendesk_sell_requests == [
+            {
+                "action": "update",
+                "type": "Venue",
+                "id": venue.id,
+                "zendesk_id": zendesk_testing.TESTING_ZENDESK_ID_VENUE,
+                "parent_organization_id": zendesk_testing.TESTING_ZENDESK_ID_OFFERER,
+            }
+        ]
 
         assert len(venue.action_history) == 1
         assert venue.action_history[0].actionType == history_models.ActionType.INFO_MODIFIED
@@ -134,8 +143,20 @@ class Returns200Test:
 
         assert external_testing.zendesk_sell_requests == [
             # Patch API called twice
-            {"action": "update", "type": "Venue", "id": venue.id},
-            {"action": "update", "type": "Venue", "id": venue.id},
+            {
+                "action": "update",
+                "type": "Venue",
+                "id": venue.id,
+                "zendesk_id": zendesk_testing.TESTING_ZENDESK_ID_VENUE,
+                "parent_organization_id": zendesk_testing.TESTING_ZENDESK_ID_OFFERER,
+            },
+            {
+                "action": "update",
+                "type": "Venue",
+                "id": venue.id,
+                "zendesk_id": zendesk_testing.TESTING_ZENDESK_ID_VENUE,
+                "parent_organization_id": zendesk_testing.TESTING_ZENDESK_ID_OFFERER,
+            },
         ]
 
     @patch("pcapi.routes.pro.venues.update_all_venue_offers_withdrawal_details_job.delay")

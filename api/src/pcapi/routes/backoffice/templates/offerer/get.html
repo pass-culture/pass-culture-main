@@ -198,10 +198,12 @@
                             <h5 class="modal-title">Synchroniser la structure {{ offerer.name }} sur Zendesk Sell</h5>
                           </div>
                           <div class="modal-body row">
-                            <div class="">
+                            <div class="d-flex align-items-center">
                               <i class="bi bi-exclamation-diamond-fill text-warning align-middle me-3 ms-2"
                                  style="font-size: 3.1rem"></i>
-                              <span class="lead">Vérifier que l’id structure est bien renseigné sur Zendesk Sell !</span>
+                              <div>
+                                N'oubliez pas de vérifier que l'ID <b>{{ offerer.id }}</b> est bien renseigné dans «&thinsp;Produit Offerer ID&thinsp;» sur Zendesk Sell.
+                              </div>
                             </div>
                             {{ build_form_fields_group(zendesk_sell_synchronisation_form) }}
                           </div>
