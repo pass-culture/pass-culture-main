@@ -192,6 +192,7 @@ const Venue = ({
                 >
                   Ajouter un RIB
                 </ButtonLink>
+
                 <span className={styles['button-group-separator']} />
               </>
             )}
