@@ -4881,18 +4881,18 @@ files = [
 
 [[package]]
 name = "slack-sdk"
-version = "3.13.0"
+version = "3.26.1"
 description = "The Slack API Platform SDK for Python"
 optional = false
 python-versions = ">=3.6.0"
 files = [
-    {file = "slack_sdk-3.13.0-py2.py3-none-any.whl", hash = "sha256:54f2a5f7419f1ab932af9e3200f7f2f93db96e0f0eb8ad7d3b4214aa9f124641"},
-    {file = "slack_sdk-3.13.0.tar.gz", hash = "sha256:aae6ce057e286a5e7fe7a9f256e85b886eee556def8e04b82b08f699e64d7f67"},
+    {file = "slack_sdk-3.26.1-py2.py3-none-any.whl", hash = "sha256:f80f0d15f0fce539b470447d2a07b03ecdad6b24f69c1edd05d464cf21253a06"},
+    {file = "slack_sdk-3.26.1.tar.gz", hash = "sha256:d1600211eaa37c71a5f92daf4404074c3e6b3f5359a37c93c818b39d88ab4ca0"},
 ]
 
 [package.extras]
-optional = ["SQLAlchemy (>=1,<2)", "aiodns (>1.0)", "aiohttp (>=3.7.3,<4)", "boto3 (<=2)", "websocket-client (>=1,<2)", "websockets (>=10,<11)"]
-testing = ["Flask (>=1,<2)", "Flask-Sockets (>=0.2,<1)", "Werkzeug (<2)", "black (==21.12b0)", "boto3 (<=2)", "codecov (>=2,<3)", "databases (>=0.3)", "flake8 (>=4,<5)", "moto (<2)", "psutil (>=5,<6)", "pytest (>=6.2.5,<7)", "pytest-asyncio (<1)", "pytest-cov (>=2,<3)"]
+optional = ["SQLAlchemy (>=1.4,<3)", "aiodns (>1.0)", "aiohttp (>=3.7.3,<4)", "boto3 (<=2)", "websocket-client (>=1,<2)", "websockets (>=10,<11)"]
+testing = ["Flask (>=1,<2)", "Flask-Sockets (>=0.2,<1)", "Jinja2 (==3.0.3)", "Werkzeug (<2)", "black (==22.8.0)", "boto3 (<=2)", "click (==8.0.4)", "flake8 (>=5.0.4,<7)", "itsdangerous (==1.1.0)", "moto (>=3,<4)", "psutil (>=5,<6)", "pytest (>=7.0.1,<8)", "pytest-asyncio (<1)", "pytest-cov (>=2,<3)"]
 
 [[package]]
 name = "sniffio"
@@ -5791,4 +5791,4 @@ test = ["pytest"]
 [metadata]
 lock-version = "2.0"
 python-versions = "^3.11"
-content-hash = "8d5910da3242b08e5c251206045e16db2f644370f8e82840aaf54bf4d2628959"
+content-hash = "343997e9f597f0e43ef1e27925f10af9339137bdf6f227f8aba2911c0acc4e7e"
