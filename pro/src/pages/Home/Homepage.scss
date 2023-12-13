@@ -40,20 +40,6 @@
     }
   }
 
-  .h-section-row {
-    display: flex;
-    flex-flow: row wrap;
-    justify-content: space-between;
-    gap: rem.torem(
-      24px
-    ); // in case it's inside a section-row with multiple cards
-
-    .h-card {
-      flex: 1 1;
-      min-width: rem.torem(236px);
-    }
-  }
-
   .newsletter {
     position: relative;
     margin-top: rem.torem(16px);

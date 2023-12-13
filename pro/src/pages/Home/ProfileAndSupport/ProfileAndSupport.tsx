@@ -8,7 +8,7 @@ export const ProfileAndSupport = () => (
   <>
     <h2 className={styles['title']}>Profil et aide</h2>
 
-    <div className="h-section-row">
+    <div className={styles['cards-row']}>
       <Profile />
 
       <Support />
