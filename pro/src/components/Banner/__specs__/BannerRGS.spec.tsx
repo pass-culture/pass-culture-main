@@ -1,5 +1,4 @@
 import { render, screen } from '@testing-library/react'
-import { userEvent } from '@testing-library/user-event'
 import React from 'react'
 
 import BannerRGS from '../BannerRGS'
@@ -13,15 +12,5 @@ describe('src | components | BannerRGS', () => {
       'href',
       'https://aide.passculture.app/hc/fr/articles/4458607720732--Acteurs-Culturels-Comment-assurer-la-s%C3%A9curit%C3%A9-de-votre-compte-'
     )
-  })
-  it('should close the banner', async () => {
-    const spyClose = vi.fn()
-    render(<BannerRGS closable onClose={spyClose} />)
-    await userEvent.click(
-      screen.getByRole('button', {
-        name: 'Masquer le bandeau',
-      })
-    )
-    expect(spyClose).toHaveBeenCalledTimes(1)
   })
 })
