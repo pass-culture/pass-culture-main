@@ -15,9 +15,10 @@
     position: absolute;
     left: 0;
     width: 100%;
-    
-    @media (max-width: size.$tablet) {
-      display: none;
+    display: none;
+
+    @media (min-width: size.$tablet) {
+      display: inline;
     }
   }
 

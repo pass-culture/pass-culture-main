@@ -74,17 +74,16 @@ const OffererDetails = ({
   return (
     <Card className={styles['card']} data-testid="offerrer-wrapper">
       <div className={styles['container']}>
-        <div className={styles['venue-select']}>
-          <SelectInput
-            onChange={handleChangeOfferer}
-            name="offererId"
-            options={offererOptions}
-            value={selectedOfferer.id.toString()}
-          />
-        </div>
+        <SelectInput
+          onChange={handleChangeOfferer}
+          name="offererId"
+          options={offererOptions}
+          value={selectedOfferer.id.toString()}
+        />
 
-        <>
+        <div className={styles['venue-buttons']}>
           <div className={cn(styles['separator'], styles['vertical'])} />
+
           <ButtonLink
             variant={ButtonVariant.TERNARY}
             link={{
@@ -101,26 +100,26 @@ const OffererDetails = ({
           >
             Inviter
           </ButtonLink>
-        </>
 
-        <div className={cn(styles['separator'], styles['vertical'])} />
+          <div className={cn(styles['separator'], styles['vertical'])} />
 
-        <ButtonLink
-          variant={ButtonVariant.TERNARY}
-          link={{
-            to: `/structures/${selectedOfferer.id}`,
-            isExternal: false,
-          }}
-          icon={fullEditIcon}
-          isDisabled={!isUserOffererValidated}
-          onClick={() =>
-            logEvent?.(Events.CLICKED_MODIFY_OFFERER, {
-              offerer_id: selectedOfferer.id,
-            })
-          }
-        >
-          Modifier
-        </ButtonLink>
+          <ButtonLink
+            variant={ButtonVariant.TERNARY}
+            link={{
+              to: `/structures/${selectedOfferer.id}`,
+              isExternal: false,
+            }}
+            icon={fullEditIcon}
+            isDisabled={!isUserOffererValidated}
+            onClick={() =>
+              logEvent?.(Events.CLICKED_MODIFY_OFFERER, {
+                offerer_id: selectedOfferer.id,
+              })
+            }
+          >
+            Modifier
+          </ButtonLink>
+        </div>
       </div>
 
       {isExpanded && !isStatisticsDashboardEnabled && (
