@@ -1,4 +1,4 @@
-import { formatPhoneNumber } from '../ProfileAndSupport'
+import { formatPhoneNumber } from '../Profile'
 
 describe('profile: formatPhoneNumber', () => {
   it('should format valid phone number', () => {
