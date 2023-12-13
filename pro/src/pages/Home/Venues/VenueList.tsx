@@ -1,4 +1,3 @@
-import cn from 'classnames'
 import React from 'react'
 
 import { GetOffererVenueResponseModel } from 'apiClient/v1'
@@ -27,7 +26,7 @@ const VenueList = ({
     physicalVenues.some((venue) => venue.hasCreatedOffer)
   const indexLastPhysicalVenues = physicalVenues.length - 1
   return (
-    <div className={cn('h-venue-list', styles['venue-list'])}>
+    <div className={styles['venue-list']}>
       {virtualVenue && (
         <Venue
           venueId={virtualVenue.id}
