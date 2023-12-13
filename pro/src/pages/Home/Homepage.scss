@@ -22,15 +22,6 @@
       justify-content: space-between;
       align-items: center;
     }
-
-    .h-card-title {
-      @include fonts.title4;
-
-      align-items: center;
-      display: flex;
-      flex-direction: row;
-      margin-bottom: rem.torem(8px);
-    }
   }
 
   .venue-banner,

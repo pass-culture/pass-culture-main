@@ -11,7 +11,7 @@ const OffererCreationLinks = () => (
     data-testid="offerers-creation-links-card"
   >
     <div className="h-card-inner">
-      <h3 className="h-card-title">Structures</h3>
+      <h3 className={styles['title']}>Structures</h3>
 
       <div className={styles['content']}>
         <p>
