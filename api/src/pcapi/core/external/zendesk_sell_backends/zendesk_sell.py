@@ -320,7 +320,6 @@ class ZendeskSellBackend(ZendeskSellReadOnlyBackend):
             "data": {
                 "is_organization": True,
                 # "name" is not updated because sometimes the name in the product is not the same in Zendesk Sell,
-                "parent_organization_id": parent_organization_id,  # if None, then it will send null on the request
                 "last_name": "",  # leave that empty for the Zendesk api
                 "description": venue.description,
                 "industry": venue.venueTypeCode.value,
@@ -352,6 +351,10 @@ class ZendeskSellBackend(ZendeskSellReadOnlyBackend):
                 },
             }
         }
+
+        if parent_organization_id:
+            # Do not remove potential parent in Zendesk in case we have two matching parents
+            params["data"]["parent_organization_id"] = parent_organization_id
 
         if created:
             params["data"]["custom_fields"][ZendeskCustomFieldsNames.CREATED_FROM_PRODUCT.value] = True
