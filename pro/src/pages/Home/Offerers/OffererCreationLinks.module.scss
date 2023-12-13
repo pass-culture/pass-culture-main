@@ -1,3 +1,19 @@
+@use "styles/mixins/_rem.scss" as rem;
+
 .content {
   text-align: center;
+}
+
+.actions-container {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: rem.torem(16px);
+  margin-top: rem.torem(24px);
+
+  > * {
+    flex: 1;
+    max-width: rem.torem(255px);
+    white-space: nowrap;
+  }
 }

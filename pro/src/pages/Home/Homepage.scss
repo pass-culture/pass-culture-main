@@ -41,29 +41,6 @@
   .venue-banner,
   .offerer-banner {
     margin-top: rem.torem(24px);
-
-    .actions-container {
-      display: flex;
-      flex-wrap: wrap;
-      justify-content: center;
-      margin-top: rem.torem(24px);
-      text-align: center;
-      gap: rem.torem(16px);
-
-      a {
-        flex: 1;
-        max-width: rem.torem(240px);
-        white-space: nowrap;
-      }
-    }
-  }
-
-  .offerer-banner {
-    .actions-container {
-      a {
-        max-width: rem.torem(255px);
-      }
-    }
   }
 
   .h-venue-list {

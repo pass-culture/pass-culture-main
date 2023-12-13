@@ -19,13 +19,14 @@ const OffererCreationLinks = () => (
           sur la suppression et vos données, veuillez contacter notre support.
         </p>
 
-        <div className="actions-container">
+        <div className={styles['actions-container']}>
           <ButtonLink
             variant={ButtonVariant.PRIMARY}
             link={{ isExternal: false, to: '/structures/creation' }}
           >
             Ajouter une nouvelle structure
           </ButtonLink>
+
           <ButtonLink
             variant={ButtonVariant.SECONDARY}
             link={{
