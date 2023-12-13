@@ -60,10 +60,7 @@ const ProfileAndSupport = () => {
       <h2 className={styles['title']}>Profil et aide</h2>
 
       <div className="h-section-row">
-        <div
-          className="h-card h-card-secondary-hover"
-          data-testid="card-profile"
-        >
+        <div className="h-card" data-testid="card-profile">
           <div className="h-card-inner">
             <div className="h-card-header-row">
               <h3 className="h-card-title">Profil</h3>

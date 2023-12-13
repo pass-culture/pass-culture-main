@@ -115,13 +115,7 @@ const Venue = ({
       className="h-section-row nested offerer-venue"
       data-testid="venue-wrapper"
     >
-      <div
-        className={cn(
-          `h-card`,
-          { 'h-card-primary': isVirtual },
-          { 'h-card-secondary': !isVirtual }
-        )}
-      >
+      <div className="h-card">
         <div className="h-card-inner">
           <div className={styles['card-container']}>
             <h3 className="h-card-title">
