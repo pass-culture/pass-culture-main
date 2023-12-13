@@ -20,6 +20,6 @@ export const Card = ({
     })}
     {...rest}
   >
-    <div className={styles['inner']}>{children}</div>
+    {children}
   </div>
 )
