@@ -30,6 +30,7 @@ export type { CategoriesResponseModel } from './models/CategoriesResponseModel';
 export type { CategoryResponseModel } from './models/CategoryResponseModel';
 export type { ChangePasswordBodyModel } from './models/ChangePasswordBodyModel';
 export type { ChangeProEmailBody } from './models/ChangeProEmailBody';
+export { CollectiveBookingBankAccountStatus } from './models/CollectiveBookingBankAccountStatus';
 export { CollectiveBookingBankInformationStatus } from './models/CollectiveBookingBankInformationStatus';
 export type { CollectiveBookingByIdResponseModel } from './models/CollectiveBookingByIdResponseModel';
 export { CollectiveBookingCancellationReasons } from './models/CollectiveBookingCancellationReasons';

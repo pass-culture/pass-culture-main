@@ -13,7 +13,9 @@ from pcapi.core.bookings.utils import convert_booking_dates_utc_to_venue_timezon
 from pcapi.core.bookings.utils import convert_real_booking_dates_utc_to_venue_timezone
 from pcapi.core.educational import models
 from pcapi.core.educational import repository
+from pcapi.core.finance.models import BankAccountApplicationStatus
 from pcapi.models.api_errors import ApiErrors
+from pcapi.models.feature import FeatureToggle
 from pcapi.routes.serialization import BaseModel
 from pcapi.routes.serialization.collective_offers_serialize import CollectiveOfferOfferVenueResponseModel
 from pcapi.routes.serialization.educational_institutions import EducationalInstitutionResponseModel
@@ -32,6 +34,13 @@ class CollectiveBookingRecapStatus(Enum):
 
 
 class CollectiveBookingBankInformationStatus(Enum):
+    ACCEPTED = "ACCEPTED"
+    DRAFT = "DRAFT"
+    MISSING = "MISSING"
+    REJECTED = "REJECTED"
+
+
+class CollectiveBookingBankAccountStatus(Enum):
     ACCEPTED = "ACCEPTED"
     DRAFT = "DRAFT"
     MISSING = "MISSING"
@@ -431,7 +440,8 @@ class CollectiveBookingByIdResponseModel(BaseModel):
     numberOfTickets: int
     venuePostalCode: str | None
     isCancellable: bool
-    bankInformationStatus: CollectiveBookingBankInformationStatus
+    bankInformationStatus: CollectiveBookingBankInformationStatus | None
+    bankAccountStatus: CollectiveBookingBankAccountStatus | None
     venueDMSApplicationId: int | None
     venueId: int
     offererId: int
@@ -441,13 +451,31 @@ class CollectiveBookingByIdResponseModel(BaseModel):
 
     @classmethod
     def from_orm(cls, booking: models.CollectiveBooking) -> "CollectiveBookingByIdResponseModel":
-        reimbursement_point = repository.get_reimbursement_venue_for_booking(booking.id)
-        if reimbursement_point and reimbursement_point.bankInformation:
-            bank_information_status = getattr(
-                CollectiveBookingBankInformationStatus, reimbursement_point.bankInformation.status.value
-            )
-        else:
+        bank_information_status = None
+        bank_account_status = None
+        ds_application_id = None
+
+        if not FeatureToggle.WIP_ENABLE_NEW_BANK_DETAILS_JOURNEY.is_active():
+            reimbursement_point = repository.get_booking_related_reimbursement_point(booking.id)
             bank_information_status = CollectiveBookingBankInformationStatus.MISSING
+            if reimbursement_point:
+                ds_application_id = reimbursement_point.demarchesSimplifieesApplicationId
+                if reimbursement_point.bankInformation:
+                    bank_information_status = CollectiveBookingBankInformationStatus[
+                        reimbursement_point.bankInformation.status.value
+                    ]
+        else:
+            bank_account = repository.get_booking_related_bank_account(booking.id)
+            bank_account_status = CollectiveBookingBankAccountStatus.MISSING
+            if bank_account:
+                ds_application_id = bank_account.dsApplicationId
+                match bank_account.status:
+                    case BankAccountApplicationStatus.ACCEPTED:
+                        bank_account_status = CollectiveBookingBankAccountStatus.ACCEPTED
+                    case (BankAccountApplicationStatus.WITHOUT_CONTINUATION, BankAccountApplicationStatus.REFUSED):
+                        bank_account_status = CollectiveBookingBankAccountStatus.REJECTED
+                    case _:
+                        bank_account_status = CollectiveBookingBankAccountStatus.DRAFT
 
         return cls(
             id=booking.id,
@@ -461,9 +489,8 @@ class CollectiveBookingByIdResponseModel(BaseModel):
             venuePostalCode=booking.venue.postalCode,
             isCancellable=booking.is_cancellable_from_offerer,
             bankInformationStatus=bank_information_status,
-            venueDMSApplicationId=reimbursement_point.demarchesSimplifieesApplicationId
-            if reimbursement_point
-            else None,
+            bankAccountStatus=bank_account_status,
+            venueDMSApplicationId=ds_application_id,
             venueId=booking.venueId,
             offererId=booking.venue.managingOffererId,
         )

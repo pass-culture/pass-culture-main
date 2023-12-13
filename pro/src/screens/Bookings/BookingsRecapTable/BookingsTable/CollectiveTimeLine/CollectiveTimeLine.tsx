@@ -3,6 +3,7 @@ import React from 'react'
 
 import {
   CollectiveBookingBankInformationStatus,
+  CollectiveBookingBankAccountStatus,
   CollectiveBookingByIdResponseModel,
   CollectiveBookingResponseModel,
 } from 'apiClient/v1'
@@ -491,12 +492,17 @@ const CollectiveTimeLine = ({
     lastValidatedStep = waitingPendingBankInfo
   }
   if (
-    bookingDetails.bankInformationStatus ==
-    CollectiveBookingBankInformationStatus.MISSING
+    isNewBankDetailsJourneyEnabled &&
+    bookingDetails.bankAccountStatus ==
+      CollectiveBookingBankAccountStatus.MISSING
   ) {
-    lastValidatedStep = isNewBankDetailsJourneyEnabled
-      ? waitingMissingBankInfo
-      : oldWaitingMissingBankInfo
+    lastValidatedStep = waitingMissingBankInfo
+  } else if (
+    !isNewBankDetailsJourneyEnabled &&
+    bookingDetails.bankInformationStatus ==
+      CollectiveBookingBankInformationStatus.MISSING
+  ) {
+    lastValidatedStep = oldWaitingMissingBankInfo
   }
 
   switch (bookingRecap.bookingStatus) {
