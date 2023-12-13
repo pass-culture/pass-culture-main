@@ -1,6 +1,7 @@
 from functools import wraps
+import typing
 
-from flask import request
+import flask
 
 from pcapi import settings
 from pcapi.models.api_errors import ForbiddenError
@@ -8,13 +9,13 @@ from pcapi.routes.adage.v1.blueprint import EAC_API_KEY_AUTH
 from pcapi.serialization.spec_tree import add_security_scheme
 
 
-def adage_api_key_required(route_function):  # type: ignore [no-untyped-def]
+def adage_api_key_required(route_function: typing.Callable) -> typing.Callable:
     add_security_scheme(route_function, EAC_API_KEY_AUTH)
 
     @wraps(route_function)
-    def wrapper(*args, **kwds):  # type: ignore [no-untyped-def]
+    def wrapper(*args: typing.Any, **kwds: typing.Any) -> flask.Response:
         mandatory_authorization_type = "Bearer "
-        authorization_header = request.headers.get("Authorization")
+        authorization_header = flask.request.headers.get("Authorization")
 
         if authorization_header and mandatory_authorization_type in authorization_header:
             adage_api_key = authorization_header.replace(mandatory_authorization_type, "")

@@ -2,6 +2,7 @@ import logging
 import os
 import sys
 import time
+import typing
 
 from authlib.integrations.flask_client import OAuth
 from flask import Flask
@@ -31,6 +32,11 @@ from pcapi.scripts.install import install_commands
 from pcapi.utils.json_encoder import EnumJSONEncoder
 from pcapi.utils.rate_limiting import rate_limiter
 from pcapi.utils.sentry import init_sentry_sdk
+
+
+if typing.TYPE_CHECKING:
+    from _typeshed.wsgi import StartResponse
+    from _typeshed.wsgi import WSGIEnvironment
 
 
 monkeypatches.install_monkey_patches()
@@ -143,7 +149,11 @@ class ProxyFix(werkzeug.middleware.proxy_fix.ProxyFix):
     traffic to go through our L7 load balancer.
     """
 
-    def __call__(self, environ, start_response):  # type: ignore [no-untyped-def]
+    def __call__(
+        self,
+        environ: "WSGIEnvironment",
+        start_response: "StartResponse",
+    ) -> typing.Iterable[bytes]:
         import sqlalchemy
 
         from pcapi.models.feature import FeatureToggle
