@@ -4,6 +4,8 @@ import { GetOffererResponseModel } from 'apiClient/v1'
 import fullLinkIcon from 'icons/full-link.svg'
 import { Banner } from 'ui-kit'
 
+import styles from './OffererBanners.module.scss'
+
 interface OffererBannersProps {
   isUserOffererValidated: boolean
   hasAtLeastOnePhysicalVenue: boolean
@@ -19,7 +21,7 @@ export const OffererBanners = ({
     return (
       <Banner
         type="notification-info"
-        className="banner"
+        className={styles['banner']}
         links={[
           {
             href: `https://aide.passculture.app/hc/fr/articles/4514252662172--Acteurs-Culturels-S-inscrire-et-comprendre-le-fonctionnement-du-pass-Culture-cr%C3%A9ation-d-offres-gestion-des-r%C3%A9servations-remboursements-etc-`,
@@ -46,7 +48,7 @@ export const OffererBanners = ({
     return (
       <Banner
         type="notification-info"
-        className="banner"
+        className={styles['banner']}
         links={[
           {
             href: `https://aide.passculture.app/hc/fr/articles/4514252662172--Acteurs-Culturels-S-inscrire-et-comprendre-le-fonctionnement-du-pass-Culture-cr%C3%A9ation-d-offres-gestion-des-r%C3%A9servations-remboursements-etc-`,
@@ -85,7 +87,7 @@ export const OffererBanners = ({
     return (
       <Banner
         type="notification-info"
-        className="banner"
+        className={styles['banner']}
         links={[
           {
             href: `https://aide.passculture.app/hc/fr/articles/4411992075281--Acteurs-Culturels-Comment-cr%C3%A9er-un-lieu-`,

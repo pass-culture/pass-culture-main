@@ -109,6 +109,7 @@ const VenueOfferSteps = ({
                 >
                   Créer un lieu
                 </ButtonLink>
+
                 <ButtonLink
                   className={cn(
                     styles['step-button-width-info'],
@@ -134,6 +135,7 @@ const VenueOfferSteps = ({
                 </ButtonLink>
               </div>
             )}
+
             {!venueHasCreatedOffer && (
               <ButtonLink
                 className={styles['step-button-width']}
@@ -148,6 +150,7 @@ const VenueOfferSteps = ({
                 Créer une offre
               </ButtonLink>
             )}
+
             {!isNewBankDetailsJourneyEnabled &&
               hasMissingReimbursementPoint && (
                 <ButtonLink
@@ -208,6 +211,7 @@ const VenueOfferSteps = ({
           </div>
         </div>
       )}
+
       {(shouldDisplayEACInformationSection ||
         (!isNewBankDetailsJourneyEnabled &&
           hasPendingBankInformationApplication)) && (
@@ -233,6 +237,7 @@ const VenueOfferSteps = ({
                 Suivre ma demande de référencement ADAGE
               </ButtonLink>
             )}
+
             {!isNewBankDetailsJourneyEnabled &&
               hasPendingBankInformationApplication && (
                 <ButtonLink
