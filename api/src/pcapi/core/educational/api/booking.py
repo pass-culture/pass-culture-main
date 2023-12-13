@@ -20,6 +20,7 @@ import pcapi.core.finance.models as finance_models
 import pcapi.core.finance.repository as finance_repository
 import pcapi.core.mails.transactional as transactional_mails
 from pcapi.core.mails.transactional.educational.eac_booking_cancellation import send_eac_booking_cancellation_email
+from pcapi.core.offerers import models as offerers_models
 from pcapi.core.users.models import User
 from pcapi.models import db
 from pcapi.models.feature import FeatureToggle
@@ -246,17 +247,37 @@ def get_collective_booking_report(
 
 
 def get_collective_booking_by_id(booking_id: int) -> educational_models.CollectiveBooking:
-    query = educational_models.CollectiveBooking.query.filter(educational_models.CollectiveBooking.id == booking_id)
-    query = query.options(
-        sa.orm.joinedload(educational_models.CollectiveBooking.collectiveStock),
-        sa.orm.joinedload(educational_models.CollectiveBooking.collectiveStock).joinedload(
-            educational_models.CollectiveStock.collectiveOffer
-        ),
-        sa.orm.joinedload(educational_models.CollectiveBooking.educationalRedactor),
-        sa.orm.joinedload(educational_models.CollectiveBooking.educationalInstitution),
-        sa.orm.joinedload(educational_models.CollectiveBooking.venue),
+    collective_booking = (
+        educational_models.CollectiveBooking.query.filter(educational_models.CollectiveBooking.id == booking_id)
+        .options(
+            sa.orm.joinedload(educational_models.CollectiveBooking.collectiveStock).load_only(
+                educational_models.CollectiveStock.price,
+                educational_models.CollectiveStock.beginningDatetime,
+                educational_models.CollectiveStock.numberOfTickets,
+            ),
+            sa.orm.joinedload(educational_models.CollectiveBooking.collectiveStock)
+            .joinedload(educational_models.CollectiveStock.collectiveOffer)
+            .load_only(educational_models.CollectiveOffer.offerVenue, educational_models.CollectiveOffer.students),
+            sa.orm.joinedload(educational_models.CollectiveBooking.educationalRedactor).load_only(
+                educational_models.EducationalRedactor.id,
+                educational_models.EducationalRedactor.email,
+                educational_models.EducationalRedactor.civility,
+                educational_models.EducationalRedactor.firstName,
+                educational_models.EducationalRedactor.lastName,
+            ),
+            sa.orm.joinedload(educational_models.CollectiveBooking.educationalInstitution),
+            sa.orm.joinedload(educational_models.CollectiveBooking.venue).load_only(offerers_models.Venue.postalCode),
+        )
+        .options(
+            sa.orm.load_only(
+                educational_models.CollectiveBooking.id,
+                educational_models.CollectiveBooking.venueId,
+                educational_models.CollectiveBooking.offererId,
+                educational_models.CollectiveBooking.status,
+            )
+        )
+        .one_or_none()
     )
-    collective_booking = query.one_or_none()
     if not collective_booking:
         raise exceptions.EducationalBookingNotFound()
     return collective_booking
