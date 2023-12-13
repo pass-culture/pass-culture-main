@@ -10,14 +10,16 @@
 }
 
 .toggle-wrapper {
+  display: flex;
+  align-items: center;
+}
+
+.venue-name {
   cursor: pointer;
   background: none;
   border: none;
   word-break: break-all;
-
-  @media (max-width: size.$tablet) {
-    flex-shrink: 0;
-  }
+  margin-bottom: 0 !important; // TODO temporary, will be refactored when h-card-title-disappears
 }
 
 .toggle-icon {
@@ -58,8 +60,9 @@
   }
 
   // Delete when WIP_ENABLE_NEW_BANK_DETAILS_JOURNEY is deleted
-  &-separator {    
-    @media (min-width: size.$tablet) {height: rem.torem(20px);
+  &-separator {
+    @media (min-width: size.$tablet) {
+      height: rem.torem(20px);
       border-left: solid rem.torem(1px) colors.$grey-medium;
       margin-left: rem.torem(16px);
       margin-right: rem.torem(12px);

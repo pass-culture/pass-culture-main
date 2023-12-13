@@ -8,6 +8,8 @@ import { ButtonLink } from 'ui-kit'
 import { ButtonVariant } from 'ui-kit/Button/types'
 import { UNAVAILABLE_ERROR_PAGE } from 'utils/routes'
 
+import styles from './VenueCreationLinks.module.scss'
+
 interface VenueCreationLinksProps {
   hasPhysicalVenue?: boolean
   hasVirtualOffers?: boolean
@@ -66,7 +68,7 @@ const VenueCreationLinks = ({
       <div className="h-card-inner">
         <h3 className="h-card-title">Lieux</h3>
 
-        <div className="h-card-content">
+        <div className={styles['content']}>
           <p>
             Avant de créer votre première offre physique vous devez avoir un
             lieu
