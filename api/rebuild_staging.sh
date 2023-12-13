@@ -14,3 +14,4 @@ flask sandbox --name beneficiaries --clean false
 flask add_permissions_to_staging_specific_roles
 
 flask disable_external_bookings
+flask index_offers_staging
