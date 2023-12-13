@@ -12,6 +12,8 @@ import { ButtonLink } from 'ui-kit'
 import { ButtonVariant } from 'ui-kit/Button/types'
 import SelectInput from 'ui-kit/form/Select/SelectInput'
 
+import { Card } from '../Card'
+
 import { OffererBanners } from './OffererBanners'
 import styles from './OffererDetails.module.scss'
 
@@ -70,67 +72,68 @@ const OffererDetails = ({
     showOffererNotValidatedAndPhysicalVenue
 
   return (
-    <div className="h-card" data-testid="offerrer-wrapper">
-      <div className="h-card-inner h-no-bottom">
-        <div className={styles['container']}>
-          <div className={styles['venue-select']}>
-            <SelectInput
-              onChange={handleChangeOfferer}
-              name="offererId"
-              options={offererOptions}
-              value={selectedOfferer.id.toString()}
-            />
-          </div>
-
-          <div className={styles['venue-buttons']}>
-            <div className={cn(styles['separator'], styles['vertical'])} />
-            <ButtonLink
-              variant={ButtonVariant.TERNARY}
-              link={{
-                to: `/structures/${selectedOfferer.id}`,
-                isExternal: false,
-              }}
-              icon={fullAddUserIcon}
-              isDisabled={!isUserOffererValidated}
-              onClick={() => {
-                logEvent?.(OffererLinkEvents.CLICKED_INVITE_COLLABORATOR, {
-                  offererId: selectedOfferer.id,
-                })
-              }}
-            >
-              Inviter
-            </ButtonLink>
-            <div className={cn(styles['separator'], styles['vertical'])} />
-            <ButtonLink
-              variant={ButtonVariant.TERNARY}
-              link={{
-                to: `/structures/${selectedOfferer.id}`,
-                isExternal: false,
-              }}
-              icon={fullEditIcon}
-              isDisabled={!isUserOffererValidated}
-              onClick={() =>
-                logEvent?.(Events.CLICKED_MODIFY_OFFERER, {
-                  offerer_id: selectedOfferer.id,
-                })
-              }
-            >
-              Modifier
-            </ButtonLink>
-          </div>
+    <Card noPaddingBottom data-testid="offerrer-wrapper">
+      <div className={styles['container']}>
+        <div className={styles['venue-select']}>
+          <SelectInput
+            onChange={handleChangeOfferer}
+            name="offererId"
+            options={offererOptions}
+            value={selectedOfferer.id.toString()}
+          />
         </div>
-        {isExpanded && !isStatisticsDashboardEnabled && (
-          <>
-            <div className={cn(styles['separator'], styles['horizontal'])} />
-            <OffererBanners
-              selectedOfferer={selectedOfferer}
-              isUserOffererValidated={isUserOffererValidated}
-              hasAtLeastOnePhysicalVenue={hasAtLeastOnePhysicalVenue}
-            />
-          </>
-        )}
+
+        <>
+          <div className={cn(styles['separator'], styles['vertical'])} />
+          <ButtonLink
+            variant={ButtonVariant.TERNARY}
+            link={{
+              to: `/structures/${selectedOfferer.id}`,
+              isExternal: false,
+            }}
+            icon={fullAddUserIcon}
+            isDisabled={!isUserOffererValidated}
+            onClick={() => {
+              logEvent?.(OffererLinkEvents.CLICKED_INVITE_COLLABORATOR, {
+                offererId: selectedOfferer.id,
+              })
+            }}
+          >
+            Inviter
+          </ButtonLink>
+        </>
+
+        <div className={cn(styles['separator'], styles['vertical'])} />
+
+        <ButtonLink
+          variant={ButtonVariant.TERNARY}
+          link={{
+            to: `/structures/${selectedOfferer.id}`,
+            isExternal: false,
+          }}
+          icon={fullEditIcon}
+          isDisabled={!isUserOffererValidated}
+          onClick={() =>
+            logEvent?.(Events.CLICKED_MODIFY_OFFERER, {
+              offerer_id: selectedOfferer.id,
+            })
+          }
+        >
+          Modifier
+        </ButtonLink>
       </div>
-    </div>
+
+      {isExpanded && !isStatisticsDashboardEnabled && (
+        <>
+          <div className={cn(styles['separator'], styles['horizontal'])} />
+          <OffererBanners
+            selectedOfferer={selectedOfferer}
+            isUserOffererValidated={isUserOffererValidated}
+            hasAtLeastOnePhysicalVenue={hasAtLeastOnePhysicalVenue}
+          />
+        </>
+      )}
+    </Card>
   )
 }
 
