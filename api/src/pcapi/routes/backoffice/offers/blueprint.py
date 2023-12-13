@@ -347,6 +347,11 @@ def _get_offers(form: forms.InternalSearchForm) -> list[offers_models.Offer]:
             .load_only(offerers_models.Venue.id, offerers_models.Venue.name, offerers_models.Venue.departementCode)
             .contains_eager(offerers_models.Venue.managingOfferer)
             .load_only(offerers_models.Offerer.id, offerers_models.Offerer.name),
+            sa.orm.joinedload(offers_models.Offer.author).load_only(
+                users_models.User.id,
+                users_models.User.firstName,
+                users_models.User.lastName,
+            ),
         )
     )
 

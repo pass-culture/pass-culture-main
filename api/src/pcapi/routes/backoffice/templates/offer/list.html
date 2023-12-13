@@ -80,10 +80,9 @@
                 <th scope="col">Règles de conformité</th>
                 <th scope="col">Score data</th>
               {% endif %}
-              {% if has_permission("MANAGE_OFFERS_AND_VENUES_TAGS") %}
-                <th scope="col">Tag</th>
-                <th scope="col">Pond.</th>
-              {% endif %}
+              {% if has_permission("MANAGE_OFFERS_AND_VENUES_TAGS") %}<th scope="col">Tag</th>{% endif %}
+              <th scope="col">Créateur de l'offre</th>
+              {% if has_permission("MANAGE_OFFERS_AND_VENUES_TAGS") %}<th scope="col">Pond.</th>{% endif %}
               <th scope="col">État</th>
               <th scope="col">
                 {% if date_created_sort_url %}
@@ -169,10 +168,9 @@
                     {% endif %}
                   </td>
                 {% endif %}
-                {% if has_permission("MANAGE_OFFERS_AND_VENUES_TAGS") %}
-                  <td>{{ row.tags | format_as_badges | safe }}</td>
-                  <td>{{ offer.rankingWeight | empty_string_if_null }}</td>
-                {% endif %}
+                {% if has_permission("MANAGE_OFFERS_AND_VENUES_TAGS") %}<td>{{ row.tags | format_as_badges | safe }}</td>{% endif %}
+                <td>{{ links.build_pro_user_name_to_details_link(offer.author.id, offer.author.full_name) }}</td>
+                {% if has_permission("MANAGE_OFFERS_AND_VENUES_TAGS") %}<td>{{ offer.rankingWeight | empty_string_if_null }}</td>{% endif %}
                 <td>{{ offer.validation | format_offer_validation_status }}</td>
                 <td>{{ offer.dateCreated | format_date("%d/%m/%Y") }}</td>
                 <td>{{ offer.lastValidationDate | format_date("%d/%m/%Y") }}</td>
