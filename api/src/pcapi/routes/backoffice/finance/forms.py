@@ -11,7 +11,6 @@ from pcapi.routes.backoffice.forms import utils as forms_utils
 
 
 not_implemented_incident_types = [
-    finance_models.IncidentType.COMMERCIAL_GESTURE,
     finance_models.IncidentType.FRAUD,
     finance_models.IncidentType.OFFER_PRICE_REGULATION,
 ]

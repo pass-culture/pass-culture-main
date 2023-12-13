@@ -183,7 +183,12 @@ def get_incident_creation_form() -> utils.BackofficeResponse:
             .filter(
                 sa.and_(
                     bookings_models.Booking.id.in_(form.object_ids_list),
-                    bookings_models.Booking.status == bookings_models.BookingStatus.REIMBURSED,
+                    bookings_models.Booking.status.in_(
+                        (
+                            bookings_models.BookingStatus.REIMBURSED,
+                            bookings_models.BookingStatus.CANCELLED,
+                        ),
+                    ),
                 )
             )
             .all()
@@ -191,8 +196,8 @@ def get_incident_creation_form() -> utils.BackofficeResponse:
 
         if not bookings or len({booking.venueId for booking in bookings}) > 1:
             return Response(
-                """<div class="alert alert-info m-0">Seules les réservations ayant le statut 'remboursée' et
-                correspondant au même lieu peuvent faire l'objet d'un incident</div>"""
+                """<div class="alert alert-info m-0">Seules les réservations ayant les statuts "remboursée" et
+                "annulée" et correspondant au même lieu peuvent faire l'objet d'un incident</div>"""
             )
 
         form.total_amount.data = sum(booking.total_amount for booking in bookings)
@@ -259,37 +264,70 @@ def create_individual_booking_incident() -> utils.BackofficeResponse:
         flash(utils.build_form_error_msg(form), "warning")
         return redirect(request.referrer, 303)
 
+    amount = form.total_amount.data
+    is_commercial_gesture = form.kind.data == finance_models.IncidentType.COMMERCIAL_GESTURE.name
+    bookings_filters = [bookings_models.Booking.id.in_(form.object_ids_list)]
+
+    if is_commercial_gesture:
+        bookings_filters.append(bookings_models.Booking.status == bookings_models.BookingStatus.CANCELLED)
+    else:
+        bookings_filters.append(bookings_models.Booking.status == bookings_models.BookingStatus.REIMBURSED)
+
     bookings = (
         bookings_models.Booking.query.options(
             sa.orm.joinedload(bookings_models.Booking.pricings).load_only(finance_models.Pricing.amount),
+            sa.orm.joinedload(bookings_models.Booking.deposit).load_only(finance_models.Deposit.amount),
+            sa.orm.joinedload(bookings_models.Booking.deposit)
+            .joinedload(finance_models.Deposit.user)
+            .load_only(users_models.User.id),
         )
-        .filter(
-            sa.and_(
-                bookings_models.Booking.id.in_(form.object_ids_list),
-                bookings_models.Booking.status == bookings_models.BookingStatus.REIMBURSED,
-            )
-        )
+        .filter(*bookings_filters)
         .all()
     )
-    is_one_booking_incident = len(bookings) == 1
-    is_commercial_gesture = form.kind.data == finance_models.IncidentType.COMMERCIAL_GESTURE.name
 
-    if not validation.check_incident_bookings(bookings) or (
-        is_one_booking_incident
-        and not validation.check_total_amount(form.total_amount.data, bookings, not is_commercial_gesture)
+    if len(bookings) != len(form.object_ids_list):
+        flash(
+            "Au moins une des réservations sélectionnées est dans un état non compatible avec ce type d'incident",
+            "warning",
+        )
+        return redirect(request.referrer or url_for("backoffice_web.individual_bookings.list_individual_bookings"), 303)
+
+    if is_commercial_gesture:
+        if not validation.check_all_same_stock(bookings):
+            flash(
+                "Un geste commercial ne peut concerner que des réservations faites sur un même stock",
+                "warning",
+            )
+            return redirect(
+                request.referrer or url_for("backoffice_web.individual_bookings.list_individual_bookings"), 303
+            )
+
+        amount /= sum(x.quantity for x in bookings)
+        if not validation.check_empty_deposits(bookings, amount):
+            flash(
+                "Au moins un des jeunes ayant fait une réservation a encore du crédit pour payer la réservation",
+                "warning",
+            )
+            return redirect(
+                request.referrer or url_for("backoffice_web.individual_bookings.list_individual_bookings"), 303
+            )
+
+    if not (
+        validation.check_incident_bookings(bookings)
+        and validation.check_total_amount(amount, bookings, is_commercial_gesture)
     ):
         return redirect(request.referrer or url_for("backoffice_web.individual_bookings.list_individual_bookings"), 303)
 
     finance_api.create_finance_incident(
-        form.kind.data,
-        bookings,
-        form.total_amount.data,
-        form.origin.data,
+        kind=form.kind.data,
+        bookings=bookings,
+        amount=amount,
+        origin=form.origin.data,
     )
 
     flash(
         Markup("Un incident a bien été créé pour {count} réservation{s}").format(
-            count=len(bookings), s="" if is_one_booking_incident else "s"
+            count=len(bookings), s="" if len(bookings) == 1 else "s"
         ),
         "success",
     )
@@ -313,7 +351,7 @@ def create_collective_booking_incident(collective_booking_id: int) -> utils.Back
     is_valid_amount = validation.check_total_amount(
         input_amount=collective_booking.total_amount,
         bookings=[collective_booking],
-        check_positive_amount=not is_commercial_gesture,
+        is_commercial_gesture=is_commercial_gesture,
     )
 
     if not (booking_has_no_incident and is_valid_amount):
