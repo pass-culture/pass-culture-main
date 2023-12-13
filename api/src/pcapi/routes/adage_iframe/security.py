@@ -1,7 +1,8 @@
 from functools import wraps
 import logging
+import typing
 
-from flask import request
+import flask
 from jwt import ExpiredSignatureError
 from jwt import InvalidSignatureError
 from jwt import InvalidTokenError
@@ -16,13 +17,13 @@ from pcapi.serialization.spec_tree import add_security_scheme
 logger = logging.getLogger(__name__)
 
 
-def adage_jwt_required(route_function):  # type: ignore [no-untyped-def]
+def adage_jwt_required(route_function: typing.Callable) -> typing.Callable:
     add_security_scheme(route_function, JWT_AUTH)
 
     @wraps(route_function)
-    def wrapper(*args, **kwargs):  # type: ignore [no-untyped-def]
+    def wrapper(*args: typing.Any, **kwargs: typing.Any) -> flask.Response:
         mandatory_authorization_type = "Bearer "
-        authorization_header = request.headers.get("Authorization")
+        authorization_header = flask.request.headers.get("Authorization")
 
         if authorization_header and mandatory_authorization_type in authorization_header:
             adage_jwt = authorization_header.replace(mandatory_authorization_type, "")
