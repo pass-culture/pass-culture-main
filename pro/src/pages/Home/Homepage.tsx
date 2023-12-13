@@ -181,6 +181,7 @@ export const Homepage = (): JSX.Element => {
           </div>
         </section>
       </div>
+
       <TutorialDialog />
     </AppLayout>
   )

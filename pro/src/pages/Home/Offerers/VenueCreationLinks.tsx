@@ -8,6 +8,8 @@ import { ButtonLink } from 'ui-kit'
 import { ButtonVariant } from 'ui-kit/Button/types'
 import { UNAVAILABLE_ERROR_PAGE } from 'utils/routes'
 
+import { Card } from '../Card'
+
 import styles from './VenueCreationLinks.module.scss'
 
 interface VenueCreationLinksProps {
@@ -65,23 +67,20 @@ const VenueCreationLinks = ({
   }
 
   const renderCard = () => (
-    <div className="h-card" data-testid="offerers-creation-links-card">
-      <div className="h-card-inner">
-        <h3 className={styles['title']}>Lieux</h3>
+    <Card data-testid="offerers-creation-links-card">
+      <h3 className={styles['title']}>Lieux</h3>
 
-        <div className={styles['content']}>
-          <p>
-            Avant de créer votre première offre physique vous devez avoir un
-            lieu
-          </p>
-          {renderLinks(true)}
-        </div>
+      <div className={styles['content']}>
+        <p>
+          Avant de créer votre première offre physique vous devez avoir un lieu
+        </p>
+        {renderLinks(true)}
       </div>
-    </div>
+    </Card>
   )
 
   return (
-    <div className="venue-banner">
+    <div className={styles['container']}>
       {!(hasPhysicalVenue || hasVirtualOffers)
         ? renderCard()
         : renderLinks(false)}

@@ -15,6 +15,7 @@ import {
 import useActiveFeature from '../../../hooks/useActiveFeature'
 import useAnalytics from '../../../hooks/useAnalytics'
 import { UNAVAILABLE_ERROR_PAGE } from '../../../utils/routes'
+import { Card } from '../Card'
 
 import styles from './VenueOfferSteps.module.scss'
 
@@ -76,14 +77,14 @@ const VenueOfferSteps = ({
   }
 
   return (
-    <div
-      className={cn(styles['card-wrapper'], 'h-card', {
+    <Card
+      className={cn(styles['card-wrapper'], {
         [styles['no-shadow']]: hasVenue,
       })}
       data-testid={hasVenue ? 'venue-offer-steps' : 'home-offer-steps'}
     >
       {(!venueHasCreatedOffer || shouldDisplayEACInformationSection) && (
-        <div className="h-card-inner">
+        <>
           <h3 className={styles['card-title']}>Prochaines étapes : </h3>
 
           <div className={styles['venue-offer-steps']}>
@@ -209,13 +210,13 @@ const VenueOfferSteps = ({
               </ButtonLink>
             )}
           </div>
-        </div>
+        </>
       )}
 
       {(shouldDisplayEACInformationSection ||
         (!isNewBankDetailsJourneyEnabled &&
           hasPendingBankInformationApplication)) && (
-        <div className="h-card-inner">
+        <>
           <h3 className={styles['card-title']}>Démarche en cours : </h3>
 
           <div className={styles['venue-offer-steps']}>
@@ -266,9 +267,9 @@ const VenueOfferSteps = ({
                 </ButtonLink>
               )}
           </div>
-        </div>
+        </>
       )}
-    </div>
+    </Card>
   )
 }
 

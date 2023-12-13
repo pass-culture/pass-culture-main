@@ -7,6 +7,8 @@ import fullEditIcon from 'icons/full-edit.svg'
 import { ButtonLink } from 'ui-kit'
 import { ButtonVariant } from 'ui-kit/Button/types'
 
+import { Card } from '../Card'
+
 import styles from './Profile.module.scss'
 
 /**
@@ -55,56 +57,48 @@ export const Profile = () => {
 
   const { currentUser: user } = useCurrentUser()
   return (
-    <div className="h-card" data-testid="card-profile">
-      <div className="h-card-inner">
-        <div className={styles['header-row']}>
-          <h3 className={styles['title']}>Profil</h3>
+    <Card data-testid="card-profile">
+      <div className={styles['header-row']}>
+        <h3 className={styles['title']}>Profil</h3>
 
-          <ButtonLink
-            variant={ButtonVariant.TERNARY}
-            link={{ to: '/profil', isExternal: false }}
-            icon={fullEditIcon}
-            onClick={() => logEvent?.(Events.CLICKED_EDIT_PROFILE)}
-          >
-            Modifier
-          </ButtonLink>
-        </div>
-
-        <div>
-          <ul className={styles['description-list']}>
-            <li className={styles['description-item']}>
-              <span className={styles['description-label']}>Nom :</span>
-              <span className={styles['description-value']}>
-                {user.lastName}
-              </span>
-            </li>
-            <li className={styles['description-item']}>
-              <span className={styles['description-label']}>Prénom :</span>
-              <span className={styles['description-value']}>
-                {user.firstName}
-              </span>
-            </li>
-            <li className={styles['description-item']}>
-              <span className={styles['description-label']}>Email :</span>
-              <span className={styles['description-value']}>{user.email}</span>
-            </li>
-            <li className={styles['description-item']}>
-              <span className={styles['description-label']}>Téléphone :</span>
-              <span className={styles['description-value']}>
-                {formatPhoneNumber(user.phoneNumber)}
-              </span>
-            </li>
-            <li className={styles['description-item']}>
-              <span className={styles['description-label']}>
-                Mot de passe :
-              </span>
-              <span className={styles['description-value']}>
-                ***************
-              </span>
-            </li>
-          </ul>
-        </div>
+        <ButtonLink
+          variant={ButtonVariant.TERNARY}
+          link={{ to: '/profil', isExternal: false }}
+          icon={fullEditIcon}
+          onClick={() => logEvent?.(Events.CLICKED_EDIT_PROFILE)}
+        >
+          Modifier
+        </ButtonLink>
       </div>
-    </div>
+
+      <div>
+        <ul className={styles['description-list']}>
+          <li className={styles['description-item']}>
+            <span className={styles['description-label']}>Nom :</span>
+            <span className={styles['description-value']}>{user.lastName}</span>
+          </li>
+          <li className={styles['description-item']}>
+            <span className={styles['description-label']}>Prénom :</span>
+            <span className={styles['description-value']}>
+              {user.firstName}
+            </span>
+          </li>
+          <li className={styles['description-item']}>
+            <span className={styles['description-label']}>Email :</span>
+            <span className={styles['description-value']}>{user.email}</span>
+          </li>
+          <li className={styles['description-item']}>
+            <span className={styles['description-label']}>Téléphone :</span>
+            <span className={styles['description-value']}>
+              {formatPhoneNumber(user.phoneNumber)}
+            </span>
+          </li>
+          <li className={styles['description-item']}>
+            <span className={styles['description-label']}>Mot de passe :</span>
+            <span className={styles['description-value']}>***************</span>
+          </li>
+        </ul>
+      </div>
+    </Card>
   )
 }
