@@ -176,7 +176,7 @@ export const Homepage = (): JSX.Element => {
         <section className={styles['section']} ref={profileRef}>
           <ProfileAndSupport />
 
-          <div className="newsletter">
+          <div className={styles['newsletter']}>
             <Newsletter />
           </div>
         </section>

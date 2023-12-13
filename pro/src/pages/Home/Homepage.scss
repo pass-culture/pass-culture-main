@@ -12,7 +12,7 @@
 
     .h-card-inner {
       height: 100%;
-      padding: rem.torem(16px) rem.torem(16px) rem.torem(24px);
+      padding: rem.torem(16px);
       width: 100%;
     }
 
@@ -33,33 +33,8 @@
     }
   }
 
-  .newsletter {
-    position: relative;
-    margin-top: rem.torem(16px);
-  }
-
   .venue-banner,
   .offerer-banner {
     margin-top: rem.torem(24px);
-  }
-
-  .h-venue-list {
-    .loading-spinner {
-      img {
-        margin-bottom: 0;
-      }
-    }
-
-    .h-card-inner {
-      padding-bottom: rem.torem(
-        16px
-      ); // FIXME: remove this fix when venue list card get content.
-    }
-  }
-}
-
-.h-card {
-  .banner {
-    margin: rem.torem(24px) 0;
   }
 }
