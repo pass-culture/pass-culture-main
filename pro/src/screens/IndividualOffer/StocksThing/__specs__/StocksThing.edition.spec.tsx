@@ -204,7 +204,7 @@ describe('screens:StocksThing', () => {
     vi.spyOn(api, 'upsertStocks').mockResolvedValue({ stocks_count: 0 })
   })
 
-  it.skip('should allow user to delete a stock', async () => {
+  it('should allow user to delete a stock', async () => {
     vi.spyOn(api, 'deleteStock').mockResolvedValue({ id: 1 })
     renderStockThingScreen(storeOverride)
     await screen.findByTestId('stock-thing-form')
@@ -231,6 +231,9 @@ describe('screens:StocksThing', () => {
     await userEvent.click(
       screen.getByRole('button', { name: 'Enregistrer les modifications' })
     )
+    expect(
+      await screen.findByText('This is the read only route content')
+    ).toBeInTheDocument()
     expect(api.upsertStocks).not.toHaveBeenCalled()
   })
 
