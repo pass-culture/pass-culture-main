@@ -4,6 +4,7 @@ from pcapi.core import testing
 from pcapi.core.categories import subcategories_v2 as subcategories
 from pcapi.core.offerers import factories as offerers_factories
 from pcapi.core.offers import factories as offers_factories
+from pcapi.core.offers import models as offers_models
 
 from . import utils
 
@@ -23,10 +24,15 @@ class GetEventsTest:
         assert response.status_code == 200
         assert [event["id"] for event in response.json["events"]] == [offer.id for offer in offers[0:5]]
 
-    def test_get_offers_without_music_sub_type(self, client):
+    def test_get_offers_with_missing_fields(self, client):
         venue, _ = utils.create_offerer_provider_linked_to_venue()
         offers_factories.EventOfferFactory(
             venue=venue, subcategoryId=subcategories.CONCERT.id, extraData={"musicType": "800"}
+        )
+        offers_factories.EventOfferFactory(
+            venue=venue,
+            subcategoryId=subcategories.CONCERT.id,
+            withdrawalType=offers_models.WithdrawalTypeEnum.ON_SITE,
         )
 
         response = client.with_explicit_token(offerers_factories.DEFAULT_CLEAR_API_KEY).get(
@@ -34,6 +40,7 @@ class GetEventsTest:
         )
 
         assert response.status_code == 200
+        assert len(response.json["events"]) == 2
 
     def test_404_when_venue_id_not_tied_to_api_key(self, client):
         utils.create_offerer_provider_linked_to_venue()
