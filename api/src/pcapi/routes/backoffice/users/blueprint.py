@@ -72,7 +72,11 @@ def suspend_user(user_id: int) -> utils.BackofficeResponse:
     form = forms.SuspendUserForm()
     if form.validate():
         users_api.suspend_account(
-            user, users_constants.SuspensionReason[form.reason.data], current_user, comment=form.comment.data
+            user,
+            users_constants.SuspensionReason[form.reason.data],
+            current_user,
+            comment=form.comment.data,
+            is_backoffice_action=True,
         )
         flash(
             Markup("Le compte de l'utilisateur {email} ({user_id}) a été suspendu").format(

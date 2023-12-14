@@ -3,6 +3,7 @@ import pytest
 
 from pcapi.core.bookings import factories as bookings_factories
 from pcapi.core.bookings import models as bookings_models
+from pcapi.core.categories import subcategories_v2
 from pcapi.core.history import models as history_models
 from pcapi.core.offerers import factories as offerers_factories
 from pcapi.core.permissions import models as perm_models
@@ -104,6 +105,56 @@ class SuspendUserTest(PostEndpointHelper):
         assert user.action_history[0].venueId is None
         assert user.action_history[0].extraData["reason"] == users_constants.SuspensionReason.FRAUD_RESELL_PRODUCT.value
         assert user.action_history[0].comment == "Le jeune a mis en ligne des annonces de vente le lendemain"
+
+    @pytest.mark.parametrize(
+        "reason,cancel_bookings,cancel_event",
+        [
+            (users_constants.SuspensionReason.FRAUD_HACK, True, False),
+            (users_constants.SuspensionReason.FRAUD_RESELL_PASS, True, True),
+            (users_constants.SuspensionReason.FRAUD_RESELL_PRODUCT, True, True),
+            (users_constants.SuspensionReason.FRAUD_SUSPICION, False, False),
+            (users_constants.SuspensionReason.SUSPICIOUS_LOGIN_REPORTED_BY_USER, True, False),
+            (users_constants.SuspensionReason.UPON_USER_REQUEST, True, False),
+            (users_constants.SuspensionReason.SUSPENSION_FOR_INVESTIGATION_TEMP, False, False),
+        ],
+    )
+    def test_cancel_booking_on_suspend(self, client, beneficiary_fraud_admin, reason, cancel_bookings, cancel_event):
+        user = users_factories.BeneficiaryGrant18Factory()
+        confirmed_booking = bookings_factories.BookingFactory(user=user)
+        used_booking = bookings_factories.UsedBookingFactory(user=user)
+        reimbursed_booking = bookings_factories.ReimbursedBookingFactory(user=user)
+        event_booking = bookings_factories.BookingFactory(
+            user=user,
+            stock__offer__subcategoryId=subcategories_v2.CINE_PLEIN_AIR.id,
+        )
+
+        response = self.post_to_endpoint(
+            client.with_bo_session_auth(beneficiary_fraud_admin),
+            user_id=user.id,
+            form={
+                "reason": reason.name,
+                "comment": "Le jeune a mis en ligne des annonces de vente le lendemain",
+            },
+        )
+        db.session.refresh(confirmed_booking)
+        db.session.refresh(used_booking)
+        db.session.refresh(reimbursed_booking)
+        db.session.refresh(event_booking)
+
+        assert response.status_code == 303
+        assert response.location == url_for(
+            "backoffice_web.public_accounts.get_public_account", user_id=user.id, _external=True
+        )
+        assert used_booking.status == bookings_models.BookingStatus.USED
+        assert reimbursed_booking.status == bookings_models.BookingStatus.REIMBURSED
+        if cancel_bookings:
+            assert confirmed_booking.status == bookings_models.BookingStatus.CANCELLED
+        else:
+            assert confirmed_booking.status == bookings_models.BookingStatus.CONFIRMED
+        if cancel_event:
+            assert event_booking.status == bookings_models.BookingStatus.CANCELLED
+        else:
+            assert event_booking.status == bookings_models.BookingStatus.CONFIRMED
 
     def test_suspend_pro_user(self, client, pro_fraud_admin):
         user = offerers_factories.UserOffererFactory().user
