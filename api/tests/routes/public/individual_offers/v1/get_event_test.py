@@ -106,6 +106,20 @@ class GetEventTest:
             "category": "CONCERT",
         }
 
+    def test_get_event_without_ticket(self, client):
+        venue, _ = utils.create_offerer_provider_linked_to_venue()
+        event_offer = offers_factories.EventOfferFactory(
+            subcategoryId=subcategories.CONCERT.id,
+            venue=venue,
+            withdrawalType=offers_models.WithdrawalTypeEnum.ON_SITE,
+        )
+
+        response = client.with_explicit_token(offerers_factories.DEFAULT_CLEAR_API_KEY).get(
+            f"/public/offers/v1/events/{event_offer.id}"
+        )
+        assert response.status_code == 200
+        assert response.json["hasTicket"] is False
+
     def test_get_music_offer_without_music_type(self, client):
         venue, _ = utils.create_offerer_provider_linked_to_venue()
         event_offer = offers_factories.EventOfferFactory(

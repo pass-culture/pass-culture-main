@@ -772,11 +772,10 @@ class BatchProductOfferResponse(serialization.ConfiguredBaseModel):
 def _serialize_has_ticket(
     offer: offers_models.Offer,
 ) -> bool:
-    if offer.withdrawalType is None or offer.withdrawalType == offers_models.WithdrawalTypeEnum.NO_TICKET:
-        return False
+    # hasTicket is True only if the bookings are linked to an externalBooking
+    # This is the case for offers with withdrawalType IN_APP.
     if offer.withdrawalType == offers_models.WithdrawalTypeEnum.IN_APP:
         return True
-    logger.error("Unknown withdrawal type %s for offer %s", offer.withdrawalType, offer.id)
     return False
 
 
