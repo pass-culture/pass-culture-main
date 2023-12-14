@@ -11,7 +11,7 @@ interface Props {
   redirect?: string
 }
 
-const NotFound = ({ redirect = '/accueil' }: Props) => (
+export const NotFound = ({ redirect = '/accueil' }: Props) => (
   <main className={styles['no-match']} id="content">
     <SvgIcon
       src={stroke404Icon}
@@ -32,4 +32,6 @@ const NotFound = ({ redirect = '/accueil' }: Props) => (
   </main>
 )
 
-export default NotFound
+// Lazy-loaded by react-router-dom
+// ts-unused-exports:disable-next-line
+export const Component = NotFound
