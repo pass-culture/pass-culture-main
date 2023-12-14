@@ -5,7 +5,6 @@ from typing import Any
 import pytz
 import sqlalchemy as sqla
 import sqlalchemy.orm as sqla_orm
-from sqlalchemy.orm import aliased
 import sqlalchemy.sql.functions as sqla_func
 import sqlalchemy.sql.sqltypes as sqla_sqltypes
 
@@ -492,19 +491,11 @@ def _get_legacy_payments_for_collective_bookings(
 def get_bank_account_with_current_venues_links(
     offerer_id: int, bank_account_id: int
 ) -> finance_models.BankAccount | None:
-    aliased_venue_bank_account_link = aliased(offerers_models.VenueBankAccountLink)
     return (
         finance_models.BankAccount.query.filter(
             finance_models.BankAccount.id == bank_account_id,
             finance_models.BankAccount.offererId == offerer_id,
             finance_models.BankAccount.status == finance_models.BankAccountApplicationStatus.ACCEPTED,
-        )
-        .outerjoin(
-            offerers_models.VenueBankAccountLink,
-            sqla.and_(
-                offerers_models.VenueBankAccountLink.bankAccountId == finance_models.BankAccount.id,
-                offerers_models.VenueBankAccountLink.timespan.contains(datetime.datetime.utcnow()),
-            ),
         )
         .join(offerers_models.Offerer)
         .outerjoin(offerers_models.Venue, offerers_models.Venue.managingOffererId == offerers_models.Offerer.id)
@@ -516,13 +507,12 @@ def get_bank_account_with_current_venues_links(
             ),
         )
         .outerjoin(
-            aliased_venue_bank_account_link,
+            offerers_models.VenueBankAccountLink,
             sqla.and_(
-                aliased_venue_bank_account_link.venueId == offerers_models.Venue.id,
-                aliased_venue_bank_account_link.timespan.contains(datetime.datetime.utcnow()),
+                offerers_models.VenueBankAccountLink.venueId == offerers_models.Venue.id,
+                offerers_models.VenueBankAccountLink.timespan.contains(datetime.datetime.utcnow()),
             ),
         )
-        .options(sqla_orm.contains_eager(finance_models.BankAccount.venueLinks))
         .options(
             sqla_orm.contains_eager(finance_models.BankAccount.offerer)
             .contains_eager(offerers_models.Offerer.managedVenues)
@@ -533,8 +523,7 @@ def get_bank_account_with_current_venues_links(
         .options(
             sqla_orm.contains_eager(finance_models.BankAccount.offerer)
             .contains_eager(offerers_models.Offerer.managedVenues)
-            .contains_eager(offerers_models.Venue.bankAccountLinks.of_type(aliased_venue_bank_account_link))
-            .load_only(aliased_venue_bank_account_link.bankAccountId, aliased_venue_bank_account_link.timespan)
+            .contains_eager(offerers_models.Venue.bankAccountLinks)
         )
         .one_or_none()
     )
