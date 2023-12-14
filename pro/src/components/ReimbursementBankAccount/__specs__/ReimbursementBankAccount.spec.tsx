@@ -21,7 +21,8 @@ const mockUpdateButtonClick = vi.fn()
 const renderReimbursementBankAccount = (
   bankAccount: BankAccountResponseModel,
   managedVenues: ManagedVenues[],
-  offererId = 0
+  offererId = 0,
+  hasWarning = false
 ) =>
   renderWithProviders(
     <Routes>
@@ -33,6 +34,7 @@ const renderReimbursementBankAccount = (
             offererId={offererId}
             onUpdateButtonClick={mockUpdateButtonClick}
             managedVenues={managedVenues}
+            hasWarning={hasWarning}
           />
         }
       />
@@ -195,7 +197,7 @@ describe('ReimbursementBankAccount', () => {
       hasPricingPoint: false,
       id: 12,
     })
-    renderReimbursementBankAccount(bankAccount, managedVenues, 1)
+    renderReimbursementBankAccount(bankAccount, managedVenues, 1, true)
 
     expect(
       screen.getByRole('img', { name: 'Une action est requise' })
