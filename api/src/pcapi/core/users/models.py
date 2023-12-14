@@ -166,6 +166,7 @@ class GenderEnum(enum.Enum):
 
 class AccountState(enum.Enum):
     ACTIVE = "ACTIVE"
+    ANONYMIZED = "ANONYMIZED"
     INACTIVE = "INACTIVE"
     SUSPENDED = "SUSPENDED"
     SUSPENDED_UPON_USER_REQUEST = "SUSPENDED_UPON_USER_REQUEST"
@@ -523,6 +524,9 @@ class User(PcObject, Base, Model, NeedsValidationMixin, DeactivableMixin):
     @property
     def account_state(self) -> AccountState:
         import pcapi.core.history.models as history_models
+
+        if UserRole.ANONYMIZED in self.roles:
+            return AccountState.ANONYMIZED
 
         if self.isActive:
             return AccountState.ACTIVE

@@ -37,6 +37,7 @@ def test_public_api(client):
                     "description": "An enumeration.",
                     "enum": [
                         "ACTIVE",
+                        "ANONYMIZED",
                         "INACTIVE",
                         "SUSPENDED",
                         "SUSPENDED_UPON_USER_REQUEST",

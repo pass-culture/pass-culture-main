@@ -378,15 +378,15 @@ class UserFactory(BaseFactory):
         age = 40
 
     email = factory.Sequence("jean.neige{}@example.com".format)
-    address = factory.Sequence("{} place des noces rouges".format)
-    city = "La Rochelle"
+    address: str | None = factory.Sequence("{} place des noces rouges".format)
+    city: str | None = "La Rochelle"
     dateOfBirth = LazyAttribute(lambda o: date.today() - relativedelta(years=o.age))
     firstName = "Jean"
     lastName = "Neige"
     isEmailValidated = True
     roles: list[models.UserRole] = []
     hasSeenProTutorials = True
-    postalCode = factory.Faker("postcode")
+    postalCode: str | None = factory.Faker("postcode")
 
     @classmethod
     def _create(
@@ -413,6 +413,18 @@ class UserFactory(BaseFactory):
         instance = super()._build(model_class, *args, **kwargs)
         instance.clearTextPassword = settings.TEST_DEFAULT_PASSWORD
         return instance
+
+
+class AnonymizedUserFactory(UserFactory):
+    roles = [models.UserRole.ANONYMIZED]
+    email = factory.Sequence("anonymous_{}@anonymized.passculture".format)
+    address = None
+    city = None
+    postalCode = None
+    dateOfBirth = LazyAttribute(lambda o: date(day=1, month=1, year=2023 - o.age))
+    factory.Sequence("Anonymous_{}".format)
+    firstName = factory.Sequence("Anonymous_{}".format)
+    lastName = factory.Sequence("Anonymous_{}".format)
 
 
 class BeneficiaryImportStatusFactory(BaseFactory):
