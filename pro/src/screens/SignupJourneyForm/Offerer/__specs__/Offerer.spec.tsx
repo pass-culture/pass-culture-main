@@ -29,7 +29,7 @@ vi.spyOn(sirenApiValidate, 'default').mockResolvedValue(undefined)
 // Appel fait dans apiAdresse.getDataFromAddress
 vi.mock('apiClient/adresse', () => ({
   apiAdresse: {
-    getDataFromAddress: () =>
+    getDataFromAddressParts: () =>
       Promise.resolve([
         {
           address: 'name',

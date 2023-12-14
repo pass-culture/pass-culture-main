@@ -19,22 +19,47 @@ const handleApiError = async (
   return (await response.json()) as AdresseApiJson
 }
 
+function formatAdressApiResponse(response: AdresseApiJson) {
+  return response.features.map((f) => ({
+    address: f.properties.name,
+    city: f.properties.city,
+    id: f.properties.id,
+    latitude: f.geometry.coordinates[1],
+    longitude: f.geometry.coordinates[0],
+    label: f.properties.label,
+    postalCode: f.properties.postcode,
+  }))
+}
+
 export default {
-  getDataFromAddress: async (
-    address: string,
+  getDataFromAddressParts: async (
+    street: string,
+    city: string,
+    postalCode: string,
     limit = 5
   ): Promise<Array<AdresseData>> => {
-    const url = `${API_ADRESSE_BASE_URL}/search/?limit=${limit}&q=${address}`
+    const url = `${API_ADRESSE_BASE_URL}/search/?limit=${limit}&q=${street} ${city} ${postalCode}`
     const response = await handleApiError(await fetch(url), 'GET', url)
 
-    return response.features.map((f) => ({
-      address: f.properties.name,
-      city: f.properties.city,
-      id: f.properties.id,
-      latitude: f.geometry.coordinates[1],
-      longitude: f.geometry.coordinates[0],
-      label: f.properties.label,
-      postalCode: f.properties.postcode,
-    }))
+    if (response.features.length > 0) {
+      return formatAdressApiResponse(response)
+    } else {
+      if (city !== null && postalCode !== null) {
+        const url = `${API_ADRESSE_BASE_URL}/search/?q=${city}&postcode=${postalCode}&type=municipality&autocomplete=0&limit=1`
+        const response = await handleApiError(await fetch(url), 'GET', url)
+        return formatAdressApiResponse(response)
+      } else {
+        return []
+      }
+    }
+  },
+  getDataFromAddress: async (
+    adress: string,
+    limit = 5
+  ): Promise<Array<AdresseData>> => {
+    const url = `${API_ADRESSE_BASE_URL}/search/?limit=${limit}&q=${adress}`
+    const response = await handleApiError(await fetch(url), 'GET', url)
+
+    return formatAdressApiResponse(response)
   },
 }
