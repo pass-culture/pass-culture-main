@@ -6,6 +6,8 @@ import { Navigate } from 'react-router-dom'
 
 import { UNAVAILABLE_ERROR_PAGE } from 'utils/routes'
 
+import { routesIndividualOfferWizard } from './subroutesIndividualOfferWizardMap'
+
 interface RouteMeta {
   public?: boolean
 }
@@ -18,6 +20,7 @@ export interface RouteConfig {
   lazy?: any
   meta?: RouteMeta
   featureName?: string
+  children?: RouteConfig[]
 }
 
 const routes: RouteConfig[] = [
@@ -239,8 +242,9 @@ const routes: RouteConfig[] = [
   },
   {
     lazy: () => import('pages/IndividualOfferWizard/IndividualOfferWizard'),
-    path: '/offre/individuelle/:offerId/*',
+    path: '/offre/individuelle/:offerId',
     title: 'Offre étape par étape',
+    children: routesIndividualOfferWizard,
   },
   {
     lazy: () => import('pages/Reimbursements/Reimbursements'),

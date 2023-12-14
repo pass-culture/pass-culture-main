@@ -15,6 +15,7 @@ import {
 import { ApiRequestOptions } from 'apiClient/v1/core/ApiRequestOptions'
 import { ApiResult } from 'apiClient/v1/core/ApiResult'
 import { ApiError } from 'apiClient/v2'
+import { routesIndividualOfferWizard } from 'app/AppRouter/subroutesIndividualOfferWizardMap'
 import { OFFER_WIZARD_STEP_IDS } from 'components/IndividualOfferNavigation/constants'
 import Notification from 'components/Notification/Notification'
 import { CATEGORY_STATUS, OFFER_WIZARD_MODE } from 'core/Offers/constants'
@@ -45,9 +46,13 @@ const renderIndividualOfferWizardRoute = (
     <>
       <Routes>
         <Route
-          path="offre/individuelle/:offerId/*"
+          path="offre/individuelle/:offerId"
           element={<IndividualOfferWizard />}
-        />
+        >
+          {routesIndividualOfferWizard.map((route) => (
+            <Route key={route.path} path={route.path} element={route.element} />
+          ))}
+        </Route>
         <Route path="/accueil" element={<>Home Page</>} />
       </Routes>
       <Notification />
