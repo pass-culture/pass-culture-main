@@ -35,6 +35,7 @@ import pcapi.core.history.models as history_models
 import pcapi.core.mails.transactional as transactional_mails
 import pcapi.core.offerers.api as offerers_api
 import pcapi.core.offerers.models as offerers_models
+import pcapi.core.offers.models as offers_models
 from pcapi.core.permissions import models as perm_models
 import pcapi.core.subscription.phone_validation.exceptions as phone_validation_exceptions
 import pcapi.core.users.constants as users_constants
@@ -392,14 +393,18 @@ def check_can_unsuspend(user: models.User) -> None:
 
 
 def suspend_account(
-    user: models.User, reason: constants.SuspensionReason, actor: models.User | None, comment: str | None = None
+    user: models.User,
+    reason: constants.SuspensionReason,
+    actor: models.User | None,
+    comment: str | None = None,
+    is_backoffice_action: bool = False,
 ) -> dict[str, int]:
     """
     Suspend a user's account:
         * mark as inactive;
         * mark as suspended (suspension history);
         * remove its admin role if any;
-        * cancel its bookings;
+        * cancel its bookings if needed;
 
     Notes:
         * `actor` can be None if and only if this function is called
@@ -407,7 +412,6 @@ def suspend_account(
         * a user who suspends his account should be able to connect to
         the application in order to access to some restricted actions.
     """
-    import pcapi.core.bookings.api as bookings_api  # avoid import loop
 
     with transaction():
         user.isActive = False
@@ -430,23 +434,11 @@ def suspend_account(
         if user.backoffice_profile:
             user.backoffice_profile.roles = []
 
-    n_bookings = 0
-
-    # Cancel all bookings of the related offerer if the suspended
-    # account was the last active offerer's account.
-    if reason in (constants.SuspensionReason.FRAUD_SUSPICION, constants.SuspensionReason.BLACKLISTED_DOMAIN_NAME):
-        for user_offerer in user.UserOfferers:
-            offerer = user_offerer.offerer
-            if any(user_of.user.isActive and user_of.user != user for user_of in offerer.UserOfferers):
-                continue
-            bookings = bookings_repository.find_cancellable_bookings_by_offerer(offerer.id)
-            for booking in bookings:
-                bookings_api.cancel_booking_for_fraud(booking)
-                n_bookings += 1
-    elif reason == constants.SuspensionReason.SUSPICIOUS_LOGIN_REPORTED_BY_USER:
+    if reason == constants.SuspensionReason.SUSPICIOUS_LOGIN_REPORTED_BY_USER:
         update_user_password(user, random_password())
 
-    n_bookings += _cancel_bookings_of_user_on_requested_account_suspension(user, reason)
+    n_bookings = _cancel_bookings_from_user_on_requested_account_suspension(user, reason)
+    n_bookings += _cancel_bookings_of_user_on_requested_account_suspension(user, reason, is_backoffice_action)
 
     logger.info(
         "Account has been suspended",
@@ -460,30 +452,89 @@ def suspend_account(
     return {"cancelled_bookings": n_bookings}
 
 
+_USER_REQUESTED_REASONS = {
+    constants.SuspensionReason.UPON_USER_REQUEST,
+    constants.SuspensionReason.SUSPICIOUS_LOGIN_REPORTED_BY_USER,
+}
+
+_AUTO_REQUESTED_REASONS = {
+    constants.SuspensionReason.FRAUD_SUSPICION,
+    constants.SuspensionReason.BLACKLISTED_DOMAIN_NAME,
+}
+
+_NON_BO_REASONS_WHICH_CANCEL_ALL_BOOKINGS = _USER_REQUESTED_REASONS | _AUTO_REQUESTED_REASONS
+
+_BACKOFFICE_REASONS_WHICH_CANCEL_ALL_BOOKINGS = {
+    constants.SuspensionReason.FRAUD_RESELL_PRODUCT,
+    constants.SuspensionReason.FRAUD_RESELL_PASS,
+}
+
+_BACKOFFICE_REASONS_WHICH_CANCEL_NON_EVENTS = {
+    constants.SuspensionReason.FRAUD_HACK,
+    constants.SuspensionReason.SUSPICIOUS_LOGIN_REPORTED_BY_USER,
+    constants.SuspensionReason.UPON_USER_REQUEST,
+}
+
+
 def _cancel_bookings_of_user_on_requested_account_suspension(
-    user: users_models.User, reason: constants.SuspensionReason
+    user: users_models.User,
+    reason: constants.SuspensionReason,
+    is_backoffice_action: bool,
 ) -> int:
     import pcapi.core.bookings.api as bookings_api
 
-    bookings_to_cancel = bookings_models.Booking.query.filter(
+    bookings_query = bookings_models.Booking.query.filter(
         bookings_models.Booking.userId == user.id,
         bookings_models.Booking.status == bookings_models.BookingStatus.CONFIRMED,
-        sa.or_(
-            datetime.datetime.utcnow() < bookings_models.Booking.cancellationLimitDate,
-            bookings_models.Booking.cancellationLimitDate.is_(None),
-        ),
-    ).all()
+    )
+
+    if (is_backoffice_action and reason in _BACKOFFICE_REASONS_WHICH_CANCEL_ALL_BOOKINGS) or (
+        not is_backoffice_action and reason in _NON_BO_REASONS_WHICH_CANCEL_ALL_BOOKINGS
+    ):
+        bookings_query = bookings_query.filter(
+            sa.or_(
+                datetime.datetime.utcnow() < bookings_models.Booking.cancellationLimitDate,
+                bookings_models.Booking.cancellationLimitDate.is_(None),
+            ),
+        )
+    elif is_backoffice_action and reason in _BACKOFFICE_REASONS_WHICH_CANCEL_NON_EVENTS:
+        bookings_query = (
+            bookings_query.join(bookings_models.Booking.stock)
+            .join(offers_models.Stock.offer)
+            .filter(sa.func.not_(offers_models.Offer.isEvent))
+        )
+    else:
+        return 0
 
     cancelled_bookings_count = 0
 
-    for booking in bookings_to_cancel:
-        match reason:
-            case constants.SuspensionReason.FRAUD_SUSPICION | constants.SuspensionReason.BLACKLISTED_DOMAIN_NAME:
-                bookings_api.cancel_booking_for_fraud(booking)
-                cancelled_bookings_count += 1
+    for booking in bookings_query.all():
+        if not is_backoffice_action and reason in _USER_REQUESTED_REASONS:
+            bookings_api.cancel_booking_on_user_requested_account_suspension(booking)
+        else:
+            bookings_api.cancel_booking_for_fraud(booking)
+        cancelled_bookings_count += 1
 
-            case constants.SuspensionReason.UPON_USER_REQUEST | constants.SuspensionReason.SUSPICIOUS_LOGIN_REPORTED_BY_USER:
-                bookings_api.cancel_booking_on_user_requested_account_suspension(booking)
+    return cancelled_bookings_count
+
+
+def _cancel_bookings_from_user_on_requested_account_suspension(
+    user: users_models.User,
+    reason: constants.SuspensionReason,
+) -> int:
+    import pcapi.core.bookings.api as bookings_api
+
+    # Cancel all bookings of the related offerer if the suspended
+    # account was the last active offerer's account.
+    cancelled_bookings_count = 0
+    if reason in (constants.SuspensionReason.FRAUD_SUSPICION, constants.SuspensionReason.BLACKLISTED_DOMAIN_NAME):
+        for user_offerer in user.UserOfferers:
+            offerer = user_offerer.offerer
+            if any(user_of.user.isActive and user_of.user != user for user_of in offerer.UserOfferers):
+                continue
+            bookings = bookings_repository.find_cancellable_bookings_by_offerer(offerer.id)
+            for booking in bookings:
+                bookings_api.cancel_booking_for_fraud(booking)
                 cancelled_bookings_count += 1
 
     return cancelled_bookings_count
