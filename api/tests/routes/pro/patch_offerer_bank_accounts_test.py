@@ -589,3 +589,30 @@ class OffererPatchBankAccountsTest:
         assert len(response.json["bankAccounts"]) == 1
         bank_account_response = response.json["bankAccounts"].pop()
         assert not bank_account_response["linkedVenues"]
+
+    @pytest.mark.usefixtures("db_session")
+    def test_cannot_link_venue_to_multiple_bank_accounts_at_same_time(self, db_session, client):
+        offerer = offerers_factories.OffererFactory()
+        pro_user = users_factories.ProFactory()
+        offerers_factories.UserOffererFactory(user=pro_user, offerer=offerer)
+        first_bank_account = finance_factories.BankAccountFactory(offerer=offerer)
+        second_bank_account = finance_factories.BankAccountFactory(offerer=offerer)
+        venue = offerers_factories.VenueFactory(managingOfferer=offerer, pricing_point="self")
+        offerers_factories.VenueBankAccountLinkFactory(venue=venue, bankAccount=first_bank_account)
+
+        assert venue.current_bank_account_link.bankAccountId == first_bank_account.id
+
+        http_client = client.with_session_auth(pro_user.email)
+
+        response = http_client.patch(
+            f"/offerers/{offerer.id}/bank-accounts/{second_bank_account.id}",
+            json={"venues_ids": [venue.id]},
+        )
+
+        assert response.status_code == 400
+        assert response.json == {
+            "code": "VENUE_ALREADY_LINKED_TO_ANOTHER_BANK_ACCOUNT",
+            "message": f"At least one venue ({venue.id},) is already linked to another bank account",
+        }
+        assert len(venue.bankAccountLinks) == 1
+        assert venue.current_bank_account_link.bankAccountId == first_bank_account.id
