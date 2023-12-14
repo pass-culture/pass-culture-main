@@ -7,6 +7,7 @@ import { Navigate } from 'react-router-dom'
 import { UNAVAILABLE_ERROR_PAGE } from 'utils/routes'
 
 import { routesIndividualOfferWizard } from './subroutesIndividualOfferWizardMap'
+import { routesSignup } from './subroutesSignupMap'
 
 interface RouteMeta {
   public?: boolean
@@ -35,9 +36,10 @@ const routes: RouteConfig[] = [
   },
   {
     lazy: () => import('pages/Signup/Signup'),
-    path: '/inscription/*',
+    path: '/inscription',
     title: 'Créer un compte',
     meta: { public: true },
+    children: routesSignup,
   },
   {
     lazy: () => import('pages/CsvTable/CsvTable'),
