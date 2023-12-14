@@ -210,7 +210,7 @@ describe('screens:StocksThing', () => {
     await screen.findByTestId('stock-thing-form')
 
     // userEvent.dblClick to fix @reach/menu-button update, to delete after refactor
-    await userEvent.dblClick(screen.getByText('Supprimer le stock'))
+    await userEvent.dblClick(await screen.findByText('Supprimer le stock'))
     expect(
       screen.getByText('Voulez-vous supprimer ce stock ?')
     ).toBeInTheDocument()
