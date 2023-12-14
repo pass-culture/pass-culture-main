@@ -1,8 +1,7 @@
 import React from 'react'
-import { Route, Routes } from 'react-router-dom'
+import { Outlet } from 'react-router-dom'
 
 import { AppLayout } from 'app/AppLayout'
-import { routesSignup } from 'app/AppRouter/subroutesSignupMap'
 import SkipLinks from 'components/SkipLinks'
 import useActiveFeature from 'hooks/useActiveFeature'
 import logoPassCultureProFullIcon from 'icons/logo-pass-culture-pro-full.svg'
@@ -31,15 +30,7 @@ export const Signup = () => {
         </header>
 
         <AppLayout fullscreen pageName="sign-up">
-          {isProAccountCreationEnabled ? (
-            <Routes>
-              {routesSignup.map(({ path, element }) => (
-                <Route key={path} path={path} element={element} />
-              ))}
-            </Routes>
-          ) : (
-            <SignupUnavailable />
-          )}
+          {isProAccountCreationEnabled ? <Outlet /> : <SignupUnavailable />}
         </AppLayout>
       </div>
     </>

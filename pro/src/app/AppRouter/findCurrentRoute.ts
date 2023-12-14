@@ -3,13 +3,13 @@ import { matchPath, Location } from 'react-router-dom'
 import routes, { RouteConfig } from 'app/AppRouter/routesMap'
 import { routesIndividualOfferWizard } from 'app/AppRouter/subroutesIndividualOfferWizardMap'
 import routesSignupJourneyDefinitions from 'app/AppRouter/subroutesSignupJourneyMap'
-import routesSignupDefinitions from 'app/AppRouter/subroutesSignupMap'
+import { routesSignup } from 'app/AppRouter/subroutesSignupMap'
 
 export const findCurrentRoute = (location: Location): RouteConfig | undefined =>
   [
     ...routes,
     ...routesIndividualOfferWizard,
-    ...routesSignupDefinitions,
+    ...routesSignup,
     ...routesSignupJourneyDefinitions,
   ]
     // This reverse is here so that subroutes (e.g. /inscription/confirmation)
