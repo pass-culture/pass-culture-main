@@ -30,7 +30,7 @@ vi.mock('apiClient/adresse', async () => {
   return {
     ...((await vi.importActual('apiClient/adresse')) ?? {}),
     default: {
-      getDataFromAddress: vi.fn(),
+      getDataFromAddressParts: vi.fn(),
     },
   }
 })
@@ -106,7 +106,9 @@ describe('components | Informations', () => {
       ape_code: '95.07A',
       legal_category_code: '1000',
     })
-    vi.spyOn(apiAdresse, 'getDataFromAddress').mockResolvedValue(mockAdressData)
+    vi.spyOn(apiAdresse, 'getDataFromAddressParts').mockResolvedValue(
+      mockAdressData
+    )
 
     const { buttonSubmit } = renderInformations({
       initialValues,
