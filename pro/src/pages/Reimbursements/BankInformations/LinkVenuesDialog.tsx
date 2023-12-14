@@ -113,6 +113,7 @@ const LinkVenuesDialog = ({
       )
     }
   }
+
   const venuesForPricingPoint = managedVenues.filter((x) => Boolean(x.siret))
   const hasVenuesWithoutPricingPoint = managedVenues.some(
     (venue) => !venue.hasPricingPoint
@@ -182,7 +183,11 @@ const LinkVenuesDialog = ({
                     className={styles['dialog-checkbox-container']}
                   >
                     <BaseCheckbox
-                      disabled={!venue.hasPricingPoint}
+                      disabled={
+                        (Boolean(venue.bankAccountId) &&
+                          venue.bankAccountId !== selectedBankAccount.id) ||
+                        !venue.hasPricingPoint
+                      }
                       label={venue.commonName}
                       name={venue.id.toString()}
                       value={venue.id}
