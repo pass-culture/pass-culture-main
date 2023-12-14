@@ -189,6 +189,12 @@ const BankInformations = (): JSX.Element => {
                   )
                 }}
                 managedVenues={selectedOffererBankAccounts.managedVenues}
+                hasWarning={
+                  (selectedOfferer &&
+                    selectedOfferer?.venuesWithNonFreeOffersWithoutBankAccounts
+                      .length > 0) ??
+                  false
+                }
               />
             ))}
           </div>
