@@ -8,6 +8,7 @@ import {
   OfferStatus,
   SubcategoryIdEnum,
 } from 'apiClient/v1'
+import { routesIndividualOfferWizard } from 'app/AppRouter/subroutesIndividualOfferWizardMap'
 import { OFFER_WIZARD_STEP_IDS } from 'components/IndividualOfferNavigation/constants'
 import { CATEGORY_STATUS, OFFER_WIZARD_MODE } from 'core/Offers/constants'
 import { getIndividualOfferPath } from 'core/Offers/utils/getIndividualOfferUrl'
@@ -35,9 +36,13 @@ const renderIndividualOfferWizardRoute = (
   renderWithProviders(
     <Routes>
       <Route
-        path="offre/individuelle/:offerId/*"
+        path="offre/individuelle/:offerId"
         element={<IndividualOfferWizard />}
-      />
+      >
+        {routesIndividualOfferWizard.map((route) => (
+          <Route key={route.path} path={route.path} element={route.element} />
+        ))}
+      </Route>
     </Routes>,
     {
       storeOverrides,

@@ -1,14 +1,14 @@
 import { matchPath, Location } from 'react-router-dom'
 
 import routes, { RouteConfig } from 'app/AppRouter/routesMap'
-import routesIndividualOfferWizardDefinitions from 'app/AppRouter/subroutesIndividualOfferWizardMap'
+import { routesIndividualOfferWizard } from 'app/AppRouter/subroutesIndividualOfferWizardMap'
 import routesSignupJourneyDefinitions from 'app/AppRouter/subroutesSignupJourneyMap'
 import routesSignupDefinitions from 'app/AppRouter/subroutesSignupMap'
 
 export const findCurrentRoute = (location: Location): RouteConfig | undefined =>
   [
     ...routes,
-    ...routesIndividualOfferWizardDefinitions,
+    ...routesIndividualOfferWizard,
     ...routesSignupDefinitions,
     ...routesSignupJourneyDefinitions,
   ]
