@@ -1,3 +1,4 @@
+import { OFFER_WIZARD_MODE } from 'core/Offers/constants'
 import { getYupValidationSchemaErrors } from 'utils/yupValidationTestHelpers'
 
 import { stockThingFactory } from '../stockThingFactory'
@@ -41,7 +42,7 @@ describe('validationSchema', () => {
   cases.forEach(({ description, formValues, expectedErrors, minQuantity }) => {
     it(`should validate the form for case: ${description}`, async () => {
       const errors = await getYupValidationSchemaErrors(
-        getValidationSchema(minQuantity),
+        getValidationSchema(OFFER_WIZARD_MODE.CREATION, minQuantity),
         formValues
       )
       expect(errors).toEqual(expectedErrors)
