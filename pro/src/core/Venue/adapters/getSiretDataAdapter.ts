@@ -65,8 +65,12 @@ const getSiretDataAdapter: GetSiretDataAdapter = async (humanSiret: string) => {
       }
     }
     const { street, city, postalCode } = response.address
-    const address = `${street} ${city} ${postalCode}`
-    const addressData = await apiAdresse.getDataFromAddress(address, 1)
+    const addressData = await apiAdresse.getDataFromAddressParts(
+      street,
+      city,
+      postalCode,
+      1
+    )
     /* istanbul ignore next: DEBT, TO FIX */
     if (addressData.length == 0) {
       return {
