@@ -133,7 +133,7 @@ const StocksThing = ({ offer }: StocksThingProps): JSX.Element => {
   const formik = useFormik({
     initialValues: buildInitialValues(offer, []),
     onSubmit,
-    validationSchema: getValidationSchema(minQuantity),
+    validationSchema: getValidationSchema(mode, minQuantity),
   })
 
   useNotifyFormError({
@@ -315,6 +315,7 @@ const StocksThing = ({ offer }: StocksThingProps): JSX.Element => {
             links={links}
             isBanner
           />
+
           <form onSubmit={formik.handleSubmit} data-testid="stock-thing-form">
             <div className={styles['stock-form-row']}>
               <div className={styles['stock-form']}>
@@ -436,6 +437,7 @@ const StocksThing = ({ offer }: StocksThingProps): JSX.Element => {
           </FormLayout.Section>
         </FormLayout>
       )}
+
       <RouteLeavingGuardIndividualOffer
         when={formik.dirty && !formik.isSubmitting}
       />

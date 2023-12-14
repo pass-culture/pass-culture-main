@@ -1,8 +1,11 @@
 import * as yup from 'yup'
 
+import { OFFER_WIZARD_MODE } from 'core/Offers/constants'
+
 export const MAX_STOCKS_QUANTITY = 1000000
 
 export const getValidationSchema = (
+  mode: OFFER_WIZARD_MODE,
   /* istanbul ignore next: DEBT, TO FIX */
   minQuantity: number | null = null
 ) => {
@@ -33,5 +36,11 @@ export const getValidationSchema = (
     )
   }
 
-  return yup.object().shape(validationSchema)
+  return yup.object().when('stockId', {
+    // Do not validate if there is no stock in edition
+    // (so you can delete the last stock of a published offer)
+    is: (stockId: string | undefined) =>
+      mode === OFFER_WIZARD_MODE.CREATION || stockId !== undefined,
+    then: (schema) => schema.shape(validationSchema),
+  })
 }
