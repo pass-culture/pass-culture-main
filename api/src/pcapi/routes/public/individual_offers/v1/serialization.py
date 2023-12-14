@@ -262,6 +262,14 @@ def serialize_extra_data(offer: offers_models.Offer) -> CategoryRelatedFields:
 
     # Convert musicSubType (resp showSubType) code to musicType slug (resp showType slug)
     music_sub_type = serialized_data.pop(subcategories.ExtraDataFieldEnum.MUSIC_SUB_TYPE.value, None)
+
+    # fixme (mageoffray, 2023-12-14): some historical offers have no musicSubType and only musicType.
+    # We should migrate our musicType|musicSubType to titelive music types. This migration will include
+    # offers without musicSubType
+    music_type = serialized_data.pop(subcategories.ExtraDataFieldEnum.MUSIC_TYPE.value, None)
+    if music_type and not music_sub_type:
+        music_sub_type = "-1"  # Use 'Other' when not filled
+
     show_sub_type = serialized_data.pop(subcategories.ExtraDataFieldEnum.SHOW_SUB_TYPE.value, None)
     if music_sub_type:
         serialized_data["musicType"] = MusicTypeEnum(music_types.MUSIC_SUB_TYPES_BY_CODE[int(music_sub_type)].slug)
@@ -288,7 +296,6 @@ def deserialize_extra_data(
             extra_data["showType"] = str(show_types.SHOW_TYPES_BY_SLUG[field_value].code)
         else:
             extra_data[field_name] = field_value
-
     return extra_data
 
 
