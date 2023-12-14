@@ -2265,7 +2265,11 @@ def update_bank_account_venues_links(
         )
 
     managed_venues_ids = {venue.id for venue in venues if venue.current_pricing_point_link}
-    current_links_by_venue_id = {link.venueId: link for link in bank_account.venueLinks}
+    current_links_by_venue_id = {
+        venue.id: venue.current_bank_account_link
+        for venue in venues
+        if venue.current_bank_account_link and venue.current_bank_account_link.bankAccountId == bank_account.id
+    }
 
     venues_already_linked = set(current_links_by_venue_id.keys())
     venues_links_to_create = venues_ids.difference(venues_already_linked)
