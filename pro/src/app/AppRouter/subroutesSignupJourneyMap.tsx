@@ -15,46 +15,37 @@ import type { RouteConfig } from './routesMap'
 export const routesSignupJourney: RouteConfig[] = [
   {
     element: <Welcome />,
-    parentPath: '/parcours-inscription',
-    path: '/',
+    path: '/parcours-inscription',
     title: 'Parcours d’inscription',
   },
   {
     element: <Offerer />,
-    parentPath: '/parcours-inscription',
-    path: '/structure',
+    path: '/parcours-inscription/structure',
     title: 'Structure - Parcours d’inscription',
   },
   {
     element: <SignupJourneyOfferers />,
-    parentPath: '/parcours-inscription',
-    path: '/structure/rattachement',
+    path: '/parcours-inscription/structure/rattachement',
     title: 'Rattachement à une structure - Parcours d’inscription',
   },
   {
     element: <ConfirmedAttachment />,
-    parentPath: '/parcours-inscription',
-    path: '/structure/rattachement/confirmation',
+    path: '/parcours-inscription/structure/rattachement/confirmation',
     title: 'Confirmation rattachement à une structure - Parcours d’inscription',
   },
   {
     element: <OffererAuthentication />,
-    parentPath: '/parcours-inscription',
-    path: '/identification',
+    path: '/parcours-inscription/identification',
     title: 'Identification - Parcours d’inscription',
   },
   {
     element: <Activity />,
-    parentPath: '/parcours-inscription',
-    path: '/activite',
+    path: '/parcours-inscription/activite',
     title: 'Activité - Parcours d’inscription',
   },
   {
     element: <Validation />,
-    parentPath: '/parcours-inscription',
-    path: '/validation',
+    path: '/parcours-inscription/validation',
     title: 'Validation - Parcours d’inscription',
   },
 ]
-
-export default routesSignupJourney

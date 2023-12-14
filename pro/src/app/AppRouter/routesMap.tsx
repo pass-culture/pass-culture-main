@@ -7,6 +7,7 @@ import { Navigate } from 'react-router-dom'
 import { UNAVAILABLE_ERROR_PAGE } from 'utils/routes'
 
 import { routesIndividualOfferWizard } from './subroutesIndividualOfferWizardMap'
+import { routesSignupJourney } from './subroutesSignupJourneyMap'
 import { routesSignup } from './subroutesSignupMap'
 
 interface RouteMeta {
@@ -266,8 +267,9 @@ const routes: RouteConfig[] = [
   },
   {
     lazy: () => import('pages/SignupJourneyRoutes/SignupJourneyRoutes'),
-    path: '/parcours-inscription/*',
+    path: '/parcours-inscription',
     title: 'Parcours de souscription',
+    children: routesSignupJourney,
   },
 ]
 

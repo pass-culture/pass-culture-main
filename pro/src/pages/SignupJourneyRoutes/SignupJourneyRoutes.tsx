@@ -1,8 +1,7 @@
 import React, { useEffect } from 'react'
-import { Route, Routes, useLocation } from 'react-router-dom'
+import { Outlet, useLocation } from 'react-router-dom'
 
 import { AppLayout } from 'app/AppLayout'
-import { routesSignupJourney } from 'app/AppRouter/subroutesSignupJourneyMap'
 import { SignupJourneyFormLayout } from 'components/SignupJourneyFormLayout'
 import SkipLinks from 'components/SkipLinks'
 import { SignupJourneyContextProvider } from 'context/SignupJourneyContext'
@@ -68,11 +67,7 @@ export const SignupJourneyRoutes = () => {
       >
         <SignupJourneyContextProvider>
           <SignupJourneyFormLayout>
-            <Routes>
-              {routesSignupJourney.map(({ path, element }) => (
-                <Route key={path} path={path} element={element} />
-              ))}
-            </Routes>
+            <Outlet />
           </SignupJourneyFormLayout>
         </SignupJourneyContextProvider>
       </AppLayout>

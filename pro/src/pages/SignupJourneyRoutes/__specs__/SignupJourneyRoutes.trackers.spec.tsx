@@ -4,6 +4,7 @@ import React from 'react'
 import { Route, Routes } from 'react-router-dom'
 
 import { api } from 'apiClient/api'
+import { routesSignupJourney } from 'app/AppRouter/subroutesSignupJourneyMap'
 import { Events } from 'core/FirebaseEvents/constants'
 import * as useAnalytics from 'hooks/useAnalytics'
 import { renderWithProviders } from 'utils/renderWithProviders'
@@ -20,7 +21,11 @@ vi.mock('apiClient/api', () => ({
 const renderSignupJourneyRoutes = () => {
   renderWithProviders(
     <Routes>
-      <Route path="/parcours-inscription/*" element={<SignupJourneyRoutes />} />
+      <Route path="/parcours-inscription" element={<SignupJourneyRoutes />}>
+        {routesSignupJourney.map((route) => (
+          <Route key={route.path} path={route.path} element={route.element} />
+        ))}
+      </Route>
       <Route path="/connexion" element={<div>Connexion</div>} />
     </Routes>,
     {
