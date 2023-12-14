@@ -22,6 +22,7 @@ interface ReimbursementBankAccountProps {
   managedVenues: ManagedVenues[]
   onUpdateButtonClick?: (id: number) => void
   offererId?: number
+  hasWarning?: boolean
 }
 
 const ReimbursementBankAccount = ({
@@ -29,6 +30,7 @@ const ReimbursementBankAccount = ({
   onUpdateButtonClick,
   offererId,
   managedVenues,
+  hasWarning = false,
 }: ReimbursementBankAccountProps): JSX.Element => {
   const hasLinkedVenues = bankAccount.linkedVenues.length > 0
   const { logEvent } = useAnalytics()
@@ -84,7 +86,7 @@ const ReimbursementBankAccount = ({
         <div className={styles['linked-venues-section']}>
           <div className={styles['linked-venues-section-title']}>
             Lieu(x) rattaché(s) à ce compte bancaire
-            {(!hasLinkedVenues || venuesNotLinkedToBankAccount > 0) && (
+            {hasWarning && (
               <SvgIcon
                 src={fullErrorIcon}
                 alt="Une action est requise"
