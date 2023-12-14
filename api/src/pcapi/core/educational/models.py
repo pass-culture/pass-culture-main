@@ -955,6 +955,12 @@ class EducationalInstitution(PcObject, Base, Model):
         "CollectiveOfferRequest", back_populates="educationalInstitution"
     )
 
+    programs: list["EducationalInstitutionProgram"] = relationship(
+        "EducationalInstitutionProgram",
+        secondary="educational_institution_program_association",
+        back_populates="institutions",
+    )
+
     @property
     def full_name(self) -> str:
         return f"{self.institutionType} {self.name}".strip()
@@ -1542,3 +1548,31 @@ class InstitutionRuralLevel(enum.Enum):
     RURAL_SOUS_FAIBLE_INFLUENCE_D_UN_POLE = "rural sous faible influence d'un pôle"
     RURAL_AUTONOME_TRES_PEU_DENSE = "rural autonome très peu dense"
     RURAL_AUTONOME_PEU_DENSE = "rural autonome peu dense"
+
+
+class EducationalInstitutionProgramAssociation(Base, Model):
+    """Association model between EducationalInstitution and
+    EducationalInstitutionProgram (many-to-many)
+    """
+
+    institutionId: int = sa.Column(
+        sa.BigInteger, sa.ForeignKey("educational_institution.id", ondelete="CASCADE"), index=True, primary_key=True
+    )
+    programId: int = sa.Column(
+        sa.BigInteger,
+        sa.ForeignKey("educational_institution_program.id", ondelete="CASCADE"),
+        index=True,
+        primary_key=True,
+    )
+
+
+class EducationalInstitutionProgram(PcObject, Base, Model):
+    # technical name
+    name: str = sa.Column(sa.Text, nullable=False, unique=True)
+    # public (printable) name - if something different from name is needed
+    label: str | None = sa.Column(sa.Text, nullable=True)
+    description: str | None = sa.Column(sa.Text, nullable=True)
+
+    institutions: list["EducationalInstitution"] = relationship(
+        "EducationalInstitution", secondary="educational_institution_program_association", back_populates="programs"
+    )

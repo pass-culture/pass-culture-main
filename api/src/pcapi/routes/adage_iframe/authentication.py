@@ -15,12 +15,14 @@ from pcapi.routes.adage_iframe.serialization.adage_authentication import (
 from pcapi.routes.adage_iframe.serialization.adage_authentication import AdageFrontRoles
 from pcapi.routes.adage_iframe.serialization.adage_authentication import AuthenticatedInformation
 from pcapi.routes.adage_iframe.serialization.adage_authentication import AuthenticatedResponse
+from pcapi.routes.adage_iframe.serialization.adage_authentication import EducationalInstitutionProgramModel
 from pcapi.routes.adage_iframe.serialization.adage_authentication import get_offers_count
 from pcapi.routes.adage_iframe.serialization.redactor import RedactorPreferences
 from pcapi.serialization.decorator import spectree_serialize
 
 
 OptionalRedactor = educational_models.EducationalRedactor | None
+OptionalInstitution = educational_models.EducationalInstitution | None
 
 
 @blueprint.adage_iframe.route("/authenticate", methods=["GET"])
@@ -39,6 +41,7 @@ def authenticate(authenticated_information: AuthenticatedInformation) -> Authent
         institution_rural_level = typing.cast(
             educational_models.InstitutionRuralLevel | None, institution_api.get_institution_rural_level(institution)
         )
+        programs = _get_programs(institution)
 
         return AuthenticatedResponse(
             role=AdageFrontRoles.REDACTOR if institution else AdageFrontRoles.READONLY,
@@ -53,6 +56,7 @@ def authenticate(authenticated_information: AuthenticatedInformation) -> Authent
             favoritesCount=favorites_count,
             offersCount=offer_count,
             institution_rural_level=institution_rural_level,
+            programs=programs,
         )
     return AuthenticatedResponse(role=AdageFrontRoles.READONLY)
 
@@ -75,3 +79,9 @@ def _get_favorites_count(redactor: OptionalRedactor) -> int:
     if redactor:
         return educational_api_favorite.get_redactor_all_favorites_count(redactor.id)
     return 0
+
+
+def _get_programs(institution: OptionalInstitution) -> list:
+    if not institution:
+        return []
+    return [EducationalInstitutionProgramModel.from_orm(program) for program in institution.programs]

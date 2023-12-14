@@ -4,6 +4,7 @@
 /* eslint-disable */
 
 import type { AdageFrontRoles } from './AdageFrontRoles';
+import type { EducationalInstitutionProgramModel } from './EducationalInstitutionProgramModel';
 import type { InstitutionRuralLevel } from './InstitutionRuralLevel';
 import type { RedactorPreferences } from './RedactorPreferences';
 
@@ -18,6 +19,7 @@ export type AuthenticatedResponse = {
   lon?: number | null;
   offersCount?: number;
   preferences?: RedactorPreferences | null;
+  programs?: Array<EducationalInstitutionProgramModel>;
   role: AdageFrontRoles;
   uai?: string | null;
 };

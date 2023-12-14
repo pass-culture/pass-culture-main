@@ -9,6 +9,7 @@ from pcapi.core.educational.api.institution import get_educational_institution_d
 from pcapi.core.educational.factories import CollectiveOfferTemplateFactory
 from pcapi.core.educational.factories import CollectiveStockFactory
 from pcapi.core.educational.factories import EducationalInstitutionFactory
+from pcapi.core.educational.factories import EducationalInstitutionProgramFactory
 from pcapi.core.educational.factories import EducationalRedactorFactory
 from pcapi.core.testing import assert_num_queries
 
@@ -54,13 +55,18 @@ def expected_serialized_auth_base(redactor, institution):
         "favoritesCount": 0,
         "offersCount": 0,
         "institutionRuralLevel": None,
+        "programs": [],
     }
 
 
 class AuthenticateTest:
     def test_should_authenticate_redactor(self, client, valid_user):
         redactor = EducationalRedactorFactory(email=valid_user.get("mail"))
-        institution = EducationalInstitutionFactory(institutionId=DEFAULT_UAI)
+        program = EducationalInstitutionProgramFactory()
+        institution = EducationalInstitutionFactory(
+            institutionId=DEFAULT_UAI,
+            programs=[program],
+        )
 
         valid_encoded_token = self._create_adage_valid_token(valid_user, uai_code=DEFAULT_UAI)
 
@@ -74,6 +80,7 @@ class AuthenticateTest:
         assert response.json == {
             **expected_serialized_auth_base(redactor, institution),
             "institutionRuralLevel": DEFAULT_RURAL_LEVEL,
+            "programs": [{"name": program.name, "label": program.label, "description": program.description}],
         }
 
     def test_should_return_redactor_role_when_token_has_an_uai_code(self, client, valid_user) -> None:
@@ -149,6 +156,7 @@ class AuthenticateTest:
             "favoritesCount": 0,
             "offersCount": 0,
             "institutionRuralLevel": None,
+            "programs": [],
         }
 
     def test_should_return_error_response_when_jwt_invalid(self, client):
