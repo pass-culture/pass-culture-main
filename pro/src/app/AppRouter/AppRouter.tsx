@@ -5,7 +5,6 @@ import { createBrowserRouter, RouterProvider } from 'react-router-dom'
 
 import App from 'app/App/App'
 import routes from 'app/AppRouter/routesMap'
-import NotFound from 'pages/Errors/NotFound/NotFound'
 import { selectActiveFeatures } from 'store/features/selectors'
 
 const sentryCreateBrowserRouter =
@@ -22,7 +21,14 @@ const AppRouter = (): JSX.Element => {
     {
       path: '/',
       element: <App />,
-      children: [...activeRoutes, { path: '*', element: <NotFound /> }],
+      children: [
+        ...activeRoutes,
+        {
+          lazy: () => import('pages/Errors/NotFound/NotFound'),
+          path: '*',
+          title: 'Erreur 404 - Page indisponible',
+        },
+      ],
     },
   ])
 
