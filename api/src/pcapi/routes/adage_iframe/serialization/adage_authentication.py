@@ -1,6 +1,7 @@
 import enum
 import logging
 
+from pydantic.v1 import Field
 from pydantic.v1 import ValidationError
 import sqlalchemy as sa
 
@@ -30,6 +31,17 @@ class AuthenticatedInformation(BaseModel):
     lon: float | None
 
 
+class EducationalInstitutionProgramModel(BaseModel):
+    name: str
+    label: str | None
+    description: str | None
+
+    class Config:
+        orm_mode = True
+        alias_generator = to_camel
+        allow_population_by_field_name = True
+
+
 class AuthenticatedResponse(BaseModel):
     role: AdageFrontRoles
     uai: str | None = None
@@ -43,6 +55,7 @@ class AuthenticatedResponse(BaseModel):
     favoritesCount: int = 0
     offersCount: int = 0
     institution_rural_level: educational_models.InstitutionRuralLevel | None = None
+    programs: list[EducationalInstitutionProgramModel] = Field(default_factory=list)
 
     class Config:
         use_enum_values = True

@@ -30,6 +30,7 @@ export type { CollectiveRequestResponseModel } from './models/CollectiveRequestR
 export type { Coordinates } from './models/Coordinates';
 export { EacFormat } from './models/EacFormat';
 export type { EacFormatsResponseModel } from './models/EacFormatsResponseModel';
+export type { EducationalInstitutionProgramModel } from './models/EducationalInstitutionProgramModel';
 export type { EducationalInstitutionResponseModel } from './models/EducationalInstitutionResponseModel';
 export type { EducationalInstitutionWithBudgetResponseModel } from './models/EducationalInstitutionWithBudgetResponseModel';
 export type { EducationalRedactorResponseModel } from './models/EducationalRedactorResponseModel';
