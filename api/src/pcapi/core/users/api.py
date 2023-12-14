@@ -1520,7 +1520,6 @@ def anonymize_user(user: users_models.User, *, force: bool = False) -> None:
     user.externalIds = []
     user.idPieceNumber = None
     user.user_email_history = []
-    user.isActive = False
     user.irisFrance = iris
     user.validatedBirthDate = user.validatedBirthDate.replace(day=1, month=1) if user.validatedBirthDate else None
 

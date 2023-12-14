@@ -1853,7 +1853,6 @@ class AnonymizeNonProNonBeneficiaryUsersTest:
         assert user_to_anonymize.idPieceNumber == None
         assert user_to_anonymize.login_device_history == []
         assert user_to_anonymize.user_email_history == []
-        assert user_to_anonymize.isActive == False
         assert user_to_anonymize.irisFrance == iris
         assert user_to_anonymize.validatedBirthDate.day == 1
         assert user_to_anonymize.validatedBirthDate.month == 1
@@ -2049,7 +2048,6 @@ class AnonymizeBeneficiaryUsersTest:
             assert user_to_anonymize.idPieceNumber == None
             assert user_to_anonymize.login_device_history == []
             assert user_to_anonymize.user_email_history == []
-            assert user_to_anonymize.isActive == False
             assert user_to_anonymize.irisFrance == iris
             assert user_to_anonymize.validatedBirthDate.day == 1
             assert user_to_anonymize.validatedBirthDate.month == 1
