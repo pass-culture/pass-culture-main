@@ -125,7 +125,10 @@ class ProUserCreationBodyV2Model(BaseModel):
 class LoginUserBodyModel(BaseModel):
     identifier: str
     password: str
-    captchaToken: str
+    captcha_token: str | None = None
+
+    class Config:
+        alias_generator = to_camel
 
 
 class SharedLoginUserResponseModel(BaseModel):

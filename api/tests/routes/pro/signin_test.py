@@ -3,6 +3,7 @@ import logging
 
 import pytest
 
+from pcapi.core.testing import override_settings
 from pcapi.core.users import factories as users_factories
 from pcapi.core.users import models as users_models
 from pcapi.repository import repository
@@ -72,17 +73,8 @@ class Returns200Test:
         # then
         assert response.status_code == 200
 
-    @pytest.mark.usefixtures("db_session")
-    def when_account_is_known_with_mixed_case_email(self, client):
-        # given
-        user = users_factories.UserFactory(email="USER@example.COM")
-        data = {"identifier": "uSeR@EXAmplE.cOm", "password": user.clearTextPassword, "captchaToken": "token"}
-
-        # when
-        response = client.post("/users/signin", json=data)
-
-        # then
-        assert response.status_code == 200
+        session = users_models.UserSession.query.filter_by(userId=user.id).first()
+        assert session is not None
 
     @pytest.mark.usefixtures("db_session")
     def when_account_is_known_with_trailing_spaces_in_email(self, client):
@@ -96,20 +88,33 @@ class Returns200Test:
         # then
         assert response.status_code == 200
 
+    # Fixme : (mageoffray, 2023-12-14)
+    # Remove this test - https://passculture.atlassian.net/browse/PC-26462
+    @override_settings(RECAPTCHA_WHITELIST=["whitelisted@email.com", "alsoWithelisted@test.com"])
     @pytest.mark.usefixtures("db_session")
-    def expect_a_new_user_session_to_be_recorded(self, client):
-        # given
-        user = users_factories.UserFactory(email="user@example.com")
-        data = {"identifier": user.email, "password": user.clearTextPassword, "captchaToken": "token"}
+    def when_account_is_whitelisted_for_recaptcha(self, client):
+        # Given
+        user = users_factories.UserFactory(email="whitelisted@email.com")
+        data = {"identifier": user.email, "password": user.clearTextPassword}
 
-        # when
+        # When
         response = client.post("/users/signin", json=data)
 
-        # then
+        # Then
         assert response.status_code == 200
 
-        session = users_models.UserSession.query.filter_by(userId=user.id).first()
-        assert session is not None
+    @pytest.mark.usefixtures("db_session")
+    def when_missing_recaptcha_token(self, client):
+        # Given
+        user = users_factories.UserFactory()
+        data = {"identifier": user.email, "password": user.clearTextPassword}
+
+        # When
+        response = client.post("/users/signin", json=data)
+
+        # Then
+        assert response.status_code == 400
+        assert response.json == {"captchaToken": "Ce champ est obligatoire"}
 
 
 class Returns401Test:

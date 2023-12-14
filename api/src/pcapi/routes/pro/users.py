@@ -187,14 +187,19 @@ def post_change_password(body: users_serializers.ChangePasswordBodyModel) -> Non
 @ip_rate_limiter()
 @email_rate_limiter()
 def signin(body: users_serializers.LoginUserBodyModel) -> users_serializers.SharedLoginUserResponseModel:
-    try:
-        check_web_recaptcha_token(
-            body.captchaToken,
-            original_action="loginUser",
-            minimal_score=settings.RECAPTCHA_MINIMAL_SCORE,
-        )
-    except ReCaptchaException:
-        raise ApiErrors({"token": "The given token is invalid"})
+    # Fixme : (mageoffray, 2023-12-14)
+    # Remove this condition - https://passculture.atlassian.net/browse/PC-26462
+    if body.identifier not in settings.RECAPTCHA_WHITELIST:
+        if not body.captcha_token:
+            raise ApiErrors({"captchaToken": "Ce champ est obligatoire"})
+        try:
+            check_web_recaptcha_token(
+                body.captcha_token,
+                original_action="loginUser",
+                minimal_score=settings.RECAPTCHA_MINIMAL_SCORE,
+            )
+        except ReCaptchaException:
+            raise ApiErrors({"captchaToken": "The given token is invalid"})
 
     errors = ApiErrors()
     errors.status_code = 401
