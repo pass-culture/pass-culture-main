@@ -480,11 +480,12 @@ def create_domains() -> list[educational_models.EducationalDomain]:
         educational_factories.EducationalDomainFactory(name="Développement durable", id=10),
         educational_factories.EducationalDomainFactory(name="Univers du livre, de la lecture et des écritures", id=11),
         educational_factories.EducationalDomainFactory(name="Musique", id=12),
-        educational_factories.EducationalDomainFactory(name="Patrimoine, mémoire, archéologie", id=13),
+        educational_factories.EducationalDomainFactory(name="Patrimoine", id=13),
         educational_factories.EducationalDomainFactory(name="Photographie", id=14),
         educational_factories.EducationalDomainFactory(name="Théâtre, expression dramatique, marionnettes", id=15),
         educational_factories.EducationalDomainFactory(name="Bande dessinée", id=16),
         educational_factories.EducationalDomainFactory(name="Média et information", id=17),
+        educational_factories.EducationalDomainFactory(name="Mémoire", id=18),
     ]
 
 
