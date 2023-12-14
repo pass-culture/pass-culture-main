@@ -3,6 +3,9 @@ from pcapi.core.educational import models as educational_models
 
 
 def create_institutions() -> list[educational_models.EducationalInstitution]:
+    program = educational_factories.EducationalInstitutionProgramFactory(
+        name="marseille_en_grand", label="Marseille en grand"
+    )
     institutions = [
         educational_factories.EducationalInstitutionFactory(
             institutionId="0560071Y",
@@ -38,14 +41,18 @@ def create_institutions() -> list[educational_models.EducationalInstitution]:
             name="FRANCOIS MOISSON",
             city="MARSEILLE",
             postalCode="13002",
+            programs=[program],
         ),
         educational_factories.EducationalInstitutionFactory(
             institutionId="0130541T",
             institutionType="ECOLE ELEMENTAIRE PUBLIQUE",
             name="CANET AMBROSINI",
             city="MARSEILLE",
+            programs=[program],
             postalCode="13014",
         ),
+        # keep one school without the expected program to enable some
+        # tests
         educational_factories.EducationalInstitutionFactory(
             institutionId="0131251P",
             institutionType="ECOLE MATERNELLE PUBLIQUE",

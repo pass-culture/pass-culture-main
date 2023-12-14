@@ -321,3 +321,14 @@ class EducationalRedactorWithFavoriteCollectiveOffer(EducationalRedactorFactory)
 
 class EducationalRedactorWithFavoriteCollectiveOfferTemplate(EducationalRedactorFactory):
     favoriteCollectiveOfferTemplates = factory.List([factory.SubFactory(CollectiveOfferTemplateFactory)])
+
+
+class EducationalInstitutionProgramFactory(BaseFactory):
+    class Meta:
+        model = models.EducationalInstitutionProgram
+
+    # some programs are inserted by default.
+    # since the id sequence starts at 0, this will trigger a unique
+    # constraint error.
+    id = factory.Sequence(lambda n: n + 1_000)
+    name = factory.Sequence("Program {}".format)
