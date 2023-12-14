@@ -66,6 +66,9 @@ def signin(body: authentication.SigninRequest) -> authentication.SigninResponse:
     if user.account_state.is_deleted:
         raise ApiErrors({"code": "ACCOUNT_DELETED", "general": ["Le compte a été supprimé"]})
 
+    if user.account_state == user_models.AccountState.ANONYMIZED:
+        raise ApiErrors({"code": "ACCOUNT_ANONYMIZED", "general": ["Le compte a été anonymisé"]})
+
     if FeatureToggle.WIP_ENABLE_TRUSTED_DEVICE.is_active():
         users_api.save_device_info_and_notify_user(user, body.device_info)
 
@@ -243,6 +246,9 @@ def google_auth(body: authentication.GoogleSigninRequest) -> authentication.Sign
 
     if user.account_state.is_deleted:
         raise ApiErrors({"code": "ACCOUNT_DELETED", "general": ["Le compte a été supprimé"]})
+
+    if user.account_state == user_models.AccountState.ANONYMIZED:
+        raise ApiErrors({"code": "ACCOUNT_ANONYMIZED", "general": ["Le compte a été anonymisé"]})
 
     if not user.isValidated or not user.isEmailValidated or not google_user.email_verified:
         raise ApiErrors({"code": "EMAIL_NOT_VALIDATED", "general": ["L'email n'a pas été validé."]})
