@@ -29,13 +29,15 @@ def job(queue: Queue) -> typing.Callable:
 
             start = time.perf_counter()
             started_at = current_job.started_at or datetime.utcnow()
+            enqueued_at = current_job.enqueued_at
+            assert enqueued_at is not None  # help mypy
             logger.info(
                 "Started job %s",
                 func.__name__,
                 extra={
                     **job_extra_description(current_job),
                     "status": "started",
-                    "waiting_time": round(((started_at - current_job.enqueued_at).microseconds) / 1000),
+                    "waiting_time": round(((started_at - enqueued_at).microseconds) / 1000),
                 },
             )
 
