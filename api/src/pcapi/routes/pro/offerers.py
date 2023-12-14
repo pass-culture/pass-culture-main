@@ -12,6 +12,7 @@ from pcapi.connectors.big_query.queries.offerer_stats import DAILY_CONSULT_PER_O
 from pcapi.connectors.big_query.queries.offerer_stats import TOP_3_MOST_CONSULTED_OFFERS_LAST_30_DAYS_TABLE
 import pcapi.core.educational.exceptions as educational_exceptions
 import pcapi.core.finance.api as finance_api
+import pcapi.core.finance.exceptions as finance_exceptions
 import pcapi.core.finance.repository as finance_repository
 from pcapi.core.offerers import api
 from pcapi.core.offerers import repository
@@ -264,7 +265,10 @@ def link_venue_to_bank_account(
     bank_account = finance_repository.get_bank_account_with_current_venues_links(offerer_id, bank_account_id)
     if bank_account is None:
         raise ResourceNotFoundError()
-    finance_api.update_bank_account_venues_links(current_user, bank_account, body.venues_ids)
+    try:
+        finance_api.update_bank_account_venues_links(current_user, bank_account, body.venues_ids)
+    except finance_exceptions.VenueAlreadyLinkedToAnotherBankAccount as exc:
+        raise ApiErrors({"code": "VENUE_ALREADY_LINKED_TO_ANOTHER_BANK_ACCOUNT", "message": str(exc)}, status_code=400)
 
 
 @private_api.route("/offerers/<int:offerer_id>/stats", methods=["GET"])

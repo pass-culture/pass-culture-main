@@ -52,3 +52,7 @@ class FinanceIncidentAlreadyValidated(Exception):
 
 class NoInvoiceToGenerate(Exception):
     pass
+
+
+class VenueAlreadyLinkedToAnotherBankAccount(Exception):
+    pass

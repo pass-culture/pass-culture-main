@@ -2250,7 +2250,21 @@ def update_bank_account_venues_links(
     venues_ids: set[int],
 ) -> None:
     offerer = bank_account.offerer
-    managed_venues_ids = {venue.id for venue in offerer.managedVenues if venue.current_pricing_point_link}
+    venues = offerer.managedVenues
+
+    venues_linked_to_other_bank_account = {
+        venue.id
+        for venue in venues
+        if venue.id in venues_ids
+        and venue.current_bank_account_link
+        and venue.current_bank_account_link.bankAccountId != bank_account.id
+    }
+    if venues_linked_to_other_bank_account:
+        raise exceptions.VenueAlreadyLinkedToAnotherBankAccount(
+            f"At least one venue {*venues_linked_to_other_bank_account,} is already linked to another bank account"
+        )
+
+    managed_venues_ids = {venue.id for venue in venues if venue.current_pricing_point_link}
     current_links_by_venue_id = {link.venueId: link for link in bank_account.venueLinks}
 
     venues_already_linked = set(current_links_by_venue_id.keys())

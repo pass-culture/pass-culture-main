@@ -117,7 +117,6 @@ class GetBankAccountVenuesTest(GetEndpointHelper):
 
     def test_get_linked_venues(self, authenticated_client):
         bank_account = finance_factories.BankAccountFactory()
-        bank_account2 = finance_factories.BankAccountFactory()
 
         offerer = offerers_factories.OffererFactory()
         venue_1 = offerers_factories.VenueFactory(managingOfferer=offerer)
@@ -131,8 +130,6 @@ class GetBankAccountVenuesTest(GetEndpointHelper):
         offerers_factories.VenueBankAccountLinkFactory(
             venue=venue_2, bankAccount=bank_account, timespan=(link_venue2_date,)
         )
-
-        offerers_factories.VenueBankAccountLinkFactory(venue=venue_1, bankAccount=bank_account2)
 
         # Don't interfere
         other_offerer = offerers_factories.OffererFactory()

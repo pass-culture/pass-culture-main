@@ -817,7 +817,7 @@ class VenueBankAccountLink(PcObject, Base, Model):
 
     __table_args__ = (
         # For a given venue, there can only be one bank account at a time.
-        sa_psql.ExcludeConstraint(("venueId", "="), ("bankAccountId", "="), ("timespan", "&&")),
+        sa_psql.ExcludeConstraint(("venueId", "="), ("timespan", "&&")),
     )
 
     def __init__(self, **kwargs: typing.Any) -> None:
