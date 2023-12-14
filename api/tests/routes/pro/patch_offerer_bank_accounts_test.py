@@ -591,7 +591,7 @@ class OffererPatchBankAccountsTest:
         assert not bank_account_response["linkedVenues"]
 
     @pytest.mark.usefixtures("db_session")
-    def test_cannot_link_venue_to_multiple_bank_accounts_at_same_time(self, db_session, client):
+    def test_cannot_link_venue_to_multiple_bank_accounts_at_same_time(self, client):
         offerer = offerers_factories.OffererFactory()
         pro_user = users_factories.ProFactory()
         offerers_factories.UserOffererFactory(user=pro_user, offerer=offerer)
