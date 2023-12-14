@@ -4,7 +4,7 @@
 /* eslint-disable */
 
 export type LoginUserBodyModel = {
-  captchaToken: string;
+  captchaToken?: string | null;
   identifier: string;
   password: string;
 };
