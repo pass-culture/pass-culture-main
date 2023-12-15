@@ -1,4 +1,5 @@
 from base64 import b64decode
+from csv import DictReader
 import datetime
 from decimal import Decimal
 import logging
@@ -17,6 +18,7 @@ from pcapi.core.offers import models as offers_models
 from pcapi.core.providers import factories as providers_factories
 from pcapi.core.providers import models as providers_models
 from pcapi.core.providers.repository import get_provider_by_local_class
+from pcapi.core.testing import override_features
 from pcapi.local_providers.cinema_providers.ems.ems_stocks import EMSStocks
 from pcapi.local_providers.provider_manager import collect_elligible_venues_and_activate_ems_sync
 from pcapi.local_providers.provider_manager import synchronize_ems_venue_providers
@@ -640,3 +642,39 @@ class EMSSyncSitesTest:
         assert len(venue.cinemaProviderPivot) == 0
         job_mocked.assert_not_called()
         assert not history_models.ActionHistory.query.count()
+
+    @override_features(LOG_EMS_CINEMAS_AVAILABLE_FOR_SYNC=True)
+    @pytest.mark.usefixtures("db_session")
+    @mock.patch("pcapi.connectors.googledrive.TestingBackend.create_file")
+    @mock.patch("pcapi.core.providers.api.update_venue_synchronized_offers_active_status_job.delay")
+    def test_that_we_successfully_log_available_cinemas_that_dont_have_sync_yet(
+        self, job_mocked, mock_gdrive_create_file, requests_mock
+    ):
+        requests_mock.get("https://fake_url.com?version=0", json=fixtures.SITES_DATA_VERSION_0)
+
+        collect_elligible_venues_and_activate_ems_sync()
+
+        assert providers_models.EMSCinemaDetails.query.count() == 0
+        job_mocked.assert_not_called()
+        assert not history_models.ActionHistory.query.count()
+        file_name = f"{datetime.datetime.today().date().isoformat()}.csv"
+        with open(f"/tmp/{file_name}", "r", encoding="utf-8") as f:
+            reader = DictReader(f)
+
+            for line, cinema in zip(
+                sorted(reader, key=lambda r: r["ems_id"]),
+                sorted(fixtures.SITES_DATA_VERSION_0["sites"], key=lambda l: l["id"]),
+            ):
+                assert line == {
+                    "siret": cinema["siret"],
+                    "ems_id": cinema["id"],
+                    "allocine_id": cinema["allocine_id"],
+                    "cinema": cinema["name"],
+                    "address": cinema["address"],
+                    "zip_code": cinema["zip_code"],
+                    "city": cinema["city"],
+                }
+
+        mock_gdrive_create_file.assert_called_once_with(
+            settings.EMS_GOOGLE_DRIVE_FOLDER, file_name, Path(f"/tmp/{file_name}")
+        )
