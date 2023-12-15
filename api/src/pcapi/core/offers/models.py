@@ -627,6 +627,10 @@ class Offer(PcObject, Base, Model, DeactivableMixin, ValidationMixin, Accessibil
         return [stock for stock in self.stocks if not stock.isSoftDeleted]
 
     @property
+    def hasStocks(self) -> bool:
+        return len(self.activeStocks) != 0
+
+    @property
     def bookableStocks(self) -> list[Stock]:
         return [stock for stock in self.stocks if stock.isBookable]
 

@@ -24,6 +24,7 @@ export type GetIndividualOfferResponseModel = {
   externalTicketOfficeUrl?: string | null;
   extraData?: any;
   hasBookingLimitDatetimesPassed: boolean;
+  hasStocks: boolean;
   id: number;
   isActivable: boolean;
   isActive: boolean;

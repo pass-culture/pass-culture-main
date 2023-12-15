@@ -105,6 +105,7 @@ describe('screens:StocksThing', () => {
       durationMinutes: null,
       extraData: null,
       hasBookingLimitDatetimesPassed: true,
+      hasStocks: true,
       isActive: true,
       isActivable: true,
       isDigital: false,

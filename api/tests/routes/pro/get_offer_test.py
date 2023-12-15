@@ -163,6 +163,7 @@ class Returns200Test:
             "extraData": None,
             "externalTicketOfficeUrl": "http://example.net",
             "hasBookingLimitDatetimesPassed": False,
+            "hasStocks": True,
             "isActive": True,
             "isActivable": True,
             "audioDisabilityCompliant": False,
@@ -259,6 +260,7 @@ class Returns200Test:
         data = response.json
         assert data["subcategoryId"] == "ABO_PLATEFORME_MUSIQUE"
         assert data["stocks"][0]["hasActivationCode"] is True
+        assert data["hasStocks"] == True
 
     @freeze_time("2020-10-15 00:00:00")
     def test_should_not_return_soft_deleted_stock(self, client):
@@ -273,6 +275,7 @@ class Returns200Test:
         # Then
         assert response.status_code == 200
         assert len(response.json["stocks"]) == 0
+        assert response.json["hasStocks"] == False
 
     def test_returns_positive_booking_count(self, client):
         # Given
@@ -287,3 +290,4 @@ class Returns200Test:
         # Then
         assert response.status_code == 200
         assert response.json["bookingsCount"] == 2
+        assert response.json["hasStocks"] == True
