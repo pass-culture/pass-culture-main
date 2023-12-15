@@ -263,19 +263,16 @@ describe('offer', () => {
       user.lat = 0
       user.lon = 0
 
-      renderOffer(
-        {
-          ...offerProps,
-          offer: {
-            ...offerInParis,
-            venue: {
-              ...offerInParis.venue,
-              coordinates: { latitude: 1, longitude: 1 },
-            },
+      renderOffer({
+        ...offerProps,
+        offer: {
+          ...offerInParis,
+          venue: {
+            ...offerInParis.venue,
+            coordinates: { latitude: 1, longitude: 1 },
           },
         },
-        [{ nameKey: 'WIP_ENABLE_ADAGE_GEO_LOCATION', isActive: true }]
-      )
+      })
 
       // Distance between {0, 0} and {1, 1} is 157km
       expect(
@@ -284,25 +281,22 @@ describe('offer', () => {
     })
 
     it('should display can move in your institution is offer intervention area match user one', () => {
-      renderOffer(
-        {
-          ...offerProps,
-          offer: {
-            ...offerInParis,
-            venue: {
-              ...offerInParis.venue,
-              coordinates: { latitude: 1, longitude: 1 },
-            },
-            offerVenue: {
-              venueId: null,
-              otherAddress: 'A la mairie',
-              addressType: OfferAddressType.OTHER,
-            },
-            interventionArea: ['75'],
+      renderOffer({
+        ...offerProps,
+        offer: {
+          ...offerInParis,
+          venue: {
+            ...offerInParis.venue,
+            coordinates: { latitude: 1, longitude: 1 },
           },
+          offerVenue: {
+            venueId: null,
+            otherAddress: 'A la mairie',
+            addressType: OfferAddressType.OTHER,
+          },
+          interventionArea: ['75'],
         },
-        [{ nameKey: 'WIP_ENABLE_ADAGE_GEO_LOCATION', isActive: true }]
-      )
+      })
 
       expect(
         screen.getByText('peut se déplacer dans votre département')
@@ -313,12 +307,9 @@ describe('offer', () => {
   it('should not display the distance to venue if the user does not have a valid geoloc', () => {
     user.lat = null
     user.lon = null
-    renderOffer(
-      {
-        ...offerProps,
-      },
-      [{ nameKey: 'WIP_ENABLE_ADAGE_GEO_LOCATION', isActive: true }]
-    )
+    renderOffer({
+      ...offerProps,
+    })
 
     expect(
       screen.queryByText('km de votre établissement')
