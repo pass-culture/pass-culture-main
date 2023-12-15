@@ -3,6 +3,7 @@ import { useNavigate } from 'react-router-dom'
 
 import { api } from 'apiClient/api'
 import { SaveNewOnboardingDataQueryModel, Target } from 'apiClient/v1'
+import Callout from 'components/Callout/Callout'
 import { OnboardingFormNavigationAction } from 'components/SignupJourneyFormLayout/constants'
 import { SIGNUP_JOURNEY_STEP_IDS } from 'components/SignupJourneyStepper/constants'
 import {
@@ -186,10 +187,10 @@ const Validation = (): JSX.Element => {
           <div className={styles['data-line']}>{targetCustomerLabel}</div>
         </Banner>
       </section>
-      <Banner type="notification-info">
+      <Callout>
         Vous pourrez modifier certaines de ces informations dans la page dédiée
         de votre espace.
-      </Banner>
+      </Callout>
       <ActionBar
         onClickPrevious={handlePreviousStep}
         previousTo={SIGNUP_JOURNEY_STEP_IDS.ACTIVITY}
