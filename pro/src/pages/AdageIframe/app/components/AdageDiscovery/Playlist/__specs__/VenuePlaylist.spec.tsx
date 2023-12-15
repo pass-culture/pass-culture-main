@@ -5,6 +5,7 @@ import { userEvent } from '@testing-library/user-event'
 import {
   AdageFrontRoles,
   AuthenticatedResponse,
+  InstitutionRuralLevel,
   LocalOfferersPlaylistOffer,
 } from 'apiClient/adage'
 import { apiAdage } from 'apiClient/api'
@@ -77,9 +78,7 @@ describe('AdageDiscover classRoomPlaylist', () => {
     renderNewOfferPlaylist(user)
 
     expect(
-      await screen.findByText(
-        'À moins de 30 minutes à pied de votre établissement'
-      )
+      await screen.findByText('À moins 30 minutes à pieds de mon établissement')
     ).toBeInTheDocument()
   })
 
@@ -105,4 +104,26 @@ describe('AdageDiscover classRoomPlaylist', () => {
 
     expect(mockTrackPlaylistElementClicked).toHaveBeenCalledTimes(1)
   })
+
+  it.each([
+    {
+      level: InstitutionRuralLevel.RURAL_AUTONOME_PEU_DENSE,
+      title: 'À environs 1h de transport de mon établissement',
+    },
+    {
+      level: InstitutionRuralLevel.URBAIN_DENSIT_INTERM_DIAIRE,
+      title: 'À moins de 30 minutes en transport de mon établissement',
+    },
+    { level: null, title: 'À moins 30 minutes à pieds de mon établissement' },
+  ])(
+    'should display the playlist title based on the institution rural level',
+    async (ruralLevelParam) => {
+      renderNewOfferPlaylist({
+        ...user,
+        institutionRuralLevel: ruralLevelParam.level,
+      })
+
+      expect(await screen.findByText(ruralLevelParam.title)).toBeInTheDocument()
+    }
+  )
 })
