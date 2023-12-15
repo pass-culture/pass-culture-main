@@ -56,18 +56,23 @@ class EMSClientAPI(external_bookings_models.ExternalBookingsClientAPI):
         external_bookings = bookings_repository.get_external_bookings_by_cinema_id_and_barcodes(
             self.cinema_id, barcodes
         )
-        for booking in external_bookings:
-            assert booking.additional_information is not None
-            payload = ems_serializers.AnnulationPassCultureRequest(
-                num_cine=booking.additional_information["num_cine"],
-                num_caisse=booking.additional_information["num_caisse"],
-                num_trans=booking.additional_information["num_trans"],
-                num_ope=booking.additional_information["num_ope"],
-            )
-            response = self.connector.do_request(self.connector.cancelation_endpoint, payload=payload.dict())
-            self.connector.raise_for_status(response)
+        # It appears we only need one metadata about one external_booking to cancel them all
+        # Even if metadata are not the same across external_bookings of a same booking. Yes.
+        external_booking = external_bookings[0]
+        assert external_booking.additional_information is not None
+        payload = ems_serializers.AnnulationPassCultureRequest(
+            num_cine=external_booking.additional_information["num_cine"],
+            num_caisse=external_booking.additional_information["num_caisse"],
+            num_trans=external_booking.additional_information["num_trans"],
+            num_ope=external_booking.additional_information["num_ope"],
+        )
+        response = self.connector.do_request(self.connector.cancelation_endpoint, payload=payload.dict())
+        self.connector.raise_for_status(response)
 
-            logger.info("Successfully canceled an EMS external booking", extra={"barcode": booking.barcode})
+        logger.info(
+            "Successfully canceled an EMS external bookings",
+            extra={"barcodes": [external_booking.barcode for external_booking in external_bookings]},
+        )
 
     def get_shows_remaining_places(self, shows_id: list[int]) -> dict[str, int]:
         raise NotImplementedError()
