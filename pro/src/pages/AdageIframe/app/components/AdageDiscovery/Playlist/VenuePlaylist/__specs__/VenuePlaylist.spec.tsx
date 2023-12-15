@@ -1,5 +1,9 @@
 // @vitest-environment happy-dom
-import { screen, waitFor } from '@testing-library/react'
+import {
+  screen,
+  waitFor,
+  waitForElementToBeRemoved,
+} from '@testing-library/react'
 import { userEvent } from '@testing-library/user-event'
 
 import {
@@ -95,6 +99,10 @@ describe('AdageDiscover classRoomPlaylist', () => {
 
   it('should call tracker for venue playlist element', async () => {
     renderNewOfferPlaylist(user)
+
+    await waitForElementToBeRemoved(() =>
+      screen.queryAllByText(/Chargement en cours/)
+    )
 
     const venuePlaylistElement = await screen.findByText(
       'Venue playlist offer 1'

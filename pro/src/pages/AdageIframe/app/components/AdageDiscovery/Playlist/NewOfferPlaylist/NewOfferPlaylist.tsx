@@ -1,3 +1,4 @@
+import classNames from 'classnames'
 import { useEffect, useState } from 'react'
 
 import { CollectiveOfferTemplateResponseModel } from 'apiClient/adage'
@@ -6,11 +7,12 @@ import { apiAdage } from 'apiClient/api'
 import { GET_DATA_ERROR_MESSAGE } from 'core/shared/constants'
 import useNotification from 'hooks/useNotification'
 
-import { TrackerElementArg } from '../AdageDiscovery'
-import styles from '../AdageDiscovery.module.scss'
-import Carousel from '../Carousel/Carousel'
-import { NEW_OFFER_PLAYLIST } from '../constant'
-import OfferCardComponent from '../OfferCard/OfferCard'
+import { TrackerElementArg } from '../../AdageDiscovery'
+import Carousel from '../../Carousel/Carousel'
+import { NEW_OFFER_PLAYLIST } from '../../constant'
+import OfferCardComponent from '../../OfferCard/OfferCard'
+
+import styles from './NewOfferPlaylist.module.scss'
 
 type NewOfferPlaylistProps = {
   onWholePlaylistSeen: ({ playlistId, playlistType }: TrackerElementArg) => void
@@ -28,22 +30,26 @@ export const NewOfferPlaylist = ({
   const [offers, setOffers] = useState<CollectiveOfferTemplateResponseModel[]>(
     []
   )
-  const notify = useNotification()
+  const [loading, setLoading] = useState<boolean>(false)
+  const { error } = useNotification()
 
   useEffect(() => {
     const getNewOfferPlaylist = async () => {
+      setLoading(true)
       try {
         const result = await apiAdage.newTemplateOffersPlaylist()
 
         setOffers(result.collectiveOffers)
       } catch (e) {
-        return notify.error(GET_DATA_ERROR_MESSAGE)
+        return error(GET_DATA_ERROR_MESSAGE)
+      } finally {
+        setLoading(false)
       }
     }
 
     // eslint-disable-next-line @typescript-eslint/no-floating-promises
     getNewOfferPlaylist()
-  }, [notify])
+  }, [error])
 
   return (
     <Carousel
@@ -52,6 +58,10 @@ export const NewOfferPlaylist = ({
           Les offres publiées récemment
         </h2>
       }
+      className={classNames(styles['playlist-carousel'], {
+        [styles['playlist-carousel-loading']]: loading,
+      })}
+      loading={loading}
       onLastCarouselElementVisible={() =>
         onWholePlaylistSeen({
           playlistId: NEW_OFFER_PLAYLIST,

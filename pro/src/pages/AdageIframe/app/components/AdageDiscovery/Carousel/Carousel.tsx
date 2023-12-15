@@ -1,3 +1,4 @@
+import cn from 'classnames'
 import { createRef } from 'react'
 
 import useIsElementVisible from 'hooks/useIsElementVisible'
@@ -58,7 +59,7 @@ export default function Carousel({
   }
 
   return (
-    <div className={`${styles['carousel']} ${className ?? ''}`}>
+    <div className={cn(styles['carousel'], className)}>
       <div className={styles['carousel-header']}>
         {title && (
           <div className={styles['carousel-header-title']}>{title}</div>

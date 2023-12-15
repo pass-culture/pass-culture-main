@@ -1,40 +1,32 @@
 // @vitest-environment happy-dom
-import { screen, waitFor } from '@testing-library/react'
+import {
+  screen,
+  waitFor,
+  waitForElementToBeRemoved,
+} from '@testing-library/react'
 import { userEvent } from '@testing-library/user-event'
 
-import { AdageFrontRoles, AuthenticatedResponse } from 'apiClient/adage'
+import { AdageFrontRoles } from 'apiClient/adage'
 import { apiAdage } from 'apiClient/api'
 import { GET_DATA_ERROR_MESSAGE } from 'core/shared'
 import * as useNotification from 'hooks/useNotification'
 import { AdageUserContextProvider } from 'pages/AdageIframe/app/providers/AdageUserContext'
-import { defaultCollectiveTemplateOffer } from 'utils/adageFactories'
+import { defaultCollectiveOffer } from 'utils/adageFactories'
 import { renderWithProviders } from 'utils/renderWithProviders'
 
-import { NewOfferPlaylist } from '../NewOfferPlaylist'
+import { ClassroomPlaylist } from '../ClassroomPlaylist'
 
 vi.mock('apiClient/api', () => ({
   apiAdage: {
     logConsultPlaylistElement: vi.fn(),
-    newTemplateOffersPlaylist: vi.fn(),
+    getClassroomPlaylist: vi.fn(),
   },
 }))
 
 const mockTrackPlaylistElementClicked = vi.fn()
 const mockOnWholePlaylistSeen = vi.fn()
 
-const renderNewOfferPlaylist = (user: AuthenticatedResponse) => {
-  renderWithProviders(
-    <AdageUserContextProvider adageUser={user}>
-      <NewOfferPlaylist
-        onWholePlaylistSeen={mockOnWholePlaylistSeen}
-        trackPlaylistElementClicked={mockTrackPlaylistElementClicked}
-      />
-    </AdageUserContextProvider>
-  )
-}
-
-describe('AdageDiscovery', () => {
-  const notifyError = vi.fn()
+const renderNewOfferPlaylist = () => {
   const user = {
     role: AdageFrontRoles.REDACTOR,
     uai: 'uai',
@@ -43,10 +35,23 @@ describe('AdageDiscovery', () => {
     institutionCity: 'ALES',
   }
 
+  renderWithProviders(
+    <AdageUserContextProvider adageUser={user}>
+      <ClassroomPlaylist
+        onWholePlaylistSeen={mockOnWholePlaylistSeen}
+        trackPlaylistElementClicked={mockTrackPlaylistElementClicked}
+      />
+    </AdageUserContextProvider>
+  )
+}
+
+describe('AdageDiscover classRoomPlaylist', () => {
+  const notifyError = vi.fn()
+
   beforeEach(() => {
     vi.spyOn(apiAdage, 'logConsultPlaylistElement')
-    vi.spyOn(apiAdage, 'newTemplateOffersPlaylist').mockResolvedValue({
-      collectiveOffers: [defaultCollectiveTemplateOffer],
+    vi.spyOn(apiAdage, 'getClassroomPlaylist').mockResolvedValue({
+      collectiveOffers: [defaultCollectiveOffer],
     })
 
     vi.spyOn(useNotification, 'default').mockImplementation(() => ({
@@ -62,30 +67,36 @@ describe('AdageDiscovery', () => {
   })
 
   it('should render new offer playlist', async () => {
-    renderNewOfferPlaylist(user)
+    renderNewOfferPlaylist()
 
     expect(
-      await screen.findByText('Les offres publiées récemment')
+      await screen.findByText(
+        'Ces interventions peuvent avoir lieu dans votre classe'
+      )
     ).toBeInTheDocument()
   })
 
-  it('should show an error message notification when offer could not be fetched', async () => {
-    vi.spyOn(apiAdage, 'newTemplateOffersPlaylist').mockRejectedValueOnce(null)
+  it('should show an error message notification when classroom offer could not be fetched', async () => {
+    vi.spyOn(apiAdage, 'getClassroomPlaylist').mockRejectedValueOnce(null)
 
-    renderNewOfferPlaylist(user)
+    renderNewOfferPlaylist()
     await waitFor(() =>
-      expect(apiAdage.newTemplateOffersPlaylist).toHaveBeenCalled()
+      expect(apiAdage.getClassroomPlaylist).toHaveBeenCalled()
     )
 
     expect(notifyError).toHaveBeenNthCalledWith(1, GET_DATA_ERROR_MESSAGE)
   })
 
-  it('should call tracker for new offer playlist element', async () => {
-    renderNewOfferPlaylist(user)
+  it('should call tracker for classroom playlist element', async () => {
+    renderNewOfferPlaylist()
 
-    const newOfferPlaylistElement = await screen.findByText('Mon offre vitrine')
+    await waitForElementToBeRemoved(() =>
+      screen.queryAllByText(/Chargement en cours/)
+    )
 
-    await userEvent.click(newOfferPlaylistElement)
+    const classRoomPlaylistElement = screen.getByText('Une chouette à la mer')
+
+    await userEvent.click(classRoomPlaylistElement)
 
     expect(mockTrackPlaylistElementClicked).toHaveBeenCalledTimes(1)
   })
