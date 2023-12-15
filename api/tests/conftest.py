@@ -308,8 +308,8 @@ def ubble_mocker() -> typing.Callable:
 
 @pytest.fixture
 def css_font_http_request_mock():
-    """Intercept requests to fonts.googleapis.com and return an empty
-    string.
+    """Intercept requests to fonts.googleapis.com and return fake
+    content.
 
     This is for weasyprint, which uses ``urllib.request.urlopen()``.
     """
@@ -350,7 +350,7 @@ def css_font_http_request_mock():
 
     def fake_urlopen(request, *args, **kwargs):
         assert request.host == "fonts.googleapis.com"
-        return FakeResponse(request.full_url, content="")
+        return FakeResponse(request.full_url, content=b"")
 
     with patch("weasyprint.urls.urlopen", fake_urlopen):
         yield
