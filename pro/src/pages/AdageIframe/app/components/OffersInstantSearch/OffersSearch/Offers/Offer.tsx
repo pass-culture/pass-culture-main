@@ -3,7 +3,6 @@ import React, { useState } from 'react'
 
 import { AdageFrontRoles, OfferAddressType } from 'apiClient/adage'
 import { apiAdage } from 'apiClient/api'
-import useActiveFeature from 'hooks/useActiveFeature'
 import fullLinkIcon from 'icons/full-link.svg'
 import fullUpIcon from 'icons/full-up.svg'
 import strokeFranceIcon from 'icons/stroke-france.svg'
@@ -49,7 +48,6 @@ const Offer = ({
   openDetails = false,
 }: OfferProps): JSX.Element => {
   const [displayDetails, setDisplayDetails] = useState(openDetails)
-  const isGeolocationActive = useActiveFeature('WIP_ENABLE_ADAGE_GEO_LOCATION')
   const { adageUser } = useAdageUser()
 
   const canAddOfferToFavorites =
@@ -93,8 +91,7 @@ const Offer = ({
       {offer.venue.coordinates.latitude &&
         offer.venue.coordinates.longitude &&
         (adageUser.lat || adageUser.lat === 0) &&
-        (adageUser.lon || adageUser.lon === 0) &&
-        isGeolocationActive && (
+        (adageUser.lon || adageUser.lon === 0) && (
           <div className={style['offer-geoloc']}>
             <SvgIcon
               alt=""

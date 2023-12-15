@@ -100,18 +100,6 @@ vi.mock('apiClient/api', () => ({
   },
 }))
 
-const isGeolocationActive = {
-  features: {
-    list: [
-      {
-        nameKey: 'WIP_ENABLE_ADAGE_GEO_LOCATION',
-        isActive: true,
-      },
-    ],
-    initialized: true,
-  },
-}
-
 const renderOffersSearchComponent = (
   props: SearchProps,
   user: AuthenticatedResponse,
@@ -318,11 +306,7 @@ describe('offersSearch component', () => {
 
   it('should display radius input filter if user has selected around me filter', async () => {
     // Given
-    renderOffersSearchComponent(
-      props,
-      { ...user, departmentCode: null },
-      isGeolocationActive
-    )
+    renderOffersSearchComponent(props, { ...user, departmentCode: null })
 
     await userEvent.click(
       screen.getByRole('button', {
@@ -343,11 +327,12 @@ describe('offersSearch component', () => {
   })
 
   it('should not let user select the geoloc filter if they have an invalid location', async () => {
-    renderOffersSearchComponent(
-      props,
-      { ...user, departmentCode: null, lat: 0, lon: null },
-      isGeolocationActive
-    )
+    renderOffersSearchComponent(props, {
+      ...user,
+      departmentCode: null,
+      lat: 0,
+      lon: null,
+    })
     await userEvent.click(
       screen.getByRole('button', {
         name: 'Localisation des partenaires',

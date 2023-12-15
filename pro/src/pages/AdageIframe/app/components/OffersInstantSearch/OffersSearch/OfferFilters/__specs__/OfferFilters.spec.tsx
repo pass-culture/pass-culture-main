@@ -14,18 +14,6 @@ import { OfferFilters } from '../OfferFilters'
 const handleSubmit = vi.fn()
 const mockSetLocalisationFilterState = vi.fn()
 
-const isGeolocationActive = {
-  features: {
-    list: [
-      {
-        nameKey: 'WIP_ENABLE_ADAGE_GEO_LOCATION',
-        isActive: true,
-      },
-    ],
-    initialized: true,
-  },
-}
-
 const renderOfferFilters = ({
   initialValues,
   localisationFilterState = LocalisationFilterStates.NONE,
@@ -228,7 +216,6 @@ describe('OfferFilters', () => {
       initialValues: initialValues,
       localisationFilterState: LocalisationFilterStates.NONE,
       adageUser: { ...defaultAdageUser, lat: 10, lon: 10 },
-      storeOverrides: isGeolocationActive,
     })
 
     expect(
@@ -241,7 +228,6 @@ describe('OfferFilters', () => {
       initialValues: initialValues,
       localisationFilterState: LocalisationFilterStates.NONE,
       adageUser: { ...defaultAdageUser, lat: 10, lon: null },
-      storeOverrides: isGeolocationActive,
     })
 
     expect(
@@ -272,7 +258,6 @@ describe('OfferFilters', () => {
     renderOfferFilters({
       initialValues: initialValues,
       localisationFilterState: LocalisationFilterStates.GEOLOCATION,
-      storeOverrides: isGeolocationActive,
     })
 
     expect(screen.getByText('Dans un rayon de')).toBeInTheDocument()
@@ -326,7 +311,6 @@ describe('OfferFilters', () => {
     renderOfferFilters({
       initialValues: initialValues,
       localisationFilterState: LocalisationFilterStates.GEOLOCATION,
-      storeOverrides: isGeolocationActive,
     })
 
     await userEvent.click(
@@ -349,7 +333,6 @@ describe('OfferFilters', () => {
     renderOfferFilters({
       initialValues: initialValues,
       localisationFilterState: LocalisationFilterStates.GEOLOCATION,
-      storeOverrides: isGeolocationActive,
     })
 
     await userEvent.click(
@@ -365,7 +348,6 @@ describe('OfferFilters', () => {
   it('should return categories options when the api call was successful', async () => {
     renderOfferFilters({
       initialValues: initialValues,
-      storeOverrides: isGeolocationActive,
     })
 
     await userEvent.click(screen.getByRole('button', { name: 'Catégorie' }))
