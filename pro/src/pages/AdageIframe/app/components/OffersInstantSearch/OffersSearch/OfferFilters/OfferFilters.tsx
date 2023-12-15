@@ -4,7 +4,6 @@ import React, { useEffect, useState } from 'react'
 import { AdageFrontRoles, EacFormat, OfferAddressType } from 'apiClient/adage'
 import AdageButtonFilter from 'components/AdageButtonFilter/AdageButtonFilter'
 import FormLayout from 'components/FormLayout'
-import useActiveFeature from 'hooks/useActiveFeature'
 import strokeBuildingIcon from 'icons/stroke-building.svg'
 import strokeFranceIcon from 'icons/stroke-france.svg'
 import strokeNearIcon from 'icons/stroke-near.svg'
@@ -52,8 +51,6 @@ export const OfferFilters = ({
   const adageUserHasValidGeoloc =
     (adageUser.lat || adageUser.lat === 0) &&
     (adageUser.lon || adageUser.lon === 0)
-
-  const isAdageGeolocEnabled = useActiveFeature('WIP_ENABLE_ADAGE_GEO_LOCATION')
 
   const getActiveLocalisationFilterCount = () => {
     if (!formik.values) {
@@ -210,7 +207,7 @@ export const OfferFilters = ({
                     hideFooter
                   >
                     <ul>
-                      {isAdageGeolocEnabled && adageUserHasValidGeoloc && (
+                      {adageUserHasValidGeoloc && (
                         <li className={styles['localisation-list-button']}>
                           <Button
                             onClick={() =>
