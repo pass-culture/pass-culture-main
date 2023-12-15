@@ -16,7 +16,6 @@ interface RouteMeta {
 }
 
 export interface RouteConfig {
-  parentPath?: string
   path: string
   title?: string
   element?: JSX.Element
