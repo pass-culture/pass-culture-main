@@ -20,9 +20,9 @@ import rectangles from './DomainsCard/assets/rectangles.svg'
 import squares from './DomainsCard/assets/squares.svg'
 import triangles from './DomainsCard/assets/triangles.svg'
 import DomainsCard from './DomainsCard/DomainsCard'
-import { ClassroomPlaylist } from './Playlist/ClassroomPlaylist'
-import { NewOfferPlaylist } from './Playlist/NewOfferPlaylist'
-import { VenuePlaylist } from './Playlist/VenuePlaylist'
+import { ClassroomPlaylist } from './Playlist/ClassroomPlaylist/ClassroomPlaylist'
+import { NewOfferPlaylist } from './Playlist/NewOfferPlaylist/NewOfferPlaylist'
+import { VenuePlaylist } from './Playlist/VenuePlaylist/VenuePlaylist'
 
 export type TrackerElementArg = {
   playlistId: number
