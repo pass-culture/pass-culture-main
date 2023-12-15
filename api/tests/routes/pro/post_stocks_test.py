@@ -221,6 +221,43 @@ class Returns201Test:
         response = client.with_session_auth("user@example.com").post("/stocks/bulk/", json=stock_data)
         assert response.json["stocks_count"] == 0
 
+    def test_avoid_duplication_with_different_quantity(self, client):
+        offer = offers_factories.EventOfferFactory()
+        beginning = datetime.datetime.utcnow() + datetime.timedelta(hours=1)
+        price_cat_label = offers_factories.PriceCategoryLabelFactory(venue=offer.venue, label="Tarif 1")
+        price_category = offers_factories.PriceCategoryFactory(
+            offer=offer, priceCategoryLabel=price_cat_label, price=10
+        )
+        existing_stock = offers_factories.EventStockFactory(
+            offer=offer,
+            beginningDatetime=format_into_utc_date(beginning),
+            bookingLimitDatetime=format_into_utc_date(beginning),
+            priceCategory=price_category,
+            price=10,
+            quantity=10,
+        )
+        offerers_factories.UserOffererFactory(
+            user__email="user@example.com",
+            offerer=offer.venue.managingOfferer,
+        )
+        # First stock should be skipped
+        stock_data = {
+            "offerId": offer.id,
+            "stocks": [
+                {
+                    "priceCategoryId": price_category.id,
+                    "price": 10,
+                    "quantity": 20,
+                    "beginningDatetime": format_into_utc_date(beginning),
+                    "bookingLimitDatetime": format_into_utc_date(beginning),
+                }
+            ],
+        }
+        response = client.with_session_auth("user@example.com").post("/stocks/bulk/", json=stock_data)
+        assert response.status_code == 201
+        assert response.json["stocks_count"] == 0
+        assert existing_stock.quantity == 10
+
     @patch("pcapi.core.search.async_index_offer_ids")
     def test_edit_one_event_stock_using_price_category(self, mocked_async_index_offer_ids, client):
         venue = offerers_factories.VenueFactory()

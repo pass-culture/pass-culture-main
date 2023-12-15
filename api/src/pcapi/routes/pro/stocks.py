@@ -45,7 +45,7 @@ def _stock_exists(
             )
             and stock.priceCategoryId == stock_to_create.price_category_id
             and (stock.price == stock_to_create.price if not stock.priceCategoryId else True)
-            and stock.quantity == stock_to_create.quantity
+            and (stock.quantity == stock_to_create.quantity if not stock.priceCategoryId else True)
         ):
             return True
     return False
@@ -62,7 +62,6 @@ def _get_existing_stocks_by_fields(
             offers_models.Stock.beginningDatetime == stock.beginning_datetime,
             offers_models.Stock.bookingLimitDatetime == stock.booking_limit_datetime,
             offers_models.Stock.priceCategoryId == stock.price_category_id,
-            offers_models.Stock.quantity == stock.quantity,
         )
         for stock in stock_payload
     ]
