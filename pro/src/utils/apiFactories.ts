@@ -91,6 +91,7 @@ export const GetIndividualOfferFactory = (
     stocks,
     venue: customVenue,
     hasBookingLimitDatetimesPassed: false,
+    hasStocks: true,
     dateCreated: '2020-04-12T19:31:12Z',
     isDigital: false,
     isDuo: true,

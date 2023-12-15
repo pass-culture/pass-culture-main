@@ -328,6 +328,7 @@ class GetIndividualOfferResponseModel(BaseModel, AccessibilityComplianceMixin):
     durationMinutes: int | None
     extraData: Any
     hasBookingLimitDatetimesPassed: bool
+    hasStocks: bool
     isActive: bool
     isActivable: bool
     isDigital: bool
