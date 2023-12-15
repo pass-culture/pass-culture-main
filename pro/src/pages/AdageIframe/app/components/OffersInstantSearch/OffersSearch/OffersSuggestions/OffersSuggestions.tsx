@@ -2,6 +2,7 @@ import { ReactNode } from 'react'
 import { Configure, Index, useInstantSearch } from 'react-instantsearch'
 
 import { OfferAddressType } from 'apiClient/adage'
+import useActiveFeature from 'hooks/useActiveFeature'
 import useAdageUser from 'pages/AdageIframe/app/hooks/useAdageUser'
 import { ALGOLIA_COLLECTIVE_OFFERS_INDEX } from 'utils/config'
 import { isNumber } from 'utils/types'
@@ -47,22 +48,37 @@ function getSearchIndexIdDisplayed(
 }
 
 const getPossibleFilterValues = (
-  formValues: SearchFormValues
+  formValues: SearchFormValues,
+  isFormatActive: boolean
 ): { values: SearchFormValues; headerMessage: ReactNode }[] => {
   const possibleFacetFilters = []
   //  The returned array should be in the order of preferred suggestion filters
 
-  if (formValues.categories.length !== 0) {
-    possibleFacetFilters.push({
-      values: {
-        ...formValues,
-        eventAddressType: OfferAddressType.OTHER,
-        domains: [],
-        categories: [],
-        geolocRadius: DEFAULT_GEO_RADIUS,
-      },
-      headerMessage: 'Découvrez des offres qui relèvent d’autres catégories',
-    })
+  if (formValues.categories.length !== 0 || formValues.formats.length !== 0) {
+    if (isFormatActive) {
+      possibleFacetFilters.push({
+        values: {
+          ...formValues,
+          eventAddressType: OfferAddressType.OTHER,
+          domains: [],
+          categories: [],
+          formats: [],
+          geolocRadius: DEFAULT_GEO_RADIUS,
+        },
+        headerMessage: 'Découvrez des offres qui relèvent d’autres formats',
+      })
+    } else {
+      possibleFacetFilters.push({
+        values: {
+          ...formValues,
+          eventAddressType: OfferAddressType.OTHER,
+          domains: [],
+          categories: [],
+          geolocRadius: DEFAULT_GEO_RADIUS,
+        },
+        headerMessage: 'Découvrez des offres qui relèvent d’autres catégories',
+      })
+    }
   }
 
   if (formValues.domains.length !== 0) {
@@ -97,6 +113,7 @@ const getPossibleFilterValues = (
         geolocRadius: 5000,
         domains: [],
         categories: [],
+        formats: [],
         eventAddressType: OfferAddressType.OTHER,
       },
       headerMessage:
@@ -108,6 +125,7 @@ const getPossibleFilterValues = (
         geolocRadius: 100_000,
         domains: [],
         categories: [],
+        formats: [],
         eventAddressType: OfferAddressType.OFFERER_VENUE,
       },
       headerMessage:
@@ -123,13 +141,14 @@ const getPossibleFilterValues = (
 export const OffersSuggestions = ({ formValues }: OffersSuggestionsProps) => {
   const { adageUser } = useAdageUser()
   const { scopedResults } = useInstantSearch()
+  const isFormatActive = useActiveFeature('WIP_ENABLE_FORMAT')
   const searchIndexIdDisplayed: null | string =
     getSearchIndexIdDisplayed(scopedResults)
 
   const formValuesArray: {
     values: SearchFormValues
     headerMessage: ReactNode
-  }[] = getPossibleFilterValues(formValues)
+  }[] = getPossibleFilterValues(formValues, isFormatActive)
 
   return (
     <>

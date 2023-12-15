@@ -42,7 +42,8 @@ vi.mock('apiClient/api', () => ({
 
 const renderOffersSuggestionsComponent = (
   props: OffersSuggestionsProps,
-  user: AuthenticatedResponse
+  user: AuthenticatedResponse,
+  featuresOverride?: { nameKey: string; isActive: boolean }[]
 ) => {
   renderWithProviders(
     <AdageUserContextProvider adageUser={user}>
@@ -51,7 +52,15 @@ const renderOffersSuggestionsComponent = (
           <OffersSuggestions {...props} />
         </AlgoliaQueryContextProvider>
       </FiltersContextProvider>
-    </AdageUserContextProvider>
+    </AdageUserContextProvider>,
+    {
+      storeOverrides: {
+        features: {
+          list: featuresOverride,
+          initialized: true,
+        },
+      },
+    }
   )
 }
 
@@ -227,6 +236,41 @@ describe('OffersSuggestions', () => {
       screen.getByText(
         'Découvrez des offres qui relèvent d’autres domaines artistiques'
       )
+    )
+  })
+
+  it('should show the result independently of formats filter when the format filter was set', () => {
+    renderOffersSuggestionsComponent(
+      {
+        formValues: {
+          ...props.formValues,
+          formats: ['Atelier de pratique'],
+        },
+      },
+      user,
+      [
+        {
+          nameKey: 'WIP_ENABLE_FORMAT',
+          isActive: true,
+        },
+      ]
+    )
+
+    expect(Configure).toHaveBeenCalledTimes(3)
+    expect(Configure).toHaveBeenCalledWith(
+      expect.objectContaining({
+        aroundRadius: 30_000_000,
+        facetFilters: [
+          [
+            'offer.educationalInstitutionUAICode:all',
+            'offer.educationalInstitutionUAICode:1234567A',
+          ],
+        ],
+      }),
+      {}
+    )
+    expect(
+      screen.getByText('Découvrez des offres qui relèvent d’autres formats')
     )
   })
 
