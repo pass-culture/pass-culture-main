@@ -54,6 +54,8 @@ if typing.TYPE_CHECKING:
 
 
 class StudentLevels(enum.Enum):
+    ECOLES_INNOVANTES_MARSEILLE_EN_GRAND_MATERNELLE = "Écoles innovantes Marseille en Grand : maternelle"
+    ECOLES_INNOVANTES_MARSEILLE_EN_GRAND_PRIMAIRE = "Écoles innovantes Marseille en Grand : primaire"
     COLLEGE6 = "Collège - 6e"
     COLLEGE5 = "Collège - 5e"
     COLLEGE4 = "Collège - 4e"
@@ -63,6 +65,10 @@ class StudentLevels(enum.Enum):
     GENERAL2 = "Lycée - Seconde"
     GENERAL1 = "Lycée - Première"
     GENERAL0 = "Lycée - Terminale"
+
+    @classmethod
+    def primary_levels(cls) -> set:
+        return {cls.ECOLES_INNOVANTES_MARSEILLE_EN_GRAND_MATERNELLE, cls.ECOLES_INNOVANTES_MARSEILLE_EN_GRAND_PRIMAIRE}
 
 
 class CollectiveBookingCancellationReasons(enum.Enum):
