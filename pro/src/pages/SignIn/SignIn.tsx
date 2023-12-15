@@ -111,7 +111,10 @@ export const SignIn = (): JSX.Element => {
 
         <AppLayout fullscreen pageName="sign-in">
           <section className={styles['content']}>
-            <h1>Bienvenue sur l’espace dédié aux acteurs culturels</h1>
+            <h1 className={styles['title']}>
+              Bienvenue sur l’espace dédié aux acteurs culturels
+            </h1>
+
             <div className={styles['mandatory']}>
               Tous les champs sont obligatoires
             </div>
