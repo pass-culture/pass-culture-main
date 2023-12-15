@@ -3,6 +3,8 @@
 
 .carousel {
   width: 100%;
+  display: flex;
+  flex-direction: column;
 
   &-header {
     display: flex;
@@ -29,10 +31,13 @@
     gap: rem.torem(16px);
     scroll-behavior: smooth;
     padding: rem.torem(20px) rem.torem(24px);
+  }
 
-    &-empty {
-      min-height: 422px;
-    }
+  &-loading {
+    flex-grow: 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
   }
 }
 
