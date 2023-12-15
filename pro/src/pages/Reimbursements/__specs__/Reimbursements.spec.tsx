@@ -3,9 +3,11 @@ import {
   waitFor,
   waitForElementToBeRemoved,
 } from '@testing-library/react'
+import { Routes, Route } from 'react-router-dom'
 
 import { api } from 'apiClient/api'
 import { GetOffererResponseModel } from 'apiClient/v1'
+import { routesReimbursements } from 'app/AppRouter/subroutesReimbursements'
 import { ReimbursementContextProvider } from 'context/ReimbursementContext/ReimbursementContext'
 import { defaultGetOffererResponseModel } from 'utils/apiFactories'
 import { renderWithProviders } from 'utils/renderWithProviders'
@@ -15,7 +17,14 @@ import { Reimbursements } from '../Reimbursements'
 const renderReimbursements = (storeOverrides: any) => {
   renderWithProviders(
     <ReimbursementContextProvider>
-      <Reimbursements />
+      <Routes>
+        <Route path="/remboursements" element={<Reimbursements />}>
+          {routesReimbursements.map((route) => (
+            <Route key={route.path} path={route.path} element={route.element} />
+          ))}
+        </Route>
+        <Route path="/accueil" element={<>Home Page</>} />
+      </Routes>
     </ReimbursementContextProvider>,
     {
       storeOverrides,
@@ -42,11 +51,14 @@ describe('Reimbursement page', () => {
         ],
       },
     }
+
+    vi.spyOn(api, 'getReimbursementPoints').mockResolvedValue([])
   })
 
-  it('should render reimbursement page with FF WIP_ENABLE_NEW_BANK_DETAILS_JOURNEY off', () => {
+  it('should render reimbursement page with FF WIP_ENABLE_NEW_BANK_DETAILS_JOURNEY off', async () => {
     renderReimbursements(store)
 
+    await waitForElementToBeRemoved(() => screen.queryAllByTestId('spinner'))
     expect(
       screen.getByText('Justificatifs de remboursement')
     ).toBeInTheDocument()
@@ -80,6 +92,7 @@ describe('Reimbursement page with FF WIP_ENABLE_NEW_BANK_DETAILS_JOURNEY enabled
     })
 
     vi.spyOn(api, 'getOfferer').mockResolvedValue(selectedOfferer)
+    vi.spyOn(api, 'getReimbursementPoints').mockResolvedValue([])
 
     store = {
       user: {
@@ -100,7 +113,7 @@ describe('Reimbursement page with FF WIP_ENABLE_NEW_BANK_DETAILS_JOURNEY enabled
   it('should render reimbursement page', async () => {
     renderReimbursements(store)
 
-    await waitForElementToBeRemoved(() => screen.queryByTestId('spinner'))
+    await waitForElementToBeRemoved(() => screen.queryAllByTestId('spinner'))
 
     expect(screen.getByText(/Justificatifs/)).toBeInTheDocument()
     expect(screen.getByText(/Détails/)).toBeInTheDocument()
@@ -109,12 +122,6 @@ describe('Reimbursement page with FF WIP_ENABLE_NEW_BANK_DETAILS_JOURNEY enabled
       screen.queryByRole('img', {
         name: 'Une action est requise dans cet onglet',
       })
-    ).not.toBeInTheDocument()
-
-    expect(
-      screen.queryByText(
-        'Les remboursements s’effectuent tous les 15 jours, rétroactivement suite à la validation d’une contremarque dans le guichet ou à la validation automatique des contremarques d’évènements. Cette page est automatiquement mise à jour à chaque remboursement.'
-      )
     ).not.toBeInTheDocument()
   })
 
@@ -126,7 +133,7 @@ describe('Reimbursement page with FF WIP_ENABLE_NEW_BANK_DETAILS_JOURNEY enabled
 
     renderReimbursements(store)
 
-    await waitForElementToBeRemoved(() => screen.queryByTestId('spinner'))
+    await waitForElementToBeRemoved(() => screen.queryAllByTestId('spinner'))
     expect(api.listOfferersNames).toHaveBeenCalledTimes(1)
     expect(api.getOfferer).toHaveBeenCalledTimes(1)
     expect(screen.getByText('Informations bancaires')).toBeInTheDocument()
@@ -146,7 +153,7 @@ describe('Reimbursement page with FF WIP_ENABLE_NEW_BANK_DETAILS_JOURNEY enabled
 
     renderReimbursements(store)
 
-    await waitForElementToBeRemoved(() => screen.queryByTestId('spinner'))
+    await waitForElementToBeRemoved(() => screen.queryAllByTestId('spinner'))
     expect(screen.getByText('Informations bancaires')).toBeInTheDocument()
   })
 
@@ -154,7 +161,7 @@ describe('Reimbursement page with FF WIP_ENABLE_NEW_BANK_DETAILS_JOURNEY enabled
     vi.spyOn(api, 'listOfferersNames').mockRejectedValue({})
     renderReimbursements(store)
 
-    await waitForElementToBeRemoved(() => screen.queryByTestId('spinner'))
+    await waitForElementToBeRemoved(() => screen.queryAllByTestId('spinner'))
     expect(screen.getByText('Informations bancaires')).toBeInTheDocument()
   })
 })

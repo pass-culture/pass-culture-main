@@ -142,10 +142,12 @@ const ReimbursementsInvoices = (): JSX.Element => {
       </div>
     )
   }
+
   if (reimbursementPointsOptions.length === 0) {
     return (
       <div className="no-refunds">
         {isNewBankDetailsJourneyEnabled && <BannerReimbursementsInfo />}
+
         <SvgIcon
           src={strokeNoBookingIcon}
           alt=""

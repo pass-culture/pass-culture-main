@@ -5,12 +5,15 @@ import { routesIndividualOfferWizard } from 'app/AppRouter/subroutesIndividualOf
 import { routesSignupJourney } from 'app/AppRouter/subroutesSignupJourneyMap'
 import { routesSignup } from 'app/AppRouter/subroutesSignupMap'
 
+import { routesReimbursements } from './subroutesReimbursements'
+
 export const findCurrentRoute = (location: Location): RouteConfig | undefined =>
   [
     ...routes,
     ...routesIndividualOfferWizard,
     ...routesSignup,
     ...routesSignupJourney,
+    ...routesReimbursements,
   ]
     // This reverse is here so that subroutes (e.g. /inscription/confirmation)
     // are matched before their parents (e.g. /inscription/*)
