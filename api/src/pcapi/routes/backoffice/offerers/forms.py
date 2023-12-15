@@ -89,7 +89,7 @@ class OffererValidationListForm(utils.PCForm):
     regions = fields.PCSelectMultipleField("Régions", choices=get_regions_choices())
     tags = fields.PCQuerySelectMultipleField(
         "Tags",
-        query_factory=_get_validation_tags_query,
+        query_factory=_get_all_tags_query,
         get_pk=lambda tag: tag.id,
         get_label=lambda tag: tag.label or tag.name,
     )
