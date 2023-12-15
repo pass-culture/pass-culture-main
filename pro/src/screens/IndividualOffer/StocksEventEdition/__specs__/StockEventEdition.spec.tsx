@@ -158,6 +158,7 @@ describe('screens:StocksEventEdition', () => {
       durationMinutes: null,
       extraData: null,
       hasBookingLimitDatetimesPassed: true,
+      hasStocks: true,
       isActive: true,
       isActivable: true,
       isDigital: false,
