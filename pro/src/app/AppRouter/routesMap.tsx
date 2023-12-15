@@ -7,6 +7,7 @@ import { Navigate } from 'react-router-dom'
 import { UNAVAILABLE_ERROR_PAGE } from 'utils/routes'
 
 import { routesIndividualOfferWizard } from './subroutesIndividualOfferWizardMap'
+import { routesReimbursements } from './subroutesReimbursements'
 import { routesSignupJourney } from './subroutesSignupJourneyMap'
 import { routesSignup } from './subroutesSignupMap'
 
@@ -251,8 +252,9 @@ const routes: RouteConfig[] = [
   },
   {
     lazy: () => import('pages/Reimbursements/Reimbursements'),
-    path: '/remboursements/*',
+    path: '/remboursements',
     title: 'Remboursements',
+    children: routesReimbursements,
   },
   {
     lazy: () => import('pages/User/UserProfile'),
