@@ -5,6 +5,7 @@ import time
 from unittest import mock
 
 import pytest
+import time_machine
 
 from pcapi.utils import pdf
 
@@ -13,6 +14,17 @@ import tests
 
 TEST_FILES_PATH = pathlib.Path(tests.__path__[0]) / "files"
 ACCEPTABLE_GENERATION_DURATION = 2  # seconds. The CI might be quite slow.
+
+
+def make_stable_pdf_test(func):
+    # Setting `SOURCE_DATE_EPOCH` is necessary for fonttools (and thus
+    # weasyprint) to be stable across time. Otherwise, if two
+    # consecutive renderings are done with a one-second interval, the
+    # output is different.
+    func = mock.patch.dict(os.environ, {"SOURCE_DATE_EPOCH": "0"}, clear=True)(func)
+    # Force creation and modification times to be stable.
+    func = time_machine.travel("2021-07-30 17:25:00")(func)
+    return func
 
 
 class GeneratePdfFromHtmlTest:
@@ -26,6 +38,7 @@ class GeneratePdfFromHtmlTest:
         path = TEST_FILES_PATH / "pdf" / "expected_example.pdf"
         return path.read_bytes()
 
+    @make_stable_pdf_test
     def test_basics(self, example_html, expected_pdf, css_font_http_request_mock):
         start = time.perf_counter()
         out = pdf.generate_pdf_from_html(html_content=example_html)
@@ -33,15 +46,11 @@ class GeneratePdfFromHtmlTest:
         # Do not use `assert out == expected_pdf`: pytest would try to
         # use a smart, but very slow algorithm to show diffs, which
         # would produce garbage anyway because it's binary.
-        if out == expected_pdf:
+        if out != expected_pdf:
             assert False, "Output PDF is not as expected"
         assert duration < ACCEPTABLE_GENERATION_DURATION
 
-    # Setting `SOURCE_DATE_EPOCH` is necessary for fonttools (and thus
-    # weasyprint) to be stable across time. Otherwise, if two
-    # consecutive renderings are done with a one-second interval, the
-    # output is different.
-    @mock.patch.dict(os.environ, {"SOURCE_DATE_EPOCH": "0"}, clear=True)
+    @make_stable_pdf_test
     def test_cache(self, example_html, css_font_http_request_mock):
         # Force recreation of the cache.
         fetcher = pdf._get_url_fetcher()
