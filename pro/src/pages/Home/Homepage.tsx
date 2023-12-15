@@ -124,63 +124,61 @@ export const Homepage = (): JSX.Element => {
 
   return (
     <AppLayout>
-      <div className="homepage">
-        <h1>Bienvenue dans l’espace acteurs culturels</h1>
+      <h1>Bienvenue dans l’espace acteurs culturels</h1>
 
-        <div className={styles['reimbursements-banners']}>
-          <AddBankAccountCallout offerer={selectedOfferer} />
-          <LinkVenueCallout offerer={selectedOfferer} />
-          <PendingBankAccountCallout offerer={selectedOfferer} />
-        </div>
+      <div className={styles['reimbursements-banners']}>
+        <AddBankAccountCallout offerer={selectedOfferer} />
+        <LinkVenueCallout offerer={selectedOfferer} />
+        <PendingBankAccountCallout offerer={selectedOfferer} />
+      </div>
 
-        {isStatisticsDashboardEnabled && selectedOfferer !== null && (
-          <>
-            <OffererBanners
-              isUserOffererValidated={isUserOffererValidated}
-              selectedOfferer={selectedOfferer}
-              hasAtLeastOnePhysicalVenue={hasAtLeastOnePhysicalVenue}
-            />
-
-            <section className={styles['section']}>
-              <StatisticsDashboard offerer={selectedOfferer} />
-            </section>
-          </>
-        )}
-
-        <section className={styles['section']} ref={offerersRef}>
-          <Offerers
-            selectedOfferer={selectedOfferer}
-            isLoading={isLoading}
+      {isStatisticsDashboardEnabled && selectedOfferer !== null && (
+        <>
+          <OffererBanners
             isUserOffererValidated={isUserOffererValidated}
+            selectedOfferer={selectedOfferer}
             hasAtLeastOnePhysicalVenue={hasAtLeastOnePhysicalVenue}
-            receivedOffererNames={receivedOffererNames}
-            onSelectedOffererChange={setSelectedOffererId}
-            cancelLoading={() => setIsLoading(false)}
-            venues={venues}
+          />
+
+          <section className={styles['section']}>
+            <StatisticsDashboard offerer={selectedOfferer} />
+          </section>
+        </>
+      )}
+
+      <section className={styles['section']} ref={offerersRef}>
+        <Offerers
+          selectedOfferer={selectedOfferer}
+          isLoading={isLoading}
+          isUserOffererValidated={isUserOffererValidated}
+          hasAtLeastOnePhysicalVenue={hasAtLeastOnePhysicalVenue}
+          receivedOffererNames={receivedOffererNames}
+          onSelectedOffererChange={setSelectedOffererId}
+          cancelLoading={() => setIsLoading(false)}
+          venues={venues}
+        />
+      </section>
+
+      {isUserOffererValidated && hasNoVenueVisible && (
+        <section className={styles['step-section']}>
+          <VenueOfferSteps
+            hasVenue={!hasNoVenueVisible}
+            offererId={Number(selectedOffererId)}
+            offererHasBankAccount={Boolean(
+              selectedOfferer?.hasPendingBankAccount ||
+                selectedOfferer?.hasValidBankAccount
+            )}
           />
         </section>
+      )}
 
-        {isUserOffererValidated && hasNoVenueVisible && (
-          <section className={styles['step-section']}>
-            <VenueOfferSteps
-              hasVenue={!hasNoVenueVisible}
-              offererId={Number(selectedOffererId)}
-              offererHasBankAccount={Boolean(
-                selectedOfferer?.hasPendingBankAccount ||
-                  selectedOfferer?.hasValidBankAccount
-              )}
-            />
-          </section>
-        )}
+      <section className={styles['section']} ref={profileRef}>
+        <ProfileAndSupport />
 
-        <section className={styles['section']} ref={profileRef}>
-          <ProfileAndSupport />
-
-          <div className={styles['newsletter']}>
-            <Newsletter />
-          </div>
-        </section>
-      </div>
+        <div className={styles['newsletter']}>
+          <Newsletter />
+        </div>
+      </section>
 
       <TutorialDialog />
     </AppLayout>
