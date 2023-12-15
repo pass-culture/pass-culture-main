@@ -28,6 +28,7 @@ from pcapi.routes.serialization import BaseModel
 from pcapi.routes.serialization import base as base_serializers
 from pcapi.routes.serialization.educational_institutions import EducationalInstitutionResponseModel
 from pcapi.routes.serialization.national_programs import NationalProgramModel
+from pcapi.routes.shared.collective.serialization import offers as shared_offers
 from pcapi.serialization import utils
 from pcapi.serialization.utils import to_camel
 from pcapi.utils.date import format_into_utc_date
@@ -468,6 +469,10 @@ class PostCollectiveOfferBodyModel(BaseModel):
     # mandatory
     formats: typing.Sequence[subcategories.EacFormat] | None
 
+    @validator("students")
+    def validate_students(cls, students: list[str]) -> list[StudentLevels]:
+        return shared_offers.validate_students(students)
+
     @root_validator
     def validate_formats_and_subcategory(cls, values: dict) -> dict:
         # TODO(jeremieb): remove this validator when subcategory_id can
@@ -574,6 +579,12 @@ class PatchCollectiveOfferBodyModel(BaseModel, AccessibilityComplianceMixin):
     venueId: int | None
     nationalProgramId: int | None
     formats: typing.Sequence[subcategories.EacFormat] | None
+
+    @validator("students")
+    def validate_students(cls, students: list[str] | None) -> list[StudentLevels] | None:
+        if not students:
+            return None
+        return shared_offers.validate_students(students)
 
     @validator("name", allow_reuse=True)
     def validate_name(cls, name: str | None) -> str | None:
