@@ -20,6 +20,7 @@ from pcapi.domain.demarches_simplifiees import DMS_TOKEN_PRO_PREFIX
 from pcapi.routes.native.v1.serialization.common_models import AccessibilityComplianceMixin
 from pcapi.routes.serialization import BaseModel
 from pcapi.routes.serialization import base
+from pcapi.routes.shared.collective.serialization import offers as shared_offers
 from pcapi.serialization.utils import string_length_validator
 from pcapi.serialization.utils import string_to_boolean_field
 from pcapi.serialization.utils import to_camel
@@ -344,6 +345,12 @@ class EditVenueCollectiveDataBodyModel(BaseModel):
     _validate_collectiveAccessInformation = string_length_validator("collectiveAccessInformation", length=500)
     _validate_collectivePhone = string_length_validator("collectivePhone", length=50)
     _validate_collectiveEmail = string_length_validator("collectiveEmail", length=150)
+
+    @validator("collectiveStudents")
+    def validate_students(cls, students: list[str]) -> list[educational_models.StudentLevels] | None:
+        if not students:
+            return []
+        return shared_offers.validate_students(students)
 
     @validator("collectiveSubCategoryId")
     @classmethod

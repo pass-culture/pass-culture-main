@@ -3,11 +3,83 @@ from unittest.mock import patch
 import pytest
 
 from pcapi.core.categories import subcategories_v2 as subcategories
+from pcapi.core.educational import models
 import pcapi.core.educational.exceptions as educational_exceptions
 import pcapi.core.educational.factories as educational_factories
 from pcapi.core.educational.models import CollectiveOffer
 import pcapi.core.offerers.factories as offerers_factories
+from pcapi.core.testing import override_features
 import pcapi.core.users.factories as users_factories
+
+
+def base_offer_payload(
+    venue, domains=None, subcategory_id=None, template_id=None, national_program_id=None, formats=None
+) -> dict:
+    if domains is None:
+        domains = [educational_factories.EducationalDomainFactory().id]
+
+    if not subcategory_id:
+        subcategory_id = subcategories.SPECTACLE_REPRESENTATION.id
+
+    if not national_program_id:
+        national_program_id = educational_factories.NationalProgramFactory().id
+
+    if formats is None:
+        formats = [subcategories.EacFormat.CONCERT.value]
+
+    return {
+        "venueId": venue.id,
+        "description": "Ma super description",
+        "bookingEmails": ["offer1@example.com", "offer2@example.com"],
+        "domains": domains,
+        "durationMinutes": 60,
+        "name": "La pièce de théâtre",
+        "subcategoryId": subcategory_id,
+        "contactEmail": "pouet@example.com",
+        "contactPhone": "01 99 00 25 68",
+        "offerVenue": {
+            "addressType": "school",
+            "venueId": venue.id,
+            "otherAddress": "17 rue aléatoire",
+        },
+        "students": ["Lycée - Seconde", "Lycée - Première"],
+        "audioDisabilityCompliant": False,
+        "mentalDisabilityCompliant": True,
+        "motorDisabilityCompliant": False,
+        "visualDisabilityCompliant": False,
+        "interventionArea": ["75", "92", "93"],
+        "templateId": template_id,
+        "nationalProgramId": national_program_id,
+        "formats": formats,
+    }
+
+
+def assert_offer_values(offer, data, user, offerer):
+    # if there is no booking emails and the offer is build from a
+    # template, the booking emails are set using the contact email
+    if not data["bookingEmails"] and data["templateId"]:
+        assert offer.bookingEmails == [data["contactEmail"]]
+    else:
+        assert set(offer.bookingEmails) == set(data["bookingEmails"])
+    assert offer.subcategoryId == data["subcategoryId"]
+    assert offer.venueId == data["venueId"]
+    assert offer.durationMinutes == data["durationMinutes"]
+    assert offer.venue.managingOffererId == offerer.id
+    assert offer.motorDisabilityCompliant == data["motorDisabilityCompliant"]
+    assert offer.visualDisabilityCompliant == data["visualDisabilityCompliant"]
+    assert offer.audioDisabilityCompliant == data["audioDisabilityCompliant"]
+    assert offer.mentalDisabilityCompliant == data["mentalDisabilityCompliant"]
+    assert offer.contactEmail == data["contactEmail"]
+    assert offer.contactPhone == data["contactPhone"]
+    assert offer.offerVenue == data["offerVenue"]
+    assert offer.interventionArea == data["interventionArea"]
+    assert {st.value for st in offer.students} == set(data["students"])
+    assert {d.id for d in offer.domains} == set(data["domains"])
+    assert offer.description == data["description"]
+    assert offer.templateId == data["templateId"]
+    assert offer.author.full_name == user.full_name
+    assert offer.nationalProgramId == data["nationalProgramId"]
+    assert {fmt.value for fmt in offer.formats} == set(data["formats"])
 
 
 @pytest.mark.usefixtures("db_session")
@@ -15,172 +87,56 @@ class Returns200Test:
     def test_create_collective_offer(self, client):
         # Given
         venue = offerers_factories.VenueFactory()
-        template = educational_factories.CollectiveOfferTemplateFactory(venue=venue)
         offerer = venue.managingOfferer
         user = offerers_factories.UserOffererFactory(offerer=offerer, user__email="user@example.com").user
-        educational_domain1 = educational_factories.EducationalDomainFactory()
-        educational_domain2 = educational_factories.EducationalDomainFactory()
-        national_program = educational_factories.NationalProgramFactory()
+
+        data = base_offer_payload(venue=venue)
 
         # When
-        data = {
-            "venueId": venue.id,
-            "description": "Ma super description",
-            "bookingEmails": ["offer1@example.com", "offer2@example.com"],
-            "domains": [educational_domain1.id, educational_domain1.id, educational_domain2.id],
-            "durationMinutes": 60,
-            "name": "La pièce de théâtre",
-            "subcategoryId": subcategories.SPECTACLE_REPRESENTATION.id,
-            "contactEmail": "pouet@example.com",
-            "contactPhone": "01 99 00 25 68",
-            "offerVenue": {
-                "addressType": "school",
-                "venueId": venue.id,
-                "otherAddress": "17 rue aléatoire",
-            },
-            "students": ["Lycée - Seconde", "Lycée - Première"],
-            "audioDisabilityCompliant": False,
-            "mentalDisabilityCompliant": True,
-            "motorDisabilityCompliant": False,
-            "visualDisabilityCompliant": False,
-            "interventionArea": ["75", "92", "93"],
-            "templateId": template.id,
-            "nationalProgramId": national_program.id,
-            "formats": [subcategories.EacFormat.CONCERT.value],
-        }
         with patch("pcapi.core.offerers.api.can_offerer_create_educational_offer"):
             response = client.with_session_auth("user@example.com").post("/collective/offers", json=data)
 
         # Then
         assert response.status_code == 201
+
         offer_id = response.json["id"]
         offer = CollectiveOffer.query.get(offer_id)
-        assert offer.bookingEmails == ["offer1@example.com", "offer2@example.com"]
-        assert offer.subcategoryId == subcategories.SPECTACLE_REPRESENTATION.id
-        assert offer.venue == venue
-        assert offer.durationMinutes == 60
-        assert offer.venue.managingOffererId == offerer.id
-        assert offer.motorDisabilityCompliant is False
-        assert offer.visualDisabilityCompliant is False
-        assert offer.audioDisabilityCompliant is False
-        assert offer.mentalDisabilityCompliant is True
-        assert offer.mentalDisabilityCompliant is True
-        assert offer.contactEmail == "pouet@example.com"
-        assert offer.contactPhone == "01 99 00 25 68"
-        assert offer.offerVenue == {
-            "addressType": "school",
-            "venueId": venue.id,
-            "otherAddress": "17 rue aléatoire",
-        }
-        assert offer.interventionArea == ["75", "92", "93"]
-        assert len(offer.students) == 2
-        assert offer.students[0].value == "Lycée - Seconde"
-        assert offer.students[1].value == "Lycée - Première"
-        assert len(offer.domains) == 2
-        assert set(offer.domains) == {educational_domain1, educational_domain2}
-        assert offer.description == "Ma super description"
-        assert offer.templateId == template.id
-        assert offer.nationalProgramId == national_program.id
-        assert offer.formats == [subcategories.EacFormat.CONCERT]
-        assert offer.author == user
+
+        assert_offer_values(offer, data, user, offerer)
 
     def test_create_collective_offer_college_6(self, client):
         # Given
         venue = offerers_factories.VenueFactory()
-        template = educational_factories.CollectiveOfferTemplateFactory(venue=venue)
         offerer = venue.managingOfferer
-        offerers_factories.UserOffererFactory(offerer=offerer, user__email="user@example.com")
-        educational_domain1 = educational_factories.EducationalDomainFactory()
-        educational_domain2 = educational_factories.EducationalDomainFactory()
+        user = offerers_factories.UserOffererFactory(offerer=offerer, user__email="user@example.com").user
 
         # When
-        data = {
-            "venueId": venue.id,
-            "description": "Ma super description",
-            "bookingEmails": ["offer1@example.com", "offer2@example.com"],
-            "domains": [educational_domain1.id, educational_domain1.id, educational_domain2.id],
-            "durationMinutes": 60,
-            "name": "La pièce de théâtre",
-            "subcategoryId": subcategories.SPECTACLE_REPRESENTATION.id,
-            "contactEmail": "pouet@example.com",
-            "contactPhone": "01 99 00 25 68",
-            "offerVenue": {
-                "addressType": "school",
-                "venueId": venue.id,
-                "otherAddress": "17 rue aléatoire",
-            },
-            "students": ["Collège - 6e"],
-            "audioDisabilityCompliant": False,
-            "mentalDisabilityCompliant": True,
-            "motorDisabilityCompliant": False,
-            "visualDisabilityCompliant": False,
-            "interventionArea": ["75", "92", "93"],
-            "templateId": template.id,
-        }
+        data = {**base_offer_payload(venue=venue), "students": ["Collège - 6e"]}
         with patch("pcapi.core.offerers.api.can_offerer_create_educational_offer"):
             response = client.with_session_auth("user@example.com").post("/collective/offers", json=data)
 
         # Then
         assert response.status_code == 201
+
         offer_id = response.json["id"]
         offer = CollectiveOffer.query.get(offer_id)
-        assert offer.bookingEmails == ["offer1@example.com", "offer2@example.com"]
-        assert offer.subcategoryId == subcategories.SPECTACLE_REPRESENTATION.id
-        assert offer.venue == venue
-        assert offer.durationMinutes == 60
-        assert offer.venue.managingOffererId == offerer.id
-        assert offer.motorDisabilityCompliant is False
-        assert offer.visualDisabilityCompliant is False
-        assert offer.audioDisabilityCompliant is False
-        assert offer.mentalDisabilityCompliant is True
-        assert offer.mentalDisabilityCompliant is True
-        assert offer.contactEmail == "pouet@example.com"
-        assert offer.contactPhone == "01 99 00 25 68"
-        assert offer.offerVenue == {
-            "addressType": "school",
-            "venueId": venue.id,
-            "otherAddress": "17 rue aléatoire",
-        }
-        assert offer.interventionArea == ["75", "92", "93"]
-        assert len(offer.students) == 1
-        assert offer.students[0].value == "Collège - 6e"
-        assert len(offer.domains) == 2
-        assert set(offer.domains) == {educational_domain1, educational_domain2}
-        assert offer.description == "Ma super description"
-        assert offer.templateId == template.id
-        assert offer.author.full_name == "René Coty"
+
+        assert_offer_values(offer, data, user, offerer)
 
     def test_create_collective_offer_empty_intervention_area(self, client):
+        """Test that intervention area can be empty if offerVenue is set
+        to offererVenue
+        """
         # Given
         venue = offerers_factories.VenueFactory()
         offerer = venue.managingOfferer
         offerers_factories.UserOffererFactory(offerer=offerer, user__email="user@example.com")
-        educational_domain = educational_factories.EducationalDomainFactory()
 
         # When
-        data = {
-            "venueId": venue.id,
-            "bookingEmails": ["offer1@example.com", "offer2@example.com"],
-            "domains": [educational_domain.id],
-            "description": "Ma super description",
-            "durationMinutes": 60,
-            "name": "La pièce de théâtre",
-            "subcategoryId": subcategories.SPECTACLE_REPRESENTATION.id,
-            "contactEmail": "pouet@example.com",
-            "contactPhone": "01 99 00 25 68",
-            "offerVenue": {
-                "addressType": "offererVenue",
-                "otherAddress": "",
-                "venueId": venue.id,
-            },
-            "students": ["Lycée - Seconde"],
-            "audioDisabilityCompliant": False,
-            "mentalDisabilityCompliant": True,
-            "motorDisabilityCompliant": False,
-            "visualDisabilityCompliant": False,
-            "interventionArea": [],
-            "templateId": None,
-        }
+        data = base_offer_payload(venue=venue)
+        data["interventionArea"] = []
+        data["offerVenue"] = {"addressType": "offererVenue", "otherAddress": "", "venueId": venue.id}
+
         with patch("pcapi.core.offerers.api.can_offerer_create_educational_offer"):
             response = client.with_session_auth("user@example.com").post("/collective/offers", json=data)
 
@@ -188,48 +144,60 @@ class Returns200Test:
         assert response.status_code == 201
 
     def test_create_offer_from_template_no_domains_nor_intervention_area_nor_booking_emails(self, client):
+        """Ensure that if a template id is set, domains, intervention
+        area and booking emails can be missing
+        """
         # Given
         venue = offerers_factories.VenueFactory()
         template = educational_factories.CollectiveOfferTemplateFactory(venue=venue)
         offerer = venue.managingOfferer
-        offerers_factories.UserOffererFactory(offerer=offerer, user__email="user@example.com")
+        user = offerers_factories.UserOffererFactory(offerer=offerer, user__email="user@example.com").user
 
         # When
         data = {
-            "venueId": venue.id,
-            "description": "Ma super description",
-            "bookingEmails": [],
-            "domains": [],
-            "durationMinutes": 60,
-            "name": "La pièce de théâtre",
-            "subcategoryId": subcategories.SPECTACLE_REPRESENTATION.id,
-            "contactEmail": "pouet@example.com",
-            "contactPhone": "01 99 00 25 68",
-            "offerVenue": {
-                "addressType": "school",
-                "venueId": venue.id,
-                "otherAddress": "17 rue aléatoire",
-            },
-            "students": ["Lycée - Seconde", "Lycée - Première"],
-            "audioDisabilityCompliant": False,
-            "mentalDisabilityCompliant": True,
-            "motorDisabilityCompliant": False,
-            "visualDisabilityCompliant": False,
+            **base_offer_payload(venue=venue, domains=[], template_id=template.id),
             "interventionArea": [],
-            "templateId": template.id,
+            "bookingEmails": [],
         }
+
         with patch("pcapi.core.offerers.api.can_offerer_create_educational_offer"):
             response = client.with_session_auth("user@example.com").post("/collective/offers", json=data)
 
         # Then
         assert response.status_code == 201
+
         offer_id = response.json["id"]
         offer = CollectiveOffer.query.get(offer_id)
-        assert offer.interventionArea == []
-        assert len(offer.domains) == 0
-        assert offer.bookingEmails == [offer.contactEmail]
-        assert offer.templateId == template.id
-        assert offer.author.full_name == "René Coty"
+
+        assert_offer_values(offer, data, user, offerer)
+
+    @override_features(WIP_ENABLE_MARSEILLE=True)
+    def test_create_collective_offer_primary_level(self, client):
+        venue = offerers_factories.VenueFactory()
+        offerer = venue.managingOfferer
+        offerers_factories.UserOffererFactory(offerer=offerer, user__email="user@example.com")
+
+        data = {**base_offer_payload(venue=venue), "students": ["Écoles innovantes Marseille en Grand : maternelle"]}
+        with patch("pcapi.core.offerers.api.can_offerer_create_educational_offer"):
+            response = client.with_session_auth("user@example.com").post("/collective/offers", json=data)
+
+        assert response.status_code == 201
+
+        offer = CollectiveOffer.query.get(response.json["id"])
+        assert offer.students == [models.StudentLevels.ECOLES_INNOVANTES_MARSEILLE_EN_GRAND_MATERNELLE]
+
+    @override_features(WIP_ENABLE_MARSEILLE=False)
+    def test_create_collective_offer_primary_level_FF_disabled(self, client):
+        venue = offerers_factories.VenueFactory()
+        offerer = venue.managingOfferer
+        offerers_factories.UserOffererFactory(offerer=offerer, user__email="user@example.com")
+
+        data = {**base_offer_payload(venue=venue), "students": ["Écoles innovantes Marseille en Grand : maternelle"]}
+        with patch("pcapi.core.offerers.api.can_offerer_create_educational_offer"):
+            response = client.with_session_auth("user@example.com").post("/collective/offers", json=data)
+
+        assert response.status_code == 400
+        assert "students" in response.json
 
 
 @pytest.mark.usefixtures("db_session")
@@ -242,29 +210,7 @@ class Returns403Test:
         offerers_factories.UserOffererFactory(offerer=offerer, user__email="user@example.com")
 
         # When
-        data = {
-            "venueId": venue.id,
-            "description": "Ma super description",
-            "bookingEmails": ["offer1@example.com", "offer2@example.com"],
-            "durationMinutes": 60,
-            "domains": [educational_factories.EducationalDomainFactory().id],
-            "name": "La pièce de théâtre",
-            "subcategoryId": subcategories.SPECTACLE_REPRESENTATION.id,
-            "contactEmail": "pouet@example.com",
-            "contactPhone": "01 99 00 25 68",
-            "offerVenue": {
-                "addressType": "school",
-                "venueId": venue.id,
-                "otherAddress": "17 rue aléatoire",
-            },
-            "students": ["Lycée - Seconde", "Lycée - Première"],
-            "audioDisabilityCompliant": False,
-            "mentalDisabilityCompliant": True,
-            "motorDisabilityCompliant": False,
-            "visualDisabilityCompliant": False,
-            "interventionArea": ["75", "92", "93"],
-            "templateId": None,
-        }
+        data = base_offer_payload(venue=venue)
         with patch("pcapi.core.offerers.api.can_offerer_create_educational_offer"):
             response = client.with_session_auth(user.email).post("/collective/offers", json=data)
 
@@ -282,29 +228,7 @@ class Returns403Test:
         offerers_factories.UserOffererFactory(offerer=offerer, user__email="user@example.com")
 
         # When
-        data = {
-            "venueId": venue.id,
-            "description": "Ma super description",
-            "bookingEmails": ["offer1@example.com", "offer2@example.com"],
-            "durationMinutes": 60,
-            "domains": [educational_factories.EducationalDomainFactory().id],
-            "name": "La pièce de théâtre",
-            "subcategoryId": subcategories.SPECTACLE_REPRESENTATION.id,
-            "contactEmail": "pouet@example.com",
-            "contactPhone": "01 99 00 25 68",
-            "offerVenue": {
-                "addressType": "school",
-                "venueId": venue.id,
-                "otherAddress": "17 rue aléatoire",
-            },
-            "students": ["Lycée - Seconde", "Lycée - Première"],
-            "audioDisabilityCompliant": False,
-            "mentalDisabilityCompliant": True,
-            "motorDisabilityCompliant": False,
-            "visualDisabilityCompliant": False,
-            "interventionArea": ["75", "92", "93"],
-            "templateId": None,
-        }
+        data = base_offer_payload(venue=venue)
         with patch("pcapi.core.offerers.api.can_offerer_create_educational_offer", side_effect=raise_ac):
             response = client.with_session_auth("user@example.com").post("/collective/offers", json=data)
 
@@ -323,28 +247,7 @@ class Returns400Test:
         offerers_factories.UserOffererFactory(offerer=offerer, user=user)
 
         # When
-        data = {
-            "venueId": venue.id,
-            "bookingEmails": ["offer1@example.com", "offer2@example.com"],
-            "durationMinutes": 60,
-            "description": "Ma super description",
-            "name": "La pièce de théâtre",
-            "subcategoryId": "Pouet",
-            "contactEmail": "pouet@example.com",
-            "contactPhone": "01 99 00 25 68",
-            "offerVenue": {
-                "addressType": "school",
-                "venueId": 125,
-                "otherAddress": "17 rue aléatoire",
-            },
-            "students": ["Lycée - Seconde", "Lycée - Première"],
-            "audioDisabilityCompliant": False,
-            "mentalDisabilityCompliant": True,
-            "motorDisabilityCompliant": False,
-            "visualDisabilityCompliant": False,
-            "interventionArea": ["75", "92", "93"],
-            "templateId": None,
-        }
+        data = base_offer_payload(venue=venue, subcategory_id="pouet")
         with patch("pcapi.core.offerers.api.can_offerer_create_educational_offer"):
             response = client.with_session_auth(user.email).post("/collective/offers", json=data)
 
@@ -360,28 +263,7 @@ class Returns400Test:
         offerers_factories.UserOffererFactory(offerer=offerer, user=user)
 
         # When
-        data = {
-            "venueId": venue.id,
-            "description": "Ma super description",
-            "bookingEmails": ["offer1@example.com", "offer2@example.com"],
-            "durationMinutes": 60,
-            "name": "La pièce de théâtre",
-            "subcategoryId": subcategories.OEUVRE_ART.id,
-            "contactEmail": "pouet@example.com",
-            "contactPhone": "01 99 00 25 68",
-            "offerVenue": {
-                "addressType": "school",
-                "venueId": 125,
-                "otherAddress": "17 rue aléatoire",
-            },
-            "students": ["Lycée - Seconde", "Lycée - Première"],
-            "audioDisabilityCompliant": False,
-            "mentalDisabilityCompliant": True,
-            "motorDisabilityCompliant": False,
-            "visualDisabilityCompliant": False,
-            "interventionArea": ["75", "92", "93"],
-            "templateId": None,
-        }
+        data = base_offer_payload(venue=venue, subcategory_id=subcategories.OEUVRE_ART.id)
         with patch("pcapi.core.offerers.api.can_offerer_create_educational_offer"):
             response = client.with_session_auth(user.email).post("/collective/offers", json=data)
 
@@ -389,7 +271,7 @@ class Returns400Test:
         assert response.status_code == 400
         assert CollectiveOffer.query.count() == 0
 
-    def test_create_collective_offer_no_collective__category(self, client):
+    def test_create_collective_offer_no_collective_category(self, client):
         # Given
         user = users_factories.UserFactory()
         venue = offerers_factories.VenueFactory()
@@ -397,28 +279,7 @@ class Returns400Test:
         offerers_factories.UserOffererFactory(offerer=offerer, user=user)
 
         # When
-        data = {
-            "venueId": venue.id,
-            "description": "Ma super description",
-            "bookingEmails": ["offer1@example.com", "offer2@example.com"],
-            "durationMinutes": 60,
-            "name": "La pièce de théâtre",
-            "subcategoryId": subcategories.SUPPORT_PHYSIQUE_FILM.id,
-            "contactEmail": "pouet@example.com",
-            "contactPhone": "01 99 00 25 68",
-            "offerVenue": {
-                "addressType": "school",
-                "venueId": 125,
-                "otherAddress": "17 rue aléatoire",
-            },
-            "students": ["Lycée - Seconde", "Lycée - Première"],
-            "audioDisabilityCompliant": False,
-            "mentalDisabilityCompliant": True,
-            "motorDisabilityCompliant": False,
-            "visualDisabilityCompliant": False,
-            "interventionArea": ["75", "92", "93"],
-            "templateId": None,
-        }
+        data = base_offer_payload(venue=venue, subcategory_id=subcategories.SUPPORT_PHYSIQUE_FILM.id)
         with patch("pcapi.core.offerers.api.can_offerer_create_educational_offer"):
             response = client.with_session_auth(user.email).post("/collective/offers", json=data)
 
@@ -434,29 +295,7 @@ class Returns400Test:
         offerers_factories.UserOffererFactory(offerer=offerer, user=user)
 
         # When
-        data = {
-            "venueId": venue.id,
-            "description": "Ma super description",
-            "bookingEmails": ["offer1@example.com", "offer2@example.com"],
-            "durationMinutes": 60,
-            "domains": [],
-            "name": "La pièce de théâtre",
-            "subcategoryId": subcategories.SPECTACLE_REPRESENTATION.id,
-            "contactEmail": "pouet@example.com",
-            "contactPhone": "01 99 00 25 68",
-            "offerVenue": {
-                "addressType": "school",
-                "venueId": 125,
-                "otherAddress": "17 rue aléatoire",
-            },
-            "students": ["Lycée - Seconde", "Lycée - Première"],
-            "audioDisabilityCompliant": False,
-            "mentalDisabilityCompliant": True,
-            "motorDisabilityCompliant": False,
-            "visualDisabilityCompliant": False,
-            "interventionArea": ["75", "92", "93"],
-            "templateId": None,
-        }
+        data = base_offer_payload(venue=venue, domains=[])
         with patch("pcapi.core.offerers.api.can_offerer_create_educational_offer"):
             response = client.with_session_auth(user.email).post("/collective/offers", json=data)
 
@@ -472,33 +311,10 @@ class Returns404Test:
         venue = offerers_factories.VenueFactory()
         offerer = venue.managingOfferer
         offerers_factories.UserOffererFactory(offerer=offerer, user__email="user@example.com")
-        educational_domain1 = educational_factories.EducationalDomainFactory()
-        educational_domain2 = educational_factories.EducationalDomainFactory()
+        domain = educational_factories.EducationalDomainFactory()
 
         # When
-        data = {
-            "venueId": venue.id,
-            "description": "Ma super description",
-            "bookingEmails": ["offer1@example.com", "offer2@example.com"],
-            "domains": [0, educational_domain1.id, educational_domain2.id],
-            "durationMinutes": 60,
-            "name": "La pièce de théâtre",
-            "subcategoryId": subcategories.SPECTACLE_REPRESENTATION.id,
-            "contactEmail": "pouet@example.com",
-            "contactPhone": "01 99 00 25 68",
-            "offerVenue": {
-                "addressType": "school",
-                "venueId": venue.id,
-                "otherAddress": "17 rue aléatoire",
-            },
-            "students": ["Lycée - Seconde", "Lycée - Première"],
-            "audioDisabilityCompliant": False,
-            "mentalDisabilityCompliant": True,
-            "motorDisabilityCompliant": False,
-            "visualDisabilityCompliant": False,
-            "interventionArea": ["75", "92", "93"],
-            "templateId": None,
-        }
+        data = base_offer_payload(venue=venue, domains=[0, domain.id])
 
         with patch("pcapi.core.offerers.api.can_offerer_create_educational_offer"):
             response = client.with_session_auth("user@example.com").post("/collective/offers", json=data)
@@ -510,37 +326,11 @@ class Returns404Test:
     def test_create_collective_offer_with_unknown_national_program(self, client):
         # Given
         venue = offerers_factories.VenueFactory()
-        template = educational_factories.CollectiveOfferTemplateFactory(venue=venue)
         offerer = venue.managingOfferer
         offerers_factories.UserOffererFactory(offerer=offerer, user__email="user@example.com")
-        educational_domain1 = educational_factories.EducationalDomainFactory()
-        educational_domain2 = educational_factories.EducationalDomainFactory()
 
         # When
-        data = {
-            "venueId": venue.id,
-            "description": "Ma super description",
-            "bookingEmails": ["offer1@example.com", "offer2@example.com"],
-            "domains": [educational_domain1.id, educational_domain1.id, educational_domain2.id],
-            "durationMinutes": 60,
-            "name": "La pièce de théâtre",
-            "subcategoryId": subcategories.SPECTACLE_REPRESENTATION.id,
-            "contactEmail": "pouet@example.com",
-            "contactPhone": "01 99 00 25 68",
-            "offerVenue": {
-                "addressType": "school",
-                "venueId": venue.id,
-                "otherAddress": "17 rue aléatoire",
-            },
-            "students": ["Lycée - Seconde", "Lycée - Première"],
-            "audioDisabilityCompliant": False,
-            "mentalDisabilityCompliant": True,
-            "motorDisabilityCompliant": False,
-            "visualDisabilityCompliant": False,
-            "interventionArea": ["75", "92", "93"],
-            "templateId": template.id,
-            "nationalProgramId": -1,
-        }
+        data = base_offer_payload(venue=venue, national_program_id=-1)
 
         with patch("pcapi.core.offerers.api.can_offerer_create_educational_offer"):
             response = client.with_session_auth("user@example.com").post("/collective/offers", json=data)
@@ -554,33 +344,9 @@ class Returns404Test:
         venue = offerers_factories.VenueFactory()
         offerer = venue.managingOfferer
         offerers_factories.UserOffererFactory(offerer=offerer, user__email="user@example.com")
-        educational_domain1 = educational_factories.EducationalDomainFactory()
-        educational_domain2 = educational_factories.EducationalDomainFactory()
 
         # When
-        data = {
-            "venueId": venue.id,
-            "bookingEmails": ["offer1@example.com", "offer2@example.com"],
-            "description": "Ma super description",
-            "domains": [educational_domain1.id, educational_domain1.id, educational_domain2.id],
-            "durationMinutes": 60,
-            "name": "La pièce de théâtre",
-            "subcategoryId": subcategories.SPECTACLE_REPRESENTATION.id,
-            "contactEmail": "pouet@example.com",
-            "contactPhone": "01 99 00 25 68",
-            "offerVenue": {
-                "addressType": "school",
-                "venueId": venue.id,
-                "otherAddress": "17 rue aléatoire",
-            },
-            "students": ["Lycée - Seconde", "Lycée - Première"],
-            "audioDisabilityCompliant": False,
-            "mentalDisabilityCompliant": True,
-            "motorDisabilityCompliant": False,
-            "visualDisabilityCompliant": False,
-            "interventionArea": ["75", "92", "93"],
-            "templateId": 1234567890,
-        }
+        data = base_offer_payload(venue=venue, template_id=1234567890)
 
         with patch("pcapi.core.offerers.api.can_offerer_create_educational_offer"):
             response = client.with_session_auth("user@example.com").post("/collective/offers", json=data)
@@ -595,32 +361,10 @@ class Returns404Test:
         educational_factories.CollectiveOfferTemplateFactory(venue=venue)
         offerer = venue.managingOfferer
         offerers_factories.UserOffererFactory(offerer=offerer, user__email="user@example.com")
-        educational_domain1 = educational_factories.EducationalDomainFactory()
-        educational_domain2 = educational_factories.EducationalDomainFactory()
 
         # When
-        data = {
-            "venueId": venue.id,
-            "description": "Ma super description",
-            "bookingEmails": [],
-            "domains": [educational_domain1.id, educational_domain1.id, educational_domain2.id],
-            "durationMinutes": 60,
-            "name": "La pièce de théâtre",
-            "subcategoryId": subcategories.SPECTACLE_REPRESENTATION.id,
-            "contactEmail": "pouet@example.com",
-            "contactPhone": "01 99 00 25 68",
-            "offerVenue": {
-                "addressType": "school",
-                "venueId": venue.id,
-                "otherAddress": "17 rue aléatoire",
-            },
-            "students": ["Lycée - Seconde", "Lycée - Première"],
-            "audioDisabilityCompliant": False,
-            "mentalDisabilityCompliant": True,
-            "motorDisabilityCompliant": False,
-            "visualDisabilityCompliant": False,
-            "interventionArea": ["75", "92", "93"],
-        }
+        data = {**base_offer_payload(venue=venue), "bookingEmails": []}
+
         with patch("pcapi.core.offerers.api.can_offerer_create_educational_offer"):
             response = client.with_session_auth("user@example.com").post("/collective/offers", json=data)
 

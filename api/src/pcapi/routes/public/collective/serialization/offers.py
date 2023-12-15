@@ -17,6 +17,7 @@ from pcapi.routes.serialization import BaseModel
 from pcapi.routes.serialization import collective_offers_serialize
 from pcapi.routes.serialization.collective_offers_serialize import validate_venue_id
 from pcapi.routes.serialization.national_programs import NationalProgramModel
+from pcapi.routes.shared.collective.serialization import offers as shared_offers
 from pcapi.serialization.utils import to_camel
 from pcapi.utils import email as email_utils
 from pcapi.utils import phone_number
@@ -123,19 +124,6 @@ def validate_price_detail(price_detail: str | None) -> str | None:
     return price_detail
 
 
-def validate_students(students: list[str] | None) -> list[StudentLevels]:
-    if not students:
-        raise ValueError("La liste des niveaux scolaires ne peut pas être vide")
-    output = []
-    for student in students:
-        try:
-            output.append(getattr(StudentLevels, student))
-        except AttributeError:
-            permitted = '", "'.join(StudentLevels.__members__.keys())
-            raise ValueError(f'Value is not a valid enumeration member; permitted: ["{permitted}"]')
-    return output
-
-
 def validate_image_file(image_file: str | None) -> str | None:
     if image_file is None:
         return None
@@ -165,10 +153,6 @@ def beginning_datetime_validator(field_name: str) -> classmethod:
 
 def price_detail_validator(field_name: str) -> classmethod:
     return validator(field_name, allow_reuse=True)(validate_price_detail)
-
-
-def students_validator(field_name: str) -> classmethod:
-    return validator(field_name, allow_reuse=True)(validate_students)
 
 
 def phone_number_validator(field_name: str) -> classmethod:
@@ -398,11 +382,14 @@ class PostCollectiveOfferBodyModel(BaseModel):
     _validate_beginning_datetime = beginning_datetime_validator("beginning_datetime")
     _validate_booking_limit_datetime = booking_limit_datetime_validator("booking_limit_datetime")
     _validate_educational_price_detail = price_detail_validator("educational_price_detail")
-    _validate_students = students_validator("students")
     _validate_contact_phone = phone_number_validator("contact_phone")
     _validate_booking_emails = emails_validator("booking_emails")
     _validate_contact_email = email_validator("contact_email")
     _validate_image_file = image_file_validator("image_file")
+
+    @validator("students")
+    def validate_students(cls, students: list[str]) -> list[StudentLevels]:
+        return shared_offers.validate_students(students)
 
     @root_validator
     def validate_formats_and_subcategory(cls, values: dict) -> dict:
@@ -501,10 +488,17 @@ class PatchCollectiveOfferBodyModel(BaseModel):
     _validate_total_price = price_validator("price")
     _validate_educational_price_detail = price_detail_validator("educationalPriceDetail")
     _validate_beginning_datetime = beginning_datetime_validator("beginningDatetime")
-    _validate_students = students_validator("students")
     _validate_contact_phone = phone_number_validator("contactPhone")
     _validate_booking_emails = emails_validator("bookingEmails")
     _validate_contact_email = email_validator("contactEmail")
+
+    @validator("students")
+    def validate_students(cls, students: list[str] | None) -> list[StudentLevels] | None:
+        # TODO(jeremieb): normalize students fields: use enum, not str
+        if not students:
+            return None
+
+        return shared_offers.validate_students(students)
 
     @validator("domains")
     def validate_domains(cls, domains: list[int]) -> list[int]:

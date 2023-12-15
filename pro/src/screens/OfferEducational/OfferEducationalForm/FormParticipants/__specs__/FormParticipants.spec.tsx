@@ -29,7 +29,7 @@ describe('FormParticipants', () => {
   }
   it('should render all options with default value', async () => {
     renderFormParticipants(participants)
-    expect(await screen.findAllByRole('checkbox')).toHaveLength(10)
+    expect(await screen.findAllByRole('checkbox')).toHaveLength(12)
     expect(
       screen.getByRole('checkbox', { name: StudentLevels.LYC_E_PREMI_RE })
     ).toBeChecked()
