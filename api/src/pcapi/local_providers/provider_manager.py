@@ -1,11 +1,17 @@
+from csv import DictWriter
+from datetime import datetime
 import logging
+from pathlib import Path
 from typing import Callable
+from typing import TYPE_CHECKING
 
 import sqlalchemy as sqla
 import sqlalchemy.orm as sqla_orm
 from urllib3 import exceptions as urllib3_exceptions
 
+from pcapi import settings
 import pcapi.connectors.ems as ems_connectors
+from pcapi.connectors.googledrive import get_backend
 import pcapi.connectors.notion as notion_connector
 from pcapi.core.history import api as history_api
 from pcapi.core.history import models as history_models
@@ -19,6 +25,7 @@ import pcapi.local_providers
 from pcapi.local_providers.cinema_providers.ems.ems_stocks import EMSStocks
 from pcapi.local_providers.provider_api import synchronize_provider_api
 from pcapi.models import db
+from pcapi.models.feature import FeatureToggle
 from pcapi.repository import repository
 from pcapi.repository import transaction
 from pcapi.scheduled_tasks.logger import CronStatus
@@ -26,6 +33,8 @@ from pcapi.scheduled_tasks.logger import build_cron_log_message
 from pcapi.utils import requests
 
 
+if TYPE_CHECKING:
+    from pcapi.connectors.serialization.ems_serializers import Site
 logger = logging.getLogger(__name__)
 
 
@@ -163,7 +172,12 @@ def synchronize_ems_venue_provider(venue_provider: provider_models.VenueProvider
 def collect_elligible_venues_and_activate_ems_sync() -> None:
     """
     Switch Allocine synchonization to EMS synchronization
+
+    Also write into a file all cinemas available for synchronization
+    that don't have one yet.
     """
+    should_log_available_cinemas_for_sync = FeatureToggle.LOG_EMS_CINEMAS_AVAILABLE_FOR_SYNC.is_active()
+
     with transaction():
         connector = ems_connectors.EMSSitesConnector()
 
@@ -176,7 +190,12 @@ def collect_elligible_venues_and_activate_ems_sync() -> None:
         price_rules_to_delete: list[int] = []
 
         ems_provider_id = providers_repository.get_provider_by_local_class("EMSStocks").id
-        available_sites_by_allocine_id = {venue.allocine_id: venue for venue in connector.get_available_sites()}
+        available_sites_by_allocine_id: dict[str, Site] = {}
+        available_sites_by_cinema_id: dict[str, Site] = {}
+
+        for site in connector.get_available_sites():
+            available_sites_by_allocine_id[site.allocine_id] = site
+            available_sites_by_cinema_id[site.id] = site
 
         allocine_venue_provider_aliased = sqla_orm.aliased(provider_models.AllocineVenueProvider, flat=True)
 
@@ -199,6 +218,18 @@ def collect_elligible_venues_and_activate_ems_sync() -> None:
             .options(sqla_orm.joinedload(Venue.allocinePivot))
             .all()
         )
+
+        cinemas_aldready_activated = {
+            cinema_id
+            for cinema_id, in (
+                provider_models.CinemaProviderPivot.query.join(
+                    provider_models.EMSCinemaDetails,
+                    provider_models.CinemaProviderPivot.id == provider_models.EMSCinemaDetails.cinemaProviderPivotId,
+                )
+                .with_entities(provider_models.CinemaProviderPivot.idAtProvider)
+                .all()
+            )
+        }
 
         for venue_to_activate in venues_to_activate:
             allocine_venue_provider = venue_to_activate.venueProviders[0]
@@ -304,3 +335,29 @@ def collect_elligible_venues_and_activate_ems_sync() -> None:
                         "venue_siret": venue.siret,
                     },
                 )
+
+        if should_log_available_cinemas_for_sync:
+            if venues_left_to_be_activated := set(available_sites_by_cinema_id).difference(cinemas_aldready_activated):
+                file_name = f"{datetime.today().date().isoformat()}.csv"
+                path = Path(f"/tmp/{file_name}")
+                with open(path, "w", encoding="utf-8") as f:
+                    header = ["cinema", "siret", "ems_id", "allocine_id", "address", "zip_code", "city"]
+                    writer = DictWriter(f, fieldnames=header)
+                    writer.writeheader()
+
+                    for cinema_id in venues_left_to_be_activated:
+                        cinema = available_sites_by_cinema_id[cinema_id]
+                        row = {
+                            "cinema": cinema.name,
+                            "siret": cinema.siret,
+                            "ems_id": cinema.id,
+                            "allocine_id": cinema.allocine_id,
+                            "address": cinema.address,
+                            "zip_code": cinema.zip_code,
+                            "city": cinema.city,
+                        }
+                        writer.writerow(row)
+
+                gdrive_backend = get_backend()
+                file_id = gdrive_backend.create_file(settings.EMS_GOOGLE_DRIVE_FOLDER, file_name, path)
+                logger.info("Successfully export cinemas available for sync under file %s", file_id)
