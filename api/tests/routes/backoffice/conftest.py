@@ -580,16 +580,18 @@ def adage_tag_fixture():
 @pytest.fixture(name="offerer_tags")
 def offerer_tags_fixture():
     category = offerers_factories.OffererTagCategoryFactory(name="homologation", label="Homologation")
+    other_category = offerers_factories.OffererTagCategoryFactory(name="comptage", label="Comptage partenaires")
     tags = tuple(
         offerers_factories.OffererTagFactory(label=label, categories=[category])
         for label in ("Top acteur", "Collectivité", "Établissement public")
     )
+    tags = tags + tuple([offerers_factories.OffererTagFactory(label="Festival", categories=[other_category])])
     return tags
 
 
 @pytest.fixture(name="offerers_to_be_validated")
 def offerers_to_be_validated_fixture(offerer_tags):
-    top_tag, collec_tag, public_tag = offerer_tags
+    top_tag, collec_tag, public_tag, festival_tag = offerer_tags
 
     no_tag = offerers_factories.NotValidatedOffererFactory(
         name="A", siren="123001001", address=None, postalCode="35000", city="Rennes"
@@ -616,6 +618,7 @@ def offerers_to_be_validated_fixture(offerer_tags):
         offerers_factories.OffererTagMappingFactory(tagId=collec_tag.id, offererId=offerer.id)
     for offerer in (public, top_public):
         offerers_factories.OffererTagMappingFactory(tagId=public_tag.id, offererId=offerer.id)
+        offerers_factories.OffererTagMappingFactory(tagId=festival_tag.id, offererId=offerer.id)
 
     offerers_factories.UserOffererFactory(
         offerer=top, user__firstName="Sadi", user__lastName="Carnot", user__email="sadi@example.com"
@@ -644,7 +647,7 @@ def offerers_to_be_validated_fixture(offerer_tags):
 
 @pytest.fixture(name="user_offerer_to_be_validated")
 def user_offerer_to_be_validated_fixture(offerer_tags):
-    top_tag, collec_tag, public_tag = offerer_tags
+    top_tag, collec_tag, public_tag, _ = offerer_tags
 
     no_tag = offerers_factories.NotValidatedUserOffererFactory(
         user__email="a@example.com",

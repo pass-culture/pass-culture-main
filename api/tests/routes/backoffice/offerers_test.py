@@ -1233,6 +1233,13 @@ class ListOfferersToValidateTest(GetEndpointHelper):
             offerers_factories.OffererTagCategoryMappingFactory(tagId=tag.id, categoryId=category.id)
             offerers_factories.OffererTagMappingFactory(tagId=tag.id, offererId=user_offerer.offerer.id)
 
+            other_category_tag = offerers_factories.OffererTagFactory(label="Festival")
+            other_category = offerers_factories.OffererTagCategoryFactory(name="spectacle", label="Spectacles")
+            offerers_factories.OffererTagCategoryMappingFactory(
+                tagId=other_category_tag.id, categoryId=other_category.id
+            )
+            offerers_factories.OffererTagMappingFactory(tagId=other_category_tag.id, offererId=user_offerer.offerer.id)
+
             commenter = users_factories.AdminFactory(firstName="Inspecteur", lastName="Validateur")
             history_factories.ActionHistoryFactory(
                 actionDate=datetime.datetime(2022, 10, 3, 12, 0),
@@ -1278,7 +1285,8 @@ class ListOfferersToValidateTest(GetEndpointHelper):
                 assert rows[0]["Top Acteur"] == ""  # no text
             else:
                 assert "Top Acteur" not in rows[0]
-            assert rows[0]["Tags structure"] == tag.label
+            assert tag.label in rows[0]["Tags structure"]
+            assert other_category_tag.label in rows[0]["Tags structure"]
             assert rows[0]["Date de la demande"] == "03/10/2022"
             assert rows[0]["Dernier commentaire"] == "Houlala"
             assert rows[0]["SIREN"] == user_offerer.offerer.siren
@@ -1402,6 +1410,7 @@ class ListOfferersToValidateTest(GetEndpointHelper):
                 (["Collectivité"], {"C", "E"}),
                 (["Établissement public"], {"D", "F"}),
                 (["Établissement public", "Top acteur"], {"F"}),
+                (["Festival"], {"D", "F"}),
             ),
         )
         def test_list_filtering_by_tags(
@@ -2918,8 +2927,8 @@ class ListOffererTagsTest(GetEndpointHelper):
         assert rows[0]["Description"] == offerer_tag.description
         assert rows[0]["Catégories"] == category.label
 
-    def test_list_offerer_tag_categories(self, authenticated_client, offerer_tags):
-        # fixture + second category
+    def test_list_offerer_tag_categories(self, authenticated_client):
+        offerers_factories.OffererTagCategoryFactory(name="homologation", label="Homologation")
         offerers_factories.OffererTagCategoryFactory(name="comptage", label="Comptage partenaires")
 
         with assert_num_queries(self.expected_num_queries):
@@ -3148,7 +3157,7 @@ class CreateOffererTagCategoryTest(PostEndpointHelper):
             html_parser.extract_alert(authenticated_client.get(response.location).data) == "Cette catégorie existe déjà"
         )
 
-        assert offerers_models.OffererTagCategory.query.count() == 1
+        assert offerers_models.OffererTagCategory.query.count() == 2  # 2 categories in fixture
 
 
 class GetIndividualOffererSubscriptionTest(GetEndpointHelper):

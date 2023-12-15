@@ -132,6 +132,15 @@ def _apply_query_filters(
     return query
 
 
+def _get_homologation_tags_subquery() -> sa.sql.selectable.ScalarSelect:
+    return (
+        _get_tags_subquery()
+        .join(offerers_models.OffererTagCategoryMapping)
+        .join(offerers_models.OffererTagCategory)
+        .filter(offerers_models.OffererTagCategory.name == "homologation")
+    )
+
+
 def _get_tags_subquery() -> sa.sql.selectable.ScalarSelect:
     # Aggregate tags as a json dictionary returned in a single row (joinedload would fetch 1 result row per tag)
     # For a single offerer, column value is like:
@@ -150,9 +159,6 @@ def _get_tags_subquery() -> sa.sql.selectable.ScalarSelect:
         .select_from(offerers_models.OffererTag)
         .join(offerers_models.OffererTagMapping)
         .filter(offerers_models.OffererTagMapping.offererId == offerers_models.Offerer.id)
-        .join(offerers_models.OffererTagCategoryMapping)
-        .join(offerers_models.OffererTagCategory)
-        .filter(offerers_models.OffererTagCategory.name == "homologation")
         .correlate(offerers_models.Offerer)
         .scalar_subquery()
     )
@@ -310,7 +316,7 @@ def list_users_offerers_to_be_validated(
     query = (
         db.session.query(
             offerers_models.UserOfferer,
-            _get_tags_subquery().label("tags"),
+            _get_homologation_tags_subquery().label("tags"),
             last_comment_subquery.label("last_comment"),
             creator_email_subquery.label("creator_email"),
         )
