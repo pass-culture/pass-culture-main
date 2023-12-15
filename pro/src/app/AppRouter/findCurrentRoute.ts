@@ -19,6 +19,5 @@ export const findCurrentRoute = (location: Location): RouteConfig | undefined =>
     // are matched before their parents (e.g. /inscription/*)
     .reverse()
     .find(
-      ({ path, parentPath }: RouteConfig) =>
-        matchPath(`${parentPath || ''}${path}`, location.pathname) !== null
+      ({ path }: RouteConfig) => matchPath(path, location.pathname) !== null
     )
