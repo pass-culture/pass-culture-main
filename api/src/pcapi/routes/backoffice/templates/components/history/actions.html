@@ -55,13 +55,11 @@
                 </div>
                 {% for info_name, modified_info in modified_info.items() %}
                   <div>
-                    <span class="text-decoration-underline">
-                      {% if action.actionType.name == "ROLE_PERMISSIONS_CHANGED" %}
-                        {{ info_name | format_permission_name }} :
-                      {% else %}
-                        {{ info_name | format_modified_info_name | escape }} :
-                      {% endif %}
-                    </span>
+                    {% if action.actionType.name == "ROLE_PERMISSIONS_CHANGED" %}
+                      <span class="text-decoration-underline">{{ info_name | format_permission_name }} :</span>
+                    {% else %}
+                      <span class="text-decoration-underline">{{ info_name | format_modified_info_name | escape }} :</span>
+                    {% endif %}
                     {{ modified_info | format_modified_info_values(info_name) }}
                   </div>
                 {% endfor %}
