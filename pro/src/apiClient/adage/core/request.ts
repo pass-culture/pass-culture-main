@@ -352,8 +352,8 @@ export const request = <T>(
         // when user is not connected we always recieve a 401 error
         // so in that case we don't redirect to the login page (since the route is public)
         // when navigating in private routes, others calls will throw a 401
-        // and redirect the user to the login page
-        if (!error.url.includes('/users/current')) {
+        // and redirect the user to the login page except if the call is made to users/signin
+        if (!error.url.includes('/users/current') && !error.url.includes('/users/signin')) {
           window.location.href = '/connexion'
         }
       }
