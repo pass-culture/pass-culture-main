@@ -1128,5 +1128,3 @@ class OffererStats(PcObject, Base, Model):
         server_default="{}",
         nullable=False,
     )
-
-    __table_args__ = (UniqueConstraint("offererId", "table", name="offerer_stats_unique"),)
