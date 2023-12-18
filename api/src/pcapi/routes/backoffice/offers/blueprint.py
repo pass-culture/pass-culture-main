@@ -39,6 +39,7 @@ from pcapi.routes.backoffice import search_utils
 from pcapi.routes.backoffice import utils
 from pcapi.routes.backoffice.forms import empty as empty_forms
 from pcapi.utils import date as date_utils
+from pcapi.utils import string as string_utils
 from pcapi.workers import push_notification_job
 
 from . import forms
@@ -76,7 +77,7 @@ SEARCH_FIELD_TO_PYTHON = {
     "EAN": {
         "field": "string",
         "column": offers_models.Offer.extraData["ean"].astext,
-        "special": utils.format_ean_or_visa,
+        "special": string_utils.format_ean_or_visa,
     },
     "EVENT_DATE": {
         "field": "date",
@@ -138,7 +139,7 @@ SEARCH_FIELD_TO_PYTHON = {
     "VISA": {
         "field": "string",
         "column": offers_models.Offer.extraData["visa"].astext,
-        "special": utils.format_ean_or_visa,
+        "special": string_utils.format_ean_or_visa,
     },
 }
 
@@ -224,12 +225,14 @@ def _get_offer_ids_query(form: forms.InternalSearchForm) -> BaseQuery:
             search_query = form.q.data
             or_filters = []
 
-            if utils.is_ean_valid(search_query):
-                or_filters.append(offers_models.Offer.extraData["ean"].astext == utils.format_ean_or_visa(search_query))
+            if string_utils.is_ean_valid(search_query):
+                or_filters.append(
+                    offers_models.Offer.extraData["ean"].astext == string_utils.format_ean_or_visa(search_query)
+                )
 
             if utils.is_visa_valid(search_query):
                 or_filters.append(
-                    offers_models.Offer.extraData["visa"].astext == utils.format_ean_or_visa(search_query)
+                    offers_models.Offer.extraData["visa"].astext == string_utils.format_ean_or_visa(search_query)
                 )
 
             if search_query.isnumeric():

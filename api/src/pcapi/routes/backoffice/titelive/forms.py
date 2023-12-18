@@ -2,7 +2,7 @@ from flask_wtf import FlaskForm
 import wtforms
 from wtforms import validators
 
-from pcapi.routes.backoffice import utils as bo_utils
+from pcapi.utils import string as string_utils
 
 from ..forms import fields
 
@@ -21,9 +21,9 @@ class SearchEanForm(FlaskForm):
 
     def validate_ean(self, ean: fields.PCSearchField) -> fields.PCSearchField:
         if ean.data:
-            if not bo_utils.is_ean_valid(ean.data):
+            if not string_utils.is_ean_valid(ean.data):
                 raise wtforms.validators.ValidationError("La recherche ne correspond pas au format d'un EAN-13")
-            ean.data = bo_utils.format_ean_or_visa(ean.data)
+            ean.data = string_utils.format_ean_or_visa(ean.data)
         return ean
 
     def is_empty(self) -> bool:

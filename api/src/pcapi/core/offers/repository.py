@@ -22,6 +22,7 @@ from pcapi.infrastructure.repository.pro_offers import offers_recap_domain_conve
 from pcapi.models import db
 from pcapi.models import offer_mixin
 from pcapi.utils import custom_keys
+from pcapi.utils import string as string_utils
 
 from . import exceptions
 from . import models
@@ -143,15 +144,13 @@ def get_offers_by_filters(
         ]
         query = query.filter(models.Offer.subcategoryId.in_(requested_subcategories))
     if name_keywords_or_ean is not None:
-        search = name_keywords_or_ean
-        if len(name_keywords_or_ean) > 3:
-            search = "%{}%".format(name_keywords_or_ean)
-        # We should really be using `union` instead of `union_all` here since we don't want duplicates but
-        # 1. it's unlikely that a book will contain its EAN in its name
-        # 2. we need to migrate models.Offer.extraData to JSONB in order to use `union`
-        query = query.filter(models.Offer.name.ilike(search)).union_all(
-            query.filter(models.Offer.extraData["ean"].astext == name_keywords_or_ean)
-        )
+        if string_utils.is_ean_valid(name_keywords_or_ean):
+            query = query.filter(models.Offer.extraData["ean"].astext == name_keywords_or_ean)
+        else:
+            search = name_keywords_or_ean
+            if len(name_keywords_or_ean) > 3:
+                search = "%{}%".format(name_keywords_or_ean)
+            query = query.filter(models.Offer.name.ilike(search))
     if status is not None:
         query = _filter_by_status(query, status)
     if period_beginning_date is not None or period_ending_date is not None:
