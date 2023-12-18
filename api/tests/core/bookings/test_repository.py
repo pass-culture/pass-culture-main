@@ -1649,7 +1649,6 @@ class GetCsvReportTest:
         assert len(all_bookings_data) == 1
 
     class BookingStatusInCsvReportTest:
-        @freeze_time("2021-12-15 09:00:00")
         def test_should_output_the_correct_status_for_individual_bookings_before_cancellationLimitDate(self, app):
             # Given
             date_created = datetime.utcnow() - timedelta(hours=6)
@@ -1669,8 +1668,8 @@ class GetCsvReportTest:
             )
 
             # When
-            beginning_period = datetime.fromisoformat("2021-10-15")
-            ending_period = datetime.fromisoformat("2032-02-15")
+            beginning_period = (datetime.utcnow().date() - timedelta(days=1)).isoformat()
+            ending_period = (datetime.utcnow().date() + timedelta(days=360)).isoformat()
             bookings_csv = booking_repository.get_export(
                 user=pro,
                 booking_period=(beginning_period, ending_period),
@@ -1682,7 +1681,6 @@ class GetCsvReportTest:
             pos_cm = headers.index("Statut de la contremarque")
             assert sorted([line[pos_cm] for line in data]) == ["annulé", "réservé"]
 
-        @freeze_time("2021-12-15 09:00:00")
         def test_should_output_the_correct_status_for_individual_bookings_things_after_cancellationLimitDate(self, app):
             # Given
             date_created = datetime.utcnow() - timedelta(days=10)
@@ -1711,8 +1709,8 @@ class GetCsvReportTest:
             )
 
             # When
-            beginning_period = datetime.fromisoformat("2021-10-15")
-            ending_period = datetime.fromisoformat("2032-02-15")
+            beginning_period = (datetime.utcnow().date() - timedelta(days=11)).isoformat()
+            ending_period = (datetime.utcnow().date() + timedelta(days=360)).isoformat()
             bookings_csv = booking_repository.get_export(
                 user=pro,
                 booking_period=(beginning_period, ending_period),
@@ -1724,7 +1722,6 @@ class GetCsvReportTest:
             pos_cm = headers.index("Statut de la contremarque")
             assert sorted([line[pos_cm] for line in data]) == ["annulé", "remboursé", "réservé", "validé"]
 
-        @freeze_time("2021-12-15 09:00:00")
         def test_should_output_the_correct_status_for_individual_bookings_events_after_cancellationLimitDate(self, app):
             # Given
             date_created = datetime.utcnow() - timedelta(days=10)
@@ -1754,8 +1751,8 @@ class GetCsvReportTest:
             )
 
             # When
-            beginning_period = datetime.fromisoformat("2021-10-15")
-            ending_period = datetime.fromisoformat("2032-02-15")
+            beginning_period = (datetime.utcnow().date() - timedelta(days=11)).isoformat()
+            ending_period = (datetime.utcnow().date() + timedelta(days=360)).isoformat()
             bookings_csv = booking_repository.get_export(
                 user=pro,
                 booking_period=(beginning_period, ending_period),
