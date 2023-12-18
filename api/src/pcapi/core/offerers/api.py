@@ -808,7 +808,10 @@ def update_offerer(
         offerer.address = address
     if tags is not UNCHANGED:
         if set(offerer.tags) != set(tags):
-            modified_info["tags"] = {"old_info": _format_tags(offerer.tags), "new_info": _format_tags(tags)}
+            modified_info["tags"] = {
+                "old_info": _format_tags(offerer.tags) or None,
+                "new_info": _format_tags(tags) or None,
+            }
             offerer.tags = tags
 
     repository.save(offerer)
