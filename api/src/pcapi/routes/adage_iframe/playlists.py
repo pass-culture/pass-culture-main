@@ -68,7 +68,7 @@ def get_classroom_playlist(
     except queries_base.MalformedRow:
         return serializers.ListCollectiveOffersResponseModel(collectiveOffers=[])
 
-    if (settings.IS_TESTING or settings.IS_DEV) and not rows:
+    if (settings.IS_TESTING or settings.IS_DEV) and not settings.IS_RUNNING_TESTS:
         rows = get_random_results(educational_models.CollectiveOffer)
 
     offer_ids = typing.cast(set[int], set(rows))
@@ -153,7 +153,7 @@ def new_template_offers_playlist(
     except queries_base.MalformedRow:
         return serializers.ListCollectiveOfferTemplateResponseModel(collectiveOffers=[])
 
-    if (settings.IS_TESTING or settings.IS_DEV) and not rows:
+    if (settings.IS_TESTING or settings.IS_DEV) and not settings.IS_RUNNING_TESTS:
         rows = get_random_results(educational_models.CollectiveOfferTemplate)
 
     offer_ids = typing.cast(set[int], set(rows))
@@ -201,7 +201,7 @@ def get_local_offerers_playlist(
     except queries_base.MalformedRow:
         return playlists_serializers.LocalOfferersPlaylist(venues=[])
 
-    if (settings.IS_TESTING or settings.IS_DEV) and not rows:
+    if (settings.IS_TESTING or settings.IS_DEV) and not settings.IS_RUNNING_TESTS:
         rows = get_random_results(offerers_models.Venue)
 
     venues = offerers_api.get_venues_by_ids(set(rows))
