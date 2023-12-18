@@ -52,7 +52,6 @@ from pcapi.repository import repository
 from pcapi.repository import transaction
 from pcapi.routes.serialization.users import ImportUserFromCsvModel
 from pcapi.routes.serialization.users import ProUserCreationBodyV2Model
-from pcapi.tasks import batch_tasks
 from pcapi.utils.clean_accents import clean_accents
 import pcapi.utils.date as date_utils
 import pcapi.utils.email as email_utils
@@ -991,10 +990,6 @@ def update_notification_subscription(
     }
 
     repository.save(user)
-
-    if not subscriptions.marketing_push:
-        payload = batch_tasks.DeleteBatchUserAttributesRequest(user_id=user.id)
-        batch_tasks.delete_user_attributes_task.delay(payload)
 
 
 def reset_recredit_amount_to_show(user: models.User) -> None:
