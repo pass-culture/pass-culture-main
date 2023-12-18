@@ -9,6 +9,7 @@ import RedirectDialog from 'components/Dialog/RedirectDialog'
 import SoftDeletedOffererWarning from 'components/SoftDeletedOffererWarning'
 import { Events } from 'core/FirebaseEvents/constants'
 import { SelectOption } from 'custom_types/form'
+import useActiveFeature from 'hooks/useActiveFeature'
 import useAnalytics from 'hooks/useAnalytics'
 import fullWaitIcon from 'icons/full-wait.svg'
 import strokePartyIcon from 'icons/stroke-party.svg'
@@ -22,6 +23,7 @@ import { Card } from '../Card'
 import OffererCreationLinks from './OffererCreationLinks'
 import OffererDetails from './OffererDetails'
 import styles from './Offerers.module.scss'
+import { PartnerPages } from './PartnerPages'
 import VenueCreationLinks from './VenueCreationLinks'
 
 const CREATE_OFFERER_SELECT_ID = 'creation'
@@ -47,6 +49,7 @@ const Offerers = ({
   venues,
   hasAtLeastOnePhysicalVenue,
 }: OfferersProps) => {
+  const isPartnerPageActive = useActiveFeature('WIP_PARTNER_PAGE')
   const [offererOptions, setOffererOptions] = useState<SelectOption[]>([])
   const [openSuccessDialog, setOpenSuccessDialog] = useState(false)
 
@@ -115,6 +118,8 @@ const Offerers = ({
   const isOffererSoftDeleted =
     selectedOfferer && selectedOfferer.isActive === false
   const userHasOfferers = offererOptions.length > 0
+  const permanentVenues =
+    selectedOfferer?.managedVenues?.filter((venue) => venue.isPermanent) ?? []
 
   return (
     <>
@@ -149,7 +154,11 @@ const Offerers = ({
             </RedirectDialog>
           )}
 
-          <h2 className={styles['title']}>Structures et lieux</h2>
+          {isPartnerPageActive ? (
+            <h2 className={styles['title']}>Structure</h2>
+          ) : (
+            <h2 className={styles['title']}>Structures et lieux</h2>
+          )}
 
           <OffererDetails
             handleChangeOfferer={handleChangeOfferer}
@@ -158,6 +167,10 @@ const Offerers = ({
             selectedOfferer={selectedOfferer}
             hasAtLeastOnePhysicalVenue={hasAtLeastOnePhysicalVenue}
           />
+
+          {isPartnerPageActive && permanentVenues.length > 0 && (
+            <PartnerPages venues={permanentVenues} />
+          )}
 
           {!isOffererSoftDeleted && (
             <VenueList
