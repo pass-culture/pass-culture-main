@@ -154,3 +154,99 @@ MOVIE_LIST = {
         ],
     }
 }
+
+MOVIE_SHOWTIME_LIST = {
+    "movieShowtimeList": {
+        "totalCount": 29,
+        "edges": [
+            {
+                "node": {
+                    "movie": {
+                        "id": "TW92aWU6Mjg4NDAx",
+                        "internalId": 288401,
+                        "backlink": {
+                            "url": "https://www.allocine.fr/film/fichefilm_gen_cfilm=288401.html",
+                            "label": "Tous les d\u00e9tails du film sur AlloCin\u00e9",
+                        },
+                        "data": {"eidr": None, "productionYear": 2023},
+                        "title": "Les Trois Mousquetaires: Milady",
+                        "originalTitle": "Les Trois Mousquetaires: Milady",
+                        "type": "FEATURE_FILM",
+                        "runtime": "PT1H55M0S",
+                        "poster": {"url": "https://fr.web.img4.acsta.net/pictures/23/10/06/12/03/1531578.jpg"},
+                        "synopsis": "Du Louvre au Palais de Buckingham, des bas-fonds de Paris au si\u00e8ge de La Rochelle\u2026 dans un Royaume divis\u00e9 par les guerres de religion et menac\u00e9 d\u2019invasion par l\u2019Angleterre, une poign\u00e9e d\u2019hommes et de femmes vont croiser leurs \u00e9p\u00e9es et lier leur destin \u00e0 celui de la France.",
+                        "releases": [
+                            {
+                                "name": "Released",
+                                "releaseDate": {"date": "2023-12-13"},
+                                "data": {
+                                    "tech": {
+                                        "auto_update_info": "Imported from AC_INT.dbo.EntityRelease from id [361246]"
+                                    },
+                                    "visa_number": "155097",
+                                },
+                                "certificate": None,
+                            }
+                        ],
+                        "credits": {
+                            "edges": [
+                                {
+                                    "node": {
+                                        "person": {"firstName": "Martin", "lastName": "Bourboulon"},
+                                        "position": {"name": "DIRECTOR"},
+                                    }
+                                }
+                            ]
+                        },
+                        "cast": {
+                            "backlink": {
+                                "url": "https://www.allocine.fr/film/fichefilm-288401/casting/",
+                                "label": "Casting complet du film sur AlloCin\u00e9",
+                            },
+                            "edges": [
+                                {
+                                    "node": {
+                                        "actor": {"firstName": "Fran\u00e7ois", "lastName": "Civil"},
+                                        "role": "D'Artagnan",
+                                    }
+                                },
+                                {
+                                    "node": {
+                                        "actor": {"firstName": "Vincent", "lastName": "Cassel"},
+                                        "role": "Athos",
+                                    }
+                                },
+                                {
+                                    "node": {
+                                        "actor": {"firstName": "Romain", "lastName": "Duris"},
+                                        "role": "Aramis",
+                                    }
+                                },
+                            ],
+                        },
+                        "countries": [{"name": "France", "alpha3": "FRA"}],
+                        "genres": ["ADVENTURE", "HISTORICAL"],
+                        "companies": [
+                            {"activity": "Distribution", "company": {"name": "Path\u00e9"}},
+                            {"activity": "InternationalDistributionExports", "company": {"name": "Path\u00e9"}},
+                            {"activity": "Production", "company": {"name": "Path\u00e9"}},
+                            {"activity": "CoProduction", "company": {"name": "M6 Films"}},
+                            {"activity": "CoProduction", "company": {"name": "Radar Films"}},
+                            {"activity": "CoProduction", "company": {"name": "DeaPlaneta"}},
+                            {"activity": "CoProduction", "company": {"name": "Constantin Film Verleih"}},
+                        ],
+                    },
+                    "showtimes": [
+                        {
+                            "startsAt": "2023-12-18T14:00:00",
+                            "diffusionVersion": "LOCAL",
+                            "projection": ["DIGITAL"],
+                            "experience": None,
+                            "languages": ["FRENCH"],
+                        }
+                    ],
+                }
+            }
+        ],
+    }
+}
