@@ -654,6 +654,17 @@ def auto_tag_new_offerer(
             else:
                 offerer.tags.append(tag)
 
+        if siren_info.siren in settings.EPN_SIREN:
+            tag_name = "ecosysteme-epn"
+            tag = offerers_models.OffererTag.query.filter_by(name=tag_name).one_or_none()
+            if not tag:
+                logger.error(
+                    "Could not assign tag to offerer: tag not found in DB",
+                    extra={"offerer": offerer.id, "tag_name": tag_name},
+                )
+            else:
+                offerer.tags.append(tag)
+
     if (user.email).split("@")[-1] in set(settings.NATIONAL_PARTNERS_EMAIL_DOMAINS.split(",")):
         tag_name = "partenaire-national"
         tag = offerers_models.OffererTag.query.filter_by(name=tag_name).one_or_none()
