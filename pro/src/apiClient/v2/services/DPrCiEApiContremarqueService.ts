@@ -7,13 +7,12 @@ import type { GetBookingResponse } from '../models/GetBookingResponse';
 import type { CancelablePromise } from '../core/CancelablePromise';
 import type { BaseHttpRequest } from '../core/BaseHttpRequest';
 
-export class ApiContremarqueService {
+export class DPrCiEApiContremarqueService {
 
   constructor(public readonly httpRequest: BaseHttpRequest) {}
 
   /**
-   * Annulation d'une réservation.
-   * Bien que, dans le cas d’un évènement, l’utilisateur ne peut plus annuler sa réservation 72h avant le début de ce dernier, cette API permet d’annuler la réservation d’un utilisateur si elle n’a pas encore été validé.
+   * [Dépréciée] Contactez partenaires.techniques@passculture.app pour plus d'informations.
    * @param token
    * @returns void
    * @throws ApiError
@@ -38,7 +37,7 @@ export class ApiContremarqueService {
   }
 
   /**
-   * Annulation de la validation d'une réservation.
+   * [Dépréciée] Contactez partenaires.techniques@passculture.app pour plus d'informations.
    * @param token
    * @returns void
    * @throws ApiError
@@ -63,8 +62,7 @@ export class ApiContremarqueService {
   }
 
   /**
-   * Consultation d'une réservation.
-   * Le code “contremarque” ou "token" est une chaîne de caractères permettant d’identifier la réservation et qui sert de preuve de réservation. Ce code unique est généré pour chaque réservation d'un utilisateur sur l'application et lui est transmis à cette occasion.
+   * [Dépréciée] Contactez partenaires.techniques@passculture.app pour plus d'informations.
    * @param token
    * @returns GetBookingResponse La contremarque existe et n’est pas validée
    * @throws ApiError
@@ -90,8 +88,7 @@ export class ApiContremarqueService {
   }
 
   /**
-   * Validation d'une réservation.
-   * Pour confirmer que la réservation a bien été utilisée par le jeune.
+   * [Dépréciée] Contactez partenaires.techniques@passculture.app pour plus d'informations.
    * @param token
    * @returns void
    * @throws ApiError

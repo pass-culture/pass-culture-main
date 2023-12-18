@@ -48,7 +48,7 @@ def _get_booking_by_token_or_404(token: str) -> bookings_models.Booking:
 @basic_auth_rate_limiter()
 @spectree_serialize(
     api=blueprints.v2_prefixed_public_api_schema,
-    tags=["API Contremarque"],
+    tags=["[Dépréciée] API Contremarque"],
     resp=SpectreeResponse(
         **(
             BASE_CODE_DESCRIPTIONS
@@ -61,11 +61,7 @@ def _get_booking_by_token_or_404(token: str) -> bookings_models.Booking:
 @login_or_api_key_required
 def get_booking_by_token_v2(token: str) -> serialization.GetBookingResponse:
     # in French, to be used by Swagger for the API documentation
-    """Consultation d'une réservation.
-
-    Le code “contremarque” ou "token" est une chaîne de caractères permettant d’identifier la réservation et qui sert de preuve de réservation.
-    Ce code unique est généré pour chaque réservation d'un utilisateur sur l'application et lui est transmis à cette occasion.
-    """
+    """[Dépréciée] Contactez partenaires.techniques@passculture.app pour plus d'informations."""
     booking = _get_booking_by_token_or_404(token)
 
     if current_user.is_authenticated:
@@ -89,7 +85,7 @@ def get_booking_by_token_v2(token: str) -> serialization.GetBookingResponse:
 @basic_auth_rate_limiter()
 @spectree_serialize(
     api=blueprints.v2_prefixed_public_api_schema,
-    tags=["API Contremarque"],
+    tags=["[Dépréciée] API Contremarque"],
     on_success_status=204,
     resp=SpectreeResponse(
         **(
@@ -103,10 +99,7 @@ def get_booking_by_token_v2(token: str) -> serialization.GetBookingResponse:
 @login_or_api_key_required
 def patch_booking_use_by_token(token: str) -> None:
     # in French, to be used by Swagger for the API documentation
-    """Validation d'une réservation.
-
-    Pour confirmer que la réservation a bien été utilisée par le jeune.
-    """
+    """[Dépréciée] Contactez partenaires.techniques@passculture.app pour plus d'informations."""
     booking = _get_booking_by_token_or_404(token)
 
     if current_user.is_authenticated:
@@ -128,7 +121,7 @@ def patch_booking_use_by_token(token: str) -> None:
 @basic_auth_rate_limiter()
 @spectree_serialize(
     api=blueprints.v2_prefixed_public_api_schema,
-    tags=["API Contremarque"],
+    tags=["[Dépréciée] API Contremarque"],
     on_success_status=204,
     resp=SpectreeResponse(
         **(
@@ -147,11 +140,7 @@ def patch_booking_use_by_token(token: str) -> None:
 @login_or_api_key_required
 def patch_cancel_booking_by_token(token: str) -> None:
     # in French, to be used by Swagger for the API documentation
-    """Annulation d'une réservation.
-
-    Bien que, dans le cas d’un évènement, l’utilisateur ne peut plus annuler sa réservation 72h avant le début de ce dernier,
-    cette API permet d’annuler la réservation d’un utilisateur si elle n’a pas encore été validé.
-    """
+    """[Dépréciée] Contactez partenaires.techniques@passculture.app pour plus d'informations."""
     token = token.upper()
     booking = _get_booking_by_token_or_404(token)
 
@@ -181,7 +170,7 @@ def patch_cancel_booking_by_token(token: str) -> None:
 @basic_auth_rate_limiter()
 @spectree_serialize(
     api=blueprints.v2_prefixed_public_api_schema,
-    tags=["API Contremarque"],
+    tags=["[Dépréciée] API Contremarque"],
     on_success_status=204,
     resp=SpectreeResponse(
         **(
@@ -199,7 +188,7 @@ def patch_cancel_booking_by_token(token: str) -> None:
 @login_or_api_key_required
 def patch_booking_keep_by_token(token: str) -> None:
     # in French, to be used by Swagger for the API documentation
-    """Annulation de la validation d'une réservation."""
+    """[Dépréciée] Contactez partenaires.techniques@passculture.app pour plus d'informations."""
     booking = _get_booking_by_token_or_404(token)
 
     if current_user.is_authenticated:
