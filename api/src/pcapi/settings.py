@@ -489,6 +489,9 @@ AMPLITUDE_QUEUE_NAME = os.environ.get("AMPLITUDE_QUEUE_NAME", "amplitude-queue-d
 # NATIONAL PARTNERS
 NATIONAL_PARTNERS_EMAIL_DOMAINS = secrets_utils.get("NATIONAL_PARTNERS_EMAIL_DOMAINS", "impossible_email_domain.fr")
 
+# EPN
+EPN_SIREN = utils.parse_str_to_list(secrets_utils.get("EPN_SIREN", ""))
+
 # NAME CHECKING
 ENABLE_PERMISSIVE_NAME_VALIDATION = bool(int(os.environ.get("ENABLE_PERMISSIVE_NAME_VALIDATION", 0)))
 
