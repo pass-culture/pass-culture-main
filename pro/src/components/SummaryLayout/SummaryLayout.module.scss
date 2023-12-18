@@ -18,6 +18,7 @@
 
   &-side {
     width: rem.torem(231px);
+    min-width: rem.torem(231px);
     margin: 0 auto;
     margin-bottom: rem.torem(32px);
   }
