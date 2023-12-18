@@ -29,3 +29,4 @@ def create_industrial_offerer_tags() -> None:
     offerers_factories.OffererTagFactory(name=CONFORMITE_TAG_NAME, label="Conformité", categories=[homologation])
     offerers_factories.OffererTagFactory(name="adage", label="Adage", categories=[homologation])
     offerers_factories.OffererTagFactory(name="siren-caduc", label="SIREN caduc", categories=[homologation])
+    offerers_factories.OffererTagFactory(name="ecosysteme-epn", label="Ecosystème EPN", categories=[homologation])
