@@ -30,6 +30,7 @@
     padding: 0;
     border-radius: rem.torem(8px) rem.torem(8px) 0 0;
     box-shadow: 0 rem.torem(2px) rem.torem(4px) 0 rgb(0 0 0 / 25%);
+    overflow-x: auto;
 
     &-brand {
       width: rem.torem(120px);
