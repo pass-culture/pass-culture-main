@@ -807,7 +807,7 @@ def test_public_api(client, app):
         "paths": {
             "/v2/bookings/cancel/token/{token}": {
                 "patch": {
-                    "description": "Bien que, dans le cas d’un évènement, l’utilisateur ne peut plus annuler sa réservation 72h avant le début de ce dernier, cette API permet d’annuler la réservation d’un utilisateur si elle n’a pas encore été validé.",
+                    "description": "",
                     "operationId": "PatchCancelBookingByToken",
                     "parameters": [
                         {
@@ -834,8 +834,8 @@ def test_public_api(client, app):
                         },
                     },
                     "security": [{"ApiKeyAuth": []}, {"SessionAuth": []}],
-                    "summary": "Annulation d'une réservation.",
-                    "tags": ["API Contremarque"],
+                    "summary": "[Dépréciée] Contactez partenaires.techniques@passculture.app pour plus d'informations.",
+                    "tags": ["[Dépréciée] API Contremarque"],
                 }
             },
             "/v2/bookings/keep/token/{token}": {
@@ -867,13 +867,13 @@ def test_public_api(client, app):
                         },
                     },
                     "security": [{"ApiKeyAuth": []}, {"SessionAuth": []}],
-                    "summary": "Annulation de la validation d'une réservation.",
-                    "tags": ["API Contremarque"],
+                    "summary": "[Dépréciée] Contactez partenaires.techniques@passculture.app pour plus d'informations.",
+                    "tags": ["[Dépréciée] API Contremarque"],
                 }
             },
             "/v2/bookings/token/{token}": {
                 "get": {
-                    "description": "Le code “contremarque” ou \"token\" est une chaîne de caractères permettant d’identifier la réservation et qui sert de preuve de réservation. Ce code unique est généré pour chaque réservation d'un utilisateur sur l'application et lui est transmis à cette occasion.",
+                    "description": "",
                     "operationId": "GetBookingByTokenV2",
                     "parameters": [
                         {
@@ -905,13 +905,13 @@ def test_public_api(client, app):
                         },
                     },
                     "security": [{"ApiKeyAuth": []}, {"SessionAuth": []}],
-                    "summary": "Consultation d'une réservation.",
-                    "tags": ["API Contremarque"],
+                    "summary": "[Dépréciée] Contactez partenaires.techniques@passculture.app pour plus d'informations.",
+                    "tags": ["[Dépréciée] API Contremarque"],
                 }
             },
             "/v2/bookings/use/token/{token}": {
                 "patch": {
-                    "description": "Pour confirmer que la réservation a bien été utilisée par le jeune.",
+                    "description": "",
                     "operationId": "PatchBookingUseByToken",
                     "parameters": [
                         {
@@ -938,8 +938,8 @@ def test_public_api(client, app):
                         },
                     },
                     "security": [{"ApiKeyAuth": []}, {"SessionAuth": []}],
-                    "summary": "Validation d'une réservation.",
-                    "tags": ["API Contremarque"],
+                    "summary": "[Dépréciée] Contactez partenaires.techniques@passculture.app pour plus d'informations.",
+                    "tags": ["[Dépréciée] API Contremarque"],
                 }
             },
             "/v2/collective/bookings/{booking_id}": {
@@ -1607,5 +1607,5 @@ def test_public_api(client, app):
         },
         "security": [],
         "servers": [{"url": settings.API_URL}],
-        "tags": [{"name": "API offres collectives"}, {"name": "API Contremarque"}],
+        "tags": [{"name": "API offres collectives"}, {"name": "[Dépréciée] API Contremarque"}],
     }

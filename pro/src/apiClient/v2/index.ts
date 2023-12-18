@@ -53,5 +53,5 @@ export { VenuePhysicalLocation } from './models/VenuePhysicalLocation';
 export type { VenueResponse } from './models/VenueResponse';
 export { VenueTypeEnum } from './models/VenueTypeEnum';
 
-export { ApiContremarqueService } from './services/ApiContremarqueService';
 export { ApiOffresCollectivesService } from './services/ApiOffresCollectivesService';
+export { DPrCiEApiContremarqueService } from './services/DPrCiEApiContremarqueService';
