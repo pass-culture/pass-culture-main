@@ -34,12 +34,14 @@ from pcapi.models.feature import FeatureToggle
 from pcapi.repository import repository
 from pcapi.routes.backoffice import autocomplete
 from pcapi.routes.backoffice import filters
+from pcapi.routes.backoffice import search_utils
 from pcapi.routes.backoffice import utils
 from pcapi.routes.backoffice.forms import empty as empty_forms
 from pcapi.routes.backoffice.forms import search as search_forms
 from pcapi.routes.backoffice.forms.search import TypeOptions
 from pcapi.routes.serialization import base as serialize_base
 from pcapi.utils import regions as regions_utils
+from pcapi.utils.clean_accents import clean_accents
 from pcapi.utils.string import to_camelcase
 
 from . import forms
@@ -73,6 +75,21 @@ def _get_venues(form: forms.GetVenuesListForm) -> list[offerers_models.Venue]:
         sa.orm.joinedload(offerers_models.Venue.criteria).load_only(criteria_models.Criterion.name),
         sa.orm.joinedload(offerers_models.Venue.venueLabel).load_only(offerers_models.VenueLabel.label),
     )
+
+    if form.q.data:
+        search_query = form.q.data
+        terms = search_utils.split_terms(search_query)
+
+        if all(term.isnumeric() for term in terms):
+            base_query = base_query.filter(offerers_models.Venue.id.in_([int(term) for term in terms]))
+        else:
+            name_query = f"%{clean_accents(search_query)}%"
+            base_query = base_query.filter(
+                sa.or_(
+                    sa.func.unaccent(offerers_models.Venue.name).ilike(name_query),
+                    sa.func.unaccent(offerers_models.Venue.publicName).ilike(name_query),
+                )
+            )
 
     if form.venue_label.data:
         base_query = base_query.filter(offerers_models.Venue.venueLabelId.in_(form.venue_label.raw_data))
