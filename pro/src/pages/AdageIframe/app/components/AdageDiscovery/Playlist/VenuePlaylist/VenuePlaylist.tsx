@@ -92,7 +92,7 @@ export const VenuePlaylist = ({
       loading={loading}
       elements={venues.map((venue, index) => (
         <VenueCard
-          key={`card-venue-${index}`}
+          key={venue.id}
           handlePlaylistElementTracking={() =>
             trackPlaylistElementClicked({
               playlistId: VENUE_PLAYLIST,
