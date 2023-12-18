@@ -41,8 +41,7 @@ def update_external_user(
     else:
         user_attributes = get_user_attributes(user)
 
-        update_batch = user.has_enabled_push_notifications()
-        if not skip_batch and update_batch:
+        if not skip_batch:
             update_batch_user(user.id, user_attributes, cultural_survey_answers=cultural_survey_answers)
 
         if not skip_sendinblue:

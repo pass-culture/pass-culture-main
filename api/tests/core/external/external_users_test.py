@@ -48,10 +48,11 @@ MAX_BATCH_PARAMETER_SIZE = 30
 pytestmark = pytest.mark.usefixtures("db_session")
 
 
-def test_update_external_user():
+@pytest.mark.parametrize("marketing_subscription", [True, False])
+def test_update_external_user(marketing_subscription):
     user = BeneficiaryGrant18Factory(
         email="jeanne@example.com",
-        notificationSubscriptions={"marketing_push": True, "marketing_email": False},
+        notificationSubscriptions={"marketing_push": marketing_subscription, "marketing_email": marketing_subscription},
     )
     BookingFactory(user=user)
 
@@ -59,9 +60,19 @@ def test_update_external_user():
         update_external_user(user)
 
     assert len(batch_testing.requests) == 2
+    assert batch_testing.requests[0].get("user_id") == user.id
+    assert (
+        batch_testing.requests[0].get("attribute_values", {}).get("u.marketing_push_subscription")
+        is marketing_subscription
+    )
+    assert batch_testing.requests[0].get("user_id") == user.id
+    assert (
+        batch_testing.requests[0].get("attribute_values", {}).get("u.marketing_push_subscription")
+        is marketing_subscription
+    )
     assert len(sendinblue_testing.sendinblue_requests) == 1
     assert sendinblue_testing.sendinblue_requests[0].get("email") == "jeanne@example.com"
-    assert sendinblue_testing.sendinblue_requests[0].get("emailBlacklisted") is True
+    assert sendinblue_testing.sendinblue_requests[0].get("emailBlacklisted") is not marketing_subscription
 
 
 def test_email_should_not_be_blacklisted_in_sendinblue_by_default():

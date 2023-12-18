@@ -815,26 +815,26 @@ class UserProfileUpdateTest:
         assert not user.get_notification_subscriptions().marketing_push
         assert not user.get_notification_subscriptions().marketing_email
 
-        assert len(push_testing.requests) == 1
+        assert len(push_testing.requests) == 2
+        assert push_testing.requests[0].get("user_id") == user.id
+        assert push_testing.requests[0].get("attribute_values", {}).get("u.marketing_push_subscription") is False
+        assert push_testing.requests[0].get("user_id") == user.id
+        assert push_testing.requests[0].get("attribute_values", {}).get("u.marketing_push_subscription") is False
 
-        push_request = push_testing.requests[0]
-        assert push_request == {"user_id": user.id, "can_be_asynchronously_retried": True}
-
-    @override_settings(BATCH_SECRET_API_KEY="coucou-la-cle")
-    @override_settings(PUSH_NOTIFICATION_BACKEND="pcapi.notifications.push.backends.batch.BatchBackend")
     def test_unsubscribe_push_notifications_with_batch(self, client):
-        users_factories.UserFactory(email=self.identifier)
+        user = users_factories.UserFactory(email=self.identifier)
 
-        with patch("pcapi.notifications.push.backends.batch.requests.delete") as mock_delete:
-            mock_delete.return_value.status_code = 200
+        client.with_token(email=self.identifier)
+        response = client.post(
+            "/native/v1/profile", json={"subscriptions": {"marketingPush": False, "marketingEmail": False}}
+        )
 
-            client.with_token(email=self.identifier)
-            response = client.post(
-                "/native/v1/profile", json={"subscriptions": {"marketingPush": False, "marketingEmail": False}}
-            )
-
-            assert response.status_code == 200
-            assert mock_delete.call_count == 2  # Android + iOS
+        assert response.status_code == 200
+        assert len(push_testing.requests) == 2
+        assert push_testing.requests[0].get("user_id") == user.id
+        assert push_testing.requests[0].get("attribute_values", {}).get("u.marketing_push_subscription") is False
+        assert push_testing.requests[0].get("user_id") == user.id
+        assert push_testing.requests[0].get("attribute_values", {}).get("u.marketing_push_subscription") is False
 
     def test_update_user_profile_reset_recredit_amount_to_show(self, client, app):
         user = users_factories.UnderageBeneficiaryFactory(email=self.identifier, recreditAmountToShow=30)
