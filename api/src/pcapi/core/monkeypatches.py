@@ -67,6 +67,12 @@ def custom_do_execute(self, cursor, statement, parameters, context=None):
     except psycopg2.errors.LockNotAvailable:
         cursor.execute("rollback")
         cursor.execute("SELECT * FROM pg_stat_activity")
+        print("All activity")
+        print(list(cursor))
+        cursor.execute(
+            "select * from pg_stat_activity where pid in (select pid from pg_locks where mode like '%Exclusive%')"
+        )
+        print("Activity that have locks")
         print(list(cursor))
         raise
 
