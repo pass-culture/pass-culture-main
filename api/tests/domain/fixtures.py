@@ -289,3 +289,75 @@ ALLOCINE_MOVIE_LIST_PAGE_2 = {
         ],
     }
 }
+
+ALLOCINE_MOVIE_SHOWTIME_LIST = {
+    "movieShowtimeList": {
+        "totalCount": 3,
+        "edges": [
+            {
+                "node": {
+                    "movie": {
+                        "id": "TW92aWU6MTMxMTM2",
+                        "internalId": 131136,
+                        "backlink": {
+                            "url": "https://www.allocine.fr/film/fichefilm_gen_cfilm=131136.html",
+                            "label": "Tous les d\u00e9tails du film sur AlloCin\u00e9",
+                        },
+                        "data": {"eidr": None, "productionYear": 1915},
+                        "title": "Ceux de chez nous",
+                        "originalTitle": "Ceux de chez nous",
+                        "type": "FEATURE_FILM",
+                        "runtime": "PT0H21M0S",
+                        "poster": {"url": "https://fr.web.img2.acsta.net/medias/nmedia/18/78/15/02/19447537.jpg"},
+                        "synopsis": "",
+                        "releases": [],
+                        "credits": {"edges": []},
+                        "cast": {
+                            "backlink": {
+                                "url": "https://www.allocine.fr/film/fichefilm-131136/casting/",
+                                "label": "Casting complet du film sur AlloCin\u00e9",
+                            },
+                            "edges": [],
+                        },
+                        "countries": [],
+                        "genres": [],
+                        "companies": [],
+                    },
+                    "showtimes": [],
+                },
+            },
+            {
+                "node": {  # SPECIAL_EVENT movie
+                    "movie": {
+                        "id": "TW92aWU6NDEzMjQ=",
+                        "internalId": 41324,
+                        "backlink": {
+                            "url": "https://www.allocine.fr/film/fichefilm_gen_cfilm=41324.html",
+                            "label": "Tous les d\u00e9tails du film sur AlloCin\u00e9",
+                        },
+                        "data": {"eidr": "10.5240/205D-17AD-BBB2-F62A-2481-7", "productionYear": 1931},
+                        "title": "The Front page",
+                        "originalTitle": "The Front page",
+                        "type": "SPECIAL_EVENT",
+                        "runtime": "PT1H41M0S",
+                        "poster": {"url": "https://fr.web.img4.acsta.net/pictures/17/12/21/10/23/2878333.jpg"},
+                        "synopsis": "",
+                        "releases": [],
+                        "credits": {"edges": []},
+                        "cast": {
+                            "backlink": {
+                                "url": "https://www.allocine.fr/film/fichefilm-41324/casting/",
+                                "label": "Casting complet du film sur AlloCin\u00e9",
+                            },
+                            "edges": [],
+                        },
+                        "countries": [{"name": "USA", "alpha3": "USA"}],
+                        "genres": ["COMEDY"],
+                        "companies": [],
+                    },
+                    "showtimes": [],
+                },
+            },
+        ],
+    }
+}
