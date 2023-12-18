@@ -299,9 +299,15 @@ class SSOSigninTest:
     def test_account_is_anonymized(self, mocked_google_oauth, client):
         user = users_factories.AnonymizedUserFactory(email=self.valid_google_user.email)
         users_factories.SingleSignOnFactory(user=user, ssoUserId=self.valid_google_user.sub)
+        oauth_state_token = token_utils.UUIDToken.create(
+            token_utils.TokenType.OAUTH_STATE, users_constants.ACCOUNT_CREATION_TOKEN_LIFE_TIME
+        )
         mocked_google_oauth.return_value = self.valid_google_user
 
-        response = client.post("/native/v1/oauth/google/authorize", json={"authorizationCode": "4/google_code"})
+        response = client.post(
+            "/native/v1/oauth/google/authorize",
+            json={"authorizationCode": "4/google_code", "oauthStateToken": oauth_state_token.encoded_token},
+        )
 
         assert response.status_code == 400
         assert response.json["code"] == "ACCOUNT_ANONYMIZED"
