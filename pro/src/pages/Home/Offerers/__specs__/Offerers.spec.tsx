@@ -1,36 +1,19 @@
 import { screen } from '@testing-library/react'
 import React from 'react'
 
-import { GetOffererResponseModel } from 'apiClient/v1'
 import { INITIAL_OFFERER_VENUES } from 'pages/Home/OffererVenues'
+import {
+  defaultGetOffererResponseModel,
+  defaultGetOffererVenueResponseModel,
+} from 'utils/apiFactories'
 import { renderWithProviders } from 'utils/renderWithProviders'
 
-import Offerers from '../Offerers'
+import Offerers, { OfferersProps } from '../Offerers'
 
-const selectedOfferer: GetOffererResponseModel = {
-  address: null,
-  apiKey: {
-    maxAllowed: 0,
-    prefixes: [],
-  },
-  city: 'city',
-  dateCreated: '1010/10/10',
-  demarchesSimplifieesApplicationId: null,
-  hasAvailablePricingPoints: false,
-  hasDigitalVenueAtLeastOneOffer: false,
-  hasValidBankAccount: false,
-  hasPendingBankAccount: false,
-  hasNonFreeOffer: true,
-  venuesWithNonFreeOffersWithoutBankAccounts: [],
-  isActive: false,
-  isValidated: false,
-  managedVenues: [],
-  name: 'name',
-  id: 10,
-  postalCode: '123123',
-  siren: null,
-}
-const renderOfferers = (userOffererValidated: boolean) => {
+const renderOfferers = (
+  props: Partial<OfferersProps> = {},
+  storeOverrides?: any
+) => {
   renderWithProviders(
     <Offerers
       receivedOffererNames={{
@@ -38,18 +21,21 @@ const renderOfferers = (userOffererValidated: boolean) => {
       }}
       onSelectedOffererChange={() => null}
       cancelLoading={() => null}
-      selectedOfferer={selectedOfferer}
+      selectedOfferer={defaultGetOffererResponseModel}
       isLoading={false}
-      isUserOffererValidated={userOffererValidated}
       hasAtLeastOnePhysicalVenue={false}
+      isUserOffererValidated
       venues={INITIAL_OFFERER_VENUES}
-    />
+      {...props}
+    />,
+    { storeOverrides }
   )
 }
 
 describe('Offerers', () => {
   it('should not display venue soft deleted if user is not validated', () => {
-    renderOfferers(false)
+    renderOfferers({ isUserOffererValidated: false })
+
     expect(
       screen.getByText(
         /Le rattachement à votre structure est en cours de traitement par les équipes du pass Culture/
@@ -63,11 +49,33 @@ describe('Offerers', () => {
   })
 
   it('should display venue soft deleted', () => {
-    renderOfferers(true)
+    renderOfferers()
+
     expect(
       screen.queryByText(
         /Votre structure a été désactivée. Pour plus d’informations sur la désactivation veuillez contacter notre support./
       )
     ).toBeInTheDocument()
+  })
+
+  it("should display the carnet d'adresses", () => {
+    const storeOverrides = {
+      features: {
+        list: [{ isActive: true, nameKey: 'WIP_PARTNER_PAGE' }],
+      },
+    }
+
+    renderOfferers(
+      {
+        selectedOfferer: {
+          ...defaultGetOffererResponseModel,
+          managedVenues: [defaultGetOffererVenueResponseModel],
+          isActive: true,
+        },
+      },
+      storeOverrides
+    )
+
+    expect(screen.getByText('Carnet d’adresses')).toBeInTheDocument()
   })
 })
