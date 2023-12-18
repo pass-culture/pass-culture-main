@@ -11,7 +11,6 @@ from pcapi.connectors.api_allocine import get_movie_list_page
 from pcapi.connectors.api_allocine import get_movie_poster_from_allocine
 from pcapi.connectors.api_allocine import get_movies_showtimes_from_allocine
 from pcapi.connectors.serialization import allocine_serializers
-
 from tests.connectors import fixtures
 
 
@@ -28,7 +27,7 @@ class GetMovieListTest:
         api_response = get_movie_list_page()
 
         # Then
-        assert api_response == allocine_serializers.AllocineMovieListResponseAdapter.validate_python(expected_result)
+        assert api_response == allocine_serializers.AllocineMovieListResponse.model_validate(expected_result)
 
     def test_raises_exception_when_api_call_fails(self, requests_mock):
         # Given
@@ -87,32 +86,29 @@ class GetMovieListTest:
 
 
 class GetMovieShowtimeListTest:
-    @patch("pcapi.connectors.api_allocine.requests.get")
-    def test_should_return_request_response_from_api(self, request_get):
+    def test_should_return_request_response_from_api(self, requests_mock):
         # Given
         theater_id = "test_id"
-        expected_result = {"toto"}
-        response_return_value = MagicMock(status_code=200, text="")
-        response_return_value.json = MagicMock(return_value=expected_result)
-        request_get.return_value = response_return_value
+        expected_result = fixtures.MOVIE_SHOWTIME_LIST
+        requests_mock.get(
+            f"https://graph-api-proxy.allocine.fr/api/query/movieShowtimeList?theater={theater_id}",
+            json=expected_result,
+        )
 
         # When
         api_response = get_movies_showtimes_from_allocine(theater_id)
 
         # Then
-        request_get.assert_called_once_with(
-            f"https://graph-api-proxy.allocine.fr/api/query/movieShowtimeList?theater={theater_id}",
-            headers={"Authorization": "Bearer " + settings.ALLOCINE_API_KEY},
-        )
-        assert api_response == expected_result
+        assert api_response == allocine_serializers.AllocineMovieShowtimeListResponse.model_validate(expected_result)
 
-    @patch("pcapi.connectors.api_allocine.requests.get")
-    def test_should_raise_exception_when_api_call_fails(self, request_get):
+    def test_should_raise_exception_when_api_call_fails(self, requests_mock):
         # Given
         theater_id = "test_id"
-        response_return_value = MagicMock(status_code=400, text="")
-        response_return_value.json = MagicMock(return_value={})
-        request_get.return_value = response_return_value
+        requests_mock.get(
+            f"https://graph-api-proxy.allocine.fr/api/query/movieShowtimeList?theater={theater_id}",
+            json={},
+            status_code=400,
+        )
 
         # When
         with pytest.raises(AllocineException) as exception:

@@ -47,6 +47,160 @@ class AllocineMovieGenre(Enum):
     WESTERN = "WESTERN"
 
 
+class AllocineShowtimeDiffusionVersion(Enum):
+    LOCAL = "LOCAL"
+    DUBBED = "DUBBED"
+    ORIGINAL = "ORIGINAL"
+
+
+class AllocineShowtimeExperience(Enum):
+    E_4DX = "E_4DX"
+    BUTT_KICKER = "BUTT_KICKER"
+    DBOX = "DBOX"
+    DOLBY_ATMOS = "DOLBY_ATMOS"
+    ATMOS_EXPERIENCE = "ATMOS_EXPERIENCE"
+    DOLBY_CINEMA = "DOLBY_CINEMA"
+    ECLAIR_COLOR = "ECLAIR_COLOR"
+    ICE = "ICE"
+    JUMBO = "JUMBO"
+    LIGHT_VIBES = "LIGHT_VIBES"
+    MX4D = "MX4D"
+    PLATINUM = "PLATINUM"
+    PREMIUM = "PREMIUM"
+    PLF = "PLF"
+    SCREEN_X = "SCREEN_X"
+    TRADITIONAL_AUDITORIUM = "TRADITIONAL_AUDITORIUM"
+    TREMOR_FX = "TREMOR_FX"
+    E_4D_EMOTION = "E_4D_EMOTION"
+    GRAND_LARGE = "GRAND_LARGE"
+    LASER_ULTRA = "LASER_ULTRA"
+    ONYX_LED = "ONYX_LED"
+
+
+class AllocineShowtimeLanguage(Enum):
+    ABORIGINAL_LANGUAGE = "ABORIGINAL_LANGUAGE"
+    AFRICAN_DIALECT = "AFRICAN_DIALECT"
+    AFRIKAANS = "AFRIKAANS"
+    ALBANIAN = "ALBANIAN"
+    ALGERIAN = "ALGERIAN"
+    AMHARIC = "AMHARIC"
+    ARABIC = "ARABIC"
+    ARAMAIC = "ARAMAIC"
+    ARMENIAN = "ARMENIAN"
+    AZERI = "AZERI"
+    BAMBARA = "BAMBARA"
+    BENGALI = "BENGALI"
+    BOSNIAN = "BOSNIAN"
+    BRITON = "BRITON"
+    BULGARIAN = "BULGARIAN"
+    BURMESE = "BURMESE"
+    CANTONESE = "CANTONESE"
+    CATALAN = "CATALAN"
+    CHINESE = "CHINESE"
+    CREOLE = "CREOLE"
+    CZECH = "CZECH"
+    DANISH = "DANISH"
+    DUTCH = "DUTCH"
+    ENGLISH = "ENGLISH"
+    ESTONIAN = "ESTONIAN"
+    EUSKERA = "EUSKERA"
+    FARSI = "FARSI"
+    FILIPINO = "FILIPINO"
+    FINNISH = "FINNISH"
+    FLEMISH = "FLEMISH"
+    FRENCH = "FRENCH"
+    GAELIC = "GAELIC"
+    GALLEGO = "GALLEGO"
+    GEORGIAN = "GEORGIAN"
+    GERMAN = "GERMAN"
+    GREEK = "GREEK"
+    GUARANI = "GUARANI"
+    HEBREW = "HEBREW"
+    HINDI = "HINDI"
+    HOKKIEN = "HOKKIEN"
+    HUNGARIAN = "HUNGARIAN"
+    ICELANDIC = "ICELANDIC"
+    INDONESIAN = "INDONESIAN"
+    INUKTITUT = "INUKTITUT"
+    ITALIAN = "ITALIAN"
+    JAPANESE = "JAPANESE"
+    KANNADA = "KANNADA"
+    KAZAKH = "KAZAKH"
+    KHMER = "KHMER"
+    KIRGIZIAN = "KIRGIZIAN"
+    KLINGON = "KLINGON"
+    KOREAN = "KOREAN"
+    KURDISH = "KURDISH"
+    LATIN = "LATIN"
+    LATVIAN = "LATVIAN"
+    LINGALA = "LINGALA"
+    LITHUANIAN = "LITHUANIAN"
+    MACEDONIAN = "MACEDONIAN"
+    MALAGASY = "MALAGASY"
+    MALAY = "MALAY"
+    MALAYALAM = "MALAYALAM"
+    MANDARIN = "MANDARIN"
+    MARATHI = "MARATHI"
+    MAYA = "MAYA"
+    MONGOLESE = "MONGOLESE"
+    NORWEGIAN = "NORWEGIAN"
+    OTHER = "OTHER"
+    PASHTO = "PASHTO"
+    PERSIAN = "PERSIAN"
+    POLISH = "POLISH"
+    PORTUGUESE = "PORTUGUESE"
+    PUNJABI = "PUNJABI"
+    ROMANIAN = "ROMANIAN"
+    ROMANY = "ROMANY"
+    RUSSIAN = "RUSSIAN"
+    SERB = "SERB"
+    SERBO_CROAT = "SERBO_CROAT"
+    SIGN_LANGUAGE = "SIGN_LANGUAGE"
+    SILENT = "SILENT"
+    SLOVAK = "SLOVAK"
+    SLOVENIAN = "SLOVENIAN"
+    SOMALI = "SOMALI"
+    SOTHO = "SOTHO"
+    SPANISH = "SPANISH"
+    SWAHILI = "SWAHILI"
+    SWEDISH = "SWEDISH"
+    SWISS_GERMAN = "SWISS_GERMAN"
+    TADZHIK = "TADZHIK"
+    TAMIL = "TAMIL"
+    THAI = "THAI"
+    TELUGU = "TELUGU"
+    TIBETAN = "TIBETAN"
+    TURKISH = "TURKISH"
+    UKRAINIAN = "UKRAINIAN"
+    UNDETERMINED_LANGUAGE = "UNDETERMINED_LANGUAGE"
+    URDU = "URDU"
+    VIETNAMESE = "VIETNAMESE"
+    WOLOF = "WOLOF"
+    YIDDISH = "YIDDISH"
+    ZANSKARI = "ZANSKARI"
+    ZULU = "ZULU"
+
+
+class AllocineShowtimeProjection(Enum):
+    F_2D = "F_2D"
+    F_3D = "F_3D"
+    F_4K = "F_4K"
+    F_3D70MM = "F_3D70MM"
+    F_35MM = "F_35MM"
+    F_70MM = "F_70MM"
+    F_4K3D = "F_4K3D"
+    F_ATMOS = "F_ATMOS"
+    ANALOG = "ANALOG"
+    REALD_3D = "REALD_3D"
+    DIGITAL = "DIGITAL"
+    IMAX = "IMAX"
+    IMAX_3D = "IMAX_3D"
+    IMAX_70MM = "IMAX_70MM"
+    HFR = "HFR"
+    F_3DHFR = "F_3DHFR"
+    IMAX_3D_HFR = "IMAX_3D_HFR"
+
+
 class AllocineBacklink(pydantic.BaseModel):
     url: pydantic.HttpUrl
     label: str
@@ -188,4 +342,31 @@ class AllocineMovieListResponse(pydantic.BaseModel):
     movieList: AllocineMovieList
 
 
-AllocineMovieListResponseAdapter = pydantic.TypeAdapter(AllocineMovieListResponse)
+class AllocineShowtime(pydantic.BaseModel):
+    diffusionVersion: AllocineShowtimeDiffusionVersion
+    experience: list[AllocineShowtimeExperience | None] | AllocineShowtimeExperience | None
+    languages: list[AllocineShowtimeLanguage] | None
+    projection: AllocineShowtimeProjection
+    startsAt: datetime.datetime
+
+    @pydantic.field_validator("projection", mode="before")
+    def get_first_projection_mode(cls, projection: list[AllocineShowtimeProjection]) -> AllocineShowtimeProjection:
+        return projection[0]
+
+
+class AllocineMovieShowtime(pydantic.BaseModel):
+    movie: AllocineMovie
+    showtimes: list[AllocineShowtime]
+
+
+class AllocineMovieShowtimeList(pydantic.BaseModel):
+    totalCount: int
+    moviesShowtimes: list[AllocineMovieShowtime] = pydantic.Field(alias="edges")
+
+    @pydantic.field_validator("moviesShowtimes", mode="before")
+    def squash_edges_and_node(cls, edges: list[dict[str, AllocineMovieShowtime]]) -> list[AllocineMovieShowtime]:
+        return [item["node"] for item in edges]
+
+
+class AllocineMovieShowtimeListResponse(pydantic.BaseModel):
+    movieShowtimeList: AllocineMovieShowtimeList
