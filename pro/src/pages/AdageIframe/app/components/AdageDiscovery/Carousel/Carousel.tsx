@@ -102,19 +102,11 @@ export default function Carousel({
       ) : (
         <ul className={styles['carousel-list']} ref={listRef}>
           {elements.map((el, i) => {
-            const isFirst = i === 0
-            const isLast = i === elements.length - 1
+            const firstRef = i === 0 ? firstElementRef : undefined
+            const lastRef =
+              i === elements.length - 1 ? lastElementRef : undefined
             return (
-              <li
-                key={i}
-                ref={
-                  isFirst
-                    ? firstElementRef
-                    : isLast
-                      ? lastElementRef
-                      : undefined
-                }
-              >
+              <li key={i} ref={firstRef ?? lastRef}>
                 {el}
               </li>
             )
