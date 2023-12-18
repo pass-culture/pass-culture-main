@@ -307,10 +307,6 @@ class User(PcObject, Base, Model, NeedsValidationMixin, DeactivableMixin):
             ).exists()
         ).scalar()
 
-    def has_enabled_push_notifications(self) -> bool:
-        subscriptions = self.get_notification_subscriptions()
-        return subscriptions.marketing_push
-
     @property
     def is_authenticated(self) -> bool:  # required by flask-login
         return True
