@@ -56,3 +56,22 @@ def monkey_patch_sendinblue() -> None:
 
 def install_monkey_patches() -> None:
     monkey_patch_sendinblue()
+    monkey_patch_sqlalchemy()
+
+
+def custom_do_execute(self, cursor, statement, parameters, context=None):
+    import psycopg2
+
+    try:
+        cursor.execute(statement, parameters)
+    except psycopg2.errors.LockNotAvailable:
+        cursor.execute("rollback")
+        cursor.execute("SELECT * FROM pg_stat_activity")
+        print(list(cursor))
+        raise
+
+
+def monkey_patch_sqlalchemy() -> None:
+    import sqlalchemy.engine.default
+
+    sqlalchemy.engine.default.DefaultDialect.do_execute = custom_do_execute
