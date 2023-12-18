@@ -6,15 +6,15 @@ import type { BaseHttpRequest } from './core/BaseHttpRequest';
 import type { OpenAPIConfig } from './core/OpenAPI';
 import { FetchHttpRequest } from './core/FetchHttpRequest';
 
-import { ApiContremarqueService } from './services/ApiContremarqueService';
 import { ApiOffresCollectivesService } from './services/ApiOffresCollectivesService';
+import { DPrCiEApiContremarqueService } from './services/DPrCiEApiContremarqueService';
 
 type HttpRequestConstructor = new (config: OpenAPIConfig) => BaseHttpRequest;
 
 export class AppClientV2 {
 
-  public readonly apiContremarque: ApiContremarqueService;
   public readonly apiOffresCollectives: ApiOffresCollectivesService;
+  public readonly dPrCiEApiContremarque: DPrCiEApiContremarqueService;
 
   public readonly request: BaseHttpRequest;
 
@@ -31,8 +31,8 @@ export class AppClientV2 {
       ENCODE_PATH: config?.ENCODE_PATH,
     });
 
-    this.apiContremarque = new ApiContremarqueService(this.request);
     this.apiOffresCollectives = new ApiOffresCollectivesService(this.request);
+    this.dPrCiEApiContremarque = new DPrCiEApiContremarqueService(this.request);
   }
 }
 
