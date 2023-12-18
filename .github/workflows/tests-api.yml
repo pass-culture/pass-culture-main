@@ -311,6 +311,7 @@ jobs:
             "tests --ignore=tests/core --ignore=tests/routes",
             "tests/routes/backoffice -m 'backoffice'",
           ]
+        max-parallel: 1
     permissions:
       id-token: write
       contents: read
