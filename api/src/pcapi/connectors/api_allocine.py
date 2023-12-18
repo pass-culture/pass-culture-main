@@ -20,10 +20,10 @@ def get_movie_list_page(after: str = "") -> allocine_serializers.AllocineMovieLi
     if not response.ok:
         raise AllocineException(f"Error getting API Allocine data to get movie list, error={response.status_code}")
 
-    return allocine_serializers.AllocineMovieListResponseAdapter.validate_python(response.json())
+    return allocine_serializers.AllocineMovieListResponse.model_validate(response.json())
 
 
-def get_movies_showtimes_from_allocine(theater_id: str) -> dict:
+def get_movies_showtimes_from_allocine(theater_id: str) -> allocine_serializers.AllocineMovieShowtimeListResponse:
     url = f"{ALLOCINE_API_URL}/movieShowtimeList?theater={theater_id}"
 
     try:
@@ -34,7 +34,7 @@ def get_movies_showtimes_from_allocine(theater_id: str) -> dict:
     if response.status_code != 200:
         raise AllocineException(f"Error getting API Allocine DATA for theater {theater_id}")
 
-    return response.json()
+    return allocine_serializers.AllocineMovieShowtimeListResponse.model_validate(response.json())
 
 
 def get_movie_poster_from_allocine(poster_url: str) -> bytes:
