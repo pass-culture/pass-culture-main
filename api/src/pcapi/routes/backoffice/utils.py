@@ -24,6 +24,7 @@ from pcapi.core.history import models as history_models
 from pcapi.core.permissions import models as perm_models
 from pcapi.models import feature
 from pcapi.models.api_errors import ApiErrors
+from pcapi.utils import string as string_utils
 from pcapi.utils.regions import get_all_regions
 
 from . import blueprint
@@ -156,17 +157,8 @@ def random_hash() -> str:
     return format(random.getrandbits(128), "x")
 
 
-def format_ean_or_visa(ean: str) -> str:
-    return ean.replace("-", "").replace(" ", "")
-
-
-def is_ean_valid(ean: str) -> bool:
-    ean = format_ean_or_visa(ean)
-    return ean.isdigit() and len(ean) == 13
-
-
 def is_visa_valid(visa: str) -> bool:
-    visa = format_ean_or_visa(visa)
+    visa = string_utils.format_ean_or_visa(visa)
     return visa.isdigit() and len(visa) <= 10
 
 
