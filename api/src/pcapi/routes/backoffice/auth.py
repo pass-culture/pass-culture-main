@@ -17,7 +17,7 @@ from pcapi.core.users import api as users_api
 from pcapi.core.users import models as users_models
 from pcapi.core.users import repository as users_repository
 from pcapi.core.users.backoffice import api as backoffice_api
-from pcapi.flask_app import oauth
+from pcapi.flask_app import backoffice_oauth
 from pcapi.models import db
 
 from . import blueprint
@@ -52,15 +52,15 @@ def login() -> utils.BackofficeResponse:
         return werkzeug.utils.redirect(url_for(".home"))
 
     redirect_uri = url_for(".authorize", _external=True)
-    return oauth.google.authorize_redirect(redirect_uri)
+    return backoffice_oauth.google.authorize_redirect(redirect_uri)
 
 
 @blueprint.backoffice_web.route("/authorize", methods=["GET"])
 def authorize() -> utils.BackofficeResponse:
     from pcapi.utils import login_manager
 
-    token = oauth.google.authorize_access_token()
-    google_user = oauth.google.parse_id_token(token)
+    token = backoffice_oauth.google.authorize_access_token()
+    google_user = backoffice_oauth.google.parse_id_token(token)
     google_email = google_user["email"]
     user = users_repository.find_user_by_email(google_email)
 
