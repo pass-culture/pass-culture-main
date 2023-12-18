@@ -46,6 +46,7 @@ class CGRClientAPI(external_bookings_models.ExternalBookingsClientAPI):
             return json.dumps({})
         return json.dumps({show.IDSeance: show.NbPlacesRestantes for show in film.Seances})
 
+
     def book_ticket(
         self, show_id: int, booking: bookings_models.Booking, beneficiary: users_models.User
     ) -> list[external_bookings_models.Ticket]:
