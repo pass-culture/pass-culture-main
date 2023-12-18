@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react'
-import { useLocation, useNavigate } from 'react-router-dom'
+import { useLocation, useNavigate, useSearchParams } from 'react-router-dom'
 
 import {
   GetOffererResponseModel,
@@ -52,17 +52,10 @@ const Offerers = ({
 
   const location = useLocation()
   const navigate = useNavigate()
-
+  const [searchParams, setSearchParams] = useSearchParams()
   const { logEvent } = useAnalytics()
 
-  const setQuery = (offererId: string) => {
-    const frenchQueryString = `structure=${offererId}`
-    navigate(`${location.pathname}?${frenchQueryString}`)
-  }
-
-  const { structure: offererId } = Object.fromEntries(
-    new URLSearchParams(location.search)
-  )
+  const offererId = searchParams.get('structure')
 
   useEffect(() => {
     if (receivedOffererNames) {
@@ -97,7 +90,8 @@ const Offerers = ({
       navigate('/structures/creation')
     } else if (newOffererId !== selectedOfferer?.id.toString()) {
       onSelectedOffererChange(newOffererId)
-      setQuery(newOffererId)
+      searchParams.set('structure', newOffererId)
+      setSearchParams(searchParams)
     }
   }
 
@@ -112,15 +106,9 @@ const Offerers = ({
   }
 
   const removeSuccessParams = () => {
-    const queryParams = new URLSearchParams(location.search)
-    if (queryParams.has('success')) {
-      queryParams.delete('success')
-      navigate(
-        {
-          search: queryParams.toString(),
-        },
-        { replace: true }
-      )
+    if (searchParams.has('success')) {
+      searchParams.delete('success')
+      setSearchParams(searchParams, { replace: true })
     }
   }
 
