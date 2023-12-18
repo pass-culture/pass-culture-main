@@ -201,12 +201,23 @@ login_manager.init_app(app)
 install_commands(app)
 finance_utils.install_template_filters(app)
 
-oauth = OAuth(app)
-oauth.register(
+
+backoffice_oauth = OAuth(app)
+backoffice_oauth.register(
     name="google",
     server_metadata_url="https://accounts.google.com/.well-known/openid-configuration",
     client_kwargs={"scope": "openid email profile"},
 )
+
+native_app_oauth = OAuth(app)
+native_app_oauth.register(
+    name="google",
+    client_id=settings.NATIVE_APP_GOOGLE_CLIENT_ID,
+    client_secret=settings.NATIVE_APP_GOOGLE_CLIENT_SECRET,
+    server_metadata_url="https://accounts.google.com/.well-known/openid-configuration",
+    client_kwargs={"scope": "openid email profile"},
+)
+
 
 app.url_map.strict_slashes = False
 

@@ -27,8 +27,8 @@ class LoginPageTest:
 
 
 class AuthorizePageTest:
-    @patch("pcapi.routes.backoffice.auth.oauth.google.parse_id_token")
-    @patch("pcapi.routes.backoffice.auth.oauth.google.authorize_access_token")
+    @patch("pcapi.routes.backoffice.auth.backoffice_oauth.google.parse_id_token")
+    @patch("pcapi.routes.backoffice.auth.backoffice_oauth.google.authorize_access_token")
     def test_authorize(self, mock_authorize_access_token, mock_parse_id_token, client):
         mock_parse_id_token.return_value = {
             "email": "email@example.com",
@@ -46,8 +46,8 @@ class AuthorizePageTest:
     @override_settings(GOOGLE_CLIENT_ID="some client id")
     @override_settings(GOOGLE_CLIENT_SECRET="some client secret")
     @patch("pcapi.routes.backoffice.auth.fetch_user_roles_from_google_workspace")
-    @patch("pcapi.routes.backoffice.auth.oauth.google.parse_id_token")
-    @patch("pcapi.routes.backoffice.auth.oauth.google.authorize_access_token")
+    @patch("pcapi.routes.backoffice.auth.backoffice_oauth.google.parse_id_token")
+    @patch("pcapi.routes.backoffice.auth.backoffice_oauth.google.authorize_access_token")
     def test_authorize_with_google_credentials(
         self,
         mock_authorize_access_token,
@@ -87,8 +87,8 @@ class AuthorizePageTest:
     @override_settings(GOOGLE_CLIENT_ID="some client id")
     @override_settings(GOOGLE_CLIENT_SECRET="some client secret")
     @patch("pcapi.routes.backoffice.auth.fetch_user_roles_from_google_workspace")
-    @patch("pcapi.routes.backoffice.auth.oauth.google.parse_id_token")
-    @patch("pcapi.routes.backoffice.auth.oauth.google.authorize_access_token")
+    @patch("pcapi.routes.backoffice.auth.backoffice_oauth.google.parse_id_token")
+    @patch("pcapi.routes.backoffice.auth.backoffice_oauth.google.authorize_access_token")
     def test_user_not_found_with_google_credentials_with_roles(
         self, mock_authorize_access_token, mock_parse_id_token, mock_fetch_user_roles, client, caplog
     ):
@@ -119,8 +119,8 @@ class AuthorizePageTest:
     @override_settings(GOOGLE_CLIENT_ID="some client id")
     @override_settings(GOOGLE_CLIENT_SECRET="some client secret")
     @patch("pcapi.routes.backoffice.auth.fetch_user_roles_from_google_workspace")
-    @patch("pcapi.routes.backoffice.auth.oauth.google.parse_id_token")
-    @patch("pcapi.routes.backoffice.auth.oauth.google.authorize_access_token")
+    @patch("pcapi.routes.backoffice.auth.backoffice_oauth.google.parse_id_token")
+    @patch("pcapi.routes.backoffice.auth.backoffice_oauth.google.authorize_access_token")
     def test_user_not_found_with_google_credentials_without_roles(
         self, mock_authorize_access_token, mock_parse_id_token, mock_fetch_user_roles, client, caplog
     ):
