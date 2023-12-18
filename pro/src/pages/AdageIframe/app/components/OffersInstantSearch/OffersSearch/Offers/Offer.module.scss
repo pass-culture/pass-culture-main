@@ -1,6 +1,7 @@
 @use "styles/variables/_colors.scss" as colors;
 @use "styles/mixins/_rem.scss" as rem;
 @use "styles/mixins/_fonts.scss" as fonts;
+@use "styles/variables/_size.scss" as size;
 
 $offer-image-height: rem.torem(264px);
 $offer-image-width: rem.torem(176px);
@@ -15,6 +16,9 @@ $offer-image-width: rem.torem(176px);
 
   &-container {
     display: flex;
+    flex-wrap: wrap;
+    padding: rem.torem(16px);
+    gap: rem.torem(16px);
   }
 
   &-geoloc {
@@ -44,7 +48,6 @@ $offer-image-width: rem.torem(176px);
   &-image-container {
     border-radius: rem.torem(3px);
     object-fit: cover;
-    margin: rem.torem(16px);
   }
 
   &-image {
@@ -89,6 +92,7 @@ $offer-image-width: rem.torem(176px);
 
     &-row {
       display: flex;
+      flex-wrap: wrap;
       justify-content: space-between;
       gap: rem.torem(12px);
       align-items: flex-start;
@@ -170,5 +174,17 @@ $offer-image-width: rem.torem(176px);
         transform: rotate(180deg);
       }
     }
+  }
+}
+
+@media (min-width: size.$tablet) {
+  .offer-container {
+    flex-wrap: unset;
+  }
+}
+
+@media (min-width: size.$mobile) {
+  .offer-header-row {
+    flex-wrap: unset;
   }
 }
