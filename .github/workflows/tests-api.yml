@@ -339,6 +339,7 @@ jobs:
           POSTGRES_PASSWORD: pytest
           POSTGRES_DB: pass_culture
     steps:
+      - run: echo ${{ matrix.node }}
       - uses: actions/checkout@v3
 
       - name: Authentification to Google
