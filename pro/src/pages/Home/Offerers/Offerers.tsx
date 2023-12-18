@@ -28,7 +28,7 @@ import VenueCreationLinks from './VenueCreationLinks'
 
 const CREATE_OFFERER_SELECT_ID = 'creation'
 
-interface OfferersProps {
+export interface OfferersProps {
   receivedOffererNames?: GetOfferersNamesResponseModel | null
   onSelectedOffererChange: (offererId: string) => void
   cancelLoading: () => void
@@ -173,20 +173,50 @@ const Offerers = ({
           )}
 
           {!isOffererSoftDeleted && (
-            <VenueList
-              physicalVenues={venues.physicalVenues}
-              selectedOffererId={selectedOfferer.id}
-              virtualVenue={
-                selectedOfferer.hasDigitalVenueAtLeastOneOffer
-                  ? venues.virtualVenue
-                  : null
-              }
-              offererHasBankAccount={Boolean(
-                selectedOfferer.hasPendingBankAccount ||
-                  selectedOfferer.hasValidBankAccount
+            <>
+              {isPartnerPageActive && (
+                <>
+                  {/*
+                   * The whole sectionning of the homepage should be refactored to account
+                   * for the new blocks introduced by the partner page feature but it
+                   * is too complex to do so for now (it would require adding another level
+                   * of section nesting DOM depending on if the FF is on or not)
+                   * For now we use h3 here with manual margin, but will revise sectioning
+                   * with h2 and the homepage margin style once the WIP_PARTNER_PAGE FF is removed.
+                   */}
+                  <h3 className={styles['title']} style={{ marginTop: '16px' }}>
+                    Carnet d’adresses
+                  </h3>
+
+                  <p>
+                    Renseignez ci-dessous les lieux dans lesquels vous proposez
+                    vos offres. Si le lieu appartient à votre structure une page
+                    partenaire y sera automatiquement associée.
+                  </p>
+                </>
               )}
-              hasNonFreeOffer={selectedOfferer.hasNonFreeOffer}
-            />
+
+              <VenueList
+                physicalVenues={
+                  isPartnerPageActive
+                    ? venues.physicalVenues.filter(
+                        (venue) => !venue.isPermanent
+                      )
+                    : venues.physicalVenues
+                }
+                selectedOffererId={selectedOfferer.id}
+                virtualVenue={
+                  selectedOfferer.hasDigitalVenueAtLeastOneOffer
+                    ? venues.virtualVenue
+                    : null
+                }
+                offererHasBankAccount={Boolean(
+                  selectedOfferer.hasPendingBankAccount ||
+                    selectedOfferer.hasValidBankAccount
+                )}
+                hasNonFreeOffer={selectedOfferer.hasNonFreeOffer}
+              />
+            </>
           )}
         </>
       )}
