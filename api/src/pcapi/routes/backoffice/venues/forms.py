@@ -118,6 +118,7 @@ class GetVenuesListForm(utils.PCForm):
     class Meta:
         csrf = False
 
+    q = fields.PCOptSearchField("ID ou liste d'ID de lieu, nom du lieu")
     type = fields.PCSelectMultipleField("Type de lieu", choices=utils.choices_from_enum(offerers_models.VenueTypeCode))
     venue_label = fields.PCQuerySelectMultipleField(
         "Label",
@@ -151,6 +152,7 @@ class GetVenuesListForm(utils.PCForm):
 
     def __init__(self, *args: typing.Any, **kwargs: typing.Any) -> None:
         super().__init__(*args, **kwargs)
+        self._fields.move_to_end("q", last=False)
         if self.is_empty():
             # default value checked does not work in wtforms.BooleanField
             self.only_validated_offerers.data = True
@@ -158,6 +160,7 @@ class GetVenuesListForm(utils.PCForm):
     def is_empty(self) -> bool:
         return not any(
             (
+                self.q.data,
                 self.type.data,
                 self.venue_label.data,
                 self.criteria.data,

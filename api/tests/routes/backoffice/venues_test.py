@@ -84,6 +84,8 @@ def venue_with_no_siret_fixture(offerer) -> offerers_models.Venue:
 def venues_fixture(criteria) -> list[offerers_models.Venue]:
     return [
         offerers_factories.VenueFactory(
+            id=42,
+            name="Le Gros Rintintin",
             venueTypeCode=offerers_models.VenueTypeCode.MOVIE,
             venueLabelId=offerers_factories.VenueLabelFactory(label="Cinéma d'art et d'essai").id,
             criteria=criteria[:2],
@@ -91,6 +93,7 @@ def venues_fixture(criteria) -> list[offerers_models.Venue]:
             isPermanent=True,
         ),
         offerers_factories.VenueFactory(
+            id=43,
             venueTypeCode=offerers_models.VenueTypeCode.GAMES,
             venueLabelId=offerers_factories.VenueLabelFactory(label="Scènes conventionnées").id,
             criteria=criteria[2:],
@@ -197,6 +200,42 @@ class ListVenuesTest(GetEndpointHelper):
         rows = html_parser.extract_table_rows(response.data)
         assert len(rows) == 1
         assert int(rows[0]["ID"]) == venues[0].id
+
+    def test_list_venues_by_id(self, authenticated_client, venues):
+        with assert_num_queries(self.expected_num_queries):
+            response = authenticated_client.get(url_for(self.endpoint, q=42))
+            assert response.status_code == 200
+
+        rows = html_parser.extract_table_rows(response.data)
+        assert len(rows) == 1
+        assert int(rows[0]["ID"]) == venues[0].id
+
+    def test_list_venue_by_multiple_ids(self, authenticated_client, venues):
+        with assert_num_queries(self.expected_num_queries):
+            response = authenticated_client.get(url_for(self.endpoint, q="42, 43"))
+            assert response.status_code == 200
+
+        rows = html_parser.extract_table_rows(response.data)
+        assert len(rows) == 2
+        assert {int(row["ID"]) for row in rows} == {venues[1].id, venues[0].id}
+
+    def test_list_venue_by_name(self, authenticated_client, venues):
+        with assert_num_queries(self.expected_num_queries):
+            response = authenticated_client.get(url_for(self.endpoint, q="Le Gros Rintintin"))
+            assert response.status_code == 200
+
+        rows = html_parser.extract_table_rows(response.data)
+        assert len(rows) == 1
+        assert rows[0]["Nom"] == venues[0].name
+
+    def test_list_venue_by_name_prefill(self, authenticated_client, venues):
+        with assert_num_queries(self.expected_num_queries):
+            response = authenticated_client.get(url_for(self.endpoint, q="Rintintin"))
+            assert response.status_code == 200
+
+        rows = html_parser.extract_table_rows(response.data)
+        assert len(rows) == 2
+        assert {row["Nom"] for row in rows} == {venues[1].name, venues[0].name}
 
     @pytest.mark.parametrize(
         "row_key,order",
