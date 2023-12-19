@@ -166,11 +166,15 @@ class GetLocalOfferersPlaylistTest(SharedPlaylistsErrorTests):
         iframe_client = _get_iframe_client(client)
 
         mock_path = "pcapi.connectors.big_query.TestingBackend.run_query"
-        with patch(mock_path) as mock_run_query:
+        with (
+            patch(mock_path) as mock_run_query,
+            patch("pcapi.routes.adage_iframe.playlists._get_max_range_for_local_venues") as mock_max_range,
+        ):
             mock_run_query.return_value = [
                 {"venue_id": venues[0].id, "distance_in_km": expected_distance},
                 {"venue_id": venues[1].id, "distance_in_km": expected_distance},
             ]
+            mock_max_range.return_value = 60
 
             # fetch the institution (1 query)
             # fetch venues data (1 query)

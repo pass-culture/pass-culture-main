@@ -12,6 +12,7 @@ from pcapi.core.educational import exceptions as educational_exceptions
 from pcapi.core.educational import models as educational_models
 from pcapi.core.educational import repository
 import pcapi.core.educational.api.favorites as favorites_api
+import pcapi.core.educational.api.institution as institution_api
 import pcapi.core.offerers.api as offerers_api
 import pcapi.core.offerers.models as offerers_models
 from pcapi.core.offerers.repository import get_venue_by_id
@@ -181,6 +182,19 @@ def new_template_offers_playlist(
     )
 
 
+def _get_max_range_for_local_venues(institution: educational_models.EducationalInstitution) -> int:
+    institution_rural_level = institution_api.get_institution_rural_level(institution)
+    return {
+        educational_models.InstitutionRuralLevel.URBAIN_DENSE.value: 3,
+        educational_models.InstitutionRuralLevel.URBAIN_DENSITE_INTERMEDIAIRE.value: 10,
+        educational_models.InstitutionRuralLevel.RURAL_SOUS_FORTE_INFLUENCE_D_UN_POLE.value: 15,
+        educational_models.InstitutionRuralLevel.RURAL_SOUS_FAIBLE_INFLUENCE_D_UN_POLE.value: 60,
+        educational_models.InstitutionRuralLevel.RURAL_AUTONOME_PEU_DENSE.value: 60,
+        educational_models.InstitutionRuralLevel.RURAL_AUTONOME_TRES_PEU_DENSE.value: 60,
+        None: 60,
+    }.get(institution_rural_level, 60)
+
+
 @blueprint.adage_iframe.route("/playlists/local-offerers", methods=["GET"])
 @spectree_serialize(response_model=playlists_serializers.LocalOfferersPlaylist, api=blueprint.api)
 @adage_jwt_required
@@ -194,9 +208,12 @@ def get_local_offerers_playlist(
     if not institution:
         raise ApiErrors({"message": "institutionId is mandatory"}, status_code=403)
 
+    max_range = _get_max_range_for_local_venues(institution)
+
     try:
         rows = {
-            row.venue_id: row.distance_in_km for row in LocalOfferersQuery().execute(institution_id=str(institution.id))
+            row.venue_id: row.distance_in_km
+            for row in LocalOfferersQuery().execute(range=max_range, institution_id=str(institution.id))
         }
     except queries_base.MalformedRow:
         return playlists_serializers.LocalOfferersPlaylist(venues=[])

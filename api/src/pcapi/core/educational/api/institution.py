@@ -184,7 +184,7 @@ def create_educational_institution_from_adage(institution: AdageEducationalInsti
 
 def get_institution_rural_level(
     institution: EducationalInstitution | None,
-) -> educational_models.InstitutionRuralLevel | None:
+) -> str | None:
     if not institution:
         return None
 
