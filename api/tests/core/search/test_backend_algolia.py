@@ -359,3 +359,29 @@ class ProcessingQueueTest:
         assert set(redis.keys()) == {main_queue, processing_too_recent}
         assert redis.lrange(main_queue, 0, -1) == ["3", "2", "1"]
         assert redis.lrange(processing_too_recent, 0, -1) == ["6", "5", "4"]
+
+
+class RemoveDuplicatesFromVenueIndexationQueueTest:
+    def test_on_non_empty_queue(self):
+        backend = get_backend()
+        redis = backend.redis_client
+        queue = algolia.REDIS_VENUE_IDS_TO_INDEX
+
+        redis.lpush(queue, "1", "2", "3", "4", "1", "2", "3", "3")
+        assert redis.llen(queue) == 8
+
+        backend.remove_duplicates_from_venue_indexation_queue()
+
+        assert redis.llen(queue) == 4
+        # Compare sets, because we cannot control the order in which
+        # deduplicated ids have been reinjected into the queue.
+        assert set(redis.lrange(queue, 0, -1)) == {"1", "2", "3", "4"}
+
+    def test_on_empty_queue(self):
+        backend = get_backend()
+        redis = backend.redis_client
+        queue = algolia.REDIS_VENUE_IDS_TO_INDEX
+
+        assert redis.llen(queue) == 0
+        backend.remove_duplicates_from_venue_indexation_queue()
+        assert redis.llen(queue) == 0

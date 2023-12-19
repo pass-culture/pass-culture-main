@@ -733,6 +733,29 @@ class AlgoliaBackend(base.SearchBackend):
                             extra={"queue": originating_queue, "processing_queue": processing_queue},
                         )
 
+    def remove_duplicates_from_venue_indexation_queue(self) -> None:
+        """Pop items from the REDIS_VENUE_IDS_TO_INDEX, remove
+        duplicate and reinject them.
+
+        FIXME (dbaty, 2023-12-19): this is temporary, until we
+        transform queues from lists to sets. See notes in this module
+        about using `smove` instead of `rpoplpush`.
+        """
+        queue = REDIS_VENUE_IDS_TO_INDEX
+        count = self.redis_client.llen(queue)
+        with self._pop_ids_from_queue(queue, count) as venue_ids:
+            if not venue_ids:
+                return
+            # At this point, `venue_ids` is the set of deduplicated ids.
+            self.redis_client.lpush(queue, *venue_ids)
+            logger.info(
+                "Deduplicated ids in venue indexation queue",
+                extra={
+                    "initial_count": count,
+                    "deduplicated_count": len(venue_ids),
+                },
+            )
+
 
 def position(venue: offerers_models.Venue) -> dict[str, float]:
     return format_coordinates(venue.latitude, venue.longitude)
