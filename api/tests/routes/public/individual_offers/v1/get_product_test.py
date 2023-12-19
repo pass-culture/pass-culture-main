@@ -1,4 +1,5 @@
 import datetime
+import decimal
 
 import pytest
 
@@ -55,6 +56,8 @@ class GetProductTest:
             venue=venue,
             subcategoryId=subcategories.LIVRE_PAPIER.id,
         )
+        # This overpriced stock can be removed once all stocks have a price under 300 €
+        offers_factories.StockFactory(offer=product_offer, price=decimal.Decimal("400.12"))
 
         response = client.with_explicit_token(offerers_factories.DEFAULT_CLEAR_API_KEY).get(
             f"/public/offers/v1/products/{product_offer.id}"
@@ -62,6 +65,7 @@ class GetProductTest:
 
         assert response.status_code == 200
         assert response.json["categoryRelatedFields"] == {"author": None, "category": "LIVRE_PAPIER", "ean": None}
+        assert response.json["stock"]["price"] == 30534
 
     def test_product_with_not_selectable_category_can_be_retrieved(self, client):
         venue, _ = utils.create_offerer_provider_linked_to_venue()
