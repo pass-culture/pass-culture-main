@@ -311,16 +311,15 @@ def get_venue_bank_information(venue: offerers_models.Venue) -> serialization.Ve
     if current_reimbursement_point:
         bic = current_reimbursement_point.bic
         iban = current_reimbursement_point.iban
-        reimbursement_point_name = current_reimbursement_point.name
+        reimbursement_point_name = current_reimbursement_point.common_name
 
         if current_reimbursement_point.id != venue.id:
             reimbursement_point_url = url_for("backoffice_web.venue.get", venue_id=current_reimbursement_point.id)
 
-    if venue.siret:
-        pricing_point_name = venue.name
-    elif current_pricing_point is not None:
-        pricing_point_name = current_pricing_point.name
-        pricing_point_url = url_for("backoffice_web.venue.get", venue_id=current_pricing_point.id)
+    if current_pricing_point is not None:
+        pricing_point_name = current_pricing_point.common_name
+        if current_pricing_point.id != venue.id:
+            pricing_point_url = url_for("backoffice_web.venue.get", venue_id=current_pricing_point.id)
 
     return serialization.VenueBankInformation(
         reimbursement_point_name=reimbursement_point_name,
@@ -340,7 +339,7 @@ def get_stats(venue_id: int) -> utils.BackofficeResponse:
         ),
         sa.orm.joinedload(offerers_models.Venue.reimbursement_point_links)
         .joinedload(offerers_models.VenueReimbursementPointLink.reimbursementPoint)
-        .load_only(offerers_models.Venue.name)
+        .load_only(offerers_models.Venue.name, offerers_models.Venue.publicName)
         .joinedload(offerers_models.Venue.bankInformation)
         .load_only(finance_models.BankInformation.bic, finance_models.BankInformation.iban),
         sa.orm.joinedload(offerers_models.Venue.bankInformation).load_only(
@@ -452,7 +451,7 @@ def get_invoices(venue_id: int) -> utils.BackofficeResponse:
         )
         .options(
             sa.orm.joinedload(offerers_models.VenueReimbursementPointLink.reimbursementPoint).load_only(
-                offerers_models.Venue.id, offerers_models.Venue.name
+                offerers_models.Venue.id, offerers_models.Venue.name, offerers_models.Venue.publicName
             )
         )
         .one_or_none()
@@ -744,13 +743,13 @@ def _load_venue_for_removing_pricing_point(venue_id: int) -> offerers_models.Ven
     venue = (
         offerers_models.Venue.query.filter(offerers_models.Venue.id == venue_id)
         .options(
-            sa.orm.load_only(offerers_models.Venue.name, offerers_models.Venue.siret),
+            sa.orm.load_only(offerers_models.Venue.name, offerers_models.Venue.publicName, offerers_models.Venue.siret),
             sa.orm.joinedload(offerers_models.Venue.pricing_point_links)
             .joinedload(offerers_models.VenuePricingPointLink.pricingPoint)
-            .load_only(offerers_models.Venue.name, offerers_models.Venue.siret),
+            .load_only(offerers_models.Venue.name, offerers_models.Venue.publicName, offerers_models.Venue.siret),
             sa.orm.joinedload(offerers_models.Venue.reimbursement_point_links)
             .joinedload(offerers_models.VenueReimbursementPointLink.reimbursementPoint)
-            .load_only(offerers_models.Venue.name, offerers_models.Venue.siret),
+            .load_only(offerers_models.Venue.name, offerers_models.Venue.publicName, offerers_models.Venue.siret),
         )
         .one_or_none()
     )
@@ -842,12 +841,17 @@ def _load_venue_for_removing_siret(venue_id: int) -> offerers_models.Venue:
     venue = (
         offerers_models.Venue.query.filter(offerers_models.Venue.id == venue_id)
         .options(
-            sa.orm.load_only(offerers_models.Venue.name, offerers_models.Venue.siret),
+            sa.orm.load_only(offerers_models.Venue.name, offerers_models.Venue.publicName, offerers_models.Venue.siret),
             sa.orm.joinedload(offerers_models.Venue.managingOfferer)
             .load_only(offerers_models.Offerer.id, offerers_models.Offerer.name)
             .joinedload(offerers_models.Offerer.managedVenues)
             .load_only()
-            .load_only(offerers_models.Venue.id, offerers_models.Venue.name, offerers_models.Venue.siret),
+            .load_only(
+                offerers_models.Venue.id,
+                offerers_models.Venue.name,
+                offerers_models.Venue.publicName,
+                offerers_models.Venue.siret,
+            ),
         )
         .one_or_none()
     )

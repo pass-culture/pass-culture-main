@@ -223,7 +223,7 @@ def list_offerers_to_be_validated(
                     "siret",
                     offerers_models.Venue.siret,
                     "name",
-                    offerers_models.Venue.name,
+                    offerers_models.Venue.common_name,
                     "state",
                     offerers_models.Venue.dms_adage_status,
                 )

@@ -107,9 +107,7 @@
           {% endif %}
         </td>
         <td class="fw-bolder">
-          {% if row.id %}
-            {{ links.build_pro_user_name_to_details_link(row.id) }}
-          {% endif %}
+          {% if row.id %}{{ links.build_pro_user_name_to_details_link(row.id) }}{% endif %}
         </td>
         <td class="text-muted">
           {% if row.id %}

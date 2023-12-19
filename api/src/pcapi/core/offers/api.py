@@ -1580,11 +1580,17 @@ def check_can_move_event_offer(offer: models.Offer) -> list[offerers_models.Venu
             ),
         )
         .options(
-            sa.orm.load_only(offerers_models.Venue.id, offerers_models.Venue.name),
+            sa.orm.load_only(
+                offerers_models.Venue.id,
+                offerers_models.Venue.name,
+                offerers_models.Venue.publicName,
+                offerers_models.Venue.siret,
+            ),
             sa.orm.contains_eager(offerers_models.Venue.pricing_point_links).load_only(
                 offerers_models.VenuePricingPointLink.pricingPointId, offerers_models.VenuePricingPointLink.timespan
             ),
         )
+        .order_by(offerers_models.Venue.common_name)
         .all()
     )
     if not venues_choices:
