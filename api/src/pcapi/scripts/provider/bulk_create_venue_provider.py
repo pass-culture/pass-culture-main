@@ -20,7 +20,7 @@ def create_venue_provider(provider_id: int, venue_ids: list[int]) -> None:
         .all()
     )
 
-    missing = {venue_ids} - {venue.id for venue in venues}
+    missing = set(venue_ids) - {venue.id for venue in venues}
     if missing:
         print(f"Some venues were not found: {missing}")
         return
