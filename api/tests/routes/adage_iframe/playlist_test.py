@@ -32,8 +32,7 @@ class GetClassroomPlaylistTest(SharedPlaylistsErrorTests):
     endpoint = "adage_iframe.get_classroom_playlist"
 
     def test_get_classroom_playlist(self, client):
-        stocks = educational_factories.CollectiveStockFactory.create_batch(2)
-        offers = sorted([stock.collectiveOffer for stock in stocks], key=lambda o: o.id)
+        offers = educational_factories.CollectiveOfferTemplateFactory.create_batch(2)
 
         expected_distance = 10.0
 
