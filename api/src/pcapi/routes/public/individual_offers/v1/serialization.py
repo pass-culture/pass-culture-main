@@ -695,10 +695,10 @@ class PostDatesResponse(serialization.ConfiguredBaseModel):
 class OfferResponse(serialization.ConfiguredBaseModel):
     id: int
     accessibility: AccessibilityResponse
-    booking_contact: pydantic_v1.EmailStr | None = BOOKING_CONTACT_FIELD
-    booking_email: pydantic_v1.EmailStr | None = BOOKING_EMAIL_FIELD
+    booking_contact: str | None = BOOKING_CONTACT_FIELD
+    booking_email: str | None = BOOKING_EMAIL_FIELD
     description: str | None = DESCRIPTION_FIELD_RESPONSE
-    external_ticket_office_url: pydantic_v1.HttpUrl | None = EXTERNAL_TICKET_OFFICE_URL_FIELD
+    external_ticket_office_url: str | None = EXTERNAL_TICKET_OFFICE_URL_FIELD
     image: ImageResponse | None
     is_duo: bool | None = IS_DUO_BOOKINGS_FIELD
     location: PhysicalLocation | DigitalLocation = LOCATION_FIELD
@@ -723,11 +723,11 @@ class OfferResponse(serialization.ConfiguredBaseModel):
     def build_offer(cls, offer: offers_models.Offer) -> "OfferResponse":
         return cls(
             id=offer.id,
-            booking_contact=offer.bookingContact,  # type: ignore [arg-type]
-            booking_email=offer.bookingEmail,  # type: ignore [arg-type]
+            booking_contact=offer.bookingContact,
+            booking_email=offer.bookingEmail,
             description=offer.description,
             accessibility=AccessibilityResponse.from_orm(offer),
-            external_ticket_office_url=offer.externalTicketOfficeUrl,  # type: ignore [arg-type]
+            external_ticket_office_url=offer.externalTicketOfficeUrl,
             image=offer.image,  # type: ignore [arg-type]
             is_duo=offer.isDuo,
             location=DigitalLocation.from_orm(offer) if offer.isDigital else PhysicalLocation.from_orm(offer),
