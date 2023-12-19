@@ -20,6 +20,7 @@ from pcapi.core.offers import factories as offers_factories
 from pcapi.core.offers import models as offers_models
 from pcapi.core.permissions import models as perm_models
 from pcapi.core.testing import assert_num_queries
+from pcapi.core.users import factories as user_factory
 from pcapi.models import db
 from pcapi.models.offer_mixin import OfferValidationStatus
 from pcapi.models.offer_mixin import OfferValidationType
@@ -41,6 +42,7 @@ def collective_offers_fixture() -> tuple:
     collective_offer_1 = educational_factories.CollectiveStockFactory(
         beginningDatetime=datetime.date.today(),
         collectiveOffer__subcategoryId=subcategories.ATELIER_PRATIQUE_ART.id,
+        collectiveOffer__author=user_factory.UserFactory(),
     ).collectiveOffer
     collective_offer_2 = educational_factories.CollectiveStockFactory(
         beginningDatetime=datetime.date.today(),
@@ -93,6 +95,7 @@ class ListCollectiveOffersTest(GetEndpointHelper):
         assert rows[0]["Catégorie"] == collective_offers[0].category.pro_label
         assert rows[0]["Sous-catégorie"] == collective_offers[0].subcategory.pro_label
         assert rows[0]["Formats"] == ""
+        assert rows[0]["Créateur de l'offre"] == collective_offers[0].author.full_name
         assert rows[0]["État"] == "Validée"
         assert rows[0]["Date de création"] == (datetime.date.today() - datetime.timedelta(days=5)).strftime("%d/%m/%Y")
         assert rows[0]["Date de l'évènement"] == datetime.date.today().strftime("%d/%m/%Y")

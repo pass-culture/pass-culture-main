@@ -260,6 +260,7 @@ def create_collective_offer_template(
         interventionArea=offer_data.intervention_area or [],
         priceDetail=offer_data.price_detail,
         formats=offer_data.formats,  # type: ignore[arg-type]
+        author=user,
     )
 
     if offer_data.dates:
@@ -311,6 +312,7 @@ def create_collective_offer(
         interventionArea=offer_data.intervention_area or [],
         templateId=offer_data.template_id,
         formats=offer_data.formats,  # type: ignore[arg-type]
+        author=user,
     )
     collective_offer.bookingEmails = offer_data.booking_emails
 

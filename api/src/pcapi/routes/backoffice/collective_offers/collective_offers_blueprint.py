@@ -50,6 +50,7 @@ def _get_collective_offers(
             educational_models.CollectiveOffer.dateCreated,
             educational_models.CollectiveOffer.validation,
             educational_models.CollectiveOffer.formats,
+            educational_models.CollectiveOffer.authorId,
         ),
         sa.orm.joinedload(educational_models.CollectiveOffer.collectiveStock).load_only(
             educational_models.CollectiveStock.beginningDatetime
@@ -63,6 +64,11 @@ def _get_collective_offers(
         ),
         sa.orm.joinedload(educational_models.CollectiveOffer.flaggingValidationRules).load_only(
             offers_models.OfferValidationRule.name
+        ),
+        sa.orm.joinedload(educational_models.CollectiveOffer.author).load_only(
+            users_models.User.id,
+            users_models.User.firstName,
+            users_models.User.lastName,
         ),
     )
     if form.from_date.data:

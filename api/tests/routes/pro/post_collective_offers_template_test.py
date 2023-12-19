@@ -95,7 +95,16 @@ def payload_fixture(venue, domains, offer_venue, template_start, template_end):
 
 class Returns200Test:
     def test_create_collective_offer_template(
-        self, pro_client, payload, offerer, venue, offer_venue, domains, template_start, template_end
+        self,
+        pro_client,
+        payload,
+        offerer,
+        venue,
+        offer_venue,
+        domains,
+        template_start,
+        template_end,
+        user,
     ):
         national_program = educational_factories.NationalProgramFactory()
 
@@ -135,6 +144,7 @@ class Returns200Test:
         assert offer.nationalProgramId == national_program.id
         assert offer.start == template_start
         assert offer.end == template_end
+        assert offer.author == user
 
     def test_empty_intervention_area(self, pro_client, payload, venue):
         data = {

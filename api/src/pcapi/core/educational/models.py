@@ -272,6 +272,10 @@ class CollectiveOffer(
 
     isActive: bool = sa.Column(sa.Boolean, nullable=False, server_default=sa.sql.expression.true(), default=True)
 
+    authorId = sa.Column(sa.BigInteger, sa.ForeignKey("user.id"), nullable=True)
+
+    author: sa_orm.Mapped["User"] | None = relationship("User", foreign_keys=[authorId], uselist=False)
+
     # the venueId is the billing address.
     # To find where the offer takes place, check offerVenue.
     venueId: int = sa.Column(sa.BigInteger, sa.ForeignKey("venue.id"), nullable=False, index=True)
@@ -570,6 +574,10 @@ class CollectiveOfferTemplate(
 
     isActive: bool = sa.Column(sa.Boolean, nullable=False, server_default=sa.sql.expression.true(), default=True)
 
+    authorId = sa.Column(sa.BigInteger, sa.ForeignKey("user.id"), nullable=True)
+
+    author: sa_orm.Mapped["User"] | None = relationship("User", foreign_keys=[authorId], uselist=False)
+
     venueId: int = sa.Column(sa.BigInteger, sa.ForeignKey("venue.id"), nullable=False, index=True)
 
     venue: sa_orm.Mapped["Venue"] = sa.orm.relationship(
@@ -825,6 +833,7 @@ class CollectiveOfferTemplate(
             "interventionArea",
             "nationalProgramId",
             "formats",
+            "author",
         ]
         collective_offer_mapping = {x: getattr(collective_offer, x) for x in list_of_common_attributes}
         return cls(
