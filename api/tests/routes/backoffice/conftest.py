@@ -210,6 +210,7 @@ def pro_user_fixture():
 @pytest.fixture(name="venue_with_accepted_bank_info")
 def venue_with_accepted_bank_info_fixture(offerer):
     venue = offerers_factories.VenueFactory(managingOfferer=offerer)
+    offerers_factories.VenuePricingPointLinkFactory(venue=venue, pricingPoint=venue)
     finance_factories.BankInformationFactory(
         venue=venue,
         status=finance_models.BankInformationStatus.ACCEPTED,
@@ -241,6 +242,7 @@ def venue_with_rejected_bank_info_fixture(offerer):
 @pytest.fixture(name="venue_with_no_bank_info")
 def venue_with_no_bank_info_fixture(offerer):
     venue = offerers_factories.VenueFactory(managingOfferer=offerer)
+    offerers_factories.VenuePricingPointLinkFactory(venue=venue, pricingPoint=venue)
     return venue
 
 
@@ -288,6 +290,7 @@ def venue_with_expired_reimbursement_point_fixture(
     venue_with_accepted_bank_info,
 ):
     venue = offerers_factories.VenueFactory(managingOfferer=offerer)
+    offerers_factories.VenuePricingPointLinkFactory(venue=venue, pricingPoint=venue)
     offerers_factories.VenueReimbursementPointLinkFactory(
         venue=venue,
         reimbursementPoint=venue_with_accepted_bank_info,

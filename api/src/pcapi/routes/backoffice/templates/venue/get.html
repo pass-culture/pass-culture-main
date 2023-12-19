@@ -16,7 +16,7 @@
       <div class="card shadow">
         <div class="card-body">
           <div class="d-flex flex-fill align-items-center">
-            <h2 class="card-title text-primary">{{ links.build_venue_name_to_pc_pro_link(venue) }}</h2>
+            <h2 class="card-title text-primary">{{ links.build_venue_name_to_pc_pro_link(venue, public_name=false) }}</h2>
             <span class="fs-5 ps-4">{{ build_venue_badges(venue) }}</span>
             <div class="d-flex row-reverse justify-content-end flex-grow-1">
               {% if has_permission("MANAGE_PRO_ENTITY") %}
@@ -73,11 +73,11 @@
                             data-turbo="false">
                         <div class="modal-header"
                              id="delete-venue-modal-label">
-                          <h5 class="modal-title">Supprimer le lieu {{ venue.name }}</h5>
+                          <h5 class="modal-title">Supprimer le lieu {{ venue.common_name }}</h5>
                         </div>
                         <div class="modal-body row">
                           <p>
-                            Le lieu <strong>{{ venue.name }} ({{ venue.id }})</strong> sera définitivement supprimé
+                            Le lieu <strong>{{ venue.common_name }} ({{ venue.id }})</strong> sera définitivement supprimé
                             de la base de données. Veuillez confirmer ce choix.
                           </p>
                           {{ build_form_fields_group(delete_form) }}
@@ -248,7 +248,7 @@
                     <i class="bi bi-trash3 text-primary"
                        data-bs-toggle="modal"
                        data-bs-target=".pc-delete-venue-provider-modal-{{ venue_provider.provider.id }}"
-                       data-bs-title="Effacer le lien entre {{ venue.name }} et {{ venue_provider.provider.name }}">
+                       data-bs-title="Effacer le lien entre {{ venue.common_name }} et {{ venue_provider.provider.name }}">
                     </i>
                     <div class="modal modal-lg fade pc-delete-venue-provider-modal-{{ venue_provider.provider.id }}"
                          tabindex="-1"
@@ -262,11 +262,11 @@
                                 data-turbo="false">
                             <div class="modal-header"
                                  id="delete-venue-provider-modal-label">
-                              <h5 class="modal-title">Supprimer le lien entre le lieu {{ venue.name }} et le provider {{ venue_provider.provider.name }}</h5>
+                              <h5 class="modal-title">Supprimer le lien entre le lieu {{ venue.common_name }} et le provider {{ venue_provider.provider.name }}</h5>
                             </div>
                             <div class="modal-body row">
                               <p>
-                                Le lieu lien entre <strong>{{ venue.name }}</strong> et <strong>{{ venue_provider.provider.name }}</strong> sera définitivement supprimé
+                                Le lieu lien entre <strong>{{ venue.common_name }}</strong> et <strong>{{ venue_provider.provider.name }}</strong> sera définitivement supprimé
                                 de la base de données. Veuillez confirmer ce choix.
                               </p>
                               {{ build_form_fields_group(delete_form) }}
@@ -349,7 +349,7 @@
                           {{ zendesk_sell_synchronisation_form.csrf_token }}
                           <div class="modal-header"
                                id="{{ sync_zsell_aria_described_by_id }}">
-                            <h5 class="modal-title">Synchroniser le lieu {{ venue.name }} sur Zendesk Sell</h5>
+                            <h5 class="modal-title">Synchroniser le lieu {{ venue.common_name }} sur Zendesk Sell</h5>
                           </div>
                           <div class="modal-body row">
                             <div class="d-flex align-items-center">

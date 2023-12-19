@@ -77,7 +77,7 @@ def autocomplete_offerers() -> AutocompleteResponse:
 
 
 def _get_venue_choice_label(venue: offerers_models.Venue) -> str:
-    return f"{venue.name} ({venue.siret or 'Pas de SIRET'})"
+    return f"{venue.common_name} ({venue.siret or 'Pas de SIRET'})"
 
 
 def _get_venues_base_query() -> sa.orm.Query:
@@ -85,6 +85,7 @@ def _get_venues_base_query() -> sa.orm.Query:
         sa.orm.load_only(
             offerers_models.Venue.id,
             offerers_models.Venue.name,
+            offerers_models.Venue.publicName,
             offerers_models.Venue.siret,
         )
     )
@@ -95,7 +96,7 @@ def prefill_venues_choices(autocomplete_field: fields.PCTomSelectField) -> None:
         venues = (
             _get_venues_base_query()
             .filter(offerers_models.Venue.id.in_(autocomplete_field.data))
-            .order_by(offerers_models.Venue.name)
+            .order_by(offerers_models.Venue.common_name)
         )
         autocomplete_field.choices = [(venue.id, _get_venue_choice_label(venue)) for venue in venues]
 
@@ -112,14 +113,18 @@ def autocomplete_venues() -> AutocompleteResponse:
     if is_numeric_query and len(query_string) == 1:
         filters = offerers_models.Venue.id == int(query_string)
     else:
-        filters = sa.func.unaccent(offerers_models.Venue.name).ilike(f"%{clean_accents(query_string)}%")
+        or_filters = [
+            sa.func.unaccent(offerers_models.Venue.name).ilike(f"%{clean_accents(query_string)}%"),
+            sa.func.unaccent(offerers_models.Venue.publicName).ilike(f"%{clean_accents(query_string)}%"),
+        ]
 
         if is_numeric_query and len(query_string) <= 14:
-            filters = sa.or_(
-                filters,
+            or_filters += [
                 offerers_models.Venue.id == int(query_string),
                 offerers_models.Venue.siret.like(f"{query_string}%"),
-            )
+            ]
+
+        filters = sa.or_(*or_filters)
 
     venues = _get_venues_base_query().filter(filters).limit(NUM_RESULTS)
 

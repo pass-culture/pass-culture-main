@@ -49,7 +49,7 @@ def _get_incidents() -> list[finance_models.FinanceIncident]:
             finance_models.BookingFinanceIncident.newTotalAmount,
         ),
         sa.orm.joinedload(offerer_models.Venue, finance_models.FinanceIncident.venue)
-        .load_only(offerer_models.Venue.id, offerer_models.Venue.name)
+        .load_only(offerer_models.Venue.id, offerer_models.Venue.name, offerer_models.Venue.publicName)
         .joinedload(offerer_models.Venue.managingOfferer)
         .load_only(offerer_models.Offerer.id, offerer_models.Offerer.name),
     )
@@ -326,7 +326,7 @@ def create_collective_booking_incident(collective_booking_id: int) -> utils.Back
 
 
 def _initialize_additional_data(bookings: list[bookings_models.Booking]) -> dict:
-    additional_data: dict[str, typing.Any] = {"Lieu": bookings[0].venue.name}
+    additional_data: dict[str, typing.Any] = {"Lieu": bookings[0].venue.common_name}
 
     if len(bookings) == 1:
         booking = bookings[0]
@@ -414,10 +414,10 @@ def get_finance_incident_validation_form(finance_incident_id: int) -> utils.Back
             .joinedload(finance_models.BookingFinanceIncident.booking)
             .load_only(bookings_models.Booking.quantity, bookings_models.Booking.amount),
             sa.orm.joinedload(finance_models.FinanceIncident.venue)
-            .load_only(offerer_models.Venue.name)
+            .load_only(offerer_models.Venue.name, offerer_models.Venue.publicName)
             .joinedload(offerer_models.Venue.reimbursement_point_links)
             .joinedload(offerer_models.VenueReimbursementPointLink.reimbursementPoint)
-            .load_only(offerer_models.Venue.name),
+            .load_only(offerer_models.Venue.name, offerer_models.Venue.publicName),
         )
         .one_or_none()
     )
@@ -480,7 +480,7 @@ def _get_incident(finance_incident_id: int) -> finance_models.FinanceIncident:
         .options(
             # Venue info
             sa.orm.joinedload(offerer_models.Venue, finance_models.FinanceIncident.venue).load_only(
-                offerer_models.Venue.id, offerer_models.Venue.name
+                offerer_models.Venue.id, offerer_models.Venue.name, offerer_models.Venue.publicName
             ),
             # Booking incidents info
             sa.orm.joinedload(

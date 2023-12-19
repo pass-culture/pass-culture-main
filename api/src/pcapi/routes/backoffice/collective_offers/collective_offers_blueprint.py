@@ -55,7 +55,7 @@ def _get_collective_offers(
             educational_models.CollectiveStock.beginningDatetime
         ),
         sa.orm.joinedload(educational_models.CollectiveOffer.venue).load_only(
-            offerers_models.Venue.managingOffererId, offerers_models.Venue.name
+            offerers_models.Venue.managingOffererId, offerers_models.Venue.name, offerers_models.Venue.publicName
         )
         # needed to check if stock is bookable and compute initial/remaining stock:
         .joinedload(offerers_models.Venue.managingOfferer).load_only(

@@ -77,6 +77,7 @@ def _get_individual_bookings(
                 # for name and link (build_pc_pro_venue_link)
                 offerers_models.Venue.id,
                 offerers_models.Venue.name,
+                offerers_models.Venue.publicName,
                 offerers_models.Venue.isVirtual,
                 offerers_models.Venue.managingOffererId,
             ),
