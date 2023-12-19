@@ -43,13 +43,21 @@ class Limiter(flask_limiter.Limiter):
     """
 
     # pylint: disable=unused-private-member
-    def __check_request_limit(self, in_middleware: bool = True) -> None:
+    def _check_request_limit(
+        self,
+        callable_name: str | None = None,
+        in_middleware: bool = True,
+    ) -> None:
         if not settings.IS_RUNNING_TESTS and not FeatureToggle.WIP_ENABLE_RATE_LIMITING.is_active():
             return None
-        return super().__check_request_limit(in_middleware=in_middleware)
+        return super()._check_request_limit(
+            callable_name=callable_name,
+            in_middleware=in_middleware,
+        )
 
 
 rate_limiter = Limiter(
+    storage_uri=settings.REDIS_URL,
     strategy="fixed-window-elastic-expiry",
     key_func=get_remote_address,  # The default is a deprecated function that raises warning logs
 )
