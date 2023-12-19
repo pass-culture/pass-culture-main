@@ -2389,13 +2389,13 @@ files = [
 
 [[package]]
 name = "itsdangerous"
-version = "2.0.1"
+version = "2.1.2"
 description = "Safely pass data to untrusted environments and back."
 optional = false
-python-versions = ">=3.6"
+python-versions = ">=3.7"
 files = [
-    {file = "itsdangerous-2.0.1-py3-none-any.whl", hash = "sha256:5174094b9637652bdb841a3029700391451bd092ba3db90600dea710ba28e97c"},
-    {file = "itsdangerous-2.0.1.tar.gz", hash = "sha256:9e724d68fc22902a1435351f84c3fb8623f303fffcc566a4cb952df8c572cff0"},
+    {file = "itsdangerous-2.1.2-py3-none-any.whl", hash = "sha256:2c2349112351b88699d8d4b6b075022c0808887cb7ad10069318a8b0bc88db44"},
+    {file = "itsdangerous-2.1.2.tar.gz", hash = "sha256:5dbbc68b317e5e42f327f9021763545dc3fc3bfe22e6deb96aaf1fc38874156a"},
 ]
 
 [[package]]
@@ -5795,4 +5795,4 @@ test = ["pytest"]
 [metadata]
 lock-version = "2.0"
 python-versions = "^3.11"
-content-hash = "188a0f8fb962e5f2e27d8b258e3a80b7d05c1bfbe87818e11c52583118dcd3c0"
+content-hash = "734d87eff2e1ac87b77eded8fe55e7e9979f738decfd8bd1b26f439f27bade89"
