@@ -24,7 +24,7 @@ factory-boy = "^3.3.0"
 flask = "==2.0.*"
 flask-cors = "3.0.10"
 flask-jwt-extended = "4.3.1"
-flask-limiter = "1.4"
+flask-limiter = "3.5.0"
 flask-login = "0.5.0"
 flask-shell-ipython = "^0.5.1"
 flask-sqlalchemy = "==2.5.*"
@@ -259,11 +259,6 @@ filterwarnings = [
     "ignore:Coercing Subquery object into a select\\(\\) for use in IN\\(\\):sqlalchemy.exc.SAWarning",
     # ---------------------------- #
 
-    # FIXME (rpaoloni, 2022-04-19): some of our dependencies (flask_limiter, at least) use `distutils.version.StrictVersion`,
-    # which emits a deprecation warnings with setuptools >=59.6.0. Remove this when we update or remove those
-    # dependencies.
-    "ignore:distutils Version classes are deprecated. Use packaging.version instead.:DeprecationWarning",
-    "ignore:The distutils package is deprecated and slated for removal in Python 3.12. Use setuptools or check PEP 632 for potential alternatives:DeprecationWarning",
     # FIXME (francois-seguin, 2023-12-19): botocore uses this, until
     # https://github.com/boto/botocore/commit/87eba485330c68ae4c48f7249d20aa566cbe4676
     # (included in botocore 1.27.80). We should be able to remove this

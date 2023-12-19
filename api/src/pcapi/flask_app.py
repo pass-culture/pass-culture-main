@@ -188,7 +188,6 @@ app.json_encoder = EnumJSONEncoder
 app.config["SQLALCHEMY_DATABASE_URI"] = settings.DATABASE_URL
 app.config["SQLALCHEMY_TRACK_MODIFICATIONS"] = False
 app.config["SQLALCHEMY_ECHO"] = settings.SQLALCHEMY_ECHO
-app.config["RATELIMIT_STORAGE_URL"] = settings.REDIS_URL  # for flask_limiter
 app.config["GOOGLE_CLIENT_ID"] = settings.GOOGLE_CLIENT_ID  # for authlib
 app.config["GOOGLE_CLIENT_SECRET"] = settings.GOOGLE_CLIENT_SECRET  # for authlib
 
