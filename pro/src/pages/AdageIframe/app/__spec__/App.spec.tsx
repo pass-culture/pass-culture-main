@@ -240,7 +240,7 @@ describe('app', () => {
       await screen.findByRole('button', { name: 'Rechercher' })
 
       expect(Configure).toHaveBeenNthCalledWith(
-        2,
+        1,
         expect.objectContaining({
           aroundLatLng: '48.856614, 2.3522219',
           aroundRadius: DEFAULT_GEO_RADIUS,

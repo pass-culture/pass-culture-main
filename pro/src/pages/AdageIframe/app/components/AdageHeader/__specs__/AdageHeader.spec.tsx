@@ -1,18 +1,13 @@
 // @vitest-environment happy-dom
 import { screen, waitFor } from '@testing-library/react'
 import { userEvent } from '@testing-library/user-event'
-import React from 'react'
-import * as instantSearch from 'react-instantsearch'
 
 import { AdageFrontRoles, AuthenticatedResponse } from 'apiClient/adage'
 import { AdageHeaderLink } from 'apiClient/adage/models/AdageHeaderLink'
 import { apiAdage } from 'apiClient/api'
 import * as useNotification from 'hooks/useNotification'
 import { AdageUserContextProvider } from 'pages/AdageIframe/app/providers/AdageUserContext'
-import {
-  defaultEducationalInstitution,
-  defaultUseStatsReturn,
-} from 'utils/adageFactories'
+import { defaultEducationalInstitution } from 'utils/adageFactories'
 import { renderWithProviders } from 'utils/renderWithProviders'
 
 import { AdageHeader } from '../AdageHeader'
@@ -53,13 +48,6 @@ vi.mock('apiClient/api', () => ({
   },
 }))
 
-vi.mock('react-instantsearch', async () => {
-  return {
-    ...((await vi.importActual('react-instantsearch')) ?? {}),
-    useStats: () => {},
-  }
-})
-
 describe('AdageHeader', () => {
   const notifyError = vi.fn()
   const user = {
@@ -77,9 +65,6 @@ describe('AdageHeader', () => {
     }))
     vi.spyOn(apiAdage, 'getEducationalInstitutionWithBudget').mockResolvedValue(
       defaultEducationalInstitution
-    )
-    vi.spyOn(instantSearch, 'useStats').mockImplementation(
-      () => defaultUseStatsReturn
     )
   })
 
@@ -112,16 +97,24 @@ describe('AdageHeader', () => {
     expect(screen.getByRole('link', { name: 'Découvrir' })).toBeInTheDocument()
   })
 
-  it('should render the number of hits', async () => {
-    vi.spyOn(instantSearch, 'useStats').mockImplementation(() => ({
-      ...defaultUseStatsReturn,
-      nbHits: 2,
-    }))
-    renderAdageHeader(user)
+  it('should display the number of offers for the user institution', async () => {
+    renderAdageHeader({ ...user, offersCount: 12 })
     await waitFor(() =>
       expect(screen.getByText('Solde prévisionnel')).toBeInTheDocument()
     )
-    expect(screen.getByText('2')).toBeInTheDocument()
+    expect(
+      screen.getByRole('link', { name: 'Pour mon établissement 12' })
+    ).toBeInTheDocument()
+  })
+
+  it('should display 0 in case the user institution offer count is not available', async () => {
+    renderAdageHeader({ ...user, offersCount: undefined })
+    await waitFor(() =>
+      expect(screen.getByText('Solde prévisionnel')).toBeInTheDocument()
+    )
+    expect(
+      screen.getByRole('link', { name: 'Pour mon établissement 0' })
+    ).toBeInTheDocument()
   })
 
   it('should display the institution budget', async () => {

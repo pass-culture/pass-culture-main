@@ -28,18 +28,6 @@ export const AdageHeader = () => {
 
   const isDiscoveryPage = pathname === '/adage-iframe'
 
-  const getEducationalInstitutionBudget = async () => {
-    const { isOk, payload, message } =
-      await getEducationalInstitutionWithBudgetAdapter()
-
-    if (!isOk) {
-      return notify.error(message)
-    }
-
-    setInstitutionBudget(payload.budget)
-    setIsLoading(false)
-  }
-
   function logAdageLinkClick(headerLinkName: AdageHeaderLink) {
     // eslint-disable-next-line @typescript-eslint/no-floating-promises
     apiAdage.logHeaderLinkClick({
@@ -49,11 +37,23 @@ export const AdageHeader = () => {
   }
 
   useEffect(() => {
+    async function getEducationalInstitutionBudget() {
+      const { isOk, payload, message } =
+        await getEducationalInstitutionWithBudgetAdapter()
+
+      if (!isOk) {
+        return notify.error(message)
+      }
+
+      setInstitutionBudget(payload.budget)
+      setIsLoading(false)
+    }
+
     if (adageUser.role !== AdageFrontRoles.READONLY) {
       // eslint-disable-next-line @typescript-eslint/no-floating-promises
       getEducationalInstitutionBudget()
     }
-  }, [adageUser.role])
+  }, [adageUser.role, notify])
 
   return (
     <div
@@ -70,10 +70,7 @@ export const AdageHeader = () => {
             viewBox="0 0 71 24"
           />
         </div>
-        <AdageHeaderMenu
-          adageUser={adageUser}
-          logAdageLinkClick={logAdageLinkClick}
-        />
+        <AdageHeaderMenu logAdageLinkClick={logAdageLinkClick} />
         {!isLoading && (
           <AdageHeaderBudget
             institutionBudget={institutionBudget}
