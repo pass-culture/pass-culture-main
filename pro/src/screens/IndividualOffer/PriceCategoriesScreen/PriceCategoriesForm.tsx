@@ -7,7 +7,7 @@ import ConfirmDialog from 'components/Dialog/ConfirmDialog'
 import FormLayout from 'components/FormLayout'
 import { getIndividualOfferAdapter } from 'core/Offers/adapters'
 import { OFFER_WIZARD_MODE } from 'core/Offers/constants'
-import { IndividualOffer, IndividualOfferStock } from 'core/Offers/types'
+import { IndividualOffer } from 'core/Offers/types'
 import useNotification from 'hooks/useNotification'
 import fullMoreIcon from 'icons/full-more.svg'
 import fullTrashIcon from 'icons/full-trash.svg'
@@ -30,8 +30,7 @@ import { PriceCategoriesFormValues, PriceCategoryForm } from './form/types'
 import styles from './PriceCategoriesForm.module.scss'
 
 interface PriceCategoriesFormProps {
-  offerId: number
-  stocks: IndividualOfferStock[]
+  offer: IndividualOffer
   mode: OFFER_WIZARD_MODE
   setOffer: ((offer: IndividualOffer | null) => void) | null
   isDisabled: boolean
@@ -39,8 +38,7 @@ interface PriceCategoriesFormProps {
 }
 
 export const PriceCategoriesForm = ({
-  offerId,
-  stocks,
+  offer,
   mode,
   setOffer,
   isDisabled,
@@ -63,25 +61,19 @@ export const PriceCategoriesForm = ({
     priceCategoryId?: number
   ) => {
     if (priceCategoryId) {
-      const shouldDisplayConfirmDeletePriceCategory = stocks.some(
-        (stock) => stock.priceCategoryId === priceCategoryId
-      )
-      if (
-        currentDeletionIndex === null &&
-        shouldDisplayConfirmDeletePriceCategory
-      ) {
+      if (currentDeletionIndex === null && offer.hasStocks) {
         setCurrentDeletionIndex(index)
         return
       } else {
         setCurrentDeletionIndex(null)
       }
       const { isOk, message } = await deletePriceCategoryAdapter({
-        offerId,
+        offerId: offer.id,
         priceCategoryId: priceCategoryId,
       })
       if (isOk) {
         arrayHelpers.remove(index)
-        const response = await getIndividualOfferAdapter(offerId)
+        const response = await getIndividualOfferAdapter(offer.id)
         if (response.isOk) {
           const updatedOffer = response.payload
           setOffer && setOffer(updatedOffer)
@@ -110,11 +102,11 @@ export const PriceCategoriesForm = ({
           ],
         }
         await postPriceCategoriesAdapter({
-          offerId: offerId,
+          offerId: offer.id,
           requestBody: requestBody,
         })
       }
-      const response = await getIndividualOfferAdapter(offerId)
+      const response = await getIndividualOfferAdapter(offer.id)
       if (response.isOk) {
         const updatedOffer = response.payload
         setOffer && setOffer(updatedOffer)

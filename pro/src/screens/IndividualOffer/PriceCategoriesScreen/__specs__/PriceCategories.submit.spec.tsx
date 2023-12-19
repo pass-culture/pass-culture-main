@@ -63,7 +63,9 @@ describe('PriceCategories', () => {
   })
 
   it('should notify and submit when clicking on Enregistrer et continuer in creation', async () => {
-    renderPriceCategories({ offer: individualOfferFactory() })
+    renderPriceCategories({
+      offer: individualOfferFactory({ hasStocks: false }),
+    })
     await userEvent.type(
       screen.getByLabelText('Intitulé du tarif'),
       'Mon tarif'
@@ -78,14 +80,12 @@ describe('PriceCategories', () => {
     expect(api.postPriceCategories).toHaveBeenCalled()
   })
 
-  it('should display price modification popin', async () => {
+  it('should display price modification modal', async () => {
     renderPriceCategories({
-      offer: individualOfferFactory(
-        undefined,
-        individualStockFactory({ priceCategoryId: 666, bookingsQuantity: 0 }),
-        undefined,
-        priceCategoryFactory({ id: 666 })
-      ),
+      offer: individualOfferFactory({
+        bookingsCount: 0,
+        priceCategories: [priceCategoryFactory({ id: 666 })],
+      }),
     })
     await userEvent.type(
       screen.getByLabelText('Intitulé du tarif'),
@@ -111,7 +111,7 @@ describe('PriceCategories', () => {
     expect(api.postPriceCategories).toHaveBeenCalled()
   })
 
-  it('should display price modification popin with booking', async () => {
+  it('should display price modification modal with booking', async () => {
     renderPriceCategories({
       offer: individualOfferFactory(
         undefined,
@@ -149,7 +149,7 @@ describe('PriceCategories', () => {
 
   it('should notify and submit when clicking on Enregistrer les modifications in edition', async () => {
     renderPriceCategories(
-      { offer: individualOfferFactory() },
+      { offer: individualOfferFactory({ hasStocks: false }) },
       generatePath(
         getIndividualOfferPath({
           step: OFFER_WIZARD_STEP_IDS.TARIFS,
@@ -177,7 +177,7 @@ describe('PriceCategories', () => {
     vi.spyOn(api, 'postPriceCategories').mockRejectedValue({})
 
     renderPriceCategories(
-      { offer: individualOfferFactory() },
+      { offer: individualOfferFactory({ hasStocks: false }) },
       generatePath(
         getIndividualOfferPath({
           step: OFFER_WIZARD_STEP_IDS.TARIFS,
