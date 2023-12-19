@@ -39,6 +39,13 @@ const ImageEditor = forwardRef<AvatarEditor, ImageEditorProps>(
   ) => {
     const [position, setPosition] = useState<Position>(initialPosition)
     const formik = useFormikContext<ImageEditorFormValues>()
+    /* The modal is too big for mobile phone.
+      The size divided by 3 works for landscape and portrait pictures */
+    const responsiveCanvasHeight =
+      window.innerWidth > 380 ? canvasHeight : canvasHeight / 3
+    const responsiveCanvasWidth =
+      window.innerWidth > 380 ? canvasWidth : canvasWidth / 3
+
     const drawCropBorder = useCallback(() => {
       const canvas = document.querySelector('canvas')
       const ctx = canvas?.getContext('2d')
@@ -76,7 +83,7 @@ const ImageEditor = forwardRef<AvatarEditor, ImageEditorProps>(
           border={[cropBorderWidth, cropBorderHeight]}
           color={[0, 0, 0, 0.4]}
           crossOrigin="anonymous"
-          height={canvasHeight}
+          height={responsiveCanvasHeight}
           image={image}
           onImageChange={drawCropBorder}
           onImageReady={drawCropBorder}
@@ -86,7 +93,7 @@ const ImageEditor = forwardRef<AvatarEditor, ImageEditorProps>(
           position={position}
           ref={ref}
           scale={Number(formik.values.scale)}
-          width={canvasWidth}
+          width={responsiveCanvasWidth}
         />
         <label className={style['image-editor-label']} htmlFor="scale">
           Zoom

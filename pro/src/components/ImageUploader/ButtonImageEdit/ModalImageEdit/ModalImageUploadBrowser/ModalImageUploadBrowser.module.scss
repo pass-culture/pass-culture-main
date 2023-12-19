@@ -9,7 +9,9 @@
   align-items: center;
 
   // UI width minus dialog padding to reach 656px
-  min-width: calc(rem.torem(656px) - size.$dialog-box-padding * 2);
+  @media (min-width: size.$tablet) {
+    min-width: calc(rem.torem(656px) - size.$dialog-box-padding * 2);
+  }
 
   .header {
     @include fonts.title3;
