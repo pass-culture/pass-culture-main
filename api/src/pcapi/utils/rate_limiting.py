@@ -1,5 +1,6 @@
 import typing
 
+import flask
 from flask import g
 from flask import request
 import flask_limiter
@@ -17,7 +18,7 @@ def get_api_key() -> str:
     return g.current_api_key
 
 
-def get_basic_auth_from_request() -> str | None:
+def get_basic_auth_from_request() -> str:
     # `pcapi.utis.login_manager` cannot be imported at module-scope,
     # because the application context may not be available and that
     # module needs it.
@@ -25,7 +26,7 @@ def get_basic_auth_from_request() -> str | None:
 
     auth = get_request_authorization()
     if not auth or not auth.username:
-        return None
+        return ""
     return auth.username
 
 
@@ -42,7 +43,6 @@ class Limiter(flask_limiter.Limiter):
     feature flag is enabled.
     """
 
-    # pylint: disable=unused-private-member
     def _check_request_limit(
         self,
         callable_name: str | None = None,
@@ -63,62 +63,60 @@ rate_limiter = Limiter(
 )
 
 
-def ip_rate_limiter(**kwargs: typing.Any) -> typing.Callable:
-    base_kwargs = {
-        "key_func": get_remote_address,
-        "scope": "ip_limiter",
-        "error_message": "rate limit by ip exceeded",
-    }
-    base_kwargs.update(kwargs)
-    return rate_limiter.shared_limit(settings.RATE_LIMIT_BY_IP, **base_kwargs)
+def ip_rate_limiter(
+    deduct_when: typing.Callable[[flask.wrappers.Response], bool] | None = None,
+) -> typing.Callable:
+    return rate_limiter.shared_limit(
+        settings.RATE_LIMIT_BY_IP,
+        scope="ip_limiter",
+        key_func=get_remote_address,
+        error_message="rate limit by ip exceeded",
+        deduct_when=deduct_when,
+    )
 
 
-def email_rate_limiter(**kwargs: typing.Any) -> typing.Callable:
-    base_kwargs = {
-        "key_func": get_email_from_request,
-        "exempt_when": lambda: not get_email_from_request(),
-        "scope": "rate_limiter",
-        "error_message": "rate limit by email exceeded",
-    }
-    base_kwargs.update(kwargs)
-    return rate_limiter.shared_limit(settings.RATE_LIMIT_BY_EMAIL, **base_kwargs)
+def email_rate_limiter() -> typing.Callable:
+    return rate_limiter.shared_limit(
+        settings.RATE_LIMIT_BY_EMAIL,
+        scope="rate_limiter",
+        key_func=get_email_from_request,
+        exempt_when=lambda: not get_email_from_request(),
+        error_message="rate limit by email exceeded",
+    )
 
 
-def api_key_high_rate_limiter(**kwargs: typing.Any) -> typing.Callable:
-    return _api_key_rate_limiter(settings.HIGH_RATE_LIMIT_BY_API_KEY, **kwargs)
+def api_key_high_rate_limiter() -> typing.Callable:
+    return _api_key_rate_limiter(settings.HIGH_RATE_LIMIT_BY_API_KEY)
 
 
-def api_key_low_rate_limiter(**kwargs: typing.Any) -> typing.Callable:
-    return _api_key_rate_limiter(settings.LOW_RATE_LIMIT_BY_API_KEY, **kwargs)
+def api_key_low_rate_limiter() -> typing.Callable:
+    return _api_key_rate_limiter(settings.LOW_RATE_LIMIT_BY_API_KEY)
 
 
-def _api_key_rate_limiter(rate_limit: str, **kwargs: typing.Any) -> typing.Callable:
-    base_kwargs = {
-        "key_func": get_api_key,
-        "scope": "rate_limiter",
-        "error_message": "rate limit by api_key exceeded",
-    }
-    base_kwargs.update(kwargs)
-    return rate_limiter.shared_limit(rate_limit, **base_kwargs)
+def _api_key_rate_limiter(rate_limit: str) -> typing.Callable:
+    return rate_limiter.shared_limit(
+        rate_limit,
+        scope="rate_limiter",
+        key_func=get_api_key,
+        error_message="rate limit by api_key exceeded",
+    )
 
 
-def basic_auth_rate_limiter(**kwargs: typing.Any) -> typing.Callable:
-    base_kwargs = {
-        "key_func": get_basic_auth_from_request,
-        "exempt_when": lambda: get_basic_auth_from_request() is None,
-        "deduct_when": lambda response: response.status_code == 401,
-        "scope": "rate_limiter",
-        "error_message": "rate limit by basic auth exceeded",
-    }
-    base_kwargs.update(kwargs)
-    return rate_limiter.shared_limit(settings.RATE_LIMIT_BY_EMAIL, **base_kwargs)
+def basic_auth_rate_limiter() -> typing.Callable:
+    return rate_limiter.shared_limit(
+        settings.RATE_LIMIT_BY_EMAIL,
+        scope="rate_limiter",
+        key_func=get_basic_auth_from_request,
+        exempt_when=lambda: not get_basic_auth_from_request(),
+        deduct_when=lambda response: response.status_code == 401,
+        error_message="rate limit by basic auth exceeded",
+    )
 
 
-def sirene_rate_limiter(**kwargs: typing.Any) -> typing.Callable:
-    base_kwargs = {
-        "key_func": get_username_or_remote_address,
-        "scope": "rate_limiter",
-        "error_message": "rate limit exceeded",
-    }
-    base_kwargs.update(kwargs)
-    return rate_limiter.shared_limit(settings.RATE_LIMIT_SIRENE_API, **base_kwargs)
+def sirene_rate_limiter() -> typing.Callable:
+    return rate_limiter.shared_limit(
+        settings.RATE_LIMIT_SIRENE_API,
+        scope="rate_limiter",
+        key_func=get_username_or_remote_address,
+        error_message="rate limit exceeded",
+    )
