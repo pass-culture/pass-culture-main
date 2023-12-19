@@ -705,10 +705,10 @@ export class DefaultService {
 
   /**
    * get_classroom_playlist <GET>
-   * @returns ListCollectiveOffersResponseModel OK
+   * @returns ListCollectiveOfferTemplateResponseModel OK
    * @throws ApiError
    */
-  public getClassroomPlaylist(): CancelablePromise<ListCollectiveOffersResponseModel> {
+  public getClassroomPlaylist(): CancelablePromise<ListCollectiveOfferTemplateResponseModel> {
     return this.httpRequest.request({
       method: 'GET',
       url: '/adage-iframe/playlists/classroom',
