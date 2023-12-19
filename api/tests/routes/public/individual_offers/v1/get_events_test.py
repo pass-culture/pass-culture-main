@@ -27,7 +27,12 @@ class GetEventsTest:
     def test_get_offers_with_missing_fields(self, client):
         venue, _ = utils.create_offerer_provider_linked_to_venue()
         offers_factories.EventOfferFactory(
-            venue=venue, subcategoryId=subcategories.CONCERT.id, extraData={"musicType": "800"}
+            venue=venue,
+            subcategoryId=subcategories.CONCERT.id,
+            extraData={"musicType": "800"},
+            bookingContact="nonValidEmail@email",
+            bookingEmail="another@non.valid;email",
+            externalTicketOfficeUrl="http:/invalidUrl.www",
         )
         offers_factories.EventOfferFactory(
             venue=venue,
