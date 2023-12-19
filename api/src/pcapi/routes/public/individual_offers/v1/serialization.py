@@ -642,8 +642,13 @@ class DatesCreation(serialization.ConfiguredBaseModel):
         extra = "forbid"
 
 
-class PriceCategoryResponse(PriceCategoryCreation):
+class PriceCategoryResponse(serialization.ConfiguredBaseModel):
     id: int
+    label: str = PRICE_CATEGORY_LABEL_FIELD
+    price: pydantic_v1.StrictInt = PRICE_FIELD
+
+    class Config:
+        getter_dict = DecimalPriceGetterDict
 
 
 class PriceCategoriesResponse(serialization.ConfiguredBaseModel):
@@ -738,7 +743,7 @@ class OfferResponse(serialization.ConfiguredBaseModel):
 
 
 class ProductStockResponse(BaseStockResponse):
-    price: offer_price_model = PRICE_FIELD
+    price: pydantic_v1.StrictInt = PRICE_FIELD
 
     @classmethod
     def build_product_stock(cls, stock: offers_models.Stock) -> "ProductStockResponse":

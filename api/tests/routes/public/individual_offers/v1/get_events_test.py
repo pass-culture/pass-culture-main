@@ -1,3 +1,5 @@
+import decimal
+
 import pytest
 
 from pcapi.core import testing
@@ -24,9 +26,10 @@ class GetEventsTest:
         assert response.status_code == 200
         assert [event["id"] for event in response.json["events"]] == [offer.id for offer in offers[0:5]]
 
+    # This test should be removed when our database has consistant data
     def test_get_offers_with_missing_fields(self, client):
         venue, _ = utils.create_offerer_provider_linked_to_venue()
-        offers_factories.EventOfferFactory(
+        offer = offers_factories.EventOfferFactory(
             venue=venue,
             subcategoryId=subcategories.CONCERT.id,
             extraData={"musicType": "800"},
@@ -34,6 +37,8 @@ class GetEventsTest:
             bookingEmail="another@non.valid;email",
             externalTicketOfficeUrl="http:/invalidUrl.www",
         )
+        offers_factories.PriceCategoryFactory(offer=offer, price=decimal.Decimal("400.12"))
+        offers_factories.EventStockFactory(offer=offer, price=decimal.Decimal("400.12"))
         offers_factories.EventOfferFactory(
             venue=venue,
             subcategoryId=subcategories.CONCERT.id,
