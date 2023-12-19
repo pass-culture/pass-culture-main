@@ -65,7 +65,7 @@ export const OffersSearch = ({
     Option<string[]>[]
   >([])
 
-  const notification = useNotification()
+  const { error } = useNotification()
 
   const [domainsOptions, setDomainsOptions] = useState<Option<number>[]>([])
 
@@ -77,6 +77,16 @@ export const OffersSearch = ({
   const nbHits = mainOffersSearchResults?.nbHits
   const isFormatEnabled = useActiveFeature('WIP_ENABLE_FORMAT')
 
+  const formik = useFormik<SearchFormValues>({
+    initialValues: {
+      ...ADAGE_FILTERS_DEFAULT_VALUES,
+      venue: venueFilter,
+    },
+    enableReinitialize: true,
+    onSubmit: handleSubmit,
+  })
+  const { setFieldValue } = formik
+
   useEffect(() => {
     const getAllCategories = async () => {
       try {
@@ -84,34 +94,31 @@ export const OffersSearch = ({
 
         return setCategoriesOptions(filterEducationalSubCategories(result))
       } catch {
-        notification.error(GET_DATA_ERROR_MESSAGE)
+        error(GET_DATA_ERROR_MESSAGE)
       }
     }
     const getAllDomains = async () => {
       try {
         const result = await api.listEducationalDomains()
 
-        const domainFromPath = result.find((elm) => elm.id === domainId)
-
-        if (domainFromPath) {
-          // eslint-disable-next-line @typescript-eslint/no-floating-promises
-          formik.setFieldValue('domains', [domainFromPath.id])
-        }
-
         return setDomainsOptions(
           result.map(({ id, name }) => ({ value: id, label: name }))
         )
       } catch {
-        notification.error(GET_DATA_ERROR_MESSAGE)
+        error(GET_DATA_ERROR_MESSAGE)
       }
     }
     // eslint-disable-next-line @typescript-eslint/no-floating-promises
     getAllCategories()
+
     // eslint-disable-next-line @typescript-eslint/no-floating-promises
     getAllDomains()
-  }, [])
 
-  const handleSubmit = () => {
+    // eslint-disable-next-line @typescript-eslint/no-floating-promises
+    setFieldValue('domains', domainId ? [domainId] : [])
+  }, [error, domainId, setFieldValue])
+
+  function handleSubmit() {
     const updatedFilters = adageFiltersToFacetFilters({
       ...formik.values,
       uai: adageUser.uai ? ['all', adageUser.uai] : ['all'],
@@ -156,15 +163,6 @@ export const OffersSearch = ({
       })
     }
   }
-
-  const formik = useFormik<SearchFormValues>({
-    initialValues: {
-      ...ADAGE_FILTERS_DEFAULT_VALUES,
-      venue: venueFilter,
-    },
-    enableReinitialize: true,
-    onSubmit: handleSubmit,
-  })
 
   const getActiveLocalisationFilter = () => {
     if (formik.values.departments.length > 0) {

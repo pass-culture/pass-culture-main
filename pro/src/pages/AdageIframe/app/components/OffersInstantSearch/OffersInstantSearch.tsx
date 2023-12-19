@@ -52,7 +52,8 @@ export const OffersInstantSearch = ({
   const [venueFilterFromParam, setVenueFilterFromParam] =
     useState<VenueResponse | null>(null)
 
-  const notification = useNotification()
+  const { error } = useNotification()
+
   useEffect(() => {
     const getVenueById = async () => {
       try {
@@ -60,14 +61,15 @@ export const OffersInstantSearch = ({
         setVenueFilterFromParam(venueResponse)
         setFacetFilters([...facetFilters, [`venue.id:${venueId}`]])
       } catch {
-        notification.error('Lieu inconnu. Tous les résultats sont affichés.')
+        error('Lieu inconnu. Tous les résultats sont affichés.')
       }
     }
     if (venueId) {
       // eslint-disable-next-line @typescript-eslint/no-floating-promises
       getVenueById()
     }
-  }, [venueId])
+  }, [venueId, error])
+
   return (
     <InstantSearch
       indexName={ALGOLIA_COLLECTIVE_OFFERS_INDEX}
