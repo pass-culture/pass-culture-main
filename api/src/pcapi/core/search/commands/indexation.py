@@ -267,3 +267,8 @@ def index_offers_staging(
 @blueprint.cli.command("clean_indexation_processing_queues")
 def clean_indexation_processing_queues() -> None:
     search.clean_processing_queues()
+
+
+@blueprint.cli.command("remove_duplicates_from_venue_indexation_queue")
+def remove_duplicates_from_venue_indexation_queue() -> None:
+    search.remove_duplicates_from_venue_indexation_queue()
