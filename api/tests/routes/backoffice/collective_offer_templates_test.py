@@ -15,6 +15,7 @@ from pcapi.core.offers import factories as offers_factories
 from pcapi.core.offers import models as offers_models
 from pcapi.core.permissions import models as perm_models
 from pcapi.core.testing import assert_num_queries
+from pcapi.core.users import factories as user_factory
 from pcapi.models import db
 from pcapi.models.offer_mixin import OfferValidationStatus
 from pcapi.models.offer_mixin import OfferValidationType
@@ -33,7 +34,7 @@ pytestmark = [
 @pytest.fixture(scope="function", name="collective_offer_templates")
 def collective_offer_templates_fixture() -> tuple:
     collective_offer_template_1 = educational_factories.CollectiveOfferTemplateFactory(
-        subcategoryId=subcategories.ATELIER_PRATIQUE_ART.id,
+        subcategoryId=subcategories.ATELIER_PRATIQUE_ART.id, author=user_factory.ProFactory()
     )
     collective_offer_template_2 = educational_factories.CollectiveOfferTemplateFactory(
         name="A Very Specific Name",
@@ -83,6 +84,7 @@ class ListCollectiveOfferTemplatesTest(GetEndpointHelper):
         assert rows[0]["Date de création"] == (datetime.date.today() - datetime.timedelta(days=5)).strftime("%d/%m/%Y")
         assert rows[0]["Structure"] == collective_offer_templates[0].venue.managingOfferer.name
         assert rows[0]["Lieu"] == collective_offer_templates[0].venue.name
+        assert rows[0]["Créateur de l'offre"] == collective_offer_templates[0].author.full_name
 
     def test_list_collective_offer_templates_by_name(self, authenticated_client, collective_offer_templates):
         searched_name = collective_offer_templates[1].name
