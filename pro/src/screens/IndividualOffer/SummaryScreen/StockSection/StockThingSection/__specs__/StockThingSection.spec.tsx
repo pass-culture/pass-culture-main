@@ -1,14 +1,13 @@
 import { screen } from '@testing-library/react'
-import React from 'react'
 
-import { individualStockFactory } from 'utils/individualApiFactories'
+import { individualGetOfferStockResponseModelFactory } from 'utils/individualApiFactories'
 import { renderWithProviders } from 'utils/renderWithProviders'
 
 import StockThingSection from '../StockThingSection'
 
 describe('StockThingSection', () => {
   it('should render correctly', () => {
-    const stock = individualStockFactory()
+    const stock = individualGetOfferStockResponseModelFactory()
 
     renderWithProviders(
       <StockThingSection stock={stock} canBeDuo={false} isDuo={false} />
@@ -28,7 +27,7 @@ describe('StockThingSection', () => {
   })
 
   it('should render duo informations for can be duo things (like ESCAPE_GAME or CARTE_MUSEE)', () => {
-    const stock = individualStockFactory()
+    const stock = individualGetOfferStockResponseModelFactory()
 
     renderWithProviders(
       <StockThingSection stock={stock} canBeDuo={true} isDuo={true} />

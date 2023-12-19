@@ -45,7 +45,6 @@ describe('screens:Stocks', () => {
       venue: offerVenueFactory({
         departementCode: '75',
       }),
-      stocks: [],
     })
     storeOverrides = {}
     contextOverride = individualOfferContextFactory({

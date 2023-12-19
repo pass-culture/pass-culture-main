@@ -1,4 +1,8 @@
-import { screen, waitFor } from '@testing-library/react'
+import {
+  screen,
+  waitFor,
+  waitForElementToBeRemoved,
+} from '@testing-library/react'
 import { userEvent } from '@testing-library/user-event'
 import React from 'react'
 import { generatePath, Route, Routes } from 'react-router-dom'
@@ -9,8 +13,9 @@ import { OFFER_WIZARD_STEP_IDS } from 'components/IndividualOfferNavigation/cons
 import { OFFER_WIZARD_MODE } from 'core/Offers/constants'
 import { getIndividualOfferPath } from 'core/Offers/utils/getIndividualOfferUrl'
 import {
-  individualOfferFactory,
   individualStockFactory,
+  individualGetOfferStockResponseModelFactory,
+  individualOfferFactory,
 } from 'utils/individualApiFactories'
 import { renderWithProviders } from 'utils/renderWithProviders'
 
@@ -59,19 +64,24 @@ const renderStockSection = (
 
 describe('Summary stock section', () => {
   describe('for general case', () => {
-    it('should render sold out warning', () => {
-      const props = {
-        offer: individualOfferFactory(
-          {
-            isEvent: false,
-            status: OfferStatus.SOLD_OUT,
-          },
-          individualStockFactory({
+    it('should render sold out warning', async () => {
+      vi.spyOn(api, 'getStocks').mockResolvedValueOnce({
+        hasStocks: true,
+        stockCount: 1,
+        stocks: [
+          individualGetOfferStockResponseModelFactory({
             quantity: 0,
             price: 20,
             bookingLimitDatetime: null,
-          })
-        ),
+          }),
+        ],
+      })
+
+      const props = {
+        offer: individualOfferFactory({
+          isEvent: false,
+          status: OfferStatus.SOLD_OUT,
+        }),
       }
       renderStockSection(
         props,
@@ -83,6 +93,9 @@ describe('Summary stock section', () => {
           { offerId: 'AA' }
         )
       )
+
+      await waitForElementToBeRemoved(() => screen.queryAllByTestId('spinner'))
+
       expect(
         screen.getByRole('heading', { name: /Stocks et prix/ })
       ).toBeInTheDocument()
@@ -91,7 +104,13 @@ describe('Summary stock section', () => {
       expect(screen.getByText('0')).toBeInTheDocument()
     })
 
-    it('should render expired warning', () => {
+    it('should render expired warning', async () => {
+      vi.spyOn(api, 'getStocks').mockResolvedValueOnce({
+        hasStocks: true,
+        stockCount: 1,
+        stocks: [individualGetOfferStockResponseModelFactory()],
+      })
+
       const props = {
         offer: individualOfferFactory(
           {
@@ -115,6 +134,9 @@ describe('Summary stock section', () => {
           { offerId: 'AA' }
         )
       )
+
+      await waitForElementToBeRemoved(() => screen.queryAllByTestId('spinner'))
+
       expect(
         screen.getByRole('heading', { name: /Stocks et prix/ })
       ).toBeInTheDocument()
@@ -122,12 +144,17 @@ describe('Summary stock section', () => {
       expect(screen.getByText(/Date limite de réservation/)).toBeInTheDocument()
     })
 
-    it('should render no stock warning', () => {
+    it('should render no stock warning', async () => {
+      vi.spyOn(api, 'getStocks').mockResolvedValueOnce({
+        hasStocks: true,
+        stockCount: 1,
+        stocks: [],
+      })
+
       const props = {
         offer: individualOfferFactory({
           status: OfferStatus.SOLD_OUT,
           isEvent: false,
-          stocks: [],
           hasStocks: false,
         }),
       }
@@ -141,6 +168,9 @@ describe('Summary stock section', () => {
           { offerId: 'AA' }
         )
       )
+
+      await waitForElementToBeRemoved(() => screen.queryAllByTestId('spinner'))
+
       expect(
         screen.getByRole('heading', { name: /Stocks et prix/ })
       ).toBeInTheDocument()
@@ -153,18 +183,23 @@ describe('Summary stock section', () => {
 
   describe('for stock thing', () => {
     it('should render creation summary', async () => {
-      const props = {
-        offer: individualOfferFactory(
-          {
-            status: OfferStatus.ACTIVE,
-            isEvent: false,
-          },
-          individualStockFactory({
+      vi.spyOn(api, 'getStocks').mockResolvedValueOnce({
+        hasStocks: true,
+        stockCount: 1,
+        stocks: [
+          individualGetOfferStockResponseModelFactory({
             quantity: 10,
             price: 20,
             bookingLimitDatetime: null,
-          })
-        ),
+          }),
+        ],
+      })
+
+      const props = {
+        offer: individualOfferFactory({
+          status: OfferStatus.ACTIVE,
+          isEvent: false,
+        }),
       }
 
       renderStockSection(
@@ -177,6 +212,8 @@ describe('Summary stock section', () => {
           { offerId: 'AA' }
         )
       )
+
+      await waitForElementToBeRemoved(() => screen.queryAllByTestId('spinner'))
 
       expect(
         screen.getByRole('heading', { name: /Stocks et prix/ })
@@ -192,21 +229,28 @@ describe('Summary stock section', () => {
     })
 
     it('should render edition summary', async () => {
-      const props = {
-        offer: individualOfferFactory(
-          {
-            status: OfferStatus.ACTIVE,
-            isEvent: false,
-          },
-          individualStockFactory({
+      vi.spyOn(api, 'getStocks').mockResolvedValueOnce({
+        hasStocks: true,
+        stockCount: 1,
+        stocks: [
+          individualGetOfferStockResponseModelFactory({
             quantity: 10,
             price: 20,
             bookingLimitDatetime: null,
-          })
-        ),
+          }),
+        ],
+      })
+
+      const props = {
+        offer: individualOfferFactory({
+          status: OfferStatus.ACTIVE,
+          isEvent: false,
+        }),
       }
 
       renderStockSection(props)
+
+      await waitForElementToBeRemoved(() => screen.queryAllByTestId('spinner'))
 
       expect(
         screen.getByRole('heading', { name: /Stocks et prix/ })
@@ -219,40 +263,54 @@ describe('Summary stock section', () => {
       expect(screen.getByText(/Offer edition: page stocks/)).toBeInTheDocument()
     })
 
-    it("should render booking limit date when it's given", () => {
-      const props = {
-        offer: individualOfferFactory(
-          {
-            status: OfferStatus.EXPIRED,
-          },
-          individualStockFactory({
+    it("should render booking limit date when it's given", async () => {
+      vi.spyOn(api, 'getStocks').mockResolvedValueOnce({
+        hasStocks: true,
+        stockCount: 1,
+        stocks: [
+          individualGetOfferStockResponseModelFactory({
             quantity: 10,
             price: 20,
             bookingLimitDatetime: '2001-06-12',
-          })
-        ),
+          }),
+        ],
+      })
+
+      const props = {
+        offer: individualOfferFactory({
+          status: OfferStatus.EXPIRED,
+          isEvent: false,
+        }),
       }
+
       renderStockSection(props)
+
+      await waitForElementToBeRemoved(() => screen.queryAllByTestId('spinner'))
+
+      expect(screen.getByText(/Date limite de réservation/)).toBeInTheDocument()
     })
 
-    it('should render quantity as "Illimité" when quantity is null or undefined', () => {
+    it('should render quantity as "Illimité" when quantity is null or undefined', async () => {
+      vi.spyOn(api, 'getStocks').mockResolvedValueOnce({
+        hasStocks: true,
+        stockCount: 1,
+        stocks: [
+          individualGetOfferStockResponseModelFactory({ quantity: null }),
+        ],
+      })
+
       const props = {
-        offer: individualOfferFactory(
-          {
-            status: OfferStatus.ACTIVE,
-            isEvent: false,
-          },
-          individualStockFactory({
-            quantity: null,
-            price: 20,
-            bookingLimitDatetime: '2001-06-12',
-          })
-        ),
+        offer: individualOfferFactory({
+          status: OfferStatus.ACTIVE,
+          isEvent: false,
+        }),
       }
 
       renderStockSection(props)
 
-      expect(screen.getByText('Illimité')).toBeInTheDocument()
+      await waitForElementToBeRemoved(() => screen.queryAllByTestId('spinner'))
+
+      expect(await screen.findByText('Illimité')).toBeInTheDocument()
     })
   })
 

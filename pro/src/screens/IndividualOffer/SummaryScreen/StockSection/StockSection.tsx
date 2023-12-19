@@ -1,7 +1,11 @@
 import React, { useEffect, useState } from 'react'
 
 import { api } from 'apiClient/api'
-import { OfferStatus, StockStatsResponseModel } from 'apiClient/v1'
+import {
+  GetOfferStockResponseModel,
+  OfferStatus,
+  StockStatsResponseModel,
+} from 'apiClient/v1'
 import { OFFER_WIZARD_STEP_IDS } from 'components/IndividualOfferNavigation/constants'
 import { SummaryLayout } from 'components/SummaryLayout'
 import { OFFER_WIZARD_MODE } from 'core/Offers/constants'
@@ -42,9 +46,23 @@ const StockSection = ({ offer, canBeDuo }: StockSectionProps): JSX.Element => {
   const [stocksEventsStats, setStocksEventsStats] = useState<
     StockStatsResponseModel | undefined
   >(undefined)
+  const [stockThing, setStockThing] = useState<GetOfferStockResponseModel>()
   const notification = useNotification()
 
   useEffect(() => {
+    async function getStockThing() {
+      setIsLoading(true)
+      try {
+        const reponse = await api.getStocks(offer.id)
+        setStockThing(reponse.stocks[0])
+      } catch {
+        notification.error(
+          'Une erreur est survenue lors de la récupération des informations de votre stock'
+        )
+      }
+      setIsLoading(false)
+    }
+
     async function getStocksEventsStats() {
       setIsLoading(true)
       try {
@@ -60,8 +78,11 @@ const StockSection = ({ offer, canBeDuo }: StockSectionProps): JSX.Element => {
     if (offer.isEvent) {
       // eslint-disable-next-line @typescript-eslint/no-floating-promises
       getStocksEventsStats()
+    } else {
+      // eslint-disable-next-line @typescript-eslint/no-floating-promises
+      getStockThing()
     }
-  }, [])
+  }, [notification, offer.id, offer.isEvent])
 
   if (isLoading) {
     return <Spinner />
@@ -97,7 +118,7 @@ const StockSection = ({ offer, canBeDuo }: StockSectionProps): JSX.Element => {
           />
         ) : (
           <StockThingSection
-            stock={offer.stocks[0]}
+            stock={stockThing}
             canBeDuo={canBeDuo}
             isDuo={offer.isDuo}
           />
