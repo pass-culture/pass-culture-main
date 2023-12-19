@@ -65,6 +65,9 @@ export const AdageHeaderMenu = ({
                   [styles['adage-header-link-active']]: isActive,
                 })
               }}
+              //  TODO : rework the facet filters + the formik context on the search page so that the search state can be
+              //  safely resetted based on the page url, and so that the facet filters are managed inside the router.
+              reloadDocument
               onClick={() => logAdageLinkClick(AdageHeaderLink.SEARCH)}
             >
               <SvgIcon src={strokeSearchIcon} alt="" width="20" />
