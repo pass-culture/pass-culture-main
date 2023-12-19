@@ -1,12 +1,11 @@
 @use "styles/mixins/_rem.scss" as rem;
 @use "styles/mixins/_fonts.scss" as fonts;
+@use "styles/variables/_size.scss" as size;
 
 $modal-width: rem.torem(592px);
 $modal-height: rem.torem(484px);
 
-.dialog {
-  width: $modal-width;
-  height: $modal-height;
+.dialog {  
   display: flex;
   flex-direction: column;
 
@@ -21,6 +20,11 @@ $modal-height: rem.torem(484px);
     display: flex;
     justify-content: flex-end;
     gap: rem.torem(24px);
+  }
+
+  @media (min-width: size.$tablet) {
+    width: $modal-width;
+    height: $modal-height;
   }
 }
 
