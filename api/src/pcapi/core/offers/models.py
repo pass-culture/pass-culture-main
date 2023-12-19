@@ -604,6 +604,14 @@ class Offer(PcObject, Base, Model, DeactivableMixin, ValidationMixin, Accessibil
         return sa.and_(cls._released, Stock._bookable)
 
     @hybrid_property
+    def is_offer_released_with_bookable_stock(self) -> bool:
+        return self.isReleased and self.isBookable
+
+    @is_offer_released_with_bookable_stock.expression  # type: ignore [no-redef]
+    def is_offer_released_with_bookable_stock(cls) -> BooleanClauseList:  # pylint: disable=no-self-argument
+        return sa.and_(cls._released, sa.exists().where(Stock.offerId == cls.id).where(Stock._bookable))
+
+    @hybrid_property
     def hasBookingLimitDatetimesPassed(self) -> bool:
         if self.activeStocks:
             return all(stock.hasBookingLimitDatetimePassed for stock in self.activeStocks)
