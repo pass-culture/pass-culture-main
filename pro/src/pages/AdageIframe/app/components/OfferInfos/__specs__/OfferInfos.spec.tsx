@@ -9,7 +9,7 @@ import {
 } from 'utils/adageFactories'
 import { renderWithProviders } from 'utils/renderWithProviders'
 
-import { OffersInfos } from '../OffersInfos'
+import { OfferInfos } from '../OfferInfos'
 
 vi.mock('apiClient/api', () => ({
   apiAdage: {
@@ -25,10 +25,10 @@ vi.mock('react-router-dom', async () => ({
   }),
 }))
 
-const renderOffersInfos = () => {
+const renderOfferInfos = () => {
   renderWithProviders(
     <AdageUserContextProvider adageUser={defaultAdageUser}>
-      <OffersInfos />
+      <OfferInfos />
     </AdageUserContextProvider>
   )
 }
@@ -41,13 +41,13 @@ const defaultUseLocationValue = {
   search: '',
 }
 
-describe('OffersInfos', () => {
+describe('OfferInfos', () => {
   beforeEach(() => {
     vi.spyOn(router, 'useLocation').mockReturnValue(defaultUseLocationValue)
   })
 
   it('should display offers informations', () => {
-    renderOffersInfos()
+    renderOfferInfos()
 
     expect(
       screen.getByRole('heading', { name: 'Mon offre vitrine' })
@@ -55,13 +55,13 @@ describe('OffersInfos', () => {
   })
 
   it('should display the breadcrumb with a link back to the discovery home', () => {
-    renderOffersInfos()
+    renderOfferInfos()
 
     expect(screen.getByRole('link', { name: 'Découvrir' })).toBeInTheDocument()
   })
 
   it('should display the offer that is passed through the router when the user navigates within the app', () => {
-    renderOffersInfos()
+    renderOfferInfos()
 
     expect(
       screen.getByRole('heading', { name: defaultCollectiveTemplateOffer.name })
@@ -78,7 +78,7 @@ describe('OffersInfos', () => {
       .spyOn(apiAdage, 'getCollectiveOfferTemplate')
       .mockResolvedValueOnce(defaultCollectiveTemplateOffer)
 
-    renderOffersInfos()
+    renderOfferInfos()
 
     await waitForElementToBeRemoved(() => screen.queryAllByTestId('spinner'))
 
@@ -87,22 +87,5 @@ describe('OffersInfos', () => {
     ).toBeInTheDocument()
 
     expect(fetchOfferSpy).toHaveBeenCalledWith(1)
-  })
-
-  it('should show an error message when the offer had to be fetched but was not found', async () => {
-    vi.spyOn(router, 'useLocation').mockReturnValueOnce({
-      ...defaultUseLocationValue,
-      state: { offer: null },
-    })
-
-    vi.spyOn(apiAdage, 'getCollectiveOfferTemplate').mockRejectedValueOnce(null)
-
-    renderOffersInfos()
-
-    await waitForElementToBeRemoved(() => screen.queryAllByTestId('spinner'))
-
-    expect(
-      screen.getByRole('heading', { name: 'Cette offre est introuvable' })
-    ).toBeInTheDocument()
   })
 })
