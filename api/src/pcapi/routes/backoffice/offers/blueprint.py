@@ -347,7 +347,12 @@ def _get_offers(form: forms.InternalSearchForm) -> list[offers_models.Offer]:
                 offers_models.Offer.extraData,
             ),
             sa.orm.contains_eager(offers_models.Offer.venue)
-            .load_only(offerers_models.Venue.id, offerers_models.Venue.name, offerers_models.Venue.departementCode)
+            .load_only(
+                offerers_models.Venue.id,
+                offerers_models.Venue.name,
+                offerers_models.Venue.publicName,
+                offerers_models.Venue.departementCode,
+            )
             .contains_eager(offerers_models.Venue.managingOfferer)
             .load_only(offerers_models.Offerer.id, offerers_models.Offerer.name),
             sa.orm.joinedload(offers_models.Offer.author).load_only(
@@ -740,6 +745,7 @@ def get_offer_details(offer_id: int) -> utils.BackofficeResponse:
         .load_only(
             offerers_models.Venue.id,
             offerers_models.Venue.name,
+            offerers_models.Venue.publicName,
             offerers_models.Venue.managingOffererId,
         )
         .joinedload(offerers_models.Venue.managingOfferer)
@@ -956,7 +962,9 @@ def edit_offer_venue(offer_id: int) -> utils.BackofficeResponse:
         return redirect(offer_url, 303)
 
     flash(
-        Markup("L'offre a été déplacée vers le lieu <b>{venue_name}</b>").format(venue_name=destination_venue.name),
+        Markup("L'offre a été déplacée vers le lieu <b>{venue_name}</b>").format(
+            venue_name=destination_venue.common_name
+        ),
         "success",
     )
     return redirect(offer_url, 303)

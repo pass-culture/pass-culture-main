@@ -28,7 +28,7 @@
      class="link-primary"
      target="_top">{{ finance_incident[text_attr] }}</a>
 {% endmacro %}
-{% macro build_venue_name_to_details_link(venue, text_attr="name", active_tab=None) %}
+{% macro build_venue_name_to_details_link(venue, text_attr="common_name", active_tab=None) %}
   <a href="{{ url_for('backoffice_web.venue.get', venue_id=venue.id, active_tab=active_tab) }}"
      class="link-primary"
      target="_top">{{ venue[text_attr] }}</a>
@@ -71,7 +71,7 @@
      class="link-primary"
      target="_blank">{{ offerer.name }} <i class="bi bi-box-arrow-up-right"></i></a>
 {% endmacro %}
-{% macro build_venue_name_to_pc_pro_link(venue, public_name=false) %}
+{% macro build_venue_name_to_pc_pro_link(venue, public_name=true) %}
   <a href="{{ venue | pc_pro_venue_link }}"
      class="link-primary"
      target="_blank">{{ (public_name and venue.publicName) or venue.name }} <i class="bi bi-box-arrow-up-right"></i></a>

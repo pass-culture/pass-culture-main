@@ -570,8 +570,8 @@ class GetVenueStatsTest(GetEndpointHelper):
 
         assert venue_with_accepted_bank_info.name is not None
         assert len(venue_with_accepted_bank_info.reimbursement_point_links) == 0
-        assert f"Point de remboursement : {venue_with_accepted_bank_info.name} " not in cards_content[2]
-        assert f"Siret de valorisation : {venue_with_accepted_bank_info.name} " in cards_content[2]
+        assert f"Point de remboursement : {venue_with_accepted_bank_info.common_name} " not in cards_content[2]
+        assert f"Siret de valorisation : {venue_with_accepted_bank_info.common_name} " in cards_content[2]
 
     def test_get_venue_with_no_bank_info_bank_information(self, authenticated_client, venue_with_no_bank_info):
         venue_id = venue_with_no_bank_info.id
@@ -584,8 +584,8 @@ class GetVenueStatsTest(GetEndpointHelper):
         cards_content = html_parser.extract_cards_text(response.data)
 
         assert len(venue_with_no_bank_info.reimbursement_point_links) == 0
-        assert f"Point de remboursement : {venue_with_no_bank_info.name}" not in cards_content[2]
-        assert f"Siret de valorisation : {venue_with_no_bank_info.name}" in cards_content[2]
+        assert f"Point de remboursement : {venue_with_no_bank_info.common_name}" not in cards_content[2]
+        assert f"Siret de valorisation : {venue_with_no_bank_info.common_name}" in cards_content[2]
 
     def test_get_venue_with_accepted_reimbursement_point_bank_information(
         self, authenticated_client, venue_with_accepted_reimbursement_point
@@ -602,8 +602,8 @@ class GetVenueStatsTest(GetEndpointHelper):
             venue_with_accepted_reimbursement_point.reimbursement_point_links[0].reimbursementPoint
         )
 
-        assert f"Point de remboursement : {expected_reimbursement_point.name}" in cards_content[2]
-        assert f"Siret de valorisation : {venue_with_accepted_reimbursement_point.name}" in cards_content[2]
+        assert f"Point de remboursement : {expected_reimbursement_point.common_name}" in cards_content[2]
+        assert f"Siret de valorisation : {venue_with_accepted_reimbursement_point.common_name}" in cards_content[2]
         assert f"BIC : {expected_reimbursement_point.bic}" in cards_content[2]
         assert f"IBAN : {expected_reimbursement_point.iban}" in cards_content[2]
 
@@ -622,8 +622,8 @@ class GetVenueStatsTest(GetEndpointHelper):
             0
         ].reimbursementPoint
 
-        assert f"Point de remboursement : {expired_reimbursement_point.name}" not in cards_content[2]
-        assert f"Siret de valorisation : {venue_with_expired_reimbursement_point.name}" in cards_content[2]
+        assert f"Point de remboursement : {expired_reimbursement_point.common_name}" not in cards_content[2]
+        assert f"Siret de valorisation : {venue_with_expired_reimbursement_point.common_name}" in cards_content[2]
         assert f"BIC : {expired_reimbursement_point.bic}" not in cards_content[2]
         assert f"IBAN : {expired_reimbursement_point.iban}" not in cards_content[2]
 

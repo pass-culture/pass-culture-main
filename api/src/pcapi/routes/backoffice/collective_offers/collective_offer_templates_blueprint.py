@@ -47,7 +47,7 @@ def _get_collective_offer_templates(
             educational_models.CollectiveOfferTemplate.validation,
         ),
         sa.orm.joinedload(educational_models.CollectiveOfferTemplate.venue).load_only(
-            offerers_models.Venue.managingOffererId, offerers_models.Venue.name
+            offerers_models.Venue.managingOffererId, offerers_models.Venue.name, offerers_models.Venue.publicName
         )
         # needed to check if stock is bookable and compute initial/remaining stock:
         .joinedload(offerers_models.Venue.managingOfferer).load_only(
