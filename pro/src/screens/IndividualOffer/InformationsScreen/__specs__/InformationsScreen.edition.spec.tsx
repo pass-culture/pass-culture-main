@@ -29,7 +29,6 @@ import {
   individualOfferFactory,
   individualOfferSubCategoryFactory,
   individualOfferVenueItemFactory,
-  individualStockFactory,
 } from 'utils/individualApiFactories'
 import { renderWithProviders } from 'utils/renderWithProviders'
 
@@ -175,7 +174,6 @@ describe('screens:IndividualOffer::Informations:edition', () => {
       withdrawalDetails: 'Offer withdrawalDetails',
       withdrawalDelay: 140,
       withdrawalType: WithdrawalTypeEnum.ON_SITE,
-      stocks: [],
       lastProviderName: null,
       lastProvider: null,
       status: OfferStatus.ACTIVE,
@@ -432,13 +430,11 @@ describe('screens:IndividualOffer::Informations:edition', () => {
     })
 
     it('should submit when user click onCancel button, but should not send mail', async () => {
-      const individualStock = individualStockFactory()
       contextOverride.offer = {
         ...offer,
         venueId: virtualVenueId,
         subcategoryId: 'SCID virtual',
         isEvent: false,
-        stocks: [individualStock],
       }
       props = {
         venueId: virtualVenueId.toString(),
@@ -502,13 +498,11 @@ describe('screens:IndividualOffer::Informations:edition', () => {
     })
 
     it('should not submit when user click on close withdrawal dialog button', async () => {
-      const individualStock = individualStockFactory()
       contextOverride.offer = {
         ...offer,
         venueId: virtualVenueId,
         subcategoryId: 'SCID virtual',
         isEvent: false,
-        stocks: [individualStock],
       }
       props = {
         venueId: virtualVenueId.toString(),
@@ -586,10 +580,6 @@ describe('screens:IndividualOffer::Informations:edition', () => {
     it.each(shouldNotOpenConditions)(
       "should not open widthdrawal send mail modal when user doesn't change withdrawal and stocks has bookingQuantity and submit form",
       async (condition) => {
-        const individualStock = individualStockFactory()
-        if (!condition.hasBookingQuantity) {
-          individualStock.bookingsQuantity = 0
-        }
         contextOverride.offer = {
           ...offer,
           venueId: virtualVenueId,
@@ -597,7 +587,7 @@ describe('screens:IndividualOffer::Informations:edition', () => {
           isEvent: true,
           withdrawalDelay: undefined,
           withdrawalType: null,
-          stocks: [individualStock],
+          bookingsCount: condition.hasBookingQuantity ? 1 : 0,
         }
         props = {
           venueId: virtualVenueId.toString(),
@@ -649,7 +639,6 @@ describe('screens:IndividualOffer::Informations:edition', () => {
     )
 
     it('should not open widthdrawal dialog if offer is not active', async () => {
-      const individualStock = individualStockFactory()
       contextOverride.offer = {
         ...offer,
         venueId: virtualVenueId,
@@ -657,7 +646,6 @@ describe('screens:IndividualOffer::Informations:edition', () => {
         isEvent: true,
         withdrawalDelay: undefined,
         withdrawalType: WithdrawalTypeEnum.NO_TICKET,
-        stocks: [individualStock],
         isActive: false,
       }
 
@@ -727,7 +715,6 @@ describe('screens:IndividualOffer::Informations:edition', () => {
     it.each(withdrawalChanges)(
       'should open widthdrawal send mail modal when user change withdrawal information and submit',
       async (withdrawalInformations) => {
-        const individualStock = individualStockFactory()
         contextOverride.offer = {
           ...offer,
           venueId: virtualVenueId,
@@ -735,7 +722,6 @@ describe('screens:IndividualOffer::Informations:edition', () => {
           isEvent: false,
           withdrawalType: WithdrawalTypeEnum.ON_SITE,
           withdrawalDelay: 0,
-          stocks: [individualStock],
         }
         if (contextOverride.subCategories) {
           contextOverride.subCategories[0].conditionalFields = [

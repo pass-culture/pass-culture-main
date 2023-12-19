@@ -137,13 +137,10 @@ const InformationsScreen = ({
           fieldMeta?.touched && fieldMeta?.value !== fieldMeta?.initialValue
         )
       })
-      const totalBookingsQuantity =
-        offer?.stocks.reduce((acc, stock) => acc + stock.bookingsQuantity, 0) ??
-        0
 
       const showWithdrawalMailDialog =
         offer?.isActive &&
-        totalBookingsQuantity > 0 &&
+        offer.bookingsCount > 0 &&
         hasWithdrawalInformationsChanged
       if (showWithdrawalMailDialog && !isWithdrawalMailDialogOpen) {
         setIsWithdrawalMailDialogOpen(true)
