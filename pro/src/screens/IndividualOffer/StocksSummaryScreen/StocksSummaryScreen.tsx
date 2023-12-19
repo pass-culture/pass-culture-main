@@ -53,10 +53,7 @@ export const StocksSummaryScreen = () => {
     mode: OFFER_WIZARD_MODE.EDITION,
   })
 
-  const stockWarningText = getStockWarningText(
-    offer.status,
-    offer.isEvent ? stocksEvent.length : offer.stocks.length
-  )
+  const stockWarningText = getStockWarningText(offer)
 
   const canBeDuo = subCategories.find(
     (subcategory) => subcategory.id === offer.subcategoryId
