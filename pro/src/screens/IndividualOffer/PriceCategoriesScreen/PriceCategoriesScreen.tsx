@@ -26,11 +26,6 @@ export interface PriceCategoriesScreenProps {
   offer: IndividualOffer
 }
 
-export enum POPIN_TYPE {
-  PRICE = 'price',
-  PRICE_WITH_BOOKING = 'priceWithBooking',
-}
-
 const hasFieldChange = (
   priceCategories: PriceCategoryForm[],
   initialPriceCategories: Record<string, Partial<PriceCategoryForm>>,
@@ -124,10 +119,8 @@ export const PriceCategoriesScreen = ({
     }
 
     // Show popin if necessary
-    const showConfirmationModal = arePriceCategoriesChanged(
-      formik.initialValues,
-      values
-    )
+    const showConfirmationModal =
+      offer.hasStocks && arePriceCategoriesChanged(formik.initialValues, values)
     setIsConfirmationModalOpen(showConfirmationModal)
     if (!isConfirmationModalOpen && showConfirmationModal) {
       return
@@ -186,16 +179,19 @@ export const PriceCategoriesScreen = ({
           confirmText="Confirmer la modification"
           cancelText="Annuler"
         >
-          Le tarif restera inchangé pour les personnes ayant déjà réservé cette
-          offre.
+          {offer.bookingsCount > 0 && (
+            <>
+              Le tarif restera inchangé pour les personnes ayant déjà réservé
+              cette offre.
+            </>
+          )}
         </ConfirmDialog>
       )}
 
       <form onSubmit={formik.handleSubmit}>
         <PriceCategoriesForm
-          offerId={offer.id}
+          offer={offer}
           mode={mode}
-          stocks={offer.stocks}
           setOffer={setOffer}
           isDisabled={isDisabled}
           canBeDuo={canBeDuo}
