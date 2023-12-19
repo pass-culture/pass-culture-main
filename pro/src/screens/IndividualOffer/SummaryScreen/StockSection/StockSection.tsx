@@ -15,19 +15,16 @@ import RecurrenceSection from './RecurrenceSection/RecurrenceSection'
 import styles from './StockSection.module.scss'
 import StockThingSection from './StockThingSection/StockThingSection'
 
-export const getStockWarningText = (
-  offerStatus: OfferStatus,
-  stocksCount?: number | null
-) => {
-  if (!stocksCount) {
+export const getStockWarningText = (offer: IndividualOffer) => {
+  if (!offer.hasStocks) {
     return 'Vous n’avez aucun stock renseigné.'
   }
 
-  if (offerStatus === OfferStatus.SOLD_OUT) {
+  if (offer.status === OfferStatus.SOLD_OUT) {
     return 'Votre stock est épuisé.'
   }
 
-  if (offerStatus === OfferStatus.EXPIRED) {
+  if (offer.status === OfferStatus.EXPIRED) {
     return 'Votre stock est expiré.'
   }
 
@@ -77,10 +74,7 @@ const StockSection = ({ offer, canBeDuo }: StockSectionProps): JSX.Element => {
       mode === OFFER_WIZARD_MODE.READ_ONLY ? OFFER_WIZARD_MODE.EDITION : mode,
   })
 
-  const stockWarningText = getStockWarningText(
-    offer.status,
-    offer.isEvent ? stocksEventsStats?.stockCount : offer.stocks.length
-  )
+  const stockWarningText = getStockWarningText(offer)
 
   return (
     <>

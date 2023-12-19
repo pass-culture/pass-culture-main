@@ -1,4 +1,5 @@
 import { OfferStatus } from 'apiClient/v1'
+import { individualOfferFactory } from 'utils/individualApiFactories'
 
 import { getStockWarningText } from '../StockSection'
 
@@ -6,39 +7,41 @@ describe('getStockWarningText', () => {
   const testData = [
     {
       offerStatus: OfferStatus.SOLD_OUT,
-      stocksCount: 1,
+      hasStocks: true,
       expected: 'Votre stock est épuisé.',
     },
     {
       offerStatus: OfferStatus.EXPIRED,
-      stocksCount: 1,
+      hasStocks: true,
       expected: 'Votre stock est expiré.',
     },
     {
       offerStatus: OfferStatus.EXPIRED,
-      stocksCount: 0,
+      hasStocks: false,
       expected: 'Vous n’avez aucun stock renseigné.',
     },
     {
       offerStatus: OfferStatus.EXPIRED,
-      stocksCount: null,
+      hasStocks: false,
       expected: 'Vous n’avez aucun stock renseigné.',
     },
     {
       offerStatus: OfferStatus.EXPIRED,
-      stocksCount: undefined,
+      hasStocks: false,
       expected: 'Vous n’avez aucun stock renseigné.',
     },
     {
       offerStatus: OfferStatus.INACTIVE,
-      stocksCount: 1,
+      hasStocks: true,
       expected: false,
     },
   ]
   it.each(testData)(
     'should render $expected',
-    ({ offerStatus, stocksCount, expected }) => {
-      const result = getStockWarningText(offerStatus, stocksCount)
+    ({ offerStatus, hasStocks, expected }) => {
+      const result = getStockWarningText(
+        individualOfferFactory({ status: offerStatus, hasStocks })
+      )
 
       expect(result).toStrictEqual(expected)
     }
