@@ -264,10 +264,6 @@ filterwarnings = [
     # dependencies.
     "ignore:distutils Version classes are deprecated. Use packaging.version instead.:DeprecationWarning",
     "ignore:The distutils package is deprecated and slated for removal in Python 3.12. Use setuptools or check PEP 632 for potential alternatives:DeprecationWarning",
-    # FIXME (jsdupuis, 2022-04-25): flask_admin validators uses tuples for flags (eg. field_flags = ('unique', )),
-    # which emits deprecation warnings in wtforms >=3.0.0a1.
-    # Remove this when we remove flask_admin
-    "ignore:Flags should be stored in dicts and not in tuples. The next version of WTForms will abandon support for flags in tuples.:DeprecationWarning",
     # FIXME (askorski, 2022-05-02): algoliasearch uses deprecated @coroutine decorator
     # Remove this when alogliasearch no more uses @coroutine
     'ignore:"@coroutine" decorator is deprecated since Python 3.8, use \"async def\" instead:DeprecationWarning',
