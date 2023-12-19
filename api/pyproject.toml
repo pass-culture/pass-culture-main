@@ -267,9 +267,11 @@ filterwarnings = [
     # FIXME (askorski, 2022-05-02): algoliasearch uses deprecated @coroutine decorator
     # Remove this when alogliasearch no more uses @coroutine
     'ignore:"@coroutine" decorator is deprecated since Python 3.8, use \"async def\" instead:DeprecationWarning',
-    # FIXME (francois-seguin, 2022-08-23): requests-toolbelt uses deprecated urllib3.contrib.pyopenssl
-    # see https://github.com/requests/toolbelt/issues/331
-    # Remove this when requests-toolbelt fixes its use
+    # FIXME (francois-seguin, 2023-12-19): botocore uses this, until
+    # https://github.com/boto/botocore/commit/87eba485330c68ae4c48f7249d20aa566cbe4676
+    # (included in botocore 1.27.80). We should be able to remove this
+    # line once we have updated to a recent version of boto3 (which
+    # depends on botocore).
     "ignore:'urllib3.contrib.pyopenssl' module is deprecated*:DeprecationWarning",
     # FIXME (francois-seguin, 2023-10-17): zeep uses cgi, which is deprecated. When this commit (https://github.com/mvantellingen/python-zeep/commit/d0d737adbcd68213b940a5cc4f1da6cd43dfca81)
     # is in a release, we'll be able to bump zeep and remove this filter.
