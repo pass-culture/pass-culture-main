@@ -10,6 +10,7 @@ from pcapi.core.finance import factories as finance_factories
 from pcapi.core.finance import models as finance_models
 from pcapi.core.offerers import models as offerers_models
 from pcapi.core.providers import models as providers_models
+from pcapi.core.users import factories as user_factory
 from pcapi.models import db
 from pcapi.models.offer_mixin import OfferValidationStatus
 from pcapi.utils.image_conversion import DO_NOT_CROP
@@ -127,6 +128,7 @@ def create_offers_base_list(
                 collectiveOffer__venue=next(venue_iterator),
                 collectiveOffer__nationalProgram=next(national_program_iterator),
                 collectiveOffer__bookingEmails=["toto@totoland.com"],
+                collectiveOffer__author=user_factory.ProFactory(),
                 beginningDatetime=datetime.utcnow() + timedelta(days=60),
             )
             offers.append(stock.collectiveOffer)
@@ -248,6 +250,7 @@ def create_offers_base_list(
                 venue=next(venue_iterator),
                 bookingEmails=["toto@totoland.com"],
                 nationalProgram=next(national_program_iterator),
+                author=user_factory.ProFactory(),
             )
             templates.append(template)
         if from_templates_offers:

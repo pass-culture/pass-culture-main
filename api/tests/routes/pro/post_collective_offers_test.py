@@ -17,7 +17,7 @@ class Returns200Test:
         venue = offerers_factories.VenueFactory()
         template = educational_factories.CollectiveOfferTemplateFactory(venue=venue)
         offerer = venue.managingOfferer
-        offerers_factories.UserOffererFactory(offerer=offerer, user__email="user@example.com")
+        user = offerers_factories.UserOffererFactory(offerer=offerer, user__email="user@example.com").user
         educational_domain1 = educational_factories.EducationalDomainFactory()
         educational_domain2 = educational_factories.EducationalDomainFactory()
         national_program = educational_factories.NationalProgramFactory()
@@ -82,6 +82,7 @@ class Returns200Test:
         assert offer.templateId == template.id
         assert offer.nationalProgramId == national_program.id
         assert offer.formats == [subcategories.EacFormat.CONCERT]
+        assert offer.author == user
 
     def test_create_collective_offer_college_6(self, client):
         # Given
@@ -147,6 +148,7 @@ class Returns200Test:
         assert set(offer.domains) == {educational_domain1, educational_domain2}
         assert offer.description == "Ma super description"
         assert offer.templateId == template.id
+        assert offer.author.full_name == "René Coty"
 
     def test_create_collective_offer_empty_intervention_area(self, client):
         # Given
@@ -227,6 +229,7 @@ class Returns200Test:
         assert len(offer.domains) == 0
         assert offer.bookingEmails == [offer.contactEmail]
         assert offer.templateId == template.id
+        assert offer.author.full_name == "René Coty"
 
 
 @pytest.mark.usefixtures("db_session")

@@ -15,6 +15,7 @@ from pcapi.core.mails import transactional as transactional_mails
 from pcapi.core.offerers import models as offerers_models
 from pcapi.core.offers import models as offers_models
 from pcapi.core.permissions import models as perm_models
+from pcapi.core.users import models as user_models
 from pcapi.models import db
 from pcapi.models.offer_mixin import OfferValidationStatus
 from pcapi.models.offer_mixin import OfferValidationType
@@ -45,6 +46,7 @@ def _get_collective_offer_templates(
             educational_models.CollectiveOfferTemplate.formats,
             educational_models.CollectiveOfferTemplate.dateCreated,
             educational_models.CollectiveOfferTemplate.validation,
+            educational_models.CollectiveOfferTemplate.authorId,
         ),
         sa.orm.joinedload(educational_models.CollectiveOfferTemplate.venue).load_only(
             offerers_models.Venue.managingOffererId, offerers_models.Venue.name, offerers_models.Venue.publicName
@@ -55,6 +57,11 @@ def _get_collective_offer_templates(
         ),
         sa.orm.joinedload(educational_models.CollectiveOfferTemplate.flaggingValidationRules).load_only(
             offers_models.OfferValidationRule.name
+        ),
+        sa.orm.joinedload(educational_models.CollectiveOfferTemplate.author).load_only(
+            user_models.User.id,
+            user_models.User.firstName,
+            user_models.User.lastName,
         ),
     )
     if form.from_date.data:

@@ -48,6 +48,7 @@
               <th scope="col">Formats</th>
               {% if has_permission("PRO_FRAUD_ACTIONS") %}<th scope="col">Règles de conformité</th>{% endif %}
               <th scope="col">État</th>
+              <th scope="col">Créateur de l'offre</th>
               <th scope="col">
                 {% if date_created_sort_url %}
                   <a href="{{ date_created_sort_url }}"
@@ -108,6 +109,7 @@
                   <td>{{ collective_offer.flaggingValidationRules | format_offer_validation_rule_list }}</td>
                 {% endif %}
                 <td>{{ collective_offer.validation | format_offer_validation_status }}</td>
+                <td>{{ links.build_pro_user_name_to_details_link(collective_offer.authorId, collective_offer.author.full_name) }}</td>
                 <td>{{ collective_offer.dateCreated | format_date }}</td>
                 <td>{{ collective_offer.collectiveStock.beginningDatetime | format_date }}</td>
                 <td>{{ links.build_offerer_name_to_details_link(collective_offer.venue.managingOfferer) }}</td>
