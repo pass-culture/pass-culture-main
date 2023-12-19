@@ -40,11 +40,11 @@ def get_random_results(cls: type[Model]) -> dict[str, float]:
 
 
 @blueprint.adage_iframe.route("/playlists/classroom", methods=["GET"])
-@spectree_serialize(response_model=serializers.ListCollectiveOffersResponseModel, api=blueprint.api)
+@spectree_serialize(response_model=serializers.ListCollectiveOfferTemplateResponseModel, api=blueprint.api)
 @adage_jwt_required
 def get_classroom_playlist(
     authenticated_information: AuthenticatedInformation,
-) -> serializers.ListCollectiveOffersResponseModel:
+) -> serializers.ListCollectiveOfferTemplateResponseModel:
     if not authenticated_information.uai:
         raise ApiErrors({"message": "institutionId is mandatory"}, status_code=403)
 
@@ -67,23 +67,23 @@ def get_classroom_playlist(
             for row in ClassroomPlaylistQuery().execute(institution_id=str(institution.id))
         }
     except queries_base.MalformedRow:
-        return serializers.ListCollectiveOffersResponseModel(collectiveOffers=[])
+        return serializers.ListCollectiveOfferTemplateResponseModel(collectiveOffers=[])
 
     if (settings.IS_TESTING or settings.IS_DEV) and not settings.IS_RUNNING_TESTS:
-        rows = get_random_results(educational_models.CollectiveOffer)
+        rows = get_random_results(educational_models.CollectiveOfferTemplate)
 
     offer_ids = typing.cast(set[int], set(rows))
 
-    offers = repository.get_collective_offers_by_ids_for_adage(offer_ids)
-    favorite_ids = favorites_api.get_redactors_favorites_subset(redactor, offer_ids)
+    offers = repository.get_collective_offer_template_by_ids(list(offer_ids))
+    favorite_ids = favorites_api.get_redactors_favorite_templates_subset(redactor, offer_ids)
 
-    return serializers.ListCollectiveOffersResponseModel(
+    return serializers.ListCollectiveOfferTemplateResponseModel(
         collectiveOffers=[
             typing.cast(
-                serializers.CollectiveOfferResponseModel,
+                serializers.CollectiveOfferTemplateResponseModel,
                 serialize_collective_offer(
                     offer=offer,
-                    serializer=serializers.CollectiveOfferResponseModel,
+                    serializer=serializers.CollectiveOfferTemplateResponseModel,
                     is_favorite=offer.id in favorite_ids,
                     venue_distance=rows[str(offer.id)],
                 ),
