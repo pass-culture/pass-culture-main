@@ -59,12 +59,12 @@ class LocalOfferersModel(pydantic_v1.BaseModel):
 class LocalOfferersQuery(BaseQuery):
     raw_query = f"""
         SELECT
-            venue_id,
+            distinct venue_id,
             distance_in_km
         FROM
             `{settings.BIG_QUERY_TABLE_BASENAME}.adage_home_playlist_local_offerers`
         WHERE
-            distance_in_km <= 60
+            distance_in_km <= @range
             and institution_id = @institution_id
         LIMIT
             10
