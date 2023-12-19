@@ -184,7 +184,7 @@ def create_educational_institution_from_adage(institution: AdageEducationalInsti
 
 def get_institution_rural_level(
     institution: EducationalInstitution | None,
-) -> str | None:
+) -> educational_models.InstitutionRuralLevel | None:
     if not institution:
         return None
 
@@ -194,6 +194,6 @@ def get_institution_rural_level(
         return None
 
     try:
-        return rows[0].institution_rural_level
-    except (IndexError, AttributeError):
+        return educational_models.InstitutionRuralLevel(rows[0].institution_rural_level)
+    except (IndexError, AttributeError, ValueError):
         return None

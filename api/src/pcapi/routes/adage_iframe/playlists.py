@@ -185,12 +185,12 @@ def new_template_offers_playlist(
 def _get_max_range_for_local_venues(institution: educational_models.EducationalInstitution) -> int:
     institution_rural_level = institution_api.get_institution_rural_level(institution)
     return {
-        educational_models.InstitutionRuralLevel.URBAIN_DENSE.value: 3,
-        educational_models.InstitutionRuralLevel.URBAIN_DENSITE_INTERMEDIAIRE.value: 10,
-        educational_models.InstitutionRuralLevel.RURAL_SOUS_FORTE_INFLUENCE_D_UN_POLE.value: 15,
-        educational_models.InstitutionRuralLevel.RURAL_SOUS_FAIBLE_INFLUENCE_D_UN_POLE.value: 60,
-        educational_models.InstitutionRuralLevel.RURAL_AUTONOME_PEU_DENSE.value: 60,
-        educational_models.InstitutionRuralLevel.RURAL_AUTONOME_TRES_PEU_DENSE.value: 60,
+        educational_models.InstitutionRuralLevel.URBAIN_DENSE: 3,
+        educational_models.InstitutionRuralLevel.URBAIN_DENSITE_INTERMEDIAIRE: 10,
+        educational_models.InstitutionRuralLevel.RURAL_SOUS_FORTE_INFLUENCE_D_UN_POLE: 15,
+        educational_models.InstitutionRuralLevel.RURAL_SOUS_FAIBLE_INFLUENCE_D_UN_POLE: 60,
+        educational_models.InstitutionRuralLevel.RURAL_AUTONOME_PEU_DENSE: 60,
+        educational_models.InstitutionRuralLevel.RURAL_AUTONOME_TRES_PEU_DENSE: 60,
         None: 60,
     }.get(institution_rural_level, 60)
 

@@ -1,5 +1,3 @@
-import typing
-
 from pcapi.core.educational import models as educational_models
 from pcapi.core.educational import repository as educational_repository
 from pcapi.core.educational.api import favorites as educational_api_favorite
@@ -36,9 +34,8 @@ def authenticate(authenticated_information: AuthenticatedInformation) -> Authent
         preferences = _get_preferences(redactor)
         favorites_count = _get_favorites_count(redactor)
         offer_count = get_offers_count(authenticated_information)
-        institution_rural_level = typing.cast(
-            educational_models.InstitutionRuralLevel | None, institution_api.get_institution_rural_level(institution)
-        )
+        # TODO: use the name instead and make sure the API/pydantic uses the name and not the value.
+        institution_rural_level = institution_api.get_institution_rural_level(institution)
 
         return AuthenticatedResponse(
             role=AdageFrontRoles.REDACTOR if institution else AdageFrontRoles.READONLY,
