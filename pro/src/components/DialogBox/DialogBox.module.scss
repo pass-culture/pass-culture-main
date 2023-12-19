@@ -3,8 +3,8 @@
 @use "styles/variables/_size.scss" as size;
 
 .dialog-box-overlay {
-  align-items: center;
   display: grid;
+  align-items: center;
   justify-content: center;
   z-index: zIndex.$modal-z-index;
 
