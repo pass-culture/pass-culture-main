@@ -102,18 +102,11 @@ describe('StocksEventCreation', () => {
     vi.spyOn(api, 'upsertStocks').mockResolvedValue({ stocks_count: 0 })
   })
 
-  it('should show help section if there are not stocks', async () => {
-    await renderStockEventCreation([], {
-      offer: individualOfferFactory({ stocks: [] }),
-    })
-
-    expect(screen.getByText('Comment faire ?')).toBeInTheDocument()
-  })
-
   it('should notify when clicking on Enregistrer et continuer without stock', async () => {
     await renderStockEventCreation([], {
-      offer: individualOfferFactory({ stocks: [] }),
+      offer: individualOfferFactory(),
     })
+    expect(screen.getByText('Comment faire ?')).toBeInTheDocument()
 
     await userEvent.click(screen.getByText('Enregistrer et continuer'))
 
