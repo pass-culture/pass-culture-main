@@ -271,7 +271,7 @@ class Venue(PcObject, Base, Model, HasThumbMixin, ProvidableMixin, Accessibility
     # banId is a unique interoperability key for French addresses registered in the
     # Base Adresse Nationale. See "cle_interop" here:
     # https://doc.adresse.data.gouv.fr/mettre-a-jour-sa-base-adresse-locale/le-format-base-adresse-locale
-    banId = Column(String(20), nullable=True)
+    banId = Column(Text(), nullable=True)
 
     timezone = Column(String(50), nullable=False, default=METROPOLE_TIMEZONE, server_default=METROPOLE_TIMEZONE)
 
