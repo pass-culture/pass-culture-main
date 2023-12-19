@@ -7,7 +7,7 @@ import { OFFER_WIZARD_STEP_IDS } from 'components/IndividualOfferNavigation/cons
 import { RouteLeavingGuardIndividualOffer } from 'components/RouteLeavingGuardIndividualOffer/RouteLeavingGuardIndividualOffer'
 import { useIndividualOfferContext } from 'context/IndividualOfferContext'
 import { OFFER_WIZARD_MODE } from 'core/Offers/constants'
-import { IndividualOffer, IndividualOfferStock } from 'core/Offers/types'
+import { IndividualOffer } from 'core/Offers/types'
 import { isOfferAllocineSynchronized, isOfferDisabled } from 'core/Offers/utils'
 import { getIndividualOfferUrl } from 'core/Offers/utils/getIndividualOfferUrl'
 import { useOfferWizardMode } from 'hooks'
@@ -34,7 +34,6 @@ export enum POPIN_TYPE {
 const hasFieldChange = (
   priceCategories: PriceCategoryForm[],
   initialPriceCategories: Record<string, Partial<PriceCategoryForm>>,
-  stockPriceCategoryIds: (number | null | undefined)[],
   field: keyof PriceCategoryForm
 ) =>
   priceCategories.some((priceCategory) => {
@@ -44,21 +43,13 @@ const hasFieldChange = (
     }
     // have fields which trigger warning been edited ?
     const initialpriceCategory = initialPriceCategories[priceCategory.id]
-    if (initialpriceCategory[field] !== priceCategory[field]) {
-      // does it match a stock ?
-      return stockPriceCategoryIds.some(
-        (stockPriceCategoryId) => stockPriceCategoryId === priceCategory.id
-      )
-    } else {
-      return false
-    }
+    return initialpriceCategory[field] !== priceCategory[field]
   })
 
-export const getPopinType = (
-  stocks: IndividualOfferStock[],
+export const arePriceCategoriesChanged = (
   initialValues: PriceCategoriesFormValues,
   values: PriceCategoriesFormValues
-): POPIN_TYPE | null => {
+): boolean => {
   const initialPriceCategories: Record<
     string,
     Partial<PriceCategoryForm>
@@ -90,62 +81,7 @@ export const getPopinType = (
     }
   )
 
-  const stockPriceCategoryIds = stocks.map((stock) => stock.priceCategoryId)
-
-  const priceCategoryWithStocks = changedPriceCategories.filter(
-    (priceCategory) => {
-      if (!priceCategory.id) {
-        return false
-      }
-      return stockPriceCategoryIds.some(
-        (stockPriceCategoryId) => stockPriceCategoryId === priceCategory.id
-      )
-    }
-  )
-
-  // when there is no stock, no need for popin
-  if (priceCategoryWithStocks.length === 0) {
-    return null
-  }
-
-  const priceCategoryWithBookings = priceCategoryWithStocks.filter(
-    (priceCategory) => {
-      return stocks.some((stock) => {
-        if (
-          stock.priceCategoryId === priceCategory.id &&
-          stock.bookingsQuantity > 0
-        ) {
-          return true
-        }
-        return false
-      })
-    }
-  )
-
-  if (priceCategoryWithBookings.length > 0) {
-    // if there are bookings we want to know if change is on price or label
-    if (
-      hasFieldChange(
-        changedPriceCategories,
-        initialPriceCategories,
-        stockPriceCategoryIds,
-        'price'
-      )
-    ) {
-      return POPIN_TYPE.PRICE_WITH_BOOKING
-    }
-  } else if (
-    // if there are only stocks with no bookings there is a special popin for price
-    hasFieldChange(
-      changedPriceCategories,
-      initialPriceCategories,
-      stockPriceCategoryIds,
-      'price'
-    )
-  ) {
-    return POPIN_TYPE.PRICE
-  }
-  return null
+  return hasFieldChange(changedPriceCategories, initialPriceCategories, 'price')
 }
 
 export const PriceCategoriesScreen = ({
@@ -155,7 +91,8 @@ export const PriceCategoriesScreen = ({
   const navigate = useNavigate()
   const mode = useOfferWizardMode()
   const notify = useNotification()
-  const [popinType, setPopinType] = useState<POPIN_TYPE | null>(null)
+  const [isConfirmationModalOpen, setIsConfirmationModalOpen] =
+    useState<boolean>(false)
 
   const isDisabledBySynchronization =
     Boolean(offer.lastProvider) && !isOfferAllocineSynchronized(offer)
@@ -187,13 +124,12 @@ export const PriceCategoriesScreen = ({
     }
 
     // Show popin if necessary
-    const newPopinType = getPopinType(
-      offer.stocks,
+    const showConfirmationModal = arePriceCategoriesChanged(
       formik.initialValues,
       values
     )
-    setPopinType(newPopinType)
-    if (popinType === null && newPopinType !== null) {
+    setIsConfirmationModalOpen(showConfirmationModal)
+    if (!isConfirmationModalOpen && showConfirmationModal) {
       return
     }
 
@@ -211,7 +147,7 @@ export const PriceCategoriesScreen = ({
     if (mode === OFFER_WIZARD_MODE.EDITION) {
       notify.success(getSuccessMessage(mode))
     }
-    setPopinType(null)
+    setIsConfirmationModalOpen(false)
   }
 
   const initialValues = computeInitialValues(offer)
@@ -242,19 +178,9 @@ export const PriceCategoriesScreen = ({
 
   return (
     <FormikProvider value={formik}>
-      {popinType === POPIN_TYPE.PRICE && (
+      {isConfirmationModalOpen && (
         <ConfirmDialog
-          onCancel={() => setPopinType(null)}
-          onConfirm={formik.submitForm}
-          title="Cette modification de tarif s’appliquera à l’ensemble des dates qui y sont associées."
-          confirmText="Confirmer la modification"
-          cancelText="Annuler"
-        />
-      )}
-
-      {popinType === POPIN_TYPE.PRICE_WITH_BOOKING && (
-        <ConfirmDialog
-          onCancel={() => setPopinType(null)}
+          onCancel={() => setIsConfirmationModalOpen(false)}
           onConfirm={formik.submitForm}
           title="Cette modification de tarif s’appliquera à l’ensemble des dates qui y sont associées."
           confirmText="Confirmer la modification"
