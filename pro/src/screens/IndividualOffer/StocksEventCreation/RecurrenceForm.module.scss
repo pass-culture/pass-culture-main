@@ -7,6 +7,10 @@
 
 .title {
   margin-bottom: rem.torem(24px);
+
+  @media (max-width: size.$tablet) {
+    margin-top: rem.torem(32px);
+  }
 }
 
 .section {
@@ -39,6 +43,10 @@
   display: flex;
   gap: rem.torem(8px);
   margin-bottom: rem.torem(16px);
+
+  @media (max-width: size.$tablet) {
+    flex-wrap: wrap;
+  }
 }
 
 .action-buttons {
@@ -49,8 +57,12 @@
 
 .day-inputs {
   display: flex;
-  gap: rem.torem(16px);
   margin-bottom: rem.torem(16px);
+  gap: rem.torem(16px);
+
+  @media (max-width: size.$tablet) {
+    flex-wrap: wrap;
+  }
 }
 
 .days-error {
