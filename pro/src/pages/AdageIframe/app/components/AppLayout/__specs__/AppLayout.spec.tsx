@@ -79,7 +79,9 @@ vi.mock('pages/AdageIframe/repository/pcapi/pcapi', () => ({
 
 const renderAppLayout = (initialRoute = '/') => {
   renderWithProviders(
-    <AdageUserContextProvider adageUser={defaultAdageUser}>
+    <AdageUserContextProvider
+      adageUser={{ ...defaultAdageUser, offersCount: 1 }}
+    >
       <FiltersContextProvider>
         <AlgoliaQueryContextProvider>
           <AppLayout venueFilter={null} />
