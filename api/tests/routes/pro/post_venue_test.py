@@ -30,7 +30,7 @@ def create_valid_venue_data(user=None):
         "siret": f"{user_offerer.offerer.siren}10045",
         "address": "75 Rue Charles Fourier, 75013 Paris",
         "postalCode": "75200",
-        "banId": "75113_1834_00007",
+        "banId": "75113_1834_00007_ter_a",
         "bookingEmail": "toto@example.com",
         "city": "Paris",
         "managingOffererId": user_offerer.offerer.id,
