@@ -14,9 +14,9 @@ import {
 import useAdageUser from '../../hooks/useAdageUser'
 import { AdageDiscovery } from '../AdageDiscovery/AdageDiscovery'
 import { AdageHeader } from '../AdageHeader/AdageHeader'
+import { OfferInfos } from '../OfferInfos/OfferInfos'
 import { OffersFavorites } from '../OffersFavorites/OffersFavorites'
 import OffersForMyInstitution from '../OffersForInstitution/OffersForMyInstitution'
-import { OffersInfos } from '../OffersInfos/OffersInfos'
 import { OffersInstantSearch } from '../OffersInstantSearch/OffersInstantSearch'
 
 import styles from './AppLayout.module.scss'
@@ -78,7 +78,7 @@ export const AppLayout = ({
             element={<OffersForMyInstitution />}
           />
           <Route path="mes-favoris" element={<OffersFavorites />} />
-          <Route path="decouverte/offre/:offerId" element={<OffersInfos />} />
+          <Route path="decouverte/offre/:offerId" element={<OfferInfos />} />
         </Routes>
       </main>
     </div>
