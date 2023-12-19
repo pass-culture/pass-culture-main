@@ -1,12 +1,7 @@
 import cn from 'classnames'
-import { useStats } from 'react-instantsearch'
 import { NavLink } from 'react-router-dom'
 
-import {
-  AdageFrontRoles,
-  AdageHeaderLink,
-  AuthenticatedResponse,
-} from 'apiClient/adage'
+import { AdageFrontRoles, AdageHeaderLink } from 'apiClient/adage'
 import useActiveFeature from 'hooks/useActiveFeature'
 import strokePassIcon from 'icons/stroke-pass.svg'
 import strokeSearchIcon from 'icons/stroke-search.svg'
@@ -18,26 +13,25 @@ import { SvgIcon } from 'ui-kit/SvgIcon/SvgIcon'
 import styles from './AdageHeaderMenu.module.scss'
 
 type AdageHeaderMenuProps = {
-  adageUser: AuthenticatedResponse
   logAdageLinkClick: (link: AdageHeaderLink) => void
 }
 
 export const AdageHeaderMenu = ({
-  adageUser,
   logAdageLinkClick,
 }: AdageHeaderMenuProps) => {
   const params = new URLSearchParams(location.search)
   const adageAuthToken = params.get('token')
 
-  const { favoritesCount } = useAdageUser()
-
-  const { nbHits } = useStats()
+  const {
+    favoritesCount,
+    adageUser: { role, offersCount },
+  } = useAdageUser()
 
   const isDiscoveryActive = useActiveFeature('WIP_ENABLE_DISCOVERY')
 
   return (
     <ul className={styles['adage-header-menu']}>
-      {adageUser.role !== AdageFrontRoles.READONLY && (
+      {role !== AdageFrontRoles.READONLY && (
         <>
           {isDiscoveryActive && (
             <li className={styles['adage-header-menu-item']}>
@@ -89,7 +83,9 @@ export const AdageHeaderMenu = ({
                 className={styles['adage-header-link-icon']}
               />
               Pour mon établissement
-              <div className={styles['adage-header-nb-hits']}>{nbHits}</div>
+              <div className={styles['adage-header-nb-hits']}>
+                {offersCount ?? 0}
+              </div>
             </NavLink>
           </li>
 
