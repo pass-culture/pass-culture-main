@@ -286,10 +286,15 @@ def post_event_price_categories(
     check_for_duplicated_price_categories(new_labels_and_prices, offer.id)
 
     created_price_categories: list[offers_models.PriceCategory] = []
-    with repository.transaction():
-        for price_category in body.price_categories:
-            euro_price = finance_utils.to_euros(price_category.price)
-            created_price_categories.append(offers_api.create_price_category(offer, price_category.label, euro_price))
+    try:
+        with repository.transaction():
+            for price_category in body.price_categories:
+                euro_price = finance_utils.to_euros(price_category.price)
+                created_price_categories.append(
+                    offers_api.create_price_category(offer, price_category.label, euro_price)
+                )
+    except offers_exceptions.OfferEditionBaseException as error:
+        raise api_errors.ApiErrors(error.errors, status_code=400)
 
     return serialization.PriceCategoriesResponse.build_price_categories(created_price_categories)
 
@@ -348,17 +353,20 @@ def patch_event_price_categories(
         raise api_errors.ApiErrors({"price_category_id": ["No price category could be found"]}, status_code=404)
 
     update_body = body.dict(exclude_unset=True)
-    with repository.transaction():
-        eurocent_price = update_body.get("price", offers_api.UNCHANGED)
-        offers_api.edit_price_category(
-            event_offer,
-            price_category=price_category_to_edit,
-            label=update_body.get("label", offers_api.UNCHANGED),
-            price=finance_utils.to_euros(eurocent_price)
-            if eurocent_price != offers_api.UNCHANGED
-            else offers_api.UNCHANGED,
-            editing_provider=current_api_key.provider,
-        )
+    try:
+        with repository.transaction():
+            eurocent_price = update_body.get("price", offers_api.UNCHANGED)
+            offers_api.edit_price_category(
+                event_offer,
+                price_category=price_category_to_edit,
+                label=update_body.get("label", offers_api.UNCHANGED),
+                price=finance_utils.to_euros(eurocent_price)
+                if eurocent_price != offers_api.UNCHANGED
+                else offers_api.UNCHANGED,
+                editing_provider=current_api_key.provider,
+            )
+    except offers_exceptions.OfferEditionBaseException as error:
+        raise api_errors.ApiErrors(error.errors, status_code=400)
 
     return serialization.PriceCategoryResponse.from_orm(price_category_to_edit)
 
@@ -525,8 +533,10 @@ def delete_event_date(event_id: int, date_id: int) -> None:
     stock_to_delete = next((stock for stock in offer.stocks if stock.id == date_id and not stock.isSoftDeleted), None)
     if not stock_to_delete:
         raise api_errors.ApiErrors({"date_id": ["The date could not be found"]}, status_code=404)
-
-    offers_api.delete_stock(stock_to_delete)
+    try:
+        offers_api.delete_stock(stock_to_delete)
+    except offers_exceptions.OfferEditionBaseException as error:
+        raise api_errors.ApiErrors(error.errors, status_code=400)
 
 
 @blueprint.v1_blueprint.route("/events/<int:event_id>/dates/<int:date_id>", methods=["PATCH"])
