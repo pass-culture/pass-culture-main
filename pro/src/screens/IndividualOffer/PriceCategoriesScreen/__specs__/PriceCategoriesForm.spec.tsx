@@ -7,7 +7,7 @@ import { api } from 'apiClient/api'
 import { GetIndividualOfferResponseModel } from 'apiClient/v1'
 import { OFFER_WIZARD_MODE } from 'core/Offers/constants'
 import { GetIndividualOfferFactory } from 'utils/apiFactories'
-import { individualStockFactory } from 'utils/individualApiFactories'
+import { individualOfferFactory } from 'utils/individualApiFactories'
 import { renderWithProviders } from 'utils/renderWithProviders'
 
 import {
@@ -16,7 +16,10 @@ import {
 } from '../form/constants'
 import { priceCategoryFormFactory } from '../form/factories'
 import { PriceCategoriesFormValues } from '../form/types'
-import { PriceCategoriesForm } from '../PriceCategoriesForm'
+import {
+  PriceCategoriesForm,
+  PriceCategoriesFormProps,
+} from '../PriceCategoriesForm'
 
 const defaultValues: PriceCategoriesFormValues = {
   priceCategories: [
@@ -29,18 +32,17 @@ const defaultValues: PriceCategoriesFormValues = {
 
 const renderPriceCategoriesForm = (
   customValues?: Partial<PriceCategoriesFormValues>,
-  canBeDuo?: boolean
+  customProps?: Partial<PriceCategoriesFormProps>
 ) => {
   const values = { ...defaultValues, ...customValues }
   return renderWithProviders(
     <Formik initialValues={values} onSubmit={vi.fn()}>
       <PriceCategoriesForm
-        offerId={42}
+        offer={individualOfferFactory({ id: 42, hasStocks: false })}
         mode={OFFER_WIZARD_MODE.CREATION}
-        stocks={[individualStockFactory({ priceCategoryId: 144 })]}
         setOffer={vi.fn()}
         isDisabled={false}
-        canBeDuo={canBeDuo}
+        {...customProps}
       />
     </Formik>
   )
@@ -55,14 +57,14 @@ describe('PriceCategories', () => {
   })
 
   it('should render without error', () => {
-    renderPriceCategoriesForm(undefined, true)
+    renderPriceCategoriesForm(undefined, { canBeDuo: true })
 
     expect(screen.getAllByText('Intitulé du tarif')).toHaveLength(3)
     expect(screen.getByText('Réservations “Duo”')).toBeInTheDocument()
   })
 
   it('should not suggest duo choice when offer cannot be duo', () => {
-    renderPriceCategoriesForm(undefined, false)
+    renderPriceCategoriesForm(undefined, { canBeDuo: false })
 
     expect(screen.queryByText('Réservations “Duo”')).not.toBeInTheDocument()
   })
@@ -151,7 +153,7 @@ describe('PriceCategories', () => {
       isDuo: true,
     }
 
-    renderPriceCategoriesForm(values, true)
+    renderPriceCategoriesForm(values, { canBeDuo: true })
     await userEvent.click(
       screen.getByLabelText('Accepter les réservations “Duo“')
     )
@@ -181,7 +183,9 @@ describe('PriceCategories', () => {
       isDuo: false,
     }
 
-    renderPriceCategoriesForm(values)
+    renderPriceCategoriesForm(values, {
+      offer: individualOfferFactory({ id: 42, hasStocks: true }),
+    })
 
     // I can cancel
     await userEvent.click(

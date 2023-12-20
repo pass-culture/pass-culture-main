@@ -29,7 +29,7 @@ import {
 import { PriceCategoriesFormValues, PriceCategoryForm } from './form/types'
 import styles from './PriceCategoriesForm.module.scss'
 
-interface PriceCategoriesFormProps {
+export interface PriceCategoriesFormProps {
   offer: IndividualOffer
   mode: OFFER_WIZARD_MODE
   setOffer: ((offer: IndividualOffer | null) => void) | null
