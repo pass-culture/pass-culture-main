@@ -1,5 +1,5 @@
 import { FormikContext, useFormik } from 'formik'
-import { useContext, useEffect, useRef, useState } from 'react'
+import { Dispatch, SetStateAction, useEffect, useRef, useState } from 'react'
 import { useInstantSearch } from 'react-instantsearch'
 
 import { AdageFrontRoles, VenueResponse } from 'apiClient/adage'
@@ -9,8 +9,7 @@ import useActiveFeature from 'hooks/useActiveFeature'
 import useIsElementVisible from 'hooks/useIsElementVisible'
 import useNotification from 'hooks/useNotification'
 import useAdageUser from 'pages/AdageIframe/app/hooks/useAdageUser'
-import { FacetFiltersContext } from 'pages/AdageIframe/app/providers'
-import { Option } from 'pages/AdageIframe/app/types'
+import { Facets, Option } from 'pages/AdageIframe/app/types'
 import { filterEducationalSubCategories } from 'utils/collectiveCategories'
 
 import { DEFAULT_GEO_RADIUS, MAIN_INDEX_ID } from '../OffersInstantSearch'
@@ -38,6 +37,7 @@ export interface SearchProps {
   venueFilter: VenueResponse | null
   domainsFilter: string | null
   setGeoRadius: (geoRadius: number) => void
+  setFacetFilters: Dispatch<SetStateAction<Facets>>
 }
 
 export interface SearchFormValues {
@@ -56,8 +56,8 @@ export const OffersSearch = ({
   venueFilter,
   domainsFilter,
   setGeoRadius,
+  setFacetFilters,
 }: SearchProps): JSX.Element => {
-  const { setFacetFilters } = useContext(FacetFiltersContext)
   const { adageUser } = useAdageUser()
   const params = new URLSearchParams(window.location.search)
   const isUserAdmin = adageUser.role === AdageFrontRoles.READONLY

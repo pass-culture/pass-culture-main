@@ -17,10 +17,7 @@ import {
   StudentLevels,
 } from 'apiClient/adage'
 import { apiAdage } from 'apiClient/api'
-import {
-  AlgoliaQueryContextProvider,
-  FacetFiltersContextProvider,
-} from 'pages/AdageIframe/app/providers'
+import { AlgoliaQueryContextProvider } from 'pages/AdageIframe/app/providers'
 import { AdageUserContextProvider } from 'pages/AdageIframe/app/providers/AdageUserContext'
 import {
   defaultCollectiveOffer,
@@ -100,11 +97,9 @@ const renderOffers = (
   return renderWithProviders(
     <AdageUserContextProvider adageUser={adageUser}>
       <AlgoliaQueryContextProvider>
-        <FacetFiltersContextProvider>
-          <Formik onSubmit={() => {}} initialValues={{}}>
-            <Offers {...props} />
-          </Formik>
-        </FacetFiltersContextProvider>
+        <Formik onSubmit={() => {}} initialValues={{}}>
+          <Offers {...props} />
+        </Formik>
       </AlgoliaQueryContextProvider>
     </AdageUserContextProvider>,
     {

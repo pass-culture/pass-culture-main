@@ -4,7 +4,6 @@ import { AdageFrontRoles } from 'apiClient/adage'
 import useActiveFeature from 'hooks/useActiveFeature'
 
 import useAdageUser from '../../hooks/useAdageUser'
-import { FacetFiltersContextProvider } from '../../providers'
 import { AdageDiscovery } from '../AdageDiscovery/AdageDiscovery'
 import { AdageHeader } from '../AdageHeader/AdageHeader'
 import { OfferInfos } from '../OfferInfos/OfferInfos'
@@ -43,14 +42,7 @@ export const AppLayout = (): JSX.Element => {
               )
             }
           />
-          <Route
-            path="recherche"
-            element={
-              <FacetFiltersContextProvider uai={adageUser?.uai}>
-                <OffersInstantSearch />
-              </FacetFiltersContextProvider>
-            }
-          />
+          <Route path="recherche" element={<OffersInstantSearch />} />
           <Route
             path="mon-etablissement"
             element={<OffersForMyInstitution />}

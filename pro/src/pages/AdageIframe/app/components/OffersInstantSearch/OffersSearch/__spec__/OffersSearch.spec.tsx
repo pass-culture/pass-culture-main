@@ -170,7 +170,9 @@ describe('offersSearch component', () => {
   beforeEach(() => {
     props = {
       venueFilter: null,
+      domainsFilter: null,
       setGeoRadius: setGeoRadiusMock,
+      setFacetFilters: () => {},
     }
     vi.spyOn(apiAdage, 'getEducationalOffersCategories').mockResolvedValue({
       categories: [],

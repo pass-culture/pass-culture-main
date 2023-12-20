@@ -1,5 +1,5 @@
 import algoliasearch from 'algoliasearch/lite'
-import React, { useContext, useEffect, useState } from 'react'
+import React, { useEffect, useState } from 'react'
 import { Configure, Index, InstantSearch } from 'react-instantsearch'
 
 import { VenueResponse } from 'apiClient/adage'
@@ -11,11 +11,12 @@ import {
   ALGOLIA_APP_ID,
   ALGOLIA_COLLECTIVE_OFFERS_INDEX,
 } from 'utils/config'
+import { getDefaultFacetFilterUAICodeValue } from 'utils/facetFilters'
 import { isNumber } from 'utils/types'
 
 import useAdageUser from '../../hooks/useAdageUser'
-import { FacetFiltersContext } from '../../providers'
 import { AnalyticsContextProvider } from '../../providers/AnalyticsContextProvider'
+import { Facets } from '../../types'
 
 import { OffersSearch } from './OffersSearch/OffersSearch'
 
@@ -39,7 +40,9 @@ export const DEFAULT_GEO_RADIUS = 30000000 // 30 000 km ensure we get all result
 export const OffersInstantSearch = (): JSX.Element => {
   const { adageUser } = useAdageUser()
 
-  const { facetFilters, setFacetFilters } = useContext(FacetFiltersContext)
+  const [facetFilters, setFacetFilters] = useState<Facets>([
+    ...getDefaultFacetFilterUAICodeValue(adageUser.uai),
+  ])
 
   const params = new URLSearchParams(window.location.search)
   const venueId = Number(params.get('venue'))
@@ -115,6 +118,7 @@ export const OffersInstantSearch = (): JSX.Element => {
               venueFilter={venueFilterFromParam}
               domainsFilter={domainId}
               setGeoRadius={setGeoRadius}
+              setFacetFilters={setFacetFilters}
             />
           </AnalyticsContextProvider>
         )}
