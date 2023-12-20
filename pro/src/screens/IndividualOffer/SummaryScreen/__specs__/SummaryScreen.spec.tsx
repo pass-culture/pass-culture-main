@@ -128,7 +128,6 @@ describe('Summary', () => {
           externalTicketOfficeUrl: 'https://grand-public-url.example.com',
           bookingEmail: 'booking@example.com',
         },
-        individualStockFactory({ price: 0, quantity: null }),
         offerVenueFactory(
           {
             name: 'ma venue',
@@ -220,7 +219,6 @@ describe('Summary', () => {
       )
 
       // then
-      expect(screen.getAllByText('Modifier')).toHaveLength(2)
       expectOfferFields()
       expect(
         screen.queryByText('Visualiser dans l’app')

@@ -12,7 +12,6 @@ import { getIndividualOfferPath } from 'core/Offers/utils/getIndividualOfferUrl'
 import { GetIndividualOfferFactory } from 'utils/apiFactories'
 import {
   individualOfferFactory,
-  individualStockFactory,
   priceCategoryFactory,
 } from 'utils/individualApiFactories'
 import { renderWithProviders } from 'utils/renderWithProviders'
@@ -113,15 +112,9 @@ describe('PriceCategories', () => {
 
   it('should display price modification modal with booking', async () => {
     renderPriceCategories({
-      offer: individualOfferFactory(
-        undefined,
-        individualStockFactory({
-          priceCategoryId: 666,
-          bookingsQuantity: 17,
-        }),
-        undefined,
-        priceCategoryFactory({ id: 666 })
-      ),
+      offer: individualOfferFactory({
+        priceCategories: [priceCategoryFactory({ id: 666 })],
+      }),
     })
     await userEvent.type(
       screen.getByLabelText('Intitulé du tarif'),

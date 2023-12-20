@@ -113,7 +113,6 @@ export const serializeOfferApi = (
       ...baseAccessibility,
       [AccessiblityEnum.NONE]: !Object.values(baseAccessibility).includes(true),
     },
-    stocks: apiOffer.stocks.map(serializeStockApi),
     lastProviderName: apiOffer.lastProvider?.name || null,
     lastProvider: apiOffer.lastProvider,
     status: apiOffer.status,

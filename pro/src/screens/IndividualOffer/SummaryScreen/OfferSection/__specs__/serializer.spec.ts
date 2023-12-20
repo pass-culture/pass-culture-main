@@ -58,7 +58,6 @@ describe('routes::Summary::serializers', () => {
         withdrawalType: WithdrawalTypeEnum.ON_SITE,
         status: OfferStatus.ACTIVE,
       },
-      undefined,
       offerVenueFactory()
     )
     categories = [
