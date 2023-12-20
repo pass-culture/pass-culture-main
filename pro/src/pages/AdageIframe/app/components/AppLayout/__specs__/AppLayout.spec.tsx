@@ -1,10 +1,7 @@
 import { screen, waitForElementToBeRemoved } from '@testing-library/react'
 import React from 'react'
 
-import {
-  AlgoliaQueryContextProvider,
-  FiltersContextProvider,
-} from 'pages/AdageIframe/app/providers'
+import { AlgoliaQueryContextProvider } from 'pages/AdageIframe/app/providers'
 import { AdageUserContextProvider } from 'pages/AdageIframe/app/providers/AdageUserContext'
 import {
   defaultAdageUser,
@@ -82,11 +79,9 @@ const renderAppLayout = (initialRoute = '/') => {
     <AdageUserContextProvider
       adageUser={{ ...defaultAdageUser, offersCount: 1 }}
     >
-      <FiltersContextProvider>
-        <AlgoliaQueryContextProvider>
-          <AppLayout venueFilter={null} />
-        </AlgoliaQueryContextProvider>
-      </FiltersContextProvider>
+      <AlgoliaQueryContextProvider>
+        <AppLayout venueFilter={null} />
+      </AlgoliaQueryContextProvider>
     </AdageUserContextProvider>,
 
     { initialRouterEntries: [initialRoute] }

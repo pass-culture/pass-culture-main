@@ -17,7 +17,6 @@ import { App } from '../App'
 import {
   AlgoliaQueryContextProvider,
   FacetFiltersContextProvider,
-  FiltersContextProvider,
 } from '../providers'
 
 vi.mock('utils/config', async () => {
@@ -31,13 +30,11 @@ vi.mock('utils/config', async () => {
 
 const renderApp = () => {
   renderWithProviders(
-    <FiltersContextProvider>
-      <AlgoliaQueryContextProvider>
-        <FacetFiltersContextProvider>
-          <App />
-        </FacetFiltersContextProvider>
-      </AlgoliaQueryContextProvider>
-    </FiltersContextProvider>
+    <AlgoliaQueryContextProvider>
+      <FacetFiltersContextProvider>
+        <App />
+      </FacetFiltersContextProvider>
+    </AlgoliaQueryContextProvider>
   )
 }
 

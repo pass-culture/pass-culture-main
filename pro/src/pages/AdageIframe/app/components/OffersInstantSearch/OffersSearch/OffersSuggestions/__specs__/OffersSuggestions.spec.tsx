@@ -6,10 +6,7 @@ import * as instantSearch from 'react-instantsearch'
 import { AuthenticatedResponse } from 'apiClient/adage'
 import { apiAdage } from 'apiClient/api'
 import { OfferAddressType } from 'apiClient/v1'
-import {
-  AlgoliaQueryContextProvider,
-  FiltersContextProvider,
-} from 'pages/AdageIframe/app/providers'
+import { AlgoliaQueryContextProvider } from 'pages/AdageIframe/app/providers'
 import { AdageUserContextProvider } from 'pages/AdageIframe/app/providers/AdageUserContext'
 import {
   defaultAdageUser,
@@ -47,11 +44,9 @@ const renderOffersSuggestionsComponent = (
 ) => {
   renderWithProviders(
     <AdageUserContextProvider adageUser={user}>
-      <FiltersContextProvider>
-        <AlgoliaQueryContextProvider>
-          <OffersSuggestions {...props} />
-        </AlgoliaQueryContextProvider>
-      </FiltersContextProvider>
+      <AlgoliaQueryContextProvider>
+        <OffersSuggestions {...props} />
+      </AlgoliaQueryContextProvider>
     </AdageUserContextProvider>,
     {
       storeOverrides: {

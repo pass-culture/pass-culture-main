@@ -5,10 +5,7 @@ import { AdageFrontRoles, AuthenticatedResponse } from 'apiClient/adage'
 import { apiAdage, api } from 'apiClient/api'
 import Notification from 'components/Notification/Notification'
 import { GET_DATA_ERROR_MESSAGE } from 'core/shared'
-import {
-  AlgoliaQueryContextProvider,
-  FiltersContextProvider,
-} from 'pages/AdageIframe/app/providers'
+import { AlgoliaQueryContextProvider } from 'pages/AdageIframe/app/providers'
 import { AdageUserContextProvider } from 'pages/AdageIframe/app/providers/AdageUserContext'
 import {
   defaultUseInfiniteHitsReturn,
@@ -108,11 +105,9 @@ const renderOffersSearchComponent = (
   renderWithProviders(
     <>
       <AdageUserContextProvider adageUser={user}>
-        <FiltersContextProvider>
-          <AlgoliaQueryContextProvider>
-            <OffersSearch {...props} />
-          </AlgoliaQueryContextProvider>
-        </FiltersContextProvider>
+        <AlgoliaQueryContextProvider>
+          <OffersSearch {...props} />
+        </AlgoliaQueryContextProvider>
       </AdageUserContextProvider>
       <Notification />
     </>,
