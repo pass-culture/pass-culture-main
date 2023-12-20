@@ -77,6 +77,7 @@ geoalchemy2 = "^0.14.1"
 fiona = "^1.9.5"
 py7zr = "^0.20.8"
 pyproj = "^3.6.1"
+fuzzywuzzy = "^0.18.0"
 
 [tool.poetry.group.dev]
 optional = true

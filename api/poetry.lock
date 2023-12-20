@@ -1533,6 +1533,20 @@ files = [
 python-dateutil = ">=2.7"
 
 [[package]]
+name = "fuzzywuzzy"
+version = "0.18.0"
+description = "Fuzzy string matching in python"
+optional = false
+python-versions = "*"
+files = [
+    {file = "fuzzywuzzy-0.18.0-py2.py3-none-any.whl", hash = "sha256:928244b28db720d1e0ee7587acf660ea49d7e4c632569cad4f1cd7e68a5f0993"},
+    {file = "fuzzywuzzy-0.18.0.tar.gz", hash = "sha256:45016e92264780e58972dca1b3d939ac864b78437422beecebb3095f8efd00e8"},
+]
+
+[package.extras]
+speedup = ["python-levenshtein (>=0.12)"]
+
+[[package]]
 name = "geoalchemy2"
 version = "0.14.1"
 description = "Using SQLAlchemy with Spatial Databases"
@@ -5795,4 +5809,4 @@ test = ["pytest"]
 [metadata]
 lock-version = "2.0"
 python-versions = "^3.11"
-content-hash = "389143f1e0136de40f1558053029cb41817469ee9996384b5cd4075fd3659f7b"
+content-hash = "3ca3e969ff69683b678ba3164da8daf1572d11f6f4bc99536b590979e4d21ea1"
