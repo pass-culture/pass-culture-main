@@ -84,7 +84,7 @@ optional = true
 [tool.poetry.group.dev.dependencies]
 black = "^23.9.1"
 debugpy = "^1.8.0"
-fakeredis = "^2.19.0"
+fakeredis = "^2.20.1"
 isort = "^5.13.1"
 mypy = "1.7.1"
 pylint-pydantic = "^0.3.2"
