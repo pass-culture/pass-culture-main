@@ -121,6 +121,7 @@ class FeatureToggle(enum.Enum):
     WIP_ENABLE_GOOGLE_SSO = "Activer la connexion SSO pour les jeunes"
     WIP_ENABLE_FINANCE_INCIDENT = "Active les incidents de finance"
     WIP_ENABLE_MARSEILLE = "Activer Marseille en grand"
+    WIP_GOOGLE_MAPS_VENUE_IMAGES = "Activer l'affichage des images des lieux importées depuis Google Maps"
     WIP_PARTNER_PAGE = 'Activer la nouvelle version des pages "Partenaire"'
 
     def is_active(self) -> bool:
@@ -189,6 +190,7 @@ FEATURES_DISABLED_BY_DEFAULT: tuple[FeatureToggle, ...] = (
     FeatureToggle.WIP_ENABLE_DISCOVERY,
     FeatureToggle.WIP_ENABLE_GOOGLE_SSO,
     FeatureToggle.WIP_ENABLE_MARSEILLE,
+    FeatureToggle.WIP_GOOGLE_MAPS_VENUE_IMAGES,  # FIXME Abdelmoujib: remove when feature is ready https://passculture.atlassian.net/browse/PC-26459
     FeatureToggle.WIP_PARTNER_PAGE,
     FeatureToggle.ENABLE_CRON_TO_UPDATE_OFFERER_STATS,
 )
