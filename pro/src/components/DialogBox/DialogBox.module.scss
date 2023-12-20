@@ -3,6 +3,7 @@
 @use "styles/variables/_size.scss" as size;
 
 .dialog-box-overlay {
+  display: grid;
   align-items: center;
   justify-content: center;
   z-index: zIndex.$modal-z-index;
@@ -51,13 +52,9 @@
 }
 
 @media (min-width: size.$tablet) {
-  .dialog-box-overlay {
-    display: grid;
-  
     .dialog-box-content {
       min-width: rem.torem(534px);
     }
-  }
 
   .dialog-box-full-content-width {
     width: size.$main-content-width !important;
