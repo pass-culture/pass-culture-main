@@ -6,6 +6,7 @@ import pytest
 import pcapi.core.finance.factories as finance_factories
 import pcapi.core.finance.models as finance_models
 import pcapi.core.history.models as history_models
+import pcapi.core.mails.testing as mails_testing
 import pcapi.core.offerers.factories as offerers_factories
 import pcapi.core.offerers.models as offerers_models
 import pcapi.core.users.factories as users_factories
@@ -242,6 +243,20 @@ class OffererPatchBankAccountsTest:
             assert action_logged.authorUserId == action_occured.authorUserId
             assert action_logged.venueId == action_occured.venueId
             assert action_logged.bankAccountId == action_occured.bankAccountId
+
+        assert len(mails_testing.outbox) == 3
+        assert mails_testing.outbox[0].sent_data["params"] == {
+            "VENUE_NAME": first_venue.common_name,
+            "BANK_ACCOUNT_LABEL": bank_account.label,
+        }
+        assert mails_testing.outbox[1].sent_data["params"] == {
+            "VENUE_NAME": second_venue.common_name,
+            "BANK_ACCOUNT_LABEL": bank_account.label,
+        }
+        assert mails_testing.outbox[2].sent_data["params"] == {
+            "VENUE_NAME": third_venue.common_name,
+            "BANK_ACCOUNT_LABEL": bank_account.label,
+        }
 
     def test_adding_new_venue_link_doesnt_alter_historic_links(self, db_session, client):
         actions_occured = []
