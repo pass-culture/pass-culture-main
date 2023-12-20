@@ -54,7 +54,6 @@ describe('setFormReadOnlyFields', () => {
         withdrawalDelay: 140,
         withdrawalType: WithdrawalTypeEnum.ON_SITE,
       },
-      undefined,
       offerVenueFactory({
         id: venueId,
       })

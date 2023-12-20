@@ -232,22 +232,6 @@ describe('serializer', () => {
       speaker: '',
       stageDirector: '',
       status: OfferStatus.ACTIVE,
-      stocks: [
-        {
-          activationCodes: [],
-          activationCodesExpirationDatetime: null,
-          beginningDatetime: '2021-10-15T12:00:00.000Z',
-          bookingLimitDatetime: '2021-09-15T12:00:00.000Z',
-          bookingsQuantity: 0,
-          hasActivationCode: false,
-          id: 1,
-          isEventDeletable: true,
-          price: 10,
-          quantity: 18,
-          remainingQuantity: 'unlimited',
-          priceCategoryId: 2,
-        },
-      ],
       subcategoryId: 'SEANCE_CINE',
       url: '',
       venue: {

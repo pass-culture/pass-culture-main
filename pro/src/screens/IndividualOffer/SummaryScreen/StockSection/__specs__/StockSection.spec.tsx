@@ -13,7 +13,6 @@ import { OFFER_WIZARD_STEP_IDS } from 'components/IndividualOfferNavigation/cons
 import { OFFER_WIZARD_MODE } from 'core/Offers/constants'
 import { getIndividualOfferPath } from 'core/Offers/utils/getIndividualOfferUrl'
 import {
-  individualStockFactory,
   individualGetOfferStockResponseModelFactory,
   individualOfferFactory,
 } from 'utils/individualApiFactories'
@@ -112,17 +111,10 @@ describe('Summary stock section', () => {
       })
 
       const props = {
-        offer: individualOfferFactory(
-          {
-            status: OfferStatus.EXPIRED,
-            isEvent: false,
-          },
-          individualStockFactory({
-            quantity: 0,
-            price: 20,
-            bookingLimitDatetime: '12/02/2018',
-          })
-        ),
+        offer: individualOfferFactory({
+          status: OfferStatus.EXPIRED,
+          isEvent: false,
+        }),
       }
       renderStockSection(
         props,
