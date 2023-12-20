@@ -238,6 +238,7 @@ def _reindex_all_venues(algolia_batch_size: int, max_venues: int) -> None:
 
 
 @blueprint.cli.command("update_products_booking_count_and_reindex_offers")
+@log_cron_with_transaction
 def update_products_booking_count_and_reindex_offers() -> None:
     """
     update last 30 days booking count for all products,
@@ -265,10 +266,12 @@ def index_offers_staging(
 
 
 @blueprint.cli.command("clean_indexation_processing_queues")
+@log_cron_with_transaction
 def clean_indexation_processing_queues() -> None:
     search.clean_processing_queues()
 
 
 @blueprint.cli.command("remove_duplicates_from_venue_indexation_queue")
+@log_cron_with_transaction
 def remove_duplicates_from_venue_indexation_queue() -> None:
     search.remove_duplicates_from_venue_indexation_queue()
