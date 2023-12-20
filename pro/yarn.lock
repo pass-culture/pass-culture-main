@@ -3653,10 +3653,10 @@ ajv@^8.0.1:
     require-from-string "^2.0.2"
     uri-js "^4.2.2"
 
-algoliasearch-helper@3.16.0:
-  version "3.16.0"
-  resolved "https://registry.yarnpkg.com/algoliasearch-helper/-/algoliasearch-helper-3.16.0.tgz#42c7c8cecf5fa91fb9dd467011fa68c9050be7dc"
-  integrity sha512-RxOtBafSQwyqD5BLO/q9VsVw/zuNz8kjb51OZhCIWLr33uvKB+vrRis+QK+JFlNQXbXf+w28fsTWiBupc1pHew==
+algoliasearch-helper@3.16.1:
+  version "3.16.1"
+  resolved "https://registry.yarnpkg.com/algoliasearch-helper/-/algoliasearch-helper-3.16.1.tgz#421e3554ec86e14e60e7e0bf796aef61cf4a06ec"
+  integrity sha512-qxAHVjjmT7USVvrM8q6gZGaJlCK1fl4APfdAA7o8O6iXEc68G0xMNrzRkxoB/HmhhvyHnoteS/iMTiHiTcQQcg==
   dependencies:
     "@algolia/events" "^4.0.1"
 
@@ -6567,10 +6567,10 @@ ini@^1.3.5:
   resolved "https://registry.yarnpkg.com/ini/-/ini-1.3.8.tgz#a29da425b48806f34767a4efce397269af28432c"
   integrity sha512-JV/yugV2uzW5iMRSiZAyDtQd+nxtUnjeLt0acNdw98kKLrvuRVyB80tsREOE7yvGVgalhZ6RNXCmEHkUKBKxew==
 
-instantsearch.js@4.62.0:
-  version "4.62.0"
-  resolved "https://registry.yarnpkg.com/instantsearch.js/-/instantsearch.js-4.62.0.tgz#68577f4f04866728f22441cbc7464c544678d342"
-  integrity sha512-zq8kQpLR8xuWH59UtkJmr0iJs/M0VlvBVeMzVmpwkbfUNPpAcYPSjxw0iBR4QgqeyOUqWnZfhLJHUVmD+H+lLg==
+instantsearch.js@4.63.0:
+  version "4.63.0"
+  resolved "https://registry.yarnpkg.com/instantsearch.js/-/instantsearch.js-4.63.0.tgz#49c86a5afacd5b66a6fe28d4453409931ef3017a"
+  integrity sha512-Bk46LO6hpaFHkeDIjAV7+xgq+1a5zOq7lKUen9KfW4EoA1JVn26HEeAjW8cvHwHp1phL9mgu/Q3CQ075+6V9hg==
   dependencies:
     "@algolia/events" "^4.0.1"
     "@algolia/ui-components-highlight-vdom" "^1.2.2"
@@ -6579,12 +6579,12 @@ instantsearch.js@4.62.0:
     "@types/google.maps" "^3.45.3"
     "@types/hogan.js" "^3.0.0"
     "@types/qs" "^6.5.3"
-    algoliasearch-helper "3.16.0"
+    algoliasearch-helper "3.16.1"
     hogan.js "^3.0.2"
     htm "^3.0.0"
     preact "^10.10.0"
     qs "^6.5.1 < 6.10"
-    search-insights "^2.6.0"
+    search-insights "^2.13.0"
 
 internal-slot@^1.0.4, internal-slot@^1.0.5:
   version "1.0.5"
@@ -8659,24 +8659,24 @@ react-inspector@6.0.2:
   resolved "https://registry.yarnpkg.com/react-inspector/-/react-inspector-6.0.2.tgz#aa3028803550cb6dbd7344816d5c80bf39d07e9d"
   integrity sha512-x+b7LxhmHXjHoU/VrFAzw5iutsILRoYyDq97EDYdFpPLcvqtEzk4ZSZSQjnFPbr5T57tLXnHcqFYoN1pI6u8uQ==
 
-react-instantsearch-core@7.4.1:
-  version "7.4.1"
-  resolved "https://registry.yarnpkg.com/react-instantsearch-core/-/react-instantsearch-core-7.4.1.tgz#b629ba48e28cf7598a386fca1201791a01b44dfa"
-  integrity sha512-Nk47IJaCrIecoAfH1vdLStvdOflN+O+TiHqUoLU2NMlQ6cK4OoCQTHG5Vyc1DaiO4uctBkvjcCQhhzZOdk0tRg==
+react-instantsearch-core@7.5.0:
+  version "7.5.0"
+  resolved "https://registry.yarnpkg.com/react-instantsearch-core/-/react-instantsearch-core-7.5.0.tgz#c6c9fcd662bf88cf8f76e59283f33f77ad300de4"
+  integrity sha512-MtIT4jTpREs19g7M6AaiAyb44BgGl4QJGumtYauN8fpvpH0yyEzEKQZ5wduNKAuqNCcEZp9FM566pouOuQJhWg==
   dependencies:
     "@babel/runtime" "^7.1.2"
-    algoliasearch-helper "3.16.0"
-    instantsearch.js "4.62.0"
+    algoliasearch-helper "3.16.1"
+    instantsearch.js "4.63.0"
     use-sync-external-store "^1.0.0"
 
-react-instantsearch@^7.4.1:
-  version "7.4.1"
-  resolved "https://registry.yarnpkg.com/react-instantsearch/-/react-instantsearch-7.4.1.tgz#8549076ceafcb62b54e9bbb1eaa81c11adb12ea2"
-  integrity sha512-iTykjIyXjLNpywvnmO79uYsyHYeNRaiqE8FMpqAsKXDDrzURqYqvVF1BoOLnYZAQ0qP9zhZETPXj89kALne9uQ==
+react-instantsearch@^7.5.0:
+  version "7.5.0"
+  resolved "https://registry.yarnpkg.com/react-instantsearch/-/react-instantsearch-7.5.0.tgz#35e5fc822a0ddca28be1ad0eab45c0af4e8ea394"
+  integrity sha512-OoK9CS1c+wHnzaz/TEVcfvc4BmGVaJIstImj097+vHhM00YeN9w4IcNA3PQaufIANjWoVCLF8CbEE0TAIeB24Q==
   dependencies:
     "@babel/runtime" "^7.1.2"
-    instantsearch.js "4.62.0"
-    react-instantsearch-core "7.4.1"
+    instantsearch.js "4.63.0"
+    react-instantsearch-core "7.5.0"
 
 react-is@18.1.0:
   version "18.1.0"
@@ -9169,7 +9169,7 @@ scheduler@^0.23.0:
   dependencies:
     loose-envify "^1.1.0"
 
-search-insights@^2.13.0, search-insights@^2.6.0:
+search-insights@^2.13.0:
   version "2.13.0"
   resolved "https://registry.yarnpkg.com/search-insights/-/search-insights-2.13.0.tgz#a79fdcf4b5dad2fba8975b06f2ebc37a865032b7"
   integrity sha512-Orrsjf9trHHxFRuo9/rzm0KIWmgzE8RMlZMzuhZOJ01Rnz3D0YBAe+V6473t6/H6c7irs6Lt48brULAiRWb3Vw==
