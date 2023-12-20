@@ -326,6 +326,7 @@ class EducationalRedactorWithFavoriteCollectiveOfferTemplate(EducationalRedactor
 class EducationalInstitutionProgramFactory(BaseFactory):
     class Meta:
         model = models.EducationalInstitutionProgram
+        sqlalchemy_get_or_create = ["name"]
 
     # some programs are inserted by default.
     # since the id sequence starts at 0, this will trigger a unique
