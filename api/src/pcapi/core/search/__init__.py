@@ -5,6 +5,7 @@ import enum
 import logging
 from typing import Iterable
 
+import flask
 from flask_sqlalchemy import BaseQuery
 import sqlalchemy as sa
 
@@ -19,12 +20,14 @@ import pcapi.core.offers.repository as offers_repository
 from pcapi.core.search.backends import base
 from pcapi.models import db
 from pcapi.models.feature import FeatureToggle
-from pcapi.repository import repository
 from pcapi.utils import requests
 from pcapi.utils.module_loading import import_string
 
 
 logger = logging.getLogger(__name__)
+
+
+INDEXED_VENUE_IDS_CACHE_KEY = "search:cache:indexed-venue-ids"
 
 
 class IndexationReason(enum.Enum):
@@ -388,21 +391,24 @@ def _reindex_venue_ids(
 
     to_add_ids = [venue.id for venue in to_add]
 
-    try:
-        backend.index_venues(to_add)
-    except Exception as exc:  # pylint: disable=broad-except
-        backend.enqueue_venue_ids_in_error(to_add_ids)
-        _log_indexation_error(
-            "venues",
-            ids=to_add_ids,
-            exc=exc,
-            from_error_queue=from_error_queue,
-        )
-    else:
-        logger.info("Finished indexing venues", extra={"count": len(to_add)})
+    if to_add:
+        try:
+            backend.index_venues(to_add)
+        except Exception as exc:  # pylint: disable=broad-except
+            backend.enqueue_venue_ids_in_error(to_add_ids)
+            _log_indexation_error(
+                "venues",
+                ids=to_add_ids,
+                exc=exc,
+                from_error_queue=from_error_queue,
+            )
+        else:
+            flask.current_app.redis_client.sadd(INDEXED_VENUE_IDS_CACHE_KEY, *to_add_ids)
+            logger.info("Finished indexing venues", extra={"count": len(to_add)})
 
     if to_delete_ids:
         unindex_venue_ids(to_delete_ids)
+        flask.current_app.redis_client.srem(INDEXED_VENUE_IDS_CACHE_KEY, *to_delete_ids)
         logger.info("Finished unindexing venues", extra={"count": len(to_delete_ids)})
 
 
@@ -658,7 +664,10 @@ def reindex_offer_ids(offer_ids: Iterable[int], from_error_queue: bool = False) 
         backend.enqueue_offer_ids_in_error(to_delete_ids)
 
     # some offers changes might make some venue ineligible for search
-    _reindex_venues_from_offers(offer_ids)
+    _reindex_venues_from_offers(
+        indexed_offer_ids=[o.id for o in to_add],
+        unindexed_offer_ids=to_delete_ids,
+    )
 
 
 def unindex_offer_ids(offer_ids: Iterable[int]) -> None:
@@ -671,7 +680,7 @@ def unindex_offer_ids(offer_ids: Iterable[int]) -> None:
         logger.exception("Could not unindex offers", extra={"offers": offer_ids})
 
     # some offers changes might make some venue ineligible for search
-    _reindex_venues_from_offers(offer_ids)
+    _reindex_venues_from_offers(unindexed_offer_ids=offer_ids)
 
 
 def unindex_all_offers() -> None:
@@ -686,19 +695,44 @@ def unindex_all_offers() -> None:
         logger.exception("Could not unindex all offers")
 
 
-def _reindex_venues_from_offers(offer_ids: Iterable[int]) -> None:
-    """
-    Get the offers' venue ids and reindex them
+def _reindex_venues_from_offers(
+    indexed_offer_ids: Iterable[int] = (),
+    unindexed_offer_ids: Iterable[int] = (),
+) -> None:
+    """Ask for an asynchronous reindexation of venues of the given
+    offers.
+
+    This is needed because we send `has_at_least_one_bookable_offer`
+    to Algolia. This property may change when an offer is indexed (the
+    venue may now have at least one bookable offer) or when an offer
+    is unindexed (the venue may stop having any bookable offer). Most
+    of the time, though, this property does not change: this is why we
+    use a cache to avoid asking for the indexation of an already
+    indexed venue.
     """
     if not FeatureToggle.ENABLE_VENUE_STRICT_SEARCH.is_active():
         return
 
-    query = (
-        offers_models.Offer.query.filter(offers_models.Offer.id.in_(offer_ids))
-        .with_entities(offers_models.Offer.venueId)
-        .distinct()
-    )
-    venue_ids = [row[0] for row in query]
+    # We could naively ask for the reindexation of all venues of both
+    # indexed _and_ unindexed offers, but that's costly. It's rare
+    venue_ids = set()
+    if indexed_offer_ids:
+        candidate_venue_ids = {
+            row.venueId
+            for row in offers_models.Offer.query.filter(offers_models.Offer.id.in_(indexed_offer_ids))
+            .with_entities(offers_models.Offer.venueId)
+            .distinct()
+        }
+        indexed_venue_ids = flask.current_app.redis_client.smembers(INDEXED_VENUE_IDS_CACHE_KEY)
+        venue_ids |= candidate_venue_ids - indexed_venue_ids
+
+    if unindexed_offer_ids:
+        venue_ids |= {
+            row.venueId
+            for row in offers_models.Offer.query.filter(offers_models.Offer.id.in_(unindexed_offer_ids))
+            .with_entities(offers_models.Offer.venueId)
+            .distinct()
+        }
 
     logger.info("Starting to reindex venues from offers", extra={"venues_count": len(venue_ids)})
     async_index_venue_ids(venue_ids, reason=IndexationReason.OFFER_REINDEXATION)
