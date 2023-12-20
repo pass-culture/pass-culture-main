@@ -1,11 +1,11 @@
 import algoliasearch from 'algoliasearch/lite'
 import React, { useContext, useEffect, useState } from 'react'
 import { Configure, Index, InstantSearch } from 'react-instantsearch'
-import { useParams } from 'react-router-dom'
 
 import { VenueResponse } from 'apiClient/adage'
 import { apiAdage } from 'apiClient/api'
 import useNotification from 'hooks/useNotification'
+import Spinner from 'ui-kit/Spinner/Spinner'
 import {
   ALGOLIA_API_KEY,
   ALGOLIA_APP_ID,
@@ -36,38 +36,51 @@ export const algoliaSearchDefaultAttributesToRetrieve = [
 
 export const DEFAULT_GEO_RADIUS = 30000000 // 30 000 km ensure we get all results in the world
 
-export const OffersInstantSearch = ({
-  venueFilter,
-}: {
-  venueFilter: VenueResponse | null
-}): JSX.Element => {
+export const OffersInstantSearch = (): JSX.Element => {
+  const { adageUser } = useAdageUser()
+
   const { facetFilters, setFacetFilters } = useContext(FacetFiltersContext)
 
-  const [geoRadius, setGeoRadius] = useState<number>(DEFAULT_GEO_RADIUS)
-  const { adageUser } = useAdageUser()
-  const { venueId } = useParams<{
-    venueId: string
-  }>()
+  const params = new URLSearchParams(window.location.search)
+  const venueId = Number(params.get('venue'))
+  const siret = params.get('siret')
+  const domainId = params.get('domain')
 
   const [venueFilterFromParam, setVenueFilterFromParam] =
     useState<VenueResponse | null>(null)
+  const [loadingVenue, setLoadingVenue] = useState(false)
 
-  const notification = useNotification()
+  const [geoRadius, setGeoRadius] = useState<number>(DEFAULT_GEO_RADIUS)
+
+  const { error } = useNotification()
+
   useEffect(() => {
-    const getVenueById = async () => {
+    const getVenue = async () => {
+      setLoadingVenue(true)
       try {
-        const venueResponse = await apiAdage.getVenueById(Number(venueId))
+        const venueResponse = venueId
+          ? await apiAdage.getVenueById(venueId)
+          : await apiAdage.getVenueBySiret(siret!)
+
         setVenueFilterFromParam(venueResponse)
-        setFacetFilters([...facetFilters, [`venue.id:${venueId}`]])
+        setFacetFilters((prev) => [...prev, [`venue.id:${venueId}`]])
       } catch {
-        notification.error('Lieu inconnu. Tous les résultats sont affichés.')
+        error('Lieu inconnu. Tous les résultats sont affichés.')
+      } finally {
+        setLoadingVenue(false)
       }
     }
-    if (venueId) {
+    if (venueId || siret) {
       // eslint-disable-next-line @typescript-eslint/no-floating-promises
-      getVenueById()
+      getVenue()
     }
-  }, [venueId])
+
+    if (domainId) {
+      // eslint-disable-next-line @typescript-eslint/no-floating-promises
+      setFacetFilters((prev) => [...prev, [`offer.domains:${domainId}`]])
+    }
+  }, [venueId, error, siret, domainId, setFacetFilters])
+
   return (
     <InstantSearch
       indexName={ALGOLIA_COLLECTIVE_OFFERS_INDEX}
@@ -94,12 +107,17 @@ export const OffersInstantSearch = ({
           aroundRadius={geoRadius}
           distinct={false}
         />
-        <AnalyticsContextProvider>
-          <OffersSearch
-            venueFilter={venueFilter || venueFilterFromParam}
-            setGeoRadius={setGeoRadius}
-          />
-        </AnalyticsContextProvider>
+        {loadingVenue ? (
+          <Spinner />
+        ) : (
+          <AnalyticsContextProvider>
+            <OffersSearch
+              venueFilter={venueFilterFromParam}
+              domainsFilter={domainId}
+              setGeoRadius={setGeoRadius}
+            />
+          </AnalyticsContextProvider>
+        )}
       </Index>
     </InstantSearch>
   )

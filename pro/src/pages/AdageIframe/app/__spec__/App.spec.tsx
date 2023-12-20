@@ -2,7 +2,7 @@ import { screen, waitForElementToBeRemoved } from '@testing-library/react'
 import React from 'react'
 import { Configure } from 'react-instantsearch'
 
-import { AdageFrontRoles, VenueResponse } from 'apiClient/adage'
+import { AdageFrontRoles } from 'apiClient/adage'
 import { apiAdage } from 'apiClient/api'
 import Notification from 'components/Notification/Notification'
 import { defaultCategories } from 'utils/adageFactories'
@@ -10,10 +10,7 @@ import { renderWithProviders } from 'utils/renderWithProviders'
 
 import { App } from '../App'
 import { DEFAULT_GEO_RADIUS } from '../components/OffersInstantSearch/OffersInstantSearch'
-import {
-  AlgoliaQueryContextProvider,
-  FacetFiltersContextProvider,
-} from '../providers'
+import { AlgoliaQueryContextProvider } from '../providers'
 
 const isDiscoveryActive = {
   features: {
@@ -118,17 +115,11 @@ vi.mock('@algolia/autocomplete-plugin-query-suggestions', () => {
   }
 })
 
-const renderApp = (
-  venueFilter: VenueResponse | null,
-  initialEntries = '/',
-  storeOverrides: any = null
-) => {
+const renderApp = (initialEntries = '/', storeOverrides: any = null) => {
   renderWithProviders(
     <>
       <AlgoliaQueryContextProvider>
-        <FacetFiltersContextProvider>
-          <App />
-        </FacetFiltersContextProvider>
+        <App />
       </AlgoliaQueryContextProvider>
       ,
       <Notification />
@@ -142,8 +133,6 @@ const renderApp = (
 
 describe('app', () => {
   describe('when is authenticated', () => {
-    let venue: VenueResponse
-
     beforeEach(() => {
       vi.spyOn(apiAdage, 'authenticate').mockResolvedValue({
         role: AdageFrontRoles.REDACTOR,
@@ -170,22 +159,11 @@ describe('app', () => {
 
       window.location = mockLocation
 
-      renderApp(venue, '/recherche?siret=123456789&venue=1436')
+      renderApp('/recherche?siret=123456789&venue=1436')
       await waitForElementToBeRemoved(() => screen.queryAllByTestId('spinner'))
 
       expect(
-        screen.getByRole('button', { name: /Lieu : Lib de Par's/ })
-      ).toBeInTheDocument()
-    })
-
-    it('should venue tag when venueId is provided and public name exists', async () => {
-      // When
-      renderApp(venue, '/recherche?venue=1436')
-
-      await waitForElementToBeRemoved(() => screen.queryAllByTestId('spinner'))
-
-      expect(
-        screen.getByRole('button', { name: /Lieu : Lib de Par's/ })
+        await screen.findByRole('button', { name: /Lieu : Lib de Par's/ })
       ).toBeInTheDocument()
     })
 
@@ -197,12 +175,10 @@ describe('app', () => {
 
       window.location = mockLocation
 
-      renderApp(venue, '/recherche?venue=1436')
-
-      await waitForElementToBeRemoved(() => screen.queryAllByTestId('spinner'))
+      renderApp('/recherche?venue=1436')
 
       expect(
-        screen.getByRole('button', { name: /Lieu : Lib de Par's/ })
+        await screen.findByRole('button', { name: /Lieu : Lib de Par's/ })
       ).toBeInTheDocument()
     })
     it('should display error messagee when venueId does not exist', async () => {
@@ -212,7 +188,7 @@ describe('app', () => {
       }
 
       window.location = mockLocation
-      renderApp(venue, '/', isDiscoveryActive)
+      renderApp('/recherche?venue=999', isDiscoveryActive)
       vi.spyOn(apiAdage, 'getVenueById').mockRejectedValue(null)
 
       expect(
@@ -232,7 +208,7 @@ describe('app', () => {
         lat: 48.856614,
         lon: 2.3522219,
       })
-      renderApp(null, '/recherche')
+      renderApp('/recherche')
 
       await screen.findByRole('button', { name: 'Rechercher' })
 
@@ -256,7 +232,7 @@ describe('app', () => {
 
       vi.spyOn(apiAdage, 'getVenueBySiret').mockRejectedValueOnce(null)
 
-      renderApp(venue)
+      renderApp()
 
       expect(
         await screen.findByText(
@@ -275,7 +251,7 @@ describe('app', () => {
 
       vi.spyOn(apiAdage, 'getVenueById').mockRejectedValueOnce(null)
 
-      renderApp(venue)
+      renderApp()
 
       expect(
         await screen.findByText(
@@ -294,7 +270,7 @@ describe('app', () => {
 
     it('should show error page', async () => {
       // When
-      renderApp(null)
+      renderApp()
 
       // Then
       const contentTitle = await screen.findByText(

@@ -80,7 +80,7 @@ const renderAppLayout = (initialRoute = '/') => {
       adageUser={{ ...defaultAdageUser, offersCount: 1 }}
     >
       <AlgoliaQueryContextProvider>
-        <AppLayout venueFilter={null} />
+        <AppLayout />
       </AlgoliaQueryContextProvider>
     </AdageUserContextProvider>,
 

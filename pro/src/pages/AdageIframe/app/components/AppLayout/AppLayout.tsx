@@ -1,9 +1,10 @@
 import { Navigate, Route, Routes, useLocation } from 'react-router-dom'
 
-import { AdageFrontRoles, VenueResponse } from 'apiClient/adage'
+import { AdageFrontRoles } from 'apiClient/adage'
 import useActiveFeature from 'hooks/useActiveFeature'
 
 import useAdageUser from '../../hooks/useAdageUser'
+import { FacetFiltersContextProvider } from '../../providers'
 import { AdageDiscovery } from '../AdageDiscovery/AdageDiscovery'
 import { AdageHeader } from '../AdageHeader/AdageHeader'
 import { OfferInfos } from '../OfferInfos/OfferInfos'
@@ -13,18 +14,14 @@ import { OffersInstantSearch } from '../OffersInstantSearch/OffersInstantSearch'
 
 import styles from './AppLayout.module.scss'
 
-export const AppLayout = ({
-  venueFilter,
-}: {
-  venueFilter: VenueResponse | null
-}): JSX.Element => {
+export const AppLayout = (): JSX.Element => {
   const { adageUser } = useAdageUser()
   const { pathname, search } = useLocation()
   const params = new URLSearchParams(search)
 
   const isDiscoveryPage = pathname === '/adage-iframe'
   const isDiscoveryActive = useActiveFeature('WIP_ENABLE_DISCOVERY')
-  const venueId = params.get('venue')
+  const venueId = Number(params.get('venue'))
 
   return (
     <div>
@@ -48,7 +45,11 @@ export const AppLayout = ({
           />
           <Route
             path="recherche"
-            element={<OffersInstantSearch venueFilter={venueFilter} />}
+            element={
+              <FacetFiltersContextProvider uai={adageUser?.uai}>
+                <OffersInstantSearch />
+              </FacetFiltersContextProvider>
+            }
           />
           <Route
             path="mon-etablissement"
