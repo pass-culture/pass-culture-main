@@ -14,11 +14,13 @@ $info-box-margin-left: rem.torem(24px);
   }
 
   &.full-width-actions {
-    & > *:not(.form-layout-actions) {
-      width: rem.torem(486px);
+    @media (min-width: size.$tablet) {
+      & > *:not(.form-layout-actions) {
+        width: rem.torem(486px);
+      }
     }
 
-    .form-layout-actions {
+    .form-layout-actions {  
       justify-content: space-between;
     }
   }
@@ -81,7 +83,10 @@ $info-box-margin-left: rem.torem(24px);
   }
 
   &-action {
-    min-width: rem.torem(192px);
+    @media (min-width: size.$tablet) {
+      min-width: rem.torem(192px);
+    }
+
     margin-left: rem.torem(24px);
     text-align: center;
 
