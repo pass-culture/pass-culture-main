@@ -404,8 +404,8 @@ def create_music_offers(venue: offerers_models.Venue) -> None:
         create_offers_with_extradata(
             venue=venue,
             extra_data={
-                "musicType": music_type.label,
-                "musicSubType": random.choice(music_type.children).label,
+                "musicType": str(music_type.code),
+                "musicSubType": str(random.choice(music_type.children).code),
                 "performer": Fake.name(),
             },
             subcategory=subcategory,
@@ -419,7 +419,7 @@ def create_event_offers(venue: offerers_models.Venue) -> None:
             venue=venue,
             extra_data={
                 "showType": str(show_type.code),
-                "musicSubType": str(random.choice(show_type.children).code),
+                "showSubType": str(random.choice(show_type.children).code),
                 "performer": Fake.name(),
                 "stageDirector": Fake.name(),
                 "speaker": Fake.name(),
