@@ -2339,6 +2339,12 @@ def update_bank_account_venues_links(
             action_history_bulk_insert_mapping,
         )
 
+    for venue in venues:
+        if venue.id in venues_links_to_deprecate:
+            transactional_mails.send_venue_bank_account_link_deprecated(
+                venue.common_name, bank_account.label, venue.bookingEmail
+            )
+
 
 def create_finance_incident(
     kind: models.IncidentType,
