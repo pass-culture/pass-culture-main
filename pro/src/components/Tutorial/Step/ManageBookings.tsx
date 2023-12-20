@@ -16,74 +16,84 @@ const ManageBookings = ({ titleId }: StepComponentProps): JSX.Element => (
   <>
     <h1 id={titleId}>Suivez et gérez vos réservations</h1>
     <section className={styles['mb-content']}>
-      <span className={styles['first-column']}>Validez vos contremarques</span>
-      <span className={styles['third-column']}>
-        Accédez à la liste de vos réservations
-      </span>
-      <SvgIcon
-        src={fullDownIcon}
-        alt=""
-        width="24"
-        className={styles['first-column']}
-      />
-      <SvgIcon
-        src={fullDownIcon}
-        alt=""
-        width="24"
-        className={styles['third-column']}
-      />
-      <span className={styles['header-example']}>
-        <span className={styles['header-element']}>
+      <div className={styles['nav-tutorial']}>
+        <div className={styles['ticket-office']}>
           <SvgIcon
             className={styles['header-element-icon']}
             src={strokeDeskIcon}
             alt=""
           />
           Guichet
-        </span>
-        <span className={styles['header-element']}>
+        </div>
+        <div className={styles['offers']}>
           <SvgIcon
             className={styles['header-element-icon']}
             src={strokeOffersIcon}
             alt=""
           />
           Offres
-        </span>
-        <span className={styles['header-element']}>
+        </div>
+        <div className={styles['booking']}>
           <SvgIcon
             alt=""
             src={strokeCalendarIcon}
             className={styles['header-element-icon']}
           />
           Réservations
-        </span>
-        <span className={styles['header-element']}>
+        </div>
+        <div className={styles['reimbursements']}>
           <SvgIcon
             className={styles['header-element-icon']}
             src={strokeEuroIcon}
             alt=""
           />
           Remboursements
-        </span>
-      </span>
-      <SvgIcon
-        src={fullUpIcon}
-        alt=""
-        width="24"
-        className={styles['second-column']}
-      />
-      <SvgIcon
-        src={fullUpIcon}
-        alt=""
-        width="24"
-        className={styles['fourth-column']}
-      />
-      <span className={styles['second-column']}>
+        </div>
+      </div>
+      <div className={styles['ticket-office-informations']}>
+        Validez vos contremarques
+        <div>
+          <SvgIcon
+            src={fullDownIcon}
+            alt=""
+            width="24"
+            className={styles['arrow-icon']}
+          />
+        </div>
+      </div>
+      <div className={styles['booking-informations']}>
+        Accédez à la liste de vos réservations
+        <div>
+          <SvgIcon
+            src={fullDownIcon}
+            alt=""
+            width="24"
+            className={styles['arrow-icon']}
+          />
+        </div>
+      </div>
+      <div className={styles['offers-informations']}>
+        <div>
+          <SvgIcon
+            src={fullUpIcon}
+            alt=""
+            width="24"
+            className={styles['arrow-icon']}
+          />
+        </div>
         Créez, éditez, désactivez vos offres
-      </span>
-      <span className={styles['fourth-column']}>
+      </div>
+      <div className={styles['reimbursements-informations']}>
+        <div>
+          <SvgIcon
+            src={fullUpIcon}
+            alt=""
+            width="24"
+            className={styles['arrow-icon']}
+          />
+        </div>
         Téléchargez le détail de vos remboursements
-      </span>
+      </div>
     </section>
   </>
 )
