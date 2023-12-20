@@ -32,12 +32,8 @@ let offerSubCategoryId = 1
 
 export const individualOfferFactory = (
   customOffer: Partial<IndividualOffer> = {},
-  customVenue: GetOfferVenueResponseModel = offerVenueFactory(),
-  customPriceCatgory: PriceCategoryResponseModel = priceCategoryFactory() ||
-    null
+  customVenue: GetOfferVenueResponseModel = offerVenueFactory()
 ): IndividualOffer => {
-  const priceCategory = customPriceCatgory ?? null
-
   return {
     id: offerId++,
     venue: customVenue,
@@ -81,7 +77,7 @@ export const individualOfferFactory = (
     status: OfferStatus.ACTIVE,
     subcategoryId: SubcategoryIdEnum.CINE_PLEIN_AIR,
     venueId: customVenue.id,
-    priceCategories: priceCategory ? [priceCategory] : [],
+    priceCategories: [priceCategoryFactory()],
     ...customOffer,
   }
 }
