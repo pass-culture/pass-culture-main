@@ -1,11 +1,14 @@
 @use "styles/variables/_colors.scss" as colors;
 @use "styles/mixins/_fonts.scss" as fonts;
 @use "styles/mixins/_rem.scss" as rem;
+@use "styles/variables/_size.scss" as size;
 
 // sass doc: https://sass-lang.com/documentation
 .tutorial-box {
-  height: rem.torem(620px);
-  width: rem.torem(750px);
+  @media (min-width: size.$tablet) {
+    height: rem.torem(620px);
+    width: rem.torem(750px);
+  }
 }
 
 .tutorial {
@@ -33,11 +36,10 @@
     height: 100%;
     justify-content: flex-start;
     gap: rem.torem(40px);
-    width: rem.torem(500px);
-  }
 
-  .tutorial-footer {
-    margin-top: auto;
+    @media (min-width: size.$tablet) {
+      width: rem.torem(500px);
+    }
   }
 
   .nav-step-list-section {
@@ -83,15 +85,25 @@
         ); // we use similar width for all button to avoid them moving on click.
     }
   }
+
+  @media (max-width: size.$tablet) {
+    .tutorial-footer {    
+      margin-top: rem.torem(32px);
+    }
+  }
 }
 
 .two-columns-section {
   display: flex;
-  flex-direction: row;
   height: 100%;
   justify-content: space-between;
   align-items: flex-start;
-  width: rem.torem(560px);
+  flex-direction: column;
   gap: rem.torem(68px);
   padding-top: rem.torem(47px);
+
+  @media (min-width: size.$tablet) {
+    width: rem.torem(560px);
+    flex-direction: row;
+  }
 }
