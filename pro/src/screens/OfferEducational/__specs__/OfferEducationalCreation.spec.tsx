@@ -5,7 +5,7 @@ import * as router from 'react-router-dom'
 
 import { CollectiveOffer } from 'core/OfferEducational'
 import * as patchCollectiveOfferAdapter from 'core/OfferEducational/adapters/patchCollectiveOfferAdapter'
-import { RootState } from 'store/reducers'
+import { RootState } from 'store/rootReducer'
 import { collectiveOfferFactory } from 'utils/collectiveApiFactories'
 import { renderWithProviders } from 'utils/renderWithProviders'
 

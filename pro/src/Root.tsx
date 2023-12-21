@@ -3,7 +3,7 @@ import { Provider } from 'react-redux'
 
 import { AppRouter } from 'app/AppRouter'
 import { AnalyticsContextProvider } from 'context/analyticsContext'
-import createStore from 'store'
+import createStore from 'store/store'
 import StoreProvider from 'store/StoreProvider/StoreProvider'
 
 import { RemoteContextProvider } from './context/remoteConfigContext'
