@@ -28,7 +28,7 @@ export const OffersFavoritesNoResult = () => {
         </p>
         <ButtonLink
           link={{
-            to: `/adage-iframe?token=${adageAuthToken}`,
+            to: `/adage-iframe/recherche?token=${adageAuthToken}`,
             isExternal: false,
           }}
           variant={ButtonVariant.PRIMARY}

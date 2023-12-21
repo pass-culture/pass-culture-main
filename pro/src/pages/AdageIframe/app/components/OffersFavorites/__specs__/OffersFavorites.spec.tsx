@@ -21,7 +21,7 @@ const mockOffer: CollectiveOfferTemplateResponseModel = {
 const renderAdageFavoritesOffers = (user: AuthenticatedResponse) => {
   renderWithProviders(
     <Routes>
-      <Route path="/adage-iframe" element={<h1>Accueil</h1>} />
+      <Route path="/adage-iframe/recherche" element={<h1>Accueil</h1>} />
       <Route
         path="/adage-iframe/mes-favoris"
         element={
