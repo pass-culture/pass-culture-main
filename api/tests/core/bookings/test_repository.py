@@ -7,8 +7,6 @@ from io import BytesIO
 from io import StringIO
 
 from dateutil import tz
-from dateutil.relativedelta import relativedelta
-from freezegun import freeze_time
 import openpyxl
 import pytest
 from pytest import fixture
@@ -20,14 +18,11 @@ from pcapi.core.bookings.models import BookingStatusFilter
 import pcapi.core.bookings.repository as booking_repository
 from pcapi.core.bookings.repository import get_bookings_from_deposit
 from pcapi.core.categories import subcategories_v2 as subcategories
-import pcapi.core.finance.api as finance_api
 import pcapi.core.offerers.factories as offerers_factories
 import pcapi.core.offers.factories as offers_factories
 from pcapi.core.testing import assert_no_duplicated_queries
 import pcapi.core.users.factories as users_factories
-from pcapi.core.users.models import EligibilityType
 from pcapi.domain.booking_recap import booking_recap_history
-from pcapi.models import db
 from pcapi.routes.serialization.bookings_recap_serialize import OfferType
 from pcapi.utils.date import utc_datetime_to_department_timezone
 
@@ -2055,32 +2050,15 @@ class FindExpiringBookingsTest:
         assert bookings == {book_booking_old_enough, movie_booking_old_enough}
 
 
-def test_get_deposit_booking():
-    with freeze_time(datetime.utcnow() - relativedelta(years=2, days=2)):
-        user = users_factories.UnderageBeneficiaryFactory(subscription_age=16)
-        # disable trigger because deposit.expirationDate > now() is False in database time
-        db.session.execute("ALTER TABLE booking DISABLE TRIGGER booking_update;")
-        previous_deposit_booking = bookings_factories.BookingFactory(user=user)
-        db.session.execute("ALTER TABLE booking ENABLE TRIGGER booking_update;")
+def test_get_bookings_from_deposit():
+    deposit1 = users_factories.DepositGrantFactory()
+    deposit2 = users_factories.DepositGrantFactory()
+    booking1 = bookings_factories.BookingFactory(deposit=deposit1)
+    booking2 = bookings_factories.BookingFactory(deposit=deposit2)
+    _cancelled_booking = bookings_factories.CancelledBookingFactory(deposit=deposit2)
 
-    finance_api.create_deposit(user, "test", EligibilityType.AGE18)
-
-    current_deposit_booking = bookings_factories.BookingFactory(user=user)
-    current_deposit_booking_2 = bookings_factories.BookingFactory(user=user)
-    bookings_factories.BookingFactory(user=user, deposit=None, amount=0)
-
-    previous_deposit_id = user.deposits[0].id
-    current_deposit_id = user.deposit.id
-
-    with assert_no_duplicated_queries():
-        previous_deposit_bookings = get_bookings_from_deposit(previous_deposit_id)
-
-    assert previous_deposit_bookings == [previous_deposit_booking]
-
-    with assert_no_duplicated_queries():
-        current_deposit_bookings = get_bookings_from_deposit(current_deposit_id)
-
-    assert set(current_deposit_bookings) == {current_deposit_booking, current_deposit_booking_2}
+    assert get_bookings_from_deposit(deposit1.id) == [booking1]
+    assert get_bookings_from_deposit(deposit2.id) == [booking2]
 
 
 class SoonExpiringBookingsTest:
