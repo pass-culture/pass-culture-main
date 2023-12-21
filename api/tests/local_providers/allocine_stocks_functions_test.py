@@ -10,7 +10,7 @@ from pcapi.local_providers.allocine.allocine_stocks import _find_showtime_by_sho
 from pcapi.local_providers.allocine.allocine_stocks import _format_poster_url
 from pcapi.local_providers.allocine.allocine_stocks import _get_showtimes_uuid_by_idAtProvider
 from pcapi.local_providers.allocine.allocine_stocks import _parse_movie_duration
-from pcapi.local_providers.allocine.allocine_stocks import retrieve_movie_information
+from pcapi.local_providers.allocine.allocine_stocks import format_movie_data_for_offer
 from pcapi.local_providers.allocine.allocine_stocks import retrieve_showtime_information
 
 
@@ -141,7 +141,7 @@ class RetrieveMovieInformationTest:
         movie_information = MOVIE_INFO
 
         # When
-        movie_parsed_information = retrieve_movie_information(movie_information["node"]["movie"])
+        movie_parsed_information = format_movie_data_for_offer(movie_information["node"]["movie"])
 
         # Then
         assert movie_parsed_information == {
@@ -171,7 +171,7 @@ class RetrieveMovieInformationTest:
         movie_information["node"]["movie"]["credits"]["edges"] = []
 
         # When
-        movie_parsed_information = retrieve_movie_information(movie_information["node"]["movie"])
+        movie_parsed_information = format_movie_data_for_offer(movie_information["node"]["movie"])
 
         # Then
         assert "visa" not in movie_parsed_information
@@ -184,7 +184,7 @@ class RetrieveMovieInformationTest:
 
         # When
         with pytest.raises(KeyError):
-            retrieve_movie_information(movie_information["node"]["movie"])
+            format_movie_data_for_offer(movie_information["node"]["movie"])
 
     def test_should_return_empty_value_when_missing_poster_information(self):
         # Given
@@ -192,7 +192,7 @@ class RetrieveMovieInformationTest:
         del movie_information["node"]["movie"]["poster"]["url"]
 
         # When
-        movie_parsed_information = retrieve_movie_information(movie_information["node"]["movie"])
+        movie_parsed_information = format_movie_data_for_offer(movie_information["node"]["movie"])
 
         # Then
         assert "poster_url" not in movie_parsed_information
@@ -203,7 +203,7 @@ class RetrieveMovieInformationTest:
         movie_information["node"]["movie"]["credits"]["edges"][0]["node"]["person"] = None
 
         # When
-        movie_parsed_information = retrieve_movie_information(movie_information["node"]["movie"])
+        movie_parsed_information = format_movie_data_for_offer(movie_information["node"]["movie"])
 
         # Then
         assert "stageDirector" not in movie_parsed_information
