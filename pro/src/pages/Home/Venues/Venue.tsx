@@ -8,7 +8,6 @@ import useActiveFeature from 'hooks/useActiveFeature'
 import useAnalytics from 'hooks/useAnalytics'
 import fullDisclosureClose from 'icons/full-disclosure-close.svg'
 import fullDisclosureOpen from 'icons/full-disclosure-open.svg'
-import fullEditIcon from 'icons/full-edit.svg'
 import fullErrorIcon from 'icons/full-error.svg'
 import fullMoreIcon from 'icons/full-more.svg'
 import strokeConnectIcon from 'icons/stroke-connect.svg'
@@ -204,7 +203,6 @@ const Venue = ({
               to: editVenueLink,
               isExternal: false,
             }}
-            icon={fullEditIcon}
             onClick={() =>
               logEvent?.(
                 VenueEvents.CLICKED_VENUE_PUBLISHED_OFFERS_LINK,
