@@ -1,11 +1,13 @@
 import { screen, waitForElementToBeRemoved } from '@testing-library/react'
 import React from 'react'
 
+import { FeatureResponseModel } from 'apiClient/adage'
 import {
   AlgoliaQueryContextProvider,
   FiltersContextProvider,
 } from 'pages/AdageIframe/app/providers'
 import { AdageUserContextProvider } from 'pages/AdageIframe/app/providers/AdageUserContext'
+import { RootState } from 'store/rootReducer'
 import {
   defaultAdageUser,
   defaultCategories,
@@ -72,16 +74,37 @@ vi.mock('utils/config', async () => {
   }
 })
 
+vi.mock('apiClient/api', () => ({
+  apiAdage: {
+    logHasSeenAllPlaylist: vi.fn(),
+    logConsultPlaylistElement: vi.fn(),
+    logHasSeenWholePlaylist: vi.fn(),
+    newTemplateOffersPlaylist: vi.fn(),
+  },
+  api: {
+    listEducationalDomains: vi.fn(() => [
+      { id: 1, name: 'Danse' },
+      { id: 2, name: 'Architecture' },
+    ]),
+  },
+}))
+
+vi.mock('hooks/useIsElementVisible', () => ({
+  default: vi.fn().mockImplementation(() => [false, false]),
+}))
+
 vi.mock('pages/AdageIframe/repository/pcapi/pcapi', () => ({
   getEducationalDomains: vi.fn(),
   getFeatures: vi.fn(),
 }))
 
-const renderAppLayout = (initialRoute = '/') => {
+const renderAppLayout = (
+  initialRoute = '/',
+  storeOverrides: Partial<RootState> = {},
+  user = defaultAdageUser
+) => {
   renderWithProviders(
-    <AdageUserContextProvider
-      adageUser={{ ...defaultAdageUser, offersCount: 1 }}
-    >
+    <AdageUserContextProvider adageUser={{ ...user, offersCount: 1 }}>
       <FiltersContextProvider>
         <AlgoliaQueryContextProvider>
           <AppLayout venueFilter={null} />
@@ -89,8 +112,23 @@ const renderAppLayout = (initialRoute = '/') => {
       </FiltersContextProvider>
     </AdageUserContextProvider>,
 
-    { initialRouterEntries: [initialRoute] }
+    { storeOverrides, initialRouterEntries: [initialRoute] }
   )
+}
+
+const store = {
+  features: {
+    list: [
+      {
+        isActive: true,
+        nameKey: 'WIP_ENABLE_MARSEILLE',
+      },
+      {
+        isActive: true,
+        nameKey: 'WIP_ENABLE_DISCOVERY',
+      },
+    ] as FeatureResponseModel[],
+  },
 }
 
 describe('AppLayout', () => {
@@ -102,13 +140,27 @@ describe('AppLayout', () => {
     }))
   })
 
-  it('should render new header if FF is active', async () => {
-    renderAppLayout()
-    await waitForElementToBeRemoved(() => screen.getByTestId('spinner'))
+  it('should redirect to the search page if the user is in Marseille en Grand and if the FF is active', () => {
+    renderAppLayout('', store, {
+      ...defaultAdageUser,
+      programs: [{ label: '', name: 'marseille_en_grand' }],
+    })
 
     expect(screen.getByRole('link', { name: 'Rechercher' })).toBeInTheDocument()
+  })
+
+  it('should redirect to the discovery page if the user is not in Marseille en Grand and if the FF is active', async () => {
+    renderAppLayout('', store, {
+      ...defaultAdageUser,
+      programs: [],
+    })
+
+    await waitForElementToBeRemoved(() => screen.getByTestId('spinner'))
+
     expect(
-      screen.getByRole('link', { name: 'Pour mon établissement 1' })
+      screen.getByRole('heading', {
+        name: 'Découvrez la part collective du pass Culture',
+      })
     ).toBeInTheDocument()
   })
 })

@@ -449,4 +449,43 @@ describe('offersSearch component', () => {
 
     expect(screen.getByTestId('suggestions-header')).toBeInTheDocument()
   })
+
+  it('should filter on student levels when the institution is in MeG and redirected from "/"', async () => {
+    vi.spyOn(URLSearchParams.prototype, 'get').mockImplementation(
+      () => 'marseille'
+    )
+    renderOffersSearchComponent(
+      props,
+      {
+        ...user,
+        programs: [{ label: '', name: 'marseille_en_grand' }],
+      },
+      {
+        features: {
+          list: [
+            {
+              isActive: true,
+              nameKey: 'WIP_ENABLE_MARSEILLE',
+            },
+          ],
+        },
+      }
+    )
+
+    const loadingMessage = screen.queryByText(/Chargement en cours/)
+    await waitFor(() => expect(loadingMessage).not.toBeInTheDocument())
+
+    //  TODO Replace StudentLevel filters values with the correct MeG ones when they exist
+    expect(
+      screen.getByRole('button', {
+        name: /Lycée - Terminale/,
+      })
+    ).toBeInTheDocument()
+
+    expect(
+      screen.getByRole('button', {
+        name: /Lycée - Seconde/,
+      })
+    ).toBeInTheDocument()
+  })
 })
