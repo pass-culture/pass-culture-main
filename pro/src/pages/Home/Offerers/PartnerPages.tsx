@@ -22,17 +22,18 @@ export const PartnerPages = ({ venues }: PartnerPagesProps) => {
 
   return (
     <section className={styles['section']}>
-      {venues.length === 1 ? (
-        <>
-          <h3 className={styles['title']}>Votre page partenaire</h3>
-          <p>
-            Les pages partenaires vous permettent de présenter votre activité.
-          </p>
-        </>
-      ) : (
-        <>
-          <h3 className={styles['title']}>Vos pages partenaire</h3>
+      <h3 className={styles['title']}>
+        {venues.length === 1 ? 'Votre page partenaire' : 'Vos pages partenaire'}
+      </h3>
 
+      <p className={styles['description']}>
+        Complétez vos informations pour présenter votre activité au grand public
+        sur le site et l’application pass Culture à destination des jeunes et /
+        ou auprès des enseignants sur la plateforme Adage.
+      </p>
+
+      {venues.length > 1 && (
+        <>
           <FieldLayout label="Sélectionnez votre page partenaire" name="venues">
             <SelectInput
               name="venues"
