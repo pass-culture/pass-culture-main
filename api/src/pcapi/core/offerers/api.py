@@ -1,6 +1,5 @@
 import dataclasses
 from datetime import datetime
-from datetime import timedelta
 import enum
 import itertools
 import logging
@@ -17,12 +16,6 @@ import sqlalchemy.orm as sa_orm
 
 from pcapi import settings
 from pcapi.connectors import sirene
-from pcapi.connectors.big_query.queries.offerer_stats import DAILY_CONSULT_PER_OFFERER_LAST_180_DAYS_TABLE
-from pcapi.connectors.big_query.queries.offerer_stats import OffererTotalViewsLast30DaysQuery
-from pcapi.connectors.big_query.queries.offerer_stats import OffererViewsModel
-from pcapi.connectors.big_query.queries.offerer_stats import OffererViewsPerDay
-from pcapi.connectors.big_query.queries.offerer_stats import OffersData
-from pcapi.connectors.big_query.queries.offerer_stats import TOP_3_MOST_CONSULTED_OFFERS_LAST_30_DAYS_TABLE
 import pcapi.connectors.thumb_storage as storage
 from pcapi.core import search
 from pcapi.core.bookings import models as bookings_models
@@ -48,7 +41,6 @@ from pcapi.models import db
 from pcapi.models import feature
 from pcapi.models.validation_status_mixin import ValidationStatus
 from pcapi.repository import repository
-from pcapi.repository import transaction
 from pcapi.routes.serialization import offerers_serialize
 from pcapi.routes.serialization import venues_serialize
 import pcapi.routes.serialization.base as serialize_base
@@ -58,8 +50,6 @@ from pcapi.utils import human_ids
 from pcapi.utils import image_conversion
 import pcapi.utils.db as db_utils
 import pcapi.utils.email as email_utils
-from pcapi.workers import worker
-from pcapi.workers.decorators import job
 
 from . import exceptions
 from . import models
@@ -2046,95 +2036,7 @@ def get_providers_offerer_and_venues(
 
 
 def get_offerer_stats_data(offerer_id: int) -> list[offerers_models.OffererStats]:
-    offerer_stats = offerers_models.OffererStats.query.filter_by(offererId=offerer_id).all()
-    if len(offerer_stats) < 2:
-        _update_offerer_stats_data.delay(offerer_id)
-    for stat in offerer_stats:
-        if stat.syncDate < datetime.utcnow() - timedelta(days=1):
-            _update_offerer_stats_data.delay(offerer_id)
-            break
-    return offerer_stats
-
-
-@job(worker.low_queue)
-def _update_offerer_stats_data(offerer_id: int) -> None:
-    with transaction():
-        daily_views_data = OffererViewsPerDay().execute(offerer_id=str(offerer_id))
-        daily_views_data_list = list(daily_views_data)[::-1]  # reverse list to have the oldest date first
-        daily_views_stats = offerers_models.OffererStats.query.filter_by(
-            offererId=offerer_id, table=DAILY_CONSULT_PER_OFFERER_LAST_180_DAYS_TABLE
-        ).one_or_none()
-
-        # this code is to fill the missing dates in the list
-        if len(daily_views_data_list) > 0:
-            current_date = daily_views_data_list[0].eventDate
-            current_views = daily_views_data_list[0].numberOfViews
-
-            counter = 1
-            while counter < len(daily_views_data_list):
-                if daily_views_data_list[counter].eventDate != current_date + timedelta(days=1):
-                    daily_views_data_list.insert(
-                        counter,
-                        OffererViewsModel(eventDate=current_date + timedelta(days=1), numberOfViews=current_views),
-                    )
-                else:
-                    current_views = daily_views_data_list[counter].numberOfViews
-                current_date = daily_views_data_list[counter].eventDate
-                counter += 1
-
-            # This code is to fill the missing dates at the end of the list
-            yesterday = datetime.utcnow().date() - timedelta(days=1)
-            latest_date = daily_views_data_list[-1].eventDate
-            if latest_date < yesterday:
-                for _ in range((yesterday - latest_date).days):
-                    daily_views_data_list.append(
-                        OffererViewsModel(
-                            eventDate=latest_date + timedelta(days=1),
-                            numberOfViews=daily_views_data_list[-1].numberOfViews,
-                        )
-                    )
-                    latest_date = daily_views_data_list[-1].eventDate
-
-        if not daily_views_stats:
-            daily_views_stats = offerers_models.OffererStats(
-                offererId=offerer_id,
-                table=DAILY_CONSULT_PER_OFFERER_LAST_180_DAYS_TABLE,
-                # Convert OffererStats (which is a TypedDict) to dict to please mypy.
-                jsonData=dict(offerers_models.OffererStatsData(daily_views=list(daily_views_data_list))),
-                syncDate=datetime.utcnow(),
-            )
-            db.session.add(daily_views_stats)
-        else:
-            # Convert OffererStats (which is a TypedDict) to dict to please mypy.
-            daily_views_stats.jsonData = dict(offerers_models.OffererStatsData(daily_views=list(daily_views_data_list)))
-            daily_views_stats.syncDate = datetime.utcnow()
-
-        top_offers = list(OffersData().execute(offerer_id=str(offerer_id)))
-        top_offers_stats = offerers_models.OffererStats.query.filter_by(
-            offererId=offerer_id, table=TOP_3_MOST_CONSULTED_OFFERS_LAST_30_DAYS_TABLE
-        ).one_or_none()
-        number_of_total_views_last_30_days = next(
-            OffererTotalViewsLast30DaysQuery().execute(offerer_id=str(offerer_id))
-        )
-        if not top_offers_stats:
-            top_offers_stats = offerers_models.OffererStats(
-                offererId=offerer_id,
-                table=TOP_3_MOST_CONSULTED_OFFERS_LAST_30_DAYS_TABLE,
-                # Convert OffererStats (which is a TypedDict) to dict to please mypy.
-                jsonData=dict(
-                    offerers_models.OffererStatsData(
-                        top_offers=top_offers,
-                        total_views_last_30_days=number_of_total_views_last_30_days.totalViews,
-                    )
-                ),
-                syncDate=datetime.utcnow(),
-            )
-            db.session.add(top_offers_stats)
-        else:
-            top_offers_stats.jsonData = offerers_models.OffererStatsData(
-                top_offers=top_offers, total_views_last_30_days=number_of_total_views_last_30_days.totalViews
-            )
-            top_offers_stats.syncDate = datetime.utcnow()
+    return offerers_models.OffererStats.query.filter_by(offererId=offerer_id).all()
 
 
 @dataclasses.dataclass
