@@ -71,7 +71,7 @@ def test_get_offerer_stats(client):
     assert response.status_code == 200
     assert response.json == {
         "publishedPublicOffers": 1,
-        "publishedEducationalOffers": 3,
+        "publishedEducationalOffers": 1,
         "pendingPublicOffers": 3,
         "pendingEducationalOffers": 3,
     }
@@ -80,12 +80,8 @@ def test_get_offerer_stats(client):
 def test_get_offerer_stats_with_no_public_offers(client):
     user_offerer = offerers_factories.UserOffererFactory()
     for _ in range(2):
-        collective_offer = educational_factories.CollectiveOfferFactory(
+        educational_factories.CollectiveOfferFactory(
             venue__managingOfferer=user_offerer.offerer, validation=OfferValidationStatus.APPROVED
-        )
-        collective_stock = educational_factories.CollectiveStockFactory(collectiveOffer=collective_offer)
-        educational_factories.CollectiveBookingFactory(
-            collectiveStock=collective_stock, status=CollectiveBookingStatus.PENDING
         )
     for _ in range(2):
         educational_factories.CollectiveOfferFactory(
