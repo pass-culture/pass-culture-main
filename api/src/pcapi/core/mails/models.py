@@ -1,4 +1,5 @@
 import dataclasses
+import datetime
 from enum import Enum
 
 from pcapi import settings
@@ -30,6 +31,7 @@ class TransactionalWithoutTemplateEmailData:
     reply_to: EmailInfo
     sender: TransactionalSender
     attachment: TransactionalAttachment | None
+    scheduled_at: datetime.datetime | None
 
     def __init__(
         self,
@@ -38,12 +40,14 @@ class TransactionalWithoutTemplateEmailData:
         sender: TransactionalSender = TransactionalSender.SUPPORT_PRO,
         attachment: TransactionalAttachment | None = None,
         reply_to: EmailInfo | None = None,
-    ):
+        scheduled_at: datetime.datetime | None = None,
+    ) -> None:
         self.subject = subject
         self.html_content = html_content
         self.sender = sender
         self.attachment = attachment
         self.reply_to = reply_to or self.sender.value
+        self.scheduled_at = scheduled_at
 
 
 @dataclasses.dataclass
@@ -70,8 +74,16 @@ class TransactionalEmailData:
     template: Template
     reply_to: EmailInfo
     params: dict
+    scheduled_at: datetime.datetime | None
 
-    def __init__(self, template: Template, params: dict | None = None, reply_to: EmailInfo | None = None):
+    def __init__(
+        self,
+        template: Template,
+        params: dict | None = None,
+        reply_to: EmailInfo | None = None,
+        scheduled_at: datetime.datetime | None = None,
+    ) -> None:
         self.template = template
         self.params = params or {}
         self.reply_to = reply_to or template.sender.value
+        self.scheduled_at = scheduled_at

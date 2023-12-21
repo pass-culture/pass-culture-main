@@ -12,6 +12,9 @@ class RedisExternalBookingType(str, enum.Enum):
     EVENT = "event"
 
 
+REDIS_SCHEDULED_EMAILS_SUFFIX = "_scheduled_email_message_id"
+
+
 ARCHIVE_DELAY = datetime.timedelta(days=30)
 CONFIRM_BOOKING_AFTER_CREATION_DELAY = datetime.timedelta(hours=48)
 CONFIRM_BOOKING_BEFORE_EVENT_DELAY = datetime.timedelta(hours=48)

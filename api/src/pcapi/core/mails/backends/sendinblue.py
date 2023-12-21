@@ -44,6 +44,7 @@ class SendinblueBackend(BaseBackend):
                 subject=None,
                 html_content=None,
                 attachment=None,
+                scheduled_at=data.scheduled_at,
             )
             if data.template.use_priority_queue:
                 send_transactional_email_primary_task.delay(payload)
@@ -62,6 +63,7 @@ class SendinblueBackend(BaseBackend):
                 template_id=None,
                 params=None,
                 tags=None,
+                scheduled_at=data.scheduled_at,
             )
             send_transactional_email_secondary_task.delay(payload)
 
