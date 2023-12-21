@@ -27,6 +27,7 @@ import pcapi.core.finance.exceptions as finance_exceptions
 import pcapi.core.finance.models as finance_models
 import pcapi.core.finance.repository as finance_repository
 import pcapi.core.mails.transactional as transactional_mails
+from pcapi.core.mails.transactional.users import online_event_reminder
 from pcapi.core.offerers.models import Venue
 from pcapi.core.offers import repository as offers_repository
 import pcapi.core.offers.exceptions as offers_exceptions
@@ -439,6 +440,7 @@ def _cancel_booking(
     )
     amplitude_events.track_cancel_booking_event(booking, reason)
     _send_external_booking_notification_if_necessary(booking, BookingAction.CANCEL)
+    online_event_reminder.cancel_online_event_reminder(booking.id)
 
     update_external_user(booking.user)
     update_external_pro(booking.venue.bookingEmail)
