@@ -10,6 +10,7 @@ const OfferRefundWarning = () => {
           href: 'https://aide.passculture.app/hc/fr/articles/6043184068252',
           linkTitle:
             'Quelles sont les offres numériques éligibles au remboursement ?',
+          'aria-label': 'Nouvelle fenêtre',
         },
       ]}
       type="attention"
