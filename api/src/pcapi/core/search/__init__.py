@@ -821,7 +821,7 @@ def update_product_last_30_days_bookings() -> list[offers_models.Product]:
     updated_eans = []
     current_product_batch = []
 
-    batch_size = 1000
+    batch_size = 100
     for batch in range(0, len(booking_count_by_ean), batch_size):
         ean_batch = list(booking_count_by_ean.keys())[batch : batch + batch_size]
         for product in db.session.query(offers_models.Product).filter(
