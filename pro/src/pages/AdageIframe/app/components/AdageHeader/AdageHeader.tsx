@@ -26,7 +26,7 @@ export const AdageHeader = () => {
   const [institutionBudget, setInstitutionBudget] = useState(0)
   const { pathname } = useLocation()
 
-  const isDiscoveryPage = pathname === '/adage-iframe'
+  const isDiscoveryPage = pathname === '/adage-iframe/decouverte'
 
   function logAdageLinkClick(headerLinkName: AdageHeaderLink) {
     // eslint-disable-next-line @typescript-eslint/no-floating-promises

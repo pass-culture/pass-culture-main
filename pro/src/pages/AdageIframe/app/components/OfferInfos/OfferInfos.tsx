@@ -57,7 +57,7 @@ export const OfferInfos = () => {
                   title: 'Découvrir',
                   link: {
                     isExternal: false,
-                    to: `/adage-iframe?token=${adageAuthToken}`,
+                    to: `/adage-iframe/decouverte?token=${adageAuthToken}`,
                   },
                   icon: strokePassIcon,
                 },

@@ -22,9 +22,19 @@ export const AppLayout = ({
   const { pathname, search } = useLocation()
   const params = new URLSearchParams(search)
 
-  const isDiscoveryPage = pathname === '/adage-iframe'
+  const isDiscoveryPage = pathname === '/adage-iframe/decouverte'
   const isDiscoveryActive = useActiveFeature('WIP_ENABLE_DISCOVERY')
+  const isMarseilleEnabled = useActiveFeature('WIP_ENABLE_MARSEILLE')
+  const isUserInMarseilleProgram = (adageUser.programs ?? []).some(
+    (prog) => prog.name === 'marseille_en_grand'
+  )
   const venueId = params.get('venue')
+
+  const redirectToSearch =
+    !isDiscoveryActive ||
+    venueId ||
+    (isMarseilleEnabled && isUserInMarseilleProgram) ||
+    adageUser.role === AdageFrontRoles.READONLY
 
   return (
     <div>
@@ -37,15 +47,14 @@ export const AppLayout = ({
           <Route
             path=""
             element={
-              adageUser.role === AdageFrontRoles.REDACTOR &&
-              isDiscoveryActive &&
-              !venueId ? (
-                <AdageDiscovery />
-              ) : (
+              redirectToSearch ? (
                 <Navigate to={`recherche${search}`} />
+              ) : (
+                <Navigate to={`decouverte${search}`} />
               )
             }
           />
+          <Route path="decouverte" element={<AdageDiscovery />} />
           <Route
             path="recherche"
             element={<OffersInstantSearch venueFilter={venueFilter} />}
