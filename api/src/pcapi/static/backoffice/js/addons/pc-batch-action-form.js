@@ -73,12 +73,15 @@ class PcBatchActionForm extends PcAddOn {
   }
 
   initialize = () => {
+    this.refreshState()
+  }
+
+  refreshState = () => {
     this.$batchConfirmBtnGroups.forEach(($batchConfirmBtnGroup) => {
       const { toggleId, pcTableMultiSelectId, inputIdsName } = $batchConfirmBtnGroup.dataset
       this.state[toggleId] = {
         inputIdsName,
       }
-
       this.getBatchConfirmButtons($batchConfirmBtnGroup).forEach(($button) => {
         $button.dataset.pcTableMultiSelectId = pcTableMultiSelectId
         $button.dataset.toggleId = toggleId
@@ -87,6 +90,7 @@ class PcBatchActionForm extends PcAddOn {
   }
 
   bindEvents = () => {
+    this.refreshState()
     addEventListener('pcTableMultiSelect:change', this.#onBatchSelectionChange)
     this.$batchConfirmBtnGroups.forEach(($batchConfirmBtnGroup) => {
       EventHandler.on($batchConfirmBtnGroup, 'click', PcBatchActionForm.BATCH_CONFIRM_BTN_SELECTOR, this.#onBatchButtonClick)

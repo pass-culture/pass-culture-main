@@ -1,11 +1,13 @@
 from datetime import datetime
 from functools import partial
+from io import BytesIO
 import typing
 
 from flask import flash
 from flask import redirect
 from flask import render_template
 from flask import request
+from flask import send_file
 from flask import url_for
 from flask_login import current_user
 from markupsafe import Markup
@@ -19,6 +21,7 @@ from pcapi.core.criteria import models as criteria_models
 from pcapi.core.educational import models as educational_models
 from pcapi.core.external.attributes import api as external_attributes_api
 from pcapi.core.finance import models as finance_models
+from pcapi.core.finance import repository as finance_repository
 from pcapi.core.finance import siret_api
 from pcapi.core.history import models as history_models
 from pcapi.core.mails import transactional as transactional_mails
@@ -40,6 +43,7 @@ from pcapi.routes.backoffice.forms import empty as empty_forms
 from pcapi.routes.backoffice.forms import search as search_forms
 from pcapi.routes.backoffice.forms.search import TypeOptions
 from pcapi.routes.serialization import base as serialize_base
+from pcapi.routes.serialization import reimbursement_csv_serialize
 from pcapi.utils import regions as regions_utils
 from pcapi.utils.clean_accents import clean_accents
 from pcapi.utils.string import to_camelcase
@@ -491,6 +495,30 @@ def get_invoices(venue_id: int) -> utils.BackofficeResponse:
         "venue/get/invoices.html",
         reimbursement_point=current_link.reimbursementPoint if current_link else None,
         invoices=invoices,
+        venue_id=venue_id,
+    )
+
+
+@venue_blueprint.route("/<int:venue_id>/reimbursement-details", methods=["POST"])
+def download_reimbursement_details(venue_id: int) -> utils.BackofficeResponse:
+    form = empty_forms.BatchForm()
+    if not form.validate():
+        flash(utils.build_form_error_msg(form), "warning")
+        return redirect(request.referrer or url_for(".list_venues"), code=303)
+
+    invoices = finance_models.Invoice.query.filter(finance_models.Invoice.id.in_(form.object_ids_list)).all()
+
+    reimbursement_details = [
+        reimbursement_csv_serialize.ReimbursementDetails(details)
+        for details in finance_repository.find_all_invoices_finance_details([invoice.id for invoice in invoices])
+    ]
+    export_data = reimbursement_csv_serialize.generate_reimbursement_details_csv(reimbursement_details)
+    export_date = datetime.utcnow().strftime("%Y-%m-%d-%H-%M")
+    return send_file(
+        BytesIO(export_data.encode("utf-8-sig")),
+        as_attachment=True,
+        download_name=f"details_remboursements_{venue_id}_{export_date}.csv",
+        mimetype="text/csv",
     )
 
 
