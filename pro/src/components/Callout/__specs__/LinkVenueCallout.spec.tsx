@@ -168,7 +168,7 @@ describe('LinkVenueCallout', () => {
         BankAccountEvents.CLICKED_ADD_VENUE_TO_BANK_ACCOUNT,
         {
           from: '/accueil',
-          offererId: 0,
+          offererId: 1,
         }
       )
     })
