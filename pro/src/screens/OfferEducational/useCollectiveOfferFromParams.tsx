@@ -1,6 +1,8 @@
-import { useState, useCallback, useEffect, ComponentType } from 'react'
+import { ComponentType, useCallback, useEffect, useState } from 'react'
 import { useLocation, useParams } from 'react-router-dom'
 
+import { api } from 'apiClient/api'
+import { GetOffererResponseModel } from 'apiClient/v1'
 import {
   CollectiveOffer,
   CollectiveOfferTemplate,
@@ -8,6 +10,7 @@ import {
 } from 'core/OfferEducational'
 import getCollectiveOfferAdapter from 'core/OfferEducational/adapters/getCollectiveOfferAdapter'
 import getCollectiveOfferTemplateAdapter from 'core/OfferEducational/adapters/getCollectiveOfferTemplateAdapter'
+import useActiveFeature from 'hooks/useActiveFeature'
 import Spinner from 'ui-kit/Spinner/Spinner'
 
 export type MandatoryCollectiveOfferFromParamsProps = {
@@ -15,24 +18,31 @@ export type MandatoryCollectiveOfferFromParamsProps = {
   setOffer: (offer: CollectiveOffer | CollectiveOfferTemplate) => void
   reloadCollectiveOffer: () => Promise<void>
   isTemplate: boolean
+  offerer: GetOffererResponseModel | undefined
 }
 
 export type OptionalCollectiveOfferFromParamsProps = Omit<
   MandatoryCollectiveOfferFromParamsProps,
-  'offer'
+  'offer' | 'offerer'
 > &
-  Partial<Pick<MandatoryCollectiveOfferFromParamsProps, 'offer'>>
+  Partial<Pick<MandatoryCollectiveOfferFromParamsProps, 'offer' | 'offerer'>>
 
 const useCollectiveOfferFromParams = (
   isOfferMandatory: boolean,
   offerIdFromParams?: string
 ) => {
+  const isNewBankDetailsJourneyEnabled = useActiveFeature(
+    'WIP_ENABLE_NEW_BANK_DETAILS_JOURNEY'
+  )
+
   const location = useLocation()
   const pathNameIncludesTemplate = location.pathname.includes('vitrine')
 
   const [offer, setOffer] = useState<
     CollectiveOffer | CollectiveOfferTemplate
   >()
+
+  const [offerer, setOfferer] = useState<GetOffererResponseModel>()
 
   const { offerId, isTemplateId } = extractOfferIdAndOfferTypeFromRouteParams(
     offerIdFromParams || ''
@@ -47,8 +57,17 @@ const useCollectiveOfferFromParams = (
     const response = await adapter(offerId)
     if (response.isOk) {
       setOffer(response.payload)
+      if (isNewBankDetailsJourneyEnabled) {
+        // eslint-disable-next-line @typescript-eslint/no-floating-promises
+        loadOfferer(response.payload.venue.managingOfferer.id)
+      }
     }
   }, [offerId, isTemplate])
+
+  async function loadOfferer(id: number) {
+    const offererResponseModel = await api.getOfferer(id)
+    setOfferer(offererResponseModel)
+  }
 
   useEffect(() => {
     // eslint-disable-next-line @typescript-eslint/no-floating-promises
@@ -64,6 +83,7 @@ const useCollectiveOfferFromParams = (
         setOffer: () => {},
         reloadCollectiveOffer: () => Promise.resolve(),
         isTemplate: false || pathNameIncludesTemplate,
+        offerer: undefined,
       }
     }
   }
@@ -73,6 +93,7 @@ const useCollectiveOfferFromParams = (
     setOffer,
     reloadCollectiveOffer: loadCollectiveOffer,
     isTemplate,
+    offerer,
   }
 }
 

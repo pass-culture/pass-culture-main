@@ -123,7 +123,7 @@ describe('AddBankAccountCallout', () => {
         BankAccountEvents.CLICKED_ADD_BANK_ACCOUNT,
         {
           from: '/accueil',
-          offererId: 0,
+          offererId: 1,
         }
       )
     })

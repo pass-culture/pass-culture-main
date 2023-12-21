@@ -2,7 +2,6 @@ import React, { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 
 import { api } from 'apiClient/api'
-import RedirectDialog from 'components/Dialog/RedirectDialog'
 import { OFFER_WIZARD_STEP_IDS } from 'components/IndividualOfferNavigation/constants'
 import { OfferAppPreview } from 'components/OfferAppPreview'
 import { SummaryLayout } from 'components/SummaryLayout'
@@ -11,7 +10,6 @@ import {
   Events,
   OFFER_FORM_NAVIGATION_MEDIUM,
   OFFER_FORM_NAVIGATION_OUT,
-  VenueEvents,
 } from 'core/FirebaseEvents/constants'
 import { serializeOfferApi } from 'core/Offers/adapters/getIndividualOfferAdapter/serializers'
 import { publishIndividualOffer } from 'core/Offers/adapters/publishIndividualOffer'
@@ -21,9 +19,8 @@ import { useOfferWizardMode } from 'hooks'
 import useActiveFeature from 'hooks/useActiveFeature'
 import useAnalytics from 'hooks/useAnalytics'
 import useNotification from 'hooks/useNotification'
-import fullWaitIcon from 'icons/full-wait.svg'
-import strokePartyIcon from 'icons/stroke-party.svg'
 import phoneStrokeIcon from 'icons/stroke-phone.svg'
+import { RedirectToBankAccountDialog } from 'screens/Offers/RedirectToBankAccountDialog'
 import Banner from 'ui-kit/Banners/Banner/Banner'
 import { ButtonVariant } from 'ui-kit/Button/types'
 import { SvgIcon } from 'ui-kit/SvgIcon/SvgIcon'
@@ -203,55 +200,12 @@ const SummaryScreen = () => {
         isDisabled={isDisabled}
       />
 
-      {displayRedirectDialog && (
-        <RedirectDialog
-          icon={strokePartyIcon}
-          onCancel={() => {
-            logEvent?.(
-              Events.CLICKED_SEE_LATER_FROM_SUCCESS_OFFER_CREATION_MODAL,
-              {
-                from: OFFER_WIZARD_STEP_IDS.SUMMARY,
-              }
-            )
-            navigate(offerConfirmationStepUrl)
-          }}
-          title="Félicitations, vous avez créé votre offre !"
-          redirectText={
-            isNewBankDetailsJourneyEnabled
-              ? 'Ajouter un compte bancaire'
-              : 'Renseigner des coordonnées bancaires'
-          }
-          redirectLink={{
-            to: isNewBankDetailsJourneyEnabled
-              ? `remboursements/informations-bancaires?structure=${offerOfferer?.id}`
-              : `/structures/${offerOfferer?.id}/lieux/${venueId}?modification#remboursement`,
-            isExternal: false,
-          }}
-          onRedirect={() =>
-            logEvent?.(VenueEvents.CLICKED_VENUE_ADD_RIB_BUTTON, {
-              venue_id: venueId,
-              from: OFFER_WIZARD_STEP_IDS.SUMMARY,
-            })
-          }
-          cancelText="Plus tard"
-          cancelIcon={fullWaitIcon}
-          withRedirectLinkIcon={false}
-        >
-          <p>
-            Vous pouvez dès à présent{' '}
-            {isNewBankDetailsJourneyEnabled
-              ? 'ajouter un compte bancaire'
-              : 'renseigner des coordonnées bancaires'}
-            .
-          </p>
-          <p>
-            Vos remboursements seront rétroactifs une fois{' '}
-            {isNewBankDetailsJourneyEnabled
-              ? 'votre compte bancaire validé'
-              : 'vos coordonnées bancaires validées'}
-            .
-          </p>
-        </RedirectDialog>
+      {displayRedirectDialog && offerOfferer?.id && venueId && (
+        <RedirectToBankAccountDialog
+          cancelRedirectUrl={offerConfirmationStepUrl}
+          offerId={offerOfferer?.id}
+          venueId={venueId}
+        />
       )}
     </>
   )

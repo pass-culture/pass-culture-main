@@ -76,5 +76,14 @@ export const shouldBlockNavigation: BlockerFunction = ({
     return false
   }
 
+  if (
+    from === STEP_RECAP &&
+    nextLocation.pathname.startsWith(
+      '/remboursements/informations-bancaires?structure='
+    )
+  ) {
+    return false
+  }
+
   return true
 }

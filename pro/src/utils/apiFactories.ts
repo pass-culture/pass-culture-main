@@ -3,15 +3,20 @@ import {
   BankAccountApplicationStatus,
   BankAccountResponseModel,
   BookingRecapResponseModel,
+  type CollectiveOfferOfferVenueResponseModel,
+  type GetCollectiveOfferManagingOffererResponseModel,
+  GetCollectiveOfferResponseModel,
+  type GetCollectiveOfferVenueResponseModel,
   GetIndividualOfferResponseModel,
-  GetOfferManagingOffererResponseModel,
-  GetOfferVenueResponseModel,
   GetOffererResponseModel,
   GetOffererVenueResponseModel,
+  GetOfferManagingOffererResponseModel,
+  GetOfferVenueResponseModel,
   ListOffersOfferResponseModel,
   ListOffersStockResponseModel,
   ListOffersVenueResponseModel,
   ManagedVenues,
+  OfferAddressType,
   OfferStatus,
   SubcategoryIdEnum,
   VenueListItemResponseModel,
@@ -206,7 +211,7 @@ export const defaultGetOffererResponseModel: GetOffererResponseModel = {
   isValidated: false,
   managedVenues: [],
   name: 'Ma super structure',
-  id: 0,
+  id: 1,
   postalCode: '00000',
 }
 
@@ -323,3 +328,45 @@ export const defaultManagedVenues: ManagedVenues = {
   siret: '123456789',
   hasPricingPoint: true,
 }
+
+const defaultCollectiveOfferOfferVenueResponseModel: CollectiveOfferOfferVenueResponseModel =
+  {
+    addressType: OfferAddressType.OFFERER_VENUE,
+    otherAddress: 'other',
+  }
+
+const defaultGetCollectiveOfferManagingOffererResponseModel: GetCollectiveOfferManagingOffererResponseModel =
+  {
+    id: 1,
+    name: 'nom',
+  }
+
+const defaultGetCollectiveOfferVenueResponseModel: GetCollectiveOfferVenueResponseModel =
+  {
+    id: 1,
+    managingOfferer: defaultGetCollectiveOfferManagingOffererResponseModel,
+    name: 'nom',
+  }
+
+export const defaultGetCollectiveOfferResponseModel: GetCollectiveOfferResponseModel =
+  {
+    bookingEmails: [],
+    contactEmail: 'contact@contact.contact',
+    dateCreated: '10/18/2000',
+    description: 'description',
+    domains: [],
+    hasBookingLimitDatetimesPassed: false,
+    id: 1,
+    interventionArea: [],
+    isActive: false,
+    isBookable: false,
+    isCancellable: false,
+    isEditable: false,
+    isPublicApi: false,
+    isVisibilityEditable: false,
+    name: 'offre',
+    offerVenue: defaultCollectiveOfferOfferVenueResponseModel,
+    status: OfferStatus.ACTIVE,
+    students: [],
+    venue: defaultGetCollectiveOfferVenueResponseModel,
+  }

@@ -301,7 +301,7 @@ describe('BankInformations page', () => {
       BankAccountEvents.CLICKED_ADD_BANK_ACCOUNT,
       {
         from: '/remboursements/informations-bancaires',
-        offererId: 0,
+        offererId: 1,
       }
     )
   })
