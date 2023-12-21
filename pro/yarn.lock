@@ -8552,10 +8552,10 @@ react-autosize-textarea@^7.1.0:
     line-height "^0.3.1"
     prop-types "^15.5.6"
 
-react-avatar-editor@^13.0.1:
-  version "13.0.1"
-  resolved "https://registry.yarnpkg.com/react-avatar-editor/-/react-avatar-editor-13.0.1.tgz#ad38ba00d9b6f5dfca3fd3bf9d0362241c3ef0fc"
-  integrity sha512-lD3WWENYbyVsKL6YfuEnblwEW+ud/6ep7XwnVAAiuayt1ZEfUN7JNzOQWQNuyzx1OkP7s1Y5aTGDXBDsU4fxSQ==
+react-avatar-editor@^13.0.2:
+  version "13.0.2"
+  resolved "https://registry.yarnpkg.com/react-avatar-editor/-/react-avatar-editor-13.0.2.tgz#7ed5a1fd7a9e7bd4b320a3a65df32d3d0e21eb10"
+  integrity sha512-a4ajbi7lwDh98kgEtSEeKMu0vs0CHTczkq4Xcxr1EiwMFH1GlgHCEtwGU8q/H5W8SeLnH4KPK8LUjEEaZXklxQ==
   dependencies:
     "@babel/plugin-transform-runtime" "^7.12.1"
     "@babel/runtime" "^7.12.5"
