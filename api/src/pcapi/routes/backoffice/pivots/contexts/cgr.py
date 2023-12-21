@@ -45,7 +45,7 @@ class CGRContext(PivotContext):
     def create_pivot(cls, form: forms.EditCGRForm) -> bool:
         cgr_provider = providers_repository.get_provider_by_local_class("CGRStocks")
         if not cgr_provider:
-            flash("Provider CGR n'existe pas.", "error")
+            flash("Provider CGR n'existe pas.", "warning")
             return False
 
         venue_id = form.venue_id.data

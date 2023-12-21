@@ -592,7 +592,7 @@ def update_venue(venue_id: int) -> utils.BackofficeResponse:
 
         try:
             if not sirene.siret_is_active(new_siret):
-                flash("Ce SIRET n'est plus actif, on ne peut pas l'attribuer à ce lieu", "error")
+                flash("Ce SIRET n'est plus actif, on ne peut pas l'attribuer à ce lieu", "warning")
                 return render_venue_details(venue, form), 400
         except sirene.SireneException:
             unavailable_sirene = True
