@@ -83,9 +83,7 @@
   max-width: rem.torem(100px);
 }
 
-.align-icon {
-  @include size.input-center-with-top-margin(size.$button-icon-size);
-}
+
 
 .date-input {
   width: rem.torem(200px);
@@ -98,10 +96,6 @@
 
 .quantity-input {
   width: rem.torem(172px);
-}
-
-.price-category-input {
-  width: rem.torem(328px);
 }
 
 .monthly-option-input {
@@ -142,5 +136,15 @@
     position: absolute;
     top: 0;
     right: rem.torem(20px);
+  }
+}
+
+@media (min-width: size.$tablet) {
+  .align-icon {
+    @include size.input-center-with-top-margin(size.$button-icon-size);
+  }
+  
+  .price-category-input {
+  width: rem.torem(328px);
   }
 }
