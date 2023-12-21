@@ -114,6 +114,8 @@ class Returns200Test:
                     "interventionArea": offer.interventionArea,
                     "imageUrl": None,
                     "imageCredit": None,
+                    "venueId": venue.id,
+                    "offererName": venue.managingOfferer.name,
                 }
             ],
         }
@@ -208,6 +210,8 @@ class Returns200Test:
                     "interventionArea": offer.interventionArea,
                     "imageUrl": None,
                     "imageCredit": None,
+                    "venueId": venue.id,
+                    "offererName": venue.managingOfferer.name,
                 }
             ],
         }

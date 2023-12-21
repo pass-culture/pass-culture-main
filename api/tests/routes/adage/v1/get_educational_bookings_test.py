@@ -89,6 +89,8 @@ class Returns200Test:
                     "interventionArea": offer1.interventionArea,
                     "imageUrl": None,
                     "imageCredit": None,
+                    "venueId": venue1.id,
+                    "offererName": venue1.managingOfferer.name,
                 },
                 {
                     "address": offer2.offerVenue["otherAddress"],
@@ -137,6 +139,8 @@ class Returns200Test:
                     "interventionArea": offer2.interventionArea,
                     "imageUrl": None,
                     "imageCredit": None,
+                    "venueId": venue2.id,
+                    "offererName": venue2.managingOfferer.name,
                 },
             ]
         }
@@ -216,6 +220,8 @@ class Returns200Test:
                     "interventionArea": offer1.interventionArea,
                     "imageUrl": None,
                     "imageCredit": None,
+                    "venueId": venue1.id,
+                    "offererName": venue1.managingOfferer.name,
                 }
             ]
         }
@@ -295,6 +301,8 @@ class Returns200Test:
                     "interventionArea": offer1.interventionArea,
                     "imageUrl": None,
                     "imageCredit": None,
+                    "venueId": venue1.id,
+                    "offererName": venue1.managingOfferer.name,
                 }
             ]
         }
@@ -374,6 +382,8 @@ class Returns200Test:
                     "interventionArea": offer1.interventionArea,
                     "imageUrl": None,
                     "imageCredit": None,
+                    "venueId": venue1.id,
+                    "offererName": venue1.managingOfferer.name,
                 }
             ]
         }
@@ -453,6 +463,8 @@ class Returns200Test:
                     "interventionArea": offer1.interventionArea,
                     "imageUrl": None,
                     "imageCredit": None,
+                    "venueId": venue1.id,
+                    "offererName": venue1.managingOfferer.name,
                 }
             ]
         }
