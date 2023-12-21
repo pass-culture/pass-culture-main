@@ -1,32 +1,33 @@
-import {
-  SAVE_PAGE_NUMBER,
-  SAVE_SEARCH_FILTERS,
-  SavePageNumberAction,
-  SaveSearchFiltersAction,
-} from './actions'
+import { createSlice, PayloadAction } from '@reduxjs/toolkit'
 
-export const initialState = {
-  list: [],
+import { SearchFiltersParams } from 'core/Offers/types'
+
+interface OffersState {
+  searchFilters: Partial<SearchFiltersParams>
+  pageNumber: number
+}
+
+export const initialState: OffersState = {
   searchFilters: {},
   pageNumber: 1,
-  categories: {},
 }
 
-export const offersReducer = (
-  state = initialState,
-  action: SaveSearchFiltersAction | SavePageNumberAction
-) => {
-  switch (action.type) {
-    case SAVE_SEARCH_FILTERS:
-      return {
-        ...state,
-        searchFilters: { ...state.searchFilters, ...action.filters },
-      }
+const offersSlice = createSlice({
+  name: 'offers',
+  initialState,
+  reducers: {
+    saveSearchFilters: (
+      state: OffersState,
+      action: PayloadAction<Partial<SearchFiltersParams>>
+    ) => {
+      state.searchFilters = { ...state.searchFilters, ...action.payload }
+    },
+    savePageNumber: (state: OffersState, action: PayloadAction<number>) => {
+      state.pageNumber = action.payload
+    },
+  },
+})
 
-    case SAVE_PAGE_NUMBER:
-      return { ...state, pageNumber: action.pageNumber }
+export const offersReducer = offersSlice.reducer
 
-    default:
-      return state
-  }
-}
+export const { saveSearchFilters, savePageNumber } = offersSlice.actions

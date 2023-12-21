@@ -67,7 +67,7 @@ const Offers = ({
   isAtLeastOneOfferChecked,
 }: OffersProps) => {
   const isAdminForbidden = useCallback(
-    (searchFilters: SearchFiltersParams) => {
+    (searchFilters: Partial<SearchFiltersParams>) => {
       return (
         currentUser.isAdmin &&
         !hasSearchFilters(searchFilters, ['venueId', 'offererId'])
