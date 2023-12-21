@@ -75,7 +75,10 @@ def get_redactor_all_favorites_count(redactor_id: int) -> int:
         )
         # ... to fetch its venue...
         .joinedload(educational_models.CollectiveOfferTemplate.venue)
-        .load_only(offerers_models.Venue.managingOffererId)
+        .load_only(
+            offerers_models.Venue.managingOffererId,
+            offerers_models.Venue.isVirtual,
+        )
         # ... to fetch its managing offerer...
         .joinedload(offerers_models.Venue.managingOfferer)
         .load_only(offerers_models.Offerer.isActive, offerers_models.Offerer.validationStatus)
