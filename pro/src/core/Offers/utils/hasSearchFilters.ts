@@ -2,7 +2,7 @@ import { DEFAULT_SEARCH_FILTERS } from '../constants'
 import { SearchFiltersParams } from '../types'
 
 export const hasSearchFilters = (
-  searchFilters: SearchFiltersParams,
+  searchFilters: Partial<SearchFiltersParams>,
   filterNames: (keyof SearchFiltersParams)[] = Object.keys(
     searchFilters
   ) as (keyof SearchFiltersParams)[]
