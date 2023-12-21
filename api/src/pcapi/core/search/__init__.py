@@ -791,8 +791,10 @@ def unindex_all_venues() -> None:
 
 
 def get_last_30_days_bookings_for_eans() -> dict[str, int]:
+    logger.info("Getting eans with bookings in the last 30 days")
     rows: Iterable[Last30DaysBookingsModel] = big_query_queries.Last30DaysBookings().execute()
     ean_booking_count = {row.ean: row.booking_count for row in rows if row.ean}
+    logger.info("Got %s eans with bookings in the last 30 days", len(ean_booking_count))
     return ean_booking_count
 
 
