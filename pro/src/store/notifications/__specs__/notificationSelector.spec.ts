@@ -1,7 +1,7 @@
 import { RootState } from 'store/reducers'
-import { initialState } from 'store/reducers/notificationReducer'
 
-import { notificationSelector } from '../notificationSelector'
+import { initialState } from '../reducer'
+import { notificationSelector } from '../selectors'
 
 describe('notificationSelector', () => {
   it('should return empty state when no notification is stored', () => {

@@ -3,7 +3,7 @@ import { userEvent } from '@testing-library/user-event'
 import React from 'react'
 
 import { api } from 'apiClient/api'
-import * as notificationReducer from 'store/reducers/notificationReducer'
+import * as notificationReducer from 'store/notifications/reducer'
 import { renderWithProviders } from 'utils/renderWithProviders'
 
 import ApiKey from '../ApiKey'
