@@ -170,15 +170,18 @@ def prefill_criteria_choices(autocomplete_field: fields.PCTomSelectField) -> Non
 def autocomplete_criteria() -> AutocompleteResponse:
     query_string = request.args.get("q", "").strip()
 
-    if not query_string or len(query_string) < 2:
+    if not query_string.isnumeric() and len(query_string) < 2:
         return AutocompleteResponse(items=[])
 
-    criteria = (
-        _get_criteria_base_query()
-        .filter(sa.func.unaccent(criteria_models.Criterion.name).ilike(f"%{clean_accents(query_string)}%"))
-        .limit(NUM_RESULTS)
-        .all()
-    )
+    if query_string.isnumeric():
+        criteria = _get_criteria_base_query().filter(criteria_models.Criterion.id == int(query_string)).all()
+    else:
+        criteria = (
+            _get_criteria_base_query()
+            .filter(sa.func.unaccent(criteria_models.Criterion.name).ilike(f"%{clean_accents(query_string)}%"))
+            .limit(NUM_RESULTS)
+            .all()
+        )
 
     return AutocompleteResponse(
         items=[AutocompleteItem(id=criterion.id, text=_get_criterion_choice_label(criterion)) for criterion in criteria]
