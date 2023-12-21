@@ -6,7 +6,7 @@ import { NOTIFICATION_SHOW_DURATION } from 'core/Notification/constants'
 import {
   closeNotification,
   showNotification,
-} from 'store/reducers/notificationReducer'
+} from 'store/notifications/reducer'
 
 export enum NotificationTypeEnum {
   SUCCESS = 'success',

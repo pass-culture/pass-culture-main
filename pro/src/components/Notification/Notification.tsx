@@ -6,7 +6,7 @@ import useNotification from 'hooks/useNotification'
 import {
   isStickyBarOpenSelector,
   notificationSelector,
-} from 'store/selectors/notificationSelector'
+} from 'store/notifications/selectors'
 import NotificationToaster from 'ui-kit/NotificationToaster/NotificationToaster'
 
 const Notification = (): JSX.Element | null => {

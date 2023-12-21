@@ -3,7 +3,7 @@ import React from 'react'
 
 import Notification from 'components/Notification/Notification'
 import { NotificationTypeEnum } from 'hooks/useNotification'
-import { Notification as NotificationType } from 'store/reducers/notificationReducer'
+import { Notification as NotificationType } from 'store/notifications/reducer'
 import { renderWithProviders } from 'utils/renderWithProviders'
 
 describe('Notification', () => {
