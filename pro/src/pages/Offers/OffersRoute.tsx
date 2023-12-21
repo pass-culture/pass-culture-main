@@ -16,7 +16,7 @@ import useCurrentUser from 'hooks/useCurrentUser'
 import useNotification from 'hooks/useNotification'
 import { formatAndOrderVenues } from 'repository/venuesService'
 import OffersScreen from 'screens/Offers'
-import { savePageNumber, saveSearchFilters } from 'store/offers/actions'
+import { savePageNumber, saveSearchFilters } from 'store/offers/reducer'
 import Spinner from 'ui-kit/Spinner/Spinner'
 import { sortByLabel } from 'utils/strings'
 
