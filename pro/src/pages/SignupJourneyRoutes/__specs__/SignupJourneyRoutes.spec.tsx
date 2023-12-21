@@ -4,7 +4,7 @@ import { Route, Routes } from 'react-router-dom'
 
 import { api } from 'apiClient/api'
 import { routesSignupJourney } from 'app/AppRouter/subroutesSignupJourneyMap'
-import { RootState } from 'store/reducers'
+import { RootState } from 'store/rootReducer'
 import { renderWithProviders } from 'utils/renderWithProviders'
 
 import { SignupJourneyRoutes } from '../SignupJourneyRoutes'

@@ -8,7 +8,7 @@ import {
   IndividualOfferContext,
 } from 'context/IndividualOfferContext'
 import { IndividualOffer } from 'core/Offers/types'
-import { RootState } from 'store/reducers'
+import { RootState } from 'store/rootReducer'
 import { offerVenueFactory } from 'utils/apiFactories'
 import {
   individualGetOfferStockResponseModelFactory,
