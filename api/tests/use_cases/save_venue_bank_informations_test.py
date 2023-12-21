@@ -525,7 +525,7 @@ class SaveVenueBankInformationsTest:
                 annotation_id="ANNOTATION_ID",
                 message="Dossier successfully imported",
             )
-            mock_archive_dossier.asserrt_called_once_with("DOSSIER_ID")
+            mock_archive_dossier.assert_called_once_with("DOSSIER_ID")
 
         def test_archive_dossier_on_refused_bank_information(
             self, mock_archive_dossier, mock_update_text_annotation, app
@@ -538,7 +538,7 @@ class SaveVenueBankInformationsTest:
 
             bank_information_count = finance_models.BankInformation.query.count()
             assert bank_information_count == 1
-            mock_archive_dossier.asserrt_called_once_with("DOSSIER_ID")
+            mock_archive_dossier.assert_called_once_with("DOSSIER_ID")
 
         def test_update_text_application_details_on_draft_bank_information(
             self, mock_archive_dossier, mock_update_text_annotation, app
