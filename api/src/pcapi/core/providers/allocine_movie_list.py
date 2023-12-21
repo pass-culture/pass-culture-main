@@ -33,7 +33,8 @@ def _upsert_product(
     id_at_providers = _build_movie_id_at_providers(provider, allocine_id)
     if not product:
         product = Product(
-            description=movie.synopsis,
+            description=_build_description(movie),
+            durationMinutes=movie.runtime,
             extraData=movie_data,
             idAtProviders=id_at_providers,
             lastProviderId=provider.id,
@@ -44,7 +45,6 @@ def _upsert_product(
         if product.extraData is None:
             product.extraData = OfferExtraData()
         product.extraData.update(movie_data)
-
     db.session.add(product)
 
 
@@ -52,7 +52,7 @@ def _build_movie_data(movie: allocine_serializers.AllocineMovie) -> OfferExtraDa
     return OfferExtraData(
         allocineId=movie.internalId,
         backlink=str(movie.backlink.url),
-        cast=[f"{item.actor.firstName} {item.actor.lastName}" for item in movie.cast.items if item.actor],
+        cast=[_build_full_name(item.actor) for item in movie.cast.items if item.actor],
         companies=[company.model_dump() for company in movie.companies],
         countries=[country.name for country in movie.countries],
         credits=[credit.model_dump() for credit in movie.credits],
@@ -63,9 +63,11 @@ def _build_movie_data(movie: allocine_serializers.AllocineMovie) -> OfferExtraDa
         productionYear=movie.data.productionYear,
         releaseDate=_get_most_recent_release_date(movie.releases),
         runtime=movie.runtime,
+        stageDirector=_build_full_name(movie.credits[0].person) if movie.credits else None,
         synopsis=movie.synopsis,
         title=movie.title,
         type=movie.type,
+        visa=movie.releases[0].data.visa_number if movie.releases else None,
     )
 
 
@@ -78,3 +80,11 @@ def _get_most_recent_release_date(releases: list[allocine_serializers.AllocineMo
         [release.releaseDate.date.isoformat() for release in releases if release.releaseDate], reverse=True
     )
     return sorted_releases[0] if sorted_releases else None
+
+
+def _build_description(movie: allocine_serializers.AllocineMovie) -> str:
+    return f"{movie.synopsis}\n{movie.backlink.label}: {movie.backlink.url}"
+
+
+def _build_full_name(person: allocine_serializers.AllocineMoviePerson) -> str:
+    return f"{person.firstName or ''} {person.lastName or ''}".strip()

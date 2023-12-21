@@ -1,6 +1,8 @@
 from datetime import datetime
 import decimal
 
+import sqlalchemy as sa
+
 from pcapi.connectors.serialization import allocine_serializers
 from pcapi.core.categories import subcategories_v2 as subcategories
 from pcapi.core.offerers.models import Venue
@@ -58,6 +60,16 @@ class AllocineStocks(LocalProvider):
     def __next__(self) -> list[ProvidableInfo]:
         movie_showtimes = next(self.movies_showtimes)
         self.movie = movie_showtimes.movie
+        self.product = get_movie_product(self.movie)
+        if not self.product:
+            # We don't want to create offers and stocks unless product already exists
+            # Otherwise it will create offers without allocine data
+            self.log_provider_event(
+                providers_models.LocalProviderEventType.SyncError,
+                f"Product not found for movie {self.movie.internalId}",
+            )
+            return []
+
         self.showtimes = _filter_only_digital_and_non_experience_showtimes(movie_showtimes.showtimes)
 
         providable_information_list = []
@@ -90,32 +102,22 @@ class AllocineStocks(LocalProvider):
         if isinstance(pc_object, offers_models.Stock):
             self.fill_stock_attributes(pc_object)
 
-    def update_offer_from_movie(self, offer: offers_models.Offer) -> None:
-        offer.description = _build_description(self.movie)
-        offer.durationMinutes = self.movie.runtime
-        offer.name = self.movie.title
-
+    def fill_offer_data_from_product(self, offer: offers_models.Offer) -> None:
         if not offer.extraData:
-            offer.extraData = {}
+            offer.extraData = offers_models.OfferExtraData()
 
-        movie_data = format_movie_data_for_offer(self.movie)
+        assert self.product
+
+        if self.product.extraData:
+            offer.extraData.update(self.product.extraData)
         offer.extraData["theater"] = {
             "allocine_movie_id": self.movie.internalId,
             "allocine_room_id": self.room_internal_id,
         }
-        for field in (
-            "visa",
-            "stageDirector",
-            "genres",
-            "type",
-            "companies",
-            "releaseDate",
-            "countries",
-            "cast",
-        ):
-            if field in movie_data:
-                # FIXME (2023-03-16): Currently not supported by mypy https://github.com/python/mypy/issues/7178
-                offer.extraData[field] = movie_data[field]  # type: ignore [literal-required, index]
+        offer.description = self.product.description
+        offer.durationMinutes = self.product.durationMinutes
+        offer.name = self.product.name
+        offer.product = self.product
 
     def fill_offer_attributes(self, allocine_offer: offers_models.Offer) -> None:
         allocine_offer.venueId = self.venue.id
@@ -125,7 +127,7 @@ class AllocineStocks(LocalProvider):
         if allocine_offer.id is None:  # Newly created offer
             allocine_offer.isDuo = self.isDuo
 
-        self.update_offer_from_movie(allocine_offer)  # type: ignore [arg-type]
+        self.fill_offer_data_from_product(allocine_offer)
 
         last_update_for_current_provider = get_last_update_for_provider(self.provider.id, allocine_offer)
         if not last_update_for_current_provider or last_update_for_current_provider.date() != datetime.today().date():
@@ -217,24 +219,11 @@ class AllocineStocks(LocalProvider):
         return True
 
 
-def format_movie_data_for_offer(movie: allocine_serializers.AllocineMovie) -> dict:
-    formatted_movie_data = {}
-    formatted_movie_data["id"] = movie.id
-    formatted_movie_data["title"] = movie.title
-    formatted_movie_data["internal_id"] = movie.internalId
-    formatted_movie_data["genres"] = movie.genres
-    formatted_movie_data["type"] = movie.type
-    formatted_movie_data["companies"] = movie.companies
-    formatted_movie_data["description"] = _build_description(movie)
-    formatted_movie_data["duration"] = movie.runtime
-    formatted_movie_data["poster_url"] = str(movie.poster.url)
-    formatted_movie_data["stageDirector"] = _build_stage_director_full_name(movie)
-    formatted_movie_data["visa"] = _get_operating_visa(movie)
-    formatted_movie_data["releaseDate"] = _get_release_date(movie)
-    formatted_movie_data["countries"] = _build_countries_list(movie)
-    formatted_movie_data["cast"] = _build_cast_list(movie)
-
-    return formatted_movie_data
+def get_movie_product(movie: allocine_serializers.AllocineMovie) -> offers_models.Product | None:
+    product = offers_models.Product.query.filter(
+        offers_models.Product.extraData["allocineId"].cast(sa.Integer) == movie.internalId
+    ).one_or_none()
+    return product
 
 
 def _filter_only_digital_and_non_experience_showtimes(
@@ -262,18 +251,6 @@ def _get_showtimes_uuid_by_idAtProvider(id_at_provider: str) -> str:
     return id_at_provider.split("#")[1]
 
 
-def _build_description(movie: allocine_serializers.AllocineMovie) -> str:
-    return f"{movie.synopsis}\n{movie.backlink.label}: {movie.backlink.url}"
-
-
-def _get_operating_visa(movie: allocine_serializers.AllocineMovie) -> str | None:
-    return movie.releases[0].data.visa_number if movie.releases else None
-
-
-def _build_stage_director_full_name(movie: allocine_serializers.AllocineMovie) -> str | None:
-    return f"{movie.credits[0].person.firstName} {movie.credits[0].person.lastName}" if movie.credits else None
-
-
 def _build_movie_uuid(movie: allocine_serializers.AllocineMovie, venue: Venue) -> str:
     return f"{movie.id}%{venue.id if not venue.siret else venue.siret}"
 
@@ -286,20 +263,3 @@ def _build_stock_uuid(
     movie: allocine_serializers.AllocineMovie, venue: Venue, showtime: allocine_serializers.AllocineShowtime
 ) -> str:
     return f"{_build_movie_uuid(movie, venue)}#{_build_showtime_uuid(showtime)}"
-
-
-def _build_countries_list(movie: allocine_serializers.AllocineMovie) -> list[str]:
-    return [country.name for country in movie.countries]
-
-
-def _build_cast_list(movie: allocine_serializers.AllocineMovie) -> list[str]:
-    cast_list = []
-    for cast_item in movie.cast.items:
-        if cast_item.actor and (cast_item.actor.firstName or cast_item.actor.lastName):
-            full_name = f"{cast_item.actor.firstName} {cast_item.actor.lastName}".strip()
-            cast_list.append(full_name)
-    return cast_list
-
-
-def _get_release_date(movie: allocine_serializers.AllocineMovie) -> str | None:
-    return movie.releases[0].releaseDate.date.isoformat() if movie.releases else None
