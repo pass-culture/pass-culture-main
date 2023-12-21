@@ -84,6 +84,24 @@ def test_get_siren_with_non_public_data():
 
 
 @override_settings(SIRENE_BACKEND="pcapi.connectors.sirene.InseeBackend")
+def test_get_siren_with_non_public_data_do_not_raise():
+    siren = "123456789"
+    with requests_mock.Mocker() as mock:
+        mock.get(
+            f"https://api.insee.fr/entreprises/sirene/V3/siren/{siren}",
+            json=sirene_test_data.RESPONSE_SIREN_COMPANY_WITH_NON_PUBLIC_DATA,
+        )
+        mock.get(
+            f"https://api.insee.fr/entreprises/sirene/V3/siret/{siren}00001",
+            json=sirene_test_data.RESPONSE_SIRET_COMPANY_WITH_NON_PUBLIC_DATA,
+        )
+        siren_info = sirene.get_siren(siren, raise_if_non_public=False)
+        assert siren_info.siren == siren
+        assert siren_info.name == "[ND]"
+        assert siren_info.active is True
+
+
+@override_settings(SIRENE_BACKEND="pcapi.connectors.sirene.InseeBackend")
 def test_get_siret():
     siret = "12345678900017"
     with requests_mock.Mocker() as mock:

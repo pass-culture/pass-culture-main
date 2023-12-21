@@ -26,4 +26,4 @@ class CheckActiveOfferersTest:
             run_command(app, "check_active_offerers")
 
         # Only check that the task is called; its behavior is tested in test_api.py
-        mock_get_siren.assert_called_once_with(offerer.siren)
+        mock_get_siren.assert_called_once_with(offerer.siren, with_address=False, raise_if_non_public=False)
