@@ -2,11 +2,16 @@ import datetime
 
 import pytest
 
+from pcapi import settings
 from pcapi.core.bookings import factories as bookings_factories
 from pcapi.core.bookings import models as bookings_models
 from pcapi.core.categories import subcategories_v2 as subcategories
 from pcapi.core.offerers import factories as offerers_factories
 from pcapi.core.offers import factories as offers_factories
+from pcapi.core.offers import models as offers_models
+from pcapi.utils import human_ids
+
+from tests.routes import image_data
 
 from . import utils
 
@@ -25,14 +30,13 @@ class PatchProductTest:
         response = client.with_explicit_token(offerers_factories.DEFAULT_CLEAR_API_KEY).patch(
             "/public/offers/v1/products",
             json={
-                "product_offers": [
-                    {"offer_id": product_offer.id, "isActive": False},
-                ]
+                "offerId": product_offer.id,
+                "isActive": False,
             },
         )
 
         assert response.status_code == 200
-        assert response.json["productOffers"][0]["status"] == "INACTIVE"
+        assert response.json["status"] == "INACTIVE"
         assert product_offer.isActive is False
 
     def test_sets_field_to_none_and_leaves_other_unchanged(self, client):
@@ -47,17 +51,31 @@ class PatchProductTest:
 
         response = client.with_explicit_token(offerers_factories.DEFAULT_CLEAR_API_KEY).patch(
             "/public/offers/v1/products",
-            json={
-                "product_offers": [
-                    {"offer_id": product_offer.id, "itemCollectionDetails": None},
-                ]
-            },
+            json={"offerId": product_offer.id, "itemCollectionDetails": None},
         )
 
         assert response.status_code == 200
-        assert response.json["productOffers"][0]["itemCollectionDetails"] is None
+        assert response.json["itemCollectionDetails"] is None
         assert product_offer.withdrawalDetails is None
         assert product_offer.bookingEmail == "notify@example.com"
+
+    def test_update_product_image(self, client, clear_tests_assets_bucket):
+        venue, api_key = utils.create_offerer_provider_linked_to_venue()
+        product_offer = offers_factories.ThingOfferFactory(
+            venue=venue, lastProvider=api_key.provider, subcategoryId=subcategories.ABO_BIBLIOTHEQUE.id
+        )
+
+        response = client.with_explicit_token(offerers_factories.DEFAULT_CLEAR_API_KEY).patch(
+            "/public/offers/v1/products",
+            json={"offerId": product_offer.id, "image": {"file": image_data.GOOD_IMAGE}},
+        )
+
+        assert response.status_code == 200
+        assert offers_models.Mediation.query.one()
+        assert (
+            product_offer.image.url
+            == f"{settings.OBJECT_STORAGE_URL}/thumbs/mediations/{human_ids.humanize(product_offer.activeMediation.id)}"
+        )
 
     def test_updates_booking_email(self, client):
         venue, api_key = utils.create_offerer_provider_linked_to_venue()
@@ -70,11 +88,7 @@ class PatchProductTest:
 
         response = client.with_explicit_token(offerers_factories.DEFAULT_CLEAR_API_KEY).patch(
             "/public/offers/v1/products",
-            json={
-                "product_offers": [
-                    {"offer_id": product_offer.id, "bookingEmail": "spam@example.com"},
-                ]
-            },
+            json={"offerId": product_offer.id, "bookingEmail": "spam@example.com"},
         )
 
         assert response.status_code == 200
@@ -94,15 +108,11 @@ class PatchProductTest:
 
         response = client.with_explicit_token(offerers_factories.DEFAULT_CLEAR_API_KEY).patch(
             "/public/offers/v1/products",
-            json={
-                "product_offers": [
-                    {"offer_id": product_offer.id, "accessibility": {"audioDisabilityCompliant": False}},
-                ]
-            },
+            json={"offerId": product_offer.id, "accessibility": {"audioDisabilityCompliant": False}},
         )
 
         assert response.status_code == 200
-        assert response.json["productOffers"][0]["accessibility"] == {
+        assert response.json["accessibility"] == {
             "audioDisabilityCompliant": False,
             "mentalDisabilityCompliant": True,
             "motorDisabilityCompliant": True,
@@ -123,15 +133,11 @@ class PatchProductTest:
 
         response = client.with_explicit_token(offerers_factories.DEFAULT_CLEAR_API_KEY).patch(
             "/public/offers/v1/products",
-            json={
-                "product_offers": [
-                    {"offer_id": product_offer.id, "stock": {"price": 1000, "quantity": 1}},
-                ]
-            },
+            json={"offerId": product_offer.id, "stock": {"price": 1000, "quantity": 1}},
         )
 
         assert response.status_code == 200
-        assert response.json["productOffers"][0]["stock"] == {
+        assert response.json["stock"] == {
             "bookedQuantity": 0,
             "bookingLimitDatetime": None,
             "price": 1000,
@@ -151,14 +157,10 @@ class PatchProductTest:
 
         response = client.with_explicit_token(offerers_factories.DEFAULT_CLEAR_API_KEY).patch(
             "/public/offers/v1/products",
-            json={
-                "product_offers": [
-                    {"offer_id": product_offer.id, "stock": {"quantity": "unlimited"}},
-                ]
-            },
+            json={"offerId": product_offer.id, "stock": {"quantity": "unlimited"}},
         )
         assert response.status_code == 200
-        assert response.json["productOffers"][0]["stock"] == {
+        assert response.json["stock"] == {
             "bookedQuantity": 0,
             "bookingLimitDatetime": None,
             "price": 1000,
@@ -168,58 +170,17 @@ class PatchProductTest:
         assert product_offer.activeStocks[0] == stock
         assert product_offer.activeStocks[0].quantity is None
 
-    def test_update_multiple_offers(self, client):
-        venue, api_key = utils.create_offerer_provider_linked_to_venue()
-        product_offer = offers_factories.ThingOfferFactory(
-            venue=venue,
-            lastProvider=api_key.provider,
-            subcategoryId=subcategories.SUPPORT_PHYSIQUE_FILM.id,
-        )
-        stock = offers_factories.StockFactory(offer=product_offer, quantity=30, price=10)
-
-        product_offer_2 = offers_factories.ThingOfferFactory(
-            venue=venue,
-            subcategoryId="SUPPORT_PHYSIQUE_FILM",
-            lastProvider=api_key.provider,
-        )
-
-        product_offer_3 = offers_factories.ThingOfferFactory(
-            venue=venue,
-            lastProvider=api_key.provider,
-            subcategoryId=subcategories.SUPPORT_PHYSIQUE_FILM.id,
-        )
-
-        response = client.with_explicit_token(offerers_factories.DEFAULT_CLEAR_API_KEY).patch(
-            "/public/offers/v1/products",
-            json={
-                "product_offers": [
-                    {"offer_id": product_offer.id, "stock": {"quantity": "unlimited", "price": 15}},
-                    {
-                        "offer_id": product_offer_2.id,
-                        "accessibility": {"audioDisabilityCompliant": False},
-                    },
-                    {"offer_id": product_offer_3.id, "stock": {"price": 1000, "quantity": 1}},
-                ]
-            },
-        )
-        assert response.status_code == 200
-        assert len(response.json["productOffers"]) == 3
-        assert stock != None
-
     def test_error_if_no_offer_is_found(self, client):
         utils.create_offerer_provider_linked_to_venue()
         response = client.with_explicit_token(offerers_factories.DEFAULT_CLEAR_API_KEY).patch(
             "/public/offers/v1/products",
             json={
-                "product_offers": [
-                    {"offer_id": "33", "stock": {"bookingLimitDatetime": None}},
-                    {"offer_id": "35", "stock": {"bookingLimitDatetime": None}},
-                    {"offer_id": "32", "stock": {"bookingLimitDatetime": None}},
-                ]
+                "offerId": "33",
+                "stock": {"bookingLimitDatetime": None},
             },
         )
         assert response.status_code == 404
-        assert response.json == {"productOffers": ["The product offers could not be found"]}
+        assert response.json == {"offerId": ["The product offer could not be found"]}
 
     def test_inactive_venue_provider_returns_404(self, client):
         venue, api_key = utils.create_offerer_provider_linked_to_venue(is_venue_provider_active=False)
@@ -229,35 +190,10 @@ class PatchProductTest:
         )
 
         response = client.with_explicit_token(offerers_factories.DEFAULT_CLEAR_API_KEY).patch(
-            "/public/offers/v1/products",
-            json={
-                "product_offers": [
-                    {"offer_id": product_offer.id, "isActive": False},
-                ]
-            },
+            "/public/offers/v1/products", json={"offerId": product_offer.id, "isActive": False}
         )
 
         assert response.status_code == 404
-
-    def test_error_if_at_least_one_offer_is_found(self, client):
-        venue, api_key = utils.create_offerer_provider_linked_to_venue()
-        product_offer = offers_factories.ThingOfferFactory(
-            venue=venue,
-            lastProvider=api_key.provider,
-            subcategoryId=subcategories.SUPPORT_PHYSIQUE_FILM.id,
-        )
-        response = client.with_explicit_token(offerers_factories.DEFAULT_CLEAR_API_KEY).patch(
-            "/public/offers/v1/products",
-            json={
-                "product_offers": [
-                    {"offer_id": product_offer.id, "stock": {"bookingLimitDatetime": None}},
-                    {"offer_id": "35", "stock": {"bookingLimitDatetime": None}},
-                    {"offer_id": "32", "stock": {"bookingLimitDatetime": None}},
-                ]
-            },
-        )
-        assert response.status_code == 404
-        assert response.json == {"productOffers": ["The product offers could not be found"]}
 
     def test_remove_stock_booking_limit_datetime(self, client):
         venue, api_key = utils.create_offerer_provider_linked_to_venue()
@@ -271,13 +207,12 @@ class PatchProductTest:
         response = client.with_explicit_token(offerers_factories.DEFAULT_CLEAR_API_KEY).patch(
             "/public/offers/v1/products",
             json={
-                "product_offers": [
-                    {"offer_id": product_offer.id, "stock": {"bookingLimitDatetime": None}},
-                ]
+                "offerId": product_offer.id,
+                "stock": {"bookingLimitDatetime": None},
             },
         )
         assert response.status_code == 200
-        assert response.json["productOffers"][0]["stock"]["bookingLimitDatetime"] is None
+        assert response.json["stock"]["bookingLimitDatetime"] is None
 
         assert len(product_offer.activeStocks) == 1
         assert product_offer.activeStocks[0] == stock
@@ -294,14 +229,10 @@ class PatchProductTest:
 
         response = client.with_explicit_token(offerers_factories.DEFAULT_CLEAR_API_KEY).patch(
             "/public/offers/v1/products",
-            json={
-                "product_offers": [
-                    {"offer_id": product_offer.id, "stock": {"bookingLimitDatetime": "2021-01-15T00:00:00Z"}},
-                ]
-            },
+            json={"offerId": product_offer.id, "stock": {"bookingLimitDatetime": "2021-01-15T00:00:00Z"}},
         )
         assert response.status_code == 200
-        assert response.json["productOffers"][0]["stock"]["bookingLimitDatetime"] == "2021-01-15T00:00:00"
+        assert response.json["stock"]["bookingLimitDatetime"] == "2021-01-15T00:00:00Z"
 
         assert len(product_offer.activeStocks) == 1
         assert product_offer.activeStocks[0] == stock
@@ -323,13 +254,12 @@ class PatchProductTest:
         response = client.with_explicit_token(offerers_factories.DEFAULT_CLEAR_API_KEY).patch(
             "/public/offers/v1/products",
             json={
-                "product_offers": [
-                    {"offer_id": product_offer.id, "stock": None},
-                ]
+                "offerId": product_offer.id,
+                "stock": None,
             },
         )
         assert response.status_code == 200
-        assert response.json["productOffers"][0]["stock"] is None
+        assert response.json["stock"] is None
 
         assert len(product_offer.activeStocks) == 0
         assert confirmed_booking.status == bookings_models.BookingStatus.CANCELLED
@@ -346,14 +276,10 @@ class PatchProductTest:
         response = client.with_explicit_token(offerers_factories.DEFAULT_CLEAR_API_KEY).patch(
             "/public/offers/v1/products",
             json={
-                "product_offers": [
-                    {
-                        "offer_id": product_offer.id,
-                        "categoryRelatedFields": {
-                            "category": "LIVRE_AUDIO_PHYSIQUE",
-                        },
-                    }
-                ]
+                "offerId": product_offer.id,
+                "categoryRelatedFields": {
+                    "category": "LIVRE_AUDIO_PHYSIQUE",
+                },
             },
         )
         assert response.status_code == 400
@@ -375,9 +301,8 @@ class PatchProductTest:
         response = client.with_explicit_token(offerers_factories.DEFAULT_CLEAR_API_KEY).patch(
             "/public/offers/v1/products",
             json={
-                "product_offers": [
-                    {"offer_id": product_offer.id, "bookingEmail": "spam@example.com"},
-                ]
+                "offerId": product_offer.id,
+                "bookingEmail": "spam@example.com",
             },
         )
 

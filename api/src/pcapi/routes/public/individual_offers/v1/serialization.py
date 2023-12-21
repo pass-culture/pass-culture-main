@@ -451,20 +451,10 @@ class InAppDetails(serialization.ConfiguredBaseModel):
 class ProductOfferCreation(OfferCreationBase):
     category_related_fields: product_category_creation_fields
     stock: StockCreation | None
+    location: PhysicalLocation | DigitalLocation = LOCATION_FIELD
 
     class Config:
         extra = "forbid"
-
-
-class BatchProductOfferCreation(serialization.ConfiguredBaseModel):
-    product_offers: list[ProductOfferCreation]
-    location: PhysicalLocation | DigitalLocation = LOCATION_FIELD
-
-    @pydantic_v1.validator("product_offers")
-    def validate_product_offer_list(cls, product_offers: list[ProductOfferCreation]) -> list[ProductOfferCreation]:
-        if len(product_offers) > 50:
-            raise ValueError("Maximum number of product offers is 50")
-        return product_offers
 
 
 class ProductOfferByEanCreation(serialization.ConfiguredBaseModel):
@@ -559,6 +549,7 @@ class OfferEditionBase(serialization.ConfiguredBaseModel):
     )
     is_duo: bool | None = IS_DUO_BOOKINGS_FIELD
     withdrawal_details: str | None = WITHDRAWAL_DETAILS_FIELD
+    image: ImageBody | None
 
     class Config:
         extra = "forbid"
@@ -579,16 +570,6 @@ class ProductOfferEdition(OfferEditionBase):
 
     class Config:
         extra = "forbid"
-
-
-class BatchProductOfferEdition(serialization.ConfiguredBaseModel):
-    product_offers: list[ProductOfferEdition]
-
-    @pydantic_v1.validator("product_offers")
-    def validate_product_offer_list(cls, product_offers: list[ProductOfferEdition]) -> list[ProductOfferEdition]:
-        if len(product_offers) > 50:
-            raise ValueError("Maximum number of product offers is 50")
-        return product_offers
 
 
 class ProductOfferByEanEdition(serialization.ConfiguredBaseModel):
@@ -768,14 +749,6 @@ class ProductOfferResponse(OfferResponse):
             stock=ProductStockResponse.build_product_stock(active_stock) if active_stock else None,
             **base_offer_response.dict(),
         )
-
-
-class BatchProductOfferResponse(serialization.ConfiguredBaseModel):
-    product_offers: list[ProductOfferResponse]
-
-    @classmethod
-    def build_product_offers(cls, offers: list[offers_models.Offer]) -> "BatchProductOfferResponse":
-        return cls(product_offers=[ProductOfferResponse.build_product_offer(offer) for offer in offers])
 
 
 def _serialize_has_ticket(
