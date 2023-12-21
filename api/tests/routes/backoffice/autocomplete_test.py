@@ -104,6 +104,7 @@ class AutocompleteCriteriaTest:
             ("va", {"Mauvaise accroche (22/02/2023-…)", "Lecture pour les vacances (01/07/2023-31/08/2023)"}),
             ("Cinema", {"Playlist cinéma (…-28/02/2023)"}),
             ("playlist lecture", set()),
+            ("10534", {"Un bon id"}),
         ],
     )
     def test_autocomplete_criteria(self, authenticated_client, search_query, expected_texts):
@@ -116,5 +117,6 @@ class AutocompleteCriteriaTest:
             endDateTime=datetime.datetime(2023, 8, 31, 21, 59),
         )
         criteria_factories.CriterionFactory(name="Playlist cinéma", endDateTime=datetime.datetime(2023, 2, 28, 22, 59))
+        criteria_factories.CriterionFactory(id=10534, name="Un bon id")
 
         _test_autocomplete(authenticated_client, "backoffice_web.autocomplete_criteria", search_query, expected_texts)
