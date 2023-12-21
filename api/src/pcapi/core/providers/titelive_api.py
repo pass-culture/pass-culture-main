@@ -48,7 +48,7 @@ class TiteliveSearch(abc.ABC, typing.Generic[TiteliveSearchResultType]):
         self.provider = providers_repository.get_provider_by_name(providers_constants.TITELIVE_EPAGINE_PROVIDER_NAME)
 
     @log_exceptions_to_notion
-    def synchronize_products(self, from_date: datetime.date | None = None) -> None:
+    def synchronize_products(self, from_date: datetime.date | None = None, from_page: int = 1) -> None:
         if from_date is None:
             from_date = self.get_last_sync_date()
 
@@ -56,7 +56,7 @@ class TiteliveSearch(abc.ABC, typing.Generic[TiteliveSearchResultType]):
             start_sync_event = self.log_sync_status(providers_models.LocalProviderEventType.SyncStart)
             db.session.add(start_sync_event)
 
-        products_to_update_pages = self.get_updated_titelive_pages(from_date)
+        products_to_update_pages = self.get_updated_titelive_pages(from_date, from_page)
         for titelive_page in products_to_update_pages:
             with repository.transaction():
                 updated_products = self.upsert_titelive_page(titelive_page)
@@ -96,19 +96,18 @@ class TiteliveSearch(abc.ABC, typing.Generic[TiteliveSearchResultType]):
         )
 
     def get_updated_titelive_pages(
-        self,
-        from_date: datetime.date,
+        self, from_date: datetime.date, from_page: int
     ) -> typing.Iterator[TiteliveProductSearchResponse[TiteliveSearchResultType]]:
-        page_index = 0
+        page_index = from_page
         has_next_page = True
         while has_next_page:
-            page_index += 1
             titelive_json_response = titelive.search_products(self.titelive_base, from_date, page_index)
             titelive_product_page = self.deserialize_titelive_search_json(titelive_json_response)
             allowed_product_page = self.filter_allowed_products(titelive_product_page)
             yield allowed_product_page
             # sometimes titelive returns a partially filled page while having a next page in store for us
             has_next_page = bool(titelive_product_page.result)
+            page_index += 1
 
     @abc.abstractmethod
     def deserialize_titelive_search_json(

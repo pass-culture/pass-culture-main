@@ -44,7 +44,13 @@ def synchronize_titelive_thing_thumbs() -> None:
     type=click.DateTime(),
     default=None,
 )
+@click.option(
+    "--from-page",
+    help="page to sync from, defaults to 1",
+    type=int,
+    default=1,
+)
 @log_cron_with_transaction
 @cron_require_feature(FeatureToggle.SYNCHRONIZE_TITELIVE_API_MUSIC_PRODUCTS)
-def synchronize_titelive_music_products(from_date: datetime.datetime | None) -> None:
-    TiteliveMusicSearch().synchronize_products(from_date.date() if from_date else None)
+def synchronize_titelive_music_products(from_date: datetime.datetime | None, from_page: int) -> None:
+    TiteliveMusicSearch().synchronize_products(from_date.date() if from_date else None, from_page)
