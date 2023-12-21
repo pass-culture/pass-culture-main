@@ -52,6 +52,10 @@ class PcTableMultiSelect extends PcAddOn {
   }
 
   initialize = () => {
+    this.refreshState()
+  }
+
+  refreshState = () => {
     this.$tables.forEach(($table) => {
       const rowsIds = new Set([])
       const { tableMultiSelectId } = $table.dataset
@@ -62,12 +66,12 @@ class PcTableMultiSelect extends PcAddOn {
       })
       this.state[tableMultiSelectId] = {
         rowsIds,
-        selectedRowsIds: new Set([]),
+        selectedRowsIds: new Set(this.state[tableMultiSelectId] ? this.state[tableMultiSelectId].selectedRowsIds || [] : []),
       }
     })
   }
-
   bindEvents = () => {
+    this.refreshState()
     EventHandler.on(document.body, 'click', PcTableMultiSelect.CHECKBOXES_SELECTOR, this.#onCheckboxClick)
     EventHandler.on(document.body, 'click', PcTableMultiSelect.CHECKBOX_ALL_SELECTOR, this.#onCheckboxAllClick)
   }

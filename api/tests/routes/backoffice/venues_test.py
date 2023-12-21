@@ -1487,6 +1487,54 @@ class GetVenueInvoicesTest(GetEndpointHelper):
         assert rows[1]["Montant remboursé"] == "10,00 €"
 
 
+class DownloadReimbursementDetailsTest(PostEndpointHelper):
+    endpoint = "backoffice_web.venue.download_reimbursement_details"
+    endpoint_kwargs = {"venue_id": 1}
+    needed_permission = perm_models.Permissions.READ_PRO_ENTITY
+
+    def test_download_reimbursement_details(self, authenticated_client):
+        booking = bookings_factories.UsedBookingFactory(stock__offer__venue__reimbursement_point="self")
+        reimbursement_point = booking.venue
+        finance_factories.BankInformationFactory(venue=reimbursement_point)
+        pricing = finance_factories.PricingFactory(
+            booking=booking,
+            status=finance_models.PricingStatus.INVOICED,
+        )
+        cashflow = finance_factories.CashflowFactory(
+            reimbursementPoint=reimbursement_point,
+            pricings=[pricing],
+        )
+        invoice = finance_factories.InvoiceFactory(cashflows=[cashflow])
+
+        second_booking = bookings_factories.UsedBookingFactory(
+            stock__offer__venue__reimbursement_point=reimbursement_point
+        )
+        second_pricing = finance_factories.PricingFactory(
+            booking=second_booking,
+            status=finance_models.PricingStatus.INVOICED,
+        )
+        second_cashflow = finance_factories.CashflowFactory(
+            reimbursementPoint=reimbursement_point,
+            pricings=[second_pricing],
+        )
+        second_invoice = finance_factories.InvoiceFactory(cashflows=[second_cashflow])
+
+        response = self.post_to_endpoint(
+            authenticated_client,
+            venue_id=reimbursement_point.id,
+            form={"object_ids": f"{invoice.id}, {second_invoice.id}"},
+        )
+        assert response.status_code == 200
+
+        expected_length = 1  # headers
+        expected_length += 1  # invoice
+        expected_length += 1  # second_invoice
+        expected_length += 1  # empty line
+        print(response.data)
+
+        assert len(response.data.split(b"\n")) == expected_length
+
+
 class GetBatchEditVenuesFormTest(PostEndpointHelper):
     endpoint = "backoffice_web.venue.get_batch_edit_venues_form"
     endpoint_kwargs = {"object_ids": "1,2"}
