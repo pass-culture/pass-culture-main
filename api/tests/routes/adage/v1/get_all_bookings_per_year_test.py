@@ -7,10 +7,30 @@ from pcapi.core.testing import assert_num_queries
 from pcapi.utils.date import format_into_utc_date
 
 
+def expected_serialized_booking(booking) -> dict:
+    return {
+        "id": booking.id,
+        "UAICode": booking.educationalInstitution.institutionId,
+        "status": booking.status.value,
+        "confirmationLimitDate": format_into_utc_date(booking.confirmationLimitDate),
+        "totalAmount": booking.collectiveStock.price,
+        "beginningDatetime": format_into_utc_date(booking.collectiveStock.beginningDatetime),
+        "venueTimezone": booking.collectiveStock.collectiveOffer.venue.timezone,
+        "name": booking.collectiveStock.collectiveOffer.name,
+        "redactorEmail": booking.educationalRedactor.email,
+        "domainIds": [domain.id for domain in booking.collectiveStock.collectiveOffer.domains],
+        "domainLabels": [domain.name for domain in booking.collectiveStock.collectiveOffer.domains],
+        "venueId": booking.collectiveStock.collectiveOffer.venueId,
+        "offererName": booking.collectiveStock.collectiveOffer.venue.managingOfferer.name,
+    }
+
+
 @pytest.mark.usefixtures("db_session")
 class Returns200Test:
     def test_get_all_collective_bookings_per_year(self, client) -> None:
-        educationalYear = EducationalYearFactory()
+        educationalYear = EducationalYearFactory(adageId="1")
+        EducationalYearFactory(adageId="2")
+
         educationalInstitution = EducationalInstitutionFactory()
         other_educational_institution = EducationalInstitutionFactory(institutionId="institutionId")
         EducationalYearFactory(adageId="adageId")
@@ -37,49 +57,12 @@ class Returns200Test:
             response = client.get(f"/adage/v1/years/{adage_id}/prebookings")
 
         assert response.status_code == 200
-
         assert response.json == {
             "bookings": [
-                {
-                    "id": booking1.id,
-                    "UAICode": educationalInstitution.institutionId,
-                    "status": "CONFIRMED",
-                    "confirmationLimitDate": format_into_utc_date(booking1.confirmationLimitDate),
-                    "totalAmount": booking1.collectiveStock.price,
-                    "beginningDatetime": format_into_utc_date(booking1.collectiveStock.beginningDatetime),
-                    "venueTimezone": booking1.collectiveStock.collectiveOffer.venue.timezone,
-                    "name": booking1.collectiveStock.collectiveOffer.name,
-                    "redactorEmail": booking1.educationalRedactor.email,
-                    "domainIds": [domain.id for domain in booking1.collectiveStock.collectiveOffer.domains],
-                    "domainLabels": [domain.name for domain in booking1.collectiveStock.collectiveOffer.domains],
-                },
-                {
-                    "id": booking2.id,
-                    "UAICode": other_educational_institution.institutionId,
-                    "status": "PENDING",
-                    "confirmationLimitDate": format_into_utc_date(booking2.confirmationLimitDate),
-                    "totalAmount": booking2.collectiveStock.price,
-                    "beginningDatetime": format_into_utc_date(booking2.collectiveStock.beginningDatetime),
-                    "venueTimezone": booking2.collectiveStock.collectiveOffer.venue.timezone,
-                    "name": booking2.collectiveStock.collectiveOffer.name,
-                    "redactorEmail": booking2.educationalRedactor.email,
-                    "domainIds": [domain.id for domain in booking2.collectiveStock.collectiveOffer.domains],
-                    "domainLabels": [domain.name for domain in booking2.collectiveStock.collectiveOffer.domains],
-                },
-                {
-                    "id": booking3.id,
-                    "UAICode": other_educational_institution.institutionId,
-                    "status": "PENDING",
-                    "confirmationLimitDate": format_into_utc_date(booking3.confirmationLimitDate),
-                    "totalAmount": booking3.collectiveStock.price,
-                    "beginningDatetime": format_into_utc_date(booking3.collectiveStock.beginningDatetime),
-                    "venueTimezone": booking3.collectiveStock.collectiveOffer.venue.timezone,
-                    "name": booking3.collectiveStock.collectiveOffer.name,
-                    "redactorEmail": booking3.educationalRedactor.email,
-                    "domainIds": [domain.id for domain in booking3.collectiveStock.collectiveOffer.domains],
-                    "domainLabels": [domain.name for domain in booking3.collectiveStock.collectiveOffer.domains],
-                },
-            ],
+                expected_serialized_booking(booking1),
+                expected_serialized_booking(booking2),
+                expected_serialized_booking(booking3),
+            ]
         }
 
     def test_get_all_collective_bookings_per_year_with_no_results(self, client) -> None:
