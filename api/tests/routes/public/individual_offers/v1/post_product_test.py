@@ -23,23 +23,20 @@ from . import utils
 
 class PostProductTest:
     @pytest.mark.usefixtures("db_session")
-    def test_physical_product_minimal_body(self, client):
+    @mock.patch("pcapi.tasks.sendinblue_tasks.update_sib_pro_attributes_task")
+    def test_physical_product_minimal_body(self, update_sib_pro_task_mock, client):
         venue, _ = utils.create_offerer_provider_linked_to_venue()
 
         response = client.with_explicit_token(offerers_factories.DEFAULT_CLEAR_API_KEY).post(
             "/public/offers/v1/products",
             json={
                 "location": {"type": "physical", "venueId": venue.id},
-                "product_offers": [
-                    {
-                        "categoryRelatedFields": {
-                            "category": "SUPPORT_PHYSIQUE_FILM",
-                            "ean": "1234567891234",
-                        },
-                        "accessibility": utils.ACCESSIBILITY_FIELDS,
-                        "name": "Le champ des possibles",
-                    }
-                ],
+                "categoryRelatedFields": {
+                    "category": "SUPPORT_PHYSIQUE_FILM",
+                    "ean": "1234567891234",
+                },
+                "accessibility": utils.ACCESSIBILITY_FIELDS,
+                "name": "Le champ des possibles",
             },
         )
 
@@ -59,89 +56,6 @@ class PostProductTest:
         assert created_offer.status == offer_mixin.OfferStatus.SOLD_OUT
 
         assert response.json == {
-            "productOffers": [
-                {
-                    "bookingContact": None,
-                    "bookingEmail": None,
-                    "categoryRelatedFields": {
-                        "category": "SUPPORT_PHYSIQUE_FILM",
-                        "ean": "1234567891234",
-                    },
-                    "description": None,
-                    "accessibility": {
-                        "audioDisabilityCompliant": True,
-                        "mentalDisabilityCompliant": True,
-                        "motorDisabilityCompliant": True,
-                        "visualDisabilityCompliant": True,
-                    },
-                    "enableDoubleBookings": False,
-                    "externalTicketOfficeUrl": None,
-                    "id": created_offer.id,
-                    "image": None,
-                    "itemCollectionDetails": None,
-                    "location": {"type": "physical", "venueId": venue.id},
-                    "name": "Le champ des possibles",
-                    "status": "SOLD_OUT",
-                    "stock": None,
-                }
-            ]
-        }
-
-    @pytest.mark.usefixtures("db_session")
-    def test_create_multiple_products(self, client):
-        venue, _ = utils.create_offerer_provider_linked_to_venue()
-
-        response = client.with_explicit_token(offerers_factories.DEFAULT_CLEAR_API_KEY).post(
-            "/public/offers/v1/products",
-            json={
-                "location": {"type": "physical", "venueId": venue.id},
-                "product_offers": [
-                    {
-                        "categoryRelatedFields": {
-                            "category": "SUPPORT_PHYSIQUE_FILM",
-                            "ean": "1234567891234",
-                        },
-                        "accessibility": utils.ACCESSIBILITY_FIELDS,
-                        "name": "Le champ des possibles",
-                    },
-                    {
-                        "categoryRelatedFields": {
-                            "category": "SUPPORT_PHYSIQUE_FILM",
-                            "ean": "1234567890987",
-                        },
-                        "accessibility": utils.ACCESSIBILITY_FIELDS,
-                        "name": "Pump it",
-                    },
-                ],
-            },
-        )
-
-        assert response.status_code == 200
-        created_offers = offers_models.Offer.query.order_by(offers_models.Offer.extraData.name).all()
-        first_created_offer = next(offer for offer in created_offers if offer.name == "Le champ des possibles")
-        second_created_offer = next(offer for offer in created_offers if offer.name == "Pump it")
-        assert second_created_offer.name == "Pump it"
-        assert first_created_offer.name == "Le champ des possibles"
-        assert second_created_offer.venue == venue
-        assert first_created_offer.venue == venue
-        assert second_created_offer.subcategoryId == "SUPPORT_PHYSIQUE_FILM"
-        assert first_created_offer.subcategoryId == "SUPPORT_PHYSIQUE_FILM"
-        assert second_created_offer.audioDisabilityCompliant is True
-        assert first_created_offer.audioDisabilityCompliant is True
-        assert second_created_offer.lastProvider.name == "Technical provider"
-        assert first_created_offer.lastProvider.name == "Technical provider"
-        assert first_created_offer.mentalDisabilityCompliant is True
-        assert first_created_offer.motorDisabilityCompliant is True
-        assert first_created_offer.visualDisabilityCompliant is True
-        assert not second_created_offer.isDuo
-        assert not first_created_offer.isDuo
-        assert first_created_offer.bookingEmail is None
-        assert first_created_offer.description is None
-        assert first_created_offer.status == offer_mixin.OfferStatus.SOLD_OUT
-
-        offer_1 = next(offer for offer in response.json["productOffers"] if offer["name"] == "Le champ des possibles")
-
-        assert offer_1 == {
             "bookingContact": None,
             "bookingEmail": None,
             "categoryRelatedFields": {
@@ -157,36 +71,12 @@ class PostProductTest:
             },
             "enableDoubleBookings": False,
             "externalTicketOfficeUrl": None,
-            "id": created_offers[1].id,
+            "id": created_offer.id,
             "image": None,
             "itemCollectionDetails": None,
             "location": {"type": "physical", "venueId": venue.id},
             "name": "Le champ des possibles",
             "status": "SOLD_OUT",
-            "stock": None,
-        }
-
-        offer_2 = next(offer for offer in response.json["productOffers"] if offer["name"] == "Pump it")
-
-        assert offer_2 == {
-            "id": offer_2["id"],
-            "accessibility": {
-                "audioDisabilityCompliant": True,
-                "mentalDisabilityCompliant": True,
-                "motorDisabilityCompliant": True,
-                "visualDisabilityCompliant": True,
-            },
-            "bookingContact": None,
-            "bookingEmail": None,
-            "description": None,
-            "externalTicketOfficeUrl": None,
-            "image": None,
-            "enableDoubleBookings": False,
-            "location": {"type": "physical", "venueId": venue.id},
-            "name": "Pump it",
-            "status": "SOLD_OUT",
-            "itemCollectionDetails": None,
-            "categoryRelatedFields": {"ean": "1234567890987", "category": "SUPPORT_PHYSIQUE_FILM"},
             "stock": None,
         }
 
@@ -199,36 +89,32 @@ class PostProductTest:
             "/public/offers/v1/products",
             json={
                 "location": {"type": "physical", "venueId": venue.id},
-                "productOffers": [
-                    {
-                        "enableDoubleBookings": False,
-                        "bookingContact": "contact@example.com",
-                        "bookingEmail": "spam@example.com",
-                        "categoryRelatedFields": {
-                            "category": "SUPPORT_PHYSIQUE_FILM",
-                            "ean": "1234567891234",
-                        },
-                        "description": "Enregistrement pour la nuit des temps",
-                        "accessibility": {
-                            "audioDisabilityCompliant": True,
-                            "mentalDisabilityCompliant": True,
-                            "motorDisabilityCompliant": False,
-                            "visualDisabilityCompliant": False,
-                        },
-                        "externalTicketOfficeUrl": "https://maposaic.com",
-                        "image": {
-                            "credit": "Jean-Crédit Photo",
-                            "file": image_data.GOOD_IMAGE,
-                        },
-                        "itemCollectionDetails": "A retirer au 6ème sous-sol du parking de la gare entre minuit et 2",
-                        "name": "Le champ des possibles",
-                        "stock": {
-                            "bookingLimitDatetime": "2022-01-01T16:00:00+04:00",
-                            "price": 1234,
-                            "quantity": 3,
-                        },
-                    }
-                ],
+                "enableDoubleBookings": False,
+                "bookingContact": "contact@example.com",
+                "bookingEmail": "spam@example.com",
+                "categoryRelatedFields": {
+                    "category": "SUPPORT_PHYSIQUE_FILM",
+                    "ean": "1234567891234",
+                },
+                "description": "Enregistrement pour la nuit des temps",
+                "accessibility": {
+                    "audioDisabilityCompliant": True,
+                    "mentalDisabilityCompliant": True,
+                    "motorDisabilityCompliant": False,
+                    "visualDisabilityCompliant": False,
+                },
+                "externalTicketOfficeUrl": "https://maposaic.com",
+                "image": {
+                    "credit": "Jean-Crédit Photo",
+                    "file": image_data.GOOD_IMAGE,
+                },
+                "itemCollectionDetails": "A retirer au 6ème sous-sol du parking de la gare entre minuit et 2",
+                "name": "Le champ des possibles",
+                "stock": {
+                    "bookingLimitDatetime": "2022-01-01T16:00:00+04:00",
+                    "price": 1234,
+                    "quantity": 3,
+                },
             },
         )
 
@@ -264,40 +150,36 @@ class PostProductTest:
         )
 
         assert response.json == {
-            "productOffers": [
-                {
-                    "bookingContact": "contact@example.com",
-                    "bookingEmail": "spam@example.com",
-                    "categoryRelatedFields": {
-                        "ean": "1234567891234",
-                        "category": "SUPPORT_PHYSIQUE_FILM",
-                    },
-                    "description": "Enregistrement pour la nuit des temps",
-                    "accessibility": {
-                        "audioDisabilityCompliant": True,
-                        "mentalDisabilityCompliant": True,
-                        "motorDisabilityCompliant": False,
-                        "visualDisabilityCompliant": False,
-                    },
-                    "enableDoubleBookings": False,
-                    "externalTicketOfficeUrl": "https://maposaic.com",
-                    "id": created_offer.id,
-                    "image": {
-                        "credit": "Jean-Crédit Photo",
-                        "url": f"http://localhost/storage/thumbs/mediations/{human_ids.humanize(created_mediation.id)}",
-                    },
-                    "itemCollectionDetails": "A retirer au 6ème sous-sol du parking de la gare entre minuit et 2",
-                    "location": {"type": "physical", "venueId": venue.id},
-                    "name": "Le champ des possibles",
-                    "status": "EXPIRED",
-                    "stock": {
-                        "bookedQuantity": 0,
-                        "bookingLimitDatetime": "2022-01-01T12:00:00",
-                        "price": 1234,
-                        "quantity": 3,
-                    },
-                }
-            ],
+            "bookingContact": "contact@example.com",
+            "bookingEmail": "spam@example.com",
+            "categoryRelatedFields": {
+                "ean": "1234567891234",
+                "category": "SUPPORT_PHYSIQUE_FILM",
+            },
+            "description": "Enregistrement pour la nuit des temps",
+            "accessibility": {
+                "audioDisabilityCompliant": True,
+                "mentalDisabilityCompliant": True,
+                "motorDisabilityCompliant": False,
+                "visualDisabilityCompliant": False,
+            },
+            "enableDoubleBookings": False,
+            "externalTicketOfficeUrl": "https://maposaic.com",
+            "id": created_offer.id,
+            "image": {
+                "credit": "Jean-Crédit Photo",
+                "url": f"http://localhost/storage/thumbs/mediations/{human_ids.humanize(created_mediation.id)}",
+            },
+            "itemCollectionDetails": "A retirer au 6ème sous-sol du parking de la gare entre minuit et 2",
+            "location": {"type": "physical", "venueId": venue.id},
+            "name": "Le champ des possibles",
+            "status": "EXPIRED",
+            "stock": {
+                "bookedQuantity": 0,
+                "bookingLimitDatetime": "2022-01-01T12:00:00Z",
+                "price": 1234,
+                "quantity": 3,
+            },
         }
 
     @pytest.mark.usefixtures("db_session")
@@ -308,21 +190,17 @@ class PostProductTest:
             "/public/offers/v1/products",
             json={
                 "location": {"type": "physical", "venueId": venue.id},
-                "productOffers": [
-                    {
-                        "categoryRelatedFields": {
-                            "category": "SUPPORT_PHYSIQUE_FILM",
-                            "ean": "1234567891234",
-                        },
-                        "accessibility": utils.ACCESSIBILITY_FIELDS,
-                        "name": "Le champ des possibles",
-                        "stock": {
-                            "bookedQuantity": 0,
-                            "price": 1,
-                            "quantity": "unlimited",
-                        },
-                    }
-                ],
+                "categoryRelatedFields": {
+                    "category": "SUPPORT_PHYSIQUE_FILM",
+                    "ean": "1234567891234",
+                },
+                "accessibility": utils.ACCESSIBILITY_FIELDS,
+                "name": "Le champ des possibles",
+                "stock": {
+                    "bookedQuantity": 0,
+                    "price": 1,
+                    "quantity": "unlimited",
+                },
             },
         )
 
@@ -344,25 +222,21 @@ class PostProductTest:
             "/public/offers/v1/products",
             json={
                 "location": {"type": "physical", "venueId": venue.id},
-                "productOffers": [
-                    {
-                        "categoryRelatedFields": {
-                            "category": "SUPPORT_PHYSIQUE_FILM",
-                            "ean": "1234567891234",
-                        },
-                        "accessibility": utils.ACCESSIBILITY_FIELDS,
-                        "name": "Le champ des possibles",
-                        "stock": {
-                            "price": 12.34,
-                            "quantity": "unlimited",
-                        },
-                    },
-                ],
+                "categoryRelatedFields": {
+                    "category": "SUPPORT_PHYSIQUE_FILM",
+                    "ean": "1234567891234",
+                },
+                "accessibility": utils.ACCESSIBILITY_FIELDS,
+                "name": "Le champ des possibles",
+                "stock": {
+                    "price": 12.34,
+                    "quantity": "unlimited",
+                },
             },
         )
 
         assert response.status_code == 400
-        assert response.json == {"productOffers.0.stock.price": ["value is not a valid integer"]}
+        assert response.json == {"stock.price": ["value is not a valid integer"]}
 
     @pytest.mark.usefixtures("db_session")
     def test_price_must_be_positive(self, client):
@@ -372,25 +246,21 @@ class PostProductTest:
             "/public/offers/v1/products",
             json={
                 "location": {"type": "physical", "venueId": venue.id},
-                "productOffers": [
-                    {
-                        "categoryRelatedFields": {
-                            "category": "SUPPORT_PHYSIQUE_FILM",
-                            "ean": "1234567891234",
-                        },
-                        "accessibility": utils.ACCESSIBILITY_FIELDS,
-                        "name": "Le champ des possibles",
-                        "stock": {
-                            "price": -1200,
-                            "quantity": "unlimited",
-                        },
-                    },
-                ],
+                "categoryRelatedFields": {
+                    "category": "SUPPORT_PHYSIQUE_FILM",
+                    "ean": "1234567891234",
+                },
+                "accessibility": utils.ACCESSIBILITY_FIELDS,
+                "name": "Le champ des possibles",
+                "stock": {
+                    "price": -1200,
+                    "quantity": "unlimited",
+                },
             },
         )
 
         assert response.status_code == 400
-        assert response.json == {"productOffers.0.stock.price": ["ensure this value is greater than or equal to 0"]}
+        assert response.json == {"stock.price": ["ensure this value is greater than or equal to 0"]}
 
     @pytest.mark.usefixtures("db_session")
     def test_quantity_must_be_positive(self, client):
@@ -400,25 +270,21 @@ class PostProductTest:
             "/public/offers/v1/products",
             json={
                 "location": {"type": "physical", "venueId": venue.id},
-                "productOffers": [
-                    {
-                        "categoryRelatedFields": {
-                            "category": "SUPPORT_PHYSIQUE_FILM",
-                            "ean": "1234567891234",
-                        },
-                        "accessibility": utils.ACCESSIBILITY_FIELDS,
-                        "name": "Le champ des possibles",
-                        "stock": {
-                            "price": 1200,
-                            "quantity": -1,
-                        },
-                    }
-                ],
+                "categoryRelatedFields": {
+                    "category": "SUPPORT_PHYSIQUE_FILM",
+                    "ean": "1234567891234",
+                },
+                "accessibility": utils.ACCESSIBILITY_FIELDS,
+                "name": "Le champ des possibles",
+                "stock": {
+                    "price": 1200,
+                    "quantity": -1,
+                },
             },
         )
 
         assert response.status_code == 400
-        assert response.json == {"productOffers.0.stock.quantity": ["Value must be positive"]}
+        assert response.json == {"stock.quantity": ["Value must be positive"]}
 
     @pytest.mark.usefixtures("db_session")
     def test_is_duo_not_applicable(self, client):
@@ -428,17 +294,13 @@ class PostProductTest:
             "/public/offers/v1/products",
             json={
                 "location": {"type": "physical", "venueId": venue.id},
-                "productOffers": [
-                    {
-                        "enableDoubleBookings": True,
-                        "categoryRelatedFields": {
-                            "category": "SUPPORT_PHYSIQUE_FILM",
-                            "ean": "1234567891234",
-                        },
-                        "accessibility": utils.ACCESSIBILITY_FIELDS,
-                        "name": "Le champ des possibles",
-                    },
-                ],
+                "enableDoubleBookings": True,
+                "categoryRelatedFields": {
+                    "category": "SUPPORT_PHYSIQUE_FILM",
+                    "ean": "1234567891234",
+                },
+                "accessibility": utils.ACCESSIBILITY_FIELDS,
+                "name": "Le champ des possibles",
             },
         )
         assert response.status_code == 400
@@ -454,13 +316,9 @@ class PostProductTest:
             "/public/offers/v1/products",
             json={
                 "location": {"type": "physical", "venueId": venue.id},
-                "productOffers": [
-                    {
-                        "categoryRelatedFields": {"category": "SPECTACLE_ENREGISTRE"},
-                        "accessibility": utils.ACCESSIBILITY_FIELDS,
-                        "name": "Le champ des possibles",
-                    },
-                ],
+                "categoryRelatedFields": {"category": "SPECTACLE_ENREGISTRE"},
+                "accessibility": utils.ACCESSIBILITY_FIELDS,
+                "name": "Le champ des possibles",
             },
         )
 
@@ -476,16 +334,12 @@ class PostProductTest:
             "/public/offers/v1/products",
             json={
                 "location": {"type": "physical", "venueId": venue.id},
-                "productOffers": [
-                    {
-                        "categoryRelatedFields": {
-                            "category": "SUPPORT_PHYSIQUE_FILM",
-                            "ean": "1234567891234",
-                        },
-                        "accessibility": utils.ACCESSIBILITY_FIELDS,
-                        "name": "Le champ des possibles",
-                    },
-                ],
+                "categoryRelatedFields": {
+                    "category": "SUPPORT_PHYSIQUE_FILM",
+                    "ean": "1234567891234",
+                },
+                "accessibility": utils.ACCESSIBILITY_FIELDS,
+                "name": "Le champ des possibles",
             },
         )
 
@@ -496,7 +350,7 @@ class PostProductTest:
             "ean": "1234567891234",
         }
 
-        assert response.json["productOffers"][0]["categoryRelatedFields"] == {
+        assert response.json["categoryRelatedFields"] == {
             "category": "SUPPORT_PHYSIQUE_FILM",
             "ean": "1234567891234",
         }
@@ -509,16 +363,12 @@ class PostProductTest:
             "/public/offers/v1/products",
             json={
                 "location": {"type": "physical", "venueId": venue.id},
-                "productOffers": [
-                    {
-                        "categoryRelatedFields": {
-                            "category": "SUPPORT_PHYSIQUE_FILM",
-                            "ean": "1234567891234",
-                        },
-                        "accessibility": utils.ACCESSIBILITY_FIELDS,
-                        "name": "Le champ des possibles",
-                    },
-                ],
+                "categoryRelatedFields": {
+                    "category": "SUPPORT_PHYSIQUE_FILM",
+                    "ean": "1234567891234",
+                },
+                "accessibility": utils.ACCESSIBILITY_FIELDS,
+                "name": "Le champ des possibles",
             },
         )
 
@@ -534,18 +384,14 @@ class PostProductTest:
             "/public/offers/v1/products",
             json={
                 "location": {"type": "physical", "venueId": venue.id},
-                "productOffers": [
-                    {
-                        "categoryRelatedFields": {"category": "EVENEMENT_JEU"},
-                        "accessibility": utils.ACCESSIBILITY_FIELDS,
-                        "name": "Le champ des possibles",
-                    },
-                ],
+                "categoryRelatedFields": {"category": "EVENEMENT_JEU"},
+                "accessibility": utils.ACCESSIBILITY_FIELDS,
+                "name": "Le champ des possibles",
             },
         )
 
         assert response.status_code == 400
-        assert "productOffers.0.categoryRelatedFields.category" in response.json
+        assert "categoryRelatedFields.category" in response.json
         assert offers_models.Offer.query.first() is None
 
     @pytest.mark.usefixtures("db_session")
@@ -557,16 +403,12 @@ class PostProductTest:
             "/public/offers/v1/products",
             json={
                 "location": {"type": "physical", "venueId": not_allowed_venue.id},
-                "productOffers": [
-                    {
-                        "categoryRelatedFields": {
-                            "category": "SUPPORT_PHYSIQUE_FILM",
-                            "ean": "1234567891234",
-                        },
-                        "accessibility": utils.ACCESSIBILITY_FIELDS,
-                        "name": "Le champ des possibles",
-                    },
-                ],
+                "categoryRelatedFields": {
+                    "category": "SUPPORT_PHYSIQUE_FILM",
+                    "ean": "1234567891234",
+                },
+                "accessibility": utils.ACCESSIBILITY_FIELDS,
+                "name": "Le champ des possibles",
             },
         )
 
@@ -584,18 +426,14 @@ class PostProductTest:
             "/public/offers/v1/products",
             json={
                 "location": {"type": "physical", "venueId": venue.id},
-                "product_offers": [
-                    {
-                        "categoryRelatedFields": {
-                            "category": "SUPPORT_PHYSIQUE_FILM",
-                            "ean": "1234567891234",
-                        },
-                        "accessibility": utils.ACCESSIBILITY_FIELDS,
-                        "name": "Le champ des possibles",
-                        "image": {"file": image_data.GOOD_IMAGE},
-                        "stock": {"quantity": 1, "price": 100},
-                    },
-                ],
+                "stock": {"quantity": 1, "price": 100},
+                "categoryRelatedFields": {
+                    "category": "SUPPORT_PHYSIQUE_FILM",
+                    "ean": "1234567891234",
+                },
+                "accessibility": utils.ACCESSIBILITY_FIELDS,
+                "name": "Le champ des possibles",
+                "image": {"file": image_data.GOOD_IMAGE},
             },
         )
 
@@ -613,18 +451,14 @@ class PostProductTest:
             "/public/offers/v1/products",
             json={
                 "location": {"type": "physical", "venueId": venue.id},
-                "product_offers": [
-                    {
-                        "categoryRelatedFields": {
-                            "category": "SUPPORT_PHYSIQUE_FILM",
-                            "ean": "1234567891234",
-                        },
-                        "accessibility": utils.ACCESSIBILITY_FIELDS,
-                        "name": "Le champ des possibles",
-                        "image": {"file": image_data.WRONG_IMAGE_SIZE},
-                        "stock": {"quantity": 1, "price": 100},
-                    },
-                ],
+                "categoryRelatedFields": {
+                    "category": "SUPPORT_PHYSIQUE_FILM",
+                    "ean": "1234567891234",
+                },
+                "accessibility": utils.ACCESSIBILITY_FIELDS,
+                "name": "Le champ des possibles",
+                "image": {"file": image_data.WRONG_IMAGE_SIZE},
+                "stock": {"quantity": 1, "price": 100},
             },
         )
 
@@ -645,18 +479,14 @@ class PostProductTest:
             "/public/offers/v1/products",
             json={
                 "location": {"type": "physical", "venueId": venue.id},
-                "product_offers": [
-                    {
-                        "categoryRelatedFields": {
-                            "category": "SUPPORT_PHYSIQUE_FILM",
-                            "ean": "1234567891234",
-                        },
-                        "accessibility": utils.ACCESSIBILITY_FIELDS,
-                        "name": "Le champ des possibles",
-                        "image": {"file": encoded_bytes.decode()},
-                        "stock": {"quantity": 1, "price": 100},
-                    },
-                ],
+                "categoryRelatedFields": {
+                    "category": "SUPPORT_PHYSIQUE_FILM",
+                    "ean": "1234567891234",
+                },
+                "accessibility": utils.ACCESSIBILITY_FIELDS,
+                "name": "Le champ des possibles",
+                "image": {"file": encoded_bytes.decode()},
+                "stock": {"quantity": 1, "price": 100},
             },
         )
 
@@ -674,24 +504,20 @@ class PostProductTest:
             "/public/offers/v1/products",
             json={
                 "location": {"type": "physical", "venueId": venue.id},
-                "product_offers": [
-                    {
-                        "categoryRelatedFields": {
-                            "category": "SUPPORT_PHYSIQUE_FILM",
-                            "ean": "1234567891234",
-                        },
-                        "accessibility": utils.ACCESSIBILITY_FIELDS,
-                        "name": "Le champ des possibles",
-                        "stock": {"bookingLimitDatetime": "2021-01-01T00:00:00", "price": 10, "quantity": 10},
-                    },
-                ],
+                "categoryRelatedFields": {
+                    "category": "SUPPORT_PHYSIQUE_FILM",
+                    "ean": "1234567891234",
+                },
+                "accessibility": utils.ACCESSIBILITY_FIELDS,
+                "name": "Le champ des possibles",
+                "stock": {"bookingLimitDatetime": "2021-01-01T00:00:00", "price": 10, "quantity": 10},
             },
         )
 
         assert response.status_code == 400
 
         assert response.json == {
-            "productOffers.0.stock.bookingLimitDatetime": ["The datetime must be timezone-aware."],
+            "stock.bookingLimitDatetime": ["The datetime must be timezone-aware."],
         }
 
     @pytest.mark.usefixtures("db_session")
@@ -702,19 +528,15 @@ class PostProductTest:
             "/public/offers/v1/products",
             json={
                 "location": {"type": "digital", "url": "https://la-flute-en-chantier.fr", "venue_id": venue.id},
-                "product_offers": [
-                    {
-                        "categoryRelatedFields": {"category": "CARTE_CINE_ILLIMITE", "showType": "OPERA-GRAND_OPERA"},
-                        "accessibility": utils.ACCESSIBILITY_FIELDS,
-                        "name": "La flûte en chantier",
-                    },
-                ],
+                "categoryRelatedFields": {"category": "CARTE_CINE_ILLIMITE", "showType": "OPERA-GRAND_OPERA"},
+                "accessibility": utils.ACCESSIBILITY_FIELDS,
+                "name": "La flûte en chantier",
             },
         )
 
         assert response.status_code == 400
         assert response.json == {
-            "productOffers.0.categoryRelatedFields.category": [
+            "categoryRelatedFields.category": [
                 "unexpected value; permitted: 'ABO_BIBLIOTHEQUE'",
                 "unexpected value; permitted: 'ABO_CONCERT'",
                 "unexpected value; permitted: 'ABO_LIVRE_NUMERIQUE'",
@@ -743,8 +565,8 @@ class PostProductTest:
                 "unexpected value; permitted: 'VISITE_VIRTUELLE'",
                 "unexpected value; permitted: 'VOD'",
             ],
-            "productOffers.0.categoryRelatedFields.ean": ["field required", "field required", "field required"],
-            "productOffers.0.categoryRelatedFields.musicType": ["field required", "field required"],
+            "categoryRelatedFields.ean": ["field required", "field required", "field required"],
+            "categoryRelatedFields.musicType": ["field required", "field required"],
         }
         assert offers_models.Offer.query.first() is None
 
@@ -756,17 +578,13 @@ class PostProductTest:
             "/public/offers/v1/products",
             json={
                 "location": {"type": "physical", "venueId": venue.id},
-                "product_offers": [
-                    {
-                        "categoryRelatedFields": {
-                            "category": "LIVRE_PAPIER",
-                            "ean": "1234567890123",
-                            "author": "Maurice",
-                        },
-                        "accessibility": utils.ACCESSIBILITY_FIELDS,
-                        "name": "A qui mieux mieux",
-                    },
-                ],
+                "categoryRelatedFields": {
+                    "category": "LIVRE_PAPIER",
+                    "ean": "1234567890123",
+                    "author": "Maurice",
+                },
+                "accessibility": utils.ACCESSIBILITY_FIELDS,
+                "name": "A qui mieux mieux",
             },
         )
 
@@ -781,13 +599,9 @@ class PostProductTest:
             "/public/offers/v1/products",
             json={
                 "location": {"type": "digital", "url": "https://la-flute-en-chantier.fr", "venue_id": venue.id},
-                "product_offers": [
-                    {
-                        "categoryRelatedFields": {"category": "SPECTACLE_ENREGISTRE", "showType": "OPERA-GRAND_OPERA"},
-                        "accessibility": utils.ACCESSIBILITY_FIELDS,
-                        "name": "La flûte en chantier",
-                    },
-                ],
+                "categoryRelatedFields": {"category": "SPECTACLE_ENREGISTRE", "showType": "OPERA-GRAND_OPERA"},
+                "accessibility": utils.ACCESSIBILITY_FIELDS,
+                "name": "La flûte en chantier",
             },
         )
 
@@ -802,16 +616,12 @@ class PostProductTest:
             "/public/offers/v1/products",
             json={
                 "location": {"type": "physical", "venueId": venue.id},
-                "product_offers": [
-                    {
-                        "categoryRelatedFields": {
-                            "category": "SUPPORT_PHYSIQUE_FILM",
-                            "ean": "1234567891234",
-                        },
-                        "accessibility": utils.ACCESSIBILITY_FIELDS,
-                        "name": "Le champ des possibles",
-                    }
-                ],
+                "categoryRelatedFields": {
+                    "category": "SUPPORT_PHYSIQUE_FILM",
+                    "ean": "1234567891234",
+                },
+                "accessibility": utils.ACCESSIBILITY_FIELDS,
+                "name": "Le champ des possibles",
             },
         )
 

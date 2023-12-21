@@ -128,16 +128,16 @@ def get_music_types() -> serialization.GetMusicTypesResponse:
 @spectree_serialize(
     api=blueprint.v1_product_schema,
     tags=[constants.PRODUCT_OFFER_TAG],
-    response_model=serialization.BatchProductOfferResponse,
+    response_model=serialization.ProductOfferResponse,
     resp=SpectreeResponse(
         **(
             constants.BASE_CODE_DESCRIPTIONS
             | {
                 "HTTP_404": (None, "No venue found for the used api key"),
-                "HTTP_400": (None, "The product offers could not be created"),
+                "HTTP_400": (None, "The product offer could not be created"),
                 "HTTP_201": (
-                    serialization.BatchProductOfferResponse,
-                    "The product offers have been created successfully",
+                    serialization.ProductOfferResponse,
+                    "The product offer have been created successfully",
                 ),
             }
         )
@@ -145,56 +145,52 @@ def get_music_types() -> serialization.GetMusicTypesResponse:
 )
 @api_key_required
 @rate_limiting.api_key_high_rate_limiter()
-def post_product_offer(body: serialization.BatchProductOfferCreation) -> serialization.BatchProductOfferResponse:
+def post_product_offer(body: serialization.ProductOfferCreation) -> serialization.ProductOfferResponse:
     """
-    Create in batch (1-50) products in authorized categories
+    Create product in authorized categories
     """
-    created_offers: list[offers_models.Offer] = []
     venue = utils.retrieve_venue_from_location(body.location)
 
     try:
         with repository.transaction():
-            for product_offer in body.product_offers:
-                created_offer = offers_api.create_offer(
-                    audio_disability_compliant=product_offer.accessibility.audio_disability_compliant,
-                    booking_contact=product_offer.booking_contact,
-                    booking_email=product_offer.booking_email,
-                    description=product_offer.description,
-                    external_ticket_office_url=product_offer.external_ticket_office_url,
-                    extra_data=serialization.deserialize_extra_data(product_offer.category_related_fields),
-                    is_duo=product_offer.is_duo,
-                    mental_disability_compliant=product_offer.accessibility.mental_disability_compliant,
-                    motor_disability_compliant=product_offer.accessibility.motor_disability_compliant,
-                    name=product_offer.name,
-                    provider=current_api_key.provider,
-                    subcategory_id=product_offer.category_related_fields.subcategory_id,
-                    url=body.location.url if isinstance(body.location, serialization.DigitalLocation) else None,
-                    venue=venue,
-                    visual_disability_compliant=product_offer.accessibility.visual_disability_compliant,
-                    withdrawal_details=product_offer.withdrawal_details,
-                )
-                created_offers.append(created_offer)
+            created_offer = offers_api.create_offer(
+                audio_disability_compliant=body.accessibility.audio_disability_compliant,
+                booking_contact=body.booking_contact,
+                booking_email=body.booking_email,
+                description=body.description,
+                external_ticket_office_url=body.external_ticket_office_url,
+                extra_data=serialization.deserialize_extra_data(body.category_related_fields),
+                is_duo=body.is_duo,
+                mental_disability_compliant=body.accessibility.mental_disability_compliant,
+                motor_disability_compliant=body.accessibility.motor_disability_compliant,
+                name=body.name,
+                provider=current_api_key.provider,
+                subcategory_id=body.category_related_fields.subcategory_id,
+                url=body.location.url if isinstance(body.location, serialization.DigitalLocation) else None,
+                venue=venue,
+                visual_disability_compliant=body.accessibility.visual_disability_compliant,
+                withdrawal_details=body.withdrawal_details,
+            )
+            db.session.add(created_offer)
 
-            # FIXME (ghaliela, 2023-06-15): stock saving optimisation
-            # Stocks are inserted one by one for now, we need to improve create_stock to remove the repository.session.add()
-            # It will be done before the release of this API
-            for product_offer, saved_offer in zip(body.product_offers, created_offers):
-                if product_offer.stock:
-                    offers_api.create_stock(
-                        offer=saved_offer,
-                        price=finance_utils.to_euros(product_offer.stock.price),
-                        quantity=serialization.deserialize_quantity(product_offer.stock.quantity),
-                        booking_limit_datetime=product_offer.stock.booking_limit_datetime,
-                        creating_provider=current_api_key.provider,
-                    )
-                if product_offer.image:
-                    utils.save_image(product_offer.image, saved_offer)
-                offers_api.publish_offer(saved_offer, user=None)
+            if body.image:
+                utils.save_image(body.image, created_offer)
+
+            if body.stock:
+                offers_api.create_stock(
+                    offer=created_offer,
+                    price=finance_utils.to_euros(body.stock.price),
+                    quantity=serialization.deserialize_quantity(body.stock.quantity),
+                    booking_limit_datetime=body.stock.booking_limit_datetime,
+                    creating_provider=current_api_key.provider,
+                )
+
+            offers_api.publish_offer(created_offer, user=None)
 
     except (offers_exceptions.OfferCreationBaseException, offers_exceptions.OfferEditionBaseException) as error:
         raise api_errors.ApiErrors(error.errors, status_code=400)
 
-    return serialization.BatchProductOfferResponse.build_product_offers(created_offers)
+    return serialization.ProductOfferResponse.build_product_offer(created_offer)
 
 
 @blueprint.v1_blueprint.route("/products/ean", methods=["POST"])
@@ -540,16 +536,16 @@ def _check_offer_can_be_edited(offer: offers_models.Offer) -> None:
 @spectree_serialize(
     api=blueprint.v1_product_schema,
     tags=[constants.PRODUCT_OFFER_TAG],
-    response_model=serialization.BatchProductOfferResponse,
+    response_model=serialization.ProductOfferResponse,
     resp=SpectreeResponse(
         **(
             constants.BASE_CODE_DESCRIPTIONS
             | {
-                "HTTP_404": (None, "The product offers could not be found"),
-                "HTTP_400": (None, "The product offers could not be edited"),
+                "HTTP_404": (None, "The product offer could not be found"),
+                "HTTP_400": (None, "The product offer could not be edited"),
                 "HTTP_200": (
-                    serialization.BatchProductOfferResponse,
-                    "The product offers have been edited successfully",
+                    serialization.ProductOfferResponse,
+                    "The product offer have been edited successfully",
                 ),
             }
         )
@@ -557,55 +553,48 @@ def _check_offer_can_be_edited(offer: offers_models.Offer) -> None:
 )
 @api_key_required
 @rate_limiting.api_key_high_rate_limiter()
-def edit_product(body: serialization.BatchProductOfferEdition) -> serialization.BatchProductOfferResponse:
+def edit_product(body: serialization.ProductOfferEdition) -> serialization.ProductOfferResponse:
     """
-    Edit in batch (1-50) products in authorized categories
+    Edit a product in authorized categories
 
     Leave fields undefined to keep their current value.
     """
-
-    product_ids = [product.offer_id for product in body.product_offers]
-    offers: list[offers_models.Offer] = (
-        utils.retrieve_offer_relations_query(utils.retrieve_offers_query(product_ids))
+    offer = (
+        utils.retrieve_offer_relations_query(utils.retrieve_offer_query(body.offer_id))
         .filter(sqla.not_(offers_models.Offer.isEvent))
-        .all()
+        .one_or_none()
     )
 
-    if not offers or len(offers) == 0 or len(offers) != len(product_ids):
-        raise api_errors.ApiErrors({"productOffers": ["The product offers could not be found"]}, status_code=404)
+    if not offer:
+        raise api_errors.ApiErrors({"offerId": ["The product offer could not be found"]}, status_code=404)
 
-    updated_offers = []
-
-    for product_offer, offer in zip(body.product_offers, offers):
-        # FIXME (ghaliela, 2023-06-16): stock upserting optimisation
-        # Stocks are edited one by one for now, we need to improve edit_stock to remove the repository.session.add()
-        # It will be done before the release of this API
-        _check_offer_can_be_edited(offer)
-        utils.check_offer_subcategory(product_offer, offer.subcategoryId)
-        try:
-            with repository.transaction():
-                updated_offer_from_body = product_offer.dict(exclude_unset=True)
-                updated_offer = offers_api.update_offer(
-                    offer,
-                    bookingContact=updated_offer_from_body.get("booking_contact", offers_api.UNCHANGED),
-                    bookingEmail=updated_offer_from_body.get("booking_email", offers_api.UNCHANGED),
-                    extraData=serialization.deserialize_extra_data(
-                        product_offer.category_related_fields, copy.deepcopy(offer.extraData)
-                    )
-                    if product_offer.category_related_fields
-                    else offers_api.UNCHANGED,
-                    isActive=updated_offer_from_body.get("is_active", offers_api.UNCHANGED),
-                    isDuo=updated_offer_from_body.get("is_duo", offers_api.UNCHANGED),
-                    withdrawalDetails=updated_offer_from_body.get("withdrawal_details", offers_api.UNCHANGED),
-                    **utils.compute_accessibility_edition_fields(updated_offer_from_body.get("accessibility")),
+    _check_offer_can_be_edited(offer)
+    utils.check_offer_subcategory(body, offer.subcategoryId)
+    try:
+        with repository.transaction():
+            updated_offer_from_body = body.dict(exclude_unset=True)
+            updated_offer = offers_api.update_offer(
+                offer,
+                bookingContact=updated_offer_from_body.get("booking_contact", offers_api.UNCHANGED),
+                bookingEmail=updated_offer_from_body.get("booking_email", offers_api.UNCHANGED),
+                extraData=serialization.deserialize_extra_data(
+                    body.category_related_fields, copy.deepcopy(offer.extraData)
                 )
-                updated_offers.append(updated_offer)
-                if "stock" in updated_offer_from_body:
-                    _upsert_product_stock(updated_offer, product_offer.stock, current_api_key.provider)
-        except (offers_exceptions.OfferCreationBaseException, offers_exceptions.OfferEditionBaseException) as e:
-            raise api_errors.ApiErrors(e.errors, status_code=400)
+                if body.category_related_fields
+                else offers_api.UNCHANGED,
+                isActive=updated_offer_from_body.get("is_active", offers_api.UNCHANGED),
+                isDuo=updated_offer_from_body.get("is_duo", offers_api.UNCHANGED),
+                withdrawalDetails=updated_offer_from_body.get("withdrawal_details", offers_api.UNCHANGED),
+                **utils.compute_accessibility_edition_fields(updated_offer_from_body.get("accessibility")),
+            )
+            if body.image:
+                utils.save_image(body.image, updated_offer)
+            if "stock" in updated_offer_from_body:
+                _upsert_product_stock(updated_offer, body.stock, current_api_key.provider)
+    except (offers_exceptions.OfferCreationBaseException, offers_exceptions.OfferEditionBaseException) as e:
+        raise api_errors.ApiErrors(e.errors, status_code=400)
 
-    return serialization.BatchProductOfferResponse.build_product_offers(updated_offers)
+    return serialization.ProductOfferResponse.build_product_offer(offer)
 
 
 def _upsert_product_stock(
