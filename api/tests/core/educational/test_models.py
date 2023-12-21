@@ -11,6 +11,7 @@ from pcapi.core.educational.models import CollectiveOffer
 from pcapi.core.educational.models import CollectiveStock
 from pcapi.core.educational.models import EducationalDeposit
 from pcapi.core.educational.models import HasImageMixin
+import pcapi.core.offerers.factories as offerers_factories
 from pcapi.models import db
 from pcapi.models.offer_mixin import OfferValidationStatus
 from pcapi.models.validation_status_mixin import ValidationStatus
@@ -514,3 +515,12 @@ class HasImageMixinTest:
         assert delete_public_object.call_count == 2
         delete_public_object.assert_any_call(folder=image.FOLDER, object_id="image/123456.jpg")
         delete_public_object.assert_any_call(folder=image.FOLDER, object_id="image/123456_original.jpg")
+
+
+class CollectiveOffeTemplateIsEligibleForSearchTest:
+    def test_is_eligible_for_search(self):
+        searchable_offer = factories.CollectiveOfferTemplateFactory()
+        virtual_venue = offerers_factories.VirtualVenueFactory()
+        unsearchable_offer = factories.CollectiveOfferTemplateFactory(venue=virtual_venue)
+        assert searchable_offer.is_eligible_for_search
+        assert not unsearchable_offer.is_eligible_for_search

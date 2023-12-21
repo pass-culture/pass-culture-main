@@ -774,7 +774,9 @@ class CollectiveOfferTemplate(
             and self.venue.managingOfferer.isValidated
         )
 
-    is_eligible_for_search = isReleased
+    @property
+    def is_eligible_for_search(self) -> bool:
+        return bool(self.isReleased and not self.venue.isVirtual)
 
     def get_formats(self) -> typing.Sequence[subcategories.EacFormat] | None:
         if self.formats:
