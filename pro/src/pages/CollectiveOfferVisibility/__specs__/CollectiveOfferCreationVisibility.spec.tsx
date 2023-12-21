@@ -31,6 +31,7 @@ const defaultProps = {
   setOffer: vi.fn(),
   reloadCollectiveOffer: vi.fn(),
   isTemplate: false,
+  offerer: undefined,
 }
 
 describe('CollectiveOfferVisibility', () => {

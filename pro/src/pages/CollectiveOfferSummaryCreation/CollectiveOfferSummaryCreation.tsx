@@ -20,6 +20,7 @@ export const CollectiveOfferSummaryCreation = ({
   offer,
   setOffer,
   isTemplate,
+  offerer,
 }: MandatoryCollectiveOfferFromParamsProps) => {
   const notify = useNotification()
 
@@ -49,6 +50,7 @@ export const CollectiveOfferSummaryCreation = ({
             offer={offer}
             categories={categories}
             setOffer={setOffer}
+            offerer={offerer}
           />
           <RouteLeavingGuardCollectiveOfferCreation />
         </CollectiveOfferLayout>

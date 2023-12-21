@@ -1,10 +1,23 @@
-import { screen, waitForElementToBeRemoved } from '@testing-library/react'
+import {
+  screen,
+  waitFor,
+  waitForElementToBeRemoved,
+} from '@testing-library/react'
+import { userEvent } from '@testing-library/user-event'
 import React from 'react'
 
 import { api } from 'apiClient/api'
+import type { GetCollectiveOfferResponseModel } from 'apiClient/v1'
 import { MandatoryCollectiveOfferFromParamsProps } from 'screens/OfferEducational/useCollectiveOfferFromParams'
+import {
+  defaultGetCollectiveOfferResponseModel,
+  defaultGetOffererResponseModel,
+} from 'utils/apiFactories'
 import { collectiveOfferFactory } from 'utils/collectiveApiFactories'
-import { renderWithProviders } from 'utils/renderWithProviders'
+import {
+  RenderWithProvidersOptions,
+  renderWithProviders,
+} from 'utils/renderWithProviders'
 
 import { CollectiveOfferSummaryCreation } from '../CollectiveOfferSummaryCreation'
 
@@ -20,9 +33,11 @@ vi.mock('react-router-dom', async () => ({
 
 const renderCollectiveOfferSummaryCreation = async (
   path: string,
-  props: MandatoryCollectiveOfferFromParamsProps
+  props: MandatoryCollectiveOfferFromParamsProps,
+  options?: RenderWithProvidersOptions
 ) => {
   renderWithProviders(<CollectiveOfferSummaryCreation {...props} />, {
+    ...options,
     initialRouterEntries: [path],
   })
   await waitForElementToBeRemoved(() => screen.queryByTestId('spinner'))
@@ -33,6 +48,7 @@ const defaultProps = {
   setOffer: vi.fn(),
   reloadCollectiveOffer: vi.fn(),
   isTemplate: false,
+  offerer: undefined,
 }
 
 describe('CollectiveOfferSummaryCreation', () => {
@@ -71,6 +87,35 @@ describe('CollectiveOfferSummaryCreation', () => {
     const previousStepLink = screen.getByText('Étape précédente')
     expect(previousStepLink.getAttribute('href')).toBe(
       '/offre/1/collectif/visibilite?requete=1'
+    )
+  })
+
+  it('Should show the redirect modal', async () => {
+    vi.spyOn(api, 'patchCollectiveOfferPublication').mockResolvedValue({
+      ...defaultGetCollectiveOfferResponseModel,
+      isNonFreeOffer: true,
+    } as GetCollectiveOfferResponseModel)
+    await renderCollectiveOfferSummaryCreation(
+      '/offre/A1/collectif/creation/recapitulatif',
+      {
+        ...defaultProps,
+        offerer: {
+          ...defaultGetOffererResponseModel,
+          hasNonFreeOffer: false,
+          hasValidBankAccount: false,
+        },
+      },
+      {
+        features: ['WIP_ENABLE_NEW_BANK_DETAILS_JOURNEY'],
+      }
+    )
+
+    await userEvent.click(screen.getByText('Publier l’offre'))
+
+    await waitFor(() =>
+      expect(
+        screen.queryByText(/Félicitations, vous avez créé votre offre !/)
+      ).toBeInTheDocument()
     )
   })
 })

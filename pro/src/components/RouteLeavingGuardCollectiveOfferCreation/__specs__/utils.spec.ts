@@ -119,6 +119,13 @@ describe('components | RouteLeavingGuardCollectiveOfferCreation', () => {
       nextLocation: '/offre/collectif/AE/creation',
       expectedShouldBlock: false,
     },
+    {
+      description:
+        'should not block when going from summary to bank account url',
+      currentLocation: '/offre/AE/collectif/creation/recapitulatif',
+      nextLocation: '/remboursements/informations-bancaires?structure=1E',
+      expectedShouldBlock: false,
+    },
   ]
 
   cases.forEach(
