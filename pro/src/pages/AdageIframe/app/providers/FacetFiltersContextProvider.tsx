@@ -1,4 +1,11 @@
-import React, { createContext, ReactNode, useMemo, useState } from 'react'
+import React, {
+  createContext,
+  Dispatch,
+  ReactNode,
+  SetStateAction,
+  useMemo,
+  useState,
+} from 'react'
 
 import { VenueResponse } from 'apiClient/adage'
 import { getDefaultFacetFilterUAICodeValue } from 'utils/facetFilters'
@@ -7,7 +14,7 @@ import { Facets } from '../types'
 
 type FacetFiltersContextType = {
   facetFilters: Facets
-  setFacetFilters: (facets: Facets) => void
+  setFacetFilters: Dispatch<SetStateAction<Facets>>
 }
 
 const facetFiltersContextInitialValues: FacetFiltersContextType = {
