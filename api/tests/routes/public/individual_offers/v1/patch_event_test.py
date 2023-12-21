@@ -1,9 +1,13 @@
 import pytest
 
+from pcapi import settings
 from pcapi.core.offerers import factories as offerers_factories
 from pcapi.core.offers import factories as offers_factories
 from pcapi.core.offers import models as offers_models
 from pcapi.core.testing import override_features
+from pcapi.utils import human_ids
+
+from tests.routes import image_data
 
 from . import utils
 
@@ -137,6 +141,7 @@ class PatchEventTest:
                 "eventDuration": 40,
                 "enableDoubleBookings": "true",
                 "itemCollectionDetails": "Here !",
+                "image": {"file": image_data.GOOD_IMAGE},
             },
         )
 
@@ -147,6 +152,12 @@ class PatchEventTest:
         assert event_offer.bookingContact == "test@myemail.com"
         assert event_offer.bookingEmail == "test@myemail.com"
         assert event_offer.withdrawalDetails == "Here !"
+
+        assert offers_models.Mediation.query.one()
+        assert (
+            event_offer.image.url
+            == f"{settings.OBJECT_STORAGE_URL}/thumbs/mediations/{human_ids.humanize(event_offer.activeMediation.id)}"
+        )
 
     def test_cannot_edit_event_with_ticket_if_FF_not_active(self, client):
         # This test can be deleted with FF WIP_ENABLE_EVENTS_WITH_TICKETS_FOR_PUBLIC_API

@@ -241,6 +241,8 @@ def edit_event(event_id: int, body: serialization.EventOfferEdition) -> serializ
                 withdrawalDetails=update_body.get("withdrawal_details", offers_api.UNCHANGED),
                 **utils.compute_accessibility_edition_fields(update_body.get("accessibility")),
             )
+            if body.image:
+                utils.save_image(body.image, offer)
     except (offers_exceptions.OfferCreationBaseException, offers_exceptions.OfferEditionBaseException) as error:
         raise api_errors.ApiErrors(error.errors, status_code=400)
 
