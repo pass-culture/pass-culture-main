@@ -325,13 +325,13 @@ def _batch_individual_bookings_action(
         try:
             booking_callback(booking)
         except bookings_exceptions.BookingIsAlreadyCancelled:
-            flash("Au moins une des réservations a déjà été annulée", "error")
+            flash("Au moins une des réservations a déjà été annulée", "warning")
             return _redirect_after_individual_booking_action()
         except bookings_exceptions.BookingIsAlreadyUsed:
-            flash("Au moins une des réservations a déjà été validée", "error")
+            flash("Au moins une des réservations a déjà été validée", "warning")
             return _redirect_after_individual_booking_action()
         except bookings_exceptions.BookingIsAlreadyRefunded:
-            flash("Au moins une des réservations a déjà été remboursée", "error")
+            flash("Au moins une des réservations a déjà été remboursée", "warning")
             return _redirect_after_individual_booking_action()
 
     flash(success_message, "success")

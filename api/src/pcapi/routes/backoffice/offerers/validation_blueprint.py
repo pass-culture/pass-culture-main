@@ -271,7 +271,7 @@ def batch_validate_offerer() -> utils.BackofficeResponse:
             BatchForm,
         )
     except offerers_exceptions.OffererAlreadyValidatedException:
-        flash("Au moins une des structures a déjà été validée", "error")
+        flash("Au moins une des structures a déjà été validée", "warning")
         return _redirect_after_offerer_validation_action()
 
 
@@ -343,7 +343,7 @@ def batch_reject_offerer() -> utils.BackofficeResponse:
             offerer_forms.BatchOptionalCommentForm,
         )
     except offerers_exceptions.OffererAlreadyRejectedException:
-        flash("Une des structures a déjà été rejetée", "error")
+        flash("Une des structures a déjà été rejetée", "warning")
         return _redirect_after_offerer_validation_action()
 
 
@@ -639,7 +639,7 @@ def batch_reject_user_offerer() -> utils.BackofficeResponse:
             offerers_api.reject_offerer_attachment, "Les rattachements sélectionnés ont été rejetés avec succès"
         )
     except offerers_exceptions.UserOffererAlreadyValidatedException:
-        flash("Au moins un des rattachements est déjà rejeté", "error")
+        flash("Au moins un des rattachements est déjà rejeté", "warning")
         return _redirect_after_user_offerer_validation_action_list()
 
 

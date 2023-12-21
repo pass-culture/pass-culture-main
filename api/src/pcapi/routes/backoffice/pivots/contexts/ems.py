@@ -46,7 +46,7 @@ class EMSContext(PivotContext):
     def create_pivot(cls, form: forms.EditEMSForm) -> bool:
         ems_provider = providers_repository.get_provider_by_local_class("EMSStocks")
         if not ems_provider:
-            flash("Provider EMS n'existe pas", "error")
+            flash("Provider EMS n'existe pas", "warning")
             return False
 
         venue_id = form.venue_id.data
