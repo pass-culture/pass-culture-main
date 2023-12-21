@@ -1,9 +1,7 @@
 from datetime import datetime
 import decimal
-import re
 
-from dateutil.parser import parse
-
+from pcapi.connectors.serialization import allocine_serializers
 from pcapi.core.categories import subcategories_v2 as subcategories
 from pcapi.core.offerers.models import Venue
 from pcapi.core.offers import api as offers_api
@@ -22,18 +20,10 @@ from pcapi.utils.date import get_department_timezone
 from pcapi.utils.date import local_datetime_to_default_timezone
 
 
-DIGITAL_PROJECTION = "DIGITAL"
-DUBBED_VERSION = "DUBBED"
-LOCAL_VERSION = "LOCAL"
-ORIGINAL_VERSION = "ORIGINAL"
-FRENCH_VERSION_SUFFIX = "VF"
-ORIGINAL_VERSION_SUFFIX = "VO"
-
-
 ACCEPTED_FEATURES_MAPPING = {
-    DUBBED_VERSION: ShowtimeFeatures.VF.value,
-    LOCAL_VERSION: ShowtimeFeatures.VF.value,
-    ORIGINAL_VERSION: ShowtimeFeatures.VO.value,
+    allocine_serializers.AllocineShowtimeDiffusionVersion.DUBBED: ShowtimeFeatures.VF.value,
+    allocine_serializers.AllocineShowtimeDiffusionVersion.LOCAL: ShowtimeFeatures.VF.value,
+    allocine_serializers.AllocineShowtimeDiffusionVersion.ORIGINAL: ShowtimeFeatures.VO.value,
 }
 
 
@@ -60,43 +50,34 @@ class AllocineStocks(LocalProvider):
             .all()
         )
 
-        self.movie_information: dict | None = None
-        self.filtered_movie_showtimes: list[dict] | None = None
+        self.movie: allocine_serializers.AllocineMovie
+        self.showtimes: list[allocine_serializers.AllocineShowtime]
         self.label: offers_models.PriceCategoryLabel = offers_api.get_or_create_label("Tarif unique", self.venue)
         self.price_categories_by_offer: dict[offers_models.Offer, list[offers_models.PriceCategory]] = {}
 
     def __next__(self) -> list[ProvidableInfo]:
-        raw_movie_information: dict = next(self.movies_showtimes)
-        try:
-            self.movie_information = retrieve_movie_information(raw_movie_information["node"]["movie"])
-            self.filtered_movie_showtimes = _filter_only_digital_and_non_experience_showtimes(
-                raw_movie_information["node"]["showtimes"]
-            )
-        except (KeyError, TypeError):
-            self.log_provider_event(
-                providers_models.LocalProviderEventType.SyncError,
-                f"Error parsing movie for theater {self.venue.siret}",
-            )
-            return []
+        movie_showtimes = next(self.movies_showtimes)
+        self.movie = movie_showtimes.movie
+        self.showtimes = _filter_only_digital_and_non_experience_showtimes(movie_showtimes.showtimes)
 
-        showtimes_number = len(self.filtered_movie_showtimes)
         providable_information_list = []
 
-        venue_movie_unique_id = _build_movie_uuid(self.movie_information, self.venue)
+        venue_movie_unique_id = _build_movie_uuid(self.movie, self.venue)
         offer_providable_information = self.create_providable_info(
             offers_models.Offer,
-            venue_movie_unique_id,
-            datetime.utcnow(),
-            venue_movie_unique_id,
+            id_at_providers=venue_movie_unique_id,
+            new_id_at_provider=venue_movie_unique_id,
+            date_modified_at_provider=datetime.utcnow(),
         )
         providable_information_list.append(offer_providable_information)
 
-        for showtime_number in range(showtimes_number):
-            showtime = self.filtered_movie_showtimes[showtime_number]
-            id_at_providers = _build_stock_uuid(self.movie_information, self.venue, showtime)
-
+        for showtime in self.showtimes:
+            id_at_providers = _build_stock_uuid(self.movie, self.venue, showtime)
             stock_providable_information = self.create_providable_info(
-                offers_models.Stock, id_at_providers, datetime.utcnow(), id_at_providers
+                offers_models.Stock,
+                id_at_providers=id_at_providers,
+                new_id_at_provider=id_at_providers,
+                date_modified_at_provider=datetime.utcnow(),
             )
             providable_information_list.append(stock_providable_information)
 
@@ -109,13 +90,19 @@ class AllocineStocks(LocalProvider):
         if isinstance(pc_object, offers_models.Stock):
             self.fill_stock_attributes(pc_object)
 
-    def update_from_movie_information(self, offer: offers_models.Offer, movie_information: dict) -> None:
-        if self.movie_information and "description" in self.movie_information:
-            offer.description = movie_information["description"]
-        if self.movie_information and "duration" in self.movie_information:
-            offer.durationMinutes = movie_information["duration"]
+    def update_offer_from_movie(self, offer: offers_models.Offer) -> None:
+        offer.description = _build_description(self.movie)
+        offer.durationMinutes = self.movie.runtime
+        offer.name = self.movie.title
+
         if not offer.extraData:
             offer.extraData = {}
+
+        movie_data = format_movie_data_for_offer(self.movie)
+        offer.extraData["theater"] = {
+            "allocine_movie_id": self.movie.internalId,
+            "allocine_room_id": self.room_internal_id,
+        }
         for field in (
             "visa",
             "stageDirector",
@@ -126,35 +113,19 @@ class AllocineStocks(LocalProvider):
             "countries",
             "cast",
         ):
-            if field in movie_information:
+            if field in movie_data:
                 # FIXME (2023-03-16): Currently not supported by mypy https://github.com/python/mypy/issues/7178
-                offer.extraData[field] = movie_information[field]  # type: ignore [literal-required, index]
+                offer.extraData[field] = movie_data[field]  # type: ignore [literal-required, index]
 
     def fill_offer_attributes(self, allocine_offer: offers_models.Offer) -> None:
         allocine_offer.venueId = self.venue.id
         allocine_offer.bookingEmail = self.venue.bookingEmail
         allocine_offer.withdrawalDetails = self.venue.withdrawalDetails
-
-        self.update_from_movie_information(allocine_offer, self.movie_information)  # type: ignore [arg-type]
-
-        if allocine_offer.extraData is None:
-            allocine_offer.extraData = {}
-        allocine_offer.extraData["theater"] = {  # type: ignore [index]
-            "allocine_movie_id": self.movie_information["internal_id"],  # type: ignore [index]
-            "allocine_room_id": self.room_internal_id,
-        }
-
-        if self.movie_information and "visa" in self.movie_information:
-            allocine_offer.extraData["visa"] = self.movie_information["visa"]  # type: ignore [index]
-        if self.movie_information and "stageDirector" in self.movie_information:
-            allocine_offer.extraData["stageDirector"] = self.movie_information["stageDirector"]  # type: ignore [index]
-
-        allocine_offer.name = self.movie_information["title"]  # type: ignore [index]
         allocine_offer.subcategoryId = subcategories.SEANCE_CINE.id
-
-        is_new_offer_to_insert = allocine_offer.id is None
-        if is_new_offer_to_insert:
+        if allocine_offer.id is None:  # Newly created offer
             allocine_offer.isDuo = self.isDuo
+
+        self.update_offer_from_movie(allocine_offer)  # type: ignore [arg-type]
 
         last_update_for_current_provider = get_last_update_for_provider(self.provider.id, allocine_offer)
         if not last_update_for_current_provider or last_update_for_current_provider.date() != datetime.today().date():
@@ -173,17 +144,20 @@ class AllocineStocks(LocalProvider):
 
     def fill_stock_attributes(self, allocine_stock: offers_models.Stock) -> None:
         showtime_uuid = _get_showtimes_uuid_by_idAtProvider(allocine_stock.idAtProviders)  # type: ignore [arg-type]
-        showtime = _find_showtime_by_showtime_uuid(self.filtered_movie_showtimes, showtime_uuid)  # type: ignore [arg-type]
-
-        parsed_showtimes = retrieve_showtime_information(showtime)  # type: ignore [arg-type]
-        diffusion_version = parsed_showtimes["diffusionVersion"]
+        showtime = _find_showtime_by_showtime_uuid(self.showtimes, showtime_uuid)
+        if not showtime:
+            self.log_provider_event(
+                providers_models.LocalProviderEventType.SyncError,
+                f"Error: showtime with UUID {showtime_uuid} cannot be found",
+            )
+            return
 
         allocine_stock.offer = self.last_offer
-        if diffusion_version in ACCEPTED_FEATURES_MAPPING:
-            allocine_stock.features = [ACCEPTED_FEATURES_MAPPING.get(diffusion_version)]
+        if showtime.diffusionVersion in ACCEPTED_FEATURES_MAPPING:
+            allocine_stock.features = [ACCEPTED_FEATURES_MAPPING.get(showtime.diffusionVersion)]
 
         local_tz = get_department_timezone(self.venue.departementCode)
-        date_in_utc = local_datetime_to_default_timezone(parsed_showtimes["startsAt"], local_tz)
+        date_in_utc = local_datetime_to_default_timezone(showtime.startsAt, local_tz)
         allocine_stock.beginningDatetime = date_in_utc
 
         is_new_stock_to_insert = allocine_stock.id is None
@@ -234,8 +208,8 @@ class AllocineStocks(LocalProvider):
         raise AllocineStocksPriceRule("Aucun prix par défaut n'a été trouvé")
 
     def get_object_thumb(self) -> bytes:
-        if self.movie_information and "poster_url" in self.movie_information:
-            image_url = self.movie_information["poster_url"]
+        if self.movie and self.movie.poster:
+            image_url = str(self.movie.poster.url)
             return get_movie_poster(image_url)
         return bytes()
 
@@ -243,52 +217,41 @@ class AllocineStocks(LocalProvider):
         return True
 
 
-def retrieve_movie_information(raw_movie_information: dict) -> dict:
-    parsed_movie_information = {}
-    parsed_movie_information["id"] = raw_movie_information["id"]
-    parsed_movie_information["title"] = raw_movie_information["title"]
-    parsed_movie_information["internal_id"] = raw_movie_information["internalId"]
-    parsed_movie_information["genres"] = raw_movie_information["genres"]
-    parsed_movie_information["type"] = raw_movie_information["type"]
-    parsed_movie_information["companies"] = raw_movie_information["companies"]
+def format_movie_data_for_offer(movie: allocine_serializers.AllocineMovie) -> dict:
+    formatted_movie_data = {}
+    formatted_movie_data["id"] = movie.id
+    formatted_movie_data["title"] = movie.title
+    formatted_movie_data["internal_id"] = movie.internalId
+    formatted_movie_data["genres"] = movie.genres
+    formatted_movie_data["type"] = movie.type
+    formatted_movie_data["companies"] = movie.companies
+    formatted_movie_data["description"] = _build_description(movie)
+    formatted_movie_data["duration"] = movie.runtime
+    formatted_movie_data["poster_url"] = str(movie.poster.url)
+    formatted_movie_data["stageDirector"] = _build_stage_director_full_name(movie)
+    formatted_movie_data["visa"] = _get_operating_visa(movie)
+    formatted_movie_data["releaseDate"] = _get_release_date(movie)
+    formatted_movie_data["countries"] = _build_countries_list(movie)
+    formatted_movie_data["cast"] = _build_cast_list(movie)
 
-    try:
-        parsed_movie_information["description"] = _build_description(raw_movie_information)
-        parsed_movie_information["duration"] = _parse_movie_duration(raw_movie_information["runtime"])
-        parsed_movie_information["poster_url"] = _format_poster_url(raw_movie_information["poster"]["url"])
-        parsed_movie_information["stageDirector"] = _build_stage_director_full_name(raw_movie_information)
-        parsed_movie_information["visa"] = _get_operating_visa(raw_movie_information)
-        parsed_movie_information["releaseDate"] = _get_release_date(raw_movie_information)
-        parsed_movie_information["countries"] = _build_countries_list(raw_movie_information)
-        parsed_movie_information["cast"] = _build_cast_list(raw_movie_information)
-
-    except (TypeError, KeyError, IndexError):
-        pass
-
-    return parsed_movie_information
+    return formatted_movie_data
 
 
-def retrieve_showtime_information(showtime_information: dict) -> dict:
-    return {
-        "startsAt": parse(showtime_information["startsAt"]),
-        "diffusionVersion": showtime_information["diffusionVersion"],
-        "projection": showtime_information["projection"][0],
-        "experience": showtime_information["experience"],
-    }
-
-
-def _filter_only_digital_and_non_experience_showtimes(showtimes_information: list[dict]) -> list[dict]:
+def _filter_only_digital_and_non_experience_showtimes(
+    showtimes_information: list[allocine_serializers.AllocineShowtime],
+) -> list[allocine_serializers.AllocineShowtime]:
     return list(
         filter(
-            lambda showtime: showtime["projection"]
-            and showtime["projection"][0] == DIGITAL_PROJECTION
-            and showtime["experience"] is None,
+            lambda showtime: showtime.projection == allocine_serializers.AllocineShowtimeProjection.DIGITAL
+            and showtime.experience is None,
             showtimes_information,
         )
     )
 
 
-def _find_showtime_by_showtime_uuid(showtimes: list[dict], showtime_uuid: str) -> dict | None:
+def _find_showtime_by_showtime_uuid(
+    showtimes: list[allocine_serializers.AllocineShowtime], showtime_uuid: str
+) -> allocine_serializers.AllocineShowtime | None:
     for showtime in showtimes:
         if _build_showtime_uuid(showtime) == showtime_uuid:
             return showtime
@@ -299,65 +262,44 @@ def _get_showtimes_uuid_by_idAtProvider(id_at_provider: str) -> str:
     return id_at_provider.split("#")[1]
 
 
-def _build_description(movie_info: dict) -> str:
-    allocine_movie_url = movie_info["backlink"]["url"].replace("\\", "")
-    return f"{movie_info['synopsis']}\n{movie_info['backlink']['label']}: {allocine_movie_url}"
+def _build_description(movie: allocine_serializers.AllocineMovie) -> str:
+    return f"{movie.synopsis}\n{movie.backlink.label}: {movie.backlink.url}"
 
 
-def _format_poster_url(url: str) -> str:
-    return url.replace(r"\/", "/")
+def _get_operating_visa(movie: allocine_serializers.AllocineMovie) -> str | None:
+    return movie.releases[0].data.visa_number if movie.releases else None
 
 
-def _get_operating_visa(movie_info: dict) -> str | None:
-    return movie_info["releases"][0]["data"]["visa_number"]
+def _build_stage_director_full_name(movie: allocine_serializers.AllocineMovie) -> str | None:
+    return f"{movie.credits[0].person.firstName} {movie.credits[0].person.lastName}" if movie.credits else None
 
 
-def _build_stage_director_full_name(movie_info: dict) -> str:
-    stage_director_first_name = movie_info["credits"]["edges"][0]["node"]["person"]["firstName"]
-    stage_director_last_name = movie_info["credits"]["edges"][0]["node"]["person"]["lastName"]
-    return f"{stage_director_first_name} {stage_director_last_name}"
+def _build_movie_uuid(movie: allocine_serializers.AllocineMovie, venue: Venue) -> str:
+    return f"{movie.id}%{venue.id if not venue.siret else venue.siret}"
 
 
-def _parse_movie_duration(duration: str | None) -> int | None:
-    if not duration:
-        return None
-    hours_minutes = "([0-9]+)H([0-9]+)"
-    duration_regex = re.compile(hours_minutes)
-    match = duration_regex.search(duration)
-    movie_duration_hours = int(match.groups()[0])  # type: ignore [union-attr]
-    movie_duration_minutes = int(match.groups()[1])  # type: ignore [union-attr]
-    return movie_duration_hours * 60 + movie_duration_minutes
+def _build_showtime_uuid(showtime: allocine_serializers.AllocineShowtime) -> str:
+    return f"{showtime.diffusionVersion.value}/{showtime.startsAt.isoformat()}"
 
 
-def _build_movie_uuid(movie_information: dict, venue: Venue) -> str:
-    venue_id = venue.id if not venue.siret else venue.siret
-    return f"{movie_information['id']}%{venue_id}"
+def _build_stock_uuid(
+    movie: allocine_serializers.AllocineMovie, venue: Venue, showtime: allocine_serializers.AllocineShowtime
+) -> str:
+    return f"{_build_movie_uuid(movie, venue)}#{_build_showtime_uuid(showtime)}"
 
 
-def _build_showtime_uuid(showtime_details: dict) -> str:
-    return f"{showtime_details['diffusionVersion']}/{showtime_details['startsAt']}"
+def _build_countries_list(movie: allocine_serializers.AllocineMovie) -> list[str]:
+    return [country.name for country in movie.countries]
 
 
-def _build_stock_uuid(movie_information: dict, venue: Venue, showtime_details: dict) -> str:
-    return f"{_build_movie_uuid(movie_information, venue)}#{_build_showtime_uuid(showtime_details)}"
-
-
-def _build_countries_list(movie_info: dict) -> list[str]:
-    return [country["name"] for country in movie_info["countries"]]
-
-
-def _build_cast_list(movie_info: dict) -> list[str]:
+def _build_cast_list(movie: allocine_serializers.AllocineMovie) -> list[str]:
     cast_list = []
-    edges = movie_info["cast"]["edges"]
-    for edge in edges:
-        actor = edge["node"]["actor"]
-        first_name = actor.get("firstName", "") if actor else ""
-        last_name = actor.get("lastName", "") if actor else ""
-        full_name = f"{first_name} {last_name}".strip()
-        if full_name:
+    for cast_item in movie.cast.items:
+        if cast_item.actor and (cast_item.actor.firstName or cast_item.actor.lastName):
+            full_name = f"{cast_item.actor.firstName} {cast_item.actor.lastName}".strip()
             cast_list.append(full_name)
     return cast_list
 
 
-def _get_release_date(movie_info: dict) -> str:
-    return movie_info["releases"][0]["releaseDate"]["date"]
+def _get_release_date(movie: allocine_serializers.AllocineMovie) -> str | None:
+    return movie.releases[0].releaseDate.date.isoformat() if movie.releases else None
