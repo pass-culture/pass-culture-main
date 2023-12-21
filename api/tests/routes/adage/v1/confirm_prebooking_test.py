@@ -14,10 +14,10 @@ from pcapi.core.educational.factories import EducationalYearFactory
 from pcapi.core.educational.models import CollectiveBooking
 from pcapi.core.educational.models import CollectiveBookingStatus
 from pcapi.core.educational.models import Ministry
-from pcapi.core.offers.utils import offer_app_link
 from pcapi.core.testing import override_features
 from pcapi.routes.adage.v1.serialization import constants
-from pcapi.utils.date import format_into_utc_date
+
+from tests.routes.adage.v1.conftest import expected_serialized_prebooking
 
 
 pytestmark = pytest.mark.usefixtures("db_session")
@@ -26,12 +26,7 @@ pytestmark = pytest.mark.usefixtures("db_session")
 @freeze_time("2021-10-15 09:00:00")
 class Returns200Test:
     def test_confirm_collective_prebooking(self, client, caplog) -> None:
-        redactor = EducationalRedactorFactory(
-            civility="Mme",
-            firstName="Jeanne",
-            lastName="Dodu",
-            email="jeanne.dodu@example.com",
-        )
+        redactor = EducationalRedactorFactory()
         educational_institution = EducationalInstitutionFactory()
         educational_year = EducationalYearFactory(adageId="1")
         EducationalDepositFactory(
@@ -68,59 +63,7 @@ class Returns200Test:
         }
 
         assert response.status_code == 200
-        stock = booking.collectiveStock
-        offer = stock.collectiveOffer
-        venue = offer.venue
-        assert response.json == {
-            "address": offer.offerVenue["otherAddress"],
-            "accessibility": "Non accessible",
-            "beginningDatetime": format_into_utc_date(stock.beginningDatetime),
-            "cancellationDate": None,
-            "cancellationLimitDate": format_into_utc_date(booking.cancellationLimitDate),
-            "city": venue.city,
-            "confirmationDate": "2021-10-15T09:00:00Z",
-            "confirmationLimitDate": format_into_utc_date(booking.confirmationLimitDate),
-            "contact": {"email": offer.contactEmail, "phone": offer.contactPhone},
-            "coordinates": {
-                "latitude": float(venue.latitude),
-                "longitude": float(venue.longitude),
-            },
-            "creationDate": format_into_utc_date(booking.dateCreated),
-            "description": offer.description,
-            "durationMinutes": offer.durationMinutes,
-            "expirationDate": None,
-            "id": booking.id,
-            "isDigital": False,
-            "venueName": venue.name,
-            "name": offer.name,
-            "numberOfTickets": stock.numberOfTickets,
-            "participants": [student.value for student in offer.students],
-            "priceDetail": stock.priceDetail,
-            "postalCode": venue.postalCode,
-            "price": float(stock.price),
-            "quantity": 1,
-            "redactor": {
-                "email": "jeanne.dodu@example.com",
-                "redactorFirstName": "Jeanne",
-                "redactorLastName": "Dodu",
-                "redactorCivility": "Mme",
-            },
-            "UAICode": booking.educationalInstitution.institutionId,
-            "yearId": int(booking.educationalYearId),
-            "status": "CONFIRMED",
-            "subcategoryLabel": offer.subcategory.app_label,
-            "venueTimezone": venue.timezone,
-            "totalAmount": float(stock.price),
-            "url": offer_app_link(offer),
-            "withdrawalDetails": None,
-            "domainLabels": [domain.name for domain in offer.domains],
-            "domainIds": [domain.id for domain in offer.domains],
-            "interventionArea": offer.interventionArea,
-            "imageUrl": None,
-            "imageCredit": None,
-            "venueId": venue.id,
-            "offererName": venue.managingOfferer.name,
-        }
+        assert response.json == expected_serialized_prebooking(booking)
         assert (
             CollectiveBooking.query.filter(CollectiveBooking.id == booking.id).one().status
             == CollectiveBookingStatus.CONFIRMED

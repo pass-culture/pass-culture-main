@@ -7,9 +7,9 @@ from pcapi.core.educational.factories import EducationalInstitutionFactory
 from pcapi.core.educational.factories import EducationalRedactorFactory
 from pcapi.core.educational.factories import EducationalYearFactory
 from pcapi.core.educational.models import StudentLevels
-from pcapi.core.offers.utils import offer_app_link
 from pcapi.core.testing import assert_num_queries
-from pcapi.utils.date import format_into_utc_date
+
+from tests.routes.adage.v1.conftest import expected_serialized_prebooking
 
 
 @pytest.mark.usefixtures("db_session")
@@ -56,69 +56,7 @@ class Returns200Test:
             response = client.with_eac_token().get(dst)
 
         assert response.status_code == 200
-
-        stock = booking.collectiveStock
-        offer = stock.collectiveOffer
-        venue = offer.venue
-        assert response.json == {
-            "prebookings": [
-                {
-                    "accessibility": "Auditif, Visuel",
-                    "address": "1 rue des polissons, Paris 75017",
-                    "beginningDatetime": format_into_utc_date(stock.beginningDatetime),
-                    "cancellationDate": None,
-                    "cancellationLimitDate": format_into_utc_date(booking.cancellationLimitDate),
-                    "city": venue.city,
-                    "confirmationDate": format_into_utc_date(booking.confirmationDate),
-                    "confirmationLimitDate": format_into_utc_date(booking.confirmationLimitDate),
-                    "contact": {"email": "miss.rond@point.com", "phone": "0101010101"},
-                    "coordinates": {
-                        "latitude": float(venue.latitude),
-                        "longitude": float(venue.longitude),
-                    },
-                    "creationDate": format_into_utc_date(booking.dateCreated),
-                    "description": offer.description,
-                    "durationMinutes": offer.durationMinutes,
-                    "expirationDate": None,
-                    "id": booking.id,
-                    "isDigital": False,
-                    "venueName": venue.name,
-                    "name": offer.name,
-                    "numberOfTickets": stock.numberOfTickets,
-                    "participants": [
-                        "CAP - 1re ann\u00e9e",
-                        "CAP - 2e ann\u00e9e",
-                        "Lyc\u00e9e - Seconde",
-                        "Lyc\u00e9e - Premi\u00e8re",
-                    ],
-                    "priceDetail": stock.priceDetail,
-                    "postalCode": venue.postalCode,
-                    "price": float(stock.price),
-                    "quantity": 1,
-                    "redactor": {
-                        "email": "jean.doux@example.com",
-                        "redactorFirstName": "Jean",
-                        "redactorLastName": "Doudou",
-                        "redactorCivility": "M.",
-                    },
-                    "UAICode": booking.educationalInstitution.institutionId,
-                    "yearId": int(booking.educationalYearId),
-                    "status": "CONFIRMED",
-                    "subcategoryLabel": offer.subcategory.app_label,
-                    "venueTimezone": venue.timezone,
-                    "totalAmount": float(stock.price),
-                    "url": offer_app_link(offer),
-                    "withdrawalDetails": None,
-                    "domainIds": [domain.id for domain in offer.domains],
-                    "domainLabels": [domain.name for domain in offer.domains],
-                    "interventionArea": offer.interventionArea,
-                    "imageUrl": None,
-                    "imageCredit": None,
-                    "venueId": venue.id,
-                    "offererName": venue.managingOfferer.name,
-                }
-            ],
-        }
+        assert response.json == {"prebookings": [expected_serialized_prebooking(booking)]}
 
     def test_get_prebookings_with_query_params(self, client: Any) -> None:
         redactor = EducationalRedactorFactory(
@@ -155,63 +93,4 @@ class Returns200Test:
             response = client.with_eac_token().get(dst)
 
         assert response.status_code == 200
-        stock = booking.collectiveStock
-        offer = stock.collectiveOffer
-        venue = offer.venue
-        assert response.json == {
-            "prebookings": [
-                {
-                    "accessibility": "Non accessible",
-                    "address": "1 rue des polissons, Paris 75017",
-                    "beginningDatetime": format_into_utc_date(stock.beginningDatetime),
-                    "cancellationDate": None,
-                    "cancellationLimitDate": format_into_utc_date(booking.cancellationLimitDate),
-                    "city": venue.city,
-                    "confirmationDate": format_into_utc_date(booking.confirmationDate),
-                    "confirmationLimitDate": format_into_utc_date(booking.confirmationLimitDate),
-                    "contact": {
-                        "email": offer.contactEmail,
-                        "phone": offer.contactPhone,
-                    },
-                    "coordinates": {
-                        "latitude": float(venue.latitude),
-                        "longitude": float(venue.longitude),
-                    },
-                    "creationDate": format_into_utc_date(booking.dateCreated),
-                    "description": offer.description,
-                    "durationMinutes": offer.durationMinutes,
-                    "expirationDate": None,
-                    "id": booking.id,
-                    "isDigital": False,
-                    "venueName": venue.name,
-                    "name": offer.name,
-                    "numberOfTickets": stock.numberOfTickets,
-                    "participants": [student.value for student in offer.students],
-                    "priceDetail": stock.priceDetail,
-                    "postalCode": venue.postalCode,
-                    "price": float(stock.price),
-                    "quantity": 1,
-                    "redactor": {
-                        "email": "jean.doux@example.com",
-                        "redactorFirstName": "Jean",
-                        "redactorLastName": "Doudou",
-                        "redactorCivility": "M.",
-                    },
-                    "UAICode": booking.educationalInstitution.institutionId,
-                    "yearId": int(booking.educationalYearId),
-                    "status": "PENDING",
-                    "subcategoryLabel": "Séance de cinéma",
-                    "venueTimezone": venue.timezone,
-                    "totalAmount": float(stock.price),
-                    "url": offer_app_link(offer),
-                    "withdrawalDetails": None,
-                    "domainIds": [domain.id for domain in offer.domains],
-                    "domainLabels": [domain.name for domain in offer.domains],
-                    "interventionArea": offer.interventionArea,
-                    "imageUrl": None,
-                    "imageCredit": None,
-                    "venueId": venue.id,
-                    "offererName": venue.managingOfferer.name,
-                }
-            ],
-        }
+        assert response.json == {"prebookings": [expected_serialized_prebooking(booking)]}
