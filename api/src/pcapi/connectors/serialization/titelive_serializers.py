@@ -36,7 +36,7 @@ class TiteliveArticle(BaseModel):
     contenu_explicite: str
     dateparution: datetime.date | None
     distributeur: str | None
-    editeur: str
+    editeur: str | None
     if typing.TYPE_CHECKING:
         gencod: str
     else:
