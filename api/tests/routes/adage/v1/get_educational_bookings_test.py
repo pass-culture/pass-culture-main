@@ -7,6 +7,8 @@ from pcapi.core.offers.utils import offer_app_link
 from pcapi.core.testing import assert_no_duplicated_queries
 from pcapi.utils.date import format_into_utc_date
 
+from tests.routes.adage.v1.conftest import expected_serialized_prebooking
+
 
 @pytest.mark.usefixtures("db_session")
 class Returns200Test:
@@ -410,61 +412,4 @@ class Returns200Test:
         )
 
         assert response.status_code == 200
-        stock1 = booking1.collectiveStock
-        offer1 = stock1.collectiveOffer
-        venue1 = offer1.venue
-
-        assert response.json == {
-            "prebookings": [
-                {
-                    "address": offer1.offerVenue["otherAddress"],
-                    "accessibility": "Non accessible",
-                    "beginningDatetime": format_into_utc_date(stock1.beginningDatetime),
-                    "cancellationDate": None,
-                    "cancellationLimitDate": format_into_utc_date(booking1.cancellationLimitDate),
-                    "city": venue1.city,
-                    "confirmationDate": format_into_utc_date(booking1.confirmationDate),
-                    "confirmationLimitDate": format_into_utc_date(booking1.confirmationLimitDate),
-                    "contact": {"email": offer1.contactEmail, "phone": offer1.contactPhone},
-                    "coordinates": {
-                        "latitude": float(venue1.latitude),
-                        "longitude": float(venue1.longitude),
-                    },
-                    "creationDate": format_into_utc_date(booking1.dateCreated),
-                    "description": offer1.description,
-                    "durationMinutes": offer1.durationMinutes,
-                    "expirationDate": None,
-                    "id": booking1.id,
-                    "isDigital": False,
-                    "venueName": venue1.name,
-                    "name": offer1.name,
-                    "numberOfTickets": stock1.numberOfTickets,
-                    "participants": [students.value for students in offer1.students],
-                    "priceDetail": stock1.priceDetail,
-                    "postalCode": venue1.postalCode,
-                    "price": float(stock1.price),
-                    "quantity": 1,
-                    "redactor": {
-                        "email": booking1.educationalRedactor.email,
-                        "redactorFirstName": booking1.educationalRedactor.firstName,
-                        "redactorLastName": booking1.educationalRedactor.lastName,
-                        "redactorCivility": booking1.educationalRedactor.civility,
-                    },
-                    "UAICode": booking1.educationalInstitution.institutionId,
-                    "yearId": int(booking1.educationalYearId),
-                    "status": "CONFIRMED",
-                    "subcategoryLabel": offer1.subcategory.app_label,
-                    "venueTimezone": venue1.timezone,
-                    "totalAmount": float(stock1.price),
-                    "url": offer_app_link(offer1),
-                    "withdrawalDetails": None,
-                    "domainIds": [domain.id for domain in offer1.domains],
-                    "domainLabels": [domain.name for domain in offer1.domains],
-                    "interventionArea": offer1.interventionArea,
-                    "imageUrl": None,
-                    "imageCredit": None,
-                    "venueId": venue1.id,
-                    "offererName": venue1.managingOfferer.name,
-                }
-            ]
-        }
+        assert response.json == {"prebookings": [expected_serialized_prebooking(booking1)]}
