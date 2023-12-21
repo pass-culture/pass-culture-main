@@ -1,7 +1,7 @@
 import { render, screen } from '@testing-library/react'
 import React from 'react'
 
-import { RootState } from 'store/reducers'
+import { RootState } from 'store/rootReducer'
 
 import AppPreviewOffer, { AppPreviewOfferProps } from '../AppPreviewOffer'
 

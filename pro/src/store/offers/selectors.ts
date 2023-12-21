@@ -1,5 +1,5 @@
 import { SearchFiltersParams } from 'core/Offers/types'
-import { RootState } from 'store/reducers'
+import { RootState } from 'store/rootReducer'
 
 export const searchFiltersSelector = (
   state: RootState

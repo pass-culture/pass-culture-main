@@ -1,4 +1,4 @@
-import { RootState } from 'store/reducers'
+import { RootState } from 'store/rootReducer'
 
 import { initialState } from '../reducer'
 import { notificationSelector } from '../selectors'
