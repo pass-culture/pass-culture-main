@@ -1,6 +1,5 @@
 import { setUser as setSentryUser } from '@sentry/browser'
 import React, { useEffect, useState } from 'react'
-import { useSelector } from 'react-redux'
 import { Navigate, Outlet, useLocation } from 'react-router-dom'
 
 import { findCurrentRoute } from 'app/AppRouter/findCurrentRoute'
@@ -11,8 +10,6 @@ import useCurrentUser from 'hooks/useCurrentUser'
 import useFocus from 'hooks/useFocus'
 import useLogNavigation from 'hooks/useLogNavigation'
 import usePageTitle from 'hooks/usePageTitle'
-import { maintenanceSelector } from 'store/selectors/maintenanceSelector'
-import { URL_FOR_MAINTENANCE } from 'utils/config'
 import { Consents, initCookieConsent } from 'utils/cookieConsentModal'
 
 window.beamer_config = { product_id: 'vjbiYuMS52566', lazy: true }
@@ -59,7 +56,6 @@ const App = (): JSX.Element | null => {
     }
   }, [location.pathname])
 
-  const isMaintenanceActivated = useSelector(maintenanceSelector)
   useConfigureFirebase({
     currentUserId: currentUser?.id.toString(),
     isCookieEnabled: consentedToFirebase,
@@ -91,16 +87,6 @@ const App = (): JSX.Element | null => {
       setSentryUser({ id: currentUser.id.toString() })
     }
   }, [currentUser])
-
-  useEffect(() => {
-    if (isMaintenanceActivated) {
-      window.location.href = URL_FOR_MAINTENANCE
-    }
-  }, [isMaintenanceActivated])
-
-  if (isMaintenanceActivated) {
-    return null
-  }
 
   const currentRoute = findCurrentRoute(location)
   if (!currentRoute?.meta?.public && currentUser === null) {

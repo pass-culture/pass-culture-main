@@ -1,9 +1,8 @@
 import { setUser } from '@sentry/browser'
-import { screen, waitFor } from '@testing-library/react'
+import { screen } from '@testing-library/react'
 import React from 'react'
 import { Route, Routes } from 'react-router-dom'
 
-import { URL_FOR_MAINTENANCE } from 'utils/config'
 import { renderWithProviders } from 'utils/renderWithProviders'
 
 import { App } from '../App'
@@ -58,20 +57,6 @@ describe('App', () => {
     expect(await screen.findByText('Sub component')).toBeInTheDocument()
     expect(setUser).toHaveBeenCalledWith({
       id: store.user.currentUser.id.toString(),
-    })
-  })
-
-  it('should render a Redirect component when isMaintenanceActivated is true', async () => {
-    store = {
-      ...store,
-      maintenance: {
-        isActivated: true,
-      },
-    }
-    renderApp(store)
-
-    await waitFor(() => {
-      expect(window.location.href).toEqual(URL_FOR_MAINTENANCE)
     })
   })
 
