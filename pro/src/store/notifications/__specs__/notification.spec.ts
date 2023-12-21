@@ -1,13 +1,14 @@
 import { NotificationTypeEnum } from 'hooks/useNotification'
+
 import {
   closeNotification,
-  notificationReducer,
+  notificationsReducer,
   showNotification,
   initialState as notificationInitialState,
   NotificationState,
-} from 'store/reducers/notificationReducer'
+} from '../reducer'
 
-describe('notificationReducer', () => {
+describe('notificationsReducer', () => {
   let initialState: NotificationState
   beforeEach(() => {
     initialState = notificationInitialState
@@ -16,7 +17,7 @@ describe('notificationReducer', () => {
   it('should remove the notification when closing it', () => {
     const action = closeNotification()
 
-    const state = notificationReducer(initialState, action)
+    const state = notificationsReducer(initialState, action)
 
     expect(state.notification).toBeNull()
   })
@@ -28,7 +29,7 @@ describe('notificationReducer', () => {
     }
     const action = showNotification(notificationMessage)
 
-    const state = notificationReducer(initialState, action)
+    const state = notificationsReducer(initialState, action)
 
     expect(state.notification).toStrictEqual(notificationMessage)
   })

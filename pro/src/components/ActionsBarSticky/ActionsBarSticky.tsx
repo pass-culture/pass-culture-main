@@ -2,7 +2,7 @@ import classnames from 'classnames'
 import React, { useEffect } from 'react'
 import { useDispatch } from 'react-redux'
 
-import { setIsStickyBarOpen } from 'store/reducers/notificationReducer'
+import { setIsStickyBarOpen } from 'store/notifications/reducer'
 
 import style from './ActionsBarSticky.module.scss'
 import Left from './ActionsBarStickyLeft'
@@ -24,6 +24,7 @@ const ActionsBarSticky = ({
       dispatch(setIsStickyBarOpen(false))
     }
   }, [])
+
   return (
     <div
       className={classnames(style['actions-bar'], className)}
