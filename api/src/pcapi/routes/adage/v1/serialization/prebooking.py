@@ -84,6 +84,8 @@ class EducationalBookingResponse(AdageBaseResponseModel):
     interventionArea: list[str]
     imageCredit: str | None = Field(description="Credit for the source image")
     imageUrl: str | None = Field(description="Url for offer image")
+    venueId: int
+    offererName: str
 
     class Config:
         title = "Prebooking detailed response"
@@ -110,26 +112,30 @@ class EducationalBookingPerYearResponse(AdageBaseResponseModel):
     redactorEmail: str
     domainIds: list[int]
     domainLabels: list[str]
+    venueId: int | None
+    offererName: str | None
 
 
 def get_collective_bookings_per_year_response(
-    educational_bookings: Iterable[CollectiveBooking],
+    bookings: Iterable[CollectiveBooking],
 ) -> "EducationalBookingsPerYearResponse":
     serialized_bookings = [
         EducationalBookingPerYearResponse(
-            id=educational_booking.id,
-            UAICode=educational_booking.educationalInstitution.institutionId,
-            status=get_collective_booking_status(educational_booking),  # type: ignore [arg-type]
-            confirmationLimitDate=educational_booking.confirmationLimitDate,
-            totalAmount=educational_booking.collectiveStock.price,
-            beginningDatetime=educational_booking.collectiveStock.beginningDatetime,
-            venueTimezone=educational_booking.collectiveStock.collectiveOffer.venue.timezone,
-            name=educational_booking.collectiveStock.collectiveOffer.name,
-            redactorEmail=educational_booking.educationalRedactor.email,
-            domainIds=[domain.id for domain in educational_booking.collectiveStock.collectiveOffer.domains],
-            domainLabels=[domain.name for domain in educational_booking.collectiveStock.collectiveOffer.domains],
+            id=booking.id,
+            UAICode=booking.educationalInstitution.institutionId,
+            status=get_collective_booking_status(booking),  # type: ignore [arg-type]
+            confirmationLimitDate=booking.confirmationLimitDate,
+            totalAmount=booking.collectiveStock.price,
+            beginningDatetime=booking.collectiveStock.beginningDatetime,
+            venueTimezone=booking.collectiveStock.collectiveOffer.venue.timezone,
+            name=booking.collectiveStock.collectiveOffer.name,
+            redactorEmail=booking.educationalRedactor.email,
+            domainIds=[domain.id for domain in booking.collectiveStock.collectiveOffer.domains],
+            domainLabels=[domain.name for domain in booking.collectiveStock.collectiveOffer.domains],
+            venueId=booking.collectiveStock.collectiveOffer.venueId,
+            offererName=booking.collectiveStock.collectiveOffer.venue.managingOfferer.name,
         )
-        for educational_booking in educational_bookings
+        for booking in bookings
     ]
     return EducationalBookingsPerYearResponse(bookings=serialized_bookings)
 
@@ -207,6 +213,8 @@ def serialize_collective_booking(collective_booking: CollectiveBooking) -> Educa
         interventionArea=offer.interventionArea,
         imageCredit=offer.imageCredit,
         imageUrl=offer.imageUrl,
+        venueId=venue.id,
+        offererName=venue.managingOfferer.name,
     )
 
 
@@ -332,4 +340,6 @@ def serialize_reibursement_notification(
         reimbursementReason=reason,
         reimbursedValue=value,
         reimbursementDetails=details,
+        venueId=venue.id,
+        offererName=venue.managingOfferer.name,
     )

@@ -118,6 +118,8 @@ class Returns200Test:
             "interventionArea": offer.interventionArea,
             "imageUrl": None,
             "imageCredit": None,
+            "venueId": venue.id,
+            "offererName": venue.managingOfferer.name,
         }
         assert (
             CollectiveBooking.query.filter(CollectiveBooking.id == booking.id).one().status
