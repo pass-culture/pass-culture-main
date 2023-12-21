@@ -88,20 +88,20 @@ class SiretInfo(pydantic_v1.BaseModel):
     legal_category_code: str
 
 
-def get_siren(siren: str, with_address: bool = True) -> SirenInfo:
+def get_siren(siren: str, with_address: bool = True, raise_if_non_public: bool = True) -> SirenInfo:
     """Return information about the requested SIREN.
 
     Getting the address requires a second HTTP request to the Sirene
     API. Ask it only if needed.
     """
     _check_feature_flag()
-    return _get_backend().get_siren(siren, with_address=with_address)
+    return _get_backend().get_siren(siren, with_address=with_address, raise_if_non_public=raise_if_non_public)
 
 
-def get_siret(siret: str) -> SiretInfo:
+def get_siret(siret: str, raise_if_non_public: bool = True) -> SiretInfo:
     """Return information about the requested SIRET."""
     _check_feature_flag()
-    return _get_backend().get_siret(siret)
+    return _get_backend().get_siret(siret, raise_if_non_public=raise_if_non_public)
 
 
 def get_legal_category_code(siren: str) -> str:
@@ -126,10 +126,10 @@ def _check_feature_flag() -> None:
 
 
 class BaseBackend:
-    def get_siren(self, siren: str, with_address: bool = True) -> SirenInfo:
+    def get_siren(self, siren: str, with_address: bool = True, raise_if_non_public: bool = True) -> SirenInfo:
         raise NotImplementedError()
 
-    def get_siret(self, siret: str) -> SiretInfo:
+    def get_siret(self, siret: str, raise_if_non_public: bool = False) -> SiretInfo:
         raise NotImplementedError()
 
 
@@ -141,7 +141,7 @@ class TestingBackend(BaseBackend):
         insee_code="75101",
     )
 
-    def get_siren(self, siren: str, with_address: bool = True) -> SirenInfo:
+    def get_siren(self, siren: str, with_address: bool = True, raise_if_non_public: bool = True) -> SirenInfo:
         assert len(siren) == 9
         if siren == "000000000":
             raise UnknownEntityException()
@@ -166,7 +166,7 @@ class TestingBackend(BaseBackend):
             active=True,
         )
 
-    def get_siret(self, siret: str) -> SiretInfo:
+    def get_siret(self, siret: str, raise_if_non_public: bool = False) -> SiretInfo:
         assert len(siret) == 14
 
         siret_ape = defaultdict(
@@ -290,12 +290,14 @@ class InseeBackend(BaseBackend):
             insee_code=block["codeCommuneEtablissement"] or "",
         )
 
-    def get_siren(self, siren: str, with_address: bool = True) -> SirenInfo:
+    def get_siren(self, siren: str, with_address: bool = True, raise_if_non_public: bool = True) -> SirenInfo:
         subpath = f"/siren/{siren}"
         data = self._cached_get(subpath)["uniteLegale"]
         head_office = self._get_head_office(data)
         head_office_siret = siren + head_office["nicSiegeUniteLegale"]
-        address = self.get_siret(head_office_siret).address if with_address else None
+        address = (
+            self.get_siret(head_office_siret, raise_if_non_public=raise_if_non_public).address if with_address else None
+        )
         info = SirenInfo(
             siren=siren,
             name=self._get_name_from_siren_data(data),
@@ -305,10 +307,11 @@ class InseeBackend(BaseBackend):
             address=address,
             active=head_office["etatAdministratifUniteLegale"] == "A",
         )
-        self._check_non_public_data(info)
+        if raise_if_non_public:
+            self._check_non_public_data(info)
         return info
 
-    def get_siret(self, siret: str) -> SiretInfo:
+    def get_siret(self, siret: str, raise_if_non_public: bool = True) -> SiretInfo:
         subpath = f"/siret/{siret}"
         data = self._cached_get(subpath)["etablissement"]
         legal_unit_block = data["uniteLegale"]
@@ -325,5 +328,6 @@ class InseeBackend(BaseBackend):
             ape_code=legal_unit_block["activitePrincipaleUniteLegale"],
             legal_category_code=legal_unit_block["categorieJuridiqueUniteLegale"],
         )
-        self._check_non_public_data(info)
+        if raise_if_non_public:
+            self._check_non_public_data(info)
         return info
