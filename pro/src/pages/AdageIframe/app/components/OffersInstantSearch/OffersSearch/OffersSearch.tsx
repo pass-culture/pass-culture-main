@@ -4,6 +4,7 @@ import { useInstantSearch } from 'react-instantsearch'
 
 import { AdageFrontRoles, VenueResponse } from 'apiClient/adage'
 import { api, apiAdage } from 'apiClient/api'
+import { StudentLevels } from 'apiClient/v1'
 import { GET_DATA_ERROR_MESSAGE } from 'core/shared'
 import useActiveFeature from 'hooks/useActiveFeature'
 import useIsElementVisible from 'hooks/useIsElementVisible'
@@ -55,7 +56,7 @@ export const OffersSearch = ({
   venueFilter,
   setGeoRadius,
 }: SearchProps): JSX.Element => {
-  const { setFacetFilters } = useContext(FacetFiltersContext)
+  const { facetFilters, setFacetFilters } = useContext(FacetFiltersContext)
   const { adageUser } = useAdageUser()
   const params = new URLSearchParams(window.location.search)
   const isUserAdmin = adageUser.role === AdageFrontRoles.READONLY
@@ -76,6 +77,15 @@ export const OffersSearch = ({
   )?.results
   const nbHits = mainOffersSearchResults?.nbHits
   const isFormatEnabled = useActiveFeature('WIP_ENABLE_FORMAT')
+
+  const isMarseilleEnabled = useActiveFeature('WIP_ENABLE_MARSEILLE')
+  const isUserInMarseilleProgram = (adageUser.programs ?? []).some(
+    (prog) => prog.name === 'marseille_en_grand'
+  )
+  const filterOnMarseilleStudents =
+    isMarseilleEnabled &&
+    isUserInMarseilleProgram &&
+    params.get('program') === 'marseille'
 
   useEffect(() => {
     const getAllCategories = async () => {
@@ -109,6 +119,24 @@ export const OffersSearch = ({
     getAllCategories()
     // eslint-disable-next-line @typescript-eslint/no-floating-promises
     getAllDomains()
+
+    if (filterOnMarseilleStudents) {
+      // eslint-disable-next-line @typescript-eslint/no-floating-promises
+      formik.setFieldValue('students', [
+        //  TODO Replace enum values with the Marseille levels when they'll be created
+        StudentLevels.LYC_E_TERMINALE,
+        StudentLevels.LYC_E_SECONDE,
+      ])
+
+      setFacetFilters([
+        ...facetFilters,
+        [
+          //  TODO Replace enum values with the Marseille levels when they'll be created
+          `offer.students:${StudentLevels.LYC_E_TERMINALE}`,
+          `offer.students:${StudentLevels.LYC_E_SECONDE}`,
+        ],
+      ])
+    }
   }, [])
 
   const handleSubmit = () => {
@@ -116,7 +144,6 @@ export const OffersSearch = ({
       ...formik.values,
       uai: adageUser.uai ? ['all', adageUser.uai] : ['all'],
     })
-
     setFacetFilters(updatedFilters.queryFilters)
 
     const adageUserHasValidGeoloc =

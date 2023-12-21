@@ -28,12 +28,14 @@ export const AppLayout = ({
   const isUserInMarseilleProgram = (adageUser.programs ?? []).some(
     (prog) => prog.name === 'marseille_en_grand'
   )
+  const recirectToMarseilleSearch =
+    isMarseilleEnabled && isUserInMarseilleProgram
   const venueId = params.get('venue')
 
   const redirectToSearch =
     !isDiscoveryActive ||
     venueId ||
-    (isMarseilleEnabled && isUserInMarseilleProgram) ||
+    recirectToMarseilleSearch ||
     adageUser.role === AdageFrontRoles.READONLY
 
   return (
@@ -48,7 +50,12 @@ export const AppLayout = ({
             path=""
             element={
               redirectToSearch ? (
-                <Navigate to={`recherche${search}`} />
+                <Navigate
+                  to={`recherche${search}${
+                    //  To apply marseille student level filters only when redirecting to search from '/'
+                    recirectToMarseilleSearch ? '&program=marseille' : ''
+                  }`}
+                />
               ) : (
                 <Navigate to={`decouverte${search}`} />
               )
