@@ -7,6 +7,7 @@ from flask import request
 from flask import url_for
 from flask_login import current_user
 import sqlalchemy as sa
+from werkzeug.exceptions import NotFound
 
 from pcapi.core import search
 from pcapi.core.educational import models as educational_models
@@ -342,4 +343,22 @@ def batch_reject_collective_offer_templates() -> utils.BackofficeResponse:
     _batch_validate_or_reject_collective_offer_templates(OfferValidationStatus.REJECTED, form.object_ids_list)
     return redirect(
         request.referrer or url_for("backoffice_web.collective_offer_template.list_collective_offer_templates"), 303
+    )
+
+
+@list_collective_offer_templates_blueprint.route("/<int:collective_offer_template_id>/details", methods=["GET"])
+def get_collective_offer_template_details(collective_offer_template_id: int) -> utils.BackofficeResponse:
+    collective_offer_template_query = educational_models.CollectiveOfferTemplate.query.filter(
+        educational_models.CollectiveOfferTemplate.id == collective_offer_template_id
+    ).options(
+        sa.orm.joinedload(educational_models.CollectiveOfferTemplate.venue).joinedload(
+            offerers_models.Venue.managingOfferer
+        )
+    )
+    collective_offer_template = collective_offer_template_query.one_or_none()
+    if not collective_offer_template:
+        raise NotFound()
+    return render_template(
+        "collective_offer_template/details.html",
+        collective_offer_template=collective_offer_template,
     )
