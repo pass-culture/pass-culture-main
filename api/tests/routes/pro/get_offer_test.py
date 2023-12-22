@@ -181,21 +181,6 @@ class Returns200Test:
             "id": stock.offer.id,
             "status": "ACTIVE",
             "isNonFreeOffer": None,
-            "stocks": [
-                {
-                    "activationCodesExpirationDatetime": None,
-                    "beginningDatetime": "2020-10-15T01:00:00Z",
-                    "bookingLimitDatetime": "2020-10-15T01:00:00Z",
-                    "bookingsQuantity": 0,
-                    "hasActivationCode": False,
-                    "priceCategoryId": stock.priceCategoryId,
-                    "id": stock.id,
-                    "isEventDeletable": True,
-                    "price": 10.1,
-                    "quantity": 1000,
-                    "remainingQuantity": 1000,
-                }
-            ],
             "priceCategories": [{"label": "Au pied du mur", "price": 10.1, "id": stock.priceCategoryId}],
             "subcategoryId": "SEANCE_CINE",
             "thumbUrl": None,
@@ -259,7 +244,6 @@ class Returns200Test:
         assert response.status_code == 200
         data = response.json
         assert data["subcategoryId"] == "ABO_PLATEFORME_MUSIQUE"
-        assert data["stocks"][0]["hasActivationCode"] is True
         assert data["hasStocks"] == True
 
     @freeze_time("2020-10-15 00:00:00")
@@ -274,7 +258,6 @@ class Returns200Test:
 
         # Then
         assert response.status_code == 200
-        assert len(response.json["stocks"]) == 0
         assert response.json["hasStocks"] == False
 
     def test_returns_positive_booking_count(self, client):
