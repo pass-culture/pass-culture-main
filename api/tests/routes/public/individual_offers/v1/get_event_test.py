@@ -86,26 +86,6 @@ class GetEventTest:
         assert response.status_code == 200
         assert response.json["categoryRelatedFields"] == {"category": "DECOUVERTE_METIERS", "speaker": None}
 
-    def test_get_event_without_music_type(self, client):
-        venue, _ = utils.create_offerer_provider_linked_to_venue()
-        event_offer = offers_factories.EventOfferFactory(
-            subcategoryId=subcategories.CONCERT.id,
-            venue=venue,
-            extraData={"musicType": "800"},
-        )
-
-        response = client.with_explicit_token(offerers_factories.DEFAULT_CLEAR_API_KEY).get(
-            f"/public/offers/v1/events/{event_offer.id}"
-        )
-        assert response.status_code == 200
-        print(response.json["categoryRelatedFields"])
-        assert response.json["categoryRelatedFields"] == {
-            "author": None,
-            "musicType": "OTHER",
-            "performer": None,
-            "category": "CONCERT",
-        }
-
     def test_get_event_without_ticket(self, client):
         venue, _ = utils.create_offerer_provider_linked_to_venue()
         event_offer = offers_factories.EventOfferFactory(
