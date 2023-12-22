@@ -1,3 +1,4 @@
+{% import "components/clipboard.html" as clipboard %}
 {% from "components/badges.html" import build_venue_badges %}
 {% from "components/forms.html" import build_form_fields_group with context %}
 {% import "components/links.html" as links %}
@@ -99,7 +100,9 @@
           {% if venue.publicName and venue.publicName != venue.name %}
             <p class="card-subtitle text-muted mb-3 h5">Nom d'usage : {{ venue.publicName }}</p>
           {% endif %}
-          <p class="card-subtitle text-muted mb-3 h5">Venue ID : {{ venue.id }}</p>
+          <p class="card-subtitle text-muted mb-3 h5">
+            Venue ID : {{ venue.id }} {{ clipboard.copy_to_clipboard(venue.id, "Copier l'ID du lieu") }}
+          </p>
           <p class="card-subtitle text-muted mb-3 h5">
             SIRET : {{ links.build_siret_to_external_link(venue) }}
             {% if venue.siret %}
