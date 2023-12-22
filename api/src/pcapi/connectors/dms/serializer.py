@@ -1,11 +1,16 @@
 from datetime import datetime
+from datetime import timedelta
 import logging
 import re
 from typing import Any
+from typing import Literal
 
 from dateutil import parser as date_parser
+from pydantic.v1 import Field
 from pydantic.v1 import root_validator
+from pydantic.v1 import validator
 
+from pcapi import settings
 from pcapi.connectors.dms import models as dms_models
 from pcapi.core.finance import models as finance_models
 from pcapi.core.finance.utils import format_raw_iban_and_bic
@@ -232,3 +237,110 @@ class ApplicationDetailNewJourney(ApplicationDetail):
             to_representation["siren"] = to_representation["siret"][:9]
             to_representation["label"] = obj["label"]
         return to_representation
+
+
+class Annotation(BaseModel):
+    """
+    BaseModel for DS application annotations
+    """
+
+    id: str
+    label: str
+    updated_at: datetime = Field(alias="updatedAt")
+    string_value: str = Field(alias="stringValue")
+
+
+class FieldAnnotation(Annotation):
+    """
+    Text field annotation
+    """
+
+
+class CheckBoxAnnotation(Annotation):
+    """
+    Checkbox annotation
+    """
+
+    checked: bool
+
+
+class ProcessingErrorPassCulture(FieldAnnotation):
+    label: Literal["Erreur traitement pass Culture"]
+
+    @validator("string_value")
+    def lower_string_value(cls, string_value: str) -> str:
+        return string_value.lower()
+
+
+class WaitingForOffererValidation(CheckBoxAnnotation):
+    label: Literal["En attente de validation de structure"]
+
+
+class WaitingForAdageValidation(CheckBoxAnnotation):
+    label: Literal["En attente de validation ADAGE"]
+
+
+class MarkWithoutContinuationApplicationDetail(BaseModel):
+    id: str
+    number: int
+    state: dms_models.GraphQLApplicationStates
+    updated_at: datetime
+    processing_error_pc: ProcessingErrorPassCulture | None
+    waiting_for_offerer_validation: WaitingForOffererValidation | None
+    waiting_for_adage_validation: WaitingForAdageValidation | None
+
+    @root_validator(pre=True)
+    def to_representation(cls: "MarkWithoutContinuationApplicationDetail", obj: dict) -> dict:
+        to_representation = {}
+        to_representation["id"] = obj["id"]
+        to_representation["number"] = int(obj["number"])
+        to_representation["state"] = obj["state"]
+        to_representation["updated_at"] = obj["dateDerniereModification"]
+
+        for annotation in obj["annotations"]:
+            match annotation["label"]:
+                case "Erreur traitement pass Culture":
+                    to_representation["processing_error_pc"] = ProcessingErrorPassCulture(**annotation)
+                case "En attente de validation de structure":
+                    to_representation["waiting_for_offerer_validation"] = WaitingForOffererValidation(**annotation)
+                case "En attente de validation ADAGE":
+                    to_representation["waiting_for_adage_validation"] = WaitingForAdageValidation(**annotation)
+
+        return to_representation
+
+    @property
+    def is_draft(self) -> bool:
+        return self.state == dms_models.GraphQLApplicationStates.draft
+
+    @property
+    def should_be_marked_without_continuation(self) -> bool:
+        dead_line_application = datetime.utcnow() - timedelta(
+            days=int(settings.DS_MARK_WITHOUT_CONTINUATION_APPLICATION_DEADLINE)
+        )
+        dead_line_annotation = datetime.utcnow() - timedelta(
+            days=int(settings.DS_MARK_WITHOUT_CONTINUATION_ANNOTATION_DEADLINE)
+        )
+
+        if self.updated_at < dead_line_application and self.state in (
+            dms_models.GraphQLApplicationStates.draft,
+            dms_models.GraphQLApplicationStates.on_going,
+        ):
+            if self.processing_error_pc is not None:
+                if (
+                    "adage" not in self.processing_error_pc.string_value
+                    and "rct" not in self.processing_error_pc.string_value
+                ):
+                    return True
+                if (
+                    "rct" in self.processing_error_pc.string_value
+                    and self.processing_error_pc.updated_at < dead_line_annotation
+                ):
+                    return True
+            elif self.waiting_for_offerer_validation is not None and self.waiting_for_adage_validation is not None:
+                if (
+                    self.waiting_for_offerer_validation.checked is True
+                    and self.waiting_for_offerer_validation.updated_at < dead_line_annotation
+                ) and self.waiting_for_adage_validation.checked is False:
+                    return True
+
+        return False
