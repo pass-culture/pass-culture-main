@@ -1,3 +1,4 @@
+{% import "components/clipboard.html" as clipboard %}
 {% from "components/badges.html" import build_pro_user_status_badge %}
 {% from "components/generic_modal.html" import build_modal_form with context %}
 {% from "components/forms.html" import build_form_fields_group with context %}
@@ -64,7 +65,9 @@
               {% endif %}
             </div>
           </div>
-          <p class="card-subtitle text-muted mb-3 h5">User ID : {{ user.id }}</p>
+          <p class="card-subtitle text-muted mb-3 h5">
+            User ID : {{ user.id }} {{ clipboard.copy_to_clipboard(user.id, "Copier l'ID de l'utilisateur") }}
+          </p>
           <div class="row pt-3">
             <div class="col-4">
               <div class="fs-6">
