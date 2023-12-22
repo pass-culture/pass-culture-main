@@ -5,6 +5,7 @@ from flask import url_for
 import pytest
 
 from pcapi.core.categories import subcategories_v2 as subcategories
+from pcapi.core.categories.subcategories_v2 import EacFormat
 from pcapi.core.educational import factories as educational_factories
 from pcapi.core.educational import models as educational_models
 from pcapi.core.mails import testing as mails_testing
@@ -229,6 +230,41 @@ class ListCollectiveOfferTemplatesTest(GetEndpointHelper):
         assert len(rows) == 1
 
         assert rows[0]["ID"] == str(target_offer.id)
+
+
+class GetCollectiveOfferTemplateDetailTest(GetEndpointHelper):
+    endpoint = "backoffice_web.collective_offer_template.get_collective_offer_template_details"
+    endpoint_kwargs = {"collective_offer_template_id": 1}
+    needed_permission = perm_models.Permissions.READ_OFFERS
+
+    # Use assert_num_queries() instead of assert_no_duplicated_queries() which does not detect one extra query caused
+    # by a field added in the jinja template.
+    # - fetch session (1 query)
+    # - fetch user (1 query)
+    # - fetch CollectiveOfferTemplate including joinedload of venue and offerer
+    expected_num_queries = 3
+
+    def test_nominal(self, authenticated_client):
+        collectiveOfferTemplate = educational_factories.CollectiveOfferTemplateFactory(
+            formats=[EacFormat.PROJECTION_AUDIOVISUELLE],
+        )
+        url = url_for(self.endpoint, collective_offer_template_id=collectiveOfferTemplate.id)
+        with assert_num_queries(self.expected_num_queries):
+            response = authenticated_client.get(url)
+            assert response.status_code == 200
+
+        content_as_text = html_parser.content_as_text(response.data)
+        assert f"Date de création : {collectiveOfferTemplate.dateCreated.strftime('%d/%m/%Y')}" in content_as_text
+        assert f"Description : {collectiveOfferTemplate.description}" in content_as_text
+        assert f"Structure : {collectiveOfferTemplate.venue.managingOfferer.name}" in content_as_text
+        assert f"Lieu : {collectiveOfferTemplate.venue.name}" in content_as_text
+        assert f"Formats : {EacFormat.PROJECTION_AUDIOVISUELLE.value}" in content_as_text
+
+    def test_collective_offer_template_not_found(self, authenticated_client):
+        url = url_for(self.endpoint, collective_offer_template_id=1)
+        with assert_num_queries(self.expected_num_queries):
+            response = authenticated_client.get(url)
+            assert response.status_code == 404
 
 
 class ValidateCollectiveOfferTemplateTest(PostEndpointHelper):
