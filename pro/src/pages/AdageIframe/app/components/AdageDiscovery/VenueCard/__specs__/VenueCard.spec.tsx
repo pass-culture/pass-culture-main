@@ -58,7 +58,7 @@ describe('VenueCard', () => {
 
     expect(offerElement).toHaveAttribute(
       'href',
-      '/adage-iframe/recherche?token=123&venue=28'
+      '/recherche?token=123&venue=28'
     )
   })
 })
