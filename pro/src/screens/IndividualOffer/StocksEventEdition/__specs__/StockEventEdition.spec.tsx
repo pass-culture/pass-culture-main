@@ -178,7 +178,6 @@ describe('screens:StocksEventEdition', () => {
         { id: Number(priceCategoryId), label: 'Cat 1', price: 10 },
         { id: Number(otherPriceCategoryId), label: 'Cat 2', price: 12.2 },
       ],
-      stocks: [],
       subcategoryId: SubcategoryIdEnum.SEANCE_CINE,
       thumbUrl: null,
       externalTicketOfficeUrl: null,
@@ -544,7 +543,6 @@ describe('screens:StocksEventEdition', () => {
 
   it('should not display any message when user delete empty stock', async () => {
     vi.spyOn(api, 'deleteStock').mockResolvedValue({ id: 1 })
-    apiOffer.stocks = []
     await renderStockEventScreen(apiOffer, apiStocks)
 
     await userEvent.click(
