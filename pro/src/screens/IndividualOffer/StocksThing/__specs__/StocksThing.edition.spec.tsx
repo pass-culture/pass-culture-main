@@ -122,7 +122,6 @@ describe('screens:StocksThing', () => {
       lastProvider: null,
       name: 'Séance ciné duo',
       priceCategories: [{ price: 12.2, label: 'Mon premier tariff', id: 1 }],
-      stocks: [stockToDelete],
       subcategoryId: SubcategoryIdEnum.SEANCE_CINE,
       thumbUrl: null,
       externalTicketOfficeUrl: null,
@@ -216,7 +215,6 @@ describe('screens:StocksThing', () => {
       screen.getByText('Voulez-vous supprimer ce stock ?')
     ).toBeInTheDocument()
 
-    apiOffer.stocks = []
     vi.spyOn(api, 'getOffer').mockResolvedValue(apiOffer)
     await userEvent.click(screen.getByText('Supprimer', { selector: 'button' }))
     expect(
@@ -312,7 +310,6 @@ describe('screens:StocksThing', () => {
   it('should not display any message when user delete empty stock', async () => {
     vi.spyOn(api, 'deleteStock').mockResolvedValue({ id: 1 })
     renderStockThingScreen(storeOverride)
-    apiOffer.stocks = []
     vi.spyOn(api, 'getOffer').mockResolvedValue(apiOffer)
     await screen.findByTestId('stock-thing-form')
     await userEvent.click(

@@ -24,8 +24,6 @@ import {
   GetBookingResponse,
 } from 'apiClient/v2'
 
-import { individualGetOfferStockResponseModelFactory } from './individualApiFactories'
-
 let offerId = 1
 let venueId = 1
 let offererId = 1
@@ -72,11 +70,8 @@ const collectiveStockFactory = (customStock = {}) => {
 }
 
 export const GetIndividualOfferFactory = (
-  customOffer = {},
-  customStock = individualGetOfferStockResponseModelFactory() || null,
-  customVenue = offerVenueFactory()
+  customOffer: Partial<GetIndividualOfferResponseModel> = {}
 ): GetIndividualOfferResponseModel => {
-  const stocks = customStock === null ? [] : [customStock]
   const currentOfferId = offerId++
 
   return {
@@ -88,8 +83,7 @@ export const GetIndividualOfferFactory = (
     isThing: true,
     id: currentOfferId,
     status: OfferStatus.ACTIVE,
-    stocks,
-    venue: customVenue,
+    venue: offerVenueFactory(),
     hasBookingLimitDatetimesPassed: false,
     hasStocks: true,
     dateCreated: '2020-04-12T19:31:12Z',
@@ -187,7 +181,7 @@ export const bookingRecapFactory = (
       offerId: offer.id,
       offerName: offer.name,
       offerIsEducational: false,
-      stockIdentifier: offer.stocks[0].id,
+      stockIdentifier: 1234,
       offerIsbn: '123456789',
     },
     ...customBookingRecap,
