@@ -1081,6 +1081,28 @@ class EducationalRedactor(PcObject, Base, Model):
         back_populates="educationalRedactorsFavorite",
     )
 
+    @hybrid_property
+    def full_name(self) -> str:
+        # full_name is used for display and should never be empty, which would be confused with no user.
+        # We use the email as a fallback because it is the most human-readable way to identify a single user
+        return (f"{self.firstName or ''} {self.lastName or ''}".strip()) or self.email
+
+    @full_name.expression  # type: ignore [no-redef]
+    def full_name(cls) -> str:  # pylint: disable=no-self-argument
+        return sa.func.coalesce(
+            sa.func.nullif(
+                sa.func.trim(
+                    sa.func.concat(
+                        sa.case([(cls.firstName.is_not(None), cls.firstName)], else_=""),
+                        " ",
+                        sa.case([(cls.lastName.is_not(None), cls.lastName)], else_=""),
+                    )
+                ),
+                "",
+            ),
+            cls.email,
+        )
+
 
 class CollectiveBooking(PcObject, Base, Model):
     __tablename__ = "collective_booking"

@@ -341,7 +341,6 @@ class GetIndividualOfferResponseModel(BaseModel, AccessibilityComplianceMixin):
     lastProvider: GetOfferLastProviderResponseModel | None
     name: str
     priceCategories: list[PriceCategoryResponseModel] | None
-    stocks: list[GetOfferStockResponseModel]
     subcategoryId: SubcategoryIdEnum
     thumbUrl: str | None
     externalTicketOfficeUrl: str | None
