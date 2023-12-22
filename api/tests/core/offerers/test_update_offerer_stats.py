@@ -13,15 +13,11 @@ from pcapi.core.offerers.update_offerer_stats import update_offerer_daily_views_
 from pcapi.core.offerers.update_offerer_stats import update_offerer_top_views_stats
 from pcapi.repository import db
 
-from tests.conftest import clean_database
-
 
 pytestmark = pytest.mark.usefixtures("db_session")
 
 
 class UpdateOffererStatsTest:
-    @pytest.mark.skip(reason="This test fails in the ci")
-    @clean_database
     @patch("pcapi.connectors.big_query.TestingBackend.run_query")
     def test_update_offerer_daily_views_stats(self, mock_run_query_with_params):
         offerer = OffererFactory()
@@ -78,8 +74,6 @@ class UpdateOffererStatsTest:
             {"eventDate": "2023-10-13", "numberOfViews": 15},
         ]
 
-    @pytest.mark.skip(reason="This test fails in the ci")
-    @clean_database
     @freezegun.freeze_time("2023-10-25")
     @patch("pcapi.connectors.big_query.TestingBackend.run_query")
     def test_update_offerer_top_offers_stats(self, mock_run_query_with_params):
