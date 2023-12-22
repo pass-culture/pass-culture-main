@@ -15,6 +15,7 @@ import pcapi.core.bookings.repository as bookings_repository
 from pcapi.core.external.automations import pro_user as pro_user_automations
 from pcapi.core.external.automations import user as user_automations
 from pcapi.core.external.automations import venue as venue_automations
+from pcapi.core.finance import ds
 import pcapi.core.mails.transactional as transactional_mails
 from pcapi.core.offerers.repository import (
     find_venues_of_offerers_with_no_offer_and_at_least_one_physical_venue_and_validated_x_days_ago,
@@ -408,6 +409,11 @@ def handle_deleted_dms_applications_cron() -> None:
             dms_script.handle_deleted_dms_applications(procedure_id)
         except Exception:  # pylint: disable=broad-except
             logger.exception("Failed to handle deleted DMS applications for procedure %s", procedure_id)
+
+
+@blueprint.cli.command("mark_without_continuation_applications")
+def mark_without_continuation_applications() -> None:
+    ds.mark_without_continuation_applications()
 
 
 @blueprint.cli.command("update_pending_ubble_applications_cron")

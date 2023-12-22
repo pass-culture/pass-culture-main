@@ -1,10 +1,13 @@
 import datetime
 import logging
 
+from pcapi import settings
 from pcapi.connectors.dms import api as ds_api
 from pcapi.connectors.dms import models as ds_models
+from pcapi.connectors.dms.models import GraphQLApplicationStates
 from pcapi.connectors.dms.serializer import ApplicationDetailNewJourney
 from pcapi.connectors.dms.serializer import ApplicationDetailOldJourney
+from pcapi.connectors.dms.serializer import MarkWithoutContinuationApplicationDetail
 from pcapi.domain.demarches_simplifiees import parse_raw_bank_info_data
 from pcapi.infrastructure.repository.bank_informations.bank_informations_sql_repository import (
     BankInformationsSQLRepository,
@@ -20,6 +23,8 @@ from pcapi.use_cases.save_venue_bank_informations import SaveVenueBankInformatio
 
 
 logger = logging.getLogger(__name__)
+
+MARK_WITHOUT_CONTINUATION_MOTIVATION = "Marked without continuation & archived through automatic process (PC-24035)"
 
 
 def import_ds_bank_information_applications(procedure_number: int, ignore_previous: bool = False) -> None:
@@ -102,3 +107,57 @@ def update_ds_applications_for_procedure(procedure_number: int, since: datetime.
         procedure_number,
         extra={"procedure_number": procedure_number},
     )
+
+
+def mark_without_continuation_applications() -> None:
+    """
+    Mark without continuation following applications:
+        - All DSv4 that:
+            - are in `draft` or `on_going` states
+            - haven't been updated since DS_MARK_WITHOUT_CONTINUATION_APPLICATION_DEADLINE days
+            - have the field `Erreur traitement Pass Culture` filled
+                - without mention of `ADAGE` or without mention of `RCT`
+                or
+                - with mention of `RCT` and haven't been updated since DS_MARK_WITHOUT_CONTINUATION_ANNOTATION_DEADLINE days
+
+        - All DSv5 that:
+            - are in `draft` or `on_going` states
+            - haven't been updated since DS_MARK_WITHOUT_CONTINUATION_APPLICATION_DEADLINE days
+            - have the field `En attente de validation de structure` checked since more than DS_MARK_WITHOUT_CONTINUATION_ANNOTATION_DEADLINE days
+            - don't have the field `En attente de validation Adage` checked at all
+    """
+    procedures = [settings.DMS_VENUE_PROCEDURE_ID_V4, settings.DS_BANK_ACCOUNT_PROCEDURE_ID]
+    states = [GraphQLApplicationStates.draft, GraphQLApplicationStates.on_going]
+    ds_client = ds_api.DMSGraphQLClient()
+
+    for procedure in procedures:
+        for state in states:
+            for raw_node in ds_client.get_pro_bank_nodes_states(procedure_number=int(procedure), state=state):
+                application = MarkWithoutContinuationApplicationDetail(**raw_node)
+
+                if application.should_be_marked_without_continuation:
+                    logger.info(
+                        "[DS] Found one application to mark `without_continuation`",
+                        extra={"application_id": application.number},
+                    )
+                    if application.is_draft:
+                        logger.info(
+                            "[DS] Make the application `on_going` before being able to make it `without_continuation`"
+                        )
+                        ds_client.make_on_going(
+                            application_techid=application.id,
+                            instructeur_techid=settings.DS_MARK_WITHOUT_CONTINUATION_INSTRUCTOR_ID,
+                        )
+                    ds_client.mark_without_continuation(
+                        application_techid=application.id,
+                        instructeur_techid=settings.DS_MARK_WITHOUT_CONTINUATION_INSTRUCTOR_ID,
+                        motivation=MARK_WITHOUT_CONTINUATION_MOTIVATION,
+                    )
+                    ds_client.archive_application(
+                        application_techid=application.id,
+                        instructeur_techid=settings.DS_MARK_WITHOUT_CONTINUATION_INSTRUCTOR_ID,
+                    )
+                    logger.info(
+                        "[DS] Successfully mark `without_continuation` and archived an application",
+                        extra={"application_id": application.number},
+                    )

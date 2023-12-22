@@ -6,7 +6,9 @@ import pytest
 from pcapi import settings
 from pcapi.connectors.dms import factories as ds_factories
 from pcapi.connectors.dms import models as ds_models
+from pcapi.core.finance.ds import MARK_WITHOUT_CONTINUATION_MOTIVATION
 from pcapi.core.finance.ds import import_ds_bank_information_applications
+from pcapi.core.finance.ds import mark_without_continuation_applications
 from pcapi.core.finance.models import BankInformationStatus
 
 from tests.connector_creators import demarches_simplifiees_creators as ds_creators
@@ -88,3 +90,435 @@ class ImportDSBankInformationApplicationsTest:
         import_ds_bank_information_applications(procedure_number=settings.DMS_VENUE_PROCEDURE_ID_V4)
 
         assert not latest_import.isProcessing
+
+
+@pytest.mark.usefixtures("db_session")
+class MarkWithoutApplicationTooOldApplicationsTest:
+    @patch("pcapi.connectors.dms.api.DMSGraphQLClient.archive_application")
+    @patch("pcapi.connectors.dms.api.DMSGraphQLClient.mark_without_continuation")
+    @patch("pcapi.connectors.dms.api.DMSGraphQLClient.make_on_going")
+    @patch("pcapi.connectors.dms.api.DMSGraphQLClient.execute_query")
+    def test_dsv4_within_application_deadline_is_not_set_without_continuantion(
+        self, mock_graphql_client, mock_make_on_going, mock_mark_without_continuation, mock_archive_application
+    ):
+        dead_line_application = (datetime.datetime.utcnow() - datetime.timedelta(days=89)).isoformat()
+        dead_line_annotation = (datetime.datetime.utcnow() - datetime.timedelta(days=6 * 31)).isoformat()
+        application_meta_data = {
+            "state": ds_models.GraphQLApplicationStates.draft.value,
+            "last_modification_date": dead_line_application,
+            "annotations": [
+                {
+                    "id": "Q2hhbXAtOTE1NDg5",
+                    "label": "Erreur traitement pass Culture",
+                    "stringValue": "Une erreur de traitement",
+                    "checked": True,
+                    "updatedAt": dead_line_annotation,
+                },
+            ],
+        }
+        empty_response = {"demarche": {"dossiers": {"pageInfo": {"hasNextPage": False}, "nodes": []}}}
+        response = ds_creators.get_bank_info_response_procedure_v4_as_batch(**application_meta_data)
+        mock_graphql_client.side_effect = [empty_response, empty_response, response, empty_response]
+
+        mark_without_continuation_applications()
+
+        mock_make_on_going.assert_not_called()
+        mock_mark_without_continuation.assert_not_called()
+        mock_archive_application.assert_not_called()
+
+    @patch("pcapi.connectors.dms.api.DMSGraphQLClient.archive_application")
+    @patch("pcapi.connectors.dms.api.DMSGraphQLClient.mark_without_continuation")
+    @patch("pcapi.connectors.dms.api.DMSGraphQLClient.make_on_going")
+    @patch("pcapi.connectors.dms.api.DMSGraphQLClient.execute_query")
+    def test_too_old_draft_dsv4_are_set_without_continuation(
+        self, mock_graphql_client, mock_make_on_going, mock_mark_without_continuation, mock_archive_application
+    ):
+        dead_line_application = (datetime.datetime.utcnow() - datetime.timedelta(days=91)).isoformat()
+        dead_line_annotation = (datetime.datetime.utcnow() - datetime.timedelta(days=6 * 31)).isoformat()
+        application_meta_data = {
+            "state": ds_models.GraphQLApplicationStates.draft.value,
+            "last_modification_date": dead_line_application,
+            "annotations": [
+                {
+                    "id": "Q2hhbXAtOTE1NDg5",
+                    "label": "Erreur traitement pass Culture",
+                    "stringValue": "Une erreur de traitement",
+                    "checked": True,
+                    "updatedAt": dead_line_annotation,
+                },
+            ],
+        }
+        empty_response = {"demarche": {"dossiers": {"pageInfo": {"hasNextPage": False}, "nodes": []}}}
+        response = ds_creators.get_bank_info_response_procedure_v4_as_batch(**application_meta_data)
+        mock_graphql_client.side_effect = [empty_response, empty_response, response, empty_response]
+
+        mark_without_continuation_applications()
+
+        mock_make_on_going.assert_called_once_with(
+            application_techid="Q2zzbXAtNzgyODAw",
+            instructeur_techid=settings.DS_MARK_WITHOUT_CONTINUATION_INSTRUCTOR_ID,
+        )
+        mock_mark_without_continuation.assert_called_once_with(
+            application_techid="Q2zzbXAtNzgyODAw",
+            instructeur_techid=settings.DS_MARK_WITHOUT_CONTINUATION_INSTRUCTOR_ID,
+            motivation=MARK_WITHOUT_CONTINUATION_MOTIVATION,
+        )
+        mock_archive_application.assert_called_once_with(
+            application_techid="Q2zzbXAtNzgyODAw",
+            instructeur_techid=settings.DS_MARK_WITHOUT_CONTINUATION_INSTRUCTOR_ID,
+        )
+
+    @patch("pcapi.connectors.dms.api.DMSGraphQLClient.archive_application")
+    @patch("pcapi.connectors.dms.api.DMSGraphQLClient.mark_without_continuation")
+    @patch("pcapi.connectors.dms.api.DMSGraphQLClient.make_on_going")
+    @patch("pcapi.connectors.dms.api.DMSGraphQLClient.execute_query")
+    def test_too_old_on_going_dsv4_are_set_without_continuation(
+        self, mock_graphql_client, mock_make_on_going, mock_mark_without_continuation, mock_archive_application
+    ):
+        dead_line_application = (datetime.datetime.utcnow() - datetime.timedelta(days=91)).isoformat()
+        dead_line_annotation = (datetime.datetime.utcnow() - datetime.timedelta(days=6 * 31)).isoformat()
+        application_meta_data = {
+            "state": ds_models.GraphQLApplicationStates.on_going.value,
+            "last_modification_date": dead_line_application,
+            "annotations": [
+                {
+                    "id": "Q2hhbXAtOTE1NDg5",
+                    "label": "Erreur traitement pass Culture",
+                    "stringValue": "Une erreur de traitement",
+                    "checked": True,
+                    "updatedAt": dead_line_annotation,
+                },
+            ],
+        }
+        empty_response = {"demarche": {"dossiers": {"pageInfo": {"hasNextPage": False}, "nodes": []}}}
+        response = ds_creators.get_bank_info_response_procedure_v4_as_batch(**application_meta_data)
+        mock_graphql_client.side_effect = [empty_response, empty_response, response, empty_response]
+
+        mark_without_continuation_applications()
+
+        mock_mark_without_continuation.assert_called_once_with(
+            application_techid="Q2zzbXAtNzgyODAw",
+            instructeur_techid=settings.DS_MARK_WITHOUT_CONTINUATION_INSTRUCTOR_ID,
+            motivation=MARK_WITHOUT_CONTINUATION_MOTIVATION,
+        )
+        mock_archive_application.assert_called_once_with(
+            application_techid="Q2zzbXAtNzgyODAw",
+            instructeur_techid=settings.DS_MARK_WITHOUT_CONTINUATION_INSTRUCTOR_ID,
+        )
+
+    @patch("pcapi.connectors.dms.api.DMSGraphQLClient.archive_application")
+    @patch("pcapi.connectors.dms.api.DMSGraphQLClient.mark_without_continuation")
+    @patch("pcapi.connectors.dms.api.DMSGraphQLClient.make_on_going")
+    @patch("pcapi.connectors.dms.api.DMSGraphQLClient.execute_query")
+    def test_too_old_dsv4_are_set_without_continuation_if_about_rct_after_annotation_deadline(
+        self, mock_graphql_client, mock_make_on_going, mock_mark_without_continuation, mock_archive_application
+    ):
+        dead_line_application = (datetime.datetime.utcnow() - datetime.timedelta(days=91)).isoformat()
+        dead_line_annotation = (datetime.datetime.utcnow() - datetime.timedelta(days=6 * 31)).isoformat()
+        application_meta_data = {
+            "state": ds_models.GraphQLApplicationStates.draft.value,
+            "last_modification_date": dead_line_application,
+            "annotations": [
+                {
+                    "id": "Q2hhbXAtOTE1NDg5",
+                    "label": "Erreur traitement pass Culture",
+                    "stringValue": "Une erreur de traitement en rapport avec RCT",
+                    "checked": True,
+                    "updatedAt": dead_line_annotation,
+                },
+            ],
+        }
+        empty_response = {"demarche": {"dossiers": {"pageInfo": {"hasNextPage": False}, "nodes": []}}}
+        response = ds_creators.get_bank_info_response_procedure_v4_as_batch(**application_meta_data)
+        mock_graphql_client.side_effect = [empty_response, empty_response, response, empty_response]
+
+        mark_without_continuation_applications()
+
+        mock_make_on_going.assert_called_once_with(
+            application_techid="Q2zzbXAtNzgyODAw",
+            instructeur_techid=settings.DS_MARK_WITHOUT_CONTINUATION_INSTRUCTOR_ID,
+        )
+        mock_mark_without_continuation.assert_called_once_with(
+            application_techid="Q2zzbXAtNzgyODAw",
+            instructeur_techid=settings.DS_MARK_WITHOUT_CONTINUATION_INSTRUCTOR_ID,
+            motivation=MARK_WITHOUT_CONTINUATION_MOTIVATION,
+        )
+        mock_archive_application.assert_called_once_with(
+            application_techid="Q2zzbXAtNzgyODAw",
+            instructeur_techid=settings.DS_MARK_WITHOUT_CONTINUATION_INSTRUCTOR_ID,
+        )
+
+    @patch("pcapi.connectors.dms.api.DMSGraphQLClient.archive_application")
+    @patch("pcapi.connectors.dms.api.DMSGraphQLClient.mark_without_continuation")
+    @patch("pcapi.connectors.dms.api.DMSGraphQLClient.make_on_going")
+    @patch("pcapi.connectors.dms.api.DMSGraphQLClient.execute_query")
+    def test_too_old_dsv4_is_not_set_without_continuation_if_about_adage(
+        self, mock_graphql_client, mock_make_on_going, mock_mark_without_continuation, mock_archive_application
+    ):
+        dead_line_application = (datetime.datetime.utcnow() - datetime.timedelta(days=91)).isoformat()
+        dead_line_annotation = (datetime.datetime.utcnow() - datetime.timedelta(days=6 * 31)).isoformat()
+        application_meta_data = {
+            "state": ds_models.GraphQLApplicationStates.draft.value,
+            "last_modification_date": dead_line_application,
+            "annotations": [
+                {
+                    "id": "Q2hhbXAtOTE1NDg5",
+                    "label": "Erreur traitement pass Culture",
+                    "stringValue": "Une erreur de traitement en rapport avec AdAgE",
+                    "checked": True,
+                    "updatedAt": dead_line_annotation,
+                },
+            ],
+        }
+        empty_response = {"demarche": {"dossiers": {"pageInfo": {"hasNextPage": False}, "nodes": []}}}
+        response = ds_creators.get_bank_info_response_procedure_v4_as_batch(**application_meta_data)
+        mock_graphql_client.side_effect = [response, empty_response, empty_response, empty_response]
+
+        mark_without_continuation_applications()
+
+        mock_make_on_going.assert_not_called()
+        mock_mark_without_continuation.assert_not_called()
+        mock_archive_application.assert_not_called()
+
+    @patch("pcapi.connectors.dms.api.DMSGraphQLClient.archive_application")
+    @patch("pcapi.connectors.dms.api.DMSGraphQLClient.mark_without_continuation")
+    @patch("pcapi.connectors.dms.api.DMSGraphQLClient.make_on_going")
+    @patch("pcapi.connectors.dms.api.DMSGraphQLClient.execute_query")
+    def test_too_old_dsv4_is_not_set_without_continuation_if_about_rct_within_dead_line_annotation(
+        self, mock_graphql_client, mock_make_on_going, mock_mark_without_continuation, mock_archive_application
+    ):
+        dead_line_application = (datetime.datetime.utcnow() - datetime.timedelta(days=91)).isoformat()
+        dead_line_annotation = (datetime.datetime.utcnow() - datetime.timedelta(days=5 * 31)).isoformat()
+        application_meta_data = {
+            "state": ds_models.GraphQLApplicationStates.draft.value,
+            "last_modification_date": dead_line_application,
+            "annotations": [
+                {
+                    "id": "Q2hhbXAtOTE1NDg5",
+                    "label": "Erreur traitement pass Culture",
+                    "stringValue": "Une erreur de traitement en rapport avec RCT",
+                    "checked": True,
+                    "updatedAt": dead_line_annotation,
+                },
+            ],
+        }
+        empty_response = {"demarche": {"dossiers": {"pageInfo": {"hasNextPage": False}, "nodes": []}}}
+        response = ds_creators.get_bank_info_response_procedure_v4_as_batch(**application_meta_data)
+        mock_graphql_client.side_effect = [response, empty_response, empty_response, empty_response]
+
+        mark_without_continuation_applications()
+
+        mock_make_on_going.assert_not_called()
+        mock_mark_without_continuation.assert_not_called()
+        mock_archive_application.assert_not_called()
+
+    @patch("pcapi.connectors.dms.api.DMSGraphQLClient.archive_application")
+    @patch("pcapi.connectors.dms.api.DMSGraphQLClient.mark_without_continuation")
+    @patch("pcapi.connectors.dms.api.DMSGraphQLClient.make_on_going")
+    @patch("pcapi.connectors.dms.api.DMSGraphQLClient.execute_query")
+    def test_too_old_draft_dsv5_are_set_without_continuation(
+        self, mock_graphql_client, mock_make_on_going, mock_mark_without_continuation, mock_archive_application
+    ):
+        dead_line_application = (datetime.datetime.utcnow() - datetime.timedelta(days=91)).isoformat()
+        dead_line_annotation = (datetime.datetime.utcnow() - datetime.timedelta(days=6 * 31)).isoformat()
+        application_meta_data = {
+            "state": ds_models.GraphQLApplicationStates.draft.value,
+            "last_modification_date": dead_line_application,
+            "annotations": [
+                {
+                    "id": "Q2hhbXAtOTE1NDg5",
+                    "label": "En attente de validation de structure",
+                    "stringValue": "true",
+                    "checked": True,
+                    "updatedAt": dead_line_annotation,
+                },
+                {
+                    "id": "Q2hhbXAtMjc2NDk5MQ==",
+                    "label": "En attente de validation ADAGE",
+                    "stringValue": "false",
+                    "updatedAt": dead_line_annotation,
+                    "checked": False,
+                },
+            ],
+        }
+        empty_response = {"demarche": {"dossiers": {"pageInfo": {"hasNextPage": False}, "nodes": []}}}
+        response = ds_creators.get_bank_info_response_procedure_v5(**application_meta_data)
+        mock_graphql_client.side_effect = [empty_response, empty_response, response, empty_response]
+
+        mark_without_continuation_applications()
+
+        mock_make_on_going.assert_called_once_with(
+            application_techid="RG9zc2llci0xNDc0MjY1NA==",
+            instructeur_techid=settings.DS_MARK_WITHOUT_CONTINUATION_INSTRUCTOR_ID,
+        )
+        mock_mark_without_continuation.assert_called_once_with(
+            application_techid="RG9zc2llci0xNDc0MjY1NA==",
+            instructeur_techid=settings.DS_MARK_WITHOUT_CONTINUATION_INSTRUCTOR_ID,
+            motivation=MARK_WITHOUT_CONTINUATION_MOTIVATION,
+        )
+        mock_archive_application.assert_called_once_with(
+            application_techid="RG9zc2llci0xNDc0MjY1NA==",
+            instructeur_techid=settings.DS_MARK_WITHOUT_CONTINUATION_INSTRUCTOR_ID,
+        )
+
+    @patch("pcapi.connectors.dms.api.DMSGraphQLClient.archive_application")
+    @patch("pcapi.connectors.dms.api.DMSGraphQLClient.mark_without_continuation")
+    @patch("pcapi.connectors.dms.api.DMSGraphQLClient.make_on_going")
+    @patch("pcapi.connectors.dms.api.DMSGraphQLClient.execute_query")
+    def test_too_old_on_going_dsv5_are_set_without_continuation(
+        self, mock_graphql_client, mock_make_on_going, mock_mark_without_continuation, mock_archive_application
+    ):
+        dead_line_application = (datetime.datetime.utcnow() - datetime.timedelta(days=91)).isoformat()
+        dead_line_annotation = (datetime.datetime.utcnow() - datetime.timedelta(days=6 * 31)).isoformat()
+        application_meta_data = {
+            "state": ds_models.GraphQLApplicationStates.on_going.value,
+            "last_modification_date": dead_line_application,
+            "annotations": [
+                {
+                    "id": "Q2hhbXAtOTE1NDg5",
+                    "label": "En attente de validation de structure",
+                    "stringValue": "true",
+                    "checked": True,
+                    "updatedAt": dead_line_annotation,
+                },
+                {
+                    "id": "Q2hhbXAtMjc2NDk5MQ==",
+                    "label": "En attente de validation ADAGE",
+                    "stringValue": "false",
+                    "updatedAt": dead_line_annotation,
+                    "checked": False,
+                },
+            ],
+        }
+        empty_response = {"demarche": {"dossiers": {"pageInfo": {"hasNextPage": False}, "nodes": []}}}
+        response = ds_creators.get_bank_info_response_procedure_v5(**application_meta_data)
+        mock_graphql_client.side_effect = [empty_response, empty_response, response, empty_response]
+
+        mark_without_continuation_applications()
+
+        mock_mark_without_continuation.assert_called_once_with(
+            application_techid="RG9zc2llci0xNDc0MjY1NA==",
+            instructeur_techid=settings.DS_MARK_WITHOUT_CONTINUATION_INSTRUCTOR_ID,
+            motivation=MARK_WITHOUT_CONTINUATION_MOTIVATION,
+        )
+        mock_archive_application.assert_called_once_with(
+            application_techid="RG9zc2llci0xNDc0MjY1NA==",
+            instructeur_techid=settings.DS_MARK_WITHOUT_CONTINUATION_INSTRUCTOR_ID,
+        )
+
+    @patch("pcapi.connectors.dms.api.DMSGraphQLClient.archive_application")
+    @patch("pcapi.connectors.dms.api.DMSGraphQLClient.mark_without_continuation")
+    @patch("pcapi.connectors.dms.api.DMSGraphQLClient.make_on_going")
+    @patch("pcapi.connectors.dms.api.DMSGraphQLClient.execute_query")
+    def test_dsv5_application_about_adage_is_not_set_without_continuation(
+        self, mock_graphql_client, mock_make_on_going, mock_mark_without_continuation, mock_archive_application
+    ):
+        dead_line_application = (datetime.datetime.utcnow() - datetime.timedelta(days=91)).isoformat()
+        dead_line_annotation = (datetime.datetime.utcnow() - datetime.timedelta(days=6 * 31)).isoformat()
+        application_meta_data = {
+            "state": ds_models.GraphQLApplicationStates.draft.value,
+            "last_modification_date": dead_line_application,
+            "annotations": [
+                {
+                    "id": "Q2hhbXAtOTE1NDg5",
+                    "label": "En attente de validation de structure",
+                    "stringValue": "true",
+                    "checked": True,
+                    "updatedAt": dead_line_annotation,
+                },
+                {
+                    "id": "Q2hhbXAtMjc2NDk5MQ==",
+                    "label": "En attente de validation ADAGE",
+                    "stringValue": "true",
+                    "updatedAt": dead_line_annotation,
+                    "checked": True,
+                },
+            ],
+        }
+        empty_response = {"demarche": {"dossiers": {"pageInfo": {"hasNextPage": False}, "nodes": []}}}
+        response = ds_creators.get_bank_info_response_procedure_v5(**application_meta_data)
+        mock_graphql_client.side_effect = [empty_response, empty_response, response, empty_response]
+
+        mark_without_continuation_applications()
+
+        mock_make_on_going.assert_not_called()
+        mock_mark_without_continuation.assert_not_called()
+        mock_archive_application.assert_not_called()
+
+    @patch("pcapi.connectors.dms.api.DMSGraphQLClient.archive_application")
+    @patch("pcapi.connectors.dms.api.DMSGraphQLClient.mark_without_continuation")
+    @patch("pcapi.connectors.dms.api.DMSGraphQLClient.make_on_going")
+    @patch("pcapi.connectors.dms.api.DMSGraphQLClient.execute_query")
+    def test_dsv5_application_within_dead_line_annotation_is_not_set_without_continuation(
+        self, mock_graphql_client, mock_make_on_going, mock_mark_without_continuation, mock_archive_application
+    ):
+        dead_line_application = (datetime.datetime.utcnow() - datetime.timedelta(days=91)).isoformat()
+        dead_line_annotation = (datetime.datetime.utcnow() - datetime.timedelta(days=5 * 31)).isoformat()
+        application_meta_data = {
+            "state": ds_models.GraphQLApplicationStates.draft.value,
+            "last_modification_date": dead_line_application,
+            "annotations": [
+                {
+                    "id": "Q2hhbXAtOTE1NDg5",
+                    "label": "En attente de validation de structure",
+                    "stringValue": "true",
+                    "checked": True,
+                    "updatedAt": dead_line_annotation,
+                },
+                {
+                    "id": "Q2hhbXAtMjc2NDk5MQ==",
+                    "label": "En attente de validation ADAGE",
+                    "stringValue": "false",
+                    "updatedAt": dead_line_annotation,
+                    "checked": False,
+                },
+            ],
+        }
+        empty_response = {"demarche": {"dossiers": {"pageInfo": {"hasNextPage": False}, "nodes": []}}}
+        response = ds_creators.get_bank_info_response_procedure_v5(**application_meta_data)
+        mock_graphql_client.side_effect = [empty_response, empty_response, response, empty_response]
+
+        mark_without_continuation_applications()
+
+        mock_make_on_going.assert_not_called()
+        mock_mark_without_continuation.assert_not_called()
+        mock_archive_application.assert_not_called()
+
+    @patch("pcapi.connectors.dms.api.DMSGraphQLClient.archive_application")
+    @patch("pcapi.connectors.dms.api.DMSGraphQLClient.mark_without_continuation")
+    @patch("pcapi.connectors.dms.api.DMSGraphQLClient.make_on_going")
+    @patch("pcapi.connectors.dms.api.DMSGraphQLClient.execute_query")
+    def test_dsv5_application_within_dead_line_application_is_not_set_without_continuation(
+        self, mock_graphql_client, mock_make_on_going, mock_mark_without_continuation, mock_archive_application
+    ):
+        dead_line_application = (datetime.datetime.utcnow() - datetime.timedelta(days=89)).isoformat()
+        dead_line_annotation = (datetime.datetime.utcnow() - datetime.timedelta(days=6 * 31)).isoformat()
+        application_meta_data = {
+            "state": ds_models.GraphQLApplicationStates.draft.value,
+            "last_modification_date": dead_line_application,
+            "annotations": [
+                {
+                    "id": "Q2hhbXAtOTE1NDg5",
+                    "label": "En attente de validation de structure",
+                    "stringValue": "true",
+                    "checked": True,
+                    "updatedAt": dead_line_annotation,
+                },
+                {
+                    "id": "Q2hhbXAtMjc2NDk5MQ==",
+                    "label": "En attente de validation ADAGE",
+                    "stringValue": "false",
+                    "updatedAt": dead_line_annotation,
+                    "checked": False,
+                },
+            ],
+        }
+        empty_response = {"demarche": {"dossiers": {"pageInfo": {"hasNextPage": False}, "nodes": []}}}
+        response = ds_creators.get_bank_info_response_procedure_v5(**application_meta_data)
+        mock_graphql_client.side_effect = [empty_response, empty_response, response, empty_response]
+
+        mark_without_continuation_applications()
+
+        mock_make_on_going.assert_not_called()
+        mock_mark_without_continuation.assert_not_called()
+        mock_archive_application.assert_not_called()

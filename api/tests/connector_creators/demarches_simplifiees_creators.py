@@ -106,6 +106,7 @@ def get_bank_info_response_procedure_v4_as_batch(
     annotations: list | None = None,
     dossier_id: str = "Q2zzbXAtNzgyODAw",
     application_id: int = 9,
+    last_modification_date: str = "2020-01-03T01:00:00+01:00",
 ) -> dict:
     etablissement = etablissement or {
         "etablissement": {
@@ -166,7 +167,7 @@ def get_bank_info_response_procedure_v4_as_batch(
                                 "value": "60a7536a21c8",
                             },
                         ],
-                        "dateDerniereModification": "2020-01-03T01:00:00+01:00",
+                        "dateDerniereModification": last_modification_date,
                         "state": state,
                         "annotations": annotations,
                     }
@@ -179,12 +180,15 @@ def get_bank_info_response_procedure_v4_as_batch(
 
 def get_bank_info_response_procedure_v5(
     state: str = GraphQLApplicationStates.accepted.value,
-    annotations: dict | None = None,
-    b64_encoded_application_id: str | None = None,
-    application_id: int | None = None,
-    bic: str | None = None,
-    iban: str | None = None,
+    annotations: list | None = None,
+    b64_encoded_application_id: str = "RG9zc2llci0xNDc0MjY1NA==",
+    application_id: int = 14742654,
+    bic: str = "BICAGRIFRPP",
+    iban: str = "FR76 3000 6000 0112 3456 7890 189",
+    last_modification_date: str = "2023-10-26T14:51:09+02:00",
 ) -> dict:
+    iban = "".join(iban.split())
+
     return {
         "demarche": {
             "dossiers": {
@@ -195,10 +199,10 @@ def get_bank_info_response_procedure_v5(
                 },
                 "nodes": [
                     {
-                        "id": b64_encoded_application_id or "RG9zc2llci0xNDc0MjY1NA==",
-                        "number": application_id or 14742654,
+                        "id": b64_encoded_application_id,
+                        "number": application_id,
                         "state": state,
-                        "dateDerniereModification": "2023-10-26T14:51:09+02:00",
+                        "dateDerniereModification": last_modification_date,
                         "demandeur": {"siret": "85331845900049"},
                         "champs": [
                             {
@@ -216,14 +220,14 @@ def get_bank_info_response_procedure_v5(
                             {
                                 "id": "Q2hhbXAtMzUyNzI3",
                                 "label": "BIC",
-                                "stringValue": bic or "BICAGRIFRPP",
-                                "value": bic or "BICAGRIFRPP",
+                                "stringValue": bic,
+                                "value": bic,
                             },
                             {
                                 "id": "Q2hhbXAtMzUyNzIy",
                                 "label": "IBAN",
-                                "stringValue": iban or "FR7630006000011234567890189",
-                                "value": iban or "FR76 3000 6000 0112 3456 7890 189",
+                                "stringValue": iban,
+                                "value": iban,
                             },
                             {
                                 "id": "Q2hhbXAtODU2ODE4",
@@ -271,16 +275,17 @@ def get_bank_info_response_procedure_v5(
                                 "stringValue": "true",
                             },
                         ],
-                        "annotations": [
+                        "annotations": annotations
+                        or [
                             {
                                 "id": "Q2hhbXAtOTE1NDg5",
                                 "label": "En attente de validation de structure",
-                                "stringValue": "False",
+                                "stringValue": "false",
                             },
                             {
                                 "id": "Q2hhbXAtMjc2NDk5MA==",
                                 "label": "En attente de validation ADAGE",
-                                "stringValue": "False",
+                                "stringValue": "false",
                             },
                             {
                                 "id": "Q2hhbXAtMzYzMDA5NA==",

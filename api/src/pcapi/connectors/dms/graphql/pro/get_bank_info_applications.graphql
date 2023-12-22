@@ -30,9 +30,13 @@ query getDemarche($demarcheNumber: Int!, $state: DossierState, $order: Order, $f
         annotations {
           id
           label
+	  updatedAt
 	  stringValue
 	  ... on TextChamp {
 	    value
+	  }
+	  ... on CheckboxChamp {
+	    checked: value
 	  }
         }
       }
