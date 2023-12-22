@@ -16,7 +16,7 @@
                           data-bs-toggle="modal"
                           data-bs-target="#update-collective-offer-price"
                           type="button">Ajuster le prix de l'offre</button>
-                  {{ build_lazy_modal(url_for("backoffice_web.collective_offer.get_collective_offer_price_form", collective_offer_id=collective_offer.id), "update-collective-offer-price") }}
+                  {{ build_lazy_modal(url_for("backoffice_web.collective_offer.get_collective_offer_price_form", collective_offer_id=collective_offer.id) , "update-collective-offer-price") }}
                 </div>
               {% endif %}
             </div>
@@ -92,7 +92,7 @@
               {% if collective_offer.template %}
                 <div class="fs-6">
                   <p class="mb-1">
-                    <span class="fw-bold">Offre vitrine liée :</span> {{ links.build_collective_offer_template_details_link(collective_offer.template) }}
+                    <span class="fw-bold">Offre vitrine liée :</span> {{ links.build_collective_offer_template_details_link(collective_offer.template, text_attr="name") }}
                   </p>
                 </div>
               {% endif %}

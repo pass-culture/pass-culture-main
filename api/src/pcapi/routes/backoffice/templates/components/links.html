@@ -60,10 +60,10 @@
      class="link-primary"
      title="Page de l'offre">{{ offer.id }}</a>
 {% endmacro %}
-{% macro build_collective_offer_template_details_link(offer) %}
-  <a href="{{ url_for('backoffice_web.collective_offer_template.list_collective_offer_templates', q=offer.id) }}" {# !TODO: need to create function in blueprint in PC-26057 #}
-    class="link-primary"
-  title="Page de l'offre vitrine">{{ offer.name }}</a>
+{% macro build_collective_offer_template_details_link(offer, text_attr="label") %}
+  <a href="{{ url_for('backoffice_web.collective_offer_template.get_collective_offer_template_details', collective_offer_template_id=offer.id) }}"
+     class="link-primary"
+     title="Page de l'offre vitrine">{{ offer[text_attr] }}</a>
 {% endmacro %}
 {% macro build_bank_account_name_to_details_link(bank_account, text_attr="label") %}
   <a href="{{ url_for('backoffice_web.bank_account.get', bank_account_id=bank_account.id) }}"

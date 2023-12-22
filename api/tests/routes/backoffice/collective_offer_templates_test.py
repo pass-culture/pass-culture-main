@@ -5,6 +5,7 @@ from flask import url_for
 import pytest
 
 from pcapi.core.categories import subcategories_v2 as subcategories
+from pcapi.core.categories.subcategories_v2 import EacFormat
 from pcapi.core.educational import factories as educational_factories
 from pcapi.core.educational import models as educational_models
 from pcapi.core.mails import testing as mails_testing
@@ -229,6 +230,29 @@ class ListCollectiveOfferTemplatesTest(GetEndpointHelper):
         assert len(rows) == 1
 
         assert rows[0]["ID"] == str(target_offer.id)
+
+
+class GetCollectiveOfferTemplateDetailTest(GetEndpointHelper):
+    endpoint = "backoffice_web.collective_offer_template.get_collective_offer_template_details"
+    endpoint_kwargs = {"collective_offer_template_id": 1}
+    needed_permission = perm_models.Permissions.READ_OFFERS
+
+    def test_nominal(self, authenticated_client):
+        collectiveOfferTemplate=educational_factories.CollectiveOfferTemplateFactory(
+            formats= [EacFormat.PROJECTION_AUDIOVISUELLE],
+        )
+        url = url_for(self.endpoint, collective_offer_template_id=collectiveOfferTemplate.id)
+        with assert_num_queries(5):
+            response = authenticated_client.get(url)
+            assert response.status_code == 200
+
+        content_as_text = html_parser.content_as_text(response.data)
+        assert f"date limite de réservation : {collectiveOfferTemplate.end.strftime('%d/%m/%Y')}" in content_as_text
+        assert f"Date de création : {collectiveOfferTemplate.dateCreated.strftime('%d/%m/%Y')}" in content_as_text
+        assert f"Description : {collectiveOfferTemplate.description}" in content_as_text
+        assert f"Structure : {collectiveOfferTemplate.venue.managingOfferer.name}" in content_as_text
+        assert f"Lieu : {collectiveOfferTemplate.venue.name}" in content_as_text
+        assert f"Formats : {EacFormat.PROJECTION_AUDIOVISUELLE.value}" in content_as_text
 
 
 class ValidateCollectiveOfferTemplateTest(PostEndpointHelper):

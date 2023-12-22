@@ -4,6 +4,7 @@ from datetime import timedelta
 from itertools import count
 from itertools import cycle
 
+from pcapi.core.categories.subcategories_v2 import EacFormat
 from pcapi.core.educational import factories as educational_factories
 from pcapi.core.educational import models as educational_models
 from pcapi.core.finance import factories as finance_factories
@@ -129,6 +130,7 @@ def create_offers_base_list(
                 collectiveOffer__nationalProgram=next(national_program_iterator),
                 collectiveOffer__bookingEmails=["toto@totoland.com"],
                 collectiveOffer__author=user_factory.ProFactory(),
+                collectiveOffer__formats=[EacFormat.PROJECTION_AUDIOVISUELLE],
                 beginningDatetime=datetime.utcnow() + timedelta(days=60),
             )
             offers.append(stock.collectiveOffer)
@@ -251,6 +253,7 @@ def create_offers_base_list(
                 bookingEmails=["toto@totoland.com"],
                 nationalProgram=next(national_program_iterator),
                 author=user_factory.ProFactory(),
+                formats=[EacFormat.PROJECTION_AUDIOVISUELLE],
             )
             templates.append(template)
         if from_templates_offers:

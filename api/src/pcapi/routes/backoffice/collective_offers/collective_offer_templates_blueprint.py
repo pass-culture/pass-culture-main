@@ -343,3 +343,18 @@ def batch_reject_collective_offer_templates() -> utils.BackofficeResponse:
     return redirect(
         request.referrer or url_for("backoffice_web.collective_offer_template.list_collective_offer_templates"), 303
     )
+
+
+@list_collective_offer_templates_blueprint.route("/<int:collective_offer_template_id>/details", methods=["GET"])
+def get_collective_offer_template_details(collective_offer_template_id: int) -> utils.BackofficeResponse:
+    collective_offer_template_query = educational_models.CollectiveOfferTemplate.query.filter(
+        educational_models.CollectiveOfferTemplate.id == collective_offer_template_id
+    )
+    collective_offer_template = collective_offer_template_query.one_or_none()
+    if not collective_offer_template:
+        flash("Cette offre collective n'existe pas", "warning")
+        return redirect(url_for("backoffice_web.collective_offer_template.list_collective_offer_templates"), code=303)
+    return render_template(
+        "collective_offer_template/details.html",
+        collective_offer_template=collective_offer_template,
+    )

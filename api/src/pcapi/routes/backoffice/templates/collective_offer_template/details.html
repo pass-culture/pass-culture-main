@@ -1,0 +1,68 @@
+{% import "components/links.html" as links %}
+{% extends "layouts/standard.html" %}
+{% from "components/turbo/lazy_modal.html" import build_lazy_modal with context %}
+{% block main_content %}
+  <div class="row row-cols-1 g-4 py-3">
+    <div class="col">
+      <div class="card shadow">
+        <div class="card-body">
+          <div class="row justify-content-start align-items-center">
+            <div class="col d-flex align-items-center justify-content-start">
+              <h2 class="card-title mb-3 text-primary">{{ collective_offer_template.name }}</h2>
+            </div>
+            <div class="col-2"></div>
+          </div>
+          <p class="card-subtitle text-muted mb-3 h5">CollectiveOfferTemplate ID : {{ collective_offer_template.id }}</p>
+          <div class="row pt-3">
+            <div class="col-4">
+              <div class="fs-6">
+                <p class="mb-1">
+                  <span class="fw-bold">Formats :</span> {{ collective_offer_template.formats | format_collective_offer_formats }}
+                </p>
+                <p class="mb-1">
+                  <span class="fw-bold">Description :</span> {{ collective_offer_template.description }}
+                </p>
+
+                <p class="mb-1">
+                  <span class="fw-bold">Date de création :</span> {{ collective_offer_template.dateCreated | format_date }}
+                </p>
+                <p class="mb-1"></p>
+              </div>
+            </div>
+            <div class="col-4">
+              <div class="fs-6">
+                <p class="mb-1">
+                  <span class="fw-bold">Statut :</span> {{ collective_offer_template.status | format_offer_status }}
+                </p>
+                <p class="mb-1">
+                  <span class="fw-bold">État :</span> {{ collective_offer_template.validation | format_offer_validation_status }}
+                </p>
+                {% if collective_offer_template.lastValidationAuthor %}
+                  <p class="mb-1">
+                    <span class="fw-bold">Utilisateur de la dernière validation :</span> {{ collective_offer_template.lastValidationAuthor.full_name }}
+                  </p>
+                {% endif %}
+                <p class="mb-1">
+                  <span class="fw-bold">date limite de réservation :</span> {{ collective_offer_template.end | format_date }}
+                </p>
+                <p class="mb-1"></p>
+              </div>
+            </div>
+            <div class="col-4">
+              <div class="fs-6">
+                <p class="mb-1">
+                  <span class="fw-bold">Structure :</span> {{ links.build_offerer_name_to_details_link(collective_offer_template.venue.managingOfferer) }}
+                </p>
+              </div>
+              <div class="fs-6">
+                <p class="mb-1">
+                  <span class="fw-bold">Lieu :</span> {{ links.build_venue_name_to_details_link(collective_offer_template.venue) }}
+                </p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+{% endblock main_content %}
