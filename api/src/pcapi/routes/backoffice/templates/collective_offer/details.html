@@ -1,3 +1,4 @@
+{% import "components/clipboard.html" as clipboard %}
 {% import "components/links.html" as links %}
 {% extends "layouts/standard.html" %}
 {% from "components/turbo/lazy_modal.html" import build_lazy_modal with context %}
@@ -21,7 +22,9 @@
             </div>
             <div class="col-2"></div>
           </div>
-          <p class="card-subtitle text-muted mb-3 h5">CollectiveOffer ID : {{ collective_offer.id }}</p>
+          <p class="card-subtitle text-muted mb-3 h5">
+            CollectiveOffer ID : {{ collective_offer.id }} {{ clipboard.copy_to_clipboard(collective_offer.id, "Copier l'ID de l'offre") }}
+          </p>
           <div class="row pt-3">
             <div class="col-4">
               <div class="fs-6">

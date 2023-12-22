@@ -1,3 +1,4 @@
+{% import "components/clipboard.html" as clipboard %}
 {% from "components/badges.html" import build_offerer_badges %}
 {% from "components/forms.html" import build_form_fields_group with context %}
 {% from "components/generic_modal.html" import build_modal_form with context %}
@@ -105,7 +106,9 @@
               {% endif %}
             </div>
           </div>
-          <p class="card-subtitle text-muted mb-3 h5">Offerer ID : {{ offerer.id }}</p>
+          <p class="card-subtitle text-muted mb-3 h5">
+            Offerer ID : {{ offerer.id }} {{ clipboard.copy_to_clipboard(offerer.id, "Copier l'ID de la structure") }}
+          </p>
           <p class="card-subtitle text-muted mb-3 h5">
             SIREN : {{ links.build_siren_to_external_link(offerer) }}
             {% if offerer.siren %}

@@ -1,3 +1,4 @@
+{% import "components/clipboard.html" as clipboard %}
 {% import "components/links.html" as links %}
 {% from "components/forms.html" import build_form_fields_group with context %}
 {% from "components/presentation/details/tabs.html" import build_details_tab %}
@@ -61,7 +62,9 @@
             </div>
             <div class="col-2"></div>
           </div>
-          <p class="card-subtitle text-muted mb-3 h5">Offer ID : {{ offer.id }}</p>
+          <p class="card-subtitle text-muted mb-3 h5">
+            Offer ID : {{ offer.id }} {{ clipboard.copy_to_clipboard(offer.id, "Copier l'ID de l'offre") }}
+          </p>
           <div class="row pt-3">
             <div class="col-4">
               <div class="fs-6">
