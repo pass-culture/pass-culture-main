@@ -27,7 +27,10 @@ import {
   defaultUseInfiniteHitsReturn,
   defaultUseStatsReturn,
 } from 'utils/adageFactories'
-import { renderWithProviders } from 'utils/renderWithProviders'
+import {
+  RenderWithProvidersOptions,
+  renderWithProviders,
+} from 'utils/renderWithProviders'
 
 import { Offers, OffersProps } from '../Offers'
 
@@ -95,7 +98,7 @@ const otherFakeSearchResult = {
 const renderOffers = (
   props: OffersProps,
   adageUser: AuthenticatedResponse,
-  storeOverrides = {}
+  options?: RenderWithProvidersOptions
 ) => {
   return renderWithProviders(
     <AdageUserContextProvider adageUser={adageUser}>
@@ -107,9 +110,7 @@ const renderOffers = (
         </FacetFiltersContextProvider>
       </AlgoliaQueryContextProvider>
     </AdageUserContextProvider>,
-    {
-      storeOverrides,
-    }
+    options
   )
 }
 
@@ -431,11 +432,7 @@ describe('offers', () => {
     )
 
     // When
-    renderOffers(offersProps, adageUser, {
-      features: {
-        list: [{ isActive: false, nameKey: 'WIP_ENABLE_SATISFACTION_SURVEY' }],
-      },
-    })
+    renderOffers(offersProps, adageUser, { features: [] })
 
     const listItemsInOffer = await screen.findAllByTestId('offer-listitem')
     expect(listItemsInOffer).toHaveLength(2)
@@ -454,9 +451,7 @@ describe('offers', () => {
 
     // When
     renderOffers(offersProps, adageUser, {
-      features: {
-        list: [{ isActive: true, nameKey: 'WIP_ENABLE_SATISFACTION_SURVEY' }],
-      },
+      features: ['WIP_ENABLE_SATISFACTION_SURVEY'],
     })
 
     const listItemsInOffer = await screen.findAllByTestId('offer-listitem')
@@ -477,11 +472,7 @@ describe('offers', () => {
     renderOffers(
       offersProps,
       { ...adageUser, role: AdageFrontRoles.READONLY },
-      {
-        features: {
-          list: [{ isActive: true, nameKey: 'WIP_ENABLE_SATISFACTION_SURVEY' }],
-        },
-      }
+      { features: ['WIP_ENABLE_SATISFACTION_SURVEY'] }
     )
 
     const listItemsInOffer = await screen.findAllByTestId('offer-listitem')
@@ -509,9 +500,7 @@ describe('offers', () => {
 
     // When
     renderOffers(offersProps, adageUser, {
-      features: {
-        list: [{ isActive: true, nameKey: 'WIP_ENABLE_SATISFACTION_SURVEY' }],
-      },
+      features: ['WIP_ENABLE_SATISFACTION_SURVEY'],
     })
 
     const listItemsInOffer = await screen.findAllByTestId('offer-listitem')
@@ -536,11 +525,7 @@ describe('offers', () => {
         ...adageUser,
         preferences: { feedback_form_closed: true },
       },
-      {
-        features: {
-          list: [{ isActive: true, nameKey: 'WIP_ENABLE_SATISFACTION_SURVEY' }],
-        },
-      }
+      { features: ['WIP_ENABLE_SATISFACTION_SURVEY'] }
     )
 
     // Then
@@ -727,9 +712,7 @@ describe('offers', () => {
       )
 
       renderOffers({ ...offersProps, submitCount: undefined }, adageUser, {
-        features: {
-          list: [{ isActive: true, nameKey: 'WIP_ENABLE_DIFFUSE_HELP' }],
-        },
+        features: ['WIP_ENABLE_DIFFUSE_HELP'],
       })
       await waitForElementToBeRemoved(() => screen.queryAllByTestId('spinner'))
 
@@ -747,9 +730,7 @@ describe('offers', () => {
       )
 
       renderOffers({ ...offersProps, submitCount: 1 }, adageUser, {
-        features: {
-          list: [{ isActive: true, nameKey: 'WIP_ENABLE_DIFFUSE_HELP' }],
-        },
+        features: ['WIP_ENABLE_DIFFUSE_HELP'],
       })
       await waitForElementToBeRemoved(() => screen.queryAllByTestId('spinner'))
 
@@ -767,9 +748,7 @@ describe('offers', () => {
       )
 
       renderOffers({ ...offersProps, submitCount: 0 }, adageUser, {
-        features: {
-          list: [{ isActive: true, nameKey: 'WIP_ENABLE_DIFFUSE_HELP' }],
-        },
+        features: ['WIP_ENABLE_DIFFUSE_HELP'],
       })
       await waitForElementToBeRemoved(() => screen.queryAllByTestId('spinner'))
 

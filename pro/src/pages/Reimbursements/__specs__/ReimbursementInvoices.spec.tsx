@@ -7,7 +7,10 @@ import { userEvent } from '@testing-library/user-event'
 import React from 'react'
 
 import { api } from 'apiClient/api'
-import { renderWithProviders } from 'utils/renderWithProviders'
+import {
+  RenderWithProvidersOptions,
+  renderWithProviders,
+} from 'utils/renderWithProviders'
 
 import { ReimbursementsInvoices } from '../ReimbursementsInvoices'
 
@@ -16,9 +19,19 @@ vi.mock('utils/date', async () => ({
   getToday: vi.fn(() => new Date('2020-12-15T12:00:00Z')),
 }))
 
-const renderReimbursementsInvoices = (storeOverrides: any) => {
+const renderReimbursementsInvoices = (options?: RenderWithProvidersOptions) => {
+  const storeOverrides = {
+    user: {
+      currentUser: {
+        isAdmin: false,
+        hasSeenProTutorials: true,
+      },
+      initialized: true,
+    },
+  }
   renderWithProviders(<ReimbursementsInvoices />, {
     storeOverrides,
+    ...options,
   })
 }
 
@@ -63,24 +76,7 @@ const BASE_REIMBURSEMENT_POINTS = [
 ]
 
 describe('reimbursementsWithFilters', () => {
-  let store: any
-
   beforeEach(() => {
-    store = {
-      user: {
-        currentUser: {
-          isAdmin: false,
-          hasSeenProTutorials: true,
-        },
-        initialized: true,
-      },
-      features: {
-        list: [
-          { isActive: false, nameKey: 'WIP_ENABLE_NEW_BANK_DETAILS_JOURNEY' },
-        ],
-      },
-    }
-
     vi.spyOn(api, 'getInvoices').mockResolvedValue(BASE_INVOICES)
     vi.spyOn(api, 'getReimbursementPoints').mockResolvedValue(
       BASE_REIMBURSEMENT_POINTS
@@ -88,7 +84,7 @@ describe('reimbursementsWithFilters', () => {
   })
 
   it('shoud render a table with invoices', async () => {
-    renderReimbursementsInvoices(store)
+    renderReimbursementsInvoices()
 
     await waitForElementToBeRemoved(() => screen.queryAllByTestId('spinner'))
 
@@ -139,7 +135,7 @@ describe('reimbursementsWithFilters', () => {
   })
 
   it('should display reimbursement points', async () => {
-    renderReimbursementsInvoices(store)
+    renderReimbursementsInvoices()
     expect(
       (await screen.findByLabelText(/Point de remboursement/)).childElementCount
     ).toEqual(BASE_REIMBURSEMENT_POINTS.length + 1)
@@ -147,7 +143,7 @@ describe('reimbursementsWithFilters', () => {
   })
 
   it('should reorder invoices on order buttons click', async () => {
-    renderReimbursementsInvoices(store)
+    renderReimbursementsInvoices()
 
     await waitForElementToBeRemoved(() => screen.queryAllByTestId('spinner'))
 
@@ -175,7 +171,7 @@ describe('reimbursementsWithFilters', () => {
   })
 
   it('should not display invoice banner if FF WIP_ENABLE_NEW_BANK_DETAILS_JOURNEY is off', async () => {
-    renderReimbursementsInvoices(store)
+    renderReimbursementsInvoices()
 
     await waitForElementToBeRemoved(() => screen.queryAllByTestId('spinner'))
     expect(
@@ -191,12 +187,9 @@ describe('reimbursementsWithFilters', () => {
   })
 
   it('should display invoice banner if FF WIP_ENABLE_NEW_BANK_DETAILS_JOURNEY is enable', async () => {
-    store.features = {
-      list: [
-        { isActive: true, nameKey: 'WIP_ENABLE_NEW_BANK_DETAILS_JOURNEY' },
-      ],
-    }
-    renderReimbursementsInvoices(store)
+    renderReimbursementsInvoices({
+      features: ['WIP_ENABLE_NEW_BANK_DETAILS_JOURNEY'],
+    })
 
     await waitForElementToBeRemoved(() => screen.queryAllByTestId('spinner'))
     expect(

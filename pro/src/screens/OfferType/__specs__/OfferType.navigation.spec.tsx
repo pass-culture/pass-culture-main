@@ -39,13 +39,11 @@ const renderOfferTypes = (venueId?: string) => {
         email: 'email@example.com',
       },
     },
-    features: {
-      list: [{ isActive: true, nameKey: 'WIP_CATEGORY_SELECTION' }],
-    },
   }
 
   renderWithProviders(<OfferType />, {
     storeOverrides,
+    features: ['WIP_CATEGORY_SELECTION'],
     initialRouterEntries: [`/creation${venueId ? `?lieu=${venueId}` : ''}`],
   })
 }

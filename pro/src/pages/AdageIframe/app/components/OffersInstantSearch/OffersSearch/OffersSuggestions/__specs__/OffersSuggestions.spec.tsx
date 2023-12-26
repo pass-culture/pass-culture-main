@@ -18,7 +18,10 @@ import {
   defaultUseInfiniteHitsReturn,
   defaultUseStatsReturn,
 } from 'utils/adageFactories'
-import { renderWithProviders } from 'utils/renderWithProviders'
+import {
+  RenderWithProvidersOptions,
+  renderWithProviders,
+} from 'utils/renderWithProviders'
 
 import { ADAGE_FILTERS_DEFAULT_VALUES } from '../../../utils'
 import { OffersSuggestions, OffersSuggestionsProps } from '../OffersSuggestions'
@@ -43,7 +46,7 @@ vi.mock('apiClient/api', () => ({
 const renderOffersSuggestionsComponent = (
   props: OffersSuggestionsProps,
   user: AuthenticatedResponse,
-  featuresOverride?: { nameKey: string; isActive: boolean }[]
+  options?: RenderWithProvidersOptions
 ) => {
   renderWithProviders(
     <AdageUserContextProvider adageUser={user}>
@@ -53,14 +56,7 @@ const renderOffersSuggestionsComponent = (
         </AlgoliaQueryContextProvider>
       </FiltersContextProvider>
     </AdageUserContextProvider>,
-    {
-      storeOverrides: {
-        features: {
-          list: featuresOverride,
-          initialized: true,
-        },
-      },
-    }
+    options
   )
 }
 
@@ -248,12 +244,7 @@ describe('OffersSuggestions', () => {
         },
       },
       user,
-      [
-        {
-          nameKey: 'WIP_ENABLE_FORMAT',
-          isActive: true,
-        },
-      ]
+      { features: ['WIP_ENABLE_FORMAT'] }
     )
 
     expect(Configure).toHaveBeenCalledTimes(3)

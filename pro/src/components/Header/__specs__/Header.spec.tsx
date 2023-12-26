@@ -4,7 +4,10 @@ import { userEvent } from '@testing-library/user-event'
 import { api } from 'apiClient/api'
 import { Events } from 'core/FirebaseEvents/constants'
 import * as useAnalytics from 'hooks/useAnalytics'
-import { renderWithProviders } from 'utils/renderWithProviders'
+import {
+  RenderWithProvidersOptions,
+  renderWithProviders,
+} from 'utils/renderWithProviders'
 
 import Header from '../Header'
 
@@ -13,19 +16,9 @@ vi.mock('apiClient/api', () => ({
   api: { signout: vi.fn(), listOfferersNames: vi.fn() },
 }))
 
-const defaultStore = {
-  user: {
-    currentUser: {
-      isAdmin: false,
-      email: 'test@toto.com',
-    },
-    initialized: true,
-  },
-}
-
-const renderHeader = (storeOverrides = defaultStore) =>
+const renderHeader = (options?: RenderWithProvidersOptions) =>
   renderWithProviders(<Header />, {
-    storeOverrides,
+    ...options,
     initialRouterEntries: ['/accueil'],
   })
 
@@ -122,17 +115,11 @@ describe('navigation menu', () => {
     })
 
     it('when clicking on Stats', async () => {
-      const overrideStore = {
-        ...defaultStore,
-        features: {
-          list: [{ isActive: true, nameKey: 'ENABLE_OFFERER_STATS' }],
-        },
-      }
       vi.spyOn(api, 'listOfferersNames').mockResolvedValue({
         offerersNames: [{ id: 123, name: 'AE' }],
       })
 
-      renderHeader(overrideStore)
+      renderHeader({ features: ['ENABLE_OFFERER_STATS'] })
 
       await userEvent.click(screen.getAllByRole('link')[6])
 
@@ -143,14 +130,7 @@ describe('navigation menu', () => {
     })
 
     it('when "Remboursement" become "Gestion financière"', () => {
-      const overrideStore = {
-        ...defaultStore,
-        features: {
-          list: [{ isActive: true, nameKey: 'WIP_ENABLE_FINANCE_INCIDENT' }],
-        },
-      }
-
-      renderHeader(overrideStore)
+      renderHeader({ features: ['WIP_ENABLE_FINANCE_INCIDENT'] })
 
       expect(screen.getByText('Gestion financière')).toBeInTheDocument()
       expect(screen.queryByText('Remboursement')).not.toBeInTheDocument()
