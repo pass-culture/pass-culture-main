@@ -17,7 +17,9 @@ jobs:
   build-and-tag-version:
     name: Build and tag version
     uses: ./.github/workflows/reusable--build-and-tag.yml
-    secrets: inherit
+    secrets:
+      GCP_EHP_WORKLOAD_IDENTITY_PROVIDER: ${{ secrets.GCP_EHP_WORKLOAD_IDENTITY_PROVIDER }}
+      GCP_EHP_SERVICE_ACCOUNT: ${{ secrets.GCP_EHP_SERVICE_ACCOUNT }}
     with:
       base_ref: ${{ github.event.inputs.commitHash }}
       tag_number: ${{ github.event.inputs.releaseNumber }}.0.0

@@ -1,5 +1,10 @@
 name: Dependabot auto-merge
-on: workflow_call
+on:
+  workflow_call:
+    secrets:
+      GITHUB_TOKEN:
+        type: string
+        required: true
 
 permissions:
   contents: write
@@ -20,10 +25,10 @@ jobs:
         run: gh pr review --approve "$PR_URL"
         env:
           PR_URL: ${{github.event.pull_request.html_url}}
-          GITHUB_TOKEN: ${{secrets.GITHUB_TOKEN}}
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       - name: Merge Dependabot PR
         if: ${{contains(steps.metadata.outputs.directory, 'pro')}}
         run: gh pr merge --rebase "$PR_URL"
         env:
           PR_URL: ${{github.event.pull_request.html_url}}
-          GITHUB_TOKEN: ${{secrets.GITHUB_TOKEN}}
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
