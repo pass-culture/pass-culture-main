@@ -13,6 +13,8 @@ RESTARTABLE_FRAUD_CHECK_REASON_CODES = (
     fraud_models.FraudReasonCode.LACK_OF_LUMINOSITY,
     fraud_models.FraudReasonCode.MISSING_REQUIRED_DATA,
     fraud_models.FraudReasonCode.NETWORK_CONNECTION_ISSUE,
+    fraud_models.FraudReasonCode.NOT_DOCUMENT_OWNER,
+    fraud_models.FraudReasonCode.UBBLE_INTERNAL_ERROR,
 )
 
 REASON_CODE_REQUIRING_IMMEDIATE_EMAIL_REMINDER = (
@@ -27,6 +29,8 @@ REASON_CODE_REQUIRING_IMMEDIATE_EMAIL_REMINDER = (
     fraud_models.FraudReasonCode.LACK_OF_LUMINOSITY,
     fraud_models.FraudReasonCode.MISSING_REQUIRED_DATA,
     fraud_models.FraudReasonCode.NETWORK_CONNECTION_ISSUE,
+    fraud_models.FraudReasonCode.NOT_DOCUMENT_OWNER,
+    fraud_models.FraudReasonCode.UBBLE_INTERNAL_ERROR,
 )
 
 REASON_CODE_REQUIRING_IMMEDIATE_NOTIFICATION_REMINDER = (
@@ -40,6 +44,8 @@ REASON_CODE_REQUIRING_IMMEDIATE_NOTIFICATION_REMINDER = (
     fraud_models.FraudReasonCode.LACK_OF_LUMINOSITY,
     fraud_models.FraudReasonCode.MISSING_REQUIRED_DATA,
     fraud_models.FraudReasonCode.NETWORK_CONNECTION_ISSUE,
+    fraud_models.FraudReasonCode.NOT_DOCUMENT_OWNER,
+    fraud_models.FraudReasonCode.UBBLE_INTERNAL_ERROR,
 )
 
 REASON_CODES_FOR_QUICK_ACTION_REMINDERS = (
@@ -51,6 +57,8 @@ REASON_CODES_FOR_QUICK_ACTION_REMINDERS = (
     fraud_models.FraudReasonCode.LACK_OF_LUMINOSITY,
     fraud_models.FraudReasonCode.MISSING_REQUIRED_DATA,
     fraud_models.FraudReasonCode.NETWORK_CONNECTION_ISSUE,
+    fraud_models.FraudReasonCode.NOT_DOCUMENT_OWNER,
+    fraud_models.FraudReasonCode.UBBLE_INTERNAL_ERROR,
 )
 
 REASON_CODES_FOR_LONG_ACTION_REMINDERS = (

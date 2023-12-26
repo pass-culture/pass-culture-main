@@ -2218,7 +2218,7 @@ class UbbleWebhookTest:
         assert mails_testing.outbox[0].sent_data["template"]["id_prod"] == 760
 
     @pytest.mark.usefixtures("db_session")
-    @pytest.mark.parametrize("code_number", [1301, 2103, 1320, 1201])
+    @pytest.mark.parametrize("code_number", [1301, 2103, 1320, 1201, 2304, 1901])
     def test_decision_suspicious_codes(self, client, ubble_mocker, code_number):
         user, ubble_fraud_check, request_data = self._init_decision_test()
         # Perform phone validation and profile completion
