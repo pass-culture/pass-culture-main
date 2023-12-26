@@ -1,3 +1,4 @@
+import cn from 'classnames'
 import React from 'react'
 
 import { ButtonAppPreview } from './ButtonAppPreview'
@@ -9,24 +10,28 @@ import styles from './ImageUploader.module.scss'
 import { UploaderModeEnum } from './types'
 
 export interface ImageUploaderProps {
+  className?: string
   onImageUpload: (values: OnImageUploadArgs) => void
   onImageDelete: () => void
   initialValues?: UploadImageValues
   mode: UploaderModeEnum
   onClickButtonImageAdd?: () => void
+  hideActionButtons?: boolean
 }
 
 const ImageUploader = ({
+  className,
   onImageUpload,
   onImageDelete,
   initialValues = {},
   mode,
   onClickButtonImageAdd,
+  hideActionButtons = false,
 }: ImageUploaderProps) => {
   const { imageUrl, originalImageUrl, credit, cropParams } = initialValues
 
   return (
-    <div className={styles['image-uploader-image-container']}>
+    <div className={cn(className, styles['image-uploader-image-container'])}>
       {imageUrl && originalImageUrl ? (
         <>
           <ImagePreview
@@ -34,25 +39,27 @@ const ImageUploader = ({
             imageUrl={imageUrl}
             alt="Prévisualisation de l’image"
           />
-          <div className={styles['image-uploader-actions-container']}>
-            <div className={styles['actions-wrapper']}>
-              <ButtonImageEdit
-                mode={mode}
-                initialValues={{
-                  originalImageUrl,
-                  imageUrl,
-                  credit,
-                  cropParams,
-                }}
-                onImageUpload={onImageUpload}
-                onClickButtonImage={onClickButtonImageAdd}
-              />
-              {mode !== UploaderModeEnum.OFFER_COLLECTIVE && (
-                <ButtonAppPreview imageUrl={imageUrl} mode={mode} />
-              )}
-              <ButtonImageDelete onImageDelete={onImageDelete} />
+          {!hideActionButtons && (
+            <div className={styles['image-uploader-actions-container']}>
+              <div className={styles['actions-wrapper']}>
+                <ButtonImageEdit
+                  mode={mode}
+                  initialValues={{
+                    originalImageUrl,
+                    imageUrl,
+                    credit,
+                    cropParams,
+                  }}
+                  onImageUpload={onImageUpload}
+                  onClickButtonImage={onClickButtonImageAdd}
+                />
+                {mode !== UploaderModeEnum.OFFER_COLLECTIVE && (
+                  <ButtonAppPreview imageUrl={imageUrl} mode={mode} />
+                )}
+                <ButtonImageDelete onImageDelete={onImageDelete} />
+              </div>
             </div>
-          </div>
+          )}
         </>
       ) : (
         <ButtonImageEdit

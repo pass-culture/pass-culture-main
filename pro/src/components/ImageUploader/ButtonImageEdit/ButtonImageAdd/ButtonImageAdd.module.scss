@@ -17,7 +17,7 @@
   border-radius: rem.torem(4px);
 
   &.add-image-venue {
-    $height: rem.torem(176px);
+    $height: rem.torem(180px);
 
     width: math.div($height * 3, 2);
     height: $height;

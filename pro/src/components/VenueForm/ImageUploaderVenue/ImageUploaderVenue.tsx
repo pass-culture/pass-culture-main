@@ -28,8 +28,8 @@ export interface VenueBannerMetaProps {
 }
 
 /* istanbul ignore next: DEBT, TO FIX */
-const buildInitialValues = (
-  bannerUrl?: string,
+export const buildInitialValues = (
+  bannerUrl?: string | null,
   bannerMeta?: VenueBannerMetaProps
 ): UploadImageValues => {
   let cropParams
