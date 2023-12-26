@@ -27,11 +27,6 @@ on:
       GCP_EHP_SERVICE_ACCOUNT:
         required: true
 
-env:
-  DOCKER_REGISTRY_PROJECT_ID: passculture-infra-prod
-  DOCKER_REGISTRY_REGION: europe-west1
-  DOCKER_REGISTRY_REPOSITORY: pass-culture-artifact-registry
-
 jobs:
   build-and-tag-version:
     runs-on: docker-cache
@@ -58,7 +53,7 @@ jobs:
           secrets: |-
             SLACK_BOT_TOKEN:passculture-metier-ehp/passculture-ci-slack-bot-token
             PUSH_TOKEN:passculture-metier-ehp/passculture-main-push-token
-            GCP_WORKLOAD_IDENTITY_PROVIDER:passculture-metier-ehp/passculture-main-gcp-workload-identity-provider
+            ARTIFACT_REGISTRY_WORKLOAD_IDENTITY_PROVIDER:passculture-metier-ehp/passculture-main-gcp-workload-identity-provider
             ARTIFACT_REGISTRY_SERVICE_ACCOUNT:passculture-metier-ehp/passculture-main-artifact-registry-service-account
 
       - name: Checkout ref
@@ -90,10 +85,6 @@ jobs:
           echo "${{ inputs.tag_number }}" > version.txt
           git add version.txt
 
-      - name: Output variables
-        id: vars
-        run: echo "DOCKER_REPO=${DOCKER_REGISTRY_REGION}-docker.pkg.dev/${DOCKER_REGISTRY_PROJECT_ID}/${DOCKER_REGISTRY_REPOSITORY}" >> $GITHUB_ENV
-
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v2
         with:
@@ -105,14 +96,14 @@ jobs:
         with:
           create_credentials_file: false
           token_format: "access_token"
-          workload_identity_provider: ${{ steps.secrets.outputs.GCP_WORKLOAD_IDENTITY_PROVIDER }}
+          workload_identity_provider: ${{ steps.secrets.outputs.ARTIFACT_REGISTRY_WORKLOAD_IDENTITY_PROVIDER }}
           service_account: ${{ steps.secrets.outputs.ARTIFACT_REGISTRY_SERVICE_ACCOUNT }}
 
       - id: docker-login
         uses: "docker/login-action@v1"
         name: "Docker login"
         with:
-          registry: "${{ env.DOCKER_REGISTRY_REGION }}-docker.pkg.dev"
+          registry: "europe-west1-docker.pkg.dev"
           username: "oauth2accesstoken"
           password: "${{ steps.openid-auth.outputs.access_token }}"
 
@@ -122,7 +113,7 @@ jobs:
           context: api
           push: true
           target: pcapi
-          tags: ${{ env.DOCKER_REPO }}/pcapi:${{ inputs.tag_number }}
+          tags: europe-west1-docker.pkg.dev/passculture-infra-prod/pass-culture-artifact-registry/pcapi:${{ inputs.tag_number }}
 
       - name: "Build and push pcapi-console image"
         uses: docker/build-push-action@v2
@@ -130,7 +121,7 @@ jobs:
           context: api
           push: true
           target: pcapi-console
-          tags: ${{ env.DOCKER_REPO }}/pcapi-console:${{ inputs.tag_number }}
+          tags: europe-west1-docker.pkg.dev/passculture-infra-prod/pass-culture-artifact-registry/pcapi-console:${{ inputs.tag_number }}
 
       - name: Tag Release
         run: |
@@ -170,15 +161,16 @@ jobs:
             SLACK_BOT_TOKEN:passculture-metier-ehp/passculture-ci-slack-bot-token
 
       - name: Slack output
+        id: slack-text
         run: |
           if [ "${{ env.WORKFLOW_CONCLUSION }}" == "failure" ];
           then
-            echo TEXT="La pose du tag *${{ env.TAG_NAME }}* a échoué :x: Détails sur <${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}|Github>" >> $GITHUB_ENV
+            echo text="La pose du tag *${{ env.TAG_NAME }}* a échoué :x: Détails sur <${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}|Github>" | tee -a $GITHUB_OUTPUT
           elif [ "${{ env.WORKFLOW_CONCLUSION }}" == "skipped" ];
           then
-            echo TEXT="La pose du tag a été annulée. Détails sur <${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}|Github>" >> $GITHUB_ENV
+            echo text="La pose du tag a été annulée. Détails sur <${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}|Github>" | tee -a $GITHUB_OUTPUT
           else
-            echo TEXT="La pose du tag *${{ env.TAG_NAME }}* a réussi. rdv sur <https://github.com/pass-culture/pass-culture-main/actions/workflows/release--deploy.yml|cette action github> pour le déployer :rocket:" >> $GITHUB_ENV
+            echo text="La pose du tag *${{ env.TAG_NAME }}* a réussi. rdv sur <https://github.com/pass-culture/pass-culture-main/actions/workflows/release--deploy.yml|cette action github> pour le déployer :rocket:" | tee -a $GITHUB_OUTPUT
           fi
 
       - name: Post to a Slack channel
@@ -198,7 +190,7 @@ jobs:
                   "author_icon": "https://github.com/${{github.actor}}.png",
                   "title": "PCAPI Deployment",
                   "title_link": "https://github.com/${{github.repository}}/actions/runs/${{github.run_id}}",
-                  "text": "${{ env.TEXT }}"
+                  "text": "${{ steps.slack-test.outputs.text }}"
                 }
               ],
               "unfurl_links": false,
