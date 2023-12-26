@@ -15,7 +15,7 @@ on:
 jobs:
   check-folder-changes:
     name: "Check folder changes"
-    runs-on: [self-hosted, linux, x64]
+    runs-on: ubuntu-latest
     outputs:
       folder_changed: ${{ steps.folder-check-changed-files.outputs.any_changed }}
     steps:

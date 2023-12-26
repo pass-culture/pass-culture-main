@@ -35,7 +35,7 @@ on:
 jobs:
   generate-pcapi-helm-secrets-file:
     name: "[pcapi] Generate helm secrets values file"
-    runs-on: [self-hosted, linux, x64]
+    runs-on: ubuntu-latest
     if: ${{ inputs.deploy_api }}
     environment: ${{ inputs.environment }}
     permissions:
@@ -83,7 +83,7 @@ jobs:
 
   deploy-api:
     name: Deploy api
-    runs-on: [self-hosted, linux, x64]
+    runs-on: ubuntu-latest
     environment: ${{ inputs.environment }}
     permissions:
       id-token: write
@@ -196,7 +196,7 @@ jobs:
       (needs.deploy-api.result == 'success' || needs.deploy-api.result == 'skipped') &&
       inputs.environment == 'testing' &&
       inputs.deploy_pro == true
-    uses: ./.github/workflows/deploy-pro-pr-version-generic.yml
+    uses: ./.github/workflows/dev_on_workflow_deploy_pro_pr_version_generic.yml
     secrets:
       GCP_EHP_SERVICE_ACCOUNT: ${{ secrets.GCP_EHP_SERVICE_ACCOUNT }}
       GCP_EHP_WORKLOAD_IDENTITY_PROVIDER: ${{ secrets.GCP_EHP_WORKLOAD_IDENTITY_PROVIDER }}
@@ -213,7 +213,7 @@ jobs:
       (needs.deploy-api.result == 'success' || needs.deploy-api.result == 'skipped') &&
       ( inputs.environment != 'testing' ) &&
       inputs.deploy_pro == true
-    uses: ./.github/workflows/configure-live-channel-pro-generic.yml
+    uses: ./.github/workflows/dev_on_workflow_configure_live_channel_pro_generic.yml
     secrets:
       GCP_EHP_SERVICE_ACCOUNT: ${{ secrets.GCP_EHP_SERVICE_ACCOUNT }}
       GCP_EHP_WORKLOAD_IDENTITY_PROVIDER: ${{ secrets.GCP_EHP_WORKLOAD_IDENTITY_PROVIDER }}
@@ -231,7 +231,7 @@ jobs:
     permissions:
       id-token: write
       contents: read
-    runs-on: [self-hosted, linux, x64]
+    runs-on: ubuntu-latest
     steps:
       - name: Install Teleport
         uses: teleport-actions/setup@v1
@@ -263,7 +263,7 @@ jobs:
     permissions:
       contents: 'read'
       id-token: 'write'
-    uses: ./.github/workflows/deploy-app-engine-image-resizing.yml
+    uses: ./.github/workflows/dev_on_workflow_deploy_app_engine_image_resizing.yml
     if: ${{ inputs.environment != 'production' }}
     with:
       workload_identity_provider_secret_name: passculture-metier-ehp/gcp_metier_ehp_workload_identity_provider
@@ -282,7 +282,7 @@ jobs:
     permissions:
       contents: 'read'
       id-token: 'write'
-    uses: ./.github/workflows/deploy-app-engine-image-resizing.yml
+    uses: ./.github/workflows/dev_on_workflow_deploy_app_engine_image_resizing.yml
     if: ${{ inputs.environment == 'production' }}
     with:
       workload_identity_provider_secret_name: passculture-metier-ehp/gcp_metier_prod_workload_identity_provider

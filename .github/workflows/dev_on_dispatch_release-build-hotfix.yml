@@ -7,7 +7,7 @@ on: workflow_dispatch
 jobs:
   check-worflow-ref:
     name: Check worflow ref
-    runs-on: [self-hosted, linux, x64]
+    runs-on: ubuntu-latest
     steps:
       - name: Check worflow ref
         run: |
@@ -21,7 +21,7 @@ jobs:
     # Example: given branch maint/v200 and existing tags v200.0.0, v200.0.1 then output == 200.0.2
     name: Find hotfix tag number
     needs: check-worflow-ref
-    runs-on: [self-hosted, linux, x64]
+    runs-on: ubuntu-latest
     outputs:
       hotfixTagNumber: ${{ steps.find-hotfix-tag-number.outputs.hotfixTagNumber }}
     steps:
@@ -42,7 +42,7 @@ jobs:
   build-and-tag-version:
     needs: find-hotfix-tag-number
     name: Build and tag version
-    uses: ./.github/workflows/reusable--build-and-tag.yml
+    uses: ./.github/workflows/dev_on_workflow_build_and_tag.yml
     secrets:
       GCP_EHP_SERVICE_ACCOUNT: ${{ secrets.GCP_EHP_SERVICE_ACCOUNT }}
       GCP_EHP_WORKLOAD_IDENTITY_PROVIDER: ${{ secrets.GCP_EHP_WORKLOAD_IDENTITY_PROVIDER }}

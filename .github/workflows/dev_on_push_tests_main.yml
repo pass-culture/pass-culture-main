@@ -19,13 +19,13 @@ concurrency:
 jobs:
   check-api-folder-changes:
     name: Check api folder changes
-    uses: ./.github/workflows/check-folder-changes.yml
+    uses: ./.github/workflows/dev_on_workflow_check_folder_changes.yml
     with:
       folder: api
 
   check-pro-folder-changes:
     name: Check pro folder changes
-    uses: ./.github/workflows/check-folder-changes.yml
+    uses: ./.github/workflows/dev_on_workflow_check_folder_changes.yml
     with:
       folder: pro
 
@@ -39,7 +39,7 @@ jobs:
       needs.check-pro-folder-changes.outputs.folder_changed == 'true' ||
       github.ref == 'refs/heads/master' ||
       startsWith(github.ref,'refs/heads/maint/v')
-    uses: ./.github/workflows/build-and-push-docker-images.yml
+    uses: ./.github/workflows/dev_on_workflow_build_and_push_docker_images.yml
     with:
       ref: ${{ github.event_name == 'pull_request' && github.event.pull_request.head.sha || github.sha }}
       tag: ${{ github.event_name == 'pull_request' && github.event.pull_request.head.sha || github.sha }}
@@ -64,7 +64,7 @@ jobs:
       needs.check-api-folder-changes.outputs.folder_changed == 'true' ||
       github.ref == 'refs/heads/master' ||
       startsWith(github.ref,'refs/heads/maint/v')
-    uses: ./.github/workflows/tests-api.yml
+    uses: ./.github/workflows/dev_on_workflow_tests_api.yml
     secrets:
       GCP_EHP_WORKLOAD_IDENTITY_PROVIDER: ${{ secrets.GCP_EHP_WORKLOAD_IDENTITY_PROVIDER }}
       GCP_EHP_SERVICE_ACCOUNT: ${{ secrets.GCP_EHP_SERVICE_ACCOUNT }}
@@ -76,7 +76,7 @@ jobs:
       github.ref == 'refs/heads/master' ||
       startsWith(github.ref,'refs/heads/maint/v')
     name: Tests pro
-    uses: ./.github/workflows/tests-pro.yml
+    uses: ./.github/workflows/dev_on_workflow_tests_pro.yml
     secrets:
       GCP_EHP_WORKLOAD_IDENTITY_PROVIDER: ${{ secrets.GCP_EHP_WORKLOAD_IDENTITY_PROVIDER }}
       GCP_EHP_SERVICE_ACCOUNT: ${{ secrets.GCP_EHP_SERVICE_ACCOUNT }}
@@ -94,7 +94,7 @@ jobs:
       github.ref == 'refs/heads/master' ||
       startsWith(github.ref,'refs/heads/maint/v')
     name: Tests pro E2E
-    uses: ./.github/workflows/tests-pro-e2e.yml
+    uses: ./.github/workflows/dev_on_workflow_tests_pro_e2e.yml
     secrets:
       GCP_EHP_WORKLOAD_IDENTITY_PROVIDER: ${{ secrets.GCP_EHP_WORKLOAD_IDENTITY_PROVIDER }}
       GCP_EHP_SERVICE_ACCOUNT: ${{ secrets.GCP_EHP_SERVICE_ACCOUNT }}
@@ -107,7 +107,7 @@ jobs:
     if: |
       github.event_name == 'pull_request' &&
       github.actor == 'dependabot[bot]'
-    uses: ./.github/workflows/dependabot-auto-merge.yml
+    uses: ./.github/workflows/dev_on_workflow_dependabot_auto_merge.yml
 
   deploy-to-testing:
     name: Deploy to testing
@@ -119,7 +119,7 @@ jobs:
       github.ref == 'refs/heads/master' &&
       (needs.test-api.result == 'success' || needs.test-api.result == 'skipped') &&
       (needs.test-pro.result == 'success' || needs.test-pro.result == 'skipped')
-    uses: ./.github/workflows/deploy.yml
+    uses: ./.github/workflows/dev_on_workflow_deploy.yml
     with:
       environment: testing
       app_version: ${{ github.sha }}
@@ -134,7 +134,7 @@ jobs:
 
   notification:
     name: "Notification"
-    runs-on: [self-hosted, linux, x64]
+    runs-on: ubuntu-latest
     if: ${{ failure() && github.ref == 'refs/heads/master' }}
     needs:
       - deploy-to-testing

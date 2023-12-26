@@ -22,7 +22,7 @@ permissions:
 jobs:
   type-check:
     name: "Type check"
-    runs-on: [self-hosted, linux, x64]
+    runs-on: ubuntu-latest
     container:
       image: node:18
     steps:
@@ -51,7 +51,7 @@ jobs:
 
   quality-check:
     name: "Quality check"
-    runs-on: [self-hosted, linux, x64]
+    runs-on: ubuntu-latest
     container:
       image: node:18
     steps:
@@ -81,7 +81,7 @@ jobs:
 
   style-quality-check:
     name: "Style quality check"
-    runs-on: [self-hosted, linux, x64]
+    runs-on: ubuntu-latest
     container:
       image: node:18
     steps:
@@ -110,7 +110,7 @@ jobs:
 
   tests-pro-unit-tests:
     name: "Unit tests"
-    runs-on: [self-hosted, linux, x64]
+    runs-on: ubuntu-latest
     container:
       image: node:18
     steps:

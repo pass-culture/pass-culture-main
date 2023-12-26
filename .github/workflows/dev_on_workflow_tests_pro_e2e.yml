@@ -22,7 +22,7 @@ permissions:
 jobs:
   tests-pro-e2e-tests:
     name: "E2E tests"
-    runs-on: [self-hosted, linux, x64]
+    runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3
       - uses: actions/setup-node@v3
@@ -67,7 +67,7 @@ jobs:
 
   notification:
     name: "Notification"
-    runs-on: [self-hosted, linux, x64]
+    runs-on: ubuntu-latest
     if: ${{ failure() && github.ref == 'refs/heads/master' }}
     needs:
       - tests-pro-e2e-tests

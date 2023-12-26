@@ -34,7 +34,7 @@ jobs:
     defaults:
       run:
         working-directory: pro
-    runs-on: [self-hosted, linux, x64]
+    runs-on: ubuntu-latest
     if: ${{ github.actor != 'dependabot[bot]' }}
     steps:
       - uses: actions/checkout@v3

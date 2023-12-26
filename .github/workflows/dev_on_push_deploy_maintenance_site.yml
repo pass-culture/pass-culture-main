@@ -12,7 +12,7 @@ permissions:
 
 jobs:
   deploy:
-    runs-on: [self-hosted, linux, x64]
+    runs-on: ubuntu-latest
     container:
       image: node:18
     steps:

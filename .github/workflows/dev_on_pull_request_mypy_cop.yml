@@ -4,9 +4,10 @@ on:
   pull_request:
     branches:
       - master
+
 jobs:
   run-mypy-cop:
-    runs-on: [self-hosted, linux, x64]
+    runs-on: ubuntu-latest
     steps:
       - name: Checkout 🛎️
         uses: actions/checkout@v3

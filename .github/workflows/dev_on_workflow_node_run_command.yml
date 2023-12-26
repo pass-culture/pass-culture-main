@@ -21,7 +21,7 @@ on:
 
 jobs:
   node-run-command:
-    runs-on: [self-hosted, linux, x64]
+    runs-on: ubuntu-latest
     container:
       image: node:18
     steps:

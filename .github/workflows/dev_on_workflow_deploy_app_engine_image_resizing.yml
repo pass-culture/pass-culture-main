@@ -39,8 +39,8 @@ jobs:
 
   check-image-resizing-folder-changes:
     name: "Check if folder changed"
-    uses: ./.github/workflows/check-folder-changes.yml
-    needs: check-image-resizing-deployed-version
+    uses: ./.github/workflows/dev_on_workflow_check_folder_changes.yml
+    needs: check-image-resizing-deployed-version 
     with:
       base_sha: ${{ needs.check-image-resizing-deployed-version.outputs.image_resizing_deployed_version }}
       folder: app-engine/image-resizing
@@ -49,7 +49,7 @@ jobs:
     needs: check-image-resizing-folder-changes
     if: ${{ needs.check-image-resizing-folder-changes.outputs.folder_changed == 'true' }}
     environment: ${{ inputs.environment }}
-    runs-on: [self-hosted, linux, x64]
+    runs-on: ubuntu-latest
     permissions:
       contents: 'read'
       id-token: 'write'
