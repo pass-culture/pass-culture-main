@@ -16,4 +16,6 @@ jobs:
       node_version: ${{ inputs.node_version }}
       app_folder: ${{ inputs.app_folder }}
       command: yarn lint:js --max-warnings 0
-    secrets: inherit
+    secrets:
+      GCP_EHP_WORKLOAD_IDENTITY_PROVIDER: ${{ secrets.GCP_EHP_WORKLOAD_IDENTITY_PROVIDER }}
+      GCP_EHP_SERVICE_ACCOUNT: ${{ secrets.GCP_EHP_SERVICE_ACCOUNT }}
