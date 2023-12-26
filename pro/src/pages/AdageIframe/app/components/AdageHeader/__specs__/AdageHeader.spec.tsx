@@ -8,7 +8,10 @@ import { apiAdage } from 'apiClient/api'
 import * as useNotification from 'hooks/useNotification'
 import { AdageUserContextProvider } from 'pages/AdageIframe/app/providers/AdageUserContext'
 import { defaultEducationalInstitution } from 'utils/adageFactories'
-import { renderWithProviders } from 'utils/renderWithProviders'
+import {
+  RenderWithProvidersOptions,
+  renderWithProviders,
+} from 'utils/renderWithProviders'
 
 import { AdageHeader } from '../AdageHeader'
 
@@ -19,26 +22,14 @@ interface HeaderLinkProps {
 
 const renderAdageHeader = (
   user: AuthenticatedResponse,
-  storeOverrides?: any
+  options?: RenderWithProvidersOptions
 ) => {
   renderWithProviders(
     <AdageUserContextProvider adageUser={user}>
       <AdageHeader />
     </AdageUserContextProvider>,
-    { storeOverrides }
+    options
   )
-}
-
-const isDiscoveryActive = {
-  features: {
-    list: [
-      {
-        nameKey: 'WIP_ENABLE_DISCOVERY',
-        isActive: true,
-      },
-    ],
-    initialized: true,
-  },
 }
 
 vi.mock('apiClient/api', () => ({
@@ -87,7 +78,7 @@ describe('AdageHeader', () => {
   })
 
   it('should render adage header with link for discovery', async () => {
-    renderAdageHeader(user, isDiscoveryActive)
+    renderAdageHeader(user, { features: ['WIP_ENABLE_DISCOVERY'] })
     await waitFor(() =>
       expect(
         apiAdage.getEducationalInstitutionWithBudget

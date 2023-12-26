@@ -34,12 +34,6 @@ const renderUsefulInformations = ({
   onSubmit: () => void
   props: UsefulInformationsProps
 }) => {
-  const storeOverrides = {
-    features: {
-      list: [{ isActive: true, nameKey: 'WIP_MANDATORY_BOOKING_CONTACT' }],
-    },
-  }
-
   return renderWithProviders(
     <Formik
       initialValues={initialValues}
@@ -51,7 +45,7 @@ const renderUsefulInformations = ({
         <SubmitButton isLoading={false}>Submit</SubmitButton>
       </Form>
     </Formik>,
-    { storeOverrides }
+    { features: ['WIP_MANDATORY_BOOKING_CONTACT'] }
   )
 }
 

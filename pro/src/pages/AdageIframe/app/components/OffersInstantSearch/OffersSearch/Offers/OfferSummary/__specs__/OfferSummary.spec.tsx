@@ -3,12 +3,18 @@ import React from 'react'
 
 import { HydratedCollectiveOfferTemplate } from 'pages/AdageIframe/app/types/offers'
 import { defaultCollectiveTemplateOffer } from 'utils/adageFactories'
-import { renderWithProviders } from 'utils/renderWithProviders'
+import {
+  RenderWithProvidersOptions,
+  renderWithProviders,
+} from 'utils/renderWithProviders'
 
 import OfferSummary, { OfferSummaryProps } from '../OfferSummary'
 
-const renderOfferSummary = (props: OfferSummaryProps, storeOverrides?: any) => {
-  renderWithProviders(<OfferSummary {...props} />, { storeOverrides })
+const renderOfferSummary = (
+  props: OfferSummaryProps,
+  options?: RenderWithProvidersOptions
+) => {
+  renderWithProviders(<OfferSummary {...props} />, options)
 }
 
 describe('offer summary', () => {
@@ -32,13 +38,7 @@ describe('offer summary', () => {
     }
     renderOfferSummary(
       { offer },
-      {
-        features: {
-          list: [
-            { isActive: true, nameKey: 'WIP_ENABLE_DATES_OFFER_TEMPLATE' },
-          ],
-        },
-      }
+      { features: ['WIP_ENABLE_DATES_OFFER_TEMPLATE'] }
     )
     expect(screen.queryByText('Le mardi 24 octobre 2023')).toBeInTheDocument()
   })
@@ -51,13 +51,7 @@ describe('offer summary', () => {
     }
     renderOfferSummary(
       { offer },
-      {
-        features: {
-          list: [
-            { isActive: true, nameKey: 'WIP_ENABLE_DATES_OFFER_TEMPLATE' },
-          ],
-        },
-      }
+      { features: ['WIP_ENABLE_DATES_OFFER_TEMPLATE'] }
     )
     expect(
       screen.queryByText('Le mardi 24 octobre 2023')

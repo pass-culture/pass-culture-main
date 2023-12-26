@@ -5,7 +5,10 @@ import React from 'react'
 import { api } from 'apiClient/api'
 import { Events } from 'core/FirebaseEvents/constants'
 import * as useAnalytics from 'hooks/useAnalytics'
-import { renderWithProviders } from 'utils/renderWithProviders'
+import {
+  RenderWithProvidersOptions,
+  renderWithProviders,
+} from 'utils/renderWithProviders'
 
 import TutorialDialog from '../TutorialDialog'
 
@@ -20,23 +23,17 @@ const stepTitles = [
   'Suivez et gérez vos réservations',
 ]
 
-const renderTutorialDialog = (storeOverrides: any) =>
-  renderWithProviders(<TutorialDialog />, { storeOverrides })
+const renderTutorialDialog = (options?: RenderWithProvidersOptions) =>
+  renderWithProviders(<TutorialDialog />, options)
 
 const mockLogEvent = vi.fn()
 
 describe('tutorial modal', () => {
-  let storeOverrides: any
-
-  beforeEach(() => {
-    storeOverrides = {}
-  })
-
   it('should trigger an event when the user arrive on /accueil for the first time', async () => {
     vi.spyOn(useAnalytics, 'default').mockImplementation(() => ({
       logEvent: mockLogEvent,
     }))
-    storeOverrides = {
+    const storeOverrides = {
       user: {
         currentUser: {
           id: 'test_id',
@@ -44,7 +41,9 @@ describe('tutorial modal', () => {
         },
       },
     }
-    renderTutorialDialog(storeOverrides)
+
+    renderTutorialDialog({ storeOverrides })
+
     const closeButton = screen.getByTitle('Fermer la modale')
     await userEvent.click(closeButton)
     expect(mockLogEvent).toHaveBeenNthCalledWith(1, Events.TUTO_PAGE_VIEW, {
@@ -55,7 +54,7 @@ describe('tutorial modal', () => {
   })
 
   it('should show tutorial dialog if user has not seen it yet', () => {
-    storeOverrides = {
+    const storeOverrides = {
       user: {
         currentUser: {
           id: 'test_id',
@@ -64,13 +63,13 @@ describe('tutorial modal', () => {
       },
     }
 
-    renderTutorialDialog(storeOverrides)
+    renderTutorialDialog({ storeOverrides })
 
     expect(screen.getByText(stepTitles[0])).toBeInTheDocument()
   })
 
   it("shouldn't show tutorial dialog if user has already seen it", () => {
-    storeOverrides = {
+    const storeOverrides = {
       user: {
         currentUser: {
           id: 'test_id',
@@ -79,7 +78,7 @@ describe('tutorial modal', () => {
       },
     }
 
-    renderTutorialDialog(storeOverrides)
+    renderTutorialDialog({ storeOverrides })
 
     expect(screen.queryByText(stepTitles[0])).not.toBeInTheDocument()
   })
@@ -87,21 +86,16 @@ describe('tutorial modal', () => {
   describe('interacting with navigation buttons', () => {
     let buttonNext: HTMLElement
     beforeEach(() => {
-      storeOverrides = {
+      const storeOverrides = {
         user: {
           currentUser: {
             id: 'test_id',
             hasSeenProTutorials: false,
           },
         },
-        features: {
-          list: [
-            { isActive: false, nameKey: 'WIP_ENABLE_NEW_BANK_DETAILS_JOURNEY' },
-          ],
-        },
       }
 
-      renderTutorialDialog(storeOverrides)
+      renderTutorialDialog({ storeOverrides })
       buttonNext = screen.getByText('Suivant')
     })
 
@@ -221,21 +215,19 @@ describe('tutorial modal', () => {
   })
 
   it('should display text in create venue step under WIP_ENABLE_NEW_BANK_DETAILS_JOURNEY FF', async () => {
-    storeOverrides = {
+    const storeOverrides = {
       user: {
         currentUser: {
           id: 'test_id',
           hasSeenProTutorials: false,
         },
       },
-      features: {
-        list: [
-          { isActive: true, nameKey: 'WIP_ENABLE_NEW_BANK_DETAILS_JOURNEY' },
-        ],
-      },
     }
 
-    renderTutorialDialog(storeOverrides)
+    renderTutorialDialog({
+      storeOverrides,
+      features: ['WIP_ENABLE_NEW_BANK_DETAILS_JOURNEY'],
+    })
 
     await userEvent.click(screen.getByText('Suivant'))
 

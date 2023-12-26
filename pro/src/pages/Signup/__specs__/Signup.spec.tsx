@@ -3,7 +3,10 @@ import React from 'react'
 import { Route, Routes } from 'react-router-dom'
 
 import { routesSignup } from 'app/AppRouter/subroutesSignupMap'
-import { renderWithProviders } from 'utils/renderWithProviders'
+import {
+  RenderWithProvidersOptions,
+  renderWithProviders,
+} from 'utils/renderWithProviders'
 
 import { Signup } from '../Signup'
 
@@ -16,7 +19,7 @@ vi.mock('apiClient/api', () => ({
   },
 }))
 
-const renderSignup = (storeOverrides: any, initialUrl: string) =>
+const renderSignup = (options?: RenderWithProvidersOptions) =>
   renderWithProviders(
     <Routes>
       <Route path="/inscription" element={<Signup />}>
@@ -25,27 +28,15 @@ const renderSignup = (storeOverrides: any, initialUrl: string) =>
         ))}
       </Route>
     </Routes>,
-    {
-      storeOverrides,
-      initialRouterEntries: [initialUrl],
-    }
+    options
   )
 
 describe('src | components | pages | Signup', () => {
-  let storeOverrides: any
-  beforeEach(() => {
-    storeOverrides = {
-      user: {
-        currentUser: null,
-      },
-      features: {
-        list: [{ isActive: true, nameKey: 'ENABLE_PRO_ACCOUNT_CREATION' }],
-      },
-    }
-  })
-
   it('should render logo and sign-up form', () => {
-    renderSignup(storeOverrides, '/inscription')
+    renderSignup({
+      initialRouterEntries: ['/inscription'],
+      features: ['ENABLE_PRO_ACCOUNT_CREATION'],
+    })
 
     expect(
       screen.getByRole('heading', { name: /Créer votre compte/ })
@@ -53,7 +44,10 @@ describe('src | components | pages | Signup', () => {
   })
 
   it('should render logo and confirmation page', () => {
-    renderSignup(storeOverrides, '/inscription/confirmation')
+    renderSignup({
+      initialRouterEntries: ['/inscription/confirmation'],
+      features: ['ENABLE_PRO_ACCOUNT_CREATION'],
+    })
 
     expect(
       screen.getByText(/Votre compte est en cours de création./)
@@ -61,13 +55,7 @@ describe('src | components | pages | Signup', () => {
   })
 
   it('should render maintenance page when signup is unavailable', () => {
-    const storeOverrides = {
-      features: {
-        list: [{ isActive: false, nameKey: 'ENABLE_PRO_ACCOUNT_CREATION' }],
-      },
-    }
-
-    renderSignup(storeOverrides, '/inscription')
+    renderSignup({ initialRouterEntries: ['/inscription'] })
 
     expect(
       screen.getByRole('heading', { name: /Inscription indisponible/ })

@@ -52,8 +52,7 @@ vi.mock('repository/pcapi/pcapi', () => ({
 
 const renderInformationsScreen = (
   props: InformationsScreenProps,
-  contextOverride: IndividualOfferContextValues,
-  features: { list: { isActive: true; nameKey: string }[] } = { list: [] }
+  contextOverride: IndividualOfferContextValues
 ) => {
   const storeOverrides = {
     user: {
@@ -63,7 +62,6 @@ const renderInformationsScreen = (
         email: 'email@example.com',
       },
     },
-    features: features,
   }
   const contextValue = individualOfferContextFactory(contextOverride)
 
@@ -394,7 +392,6 @@ describe('screens:IndividualOffer::Informations:edition', () => {
 
   describe('send mail on withdrawal changes', () => {
     let expectedBody: PatchOfferBodyModel
-    let features: { list: { isActive: true; nameKey: string }[] }
 
     beforeEach(() => {
       expectedBody = {
@@ -443,7 +440,7 @@ describe('screens:IndividualOffer::Informations:edition', () => {
       expectedBody.withdrawalDelay = 140
       expectedBody.withdrawalType = WithdrawalTypeEnum.ON_SITE
 
-      renderInformationsScreen(props, contextOverride, features)
+      renderInformationsScreen(props, contextOverride)
 
       const nameField = screen.getByLabelText('Titre de l’offre')
       await userEvent.clear(nameField)
@@ -509,7 +506,7 @@ describe('screens:IndividualOffer::Informations:edition', () => {
         offererId: offererId.toString(),
       }
 
-      renderInformationsScreen(props, contextOverride, features)
+      renderInformationsScreen(props, contextOverride)
 
       const nameField = screen.getByLabelText('Titre de l’offre')
       await userEvent.clear(nameField)
@@ -593,7 +590,7 @@ describe('screens:IndividualOffer::Informations:edition', () => {
           venueId: virtualVenueId.toString(),
           offererId: offererId.toString(),
         }
-        renderInformationsScreen(props, contextOverride, features)
+        renderInformationsScreen(props, contextOverride)
 
         const nameField = screen.getByLabelText('Titre de l’offre')
         await userEvent.clear(nameField)
@@ -653,7 +650,7 @@ describe('screens:IndividualOffer::Informations:edition', () => {
         venueId: virtualVenueId.toString(),
         offererId: offererId.toString(),
       }
-      renderInformationsScreen(props, contextOverride, features)
+      renderInformationsScreen(props, contextOverride)
       expectedBody.withdrawalDelay = null
       expectedBody.withdrawalType = WithdrawalTypeEnum.NO_TICKET
 
@@ -738,7 +735,7 @@ describe('screens:IndividualOffer::Informations:edition', () => {
           venueId: virtualVenueId.toString(),
           offererId: offererId.toString(),
         }
-        renderInformationsScreen(props, contextOverride, features)
+        renderInformationsScreen(props, contextOverride)
 
         const nameField = screen.getByLabelText('Titre de l’offre')
         await userEvent.clear(nameField)

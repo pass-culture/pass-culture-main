@@ -6,9 +6,11 @@ import { createMemoryRouter, RouterProvider } from 'react-router-dom'
 
 import { configureTestStore } from 'store/testUtils'
 
-interface RenderWithProvidersOptions {
+export type RenderWithProvidersOptions = {
+  // TODO change any to Partial<RootState> and use factories for each slice
   storeOverrides?: any
   initialRouterEntries?: string[]
+  features?: string[]
 }
 
 const createRouterFromOverrides = (
@@ -25,7 +27,18 @@ export const renderWithProviders = (
   overrides?: RenderWithProvidersOptions,
   initialPath?: string
 ) => {
-  const store = configureTestStore(overrides?.storeOverrides)
+  const featuresList = (overrides?.features ?? []).map((feature) => ({
+    isActive: true,
+    nameKey: feature,
+  }))
+
+  const storeOverrides = {
+    ...overrides?.storeOverrides,
+    features: {
+      list: featuresList,
+    },
+  }
+  const store = configureTestStore(storeOverrides)
   const router = createRouterFromOverrides(component, overrides, initialPath)
 
   const { rerender, ...otherRenderResult } = render(

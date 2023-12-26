@@ -15,18 +15,8 @@ const renderVanueFormActionBar = ({
     user: {
       initialized: true,
       currentUser: {
-        id: 12,
         isAdmin: true,
       },
-    },
-    features: {
-      list: [
-        {
-          nameKey: 'WIP_ENABLE_NEW_OFFER_CREATION_JOURNEY',
-          isActive: true,
-        },
-      ],
-      initialized: true,
     },
   }
 
@@ -34,7 +24,7 @@ const renderVanueFormActionBar = ({
     <Formik initialValues={{}} onSubmit={vi.fn()}>
       <VenueFormActionBar isCreatingVenue={isCreatingVenue} offererId={59} />
     </Formik>,
-    { storeOverrides }
+    { storeOverrides, features: ['WIP_ENABLE_NEW_OFFER_CREATION_JOURNEY'] }
   )
 }
 

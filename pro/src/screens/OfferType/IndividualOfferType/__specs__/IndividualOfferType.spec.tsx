@@ -77,9 +77,6 @@ const renderOfferTypeIndividual = ({
         email: 'email@example.com',
       },
     },
-    features: {
-      list: [{ isActive: isFeatureActive, nameKey: 'WIP_CATEGORY_SELECTION' }],
-    },
   }
 
   const params = new URLSearchParams()
@@ -92,6 +89,7 @@ const renderOfferTypeIndividual = ({
 
   return renderWithProviders(<TestForm />, {
     storeOverrides,
+    features: isFeatureActive ? ['WIP_CATEGORY_SELECTION'] : [],
     initialRouterEntries: [
       `/creation${params.toString() ? `?${params.toString()}` : ''}`,
     ],

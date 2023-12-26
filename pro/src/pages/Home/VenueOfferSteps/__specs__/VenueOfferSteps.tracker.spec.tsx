@@ -2,48 +2,32 @@ import { screen } from '@testing-library/react'
 import { userEvent } from '@testing-library/user-event'
 import React from 'react'
 
-import { renderWithProviders } from 'utils/renderWithProviders'
+import {
+  RenderWithProvidersOptions,
+  renderWithProviders,
+} from 'utils/renderWithProviders'
 
 import { Events, VenueEvents } from '../../../../core/FirebaseEvents/constants'
 import * as useAnalytics from '../../../../hooks/useAnalytics'
 import { VenueOfferSteps } from '../index'
+import { VenueOfferStepsProps } from '../VenueOfferSteps'
 
 const mockLogEvent = vi.fn()
 
 const renderVenueOfferSteps = (
-  venueId: number | null = null,
-  hasMissingReimbursementPoint = true,
-  shouldDisplayEacSection = false,
-  hasPendingBankInformationApplication = false,
-  demarchesSimplifieesApplicationId?: number,
-  offererHasBankAccount = false,
-  features?: any
+  props?: Partial<VenueOfferStepsProps>,
+  options?: RenderWithProvidersOptions
 ) => {
-  const currentUser = {
-    id: 'EY',
-  }
-  const storeOverrides = {
-    user: {
-      initialized: true,
-      currentUser,
-    },
-    features,
-  }
-
   return renderWithProviders(
     <VenueOfferSteps
-      hasVenue={venueId != null}
-      venueId={venueId}
+      venueId={null}
+      hasMissingReimbursementPoint
+      hasVenue={false}
+      offererHasBankAccount={false}
       offererId={12}
-      hasMissingReimbursementPoint={hasMissingReimbursementPoint}
-      shouldDisplayEACInformationSection={shouldDisplayEacSection}
-      hasPendingBankInformationApplication={
-        hasPendingBankInformationApplication
-      }
-      demarchesSimplifieesApplicationId={demarchesSimplifieesApplicationId}
-      offererHasBankAccount={offererHasBankAccount}
+      {...props}
     />,
-    { storeOverrides, initialRouterEntries: ['/accueil'] }
+    { initialRouterEntries: ['/accueil'], ...options }
   )
 }
 
@@ -71,13 +55,13 @@ describe('VenueOfferSteps', () => {
   })
 
   it('should track creation offer', async () => {
-    renderVenueOfferSteps(venueId)
+    renderVenueOfferSteps({ venueId, hasVenue: true })
 
     await userEvent.click(screen.getByText(/Créer une offre/))
   })
 
   it('should track ReimbursementPoint', async () => {
-    renderVenueOfferSteps(venueId)
+    renderVenueOfferSteps({ venueId, hasVenue: true })
 
     await userEvent.click(
       screen.getByText(/Renseigner des coordonnées bancaires/)
@@ -94,11 +78,10 @@ describe('VenueOfferSteps', () => {
   })
 
   it('should track ReimbursementPoint', async () => {
-    renderVenueOfferSteps(venueId, false, false, false, undefined, false, {
-      list: [
-        { isActive: true, nameKey: 'WIP_ENABLE_NEW_BANK_DETAILS_JOURNEY' },
-      ],
-    })
+    renderVenueOfferSteps(
+      { venueId, hasVenue: true, hasMissingReimbursementPoint: false },
+      { features: ['WIP_ENABLE_NEW_BANK_DETAILS_JOURNEY'] }
+    )
 
     await userEvent.click(screen.getByText(/Ajouter un compte bancaire/))
 
@@ -128,7 +111,12 @@ describe('VenueOfferSteps', () => {
   })
 
   it('should track click on dms timeline link', async () => {
-    renderVenueOfferSteps(venueId, true, true)
+    renderVenueOfferSteps({
+      venueId,
+      hasVenue: true,
+      shouldDisplayEACInformationSection: true,
+      hasPendingBankInformationApplication: true,
+    })
 
     await userEvent.click(
       screen.getByText('Suivre ma demande de référencement ADAGE')
@@ -141,7 +129,12 @@ describe('VenueOfferSteps', () => {
   })
 
   it('should track click on dms redirect link', async () => {
-    renderVenueOfferSteps(venueId, false, false, true, 123456)
+    renderVenueOfferSteps({
+      venueId,
+      hasMissingReimbursementPoint: false,
+      hasPendingBankInformationApplication: true,
+      demarchesSimplifieesApplicationId: 123456,
+    })
 
     await userEvent.click(
       screen.getByText('Suivre mon dossier de coordonnées bancaires')

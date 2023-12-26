@@ -7,7 +7,10 @@ import Notification from 'components/Notification/Notification'
 import { AdageUserContext } from 'pages/AdageIframe/app/providers/AdageUserContext'
 import { defaultAdageUser, defaultCategories } from 'utils/adageFactories'
 import * as localStorageAvailable from 'utils/localStorageAvailable'
-import { renderWithProviders } from 'utils/renderWithProviders'
+import {
+  RenderWithProvidersOptions,
+  renderWithProviders,
+} from 'utils/renderWithProviders'
 
 import { Autocomplete } from '../Autocomplete'
 
@@ -117,20 +120,10 @@ vi.mock('react-instantsearch', async () => {
   }
 })
 
-const renderAutocomplete = ({
-  initialQuery,
-  featuresOverride = null,
-}: {
-  initialQuery: string
-  featuresOverride?: { nameKey: string; isActive: boolean }[] | null
-}) => {
-  const storeOverrides = {
-    features: {
-      list: featuresOverride,
-      initialized: true,
-    },
-  }
-
+const renderAutocomplete = (
+  initialQuery: string,
+  options?: RenderWithProvidersOptions
+) => {
   return renderWithProviders(
     <>
       <AdageUserContext.Provider value={{ adageUser: defaultAdageUser }}>
@@ -148,13 +141,13 @@ const renderAutocomplete = ({
       </AdageUserContext.Provider>
       <Notification />
     </>,
-    { storeOverrides }
+    options
   )
 }
 
 describe('Autocomplete', () => {
   it('should renders the Autocomplete component with placeholder and search button', () => {
-    renderAutocomplete({ initialQuery: '' })
+    renderAutocomplete('')
 
     const inputElement = screen.getByPlaceholderText(
       'Rechercher par mot-clé, par partenaire culturel, par nom d’offre...'
@@ -166,13 +159,7 @@ describe('Autocomplete', () => {
   })
 
   it('should close autocomplete panel when escape key pressed  ', async () => {
-    const featuresOverride = [
-      {
-        nameKey: 'WIP_ENABLE_SEARCH_HISTORY_ADAGE',
-        isActive: true,
-      },
-    ]
-    renderAutocomplete({ initialQuery: '', featuresOverride })
+    renderAutocomplete('', { features: ['WIP_ENABLE_SEARCH_HISTORY_ADAGE'] })
 
     const inputElement = screen.getByPlaceholderText(
       'Rechercher par mot-clé, par partenaire culturel, par nom d’offre...'
@@ -192,13 +179,7 @@ describe('Autocomplete', () => {
   })
 
   it('should close autocomplete panel when focus outside form ', async () => {
-    const featuresOverride = [
-      {
-        nameKey: 'WIP_ENABLE_SEARCH_HISTORY_ADAGE',
-        isActive: true,
-      },
-    ]
-    renderAutocomplete({ initialQuery: '', featuresOverride })
+    renderAutocomplete('', { features: ['WIP_ENABLE_SEARCH_HISTORY_ADAGE'] })
 
     const inputElement = screen.getByPlaceholderText(
       'Rechercher par mot-clé, par partenaire culturel, par nom d’offre...'
@@ -223,7 +204,7 @@ describe('Autocomplete', () => {
   })
 
   it('should call refine function when the form is submitted', async () => {
-    renderAutocomplete({ initialQuery: '' })
+    renderAutocomplete('', { features: ['WIP_ENABLE_SEARCH_HISTORY_ADAGE'] })
 
     const inputElement = screen.getByPlaceholderText(
       'Rechercher par mot-clé, par partenaire culturel, par nom d’offre...'
@@ -238,9 +219,7 @@ describe('Autocomplete', () => {
   })
 
   it('should set an initial search value on init', async () => {
-    renderAutocomplete({
-      initialQuery: 'test query 2',
-    })
+    renderAutocomplete('test query 2')
 
     const searchButton = screen.getByText('Rechercher')
 
@@ -255,17 +234,7 @@ describe('Autocomplete', () => {
   })
 
   it('should clear recent search when clear button is clicked', async () => {
-    const featuresOverride = [
-      {
-        nameKey: 'WIP_ENABLE_SEARCH_HISTORY_ADAGE',
-        isActive: true,
-      },
-    ]
-
-    renderAutocomplete({
-      initialQuery: '',
-      featuresOverride,
-    })
+    renderAutocomplete('', { features: ['WIP_ENABLE_SEARCH_HISTORY_ADAGE'] })
 
     const inputElement = screen.getByPlaceholderText(
       'Rechercher par mot-clé, par partenaire culturel, par nom d’offre...'
@@ -284,17 +253,7 @@ describe('Autocomplete', () => {
   })
 
   it('should disable saved history when cookies are disabled', async () => {
-    const featuresOverride = [
-      {
-        nameKey: 'WIP_ENABLE_SEARCH_HISTORY_ADAGE',
-        isActive: true,
-      },
-    ]
-
-    renderAutocomplete({
-      initialQuery: '',
-      featuresOverride,
-    })
+    renderAutocomplete('', { features: ['WIP_ENABLE_SEARCH_HISTORY_ADAGE'] })
 
     vi.spyOn(
       localStorageAvailable,
@@ -320,17 +279,7 @@ describe('Autocomplete', () => {
   })
 
   it('should display venue suggestion when user start to type', async () => {
-    const featuresOverride = [
-      {
-        nameKey: 'WIP_ENABLE_SEARCH_HISTORY_ADAGE',
-        isActive: true,
-      },
-    ]
-
-    renderAutocomplete({
-      initialQuery: '',
-      featuresOverride,
-    })
+    renderAutocomplete('', { features: ['WIP_ENABLE_SEARCH_HISTORY_ADAGE'] })
 
     const inputElement = screen.getByPlaceholderText(
       'Rechercher par mot-clé, par partenaire culturel, par nom d’offre...'
@@ -344,20 +293,10 @@ describe('Autocomplete', () => {
   })
 
   it('should display word suggestion when user start to type', async () => {
-    const featuresOverride = [
-      {
-        nameKey: 'WIP_ENABLE_SEARCH_HISTORY_ADAGE',
-        isActive: true,
-      },
-    ]
-
     mockGetItems = vi.fn(() => mockKeywordSuggestions)
     mockSourceId = 'KeywordQuerySuggestionsSource'
 
-    renderAutocomplete({
-      initialQuery: '',
-      featuresOverride,
-    })
+    renderAutocomplete('', { features: ['WIP_ENABLE_SEARCH_HISTORY_ADAGE'] })
 
     const inputElement = screen.getByPlaceholderText(
       'Rechercher par mot-clé, par partenaire culturel, par nom d’offre...'
@@ -370,21 +309,11 @@ describe('Autocomplete', () => {
     expect(keywordSuggestion).toBeInTheDocument()
   })
 
-  it('should display an error message when the categories cound not be fetched', async () => {
-    const featuresOverride = [
-      {
-        nameKey: 'WIP_ENABLE_SEARCH_HISTORY_ADAGE',
-        isActive: true,
-      },
-    ]
-
+  it('should display an error message when the categories could not be fetched', async () => {
     vi.spyOn(apiAdage, 'getEducationalOffersCategories').mockRejectedValueOnce(
       null
     )
-    renderAutocomplete({
-      initialQuery: '',
-      featuresOverride,
-    })
+    renderAutocomplete('', { features: ['WIP_ENABLE_SEARCH_HISTORY_ADAGE'] })
 
     expect(
       await screen.findByText(
@@ -394,20 +323,8 @@ describe('Autocomplete', () => {
   })
 
   it('should display format value for suggestion word ', async () => {
-    const featuresOverride = [
-      {
-        nameKey: 'WIP_ENABLE_SEARCH_HISTORY_ADAGE',
-        isActive: true,
-      },
-      {
-        nameKey: 'WIP_ENABLE_FORMAT',
-        isActive: true,
-      },
-    ]
-
-    renderAutocomplete({
-      initialQuery: 'mock keyword 1',
-      featuresOverride,
+    renderAutocomplete('mock keyword 1', {
+      features: ['WIP_ENABLE_SEARCH_HISTORY_ADAGE', 'WIP_ENABLE_FORMAT'],
     })
 
     const inputElement = screen.getByPlaceholderText(
