@@ -106,7 +106,7 @@ const VenueForm = ({
     }
     // eslint-disable-next-line @typescript-eslint/no-floating-promises
     loadCanOffererCreateCollectiveOffer()
-  }, [])
+  }, [offerer.id])
 
   return (
     <div>
