@@ -694,65 +694,20 @@ class StepperTest:
         assert response.json["maintenancePageType"] is None
 
     @pytest.mark.parametrize(
-        "error_code,expected_subtitle",
+        "reason_code",
         [
-            (
-                fraud_models.FraudReasonCode.ID_CHECK_UNPROCESSABLE,
-                ubble_models.UBBLE_CODE_ERROR_MAPPING[
-                    fraud_models.FraudReasonCode.ID_CHECK_UNPROCESSABLE
-                ].retryable_action_hint,
-            ),
-            (
-                fraud_models.FraudReasonCode.ID_CHECK_NOT_AUTHENTIC,
-                ubble_models.UBBLE_CODE_ERROR_MAPPING[
-                    fraud_models.FraudReasonCode.ID_CHECK_NOT_AUTHENTIC
-                ].retryable_action_hint,
-            ),
-            (
-                fraud_models.FraudReasonCode.ID_CHECK_NOT_SUPPORTED,
-                ubble_models.UBBLE_CODE_ERROR_MAPPING[
-                    fraud_models.FraudReasonCode.ID_CHECK_NOT_SUPPORTED
-                ].retryable_action_hint,
-            ),
-            (
-                fraud_models.FraudReasonCode.ID_CHECK_EXPIRED,
-                ubble_models.UBBLE_CODE_ERROR_MAPPING[
-                    fraud_models.FraudReasonCode.ID_CHECK_EXPIRED
-                ].retryable_action_hint,
-            ),
-            (
-                fraud_models.FraudReasonCode.BLURRY_DOCUMENT_VIDEO,
-                ubble_models.UBBLE_CODE_ERROR_MAPPING[
-                    fraud_models.FraudReasonCode.BLURRY_DOCUMENT_VIDEO
-                ].retryable_action_hint,
-            ),
-            (
-                fraud_models.FraudReasonCode.NETWORK_CONNECTION_ISSUE,
-                ubble_models.UBBLE_CODE_ERROR_MAPPING[
-                    fraud_models.FraudReasonCode.NETWORK_CONNECTION_ISSUE
-                ].retryable_action_hint,
-            ),
-            (
-                fraud_models.FraudReasonCode.LACK_OF_LUMINOSITY,
-                ubble_models.UBBLE_CODE_ERROR_MAPPING[
-                    fraud_models.FraudReasonCode.LACK_OF_LUMINOSITY
-                ].retryable_action_hint,
-            ),
-            (
-                fraud_models.FraudReasonCode.MISSING_REQUIRED_DATA,
-                ubble_models.UBBLE_CODE_ERROR_MAPPING[
-                    fraud_models.FraudReasonCode.MISSING_REQUIRED_DATA
-                ].retryable_action_hint,
-            ),
-            (
-                fraud_models.FraudReasonCode.DOCUMENT_DAMAGED,
-                ubble_models.UBBLE_CODE_ERROR_MAPPING[
-                    fraud_models.FraudReasonCode.DOCUMENT_DAMAGED
-                ].retryable_action_hint,
-            ),
+            fraud_models.FraudReasonCode.ID_CHECK_UNPROCESSABLE,
+            fraud_models.FraudReasonCode.ID_CHECK_NOT_AUTHENTIC,
+            fraud_models.FraudReasonCode.ID_CHECK_NOT_SUPPORTED,
+            fraud_models.FraudReasonCode.ID_CHECK_EXPIRED,
+            fraud_models.FraudReasonCode.BLURRY_DOCUMENT_VIDEO,
+            fraud_models.FraudReasonCode.NETWORK_CONNECTION_ISSUE,
+            fraud_models.FraudReasonCode.LACK_OF_LUMINOSITY,
+            fraud_models.FraudReasonCode.MISSING_REQUIRED_DATA,
+            fraud_models.FraudReasonCode.DOCUMENT_DAMAGED,
         ],
     )
-    def should_have_subtitle_for_id_check_when_ubble_retryable(self, client, error_code, expected_subtitle):
+    def should_have_subtitle_for_id_check_when_ubble_retryable(self, client, reason_code):
         user = fraud_factories.UserEligibleAtIdentityCheckStepFactory()
 
         fraud_factories.BeneficiaryFraudCheckFactory(
@@ -760,7 +715,7 @@ class StepperTest:
             type=fraud_models.FraudCheckType.UBBLE,
             status=fraud_models.FraudCheckStatus.KO,
             eligibilityType=users_models.EligibilityType.AGE18,
-            reasonCodes=[error_code],
+            reasonCodes=[reason_code],
         )
 
         client.with_token(user.email)
@@ -772,7 +727,7 @@ class StepperTest:
             {
                 "name": "identity-check",
                 "title": "Identification",
-                "subtitle": expected_subtitle,
+                "subtitle": ubble_models.UBBLE_CODE_ERROR_MAPPING[reason_code].retryable_action_hint,
                 "completionState": SubscriptionStepCompletionState.RETRY.value,
             },
             self.get_step("honor_statement_step", SubscriptionStepCompletionState.DISABLED.value),

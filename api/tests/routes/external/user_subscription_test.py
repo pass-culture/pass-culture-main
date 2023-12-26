@@ -2218,40 +2218,8 @@ class UbbleWebhookTest:
         assert mails_testing.outbox[0].sent_data["template"]["id_prod"] == 760
 
     @pytest.mark.usefixtures("db_session")
-    @pytest.mark.parametrize(
-        "reason_code,retryable_message,code_number",
-        [
-            (
-                fraud_models.FraudReasonCode.BLURRY_DOCUMENT_VIDEO,
-                ubble_models.UBBLE_CODE_ERROR_MAPPING[
-                    fraud_models.FraudReasonCode.BLURRY_DOCUMENT_VIDEO
-                ].retryable_user_message,
-                1301,
-            ),
-            (
-                fraud_models.FraudReasonCode.DOCUMENT_DAMAGED,
-                ubble_models.UBBLE_CODE_ERROR_MAPPING[
-                    fraud_models.FraudReasonCode.DOCUMENT_DAMAGED
-                ].retryable_user_message,
-                2103,
-            ),
-            (
-                fraud_models.FraudReasonCode.LACK_OF_LUMINOSITY,
-                ubble_models.UBBLE_CODE_ERROR_MAPPING[
-                    fraud_models.FraudReasonCode.LACK_OF_LUMINOSITY
-                ].retryable_user_message,
-                1320,
-            ),
-            (
-                fraud_models.FraudReasonCode.NETWORK_CONNECTION_ISSUE,
-                ubble_models.UBBLE_CODE_ERROR_MAPPING[
-                    fraud_models.FraudReasonCode.NETWORK_CONNECTION_ISSUE
-                ].retryable_user_message,
-                1201,
-            ),
-        ],
-    )
-    def test_decision_suspicious_codes(self, client, ubble_mocker, reason_code, retryable_message, code_number):
+    @pytest.mark.parametrize("code_number", [1301, 2103, 1320, 1201])
+    def test_decision_suspicious_codes(self, client, ubble_mocker, code_number):
         user, ubble_fraud_check, request_data = self._init_decision_test()
         # Perform phone validation and profile completion
         user.phoneValidationStatus = users_models.PhoneValidationStatusType.VALIDATED
@@ -2272,10 +2240,11 @@ class UbbleWebhookTest:
 
         assert not user.has_beneficiary_role
         assert ubble_fraud_check.status == fraud_models.FraudCheckStatus.SUSPICIOUS
+        reason_code = fraud_models.UBBLE_REASON_CODE_MAPPING[code_number]
         assert reason_code in ubble_fraud_check.reasonCodes
 
         message = ubble_subscription_api.get_ubble_subscription_message(ubble_fraud_check)
-        assert message.user_message == retryable_message
+        assert message.user_message == ubble_models.UBBLE_CODE_ERROR_MAPPING[reason_code].retryable_user_message
         assert message.call_to_action.link == "passculture://verification-identite"
         assert message.call_to_action.icon == subscription_models.CallToActionIcon.RETRY
         assert message.call_to_action.title == "Réessayer la vérification de mon identité"
