@@ -40,7 +40,7 @@
     "@reduxjs/toolkit": "^2.0.0",
     "@sentry/browser": "^7.89.0",
     "@sentry/react": "^7.88.0",
-    "@sentry/tracing": "^7.89.0",
+    "@sentry/tracing": "^7.91.0",
     "@zootools/email-spell-checker": "^1.12.0",
     "chart.js": "^4.4.1",
     "chartjs-adapter-date-fns": "^3.0.0",
