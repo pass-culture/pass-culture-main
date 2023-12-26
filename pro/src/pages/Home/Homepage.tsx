@@ -1,9 +1,11 @@
 import React, { useEffect, useRef, useState } from 'react'
+import { RouteObject } from 'react-router-dom'
 
 import { api } from 'apiClient/api'
 import {
   GetOffererResponseModel,
   GetOfferersNamesResponseModel,
+  VenueTypeListResponseModel,
 } from 'apiClient/v1'
 import { AppLayout } from 'app/AppLayout'
 import AddBankAccountCallout from 'components/Callout/AddBankAccountCallout'
@@ -185,6 +187,23 @@ export const Homepage = (): JSX.Element => {
   )
 }
 
-// Lazy-loaded by react-router-dom
+// Below exports are used by react-router-dom
 // ts-unused-exports:disable-next-line
 export const Component = Homepage
+
+export type HomepageLoaderData = { venueTypes: VenueTypeListResponseModel }
+
+// ts-unused-exports:disable-next-line
+export const loader: RouteObject['loader'] =
+  async (): Promise<HomepageLoaderData> => {
+    const venueTypes = await api.getVenueTypes()
+
+    return {
+      venueTypes,
+    }
+  }
+
+// ts-unused-exports:disable-next-line
+export const shouldRevalidate: RouteObject['shouldRevalidate'] = () => {
+  return false
+}
