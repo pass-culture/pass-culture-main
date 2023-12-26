@@ -705,6 +705,8 @@ class StepperTest:
             fraud_models.FraudReasonCode.LACK_OF_LUMINOSITY,
             fraud_models.FraudReasonCode.MISSING_REQUIRED_DATA,
             fraud_models.FraudReasonCode.DOCUMENT_DAMAGED,
+            fraud_models.FraudReasonCode.NOT_DOCUMENT_OWNER,
+            fraud_models.FraudReasonCode.UBBLE_INTERNAL_ERROR,
         ],
     )
     def should_have_subtitle_for_id_check_when_ubble_retryable(self, client, reason_code):

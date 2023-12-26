@@ -120,6 +120,20 @@ UBBLE_CODE_ERROR_MAPPING = {
         retryable_user_message="Nous n’avons pas vu valider ton document. Réessaie en t’assurant d’avoir une bonne connexion à Internet.",
         priority=30,
     ),
+    fraud_models.FraudReasonCode.NOT_DOCUMENT_OWNER: UbbleError(
+        detail_message="Pas le propriétaire du document d'identité",
+        retryable_action_hint="Réessaie en réalisant toutes les étapes de la vérification toi-même",
+        retryable_message_summary="Ce n’est pas le propriétaire de la pièce d’identité qui a effectué la vérification.",
+        retryable_user_message="Nous n’avons pas pu valider ton identité, car ce n’est pas le propriétaire de la pièce d’identité qui a effectué la vérification. Réessaie la vérification d’identité en réalisant toutes les étapes toi-même.",
+        priority=30,
+    ),
+    fraud_models.FraudReasonCode.UBBLE_INTERNAL_ERROR: UbbleError(
+        detail_message="Ubble a eu une erreur technique",
+        retryable_action_hint="Tu peux réessayer de vérifier ton identité",
+        retryable_message_summary="Une erreur technique a eu lieu.",
+        retryable_user_message="Nous n’avons pas pu valider ton identité en raison d’une erreur technique. Tu peux réessayer la vérification.",
+        priority=30,
+    ),
     fraud_models.FraudReasonCode.NOT_ELIGIBLE: UbbleError(
         not_retryable_user_message=f"Ton dossier a été refusé{u_nbsp}: tu ne peux pas bénéficier du pass Culture. Il est réservé aux jeunes de 15 à 18 ans.",
         priority=50,
