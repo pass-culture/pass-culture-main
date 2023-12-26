@@ -1,0 +1,21 @@
+name: Node type check
+on:
+  workflow_call:
+    inputs:
+      node_version:
+        type: string
+        required: true
+      app_folder:
+        type: string
+        required: true
+
+jobs:
+  type-check-node-app:
+    uses: ./.github/workflows/dev_on_workflow_node_run_command.yml
+    with:
+      node_version: ${{ inputs.node_version }}
+      app_folder: ${{ inputs.app_folder }}
+      command: yarn tsc -b
+    secrets:
+      GCP_EHP_WORKLOAD_IDENTITY_PROVIDER: ${{ secrets.GCP_EHP_WORKLOAD_IDENTITY_PROVIDER }}
+      GCP_EHP_SERVICE_ACCOUNT: ${{ secrets.GCP_EHP_SERVICE_ACCOUNT }}
