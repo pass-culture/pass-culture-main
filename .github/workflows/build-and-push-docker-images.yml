@@ -25,10 +25,8 @@ on:
         default: false
     secrets:
       GCP_WORKLOAD_IDENTITY_PROVIDER:
-        type: string
         required: true
       ARTIFACT_REGISTRY_SERVICE_ACCOUNT:
-        type: string
         required: true
 
 env:
