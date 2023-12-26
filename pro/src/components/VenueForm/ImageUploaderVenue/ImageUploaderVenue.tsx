@@ -79,8 +79,8 @@ const ImageUploaderVenue = ({ isCreatingVenue }: ImageUploaderProps) => {
         cropParams?.width
       )
 
-      setFieldValue('bannerUrl', editedVenue.bannerUrl)
-      setFieldValue('bannerMeta', editedVenue.bannerMeta)
+      await setFieldValue('bannerUrl', editedVenue.bannerUrl)
+      await setFieldValue('bannerMeta', editedVenue.bannerMeta)
       logEvent?.(VenueEvents.UPLOAD_IMAGE, {
         from: location.pathname,
         venueId: venueId,
@@ -99,8 +99,8 @@ const ImageUploaderVenue = ({ isCreatingVenue }: ImageUploaderProps) => {
     try {
       await api.deleteVenueBanner(venueId || 0)
 
-      setFieldValue('bannerUrl', undefined)
-      setFieldValue('bannerMeta', undefined)
+      await setFieldValue('bannerUrl', undefined)
+      await setFieldValue('bannerMeta', undefined)
 
       return Promise.resolve()
     } catch {
