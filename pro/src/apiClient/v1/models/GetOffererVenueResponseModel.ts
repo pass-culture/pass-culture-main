@@ -3,6 +3,7 @@
 /* tslint:disable */
 /* eslint-disable */
 
+import type { BannerMetaModel } from './BannerMetaModel';
 import type { DMSApplicationForEAC } from './DMSApplicationForEAC';
 import type { VenueTypeCode } from './VenueTypeCode';
 
@@ -10,7 +11,7 @@ export type GetOffererVenueResponseModel = {
   adageInscriptionDate?: string | null;
   address?: string | null;
   audioDisabilityCompliant?: boolean | null;
-  bannerMeta?: Record<string, any> | null;
+  bannerMeta?: BannerMetaModel | null;
   bannerUrl?: string | null;
   bookingEmail?: string | null;
   city?: string | null;
