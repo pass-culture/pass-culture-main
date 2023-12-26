@@ -4,20 +4,18 @@
 @use "styles/variables/_colors.scss" as colors;
 
 .header {
-  display: grid;
-  grid-template-columns: 1fr;
+  display: flex;
+  flex-direction: column;
   gap: rem.torem(24px);
 
   @media (min-width: size.$tablet) {
-    grid-template-columns: rem.torem(292px) 1fr;
+    flex-direction: row;
     gap: rem.torem(32px);
   }
 }
 
-.image {
-  height: rem.torem(180px);
-  background-color: colors.$grey-light;
-  border-radius: rem.torem(6px);
+.image-uploader {
+  align-self: center;
 }
 
 .venue-type {
