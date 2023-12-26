@@ -169,7 +169,10 @@ const Offerers = ({
           />
 
           {isPartnerPageActive && permanentVenues.length > 0 && (
-            <PartnerPages venues={permanentVenues} />
+            <PartnerPages
+              venues={permanentVenues}
+              offererId={selectedOfferer.id.toString()}
+            />
           )}
 
           {!isOffererSoftDeleted && (

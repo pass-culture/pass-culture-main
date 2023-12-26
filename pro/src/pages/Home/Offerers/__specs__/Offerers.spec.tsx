@@ -10,6 +10,11 @@ import { renderWithProviders } from 'utils/renderWithProviders'
 
 import Offerers, { OfferersProps } from '../Offerers'
 
+vi.mock('react-router-dom', async () => ({
+  ...((await vi.importActual('react-router-dom')) ?? {}),
+  useLoaderData: vi.fn(() => ({ venueTypes: [] })),
+}))
+
 const renderOfferers = (
   props: Partial<OfferersProps> = {},
   storeOverrides?: any
