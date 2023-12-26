@@ -1,18 +1,19 @@
-name: Ping data team on slack
+name: "Ping data team on slack"
 # This action pings slack for every new PR that adds, changes or removes a db migration.
 # The ping is done on every push.
 
 on:
-  pull_request:
-    types: [closed]
-    paths:
-      - 'api/src/pcapi/alembic/versions/**'
-      - 'api/src/pcapi/alembic/run_migrations.py'
+  workflow_call:
+    secrets:
+      GCP_EHP_WORKLOAD_IDENTITY_PROVIDER:
+        required: true
+      GCP_EHP_SERVICE_ACCOUNT:
+        required: true
 
 jobs:
-  send-message:
+  slack-notification:
+    name: 'Send slack notification'
     runs-on: ubuntu-latest
-    if: github.event.pull_request.merged == true
     steps:
       - uses: actions/checkout@v4
       - name: 'Authentification to Google'
@@ -26,7 +27,7 @@ jobs:
         with:
           secrets: |-
             SLACK_BOT_TOKEN:passculture-metier-ehp/passculture-ci-slack-bot-token
-      - name: Slack Notification
+      - name: "Slack Notification"
         uses: slackapi/slack-github-action@v1.23.0
         with:
           # channel #db-changes
