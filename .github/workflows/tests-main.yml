@@ -80,7 +80,6 @@ jobs:
     secrets:
       GCP_EHP_WORKLOAD_IDENTITY_PROVIDER: ${{ secrets.GCP_EHP_WORKLOAD_IDENTITY_PROVIDER }}
       GCP_EHP_SERVICE_ACCOUNT: ${{ secrets.GCP_EHP_SERVICE_ACCOUNT }}
-      GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
     with:
       CACHE_BUCKET_NAME: passculture-infra-prod-github-runner-cache
 
@@ -109,8 +108,6 @@ jobs:
       github.event_name == 'pull_request' &&
       github.actor == 'dependabot[bot]'
     uses: ./.github/workflows/dependabot-auto-merge.yml
-    secrets:
-      GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
   deploy-to-testing:
     name: Deploy to testing
