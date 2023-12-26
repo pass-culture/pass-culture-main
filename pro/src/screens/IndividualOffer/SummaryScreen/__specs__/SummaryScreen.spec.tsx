@@ -35,7 +35,10 @@ import {
   individualOfferVenueItemFactory,
   individualStockFactory,
 } from 'utils/individualApiFactories'
-import { renderWithProviders } from 'utils/renderWithProviders'
+import {
+  RenderWithProvidersOptions,
+  renderWithProviders,
+} from 'utils/renderWithProviders'
 
 import SummaryScreen from '../SummaryScreen'
 
@@ -47,20 +50,9 @@ const renderSummary = (
     step: OFFER_WIZARD_STEP_IDS.SUMMARY,
     mode: OFFER_WIZARD_MODE.READ_ONLY,
   }),
-  storeOverride: any = {}
+  options?: RenderWithProvidersOptions
 ) => {
   const contextValues = individualOfferContextFactory(customContext)
-
-  const storeOverrides = {
-    user: {
-      initialized: true,
-      currentUser: {
-        isAdmin: false,
-        email: 'email@example.com',
-      },
-    },
-    ...storeOverride,
-  }
 
   return renderWithProviders(
     <>
@@ -91,7 +83,7 @@ const renderSummary = (
       </IndividualOfferContext.Provider>
       <Notification />
     </>,
-    { storeOverrides, initialRouterEntries: [url] }
+    { initialRouterEntries: [url], ...options }
   )
 }
 
@@ -352,17 +344,6 @@ describe('Summary', () => {
           1: true,
         },
       }
-      const storeOverride = {
-        features: {
-          initialized: true,
-          list: [
-            {
-              isActive: true,
-              nameKey: 'WIP_ENABLE_NEW_OFFER_CREATION_JOURNEY',
-            },
-          ],
-        },
-      }
 
       renderSummary(
         context,
@@ -373,7 +354,7 @@ describe('Summary', () => {
           }),
           { offerId: 'AA' }
         ),
-        storeOverride
+        { features: ['WIP_ENABLE_NEW_OFFER_CREATION_JOURNEY'] }
       )
 
       await userEvent.click(
@@ -402,21 +383,6 @@ describe('Summary', () => {
         venueId: 1,
         venueList: [individualOfferVenueItemFactory()],
       }
-      const storeOverride = {
-        features: {
-          initialized: true,
-          list: [
-            {
-              isActive: true,
-              nameKey: 'WIP_ENABLE_NEW_OFFER_CREATION_JOURNEY',
-            },
-            {
-              isActive: true,
-              nameKey: 'WIP_ENABLE_NEW_BANK_DETAILS_JOURNEY',
-            },
-          ],
-        },
-      }
 
       vi.spyOn(api, 'getOfferer').mockResolvedValue({
         ...defaultGetOffererResponseModel,
@@ -438,7 +404,12 @@ describe('Summary', () => {
           }),
           { offerId: 'AA' }
         ),
-        storeOverride
+        {
+          features: [
+            'WIP_ENABLE_NEW_OFFER_CREATION_JOURNEY',
+            'WIP_ENABLE_NEW_BANK_DETAILS_JOURNEY',
+          ],
+        }
       )
 
       await userEvent.click(
@@ -465,21 +436,6 @@ describe('Summary', () => {
         venueId: 1,
         venueList: [individualOfferVenueItemFactory()],
       }
-      const storeOverride = {
-        features: {
-          initialized: true,
-          list: [
-            {
-              isActive: true,
-              nameKey: 'WIP_ENABLE_NEW_OFFER_CREATION_JOURNEY',
-            },
-            {
-              isActive: true,
-              nameKey: 'WIP_ENABLE_NEW_BANK_DETAILS_JOURNEY',
-            },
-          ],
-        },
-      }
 
       vi.spyOn(api, 'getOfferer').mockResolvedValue({
         ...defaultGetOffererResponseModel,
@@ -500,7 +456,12 @@ describe('Summary', () => {
           }),
           { offerId: 'AA' }
         ),
-        storeOverride
+        {
+          features: [
+            'WIP_ENABLE_NEW_OFFER_CREATION_JOURNEY',
+            'WIP_ENABLE_NEW_BANK_DETAILS_JOURNEY',
+          ],
+        }
       )
 
       await userEvent.click(
@@ -518,21 +479,6 @@ describe('Summary', () => {
         venueId: 1,
         venueList: [individualOfferVenueItemFactory()],
       }
-      const storeOverride = {
-        features: {
-          initialized: true,
-          list: [
-            {
-              isActive: true,
-              nameKey: 'WIP_ENABLE_NEW_OFFER_CREATION_JOURNEY',
-            },
-            {
-              isActive: true,
-              nameKey: 'WIP_ENABLE_NEW_BANK_DETAILS_JOURNEY',
-            },
-          ],
-        },
-      }
 
       renderSummary(
         context,
@@ -543,7 +489,12 @@ describe('Summary', () => {
           }),
           { offerId: 'AA' }
         ),
-        storeOverride
+        {
+          features: [
+            'WIP_ENABLE_NEW_OFFER_CREATION_JOURNEY',
+            'WIP_ENABLE_NEW_BANK_DETAILS_JOURNEY',
+          ],
+        }
       )
 
       await userEvent.click(
@@ -561,21 +512,6 @@ describe('Summary', () => {
         venueId: 1,
         venueList: [individualOfferVenueItemFactory()],
       }
-      const storeOverride = {
-        features: {
-          initialized: true,
-          list: [
-            {
-              isActive: true,
-              nameKey: 'WIP_ENABLE_NEW_OFFER_CREATION_JOURNEY',
-            },
-            {
-              isActive: true,
-              nameKey: 'WIP_ENABLE_NEW_BANK_DETAILS_JOURNEY',
-            },
-          ],
-        },
-      }
 
       renderSummary(
         context,
@@ -586,7 +522,12 @@ describe('Summary', () => {
           }),
           { offerId: 'AA' }
         ),
-        storeOverride
+        {
+          features: [
+            'WIP_ENABLE_NEW_OFFER_CREATION_JOURNEY',
+            'WIP_ENABLE_NEW_BANK_DETAILS_JOURNEY',
+          ],
+        }
       )
 
       await userEvent.click(

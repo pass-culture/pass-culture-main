@@ -200,12 +200,7 @@ describe('screens | OfferEducational : creation offer type step', () => {
   describe('formats', () => {
     it('should user select formats', async () => {
       renderWithProviders(<OfferEducational {...props} />, {
-        storeOverrides: {
-          ...store,
-          features: {
-            list: [{ isActive: true, nameKey: 'WIP_ENABLE_FORMAT' }],
-          },
-        },
+        features: ['WIP_ENABLE_FORMAT'],
       })
 
       const selectFormat = await screen.findByTestId('select')

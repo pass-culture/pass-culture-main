@@ -8,11 +8,14 @@ import { ApiError, PostOffererResponseModel } from 'apiClient/v1'
 import { ApiRequestOptions } from 'apiClient/v1/core/ApiRequestOptions'
 import { ApiResult } from 'apiClient/v1/core/ApiResult'
 import Notification from 'components/Notification/Notification'
-import { renderWithProviders } from 'utils/renderWithProviders'
+import {
+  RenderWithProvidersOptions,
+  renderWithProviders,
+} from 'utils/renderWithProviders'
 
 import { OffererCreation } from '../OffererCreation'
 
-const renderOffererCreation = (storeOverrides: any) =>
+const renderOffererCreation = (options?: RenderWithProvidersOptions) =>
   renderWithProviders(
     <>
       <Routes>
@@ -21,7 +24,7 @@ const renderOffererCreation = (storeOverrides: any) =>
       </Routes>
       <Notification />
     </>,
-    { storeOverrides, initialRouterEntries: ['/'] }
+    { initialRouterEntries: ['/'], ...options }
   )
 
 vi.mock('apiClient/api', () => ({
@@ -33,22 +36,7 @@ vi.mock('apiClient/api', () => ({
 
 describe('src | components | OffererCreation', () => {
   it('should render a OffererCreationUnavailable component when pro offerer creation is disabled', () => {
-    const store = {
-      features: {
-        initialized: true,
-        list: [
-          {
-            description: 'Active feature',
-            id: 'DISABLE_ENTERPRISE_API',
-            isActive: true,
-            name: 'DISABLE_ENTERPRISE_API',
-            nameKey: 'DISABLE_ENTERPRISE_API',
-          },
-        ],
-      },
-    }
-
-    renderOffererCreation(store)
+    renderOffererCreation({ features: ['DISABLE_ENTERPRISE_API'] })
 
     expect(
       screen.getByText('Impossibilité de créer une structure actuellement.')

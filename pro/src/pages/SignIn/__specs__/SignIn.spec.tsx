@@ -17,7 +17,10 @@ import Notification from 'components/Notification/Notification'
 import { Events } from 'core/FirebaseEvents/constants'
 import * as useAnalytics from 'hooks/useAnalytics'
 import * as utils from 'utils/recaptcha'
-import { renderWithProviders } from 'utils/renderWithProviders'
+import {
+  RenderWithProvidersOptions,
+  renderWithProviders,
+} from 'utils/renderWithProviders'
 
 import { SignIn } from '../SignIn'
 
@@ -35,22 +38,7 @@ vi.mock('utils/windowMatchMedia', () => ({
 
 const mockLogEvent = vi.fn()
 
-const renderSignIn = (
-  storeOverrides?: any,
-  initialRouterEntries = ['/connexion']
-) => {
-  const store = {
-    user: {},
-    features: {
-      list: [
-        {
-          isActive: true,
-          nameKey: 'API_SIRENE_AVAILABLE',
-        },
-      ],
-    },
-    ...storeOverrides,
-  }
+const renderSignIn = (options?: RenderWithProvidersOptions) => {
   renderWithProviders(
     <>
       <SignIn />
@@ -72,8 +60,9 @@ const renderSignIn = (
       <Notification />
     </>,
     {
-      storeOverrides: store,
-      initialRouterEntries: initialRouterEntries,
+      initialRouterEntries: ['/connexion'],
+      features: ['API_SIRENE_AVAILABLE'],
+      ...options,
     }
   )
 }
@@ -170,16 +159,7 @@ describe('SignIn', () => {
     })
 
     it('should redirect to the unavailable error page when the API sirene feature is disabled', () => {
-      renderSignIn({
-        features: {
-          list: [
-            {
-              isActive: false,
-              nameKey: 'API_SIRENE_AVAILABLE',
-            },
-          ],
-        },
-      })
+      renderSignIn({ features: [] })
 
       // then
       expect(
@@ -191,8 +171,11 @@ describe('SignIn', () => {
       vi.spyOn(useAnalytics, 'default').mockImplementation(() => ({
         logEvent: mockLogEvent,
       }))
+      const storeOverrides = {
+        user: { initialized: true, currentUser: null },
+      }
 
-      renderSignIn({ user: { initialized: true, currentUser: null } })
+      renderSignIn({ storeOverrides })
       await userEvent.click(
         screen.getByRole('link', {
           name: 'Créer un compte',
@@ -241,7 +224,7 @@ describe('SignIn', () => {
         ],
       })
 
-      renderSignIn({
+      const storeOverrides = {
         user: {
           currentUser: {
             id: 'user_id',
@@ -249,7 +232,9 @@ describe('SignIn', () => {
           },
           initialized: true,
         },
-      })
+      }
+
+      renderSignIn({ storeOverrides })
 
       await waitFor(() =>
         expect(
@@ -330,17 +315,6 @@ describe('SignIn', () => {
   })
 
   describe('sign in with new onboarding feature', () => {
-    const featureOverride = {
-      features: {
-        list: [
-          {
-            isActive: true,
-            nameKey: 'API_SIRENE_AVAILABLE',
-          },
-        ],
-      },
-    }
-
     it('should not call listOfferersNames if user is admin', () => {
       const listOfferersNamesRequest = vi
         .spyOn(api, 'listOfferersNames')
@@ -357,7 +331,7 @@ describe('SignIn', () => {
           ],
         })
 
-      renderSignIn({
+      const storeOverrides = {
         user: {
           currentUser: {
             id: 'user_id',
@@ -365,8 +339,8 @@ describe('SignIn', () => {
           },
           initialized: true,
         },
-        ...featureOverride,
-      })
+      }
+      renderSignIn({ storeOverrides })
 
       expect(listOfferersNamesRequest).toHaveBeenCalledTimes(0)
     })
@@ -378,7 +352,7 @@ describe('SignIn', () => {
           offerersNames: [],
         })
 
-      renderSignIn({ ...featureOverride })
+      renderSignIn()
 
       const email = screen.getByLabelText('Adresse email')
       await userEvent.type(email, 'MonPetitEmail@exemple.com')
@@ -410,7 +384,7 @@ describe('SignIn', () => {
         ],
       })
 
-      renderSignIn({ ...featureOverride })
+      renderSignIn()
 
       const email = screen.getByLabelText('Adresse email')
       await userEvent.type(email, 'MonPetitEmail@exemple.com')
@@ -430,7 +404,7 @@ describe('SignIn', () => {
     })
 
     it('should redirect user to offer page on signin with url parameter', async () => {
-      renderSignIn({ ...featureOverride }, ['/connexion?de=%2Foffres'])
+      renderSignIn({ initialRouterEntries: ['/connexion?de=%2Foffres'] })
 
       const email = screen.getByLabelText('Adresse email')
       await userEvent.type(email, 'MonPetitEmail@exemple.com')
@@ -483,7 +457,10 @@ describe('SignIn', () => {
     })
 
     it('should trigger a tracking event', async () => {
-      renderSignIn({ user: { initialized: true, currentUser: null } })
+      const storeOverrides = {
+        user: { initialized: true, currentUser: null },
+      }
+      renderSignIn({ storeOverrides })
       await userEvent.click(
         screen.getByRole('link', {
           name: 'Créer un compte',
@@ -498,7 +475,11 @@ describe('SignIn', () => {
     })
 
     it('should trigger a tracking event when user clicks forgotten password"', async () => {
-      renderSignIn({ user: { initialized: true, currentUser: null } })
+      const storeOverrides = {
+        user: { initialized: true, currentUser: null },
+      }
+      renderSignIn({ storeOverrides })
+
       await userEvent.click(
         screen.getByRole('link', {
           name: 'Mot de passe oublié ?',

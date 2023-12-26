@@ -13,7 +13,6 @@ import {
 import { Events } from 'core/FirebaseEvents/constants'
 import * as useAnalytics from 'hooks/useAnalytics'
 import * as useNotification from 'hooks/useNotification'
-import { baseStoreFactory } from 'store/testUtils'
 import {
   collectiveOfferFactory,
   defaultGetOffererVenueResponseModel,
@@ -75,9 +74,8 @@ const renderOfferTypes = (structureId?: string, venueId?: string) => {
       />
     </Routes>,
     {
-      storeOverrides: baseStoreFactory({
-        featureList: ['WIP_CATEGORY_SELECTION'],
-      }),
+      storeOverrides: { user: { currentUser: { isAdmin: false } } },
+      features: ['WIP_CATEGORY_SELECTION'],
       initialRouterEntries: [
         `/creation${
           structureId

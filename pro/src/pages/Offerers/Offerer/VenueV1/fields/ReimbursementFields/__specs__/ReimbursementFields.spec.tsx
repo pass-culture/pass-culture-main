@@ -8,7 +8,10 @@ import {
   GetOffererVenueResponseModel,
 } from 'apiClient/v1'
 import { Venue } from 'core/Venue/types'
-import { renderWithProviders } from 'utils/renderWithProviders'
+import {
+  RenderWithProvidersOptions,
+  renderWithProviders,
+} from 'utils/renderWithProviders'
 
 import ReimbursementFields, {
   ReimbursementFieldsProps,
@@ -16,15 +19,8 @@ import ReimbursementFields, {
 
 const renderReimbursementFields = async (
   props: ReimbursementFieldsProps,
-  featuresOverride?: { nameKey: string; isActive: boolean }[]
+  options?: RenderWithProvidersOptions
 ) => {
-  const storeOverrides = {
-    features: {
-      list: featuresOverride,
-      initialized: true,
-    },
-  }
-
   const rtlReturn = renderWithProviders(
     <Formik onSubmit={() => {}} initialValues={{}}>
       {({ handleSubmit }) => (
@@ -33,7 +29,7 @@ const renderReimbursementFields = async (
         </Form>
       )}
     </Formik>,
-    { storeOverrides }
+    options
   )
 
   const loadingMessage = screen.queryByText('Chargement en cours ...')
@@ -97,12 +93,6 @@ describe('ReimbursementFields', () => {
   })
 
   it('should display pricing point section when venue has no siret', async () => {
-    const featuresOverride = [
-      {
-        nameKey: 'WIP_ENABLE_NEW_BANK_DETAILS_JOURNEY',
-        isActive: false,
-      },
-    ]
     const venueWithoutSiret = {
       ...venue,
       siret: '',
@@ -110,7 +100,7 @@ describe('ReimbursementFields', () => {
 
     props.venue = venueWithoutSiret
 
-    await renderReimbursementFields(props, featuresOverride)
+    await renderReimbursementFields(props)
 
     expect(screen.getByText('Barème de remboursement')).toBeInTheDocument()
 
@@ -122,19 +112,15 @@ describe('ReimbursementFields', () => {
   })
 
   it('should not display bank details section if ff is active', async () => {
-    const featuresOverride = [
-      {
-        nameKey: 'WIP_ENABLE_NEW_BANK_DETAILS_JOURNEY',
-        isActive: true,
-      },
-    ]
     const venueWithoutSiret = {
       ...venue,
       siret: '',
     }
     props.venue = venueWithoutSiret
 
-    await renderReimbursementFields(props, featuresOverride)
+    await renderReimbursementFields(props, {
+      features: ['WIP_ENABLE_NEW_BANK_DETAILS_JOURNEY'],
+    })
 
     expect(screen.getByText('Barème de remboursement')).toBeInTheDocument()
 

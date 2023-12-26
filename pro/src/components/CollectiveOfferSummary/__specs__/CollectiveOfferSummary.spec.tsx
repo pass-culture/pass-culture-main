@@ -10,7 +10,10 @@ import {
   collectiveOfferFactory,
   collectiveOfferTemplateFactory,
 } from 'utils/collectiveApiFactories'
-import { renderWithProviders } from 'utils/renderWithProviders'
+import {
+  RenderWithProvidersOptions,
+  renderWithProviders,
+} from 'utils/renderWithProviders'
 
 import CollectiveOfferSummary, {
   CollectiveOfferSummaryProps,
@@ -25,25 +28,11 @@ vi.mock('apiClient/api', () => ({
   },
 }))
 
-const isFormatActive = {
-  features: {
-    list: [
-      {
-        nameKey: 'WIP_ENABLE_FORMAT',
-        isActive: true,
-      },
-    ],
-    initialized: true,
-  },
-}
-
 const renderCollectiveOfferSummary = (
   props: CollectiveOfferSummaryProps,
-  storeOverrides?: any
+  overrides?: RenderWithProvidersOptions
 ) => {
-  renderWithProviders(<CollectiveOfferSummary {...props} />, {
-    storeOverrides: storeOverrides,
-  })
+  renderWithProviders(<CollectiveOfferSummary {...props} />, overrides)
 }
 
 describe('CollectiveOfferSummary', () => {
@@ -86,12 +75,14 @@ describe('CollectiveOfferSummary', () => {
 
     expect(screen.queryAllByRole('link', { name: 'Modifier' })).toHaveLength(0)
   })
+
   it('should display national program', async () => {
     renderCollectiveOfferSummary(props)
     await waitForElementToBeRemoved(() => screen.queryAllByTestId('spinner'))
     expect(screen.getByText('Dispositif national :')).toBeInTheDocument()
     expect(screen.getByText('Collège au cinéma')).toBeInTheDocument()
   })
+
   it('should display format when ff is active', async () => {
     renderCollectiveOfferSummary(
       {
@@ -101,7 +92,7 @@ describe('CollectiveOfferSummary', () => {
           formats: [EacFormat.PROJECTION_AUDIOVISUELLE, EacFormat.CONCERT],
         },
       },
-      isFormatActive
+      { features: ['WIP_ENABLE_FORMAT'] }
     )
     await waitForElementToBeRemoved(() => screen.queryAllByTestId('spinner'))
 
@@ -120,7 +111,7 @@ describe('CollectiveOfferSummary', () => {
           formats: null,
         },
       },
-      isFormatActive
+      { features: ['WIP_ENABLE_FORMAT'] }
     )
     await waitForElementToBeRemoved(() => screen.queryAllByTestId('spinner'))
 
@@ -134,13 +125,7 @@ describe('CollectiveOfferSummary', () => {
     })
     renderCollectiveOfferSummary(
       { ...props, offer },
-      {
-        features: {
-          list: [
-            { isActive: true, nameKey: 'WIP_ENABLE_DATES_OFFER_TEMPLATE' },
-          ],
-        },
-      }
+      { features: ['WIP_ENABLE_DATES_OFFER_TEMPLATE'] }
     )
 
     await waitForElementToBeRemoved(() => screen.queryAllByTestId('spinner'))

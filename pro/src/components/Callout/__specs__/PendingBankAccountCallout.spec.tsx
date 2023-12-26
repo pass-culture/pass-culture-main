@@ -29,21 +29,13 @@ describe('PendingBankAccountCallout', () => {
   })
 
   describe('With FF enabled', () => {
-    const storeOverrides = {
-      features: {
-        list: [
-          { isActive: true, nameKey: 'WIP_ENABLE_NEW_BANK_DETAILS_JOURNEY' },
-        ],
-      },
-    }
-
     it('should not render the pending bank account banner if the offerer has no pending bank account', () => {
       props.offerer = {
         ...defaultGetOffererResponseModel,
         hasPendingBankAccount: false,
       }
       renderWithProviders(<PendingBankAccountCallout {...props} />, {
-        storeOverrides,
+        features: ['WIP_ENABLE_NEW_BANK_DETAILS_JOURNEY'],
       })
 
       expect(
@@ -59,7 +51,7 @@ describe('PendingBankAccountCallout', () => {
         hasPendingBankAccount: true,
       }
       renderWithProviders(<PendingBankAccountCallout {...props} />, {
-        storeOverrides,
+        features: ['WIP_ENABLE_NEW_BANK_DETAILS_JOURNEY'],
       })
 
       expect(
@@ -88,9 +80,7 @@ describe('PendingBankAccountCallout', () => {
             hasPendingBankAccount: true,
           }}
         />,
-        {
-          storeOverrides,
-        }
+        { features: ['WIP_ENABLE_NEW_BANK_DETAILS_JOURNEY'] }
       )
       await userEvent.click(
         screen.getByRole('link', {

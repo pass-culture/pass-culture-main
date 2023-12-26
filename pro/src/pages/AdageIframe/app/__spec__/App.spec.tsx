@@ -6,7 +6,10 @@ import { AdageFrontRoles, VenueResponse } from 'apiClient/adage'
 import { apiAdage } from 'apiClient/api'
 import Notification from 'components/Notification/Notification'
 import { defaultCategories } from 'utils/adageFactories'
-import { renderWithProviders } from 'utils/renderWithProviders'
+import {
+  RenderWithProvidersOptions,
+  renderWithProviders,
+} from 'utils/renderWithProviders'
 
 import { App } from '../App'
 import { DEFAULT_GEO_RADIUS } from '../components/OffersInstantSearch/OffersInstantSearch'
@@ -15,18 +18,6 @@ import {
   FacetFiltersContextProvider,
   FiltersContextProvider,
 } from '../providers'
-
-const isDiscoveryActive = {
-  features: {
-    list: [
-      {
-        nameKey: 'WIP_ENABLE_DISCOVERY',
-        isActive: true,
-      },
-    ],
-    initialized: true,
-  },
-}
 
 vi.mock(
   '../components/OffersInstantSearch/OffersSearch/Autocomplete/Autocomplete',
@@ -121,8 +112,7 @@ vi.mock('@algolia/autocomplete-plugin-query-suggestions', () => {
 
 const renderApp = (
   venueFilter: VenueResponse | null,
-  initialEntries = '/',
-  storeOverrides: any = null
+  options?: RenderWithProvidersOptions
 ) => {
   renderWithProviders(
     <>
@@ -137,8 +127,8 @@ const renderApp = (
       <Notification />
     </>,
     {
-      storeOverrides: storeOverrides,
-      initialRouterEntries: [initialEntries],
+      initialRouterEntries: ['/'],
+      ...options,
     }
   )
 }
@@ -173,7 +163,9 @@ describe('app', () => {
 
       window.location = mockLocation
 
-      renderApp(venue, '/recherche?siret=123456789&venue=1436')
+      renderApp(venue, {
+        initialRouterEntries: ['/recherche?siret=123456789&venue=1436'],
+      })
       await waitForElementToBeRemoved(() => screen.queryAllByTestId('spinner'))
 
       expect(
@@ -183,7 +175,9 @@ describe('app', () => {
 
     it('should venue tag when venueId is provided and public name exists', async () => {
       // When
-      renderApp(venue, '/recherche?venue=1436')
+      renderApp(venue, {
+        initialRouterEntries: ['/recherche?venue=1436'],
+      })
 
       await waitForElementToBeRemoved(() => screen.queryAllByTestId('spinner'))
 
@@ -200,7 +194,9 @@ describe('app', () => {
 
       window.location = mockLocation
 
-      renderApp(venue, '/recherche?venue=1436')
+      renderApp(venue, {
+        initialRouterEntries: ['/recherche?venue=1436'],
+      })
 
       await waitForElementToBeRemoved(() => screen.queryAllByTestId('spinner'))
 
@@ -215,7 +211,7 @@ describe('app', () => {
       }
 
       window.location = mockLocation
-      renderApp(venue, '/', isDiscoveryActive)
+      renderApp(venue, { features: ['WIP_ENABLE_DISCOVERY'] })
       vi.spyOn(apiAdage, 'getVenueById').mockRejectedValue(null)
 
       expect(
@@ -235,7 +231,7 @@ describe('app', () => {
         lat: 48.856614,
         lon: 2.3522219,
       })
-      renderApp(null, '/recherche')
+      renderApp(null, { initialRouterEntries: ['/recherche'] })
 
       await screen.findByRole('button', { name: 'Rechercher' })
 

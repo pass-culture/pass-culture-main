@@ -8,7 +8,10 @@ import { HTTP_STATUS } from 'apiClient/helpers'
 import { Events } from 'core/FirebaseEvents/constants'
 import * as useAnalytics from 'hooks/useAnalytics'
 import * as utils from 'utils/recaptcha'
-import { renderWithProviders } from 'utils/renderWithProviders'
+import {
+  RenderWithProvidersOptions,
+  renderWithProviders,
+} from 'utils/renderWithProviders'
 
 import SignupContainer from '../SignupContainer'
 
@@ -25,7 +28,7 @@ vi.mock('apiClient/api', () => ({
   },
 }))
 
-const renderSignUp = (storeOverrides: any) =>
+const renderSignUp = (options?: RenderWithProvidersOptions) =>
   renderWithProviders(
     <Routes>
       <Route path="/inscription" element={<SignupContainer />} />
@@ -38,19 +41,15 @@ const renderSignUp = (storeOverrides: any) =>
         element={<span>I’m the confirmation page</span>}
       />
     </Routes>,
-    { storeOverrides, initialRouterEntries: ['/inscription'] }
+    {
+      initialRouterEntries: ['/inscription'],
+      features: ['ENABLE_PRO_ACCOUNT_CREATION'],
+      ...options,
+    }
   )
 
 describe('Signup', () => {
-  let store: any
-
   beforeEach(() => {
-    store = {
-      user: { initialized: true },
-      features: {
-        list: [{ isActive: true, nameKey: 'ENABLE_PRO_ACCOUNT_CREATION' }],
-      },
-    }
     vi.spyOn(api, 'signupProV2').mockResolvedValue()
     vi.spyOn(useAnalytics, 'default').mockImplementation(() => ({
       logEvent: mockLogEvent,
@@ -73,14 +72,16 @@ describe('Signup', () => {
 
   it('should redirect to accueil page if the user is logged in', async () => {
     // when the user is logged in and lands on signup validation page
-    store.user = {
-      currentUser: {
-        id: 'user_id',
-        isAdmin: false,
+    const storeOverrides = {
+      user: {
+        currentUser: {
+          id: 'user_id',
+          isAdmin: false,
+        },
+        initialized: true,
       },
-      initialized: true,
     }
-    renderSignUp(store)
+    renderSignUp({ storeOverrides })
     await expect(
       screen.findByText('I’m logged in as a pro user')
     ).resolves.toBeInTheDocument()
@@ -89,7 +90,7 @@ describe('Signup', () => {
   describe('render', () => {
     it('should render with all information', () => {
       // when the user sees the form
-      renderSignUp(store)
+      renderSignUp()
 
       // then it should have a title
       expect(
@@ -144,7 +145,8 @@ describe('Signup', () => {
 
     it('should render with all fields', () => {
       // when the user sees the form
-      renderSignUp(store)
+      renderSignUp()
+
       // then it should have an email field
       expect(
         screen.getByRole('textbox', {
@@ -184,7 +186,8 @@ describe('Signup', () => {
     describe('formlogEvents', () => {
       describe('on component unmount', () => {
         it('should trigger an event with touched fields', async () => {
-          const { unmount } = renderSignUp(store)
+          const { unmount } = renderSignUp()
+
           await userEvent.type(
             screen.getByRole('textbox', {
               name: /Adresse email/,
@@ -210,18 +213,19 @@ describe('Signup', () => {
           )
         })
         it('should not trigger an event if no field has been touched', () => {
-          const { unmount } = renderSignUp(store)
+          const { unmount } = renderSignUp()
           unmount()
           expect(mockLogEvent).toHaveBeenCalledTimes(0)
         })
       })
+
       it('should have an beforeunload event listener attached to the window', () => {
         const spyAddEvent = vi.fn()
         const spyRemoveEvent = vi.fn()
         window.addEventListener = spyAddEvent
         window.removeEventListener = spyRemoveEvent
 
-        const { unmount } = renderSignUp(store)
+        const { unmount } = renderSignUp()
         // Count calls to window.addEventListener with "beforeunload" as first argument
         expect(
           spyAddEvent.mock.calls
@@ -242,17 +246,13 @@ describe('Signup', () => {
       })
     })
     describe('formValidation', () => {
-      const features = {
-        list: [{ isActive: true, nameKey: 'ENABLE_PRO_ACCOUNT_CREATION' }],
-      }
-
       describe('formValidation', () => {
         it('should enable submit button', async () => {
           vi.spyOn(utils, 'initReCaptchaScript').mockReturnValue({
             remove: vi.fn(),
           } as unknown as HTMLScriptElement)
           vi.spyOn(utils, 'getReCaptchaToken').mockResolvedValue('token')
-          renderSignUp({ ...store, features })
+          renderSignUp({ features: ['ENABLE_PRO_ACCOUNT_CREATION'] })
           const submitButton = screen.getByRole('button', {
             name: /Créer mon compte/,
           })
@@ -322,7 +322,8 @@ describe('Signup', () => {
           },
           status: HTTP_STATUS.GONE,
         })
-        renderSignUp(store)
+        renderSignUp()
+
         const submitButton = screen.getByRole('button', {
           name: /Créer mon compte/,
         })

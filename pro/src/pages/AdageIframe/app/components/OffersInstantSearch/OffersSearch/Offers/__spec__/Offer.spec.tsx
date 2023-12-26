@@ -16,7 +16,10 @@ import {
   defaultCollectiveOffer,
   defaultCollectiveTemplateOffer,
 } from 'utils/adageFactories'
-import { renderWithProviders } from 'utils/renderWithProviders'
+import {
+  RenderWithProvidersOptions,
+  renderWithProviders,
+} from 'utils/renderWithProviders'
 
 import Offer, { OfferProps } from '../Offer'
 
@@ -54,21 +57,14 @@ const user: AuthenticatedResponse = {
 
 const renderOffer = (
   props: OfferProps,
-  featuresOverride?: { nameKey: string; isActive: boolean }[],
-  adageUser: AuthenticatedResponse | null = user
+  adageUser: AuthenticatedResponse | null = user,
+  options?: RenderWithProvidersOptions
 ) => {
   renderWithProviders(
     <AdageUserContextProvider adageUser={adageUser}>
       <Offer {...props} />
     </AdageUserContextProvider>,
-    {
-      storeOverrides: {
-        features: {
-          list: featuresOverride,
-          initialized: true,
-        },
-      },
-    }
+    options
   )
 }
 
@@ -453,7 +449,6 @@ describe('offer', () => {
           isTemplate: true,
         },
       },
-      undefined,
       { ...user, role: AdageFrontRoles.READONLY }
     )
 
@@ -514,7 +509,8 @@ describe('offer', () => {
           formats: [EacFormat.CONCERT, EacFormat.REPR_SENTATION],
         },
       },
-      [{ nameKey: 'WIP_ENABLE_FORMAT', isActive: true }]
+      user,
+      { features: ['WIP_ENABLE_FORMAT'] }
     )
 
     expect(screen.getByText('Concert, Représentation')).toBeInTheDocument()

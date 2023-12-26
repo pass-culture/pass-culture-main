@@ -1,4 +1,3 @@
-import { FeatureResponseModel, UserRole } from 'apiClient/v1'
 import { initialState as featuresInitialState } from 'store/features/reducer'
 import { initialState as notificationInitialState } from 'store/notifications/reducer'
 import { initialState as offersInitialState } from 'store/offers/reducer'
@@ -16,38 +15,4 @@ export const configureTestStore = (overrideData?: Partial<RootState>) => {
   }
 
   return createStore({ ...initialData, ...overrideData }).store
-}
-
-export const baseStoreFactory = ({
-  isAdmin = false,
-  featureList = [],
-}: Partial<{
-  isAdmin: boolean
-  featureList: string[]
-}> = {}): Partial<RootState> => {
-  const featuresList: FeatureResponseModel[] = featureList.map(
-    (featureName) => ({
-      id: featureName,
-      isActive: true,
-      description: '',
-      name: featureName,
-      nameKey: featureName,
-    })
-  )
-
-  return {
-    user: {
-      currentUser: {
-        id: 1,
-        email: 'email@example.com',
-        isAdmin: isAdmin,
-        roles: isAdmin ? [UserRole.ADMIN] : [UserRole.PRO],
-        isEmailValidated: true,
-        dateCreated: '2022-07-29T12:18:43.087097Z',
-      },
-    },
-    features: {
-      list: featuresList,
-    },
-  }
 }

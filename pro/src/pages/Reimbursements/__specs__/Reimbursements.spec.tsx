@@ -10,11 +10,24 @@ import { GetOffererResponseModel } from 'apiClient/v1'
 import { routesReimbursements } from 'app/AppRouter/subroutesReimbursements'
 import { ReimbursementContextProvider } from 'context/ReimbursementContext/ReimbursementContext'
 import { defaultGetOffererResponseModel } from 'utils/apiFactories'
-import { renderWithProviders } from 'utils/renderWithProviders'
+import {
+  RenderWithProvidersOptions,
+  renderWithProviders,
+} from 'utils/renderWithProviders'
 
 import { Reimbursements } from '../Reimbursements'
 
-const renderReimbursements = (storeOverrides: any) => {
+const renderReimbursements = (options?: RenderWithProvidersOptions) => {
+  const storeOverrides = {
+    user: {
+      currentUser: {
+        isAdmin: false,
+        hasSeenProTutorials: true,
+      },
+      initialized: true,
+    },
+  }
+
   renderWithProviders(
     <ReimbursementContextProvider>
       <Routes>
@@ -27,36 +40,20 @@ const renderReimbursements = (storeOverrides: any) => {
       </Routes>
     </ReimbursementContextProvider>,
     {
-      storeOverrides,
       initialRouterEntries: ['/remboursements/justificatifs'],
+      storeOverrides,
+      ...options,
     }
   )
 }
 
 describe('Reimbursement page', () => {
-  let store: any
-
   beforeEach(() => {
-    store = {
-      user: {
-        currentUser: {
-          isAdmin: false,
-          hasSeenProTutorials: true,
-        },
-        initialized: true,
-      },
-      features: {
-        list: [
-          { isActive: false, nameKey: 'WIP_ENABLE_NEW_BANK_DETAILS_JOURNEY' },
-        ],
-      },
-    }
-
     vi.spyOn(api, 'getReimbursementPoints').mockResolvedValue([])
   })
 
   it('should render reimbursement page with FF WIP_ENABLE_NEW_BANK_DETAILS_JOURNEY off', async () => {
-    renderReimbursements(store)
+    renderReimbursements()
 
     await waitForElementToBeRemoved(() => screen.queryAllByTestId('spinner'))
     expect(
@@ -75,7 +72,6 @@ describe('Reimbursement page', () => {
 
 describe('Reimbursement page with FF WIP_ENABLE_NEW_BANK_DETAILS_JOURNEY enabled', () => {
   let selectedOfferer: GetOffererResponseModel
-  let store: any
 
   beforeEach(() => {
     selectedOfferer = {
@@ -93,25 +89,10 @@ describe('Reimbursement page with FF WIP_ENABLE_NEW_BANK_DETAILS_JOURNEY enabled
 
     vi.spyOn(api, 'getOfferer').mockResolvedValue(selectedOfferer)
     vi.spyOn(api, 'getReimbursementPoints').mockResolvedValue([])
-
-    store = {
-      user: {
-        currentUser: {
-          isAdmin: false,
-          hasSeenProTutorials: true,
-        },
-        initialized: true,
-      },
-      features: {
-        list: [
-          { isActive: true, nameKey: 'WIP_ENABLE_NEW_BANK_DETAILS_JOURNEY' },
-        ],
-      },
-    }
   })
 
   it('should render reimbursement page', async () => {
-    renderReimbursements(store)
+    renderReimbursements({ features: ['WIP_ENABLE_NEW_BANK_DETAILS_JOURNEY'] })
 
     await waitForElementToBeRemoved(() => screen.queryAllByTestId('spinner'))
 
@@ -131,7 +112,7 @@ describe('Reimbursement page with FF WIP_ENABLE_NEW_BANK_DETAILS_JOURNEY enabled
       venuesWithNonFreeOffersWithoutBankAccounts: [2],
     })
 
-    renderReimbursements(store)
+    renderReimbursements({ features: ['WIP_ENABLE_NEW_BANK_DETAILS_JOURNEY'] })
 
     await waitForElementToBeRemoved(() => screen.queryAllByTestId('spinner'))
     expect(api.listOfferersNames).toHaveBeenCalledTimes(1)
@@ -151,7 +132,7 @@ describe('Reimbursement page with FF WIP_ENABLE_NEW_BANK_DETAILS_JOURNEY enabled
       offerersNames: [],
     })
 
-    renderReimbursements(store)
+    renderReimbursements({ features: ['WIP_ENABLE_NEW_BANK_DETAILS_JOURNEY'] })
 
     await waitForElementToBeRemoved(() => screen.queryAllByTestId('spinner'))
     expect(screen.getByText('Informations bancaires')).toBeInTheDocument()
@@ -159,7 +140,7 @@ describe('Reimbursement page with FF WIP_ENABLE_NEW_BANK_DETAILS_JOURNEY enabled
 
   it('should render component on getOffererNames error', async () => {
     vi.spyOn(api, 'listOfferersNames').mockRejectedValue({})
-    renderReimbursements(store)
+    renderReimbursements({ features: ['WIP_ENABLE_NEW_BANK_DETAILS_JOURNEY'] })
 
     await waitForElementToBeRemoved(() => screen.queryAllByTestId('spinner'))
     expect(screen.getByText('Informations bancaires')).toBeInTheDocument()

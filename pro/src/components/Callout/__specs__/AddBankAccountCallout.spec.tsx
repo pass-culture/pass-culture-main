@@ -37,14 +37,6 @@ describe('AddBankAccountCallout', () => {
   })
 
   describe('With FF enabled', () => {
-    const storeOverrides = {
-      features: {
-        list: [
-          { isActive: true, nameKey: 'WIP_ENABLE_NEW_BANK_DETAILS_JOURNEY' },
-        ],
-      },
-    }
-
     it.each([
       {
         ...defaultGetOffererResponseModel,
@@ -71,7 +63,7 @@ describe('AddBankAccountCallout', () => {
           ...rest,
         }
         renderWithProviders(<AddBankAccountCallout {...props} />, {
-          storeOverrides,
+          features: ['WIP_ENABLE_NEW_BANK_DETAILS_JOURNEY'],
         })
 
         expect(
@@ -89,7 +81,7 @@ describe('AddBankAccountCallout', () => {
         venuesWithNonFreeOffersWithoutBankAccounts: [1],
       }
       renderWithProviders(<AddBankAccountCallout {...props} />, {
-        storeOverrides,
+        features: ['WIP_ENABLE_NEW_BANK_DETAILS_JOURNEY'],
       })
 
       expect(
@@ -121,7 +113,7 @@ describe('AddBankAccountCallout', () => {
       }
 
       renderWithProviders(<AddBankAccountCallout {...props} />, {
-        storeOverrides,
+        features: ['WIP_ENABLE_NEW_BANK_DETAILS_JOURNEY'],
         initialRouterEntries: ['/accueil'],
       })
 

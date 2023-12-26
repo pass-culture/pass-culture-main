@@ -13,14 +13,17 @@ import { ApiRequestOptions } from 'apiClient/v1/core/ApiRequestOptions'
 import { ApiResult } from 'apiClient/v1/core/ApiResult'
 import { Providers } from 'core/Venue/types'
 import * as pcapi from 'repository/pcapi/pcapi'
-import { renderWithProviders } from 'utils/renderWithProviders'
+import {
+  RenderWithProvidersOptions,
+  renderWithProviders,
+} from 'utils/renderWithProviders'
 
 import { VenueEdition } from '../VenueEdition'
 
 const renderVenueEdition = (
   venueId: number,
   offererId: number,
-  featuresOverride?: { nameKey: string; isActive: boolean }[]
+  options?: RenderWithProvidersOptions
 ) => {
   const storeOverrides = {
     user: {
@@ -29,10 +32,6 @@ const renderVenueEdition = (
         id: 'EY',
         isAdmin: false,
       },
-    },
-    features: {
-      list: featuresOverride,
-      initialized: true,
     },
   }
 
@@ -47,6 +46,7 @@ const renderVenueEdition = (
     {
       storeOverrides,
       initialRouterEntries: [`/structures/${offererId}/lieux/${venueId}`],
+      ...options,
     }
   )
 }
@@ -180,13 +180,9 @@ describe('route VenueEdition', () => {
       siret: '11111111111111',
     })
 
-    const featuresOverride = [
-      {
-        nameKey: 'WIP_ENABLE_NEW_BANK_DETAILS_JOURNEY',
-        isActive: true,
-      },
-    ]
-    renderVenueEdition(venue.id, offerer.id, featuresOverride)
+    renderVenueEdition(venue.id, offerer.id, {
+      features: ['WIP_ENABLE_NEW_BANK_DETAILS_JOURNEY'],
+    })
 
     await screen.findByRole('heading', {
       name: 'Cinéma des iles',

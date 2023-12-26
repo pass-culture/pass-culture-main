@@ -6,13 +6,16 @@ import {
   defaultGetOffererResponseModel,
   defaultGetOffererVenueResponseModel,
 } from 'utils/apiFactories'
-import { renderWithProviders } from 'utils/renderWithProviders'
+import {
+  RenderWithProvidersOptions,
+  renderWithProviders,
+} from 'utils/renderWithProviders'
 
 import Offerers, { OfferersProps } from '../Offerers'
 
 const renderOfferers = (
   props: Partial<OfferersProps> = {},
-  storeOverrides?: any
+  options?: RenderWithProvidersOptions
 ) => {
   renderWithProviders(
     <Offerers
@@ -28,7 +31,7 @@ const renderOfferers = (
       venues={INITIAL_OFFERER_VENUES}
       {...props}
     />,
-    { storeOverrides }
+    options
   )
 }
 
@@ -59,12 +62,6 @@ describe('Offerers', () => {
   })
 
   it("should display the carnet d'adresses", () => {
-    const storeOverrides = {
-      features: {
-        list: [{ isActive: true, nameKey: 'WIP_PARTNER_PAGE' }],
-      },
-    }
-
     renderOfferers(
       {
         selectedOfferer: {
@@ -73,7 +70,7 @@ describe('Offerers', () => {
           isActive: true,
         },
       },
-      storeOverrides
+      { features: ['WIP_PARTNER_PAGE'] }
     )
 
     expect(screen.getByText('Carnet d’adresses')).toBeInTheDocument()

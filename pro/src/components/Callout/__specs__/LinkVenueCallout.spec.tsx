@@ -35,14 +35,6 @@ describe('LinkVenueCallout', () => {
   })
 
   describe('With FF enabled', () => {
-    const storeOverrides = {
-      features: {
-        list: [
-          { isActive: true, nameKey: 'WIP_ENABLE_NEW_BANK_DETAILS_JOURNEY' },
-        ],
-      },
-    }
-
     it.each([
       {
         ...defaultGetOffererResponseModel,
@@ -68,7 +60,7 @@ describe('LinkVenueCallout', () => {
           venuesWithNonFreeOffersWithoutBankAccounts,
         }
         renderWithProviders(<LinkVenueCallout {...props} />, {
-          storeOverrides,
+          features: ['WIP_ENABLE_NEW_BANK_DETAILS_JOURNEY'],
         })
 
         expect(
@@ -84,7 +76,7 @@ describe('LinkVenueCallout', () => {
         venuesWithNonFreeOffersWithoutBankAccounts: [1],
       }
       renderWithProviders(<LinkVenueCallout {...props} />, {
-        storeOverrides,
+        features: ['WIP_ENABLE_NEW_BANK_DETAILS_JOURNEY'],
       })
 
       expect(
@@ -110,7 +102,7 @@ describe('LinkVenueCallout', () => {
         venuesWithNonFreeOffersWithoutBankAccounts: [1],
       }
       renderWithProviders(<LinkVenueCallout {...props} />, {
-        storeOverrides,
+        features: ['WIP_ENABLE_NEW_BANK_DETAILS_JOURNEY'],
       })
 
       expect(
@@ -135,7 +127,7 @@ describe('LinkVenueCallout', () => {
         venuesWithNonFreeOffersWithoutBankAccounts: [1, 2],
       }
       renderWithProviders(<LinkVenueCallout {...props} />, {
-        storeOverrides,
+        features: ['WIP_ENABLE_NEW_BANK_DETAILS_JOURNEY'],
       })
 
       expect(
@@ -162,7 +154,7 @@ describe('LinkVenueCallout', () => {
       }
 
       renderWithProviders(<LinkVenueCallout {...props} />, {
-        storeOverrides,
+        features: ['WIP_ENABLE_NEW_BANK_DETAILS_JOURNEY'],
         initialRouterEntries: ['/accueil'],
       })
 

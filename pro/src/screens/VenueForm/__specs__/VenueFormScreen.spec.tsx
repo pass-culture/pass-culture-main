@@ -46,7 +46,6 @@ const renderForm = (
   initialValues: VenueFormValues,
   isCreatingVenue: boolean,
   venue?: Venue | undefined,
-  features?: { list: { isActive: true; nameKey: string }[] },
   hasBookingQuantity?: boolean
 ) => {
   const storeOverrides = {
@@ -54,7 +53,6 @@ const renderForm = (
       initialized: true,
       currentUser,
     },
-    features: features,
   }
 
   renderWithProviders(
@@ -613,8 +611,6 @@ describe('VenueFormScreen', () => {
   })
 
   describe('Displaying with new onboarding', () => {
-    let features: { list: { isActive: true; nameKey: string }[] }
-
     it('should display new onboarding wording labels', async () => {
       venue.isVirtual = false
       renderForm(
@@ -624,8 +620,7 @@ describe('VenueFormScreen', () => {
         } as SharedCurrentUserResponseModel,
         formValues,
         false,
-        venue,
-        features
+        venue
       )
 
       await waitFor(() => {
@@ -656,8 +651,7 @@ describe('VenueFormScreen', () => {
         } as SharedCurrentUserResponseModel,
         formValues,
         true,
-        undefined,
-        features
+        undefined
       )
 
       await userEvent.click(screen.getByText(/Enregistrer et créer le lieu/))
@@ -675,8 +669,6 @@ describe('VenueFormScreen', () => {
   })
 
   describe('Withdrawal dialog to send mail', () => {
-    let features: { list: { isActive: true; nameKey: string }[] }
-
     beforeEach(() => {
       expectedEditVenue = {
         address: 'PARIS',
@@ -721,7 +713,6 @@ describe('VenueFormScreen', () => {
         formValues,
         false,
         venue,
-        features,
         true
       )
 
@@ -791,7 +782,6 @@ describe('VenueFormScreen', () => {
         formValues,
         false,
         venue,
-        features,
         true
       )
 
@@ -859,7 +849,6 @@ describe('VenueFormScreen', () => {
         formValues,
         false,
         venue,
-        features,
         false
       )
 
@@ -901,7 +890,6 @@ describe('VenueFormScreen', () => {
         formValues,
         false,
         venue,
-        features,
         true
       )
 
@@ -968,7 +956,6 @@ describe('VenueFormScreen', () => {
         formValues,
         false,
         venue,
-        features,
         true
       )
 

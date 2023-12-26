@@ -4,20 +4,18 @@ import React from 'react'
 
 import { DMSApplicationstatus } from 'apiClient/v1'
 import { defaultCollectiveDmsApplication } from 'utils/collectiveApiFactories'
-import { renderWithProviders } from 'utils/renderWithProviders'
+import {
+  RenderWithProvidersOptions,
+  renderWithProviders,
+} from 'utils/renderWithProviders'
 
 import Venue, { VenueProps } from '../Venue'
 
 const renderVenue = (
   props: VenueProps,
-  features?: { list: { isActive: true; nameKey: string }[] }
+  options?: RenderWithProvidersOptions
 ) => {
-  const storeOverrides = {
-    features: features,
-  }
-  renderWithProviders(<Venue {...props} />, {
-    storeOverrides: { ...storeOverrides },
-  })
+  renderWithProviders(<Venue {...props} />, options)
 }
 
 describe('venues', () => {
@@ -73,9 +71,7 @@ describe('venues', () => {
       props.venueHasCreatedOffer = true
 
       renderVenue(props, {
-        list: [
-          { isActive: true, nameKey: 'WIP_ENABLE_NEW_BANK_DETAILS_JOURNEY' },
-        ],
+        features: ['WIP_ENABLE_NEW_BANK_DETAILS_JOURNEY'],
       })
 
       expect(

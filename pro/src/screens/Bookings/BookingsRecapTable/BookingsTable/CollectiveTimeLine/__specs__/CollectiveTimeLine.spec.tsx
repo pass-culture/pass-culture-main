@@ -18,23 +18,24 @@ import {
   collectiveBookingRecapFactory,
   defaultCollectiveBookingStock,
 } from 'utils/collectiveApiFactories'
-import { renderWithProviders } from 'utils/renderWithProviders'
+import {
+  RenderWithProvidersOptions,
+  renderWithProviders,
+} from 'utils/renderWithProviders'
 
 import CollectiveTimeLine from '../CollectiveTimeLine'
 
 const renderCollectiveTimeLine = (
   bookingRecap: CollectiveBookingResponseModel,
   bookingDetails: CollectiveBookingByIdResponseModel,
-  storeOverrides = {}
+  options?: RenderWithProvidersOptions
 ) =>
   renderWithProviders(
     <CollectiveTimeLine
       bookingRecap={bookingRecap}
       bookingDetails={bookingDetails}
     />,
-    {
-      storeOverrides,
-    }
+    options
   )
 
 describe('collective timeline', () => {
@@ -224,14 +225,10 @@ describe('collective timeline', () => {
         bankInformationStatus: null,
         bankAccountStatus: CollectiveBookingBankAccountStatus.MISSING,
       })
-      const storeOverrides = {
-        features: {
-          list: [
-            { isActive: true, nameKey: 'WIP_ENABLE_NEW_BANK_DETAILS_JOURNEY' },
-          ],
-        },
-      }
-      renderCollectiveTimeLine(bookingRecap, bookingDetails, storeOverrides)
+
+      renderCollectiveTimeLine(bookingRecap, bookingDetails, {
+        features: ['WIP_ENABLE_NEW_BANK_DETAILS_JOURNEY'],
+      })
       expect(
         screen.getByText(
           'Complétez vos informations bancaires pour débloquer le remboursement.'
