@@ -61,7 +61,12 @@ jobs:
       teleport_kubernetes_cluster: passculture-metier-ehp
       deploy_api: true
       deploy_pro: true
-    secrets: inherit
+    secrets:
+      INFRA_PROD_GCP_PROJECT: ${{ secrets.INFRA_PROD_GCP_PROJECT }}
+      INFRA_PROD_GCP_WORKLOAD_IDENTITY_PROVIDER: ${{ secrets.INFRA_PROD_GCP_WORKLOAD_IDENTITY_PROVIDER }}
+      ARTIFACT_REGISTRY_SERVICE_ACCOUNT: ${{ secrets.ARTIFACT_REGISTRY_SERVICE_ACCOUNT }}
+      GCP_EHP_WORKLOAD_IDENTITY_PROVIDER: ${{ secrets.GCP_EHP_WORKLOAD_IDENTITY_PROVIDER }}
+      GCP_EHP_SERVICE_ACCOUNT: ${{ secrets.GCP_EHP_SERVICE_ACCOUNT }}
 
   deploy-integration:
     if: github.event.inputs.target_environment == 'production'
@@ -77,7 +82,12 @@ jobs:
       teleport_kubernetes_cluster: passculture-metier-ehp
       deploy_api: true
       deploy_pro: true
-    secrets: inherit
+    secrets:
+      INFRA_PROD_GCP_PROJECT: ${{ secrets.INFRA_PROD_GCP_PROJECT }}
+      INFRA_PROD_GCP_WORKLOAD_IDENTITY_PROVIDER: ${{ secrets.INFRA_PROD_GCP_WORKLOAD_IDENTITY_PROVIDER }}
+      ARTIFACT_REGISTRY_SERVICE_ACCOUNT: ${{ secrets.ARTIFACT_REGISTRY_SERVICE_ACCOUNT }}
+      GCP_EHP_WORKLOAD_IDENTITY_PROVIDER: ${{ secrets.GCP_EHP_WORKLOAD_IDENTITY_PROVIDER }}
+      GCP_EHP_SERVICE_ACCOUNT: ${{ secrets.GCP_EHP_SERVICE_ACCOUNT }}
 
   deploy-prod:
     if: github.event.inputs.target_environment == 'production'
@@ -93,7 +103,12 @@ jobs:
       teleport_kubernetes_cluster: passculture-metier-prod
       deploy_api: true
       deploy_pro: true
-    secrets: inherit
+    secrets:
+      INFRA_PROD_GCP_PROJECT: ${{ secrets.INFRA_PROD_GCP_PROJECT }}
+      INFRA_PROD_GCP_WORKLOAD_IDENTITY_PROVIDER: ${{ secrets.INFRA_PROD_GCP_WORKLOAD_IDENTITY_PROVIDER }}
+      ARTIFACT_REGISTRY_SERVICE_ACCOUNT: ${{ secrets.ARTIFACT_REGISTRY_SERVICE_ACCOUNT }}
+      GCP_EHP_WORKLOAD_IDENTITY_PROVIDER: ${{ secrets.GCP_EHP_WORKLOAD_IDENTITY_PROVIDER }}
+      GCP_EHP_SERVICE_ACCOUNT: ${{ secrets.GCP_EHP_SERVICE_ACCOUNT }}
 
   notification:
     name: "Notification"
