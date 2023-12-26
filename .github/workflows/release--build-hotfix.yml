@@ -43,7 +43,9 @@ jobs:
     needs: find-hotfix-tag-number
     name: Build and tag version
     uses: ./.github/workflows/reusable--build-and-tag.yml
-    secrets: inherit
+    secrets:
+      GCP_SERVICE_ACCOUNT: ${{ secrets.GCP_EHP_SERVICE_ACCOUNT }}
+      GCP_WORKLOAD_IDENTITY_PROVIDER: ${{ secrets.GCP_EHP_WORKLOAD_IDENTITY_PROVIDER }}
     with:
       base_ref: ${{ github.ref }}
       tag_number: ${{ needs.find-hotfix-tag-number.outputs.hotfixTagNumber }}

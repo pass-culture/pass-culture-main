@@ -21,6 +21,13 @@ on:
         required: false
         type: boolean
         default: false
+    secrets:
+      GCP_EHP_WORKLOAD_IDENTITY_PROVIDER:
+        required: true
+        type: string
+      GCP_EHP_SERVICE_ACCOUNT:
+        required: true
+        type: string
 
 env:
   DOCKER_REGISTRY_PROJECT_ID: passculture-infra-prod
@@ -184,20 +191,20 @@ jobs:
           channel-id: CU0SQ8Y58
           payload: |
             {
-                    "attachments": [
-                        {
-                            "mrkdwn_in": ["text"],
-                            "color": "${{ fromJSON('["#36a64f", "#A30002"]')[ env.WORKFLOW_CONCLUSION == 'failure'] }}",
-                            "author_name": "${{github.actor}}",
-                            "author_link": "https://github.com/${{github.actor}}",
-                            "author_icon": "https://github.com/${{github.actor}}.png",
-                            "title": "PCAPI Deployment",
-                            "title_link": "https://github.com/${{github.repository}}/actions/runs/${{github.run_id}}",
-                            "text": "${{ env.TEXT }}"
-                        }
-                    ],
-                    "unfurl_links": false,
-                    "unfurl_media": false
+              "attachments": [
+                {
+                  "mrkdwn_in": ["text"],
+                  "color": "${{ fromJSON('["#36a64f", "#A30002"]')[ env.WORKFLOW_CONCLUSION == 'failure'] }}",
+                  "author_name": "${{github.actor}}",
+                  "author_link": "https://github.com/${{github.actor}}",
+                  "author_icon": "https://github.com/${{github.actor}}.png",
+                  "title": "PCAPI Deployment",
+                  "title_link": "https://github.com/${{github.repository}}/actions/runs/${{github.run_id}}",
+                  "text": "${{ env.TEXT }}"
+                }
+              ],
+              "unfurl_links": false,
+              "unfurl_media": false
             }
         env:
           SLACK_BOT_TOKEN: ${{ steps.secrets.outputs.SLACK_BOT_TOKEN }}
