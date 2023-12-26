@@ -5,6 +5,13 @@ on:
       CACHE_BUCKET_NAME:
         type: string
         required: true
+    secrets:
+      GCP_EHP_WORKLOAD_IDENTITY_PROVIDER:
+        type: string
+        required: true
+      GCP_EHP_SERVICE_ACCOUNT:
+        type: string
+        required: true
 
 defaults:
   run:
@@ -130,6 +137,7 @@ jobs:
         with:
           secrets: |-
             SONAR_TOKEN:passculture-metier-ehp/passculture-main-sonar-token
+            SLACK_BOT_TOKEN:passculture-metier-ehp/passculture-ci-slack-bot-token
       - name: Cache the node_modules
         id: yarn-modules-cache
         uses: kopax-polyconseil/gcs-cache-action@v1.0.2
@@ -177,4 +185,4 @@ jobs:
             "unfurl_media": false
             }
         env:
-          SLACK_BOT_TOKEN: ${{ secrets.SLACK_BOT_TOKEN }}
+          SLACK_BOT_TOKEN: ${{ steps.secrets.outputs.SLACK_BOT_TOKEN }}
