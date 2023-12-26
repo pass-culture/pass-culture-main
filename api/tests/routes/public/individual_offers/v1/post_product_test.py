@@ -567,6 +567,23 @@ class PostProductTest:
             ],
             "categoryRelatedFields.ean": ["field required", "field required", "field required"],
             "categoryRelatedFields.musicType": ["field required", "field required"],
+            "categoryRelatedFields.offerUrl": [
+                "field required",
+                "field required",
+                "field required",
+                "field required",
+                "field required",
+                "field required",
+                "field required",
+                "field required",
+                "field required",
+                "field required",
+                "field required",
+                "field required",
+                "field required",
+                "field required",
+                "field required",
+            ],
         }
         assert offers_models.Offer.query.first() is None
 
@@ -599,14 +616,21 @@ class PostProductTest:
             "/public/offers/v1/products",
             json={
                 "location": {"type": "digital", "url": "https://la-flute-en-chantier.fr", "venue_id": venue.id},
-                "categoryRelatedFields": {"category": "SPECTACLE_ENREGISTRE", "showType": "OPERA-GRAND_OPERA"},
+                "categoryRelatedFields": {
+                    "category": "SPECTACLE_ENREGISTRE",
+                    "showType": "OPERA-GRAND_OPERA",
+                    "offerUrl": "https://la-flute-en-chantier.fr/la-flute-enchantee",
+                },
                 "accessibility": utils.ACCESSIBILITY_FIELDS,
                 "name": "La flûte en chantier",
             },
         )
 
         assert response.status_code == 200
+
         assert offers_models.Offer.query.count() == 1
+        created_offer = offers_models.Offer.query.one()
+        assert created_offer.extraData["offerUrl"] == "https://la-flute-en-chantier.fr/la-flute-enchantee"
 
     @pytest.mark.usefixtures("db_session")
     def test_returns_404_for_inactive_venue_provider(self, client):

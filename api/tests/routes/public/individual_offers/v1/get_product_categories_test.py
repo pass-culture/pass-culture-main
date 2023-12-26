@@ -38,4 +38,5 @@ def test_category_serialization(client):
         "showType": True,
         "stageDirector": False,
         "performer": False,
+        "offerUrl": True,
     }

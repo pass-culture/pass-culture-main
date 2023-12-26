@@ -178,6 +178,7 @@ class ExtraDataFieldEnum(Enum):
     STAGE_DIRECTOR = "stageDirector"
     VISA = "visa"
     GTL_ID = "gtl_id"
+    OFFER_URL = "offerUrl"
 
 
 @dataclass
@@ -298,7 +299,9 @@ VOD = Subcategory(
     search_group_name=SearchGroups.FILMS_SERIES_CINEMA.name,
     homepage_label_name=HomepageLabels.FILMS.name,
     is_event=False,
-    conditional_fields={},
+    conditional_fields={
+        ExtraDataFieldEnum.OFFER_URL.value: FieldCondition(is_required_in_external_form=True),
+    },
     can_expire=False,
     can_be_duo=False,
     can_be_educational=False,
@@ -317,7 +320,7 @@ ABO_PLATEFORME_VIDEO = Subcategory(
     search_group_name=SearchGroups.FILMS_SERIES_CINEMA.name,
     homepage_label_name=HomepageLabels.FILMS.name,
     is_event=False,
-    conditional_fields={},
+    conditional_fields={ExtraDataFieldEnum.OFFER_URL.value: FieldCondition(is_required_in_external_form=True)},
     can_expire=False,
     can_be_duo=False,
     can_be_educational=False,
@@ -336,7 +339,9 @@ AUTRE_SUPPORT_NUMERIQUE = Subcategory(
     search_group_name=SearchGroups.FILMS_SERIES_CINEMA.name,
     homepage_label_name=HomepageLabels.FILMS.name,
     is_event=False,
-    conditional_fields={},
+    conditional_fields={
+        ExtraDataFieldEnum.OFFER_URL.value: FieldCondition(is_required_in_external_form=True),
+    },
     can_expire=False,
     can_be_duo=False,
     can_be_educational=False,
@@ -466,6 +471,7 @@ CINE_VENTE_DISTANCE = Subcategory(
         ExtraDataFieldEnum.AUTHOR.value: FieldCondition(),
         ExtraDataFieldEnum.VISA.value: FieldCondition(),
         ExtraDataFieldEnum.STAGE_DIRECTOR.value: FieldCondition(),
+        ExtraDataFieldEnum.OFFER_URL.value: FieldCondition(is_required_in_external_form=True),
     },
     can_expire=False,
     can_be_duo=False,
@@ -589,7 +595,10 @@ RENCONTRE_EN_LIGNE = Subcategory(
     search_group_name=SearchGroups.RENCONTRES_CONFERENCES.name,
     homepage_label_name=HomepageLabels.RENCONTRES.name,
     is_event=True,
-    conditional_fields={ExtraDataFieldEnum.SPEAKER.value: FieldCondition()},
+    conditional_fields={
+        ExtraDataFieldEnum.SPEAKER.value: FieldCondition(),
+        ExtraDataFieldEnum.OFFER_URL.value: FieldCondition(is_required_in_external_form=True),
+    },
     can_expire=False,
     can_be_duo=False,
     can_be_educational=True,
@@ -686,7 +695,10 @@ JEU_EN_LIGNE = Subcategory(
     search_group_name=SearchGroups.JEUX_JEUX_VIDEOS.name,
     homepage_label_name=HomepageLabels.JEUX.name,
     is_event=False,
-    conditional_fields={ExtraDataFieldEnum.EAN.value: FieldCondition(is_required_in_external_form=True)},
+    conditional_fields={
+        ExtraDataFieldEnum.EAN.value: FieldCondition(is_required_in_external_form=True),
+        ExtraDataFieldEnum.OFFER_URL.value: FieldCondition(is_required_in_external_form=True),
+    },
     can_expire=False,
     can_be_duo=False,
     can_be_educational=False,
@@ -706,7 +718,9 @@ ABO_JEU_VIDEO = Subcategory(
     search_group_name=SearchGroups.JEUX_JEUX_VIDEOS.name,
     homepage_label_name=HomepageLabels.JEUX.name,
     is_event=False,
-    conditional_fields={},
+    conditional_fields={
+        ExtraDataFieldEnum.OFFER_URL.value: FieldCondition(is_required_in_external_form=True),
+    },
     can_expire=False,
     can_be_duo=False,
     can_be_educational=False,
@@ -775,6 +789,7 @@ LIVRE_NUMERIQUE = Subcategory(
     conditional_fields={
         ExtraDataFieldEnum.AUTHOR.value: FieldCondition(),
         ExtraDataFieldEnum.EAN.value: FieldCondition(),
+        ExtraDataFieldEnum.OFFER_URL.value: FieldCondition(is_required_in_external_form=True),
     },
     can_expire=False,
     can_be_duo=False,
@@ -796,6 +811,7 @@ TELECHARGEMENT_LIVRE_AUDIO = Subcategory(
     is_event=False,
     conditional_fields={
         ExtraDataFieldEnum.AUTHOR.value: FieldCondition(),
+        ExtraDataFieldEnum.OFFER_URL.value: FieldCondition(is_required_in_external_form=True),
     },
     can_expire=False,
     can_be_duo=False,
@@ -855,7 +871,9 @@ ABO_LIVRE_NUMERIQUE = Subcategory(
     search_group_name=SearchGroups.LIVRES.name,
     homepage_label_name=HomepageLabels.LIVRES.name,
     is_event=False,
-    conditional_fields={},
+    conditional_fields={
+        ExtraDataFieldEnum.OFFER_URL.value: FieldCondition(is_required_in_external_form=True),
+    },
     can_expire=True,
     can_be_duo=False,
     can_be_educational=False,
@@ -990,7 +1008,9 @@ VISITE_VIRTUELLE = Subcategory(
     search_group_name=SearchGroups.MUSEES_VISITES_CULTURELLES.name,
     homepage_label_name=HomepageLabels.VISITES.name,
     is_event=False,
-    conditional_fields={},
+    conditional_fields={
+        ExtraDataFieldEnum.OFFER_URL.value: FieldCondition(is_required_in_external_form=True),
+    },
     can_expire=False,
     can_be_duo=False,
     can_be_educational=False,
@@ -1009,7 +1029,9 @@ MUSEE_VENTE_DISTANCE = Subcategory(
     search_group_name=SearchGroups.MUSEES_VISITES_CULTURELLES.name,
     homepage_label_name=HomepageLabels.MUSEE.name,
     is_event=False,
-    conditional_fields={},
+    conditional_fields={
+        ExtraDataFieldEnum.OFFER_URL.value: FieldCondition(is_required_in_external_form=True),
+    },
     can_expire=False,
     can_be_duo=False,
     can_be_educational=False,
@@ -1121,6 +1143,7 @@ LIVESTREAM_MUSIQUE = Subcategory(
             is_required_in_external_form=True, is_required_in_internal_form=True
         ),
         ExtraDataFieldEnum.PERFORMER.value: FieldCondition(),
+        ExtraDataFieldEnum.OFFER_URL.value: FieldCondition(is_required_in_external_form=True),
     },
     can_expire=False,
     can_be_duo=False,
@@ -1259,6 +1282,7 @@ TELECHARGEMENT_MUSIQUE = Subcategory(
         ),
         ExtraDataFieldEnum.PERFORMER.value: FieldCondition(),
         ExtraDataFieldEnum.EAN.value: FieldCondition(is_required_in_external_form=True),
+        ExtraDataFieldEnum.OFFER_URL.value: FieldCondition(is_required_in_external_form=True),
     },
     can_expire=False,
     can_be_duo=False,
@@ -1278,7 +1302,9 @@ ABO_PLATEFORME_MUSIQUE = Subcategory(
     search_group_name=SearchGroups.CD_VINYLE_MUSIQUE_EN_LIGNE.name,
     homepage_label_name=HomepageLabels.MUSIQUE.name,
     is_event=False,
-    conditional_fields={},
+    conditional_fields={
+        ExtraDataFieldEnum.OFFER_URL.value: FieldCondition(is_required_in_external_form=True),
+    },
     can_expire=False,
     can_be_duo=False,
     can_be_educational=False,
@@ -1384,7 +1410,10 @@ PRATIQUE_ART_VENTE_DISTANCE = Subcategory(
     search_group_name=SearchGroups.ARTS_LOISIRS_CREATIFS.name,
     homepage_label_name=HomepageLabels.BEAUX_ARTS.name,
     is_event=False,
-    conditional_fields={ExtraDataFieldEnum.SPEAKER.value: FieldCondition()},
+    conditional_fields={
+        ExtraDataFieldEnum.SPEAKER.value: FieldCondition(),
+        ExtraDataFieldEnum.OFFER_URL.value: FieldCondition(is_required_in_external_form=True),
+    },
     can_expire=False,
     can_be_duo=False,
     can_be_educational=False,
@@ -1402,7 +1431,9 @@ PLATEFORME_PRATIQUE_ARTISTIQUE = Subcategory(
     search_group_name=SearchGroups.ARTS_LOISIRS_CREATIFS.name,
     homepage_label_name=HomepageLabels.PLATEFORME.name,
     is_event=False,
-    conditional_fields={},
+    conditional_fields={
+        ExtraDataFieldEnum.OFFER_URL.value: FieldCondition(is_required_in_external_form=True),
+    },
     can_expire=True,
     can_be_duo=False,
     can_be_educational=False,
@@ -1421,7 +1452,9 @@ LIVESTREAM_PRATIQUE_ARTISTIQUE = Subcategory(
     search_group_name=SearchGroups.EVENEMENTS_EN_LIGNE.name,
     homepage_label_name=HomepageLabels.COURS.name,
     is_event=True,
-    conditional_fields={},
+    conditional_fields={
+        ExtraDataFieldEnum.OFFER_URL.value: FieldCondition(is_required_in_external_form=True),
+    },
     can_expire=False,
     can_be_duo=False,
     can_be_educational=False,
@@ -1442,7 +1475,9 @@ ABO_PRESSE_EN_LIGNE = Subcategory(
     search_group_name=SearchGroups.MEDIA_PRESSE.name,
     homepage_label_name=HomepageLabels.MEDIAS.name,
     is_event=False,
-    conditional_fields={},
+    conditional_fields={
+        ExtraDataFieldEnum.OFFER_URL.value: FieldCondition(is_required_in_external_form=True),
+    },
     can_expire=False,
     can_be_duo=False,
     can_be_educational=False,
@@ -1461,7 +1496,9 @@ PODCAST = Subcategory(
     search_group_name=SearchGroups.MEDIA_PRESSE.name,
     homepage_label_name=HomepageLabels.MEDIAS.name,
     is_event=False,
-    conditional_fields={},
+    conditional_fields={
+        ExtraDataFieldEnum.OFFER_URL.value: FieldCondition(is_required_in_external_form=True),
+    },
     can_expire=False,
     can_be_duo=False,
     can_be_educational=False,
@@ -1480,7 +1517,9 @@ APP_CULTURELLE = Subcategory(
     search_group_name=SearchGroups.MEDIA_PRESSE.name,
     homepage_label_name=HomepageLabels.MEDIAS.name,
     is_event=False,
-    conditional_fields={},
+    conditional_fields={
+        ExtraDataFieldEnum.OFFER_URL.value: FieldCondition(is_required_in_external_form=True),
+    },
     can_expire=False,
     can_be_duo=False,
     can_be_educational=False,
@@ -1541,6 +1580,7 @@ SPECTACLE_ENREGISTRE = Subcategory(
         ),
         ExtraDataFieldEnum.STAGE_DIRECTOR.value: FieldCondition(),
         ExtraDataFieldEnum.PERFORMER.value: FieldCondition(),
+        ExtraDataFieldEnum.OFFER_URL.value: FieldCondition(is_required_in_external_form=True),
     },
     can_expire=False,
     can_be_duo=False,
@@ -1570,6 +1610,7 @@ LIVESTREAM_EVENEMENT = Subcategory(
         ),
         ExtraDataFieldEnum.STAGE_DIRECTOR.value: FieldCondition(),
         ExtraDataFieldEnum.PERFORMER.value: FieldCondition(),
+        ExtraDataFieldEnum.OFFER_URL.value: FieldCondition(is_required_in_external_form=True),
     },
     can_expire=False,
     can_be_duo=False,
@@ -1654,6 +1695,7 @@ SPECTACLE_VENTE_DISTANCE = Subcategory(
         ),
         ExtraDataFieldEnum.STAGE_DIRECTOR.value: FieldCondition(),
         ExtraDataFieldEnum.PERFORMER.value: FieldCondition(),
+        ExtraDataFieldEnum.OFFER_URL.value: FieldCondition(is_required_in_external_form=True),
     },
     can_expire=False,
     can_be_duo=False,
@@ -1768,7 +1810,9 @@ ACTIVATION_EVENT = Subcategory(
     search_group_name=SearchGroups.NONE.name,
     homepage_label_name=HomepageLabels.NONE.name,
     is_event=True,
-    conditional_fields={},
+    conditional_fields={
+        ExtraDataFieldEnum.OFFER_URL.value: FieldCondition(is_required_in_external_form=False),
+    },
     can_expire=False,
     can_be_duo=False,
     can_be_educational=False,
@@ -1788,7 +1832,9 @@ ACTIVATION_THING = Subcategory(
     search_group_name=SearchGroups.NONE.name,
     homepage_label_name=HomepageLabels.NONE.name,
     is_event=False,
-    conditional_fields={},
+    conditional_fields={
+        ExtraDataFieldEnum.OFFER_URL.value: FieldCondition(is_required_in_external_form=False),
+    },
     can_expire=False,
     can_be_duo=False,
     can_be_educational=False,
@@ -1809,7 +1855,9 @@ JEU_SUPPORT_PHYSIQUE = Subcategory(
     search_group_name=SearchGroups.NONE.name,
     homepage_label_name=HomepageLabels.NONE.name,
     is_event=False,
-    conditional_fields={},
+    conditional_fields={
+        ExtraDataFieldEnum.OFFER_URL.value: FieldCondition(is_required_in_external_form=False),
+    },
     can_expire=False,
     can_be_duo=False,
     can_be_educational=False,
@@ -1830,7 +1878,9 @@ OEUVRE_ART = Subcategory(
     search_group_name=SearchGroups.ARTS_LOISIRS_CREATIFS.name,
     homepage_label_name=HomepageLabels.NONE.name,
     is_event=False,
-    conditional_fields={},
+    conditional_fields={
+        ExtraDataFieldEnum.OFFER_URL.value: FieldCondition(is_required_in_external_form=False),
+    },
     can_expire=True,
     can_be_duo=False,
     can_be_educational=False,

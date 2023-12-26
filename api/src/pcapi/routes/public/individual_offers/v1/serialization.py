@@ -129,6 +129,7 @@ class ExtraDataModel(serialization.ConfiguredBaseModel):
     showType: ShowTypeEnum | None  # type: ignore [valid-type]
     speaker: str | None = pydantic_v1.Field(example="Jane Doe")
     visa: str | None = pydantic_v1.Field(example="140843")
+    offerUrl: pydantic_v1.HttpUrl | None = pydantic_v1.Field(example="https://example.com")
 
 
 class CategoryRelatedFields(ExtraDataModel):
