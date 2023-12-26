@@ -273,6 +273,8 @@ class SendUbbleKoReminderReminderTest:
             fraud_models.FraudReasonCode.LACK_OF_LUMINOSITY,
             fraud_models.FraudReasonCode.MISSING_REQUIRED_DATA,
             fraud_models.FraudReasonCode.NETWORK_CONNECTION_ISSUE,
+            fraud_models.FraudReasonCode.NOT_DOCUMENT_OWNER,
+            fraud_models.FraudReasonCode.UBBLE_INTERNAL_ERROR,
         ],
     )
     def should_send_default_email_to_user(self, reason_code):

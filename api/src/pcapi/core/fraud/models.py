@@ -72,6 +72,8 @@ class FraudReasonCode(enum.Enum):
     INVALID_ID_PIECE_NUMBER = "invalid_id_piece_number"
     LACK_OF_LUMINOSITY = "lack_of_luminosity"
     NETWORK_CONNECTION_ISSUE = "network_connection_issue"
+    NOT_DOCUMENT_OWNER = "not_document_owner"
+    UBBLE_INTERNAL_ERROR = "ubble_internal_error"
 
     # Our API errors
     AGE_TOO_OLD = "age_too_old"
@@ -331,12 +333,14 @@ UBBLE_REASON_CODE_MAPPING = {
     1201: FraudReasonCode.NETWORK_CONNECTION_ISSUE,  # applicant did not have a sufficient connection
     1301: FraudReasonCode.BLURRY_DOCUMENT_VIDEO,  # applicant’s document video is too blurry
     1320: FraudReasonCode.LACK_OF_LUMINOSITY,  # applicant performed their id verification under poor lighting conditions
+    1901: FraudReasonCode.UBBLE_INTERNAL_ERROR,  # ubble had trouble decoding the video
     2101: FraudReasonCode.ID_CHECK_EXPIRED,  # applicant presented an expired document
     2102: FraudReasonCode.ID_CHECK_NOT_SUPPORTED,  # applicant presented a document which is not accepted
     2103: FraudReasonCode.DOCUMENT_DAMAGED,  # applicant has submitted a damaged document
     2201: FraudReasonCode.ID_CHECK_NOT_AUTHENTIC,  # applicant presented a photocopy of the document
     2202: FraudReasonCode.ID_CHECK_NOT_AUTHENTIC,  # applicant presented the document on a screen
     2301: FraudReasonCode.ID_CHECK_NOT_AUTHENTIC,  # applicant has submitted a counterfeit or falsification
+    2304: FraudReasonCode.NOT_DOCUMENT_OWNER,  # applicant is not the rightful owner of the document
     2401: FraudReasonCode.ID_CHECK_DATA_MATCH,  # applicant’s identity does not match with the expected one
 }
 

@@ -849,6 +849,8 @@ class SubscriptionMessageTest:
             fraud_models.FraudReasonCode.LACK_OF_LUMINOSITY,
             fraud_models.FraudReasonCode.MISSING_REQUIRED_DATA,
             fraud_models.FraudReasonCode.DOCUMENT_DAMAGED,
+            fraud_models.FraudReasonCode.NOT_DOCUMENT_OWNER,
+            fraud_models.FraudReasonCode.UBBLE_INTERNAL_ERROR,
         ],
     )
     def test_retryable(self, reason_code):
@@ -927,6 +929,8 @@ class SubscriptionMessageTest:
             fraud_models.FraudReasonCode.NETWORK_CONNECTION_ISSUE,
             fraud_models.FraudReasonCode.LACK_OF_LUMINOSITY,
             fraud_models.FraudReasonCode.DOCUMENT_DAMAGED,
+            fraud_models.FraudReasonCode.NOT_DOCUMENT_OWNER,
+            fraud_models.FraudReasonCode.UBBLE_INTERNAL_ERROR,
         ],
     )
     def test_not_retryable_third_time_go_dms(self, reason_code):
