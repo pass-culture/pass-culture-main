@@ -5,19 +5,24 @@ import { SelectOption } from 'custom_types/form'
 import SelectInput from 'ui-kit/form/Select/SelectInput'
 import { FieldLayout } from 'ui-kit/form/shared'
 
+import { PartnerPage } from './PartnerPage'
 import styles from './PartnerPages.module.scss'
 
 export interface PartnerPagesProps {
+  offererId: string
   venues: GetOffererVenueResponseModel[]
 }
 
-export const PartnerPages = ({ venues }: PartnerPagesProps) => {
+export const PartnerPages = ({ venues, offererId }: PartnerPagesProps) => {
   const venuesOptions: SelectOption[] = venues.map((venue) => ({
     label: venue.name,
     value: venue.id.toString(),
   }))
-  const [selectedVenue, setSelectedVenue] = useState<string>(
+  const [selectedVenueId, setSelectedVenueId] = useState<string>(
     venues.length > 0 ? venues[0].id.toString() : ''
+  )
+  const selectedVenue = venues.find(
+    (venue) => venue.id.toString() === selectedVenueId
   )
 
   return (
@@ -38,11 +43,15 @@ export const PartnerPages = ({ venues }: PartnerPagesProps) => {
             <SelectInput
               name="venues"
               options={venuesOptions}
-              value={selectedVenue}
-              onChange={(e) => setSelectedVenue(e.target.value)}
+              value={selectedVenueId}
+              onChange={(e) => setSelectedVenueId(e.target.value)}
             />
           </FieldLayout>
         </>
+      )}
+
+      {selectedVenue && (
+        <PartnerPage offererId={offererId} venue={selectedVenue} />
       )}
     </section>
   )
