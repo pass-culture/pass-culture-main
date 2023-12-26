@@ -16,30 +16,31 @@ on:
       GCP_EHP_WORKLOAD_IDENTITY_PROVIDER:
         required: true
 
+defaults:
+  run:
+    working-directory: pro
+
 jobs:  
   deploy_on_firebase:
     permissions: write-all
-    defaults:
-      run:
-        working-directory: pro
-    runs-on: [self-hosted, linux, x64]
+    runs-on: ubuntu-latest
     if: ${{ github.actor != 'dependabot[bot]' }}
     steps:
-      - uses: actions/checkout@v3
-      - id: openid-auth
-        name: "OpenID Connect Authentication"
+      - uses: actions/checkout@v4
+      - name: "OpenID Connect Authentication"
+        id: "openid-auth"
         uses: 'google-github-actions/auth@v1'
         with:
           workload_identity_provider: ${{ secrets.GCP_EHP_WORKLOAD_IDENTITY_PROVIDER }}
           service_account: ${{ secrets.GCP_EHP_SERVICE_ACCOUNT }}
-      - name: Get Secret
+      - name: "Get Secret"
         id: 'secrets'
         uses: 'google-github-actions/get-secretmanager-secrets@v1'
         with:
           secrets: |-
             FIREBASE_TOKEN:passculture-metier-ehp/pc_pro_${{ inputs.ENV }}_firebase_json
-      - name: Clone version to live channel
-        id: clone-version
+      - name: "Clone version to live channel"
+        id: "clone-version"
         env:
           CREDENTIALS: ${{ steps.secrets.outputs.FIREBASE_TOKEN }}
           GOOGLE_APPLICATION_CREDENTIALS: "credentials.json"

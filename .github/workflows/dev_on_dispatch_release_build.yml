@@ -7,7 +7,6 @@ on:
         description: "Hash du commit à déployer (ex: cadd172232c80206107e2f0122542adf19fb42af)"
         required: true
         type: string
-
       releaseNumber:
         description: "Numéro de l'itération (ex: 199)"
         required: true
@@ -15,8 +14,8 @@ on:
 
 jobs:
   build-and-tag-version:
-    name: Build and tag version
-    uses: ./.github/workflows/reusable--build-and-tag.yml
+    name: "Build and tag version"
+    uses: ./.github/workflows/dev_on_workflow_build_and_tag.yml
     secrets:
       GCP_EHP_WORKLOAD_IDENTITY_PROVIDER: ${{ secrets.GCP_EHP_WORKLOAD_IDENTITY_PROVIDER }}
       GCP_EHP_SERVICE_ACCOUNT: ${{ secrets.GCP_EHP_SERVICE_ACCOUNT }}
@@ -25,9 +24,9 @@ jobs:
       tag_number: ${{ github.event.inputs.releaseNumber }}.0.0
 
   create-pro-staging-release:
-    needs:
-      - build-and-tag-version
-    uses: ./.github/workflows/deploy-pro-pr-version-generic.yml
+    name: "Pro staging"
+    needs: build-and-tag-version
+    uses: ./.github/workflows/dev_on_workflow_deploy_pro_pr_version_generic.yml
     secrets:
       GCP_EHP_SERVICE_ACCOUNT: ${{ secrets.GCP_EHP_SERVICE_ACCOUNT }}
       GCP_EHP_WORKLOAD_IDENTITY_PROVIDER: ${{ secrets.GCP_EHP_WORKLOAD_IDENTITY_PROVIDER }}
@@ -37,11 +36,12 @@ jobs:
       EXPIRES: "30d"
       PUSH_RELEASE_TO_SENTRY: true
       REF: v${{ github.event.inputs.releaseNumber }}.0.0
+      CACHE_BUCKET_NAME: "passculture-infra-prod-github-runner-cache"
 
   create-pro-integration-release:
-    needs:
-      - build-and-tag-version
-    uses: ./.github/workflows/deploy-pro-pr-version-generic.yml
+    name: "Pro integration"
+    needs: build-and-tag-version
+    uses: ./.github/workflows/dev_on_workflow_deploy_pro_pr_version_generic.yml
     secrets:
       GCP_EHP_SERVICE_ACCOUNT: ${{ secrets.GCP_EHP_SERVICE_ACCOUNT }}
       GCP_EHP_WORKLOAD_IDENTITY_PROVIDER: ${{ secrets.GCP_EHP_WORKLOAD_IDENTITY_PROVIDER }}
@@ -50,11 +50,12 @@ jobs:
       CHANNEL: "${{ github.event.inputs.releaseNumber }}.0.0"
       EXPIRES: "30d"
       REF: v${{ github.event.inputs.releaseNumber }}.0.0
+      CACHE_BUCKET_NAME: "passculture-infra-prod-github-runner-cache"
 
   create-pro-production-release:
-    needs:
-      - build-and-tag-version
-    uses: ./.github/workflows/deploy-pro-pr-version-generic.yml
+    name: "Pro production"
+    needs: build-and-tag-version
+    uses: ./.github/workflows/dev_on_workflow_deploy_pro_pr_version_generic.yml
     secrets:
       GCP_EHP_SERVICE_ACCOUNT: ${{ secrets.GCP_EHP_SERVICE_ACCOUNT }}
       GCP_EHP_WORKLOAD_IDENTITY_PROVIDER: ${{ secrets.GCP_EHP_WORKLOAD_IDENTITY_PROVIDER }}
@@ -64,23 +65,24 @@ jobs:
       EXPIRES: "30d"
       REF: v${{ github.event.inputs.releaseNumber }}.0.0
       PUSH_RELEASE_TO_SENTRY: true
+      CACHE_BUCKET_NAME: "passculture-infra-prod-github-runner-cache"
 
   create-maintenance-branch:
-    name: Create maintenance branch
+    name: "Create maintenance branch"
     needs:
       - build-and-tag-version
       - create-pro-production-release
       - create-pro-staging-release
       - create-pro-integration-release
-    runs-on: [self-hosted, linux, x64]
+    runs-on: ubuntu-latest
     env:
       MAINTENANCE_BRANCH: maint/v${{ github.event.inputs.releaseNumber }}
     steps:
-      - name: Checkout new tag
-        uses: actions/checkout@v3
+      - name: "Checkout new tag"
+        uses: actions/checkout@v4
         with:
           ref: v${{ github.event.inputs.releaseNumber }}.0.0
-      - name: Create maintenance branch
+      - name: "Create maintenance branch"
         run: |
           git checkout -b "$MAINTENANCE_BRANCH"
           git push origin "$MAINTENANCE_BRANCH"
