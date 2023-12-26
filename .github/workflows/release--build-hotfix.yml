@@ -37,15 +37,15 @@ jobs:
           MAJOR_NUMBER=(${GITHUB_REF//refs\/heads\/maint\/v/ })
           CURRENT_PATCH_NUMBER=$(git tag -l "v${MAJOR_NUMBER}.0.*" | sort -V | tail -n 1 | cut -d. -f3)
           NEXT_PATCH_NUMBER=$((CURRENT_PATCH_NUMBER + 1))
-          echo "hotfixTagNumber=${MAJOR_NUMBER}.0.${NEXT_PATCH_NUMBER}" >> $GITHUB_OUTPUT
+          echo "hotfixTagNumber=${MAJOR_NUMBER}.0.${NEXT_PATCH_NUMBER}" | tee -a $GITHUB_OUTPUT
 
   build-and-tag-version:
     needs: find-hotfix-tag-number
     name: Build and tag version
     uses: ./.github/workflows/reusable--build-and-tag.yml
     secrets:
-      GCP_SERVICE_ACCOUNT: ${{ secrets.GCP_EHP_SERVICE_ACCOUNT }}
-      GCP_WORKLOAD_IDENTITY_PROVIDER: ${{ secrets.GCP_EHP_WORKLOAD_IDENTITY_PROVIDER }}
+      GCP_EHP_SERVICE_ACCOUNT: ${{ secrets.GCP_EHP_SERVICE_ACCOUNT }}
+      GCP_EHP_WORKLOAD_IDENTITY_PROVIDER: ${{ secrets.GCP_EHP_WORKLOAD_IDENTITY_PROVIDER }}
     with:
       base_ref: ${{ github.ref }}
       tag_number: ${{ needs.find-hotfix-tag-number.outputs.hotfixTagNumber }}
@@ -55,8 +55,8 @@ jobs:
     needs: [build-and-tag-version, find-hotfix-tag-number]
     uses: ./.github/workflows/deploy-pro-pr-version-generic.yml
     secrets:
-      GCP_SERVICE_ACCOUNT: ${{ secrets.GCP_EHP_SERVICE_ACCOUNT }}
-      GCP_WORKLOAD_IDENTITY_PROVIDER: ${{ secrets.GCP_EHP_WORKLOAD_IDENTITY_PROVIDER }}
+      GCP_EHP_SERVICE_ACCOUNT: ${{ secrets.GCP_EHP_SERVICE_ACCOUNT }}
+      GCP_EHP_WORKLOAD_IDENTITY_PROVIDER: ${{ secrets.GCP_EHP_WORKLOAD_IDENTITY_PROVIDER }}
     with:
       ENV: staging
       CHANNEL: "${{ needs.find-hotfix-tag-number.outputs.hotfixTagNumber }}"
@@ -68,8 +68,8 @@ jobs:
     needs: [build-and-tag-version, find-hotfix-tag-number]
     uses: ./.github/workflows/deploy-pro-pr-version-generic.yml
     secrets:
-      GCP_SERVICE_ACCOUNT: ${{ secrets.GCP_EHP_SERVICE_ACCOUNT }}
-      GCP_WORKLOAD_IDENTITY_PROVIDER: ${{ secrets.GCP_EHP_WORKLOAD_IDENTITY_PROVIDER }}
+      GCP_EHP_SERVICE_ACCOUNT: ${{ secrets.GCP_EHP_SERVICE_ACCOUNT }}
+      GCP_EHP_WORKLOAD_IDENTITY_PROVIDER: ${{ secrets.GCP_EHP_WORKLOAD_IDENTITY_PROVIDER }}
     with:
       ENV: integration
       CHANNEL: "${{ needs.find-hotfix-tag-number.outputs.hotfixTagNumber }}"
@@ -80,8 +80,8 @@ jobs:
     needs: [build-and-tag-version, find-hotfix-tag-number]
     uses: ./.github/workflows/deploy-pro-pr-version-generic.yml
     secrets:
-      GCP_SERVICE_ACCOUNT: ${{ secrets.GCP_EHP_SERVICE_ACCOUNT }}
-      GCP_WORKLOAD_IDENTITY_PROVIDER: ${{ secrets.GCP_EHP_WORKLOAD_IDENTITY_PROVIDER }}
+      GCP_EHP_SERVICE_ACCOUNT: ${{ secrets.GCP_EHP_SERVICE_ACCOUNT }}
+      GCP_EHP_WORKLOAD_IDENTITY_PROVIDER: ${{ secrets.GCP_EHP_WORKLOAD_IDENTITY_PROVIDER }}
     with:
       ENV: production
       CHANNEL: "${{ needs.find-hotfix-tag-number.outputs.hotfixTagNumber }}"

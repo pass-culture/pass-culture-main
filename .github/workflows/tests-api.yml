@@ -10,7 +10,6 @@ on:
         required: true
 
 env:
-  region: europe-west1
   tests_docker_image: europe-west1-docker.pkg.dev/passculture-infra-prod/pass-culture-artifact-registry/pcapi-tests:${{ github.event_name == 'pull_request' && github.event.pull_request.head.sha || github.sha }}
 
 defaults:
@@ -38,7 +37,7 @@ jobs:
         uses: 'google-github-actions/get-secretmanager-secrets@v1'
         with:
           secrets: |-
-            INFRA_PROD_GCP_WORKLOAD_IDENTITY_PROVIDER:passculture-metier-ehp/passculture-main-gcp-workload-identity-provider
+            ARTIFACT_REGISTRY_WORKLOAD_IDENTITY_PROVIDER:passculture-metier-ehp/passculture-main-gcp-workload-identity-provider
             ARTIFACT_REGISTRY_SERVICE_ACCOUNT:passculture-metier-ehp/passculture-main-artifact-registry-service-account
             SLACK_BOT_TOKEN:passculture-metier-ehp/passculture-ci-slack-bot-token
 
@@ -48,11 +47,11 @@ jobs:
         with:
           create_credentials_file: false
           token_format: "access_token"
-          workload_identity_provider: ${{ steps.secrets.outputs.INFRA_PROD_GCP_WORKLOAD_IDENTITY_PROVIDER }}
+          workload_identity_provider: ${{ steps.secrets.outputs.ARTIFACT_REGISTRY_WORKLOAD_IDENTITY_PROVIDER }}
           service_account: ${{ steps.secrets.outputs.ARTIFACT_REGISTRY_SERVICE_ACCOUNT }}
       - uses: docker/login-action@v2
         with:
-          registry: "${{ env.region }}-docker.pkg.dev"
+          registry: "europe-west1-docker.pkg.dev"
           username: oauth2accesstoken
           password: ${{ steps.openid-auth.outputs.access_token }}
       - run: docker pull ${{ env.tests_docker_image }}
@@ -122,7 +121,7 @@ jobs:
         uses: 'google-github-actions/get-secretmanager-secrets@v1'
         with:
           secrets: |-
-            INFRA_PROD_GCP_WORKLOAD_IDENTITY_PROVIDER:passculture-metier-ehp/passculture-main-gcp-workload-identity-provider
+            ARTIFACT_REGISTRY_WORKLOAD_IDENTITY_PROVIDER:passculture-metier-ehp/passculture-main-gcp-workload-identity-provider
             ARTIFACT_REGISTRY_SERVICE_ACCOUNT:passculture-metier-ehp/passculture-main-artifact-registry-service-account
             SLACK_BOT_TOKEN:passculture-metier-ehp/passculture-ci-slack-bot-token
 
@@ -132,11 +131,11 @@ jobs:
         with:
           create_credentials_file: false
           token_format: "access_token"
-          workload_identity_provider: ${{ steps.secrets.outputs.INFRA_PROD_GCP_WORKLOAD_IDENTITY_PROVIDER }}
+          workload_identity_provider: ${{ steps.secrets.outputs.ARTIFACT_REGISTRY_WORKLOAD_IDENTITY_PROVIDER }}
           service_account: ${{ steps.secrets.outputs.ARTIFACT_REGISTRY_SERVICE_ACCOUNT }}
       - uses: docker/login-action@v2
         with:
-          registry: "${{ env.region }}-docker.pkg.dev"
+          registry: "europe-west1-docker.pkg.dev"
           username: oauth2accesstoken
           password: ${{ steps.openid-auth.outputs.access_token }}
       - run: docker pull ${{ env.tests_docker_image }}
@@ -223,7 +222,7 @@ jobs:
         uses: 'google-github-actions/get-secretmanager-secrets@v1'
         with:
           secrets: |-
-            INFRA_PROD_GCP_WORKLOAD_IDENTITY_PROVIDER:passculture-metier-ehp/passculture-main-gcp-workload-identity-provider
+            ARTIFACT_REGISTRY_WORKLOAD_IDENTITY_PROVIDER:passculture-metier-ehp/passculture-main-gcp-workload-identity-provider
             ARTIFACT_REGISTRY_SERVICE_ACCOUNT:passculture-metier-ehp/passculture-main-artifact-registry-service-account
             SLACK_BOT_TOKEN:passculture-metier-ehp/passculture-ci-slack-bot-token
 
@@ -233,11 +232,11 @@ jobs:
         with:
           create_credentials_file: false
           token_format: "access_token"
-          workload_identity_provider: ${{ steps.secrets.outputs.INFRA_PROD_GCP_WORKLOAD_IDENTITY_PROVIDER }}
+          workload_identity_provider: ${{ steps.secrets.outputs.ARTIFACT_REGISTRY_WORKLOAD_IDENTITY_PROVIDER }}
           service_account: ${{ steps.secrets.outputs.ARTIFACT_REGISTRY_SERVICE_ACCOUNT }}
       - uses: docker/login-action@v2
         with:
-          registry: "${{ env.region }}-docker.pkg.dev"
+          registry: "europe-west1-docker.pkg.dev"
           username: oauth2accesstoken
           password: ${{ steps.openid-auth.outputs.access_token }}
       - run: docker pull ${{ env.tests_docker_image }}
@@ -360,7 +359,7 @@ jobs:
         uses: 'google-github-actions/get-secretmanager-secrets@v1'
         with:
           secrets: |-
-            INFRA_PROD_GCP_WORKLOAD_IDENTITY_PROVIDER:passculture-metier-ehp/passculture-main-gcp-workload-identity-provider
+            ARTIFACT_REGISTRY_WORKLOAD_IDENTITY_PROVIDER:passculture-metier-ehp/passculture-main-gcp-workload-identity-provider
             ARTIFACT_REGISTRY_SERVICE_ACCOUNT:passculture-metier-ehp/passculture-main-artifact-registry-service-account
             SLACK_BOT_TOKEN:passculture-metier-ehp/passculture-ci-slack-bot-token
 
@@ -370,11 +369,11 @@ jobs:
         with:
           create_credentials_file: false
           token_format: "access_token"
-          workload_identity_provider: ${{ steps.secrets.outputs.INFRA_PROD_GCP_WORKLOAD_IDENTITY_PROVIDER }}
+          workload_identity_provider: ${{ steps.secrets.outputs.ARTIFACT_REGISTRY_WORKLOAD_IDENTITY_PROVIDER }}
           service_account: ${{ steps.secrets.outputs.ARTIFACT_REGISTRY_SERVICE_ACCOUNT }}
       - uses: docker/login-action@v2
         with:
-          registry: "${{ env.region }}-docker.pkg.dev"
+          registry: "europe-west1-docker.pkg.dev"
           username: oauth2accesstoken
           password: ${{ steps.openid-auth.outputs.access_token }}
       - run: docker pull ${{ env.tests_docker_image }}
