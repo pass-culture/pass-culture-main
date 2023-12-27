@@ -190,7 +190,7 @@ jobs:
                   "author_icon": "https://github.com/${{github.actor}}.png",
                   "title": "PCAPI Deployment",
                   "title_link": "https://github.com/${{github.repository}}/actions/runs/${{github.run_id}}",
-                  "text": "${{ steps.slack-test.outputs.text }}"
+                  "text": "${{ steps.slack-text.outputs.text }}"
                 }
               ],
               "unfurl_links": false,
