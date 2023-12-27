@@ -201,3 +201,6 @@ class TransactionalEmail(Enum):
     VENUE_BANK_ACCOUNT_LINK_DEPRECATED = models.TemplatePro(
         id_prod=1096, id_not_prod=148, tags=["pro_compte_bancaire_déssocié"]
     )
+    BANK_ACCOUNT_VALIDATED = models.TemplatePro(
+        id_prod=1095, id_not_prod=149, tags=["pro_cordonnées_bancaire_validées"]
+    )
