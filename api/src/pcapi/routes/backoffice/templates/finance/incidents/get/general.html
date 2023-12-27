@@ -49,10 +49,20 @@
             <p class="mb-1">
               <span class="fw-bold">Lieu porteur de l'offre :</span> {{ links.build_venue_name_to_details_link(incident.venue) }}
             </p>
-            <p class="mb-1">
-              <span class="fw-bold">Lieu point de remboursement :</span> {{ links.build_venue_name_to_details_link(reimbursement_point) }}
-              <span class="fw-bold">({{ reimbursement_point_humanized_id }})</span>
-            </p>
+            {% if is_feature_active("WIP_ENABLE_NEW_BANK_DETAILS_JOURNEY") %}
+              {% set bank_account_link = incident.venue.current_bank_account_link %}
+              <p class="mb-1">
+                <span class="fw-bold">Compte bancaire :</span>
+                {% if bank_account_link %}
+                  {{ links.build_bank_account_name_to_details_link(bank_account_link.bankAccount) }} ({{ bank_account_link.timespan.lower | format_date }})
+                {% endif %}
+              </p>
+            {% else %}
+              <p class="mb-1">
+                <span class="fw-bold">Lieu point de remboursement :</span> {{ links.build_venue_name_to_details_link(reimbursement_point) }}
+                <span class="fw-bold">({{ reimbursement_point_humanized_id }})</span>
+              </p>
+            {% endif %}
             {% if incident.details.origin %}
               <p class="mb-1">
                 <span class="fw-bold">Origine de la demande :</span> {{ incident.details.origin }}
