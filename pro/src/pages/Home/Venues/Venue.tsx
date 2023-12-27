@@ -202,6 +202,7 @@ const Venue = ({
             link={{
               to: editVenueLink,
               isExternal: false,
+              'aria-label': `Gérer la page de ${name}`,
             }}
             onClick={() =>
               logEvent?.(

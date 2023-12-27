@@ -103,6 +103,7 @@ export const PartnerPage = ({ offererId, venue }: PartnerPageProps) => {
             link={{
               to: `/structures/${offererId}/lieux/${venue.id}?modification`,
               isExternal: false,
+              'aria-label': `Gérer la page de ${venue.name}`,
             }}
             onClick={() =>
               logEvent?.(VenueEvents.CLICKED_VENUE_PUBLISHED_OFFERS_LINK, {
