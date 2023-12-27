@@ -24,8 +24,10 @@ on:
     secrets:
       GCP_EHP_WORKLOAD_IDENTITY_PROVIDER:
         required: true
+        type: string
       GCP_EHP_SERVICE_ACCOUNT:
         required: true
+        type: string
 
 jobs:
   build-and-tag-version:
