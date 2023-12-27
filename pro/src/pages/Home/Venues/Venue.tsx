@@ -2,7 +2,10 @@ import cn from 'classnames'
 import { addDays, isBefore } from 'date-fns'
 import React, { useState } from 'react'
 
-import { DMSApplicationForEAC, DMSApplicationstatus } from 'apiClient/v1'
+import {
+  DMSApplicationstatus,
+  GetOffererVenueResponseModel,
+} from 'apiClient/v1'
 import { VenueEvents } from 'core/FirebaseEvents/constants'
 import useActiveFeature from 'hooks/useActiveFeature'
 import useAnalytics from 'hooks/useAnalytics'
@@ -15,6 +18,7 @@ import { Button, ButtonLink } from 'ui-kit'
 import { ButtonVariant } from 'ui-kit/Button/types'
 import { SvgIcon } from 'ui-kit/SvgIcon/SvgIcon'
 import { Tag, TagVariant } from 'ui-kit/Tag/Tag'
+import { getLastCollectiveDmsApplication } from 'utils/getLastCollectiveDmsApplication'
 
 import { Card } from '../Card'
 import { VenueOfferSteps } from '../VenueOfferSteps'
@@ -22,48 +26,31 @@ import { VenueOfferSteps } from '../VenueOfferSteps'
 import styles from './Venue.module.scss'
 
 export interface VenueProps {
-  hasMissingReimbursementPoint?: boolean
-  venueId: number
+  venue: GetOffererVenueResponseModel
   isVirtual?: boolean
-  name: string
   offererId: number
-  publicName?: string | null
   offererHasCreatedOffer?: boolean
-  venueHasCreatedOffer?: boolean
-  hasProvider?: boolean
-  dmsInformations?: DMSApplicationForEAC | null
-  hasAdageId?: boolean
-  adageInscriptionDate?: string | null
-  hasPendingBankInformationApplication?: boolean | null
-  demarchesSimplifieesApplicationId?: number | null
   offererHasBankAccount: boolean
   hasNonFreeOffer: boolean
   isFirstVenue: boolean
 }
 
-const Venue = ({
-  hasMissingReimbursementPoint = false,
-  venueId,
+export const Venue = ({
+  venue,
   isVirtual = false,
-  name,
   offererId,
-  hasProvider,
-  publicName,
   offererHasCreatedOffer,
-  venueHasCreatedOffer,
-  dmsInformations,
-  hasAdageId,
-  adageInscriptionDate,
-  demarchesSimplifieesApplicationId,
-  hasPendingBankInformationApplication = false,
   offererHasBankAccount,
   hasNonFreeOffer,
   isFirstVenue,
 }: VenueProps) => {
+  const dmsInformations = getLastCollectiveDmsApplication(
+    venue.collectiveDmsApplications
+  )
   const hasAdageIdForMoreThan30Days =
-    hasAdageId &&
-    !!adageInscriptionDate &&
-    isBefore(new Date(adageInscriptionDate), addDays(new Date(), -30))
+    venue.hasAdageId &&
+    !!venue.adageInscriptionDate &&
+    isBefore(new Date(venue.adageInscriptionDate), addDays(new Date(), -30))
 
   const hasRefusedApplicationForMoreThan30Days =
     (dmsInformations?.state == DMSApplicationstatus.REFUSE ||
@@ -81,8 +68,8 @@ const Venue = ({
 
   const shouldShowVenueOfferSteps =
     shouldDisplayEACInformationSection ||
-    !venueHasCreatedOffer ||
-    hasPendingBankInformationApplication
+    !venue.hasCreatedOffer ||
+    venue.hasPendingBankInformationApplication
 
   const [prevInitialOpenState, setPrevInitialOpenState] = useState(
     shouldShowVenueOfferSteps
@@ -95,7 +82,7 @@ const Venue = ({
   )
 
   const venueIdTrackParam = {
-    venue_id: venueId,
+    venue_id: venue.id,
   }
 
   if (prevInitialOpenState != shouldShowVenueOfferSteps) {
@@ -107,8 +94,11 @@ const Venue = ({
     setPrevOffererId(offererId)
   }
 
-  const editVenueLink = `/structures/${offererId}/lieux/${venueId}?modification`
-  const reimbursementSectionLink = `/structures/${offererId}/lieux/${venueId}?modification#remboursement`
+  const editVenueLink = `/structures/${offererId}/lieux/${venue.id}?modification`
+  const reimbursementSectionLink = `/structures/${offererId}/lieux/${venue.id}?modification#remboursement`
+  const venueDisplayName = isVirtual
+    ? 'Offres numériques'
+    : venue.publicName || venue.name
 
   return (
     <Card data-testid="venue-wrapper">
@@ -134,10 +124,10 @@ const Venue = ({
                 viewBox="0 0 16 16"
                 src={isToggleOpen ? fullDisclosureOpen : fullDisclosureClose}
               />
-              <span>{publicName || name}</span>
+              <span>{venueDisplayName}</span>
             </button>
           ) : (
-            <div className={styles['venue-name']}>{publicName || name}</div>
+            <div className={styles['venue-name']}>{venueDisplayName}</div>
           )}
 
           {shouldShowVenueOfferSteps && !isVirtual && (
@@ -158,7 +148,7 @@ const Venue = ({
             </Button>
           )}
 
-          {hasProvider && (
+          {venue.hasVenueProviders && (
             <Tag
               variant={TagVariant.LIGHT_PURPLE}
               className={styles['api-tag']}
@@ -172,9 +162,9 @@ const Venue = ({
         <div className={styles['button-group']}>
           {/*Delete when WIP_ENABLE_NEW_BANK_DETAILS_JOURNEY is deleted*/}
           {!isNewBankDetailsJourneyEnabled &&
-            hasMissingReimbursementPoint &&
+            venue.hasMissingReimbursementPoint &&
             !isVirtual &&
-            venueHasCreatedOffer && (
+            venue.hasCreatedOffer && (
               <>
                 <ButtonLink
                   variant={ButtonVariant.TERNARYPINK}
@@ -202,7 +192,7 @@ const Venue = ({
             link={{
               to: editVenueLink,
               isExternal: false,
-              'aria-label': `Gérer la page de ${name}`,
+              'aria-label': `Gérer la page de ${venueDisplayName}`,
             }}
             onClick={() =>
               logEvent?.(
@@ -219,21 +209,21 @@ const Venue = ({
       {isToggleOpen && shouldShowVenueOfferSteps && (
         <div className={styles['offer-steps']}>
           <VenueOfferSteps
-            venueId={venueId}
+            venueId={venue.id}
             hasVenue={true}
             offererId={offererId}
-            venueHasCreatedOffer={venueHasCreatedOffer}
+            venueHasCreatedOffer={venue.hasCreatedOffer}
             offererHasCreatedOffer={offererHasCreatedOffer}
-            hasMissingReimbursementPoint={hasMissingReimbursementPoint}
-            hasAdageId={hasAdageId}
+            hasMissingReimbursementPoint={venue.hasMissingReimbursementPoint}
+            hasAdageId={venue.hasAdageId}
             shouldDisplayEACInformationSection={
               shouldDisplayEACInformationSection
             }
             hasPendingBankInformationApplication={
-              hasPendingBankInformationApplication
+              venue.hasPendingBankInformationApplication
             }
             demarchesSimplifieesApplicationId={
-              demarchesSimplifieesApplicationId
+              venue.demarchesSimplifieesApplicationId
             }
             offererHasBankAccount={offererHasBankAccount}
             hasNonFreeOffer={hasNonFreeOffer}
@@ -244,5 +234,3 @@ const Venue = ({
     </Card>
   )
 }
-
-export default Venue

@@ -14,7 +14,7 @@ import useAnalytics from 'hooks/useAnalytics'
 import fullWaitIcon from 'icons/full-wait.svg'
 import strokePartyIcon from 'icons/stroke-party.svg'
 import { OffererVenues } from 'pages/Home/OffererVenues'
-import { VenueList } from 'pages/Home/Venues'
+import { VenueList } from 'pages/Home/Venues/VenueList'
 import Spinner from 'ui-kit/Spinner/Spinner'
 import { sortByLabel } from 'utils/strings'
 

@@ -3,13 +3,14 @@ import { addDays } from 'date-fns'
 import React from 'react'
 
 import { DMSApplicationstatus } from 'apiClient/v1'
+import { defaultGetOffererVenueResponseModel } from 'utils/apiFactories'
 import { defaultCollectiveDmsApplication } from 'utils/collectiveApiFactories'
 import {
   RenderWithProvidersOptions,
   renderWithProviders,
 } from 'utils/renderWithProviders'
 
-import Venue, { VenueProps } from '../Venue'
+import { Venue, VenueProps } from '../Venue'
 
 const renderVenue = (
   props: VenueProps,
@@ -25,11 +26,13 @@ describe('venues', () => {
 
   beforeEach(() => {
     props = {
-      venueId: venueId,
+      venue: {
+        ...defaultGetOffererVenueResponseModel,
+        id: venueId,
+        name: 'My venue',
+      },
       isVirtual: false,
-      name: 'My venue',
       offererId: offererId,
-      dmsInformations: null,
       offererHasBankAccount: false,
       hasNonFreeOffer: false,
       isFirstVenue: false,
@@ -51,9 +54,9 @@ describe('venues', () => {
     })
 
     it('should display add bank information when venue does not have a reimbursement point', () => {
-      props.hasMissingReimbursementPoint = true
+      props.venue.hasMissingReimbursementPoint = true
       props.offererHasCreatedOffer = true
-      props.venueHasCreatedOffer = true
+      props.venue.hasCreatedOffer = true
 
       renderVenue(props)
 
@@ -66,9 +69,9 @@ describe('venues', () => {
     })
 
     it('should not display add bank information when for the new bank details journey is enabled', () => {
-      props.hasMissingReimbursementPoint = true
+      props.venue.hasMissingReimbursementPoint = true
       props.offererHasCreatedOffer = true
-      props.venueHasCreatedOffer = true
+      props.venue.hasCreatedOffer = true
 
       renderVenue(props, {
         features: ['WIP_ENABLE_NEW_BANK_DETAILS_JOURNEY'],
@@ -81,11 +84,10 @@ describe('venues', () => {
   })
 
   it('should not display dms timeline link if venue has no dms application', () => {
-    renderVenue({
-      ...props,
-      hasAdageId: false,
-      dmsInformations: null,
-    })
+    props.venue.hasAdageId = false
+    props.venue.collectiveDmsApplications = []
+
+    renderVenue(props)
 
     expect(
       screen.queryByRole('link', {
@@ -95,15 +97,16 @@ describe('venues', () => {
   })
 
   it('should display dms timeline link when venue has dms applicaiton and adage id less than 30 days', () => {
-    renderVenue({
-      ...props,
-      hasAdageId: true,
-      adageInscriptionDate: addDays(new Date(), -15).toISOString(),
-      dmsInformations: {
+    props.venue.hasAdageId = true
+    props.venue.adageInscriptionDate = addDays(new Date(), -15).toISOString()
+    props.venue.collectiveDmsApplications = [
+      {
         ...defaultCollectiveDmsApplication,
         state: DMSApplicationstatus.ACCEPTE,
       },
-    })
+    ]
+
+    renderVenue(props)
 
     expect(
       screen.getByRole('link', {
@@ -116,15 +119,16 @@ describe('venues', () => {
   })
 
   it('should not display dms timeline link if venue has adageId for more than 30days', () => {
-    renderVenue({
-      ...props,
-      hasAdageId: true,
-      adageInscriptionDate: addDays(new Date(), -32).toISOString(),
-      dmsInformations: {
+    props.venue.hasAdageId = true
+    props.venue.adageInscriptionDate = addDays(new Date(), -32).toISOString()
+    props.venue.collectiveDmsApplications = [
+      {
         ...defaultCollectiveDmsApplication,
         state: DMSApplicationstatus.ACCEPTE,
       },
-    })
+    ]
+
+    renderVenue(props)
 
     expect(
       screen.queryByRole('link', {
@@ -134,14 +138,15 @@ describe('venues', () => {
   })
 
   it('should display dms timeline link if venue has refused application for less than 30days', () => {
-    renderVenue({
-      ...props,
-      dmsInformations: {
+    props.venue.collectiveDmsApplications = [
+      {
         ...defaultCollectiveDmsApplication,
         state: DMSApplicationstatus.REFUSE,
         processingDate: addDays(new Date(), -15).toISOString(),
       },
-    })
+    ]
+
+    renderVenue(props)
 
     expect(
       screen.getByRole('link', {
@@ -151,14 +156,15 @@ describe('venues', () => {
   })
 
   it('should not display dms timeline link if venue has refused application for more than 30days', () => {
-    renderVenue({
-      ...props,
-      dmsInformations: {
+    props.venue.collectiveDmsApplications = [
+      {
         ...defaultCollectiveDmsApplication,
         state: DMSApplicationstatus.REFUSE,
         processingDate: addDays(new Date(), -31).toISOString(),
       },
-    })
+    ]
+
+    renderVenue(props)
 
     expect(
       screen.queryByRole('link', {
@@ -168,7 +174,7 @@ describe('venues', () => {
   })
 
   it('should display API tag if venue has at least one provider', async () => {
-    props.hasProvider = true
+    props.venue.hasVenueProviders = true
     renderVenue(props)
 
     await screen.findByText('API')
