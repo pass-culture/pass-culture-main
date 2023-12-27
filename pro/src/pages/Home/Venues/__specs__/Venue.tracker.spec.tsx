@@ -4,9 +4,10 @@ import React from 'react'
 
 import { VenueEvents } from 'core/FirebaseEvents/constants'
 import * as useAnalytics from 'hooks/useAnalytics'
+import { defaultGetOffererVenueResponseModel } from 'utils/apiFactories'
 import { renderWithProviders } from 'utils/renderWithProviders'
 
-import Venue, { VenueProps } from '../Venue'
+import { Venue, VenueProps } from '../Venue'
 
 const mockLogEvent = vi.fn()
 
@@ -20,11 +21,13 @@ describe('venue create offer link', () => {
 
   beforeEach(() => {
     props = {
-      venueId: venueId,
+      venue: {
+        ...defaultGetOffererVenueResponseModel,
+        id: venueId,
+        name: 'My venue',
+      },
       isVirtual: false,
-      name: 'My venue',
       offererId: offererId,
-      dmsInformations: null,
       offererHasBankAccount: false,
       hasNonFreeOffer: false,
       isFirstVenue: false,
@@ -45,16 +48,14 @@ describe('venue create offer link', () => {
 
     expect(mockLogEvent).toHaveBeenCalledWith(
       VenueEvents.CLICKED_VENUE_PUBLISHED_OFFERS_LINK,
-      {
-        venue_id: props.venueId,
-      }
+      { venue_id: props.venue.id }
     )
   })
 
   it('should track Add RIB button', async () => {
     props.isVirtual = false
-    props.hasMissingReimbursementPoint = true
-    props.venueHasCreatedOffer = true
+    props.venue.hasMissingReimbursementPoint = true
+    props.venue.hasCreatedOffer = true
     props.offererHasCreatedOffer = true
 
     renderVenue(props)
@@ -64,7 +65,7 @@ describe('venue create offer link', () => {
       VenueEvents.CLICKED_VENUE_ADD_RIB_BUTTON,
       {
         from: '/',
-        venue_id: props.venueId,
+        venue_id: props.venue.id,
       }
     )
   })
