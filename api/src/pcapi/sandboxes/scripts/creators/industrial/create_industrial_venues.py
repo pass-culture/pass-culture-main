@@ -160,6 +160,7 @@ def create_industrial_venues(offerers_by_name: dict) -> dict[str, Venue]:
         pricing_point="self",
         reimbursement_point="self",
         managingOfferer__name="Structure du lieu synchro allociné",
+        venueTypeCode=offerers_models.VenueTypeCode.MOVIE,
     )
     allocine_provider = providers_factories.AllocineProviderFactory(isActive=True)
     theater = providers_factories.AllocineTheaterFactory(siret=venue_synchronized_with_allocine.siret)

@@ -3,6 +3,7 @@ import logging
 from pcapi.core.categories import subcategories_v2 as subcategories
 from pcapi.core.criteria import factories as criteria_factories
 from pcapi.core.offerers import factories as offerers_factories
+from pcapi.core.offerers import models as offerers_models
 from pcapi.core.offers import factories as offers_factories
 from pcapi.core.providers import factories as providers_factory
 from pcapi.models.offer_mixin import OfferValidationStatus
@@ -34,7 +35,11 @@ def create_offers_with_ean() -> None:
     )
 
     for i in range(1, 11):
-        venue = offerers_factories.VenueFactory(name=f"Librairie {i}", managingOfferer=user_offerer.offerer)
+        venue = offerers_factories.VenueFactory(
+            name=f"Librairie {i}",
+            managingOfferer=user_offerer.offerer,
+            venueTypeCode=offerers_models.VenueTypeCode.LIBRARY,
+        )
 
         for j, product in enumerate(products):
             offer_thing = offers_factories.ThingOfferFactory(
