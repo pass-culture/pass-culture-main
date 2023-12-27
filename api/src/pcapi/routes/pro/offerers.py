@@ -287,14 +287,22 @@ def get_offerer_stats(offerer_id: int) -> offerers_serialize.GetOffererStatsResp
             syncDate=None,
             jsonData=offerers_serialize.OffererStatsDataModel(dailyViews=[], topOffers=[], totalViewsLast30Days=0),
         )
-    top_offers = next(el for el in stats if el.table == TOP_3_MOST_CONSULTED_OFFERS_LAST_30_DAYS_TABLE)
+    top_offers = next((el for el in stats if el.table == TOP_3_MOST_CONSULTED_OFFERS_LAST_30_DAYS_TABLE), None)
+    if top_offers:
+        top_offers_data = top_offers.jsonData["top_offers"]
+        total_views_last_30_days = top_offers.jsonData.get("total_views_last_30_days", 0)
+    else:
+        top_offers_data = []
+        total_views_last_30_days = 0
+
+    # It's impossible to have top offers data without daily offerer views data
+    # So we can safely assume that the next call will not raise a StopIteration
+    # If it does we want the error in Sentry
     daily_offerer_views = next(el for el in stats if el.table == DAILY_CONSULT_PER_OFFERER_LAST_180_DAYS_TABLE)
-    top_offers_data = top_offers.jsonData["top_offers"]
-    total_views_last_30_days = top_offers.jsonData.get("total_views_last_30_days", 0)
     daily_offerer_views_data = daily_offerer_views.jsonData["daily_views"]
     return offerers_serialize.GetOffererStatsResponseModel.build(
         offerer_id,
-        min(top_offers.syncDate, daily_offerer_views.syncDate),
+        min(top_offers.syncDate, daily_offerer_views.syncDate) if top_offers else daily_offerer_views.syncDate,
         daily_offerer_views_data,
         top_offers_data,
         total_views_last_30_days,
