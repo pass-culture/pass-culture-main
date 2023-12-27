@@ -703,5 +703,5 @@ def user_offerer_to_be_validated_fixture(offerer_tags):
 
 @pytest.fixture(name="finance_incident")
 def finance_incident_fixture():
-    finance_incident = finance_factories.FinanceIncidentFactory()
+    finance_incident = finance_factories.FinanceIncidentFactory(venue__reimbursement_point="self")
     return finance_incident
