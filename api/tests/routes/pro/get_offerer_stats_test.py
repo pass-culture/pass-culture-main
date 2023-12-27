@@ -83,3 +83,47 @@ class OffererStatsTest:
             "offererId": offerer.id,
             "syncDate": "2021-01-01T00:00:00",
         }
+
+    @freeze_time("2021-01-01")
+    def test_get_offerer_stats_if_no_top_offers(self, client):
+        offerer = offerers_factories.OffererFactory()
+        pro_user = users_factories.ProFactory()
+        offerers_factories.UserOffererFactory(user=pro_user, offerer=offerer)
+
+        offerers_factories.OffererStatsFactory(
+            offerer=offerer,
+            table=DAILY_CONSULT_PER_OFFERER_LAST_180_DAYS_TABLE,
+            jsonData={
+                "daily_views": [
+                    {
+                        "eventDate": "2021-01-01",
+                        "numberOfViews": 1,
+                    },
+                    {
+                        "eventDate": "2021-01-02",
+                        "numberOfViews": 2,
+                    },
+                    {
+                        "eventDate": "2021-01-03",
+                        "numberOfViews": 3,
+                    },
+                ]
+            },
+        )
+
+        response = client.with_session_auth(pro_user.email).get(f"/offerers/{offerer.id}/stats")
+
+        assert response.status_code == 200
+        assert response.json == {
+            "jsonData": {
+                "dailyViews": [
+                    {"eventDate": "2021-01-01", "numberOfViews": 1},
+                    {"eventDate": "2021-01-02", "numberOfViews": 2},
+                    {"eventDate": "2021-01-03", "numberOfViews": 3},
+                ],
+                "topOffers": [],
+                "totalViewsLast30Days": 0,
+            },
+            "offererId": offerer.id,
+            "syncDate": "2021-01-01T00:00:00",
+        }
