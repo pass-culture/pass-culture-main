@@ -15,6 +15,7 @@ from uuid import UUID
 import psycopg2.extras
 import sqlalchemy as sqla
 import sqlalchemy.dialects.postgresql as sqla_psql
+from sqlalchemy.ext.hybrid import hybrid_property
 import sqlalchemy.ext.mutable as sqla_mutable
 import sqlalchemy.orm as sqla_orm
 
@@ -654,10 +655,10 @@ class Cashflow(Base, Model):
     # We denormalize `reimbursementPoint.bankAccountId` here because it may
     # change. Here we want to store the bank account that was used at
     # the time the cashflow was created.
-    bankAccountId: int = sqla.Column(
-        sqla.BigInteger, sqla.ForeignKey("bank_information.id"), index=True, nullable=False
+    _bankAccountId: int = sqla.Column(
+        "bankAccountId", sqla.BigInteger, sqla.ForeignKey("bank_information.id"), index=True, nullable=False
     )
-    bankAccount: BankInformation = sqla_orm.relationship(BankInformation, foreign_keys=[bankAccountId])
+    _bankAccount: BankInformation = sqla_orm.relationship(BankInformation, foreign_keys=[_bankAccountId])
     reimbursementPointId = sqla.Column(sqla.BigInteger, sqla.ForeignKey("venue.id"), index=True, nullable=False)
     reimbursementPoint: sqla_orm.Mapped["offerers_models.Venue"] = sqla_orm.relationship(
         "Venue", foreign_keys=[reimbursementPointId]
@@ -681,6 +682,31 @@ class Cashflow(Base, Model):
     )
 
     __table_args__ = (sqla.CheckConstraint('("amount" != 0)', name="non_zero_amount_check"),)
+
+    def __init__(
+        self, bankAccountId: int | None = None, bankAccount: BankInformation | None = None, **kwargs: typing.Any
+    ) -> None:
+        if bankAccountId:
+            self.bankAccountId = bankAccountId  # type: ignore [method-assign]
+        if bankAccount:
+            self.bankAccount = bankAccount  # type: ignore [method-assign]
+        super().__init__(**kwargs)
+
+    @hybrid_property
+    def bankAccountId(self) -> int:
+        return self._bankAccountId
+
+    @bankAccountId.setter  # type: ignore [no-redef]
+    def bankAccountId(self, value: int) -> None:
+        self._bankAccountId = value
+
+    @hybrid_property
+    def bankAccount(self) -> BankInformation:
+        return self._bankAccount
+
+    @bankAccount.setter  # type: ignore [no-redef]
+    def bankAccount(self, value: BankInformation) -> None:
+        self._bankAccount = value
 
 
 class CashflowLog(Base, Model):
