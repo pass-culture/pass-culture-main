@@ -213,7 +213,7 @@ def _get_sent_pricings_for_collective_bookings(
         .join(offerers_models.Venue, educational_models.CollectiveOffer.venue)
         .join(offerers_models.Offerer, offerers_models.Venue.managingOfferer)
         .join(models.Pricing.cashflows)
-        .join(models.Cashflow.bankAccount)
+        .join(models.Cashflow.bankInformation)
         .join(models.Cashflow.batch)
         .join(models.Cashflow.invoices)
         .join(ReimbursementPoint, models.Cashflow.reimbursementPointId == ReimbursementPoint.id)
@@ -306,7 +306,7 @@ def _get_sent_pricings_for_individual_bookings(
     return (
         models.Pricing.query.join(models.Pricing.booking)
         .join(models.Pricing.cashflows)
-        .join(models.Cashflow.bankAccount)
+        .join(models.Cashflow.bankInformation)
         .join(models.Cashflow.batch)
         .join(models.Cashflow.invoices)
         .join(ReimbursementPoint, models.Cashflow.reimbursementPointId == ReimbursementPoint.id)

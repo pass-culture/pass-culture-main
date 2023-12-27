@@ -684,28 +684,28 @@ class Cashflow(Base, Model):
     __table_args__ = (sqla.CheckConstraint('("amount" != 0)', name="non_zero_amount_check"),)
 
     def __init__(
-        self, bankAccountId: int | None = None, bankAccount: BankInformation | None = None, **kwargs: typing.Any
+        self, bankInformationId: int | None = None, bankInformation: BankInformation | None = None, **kwargs: typing.Any
     ) -> None:
-        if bankAccountId:
-            self.bankAccountId = bankAccountId  # type: ignore [method-assign]
-        if bankAccount:
-            self.bankAccount = bankAccount  # type: ignore [method-assign]
+        if bankInformationId:
+            self.bankInformationId = bankInformationId  # type: ignore [method-assign]
+        if bankInformation:
+            self.bankInformation = bankInformation  # type: ignore [method-assign]
         super().__init__(**kwargs)
 
     @hybrid_property
-    def bankAccountId(self) -> int:
+    def bankInformationId(self) -> int:
         return self._bankAccountId
 
-    @bankAccountId.setter  # type: ignore [no-redef]
-    def bankAccountId(self, value: int) -> None:
+    @bankInformationId.setter  # type: ignore [no-redef]
+    def bankInformationId(self, value: int) -> None:
         self._bankAccountId = value
 
     @hybrid_property
-    def bankAccount(self) -> BankInformation:
+    def bankInformation(self) -> BankInformation:
         return self._bankAccount
 
-    @bankAccount.setter  # type: ignore [no-redef]
-    def bankAccount(self, value: BankInformation) -> None:
+    @bankInformation.setter  # type: ignore [no-redef]
+    def bankInformation(self, value: BankInformation) -> None:
         self._bankAccount = value
 
 
