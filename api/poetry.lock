@@ -3072,13 +3072,13 @@ ptyprocess = ">=0.5"
 
 [[package]]
 name = "pgcli"
-version = "3.5.0"
+version = "4.0.1"
 description = "CLI for Postgres Database. With auto-completion and syntax highlighting."
 optional = false
-python-versions = ">=3.7"
+python-versions = ">=3.8"
 files = [
-    {file = "pgcli-3.5.0-py3-none-any.whl", hash = "sha256:0bcef2c628bae8443822f647e1b67680f219798625adf7ffa0920049056088a1"},
-    {file = "pgcli-3.5.0.tar.gz", hash = "sha256:cc448d95159fc0903d36182992778a096eda5752d660d47671383c8e2bf633f1"},
+    {file = "pgcli-4.0.1-py3-none-any.whl", hash = "sha256:869cab500b55f93fc97d04c946772f646017f724c126697f8db89cd539c6dd13"},
+    {file = "pgcli-4.0.1.tar.gz", hash = "sha256:f2feea2099ce1ad5e8a9d5d93b0edaf60dc61e97b21b75e91d9723939ce53bd2"},
 ]
 
 [package.dependencies]
@@ -5799,4 +5799,4 @@ test = ["pytest"]
 [metadata]
 lock-version = "2.0"
 python-versions = "^3.11"
-content-hash = "e0421c0554d442f9854b32cf3481a59f574573c0208e7cbf9f7d1711cf46609d"
+content-hash = "29014409cb959d11efe31b5740a6ed8514c2891cb0fb7c0433d4a6da0ab4465e"
