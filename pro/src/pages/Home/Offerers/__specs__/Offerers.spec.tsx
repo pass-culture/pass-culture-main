@@ -1,7 +1,6 @@
 import { screen } from '@testing-library/react'
 import React from 'react'
 
-import { INITIAL_OFFERER_VENUES } from 'pages/Home/OffererVenues'
 import {
   defaultGetOffererResponseModel,
   defaultGetOffererVenueResponseModel,
@@ -33,7 +32,6 @@ const renderOfferers = (
       isLoading={false}
       hasAtLeastOnePhysicalVenue={false}
       isUserOffererValidated
-      venues={INITIAL_OFFERER_VENUES}
       {...props}
     />,
     options
