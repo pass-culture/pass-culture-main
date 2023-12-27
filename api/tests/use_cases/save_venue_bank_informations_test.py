@@ -15,6 +15,7 @@ from pcapi.core.finance import models as finance_models
 from pcapi.core.finance.ds import update_ds_applications_for_procedure
 import pcapi.core.finance.factories as finance_factories
 from pcapi.core.history import models as history_models
+import pcapi.core.mails.testing as mails_testing
 from pcapi.core.offerers import models as offerers_models
 import pcapi.core.offerers.factories as offerers_factories
 from pcapi.core.testing import override_features
@@ -899,14 +900,18 @@ class NewBankAccountJourneyTest:
         assert history_models.ActionHistory.query.count() == 1  # One link created
         assert finance_models.BankAccountStatusHistory.query.count() == 1  # One status change recorded
 
+        assert len(mails_testing.outbox) == 0
+
     @override_features(WIP_ENABLE_DOUBLE_MODEL_WRITING=True)
-    def test_DSv4_link_is_created_if_sevelal_venues_exists(
+    def test_DSv4_link_is_created_if_several_venues_exists(
         self, mock_archive_dossier, mock_update_text_annotation, mock_grapqhl_client
     ):
         siret = "85331845900049"
         siren = siret[:9]
         venue = offerers_factories.VenueFactory(pricing_point="self", managingOfferer__siren=siren)
-        offerers_factories.VenueFactory(pricing_point="self", managingOfferer=venue.managingOfferer)
+        venue_with_no_bank_account = offerers_factories.VenueFactory(
+            pricing_point="self", managingOfferer=venue.managingOfferer
+        )
         offerer = venue.managingOfferer
 
         mock_grapqhl_client.return_value = dms_creators.get_bank_info_response_procedure_v4_as_batch(
@@ -937,6 +942,9 @@ class NewBankAccountJourneyTest:
         assert history_models.ActionHistory.query.count() == 1  # One link created
         assert finance_models.BankAccountStatusHistory.query.count() == 1  # One status change recorded
 
+        assert len(mails_testing.outbox) == 1
+        assert mails_testing.outbox[0].sent_data["To"] == venue_with_no_bank_account.bookingEmail
+
     @override_features(WIP_ENABLE_DOUBLE_MODEL_WRITING=True)
     def test_creating_DSv4_with_aldready_existing_link_should_deprecate_old_one_and_create_new_one(
         self, mock_archive_dossier, mock_update_text_annotation, mock_grapqhl_client
@@ -948,7 +956,9 @@ class NewBankAccountJourneyTest:
         soon_to_be_deprecated_link = offerers_factories.VenueBankAccountLinkFactory(
             bankAccount=bank_account, venue=venue, timespan=(datetime.utcnow(),)
         )
-        offerers_factories.VenueFactory(pricing_point="self", managingOfferer=venue.managingOfferer)
+        venue_with_no_bank_account = offerers_factories.VenueFactory(
+            pricing_point="self", managingOfferer=venue.managingOfferer
+        )
         offerer = venue.managingOfferer
 
         mock_grapqhl_client.return_value = dms_creators.get_bank_info_response_procedure_v4_as_batch(
@@ -989,6 +999,9 @@ class NewBankAccountJourneyTest:
 
         assert history_models.ActionHistory.query.count() == 2  # One link deprecated and one created
         assert finance_models.BankAccountStatusHistory.query.count() == 1  # One status change recorded
+
+        assert len(mails_testing.outbox) == 1
+        assert mails_testing.outbox[0].sent_data["To"] == venue_with_no_bank_account.bookingEmail
 
     @override_features(WIP_ENABLE_DOUBLE_MODEL_WRITING=True)
     def test_DSv4_bank_account_get_successfully_updated_on_status_change(
@@ -1108,6 +1121,8 @@ class NewBankAccountJourneyTest:
         assert history_models.ActionHistory.query.count() == 1  # One link created
         assert finance_models.BankAccountStatusHistory.query.count() == 1  # One status change recorded
 
+        assert len(mails_testing.outbox) == 0
+
     @override_features(WIP_ENABLE_DOUBLE_MODEL_WRITING=True)
     def test_DSv5_link_is_not_created_if_several_venues_exists(
         self, mock_archive_dossier, mock_update_text_annotation, mock_grapqhl_client
@@ -1115,7 +1130,7 @@ class NewBankAccountJourneyTest:
         siret = "85331845900049"
         siren = siret[:9]
         venue = offerers_factories.VenueFactory(pricing_point="self", managingOfferer__siren=siren)
-        offerers_factories.VenueFactory(pricing_point="self", managingOfferer=venue.managingOfferer)
+        second_venue = offerers_factories.VenueFactory(pricing_point="self", managingOfferer=venue.managingOfferer)
 
         mock_grapqhl_client.return_value = dms_creators.get_bank_info_response_procedure_v5(
             state=GraphQLApplicationStates.accepted.value,
@@ -1143,6 +1158,12 @@ class NewBankAccountJourneyTest:
 
         assert not history_models.ActionHistory.query.count()
         assert finance_models.BankAccountStatusHistory.query.count() == 1  # One status change recorded
+
+        assert len(mails_testing.outbox) == 2
+        assert {mails_testing.outbox[0].sent_data["To"], mails_testing.outbox[1].sent_data["To"]} == {
+            venue.bookingEmail,
+            second_venue.bookingEmail,
+        }
 
     @override_features(WIP_ENABLE_DOUBLE_MODEL_WRITING=True)
     def test_draft_dossier_are_not_archived(
@@ -1179,6 +1200,8 @@ class NewBankAccountJourneyTest:
         assert not history_models.ActionHistory.query.count()
 
         assert finance_models.BankAccountStatusHistory.query.count() == 1
+
+        assert len(mails_testing.outbox) == 0
 
     @override_features(WIP_ENABLE_DOUBLE_MODEL_WRITING=True)
     def test_on_going_dossier_are_not_archived(

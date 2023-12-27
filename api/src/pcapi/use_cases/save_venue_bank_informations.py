@@ -14,6 +14,7 @@ from pcapi.core.external.attributes.api import update_external_pro
 from pcapi.core.finance import models as finance_models
 from pcapi.core.finance.models import BankAccountApplicationStatus
 from pcapi.core.history import models as history_models
+from pcapi.core.mails.transactional.pro.bank_account_validation import send_bank_account_validated_email
 from pcapi.core.offerers import api as offerers_api
 from pcapi.core.offerers import models as offerers_models
 from pcapi.domain.bank_information import CannotRegisterBankInformation
@@ -654,6 +655,37 @@ class ImportBankAccountMixin:
             logger.info("Archiving application", extra={"application_id": self.application_details.application_id})
             archive_dossier(self.application_details.dossier_id)
 
+    def validated_bank_account_email_notification(
+        self, bank_account: finance_models.BankAccount, new_linked_venue: offerers_models.Venue | None
+    ) -> None:
+        if self.application_details.status != BankAccountApplicationStatus.ACCEPTED:
+            return
+
+        offerer_id = bank_account.offerer.id
+        venue_id = new_linked_venue.id if new_linked_venue else None
+        venues = (
+            offerers_models.Venue.query.filter(offerers_models.Venue.managingOffererId == offerer_id)
+            .filter(offerers_models.Venue.id != venue_id)
+            .join(offerers_models.Offerer)
+            .outerjoin(
+                offerers_models.VenueBankAccountLink,
+                sqla.and_(
+                    offerers_models.VenueBankAccountLink.venueId == offerers_models.Venue.id,
+                    offerers_models.VenueBankAccountLink.timespan.contains(datetime.utcnow()),
+                ),
+                isouter=True,
+            )
+            .options(
+                sqla_orm.contains_eager(offerers_models.Venue.bankAccountLinks)
+                .load_only(offerers_models.VenueBankAccountLink.id)
+                .load_only(offerers_models.VenueBankAccountLink.timespan)
+            )
+            .all()
+        )
+        for venue in venues:
+            if not venue.current_bank_account_link and venue.bookingEmail:
+                send_bank_account_validated_email(venue.bookingEmail)
+
 
 class ImportBankAccountV4(AbstractImportBankAccount, ImportBankAccountMixin):
     def execute(self) -> None:
@@ -665,6 +697,7 @@ class ImportBankAccountV4(AbstractImportBankAccount, ImportBankAccountMixin):
         bank_account = self.get_or_create_bank_account(venue.managingOfferer, venue)
         self.keep_track_of_bank_account_status_changes(bank_account)
         self.link_venue_to_bank_account(bank_account, venue)
+        self.validated_bank_account_email_notification(bank_account, venue)
         self.archive_dossier()
 
     def get_venue(self) -> "Venue | None":
@@ -724,6 +757,7 @@ class ImportBankAccountV5(AbstractImportBankAccount, ImportBankAccountMixin):
         self.keep_track_of_bank_account_status_changes(bank_account)
         if venue:
             self.link_venue_to_bank_account(bank_account, venue)
+        self.validated_bank_account_email_notification(bank_account, venue)
         self.archive_dossier()
 
     def get_venue(self) -> "Venue | None":
