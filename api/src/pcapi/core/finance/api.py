@@ -996,7 +996,7 @@ def _generate_cashflows(batch: models.CashflowBatch) -> None:
                 cashflow = models.Cashflow(
                     batchId=batch_id,
                     reimbursementPointId=reimbursement_point_id,
-                    bankAccountId=bank_account_id,
+                    bankInformationId=bank_account_id,
                     status=models.CashflowStatus.PENDING,
                     amount=total,
                 )

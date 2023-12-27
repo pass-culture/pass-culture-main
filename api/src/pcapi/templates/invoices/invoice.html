@@ -270,7 +270,7 @@
     <tbody>
 {% for cashflow in cashflows %}
     <tr>
-        <td>Virement {{ cashflow.bankAccount.iban }}</td>
+        <td>Virement {{ cashflow.bankInformation.iban }}</td>
         <td class="cashflow_batch_label">{{ cashflow.batch.label }}</td>
         <td class="cashflow_creation_date">{{ invoice.date.strftime("%d/%m/%Y") }}</td>
         <td>{{ cashflow.amount|fr_currency_opposite }} €</td>

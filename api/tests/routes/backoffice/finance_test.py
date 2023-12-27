@@ -823,7 +823,7 @@ class GetInvoiceGenerationTest(GetEndpointHelper):
         finance_factories.CashflowFactory(
             status=finance_models.CashflowStatus.ACCEPTED,
             reimbursementPoint=pro_reimbursement_point1,
-            bankAccount=pro_reimbursement_point1.bankInformation,
+            bankInformation=pro_reimbursement_point1.bankInformation,
             amount=-2500,
             batch=finance_factories.CashflowBatchFactory(label="VIR1", cutoff=datetime.datetime(2023, 1, 15)),
         )
@@ -836,7 +836,7 @@ class GetInvoiceGenerationTest(GetEndpointHelper):
         finance_factories.CashflowFactory(
             status=last_cashflow_status,
             reimbursementPoint=pro_reimbursement_point1,
-            bankAccount=pro_reimbursement_point1.bankInformation,
+            bankInformation=pro_reimbursement_point1.bankInformation,
             amount=-1500,
             batch=finance_factories.CashflowBatchFactory(label="VIR2", cutoff=datetime.datetime(2023, 1, 31)),
         )

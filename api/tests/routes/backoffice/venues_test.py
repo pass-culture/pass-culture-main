@@ -1463,7 +1463,7 @@ class GetVenueInvoicesTest(GetEndpointHelper):
         finance_factories.CashflowFactory(
             invoices=[invoice1, invoice2],
             reimbursementPoint=venue,
-            bankAccount=finance_factories.BankInformationFactory(venue=venue),
+            bankInformation=finance_factories.BankInformationFactory(venue=venue),
             amount=-2250,
             batch=finance_factories.CashflowBatchFactory(label="TEST123"),
         )
