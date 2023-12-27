@@ -22,6 +22,7 @@ from pcapi.core.offerers import factories as offerers_factories
 from pcapi.core.offers import factories as offers_factories
 from pcapi.core.permissions import models as perm_models
 from pcapi.core.testing import assert_num_queries
+from pcapi.core.testing import override_features
 from pcapi.core.users import factories as users_factories
 from pcapi.models import db
 from pcapi.routes.backoffice import filters
@@ -96,6 +97,7 @@ class GetIncidentValidationFormTest(GetEndpointHelper):
 
     expected_num_queries = 2
     expected_num_queries += 1  # get incident info
+    expected_num_queries += 1  # check new bank details journey FF
 
     def test_get_incident_validation_form(self, authenticated_client):
         booking_incident = finance_factories.IndividualBookingFinanceIncidentFactory()
@@ -257,13 +259,13 @@ class ValidateIncidentTest(PostEndpointHelper):
         )
         bookings_factories.BookingFactory(deposit=deposit, amount=20, user=deposit.user)
 
-        finance_factories.IndividualBookingFinanceIncidentFactory(
+        total_booking_incident = finance_factories.IndividualBookingFinanceIncidentFactory(
             booking=booking_reimbursed,
             incident=incident,
             newTotalAmount=finance_utils.to_eurocents(booking_reimbursed.pricings[0].amount),
         )  # total incident
 
-        finance_factories.IndividualBookingFinanceIncidentFactory(
+        partial_booking_incident = finance_factories.IndividualBookingFinanceIncidentFactory(
             booking=booking_reimbursed_2, incident=incident, newTotalAmount=3000
         )  # partiel incident : instead of 40, 10 go back to the deposit
 
@@ -302,15 +304,22 @@ class ValidateIncidentTest(PostEndpointHelper):
         assert booking_reimbursed.status == bookings_models.BookingStatus.CANCELLED
         assert booking_reimbursed_2.status == bookings_models.BookingStatus.REIMBURSED
 
-        finance_events = finance_models.FinanceEvent.query.all()
-        assert len(finance_events) == 3
-
         # total finance incident
-        assert finance_events[0].motive == finance_models.FinanceEventMotive.INCIDENT_REVERSAL_OF_ORIGINAL_EVENT
+        total_incident_events = finance_models.FinanceEvent.query.filter(
+            finance_models.FinanceEvent.bookingFinanceIncidentId == total_booking_incident.id
+        ).all()
+        assert len(total_incident_events) == 1
+        assert total_incident_events[0].motive == finance_models.FinanceEventMotive.INCIDENT_REVERSAL_OF_ORIGINAL_EVENT
 
         # partial finaance incident
-        assert finance_events[1].motive == finance_models.FinanceEventMotive.INCIDENT_REVERSAL_OF_ORIGINAL_EVENT
-        assert finance_events[2].motive == finance_models.FinanceEventMotive.INCIDENT_NEW_PRICE
+        partial_incident_events = finance_models.FinanceEvent.query.filter(
+            finance_models.FinanceEvent.bookingFinanceIncidentId == partial_booking_incident.id
+        ).all()
+        assert len(partial_incident_events) == 2
+        assert (
+            partial_incident_events[0].motive == finance_models.FinanceEventMotive.INCIDENT_REVERSAL_OF_ORIGINAL_EVENT
+        )
+        assert partial_incident_events[1].motive == finance_models.FinanceEventMotive.INCIDENT_NEW_PRICE
 
     @pytest.mark.parametrize(
         "initial_status", [finance_models.IncidentStatus.CANCELLED, finance_models.IncidentStatus.VALIDATED]
@@ -452,7 +461,7 @@ class GetIncidentTest(GetEndpointHelper):
     expected_num_queries += 1  # Fetch Session
     expected_num_queries += 1  # Fetch User
     expected_num_queries += 1  # Fetch Incidents infos
-    expected_num_queries += 1  # Fetch Reimbursement point infos
+    expected_num_queries += 1  # Check new bank details journey FF
 
     def test_get_incident(self, authenticated_client, finance_incident):
         url = url_for(self.endpoint, finance_incident_id=finance_incident.id)
@@ -466,6 +475,26 @@ class GetIncidentTest(GetEndpointHelper):
         assert f"ID : {finance_incident.id}" in content
         assert f"Lieu porteur de l'offre : {finance_incident.venue.name}" in content
         assert f"Incident créé par : {finance_incident.details['author']}" in content
+        reimbursement_point = finance_incident.venue.current_reimbursement_point
+        assert f"Lieu point de remboursement : {reimbursement_point.name}" in content
+
+    @override_features(WIP_ENABLE_NEW_BANK_DETAILS_JOURNEY=True)
+    def test_get_incident_with_bank_account(self, authenticated_client):
+        finance_incident = finance_factories.FinanceIncidentFactory(venue__reimbursement_point="self")
+        bank_account = finance_factories.BankAccountFactory(offerer=finance_incident.venue.managingOfferer)
+        offerers_factories.VenueBankAccountLinkFactory(venue=finance_incident.venue, bankAccount=bank_account)
+        url = url_for(self.endpoint, finance_incident_id=finance_incident.id)
+
+        with assert_num_queries(self.expected_num_queries):
+            response = authenticated_client.get(url)
+            assert response.status_code == 200
+
+        content = html_parser.content_as_text(response.data)
+
+        assert f"ID : {finance_incident.id}" in content
+        assert f"Lieu porteur de l'offre : {finance_incident.venue.name}" in content
+        assert f"Incident créé par : {finance_incident.details['author']}" in content
+        assert f"Compte bancaire : {bank_account.label}" in content
 
     def test_get_collective_booking_incident(self, authenticated_client):
         finance_incident = finance_factories.FinanceIncidentFactory(
