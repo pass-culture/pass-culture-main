@@ -199,7 +199,7 @@ class TransactionalEmail(Enum):
     VENUE_SYNC_DISABLED = models.TemplatePro(id_prod=883, id_not_prod=122, tags=["pro_pause_synchro"])
     VENUE_SYNC_DELETED = models.TemplatePro(id_prod=865, id_not_prod=123, tags=["pro_suppression_synchro"])
     VENUE_BANK_ACCOUNT_LINK_DEPRECATED = models.TemplatePro(
-        id_prod=1096, id_not_prod=148, tags=["pro_compte_bancaire_déssocié"]
+        id_prod=1096, id_not_prod=148, tags=["pro_compte_bancaire_dissocié"]
     )
     BANK_ACCOUNT_VALIDATED = models.TemplatePro(
         id_prod=1095, id_not_prod=149, tags=["pro_cordonnées_bancaire_validées"]
