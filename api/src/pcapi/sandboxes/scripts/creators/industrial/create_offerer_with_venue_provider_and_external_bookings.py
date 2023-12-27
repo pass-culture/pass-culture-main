@@ -11,6 +11,7 @@ from pcapi.core.offerers.factories import UserOffererFactory
 from pcapi.core.offerers.factories import VenueFactory
 from pcapi.core.offerers.factories import VirtualVenueFactory
 from pcapi.core.offerers.models import Venue
+from pcapi.core.offerers.models import VenueTypeCode
 from pcapi.core.offers.factories import CinemaStockProviderFactory
 from pcapi.core.offers.factories import EventOfferFactory
 from pcapi.core.offers.factories import ThingOfferFactory
@@ -51,6 +52,7 @@ def _create_offers(provider: Provider) -> Venue:
             managingOfferer=cinema_user_offerer.offerer,
             lastProviderId=provider.id,
             idAtProviders=factory.Sequence("idAtProviders{}".format),
+            venueTypeCode=VenueTypeCode.MOVIE,
         )
         # offerers have always a virtual venue so we have to create one to match reality
         VirtualVenueFactory(name=f"Cinéma - {provider_name} Lieu Virtuel", managingOfferer=cinema_user_offerer.offerer)
@@ -61,6 +63,7 @@ def _create_offers(provider: Provider) -> Venue:
             managingOfferer=book_user_offerer.offerer,
             lastProviderId=provider.id,
             idAtProviders=factory.Sequence("idAtProviders{}".format),
+            venueTypeCode=VenueTypeCode.LIBRARY,
         )
         # offerers have always a virtual venue so we have to create one to match reality
         VirtualVenueFactory(name=f"Livre - {provider_name} Lieu Virtuel", managingOfferer=book_user_offerer.offerer)
