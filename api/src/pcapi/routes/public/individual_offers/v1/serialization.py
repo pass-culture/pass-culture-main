@@ -6,8 +6,11 @@ import logging
 import typing
 
 from dateutil import relativedelta
+from flask import request
 import pydantic.v1 as pydantic_v1
+from pydantic.v1 import validator
 from pydantic.v1.utils import GetterDict
+from spectree import BaseFile
 import typing_extensions
 
 from pcapi.core.categories import subcategories_v2 as subcategories
@@ -20,6 +23,7 @@ from pcapi.routes import serialization
 from pcapi.routes.public.individual_offers.v1.base_serialization import IndexPaginationQueryParams
 import pcapi.routes.public.serialization.accessibility as accessibility_serialization
 from pcapi.routes.public.serialization.utils import StrEnum
+from pcapi.routes.serialization import BaseModel
 from pcapi.serialization import utils as serialization_utils
 from pcapi.utils import date as date_utils
 
@@ -903,3 +907,19 @@ class MusicTypeResponse(serialization.ConfiguredBaseModel):
 
 class GetMusicTypesResponse(serialization.ConfiguredBaseModel):
     __root__: list[MusicTypeResponse]
+
+
+class ImageUploadFile(BaseModel):
+    # This field is required but cannot be handled by pydantic.
+    # We validate it manually in the validator below.
+    # This is used by spectree to generate a correct swagger documentation.
+    file: BaseFile | None = pydantic_v1.Field(
+        description="[required] Image format must be PNG, JPEG or JPG. Size must be between 400x600 and 800x1200 pixels. Aspect ratio must be 2:3 (portrait format).",
+    )
+    credit: str | None
+
+    @validator("file", pre=True, always=True)
+    def validate_file(cls, value: BaseFile | None) -> BaseFile | None:
+        if request.files and "file" in request.files:
+            return value
+        raise ValueError("A file must be provided in the request")
