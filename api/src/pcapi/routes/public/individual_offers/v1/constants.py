@@ -9,6 +9,7 @@ EVENT_OFFER_DATES_TAG = "Event offer dates"
 
 # Procuct API tags
 PRODUCT_OFFER_TAG = "Product offer"
+IMAGE_TAG = "Image"
 PRODUCT_EAN_OFFER_TAG = "Bulk product offer operation"
 OFFERER_VENUES_TAG = "Offerer and Venues"
 OFFER_ATTRIBUTES = "Offer attributes"
