@@ -1,30 +1,30 @@
-name: MyPy cop
+name: "MyPy cop"
 
 on:
   pull_request:
     branches:
-      - master
+      - refacto-workflows
 
 jobs:
   run-mypy-cop:
     runs-on: ubuntu-latest
     steps:
-      - name: Checkout 🛎️
+      - name: "Checkout 🛎️"
         uses: actions/checkout@v3
         with:
           persist-credentials: false
-      - name: Check changes
+      - name: "Check changes"
         uses: dorny/paths-filter@v2
         id: changes
         with:
           filters: |
             src:
               - 'api/**'
-      - name: Count mypy ignore's on this branch and master
+      - name: "Count mypy ignore's on this branch and master"
         id: mypy-ignore-counter
         if: steps.changes.outputs.src == 'true'
+        working-directory: api
         run: |
-          cd api
           this_branch_ignore_count="$(grep "type: ignore" -r src | grep -v /alembic/versions/ | wc -l)"
           git fetch origin master:master --quiet
           git checkout master --quiet
@@ -32,17 +32,17 @@ jobs:
           git checkout - --quiet
           echo "this_branch_ignore_count=$this_branch_ignore_count" | tee -a $GITHUB_OUTPUT
           echo "master_ignore_count=$master_ignore_count" | tee -a $GITHUB_OUTPUT
-      - name: Create mypy cop report
+      - name: "Create mypy cop report"
         id: mypy-cop
+        working-directory: api
         run: |
-          cd api
           body="$(./mypy_cop.sh ${{ steps.mypy-ignore-counter.outputs.master_ignore_count }} ${{ steps.mypy-ignore-counter.outputs.this_branch_ignore_count }} )"
           # See https://docs.github.com/en/actions/using-workflows/workflow-commands-for-github-actions#multiline-strings
           EOF=$(dd if=/dev/urandom bs=15 count=1 status=none | base64)
           echo "body<<$EOF" | tee -a $GITHUB_OUTPUT
           echo "$body" | tee -a $GITHUB_OUTPUT
           echo "$EOF" | tee -a $GITHUB_OUTPUT
-      - name: Find Comment
+      - name: "Find Comment"
         if: steps.changes.outputs.src == 'true'
         uses: peter-evans/find-comment@v1
         id: fc
@@ -50,13 +50,13 @@ jobs:
           issue-number: ${{ github.event.pull_request.number }}
           comment-author: "github-actions[bot]"
           body-includes: "mypy cop report"
-      - name: Create comment
+      - name: "Create comment"
         if: ${{ steps.changes.outputs.src == 'true' && steps.fc.outputs.comment-id == '' && steps.mypy-ignore-counter.outputs.this_branch_ignore_count != steps.mypy-ignore-counter.outputs.master_ignore_count }}
         uses: peter-evans/create-or-update-comment@v1
         with:
           issue-number: ${{ github.event.pull_request.number }}
           body: ${{ steps.mypy-cop.outputs.body }}
-      - name: Update comment
+      - name: "Update comment"
         if: ${{ steps.changes.outputs.src == 'true' && steps.fc.outputs.comment-id != '' }}
         uses: peter-evans/create-or-update-comment@v1
         with:
