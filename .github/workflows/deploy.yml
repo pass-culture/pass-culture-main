@@ -263,7 +263,7 @@ jobs:
     permissions:
       contents: 'read'
       id-token: 'write'
-    uses: ./.github/workflows/deploy-app-engine-image-resizing.yml
+    uses: ./.github/workflows/deploy-app-engine-image-resizing.yaml
     if: ${{ inputs.environment != 'production' }}
     with:
       workload_identity_provider_secret_name: passculture-metier-ehp/gcp_metier_ehp_workload_identity_provider
@@ -281,7 +281,7 @@ jobs:
     permissions:
       contents: 'read'
       id-token: 'write'
-    uses: ./.github/workflows/deploy-app-engine-image-resizing.yml
+    uses: ./.github/workflows/deploy-app-engine-image-resizing.yaml
     if: ${{ inputs.environment == 'production' }}
     with:
       workload_identity_provider_secret_name: passculture-metier-ehp/gcp_metier_prod_workload_identity_provider
