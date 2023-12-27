@@ -2,6 +2,7 @@ import copy
 import datetime
 import logging
 
+from flask import request
 import sqlalchemy as sqla
 
 from pcapi import repository
@@ -23,6 +24,7 @@ from pcapi.models.offer_mixin import OfferValidationType
 from pcapi.routes.public.serialization import venues as venues_serialization
 from pcapi.serialization.decorator import spectree_serialize
 from pcapi.serialization.spec_tree import ExtendResponse as SpectreeResponse
+from pcapi.utils import image_conversion
 from pcapi.utils import rate_limiting
 from pcapi.validation.routes.users_authentifications import api_key_required
 from pcapi.validation.routes.users_authentifications import current_api_key
@@ -659,3 +661,55 @@ def get_product_categories() -> serialization.GetProductCategoriesResponse:
         for subcategory in serialization.ALLOWED_PRODUCT_SUBCATEGORIES
     ]
     return serialization.GetProductCategoriesResponse(__root__=product_categories_response)
+
+
+@blueprint.v1_blueprint.route("/<int:offer_id>/image", methods=["POST"])
+@spectree_serialize(
+    api=blueprint.v1_product_schema,
+    tags=[constants.IMAGE_TAG],
+    on_success_status=204,
+    resp=SpectreeResponse(
+        **(
+            constants.BASE_CODE_DESCRIPTIONS
+            | {
+                "HTTP_204": (None, "Image updated successfully"),
+            }
+        ),
+    ),
+)
+@api_key_required
+@rate_limiting.api_key_high_rate_limiter()
+def upload_image(offer_id: int, form: serialization.ImageUploadFile) -> None:
+    offer = utils.retrieve_offer_relations_query(utils.retrieve_offer_query(offer_id)).one_or_none()
+    if not offer:
+        raise api_errors.ApiErrors({"offerId": ["The offer could not be found"]}, status_code=404)
+    try:
+        image_as_bytes = request.files["file"].read()
+    except Exception as err:
+        logger.exception("Error while reading image file", extra={"offer_id": offer_id, "err": err})
+        raise api_errors.ApiErrors({"file": ["The image is not valid."]}, status_code=400)
+    try:
+        offers_api.create_mediation(
+            user=None,
+            offer=offer,
+            credit=form.credit,
+            image_as_bytes=image_as_bytes,
+        )
+    except offers_exceptions.ImageValidationError as error:
+        if isinstance(error, offers_exceptions.ImageTooSmall):
+            message = f"The image is too small. It must be above {constants.MIN_IMAGE_WIDTH}x{constants.MIN_IMAGE_HEIGHT} pixels."
+        elif isinstance(error, offers_exceptions.ImageTooLarge):
+            message = f"The image is too large. It must be below {constants.MAX_IMAGE_WIDTH}x{constants.MAX_IMAGE_HEIGHT} pixels."
+        elif isinstance(error, offers_exceptions.UnacceptedFileType):
+            message = f"The image format is not accepted. It must be in {offers_validation.ACCEPTED_THUMBNAIL_FORMATS}."
+        elif isinstance(error, offers_exceptions.UnidentifiedImage):
+            message = "The file is not a valid image."
+        elif isinstance(error, offers_exceptions.FileSizeExceeded):
+            message = f"The file is too large. It must be less than {offers_validation.MAX_THUMBNAIL_SIZE} bytes."
+        else:
+            message = "The image is not valid."
+        raise api_errors.ApiErrors(errors={"file": message})
+    except image_conversion.ImageRatioError as error:
+        raise api_errors.ApiErrors(
+            errors={"file": f"Bad image ratio: expected {str(error.expected)[:4]}, found {str(error.found)[:4]}"}
+        )
