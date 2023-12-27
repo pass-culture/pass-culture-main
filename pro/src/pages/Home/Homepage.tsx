@@ -1,4 +1,4 @@
-import React, { useEffect, useRef, useState } from 'react'
+import React, { useEffect, useMemo, useRef, useState } from 'react'
 import { RouteObject } from 'react-router-dom'
 
 import { api } from 'apiClient/api'
@@ -16,7 +16,6 @@ import TutorialDialog from 'components/TutorialDialog'
 import { hasStatusCode } from 'core/OfferEducational'
 import useActiveFeature from 'hooks/useActiveFeature'
 import useRemoteConfig from 'hooks/useRemoteConfig'
-import { INITIAL_OFFERER_VENUES } from 'pages/Home/OffererVenues'
 import { HTTP_STATUS } from 'repository/pcapi/pcapiClient'
 
 import styles from './Homepage.module.scss'
@@ -25,6 +24,10 @@ import Offerers from './Offerers/Offerers'
 import { ProfileAndSupport } from './ProfileAndSupport/ProfileAndSupport'
 import { StatisticsDashboard } from './StatisticsDashboard/StatisticsDashboard'
 import { VenueOfferSteps } from './VenueOfferSteps'
+import {
+  getPhysicalVenuesFromOfferer,
+  getVirtualVenueFromOfferer,
+} from './venueUtils'
 
 export const Homepage = (): JSX.Element => {
   const profileRef = useRef<HTMLElement>(null)
@@ -36,30 +39,22 @@ export const Homepage = (): JSX.Element => {
   const [selectedOfferer, setSelectedOfferer] =
     useState<GetOffererResponseModel | null>(null)
   const [isLoading, setIsLoading] = useState(true)
-  const [hasNoVenueVisible, setHasNoVenueVisible] = useState(false)
   const [isUserOffererValidated, setIsUserOffererValidated] = useState(false)
-  const [venues, setVenues] = useState(INITIAL_OFFERER_VENUES)
   const { remoteConfigData } = useRemoteConfig()
   const isStatisticsDashboardEnabled = useActiveFeature('WIP_HOME_STATS')
+
+  const hasNoVenueVisible = useMemo(() => {
+    const physicalVenues = getPhysicalVenuesFromOfferer(selectedOfferer)
+    const virtualVenue = getVirtualVenueFromOfferer(selectedOfferer)
+
+    return physicalVenues?.length === 0 && !virtualVenue
+  }, [selectedOfferer])
 
   useEffect(() => {
     async function loadOfferer(offererId: string) {
       try {
-        const receivedOfferer = await api.getOfferer(Number(offererId))
-        const offererPhysicalVenues =
-          receivedOfferer.managedVenues?.filter((venue) => !venue.isVirtual) ??
-          []
-        const virtualVenue =
-          receivedOfferer.managedVenues?.find((venue) => venue.isVirtual) ??
-          null
-        setHasNoVenueVisible(
-          offererPhysicalVenues?.length === 0 && !virtualVenue?.hasCreatedOffer
-        )
-        setVenues({
-          physicalVenues: offererPhysicalVenues,
-          virtualVenue: virtualVenue,
-        })
-        setSelectedOfferer(receivedOfferer)
+        const offerer = await api.getOfferer(Number(offererId))
+        setSelectedOfferer(offerer)
         setIsUserOffererValidated(true)
       } catch (error) {
         /* istanbul ignore next: DEBT, TO FIX */
@@ -84,7 +79,6 @@ export const Homepage = (): JSX.Element => {
             id: Number(offererId) ?? 0,
             postalCode: '',
           })
-          setVenues(INITIAL_OFFERER_VENUES)
           setIsUserOffererValidated(false)
         }
       }
@@ -157,7 +151,6 @@ export const Homepage = (): JSX.Element => {
           receivedOffererNames={receivedOffererNames}
           onSelectedOffererChange={setSelectedOffererId}
           cancelLoading={() => setIsLoading(false)}
-          venues={venues}
         />
       </section>
 
