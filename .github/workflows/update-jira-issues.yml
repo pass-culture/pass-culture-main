@@ -71,7 +71,7 @@ jobs:
         run: |
           issue_type=$(jira view ${{ steps.get_jira_key.outputs.issue }} --template viewTicketType)
           if [[ $issue_type != "OPS Task" && "$issue_type" != "Infra Task" ]]; then 
-            echo "status=${{ steps.get_jira_key.outputs.issue }}" | tee -a $GITHUB_OUTPUT
+            echo "status=${{ steps.get_jira_key.outputs.issue }}" >> $GITHUB_OUTPUT
           fi
 
   # run only if previous job issue-number has set his output to the issue number 
@@ -119,7 +119,7 @@ jobs:
           JIRA_API_TOKEN: ${{ steps.secrets.outputs.JIRA_API_TOKEN }}
         # The jira view command uses .jira.d/templates/view template by default
         run: |
-          echo "value=$(jira view ${{ needs.issue-number.outputs.status }})" | tee -a $GITHUB_OUTPUT
+          echo "value=$(jira view ${{ needs.issue-number.outputs.status }})" >> $GITHUB_OUTPUT
 
       - name: Mark issue as not deployable
         env:

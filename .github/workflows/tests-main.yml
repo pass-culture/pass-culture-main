@@ -52,8 +52,8 @@ jobs:
       # Needed to run backend tests.
       tests: ${{ needs.check-api-folder-changes.outputs.folder_changed == 'true' || github.ref == 'refs/heads/master' || startsWith(github.ref,'refs/heads/maint/v') }}
     secrets:
-      GCP_EHP_WORKLOAD_IDENTITY_PROVIDER: ${{ secrets.GCP_EHP_WORKLOAD_IDENTITY_PROVIDER }}
-      GCP_EHP_SERVICE_ACCOUNT: ${{ secrets.GCP_EHP_SERVICE_ACCOUNT }}
+      GCP_WORKLOAD_IDENTITY_PROVIDER: ${{ secrets.GCP_WORKLOAD_IDENTITY_PROVIDER }}
+      ARTIFACT_REGISTRY_SERVICE_ACCOUNT: ${{ secrets.ARTIFACT_REGISTRY_SERVICE_ACCOUNT }}
 
   test-api:
     name: Test api
@@ -132,6 +132,9 @@ jobs:
       deploy_api: ${{ needs.test-api.result == 'success' }}
       deploy_pro: ${{ needs.test-pro.result == 'success' }}
     secrets:
+      INFRA_PROD_GCP_PROJECT: ${{ secrets.INFRA_PROD_GCP_PROJECT }}
+      INFRA_PROD_GCP_WORKLOAD_IDENTITY_PROVIDER: ${{ secrets.INFRA_PROD_GCP_WORKLOAD_IDENTITY_PROVIDER }}
+      ARTIFACT_REGISTRY_SERVICE_ACCOUNT: ${{ secrets.ARTIFACT_REGISTRY_SERVICE_ACCOUNT }}
       GCP_EHP_WORKLOAD_IDENTITY_PROVIDER: ${{ secrets.GCP_EHP_WORKLOAD_IDENTITY_PROVIDER }}
       GCP_EHP_SERVICE_ACCOUNT: ${{ secrets.GCP_EHP_SERVICE_ACCOUNT }}
 

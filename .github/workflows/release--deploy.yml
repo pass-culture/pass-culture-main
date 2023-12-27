@@ -45,7 +45,7 @@ jobs:
       - name: Get app version
         id: app-version
         run: |
-          echo APP_VERSION="$(cat ./api/version.txt)" | tee -a $GITHUB_OUTPUT
+          echo APP_VERSION="$(cat ./api/version.txt)" >> $GITHUB_OUTPUT
 
   deploy-ehp:
     if: github.event.inputs.target_environment != 'production'
@@ -62,6 +62,9 @@ jobs:
       deploy_api: true
       deploy_pro: true
     secrets:
+      INFRA_PROD_GCP_PROJECT: ${{ secrets.INFRA_PROD_GCP_PROJECT }}
+      INFRA_PROD_GCP_WORKLOAD_IDENTITY_PROVIDER: ${{ secrets.INFRA_PROD_GCP_WORKLOAD_IDENTITY_PROVIDER }}
+      ARTIFACT_REGISTRY_SERVICE_ACCOUNT: ${{ secrets.ARTIFACT_REGISTRY_SERVICE_ACCOUNT }}
       GCP_EHP_WORKLOAD_IDENTITY_PROVIDER: ${{ secrets.GCP_EHP_WORKLOAD_IDENTITY_PROVIDER }}
       GCP_EHP_SERVICE_ACCOUNT: ${{ secrets.GCP_EHP_SERVICE_ACCOUNT }}
 
@@ -80,6 +83,9 @@ jobs:
       deploy_api: true
       deploy_pro: true
     secrets:
+      INFRA_PROD_GCP_PROJECT: ${{ secrets.INFRA_PROD_GCP_PROJECT }}
+      INFRA_PROD_GCP_WORKLOAD_IDENTITY_PROVIDER: ${{ secrets.INFRA_PROD_GCP_WORKLOAD_IDENTITY_PROVIDER }}
+      ARTIFACT_REGISTRY_SERVICE_ACCOUNT: ${{ secrets.ARTIFACT_REGISTRY_SERVICE_ACCOUNT }}
       GCP_EHP_WORKLOAD_IDENTITY_PROVIDER: ${{ secrets.GCP_EHP_WORKLOAD_IDENTITY_PROVIDER }}
       GCP_EHP_SERVICE_ACCOUNT: ${{ secrets.GCP_EHP_SERVICE_ACCOUNT }}
 
@@ -98,6 +104,9 @@ jobs:
       deploy_api: true
       deploy_pro: true
     secrets:
+      INFRA_PROD_GCP_PROJECT: ${{ secrets.INFRA_PROD_GCP_PROJECT }}
+      INFRA_PROD_GCP_WORKLOAD_IDENTITY_PROVIDER: ${{ secrets.INFRA_PROD_GCP_WORKLOAD_IDENTITY_PROVIDER }}
+      ARTIFACT_REGISTRY_SERVICE_ACCOUNT: ${{ secrets.ARTIFACT_REGISTRY_SERVICE_ACCOUNT }}
       GCP_EHP_WORKLOAD_IDENTITY_PROVIDER: ${{ secrets.GCP_EHP_WORKLOAD_IDENTITY_PROVIDER }}
       GCP_EHP_SERVICE_ACCOUNT: ${{ secrets.GCP_EHP_SERVICE_ACCOUNT }}
 
