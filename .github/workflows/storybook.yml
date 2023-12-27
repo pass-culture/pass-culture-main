@@ -3,6 +3,9 @@ on:
   push:
     branches:
       - master
+permissions:
+  contents: write
+
 jobs:
   build-and-deploy:
     runs-on: [self-hosted, linux, x64]
