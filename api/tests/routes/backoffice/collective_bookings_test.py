@@ -447,7 +447,7 @@ class ListCollectiveBookingsTest(GetEndpointHelper):
         )
         bank_info = finance_factories.BankInformationFactory(venue=reimbursement_and_pricing_venue)
         cashflow = finance_factories.CashflowFactory(
-            reimbursementPoint=reimbursement_and_pricing_venue, bankAccount=bank_info, pricings=[pricing]
+            reimbursementPoint=reimbursement_and_pricing_venue, bankInformation=bank_info, pricings=[pricing]
         )
 
         with assert_num_queries(self.expected_num_queries):

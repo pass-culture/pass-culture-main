@@ -900,7 +900,7 @@ class GenerateCashflowsTest:
         assert pricing11.cashflows == pricing12.cashflows == collective_pricing13.cashflows
         assert len(pricing2.cashflows) == 1
         assert pricing11.cashflows[0].amount == -2500
-        assert pricing11.cashflows[0].bankAccount == bank_info1
+        assert pricing11.cashflows[0].bankInformation == bank_info1
         assert pricing2.cashflows[0].amount == -3000
 
         assert not pricing_future_event.cashflows
@@ -979,7 +979,7 @@ class GenerateCashflowsTest:
             assert batch.cashflows[0].amount == booking_pricing + (incident_booking_amount * 100)
 
             assert len(pricing11.cashflows) == 1
-            assert pricing11.cashflows[0].bankAccount == bank_info1
+            assert pricing11.cashflows[0].bankInformation == bank_info1
 
         assert queried_batch.id == batch.id
         assert queried_batch.cutoff == cutoff
@@ -1376,7 +1376,7 @@ def test_generate_invoice_file():
         category=models.PricingLineCategory.OFFERER_CONTRIBUTION,
     )
     cashflow1 = factories.CashflowFactory(
-        bankAccount=bank_info1,
+        bankInformation=bank_info1,
         reimbursementPoint=reimbursement_point1,
         pricings=[pricing1],
         status=models.CashflowStatus.ACCEPTED,
@@ -1401,7 +1401,7 @@ def test_generate_invoice_file():
     pline2 = factories.PricingLineFactory()
     pricing2 = pline2.pricing
     cashflow2 = factories.CashflowFactory(
-        bankAccount=bank_info2,
+        bankInformation=bank_info2,
         reimbursementPoint=reimbursement_point2,
         pricings=[pricing2],
         status=models.CashflowStatus.ACCEPTED,

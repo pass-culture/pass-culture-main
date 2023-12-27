@@ -24,7 +24,7 @@ class GetInvoicesTest:
         finance_factories.CashflowFactory(
             invoices=[invoice1, invoice2],
             reimbursementPoint=pro_reimbursement_point1,
-            bankAccount=pro_reimbursement_point1.bankInformation,
+            bankInformation=pro_reimbursement_point1.bankInformation,
             amount=-2500,
             batch=finance_factories.CashflowBatchFactory(label="VIR1"),
         )
@@ -59,7 +59,7 @@ class GetInvoicesTest:
         finance_factories.CashflowFactory(
             invoices=[invoice1, invoice2],
             reimbursementPoint=pro_reimbursement_point1,
-            bankAccount=pro_reimbursement_point1.bankInformation,
+            bankInformation=pro_reimbursement_point1.bankInformation,
             amount=-2500,
             batch=finance_factories.CashflowBatchFactory(label="VIR1"),
         )
