@@ -1,4 +1,5 @@
-name: Check folder changes
+name: "Check folder changes"
+
 on:
   workflow_call:
     outputs:
@@ -19,7 +20,7 @@ jobs:
     outputs:
       folder_changed: ${{ steps.folder-check-changed-files.outputs.any_changed }}
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
         with:
           fetch-depth: 0
       - id: folder-check-changed-files
@@ -27,4 +28,4 @@ jobs:
         with:
           base_sha: ${{ inputs.base_sha }}
           files: |
-            ${{ inputs.folder }}/**
+            ${{ inputs.folder }}

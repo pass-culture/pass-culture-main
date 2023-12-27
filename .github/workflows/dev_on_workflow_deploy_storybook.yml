@@ -1,0 +1,30 @@
+name: "Storybook"
+
+on: workflow_call
+
+jobs:
+  build-and-deploy-storybook:
+    name: "Build and deploy Storybook"
+    runs-on: ubuntu-latest
+    steps:
+      - name: "Checkout 🛎️"
+        uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - uses: actions/setup-node@v3
+        with:
+          node-version-file: "pro/.nvmrc"
+      - name: "Install dependencies"
+        working-directory: pro
+        run: yarn install --immutable
+      - name: "Build Storybook 🔧"
+        working-directory: pro
+        run: yarn build-storybook
+      - name: "Deploy 🚀"
+        uses: JamesIves/github-pages-deploy-action@v4.4.1
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+          branch: "docs"
+          folder: "pro/docs-build"
+          clean: true
+          target-folder: "docs"

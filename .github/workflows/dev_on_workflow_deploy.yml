@@ -1,4 +1,4 @@
-name: Deploy
+name: "Deploy"
 on:
   workflow_call:
     inputs:
@@ -31,34 +31,30 @@ on:
       GCP_EHP_SERVICE_ACCOUNT:
         required: true
 
-
 jobs:
   generate-pcapi-helm-secrets-file:
     name: "[pcapi] Generate helm secrets values file"
     runs-on: ubuntu-latest
     if: ${{ inputs.deploy_api }}
     environment: ${{ inputs.environment }}
-    permissions:
-      id-token: write
-      contents: read
     outputs:
       pcapi_helm_secrets_file_base64: ${{ steps.set-secrets-file-output.outputs.secrets_file_base64 }}
     steps:
       - uses: actions/checkout@v4
-      - name: Authentification to Google
+      - name: "Authentification to Google"
         uses: 'google-github-actions/auth@v1'
         with:
           workload_identity_provider: ${{ secrets.GCP_EHP_WORKLOAD_IDENTITY_PROVIDER }}
           service_account: ${{ secrets.GCP_EHP_SERVICE_ACCOUNT }}
-      - name: Get Secret
+      - name: "Get Secret"
         id: 'secrets'
         uses: 'google-github-actions/get-secretmanager-secrets@v1'
         with:
           secrets: |-
             ARTIFACT_REGISTRY_WORKLOAD_IDENTITY_PROVIDER:passculture-metier-ehp/infra-prod-gcp-workload-identity-provider
             ARTIFACT_REGISTRY_SERVICE_ACCOUNT:passculture-metier-ehp/passculture-main-artifact-registry-service-account
-      - id: openid-auth
-        name: "OpenID Connect Authentication"
+      - name: "OpenID Connect Authentication"
+        id: "openid-auth"
         uses: 'google-github-actions/auth@v1'
         with:
           create_credentials_file: false
@@ -66,7 +62,7 @@ jobs:
           workload_identity_provider: ${{ steps.secrets.outputs.ARTIFACT_REGISTRY_WORKLOAD_IDENTITY_PROVIDER }}
           service_account: ${{ steps.secrets.outputs.ARTIFACT_REGISTRY_SERVICE_ACCOUNT }}
       - name: "Generate pcapi helm values file"
-        id: generate-secrets-file
+        id: "generate-secrets-file"
         uses: addnab/docker-run-action@v3
         with:
           options: --user 0 -v ${{ github.workspace }}:/workspace
@@ -78,26 +74,26 @@ jobs:
             su pcapi -c "flask print_secret_keys | base64 -w 0 > /tmp/helm_secrets_file_base64"
             cp /tmp/helm_secrets_file_base64 /workspace/helm_secrets_file_base64
       - name: "Set pcapi helm secrets values file as output"
-        id: set-secrets-file-output
+        id: "set-secrets-file-output"
         run: echo "secrets_file_base64=$(cat ${{ github.workspace }}/helm_secrets_file_base64)" | tee -a $GITHUB_OUTPUT
 
   deploy-api:
-    name: Deploy api
+    name: "Deploy api"
+    needs: generate-pcapi-helm-secrets-file
+    if: ${{ inputs.deploy_api }}
     runs-on: ubuntu-latest
     environment: ${{ inputs.environment }}
     permissions:
       id-token: write
       contents: read
-    needs: generate-pcapi-helm-secrets-file
-    if: ${{ inputs.deploy_api }}
     steps:
-      - uses: actions/checkout@v3
-      - name: Authentification to Google
+      - uses: actions/checkout@v4
+      - name: "Authentification to Google"
         uses: 'google-github-actions/auth@v1'
         with:
           workload_identity_provider: ${{ secrets.GCP_EHP_WORKLOAD_IDENTITY_PROVIDER }}
           service_account: ${{ secrets.GCP_EHP_SERVICE_ACCOUNT }}
-      - name: Get Secret
+      - name: "Get Secret"
         id: 'secrets'
         uses: 'google-github-actions/get-secretmanager-secrets@v1'
         with:
@@ -105,20 +101,20 @@ jobs:
             PASSCULTURE_SA_ACCESS_TOKEN:passculture-metier-ehp/passculture-main-sa-access-token
             ARTIFACT_REGISTRY_WORKLOAD_IDENTITY_PROVIDER:passculture-metier-ehp/infra-prod-gcp-workload-identity-provider
             ARTIFACT_REGISTRY_SERVICE_ACCOUNT:passculture-metier-ehp/passculture-main-artifact-registry-service-account
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
         with:
           repository: pass-culture/pass-culture-deployment
           token: ${{ steps.secrets.outputs.PASSCULTURE_SA_ACCESS_TOKEN }}
           path: ./pass-culture-deployment
-      - id: openid-auth-infra
-        name: "OpenID Connect Authentication"
+      - name: "OpenID Connect Authentication"
+        id: "openid-auth-infra"
         uses: 'google-github-actions/auth@v1'
         with:
           create_credentials_file: false
           token_format: 'access_token'
           workload_identity_provider: ${{ steps.secrets.outputs.ARTIFACT_REGISTRY_WORKLOAD_IDENTITY_PROVIDER }}
           service_account: ${{ steps.secrets.outputs.ARTIFACT_REGISTRY_SERVICE_ACCOUNT }}
-      - name: Install Teleport
+      - name: "Install Teleport"
         uses: teleport-actions/setup@v1
         with:
           version: ${{ inputs.teleport_version }}
@@ -129,23 +125,23 @@ jobs:
           token: github-token
           certificate-ttl: 1h
           kubernetes-cluster: ${{ inputs.teleport_kubernetes_cluster }}
-      - name: Setup helmfile
+      - name: "Setup helmfile"
         uses: mamezou-tech/setup-helmfile@v1.0.0
         with:
           helmfile-version: "v0.147.0"
-      - name: Install Teleport
+      - name: "Install Teleport"
         uses: teleport-actions/setup@v1
         with:
           version: ${{ inputs.teleport_version }}
-      - id: teleport-auth
-        name: "Teleport Authentication"
+      - name: "Teleport Authentication"
+        id: "teleport-auth"
         uses: teleport-actions/auth-k8s@v1
         with:
           proxy: ${{ inputs.teleport_proxy }}
           token: github-token
           certificate-ttl: 1h
           kubernetes-cluster: ${{ inputs.teleport_kubernetes_cluster }}
-      - name: Play pre-migrations
+      - name: "Play pre-migrations"
         uses: nick-fields/retry@v2
         with:
           timeout_minutes: 30
@@ -163,14 +159,14 @@ jobs:
             kubectl logs -n ${{ inputs.environment }} -f jobs/pre-upgrade-${DATE} && break
             done
             kubectl wait --for=condition=complete --timeout=30s -n ${{ inputs.environment }} jobs/pre-upgrade-${DATE}
-      - name: Deploy pcapi
+      - name: "Deploy pcapi"
         run: |
           PASSCULTURE_USERNAME="oauth2accesstoken" \
           PASSCULTURE_PASSWORD=${{ steps.openid-auth-infra.outputs.access_token }} \
           PCAPI_VALUES_FILE=./pass-culture-deployment/helm/pcapi/values.${{ inputs.environment }}.yaml \
           PCAPI_SECRETS_FILE=<(echo '${{ needs.generate-pcapi-helm-secrets-file.outputs.pcapi_helm_secrets_file_base64 }}' | base64 -d) \
           helmfile -e ${{ inputs.environment }} sync --set image.tag=${{ inputs.app_version }}
-      - name: Play post-migrations
+      - name: "Play post-migrations"
         uses: nick-fields/retry@v2
         with:
           timeout_minutes: 30
@@ -188,8 +184,9 @@ jobs:
             kubectl logs -n ${{ inputs.environment }} -f jobs/post-upgrade-${DATE} && break
             done
             kubectl wait --for=condition=complete --timeout=30s -n ${{ inputs.environment }} jobs/post-upgrade-${DATE}
+
   deploy-pro-on-testing-on-firebase:
-    name: Deploy pro on testing live channel
+    name: "Deploy pro on testing live channel"
     needs: deploy-api
     if: |
       always() &&
@@ -204,9 +201,10 @@ jobs:
       ENV: testing
       CHANNEL: "live"
       REF: ${{ github.ref }}
-  
+      CACHE_BUCKET_NAME: "passculture-infra-prod-github-runner-cache"
+
   deploy-pro-on-firebase:
-    name: Deploy pro
+    name: "Deploy pro"
     needs: deploy-api
     if: |
       always() &&
@@ -233,20 +231,20 @@ jobs:
       contents: read
     runs-on: ubuntu-latest
     steps:
-      - name: Install Teleport
+      - name: "Install Teleport"
         uses: teleport-actions/setup@v1
         with:
           version: ${{ inputs.teleport_version }}
-      - id: teleport-auth
-        name: "Teleport Authentication"
+      - name: "Teleport Authentication"
+        id: "teleport-auth"
         uses: teleport-actions/auth-k8s@v1
         with:
           proxy: ${{ inputs.teleport_proxy }}
           token: github-token
           certificate-ttl: 1h
           kubernetes-cluster: ${{ inputs.teleport_kubernetes_cluster }}
-      - id: set_algolia_settings
-        name: "Configure algolia"
+      - name: "Configure algolia"
+        id: "set_algolia_settings"
         uses: nick-fields/retry@v2
         with:
           timeout_minutes: 30
@@ -275,7 +273,6 @@ jobs:
     secrets:
       GCP_EHP_SERVICE_ACCOUNT: ${{ secrets.GCP_EHP_SERVICE_ACCOUNT }}
       GCP_EHP_WORKLOAD_IDENTITY_PROVIDER: ${{ secrets.GCP_EHP_WORKLOAD_IDENTITY_PROVIDER }}
-
 
   deploy-image-resizing-production:
     name: "Deploy image-resizing production"
