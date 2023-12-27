@@ -25,22 +25,6 @@ on:
         type: boolean
         required: false
         default: false
-    secrets:
-      INFRA_PROD_GCP_PROJECT:
-        type: string
-        required: true
-      INFRA_PROD_GCP_WORKLOAD_IDENTITY_PROVIDER:
-        type: string
-        required: true
-      ARTIFACT_REGISTRY_SERVICE_ACCOUNT:
-        type: string
-        required: true
-      GCP_EHP_WORKLOAD_IDENTITY_PROVIDER:
-        type: string
-        required: true
-      GCP_EHP_SERVICE_ACCOUNT:
-        type: string
-        required: true
 
 env:
   REGION: europe-west1
@@ -273,9 +257,7 @@ jobs:
       environment: testing
       google_project: passculture-metier-ehp
       base_ref: ${{ github.ref }}
-    secrets:
-      GCP_SERVICE_ACCOUNT: ${{ secrets.GCP_EHP_SERVICE_ACCOUNT }}
-      GCP_WORKLOAD_IDENTITY_PROVIDER: ${{ secrets.GCP_EHP_WORKLOAD_IDENTITY_PROVIDER }}
+    secrets: inherit
 
   deploy-image-resizing-production:
     name: "Deploy image-resizing production"
@@ -291,6 +273,4 @@ jobs:
       environment: production
       google_project: passculture-metier-prod
       base_ref: ${{ github.ref }}
-    secrets:
-      GCP_SERVICE_ACCOUNT: ${{ secrets.GCP_EHP_SERVICE_ACCOUNT }}
-      GCP_WORKLOAD_IDENTITY_PROVIDER: ${{ secrets.GCP_EHP_WORKLOAD_IDENTITY_PROVIDER }}
+    secrets: inherit

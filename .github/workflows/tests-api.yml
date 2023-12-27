@@ -1,13 +1,5 @@
 name: Tests api
-on:
-  workflow_call:
-    secrets:
-      GCP_EHP_WORKLOAD_IDENTITY_PROVIDER:
-        type: string
-        required: true
-      GCP_EHP_SERVICE_ACCOUNT:
-        type: string
-        required: true
+on: workflow_call
 
 env:
   region: europe-west1

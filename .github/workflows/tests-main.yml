@@ -51,9 +51,7 @@ jobs:
       console: ${{ github.ref == 'refs/heads/master' }}
       # Needed to run backend tests.
       tests: ${{ needs.check-api-folder-changes.outputs.folder_changed == 'true' || github.ref == 'refs/heads/master' || startsWith(github.ref,'refs/heads/maint/v') }}
-    secrets:
-      GCP_WORKLOAD_IDENTITY_PROVIDER: ${{ secrets.GCP_WORKLOAD_IDENTITY_PROVIDER }}
-      ARTIFACT_REGISTRY_SERVICE_ACCOUNT: ${{ secrets.ARTIFACT_REGISTRY_SERVICE_ACCOUNT }}
+    secrets: inherit
 
   test-api:
     name: Test api
@@ -65,9 +63,7 @@ jobs:
       github.ref == 'refs/heads/master' ||
       startsWith(github.ref,'refs/heads/maint/v')
     uses: ./.github/workflows/tests-api.yml
-    secrets:
-      GCP_EHP_WORKLOAD_IDENTITY_PROVIDER: ${{ secrets.GCP_EHP_WORKLOAD_IDENTITY_PROVIDER }}
-      GCP_EHP_SERVICE_ACCOUNT: ${{ secrets.GCP_EHP_SERVICE_ACCOUNT }}
+    secrets: inherit
 
   test-pro:
     needs: check-pro-folder-changes
@@ -77,10 +73,7 @@ jobs:
       startsWith(github.ref,'refs/heads/maint/v')
     name: Tests pro
     uses: ./.github/workflows/tests-pro.yml
-    secrets:
-      GCP_EHP_WORKLOAD_IDENTITY_PROVIDER: ${{ secrets.GCP_EHP_WORKLOAD_IDENTITY_PROVIDER }}
-      GCP_EHP_SERVICE_ACCOUNT: ${{ secrets.GCP_EHP_SERVICE_ACCOUNT }}
-      GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+    secrets: inherit
     with:
       CACHE_BUCKET_NAME: passculture-infra-prod-github-runner-cache
 
@@ -96,9 +89,7 @@ jobs:
       startsWith(github.ref,'refs/heads/maint/v')
     name: Tests pro E2E
     uses: ./.github/workflows/tests-pro-e2e.yml
-    secrets:
-      GCP_EHP_WORKLOAD_IDENTITY_PROVIDER: ${{ secrets.GCP_EHP_WORKLOAD_IDENTITY_PROVIDER }}
-      GCP_EHP_SERVICE_ACCOUNT: ${{ secrets.GCP_EHP_SERVICE_ACCOUNT }}
+    secrets: inherit
     with:
       CACHE_BUCKET_NAME: passculture-infra-prod-github-runner-cache
 
@@ -109,8 +100,7 @@ jobs:
       github.event_name == 'pull_request' &&
       github.actor == 'dependabot[bot]'
     uses: ./.github/workflows/dependabot-auto-merge.yml
-    secrets:
-      GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+    secrets: inherit
 
   deploy-to-testing:
     name: Deploy to testing
@@ -131,12 +121,7 @@ jobs:
       teleport_kubernetes_cluster: passculture-metier-ehp
       deploy_api: ${{ needs.test-api.result == 'success' }}
       deploy_pro: ${{ needs.test-pro.result == 'success' }}
-    secrets:
-      INFRA_PROD_GCP_PROJECT: ${{ secrets.INFRA_PROD_GCP_PROJECT }}
-      INFRA_PROD_GCP_WORKLOAD_IDENTITY_PROVIDER: ${{ secrets.INFRA_PROD_GCP_WORKLOAD_IDENTITY_PROVIDER }}
-      ARTIFACT_REGISTRY_SERVICE_ACCOUNT: ${{ secrets.ARTIFACT_REGISTRY_SERVICE_ACCOUNT }}
-      GCP_EHP_WORKLOAD_IDENTITY_PROVIDER: ${{ secrets.GCP_EHP_WORKLOAD_IDENTITY_PROVIDER }}
-      GCP_EHP_SERVICE_ACCOUNT: ${{ secrets.GCP_EHP_SERVICE_ACCOUNT }}
+    secrets: inherit
 
   notification:
     name: "Notification"
