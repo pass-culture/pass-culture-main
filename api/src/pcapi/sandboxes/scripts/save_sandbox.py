@@ -13,7 +13,7 @@ logger = logging.getLogger(__name__)
 def save_sandbox(name: str, with_clean: bool = True) -> None:
     if with_clean:
         logger.info("Cleaning database")
-        clean_all_database()
+        clean_all_database(reset_ids=True)
         logger.info("All databases cleaned")
 
     script_name = "sandbox_" + name

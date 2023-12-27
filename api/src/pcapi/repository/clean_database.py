@@ -1,5 +1,7 @@
 import typing
 
+import flask_sqlalchemy
+
 from pcapi import settings
 import pcapi.core.bookings.models as bookings_models
 import pcapi.core.criteria.models as criteria_models
@@ -22,109 +24,123 @@ from pcapi.models.feature import Feature
 from pcapi.models.feature import install_feature_flags
 
 
-def clean_all_database(*args: typing.Any, **kwargs: typing.Any) -> None:
-    """Order of deletions matters because of foreign key constraints"""
+# Order of table to clean matters because of foreign key constraints
+# They will be deleted in this order
+tables_to_clean: list[flask_sqlalchemy.Model] = [
+    providers_models.LocalProviderEvent,
+    offers_models.ActivationCode,
+    providers_models.AllocineVenueProviderPriceRule,
+    providers_models.AllocineVenueProvider,
+    providers_models.VenueProvider,
+    finance_models.PaymentStatus,
+    finance_models.Payment,
+    finance_models.PaymentMessage,
+    finance_models.CashflowPricing,
+    finance_models.CashflowLog,
+    finance_models.InvoiceCashflow,
+    finance_models.Cashflow,
+    finance_models.CashflowBatch,
+    finance_models.PricingLine,
+    finance_models.PricingLog,
+    finance_models.Pricing,
+    finance_models.InvoiceLine,
+    finance_models.Invoice,
+    finance_models.FinanceEvent,
+    finance_models.CustomReimbursementRule,
+    finance_models.BookingFinanceIncident,
+    finance_models.FinanceIncident,
+    educational_models.CollectiveOfferDomain,
+    educational_models.CollectiveOfferTemplateDomain,
+    educational_models.EducationalDomain,
+    educational_models.CollectiveBooking,
+    educational_models.CollectiveDmsApplication,
+    educational_models.CollectiveOfferRequest,
+    educational_models.CollectiveOfferEducationalRedactor,
+    educational_models.CollectiveOfferTemplateEducationalRedactor,
+    bookings_models.ExternalBooking,
+    bookings_models.Booking,
+    educational_models.CollectiveStock,
+    offers_models.Stock,
+    users_models.Favorite,
+    offers_models.Mediation,
+    criteria_models.OfferCriterion,
+    criteria_models.VenueCriterion,
+    criteria_models.Criterion,
+    educational_models.CollectiveOffer,
+    educational_models.CollectiveOfferTemplate,
+    offers_models.Offer,
+    offers_models.PriceCategory,
+    offers_models.PriceCategoryLabel,
+    offers_models.Product,
+    BankInformation,
+    providers_models.CDSCinemaDetails,
+    providers_models.BoostCinemaDetails,
+    providers_models.CGRCinemaDetails,
+    providers_models.EMSCinemaDetails,
+    providers_models.CinemaProviderPivot,
+    providers_models.AllocinePivot,
+    providers_models.AllocineTheater,
+    offerers_models.VenuePricingPointLink,
+    offerers_models.VenueReimbursementPointLink,
+    offerers_models.Venue,
+    offerers_models.VenueEducationalStatus,
+    offerers_models.UserOfferer,
+    offerers_models.ApiKey,
+    offerers_models.Offerer,
+    offerers_models.OffererStats,
+    offerers_models.OffererTag,
+    offerers_models.OffererTagCategory,
+    finance_models.Recredit,
+    finance_models.Deposit,
+    BeneficiaryImportStatus,
+    BeneficiaryImport,
+    fraud_models.ProductWhitelist,
+    fraud_models.OrphanDmsApplication,
+    fraud_models.BlacklistedDomainName,
+    fraud_models.BeneficiaryFraudCheck,
+    fraud_models.BeneficiaryFraudReview,
+    users_models.Token,
+    offers_models.OfferValidationSubRule,
+    offers_models.OfferValidationRule,
+    users_models.SingleSignOn,
+    users_models.User,
+    users_models.UserSession,
+    geography_models.IrisFrance,
+    providers_models.Provider,
+    offerers_models.VenueLabel,
+    educational_models.EducationalDeposit,
+    educational_models.EducationalInstitution,
+    educational_models.EducationalYear,
+    educational_models.EducationalRedactor,
+    Feature,
+    perm_models.RolePermission,
+    perm_models.Permission,
+    perm_models.Role,
+    history_models.ActionHistory,
+    educational_models.NationalProgram,
+]
+
+
+def clean_all_database(*args: typing.Any, reset_ids: bool = False, **kwargs: typing.Any) -> None:
     if settings.ENV not in ("development", "testing"):
         raise ValueError(f"You cannot do this on this environment: '{settings.ENV}'")
-    providers_models.LocalProviderEvent.query.delete()
-    offers_models.ActivationCode.query.delete()
-    providers_models.AllocineVenueProviderPriceRule.query.delete()
-    providers_models.AllocineVenueProvider.query.delete()
-    providers_models.VenueProvider.query.delete()
-    finance_models.PaymentStatus.query.delete()
-    finance_models.Payment.query.delete()
-    finance_models.PaymentMessage.query.delete()
-    finance_models.CashflowPricing.query.delete()
-    finance_models.CashflowLog.query.delete()
-    finance_models.InvoiceCashflow.query.delete()
-    finance_models.Cashflow.query.delete()
-    finance_models.CashflowBatch.query.delete()
-    finance_models.PricingLine.query.delete()
-    finance_models.PricingLog.query.delete()
-    finance_models.Pricing.query.delete()
-    finance_models.InvoiceLine.query.delete()
-    finance_models.Invoice.query.delete()
-    finance_models.FinanceEvent.query.delete()
-    finance_models.CustomReimbursementRule.query.delete()
-    finance_models.BookingFinanceIncident.query.delete()
-    finance_models.FinanceIncident.query.delete()
-    educational_models.CollectiveOfferDomain.query.delete()
-    educational_models.CollectiveOfferTemplateDomain.query.delete()
-    educational_models.EducationalDomain.query.delete()
-    educational_models.CollectiveBooking.query.delete()
-    educational_models.CollectiveDmsApplication.query.delete()
-    educational_models.CollectiveOfferRequest.query.delete()
-    educational_models.CollectiveOfferEducationalRedactor.query.delete()
-    educational_models.CollectiveOfferTemplateEducationalRedactor.query.delete()
-    bookings_models.ExternalBooking.query.delete()
-    bookings_models.Booking.query.delete()
-    educational_models.CollectiveStock.query.delete()
-    offers_models.Stock.query.delete()
-    users_models.Favorite.query.delete()
-    offers_models.Mediation.query.delete()
-    criteria_models.OfferCriterion.query.delete()
-    criteria_models.VenueCriterion.query.delete()
-    criteria_models.Criterion.query.delete()
-    educational_models.CollectiveOffer.query.delete()
-    educational_models.CollectiveOfferTemplate.query.delete()
-    offers_models.Offer.query.delete()
-    offers_models.PriceCategory.query.delete()
-    offers_models.PriceCategoryLabel.query.delete()
-    offers_models.Product.query.delete()
-    BankInformation.query.delete()
-    providers_models.CDSCinemaDetails.query.delete()
-    providers_models.BoostCinemaDetails.query.delete()
-    providers_models.CGRCinemaDetails.query.delete()
-    providers_models.EMSCinemaDetails.query.delete()
-    providers_models.CinemaProviderPivot.query.delete()
-    providers_models.AllocinePivot.query.delete()
-    providers_models.AllocineTheater.query.delete()
-    offerers_models.VenuePricingPointLink.query.delete()
-    offerers_models.VenueReimbursementPointLink.query.delete()
-    offerers_models.Venue.query.delete()
-    offerers_models.VenueEducationalStatus.query.delete()
-    offerers_models.UserOfferer.query.delete()
-    offerers_models.ApiKey.query.delete()
-    offerers_models.Offerer.query.delete()
-    offerers_models.OffererStats.query.delete()
-    offerers_models.OffererTag.query.delete()
-    offerers_models.OffererTagCategory.query.delete()
-    finance_models.Recredit.query.delete()
-    finance_models.Deposit.query.delete()
-    BeneficiaryImportStatus.query.delete()
-    BeneficiaryImport.query.delete()
-    fraud_models.ProductWhitelist.query.delete()
-    fraud_models.OrphanDmsApplication.query.delete()
-    fraud_models.BlacklistedDomainName.query.delete()
-    fraud_models.BeneficiaryFraudCheck.query.delete()
-    fraud_models.BeneficiaryFraudReview.query.delete()
-    users_models.Token.query.delete()
-    offers_models.OfferValidationSubRule.query.delete()
-    offers_models.OfferValidationRule.query.delete()
-    users_models.SingleSignOn.query.delete()
-    users_models.User.query.delete()
-    users_models.UserSession.query.delete()
-    geography_models.IrisFrance.query.delete()  # must be after User
-    providers_models.Provider.query.delete()
-    offerers_models.VenueLabel.query.delete()
-    educational_models.EducationalDeposit.query.delete()
-    educational_models.EducationalInstitution.query.delete()
-    educational_models.EducationalYear.query.delete()
-    educational_models.EducationalRedactor.query.delete()
-    Feature.query.delete()
-    perm_models.RolePermission.query.delete()
-    perm_models.Permission.query.delete()
-    perm_models.Role.query.delete()
-    history_models.ActionHistory.query.delete()
-    educational_models.NationalProgram.query.delete()
 
-    # Dans le cadre du projet EAC, notre partenaire Adage requête notre api sur le endpoint get_pre_bookings.
-    # Ils récupèrent les pré-réservations EAC liées à un utilisateur EAC et stockent les ids en base.
-    # Dans la phase de développement, ils se connectent sur notre environnement testing et récupèrent des données issues donc de nos sandbox.
-    # Nous avons besoin que les ids soient fixes. Pour ce faire, il faut que la séquence d'ids sur les CollectiveBookings recommence à 1 à chaque
-    # nouvelle génération de la sandbox sur testing. C'est la raison de la commande ci-dessous.
-    # A noter qu'en local la question ne se pose pas car l'instance de base de données est détruite puis reconstruite. L'id recommence donc nécessairement à 1
-    db.session.execute("SELECT setval('collective_booking_id_seq', 1, FALSE)")
+    for table in tables_to_clean:
+        table.query.delete()
+        if reset_ids:
+            # Reset sequence id to 1 to have consistent ids in testing environment
+            # This is mandatory for EAC bookings which are used by Adage (external partner)
+            db.session.execute(
+                """DO $$
+                BEGIN
+                    IF EXISTS (SELECT 1 FROM pg_sequences WHERE schemaname = 'public' AND sequencename = '{table.__tablename__}_id_seq') THEN
+                        EXECUTE 'SELECT setval(''{table.__tablename__}_id_seq'', 1, false)';
+                    END IF;
+                END $$;
+            """.format(
+                    table=table
+                )
+            )
 
     db.session.commit()
     install_feature_flags()
