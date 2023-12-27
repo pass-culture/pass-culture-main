@@ -1,5 +1,6 @@
-name: Test main
-run-name: Test main${{ github.ref == 'refs/heads/master' && ' and deploy to testing' || '' }}
+name: Initiate workflow
+# run-name: Test main${{ github.ref == 'refs/heads/master' && ' and deploy to testing' || '' }}
+
 on:
   push:
     branches:
@@ -11,12 +12,23 @@ on:
 
 permissions: write-all
 
+env:
+  IS_MES_MEP: ${{ github.ref == 'refs/pull/9823/merge' || startsWith(github.ref,'refs/heads/maint/v') }}
+
 concurrency:
   # cancel previous workflow of the same branch except on master
   group: ${{ github.ref }}
-  cancel-in-progress: ${{ github.ref == 'refs/heads/master' && false || true }}
+  # cancel-in-progress: ${{ github.ref == 'refs/heads/master' && false || true }}
+  cancel-in-progress: ${{ github.ref == 'refs/pull/9823/merge' && false || true }}
 
 jobs:
+  echo-github-ref:
+    runs-on: ubuntu-latest
+    steps:
+      - run: echo ${{ github.ref }}
+      - run: echo ${{ github.ref_name }}
+      - run: echo ${{ env.IS_MES_MEP }}
+
   check-api-folder-changes:
     name: Check api folder changes
     uses: ./.github/workflows/dev_on_workflow_check_folder_changes.yml
@@ -100,6 +112,39 @@ jobs:
       GCP_EHP_SERVICE_ACCOUNT: ${{ secrets.GCP_EHP_SERVICE_ACCOUNT }}
     with:
       CACHE_BUCKET_NAME: passculture-infra-prod-github-runner-cache
+
+  build-and-deploy-storybook:
+    runs-on: ubuntu-latest
+    needs: check-pro-folder-changes
+    # if: |
+    #   github.ref == 'refs/heads/refacto-workflows'
+    # if: |
+    #   needs.check-pro-folder-changes.outputs.folder_changed == 'true' ||
+    #   github.ref == 'refs/heads/master'
+    steps:
+      - name: Checkout 🛎️
+        uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - uses: actions/setup-node@v3
+        with:
+          node-version-file: "pro/.nvmrc"
+      # - name: Install tools needed
+      #   run: |
+      #     apt-get update && apt-get install rsync -y
+      - name: Install and Build Storybook 🔧
+        working-directory: pro
+        run: | # Install npm packages and build the Storybook files
+          yarn install
+          yarn build-storybook
+      - name: Deploy 🚀
+        uses: JamesIves/github-pages-deploy-action@v4.4.1
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+          branch: docs # The branch the action should deploy to.
+          folder: pro/docs-build # The folder that the build-storybook script generates files.
+          clean: true # Automatically remove deleted files from the deploy branch
+          target-folder: docs # The folder that we serve our Storybook files from
 
   dependabot-auto-merge:
     needs:
