@@ -1,6 +1,10 @@
 name: Dependabot auto-merge
-
-on: workflow_call
+on:
+  workflow_call:
+    secrets:
+      GITHUB_TOKEN:
+        type: string
+        required: true
 
 permissions:
   contents: write
