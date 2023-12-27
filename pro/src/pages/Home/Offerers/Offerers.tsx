@@ -13,12 +13,15 @@ import useActiveFeature from 'hooks/useActiveFeature'
 import useAnalytics from 'hooks/useAnalytics'
 import fullWaitIcon from 'icons/full-wait.svg'
 import strokePartyIcon from 'icons/stroke-party.svg'
-import { OffererVenues } from 'pages/Home/OffererVenues'
 import { VenueList } from 'pages/Home/Venues/VenueList'
 import Spinner from 'ui-kit/Spinner/Spinner'
 import { sortByLabel } from 'utils/strings'
 
 import { Card } from '../Card'
+import {
+  getPhysicalVenuesFromOfferer,
+  getVirtualVenueFromOfferer,
+} from '../venueUtils'
 
 import OffererCreationLinks from './OffererCreationLinks'
 import OffererDetails from './OffererDetails'
@@ -36,7 +39,6 @@ export interface OfferersProps {
   isLoading: boolean
   isUserOffererValidated: boolean
   hasAtLeastOnePhysicalVenue: boolean
-  venues: OffererVenues
 }
 
 const Offerers = ({
@@ -46,7 +48,6 @@ const Offerers = ({
   selectedOfferer,
   isLoading,
   isUserOffererValidated,
-  venues,
   hasAtLeastOnePhysicalVenue,
 }: OfferersProps) => {
   const isPartnerPageActive = useActiveFeature('WIP_PARTNER_PAGE')
@@ -120,6 +121,9 @@ const Offerers = ({
   const userHasOfferers = offererOptions.length > 0
   const permanentVenues =
     selectedOfferer?.managedVenues?.filter((venue) => venue.isPermanent) ?? []
+
+  const virtualVenue = getVirtualVenueFromOfferer(selectedOfferer)
+  const physicalVenues = getPhysicalVenuesFromOfferer(selectedOfferer)
 
   return (
     <>
@@ -202,15 +206,13 @@ const Offerers = ({
               <VenueList
                 physicalVenues={
                   isPartnerPageActive
-                    ? venues.physicalVenues.filter(
-                        (venue) => !venue.isPermanent
-                      )
-                    : venues.physicalVenues
+                    ? physicalVenues.filter((venue) => !venue.isPermanent)
+                    : physicalVenues
                 }
                 selectedOffererId={selectedOfferer.id}
                 virtualVenue={
                   selectedOfferer.hasDigitalVenueAtLeastOneOffer
-                    ? venues.virtualVenue
+                    ? virtualVenue
                     : null
                 }
                 offererHasBankAccount={Boolean(
@@ -230,11 +232,11 @@ const Offerers = ({
 
       {!userHasOfferers && <OffererCreationLinks />}
 
-      {venues.physicalVenues.length > 0 && (
+      {physicalVenues.length > 0 && (
         <VenueCreationLinks
-          hasPhysicalVenue={venues.physicalVenues.length > 0}
+          hasPhysicalVenue={physicalVenues.length > 0}
           hasVirtualOffers={
-            Boolean(venues.virtualVenue) &&
+            Boolean(virtualVenue) &&
             Boolean(selectedOfferer?.hasDigitalVenueAtLeastOneOffer)
           }
           offererId={
