@@ -82,7 +82,7 @@ pyproj = "^3.6.1"
 optional = true
 
 [tool.poetry.group.dev.dependencies]
-black = "^23.9.1"
+black = "^23.12.1"
 debugpy = "^1.8.0"
 fakeredis = "^2.20.1"
 isort = "^5.13.1"
