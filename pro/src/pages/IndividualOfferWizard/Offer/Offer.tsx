@@ -40,4 +40,6 @@ const Offer = (): JSX.Element | null => {
   )
 }
 
-export default Offer
+// Below exports are used by react-router-dom
+// ts-unused-exports:disable-next-line
+export const Component = Offer

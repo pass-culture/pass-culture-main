@@ -6,7 +6,7 @@ import IndivualOfferLayout from 'screens/IndividualOffer/IndivualOfferLayout/Ind
 import { PriceCategoriesSection } from 'screens/IndividualOffer/SummaryScreen/PriceCategoriesSection/PriceCategoriesSection'
 import Spinner from 'ui-kit/Spinner/Spinner'
 
-export const PriceCategoriesSummary = (): JSX.Element | null => {
+const PriceCategoriesSummary = (): JSX.Element | null => {
   const mode = useOfferWizardMode()
   const { offer, subCategories, setOffer } = useIndividualOfferContext()
 
@@ -29,3 +29,7 @@ export const PriceCategoriesSummary = (): JSX.Element | null => {
     </IndivualOfferLayout>
   )
 }
+
+// Below exports are used by react-router-dom
+// ts-unused-exports:disable-next-line
+export const Component = PriceCategoriesSummary

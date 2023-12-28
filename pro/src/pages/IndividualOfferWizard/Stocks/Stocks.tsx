@@ -10,7 +10,7 @@ import StocksEventEdition from 'screens/IndividualOffer/StocksEventEdition/Stock
 import StocksThing from 'screens/IndividualOffer/StocksThing/StocksThing'
 import Spinner from 'ui-kit/Spinner/Spinner'
 
-const Stocks = (): JSX.Element | null => {
+export const Stocks = (): JSX.Element | null => {
   const { offer, setOffer } = useIndividualOfferContext()
   const mode = useOfferWizardMode()
 
@@ -43,4 +43,6 @@ const Stocks = (): JSX.Element | null => {
   )
 }
 
-export default Stocks
+// Below exports are used by react-router-dom
+// ts-unused-exports:disable-next-line
+export const Component = Stocks

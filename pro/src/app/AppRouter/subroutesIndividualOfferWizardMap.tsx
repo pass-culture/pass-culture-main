@@ -3,25 +3,16 @@
 import React from 'react'
 import { Navigate } from 'react-router-dom'
 
-import { BookingsSummary } from 'pages/IndividualOfferWizard/BookingsSummary/BookingsSummary'
-import Confirmation from 'pages/IndividualOfferWizard/Confirmation/Confirmation'
-import Offer from 'pages/IndividualOfferWizard/Offer/Offer'
-import { PriceCategories } from 'pages/IndividualOfferWizard/PriceCategories/PriceCategories'
-import { PriceCategoriesSummary } from 'pages/IndividualOfferWizard/PriceCategoriesSummary/PriceCategoriesSummary'
-import Stocks from 'pages/IndividualOfferWizard/Stocks/Stocks'
-import { StocksSummary } from 'pages/IndividualOfferWizard/StocksSummary/StocksSummary'
-import { Summary } from 'pages/IndividualOfferWizard/Summary/Summary'
-
 import type { RouteConfig } from './routesMap'
 
 export const routesIndividualOfferWizard: RouteConfig[] = [
   {
-    element: <Offer />,
+    lazy: () => import('pages/IndividualOfferWizard/Offer/Offer'),
     path: '/offre/individuelle/:offerId/informations',
     title: 'Détails - Consulter une offre individuelle',
   },
   {
-    element: <Offer />,
+    lazy: () => import('pages/IndividualOfferWizard/Offer/Offer'),
     // This route is duplicated with the one above because
     // /offre/individuelle/creation also matches /offre/individuelle/:offerId
     // but we do not want to display the same title for both routes
@@ -35,67 +26,74 @@ export const routesIndividualOfferWizard: RouteConfig[] = [
     title: 'Création - Détail de l’offre',
   },
   {
-    element: <Offer />,
+    lazy: () => import('pages/IndividualOfferWizard/Offer/Offer'),
     path: '/offre/individuelle/:offerId/creation/informations',
     title: 'Détails - Créer une offre individuelle',
   },
   {
-    element: <Offer />,
+    lazy: () => import('pages/IndividualOfferWizard/Offer/Offer'),
     path: '/offre/individuelle/:offerId/edition/informations',
     title: 'Détails - Modifier une offre individuelle',
   },
   {
-    element: <PriceCategories />,
+    lazy: () =>
+      import('pages/IndividualOfferWizard/PriceCategories/PriceCategories'),
     path: '/offre/individuelle/:offerId/creation/tarifs',
     title: 'Tarifs - Créer une offre individuelle',
   },
   {
-    element: <PriceCategories />,
+    lazy: () =>
+      import('pages/IndividualOfferWizard/PriceCategories/PriceCategories'),
     path: '/offre/individuelle/:offerId/edition/tarifs',
     title: 'Tarifs - Modifier une offre individuelle',
   },
   {
-    element: <PriceCategoriesSummary />,
+    lazy: () =>
+      import(
+        'pages/IndividualOfferWizard/PriceCategoriesSummary/PriceCategoriesSummary'
+      ),
     path: '/offre/individuelle/:offerId/tarifs',
     title: 'Tarifs - Consulter une offre individuelle',
   },
   {
-    element: <Stocks />,
+    lazy: () => import('pages/IndividualOfferWizard/Stocks/Stocks'),
     path: '/offre/individuelle/:offerId/creation/stocks',
     title: 'Stocks et prix - Créer une offre individuelle',
   },
   {
-    element: <Stocks />,
+    lazy: () => import('pages/IndividualOfferWizard/Stocks/Stocks'),
     path: '/offre/individuelle/:offerId/edition/stocks',
     title: 'Stocks et prix - Modifier une offre individuelle',
   },
   {
-    element: <StocksSummary />,
+    lazy: () =>
+      import('pages/IndividualOfferWizard/StocksSummary/StocksSummary'),
     path: '/offre/individuelle/:offerId/stocks',
     title: 'Stocks et prix - Consulter une offre individuelle',
   },
   {
-    element: <Summary />,
+    lazy: () => import('pages/IndividualOfferWizard/Summary/Summary'),
     path: '/offre/individuelle/:offerId/creation/recapitulatif',
     title: 'Récapitulatif - Créer une offre individuelle',
   },
   {
-    element: <Summary />,
+    lazy: () => import('pages/IndividualOfferWizard/Summary/Summary'),
     path: '/offre/individuelle/:offerId/recapitulatif',
     title: 'Récapitulatif - Modifier une offre individuelle',
   },
   {
-    element: <Confirmation />,
+    lazy: () => import('pages/IndividualOfferWizard/Confirmation/Confirmation'),
     path: '/offre/individuelle/:offerId/creation/confirmation',
     title: 'Confirmation - Offre individuelle publiée',
   },
   {
-    element: <Confirmation />,
+    lazy: () => import('pages/IndividualOfferWizard/Confirmation/Confirmation'),
     path: '/offre/individuelle/:offerId/confirmation',
     title: 'Confirmation - Offre individuelle publiée',
   },
   {
-    element: <BookingsSummary />,
+    lazy: () =>
+      import('pages/IndividualOfferWizard/BookingsSummary/BookingsSummary'),
     path: '/offre/individuelle/:offerId/reservations',
     title: 'Réservations - Consulter une offre individuelle',
   },
