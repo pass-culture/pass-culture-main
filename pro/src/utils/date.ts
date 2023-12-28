@@ -1,3 +1,4 @@
+import isValid from 'date-fns/isValid'
 import { fr } from 'date-fns/locale'
 import { format } from 'date-fns-tz'
 
@@ -18,13 +19,8 @@ export const removeTime = (date: Date): Date => {
 
 export const isDateValid = (
   date?: Date | null | string
-): date is Date | string => {
-  if (date === null || date === undefined || date === '') {
-    return false
-  }
-  const dateAsDate = typeof date === 'string' ? new Date(date) : date
-  return dateAsDate instanceof Date && !isNaN(dateAsDate.getTime())
-}
+): date is Date | string =>
+  isValid(typeof date === 'string' ? new Date(date) : date)
 
 export const getToday = () => new Date()
 

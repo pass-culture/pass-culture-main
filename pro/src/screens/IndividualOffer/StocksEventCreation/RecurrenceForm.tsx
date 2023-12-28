@@ -74,11 +74,11 @@ const getMonthlyOptions = (values: RecurrenceFormValues) => {
     ? Math.floor((startingDate.getDate() - 1) / 7)
     : 0
 
-  const lastDayofMonth = isLastWeekOfMonth(startingDate)
+  const isLastDayOfMonth = isLastWeekOfMonth(startingDate)
 
   const dayName = isDateValid(values.startingDate)
     ? formatLocalTimeDateString(
-        values.startingDate,
+        new Date(values.startingDate),
         undefined,
         'eeeeeeee'
       ).replace('.', '')
@@ -94,7 +94,7 @@ const getMonthlyOptions = (values: RecurrenceFormValues) => {
       value: MonthlyOption.BY_FIRST_DAY,
     },
   ]
-  if (lastDayofMonth) {
+  if (isLastDayOfMonth) {
     options.push({
       label: `Le dernier ${dayName} du mois`,
       value: MonthlyOption.BY_LAST_DAY,

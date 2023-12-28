@@ -1,5 +1,7 @@
 import { addMonths, endOfMonth } from 'date-fns'
 
+import { isDateValid } from 'utils/date'
+
 import { MonthlyOption, RecurrenceDays } from './types'
 
 const jsDayToRecurrenceDayMap: Record<number, RecurrenceDays> = {
@@ -14,7 +16,7 @@ const jsDayToRecurrenceDayMap: Record<number, RecurrenceDays> = {
 }
 
 export const isLastWeekOfMonth = (date?: Date | null): boolean => {
-  if (!date) {
+  if (!date || !isDateValid(date)) {
     return false
   }
 
