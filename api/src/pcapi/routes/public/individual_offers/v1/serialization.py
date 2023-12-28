@@ -848,11 +848,17 @@ class EventCategoryResponse(serialization.ConfiguredBaseModel):
         )
 
 
+class LocationTypeEnum(str, enum.Enum):
+    DIGITAL = "DIGITAL"
+    PHYSICAL = "PHYSICAL"
+
+
 class ProductCategoryResponse(serialization.ConfiguredBaseModel):
     id: ProductCategoryEnum  # type: ignore [valid-type]
     conditional_fields: dict[str, bool] = pydantic_v1.Field(
         description="The keys are fields that should be set in the category_related_fields of a product. The values indicate whether their associated field is mandatory during product creation."
     )
+    locationType: LocationTypeEnum | None
 
     @classmethod
     def build_category(cls, subcategory: subcategories.Subcategory) -> "ProductCategoryResponse":
@@ -861,9 +867,15 @@ class ProductCategoryResponse(serialization.ConfiguredBaseModel):
             if field_name in ExtraDataModel.__fields__:
                 conditional_fields[field_name] = condition.is_required_in_external_form
 
+        if subcategory.is_online_only:
+            locationType = LocationTypeEnum.DIGITAL
+        elif subcategory.is_offline_only:
+            locationType = LocationTypeEnum.PHYSICAL
+
         return cls(
             id=subcategory.id,
             conditional_fields=conditional_fields,
+            locationType=locationType,
         )
 
 
