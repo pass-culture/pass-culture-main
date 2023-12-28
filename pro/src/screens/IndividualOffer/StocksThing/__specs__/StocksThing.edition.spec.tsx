@@ -20,7 +20,7 @@ import {
   getIndividualOfferPath,
   getIndividualOfferUrl,
 } from 'core/Offers/utils/getIndividualOfferUrl'
-import Stocks from 'pages/IndividualOfferWizard/Stocks/Stocks'
+import { Stocks } from 'pages/IndividualOfferWizard/Stocks/Stocks'
 import { RootState } from 'store/rootReducer'
 import { individualGetOfferStockResponseModelFactory } from 'utils/individualApiFactories'
 import { renderWithProviders } from 'utils/renderWithProviders'
