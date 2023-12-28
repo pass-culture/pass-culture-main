@@ -29,16 +29,10 @@ import styles from './Venue.module.scss'
 export interface VenueProps {
   offerer?: GetOffererResponseModel | null
   venue: GetOffererVenueResponseModel
-  offererHasCreatedOffer?: boolean
   isFirstVenue: boolean
 }
 
-export const Venue = ({
-  offerer,
-  venue,
-  offererHasCreatedOffer,
-  isFirstVenue,
-}: VenueProps) => {
+export const Venue = ({ offerer, venue, isFirstVenue }: VenueProps) => {
   const dmsInformations = getLastCollectiveDmsApplication(
     venue.collectiveDmsApplications
   )
@@ -208,7 +202,6 @@ export const Venue = ({
             venue={venue}
             hasVenue={true}
             isFirstVenue={isFirstVenue}
-            offererHasCreatedOffer={offererHasCreatedOffer}
             shouldDisplayEACInformationSection={
               shouldDisplayEACInformationSection
             }

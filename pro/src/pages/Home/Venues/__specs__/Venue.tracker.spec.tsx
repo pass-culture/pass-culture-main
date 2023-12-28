@@ -56,7 +56,6 @@ describe('venue create offer link', () => {
     props.venue.isVirtual = false
     props.venue.hasMissingReimbursementPoint = true
     props.venue.hasCreatedOffer = true
-    props.offererHasCreatedOffer = true
 
     renderVenue(props)
     await userEvent.click(screen.getByRole('link', { name: 'Ajouter un RIB' }))
