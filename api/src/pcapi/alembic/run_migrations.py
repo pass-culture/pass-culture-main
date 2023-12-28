@@ -13,7 +13,7 @@ from pcapi.models import Base
 logger = logging.getLogger(__name__)
 
 target_metadata = Base.metadata
-
+# test
 
 def include_object(
     object: schema.SchemaItem,  # pylint: disable=redefined-builtin
