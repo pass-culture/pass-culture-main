@@ -15,6 +15,7 @@ from pcapi.core.offerers import api as offerers_api
 from pcapi.core.offerers import models as offerers_models
 from pcapi.core.offerers import repository as offerers_repository
 from pcapi.core.permissions import models as perm_models
+from pcapi.core.providers import api as providers_api
 from pcapi.core.providers import models as providers_models
 from pcapi.models import db
 from pcapi.models.validation_status_mixin import ValidationStatus
@@ -176,6 +177,8 @@ def update_provider(provider_id: int) -> utils.BackofficeResponse:
     try:
         db.session.add(provider)
         db.session.commit()
+        if not form.is_active.data:
+            providers_api.disable_offers_linked_to_provider(provider_id)
     except sa.exc.IntegrityError:
         db.session.rollback()
         flash("Ce partenaire existe déjà", "warning")

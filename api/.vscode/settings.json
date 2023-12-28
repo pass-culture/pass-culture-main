@@ -2,7 +2,7 @@
   "pylint.importStrategy": "fromEnvironment",
   "pylint.ignorePatterns": ["**/tests/**"],
   "editor.codeActionsOnSave": {
-    "source.organizeImports": true
+    "source.organizeImports": "explicit"
   },
   "editor.formatOnSave": true,
   "python.testing.unittestEnabled": false,
