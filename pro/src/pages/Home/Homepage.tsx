@@ -151,11 +151,7 @@ export const Homepage = (): JSX.Element => {
         <section className={styles['step-section']}>
           <VenueOfferSteps
             hasVenue={!hasNoVenueVisible}
-            offererId={Number(selectedOffererId)}
-            offererHasBankAccount={Boolean(
-              selectedOfferer?.hasPendingBankAccount ||
-                selectedOfferer?.hasValidBankAccount
-            )}
+            offerer={selectedOfferer}
           />
         </section>
       )}
