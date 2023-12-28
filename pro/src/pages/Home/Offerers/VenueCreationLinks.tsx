@@ -1,6 +1,7 @@
 import React from 'react'
 import { useLocation } from 'react-router-dom'
 
+import { GetOffererResponseModel } from 'apiClient/v1'
 import { Events } from 'core/FirebaseEvents/constants'
 import useActiveFeature from 'hooks/useActiveFeature'
 import useAnalytics from 'hooks/useAnalytics'
@@ -9,27 +10,34 @@ import { ButtonVariant } from 'ui-kit/Button/types'
 import { UNAVAILABLE_ERROR_PAGE } from 'utils/routes'
 
 import { Card } from '../Card'
+import {
+  getVirtualVenueFromOfferer,
+  getPhysicalVenuesFromOfferer,
+} from '../venueUtils'
 
 import styles from './VenueCreationLinks.module.scss'
 
 interface VenueCreationLinksProps {
-  hasPhysicalVenue?: boolean
-  hasVirtualOffers?: boolean
-  offererId?: number
+  offerer?: GetOffererResponseModel | null
 }
 
-const VenueCreationLinks = ({
-  hasPhysicalVenue,
-  hasVirtualOffers,
-  offererId,
-}: VenueCreationLinksProps) => {
+const VenueCreationLinks = ({ offerer }: VenueCreationLinksProps) => {
   const isVenueCreationAvailable = useActiveFeature('API_SIRENE_AVAILABLE')
   const isStatisticsDashboardEnabled = useActiveFeature('WIP_HOME_STATS')
   const { logEvent } = useAnalytics()
   const location = useLocation()
 
+  const virtualVenue = getVirtualVenueFromOfferer(offerer)
+  const physicalVenues = getPhysicalVenuesFromOfferer(offerer)
+  const hasVirtualOffers = Boolean(virtualVenue)
+  const hasPhysicalVenue = physicalVenues?.length > 0
+
+  if (!hasPhysicalVenue) {
+    return
+  }
+
   const venueCreationUrl = isVenueCreationAvailable
-    ? `/structures/${offererId}/lieux/creation`
+    ? `/structures/${offerer?.id}/lieux/creation`
     : UNAVAILABLE_ERROR_PAGE
 
   const renderLinks = (insideCard: boolean) => {
@@ -55,7 +63,7 @@ const VenueCreationLinks = ({
           <ButtonLink
             variant={ButtonVariant.SECONDARY}
             link={{
-              to: `/offre/creation?structure=${offererId}`,
+              to: `/offre/creation?structure=${offerer?.id}`,
               isExternal: false,
             }}
           >
