@@ -132,7 +132,7 @@ class GooglePlacesInfoFactory(BaseFactory):
     venue = factory.SubFactory(VenueFactory)
     placeId = factory.Sequence("ChIJd8BlQ2Bx5kcRwE0uQdK5P8U{}".format)
     bannerUrl = factory.Sequence(
-        "https://maps.googleapis.com/maps/api/place/photo?maxwidth=400&photoreference={}&key={}".format
+        "https://maps.googleapis.com/maps/api/place/photo?maxwidth=400&photoreference={}".format
     )
     bannerMeta = None
 
