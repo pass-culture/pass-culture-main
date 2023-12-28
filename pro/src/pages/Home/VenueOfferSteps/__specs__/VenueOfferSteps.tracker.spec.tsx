@@ -28,6 +28,7 @@ const renderVenueOfferSteps = (
         ...defaultGetOffererResponseModel,
         hasPendingBankAccount: false,
         hasValidBankAccount: false,
+        hasNonFreeOffer: false,
       }}
       {...props}
     />,

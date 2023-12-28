@@ -30,8 +30,6 @@ describe('venue create offer link', () => {
         id: venueId,
         name: 'My venue',
       },
-      isVirtual: false,
-      hasNonFreeOffer: false,
       isFirstVenue: false,
     }
     vi.spyOn(useAnalytics, 'default').mockImplementation(() => ({
@@ -40,7 +38,7 @@ describe('venue create offer link', () => {
   })
 
   it('should track updating venue', async () => {
-    props.isVirtual = false
+    props.venue.isVirtual = false
 
     renderVenue(props)
 
@@ -55,7 +53,7 @@ describe('venue create offer link', () => {
   })
 
   it('should track Add RIB button', async () => {
-    props.isVirtual = false
+    props.venue.isVirtual = false
     props.venue.hasMissingReimbursementPoint = true
     props.venue.hasCreatedOffer = true
     props.offererHasCreatedOffer = true
@@ -73,7 +71,7 @@ describe('venue create offer link', () => {
   })
 
   it('should track updating venue with new venue creation journey', () => {
-    props.isVirtual = false
+    props.venue.isVirtual = false
 
     renderVenue(props)
 

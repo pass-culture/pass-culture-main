@@ -18,10 +18,6 @@ import Spinner from 'ui-kit/Spinner/Spinner'
 import { sortByLabel } from 'utils/strings'
 
 import { Card } from '../Card'
-import {
-  getPhysicalVenuesFromOfferer,
-  getVirtualVenueFromOfferer,
-} from '../venueUtils'
 
 import OffererCreationLinks from './OffererCreationLinks'
 import OffererDetails from './OffererDetails'
@@ -120,9 +116,6 @@ const Offerers = ({
   const permanentVenues =
     selectedOfferer?.managedVenues?.filter((venue) => venue.isPermanent) ?? []
 
-  const virtualVenue = getVirtualVenueFromOfferer(selectedOfferer)
-  const physicalVenues = getPhysicalVenuesFromOfferer(selectedOfferer)
-
   return (
     <>
       {userHasOfferers && selectedOfferer && (
@@ -200,20 +193,7 @@ const Offerers = ({
                 </>
               )}
 
-              <VenueList
-                offerer={selectedOfferer}
-                physicalVenues={
-                  isPartnerPageActive
-                    ? physicalVenues.filter((venue) => !venue.isPermanent)
-                    : physicalVenues
-                }
-                virtualVenue={
-                  selectedOfferer.hasDigitalVenueAtLeastOneOffer
-                    ? virtualVenue
-                    : null
-                }
-                hasNonFreeOffer={selectedOfferer.hasNonFreeOffer}
-              />
+              <VenueList offerer={selectedOfferer} />
             </>
           )}
         </>
