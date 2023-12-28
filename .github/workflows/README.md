@@ -84,9 +84,6 @@ Liste des fichiers
 | deploy-app-engine-image-resizing.yml | Helper   | Automatically |                                                                                                       |
 | deploy.yml                            | Helper   | Automatically |                                                                                                       |
 | mypy-cop.yml                          | Workflow | Automatically | [runs](https://github.com/pass-culture/pass-culture-main/actions/workflows/mypy-cop.yml)              |
-| node-quality-check.yml                | Helper   | Automatically |                                                                                                       |
-| node-run-command.yml                  | Helper   | Automatically |                                                                                                       |
-| node-type-check.yml                   | Helper   | Automatically |                                                                                                       |
 | ping_data_team.yml                    | Workflow | Automatically | [runs](https://github.com/pass-culture/pass-culture-main/actions/workflows/ping_data_team.yml)        |
 | prepare-cache-master.yml              | Workflow | Automatically | [runs](https://github.com/pass-culture/pass-culture-main/actions/workflows/prepare-cache-master.yml)  |
 | prepare-cache-weekly.yml              | Workflow | Automatically | [runs](https://github.com/pass-culture/pass-culture-main/actions/workflows/prepare-cache-weekly.yml)  |
