@@ -5,6 +5,7 @@ import { AdageFrontRoles, AuthenticatedResponse } from 'apiClient/adage'
 import { apiAdage, api } from 'apiClient/api'
 import Notification from 'components/Notification/Notification'
 import { GET_DATA_ERROR_MESSAGE } from 'core/shared'
+import { MARSEILLE, MARSEILLE_EN_GRAND } from 'pages/AdageIframe/app/constants'
 import {
   AlgoliaQueryContextProvider,
   FiltersContextProvider,
@@ -14,7 +15,10 @@ import {
   defaultUseInfiniteHitsReturn,
   defaultUseStatsReturn,
 } from 'utils/adageFactories'
-import { renderWithProviders } from 'utils/renderWithProviders'
+import {
+  RenderWithProvidersOptions,
+  renderWithProviders,
+} from 'utils/renderWithProviders'
 
 import { MAIN_INDEX_ID } from '../../OffersInstantSearch'
 import { OffersSearch, SearchProps } from '../OffersSearch'
@@ -103,7 +107,7 @@ vi.mock('apiClient/api', () => ({
 const renderOffersSearchComponent = (
   props: SearchProps,
   user: AuthenticatedResponse,
-  storeOverrides?: unknown
+  options?: RenderWithProvidersOptions
 ) => {
   renderWithProviders(
     <>
@@ -116,9 +120,7 @@ const renderOffersSearchComponent = (
       </AdageUserContextProvider>
       <Notification />
     </>,
-    {
-      storeOverrides: storeOverrides,
-    }
+    options
   )
 }
 
@@ -452,39 +454,29 @@ describe('offersSearch component', () => {
 
   it('should filter on student levels when the institution is in MeG and redirected from "/"', async () => {
     vi.spyOn(URLSearchParams.prototype, 'get').mockImplementation(
-      () => 'marseille'
+      () => MARSEILLE
     )
     renderOffersSearchComponent(
       props,
       {
         ...user,
-        programs: [{ label: '', name: 'marseille_en_grand' }],
+        programs: [{ label: '', name: MARSEILLE_EN_GRAND }],
       },
-      {
-        features: {
-          list: [
-            {
-              isActive: true,
-              nameKey: 'WIP_ENABLE_MARSEILLE',
-            },
-          ],
-        },
-      }
+      { features: ['WIP_ENABLE_MARSEILLE'] }
     )
 
     const loadingMessage = screen.queryByText(/Chargement en cours/)
     await waitFor(() => expect(loadingMessage).not.toBeInTheDocument())
 
-    //  TODO Replace StudentLevel filters values with the correct MeG ones when they exist
     expect(
       screen.getByRole('button', {
-        name: /Lycée - Terminale/,
+        name: /Écoles innovantes Marseille en Grand : maternelle/,
       })
     ).toBeInTheDocument()
 
     expect(
       screen.getByRole('button', {
-        name: /Lycée - Seconde/,
+        name: /Écoles innovantes Marseille en Grand : primaire/,
       })
     ).toBeInTheDocument()
   })

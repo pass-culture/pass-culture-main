@@ -3,6 +3,7 @@ import { Navigate, Route, Routes, useLocation } from 'react-router-dom'
 import { AdageFrontRoles, VenueResponse } from 'apiClient/adage'
 import useActiveFeature from 'hooks/useActiveFeature'
 
+import { MARSEILLE_EN_GRAND } from '../../constants'
 import useAdageUser from '../../hooks/useAdageUser'
 import { AdageDiscovery } from '../AdageDiscovery/AdageDiscovery'
 import { AdageHeader } from '../AdageHeader/AdageHeader'
@@ -26,16 +27,16 @@ export const AppLayout = ({
   const isDiscoveryActive = useActiveFeature('WIP_ENABLE_DISCOVERY')
   const isMarseilleEnabled = useActiveFeature('WIP_ENABLE_MARSEILLE')
   const isUserInMarseilleProgram = (adageUser.programs ?? []).some(
-    (prog) => prog.name === 'marseille_en_grand'
+    (prog) => prog.name === MARSEILLE_EN_GRAND
   )
-  const recirectToMarseilleSearch =
+  const redirectToMarseilleSearch =
     isMarseilleEnabled && isUserInMarseilleProgram
   const venueId = params.get('venue')
 
   const redirectToSearch =
     !isDiscoveryActive ||
     venueId ||
-    recirectToMarseilleSearch ||
+    redirectToMarseilleSearch ||
     adageUser.role === AdageFrontRoles.READONLY
 
   return (
@@ -53,7 +54,7 @@ export const AppLayout = ({
                 <Navigate
                   to={`recherche${search}${
                     //  To apply marseille student level filters only when redirecting to search from '/'
-                    recirectToMarseilleSearch ? '&program=marseille' : ''
+                    redirectToMarseilleSearch ? '&program=marseille' : ''
                   }`}
                 />
               ) : (
