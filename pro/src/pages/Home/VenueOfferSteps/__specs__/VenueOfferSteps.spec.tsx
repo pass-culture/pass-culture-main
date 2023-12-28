@@ -78,7 +78,9 @@ describe('VenueOfferSteps', () => {
 
   it('should display bank account link on first venue if user has no bank account and no offer on offerer', () => {
     props.offerer = offererWithoutBankAccount
-    props.offererHasCreatedOffer = false
+    props.offerer.managedVenues = [
+      { ...defaultGetOffererVenueResponseModel, hasCreatedOffer: false },
+    ]
     props.isFirstVenue = true
     renderVenueOfferSteps(props, {
       features: ['WIP_ENABLE_NEW_BANK_DETAILS_JOURNEY'],
@@ -91,7 +93,9 @@ describe('VenueOfferSteps', () => {
 
   it('should display bank account link on second venue if user has no bank account and no paid offer', () => {
     props.offerer = offererWithoutBankAccount
-    props.offererHasCreatedOffer = false
+    props.offerer.managedVenues = [
+      { ...defaultGetOffererVenueResponseModel, hasCreatedOffer: false },
+    ]
     props.isFirstVenue = false
     renderVenueOfferSteps(props, {
       features: ['WIP_ENABLE_NEW_BANK_DETAILS_JOURNEY'],
@@ -105,7 +109,9 @@ describe('VenueOfferSteps', () => {
   it('should not display bank account link on second venue if user has no bank account with paid offer', () => {
     props.offerer = offererWithoutBankAccount
     props.offerer.hasNonFreeOffer = true
-    props.offererHasCreatedOffer = false
+    props.offerer.managedVenues = [
+      { ...defaultGetOffererVenueResponseModel, hasCreatedOffer: false },
+    ]
     props.isFirstVenue = false
     renderVenueOfferSteps(props, {
       features: ['WIP_ENABLE_NEW_BANK_DETAILS_JOURNEY'],
@@ -117,7 +123,9 @@ describe('VenueOfferSteps', () => {
 
   it('should not display bank account link on first venue if user has bank account', () => {
     props.offerer = offererWithoutBankAccount
-    props.offererHasCreatedOffer = true
+    props.offerer.managedVenues = [
+      { ...defaultGetOffererVenueResponseModel, hasCreatedOffer: true },
+    ]
     props.isFirstVenue = true
     renderVenueOfferSteps(props, {
       features: ['WIP_ENABLE_NEW_BANK_DETAILS_JOURNEY'],
