@@ -518,11 +518,24 @@ def _price_event(event: models.FinanceEvent) -> models.Pricing:
     rule = reimbursement.get_reimbursement_rule(booking, rule_finder, new_revenue)
 
     if event.motive == models.FinanceEventMotive.INCIDENT_REVERSAL_OF_ORIGINAL_EVENT:
-        original_pricing = models.Pricing.query.filter_by(
-            status=models.PricingStatus.INVOICED,
-            booking=individual_booking,
-            collectiveBooking=collective_booking,
-        ).one()
+        original_pricing = (
+            models.Pricing.query.join(models.FinanceEvent)
+            .filter(
+                models.Pricing.status == models.PricingStatus.INVOICED,
+                sqla.or_(
+                    sqla.and_(
+                        models.Pricing.booking == individual_booking,
+                        models.Pricing.collectiveBooking == collective_booking,
+                    ),
+                    sqla.and_(
+                        models.FinanceEvent.booking == individual_booking,
+                        models.FinanceEvent.collectiveBooking == collective_booking,
+                        models.FinanceEvent.motive == models.FinanceEventMotive.BOOKING_USED,
+                    ),
+                ),
+            )
+            .one()
+        )
         amount = -original_pricing.amount  # inverse the original pricing amount (positive)
         lines = [
             models.PricingLine(
@@ -1210,102 +1223,127 @@ def _generate_payments_file(batch_id: int) -> pathlib.Path:
         "Identifiant du point de remboursement",
         "SIRET du point de remboursement",
         "Libellé du point de remboursement",  # commercial name
-        "Type de réservation",
-        "Ministère",
-        "Prix de la réservation",
-        "Montant remboursé à l'offreur",
+        "Montant net offreur",
     ]
-    bookings_query = (
+
+    def get_bookings_data(query: BaseQuery) -> BaseQuery:
+        return (
+            query.filter(bookings_models.Booking.amount != 0)
+            .join(
+                offerers_models.Venue,
+                offerers_models.Venue.id == models.Cashflow.reimbursementPointId,
+            )
+            .join(bookings_models.Booking.deposit)
+            .filter(models.Cashflow.batchId == batch_id)
+            .group_by(
+                offerers_models.Venue.id,
+                offerers_models.Venue.siret,
+                models.Deposit.type,
+            )
+            .with_entities(
+                offerers_models.Venue.id.label("reimbursement_point_id"),
+                offerers_models.Venue.siret.label("reimbursement_point_siret"),
+                offerers_models.Venue.common_name.label("reimbursement_point_name"),  # type: ignore[attr-defined]
+                sqla_func.sum(models.Pricing.amount).label("pricing_amount"),
+            )
+        )
+
+    def get_collective_bookings_data(query: BaseQuery) -> BaseQuery:
+        return (
+            query.join(educational_models.CollectiveBooking.collectiveStock)
+            .join(
+                offerers_models.Venue,
+                offerers_models.Venue.id == models.Cashflow.reimbursementPointId,
+            )
+            .join(educational_models.CollectiveBooking.educationalInstitution)
+            .join(
+                educational_models.EducationalDeposit,
+                sqla.and_(
+                    educational_models.EducationalDeposit.educationalYearId
+                    == educational_models.CollectiveBooking.educationalYearId,
+                    educational_models.EducationalDeposit.educationalInstitutionId
+                    == educational_models.EducationalInstitution.id,
+                ),
+            )
+            .filter(models.Cashflow.batchId == batch_id)
+            .group_by(
+                offerers_models.Venue.id,
+                offerers_models.Venue.siret,
+                educational_models.EducationalDeposit.ministry,
+            )
+            .with_entities(
+                offerers_models.Venue.id.label("reimbursement_point_id"),
+                offerers_models.Venue.siret.label("reimbursement_point_siret"),
+                offerers_models.Venue.common_name.label("reimbursement_point_name"),  # type: ignore[attr-defined]
+                sqla_func.sum(models.Pricing.amount).label("pricing_amount"),
+            )
+        )
+
+    bookings_query = get_bookings_data(
         models.Pricing.query.filter_by(status=models.PricingStatus.PROCESSED)
         .join(models.Pricing.cashflows)
         .join(models.Pricing.booking)
-        .filter(bookings_models.Booking.amount != 0)
-        .join(
-            offerers_models.Venue,
-            offerers_models.Venue.id == models.Cashflow.reimbursementPointId,
-        )
-        .join(bookings_models.Booking.deposit)
-        .filter(models.Cashflow.batchId == batch_id)
-        .group_by(
-            offerers_models.Venue.id,
-            offerers_models.Venue.siret,
-            models.Deposit.type,
-        )
-        .with_entities(
-            offerers_models.Venue.id.label("reimbursement_point_id"),
-            offerers_models.Venue.siret.label("reimbursement_point_siret"),
-            offerers_models.Venue.common_name.label("reimbursement_point_name"),  # type: ignore[attr-defined]
-            sqla_func.sum(bookings_models.Booking.amount * bookings_models.Booking.quantity).label("booking_amount"),
-            models.Deposit.type.label("deposit_type"),
-            sqla_func.sum(models.Pricing.amount).label("pricing_amount"),
-        )
     )
 
-    collective_bookings_query = (
+    collective_bookings_query = get_collective_bookings_data(
         models.Pricing.query.filter_by(status=models.PricingStatus.PROCESSED)
         .join(models.Pricing.cashflows)
         .join(models.Pricing.collectiveBooking)
-        .join(educational_models.CollectiveBooking.collectiveStock)
-        .join(
-            offerers_models.Venue,
-            offerers_models.Venue.id == models.Cashflow.reimbursementPointId,
-        )
-        .join(educational_models.CollectiveBooking.educationalInstitution)
-        .join(
-            educational_models.EducationalDeposit,
-            sqla.and_(
-                educational_models.EducationalDeposit.educationalYearId
-                == educational_models.CollectiveBooking.educationalYearId,
-                educational_models.EducationalDeposit.educationalInstitutionId
-                == educational_models.EducationalInstitution.id,
-            ),
-        )
-        .filter(models.Cashflow.batchId == batch_id)
-        .group_by(
-            offerers_models.Venue.id,
-            offerers_models.Venue.siret,
-            educational_models.EducationalDeposit.ministry,
-        )
-        .with_entities(
-            offerers_models.Venue.id.label("reimbursement_point_id"),
-            offerers_models.Venue.siret.label("reimbursement_point_siret"),
-            offerers_models.Venue.common_name.label("reimbursement_point_name"),  # type: ignore[attr-defined]
-            sqla_func.sum(educational_models.CollectiveStock.price).label("booking_amount"),
-            educational_models.EducationalDeposit.ministry.label("ministry"),
-            sqla_func.sum(models.Pricing.amount).label("pricing_amount"),
-        )
+    )
+
+    finance_event_bookings_query = get_bookings_data(
+        models.Pricing.query.filter_by(status=models.PricingStatus.PROCESSED)
+        .join(models.Pricing.cashflows)
+        .join(models.Pricing.event)
+        .join(models.FinanceEvent.booking)
+    )
+
+    finance_event_collective_bookings_query = get_collective_bookings_data(
+        models.Pricing.query.filter_by(status=models.PricingStatus.PROCESSED)
+        .join(models.Pricing.cashflows)
+        .join(models.Pricing.event)
+        .join(models.FinanceEvent.collectiveBooking)
+    )
+
+    finance_incident_bookings_query = get_bookings_data(
+        models.Pricing.query.filter_by(status=models.PricingStatus.PROCESSED)
+        .join(models.Pricing.cashflows)
+        .join(models.Pricing.event)
+        .join(models.FinanceEvent.bookingFinanceIncident)
+        .join(models.BookingFinanceIncident.booking)
+    )
+
+    finance_incident_collective_bookings_query = get_collective_bookings_data(
+        models.Pricing.query.filter_by(status=models.PricingStatus.PROCESSED)
+        .join(models.Pricing.cashflows)
+        .join(models.Pricing.event)
+        .join(models.FinanceEvent.bookingFinanceIncident)
+        .join(models.BookingFinanceIncident.collectiveBooking)
     )
 
     return _write_csv(
-        "payment_details",
+        "down_payment",
         header,
-        rows=itertools.chain(bookings_query, collective_bookings_query),
+        rows=itertools.chain(
+            bookings_query,
+            collective_bookings_query,
+            finance_event_bookings_query,
+            finance_event_collective_bookings_query,
+            finance_incident_bookings_query,
+            finance_incident_collective_bookings_query,
+        ),
         row_formatter=_payment_details_row_formatter,
     )
 
 
 def _payment_details_row_formatter(sql_row: typing.Any) -> tuple:
-    if hasattr(sql_row, "ministry"):
-        booking_type = "EACC"
-    elif sql_row.deposit_type == models.DepositType.GRANT_15_17:
-        booking_type = "EACI"
-    elif sql_row.deposit_type == models.DepositType.GRANT_18:
-        booking_type = "PC"
-    else:
-        raise ValueError("Unknown booking type (not educational nor individual)")
-
-    booking_total_amount = sql_row.booking_amount
-    reimbursed_amount = utils.to_euros(-sql_row.pricing_amount)
-    ministry = sql_row.ministry.name if hasattr(sql_row, "ministry") else ""
+    net_amount = utils.to_euros(-sql_row.pricing_amount)
 
     return (
         human_ids.humanize(sql_row.reimbursement_point_id),
         _clean_for_accounting(sql_row.reimbursement_point_siret),
         _clean_for_accounting(sql_row.reimbursement_point_name),
-        booking_type,
-        ministry,
-        booking_total_amount,
-        reimbursed_amount,
+        net_amount,
     )
 
 

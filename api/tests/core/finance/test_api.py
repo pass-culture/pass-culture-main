@@ -1325,10 +1325,40 @@ def test_generate_payments_file():
         collectiveBooking__educationalYear=deposit2.educationalYear,
     )
 
+    # Create booking for overpayment finance incident
+    incident_booking = bookings_factories.ReimbursedBookingFactory(
+        amount=12,
+        dateUsed=used_date,
+        venue=offer_venue2,
+        stock__offer__name="Une histoire plutôt bien",
+        stock__offer__subcategoryId=subcategories.SUPPORT_PHYSIQUE_FILM.id,
+        stock__offer__venue=offer_venue2,
+    )
+
+    used_event = factories.UsedBookingFinanceEventFactory(booking=incident_booking)
+    factories.PricingFactory(
+        booking=None,
+        event=used_event,
+        status=models.PricingStatus.INVOICED,
+        venue=incident_booking.venue,
+        valueDate=datetime.datetime.utcnow(),
+    )
+
+    # Create finance incident on the booking above (incident amount: 2€)
+    booking_finance_incident = factories.IndividualBookingFinanceIncidentFactory(
+        booking=incident_booking, newTotalAmount=1000
+    )
+    incident_events = api._create_finance_events_from_incident(
+        booking_finance_incident, datetime.datetime.utcnow(), commit=True
+    )
+
+    for event in incident_events:
+        api.price_event(event)
+
     cutoff = datetime.datetime.utcnow()
     batch_id = api.generate_cashflows(cutoff).id
 
-    n_queries = 2  # select pricings for bookings + collective bookings
+    n_queries = 6  # select pricings for bookings + collective bookings
     with assert_num_queries(n_queries):
         path = api._generate_payments_file(batch_id)
 
@@ -1336,42 +1366,36 @@ def test_generate_payments_file():
         reader = csv.DictReader(fp, quoting=csv.QUOTE_NONNUMERIC)
         rows = list(reader)
 
-    assert len(rows) == 4
+    assert len(rows) == 5
     assert rows[0] == {
         "Identifiant du point de remboursement": human_ids.humanize(venue1.id),
         "SIRET du point de remboursement": "123456 test",
         "Libellé du point de remboursement": "Le Petit Rintintin test",
-        "Type de réservation": "PC",
-        "Ministère": "",
-        "Prix de la réservation": 10,
-        "Montant remboursé à l'offreur": 10,
+        "Montant net offreur": 10,
     }
     assert rows[1] == {
         "Identifiant du point de remboursement": human_ids.humanize(reimbursement_point_2.id),
         "SIRET du point de remboursement": "22222222233333",
         "Libellé du point de remboursement": "Point de remboursement du Gigantesque Cubitus",
-        "Type de réservation": "EACI",
-        "Ministère": "",
-        "Prix de la réservation": 12,
-        "Montant remboursé à l'offreur": 6,
+        "Montant net offreur": 6,
     }
     assert rows[2] == {
         "Identifiant du point de remboursement": human_ids.humanize(reimbursement_point_2.id),
         "SIRET du point de remboursement": "22222222233333",
         "Libellé du point de remboursement": "Point de remboursement du Gigantesque Cubitus",
-        "Type de réservation": "PC",
-        "Ministère": "",
-        "Prix de la réservation": 24,
-        "Montant remboursé à l'offreur": 15,
+        "Montant net offreur": 15,
     }
     assert rows[3] == {
         "Identifiant du point de remboursement": human_ids.humanize(reimbursement_point_2.id),
         "SIRET du point de remboursement": "22222222233333",
         "Libellé du point de remboursement": "Point de remboursement du Gigantesque Cubitus",
-        "Type de réservation": "EACC",
-        "Ministère": Ministry.EDUCATION_NATIONALE.name,
-        "Prix de la réservation": 10,
-        "Montant remboursé à l'offreur": 10,
+        "Montant net offreur": 10,
+    }
+    assert rows[4] == {
+        "Identifiant du point de remboursement": human_ids.humanize(reimbursement_point_2.id),
+        "SIRET du point de remboursement": "22222222233333",
+        "Libellé du point de remboursement": "Point de remboursement du Gigantesque Cubitus",
+        "Montant net offreur": -2,
     }
 
 

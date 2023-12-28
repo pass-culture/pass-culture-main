@@ -134,7 +134,16 @@ class _BasePricingFactory(BaseFactory):
         **kwargs: typing.Any,
     ) -> models.Pricing:
         if not kwargs["pricingPointId"]:
-            booking = kwargs.get("booking") or kwargs.get("collectiveBooking")
+            event = kwargs.get("event")
+            event_booking = (
+                event.booking
+                or event.collectiveBooking
+                or event.bookingFinanceIncident.booking
+                or event.bookingFinanceIncident.collectiveBooking
+                if event
+                else None
+            )
+            booking = kwargs.get("booking") or kwargs.get("collectiveBooking") or event_booking
             assert booking  # make mypy happy
             venue = booking.venue
             pricing_point_id = venue.current_pricing_point_id
@@ -153,9 +162,17 @@ class PricingFactory(_BasePricingFactory):
     booking = factory.SubFactory(bookings_factories.UsedBookingFactory)
     venue = factory.SelfAttribute("booking.venue")
     valueDate = factory.SelfAttribute("booking.dateUsed")
-    amount = factory.LazyAttribute(lambda pricing: -int(100 * pricing.booking.total_amount))
+    amount = factory.LazyAttribute(
+        lambda pricing: -int(
+            100 * (pricing.booking.total_amount if pricing.booking else pricing.event.booking.total_amount)
+        )
+    )
     standardRule = "Remboursement total pour les offres physiques"
-    revenue = factory.LazyAttribute(lambda pricing: int(100 * pricing.booking.total_amount))
+    revenue = factory.LazyAttribute(
+        lambda pricing: int(
+            100 * (pricing.booking.total_amount if pricing.booking else pricing.event.booking.total_amount)
+        )
+    )
 
 
 class CollectivePricingFactory(_BasePricingFactory):
