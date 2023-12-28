@@ -232,20 +232,7 @@ const Offerers = ({
 
       {!userHasOfferers && <OffererCreationLinks />}
 
-      {physicalVenues.length > 0 && (
-        <VenueCreationLinks
-          hasPhysicalVenue={physicalVenues.length > 0}
-          hasVirtualOffers={
-            Boolean(virtualVenue) &&
-            Boolean(selectedOfferer?.hasDigitalVenueAtLeastOneOffer)
-          }
-          offererId={
-            /* istanbul ignore next: DEBT, TO FIX */ selectedOfferer
-              ? selectedOfferer.id
-              : undefined
-          }
-        />
-      )}
+      <VenueCreationLinks offerer={selectedOfferer} />
     </>
   )
 }
