@@ -1,19 +1,21 @@
 import { screen, waitForElementToBeRemoved } from '@testing-library/react'
 import React from 'react'
 
-import { FeatureResponseModel } from 'apiClient/adage'
+import { MARSEILLE_EN_GRAND } from 'pages/AdageIframe/app/constants'
 import {
   AlgoliaQueryContextProvider,
   FiltersContextProvider,
 } from 'pages/AdageIframe/app/providers'
 import { AdageUserContextProvider } from 'pages/AdageIframe/app/providers/AdageUserContext'
-import { RootState } from 'store/rootReducer'
 import {
   defaultAdageUser,
   defaultCategories,
   defaultUseInfiniteHitsReturn,
 } from 'utils/adageFactories'
-import { renderWithProviders } from 'utils/renderWithProviders'
+import {
+  RenderWithProvidersOptions,
+  renderWithProviders,
+} from 'utils/renderWithProviders'
 
 import { AppLayout } from '../AppLayout'
 
@@ -99,8 +101,7 @@ vi.mock('pages/AdageIframe/repository/pcapi/pcapi', () => ({
 }))
 
 const renderAppLayout = (
-  initialRoute = '/',
-  storeOverrides: Partial<RootState> = {},
+  options?: RenderWithProvidersOptions,
   user = defaultAdageUser
 ) => {
   renderWithProviders(
@@ -111,24 +112,12 @@ const renderAppLayout = (
         </AlgoliaQueryContextProvider>
       </FiltersContextProvider>
     </AdageUserContextProvider>,
-
-    { storeOverrides, initialRouterEntries: [initialRoute] }
+    options
   )
 }
 
-const store = {
-  features: {
-    list: [
-      {
-        isActive: true,
-        nameKey: 'WIP_ENABLE_MARSEILLE',
-      },
-      {
-        isActive: true,
-        nameKey: 'WIP_ENABLE_DISCOVERY',
-      },
-    ] as FeatureResponseModel[],
-  },
+const featureOverrides = {
+  features: ['WIP_ENABLE_MARSEILLE', 'WIP_ENABLE_DISCOVERY'],
 }
 
 describe('AppLayout', () => {
@@ -141,16 +130,16 @@ describe('AppLayout', () => {
   })
 
   it('should redirect to the search page if the user is in Marseille en Grand and if the FF is active', () => {
-    renderAppLayout('', store, {
+    renderAppLayout(featureOverrides, {
       ...defaultAdageUser,
-      programs: [{ label: '', name: 'marseille_en_grand' }],
+      programs: [{ label: '', name: MARSEILLE_EN_GRAND }],
     })
 
     expect(screen.getByRole('link', { name: 'Rechercher' })).toBeInTheDocument()
   })
 
   it('should redirect to the discovery page if the user is not in Marseille en Grand and if the FF is active', async () => {
-    renderAppLayout('', store, {
+    renderAppLayout(featureOverrides, {
       ...defaultAdageUser,
       programs: [],
     })

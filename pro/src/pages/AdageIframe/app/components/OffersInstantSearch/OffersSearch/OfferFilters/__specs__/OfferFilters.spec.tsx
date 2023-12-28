@@ -373,7 +373,9 @@ describe('OfferFilters', () => {
     expect(options[0]).toHaveAccessibleName('Collège - 5e')
 
     //  Verify that non-selected options aren't sorted alphabetically
-    expect(options[1]).toHaveAccessibleName('Collège - 6e')
+    expect(options[1]).toHaveAccessibleName(
+      'Écoles innovantes Marseille en Grand : maternelle'
+    )
     expect(options[options.length - 1]).toHaveAccessibleName('CAP - 2e année')
   })
 })
