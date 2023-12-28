@@ -1,14 +1,18 @@
 import { screen } from '@testing-library/react'
 import React from 'react'
 
-import { VenueOfferStepsProps } from 'pages/Home/VenueOfferSteps/VenueOfferSteps'
-import { defaultGetOffererResponseModel } from 'utils/apiFactories'
+import {
+  VenueOfferSteps,
+  VenueOfferStepsProps,
+} from 'pages/Home/VenueOfferSteps/VenueOfferSteps'
+import {
+  defaultGetOffererResponseModel,
+  defaultGetOffererVenueResponseModel,
+} from 'utils/apiFactories'
 import {
   RenderWithProvidersOptions,
   renderWithProviders,
 } from 'utils/renderWithProviders'
-
-import { VenueOfferSteps } from '../index'
 
 const renderVenueOfferSteps = (
   props: VenueOfferStepsProps,
@@ -51,7 +55,10 @@ describe('VenueOfferSteps', () => {
   })
 
   it('should display reimbursement link if user has no ReimbursementPoint on venue', () => {
-    props.hasMissingReimbursementPoint = true
+    props.venue = {
+      ...defaultGetOffererVenueResponseModel,
+      hasMissingReimbursementPoint: true,
+    }
     renderVenueOfferSteps(props)
     expect(
       screen.getByText('Renseigner des coordonnées bancaires')
@@ -59,7 +66,10 @@ describe('VenueOfferSteps', () => {
   })
 
   it('should not display reimbursement link if user has ReimbursementPoint on venue', () => {
-    props.hasMissingReimbursementPoint = false
+    props.venue = {
+      ...defaultGetOffererVenueResponseModel,
+      hasMissingReimbursementPoint: false,
+    }
     renderVenueOfferSteps(props)
     expect(
       screen.queryByText('Renseigner des coordonnées bancaires')
@@ -141,8 +151,11 @@ describe('VenueOfferSteps', () => {
 
   it('should display bank information status follow link when condition to display it is true', () => {
     props.shouldDisplayEACInformationSection = false
-    props.hasPendingBankInformationApplication = true
-    props.demarchesSimplifieesApplicationId = 1232799
+    props.venue = {
+      ...defaultGetOffererVenueResponseModel,
+      hasPendingBankInformationApplication: true,
+      demarchesSimplifieesApplicationId: 1232799,
+    }
     renderVenueOfferSteps(props)
     expect(screen.getByText('Démarche en cours :')).toBeInTheDocument()
     expect(
@@ -168,10 +181,12 @@ describe('VenueOfferSteps', () => {
   })
 
   it('redirect to dms even if there is no dms application id', () => {
-    props.hasVenue = false
+    props.venue = {
+      ...defaultGetOffererVenueResponseModel,
+      hasPendingBankInformationApplication: true,
+      demarchesSimplifieesApplicationId: null,
+    }
     props.shouldDisplayEACInformationSection = false
-    props.hasPendingBankInformationApplication = true
-    props.demarchesSimplifieesApplicationId = null
     renderVenueOfferSteps(props)
     expect(
       screen.getByRole('link', {
@@ -181,8 +196,10 @@ describe('VenueOfferSteps', () => {
   })
 
   it('should display link for eac informations if has adage id and already created offer', () => {
-    props.hasVenue = false
-    props.hasAdageId = true
+    props.venue = {
+      ...defaultGetOffererVenueResponseModel,
+      hasAdageId: true,
+    }
     props.shouldDisplayEACInformationSection = true
     renderVenueOfferSteps(props)
     expect(
@@ -193,8 +210,10 @@ describe('VenueOfferSteps', () => {
   })
 
   it('should display disabled link to eac informations if venue doesnt have adage id', () => {
-    props.hasVenue = false
-    props.hasAdageId = false
+    props.venue = {
+      ...defaultGetOffererVenueResponseModel,
+      hasAdageId: false,
+    }
     props.shouldDisplayEACInformationSection = true
     renderVenueOfferSteps(props)
     const eacInformationsLink = screen.getByRole('link', {
@@ -214,8 +233,11 @@ describe('VenueOfferSteps', () => {
   })
 
   it('should not display venueOfferSteps if no condition to display informations', () => {
-    props.venueHasCreatedOffer = true
-    props.hasPendingBankInformationApplication = false
+    props.venue = {
+      ...defaultGetOffererVenueResponseModel,
+      hasCreatedOffer: true,
+      hasPendingBankInformationApplication: false,
+    }
     props.shouldDisplayEACInformationSection = false
     renderVenueOfferSteps(props)
     expect(screen.queryByText('Prochaines étapes :')).not.toBeInTheDocument()
@@ -224,7 +246,10 @@ describe('VenueOfferSteps', () => {
   })
 
   it('should display venueOfferSteps if condition to display it', () => {
-    props.venueHasCreatedOffer = true
+    props.venue = {
+      ...defaultGetOffererVenueResponseModel,
+      hasCreatedOffer: true,
+    }
     props.shouldDisplayEACInformationSection = true
     renderVenueOfferSteps(props)
     expect(screen.getByText('Prochaines étapes :')).toBeInTheDocument()
