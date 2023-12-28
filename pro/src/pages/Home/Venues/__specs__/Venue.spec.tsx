@@ -3,7 +3,10 @@ import { addDays } from 'date-fns'
 import React from 'react'
 
 import { DMSApplicationstatus } from 'apiClient/v1'
-import { defaultGetOffererVenueResponseModel } from 'utils/apiFactories'
+import {
+  defaultGetOffererResponseModel,
+  defaultGetOffererVenueResponseModel,
+} from 'utils/apiFactories'
 import { defaultCollectiveDmsApplication } from 'utils/collectiveApiFactories'
 import {
   RenderWithProvidersOptions,
@@ -26,14 +29,13 @@ describe('venues', () => {
 
   beforeEach(() => {
     props = {
+      offerer: { ...defaultGetOffererResponseModel, id: offererId },
       venue: {
         ...defaultGetOffererVenueResponseModel,
         id: venueId,
         name: 'My venue',
       },
       isVirtual: false,
-      offererId: offererId,
-      offererHasBankAccount: false,
       hasNonFreeOffer: false,
       isFirstVenue: false,
     }

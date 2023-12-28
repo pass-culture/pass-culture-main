@@ -201,21 +201,17 @@ const Offerers = ({
               )}
 
               <VenueList
+                offerer={selectedOfferer}
                 physicalVenues={
                   isPartnerPageActive
                     ? physicalVenues.filter((venue) => !venue.isPermanent)
                     : physicalVenues
                 }
-                selectedOffererId={selectedOfferer.id}
                 virtualVenue={
                   selectedOfferer.hasDigitalVenueAtLeastOneOffer
                     ? virtualVenue
                     : null
                 }
-                offererHasBankAccount={Boolean(
-                  selectedOfferer.hasPendingBankAccount ||
-                    selectedOfferer.hasValidBankAccount
-                )}
                 hasNonFreeOffer={selectedOfferer.hasNonFreeOffer}
               />
             </>

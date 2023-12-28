@@ -1,23 +1,24 @@
 import React from 'react'
 
-import { GetOffererVenueResponseModel } from 'apiClient/v1'
+import {
+  GetOffererResponseModel,
+  GetOffererVenueResponseModel,
+} from 'apiClient/v1'
 
 import { Venue } from './Venue'
 import styles from './Venue.module.scss'
 
 interface VenueListProps {
+  offerer: GetOffererResponseModel
   physicalVenues: GetOffererVenueResponseModel[]
-  selectedOffererId: number
   virtualVenue: GetOffererVenueResponseModel | null
-  offererHasBankAccount: boolean
   hasNonFreeOffer: boolean
 }
 
 export const VenueList = ({
+  offerer,
   physicalVenues,
-  selectedOffererId,
   virtualVenue,
-  offererHasBankAccount,
   hasNonFreeOffer,
 }: VenueListProps) => {
   const offererHasCreatedOffer =
@@ -30,23 +31,21 @@ export const VenueList = ({
       {virtualVenue && (
         <Venue
           venue={virtualVenue}
+          offerer={offerer}
           isVirtual
           isFirstVenue
-          offererId={selectedOffererId}
           offererHasCreatedOffer={offererHasCreatedOffer}
-          offererHasBankAccount={offererHasBankAccount}
           hasNonFreeOffer={hasNonFreeOffer}
         />
       )}
 
       {physicalVenues?.map((venue, index) => (
         <Venue
-          key={selectedOffererId + '-' + venue.id}
+          key={offerer.id + '-' + venue.id}
           venue={venue}
+          offerer={offerer}
           isFirstVenue={index === indexLastPhysicalVenues}
-          offererId={selectedOffererId}
           offererHasCreatedOffer={offererHasCreatedOffer}
-          offererHasBankAccount={offererHasBankAccount}
           hasNonFreeOffer={hasNonFreeOffer}
         />
       ))}
