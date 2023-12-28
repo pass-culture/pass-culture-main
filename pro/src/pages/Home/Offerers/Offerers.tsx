@@ -38,7 +38,6 @@ export interface OfferersProps {
   selectedOfferer?: GetOffererResponseModel | null
   isLoading: boolean
   isUserOffererValidated: boolean
-  hasAtLeastOnePhysicalVenue: boolean
 }
 
 const Offerers = ({
@@ -48,7 +47,6 @@ const Offerers = ({
   selectedOfferer,
   isLoading,
   isUserOffererValidated,
-  hasAtLeastOnePhysicalVenue,
 }: OfferersProps) => {
   const isPartnerPageActive = useActiveFeature('WIP_PARTNER_PAGE')
   const [offererOptions, setOffererOptions] = useState<SelectOption[]>([])
@@ -169,7 +167,6 @@ const Offerers = ({
             isUserOffererValidated={isUserOffererValidated}
             offererOptions={offererOptions}
             selectedOfferer={selectedOfferer}
-            hasAtLeastOnePhysicalVenue={hasAtLeastOnePhysicalVenue}
           />
 
           {isPartnerPageActive && permanentVenues.length > 0 && (
