@@ -6,6 +6,7 @@ import pytest
 from pcapi.core.offerers import api as offerers_api
 from pcapi.core.offerers import factories as offerers_factories
 from pcapi.core.offerers import models as offerers_models
+from pcapi.core.offers import factories as offers_factories
 from pcapi.core.permissions import models as perm_models
 from pcapi.core.providers import factories as providers_factories
 from pcapi.core.providers import models as providers_models
@@ -248,3 +249,34 @@ class UpdateProviderTest(PostEndpointHelper):
         assert not updated_provider.apiKeys
 
         assert offerer.name != form_data["name"]
+
+    def test_disable_offer_when_disabling_provider(self, authenticated_client):
+        provider = providers_factories.ProviderFactory()
+        offerer = offerers_factories.OffererFactory()
+        providers_factories.OffererProviderFactory(offerer=offerer, provider=provider)
+
+        venue_provider_1 = providers_factories.VenueProviderFactory(provider=provider)
+        offer_1_1 = offers_factories.OfferFactory(venue=venue_provider_1.venue, lastProvider=provider, isActive=True)
+
+        venue_provider_2 = providers_factories.VenueProviderFactory(provider=provider)
+        offer_2_1 = offers_factories.OfferFactory(venue=venue_provider_2.venue, lastProvider=provider, isActive=True)
+        offer_2_2 = offers_factories.OfferFactory(venue=venue_provider_2.venue, lastProvider=provider, isActive=True)
+
+        form_data = {
+            "name": "Individual Offer API consumer",
+            "enabled_for_pro": False,
+        }
+        response = self.post_to_endpoint(authenticated_client, form_data, provider_id=provider.id)
+        assert response.status_code == 303
+        redirected_response = authenticated_client.get(response.headers["location"])
+
+        created_provider_alert = html_parser.extract_alert(redirected_response.data)
+        assert created_provider_alert == f'Le partenaire {form_data["name"]} a été modifié.'
+
+        updated_provider = providers_models.Provider.query.get(provider.id)
+        assert updated_provider.isActive == False
+        assert venue_provider_1.isActive == False
+        assert offer_1_1.isActive == False
+        assert venue_provider_2.isActive == False
+        assert offer_2_1.isActive == False
+        assert offer_2_2.isActive == False

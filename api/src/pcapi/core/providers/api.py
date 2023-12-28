@@ -481,3 +481,12 @@ def _get_siret(venue_id_at_offer_provider: str | None, siret: str | None) -> str
     if siret is not None:
         return siret
     raise providers_exceptions.NoSiretSpecified()
+
+
+def disable_offers_linked_to_provider(provider_id: int) -> None:
+    venue_providers = providers_models.VenueProvider.query.filter_by(providerId=provider_id).all()
+    for venue_provider in venue_providers:
+        update_venue_synchronized_offers_active_status_job.delay(
+            venue_provider.venueId, venue_provider.providerId, False
+        )
+        venue_provider.isActive = False
