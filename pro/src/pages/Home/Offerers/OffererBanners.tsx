@@ -4,19 +4,21 @@ import { GetOffererResponseModel } from 'apiClient/v1'
 import fullLinkIcon from 'icons/full-link.svg'
 import { Banner } from 'ui-kit'
 
+import { hasOffererAtLeastOnePhysicalVenue } from '../venueUtils'
+
 import styles from './OffererBanners.module.scss'
 
 interface OffererBannersProps {
   isUserOffererValidated: boolean
-  hasAtLeastOnePhysicalVenue: boolean
-  selectedOfferer: GetOffererResponseModel
+  offerer: GetOffererResponseModel
 }
 
 export const OffererBanners = ({
   isUserOffererValidated,
-  hasAtLeastOnePhysicalVenue,
-  selectedOfferer,
+  offerer,
 }: OffererBannersProps) => {
+  const hasAtLeastOnePhysicalVenue = hasOffererAtLeastOnePhysicalVenue(offerer)
+
   if (!isUserOffererValidated) {
     return (
       <Banner
@@ -44,7 +46,7 @@ export const OffererBanners = ({
     )
   }
 
-  if (!selectedOfferer.isValidated) {
+  if (!offerer.isValidated) {
     return (
       <Banner
         type="notification-info"

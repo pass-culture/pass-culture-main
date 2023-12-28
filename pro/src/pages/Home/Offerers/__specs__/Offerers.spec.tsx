@@ -30,7 +30,6 @@ const renderOfferers = (
       cancelLoading={() => null}
       selectedOfferer={defaultGetOffererResponseModel}
       isLoading={false}
-      hasAtLeastOnePhysicalVenue={false}
       isUserOffererValidated
       {...props}
     />,

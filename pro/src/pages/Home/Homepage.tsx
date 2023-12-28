@@ -113,11 +113,6 @@ export const Homepage = (): JSX.Element => {
     logProFlags()
   }, [remoteConfigData?.REMOTE_CONFIG_LOADED])
 
-  const hasAtLeastOnePhysicalVenue =
-    selectedOfferer?.managedVenues?.some(
-      (venue) => !venue.isVirtual && venue.id
-    ) ?? false
-
   return (
     <AppLayout>
       <h1>Bienvenue dans l’espace acteurs culturels</h1>
@@ -132,8 +127,7 @@ export const Homepage = (): JSX.Element => {
         <>
           <OffererBanners
             isUserOffererValidated={isUserOffererValidated}
-            selectedOfferer={selectedOfferer}
-            hasAtLeastOnePhysicalVenue={hasAtLeastOnePhysicalVenue}
+            offerer={selectedOfferer}
           />
 
           <section className={styles['section']}>
@@ -147,7 +141,6 @@ export const Homepage = (): JSX.Element => {
           selectedOfferer={selectedOfferer}
           isLoading={isLoading}
           isUserOffererValidated={isUserOffererValidated}
-          hasAtLeastOnePhysicalVenue={hasAtLeastOnePhysicalVenue}
           receivedOffererNames={receivedOffererNames}
           onSelectedOffererChange={setSelectedOffererId}
           cancelLoading={() => setIsLoading(false)}

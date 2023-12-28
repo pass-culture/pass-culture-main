@@ -13,6 +13,7 @@ import { ButtonVariant } from 'ui-kit/Button/types'
 import SelectInput from 'ui-kit/form/Select/SelectInput'
 
 import { Card } from '../Card'
+import { hasOffererAtLeastOnePhysicalVenue } from '../venueUtils'
 
 import { OffererBanners } from './OffererBanners'
 import styles from './OffererDetails.module.scss'
@@ -20,7 +21,6 @@ import styles from './OffererDetails.module.scss'
 interface OffererDetailsProps {
   handleChangeOfferer: (event: React.ChangeEvent<HTMLSelectElement>) => void
   isUserOffererValidated: boolean
-  hasAtLeastOnePhysicalVenue: boolean
   offererOptions: SelectOption[]
   selectedOfferer: GetOffererResponseModel
 }
@@ -30,7 +30,6 @@ const OffererDetails = ({
   isUserOffererValidated,
   offererOptions,
   selectedOfferer,
-  hasAtLeastOnePhysicalVenue,
 }: OffererDetailsProps) => {
   const { logEvent } = useAnalytics()
   const isStatisticsDashboardEnabled = useActiveFeature('WIP_HOME_STATS')
@@ -44,6 +43,9 @@ const OffererDetails = ({
       .map((venue) => venue.hasMissingReimbursementPoint)
       .some(Boolean)
   }, [selectedOfferer])
+
+  const hasAtLeastOnePhysicalVenue =
+    hasOffererAtLeastOnePhysicalVenue(selectedOfferer)
 
   const showCreateVenueBanner =
     selectedOfferer.isValidated &&
@@ -126,9 +128,8 @@ const OffererDetails = ({
         <>
           <div className={cn(styles['separator'], styles['horizontal'])} />
           <OffererBanners
-            selectedOfferer={selectedOfferer}
+            offerer={selectedOfferer}
             isUserOffererValidated={isUserOffererValidated}
-            hasAtLeastOnePhysicalVenue={hasAtLeastOnePhysicalVenue}
           />
         </>
       )}
