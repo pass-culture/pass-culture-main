@@ -30,7 +30,10 @@ def test_category_serialization(client):
     )
 
     assert response.status_code == 200
-    assert all({"id", "conditionalFields"} == set(category_response.keys()) for category_response in response.json)
+    assert all(
+        {"id", "conditionalFields", "locationType"} == set(category_response.keys())
+        for category_response in response.json
+    )
 
     concert_response = next(subcategory for subcategory in response.json if subcategory["id"] == "SPECTACLE_ENREGISTRE")
     assert concert_response["conditionalFields"] == {
@@ -39,3 +42,4 @@ def test_category_serialization(client):
         "stageDirector": False,
         "performer": False,
     }
+    assert concert_response["locationType"] == "DIGITAL"
