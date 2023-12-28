@@ -5,6 +5,7 @@ import {
   VenueOfferSteps,
   VenueOfferStepsProps,
 } from 'pages/Home/VenueOfferSteps/VenueOfferSteps'
+import * as venueUtils from 'pages/Home/venueUtils'
 import {
   defaultGetOffererResponseModel,
   defaultGetOffererVenueResponseModel,
@@ -35,6 +36,13 @@ describe('VenueOfferSteps', () => {
     hasValidBankAccount: false,
     hasNonFreeOffer: false,
   }
+
+  beforeEach(() => {
+    vi.spyOn(
+      venueUtils,
+      'shouldDisplayEACInformationSectionForVenue'
+    ).mockReturnValue(false)
+  })
 
   it('should display venue creation link if user has no venue', () => {
     props.hasVenue = false
@@ -149,8 +157,14 @@ describe('VenueOfferSteps', () => {
   })
 
   it('should display eac dms link when condition to display it is true', () => {
-    props.shouldDisplayEACInformationSection = true
+    vi.spyOn(
+      venueUtils,
+      'shouldDisplayEACInformationSectionForVenue'
+    ).mockReturnValue(true)
+    props.venue = { ...defaultGetOffererVenueResponseModel }
+
     renderVenueOfferSteps(props)
+
     expect(screen.getByText('Démarche en cours :')).toBeInTheDocument()
     expect(
       screen.getByText('Suivre ma demande de référencement ADAGE')
@@ -158,7 +172,6 @@ describe('VenueOfferSteps', () => {
   })
 
   it('should display bank information status follow link when condition to display it is true', () => {
-    props.shouldDisplayEACInformationSection = false
     props.venue = {
       ...defaultGetOffererVenueResponseModel,
       hasPendingBankInformationApplication: true,
@@ -194,7 +207,6 @@ describe('VenueOfferSteps', () => {
       hasPendingBankInformationApplication: true,
       demarchesSimplifieesApplicationId: null,
     }
-    props.shouldDisplayEACInformationSection = false
     renderVenueOfferSteps(props)
     expect(
       screen.getByRole('link', {
@@ -204,12 +216,17 @@ describe('VenueOfferSteps', () => {
   })
 
   it('should display link for eac informations if has adage id and already created offer', () => {
+    vi.spyOn(
+      venueUtils,
+      'shouldDisplayEACInformationSectionForVenue'
+    ).mockReturnValue(true)
     props.venue = {
       ...defaultGetOffererVenueResponseModel,
       hasAdageId: true,
     }
-    props.shouldDisplayEACInformationSection = true
+
     renderVenueOfferSteps(props)
+
     expect(
       screen.getByText(
         'Renseigner mes informations à destination des enseignants'
@@ -218,12 +235,18 @@ describe('VenueOfferSteps', () => {
   })
 
   it('should display disabled link to eac informations if venue doesnt have adage id', () => {
+    vi.spyOn(
+      venueUtils,
+      'shouldDisplayEACInformationSectionForVenue'
+    ).mockReturnValue(true)
+    props.venue = { ...defaultGetOffererVenueResponseModel }
     props.venue = {
       ...defaultGetOffererVenueResponseModel,
       hasAdageId: false,
     }
-    props.shouldDisplayEACInformationSection = true
+
     renderVenueOfferSteps(props)
+
     const eacInformationsLink = screen.getByRole('link', {
       name: 'Renseigner mes informations à destination des enseignants',
     })
@@ -233,8 +256,9 @@ describe('VenueOfferSteps', () => {
 
   it('should not display dms link if condition to display it is false', () => {
     props.hasVenue = false
-    props.shouldDisplayEACInformationSection = false
+
     renderVenueOfferSteps(props)
+
     expect(
       screen.queryByText('Suivre ma demande de référencement ADAGE')
     ).not.toBeInTheDocument()
@@ -246,20 +270,27 @@ describe('VenueOfferSteps', () => {
       hasCreatedOffer: true,
       hasPendingBankInformationApplication: false,
     }
-    props.shouldDisplayEACInformationSection = false
+
     renderVenueOfferSteps(props)
+
     expect(screen.queryByText('Prochaines étapes :')).not.toBeInTheDocument()
     expect(screen.queryByTestId('venue-offer-steps')).not.toBeInTheDocument()
     expect(screen.queryByTestId('home-offer-steps')).not.toBeInTheDocument()
   })
 
   it('should display venueOfferSteps if condition to display it', () => {
+    vi.spyOn(
+      venueUtils,
+      'shouldDisplayEACInformationSectionForVenue'
+    ).mockReturnValue(true)
+    props.venue = { ...defaultGetOffererVenueResponseModel }
     props.venue = {
       ...defaultGetOffererVenueResponseModel,
       hasCreatedOffer: true,
     }
-    props.shouldDisplayEACInformationSection = true
+
     renderVenueOfferSteps(props)
+
     expect(screen.getByText('Prochaines étapes :')).toBeInTheDocument()
   })
 })

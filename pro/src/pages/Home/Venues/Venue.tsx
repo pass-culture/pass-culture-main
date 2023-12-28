@@ -1,9 +1,7 @@
 import cn from 'classnames'
-import { addDays, isBefore } from 'date-fns'
 import React, { useState } from 'react'
 
 import {
-  DMSApplicationstatus,
   GetOffererResponseModel,
   GetOffererVenueResponseModel,
 } from 'apiClient/v1'
@@ -19,10 +17,10 @@ import { Button, ButtonLink } from 'ui-kit'
 import { ButtonVariant } from 'ui-kit/Button/types'
 import { SvgIcon } from 'ui-kit/SvgIcon/SvgIcon'
 import { Tag, TagVariant } from 'ui-kit/Tag/Tag'
-import { getLastCollectiveDmsApplication } from 'utils/getLastCollectiveDmsApplication'
 
 import { Card } from '../Card'
 import { VenueOfferSteps } from '../VenueOfferSteps/VenueOfferSteps'
+import { shouldDisplayEACInformationSectionForVenue } from '../venueUtils'
 
 import styles from './Venue.module.scss'
 
@@ -33,30 +31,8 @@ export interface VenueProps {
 }
 
 export const Venue = ({ offerer, venue, isFirstVenue }: VenueProps) => {
-  const dmsInformations = getLastCollectiveDmsApplication(
-    venue.collectiveDmsApplications
-  )
-  const hasAdageIdForMoreThan30Days =
-    venue.hasAdageId &&
-    !!venue.adageInscriptionDate &&
-    isBefore(new Date(venue.adageInscriptionDate), addDays(new Date(), -30))
-
-  const hasRefusedApplicationForMoreThan30Days =
-    (dmsInformations?.state == DMSApplicationstatus.REFUSE ||
-      dmsInformations?.state == DMSApplicationstatus.SANS_SUITE) &&
-    dmsInformations.processingDate &&
-    isBefore(
-      new Date(dmsInformations?.processingDate),
-      addDays(new Date(), -30)
-    )
-
-  const shouldDisplayEACInformationSection =
-    Boolean(dmsInformations) &&
-    !hasAdageIdForMoreThan30Days &&
-    !hasRefusedApplicationForMoreThan30Days
-
   const shouldShowVenueOfferSteps =
-    shouldDisplayEACInformationSection ||
+    shouldDisplayEACInformationSectionForVenue(venue) ||
     !venue.hasCreatedOffer ||
     venue.hasPendingBankInformationApplication
 
@@ -200,11 +176,8 @@ export const Venue = ({ offerer, venue, isFirstVenue }: VenueProps) => {
           <VenueOfferSteps
             offerer={offerer}
             venue={venue}
-            hasVenue={true}
+            hasVenue
             isFirstVenue={isFirstVenue}
-            shouldDisplayEACInformationSection={
-              shouldDisplayEACInformationSection
-            }
           />
         </div>
       )}
