@@ -22,7 +22,7 @@ import { Tag, TagVariant } from 'ui-kit/Tag/Tag'
 import { getLastCollectiveDmsApplication } from 'utils/getLastCollectiveDmsApplication'
 
 import { Card } from '../Card'
-import { VenueOfferSteps } from '../VenueOfferSteps'
+import { VenueOfferSteps } from '../VenueOfferSteps/VenueOfferSteps'
 
 import styles from './Venue.module.scss'
 
@@ -205,22 +205,13 @@ export const Venue = ({
         <div className={styles['offer-steps']}>
           <VenueOfferSteps
             offerer={offerer}
-            venueId={venue.id}
+            venue={venue}
             hasVenue={true}
-            venueHasCreatedOffer={venue.hasCreatedOffer}
+            isFirstVenue={isFirstVenue}
             offererHasCreatedOffer={offererHasCreatedOffer}
-            hasMissingReimbursementPoint={venue.hasMissingReimbursementPoint}
-            hasAdageId={venue.hasAdageId}
             shouldDisplayEACInformationSection={
               shouldDisplayEACInformationSection
             }
-            hasPendingBankInformationApplication={
-              venue.hasPendingBankInformationApplication
-            }
-            demarchesSimplifieesApplicationId={
-              venue.demarchesSimplifieesApplicationId
-            }
-            isFirstVenue={isFirstVenue}
           />
         </div>
       )}

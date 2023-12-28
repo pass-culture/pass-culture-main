@@ -1,7 +1,10 @@
 import cn from 'classnames'
 import React from 'react'
 
-import { GetOffererResponseModel } from 'apiClient/v1'
+import {
+  GetOffererResponseModel,
+  GetOffererVenueResponseModel,
+} from 'apiClient/v1'
 import fullInfoIcon from 'icons/full-info.svg'
 import fullLinkIcon from 'icons/full-link.svg'
 import fullNextIcon from 'icons/full-next.svg'
@@ -22,29 +25,19 @@ import styles from './VenueOfferSteps.module.scss'
 
 export interface VenueOfferStepsProps {
   hasVenue: boolean
-  hasMissingReimbursementPoint?: boolean
   offerer?: GetOffererResponseModel | null
-  venueId?: number | null
-  venueHasCreatedOffer?: boolean
+  venue?: GetOffererVenueResponseModel
   offererHasCreatedOffer?: boolean
-  hasAdageId?: boolean
   shouldDisplayEACInformationSection?: boolean
-  hasPendingBankInformationApplication?: boolean | null
-  demarchesSimplifieesApplicationId?: number | null
   isFirstVenue?: boolean
 }
 
-const VenueOfferSteps = ({
+export const VenueOfferSteps = ({
   offerer,
+  venue,
   hasVenue = false,
-  hasMissingReimbursementPoint = true,
-  venueId = null,
   offererHasCreatedOffer = false,
-  venueHasCreatedOffer = false,
-  hasAdageId = false,
   shouldDisplayEACInformationSection = false,
-  hasPendingBankInformationApplication = false,
-  demarchesSimplifieesApplicationId,
   isFirstVenue = false,
 }: VenueOfferStepsProps) => {
   const isVenueCreationAvailable = useActiveFeature('API_SIRENE_AVAILABLE')
@@ -69,8 +62,8 @@ const VenueOfferSteps = ({
 
   const shouldShowVenueOfferSteps =
     shouldDisplayEACInformationSection ||
-    !venueHasCreatedOffer ||
-    hasPendingBankInformationApplication
+    !venue?.hasCreatedOffer ||
+    venue.hasPendingBankInformationApplication
 
   if (!shouldShowVenueOfferSteps) {
     return null
@@ -83,7 +76,7 @@ const VenueOfferSteps = ({
       })}
       data-testid={hasVenue ? 'venue-offer-steps' : 'home-offer-steps'}
     >
-      {(!venueHasCreatedOffer || shouldDisplayEACInformationSection) && (
+      {(!venue?.hasCreatedOffer || shouldDisplayEACInformationSection) && (
         <>
           <h3 className={styles['card-title']}>Prochaines étapes : </h3>
 
@@ -137,14 +130,14 @@ const VenueOfferSteps = ({
               </div>
             )}
 
-            {!venueHasCreatedOffer && (
+            {!venue?.hasCreatedOffer && (
               <ButtonLink
                 className={styles['step-button-width']}
                 isDisabled={!hasVenue}
                 variant={ButtonVariant.BOX}
                 icon={fullNextIcon}
                 link={{
-                  to: `/offre/creation?lieu=${venueId}&structure=${offerer?.id}`,
+                  to: `/offre/creation?lieu=${venue?.id}&structure=${offerer?.id}`,
                   isExternal: false,
                 }}
               >
@@ -153,19 +146,19 @@ const VenueOfferSteps = ({
             )}
 
             {!isNewBankDetailsJourneyEnabled &&
-              hasMissingReimbursementPoint && (
+              venue?.hasMissingReimbursementPoint && (
                 <ButtonLink
                   className={styles['step-button-width']}
                   isDisabled={!hasVenue}
                   variant={ButtonVariant.BOX}
                   icon={fullNextIcon}
                   link={{
-                    to: `/structures/${offerer?.id}/lieux/${venueId}#reimbursement`,
+                    to: `/structures/${offerer?.id}/lieux/${venue?.id}#reimbursement`,
                     isExternal: false,
                   }}
                   onClick={() => {
                     logEvent?.(VenueEvents.CLICKED_VENUE_ADD_RIB_BUTTON, {
-                      venue_id: venueId || '',
+                      venue_id: venue?.id || '',
                       from: OFFER_FORM_NAVIGATION_IN.HOME,
                     })
                   }}
@@ -187,7 +180,7 @@ const VenueOfferSteps = ({
                   }}
                   onClick={() => {
                     logEvent?.(VenueEvents.CLICKED_VENUE_ADD_RIB_BUTTON, {
-                      venue_id: venueId ?? '',
+                      venue_id: venue?.id ?? '',
                       from: OFFER_FORM_NAVIGATION_IN.HOME,
                     })
                   }}
@@ -198,11 +191,11 @@ const VenueOfferSteps = ({
             {shouldDisplayEACInformationSection && (
               <ButtonLink
                 className={styles['step-button-width']}
-                isDisabled={!hasAdageId}
+                isDisabled={!venue?.hasAdageId}
                 variant={ButtonVariant.BOX}
                 icon={fullNextIcon}
                 link={{
-                  to: `/structures/${offerer?.id}/lieux/${venueId}/eac`,
+                  to: `/structures/${offerer?.id}/lieux/${venue?.id}/eac`,
                   isExternal: false,
                 }}
               >
@@ -215,7 +208,7 @@ const VenueOfferSteps = ({
 
       {(shouldDisplayEACInformationSection ||
         (!isNewBankDetailsJourneyEnabled &&
-          hasPendingBankInformationApplication)) && (
+          venue?.hasPendingBankInformationApplication)) && (
         <>
           <h3 className={styles['card-title']}>Démarche en cours : </h3>
 
@@ -226,7 +219,7 @@ const VenueOfferSteps = ({
                 variant={ButtonVariant.BOX}
                 icon={fullNextIcon}
                 link={{
-                  to: `/structures/${offerer?.id}/lieux/${venueId}#venue-collective-data`,
+                  to: `/structures/${offerer?.id}/lieux/${venue?.id}#venue-collective-data`,
                   isExternal: false,
                 }}
                 onClick={() => {
@@ -240,15 +233,15 @@ const VenueOfferSteps = ({
             )}
 
             {!isNewBankDetailsJourneyEnabled &&
-              hasPendingBankInformationApplication && (
+              venue?.hasPendingBankInformationApplication && (
                 <ButtonLink
                   className={styles['step-button-width']}
                   variant={ButtonVariant.BOX}
                   icon={fullLinkIcon}
                   link={{
                     to: `https://www.demarches-simplifiees.fr/dossiers${
-                      demarchesSimplifieesApplicationId
-                        ? `/${demarchesSimplifieesApplicationId}/messagerie`
+                      venue?.demarchesSimplifieesApplicationId
+                        ? `/${venue?.demarchesSimplifieesApplicationId}/messagerie`
                         : ''
                     }`,
                     isExternal: true,
@@ -272,5 +265,3 @@ const VenueOfferSteps = ({
     </Card>
   )
 }
-
-export default VenueOfferSteps

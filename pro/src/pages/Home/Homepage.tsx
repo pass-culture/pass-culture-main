@@ -23,7 +23,7 @@ import { OffererBanners } from './Offerers/OffererBanners'
 import Offerers from './Offerers/Offerers'
 import { ProfileAndSupport } from './ProfileAndSupport/ProfileAndSupport'
 import { StatisticsDashboard } from './StatisticsDashboard/StatisticsDashboard'
-import { VenueOfferSteps } from './VenueOfferSteps'
+import { VenueOfferSteps } from './VenueOfferSteps/VenueOfferSteps'
 import {
   getPhysicalVenuesFromOfferer,
   getVirtualVenueFromOfferer,
