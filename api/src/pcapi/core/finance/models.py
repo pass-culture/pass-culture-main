@@ -659,6 +659,10 @@ class Cashflow(Base, Model):
         "bankAccountId", sqla.BigInteger, sqla.ForeignKey("bank_information.id"), index=True, nullable=False
     )
     _bankAccount: BankInformation = sqla_orm.relationship(BankInformation, foreign_keys=[_bankAccountId])
+    _bankInformationId: int = sqla.Column(
+        "bankInformationId", sqla.BigInteger, sqla.ForeignKey("bank_information.id"), index=True, nullable=True
+    )
+    _bankInformation: BankInformation = sqla_orm.relationship(BankInformation, foreign_keys=[_bankInformationId])
     reimbursementPointId = sqla.Column(sqla.BigInteger, sqla.ForeignKey("venue.id"), index=True, nullable=False)
     reimbursementPoint: sqla_orm.Mapped["offerers_models.Venue"] = sqla_orm.relationship(
         "Venue", foreign_keys=[reimbursementPointId]
@@ -699,6 +703,7 @@ class Cashflow(Base, Model):
     @bankInformationId.setter  # type: ignore [no-redef]
     def bankInformationId(self, value: int) -> None:
         self._bankAccountId = value
+        self._bankInformationId = value
 
     @hybrid_property
     def bankInformation(self) -> BankInformation:
@@ -707,6 +712,7 @@ class Cashflow(Base, Model):
     @bankInformation.setter  # type: ignore [no-redef]
     def bankInformation(self, value: BankInformation) -> None:
         self._bankAccount = value
+        self._bankInformation = value
 
 
 class CashflowLog(Base, Model):
