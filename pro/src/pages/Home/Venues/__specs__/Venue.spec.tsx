@@ -34,16 +34,15 @@ describe('venues', () => {
         ...defaultGetOffererVenueResponseModel,
         id: venueId,
         name: 'My venue',
+        isVirtual: false,
       },
-      isVirtual: false,
-      hasNonFreeOffer: false,
       isFirstVenue: false,
     }
   })
 
   describe('physical venue section', () => {
     it('should display edition venue link', () => {
-      props.isVirtual = false
+      props.venue.isVirtual = false
 
       renderVenue(props)
 
