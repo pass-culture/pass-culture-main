@@ -15,7 +15,7 @@ attrs = "22.1.0"
 babel = "2.13.1"
 basecrm = "1.2.9"
 bcrypt = "4.0.1"
-beautifulsoup4 = "4.11.2"
+beautifulsoup4 = "4.12.2"
 # `sentry_sdk.init()` uses `flask.signals`, which requires `blinker`
 blinker = "1.4"
 boto3 = "1.21.9"
