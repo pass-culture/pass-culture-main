@@ -2,6 +2,7 @@ import { screen } from '@testing-library/react'
 import { userEvent } from '@testing-library/user-event'
 import React from 'react'
 
+import { defaultGetOffererResponseModel } from 'utils/apiFactories'
 import {
   RenderWithProvidersOptions,
   renderWithProviders,
@@ -23,8 +24,11 @@ const renderVenueOfferSteps = (
       venueId={null}
       hasMissingReimbursementPoint
       hasVenue={false}
-      offererHasBankAccount={false}
-      offererId={12}
+      offerer={{
+        ...defaultGetOffererResponseModel,
+        hasPendingBankAccount: false,
+        hasValidBankAccount: false,
+      }}
       {...props}
     />,
     { initialRouterEntries: ['/accueil'], ...options }

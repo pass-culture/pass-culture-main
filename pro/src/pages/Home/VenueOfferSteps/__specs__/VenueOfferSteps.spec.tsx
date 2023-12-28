@@ -2,6 +2,7 @@ import { screen } from '@testing-library/react'
 import React from 'react'
 
 import { VenueOfferStepsProps } from 'pages/Home/VenueOfferSteps/VenueOfferSteps'
+import { defaultGetOffererResponseModel } from 'utils/apiFactories'
 import {
   RenderWithProvidersOptions,
   renderWithProviders,
@@ -22,29 +23,33 @@ const renderVenueOfferSteps = (
 describe('VenueOfferSteps', () => {
   const props: VenueOfferStepsProps = {
     hasVenue: false,
-    offererId: 1,
-    offererHasBankAccount: false,
+    offerer: { ...defaultGetOffererResponseModel },
+  }
+  const offererWithoutBankAccount = {
+    ...defaultGetOffererResponseModel,
+    hasPendingBankAccount: false,
+    hasValidBankAccount: false,
   }
 
-  it('Should display venue creation link if user has no venue', () => {
+  it('should display venue creation link if user has no venue', () => {
     props.hasVenue = false
     renderVenueOfferSteps(props)
     expect(screen.getByText('Créer un lieu')).toBeInTheDocument()
   })
 
-  it('Should not display venue creation link if user has venues', () => {
+  it('should not display venue creation link if user has venues', () => {
     props.hasVenue = true
     renderVenueOfferSteps(props)
     expect(screen.queryByText('Créer un lieu')).not.toBeInTheDocument()
   })
 
-  it('Should display offer creation link if user has no offer on venue', () => {
+  it('should display offer creation link if user has no offer on venue', () => {
     props.hasVenue = false
     renderVenueOfferSteps(props)
     expect(screen.getByText('Créer une offre')).toBeInTheDocument()
   })
 
-  it('Should display reimbursement link if user has no ReimbursementPoint on venue', () => {
+  it('should display reimbursement link if user has no ReimbursementPoint on venue', () => {
     props.hasMissingReimbursementPoint = true
     renderVenueOfferSteps(props)
     expect(
@@ -52,7 +57,7 @@ describe('VenueOfferSteps', () => {
     ).toBeInTheDocument()
   })
 
-  it('Should not display reimbursement link if user has ReimbursementPoint on venue', () => {
+  it('should not display reimbursement link if user has ReimbursementPoint on venue', () => {
     props.hasMissingReimbursementPoint = false
     renderVenueOfferSteps(props)
     expect(
@@ -60,8 +65,8 @@ describe('VenueOfferSteps', () => {
     ).not.toBeInTheDocument()
   })
 
-  it('Should display bank account link on first venue if user has no bank account and no offer on offerer', () => {
-    props.offererHasBankAccount = false
+  it('should display bank account link on first venue if user has no bank account and no offer on offerer', () => {
+    props.offerer = offererWithoutBankAccount
     props.offererHasCreatedOffer = false
     props.isFirstVenue = true
     renderVenueOfferSteps(props, {
@@ -73,8 +78,8 @@ describe('VenueOfferSteps', () => {
     ).not.toBeInTheDocument()
   })
 
-  it('Should display bank account link on second venue if user has no bank account and no paid offer', () => {
-    props.offererHasBankAccount = false
+  it('should display bank account link on second venue if user has no bank account and no paid offer', () => {
+    props.offerer = offererWithoutBankAccount
     props.offererHasCreatedOffer = false
     props.hasNonFreeOffer = false
     props.isFirstVenue = false
@@ -87,8 +92,8 @@ describe('VenueOfferSteps', () => {
     ).not.toBeInTheDocument()
   })
 
-  it('Should not display bank account link on second venue if user has no bank account with paid offer', () => {
-    props.offererHasBankAccount = false
+  it('should not display bank account link on second venue if user has no bank account with paid offer', () => {
+    props.offerer = offererWithoutBankAccount
     props.offererHasCreatedOffer = false
     props.hasNonFreeOffer = true
     props.isFirstVenue = false
@@ -100,8 +105,8 @@ describe('VenueOfferSteps', () => {
     ).not.toBeInTheDocument()
   })
 
-  it('Should not display bank account link on first venue if user has bank account', () => {
-    props.offererHasBankAccount = false
+  it('should not display bank account link on first venue if user has bank account', () => {
+    props.offerer = offererWithoutBankAccount
     props.offererHasCreatedOffer = true
     props.isFirstVenue = true
     renderVenueOfferSteps(props, {
@@ -112,8 +117,11 @@ describe('VenueOfferSteps', () => {
     ).not.toBeInTheDocument()
   })
 
-  it('Should not display account link if user has bank account on offerer', () => {
-    props.offererHasBankAccount = true
+  it('should not display account link if user has bank account on offerer', () => {
+    props.offerer = {
+      ...defaultGetOffererResponseModel,
+      hasValidBankAccount: true,
+    }
     renderVenueOfferSteps(props, {
       features: ['WIP_ENABLE_NEW_BANK_DETAILS_JOURNEY'],
     })
@@ -122,7 +130,7 @@ describe('VenueOfferSteps', () => {
     ).not.toBeInTheDocument()
   })
 
-  it('Should display eac dms link when condition to display it is true', () => {
+  it('should display eac dms link when condition to display it is true', () => {
     props.shouldDisplayEACInformationSection = true
     renderVenueOfferSteps(props)
     expect(screen.getByText('Démarche en cours :')).toBeInTheDocument()
@@ -131,7 +139,7 @@ describe('VenueOfferSteps', () => {
     ).toBeInTheDocument()
   })
 
-  it('Should display bank information status follow link when condition to display it is true', () => {
+  it('should display bank information status follow link when condition to display it is true', () => {
     props.shouldDisplayEACInformationSection = false
     props.hasPendingBankInformationApplication = true
     props.demarchesSimplifieesApplicationId = 1232799
@@ -147,7 +155,7 @@ describe('VenueOfferSteps', () => {
     )
   })
 
-  it('Should not display ds application link when the FF is enabled', () => {
+  it('should not display ds application link when the FF is enabled', () => {
     renderVenueOfferSteps(props, {
       features: ['WIP_ENABLE_NEW_BANK_DETAILS_JOURNEY'],
     })
@@ -172,7 +180,7 @@ describe('VenueOfferSteps', () => {
     ).toHaveAttribute('href', 'https://www.demarches-simplifiees.fr/dossiers')
   })
 
-  it('Should display link for eac informations if has adage id and already created offer', () => {
+  it('should display link for eac informations if has adage id and already created offer', () => {
     props.hasVenue = false
     props.hasAdageId = true
     props.shouldDisplayEACInformationSection = true
@@ -184,7 +192,7 @@ describe('VenueOfferSteps', () => {
     ).toBeInTheDocument()
   })
 
-  it('Should display disabled link to eac informations if venue doesnt have adage id', () => {
+  it('should display disabled link to eac informations if venue doesnt have adage id', () => {
     props.hasVenue = false
     props.hasAdageId = false
     props.shouldDisplayEACInformationSection = true

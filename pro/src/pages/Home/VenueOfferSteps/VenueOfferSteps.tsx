@@ -1,6 +1,7 @@
 import cn from 'classnames'
 import React from 'react'
 
+import { GetOffererResponseModel } from 'apiClient/v1'
 import fullInfoIcon from 'icons/full-info.svg'
 import fullLinkIcon from 'icons/full-link.svg'
 import fullNextIcon from 'icons/full-next.svg'
@@ -22,7 +23,7 @@ import styles from './VenueOfferSteps.module.scss'
 export interface VenueOfferStepsProps {
   hasVenue: boolean
   hasMissingReimbursementPoint?: boolean
-  offererId: number
+  offerer?: GetOffererResponseModel | null
   venueId?: number | null
   venueHasCreatedOffer?: boolean
   offererHasCreatedOffer?: boolean
@@ -30,13 +31,12 @@ export interface VenueOfferStepsProps {
   shouldDisplayEACInformationSection?: boolean
   hasPendingBankInformationApplication?: boolean | null
   demarchesSimplifieesApplicationId?: number | null
-  offererHasBankAccount: boolean
   hasNonFreeOffer?: boolean
   isFirstVenue?: boolean
 }
 
 const VenueOfferSteps = ({
-  offererId,
+  offerer,
   hasVenue = false,
   hasMissingReimbursementPoint = true,
   venueId = null,
@@ -45,7 +45,6 @@ const VenueOfferSteps = ({
   hasAdageId = false,
   shouldDisplayEACInformationSection = false,
   hasPendingBankInformationApplication = false,
-  offererHasBankAccount,
   demarchesSimplifieesApplicationId,
   hasNonFreeOffer = false,
   isFirstVenue = false,
@@ -55,7 +54,7 @@ const VenueOfferSteps = ({
     'WIP_ENABLE_NEW_BANK_DETAILS_JOURNEY'
   )
   const venueCreationUrl = isVenueCreationAvailable
-    ? `/structures/${offererId}/lieux/creation`
+    ? `/structures/${offerer?.id}/lieux/creation`
     : UNAVAILABLE_ERROR_PAGE
   const { logEvent } = useAnalytics()
 
@@ -63,6 +62,9 @@ const VenueOfferSteps = ({
     display button if this is the first venue and the offerer has no offer at all,
     or if the offerer has no paid offerer
   */
+  const offererHasBankAccount = Boolean(
+    offerer?.hasPendingBankAccount || offerer?.hasValidBankAccount
+  )
   const displayButtonDependingVenue =
     (!isFirstVenue && !hasNonFreeOffer) ||
     (isFirstVenue && !offererHasCreatedOffer)
@@ -144,7 +146,7 @@ const VenueOfferSteps = ({
                 variant={ButtonVariant.BOX}
                 icon={fullNextIcon}
                 link={{
-                  to: `/offre/creation?lieu=${venueId}&structure=${offererId}`,
+                  to: `/offre/creation?lieu=${venueId}&structure=${offerer?.id}`,
                   isExternal: false,
                 }}
               >
@@ -160,7 +162,7 @@ const VenueOfferSteps = ({
                   variant={ButtonVariant.BOX}
                   icon={fullNextIcon}
                   link={{
-                    to: `/structures/${offererId}/lieux/${venueId}#reimbursement`,
+                    to: `/structures/${offerer?.id}/lieux/${venueId}#reimbursement`,
                     isExternal: false,
                   }}
                   onClick={() => {
@@ -182,7 +184,7 @@ const VenueOfferSteps = ({
                   variant={ButtonVariant.BOX}
                   icon={fullNextIcon}
                   link={{
-                    to: `remboursements/informations-bancaires?structure=${offererId}`,
+                    to: `remboursements/informations-bancaires?structure=${offerer?.id}`,
                     isExternal: false,
                   }}
                   onClick={() => {
@@ -202,7 +204,7 @@ const VenueOfferSteps = ({
                 variant={ButtonVariant.BOX}
                 icon={fullNextIcon}
                 link={{
-                  to: `/structures/${offererId}/lieux/${venueId}/eac`,
+                  to: `/structures/${offerer?.id}/lieux/${venueId}/eac`,
                   isExternal: false,
                 }}
               >
@@ -226,7 +228,7 @@ const VenueOfferSteps = ({
                 variant={ButtonVariant.BOX}
                 icon={fullNextIcon}
                 link={{
-                  to: `/structures/${offererId}/lieux/${venueId}#venue-collective-data`,
+                  to: `/structures/${offerer?.id}/lieux/${venueId}#venue-collective-data`,
                   isExternal: false,
                 }}
                 onClick={() => {

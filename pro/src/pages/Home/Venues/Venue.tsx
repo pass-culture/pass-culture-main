@@ -4,6 +4,7 @@ import React, { useState } from 'react'
 
 import {
   DMSApplicationstatus,
+  GetOffererResponseModel,
   GetOffererVenueResponseModel,
 } from 'apiClient/v1'
 import { VenueEvents } from 'core/FirebaseEvents/constants'
@@ -26,21 +27,19 @@ import { VenueOfferSteps } from '../VenueOfferSteps'
 import styles from './Venue.module.scss'
 
 export interface VenueProps {
+  offerer?: GetOffererResponseModel | null
   venue: GetOffererVenueResponseModel
   isVirtual?: boolean
-  offererId: number
   offererHasCreatedOffer?: boolean
-  offererHasBankAccount: boolean
   hasNonFreeOffer: boolean
   isFirstVenue: boolean
 }
 
 export const Venue = ({
+  offerer,
   venue,
   isVirtual = false,
-  offererId,
   offererHasCreatedOffer,
-  offererHasBankAccount,
   hasNonFreeOffer,
   isFirstVenue,
 }: VenueProps) => {
@@ -74,7 +73,7 @@ export const Venue = ({
   const [prevInitialOpenState, setPrevInitialOpenState] = useState(
     shouldShowVenueOfferSteps
   )
-  const [prevOffererId, setPrevOffererId] = useState(offererId)
+  const [prevOffererId, setPrevOffererId] = useState(offerer?.id)
   const [isToggleOpen, setIsToggleOpen] = useState(shouldShowVenueOfferSteps)
   const { logEvent } = useAnalytics()
   const isNewBankDetailsJourneyEnabled = useActiveFeature(
@@ -90,12 +89,12 @@ export const Venue = ({
     setPrevInitialOpenState(shouldShowVenueOfferSteps)
   }
 
-  if (offererId !== prevOffererId) {
-    setPrevOffererId(offererId)
+  if (offerer?.id !== prevOffererId) {
+    setPrevOffererId(offerer?.id)
   }
 
-  const editVenueLink = `/structures/${offererId}/lieux/${venue.id}?modification`
-  const reimbursementSectionLink = `/structures/${offererId}/lieux/${venue.id}?modification#remboursement`
+  const editVenueLink = `/structures/${offerer?.id}/lieux/${venue.id}?modification`
+  const reimbursementSectionLink = `/structures/${offerer?.id}/lieux/${venue.id}?modification#remboursement`
   const venueDisplayName = isVirtual
     ? 'Offres numériques'
     : venue.publicName || venue.name
@@ -209,9 +208,9 @@ export const Venue = ({
       {isToggleOpen && shouldShowVenueOfferSteps && (
         <div className={styles['offer-steps']}>
           <VenueOfferSteps
+            offerer={offerer}
             venueId={venue.id}
             hasVenue={true}
-            offererId={offererId}
             venueHasCreatedOffer={venue.hasCreatedOffer}
             offererHasCreatedOffer={offererHasCreatedOffer}
             hasMissingReimbursementPoint={venue.hasMissingReimbursementPoint}
@@ -225,7 +224,6 @@ export const Venue = ({
             demarchesSimplifieesApplicationId={
               venue.demarchesSimplifieesApplicationId
             }
-            offererHasBankAccount={offererHasBankAccount}
             hasNonFreeOffer={hasNonFreeOffer}
             isFirstVenue={isFirstVenue}
           />

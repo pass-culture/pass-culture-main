@@ -4,7 +4,10 @@ import React from 'react'
 
 import { VenueEvents } from 'core/FirebaseEvents/constants'
 import * as useAnalytics from 'hooks/useAnalytics'
-import { defaultGetOffererVenueResponseModel } from 'utils/apiFactories'
+import {
+  defaultGetOffererResponseModel,
+  defaultGetOffererVenueResponseModel,
+} from 'utils/apiFactories'
 import { renderWithProviders } from 'utils/renderWithProviders'
 
 import { Venue, VenueProps } from '../Venue'
@@ -21,14 +24,13 @@ describe('venue create offer link', () => {
 
   beforeEach(() => {
     props = {
+      offerer: { ...defaultGetOffererResponseModel, id: offererId },
       venue: {
         ...defaultGetOffererVenueResponseModel,
         id: venueId,
         name: 'My venue',
       },
       isVirtual: false,
-      offererId: offererId,
-      offererHasBankAccount: false,
       hasNonFreeOffer: false,
       isFirstVenue: false,
     }
