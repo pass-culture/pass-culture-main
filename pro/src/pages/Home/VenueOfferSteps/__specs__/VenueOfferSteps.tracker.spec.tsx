@@ -13,6 +13,7 @@ import {
 
 import { Events, VenueEvents } from '../../../../core/FirebaseEvents/constants'
 import * as useAnalytics from '../../../../hooks/useAnalytics'
+import * as venueUtils from '../../venueUtils'
 import { VenueOfferSteps, VenueOfferStepsProps } from '../VenueOfferSteps'
 
 const mockLogEvent = vi.fn()
@@ -47,7 +48,12 @@ describe('VenueOfferSteps', () => {
     vi.spyOn(useAnalytics, 'default').mockImplementation(() => ({
       logEvent: mockLogEvent,
     }))
+    vi.spyOn(
+      venueUtils,
+      'shouldDisplayEACInformationSectionForVenue'
+    ).mockReturnValue(true)
   })
+
   it('should track creation venue', async () => {
     renderVenueOfferSteps()
 
@@ -130,7 +136,6 @@ describe('VenueOfferSteps', () => {
     renderVenueOfferSteps({
       venue: { ...venue, hasPendingBankInformationApplication: true },
       hasVenue: true,
-      shouldDisplayEACInformationSection: true,
     })
 
     await userEvent.click(

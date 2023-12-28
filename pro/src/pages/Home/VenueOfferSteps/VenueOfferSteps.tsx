@@ -20,6 +20,7 @@ import useActiveFeature from '../../../hooks/useActiveFeature'
 import useAnalytics from '../../../hooks/useAnalytics'
 import { UNAVAILABLE_ERROR_PAGE } from '../../../utils/routes'
 import { Card } from '../Card'
+import { shouldDisplayEACInformationSectionForVenue } from '../venueUtils'
 
 import styles from './VenueOfferSteps.module.scss'
 
@@ -27,7 +28,6 @@ export interface VenueOfferStepsProps {
   hasVenue: boolean
   offerer?: GetOffererResponseModel | null
   venue?: GetOffererVenueResponseModel
-  shouldDisplayEACInformationSection?: boolean
   isFirstVenue?: boolean
 }
 
@@ -35,17 +35,19 @@ export const VenueOfferSteps = ({
   offerer,
   venue,
   hasVenue = false,
-  shouldDisplayEACInformationSection = false,
   isFirstVenue = false,
 }: VenueOfferStepsProps) => {
+  const { logEvent } = useAnalytics()
   const isVenueCreationAvailable = useActiveFeature('API_SIRENE_AVAILABLE')
   const isNewBankDetailsJourneyEnabled = useActiveFeature(
     'WIP_ENABLE_NEW_BANK_DETAILS_JOURNEY'
   )
+
   const venueCreationUrl = isVenueCreationAvailable
     ? `/structures/${offerer?.id}/lieux/creation`
     : UNAVAILABLE_ERROR_PAGE
-  const { logEvent } = useAnalytics()
+  const shouldDisplayEACInformationSection =
+    venue && shouldDisplayEACInformationSectionForVenue(venue)
 
   /* Condition linked to add bank account banner
     display button if this is the first venue and the offerer has no offer at all,
