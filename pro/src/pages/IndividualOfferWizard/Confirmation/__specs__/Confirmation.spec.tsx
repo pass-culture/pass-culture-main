@@ -19,7 +19,7 @@ import {
 } from 'utils/individualApiFactories'
 import { renderWithProviders } from 'utils/renderWithProviders'
 
-import Confirmation from '../Confirmation'
+import { Confirmation } from '../Confirmation'
 
 window.open = vi.fn()
 

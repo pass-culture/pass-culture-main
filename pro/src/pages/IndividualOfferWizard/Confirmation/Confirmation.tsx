@@ -7,7 +7,7 @@ import { getTitle } from 'screens/IndividualOffer/IndivualOfferLayout/utils/getT
 import IndividualOfferConfirmationScreen from 'screens/IndividualOfferConfirmationScreen/IndividualOfferConfirmationScreen'
 import Spinner from 'ui-kit/Spinner/Spinner'
 
-const Confirmation = (): JSX.Element => {
+export const Confirmation = (): JSX.Element => {
   const mode = useOfferWizardMode()
   const { offer, setOffer } = useIndividualOfferContext()
 
@@ -28,4 +28,6 @@ const Confirmation = (): JSX.Element => {
   )
 }
 
-export default Confirmation
+// Below exports are used by react-router-dom
+// ts-unused-exports:disable-next-line
+export const Component = Confirmation

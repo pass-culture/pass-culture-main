@@ -7,7 +7,7 @@ import IndivualOfferLayout from 'screens/IndividualOffer/IndivualOfferLayout/Ind
 import { StocksSummaryScreen } from 'screens/IndividualOffer/StocksSummaryScreen/StocksSummaryScreen'
 import Spinner from 'ui-kit/Spinner/Spinner'
 
-export const StocksSummary = (): JSX.Element | null => {
+const StocksSummary = (): JSX.Element | null => {
   const mode = useOfferWizardMode()
   const { offer, setOffer } = useIndividualOfferContext()
 
@@ -26,3 +26,7 @@ export const StocksSummary = (): JSX.Element | null => {
     </IndivualOfferLayout>
   )
 }
+
+// Below exports are used by react-router-dom
+// ts-unused-exports:disable-next-line
+export const Component = StocksSummary

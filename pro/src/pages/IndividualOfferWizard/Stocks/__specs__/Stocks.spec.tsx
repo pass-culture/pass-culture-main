@@ -17,7 +17,7 @@ import {
 } from 'utils/individualApiFactories'
 import { renderWithProviders } from 'utils/renderWithProviders'
 
-import Stocks from '../Stocks'
+import { Stocks } from '../Stocks'
 
 const renderStocksScreen = (
   storeOverrides: Partial<RootState> = {},

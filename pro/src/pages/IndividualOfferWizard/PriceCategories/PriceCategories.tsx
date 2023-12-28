@@ -30,3 +30,7 @@ export const PriceCategories = (): JSX.Element | null => {
     </IndivualOfferLayout>
   )
 }
+
+// Below exports are used by react-router-dom
+// ts-unused-exports:disable-next-line
+export const Component = PriceCategories
