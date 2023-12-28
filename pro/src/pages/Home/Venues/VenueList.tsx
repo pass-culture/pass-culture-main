@@ -24,20 +24,12 @@ export const VenueList = ({ offerer }: VenueListProps) => {
     ? basePhysicalVenues.filter((venue) => !venue.isPermanent)
     : basePhysicalVenues
 
-  const offererHasCreatedOffer =
-    virtualVenue?.hasCreatedOffer ||
-    physicalVenues.some((venue) => venue.hasCreatedOffer)
   const indexLastPhysicalVenues = physicalVenues.length - 1
 
   return (
     <div className={styles['venue-list']}>
       {virtualVenue && (
-        <Venue
-          venue={virtualVenue}
-          offerer={offerer}
-          isFirstVenue
-          offererHasCreatedOffer={offererHasCreatedOffer}
-        />
+        <Venue venue={virtualVenue} offerer={offerer} isFirstVenue />
       )}
 
       {physicalVenues?.map((venue, index) => (
@@ -46,7 +38,6 @@ export const VenueList = ({ offerer }: VenueListProps) => {
           venue={venue}
           offerer={offerer}
           isFirstVenue={index === indexLastPhysicalVenues}
-          offererHasCreatedOffer={offererHasCreatedOffer}
         />
       ))}
     </div>

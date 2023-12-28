@@ -27,7 +27,6 @@ export interface VenueOfferStepsProps {
   hasVenue: boolean
   offerer?: GetOffererResponseModel | null
   venue?: GetOffererVenueResponseModel
-  offererHasCreatedOffer?: boolean
   shouldDisplayEACInformationSection?: boolean
   isFirstVenue?: boolean
 }
@@ -36,7 +35,6 @@ export const VenueOfferSteps = ({
   offerer,
   venue,
   hasVenue = false,
-  offererHasCreatedOffer = false,
   shouldDisplayEACInformationSection = false,
   isFirstVenue = false,
 }: VenueOfferStepsProps) => {
@@ -53,6 +51,9 @@ export const VenueOfferSteps = ({
     display button if this is the first venue and the offerer has no offer at all,
     or if the offerer has no paid offerer
   */
+  const offererHasCreatedOffer = Boolean(
+    offerer?.managedVenues?.some((venue) => venue.hasCreatedOffer)
+  )
   const offererHasBankAccount = Boolean(
     offerer?.hasPendingBankAccount || offerer?.hasValidBankAccount
   )
