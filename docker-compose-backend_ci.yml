@@ -2,7 +2,7 @@ version: "3.7"
 
 services:
   postgres:
-    image: postgis/postgis:12-3.4-alpine
+    image: postgis/postgis:15-3.4-alpine
     container_name: pc-postgres
     volumes:
       - postgres_data:/var/lib/postgresql/data
