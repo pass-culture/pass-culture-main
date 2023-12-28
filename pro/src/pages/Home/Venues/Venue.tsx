@@ -29,18 +29,14 @@ import styles from './Venue.module.scss'
 export interface VenueProps {
   offerer?: GetOffererResponseModel | null
   venue: GetOffererVenueResponseModel
-  isVirtual?: boolean
   offererHasCreatedOffer?: boolean
-  hasNonFreeOffer: boolean
   isFirstVenue: boolean
 }
 
 export const Venue = ({
   offerer,
   venue,
-  isVirtual = false,
   offererHasCreatedOffer,
-  hasNonFreeOffer,
   isFirstVenue,
 }: VenueProps) => {
   const dmsInformations = getLastCollectiveDmsApplication(
@@ -95,7 +91,7 @@ export const Venue = ({
 
   const editVenueLink = `/structures/${offerer?.id}/lieux/${venue.id}?modification`
   const reimbursementSectionLink = `/structures/${offerer?.id}/lieux/${venue.id}?modification#remboursement`
-  const venueDisplayName = isVirtual
+  const venueDisplayName = venue.isVirtual
     ? 'Offres numériques'
     : venue.publicName || venue.name
 
@@ -129,7 +125,7 @@ export const Venue = ({
             <div className={styles['venue-name']}>{venueDisplayName}</div>
           )}
 
-          {shouldShowVenueOfferSteps && !isVirtual && (
+          {shouldShowVenueOfferSteps && !venue.isVirtual && (
             <Button
               icon={fullErrorIcon}
               className={styles['needs-payment-icon']}
@@ -162,7 +158,7 @@ export const Venue = ({
           {/*Delete when WIP_ENABLE_NEW_BANK_DETAILS_JOURNEY is deleted*/}
           {!isNewBankDetailsJourneyEnabled &&
             venue.hasMissingReimbursementPoint &&
-            !isVirtual &&
+            !venue.isVirtual &&
             venue.hasCreatedOffer && (
               <>
                 <ButtonLink
@@ -224,7 +220,6 @@ export const Venue = ({
             demarchesSimplifieesApplicationId={
               venue.demarchesSimplifieesApplicationId
             }
-            hasNonFreeOffer={hasNonFreeOffer}
             isFirstVenue={isFirstVenue}
           />
         </div>

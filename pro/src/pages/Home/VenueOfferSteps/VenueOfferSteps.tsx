@@ -31,7 +31,6 @@ export interface VenueOfferStepsProps {
   shouldDisplayEACInformationSection?: boolean
   hasPendingBankInformationApplication?: boolean | null
   demarchesSimplifieesApplicationId?: number | null
-  hasNonFreeOffer?: boolean
   isFirstVenue?: boolean
 }
 
@@ -46,7 +45,6 @@ const VenueOfferSteps = ({
   shouldDisplayEACInformationSection = false,
   hasPendingBankInformationApplication = false,
   demarchesSimplifieesApplicationId,
-  hasNonFreeOffer = false,
   isFirstVenue = false,
 }: VenueOfferStepsProps) => {
   const isVenueCreationAvailable = useActiveFeature('API_SIRENE_AVAILABLE')
@@ -66,7 +64,7 @@ const VenueOfferSteps = ({
     offerer?.hasPendingBankAccount || offerer?.hasValidBankAccount
   )
   const displayButtonDependingVenue =
-    (!isFirstVenue && !hasNonFreeOffer) ||
+    (!isFirstVenue && !offerer?.hasNonFreeOffer) ||
     (isFirstVenue && !offererHasCreatedOffer)
 
   const shouldShowVenueOfferSteps =

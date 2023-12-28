@@ -1,26 +1,29 @@
 import React from 'react'
 
+import { GetOffererResponseModel } from 'apiClient/v1'
+import useActiveFeature from 'hooks/useActiveFeature'
+
 import {
-  GetOffererResponseModel,
-  GetOffererVenueResponseModel,
-} from 'apiClient/v1'
+  getVirtualVenueFromOfferer,
+  getPhysicalVenuesFromOfferer,
+} from '../venueUtils'
 
 import { Venue } from './Venue'
 import styles from './Venue.module.scss'
 
 interface VenueListProps {
   offerer: GetOffererResponseModel
-  physicalVenues: GetOffererVenueResponseModel[]
-  virtualVenue: GetOffererVenueResponseModel | null
-  hasNonFreeOffer: boolean
 }
 
-export const VenueList = ({
-  offerer,
-  physicalVenues,
-  virtualVenue,
-  hasNonFreeOffer,
-}: VenueListProps) => {
+export const VenueList = ({ offerer }: VenueListProps) => {
+  const isPartnerPageActive = useActiveFeature('WIP_PARTNER_PAGE')
+  const virtualVenue = getVirtualVenueFromOfferer(offerer)
+  const basePhysicalVenues = getPhysicalVenuesFromOfferer(offerer)
+
+  const physicalVenues = isPartnerPageActive
+    ? basePhysicalVenues.filter((venue) => !venue.isPermanent)
+    : basePhysicalVenues
+
   const offererHasCreatedOffer =
     virtualVenue?.hasCreatedOffer ||
     physicalVenues.some((venue) => venue.hasCreatedOffer)
@@ -32,10 +35,8 @@ export const VenueList = ({
         <Venue
           venue={virtualVenue}
           offerer={offerer}
-          isVirtual
           isFirstVenue
           offererHasCreatedOffer={offererHasCreatedOffer}
-          hasNonFreeOffer={hasNonFreeOffer}
         />
       )}
 
@@ -46,7 +47,6 @@ export const VenueList = ({
           offerer={offerer}
           isFirstVenue={index === indexLastPhysicalVenues}
           offererHasCreatedOffer={offererHasCreatedOffer}
-          hasNonFreeOffer={hasNonFreeOffer}
         />
       ))}
     </div>
