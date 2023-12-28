@@ -53,6 +53,15 @@ jobs:
         api/src/pcapi/alembic/versions/**
         api/src/pcapi/alembic/run_migrations.py
 
+  test-check-db-migrations:
+    name: 'test check db migrations'
+    needs: check-db-migrations
+    runs-on: ubuntu-latest
+    steps:
+      - run: echo ${{ github.event.pull_request.merged }}
+      - run: echo ${{ github.event.action }}
+      - run: echo ${{ needs.check-db-migrations.outputs.folder_changed }}
+
   build-api:
     name: "Build API (backend) Docker image"
     needs: [check-api, check-pro]
