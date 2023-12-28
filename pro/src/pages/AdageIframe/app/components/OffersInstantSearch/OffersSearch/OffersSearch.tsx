@@ -9,6 +9,7 @@ import { GET_DATA_ERROR_MESSAGE } from 'core/shared'
 import useActiveFeature from 'hooks/useActiveFeature'
 import useIsElementVisible from 'hooks/useIsElementVisible'
 import useNotification from 'hooks/useNotification'
+import { MARSEILLE, MARSEILLE_EN_GRAND } from 'pages/AdageIframe/app/constants'
 import useAdageUser from 'pages/AdageIframe/app/hooks/useAdageUser'
 import { FacetFiltersContext } from 'pages/AdageIframe/app/providers'
 import { Option } from 'pages/AdageIframe/app/types'
@@ -80,12 +81,12 @@ export const OffersSearch = ({
 
   const isMarseilleEnabled = useActiveFeature('WIP_ENABLE_MARSEILLE')
   const isUserInMarseilleProgram = (adageUser.programs ?? []).some(
-    (prog) => prog.name === 'marseille_en_grand'
+    (prog) => prog.name === MARSEILLE_EN_GRAND
   )
   const filterOnMarseilleStudents =
     isMarseilleEnabled &&
     isUserInMarseilleProgram &&
-    params.get('program') === 'marseille'
+    params.get('program') === MARSEILLE
 
   useEffect(() => {
     const getAllCategories = async () => {
@@ -123,17 +124,15 @@ export const OffersSearch = ({
     if (filterOnMarseilleStudents) {
       // eslint-disable-next-line @typescript-eslint/no-floating-promises
       formik.setFieldValue('students', [
-        //  TODO Replace enum values with the Marseille levels when they'll be created
-        StudentLevels.LYC_E_TERMINALE,
-        StudentLevels.LYC_E_SECONDE,
+        StudentLevels._COLES_INNOVANTES_MARSEILLE_EN_GRAND_MATERNELLE,
+        StudentLevels._COLES_INNOVANTES_MARSEILLE_EN_GRAND_PRIMAIRE,
       ])
 
       setFacetFilters([
         ...facetFilters,
         [
-          //  TODO Replace enum values with the Marseille levels when they'll be created
-          `offer.students:${StudentLevels.LYC_E_TERMINALE}`,
-          `offer.students:${StudentLevels.LYC_E_SECONDE}`,
+          `offer.students:${StudentLevels._COLES_INNOVANTES_MARSEILLE_EN_GRAND_MATERNELLE}`,
+          `offer.students:${StudentLevels._COLES_INNOVANTES_MARSEILLE_EN_GRAND_PRIMAIRE}`,
         ],
       ])
     }

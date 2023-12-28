@@ -53,6 +53,7 @@ export const OffersInstantSearch = ({
     useState<VenueResponse | null>(null)
 
   const notification = useNotification()
+
   useEffect(() => {
     const getVenueById = async () => {
       try {
@@ -68,6 +69,7 @@ export const OffersInstantSearch = ({
       getVenueById()
     }
   }, [venueId])
+
   return (
     <InstantSearch
       indexName={ALGOLIA_COLLECTIVE_OFFERS_INDEX}
