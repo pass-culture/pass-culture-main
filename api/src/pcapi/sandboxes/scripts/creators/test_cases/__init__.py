@@ -43,6 +43,7 @@ def save_test_cases_sandbox() -> None:
     create_specific_cashflow_batch_without_invoice()
     create_venue_labels(sandbox=True)
     create_offers_with_more_extra_data()
+    create_venues_with_gmaps_image()
 
 
 def create_offers_with_gtls() -> None:
@@ -479,4 +480,55 @@ def create_offers_with_extradata(
         )
     offers_factories.StockFactory(
         offer=offer,
+    )
+
+
+def create_venues_with_gmaps_image() -> None:
+    venue_with_user_image_and_gmaps_image = offerers_factories.VenueFactory(
+        name="venue_with_user_image_and_gmaps_image",
+        _bannerUrl="passculture-metier-ehp-staging-assets-fine-grained/assets/venue_default_images/noriely-fernandez-oJ1qnM6BYZo-unsplash.png",
+    )
+    offerers_factories.GooglePlacesInfoFactory(
+        bannerUrl="https://storage.googleapis.com/passculture-metier-ehp-testing-assets-fine-grained/assets/Google_Maps_Logo_2020.png",
+        venue=venue_with_user_image_and_gmaps_image,
+    )
+
+    venue_without_user_image_and_with_gmaps_image = offerers_factories.VenueFactory(
+        name="venue_without_user_image_and_with_gmaps_image",
+        _bannerUrl=None,
+    )
+    offerers_factories.GooglePlacesInfoFactory(
+        bannerUrl="https://storage.googleapis.com/passculture-metier-ehp-testing-assets-fine-grained/assets/Google_Maps_Logo_2020.png",
+        venue=venue_without_user_image_and_with_gmaps_image,
+    )
+    venue_with_no_images = offerers_factories.VenueFactory(name="venue_with_no_images", _bannerUrl=None)
+    offers_factories.StockFactory(
+        offer=offers_factories.OfferFactory(
+            venue=venue_with_user_image_and_gmaps_image,
+            product=None,
+            subcategoryId=random.choice(subcategories_v2.ALL_SUBCATEGORIES).id,
+            name=Fake.sentence(nb_words=3, variable_nb_words=True)[:-1],
+            description=Fake.paragraph(nb_sentences=5, variable_nb_sentences=True),
+            url=None,
+        )
+    )
+    offers_factories.StockFactory(
+        offer=offers_factories.OfferFactory(
+            venue=venue_without_user_image_and_with_gmaps_image,
+            product=None,
+            subcategoryId=random.choice(subcategories_v2.ALL_SUBCATEGORIES).id,
+            name=Fake.sentence(nb_words=3, variable_nb_words=True)[:-1],
+            description=Fake.paragraph(nb_sentences=5, variable_nb_sentences=True),
+            url=None,
+        )
+    )
+    offers_factories.StockFactory(
+        offer=offers_factories.OfferFactory(
+            venue=venue_with_no_images,
+            product=None,
+            subcategoryId=random.choice(subcategories_v2.ALL_SUBCATEGORIES).id,
+            name=Fake.sentence(nb_words=3, variable_nb_words=True)[:-1],
+            description=Fake.paragraph(nb_sentences=5, variable_nb_sentences=True),
+            url=None,
+        )
     )
