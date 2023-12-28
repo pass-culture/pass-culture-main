@@ -9,7 +9,9 @@ import {
   StocksOrderedBy,
 } from 'apiClient/v1'
 import ActionsBarSticky from 'components/ActionsBarSticky'
+import { useIndividualOfferContext } from 'context/IndividualOfferContext'
 import { Events } from 'core/FirebaseEvents/constants'
+import getIndividualOfferAdapter from 'core/Offers/adapters/getIndividualOfferAdapter/getIndividualOfferAdapter'
 import { IndividualOffer } from 'core/Offers/types'
 import useAnalytics from 'hooks/useAnalytics'
 import { SortingMode, useColumnSorting } from 'hooks/useColumnSorting'
@@ -85,6 +87,7 @@ const StocksEventList = ({
   const { logEvent } = useAnalytics()
   const notify = useNotification()
   const [searchParams, setSearchParams] = useSearchParams()
+  const { setOffer } = useIndividualOfferContext()
 
   // states
   const [allStocksChecked, setAllStocksChecked] = useState<PartialCheck>(
@@ -130,6 +133,12 @@ const StocksEventList = ({
   const reloadStocks = async () => {
     const response = await loadStocksFromCurrentFilters()
     handleStocksResponse(response)
+
+    // Reload to update offer.hasStocks in the context
+    const offerResponse = await getIndividualOfferAdapter(offer.id)
+    if (offerResponse.isOk) {
+      setOffer && setOffer(offerResponse.payload)
+    }
   }
   useEffect(() => {
     if (dateFilter) {

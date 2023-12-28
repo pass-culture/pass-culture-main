@@ -37,7 +37,7 @@ export const StocksEventCreation = ({
     )
   }
 
-  const handleNextStep = () => {
+  const handleNextStep = async () => {
     // Check that there is at least one stock left
     if (!hasStocks) {
       notify.error('Veuillez renseigner au moins une date')
