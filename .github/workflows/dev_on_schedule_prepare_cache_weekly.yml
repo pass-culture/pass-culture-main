@@ -6,7 +6,7 @@ on:
 
 jobs:
   prepare-cache-weekly:
-    uses: ./.github/workflows/update-api-client-template.yml
+    uses: ./.github/workflows/dev_on_workflow_update_api_client_template.yml
     with:
       trigger-only-on-api-change: false
       trigger-only-on-dependency-change: false

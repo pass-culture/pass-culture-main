@@ -95,7 +95,7 @@ Liste des fichiers
 | tests-api.yml                         | Helper   | Automatically |                                                                                                       |
 | dev_on_dispatch_release_build.yml                        | Workflow | Automatically | [runs](https://github.com/pass-culture/pass-culture-main/actions/workflows/dev_on_dispatch_release_build.yml)            |
 | tests-pro.yml                         | Helper   | Automatically |                                                                                                       |
-| update-api-client-template.yml        | Helper   | Automatically |                                                                                                       |
-| update-api-client-template.yml        | Helper   | Automatically |                                                                                                       |
+| dev_on_workflow_update_api_client_template.yml        | Helper   | Automatically |                                                                                                       |
+| dev_on_workflow_update_api_client_template.yml        | Helper   | Automatically |                                                                                                       |
 | update-api-client.yml                 | Workflow | Automatically | [runs](https://github.com/pass-culture/pass-culture-main/actions/workflows/update-api-client.yml)     |
 | dev_on_workflow_update_jira_issues.yml                | Workflow | Automatically | [runs](https://github.com/pass-culture/pass-culture-main/actions/workflows/dev_on_workflow_update_jira_issues.yml)    |
