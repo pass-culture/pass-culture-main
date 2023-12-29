@@ -119,7 +119,7 @@ jobs:
       github.ref == 'refs/heads/master' &&
       (needs.test-api.result == 'success' || needs.test-api.result == 'skipped') &&
       (needs.test-pro.result == 'success' || needs.test-pro.result == 'skipped')
-    uses: ./.github/workflows/deploy.yml
+    uses: ./.github/workflows/dev_on_workflow_deploy.yml
     with:
       environment: testing
       app_version: ${{ github.sha }}

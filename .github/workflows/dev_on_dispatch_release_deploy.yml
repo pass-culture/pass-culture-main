@@ -52,7 +52,7 @@ jobs:
     needs:
       - version
     name: "Deploy on EHP environnement"
-    uses: ./.github/workflows/deploy.yml
+    uses: ./.github/workflows/dev_on_workflow_deploy.yml
     with:
       environment: ${{ github.event.inputs.target_environment }}
       app_version: ${{ needs.version.outputs.APP_VERSION }}
@@ -70,7 +70,7 @@ jobs:
     needs:
       - version
     name: "Deploy on integration environnement"
-    uses: ./.github/workflows/deploy.yml
+    uses: ./.github/workflows/dev_on_workflow_deploy.yml
     with:
       environment: integration
       app_version: ${{ needs.version.outputs.APP_VERSION }}
@@ -88,7 +88,7 @@ jobs:
     needs:
       - version
     name: "Deploy on production environnement"
-    uses: ./.github/workflows/deploy.yml
+    uses: ./.github/workflows/dev_on_workflow_deploy.yml
     with:
       environment: ${{ github.event.inputs.target_environment }}
       app_version: ${{ needs.version.outputs.APP_VERSION }}
