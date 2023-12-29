@@ -28,24 +28,16 @@ logger = logging.getLogger(__name__)
 
 
 def _stock_exists(
-    offer_id: int,
-    stock_to_create: serialization.StockCreationBodyModel | serialization.StockEditionBodyModel,
+    stock_data: serialization.StockCreationBodyModel | serialization.StockEditionBodyModel,
     existing_stocks: list[offers_models.Stock],
 ) -> bool:
     for stock in existing_stocks:
-        if (  # pylint: disable=too-many-boolean-expressions
-            stock.offerId == offer_id
+        if (
+            (stock.id != stock_data.id if isinstance(stock_data, serialization.StockEditionBodyModel) else True)
             and stock.beginningDatetime
-            == (stock_to_create.beginning_datetime.replace(tzinfo=None) if stock_to_create.beginning_datetime else None)
-            and stock.bookingLimitDatetime
-            == (
-                stock_to_create.booking_limit_datetime.replace(tzinfo=None)
-                if stock_to_create.booking_limit_datetime
-                else None
-            )
-            and stock.priceCategoryId == stock_to_create.price_category_id
-            and (stock.price == stock_to_create.price if not stock.priceCategoryId else True)
-            and (stock.quantity == stock_to_create.quantity if not stock.priceCategoryId else True)
+            == (stock_data.beginning_datetime.replace(tzinfo=None) if stock_data.beginning_datetime else None)
+            and stock.priceCategoryId == stock_data.price_category_id
+            and (stock.price == stock_data.price if not stock.priceCategoryId else True)
         ):
             return True
     return False
@@ -60,7 +52,6 @@ def _get_existing_stocks_by_fields(
             offers_models.Stock.offerId == offer_id,
             offers_models.Stock.isSoftDeleted == False,
             offers_models.Stock.beginningDatetime == stock.beginning_datetime,
-            offers_models.Stock.bookingLimitDatetime == stock.booking_limit_datetime,
             offers_models.Stock.priceCategoryId == stock.price_category_id,
         )
         for stock in stock_payload
@@ -116,18 +107,12 @@ def upsert_stocks(
     stocks_to_edit = [
         stock
         for stock in body.stocks
-        if (
-            isinstance(stock, serialization.StockEditionBodyModel)
-            and not _stock_exists(body.offer_id, stock, matching_stocks)
-        )
+        if (isinstance(stock, serialization.StockEditionBodyModel) and not _stock_exists(stock, matching_stocks))
     ]
     stocks_to_create = [
         stock
         for stock in body.stocks
-        if (
-            isinstance(stock, serialization.StockCreationBodyModel)
-            and not _stock_exists(body.offer_id, stock, matching_stocks)
-        )
+        if (isinstance(stock, serialization.StockCreationBodyModel) and not _stock_exists(stock, matching_stocks))
     ]
 
     offers_validation.check_stocks_price(stocks_to_edit, offer)
