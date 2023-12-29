@@ -188,6 +188,7 @@ class Returns201Test:
     def test_do_not_edit_one_stock_when_duplicated(self, client):
         offer = offers_factories.EventOfferFactory()
         beginning = datetime.datetime.utcnow()
+        tomorrow = beginning + relativedelta(days=1)
         price_cat_label = offers_factories.PriceCategoryLabelFactory(venue=offer.venue, label="Tarif 1")
         price_category = offers_factories.PriceCategoryFactory(
             offer=offer, priceCategoryLabel=price_cat_label, price=10
@@ -200,11 +201,19 @@ class Returns201Test:
             price=10,
             quantity=10,
         )
+        offers_factories.EventStockFactory(
+            offer=offer,
+            beginningDatetime=format_into_utc_date(tomorrow),
+            bookingLimitDatetime=format_into_utc_date(beginning),
+            priceCategory=price_category,
+            price=10,
+            quantity=10,
+        )
         offerers_factories.UserOffererFactory(
             user__email="user@example.com",
             offerer=offer.venue.managingOfferer,
         )
-        # First stock should be skipped
+
         stock_data = {
             "offerId": offer.id,
             "stocks": [
@@ -213,13 +222,15 @@ class Returns201Test:
                     "priceCategoryId": price_category.id,
                     "price": 10,
                     "quantity": 10,
-                    "beginningDatetime": format_into_utc_date(beginning),
+                    "beginningDatetime": format_into_utc_date(tomorrow),
                     "bookingLimitDatetime": format_into_utc_date(beginning),
                 }
             ],
         }
         response = client.with_session_auth("user@example.com").post("/stocks/bulk/", json=stock_data)
-        assert response.json["stocks_count"] == 0
+
+        assert response.status_code == 201
+        assert existing_stock.beginningDatetime == beginning  # didn't change
 
     def test_avoid_duplication_with_different_quantity(self, client):
         offer = offers_factories.EventOfferFactory()
@@ -636,6 +647,42 @@ class Returns201Test:
         assert response.status_code == 200
         assert response.json["ongoing_bookings"][0]["id"] == booking.id
         assert not response.json["ended_bookings"]
+
+    def test_update_event_stock_quantity(self, client):
+        beginning = datetime.datetime.utcnow()
+        offer = offers_factories.EventOfferFactory(isActive=False, validation=OfferValidationStatus.DRAFT)
+        price_category_1 = offers_factories.PriceCategoryFactory(offer=offer, price=10)
+        existing_stock = offers_factories.EventStockFactory(
+            offer=offer,
+            beginningDatetime=format_into_utc_date(beginning),
+            bookingLimitDatetime=format_into_utc_date(beginning),
+            priceCategory=price_category_1,
+            quantity=20,
+        )
+        offerers_factories.UserOffererFactory(
+            user__email="user@example.com",
+            offerer=offer.venue.managingOfferer,
+        )
+        # When
+        stock_data = {
+            "offerId": offer.id,
+            "stocks": [
+                {
+                    "priceCategoryId": price_category_1.id,
+                    "id": existing_stock.id,
+                    "quantity": 42,
+                    "beginningDatetime": format_into_utc_date(beginning),
+                    "bookingLimitDatetime": format_into_utc_date(beginning),
+                }
+            ],
+        }
+
+        response = client.with_session_auth("user@example.com").post("/stocks/bulk/", json=stock_data)
+
+        assert response.status_code == 201
+        created_stock = Stock.query.first()
+        assert offer.id == created_stock.offerId
+        assert created_stock.quantity == 42
 
     def should_not_create_duplicated_stock(self, client):
         # Given
