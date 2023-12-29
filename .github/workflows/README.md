@@ -83,7 +83,7 @@ Liste des fichiers
 | dev_on_workflow_check_folder_changes.yml              | Helper   | Automatically |                                                                                                       |
 | deploy-app-engine-image-resizing.yml | Helper   | Automatically |                                                                                                       |
 | deploy.yml                            | Helper   | Automatically |                                                                                                       |
-| mypy-cop.yml                          | Workflow | Automatically | [runs](https://github.com/pass-culture/pass-culture-main/actions/workflows/mypy-cop.yml)              |
+| dev_on_workflow_mypy_cop.yml                          | Workflow | Automatically | [runs](https://github.com/pass-culture/pass-culture-main/actions/workflows/dev_on_workflow_mypy_cop.yml)              |
 | ping_data_team.yml                    | Workflow | Automatically | [runs](https://github.com/pass-culture/pass-culture-main/actions/workflows/ping_data_team.yml)        |
 | prepare-cache-master.yml              | Workflow | Automatically | [runs](https://github.com/pass-culture/pass-culture-main/actions/workflows/prepare-cache-master.yml)  |
 | dev_on_schedule_prepare_cache_weekly.yml              | Workflow | Automatically | [runs](https://github.com/pass-culture/pass-culture-main/actions/workflows/dev_on_schedule_prepare_cache_weekly.yml)  |
