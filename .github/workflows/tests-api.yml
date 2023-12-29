@@ -22,7 +22,7 @@ jobs:
       id-token: write
       contents: read
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
 
       - name: Authentification to Google
         uses: 'google-github-actions/auth@v1'
@@ -106,7 +106,7 @@ jobs:
       id-token: write
       contents: read
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
 
       - name: Authentification to Google
         uses: 'google-github-actions/auth@v1'
@@ -207,7 +207,7 @@ jobs:
           POSTGRES_PASSWORD: pytest
           POSTGRES_DB: pass_culture
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
 
       - name: Authentification to Google
         uses: 'google-github-actions/auth@v1'
@@ -344,7 +344,7 @@ jobs:
           POSTGRES_PASSWORD: pytest
           POSTGRES_DB: pass_culture
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
 
       - name: Authentification to Google
         uses: 'google-github-actions/auth@v1'
