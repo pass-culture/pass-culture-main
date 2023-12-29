@@ -3248,13 +3248,13 @@ twisted = ["twisted"]
 
 [[package]]
 name = "prometheus-flask-exporter"
-version = "0.22.4"
+version = "0.23.0"
 description = "Prometheus metrics exporter for Flask"
 optional = false
 python-versions = "*"
 files = [
-    {file = "prometheus_flask_exporter-0.22.4-py3-none-any.whl", hash = "sha256:e130179c26d5a9b903c12c0d8826127ae491b04b298cae0b92b98677dcf2c06f"},
-    {file = "prometheus_flask_exporter-0.22.4.tar.gz", hash = "sha256:959b69f1e740b6736ea53fe5f28dc2ab6229b2ebeade6582b3dbb5d74c7d58e4"},
+    {file = "prometheus_flask_exporter-0.23.0-py3-none-any.whl", hash = "sha256:7a026b4fdd54ebeddb77589333efe3a1ec43c7c717468825b0b3e9b6c33f7e9e"},
+    {file = "prometheus_flask_exporter-0.23.0.tar.gz", hash = "sha256:e4e6beb1b8e1e164da6d70fe1edefc95ef184f113b5047f66f4b7262233da9c0"},
 ]
 
 [package.dependencies]
@@ -5799,4 +5799,4 @@ test = ["pytest"]
 [metadata]
 lock-version = "2.0"
 python-versions = "^3.11"
-content-hash = "31f2302114952b686931be6b26835d713be55193fd0aadb73ee51ed350d071f3"
+content-hash = "7ee0d726b86c743deb4295e723df6679955ce108f1383efcaeac570867b62465"
