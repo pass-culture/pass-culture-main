@@ -11,7 +11,7 @@ Ce workflow est celui lancé pour faire un déploiement en staging/integration/p
 
 ![schéma release deploy](./img/release-deploy.drawio.svg)
 
-Description détaillée de tests-main.yml
+Description détaillée de dev_on_dispatch_release_build.yml
 ---------------------------------------
 
 Ce workflow est celui lancé à chaque merge sur la branche master.
@@ -93,7 +93,7 @@ Liste des fichiers
 | reusable--build-and-tag.yml           | Helper   | Automatically |                                                                                                       |
 | storybook.yml                         | Workflow | Automatically | [runs](https://github.com/pass-culture/pass-culture-main/actions/workflows/storybook.yml)             |
 | tests-api.yml                         | Helper   | Automatically |                                                                                                       |
-| tests-main.yml                        | Workflow | Automatically | [runs](https://github.com/pass-culture/pass-culture-main/actions/workflows/tests-main.yml)            |
+| dev_on_dispatch_release_build.yml                        | Workflow | Automatically | [runs](https://github.com/pass-culture/pass-culture-main/actions/workflows/dev_on_dispatch_release_build.yml)            |
 | tests-pro.yml                         | Helper   | Automatically |                                                                                                       |
 | update-api-client-template.yml        | Helper   | Automatically |                                                                                                       |
 | update-api-client-template.yml        | Helper   | Automatically |                                                                                                       |
