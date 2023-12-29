@@ -21,16 +21,10 @@ from pcapi.sandboxes.scripts.creators.industrial.create_industrial_iris import c
 from pcapi.sandboxes.scripts.creators.industrial.create_industrial_mediations import *
 from pcapi.sandboxes.scripts.creators.industrial.create_industrial_offer_validation_rules import *
 from pcapi.sandboxes.scripts.creators.industrial.create_industrial_offerer_tags import create_industrial_offerer_tags
-from pcapi.sandboxes.scripts.creators.industrial.create_industrial_offerer_with_custom_reimbursement_rule import (
-    create_industrial_offerer_with_custom_reimbursement_rule,
-)
 from pcapi.sandboxes.scripts.creators.industrial.create_industrial_offerers_stats import (
     create_industrial_offerers_stats,
 )
 from pcapi.sandboxes.scripts.creators.industrial.create_industrial_offerers_with_pro_users import *
-from pcapi.sandboxes.scripts.creators.industrial.create_industrial_offers_with_activation_codes import (
-    create_industrial_offers_with_activation_codes,
-)
 from pcapi.sandboxes.scripts.creators.industrial.create_industrial_pro_users import *
 from pcapi.sandboxes.scripts.creators.industrial.create_industrial_pro_users_api_keys import *
 from pcapi.sandboxes.scripts.creators.industrial.create_industrial_search_objects import (
@@ -86,8 +80,6 @@ def save_industrial_sandbox() -> None:
 
     create_industrial_draft_offers(offerers_by_name)
 
-    create_industrial_offers_with_activation_codes()
-
     offers_by_name = dict(event_offers_by_name, **thing_offers_by_name)
 
     event_occurrences_by_name = create_industrial_event_occurrences(event_offers_by_name)
@@ -124,13 +116,13 @@ def save_industrial_sandbox() -> None:
 
     create_industrial_offerer_tags()
 
-    create_offers_with_status()
+    offerer_with_several_venues = create_offerer_with_several_venues()
 
-    create_offer_with_thousand_stocks()
+    create_offers_with_status(offerer_with_several_venues)
 
-    create_offerer_with_several_venues()
+    create_offer_with_thousand_stocks(offerer_with_several_venues)
 
-    create_offers_with_price_categories()
+    create_offers_with_price_categories(offerer_with_several_venues)
 
     create_offerer_providers_for_apis()
 

@@ -3,9 +3,8 @@ import logging
 
 from pcapi.core.bookings.factories import BookingFactory
 from pcapi.core.categories import subcategories_v2 as subcategories
-from pcapi.core.offerers.factories import UserOffererFactory
 from pcapi.core.offerers.factories import VenueFactory
-from pcapi.core.offerers.factories import VirtualVenueFactory
+from pcapi.core.offerers.models import Offerer
 from pcapi.core.offerers.models import Venue
 from pcapi.core.offers.factories import EventOfferFactory
 from pcapi.core.offers.factories import EventStockFactory
@@ -20,14 +19,11 @@ from pcapi.models.offer_mixin import OfferValidationStatus
 logger = logging.getLogger(__name__)
 
 
-def create_offers_with_status() -> None:
-    user_offerer = UserOffererFactory(offerer__name="Offerer avec offres spécifiques")
+def create_offers_with_status(offerer: Offerer) -> None:
     venue = VenueFactory(
         name="Lieu avec offres spécifiques",
-        managingOfferer=user_offerer.offerer,
+        managingOfferer=offerer,
     )
-    # offerers have always a virtual venue so we have to create one to match reality
-    VirtualVenueFactory(name="Lieu virtuel avec offres spécifiques", managingOfferer=user_offerer.offerer)
     user_bene = BeneficiaryGrant18Factory(email="jeune-has-specific-offers-external-bookings@example.com")
 
     create_offers_fully_booked(user_bene, venue)

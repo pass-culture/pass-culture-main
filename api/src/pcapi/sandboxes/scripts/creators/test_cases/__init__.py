@@ -18,7 +18,6 @@ from pcapi.sandboxes.scripts.creators.industrial.create_industrial_invoices impo
 )
 from pcapi.sandboxes.scripts.creators.industrial.create_industrial_invoices import create_specific_invoice
 from pcapi.sandboxes.scripts.creators.industrial.create_industrial_offer_validation_rules import *
-from pcapi.sandboxes.scripts.creators.industrial.create_industrial_offerer_tags import create_industrial_offerer_tags
 from pcapi.sandboxes.scripts.creators.industrial.create_industrial_offerer_with_custom_reimbursement_rule import (
     create_industrial_offerer_with_custom_reimbursement_rule,
 )

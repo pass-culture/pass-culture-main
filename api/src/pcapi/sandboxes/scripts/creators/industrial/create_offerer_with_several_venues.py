@@ -1,29 +1,30 @@
+import datetime
 import logging
 
 from pcapi.core.bookings import factories as booking_factories
 from pcapi.core.offerers import factories as offerers_factories
-from pcapi.core.offerers.models import VenueTypeCode
+from pcapi.core.offerers import models as offerers_models
 from pcapi.core.offers import factories as offers_factories
 
 
 logger = logging.getLogger(__name__)
 
 
-def create_offerer_with_several_venues() -> None:
+def create_offerer_with_several_venues() -> offerers_models.Offerer:
     user_offerer = offerers_factories.UserOffererFactory(offerer__name="Structure avec plusieurs lieux")
     venue1 = offerers_factories.VenueFactory(
         name="Compagnie de théâtre",
         managingOfferer=user_offerer.offerer,
         pricing_point="self",
         reimbursement_point="self",
-        venueTypeCode=VenueTypeCode.PERFORMING_ARTS,
+        venueTypeCode=offerers_models.VenueTypeCode.PERFORMING_ARTS,
     )
     venue2 = offerers_factories.VenueFactory(
         name="Musée",
         managingOfferer=user_offerer.offerer,
         pricing_point="self",
         reimbursement_point="self",
-        venueTypeCode=VenueTypeCode.MUSEUM,
+        venueTypeCode=offerers_models.VenueTypeCode.MUSEUM,
         isPermanent=True,
     )
     offerers_factories.VenueFactory(
@@ -31,20 +32,28 @@ def create_offerer_with_several_venues() -> None:
         managingOfferer=user_offerer.offerer,
         pricing_point="self",
         reimbursement_point=venue1,
-        venueTypeCode=VenueTypeCode.FESTIVAL,
+        venueTypeCode=offerers_models.VenueTypeCode.FESTIVAL,
     )
     offerers_factories.VenueWithoutSiretFactory(
         name="Bibliothèque sans SIRET",
         managingOfferer=user_offerer.offerer,
         pricing_point=venue1,
         reimbursement_point=venue1,
-        venueTypeCode=VenueTypeCode.LIBRARY,
+        venueTypeCode=offerers_models.VenueTypeCode.LIBRARY,
         isPermanent=True,
     )
     # offerers have always a virtual venue so we have to create one to match reality
-    offerers_factories.VirtualVenueFactory(
+    virtual_venue = offerers_factories.VirtualVenueFactory(
         name="Lieu virtuel de la structure avec plusieurs lieux ", managingOfferer=user_offerer.offerer
     )
+    in_two_month = datetime.datetime.utcnow() + datetime.timedelta(days=60)
+    for i in range(1, 6):
+        offer = offers_factories.DigitalOfferFactory(name=f"Offre avec code d'activation {i}", venue=virtual_venue)
+
+        offers_factories.StockWithActivationCodesFactory(
+            offer=offer,
+            activationCodes__expirationDate=in_two_month,
+        )
 
     for i, venue in enumerate([venue1, venue2], 1):
         offers_factories.EventStockFactory(
@@ -73,3 +82,5 @@ def create_offerer_with_several_venues() -> None:
         booking_factories.ReimbursedBookingFactory.create_batch(2, stock=event5)
 
     logger.info("create_offerer_with_several_venues")
+
+    return user_offerer.offerer
