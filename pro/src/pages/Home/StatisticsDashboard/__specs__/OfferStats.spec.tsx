@@ -86,4 +86,17 @@ describe('OfferStats', () => {
       '5 à destination de groupes scolaires'
     )
   })
+
+  it('should render when the count is too high', async () => {
+    vi.spyOn(api, 'getOffererV2Stats').mockResolvedValueOnce({
+      publishedPublicOffers: 10000,
+      publishedEducationalOffers: 0,
+      pendingPublicOffers: 0,
+      pendingEducationalOffers: 0,
+    })
+
+    renderOfferStats()
+
+    expect(await screen.findByText('500+')).toBeInTheDocument()
+  })
 })

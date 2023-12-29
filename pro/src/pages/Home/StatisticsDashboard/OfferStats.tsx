@@ -11,6 +11,7 @@ import fullLinkIcon from 'icons/full-link.svg'
 import fullShowIcon from 'icons/full-show.svg'
 import strokePhoneIcon from 'icons/stroke-phone.svg'
 import strokeTeacherIcon from 'icons/stroke-teacher.svg'
+import { getOffersCountToDisplay } from 'pages/Offers/domain/getOffersCountToDisplay'
 import { ButtonLink } from 'ui-kit'
 import { ButtonVariant } from 'ui-kit/Button/types'
 import { SvgIcon } from 'ui-kit/SvgIcon/SvgIcon'
@@ -43,7 +44,10 @@ const StatBlock = ({ icon, count, label, link, linkLabel }: StatBlockProps) => (
 
     <div className={styles['stat-block-text']}>
       <p>
-        <span className={styles['stat-block-count']}>{count}</span> {label}
+        <span className={styles['stat-block-count']}>
+          {getOffersCountToDisplay(count)}
+        </span>{' '}
+        {label}
       </p>
       <ButtonLink
         variant={ButtonVariant.QUATERNARY}
