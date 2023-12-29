@@ -1,38 +1,41 @@
 #!/bin/bash
 
-protected_branch='production'
-
-policy='[Policy] Never force push or delete the '$protected_branch' branch!'
-warning='You are about to deploy a new version in PRODUCTION, are you sure ? [Y/n]'
-warning_different_branch='[WARNING] It seems that you are about to push '$current_branch' (local branch) to the remote '$protected_branch' branch!'
+protected_branch='master'
+warning='[WARNING] You are about to push to '$protected_branch', which requires pull request reviews before merging.'
+warning_different_branch='[WARNING] It seems that you are about to push '$current_branch' (local branch) to the remote '$protected_branch' branch.'
+confirmation_query='Are you sure ? [Y/n]'
+YELLOW='\033[33m'
+NOCOLOR='\033[0m'
 
 # GET PUSH TARGET
 current_branch=$(git symbolic-ref HEAD | sed -e 's,.*/\(.*\),\1,')
 push_command=$(ps -ocommand= -p $PPID)
 push_only='git push'
 
-# Case: git push origin production, on branch production
+# Case: git push origin master, on branch master
 if [[ $push_command =~ $protected_branch ]] && [ $current_branch = $protected_branch ]; then
-    echo $warning
+    echo -e "${YELLOW}$warning${NOCOLOR}"
+    echo -e "$confirmation_query"
     read -r < /dev/tty
     if [[ $REPLY = 'Y' ]]; then
         exit 0
     else
         exit 1
     fi
-# Case: git push, on branch production
+# Case: git push, on branch master
 elif [[ $push_command =~ $push_only ]] && [ $current_branch = $protected_branch ]; then
-    echo $warning
+    echo -e "${YELLOW}$warning${NOCOLOR}"
+    echo -e "$confirmation_query"
     read -r < /dev/tty
     if [[ $REPLY = 'Y' ]]; then
         exit 0
     else
         exit 1
     fi
-# Case: git push origin production, on some other branch
+# Case: git push origin master, on some other branch
 elif [[ $push_command =~ $protected_branch ]] && [ $current_branch != $protected_branch ]; then
-    echo $warning_different_branch
-    echo $warning
+    echo -e "${YELLOW}$warning_different_branch${NOCOLOR}"
+    echo -e "$confirmation_query"
     read -r < /dev/tty
     if [[ $REPLY = 'Y' ]]; then
         exit 0
