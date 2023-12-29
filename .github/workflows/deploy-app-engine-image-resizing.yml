@@ -39,7 +39,7 @@ jobs:
 
   check-image-resizing-folder-changes:
     name: "Check if folder changed"
-    uses: ./.github/workflows/check-folder-changes.yml
+    uses: ./.github/workflows/dev_on_workflow_check_folder_changes.yml
     needs: check-image-resizing-deployed-version
     with:
       base_sha: ${{ needs.check-image-resizing-deployed-version.outputs.image_resizing_deployed_version }}
