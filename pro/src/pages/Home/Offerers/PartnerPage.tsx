@@ -19,6 +19,7 @@ import { ButtonVariant } from 'ui-kit/Button/types'
 
 import { Card } from '../Card'
 import { HomepageLoaderData } from '../Homepage'
+import { VenueOfferSteps } from '../VenueOfferSteps/VenueOfferSteps'
 
 import styles from './PartnerPage.module.scss'
 
@@ -118,6 +119,10 @@ export const PartnerPage = ({ offererId, venue }: PartnerPageProps) => {
             Gérer ma page
           </ButtonLink>
         </div>
+      </div>
+
+      <div className={styles['venue-offer-steps']}>
+        <VenueOfferSteps venue={venue} hasVenue isInsidePartnerBlock />
       </div>
     </Card>
   )

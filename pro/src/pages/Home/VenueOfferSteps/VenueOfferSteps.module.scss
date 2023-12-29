@@ -3,12 +3,15 @@
 
 .card-wrapper {
   margin-left: 0 !important;
+  display: flex;
+  flex-direction: column;
+  gap: rem.torem(16px);
 
   &.no-shadow {
     box-shadow: none;
   }
 
-  .venue-offer-steps {
+  & .venue-offer-steps {
     display: flex;
     flex-direction: column;
     gap: rem.torem(8px);
@@ -43,7 +46,21 @@
 
 .card-title {
   display: block;
-  margin-bottom: rem.torem(24px);
+  margin-bottom: rem.torem(8px);
 
   @include fonts.title4;
+}
+
+.inside-partner-block {
+  &.card-wrapper {
+    border: none;
+    padding: 0;
+    gap: rem.torem(8px);
+  }
+
+  .card-title {
+    margin-bottom: 0;
+
+    @include fonts.button;
+  }
 }
