@@ -196,7 +196,7 @@ jobs:
       (needs.deploy-api.result == 'success' || needs.deploy-api.result == 'skipped') &&
       inputs.environment == 'testing' &&
       inputs.deploy_pro == true
-    uses: ./.github/workflows/deploy-pro-pr-version-generic.yml
+    uses: ./.github/workflows/dev_on_workflow_deploy_pro_pr_version_generic.yml
     secrets:
       GCP_EHP_SERVICE_ACCOUNT: ${{ secrets.GCP_EHP_SERVICE_ACCOUNT }}
       GCP_EHP_WORKLOAD_IDENTITY_PROVIDER: ${{ secrets.GCP_EHP_WORKLOAD_IDENTITY_PROVIDER }}
@@ -263,7 +263,7 @@ jobs:
     permissions:
       contents: 'read'
       id-token: 'write'
-    uses: ./.github/workflows/deploy-app-engine-image-resizing.yml
+    uses: ./.github/workflows/dev_on_workflow_deploy_app_engine_image_resizing.yml
     if: ${{ inputs.environment != 'production' }}
     with:
       workload_identity_provider_secret_name: passculture-metier-ehp/gcp_metier_ehp_workload_identity_provider
@@ -282,7 +282,7 @@ jobs:
     permissions:
       contents: 'read'
       id-token: 'write'
-    uses: ./.github/workflows/deploy-app-engine-image-resizing.yml
+    uses: ./.github/workflows/dev_on_workflow_deploy_app_engine_image_resizing.yml
     if: ${{ inputs.environment == 'production' }}
     with:
       workload_identity_provider_secret_name: passculture-metier-ehp/gcp_metier_prod_workload_identity_provider

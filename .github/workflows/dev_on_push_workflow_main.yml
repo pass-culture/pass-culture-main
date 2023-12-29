@@ -39,7 +39,7 @@ jobs:
       needs.check-pro-folder-changes.outputs.folder_changed == 'true' ||
       github.ref == 'refs/heads/master' ||
       startsWith(github.ref,'refs/heads/maint/v')
-    uses: ./.github/workflows/build-and-push-docker-images.yml
+    uses: ./.github/workflows/dev_on_workflow_build_and_push_docker_images.yml
     with:
       ref: ${{ github.event_name == 'pull_request' && github.event.pull_request.head.sha || github.sha }}
       tag: ${{ github.event_name == 'pull_request' && github.event.pull_request.head.sha || github.sha }}
@@ -107,7 +107,7 @@ jobs:
     if: |
       github.event_name == 'pull_request' &&
       github.actor == 'dependabot[bot]'
-    uses: ./.github/workflows/dependabot-auto-merge.yml
+    uses: ./.github/workflows/dev_on_workflow_dependabot_auto_merge.yml
 
   deploy-to-testing:
     name: Deploy to testing
