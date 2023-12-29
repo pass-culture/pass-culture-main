@@ -213,7 +213,7 @@ jobs:
       (needs.deploy-api.result == 'success' || needs.deploy-api.result == 'skipped') &&
       ( inputs.environment != 'testing' ) &&
       inputs.deploy_pro == true
-    uses: ./.github/workflows/configure-live-channel-pro-generic.yml
+    uses: ./.github/workflows/dev_on_workflow_configure_live_channel_pro_generic.yml
     secrets:
       GCP_EHP_SERVICE_ACCOUNT: ${{ secrets.GCP_EHP_SERVICE_ACCOUNT }}
       GCP_EHP_WORKLOAD_IDENTITY_PROVIDER: ${{ secrets.GCP_EHP_WORKLOAD_IDENTITY_PROVIDER }}
