@@ -5,7 +5,6 @@ import logging
 from pydantic.v1.error_wrappers import ValidationError
 import sqlalchemy as sa
 
-from pcapi.core import search
 from pcapi.core.bookings import models as bookings_models
 from pcapi.core.educational import adage_backends as adage_client
 from pcapi.core.educational import exceptions
@@ -83,11 +82,6 @@ def book_collective_offer(
     )
 
     transactional_mails.send_eac_new_collective_prebooking_email_to_pro(booking)
-
-    search.async_index_collective_offer_ids(
-        [stock.collectiveOfferId],
-        reason=search.IndexationReason.BOOKING_CREATION,
-    )
 
     try:
         adage_client.notify_prebooking(data=prebooking.serialize_collective_booking(booking))
@@ -223,11 +217,6 @@ def refuse_collective_booking(educational_booking_id: int) -> educational_models
 
     transactional_mails.send_eac_booking_cancellation_email(collective_booking)
 
-    search.async_index_collective_offer_ids(
-        [collective_booking.collectiveStock.collectiveOfferId],
-        reason=search.IndexationReason.BOOKING_CANCELLATION,
-    )
-
     return collective_booking
 
 
@@ -311,11 +300,6 @@ def cancel_collective_offer_booking(offer_id: int) -> None:
 
     # Offer is reindexed in the end of this function
     cancelled_booking = _cancel_collective_booking_by_offerer(collective_stock)
-
-    search.async_index_collective_offer_ids(
-        [offer_id],
-        reason=search.IndexationReason.BOOKING_CANCELLATION,
-    )
 
     logger.info(
         "Cancelled collective booking from offer",
@@ -411,10 +395,6 @@ def cancel_collective_booking(
             )
 
         db.session.commit()
-    search.async_index_collective_offer_ids(
-        [collective_booking.collectiveStock.collectiveOfferId],
-        reason=search.IndexationReason.BOOKING_CANCELLATION,
-    )
     logger.info(
         "CollectiveBooking has been cancelled by %s %s",
         reason.value.lower(),
@@ -440,10 +420,6 @@ def uncancel_collective_booking(
             )
         db.session.commit()
 
-    search.async_index_collective_offer_ids(
-        [collective_booking.collectiveStock.collectiveOfferId],
-        reason=search.IndexationReason.BOOKING_UNCANCELLATION,
-    )
     logger.info(
         "CollectiveBooking has been uncancelled by support",
         extra={
