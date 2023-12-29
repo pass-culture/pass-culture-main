@@ -20,13 +20,13 @@ tz = ["python-dateutil"]
 
 [[package]]
 name = "algoliasearch"
-version = "2.4.0"
+version = "3.0.0"
 description = "Algolia Search API Client for Python."
 optional = false
-python-versions = ">= 2.7, != 3.0.*, != 3.1.*, != 3.2.*, !=3.3.*"
+python-versions = ">=3.4"
 files = [
-    {file = "algoliasearch-2.4.0-py2.py3-none-any.whl", hash = "sha256:5f62155450949642fe6ae1c163d89630c9ffce9cca62901893ddc1ad3e653239"},
-    {file = "algoliasearch-2.4.0.tar.gz", hash = "sha256:525f9d50f5363c8ae6603a8e328d8c23957e825fdfe363ecbda55487a0140c76"},
+    {file = "algoliasearch-3.0.0-py2.py3-none-any.whl", hash = "sha256:e150a577435f5256a52e5f50c865138df2e434db640b9e71556e84c169a1da52"},
+    {file = "algoliasearch-3.0.0.tar.gz", hash = "sha256:abd9316f81fec1e322db4faf183081383b334188ac8184baab36405533038cdd"},
 ]
 
 [package.dependencies]
@@ -2533,7 +2533,6 @@ files = [
     {file = "libsass-0.22.0-cp37-abi3-macosx_10_15_x86_64.whl", hash = "sha256:081e256ab3c5f3f09c7b8dea3bf3bf5e64a97c6995fd9eea880639b3f93a9f9a"},
     {file = "libsass-0.22.0-cp37-abi3-win32.whl", hash = "sha256:89c5ce497fcf3aba1dd1b19aae93b99f68257e5f2026b731b00a872f13324c7f"},
     {file = "libsass-0.22.0-cp37-abi3-win_amd64.whl", hash = "sha256:65455a2728b696b62100eb5932604aa13a29f4ac9a305d95773c14aaa7200aaf"},
-    {file = "libsass-0.22.0-cp38-abi3-macosx_14_0_arm64.whl", hash = "sha256:5fb2297a4754a6c8e25cfe5c015a3b51a2b6b9021b333f989bb8ce9d60eb5828"},
     {file = "libsass-0.22.0.tar.gz", hash = "sha256:3ab5ad18e47db560f4f0c09e3d28cf3bb1a44711257488ac2adad69f4f7f8425"},
 ]
 
@@ -5799,4 +5798,4 @@ test = ["pytest"]
 [metadata]
 lock-version = "2.0"
 python-versions = "^3.11"
-content-hash = "0d65e1d855de8a8355b60b139cc2d1ecbab84552f4a757380e05c952285595fa"
+content-hash = "d44ec1062daf09ac398ba3f17f45228746c3d2f74ccbcecf53e21013192c80c1"
