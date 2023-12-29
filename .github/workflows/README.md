@@ -98,4 +98,4 @@ Liste des fichiers
 | update-api-client-template.yml        | Helper   | Automatically |                                                                                                       |
 | update-api-client-template.yml        | Helper   | Automatically |                                                                                                       |
 | update-api-client.yml                 | Workflow | Automatically | [runs](https://github.com/pass-culture/pass-culture-main/actions/workflows/update-api-client.yml)     |
-| update-jira-issues.yml                | Workflow | Automatically | [runs](https://github.com/pass-culture/pass-culture-main/actions/workflows/update-jira-issues.yml)    |
+| dev_on_workflow_update_jira_issues.yml                | Workflow | Automatically | [runs](https://github.com/pass-culture/pass-culture-main/actions/workflows/dev_on_workflow_update_jira_issues.yml)    |
