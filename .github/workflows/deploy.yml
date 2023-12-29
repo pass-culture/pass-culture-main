@@ -91,7 +91,7 @@ jobs:
     needs: generate-pcapi-helm-secrets-file
     if: ${{ inputs.deploy_api }}
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
       - name: Authentification to Google
         uses: 'google-github-actions/auth@v1'
         with:
@@ -105,7 +105,7 @@ jobs:
             PASSCULTURE_SA_ACCESS_TOKEN:passculture-metier-ehp/passculture-main-sa-access-token
             ARTIFACT_REGISTRY_WORKLOAD_IDENTITY_PROVIDER:passculture-metier-ehp/infra-prod-gcp-workload-identity-provider
             ARTIFACT_REGISTRY_SERVICE_ACCOUNT:passculture-metier-ehp/passculture-main-artifact-registry-service-account
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
         with:
           repository: pass-culture/pass-culture-deployment
           token: ${{ steps.secrets.outputs.PASSCULTURE_SA_ACCESS_TOKEN }}
