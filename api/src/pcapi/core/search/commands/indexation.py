@@ -39,7 +39,9 @@ def index_offers_in_algolia_by_venue() -> None:
 @log_cron_with_transaction
 def index_collective_offers() -> None:
     """Pop collective offers from indexation queue and reindex them."""
-    search.index_collective_offers_in_queue()
+    # TODO(jeremieb): to remove, once we are sure that removing this
+    # function won't break anything (eg. deactivate cron tasks)
+    pass  # pylint: disable=unnecessary-pass
 
 
 @blueprint.cli.command("index_collective_offer_templates")
@@ -91,7 +93,9 @@ def index_offers_in_error_in_algolia_by_offer() -> None:
 @log_cron_with_transaction
 def index_collective_offers_in_error() -> None:
     """Pop collective offers from the error queue and reindex them."""
-    search.index_collective_offers_in_queue(from_error_queue=True)
+    # TODO(jeremieb): to remove, once we are sure that removing this
+    # function won't break anything (eg. deactivate cron tasks)
+    pass  # pylint: disable=unnecessary-pass
 
 
 @blueprint.cli.command("index_collective_offers_templates_in_error")
@@ -178,16 +182,9 @@ def partially_index_collective_offers(
     offers that are eligible for search. You control the first and
     last pages of the batches (starting from page 1).
     """
-    if clear:
-        search.unindex_all_collective_offers(only_non_template=True)
-    _partially_index(
-        what="collective offers",
-        getter=collective_offers_repository.get_paginated_active_collective_offer_ids,
-        indexation_callback=search._reindex_collective_offer_ids,
-        batch_size=batch_size,
-        starting_page=starting_page,
-        last_page=last_page,
-    )
+    # TODO(jeremieb): to remove, once we are sure that removing this
+    # function won't break anything (eg. deactivate cron tasks)
+    pass  # pylint: disable=unnecessary-pass
 
 
 @blueprint.cli.command("partially_index_collective_offer_templates")
