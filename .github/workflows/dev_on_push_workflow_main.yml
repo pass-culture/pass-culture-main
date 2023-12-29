@@ -19,13 +19,13 @@ concurrency:
 jobs:
   check-api-folder-changes:
     name: Check api folder changes
-    uses: ./.github/workflows/check-folder-changes.yml
+    uses: ./.github/workflows/dev_on_workflow_check_folder_changes.yml
     with:
       folder: api
 
   check-pro-folder-changes:
     name: Check pro folder changes
-    uses: ./.github/workflows/check-folder-changes.yml
+    uses: ./.github/workflows/dev_on_workflow_check_folder_changes.yml
     with:
       folder: pro
 
