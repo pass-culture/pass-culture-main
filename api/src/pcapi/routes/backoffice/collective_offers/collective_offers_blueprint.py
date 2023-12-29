@@ -8,7 +8,6 @@ from flask import url_for
 from flask_login import current_user
 import sqlalchemy as sa
 
-from pcapi.core import search
 from pcapi.core.educational import adage_backends as adage_client
 from pcapi.core.educational import models as educational_models
 from pcapi.core.educational.adage_backends.serialize import serialize_collective_offer
@@ -222,11 +221,6 @@ def _batch_validate_or_reject_collective_offers(
 
         if collective_offer.institutionId is not None:
             adage_client.notify_institution_association(serialize_collective_offer(collective_offer))
-
-    search.async_index_collective_offer_ids(
-        collective_offer_update_succeed_ids,
-        reason=search.IndexationReason.OFFER_BATCH_VALIDATION,
-    )
 
     if len(collective_offer_update_succeed_ids) == 1:
         flash(
