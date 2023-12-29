@@ -477,7 +477,8 @@ class CollectiveOffer(
             return self.collectiveStock.isBookable
         return False
 
-    is_eligible_for_search = isBookable
+    # TODO(jeremieb - 2023/12/29): to be removed, is possible
+    is_eligible_for_search = False
 
     @property
     def isReleased(self) -> bool:
