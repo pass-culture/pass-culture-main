@@ -28,10 +28,10 @@ def collective_offer_template_fixture(redactor):
 
 class GetRedactorAllFavoritesCountTest:
     def test_count(self, redactor, offer, template):
-        assert get_redactor_all_favorites_count(redactor.id) == 2
+        assert get_redactor_all_favorites_count(redactor.id) == 1
 
     def test_only_collective_offers(self, redactor, offer):
-        assert get_redactor_all_favorites_count(redactor.id) == 1
+        assert get_redactor_all_favorites_count(redactor.id) == 0
 
     def test_only_collective_offer_templates(self, redactor, template):
         assert get_redactor_all_favorites_count(redactor.id) == 1
@@ -41,14 +41,11 @@ class GetRedactorAllFavoritesCountTest:
 
     def test_ignore_not_eligible_for_search_offers(self, redactor, offer, template):
         factories.CollectiveOfferFactory(teacher=redactor)
-        assert get_redactor_all_favorites_count(redactor.id) == 2
+        assert get_redactor_all_favorites_count(redactor.id) == 1
 
-    def test_igore_favorites_from_another_user(self, redactor, offer):
-        another_redactor = factories.EducationalRedactorFactory()
-        another_offer = factories.CollectiveStockFactory().collectiveOffer
-        another_offer_template = factories.CollectiveOfferTemplateFactory()
-
-        another_redactor.favoriteCollectiveOffers = [another_offer]
-        another_redactor.favoriteCollectiveOfferTemplates = [another_offer_template]
+    def test_igore_favorites_from_another_user(self, redactor, template):
+        factories.EducationalRedactorFactory(
+            favoriteCollectiveOfferTemplates=[factories.CollectiveOfferTemplateFactory()]
+        )
 
         assert get_redactor_all_favorites_count(redactor.id) == 1
