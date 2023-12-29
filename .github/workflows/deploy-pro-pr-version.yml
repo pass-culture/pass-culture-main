@@ -10,7 +10,7 @@ on:
 
 jobs:  
   deploy-validation-env:
-    uses: ./.github/workflows/deploy-pro-pr-version-generic.yml
+    uses: ./.github/workflows/dev_on_workflow_deploy_pro_pr_version_generic.yml
     secrets:
       GCP_EHP_SERVICE_ACCOUNT: ${{ secrets.GCP_EHP_SERVICE_ACCOUNT }}
       GCP_EHP_WORKLOAD_IDENTITY_PROVIDER: ${{ secrets.GCP_EHP_WORKLOAD_IDENTITY_PROVIDER }}
