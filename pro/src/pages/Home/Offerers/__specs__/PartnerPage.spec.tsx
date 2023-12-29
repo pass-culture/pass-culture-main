@@ -1,12 +1,18 @@
 import { screen } from '@testing-library/react'
+import userEvent from '@testing-library/user-event'
 import React from 'react'
 import * as router from 'react-router-dom'
 
 import { VenueTypeCode } from 'apiClient/v1'
+import { UploaderModeEnum } from 'components/ImageUploader/types'
+import { Events } from 'core/FirebaseEvents/constants'
+import * as useAnalytics from 'hooks/useAnalytics'
 import { defaultGetOffererVenueResponseModel } from 'utils/apiFactories'
 import { renderWithProviders } from 'utils/renderWithProviders'
 
 import { PartnerPage, PartnerPageProps } from '../PartnerPage'
+
+const mockLogEvent = vi.fn()
 
 const renderPartnerPages = (props: PartnerPageProps) => {
   renderWithProviders(<PartnerPage {...props} />)
@@ -24,7 +30,11 @@ describe('PartnerPages', () => {
     })
   })
 
-  it('should display image upload if no image', () => {
+  it('should display image upload if no image', async () => {
+    vi.spyOn(useAnalytics, 'default').mockImplementation(() => ({
+      logEvent: mockLogEvent,
+    }))
+
     renderPartnerPages({
       venue: {
         ...defaultGetOffererVenueResponseModel,
@@ -34,6 +44,13 @@ describe('PartnerPages', () => {
     })
 
     expect(screen.getByText(/Ajouter une image/)).toBeInTheDocument()
+    await userEvent.click(screen.getByText(/Ajouter une image/))
+
+    expect(mockLogEvent).toHaveBeenCalledWith(Events.CLICKED_ADD_IMAGE, {
+      venueId: defaultGetOffererVenueResponseModel.id,
+      imageType: UploaderModeEnum.VENUE,
+      isEdition: true,
+    })
   })
 
   it('should display the image if its present', () => {
