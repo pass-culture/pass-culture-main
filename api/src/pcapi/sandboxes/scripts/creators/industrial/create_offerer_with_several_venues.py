@@ -2,6 +2,7 @@ import logging
 
 from pcapi.core.bookings import factories as booking_factories
 from pcapi.core.offerers import factories as offerers_factories
+from pcapi.core.offerers.models import VenueTypeCode
 from pcapi.core.offers import factories as offers_factories
 
 
@@ -11,28 +12,34 @@ logger = logging.getLogger(__name__)
 def create_offerer_with_several_venues() -> None:
     user_offerer = offerers_factories.UserOffererFactory(offerer__name="Structure avec plusieurs lieux")
     venue1 = offerers_factories.VenueFactory(
-        name="Lieu 1 de la structure avec plusieurs lieux",
+        name="Compagnie de théâtre",
         managingOfferer=user_offerer.offerer,
         pricing_point="self",
         reimbursement_point="self",
+        venueTypeCode=VenueTypeCode.PERFORMING_ARTS,
     )
     venue2 = offerers_factories.VenueFactory(
-        name="Lieu 2 de la structure avec plusieurs lieux",
+        name="Musée",
         managingOfferer=user_offerer.offerer,
         pricing_point="self",
         reimbursement_point="self",
+        venueTypeCode=VenueTypeCode.MUSEUM,
+        isPermanent=True,
     )
     offerers_factories.VenueFactory(
-        name="Lieu 3 de la structure avec plusieurs lieux",
+        name="Festival de musique",
         managingOfferer=user_offerer.offerer,
         pricing_point="self",
         reimbursement_point=venue1,
+        venueTypeCode=VenueTypeCode.FESTIVAL,
     )
     offerers_factories.VenueWithoutSiretFactory(
-        name="Lieu 4 sans SIRET de la structure avec plusieurs lieux",
+        name="Bibliothèque sans SIRET",
         managingOfferer=user_offerer.offerer,
         pricing_point=venue1,
         reimbursement_point=venue1,
+        venueTypeCode=VenueTypeCode.LIBRARY,
+        isPermanent=True,
     )
     # offerers have always a virtual venue so we have to create one to match reality
     offerers_factories.VirtualVenueFactory(
