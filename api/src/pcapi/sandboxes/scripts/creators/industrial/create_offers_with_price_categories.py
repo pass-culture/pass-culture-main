@@ -1,9 +1,8 @@
 import logging
 
 from pcapi.core.categories import subcategories_v2 as subcategories
-from pcapi.core.offerers.factories import UserOffererFactory
 from pcapi.core.offerers.factories import VenueFactory
-from pcapi.core.offerers.factories import VirtualVenueFactory
+from pcapi.core.offerers.models import Offerer
 from pcapi.core.offers.factories import EventOfferFactory
 from pcapi.core.offers.factories import EventStockFactory
 from pcapi.core.offers.factories import PriceCategoryFactory
@@ -12,14 +11,11 @@ from pcapi.core.offers.factories import PriceCategoryFactory
 logger = logging.getLogger(__name__)
 
 
-def create_offers_with_price_categories() -> None:
-    user_offerer = UserOffererFactory(offerer__name="Offerer avec tarif")
+def create_offers_with_price_categories(offerer: Offerer) -> None:
     venue = VenueFactory(
         name="Lieu avec tarif",
-        managingOfferer=user_offerer.offerer,
+        managingOfferer=offerer,
     )
-    # offerers have always a virtual venue so we have to create one to match reality
-    VirtualVenueFactory(name="Lieu virtuel avec tarif", managingOfferer=user_offerer.offerer)
 
     offer_event = EventOfferFactory(
         name="Offre à tarifs",
