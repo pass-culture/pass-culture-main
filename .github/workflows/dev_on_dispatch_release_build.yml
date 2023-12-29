@@ -16,7 +16,7 @@ on:
 jobs:
   build-and-tag-version:
     name: Build and tag version
-    uses: ./.github/workflows/reusable--build-and-tag.yml
+    uses: ./.github/workflows/dev_on_workflow_build_and_tag.yml
     secrets:
       GCP_EHP_WORKLOAD_IDENTITY_PROVIDER: ${{ secrets.GCP_EHP_WORKLOAD_IDENTITY_PROVIDER }}
       GCP_EHP_SERVICE_ACCOUNT: ${{ secrets.GCP_EHP_SERVICE_ACCOUNT }}
@@ -27,7 +27,7 @@ jobs:
   create-pro-staging-release:
     needs:
       - build-and-tag-version
-    uses: ./.github/workflows/deploy-pro-pr-version-generic.yml
+    uses: ./.github/workflows/dev_on_workflow_deploy_pro_pr_version_generic.yml
     secrets:
       GCP_EHP_SERVICE_ACCOUNT: ${{ secrets.GCP_EHP_SERVICE_ACCOUNT }}
       GCP_EHP_WORKLOAD_IDENTITY_PROVIDER: ${{ secrets.GCP_EHP_WORKLOAD_IDENTITY_PROVIDER }}
@@ -41,7 +41,7 @@ jobs:
   create-pro-integration-release:
     needs:
       - build-and-tag-version
-    uses: ./.github/workflows/deploy-pro-pr-version-generic.yml
+    uses: ./.github/workflows/dev_on_workflow_deploy_pro_pr_version_generic.yml
     secrets:
       GCP_EHP_SERVICE_ACCOUNT: ${{ secrets.GCP_EHP_SERVICE_ACCOUNT }}
       GCP_EHP_WORKLOAD_IDENTITY_PROVIDER: ${{ secrets.GCP_EHP_WORKLOAD_IDENTITY_PROVIDER }}
@@ -54,7 +54,7 @@ jobs:
   create-pro-production-release:
     needs:
       - build-and-tag-version
-    uses: ./.github/workflows/deploy-pro-pr-version-generic.yml
+    uses: ./.github/workflows/dev_on_workflow_deploy_pro_pr_version_generic.yml
     secrets:
       GCP_EHP_SERVICE_ACCOUNT: ${{ secrets.GCP_EHP_SERVICE_ACCOUNT }}
       GCP_EHP_WORKLOAD_IDENTITY_PROVIDER: ${{ secrets.GCP_EHP_WORKLOAD_IDENTITY_PROVIDER }}

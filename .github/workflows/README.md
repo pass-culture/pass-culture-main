@@ -79,9 +79,9 @@ Liste des fichiers
 
 | Nom du fichier                        | Type     | Trigger       | Liens vers les runs                                                                                   |
 |:--------------------------------------|:---------|:--------------|:------------------------------------------------------------------------------------------------------|
-| build-and-push-docker-images.yml      | Helper   | Automatically |                                                                                                       |
+| dev_on_workflow_build_and_push_docker_images.yml      | Helper   | Automatically |                                                                                                       |
 | dev_on_workflow_check_folder_changes.yml              | Helper   | Automatically |                                                                                                       |
-| deploy-app-engine-image-resizing.yml | Helper   | Automatically |                                                                                                       |
+| dev_on_workflow_deploy_app_engine_image_resizing.yml | Helper   | Automatically |                                                                                                       |
 | deploy.yml                            | Helper   | Automatically |                                                                                                       |
 | dev_on_workflow_mypy_cop.yml                          | Workflow | Automatically | [runs](https://github.com/pass-culture/pass-culture-main/actions/workflows/dev_on_workflow_mypy_cop.yml)              |
 | ping_data_team.yml                    | Workflow | Automatically | [runs](https://github.com/pass-culture/pass-culture-main/actions/workflows/ping_data_team.yml)        |
@@ -90,7 +90,7 @@ Liste des fichiers
 | dev_on_dispatch_release_build_hotfix.yml             | Workflow | Manually      | [runs](https://github.com/pass-culture/pass-culture-main/actions/workflows/dev_on_dispatch_release_build_hotfix.yml) |
 | dev_on_dispatch_release_build.yml                    | Workflow | Manually      | [runs](https://github.com/pass-culture/pass-culture-main/actions/workflows/dev_on_dispatch_release_build.yml)        |
 | dev_on_dispatch_release_deploy.yml                   | Workflow | Manually      | [runs](https://github.com/pass-culture/pass-culture-main/actions/workflows/dev_on_dispatch_release_deploy.yml)       |
-| reusable--build-and-tag.yml           | Helper   | Automatically |                                                                                                       |
+| dev_on_workflow_build_and_tag.yml           | Helper   | Automatically |                                                                                                       |
 | dev_on_workflow_deploy_storybook.yml                         | Workflow | Automatically | [runs](https://github.com/pass-culture/pass-culture-main/actions/workflows/dev_on_workflow_deploy_storybook.yml)             |
 | dev_on_workflow_tests_api.yml                         | Helper   | Automatically |                                                                                                       |
 | dev_on_dispatch_release_build.yml                        | Workflow | Automatically | [runs](https://github.com/pass-culture/pass-culture-main/actions/workflows/dev_on_dispatch_release_build.yml)            |
