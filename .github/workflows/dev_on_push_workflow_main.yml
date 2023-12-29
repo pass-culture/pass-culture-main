@@ -76,7 +76,7 @@ jobs:
       github.ref == 'refs/heads/master' ||
       startsWith(github.ref,'refs/heads/maint/v')
     name: Tests pro
-    uses: ./.github/workflows/tests-pro.yml
+    uses: ./.github/workflows/dev_on_workflow_tests_pro.yml
     secrets:
       GCP_EHP_WORKLOAD_IDENTITY_PROVIDER: ${{ secrets.GCP_EHP_WORKLOAD_IDENTITY_PROVIDER }}
       GCP_EHP_SERVICE_ACCOUNT: ${{ secrets.GCP_EHP_SERVICE_ACCOUNT }}
