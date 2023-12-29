@@ -108,32 +108,6 @@ def test_update_products_booking_count_and_reindex_offers_if_same_ean(mocked_asy
 
 
 @clean_database
-def test_partially_index_collective_offers(app):
-    _inactive_offer = educational_factories.CollectiveStockFactory(collectiveOffer__isActive=False).collectiveOffer
-    _unbookable_offer = educational_factories.CollectiveOfferFactory()
-    bookable_offer1 = educational_factories.CollectiveStockFactory().collectiveOffer
-    _bookable_offer2 = educational_factories.CollectiveStockFactory().collectiveOffer
-
-    # `get_paginated_active_collective_offer_ids()` returns the first
-    # 2 active offers, which are _unbookable_offer and bookable_offer1.
-    # Only the latter is indexed.
-    expected_to_be_reindexed = {
-        bookable_offer1.id,
-    }
-
-    # fmt: off
-    run_command(
-        app,
-        "partially_index_collective_offers",
-        "--batch-size", 1,
-        "--last-page", 2,
-    )
-    # fmt: on
-
-    assert set(search_testing.search_store["collective-offers"].keys()) == expected_to_be_reindexed
-
-
-@clean_database
 def test_partially_index_collective_offer_templates(app):
     _not_indexable_template = educational_factories.CollectiveOfferTemplateFactory(isActive=False)
     indexable_template1 = educational_factories.CollectiveOfferTemplateFactory()
