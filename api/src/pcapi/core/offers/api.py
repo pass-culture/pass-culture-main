@@ -338,11 +338,6 @@ def update_collective_offer(
 
     updated_fields = _update_collective_offer(offer=offer_to_update, new_values=new_values)
 
-    search.async_index_collective_offer_ids(
-        [offer_to_update.id],
-        reason=search.IndexationReason.OFFER_UPDATE,
-    )
-
     educational_api_offer.notify_educational_redactor_on_collective_offer_or_stock_edit(
         offer_to_update.id,
         updated_fields,
@@ -472,12 +467,6 @@ def batch_update_collective_offers(query: BaseQuery, update_fields: dict) -> Non
         )
         query_to_update.update(update_fields, synchronize_session=False)
         db.session.commit()
-
-        search.async_index_collective_offer_ids(
-            collective_offer_ids_batch,
-            reason=search.IndexationReason.OFFER_BATCH_UPDATE,
-            log_extra={"changes": set(update_fields.keys())},
-        )
 
 
 def batch_update_collective_offers_template(query: BaseQuery, update_fields: dict) -> None:
