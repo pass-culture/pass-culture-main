@@ -25,10 +25,11 @@ import { shouldDisplayEACInformationSectionForVenue } from '../venueUtils'
 import styles from './VenueOfferSteps.module.scss'
 
 export interface VenueOfferStepsProps {
-  hasVenue: boolean
   offerer?: GetOffererResponseModel | null
   venue?: GetOffererVenueResponseModel
+  hasVenue: boolean
   isFirstVenue?: boolean
+  isInsidePartnerBlock?: boolean
 }
 
 export const VenueOfferSteps = ({
@@ -36,6 +37,7 @@ export const VenueOfferSteps = ({
   venue,
   hasVenue = false,
   isFirstVenue = false,
+  isInsidePartnerBlock = false,
 }: VenueOfferStepsProps) => {
   const { logEvent } = useAnalytics()
   const isVenueCreationAvailable = useActiveFeature('API_SIRENE_AVAILABLE')
@@ -75,7 +77,8 @@ export const VenueOfferSteps = ({
   return (
     <Card
       className={cn(styles['card-wrapper'], {
-        [styles['no-shadow']]: hasVenue,
+        [styles['no-shadow']]: hasVenue || isInsidePartnerBlock,
+        [styles['inside-partner-block']]: isInsidePartnerBlock,
       })}
       data-testid={hasVenue ? 'venue-offer-steps' : 'home-offer-steps'}
     >
