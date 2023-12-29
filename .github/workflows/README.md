@@ -92,7 +92,7 @@ Liste des fichiers
 | dev_on_dispatch_release_deploy.yml                   | Workflow | Manually      | [runs](https://github.com/pass-culture/pass-culture-main/actions/workflows/dev_on_dispatch_release_deploy.yml)       |
 | reusable--build-and-tag.yml           | Helper   | Automatically |                                                                                                       |
 | storybook.yml                         | Workflow | Automatically | [runs](https://github.com/pass-culture/pass-culture-main/actions/workflows/storybook.yml)             |
-| tests-api.yml                         | Helper   | Automatically |                                                                                                       |
+| dev_on_workflow_tests_api.yml                         | Helper   | Automatically |                                                                                                       |
 | dev_on_dispatch_release_build.yml                        | Workflow | Automatically | [runs](https://github.com/pass-culture/pass-culture-main/actions/workflows/dev_on_dispatch_release_build.yml)            |
 | dev_on_workflow_tests_pro.yml                         | Helper   | Automatically |                                                                                                       |
 | dev_on_workflow_update_api_client_template.yml        | Helper   | Automatically |                                                                                                       |
