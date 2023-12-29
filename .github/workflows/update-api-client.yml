@@ -11,7 +11,7 @@ concurrency:
 
 jobs:
   update-api-client:
-    uses: ./.github/workflows/update-api-client-template.yml
+    uses: ./.github/workflows/dev_on_workflow_update_api_client_template.yml
     with:
       trigger-only-on-api-change: true
       trigger-only-on-dependency-change: false
