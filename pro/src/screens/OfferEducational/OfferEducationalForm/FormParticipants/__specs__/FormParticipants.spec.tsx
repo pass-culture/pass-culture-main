@@ -5,20 +5,36 @@ import React from 'react'
 
 import { StudentLevels } from 'apiClient/v1'
 import { buildStudentLevelsMapWithDefaultValue } from 'core/OfferEducational/utils/buildStudentLevelsMapWithDefaultValue'
-import { renderWithProviders } from 'utils/renderWithProviders'
+import {
+  RenderWithProvidersOptions,
+  renderWithProviders,
+} from 'utils/renderWithProviders'
 
 import FormParticipants from '../FormParticipants'
 import { ALL_STUDENTS_LABEL } from '../useParticipantsOptions'
 
+const filteredParticipants = Object.values(StudentLevels).filter(
+  (studentLevel) =>
+    studentLevel !==
+      StudentLevels._COLES_INNOVANTES_MARSEILLE_EN_GRAND_MATERNELLE &&
+    studentLevel !== StudentLevels._COLES_INNOVANTES_MARSEILLE_EN_GRAND_PRIMAIRE
+)
+
 const renderFormParticipants = (
   participants: Record<string, boolean>,
-  isTemplate: boolean = true
+  isTemplate: boolean = true,
+  options?: RenderWithProvidersOptions
 ) => {
   return renderWithProviders(
     <Formik initialValues={{ participants }} onSubmit={() => {}}>
       <FormParticipants disableForm={false} isTemplate={isTemplate} />
-    </Formik>
+    </Formik>,
+    options
   )
+}
+
+const featureOverrides = {
+  features: ['WIP_ENABLE_MARSEILLE'],
 }
 
 describe('FormParticipants', () => {
@@ -29,7 +45,7 @@ describe('FormParticipants', () => {
   }
   it('should render all options with default value', async () => {
     renderFormParticipants(participants)
-    expect(await screen.findAllByRole('checkbox')).toHaveLength(12)
+    expect(await screen.findAllByRole('checkbox')).toHaveLength(10)
     expect(
       screen.getByRole('checkbox', { name: StudentLevels.LYC_E_PREMI_RE })
     ).toBeChecked()
@@ -50,7 +66,7 @@ describe('FormParticipants', () => {
       await waitFor(() =>
         expect(screen.getByLabelText(ALL_STUDENTS_LABEL)).toBeChecked()
       )
-      Object.values(StudentLevels).forEach((studentLevel) => {
+      filteredParticipants.forEach((studentLevel) => {
         const studentLevelCheckbox = screen.getByRole('checkbox', {
           name: studentLevel,
         })
@@ -72,7 +88,7 @@ describe('FormParticipants', () => {
       await waitFor(() =>
         expect(screen.getByLabelText(ALL_STUDENTS_LABEL)).not.toBeChecked()
       )
-      Object.values(StudentLevels).forEach((studentLevel) => {
+      filteredParticipants.forEach((studentLevel) => {
         const studentLevelCheckbox = screen.getByRole('checkbox', {
           name: studentLevel,
         })
@@ -96,7 +112,7 @@ describe('FormParticipants', () => {
       await waitFor(() =>
         expect(screen.getByLabelText(ALL_STUDENTS_LABEL)).toBeChecked()
       )
-      Object.values(StudentLevels).forEach((studentLevel) => {
+      filteredParticipants.forEach((studentLevel) => {
         const studentLevelCheckbox = screen.getByRole('checkbox', {
           name: studentLevel,
         })
@@ -121,7 +137,7 @@ describe('FormParticipants', () => {
           screen.getByLabelText(StudentLevels.COLL_GE_4E)
         ).not.toBeChecked()
       )
-      Object.values(StudentLevels)
+      filteredParticipants
         .filter((studentLevel) => studentLevel !== StudentLevels.COLL_GE_4E)
         .forEach((studentLevel) => {
           const studentLevelCheckbox = screen.getByRole('checkbox', {
@@ -160,5 +176,30 @@ describe('FormParticipants', () => {
     renderFormParticipants(participants, false)
 
     expect(screen.queryByLabelText(ALL_STUDENTS_LABEL)).not.toBeInTheDocument()
+  })
+
+  it('display a new text in the "à savoir" section when marseille ff is active', () => {
+    renderFormParticipants(participants, false, featureOverrides)
+
+    expect(
+      screen.getByText(
+        'Dans le cadre du projet Marseille en Grand, les écoles primaires innovantes du territoire marseillais bénéficient d’un budget pour financer des projets d’EAC avec leurs élèves.'
+      )
+    ).toBeInTheDocument()
+  })
+
+  it('should display new student level for MeG when ff is active', () => {
+    renderFormParticipants(participants, false, featureOverrides)
+
+    expect(
+      screen.getByRole('checkbox', {
+        name: StudentLevels._COLES_INNOVANTES_MARSEILLE_EN_GRAND_MATERNELLE,
+      })
+    ).toBeInTheDocument()
+    expect(
+      screen.getByRole('checkbox', {
+        name: StudentLevels._COLES_INNOVANTES_MARSEILLE_EN_GRAND_PRIMAIRE,
+      })
+    ).toBeInTheDocument()
   })
 })
