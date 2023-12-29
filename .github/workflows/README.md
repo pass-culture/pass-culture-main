@@ -86,7 +86,7 @@ Liste des fichiers
 | mypy-cop.yml                          | Workflow | Automatically | [runs](https://github.com/pass-culture/pass-culture-main/actions/workflows/mypy-cop.yml)              |
 | ping_data_team.yml                    | Workflow | Automatically | [runs](https://github.com/pass-culture/pass-culture-main/actions/workflows/ping_data_team.yml)        |
 | prepare-cache-master.yml              | Workflow | Automatically | [runs](https://github.com/pass-culture/pass-culture-main/actions/workflows/prepare-cache-master.yml)  |
-| prepare-cache-weekly.yml              | Workflow | Automatically | [runs](https://github.com/pass-culture/pass-culture-main/actions/workflows/prepare-cache-weekly.yml)  |
+| dev_on_schedule_prepare_cache_weekly.yml              | Workflow | Automatically | [runs](https://github.com/pass-culture/pass-culture-main/actions/workflows/dev_on_schedule_prepare_cache_weekly.yml)  |
 | release--build-hotfix.yml             | Workflow | Manually      | [runs](https://github.com/pass-culture/pass-culture-main/actions/workflows/release--build-hotfix.yml) |
 | release--build.yml                    | Workflow | Manually      | [runs](https://github.com/pass-culture/pass-culture-main/actions/workflows/release--build.yml)        |
 | release--deploy.yml                   | Workflow | Manually      | [runs](https://github.com/pass-culture/pass-culture-main/actions/workflows/release--deploy.yml)       |
