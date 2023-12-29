@@ -8,7 +8,7 @@ authors = ["Equipe pass Culture <contact@passculture.app>"]
 [tool.poetry.dependencies]
 python = "^3.11"
 alembic = "1.8.0"
-algoliasearch = "2.4.0"
+algoliasearch = "3.0.0"
 amplitude-analytics = "^1.1.3"
 authlib = "0.15.5"
 attrs = "22.1.0"
@@ -264,9 +264,6 @@ filterwarnings = [
     # dependencies.
     "ignore:distutils Version classes are deprecated. Use packaging.version instead.:DeprecationWarning",
     "ignore:The distutils package is deprecated and slated for removal in Python 3.12. Use setuptools or check PEP 632 for potential alternatives:DeprecationWarning",
-    # FIXME (askorski, 2022-05-02): algoliasearch uses deprecated @coroutine decorator
-    # Remove this when alogliasearch no more uses @coroutine
-    'ignore:"@coroutine" decorator is deprecated since Python 3.8, use \"async def\" instead:DeprecationWarning',
     # FIXME (francois-seguin, 2023-12-19): botocore uses this, until
     # https://github.com/boto/botocore/commit/87eba485330c68ae4c48f7249d20aa566cbe4676
     # (included in botocore 1.27.80). We should be able to remove this
