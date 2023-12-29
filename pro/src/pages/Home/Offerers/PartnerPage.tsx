@@ -10,7 +10,7 @@ import {
   VenueBannerMetaProps,
   buildInitialValues,
 } from 'components/VenueForm/ImageUploaderVenue/ImageUploaderVenue'
-import { VenueEvents } from 'core/FirebaseEvents/constants'
+import { Events } from 'core/FirebaseEvents/constants'
 import useAnalytics from 'hooks/useAnalytics'
 import useNotification from 'hooks/useNotification'
 import { postImageToVenue } from 'repository/pcapi/pcapi'
@@ -81,6 +81,14 @@ export const PartnerPage = ({ offererId, venue }: PartnerPageProps) => {
     }
   }
 
+  const logButtonAddClick = () => {
+    logEvent?.(Events.CLICKED_ADD_IMAGE, {
+      venueId: venue.id,
+      imageType: UploaderModeEnum.VENUE,
+      isEdition: true,
+    })
+  }
+
   return (
     <Card>
       <div className={styles['header']}>
@@ -91,6 +99,7 @@ export const PartnerPage = ({ offererId, venue }: PartnerPageProps) => {
           initialValues={imageValues}
           mode={UploaderModeEnum.VENUE}
           hideActionButtons
+          onClickButtonImageAdd={logButtonAddClick}
         />
 
         <div>
@@ -105,11 +114,6 @@ export const PartnerPage = ({ offererId, venue }: PartnerPageProps) => {
               isExternal: false,
               'aria-label': `Gérer la page de ${venue.name}`,
             }}
-            onClick={() =>
-              logEvent?.(VenueEvents.CLICKED_VENUE_PUBLISHED_OFFERS_LINK, {
-                venue_id: venue.id,
-              })
-            }
           >
             Gérer ma page
           </ButtonLink>
