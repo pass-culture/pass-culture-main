@@ -64,7 +64,7 @@ jobs:
       needs.check-api-folder-changes.outputs.folder_changed == 'true' ||
       github.ref == 'refs/heads/master' ||
       startsWith(github.ref,'refs/heads/maint/v')
-    uses: ./.github/workflows/tests-api.yml
+    uses: ./.github/workflows/dev_on_workflow_tests_api.yml
     secrets:
       GCP_EHP_WORKLOAD_IDENTITY_PROVIDER: ${{ secrets.GCP_EHP_WORKLOAD_IDENTITY_PROVIDER }}
       GCP_EHP_SERVICE_ACCOUNT: ${{ secrets.GCP_EHP_SERVICE_ACCOUNT }}
