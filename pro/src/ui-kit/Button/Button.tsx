@@ -3,7 +3,6 @@
 import cn from 'classnames'
 import React from 'react'
 
-import fullRightIcon from 'icons/full-right.svg'
 import strokePassIcon from 'icons/stroke-pass.svg'
 import { SvgIcon } from 'ui-kit/SvgIcon/SvgIcon'
 import Tooltip from 'ui-kit/Tooltip'
@@ -69,14 +68,6 @@ const Button = ({
           src={icon}
           alt=""
           className={styles['button-icon']}
-          width="20"
-        />
-      )}
-      {!isLoading && variant === ButtonVariant.BOX && (
-        <SvgIcon
-          src={fullRightIcon}
-          alt=""
-          className={cn(styles['button-icon'], styles['button-icon-arrow'])}
           width="20"
         />
       )}
