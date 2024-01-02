@@ -59,4 +59,16 @@
     background-color: colors.$green-valid;
     color: colors.$white;
   }
+
+  &.light-green {
+    background-color: colors.$callout-success-background;
+  }
+
+  &.light-yellow {
+    background-color: colors.$callout-warning-background;
+  }
+
+  &.light-blue {
+    background-color: colors.$callout-info-background;
+  }
 }

@@ -12,6 +12,9 @@ export enum TagVariant {
   LIGHT_PURPLE = 'light-purple',
   RED = 'red',
   GREEN = 'green',
+  LIGHT_GREEN = 'light-green',
+  LIGHT_YELLOWN = 'light-yellow',
+  LIGHT_BLUE = 'light-blue',
 }
 
 const classByVariant: Record<TagVariant, string> = {
@@ -23,6 +26,9 @@ const classByVariant: Record<TagVariant, string> = {
   [TagVariant.LIGHT_PURPLE]: styles['light-purple'],
   [TagVariant.RED]: styles['red'],
   [TagVariant.GREEN]: styles['green'],
+  [TagVariant.LIGHT_GREEN]: styles['light-green'],
+  [TagVariant.LIGHT_YELLOWN]: styles['light-yellow'],
+  [TagVariant.LIGHT_BLUE]: styles['light-blue'],
 }
 
 interface TagProps {
