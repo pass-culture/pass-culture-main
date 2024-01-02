@@ -9,6 +9,7 @@ import pcapi.core.mails.testing as mails_testing
 from pcapi.core.mails.transactional import sendinblue_template_ids
 from pcapi.core.offerers import factories as offerers_factories
 from pcapi.core.offers import factories as offers_factories
+from pcapi.utils.date import format_into_utc_date
 
 from . import utils
 
@@ -48,20 +49,23 @@ class PatchDateTest:
         assert event_stock.priceCategory == price_category
         assert event_stock.quantity == 24
 
-    @freezegun.freeze_time("2022-01-01 12:00:00")
     def test_sends_email_if_beginning_date_changes_on_edition(self, client):
         venue, api_key = utils.create_offerer_provider_linked_to_venue(venue_params={"bookingEmail": "venue@email.com"})
         event_offer = offers_factories.EventOfferFactory(
             venue=venue,
             lastProvider=api_key.provider,
         )
+        now = datetime.datetime.utcnow()
+        tomorrow = now + datetime.timedelta(days=1)
+        two_days_after = now + datetime.timedelta(days=2)
+        three_days_after = now + datetime.timedelta(days=3)
         event_stock = offers_factories.EventStockFactory(
             offer=event_offer,
             quantity=10,
             price=12,
             priceCategory=None,
-            bookingLimitDatetime=datetime.datetime(2022, 1, 7),
-            beginningDatetime=datetime.datetime(2022, 1, 12),
+            bookingLimitDatetime=tomorrow,
+            beginningDatetime=two_days_after,
         )
         price_category = offers_factories.PriceCategoryFactory(offer=event_offer)
         bookings_factories.BookingFactory(stock=event_stock, user__email="benefeciary@email.com")
@@ -69,17 +73,16 @@ class PatchDateTest:
         response = client.with_explicit_token(offerers_factories.DEFAULT_CLEAR_API_KEY).patch(
             f"/public/offers/v1/events/{event_stock.offer.id}/dates/{event_stock.id}",
             json={
-                "beginningDatetime": "2022-02-01T15:00:00+02:00",
-                "bookingLimitDatetime": "2022-01-20T12:00:00+02:00",
+                "bookingLimitDatetime": format_into_utc_date(two_days_after),
+                "beginningDatetime": format_into_utc_date(three_days_after),
                 "priceCategoryId": price_category.id,
                 "quantity": 24,
             },
         )
 
-        # Then
         assert response.status_code == 200
-        assert event_stock.bookingLimitDatetime == datetime.datetime(2022, 1, 20, 10)
-        assert event_stock.beginningDatetime == datetime.datetime(2022, 2, 1, 13)
+        assert event_stock.bookingLimitDatetime == two_days_after
+        assert event_stock.beginningDatetime == three_days_after
         assert event_stock.price == price_category.price
         assert event_stock.priceCategory == price_category
         assert event_stock.quantity == 25
@@ -92,34 +95,37 @@ class PatchDateTest:
         )
         assert mails_testing.outbox[1].sent_data["To"] == "benefeciary@email.com"
 
-    @freezegun.freeze_time("2022-01-01 12:00:00")
     def test_update_all_fields_on_date_with_price_category(self, client):
         venue, api_key = utils.create_offerer_provider_linked_to_venue()
         event_offer = offers_factories.EventOfferFactory(venue=venue, lastProvider=api_key.provider)
+        now = datetime.datetime.utcnow()
+        tomorrow = now + datetime.timedelta(days=1)
+        two_days_after = now + datetime.timedelta(days=2)
+        three_days_after = now + datetime.timedelta(days=3)
 
         old_price_category = offers_factories.PriceCategoryFactory(offer=event_offer)
         event_stock = offers_factories.EventStockFactory(
             offer=event_offer,
             quantity=10,
             priceCategory=old_price_category,
-            bookingLimitDatetime=datetime.datetime(2022, 1, 7),
-            beginningDatetime=datetime.datetime(2022, 1, 12),
+            bookingLimitDatetime=now,
+            beginningDatetime=tomorrow,
         )
         new_price_category = offers_factories.PriceCategoryFactory(offer=event_offer)
 
         response = client.with_explicit_token(offerers_factories.DEFAULT_CLEAR_API_KEY).patch(
             f"/public/offers/v1/events/{event_stock.offer.id}/dates/{event_stock.id}",
             json={
-                "beginningDatetime": "2022-02-01T15:00:00+02:00",
-                "bookingLimitDatetime": "2022-01-20T12:00:00+02:00",
+                "bookingLimitDatetime": format_into_utc_date(two_days_after),
+                "beginningDatetime": format_into_utc_date(three_days_after),
                 "priceCategoryId": new_price_category.id,
                 "quantity": 24,
             },
         )
 
         assert response.status_code == 200
-        assert event_stock.bookingLimitDatetime == datetime.datetime(2022, 1, 20, 10)
-        assert event_stock.beginningDatetime == datetime.datetime(2022, 2, 1, 13)
+        assert event_stock.bookingLimitDatetime == two_days_after
+        assert event_stock.beginningDatetime == three_days_after
         assert event_stock.price == new_price_category.price
         assert event_stock.priceCategory == new_price_category
         assert event_stock.quantity == 24
@@ -187,7 +193,6 @@ class PatchDateTest:
         assert response.status_code == 400
         assert response.json == {"testForbidField": ["extra fields not permitted"]}
 
-    @freezegun.freeze_time("2022-01-01 12:00:00")
     def test_update_stock_with_existing_booking(self, client):
         venue, api_key = utils.create_offerer_provider_linked_to_venue()
         event_offer = offers_factories.EventOfferFactory(
@@ -199,8 +204,6 @@ class PatchDateTest:
             offer=event_offer,
             quantity=2,
             priceCategory=price_category,
-            bookingLimitDatetime=datetime.datetime(2022, 1, 7),
-            beginningDatetime=datetime.datetime(2022, 1, 12),
         )
         bookings_factories.BookingFactory(stock=event_stock, quantity=2)
 
@@ -216,7 +219,6 @@ class PatchDateTest:
         assert event_stock.quantity == 12
         assert event_stock.priceCategory == price_category
 
-    @freezegun.freeze_time("2022-01-01 12:00:00")
     def test_update_stock_quantity_0_with_existing_booking(self, client):
         venue, api_key = utils.create_offerer_provider_linked_to_venue()
         event_offer = offers_factories.EventOfferFactory(
@@ -228,8 +230,6 @@ class PatchDateTest:
             offer=event_offer,
             quantity=20,
             priceCategory=price_category,
-            bookingLimitDatetime=datetime.datetime(2022, 1, 7),
-            beginningDatetime=datetime.datetime(2022, 1, 12),
         )
         bookings_factories.BookingFactory(stock=event_stock)
 
