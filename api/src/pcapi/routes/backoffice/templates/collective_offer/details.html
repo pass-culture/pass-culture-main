@@ -66,6 +66,16 @@
                   <span class="fw-bold">Places :</span>
                   {% if collective_offer.collectiveStock %}{{ collective_offer.collectiveStock.numberOfTickets }}{% endif %}
                 </p>
+                {% if collective_offer.institution %}
+                  <p class="mb-1">
+                    <span class="fw-bold">Établissement :</span> {{ collective_offer.institution.name }}
+                  </p>
+                {% endif %}
+                {% if collective_offer.teacher %}
+                  <p class="mb-1">
+                    <span class="fw-bold">Enseignant :</span> {{ collective_offer.teacher.full_name }}
+                  </p>
+                {% endif %}
               </div>
             </div>
             <div class="col-4">
@@ -79,6 +89,13 @@
                   <span class="fw-bold">Lieu :</span> {{ links.build_venue_name_to_details_link(collective_offer.venue) }}
                 </p>
               </div>
+              {% if collective_offer.template %}
+                <div class="fs-6">
+                  <p class="mb-1">
+                    <span class="fw-bold">Offre vitrine liée :</span> {{ links.build_collective_offer_template_details_link(collective_offer.template) }}
+                  </p>
+                </div>
+              {% endif %}
             </div>
           </div>
         </div>

@@ -528,6 +528,15 @@ class GetCollectiveOfferDetailTest(GetEndpointHelper):
         event_date = datetime.datetime.utcnow() - datetime.timedelta(days=1)
         collective_booking = educational_factories.CollectiveBookingFactory(
             collectiveStock__beginningDatetime=event_date,
+            collectiveStock__collectiveOffer__teacher=educational_factories.EducationalRedactorFactory(
+                firstName="Pacôme", lastName="De Champignac"
+            ),
+            collectiveStock__collectiveOffer__institution=educational_factories.EducationalInstitutionFactory(
+                name="Ecole de Marcinelle"
+            ),
+            collectiveStock__collectiveOffer__template=educational_factories.CollectiveOfferTemplateFactory(
+                name="offre Vito Cortizone pour lieu que l'on ne peut refuser"
+            ),
         )
         url = url_for(self.endpoint, collective_offer_id=collective_booking.collectiveStock.collectiveOffer.id)
         with assert_num_queries(4):
@@ -540,6 +549,9 @@ class GetCollectiveOfferDetailTest(GetEndpointHelper):
         assert "État : Validée" in content_as_text
         assert "Utilisateur de la dernière validation" not in content_as_text
         assert "Date de dernière validation de l’offre" not in content_as_text
+        assert "Enseignant : Pacôme De Champignac" in content_as_text
+        assert "Établissement : Ecole de Marcinelle" in content_as_text
+        assert "Offre vitrine liée : offre Vito Cortizone pour lieu que l'on ne peut refuser" in content_as_text
 
     def test_processed_pricing(self, legit_user, authenticated_client):
         pricing = finance_factories.CollectivePricingFactory(

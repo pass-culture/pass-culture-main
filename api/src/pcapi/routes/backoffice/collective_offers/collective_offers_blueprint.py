@@ -372,6 +372,16 @@ def get_collective_offer_details(collective_offer_id: int) -> utils.BackofficeRe
         sa.orm.joinedload(educational_models.CollectiveOffer.lastValidationAuthor).load_only(
             users_models.User.firstName, users_models.User.lastName
         ),
+        sa.orm.joinedload(educational_models.CollectiveOffer.teacher).load_only(
+            educational_models.EducationalRedactor.firstName,
+            educational_models.EducationalRedactor.lastName,
+        ),
+        sa.orm.joinedload(educational_models.CollectiveOffer.institution).load_only(
+            educational_models.EducationalInstitution.name
+        ),
+        sa.orm.joinedload(educational_models.CollectiveOffer.template).load_only(
+            educational_models.CollectiveOfferTemplate.name,
+        ),
     )
     collective_offer = collective_offer_query.one_or_none()
     if not collective_offer:
