@@ -715,6 +715,39 @@ class Cashflow(Base, Model):
         self._bankInformation = value
 
 
+class TmpCashflow(Base, Model):
+    """A temporary table that will be populated in parallel with the current table in order to compare and ensure
+    the proper functioning of the finance section following the modifications to the V5 project.
+    The table will be removed later.
+    """
+
+    id: int = sqla.Column(sqla.BigInteger, primary_key=True, autoincrement=True)
+    creationDate: datetime.datetime = sqla.Column(sqla.DateTime, nullable=False, server_default=sqla.func.now())
+    status: CashflowStatus = sqla.Column(db_utils.MagicEnum(CashflowStatus), index=True, nullable=False)
+
+    bankAccountId: int = sqla.Column(sqla.BigInteger, sqla.ForeignKey("bank_account.id"), index=True, nullable=True)
+    bankAccount: BankAccount = sqla_orm.relationship(BankAccount, foreign_keys=[bankAccountId])
+    reimbursementPointId: int = sqla.Column(sqla.BigInteger, sqla.ForeignKey("venue.id"), index=True, nullable=False)
+    reimbursementPoint: sqla_orm.Mapped["offerers_models.Venue"] = sqla_orm.relationship(
+        "Venue", foreign_keys=[reimbursementPointId]
+    )
+
+    batchId: int = sqla.Column(sqla.BigInteger, sqla.ForeignKey("cashflow_batch.id"), index=True, nullable=False)
+    batch: "CashflowBatch" = sqla_orm.relationship("CashflowBatch", foreign_keys=[batchId], backref="cashflows")
+
+    amount: int = sqla.Column(sqla.Integer, nullable=False)
+
+    logs: list["CashflowLog"] = sqla_orm.relationship(
+        "CashflowLog", back_populates="cashflow", order_by="CashflowLog.timestamp"
+    )
+    pricings: list[Pricing] = sqla_orm.relationship("Pricing", secondary="cashflow_pricing", back_populates="cashflows")
+    invoices: list["TmpInvoice"] = sqla_orm.relationship(
+        "TmpInvoice", secondary="tmp_invoice_cashflow", back_populates="cashflows"
+    )
+
+    __table_args__ = (sqla.CheckConstraint('("amount" != 0)', name="non_zero_amount_check"),)
+
+
 class CashflowLog(Base, Model):
     """A cashflow log is created whenever the status of a cashflow
     changes.
@@ -849,6 +882,9 @@ class TmpInvoice(Base, Model):
     amount: int = sqla.Column(sqla.Integer, nullable=False)
     token: str = sqla.Column(sqla.Text, unique=True, nullable=False)
     lines: list[InvoiceLine] = sqla_orm.relationship("InvoiceLine")
+    cashflows: list[TmpCashflow] = sqla_orm.relationship(
+        "Cashflow", secondary="tmp_invoice_cashflow", back_populates="invoices"
+    )
 
 
 class InvoiceCashflow(Base, Model):
@@ -856,6 +892,21 @@ class InvoiceCashflow(Base, Model):
 
     invoiceId: int = sqla.Column(sqla.BigInteger, sqla.ForeignKey("invoice.id"), index=True, primary_key=True)
     cashflowId: int = sqla.Column(sqla.BigInteger, sqla.ForeignKey("cashflow.id"), index=True, primary_key=True)
+
+    __table_args__ = (
+        sqla.PrimaryKeyConstraint(
+            "invoiceId",
+            "cashflowId",
+            name="unique_invoice_cashflow_association",
+        ),
+    )
+
+
+class TmpInvoiceCashflow(Base, Model):
+    "An association table between temporary invoices and temporary cashflows for their many-to-many relationship"
+
+    invoiceId: int = sqla.Column(sqla.BigInteger, sqla.ForeignKey("tmp_invoice.id"), index=True, primary_key=True)
+    cashflowId: int = sqla.Column(sqla.BigInteger, sqla.ForeignKey("tmp_cashflow.id"), index=True, primary_key=True)
 
     __table_args__ = (
         sqla.PrimaryKeyConstraint(
