@@ -125,14 +125,14 @@ export const OffersSearch = ({
       // eslint-disable-next-line @typescript-eslint/no-floating-promises
       formik.setFieldValue('students', [
         StudentLevels._COLES_INNOVANTES_MARSEILLE_EN_GRAND_MATERNELLE,
-        StudentLevels._COLES_INNOVANTES_MARSEILLE_EN_GRAND_PRIMAIRE,
+        StudentLevels._COLES_INNOVANTES_MARSEILLE_EN_GRAND_L_MENTAIRE,
       ])
 
       setFacetFilters([
         ...facetFilters,
         [
           `offer.students:${StudentLevels._COLES_INNOVANTES_MARSEILLE_EN_GRAND_MATERNELLE}`,
-          `offer.students:${StudentLevels._COLES_INNOVANTES_MARSEILLE_EN_GRAND_PRIMAIRE}`,
+          `offer.students:${StudentLevels._COLES_INNOVANTES_MARSEILLE_EN_GRAND_L_MENTAIRE}`,
         ],
       ])
     }

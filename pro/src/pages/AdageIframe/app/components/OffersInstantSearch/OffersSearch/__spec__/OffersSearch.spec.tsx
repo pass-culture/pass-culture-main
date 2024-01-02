@@ -476,7 +476,7 @@ describe('offersSearch component', () => {
 
     expect(
       screen.getByRole('button', {
-        name: /Écoles innovantes Marseille en Grand : primaire/,
+        name: /Écoles innovantes Marseille en Grand : élémentaire/,
       })
     ).toBeInTheDocument()
   })

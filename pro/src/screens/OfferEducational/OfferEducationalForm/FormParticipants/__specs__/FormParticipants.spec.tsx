@@ -17,7 +17,8 @@ const filteredParticipants = Object.values(StudentLevels).filter(
   (studentLevel) =>
     studentLevel !==
       StudentLevels._COLES_INNOVANTES_MARSEILLE_EN_GRAND_MATERNELLE &&
-    studentLevel !== StudentLevels._COLES_INNOVANTES_MARSEILLE_EN_GRAND_PRIMAIRE
+    studentLevel !==
+      StudentLevels._COLES_INNOVANTES_MARSEILLE_EN_GRAND_L_MENTAIRE
 )
 
 const renderFormParticipants = (
@@ -198,7 +199,7 @@ describe('FormParticipants', () => {
     ).toBeInTheDocument()
     expect(
       screen.getByRole('checkbox', {
-        name: StudentLevels._COLES_INNOVANTES_MARSEILLE_EN_GRAND_PRIMAIRE,
+        name: StudentLevels._COLES_INNOVANTES_MARSEILLE_EN_GRAND_L_MENTAIRE,
       })
     ).toBeInTheDocument()
   })
