@@ -106,7 +106,9 @@ export const PartnerPage = ({ offererId, venue }: PartnerPageProps) => {
         <div>
           <div className={styles['venue-type']}>{venueType?.label}</div>
           <div className={styles['venue-name']}>{venue.name}</div>
-          <address className={styles['venue-address']}>{venue.address}</address>
+          <address className={styles['venue-address']}>
+            {venue.address}, {venue.postalCode} {venue.city}
+          </address>
 
           <ButtonLink
             variant={ButtonVariant.SECONDARY}

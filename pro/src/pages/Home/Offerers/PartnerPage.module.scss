@@ -22,6 +22,7 @@
   @include fonts.body-important;
 
   color: colors.$grey-dark;
+  text-transform: uppercase;
   margin-top: rem.torem(16px);
 }
 
