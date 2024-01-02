@@ -134,6 +134,12 @@ jobs:
     with:
       CACHE_BUCKET_NAME: passculture-infra-prod-github-runner-cache
 
+  deploy-storybook:
+    name: "Deploy Storybook"
+    needs: check-pro
+    if: ${{ github.ref == 'refs/heads/master' && needs.check-pro.outputs.folder_changed == 'true' }}
+    uses: ./.github/workflows/dev_on_workflow_deploy_storybook.yml
+
   dependabot-auto-merge:
     needs:
       - test-pro
