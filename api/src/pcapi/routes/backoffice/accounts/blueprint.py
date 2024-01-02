@@ -776,7 +776,11 @@ def get_public_account(user_id: int) -> utils.BackofficeResponse:
 @public_accounts_blueprint.route("/<int:user_id>/update", methods=["POST"])
 @utils.permission_required(perm_models.Permissions.MANAGE_PUBLIC_ACCOUNT)
 def update_public_account(user_id: int) -> utils.BackofficeResponse:
-    user = users_models.User.query.get_or_404(user_id)
+    user = (
+        users_models.User.query.filter_by(id=user_id).populate_existing().with_for_update(key_share=True).one_or_none()
+    )
+    if not user:
+        raise NotFound()
 
     form = account_forms.EditAccountForm()
     if not form.validate():
@@ -838,7 +842,12 @@ def resend_validation_email(user_id: int) -> utils.BackofficeResponse:
 @public_accounts_blueprint.route("/<int:user_id>/validate-phone-number", methods=["POST"])
 @utils.permission_required(perm_models.Permissions.MANAGE_PUBLIC_ACCOUNT)
 def manually_validate_phone_number(user_id: int) -> utils.BackofficeResponse:
-    user = users_models.User.query.get_or_404(user_id)
+    user = (
+        users_models.User.query.filter_by(id=user_id).populate_existing().with_for_update(key_share=True).one_or_none()
+    )
+    if not user:
+        raise NotFound()
+
     if not user.phoneNumber:
         flash("L'utilisateur n'a pas de numéro de téléphone", "warning")
         return redirect(get_public_account_link(user_id), code=303)
@@ -860,7 +869,11 @@ def manually_validate_phone_number(user_id: int) -> utils.BackofficeResponse:
 @public_accounts_blueprint.route("/<int:user_id>/send-validation-code", methods=["POST"])
 @utils.permission_required(perm_models.Permissions.MANAGE_PUBLIC_ACCOUNT)
 def send_validation_code(user_id: int) -> utils.BackofficeResponse:
-    user = users_models.User.query.get_or_404(user_id)
+    user = (
+        users_models.User.query.filter_by(id=user_id).populate_existing().with_for_update(key_share=True).one_or_none()
+    )
+    if not user:
+        raise NotFound()
 
     if not user.phoneNumber:
         flash("L'utilisateur n'a pas de numéro de téléphone", "warning")
@@ -900,7 +913,11 @@ def send_validation_code(user_id: int) -> utils.BackofficeResponse:
 @public_accounts_blueprint.route("/<int:user_id>/review", methods=["POST"])
 @utils.permission_required(perm_models.Permissions.BENEFICIARY_FRAUD_ACTIONS)
 def review_public_account(user_id: int) -> utils.BackofficeResponse:
-    user = users_models.User.query.get_or_404(user_id)
+    user = (
+        users_models.User.query.filter_by(id=user_id).populate_existing().with_for_update(key_share=True).one_or_none()
+    )
+    if not user:
+        raise NotFound()
 
     form = account_forms.ManualReviewForm()
     if not form.validate():
@@ -943,7 +960,14 @@ def review_public_account(user_id: int) -> utils.BackofficeResponse:
 @public_accounts_blueprint.route("/<int:user_id>/comment", methods=["POST"])
 @utils.permission_required(perm_models.Permissions.MANAGE_PUBLIC_ACCOUNT)
 def comment_public_account(user_id: int) -> utils.BackofficeResponse:
-    user = users_models.User.query.get_or_404(user_id)
+    user = (
+        users_models.User.query.filter_by(id=user_id)
+        .populate_existing()
+        .with_for_update(key_share=True, read=True)
+        .one_or_none()
+    )
+    if not user:
+        raise NotFound()
 
     form = account_forms.CommentForm()
     if not form.validate():

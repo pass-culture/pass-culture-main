@@ -111,7 +111,14 @@ def get_history(bank_account_id: int) -> utils.BackofficeResponse:
 @bank_blueprint.route("/<int:bank_account_id>", methods=["POST"])
 @utils.permission_required(perm_models.Permissions.MANAGE_PRO_ENTITY)
 def update_bank_account(bank_account_id: int) -> utils.BackofficeResponse:
-    bank_account = finance_models.BankAccount.query.get_or_404(bank_account_id)
+    bank_account = (
+        finance_models.BankAccount.query.filter_by(id=bank_account_id)
+        .populate_existing()
+        .with_for_update(key_share=True)
+        .one_or_none()
+    )
+    if not bank_account:
+        raise NotFound()
 
     form = forms.EditBankAccountForm()
     if not form.validate():
