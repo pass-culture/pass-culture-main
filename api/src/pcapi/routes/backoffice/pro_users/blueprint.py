@@ -118,7 +118,9 @@ def get_details(user_id: int) -> utils.BackofficeResponse:
 @pro_user_blueprint.route("/update", methods=["POST"])
 @utils.permission_required(perm_models.Permissions.MANAGE_PRO_ENTITY)
 def update_pro_user(user_id: int) -> utils.BackofficeResponse:
-    user = users_api.get_pro_account_base_query(user_id).one_or_none()
+    user = (
+        users_api.get_pro_account_base_query(user_id).populate_existing().with_for_update(key_share=True).one_or_none()
+    )
     if not user:
         raise NotFound()
 
@@ -160,7 +162,7 @@ def update_pro_user(user_id: int) -> utils.BackofficeResponse:
 @pro_user_blueprint.route("/delete", methods=["POST"])
 @utils.permission_required(perm_models.Permissions.MANAGE_PRO_ENTITY)
 def delete(user_id: int) -> utils.BackofficeResponse:
-    user = users_api.get_pro_account_base_query(user_id).one_or_none()
+    user = users_api.get_pro_account_base_query(user_id).populate_existing().with_for_update().one_or_none()
     if not user:
         raise NotFound()
 
@@ -194,7 +196,12 @@ def delete(user_id: int) -> utils.BackofficeResponse:
 @pro_user_blueprint.route("/comment", methods=["POST"])
 @utils.permission_required(perm_models.Permissions.MANAGE_PRO_ENTITY)
 def comment_pro_user(user_id: int) -> utils.BackofficeResponse:
-    user = users_api.get_pro_account_base_query(user_id).one_or_none()
+    user = (
+        users_api.get_pro_account_base_query(user_id)
+        .populate_existing()
+        .with_for_update(key_share=True, read=True)
+        .one_or_none()
+    )
     if not user:
         raise NotFound()
 
@@ -212,7 +219,9 @@ def comment_pro_user(user_id: int) -> utils.BackofficeResponse:
 @pro_user_blueprint.route("/validate-email", methods=["POST"])
 @utils.permission_required(perm_models.Permissions.MANAGE_PRO_ENTITY)
 def validate_pro_user_email(user_id: int) -> utils.BackofficeResponse:
-    user = users_api.get_pro_account_base_query(user_id).one_or_none()
+    user = (
+        users_api.get_pro_account_base_query(user_id).populate_existing().with_for_update(key_share=True).one_or_none()
+    )
     if not user:
         raise NotFound()
 

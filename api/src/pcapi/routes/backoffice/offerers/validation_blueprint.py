@@ -103,7 +103,14 @@ def list_offerers_to_validate() -> utils.BackofficeResponse:
 @validation_blueprint.route("/offerer/<int:offerer_id>/validate", methods=["POST"])
 @utils.permission_required(perm_models.Permissions.VALIDATE_OFFERER)
 def validate_offerer(offerer_id: int) -> utils.BackofficeResponse:
-    offerer = offerers_models.Offerer.query.get_or_404(offerer_id)
+    offerer = (
+        offerers_models.Offerer.query.filter_by(id=offerer_id)
+        .populate_existing()
+        .with_for_update(key_share=True)
+        .one_or_none()
+    )
+    if not offerer:
+        raise NotFound()
 
     try:
         offerers_api.validate_offerer(offerer, current_user)
@@ -118,7 +125,14 @@ def validate_offerer(offerer_id: int) -> utils.BackofficeResponse:
 @validation_blueprint.route("/offerer/<int:offerer_id>/reject", methods=["GET"])
 @utils.permission_required(perm_models.Permissions.VALIDATE_OFFERER)
 def get_reject_offerer_form(offerer_id: int) -> utils.BackofficeResponse:
-    offerer = offerers_models.Offerer.query.get_or_404(offerer_id)
+    offerer = (
+        offerers_models.Offerer.query.filter_by(id=offerer_id)
+        .populate_existing()
+        .with_for_update(key_share=True)
+        .one_or_none()
+    )
+    if not offerer:
+        raise NotFound()
 
     form = offerer_forms.OptionalCommentForm()
 
@@ -135,7 +149,14 @@ def get_reject_offerer_form(offerer_id: int) -> utils.BackofficeResponse:
 @validation_blueprint.route("/offerer/<int:offerer_id>/reject", methods=["POST"])
 @utils.permission_required(perm_models.Permissions.VALIDATE_OFFERER)
 def reject_offerer(offerer_id: int) -> utils.BackofficeResponse:
-    offerer = offerers_models.Offerer.query.get_or_404(offerer_id)
+    offerer = (
+        offerers_models.Offerer.query.filter_by(id=offerer_id)
+        .populate_existing()
+        .with_for_update(key_share=True)
+        .one_or_none()
+    )
+    if not offerer:
+        raise NotFound()
 
     form = offerer_forms.OptionalCommentForm()
     if not form.validate():
@@ -172,7 +193,14 @@ def get_offerer_pending_form(offerer_id: int) -> utils.BackofficeResponse:
 @validation_blueprint.route("/offerer/<int:offerer_id>/pending", methods=["POST"])
 @utils.permission_required(perm_models.Permissions.VALIDATE_OFFERER)
 def set_offerer_pending(offerer_id: int) -> utils.BackofficeResponse:
-    offerer = offerers_models.Offerer.query.get_or_404(offerer_id)
+    offerer = (
+        offerers_models.Offerer.query.filter_by(id=offerer_id)
+        .populate_existing()
+        .with_for_update(key_share=True)
+        .one_or_none()
+    )
+    if not offerer:
+        raise NotFound()
 
     form = offerer_forms.CommentAndTagOffererForm()
     if not form.validate():
@@ -195,7 +223,14 @@ def set_offerer_pending(offerer_id: int) -> utils.BackofficeResponse:
 @validation_blueprint.route("/offerer/<int:offerer_id>/top-actor", methods=["POST"])
 @utils.permission_required(perm_models.Permissions.VALIDATE_OFFERER)
 def toggle_top_actor(offerer_id: int) -> utils.BackofficeResponse:
-    offerer = offerers_models.Offerer.query.get_or_404(offerer_id)
+    offerer = (
+        offerers_models.Offerer.query.filter_by(id=offerer_id)
+        .populate_existing()
+        .with_for_update(key_share=True, read=True)
+        .one_or_none()
+    )
+    if not offerer:
+        raise NotFound()
 
     try:
         tag = offerers_models.OffererTag.query.filter(offerers_models.OffererTag.name == "top-acteur").one()
@@ -237,7 +272,12 @@ def _offerer_batch_action(
         flash(utils.build_form_error_msg(form), "warning")
         return _redirect_after_offerer_validation_action()
 
-    offerers = offerers_models.Offerer.query.filter(offerers_models.Offerer.id.in_(form.object_ids_list)).all()
+    offerers = (
+        offerers_models.Offerer.query.filter(offerers_models.Offerer.id.in_(form.object_ids_list))
+        .populate_existing()
+        .with_for_update(key_share=True)
+        .all()
+    )
 
     if hasattr(form, "tags"):
         tags = form.tags.data
