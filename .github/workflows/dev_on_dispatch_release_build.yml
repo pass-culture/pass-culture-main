@@ -37,6 +37,7 @@ jobs:
       EXPIRES: "30d"
       PUSH_RELEASE_TO_SENTRY: true
       REF: v${{ github.event.inputs.releaseNumber }}.0.0
+      CACHE_BUCKET_NAME: "passculture-infra-prod-github-runner-cache"
 
   create-pro-integration-release:
     needs:
@@ -50,6 +51,7 @@ jobs:
       CHANNEL: "${{ github.event.inputs.releaseNumber }}.0.0"
       EXPIRES: "30d"
       REF: v${{ github.event.inputs.releaseNumber }}.0.0
+      CACHE_BUCKET_NAME: "passculture-infra-prod-github-runner-cache"
 
   create-pro-production-release:
     needs:
@@ -64,6 +66,7 @@ jobs:
       EXPIRES: "30d"
       REF: v${{ github.event.inputs.releaseNumber }}.0.0
       PUSH_RELEASE_TO_SENTRY: true
+      CACHE_BUCKET_NAME: "passculture-infra-prod-github-runner-cache"
 
   create-maintenance-branch:
     name: Create maintenance branch

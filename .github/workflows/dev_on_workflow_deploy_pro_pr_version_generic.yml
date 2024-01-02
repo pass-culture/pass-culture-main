@@ -19,22 +19,22 @@ on:
       REF:
         type: string
         required: true
+      CACHE_BUCKET_NAME:
+        type: string
+        required: true
     secrets:
       GCP_EHP_SERVICE_ACCOUNT:
         required: true
       GCP_EHP_WORKLOAD_IDENTITY_PROVIDER:
         required: true
 
-env:
-  CACHE_BUCKET_NAME: passculture-infra-prod-github-runner-cache
+defaults:
+  run:
+    working-directory: pro
 
 jobs:
   deploy_on_firebase:
-    permissions: write-all
-    defaults:
-      run:
-        working-directory: pro
-    runs-on: [self-hosted, linux, x64]
+    runs-on: ubuntu-latest
     if: ${{ github.actor != 'dependabot[bot]' }}
     steps:
       - uses: actions/checkout@v4
@@ -43,25 +43,25 @@ jobs:
       - uses: actions/setup-node@v3
         with:
           node-version-file: 'pro/.nvmrc'
-      - id: openid-auth
-        name: "OpenID Connect Authentication"
+      - name: "OpenID Connect Authentication"
+        id: "openid-auth"
         uses: "google-github-actions/auth@v1"
         with:
           workload_identity_provider: ${{ secrets.GCP_EHP_WORKLOAD_IDENTITY_PROVIDER }}
           service_account: ${{ secrets.GCP_EHP_SERVICE_ACCOUNT }}
-      - name: Get Secret
+      - name: "Get Secret"
         id: "secrets"
         uses: "google-github-actions/get-secretmanager-secrets@v1"
         with:
           secrets: |-
             FIREBASE_TOKEN:passculture-metier-ehp/pc_pro_${{ inputs.ENV }}_firebase_json
             SENTRY_TOKEN:passculture-metier-ehp/passculture-app-pro-sentry-token
-      - name: Cache the node_modules
-        id: yarn-modules-cache
-        uses: kopax-polyconseil/gcs-cache-action@v1.0.2
+      - name: "Cache the node_modules"
+        id: "yarn-modules-cache"
+        uses: pass-culture-github-actions/cache@v1.0.0
         with:
-          compression-method: gzip
-          bucket: ${{ env.CACHE_BUCKET_NAME }}
+          compression-method: "gzip"
+          bucket: ${{ inputs.CACHE_BUCKET_NAME }}
           path: |
             **/node_modules
           key: v1-yarn-pro-dependency-cache-${{ runner.os }}-${{ hashFiles('**/yarn.lock') }}
@@ -74,10 +74,10 @@ jobs:
           # This is not enough for the build process when compiling sourcemaps
           # Increases the limit so that the build doesnt fail
           NODE_OPTIONS: --max_old_space_size=4096
-      - if: ${{ inputs.ENV != 'testing' }}
+      - if: inputs.ENV != 'testing'
         run: |
           cat package.json | grep -E '"version": "[0-9]+.[0-9]+.[0-9]+"' | grep -Eo '[0-9]+.[0-9]+.[0-9]+' > build/version.txt
-      - name: Create Sentry release
+      - name: "Create Sentry release"
         if: ${{ inputs.PUSH_RELEASE_TO_SENTRY }}
         uses: getsentry/action-release@v1
         env:
