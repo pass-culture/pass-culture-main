@@ -21,9 +21,8 @@ export const PartnerPages = ({ venues, offererId }: PartnerPagesProps) => {
   const [selectedVenueId, setSelectedVenueId] = useState<string>(
     venues.length > 0 ? venues[0].id.toString() : ''
   )
-  const selectedVenue = venues.find(
-    (venue) => venue.id.toString() === selectedVenueId
-  )
+  const selectedVenue =
+    venues.find((venue) => venue.id.toString() === selectedVenueId) ?? venues[0]
 
   return (
     <section className={styles['section']}>
