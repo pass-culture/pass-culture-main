@@ -25,6 +25,9 @@ jobs:
       - uses: actions/setup-node@v3
         with:
           node-version-file: "pro/.nvmrc"
+      - uses: KengoTODA/actions-setup-docker-compose@v1
+        with:
+          version: '2.23.3'
       - name: "Run API server"
         run: docker-compose -f ../docker-compose-backend.yml up flask postgres redis --build -d
       - name: "Wait for migrations to be run"
