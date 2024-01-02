@@ -159,49 +159,54 @@ jobs:
       GCP_EHP_WORKLOAD_IDENTITY_PROVIDER: ${{ secrets.GCP_EHP_WORKLOAD_IDENTITY_PROVIDER }}
       GCP_EHP_SERVICE_ACCOUNT: ${{ secrets.GCP_EHP_SERVICE_ACCOUNT }}
 
-  notification:
-    name: "Notification"
-    runs-on: [self-hosted, linux, x64]
+  update-jira-issue:
+    name: "Update Jira issue"
+    if: ${{ always() && github.ref == 'refs/heads/master' }}
+    concurrency: ${{ github.workflow }}-${{ github.ref }}
+    uses: ./.github/workflows/dev_on_workflow_update_jira_issues.yml
+    secrets:
+      GCP_EHP_WORKLOAD_IDENTITY_PROVIDER: ${{ secrets.GCP_EHP_WORKLOAD_IDENTITY_PROVIDER }}
+      GCP_EHP_SERVICE_ACCOUNT: ${{ secrets.GCP_EHP_SERVICE_ACCOUNT }}
+
+  slack-notify:
+    name: "Slack notification"
+    runs-on: ubuntu-latest
     if: ${{ failure() && github.ref == 'refs/heads/master' }}
-    needs:
-      - deploy-to-testing
+    needs: deploy-to-testing
     steps:
       - uses: technote-space/workflow-conclusion-action@v3
-      - name: Authentification to Google
+      - name: "Authentification to Google"
         uses: 'google-github-actions/auth@v1'
         with:
           workload_identity_provider: ${{ secrets.GCP_EHP_WORKLOAD_IDENTITY_PROVIDER }}
           service_account: ${{ secrets.GCP_EHP_SERVICE_ACCOUNT }}
-
-      - name: Get Secret
+      - name: "Get Secret"
         id: 'secrets'
         uses: 'google-github-actions/get-secretmanager-secrets@v1'
         with:
           secrets: |-
             SLACK_BOT_TOKEN:passculture-metier-ehp/passculture-ci-slack-bot-token
-
-      - name: Post to a Slack channel
-        id: slack
+      - name: "Post to a Slack channel"
         uses: slackapi/slack-github-action@v1.23.0
         with:
           # channel #alertes-deploiement
           channel-id: "CQAMNFVPS"
           payload: |
             {
-            "attachments": [
-              {
-                "mrkdwn_in": ["text"],
-                "color": "#A30002",
-                "author_name": "${{github.actor}}",
-                "author_link": "https://github.com/${{github.actor}}",
-                "author_icon": "https://github.com/${{github.actor}}.png",
-                "title": "PCAPI Deployment",
-                "title_link": "https://github.com/${{github.repository}}/actions/runs/${{github.run_id}}",
-                "text": "Le déploiement de la version `master` a échoué sur `testing` :boom:"
-              }
-            ],
-            "unfurl_links": false,
-            "unfurl_media": false
+              "attachments": [
+                {
+                  "mrkdwn_in": ["text"],
+                  "color": "#A30002",
+                  "author_name": "${{github.actor}}",
+                  "author_link": "https://github.com/${{github.actor}}",
+                  "author_icon": "https://github.com/${{github.actor}}.png",
+                  "title": "PCAPI Deployment",
+                  "title_link": "https://github.com/${{github.repository}}/actions/runs/${{github.run_id}}",
+                  "text": "Le déploiement de la version `master` a échoué sur `testing` :boom:"
+                }
+              ],
+              "unfurl_links": false,
+              "unfurl_media": false
             }
         env:
           SLACK_BOT_TOKEN: ${{ steps.secrets.outputs.SLACK_BOT_TOKEN }}
