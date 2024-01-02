@@ -19,15 +19,27 @@ defaults:
 jobs:
   tests-pro-e2e-tests:
     name: "E2E tests"
-    runs-on: ubuntu-latest
+    runs-on: [self-hosted, linux, x64]
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v3
         with:
           node-version-file: "pro/.nvmrc"
+      - name: "OpenID Connect Authentication"
+        if: always()
+        uses: "google-github-actions/auth@v1"
+        with:
+          workload_identity_provider: ${{ secrets.GCP_EHP_WORKLOAD_IDENTITY_PROVIDER }}
+          service_account: ${{ secrets.GCP_EHP_SERVICE_ACCOUNT }}
       - uses: KengoTODA/actions-setup-docker-compose@v1
         with:
           version: '2.23.3'
+      - name: "Fix local permissions"
+        run: sudo chown -R $PCAPI_UID:$PCAPI_GID .
+        working-directory: api
+        env:
+          PCAPI_UID: 1000
+          PCAPI_GID: 1000
       - name: "Run API server"
         run: docker-compose -f ../docker-compose-backend.yml up flask postgres redis --build -d
       - name: "Wait for migrations to be run"
@@ -48,12 +60,6 @@ jobs:
           wait-on: "http://localhost:3001,http://localhost:5001/health/api,http://localhost:5001/health/database"
           wait-on-timeout: 600
           working-directory: pro
-      - name: "OpenID Connect Authentication"
-        if: always()
-        uses: "google-github-actions/auth@v1"
-        with:
-          workload_identity_provider: ${{ secrets.GCP_EHP_WORKLOAD_IDENTITY_PROVIDER }}
-          service_account: ${{ secrets.GCP_EHP_SERVICE_ACCOUNT }}
       - name: 'Move cypress videos'
         run: |
           mkdir -p cypress/videos/${{ github.ref }}/${{ github.sha }} && \
