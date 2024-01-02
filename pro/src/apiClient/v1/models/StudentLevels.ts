@@ -8,7 +8,7 @@
  */
 export enum StudentLevels {
   _COLES_INNOVANTES_MARSEILLE_EN_GRAND_MATERNELLE = 'Écoles innovantes Marseille en Grand : maternelle',
-  _COLES_INNOVANTES_MARSEILLE_EN_GRAND_PRIMAIRE = 'Écoles innovantes Marseille en Grand : primaire',
+  _COLES_INNOVANTES_MARSEILLE_EN_GRAND_L_MENTAIRE = 'Écoles innovantes Marseille en Grand : élémentaire',
   COLL_GE_6E = 'Collège - 6e',
   COLL_GE_5E = 'Collège - 5e',
   COLL_GE_4E = 'Collège - 4e',

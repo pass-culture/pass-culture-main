@@ -34,7 +34,7 @@ const FormParticipants = ({
           option.name !==
             `participants.${StudentLevels._COLES_INNOVANTES_MARSEILLE_EN_GRAND_MATERNELLE}` &&
           option.name !==
-            `participants.${StudentLevels._COLES_INNOVANTES_MARSEILLE_EN_GRAND_PRIMAIRE}`
+            `participants.${StudentLevels._COLES_INNOVANTES_MARSEILLE_EN_GRAND_L_MENTAIRE}`
       )
 
   return (
