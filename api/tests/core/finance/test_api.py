@@ -146,7 +146,7 @@ class PriceEventTest:
         return models.FinanceEvent.query.filter_by(booking=booking).one()
 
     def _make_collective_event(self, price=None, user=None, stock=None, venue=None):
-        booking_kwargs = {}
+        booking_kwargs = {"dateUsed": datetime.datetime.utcnow()}
         if user:
             booking_kwargs["user"] = user
         if stock:
