@@ -13,9 +13,15 @@ import {
 import { Events } from 'core/FirebaseEvents/constants'
 import useAnalytics from 'hooks/useAnalytics'
 import useNotification from 'hooks/useNotification'
+import fullDuplicateIcon from 'icons/full-duplicate.svg'
+import fullInfoIcon from 'icons/full-info.svg'
+import fullLinkIcon from 'icons/full-link.svg'
 import { postImageToVenue } from 'repository/pcapi/pcapi'
-import { ButtonLink } from 'ui-kit'
+import { Button, ButtonLink } from 'ui-kit'
 import { ButtonVariant } from 'ui-kit/Button/types'
+import { copyTextToClipboard } from 'ui-kit/CopyLink/CopyLink'
+import { Tag, TagVariant } from 'ui-kit/Tag/Tag'
+import { WEBAPP_URL } from 'utils/config'
 
 import { Card } from '../Card'
 import { HomepageLoaderData } from '../Homepage'
@@ -90,6 +96,8 @@ export const PartnerPage = ({ offererId, venue }: PartnerPageProps) => {
     })
   }
 
+  const venuePreviewLink = `${WEBAPP_URL}/lieu/${venue.id}`
+
   return (
     <Card>
       <div className={styles['header']}>
@@ -126,6 +134,133 @@ export const PartnerPage = ({ offererId, venue }: PartnerPageProps) => {
       <div className={styles['venue-offer-steps']}>
         <VenueOfferSteps venue={venue} hasVenue isInsidePartnerBlock />
       </div>
+
+      {/* TODO handle not visible case (https://passculture.atlassian.net/browse/PC-26280) */}
+      <section className={styles['details']}>
+        <div>
+          <h4 className={styles['details-title']}>Grand public</h4>
+          <Tag variant={TagVariant.LIGHT_GREEN}>Visible</Tag>
+        </div>
+
+        <p className={styles['details-description']}>
+          Votre page partenaire est visible sur l’application pass Culture.
+        </p>
+
+        <ButtonLink
+          variant={ButtonVariant.TERNARY}
+          icon={fullLinkIcon}
+          link={{
+            to: venuePreviewLink,
+            isExternal: true,
+            target: '_blank',
+            rel: 'noopener noreferrer',
+          }}
+          svgAlt="Nouvelle fenêtre"
+          className={styles['details-link']}
+        >
+          Voir ma page dans l’application
+        </ButtonLink>
+
+        <Button
+          variant={ButtonVariant.TERNARY}
+          icon={fullDuplicateIcon}
+          className={styles['details-link']}
+          onClick={async () => {
+            await copyTextToClipboard(venuePreviewLink)
+            notify.success('Lien copié !')
+          }}
+        >
+          Copier le lien de la page
+        </Button>
+      </section>
+
+      {!venue.hasAdageId && !venue.demarchesSimplifieesApplicationId && (
+        <section className={styles['details']}>
+          <div>
+            <h4 className={styles['details-title']}>Enseignants</h4>
+            <Tag variant={TagVariant.LIGHT_BLUE}>Non référencé sur ADAGE</Tag>
+          </div>
+
+          <p className={styles['details-description']}>
+            Pour pouvoir adresser des offres aux enseignants, vous devez être
+            référencé sur ADAGE, l’application du ministère de l’Education
+            nationale et de la Jeunesse dédiée à l’EAC.
+          </p>
+
+          <ButtonLink
+            variant={ButtonVariant.TERNARY}
+            icon={fullLinkIcon}
+            link={{
+              to: 'https://www.demarches-simplifiees.fr/commencer/demande-de-referencement-sur-adage',
+              isExternal: true,
+              target: '_blank',
+              rel: 'noopener noreferrer',
+            }}
+            svgAlt="Nouvelle fenêtre"
+            className={styles['details-link']}
+          >
+            Demander à être référencé sur Adage
+          </ButtonLink>
+
+          <ButtonLink
+            variant={ButtonVariant.TERNARY}
+            icon={fullInfoIcon}
+            link={{
+              to: 'https://aide.passculture.app/hc/fr/categories/4410482280977--Acteurs-Culturels-Tout-savoir-sur-le-pass-Culture-collectif-%C3%A0-destination-des-groupes-scolaires',
+              isExternal: true,
+              target: '_blank',
+              rel: 'noopener noreferrer',
+            }}
+            svgAlt="Nouvelle fenêtre"
+            className={styles['details-link']}
+          >
+            En savoir plus sur le pass Culture à destination des scolaires
+          </ButtonLink>
+        </section>
+      )}
+
+      {!venue.hasAdageId && venue.demarchesSimplifieesApplicationId && (
+        <section className={styles['details']}>
+          <div>
+            <h4 className={styles['details-title']}>Enseignants</h4>
+            <Tag variant={TagVariant.LIGHT_YELLOWN}>Référencement en cours</Tag>
+          </div>
+
+          <p className={styles['details-description']}>
+            Votre démarche de référencement est en cours de traitement par
+            ADAGE.
+          </p>
+
+          <ButtonLink
+            variant={ButtonVariant.TERNARY}
+            icon={fullInfoIcon}
+            link={{
+              to: 'https://aide.passculture.app/hc/fr/categories/4410482280977--Acteurs-Culturels-Tout-savoir-sur-le-pass-Culture-collectif-%C3%A0-destination-des-groupes-scolaires',
+              isExternal: true,
+              target: '_blank',
+              rel: 'noopener noreferrer',
+            }}
+            svgAlt="Nouvelle fenêtre"
+            className={styles['details-link']}
+          >
+            En savoir plus sur le pass Culture à destination des scolaires
+          </ButtonLink>
+        </section>
+      )}
+
+      {venue.hasAdageId && (
+        <section className={styles['details']}>
+          <div>
+            <h4 className={styles['details-title']}>Enseignants</h4>
+            <Tag variant={TagVariant.LIGHT_GREEN}>Référencé sur ADAGE</Tag>
+          </div>
+
+          <p className={styles['details-description']}>
+            Vos offres collectives sont visibles par les enseignants, de même
+            que les informations renseignées sur votre activité.
+          </p>
+        </section>
+      )}
     </Card>
   )
 }

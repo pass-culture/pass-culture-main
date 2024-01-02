@@ -35,7 +35,9 @@ describe('PartnerPages', () => {
       offererId: '1',
     })
 
-    expect(screen.getByText(/Votre page partenaire/)).toBeInTheDocument()
+    expect(
+      screen.getByRole('heading', { name: 'Votre page partenaire' })
+    ).toBeInTheDocument()
     expect(
       screen.queryByLabelText(/Sélectionnez votre page partenaire/)
     ).not.toBeInTheDocument()
@@ -53,7 +55,9 @@ describe('PartnerPages', () => {
       offererId: '1',
     })
 
-    expect(screen.getByText(/Vos pages partenaire/)).toBeInTheDocument()
+    expect(
+      screen.getByRole('heading', { name: 'Vos pages partenaire' })
+    ).toBeInTheDocument()
     expect(
       screen.queryByLabelText(/Sélectionnez votre page partenaire/)
     ).toBeInTheDocument()
