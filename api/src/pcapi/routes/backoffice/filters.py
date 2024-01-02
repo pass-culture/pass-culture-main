@@ -713,7 +713,7 @@ def get_comparated_format_function(
             sub_rule.attribute == offers_models.OfferValidationAttribute.ID
             and sub_rule.model == offers_models.OfferValidationModel.OFFERER
         ):
-            return lambda offerer_id: offerer_dict[offerer_id]
+            return lambda offerer_id: offerer_dict.get(offerer_id, str(f"Offerer ID : {offerer_id}"))
         if sub_rule.attribute == offers_models.OfferValidationAttribute.CATEGORY_ID:
             return lambda category_id: categories.ALL_CATEGORIES_DICT[category_id].pro_label
         if sub_rule.attribute == offers_models.OfferValidationAttribute.SUBCATEGORY_ID:

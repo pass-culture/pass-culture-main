@@ -151,6 +151,25 @@ class ListRulesTest(GetEndpointHelper):
         assert len(rows) == 1
         assert rows[0]["ID"] == str(rule.id)
 
+    def test_search_rule_by_offerer_which_does_no_longer_exist(
+        self,
+        authenticated_client,
+    ):
+        rule = offers_factories.OfferValidationRuleFactory(name="Ma règle de conformité")
+        offers_factories.OfferValidationSubRuleFactory(
+            validationRule=rule,
+            model=offers_models.OfferValidationModel.OFFERER,
+            attribute=offers_models.OfferValidationAttribute.ID,
+            operator=offers_models.OfferValidationRuleOperator.IN,
+            comparated={"comparated": [42]},
+        )
+
+        with assert_num_queries(self.expected_num_queries_when_using_offerer + 1):  # +1 to prefill offerers filter
+            response = authenticated_client.get(url_for(self.endpoint, offerer=42))
+            assert response.status_code == 200
+
+        assert "La structure proposant l'offre est parmi Offerer ID : 42" in html_parser.content_as_text(response.data)
+
     def test_search_rule_by_category(self, authenticated_client):
         rule = offers_factories.OfferValidationRuleFactory(name="Ma règle de conformité")
         offers_factories.OfferValidationSubRuleFactory(
