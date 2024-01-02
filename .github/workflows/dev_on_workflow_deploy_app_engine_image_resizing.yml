@@ -1,4 +1,5 @@
-name: Deploy app engine image resizing
+name: "Deploy app engine image resizing"
+
 on:
   workflow_call:
     inputs:
@@ -32,8 +33,8 @@ jobs:
     outputs:
       image_resizing_deployed_version: ${{ steps.curl_version.outputs.version }}
     steps:
-      - id: curl_version
-        name: "Check image resizing ${{ inputs.environment }} deployed version"
+      - name: "Check image resizing ${{ inputs.environment }} deployed version"
+        id: "curl_version"
         # add prefix v to version if contains dot (otherwise it is sha)
         run: echo "version=$(curl -Ss ${{ inputs.image_resizing_url }}/version | sed 's/.*\./v&/')" | tee -a $GITHUB_OUTPUT
 
@@ -43,16 +44,14 @@ jobs:
     needs: check-image-resizing-deployed-version
     with:
       base_sha: ${{ needs.check-image-resizing-deployed-version.outputs.image_resizing_deployed_version }}
-      folder: app-engine/image-resizing
+      folder: app-engine/image-resizing/**
 
   deploy-image-resizing:
+    name: "Deploy image resizing"
     needs: check-image-resizing-folder-changes
     if: ${{ needs.check-image-resizing-folder-changes.outputs.folder_changed == 'true' }}
     environment: ${{ inputs.environment }}
-    runs-on: [self-hosted, linux, x64]
-    permissions:
-      contents: 'read'
-      id-token: 'write'
+    runs-on: ubuntu-latest
     steps:
       - name: 'Checkout actual repository'
         uses: actions/checkout@v4
@@ -65,7 +64,7 @@ jobs:
           service_account: ${{ secrets.GCP_EHP_SERVICE_ACCOUNT }}
       - name: 'Set up Cloud SDK'
         uses: 'google-github-actions/setup-gcloud@v1'
-      - name: Get Secret
+      - name: "Get Secret"
         id: 'secrets'
         uses: 'google-github-actions/get-secretmanager-secrets@v1'
         with:
@@ -80,11 +79,15 @@ jobs:
           service_account: ${{ steps.secrets.outputs.APP_ENGINE_IMAGE_RESIZING_SERVICE_ACCOUNT }}
       - name: 'Set up Cloud SDK ${{ inputs.environment }} App Engine'
         uses: 'google-github-actions/setup-gcloud@v1'
-      - name: Add sha to image-resizing
-        if: ${{ inputs.environment == 'testing' }}
-        run: |
-          cd ./app-engine/image-resizing
-          echo "${{ github.sha }}" > version.txt
+      - name: "Add sha to image-resizing"
+        if: inputs.environment == 'testing'
+        working-directory: app-engine/image-resizing
+        run: echo "${{ github.sha }}" > version.txt
       - name: 'Deploy the image-resizing service to ${{ inputs.environment }} environment'
-        working-directory: ./app-engine/image-resizing
-        run:  gcloud app deploy --user-output-enabled=false --quiet --service-account=${{ steps.secrets.outputs.APP_ENGINE_IMAGE_RESIZING_SERVICE_ACCOUNT }} --project ${{ inputs.google_project }} --version=$(echo ${{ inputs.base_ref }}| tr '.' '-'| tr '/' '-'| tr '[:upper:]' '[:lower:]' | cut -c1-25)
+        working-directory: app-engine/image-resizing
+        run: |
+          gcloud app deploy --user-output-enabled=false \
+            --quiet \
+            --service-account=${{ steps.secrets.outputs.APP_ENGINE_IMAGE_RESIZING_SERVICE_ACCOUNT }} \
+            --project=${{ inputs.google_project }} \
+            --version=$(echo ${{ inputs.base_ref }}| tr '.' '-'| tr '/' '-'| tr '[:upper:]' '[:lower:]' | cut -c1-25)

@@ -1,31 +1,25 @@
-name: Deploy maintenance site
-on:
-  push:
-    paths:
-      - "maintenance-site/**"
-    branches:
-      - master
+name: "Deploy maintenance site"
 
-permissions:
-  id-token: write
-  contents: write
+on:
+  workflow_call:
+    secrets:
+      GCP_EHP_SERVICE_ACCOUNT:
+        required: true
+      GCP_EHP_WORKLOAD_IDENTITY_PROVIDER:
+        required: true
 
 jobs:
   deploy:
-    runs-on: [self-hosted, linux, x64]
-    container:
-      image: node:18
+    name: "Deploy maintenance site to bucket"
+    runs-on: ubuntu-latest
     steps:
-      - name: Checkout
-        uses: actions/checkout@v4
-
+      - uses: actions/checkout@v4
       - name: 'Authenticate to Google Cloud'
         uses: 'google-github-actions/auth@v1'
         with:
           workload_identity_provider: ${{ secrets.GCP_EHP_WORKLOAD_IDENTITY_PROVIDER }}
           service_account: ${{ secrets.GCP_EHP_SERVICE_ACCOUNT }}
-
-      - name: Get Secret
+      - name: "Get Secret"
         id: 'secrets'
         uses: 'google-github-actions/get-secretmanager-secrets@v1'
         with:
@@ -33,19 +27,15 @@ jobs:
             MAINTENANCE_SITE_DEPLOY_SA:passculture-metier-ehp/passculture-main-production-maintenance-site-deploy-service-account
             MAINTENANCE_SITE_BUCKET:passculture-metier-ehp/passculture-main-production-maintenance-site-bucket
             GCP_WORKLOAD_IDENTITY_PROVIDER:passculture-metier-ehp/gcp_metier_prod_workload_identity_provider
-
-      - name: 'Set up Cloud SDK'
+      - name: 'Set up gcloud SDK'
         uses: 'google-github-actions/setup-gcloud@v1'
-
       - name: 'Authenticate to Google Cloud'
         uses: 'google-github-actions/auth@v1'
         with:
           workload_identity_provider: ${{ steps.secrets.outputs.GCP_WORKLOAD_IDENTITY_PROVIDER }}
           service_account: ${{ steps.secrets.outputs.MAINTENANCE_SITE_DEPLOY_SA }}
-
       - name: 'Set up Cloud SDK'
         uses: 'google-github-actions/setup-gcloud@v1'
-
       - name: 'Push web site files to bucket'
-        working-directory: ./maintenance-site
+        working-directory: maintenance-site
         run:  gsutil rsync  -x '.*/\..*|^\..*' -r . gs://passculture-metier-prod-production-maintenance
