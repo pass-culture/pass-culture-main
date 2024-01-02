@@ -24,7 +24,7 @@ jobs:
         with:
           fetch-depth: 0
       - id: folder-check-changed-files
-        uses: tj-actions/changed-files@v39
+        uses: tj-actions/changed-files@v41
         with:
           base_sha: ${{ inputs.base_sha }}
           files: |
