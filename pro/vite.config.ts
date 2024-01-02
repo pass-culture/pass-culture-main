@@ -14,6 +14,7 @@ export default defineConfig(({ mode }) => {
       outDir: '../build',
       sourcemap: true,
       emptyOutDir: true,
+      assetsInlineLimit: 0,
     },
     resolve: {
       alias: {
