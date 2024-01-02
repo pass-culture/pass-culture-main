@@ -1,4 +1,5 @@
-name: Tests pro
+name: "Tests pro"
+
 on:
   workflow_call:
     inputs:
@@ -15,16 +16,10 @@ defaults:
   run:
     working-directory: pro
 
-permissions:
-  contents: "read"
-  id-token: "write"
-
 jobs:
   type-check:
     name: "Type check"
-    runs-on: [self-hosted, linux, x64]
-    container:
-      image: node:18
+    runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v3
@@ -35,11 +30,11 @@ jobs:
         with:
           workload_identity_provider: ${{ secrets.GCP_EHP_WORKLOAD_IDENTITY_PROVIDER }}
           service_account: ${{ secrets.GCP_EHP_SERVICE_ACCOUNT }}
-      - name: Cache the node_modules
-        id: yarn-modules-cache
-        uses: kopax-polyconseil/gcs-cache-action@v1.0.2
+      - name: "Cache the node_modules"
+        id: "yarn-modules-cache"
+        uses: pass-culture-github-actions/cache@v1.0.0
         with:
-          compression-method: gzip
+          compression-method: "gzip"
           bucket: ${{ inputs.CACHE_BUCKET_NAME }}
           path: |
             **/node_modules
@@ -51,9 +46,7 @@ jobs:
 
   quality-check:
     name: "Quality check"
-    runs-on: [self-hosted, linux, x64]
-    container:
-      image: node:18
+    runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v3
@@ -64,11 +57,11 @@ jobs:
         with:
           workload_identity_provider: ${{ secrets.GCP_EHP_WORKLOAD_IDENTITY_PROVIDER }}
           service_account: ${{ secrets.GCP_EHP_SERVICE_ACCOUNT }}
-      - name: Cache the node_modules
-        id: yarn-modules-cache
-        uses: kopax-polyconseil/gcs-cache-action@v1.0.2
+      - name: "Cache the node_modules"
+        id: "yarn-modules-cache"
+        uses: pass-culture-github-actions/cache@v1.0.0
         with:
-          compression-method: gzip
+          compression-method: "gzip"
           bucket: ${{ inputs.CACHE_BUCKET_NAME }}
           path: |
             **/node_modules
@@ -81,9 +74,7 @@ jobs:
 
   style-quality-check:
     name: "Style quality check"
-    runs-on: [self-hosted, linux, x64]
-    container:
-      image: node:18
+    runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v3
@@ -94,11 +85,11 @@ jobs:
         with:
           workload_identity_provider: ${{ secrets.GCP_EHP_WORKLOAD_IDENTITY_PROVIDER }}
           service_account: ${{ secrets.GCP_EHP_SERVICE_ACCOUNT }}
-      - name: Cache the node_modules
-        id: yarn-modules-cache
-        uses: kopax-polyconseil/gcs-cache-action@v1.0.2
+      - name: "Cache the node_modules"
+        id: "yarn-modules-cache"
+        uses: pass-culture-github-actions/cache@v1.0.0
         with:
-          compression-method: gzip
+          compression-method: "gzip"
           bucket: ${{ inputs.CACHE_BUCKET_NAME }}
           path: |
             **/node_modules
@@ -110,9 +101,7 @@ jobs:
 
   tests-pro-unit-tests:
     name: "Unit tests"
-    runs-on: [self-hosted, linux, x64]
-    container:
-      image: node:18
+    runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
         with:
@@ -129,18 +118,18 @@ jobs:
         with:
           workload_identity_provider: ${{ secrets.GCP_EHP_WORKLOAD_IDENTITY_PROVIDER }}
           service_account: ${{ secrets.GCP_EHP_SERVICE_ACCOUNT }}
-      - name: Get Secret
+      - name: "Get Secret"
         id: 'secrets'
         uses: 'google-github-actions/get-secretmanager-secrets@v1'
         with:
           secrets: |-
             SONAR_TOKEN:passculture-metier-ehp/passculture-main-sonar-token
             SLACK_BOT_TOKEN:passculture-metier-ehp/passculture-ci-slack-bot-token
-      - name: Cache the node_modules
-        id: yarn-modules-cache
-        uses: kopax-polyconseil/gcs-cache-action@v1.0.2
+      - name: "Cache the node_modules"
+        id: "yarn-modules-cache"
+        uses: pass-culture-github-actions/cache@v1.0.0
         with:
-          compression-method: gzip
+          compression-method: "gzip"
           bucket: ${{ inputs.CACHE_BUCKET_NAME }}
           path: |
             **/node_modules
@@ -159,28 +148,28 @@ jobs:
         with:
           projectBaseDir: pro
           args: -Dsonar.qualitygate.wait=${{ github.event_name == 'pull_request' && 'true' || 'false'  }}
-      - if: ${{ failure() && github.ref == 'refs/heads/master'  }}
-        id: slack
+      - name: "Post failure message to slack"
+        if: ${{ failure() && github.ref == 'refs/heads/master'  }}
         uses: slackapi/slack-github-action@v1.23.0
         with:
           # channel #dev
           channel-id: "CPZ7U1CNP"
           payload: |
             {
-            "attachments": [
-              {
-                "mrkdwn_in": ["text"],
-                "color": "#A30002",
-                "author_name": "${{github.actor}}",
-                "author_link": "https://github.com/${{github.actor}}",
-                "author_icon": "https://github.com/${{github.actor}}.png",
-                "title": "Pro tests",
-                "title_link": "https://github.com/${{github.repository}}/actions/runs/${{github.run_id}}",
-                "text": "Les tests unitaires de pro échouent sur `master` :boom:"
-              }
-            ],
-            "unfurl_links": false,
-            "unfurl_media": false
+              "attachments": [
+                {
+                  "mrkdwn_in": ["text"],
+                  "color": "#A30002",
+                  "author_name": "${{github.actor}}",
+                  "author_link": "https://github.com/${{github.actor}}",
+                  "author_icon": "https://github.com/${{github.actor}}.png",
+                  "title": "Pro tests",
+                  "title_link": "https://github.com/${{github.repository}}/actions/runs/${{github.run_id}}",
+                  "text": "Les tests unitaires de pro échouent sur `master` :boom:"
+                }
+              ],
+              "unfurl_links": false,
+              "unfurl_media": false
             }
         env:
           SLACK_BOT_TOKEN: ${{ steps.secrets.outputs.SLACK_BOT_TOKEN }}
