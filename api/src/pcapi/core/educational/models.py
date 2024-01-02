@@ -1084,6 +1084,12 @@ class EducationalRedactor(PcObject, Base, Model):
         back_populates="educationalRedactorsFavorite",
     )
 
+    @property
+    def full_name(self) -> str:
+        # full_name is used for display and should never be empty, which would be confused with no user.
+        # We use the email as a fallback because it is the most human-readable way to identify a single user
+        return (f"{self.firstName or ''} {self.lastName or ''}".strip()) or self.email
+
 
 class CollectiveBooking(PcObject, Base, Model):
     __tablename__ = "collective_booking"
