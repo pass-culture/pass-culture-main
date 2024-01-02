@@ -617,9 +617,9 @@ def format_offer_validation_sub_rule_field(sub_rule_field: offers_models.OfferVa
         case offers_models.OfferValidationSubRuleField.TEXT_OFFER:
             return "Le nom ou la description de l'offre individuelle"
         case offers_models.OfferValidationSubRuleField.TEXT_COLLECTIVE_OFFER:
-            return "Le nom, la description ou le detail du prix de l'offre collective"
+            return "Le nom, la description ou le détail du prix de l'offre collective"
         case offers_models.OfferValidationSubRuleField.TEXT_COLLECTIVE_OFFER_TEMPLATE:
-            return "Le nom, la description ou le detail du prix de l'offre collective vitrine"
+            return "Le nom, la description ou le détail du prix de l'offre collective vitrine"
         case offers_models.OfferValidationSubRuleField.DESCRIPTION_OFFER:
             return "La description de l'offre individuelle"
         case offers_models.OfferValidationSubRuleField.DESCRIPTION_COLLECTIVE_OFFER:
@@ -637,7 +637,7 @@ def format_offer_validation_sub_rule_field(sub_rule_field: offers_models.OfferVa
         case offers_models.OfferValidationSubRuleField.FORMATS_COLLECTIVE_OFFER:
             return "Les formats de l'offre collective"
         case offers_models.OfferValidationSubRuleField.FORMATS_COLLECTIVE_OFFER_TEMPLATE:
-            return "Les formats de l'offre vitrine"
+            return "Les formats de l'offre collective vitrine"
         case _:
             return sub_rule_field.value
 
