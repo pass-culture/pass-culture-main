@@ -525,7 +525,10 @@ def download_reimbursement_details(venue_id: int) -> utils.BackofficeResponse:
 @venue_blueprint.route("/<int:venue_id>/delete", methods=["POST"])
 @utils.permission_required(perm_models.Permissions.DELETE_PRO_ENTITY)
 def delete_venue(venue_id: int) -> utils.BackofficeResponse:
-    venue = offerers_models.Venue.query.get_or_404(venue_id)
+    venue = offerers_models.Venue.query.filter_by(id=venue_id).populate_existing().with_for_update().one_or_none()
+    if not venue:
+        raise NotFound()
+
     venue_name = venue.name
 
     emails = offerers_repository.get_emails_by_venue(venue)
@@ -672,7 +675,9 @@ def update_venue(venue_id: int) -> utils.BackofficeResponse:
 @venue_blueprint.route("/<int:venue_id>/comment", methods=["POST"])
 @utils.permission_required(perm_models.Permissions.MANAGE_PRO_ENTITY)
 def comment_venue(venue_id: int) -> utils.BackofficeResponse:
-    venue = offerers_models.Venue.query.get_or_404(venue_id)
+    venue = offerers_models.Venue.query.fitler_by(id=venue_id).with_for_update(key_share=True, read=True).one_or_none()
+    if not venue:
+        raise NotFound()
 
     form = forms.CommentForm()
     if not form.validate():
@@ -726,7 +731,12 @@ def batch_edit_venues() -> utils.BackofficeResponse:
         flash(utils.build_form_error_msg(form), "warning")
         return redirect(request.referrer or url_for(".list_venues"), code=303)
 
-    venues = offerers_models.Venue.query.filter(offerers_models.Venue.id.in_(form.object_ids_list)).all()
+    venues = (
+        offerers_models.Venue.query.filter(offerers_models.Venue.id.in_(form.object_ids_list))
+        .populate_existing()
+        .with_for_update(key_share=True)
+        .all()
+    )
 
     updated_criteria_venues = _update_venues_criteria(venues=venues, criteria_ids=form.criteria.data)
     updated_permanent_venues = []

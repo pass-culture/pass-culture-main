@@ -265,9 +265,16 @@ def get_stats(offerer_id: int) -> utils.BackofficeResponse:
 @offerer_blueprint.route("/suspend", methods=["POST"])
 @utils.permission_required(perm_models.Permissions.PRO_FRAUD_ACTIONS)
 def suspend_offerer(offerer_id: int) -> utils.BackofficeResponse:
-    offerer = offerers_models.Offerer.query.get_or_404(offerer_id)
-    form = offerer_forms.SuspendOffererForm()
+    offerer = (
+        offerers_models.Offerer.query.filter_by(id=offerer_id)
+        .populate_existing()
+        .with_for_update(key_share=True)
+        .one_or_none()
+    )
+    if not offerer:
+        raise NotFound()
 
+    form = offerer_forms.SuspendOffererForm()
     if not form.validate():
         flash(utils.build_form_error_msg(form), "warning")
     else:
@@ -289,9 +296,16 @@ def suspend_offerer(offerer_id: int) -> utils.BackofficeResponse:
 @offerer_blueprint.route("/unsuspend", methods=["POST"])
 @utils.permission_required(perm_models.Permissions.PRO_FRAUD_ACTIONS)
 def unsuspend_offerer(offerer_id: int) -> utils.BackofficeResponse:
-    offerer = offerers_models.Offerer.query.get_or_404(offerer_id)
-    form = offerer_forms.SuspendOffererForm()
+    offerer = (
+        offerers_models.Offerer.query.filter_by(id=offerer_id)
+        .populate_existing()
+        .with_for_update(key_share=True)
+        .one_or_none()
+    )
+    if not offerer:
+        raise NotFound()
 
+    form = offerer_forms.SuspendOffererForm()
     if not form.validate():
         flash(utils.build_form_error_msg(form), "warning")
     else:
@@ -309,7 +323,10 @@ def unsuspend_offerer(offerer_id: int) -> utils.BackofficeResponse:
 @offerer_blueprint.route("/delete", methods=["POST"])
 @utils.permission_required(perm_models.Permissions.DELETE_PRO_ENTITY)
 def delete_offerer(offerer_id: int) -> utils.BackofficeResponse:
-    offerer = offerers_models.Offerer.query.get_or_404(offerer_id)
+    offerer = offerers_models.Offerer.query.filter_by(id=offerer_id).populate_existing().with_for_update().one_or_none()
+    if not offerer:
+        raise NotFound()
+
     offerer_name = offerer.name
 
     # Get users to update before association info is deleted
@@ -337,9 +354,16 @@ def delete_offerer(offerer_id: int) -> utils.BackofficeResponse:
 @offerer_blueprint.route("/update", methods=["POST"])
 @utils.permission_required(perm_models.Permissions.MANAGE_PRO_ENTITY)
 def update_offerer(offerer_id: int) -> utils.BackofficeResponse:
-    offerer = offerers_models.Offerer.query.get_or_404(offerer_id)
-    form = offerer_forms.EditOffererForm()
+    offerer = (
+        offerers_models.Offerer.query.filter_by(id=offerer_id)
+        .populate_existing()
+        .with_for_update(key_share=True)
+        .one_or_none()
+    )
+    if not offerer:
+        raise NotFound()
 
+    form = offerer_forms.EditOffererForm()
     if not form.validate():
         msg = Markup(
             """
@@ -546,14 +570,21 @@ def get_delete_user_offerer_form(offerer_id: int, user_offerer_id: int) -> utils
 @utils.permission_required(perm_models.Permissions.MANAGE_PRO_ENTITY)
 def delete_user_offerer(offerer_id: int, user_offerer_id: int) -> utils.BackofficeResponse:
     user_offerer = (
-        offerers_models.UserOfferer.query.options(
-            sa.orm.joinedload(offerers_models.UserOfferer.offerer).load_only(
+        offerers_models.UserOfferer.query.join(offerers_models.UserOfferer.offerer)
+        .join(offerers_models.UserOfferer.user)
+        .options(
+            sa.orm.contains_eager(offerers_models.UserOfferer.offerer).load_only(
                 offerers_models.Offerer.id,
                 offerers_models.Offerer.name,
             ),
-            sa.orm.joinedload(offerers_models.UserOfferer.user).load_only(users_models.User.email),
+            sa.orm.contains_eager(offerers_models.UserOfferer.user).load_only(users_models.User.email),
         )
-        .filter_by(id=user_offerer_id)
+        .filter(
+            offerers_models.UserOfferer.offererId == offerer_id,
+            offerers_models.UserOfferer.id == user_offerer_id,
+        )
+        .populate_existing()
+        .with_for_update(key_share=True, read=True, of=offerers_models.Offerer)
         .one_or_none()
     )
     if not user_offerer:
@@ -681,7 +712,14 @@ def get_bank_accounts(offerer_id: int) -> utils.BackofficeResponse:
 @offerer_blueprint.route("/comment", methods=["POST"])
 @utils.permission_required(perm_models.Permissions.MANAGE_PRO_ENTITY)
 def comment_offerer(offerer_id: int) -> utils.BackofficeResponse:
-    offerer = offerers_models.Offerer.query.get_or_404(offerer_id)
+    offerer = (
+        offerers_models.Offerer.query.filter_by(id=offerer_id)
+        .populate_existing()
+        .with_for_update(key_share=True, read=True)
+        .one_or_none()
+    )
+    if not offerer:
+        raise NotFound()
 
     form = offerer_forms.CommentForm()
     if not form.validate():

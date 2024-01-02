@@ -1792,7 +1792,7 @@ class GetRejectOffererFormTest(GetEndpointHelper):
         offerer = offerers_factories.NotValidatedOffererFactory()
 
         url = url_for(self.endpoint, offerer_id=offerer.id)
-        with assert_num_queries(2):  # session + current user
+        with assert_num_queries(3):  # session + current user + offerer
             response = authenticated_client.get(url)
             # Rendering is not checked, but at least the fetched frame does not crash
             assert response.status_code == 200

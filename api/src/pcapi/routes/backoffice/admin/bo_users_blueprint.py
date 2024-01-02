@@ -141,7 +141,7 @@ def get_bo_user(user_id: int) -> utils.BackofficeResponse:
 @bo_users_blueprint.route("/<int:user_id>", methods=["POST"])
 @utils.permission_required(perm_models.Permissions.MANAGE_ADMIN_ACCOUNTS)
 def update_bo_user(user_id: int) -> utils.BackofficeResponse:
-    user = _get_bo_user_query(user_id).one_or_none()
+    user = _get_bo_user_query(user_id).populate_existing().with_for_update(key_share=True).one_or_none()
 
     if not user:
         raise NotFound()

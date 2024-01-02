@@ -10,6 +10,7 @@ from markupsafe import Markup
 from sqlalchemy.orm import joinedload
 from sqlalchemy.orm import load_only
 from werkzeug.exceptions import Forbidden
+from werkzeug.exceptions import NotFound
 
 from pcapi.core.bookings import models as bookings_models
 from pcapi.core.permissions import models as perm_models
@@ -66,7 +67,12 @@ def _check_user_role_vs_backoffice_permission(user: users_models.User, unsuspend
     ]
 )
 def suspend_user(user_id: int) -> utils.BackofficeResponse:
-    user = users_models.User.query.get_or_404(user_id)
+    user = (
+        users_models.User.query.filter_by(id=user_id).populate_existing().with_for_update(key_share=True).one_or_none()
+    )
+    if not user:
+        raise NotFound()
+
     _check_user_role_vs_backoffice_permission(user)
 
     form = forms.SuspendUserForm()
@@ -99,7 +105,12 @@ def suspend_user(user_id: int) -> utils.BackofficeResponse:
     ]
 )
 def unsuspend_user(user_id: int) -> utils.BackofficeResponse:
-    user = users_models.User.query.get_or_404(user_id)
+    user = (
+        users_models.User.query.filter_by(id=user_id).populate_existing().with_for_update(key_share=True).one_or_none()
+    )
+    if not user:
+        raise NotFound()
+
     _check_user_role_vs_backoffice_permission(user, unsuspend=True)
 
     form = forms.UnsuspendUserForm()
