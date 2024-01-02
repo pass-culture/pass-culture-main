@@ -817,7 +817,7 @@ LIVRE_AUDIO_PHYSIQUE = Subcategory(
     is_event=False,
     conditional_fields={
         ExtraDataFieldEnum.AUTHOR.value: FieldCondition(),
-        ExtraDataFieldEnum.EAN.value: FieldCondition(),
+        ExtraDataFieldEnum.EAN.value: FieldCondition(is_required_in_external_form=True),
     },
     can_expire=True,
     can_be_duo=False,
@@ -1258,7 +1258,7 @@ TELECHARGEMENT_MUSIQUE = Subcategory(
             is_required_in_external_form=True, is_required_in_internal_form=True
         ),
         ExtraDataFieldEnum.PERFORMER.value: FieldCondition(),
-        ExtraDataFieldEnum.EAN.value: FieldCondition(is_required_in_external_form=True),
+        ExtraDataFieldEnum.EAN.value: FieldCondition(),
     },
     can_expire=False,
     can_be_duo=False,
