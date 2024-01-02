@@ -38,7 +38,7 @@ def create_offers_with_ean() -> None:
         venue = offerers_factories.VenueFactory(
             name=f"Librairie {i}",
             managingOfferer=user_offerer.offerer,
-            venueTypeCode=offerers_models.VenueTypeCode.LIBRARY,
+            venueTypeCode=offerers_models.VenueTypeCode.BOOKSTORE,
         )
 
         for j, product in enumerate(products):
