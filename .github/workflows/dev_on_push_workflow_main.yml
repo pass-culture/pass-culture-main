@@ -17,13 +17,13 @@ concurrency:
   cancel-in-progress: ${{ github.ref == 'refs/heads/master' && false || true }}
 
 jobs:
-  check-api-folder-changes:
+  check-api:
     name: Check api folder changes
     uses: ./.github/workflows/dev_on_workflow_check_folder_changes.yml
     with:
       folder: api
 
-  check-pro-folder-changes:
+  check-pro:
     name: Check pro folder changes
     uses: ./.github/workflows/dev_on_workflow_check_folder_changes.yml
     with:
@@ -32,11 +32,11 @@ jobs:
   build-api:
     name: Build API (backend) Docker image
     needs:
-      - check-api-folder-changes
-      - check-pro-folder-changes
+      - check-api
+      - check-pro
     if: |
-      needs.check-api-folder-changes.outputs.folder_changed == 'true' ||
-      needs.check-pro-folder-changes.outputs.folder_changed == 'true' ||
+      needs.check-api.outputs.folder_changed == 'true' ||
+      needs.check-pro.outputs.folder_changed == 'true' ||
       github.ref == 'refs/heads/master' ||
       startsWith(github.ref,'refs/heads/maint/v')
     uses: ./.github/workflows/dev_on_workflow_build_and_push_docker_images.yml
@@ -50,18 +50,24 @@ jobs:
       # Extra when tests are run on master before deployment on testing.
       console: ${{ github.ref == 'refs/heads/master' }}
       # Needed to run backend tests.
-      tests: ${{ needs.check-api-folder-changes.outputs.folder_changed == 'true' || github.ref == 'refs/heads/master' || startsWith(github.ref,'refs/heads/maint/v') }}
+      tests: ${{ needs.check-api.outputs.folder_changed == 'true' || github.ref == 'refs/heads/master' || startsWith(github.ref,'refs/heads/maint/v') }}
     secrets:
       GCP_EHP_WORKLOAD_IDENTITY_PROVIDER: ${{ secrets.GCP_EHP_WORKLOAD_IDENTITY_PROVIDER }}
       GCP_EHP_SERVICE_ACCOUNT: ${{ secrets.GCP_EHP_SERVICE_ACCOUNT }}
 
+  run-mypy-cop:
+    name: "MyPy cop"
+    needs: check-api
+    if: needs.check-api.outputs.folder_changed == 'true'
+    uses: ./.github/workflows/dev_on_workflow_mypy_cop.yml
+
   test-api:
     name: Test api
     needs:
-      - check-api-folder-changes
+      - check-api
       - build-api
     if: |
-      needs.check-api-folder-changes.outputs.folder_changed == 'true' ||
+      needs.check-api.outputs.folder_changed == 'true' ||
       github.ref == 'refs/heads/master' ||
       startsWith(github.ref,'refs/heads/maint/v')
     uses: ./.github/workflows/dev_on_workflow_tests_api.yml
@@ -97,9 +103,9 @@ jobs:
       GCP_EHP_WORKLOAD_IDENTITY_PROVIDER: ${{ secrets.GCP_EHP_WORKLOAD_IDENTITY_PROVIDER }}
 
   test-pro:
-    needs: check-pro-folder-changes
+    needs: check-pro
     if: |
-      needs.check-pro-folder-changes.outputs.folder_changed == 'true' ||
+      needs.check-pro.outputs.folder_changed == 'true' ||
       github.ref == 'refs/heads/master' ||
       startsWith(github.ref,'refs/heads/maint/v')
     name: Tests pro
@@ -112,12 +118,12 @@ jobs:
 
   test-pro-e2e:
     needs:
-      - check-api-folder-changes
-      - check-pro-folder-changes
+      - check-api
+      - check-pro
       - build-api
     if: |
-      needs.check-api-folder-changes.outputs.folder_changed == 'true' ||
-      needs.check-pro-folder-changes.outputs.folder_changed == 'true' ||
+      needs.check-api.outputs.folder_changed == 'true' ||
+      needs.check-pro.outputs.folder_changed == 'true' ||
       github.ref == 'refs/heads/master' ||
       startsWith(github.ref,'refs/heads/maint/v')
     name: Tests pro E2E
