@@ -302,8 +302,25 @@ class AlgoliaBackend(base.SearchBackend):
                     pipeline.rpoplpush(queue, processing_queue)
                 results = pipeline.execute()
                 # `results` may contain `None` if there were less than {count} items.
-                yield {int(id_) for id_ in results if id_ is not None}  # str -> int
+                batch = {int(id_) for id_ in results if id_ is not None}  # str -> int
+                logger.info(
+                    "Moved batch of object ids to index to processing queue",
+                    extra={
+                        "originating_queue": queue,
+                        "processing_queue": processing_queue,
+                        "requested_count": count,
+                        "effective_count": len(batch),
+                    },
+                )
+                yield batch
                 self.redis_client.delete(processing_queue)
+                logger.info(
+                    "Deleted processing queue",
+                    extra={
+                        "originating_queue": queue,
+                        "processing_queue": processing_queue,
+                    },
+                )
         except redis.exceptions.RedisError:
             logger.exception(
                 "Could not pop object ids to index from queue",
