@@ -63,7 +63,7 @@ def _create_offers(provider: Provider) -> Venue:
             managingOfferer=book_user_offerer.offerer,
             lastProviderId=provider.id,
             idAtProviders=factory.Sequence("idAtProviders{}".format),
-            venueTypeCode=VenueTypeCode.LIBRARY,
+            venueTypeCode=VenueTypeCode.BOOKSTORE,
         )
         # offerers have always a virtual venue so we have to create one to match reality
         VirtualVenueFactory(name=f"Livre - {provider_name} Lieu Virtuel", managingOfferer=book_user_offerer.offerer)
