@@ -830,6 +830,27 @@ class Invoice(Base, Model):
         return f"{settings.OBJECT_STORAGE_URL}/invoices/{self.storage_object_id}"
 
 
+class TmpInvoice(Base, Model):
+    """
+    A temporary table that will be populated in parallel with the current table in order to compare and ensure
+    the proper functioning of the finance section following the modifications to the V5 project.
+    The table will be removed later.
+    """
+
+    id: int = sqla.Column(sqla.BigInteger, primary_key=True, autoincrement=True)
+    date: datetime.datetime = sqla.Column(sqla.DateTime, nullable=False, server_default=sqla.func.now())
+    reference: str = sqla.Column(sqla.Text, nullable=False, unique=True)
+    venueBankAccountLinkId = sqla.Column(
+        sqla.BigInteger, sqla.ForeignKey("venue_bank_account_link.id"), index=True, nullable=False
+    )
+    venueBankAccountLink: sqla_orm.Mapped["offerers_models.VenueBankAccountLink"] = sqla_orm.relationship(
+        "VenueBankAccountLink", foreign_keys=[venueBankAccountLinkId]
+    )
+    amount: int = sqla.Column(sqla.Integer, nullable=False)
+    token: str = sqla.Column(sqla.Text, unique=True, nullable=False)
+    lines: list[InvoiceLine] = sqla_orm.relationship("InvoiceLine")
+
+
 class InvoiceCashflow(Base, Model):
     """An association table between invoices and cashflows for their many-to-many relationship."""
 
