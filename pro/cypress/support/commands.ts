@@ -72,4 +72,18 @@ Cypress.Commands.add('acceptCookies', () => {
   cy.get('button').contains('Tout accepter').click()
 })
 
+Cypress.Commands.add('setFeatureFlags', (features: Feature[]) => {
+  cy.request({
+    method: 'PATCH',
+    url: 'http://localhost:5001/testing/features',
+    headers: {
+      'Content-Type': 'application/json',
+      Accept: 'application/json',
+    },
+    body: JSON.stringify({
+      features,
+    }),
+  })
+})
+
 export {}
