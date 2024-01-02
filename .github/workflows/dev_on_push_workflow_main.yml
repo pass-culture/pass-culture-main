@@ -18,16 +18,22 @@ concurrency:
 
 jobs:
   check-api:
-    name: Check api folder changes
+    name: "Check api folder changes"
     uses: ./.github/workflows/dev_on_workflow_check_folder_changes.yml
     with:
-      folder: api
+      folder: api/**
 
   check-pro:
-    name: Check pro folder changes
+    name: "Check pro folder changes"
     uses: ./.github/workflows/dev_on_workflow_check_folder_changes.yml
     with:
-      folder: pro
+      folder: pro/**
+
+  check-maintenance-site:
+    name: "Check maintenance-site folder changes"
+    uses: ./.github/workflows/dev_on_workflow_check_folder_changes.yml
+    with:
+      folder: maintenance-site/**
 
   build-api:
     name: Build API (backend) Docker image
@@ -170,6 +176,34 @@ jobs:
     secrets:
       GCP_EHP_WORKLOAD_IDENTITY_PROVIDER: ${{ secrets.GCP_EHP_WORKLOAD_IDENTITY_PROVIDER }}
       GCP_EHP_SERVICE_ACCOUNT: ${{ secrets.GCP_EHP_SERVICE_ACCOUNT }}
+
+  deploy-validation-env:
+    name: "[PRO] Deploy PR version for validation"
+    uses: ./.github/workflows/dev_on_workflow_deploy_pro_pr_version_generic.yml
+    if: |
+      always() &&
+      github.base_ref == 'master' &&
+      needs.check-pro.outputs.folder_changed == 'true'
+    secrets:
+      GCP_EHP_SERVICE_ACCOUNT: ${{ secrets.GCP_EHP_SERVICE_ACCOUNT }}
+      GCP_EHP_WORKLOAD_IDENTITY_PROVIDER: ${{ secrets.GCP_EHP_WORKLOAD_IDENTITY_PROVIDER }}
+    with:
+      ENV: "testing"
+      CHANNEL: ""
+      REF: "${{ github.ref }}"
+      CACHE_BUCKET_NAME: "passculture-infra-prod-github-runner-cache"
+
+  deploy-maintenance-site:
+    name: "Deploy maintenance site"
+    needs: check-maintenance-site
+    if: |
+      always() &&
+      github.ref == 'refs/heads/master' &&
+      needs.check-maintenance-site.outputs.folder_changed == 'true'
+    uses: ./.github/workflows/dev_on_workflow_deploy_maintenance_site.yml
+    secrets:
+      GCP_EHP_SERVICE_ACCOUNT: ${{ secrets.GCP_EHP_SERVICE_ACCOUNT }}
+      GCP_EHP_WORKLOAD_IDENTITY_PROVIDER: ${{ secrets.GCP_EHP_WORKLOAD_IDENTITY_PROVIDER }}
 
   update-jira-issue:
     name: "Update Jira issue"

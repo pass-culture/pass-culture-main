@@ -63,6 +63,7 @@ jobs:
       EXPIRES: "30d"
       PUSH_RELEASE_TO_SENTRY: true
       REF: v${{ needs.find-hotfix-tag-number.outputs.hotfixTagNumber }}
+      CACHE_BUCKET_NAME: "passculture-infra-prod-github-runner-cache"
 
   create-pro-integration-release:
     needs: [build-and-tag-version, find-hotfix-tag-number]
@@ -75,6 +76,7 @@ jobs:
       CHANNEL: "${{ needs.find-hotfix-tag-number.outputs.hotfixTagNumber }}"
       EXPIRES: "30d"
       REF: v${{ needs.find-hotfix-tag-number.outputs.hotfixTagNumber }}
+      CACHE_BUCKET_NAME: "passculture-infra-prod-github-runner-cache"
 
   create-pro-production-release:
     needs: [build-and-tag-version, find-hotfix-tag-number]
@@ -88,3 +90,4 @@ jobs:
       EXPIRES: "30d"
       PUSH_RELEASE_TO_SENTRY: true
       REF: v${{ needs.find-hotfix-tag-number.outputs.hotfixTagNumber }}
+      CACHE_BUCKET_NAME: "passculture-infra-prod-github-runner-cache"
