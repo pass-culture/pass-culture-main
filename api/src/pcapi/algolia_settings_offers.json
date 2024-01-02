@@ -108,10 +108,10 @@
     "enableReRanking": true,
     "reRankingApplyFilter": [
         [
-            "offer.searchGroupName:-LIVRE"
+            "offer.searchGroupNamev2:-LIVRES"
         ],
         [
-            "offer.searchGroupName:-CINEMA"
+            "offer.searchGroupNamev2:-FILMS_SERIES_CINEMA"
         ]
     ],
     "numericAttributesForFiltering": null
