@@ -1,6 +1,8 @@
+import { fileURLToPath, URL } from 'url'
+
 import react from '@vitejs/plugin-react'
 import { visualizer } from 'rollup-plugin-visualizer'
-import { defineConfig } from 'vite'
+import { defineConfig, PluginOption } from 'vite'
 import { createHtmlPlugin } from 'vite-plugin-html'
 import tsconfigPaths from 'vite-tsconfig-paths'
 
@@ -14,7 +16,9 @@ export default defineConfig(({ mode }) => {
       emptyOutDir: true,
     },
     resolve: {
-      alias: { styles: 'src/styles' },
+      alias: {
+        styles: fileURLToPath(new URL('./src/styles', import.meta.url)),
+      },
     },
     plugins: [
       react(),
@@ -22,8 +26,9 @@ export default defineConfig(({ mode }) => {
       createHtmlPlugin({
         minify: true,
         inject: { data: { mode } },
+        viteNext: true,
       }),
-      visualizer({ filename: 'bundleStats.html' }),
+      visualizer({ filename: 'bundleStats.html' }) as PluginOption,
     ],
     server: { port: 3001 },
     preview: { port: 3001 },
