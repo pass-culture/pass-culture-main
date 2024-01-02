@@ -12,6 +12,7 @@ from pcapi.core.offerers import factories as offerers_factories
 from pcapi.core.offers import factories as offers_factories
 from pcapi.core.offers import models as offers_models
 from pcapi.core.providers import factories as providers_factories
+from pcapi.utils.date import format_into_utc_date
 
 from . import utils
 
@@ -134,7 +135,6 @@ class PostProductByEanTest:
         offer = offers_models.Offer.query.one()
         assert offer.product == product
 
-    @freezegun.freeze_time("2022-01-01 12:00:00")
     def test_update_stock_quantity_with_previous_bookings(self, client):
         venue_data = {
             "audioDisabilityCompliant": True,
@@ -161,7 +161,9 @@ class PostProductByEanTest:
                     {
                         "ean": product.extraData["ean"],
                         "stock": {
-                            "bookingLimitDatetime": "2022-01-01T16:00:00+04:00",
+                            "bookingLimitDatetime": format_into_utc_date(
+                                datetime.datetime.utcnow() + datetime.timedelta(days=1)
+                            ),
                             "price": 1234,
                             "quantity": 3,
                         },
@@ -202,7 +204,6 @@ class PostProductByEanTest:
         assert offer.lastProvider == api_key.provider
         assert offer.isActive == True
 
-    @freezegun.freeze_time("2022-01-01 12:00:00")
     def test_update_stock_quantity_0_with_previous_bookings(self, client):
         venue_data = {
             "audioDisabilityCompliant": True,
@@ -229,7 +230,9 @@ class PostProductByEanTest:
                     {
                         "ean": product.extraData["ean"],
                         "stock": {
-                            "bookingLimitDatetime": "2022-01-01T16:00:00+04:00",
+                            "bookingLimitDatetime": format_into_utc_date(
+                                datetime.datetime.utcnow() + datetime.timedelta(days=1)
+                            ),
                             "price": 1234,
                             "quantity": 0,
                         },
