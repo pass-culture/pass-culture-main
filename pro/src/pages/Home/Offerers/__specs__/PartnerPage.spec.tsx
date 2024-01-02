@@ -78,4 +78,43 @@ describe('PartnerPages', () => {
       'https://www.example.com/image.png'
     )
   })
+
+  it('should display the EAC section when no adage', () => {
+    renderPartnerPages({
+      venue: {
+        ...defaultGetOffererVenueResponseModel,
+        hasAdageId: false,
+        demarchesSimplifieesApplicationId: null,
+      },
+      offererId: '1',
+    })
+
+    expect(screen.getByText('Non référencé sur ADAGE')).toBeInTheDocument()
+  })
+
+  it('should display the EAC section when adage application in progress', () => {
+    renderPartnerPages({
+      venue: {
+        ...defaultGetOffererVenueResponseModel,
+        hasAdageId: false,
+        demarchesSimplifieesApplicationId: 10,
+      },
+      offererId: '1',
+    })
+
+    expect(screen.getByText('Référencement en cours')).toBeInTheDocument()
+  })
+
+  it('should display the EAC section when adage application accepted', () => {
+    renderPartnerPages({
+      venue: {
+        ...defaultGetOffererVenueResponseModel,
+        hasAdageId: true,
+        demarchesSimplifieesApplicationId: 10,
+      },
+      offererId: '1',
+    })
+
+    expect(screen.getByText('Référencé sur ADAGE')).toBeInTheDocument()
+  })
 })

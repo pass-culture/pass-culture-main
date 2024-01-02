@@ -10,16 +10,16 @@ export interface CopyLinkProps {
   textToCopy: string
 }
 
+export const copyTextToClipboard = async (text: string) => {
+  if ('clipboard' in navigator) {
+    await navigator.clipboard.writeText(text)
+  } else {
+    document.execCommand('copy', true, text)
+  }
+}
+
 const CopyLink = ({ textToCopy }: CopyLinkProps): JSX.Element => {
   const [isClicked, setIsClicked] = useState(false)
-
-  const copyTextToClipboard = async (text: string) => {
-    if ('clipboard' in navigator) {
-      return await navigator.clipboard.writeText(text).then()
-    } else {
-      return document.execCommand('copy', true, text)
-    }
-  }
 
   return (
     <div
