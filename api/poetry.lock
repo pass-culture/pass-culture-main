@@ -4752,18 +4752,21 @@ crt = ["botocore[crt] (>=1.20.29,<2.0a.0)"]
 
 [[package]]
 name = "schwifty"
-version = "2022.9.0"
-description = "Validate/generate IBANs and BICs"
+version = "2023.11.2"
+description = ""
 optional = false
-python-versions = ">=3.7"
+python-versions = ">=3.8"
 files = [
-    {file = "schwifty-2022.9.0-py3-none-any.whl", hash = "sha256:a38c950d9dcda57670a17ae408a5efcc86b5f0433fc8412e65b3220c04942e63"},
-    {file = "schwifty-2022.9.0.tar.gz", hash = "sha256:ff3c4ad2951f8391b9c3d13e401b751f5d8b77981673e59a91074d5513121620"},
+    {file = "schwifty-2023.11.2-py3-none-any.whl", hash = "sha256:81bfa92a32a4a2098a793f2e99dc468b3027c13ca64d9d328ace24d1766aea40"},
+    {file = "schwifty-2023.11.2.tar.gz", hash = "sha256:972c80c7c5432113bbdb15bae208dcb19c360b7d615776022c819299d94825e2"},
 ]
 
 [package.dependencies]
 iso3166 = "*"
 pycountry = "*"
+
+[package.extras]
+pydantic = ["pydantic (>=2.0)"]
 
 [[package]]
 name = "semver"
@@ -5876,4 +5879,4 @@ test = ["pytest"]
 [metadata]
 lock-version = "2.0"
 python-versions = "^3.11"
-content-hash = "91c86f73779b6150e511b8452720570421a56d713d24ba4694e97b1c7e60daa3"
+content-hash = "ffecd5ca050489f037a1bdff33aae893f3a99e549effbf5a1a7f1a5013313658"
