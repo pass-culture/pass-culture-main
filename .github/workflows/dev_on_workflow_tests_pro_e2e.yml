@@ -19,18 +19,12 @@ defaults:
 jobs:
   tests-pro-e2e-tests:
     name: "E2E tests"
-    runs-on: [self-hosted, linux, x64]
+    runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v3
         with:
           node-version-file: "pro/.nvmrc"
-      - name: "OpenID Connect Authentication"
-        if: always()
-        uses: "google-github-actions/auth@v1"
-        with:
-          workload_identity_provider: ${{ secrets.GCP_EHP_WORKLOAD_IDENTITY_PROVIDER }}
-          service_account: ${{ secrets.GCP_EHP_SERVICE_ACCOUNT }}
       - uses: KengoTODA/actions-setup-docker-compose@v1
         with:
           version: '2.23.3'
@@ -40,6 +34,24 @@ jobs:
         env:
           PCAPI_UID: 1000
           PCAPI_GID: 1000
+      - name: "OpenID Connect Authentication"
+        uses: "google-github-actions/auth@v1"
+        with:
+          workload_identity_provider: ${{ secrets.GCP_EHP_WORKLOAD_IDENTITY_PROVIDER }}
+          service_account: ${{ secrets.GCP_EHP_SERVICE_ACCOUNT }}
+      - name: "Cache the node_modules"
+        id: "yarn-modules-cache"
+        uses: pass-culture-github-actions/cache@v1.0.0
+        with:
+          compression-method: "gzip"
+          bucket: ${{ inputs.CACHE_BUCKET_NAME }}
+          path: |
+            ~/.cache/Cypress
+            **/node_modules
+          key: v1-yarn-pro-cypress-dependency-cache-${{ runner.os }}-${{ hashFiles('**/yarn.lock') }}
+          restore-keys: |
+            v1-yarn-pro-cypress-dependency-cache-${{ runner.os }}-${{ hashFiles('**/yarn.lock') }}
+      - run: yarn install --immutable
       - name: "Run API server"
         run: docker-compose -f ../docker-compose-backend.yml up flask postgres redis --build -d
       - name: "Wait for migrations to be run"
@@ -49,15 +61,22 @@ jobs:
           timeout: 120000
       - name: "Load sandbox"
         run: ../pc sandbox -n industrial
+      - name: 'Build vite application'
+        run: yarn build:development
+      - name: 'Serve vite preview'
+        run: yarn serve &
+      # Using wait-on does not work well for this service, we use curl
+      - name: 'Wait for front-end to listen'
+        run: |
+          timeout 300 bash -c 'while [[ "$(curl -s -o /dev/null -w ''%{http_code}'' localhost:3001)" != "200" ]]; do sleep 5; done' || false
       # Doc : https://github.com/cypress-io/github-action
       - name: "Cypress run"
+        if: always()
         uses: cypress-io/github-action@v5
         with:
-          build: yarn build:development
-          start: yarn serve
           config: baseUrl=http://localhost:3001
           browser: chrome
-          wait-on: "http://localhost:3001,http://localhost:5001/health/api,http://localhost:5001/health/database"
+          wait-on: "http://localhost:5001/health/api,http://localhost:5001/health/database"
           wait-on-timeout: 600
           working-directory: pro
       - name: 'Move cypress videos'
