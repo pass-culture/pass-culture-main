@@ -330,12 +330,13 @@ uvloop = ["uvloop (>=0.15.2)"]
 
 [[package]]
 name = "blinker"
-version = "1.4"
+version = "1.7.0"
 description = "Fast, simple object-to-object and broadcast signaling"
 optional = false
-python-versions = "*"
+python-versions = ">=3.8"
 files = [
-    {file = "blinker-1.4.tar.gz", hash = "sha256:471aee25f3992bd325afa3772f1063dbdbbca947a041b8b89466dc00d606f8b6"},
+    {file = "blinker-1.7.0-py3-none-any.whl", hash = "sha256:c3f865d4d54db7abc53758a01601cf343fe55b84c1de4e3fa910e420b438d5b9"},
+    {file = "blinker-1.7.0.tar.gz", hash = "sha256:e6820ff6fa4e4d1d8e2747c2283749c3f547e4fee112b98555cdcdae32996182"},
 ]
 
 [[package]]
@@ -5875,4 +5876,4 @@ test = ["pytest"]
 [metadata]
 lock-version = "2.0"
 python-versions = "^3.11"
-content-hash = "4f59963577fe73b6fe25d2b79f857838d32759d9c74f2c665517bcc62b526347"
+content-hash = "373b01ca073c9345e20ba13d4829798f87119e760081b5e4cc36e0d6ebfd3242"
