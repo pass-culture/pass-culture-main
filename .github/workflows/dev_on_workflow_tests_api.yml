@@ -42,7 +42,7 @@ jobs:
           token_format: "access_token"
           workload_identity_provider: ${{ steps.secrets.outputs.ARTIFACT_REGISTRY_WORKLOAD_IDENTITY_PROVIDER }}
           service_account: ${{ steps.secrets.outputs.ARTIFACT_REGISTRY_SERVICE_ACCOUNT }}
-      - uses: docker/login-action@v2
+      - uses: docker/login-action@v3
         with:
           registry: "europe-west1-docker.pkg.dev"
           username: oauth2accesstoken
@@ -120,7 +120,7 @@ jobs:
           token_format: "access_token"
           workload_identity_provider: ${{ steps.secrets.outputs.ARTIFACT_REGISTRY_WORKLOAD_IDENTITY_PROVIDER }}
           service_account: ${{ steps.secrets.outputs.ARTIFACT_REGISTRY_SERVICE_ACCOUNT }}
-      - uses: docker/login-action@v2
+      - uses: docker/login-action@v3
         with:
           registry: "europe-west1-docker.pkg.dev"
           username: oauth2accesstoken
@@ -215,7 +215,7 @@ jobs:
           token_format: "access_token"
           workload_identity_provider: ${{ steps.secrets.outputs.ARTIFACT_REGISTRY_WORKLOAD_IDENTITY_PROVIDER }}
           service_account: ${{ steps.secrets.outputs.ARTIFACT_REGISTRY_SERVICE_ACCOUNT }}
-      - uses: docker/login-action@v2
+      - uses: docker/login-action@v3
         with:
           registry: "europe-west1-docker.pkg.dev"
           username: oauth2accesstoken
@@ -345,7 +345,7 @@ jobs:
           token_format: "access_token"
           workload_identity_provider: ${{ steps.secrets.outputs.ARTIFACT_REGISTRY_WORKLOAD_IDENTITY_PROVIDER }}
           service_account: ${{ steps.secrets.outputs.ARTIFACT_REGISTRY_SERVICE_ACCOUNT }}
-      - uses: docker/login-action@v2
+      - uses: docker/login-action@v3
         with:
           registry: "europe-west1-docker.pkg.dev"
           username: oauth2accesstoken
