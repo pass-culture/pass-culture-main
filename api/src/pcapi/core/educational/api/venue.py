@@ -62,6 +62,7 @@ def get_all_venues(page: int | None, per_page: int | None) -> list[offerers_mode
         .options(sa.orm.joinedload(offerers_models.Venue.contact))
         .options(sa.orm.joinedload(offerers_models.Venue.venueLabel))
         .options(sa.orm.joinedload(offerers_models.Venue.managingOfferer))
+        .options(sa.orm.joinedload(offerers_models.Venue.googlePlacesInfo))
         .options(
             sa.orm.joinedload(offerers_models.Venue.collectiveDomains).load_only(
                 educational_models.EducationalDomain.id, educational_models.EducationalDomain.name
