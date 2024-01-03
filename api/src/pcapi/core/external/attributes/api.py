@@ -57,12 +57,10 @@ def update_external_pro(email: str | None) -> None:
 
     if email:
         now = datetime.utcnow()
-        update_sib_pro_attributes_task.delay(
-            UpdateProAttributesRequest(email=email, time_id=f"{now.hour}:{now.minute // 15}")
-        )
+        update_sib_pro_attributes_task.delay(UpdateProAttributesRequest(email=email, time_id=f"{now.hour // 12}"))
         if FeatureToggle.ENABLE_BEAMER.is_active():
             update_beamer_pro_attributes_task.delay(
-                UpdateProAttributesRequest(email=email, time_id=f"{now.hour}:{now.minute // 15}")
+                UpdateProAttributesRequest(email=email, time_id=f"{now.hour // 12}")
             )
 
 
