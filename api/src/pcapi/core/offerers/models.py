@@ -322,6 +322,9 @@ class Venue(PcObject, Base, Model, HasThumbMixin, ProvidableMixin, Accessibility
     # whereas bannerMeta should provide extra information that might be
     # helpful like image type, author, etc. that can change over time.
     _bannerUrl = Column(Text, nullable=True, name="bannerUrl")
+    googlePlacesInfo: sa_orm.Mapped["GooglePlacesInfo | None"] = relationship(
+        "GooglePlacesInfo", back_populates="venue", uselist=False
+    )
 
     bannerMeta: dict | None = Column(MutableDict.as_mutable(JSONB), nullable=True)
 
@@ -677,6 +680,17 @@ class Venue(PcObject, Base, Model, HasThumbMixin, ProvidableMixin, Accessibility
     @property
     def target(self) -> Target | None:
         return self.registration.target if self.registration else None
+
+
+class GooglePlacesInfo(PcObject, Base, Model):
+    __tablename__ = "google_places_info"
+    venueId: int = Column(
+        BigInteger, ForeignKey("venue.id", ondelete="CASCADE"), nullable=False, index=True, unique=True
+    )
+    venue: sa_orm.Mapped[Venue] = relationship("Venue", foreign_keys=[venueId], back_populates="googlePlacesInfo")
+    placeId = Column(Text, nullable=False, unique=True)
+    bannerUrl: str | None = Column(Text, nullable=True, name="bannerUrl")
+    bannerMeta: dict | None = Column(MutableDict.as_mutable(JSONB), nullable=True)
 
 
 class VenueLabel(PcObject, Base, Model):
