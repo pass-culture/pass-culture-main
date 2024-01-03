@@ -1,5 +1,5 @@
-name: Test main
-run-name: Test main${{ github.ref == 'refs/heads/master' && ' and deploy to testing' || '' }}
+name: "Initiate workflow"
+
 on:
   push:
     branches:
@@ -36,10 +36,8 @@ jobs:
       folder: maintenance-site/**
 
   build-api:
-    name: Build API (backend) Docker image
-    needs:
-      - check-api
-      - check-pro
+    name: "Build API (backend) Docker image"
+    needs: [check-api, check-pro]
     if: |
       needs.check-api.outputs.folder_changed == 'true' ||
       needs.check-pro.outputs.folder_changed == 'true' ||
@@ -66,20 +64,6 @@ jobs:
     needs: check-api
     if: needs.check-api.outputs.folder_changed == 'true'
     uses: ./.github/workflows/dev_on_workflow_mypy_cop.yml
-
-  test-api:
-    name: Test api
-    needs:
-      - check-api
-      - build-api
-    if: |
-      needs.check-api.outputs.folder_changed == 'true' ||
-      github.ref == 'refs/heads/master' ||
-      startsWith(github.ref,'refs/heads/maint/v')
-    uses: ./.github/workflows/dev_on_workflow_tests_api.yml
-    secrets:
-      GCP_EHP_WORKLOAD_IDENTITY_PROVIDER: ${{ secrets.GCP_EHP_WORKLOAD_IDENTITY_PROVIDER }}
-      GCP_EHP_SERVICE_ACCOUNT: ${{ secrets.GCP_EHP_SERVICE_ACCOUNT }}
 
   update-api-client-template:
     name: "Update api client template"
@@ -108,37 +92,46 @@ jobs:
       GCP_EHP_SERVICE_ACCOUNT: ${{ secrets.GCP_EHP_SERVICE_ACCOUNT }}
       GCP_EHP_WORKLOAD_IDENTITY_PROVIDER: ${{ secrets.GCP_EHP_WORKLOAD_IDENTITY_PROVIDER }}
 
+  test-api:
+    name: "Test api"
+    needs: [check-api, build-api]
+    if: |
+      needs.check-api.outputs.folder_changed == 'true' ||
+      github.ref == 'refs/heads/master' ||
+      startsWith(github.ref,'refs/heads/maint/v')
+    uses: ./.github/workflows/dev_on_workflow_tests_api.yml
+    secrets:
+      GCP_EHP_WORKLOAD_IDENTITY_PROVIDER: ${{ secrets.GCP_EHP_WORKLOAD_IDENTITY_PROVIDER }}
+      GCP_EHP_SERVICE_ACCOUNT: ${{ secrets.GCP_EHP_SERVICE_ACCOUNT }}
+
   test-pro:
+    name: "Tests pro"
     needs: check-pro
     if: |
       needs.check-pro.outputs.folder_changed == 'true' ||
       github.ref == 'refs/heads/master' ||
       startsWith(github.ref,'refs/heads/maint/v')
-    name: Tests pro
     uses: ./.github/workflows/dev_on_workflow_tests_pro.yml
+    with:
+      CACHE_BUCKET_NAME: "passculture-infra-prod-github-runner-cache"
     secrets:
       GCP_EHP_WORKLOAD_IDENTITY_PROVIDER: ${{ secrets.GCP_EHP_WORKLOAD_IDENTITY_PROVIDER }}
       GCP_EHP_SERVICE_ACCOUNT: ${{ secrets.GCP_EHP_SERVICE_ACCOUNT }}
-    with:
-      CACHE_BUCKET_NAME: passculture-infra-prod-github-runner-cache
 
   test-pro-e2e:
-    needs:
-      - check-api
-      - check-pro
-      - build-api
+    name: "Tests pro E2E"
+    needs: [check-api, check-pro, build-api]
     if: |
       needs.check-api.outputs.folder_changed == 'true' ||
       needs.check-pro.outputs.folder_changed == 'true' ||
       github.ref == 'refs/heads/master' ||
       startsWith(github.ref,'refs/heads/maint/v')
-    name: Tests pro E2E
     uses: ./.github/workflows/dev_on_workflow_tests_pro_e2e.yml
     secrets:
       GCP_EHP_WORKLOAD_IDENTITY_PROVIDER: ${{ secrets.GCP_EHP_WORKLOAD_IDENTITY_PROVIDER }}
       GCP_EHP_SERVICE_ACCOUNT: ${{ secrets.GCP_EHP_SERVICE_ACCOUNT }}
     with:
-      CACHE_BUCKET_NAME: passculture-infra-prod-github-runner-cache
+      CACHE_BUCKET_NAME: "passculture-infra-prod-github-runner-cache"
 
   deploy-storybook:
     name: "Deploy Storybook"
@@ -147,35 +140,13 @@ jobs:
     uses: ./.github/workflows/dev_on_workflow_deploy_storybook.yml
 
   dependabot-auto-merge:
-    needs:
-      - test-pro
+    name: "Dependabot"
+    needs: test-pro
     if: |
+      always() &&
       github.event_name == 'pull_request' &&
       github.actor == 'dependabot[bot]'
     uses: ./.github/workflows/dev_on_workflow_dependabot_auto_merge.yml
-
-  deploy-to-testing:
-    name: Deploy to testing
-    needs:
-      - test-api
-      - test-pro
-    if: |
-      always() &&
-      github.ref == 'refs/heads/master' &&
-      (needs.test-api.result == 'success' || needs.test-api.result == 'skipped') &&
-      (needs.test-pro.result == 'success' || needs.test-pro.result == 'skipped')
-    uses: ./.github/workflows/dev_on_workflow_deploy.yml
-    with:
-      environment: testing
-      app_version: ${{ github.sha }}
-      teleport_version: 11.1.1
-      teleport_proxy: teleport.ehp.passculture.team:443
-      teleport_kubernetes_cluster: passculture-metier-ehp
-      deploy_api: ${{ needs.test-api.result == 'success' }}
-      deploy_pro: ${{ needs.test-pro.result == 'success' }}
-    secrets:
-      GCP_EHP_WORKLOAD_IDENTITY_PROVIDER: ${{ secrets.GCP_EHP_WORKLOAD_IDENTITY_PROVIDER }}
-      GCP_EHP_SERVICE_ACCOUNT: ${{ secrets.GCP_EHP_SERVICE_ACCOUNT }}
 
   deploy-validation-env:
     name: "[PRO] Deploy PR version for validation"
@@ -192,6 +163,27 @@ jobs:
       CHANNEL: ""
       REF: "${{ github.ref }}"
       CACHE_BUCKET_NAME: "passculture-infra-prod-github-runner-cache"
+
+  deploy-to-testing:
+    name: "Deploy to testing"
+    needs: [test-api, test-pro]
+    if: |
+      always() &&
+      github.ref == 'refs/heads/master' &&
+      contains(fromJSON('["success", "skipped"]'), needs.test-api.result) &&
+      contains(fromJSON('["success", "skipped"]'), needs.test-pro.result)
+    uses: ./.github/workflows/dev_on_workflow_deploy.yml
+    with:
+      environment: testing
+      app_version: ${{ github.sha }}
+      teleport_version: 11.1.1
+      teleport_proxy: teleport.ehp.passculture.team:443
+      teleport_kubernetes_cluster: passculture-metier-ehp
+      deploy_api: ${{ needs.test-api.result == 'success' }}
+      deploy_pro: ${{ needs.test-pro.result == 'success' }}
+    secrets:
+      GCP_EHP_WORKLOAD_IDENTITY_PROVIDER: ${{ secrets.GCP_EHP_WORKLOAD_IDENTITY_PROVIDER }}
+      GCP_EHP_SERVICE_ACCOUNT: ${{ secrets.GCP_EHP_SERVICE_ACCOUNT }}
 
   deploy-maintenance-site:
     name: "Deploy maintenance site"
