@@ -485,8 +485,9 @@ def create_offers_with_extradata(
 
 def create_venues_with_gmaps_image() -> None:
     venue_with_user_image_and_gmaps_image = offerers_factories.VenueFactory(
+        isPermanent=True,
         name="venue_with_user_image_and_gmaps_image",
-        _bannerUrl="passculture-metier-ehp-staging-assets-fine-grained/assets/venue_default_images/noriely-fernandez-oJ1qnM6BYZo-unsplash.png",
+        _bannerUrl="https://storage.googleapis.com/passculture-metier-ehp-testing-assets-fine-grained/thumbs/offerers/FY",
     )
     offerers_factories.GooglePlacesInfoFactory(
         bannerUrl="https://storage.googleapis.com/passculture-metier-ehp-testing-assets-fine-grained/assets/Google_Maps_Logo_2020.png",
@@ -494,6 +495,7 @@ def create_venues_with_gmaps_image() -> None:
     )
 
     venue_without_user_image_and_with_gmaps_image = offerers_factories.VenueFactory(
+        isPermanent=True,
         name="venue_without_user_image_and_with_gmaps_image",
         _bannerUrl=None,
     )
@@ -501,7 +503,11 @@ def create_venues_with_gmaps_image() -> None:
         bannerUrl="https://storage.googleapis.com/passculture-metier-ehp-testing-assets-fine-grained/assets/Google_Maps_Logo_2020.png",
         venue=venue_without_user_image_and_with_gmaps_image,
     )
-    venue_with_no_images = offerers_factories.VenueFactory(name="venue_with_no_images", _bannerUrl=None)
+    venue_with_no_images = offerers_factories.VenueFactory(
+        name="venue_with_no_images",
+        _bannerUrl=None,
+        isPermanent=True,
+    )
     offers_factories.StockFactory(
         offer=offers_factories.OfferFactory(
             venue=venue_with_user_image_and_gmaps_image,
