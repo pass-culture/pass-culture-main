@@ -77,7 +77,7 @@ class AllocineMovieListTest:
         synchronize_products()
 
         # Then
-        updated_product = Product.query.order_by(Product.id).all()[0]
+        updated_product = Product.query.order_by(Product.id).first()
         assert updated_product.extraData["title"] == "Nouveau titre pour ceux de chez nous"
 
     def test_synchronize_products_is_idempotent(self, requests_mock):
