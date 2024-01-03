@@ -14,7 +14,6 @@ import {
 import { App } from '../App'
 import { DEFAULT_GEO_RADIUS } from '../components/OffersInstantSearch/OffersInstantSearch'
 import {
-  AlgoliaQueryContextProvider,
   FacetFiltersContextProvider,
   FiltersContextProvider,
 } from '../providers'
@@ -117,11 +116,9 @@ const renderApp = (
   renderWithProviders(
     <>
       <FiltersContextProvider venueFilter={venueFilter}>
-        <AlgoliaQueryContextProvider>
-          <FacetFiltersContextProvider>
-            <App />
-          </FacetFiltersContextProvider>
-        </AlgoliaQueryContextProvider>
+        <FacetFiltersContextProvider>
+          <App />
+        </FacetFiltersContextProvider>
       </FiltersContextProvider>
       ,
       <Notification />

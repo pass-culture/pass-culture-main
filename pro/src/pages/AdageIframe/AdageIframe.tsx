@@ -2,14 +2,9 @@ import * as React from 'react'
 import './index.scss'
 
 import { App } from './app/App'
-import { AlgoliaQueryContextProvider } from './app/providers'
 
 const AdageIframe = () => {
-  return (
-    <AlgoliaQueryContextProvider>
-      <App />
-    </AlgoliaQueryContextProvider>
-  )
+  return <App />
 }
 
 // Lazy-loaded by react-router-dom
