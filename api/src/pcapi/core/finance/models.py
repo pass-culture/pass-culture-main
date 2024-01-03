@@ -808,6 +808,8 @@ class Invoice(Base, Model):
     reimbursementPoint: sqla_orm.Mapped["offerers_models.Venue"] = sqla_orm.relationship(
         "Venue", foreign_keys=[reimbursementPointId]
     )
+    bankAccountId = sqla.Column(sqla.BigInteger, sqla.ForeignKey("bank_account.id"), index=True, nullable=True)
+    bankAccount: BankAccount = sqla_orm.relationship("BankAccount", foreign_keys=[bankAccountId])
     # See the note about `amount` at the beginning of this module.
     amount: int = sqla.Column(sqla.Integer, nullable=False)
     token: str = sqla.Column(sqla.Text, unique=True, nullable=False)
