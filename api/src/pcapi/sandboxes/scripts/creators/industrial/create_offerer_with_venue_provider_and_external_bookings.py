@@ -46,7 +46,9 @@ def create_industrial_provider_external_bookings() -> None:
 def _create_offers(provider: Provider) -> Venue:
     provider_name = provider.name
     if provider_name != "TiteLiveThings":
-        cinema_user_offerer = UserOffererFactory(offerer__name=f"Structure du cinéma {provider_name}")
+        cinema_user_offerer = UserOffererFactory(
+            offerer__name=f"Structure du cinéma {provider_name}", user__email="api@example.com"
+        )
         venue = VenueFactory(
             name=f"Cinéma - {provider_name}",
             managingOfferer=cinema_user_offerer.offerer,

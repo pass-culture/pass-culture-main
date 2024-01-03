@@ -828,6 +828,7 @@ class EligibleActivableUnderageFactory(EligibleUnderageFactory):
 class ProFactory(BaseFactory):
     class Meta:
         model = models.User
+        sqlalchemy_get_or_create = ["email"]
 
     email = factory.Sequence("ma.librairie{}@example.com".format)
     address = factory.Sequence("{} rue des cinémas".format)

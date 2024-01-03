@@ -32,8 +32,7 @@ def create_specific_invoice() -> None:
     logger.info("create_specific_invoice")
     bank_info = finance_factories.BankInformationFactory()
     offerer = offerers_factories.OffererFactory(name="0 - Structure avec justificatif copieux")
-    pro = users_factories.ProFactory(email="pctest.pro.justificatif.copieux@example.com")
-    offerers_factories.UserOffererFactory(offerer=offerer, user=pro)
+    offerers_factories.UserOffererFactory(offerer=offerer, user__email="activation@example.com")
     venue = offerers_factories.VenueFactory(
         name="Lieu avec justificatif copieux",
         managingOfferer=offerer,
@@ -162,8 +161,7 @@ def create_specific_cashflow_batch_without_invoice() -> None:
     logger.info("create_specific_cashflow_batch_without_invoice")
     bank_info = finance_factories.BankInformationFactory()
     offerer = offerers_factories.OffererFactory(name="0 - Structure avec justificatif copié")
-    pro = users_factories.ProFactory(email="pctest.pro.justificatif.copie@example.com")
-    offerers_factories.UserOffererFactory(offerer=offerer, user=pro)
+    offerers_factories.UserOffererFactory(offerer=offerer, user__email="activation@example.com")
     venue = offerers_factories.VenueFactory(
         name="Lieu avec justificatif copié",
         managingOfferer=offerer,
