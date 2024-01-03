@@ -125,6 +125,18 @@ class CollectiveVenueFactory(VenueFactory):
     collectiveInterventionArea = ["75", "92"]
 
 
+class GooglePlacesInfoFactory(BaseFactory):
+    class Meta:
+        model = models.GooglePlacesInfo
+
+    venue = factory.SubFactory(VenueFactory)
+    placeId = factory.Sequence("ChIJd8BlQ2Bx5kcRwE0uQdK5P8U{}".format)
+    bannerUrl = factory.Sequence(
+        "https://maps.googleapis.com/maps/api/place/photo?maxwidth=400&photoreference={}&key={}".format
+    )
+    bannerMeta = None
+
+
 class VirtualVenueFactory(VenueFactory):
     isVirtual = True
     address = None

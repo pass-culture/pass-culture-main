@@ -2064,4 +2064,6 @@ def get_offerer_v2_stats(offerer_id: int) -> OffererV2Stats:
 
 
 def get_venues_by_ids(ids: typing.Collection[int]) -> BaseQuery:
-    return offerers_models.Venue.query.filter(offerers_models.Venue.id.in_(ids))
+    return offerers_models.Venue.query.filter(offerers_models.Venue.id.in_(ids)).options(
+        sa.orm.joinedload(offerers_models.Venue.googlePlacesInfo)
+    )

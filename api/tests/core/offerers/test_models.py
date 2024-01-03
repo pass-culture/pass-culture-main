@@ -15,6 +15,7 @@ from pcapi.core.offerers import models
 import pcapi.core.offers.factories as offers_factories
 import pcapi.core.offers.models as offers_models
 from pcapi.core.testing import assert_num_queries
+from pcapi.core.testing import override_features
 import pcapi.core.users.factories as users_factories
 from pcapi.models import db
 from pcapi.models.api_errors import ApiErrors
@@ -151,6 +152,7 @@ class VenueBannerUrlTest:
     @pytest.mark.parametrize(
         "venue_type_code", (type_code for type_code, banners in models.VENUE_TYPE_DEFAULT_BANNERS.items() if banners)
     )
+    @override_features(WIP_GOOGLE_MAPS_VENUE_IMAGES=True)
     def test_can_get_category_default_banner_url_when_exists(self, venue_type_code):
         venue = factories.VenueFactory(venueTypeCode=venue_type_code)
 
@@ -162,16 +164,34 @@ class VenueBannerUrlTest:
         "venue_type_code",
         (type_code for type_code, banners in models.VENUE_TYPE_DEFAULT_BANNERS.items() if not banners),
     )
+    @override_features(WIP_GOOGLE_MAPS_VENUE_IMAGES=True)
     def test_cannot_get_category_default_banner_if_not_available(self, venue_type_code):
         venue = factories.VenueFactory(venueTypeCode=venue_type_code)
 
         assert venue.bannerUrl is None
 
+    @override_features(WIP_GOOGLE_MAPS_VENUE_IMAGES=True)
     def test_can_get_user_defined_banner_if_exists(self):
         expected_banner_url = "http://example.com/banner_url"
+        # no google maps banner
         venue = factories.VenueFactory(bannerUrl=expected_banner_url)
 
         assert venue.bannerUrl == expected_banner_url
+        # with google maps banner
+        google_maps_banner_url = "http://example.com/google_maps_banner_url"
+        venue = factories.VenueFactory(
+            bannerUrl=expected_banner_url,
+        )
+        factories.GooglePlacesInfoFactory(bannerUrl=google_maps_banner_url, venue=venue)
+        assert venue.bannerUrl == expected_banner_url
+
+    @override_features(WIP_GOOGLE_MAPS_VENUE_IMAGES=True)
+    def test_can_get_google_maps_banner_url_if_no_user_defined_banner(self):
+        google_maps_banner_url = "http://example.com/google_maps_banner_url"
+        venue = factories.VenueFactory(bannerUrl=None)
+        factories.GooglePlacesInfoFactory(bannerUrl=google_maps_banner_url, venue=venue)
+
+        assert venue.bannerUrl == google_maps_banner_url
 
 
 class OffererDepartementCodePropertyTest:

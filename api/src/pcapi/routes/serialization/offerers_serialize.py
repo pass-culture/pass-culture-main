@@ -125,6 +125,7 @@ class GetOffererResponseModel(BaseModel):
             .options(sqla_orm.joinedload(offerers_models.Venue.bankInformation))
             .options(sqla_orm.joinedload(offerers_models.Venue.collectiveDmsApplications))
             .options(sqla_orm.joinedload(offerers_models.Venue.venueProviders))
+            .options(sqla_orm.joinedload(offerers_models.Venue.googlePlacesInfo))
             .order_by(offerers_models.Venue.common_name)
             .all()
         )
