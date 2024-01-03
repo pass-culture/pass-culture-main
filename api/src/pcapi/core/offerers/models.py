@@ -424,7 +424,11 @@ class Venue(PcObject, Base, Model, HasThumbMixin, ProvidableMixin, Accessibility
     def bannerUrl(self) -> str | None:
         if self._bannerUrl:
             return self._bannerUrl
-        if self.googlePlacesInfo and self.googlePlacesInfo.bannerUrl and FeatureToggle.WIP_GOOGLE_MAPS_VENUE_IMAGES:
+        if (
+            self.googlePlacesInfo
+            and self.googlePlacesInfo.bannerUrl
+            and FeatureToggle.WIP_GOOGLE_MAPS_VENUE_IMAGES.is_active()
+        ):
             return self.googlePlacesInfo.bannerUrl
         return self._get_type_banner_url()
 
