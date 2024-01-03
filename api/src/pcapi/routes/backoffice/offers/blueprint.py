@@ -31,6 +31,7 @@ from pcapi.core.offers import api as offers_api
 from pcapi.core.offers import exceptions as offers_exceptions
 from pcapi.core.offers import models as offers_models
 from pcapi.core.permissions import models as perm_models
+from pcapi.core.providers import models as providers_models
 from pcapi.core.users import models as users_models
 from pcapi.models import db
 from pcapi.models.offer_mixin import OfferValidationType
@@ -782,6 +783,10 @@ def get_offer_details(offer_id: int) -> utils.BackofficeResponse:
         sa.orm.joinedload(offers_models.Offer.lastValidationAuthor).load_only(
             users_models.User.firstName, users_models.User.lastName
         ),
+        sa.orm.joinedload(offers_models.Offer.criteria),
+        sa.orm.joinedload(offers_models.Offer.flaggingValidationRules),
+        sa.orm.joinedload(offers_models.Offer.mediations),
+        sa.orm.joinedload(offers_models.Offer.lastProvider).load_only(providers_models.Provider.name),
     )
     offer = offer_query.one_or_none()
 
