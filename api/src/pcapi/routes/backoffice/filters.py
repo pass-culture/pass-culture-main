@@ -28,7 +28,8 @@ from pcapi.core.offers import models as offers_models
 from pcapi.core.permissions import models as perm_models
 from pcapi.core.users import constants as users_constants
 from pcapi.core.users import models as users_models
-from pcapi.domain.show_types import SHOW_SUB_TYPES_LABEL_BY_CODE
+from pcapi.domain import music_types
+from pcapi.domain import show_types
 from pcapi.models import offer_mixin
 from pcapi.models import validation_status_mixin
 from pcapi.routes.backoffice.accounts import serialization as serialization_accounts
@@ -148,9 +149,9 @@ def format_rate_multiply_by_100(rate: float | None) -> str:
     return f"{rate * 100:.2f} %".replace(".", ",")
 
 
-def format_bool(data: bool | None) -> str:
+def format_bool(data: bool | None, none_display: str = "") -> str:
     if data is None:
-        return ""
+        return none_display
 
     if data:
         return "Oui"
@@ -437,7 +438,9 @@ def format_tag_object_list(
     objects_with_label_attribute: list[offerers_models.OffererTag] | list[offerers_models.OffererTagCategory],
 ) -> str:
     if objects_with_label_attribute:
-        return format_as_badges([(obj.label or obj.name) for obj in objects_with_label_attribute])
+        return format_as_badges(
+            [getattr(obj, "label", getattr(obj, "name", "")) for obj in objects_with_label_attribute]
+        )
     return ""
 
 
@@ -521,6 +524,32 @@ def format_modified_info_values(modified_info: typing.Any, name: str | None = No
         return f"ajout de : {_format_modified_info_value(new_info, name)}"
 
     return str(modified_info)  # this should not happen if data is consistent
+
+
+def format_music_type(music_subtype_id: int | str, music_type_id: int | str) -> str:
+    try:
+        music_type = music_types.MUSIC_TYPES_LABEL_BY_CODE.get(int(music_type_id), f"Autre[{music_type_id}]")
+    except ValueError:
+        music_type = f"Autre[{music_type_id}]"
+    try:
+        music_subtype = music_types.MUSIC_SUB_TYPES_LABEL_BY_CODE.get(
+            int(music_subtype_id), f"Autre[{music_subtype_id}]"
+        )
+    except ValueError:
+        music_subtype = f"Autre[{music_subtype_id}]"
+    return f"{music_type} - {music_subtype}"
+
+
+def format_show_type(show_subtype_id: int | str, show_type_id: int | str) -> str:
+    try:
+        show_type = show_types.SHOW_TYPES_LABEL_BY_CODE.get(int(show_type_id), f"Autre[{show_type_id}]")
+    except ValueError:
+        show_type = f"Autre[{show_type_id}]"
+    try:
+        show_subtype = show_types.SHOW_SUB_TYPES_LABEL_BY_CODE.get(int(show_subtype_id), f"Autre[{show_subtype_id}]")
+    except ValueError:
+        show_subtype = f"Autre[{show_subtype_id}]"
+    return f"{show_type} - {show_subtype}"
 
 
 def format_modified_info_name(info_name: str) -> str:
@@ -721,7 +750,7 @@ def get_comparated_format_function(
         if sub_rule.attribute == offers_models.OfferValidationAttribute.SUBCATEGORY_ID:
             return lambda subcategory_id: subcategories_v2.ALL_SUBCATEGORIES_DICT[subcategory_id].pro_label
         if sub_rule.attribute == offers_models.OfferValidationAttribute.SHOW_SUB_TYPE:
-            return lambda show_sub_type_code: SHOW_SUB_TYPES_LABEL_BY_CODE[int(show_sub_type_code)]
+            return lambda show_sub_type_code: show_types.SHOW_SUB_TYPES_LABEL_BY_CODE[int(show_sub_type_code)]
         if sub_rule.attribute == offers_models.OfferValidationAttribute.FORMATS:
             return lambda fmt: subcategories_v2.EacFormat[fmt].value
     except ValueError as err:
@@ -1006,6 +1035,8 @@ def install_template_filters(app: Flask) -> None:
     app.jinja_env.filters["format_sub_rules_info_type"] = format_sub_rules_info_type
     app.jinja_env.filters["format_offer_validation_sub_rule"] = format_offer_validation_sub_rule
     app.jinja_env.filters["format_offer_validation_operator"] = format_offer_validation_operator
+    app.jinja_env.filters["format_music_type"] = format_music_type
+    app.jinja_env.filters["format_show_type"] = format_show_type
     app.jinja_env.filters["get_comparated_format_function"] = get_comparated_format_function
     app.jinja_env.filters["format_offer_types"] = format_offer_types
     app.jinja_env.filters["format_website"] = format_website

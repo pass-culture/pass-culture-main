@@ -16,6 +16,13 @@
           <div class="row justify-content-start align-items-center">
             <div class="col d-flex align-items-center justify-content-start">
               <h2 class="card-title mb-3 text-primary">{{ links.build_offer_name_to_pc_pro_link(offer) }}</h2>
+              <span class="fs-5 ps-4">
+                {% if offer.lastProviderId %}
+                  <span class="me-2 badge rounded-pill text-bg-secondary align-middle">
+                    <i class="bi bi-gear-fill"></i> {{ offer.lastProvider.name }}
+                  </span>
+                {% endif %}
+              </span>
               {% if reindex_offer_form %}
                 <div class="d-flex row-reverse justify-content-end flex-grow-1">
                   <form action="{{ url_for('.reindex', offer_id=offer.id) }}"
@@ -74,9 +81,16 @@
                 <p class="mb-1">
                   <span class="fw-bold">Sous-catégorie :</span> {{ offer.subcategoryId | format_offer_subcategory }}
                 </p>
-                <p class="mb-1">
-                  <span class="fw-bold">Date de création :</span> {{ offer.dateCreated | format_date }}
-                </p>
+                {% if offer.extraData.musicType %}
+                  <span class="fw-bold">Type de musique :</span> {{ offer.extraData.musicSubType | format_music_type(offer.extraData.musicType) }}
+                {% endif %}
+                {% if offer.extraData.showType %}
+                  <span class="fw-bold">Type de spectacle :</span> {{ offer.extraData.showSubType | format_show_type(offer.extraData.showType) }}
+                {% endif %}
+                {% if offer.extraData.genres %}<span class="fw-bold">Genres :</span> {{ offer.extraData.genres | format_string_list }}{% endif %}
+                {% if offer.withdrawalDetails %}
+                  <span class="fw-bold">Modalités de retrait :</span> {{ offer.withdrawalDetails | replace("\n", "<br />"|safe) }}
+                {% endif %}
               </div>
             </div>
             <div class="col-4">
@@ -86,6 +100,9 @@
                 </p>
                 <p class="mb-1">
                   <span class="fw-bold">État :</span> {{ offer.validation | format_offer_validation_status }}
+                </p>
+                <p class="mb-1">
+                  <span class="fw-bold">Date de création :</span> {{ offer.dateCreated | format_date }}
                 </p>
                 {% if has_permission("PRO_FRAUD_ACTIONS") %}
                   {% set compliance_score = offer.extraData.get("complianceScore", "") if offer.extraData else "" %}
@@ -111,6 +128,10 @@
                     <span class="fw-bold">Utilisateur de la dernière validation :</span> {{ offer.lastValidationAuthor.full_name }}
                   </p>
                 {% endif %}
+                <p class="mb-1">
+                  <span class="fw-bold">Tags :</span>
+                  {{ offer.criteria | sort(attribute="name") | format_tag_object_list | safe }}
+                </p>
               </div>
             </div>
             <div class="col-4">
@@ -130,6 +151,7 @@
       </div>
       <div class="mt-4">
         {% call build_details_tabs_wrapper() %}
+          {{ build_details_tab("info", "Détails", active_tab == 'info') }}
           {{ build_details_tab("stock", "Stocks", active_tab == 'stock') }}
           {{ build_details_tab("bookings", "Réservations", active_tab == 'bookings') }}
         {% endcall %}
@@ -143,7 +165,10 @@
                   <th scope="col" class="col-2">Stock réservé</th>
                   <th scope="col" class="col-2">Stock restant</th>
                   <th scope="col" class="col-2">Prix</th>
-                  <th scope="col" class="col-4">Date / Heure</th>
+                  {% if offer.isEvent %}
+                    <th scope="col" class="col-2">Date / Heure</th>
+                    <th scope="col" class="col-4">Fin des réservations</th>
+                  {% endif %}
                 </tr>
               </thead>
               <tbody>
@@ -178,7 +203,10 @@
                       {% endif %}
                     </td>
                     <td>{{ stock.price | format_amount }}</td>
-                    <td>{{ stock.beginningDatetime | format_date_time }}</td>
+                    {% if offer.isEvent %}
+                      <td>{{ stock.beginningDatetime | format_date_time }}</td>
+                      <td>{{ stock.bookingLimitDatetime | format_date_time }}</td>
+                    {% endif %}
                   </tr>
                 {% endfor %}
               </tbody>
@@ -203,12 +231,92 @@
               </div>
             </div>
           {% endcall %}
+          {% call build_details_tab_content("info", active_tab == 'info') %}
+            <div class="container">
+              <div class="row">
+                <div class="col">
+                  {% if offer.idAtProvider or offer.extraData.ean %}
+                    <h3>Informations techniques</h3>
+                    <div class="fs-6">
+                      {% if offer.idAtProvider %}
+                        <p class="mb-1">
+                          <span class="fw-bold">Identifiant chez le fournisseur :</span> {{ offer.idAtProvider }}
+                        </p>
+                      {% endif %}
+                      {% if offer.extraData.ean %}
+                        <p class="mb-1">
+                          <span class="fw-bold">EAN :</span> {{ offer.extraData.ean }}
+                        </p>
+                      {% endif %}
+                    </div>
+                  {% endif %}
+                  <h3>Informations artistiques</h3>
+                  <div class="fs-6">
+                    {% if offer.extraData.author %}
+                      <p class="mb-1">
+                        <span class="fw-bold">Auteur :</span> {{ offer.extraData.author }}
+                      </p>
+                    {% endif %}
+                    {% if offer.extraData.editeur %}
+                      <p class="mb-1">
+                        <span class="fw-bold">Éditeur :</span> {{ offer.extraData.editeur }}
+                      </p>
+                    {% endif %}
+                    {% if offer.extraData.performer %}
+                      <p class="mb-1">
+                        <span class="fw-bold">Interprète :</span> {{ offer.extraData.performer }}
+                      </p>
+                    {% endif %}
+                    {% if offer.durationMinutes %}
+                      <p class="mb-1">
+                        <span class="fw-bold">Durée :</span> {{ offer.durationMinutes }} minutes
+                      </p>
+                    {% endif %}
+                    {% if offer.extraData.diffusionVersion %}
+                      <p class="mb-1">
+                        <span class="fw-bold">Langue :</span> {{ offer.extraData.diffusionVersion }}
+                      </p>
+                    {% endif %}
+                    <p class="mb-1">
+                      <span class="fw-bold">Description :</span> {{ offer.description | replace("\n", "<br />"|safe) }}
+                    </p>
+                  </div>
+                  <h3>Accessibilité</h3>
+                  <div class="fs-6">
+                    <p class="mb-1">
+                      <span class="fw-bold">Accessible aux handicaps auditifs :</span> {{ offer.audioDisabilityCompliant | format_bool("Non renseigné") }}
+                    </p>
+                    <p class="mb-1">
+                      <span class="fw-bold">Accessible aux handicaps mentaux :</span> {{ offer.mentalDisabilityCompliant | format_bool("Non renseigné") }}
+                    </p>
+                    <p class="mb-1">
+                      <span class="fw-bold">Accessible aux handicaps moteurs :</span> {{ offer.motorDisabilityCompliant | format_bool("Non renseigné") }}
+                    </p>
+                    <p class="mb-1">
+                      <span class="fw-bold">Accessible aux handicaps visuels :</span> {{ offer.visualDisabilityCompliant | format_bool("Non renseigné") }}
+                    </p>
+                  </div>
+                </div>
+                <div class="col-sm-2">
+                  {% if offer.image %}
+                    <img class="d-block"
+                         src="{{ offer.image.url }}" />
+                    {% if offer.image.credit %}Crédits: {{ offer.image.credit }}{% endif %}
+                  {% else %}
+                    <div class="empty-offer-image">
+                      <p>Pas d’image</p>
+                    </div>
+                  {% endif %}
+                </div>
+              </div>
+            </div>
+          {% endcall %}
         {% endcall %}
       </div>
     </div>
     {% if has_permission("MANAGE_OFFERS") %}
       {% for stock_id in editable_stock_ids %}
-        {{ build_lazy_modal(url_for('backoffice_web.offer.get_offer_stock_edit_form', offer_id=offer.id, stock_id=stock_id), "edit-offer-modal-" + stock_id|string) }}
+        {{ build_lazy_modal(url_for('backoffice_web.offer.get_offer_stock_edit_form', offer_id=offer.id, stock_id=stock_id) , "edit-offer-modal-" + stock_id|string) }}
       {% endfor %}
     {% endif %}
   </div>

@@ -1213,10 +1213,14 @@ class GetOfferDetailsTest(GetEndpointHelper):
 
     def test_get_detail_offer(self, legit_user, authenticated_client):
         offer = offers_factories.OfferFactory(
+            withdrawalDetails="Demander à la caisse",
             extraData={
+                "ean": "1234567891234",
                 "complianceScore": 55,
+                "author": "Author",
+                "editeur": "Editor",
                 "complianceReasons": ["stock_price", "offer_subcategoryid", "offer_description"],
-            }
+            },
         )
 
         url = url_for(self.endpoint, offer_id=offer.id, _external=True)
@@ -1240,6 +1244,110 @@ class GetOfferDetailsTest(GetEndpointHelper):
         assert "Date de dernière validation" not in card_text
         assert "Resynchroniser l'offre dans Algolia" in card_text
         assert "Modifier le lieu" not in card_text
+        assert "Demander à la caisse" in card_text
+        assert b"Auteur :</span> Author" in response.data
+        assert b"EAN :</span> 1234567891234" in response.data
+        assert "Éditeur :</span> Editor".encode() in response.data
+
+        assert html_parser.count_table_rows(response.data) == 0
+
+    def test_get_detail_event_offer(self, legit_user, authenticated_client):
+        offer = offers_factories.OfferFactory(
+            name="good movie",
+            subcategoryId=subcategories.SEANCE_CINE.id,
+            durationMinutes=133,
+            description="description",
+            idAtProvider="pouet provider",
+            isActive=True,
+            isDuo=False,
+            audioDisabilityCompliant=True,
+            mentalDisabilityCompliant=False,
+            motorDisabilityCompliant=None,
+            visualDisabilityCompliant=False,
+            extraData={
+                "cast": [
+                    "first actor",
+                    "second actor",
+                    "third actor",
+                ],
+                "type": "FEATURE_FILM",
+                "visa": "123456",
+                "genres": [
+                    "ADVENTURE",
+                    "ANIMATION",
+                    "DRAMA",
+                ],
+                "theater": {
+                    "allocine_room_id": "W1234",
+                    "allocine_movie_id": 654321,
+                },
+                "companies": [
+                    {
+                        "company": {
+                            "name": "Company1 Name",
+                        },
+                        "activity": "InternationalDistributionExports",
+                    },
+                    {
+                        "company": {
+                            "name": "Company2 Name",
+                        },
+                        "activity": "Distribution",
+                    },
+                    {
+                        "company": {
+                            "name": "Company3 Name",
+                        },
+                        "activity": "Production",
+                    },
+                    {
+                        "company": {"name": "Company4 Name"},
+                        "activity": "Production",
+                    },
+                    {
+                        "company": {"name": "Company5 Name"},
+                        "activity": "PrAgency",
+                    },
+                ],
+                "countries": [
+                    "Never Land",
+                ],
+                "releaseDate": "2023-04-12",
+                "stageDirector": "Georges Méliès",
+                "diffusionVersion": "VO",
+                "performer": "John Doe",
+            },
+        )
+
+        url = url_for(self.endpoint, offer_id=offer.id, _external=True)
+
+        response = authenticated_client.get(url)
+        assert response.status_code == 200
+
+        cards_text = html_parser.extract_cards_text(response.data)
+        assert len(cards_text) == 1
+        card_text = cards_text[0]
+        assert f"Offer ID : {offer.id}" in card_text
+        assert "Catégorie : Cinéma" in card_text
+        assert "Sous-catégorie : Séance de cinéma " in card_text
+        assert "Genres : ADVENTURE, ANIMATION, DRAMA " in card_text
+        assert "Statut : Épuisée" in card_text
+        assert "État : Validée" in card_text
+        assert "Structure : Le Petit Rintintin Management" in card_text
+        assert "Lieu : Le Petit Rintintin" in card_text
+        assert "Utilisateur de la dernière validation" not in card_text
+        assert "Date de dernière validation" not in card_text
+        assert "Resynchroniser l'offre dans Algolia" in card_text
+        assert "Modifier le lieu" not in card_text
+        assert b"Identifiant chez le fournisseur :</span> pouet provider" in response.data
+        assert b"Langue :</span> VO" in response.data
+        assert "Durée :</span> 133 minutes".encode() in response.data
+        assert b"Accessible aux handicaps auditifs :</span> Oui" in response.data
+        assert b"Accessible aux handicaps mentaux :</span> Non" in response.data
+        assert "Accessible aux handicaps moteurs :</span> Non renseigné".encode() in response.data
+        assert b"Accessible aux handicaps visuels :</span> Non" in response.data
+        assert b"Description :</span> description" in response.data
+        assert "Interprète :</span> John Doe".encode() in response.data
 
         assert html_parser.count_table_rows(response.data) == 0
 
@@ -1282,14 +1390,18 @@ class GetOfferDetailsTest(GetEndpointHelper):
         assert f"Date de dernière validation : {format_date(validation_date, '%d/%m/%Y à %Hh%M')}" in card_text
 
     def test_get_offer_details_with_one_expired_stock(self, legit_user, authenticated_client):
-        offer = offers_factories.OfferFactory()
+        offer = offers_factories.OfferFactory(subcategoryId=subcategories.SEANCE_CINE.id)
 
         expired_stock = offers_factories.EventStockFactory(
             offer=offer, beginningDatetime=datetime.datetime.utcnow() - datetime.timedelta(hours=1), price=6.66
         )
 
+        query_count = self.expected_num_queries
+        query_count += 1  # _get_editable_stock
+        query_count += 1  # check_can_move_event_offer
+
         url = url_for(self.endpoint, offer_id=offer.id, _external=True)
-        with assert_num_queries(self.expected_num_queries):
+        with assert_num_queries(query_count):
             response = authenticated_client.get(url)
             assert response.status_code == 200
 
@@ -1302,7 +1414,7 @@ class GetOfferDetailsTest(GetEndpointHelper):
         assert stocks_rows[0]["Date / Heure"] == format_date(expired_stock.beginningDatetime, "%d/%m/%Y à %Hh%M")
 
     def test_get_offer_details_with_two_expired_stocks(self, legit_user, authenticated_client):
-        offer = offers_factories.OfferFactory()
+        offer = offers_factories.OfferFactory(subcategoryId=subcategories.SEANCE_CINE.id)
 
         expired_stock_1 = offers_factories.EventStockFactory(
             offer=offer,
@@ -1317,8 +1429,12 @@ class GetOfferDetailsTest(GetEndpointHelper):
             beginningDatetime=datetime.datetime.utcnow() - datetime.timedelta(hours=1),
         )
 
+        query_count = self.expected_num_queries
+        query_count += 1  # _get_editable_stock
+        query_count += 1  # check_can_move_event_offer
+
         url = url_for(self.endpoint, offer_id=offer.id, _external=True)
-        with assert_num_queries(self.expected_num_queries):
+        with assert_num_queries(query_count):
             response = authenticated_client.get(url)
             assert response.status_code == 200
 
@@ -1349,12 +1465,15 @@ class GetOfferDetailsTest(GetEndpointHelper):
     def test_get_offer_details_with_one_bookable_stock(
         self, legit_user, authenticated_client, quantity, booked_quantity, expected_remaining
     ):
-        offer = offers_factories.OfferFactory()
-
+        offer = offers_factories.OfferFactory(subcategoryId=subcategories.SEANCE_CINE.id)
         stock = offers_factories.EventStockFactory(offer=offer, quantity=quantity, dnBookedQuantity=booked_quantity)
 
+        query_count = self.expected_num_queries
+        query_count += 1  # _get_editable_stock
+        query_count += 3  # check_can_move_event_offer
+
         url = url_for(self.endpoint, offer_id=offer.id, _external=True)
-        with assert_num_queries(self.expected_num_queries):
+        with assert_num_queries(query_count):
             response = authenticated_client.get(url)
             assert response.status_code == 200
 
