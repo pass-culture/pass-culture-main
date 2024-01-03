@@ -10,7 +10,7 @@ const WithdrawalReminder = () => {
         {
           href: CGU_URL,
           linkTitle: "Consulter les Conditions Générales d'Utilisation",
-          'aria-label': 'Nouvelle fenêtre',
+          svgAlt: 'Nouvelle fenêtre',
         },
       ]}
       type="notification-info"

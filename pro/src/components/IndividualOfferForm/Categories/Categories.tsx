@@ -180,8 +180,8 @@ const Categories = ({
               text: 'Quelles catégories choisir ?',
               target: '_blank',
               rel: 'noopener noreferrer',
-              'aria-label': 'Nouvelle fenêtre',
             }}
+            svgAlt="Nouvelle fenêtre"
           >
             Une sélection précise de vos catégories permettra au grand public de
             facilement trouver votre offre. Une fois validées, vous ne pourrez

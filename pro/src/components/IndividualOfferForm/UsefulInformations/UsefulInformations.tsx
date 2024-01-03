@@ -79,12 +79,11 @@ const UsefulInformations = ({
             link={{
               isExternal: true,
               to: 'https://aide.passculture.app/hc/fr/articles/4413389597329--Acteurs-Culturels-Quelles-modalit%C3%A9s-de-retrait-indiquer-pour-ma-structure-',
-              text: 'En savoir plus',
-              'aria-label':
-                'en savoir plus sur les modalités de retrait (nouvelle fenêtre)',
+              text: 'Quelles modalités de retrait choisir ?',
               target: '_blank',
               rel: 'noopener noreferrer',
             }}
+            svgAlt="Nouvelle fenêtre"
           >
             {isVenueVirtual
               ? 'Indiquez ici tout ce qui peut être utile au bénéficiaire pour le retrait de l’offre.'

@@ -438,7 +438,9 @@ describe('IndividualOffer section: UsefulInformations', () => {
         const infoBox = screen.getByText(
           'Indiquez ici tout ce qui peut être utile au bénéficiaire pour le retrait de l’offre. En renseignant ces informations depuis votre page lieu, elles s’appliqueront par défaut à toutes vos offres.'
         )
-        const infoLink = screen.getByText('En savoir plus')
+        const infoLink = screen.getByText(
+          'Quelles modalités de retrait choisir ?'
+        )
         expect(infoBox).toBeInTheDocument()
         expect(infoLink).toHaveAttribute(
           'href',
@@ -459,7 +461,9 @@ describe('IndividualOffer section: UsefulInformations', () => {
         const infoBoxWithdrawal = screen.getByText(
           'Indiquez ici tout ce qui peut être utile au bénéficiaire pour le retrait de l’offre.'
         )
-        const infoLinkWithdrawal = screen.getByText('En savoir plus')
+        const infoLinkWithdrawal = screen.getByText(
+          'Quelles modalités de retrait choisir ?'
+        )
         expect(infoBoxWithdrawal).toBeInTheDocument()
         expect(infoLinkWithdrawal).toHaveAttribute(
           'href',
