@@ -2,6 +2,7 @@ from pcapi.sandboxes.scripts.creators.industrial.create_industrial_admin_users i
 from pcapi.sandboxes.scripts.creators.industrial.create_industrial_app_users import *
 from pcapi.sandboxes.scripts.creators.industrial.create_industrial_bank_accounts import create_industrial_bank_accounts
 from pcapi.sandboxes.scripts.creators.industrial.create_industrial_bookings import *
+from pcapi.sandboxes.scripts.creators.industrial.create_industrial_complex_offers import create_complex_offers
 from pcapi.sandboxes.scripts.creators.industrial.create_industrial_criterion import (
     associate_criterion_to_one_offer_with_mediation,
 )
@@ -96,6 +97,8 @@ def save_industrial_sandbox() -> None:
     associate_criterion_to_one_offer_with_mediation(offers_by_name, criteria_by_name)
 
     create_industrial_bookings(offers_by_name, users_by_name)
+
+    create_complex_offers(offerers_by_name)
 
     create_eac_data()
 
