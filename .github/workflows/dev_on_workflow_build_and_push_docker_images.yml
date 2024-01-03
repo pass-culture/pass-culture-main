@@ -81,7 +81,7 @@ jobs:
         with:
           driver: docker
       - name: "Build and push pcapi image"
-        uses: docker/build-push-action@v2
+        uses: docker/build-push-action@v5
         if: inputs.pcapi == true
         with:
           context: api
@@ -89,7 +89,7 @@ jobs:
           target: pcapi
           tags: europe-west1-docker.pkg.dev/passculture-infra-prod/pass-culture-artifact-registry/pcapi:${{ inputs.tag }}
       - name: "Build and push pcapi-console image"
-        uses: docker/build-push-action@v2
+        uses: docker/build-push-action@v5
         if: inputs.console == true
         with:
           context: api
@@ -97,7 +97,7 @@ jobs:
           target: pcapi-console
           tags: europe-west1-docker.pkg.dev/passculture-infra-prod/pass-culture-artifact-registry/pcapi-console:${{ inputs.tag }}
       - name: "Build and push pcapi-tests image"
-        uses: docker/build-push-action@v2
+        uses: docker/build-push-action@v5
         if: inputs.tests == true
         with:
           context: api
