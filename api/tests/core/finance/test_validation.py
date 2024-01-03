@@ -7,6 +7,7 @@ from pcapi.core.finance import exceptions
 from pcapi.core.finance import factories
 from pcapi.core.finance import models
 from pcapi.core.finance import validation
+from pcapi.core.offerers import factories as offerers_factories
 
 
 class CustomReimbursementRuleValidationTest:
@@ -17,6 +18,17 @@ class CustomReimbursementRuleValidationTest:
         kwargs.setdefault("subcategories", [])
         kwargs.setdefault("timespan", (tomorrow, None))
         return models.CustomReimbursementRule(**kwargs)
+
+    def test_check_venue_has_siret(self):
+        venue = offerers_factories.VenueFactory()
+        rule = self._make_rule(venueId=venue.id)
+        validation.validate_reimbursement_rule(rule)  # should not raise
+
+        venue = offerers_factories.VenueWithoutSiretFactory()
+        rule = self._make_rule(venueId=venue.id)
+        with pytest.raises(exceptions.NotPricingPointVenueForReimbursementRule) as exc:
+            validation.validate_reimbursement_rule(rule)
+            assert str(exc) == f"Le lieu {venue.id} - {venue.name} doit être un point de valorisation."
 
     def test_check_subcategories(self):
         rule = self._make_rule(subcategories=[])

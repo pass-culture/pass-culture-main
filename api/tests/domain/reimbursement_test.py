@@ -10,6 +10,7 @@ from pcapi.core.categories import subcategories_v2 as subcategories
 import pcapi.core.educational.factories as educational_factories
 import pcapi.core.finance.factories as finance_factories
 import pcapi.core.finance.models as finance_models
+import pcapi.core.offerers.factories as offerers_factories
 import pcapi.core.offers.factories as offers_factories
 import pcapi.core.users.factories as users_factories
 from pcapi.domain import reimbursement
@@ -357,67 +358,105 @@ class CustomRuleFinderTest:
     def test_offer_rule(self):
         yesterday = datetime.utcnow() - timedelta(days=1)
         far_in_the_past = datetime.utcnow() - timedelta(days=800)
-        booking1 = bookings_factories.UsedBookingFactory()
-        offer = booking1.stock.offer
-        booking2 = bookings_factories.UsedBookingFactory(stock=booking1.stock, dateUsed=far_in_the_past)
-        booking3 = bookings_factories.UsedBookingFactory()
+        booking = bookings_factories.UsedBookingFactory(stock__offer__venue__pricing_point="self")
+        offer = booking.stock.offer
+        old_booking = bookings_factories.UsedBookingFactory(stock=booking.stock, dateUsed=far_in_the_past)
+        unrelated_booking = bookings_factories.UsedBookingFactory(stock__offer__venue__pricing_point="self")
         rule = finance_factories.CustomReimbursementRuleFactory(offer=offer, timespan=(yesterday, None))
+        finder = reimbursement.CustomRuleFinder()
+        assert finder.get_rule(booking) == rule
+        assert finder.get_rule(old_booking) is None  # outside `rule.timespan`
+        assert finder.get_rule(unrelated_booking) is None  # no rule for this bookings's offer
+
+    def test_venue_rule(self):
+        yesterday = datetime.utcnow() - timedelta(days=1)
+        far_in_the_past = datetime.utcnow() - timedelta(days=800)
+        pricing_point = offerers_factories.VenueFactory(pricing_point="self")
+        linked_venue = offerers_factories.VenueFactory(pricing_point=pricing_point)
+
+        pricing_point_booking = bookings_factories.UsedBookingFactory(stock__offer__venue=pricing_point)
+        related_booking = bookings_factories.UsedBookingFactory(stock__offer__venue=linked_venue)
+        old_booking = bookings_factories.UsedBookingFactory(stock=pricing_point_booking.stock, dateUsed=far_in_the_past)
+        unrelated_booking = bookings_factories.UsedBookingFactory(stock__offer__venue__pricing_point="self")
+        rule = finance_factories.CustomReimbursementRuleFactory(venue=pricing_point, timespan=(yesterday, None))
 
         finder = reimbursement.CustomRuleFinder()
-        assert finder.get_rule(booking1) == rule
-        assert finder.get_rule(booking2) is None  # outside `rule.timespan`
-        assert finder.get_rule(booking3) is None  # no rule for this offer
+        assert finder.get_rule(pricing_point_booking) == rule
+        assert finder.get_rule(related_booking) == rule
+        assert finder.get_rule(old_booking) is None  # outside `rule.timespan`
+        assert finder.get_rule(unrelated_booking) is None  # no rule for this bookings's venue
 
     def test_offerer_without_category_rule(self):
         yesterday = datetime.utcnow() - timedelta(days=1)
         far_in_the_past = datetime.utcnow() - timedelta(days=800)
-        booking1 = bookings_factories.UsedBookingFactory()
-        offerer = booking1.offerer
-        booking2 = bookings_factories.UsedBookingFactory(offerer=offerer, dateUsed=far_in_the_past)
-        booking3 = bookings_factories.UsedBookingFactory()
+        booking = bookings_factories.UsedBookingFactory(stock__offer__venue__pricing_point="self")
+        offerer = booking.offerer
+        old_booking = bookings_factories.UsedBookingFactory(
+            offerer=offerer, stock__offer__venue__pricing_point=booking.venue, dateUsed=far_in_the_past
+        )
+        unrelated_booking = bookings_factories.UsedBookingFactory(stock__offer__venue__pricing_point="self")
         rule = finance_factories.CustomReimbursementRuleFactory(offerer=offerer, timespan=(yesterday, None))
 
         finder = reimbursement.CustomRuleFinder()
-        assert finder.get_rule(booking1) == rule
-        assert finder.get_rule(booking2) is None  # outside `rule.timespan`
-        assert finder.get_rule(booking3) is None  # no rule for this offerer
+        assert finder.get_rule(booking) == rule
+        assert finder.get_rule(old_booking) is None  # outside `rule.timespan`
+        assert finder.get_rule(unrelated_booking) is None  # no rule for this bookings's offerer
 
     def test_offerer_with_category_rule(self):
         yesterday = datetime.utcnow() - timedelta(days=1)
         far_in_the_past = datetime.utcnow() - timedelta(days=800)
-        booking1 = bookings_factories.UsedBookingFactory(stock__offer__subcategoryId=subcategories.FESTIVAL_CINE.id)
-        offerer = booking1.offerer
-        booking2 = bookings_factories.UsedBookingFactory(
-            stock__offer__subcategoryId=subcategories.LIVRE_PAPIER.id, stock__offer__venue__managingOfferer=offerer
+        offerer_booking = bookings_factories.UsedBookingFactory(
+            stock__offer__subcategoryId=subcategories.FESTIVAL_CINE.id, stock__offer__venue__pricing_point="self"
         )
-        booking3 = bookings_factories.UsedBookingFactory(
-            offerer=offerer, stock__offer__subcategoryId=subcategories.FESTIVAL_CINE.id, dateUsed=far_in_the_past
+        offerer = offerer_booking.offerer
+        other_subcategory_booking = bookings_factories.UsedBookingFactory(
+            stock__offer__subcategoryId=subcategories.LIVRE_PAPIER.id,
+            stock__offer__venue__managingOfferer=offerer,
+            stock__offer__venue=offerer_booking.venue,
         )
-        booking4 = bookings_factories.UsedBookingFactory()
+        old_booking = bookings_factories.UsedBookingFactory(
+            offerer=offerer,
+            stock__offer__venue=offerer_booking.venue,
+            stock__offer__subcategoryId=subcategories.FESTIVAL_CINE.id,
+            dateUsed=far_in_the_past,
+        )
+        unrelated_booking = bookings_factories.UsedBookingFactory(stock__offer__venue__pricing_point="self")
         rule = finance_factories.CustomReimbursementRuleFactory(
             offerer=offerer, subcategories=[subcategories.FESTIVAL_CINE.id], timespan=(yesterday, None)
         )
 
         finder = reimbursement.CustomRuleFinder()
-        assert finder.get_rule(booking1) == rule
-        assert finder.get_rule(booking2) is None  # wrong category
-        assert finder.get_rule(booking3) is None  # outside `rule.timespan`
-        assert finder.get_rule(booking4) is None  # no rule for this offerer
+        assert finder.get_rule(offerer_booking) == rule
+        assert finder.get_rule(other_subcategory_booking) is None  # wrong category
+        assert finder.get_rule(old_booking) is None  # outside `rule.timespan`
+        assert finder.get_rule(unrelated_booking) is None  # no rule for this bookings's offerer
 
-    def test_rule_offer_rule_priority(self):
+    def test_rule_priorities(self):
         yesterday = datetime.utcnow() - timedelta(days=1)
         far_in_the_past = datetime.utcnow() - timedelta(days=800)
-        yesterday_booking = bookings_factories.UsedBookingFactory()
-        offerer = yesterday_booking.offerer
-        offer = yesterday_booking.stock.offer
+        pricing_point = offerers_factories.VenueFactory(pricing_point="self")
+        offerer = pricing_point.managingOfferer
+        yesterday_booking = bookings_factories.UsedBookingFactory(stock__offer__venue=pricing_point)
         ancient_booking = bookings_factories.UsedBookingFactory(stock=yesterday_booking.stock, dateUsed=far_in_the_past)
-        another_booking = bookings_factories.UsedBookingFactory()
-        offer_rule = finance_factories.CustomReimbursementRuleFactory(offer=offer, timespan=(yesterday, None))
+        another_booking = bookings_factories.UsedBookingFactory(stock__offer__venue__pricing_point="self")
+
+        venue_rule = finance_factories.CustomReimbursementRuleFactory(venue=pricing_point, timespan=(yesterday, None))
         _offerer_rule = finance_factories.CustomReimbursementRuleFactory(offerer=offerer, timespan=(yesterday, None))
 
         finder = reimbursement.CustomRuleFinder()
 
-        # Custom rule on Offer has priority over rule on Offerer
+        # Custom rule on Venue has priority over rule on Offerer
+        assert finder.get_rule(yesterday_booking) == venue_rule
+        assert finder.get_rule(ancient_booking) is None  # outside `rule.timespan`
+        assert finder.get_rule(another_booking) is None  # no rule for this venue
+
+        offer_rule = finance_factories.CustomReimbursementRuleFactory(
+            offer=yesterday_booking.stock.offer, timespan=(yesterday, None)
+        )
+
+        finder = reimbursement.CustomRuleFinder()
+
+        # Custom rule on Offer has priority over rule on Venue and Offerer
         assert finder.get_rule(yesterday_booking) == offer_rule
         assert finder.get_rule(ancient_booking) is None  # outside `rule.timespan`
         assert finder.get_rule(another_booking) is None  # no rule for this offer

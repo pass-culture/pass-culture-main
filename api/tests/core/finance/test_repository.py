@@ -216,7 +216,7 @@ class HasActiveOrFutureCustomRemibursementRuleTest:
 class FindAllOffererPaymentsTest:
     def test_should_not_return_payment_info_with_error_status(self):
         # Given
-        payment = factories.PaymentFactory()
+        payment = factories.PaymentFactory(booking__stock__offer__venue__pricing_point="self")
         offerer = payment.booking.offerer
         factories.PaymentStatusFactory(
             payment=payment,
@@ -233,7 +233,7 @@ class FindAllOffererPaymentsTest:
 
     def test_should_return_one_payment_info_with_sent_status(self):
         # Given
-        payment = factories.PaymentFactory()
+        payment = factories.PaymentFactory(booking__stock__offer__venue__pricing_point="self")
         for status in (
             models.TransactionStatus.ERROR,
             models.TransactionStatus.RETRY,
@@ -258,7 +258,9 @@ class FindAllOffererPaymentsTest:
             educationalRedactor__lastName="Leprof",
         )
         offerer = collective_booking.offerer
-        payment = factories.PaymentFactory(collectiveBooking=collective_booking)
+        payment = factories.PaymentFactory(
+            collectiveBooking=collective_booking, booking__stock__offer__venue__pricing_point="self"
+        )
         factories.PaymentStatusFactory(
             payment=payment,
             status=models.TransactionStatus.SENT,
@@ -277,7 +279,7 @@ class FindAllOffererPaymentsTest:
 
     def test_should_return_last_matching_status_based_on_date_for_each_payment(self):
         # Given
-        stock = offers_factories.ThingStockFactory()
+        stock = offers_factories.ThingStockFactory(offer__venue__pricing_point="self")
         offerer = stock.offer.venue.managingOfferer
         booking1 = bookings_factories.UsedBookingFactory(
             stock=stock,
@@ -321,10 +323,14 @@ class FindAllOffererPaymentsTest:
         # Given
         offerer = offerers_factories.OffererFactory()
         factories.PaymentStatusFactory(
-            payment__booking__stock__offer__venue__managingOfferer=offerer, status=models.TransactionStatus.SENT
+            payment__booking__stock__offer__venue__managingOfferer=offerer,
+            payment__booking__stock__offer__venue__pricing_point="self",
+            status=models.TransactionStatus.SENT,
         )
         factories.PaymentStatusFactory(
-            payment__booking__stock__offer__venue__managingOfferer=offerer, status=models.TransactionStatus.SENT
+            payment__booking__stock__offer__venue__managingOfferer=offerer,
+            payment__booking__stock__offer__venue__pricing_point="self",
+            status=models.TransactionStatus.SENT,
         )
 
         # When
@@ -337,8 +343,8 @@ class FindAllOffererPaymentsTest:
     def test_should_return_payments_filtered_by_venue(self):
         # Given
         offerer = offerers_factories.OffererFactory()
-        venue_1 = offerers_factories.VenueFactory(managingOfferer=offerer)
-        venue_2 = offerers_factories.VenueFactory(managingOfferer=offerer)
+        venue_1 = offerers_factories.VenueFactory(managingOfferer=offerer, pricing_point="self")
+        venue_2 = offerers_factories.VenueFactory(managingOfferer=offerer, pricing_point="self")
 
         payment_1 = factories.PaymentFactory(booking__stock__offer__venue=venue_1)
         factories.PaymentStatusFactory(payment=payment_1, status=models.TransactionStatus.SENT)
@@ -360,7 +366,7 @@ class FindAllOffererPaymentsTest:
             datetime.date.today() + datetime.timedelta(days=1), datetime.datetime.min.time()
         ) + datetime.timedelta(hours=9)
         offerer = offerers_factories.OffererFactory()
-        venue_1 = offerers_factories.VenueFactory(managingOfferer=offerer)
+        venue_1 = offerers_factories.VenueFactory(managingOfferer=offerer, pricing_point="self")
         payment_1 = factories.PaymentFactory(booking__stock__offer__venue=venue_1)
         factories.PaymentStatusFactory(date=tomorrow_at_nine, payment=payment_1, status=models.TransactionStatus.SENT)
         payment_2 = factories.PaymentFactory(booking__stock__offer__venue=venue_1)

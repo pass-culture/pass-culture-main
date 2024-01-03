@@ -1,6 +1,7 @@
 from datetime import date
 from datetime import timedelta
 
+from flask import flash
 from flask_wtf import FlaskForm
 import wtforms
 
@@ -20,6 +21,13 @@ class GetCustomReimbursementRulesListForm(FlaskForm):
         validate_choice=False,
         endpoint="backoffice_web.autocomplete_offerers",
     )
+    venue = fields.PCTomSelectField(
+        "Points de valorisation",
+        multiple=True,
+        choices=[],
+        validate_choice=False,
+        endpoint="backoffice_web.autocomplete_venues",
+    )
     limit = fields.PCSelectField(
         "Nombre maximum",
         choices=((25, "25"), (50, "50"), (100, "100")),
@@ -33,6 +41,7 @@ class GetCustomReimbursementRulesListForm(FlaskForm):
             (
                 self.q.data,
                 self.offerer.data,
+                self.venue.data,
             )
         )
 
@@ -47,7 +56,13 @@ class CreateCustomReimbursementRuleForm(FlaskForm):
         choices=[],
         validate_choice=False,
         endpoint="backoffice_web.autocomplete_offerers",
-        validators=[wtforms.validators.InputRequired("Information obligatoire")],
+    )
+    venue = fields.PCTomSelectField(
+        "Point de valorisation",
+        multiple=False,
+        choices=[],
+        validate_choice=False,
+        endpoint="backoffice_web.autocomplete_pricing_points",
     )
     subcategories = fields.PCSelectMultipleField(
         "Sous-catégories", choices=[(s.id, s.pro_label) for s in subcategories_v2.ALL_SUBCATEGORIES]
@@ -81,6 +96,21 @@ class CreateCustomReimbursementRuleForm(FlaskForm):
             raise wtforms.ValidationError("Ne peut pas commencer avant demain")
 
         return start_date
+
+    def validate(self, extra_validators: dict | None = None) -> bool:
+        offerer_id = self._fields["offerer"].data[0]
+        venue_id = self._fields["venue"].data[0]
+        print(offerer_id)
+        print(venue_id)
+
+        if not offerer_id and not venue_id:
+            flash("Il faut obligatoirement renseigner une structure ou un lieu", "warning")
+            return False
+
+        if offerer_id and venue_id:
+            flash("Un tarif dérogatoire ne peut pas concerner un lieu et une structure en même temps", "warning")
+            return False
+        return super().validate(extra_validators)
 
 
 class EditCustomReimbursementRuleForm(FlaskForm):

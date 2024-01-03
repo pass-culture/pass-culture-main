@@ -76,10 +76,10 @@
      class="link-primary"
      target="_blank">{{ offerer.name }} <i class="bi bi-box-arrow-up-right"></i></a>
 {% endmacro %}
-{% macro build_venue_name_to_pc_pro_link(venue, public_name=true) %}
+{% macro build_venue_name_to_pc_pro_link(venue, public_name=true, siret=false) %}
   <a href="{{ venue | pc_pro_venue_link }}"
      class="link-primary"
-     target="_blank">{{ (public_name and venue.publicName) or venue.name }} <i class="bi bi-box-arrow-up-right"></i></a>
+     target="_blank">{{ ((public_name and venue.publicName) or venue.name) + ((" - " + venue.siret) if siret else "") }} <i class="bi bi-box-arrow-up-right"></i></a>
 {% endmacro %}
 {% macro build_offer_name_to_pc_pro_link(offer) %}
   <a href="{{ offer | pc_pro_offer_link }}"

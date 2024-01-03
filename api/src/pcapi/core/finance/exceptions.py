@@ -29,6 +29,10 @@ class UnknownSubcategoryForReimbursementRule(ReimbursementRuleValidationError):
     pass
 
 
+class NotPricingPointVenueForReimbursementRule(ReimbursementRuleValidationError):
+    pass
+
+
 class DepositTypeAlreadyGrantedException(ApiErrors):
     def __init__(self, deposit_type: models.DepositType) -> None:
         super().__init__({"user": [f'Cet utilisateur a déjà été crédité de la subvention "{deposit_type.name}".']})
