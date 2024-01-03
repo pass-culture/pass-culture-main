@@ -901,8 +901,7 @@ class GenerateCashflowsTest:
         assert len(pricing2.cashflows) == 1
         assert pricing11.cashflows[0].amount == -2500
         assert pricing11.cashflows[0].bankInformation == bank_info1
-        assert pricing11.cashflows[0]._bankInformationId == bank_info1.id
-        assert pricing11.cashflows[0]._bankAccountId == bank_info1.id
+        assert pricing11.cashflows[0].bankInformationId == bank_info1.id
         assert pricing2.cashflows[0].amount == -3000
 
         assert not pricing_future_event.cashflows
