@@ -9,6 +9,7 @@ from pcapi.core.offerers import models as offerers_models
 from pcapi.core.offers import factories as offers_factories
 from pcapi.core.providers import factories as providers_factory
 from pcapi.core.providers.titelive_gtl import GTLS
+from pcapi.core.users import factories as users_factories
 from pcapi.domain.movie_types import MOVIE_TYPES
 from pcapi.domain.music_types import music_types
 from pcapi.domain.show_types import show_types
@@ -44,6 +45,7 @@ def save_test_cases_sandbox() -> None:
     create_venue_labels(sandbox=True)
     create_offers_with_more_extra_data()
     create_venues_with_gmaps_image()
+    create_app_beneficiary()
 
 
 def create_offers_with_gtls() -> None:
@@ -537,4 +539,13 @@ def create_venues_with_gmaps_image() -> None:
             description=Fake.paragraph(nb_sentences=5, variable_nb_sentences=True),
             url=None,
         )
+    )
+
+
+def create_app_beneficiary() -> None:
+    users_factories.BeneficiaryGrant18Factory(
+        email="dev-tests-e2e@passculture.team",
+        firstName=Fake.first_name(),
+        lastName=Fake.last_name(),
+        needsToFillCulturalSurvey=False,
     )
