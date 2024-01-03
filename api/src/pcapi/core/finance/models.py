@@ -15,7 +15,6 @@ from uuid import UUID
 import psycopg2.extras
 import sqlalchemy as sqla
 import sqlalchemy.dialects.postgresql as sqla_psql
-from sqlalchemy.ext.hybrid import hybrid_property
 import sqlalchemy.ext.mutable as sqla_mutable
 import sqlalchemy.orm as sqla_orm
 
@@ -652,17 +651,13 @@ class Cashflow(Base, Model):
     creationDate: datetime.datetime = sqla.Column(sqla.DateTime, nullable=False, server_default=sqla.func.now())
     status: CashflowStatus = sqla.Column(db_utils.MagicEnum(CashflowStatus), index=True, nullable=False)
 
-    # We denormalize `reimbursementPoint.bankAccountId` here because it may
+    # We denormalize `reimbursementPoint.bankInformationId` here because it may
     # change. Here we want to store the bank account that was used at
     # the time the cashflow was created.
-    _bankAccountId: int = sqla.Column(
-        "bankAccountId", sqla.BigInteger, sqla.ForeignKey("bank_information.id"), index=True, nullable=True
-    )
-    _bankAccount: BankInformation = sqla_orm.relationship(BankInformation, foreign_keys=[_bankAccountId])
-    _bankInformationId: int = sqla.Column(
+    bankInformationId: int = sqla.Column(
         "bankInformationId", sqla.BigInteger, sqla.ForeignKey("bank_information.id"), index=True, nullable=True
     )
-    _bankInformation: BankInformation = sqla_orm.relationship(BankInformation, foreign_keys=[_bankInformationId])
+    bankInformation: BankInformation = sqla_orm.relationship(BankInformation, foreign_keys=[bankInformationId])
     reimbursementPointId = sqla.Column(sqla.BigInteger, sqla.ForeignKey("venue.id"), index=True, nullable=False)
     reimbursementPoint: sqla_orm.Mapped["offerers_models.Venue"] = sqla_orm.relationship(
         "Venue", foreign_keys=[reimbursementPointId]
@@ -686,33 +681,6 @@ class Cashflow(Base, Model):
     )
 
     __table_args__ = (sqla.CheckConstraint('("amount" != 0)', name="non_zero_amount_check"),)
-
-    def __init__(
-        self, bankInformationId: int | None = None, bankInformation: BankInformation | None = None, **kwargs: typing.Any
-    ) -> None:
-        if bankInformationId:
-            self.bankInformationId = bankInformationId  # type: ignore [method-assign]
-        if bankInformation:
-            self.bankInformation = bankInformation  # type: ignore [method-assign]
-        super().__init__(**kwargs)
-
-    @hybrid_property
-    def bankInformationId(self) -> int:
-        return self._bankAccountId
-
-    @bankInformationId.setter  # type: ignore [no-redef]
-    def bankInformationId(self, value: int) -> None:
-        self._bankAccountId = value
-        self._bankInformationId = value
-
-    @hybrid_property
-    def bankInformation(self) -> BankInformation:
-        return self._bankAccount
-
-    @bankInformation.setter  # type: ignore [no-redef]
-    def bankInformation(self, value: BankInformation) -> None:
-        self._bankAccount = value
-        self._bankInformation = value
 
 
 class CashflowLog(Base, Model):
