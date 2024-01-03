@@ -309,9 +309,30 @@ ALLOCINE_MOVIE_SHOWTIME_LIST = {
                         "type": "FEATURE_FILM",
                         "runtime": "PT0H21M0S",
                         "poster": {"url": "https://fr.web.img2.acsta.net/medias/nmedia/18/78/15/02/19447537.jpg"},
-                        "synopsis": "",
-                        "releases": [],
-                        "credits": {"edges": []},
+                        "synopsis": "Alors que la Première Guerre Mondiale a éclaté...",
+                        "releases": [
+                            {
+                                "name": "Released",
+                                "releaseDate": {"date": "1976-12-22"},
+                                "data": {
+                                    "tech": {
+                                        "auto_update_info": "Imported from AC_INT.dbo.EntityRelease from id [413873]"
+                                    },
+                                    "visa_number": "108245",
+                                },
+                                "certificate": None,
+                            }
+                        ],
+                        "credits": {
+                            "edges": [
+                                {
+                                    "node": {
+                                        "person": {"firstName": "Sacha", "lastName": "Guitry"},
+                                        "position": {"name": "DIRECTOR"},
+                                    }
+                                }
+                            ]
+                        },
                         "cast": {
                             "backlink": {
                                 "url": "https://www.allocine.fr/film/fichefilm-131136/casting/",
@@ -323,7 +344,50 @@ ALLOCINE_MOVIE_SHOWTIME_LIST = {
                         "genres": [],
                         "companies": [],
                     },
-                    "showtimes": [],
+                    "showtimes": [
+                        {
+                            "startsAt": "2023-12-18T14:00:00",
+                            "diffusionVersion": "LOCAL",
+                            "projection": ["DIGITAL"],
+                            "experience": None,
+                            "languages": ["FRENCH"],
+                        },
+                        {
+                            "startsAt": "2023-12-18T16:00:00",
+                            "diffusionVersion": "DUBBED",
+                            "projection": ["DIGITAL"],
+                            "experience": None,
+                            "languages": ["FRENCH"],
+                        },
+                        {
+                            "startsAt": "2023-12-18T16:00:00",
+                            "diffusionVersion": "ORIGINAL",
+                            "projection": ["DIGITAL"],
+                            "experience": None,
+                            "languages": ["FRENCH"],
+                        },
+                        {
+                            "startsAt": "2023-12-18T16:00:00",
+                            "diffusionVersion": "ORIGINAL",
+                            "projection": ["DIGITAL"],
+                            "experience": None,
+                            "languages": ["FRENCH"],
+                        },
+                        {
+                            "startsAt": "2023-12-19T20:00:00",
+                            "diffusionVersion": "LOCAL",
+                            "projection": ["DIGITAL"],
+                            "experience": "ECLAIR_COLOR",  # Not None
+                            "languages": ["FRENCH"],
+                        },
+                        {
+                            "startsAt": "2023-12-19T20:00:00",
+                            "diffusionVersion": "LOCAL",
+                            "projection": ["IMAX_3D"],  # Non-digital
+                            "experience": None,
+                            "languages": ["FRENCH"],
+                        },
+                    ],
                 },
             },
             {

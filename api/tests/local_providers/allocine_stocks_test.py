@@ -6,86 +6,48 @@ from unittest.mock import patch
 
 from freezegun import freeze_time
 import pytest
+import requests_mock
 
+from pcapi.connectors.api_allocine import ALLOCINE_API_URL
+from pcapi.connectors.serialization import allocine_serializers
 from pcapi.core.categories import subcategories_v2 as subcategories
 import pcapi.core.offerers.factories as offerers_factories
 import pcapi.core.offers.factories as offers_factories
 import pcapi.core.offers.models as offers_models
+from pcapi.core.providers.allocine_movie_list import synchronize_products
 import pcapi.core.providers.factories as providers_factories
+from pcapi.core.testing import TestContextDecorator
 from pcapi.local_providers import AllocineStocks
 from pcapi.repository import repository
+from pcapi.repository import transaction
 from pcapi.utils.human_ids import humanize
 
 import tests
+from tests.domain import fixtures
 
 
-MOVIE_INFO = {
-    "id": "TW92aWU6Mzc4MzI=",
-    "type": "FEATURE_FILM",
-    "internalId": 37832,
-    "backlink": {
-        "url": r"http:\/\/www.allocine.fr\/film\/fichefilm_gen_cfilm=37832.html",
-        "label": "Tous les d\u00e9tails du film sur AlloCin\u00e9",
-    },
-    "data": {"eidr": r"10.5240\/EF0C-7FB2-7D20-46D1-5C8D-E", "productionYear": 2001},
-    "title": "Les Contes de la m\u00e8re poule",
-    "originalTitle": "Les Contes de la m\u00e8re poule",
-    "runtime": "PT0H46M0S",
-    "poster": {"url": r"https:\/\/fr.web.img6.acsta.net\/medias\/nmedia\/00\/02\/32\/64\/69215979_af.jpg"},
-    "synopsis": "synopsis du film",
-    "releases": [
-        {
-            "name": "Released",
-            "releaseDate": {"date": "2001-10-03"},
-            "data": {"visa_number": "2009993528"},
-        }
-    ],
-    "credits": {
-        "edges": [
-            {
-                "node": {
-                    "person": {"firstName": "Farkhondeh", "lastName": "Torabi"},
-                    "position": {"name": "DIRECTOR"},
-                }
-            }
-        ]
-    },
-    "cast": {
-        "backlink": {
-            "url": r"http:\/\/www.allocine.fr\/film\/fichefilm-255951\/casting\/",
-            "label": "Casting complet du film sur AlloCin\u00e9",
-        },
-        "edges": [
-            {
-                "node": {
-                    "actor": {"firstName": "Chloë Grace", "lastName": "Moretz"},
-                    "role": "Kayla",
-                }
-            },
-            {"node": {"actor": None, "role": "Tom/Jerry"}},
-            {
-                "node": {
-                    "actor": {"firstName": "Michael", "lastName": "Peña"},
-                    "role": "Terence",
-                }
-            },
-        ],
-    },
-    "countries": [{"name": "Iran", "alpha3": "IRN"}],
-    "genres": ["ANIMATION", "FAMILY"],
-    "companies": [
-        {
-            "activity": "Distribution",
-            "company": {"name": "Warner Bros. France"},
-        },
-        {"activity": "Production", "company": {"name": "The Story Company"}},
-    ],
-}
+class needs_synchronized_movies(TestContextDecorator):
+    def enable(self) -> None:
+        with requests_mock.Mocker() as mock:
+            mock.get(
+                f"{ALLOCINE_API_URL}/movieList?after=",
+                json=fixtures.ALLOCINE_MOVIE_LIST_PAGE_1,
+            )
+            mock.get(
+                f"{ALLOCINE_API_URL}/movieList?after=YXJyYXljb25uZWN0aW9uOjQ5",
+                json=fixtures.ALLOCINE_MOVIE_LIST_PAGE_2,
+            )
+            synchronize_products()
+
+    def disable(self) -> None:
+        with transaction():
+            offers_models.Product.query.delete()
 
 
+@needs_synchronized_movies()
 class AllocineStocksTest:
     class InitTest:
-        @patch("pcapi.local_providers.allocine.allocine_stocks.get_movies_showtimes")
+        @patch("pcapi.connectors.api_allocine.get_movies_showtimes_from_allocine")
         @patch("pcapi.settings.ALLOCINE_API_KEY", "token")
         @pytest.mark.usefixtures("db_session")
         def test_should_call_allocine_api(self, mock_call_allocine_api, app):
@@ -106,28 +68,14 @@ class AllocineStocksTest:
             mock_call_allocine_api.assert_called_once_with(theater_token)
 
     class NextTest:
-        @patch("pcapi.local_providers.allocine.allocine_stocks.get_movies_showtimes")
+        @patch("pcapi.connectors.api_allocine.get_movies_showtimes_from_allocine")
         @patch("pcapi.settings.ALLOCINE_API_KEY", "token")
-        @freeze_time("2019-10-15 09:00:00")
+        @freeze_time("2023-12-15T9:00:00")
         @pytest.mark.usefixtures("db_session")
         def test_should_return_providable_infos_for_each_movie(self, mock_call_allocine_api, app):
             # Given
-            mock_call_allocine_api.return_value = iter(
-                [
-                    {
-                        "node": {
-                            "movie": MOVIE_INFO,
-                            "showtimes": [
-                                {
-                                    "startsAt": "2019-10-29T10:30:00",
-                                    "diffusionVersion": "DUBBED",
-                                    "projection": ["DIGITAL"],
-                                    "experience": None,
-                                }
-                            ],
-                        }
-                    }
-                ]
+            mock_call_allocine_api.return_value = allocine_serializers.AllocineMovieShowtimeListResponse.model_validate(
+                fixtures.ALLOCINE_MOVIE_SHOWTIME_LIST
             )
 
             venue = offerers_factories.VenueFactory(
@@ -145,47 +93,34 @@ class AllocineStocksTest:
             allocine_providable_infos = next(allocine_stocks_provider)
 
             # Then
-            assert len(allocine_providable_infos) == 2
+            assert len(allocine_providable_infos) == 5
 
             offer_providable_info = allocine_providable_infos[0]
             stock_providable_info = allocine_providable_infos[1]
 
             assert offer_providable_info.type == offers_models.Offer
-            assert offer_providable_info.id_at_providers == "TW92aWU6Mzc4MzI=%77567146400110"
-            assert offer_providable_info.new_id_at_provider == "TW92aWU6Mzc4MzI=%77567146400110"
-            assert offer_providable_info.date_modified_at_provider == datetime(year=2019, month=10, day=15, hour=9)
+            assert offer_providable_info.id_at_providers == "TW92aWU6MTMxMTM2%77567146400110"
+            assert offer_providable_info.new_id_at_provider == "TW92aWU6MTMxMTM2%77567146400110"
+            assert offer_providable_info.date_modified_at_provider == datetime(year=2023, month=12, day=15, hour=9)
 
             assert stock_providable_info.type == offers_models.Stock
-            assert stock_providable_info.id_at_providers == "TW92aWU6Mzc4MzI=%77567146400110#DUBBED/2019-10-29T10:30:00"
+            assert stock_providable_info.id_at_providers == "TW92aWU6MTMxMTM2%77567146400110#LOCAL/2023-12-18T14:00:00"
             assert (
-                stock_providable_info.new_id_at_provider == "TW92aWU6Mzc4MzI=%77567146400110#DUBBED/2019-10-29T10:30:00"
+                stock_providable_info.new_id_at_provider == "TW92aWU6MTMxMTM2%77567146400110#LOCAL/2023-12-18T14:00:00"
             )
-            assert stock_providable_info.date_modified_at_provider == datetime(year=2019, month=10, day=15, hour=9)
+            assert stock_providable_info.date_modified_at_provider == datetime(year=2023, month=12, day=15, hour=9)
 
 
+@needs_synchronized_movies()
 class UpdateObjectsTest:
     @patch("pcapi.local_providers.allocine.allocine_stocks.get_movie_poster")
-    @patch("pcapi.local_providers.allocine.allocine_stocks.get_movies_showtimes")
+    @patch("pcapi.connectors.api_allocine.get_movies_showtimes_from_allocine")
     @patch("pcapi.settings.ALLOCINE_API_KEY", "token")
     @pytest.mark.usefixtures("db_session")
     def test_should_create_one_offer_with_movie_info(self, mock_call_allocine_api, mock_api_poster):
         # Given
-        mock_call_allocine_api.return_value = iter(
-            [
-                {
-                    "node": {
-                        "movie": MOVIE_INFO,
-                        "showtimes": [
-                            {
-                                "startsAt": "2019-10-29T10:30:00",
-                                "diffusionVersion": "LOCAL",
-                                "projection": ["DIGITAL"],
-                                "experience": None,
-                            }
-                        ],
-                    }
-                }
-            ]
+        mock_call_allocine_api.return_value = allocine_serializers.AllocineMovieShowtimeListResponse.model_validate(
+            fixtures.ALLOCINE_MOVIE_SHOWTIME_LIST
         )
         mock_api_poster.return_value = bytes()
 
@@ -212,192 +147,50 @@ class UpdateObjectsTest:
 
         assert created_offer.bookingEmail == "toto@example.com"
         assert (
-            created_offer.description == "synopsis du film\nTous les détails du film sur AlloCiné:"
-            " http://www.allocine.fr/film/fichefilm_gen_cfilm=37832.html"
+            created_offer.description
+            == "Alors que la Premi\u00e8re Guerre Mondiale a \u00e9clat\u00e9, et en r\u00e9ponse aux propos des intellectuels allemands de l'\u00e9poque, Sacha Guitry filme les grands artistes de l'\u00e9poque qui contribuent au rayonnement culturel de la France.\n"
+            "Tous les détails du film sur AlloCiné:"
+            " https://www.allocine.fr/film/fichefilm_gen_cfilm=131136.html"
         )
-        assert created_offer.durationMinutes == 46
+        assert created_offer.durationMinutes == 21
         assert created_offer.extraData == {
-            "visa": "2009993528",
-            "stageDirector": "Farkhondeh Torabi",
-            "theater": {"allocine_movie_id": 37832, "allocine_room_id": "PXXXXX"},
-            "genres": ["ANIMATION", "FAMILY"],
+            "cast": ["Sacha Guitry", "Sarah Bernhardt", "Anatole France"],
+            "eidr": None,
             "type": "FEATURE_FILM",
+            "visa": "108245",
+            "title": "Ceux de chez nous",
+            "genres": ["DOCUMENTARY"],
+            "credits": [{"person": {"lastName": "Guitry", "firstName": "Sacha"}, "position": {"name": "DIRECTOR"}}],
+            "runtime": 21,
+            "theater": {"allocine_room_id": "PXXXXX", "allocine_movie_id": 131136},
+            "backlink": "https://www.allocine.fr/film/fichefilm_gen_cfilm=131136.html",
+            "synopsis": "Alors que la Première Guerre Mondiale a éclaté, et en réponse aux propos des intellectuels allemands de l'époque, Sacha Guitry filme les grands artistes de l'époque qui contribuent au rayonnement culturel de la France.",
             "companies": [
-                {"activity": "Distribution", "company": {"name": "Warner Bros. France"}},
-                {"activity": "Production", "company": {"name": "The Story Company"}},
+                {"name": "Les Acacias", "activity": "Distribution"},
+                {"name": "Les Acacias", "activity": "Distribution"},
             ],
-            "releaseDate": "2001-10-03",
-            "countries": ["Iran"],
-            "cast": ["Chloë Grace Moretz", "Michael Peña"],
+            "countries": ["France"],
+            "posterUrl": "https://fr.web.img2.acsta.net/medias/nmedia/18/78/15/02/19447537.jpg",
+            "allocineId": 131136,
+            "releaseDate": "2023-11-01",
+            "originalTitle": "Ceux de chez nous",
+            "stageDirector": "Sacha Guitry",
+            "productionYear": 1915,
         }
 
         assert not created_offer.isDuo
-        assert created_offer.name == "Les Contes de la mère poule"
+        assert created_offer.name == "Ceux de chez nous"
         assert created_offer.subcategoryId == subcategories.SEANCE_CINE.id
         assert created_offer.withdrawalDetails == venue.withdrawalDetails
 
     @patch("pcapi.local_providers.allocine.allocine_stocks.get_movie_poster")
-    @patch("pcapi.local_providers.allocine.allocine_stocks.get_movies_showtimes")
-    @patch("pcapi.settings.ALLOCINE_API_KEY", "token")
-    @pytest.mark.usefixtures("db_session")
-    def test_should_create_one_unique_offer_for_original_version_and_dubbed_version_with_movie_info(
-        self, mock_call_allocine_api, mock_api_poster
-    ):
-        # Given
-        mock_call_allocine_api.return_value = iter(
-            [
-                {
-                    "node": {
-                        "movie": MOVIE_INFO,
-                        "showtimes": [
-                            {
-                                "startsAt": "2019-10-29T10:30:00",
-                                "diffusionVersion": "ORIGINAL",
-                                "projection": ["DIGITAL"],
-                                "experience": None,
-                            },
-                            {
-                                "startsAt": "2019-10-29T10:30:00",
-                                "diffusionVersion": "DUBBED",
-                                "projection": ["DIGITAL"],
-                                "experience": None,
-                            },
-                            {
-                                "startsAt": "2019-10-29T10:30:00",
-                                "diffusionVersion": "LOCAL",
-                                "projection": ["DIGITAL"],
-                                "experience": None,
-                            },
-                            {
-                                "startsAt": "2019-10-29T14:30:00",
-                                "diffusionVersion": "ORIGINAL",
-                                "projection": ["DIGITAL"],
-                                "experience": None,
-                            },
-                            {
-                                "startsAt": "2019-10-29T14:30:00",
-                                "diffusionVersion": "DUBBED",
-                                "projection": ["DIGITAL"],
-                                "experience": None,
-                            },
-                        ],
-                    }
-                }
-            ]
-        )
-        mock_api_poster.return_value = bytes()
-
-        venue = offerers_factories.VenueFactory(
-            managingOfferer__siren="775671464",
-            name="Cinema Allocine",
-            siret="77567146400110",
-            bookingEmail="toto@example.com",
-        )
-
-        allocine_venue_provider = providers_factories.AllocineVenueProviderFactory(venue=venue, isDuo=False)
-        providers_factories.AllocineVenueProviderPriceRuleFactory(allocineVenueProvider=allocine_venue_provider)
-
-        allocine_stocks_provider = AllocineStocks(allocine_venue_provider)
-
-        # When
-        allocine_stocks_provider.updateObjects()
-
-        # Then
-        created_offer = offers_models.Offer.query.one()
-
-        assert created_offer.bookingEmail == "toto@example.com"
-        assert (
-            created_offer.description == "synopsis du film\nTous les détails du film sur AlloCiné:"
-            " http://www.allocine.fr/film/fichefilm_gen_cfilm=37832.html"
-        )
-        assert created_offer.durationMinutes == 46
-        assert created_offer.extraData["visa"] == "2009993528"
-        assert created_offer.extraData["stageDirector"] == "Farkhondeh Torabi"
-        assert not created_offer.isDuo
-        assert created_offer.name == "Les Contes de la mère poule"
-        assert created_offer.subcategoryId == subcategories.SEANCE_CINE.id
-
-    @patch("pcapi.local_providers.allocine.allocine_stocks.get_movie_poster")
-    @patch("pcapi.local_providers.allocine.allocine_stocks.get_movies_showtimes")
-    @patch("pcapi.settings.ALLOCINE_API_KEY", "token")
-    @pytest.mark.usefixtures("db_session")
-    def test_should_create_only_one_original_version_offer_when_only_original_showtimes_exist(
-        self, mock_call_allocine_api, mock_api_poster
-    ):
-        # Given
-        mock_call_allocine_api.return_value = iter(
-            [
-                {
-                    "node": {
-                        "movie": MOVIE_INFO,
-                        "showtimes": [
-                            {
-                                "startsAt": "2019-10-29T10:30:00",
-                                "diffusionVersion": "ORIGINAL",
-                                "projection": ["DIGITAL"],
-                                "experience": None,
-                            },
-                            {
-                                "startsAt": "2019-10-29T14:30:00",
-                                "diffusionVersion": "ORIGINAL",
-                                "projection": ["DIGITAL"],
-                                "experience": None,
-                            },
-                        ],
-                    }
-                }
-            ]
-        )
-        mock_api_poster.return_value = bytes()
-
-        venue = offerers_factories.VenueFactory(
-            managingOfferer__siren="775671464",
-            name="Cinema Allocine",
-            siret="77567146400110",
-            bookingEmail="toto@example.com",
-        )
-
-        allocine_venue_provider = providers_factories.AllocineVenueProviderFactory(venue=venue)
-        providers_factories.AllocineVenueProviderPriceRuleFactory(allocineVenueProvider=allocine_venue_provider)
-
-        allocine_stocks_provider = AllocineStocks(allocine_venue_provider)
-
-        # When
-        allocine_stocks_provider.updateObjects()
-
-        # Then
-        created_offers = offers_models.Offer.query.all()
-
-        assert len(created_offers) == 1
-
-    @patch("pcapi.local_providers.allocine.allocine_stocks.get_movie_poster")
-    @patch("pcapi.local_providers.allocine.allocine_stocks.get_movies_showtimes")
+    @patch("pcapi.connectors.api_allocine.get_movies_showtimes_from_allocine")
     @patch("pcapi.settings.ALLOCINE_API_KEY", "token")
     @pytest.mark.usefixtures("db_session")
     def test_should_update_existing_offers(self, mock_call_allocine_api, mock_api_poster):
         # Given
-        mock_call_allocine_api.return_value = iter(
-            [
-                {
-                    "node": {
-                        "movie": MOVIE_INFO,
-                        "showtimes": [
-                            {
-                                "startsAt": "2019-10-29T10:30:00",
-                                "diffusionVersion": "DUBBED",
-                                "projection": ["DIGITAL"],
-                                "experience": None,
-                            },
-                            {
-                                "startsAt": "2019-10-29T10:30:00",
-                                "diffusionVersion": "ORIGINAL",
-                                "projection": ["DIGITAL"],
-                                "experience": None,
-                            },
-                        ],
-                    }
-                }
-            ]
+        mock_call_allocine_api.return_value = allocine_serializers.AllocineMovieShowtimeListResponse.model_validate(
+            fixtures.ALLOCINE_MOVIE_SHOWTIME_LIST
         )
         mock_api_poster.return_value = bytes()
 
@@ -412,7 +205,7 @@ class UpdateObjectsTest:
             name="Test event",
             subcategoryId=subcategories.SEANCE_CINE.id,
             durationMinutes=60,
-            idAtProvider="TW92aWU6Mzc4MzI=%77567146400110",
+            idAtProvider="TW92aWU6MTMxMTM2%77567146400110",
             venue=venue,
         )
 
@@ -426,30 +219,16 @@ class UpdateObjectsTest:
 
         # Then
         existing_offer = offers_models.Offer.query.one()
-        assert existing_offer.durationMinutes == 46
+        assert existing_offer.durationMinutes == 21
 
     @patch("pcapi.local_providers.allocine.allocine_stocks.get_movie_poster")
-    @patch("pcapi.local_providers.allocine.allocine_stocks.get_movies_showtimes")
+    @patch("pcapi.connectors.api_allocine.get_movies_showtimes_from_allocine")
     @patch("pcapi.settings.ALLOCINE_API_KEY", "token")
     @pytest.mark.usefixtures("db_session")
     def test_should_create_new_offer_when_no_offer_exists(self, mock_call_allocine_api, mock_api_poster):
         # Given
-        mock_call_allocine_api.return_value = iter(
-            [
-                {
-                    "node": {
-                        "movie": MOVIE_INFO,
-                        "showtimes": [
-                            {
-                                "startsAt": "2019-10-29T10:30:00",
-                                "diffusionVersion": "DUBBED",
-                                "projection": ["DIGITAL"],
-                                "experience": None,
-                            }
-                        ],
-                    }
-                }
-            ]
+        mock_call_allocine_api.return_value = allocine_serializers.AllocineMovieShowtimeListResponse.model_validate(
+            fixtures.ALLOCINE_MOVIE_SHOWTIME_LIST
         )
         mock_api_poster.return_value = bytes()
 
@@ -470,138 +249,19 @@ class UpdateObjectsTest:
 
         # Then
         created_offer = offers_models.Offer.query.one()
-        assert created_offer.durationMinutes == 46
-        assert created_offer.name == "Les Contes de la mère poule"
+        assert created_offer.durationMinutes == 21
+        assert created_offer.name == "Ceux de chez nous"
 
-    @patch("pcapi.local_providers.allocine.allocine_stocks.get_movie_poster")
-    @patch("pcapi.local_providers.allocine.allocine_stocks.get_movies_showtimes")
-    @patch("pcapi.settings.ALLOCINE_API_KEY", "token")
-    @pytest.mark.usefixtures("db_session")
-    def test_should_create_offer_with_missing_visa_and_stage_director(self, mock_call_allocine_api, mock_api_poster):
-        # Given
-        mock_call_allocine_api.return_value = iter(
-            [
-                {
-                    "node": {
-                        "movie": MOVIE_INFO,
-                        "showtimes": [
-                            {
-                                "startsAt": "2019-10-29T10:30:00",
-                                "diffusionVersion": "DUBBED",
-                                "projection": ["DIGITAL"],
-                                "experience": None,
-                            }
-                        ],
-                    }
-                }
-            ]
-        )
-        mock_api_poster.return_value = bytes()
-
-        venue = offerers_factories.VenueFactory(
-            managingOfferer__siren="775671464",
-            name="Cinema Allocine",
-            siret="77567146400110",
-            bookingEmail="toto@example.com",
-        )
-
-        allocine_venue_provider = providers_factories.AllocineVenueProviderFactory(venue=venue, internalId="P12345")
-        providers_factories.AllocineVenueProviderPriceRuleFactory(allocineVenueProvider=allocine_venue_provider)
-
-        allocine_stocks_provider = AllocineStocks(allocine_venue_provider)
-
-        # When
-        allocine_stocks_provider.updateObjects()
-
-        # Then
-        created_offer = offers_models.Offer.query.one()
-
-        assert created_offer.durationMinutes == 46
-        assert created_offer.extraData == {
-            "visa": "2009993528",
-            "stageDirector": "Farkhondeh Torabi",
-            "theater": {"allocine_movie_id": 37832, "allocine_room_id": "P12345"},
-            "genres": ["ANIMATION", "FAMILY"],
-            "type": "FEATURE_FILM",
-            "companies": [
-                {"activity": "Distribution", "company": {"name": "Warner Bros. France"}},
-                {"activity": "Production", "company": {"name": "The Story Company"}},
-            ],
-            "releaseDate": "2001-10-03",
-            "countries": ["Iran"],
-            "cast": ["Chloë Grace Moretz", "Michael Peña"],
-        }
-
-        assert created_offer.subcategoryId == subcategories.SEANCE_CINE.id
-        assert created_offer.name == "Les Contes de la mère poule"
-
-    @patch("pcapi.local_providers.allocine.allocine_stocks.get_movie_poster")
-    @patch("pcapi.local_providers.allocine.allocine_stocks.get_movies_showtimes")
-    @patch("pcapi.settings.ALLOCINE_API_KEY", "token")
-    @pytest.mark.usefixtures("db_session")
-    def test_should_not_create_offer_when_missing_required_information_in_api_response(
-        self, mock_call_allocine_api, mock_api_poster
-    ):
-        # Given
-        movie_information = copy.deepcopy(MOVIE_INFO)
-        del movie_information["title"]
-
-        mock_call_allocine_api.return_value = iter(
-            [
-                {
-                    "node": {
-                        "movie": movie_information,
-                        "showtimes": [
-                            {
-                                "startsAt": "2019-10-29T10:30:00",
-                                "diffusionVersion": "DUBBED",
-                                "projection": ["DIGITAL"],
-                                "experience": None,
-                            }
-                        ],
-                    }
-                }
-            ]
-        )
-
-        venue = offerers_factories.VenueFactory()
-
-        allocine_venue_provider = providers_factories.AllocineVenueProviderFactory(venue=venue)
-        providers_factories.AllocineVenueProviderPriceRuleFactory(allocineVenueProvider=allocine_venue_provider)
-
-        allocine_stocks_provider = AllocineStocks(allocine_venue_provider)
-
-        # When
-        allocine_stocks_provider.updateObjects()
-
-        # Then
-        assert offers_models.Offer.query.count() == 0
-
-    @patch("pcapi.local_providers.allocine.allocine_stocks.get_movie_poster")
-    @patch("pcapi.local_providers.allocine.allocine_stocks.get_movies_showtimes")
+    @patch("pcapi.connectors.api_allocine.get_movies_showtimes_from_allocine")
     @patch("pcapi.local_providers.allocine.allocine_stocks.AllocineStocks.get_object_thumb")
     @patch("pcapi.settings.ALLOCINE_API_KEY", "token")
     @pytest.mark.usefixtures("db_session")
     def test_should_create_offer_with_correct_thumb_and_increase_thumbCount_by_1(
-        self, mock_get_object_thumb, mock_call_allocine_api, mock_api_poster
+        self, mock_get_object_thumb, mock_call_allocine_api
     ):
         # Given
-        mock_call_allocine_api.return_value = iter(
-            [
-                {
-                    "node": {
-                        "movie": MOVIE_INFO,
-                        "showtimes": [
-                            {
-                                "startsAt": "2019-10-29T10:30:00",
-                                "diffusionVersion": "DUBBED",
-                                "projection": ["DIGITAL"],
-                                "experience": None,
-                            }
-                        ],
-                    }
-                }
-            ]
+        mock_call_allocine_api.return_value = allocine_serializers.AllocineMovieShowtimeListResponse.model_validate(
+            fixtures.ALLOCINE_MOVIE_SHOWTIME_LIST
         )
         file_path = Path(tests.__path__[0]) / "files" / "mouette_portrait.jpg"
         with open(file_path, "rb") as thumb_file:
@@ -632,28 +292,14 @@ class UpdateObjectsTest:
         assert existing_offer.activeMediation.thumbCount == 1
 
     @patch("pcapi.local_providers.allocine.allocine_stocks.get_movie_poster")
-    @patch("pcapi.local_providers.allocine.allocine_stocks.get_movies_showtimes")
+    @patch("pcapi.connectors.api_allocine.get_movies_showtimes_from_allocine")
     @patch("pcapi.local_providers.allocine.allocine_stocks.AllocineStocks.get_object_thumb")
     @patch("pcapi.settings.ALLOCINE_API_KEY", "token")
     @pytest.mark.usefixtures("db_session")
     def test_should_add_offer_thumb(self, mock_get_object_thumb, mock_call_allocine_api, mock_api_poster):
         # Given
-        mock_call_allocine_api.return_value = iter(
-            [
-                {
-                    "node": {
-                        "movie": MOVIE_INFO,
-                        "showtimes": [
-                            {
-                                "startsAt": "2019-10-29T10:30:00",
-                                "diffusionVersion": "DUBBED",
-                                "projection": ["DIGITAL"],
-                                "experience": None,
-                            }
-                        ],
-                    }
-                }
-            ]
+        mock_call_allocine_api.return_value = allocine_serializers.AllocineMovieShowtimeListResponse.model_validate(
+            fixtures.ALLOCINE_MOVIE_SHOWTIME_LIST
         )
         file_path = Path(tests.__path__[0]) / "files" / "mouette_portrait.jpg"
         with open(file_path, "rb") as thumb_file:
@@ -682,59 +328,15 @@ class UpdateObjectsTest:
         )
         assert existing_offer.activeMediation.thumbCount == 1
 
-    @patch("pcapi.local_providers.allocine.allocine_stocks.get_movies_showtimes")
+    @patch("pcapi.connectors.api_allocine.get_movies_showtimes_from_allocine")
     @patch("pcapi.local_providers.allocine.allocine_stocks.get_movie_poster")
     @patch("pcapi.settings.ALLOCINE_API_KEY", "token")
     @pytest.mark.usefixtures("db_session")
     def test_should_create_one_offer_and_associated_stocks(self, mock_poster_get_allocine, mock_call_allocine_api):
         # Given
         mock_poster_get_allocine.return_value = bytes()
-        mock_call_allocine_api.return_value = iter(
-            [
-                {
-                    "node": {
-                        "movie": MOVIE_INFO,
-                        "showtimes": [
-                            {
-                                "startsAt": "2019-12-03T10:00:00",
-                                "diffusionVersion": "LOCAL",
-                                "projection": ["DIGITAL"],
-                                "experience": None,
-                            },
-                            {
-                                "startsAt": "2019-12-03T10:00:00",
-                                "diffusionVersion": "DUBBED",
-                                "projection": ["DIGITAL"],
-                                "experience": None,
-                            },
-                            {
-                                "startsAt": "2019-12-03T18:00:00",
-                                "diffusionVersion": "ORIGINAL",
-                                "projection": ["DIGITAL"],
-                                "experience": None,
-                            },
-                            {
-                                "startsAt": "2019-12-03T20:00:00",
-                                "diffusionVersion": "LOCAL",
-                                "projection": ["DIGITAL"],
-                                "experience": None,
-                            },
-                            {
-                                "startsAt": "2019-12-03T20:00:00",
-                                "diffusionVersion": "LOCAL",
-                                "projection": ["DIGITAL"],
-                                "experience": "experience",
-                            },
-                            {
-                                "startsAt": "2019-12-03T20:00:00",
-                                "diffusionVersion": "LOCAL",
-                                "projection": ["NON DIGITAL"],
-                                "experience": None,
-                            },
-                        ],
-                    }
-                }
-            ]
+        mock_call_allocine_api.return_value = allocine_serializers.AllocineMovieShowtimeListResponse.model_validate(
+            fixtures.ALLOCINE_MOVIE_SHOWTIME_LIST
         )
 
         venue = offerers_factories.VenueFactory(
@@ -765,45 +367,37 @@ class UpdateObjectsTest:
         first_stock = created_stock[0]
         second_stock = created_stock[1]
         third_stock = created_stock[2]
-        fourth_stock = created_stock[3]
 
         first_price_category = created_price_category[0]
 
         assert len(created_offer) == 1
-        assert len(created_stock) == 4
+        assert len(created_stock) == 3
         assert len(created_price_category) == 1
 
-        assert unique_offer.name == "Les Contes de la mère poule"
+        assert unique_offer.name == "Ceux de chez nous"
 
-        assert unique_offer.durationMinutes == 46
+        assert unique_offer.durationMinutes == 21
 
         assert first_stock.offerId == unique_offer.id
         assert first_stock.quantity is None
         assert first_stock.price == 10
         assert first_stock.priceCategory == first_price_category
-        assert first_stock.beginningDatetime == datetime(2019, 12, 3, 9, 0)
-        assert first_stock.bookingLimitDatetime == datetime(2019, 12, 3, 9, 0)
+        assert first_stock.beginningDatetime == datetime(2023, 12, 18, 13, 0)
+        assert first_stock.bookingLimitDatetime == datetime(2023, 12, 18, 13, 0)
 
         assert second_stock.offerId == unique_offer.id
         assert second_stock.quantity is None
         assert second_stock.price == 10
         assert second_stock.priceCategory == first_price_category
-        assert second_stock.beginningDatetime == datetime(2019, 12, 3, 9, 0)
-        assert second_stock.bookingLimitDatetime == datetime(2019, 12, 3, 9, 0)
+        assert second_stock.beginningDatetime == datetime(2023, 12, 18, 15, 0)
+        assert second_stock.bookingLimitDatetime == datetime(2023, 12, 18, 15, 0)
 
         assert third_stock.offerId == unique_offer.id
         assert third_stock.quantity is None
         assert third_stock.price == 10
         assert third_stock.priceCategory == first_price_category
-        assert third_stock.beginningDatetime == datetime(2019, 12, 3, 17, 0)
-        assert third_stock.bookingLimitDatetime == datetime(2019, 12, 3, 17, 0)
-
-        assert fourth_stock.offerId == unique_offer.id
-        assert fourth_stock.quantity is None
-        assert fourth_stock.price == 10
-        assert fourth_stock.priceCategory == first_price_category
-        assert fourth_stock.beginningDatetime == datetime(2019, 12, 3, 19, 0)
-        assert fourth_stock.bookingLimitDatetime == datetime(2019, 12, 3, 19, 0)
+        assert third_stock.beginningDatetime == datetime(2023, 12, 18, 15, 0)
+        assert third_stock.bookingLimitDatetime == datetime(2023, 12, 18, 15, 0)
 
         assert first_price_category.offerId == unique_offer.id
         assert first_price_category.price == 10
@@ -813,54 +407,22 @@ class UpdateObjectsTest:
         assert allocine_stocks_provider.erroredThumbs == 0
 
     class WhenAllocineStockAreSynchronizedTwiceTest:
-        @patch("pcapi.local_providers.allocine.allocine_stocks.get_movies_showtimes")
+        @patch("pcapi.connectors.api_allocine.get_movies_showtimes_from_allocine")
         @patch("pcapi.local_providers.allocine.allocine_stocks.get_movie_poster")
         @patch("pcapi.settings.ALLOCINE_API_KEY", "token")
         @pytest.mark.usefixtures("db_session")
-        def test_should_update_stocks_based_on_stock_date(self, mock_poster_get_allocine, mock_call_allocine_api, app):
+        def test_should_update_stocks_based_on_stock_date(self, mock_poster_get_allocine, mock_call_allocine_api):
             # Given
             mock_poster_get_allocine.return_value = bytes()
+            updated_showtimes = copy.deepcopy(fixtures.ALLOCINE_MOVIE_SHOWTIME_LIST)
+            updated_showtimes["movieShowtimeList"]["edges"][0]["node"]["showtimes"] = updated_showtimes[
+                "movieShowtimeList"
+            ]["edges"][0]["node"]["showtimes"][:1]
             mock_call_allocine_api.side_effect = [
-                iter(
-                    [
-                        {
-                            "node": {
-                                "movie": MOVIE_INFO,
-                                "showtimes": [
-                                    {
-                                        "startsAt": "2019-12-03T10:00:00",
-                                        "diffusionVersion": "LOCAL",
-                                        "projection": ["DIGITAL"],
-                                        "experience": None,
-                                    },
-                                    {
-                                        "startsAt": "2019-12-04T18:00:00",
-                                        "diffusionVersion": "LOCAL",
-                                        "projection": ["DIGITAL"],
-                                        "experience": None,
-                                    },
-                                ],
-                            }
-                        }
-                    ]
+                allocine_serializers.AllocineMovieShowtimeListResponse.model_validate(
+                    fixtures.ALLOCINE_MOVIE_SHOWTIME_LIST
                 ),
-                iter(
-                    [
-                        {
-                            "node": {
-                                "movie": MOVIE_INFO,
-                                "showtimes": [
-                                    {
-                                        "startsAt": "2019-12-04T18:00:00",
-                                        "diffusionVersion": "LOCAL",
-                                        "projection": ["DIGITAL"],
-                                        "experience": None,
-                                    }
-                                ],
-                            }
-                        }
-                    ]
-                ),
+                allocine_serializers.AllocineMovieShowtimeListResponse.model_validate(updated_showtimes),
             ]
 
             venue = offerers_factories.VenueFactory(
@@ -882,21 +444,25 @@ class UpdateObjectsTest:
 
             # Then
             created_stocks = offers_models.Stock.query.order_by(offers_models.Stock.beginningDatetime).all()
-            vf_offer = offers_models.Offer.query.first()
+            offer = offers_models.Offer.query.first()
 
             first_stock = created_stocks[0]
             second_stock = created_stocks[1]
+            third_stock = created_stocks[2]
 
-            assert len(created_stocks) == 2
-            assert first_stock.offerId == vf_offer.id
-            assert first_stock.beginningDatetime == datetime(2019, 12, 3, 9, 0)
+            assert len(created_stocks) == 3
+            assert first_stock.offerId == offer.id
+            assert first_stock.beginningDatetime == datetime(2023, 12, 18, 13, 0)
 
-            assert second_stock.offerId == vf_offer.id
-            assert second_stock.beginningDatetime == datetime(2019, 12, 4, 17, 0)
+            assert second_stock.offerId == offer.id
+            assert second_stock.beginningDatetime == datetime(2023, 12, 18, 15, 0)
+
+            assert third_stock.offerId == offer.id
+            assert third_stock.beginningDatetime == datetime(2023, 12, 18, 15, 0)
 
             assert offers_models.PriceCategory.query.count() == 1
 
-        @patch("pcapi.local_providers.allocine.allocine_stocks.get_movies_showtimes")
+        @patch("pcapi.connectors.api_allocine.get_movies_showtimes_from_allocine")
         @patch("pcapi.local_providers.allocine.allocine_stocks.get_movie_poster")
         @patch("pcapi.settings.ALLOCINE_API_KEY", "token")
         @pytest.mark.usefixtures("db_session")
@@ -906,22 +472,10 @@ class UpdateObjectsTest:
             # Given
             theater_token1 = "test1"
             theater_token2 = "test2"
-            allocine_api_response = [
-                {
-                    "node": {
-                        "movie": MOVIE_INFO,
-                        "showtimes": [
-                            {
-                                "startsAt": "2019-12-03T10:00:00",
-                                "diffusionVersion": "LOCAL",
-                                "projection": ["DIGITAL"],
-                                "experience": None,
-                            }
-                        ],
-                    }
-                }
-            ]
-            mock_call_allocine_api.side_effect = [iter(allocine_api_response), iter(allocine_api_response)]
+            mock_result = allocine_serializers.AllocineMovieShowtimeListResponse.model_validate(
+                fixtures.ALLOCINE_MOVIE_SHOWTIME_LIST
+            )
+            mock_call_allocine_api.side_effect = [mock_result, mock_result]
             mock_poster_get_allocine.return_value = bytes()
             offerer = offerers_factories.OffererFactory(siren="775671464")
             venue1 = offerers_factories.VenueFactory(
@@ -965,66 +519,21 @@ class UpdateObjectsTest:
             assert len(created_price_categories_labels) == 2
             assert offers_models.Offer.query.filter(offers_models.Offer.venueId == venue1.id).count() == 1
             assert offers_models.Offer.query.filter(offers_models.Offer.venueId == venue2.id).count() == 1
-            assert len(created_stock) == 2
+            assert len(created_stock) == 6
 
-        @patch("pcapi.local_providers.allocine.allocine_stocks.get_movies_showtimes")
+        @patch("pcapi.connectors.api_allocine.get_movies_showtimes_from_allocine")
         @patch("pcapi.local_providers.allocine.allocine_stocks.get_movie_poster")
         @patch("pcapi.settings.ALLOCINE_API_KEY", "token")
         @pytest.mark.usefixtures("db_session")
         def test_should_update_stocks_info_after_pro_user_modification(
-            self, mock_poster_get_allocine, mock_call_allocine_api, app
+            self, mock_poster_get_allocine, mock_call_allocine_api
         ):
             # Given
             mock_poster_get_allocine.return_value = bytes()
-            mock_call_allocine_api.side_effect = [
-                iter(
-                    [
-                        {
-                            "node": {
-                                "movie": MOVIE_INFO,
-                                "showtimes": [
-                                    {
-                                        "startsAt": "2019-12-03T10:00:00",
-                                        "diffusionVersion": "LOCAL",
-                                        "projection": ["DIGITAL"],
-                                        "experience": None,
-                                    },
-                                    {
-                                        "startsAt": "2019-12-04T18:00:00",
-                                        "diffusionVersion": "LOCAL",
-                                        "projection": ["DIGITAL"],
-                                        "experience": None,
-                                    },
-                                ],
-                            }
-                        }
-                    ]
-                ),
-                iter(
-                    [
-                        {
-                            "node": {
-                                "movie": MOVIE_INFO,
-                                "showtimes": [
-                                    {
-                                        "startsAt": "2019-12-03T10:00:00",
-                                        "diffusionVersion": "LOCAL",
-                                        "projection": ["DIGITAL"],
-                                        "experience": None,
-                                    },
-                                    {
-                                        "startsAt": "2019-12-04T18:00:00",
-                                        "diffusionVersion": "LOCAL",
-                                        "projection": ["DIGITAL"],
-                                        "experience": None,
-                                    },
-                                ],
-                            }
-                        }
-                    ]
-                ),
-            ]
-
+            mock_result = allocine_serializers.AllocineMovieShowtimeListResponse.model_validate(
+                fixtures.ALLOCINE_MOVIE_SHOWTIME_LIST
+            )
+            mock_call_allocine_api.side_effect = [mock_result, mock_result]
             venue = offerers_factories.VenueFactory(
                 managingOfferer__siren="775671464",
                 name="Cinema Allocine",
@@ -1052,7 +561,7 @@ class UpdateObjectsTest:
 
             second_stock = created_stocks[1]
             second_stock.fieldsUpdated = ["bookingLimitDatetime"]
-            second_stock.bookingLimitDatetime = datetime(2019, 12, 4, 15, 0)
+            second_stock.bookingLimitDatetime = datetime(2023, 12, 4, 14, 30)
 
             repository.save(first_stock, second_stock)
 
@@ -1061,76 +570,32 @@ class UpdateObjectsTest:
             allocine_stocks_provider.updateObjects()
 
             # Then
-            assert len(created_stocks) == 2
+            assert len(created_stocks) == 3
             assert len(offers_models.PriceCategory.query.all()) == 2
             assert first_stock.quantity == 100
             assert first_stock.price == 20
             assert first_stock.priceCategory.price == 20
             assert first_stock.priceCategory.label == "Tarif unique"
-            assert first_stock.bookingLimitDatetime == datetime(2019, 12, 3, 9, 0)
+            assert first_stock.bookingLimitDatetime == datetime(2023, 12, 18, 13, 0)
 
             assert second_stock.quantity is None
             assert second_stock.price == 10
             assert second_stock.priceCategory.price == 10
             assert second_stock.priceCategory.label == "Tarif unique"
-            assert second_stock.bookingLimitDatetime == datetime(2019, 12, 4, 15, 0)
+            assert second_stock.bookingLimitDatetime == datetime(2023, 12, 4, 14, 30)
 
     @pytest.mark.usefixtures("db_session")
     class WhenOfferHasBeenManuallyUpdatedTest:
-        @patch("pcapi.local_providers.allocine.allocine_stocks.get_movies_showtimes")
+        @patch("pcapi.connectors.api_allocine.get_movies_showtimes_from_allocine")
         @patch("pcapi.local_providers.allocine.allocine_stocks.get_movie_poster")
         @patch("pcapi.settings.ALLOCINE_API_KEY", "token")
         def test_should_preserve_manual_modification(self, mock_poster_get_allocine, mock_call_allocine_api, app):
             # Given
             mock_poster_get_allocine.return_value = bytes()
-            mock_call_allocine_api.side_effect = [
-                iter(
-                    [
-                        {
-                            "node": {
-                                "movie": MOVIE_INFO,
-                                "showtimes": [
-                                    {
-                                        "startsAt": "2019-12-03T10:00:00",
-                                        "diffusionVersion": "LOCAL",
-                                        "projection": ["DIGITAL"],
-                                        "experience": None,
-                                    },
-                                    {
-                                        "startsAt": "2019-12-04T18:00:00",
-                                        "diffusionVersion": "LOCAL",
-                                        "projection": ["DIGITAL"],
-                                        "experience": None,
-                                    },
-                                ],
-                            }
-                        }
-                    ]
-                ),
-                iter(
-                    [
-                        {
-                            "node": {
-                                "movie": MOVIE_INFO,
-                                "showtimes": [
-                                    {
-                                        "startsAt": "2019-12-03T10:00:00",
-                                        "diffusionVersion": "LOCAL",
-                                        "projection": ["DIGITAL"],
-                                        "experience": None,
-                                    },
-                                    {
-                                        "startsAt": "2019-12-04T18:00:00",
-                                        "diffusionVersion": "LOCAL",
-                                        "projection": ["DIGITAL"],
-                                        "experience": None,
-                                    },
-                                ],
-                            }
-                        }
-                    ]
-                ),
-            ]
+            mock_result = allocine_serializers.AllocineMovieShowtimeListResponse.model_validate(
+                fixtures.ALLOCINE_MOVIE_SHOWTIME_LIST
+            )
+            mock_call_allocine_api.side_effect = [mock_result, mock_result]
 
             venue = offerers_factories.VenueFactory(
                 managingOfferer__siren="775671464",
@@ -1158,33 +623,17 @@ class UpdateObjectsTest:
             created_offer = offers_models.Offer.query.one()
             assert created_offer.isDuo is True
 
-        @patch("pcapi.local_providers.allocine.allocine_stocks.get_movies_showtimes")
+        @patch("pcapi.connectors.api_allocine.get_movies_showtimes_from_allocine")
         @patch("pcapi.local_providers.allocine.allocine_stocks.get_movie_poster")
         @patch("pcapi.settings.ALLOCINE_API_KEY", "token")
         def test_should_succeed_when_additional_price_categories_were_created(
-            self, mock_poster_get_allocine, mock_call_allocine_api, app
+            self, mock_poster_get_allocine, mock_call_allocine_api
         ):
             # Given
             mock_poster_get_allocine.return_value = bytes()
-            mock_call_allocine_api.side_effect = [
-                iter(
-                    [
-                        {
-                            "node": {
-                                "movie": MOVIE_INFO,
-                                "showtimes": [
-                                    {
-                                        "startsAt": "2019-12-03T10:00:00",
-                                        "diffusionVersion": "ORIGINAL",
-                                        "projection": ["DIGITAL"],
-                                        "experience": None,
-                                    },
-                                ],
-                            }
-                        }
-                    ]
-                )
-            ]
+            mock_call_allocine_api.return_value = allocine_serializers.AllocineMovieShowtimeListResponse.model_validate(
+                fixtures.ALLOCINE_MOVIE_SHOWTIME_LIST
+            )
 
             venue = offerers_factories.VenueFactory(
                 managingOfferer__siren="775671464",
@@ -1200,7 +649,7 @@ class UpdateObjectsTest:
             offer = offers_factories.OfferFactory(
                 name="Test event",
                 durationMinutes=60,
-                idAtProvider="TW92aWU6Mzc4MzI=%77567146400110",
+                idAtProvider="TW92aWU6MTMxMTM2%77567146400110",
                 venue=venue,
             )
             offers_factories.PriceCategoryFactory(offer=offer, price=price_rule.price)
@@ -1213,43 +662,21 @@ class UpdateObjectsTest:
             allocine_stocks_provider.updateObjects()
 
             # Then
-            stock = offers_models.Stock.query.one()
+            stock = offers_models.Stock.query.first()
             assert stock.priceCategory == newest_price_category
 
             assert allocine_stocks_provider.erroredObjects == 0
             assert allocine_stocks_provider.erroredThumbs == 0
 
-        @patch("pcapi.local_providers.allocine.allocine_stocks.get_movies_showtimes")
+        @patch("pcapi.connectors.api_allocine.get_movies_showtimes_from_allocine")
         @patch("pcapi.local_providers.allocine.allocine_stocks.get_movie_poster")
         @patch("pcapi.settings.ALLOCINE_API_KEY", "token")
         def test_should_only_update_default_price_category(self, mock_poster_get_allocine, mock_call_allocine_api, app):
             # Given
             mock_poster_get_allocine.return_value = bytes()
-            mock_call_allocine_api.side_effect = [
-                iter(
-                    [
-                        {
-                            "node": {
-                                "movie": MOVIE_INFO,
-                                "showtimes": [
-                                    {
-                                        "startsAt": "2019-12-03T10:00:00",
-                                        "diffusionVersion": "ORIGINAL",
-                                        "projection": ["DIGITAL"],
-                                        "experience": None,
-                                    },
-                                    {
-                                        "startsAt": "2019-12-04T10:00:00",
-                                        "diffusionVersion": "ORIGINAL",
-                                        "projection": ["DIGITAL"],
-                                        "experience": None,
-                                    },
-                                ],
-                            }
-                        }
-                    ]
-                )
-            ]
+            mock_call_allocine_api.return_value = allocine_serializers.AllocineMovieShowtimeListResponse.model_validate(
+                fixtures.ALLOCINE_MOVIE_SHOWTIME_LIST
+            )
 
             venue = offerers_factories.VenueFactory(
                 managingOfferer__siren="775671464",
@@ -1261,13 +688,13 @@ class UpdateObjectsTest:
             offer = offers_factories.OfferFactory(
                 name="Test event",
                 durationMinutes=60,
-                idAtProvider="TW92aWU6Mzc4MzI=%77567146400110",
+                idAtProvider="TW92aWU6MTMxMTM2%77567146400110",
                 venue=venue,
             )
             default_price_category = offers_factories.PriceCategoryFactory(offer=offer, price=decimal.Decimal("10.1"))
             stock_with_price_to_edit = offers_factories.EventStockFactory(
                 offer=offer,
-                idAtProviders="TW92aWU6Mzc4MzI=%77567146400110#ORIGINAL/2019-12-03T10:00:00",
+                idAtProviders="TW92aWU6MTMxMTM2%77567146400110#LOCAL/2023-12-18T14:00:00",
                 priceCategory=default_price_category,
             )
 
@@ -1276,7 +703,7 @@ class UpdateObjectsTest:
             )
             stock_with_unchanging_price = offers_factories.EventStockFactory(
                 offer=offer,
-                idAtProviders="TW92aWU6Mzc4MzI=%77567146400110#ORIGINAL/2019-12-04T10:00:00",
+                idAtProviders="TW92aWU6MTMxMTM2%77567146400110#ORIGINAL/2023-12-18T16:00:00",
                 priceCategory=manually_created_price_category,
             )
 
@@ -1300,49 +727,17 @@ class UpdateObjectsTest:
             assert allocine_stocks_provider.erroredThumbs == 0
 
     class WhenStockHasBeenManuallyDeletedTest:
-        @patch("pcapi.local_providers.allocine.allocine_stocks.get_movies_showtimes")
+        @patch("pcapi.connectors.api_allocine.get_movies_showtimes_from_allocine")
         @patch("pcapi.local_providers.allocine.allocine_stocks.get_movie_poster")
         @patch("pcapi.settings.ALLOCINE_API_KEY", "token")
         @pytest.mark.usefixtures("db_session")
         def test_should_preserve_deletion(self, mock_poster_get_allocine, mock_call_allocine_api, app):
             # Given
             mock_poster_get_allocine.return_value = bytes()
-            mock_call_allocine_api.side_effect = [
-                iter(
-                    [
-                        {
-                            "node": {
-                                "movie": MOVIE_INFO,
-                                "showtimes": [
-                                    {
-                                        "startsAt": "2019-12-03T10:00:00",
-                                        "diffusionVersion": "LOCAL",
-                                        "projection": ["DIGITAL"],
-                                        "experience": None,
-                                    }
-                                ],
-                            }
-                        }
-                    ]
-                ),
-                iter(
-                    [
-                        {
-                            "node": {
-                                "movie": MOVIE_INFO,
-                                "showtimes": [
-                                    {
-                                        "startsAt": "2019-12-03T10:00:00",
-                                        "diffusionVersion": "LOCAL",
-                                        "projection": ["DIGITAL"],
-                                        "experience": None,
-                                    }
-                                ],
-                            }
-                        }
-                    ]
-                ),
-            ]
+            mock_result = allocine_serializers.AllocineMovieShowtimeListResponse.model_validate(
+                fixtures.ALLOCINE_MOVIE_SHOWTIME_LIST
+            )
+            mock_call_allocine_api.side_effect = [mock_result, mock_result]
 
             venue = offerers_factories.VenueFactory(
                 managingOfferer__siren="775671464", name="Cinema Allocine", siret="77567146400110"
@@ -1354,7 +749,7 @@ class UpdateObjectsTest:
             allocine_stocks_provider = AllocineStocks(allocine_venue_provider)
             allocine_stocks_provider.updateObjects()
 
-            created_stock = offers_models.Stock.query.one()
+            created_stock = offers_models.Stock.query.order_by(offers_models.Stock.id).first()
             created_stock.isSoftDeleted = True
 
             # When
@@ -1362,65 +757,21 @@ class UpdateObjectsTest:
             allocine_stocks_provider.updateObjects()
 
             # Then
-            created_stock = offers_models.Stock.query.one()
+            created_stock = offers_models.Stock.query.order_by(offers_models.Stock.id).first()
             assert created_stock.isSoftDeleted is True
 
     class WhenSettingDefaultValuesAtImportTest:
-        @patch("pcapi.local_providers.allocine.allocine_stocks.get_movies_showtimes")
+        @patch("pcapi.connectors.api_allocine.get_movies_showtimes_from_allocine")
         @patch("pcapi.local_providers.allocine.allocine_stocks.get_movie_poster")
         @patch("pcapi.settings.ALLOCINE_API_KEY", "token")
         @pytest.mark.usefixtures("db_session")
-        def test_should_preserve_is_duo_default_value(self, mock_poster_get_allocine, mock_call_allocine_api, app):
+        def test_should_preserve_is_duo_default_value(self, mock_poster_get_allocine, mock_call_allocine_api):
             # Given
             mock_poster_get_allocine.return_value = bytes()
-            mock_call_allocine_api.side_effect = [
-                iter(
-                    [
-                        {
-                            "node": {
-                                "movie": MOVIE_INFO,
-                                "showtimes": [
-                                    {
-                                        "startsAt": "2019-12-03T10:00:00",
-                                        "diffusionVersion": "LOCAL",
-                                        "projection": ["DIGITAL"],
-                                        "experience": None,
-                                    },
-                                    {
-                                        "startsAt": "2019-12-04T18:00:00",
-                                        "diffusionVersion": "LOCAL",
-                                        "projection": ["DIGITAL"],
-                                        "experience": None,
-                                    },
-                                ],
-                            }
-                        }
-                    ]
-                ),
-                iter(
-                    [
-                        {
-                            "node": {
-                                "movie": MOVIE_INFO,
-                                "showtimes": [
-                                    {
-                                        "startsAt": "2019-12-03T10:00:00",
-                                        "diffusionVersion": "LOCAL",
-                                        "projection": ["DIGITAL"],
-                                        "experience": None,
-                                    },
-                                    {
-                                        "startsAt": "2019-12-04T18:00:00",
-                                        "diffusionVersion": "LOCAL",
-                                        "projection": ["DIGITAL"],
-                                        "experience": None,
-                                    },
-                                ],
-                            }
-                        }
-                    ]
-                ),
-            ]
+            mock_result = allocine_serializers.AllocineMovieShowtimeListResponse.model_validate(
+                fixtures.ALLOCINE_MOVIE_SHOWTIME_LIST
+            )
+            mock_call_allocine_api.side_effect = [mock_result, mock_result]
 
             venue = offerers_factories.VenueFactory(
                 managingOfferer__siren="775671464",
@@ -1440,32 +791,16 @@ class UpdateObjectsTest:
             created_offer = offers_models.Offer.query.one()
             assert created_offer.isDuo
 
-        @patch("pcapi.local_providers.allocine.allocine_stocks.get_movies_showtimes")
+        @patch("pcapi.connectors.api_allocine.get_movies_showtimes_from_allocine")
         @patch("pcapi.local_providers.allocine.allocine_stocks.get_movie_poster")
         @patch("pcapi.settings.ALLOCINE_API_KEY", "token")
         @pytest.mark.usefixtures("db_session")
         def test_should_preserve_quantity_default_value(self, mock_poster_get_allocine, mock_call_allocine_api, app):
             # Given
             mock_poster_get_allocine.return_value = bytes()
-            mock_call_allocine_api.side_effect = [
-                iter(
-                    [
-                        {
-                            "node": {
-                                "movie": MOVIE_INFO,
-                                "showtimes": [
-                                    {
-                                        "startsAt": "2019-12-03T10:00:00",
-                                        "diffusionVersion": "LOCAL",
-                                        "projection": ["DIGITAL"],
-                                        "experience": None,
-                                    }
-                                ],
-                            }
-                        }
-                    ]
-                )
-            ]
+            mock_call_allocine_api.return_value = allocine_serializers.AllocineMovieShowtimeListResponse.model_validate(
+                fixtures.ALLOCINE_MOVIE_SHOWTIME_LIST
+            )
 
             venue = offerers_factories.VenueFactory(
                 managingOfferer__siren="775671464",
@@ -1482,33 +817,19 @@ class UpdateObjectsTest:
             allocine_stocks_provider.updateObjects()
 
             # Then
-            stock = offers_models.Stock.query.one()
+            stock = offers_models.Stock.query.first()
             assert stock.quantity == 50
 
     @patch("pcapi.local_providers.allocine.allocine_stocks.get_movie_poster")
-    @patch("pcapi.local_providers.allocine.allocine_stocks.get_movies_showtimes")
+    @patch("pcapi.connectors.api_allocine.get_movies_showtimes_from_allocine")
     @patch("pcapi.local_providers.allocine.allocine_stocks.AllocineStocks.get_object_thumb")
     @patch("pcapi.settings.ALLOCINE_API_KEY", "token")
     @pytest.mark.usefixtures("db_session")
     def should_not_update_thumbnail_more_then_once_a_day(
         self, mock_get_object_thumb, mock_call_allocine_api, mock_api_poster
     ):
-        mock_call_allocine_api.return_value = iter(
-            [
-                {
-                    "node": {
-                        "movie": MOVIE_INFO,
-                        "showtimes": [
-                            {
-                                "startsAt": "2019-10-29T10:30:00",
-                                "diffusionVersion": "LOCAL",
-                                "projection": ["DIGITAL"],
-                                "experience": None,
-                            }
-                        ],
-                    }
-                }
-            ]
+        mock_call_allocine_api.return_value = allocine_serializers.AllocineMovieShowtimeListResponse.model_validate(
+            fixtures.ALLOCINE_MOVIE_SHOWTIME_LIST
         )
         file_path = Path(tests.__path__[0]) / "files" / "mouette_portrait.jpg"
         with open(file_path, "rb") as thumb_file:
@@ -1541,38 +862,41 @@ class UpdateObjectsTest:
 
 
 class GetObjectThumbTest:
-    @patch("pcapi.local_providers.allocine.allocine_stocks.get_movies_showtimes")
+    @patch("pcapi.connectors.api_allocine.get_movies_showtimes_from_allocine")
     @patch("pcapi.local_providers.allocine.allocine_stocks.get_movie_poster")
     @patch("pcapi.settings.ALLOCINE_API_KEY", "token")
     @pytest.mark.usefixtures("db_session")
     def test_should_get_movie_poster_if_poster_url_exist(self, mock_poster_get_allocine, mock_call_allocine_api, app):
         # Given
+        mock_call_allocine_api.return_value = allocine_serializers.AllocineMovieShowtimeListResponse.model_validate(
+            fixtures.ALLOCINE_MOVIE_SHOWTIME_LIST
+        )
         mock_poster_get_allocine.return_value = "poster_thumb"
         allocine_venue_provider = providers_factories.AllocineVenueProviderFactory()
 
         allocine_stocks_provider = AllocineStocks(allocine_venue_provider)
-        allocine_stocks_provider.movie_information = {"poster_url": "http://url.example.com"}
+        allocine_stocks_provider.movie = list(allocine_stocks_provider.movies_showtimes)[0].movie
 
         # When
         poster_thumb = allocine_stocks_provider.get_object_thumb()
 
         # Then
-        mock_poster_get_allocine.assert_called_once_with("http://url.example.com")
+        mock_poster_get_allocine.assert_called_once_with(
+            "https://fr.web.img2.acsta.net/medias/nmedia/18/78/15/02/19447537.jpg"
+        )
         assert poster_thumb == "poster_thumb"
 
-    @patch("pcapi.local_providers.allocine.allocine_stocks.get_movies_showtimes")
+    @patch("pcapi.connectors.api_allocine.get_movies_showtimes_from_allocine")
     @patch("pcapi.local_providers.allocine.allocine_stocks.get_movie_poster")
     @patch("pcapi.settings.ALLOCINE_API_KEY", "token")
     @pytest.mark.usefixtures("db_session")
-    def test_should_return_empty_thumb_if_poster_does_not_exist(
-        self, mock_poster_get_allocine, mock_call_allocine_api, app
-    ):
+    def test_should_return_empty_thumb_if_poster_does_not_exist(self, mock_poster_get_allocine, mock_call_allocine_api):
         # Given
         mock_poster_get_allocine.return_value = "poster_thumb"
         allocine_venue_provider = providers_factories.AllocineVenueProviderFactory()
 
         allocine_stocks_provider = AllocineStocks(allocine_venue_provider)
-        allocine_stocks_provider.movie_information = {}
+        allocine_stocks_provider.movie = None
 
         # When
         poster_thumb = allocine_stocks_provider.get_object_thumb()
