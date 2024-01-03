@@ -425,6 +425,7 @@ def link_venue_to_pricing_point(
     pricing_point_id: int,
     timestamp: datetime | None = None,
     force_link: bool = False,
+    commit: bool = True,
 ) -> None:
     """
     Creates a VenuePricingPointLink if the venue had not been previously linked to a pricing point.
@@ -493,7 +494,8 @@ def link_venue_to_pricing_point(
                 "new_link_start": timestamp,
             },
         )
-    db.session.commit()
+    if commit:
+        db.session.commit()
     logger.info(
         "Linked venue to pricing point",
         extra={
@@ -501,6 +503,7 @@ def link_venue_to_pricing_point(
             "new_pricing_point": pricing_point_id,
             "previous_pricing_point": current_link.pricingPointId if current_link else None,
             "updated_finance_events": ppoint_update_result.rowcount,
+            "commit": commit,
         },
     )
 
