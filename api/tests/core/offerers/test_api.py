@@ -39,6 +39,7 @@ from pcapi.core.testing import override_settings
 from pcapi.core.users import factories as users_factories
 from pcapi.core.users import models as users_models
 from pcapi.models import api_errors
+from pcapi.models import db
 from pcapi.models.validation_status_mixin import ValidationStatus
 from pcapi.routes.serialization import base as serialize_base
 from pcapi.routes.serialization import offerers_serialize
@@ -1937,6 +1938,8 @@ class LinkVenueToPricingPointTest:
 
         offerers_api.link_venue_to_pricing_point(venue, pricing_point.id)
 
+        db.session.rollback()  # ensure that commit() was called before assertions
+
         new_link = offerers_models.VenuePricingPointLink.query.one()
         assert new_link.venue == venue
         assert new_link.pricingPoint == pricing_point
@@ -1981,6 +1984,16 @@ class LinkVenueToPricingPointTest:
             offerers_api.link_venue_to_pricing_point(venue, reimbursement_point.id)
         msg = "Ce lieu a un SIRET, vous ne pouvez donc pas choisir un autre lieu pour le calcul du barème de remboursement."
         assert error.value.errors == {"pricingPointId": [msg]}
+
+    def test_no_commit(self):
+        venue = offerers_factories.VenueWithoutSiretFactory()
+        pricing_point = offerers_factories.VenueFactory(managingOfferer=venue.managingOfferer)
+
+        offerers_api.link_venue_to_pricing_point(venue, pricing_point.id, commit=False)
+
+        db.session.rollback()  # test after commit() is not called
+
+        assert offerers_models.VenuePricingPointLink.query.count() == 0
 
 
 class LinkVenueToReimbursementPointTest:
