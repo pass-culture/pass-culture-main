@@ -2,7 +2,6 @@ import { screen, waitFor } from '@testing-library/react'
 import React from 'react'
 import { Configure } from 'react-instantsearch'
 
-import { AlgoliaQueryContextProvider } from 'pages/AdageIframe/app/providers'
 import { AdageUserContextProvider } from 'pages/AdageIframe/app/providers/AdageUserContext'
 import {
   defaultAdageUser,
@@ -48,9 +47,7 @@ vi.mock('react-instantsearch', async () => {
 const renderOffersForMyInstitution = () => {
   renderWithProviders(
     <AdageUserContextProvider adageUser={defaultAdageUser}>
-      <AlgoliaQueryContextProvider>
-        <OffersForMyInstitution />
-      </AlgoliaQueryContextProvider>
+      <OffersForMyInstitution />
     </AdageUserContextProvider>
   )
 }

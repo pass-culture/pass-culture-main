@@ -2,10 +2,7 @@ import { screen, waitForElementToBeRemoved } from '@testing-library/react'
 import React from 'react'
 
 import { MARSEILLE_EN_GRAND } from 'pages/AdageIframe/app/constants'
-import {
-  AlgoliaQueryContextProvider,
-  FiltersContextProvider,
-} from 'pages/AdageIframe/app/providers'
+import { FiltersContextProvider } from 'pages/AdageIframe/app/providers'
 import { AdageUserContextProvider } from 'pages/AdageIframe/app/providers/AdageUserContext'
 import {
   defaultAdageUser,
@@ -107,9 +104,7 @@ const renderAppLayout = (
   renderWithProviders(
     <AdageUserContextProvider adageUser={{ ...user, offersCount: 1 }}>
       <FiltersContextProvider>
-        <AlgoliaQueryContextProvider>
-          <AppLayout venueFilter={null} />
-        </AlgoliaQueryContextProvider>
+        <AppLayout venueFilter={null} />
       </FiltersContextProvider>
     </AdageUserContextProvider>,
     options
