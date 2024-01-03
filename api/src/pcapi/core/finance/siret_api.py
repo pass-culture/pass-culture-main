@@ -2,7 +2,10 @@ from collections import defaultdict
 import datetime
 from decimal import Decimal
 
+import sqlalchemy as sa
+
 import pcapi.core.history.models as history_models
+from pcapi.core.offerers import api as offerers_api
 import pcapi.core.offerers.models as offerers_models
 from pcapi.models import db
 import pcapi.utils.db as db_utils
@@ -270,6 +273,7 @@ def remove_siret(
         ).one_or_none()
         if not new_pricing_point_venue:
             raise CheckError("Le nouveau point de valorisation doit être un lieu avec SIRET sur la même structure")
+        new_siret = new_pricing_point_venue.siret
 
     with db.session.no_autoflush:  # do not flush anything before commit
         if new_db_session:
@@ -284,30 +288,35 @@ def remove_siret(
             db.session.add(venue)
             modified_info_by_venue[venue.id]["siret"] = {"old_info": old_siret, "new_info": None}
 
-            # End all active links to this pricing point
-            pricing_point_links = offerers_models.VenuePricingPointLink.query.filter(
-                offerers_models.VenuePricingPointLink.pricingPointId == venue.id,
-                offerers_models.VenuePricingPointLink.timespan.contains(now),
-            ).all()
-            for pricing_point_link in pricing_point_links:
-                pricing_point_link.timespan = db_utils.make_timerange(pricing_point_link.timespan.lower, end=now)
-                db.session.add(pricing_point_link)
-                modified_info_by_venue[pricing_point_link.venueId]["pricingPointSiret"] = {
-                    "old_info": old_siret,
-                    "new_info": None,
-                }
+            # must be called before link_venue_to_pricing_point() so that new pricing point is set properly
+            _delete_ongoing_pricings(venue)
 
+            # End all active links to this pricing point
+            pricing_point_links = (
+                offerers_models.VenuePricingPointLink.query.filter(
+                    offerers_models.VenuePricingPointLink.pricingPointId == venue.id,
+                    offerers_models.VenuePricingPointLink.timespan.contains(now),
+                )
+                .options(sa.orm.joinedload(offerers_models.VenuePricingPointLink.venue))
+                .all()
+            )
+            for pricing_point_link in pricing_point_links:
                 # Replace with new pricing point (when provided), only for the venue which lost its SIRET
                 if new_pricing_point_id and pricing_point_link.venueId == venue.id:
-                    new_pricing_point_link = offerers_models.VenuePricingPointLink(
-                        venueId=pricing_point_link.venueId,
-                        pricingPointId=new_pricing_point_id,
-                        timespan=(now, None),
+                    offerers_api.link_venue_to_pricing_point(
+                        pricing_point_link.venue, new_pricing_point_id, force_link=True, commit=False
                     )
-                    db.session.add(new_pricing_point_link)
-                    modified_info_by_venue[pricing_point_link.venueId]["pricingPointSiret"]["new_info"] = (
-                        db.session.query(offerers_models.Venue.siret).filter_by(id=new_pricing_point_id).scalar()
-                    )
+                    modified_info_by_venue[pricing_point_link.venueId]["pricingPointSiret"] = {
+                        "old_info": old_siret,
+                        "new_info": new_siret,
+                    }
+                else:
+                    pricing_point_link.timespan = db_utils.make_timerange(pricing_point_link.timespan.lower, end=now)
+                    db.session.add(pricing_point_link)
+                    modified_info_by_venue[pricing_point_link.venueId]["pricingPointSiret"] = {
+                        "old_info": old_siret,
+                        "new_info": None,
+                    }
 
             for modified_venue_id, modified_info in modified_info_by_venue.items():
                 db.session.add(
@@ -320,8 +329,6 @@ def remove_siret(
                         extraData={"modified_info": modified_info},
                     )
                 )
-
-            _delete_ongoing_pricings(venue)
 
         except Exception:
             db.session.rollback()
