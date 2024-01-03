@@ -54,7 +54,7 @@ export const NewOfferPlaylist = ({
   return (
     <Carousel
       title={
-        <h2 className={styles['section-title']}>
+        <h2 className={styles['playlist-carousel-title']}>
           Les offres publiées récemment
         </h2>
       }
