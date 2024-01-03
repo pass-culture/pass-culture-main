@@ -82,7 +82,9 @@ describe('AdageDiscover classRoomPlaylist', () => {
     renderNewOfferPlaylist(user)
 
     expect(
-      await screen.findByText('À moins 30 minutes à pieds de mon établissement')
+      await screen.findByText(
+        'À moins de 30 minutes à pied de mon établissement'
+      )
     ).toBeInTheDocument()
   })
 
@@ -116,13 +118,13 @@ describe('AdageDiscover classRoomPlaylist', () => {
   it.each([
     {
       level: InstitutionRuralLevel.RURAL_AUTONOME_PEU_DENSE,
-      title: 'À environs 1h de transport de mon établissement',
+      title: 'À environ 1h de route de mon établissement',
     },
     {
       level: InstitutionRuralLevel.URBAIN_DENSIT_INTERM_DIAIRE,
       title: 'À moins de 30 minutes en transport de mon établissement',
     },
-    { level: null, title: 'À moins 30 minutes à pieds de mon établissement' },
+    { level: null, title: 'À moins de 30 minutes à pied de mon établissement' },
   ])(
     'should display the playlist title based on the institution rural level',
     async (ruralLevelParam) => {
