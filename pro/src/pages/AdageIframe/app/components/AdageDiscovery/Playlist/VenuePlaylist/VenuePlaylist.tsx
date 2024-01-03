@@ -71,7 +71,7 @@ export const VenuePlaylist = ({
   return (
     <Carousel
       title={
-        <h2 className={styles['section-title']}>
+        <h2 className={styles['playlist-carousel-title']}>
           {adageUser.institutionRuralLevel
             ? institutionRuralLevelToPlaylistTitle[
                 adageUser.institutionRuralLevel

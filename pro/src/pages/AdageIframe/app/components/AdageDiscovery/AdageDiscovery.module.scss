@@ -68,6 +68,10 @@
   }
 }
 
+.playlist-carousel-title {
+  @include fonts.title3;
+}
+
 @media (min-width: size.$tablet) {
   .discovery-banner-title {
     font-size: rem.torem(32px);

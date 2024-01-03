@@ -121,7 +121,7 @@ export const AdageDiscovery = () => {
         <div className={styles['discovery-playlist']}>
           <Carousel
             title={
-              <h2 className={styles['section-title']}>
+              <h2 className={styles['playlist-carousel-title']}>
                 Explorez les domaines artistiques et culturels
               </h2>
             }
