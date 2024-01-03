@@ -154,12 +154,15 @@ def create_industrial_venues(offerers_by_name: dict) -> dict[str, Venue]:
         )
 
     # Venue Allocine
+
+    allocine_offerer = offerers_factories.OffererFactory(name="Structure du lieu synchro allociné")
+    offerers_factories.UserOffererFactory(offerer=allocine_offerer, user__email="api@example.com")
     venue_synchronized_with_allocine = offerers_factories.VenueFactory(
         name="Lieu synchro allociné",
         siret="21070034000016",
         pricing_point="self",
         reimbursement_point="self",
-        managingOfferer__name="Structure du lieu synchro allociné",
+        managingOfferer=allocine_offerer,
         venueTypeCode=offerers_models.VenueTypeCode.MOVIE,
     )
     allocine_provider = providers_factories.AllocineProviderFactory(isActive=True)

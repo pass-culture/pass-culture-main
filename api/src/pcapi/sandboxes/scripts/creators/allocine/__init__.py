@@ -20,12 +20,6 @@ def save_allocine_sandbox() -> None:
 
     create_industrial_admin_users()
 
-    pro = users_factories.ProFactory(
-        firstName="Didier",
-        lastName="Champion",
-        email="pro.exploitant-cinema@example.net",
-    )
-
     offerer = offerers_factories.OffererFactory(
         address="145, rue Chaplin",
         city="Paris 17",
@@ -34,7 +28,7 @@ def save_allocine_sandbox() -> None:
         siren=sirene.siren,
     )
 
-    offerers_factories.UserOffererFactory(offerer=offerer, user=pro)
+    offerers_factories.UserOffererFactory(offerer=offerer, user__email="api@example.com")
 
     venue = offerers_factories.VenueFactory(
         managingOfferer=offerer,
