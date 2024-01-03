@@ -24,7 +24,7 @@ Spectree:
 
 ## Installation des dépendances
 
-Avec `poetry` et Python **3.10** :
+Avec `poetry` et Python **3.11** :
 
 ```shell
 curl -sSL https://install.python-poetry.org | python3 -
