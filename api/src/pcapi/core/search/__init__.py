@@ -375,6 +375,7 @@ def _reindex_venue_ids(
         .options(sa.orm.joinedload(offerers_models.Venue.managingOfferer))
         .options(sa.orm.joinedload(offerers_models.Venue.contact))
         .options(sa.orm.joinedload(offerers_models.Venue.criteria))
+        .options(sa.orm.joinedload(offerers_models.Venue.googlePlacesInfo))
     )
 
     to_add = []

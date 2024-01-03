@@ -52,6 +52,7 @@ from pcapi.models import Model
 from pcapi.models import db
 from pcapi.models.accessibility_mixin import AccessibilityMixin
 from pcapi.models.deactivable_mixin import DeactivableMixin
+from pcapi.models.feature import FeatureToggle
 from pcapi.models.has_address_mixin import HasAddressMixin
 from pcapi.models.has_thumb_mixin import HasThumbMixin
 from pcapi.models.pc_object import PcObject
@@ -421,7 +422,11 @@ class Venue(PcObject, Base, Model, HasThumbMixin, ProvidableMixin, Accessibility
 
     @hybrid_property
     def bannerUrl(self) -> str | None:
-        return self._bannerUrl or self._get_type_banner_url()
+        if self._bannerUrl:
+            return self._bannerUrl
+        if self.googlePlacesInfo and self.googlePlacesInfo.bannerUrl and FeatureToggle.WIP_GOOGLE_MAPS_VENUE_IMAGES:
+            return self.googlePlacesInfo.bannerUrl
+        return self._get_type_banner_url()
 
     @bannerUrl.setter  # type: ignore [no-redef]
     def bannerUrl(self, value: str | None) -> None:
