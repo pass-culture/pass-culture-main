@@ -15,10 +15,7 @@ import { initAlgoliaAnalytics } from '../libs/initAlgoliaAnalytics'
 import { AppLayout } from './components/AppLayout/AppLayout'
 import { LoaderPage } from './components/LoaderPage/LoaderPage'
 import { UnauthenticatedError } from './components/UnauthenticatedError/UnauthenticatedError'
-import {
-  FacetFiltersContextProvider,
-  FiltersContextProvider,
-} from './providers'
+import { FacetFiltersContextProvider } from './providers'
 import { AdageUserContextProvider } from './providers/AdageUserContext'
 
 export const App = (): JSX.Element => {
@@ -97,22 +94,20 @@ export const App = (): JSX.Element => {
 
   return (
     <AdageUserContextProvider adageUser={user}>
-      <FiltersContextProvider venueFilter={venueFilter}>
-        <FacetFiltersContextProvider
-          uai={user?.uai}
-          venueFilter={venueFilter}
-          domainFilter={domainId}
-        >
-          {user?.role &&
-          [AdageFrontRoles.READONLY, AdageFrontRoles.REDACTOR].includes(
-            user.role
-          ) ? (
-            <AppLayout venueFilter={venueFilter} />
-          ) : (
-            <UnauthenticatedError />
-          )}
-        </FacetFiltersContextProvider>
-      </FiltersContextProvider>
+      <FacetFiltersContextProvider
+        uai={user?.uai}
+        venueFilter={venueFilter}
+        domainFilter={domainId}
+      >
+        {user?.role &&
+        [AdageFrontRoles.READONLY, AdageFrontRoles.REDACTOR].includes(
+          user.role
+        ) ? (
+          <AppLayout venueFilter={venueFilter} />
+        ) : (
+          <UnauthenticatedError />
+        )}
+      </FacetFiltersContextProvider>
     </AdageUserContextProvider>
   )
 }
