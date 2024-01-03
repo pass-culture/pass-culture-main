@@ -566,6 +566,12 @@ class CustomReimbursementRule(ReimbursementRule, Base, Model):
         "Offer", foreign_keys=[offerId], backref="custom_reimbursement_rules"
     )
 
+    venueId = sqla.Column(sqla.BigInteger, sqla.ForeignKey("venue.id"), nullable=True)
+
+    venue: sqla_orm.Mapped["offerers_models.Venue | None"] = sqla_orm.relationship(
+        "Venue", foreign_keys=[venueId], backref="custom_reimbursement_rules"
+    )
+
     offererId = sqla.Column(sqla.BigInteger, sqla.ForeignKey("offerer.id"), nullable=True)
 
     offerer: sqla_orm.Mapped["offerers_models.Offerer | None"] = sqla_orm.relationship(
@@ -589,8 +595,8 @@ class CustomReimbursementRule(ReimbursementRule, Base, Model):
     timespan: psycopg2.extras.DateTimeRange = sqla.Column(sqla_psql.TSRANGE)
 
     __table_args__ = (
-        # A rule relates to an offer or an offerer, never both.
-        sqla.CheckConstraint('num_nonnulls("offerId", "offererId") = 1'),
+        # A rule relates to an offer, a venue, or an offerer, never more than one.
+        sqla.CheckConstraint('num_nonnulls("offerId", "venueId", "offererId") = 1'),
         # A rule has an amount or a rate, never both.
         sqla.CheckConstraint("num_nonnulls(amount, rate) = 1"),
         # A timespan must have a lower bound. Upper bound is optional.
@@ -613,11 +619,15 @@ class CustomReimbursementRule(ReimbursementRule, Base, Model):
         booking: "bookings_models.Booking",
         cumulative_revenue: int = 0,  # unused
     ) -> bool:
+        from pcapi.core.finance.api import get_pricing_point_link
+
         if booking.stock.offerId == self.offerId:
             return True
         if self.subcategories:
             if booking.stock.offer.subcategoryId not in self.subcategories:
                 return False
+        if get_pricing_point_link(booking).pricingPointId == self.venueId:
+            return True
         if booking.offererId == self.offererId:
             return True
         return False
@@ -638,6 +648,39 @@ class CustomReimbursementRule(ReimbursementRule, Base, Model):
     @property
     def group(self) -> RuleGroup:
         return RuleGroup.CUSTOM
+
+
+CustomReimbursementRule.trig_ddl = """
+    CREATE OR REPLACE FUNCTION check_venue_has_siret()
+    RETURNS TRIGGER AS $$
+    BEGIN
+      IF
+       NOT NEW.venueId IS NULL
+       AND
+        (
+         (
+          SELECT venue.siret
+          FROM venue
+          WHERE "id"=NEW.venueId
+         ) IS NULL
+        )
+      THEN
+       RAISE EXCEPTION 'venueHasNoSiret'
+       USING HINT = 'the venue must have a siret';
+      END IF;
+
+      RETURN NEW;
+    END;
+    $$ LANGUAGE plpgsql;
+
+    DROP TRIGGER IF EXISTS check_venue_has_siret ON "custom_reimbursement_rule";
+    CREATE TRIGGER check_venue_has_siret
+    AFTER INSERT OR UPDATE ON custom_reimbursement_rule
+    FOR EACH ROW
+    EXECUTE PROCEDURE check_venue_has_siret()
+    """
+
+sqla.event.listen(CustomReimbursementRule.__table__, "after_create", sqla.DDL(CustomReimbursementRule.trig_ddl))
 
 
 class Cashflow(Base, Model):

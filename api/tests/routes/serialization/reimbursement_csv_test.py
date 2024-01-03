@@ -51,6 +51,7 @@ class ReimbursementDetailsTest:
             booking__quantity=2,
             booking__dateUsed=datetime(2022, 6, 18),
             booking__stock__offer__venue__reimbursement_point=reimbursement_point,
+            booking__stock__offer__venue__pricing_point=reimbursement_point,
             booking__priceCategoryLabel="Tarif unique",
         )
         finance_factories.PaymentStatusFactory(
@@ -192,6 +193,7 @@ def test_generate_reimbursement_details_csv() -> None:
         booking__stock__offer__venue__publicName="Un nom public pas très spécial",
         booking__stock__offer__venue__siret="siret-1234",
         booking__stock__offer__venue__reimbursement_point="self",
+        booking__stock__offer__venue__pricing_point="self",
         booking__token="0E2722",
         booking__amount=10.5,
         booking__quantity=2,
@@ -262,11 +264,16 @@ def test_find_all_offerer_reimbursement_details() -> None:
     # reimbursement point.
     finance_factories.BankInformationFactory(venue=venue1)
     finance_factories.BankInformationFactory(venue=venue2)
-    booking1 = bookings_factories.UsedBookingFactory(stock__offer__venue=venue1)
-    booking2 = bookings_factories.UsedBookingFactory(stock__offer__venue=venue2)
+    booking1 = bookings_factories.UsedBookingFactory(
+        stock__offer__venue=venue1, stock__offer__venue__pricing_point="self"
+    )
+    booking2 = bookings_factories.UsedBookingFactory(
+        stock__offer__venue=venue2, stock__offer__venue__pricing_point="self"
+    )
     collective_booking3 = educational_factories.UsedCollectiveBookingFactory(
         collectiveStock__beginningDatetime=datetime.utcnow(),
         collectiveStock__collectiveOffer__venue=venue2,
+        collectiveStock__collectiveOffer__venue__pricing_point=venue2,
     )
     label = ("pass Culture Pro - remboursement 1ère quinzaine 07-2019",)
     payment_1 = finance_factories.PaymentFactory(booking=booking1, transactionLabel=label)

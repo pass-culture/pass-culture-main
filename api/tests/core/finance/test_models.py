@@ -4,11 +4,12 @@ from decimal import Decimal
 
 import pytest
 import pytz
-from sqlalchemy.exc import IntegrityError
+import sqlalchemy.exc as sa_exc
 
 import pcapi.core.bookings.factories as bookings_factories
 from pcapi.core.finance import factories
 from pcapi.core.finance import models
+import pcapi.core.offerers.factories as offerers_factories
 import pcapi.core.offers.factories as offers_factories
 from pcapi.core.users import factories as users_factories
 from pcapi.models import db
@@ -82,7 +83,7 @@ class CustomReimbursementRuleTest:
         rule = factories.CustomReimbursementRuleFactory(offer=offer1)
         assert rule.is_relevant(booking1)
 
-        booking2 = bookings_factories.BookingFactory()
+        booking2 = bookings_factories.UsedBookingFactory(stock__offer__venue__pricing_point="self")
         assert not rule.is_relevant(booking2)
 
     def test_apply_with_amount(self):
@@ -122,6 +123,13 @@ class CustomReimbursementRuleTest:
         double = bookings_factories.BookingFactory(quantity=2, amount=40.65)
         assert rule.apply(single) == 7724  # 7723.5 rounded
         assert rule.apply(double) == 7724  # 7723.5 rounded
+
+    def test_cant_create_if_venue_is_not_a_pricing_point(self):
+        not_a_pricing_point_venue = offerers_factories.VenueWithoutSiretFactory()
+        with pytest.raises(sa_exc.InternalError) as exc:
+            factories.CustomReimbursementRuleFactory(venue=not_a_pricing_point_venue)
+
+        assert "venueHasNoSiret" in str(exc)
 
 
 class DepositSpecificCapsTest:
@@ -172,7 +180,7 @@ class BankAccountRulesTest:
     def test_we_cant_have_the_two_bank_account_with_same_dsapplicationid(self):
         factories.BankAccountFactory(dsApplicationId=42)
 
-        with pytest.raises(IntegrityError):
+        with pytest.raises(sa_exc.IntegrityError):
             factories.BankAccountFactory(dsApplicationId=42)
 
     def test_we_cant_log_twice_status_history_at_the_same_time(self):
@@ -184,7 +192,7 @@ class BankAccountRulesTest:
             timespan=(datetime.datetime.utcnow(),),
         )
 
-        with pytest.raises(IntegrityError):
+        with pytest.raises(sa_exc.IntegrityError):
             factories.BankAccountStatusHistoryFactory(
                 bankAccount=bank_account,
                 status=models.BankAccountApplicationStatus.ON_GOING,
@@ -195,6 +203,6 @@ class BankAccountRulesTest:
 @pytest.mark.usefixtures("db_session")
 class BookingFinanceIncidentTest:
     def test_no_partial_incident_on_collective_booking(self):
-        with pytest.raises(IntegrityError) as err:
+        with pytest.raises(sa_exc.IntegrityError) as err:
             factories.CollectiveBookingFinanceIncidentFactory(newTotalAmount=100)
         assert 'booking_finance_incident" violates check constraint "booking_finance_incident_check"' in str(err.value)

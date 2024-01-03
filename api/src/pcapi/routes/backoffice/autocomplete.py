@@ -91,19 +91,19 @@ def _get_venues_base_query() -> sa.orm.Query:
     )
 
 
-def prefill_venues_choices(autocomplete_field: fields.PCTomSelectField) -> None:
+def prefill_venues_choices(autocomplete_field: fields.PCTomSelectField, only_with_siret: bool = False) -> None:
     if autocomplete_field.data:
         venues = (
             _get_venues_base_query()
             .filter(offerers_models.Venue.id.in_(autocomplete_field.data))
             .order_by(offerers_models.Venue.common_name)
         )
+        if only_with_siret:
+            venues = venues.filter(offerers_models.Venue.siret.is_not(None))
         autocomplete_field.choices = [(venue.id, _get_venue_choice_label(venue)) for venue in venues]
 
 
-@blueprint.backoffice_web.route("/autocomplete/venues", methods=["GET"])
-@spectree_serialize(response_model=AutocompleteResponse, api=blueprint.backoffice_web_schema)
-def autocomplete_venues() -> AutocompleteResponse:
+def _autocomplete_venues(only_with_siret: bool = False) -> AutocompleteResponse:
     query_string = request.args.get("q", "").strip()
 
     is_numeric_query = query_string.isnumeric()
@@ -125,12 +125,25 @@ def autocomplete_venues() -> AutocompleteResponse:
             ]
 
         filters = sa.or_(*or_filters)
+    if only_with_siret:
+        filters = sa.and_(filters, offerers_models.Venue.siret.is_not(None))
 
     venues = _get_venues_base_query().filter(filters).limit(NUM_RESULTS)
-
     return AutocompleteResponse(
         items=[AutocompleteItem(id=venue.id, text=_get_venue_choice_label(venue)) for venue in venues]
     )
+
+
+@blueprint.backoffice_web.route("/autocomplete/venues", methods=["GET"])
+@spectree_serialize(response_model=AutocompleteResponse, api=blueprint.backoffice_web_schema)
+def autocomplete_venues() -> AutocompleteResponse:
+    return _autocomplete_venues()
+
+
+@blueprint.backoffice_web.route("/autocomplete/pricing-points", methods=["GET"])
+@spectree_serialize(response_model=AutocompleteResponse, api=blueprint.backoffice_web_schema)
+def autocomplete_pricing_points() -> AutocompleteResponse:
+    return _autocomplete_venues(only_with_siret=True)
 
 
 def _get_criterion_choice_label(criterion: criteria_models.Criterion) -> str:

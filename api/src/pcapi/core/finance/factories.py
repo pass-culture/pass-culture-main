@@ -211,6 +211,9 @@ class CustomReimbursementRuleFactory(BaseFactory):
             kwargs["amount"] = None
         if "offerer" in kwargs:
             kwargs["offer"] = None
+            kwargs["venue"] = None
+        elif "venue" in kwargs:
+            kwargs["offer"] = None  # offerer is already None here
         return super()._create(model_class, *args, **kwargs)
 
 
@@ -255,6 +258,7 @@ class PaymentFactory(BaseFactory):
 
     author = "batch"
     booking = factory.SubFactory(bookings_factories.UsedBookingFactory)
+    collectiveBooking = None
     amount = factory.LazyAttribute(
         lambda payment: payment.booking.total_amount * decimal.Decimal(payment.reimbursementRate)
     )
@@ -262,7 +266,7 @@ class PaymentFactory(BaseFactory):
     reimbursementRule = factory.Iterator(REIMBURSEMENT_RULE_DESCRIPTIONS)
     reimbursementRate = factory.LazyAttribute(
         lambda payment: reimbursement.get_reimbursement_rule(  # type: ignore [attr-defined]
-            payment.booking, reimbursement.CustomRuleFinder(), 0
+            payment.collectiveBooking or payment.booking, reimbursement.CustomRuleFinder(), 0
         ).rate
     )
     recipientName = "Récipiendaire"
@@ -283,6 +287,17 @@ class PaymentFactory(BaseFactory):
             return extracted
         status = PaymentStatusFactory(payment=obj, status=models.TransactionStatus.PENDING)
         return [status]
+
+    @classmethod
+    def _create(
+        cls,
+        model_class: type[models.Payment],
+        *args: typing.Any,
+        **kwargs: typing.Any,
+    ) -> models.Payment:
+        if kwargs.get("collectiveBooking"):
+            kwargs["booking"] = None  # override default Booking
+        return super()._create(model_class, *args, **kwargs)
 
 
 class PaymentStatusFactory(BaseFactory):

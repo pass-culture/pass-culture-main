@@ -99,7 +99,7 @@ def get_pricing_ordering_date(
     # IMPORTANT: if you change this, you must also adapt the SQL query
     # in `core.offerers.api.link_venue_to_pricing_point()`
     return max(
-        _get_pricing_point_link(booking).timespan.lower,
+        get_pricing_point_link(booking).timespan.lower,
         stock.beginningDatetime or booking.dateUsed,
         booking.dateUsed,
     )
@@ -296,7 +296,7 @@ def price_events(
                     db.session.expunge(event)
 
 
-def _get_pricing_point_link(
+def get_pricing_point_link(
     booking: bookings_models.Booking | educational_models.CollectiveBooking,
 ) -> offerers_models.VenuePricingPointLink:
     """Return the venue-pricing point link to use at the time the
@@ -1958,6 +1958,22 @@ def create_offerer_reimbursement_rule(
     )
 
 
+def create_venue_reimbursement_rule(
+    venue_id: int,
+    subcategories: list[int],
+    rate: decimal.Decimal,
+    start_date: datetime.datetime,
+    end_date: datetime.datetime | None = None,
+) -> models.CustomReimbursementRule:
+    return _create_reimbursement_rule(
+        venue_id=venue_id,
+        subcategories=subcategories,
+        rate=rate,
+        start_date=start_date,
+        end_date=end_date,
+    )
+
+
 def create_offer_reimbursement_rule(
     offer_id: int,
     amount: decimal.Decimal,
@@ -1974,6 +1990,7 @@ def create_offer_reimbursement_rule(
 
 def _create_reimbursement_rule(
     offerer_id: int | None = None,
+    venue_id: int | None = None,
     offer_id: int | None = None,
     subcategories: list[int] | None = None,
     rate: decimal.Decimal | None = None,
@@ -1982,21 +1999,22 @@ def _create_reimbursement_rule(
     end_date: datetime.datetime | None = None,
 ) -> models.CustomReimbursementRule:
     subcategories = subcategories or []
-    if not (bool(offerer_id) ^ bool(offer_id)):
-        raise ValueError("Must provide offer or offerer (but not both)")
+    if not (bool(offerer_id) ^ bool(venue_id) ^ bool(offer_id)):
+        raise ValueError("Must provide offer, venue, or offerer (only one)")
     if not (bool(rate) ^ bool(amount)):
         raise ValueError("Must provide rate or amount (but not both)")
-    if not (bool(rate) or not bool(offerer_id)):
-        raise ValueError("Rate must be specified only with an offerer (not with an offer)")
+    if not bool(rate) and (bool(offerer_id) or bool(venue_id)):
+        raise ValueError("Rate must be specified only with an offerer or venue (not with an offer)")
     if not (bool(amount) or not bool(offer_id)):
-        raise ValueError("Amount must be specified only with an offer (not with an offerer)")
+        raise ValueError("Amount must be specified only with an offer (not with an offerer or venue)")
     if not start_date:
         raise ValueError("Start date must be provided")
     rule = models.CustomReimbursementRule(
         offererId=offerer_id,
+        venueId=venue_id,
         offerId=offer_id,
         subcategories=subcategories,
-        rate=rate,  # only for offerers
+        rate=rate,  # only for offerers and venues
         amount=utils.to_eurocents(amount) if amount is not None else None,  # only for offers
         timespan=(start_date, end_date),
     )
