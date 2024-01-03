@@ -26,7 +26,7 @@
                 data-bs-toggle="modal"
                 data-bs-target="#create-custom-reimbursement-rule"
                 type="button">Créer un tarif dérogatoire</button>
-        {{ build_lazy_modal(url_for("backoffice_web.reimbursement_rules.get_create_custom_reimbursement_rule_form"), "create-custom-reimbursement-rule") }}
+        {{ build_lazy_modal(url_for("backoffice_web.reimbursement_rules.get_create_custom_reimbursement_rule_form") , "create-custom-reimbursement-rule") }}
       {% endif %}
       {% if rows %}
         <div class="d-flex justify-content-between">
@@ -75,6 +75,11 @@
                   <td>{{ reimbursement_rule.offerer.siren }}</td>
                   <td></td>
                   <td></td>
+                {% elif reimbursement_rule.venue %}
+                  <td>{{ links.build_offerer_name_to_pc_pro_link(reimbursement_rule.venue.managingOfferer) }}</td>
+                  <td>{{ reimbursement_rule.venue.managingOfferer.siren }}</td>
+                  <td>{{ links.build_venue_name_to_pc_pro_link(reimbursement_rule.venue, siret=true) }}</td>
+                  <td></td>
                 {% else %}
                   <td>{{ links.build_offerer_name_to_pc_pro_link(reimbursement_rule.offer.venue.managingOfferer) }}</td>
                   <td>{{ reimbursement_rule.offer.venue.managingOfferer.siren }}</td>
@@ -91,8 +96,7 @@
         </table>
         {% for reimbursement_rule in rows %}
           {% if not reimbursement_rule.timespan.upper %}
-            {{ build_lazy_modal(
-            url_for("backoffice_web.reimbursement_rules.get_edit_custom_reimbursement_rule_form", reimbursement_rule_id=reimbursement_rule.id),
+            {{ build_lazy_modal(url_for("backoffice_web.reimbursement_rules.get_edit_custom_reimbursement_rule_form", reimbursement_rule_id=reimbursement_rule.id) ,
             "edit-custom-reimbursement-rule-" + reimbursement_rule.id|string) }}
           {% endif %}
         {% endfor %}

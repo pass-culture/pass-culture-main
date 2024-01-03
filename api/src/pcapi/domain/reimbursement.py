@@ -5,6 +5,7 @@ from pcapi.core.bookings.models import Booking
 from pcapi.core.categories import subcategories_v2 as subcategories
 from pcapi.core.educational.models import CollectiveBooking
 from pcapi.core.finance import utils as finance_utils
+import pcapi.core.finance.api as finance_api
 import pcapi.core.finance.models as finance_models
 from pcapi.core.offers.models import Offer
 
@@ -203,6 +204,7 @@ class CustomRuleFinder:
     def __init__(self) -> None:
         self.rules = finance_models.CustomReimbursementRule.query.all()
         self.rules_by_offer = self._partition_by_field("offerId")
+        self.rules_by_venue = self._partition_by_field("venueId")
         self.rules_by_offerer = self._partition_by_field("offererId")
 
     def _partition_by_field(self, field: str) -> dict:
@@ -213,6 +215,9 @@ class CustomRuleFinder:
 
     def get_rule(self, booking: Booking) -> finance_models.CustomReimbursementRule | None:
         for rule in self.rules_by_offer.get(booking.stock.offerId, ()):
+            if rule.matches(booking, cumulative_revenue=0):  # cumulative revenue is ignored
+                return rule
+        for rule in self.rules_by_venue.get(finance_api.get_pricing_point_link(booking).pricingPointId, ()):
             if rule.matches(booking, cumulative_revenue=0):  # cumulative revenue is ignored
                 return rule
         for rule in self.rules_by_offerer.get(booking.offererId, ()):

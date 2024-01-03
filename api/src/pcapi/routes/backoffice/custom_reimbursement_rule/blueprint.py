@@ -57,6 +57,21 @@ def _get_custom_reimbursement_rules(
                 offerers_models.Offerer.name,
                 offerers_models.Offerer.siren,
             ),
+            sa.orm.joinedload(finance_models.CustomReimbursementRule.venue)
+            .load_only(
+                offerers_models.Venue.id,
+                offerers_models.Venue.name,
+                offerers_models.Venue.publicName,
+                offerers_models.Venue.isVirtual,
+                offerers_models.Venue.managingOffererId,
+                offerers_models.Venue.siret,
+            )
+            .joinedload(offerers_models.Venue.managingOfferer)
+            .load_only(
+                offerers_models.Offerer.id,
+                offerers_models.Offerer.name,
+                offerers_models.Offerer.siren,
+            ),
             sa.orm.joinedload(finance_models.CustomReimbursementRule.offer)
             .load_only(offers_models.Offer.id, offers_models.Offer.name)
             .joinedload(offers_models.Offer.venue)
@@ -65,6 +80,7 @@ def _get_custom_reimbursement_rules(
                 offerers_models.Venue.publicName,
                 offerers_models.Venue.isVirtual,
                 offerers_models.Venue.managingOffererId,
+                offerers_models.Venue.siret,
             )
             .joinedload(offerers_models.Venue.managingOfferer)
             .load_only(
@@ -75,12 +91,23 @@ def _get_custom_reimbursement_rules(
         )
     )
 
-    if form.offerer.data:
-        # search on offererId for custom rules on offerers, and on offer's offerer id
+    if form.venue.data:
+        # search on venueId for custom rules on venues, and on offer's venue id
         # for custom rules on offers
         base_query = base_query.filter(
             sa.or_(
+                finance_models.CustomReimbursementRule.venueId.in_(form.venue.data),
+                offerers_models.Venue.id.in_(form.venue.data),
+            )
+        )
+
+    if form.offerer.data:
+        # search on offererId for custom rules on offerers, on offer's venue's offerer id
+        # for custom rules on venues and on offer's offerer id for custom rules on offers
+        base_query = base_query.filter(
+            sa.or_(
                 finance_models.CustomReimbursementRule.offererId.in_(form.offerer.data),
+                offerers_models.Venue.managingOffererId.in_(form.offerer.data),
                 offerers_models.Offerer.id.in_(form.offerer.data),
             )
         )
@@ -112,6 +139,7 @@ def list_custom_reimbursement_rules() -> utils.BackofficeResponse:
     custom_reimbursement_rules = utils.limit_rows(custom_reimbursement_rules, form.limit.data)
 
     autocomplete.prefill_offerers_choices(form.offerer)
+    autocomplete.prefill_venues_choices(form.venue, only_with_siret=True)
 
     return render_template(
         "custom_reimbursement_rules/list.html",
@@ -125,7 +153,6 @@ def list_custom_reimbursement_rules() -> utils.BackofficeResponse:
 @utils.permission_required(perm_models.Permissions.CREATE_REIMBURSEMENT_RULES)
 def create_custom_reimbursement_rule() -> utils.BackofficeResponse:
     form = custom_reimbursement_rule_forms.CreateCustomReimbursementRuleForm()
-
     if not form.validate():
         flash(utils.build_form_error_msg(form), "warning")
         return _redirect_after_reimbursement_rule_action()
@@ -140,14 +167,24 @@ def create_custom_reimbursement_rule() -> utils.BackofficeResponse:
         end_datetime = None
 
     rate = Decimal(form.rate.data / 100).quantize(Decimal("0.0001"))
+
     try:
-        finance_api.create_offerer_reimbursement_rule(
-            offerer_id=int(form.offerer.data[0]),
-            subcategories=form.subcategories.data,
-            rate=rate,
-            start_date=start_datetime,
-            end_date=end_datetime,
-        )
+        if form.offerer.data[0]:
+            finance_api.create_offerer_reimbursement_rule(
+                offerer_id=int(form.offerer.data[0]),
+                subcategories=form.subcategories.data,
+                rate=rate,
+                start_date=start_datetime,
+                end_date=end_datetime,
+            )
+        else:  # if it's not an offerer rule, then it's a venue one
+            finance_api.create_venue_reimbursement_rule(
+                venue_id=int(form.venue.data[0]),
+                subcategories=form.subcategories.data,
+                rate=rate,
+                start_date=start_datetime,
+                end_date=end_datetime,
+            )
     except (ValueError, finance_exceptions.ReimbursementRuleValidationError) as exc:
         flash(get_error_message(exc), "warning")
     except sa.exc.IntegrityError as err:

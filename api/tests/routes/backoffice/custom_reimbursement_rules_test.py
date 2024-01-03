@@ -41,6 +41,8 @@ class ListCustomReimbursementRulesTest(GetEndpointHelper):
         start = datetime.datetime.utcnow() - datetime.timedelta(days=365)
         end = datetime.datetime.utcnow() + datetime.timedelta(days=365)
         offer_rule = finance_factories.CustomReimbursementRuleFactory(amount=2700, timespan=(start, None))
+        venue = offerers_factories.VenueFactory()
+        venue_rule = finance_factories.CustomReimbursementRuleFactory(venue=venue, rate=0.98, timespan=(start, None))
         offerer = offerers_factories.OffererFactory()
         offerer_rule = finance_factories.CustomReimbursementRuleFactory(
             offerer=offerer, rate=0.5, subcategories=["FESTIVAL_LIVRE"]
@@ -51,7 +53,7 @@ class ListCustomReimbursementRulesTest(GetEndpointHelper):
             assert response.status_code == 200
 
         rows = html_parser.extract_table_rows(response.data)
-        assert len(rows) == 2
+        assert len(rows) == 3
 
         rows = sorted(rows, key=lambda row: int(row["ID règle"]))
 
@@ -65,15 +67,25 @@ class ListCustomReimbursementRulesTest(GetEndpointHelper):
         assert rows[0]["Sous-catégories"] == ""
         assert rows[0]["Date d'application"] == start.strftime("%d/%m/%Y") + " → ∞"
 
-        assert rows[1]["ID règle"] == str(offerer_rule.id)
-        assert rows[1]["Structure"] == offerer_rule.offerer.name
-        assert rows[1]["SIREN"] == offerer_rule.offerer.siren
-        assert rows[1]["Lieu"] == ""
+        assert rows[1]["ID règle"] == str(venue_rule.id)
+        assert rows[1]["Structure"] == venue_rule.venue.managingOfferer.name
+        assert rows[1]["SIREN"] == venue_rule.venue.managingOfferer.siren
+        assert rows[1]["Lieu"] == f"{venue_rule.venue.name} - {venue_rule.venue.siret}"
         assert rows[1]["Offre"] == ""
-        assert rows[1]["Taux de remboursement"] == "50,00 %"
+        assert rows[1]["Taux de remboursement"] == "98,00 %"
         assert rows[1]["Montant remboursé"] == ""
-        assert rows[1]["Sous-catégories"] == subcategories_v2.FESTIVAL_LIVRE.pro_label
-        assert rows[1]["Date d'application"] == start.strftime("%d/%m/%Y") + " → " + end.strftime("%d/%m/%Y")
+        assert rows[1]["Sous-catégories"] == ""
+        assert rows[1]["Date d'application"] == start.strftime("%d/%m/%Y") + " → ∞"
+
+        assert rows[2]["ID règle"] == str(offerer_rule.id)
+        assert rows[2]["Structure"] == offerer_rule.offerer.name
+        assert rows[2]["SIREN"] == offerer_rule.offerer.siren
+        assert rows[2]["Lieu"] == ""
+        assert rows[2]["Offre"] == ""
+        assert rows[2]["Taux de remboursement"] == "50,00 %"
+        assert rows[2]["Montant remboursé"] == ""
+        assert rows[2]["Sous-catégories"] == subcategories_v2.FESTIVAL_LIVRE.pro_label
+        assert rows[2]["Date d'application"] == start.strftime("%d/%m/%Y") + " → " + end.strftime("%d/%m/%Y")
 
         assert html_parser.extract_pagination_info(response.data) == (1, 1, len(rows))
 
@@ -172,6 +184,7 @@ class CreateCustomReimbursementRuleTest(PostEndpointHelper):
             form={
                 "offerer": offerer.id,
                 "subcategories": ["ABO_CONCERT", "ABO_JEU_VIDEO"],
+                "venue": "",
                 "rate": "12,34",
                 "start_date": self.tomorrow,
                 "end_date": self.next_year,
@@ -199,6 +212,7 @@ class CreateCustomReimbursementRuleTest(PostEndpointHelper):
             authenticated_client,
             form={
                 "offerer": 0,
+                "venue": "",
                 "rate": "12,34",
                 "start_date": self.tomorrow,
             },
@@ -206,7 +220,62 @@ class CreateCustomReimbursementRuleTest(PostEndpointHelper):
         assert response.status_code == 303
         assert (
             html_parser.extract_alert(authenticated_client.get(response.location).data)
-            == "Must provide offer or offerer (but not both)"
+            == "Must provide offer, venue, or offerer (only one)"
+        )
+
+        assert finance_models.CustomReimbursementRule.query.count() == 0
+
+    def test_create_with_invalid_venue(self, authenticated_client):
+        response = self.post_to_endpoint(
+            authenticated_client,
+            form={
+                "offerer": "",
+                "venue": 0,
+                "rate": "12,34",
+                "start_date": self.tomorrow,
+            },
+        )
+        assert response.status_code == 303
+        assert (
+            html_parser.extract_alert(authenticated_client.get(response.location).data)
+            == "Must provide offer, venue, or offerer (only one)"
+        )
+
+        assert finance_models.CustomReimbursementRule.query.count() == 0
+
+    def test_create_with_not_a_pricing_point(self, authenticated_client):
+        venue = offerers_factories.VenueWithoutSiretFactory()
+        response = self.post_to_endpoint(
+            authenticated_client,
+            form={
+                "offerer": "",
+                "venue": venue.id,
+                "rate": "12,34",
+                "start_date": self.tomorrow,
+            },
+        )
+        assert response.status_code == 303
+        assert (
+            html_parser.extract_alert(authenticated_client.get(response.location).data)
+            == f"Le lieu {venue.id} - {venue.name} doit être un point de valorisation."
+        )
+
+        assert finance_models.CustomReimbursementRule.query.count() == 0
+
+    def test_create_with_venue_and_offerer(self, authenticated_client):
+        response = self.post_to_endpoint(
+            authenticated_client,
+            form={
+                "offerer": 1,
+                "venue": 1,
+                "rate": "12,34",
+                "start_date": self.tomorrow,
+            },
+        )
+        assert response.status_code == 303
+        assert (
+            html_parser.extract_alert(authenticated_client.get(response.location).data)
+            == "Un tarif dérogatoire ne peut pas concerner un lieu et une structure en même temps"
         )
 
         assert finance_models.CustomReimbursementRule.query.count() == 0
@@ -217,6 +286,7 @@ class CreateCustomReimbursementRuleTest(PostEndpointHelper):
             authenticated_client,
             form={
                 "offerer": offerer.id,
+                "venue": "",
                 "rate": "12,34",
                 "start_date": self.tomorrow,
                 "end_date": "",
@@ -240,6 +310,7 @@ class CreateCustomReimbursementRuleTest(PostEndpointHelper):
             authenticated_client,
             form={
                 "offerer": offerer.id,
+                "venue": "",
                 "rate": "12,34",
                 "start_date": "1970-01-01",
             },
@@ -257,6 +328,7 @@ class CreateCustomReimbursementRuleTest(PostEndpointHelper):
             authenticated_client,
             form={
                 "offerer": offerer.id,
+                "venue": "",
                 "rate": "12,34",
                 "start_date": self.next_year,
                 "end_date": self.tomorrow,
@@ -275,6 +347,7 @@ class CreateCustomReimbursementRuleTest(PostEndpointHelper):
             authenticated_client,
             form={
                 "offerer": offerer.id,
+                "venue": "",
                 "rate": "pouet",
                 "start_date": self.tomorrow,
             },
@@ -288,6 +361,7 @@ class CreateCustomReimbursementRuleTest(PostEndpointHelper):
             authenticated_client,
             form={
                 "offerer": offerer.id,
+                "venue": "",
                 "rate": "100",
                 "start_date": self.tomorrow,
                 "end_date": self.next_year,
@@ -308,6 +382,7 @@ class CreateCustomReimbursementRuleTest(PostEndpointHelper):
             authenticated_client,
             form={
                 "offerer": offerer.id,
+                "venue": "",
                 "rate": "0",
                 "start_date": self.tomorrow,
                 "end_date": self.next_year,
@@ -327,6 +402,7 @@ class CreateCustomReimbursementRuleTest(PostEndpointHelper):
             authenticated_client,
             form={
                 "offerer": offerer.id,
+                "venue": "",
                 "rate": "-10",
                 "start_date": self.tomorrow,
             },
@@ -344,6 +420,7 @@ class CreateCustomReimbursementRuleTest(PostEndpointHelper):
             authenticated_client,
             form={
                 "offerer": offerer.id,
+                "venue": "",
                 "rate": "1203",
                 "start_date": self.tomorrow,
             },
@@ -361,6 +438,7 @@ class CreateCustomReimbursementRuleTest(PostEndpointHelper):
             authenticated_client,
             form={
                 "offerer": offerer.id,
+                "venue": "",
                 "rate": "12,34",
                 "start_date": self.tomorrow,
                 "end_date": self.next_year,
@@ -383,6 +461,7 @@ class CreateCustomReimbursementRuleTest(PostEndpointHelper):
             form={
                 "offerer": offerer.id,
                 "subcategories": ["POUET"],
+                "venue": "",
                 "rate": "12,34",
                 "start_date": self.tomorrow,
                 "end_date": self.next_year,

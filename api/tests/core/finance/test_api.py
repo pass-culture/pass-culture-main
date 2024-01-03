@@ -682,7 +682,7 @@ class GetPricingPointLinkTest:
             dateUsed=datetime.datetime.utcnow() - datetime.timedelta(days=1),
             stock__offer__venue__pricing_point="self",
         )
-        link = api._get_pricing_point_link(booking)
+        link = api.get_pricing_point_link(booking)
         assert link.pricingPoint == booking.venue
 
     def test_used_after_start_of_only_active_link(self):
@@ -692,7 +692,7 @@ class GetPricingPointLinkTest:
             stock__offer__venue__pricing_point="self",
             dateUsed=datetime.datetime.utcnow() + datetime.timedelta(days=1),
         )
-        link = api._get_pricing_point_link(booking)
+        link = api.get_pricing_point_link(booking)
         assert link.pricingPoint == booking.venue
 
     def test_used_after_start_of_subsequent_active_link(self):
@@ -715,7 +715,7 @@ class GetPricingPointLinkTest:
                 None,
             ),
         )
-        assert api._get_pricing_point_link(booking) == current_link
+        assert api.get_pricing_point_link(booking) == current_link
 
     def test_used_between_inactive_and_active_link(self):
         # link:      |------|     |-----------
@@ -737,7 +737,7 @@ class GetPricingPointLinkTest:
                 None,
             ),
         )
-        assert api._get_pricing_point_link(booking) == current_link
+        assert api.get_pricing_point_link(booking) == current_link
 
     def test_used_before_start_of_only_inactive_link(self):
         # link:      |------|
@@ -755,7 +755,7 @@ class GetPricingPointLinkTest:
         db.session.refresh(link)  # otherwise `link.timespan.lower` is seen as a string
 
         with pytest.raises(ValueError):
-            api._get_pricing_point_link(booking)
+            api.get_pricing_point_link(booking)
 
     def test_used_after_end_of_inactive_link(self):
         # link:      |------|
@@ -773,7 +773,7 @@ class GetPricingPointLinkTest:
         db.session.refresh(link)  # otherwise `link.timespan.lower` is seen as a string
 
         with pytest.raises(ValueError):
-            api._get_pricing_point_link(booking)
+            api.get_pricing_point_link(booking)
 
     def test_used_before_inactive_link_followed_by_active_link(self):
         # link:      |------| |-----------
@@ -798,14 +798,14 @@ class GetPricingPointLinkTest:
         )
 
         with pytest.raises(ValueError):
-            api._get_pricing_point_link(booking)
+            api.get_pricing_point_link(booking)
 
     def test_no_link(self):
         booking = bookings_factories.UsedBookingFactory()
         assert not booking.venue.pricing_point_links
 
         with pytest.raises(ValueError):
-            api._get_pricing_point_link(booking)
+            api.get_pricing_point_link(booking)
 
 
 class GetRevenuePeriodTest:
@@ -2234,6 +2234,35 @@ class CreateOffererReimbursementRuleTest:
         start = (datetime.datetime.today() + datetime.timedelta(days=1)).astimezone(pytz.utc)
         with pytest.raises(exceptions.UnknownSubcategoryForReimbursementRule):
             api.create_offerer_reimbursement_rule(offerer.id, subcategories=["UNKNOWN"], rate=0.8, start_date=start)
+
+
+class CreateVenueReimbursementRuleTest:
+    def test_create_rule(self):
+        venue = offerers_factories.VenueFactory()
+        start = pytz.utc.localize(datetime.datetime.today() + datetime.timedelta(days=1))
+        end = pytz.utc.localize(datetime.datetime.today() + datetime.timedelta(days=2))
+        rule = api.create_venue_reimbursement_rule(
+            venue.id, subcategories=["VOD"], rate=0.8, start_date=start, end_date=end
+        )
+
+        db.session.refresh(rule)
+        assert rule.venue == venue
+        assert rule.subcategories == ["VOD"]
+        assert rule.rate == Decimal("0.8")
+        assert rule.timespan.lower.strftime("%d/%m/%Y") == (
+            datetime.datetime.today() + datetime.timedelta(days=1)
+        ).strftime("%d/%m/%Y")
+        assert rule.timespan.upper.strftime("%d/%m/%Y") == (
+            datetime.datetime.today() + datetime.timedelta(days=2)
+        ).strftime("%d/%m/%Y")
+
+    def test_validation(self):
+        # Validation is thoroughly verified in `test_validation.py`.
+        # This is just an integration test.
+        venue = offerers_factories.VenueFactory()
+        start = (datetime.datetime.today() + datetime.timedelta(days=1)).astimezone(pytz.utc)
+        with pytest.raises(exceptions.UnknownSubcategoryForReimbursementRule):
+            api.create_venue_reimbursement_rule(venue.id, subcategories=["UNKNOWN"], rate=0.8, start_date=start)
 
 
 class CreateOfferReimbursementRuleTest:

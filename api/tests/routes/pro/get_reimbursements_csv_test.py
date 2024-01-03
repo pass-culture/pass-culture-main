@@ -14,8 +14,8 @@ def test_with_venue_filter(client):
     beginning_date_iso_format = (date.today() - timedelta(days=2)).isoformat()
     ending_date_iso_format = (date.today() + timedelta(days=2)).isoformat()
     offerer = offerers_factories.OffererFactory()
-    venue1 = offerers_factories.VenueFactory(managingOfferer=offerer)
-    venue2 = offerers_factories.VenueFactory(managingOfferer=offerer)
+    venue1 = offerers_factories.VenueFactory(managingOfferer=offerer, pricing_point="self")
+    venue2 = offerers_factories.VenueFactory(managingOfferer=offerer, pricing_point=venue1)
     for venue in (venue1, venue2):
         finance_factories.PaymentStatusFactory(
             payment__booking__stock__offer__venue=venue,
@@ -47,24 +47,28 @@ def test_with_reimbursement_period_filter(client):
     pro = user_offerer.user
     finance_factories.PaymentStatusFactory(
         payment__booking__stock__offer__venue__managingOfferer=offerer,
+        payment__booking__stock__offer__venue__pricing_point="self",
         status=finance_models.TransactionStatus.SENT,
         payment__transactionLabel="pass Culture Pro - remboursement 1ère quinzaine 06-21",
         date=date.today() - timedelta(days=2),
     )
     finance_factories.PaymentStatusFactory(
         payment__booking__stock__offer__venue__managingOfferer=offerer,
+        payment__booking__stock__offer__venue__pricing_point="self",
         status=finance_models.TransactionStatus.SENT,
         payment__transactionLabel="pass Culture Pro - remboursement 1ère quinzaine 06-21",
         date=date.today() - timedelta(days=3),
     )
     finance_factories.PaymentStatusFactory(
         payment__booking__stock__offer__venue__managingOfferer=offerer,
+        payment__booking__stock__offer__venue__pricing_point="self",
         status=finance_models.TransactionStatus.SENT,
         payment__transactionLabel="pass Culture Pro - remboursement 1ère quinzaine 06-21",
         date=date.today() + timedelta(days=2),
     )
     finance_factories.PaymentStatusFactory(
         payment__booking__stock__offer__venue__managingOfferer=offerer,
+        payment__booking__stock__offer__venue__pricing_point="self",
         status=finance_models.TransactionStatus.SENT,
         payment__transactionLabel="pass Culture Pro - remboursement 1ère quinzaine 06-21",
         date=date.today() + timedelta(days=3),
@@ -111,6 +115,7 @@ def test_admin_can_access_reimbursements_data_with_venue_filter(app, client):
     offerer = user_offerer.offerer
     status = finance_factories.PaymentStatusFactory(
         payment__booking__stock__offer__venue__managingOfferer=offerer,
+        payment__booking__stock__offer__venue__pricing_point="self",
         status=finance_models.TransactionStatus.SENT,
         payment__transactionLabel="pass Culture Pro - remboursement 1ère quinzaine 06-21",
         date=date.today(),
@@ -141,6 +146,7 @@ def test_admin_cannot_access_reimbursements_data_without_venue_filter(app, clien
     offerer = user_offerer.offerer
     finance_factories.PaymentStatusFactory(
         payment__booking__stock__offer__venue__managingOfferer=offerer,
+        payment__booking__stock__offer__venue__pricing_point="self",
         status=finance_models.TransactionStatus.SENT,
         payment__transactionLabel="pass Culture Pro - remboursement 1ère quinzaine 06-21",
         date=date.today(),
