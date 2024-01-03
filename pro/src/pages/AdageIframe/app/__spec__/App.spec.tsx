@@ -13,10 +13,7 @@ import {
 
 import { App } from '../App'
 import { DEFAULT_GEO_RADIUS } from '../components/OffersInstantSearch/OffersInstantSearch'
-import {
-  FacetFiltersContextProvider,
-  FiltersContextProvider,
-} from '../providers'
+import { FacetFiltersContextProvider } from '../providers'
 
 vi.mock(
   '../components/OffersInstantSearch/OffersSearch/Autocomplete/Autocomplete',
@@ -115,11 +112,9 @@ const renderApp = (
 ) => {
   renderWithProviders(
     <>
-      <FiltersContextProvider venueFilter={venueFilter}>
-        <FacetFiltersContextProvider>
-          <App />
-        </FacetFiltersContextProvider>
-      </FiltersContextProvider>
+      <FacetFiltersContextProvider>
+        <App />
+      </FacetFiltersContextProvider>
       ,
       <Notification />
     </>,

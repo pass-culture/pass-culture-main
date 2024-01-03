@@ -6,7 +6,6 @@ import { apiAdage, api } from 'apiClient/api'
 import Notification from 'components/Notification/Notification'
 import { GET_DATA_ERROR_MESSAGE } from 'core/shared'
 import { MARSEILLE, MARSEILLE_EN_GRAND } from 'pages/AdageIframe/app/constants'
-import { FiltersContextProvider } from 'pages/AdageIframe/app/providers'
 import { AdageUserContextProvider } from 'pages/AdageIframe/app/providers/AdageUserContext'
 import {
   defaultUseInfiniteHitsReturn,
@@ -109,9 +108,7 @@ const renderOffersSearchComponent = (
   renderWithProviders(
     <>
       <AdageUserContextProvider adageUser={user}>
-        <FiltersContextProvider>
-          <OffersSearch {...props} />
-        </FiltersContextProvider>
+        <OffersSearch {...props} />
       </AdageUserContextProvider>
       <Notification />
     </>,
