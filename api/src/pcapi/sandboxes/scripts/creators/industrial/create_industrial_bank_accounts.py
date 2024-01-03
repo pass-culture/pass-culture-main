@@ -25,9 +25,7 @@ def create_offerer_without_bank_accounts() -> None:
     offerer_without_bank_accounts = offerers_factories.OffererFactory(
         name="1 - [CB] Structure sans coordonnées bancaires"
     )
-    offerers_factories.UserOffererFactory(
-        offerer=offerer_without_bank_accounts, user__email="offerer_with_bank_accounts@mail.com"
-    )
+    offerers_factories.UserOffererFactory(offerer=offerer_without_bank_accounts, user__email="activation@example.com")
     venue = offerers_factories.VenueFactory(managingOfferer=offerer_without_bank_accounts, pricing_point="self")
     offer = offers_factories.OfferFactory(venue=venue)
     offers_factories.StockFactory(offer=offer)
@@ -39,7 +37,7 @@ def create_offerer_with_various_bank_accounts_state() -> None:
         name="1 - [CB] Structure avec des coordonnées bancaires dans différents états"
     )
     offerers_factories.UserOffererFactory(
-        offerer=offerer_with_various_bank_accounts_status, user__email="various_bank_accounts_status@mail.com"
+        offerer=offerer_with_various_bank_accounts_status, user__email="activation@example.com"
     )
     finance_factories.BankAccountFactory(
         status=finance_models.BankAccountApplicationStatus.ACCEPTED, offerer=offerer_with_various_bank_accounts_status
@@ -70,7 +68,7 @@ def create_offerer_with_all_his_venue_linked() -> None:
     offerer_with_all_venues_linked = offerers_factories.OffererFactory(
         name="1 - [CB] Structure avec tous ses lieux liés à des coordonnées bancaires"
     )
-    offerers_factories.UserOffererFactory(offerer=offerer_with_all_venues_linked, user__email="all_venues_linked")
+    offerers_factories.UserOffererFactory(offerer=offerer_with_all_venues_linked, user__email="activation@example.com")
     first_venue_with_non_free_offer = offerers_factories.VenueFactory(
         managingOfferer=offerer_with_all_venues_linked, pricing_point="self"
     )
@@ -90,9 +88,7 @@ def create_offerer_at_least_one_venue_linked() -> None:
     offerer_with_one_venue_linked = offerers_factories.OffererFactory(
         name="1 - [CB] Structure avec un de ses lieux non rattachés à des coordonnées bancaires"
     )
-    offerers_factories.UserOffererFactory(
-        offerer=offerer_with_one_venue_linked, user__email="at_least_one_venue_linked"
-    )
+    offerers_factories.UserOffererFactory(offerer=offerer_with_one_venue_linked, user__email="activation@example.com")
     first_venue_with_non_free_offer = offerers_factories.VenueFactory(
         managingOfferer=offerer_with_one_venue_linked, pricing_point="self"
     )
@@ -111,7 +107,7 @@ def create_offerer_with_none_venue_linked() -> None:
     offerer_with_none_venue_linked = offerers_factories.OffererFactory(
         name="1 - [CB] Structure avec aucun de ses lieux liés à des coordonnées bancaires"
     )
-    offerers_factories.UserOffererFactory(offerer=offerer_with_none_venue_linked, user__email="none_venue_linked")
+    offerers_factories.UserOffererFactory(offerer=offerer_with_none_venue_linked, user__email="activation@example.com")
     first_venue_with_non_free_offer = offerers_factories.VenueFactory(
         managingOfferer=offerer_with_none_venue_linked, pricing_point="self"
     )
@@ -130,9 +126,7 @@ def create_offerer_with_all_his_venue_linked_to_one_bank_account() -> None:
     offerer_with_all_venues_linked = offerers_factories.OffererFactory(
         name="1 - [CB] Structure avec deux coordonnées bancaires dont tous les lieux sont liés à l’une d’entre elles."
     )
-    offerers_factories.UserOffererFactory(
-        offerer=offerer_with_all_venues_linked, user__email="all_venues_linked_to_only_one_bank_account"
-    )
+    offerers_factories.UserOffererFactory(offerer=offerer_with_all_venues_linked, user__email="activation@example.com")
     first_venue_with_non_free_offer = offerers_factories.VenueFactory(
         managingOfferer=offerer_with_all_venues_linked, pricing_point="self"
     )
@@ -154,7 +148,7 @@ def create_offerer_with_only_one_venue_linked() -> None:
         name="1 - [CB] Structure avec plusieurs de ses lieux non rattachés à des coordonnées bancaires"
     )
     offerers_factories.UserOffererFactory(
-        offerer=offerer_with_only_one_venue_linked, user__email="offerer_with_only_one_venue_linked"
+        offerer=offerer_with_only_one_venue_linked, user__email="activation@example.com"
     )
     first_venue_with_non_free_offer = offerers_factories.VenueFactory(
         managingOfferer=offerer_with_only_one_venue_linked, pricing_point="self"
