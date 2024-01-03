@@ -32,7 +32,7 @@ def send_transactional_email_secondary_task(payload: SendTransactionalEmailReque
     send_transactional_email(payload)
 
 
-# De-duplicate and delay by 15 minutes, to avoid collecting pro attributes and making an update request to Sendinblue
+# De-duplicate and delay by 12 hours, to avoid collecting pro attributes and making an update request to Sendinblue
 # several times in a short time when a user managing an offerer makes several changes.
 #
 # Deduplication of Google tasks is based on identical payload in src.pcapi.tasks.cloud_task.enqueue_internal_task,
@@ -41,8 +41,8 @@ def send_transactional_email_secondary_task(payload: SendTransactionalEmailReque
 # Reference: https://cloud.google.com/tasks/docs/reference/rest/v2/projects.locations.queues.tasks/create
 #
 # So time_id parameter in UpdateProAttributesRequest helps to generate different hashes, so different task ids, every
-# 15 minutes. Keep delayed_seconds below consistent with time_id generation.
-@task(SENDINBLUE_PRO_QUEUE_NAME, "/sendinblue/update_pro_attributes", True, 900)  # type: ignore [arg-type]
+# 12 hours. Keep delayed_seconds below consistent with time_id generation.
+@task(SENDINBLUE_PRO_QUEUE_NAME, "/sendinblue/update_pro_attributes", True, 43_200)  # type: ignore [arg-type]
 def update_sib_pro_attributes_task(payload: UpdateProAttributesRequest) -> None:
     from pcapi.core.external.attributes.api import get_pro_attributes
     from pcapi.core.external.sendinblue import update_contact_attributes
