@@ -93,14 +93,14 @@ jobs:
           username: "oauth2accesstoken"
           password: "${{ steps.openid-auth.outputs.access_token }}"
       - name: "Build and push pcapi image"
-        uses: docker/build-push-action@v2
+        uses: docker/build-push-action@v5
         with:
           context: api
           push: true
           target: pcapi
           tags: europe-west1-docker.pkg.dev/passculture-infra-prod/pass-culture-artifact-registry/pcapi:${{ inputs.tag_number }}
       - name: "Build and push pcapi-console image"
-        uses: docker/build-push-action@v2
+        uses: docker/build-push-action@v5
         with:
           context: api
           push: true
