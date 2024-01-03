@@ -10,7 +10,7 @@ updates:
     ignore:
       - dependency-name: '*'
         update-types: ['version-update:semver-major']
-  # Bump automatically dependancies to newer versions
+
   - package-ecosystem: 'pip' # pip even if we use poetry
     directory: '/api'
     schedule:
@@ -27,3 +27,10 @@ updates:
         update-types: ['version-update:semver-major', 'version-update:semver-minor']
       # We are not ready to handle upper version of spectree, even for patches
       - dependency-name: 'spectree'
+
+  - package-ecosystem: 'github-actions'
+    directory: '.github/workflows'
+    schedule:
+      interval: 'daily'
+      time: '06:00'
+    open-pull-requests-limit: 10
