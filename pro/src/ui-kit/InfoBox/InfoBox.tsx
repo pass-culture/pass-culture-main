@@ -16,9 +16,10 @@ interface InfoBoxLinkProps extends LinkProps {
 interface InfoBoxProps {
   children: ReactNode
   link?: InfoBoxLinkProps
+  svgAlt?: string
 }
 
-const InfoBox = ({ children, link }: InfoBoxProps): JSX.Element => {
+const InfoBox = ({ children, link, svgAlt }: InfoBoxProps): JSX.Element => {
   return (
     <div className={cn(styles['info-box'])}>
       <div className={styles['info-box-header']}>
@@ -41,6 +42,7 @@ const InfoBox = ({ children, link }: InfoBoxProps): JSX.Element => {
           link={link}
           icon={fullLinkIcon}
           className={styles['info-box-link']}
+          svgAlt={svgAlt || ''}
         >
           {link.text}
         </ButtonLink>
