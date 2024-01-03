@@ -40,6 +40,7 @@ from pcapi.repository.clean_database import clean_all_database
 from pcapi.routes.backoffice import install_routes
 from pcapi.utils.module_loading import import_string
 
+import tests
 from tests.routes.adage_iframe.utils_create_test_token import create_adage_valid_token_with_email
 from tests.serialization.serialization_decorator_test import test_blueprint
 from tests.serialization.serialization_decorator_test import test_bookings_blueprint
@@ -308,7 +309,7 @@ def ubble_mocker() -> typing.Callable:
 
 @pytest.fixture
 def css_font_http_request_mock():
-    """Intercept requests to fonts.googleapis.com and return fake
+    """Intercept requests to fonts.googleapis.com and return local
     content.
 
     This is for weasyprint, which uses ``urllib.request.urlopen()``.
@@ -349,8 +350,11 @@ def css_font_http_request_mock():
             return self.url
 
     def fake_urlopen(request, *args, **kwargs):
-        assert request.host == "fonts.googleapis.com"
-        return FakeResponse(request.full_url, content=b"")
+        assert request.host in ("fonts.googleapis.com", "fonts.gstatic.com")
+        path = Path(tests.__path__[0]) / "files" / "pdf" / "fonts" / urllib.parse.quote_plus(request.full_url)
+        if not path.exists():
+            raise ValueError(f"Could not find local file for {request.full_url}")
+        return FakeResponse(request.full_url, content=path.read_bytes())
 
     with patch("weasyprint.urls.urlopen", fake_urlopen):
         yield
