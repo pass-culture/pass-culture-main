@@ -60,7 +60,7 @@ jobs:
           workload_identity_provider: ${{ steps.secrets.outputs.ARTIFACT_REGISTRY_WORKLOAD_IDENTITY_PROVIDER }}
           service_account: ${{ steps.secrets.outputs.ARTIFACT_REGISTRY_SERVICE_ACCOUNT }}
       - name: 'Docker login'
-        uses: 'docker/login-action@v1'
+        uses: 'docker/login-action@v3'
         id: "docker-login"
         with:
           registry: 'europe-west1-docker.pkg.dev'
