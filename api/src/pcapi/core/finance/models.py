@@ -656,7 +656,7 @@ class Cashflow(Base, Model):
     # change. Here we want to store the bank account that was used at
     # the time the cashflow was created.
     _bankAccountId: int = sqla.Column(
-        "bankAccountId", sqla.BigInteger, sqla.ForeignKey("bank_information.id"), index=True, nullable=False
+        "bankAccountId", sqla.BigInteger, sqla.ForeignKey("bank_information.id"), index=True, nullable=True
     )
     _bankAccount: BankInformation = sqla_orm.relationship(BankInformation, foreign_keys=[_bankAccountId])
     _bankInformationId: int = sqla.Column(
