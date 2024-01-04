@@ -25,6 +25,7 @@ from pcapi.models.offer_mixin import OfferValidationStatus
 from pcapi.models.offer_mixin import OfferValidationType
 from pcapi.routes.backoffice.filters import format_date
 
+from .helpers import button as button_helpers
 from .helpers import html_parser
 from .helpers.get import GetEndpointHelper
 from .helpers.post import PostEndpointHelper
@@ -523,6 +524,13 @@ class GetCollectiveOfferDetailTest(GetEndpointHelper):
     endpoint = "backoffice_web.collective_offer.get_collective_offer_details"
     endpoint_kwargs = {"collective_offer_id": 1}
     needed_permission = perm_models.Permissions.READ_OFFERS
+    # Use assert_num_queries() instead of assert_no_duplicated_queries() which does not detect one extra query caused
+    # by a field added in the jinja template.
+    # - fetch session (1 query)
+    # - fetch user (1 query)
+    # - fetch CollectiveOffer
+    # - _is_collective_offer_price_editable
+    expected_num_queries = 4
 
     def test_nominal(self, legit_user, authenticated_client):
         event_date = datetime.datetime.utcnow() - datetime.timedelta(days=1)
@@ -539,7 +547,7 @@ class GetCollectiveOfferDetailTest(GetEndpointHelper):
             ),
         )
         url = url_for(self.endpoint, collective_offer_id=collective_booking.collectiveStock.collectiveOffer.id)
-        with assert_num_queries(4):
+        with assert_num_queries(self.expected_num_queries):
             response = authenticated_client.get(url)
             assert response.status_code == 200
 
@@ -560,7 +568,7 @@ class GetCollectiveOfferDetailTest(GetEndpointHelper):
         )
         url = url_for(self.endpoint, collective_offer_id=pricing.collectiveBooking.collectiveStock.collectiveOffer.id)
 
-        with assert_num_queries(4):
+        with assert_num_queries(self.expected_num_queries):
             response = authenticated_client.get(url)
             assert response.status_code == 200
 
@@ -573,7 +581,7 @@ class GetCollectiveOfferDetailTest(GetEndpointHelper):
         )
         url = url_for(self.endpoint, collective_offer_id=pricing.collectiveBooking.collectiveStock.collectiveOffer.id)
 
-        with assert_num_queries(4):
+        with assert_num_queries(self.expected_num_queries):
             response = authenticated_client.get(url)
             assert response.status_code == 200
 
@@ -604,7 +612,7 @@ class GetCollectiveOfferDetailTest(GetEndpointHelper):
             collectiveStock__collectiveOffer__lastValidationAuthor=legit_user,
         )
         url = url_for(self.endpoint, collective_offer_id=collective_booking.collectiveStock.collectiveOffer.id)
-        with assert_num_queries(4):  # session + user + offer + pricing + loaded data
+        with assert_num_queries(self.expected_num_queries):
             response = authenticated_client.get(url)
 
         content_as_text = html_parser.content_as_text(response.data)
@@ -622,13 +630,35 @@ class GetCollectiveOfferDetailTest(GetEndpointHelper):
             collectiveStock__collectiveOffer__lastValidationAuthor=legit_user,
         )
         url = url_for(self.endpoint, collective_offer_id=collective_booking.collectiveStock.collectiveOffer.id)
-        with assert_num_queries(4):  # session + user + offer + pricing + loaded data
+        with assert_num_queries(self.expected_num_queries):
             response = authenticated_client.get(url)
             assert response.status_code == 200
 
         content_as_text = html_parser.content_as_text(response.data)
         assert f"Utilisateur de la dernière validation : {legit_user.full_name}" in content_as_text
         assert f"Date de dernière validation : {format_date(validation_date, '%d/%m/%Y à %Hh%M')}" in content_as_text
+
+
+class ValidateCollectiveOfferFromDetailsButtonTest(button_helpers.ButtonHelper):
+    needed_permission = perm_models.Permissions.PRO_FRAUD_ACTIONS
+    button_label = "Valider l'offre"
+    endpoint = "backoffice_web.collective_offer.get_collective_offer_details"
+
+    @property
+    def path(self):
+        stock = educational_factories.CollectiveStockFactory()
+        return url_for(self.endpoint, collective_offer_id=stock.collectiveOffer.id)
+
+
+class RejectCollectiveOfferFromDetailsButtonTest(button_helpers.ButtonHelper):
+    needed_permission = perm_models.Permissions.PRO_FRAUD_ACTIONS
+    button_label = "Rejeter l'offre"
+    endpoint = "backoffice_web.collective_offer.get_collective_offer_details"
+
+    @property
+    def path(self):
+        stock = educational_factories.CollectiveStockFactory()
+        return url_for(self.endpoint, collective_offer_id=stock.collectiveOffer.id)
 
 
 class GetCollectiveOfferPriceFormTest(GetEndpointHelper):
