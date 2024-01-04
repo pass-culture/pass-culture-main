@@ -45,7 +45,7 @@ export const useIndividualOfferContext = () => {
   return useContext(IndividualOfferContext)
 }
 
-interface IndividualOfferContextProviderProps {
+export interface IndividualOfferContextProviderProps {
   children: React.ReactNode
   isUserAdmin: boolean
   offerId?: string

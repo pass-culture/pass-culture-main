@@ -11,7 +11,7 @@ import { getTitle } from 'screens/IndividualOffer/IndivualOfferLayout/utils/getT
 import InformationsScreen from 'screens/IndividualOffer/InformationsScreen/InformationsScreen'
 import { parse } from 'utils/query-string'
 
-const Offer = (): JSX.Element | null => {
+export const Offer = (): JSX.Element | null => {
   const mode = useOfferWizardMode()
   const { currentUser } = useCurrentUser()
   const { offer, setOffer } = useIndividualOfferContext()
