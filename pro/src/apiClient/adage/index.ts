@@ -62,6 +62,7 @@ export { SuggestionType } from './models/SuggestionType';
 export type { TemplateDatesModel } from './models/TemplateDatesModel';
 export type { TrackingAutocompleteSuggestionBody } from './models/TrackingAutocompleteSuggestionBody';
 export type { TrackingFilterBody } from './models/TrackingFilterBody';
+export type { TrackingShowMoreBody } from './models/TrackingShowMoreBody';
 export type { ValidationError } from './models/ValidationError';
 export type { ValidationErrorElement } from './models/ValidationErrorElement';
 export type { VenueResponse } from './models/VenueResponse';
