@@ -44,15 +44,22 @@ vi.mock('react-instantsearch', async () => {
   }
 })
 
-const renderOffersForMyInstitution = () => {
+const renderOffersForMyInstitution = (user = defaultAdageUser) => {
   renderWithProviders(
-    <AdageUserContextProvider adageUser={defaultAdageUser}>
+    <AdageUserContextProvider adageUser={user}>
       <OffersForMyInstitution />
     </AdageUserContextProvider>
   )
 }
 
 describe('OffersInstitutionList', () => {
+  it('should display no result page', () => {
+    renderOffersForMyInstitution({ ...defaultAdageUser, offersCount: 0 })
+
+    expect(
+      screen.getByText('Vous n’avez pas d’offre à préréserver')
+    ).toBeInTheDocument()
+  })
   it('should display list of offers for my institution', async () => {
     renderOffersForMyInstitution()
 
