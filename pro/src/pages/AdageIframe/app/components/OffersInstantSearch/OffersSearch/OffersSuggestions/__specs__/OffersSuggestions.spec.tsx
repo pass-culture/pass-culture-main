@@ -201,7 +201,7 @@ describe('OffersSuggestions', () => {
       {
         formValues: {
           ...props.formValues,
-          domains: ['Architecture'],
+          domains: [2],
         },
       },
       user
@@ -330,7 +330,7 @@ describe('OffersSuggestions', () => {
       {
         formValues: {
           ...props.formValues,
-          domains: ['Architecture'],
+          domains: [2],
           categories: [['JEUX']],
         },
       },

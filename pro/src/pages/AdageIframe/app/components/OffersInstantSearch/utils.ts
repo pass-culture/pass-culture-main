@@ -29,7 +29,7 @@ export const adageFiltersToFacetFilters = ({
   formats,
   venue,
 }: {
-  domains: string[]
+  domains: number[]
   uai?: string[] | null
   students: string[]
   departments: string[]

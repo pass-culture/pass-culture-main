@@ -3,9 +3,9 @@ import { userEvent } from '@testing-library/user-event'
 
 import { AdageFrontRoles, AuthenticatedResponse } from 'apiClient/adage'
 import { apiAdage, api } from 'apiClient/api'
+import { StudentLevels } from 'apiClient/v1'
 import Notification from 'components/Notification/Notification'
 import { GET_DATA_ERROR_MESSAGE } from 'core/shared'
-import { MARSEILLE, MARSEILLE_EN_GRAND } from 'pages/AdageIframe/app/constants'
 import { AdageUserContextProvider } from 'pages/AdageIframe/app/providers/AdageUserContext'
 import {
   defaultUseInfiniteHitsReturn,
@@ -168,10 +168,9 @@ describe('offersSearch component', () => {
 
   beforeEach(() => {
     props = {
-      venueFilter: null,
       setGeoRadius: setGeoRadiusMock,
       setFacetFilters: () => {},
-      domainsFilter: null,
+      initialFilters: {},
     }
     vi.spyOn(apiAdage, 'getEducationalOffersCategories').mockResolvedValue({
       categories: [],
@@ -353,11 +352,13 @@ describe('offersSearch component', () => {
     renderOffersSearchComponent(
       {
         ...props,
-        venueFilter: {
-          id: 1,
-          name: 'test',
-          relative: [],
-          departementCode: '75',
+        initialFilters: {
+          venue: {
+            id: 1,
+            name: 'test',
+            relative: [],
+            departementCode: '75',
+          },
         },
       },
       user
@@ -377,7 +378,10 @@ describe('offersSearch component', () => {
 
     window.location = mockLocation
 
-    renderOffersSearchComponent({ ...props, domainsFilter: '1' }, user)
+    renderOffersSearchComponent(
+      { ...props, initialFilters: { domains: [1] } },
+      user
+    )
 
     const tagDomain = await screen.findByRole('button', {
       name: /Danse/,
@@ -447,29 +451,29 @@ describe('offersSearch component', () => {
   })
 
   it('should filter on student levels when the institution is in MeG and redirected from "/"', async () => {
-    vi.spyOn(URLSearchParams.prototype, 'get').mockImplementation(
-      () => MARSEILLE
-    )
     renderOffersSearchComponent(
-      props,
+      {
+        ...props,
+        initialFilters: {
+          students: [
+            StudentLevels._COLES_INNOVANTES_MARSEILLE_EN_GRAND_L_MENTAIRE,
+            StudentLevels._COLES_INNOVANTES_MARSEILLE_EN_GRAND_MATERNELLE,
+          ],
+        },
+      },
       {
         ...user,
-        programs: [{ label: '', name: MARSEILLE_EN_GRAND }],
-      },
-      { features: ['WIP_ENABLE_MARSEILLE'] }
+      }
     )
 
-    const loadingMessage = screen.queryByText(/Chargement en cours/)
-    await waitFor(() => expect(loadingMessage).not.toBeInTheDocument())
-
     expect(
-      screen.getByRole('button', {
+      await screen.findByRole('button', {
         name: /Écoles innovantes Marseille en Grand : maternelle/,
       })
     ).toBeInTheDocument()
 
     expect(
-      screen.getByRole('button', {
+      await screen.findByRole('button', {
         name: /Écoles innovantes Marseille en Grand : élémentaire/,
       })
     ).toBeInTheDocument()
