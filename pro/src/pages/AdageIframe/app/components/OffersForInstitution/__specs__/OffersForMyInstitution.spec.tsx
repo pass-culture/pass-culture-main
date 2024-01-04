@@ -1,4 +1,4 @@
-import { screen, waitFor } from '@testing-library/react'
+import { screen, waitForElementToBeRemoved } from '@testing-library/react'
 import React from 'react'
 import { Configure } from 'react-instantsearch'
 
@@ -63,8 +63,7 @@ describe('OffersInstitutionList', () => {
   it('should display list of offers for my institution', async () => {
     renderOffersForMyInstitution()
 
-    const loadingMessage = screen.queryByText(/Chargement en cours/)
-    await waitFor(() => expect(loadingMessage).not.toBeInTheDocument())
+    await waitForElementToBeRemoved(() => screen.queryAllByTestId('spinner'))
 
     expect(Configure).toHaveBeenCalledWith(
       {
@@ -86,5 +85,18 @@ describe('OffersInstitutionList', () => {
       },
       {}
     )
+  })
+
+  it('should display title and banner', async () => {
+    renderOffersForMyInstitution()
+
+    await waitForElementToBeRemoved(() => screen.queryAllByTestId('spinner'))
+
+    expect(screen.getByText('Pour mon établissement'))
+    expect(
+      screen.getByRole('link', {
+        name: 'Voir la page “Suivi pass Culture”',
+      })
+    ).toHaveAttribute('href', 'adage/passculture/index')
   })
 })
