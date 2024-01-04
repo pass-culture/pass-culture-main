@@ -30,6 +30,7 @@ export interface VenueOfferStepsProps {
   hasVenue: boolean
   isFirstVenue?: boolean
   isInsidePartnerBlock?: boolean
+  className?: string
 }
 
 export const VenueOfferSteps = ({
@@ -38,6 +39,7 @@ export const VenueOfferSteps = ({
   hasVenue = false,
   isFirstVenue = false,
   isInsidePartnerBlock = false,
+  className,
 }: VenueOfferStepsProps) => {
   const { logEvent } = useAnalytics()
   const isVenueCreationAvailable = useActiveFeature('API_SIRENE_AVAILABLE')
@@ -76,7 +78,7 @@ export const VenueOfferSteps = ({
 
   return (
     <Card
-      className={cn(styles['card-wrapper'], {
+      className={cn(styles['card-wrapper'], className, {
         [styles['no-shadow']]: hasVenue || isInsidePartnerBlock,
         [styles['inside-partner-block']]: isInsidePartnerBlock,
       })}

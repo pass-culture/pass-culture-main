@@ -7,6 +7,7 @@
   display: flex;
   flex-direction: column;
   gap: rem.torem(24px);
+  margin-bottom: rem.torem(32px);
 
   @media (min-width: size.$tablet) {
     flex-direction: row;
@@ -37,8 +38,15 @@
   margin-bottom: rem.torem(16px);
 }
 
+.venue-button {
+  width: 100%;
+
+  @media (min-width: size.$tablet) {
+    width: auto;
+  }
+}
+
 .venue-offer-steps {
-  margin-top: rem.torem(32px);
   max-width: rem.torem(500px);
 }
 
@@ -46,12 +54,12 @@
   display: flex;
   flex-direction: column;
   align-items: flex-start;
+  margin-top: rem.torem(32px);
 }
 
 .details-title {
   @include fonts.title4;
 
-  margin-top: rem.torem(32px);
   display: inline-block;
   margin-right: rem.torem(8px);
 }
