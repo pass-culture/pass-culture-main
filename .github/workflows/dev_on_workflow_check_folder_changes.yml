@@ -20,7 +20,7 @@ jobs:
     outputs:
       folder_changed: ${{ steps.folder-check-changed-files.outputs.any_changed }}
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v4.1.1
         with:
           fetch-depth: 0
       - id: folder-check-changed-files
