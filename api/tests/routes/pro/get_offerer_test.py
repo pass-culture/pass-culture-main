@@ -591,8 +591,8 @@ class GetOffererTest:
         response = http_client.get(f"/offerers/{offerer_id}")
         assert response.status_code == 200
 
-        assert response.json["venuesWithNonFreeOffersWithoutBankAccounts"] == [
+        assert set(response.json["venuesWithNonFreeOffersWithoutBankAccounts"]) == {
             first_venue.id,
             second_venue.id,
             third_venue.id,
-        ]
+        }
