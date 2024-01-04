@@ -54,6 +54,7 @@ class Returns200Test:
         )
         expected_serialized_venue = {
             "address": venue.address,
+            "banId": venue.banId,
             "audioDisabilityCompliant": venue.audioDisabilityCompliant,
             "bookingEmail": venue.bookingEmail,
             "city": venue.city,

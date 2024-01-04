@@ -17,6 +17,7 @@ export type GetVenueResponseModel = {
   adageInscriptionDate?: string | null;
   address?: string | null;
   audioDisabilityCompliant?: boolean | null;
+  banId?: string | null;
   bannerMeta?: BannerMetaModel | null;
   bannerUrl?: string | null;
   bookingEmail?: string | null;
