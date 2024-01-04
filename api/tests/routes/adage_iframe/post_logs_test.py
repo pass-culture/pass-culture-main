@@ -506,8 +506,9 @@ class LogsTest:
         assert caplog.records[0].message == "SearchShowMore"
         assert caplog.records[0].extra == {
             "analyticsSource": "adage",
+            "source": "partnersMap",
             "queryId": "1234a",
-            "from": "SearchShowMore",
+            "from": "for_my_institution",
             "uai": "EAU123",
             "user_role": AdageFrontRoles.READONLY,
             "userId": "f0e2a21bcf499cbc713c47d8f034d66e90a99f9ffcfe96466c9971dfdc5c9816",
