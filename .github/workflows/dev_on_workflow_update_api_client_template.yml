@@ -72,11 +72,16 @@ jobs:
           restore-keys: |
             docker-cache-${{ hashFiles('api/requirements.txt') }}
             docker-cache
+      - name: "Fix local permissions"
+        if: steps.evaluate-variables.outputs.should-run-cache == 'true'
+        run: sudo chown -R $PCAPI_UID:$PCAPI_GID .
+        working-directory: api
+        env:
+          PCAPI_UID: 1000
+          PCAPI_GID: 1000
       - name: "Run API"
         if: steps.evaluate-variables.outputs.should-run-cache == 'true'
-        run: |
-          sudo chown -R 1000:1000 .
-          ./pc start-backend &
+        run: ./pc start-backend &
       - name: "Cache node dependencies"
         uses: pass-culture-github-actions/cache@v1.0.0
         if: steps.evaluate-variables.outputs.should-run-cache == 'true'
