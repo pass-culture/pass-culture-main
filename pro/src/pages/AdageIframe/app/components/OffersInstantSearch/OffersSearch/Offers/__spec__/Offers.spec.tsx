@@ -17,7 +17,6 @@ import {
   StudentLevels,
 } from 'apiClient/adage'
 import { apiAdage } from 'apiClient/api'
-import { FacetFiltersContextProvider } from 'pages/AdageIframe/app/providers'
 import { AdageUserContextProvider } from 'pages/AdageIframe/app/providers/AdageUserContext'
 import {
   defaultCollectiveOffer,
@@ -108,11 +107,9 @@ const renderOffers = (
 ) => {
   return renderWithProviders(
     <AdageUserContextProvider adageUser={adageUser}>
-      <FacetFiltersContextProvider>
-        <Formik onSubmit={() => {}} initialValues={{}}>
-          <Offers {...props} />
-        </Formik>
-      </FacetFiltersContextProvider>
+      <Formik onSubmit={() => {}} initialValues={{}}>
+        <Offers {...props} />
+      </Formik>
     </AdageUserContextProvider>,
     options
   )

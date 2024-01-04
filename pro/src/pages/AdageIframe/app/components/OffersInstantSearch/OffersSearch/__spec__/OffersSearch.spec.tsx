@@ -170,6 +170,8 @@ describe('offersSearch component', () => {
     props = {
       venueFilter: null,
       setGeoRadius: setGeoRadiusMock,
+      setFacetFilters: () => {},
+      domainsFilter: null,
     }
     vi.spyOn(apiAdage, 'getEducationalOffersCategories').mockResolvedValue({
       categories: [],
@@ -375,7 +377,7 @@ describe('offersSearch component', () => {
 
     window.location = mockLocation
 
-    renderOffersSearchComponent(props, user)
+    renderOffersSearchComponent({ ...props, domainsFilter: '1' }, user)
 
     const tagDomain = await screen.findByRole('button', {
       name: /Danse/,
