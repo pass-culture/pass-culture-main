@@ -159,7 +159,7 @@ describe('app', () => {
       ).toBeInTheDocument()
     })
 
-    it('should venue tag when venueId is provided and public name exists', async () => {
+    it('should display venue tag when venueId is provided and public name exists', async () => {
       // When
       renderApp({
         initialRouterEntries: ['/recherche?venue=1436'],
@@ -197,8 +197,10 @@ describe('app', () => {
       }
 
       window.location = mockLocation
+
+      vi.spyOn(apiAdage, 'getVenueById').mockRejectedValueOnce(null)
+
       renderApp({ features: ['WIP_ENABLE_DISCOVERY'] })
-      vi.spyOn(apiAdage, 'getVenueById').mockRejectedValue(null)
 
       expect(
         await screen.findByText(
