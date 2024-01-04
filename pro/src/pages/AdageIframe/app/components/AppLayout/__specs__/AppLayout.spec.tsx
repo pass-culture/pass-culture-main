@@ -102,7 +102,7 @@ const renderAppLayout = (
 ) => {
   renderWithProviders(
     <AdageUserContextProvider adageUser={{ ...user, offersCount: 1 }}>
-      <AppLayout venueFilter={null} />
+      <AppLayout />
     </AdageUserContextProvider>,
     options
   )

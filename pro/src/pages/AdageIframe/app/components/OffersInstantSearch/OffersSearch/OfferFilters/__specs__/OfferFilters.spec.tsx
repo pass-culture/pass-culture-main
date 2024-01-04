@@ -82,7 +82,7 @@ describe('OfferFilters', () => {
     renderOfferFilters({
       initialValues: {
         ...initialValues,
-        domains: ['test'],
+        domains: [123],
       },
     })
 
@@ -153,7 +153,7 @@ describe('OfferFilters', () => {
     renderOfferFilters({
       initialValues: {
         ...initialValues,
-        domains: ['test'],
+        domains: [123],
       },
     })
 

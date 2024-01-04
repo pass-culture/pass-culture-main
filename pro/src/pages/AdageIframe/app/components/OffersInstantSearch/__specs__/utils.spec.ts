@@ -11,7 +11,7 @@ const venueFilter = {
 }
 
 describe('adageFiltersToFacetFilters', () => {
-  const domains: string[] = ['1']
+  const domains = [1]
   const students: string[] = ['Collège - 4e']
   const departments: string[] = ['01']
   const academies: string[] = ['Paris']
@@ -174,7 +174,7 @@ describe('serializeFiltersForData', () => {
   ]
   it('should return serialized filters', () => {
     const filters: SearchFormValues = {
-      domains: ['1'],
+      domains: [1],
       students: ['Collège - 4e'],
       eventAddressType: 'school',
       departments: ['01'],
@@ -207,7 +207,7 @@ describe('serializeFiltersForData', () => {
   })
   it('should not serialize serialise formats if ff is not active', () => {
     const filters: SearchFormValues = {
-      domains: ['1'],
+      domains: [1],
       students: ['Collège - 4e'],
       eventAddressType: 'school',
       departments: ['01'],

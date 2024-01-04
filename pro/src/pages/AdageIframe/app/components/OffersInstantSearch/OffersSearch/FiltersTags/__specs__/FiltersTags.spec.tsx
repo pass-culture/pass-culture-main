@@ -190,7 +190,7 @@ describe('FiltersTag', () => {
     it('should display domain label in tag', () => {
       renderFiltersTag({
         ...ADAGE_FILTERS_DEFAULT_VALUES,
-        domains: ['2'],
+        domains: [2],
       })
 
       expect(screen.getByText('Danse')).toBeInTheDocument()
@@ -198,7 +198,7 @@ describe('FiltersTag', () => {
     it('should not display tag if domain does not exit', () => {
       renderFiltersTag({
         ...ADAGE_FILTERS_DEFAULT_VALUES,
-        domains: ['abc123'],
+        domains: [12121212121],
       })
 
       expect(screen.queryByText('abc123')).not.toBeInTheDocument()
@@ -206,7 +206,7 @@ describe('FiltersTag', () => {
     it('should remove domain tag on click', async () => {
       renderFiltersTag({
         ...ADAGE_FILTERS_DEFAULT_VALUES,
-        domains: ['2'],
+        domains: [2],
       })
       await userEvent.click(screen.getByText('Danse'))
       expect(screen.queryByText('Danse')).not.toBeInTheDocument()
