@@ -643,6 +643,11 @@ class Offer(PcObject, Base, Model, DeactivableMixin, ValidationMixin, Accessibil
         )
 
     @property
+    def metadataFirstBeginningDatetime(self) -> datetime.datetime | None:
+        stocks_with_date = [stock.beginningDatetime for stock in self.stocks if stock.beginningDatetime is not None]
+        return min(stocks_with_date) if stocks_with_date else None
+
+    @property
     def activeStocks(self) -> list[Stock]:
         return [stock for stock in self.stocks if not stock.isSoftDeleted]
 
@@ -695,7 +700,7 @@ class Offer(PcObject, Base, Model, DeactivableMixin, ValidationMixin, Accessibil
 
     @property
     def min_price(self) -> float | None:
-        available_stocks = [stock.price for stock in self.stocks if not stock.isSoftDeleted]
+        available_stocks = [stock.price for stock in self.stocks]
         if len(available_stocks) > 0:
             return min(available_stocks)
 
