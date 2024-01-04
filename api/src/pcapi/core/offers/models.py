@@ -186,8 +186,6 @@ class Stock(PcObject, Base, Model, ProvidableMixin, SoftDeletableMixin):
     )
     dateModified: datetime.datetime = sa.Column(sa.DateTime, nullable=False, default=datetime.datetime.utcnow)
     dnBookedQuantity: int = sa.Column(sa.BigInteger, nullable=False, server_default=sa.text("0"))
-    educationalPriceDetail = sa.Column(sa.Text, nullable=True)
-    numberOfTickets = sa.Column(sa.Integer, nullable=True)
     offer: sa_orm.Mapped["Offer"] = sa.orm.relationship("Offer", backref="stocks")
     offerId: int = sa.Column(sa.BigInteger, sa.ForeignKey("offer.id"), index=True, nullable=False)
     price: decimal.Decimal = sa.Column(
@@ -198,7 +196,6 @@ class Stock(PcObject, Base, Model, ProvidableMixin, SoftDeletableMixin):
     )
     priceCategory: sa_orm.Mapped["PriceCategory | None"] = sa.orm.relationship("PriceCategory", back_populates="stocks")
     quantity: int | None = sa.Column(sa.Integer, nullable=True)
-    rawProviderQuantity = sa.Column(sa.Integer, nullable=True)
     features: list[str] = sa.Column(postgresql.ARRAY(sa.Text), nullable=False, server_default=sa.text("'{}'::text[]"))
 
     __table_args__ = (

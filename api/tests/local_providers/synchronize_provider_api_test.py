@@ -124,14 +124,12 @@ class ProviderAPICronTest:
         # Then
         # Test updates stock if already exists
         assert stock.quantity == 6
-        assert stock.rawProviderQuantity == 6
         assert stock.lastProviderId == provider.id
 
         # Test creates stock if does not exist
         assert len(offer.stocks) == 1
         created_stock = offer.stocks[0]
         assert created_stock.quantity == 4
-        assert created_stock.rawProviderQuantity == 4
         assert created_stock.lastProviderId == provider.id
 
         # Test creates offer if does not exist
@@ -149,7 +147,7 @@ class ProviderAPICronTest:
 
         # Test existing bookings are added to quantity
         assert stock_with_booking.quantity == 17 + 1 + 2
-        assert stock_with_booking.rawProviderQuantity == 17
+        assert stock_with_booking.remainingQuantity == 17
 
         # Test fill stock attributes
         assert created_stock.price == Decimal("30")

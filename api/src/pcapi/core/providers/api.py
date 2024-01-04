@@ -401,7 +401,6 @@ def _get_stocks_to_upsert(
                 {
                     "id": stock["id"],
                     "quantity": stock_detail.available_quantity + stock["booking_quantity"],
-                    "rawProviderQuantity": stock_detail.available_quantity,
                     "price": stock_detail.price,
                     "lastProviderId": provider_id,
                 }
@@ -437,7 +436,6 @@ def _build_stock_from_stock_detail(
 ) -> offers_models.Stock:
     return offers_models.Stock(
         quantity=stock_detail.available_quantity,
-        rawProviderQuantity=stock_detail.available_quantity,
         bookingLimitDatetime=None,
         offerId=offers_id,
         price=stock_detail.price,

@@ -172,13 +172,11 @@ class SynchronizeStocksTest:
         # Then
         # Test updates stock if already exists
         assert stock.quantity == 6
-        assert stock.rawProviderQuantity == 6
 
         # Test creates stock if does not exist
         assert len(offer.stocks) == 1
         created_stock = offer.stocks[0]
         assert created_stock.quantity == 4
-        assert created_stock.rawProviderQuantity == 4
 
         # Test creates offer if does not exist
         created_offer = Offer.query.filter_by(idAtProvider=spec[2]["ref"]).one()
@@ -199,7 +197,7 @@ class SynchronizeStocksTest:
 
         # Test existing bookings are added to quantity
         assert stock_with_booking.quantity == 17 + 1 + 2
-        assert stock_with_booking.rawProviderQuantity == 17
+        assert stock_with_booking.remainingQuantity == 17
 
         # Test fill stock attributes
         assert created_stock.price == Decimal("12.00")
@@ -353,14 +351,12 @@ class SynchronizeStocksTest:
                 "id": 1,
                 "quantity": 15 + 3,
                 "price": 15.78,
-                "rawProviderQuantity": 15,
                 "lastProviderId": 1,
             },
             {
                 "id": 4,
                 "quantity": 15 + 3,
                 "price": 18.0,
-                "rawProviderQuantity": 15,
                 "lastProviderId": 1,
             },
         ]
