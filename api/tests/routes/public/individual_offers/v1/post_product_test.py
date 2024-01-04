@@ -565,7 +565,13 @@ class PostProductTest:
                 "unexpected value; permitted: 'VISITE_VIRTUELLE'",
                 "unexpected value; permitted: 'VOD'",
             ],
-            "categoryRelatedFields.ean": ["field required", "field required", "field required"],
+            "categoryRelatedFields.ean": [
+                "field required",
+                "field required",
+                "field required",
+                "field required",
+                "field required",
+            ],
             "categoryRelatedFields.musicType": ["field required", "field required"],
         }
         assert offers_models.Offer.query.first() is None
