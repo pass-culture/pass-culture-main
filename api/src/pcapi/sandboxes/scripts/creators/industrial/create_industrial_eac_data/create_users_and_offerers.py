@@ -100,4 +100,11 @@ def create_users_offerers() -> list[offerers_models.Offerer]:
     )
     offerers.append(user_offerer.offerer)
 
+    user_offerer = offerers_factories.UserOffererFactory(
+        user__email="eac_with_no_offers@example.com",
+        offerer__name="eac_with_no_offers",
+        offerer__siren="956513147",
+    )
+    offerers.append(user_offerer.offerer)
+
     return offerers
