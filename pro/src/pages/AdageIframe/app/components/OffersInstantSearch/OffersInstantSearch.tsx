@@ -74,6 +74,7 @@ export const OffersInstantSearch = ({
     <InstantSearch
       indexName={ALGOLIA_COLLECTIVE_OFFERS_INDEX}
       searchClient={searchClient}
+      future={{ preserveSharedStateOnUnmount: true }} // InstantSearch recommendation to prepare for version 8
     >
       <Index
         indexName={ALGOLIA_COLLECTIVE_OFFERS_INDEX}
