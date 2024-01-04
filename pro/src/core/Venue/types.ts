@@ -43,7 +43,7 @@ export interface Venue {
   isVirtual: boolean
   accessibility: AccessibiltyFormValues
   address: string
-  banId: string | null
+  banId: string
   bannerMeta: VenueBannerMetaProps | null | undefined
   bannerUrl: string
   city: string
