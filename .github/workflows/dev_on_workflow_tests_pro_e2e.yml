@@ -72,7 +72,7 @@ jobs:
       # Doc : https://github.com/cypress-io/github-action
       - name: "Cypress run"
         if: always()
-        uses: cypress-io/github-action@v5
+        uses: cypress-io/github-action@v6
         with:
           config: baseUrl=http://localhost:3001
           browser: chrome
