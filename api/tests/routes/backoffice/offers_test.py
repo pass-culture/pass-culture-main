@@ -24,6 +24,7 @@ from pcapi.core.offerers import factories as offerers_factories
 from pcapi.core.offerers import models as offerers_models
 from pcapi.core.offers import factories as offers_factories
 from pcapi.core.offers import models as offers_models
+from pcapi.core.permissions import factories as perm_factories
 from pcapi.core.permissions import models as perm_models
 from pcapi.core.testing import assert_num_queries
 from pcapi.core.users import factories as users_factories
@@ -1222,7 +1223,6 @@ class GetOfferDetailsTest(GetEndpointHelper):
                 "complianceReasons": ["stock_price", "offer_subcategoryid", "offer_description"],
             },
         )
-
         url = url_for(self.endpoint, offer_id=offer.id, _external=True)
         with assert_num_queries(self.expected_num_queries):
             response = authenticated_client.get(url)
@@ -1369,6 +1369,52 @@ class GetOfferDetailsTest(GetEndpointHelper):
         card_text = cards_text[0]
         assert f"Utilisateur de la dernière validation : {legit_user.full_name}" in card_text
         assert f"Date de dernière validation : {format_date(validation_date, '%d/%m/%Y à %Hh%M')}" in card_text
+
+    def test_get_detail_offer_display_modify_offer_button(self, client):
+        offer = offers_factories.OfferFactory()
+        manage_offers = perm_models.Permission.query.filter_by(name=perm_models.Permissions.MANAGE_OFFERS.name).one()
+        read_offers = perm_models.Permission.query.filter_by(name=perm_models.Permissions.READ_OFFERS.name).one()
+        role = perm_factories.RoleFactory(permissions=[read_offers, manage_offers])
+        user = users_factories.UserFactory()
+        user.backoffice_profile = perm_models.BackOfficeUserProfile(user=user, roles=[role])
+
+        authenticated_client = client.with_bo_session_auth(user)
+        url = url_for(self.endpoint, offer_id=offer.id, _external=True)
+        with assert_num_queries(self.expected_num_queries):
+            response = authenticated_client.get(url)
+            assert response.status_code == 200
+
+        cards_text = html_parser.extract_cards_text(response.data)
+        assert len(cards_text) == 1
+        card_text = cards_text[0]
+
+        assert "Modifier l'offre" in card_text
+        assert "Valider l'offre" not in card_text
+        assert "Rejeter l'offre" not in card_text
+
+    def test_get_detail_offer_display_validation_buttons_fraud(self, client):
+        offer = offers_factories.OfferFactory()
+        pro_fraud_actions = perm_models.Permission.query.filter_by(
+            name=perm_models.Permissions.PRO_FRAUD_ACTIONS.name
+        ).one()
+        read_offers = perm_models.Permission.query.filter_by(name=perm_models.Permissions.READ_OFFERS.name).one()
+        role = perm_factories.RoleFactory(permissions=[read_offers, pro_fraud_actions])
+        user = users_factories.UserFactory()
+        user.backoffice_profile = perm_models.BackOfficeUserProfile(user=user, roles=[role])
+
+        authenticated_client = client.with_bo_session_auth(user)
+        url = url_for(self.endpoint, offer_id=offer.id, _external=True)
+        with assert_num_queries(self.expected_num_queries):
+            response = authenticated_client.get(url)
+            assert response.status_code == 200
+
+        cards_text = html_parser.extract_cards_text(response.data)
+        assert len(cards_text) == 1
+        card_text = cards_text[0]
+
+        assert "Modifier l'offre" not in card_text
+        assert "Valider l'offre" in card_text
+        assert "Rejeter l'offre" in card_text
 
     def test_get_detail_rejected_offer(self, legit_user, authenticated_client):
         validation_date = datetime.datetime.utcnow()
