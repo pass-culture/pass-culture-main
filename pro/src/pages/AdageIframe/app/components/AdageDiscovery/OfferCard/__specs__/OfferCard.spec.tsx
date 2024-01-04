@@ -2,7 +2,7 @@ import { screen } from '@testing-library/react'
 import { userEvent } from '@testing-library/user-event'
 import * as router from 'react-router-dom'
 
-import { OfferAddressType } from 'apiClient/adage'
+import { AuthenticatedResponse, OfferAddressType } from 'apiClient/adage'
 import { apiAdage } from 'apiClient/api'
 import { AdageUserContextProvider } from 'pages/AdageIframe/app/providers/AdageUserContext'
 import { defaultAdageUser, defaultCollectiveOffer } from 'utils/adageFactories'
@@ -29,12 +29,18 @@ const mockOffer = {
   isTemplate: false,
 }
 
+const adageUser: AuthenticatedResponse = {
+  ...defaultAdageUser,
+  lat: 48.86543326111946,
+  lon: 2.321135886028998,
+}
+
 const renderOfferCardComponent = ({
   offer,
   handlePlaylistElementTracking,
 }: CardComponentProps) => {
   renderWithProviders(
-    <AdageUserContextProvider adageUser={defaultAdageUser}>
+    <AdageUserContextProvider adageUser={adageUser}>
       <OfferCardComponent
         offer={offer}
         handlePlaylistElementTracking={handlePlaylistElementTracking}
@@ -83,6 +89,26 @@ describe('OfferCard component', () => {
 
     expect(screen.getByText('Sortie')).toBeInTheDocument()
     expect(screen.getByText('Lieu à définir')).toBeInTheDocument()
+  })
+
+  it('should display the distance when it is available', () => {
+    const offer = {
+      ...mockOffer,
+      offerVenue: {
+        ...mockOffer.offerVenue,
+        addressType: OfferAddressType.OFFERER_VENUE,
+      },
+      venue: {
+        ...mockOffer.venue,
+        coordinates: {
+          latitude: 48.869440910282734,
+          longitude: 2.3087717501609233,
+        },
+      },
+    }
+    renderOfferCardComponent({ offer, handlePlaylistElementTracking: vi.fn() })
+
+    expect(screen.getByText('à 1 km - Paris')).toBeInTheDocument()
   })
 
   it('should redirect on click in offer card', async () => {
