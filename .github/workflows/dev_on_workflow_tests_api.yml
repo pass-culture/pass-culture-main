@@ -20,7 +20,7 @@ jobs:
     name: "Quality checks"
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v4.1.1
       - name: "Authentification to Google"
         uses: 'google-github-actions/auth@v1'
         with:
@@ -98,7 +98,7 @@ jobs:
     name: "Pylint"
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v4.1.1
       - name: Authentification to Google
         uses: 'google-github-actions/auth@v1'
         with:
@@ -193,7 +193,7 @@ jobs:
           POSTGRES_PASSWORD: pytest
           POSTGRES_DB: pass_culture
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v4.1.1
       - name: "Authentification to Google"
         uses: 'google-github-actions/auth@v1'
         with:
@@ -323,7 +323,7 @@ jobs:
           POSTGRES_PASSWORD: pytest
           POSTGRES_DB: pass_culture
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v4.1.1
       - name: "Authentification to Google"
         uses: 'google-github-actions/auth@v1'
         with:
