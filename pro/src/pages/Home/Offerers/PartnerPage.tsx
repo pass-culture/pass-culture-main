@@ -120,6 +120,7 @@ export const PartnerPage = ({ offererId, venue }: PartnerPageProps) => {
 
           <ButtonLink
             variant={ButtonVariant.SECONDARY}
+            className={styles['venue-button']}
             link={{
               to: `/structures/${offererId}/lieux/${venue.id}?modification`,
               isExternal: false,
@@ -131,9 +132,12 @@ export const PartnerPage = ({ offererId, venue }: PartnerPageProps) => {
         </div>
       </div>
 
-      <div className={styles['venue-offer-steps']}>
-        <VenueOfferSteps venue={venue} hasVenue isInsidePartnerBlock />
-      </div>
+      <VenueOfferSteps
+        className={styles['venue-offer-steps']}
+        venue={venue}
+        hasVenue
+        isInsidePartnerBlock
+      />
 
       {/* TODO handle not visible case (https://passculture.atlassian.net/browse/PC-26280) */}
       <section className={styles['details']}>
@@ -199,7 +203,7 @@ export const PartnerPage = ({ offererId, venue }: PartnerPageProps) => {
             svgAlt="Nouvelle fenêtre"
             className={styles['details-link']}
           >
-            Demander à être référencé sur Adage
+            Faire une demande de référencement ADAGE
           </ButtonLink>
 
           <ButtonLink
