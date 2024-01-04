@@ -1,4 +1,4 @@
-import { screen, waitForElementToBeRemoved } from '@testing-library/react'
+import { screen } from '@testing-library/react'
 import React from 'react'
 import { Configure } from 'react-instantsearch'
 
@@ -6,14 +6,10 @@ import { AdageFrontRoles } from 'apiClient/adage'
 import { apiAdage } from 'apiClient/api'
 import Notification from 'components/Notification/Notification'
 import { defaultCategories } from 'utils/adageFactories'
-import {
-  RenderWithProvidersOptions,
-  renderWithProviders,
-} from 'utils/renderWithProviders'
+import { renderWithProviders } from 'utils/renderWithProviders'
 
 import { App } from '../App'
 import { DEFAULT_GEO_RADIUS } from '../components/OffersInstantSearch/OffersInstantSearch'
-import { FacetFiltersContextProvider } from '../providers'
 
 vi.mock(
   '../components/OffersInstantSearch/OffersSearch/Autocomplete/Autocomplete',
@@ -71,6 +67,18 @@ const venue = {
   departementCode: '75',
 }
 
+const isDiscoveryActive = {
+  features: {
+    list: [
+      {
+        nameKey: 'WIP_ENABLE_DISCOVERY',
+        isActive: true,
+      },
+    ],
+    initialized: true,
+  },
+}
+
 vi.mock('apiClient/api', () => ({
   apiAdage: {
     getEducationalOffersCategories: vi.fn(),
@@ -106,17 +114,15 @@ vi.mock('@algolia/autocomplete-plugin-query-suggestions', () => {
   }
 })
 
-const renderApp = (options?: RenderWithProvidersOptions) => {
+const renderApp = (initialEntries = '/', storeOverrides: any = null) => {
   renderWithProviders(
     <>
-      <FacetFiltersContextProvider>
-        <App />
-      </FacetFiltersContextProvider>
+      <App />
       <Notification />
     </>,
     {
-      initialRouterEntries: ['/'],
-      ...options,
+      initialRouterEntries: [initialEntries],
+      storeOverrides: storeOverrides,
     }
   )
 }
@@ -149,27 +155,16 @@ describe('app', () => {
 
       window.location = mockLocation
 
-      renderApp({
-        initialRouterEntries: ['/recherche?siret=123456789&venue=1436'],
-      })
-      await waitForElementToBeRemoved(() => screen.queryAllByTestId('spinner'))
+      renderApp('/recherche?siret=123456789&venue=1436')
 
-      expect(
-        screen.getByRole('button', { name: /Lieu : Lib de Par's/ })
-      ).toBeInTheDocument()
+      await screen.findByRole('button', { name: /Lieu : Lib de Par's/ })
     })
 
     it('should display venue tag when venueId is provided and public name exists', async () => {
       // When
-      renderApp({
-        initialRouterEntries: ['/recherche?venue=1436'],
-      })
+      renderApp('/recherche?venue=1436')
 
-      await waitForElementToBeRemoved(() => screen.queryAllByTestId('spinner'))
-
-      expect(
-        screen.getByRole('button', { name: /Lieu : Lib de Par's/ })
-      ).toBeInTheDocument()
+      await screen.findByRole('button', { name: /Lieu : Lib de Par's/ })
     })
 
     it('should display venue when venueId is provided in url', async () => {
@@ -180,15 +175,9 @@ describe('app', () => {
 
       window.location = mockLocation
 
-      renderApp({
-        initialRouterEntries: ['/recherche?venue=1436'],
-      })
+      renderApp('/recherche?venue=1436')
 
-      await waitForElementToBeRemoved(() => screen.queryAllByTestId('spinner'))
-
-      expect(
-        screen.getByRole('button', { name: /Lieu : Lib de Par's/ })
-      ).toBeInTheDocument()
+      await screen.findByRole('button', { name: /Lieu : Lib de Par's/ })
     })
     it('should display error messagee when venueId does not exist', async () => {
       const mockLocation = {
@@ -200,7 +189,7 @@ describe('app', () => {
 
       vi.spyOn(apiAdage, 'getVenueById').mockRejectedValueOnce(null)
 
-      renderApp({ features: ['WIP_ENABLE_DISCOVERY'] })
+      renderApp('/recherche?venue=999', isDiscoveryActive)
 
       expect(
         await screen.findByText(
@@ -219,7 +208,7 @@ describe('app', () => {
         lat: 48.856614,
         lon: 2.3522219,
       })
-      renderApp({ initialRouterEntries: ['/recherche'] })
+      renderApp('/recherche')
 
       await screen.findByRole('button', { name: 'Rechercher' })
 

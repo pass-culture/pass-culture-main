@@ -1,6 +1,6 @@
 import { Navigate, Route, Routes, useLocation } from 'react-router-dom'
 
-import { AdageFrontRoles, VenueResponse } from 'apiClient/adage'
+import { AdageFrontRoles } from 'apiClient/adage'
 import useActiveFeature from 'hooks/useActiveFeature'
 
 import { MARSEILLE_EN_GRAND } from '../../constants'
@@ -14,11 +14,7 @@ import { OffersInstantSearch } from '../OffersInstantSearch/OffersInstantSearch'
 
 import styles from './AppLayout.module.scss'
 
-export const AppLayout = ({
-  venueFilter,
-}: {
-  venueFilter: VenueResponse | null
-}): JSX.Element => {
+export const AppLayout = (): JSX.Element => {
   const { adageUser } = useAdageUser()
   const { pathname, search } = useLocation()
   const params = new URLSearchParams(search)
@@ -63,10 +59,7 @@ export const AppLayout = ({
             }
           />
           <Route path="decouverte" element={<AdageDiscovery />} />
-          <Route
-            path="recherche"
-            element={<OffersInstantSearch venueFilter={venueFilter} />}
-          />
+          <Route path="recherche" element={<OffersInstantSearch />} />
           <Route
             path="mon-etablissement"
             element={<OffersForMyInstitution />}
