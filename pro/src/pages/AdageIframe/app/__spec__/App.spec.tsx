@@ -6,7 +6,10 @@ import { AdageFrontRoles } from 'apiClient/adage'
 import { apiAdage } from 'apiClient/api'
 import Notification from 'components/Notification/Notification'
 import { defaultCategories } from 'utils/adageFactories'
-import { renderWithProviders } from 'utils/renderWithProviders'
+import {
+  RenderWithProvidersOptions,
+  renderWithProviders,
+} from 'utils/renderWithProviders'
 
 import { App } from '../App'
 import { DEFAULT_GEO_RADIUS } from '../components/OffersInstantSearch/OffersInstantSearch'
@@ -114,15 +117,16 @@ vi.mock('@algolia/autocomplete-plugin-query-suggestions', () => {
   }
 })
 
-const renderApp = (initialEntries = '/', storeOverrides: any = null) => {
+const renderApp = (options?: RenderWithProvidersOptions) => {
   renderWithProviders(
     <>
       <App />
       <Notification />
     </>,
     {
-      initialRouterEntries: [initialEntries],
-      storeOverrides: storeOverrides,
+      initialRouterEntries:
+        options?.initialRouterEntries ?? options?.initialRouterEntries,
+      storeOverrides: options?.storeOverrides,
     }
   )
 }
@@ -155,14 +159,18 @@ describe('app', () => {
 
       window.location = mockLocation
 
-      renderApp('/recherche?siret=123456789&venue=1436')
+      renderApp({
+        initialRouterEntries: ['/recherche?siret=123456789&venue=1436'],
+      })
 
       await screen.findByRole('button', { name: /Lieu : Lib de Par's/ })
     })
 
     it('should display venue tag when venueId is provided and public name exists', async () => {
       // When
-      renderApp('/recherche?venue=1436')
+      renderApp({
+        initialRouterEntries: ['/recherche?venue=1436'],
+      })
 
       await screen.findByRole('button', { name: /Lieu : Lib de Par's/ })
     })
@@ -175,7 +183,9 @@ describe('app', () => {
 
       window.location = mockLocation
 
-      renderApp('/recherche?venue=1436')
+      renderApp({
+        initialRouterEntries: ['/recherche?venue=1436'],
+      })
 
       await screen.findByRole('button', { name: /Lieu : Lib de Par's/ })
     })
@@ -189,7 +199,10 @@ describe('app', () => {
 
       vi.spyOn(apiAdage, 'getVenueById').mockRejectedValueOnce(null)
 
-      renderApp('/recherche?venue=999', isDiscoveryActive)
+      renderApp({
+        initialRouterEntries: ['/recherche?venue=999'],
+        storeOverrides: isDiscoveryActive,
+      })
 
       expect(
         await screen.findByText(
@@ -208,7 +221,9 @@ describe('app', () => {
         lat: 48.856614,
         lon: 2.3522219,
       })
-      renderApp('/recherche')
+      renderApp({
+        initialRouterEntries: ['/recherche'],
+      })
 
       await screen.findByRole('button', { name: 'Rechercher' })
 

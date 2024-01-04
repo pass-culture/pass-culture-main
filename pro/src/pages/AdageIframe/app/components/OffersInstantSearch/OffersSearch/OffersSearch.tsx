@@ -4,12 +4,11 @@ import { useInstantSearch } from 'react-instantsearch'
 
 import { AdageFrontRoles, VenueResponse } from 'apiClient/adage'
 import { api, apiAdage } from 'apiClient/api'
-import { StudentLevels } from 'apiClient/v1'
 import { GET_DATA_ERROR_MESSAGE } from 'core/shared'
 import useActiveFeature from 'hooks/useActiveFeature'
 import useIsElementVisible from 'hooks/useIsElementVisible'
 import useNotification from 'hooks/useNotification'
-import { MARSEILLE, MARSEILLE_EN_GRAND } from 'pages/AdageIframe/app/constants'
+import { MARSEILLE_EN_GRAND } from 'pages/AdageIframe/app/constants'
 import useAdageUser from 'pages/AdageIframe/app/hooks/useAdageUser'
 import { Facets, Option } from 'pages/AdageIframe/app/types'
 import { filterEducationalSubCategories } from 'utils/collectiveCategories'
@@ -36,14 +35,13 @@ export enum LocalisationFilterStates {
 }
 
 export interface SearchProps {
-  setFacetFilters: Dispatch<SetStateAction<Facets>>
-  venueFilter: VenueResponse | null
-  domainsFilter: string | null
+  setFacetFilters: Dispatch<SetStateAction<Facets | null>>
+  initialFilters: Partial<SearchFormValues>
   setGeoRadius: (geoRadius: number) => void
 }
 
 export interface SearchFormValues {
-  domains: string[]
+  domains: number[]
   students: string[]
   departments: string[]
   academies: string[]
@@ -56,12 +54,10 @@ export interface SearchFormValues {
 
 export const OffersSearch = ({
   setFacetFilters,
-  venueFilter,
-  domainsFilter,
   setGeoRadius,
+  initialFilters,
 }: SearchProps): JSX.Element => {
   const { adageUser } = useAdageUser()
-  const params = new URLSearchParams(window.location.search)
   const isUserAdmin = adageUser.role === AdageFrontRoles.READONLY
 
   const [categoriesOptions, setCategoriesOptions] = useState<
@@ -84,16 +80,11 @@ export const OffersSearch = ({
   const isUserInMarseilleProgram = (adageUser.programs ?? []).some(
     (prog) => prog.name === MARSEILLE_EN_GRAND
   )
-  const filterOnMarseilleStudents =
-    isMarseilleEnabled &&
-    isUserInMarseilleProgram &&
-    params.get('program') === MARSEILLE
 
   const formik = useFormik<SearchFormValues>({
     initialValues: {
       ...ADAGE_FILTERS_DEFAULT_VALUES,
-      venue: venueFilter,
-      domains: domainsFilter ? [domainsFilter] : [],
+      ...initialFilters,
     },
     enableReinitialize: true,
     onSubmit: handleSubmit,
@@ -124,23 +115,7 @@ export const OffersSearch = ({
     getAllCategories()
     // eslint-disable-next-line @typescript-eslint/no-floating-promises
     getAllDomains()
-
-    if (filterOnMarseilleStudents) {
-      // eslint-disable-next-line @typescript-eslint/no-floating-promises
-      formik.setFieldValue('students', [
-        StudentLevels._COLES_INNOVANTES_MARSEILLE_EN_GRAND_MATERNELLE,
-        StudentLevels._COLES_INNOVANTES_MARSEILLE_EN_GRAND_L_MENTAIRE,
-      ])
-
-      setFacetFilters((filters) => [
-        ...filters,
-        [
-          `offer.students:${StudentLevels._COLES_INNOVANTES_MARSEILLE_EN_GRAND_MATERNELLE}`,
-          `offer.students:${StudentLevels._COLES_INNOVANTES_MARSEILLE_EN_GRAND_L_MENTAIRE}`,
-        ],
-      ])
-    }
-  }, [])
+  }, [notification])
 
   function handleSubmit() {
     const updatedFilters = adageFiltersToFacetFilters({
@@ -166,6 +141,7 @@ export const OffersSearch = ({
     await formik.setValues(ADAGE_FILTERS_DEFAULT_VALUES)
     formik.handleSubmit()
   }
+
   const [currentSearch, setCurrentSearch] = useState<string | null>(null)
   const logFiltersOnSearch = async (nbHits: number, queryId?: string) => {
     /* istanbul ignore next: TO FIX the current structure make it hard to test, we probably should not mock Offers in OfferSearch tests */

@@ -4,6 +4,8 @@ import { Configure, Index, InstantSearch } from 'react-instantsearch'
 
 import { VenueResponse } from 'apiClient/adage'
 import { apiAdage } from 'apiClient/api'
+import { StudentLevels } from 'apiClient/v1'
+import useActiveFeature from 'hooks/useActiveFeature'
 import useNotification from 'hooks/useNotification'
 import Spinner from 'ui-kit/Spinner/Spinner'
 import {
@@ -11,14 +13,18 @@ import {
   ALGOLIA_APP_ID,
   ALGOLIA_COLLECTIVE_OFFERS_INDEX,
 } from 'utils/config'
-import { getDefaultFacetFilterUAICodeValue } from 'utils/facetFilters'
 import { isNumber } from 'utils/types'
 
+import { MARSEILLE_EN_GRAND } from '../../constants'
 import useAdageUser from '../../hooks/useAdageUser'
 import { AnalyticsContextProvider } from '../../providers/AnalyticsContextProvider'
 import { Facets } from '../../types'
 
 import { OffersSearch } from './OffersSearch/OffersSearch'
+import {
+  ADAGE_FILTERS_DEFAULT_VALUES,
+  adageFiltersToFacetFilters,
+} from './utils'
 
 const searchClient = algoliasearch(ALGOLIA_APP_ID, ALGOLIA_API_KEY)
 
@@ -37,18 +43,29 @@ export const algoliaSearchDefaultAttributesToRetrieve = [
 
 export const DEFAULT_GEO_RADIUS = 30000000 // 30 000 km ensure we get all results in the world
 
-export const OffersInstantSearch = (): JSX.Element => {
+const DEFAULT_MARSEILLE_STUDENTS = [
+  StudentLevels._COLES_INNOVANTES_MARSEILLE_EN_GRAND_MATERNELLE,
+  StudentLevels._COLES_INNOVANTES_MARSEILLE_EN_GRAND_L_MENTAIRE,
+]
+
+export const OffersInstantSearch = (): JSX.Element | null => {
   const { adageUser } = useAdageUser()
 
   const params = new URLSearchParams(window.location.search)
-  const venueId = Number(params.get('venue'))
-  const siret = params.get('siret')
-  const domainId = params.get('domain')
-  const relativeOffersIncluded = params.get('all') === 'true'
+  const venueParam = Number(params.get('venue'))
+  const siretParam = params.get('siret')
+  const domainParam = Number(params.get('domain'))
+  const relativeOffersIncludedParam = params.get('all') === 'true'
+  const programParam = params.get('program')
 
-  const [facetFilters, setFacetFilters] = useState<Facets>([
-    ...getDefaultFacetFilterUAICodeValue(adageUser?.uai),
-  ])
+  const isMarseilleEnabled = useActiveFeature('WIP_ENABLE_MARSEILLE')
+  const isUserInMarseilleProgram = (adageUser.programs ?? []).some(
+    (prog) => prog.name === MARSEILLE_EN_GRAND
+  )
+  const filterOnMarseilleStudents =
+    isMarseilleEnabled && isUserInMarseilleProgram && programParam
+
+  const [facetFilters, setFacetFilters] = useState<Facets | null>(null)
 
   const [geoRadius, setGeoRadius] = useState<number>(DEFAULT_GEO_RADIUS)
 
@@ -58,39 +75,66 @@ export const OffersInstantSearch = (): JSX.Element => {
   const notification = useNotification()
 
   useEffect(() => {
+    function setFacetFiltersFromParams(venue?: VenueResponse | null) {
+      const filtersFromParams = {
+        uai: adageUser?.uai ? [adageUser.uai, 'all'] : ['all'],
+        domains: domainParam ? [domainParam] : [],
+        students: filterOnMarseilleStudents ? DEFAULT_MARSEILLE_STUDENTS : [],
+        venue: venue ?? null,
+      }
+      setFacetFilters(
+        adageFiltersToFacetFilters({
+          ...ADAGE_FILTERS_DEFAULT_VALUES,
+          ...filtersFromParams,
+        }).queryFilters
+      )
+    }
+
     async function setVenueFromUrl() {
-      setLoadingVenue(true)
-      if (!siret && !venueId) {
+      if (!siretParam && !venueParam) {
         return
       }
 
+      setLoadingVenue(true)
+
       try {
-        const result = siret
-          ? await apiAdage.getVenueBySiret(siret, relativeOffersIncluded)
-          : await apiAdage.getVenueById(venueId, relativeOffersIncluded)
+        const result = siretParam
+          ? await apiAdage.getVenueBySiret(
+              siretParam,
+              relativeOffersIncludedParam
+            )
+          : await apiAdage.getVenueById(venueParam, relativeOffersIncludedParam)
 
         setVenueFilter(result)
-
-        setFacetFilters((prev) => [...prev, [`venue.id:${venueId}`]])
+        setFacetFiltersFromParams(result)
       } catch {
         notification.error('Lieu inconnu. Tous les résultats sont affichés.')
+        setFacetFiltersFromParams()
       } finally {
         setLoadingVenue(false)
       }
     }
 
-    if (siret || venueId) {
+    if (siretParam || venueParam) {
       // eslint-disable-next-line @typescript-eslint/no-floating-promises
       setVenueFromUrl()
+    } else {
+      //  If a venue has to be fetched, the params will be set when that's done. Otherwise, we can set the filters directy.
+      setFacetFiltersFromParams()
     }
+  }, [
+    venueParam,
+    siretParam,
+    relativeOffersIncludedParam,
+    notification,
+    adageUser,
+    domainParam,
+    filterOnMarseilleStudents,
+  ])
 
-    if (domainId) {
-      // eslint-disable-next-line @typescript-eslint/no-floating-promises
-      setFacetFilters((prev) => [...prev, [`offer.domains:${domainId}`]])
-    }
-  }, [venueId, siret, domainId, relativeOffersIncluded, notification])
-
-  return (
+  return loadingVenue ? (
+    <Spinner />
+  ) : facetFilters ? (
     <InstantSearch
       indexName={ALGOLIA_COLLECTIVE_OFFERS_INDEX}
       searchClient={searchClient}
@@ -117,19 +161,21 @@ export const OffersInstantSearch = (): JSX.Element => {
           aroundRadius={geoRadius}
           distinct={false}
         />
-        {loadingVenue ? (
-          <Spinner />
-        ) : (
-          <AnalyticsContextProvider>
-            <OffersSearch
-              setFacetFilters={setFacetFilters}
-              venueFilter={venueFilter}
-              domainsFilter={domainId}
-              setGeoRadius={setGeoRadius}
-            />
-          </AnalyticsContextProvider>
-        )}
+
+        <AnalyticsContextProvider>
+          <OffersSearch
+            setFacetFilters={setFacetFilters}
+            initialFilters={{
+              venue: venueFilter,
+              domains: domainParam ? [domainParam] : [],
+              students: filterOnMarseilleStudents
+                ? DEFAULT_MARSEILLE_STUDENTS
+                : [],
+            }}
+            setGeoRadius={setGeoRadius}
+          />
+        </AnalyticsContextProvider>
       </Index>
     </InstantSearch>
-  )
+  ) : null
 }
