@@ -76,12 +76,14 @@ const OffererDetails = ({
   return (
     <Card className={styles['card']} data-testid="offerrer-wrapper">
       <div className={styles['container']}>
-        <SelectInput
-          onChange={handleChangeOfferer}
-          name="offererId"
-          options={offererOptions}
-          value={selectedOfferer.id.toString()}
-        />
+        <div className={styles['offerer-select']}>
+          <SelectInput
+            onChange={handleChangeOfferer}
+            name="offererId"
+            options={offererOptions}
+            value={selectedOfferer.id.toString()}
+          />
+        </div>
 
         <div className={styles['venue-buttons']}>
           <div className={cn(styles['separator'], styles['vertical'])} />

@@ -27,6 +27,10 @@
 }
 
 @media (min-width: size.$tablet) {
+  .offerer-select {
+    flex-grow: 1;
+  }
+
   .separator {
     background-color: colors.$grey-medium;
 
