@@ -20,6 +20,7 @@ from pcapi.models import db
 from pcapi.models.offer_mixin import OfferValidationStatus
 from pcapi.models.offer_mixin import OfferValidationType
 
+from .helpers import button as button_helpers
 from .helpers import html_parser
 from .helpers.get import GetEndpointHelper
 from .helpers.post import PostEndpointHelper
@@ -265,6 +266,28 @@ class GetCollectiveOfferTemplateDetailTest(GetEndpointHelper):
         with assert_num_queries(self.expected_num_queries):
             response = authenticated_client.get(url)
             assert response.status_code == 404
+
+
+class ValidateCollectiveOfferTemplateFromDetailsButtonTest(button_helpers.ButtonHelper):
+    needed_permission = perm_models.Permissions.PRO_FRAUD_ACTIONS
+    button_label = "Valider l'offre"
+    endpoint = "backoffice_web.collective_offer_template.get_collective_offer_template_details"
+
+    @property
+    def path(self):
+        offer = educational_factories.CollectiveOfferTemplateFactory()
+        return url_for(self.endpoint, collective_offer_template_id=offer.id)
+
+
+class RejectCollectiveOfferTemplateFromDetailsButtonTest(button_helpers.ButtonHelper):
+    needed_permission = perm_models.Permissions.PRO_FRAUD_ACTIONS
+    button_label = "Rejeter l'offre"
+    endpoint = "backoffice_web.collective_offer_template.get_collective_offer_template_details"
+
+    @property
+    def path(self):
+        offer = educational_factories.CollectiveOfferTemplateFactory()
+        return url_for(self.endpoint, collective_offer_template_id=offer.id)
 
 
 class ValidateCollectiveOfferTemplateTest(PostEndpointHelper):
