@@ -2,6 +2,8 @@ import algoliasearch from 'algoliasearch/lite'
 import React from 'react'
 import { Configure, InstantSearch } from 'react-instantsearch'
 
+import Callout from 'components/Callout/Callout'
+import fullLinkIcon from 'icons/full-link.svg'
 import strokeMyInstitution from 'icons/stroke-my-institution.svg'
 import { ButtonLink } from 'ui-kit'
 import { ButtonVariant } from 'ui-kit/Button/types'
@@ -67,7 +69,35 @@ const OffersForMyInstitution = (): JSX.Element => {
             </div>
           </div>
         ) : (
-          <Offers displayStats={false} />
+          <>
+            <h1>Pour mon établissement</h1>
+            <Callout
+              className={styles['my-institution-callout']}
+              links={[
+                {
+                  href: `${document.referrer}adage/passculture/index`,
+                  isExternal: true,
+                  icon: fullLinkIcon,
+                  linkTitle: 'Voir la page “Suivi pass Culture”',
+                },
+              ]}
+            >
+              <p className={styles['callout-text']}>
+                Retrouvez sur cette page les offres destinées aux professeurs de
+                votre établissement et rédigées par les acteurs culturels
+                partenaires de l’établissement scolaire.
+              </p>
+              <p>
+                Processus : vous cliquez sur “Préréserver” l’offre qui vous est
+                destinée. L’offre va disparaitre de cette page, mais vous
+                pourrez la retrouver dans la page “Suivi pass Culture”. Puis,
+                vous associerez l’offre à votre projet pédagogique dans la page
+                “Les projets”. Enfin, votre chef d’établissement confirmera la
+                réservation de l’offre dans “Suivi pass Culture”.
+              </p>
+            </Callout>
+            <Offers displayStats={false} />
+          </>
         )}
       </AnalyticsContextProvider>
     </InstantSearch>
