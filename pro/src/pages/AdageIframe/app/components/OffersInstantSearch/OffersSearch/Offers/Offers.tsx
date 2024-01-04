@@ -4,8 +4,10 @@ import {
   useInstantSearch,
   useStats,
 } from 'react-instantsearch'
+import { useParams } from 'react-router-dom'
 
 import { AdageFrontRoles } from 'apiClient/adage'
+import { apiAdage } from 'apiClient/api'
 import useActiveFeature from 'hooks/useActiveFeature'
 import fullGoTop from 'icons/full-go-top.svg'
 import { getCollectiveOfferAdapter } from 'pages/AdageIframe/app/adapters/getCollectiveOfferAdapter'
@@ -54,6 +56,10 @@ export const Offers = ({
   const { hits, isLastPage, showMore } = useInfiniteHits()
   const { nbHits } = useStats()
   const { scopedResults, results: nonScopedResult } = useInstantSearch()
+  const { siret, venueId } = useParams<{
+    siret: string
+    venueId: string
+  }>()
 
   const results = indexId
     ? scopedResults.find((res) => res.indexId === indexId)?.results
@@ -74,6 +80,16 @@ export const Offers = ({
     isSatisfactionSurveyActive &&
     !adageUser.preferences?.feedback_form_closed &&
     adageUser.role !== AdageFrontRoles.READONLY
+
+  const showMoreAndTrack = async () => {
+    showMore()
+
+    await apiAdage.logSearchShowMore({
+      iframeFrom: location.pathname,
+      source: siret || venueId ? 'partnersMap' : 'homepage',
+      queryId: results?.queryID,
+    })
+  }
 
   useEffect(() => {
     setQueriesAreLoading(true)
@@ -179,7 +195,10 @@ export const Offers = ({
                   <Spinner />
                 </div>
               ) : (
-                <Button onClick={showMore} variant={ButtonVariant.SECONDARY}>
+                <Button
+                  onClick={showMoreAndTrack}
+                  variant={ButtonVariant.SECONDARY}
+                >
                   Voir plus d’offres
                 </Button>
               ))}

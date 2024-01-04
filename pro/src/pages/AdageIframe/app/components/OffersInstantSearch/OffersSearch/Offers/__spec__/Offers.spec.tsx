@@ -31,12 +31,21 @@ import {
 
 import { Offers, OffersProps } from '../Offers'
 
+vi.mock('react-router-dom', async () => ({
+  ...((await vi.importActual('react-router-dom')) ?? {}),
+  useParams: () => ({
+    venueId: '',
+    siret: '',
+  }),
+}))
+
 vi.mock('apiClient/api', () => ({
   apiAdage: {
     getCollectiveOffer: vi.fn(),
     getCollectiveOfferTemplate: vi.fn(),
     logSearchButtonClick: vi.fn(),
     logTrackingFilter: vi.fn(),
+    logSearchShowMore: vi.fn(),
   },
 }))
 
@@ -763,6 +772,38 @@ describe('offers', () => {
       expect(
         screen.getByRole('link', { name: /Retour en haut/ })
       ).toBeInTheDocument()
+    })
+
+    it('should track show more button onclick', async () => {
+      vi.spyOn(apiAdage, 'getCollectiveOffer').mockResolvedValueOnce(
+        offerInParis
+      )
+      vi.spyOn(apiAdage, 'getCollectiveOffer').mockResolvedValueOnce(
+        offerInCayenne
+      )
+
+      const showMoreMock = vi.fn()
+
+      vi.spyOn(instantSearch, 'useInfiniteHits').mockImplementation(() => ({
+        ...defaultUseInfiniteHitsReturn,
+        isLastPage: false,
+        showMore: showMoreMock,
+      }))
+
+      renderOffers(offersProps, adageUser)
+      await waitForElementToBeRemoved(() => screen.queryAllByTestId('spinner'))
+
+      const loadMoreButton = await screen.findByRole('button', {
+        name: 'Voir plus d’offres',
+      })
+
+      await userEvent.click(loadMoreButton)
+
+      expect(apiAdage.logSearchShowMore).toHaveBeenCalledWith({
+        queryId: 'queryId',
+        iframeFrom: '/',
+        source: 'homepage',
+      })
     })
   })
 })
