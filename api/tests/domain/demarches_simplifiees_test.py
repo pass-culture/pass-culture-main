@@ -18,22 +18,6 @@ VENUE_DMS_TOKEN_FIELD_WITH_PRO_PREFIX = {
 VENUE_FIELD = {
     "siret": "43839119500056",
 }
-EXPECTED_RESULT_WITH_SIRET_V3 = {
-    "application_id": 1234,
-    "status": "en_construction",
-    "updated_at": "2021-11-12T14:51:42+01:00",
-    "firstname": "John",
-    "lastname": "Doe",
-    "phone_number": "0102030405",
-    "siret": "43839119500056",
-    "siren": "438391195",
-    "iban": "FR7630001007941234567890185",
-    "bic": "QSDFGH8Z",
-    "error_annotation_id": "InterestingId",
-    "error_annotation_value": "",
-    "dossier_id": "Q2zzbXAtNzgyODAw",
-    "venue_url_annotation_id": None,
-}
 EXPECTED_RESULT_V4 = {
     "application_id": 1234,
     "status": "en_construction",
@@ -56,7 +40,6 @@ class ParseRawBankInfoDataTest:
     @pytest.mark.parametrize(
         "procedure_version, etablissement, identifiant_du_lieu, expected_result, prenom, nom",
         [
-            (3, VENUE_FIELD, None, EXPECTED_RESULT_WITH_SIRET_V3, "prénom", "Nom"),
             (4, None, VENUE_DMS_TOKEN_FIELD_WITHOUT_PRO_PREFIX, EXPECTED_RESULT_V4, "Prénom", "nom"),
             (4, VENUE_FIELD, VENUE_DMS_TOKEN_FIELD_WITHOUT_PRO_PREFIX, EXPECTED_RESULT_V4, "prénom", "nom"),
             (4, None, VENUE_DMS_TOKEN_FIELD_WITH_PRO_PREFIX, EXPECTED_RESULT_V4, "Prénom", "Nom"),
@@ -151,8 +134,7 @@ class ParseRawBankInfoDataTest:
                 },
             },
         ]
-        if identifiant_du_lieu:
-            champs.insert(3, identifiant_du_lieu)
+        champs.insert(3, identifiant_du_lieu)
         input_data = {
             "id": "Q2zzbXAtNzgyODAw",
             "number": 1234,
@@ -164,8 +146,7 @@ class ParseRawBankInfoDataTest:
                 {"label": "Erreur traitement pass Culture", "id": "InterestingId", "stringValue": ""},
             ],
         }
-        if procedure_version == 4:
-            input_data["annotations"].append({"label": "URL du lieu", "id": "AnotherInterestingId", "stringValue": ""})
+        input_data["annotations"].append({"label": "URL du lieu", "id": "AnotherInterestingId", "stringValue": ""})
 
         result = parse_raw_bank_info_data(input_data, procedure_version)
 

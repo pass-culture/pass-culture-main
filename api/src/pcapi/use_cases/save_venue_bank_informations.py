@@ -7,7 +7,6 @@ import sqlalchemy as sqla
 from sqlalchemy import orm as sqla_orm
 
 from pcapi import settings
-from pcapi.connectors import sirene
 from pcapi.connectors.dms.serializer import ApplicationDetailNewJourney
 from pcapi.connectors.dms.serializer import ApplicationDetailOldJourney
 from pcapi.core.external.attributes.api import update_external_pro
@@ -31,7 +30,6 @@ from pcapi.domain.venue.venue_with_basic_information.venue_with_basic_informatio
     VenueWithBasicInformationRepository,
 )
 from pcapi.models import db
-from pcapi.models.api_errors import ApiErrors
 from pcapi.utils import urls
 
 
@@ -44,8 +42,6 @@ from pcapi.utils.db import make_timerange
 logger = logging.getLogger(__name__)
 
 PROCEDURE_ID_VERSION_MAP = {
-    settings.DMS_VENUE_PROCEDURE_ID_V2: 2,
-    settings.DMS_VENUE_PROCEDURE_ID_V3: 3,
     settings.DMS_VENUE_PROCEDURE_ID_V4: 4,
     settings.DS_BANK_ACCOUNT_PROCEDURE_ID: 5,
 }
@@ -130,134 +126,6 @@ class SaveVenueBankInformationsMixin(AbstractSaveBankInformations):
         )
 
 
-class SaveVenueBankInformationsV2(SaveVenueBankInformationsMixin):
-    def __init__(
-        self,
-        venue_repository: VenueWithBasicInformationRepository,
-        bank_informations_repository: BankInformationsRepository,
-    ):
-        super().__init__(venue_repository=venue_repository, bank_informations_repository=bank_informations_repository)
-        self.procedure_version = 2
-
-    def execute(self, application_details: ApplicationDetailOldJourney) -> BankInformations | None:
-        logger.info(
-            "This DMS application was created on a bank info procedure that is deprecated.",
-            extra={
-                "application_id": application_details.application_id,
-                "procedure_version": self.procedure_version,
-            },
-        )
-
-        venue = self.get_referent_venue(application_details)
-
-        if self.api_errors.errors:
-            if application_details.error_annotation_id is not None:
-                if application_details.status != finance_models.BankInformationStatus.REJECTED:
-                    self.annotate_application_with_errors(application_detail=application_details)
-                return None
-            if application_details.status == finance_models.BankInformationStatus.ACCEPTED:
-                raise self.api_errors
-            return None
-
-        assert venue  # for typing purposes
-        venue_sql_entity = offerers_models.Venue.query.get(venue.identifier)
-
-        bank_information = self.bank_informations_repository.get_by_application(application_details.application_id)
-        if not bank_information:
-            bank_information = self.bank_informations_repository.find_by_venue(venue.identifier)
-
-        if bank_information:
-            check_new_bank_information_older_than_saved_one(
-                bank_information, application_details.modification_date, self.api_errors
-            )
-            if (
-                bank_information.venue_id == venue.identifier
-                and bank_information.application_id != application_details.application_id
-            ):
-                check_new_bank_information_has_a_more_advanced_status(
-                    bank_information, application_details.status, self.api_errors
-                )
-
-        new_bank_informations = self.get_or_create_new_bank_informations(application_details, venue.identifier)
-
-        check_new_bank_information_valid(new_bank_informations, self.api_errors)
-
-        if self.api_errors.errors:
-            if application_details.error_annotation_id is not None:
-                self.annotate_application_with_errors(application_detail=application_details)
-                return None
-            if application_details.status == finance_models.BankInformationStatus.DRAFT:
-                return None
-            raise self.api_errors
-
-        if not bank_information:
-            self.bank_informations_repository.save(new_bank_informations)
-        elif bank_information.application_id == application_details.application_id:
-            self.bank_informations_repository.update_by_application_id(new_bank_informations)
-        elif bank_information.venue_id == venue.identifier:
-            self.bank_informations_repository.update_by_venue_id(new_bank_informations)
-        else:
-            raise NotImplementedError()
-
-        if application_details.status == finance_models.BankInformationStatus.ACCEPTED:
-            try:
-                offerers_api.link_venue_to_reimbursement_point(venue_sql_entity, venue.identifier)
-            except ApiErrors as exc:
-                logger.error(
-                    "Could not link venue to itself as its reimbursement point with legacy DMS procedure",
-                    extra={
-                        "procedure_version": self.procedure_version,
-                        "application_id": application_details.application_id,
-                        "err": exc.errors,
-                        "venue": venue_sql_entity.id,
-                    },
-                )
-
-        update_external_pro(venue.bookingEmail)
-        if application_details.error_annotation_id is not None:
-            if application_details.status == finance_models.BankInformationStatus.ACCEPTED:
-                self.annotate_application(
-                    application_detail=application_details, message="Dossier successfully imported"
-                )
-            if application_details.status == finance_models.BankInformationStatus.DRAFT:
-                self.annotate_application(application_detail=application_details, message="Valid dossier")
-        if application_details.status != finance_models.BankInformationStatus.DRAFT:
-            archive_dossier(application_details.dossier_id)
-        return bank_information
-
-    # TODO(fseguin, 2022-07-11): clean up when previous procedures are retired
-    def get_referent_venue(
-        self,
-        application_details: ApplicationDetailOldJourney,
-    ) -> VenueWithBasicInformation | None:
-        venue = None
-
-        siret = (application_details.siret or "").strip()
-        if siret:
-            venue = self.venue_repository.find_by_siret(siret)
-        if not venue:
-            self.api_errors.add_error("Venue", "Venue not found")
-        else:
-            try:
-                if not sirene.siret_is_active(siret):
-                    self.api_errors.add_error("Venue", "SIRET is no longer active")
-            except sirene.SireneException:
-                self.api_errors.add_error("Venue", "Error while checking SIRET on Sirene API")
-
-        assert venue or self.api_errors.errors
-        return venue
-
-
-class SaveVenueBankInformationsV3(SaveVenueBankInformationsV2):
-    def __init__(
-        self,
-        venue_repository: VenueWithBasicInformationRepository,
-        bank_informations_repository: BankInformationsRepository,
-    ):
-        super().__init__(venue_repository=venue_repository, bank_informations_repository=bank_informations_repository)
-        self.procedure_version = 3
-
-
 class SaveVenueBankInformationsV4(SaveVenueBankInformationsMixin):
     def __init__(
         self,
@@ -336,7 +204,6 @@ class SaveVenueBankInformationsV4(SaveVenueBankInformationsMixin):
             archive_dossier(application_details.dossier_id)
         return bank_information
 
-    # TODO(fseguin, 2022-07-11): clean up when previous procedures are retired
     def get_referent_venue(
         self,
         application_details: ApplicationDetailOldJourney,
@@ -496,8 +363,6 @@ class SaveVenueBankInformationsV5(SaveVenueBankInformationsMixin):
 
 class SaveVenueBankInformationsFactory:
     procedure_to_class = {
-        2: SaveVenueBankInformationsV2,
-        3: SaveVenueBankInformationsV3,
         4: SaveVenueBankInformationsV4,
         5: SaveVenueBankInformationsV5,
     }

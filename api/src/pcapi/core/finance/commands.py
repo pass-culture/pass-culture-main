@@ -185,8 +185,6 @@ def import_ds_bank_information_applications() -> None:
     procedures = [
         settings.DS_BANK_ACCOUNT_PROCEDURE_ID,
         settings.DMS_VENUE_PROCEDURE_ID_V4,
-        settings.DMS_VENUE_PROCEDURE_ID_V3,
-        settings.DMS_VENUE_PROCEDURE_ID_V2,
     ]
     for procedure in procedures:
         if not procedure:
