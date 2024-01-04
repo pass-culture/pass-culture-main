@@ -153,7 +153,6 @@ export const individualOfferVenueResponseModelFactory = (
     collectiveDomains: [],
     dateCreated: '2021-10-15T12:00:00Z',
     dmsToken: 'token',
-    fieldsUpdated: [],
     hasAdageId: false,
     venueTypeCode: VenueTypeCode.AUTRE,
     ...customVenue,

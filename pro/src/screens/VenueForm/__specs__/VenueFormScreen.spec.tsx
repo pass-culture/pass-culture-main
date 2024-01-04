@@ -183,7 +183,6 @@ const venueResponse: GetVenueResponseModel = {
   demarchesSimplifieesApplicationId: '',
   collectiveDomains: [],
   dateCreated: '2022-02-02',
-  fieldsUpdated: [],
   isVirtual: false,
   visualDisabilityCompliant: false,
   audioDisabilityCompliant: false,
@@ -292,7 +291,6 @@ describe('VenueFormScreen', () => {
       demarchesSimplifieesApplicationId: '',
       collectiveDomains: [],
       dateCreated: '2022-02-02',
-      fieldsUpdated: [],
       isVirtual: false,
       accessibility: {
         visual: false,

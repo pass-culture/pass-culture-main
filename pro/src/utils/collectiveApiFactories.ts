@@ -339,7 +339,6 @@ export const defaultVenue: Venue = {
   longitude: 2.3522219,
   collectiveDomains: [],
   dateCreated: '',
-  fieldsUpdated: [],
   isVirtual: false,
   accessibility: {
     none: false,
@@ -400,7 +399,6 @@ export const defaultVenue: Venue = {
 export const defaultVenueResponseModel: GetVenueResponseModel = {
   dateCreated: new Date().toISOString(),
   dmsToken: 'fakeDmsToken',
-  fieldsUpdated: [],
   hasAdageId: true,
   collectiveDmsApplications: [],
   isVirtual: false,
@@ -462,7 +460,6 @@ export const defaultCollectifOfferResponseModel = {
   students: [],
   subcategoryId: SubcategoryIdEnum.CONCERT,
   venue: {
-    fieldsUpdated: [],
     isVirtual: false,
     id: 1,
     managingOfferer: {

@@ -128,7 +128,6 @@ class Returns200Test:
             venue__siret="12345678912345",
             venue__name="La petite librairie",
             venue__dateCreated=now,
-            venue__dateModifiedAtLastProvider=now,
             venue__bookingEmail="test@test.com",
             venue__managingOfferer=user_offerer.offerer,
         )

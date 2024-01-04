@@ -205,14 +205,10 @@ class GetVenueResponseModel(base.BaseVenueResponse, AccessibilityComplianceMixin
     bannerMeta: BannerMetaModel | None
     bookingEmail: str | None
     comment: str | None
-    dateModifiedAtLastProvider: datetime | None
     demarchesSimplifieesApplicationId: str | None
     departementCode: str | None
     dmsToken: str
-    fieldsUpdated: list[str]
     hasPendingBankInformationApplication: bool | None
-    idAtProviders: str | None
-    lastProviderId: str | None
     managingOfferer: GetVenueManagingOffererResponseModel
     pricingPoint: GetVenuePricingPointResponseModel | None
     reimbursementPointId: int | None
