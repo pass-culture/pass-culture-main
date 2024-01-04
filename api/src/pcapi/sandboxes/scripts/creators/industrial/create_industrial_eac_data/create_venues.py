@@ -314,6 +314,17 @@ def create_venues(offerer_list: list[offerers_models.Offerer]) -> None:
         state="refuse",
     )
 
+    # eac_with_no_offers
+    offerer = next(offerer_iterator)
+    venue_with_accepted_dms_status = create_venue(
+        managingOfferer=offerer,
+        name=f"Lieu {offerer.name}",
+        venueEducationalStatusId=next(educational_status_iterator),
+        collectiveInterventionArea=ALL_INTERVENTION_AREA,
+        siret="95651314700192",
+        adageId="98764",
+    )
+
 
 def create_venue(*, reimbursement: bool = False, **kwargs: typing.Any) -> offerers_models.Venue:
     venue = offerers_factories.VenueFactory(**kwargs)
