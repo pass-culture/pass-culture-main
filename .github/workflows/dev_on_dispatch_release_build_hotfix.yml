@@ -2,7 +2,10 @@ name: "[Deployment] Create a hotfix release"
 
 run-name: "Create a hotfix release from ${{ github.ref }}"
 
-on: workflow_dispatch
+on:
+  workflow_dispatch
+
+permissions: write-all
 
 jobs:
   check-worflow-ref:
