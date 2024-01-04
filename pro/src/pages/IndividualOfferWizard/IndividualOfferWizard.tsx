@@ -6,7 +6,7 @@ import { IndividualOfferContextProvider } from 'context/IndividualOfferContext'
 import useCurrentUser from 'hooks/useCurrentUser'
 import { parse } from 'utils/query-string'
 
-export const IndividualOfferWizard = () => {
+const IndividualOfferWizard = () => {
   const { currentUser } = useCurrentUser()
   const { offerId } = useParams<{ offerId: string }>()
   const { search } = useLocation()
