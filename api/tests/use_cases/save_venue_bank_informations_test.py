@@ -575,6 +575,7 @@ class DSV4InOldBankInformationsJourneyTest:
             bank_informations_repository=BankInformationsSQLRepository(),
         )
 
+    @override_features(WIP_ENABLE_DOUBLE_MODEL_WRITING=False)
     def test_creation_and_association_bank_information_to_a_venue_in_DSv4_context(
         self, mock_archive_dossier, mock_update_text_annotation, mock_dms_graphql_client
     ):
@@ -603,6 +604,7 @@ class DSV4InOldBankInformationsJourneyTest:
         assert not finance_models.BankAccount.query.count()
         assert not offerers_models.VenueBankAccountLink.query.count()
 
+    @override_features(WIP_ENABLE_DOUBLE_MODEL_WRITING=False)
     def test_should_prepend_annotation_if_any_exists(
         self, mock_archive_dossier, mock_update_text_annotation, mock_dms_graphql_client
     ):
@@ -640,6 +642,7 @@ class DSV4InOldBankInformationsJourneyTest:
         assert not finance_models.BankAccount.query.count()
         assert not offerers_models.VenueBankAccountLink.query.count()
 
+    @override_features(WIP_ENABLE_DOUBLE_MODEL_WRITING=False)
     def test_should_not_write_same_message_annotation_twice(
         self, mock_archive_dossier, mock_update_text_annotation, mock_dms_graphql_client
     ):
@@ -672,6 +675,7 @@ class DSV4InOldBankInformationsJourneyTest:
         assert not finance_models.BankAccount.query.count()
         assert not offerers_models.VenueBankAccountLink.query.count()
 
+    @override_features(WIP_ENABLE_DOUBLE_MODEL_WRITING=False)
     def test_should_not_rewrite_url_venue_if_exists(
         self, mock_archive_dossier, mock_update_text_annotation, mock_dms_graphql_client
     ):
@@ -718,6 +722,7 @@ class DSV5InOldBankInformationsJourneyTest:
             bank_informations_repository=BankInformationsSQLRepository(),
         )
 
+    @override_features(WIP_ENABLE_DOUBLE_MODEL_WRITING=False)
     def test_creation_and_association_bank_information_to_a_venue_in_DSv5_context(
         self, mock_archive_dossier, mock_update_text_annotation, mock_dms_graphql_client
     ):
@@ -740,6 +745,7 @@ class DSV5InOldBankInformationsJourneyTest:
         assert not finance_models.BankAccount.query.count()
         assert not offerers_models.VenueBankAccountLink.query.count()
 
+    @override_features(WIP_ENABLE_DOUBLE_MODEL_WRITING=False)
     def test_association_to_physical_venue_if_both_virtual_and_physical_exists(
         self, mock_archive_dossier, mock_update_text_annotation, mock_dms_graphql_client
     ):
@@ -763,6 +769,7 @@ class DSV5InOldBankInformationsJourneyTest:
         assert not finance_models.BankAccount.query.count()
         assert not offerers_models.VenueBankAccountLink.query.count()
 
+    @override_features(WIP_ENABLE_DOUBLE_MODEL_WRITING=False)
     def test_updated_status_successfully_update_bank_informations(
         self, mock_archive_dossier, mock_update_text_annotation, mock_dms_graphql_client
     ):
@@ -798,6 +805,7 @@ class DSV5InOldBankInformationsJourneyTest:
         assert not finance_models.BankAccount.query.count()
         assert not offerers_models.VenueBankAccountLink.query.count()
 
+    @override_features(WIP_ENABLE_DOUBLE_MODEL_WRITING=False)
     def test_bank_information_is_not_linked_to_a_venue_if_many_exists(
         self, mock_archive_dossier, mock_update_text_annotation, mock_dms_graphql_client
     ):
@@ -822,6 +830,7 @@ class DSV5InOldBankInformationsJourneyTest:
         assert not finance_models.BankAccount.query.count()
         assert not offerers_models.VenueBankAccountLink.query.count()
 
+    @override_features(WIP_ENABLE_DOUBLE_MODEL_WRITING=False)
     def test_updated_status_successfully_update_bank_informations_when_attach_to_an_offerer(
         self, mock_archive_dossier, mock_update_text_annotation, mock_dms_graphql_client
     ):
