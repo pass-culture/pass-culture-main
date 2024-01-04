@@ -78,3 +78,7 @@ class SuggestionType(enum.Enum):
 class TrackingAutocompleteSuggestionBody(AdageBaseModel):
     suggestionType: SuggestionType
     suggestionValue: str
+
+
+class TrackingShowMoreBody(AdageBaseModel):
+    source: str

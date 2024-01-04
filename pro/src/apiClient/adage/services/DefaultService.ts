@@ -30,6 +30,7 @@ import type { SearchBody } from '../models/SearchBody';
 import type { StockIdBody } from '../models/StockIdBody';
 import type { TrackingAutocompleteSuggestionBody } from '../models/TrackingAutocompleteSuggestionBody';
 import type { TrackingFilterBody } from '../models/TrackingFilterBody';
+import type { TrackingShowMoreBody } from '../models/TrackingShowMoreBody';
 import type { VenueResponse } from '../models/VenueResponse';
 
 import type { CancelablePromise } from '../core/CancelablePromise';
@@ -595,6 +596,28 @@ export class DefaultService {
     return this.httpRequest.request({
       method: 'POST',
       url: '/adage-iframe/logs/search-button',
+      body: requestBody,
+      mediaType: 'application/json',
+      errors: {
+        403: `Forbidden`,
+        404: `Not Found`,
+        422: `Unprocessable Entity`,
+      },
+    });
+  }
+
+  /**
+   * log_search_show_more <POST>
+   * @param requestBody
+   * @returns void
+   * @throws ApiError
+   */
+  public logSearchShowMore(
+    requestBody?: TrackingShowMoreBody,
+  ): CancelablePromise<void> {
+    return this.httpRequest.request({
+      method: 'POST',
+      url: '/adage-iframe/logs/search-show-more',
       body: requestBody,
       mediaType: 'application/json',
       errors: {
