@@ -31,7 +31,7 @@ const routes: RouteConfig[] = [
     path: '/',
   },
   {
-    lazy: () => import('pages/AdageIframe/AdageIframe'),
+    lazy: () => import('pages/AdageIframe/app/App'),
     path: '/adage-iframe/*',
     meta: { public: true },
   },

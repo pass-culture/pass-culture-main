@@ -111,3 +111,7 @@ export const App = (): JSX.Element => {
     </AdageUserContextProvider>
   )
 }
+
+// Lazy-loaded by react-router-dom
+// ts-unused-exports:disable-next-line
+export const Component = App
