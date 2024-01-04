@@ -75,6 +75,14 @@ class OfferMetadataTest:
 
             assert metadata["offers"]["lowPrice"] == "2.00"
 
+        def should_have_a_low_price_when_no_active_stocks(self):
+            offer = offers_factories.OfferFactory()
+            offers_factories.StockFactory(offer=offer, isSoftDeleted=True, price=5.10)
+
+            metadata = get_metadata_from_offer(offer)
+
+            assert metadata["offers"]["lowPrice"] == "5.10"
+
         def should_have_a_price_currency(self):
             offer = offers_factories.OfferFactory()
             offers_factories.StockFactory(offer=offer, price=5.10)
@@ -82,6 +90,22 @@ class OfferMetadataTest:
             metadata = get_metadata_from_offer(offer)
 
             assert metadata["offers"]["priceCurrency"] == "EUR"
+
+        def should_be_in_stock_when_offer_has_active_stocks(self):
+            offer = offers_factories.OfferFactory()
+            offers_factories.StockFactory(offer=offer)
+
+            metadata = get_metadata_from_offer(offer)
+
+            assert metadata["offers"]["availability"] == "https://schema.org/InStock"
+
+        def should_be_out_of_stock_when_offer_has_no_active_stocks(self):
+            offer = offers_factories.OfferFactory()
+            offers_factories.StockFactory(offer=offer, isSoftDeleted=True)
+
+            metadata = get_metadata_from_offer(offer)
+
+            assert metadata["offers"]["availability"] == "https://schema.org/OutOfStock"
 
     class GivenAnEventTest:
         def should_describe_an_event(self):
@@ -112,7 +136,16 @@ class OfferMetadataTest:
 
             assert metadata["startDate"] == "2023-05-03T12:39"
 
-        def should_have_a_location(self):
+        def should_define_a_start_date_when_no_active_stocks(self):
+            stock = offers_factories.EventStockFactory(
+                isSoftDeleted=True, beginningDatetime=datetime.datetime(2023, 5, 3, 12, 39, 0)
+            )
+
+            metadata = get_metadata_from_offer(stock.offer)
+
+            assert metadata["startDate"] == "2023-05-03T12:39"
+
+        def should_have_a_location_when_event_is_physical(self):
             offer = offers_factories.EventOfferFactory(
                 venue__name="Le Poney qui tousse",
                 venue__address="Rue du Poney qui tousse",
@@ -120,6 +153,7 @@ class OfferMetadataTest:
                 venue__city="Boulgourville",
                 venue__latitude="47.097456",
                 venue__longitude="-1.270040",
+                url=None,
             )
 
             metadata = get_metadata_from_offer(offer)
@@ -139,6 +173,13 @@ class OfferMetadataTest:
                     "longitude": "-1.27004",
                 },
             }
+
+        def should_not_have_a_location_when_event_is_digital(self):
+            offer = offers_factories.EventOfferFactory(url="https://digital-offer.com")
+
+            metadata = get_metadata_from_offer(offer)
+
+            assert "location" not in metadata
 
         def should_have_an_url(self):
             offer = offers_factories.EventOfferFactory(id=72180399)
@@ -169,6 +210,14 @@ class OfferMetadataTest:
             metadata = get_metadata_from_offer(offer)
 
             assert metadata["validFrom"] == "2000-01-01"
+
+        def should_be_sold_out_when_offer_has_no_active_stocks(self):
+            offer = offers_factories.EventOfferFactory()
+            offers_factories.StockFactory(offer=offer, isSoftDeleted=True)
+
+            metadata = get_metadata_from_offer(offer)
+
+            assert metadata["offers"]["availability"] == "https://schema.org/SoldOut"
 
     class GivenABookTest:
         @pytest.mark.parametrize(
