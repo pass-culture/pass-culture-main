@@ -1,21 +1,22 @@
 import algoliasearch from 'algoliasearch/lite'
-import React, { useContext, useEffect, useState } from 'react'
+import React, { useEffect, useState } from 'react'
 import { Configure, Index, InstantSearch } from 'react-instantsearch'
-import { useParams } from 'react-router-dom'
 
 import { VenueResponse } from 'apiClient/adage'
 import { apiAdage } from 'apiClient/api'
 import useNotification from 'hooks/useNotification'
+import Spinner from 'ui-kit/Spinner/Spinner'
 import {
   ALGOLIA_API_KEY,
   ALGOLIA_APP_ID,
   ALGOLIA_COLLECTIVE_OFFERS_INDEX,
 } from 'utils/config'
+import { getDefaultFacetFilterUAICodeValue } from 'utils/facetFilters'
 import { isNumber } from 'utils/types'
 
 import useAdageUser from '../../hooks/useAdageUser'
-import { FacetFiltersContext } from '../../providers'
 import { AnalyticsContextProvider } from '../../providers/AnalyticsContextProvider'
+import { Facets } from '../../types'
 
 import { OffersSearch } from './OffersSearch/OffersSearch'
 
@@ -36,39 +37,58 @@ export const algoliaSearchDefaultAttributesToRetrieve = [
 
 export const DEFAULT_GEO_RADIUS = 30000000 // 30 000 km ensure we get all results in the world
 
-export const OffersInstantSearch = ({
-  venueFilter,
-}: {
-  venueFilter: VenueResponse | null
-}): JSX.Element => {
-  const { facetFilters, setFacetFilters } = useContext(FacetFiltersContext)
+export const OffersInstantSearch = (): JSX.Element => {
+  const { adageUser } = useAdageUser()
+
+  const params = new URLSearchParams(window.location.search)
+  const venueId = Number(params.get('venue'))
+  const siret = params.get('siret')
+  const domainId = params.get('domain')
+  const relativeOffersIncluded = params.get('all') === 'true'
+
+  const [facetFilters, setFacetFilters] = useState<Facets>([
+    ...getDefaultFacetFilterUAICodeValue(adageUser?.uai),
+  ])
 
   const [geoRadius, setGeoRadius] = useState<number>(DEFAULT_GEO_RADIUS)
-  const { adageUser } = useAdageUser()
-  const { venueId } = useParams<{
-    venueId: string
-  }>()
 
-  const [venueFilterFromParam, setVenueFilterFromParam] =
-    useState<VenueResponse | null>(null)
+  const [venueFilter, setVenueFilter] = useState<VenueResponse | null>(null)
+  const [loadingVenue, setLoadingVenue] = useState<boolean>(false)
 
   const notification = useNotification()
 
   useEffect(() => {
-    const getVenueById = async () => {
+    async function setVenueFromUrl() {
+      setLoadingVenue(true)
+      if (!siret && !venueId) {
+        return
+      }
+
       try {
-        const venueResponse = await apiAdage.getVenueById(Number(venueId))
-        setVenueFilterFromParam(venueResponse)
-        setFacetFilters([...facetFilters, [`venue.id:${venueId}`]])
+        const result = siret
+          ? await apiAdage.getVenueBySiret(siret, relativeOffersIncluded)
+          : await apiAdage.getVenueById(venueId, relativeOffersIncluded)
+
+        setVenueFilter(result)
+
+        setFacetFilters((prev) => [...prev, [`venue.id:${venueId}`]])
       } catch {
         notification.error('Lieu inconnu. Tous les résultats sont affichés.')
+      } finally {
+        setLoadingVenue(false)
       }
     }
-    if (venueId) {
+
+    if (siret || venueId) {
       // eslint-disable-next-line @typescript-eslint/no-floating-promises
-      getVenueById()
+      setVenueFromUrl()
     }
-  }, [venueId])
+
+    if (domainId) {
+      // eslint-disable-next-line @typescript-eslint/no-floating-promises
+      setFacetFilters((prev) => [...prev, [`offer.domains:${domainId}`]])
+    }
+  }, [venueId, siret, domainId, relativeOffersIncluded, notification])
 
   return (
     <InstantSearch
@@ -97,12 +117,18 @@ export const OffersInstantSearch = ({
           aroundRadius={geoRadius}
           distinct={false}
         />
-        <AnalyticsContextProvider>
-          <OffersSearch
-            venueFilter={venueFilter || venueFilterFromParam}
-            setGeoRadius={setGeoRadius}
-          />
-        </AnalyticsContextProvider>
+        {loadingVenue ? (
+          <Spinner />
+        ) : (
+          <AnalyticsContextProvider>
+            <OffersSearch
+              setFacetFilters={setFacetFilters}
+              venueFilter={venueFilter}
+              domainsFilter={domainId}
+              setGeoRadius={setGeoRadius}
+            />
+          </AnalyticsContextProvider>
+        )}
       </Index>
     </InstantSearch>
   )
