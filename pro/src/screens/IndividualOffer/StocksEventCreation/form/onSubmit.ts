@@ -1,5 +1,4 @@
-import { format } from 'date-fns'
-import sub from 'date-fns/sub'
+import { format, sub } from 'date-fns'
 
 import { StocksEvent } from 'components/StocksEventList/StocksEventList'
 import useNotification from 'hooks/useNotification'

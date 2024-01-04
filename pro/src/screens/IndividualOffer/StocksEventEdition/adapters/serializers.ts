@@ -1,4 +1,4 @@
-import endOfDay from 'date-fns/endOfDay'
+import { endOfDay } from 'date-fns'
 
 import { StockCreationBodyModel, StockEditionBodyModel } from 'apiClient/v1'
 import { StockEventFormValues } from 'screens/IndividualOffer/StocksEventEdition/StockFormList/types'
