@@ -32,7 +32,7 @@ export const serializeVenueApi = (venue: GetVenueResponseModel): Venue => {
     pricingPoint: venue.pricingPoint || null,
     accessibility: venueAccessibility,
     address: venue.address || '',
-    banId: '',
+    banId: venue.banId || '',
     bannerMeta: venue.bannerMeta
       ? serializeBannerMetaApi(venue.bannerMeta)
       : null,

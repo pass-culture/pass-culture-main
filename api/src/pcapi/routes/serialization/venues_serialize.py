@@ -68,7 +68,7 @@ class DMSApplicationForEAC(BaseModel):
 
 class PostVenueBodyModel(BaseModel, AccessibilityComplianceMixin):
     address: base.VenueAddress
-    banId: base.VenueBanId | None
+    banId: base.VenueBanId
     bookingEmail: base.VenueBookingEmail
     city: base.VenueCity
     comment: base.VenueComment | None
@@ -203,6 +203,7 @@ class GetVenueResponseModel(base.BaseVenueResponse, AccessibilityComplianceMixin
     dateCreated: datetime
     id: int
     bannerMeta: BannerMetaModel | None
+    banId: str | None
     bookingEmail: str | None
     comment: str | None
     dateModifiedAtLastProvider: datetime | None
