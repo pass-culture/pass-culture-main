@@ -484,3 +484,31 @@ class LogsTest:
             "user_role": AdageFrontRoles.READONLY,
             "userId": "f0e2a21bcf499cbc713c47d8f034d66e90a99f9ffcfe96466c9971dfdc5c9816",
         }
+
+    def test_log_search_show_more(self, client, caplog):
+        # given
+        adage_jwt_fake_valid_token = create_adage_valid_token_with_email(email="test@mail.com")
+        client.auth_header = {"Authorization": f"Bearer {adage_jwt_fake_valid_token}"}
+
+        # when
+        with caplog.at_level(logging.INFO):
+            response = client.post(
+                "/adage-iframe/logs/search-show-more",
+                json={
+                    "iframeFrom": "for_my_institution",
+                    "queryId": "1234a",
+                    "source": "partnersMap",
+                },
+            )
+
+        # then
+        assert response.status_code == 204
+        assert caplog.records[0].message == "SearchShowMore"
+        assert caplog.records[0].extra == {
+            "analyticsSource": "adage",
+            "queryId": "1234a",
+            "from": "SearchShowMore",
+            "uai": "EAU123",
+            "user_role": AdageFrontRoles.READONLY,
+            "userId": "f0e2a21bcf499cbc713c47d8f034d66e90a99f9ffcfe96466c9971dfdc5c9816",
+        }
