@@ -158,6 +158,7 @@ jobs:
 
   deploy-validation-env:
     name: "[PRO] Deploy PR version for validation"
+    needs: check-pro
     uses: ./.github/workflows/dev_on_workflow_deploy_pro_pr_version_generic.yml
     if: |
       always() &&
