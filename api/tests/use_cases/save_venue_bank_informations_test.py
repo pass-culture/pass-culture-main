@@ -8,7 +8,6 @@ import pytest
 import schwifty
 
 from pcapi import settings
-from pcapi.connectors import sirene
 from pcapi.connectors.dms.models import GraphQLApplicationStates
 from pcapi.connectors.dms.serializer import ApplicationDetailOldJourney
 from pcapi.core.finance import models as finance_models
@@ -40,56 +39,11 @@ class SaveVenueBankInformationsTest:
     @patch("pcapi.use_cases.save_venue_bank_informations.update_demarches_simplifiees_text_annotations")
     class GetReferentVenueTest:
         def setup_method(self):
-            SaveVenueBankInformationsV3 = SaveVenueBankInformationsFactory.get(settings.DMS_VENUE_PROCEDURE_ID_V3)
             SaveVenueBankInformationsV4 = SaveVenueBankInformationsFactory.get(settings.DMS_VENUE_PROCEDURE_ID_V4)
-            self.save_venue_bank_informations_v3 = SaveVenueBankInformationsV3(
-                venue_repository=VenueWithBasicInformationSQLRepository(),
-                bank_informations_repository=BankInformationsSQLRepository(),
-            )
             self.save_venue_bank_informations_v4 = SaveVenueBankInformationsV4(
                 venue_repository=VenueWithBasicInformationSQLRepository(),
                 bank_informations_repository=BankInformationsSQLRepository(),
             )
-
-        def test_v3_raises_an_error_if_siret_is_absent(self, mock_update_text_annotation):
-            application_details = ApplicationDetailOldJourney(
-                application_type=3,
-                siren="999999999",
-                status=GraphQLApplicationStates.accepted.value,
-                application_id=1,
-                dossier_id="2",
-                iban="XXX",
-                bic="YYY",
-                updated_at=datetime.utcnow().isoformat(),
-                siret=None,
-                error_annotation_id="Q2hhbXAtMTIzNDUK",
-                venue_url_annotation_id=None,
-            )
-
-            self.save_venue_bank_informations_v3.get_referent_venue(
-                application_details,
-            )
-            assert self.save_venue_bank_informations_v3.api_errors.errors["Venue"] == ["Venue not found"]
-
-        def test_v3_raises_an_error_if_no_venue_found_by_siret(self, mock_update_text_annotation):
-            application_details = ApplicationDetailOldJourney(
-                application_type=3,
-                siren="999999999",
-                status=GraphQLApplicationStates.accepted.value,
-                application_id=1,
-                dossier_id="2",
-                iban="XXX",
-                bic="YYY",
-                updated_at=datetime.utcnow().isoformat(),
-                siret="99999999900000",
-                error_annotation_id="Q2hhbXAtMTIzNDUK",
-                venue_url_annotation_id=None,
-            )
-
-            self.save_venue_bank_informations_v3.get_referent_venue(
-                application_details,
-            )
-            assert self.save_venue_bank_informations_v3.api_errors.errors["Venue"] == ["Venue not found"]
 
         def test_v4_raises_an_error_if_dms_token_is_absent(self, mock_update_text_annotation):
             application_details = ApplicationDetailOldJourney(
@@ -128,31 +82,6 @@ class SaveVenueBankInformationsTest:
                 application_details,
             )
             assert self.save_venue_bank_informations_v4.api_errors.errors["Venue"] == ["Venue not found"]
-
-        @patch("pcapi.connectors.sirene.siret_is_active", side_effect=sirene.UnknownEntityException())
-        def test_v3_raises_an_error_if_sirene_api_errored(self, siret_is_active, mock_update_text_annotation):
-            offerer = offerers_factories.OffererFactory()
-            offerers_factories.VenueFactory(managingOfferer=offerer, siret="99999999900000")
-            application_details = ApplicationDetailOldJourney(
-                application_type=3,
-                siren="999999999",
-                status=GraphQLApplicationStates.accepted.value,
-                application_id=1,
-                dossier_id="2",
-                iban="XXX",
-                bic="YYY",
-                updated_at=datetime.utcnow().isoformat(),
-                siret="99999999900000",
-                error_annotation_id="Q2hhbXAtMTIzNDUK",
-                venue_url_annotation_id=None,
-            )
-
-            self.save_venue_bank_informations_v3.get_referent_venue(
-                application_details,
-            )
-            assert self.save_venue_bank_informations_v3.api_errors.errors["Venue"] == [
-                "Error while checking SIRET on Sirene API"
-            ]
 
     @patch("pcapi.use_cases.save_venue_bank_informations.update_demarches_simplifiees_text_annotations")
     @patch("pcapi.use_cases.save_venue_bank_informations.archive_dossier")

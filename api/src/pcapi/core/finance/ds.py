@@ -81,7 +81,7 @@ def update_ds_applications_for_procedure(procedure_number: int, since: datetime.
             save_venue_bank_informations.execute(
                 application_details=ApplicationDetailOldJourney(**{"application_type": procedure_version, **data})
             )
-            if FeatureToggle.WIP_ENABLE_DOUBLE_MODEL_WRITING.is_active() and procedure_version in (4, 5):
+            if FeatureToggle.WIP_ENABLE_DOUBLE_MODEL_WRITING.is_active():
                 ImportBankAccount = ImportBankAccountFactory.get(procedure_version)
                 application_details = ApplicationDetailNewJourney(**{"application_type": procedure_version, **data})
                 ImportBankAccount(application_details).execute()
