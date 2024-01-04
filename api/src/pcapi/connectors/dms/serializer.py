@@ -17,7 +17,7 @@ from pcapi.core.finance.utils import format_raw_iban_and_bic
 from pcapi.core.fraud import api as fraud_api
 from pcapi.core.fraud import models as fraud_models
 from pcapi.core.users import models as users_models
-from pcapi.domain.demarches_simplifiees import get_status_from_demarches_simplifiees_application_state_v2
+from pcapi.domain.demarches_simplifiees import get_status_from_demarches_simplifiees_application_state
 from pcapi.routes.serialization import BaseModel
 from pcapi.utils.date import FrenchParserInfo
 
@@ -219,7 +219,7 @@ class ApplicationDetailOldJourney(ApplicationDetail):
     @root_validator(pre=True)
     def to_representation(cls: "ApplicationDetailOldJourney", obj: dict) -> dict:
         to_representation = super().to_representation(obj)
-        to_representation["status"] = get_status_from_demarches_simplifiees_application_state_v2(
+        to_representation["status"] = get_status_from_demarches_simplifiees_application_state(
             dms_models.GraphQLApplicationStates(obj["status"])
         )
         return to_representation
