@@ -52,6 +52,11 @@ def _get_common_metadata_from_offer(offer: offers_models.Offer) -> Metadata:
             "priceCurrency": "EUR",
             "lowPrice": str(offer.min_price),
             "url": offer_app_link(offer),
+            "availability": "https://schema.org/InStock"
+            if offer.hasStocks
+            else "https://schema.org/SoldOut"
+            if offer.isEvent
+            else "https://schema.org/OutOfStock",
         }
 
     return metadata
@@ -60,18 +65,19 @@ def _get_common_metadata_from_offer(offer: offers_models.Offer) -> Metadata:
 def _get_event_metadata_from_offer(offer: offers_models.Offer) -> Metadata:
     common_metadata = _get_common_metadata_from_offer(offer)
 
-    event_metadata = {
+    event_metadata: Metadata = {
         "@type": "Event",
-        "location": _get_metadata_from_venue(offer.venue),
     }
 
-    if offer.firstBeginningDatetime:
-        firstBeginningDatetime: datetime.datetime = offer.firstBeginningDatetime
-        event_metadata["startDate"] = firstBeginningDatetime.isoformat(timespec="minutes")
+    if offer.isDigital:
+        event_metadata["eventAttendanceMode"] = "OnlineEventAttendanceMode"
+    else:
+        event_metadata["eventAttendanceMode"] = "OfflineEventAttendanceMode"
+        event_metadata["location"] = _get_metadata_from_venue(offer.venue)
 
-    event_metadata["eventAttendanceMode"] = (
-        "OnlineEventAttendanceMode" if offer.isDigital else "OfflineEventAttendanceMode"
-    )
+    if offer.metadataFirstBeginningDatetime:
+        firstBeginningDatetime: datetime.datetime = offer.metadataFirstBeginningDatetime
+        event_metadata["startDate"] = firstBeginningDatetime.isoformat(timespec="minutes")
 
     if offer.extraData and offer.extraData.get("releaseDate"):
         event_metadata["validFrom"] = str(offer.extraData["releaseDate"])
