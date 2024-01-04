@@ -96,6 +96,32 @@ export const PartnerPage = ({ offererId, venue }: PartnerPageProps) => {
     })
   }
 
+  const logVenueLinkClick = () => {
+    logEvent?.(Events.CLICKED_PARTNER_BLOCK_PREVIEW_VENUE_LINK, {
+      venueId: venue.id,
+    })
+  }
+
+  const copyVenueLink = async () => {
+    await copyTextToClipboard(venuePreviewLink)
+    notify.success('Lien copié !')
+    logEvent?.(Events.CLICKED_PARTNER_BLOCK_COPY_VENUE_LINK, {
+      venueId: venue.id,
+    })
+  }
+
+  const logCollectiveHelpLinkClick = () => {
+    logEvent?.(Events.CLICKED_PARTNER_BLOCK_COLLECTIVE_HELP_LINK, {
+      venueId: venue.id,
+    })
+  }
+
+  const logDMSApplicationLinkClick = () => {
+    logEvent?.(Events.CLICKED_PARTNER_BLOCK_DMS_APPLICATION_LINK, {
+      venueId: venue.id,
+    })
+  }
+
   const venuePreviewLink = `${WEBAPP_URL}/lieu/${venue.id}`
 
   return (
@@ -161,6 +187,7 @@ export const PartnerPage = ({ offererId, venue }: PartnerPageProps) => {
           }}
           svgAlt="Nouvelle fenêtre"
           className={styles['details-link']}
+          onClick={logVenueLinkClick}
         >
           Voir ma page dans l’application
         </ButtonLink>
@@ -169,10 +196,7 @@ export const PartnerPage = ({ offererId, venue }: PartnerPageProps) => {
           variant={ButtonVariant.TERNARY}
           icon={fullDuplicateIcon}
           className={styles['details-link']}
-          onClick={async () => {
-            await copyTextToClipboard(venuePreviewLink)
-            notify.success('Lien copié !')
-          }}
+          onClick={copyVenueLink}
         >
           Copier le lien de la page
         </Button>
@@ -202,6 +226,7 @@ export const PartnerPage = ({ offererId, venue }: PartnerPageProps) => {
             }}
             svgAlt="Nouvelle fenêtre"
             className={styles['details-link']}
+            onClick={logDMSApplicationLinkClick}
           >
             Faire une demande de référencement ADAGE
           </ButtonLink>
@@ -217,6 +242,7 @@ export const PartnerPage = ({ offererId, venue }: PartnerPageProps) => {
             }}
             svgAlt="Nouvelle fenêtre"
             className={styles['details-link']}
+            onClick={logCollectiveHelpLinkClick}
           >
             En savoir plus sur le pass Culture à destination des scolaires
           </ButtonLink>
@@ -246,6 +272,7 @@ export const PartnerPage = ({ offererId, venue }: PartnerPageProps) => {
             }}
             svgAlt="Nouvelle fenêtre"
             className={styles['details-link']}
+            onClick={logCollectiveHelpLinkClick}
           >
             En savoir plus sur le pass Culture à destination des scolaires
           </ButtonLink>
