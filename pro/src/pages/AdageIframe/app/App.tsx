@@ -19,70 +19,69 @@ import { FacetFiltersContextProvider } from './providers'
 import { AdageUserContextProvider } from './providers/AdageUserContext'
 
 export const App = (): JSX.Element => {
-  const params = new URLSearchParams(window.location.search)
   const [user, setUser] = useState<AuthenticatedResponse | null>()
   const [isLoading, setIsLoading] = useState<boolean>(true)
   const [venueFilter, setVenueFilter] = useState<VenueResponse | null>(null)
 
   const notification = useNotification()
+  const uniqueId = useId()
+
+  const params = new URLSearchParams(window.location.search)
   const domainId = Number(params.get('domain'))
+  const siret = params.get('siret')
+  const venueId = Number(params.get('venue'))
+  const relativeOffersIncluded = params.get('all') === 'true'
 
   useEffect(() => {
-    const siret = params.get('siret')
-    const venueId = Number(params.get('venue'))
-    const getRelativeOffers = params.get('all') === 'true'
-    apiAdage
-      .authenticate()
-      .then((user) => setUser(user))
-      .then(async () => {
-        if (siret) {
-          try {
-            const result = await apiAdage.getVenueBySiret(
-              siret,
-              getRelativeOffers
-            )
-            return setVenueFilter(result)
-          } catch {
-            notification.error(
-              'Lieu inconnu. Tous les résultats sont affichés.'
-            )
-          }
-        }
-
-        if (venueId && !Number.isNaN(venueId)) {
-          try {
-            const result = await apiAdage.getVenueById(
-              venueId,
-              getRelativeOffers
-            )
-
-            return setVenueFilter(result)
-          } catch {
-            notification.error(
-              'Lieu inconnu. Tous les résultats sont affichés.'
-            )
-          }
-        }
-        return null
-      })
-      .catch(() => setUser(null))
-      .finally(() => {
+    async function authenticate() {
+      setIsLoading(true)
+      try {
+        const user = await apiAdage.authenticate()
+        setUser(user)
+      } catch {
+        setUser(null)
+      } finally {
         setIsLoading(false)
-        if (LOGS_DATA) {
-          // eslint-disable-next-line @typescript-eslint/no-floating-promises
-          apiAdage.logCatalogView({
-            iframeFrom: location.pathname,
-            source: siret || venueId ? 'partnersMap' : 'homepage',
-          })
-        }
-      })
-  }, [])
+      }
+    }
 
-  const uniqueId = useId()
+    async function setVenueFromUrl() {
+      if (!siret && !venueId) {
+        return
+      }
+
+      try {
+        const result = siret
+          ? await apiAdage.getVenueBySiret(siret, relativeOffersIncluded)
+          : await apiAdage.getVenueById(venueId, relativeOffersIncluded)
+
+        setVenueFilter(result)
+      } catch {
+        notification.error('Lieu inconnu. Tous les résultats sont affichés.')
+      }
+    }
+
+    // eslint-disable-next-line @typescript-eslint/no-floating-promises
+    authenticate()
+
+    if (siret || venueId) {
+      // eslint-disable-next-line @typescript-eslint/no-floating-promises
+      setVenueFromUrl()
+    }
+
+    if (LOGS_DATA) {
+      // eslint-disable-next-line @typescript-eslint/no-floating-promises
+      apiAdage.logCatalogView({
+        iframeFrom: location.pathname,
+        source: siret || venueId ? 'partnersMap' : 'homepage',
+      })
+    }
+  }, [notification, siret, venueId, relativeOffersIncluded])
+
   useEffect(() => {
     // User token can not contains special characters
     initAlgoliaAnalytics(uniqueId.replace(/[\W_]/g, '_'))
-  }, [])
+  }, [uniqueId])
 
   if (isLoading) {
     return <LoaderPage />
