@@ -61,15 +61,12 @@ const OfferDetails = ({
     visualDisabilityCompliant,
     students,
     offerVenue,
-    contactEmail,
-    contactPhone,
     educationalPriceDetail,
     interventionArea,
     nationalProgram,
   } = offer
 
   const durationString = computeDurationString(durationMinutes)
-  const displayContactSection = contactEmail || contactPhone
   const disabilityString = computeDisabilityString(
     audioDisabilityCompliant,
     mentalDisabilityCompliant,
@@ -109,23 +106,6 @@ const OfferDetails = ({
         </OfferSection>
       )}
 
-      {displayContactSection && (
-        <OfferSection title="Contact">
-          <ul className="offer-details-list">
-            {contactEmail && (
-              <li>
-                <a
-                  className="offer-details-list-item-link"
-                  href={`mailto:${contactEmail}`}
-                >
-                  {contactEmail}
-                </a>
-              </li>
-            )}
-            {contactPhone && <li>{contactPhone}</li>}
-          </ul>
-        </OfferSection>
-      )}
       <OfferSection title="Cette offre est accessible aux publics en situation de handicap :">
         {disabilityString}
       </OfferSection>
