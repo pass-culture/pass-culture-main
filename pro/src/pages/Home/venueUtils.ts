@@ -1,5 +1,3 @@
-import { isBefore, addDays } from 'date-fns'
-
 import {
   DMSApplicationstatus,
   GetOffererResponseModel,
@@ -34,23 +32,9 @@ export const shouldDisplayEACInformationSectionForVenue = (
     venue.collectiveDmsApplications
   )
 
-  const hasAdageIdForMoreThan30Days =
-    venue.hasAdageId &&
-    !!venue.adageInscriptionDate &&
-    isBefore(new Date(venue.adageInscriptionDate), addDays(new Date(), -30))
-
-  const hasRefusedApplicationForMoreThan30Days =
-    (dmsInformations?.state == DMSApplicationstatus.REFUSE ||
-      dmsInformations?.state == DMSApplicationstatus.SANS_SUITE) &&
-    dmsInformations.processingDate &&
-    isBefore(
-      new Date(dmsInformations?.processingDate),
-      addDays(new Date(), -30)
-    )
-
   return (
     Boolean(dmsInformations) &&
-    !hasAdageIdForMoreThan30Days &&
-    !hasRefusedApplicationForMoreThan30Days
+    (dmsInformations?.state === DMSApplicationstatus.EN_INSTRUCTION ||
+      dmsInformations?.state === DMSApplicationstatus.EN_CONSTRUCTION)
   )
 }
