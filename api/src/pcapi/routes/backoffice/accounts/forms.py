@@ -1,3 +1,5 @@
+import enum
+
 from flask_wtf import FlaskForm
 import wtforms
 
@@ -9,7 +11,16 @@ from pcapi.routes.backoffice.forms import search
 from pcapi.routes.backoffice.forms import utils
 
 
+class AccountSearchFilter(enum.Enum):
+    UNDERAGE = "Pass 15-17"
+    BENEFICIARY = "Pass 18"
+    PUBLIC = "Non bénéficiaire"
+    SUSPENDED = "Suspendu"
+
+
 class AccountSearchForm(search.SearchForm):
+    filter = fields.PCSelectMultipleField("Filtres", choices=utils.choices_from_enum(AccountSearchFilter))
+
     def validate_q(self, q: fields.PCSearchField) -> fields.PCSearchField:
         q = super().validate_q(q)
         if len(q.data) < 3 and not str(q.data).isnumeric():
