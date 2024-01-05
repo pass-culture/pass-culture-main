@@ -1,13 +1,14 @@
 import { screen } from '@testing-library/react'
-import userEvent from '@testing-library/user-event'
+import { userEvent } from '@testing-library/user-event'
 import React from 'react'
 import * as router from 'react-router-dom'
 
-import { VenueTypeCode } from 'apiClient/v1'
+import { DMSApplicationstatus, VenueTypeCode } from 'apiClient/v1'
 import { UploaderModeEnum } from 'components/ImageUploader/types'
 import { Events } from 'core/FirebaseEvents/constants'
 import * as useAnalytics from 'hooks/useAnalytics'
 import { defaultGetOffererVenueResponseModel } from 'utils/apiFactories'
+import { defaultCollectiveDmsApplication } from 'utils/collectiveApiFactories'
 import { renderWithProviders } from 'utils/renderWithProviders'
 
 import { PartnerPage, PartnerPageProps } from '../PartnerPage'
@@ -83,8 +84,24 @@ describe('PartnerPages', () => {
     renderPartnerPages({
       venue: {
         ...defaultGetOffererVenueResponseModel,
-        hasAdageId: false,
-        demarchesSimplifieesApplicationId: null,
+        collectiveDmsApplications: [],
+      },
+      offererId: '1',
+    })
+
+    expect(screen.getByText('Non référencé sur ADAGE')).toBeInTheDocument()
+  })
+
+  it('should display the EAC section when adage refused', () => {
+    renderPartnerPages({
+      venue: {
+        ...defaultGetOffererVenueResponseModel,
+        collectiveDmsApplications: [
+          {
+            ...defaultCollectiveDmsApplication,
+            state: DMSApplicationstatus.REFUSE,
+          },
+        ],
       },
       offererId: '1',
     })
@@ -96,8 +113,12 @@ describe('PartnerPages', () => {
     renderPartnerPages({
       venue: {
         ...defaultGetOffererVenueResponseModel,
-        hasAdageId: false,
-        demarchesSimplifieesApplicationId: 10,
+        collectiveDmsApplications: [
+          {
+            ...defaultCollectiveDmsApplication,
+            state: DMSApplicationstatus.EN_INSTRUCTION,
+          },
+        ],
       },
       offererId: '1',
     })
@@ -109,8 +130,12 @@ describe('PartnerPages', () => {
     renderPartnerPages({
       venue: {
         ...defaultGetOffererVenueResponseModel,
-        hasAdageId: true,
-        demarchesSimplifieesApplicationId: 10,
+        collectiveDmsApplications: [
+          {
+            ...defaultCollectiveDmsApplication,
+            state: DMSApplicationstatus.ACCEPTE,
+          },
+        ],
       },
       offererId: '1',
     })
