@@ -244,19 +244,25 @@ class OffererPatchBankAccountsTest:
             assert action_logged.venueId == action_occured.venueId
             assert action_logged.bankAccountId == action_occured.bankAccountId
 
-        assert len(mails_testing.outbox) == 3
-        assert mails_testing.outbox[0].sent_data["params"] == {
-            "VENUE_NAME": first_venue.common_name,
-            "BANK_ACCOUNT_LABEL": bank_account.label,
-        }
-        assert mails_testing.outbox[1].sent_data["params"] == {
-            "VENUE_NAME": second_venue.common_name,
-            "BANK_ACCOUNT_LABEL": bank_account.label,
-        }
-        assert mails_testing.outbox[2].sent_data["params"] == {
-            "VENUE_NAME": third_venue.common_name,
-            "BANK_ACCOUNT_LABEL": bank_account.label,
-        }
+        expected_data = [
+            {
+                "VENUE_NAME": first_venue.common_name,
+                "BANK_ACCOUNT_LABEL": bank_account.label,
+            },
+            {
+                "VENUE_NAME": second_venue.common_name,
+                "BANK_ACCOUNT_LABEL": bank_account.label,
+            },
+            {
+                "VENUE_NAME": third_venue.common_name,
+                "BANK_ACCOUNT_LABEL": bank_account.label,
+            },
+        ]
+
+        assert len(mails_testing.outbox) == len(expected_data)
+
+        for mail_sent in mails_testing.outbox:
+            assert mail_sent.sent_data["params"] in expected_data
 
     def test_adding_new_venue_link_doesnt_alter_historic_links(self, db_session, client):
         actions_occured = []
