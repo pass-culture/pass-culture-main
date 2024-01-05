@@ -5,6 +5,7 @@ import click
 import sqlalchemy as sa
 
 from pcapi.core.offerers import models as offerers_models
+from pcapi.core.offerers import synchronize_venues_banners_with_google_places as banner_url_synchronizations
 from pcapi.core.offerers import tasks as offerers_tasks
 from pcapi.models import db
 from pcapi.utils.blueprint import Blueprint
@@ -52,3 +53,16 @@ def check_active_offerers(dry_run: bool = False) -> None:
         offerers_tasks.check_offerer_siren_task.delay(
             offerers_tasks.CheckOffererSirenRequest(siren=offerer.siren, tag_when_inactive=not dry_run)
         )
+
+
+@blueprint.cli.command("synchronize_venues_banners_with_google_places")
+@click.argument("begin", type=int, required=True)
+@click.argument("end", type=int, required=True)
+@click.argument("limit", type=int, required=False, default=None)
+def synchronize_venues_banners_with_google_places(begin: int, end: int, limit: int | None = None) -> None:
+    """Synchronize venues banners with Google Places API.
+    The command searches for venues without banner and with a permanent venue type in google places api.
+    it creates entries in the database for the venues with the banner url found in google places api and stores their placeId.
+    then it aploads the banner to gcp and stores the url in the database.
+    """
+    banner_url_synchronizations.synchronize_venues_banners_with_google_places(begin, end, limit)
