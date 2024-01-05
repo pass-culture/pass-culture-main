@@ -19,13 +19,14 @@ const FormParticipants = ({
   const { values, setFieldValue } =
     useFormikContext<OfferEducationalFormValues>()
 
+  const isMarseilleEnabled = useActiveFeature('WIP_ENABLE_MARSEILLE')
+
   const defaultPartipantsOptions = useParticipantsOptions(
     values.participants,
     setFieldValue,
-    isTemplate
+    isTemplate,
+    isMarseilleEnabled
   )
-
-  const isMarseilleEnabled = useActiveFeature('WIP_ENABLE_MARSEILLE')
 
   const filteredParticipantsOptions = isMarseilleEnabled
     ? defaultPartipantsOptions
