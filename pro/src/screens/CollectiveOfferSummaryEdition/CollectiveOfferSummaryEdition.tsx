@@ -41,6 +41,7 @@ const CollectiveOfferSummaryEdition = ({
   const notify = useNotification()
   const navigate = useNavigate()
   const isFormatActive = useActiveFeature('WIP_ENABLE_FORMAT')
+  const isMarseilleActive = useActiveFeature('WIP_ENABLE_MARSEILLE')
 
   const offerEditLink = `/offre/${computeURLCollectiveOfferId(
     offer.id,
@@ -84,11 +85,14 @@ const CollectiveOfferSummaryEdition = ({
               logEvent?.(Events.CLICKED_DUPLICATE_TEMPLATE_OFFER, {
                 from: OFFER_FROM_TEMPLATE_ENTRIES.OFFER_TEMPLATE_RECAP,
               })
+              // eslint-disable-next-line @typescript-eslint/no-floating-promises
               createOfferFromTemplate(
                 navigate,
                 notify,
                 offer.id,
-                isFormatActive
+                isFormatActive,
+                undefined,
+                isMarseilleActive
               )
             }}
           >

@@ -35,6 +35,7 @@ export const CollectiveOfferSelectionDuplication = (): JSX.Element => {
   const notify = useNotification()
   const navigate = useNavigate()
   const isFormatActive = useActiveFeature('WIP_ENABLE_FORMAT')
+  const isMarseilleActive = useActiveFeature('WIP_ENABLE_FORMAT')
   const formikSearch = useFormik({
     initialValues: { searchFilter: '' },
     onSubmit: (formValues) =>
@@ -90,11 +91,14 @@ export const CollectiveOfferSelectionDuplication = (): JSX.Element => {
         'Vous devez séléctionner une offre vitrine à dupliquer'
       )
     }
+    // eslint-disable-next-line @typescript-eslint/no-floating-promises
     createOfferFromTemplate(
       navigate,
       notify,
       Number(templateOfferId),
-      isFormatActive
+      isFormatActive,
+      undefined,
+      isMarseilleActive
     )
   }
 

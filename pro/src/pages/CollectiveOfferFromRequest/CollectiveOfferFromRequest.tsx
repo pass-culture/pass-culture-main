@@ -32,6 +32,7 @@ export const CollectiveOfferFromRequest = (): JSX.Element => {
   const [isLoading, setIsLoading] = useState(true)
 
   const isFormatActive = useActiveFeature('WIP_ENABLE_FORMAT')
+  const isMarseilleActive = useActiveFeature('WIP_ENABLE_MARSEILLE')
 
   const { offerId, requestId } = useParams<{
     offerId: string
@@ -44,12 +45,14 @@ export const CollectiveOfferFromRequest = (): JSX.Element => {
       requestId,
       templateOfferId: offerId,
     })
+    // eslint-disable-next-line @typescript-eslint/no-floating-promises
     createOfferFromTemplate(
       navigate,
       notify,
       Number(offerId),
       isFormatActive,
-      requestId
+      requestId,
+      isMarseilleActive
     )
   }
 
