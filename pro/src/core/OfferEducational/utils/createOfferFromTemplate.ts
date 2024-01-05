@@ -14,7 +14,8 @@ export const createOfferFromTemplate = async (
   notify: ReturnType<typeof useNotification>,
   templateOfferId: number,
   isFormatActive: boolean,
-  requestId?: string
+  requestId?: string,
+  isMarseilleActive?: boolean
 ) => {
   const offerTemplateResponse =
     await getCollectiveOfferTemplateAdapter(templateOfferId)
@@ -38,7 +39,10 @@ export const createOfferFromTemplate = async (
     categories,
     offerers,
     false,
-    offerTemplateResponse.payload
+    offerTemplateResponse.payload,
+    undefined,
+    undefined,
+    isMarseilleActive
   )
 
   const { isOk, message, payload } = await postCollectiveOfferAdapter({

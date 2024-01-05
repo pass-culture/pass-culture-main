@@ -11,7 +11,8 @@ const useParticipantsOptions = (
     value: any,
     shouldValidate?: boolean | undefined
   ) => void,
-  isTemplate: boolean = false
+  isTemplate: boolean = false,
+  isMarseilleEnabled: boolean = false
 ) => {
   const canToggleAllParticipants = isTemplate
 
@@ -20,12 +21,12 @@ const useParticipantsOptions = (
   ) => {
     if (event.target.checked) {
       setFieldValue('participants', {
-        ...buildStudentLevelsMapWithDefaultValue(true),
+        ...buildStudentLevelsMapWithDefaultValue(true, isMarseilleEnabled),
         all: true,
       })
     } else {
       setFieldValue('participants', {
-        ...buildStudentLevelsMapWithDefaultValue(false),
+        ...buildStudentLevelsMapWithDefaultValue(false, isMarseilleEnabled),
         all: false,
       })
     }
