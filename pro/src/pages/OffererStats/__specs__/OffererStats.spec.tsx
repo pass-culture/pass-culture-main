@@ -87,8 +87,12 @@ describe('OffererStatsScreen', () => {
 
   it('should display error message if api call fail', async () => {
     const notifyError = vi.fn()
-    // @ts-expect-error
+
+    const notifsImport = (await vi.importActual(
+      'hooks/useNotification'
+    )) as ReturnType<typeof useNotification.default>
     vi.spyOn(useNotification, 'default').mockImplementation(() => ({
+      ...notifsImport,
       error: notifyError,
     }))
     vi.spyOn(api, 'listOfferersNames').mockRejectedValueOnce('')

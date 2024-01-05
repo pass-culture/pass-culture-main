@@ -48,14 +48,17 @@ const renderNewOfferPlaylist = () => {
 describe('AdageDiscover classRoomPlaylist', () => {
   const notifyError = vi.fn()
 
-  beforeEach(() => {
+  beforeEach(async () => {
     vi.spyOn(apiAdage, 'logConsultPlaylistElement')
     vi.spyOn(apiAdage, 'getClassroomPlaylist').mockResolvedValue({
       collectiveOffers: [defaultCollectiveOffer],
     })
 
+    const notifsImport = (await vi.importActual(
+      'hooks/useNotification'
+    )) as ReturnType<typeof useNotification.default>
     vi.spyOn(useNotification, 'default').mockImplementation(() => ({
-      ...vi.importActual('hooks/useNotification'),
+      ...notifsImport,
       error: notifyError,
     }))
 

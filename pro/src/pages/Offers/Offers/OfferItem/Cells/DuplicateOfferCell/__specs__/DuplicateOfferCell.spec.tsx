@@ -173,12 +173,15 @@ describe('DuplicateOfferCell', () => {
     const mockNavigate = vi.fn()
     const notifyError = vi.fn()
 
-    beforeEach(() => {
+    beforeEach(async () => {
       offer = collectiveOfferFactory()
       offerDuplicate = collectiveOfferFactory()
 
+      const notifsImport = (await vi.importActual(
+        'hooks/useNotification'
+      )) as ReturnType<typeof useNotification.default>
       vi.spyOn(useNotification, 'default').mockImplementation(() => ({
-        ...vi.importActual('hooks/useNotification'),
+        ...notifsImport,
         error: notifyError,
       }))
 

@@ -369,8 +369,11 @@ describe('OfferType', () => {
   it('should display error message if trying to duplicate without template offer', async () => {
     vi.spyOn(api, 'canOffererCreateEducationalOffer').mockResolvedValue()
     const notifyError = vi.fn()
+    const notifsImport = (await vi.importActual(
+      'hooks/useNotification'
+    )) as ReturnType<typeof useNotification.default>
     vi.spyOn(useNotification, 'default').mockImplementation(() => ({
-      ...vi.importActual('hooks/useNotification'),
+      ...notifsImport,
       error: notifyError,
     }))
 
