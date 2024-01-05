@@ -35,6 +35,7 @@ export const generateValidationSchema = (
     .number()
     .nullable()
     .min(0, 'Nombre positif attendu')
+    .max(60000, 'Le prix ne doit pas dépasser 60 000€')
     .required('Champ requis')
   if (preventPriceIncrease && initialPrice) {
     totalPriceValidation = totalPriceValidation.max(
@@ -75,6 +76,7 @@ export const generateValidationSchema = (
       .number()
       .nullable()
       .min(0, 'Nombre positif attendu')
+      .max(3000, 'Le nombre de participants ne doit pas dépasser 3000')
       .required('Champ requis'),
     totalPrice: totalPriceValidation,
     bookingLimitDatetime: yup

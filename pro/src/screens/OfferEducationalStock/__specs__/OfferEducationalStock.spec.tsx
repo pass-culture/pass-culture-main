@@ -160,4 +160,29 @@ describe('OfferEducationalStock', () => {
 
     expect(testProps.onSubmit).toHaveBeenCalled()
   })
+
+  it('should display error message when price and participants are too high', async () => {
+    const offer = collectiveOfferFactory({ isPublicApi: false })
+    const testProps: OfferEducationalStockProps = {
+      ...defaultProps,
+      offer,
+      initialValues: {
+        ...initialValuesNotEmpty,
+        totalPrice: 60001,
+        numberOfPlaces: 3001,
+      },
+      mode: Mode.CREATION,
+    }
+
+    renderWithProviders(<OfferEducationalStock {...testProps} />)
+    const submitButton = screen.getByRole('button', { name: 'Étape suivante' })
+    await userEvent.click(submitButton)
+
+    expect(
+      screen.getByText('Le nombre de participants ne doit pas dépasser 3000')
+    ).toBeInTheDocument()
+    expect(
+      screen.getByText('Le prix ne doit pas dépasser 60 000€')
+    ).toBeInTheDocument()
+  })
 })
