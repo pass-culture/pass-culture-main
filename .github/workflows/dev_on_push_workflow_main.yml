@@ -126,6 +126,14 @@ jobs:
       GCP_EHP_WORKLOAD_IDENTITY_PROVIDER: ${{ secrets.GCP_EHP_WORKLOAD_IDENTITY_PROVIDER }}
       GCP_EHP_SERVICE_ACCOUNT: ${{ secrets.GCP_EHP_SERVICE_ACCOUNT }}
 
+  dependabot-auto-merge:
+    name: "Dependabot"
+    needs: test-pro
+    if: |
+      github.event_name == 'pull_request' &&
+      github.actor == 'dependabot[bot]'
+    uses: ./.github/workflows/dev_on_workflow_dependabot_auto_merge.yml
+
   test-pro-e2e:
     name: "Tests pro E2E"
     needs: [check-api, check-pro, build-api]
@@ -146,15 +154,6 @@ jobs:
     needs: check-pro
     if: ${{ github.ref == 'refs/heads/master' && needs.check-pro.outputs.folder_changed == 'true' }}
     uses: ./.github/workflows/dev_on_workflow_deploy_storybook.yml
-
-  dependabot-auto-merge:
-    name: "Dependabot"
-    needs: test-pro
-    if: |
-      always() &&
-      github.event_name == 'pull_request' &&
-      github.actor == 'dependabot[bot]'
-    uses: ./.github/workflows/dev_on_workflow_dependabot_auto_merge.yml
 
   deploy-validation-env:
     name: "[PRO] Deploy PR version for validation"
