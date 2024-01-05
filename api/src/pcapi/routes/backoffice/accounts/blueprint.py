@@ -75,6 +75,42 @@ def _join_suspension_history(query: BaseQuery) -> BaseQuery:
     ).options(sa.orm.contains_eager(users_models.User.action_history))
 
 
+def _apply_search_filters(query: BaseQuery, search_filters: list[str]) -> BaseQuery:
+    or_filters: list[sa.sql.elements.ClauseElement] = []
+
+    if account_forms.AccountSearchFilter.UNDERAGE.name in search_filters:
+        or_filters.append(
+            sa.and_(
+                users_models.User.has_underage_beneficiary_role.is_(True),  # type: ignore [attr-defined]
+                users_models.User.isActive.is_(True),
+            )
+        )
+
+    if account_forms.AccountSearchFilter.BENEFICIARY.name in search_filters:
+        or_filters.append(
+            sa.and_(
+                users_models.User.has_beneficiary_role.is_(True),  # type: ignore [attr-defined]
+                users_models.User.isActive.is_(True),
+            )
+        )
+
+    if account_forms.AccountSearchFilter.PUBLIC.name in search_filters:
+        or_filters.append(
+            sa.and_(
+                users_models.User.is_beneficiary.is_(False),  # type: ignore [attr-defined]
+                users_models.User.isActive.is_(True),
+            )
+        )
+
+    if account_forms.AccountSearchFilter.SUSPENDED.name in search_filters:
+        or_filters.append(users_models.User.isActive.is_(False))
+
+    if not or_filters:
+        return query
+
+    return query.filter(sa.or_(*or_filters))
+
+
 @public_accounts_blueprint.route("/search", methods=["GET"])
 def search_public_accounts() -> utils.BackofficeResponse:
     """
@@ -89,6 +125,7 @@ def search_public_accounts() -> utils.BackofficeResponse:
         return render_search_template(form), 400
 
     users_query = users_api.search_public_account(form.q.data)
+    users_query = _apply_search_filters(users_query, form.filter.data)
     users_query = _join_suspension_history(users_query)
     paginated_rows = users_query.paginate(page=form.page.data, per_page=form.per_page.data)
 
@@ -104,7 +141,12 @@ def search_public_accounts() -> utils.BackofficeResponse:
     if paginated_rows.total == 1:
         return redirect(
             url_for(
-                ".get_public_account", user_id=paginated_rows.items[0].id, q=form.q.data, search_rank=1, total_items=1
+                ".get_public_account",
+                user_id=paginated_rows.items[0].id,
+                q=form.q.data,
+                filter=form.filter.data,
+                search_rank=1,
+                total_items=1,
             ),
             code=303,
         )
@@ -271,7 +313,7 @@ def render_public_account_details(
     kwargs.update(user_forms.get_toggle_suspension_args(user, suspension_type=user_forms.SuspensionUserType.PUBLIC))
     return render_template(
         "accounts/get.html",
-        search_form=account_forms.AccountSearchForm(q=request.args.get("q")),
+        search_form=account_forms.AccountSearchForm(),  # values taken from request
         search_dst=url_for(".search_public_accounts"),
         user=user,
         tunnel=tunnel,
