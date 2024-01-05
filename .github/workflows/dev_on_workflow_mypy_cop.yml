@@ -12,16 +12,8 @@ jobs:
         uses: actions/checkout@v4.1.1
         with:
           persist-credentials: false
-      - name: "Check changes"
-        id: "changes"
-        uses: dorny/paths-filter@v2
-        with:
-          filters: |
-            src:
-              - 'api/**'
       - name: "Count mypy ignore's on this branch and master"
         id: "mypy-ignore-counter"
-        if: steps.changes.outputs.src == 'true'
         working-directory: api
         run: |
           this_branch_ignore_count="$(grep "type: ignore" -r src | grep -v /alembic/versions/ | wc -l)"
@@ -43,20 +35,19 @@ jobs:
           echo "$EOF" | tee -a $GITHUB_OUTPUT
       - name: "Find Comment"
         id: "fc"
-        if: steps.changes.outputs.src == 'true'
         uses: peter-evans/find-comment@v2
         with:
           issue-number: ${{ github.event.pull_request.number }}
           comment-author: "github-actions[bot]"
           body-includes: "mypy cop report"
       - name: "Create comment"
-        if: ${{ steps.changes.outputs.src == 'true' && steps.fc.outputs.comment-id == '' && steps.mypy-ignore-counter.outputs.this_branch_ignore_count != steps.mypy-ignore-counter.outputs.master_ignore_count }}
+        if: ${{ steps.fc.outputs.comment-id == '' && steps.mypy-ignore-counter.outputs.this_branch_ignore_count != steps.mypy-ignore-counter.outputs.master_ignore_count }}
         uses: peter-evans/create-or-update-comment@v3
         with:
           issue-number: ${{ github.event.pull_request.number }}
           body: ${{ steps.mypy-cop.outputs.body }}
       - name: "Update comment"
-        if: ${{ steps.changes.outputs.src == 'true' && steps.fc.outputs.comment-id != '' }}
+        if: ${{ steps.fc.outputs.comment-id != '' }}
         uses: peter-evans/create-or-update-comment@v3
         with:
           comment-id: ${{ steps.fc.outputs.comment-id }}
