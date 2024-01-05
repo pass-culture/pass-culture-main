@@ -701,6 +701,10 @@ class Cashflow(Base, Model):
         "bankInformationId", sqla.BigInteger, sqla.ForeignKey("bank_information.id"), index=True, nullable=True
     )
     bankInformation: BankInformation = sqla_orm.relationship(BankInformation, foreign_keys=[bankInformationId])
+    bankAccountId: int = sqla.Column(
+        "bankAccountId", sqla.BigInteger, sqla.ForeignKey("bank_account.id"), index=True, nullable=True
+    )
+    bankAccount: BankAccount = sqla_orm.relationship(BankAccount, foreign_keys=[bankAccountId])
     reimbursementPointId = sqla.Column(sqla.BigInteger, sqla.ForeignKey("venue.id"), index=True, nullable=False)
     reimbursementPoint: sqla_orm.Mapped["offerers_models.Venue"] = sqla_orm.relationship(
         "Venue", foreign_keys=[reimbursementPointId]
