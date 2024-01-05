@@ -448,6 +448,8 @@ def suspend_account(
         },
     )
 
+    _remove_external_user(user)
+
     return {"cancelled_bookings": n_bookings}
 
 
@@ -558,6 +560,9 @@ def unsuspend_account(
             "send_email": send_email,
         },
     )
+
+    # external user was deleted when suspended, re-create it
+    external_attributes_api.update_external_user(user)
 
     if send_email:
         transactional_mails.send_unsuspension_email(user)
@@ -1577,7 +1582,7 @@ def anonymize_user(user: users_models.User, *, force: bool = False) -> None:
     user.irisFrance = iris
     user.validatedBirthDate = user.validatedBirthDate.replace(day=1, month=1) if user.validatedBirthDate else None
 
-    external_email_anonymized = _anonymize_external_user_email(user)
+    external_email_anonymized = _remove_external_user(user)
 
     users_models.TrustedDevice.query.filter(users_models.TrustedDevice.userId == user.id).delete()
     users_models.LoginDeviceHistory.query.filter(users_models.LoginDeviceHistory.userId == user.id).delete()
@@ -1598,15 +1603,11 @@ def anonymize_user(user: users_models.User, *, force: bool = False) -> None:
     return
 
 
-def _anonymize_external_user_email(user: users_models.User) -> bool:
+def _remove_external_user(user: users_models.User) -> bool:
     # check if this email is used in booking_email (it should not be)
     is_email_used = (
-        db.session.query(
-            offerers_models.Venue.id,
-        )
-        .filter(
-            offerers_models.Venue.bookingEmail == user.email,
-        )
+        db.session.query(offerers_models.Venue.id)
+        .filter(offerers_models.Venue.bookingEmail == user.email)
         .limit(1)
         .count()
     )
@@ -1621,10 +1622,10 @@ def _anonymize_external_user_email(user: users_models.User) -> bool:
     except ExternalAPIException as exc:
         # If is_retryable it is a real error. If this flag is False then it means the email is unknown for brevo.
         if exc.is_retryable:
-            logger.exception("Could not anonymize user", extra={"user_id": user.id, "exc": str(exc)})
+            logger.exception("Could not delete external user", extra={"user_id": user.id, "exc": str(exc)})
             return False
     except Exception as exc:  # pylint: disable=broad-exception-caught
-        logger.exception("Could not anonymize user", extra={"user_id": user.id, "exc": str(exc)})
+        logger.exception("Could not delete external user", extra={"user_id": user.id, "exc": str(exc)})
         return False
 
     return True

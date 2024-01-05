@@ -47,8 +47,11 @@ def _run_iteration(min_user_id: int, max_user_id: int, synchronize_batch: bool, 
     print(f"{message} started")
     chunk = (
         User.query.filter(User.id.in_(user_ids))
-        .filter(User.has_pro_role.is_(False))  # type: ignore [attr-defined]
-        .filter(User.has_admin_role.is_(False))  # type: ignore [attr-defined]
+        .filter(
+            User.isActive.is_(True),
+            User.has_pro_role.is_(False),  # type: ignore [attr-defined]
+            User.has_admin_role.is_(False),  # type: ignore [attr-defined]
+        )
         .all()
     )
 

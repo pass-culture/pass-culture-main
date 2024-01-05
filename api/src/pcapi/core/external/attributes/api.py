@@ -36,6 +36,10 @@ def update_external_user(
     skip_batch: bool = False,
     skip_sendinblue: bool = False,
 ) -> None:
+    if not user.isActive:
+        # suspended users have been removed from Brevo
+        return
+
     if user.has_pro_role:
         update_external_pro(user.email)
     else:
@@ -149,6 +153,7 @@ def get_pro_attributes(email: str) -> models.ProAttributes:
 
     user = (
         users_repository.find_pro_user_by_email_query(email)
+        .filter(users_models.User.isActive.is_(True))
         .options(
             load_only(
                 users_models.User.firstName, users_models.User.lastName, users_models.User.notificationSubscriptions
