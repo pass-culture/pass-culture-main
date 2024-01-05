@@ -332,6 +332,8 @@ class DMSContent(common_models.IdentityCheckContent):
 UBBLE_REASON_CODE_MAPPING = {
     1201: FraudReasonCode.NETWORK_CONNECTION_ISSUE,  # applicant did not have a sufficient connection
     1301: FraudReasonCode.BLURRY_DOCUMENT_VIDEO,  # applicant’s document video is too blurry
+    1304: FraudReasonCode.LACK_OF_LUMINOSITY,  # applicant hides part of the document
+    1305: FraudReasonCode.LACK_OF_LUMINOSITY,  # applicant did not present a dynamic view of the document
     1320: FraudReasonCode.LACK_OF_LUMINOSITY,  # applicant performed their id verification under poor lighting conditions
     1901: FraudReasonCode.UBBLE_INTERNAL_ERROR,  # ubble had trouble decoding the video
     2101: FraudReasonCode.ID_CHECK_EXPIRED,  # applicant presented an expired document
