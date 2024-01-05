@@ -73,6 +73,7 @@ geoalchemy2 = "^0.14.3"
 fiona = "^1.9.5"
 py7zr = "^0.20.8"
 pyproj = "^3.6.1"
+googlemaps = "^4.10.0"
 
 [tool.poetry.group.dev]
 optional = true
