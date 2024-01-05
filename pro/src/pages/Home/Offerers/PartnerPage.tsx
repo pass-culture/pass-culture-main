@@ -2,7 +2,10 @@ import React, { useState } from 'react'
 import { useLoaderData } from 'react-router-dom'
 
 import { api } from 'apiClient/api'
-import { GetOffererVenueResponseModel } from 'apiClient/v1'
+import {
+  DMSApplicationstatus,
+  GetOffererVenueResponseModel,
+} from 'apiClient/v1'
 import { ImageUploader, UploadImageValues } from 'components/ImageUploader'
 import { OnImageUploadArgs } from 'components/ImageUploader/ButtonImageEdit/ModalImageEdit/ModalImageEdit'
 import { UploaderModeEnum } from 'components/ImageUploader/types'
@@ -22,6 +25,7 @@ import { ButtonVariant } from 'ui-kit/Button/types'
 import { copyTextToClipboard } from 'ui-kit/CopyLink/CopyLink'
 import { Tag, TagVariant } from 'ui-kit/Tag/Tag'
 import { WEBAPP_URL } from 'utils/config'
+import { getLastCollectiveDmsApplication } from 'utils/getLastCollectiveDmsApplication'
 
 import { Card } from '../Card'
 import { HomepageLoaderData } from '../Homepage'
@@ -50,6 +54,9 @@ export const PartnerPage = ({ offererId, venue }: PartnerPageProps) => {
   )
   const [imageValues, setImageValues] =
     useState<UploadImageValues>(initialValues)
+  const lastDmsApplication = getLastCollectiveDmsApplication(
+    venue.collectiveDmsApplications
+  )
 
   const handleOnImageUpload = async ({
     imageFile,
@@ -202,7 +209,7 @@ export const PartnerPage = ({ offererId, venue }: PartnerPageProps) => {
         </Button>
       </section>
 
-      {!venue.hasAdageId && !venue.demarchesSimplifieesApplicationId && (
+      {lastDmsApplication === null && (
         <section className={styles['details']}>
           <div>
             <h4 className={styles['details-title']}>Enseignants</h4>
@@ -249,7 +256,24 @@ export const PartnerPage = ({ offererId, venue }: PartnerPageProps) => {
         </section>
       )}
 
-      {!venue.hasAdageId && venue.demarchesSimplifieesApplicationId && (
+      {(lastDmsApplication?.state === DMSApplicationstatus.REFUSE ||
+        lastDmsApplication?.state === DMSApplicationstatus.SANS_SUITE) && (
+        <section className={styles['details']}>
+          <div>
+            <h4 className={styles['details-title']}>Enseignants</h4>
+            <Tag variant={TagVariant.LIGHT_BLUE}>Non référencé sur ADAGE</Tag>
+          </div>
+
+          <p className={styles['details-description']}>
+            Pour pouvoir adresser des offres aux enseignants, vous devez être
+            référencé sur ADAGE, l’application du ministère de l’Education
+            nationale et de la Jeunesse dédiée à l’EAC.
+          </p>
+        </section>
+      )}
+
+      {(lastDmsApplication?.state === DMSApplicationstatus.EN_CONSTRUCTION ||
+        lastDmsApplication?.state === DMSApplicationstatus.EN_INSTRUCTION) && (
         <section className={styles['details']}>
           <div>
             <h4 className={styles['details-title']}>Enseignants</h4>
@@ -279,7 +303,7 @@ export const PartnerPage = ({ offererId, venue }: PartnerPageProps) => {
         </section>
       )}
 
-      {venue.hasAdageId && (
+      {lastDmsApplication?.state === DMSApplicationstatus.ACCEPTE && (
         <section className={styles['details']}>
           <div>
             <h4 className={styles['details-title']}>Enseignants</h4>

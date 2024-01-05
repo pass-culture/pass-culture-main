@@ -6,7 +6,7 @@ import {
 
 export const getLastCollectiveDmsApplication = (
   collectiveDmsApplications: DMSApplicationForEAC[]
-) => {
+): DMSApplicationForEAC | null => {
   if (!collectiveDmsApplications || collectiveDmsApplications.length === 0) {
     return null
   }
