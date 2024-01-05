@@ -1758,6 +1758,19 @@ protobuf = ">=3.19.5,<3.20.0 || >3.20.0,<3.20.1 || >3.20.1,<4.21.1 || >4.21.1,<4
 grpc = ["grpcio (>=1.44.0,<2.0.0.dev0)"]
 
 [[package]]
+name = "googlemaps"
+version = "4.10.0"
+description = "Python client library for Google Maps Platform"
+optional = false
+python-versions = ">=3.5"
+files = [
+    {file = "googlemaps-4.10.0.tar.gz", hash = "sha256:3055fcbb1aa262a9159b589b5e6af762b10e80634ae11c59495bd44867e47d88"},
+]
+
+[package.dependencies]
+requests = ">=2.20.0,<3.0"
+
+[[package]]
 name = "gql"
 version = "3.5.0"
 description = "GraphQL client for Python"
@@ -5785,4 +5798,4 @@ test = ["pytest"]
 [metadata]
 lock-version = "2.0"
 python-versions = "^3.11"
-content-hash = "295d315575c647b8069de01c993f6a382c48de8c15596ddf33be180d23b5b62e"
+content-hash = "3962e1f9096cc2f59b50f92cf131b6df85216e087a22f3ccd7602a02abe059b9"
