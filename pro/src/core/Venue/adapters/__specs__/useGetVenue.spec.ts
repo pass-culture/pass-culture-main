@@ -31,7 +31,6 @@ describe('useGetVenue', () => {
       },
       dateCreated: '2022-07-29T12:18:43.087097Z',
       dmsToken: 'dms-token-12345',
-      fieldsUpdated: [],
       isVirtual: false,
       isPermanent: true,
       latitude: 12.3,
@@ -119,7 +118,6 @@ describe('useGetVenue', () => {
       departmentCode: '',
       description: 'description du lieu',
       dmsToken: 'dms-token-12345',
-      fieldsUpdated: [],
       isVirtual: false,
       managingOfferer: {
         city: 'Paris',

@@ -39,7 +39,6 @@ export type VenueCollectiveInformation = Pick<
 export interface Venue {
   collectiveDomains: Array<GetVenueDomainResponseModel>
   dateCreated: string
-  fieldsUpdated: Array<string>
   isVirtual: boolean
   accessibility: AccessibiltyFormValues
   address: string
