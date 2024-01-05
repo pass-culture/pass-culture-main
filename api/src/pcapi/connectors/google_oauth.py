@@ -15,5 +15,5 @@ def get_google_user(authorization_code: str) -> GoogleUser:
     # see https://stackoverflow.com/questions/71968377
     redirect_uri = "postmessage" if request.headers.get("platform") == "web" else None
     token = native_app_oauth.google.fetch_access_token(code=authorization_code, redirect_uri=redirect_uri)
-    google_user = GoogleUser.model_validate(native_app_oauth.google.parse_id_token(token))
+    google_user = GoogleUser.model_validate(native_app_oauth.google.parse_id_token(token, nonce=None))
     return google_user
