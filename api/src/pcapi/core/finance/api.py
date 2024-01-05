@@ -518,24 +518,11 @@ def _price_event(event: models.FinanceEvent) -> models.Pricing:
     rule = reimbursement.get_reimbursement_rule(booking, rule_finder, new_revenue)
 
     if event.motive == models.FinanceEventMotive.INCIDENT_REVERSAL_OF_ORIGINAL_EVENT:
-        original_pricing = (
-            models.Pricing.query.join(models.FinanceEvent)
-            .filter(
-                models.Pricing.status == models.PricingStatus.INVOICED,
-                sqla.or_(
-                    sqla.and_(
-                        models.Pricing.booking == individual_booking,
-                        models.Pricing.collectiveBooking == collective_booking,
-                    ),
-                    sqla.and_(
-                        models.FinanceEvent.booking == individual_booking,
-                        models.FinanceEvent.collectiveBooking == collective_booking,
-                        models.FinanceEvent.motive == models.FinanceEventMotive.BOOKING_USED,
-                    ),
-                ),
-            )
-            .one()
-        )
+        original_pricing = models.Pricing.query.filter_by(
+            status=models.PricingStatus.INVOICED,
+            booking=individual_booking,
+            collectiveBooking=collective_booking,
+        ).one()
         amount = -original_pricing.amount  # inverse the original pricing amount (positive)
         lines = [
             models.PricingLine(
@@ -1291,20 +1278,6 @@ def _generate_payments_file(batch_id: int) -> pathlib.Path:
         .join(models.Pricing.collectiveBooking)
     )
 
-    finance_event_bookings_query = get_bookings_data(
-        models.Pricing.query.filter_by(status=models.PricingStatus.PROCESSED)
-        .join(models.Pricing.cashflows)
-        .join(models.Pricing.event)
-        .join(models.FinanceEvent.booking)
-    )
-
-    finance_event_collective_bookings_query = get_collective_bookings_data(
-        models.Pricing.query.filter_by(status=models.PricingStatus.PROCESSED)
-        .join(models.Pricing.cashflows)
-        .join(models.Pricing.event)
-        .join(models.FinanceEvent.collectiveBooking)
-    )
-
     finance_incident_bookings_query = get_bookings_data(
         models.Pricing.query.filter_by(status=models.PricingStatus.PROCESSED)
         .join(models.Pricing.cashflows)
@@ -1327,8 +1300,6 @@ def _generate_payments_file(batch_id: int) -> pathlib.Path:
         rows=itertools.chain(
             bookings_query,
             collective_bookings_query,
-            finance_event_bookings_query,
-            finance_event_collective_bookings_query,
             finance_incident_bookings_query,
             finance_incident_collective_bookings_query,
         ),
@@ -1475,41 +1446,107 @@ def generate_invoice_file(batch: models.CashflowBatch) -> pathlib.Path:
         "Identifiant du point de remboursement",
         "Date du justificatif",
         "Référence du justificatif",
-        "Identifiant valorisation",
-        "Identifiant ticket de facturation",
-        "type de ticket de facturation",
-        "montant du ticket de facturation",
+        "Type de ticket de facturation",
+        "Type de réservation",
+        "Ministère",
+        "Somme des tickets de facturation",
     ]
-    query = (
-        db.session.query(
-            models.Invoice,
-            models.Invoice.reimbursementPointId.label("reimbursement_point_id"),
-            models.Pricing.id.label("pricing_id"),
-            models.PricingLine.id.label("pricing_line_id"),
-            models.PricingLine.category.label("pricing_line_category"),
-            models.PricingLine.amount.label("pricing_line_amount"),
+
+    def get_data(base_query: BaseQuery) -> BaseQuery:
+        return (
+            base_query.join(bookings_models.Booking.deposit)
+            .filter(models.Cashflow.batchId == batch.id)
+            .order_by(models.Invoice.id, models.Pricing.id, models.PricingLine.id)
+            .with_entities(
+                models.Invoice,
+                models.Invoice.reimbursementPointId.label("reimbursement_point_id"),
+                models.PricingLine.category.label("pricing_line_category"),
+                models.Deposit.type.label("deposit_type"),
+                models.PricingLine.amount.label("pricing_line_amount"),
+            )
         )
-        .join(models.Invoice.cashflows)
+
+    def get_collective_data(base_query: BaseQuery) -> BaseQuery:
+        return (
+            base_query.join(educational_models.CollectiveBooking.educationalInstitution)
+            .join(
+                educational_models.EducationalDeposit,
+                sqla.and_(
+                    educational_models.EducationalDeposit.educationalYearId
+                    == educational_models.CollectiveBooking.educationalYearId,
+                    educational_models.EducationalDeposit.educationalInstitutionId
+                    == educational_models.EducationalInstitution.id,
+                ),
+            )
+            .filter(models.Cashflow.batchId == batch.id)
+            .order_by(models.Invoice.id, models.Pricing.id, models.PricingLine.id)
+            .with_entities(
+                models.Invoice,
+                models.Invoice.reimbursementPointId.label("reimbursement_point_id"),
+                models.PricingLine.category.label("pricing_line_category"),
+                educational_models.EducationalDeposit.ministry.label("ministry"),
+                models.PricingLine.amount.label("pricing_line_amount"),
+            )
+        )
+
+    query = get_data(
+        models.Invoice.query.join(models.Invoice.cashflows)
         .join(models.Cashflow.pricings)
         .join(models.Pricing.lines)
-        .filter(models.Cashflow.batchId == batch.id)
-        .order_by(models.Invoice.id, models.Pricing.id, models.PricingLine.id)
+        .join(models.Pricing.booking)
     )
-    row_formatter = lambda row: (
-        human_ids.humanize(row.reimbursement_point_id),
-        row.Invoice.date.date().isoformat(),
-        row.Invoice.reference,
-        row.pricing_id,
-        row.pricing_line_id,
-        row.pricing_line_category.value,
-        abs(row.pricing_line_amount),
+    collective_query = get_collective_data(
+        models.Invoice.query.join(models.Invoice.cashflows)
+        .join(models.Cashflow.pricings)
+        .join(models.Pricing.lines)
+        .join(models.Pricing.collectiveBooking)
     )
+    incident_query = get_data(
+        models.Invoice.query.join(models.Invoice.cashflows)
+        .join(models.Cashflow.pricings)
+        .join(models.Pricing.lines)
+        .join(models.Pricing.event)
+        .join(models.FinanceEvent.bookingFinanceIncident)
+        .join(models.BookingFinanceIncident.booking)
+    )
+    incident_collective_query = get_collective_data(
+        models.Invoice.query.join(models.Invoice.cashflows)
+        .join(models.Cashflow.pricings)
+        .join(models.Pricing.lines)
+        .join(models.Pricing.event)
+        .join(models.FinanceEvent.bookingFinanceIncident)
+        .join(models.BookingFinanceIncident.collectiveBooking)
+    )
+
     return _write_csv(
         "invoices",
         header,
-        rows=query,
-        row_formatter=row_formatter,
+        rows=itertools.chain(query, collective_query, incident_query, incident_collective_query),
+        row_formatter=_invoice_row_formatter,
         compress=True,
+    )
+
+
+def _invoice_row_formatter(sql_row: typing.Any) -> tuple:
+    if hasattr(sql_row, "ministry"):
+        booking_type = "EACC"
+    elif sql_row.deposit_type == models.DepositType.GRANT_15_17:
+        booking_type = "EACI"
+    elif sql_row.deposit_type == models.DepositType.GRANT_18:
+        booking_type = "PC"
+    else:
+        raise ValueError("Unknown booking type (not educational nor individual)")
+
+    ministry = sql_row.ministry.name if hasattr(sql_row, "ministry") else ""
+
+    return (
+        human_ids.humanize(sql_row.reimbursement_point_id),
+        sql_row.Invoice.date.date().isoformat(),
+        sql_row.Invoice.reference,
+        sql_row.pricing_line_category.value,
+        booking_type,
+        ministry,
+        sql_row.pricing_line_amount,
     )
 
 
