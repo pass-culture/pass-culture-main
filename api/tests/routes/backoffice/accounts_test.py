@@ -1,4 +1,5 @@
 import datetime
+import re
 from unittest import mock
 
 from dateutil.relativedelta import relativedelta
@@ -31,6 +32,7 @@ from pcapi.models.beneficiary_import import BeneficiaryImportSources
 from pcapi.models.beneficiary_import_status import ImportStatus
 from pcapi.notifications.sms import testing as sms_testing
 from pcapi.repository import repository
+from pcapi.routes.backoffice.accounts import forms as account_forms
 from pcapi.routes.backoffice.accounts.blueprint import RegistrationStep
 from pcapi.routes.backoffice.accounts.blueprint import RegistrationStepStatus
 from pcapi.routes.backoffice.accounts.blueprint import TunnelType
@@ -445,6 +447,56 @@ class SearchPublicAccountsTest(search_helpers.SearchHelper, GetEndpointHelper):
             search_rank=1,
             total_items=1,
         )
+
+    @pytest.mark.parametrize(
+        "search_filter,expected_user",
+        [
+            (account_forms.AccountSearchFilter.UNDERAGE.name, "underage_user"),
+            (account_forms.AccountSearchFilter.BENEFICIARY.name, "beneficiary_user"),
+            (account_forms.AccountSearchFilter.PUBLIC.name, "public_user"),
+            (account_forms.AccountSearchFilter.SUSPENDED.name, "suspended_user"),
+        ],
+    )
+    def test_search_with_single_filter(
+        self, authenticated_client, search_filter, expected_user
+    ):  # pylint: disable=possibly-unused-variable
+        common_name = "Last-Name"
+        underage_user = users_factories.UnderageBeneficiaryFactory(lastName=common_name)
+        beneficiary_user = users_factories.BeneficiaryGrant18Factory(lastName=common_name)
+        public_user = users_factories.UserFactory(lastName=common_name)
+        suspended_user = users_factories.BeneficiaryGrant18Factory(lastName=common_name, isActive=False)
+
+        with assert_num_queries(self.expected_num_queries):
+            response = authenticated_client.get(url_for(self.endpoint, q=common_name, filter=search_filter))
+            assert response.status_code == 303
+
+        redirected_id = int(re.match(r".*/(\d+)\?.*", response.location).group(1))
+        assert redirected_id == locals()[expected_user].id
+
+    def test_search_with_several_filters(self, authenticated_client):
+        common_name = "First-Name"
+        underage_user = users_factories.UnderageBeneficiaryFactory(firstName=common_name)
+        users_factories.BeneficiaryGrant18Factory(firstName=common_name)
+        users_factories.UserFactory(firstName=common_name)
+        suspended_user = users_factories.BeneficiaryGrant18Factory(firstName=common_name, isActive=False)
+
+        with assert_num_queries(self.expected_num_queries):
+            response = authenticated_client.get(
+                url_for(
+                    self.endpoint,
+                    q=common_name,
+                    filter=[
+                        account_forms.AccountSearchFilter.UNDERAGE.name,
+                        account_forms.AccountSearchFilter.SUSPENDED.name,
+                    ],
+                )
+            )
+            assert response.status_code == 200
+
+        cards_text = html_parser.extract_cards_text(response.data)
+        assert len(cards_text) == 2
+        assert_user_equals(cards_text[0], underage_user)
+        assert_user_equals(cards_text[1], suspended_user)
 
 
 class GetPublicAccountTest(GetEndpointHelper):
