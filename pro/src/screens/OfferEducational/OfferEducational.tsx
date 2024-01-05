@@ -71,6 +71,7 @@ const OfferEducational = ({
   )
 
   const isFormatActive = useActiveFeature('WIP_ENABLE_FORMAT')
+  const isMarseilleEnabled = useActiveFeature('WIP_ENABLE_MARSEILLE')
 
   const {
     structure: offererId,
@@ -84,7 +85,8 @@ const OfferEducational = ({
     isTemplate,
     offer,
     offererId,
-    venueId
+    venueId,
+    isMarseilleEnabled
   )
   const isOfferCreated = offer !== undefined
   const initialValues =

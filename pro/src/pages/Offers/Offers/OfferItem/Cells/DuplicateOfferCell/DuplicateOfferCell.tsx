@@ -37,6 +37,7 @@ const DuplicateOfferCell = ({
     localStorage.getItem(LOCAL_STORAGE_HAS_SEEN_MODAL_KEY) !== 'true'
 
   const isFormatActive = useActiveFeature('WIP_ENABLE_FORMAT')
+  const isMarseilleActive = useActiveFeature('WIP_ENABLE_MARSEILLE')
 
   const onDialogConfirm = async (shouldNotDisplayModalAgain: boolean) => {
     logEvent?.(Events.CLICKED_DUPLICATE_TEMPLATE_OFFER, {
@@ -45,7 +46,14 @@ const DuplicateOfferCell = ({
     if (shouldNotDisplayModalAgain && isLocalStorageAvailable) {
       localStorage.setItem(LOCAL_STORAGE_HAS_SEEN_MODAL_KEY, 'true')
     }
-    await createOfferFromTemplate(navigate, notify, offerId, isFormatActive)
+    await createOfferFromTemplate(
+      navigate,
+      notify,
+      offerId,
+      isFormatActive,
+      undefined,
+      isMarseilleActive
+    )
   }
 
   const handleCreateOfferClick = async () => {
@@ -54,7 +62,14 @@ const DuplicateOfferCell = ({
         logEvent?.(Events.CLICKED_DUPLICATE_TEMPLATE_OFFER, {
           from: OFFER_FROM_TEMPLATE_ENTRIES.OFFERS,
         })
-        await createOfferFromTemplate(navigate, notify, offerId, isFormatActive)
+        await createOfferFromTemplate(
+          navigate,
+          notify,
+          offerId,
+          isFormatActive,
+          undefined,
+          isMarseilleActive
+        )
       }
       buttonRef.current?.blur()
       setIsModalOpen(true)

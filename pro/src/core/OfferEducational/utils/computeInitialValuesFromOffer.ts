@@ -114,7 +114,8 @@ export const computeInitialValuesFromOffer = (
   isTemplate: boolean,
   offer?: CollectiveOffer | CollectiveOfferTemplate,
   offererIdQueryParam?: string | null,
-  venueIdQueryParam?: string | null
+  venueIdQueryParam?: string | null,
+  isMarseilleEnabled?: boolean
 ): OfferEducationalFormValues => {
   const initialOffererId = getInitialOffererId(
     offerers,
@@ -142,8 +143,9 @@ export const computeInitialValuesFromOffer = (
     all: Object.values(StudentLevels).every((student) =>
       offer.students.includes(student)
     ),
-    ...buildStudentLevelsMapWithDefaultValue((studentKey: StudentLevels) =>
-      offer.students.includes(studentKey)
+    ...buildStudentLevelsMapWithDefaultValue(
+      (studentKey: StudentLevels) => offer.students.includes(studentKey),
+      isMarseilleEnabled
     ),
   }
   const email = offer.contactEmail
