@@ -77,7 +77,7 @@ jobs:
         working-directory: api
         run: poetry check
       - name: "Set up Docker Buildx"
-        uses: docker/setup-buildx-action@v2
+        uses: docker/setup-buildx-action@v3
         with:
           driver: docker
       - name: "Build and push pcapi image"
