@@ -35,7 +35,6 @@ from pcapi.models import Base
 from pcapi.models import Model
 from pcapi.models.deactivable_mixin import DeactivableMixin
 from pcapi.models.pc_object import PcObject
-from pcapi.models.providable_mixin import ProvidableMixin
 
 
 if typing.TYPE_CHECKING:
@@ -115,7 +114,7 @@ class Provider(PcObject, Base, Model, DeactivableMixin):
         )
 
 
-class VenueProvider(PcObject, Base, Model, ProvidableMixin, DeactivableMixin):
+class VenueProvider(PcObject, Base, Model, DeactivableMixin):
     """Stores specific sync settings for a Venue, and whether it is active"""
 
     venueId: int = Column(BigInteger, ForeignKey("venue.id"), nullable=False)
