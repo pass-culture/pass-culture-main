@@ -93,7 +93,7 @@ describe('screen Offers', () => {
 
   const mockNotifyError = vi.fn()
   const mockNotifyPending = vi.fn()
-  beforeEach(() => {
+  beforeEach(async () => {
     currentUser = {
       id: 'EY',
       isAdmin: false,
@@ -121,8 +121,12 @@ describe('screen Offers', () => {
         ({ id, proLabel }) => ({ value: id, label: proLabel })
       ),
     } as OffersProps
+
+    const notifsImport = (await vi.importActual(
+      'hooks/useNotification'
+    )) as ReturnType<typeof useNotification.default>
     vi.spyOn(useNotification, 'default').mockImplementation(() => ({
-      ...vi.importActual('hooks/useNotification'),
+      ...notifsImport,
       error: mockNotifyError,
       pending: mockNotifyPending,
     }))

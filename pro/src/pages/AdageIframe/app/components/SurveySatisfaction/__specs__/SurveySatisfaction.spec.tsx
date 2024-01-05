@@ -37,8 +37,12 @@ describe('SurveySatisfaction', () => {
 
   it('should fail close survey satisfaction', async () => {
     const notifyError = vi.fn()
-    // @ts-expect-error
+
+    const notifsImport = (await vi.importActual(
+      'hooks/useNotification'
+    )) as ReturnType<typeof useNotification.default>
     vi.spyOn(useNotification, 'default').mockImplementation(() => ({
+      ...notifsImport,
       error: notifyError,
     }))
 

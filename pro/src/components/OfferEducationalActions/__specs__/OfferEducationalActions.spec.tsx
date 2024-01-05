@@ -180,8 +180,11 @@ describe('OfferEducationalActions', () => {
 
   it('should display error message when trying to activate offer with booking limit date time in the past', async () => {
     const notifyError = vi.fn()
+    const notifsImport = (await vi.importActual(
+      'hooks/useNotification'
+    )) as ReturnType<typeof useNotification.default>
     vi.spyOn(useNotification, 'default').mockImplementation(() => ({
-      ...vi.importActual('hooks/useNotification'),
+      ...notifsImport,
       error: notifyError,
     }))
     renderOfferEducationalActions({
@@ -204,11 +207,16 @@ describe('OfferEducationalActions', () => {
   it('should activate offer with booking limit date time in the future', async () => {
     const notifyError = vi.fn()
     const offerId = 12
+
+    const notifsImport = (await vi.importActual(
+      'hooks/useNotification'
+    )) as ReturnType<typeof useNotification.default>
     vi.spyOn(useNotification, 'default').mockImplementation(() => ({
-      ...vi.importActual('hooks/useNotification'),
+      ...notifsImport,
       success: vi.fn(),
       error: notifyError,
     }))
+
     const bookingLimitDateTomorrow = new Date()
     bookingLimitDateTomorrow.setDate(bookingLimitDateTomorrow.getDate() + 1)
     renderOfferEducationalActions({

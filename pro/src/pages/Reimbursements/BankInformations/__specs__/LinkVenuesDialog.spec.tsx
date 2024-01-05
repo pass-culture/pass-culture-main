@@ -121,8 +121,12 @@ describe('LinkVenueDialog', () => {
   it('should display error message when attach pricing point fail', async () => {
     vi.spyOn(api, 'linkVenueToPricingPoint').mockRejectedValue({})
     const mockNotifyError = vi.fn()
+
+    const notifsImport = (await vi.importActual(
+      'hooks/useNotification'
+    )) as ReturnType<typeof useNotification.default>
     vi.spyOn(useNotification, 'default').mockImplementation(() => ({
-      ...vi.importActual('hooks/useNotification'),
+      ...notifsImport,
       error: mockNotifyError,
     }))
     const managedVenues = [
