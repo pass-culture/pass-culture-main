@@ -71,7 +71,7 @@ describe('CollectiveOfferSummary', () => {
   const mockLogEvent = vi.fn()
   const notifyError = vi.fn()
 
-  beforeEach(() => {
+  beforeEach(async () => {
     offer = collectiveOfferTemplateFactory({ isTemplate: true })
     categories = {
       educationalCategories: categoriesFactory([{ id: 'CAT_1' }]),
@@ -80,8 +80,11 @@ describe('CollectiveOfferSummary', () => {
       ]),
     }
 
+    const notifsImport = (await vi.importActual(
+      'hooks/useNotification'
+    )) as ReturnType<typeof useNotification.default>
     vi.spyOn(useNotification, 'default').mockImplementation(() => ({
-      ...vi.importActual('hooks/useNotification'),
+      ...notifsImport,
       error: notifyError,
     }))
 

@@ -217,8 +217,12 @@ describe('CollectiveOfferVisibility', () => {
       .fn()
       .mockResolvedValue({ isOk: false, message: 'Ooops' })
     const notifyError = vi.fn()
-    // @ts-expect-error
+
+    const notifsImport = (await vi.importActual(
+      'hooks/useNotification'
+    )) as ReturnType<typeof useNotification.default>
     vi.spyOn(useNotification, 'default').mockImplementation(() => ({
+      ...notifsImport,
       error: notifyError,
     }))
     renderVisibilityStep({ ...props, patchInstitution: spyPatch })
@@ -406,8 +410,11 @@ describe('CollectiveOfferVisibility', () => {
     it('should display error message on api error getting requested info', async () => {
       const notifyError = vi.fn()
 
+      const notifsImport = (await vi.importActual(
+        'hooks/useNotification'
+      )) as ReturnType<typeof useNotification.default>
       vi.spyOn(useNotification, 'default').mockImplementation(() => ({
-        ...vi.importActual('hooks/useNotification'),
+        ...notifsImport,
         error: notifyError,
       }))
 
