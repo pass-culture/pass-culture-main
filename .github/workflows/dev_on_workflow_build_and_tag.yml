@@ -36,7 +36,7 @@ jobs:
       TAG_NAME: v${{ inputs.tag_number }}
     steps:
       - name: "Authentification to Google"
-        uses: 'google-github-actions/auth@v1'
+        uses: 'google-github-actions/auth@v2'
         with:
           workload_identity_provider: ${{ secrets.GCP_EHP_WORKLOAD_IDENTITY_PROVIDER }}
           service_account: ${{ secrets.GCP_EHP_SERVICE_ACCOUNT }}
@@ -79,7 +79,7 @@ jobs:
           driver: docker
       - name: "OpenID Connect Authentication"
         id: "openid-auth"
-        uses: "google-github-actions/auth@v1"
+        uses: "google-github-actions/auth@v2"
         with:
           create_credentials_file: false
           token_format: "access_token"
@@ -124,7 +124,7 @@ jobs:
     steps:
       - uses: technote-space/workflow-conclusion-action@v3
       - name: "Authentification to Google"
-        uses: 'google-github-actions/auth@v1'
+        uses: 'google-github-actions/auth@v2'
         with:
           workload_identity_provider: ${{ secrets.GCP_EHP_WORKLOAD_IDENTITY_PROVIDER }}
           service_account: ${{ secrets.GCP_EHP_SERVICE_ACCOUNT }}
