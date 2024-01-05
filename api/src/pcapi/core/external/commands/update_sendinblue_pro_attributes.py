@@ -25,8 +25,11 @@ def get_all_booking_emails() -> set[str]:
 def get_all_pro_users_emails() -> set[str]:
     rows = (
         db.session.query(User.email)
-        .filter(User.has_pro_role.is_(True))  # type: ignore [attr-defined]
-        .filter(User.has_admin_role.is_(False))  # type: ignore [attr-defined]
+        .filter(
+            User.isActive.is_(True),
+            User.has_pro_role.is_(True),  # type: ignore [attr-defined]
+            User.has_admin_role.is_(False),  # type: ignore [attr-defined]
+        )
         .all()
     )
     print(f"{len(rows)} pro users emails")
