@@ -2,8 +2,6 @@ import datetime
 import logging
 import random
 
-import factory
-
 from pcapi.core.categories import subcategories_v2 as subcategories
 from pcapi.core.external_bookings.factories import BookingFactory
 from pcapi.core.external_bookings.factories import ExternalBookingFactory
@@ -52,8 +50,6 @@ def _create_offers(provider: Provider) -> Venue:
         venue = VenueFactory(
             name=f"Cinéma - {provider_name}",
             managingOfferer=cinema_user_offerer.offerer,
-            lastProviderId=provider.id,
-            idAtProviders=factory.Sequence("idAtProviders{}".format),
             venueTypeCode=VenueTypeCode.MOVIE,
         )
         # offerers have always a virtual venue so we have to create one to match reality
@@ -63,8 +59,6 @@ def _create_offers(provider: Provider) -> Venue:
         venue = VenueFactory(
             name=f"Livre - {provider_name}",
             managingOfferer=book_user_offerer.offerer,
-            lastProviderId=provider.id,
-            idAtProviders=factory.Sequence("idAtProviders{}".format),
             venueTypeCode=VenueTypeCode.BOOKSTORE,
         )
         # offerers have always a virtual venue so we have to create one to match reality

@@ -56,7 +56,6 @@ from pcapi.models.feature import FeatureToggle
 from pcapi.models.has_address_mixin import HasAddressMixin
 from pcapi.models.has_thumb_mixin import HasThumbMixin
 from pcapi.models.pc_object import PcObject
-from pcapi.models.providable_mixin import ProvidableMixin
 from pcapi.models.validation_status_mixin import ValidationStatusMixin
 from pcapi.utils import crypto
 from pcapi.utils.date import METROPOLE_TIMEZONE
@@ -238,7 +237,7 @@ class InvitationStatus(enum.Enum):
     ACCEPTED = "ACCEPTED"
 
 
-class Venue(PcObject, Base, Model, HasThumbMixin, ProvidableMixin, AccessibilityMixin):
+class Venue(PcObject, Base, Model, HasThumbMixin, AccessibilityMixin):
     __tablename__ = "venue"
 
     name: str = Column(String(140), nullable=False)
