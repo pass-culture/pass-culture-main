@@ -9,6 +9,7 @@ import {
   RenderWithProvidersOptions,
   renderWithProviders,
 } from 'utils/renderWithProviders'
+
 import { Offer } from '../Offer'
 
 const renderOfferPage = (options?: RenderWithProvidersOptions) =>
