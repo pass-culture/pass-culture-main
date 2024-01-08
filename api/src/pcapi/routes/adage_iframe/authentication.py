@@ -1,9 +1,6 @@
-import typing
-
 from pcapi.core.educational import models as educational_models
 from pcapi.core.educational import repository as educational_repository
 from pcapi.core.educational.api import favorites as educational_api_favorite
-from pcapi.core.educational.api import institution as institution_api
 from pcapi.core.educational.api.institution import get_educational_institution_department_code
 from pcapi.core.educational.exceptions import MissingRequiredRedactorInformation
 from pcapi.core.educational.repository import find_educational_institution_by_uai_code
@@ -38,9 +35,6 @@ def authenticate(authenticated_information: AuthenticatedInformation) -> Authent
         preferences = _get_preferences(redactor)
         favorites_count = _get_favorites_count(redactor)
         offer_count = get_offers_count(authenticated_information)
-        institution_rural_level = typing.cast(
-            educational_models.InstitutionRuralLevel | None, institution_api.get_institution_rural_level(institution)
-        )
         programs = _get_programs(institution)
 
         return AuthenticatedResponse(
@@ -55,7 +49,7 @@ def authenticate(authenticated_information: AuthenticatedInformation) -> Authent
             lon=authenticated_information.lon,
             favoritesCount=favorites_count,
             offersCount=offer_count,
-            institution_rural_level=institution_rural_level,
+            institution_rural_level=institution.ruralLevel if institution else None,
             programs=programs,
         )
     return AuthenticatedResponse(role=AdageFrontRoles.READONLY)

@@ -1,5 +1,4 @@
 import datetime
-from unittest.mock import patch
 
 from flask import url_for
 import pytest
@@ -24,7 +23,7 @@ pytestmark = pytest.mark.usefixtures("db_session")
 
 
 DEFAULT_UAI = "EAU123"
-DEFAULT_RURAL_LEVEL = models.InstitutionRuralLevel.URBAIN_DENSE.value
+DEFAULT_RURAL_LEVEL = models.InstitutionRuralLevel.URBAIN_DENSE
 
 
 @pytest.fixture(name="valid_user", scope="module")
@@ -66,20 +65,17 @@ class AuthenticateTest:
         institution = EducationalInstitutionFactory(
             institutionId=DEFAULT_UAI,
             programs=[program],
+            ruralLevel=DEFAULT_RURAL_LEVEL,
         )
 
         valid_encoded_token = self._create_adage_valid_token(valid_user, uai_code=DEFAULT_UAI)
 
-        mock_path = "pcapi.connectors.big_query.TestingBackend.run_query"
-        with patch(mock_path) as mock_run_query:
-            mock_run_query.return_value = [{"institution_rural_level": DEFAULT_RURAL_LEVEL}]
-
-            response = client.with_explicit_token(valid_encoded_token).get("/adage-iframe/authenticate")
+        response = client.with_explicit_token(valid_encoded_token).get("/adage-iframe/authenticate")
 
         assert response.status_code == 200
         assert response.json == {
             **expected_serialized_auth_base(redactor, institution),
-            "institutionRuralLevel": DEFAULT_RURAL_LEVEL,
+            "institutionRuralLevel": DEFAULT_RURAL_LEVEL.value,
             "programs": [{"name": program.name, "label": program.label, "description": program.description}],
         }
 
