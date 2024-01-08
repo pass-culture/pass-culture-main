@@ -49,7 +49,7 @@ export const loader: RouteObject['loader'] = async ({
   }
 }
 
-// Used to manually retrigger loader
+// Used to manually retrigger loader (call it with fetcher.submit)
 // ts-unused-exports:disable-next-line
 export const action: RouteObject['action'] = () => null
 
