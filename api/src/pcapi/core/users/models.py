@@ -184,7 +184,7 @@ class User(PcObject, Base, Model, NeedsValidationMixin, DeactivableMixin):
     activity = sa.Column(sa.String(128), nullable=True)
     address = sa.Column(sa.Text, nullable=True)
     city = sa.Column(sa.String(100), nullable=True)
-    civility = sa.Column(sa.Text, nullable=True)
+    civility = sa.Column(sa.VARCHAR(length=20), nullable=True)
     clearTextPassword = None
     comment = sa.Column(sa.Text(), nullable=True)
     culturalSurveyFilledDate = sa.Column(sa.DateTime, nullable=True)
