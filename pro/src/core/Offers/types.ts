@@ -148,7 +148,6 @@ export interface IndividualOffer {
   image?: IndividualOfferImage
   url: string
   externalTicketOfficeUrl: string
-  venueId: number
   venue: GetOfferVenueResponseModel
   visa: string
   withdrawalDetails: string | null

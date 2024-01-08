@@ -76,7 +76,6 @@ export const individualOfferFactory = (
     isActivable: true,
     status: OfferStatus.ACTIVE,
     subcategoryId: SubcategoryIdEnum.CINE_PLEIN_AIR,
-    venueId: customVenue.id,
     priceCategories: [priceCategoryFactory()],
     ...customOffer,
   }

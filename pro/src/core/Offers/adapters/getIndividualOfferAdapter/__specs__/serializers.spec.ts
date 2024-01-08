@@ -252,7 +252,6 @@ describe('serializer', () => {
         postalCode: '11100',
         publicName: 'Mon Lieu',
       },
-      venueId: 1,
       visa: '',
       withdrawalDelay: null,
       withdrawalDetails: '',

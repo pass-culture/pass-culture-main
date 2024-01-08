@@ -102,7 +102,6 @@ export const serializeOfferApi = (
     subcategoryId: apiOffer.subcategoryId,
     url: apiOffer.url || '',
     externalTicketOfficeUrl: apiOffer.externalTicketOfficeUrl || '',
-    venueId: apiOffer.venue.id,
     venue: apiOffer.venue,
     withdrawalDetails: apiOffer.withdrawalDetails || '',
     withdrawalDelay:
