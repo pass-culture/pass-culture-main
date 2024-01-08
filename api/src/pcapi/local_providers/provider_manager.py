@@ -252,15 +252,12 @@ def collect_elligible_venues_and_activate_ems_sync() -> None:
                     "venue_provider_id": allocine_venue_provider.id,
                 },
             )
-            db.session.add(
-                history_api.log_action(
-                    action_type=history_models.ActionType.LINK_VENUE_PROVIDER_DELETED,
-                    author=None,
-                    venue=venue_to_activate,
-                    save=False,
-                    provider_id=allocine_venue_provider.providerId,
-                    provider_name="Allociné",
-                )
+            history_api.add_action(
+                action_type=history_models.ActionType.LINK_VENUE_PROVIDER_DELETED,
+                author=None,
+                venue=venue_to_activate,
+                provider_id=allocine_venue_provider.providerId,
+                provider_name="Allociné",
             )
 
             venue_providers_to_activate.append(

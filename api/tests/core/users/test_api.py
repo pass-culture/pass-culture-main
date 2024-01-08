@@ -672,7 +672,7 @@ class UpdateUserInfoTest:
         user = users_factories.UserFactory(firstName="Noël", lastName="Flantier")
 
         modified_info = users_api.update_user_info(
-            user, author=user, first_name="Hubert", last_name="Bonisseur de la Bath"
+            user, author=user, first_name="Hubert", last_name="Bonisseur de la Bath", commit=False
         )
         assert modified_info.to_dict() == {
             "firstName": {"new_info": "Hubert", "old_info": "Noël"},

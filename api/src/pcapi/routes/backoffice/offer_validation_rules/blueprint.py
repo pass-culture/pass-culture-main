@@ -271,14 +271,11 @@ def create_rule() -> utils.BackofficeResponse:
             db.session.add(sub_rule)
             db.session.flush()
             _add_sub_rule_data_to_history(sub_rule, sub_rules_info["sub_rules_created"])
-        db.session.add(
-            history_api.log_action(
-                history_models.ActionType.RULE_CREATED,
-                current_user,
-                rule=new_rule,
-                sub_rules_info=sub_rules_info,
-                save=False,
-            )
+        history_api.add_action(
+            history_models.ActionType.RULE_CREATED,
+            current_user,
+            rule=new_rule,
+            sub_rules_info=sub_rules_info,
         )
         db.session.commit()
         flash("Règle créée avec succès", "success")
@@ -320,14 +317,11 @@ def delete_rule(rule_id: int) -> utils.BackofficeResponse:
                 _add_sub_rule_data_to_history(sub_rule, sub_rules_info["sub_rules_deleted"])
                 db.session.delete(sub_rule)
             rule_to_delete.isActive = False
-            db.session.add(
-                history_api.log_action(
-                    history_models.ActionType.RULE_DELETED,
-                    current_user,
-                    rule=rule_to_delete,
-                    sub_rules_info=sub_rules_info,
-                    save=False,
-                )
+            history_api.add_action(
+                history_models.ActionType.RULE_DELETED,
+                current_user,
+                rule=rule_to_delete,
+                sub_rules_info=sub_rules_info,
             )
             db.session.commit()
         except sa.exc.IntegrityError as exc:
@@ -473,14 +467,11 @@ def edit_rule(rule_id: int) -> utils.BackofficeResponse:
                 sub_rules_info["sub_rules_created"],
             ]
         ):
-            db.session.add(
-                history_api.log_action(
-                    history_models.ActionType.RULE_MODIFIED,
-                    current_user,
-                    rule=rule_to_update,
-                    sub_rules_info=sub_rules_info,
-                    save=False,
-                )
+            history_api.add_action(
+                history_models.ActionType.RULE_MODIFIED,
+                current_user,
+                rule=rule_to_update,
+                sub_rules_info=sub_rules_info,
             )
         db.session.commit()
 

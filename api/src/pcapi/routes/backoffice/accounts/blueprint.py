@@ -42,7 +42,6 @@ from pcapi.core.users.models import EligibilityType
 from pcapi.models import db
 from pcapi.models.beneficiary_import import BeneficiaryImport
 from pcapi.models.beneficiary_import_status import BeneficiaryImportStatus
-from pcapi.repository import repository
 from pcapi.routes.backoffice import search_utils
 from pcapi.routes.backoffice import utils
 from pcapi.routes.backoffice.forms import empty as empty_forms
@@ -799,25 +798,28 @@ def update_public_account(user_id: int) -> utils.BackofficeResponse:
             address=form.address.data,
             postal_code=form.postal_code.data,
             city=form.city.data,
+            commit=False,
         )
     except phone_validation_exceptions.InvalidPhoneNumber:
         flash("Le numéro de téléphone est invalide", "warning")
         return render_public_account_details(user_id, form), 400
 
-    if form.email.data and form.email.data != email_utils.sanitize_email(user.email):
+    email_changed = bool(form.email.data and form.email.data != email_utils.sanitize_email(user.email))
+    if email_changed:
         # Do not log email change in snapshot, since it is already logged in user_email_history table
         try:
             email_update.full_email_update_by_admin(user, form.email.data)
         except users_exceptions.EmailExistsError:
             form.email.errors.append("L'email est déjà associé à un autre utilisateur")
-            snapshot.log_update(save=True)
             flash("L'email est déjà associé à un autre utilisateur", "warning")
             return render_public_account_details(user_id, form), 400
 
+    snapshot.add_action()
+    db.session.commit()
+
+    if email_changed:
         # TODO (prouzet) old email should also be updated, but there is no update_external_user by email
         external_attributes_api.update_external_user(user)
-
-    snapshot.log_update(save=True)
 
     flash("Informations mises à jour", "success")
     return redirect(get_public_account_link(user_id), code=303)
@@ -853,10 +855,9 @@ def manually_validate_phone_number(user_id: int) -> utils.BackofficeResponse:
         return redirect(get_public_account_link(user_id), code=303)
 
     user.phoneValidationStatus = users_models.PhoneValidationStatusType.VALIDATED
-    action = history_api.log_action(
-        action_type=history_models.ActionType.USER_PHONE_VALIDATED, author=current_user, user=user
-    )
-    repository.save(user, action)
+    db.session.add(user)
+    history_api.add_action(action_type=history_models.ActionType.USER_PHONE_VALIDATED, author=current_user, user=user)
+    db.session.commit()
 
     subscription_api.activate_beneficiary_if_no_missing_step(user)
     users_api.delete_all_users_phone_validation_tokens(user)

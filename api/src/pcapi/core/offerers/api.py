@@ -117,7 +117,8 @@ def update_venue(
 
     if not modifications and reimbursement_point_id == UNCHANGED:
         # avoid any contact information update loss
-        venue_snapshot.log_update(save=True)
+        venue_snapshot.add_action()
+        db.session.commit()
         return venue
 
     if reimbursement_point_id != UNCHANGED:
@@ -138,12 +139,10 @@ def update_venue(
     venue_snapshot.trace_update(modifications)
     venue.populate_from_dict(modifications)
 
-    history = venue_snapshot.log_update()
+    venue_snapshot.add_action()
 
-    if history:
-        repository.save(venue, history)
-    else:
-        repository.save(venue)
+    # keep commit with repository.save() as long as venue is validated in pcapi.validation.models.venue
+    repository.save(venue)
 
     search.async_index_venue_ids(
         [venue.id],
@@ -667,7 +666,6 @@ def auto_tag_new_offerer(
         else:
             offerer.tags.append(tag)
     db.session.add(offerer)
-    db.session.commit()
 
 
 @dataclasses.dataclass
@@ -705,39 +703,29 @@ def create_offerer(
             user_offerer.validationStatus = ValidationStatus.VALIDATED
         else:
             user_offerer = grant_user_offerer_access(offerer, user)
+        db.session.add(user_offerer)
 
-        objects_to_save = [user_offerer]
         if offerer.isRejected:
             # When offerer was rejected, it is considered as a new offerer in validation process;
             # history is kept with same id and siren
             is_new = True
             _fill_in_offerer(offerer, offerer_informations)
             comment = "Nouvelle demande sur un SIREN précédemment rejeté"
-            objects_to_save += [offerer]
         else:
             user_offerer.validationStatus = ValidationStatus.NEW
             user_offerer.dateCreated = datetime.utcnow()
             extra_data: dict[str, typing.Any] = {}
             _add_new_onboarding_info_to_extra_data(new_onboarding_info, extra_data)
-            objects_to_save += [
-                history_api.log_action(
-                    history_models.ActionType.USER_OFFERER_NEW,
-                    user,
-                    user=user,
-                    offerer=offerer,
-                    save=False,
-                    **extra_data,
-                ),
-            ]
-        repository.save(*objects_to_save)
-
+            history_api.add_action(
+                history_models.ActionType.USER_OFFERER_NEW, user, user=user, offerer=offerer, **extra_data
+            )
     else:
         is_new = True
         offerer = models.Offerer()
         _fill_in_offerer(offerer, offerer_informations)
         digital_venue = create_digital_venue(offerer)
         user_offerer = grant_user_offerer_access(offerer, user)
-        repository.save(offerer, digital_venue, user_offerer)
+        db.session.add_all([offerer, digital_venue, user_offerer])
 
     assert offerer.siren  # helps mypy until Offerer.siren is set as NOT NULL
     try:
@@ -754,14 +742,12 @@ def create_offerer(
             extra_data = {"sirene_info": dict(siren_info)}
         _add_new_onboarding_info_to_extra_data(new_onboarding_info, extra_data)
 
-        history_api.log_action(
-            history_models.ActionType.OFFERER_NEW,
-            user,
-            user=user,
-            offerer=offerer,
-            comment=comment,
-            **extra_data,
+        history_api.add_action(
+            history_models.ActionType.OFFERER_NEW, user, user=user, offerer=offerer, comment=comment, **extra_data
         )
+
+    # keep commit with repository.save() as long as siren is validated in pcapi.validation.models.offerer
+    repository.save(offerer)
 
     external_attributes_api.update_external_pro(user.email)
     zendesk_sell.create_offerer(offerer)
@@ -779,12 +765,13 @@ def _format_tags(tags: typing.Iterable[models.OffererTag]) -> str:
 
 def update_offerer(
     offerer: models.Offerer,
+    author: users_models.User,
     name: str | T_UNCHANGED = UNCHANGED,
     city: str | T_UNCHANGED = UNCHANGED,
     postal_code: str | T_UNCHANGED = UNCHANGED,
     address: str | T_UNCHANGED = UNCHANGED,
     tags: list[models.OffererTag] | T_UNCHANGED = UNCHANGED,
-) -> dict[str, dict[str, str | None]]:
+) -> None:
     modified_info: dict[str, dict[str, str | None]] = {}
 
     if name is not UNCHANGED and offerer.name != name:
@@ -807,11 +794,15 @@ def update_offerer(
             }
             offerer.tags = tags
 
+    if modified_info:
+        history_api.add_action(
+            history_models.ActionType.INFO_MODIFIED, author, offerer=offerer, modified_info=modified_info
+        )
+
+    # keep commit with repository.save() as long as postal code is validated in pcapi.validation.models.offerer
     repository.save(offerer)
 
     zendesk_sell.update_offerer(offerer)
-
-    return modified_info
 
 
 def remove_pro_role_and_add_non_attached_pro_role(users: list[users_models.User]) -> None:
@@ -843,17 +834,17 @@ def validate_offerer_attachment(
 
     user_offerer.user.add_pro_role()
     user_offerer.validationStatus = ValidationStatus.VALIDATED
+    db.session.add(user_offerer)
 
-    action = history_api.log_action(
+    history_api.add_action(
         history_models.ActionType.USER_OFFERER_VALIDATED,
         author=author_user,
         user=user_offerer.user,
         offerer=user_offerer.offerer,
         comment=comment,
-        save=False,
     )
 
-    repository.save(user_offerer, action)
+    db.session.commit()
 
     external_attributes_api.update_external_pro(user_offerer.user.email)
 
@@ -878,15 +869,15 @@ def set_offerer_attachment_pending(
 ) -> None:
     user_offerer.validationStatus = ValidationStatus.PENDING
     remove_pro_role_and_add_non_attached_pro_role([user_offerer.user])
-    action = history_api.log_action(
+    db.session.add(user_offerer)
+    history_api.add_action(
         history_models.ActionType.USER_OFFERER_PENDING,
         author_user,
         user=user_offerer.user,
         offerer=user_offerer.offerer,
         comment=comment,
-        save=False,
     )
-    repository.save(user_offerer, action)
+    db.session.commit()
 
 
 def reject_offerer_attachment(
@@ -898,15 +889,12 @@ def reject_offerer_attachment(
     user_offerer.validationStatus = ValidationStatus.REJECTED
     db.session.add(user_offerer)
 
-    db.session.add(
-        history_api.log_action(
-            history_models.ActionType.USER_OFFERER_REJECTED,
-            author_user,
-            user=user_offerer.user,
-            offerer=user_offerer.offerer,
-            comment=comment,
-            save=False,
-        )
+    history_api.add_action(
+        history_models.ActionType.USER_OFFERER_REJECTED,
+        author_user,
+        user=user_offerer.user,
+        offerer=user_offerer.offerer,
+        comment=comment,
     )
 
     if not transactional_mails.send_offerer_attachment_rejection_email_to_pro(user_offerer):
@@ -929,15 +917,12 @@ def delete_offerer_attachment(
     user_offerer.validationStatus = ValidationStatus.DELETED
     db.session.add(user_offerer)
 
-    db.session.add(
-        history_api.log_action(
-            history_models.ActionType.USER_OFFERER_DELETED,
-            author_user,
-            user=user_offerer.user,
-            offerer=user_offerer.offerer,
-            comment=comment,
-            save=False,
-        )
+    history_api.add_action(
+        history_models.ActionType.USER_OFFERER_DELETED,
+        author_user,
+        user=user_offerer.user,
+        offerer=user_offerer.offerer,
+        comment=comment,
     )
 
     remove_pro_role_and_add_non_attached_pro_role([user_offerer.user])
@@ -952,19 +937,22 @@ def validate_offerer(offerer: models.Offerer, author_user: users_models.User) ->
     offerer.validationStatus = ValidationStatus.VALIDATED
     offerer.dateValidated = datetime.utcnow()
     offerer.isActive = True
+    db.session.add(offerer)
+
     for applicant in applicants:
         applicant.add_pro_role()
-    managed_venues = offerer.managedVenues
+    db.session.add_all(applicants)
 
-    action = history_api.log_action(
+    history_api.add_action(
         history_models.ActionType.OFFERER_VALIDATED,
         author_user,
         offerer=offerer,
         user=applicants[0] if applicants else None,  # before validation we should have only one applicant
-        save=False,
     )
 
-    repository.save(offerer, action, *applicants)
+    db.session.commit()
+
+    managed_venues = offerer.managedVenues
     search.async_index_offers_of_venue_ids(
         [venue.id for venue in managed_venues],
         reason=search.IndexationReason.OFFERER_VALIDATION,
@@ -1002,15 +990,12 @@ def reject_offerer(
     offerer.dateValidated = None
     offerer.isActive = False
     db.session.add(offerer)
-    db.session.add(
-        history_api.log_action(
-            history_models.ActionType.OFFERER_REJECTED,
-            author_user,
-            offerer=offerer,
-            user=first_user_to_register_offerer,
-            comment=comment,
-            save=False,
-        )
+    history_api.add_action(
+        history_models.ActionType.OFFERER_REJECTED,
+        author_user,
+        offerer=offerer,
+        user=first_user_to_register_offerer,
+        comment=comment,
     )
 
     if applicants:
@@ -1060,7 +1045,10 @@ def set_offerer_pending(
             offerer.tags += list(tags_to_add)
         if tags_to_remove:
             offerer.tags = [tag for tag in offerer.tags if tag not in tags_to_remove]
-    action = history_api.log_action(
+
+    db.session.add(offerer)
+
+    history_api.add_action(
         history_models.ActionType.OFFERER_PENDING,
         author_user,
         offerer=offerer,
@@ -1070,18 +1058,20 @@ def set_offerer_pending(
         bank_account=None,  # otherwise mypy does not accept extra_data dict
         rule=None,  # otherwise mypy does not accept extra_data dict
         comment=comment,
-        save=False,
         **extra_data,
     )
-    repository.save(offerer, action)
+
+    db.session.commit()
 
 
 def add_comment_to_offerer(offerer: offerers_models.Offerer, author_user: users_models.User, comment: str) -> None:
-    history_api.log_action(history_models.ActionType.COMMENT, author_user, offerer=offerer, comment=comment)
+    history_api.add_action(history_models.ActionType.COMMENT, author_user, offerer=offerer, comment=comment)
+    db.session.commit()
 
 
 def add_comment_to_venue(venue: offerers_models.Venue, author_user: users_models.User, comment: str) -> None:
-    history_api.log_action(history_models.ActionType.COMMENT, author_user, venue=venue, comment=comment)
+    history_api.add_action(history_models.ActionType.COMMENT, author_user, venue=venue, comment=comment)
+    db.session.commit()
 
 
 def get_timestamp_from_url(image_url: str) -> str:
@@ -1789,10 +1779,9 @@ def suspend_offerer(offerer: models.Offerer, actor: users_models.User, comment: 
         raise exceptions.CannotSuspendOffererWithBookingsException()
 
     offerer.isActive = False
-    action = history_api.log_action(
-        history_models.ActionType.OFFERER_SUSPENDED, author=actor, offerer=offerer, comment=comment, save=False
-    )
-    repository.save(offerer, action)
+    db.session.add(offerer)
+    history_api.add_action(history_models.ActionType.OFFERER_SUSPENDED, author=actor, offerer=offerer, comment=comment)
+    db.session.commit()
 
     _update_external_offerer(offerer)
 
@@ -1802,10 +1791,11 @@ def unsuspend_offerer(offerer: models.Offerer, actor: users_models.User, comment
         return
 
     offerer.isActive = True
-    action = history_api.log_action(
-        history_models.ActionType.OFFERER_UNSUSPENDED, author=actor, offerer=offerer, comment=comment, save=False
+    db.session.add(offerer)
+    history_api.add_action(
+        history_models.ActionType.OFFERER_UNSUSPENDED, author=actor, offerer=offerer, comment=comment
     )
-    repository.save(offerer, action)
+    db.session.commit()
 
     _update_external_offerer(offerer)
 
@@ -1921,17 +1911,16 @@ def invite_member(offerer: models.Offerer, email: str, current_user: users_model
         new_user_offerer = models.UserOfferer(
             offerer=offerer, user=existing_user, validationStatus=ValidationStatus.NEW
         )
-        log_action = history_api.log_action(
+        db.session.add_all([offerer_invitation, new_user_offerer])
+        history_api.add_action(
             history_models.ActionType.USER_OFFERER_NEW,
             current_user,
             user=existing_user,
             offerer=offerer_invitation.offerer,
-            save=False,
             comment="Rattachement créé par invitation",
             inviter_user_id=current_user.id,
             offerer_invitation_id=offerer_invitation.id,
         )
-        db.session.add_all([offerer_invitation, new_user_offerer, log_action])
         db.session.commit()
         logger.info(
             "Existing user invited to join offerer",
@@ -1991,18 +1980,17 @@ def accept_offerer_invitation_if_exists(user: users_models.User) -> None:
         user_offerer = models.UserOfferer(
             offerer=offerer_invitation.offerer, user=user, validationStatus=ValidationStatus.NEW
         )
-        log_action = history_api.log_action(
+        history_api.add_action(
             history_models.ActionType.USER_OFFERER_NEW,
             user,
             user=user,
             offerer=offerer_invitation.offerer,
-            save=False,
             comment="Rattachement créé par invitation",
             inviter_user_id=inviter_user.id,
             offerer_invitation_id=offerer_invitation.id,
         )
         offerer_invitation.status = offerers_models.InvitationStatus.ACCEPTED
-        db.session.add_all([user_offerer, offerer_invitation, log_action])
+        db.session.add_all([user_offerer, offerer_invitation])
         db.session.commit()
         external_attributes_api.update_external_pro(user.email)
         zendesk_sell.create_offerer(user_offerer.offerer)

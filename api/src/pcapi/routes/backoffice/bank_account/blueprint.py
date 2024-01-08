@@ -17,7 +17,7 @@ from pcapi.core.history import models as history_models
 from pcapi.core.offerers import models as offerers_models
 from pcapi.core.permissions import models as perm_models
 from pcapi.core.users import models as users_models
-from pcapi.repository import repository
+from pcapi.models import db
 from pcapi.routes.backoffice import utils
 from pcapi.routes.backoffice.forms import search as search_forms
 from pcapi.routes.backoffice.forms.search import TypeOptions
@@ -136,14 +136,15 @@ def update_bank_account(bank_account_id: int) -> utils.BackofficeResponse:
         return render_bank_account_details(bank_account, edit_form=form), 400
 
     if bank_account.label != form.label.data:
-        action = history_api.log_action(
+        history_api.add_action(
             history_models.ActionType.INFO_MODIFIED,
             current_user,
             bank_account=bank_account,
             modified_info={"label": {"old_info": bank_account.label, "new_info": form.label.data}},
         )
         bank_account.label = form.label.data
-        repository.save(bank_account, action)
+        db.session.add(bank_account)
+        db.session.commit()
         flash("Les informations ont bien été mises à jour", "success")
 
     return redirect(url_for("backoffice_web.bank_account.get", bank_account_id=bank_account_id), code=303)

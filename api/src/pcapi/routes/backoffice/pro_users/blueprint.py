@@ -137,6 +137,7 @@ def update_pro_user(user_id: int) -> utils.BackofficeResponse:
         last_name=form.last_name.data,
         phone_number=form.phone_number.data,
         postal_code=form.postal_code.data,
+        commit=False,
     )
 
     if form.email.data and form.email.data != email_utils.sanitize_email(user.email):
@@ -153,7 +154,8 @@ def update_pro_user(user_id: int) -> utils.BackofficeResponse:
         external_attributes_api.update_external_pro(old_email)  # to delete previous user info from SendinBlue
         external_attributes_api.update_external_user(user)
 
-    snapshot.log_update(save=True)
+    snapshot.add_action()
+    db.session.commit()
 
     flash("Informations mises à jour", "success")
     return redirect(url_for(".get", user_id=user_id), code=303)

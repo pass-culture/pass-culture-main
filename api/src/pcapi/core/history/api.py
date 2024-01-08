@@ -10,10 +10,10 @@ from pcapi.core.offerers import models as offerers_models
 from pcapi.core.offers import models as offers_models
 from pcapi.core.users import models as users_models
 from pcapi.models import Model
-from pcapi.repository import repository
+from pcapi.models import db
 
 
-def log_action(
+def add_action(
     action_type: models.ActionType,
     author: users_models.User | None,
     user: users_models.User | None = None,
@@ -23,16 +23,8 @@ def log_action(
     bank_account: finance_models.BankAccount | None = None,
     rule: offers_models.OfferValidationRule | None = None,
     comment: str | None = None,
-    save: bool = True,
     **extra_data: typing.Any,
 ) -> models.ActionHistory:
-    """
-    Set save parameter to False if you want to save the returned object at the same time as modified resources.
-
-    Be careful: author/user/offerer/venue/bank_account object and its id may not be associated before the action is saved and/or
-    before the new object itself is inserted in the database. RuntimeError are issued in case this function would save
-    new resources in parameters; when such an exception is raised, it shows a bug in our code.
-    """
     legit_actions = (
         models.ActionType.BLACKLIST_DOMAIN_NAME,
         models.ActionType.REMOVE_BLACKLISTED_DOMAIN_NAME,
@@ -41,21 +33,23 @@ def log_action(
     if not any((user, offerer, venue, finance_incident, bank_account, rule)) and (action_type not in legit_actions):
         raise ValueError("No resource (user, offerer, venue, finance incident, bank account, rule)")
 
-    if save:
-        if user is not None and user.id is None:
-            raise RuntimeError("Unsaved user would be saved with action: %s" % (user.email,))
+    # author/user/offerer/venue/bank_account object and its would may not be associated before flush() or commit()
+    db.session.flush()
 
-        if offerer is not None and offerer.id is None:
-            raise RuntimeError("Unsaved offerer would be saved with action: %s" % (offerer.name,))
+    if user is not None and user.id is None:
+        raise RuntimeError("Unsaved user would be saved with action: %s" % (user.email,))
 
-        if venue is not None and venue.id is None:
-            raise RuntimeError("Unsaved venue would be saved with action %s" % (venue.name,))
+    if offerer is not None and offerer.id is None:
+        raise RuntimeError("Unsaved offerer would be saved with action: %s" % (offerer.name,))
 
-        if bank_account is not None and bank_account.id is None:
-            raise RuntimeError("Unsaved bank account would be saved with action %s" % bank_account.label)
+    if venue is not None and venue.id is None:
+        raise RuntimeError("Unsaved venue would be saved with action %s" % (venue.name,))
 
-        if rule is not None and rule.id is None:
-            raise RuntimeError("Unsaved rule would be saved with action %s" % rule.name)
+    if bank_account is not None and bank_account.id is None:
+        raise RuntimeError("Unsaved bank account would be saved with action %s" % bank_account.label)
+
+    if rule is not None and rule.id is None:
+        raise RuntimeError("Unsaved rule would be saved with action %s" % rule.name)
 
     if not isinstance(author, users_models.User):
         # None or AnonymousUserMixin
@@ -76,8 +70,7 @@ def log_action(
         extraData=extra_data,
     )
 
-    if save:
-        repository.save(action)
+    db.session.add(action)
 
     return action
 
@@ -87,7 +80,7 @@ class ObjectUpdateSnapshot:
         self.snapshot = UpdateSnapshot()
         self.obj = obj
         self.author = author
-        self.log_action_target = {obj.__class__.__tablename__: obj}
+        self.add_action_target = {obj.__class__.__tablename__: obj}
 
     def set(self, field_name: str, old: typing.Any, new: typing.Any) -> "ObjectUpdateSnapshot":
         """
@@ -146,24 +139,23 @@ class ObjectUpdateSnapshot:
     def to_dict(self) -> typing.Mapping[str, typing.Any]:
         return self.snapshot.to_dict()
 
-    def log_update(self, save: bool = False) -> models.ActionHistory | None:
+    def add_action(self) -> models.ActionHistory | None:
         modified_info = self.to_dict()
         if not modified_info:
             return None
 
-        return log_action(
+        return add_action(
             models.ActionType.INFO_MODIFIED,
             self.author,
-            **self.log_action_target,
+            **self.add_action_target,
             modified_info=modified_info,
-            save=save,
         )
 
 
 class UpdateSnapshot:
     """
     Use UpdateSnapshot when model update needs to be tracked and logged
-    through log_action's extraData parameter.
+    through add_action's extraData parameter.
 
     Its simple interface helps tracking and formatting those
     information, as expected. No need to worry whether the key is old,

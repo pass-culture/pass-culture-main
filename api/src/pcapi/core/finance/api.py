@@ -974,14 +974,11 @@ def _generate_cashflows(batch: models.CashflowBatch) -> None:
                             and not override_incident_debit_note
                         ):
                             for incident in all_current_incidents:
-                                db.session.add(
-                                    history_api.log_action(
-                                        history_models.ActionType.FINANCE_INCIDENT_WAIT_FOR_PAYMENT,
-                                        author=None,
-                                        finance_incident=incident,
-                                        comment="Le montant de l’incident est supérieur au montant total des réservations validées. Donc aucun justificatif n’est généré, on attend la prochaine échéance",
-                                        save=False,
-                                    )
+                                history_api.add_action(
+                                    history_models.ActionType.FINANCE_INCIDENT_WAIT_FOR_PAYMENT,
+                                    author=None,
+                                    finance_incident=incident,
+                                    comment="Le montant de l’incident est supérieur au montant total des réservations validées. Donc aucun justificatif n’est généré, on attend la prochaine échéance",
                                 )
 
                             continue
@@ -2401,14 +2398,12 @@ def create_finance_incident(
             )
     db.session.add_all(booking_finance_incidents_to_create)
 
-    action = history_api.log_action(
+    history_api.add_action(
         history_models.ActionType.FINANCE_INCIDENT_CREATED,
         author=current_user,
         finance_incident=incident,
         comment=origin,
-        save=False,
     )
-    db.session.add(action)
 
     db.session.commit()
 
@@ -2477,28 +2472,23 @@ def validate_finance_incident(finance_incident: models.FinanceIncident, force_de
                 )
     db.session.add_all(finance_events)
 
-    beneficiaries_actions = []
     if not finance_incident.relates_to_collective_bookings:
         beneficiaries = set(
             booking_incident.beneficiary for booking_incident in finance_incident.booking_finance_incidents
         )
         for beneficiary in beneficiaries:
-            beneficiaries_actions.append(
-                history_api.log_action(
-                    history_models.ActionType.FINANCE_INCIDENT_USER_RECREDIT,
-                    author=current_user,
-                    user=beneficiary,
-                    save=False,
-                    linked_incident_id=finance_incident.id,
-                )
+            history_api.add_action(
+                history_models.ActionType.FINANCE_INCIDENT_USER_RECREDIT,
+                author=current_user,
+                user=beneficiary,
+                linked_incident_id=finance_incident.id,
             )
-    db.session.add_all(beneficiaries_actions)
 
     finance_incident.status = models.IncidentStatus.VALIDATED
     finance_incident.forceDebitNote = force_debit_note
     db.session.add(finance_incident)
 
-    validation_action = history_api.log_action(
+    history_api.add_action(
         history_models.ActionType.FINANCE_INCIDENT_VALIDATED,
         author=current_user,
         venue=finance_incident.venue,
@@ -2506,10 +2496,8 @@ def validate_finance_incident(finance_incident: models.FinanceIncident, force_de
         comment="Génération d'une note de débit à la prochaine échéance."
         if force_debit_note
         else "Récupération sur les prochaines réservations.",
-        save=False,
         linked_incident_id=finance_incident.id,
     )
-    db.session.add(validation_action)
 
     db.session.commit()
 
@@ -2523,14 +2511,12 @@ def cancel_finance_incident(incident: models.FinanceIncident, comment: str) -> N
     incident.status = models.IncidentStatus.CANCELLED
     db.session.add(incident)
 
-    action = history_api.log_action(
+    history_api.add_action(
         history_models.ActionType.FINANCE_INCIDENT_CANCELLED,
         author=current_user,
         finance_incident=incident,
         comment=comment,
-        save=False,
     )
-    db.session.add(action)
 
     db.session.commit()
 
