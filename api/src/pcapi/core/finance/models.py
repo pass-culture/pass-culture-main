@@ -1056,7 +1056,7 @@ class BookingFinanceIncident(Base, Model):
         "User", foreign_keys=[beneficiaryId], backref="incidents"
     )
 
-    newTotalAmount: int = sqla.Column(sqla.Integer, nullable=False)
+    newTotalAmount: int = sqla.Column(sqla.Integer, nullable=False)  # in cents
 
     __table_args__ = (
         # - incident is either individual or collective
