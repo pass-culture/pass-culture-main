@@ -61,6 +61,7 @@ jobs:
     secrets:
       GCP_EHP_SERVICE_ACCOUNT: ${{ secrets.GCP_EHP_SERVICE_ACCOUNT }}
       GCP_EHP_WORKLOAD_IDENTITY_PROVIDER: ${{ secrets.GCP_EHP_WORKLOAD_IDENTITY_PROVIDER }}
+      CACHE_BUCKET_NAME: "passculture-infra-prod-github-runner-cache"
     with:
       ENV: "staging"
       CHANNEL: "${{ needs.find-hotfix-tag-number.outputs.hotfixTagNumber }}"
@@ -75,6 +76,7 @@ jobs:
     secrets:
       GCP_EHP_SERVICE_ACCOUNT: ${{ secrets.GCP_EHP_SERVICE_ACCOUNT }}
       GCP_EHP_WORKLOAD_IDENTITY_PROVIDER: ${{ secrets.GCP_EHP_WORKLOAD_IDENTITY_PROVIDER }}
+      CACHE_BUCKET_NAME: "passculture-infra-prod-github-runner-cache"
     with:
       ENV: "integration"
       CHANNEL: "${{ needs.find-hotfix-tag-number.outputs.hotfixTagNumber }}"
@@ -88,6 +90,7 @@ jobs:
     secrets:
       GCP_EHP_SERVICE_ACCOUNT: ${{ secrets.GCP_EHP_SERVICE_ACCOUNT }}
       GCP_EHP_WORKLOAD_IDENTITY_PROVIDER: ${{ secrets.GCP_EHP_WORKLOAD_IDENTITY_PROVIDER }}
+      CACHE_BUCKET_NAME: "passculture-infra-prod-github-runner-cache"
     with:
       ENV: "production"
       CHANNEL: "${{ needs.find-hotfix-tag-number.outputs.hotfixTagNumber }}"
