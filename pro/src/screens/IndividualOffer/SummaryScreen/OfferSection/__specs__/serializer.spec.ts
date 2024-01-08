@@ -51,7 +51,6 @@ describe('routes::Summary::serializers', () => {
         subcategoryId: 'SCID',
         url: 'https://offer.example.com',
         externalTicketOfficeUrl: 'https://external.example.com',
-        venueId: 1,
         visa: '',
         withdrawalDetails: 'Offer withdrawalDetails',
         withdrawalDelay: 140,

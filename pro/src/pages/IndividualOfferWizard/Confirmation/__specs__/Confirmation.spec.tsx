@@ -83,8 +83,8 @@ describe('Confirmation', () => {
       },
     }
     offer = individualOfferFactory({
-      venueId: venueId,
       venue: offerVenueFactory({
+        id: venueId,
         managingOfferer: {
           id: offererId,
           name: 'Offerer name',
