@@ -225,6 +225,9 @@ export const OffersSearch = ({
             categoriesOptions={categoriesOptions}
             domainsOptions={domainsOptions}
             isFormatEnabled={isFormatEnabled}
+            shouldDisplayMarseilleStudentOptions={
+              isMarseilleEnabled && isUserInMarseilleProgram
+            }
           />
         </div>
 

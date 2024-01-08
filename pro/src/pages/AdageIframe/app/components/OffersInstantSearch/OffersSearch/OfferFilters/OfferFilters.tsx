@@ -30,6 +30,7 @@ interface OfferFiltersProps {
   categoriesOptions: Option<string[]>[]
   domainsOptions: Option<number>[]
   isFormatEnabled: boolean
+  shouldDisplayMarseilleStudentOptions: boolean
 }
 
 export const OfferFilters = ({
@@ -39,6 +40,7 @@ export const OfferFilters = ({
   categoriesOptions,
   domainsOptions,
   isFormatEnabled,
+  shouldDisplayMarseilleStudentOptions,
 }: OfferFiltersProps): JSX.Element => {
   const [modalOpenStatus, setModalOpenStatus] = useState<{
     [key: string]: boolean
@@ -142,6 +144,14 @@ export const OfferFilters = ({
       value: OfferAddressType.SCHOOL,
     },
   ]
+
+  const studentsOptionsFiltered = shouldDisplayMarseilleStudentOptions
+    ? studentsOptions
+    : studentsOptions.filter(
+        ({ value }) =>
+          value !== 'Écoles innovantes Marseille en Grand : maternelle' &&
+          value !== 'Écoles innovantes Marseille en Grand : élémentaire'
+      )
 
   return (
     <FormikProvider value={formik}>
@@ -403,7 +413,7 @@ export const OfferFilters = ({
                     placeholder="Ex: Collège"
                     name="students"
                     label="Niveau scolaire"
-                    options={studentsOptions}
+                    options={studentsOptionsFiltered}
                     isOpen={modalOpenStatus['students']}
                     sortOptions={(options, selectedOptions) => {
                       //  Implement custom sort to not sort results alphabetically
