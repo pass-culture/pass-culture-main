@@ -39,6 +39,7 @@ const renderOfferFilters = ({
             { value: 2, label: 'Architecture' },
             { value: 3, label: 'Arts' },
           ]}
+          shouldDisplayMarseilleStudentOptions={true}
           isFormatEnabled={isFormatEnabled}
         />
       </Formik>
