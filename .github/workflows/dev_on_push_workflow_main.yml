@@ -210,8 +210,7 @@ jobs:
     needs: check-db-migrations
     if: |
       always() &&
-      github.event.pull_request.merged == true &&
-      github.event.action == 'closed' &&
+      github.ref == 'refs/heads/master' &&
       needs.check-db-migrations.outputs.folder_changed == 'true'
     uses: ./.github/workflows/dev_on_workflow_ping_data_team.yml
     secrets:
