@@ -620,10 +620,9 @@ class CreateBeneficiaryTest:
         assert trigger_event_log["event_name"] == "user_deposit_activated"
         assert trigger_event_log["event_payload"] == {"deposit_type": "GRANT_18", "deposit_amount": 300}
 
-    @freeze_time("2020-03-01")
     def test_15yo_that_started_at_14_is_activated(self):
-        fifteen_years_and_one_week_ago = datetime.datetime(2005, 2, 22)
-        one_month_ago = datetime.datetime(2020, 2, 1)
+        fifteen_years_and_one_week_ago = datetime.datetime.utcnow() - relativedelta(years=15, weeks=1)
+        one_month_ago = datetime.datetime.utcnow() - relativedelta(months=1)
 
         fifteen_year_old = users_factories.UserFactory(validatedBirthDate=fifteen_years_and_one_week_ago)
 
@@ -728,11 +727,14 @@ class UpdateUserInfoTest:
 
     def test_update_user_info_also_updates_underage_deposit_expiration_date(self):
         # Given a user with an underage deposit
-        with freeze_time("2020-05-01"):
-            user = users_factories.BeneficiaryFactory(age=17)
-            users_api.update_user_info(user, author=user, validated_birth_date=datetime.date(2003, 1, 1))
+        underaged_beneficiary_birthday = datetime.datetime.utcnow() - relativedelta(years=17, months=4)
+        underaged_beneficiary_expiration_date = underaged_beneficiary_birthday + relativedelta(
+            years=18, hour=0, minute=0, second=0, microsecond=0
+        )
+        user = users_factories.BeneficiaryFactory(age=17)
+        users_api.update_user_info(user, author=user, validated_birth_date=underaged_beneficiary_birthday)
 
-        assert user.deposits[0].expirationDate == datetime.datetime(2021, 1, 1)
+        assert user.deposits[0].expirationDate == underaged_beneficiary_expiration_date
 
 
 @pytest.mark.usefixtures("db_session")
@@ -2152,16 +2154,16 @@ class AnonymizeBeneficiaryUsersTest:
         assert user_to_anonymize.firstName == "user_to_anonymize"
 
 
-@freeze_time("2021-05-27")
 class AnonymizeUserDepositsTest:
     def test_anonymize_user_deposits(self) -> None:
+        now = datetime.datetime.utcnow().replace(hour=0, minute=0, second=0, microsecond=0)
         user_recent_deposit = users_factories.BeneficiaryFactory(
-            deposit__dateCreated=datetime.datetime.utcnow() - relativedelta(years=6),
-            deposit__expirationDate=datetime.datetime.utcnow() - relativedelta(years=5, days=1),
+            deposit__dateCreated=now - relativedelta(years=6),
+            deposit__expirationDate=now - relativedelta(years=5, days=1),
         )
         user_old_deposit = users_factories.BeneficiaryFactory(
-            deposit__dateCreated=datetime.datetime.utcnow() - relativedelta(years=11, days=1),
-            deposit__expirationDate=datetime.datetime.utcnow() - relativedelta(years=10, days=1),
+            deposit__dateCreated=now - relativedelta(years=11, days=1),
+            deposit__expirationDate=now - relativedelta(years=10, days=1),
         )
 
         users_api.anonymize_user_deposits()
@@ -2170,9 +2172,9 @@ class AnonymizeUserDepositsTest:
         db.session.refresh(user_old_deposit)
 
         for deposit in user_recent_deposit.deposits:
-            assert deposit.dateCreated == datetime.datetime(2015, 5, 27, 0, 0)
-            assert deposit.expirationDate == datetime.datetime(2016, 5, 26, 0, 0)
+            assert deposit.dateCreated == now - relativedelta(years=6)
+            assert deposit.expirationDate == now - relativedelta(years=5, days=1)
 
         for deposit in user_old_deposit.deposits:
-            assert deposit.dateCreated == datetime.datetime(2010, 1, 1, 0, 0)
-            assert deposit.expirationDate == datetime.datetime(2011, 1, 1, 0, 0)
+            assert deposit.dateCreated == now - relativedelta(years=11, day=1, month=1)
+            assert deposit.expirationDate == now - relativedelta(years=10, day=1, month=1)
