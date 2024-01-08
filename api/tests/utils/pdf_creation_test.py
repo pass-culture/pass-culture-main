@@ -4,7 +4,6 @@ import pathlib
 import time
 from unittest import mock
 
-from freezegun import freeze_time
 import pytest
 
 from pcapi.utils import pdf
@@ -61,15 +60,15 @@ class GeneratePdfFromHtmlTest:
         # debugging statements showed that the cache was used (and
         # thus that the second run should be faster).
 
-    @freeze_time("2021-07-30 17:25:00")
     def test_metadata(self, example_html, css_font_http_request_mock):
+        date_string = datetime.datetime.utcnow().strftime("%Y%m%d%H%M%S") + "Z"
         metadata = pdf.PdfMetadata(
             author="Pass Culture Dev Team",
             title="Le dispositif pass Culture",
             description="Des explications issues du site",
         )
         pdf_file = pdf.generate_pdf_from_html(html_content=example_html, metadata=metadata)
-        assert b"/Author (Pass Culture Dev Team)" in pdf_file
-        assert b"/Title (Le dispositif pass Culture)" in pdf_file
-        assert b"/CreationDate (20210730172500Z)" in pdf_file
-        assert b"/ModDate (20210730172500Z)" in pdf_file
+        assert "/Author (Pass Culture Dev Team)".encode() in pdf_file
+        assert "/Title (Le dispositif pass Culture)".encode() in pdf_file
+        assert f"/CreationDate ({date_string})".encode() in pdf_file
+        assert f"/ModDate ({date_string})".encode() in pdf_file
