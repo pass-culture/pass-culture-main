@@ -23,7 +23,6 @@ export interface IndividualOfferContextValues {
   setSubcategory: (p?: SubcategoryResponseModel) => void
   offererNames: OffererName[]
   venueList: IndividualOfferVenueItem[]
-  venueId?: number | undefined
   offerOfferer?: OffererName | null
   showVenuePopin: Record<string, boolean>
 }
@@ -67,7 +66,6 @@ export function IndividualOfferContextProvider({
   )
   const [isLoading, setIsLoading] = useState<boolean>(true)
   const [offerOfferer, setOfferOfferer] = useState<OffererName | null>(null)
-  const [venueId, setVenueId] = useState<number>()
 
   const [offer, setOfferState] = useState<IndividualOffer | null>(null)
   const [categories, setCategories] = useState<CategoryResponseModel[]>([])
@@ -91,7 +89,6 @@ export function IndividualOfferContextProvider({
       const response = await getIndividualOfferAdapter(Number(offerId))
       if (response.isOk) {
         setOffer(response.payload)
-        setVenueId(response.payload.venueId)
       } else {
         navigate('/accueil')
         notify.error(
@@ -164,7 +161,6 @@ export function IndividualOfferContextProvider({
         subCategories,
         offererNames,
         venueList,
-        venueId,
         offerOfferer,
         showVenuePopin: showVenuePopin,
         subcategory,
