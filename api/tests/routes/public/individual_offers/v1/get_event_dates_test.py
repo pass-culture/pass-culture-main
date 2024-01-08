@@ -1,19 +1,18 @@
 import datetime
 
-import freezegun
 import pytest
 
 from pcapi.core import testing
 from pcapi.core.bookings import factories as bookings_factories
 from pcapi.core.offerers import factories as offerers_factories
 from pcapi.core.offers import factories as offers_factories
+from pcapi.utils import date as date_utils
 
 from . import utils
 
 
 @pytest.mark.usefixtures("db_session")
 class GetEventDatesTest:
-    @freezegun.freeze_time("2023-01-01 12:00:00")
     def test_event_with_dates(self, client):
         venue, _ = utils.create_offerer_provider_linked_to_venue()
         event_offer = offers_factories.EventOfferFactory(venue=venue)
@@ -21,12 +20,13 @@ class GetEventDatesTest:
         price_category = offers_factories.PriceCategoryFactory(
             offer=event_offer, price=12.34, priceCategoryLabel__label="carre or"
         )
+        two_weeks_from_now = datetime.datetime.utcnow().replace(second=0, microsecond=0) + datetime.timedelta(weeks=2)
         bookable_stock = offers_factories.EventStockFactory(
             offer=event_offer,
             priceCategory=price_category,
             quantity=10,
-            bookingLimitDatetime=datetime.datetime(2023, 1, 15, 13, 0, 0),
-            beginningDatetime=datetime.datetime(2023, 1, 15, 13, 0, 0),
+            bookingLimitDatetime=two_weeks_from_now,
+            beginningDatetime=two_weeks_from_now,
         )
         not_booked_price_category = offers_factories.PriceCategoryFactory(
             offer=event_offer, price=299.99, priceCategoryLabel__label="ultra vip"
@@ -35,8 +35,8 @@ class GetEventDatesTest:
             offer=event_offer,
             priceCategory=not_booked_price_category,
             quantity=2,
-            bookingLimitDatetime=datetime.datetime(2023, 1, 15, 13, 0, 0),
-            beginningDatetime=datetime.datetime(2023, 1, 15, 13, 0, 0),
+            bookingLimitDatetime=two_weeks_from_now,
+            beginningDatetime=two_weeks_from_now,
         )
         offers_factories.EventStockFactory(offer=event_offer, isSoftDeleted=True)  # deleted stock, not returned
         bookings_factories.BookingFactory(stock=bookable_stock)
@@ -49,17 +49,17 @@ class GetEventDatesTest:
         assert response.status_code == 200
         assert response.json["dates"] == [
             {
-                "beginningDatetime": "2023-01-15T13:00:00Z",
+                "beginningDatetime": date_utils.format_into_utc_date(two_weeks_from_now),
                 "bookedQuantity": 1,
-                "bookingLimitDatetime": "2023-01-15T13:00:00Z",
+                "bookingLimitDatetime": date_utils.format_into_utc_date(two_weeks_from_now),
                 "id": bookable_stock.id,
                 "priceCategory": {"id": price_category.id, "label": "carre or", "price": 1234},
                 "quantity": 10,
             },
             {
-                "beginningDatetime": "2023-01-15T13:00:00Z",
+                "beginningDatetime": date_utils.format_into_utc_date(two_weeks_from_now),
                 "bookedQuantity": 0,
-                "bookingLimitDatetime": "2023-01-15T13:00:00Z",
+                "bookingLimitDatetime": date_utils.format_into_utc_date(two_weeks_from_now),
                 "id": stock_without_booking.id,
                 "priceCategory": {
                     "id": not_booked_price_category.id,

@@ -4,7 +4,6 @@ import decimal
 import pathlib
 from unittest import mock
 
-import freezegun
 import pytest
 
 from pcapi import settings
@@ -12,6 +11,7 @@ from pcapi.core import testing
 from pcapi.core.offerers import factories as offerers_factories
 from pcapi.core.offers import models as offers_models
 from pcapi.models import offer_mixin
+from pcapi.utils import date as date_utils
 from pcapi.utils import human_ids
 
 import tests
@@ -81,10 +81,11 @@ class PostProductTest:
         }
 
     @pytest.mark.usefixtures("db_session")
-    @freezegun.freeze_time("2022-01-01 12:00:00")
     def test_product_creation_with_full_body(self, client, clear_tests_assets_bucket):
         venue, _ = utils.create_offerer_provider_linked_to_venue()
 
+        next_minute = datetime.datetime.utcnow().replace(second=0, microsecond=0) + datetime.timedelta(minutes=1)
+        next_minute_in_non_utc_tz = date_utils.utc_datetime_to_department_timezone(next_minute, "973")
         response = client.with_explicit_token(offerers_factories.DEFAULT_CLEAR_API_KEY).post(
             "/public/offers/v1/products",
             json={
@@ -111,14 +112,15 @@ class PostProductTest:
                 "itemCollectionDetails": "A retirer au 6ème sous-sol du parking de la gare entre minuit et 2",
                 "name": "Le champ des possibles",
                 "stock": {
-                    "bookingLimitDatetime": "2022-01-01T16:00:00+04:00",
+                    "bookingLimitDatetime": next_minute_in_non_utc_tz.isoformat(),
                     "price": 1234,
                     "quantity": 3,
                 },
             },
         )
 
-        assert response.status_code == 200
+        assert response.status_code == 200, response.json
+
         created_offer = offers_models.Offer.query.one()
         assert created_offer.name == "Le champ des possibles"
         assert created_offer.venue == venue
@@ -132,14 +134,14 @@ class PostProductTest:
         assert created_offer.bookingEmail == "spam@example.com"
         assert created_offer.description == "Enregistrement pour la nuit des temps"
         assert created_offer.externalTicketOfficeUrl == "https://maposaic.com"
-        assert created_offer.status == offer_mixin.OfferStatus.EXPIRED
+        assert created_offer.status == offer_mixin.OfferStatus.ACTIVE
         assert created_offer.withdrawalDetails == "A retirer au 6ème sous-sol du parking de la gare entre minuit et 2"
 
         created_stock = offers_models.Stock.query.one()
         assert created_stock.price == decimal.Decimal("12.34")
         assert created_stock.quantity == 3
         assert created_stock.offer == created_offer
-        assert created_stock.bookingLimitDatetime == datetime.datetime(2022, 1, 1, 12, 0, 0)
+        assert created_stock.bookingLimitDatetime == next_minute
 
         created_mediation = offers_models.Mediation.query.one()
         assert created_mediation.offer == created_offer
@@ -173,10 +175,10 @@ class PostProductTest:
             "itemCollectionDetails": "A retirer au 6ème sous-sol du parking de la gare entre minuit et 2",
             "location": {"type": "physical", "venueId": venue.id},
             "name": "Le champ des possibles",
-            "status": "EXPIRED",
+            "status": "ACTIVE",
             "stock": {
                 "bookedQuantity": 0,
-                "bookingLimitDatetime": "2022-01-01T12:00:00Z",
+                "bookingLimitDatetime": date_utils.format_into_utc_date(next_minute),
                 "price": 1234,
                 "quantity": 3,
             },
