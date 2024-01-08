@@ -4,7 +4,6 @@
 @use "styles/variables/_colors.scss" as colors;
 @use "styles/variables/_size.scss" as size;
 
-
 .base-checkbox {
   display: flex;
 
@@ -33,7 +32,6 @@
       color: forms.$input-text-color-disabled;
       cursor: default;
     }
-
   }
 
   &-icon {
@@ -56,8 +54,9 @@
     background-color: forms.$input-bg-color;
     border: rem.torem(2px) solid forms.$input-border-color;
     border-radius: rem.torem(3px);
-    transition: border 150ms ease,
-    background 150ms ease;
+    transition:
+      border 150ms ease,
+      background 150ms ease;
     flex: 0 0 auto;
     font-size: inherit;
     margin-right: rem.torem(8px);
@@ -105,7 +104,8 @@
       }
     }
 
-    &:disabled, &:disabled:checked {
+    &:disabled,
+    &:disabled:checked {
       background-color: colors.$grey-medium;
       border-color: colors.$grey-medium;
       cursor: not-allowed;
@@ -153,7 +153,7 @@
     outline: none;
   }
 
-  &:focus-within {
+  &:has(input:focus-visible) {
     outline: rem.torem(1px) solid colors.$input-text-color;
     outline-offset: rem.torem(4px);
     border-radius: rem.torem(4px);

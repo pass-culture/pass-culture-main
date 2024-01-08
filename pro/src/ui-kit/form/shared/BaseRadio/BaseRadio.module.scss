@@ -19,7 +19,7 @@
     }
   }
 
-  &:focus-within {
+  &:has(input:focus-visible) {
     outline: rem.torem(1px) solid colors.$input-text-color;
     outline-offset: rem.torem(4px);
     border-radius: rem.torem(4px);
@@ -165,7 +165,7 @@
     white-space: nowrap;
   }
 
-  &:focus-within {
+  &:has(input:focus-visible) {
     outline: rem.torem(1px) solid colors.$black;
     outline-offset: rem.torem(4px);
   }
