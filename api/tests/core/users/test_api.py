@@ -445,17 +445,17 @@ class ChangeUserEmailTest:
         user = users_factories.UserFactory(email=self.old_email, firstName="UniqueNameForEmailChangeTest")
         users_factories.UserSessionFactory(user=user)
         with mock.patch("flask.current_app.redis_client", self.mock_redis_client):
-            with freeze_time("2021-01-01"):
-                token = self._init_token(user)
+            # with freeze_time("2021-01-01"):
+            token = self._init_token(user)
 
             # When
-            with freeze_time("2021-01-03"):
-                with pytest.raises(users_exceptions.InvalidToken):
-                    email_update.validate_email_update_request(token)
+            # with freeze_time("2021-01-03"):
+            with pytest.raises(users_exceptions.InvalidToken):
+                email_update.validate_email_update_request(token)
 
-                # Then
-                user = users_models.User.query.get(user.id)
-                assert user.email == self.old_email
+            # Then
+            user = users_models.User.query.get(user.id)
+            assert user.email == self.old_email
 
     def test_change_user_email_twice(self):
         """
