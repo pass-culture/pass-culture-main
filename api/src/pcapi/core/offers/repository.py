@@ -79,11 +79,55 @@ def get_capped_offers_for_filters(
     )
 
     offers = (
-        query.options(sa_orm.joinedload(models.Offer.venue).joinedload(offerers_models.Venue.managingOfferer))
-        .options(sa_orm.joinedload(models.Offer.stocks))
-        .options(sa_orm.joinedload(models.Offer.mediations))
-        .options(sa_orm.joinedload(models.Offer.product))
-        .options(sa_orm.joinedload(models.Offer.lastProvider))
+        query.options(
+            sa.orm.load_only(
+                models.Offer.id,
+                models.Offer.name,
+                models.Offer.isActive,
+                models.Offer.subcategoryId,
+                models.Offer.validation,
+                models.Offer.extraData,
+                models.Offer.lastProviderId,
+            )
+        )
+        .options(
+            sa_orm.joinedload(models.Offer.venue)
+            .load_only(
+                offerers_models.Venue.id,
+                offerers_models.Venue.name,
+                offerers_models.Venue.publicName,
+                offerers_models.Venue.departementCode,
+                offerers_models.Venue.isVirtual,
+            )
+            .joinedload(offerers_models.Venue.managingOfferer)
+            .load_only(offerers_models.Offerer.id, offerers_models.Offerer.name)
+        )
+        .options(
+            sa_orm.joinedload(models.Offer.stocks).load_only(
+                models.Stock.id,
+                models.Stock.beginningDatetime,
+                models.Stock.bookingLimitDatetime,
+                models.Stock.quantity,
+                models.Stock.dnBookedQuantity,
+                models.Stock.isSoftDeleted,
+            )
+        )
+        .options(
+            sa_orm.joinedload(models.Offer.mediations).load_only(
+                models.Mediation.id,
+                models.Mediation.credit,
+                models.Mediation.dateCreated,
+                models.Mediation.isActive,
+                models.Mediation.thumbCount,
+            )
+        )
+        .options(
+            sa_orm.joinedload(models.Offer.product).load_only(
+                models.Product.id,
+                models.Product.thumbCount,
+            )
+        )
+        .options(sa_orm.joinedload(models.Offer.lastProvider).load_only(providers_models.Provider.localClass))
         .limit(offers_limit)
         .all()
     )
