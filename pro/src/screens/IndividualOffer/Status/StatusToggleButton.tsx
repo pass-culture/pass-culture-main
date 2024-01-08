@@ -1,9 +1,7 @@
-import React from 'react'
+import { useFetcher } from 'react-router-dom'
 
 import { api } from 'apiClient/api'
 import { OfferStatus } from 'apiClient/v1'
-import { getIndividualOfferAdapter } from 'core/Offers/adapters'
-import { IndividualOffer } from 'core/Offers/types'
 import useNotification from 'hooks/useNotification'
 import fullHideIcon from 'icons/full-hide.svg'
 import strokeCheckIcon from 'icons/stroke-check.svg'
@@ -14,30 +12,23 @@ export interface StatusToggleButtonProps {
   offerId: number
   isActive: boolean
   status: OfferStatus
-  setOffer: ((offer: IndividualOffer) => void) | null
 }
 
 const StatusToggleButton = ({
   offerId,
   isActive,
   status,
-  setOffer,
 }: StatusToggleButtonProps) => {
   const notification = useNotification()
-
-  const reloadOffer = async () => {
-    const response = await getIndividualOfferAdapter(offerId)
-    if (response.isOk) {
-      setOffer && setOffer(response.payload)
-    } else {
-      notification.error(response.message)
-    }
-  }
+  const fetcher = useFetcher()
 
   const toggleOfferActiveStatus = async () => {
     try {
       await api.patchOffersActiveStatus({ ids: [offerId], isActive: !isActive })
-      await reloadOffer()
+      fetcher.submit(null, {
+        method: 'patch',
+        action: `/offre/individuelle/${offerId}`,
+      })
       notification.success(
         `L’offre a bien été ${isActive ? 'désactivée' : 'publiée'}.`
       )
