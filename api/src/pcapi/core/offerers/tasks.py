@@ -44,13 +44,10 @@ def check_offerer_siren_task(payload: CheckOffererSirenRequest) -> None:
 
         with transaction():
             db.session.add(offerers_models.OffererTagMapping(offererId=offerer.id, tagId=tag.id))
-            db.session.add(
-                history_api.log_action(
-                    history_models.ActionType.INFO_MODIFIED,
-                    None,
-                    offerer=offerer,
-                    comment="La structure est détectée comme inactive via l'API Sirene (INSEE)",
-                    modified_info={"tags": {"new_info": tag.label}},
-                    save=False,
-                )
+            history_api.add_action(
+                history_models.ActionType.INFO_MODIFIED,
+                None,
+                offerer=offerer,
+                comment="La structure est détectée comme inactive via l'API Sirene (INSEE)",
+                modified_info={"tags": {"new_info": tag.label}},
             )

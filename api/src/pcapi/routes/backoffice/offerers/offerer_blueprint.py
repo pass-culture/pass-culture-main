@@ -15,7 +15,6 @@ from pcapi.connectors.dms.models import GraphQLApplicationStates
 from pcapi.core.educational import models as educational_models
 from pcapi.core.external.attributes import api as external_attributes_api
 from pcapi.core.finance import models as finance_models
-from pcapi.core.history import api as history_api
 from pcapi.core.history import models as history_models
 from pcapi.core.offerers import api as offerers_api
 from pcapi.core.offerers import exceptions as offerers_exceptions
@@ -378,22 +377,15 @@ def update_offerer(offerer_id: int) -> utils.BackofficeResponse:
         flash(msg, "warning")
         return _render_offerer_details(offerer_id, edit_offerer_form=form), 400
 
-    modified_info = offerers_api.update_offerer(
+    offerers_api.update_offerer(
         offerer,
+        current_user,
         name=form.name.data,
         city=form.city.data,
         postal_code=form.postal_code.data,
         address=form.address.data,
         tags=form.tags.data,
     )
-
-    if modified_info:
-        history_api.log_action(
-            history_models.ActionType.INFO_MODIFIED,
-            current_user,
-            offerer=offerer,
-            modified_info=modified_info,
-        )
 
     flash("Informations mises à jour", "success")
     return _self_redirect(offerer.id)

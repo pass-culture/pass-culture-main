@@ -19,6 +19,7 @@ from pcapi.core.users.models import EligibilityType
 from pcapi.core.users.models import User
 from pcapi.core.users.models import UserRole
 from pcapi.core.users.repository import find_user_by_email
+from pcapi.models import db
 from pcapi.models.validation_status_mixin import ValidationStatus
 from pcapi.notifications.internal.transactional import import_test_user_failure
 from pcapi.repository import repository
@@ -52,13 +53,13 @@ def _create_beneficiary(row: dict, role: UserRole | None) -> User:
     user.validatedBirthDate = _get_birth_date(row)
     if role == UserRole.BENEFICIARY:
         deposit = finance_api.create_deposit(user, "import_test_users (csv)", eligibility=EligibilityType.AGE18)
-        repository.save(deposit)
+        db.session.add(deposit)
         user.add_beneficiary_role()
     elif role == UserRole.UNDERAGE_BENEFICIARY:
         deposit = finance_api.create_deposit(
             user, "import_test_users (csv)", eligibility=EligibilityType.UNDERAGE, age_at_registration=16
         )
-        repository.save(deposit)
+        db.session.add(deposit)
         user.add_underage_beneficiary_role()
     return user
 
@@ -84,15 +85,15 @@ def _create_pro_user(row: dict) -> User:
     offerer = user.UserOfferers[0].offerer
     offerer.validationStatus = ValidationStatus.VALIDATED
     offerer.dateValidated = datetime.datetime.utcnow()
-    action = history_api.log_action(
+    db.session.add(offerer)
+
+    history_api.add_action(
         history_models.ActionType.OFFERER_VALIDATED,
         None,
         user=user,
         offerer=offerer,
         comment="Validée automatiquement par le script de création",
-        save=False,
     )
-    repository.save(offerer, action)
 
     user.validationToken = None
     user.isEmailValidated = True
@@ -123,7 +124,8 @@ def _add_or_update_user_from_row(row: dict, update_if_exists: bool) -> User | No
     user.postalCode = row["Code postal"]
     user.comment = row["Type"]
     user.add_test_role()
-    repository.save(user)
+    db.session.add(user)
+    db.session.commit()
 
     logger.info(
         "Created or updated user=%s <%s> %s from CSV import", user.id, user.email, [role.value for role in user.roles]

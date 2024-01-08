@@ -14,6 +14,7 @@ from pcapi.core.users import exceptions
 from pcapi.core.users import models
 from pcapi.core.users import repository as users_repository
 from pcapi.core.users.email.send import send_pro_user_emails_for_email_change
+from pcapi.models import db
 from pcapi.models.api_errors import ApiErrors
 from pcapi.repository import repository
 from pcapi.repository import transaction
@@ -245,7 +246,7 @@ def request_email_update_from_admin(user: models.User, email: str) -> None:
     api.request_email_confirmation(user)
 
 
-def full_email_update_by_admin(user: models.User, email: str) -> None:
+def full_email_update_by_admin(user: models.User, email: str, commit: bool = False) -> None:
     """
     Runs the whole email update process at once, without sending any
     confirmation email: log update history, update user's email and
@@ -254,11 +255,14 @@ def full_email_update_by_admin(user: models.User, email: str) -> None:
     check_email_address_does_not_exist(email)
 
     admin_update_event = models.UserEmailHistory.build_admin_update(user=user, new_email=email)
+    db.session.add(admin_update_event)
 
     user.email = email
     user.isEmailValidated = True
+    db.session.add(user)
 
-    repository.save(user, admin_update_event)
+    if commit:
+        db.session.commit()
 
 
 def get_active_token_expiration(user: models.User) -> datetime | None:

@@ -7,25 +7,26 @@ from pcapi.core.offerers import api as offerers_api
 from pcapi.core.offerers import factories as offerers_factories
 from pcapi.core.offerers import models as offerers_models
 from pcapi.core.users import factories as users_factories
+from pcapi.models import db
 
 
 pytestmark = pytest.mark.usefixtures("db_session")
 
 
 class LogActionTest:
-    def test_log_action(self):
+    def test_add_action(self):
         admin = users_factories.AdminFactory()
         user_offerer = offerers_factories.UserOffererFactory()
 
-        returned_action = history_api.log_action(
+        returned_action = history_api.add_action(
             history_models.ActionType.OFFERER_REJECTED,
             admin,
             user=user_offerer.user,
             offerer=user_offerer.offerer,
             comment="Test rejected",
-            save=True,
             custom_data="Test",
         )
+        db.session.commit()
 
         action = history_models.ActionHistory.query.one()
         assert action.actionType == history_models.ActionType.OFFERER_REJECTED
@@ -42,26 +43,27 @@ class LogActionTest:
 
         assert returned_action == action
 
-    def test_log_action_without_resource(self):
+    def test_add_action_without_resource(self):
         admin = users_factories.AdminFactory()
 
         with pytest.raises(ValueError) as err:
-            history_api.log_action(history_models.ActionType.OFFERER_PENDING, admin)
+            history_api.add_action(history_models.ActionType.OFFERER_PENDING, admin)
+            db.session.commit()
 
         assert "No resource" in str(err.value)
         assert history_models.ActionHistory.query.count() == 0
 
-    def test_log_action_do_not_save(self):
+    def test_add_action_do_not_save(self):
         admin = users_factories.AdminFactory()
         user_offerer = offerers_factories.UserOffererFactory()
 
-        action = history_api.log_action(
+        action = history_api.add_action(
             history_models.ActionType.OFFERER_VALIDATED,
             admin,
             user=user_offerer.user,
             offerer=user_offerer.offerer,
-            save=False,
         )
+        # commit() not called here
 
         assert action.id is None
         assert action.actionType == history_models.ActionType.OFFERER_VALIDATED
@@ -70,7 +72,7 @@ class LogActionTest:
         assert action.offerer == user_offerer.offerer
         assert action.venueId is None
 
-    def test_log_action_unsaved_resource(self):
+    def test_add_action_unsaved_resource(self):
         admin = users_factories.AdminFactory()
         user = users_factories.UserFactory()
         unsaved_offerer = offerers_models.Offerer()
@@ -80,12 +82,13 @@ class LogActionTest:
         unsaved_offerer.city = "Paris"
 
         with pytest.raises(RuntimeError):
-            history_api.log_action(
+            history_api.add_action(
                 history_models.ActionType.OFFERER_VALIDATED,
                 admin,
                 user=user,
                 offerer=unsaved_offerer,
             )
+            db.session.commit()
 
 
 class ObjectUpdateSnapshotTest:
@@ -97,7 +100,8 @@ class ObjectUpdateSnapshotTest:
         new_siren = "987654321234"
 
         snapshot = history_api.ObjectUpdateSnapshot(offerer, author)
-        snapshot.trace_update({"name": new_name, "siren": new_siren}).log_update(save=True)
+        snapshot.trace_update({"name": new_name, "siren": new_siren}).add_action()
+        db.session.commit()
 
         action = history_models.ActionHistory.query.one()
 
@@ -137,7 +141,7 @@ class ObjectUpdateSnapshotTest:
         new_siren = "987654321234"
 
         snapshot = history_api.ObjectUpdateSnapshot(offerer, author)
-        action = snapshot.trace_update({"name": new_name, "siren": new_siren}).log_update(save=False)
+        action = snapshot.trace_update({"name": new_name, "siren": new_siren}).add_action()
 
         assert not action.id
 
@@ -157,9 +161,8 @@ class ObjectUpdateSnapshotTest:
         new_email = venue.contact.email + ".update"
 
         snapshot = history_api.ObjectUpdateSnapshot(venue, author)
-        snapshot.trace_update({"email": new_email}, target=venue.contact, field_name_template="contact.{}").log_update(
-            save=True
-        )
+        snapshot.trace_update({"email": new_email}, target=venue.contact, field_name_template="contact.{}").add_action()
+        db.session.commit()
 
         action = history_models.ActionHistory.query.one()
 

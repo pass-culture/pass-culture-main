@@ -23,6 +23,7 @@ from pcapi.core.offerers import models as offerer_models
 from pcapi.core.offers import models as offers_models
 from pcapi.core.permissions import models as perm_models
 from pcapi.core.users import models as users_models
+from pcapi.models import db
 from pcapi.routes.backoffice import filters
 from pcapi.routes.backoffice import utils
 from pcapi.routes.backoffice.finance import forms
@@ -421,13 +422,13 @@ def comment_incident(finance_incident_id: int) -> utils.BackofficeResponse:
     if not form.validate():
         flash("Le formulaire comporte des erreurs", "warning")
     else:
-        history_api.log_action(
+        history_api.add_action(
             history_models.ActionType.COMMENT,
             author=current_user,
             finance_incident=incident,
             comment=form.comment.data,
-            save=True,
         )
+        db.session.commit()
         flash("Commentaire enregistré", "success")
 
     return redirect(

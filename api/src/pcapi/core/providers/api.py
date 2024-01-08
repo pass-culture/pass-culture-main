@@ -104,15 +104,12 @@ def delete_venue_provider(
     # Save data now: it won't be available after we have deleted the object.
     venue_id = venue_provider.venueId
     provider_name = venue_provider.provider.name
-    db.session.add(
-        history_api.log_action(
-            history_models.ActionType.LINK_VENUE_PROVIDER_DELETED,
-            author,
-            venue=venue_provider.venue,
-            save=False,
-            provider_id=venue_provider.providerId,
-            provider_name=venue_provider.provider.name,
-        )
+    history_api.add_action(
+        history_models.ActionType.LINK_VENUE_PROVIDER_DELETED,
+        author,
+        venue=venue_provider.venue,
+        provider_id=venue_provider.providerId,
+        provider_name=venue_provider.provider.name,
     )
     db.session.delete(venue_provider)
     db.session.commit()

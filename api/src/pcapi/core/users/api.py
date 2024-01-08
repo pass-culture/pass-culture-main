@@ -416,15 +416,9 @@ def suspend_account(
         user.isActive = False
         user.remove_admin_role()
         db.session.add(user)
-        db.session.add(
-            history_api.log_action(
-                history_models.ActionType.USER_SUSPENDED,
-                author=actor,
-                user=user,
-                reason=reason.value,
-                comment=comment,
-                save=False,
-            )
+
+        history_api.add_action(
+            history_models.ActionType.USER_SUSPENDED, author=actor, user=user, reason=reason.value, comment=comment
         )
 
         for session in models.UserSession.query.filter_by(userId=user.id):
@@ -544,11 +538,11 @@ def unsuspend_account(
 ) -> None:
     suspension_reason = user.suspension_reason
     user.isActive = True
-    action = history_api.log_action(
-        history_models.ActionType.USER_UNSUSPENDED, author=actor, user=user, comment=comment, save=False
-    )
+    db.session.add(user)
 
-    repository.save(user, action)
+    history_api.add_action(history_models.ActionType.USER_UNSUSPENDED, author=actor, user=user, comment=comment)
+
+    db.session.commit()
 
     logger.info(
         "Account has been unsuspended",
@@ -629,6 +623,7 @@ def update_user_info(
     city: str | T_UNCHANGED = UNCHANGED,
     validated_birth_date: datetime.date | T_UNCHANGED = UNCHANGED,
     id_piece_number: str | T_UNCHANGED = UNCHANGED,
+    commit: bool = True,
 ) -> history_api.ObjectUpdateSnapshot:
     old_email = None
     snapshot = history_api.ObjectUpdateSnapshot(user, author)
@@ -677,7 +672,12 @@ def update_user_info(
             snapshot.set("idPieceNumber", old=user.idPieceNumber, new=id_piece_number)
         user.idPieceNumber = id_piece_number
 
-    repository.save(user)
+    # keep using repository as long as user is validated in pcapi.validation.models.user
+    if commit:
+        snapshot.add_action()
+        repository.save(user)
+    else:
+        repository.add_to_session(user)
 
     # TODO(prouzet) even for young users, we should probably remove contact with former email from sendinblue lists
     if old_email and user.has_pro_role:
@@ -727,7 +727,8 @@ def _update_underage_beneficiary_deposit_expiration_date(user: users_models.User
 
 
 def add_comment_to_user(user: models.User, author_user: models.User, comment: str) -> None:
-    history_api.log_action(history_models.ActionType.COMMENT, author_user, user=user, comment=comment)
+    history_api.add_action(history_models.ActionType.COMMENT, author_user, user=user, comment=comment)
+    db.session.commit()
 
 
 def get_domains_credit(
@@ -798,12 +799,13 @@ def import_pro_user_and_offerer_from_csv(pro_user: ImportUserFromCsvModel) -> mo
     digital_venue = offerers_api.create_digital_venue(offerer)
 
     new_pro_user = _set_offerer_departement_code(new_pro_user, offerer)
+    db.session.add_all([new_pro_user, user_offerer, offerer, digital_venue])
 
-    action = history_api.log_action(
-        history_models.ActionType.USER_CREATED, author=new_pro_user, user=new_pro_user, offerer=offerer, save=False
+    history_api.add_action(
+        history_models.ActionType.USER_CREATED, author=new_pro_user, user=new_pro_user, offerer=offerer
     )
 
-    repository.save(new_pro_user, user_offerer, offerer, digital_venue, action)
+    repository.save(new_pro_user, user_offerer, offerer, digital_venue)
     token = token_utils.Token.create(
         token_utils.TokenType.EMAIL_VALIDATION,
         ttl=None,
@@ -821,13 +823,15 @@ def import_pro_user_and_offerer_from_csv(pro_user: ImportUserFromCsvModel) -> mo
     if siren_info:
         extra_data = {"sirene_info": dict(siren_info)}
 
-    history_api.log_action(
+    history_api.add_action(
         history_models.ActionType.OFFERER_NEW,
         new_pro_user,
         user=new_pro_user,
         offerer=offerer,
         **extra_data,
     )
+
+    db.session.commit()
 
     if not transactional_mails.send_email_validation_to_pro_email(new_pro_user, token):
         logger.warning(
@@ -842,12 +846,10 @@ def import_pro_user_and_offerer_from_csv(pro_user: ImportUserFromCsvModel) -> mo
 
 def create_pro_user_V2(pro_user: ProUserCreationBodyV2Model) -> models.User:
     new_pro_user = create_pro_user(pro_user)
+    repository.add_to_session(new_pro_user)  # valide user with pcapi.validation.models.user
+    history_api.add_action(history_models.ActionType.USER_CREATED, author=new_pro_user, user=new_pro_user)
+    repository.save()  # keep commit with repository.save() to catch IntegrityError when email is duplicated
 
-    action = history_api.log_action(
-        history_models.ActionType.USER_CREATED, author=new_pro_user, user=new_pro_user, save=False
-    )
-
-    repository.save(new_pro_user, action)
     token = token_utils.Token.create(
         token_utils.TokenType.EMAIL_VALIDATION,
         ttl=None,
@@ -1251,17 +1253,13 @@ def search_backoffice_accounts(search_query: str) -> BaseQuery:
 def validate_pro_user_email(user: users_models.User, author_user: users_models.User | None = None) -> None:
     user.validationToken = None
     user.isEmailValidated = True
-    if author_user:
-        action = history_api.log_action(
-            history_models.ActionType.USER_EMAIL_VALIDATED,
-            author=author_user,
-            user=user,
-            save=False,
-        )
-        repository.save(user, action)
-    else:
-        repository.save(user)
 
+    if author_user:
+        history_api.add_action(history_models.ActionType.USER_EMAIL_VALIDATED, author=author_user, user=user)
+
+    repository.save(user)
+
+    # FIXME: accept_offerer_invitation_if_exists also add() and commit()... in a loop!
     offerers_api.accept_offerer_invitation_if_exists(user)
 
 

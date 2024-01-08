@@ -18,7 +18,7 @@ from pcapi.core.permissions import models as perm_models
 from pcapi.core.users import constants as users_constants
 from pcapi.core.users import models as users_models
 from pcapi.core.users.api import suspend_account
-from pcapi.repository import repository
+from pcapi.models import db
 from pcapi.routes.backoffice import utils
 
 from . import forms
@@ -152,17 +152,17 @@ def blacklist_domain_name() -> utils.BackofficeResponse:
     domain = fraud_models.BlacklistedDomainName.query.filter_by(domain=form.domain.data).first()
     if not domain:
         domain = fraud_models.BlacklistedDomainName(domain=form.domain.data)
+    db.session.add(domain)
 
-    action = history_api.log_action(
+    history_api.add_action(
         action_type=history_models.ActionType.BLACKLIST_DOMAIN_NAME,
         author=current_user,
         domain=form.domain.data,
         deactivated_users=sorted([(user.id, user.email) for user in users]),
         cancelled_bookings_count=cancelled_bookings_count,
-        save=False,
     )
 
-    repository.save(domain, action)
+    db.session.commit()
 
     deactivated_accounts_count = len(users)
     if deactivated_accounts_count > 1:
@@ -197,14 +197,13 @@ def remove_blacklisted_domain_name(domain: str) -> utils.BackofficeResponse:
         raise NotFound()
 
     query.delete(synchronize_session=False)
-    action = history_api.log_action(
+    history_api.add_action(
         action_type=history_models.ActionType.REMOVE_BLACKLISTED_DOMAIN_NAME,
         author=current_user,
         domain=row.domain,
-        save=False,
     )
 
-    repository.save(action)
+    db.session.commit()
 
     flash(Markup("Le nom de domaine {domain} a été retiré de la liste").format(domain=domain), "success")
     return redirect(url_for(".list_blacklisted_domain_names"), code=303)
