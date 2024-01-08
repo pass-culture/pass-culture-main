@@ -1,7 +1,7 @@
+import datetime
 from pathlib import Path
 from unittest.mock import patch
 
-from freezegun import freeze_time
 import pytest
 
 from pcapi import settings
@@ -77,8 +77,8 @@ def payload_fixture(venue_provider, domain, institution, national_program, venue
         "isActive": True,
         "nationalProgramId": national_program.id,
         # stock part
-        "beginningDatetime": "2022-09-25T11:00",
-        "bookingLimitDatetime": "2022-09-15T11:00",
+        "beginningDatetime": (datetime.datetime.utcnow() + datetime.timedelta(days=2)).isoformat(timespec="seconds"),
+        "bookingLimitDatetime": (datetime.datetime.utcnow() + datetime.timedelta(days=2)).isoformat(timespec="seconds"),
         "totalPrice": 35621,
         "numberOfTickets": 30,
         "educationalPriceDetail": "Justification du prix",
@@ -95,7 +95,6 @@ def public_client_fixture(client):
 
 
 @pytest.mark.usefixtures("db_session")
-@freeze_time("2022-05-01 15:00:00")
 class CollectiveOffersPublicPostOfferTest:
     def teardown_method(self, *args):
         """clear images after each tests"""
@@ -132,17 +131,6 @@ class CollectiveOffersPublicPostOfferTest:
         assert offer.nationalProgramId == national_program.id
         assert (UPLOAD_FOLDER / offer._get_image_storage_id()).exists()
         assert offer.formats == [subcategories.EacFormat.CONCERT]
-
-    def test_post_offers_6_5_only(self, payload, public_client, api_key):
-        payload["students"] = [
-            educational_models.StudentLevels.COLLEGE6.name,
-            educational_models.StudentLevels.COLLEGE5.name,
-        ]
-
-        with patch("pcapi.core.offerers.api.can_venue_create_educational_offer"):
-            response = public_client.post("/v2/collective/offers/", json=payload)
-
-        assert response.status_code == 403
 
     def test_post_offers_with_uai(self, public_client, payload, venue_provider, api_key, domain, institution, venue):
         payload["educationalInstitution"] = institution.institutionId

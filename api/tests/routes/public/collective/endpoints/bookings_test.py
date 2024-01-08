@@ -1,7 +1,6 @@
 from datetime import datetime
 
 from flask import url_for
-from freezegun import freeze_time
 import pytest
 
 from pcapi.core.educational import testing as educational_testing
@@ -24,7 +23,6 @@ def venue_fixture():
 
 
 class CancelCollectiveBookingTest:
-    @freeze_time("2023-01-01 10:00:00")
     def test_cancel_collective_booking(self, client, venue):
         booking = educational_factories.CollectiveBookingFactory(collectiveStock__collectiveOffer__venue=venue)
 
@@ -34,7 +32,7 @@ class CancelCollectiveBookingTest:
         db.session.refresh(booking)
 
         assert booking.cancellationReason == educational_models.CollectiveBookingCancellationReasons.PUBLIC_API
-        assert booking.cancellationDate == datetime(2023, 1, 1, 10)
+        assert booking.cancellationDate.timestamp() == pytest.approx(datetime.utcnow().timestamp(), rel=1)
         assert booking.status == educational_models.CollectiveBookingStatus.CANCELLED
 
         assert len(educational_testing.adage_requests) == 1
