@@ -27,6 +27,8 @@ updates:
         update-types: ['version-update:semver-major', 'version-update:semver-minor']
       # We are not ready to handle upper version of spectree, even for patches
       - dependency-name: 'spectree'
+    # Disable automatic rebasing for poetry pull requests
+    rebase-strategy: "disabled"
 
   - package-ecosystem: 'github-actions'
     directory: '.github/workflows'
