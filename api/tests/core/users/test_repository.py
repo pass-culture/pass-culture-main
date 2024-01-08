@@ -1,7 +1,6 @@
-from datetime import date
 from datetime import datetime
 
-from freezegun import freeze_time
+from dateutil.relativedelta import relativedelta
 import pytest
 
 from pcapi import settings
@@ -62,55 +61,61 @@ class CheckUserAndCredentialsTest:
 
 
 class GetNewlyEligibleUsersTest:
-    @freeze_time("2018-01-01")
     def test_eligible_user(self):
+        today = datetime.today()
+        already_18_birthday = today - relativedelta(years=18, days=1)
+        created_one_month_ago = today - relativedelta(months=1)
+        just_18_birthday = today - relativedelta(years=18)
+        not_yet_18 = today - relativedelta(years=17, days=364)
+        created_yesterday = today - relativedelta(days=1)
+        one_day_ago = today - relativedelta(days=1)
+        two_days_ago = today - relativedelta(days=2)
+
         user_already_18 = users_factories.BaseUserFactory(
-            dateOfBirth=datetime(1999, 12, 31), dateCreated=datetime(2017, 12, 1)
+            dateOfBirth=already_18_birthday, dateCreated=created_one_month_ago
         )
-        user_just_18 = users_factories.BaseUserFactory(
-            dateOfBirth=datetime(2000, 1, 1), dateCreated=datetime(2017, 12, 31)
-        )
+        user_just_18 = users_factories.BaseUserFactory(dateOfBirth=just_18_birthday, dateCreated=created_yesterday)
         user_just_18_ex_underage_beneficiary = users_factories.BaseUserFactory(
-            dateOfBirth=datetime(2000, 1, 1),
-            dateCreated=datetime(2017, 12, 1),
+            dateOfBirth=just_18_birthday,
+            dateCreated=created_one_month_ago,
             roles=[UserRole.UNDERAGE_BENEFICIARY],
         )
         # Possible beneficiary that registered too late
-        users_factories.BaseUserFactory(dateOfBirth=datetime(2000, 1, 1), dateCreated=datetime(2018, 1, 1))
+        users_factories.BaseUserFactory(dateOfBirth=just_18_birthday, dateCreated=today)
         # Admin
-        users_factories.AdminFactory(dateOfBirth=datetime(2000, 1, 1), dateCreated=datetime(2018, 1, 1))
+        users_factories.AdminFactory(dateOfBirth=just_18_birthday, dateCreated=today)
         # Pro
-        pro_user = users_factories.ProFactory(dateOfBirth=datetime(2000, 1, 1), dateCreated=datetime(2018, 1, 1))
+        pro_user = users_factories.ProFactory(dateOfBirth=just_18_birthday, dateCreated=today)
         offerers_factories.UserOffererFactory(user=pro_user)
         # User not yet 18
-        users_factories.BaseUserFactory(dateOfBirth=datetime(2000, 1, 2), dateCreated=datetime(2017, 12, 1))
+        users_factories.BaseUserFactory(dateOfBirth=not_yet_18, dateCreated=created_one_month_ago)
 
         # Users 18 on the day `since` should not appear, nor those that are not 18 yet
-        users = repository.get_newly_eligible_age_18_users(since=date(2017, 12, 31))
+        users = repository.get_newly_eligible_age_18_users(since=one_day_ago)
         assert set(users) == {user_just_18, user_just_18_ex_underage_beneficiary}
-        users = repository.get_newly_eligible_age_18_users(since=date(2017, 12, 30))
+        users = repository.get_newly_eligible_age_18_users(since=two_days_ago)
         assert set(users) == {user_just_18, user_just_18_ex_underage_beneficiary, user_already_18}
 
-    @freeze_time("2018-01-01")
     def test_eligible_user_with_discordant_dates_on_declared_one(self):
+        date_to_check = datetime.utcnow() - relativedelta(days=1)
         users_factories.BaseUserFactory(
-            dateOfBirth=datetime(2000, 1, 1),
-            validatedBirthDate=datetime(2000, 2, 1),
-            dateCreated=datetime(2017, 12, 1),
+            dateOfBirth=datetime.utcnow() - relativedelta(years=18),
+            validatedBirthDate=datetime.utcnow() - relativedelta(years=17, months=11),
+            dateCreated=datetime.utcnow() - relativedelta(months=1),
             roles=[UserRole.UNDERAGE_BENEFICIARY],
         )
-        users = repository.get_newly_eligible_age_18_users(since=date(2017, 12, 31))
+        users = repository.get_newly_eligible_age_18_users(since=date_to_check)
         assert set(users) == set()
 
-    @freeze_time("2018-02-01")
     def test_eligible_user_with_discordant_dates_on_validated_one(self):
+        date_to_check = datetime.utcnow() - relativedelta(days=1)
         user_just_18_discordant_dates = users_factories.BaseUserFactory(
-            dateOfBirth=datetime(2000, 1, 1),
-            validatedBirthDate=datetime(2000, 2, 1),
-            dateCreated=datetime(2017, 12, 1),
+            dateOfBirth=datetime.utcnow() - relativedelta(years=18, months=1),
+            validatedBirthDate=datetime.utcnow() - relativedelta(years=18),
+            dateCreated=datetime.utcnow() - relativedelta(months=2),
             roles=[UserRole.UNDERAGE_BENEFICIARY],
         )
-        users = repository.get_newly_eligible_age_18_users(since=date(2018, 1, 31))
+        users = repository.get_newly_eligible_age_18_users(since=date_to_check)
         assert set(users) == {user_just_18_discordant_dates}
 
 
