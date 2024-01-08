@@ -675,7 +675,7 @@ def update_venue(venue_id: int) -> utils.BackofficeResponse:
 @venue_blueprint.route("/<int:venue_id>/comment", methods=["POST"])
 @utils.permission_required(perm_models.Permissions.MANAGE_PRO_ENTITY)
 def comment_venue(venue_id: int) -> utils.BackofficeResponse:
-    venue = offerers_models.Venue.query.fitler_by(id=venue_id).with_for_update(key_share=True, read=True).one_or_none()
+    venue = offerers_models.Venue.query.filter_by(id=venue_id).with_for_update(key_share=True, read=True).one_or_none()
     if not venue:
         raise NotFound()
 
