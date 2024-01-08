@@ -1,16 +1,21 @@
 import { screen } from '@testing-library/react'
 import { userEvent } from '@testing-library/user-event'
 import React from 'react'
+import * as router from 'react-router-dom'
 
 import { api } from 'apiClient/api'
 import { OfferStatus } from 'apiClient/v1'
 import * as useNotification from 'hooks/useNotification'
-import { GetIndividualOfferFactory } from 'utils/apiFactories'
 import { renderWithProviders } from 'utils/renderWithProviders'
 
 import StatusToggleButton, {
   StatusToggleButtonProps,
 } from '../StatusToggleButton'
+
+vi.mock('react-router-dom', async () => ({
+  ...((await vi.importActual('react-router-dom')) ?? {}),
+  useFetcher: vi.fn(),
+}))
 
 const renderStatusToggleButton = (props: StatusToggleButtonProps) =>
   renderWithProviders(<StatusToggleButton {...props} />)
@@ -23,9 +28,12 @@ describe('StatusToggleButton', () => {
       offerId: offerId,
       isActive: true,
       status: OfferStatus.ACTIVE,
-      setOffer: vi.fn(),
     }
-    vi.spyOn(api, 'getOffer').mockResolvedValue(GetIndividualOfferFactory())
+
+    // @ts-expect-error
+    vi.spyOn(router, 'useFetcher').mockReturnValue({
+      submit: vi.fn(),
+    })
   })
 
   it('should deactivate an offer and confirm', async () => {
@@ -55,7 +63,6 @@ describe('StatusToggleButton', () => {
       1,
       'L’offre a bien été désactivée.'
     )
-    expect(api.getOffer).toHaveBeenCalledTimes(1)
   })
 
   it('should activate an offer and confirm', async () => {
@@ -90,7 +97,6 @@ describe('StatusToggleButton', () => {
       1,
       'L’offre a bien été publiée.'
     )
-    expect(api.getOffer).toHaveBeenCalledTimes(1)
   })
 
   it('should display error', async () => {
