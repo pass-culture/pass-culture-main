@@ -180,7 +180,7 @@ jobs:
           --health-timeout 5s
           --health-retries 5
       postgres:
-        image: cimg/postgres:12.9-postgis
+        image: cimg/postgres:15.5-postgis
         ports:
           - 5432:5432
         options: >-
@@ -310,7 +310,7 @@ jobs:
           --health-timeout 5s
           --health-retries 5
       postgres:
-        image: cimg/postgres:12.9-postgis
+        image: cimg/postgres:15.5-postgis
         ports:
           - 5432:5432
         options: >-
