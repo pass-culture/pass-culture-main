@@ -15,6 +15,18 @@ logger = logging.getLogger(__name__)
 target_metadata = Base.metadata
 
 
+def _is_enum_column(type_: str, object_: schema.SchemaItem) -> bool:
+    return type_ == "column" and isinstance(object_.type, sqlalchemy.types.Enum)  # type: ignore[attr-defined]
+
+
+def _is_an_array_of_enum_column(type_: str, object_: schema.SchemaItem) -> bool:
+    return (
+        type_ == "column"
+        and isinstance(object_.type, sqlalchemy.dialects.postgresql.ARRAY)  # type: ignore[attr-defined]
+        and isinstance(object_.type.item_type, sqlalchemy.types.Enum)  # type: ignore[attr-defined]
+    )
+
+
 def include_object(
     object: schema.SchemaItem,  # pylint: disable=redefined-builtin
     name: str,
@@ -27,6 +39,10 @@ def include_object(
     if type_ == "table" and reflected and compare_to is None:
         table_name = object.name  # type: ignore[attr-defined]
         logger.warning(">>>>> Ignoring DROP TABLE for table '%s' <<<<<", table_name)
+        return False
+    if _is_enum_column(type_, object) or _is_an_array_of_enum_column(type_, object):
+        # Don't try to convert TEXT() column storing python Enum to `sa.Enum` or `postgresql.ENUM` columns
+        logger.warning(">>>>> Ignoring TEXT columns storing Enum values (%s) <<<<<", name)
         return False
     return True
 
