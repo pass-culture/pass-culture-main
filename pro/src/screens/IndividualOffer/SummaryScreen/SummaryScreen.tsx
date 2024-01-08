@@ -43,14 +43,8 @@ const SummaryScreen = () => {
   const notification = useNotification()
   const mode = useOfferWizardMode()
   const navigate = useNavigate()
-  const {
-    setOffer,
-    venueId,
-    offerOfferer,
-    showVenuePopin,
-    offer,
-    subCategories,
-  } = useIndividualOfferContext()
+  const { setOffer, offerOfferer, showVenuePopin, offer, subCategories } =
+    useIndividualOfferContext()
   const { logEvent } = useAnalytics()
 
   if (offer === null) {
@@ -90,7 +84,8 @@ const SummaryScreen = () => {
           !offererResponse.hasNonFreeOffer &&
           !offererResponse.hasValidBankAccount &&
           !offererResponse.hasPendingBankAccount) ||
-        (!isNewBankDetailsJourneyEnabled && showVenuePopin[venueId || ''])
+        (!isNewBankDetailsJourneyEnabled &&
+          showVenuePopin[offer.venue.id || ''])
 
       if (shouldDisplayRedirectDialog) {
         setDisplayRedirectDialog(true)
@@ -200,11 +195,11 @@ const SummaryScreen = () => {
         isDisabled={isDisabled}
       />
 
-      {displayRedirectDialog && offerOfferer?.id && venueId && (
+      {displayRedirectDialog && offerOfferer?.id && offer.venue.id && (
         <RedirectToBankAccountDialog
           cancelRedirectUrl={offerConfirmationStepUrl}
           offerId={offerOfferer?.id}
-          venueId={venueId}
+          venueId={offer.venue.id}
         />
       )}
     </>

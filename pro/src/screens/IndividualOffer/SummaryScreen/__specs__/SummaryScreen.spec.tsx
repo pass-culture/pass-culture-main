@@ -336,12 +336,14 @@ describe('Summary', () => {
     })
 
     it('should display redirect modal if first offer', async () => {
+      const venueId = 1
       const context = {
-        offer: individualOfferFactory(),
-        venueId: 1,
+        offer: individualOfferFactory({
+          venue: offerVenueFactory({ id: venueId }),
+        }),
         offerOfferer: { name: 'offerOffererName', id: 1 },
         showVenuePopin: {
-          1: true,
+          [venueId]: true,
         },
       }
 
@@ -380,7 +382,6 @@ describe('Summary', () => {
           individualStockFactory({ price: 2, quantity: null })
         ),
         offerOfferer: { name: 'offerOffererName', id: 1 },
-        venueId: 1,
         venueList: [individualOfferVenueItemFactory()],
       }
 
@@ -433,7 +434,6 @@ describe('Summary', () => {
           individualStockFactory({ price: 2, quantity: null })
         ),
         offerOfferer: { name: 'offerOffererName', id: 1 },
-        venueId: 1,
         venueList: [individualOfferVenueItemFactory()],
       }
 
@@ -476,7 +476,6 @@ describe('Summary', () => {
     it('should not display redirect modal if offer is free', async () => {
       const context = {
         offer: individualOfferFactory(),
-        venueId: 1,
         venueList: [individualOfferVenueItemFactory()],
       }
 
@@ -509,7 +508,6 @@ describe('Summary', () => {
     it('should not display redirect modal if venue hasNonFreeOffers', async () => {
       const context = {
         offer: individualOfferFactory(),
-        venueId: 1,
         venueList: [individualOfferVenueItemFactory()],
       }
 
