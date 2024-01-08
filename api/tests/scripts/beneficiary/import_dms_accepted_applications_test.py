@@ -430,7 +430,6 @@ class RunIntegrationTest:
         assert len(mails_testing.outbox) == 1
         assert mails_testing.outbox[0].sent_data["params"] == {"DUPLICATE_BENEFICIARY_EMAIL": "joh***@example.com"}
 
-    @freezegun.freeze_time("2021-10-30 09:00:00")
     @patch.object(dms_connector_api.DMSGraphQLClient, "get_applications_with_details")
     def test_import_with_existing_user_with_the_same_id_number(self, get_applications_with_details, mocker):
         beneficiary = users_factories.BeneficiaryGrant18Factory(idPieceNumber="123412341234")
