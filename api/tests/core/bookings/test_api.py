@@ -1448,62 +1448,64 @@ class ComputeCancellationDateTest:
         ) == event_date_four_days_from_now - timedelta(days=2)
 
 
-@freeze_time("2032-11-17 15:00:00")
 @pytest.mark.usefixtures("db_session")
 class UpdateCancellationLimitDatesTest:
     def should_update_bookings_cancellation_limit_dates_for_event_beginning_tomorrow(self):
-        #  Given
-        recent_booking = bookings_factories.BookingFactory(
-            stock__beginningDatetime=datetime.utcnow() + timedelta(days=90)
-        )
-        old_booking = bookings_factories.BookingFactory(
-            stock=recent_booking.stock, dateCreated=(datetime.utcnow() - timedelta(days=7))
-        )
+        # Given
+        now = datetime.utcnow()
+        recent_booking = bookings_factories.BookingFactory(stock__beginningDatetime=now + timedelta(days=90))
+        old_booking = bookings_factories.BookingFactory(stock=recent_booking.stock, dateCreated=now - timedelta(days=7))
         # When
-        tomorrow = datetime.utcnow() + timedelta(days=1)
+        tomorrow = now + timedelta(days=1)
         updated_bookings = api.update_cancellation_limit_dates(
             bookings_to_update=[recent_booking, old_booking],
             new_beginning_datetime=tomorrow,
         )
         # Then
         assert updated_bookings == [recent_booking, old_booking]
-        assert recent_booking.cancellationLimitDate == old_booking.cancellationLimitDate == tomorrow
+        assert (
+            recent_booking.cancellationLimitDate.isoformat(timespec="hours")
+            == old_booking.cancellationLimitDate.isoformat(timespec="hours")
+            == tomorrow.isoformat(timespec="hours")
+        )
 
     def should_update_bookings_cancellation_limit_dates_for_event_beginning_in_three_days(self):
-        #  Given
-        recent_booking = bookings_factories.BookingFactory(
-            stock__beginningDatetime=datetime.utcnow() + timedelta(days=90)
-        )
-        old_booking = bookings_factories.BookingFactory(
-            stock=recent_booking.stock, dateCreated=(datetime.utcnow() - timedelta(days=7))
-        )
+        # Given
+        now = datetime.utcnow()
+        recent_booking = bookings_factories.BookingFactory(stock__beginningDatetime=now + timedelta(days=90))
+        old_booking = bookings_factories.BookingFactory(stock=recent_booking.stock, dateCreated=now - timedelta(days=7))
         # When
         updated_bookings = api.update_cancellation_limit_dates(
             bookings_to_update=[recent_booking, old_booking],
-            new_beginning_datetime=datetime.utcnow() + timedelta(days=3),
+            new_beginning_datetime=now + timedelta(days=3),
         )
         # Then
         assert updated_bookings == [recent_booking, old_booking]
-        two_days_past_today = datetime.utcnow() + timedelta(days=2)
-        assert recent_booking.cancellationLimitDate == old_booking.cancellationLimitDate == two_days_past_today
+        two_days_past_today = now + timedelta(days=2)
+        assert (
+            recent_booking.cancellationLimitDate.isoformat(timespec="hours")
+            == old_booking.cancellationLimitDate.isoformat(timespec="hours")
+            == two_days_past_today.isoformat(timespec="hours")
+        )
 
     def should_update_bookings_cancellation_limit_dates_for_event_beginning_in_a_week(self):
-        #  Given
-        recent_booking = bookings_factories.BookingFactory(
-            stock__beginningDatetime=datetime.utcnow() + timedelta(days=90)
-        )
-        old_booking = bookings_factories.BookingFactory(
-            stock=recent_booking.stock, dateCreated=(datetime.utcnow() - timedelta(days=7))
-        )
+        # Given
+        now = datetime.utcnow()
+        recent_booking = bookings_factories.BookingFactory(stock__beginningDatetime=now + timedelta(days=90))
+        old_booking = bookings_factories.BookingFactory(stock=recent_booking.stock, dateCreated=now - timedelta(days=7))
         # When
         updated_bookings = api.update_cancellation_limit_dates(
             bookings_to_update=[recent_booking, old_booking],
-            new_beginning_datetime=datetime.utcnow() + timedelta(days=7),
+            new_beginning_datetime=now + timedelta(days=7),
         )
         # Then
         assert updated_bookings == [recent_booking, old_booking]
-        two_days_past_today = datetime.utcnow() + timedelta(days=2)
-        assert recent_booking.cancellationLimitDate == old_booking.cancellationLimitDate == two_days_past_today
+        two_days_past_today = now + timedelta(days=2)
+        assert (
+            recent_booking.cancellationLimitDate.isoformat(timespec="hours")
+            == old_booking.cancellationLimitDate.isoformat(timespec="hours")
+            == two_days_past_today.isoformat(timespec="hours")
+        )
 
 
 @pytest.mark.usefixtures("db_session")

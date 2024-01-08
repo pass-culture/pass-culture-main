@@ -2206,7 +2206,6 @@ def test_get_drive_folder_name():
 
 
 class CreateOffererReimbursementRuleTest:
-    @freezegun.freeze_time("2021-10-01 00:00:00")
     def test_create_rule(self):
         offerer = offerers_factories.OffererFactory()
         start = pytz.utc.localize(datetime.datetime.today() + datetime.timedelta(days=1))
@@ -2219,8 +2218,12 @@ class CreateOffererReimbursementRuleTest:
         assert rule.offerer == offerer
         assert rule.subcategories == ["VOD"]
         assert rule.rate == Decimal("0.8")
-        assert rule.timespan.lower == datetime.datetime(2021, 10, 2, 0, 0)
-        assert rule.timespan.upper == datetime.datetime(2021, 10, 3, 0, 0)
+        assert rule.timespan.lower.strftime("%d/%m/%Y") == (
+            datetime.datetime.today() + datetime.timedelta(days=1)
+        ).strftime("%d/%m/%Y")
+        assert rule.timespan.upper.strftime("%d/%m/%Y") == (
+            datetime.datetime.today() + datetime.timedelta(days=2)
+        ).strftime("%d/%m/%Y")
 
     def test_validation(self):
         # Validation is thoroughly verified in `test_validation.py`.
@@ -2232,7 +2235,6 @@ class CreateOffererReimbursementRuleTest:
 
 
 class CreateOfferReimbursementRuleTest:
-    @freezegun.freeze_time("2021-10-01 00:00:00")
     def test_create_rule(self):
         offer = offers_factories.OfferFactory()
         start = pytz.utc.localize(datetime.datetime.today() + datetime.timedelta(days=1))
@@ -2242,8 +2244,12 @@ class CreateOfferReimbursementRuleTest:
         db.session.refresh(rule)
         assert rule.offer == offer
         assert rule.amount == 1234
-        assert rule.timespan.lower == datetime.datetime(2021, 10, 2, 0, 0)
-        assert rule.timespan.upper == datetime.datetime(2021, 10, 3, 0, 0)
+        assert rule.timespan.lower.strftime("%d/%m/%Y") == (
+            datetime.datetime.today() + datetime.timedelta(days=1)
+        ).strftime("%d/%m/%Y")
+        assert rule.timespan.upper.strftime("%d/%m/%Y") == (
+            datetime.datetime.today() + datetime.timedelta(days=2)
+        ).strftime("%d/%m/%Y")
 
     def test_validation(self):
         # Validation is thoroughly verified in `test_validation.py`.

@@ -652,19 +652,19 @@ class HasUserPerformedIdentityCheckTest:
 
 @pytest.mark.usefixtures("db_session")
 class DecideEligibilityTest:
-    @freeze_time("2020-01-02")
     def test_19yo_is_eligible_if_application_at_18_yo(self):
-        birth_date = datetime.date(year=2001, month=1, day=1)
+        today = datetime.date.today()
+        birth_date = today - relativedelta(years=19, days=1)
         user = users_factories.UserFactory()
         fraud_factories.BeneficiaryFraudCheckFactory(
             user=user,
             type=fraud_models.FraudCheckType.UBBLE,
             eligibilityType=users_models.EligibilityType.AGE18,
-            dateCreated=datetime.datetime(year=2019, month=1, day=2),
+            dateCreated=today - relativedelta(years=1),
         )
 
         dms_content = fraud_factories.DMSContentFactory(
-            registration_datetime=datetime.datetime(year=2020, month=1, day=2), birth_date=birth_date
+            registration_datetime=datetime.datetime.combine(today, datetime.datetime.min.time()), birth_date=birth_date
         )
         fraud_factories.BeneficiaryFraudCheckFactory(
             user=user, type=fraud_models.FraudCheckType.DMS, resultContent=dms_content
@@ -675,13 +675,13 @@ class DecideEligibilityTest:
         )
         assert result == users_models.EligibilityType.AGE18
 
-    @freeze_time("2020-01-02")
     def test_19yo_not_eligible(self):
-        birth_date = datetime.date(year=2001, month=1, day=1)
+        today = datetime.date.today()
+        birth_date = today - relativedelta(years=19, days=1)
         user = users_factories.UserFactory()
 
         dms_content = fraud_factories.DMSContentFactory(
-            registration_datetime=datetime.datetime(year=2020, month=1, day=2), birth_date=birth_date
+            registration_datetime=datetime.datetime.combine(today, datetime.datetime.min.time()), birth_date=birth_date
         )
         fraud_factories.BeneficiaryFraudCheckFactory(
             user=user, type=fraud_models.FraudCheckType.DMS, resultContent=dms_content
@@ -692,18 +692,18 @@ class DecideEligibilityTest:
         )
         assert result is None
 
-    @freeze_time("2020-01-02")
     def test_19yo_ex_underage_not_eligible(self):
-        birth_date = datetime.date(year=2001, month=1, day=1)
+        today = datetime.date.today()
+        birth_date = today - relativedelta(years=19, days=1)
         user = users_factories.UserFactory()
         fraud_factories.BeneficiaryFraudCheckFactory(
             user=user,
             type=fraud_models.FraudCheckType.EDUCONNECT,
-            dateCreated=datetime.date(year=2017, month=1, day=1),
+            dateCreated=today - relativedelta(years=3, days=1),
             eligibilityType=users_models.EligibilityType.UNDERAGE,
         )
         dms_content = fraud_factories.DMSContentFactory(
-            registration_datetime=datetime.datetime(year=2020, month=1, day=2), birth_date=birth_date
+            registration_datetime=datetime.datetime.combine(today, datetime.datetime.min.time()), birth_date=birth_date
         )
         fraud_factories.BeneficiaryFraudCheckFactory(
             user=user, type=fraud_models.FraudCheckType.DMS, resultContent=dms_content
@@ -714,18 +714,21 @@ class DecideEligibilityTest:
         )
         assert result is None
 
-    @freeze_time("2020-01-02")
     def test_18yo_eligible(self):
-        birth_date = datetime.date(year=2001, month=1, day=1)
+        today = datetime.date.today()
+        birth_date = today - relativedelta(years=19, days=1)
         user = users_factories.UserFactory()
         fraud_factories.BeneficiaryFraudCheckFactory(
             user=user,
             type=fraud_models.FraudCheckType.UBBLE,
             eligibilityType=users_models.EligibilityType.AGE18,
-            dateCreated=datetime.datetime(year=2019, month=1, day=2),
+            dateCreated=today - relativedelta(years=1),
         )
         dms_content = fraud_factories.DMSContentFactory(
-            registration_datetime=datetime.datetime(year=2019, month=1, day=3), birth_date=birth_date
+            registration_datetime=datetime.datetime.combine(
+                today - relativedelta(years=1, days=-1), datetime.datetime.min.time()
+            ),
+            birth_date=birth_date,
         )
         fraud_factories.BeneficiaryFraudCheckFactory(
             user=user, type=fraud_models.FraudCheckType.DMS, resultContent=dms_content
@@ -736,12 +739,15 @@ class DecideEligibilityTest:
         )
         assert result == users_models.EligibilityType.AGE18
 
-    @freeze_time("2020-01-02")
     def test_18yo_underage_eligible(self):
-        birth_date = datetime.date(year=2002, month=1, day=1)
+        today = datetime.date.today()
+        birth_date = today - relativedelta(years=18, days=1)
         user = users_factories.UserFactory()
         dms_content = fraud_factories.DMSContentFactory(
-            registration_datetime=datetime.datetime(year=2019, month=1, day=3), birth_date=birth_date
+            registration_datetime=datetime.datetime.combine(
+                today - relativedelta(years=1, days=-1), datetime.datetime.min.time()
+            ),
+            birth_date=birth_date,
         )
         fraud_factories.BeneficiaryFraudCheckFactory(
             user=user, type=fraud_models.FraudCheckType.DMS, resultContent=dms_content
@@ -768,8 +774,7 @@ class DecideEligibilityTest:
     @freeze_time("2022-01-01")
     def test_decide_eligibility_for_18_yo_users_is_always_age_18(self):
         # 18 users are always eligible
-        age = 18
-        birth_date = datetime.datetime.utcnow() - relativedelta(years=age)
+        birth_date = datetime.datetime.utcnow() - relativedelta(years=18)
         user = users_factories.UserFactory()
 
         assert (
@@ -811,22 +816,20 @@ class DecideEligibilityTest:
         assert fraud_api.decide_eligibility(user, birth_date, datetime.datetime.today()) == expected_eligibility
 
     def test_decide_eligibility_for_19_yo_users_with_no_registration_datetime(self):
+        today = datetime.date.today()
+        birth_date = today - relativedelta(years=19, days=1)
         user = users_factories.UserFactory()
         fraud_factories.BeneficiaryFraudCheckFactory(
             user=user,
             type=fraud_models.FraudCheckType.DMS,
             resultContent=fraud_factories.DMSContentFactory(
                 registration_datetime=None,
-                birth_date=datetime.datetime(year=2003, month=1, day=1),
+                birth_date=birth_date,
             ),
-            dateCreated=datetime.datetime(year=2021, month=12, day=1),
+            dateCreated=today - relativedelta(days=3),
         )
 
-        with freeze_time("2022-07-01"):
-            assert (
-                fraud_api.decide_eligibility(user, datetime.datetime(year=2003, month=1, day=1), None)
-                == users_models.EligibilityType.AGE18
-            )
+        assert fraud_api.decide_eligibility(user, birth_date, None) == users_models.EligibilityType.AGE18
 
 
 @pytest.mark.usefixtures("db_session")
