@@ -37,7 +37,7 @@ const setInitialFormValues = (
     name: offer.name,
     description: offer.description,
     offererId: offer.offererId.toString(),
-    venueId: offer.venueId.toString(),
+    venueId: offer.venue.id.toString(),
     isNational: offer.isNational,
     isDuo: offer.isDuo,
     categoryId: subcategory.categoryId,

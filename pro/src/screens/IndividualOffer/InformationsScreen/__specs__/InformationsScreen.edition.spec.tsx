@@ -23,6 +23,7 @@ import { getIndividualOfferPath } from 'core/Offers/utils/getIndividualOfferUrl'
 import { AccessiblityEnum } from 'core/shared'
 import { IndividualOfferVenueItem } from 'core/Venue/types'
 import * as pcapi from 'repository/pcapi/pcapi'
+import { offerVenueFactory } from 'utils/apiFactories'
 import {
   individualOfferCategoryFactory,
   individualOfferContextFactory,
@@ -167,7 +168,6 @@ describe('screens:IndividualOffer::Informations:edition', () => {
       image: undefined,
       url: 'https://offer.example.com',
       externalTicketOfficeUrl: 'https://external.example.com',
-      venueId: 1,
       visa: '',
       withdrawalDetails: 'Offer withdrawalDetails',
       withdrawalDelay: 140,
@@ -255,7 +255,7 @@ describe('screens:IndividualOffer::Informations:edition', () => {
   it('should submit minimal virtual offer and redirect to summary', async () => {
     contextOverride.offer = {
       ...offer,
-      venueId: virtualVenueId,
+      venue: offerVenueFactory({ id: virtualVenueId }),
       subcategoryId: 'SCID virtual',
       isEvent: false,
       withdrawalDelay: undefined,
@@ -429,7 +429,7 @@ describe('screens:IndividualOffer::Informations:edition', () => {
     it('should submit when user click onCancel button, but should not send mail', async () => {
       contextOverride.offer = {
         ...offer,
-        venueId: virtualVenueId,
+        venue: offerVenueFactory({ id: virtualVenueId }),
         subcategoryId: 'SCID virtual',
         isEvent: false,
       }
@@ -497,7 +497,7 @@ describe('screens:IndividualOffer::Informations:edition', () => {
     it('should not submit when user click on close withdrawal dialog button', async () => {
       contextOverride.offer = {
         ...offer,
-        venueId: virtualVenueId,
+        venue: offerVenueFactory({ id: virtualVenueId }),
         subcategoryId: 'SCID virtual',
         isEvent: false,
       }
@@ -579,7 +579,7 @@ describe('screens:IndividualOffer::Informations:edition', () => {
       async (condition) => {
         contextOverride.offer = {
           ...offer,
-          venueId: virtualVenueId,
+          venue: offerVenueFactory({ id: virtualVenueId }),
           subcategoryId: 'SCID virtual',
           isEvent: true,
           withdrawalDelay: undefined,
@@ -638,7 +638,7 @@ describe('screens:IndividualOffer::Informations:edition', () => {
     it('should not open widthdrawal dialog if offer is not active', async () => {
       contextOverride.offer = {
         ...offer,
-        venueId: virtualVenueId,
+        venue: offerVenueFactory({ id: virtualVenueId }),
         subcategoryId: 'SCID virtual',
         isEvent: true,
         withdrawalDelay: undefined,
@@ -714,7 +714,7 @@ describe('screens:IndividualOffer::Informations:edition', () => {
       async (withdrawalInformations) => {
         contextOverride.offer = {
           ...offer,
-          venueId: virtualVenueId,
+          venue: offerVenueFactory({ id: virtualVenueId }),
           subcategoryId: 'SCID virtual',
           isEvent: false,
           withdrawalType: WithdrawalTypeEnum.ON_SITE,

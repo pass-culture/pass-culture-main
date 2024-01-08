@@ -153,7 +153,6 @@ describe('screens:IndividualOffer::Informations::creation', () => {
       image: undefined,
       url: 'https://offer.example.com',
       externalTicketOfficeUrl: 'https://external.example.com',
-      venueId: 1,
       visa: '',
       withdrawalDetails: 'Offer withdrawalDetails',
       withdrawalDelay: 140,
