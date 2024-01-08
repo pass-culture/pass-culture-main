@@ -18,6 +18,7 @@ from pcapi.core.users import api as users_api
 from pcapi.core.users import exceptions as users_exceptions
 from pcapi.core.users import models as users_models
 from pcapi.core.users.email import update as email_update
+from pcapi.repository import repository
 from pcapi.routes.backoffice import search_utils
 from pcapi.routes.backoffice import utils
 from pcapi.routes.backoffice.accounts import serialization
@@ -152,10 +153,7 @@ def update_bo_user(user_id: int) -> utils.BackofficeResponse:
         return render_bo_user_page(user_id, form), 400
 
     snapshot = users_api.update_user_info(
-        user,
-        author=current_user,
-        first_name=form.first_name.data,
-        last_name=form.last_name.data,
+        user, author=current_user, first_name=form.first_name.data, last_name=form.last_name.data, commit=False
     )
 
     if form.email.data and form.email.data != email_utils.sanitize_email(user.email):
@@ -164,12 +162,12 @@ def update_bo_user(user_id: int) -> utils.BackofficeResponse:
             email_update.full_email_update_by_admin(user, form.email.data)
         except users_exceptions.EmailExistsError:
             form.email.errors.append("L'email est déjà associé à un autre utilisateur")
-            snapshot.log_update(save=True)
             flash("L'email est déjà associé à un autre utilisateur", "warning")
             return render_bo_user_page(user_id, form), 400
         snapshot.set("email", old=old_email, new=form.email.data)
 
-    snapshot.log_update(save=True)
+    snapshot.add_action()
+    repository.save(user)
 
     flash("Informations mises à jour", "success")
     return redirect(url_for(".get_bo_user", user_id=user_id), code=303)

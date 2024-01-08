@@ -85,16 +85,15 @@ def create_provider() -> utils.BackofficeResponse:
         offerer, is_offerer_new = _get_or_create_offerer(form)
         offerer_provider = offerers_models.OffererProvider(offerer=offerer, provider=provider)
         api_key, clear_secret = offerers_api.generate_provider_api_key(provider)
+        db.session.add_all([provider, offerer, offerer_provider, api_key])
 
-        action_history = history_api.log_action(
+        history_api.add_action(
             history_models.ActionType.OFFERER_NEW,
             current_user,
             offerer=offerer,
             comment="Création automatique via création de partenaire",
-            save=False,
         )
 
-        db.session.add_all([provider, offerer, offerer_provider, api_key, action_history])
         db.session.commit()
     except sa.exc.IntegrityError:
         db.session.rollback()

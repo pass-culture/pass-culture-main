@@ -569,9 +569,11 @@ class EditVenueTest:
             website=venue.contact.website,
         )
 
-        # nothing has changed => nothing to save nor update
-        with assert_num_queries(0):
+        # nothing has changed, nothing to save but commit() causes RELEASE SAVEPOINT before updating external data
+        with assert_num_queries(1):
             offerers_api.update_venue(venue, contact_data=contact_data, author=user, **venue_data)
+
+        assert history_models.ActionHistory.query.count() == 0
 
     def test_update_only_venue_contact(self, app):
         user_offerer = offerers_factories.UserOffererFactory(
@@ -1075,24 +1077,36 @@ class CreateOffererTest:
 class UpdateOffererTest:
     def test_update_offerer(self):
         offerer = offerers_factories.OffererFactory(city="Portus Namnetum", address="1 rue d'Armorique")
+        author = users_factories.UserFactory()
 
-        offerers_api.update_offerer(offerer, city="Nantes", postal_code="44000", address="29 avenue de Bretagne")
+        offerers_api.update_offerer(
+            offerer, author, city="Nantes", postal_code="44000", address="29 avenue de Bretagne"
+        )
         offerer = offerers_models.Offerer.query.one()
         assert offerer.city == "Nantes"
         assert offerer.postalCode == "44000"
         assert offerer.address == "29 avenue de Bretagne"
 
-        offerers_api.update_offerer(offerer, city="Naoned")
+        offerers_api.update_offerer(offerer, author, city="Naoned")
         offerer = offerers_models.Offerer.query.one()
         assert offerer.city == "Naoned"
         assert offerer.postalCode == "44000"
         assert offerer.address == "29 avenue de Bretagne"
 
-    def test_update_offerer_returns_modified_info(self):
+    def test_update_offerer_logs_action(self):
         offerer = offerers_factories.OffererFactory(city="Portus Namnetum", address="1 rue d'Armorique")
+        author = users_factories.UserFactory()
 
-        modified_info = offerers_api.update_offerer(offerer, city="Nantes", address="29 avenue de Bretagne")
-        assert modified_info == {
+        offerers_api.update_offerer(offerer, author, city="Nantes", address="29 avenue de Bretagne")
+
+        action = history_models.ActionHistory.query.one()
+        assert action.actionType == history_models.ActionType.INFO_MODIFIED
+        assert action.actionDate is not None
+        assert action.authorUserId == author.id
+        assert action.userId is None
+        assert action.offererId == offerer.id
+        assert action.venueId is None
+        assert action.extraData["modified_info"] == {
             "city": {"new_info": "Nantes", "old_info": "Portus Namnetum"},
             "address": {"new_info": "29 avenue de Bretagne", "old_info": "1 rue d'Armorique"},
         }
