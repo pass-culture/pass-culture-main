@@ -1,7 +1,6 @@
 from datetime import datetime
 from datetime import timedelta
 
-from freezegun import freeze_time
 import pytest
 
 from pcapi.core.educational import factories as educational_factories
@@ -15,7 +14,6 @@ from pcapi.core.users import factories as users_factories
 pytestmark = pytest.mark.usefixtures("db_session")
 
 
-@freeze_time("2022-03-20")
 class FindByProUserTest:
     def test_should_return_only_expected_collective_booking_attributes(self, app):
         # Given

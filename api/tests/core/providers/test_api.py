@@ -3,7 +3,6 @@ from decimal import Decimal
 from unittest import mock
 from unittest.mock import patch
 
-from freezegun.api import freeze_time
 import pytest
 
 from pcapi.core import search
@@ -128,7 +127,6 @@ def test_reset_stock_quantity():
 
 class SynchronizeStocksTest:
     @pytest.mark.usefixtures("db_session")
-    @freeze_time("2022-10-15 09:00:00")
     @mock.patch("pcapi.core.search.async_index_offer_ids")
     def test_execution(self, mock_async_index_offer_ids):
         # Given

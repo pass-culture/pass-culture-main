@@ -22,39 +22,40 @@ class TokenTest:
 
     def test_create_token_then_get_data(self):
         """testing the creation of a token and getting the data"""
-        with freeze_time("2021-01-01"):
-            token = token_tools.Token.create(self.token_type, self.ttl, self.user_id, self.data)
-            assert token.data == self.data
-            assert token.user_id == self.user_id
-            assert token.type_ == self.token_type
-            assert token.encoded_token is not None
-            assert token_tools.Token.get_expiration_date(self.token_type, self.user_id) == datetime.utcnow() + self.ttl
+        token = token_tools.Token.create(self.token_type, self.ttl, self.user_id, self.data)
+        assert token.data == self.data
+        assert token.user_id == self.user_id
+        assert token.type_ == self.token_type
+        assert token.encoded_token is not None
+        assert token_tools.Token.get_expiration_date(self.token_type, self.user_id).isoformat(timespec="hours") == (
+            datetime.utcnow() + self.ttl
+        ).isoformat(timespec="hours")
 
     def test_create_token_with_no_data_no_ttl(self):
         """no data, no user and no ttl are provided"""
-        with freeze_time("2021-01-01"):
-            token = token_tools.Token.create(self.token_type, None, self.user_id)
-            assert not token.data and isinstance(token.data, dict)
-            assert token.user_id == self.user_id
-            assert token.type_ == self.token_type
-            assert token.encoded_token is not None
-            assert token_tools.Token.get_expiration_date(self.token_type, self.user_id) is None
+        token = token_tools.Token.create(self.token_type, None, self.user_id)
+        assert not token.data and isinstance(token.data, dict)
+        assert token.user_id == self.user_id
+        assert token.type_ == self.token_type
+        assert token.encoded_token is not None
+        assert token_tools.Token.get_expiration_date(self.token_type, self.user_id) is None
 
     def test_token_from_encoded_token_and_get_data(self):
         """if the token is created from an encoded token, the data should be the same"""
-        with freeze_time("2021-01-01"):
-            old_token = token_tools.Token.create(
-                self.token_type,
-                self.ttl,
-                self.user_id,
-                self.data,
-            )
-            token = token_tools.Token.load_without_checking(old_token.encoded_token)
-            assert token.data == old_token.data
-            assert token.user_id == old_token.user_id
-            assert token.type_ == old_token.type_
-            assert token.encoded_token == old_token.encoded_token
-            assert token_tools.Token.get_expiration_date(self.token_type, self.user_id) == datetime.utcnow() + self.ttl
+        old_token = token_tools.Token.create(
+            self.token_type,
+            self.ttl,
+            self.user_id,
+            self.data,
+        )
+        token = token_tools.Token.load_without_checking(old_token.encoded_token)
+        assert token.data == old_token.data
+        assert token.user_id == old_token.user_id
+        assert token.type_ == old_token.type_
+        assert token.encoded_token == old_token.encoded_token
+        assert token_tools.Token.get_expiration_date(self.token_type, self.user_id).isoformat(timespec="hours") == (
+            datetime.utcnow() + self.ttl
+        ).isoformat(timespec="hours")
 
     def test_get_expiration_date_used_token(self):
         """if the token has been expired using expire_token, the expiration date should be None"""

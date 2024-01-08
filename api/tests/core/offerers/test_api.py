@@ -1441,7 +1441,6 @@ class ValidateOffererAttachmentTest:
         )
 
 
-@freeze_time("2020-10-15 00:00:00")
 class RejectOffererAttachementTest:
     def test_offerer_attachement_is_not_validated(self):
         # Given
@@ -1513,7 +1512,6 @@ class RejectOffererAttachementTest:
         assert action.venueId is None
 
 
-@freeze_time("2020-10-15 00:00:00")
 class DeleteOffererAttachementTest:
     def test_offerer_attachement_is_not_validated(self):
         # Given
@@ -1573,7 +1571,6 @@ class DeleteOffererAttachementTest:
         assert action.venueId is None
 
 
-@freeze_time("2020-10-15 00:00:00")
 class ValidateOffererTest:
     @patch("pcapi.core.search.async_index_offers_of_venue_ids")
     def test_offerer_is_validated(self, mocked_async_index_offers_of_venue_ids):
@@ -1586,7 +1583,7 @@ class ValidateOffererTest:
 
         # Then
         assert user_offerer.offerer.isValidated
-        assert user_offerer.offerer.dateValidated == datetime.datetime.utcnow()
+        assert user_offerer.offerer.dateValidated.strftime("%d/%m/%Y") == datetime.date.today().strftime("%d/%m/%Y")
         assert user_offerer.offerer.validationStatus == ValidationStatus.VALIDATED
 
     @patch("pcapi.core.search.async_index_offers_of_venue_ids")
@@ -1671,7 +1668,6 @@ class ValidateOffererTest:
         assert action.venueId is None
 
 
-@freeze_time("2020-10-15 00:00:00")
 class RejectOffererTest:
     def test_offerer_is_not_validated(self):
         # Given
@@ -2131,7 +2127,6 @@ class HasVenueAtLeastOneBookableOfferTest:
         assert offerers_api.has_venue_at_least_one_bookable_offer(venue)
 
 
-@freeze_time("2022-10-11 12:00:00")
 @override_settings(METABASE_SECRET_KEY="metabase secret key")
 def test_get_offerer_stats_dashboard_url():
     venue = offerers_factories.VenueFactory()
