@@ -2,7 +2,6 @@ import datetime
 import decimal
 from unittest import mock
 
-import freezegun
 import pytest
 
 from pcapi.core.bookings import factories as bookings_factories
@@ -12,14 +11,13 @@ from pcapi.core.offerers import factories as offerers_factories
 from pcapi.core.offers import factories as offers_factories
 from pcapi.core.offers import models as offers_models
 from pcapi.core.providers import factories as providers_factories
-from pcapi.utils.date import format_into_utc_date
+from pcapi.utils import date as date_utils
 
 from . import utils
 
 
 @pytest.mark.usefixtures("db_session")
 class PostProductByEanTest:
-    @freezegun.freeze_time("2022-01-01 12:00:00")
     def test_valid_ean_with_stock(self, client):
         venue_data = {
             "audioDisabilityCompliant": True,
@@ -37,6 +35,8 @@ class PostProductByEanTest:
         )
         unknown_ean = "1234567897123"
 
+        next_minute = datetime.datetime.utcnow().replace(second=0, microsecond=0) + datetime.timedelta(minutes=1)
+        next_minute_in_non_utc_tz = date_utils.utc_datetime_to_department_timezone(next_minute, "973")
         response = client.with_explicit_token(offerers_factories.DEFAULT_CLEAR_API_KEY).post(
             "/public/offers/v1/products/ean",
             json={
@@ -45,7 +45,7 @@ class PostProductByEanTest:
                     {
                         "ean": product.extraData["ean"],
                         "stock": {
-                            "bookingLimitDatetime": "2022-01-01T16:00:00+04:00",
+                            "bookingLimitDatetime": next_minute_in_non_utc_tz.isoformat(),
                             "price": 1234,
                             "quantity": 3,
                         },
@@ -53,7 +53,7 @@ class PostProductByEanTest:
                     {
                         "ean": unknown_ean,
                         "stock": {
-                            "bookingLimitDatetime": "2022-01-01T16:00:00+04:00",
+                            "bookingLimitDatetime": next_minute_in_non_utc_tz.isoformat(),
                             "price": 1234,
                             "quantity": 3,
                         },
@@ -83,7 +83,7 @@ class PostProductByEanTest:
         assert created_stock.price == decimal.Decimal("12.34")
         assert created_stock.quantity == 3
         assert created_stock.offer == created_offer
-        assert created_stock.bookingLimitDatetime == datetime.datetime(2022, 1, 1, 12, 0, 0)
+        assert created_stock.bookingLimitDatetime == next_minute
 
     def test_valid_ean_with_multiple_products(self, client):
         # FIXME : (mageoffray, 2023-11-07) Delete this test one product database is cleaned
@@ -153,6 +153,7 @@ class PostProductByEanTest:
         stock = offers_factories.ThingStockFactory(offer=offer, quantity=10, price=100)
         bookings_factories.BookingFactory(stock=stock, quantity=2)
 
+        tomorrow = datetime.datetime.utcnow() + datetime.timedelta(days=1)
         response = client.with_explicit_token(offerers_factories.DEFAULT_CLEAR_API_KEY).post(
             "/public/offers/v1/products/ean",
             json={
@@ -161,9 +162,7 @@ class PostProductByEanTest:
                     {
                         "ean": product.extraData["ean"],
                         "stock": {
-                            "bookingLimitDatetime": format_into_utc_date(
-                                datetime.datetime.utcnow() + datetime.timedelta(days=1)
-                            ),
+                            "bookingLimitDatetime": date_utils.format_into_utc_date(tomorrow),
                             "price": 1234,
                             "quantity": 3,
                         },
@@ -230,7 +229,7 @@ class PostProductByEanTest:
                     {
                         "ean": product.extraData["ean"],
                         "stock": {
-                            "bookingLimitDatetime": format_into_utc_date(
+                            "bookingLimitDatetime": date_utils.format_into_utc_date(
                                 datetime.datetime.utcnow() + datetime.timedelta(days=1)
                             ),
                             "price": 1234,
@@ -245,7 +244,6 @@ class PostProductByEanTest:
         assert stock.quantity == 2
         assert stock.price == decimal.Decimal("12.34")
 
-    @freezegun.freeze_time("2022-01-01 12:00:00")
     def test_update_multiple_stocks_with_one_rejected(self, client):
         venue_data = {
             "audioDisabilityCompliant": True,
@@ -272,6 +270,8 @@ class PostProductByEanTest:
         cd_stock = offers_factories.ThingStockFactory(offer=cd_offer, quantity=10, price=100)
         book_stock = offers_factories.ThingStockFactory(offer=book_offer, quantity=10, price=100)
 
+        next_minute = datetime.datetime.utcnow().replace(second=0, microsecond=0) + datetime.timedelta(minutes=1)
+        next_minute_in_non_utc_tz = date_utils.utc_datetime_to_department_timezone(next_minute, "973")
         response = client.with_explicit_token(offerers_factories.DEFAULT_CLEAR_API_KEY).post(
             "/public/offers/v1/products/ean",
             json={
@@ -280,7 +280,7 @@ class PostProductByEanTest:
                     {
                         "ean": cd_product.extraData["ean"],
                         "stock": {
-                            "bookingLimitDatetime": "2022-01-01T16:00:00+04:00",
+                            "bookingLimitDatetime": next_minute_in_non_utc_tz.isoformat(),
                             "price": 1234,
                             "quantity": 0,
                         },
@@ -288,7 +288,7 @@ class PostProductByEanTest:
                     {
                         "ean": book_product.extraData["ean"],
                         "stock": {
-                            "bookingLimitDatetime": "2022-01-01T16:00:00+04:00",
+                            "bookingLimitDatetime": next_minute_in_non_utc_tz.isoformat(),
                             "price": 2345,
                             "quantity": 25,
                         },
@@ -304,7 +304,6 @@ class PostProductByEanTest:
         assert book_stock.price == decimal.Decimal("100.00")
 
     @mock.patch("pcapi.tasks.sendinblue_tasks.update_sib_pro_attributes_task")
-    @freezegun.freeze_time("2022-01-01 12:00:00")
     def test_valid_ean_without_task_autoflush(self, update_sib_pro_task_mock, client):
         product_provider = providers_factories.ProviderFactory()
         venue, api_key = utils.create_offerer_provider_linked_to_venue()
@@ -320,6 +319,8 @@ class PostProductByEanTest:
         # environments, therefore we cannot rely on its side effects
         update_sib_pro_task_mock.side_effect = None
 
+        next_minute = datetime.datetime.utcnow().replace(second=0, microsecond=0) + datetime.timedelta(minutes=1)
+        next_minute_in_non_utc_tz = date_utils.utc_datetime_to_department_timezone(next_minute, "973")
         response = client.with_explicit_token(offerers_factories.DEFAULT_CLEAR_API_KEY).post(
             "/public/offers/v1/products/ean",
             json={
@@ -327,7 +328,7 @@ class PostProductByEanTest:
                     {
                         "ean": product.extraData["ean"],
                         "stock": {
-                            "bookingLimitDatetime": "2022-01-01T16:00:00+04:00",
+                            "bookingLimitDatetime": next_minute_in_non_utc_tz.isoformat(),
                             "price": 1234,
                             "quantity": 3,
                         },

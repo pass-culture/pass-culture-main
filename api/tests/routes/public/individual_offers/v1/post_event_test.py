@@ -1,6 +1,5 @@
 import decimal
 
-import freezegun
 import pytest
 
 from pcapi import settings
@@ -51,7 +50,6 @@ class PostEventTest:
         assert created_offer.withdrawalDelay is None
 
     @override_features(WIP_ENABLE_EVENTS_WITH_TICKETS_FOR_PUBLIC_API=True)
-    @freezegun.freeze_time("2022-01-01 12:00:00")
     def test_event_creation_with_full_body(self, client, clear_tests_assets_bucket):
         venue, _ = utils.create_offerer_provider_linked_to_venue(with_charlie=True)
 
