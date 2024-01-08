@@ -1,7 +1,6 @@
 import dataclasses
 import datetime
 
-import freezegun
 import pytest
 
 from pcapi.core.bookings import factories as bookings_factories
@@ -9,42 +8,47 @@ import pcapi.core.mails.testing as mails_testing
 from pcapi.core.mails.transactional import sendinblue_template_ids
 from pcapi.core.offerers import factories as offerers_factories
 from pcapi.core.offers import factories as offers_factories
-from pcapi.utils.date import format_into_utc_date
+from pcapi.utils import date as date_utils
 
 from . import utils
 
 
 @pytest.mark.usefixtures("db_session")
 class PatchDateTest:
-    @freezegun.freeze_time("2022-01-01 12:00:00")
     def test_update_all_fields_on_date_with_price(self, client):
         venue, api_key = utils.create_offerer_provider_linked_to_venue()
         event_offer = offers_factories.EventOfferFactory(
             venue=venue,
             lastProvider=api_key.provider,
         )
+        next_year = datetime.datetime.utcnow().replace(second=0, microsecond=0) + datetime.timedelta(days=365)
         event_stock = offers_factories.EventStockFactory(
             offer=event_offer,
             quantity=10,
             price=12,
             priceCategory=None,
-            bookingLimitDatetime=datetime.datetime(2022, 1, 7),
-            beginningDatetime=datetime.datetime(2022, 1, 12),
+            bookingLimitDatetime=next_year,
+            beginningDatetime=next_year,
         )
         price_category = offers_factories.PriceCategoryFactory(offer=event_offer)
 
+        two_weeks_from_now = datetime.datetime.utcnow().replace(second=0, microsecond=0) + datetime.timedelta(weeks=2)
+        next_month = datetime.datetime.utcnow().replace(second=0, microsecond=0) + datetime.timedelta(days=30)
         response = client.with_explicit_token(offerers_factories.DEFAULT_CLEAR_API_KEY).patch(
             f"/public/offers/v1/events/{event_stock.offer.id}/dates/{event_stock.id}",
             json={
-                "beginningDatetime": "2022-02-01T15:00:00+02:00",
-                "bookingLimitDatetime": "2022-01-20T12:00:00+02:00",
+                "beginningDatetime": date_utils.utc_datetime_to_department_timezone(next_month, None).isoformat(),
+                "bookingLimitDatetime": date_utils.utc_datetime_to_department_timezone(
+                    two_weeks_from_now, departement_code=None
+                ).isoformat(),
                 "priceCategoryId": price_category.id,
                 "quantity": 24,
             },
         )
-        assert response.status_code == 200
-        assert event_stock.bookingLimitDatetime == datetime.datetime(2022, 1, 20, 10)
-        assert event_stock.beginningDatetime == datetime.datetime(2022, 2, 1, 13)
+
+        assert response.status_code == 200, response.json
+        assert event_stock.bookingLimitDatetime == two_weeks_from_now
+        assert event_stock.beginningDatetime == next_month
         assert event_stock.price == price_category.price
         assert event_stock.priceCategory == price_category
         assert event_stock.quantity == 24
@@ -73,8 +77,8 @@ class PatchDateTest:
         response = client.with_explicit_token(offerers_factories.DEFAULT_CLEAR_API_KEY).patch(
             f"/public/offers/v1/events/{event_stock.offer.id}/dates/{event_stock.id}",
             json={
-                "bookingLimitDatetime": format_into_utc_date(two_days_after),
-                "beginningDatetime": format_into_utc_date(three_days_after),
+                "bookingLimitDatetime": date_utils.format_into_utc_date(two_days_after),
+                "beginningDatetime": date_utils.format_into_utc_date(three_days_after),
                 "priceCategoryId": price_category.id,
                 "quantity": 24,
             },
@@ -116,8 +120,8 @@ class PatchDateTest:
         response = client.with_explicit_token(offerers_factories.DEFAULT_CLEAR_API_KEY).patch(
             f"/public/offers/v1/events/{event_stock.offer.id}/dates/{event_stock.id}",
             json={
-                "bookingLimitDatetime": format_into_utc_date(two_days_after),
-                "beginningDatetime": format_into_utc_date(three_days_after),
+                "bookingLimitDatetime": date_utils.format_into_utc_date(two_days_after),
+                "beginningDatetime": date_utils.format_into_utc_date(three_days_after),
                 "priceCategoryId": new_price_category.id,
                 "quantity": 24,
             },
@@ -130,7 +134,6 @@ class PatchDateTest:
         assert event_stock.priceCategory == new_price_category
         assert event_stock.quantity == 24
 
-    @freezegun.freeze_time("2022-01-01 12:00:00")
     def test_update_only_one_field(self, client):
         venue, api_key = utils.create_offerer_provider_linked_to_venue()
         event_offer = offers_factories.EventOfferFactory(
@@ -138,24 +141,28 @@ class PatchDateTest:
             lastProvider=api_key.provider,
         )
         price_category = offers_factories.PriceCategoryFactory(offer=event_offer)
+        next_year = datetime.datetime.utcnow().replace(second=0, microsecond=0) + datetime.timedelta(days=365)
         event_stock = offers_factories.EventStockFactory(
             offer=event_offer,
             quantity=10,
             priceCategory=price_category,
-            bookingLimitDatetime=datetime.datetime(2022, 1, 7),
-            beginningDatetime=datetime.datetime(2022, 1, 12),
+            bookingLimitDatetime=next_year,
+            beginningDatetime=next_year,
         )
 
+        eight_days_from_now = datetime.datetime.utcnow().replace(second=0, microsecond=0) + datetime.timedelta(days=8)
         response = client.with_explicit_token(offerers_factories.DEFAULT_CLEAR_API_KEY).patch(
             f"/public/offers/v1/events/{event_stock.offer.id}/dates/{event_stock.id}",
             json={
-                "bookingLimitDatetime": "2022-01-09T12:00:00+02:00",
+                "bookingLimitDatetime": date_utils.utc_datetime_to_department_timezone(
+                    eight_days_from_now, departement_code=None
+                ).isoformat(),
             },
         )
 
-        assert response.status_code == 200
-        assert event_stock.bookingLimitDatetime == datetime.datetime(2022, 1, 9, 10)
-        assert event_stock.beginningDatetime == datetime.datetime(2022, 1, 12)
+        assert response.status_code == 200, response.json
+        assert event_stock.bookingLimitDatetime == eight_days_from_now
+        assert event_stock.beginningDatetime == next_year
         assert event_stock.price == price_category.price
         assert event_stock.quantity == 10
         assert event_stock.priceCategory == price_category
