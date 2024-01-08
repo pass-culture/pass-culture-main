@@ -61,13 +61,13 @@ jobs:
     secrets:
       GCP_EHP_SERVICE_ACCOUNT: ${{ secrets.GCP_EHP_SERVICE_ACCOUNT }}
       GCP_EHP_WORKLOAD_IDENTITY_PROVIDER: ${{ secrets.GCP_EHP_WORKLOAD_IDENTITY_PROVIDER }}
-      CACHE_BUCKET_NAME: "passculture-infra-prod-github-runner-cache"
     with:
       ENV: "staging"
       CHANNEL: "${{ needs.find-hotfix-tag-number.outputs.hotfixTagNumber }}"
       EXPIRES: "30d"
       PUSH_RELEASE_TO_SENTRY: true
       REF: v${{ needs.find-hotfix-tag-number.outputs.hotfixTagNumber }}
+      CACHE_BUCKET_NAME: "passculture-infra-prod-github-runner-cache"
 
   create-pro-integration-release:
     name: "Pro integration"
@@ -76,12 +76,12 @@ jobs:
     secrets:
       GCP_EHP_SERVICE_ACCOUNT: ${{ secrets.GCP_EHP_SERVICE_ACCOUNT }}
       GCP_EHP_WORKLOAD_IDENTITY_PROVIDER: ${{ secrets.GCP_EHP_WORKLOAD_IDENTITY_PROVIDER }}
-      CACHE_BUCKET_NAME: "passculture-infra-prod-github-runner-cache"
     with:
       ENV: "integration"
       CHANNEL: "${{ needs.find-hotfix-tag-number.outputs.hotfixTagNumber }}"
       EXPIRES: "30d"
       REF: v${{ needs.find-hotfix-tag-number.outputs.hotfixTagNumber }}
+      CACHE_BUCKET_NAME: "passculture-infra-prod-github-runner-cache"
 
   create-pro-production-release:
     name: "Pro production"
@@ -90,10 +90,10 @@ jobs:
     secrets:
       GCP_EHP_SERVICE_ACCOUNT: ${{ secrets.GCP_EHP_SERVICE_ACCOUNT }}
       GCP_EHP_WORKLOAD_IDENTITY_PROVIDER: ${{ secrets.GCP_EHP_WORKLOAD_IDENTITY_PROVIDER }}
-      CACHE_BUCKET_NAME: "passculture-infra-prod-github-runner-cache"
     with:
       ENV: "production"
       CHANNEL: "${{ needs.find-hotfix-tag-number.outputs.hotfixTagNumber }}"
       EXPIRES: "30d"
       PUSH_RELEASE_TO_SENTRY: true
       REF: v${{ needs.find-hotfix-tag-number.outputs.hotfixTagNumber }}
+      CACHE_BUCKET_NAME: "passculture-infra-prod-github-runner-cache"
