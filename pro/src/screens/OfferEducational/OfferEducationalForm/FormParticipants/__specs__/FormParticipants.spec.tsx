@@ -203,4 +203,19 @@ describe('FormParticipants', () => {
       })
     ).toBeInTheDocument()
   })
+
+  it('should not display new student level for MeG when ff is not active', () => {
+    renderFormParticipants(participants, false)
+
+    expect(
+      screen.queryByRole('checkbox', {
+        name: StudentLevels._COLES_INNOVANTES_MARSEILLE_EN_GRAND_MATERNELLE,
+      })
+    ).not.toBeInTheDocument()
+    expect(
+      screen.queryByRole('checkbox', {
+        name: StudentLevels._COLES_INNOVANTES_MARSEILLE_EN_GRAND_L_MENTAIRE,
+      })
+    ).not.toBeInTheDocument()
+  })
 })
