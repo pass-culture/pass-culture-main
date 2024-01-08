@@ -1,3 +1,4 @@
+import * as Sentry from '@sentry/react'
 import React, { useEffect, useState } from 'react'
 import {
   useInfiniteHits,
@@ -10,8 +11,6 @@ import { AdageFrontRoles } from 'apiClient/adage'
 import { apiAdage } from 'apiClient/api'
 import useActiveFeature from 'hooks/useActiveFeature'
 import fullGoTop from 'icons/full-go-top.svg'
-import { getCollectiveOfferAdapter } from 'pages/AdageIframe/app/adapters/getCollectiveOfferAdapter'
-import { getCollectiveOfferTemplateAdapter } from 'pages/AdageIframe/app/adapters/getCollectiveOfferTemplateAdapter'
 import useAdageUser from 'pages/AdageIframe/app/hooks/useAdageUser'
 import {
   HydratedCollectiveOffer,
@@ -41,7 +40,6 @@ export interface OffersProps {
 }
 
 type HydratedOffer = HydratedCollectiveOffer | HydratedCollectiveOfferTemplate
-
 type OfferMap = Map<string, HydratedOffer>
 
 export const Offers = ({
@@ -97,36 +95,68 @@ export const Offers = ({
       logFiltersOnSearch(nbHits, results?.queryID)
     }
 
-    Promise.all(
-      hits.map(async (hit) => {
-        if (fetchedOffers.has(hit.objectID)) {
-          return Promise.resolve({
-            hitId: hit.objectID,
-            offer: fetchedOffers.get(hit.objectID),
-          })
-        }
-        const offerId = extractOfferIdFromObjectId(hit.objectID)
-        const { isOk, payload: offer } = await (hit.isTemplate
-          ? getCollectiveOfferTemplateAdapter(offerId)
-          : getCollectiveOfferAdapter(offerId))
+    Promise.allSettled(
+      hits.map(
+        async (hit): Promise<{ hitId?: string; offer?: HydratedOffer }> => {
+          if (fetchedOffers.has(hit.objectID)) {
+            return {
+              hitId: hit.objectID,
+              offer: fetchedOffers.get(hit.objectID),
+            }
+          }
+          const offerId = extractOfferIdFromObjectId(hit.objectID)
 
-        if (!isOk) {
-          return { hitId: undefined, offer: undefined }
+          try {
+            if (hit.isTemplate) {
+              const offer = await apiAdage.getCollectiveOfferTemplate(offerId)
+              return {
+                hitId: hit.objectID,
+                offer: { ...offer, isTemplate: true },
+              }
+            } else {
+              const offer = await apiAdage.getCollectiveOffer(offerId)
+              return {
+                hitId: hit.objectID,
+                offer: { ...offer, isTemplate: false },
+              }
+            }
+          } catch (e) {
+            Sentry.withScope((scope) => {
+              scope.setTag('custom-error-type', 'api')
+              Sentry.captureException(
+                `error when retrieving adage offer ${hit.objectID} ${e}`
+              )
+            })
+            return {}
+          }
         }
-
-        return { hitId: hit.objectID, offer }
-      })
+      )
     )
       .then((offersFromHits) => {
         const offersFromHitsMap = new Map(fetchedOffers)
         offersFromHits
-          .filter((res) => res?.offer && offerIsBookable(res.offer))
+          .filter(
+            (res) =>
+              res.status === 'fulfilled' &&
+              res.value.offer &&
+              offerIsBookable(res.value.offer)
+          )
           .forEach((res) => {
-            if (res?.hitId && res.offer) {
-              offersFromHitsMap.set(res.hitId, res.offer)
+            if (
+              res.status === 'fulfilled' &&
+              res.value.hitId &&
+              res.value.offer
+            ) {
+              offersFromHitsMap.set(res.value.hitId, res.value.offer)
             }
           })
         setFetchedOffers(offersFromHitsMap)
+      })
+      .catch((e) => {
+        Sentry.withScope((scope) => {
+          scope.setTag('custom-error-type', 'data-processing')
+          Sentry.captureException(`error when filtering offer results ${e}`)
+        })
       })
       .finally(() => {
         setQueriesAreLoading(false)
