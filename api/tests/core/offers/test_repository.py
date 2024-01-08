@@ -15,6 +15,7 @@ from pcapi.core.offers import models
 from pcapi.core.offers import repository
 import pcapi.core.providers.constants as providers_constants
 import pcapi.core.providers.factories as providers_factories
+from pcapi.core.testing import assert_num_queries
 from pcapi.core.users import factories as users_factories
 from pcapi.domain.pro_offers.offers_recap import OffersRecap
 from pcapi.models import db
@@ -25,6 +26,32 @@ from pcapi.utils.date import utc_datetime_to_department_timezone
 
 class GetCappedOffersForFiltersTest:
     @pytest.mark.usefixtures("db_session")
+    def test_perf_offers_capped_to_max_offers_count(self):
+        user_offerer = offerers_factories.UserOffererFactory()
+        venue = offerers_factories.VenueFactory(managingOfferer=user_offerer.offerer)
+        offer = factories.OfferFactory(venue=venue)
+        factories.ThingStockFactory(offer=offer)
+        factories.MediationFactory(offer=offer)
+        provider = providers_factories.AllocineProviderFactory()
+        factories.OfferFactory(venue=venue, lastProvider=provider)
+        product = factories.ProductFactory()
+        factories.OfferFactory(venue=venue, product=product)
+        event = factories.EventOfferFactory(venue=venue)
+        factories.EventStockFactory(offer=event)
+        digital_event = factories.DigitalOfferFactory(venue=venue)
+        factories.StockFactory(offer=digital_event)
+
+        # 1 to get user
+        # 1 to get user_offerer
+        # 1 to get offers
+        with assert_num_queries(3):
+            offer_recap = repository.get_capped_offers_for_filters(
+                user_id=user_offerer.user.id, user_is_admin=user_offerer.user.has_admin_role, offers_limit=50
+            )
+
+        assert len(offer_recap.offers) == 5
+
+    @pytest.mark.usefixtures("db_session")
     def should_return_offers_capped_to_max_offers_count(self):
         # Given
         user_offerer = offerers_factories.UserOffererFactory()
@@ -34,6 +61,7 @@ class GetCappedOffersForFiltersTest:
         requested_max_offers_count = 1
 
         # When
+
         offers = repository.get_capped_offers_for_filters(
             user_id=user_offerer.user.id,
             user_is_admin=user_offerer.user.has_admin_role,
