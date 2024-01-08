@@ -1,14 +1,14 @@
 import React, { createContext, useContext, useEffect, useState } from 'react'
-import { useNavigate } from 'react-router-dom'
+import { useLoaderData, useNavigate } from 'react-router-dom'
 
 import { CategoryResponseModel, SubcategoryResponseModel } from 'apiClient/v1'
 import { OffererName } from 'core/Offerers/types'
-import { getIndividualOfferAdapter } from 'core/Offers/adapters'
 import { IndividualOffer } from 'core/Offers/types'
 import { GET_DATA_ERROR_MESSAGE } from 'core/shared'
 import { IndividualOfferVenueItem } from 'core/Venue/types'
 import useActiveFeature from 'hooks/useActiveFeature'
 import useNotification from 'hooks/useNotification'
+import { IndividualOfferWizardLoaderData } from 'pages/IndividualOfferWizard/IndividualOfferWizard'
 import Spinner from 'ui-kit/Spinner/Spinner'
 
 import { getWizardData } from './adapters'
@@ -16,7 +16,6 @@ import { getWizardData } from './adapters'
 export interface IndividualOfferContextValues {
   offerId: number | null
   offer: IndividualOffer | null
-  setOffer: ((offer: IndividualOffer | null) => void) | null
   categories: CategoryResponseModel[]
   subCategories: SubcategoryResponseModel[]
   subcategory?: SubcategoryResponseModel
@@ -31,7 +30,6 @@ export const IndividualOfferContext =
   createContext<IndividualOfferContextValues>({
     offerId: null,
     offer: null,
-    setOffer: null,
     categories: [],
     subCategories: [],
     offererNames: [],
@@ -59,15 +57,13 @@ export function IndividualOfferContextProvider({
   queryOffererId,
   querySubcategoryId,
 }: IndividualOfferContextProviderProps) {
+  const { offer } = useLoaderData() as IndividualOfferWizardLoaderData
   const notify = useNotification()
   const navigate = useNavigate()
   const isNewBankDetailsJourneyEnabled = useActiveFeature(
     'WIP_ENABLE_NEW_BANK_DETAILS_JOURNEY'
   )
   const [isLoading, setIsLoading] = useState<boolean>(true)
-  const [offerOfferer, setOfferOfferer] = useState<OffererName | null>(null)
-
-  const [offer, setOfferState] = useState<IndividualOffer | null>(null)
   const [categories, setCategories] = useState<CategoryResponseModel[]>([])
   const [subCategories, setSubCategories] = useState<
     SubcategoryResponseModel[]
@@ -79,30 +75,7 @@ export function IndividualOfferContextProvider({
     {}
   )
 
-  const setOffer = (offer: IndividualOffer | null) => {
-    setOfferState(offer)
-    setOfferOfferer(offer ? offer.venue.managingOfferer : null)
-  }
-
-  useEffect(() => {
-    async function loadOffer() {
-      const response = await getIndividualOfferAdapter(Number(offerId))
-      if (response.isOk) {
-        setOffer(response.payload)
-      } else {
-        navigate('/accueil')
-        notify.error(
-          'Une erreur est survenue lors de la récupération de votre offre'
-        )
-      }
-    }
-    if (offerId) {
-      // eslint-disable-next-line @typescript-eslint/no-floating-promises
-      loadOffer()
-    } else {
-      setOffer(null)
-    }
-  }, [offerId])
+  const offerOfferer = offer ? offer.venue.managingOfferer : null
 
   useEffect(() => {
     async function loadData() {
@@ -156,7 +129,6 @@ export function IndividualOfferContextProvider({
       value={{
         offerId: offer?.id || null,
         offer,
-        setOffer,
         categories,
         subCategories,
         offererNames,

@@ -4,6 +4,7 @@ import {
   waitForElementToBeRemoved,
 } from '@testing-library/react'
 import React from 'react'
+import * as router from 'react-router-dom'
 
 import { api } from 'apiClient/api'
 import { GetIndividualOfferResponseModel } from 'apiClient/v1'
@@ -22,6 +23,11 @@ import {
 
 const offerer = offererFactory()
 const apiOffer: GetIndividualOfferResponseModel = GetIndividualOfferFactory()
+
+vi.mock('react-router-dom', async () => ({
+  ...((await vi.importActual('react-router-dom')) ?? {}),
+  useLoaderData: vi.fn(),
+}))
 
 const renderIndividualOfferContextProvider = (
   props?: Partial<IndividualOfferContextProviderProps>
@@ -47,7 +53,7 @@ describe('IndividualOfferContextProvider', () => {
       categories: [],
       subcategories: [],
     })
-    vi.spyOn(api, 'getOffer').mockResolvedValue(apiOffer)
+    vi.spyOn(router, 'useLoaderData').mockResolvedValue({ offer: apiOffer })
   })
 
   it('should initialize context with api when a offerId is given and user is admin', async () => {
@@ -61,7 +67,6 @@ describe('IndividualOfferContextProvider', () => {
       )
     })
     expect(api.getCategories).toHaveBeenCalledWith()
-    expect(api.getOffer).toHaveBeenCalledWith(apiOffer.id)
   })
 
   it('should initialize context with api when a offerId is given', async () => {
@@ -75,7 +80,6 @@ describe('IndividualOfferContextProvider', () => {
       )
     })
     expect(api.getCategories).toHaveBeenCalledWith()
-    expect(api.getOffer).toHaveBeenCalledWith(apiOffer.id)
   })
 
   it('should initialize context with api when no offerId is given', async () => {
@@ -89,27 +93,6 @@ describe('IndividualOfferContextProvider', () => {
       )
     })
     expect(api.getCategories).toHaveBeenCalledWith()
-    expect(api.getOffer).not.toHaveBeenCalled()
-  })
-
-  it('should display an error when unable to load offer', async () => {
-    vi.spyOn(api, 'getOffer').mockRejectedValueOnce(
-      new ApiError(
-        {} as ApiRequestOptions,
-        { body: { global: ['Une erreur est survenue'] } } as ApiResult,
-        ''
-      )
-    )
-
-    renderIndividualOfferContextProvider({ offerId: 'OFFER_ID' })
-
-    await waitFor(() => {
-      expect(
-        screen.getByText(
-          /Une erreur est survenue lors de la récupération de votre offre/
-        )
-      ).toBeInTheDocument()
-    })
   })
 
   it('should display an error when unable to load categories', async () => {
