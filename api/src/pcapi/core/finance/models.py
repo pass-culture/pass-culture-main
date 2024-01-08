@@ -902,7 +902,7 @@ class PaymentStatus(Base, Model):
         sqla.DateTime, nullable=False, default=datetime.datetime.utcnow, server_default=sqla.func.now()
     )
     status: TransactionStatus = sqla.Column(sqla.Enum(TransactionStatus), nullable=False)
-    detail = sqla.Column(sqla.Text, nullable=True)
+    detail = sqla.Column(sqla.VARCHAR(), nullable=True)
 
 
 # `PaymentMessage` is deprecated. See comment above `Payment` model
