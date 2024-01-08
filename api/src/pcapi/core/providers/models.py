@@ -16,6 +16,7 @@ from sqlalchemy import Numeric
 from sqlalchemy import String
 from sqlalchemy import Text
 from sqlalchemy import UniqueConstraint
+from sqlalchemy import VARCHAR
 from sqlalchemy import and_
 from sqlalchemy import case
 from sqlalchemy import exists
@@ -66,7 +67,7 @@ class Provider(PcObject, Base, Model, DeactivableMixin):
     logoUrl: str = Column(Text(), nullable=True)
     bookingExternalUrl: str = Column(Text(), nullable=True)
     cancelExternalUrl: str = Column(Text(), nullable=True)
-    notificationExternalUrl: str = Column(Text(), nullable=True)
+    notificationExternalUrl: str = Column(VARCHAR(length=255), nullable=True)
     hmacKey: str = Column(Text(64), nullable=True)
     pricesInCents: bool = Column(Boolean, nullable=False, default=False, server_default=expression.false())
 
