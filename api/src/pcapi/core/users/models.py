@@ -202,7 +202,7 @@ class User(PcObject, Base, Model, NeedsValidationMixin, DeactivableMixin):
     hasSeenProTutorials: bool = sa.Column(sa.Boolean, nullable=False, server_default=expression.false())
     hasSeenProRgs: bool = sa.Column(sa.Boolean, nullable=False, server_default=expression.false())
     idPieceNumber = sa.Column(sa.String, nullable=True, unique=True)
-    ineHash = sa.Column(sa.String, nullable=True, unique=True)
+    ineHash = sa.Column(sa.Text(), nullable=True, unique=True)
     irisFranceId = sa.Column(sa.BigInteger, sa.ForeignKey("iris_france.id"), index=True, nullable=True)
     irisFrance: sa.orm.Mapped[IrisFrance] = orm.relationship(IrisFrance, foreign_keys=[irisFranceId])
     isEmailValidated = sa.Column(sa.Boolean, nullable=True, server_default=expression.false())
