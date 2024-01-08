@@ -1,6 +1,5 @@
 from datetime import datetime
 
-from freezegun import freeze_time
 import pytest
 
 from pcapi.core.educational import factories as educational_factories
@@ -11,7 +10,6 @@ from pcapi.models.offer_mixin import OfferValidationStatus
 
 
 @pytest.mark.usefixtures("db_session")
-@freeze_time("2022-05-01 15:00:00")
 class CollectiveOffersPublicGetOfferTest:
     def test_get_offers(self, client):
         # Given
@@ -42,14 +40,14 @@ class CollectiveOffersPublicGetOfferTest:
             {
                 "id": offer1.id,
                 "venueId": offer1.venueId,
-                "beginningDatetime": "2022-05-02T15:00:00",
+                "beginningDatetime": stock1.beginningDatetime.isoformat(timespec="seconds"),
                 "status": offer1.status.name,
                 "bookings": [],
             },
             {
                 "id": offer2.id,
                 "venueId": offer2.venueId,
-                "beginningDatetime": "2022-05-02T15:00:00",
+                "beginningDatetime": offer2.collectiveStock.beginningDatetime.isoformat(timespec="seconds"),
                 "status": offer2.status.name,
                 "bookings": [
                     {
@@ -143,7 +141,7 @@ class CollectiveOffersPublicGetOfferTest:
             {
                 "id": offer.id,
                 "venueId": offer.venueId,
-                "beginningDatetime": "2022-05-02T15:00:00",
+                "beginningDatetime": stock.beginningDatetime.isoformat(timespec="seconds"),
                 "status": offer.status.name,
                 "bookings": [],
             },
@@ -170,7 +168,7 @@ class CollectiveOffersPublicGetOfferTest:
             {
                 "id": offer1.id,
                 "venueId": offer1.venueId,
-                "beginningDatetime": "2022-05-02T15:00:00",
+                "beginningDatetime": stock1.beginningDatetime.isoformat(timespec="seconds"),
                 "status": offer1.status.name,
                 "bookings": [],
             },
@@ -198,7 +196,7 @@ class CollectiveOffersPublicGetOfferTest:
             {
                 "id": offer1.id,
                 "venueId": offer1.venueId,
-                "beginningDatetime": "2022-05-02T15:00:00",
+                "beginningDatetime": stock1.beginningDatetime.isoformat(timespec="seconds"),
                 "status": offer1.status.name,
                 "bookings": [],
             },

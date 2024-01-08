@@ -3,7 +3,6 @@ from decimal import Decimal
 from pathlib import Path
 from unittest.mock import patch
 
-from freezegun import freeze_time
 import pytest
 
 from pcapi import settings
@@ -23,7 +22,6 @@ UPLOAD_FOLDER = settings.LOCAL_STORAGE_DIR / educational_models.CollectiveOffer.
 
 
 @pytest.mark.usefixtures("db_session")
-@freeze_time("2022-05-01 15:00:00")
 class CollectiveOffersPublicPatchOfferTest:
     def teardown_method(self, *args):
         """clear images after each tests"""
@@ -81,8 +79,8 @@ class CollectiveOffersPublicPatchOfferTest:
             "imageCredit": "a great artist",
             "nationalProgramId": national_program.id,
             # stock part
-            "beginningDatetime": "2022-09-25T11:00",
-            "bookingLimitDatetime": "2022-09-15T11:00",
+            "beginningDatetime": stock.beginningDatetime.isoformat(timespec="seconds"),
+            "bookingLimitDatetime": stock.bookingLimitDatetime.isoformat(timespec="seconds"),
             "totalPrice": 96.25,
             "numberOfTickets": 30,
             "educationalPriceDetail": "Justification du prix",
@@ -383,8 +381,8 @@ class CollectiveOffersPublicPatchOfferTest:
                 "otherAddress": None,
             },
             # stock part
-            "beginningDatetime": "2022-09-25T11:00",
-            "bookingLimitDatetime": "2022-09-15T11:00",
+            "beginningDatetime": stock.beginningDatetime.isoformat(timespec="seconds"),
+            "bookingLimitDatetime": stock.bookingLimitDatetime.isoformat(timespec="seconds"),
             "totalPrice": 21,
             "numberOfTickets": 30,
             "educationalPriceDetail": "Justification du prix",
@@ -431,8 +429,8 @@ class CollectiveOffersPublicPatchOfferTest:
                 "otherAddress": None,
             },
             # stock part
-            "beginningDatetime": "2022-09-25T11:00",
-            "bookingLimitDatetime": "2022-09-15T11:00",
+            "beginningDatetime": stock.beginningDatetime.isoformat(timespec="seconds"),
+            "bookingLimitDatetime": stock.bookingLimitDatetime.isoformat(timespec="seconds"),
             "totalPrice": 35621,
             "numberOfTickets": 30,
             "educationalPriceDetail": "Justification du prix",
@@ -478,8 +476,8 @@ class CollectiveOffersPublicPatchOfferTest:
                 "otherAddress": None,
             },
             # stock part
-            "beginningDatetime": "2022-09-25T11:00",
-            "bookingLimitDatetime": "2022-09-15T11:00",
+            "beginningDatetime": stock.beginningDatetime.isoformat(timespec="seconds"),
+            "bookingLimitDatetime": stock.bookingLimitDatetime.isoformat(timespec="seconds"),
             "totalPrice": 35621,
             "numberOfTickets": 30,
             "educationalPriceDetail": "Justification du prix",
@@ -837,8 +835,8 @@ class CollectiveOffersPublicPatchOfferTest:
             "isActive": False,
             "imageCredit": "a great artist",
             # stock part
-            "beginningDatetime": "2022-09-25T11:00",
-            "bookingLimitDatetime": "2022-09-15T11:00",
+            "beginningDatetime": stock.beginningDatetime.isoformat(timespec="seconds"),
+            "bookingLimitDatetime": stock.bookingLimitDatetime.isoformat(timespec="seconds"),
             "totalPrice": 96.25,
             "numberOfTickets": 30,
             "educationalPriceDetail": "Justification du prix",

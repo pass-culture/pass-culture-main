@@ -1,6 +1,5 @@
 from operator import itemgetter
 
-from freezegun import freeze_time
 import pytest
 
 from pcapi.core.educational import factories as educational_factories
@@ -9,7 +8,6 @@ from pcapi.core.providers import factories as provider_factories
 
 
 @pytest.mark.usefixtures("db_session")
-@freeze_time("2022-05-01 15:00:00")
 class CollectiveOffersPublicGetOfferTest:
     def test_get_offer(self, client):
         # Given
