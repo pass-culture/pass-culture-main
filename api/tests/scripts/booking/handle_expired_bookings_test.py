@@ -2,7 +2,6 @@ from datetime import datetime
 from datetime import timedelta
 from unittest import mock
 
-from freezegun import freeze_time
 import pytest
 
 from pcapi.core.bookings import factories as booking_factories
@@ -327,10 +326,11 @@ class NotifyOfferersOfExpiredBookingsTest:
             [expired_today_cd_booking],
         )
 
-    @freeze_time("2022-11-17 15:00:00")
     def test_should_notify_of_todays_expired_collective_bookings(self) -> None:
         # Given
         today = datetime.today()
+        date_event_1 = today + timedelta(days=6, hours=21, minutes=53)
+        date_event_2 = today + timedelta(days=16, hours=5)
         yesterday = today - timedelta(days=1)
         redactor = educational_factories.EducationalRedactorFactory(
             civility="M.",
@@ -343,7 +343,7 @@ class NotifyOfferersOfExpiredBookingsTest:
         )
         stock_one = educational_factories.CollectiveStockFactory(
             collectiveOffer__bookingEmails=["test@mail.com", "test2@mail.com"],
-            beginningDatetime=datetime(2022, 11, 24, 12, 53, 00),
+            beginningDatetime=date_event_1,
             collectiveOffer__name="Ma première offre expirée",
         )
         first_expired_booking = educational_factories.CancelledCollectiveBookingFactory(
@@ -356,7 +356,7 @@ class NotifyOfferersOfExpiredBookingsTest:
 
         stock_two = educational_factories.CollectiveStockFactory(
             collectiveOffer__bookingEmails=["new_test@mail.com", "newer_test@mail.com"],
-            beginningDatetime=datetime(2022, 12, 3, 20, 00, 00),
+            beginningDatetime=date_event_2,
             collectiveOffer__name="Ma deuxième offre expirée",
         )
         second_expired_booking = educational_factories.CancelledCollectiveBookingFactory(
@@ -386,8 +386,8 @@ class NotifyOfferersOfExpiredBookingsTest:
             "OFFER_NAME": "Ma première offre expirée",
             "EDUCATIONAL_INSTITUTION_NAME": institution.name,
             "VENUE_NAME": stock_one.collectiveOffer.venue.name,
-            "EVENT_DATE": "24/11/2022",
-            "EVENT_HOUR": "12:53",
+            "EVENT_DATE": date_event_1.strftime("%d/%m/%Y"),
+            "EVENT_HOUR": date_event_1.strftime("%H:%M"),
             "REDACTOR_FIRSTNAME": redactor.firstName,
             "REDACTOR_LASTNAME": redactor.lastName,
             "REDACTOR_EMAIL": redactor.email,
@@ -404,8 +404,8 @@ class NotifyOfferersOfExpiredBookingsTest:
             "OFFER_NAME": "Ma deuxième offre expirée",
             "EDUCATIONAL_INSTITUTION_NAME": second_educational_institution.name,
             "VENUE_NAME": stock_two.collectiveOffer.venue.name,
-            "EVENT_DATE": "03/12/2022",
-            "EVENT_HOUR": "20:00",
+            "EVENT_DATE": date_event_2.strftime("%d/%m/%Y"),
+            "EVENT_HOUR": date_event_2.strftime("%H:%M"),
             "REDACTOR_FIRSTNAME": redactor.firstName,
             "REDACTOR_LASTNAME": redactor.lastName,
             "REDACTOR_EMAIL": redactor.email,
