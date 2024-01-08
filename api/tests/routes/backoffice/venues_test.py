@@ -1423,6 +1423,39 @@ class GetVenueHistoryTest(GetEndpointHelper):
         assert html_parser.count_table_rows(response.data) == 0
 
 
+class CommentVenueTest(PostEndpointHelper):
+    endpoint = "backoffice_web.venue.comment_venue"
+    endpoint_kwargs = {"venue_id": 1}
+    needed_permission = perm_models.Permissions.MANAGE_PRO_ENTITY
+
+    def test_add_comment(self, authenticated_client, legit_user, venue):
+        comment = "Juste un commentaire"
+        response = self.post_to_endpoint(authenticated_client, venue_id=venue.id, form={"comment": comment})
+
+        assert response.status_code == 303
+
+        expected_url = url_for("backoffice_web.venue.get", venue_id=venue.id, _external=True)
+        assert response.location == expected_url
+
+        db.session.refresh(venue)
+        assert len(venue.action_history) == 1
+        action = venue.action_history[0]
+        assert action.actionType == history_models.ActionType.COMMENT
+        assert action.actionDate is not None
+        assert action.authorUserId == legit_user.id
+        assert action.userId is None
+        assert action.offererId is None
+        assert action.venueId == venue.id
+        assert action.comment == comment
+
+    def test_add_invalid_comment(self, authenticated_client, venue):
+        response = self.post_to_endpoint(authenticated_client, venue_id=venue.id, form={"comment": ""})
+
+        assert response.status_code == 303
+        redirected_response = authenticated_client.get(response.headers["location"])
+        assert "Les données envoyées comportent des erreurs" in redirected_response.data.decode("utf8")
+
+
 class GetVenueInvoicesTest(GetEndpointHelper):
     endpoint = "backoffice_web.venue.get_invoices"
     endpoint_kwargs = {"venue_id": 1}
