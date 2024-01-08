@@ -1252,7 +1252,6 @@ class GetExpiredOffersTest:
 
 @pytest.mark.usefixtures("db_session")
 class DeletePastDraftOfferTest:
-    @freeze_time("2020-10-15 09:00:00")
     def test_delete_past_draft_collective_offers(self):
         two_days_ago = datetime.datetime.utcnow() - datetime.timedelta(days=2)
         educational_factories.CollectiveOfferFactory(
