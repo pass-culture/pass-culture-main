@@ -33,6 +33,7 @@ const addressInformations: Address = {
   latitude: 1.23,
   longitude: 2.9887,
   postalCode: '75001',
+  banId: '75118_5995_00043',
 }
 
 const renderValidationScreen = (contextValue: SignupJourneyContextValues) => {
@@ -244,6 +245,7 @@ describe('ValidationScreen', () => {
           target: Target.EDUCATIONAL,
           createVenueWithoutSiret: false,
           address: '3 Rue de Valois',
+          banId: '75118_5995_00043',
           city: 'Paris',
           latitude: 0,
           longitude: 0,

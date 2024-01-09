@@ -19,6 +19,7 @@ type Payload = {
     siret: string
     apeCode: string
     legalCategoryCode: string
+    banId: string | null
   }
 }
 type GetSiretDataAdapter = Adapter<Params, Payload, Payload>
@@ -42,6 +43,7 @@ const getSiretDataAdapter: GetSiretDataAdapter = async (humanSiret: string) => {
           companyStatus: '',
           legalUnitStatus: '',
           legalCategoryCode: '',
+          banId: '',
         },
       },
     }
@@ -95,6 +97,7 @@ const getSiretDataAdapter: GetSiretDataAdapter = async (humanSiret: string) => {
           siret: response.siret,
           apeCode: response.ape_code,
           legalCategoryCode: response.legal_category_code,
+          banId: addressData[0].id,
         },
       },
     }

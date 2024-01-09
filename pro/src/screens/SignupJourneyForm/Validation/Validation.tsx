@@ -84,6 +84,7 @@ const Validation = (): JSX.Element => {
         activity.targetCustomer ?? Target.EDUCATIONAL,
       createVenueWithoutSiret: offerer?.createVenueWithoutSiret ?? false,
       address: offerer.address,
+      banId: offerer.banId,
       longitude: offerer.longitude ?? 0,
       latitude: offerer.latitude ?? 0,
       city: offerer.city,
