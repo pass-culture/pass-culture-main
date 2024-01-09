@@ -387,6 +387,9 @@ JWT_ADAGE_PUBLIC_KEY_FILENAME = os.environ.get("JWT_ADAGE_PUBLIC_KEY_FILENAME", 
 ADAGE_BACKEND = os.environ.get("ADAGE_BACKEND", "pcapi.core.educational.adage_backends.adage.AdageHttpClient")
 CAN_COLLECTIVE_OFFERER_IGNORE_ADAGE = bool(int(os.environ.get("CAN_COLLECTIVE_OFFERER_IGNORE_ADAGE", "0")))
 
+EAC_OFFER_PRICE_LIMIT = int(os.environ.get("EAC_OFFER_PRICE_LIMIT", 60_000))
+EAC_NUMBER_OF_TICKETS_LIMIT = int(os.environ.get("EAC_NUMBER_OF_TICKETS_LIMIT", 3_000))
+
 # NOTION
 NOTION_TOKEN = secrets_utils.get("NOTION_TOKEN", "")
 SEND_SYNCHRONIZATION_ERRORS_TO_NOTION = bool(int(os.environ.get("SEND_SYNCHRONIZATION_ERRORS_TO_NOTION", 0)))

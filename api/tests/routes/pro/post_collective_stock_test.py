@@ -1,6 +1,7 @@
 from freezegun import freeze_time
 import pytest
 
+from pcapi import settings
 import pcapi.core.educational.factories as educational_factories
 from pcapi.core.educational.models import CollectiveOffer
 from pcapi.core.educational.models import CollectiveStock
@@ -165,7 +166,7 @@ class Return400Test:
             "offerId": offer.id,
             "beginningDatetime": "2022-01-17T22:00:00Z",
             "bookingLimitDatetime": "2021-12-31T20:00:00Z",
-            "totalPrice": 1_000_000,
+            "totalPrice": settings.EAC_OFFER_PRICE_LIMIT + 1,
             "numberOfTickets": 1,
         }
 
@@ -175,6 +176,30 @@ class Return400Test:
         # Then
         assert response.status_code == 400
         assert response.json == {"totalPrice": ["Le prix est trop élevé."]}
+
+    def should_not_allow_too_many_tickets(self, client):
+        # Given
+        offer = educational_factories.CollectiveOfferFactory()
+        offerers_factories.UserOffererFactory(
+            user__email="user@example.com",
+            offerer=offer.venue.managingOfferer,
+        )
+
+        # When
+        stock_payload = {
+            "offerId": offer.id,
+            "beginningDatetime": "2022-01-17T22:00:00Z",
+            "bookingLimitDatetime": "2021-12-31T20:00:00Z",
+            "totalPrice": 100,
+            "numberOfTickets": settings.EAC_NUMBER_OF_TICKETS_LIMIT + 1,
+        }
+
+        client.with_session_auth("user@example.com")
+        response = client.post("/collective/stocks/", json=stock_payload)
+
+        # Then
+        assert response.status_code == 400
+        assert response.json == {"numberOfTickets": ["Le nombre de places est trop élevé."]}
 
     def should_not_accept_payload_with_bookingLimitDatetime_after_beginningDatetime(self, client):
         # Given
