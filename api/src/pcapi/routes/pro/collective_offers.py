@@ -405,6 +405,7 @@ def patch_all_collective_offers_active_status(
         "offerer_id": body.offerer_id,
         "status": body.status,
         "venue_id": body.venue_id,
+        "provider_id": None,
         "category_id": body.category_id,
         "name_or_isbn": body.name_or_isbn,
         "creation_mode": body.creation_mode,
