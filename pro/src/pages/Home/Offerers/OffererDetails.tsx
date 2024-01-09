@@ -82,6 +82,7 @@ const OffererDetails = ({
             name="offererId"
             options={offererOptions}
             value={selectedOfferer.id.toString()}
+            title="Structure"
           />
         </div>
 
