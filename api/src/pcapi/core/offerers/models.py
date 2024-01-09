@@ -703,6 +703,7 @@ class GooglePlacesInfo(PcObject, Base, Model):
 
 class VenueLabel(PcObject, Base, Model):
     __tablename__ = "venue_label"
+    id: sa_orm.Mapped[int] = Column(Integer, primary_key=True, autoincrement=True)
     label: str = Column(String(100), nullable=False)
 
 
