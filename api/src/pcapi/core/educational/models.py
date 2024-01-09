@@ -954,6 +954,8 @@ class CollectiveStock(PcObject, Base, Model):
 class EducationalInstitution(PcObject, Base, Model):
     __tablename__ = "educational_institution"
 
+    id: sa_orm.Mapped[int] = sa.Column(sa.Integer, primary_key=True, autoincrement=True)
+
     institutionId: str = sa.Column(sa.String(30), nullable=False, unique=True, index=True)
 
     institutionType: str = sa.Column(sa.String(80), nullable=False)
