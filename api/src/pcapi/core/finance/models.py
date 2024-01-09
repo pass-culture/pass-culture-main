@@ -705,7 +705,7 @@ class Cashflow(Base, Model):
         "bankAccountId", sqla.BigInteger, sqla.ForeignKey("bank_account.id"), index=True, nullable=True
     )
     bankAccount: BankAccount = sqla_orm.relationship(BankAccount, foreign_keys=[bankAccountId])
-    reimbursementPointId = sqla.Column(sqla.BigInteger, sqla.ForeignKey("venue.id"), index=True, nullable=False)
+    reimbursementPointId = sqla.Column(sqla.BigInteger, sqla.ForeignKey("venue.id"), index=True, nullable=True)
     reimbursementPoint: sqla_orm.Mapped["offerers_models.Venue"] = sqla_orm.relationship(
         "Venue", foreign_keys=[reimbursementPointId]
     )
@@ -819,7 +819,7 @@ class Invoice(Base, Model):
     id: int = sqla.Column(sqla.BigInteger, primary_key=True, autoincrement=True)
     date: datetime.datetime = sqla.Column(sqla.DateTime, nullable=False, server_default=sqla.func.now())
     reference: str = sqla.Column(sqla.Text, nullable=False, unique=True)
-    reimbursementPointId = sqla.Column(sqla.BigInteger, sqla.ForeignKey("venue.id"), index=True, nullable=False)
+    reimbursementPointId = sqla.Column(sqla.BigInteger, sqla.ForeignKey("venue.id"), index=True, nullable=True)
     reimbursementPoint: sqla_orm.Mapped["offerers_models.Venue"] = sqla_orm.relationship(
         "Venue", foreign_keys=[reimbursementPointId]
     )

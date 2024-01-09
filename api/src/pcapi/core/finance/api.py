@@ -806,18 +806,22 @@ def _get_next_cashflow_batch_label() -> str:
 def generate_cashflows(cutoff: datetime.datetime) -> models.CashflowBatch:
     """Generate a new CashflowBatch and a new cashflow for each
     reimbursement point for which there is money to transfer.
+    # TODO for each bank account instead of each reimbursement point
     """
     app.redis_client.set(conf.REDIS_GENERATE_CASHFLOW_LOCK, "1", ex=conf.REDIS_GENERATE_CASHFLOW_LOCK_TIMEOUT)
     batch = models.CashflowBatch(cutoff=cutoff, label=_get_next_cashflow_batch_label())
     db.session.add(batch)
     db.session.commit()
-    _generate_cashflows(batch)
+    if FeatureToggle.WIP_ENABLE_NEW_BANK_DETAILS_JOURNEY.is_active():
+        _generate_cashflows(batch)
+    else:
+        _generate_cashflows_legacy(batch)
     # if the script fail we want to keep the lock to forbid backoffice to modify the data
     app.redis_client.delete(conf.REDIS_GENERATE_CASHFLOW_LOCK)
     return batch
 
 
-def _generate_cashflows(batch: models.CashflowBatch) -> None:
+def _generate_cashflows_legacy(batch: models.CashflowBatch) -> None:
     """Given an existing CashflowBatch and corresponding cutoff, generate
     a new cashflow for each reimbursement point for which there is
     money to transfer.
@@ -996,6 +1000,7 @@ def _generate_cashflows(batch: models.CashflowBatch) -> None:
                                     author=None,
                                     finance_incident=incident,
                                     comment="Le montant de l’incident est supérieur au montant total des réservations validées. Donc aucun justificatif n’est généré, on attend la prochaine échéance",
+                                    save=False,
                                 )
 
                             continue
@@ -1038,6 +1043,217 @@ def _generate_cashflows(batch: models.CashflowBatch) -> None:
                 reimbursement_point_id,
                 extra=log_extra,
             )
+
+
+def _generate_cashflows(batch: models.CashflowBatch) -> None:
+    """Given an existing CashflowBatch and corresponding cutoff, generate
+    a new cashflow for each bank account for which there is money to transfer.
+
+    This is a private function that you should never call directly,
+    unless the cashflow generation stopped before its end and you want
+    to proceed with an **existing** CashflowBatch.
+    """
+    # Store now otherwise SQLAlchemy will make a SELECT to fetch the
+    # id again after each COMMIT.
+    batch_id = batch.id
+    logger.info("Started to generate cashflows for batch %d", batch_id)
+    filters = (
+        models.Pricing.status == models.PricingStatus.VALIDATED,
+        models.Pricing.valueDate < batch.cutoff,
+        # We should not have any validated pricing with a cashflow,
+        # this is a safety belt.
+        models.CashflowPricing.pricingId.is_(None),
+        # Bookings can now be priced even if BankAccount is not ACCEPTED,
+        # but to generate cashflows we definitely need it.
+        models.BankAccount.status == models.BankAccountApplicationStatus.ACCEPTED,
+        # Even if a booking is marked as used prematurely, we should
+        # wait for the event to happen.
+        sqla.or_(
+            sqla.and_(
+                models.Pricing.bookingId.is_not(None),
+                sqla.or_(
+                    offers_models.Stock.beginningDatetime.is_(None),
+                    offers_models.Stock.beginningDatetime < batch.cutoff,
+                ),
+            ),
+            sqla.and_(
+                models.Pricing.collectiveBookingId.is_not(None),
+                educational_models.CollectiveStock.beginningDatetime < batch.cutoff,
+            ),
+            models.FinanceEvent.bookingFinanceIncidentId.is_not(None),
+        ),
+    )
+
+    def _mark_as_processed(pricings: sqla_orm.Query) -> None:
+        pricings_to_update = models.Pricing.query.filter(
+            models.Pricing.id.in_(pricings.with_entities(models.Pricing.id))
+        )
+        pricings_to_update.update(
+            {"status": models.PricingStatus.PROCESSED},
+            synchronize_session=False,
+        )
+
+    bank_account_infos = (
+        models.Pricing.query.filter(*filters)
+        .outerjoin(models.Pricing.booking)
+        .outerjoin(bookings_models.Booking.stock)
+        .outerjoin(models.Pricing.collectiveBooking)
+        .outerjoin(educational_models.CollectiveBooking.collectiveStock)
+        .outerjoin(models.Pricing.event)
+        .join(
+            offerers_models.VenueBankAccountLink,
+            offerers_models.VenueBankAccountLink.venueId == models.Pricing.venueId,
+        )
+        .filter(offerers_models.VenueBankAccountLink.timespan.contains(batch.cutoff))
+        .join(models.BankAccount, models.BankAccount.id == offerers_models.VenueBankAccountLink.bankAccountId)
+        .outerjoin(models.CashflowPricing)
+        .with_entities(
+            models.BankAccount.id,
+            sqla_func.array_agg(models.Pricing.venueId.distinct()),
+        )
+        .group_by(
+            models.BankAccount.id,
+        )
+    )
+
+    for bank_account_id, venue_ids in bank_account_infos:
+        log_extra = {
+            "batch": batch_id,
+            "bank_account": bank_account_id,
+        }
+        start = time.perf_counter()
+        logger.info("Generating cashflow", extra=log_extra)
+        try:
+            with transaction():
+                pricings = (
+                    models.Pricing.query.outerjoin(models.Pricing.booking)
+                    .outerjoin(bookings_models.Booking.stock)
+                    .outerjoin(models.Pricing.collectiveBooking)
+                    .outerjoin(educational_models.CollectiveBooking.collectiveStock)
+                    .outerjoin(models.Pricing.event)
+                    .join(
+                        models.BankAccount,
+                        models.BankAccount.id == bank_account_id,
+                    )
+                    .outerjoin(models.CashflowPricing)
+                    .filter(
+                        models.Pricing.venueId.in_(venue_ids),
+                        *filters,
+                    )
+                )
+
+                # Check integrity by looking for bookings whose amount
+                # has been changed after they have been priced.
+                diff = (
+                    pricings.join(models.Pricing.lines)
+                    .filter(
+                        models.PricingLine.category == models.PricingLineCategory.OFFERER_REVENUE,
+                        models.PricingLine.amount
+                        != -100
+                        * sqla.case(
+                            (
+                                bookings_models.Booking.id.is_not(None),
+                                bookings_models.Booking.amount * bookings_models.Booking.quantity,
+                            ),
+                            else_=educational_models.CollectiveStock.price,
+                        ),
+                    )
+                    .with_entities(models.Pricing.id)
+                )
+                diff = {_pricing_id for _pricing_id, in diff.all()}
+                if diff:
+                    logger.error(
+                        "Found integrity error on booking prices vs. pricing lines",
+                        extra={
+                            "pricing_lines": diff,
+                            "bank_account": bank_account_id,
+                        },
+                    )
+                    continue
+                total = pricings.with_entities(sqla.func.sum(models.Pricing.amount)).scalar() or 0
+
+                # The total is positive if the pro owes us more than we do.
+                if total >= 0:
+                    last_cashflow_age = 0
+
+                    all_current_incidents = (
+                        models.FinanceIncident.query.join(models.FinanceIncident.booking_finance_incidents)
+                        .join(models.BookingFinanceIncident.finance_events)
+                        .join(models.FinanceEvent.pricings)
+                        .outerjoin(models.Pricing.cashflows)
+                        .filter(
+                            models.FinanceIncident.venueId.in_(venue_ids),
+                            models.FinanceIncident.status == models.IncidentStatus.VALIDATED,
+                            models.Cashflow.id.is_(None),  # exclude incidents that already have a cashflow
+                            models.Pricing.status == models.PricingStatus.VALIDATED,
+                            models.Pricing.valueDate < batch.cutoff,
+                        )
+                        .all()
+                    )
+
+                    if total > 0:
+                        override_incident_debit_note = any(
+                            incident.forceDebitNote for incident in all_current_incidents
+                        )
+                        # Last cashflow where we effectively paid (successfully or not) the pro
+                        last_cashflow = (
+                            models.Cashflow.query.filter(
+                                models.Cashflow.bankAccountId == bank_account_id,
+                                models.Cashflow.status == models.CashflowStatus.ACCEPTED,
+                            )
+                            .order_by(models.Cashflow.creationDate.desc())
+                            .first()
+                        )
+                        if last_cashflow:
+                            last_cashflow_age = (datetime.datetime.utcnow() - last_cashflow.creationDate).days
+
+                        if (
+                            last_cashflow_age < conf.DEBIT_NOTE_AGE_THRESHOLD_FOR_CASHFLOW
+                            and not override_incident_debit_note
+                        ):
+                            for incident in all_current_incidents:
+                                history_api.add_action(
+                                    history_models.ActionType.FINANCE_INCIDENT_WAIT_FOR_PAYMENT,
+                                    author=None,
+                                    finance_incident=incident,
+                                    comment="Le montant de l’incident est supérieur au montant total des réservations validées. Donc aucun justificatif n’est généré, on attend la prochaine échéance",
+                                )
+
+                            continue
+
+                        # TODO (akarki): generate debit note + history entry
+                        continue
+                    # Mark as `PROCESSED` even if there is no cashflow, so
+                    # that we will not process these pricings again.
+                    _mark_as_processed(pricings)
+                    continue
+
+                cashflow = models.Cashflow(
+                    batchId=batch_id,
+                    bankAccountId=bank_account_id,
+                    status=models.CashflowStatus.PENDING,
+                    amount=total,
+                )
+                db.session.add(cashflow)
+                links = [
+                    models.CashflowPricing(
+                        cashflowId=cashflow.id,
+                        pricingId=pricing.id,
+                    )
+                    for pricing in pricings
+                ]
+                # Mark as `PROCESSED` now (and not before), otherwise the
+                # `pricings` query above will be empty since it
+                # filters on `VALIDATED` pricings.
+                _mark_as_processed(pricings)
+                db.session.bulk_save_objects(links)
+                db.session.commit()
+                elapsed = time.perf_counter() - start
+                logger.info("Generated cashflow", extra=log_extra | {"elapsed": elapsed})
+        except Exception:  # pylint: disable=broad-except
+            if settings.IS_RUNNING_TESTS:
+                raise
+            logger.exception("Could not generate cashflow for bank account %d", bank_account_id, extra=log_extra)
 
 
 def generate_payment_files(batch: models.CashflowBatch) -> None:
