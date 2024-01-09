@@ -74,7 +74,8 @@ class LocalOfferersQuery(BaseQuery):
 
 
 class InstitutionRuralLevelModel(pydantic_v1.BaseModel):
-    institution_rural_level: educational_models.InstitutionRuralLevel
+    institution_id: int
+    institution_rural_level: educational_models.InstitutionRuralLevel | None
 
     class Config:
         use_enum_values = True
@@ -83,13 +84,9 @@ class InstitutionRuralLevelModel(pydantic_v1.BaseModel):
 class InstitutionRuralLevelQuery(BaseQuery):
     raw_query = f"""
         SELECT
-            institution_rural_level,
+            DISTINCT institution_id, institution_rural_level,
         FROM
             `{settings.BIG_QUERY_TABLE_BASENAME}.adage_home_playlist_moving_offerers`
-        WHERE
-            institution_id = @institution_id
-        LIMIT
-            1
     """
 
     model = InstitutionRuralLevelModel
