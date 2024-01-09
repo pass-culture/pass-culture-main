@@ -703,6 +703,7 @@ class GetBookingsTest:
             dateUsed=datetime(2023, 3, 2),
             stock__offer__url=OFFER_URL,
             stock__features=["VO"],
+            stock__offer__extraData=None,
             cancellation_limit_date=datetime(2023, 3, 2),
         )
 
