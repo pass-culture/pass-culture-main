@@ -53,8 +53,7 @@ class GetProductTest:
     def test_books_can_be_retrieved(self, client):
         venue, _ = utils.create_offerer_provider_linked_to_venue()
         product_offer = offers_factories.ThingOfferFactory(
-            venue=venue,
-            subcategoryId=subcategories.LIVRE_PAPIER.id,
+            venue=venue, subcategoryId=subcategories.LIVRE_PAPIER.id, extraData=None
         )
         # This overpriced stock can be removed once all stocks have a price under 300 €
         offers_factories.StockFactory(offer=product_offer, price=decimal.Decimal("400.12"))

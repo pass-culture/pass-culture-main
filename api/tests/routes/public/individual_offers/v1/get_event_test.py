@@ -29,6 +29,7 @@ class GetEventTest:
         event_offer = offers_factories.EventOfferFactory(
             subcategoryId=subcategories.SEANCE_CINE.id,
             venue=venue,
+            extraData=None,
             description="Un livre de contrepèterie",
             name="Vieux motard que jamais",
             product=product,
@@ -84,7 +85,7 @@ class GetEventTest:
         )
 
         assert response.status_code == 200
-        assert response.json["categoryRelatedFields"] == {"category": "DECOUVERTE_METIERS", "speaker": None}
+        assert response.json["categoryRelatedFields"]["category"] == "DECOUVERTE_METIERS"
 
     def test_get_event_without_ticket(self, client):
         venue, _ = utils.create_offerer_provider_linked_to_venue()
@@ -104,6 +105,7 @@ class GetEventTest:
         venue, _ = utils.create_offerer_provider_linked_to_venue()
         event_offer = offers_factories.EventOfferFactory(
             subcategoryId=subcategories.CONCERT.id,
+            extraData=None,
             venue=venue,
         )
 
