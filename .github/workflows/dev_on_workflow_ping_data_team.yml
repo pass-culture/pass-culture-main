@@ -1,4 +1,4 @@
-name: "Ping data team on slack"
+name: "3 [on_workflow] Ping data team on slack"
 # This action pings slack for every new PR that adds, changes or removes a db migration.
 # The ping is done on every push.
 

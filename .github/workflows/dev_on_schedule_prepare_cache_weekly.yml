@@ -1,4 +1,4 @@
-name: "Reset cache weekly"
+name: "2 [on_schedule] Reset cache weekly"
 
 on:
   schedule:

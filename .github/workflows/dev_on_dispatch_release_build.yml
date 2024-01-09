@@ -1,4 +1,7 @@
-name: "[Deployment] Create a release"
+name: "0 [on_dispatch/CD] Create release"
+
+run-name: "Create release ${{ inputs.releaseNumber }}.0.0"
+
 
 on:
   workflow_dispatch:

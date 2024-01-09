@@ -1,4 +1,4 @@
-name: "Tests E2E pro"
+name: "3 [on_workflow] Tests E2E"
 
 on:
   workflow_call:
