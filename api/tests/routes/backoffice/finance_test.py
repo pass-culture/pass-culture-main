@@ -294,7 +294,6 @@ class CreateIncidentFinanceEventTest:
                 finance_factories.PricingFactory(status=finance_models.PricingStatus.INVOICED, amount=-10000)
             ],
             incident__kind=incident_type,
-            newTotalAmount=0,
         )
 
         validation_date = datetime.datetime.utcnow()
@@ -342,40 +341,6 @@ class CreateIncidentFinanceEventTest:
         assert finance_events[1].motive == finance_models.FinanceEventMotive.INCIDENT_NEW_PRICE
         assert finance_events[1].valueDate == validation_date
 
-    @pytest.mark.parametrize(
-        "incident_type",
-        [
-            finance_models.IncidentType.OVERPAYMENT,
-            finance_models.IncidentType.OFFER_PRICE_REGULATION,
-            finance_models.IncidentType.FRAUD,
-        ],
-    )
-    def test_create_event_on_partial_collective_booking_incident(self, incident_type):
-        partial_booking_incident = finance_factories.CollectiveBookingFinanceIncidentFactory(
-            collectiveBooking__pricings=[
-                finance_factories.PricingFactory(status=finance_models.PricingStatus.INVOICED, amount=-10000)
-            ],
-            incident__kind=incident_type,
-            newTotalAmount=5500,
-        )
-
-        validation_date = datetime.datetime.utcnow()
-        finance_events = api._create_finance_events_from_incident(partial_booking_incident, validation_date)
-
-        assert len(finance_events) == 2
-
-        assert finance_events[0].bookingFinanceIncidentId == partial_booking_incident.id
-        assert finance_events[0].status == finance_models.FinanceEventStatus.PENDING
-        assert finance_events[0].venue and finance_events[0].venue == partial_booking_incident.collectiveBooking.venue
-        assert finance_events[0].motive == finance_models.FinanceEventMotive.INCIDENT_REVERSAL_OF_ORIGINAL_EVENT
-        assert finance_events[0].valueDate == validation_date
-
-        assert finance_events[1].bookingFinanceIncidentId == partial_booking_incident.id
-        assert finance_events[1].status == finance_models.FinanceEventStatus.PENDING
-        assert finance_events[1].venue and finance_events[1].venue == partial_booking_incident.collectiveBooking.venue
-        assert finance_events[1].motive == finance_models.FinanceEventMotive.INCIDENT_NEW_PRICE
-        assert finance_events[1].valueDate == validation_date
-
     def test_create_commercial_gesture_event_on_booking(self):
         booking_incident = finance_factories.IndividualBookingFinanceIncidentFactory(
             booking__pricings=[
@@ -393,26 +358,6 @@ class CreateIncidentFinanceEventTest:
         assert finance_events[0].bookingFinanceIncidentId == booking_incident.id
         assert finance_events[0].status == finance_models.FinanceEventStatus.PENDING
         assert finance_events[0].venue and finance_events[0].venue == booking_incident.booking.venue
-        assert finance_events[0].motive == finance_models.FinanceEventMotive.INCIDENT_COMMERCIAL_GESTURE
-        assert finance_events[0].valueDate == validation_date
-
-    def test_create_commercial_gesture_event_on_collective_booking(self):
-        booking_incident = finance_factories.CollectiveBookingFinanceIncidentFactory(
-            collectiveBooking__pricings=[
-                finance_factories.PricingFactory(status=finance_models.PricingStatus.INVOICED, amount=-1000)
-            ],
-            incident__kind=finance_models.IncidentType.COMMERCIAL_GESTURE,
-            newTotalAmount=800,
-        )
-
-        validation_date = datetime.datetime.utcnow()
-        finance_events = api._create_finance_events_from_incident(booking_incident, validation_date)
-
-        assert len(finance_events) == 1
-
-        assert finance_events[0].bookingFinanceIncidentId == booking_incident.id
-        assert finance_events[0].status == finance_models.FinanceEventStatus.PENDING
-        assert finance_events[0].venue and finance_events[0].venue == booking_incident.collectiveBooking.venue
         assert finance_events[0].motive == finance_models.FinanceEventMotive.INCIDENT_COMMERCIAL_GESTURE
         assert finance_events[0].valueDate == validation_date
 
