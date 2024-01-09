@@ -120,6 +120,7 @@ class Returns200Test:
             name="Derrick",
             description="Tatort, but slower",
             durationMinutes=60,
+            extraData=None,
             mentalDisabilityCompliant=True,
             externalTicketOfficeUrl="http://example.net",
             withdrawalDetails="Veuillez chercher votre billet au guichet",
