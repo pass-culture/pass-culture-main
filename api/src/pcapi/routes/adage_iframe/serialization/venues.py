@@ -12,6 +12,7 @@ class VenueResponse(BaseModel):
     name: str
     departementCode: str
     relative: list[int]
+    adageId: str | None
 
     class Config:
         orm_mode = True

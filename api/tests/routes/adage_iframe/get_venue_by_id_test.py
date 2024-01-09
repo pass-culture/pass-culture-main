@@ -20,7 +20,9 @@ class VenueByIdTest:
 
     def test_return_venue_with_publicName_of_given_id(self, client):
         # Given
-        requested_venue = offerers_factories.VenueFactory(publicName="Un petit surnom", isPermanent=True)
+        requested_venue = offerers_factories.VenueFactory(
+            publicName="Un petit surnom", isPermanent=True, adageId="123456"
+        )
         offerers_factories.VenueFactory(managingOfferer=requested_venue.managingOfferer, isPermanent=True)
         offerers_factories.VenueFactory(isPermanent=True)
         valid_encoded_token = self._create_adage_valid_token()
@@ -38,6 +40,7 @@ class VenueByIdTest:
             "publicName": requested_venue.publicName,
             "relative": [],
             "departementCode": "75",
+            "adageId": requested_venue.adageId,
         }
 
     def test_return_venue_without_publicName_of_given_id(self, client):
@@ -60,6 +63,7 @@ class VenueByIdTest:
             "publicName": None,
             "relative": [],
             "departementCode": "75",
+            "adageId": requested_venue.adageId,
         }
 
     def test_relative_venue(self, client):
@@ -86,6 +90,7 @@ class VenueByIdTest:
             "publicName": None,
             "relative": [venue2.id, venue3.id],
             "departementCode": "75",
+            "adageId": requested_venue.adageId,
         }
 
     def test_return_error_if_venue_does_not_exist(self, client):
