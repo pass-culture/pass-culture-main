@@ -54,11 +54,11 @@ export const onSubmit = async (
     })
     if (isOk) {
       notify.success(
-        payload === 1
-          ? '1 nouvelle date a été ajoutée'
-          : `${new Intl.NumberFormat('fr-FR').format(
+        payload > 1
+          ? `${new Intl.NumberFormat('fr-FR').format(
               payload
             )} nouvelles dates ont été ajoutées`
+          : `${payload} nouvelle date a été ajoutée`
       )
     } else {
       notify.error(

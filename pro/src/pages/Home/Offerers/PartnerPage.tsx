@@ -311,8 +311,9 @@ export const PartnerPage = ({ offererId, venue }: PartnerPageProps) => {
           </div>
 
           <p className={styles['details-description']}>
-            Vos offres collectives sont visibles par les enseignants, de même
-            que les informations renseignées sur votre activité.
+            Les enseignants voient les offres vitrines et celles que vous
+            adressez à leur établissement sur ADAGE. Complétez vos informations
+            à destination des enseignants pour qu’ils vous contactent !
           </p>
         </section>
       )}
