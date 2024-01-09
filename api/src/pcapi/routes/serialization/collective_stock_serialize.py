@@ -7,6 +7,7 @@ from pydantic.v1 import Field
 from pydantic.v1 import validator
 from pydantic.v1.fields import ModelField
 
+from pcapi import settings
 from pcapi.routes.serialization import BaseModel
 from pcapi.serialization.utils import to_camel
 from pcapi.utils.date import format_into_utc_date
@@ -20,6 +21,8 @@ def validate_number_of_tickets(number_of_tickets: int | None) -> int:
         raise ValueError("Le nombre de places ne peut pas être nul.")
     if number_of_tickets < 0:
         raise ValueError("Le nombre de places ne peut pas être négatif.")
+    if number_of_tickets > settings.EAC_NUMBER_OF_TICKETS_LIMIT:
+        raise ValueError("Le nombre de places est trop élevé.")
     return number_of_tickets
 
 
@@ -28,7 +31,7 @@ def validate_price(price: float | None) -> float:
         raise ValueError("Le prix ne peut pas être nul.")
     if price < 0:
         raise ValueError("Le prix ne peut pas être négatif.")
-    if price > 100_000:
+    if price > settings.EAC_OFFER_PRICE_LIMIT:
         raise ValueError("Le prix est trop élevé.")
     return price
 
