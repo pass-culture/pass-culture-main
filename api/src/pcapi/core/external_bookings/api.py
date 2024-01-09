@@ -103,11 +103,8 @@ def book_event_ticket(
     booking: bookings_models.Booking,
     stock: offers_models.Stock,
     beneficiary: users_models.User,
+    provider: providers_models.Provider,
 ) -> tuple[list[external_bookings_models.Ticket], int | None]:
-    provider = providers_repository.get_provider_enabled_for_pro_by_id(stock.offer.lastProviderId)
-    if not provider:
-        raise providers_exceptions.InactiveProvider()
-
     payload = serialize.ExternalEventBookingRequest.build_external_booking(stock, booking, beneficiary)
     json_payload = payload.json()
     hmac_signature = generate_hmac_signature(provider.hmacKey, json_payload)
