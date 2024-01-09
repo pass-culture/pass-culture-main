@@ -175,8 +175,8 @@ class MarkWithoutApplicationTooOldApplicationsTest:
     def test_too_old_on_going_dsv4_are_set_without_continuation(
         self, mock_graphql_client, mock_make_on_going, mock_mark_without_continuation, mock_archive_application
     ):
-        dead_line_application = (datetime.datetime.utcnow() - datetime.timedelta(days=91)).isoformat()
-        dead_line_annotation = (datetime.datetime.utcnow() - datetime.timedelta(days=6 * 31)).isoformat()
+        dead_line_application = (datetime.datetime.utcnow() - datetime.timedelta(days=91)).astimezone().isoformat()
+        dead_line_annotation = (datetime.datetime.utcnow() - datetime.timedelta(days=6 * 31)).astimezone().isoformat()
         application_meta_data = {
             "state": ds_models.GraphQLApplicationStates.on_going.value,
             "last_modification_date": dead_line_application,
@@ -213,8 +213,8 @@ class MarkWithoutApplicationTooOldApplicationsTest:
     def test_too_old_dsv4_are_set_without_continuation_if_about_rct_after_annotation_deadline(
         self, mock_graphql_client, mock_make_on_going, mock_mark_without_continuation, mock_archive_application
     ):
-        dead_line_application = (datetime.datetime.utcnow() - datetime.timedelta(days=91)).isoformat()
-        dead_line_annotation = (datetime.datetime.utcnow() - datetime.timedelta(days=6 * 31)).isoformat()
+        dead_line_application = (datetime.datetime.utcnow() - datetime.timedelta(days=91)).astimezone().isoformat()
+        dead_line_annotation = (datetime.datetime.utcnow() - datetime.timedelta(days=6 * 31)).astimezone().isoformat()
         application_meta_data = {
             "state": ds_models.GraphQLApplicationStates.draft.value,
             "last_modification_date": dead_line_application,
@@ -255,8 +255,8 @@ class MarkWithoutApplicationTooOldApplicationsTest:
     def test_too_old_dsv4_is_not_set_without_continuation_if_about_adage(
         self, mock_graphql_client, mock_make_on_going, mock_mark_without_continuation, mock_archive_application
     ):
-        dead_line_application = (datetime.datetime.utcnow() - datetime.timedelta(days=91)).isoformat()
-        dead_line_annotation = (datetime.datetime.utcnow() - datetime.timedelta(days=6 * 31)).isoformat()
+        dead_line_application = (datetime.datetime.utcnow() - datetime.timedelta(days=91)).astimezone().isoformat()
+        dead_line_annotation = (datetime.datetime.utcnow() - datetime.timedelta(days=6 * 31)).astimezone().isoformat()
         application_meta_data = {
             "state": ds_models.GraphQLApplicationStates.draft.value,
             "last_modification_date": dead_line_application,
@@ -287,8 +287,8 @@ class MarkWithoutApplicationTooOldApplicationsTest:
     def test_too_old_dsv4_is_not_set_without_continuation_if_about_rct_within_dead_line_annotation(
         self, mock_graphql_client, mock_make_on_going, mock_mark_without_continuation, mock_archive_application
     ):
-        dead_line_application = (datetime.datetime.utcnow() - datetime.timedelta(days=91)).isoformat()
-        dead_line_annotation = (datetime.datetime.utcnow() - datetime.timedelta(days=5 * 31)).isoformat()
+        dead_line_application = (datetime.datetime.utcnow() - datetime.timedelta(days=91)).astimezone().isoformat()
+        dead_line_annotation = (datetime.datetime.utcnow() - datetime.timedelta(days=5 * 31)).astimezone().isoformat()
         application_meta_data = {
             "state": ds_models.GraphQLApplicationStates.draft.value,
             "last_modification_date": dead_line_application,
@@ -319,8 +319,8 @@ class MarkWithoutApplicationTooOldApplicationsTest:
     def test_too_old_draft_dsv5_are_set_without_continuation(
         self, mock_graphql_client, mock_make_on_going, mock_mark_without_continuation, mock_archive_application
     ):
-        dead_line_application = (datetime.datetime.utcnow() - datetime.timedelta(days=91)).isoformat()
-        dead_line_annotation = (datetime.datetime.utcnow() - datetime.timedelta(days=6 * 31)).isoformat()
+        dead_line_application = (datetime.datetime.utcnow() - datetime.timedelta(days=91)).astimezone().isoformat()
+        dead_line_annotation = (datetime.datetime.utcnow() - datetime.timedelta(days=6 * 31)).astimezone().isoformat()
         application_meta_data = {
             "state": ds_models.GraphQLApplicationStates.draft.value,
             "last_modification_date": dead_line_application,
@@ -368,8 +368,8 @@ class MarkWithoutApplicationTooOldApplicationsTest:
     def test_too_old_on_going_dsv5_are_set_without_continuation(
         self, mock_graphql_client, mock_make_on_going, mock_mark_without_continuation, mock_archive_application
     ):
-        dead_line_application = (datetime.datetime.utcnow() - datetime.timedelta(days=91)).isoformat()
-        dead_line_annotation = (datetime.datetime.utcnow() - datetime.timedelta(days=6 * 31)).isoformat()
+        dead_line_application = (datetime.datetime.utcnow() - datetime.timedelta(days=91)).astimezone().isoformat()
+        dead_line_annotation = (datetime.datetime.utcnow() - datetime.timedelta(days=6 * 31)).astimezone().isoformat()
         application_meta_data = {
             "state": ds_models.GraphQLApplicationStates.on_going.value,
             "last_modification_date": dead_line_application,
@@ -413,8 +413,8 @@ class MarkWithoutApplicationTooOldApplicationsTest:
     def test_dsv5_application_about_adage_is_not_set_without_continuation(
         self, mock_graphql_client, mock_make_on_going, mock_mark_without_continuation, mock_archive_application
     ):
-        dead_line_application = (datetime.datetime.utcnow() - datetime.timedelta(days=91)).isoformat()
-        dead_line_annotation = (datetime.datetime.utcnow() - datetime.timedelta(days=6 * 31)).isoformat()
+        dead_line_application = (datetime.datetime.utcnow() - datetime.timedelta(days=91)).astimezone().isoformat()
+        dead_line_annotation = (datetime.datetime.utcnow() - datetime.timedelta(days=6 * 31)).astimezone().isoformat()
         application_meta_data = {
             "state": ds_models.GraphQLApplicationStates.draft.value,
             "last_modification_date": dead_line_application,
@@ -452,8 +452,8 @@ class MarkWithoutApplicationTooOldApplicationsTest:
     def test_dsv5_application_within_dead_line_annotation_is_not_set_without_continuation(
         self, mock_graphql_client, mock_make_on_going, mock_mark_without_continuation, mock_archive_application
     ):
-        dead_line_application = (datetime.datetime.utcnow() - datetime.timedelta(days=91)).isoformat()
-        dead_line_annotation = (datetime.datetime.utcnow() - datetime.timedelta(days=5 * 31)).isoformat()
+        dead_line_application = (datetime.datetime.utcnow() - datetime.timedelta(days=91)).astimezone().isoformat()
+        dead_line_annotation = (datetime.datetime.utcnow() - datetime.timedelta(days=5 * 31)).astimezone().isoformat()
         application_meta_data = {
             "state": ds_models.GraphQLApplicationStates.draft.value,
             "last_modification_date": dead_line_application,
@@ -491,8 +491,8 @@ class MarkWithoutApplicationTooOldApplicationsTest:
     def test_dsv5_application_within_dead_line_application_is_not_set_without_continuation(
         self, mock_graphql_client, mock_make_on_going, mock_mark_without_continuation, mock_archive_application
     ):
-        dead_line_application = (datetime.datetime.utcnow() - datetime.timedelta(days=89)).isoformat()
-        dead_line_annotation = (datetime.datetime.utcnow() - datetime.timedelta(days=6 * 31)).isoformat()
+        dead_line_application = (datetime.datetime.utcnow() - datetime.timedelta(days=89)).astimezone().isoformat()
+        dead_line_annotation = (datetime.datetime.utcnow() - datetime.timedelta(days=6 * 31)).astimezone().isoformat()
         application_meta_data = {
             "state": ds_models.GraphQLApplicationStates.draft.value,
             "last_modification_date": dead_line_application,
