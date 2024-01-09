@@ -4,4 +4,5 @@ export interface Address {
   latitude: number | null
   longitude: number | null
   postalCode: string
+  banId: string | null
 }
