@@ -25,7 +25,7 @@ class AutocompleteResponse(BaseModel):
 
 
 def _get_offerer_choice_label(offerer: offerers_models.Offerer) -> str:
-    return f"{offerer.name} ({offerer.siren})"
+    return f"{offerer.id} - {offerer.name} ({offerer.siren})"
 
 
 def _get_offerers_base_query() -> sa.orm.Query:
@@ -77,7 +77,7 @@ def autocomplete_offerers() -> AutocompleteResponse:
 
 
 def _get_venue_choice_label(venue: offerers_models.Venue) -> str:
-    return f"{venue.common_name} ({venue.siret or 'Pas de SIRET'})"
+    return f"{venue.id} - {venue.common_name} ({venue.siret or 'Pas de SIRET'})"
 
 
 def _get_venues_base_query() -> sa.orm.Query:
