@@ -242,7 +242,7 @@ jobs:
             alembic upgrade pre@head
             alembic upgrade post@head
             flask install_data
-            python tests/alembic/check_db_schema.py
+            alembic check
       - name: "Check that downgrade scripts are correctly written"
         uses: addnab/docker-run-action@v3
         with:
