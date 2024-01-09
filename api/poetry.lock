@@ -536,17 +536,6 @@ files = [
 cffi = ">=1.0.0"
 
 [[package]]
-name = "cached-property"
-version = "1.5.2"
-description = "A decorator for caching properties in classes."
-optional = false
-python-versions = "*"
-files = [
-    {file = "cached-property-1.5.2.tar.gz", hash = "sha256:9fa5755838eecbb2d234c3aa390bd80fbd3ac6b6869109bfc1b499f7bd89a130"},
-    {file = "cached_property-1.5.2-py2.py3-none-any.whl", hash = "sha256:df4f613cf7ad9a588cc381aaf4a512d26265ecebd5eb9e1ba12f1319eb85a6a0"},
-]
-
-[[package]]
 name = "cachetools"
 version = "5.3.1"
 description = "Extensible memoizing collections and decorators"
@@ -5777,18 +5766,17 @@ multidict = ">=4.0"
 
 [[package]]
 name = "zeep"
-version = "4.1.0"
-description = "A modern/fast Python SOAP client based on lxml / requests"
+version = "4.2.1"
+description = "A Python SOAP client"
 optional = false
-python-versions = ">=3.6"
+python-versions = ">=3.7"
 files = [
-    {file = "zeep-4.1.0-py2.py3-none-any.whl", hash = "sha256:81c491092b71f5b276de8c63dfd452be3f322622c48a54f3a497cf913bdfb2f4"},
-    {file = "zeep-4.1.0.tar.gz", hash = "sha256:5867f2eadd6b028d9751f4155af590d3aaf9280e3a0ed5e15a53343921c956e5"},
+    {file = "zeep-4.2.1-py3-none-any.whl", hash = "sha256:6754feb4c34a4b6d65fbc359252bf6654dcce3937bf1d95aae4402a60a8f5939"},
+    {file = "zeep-4.2.1.tar.gz", hash = "sha256:72093acfdb1d8360ed400869b73fbf1882b95c4287f798084c42ee0c1ff0e425"},
 ]
 
 [package.dependencies]
 attrs = ">=17.2.0"
-cached-property = ">=1.3.0"
 isodate = ">=0.5.4"
 lxml = ">=4.6.0"
 platformdirs = ">=1.4.0"
@@ -5798,9 +5786,9 @@ requests-file = ">=1.5.1"
 requests-toolbelt = ">=0.7.1"
 
 [package.extras]
-async = ["httpx"]
+async = ["httpx (>=0.15.0)"]
 docs = ["sphinx (>=1.4.0)"]
-test = ["coverage[toml] (==5.2.1)", "flake8 (==3.8.3)", "flake8-blind-except (==0.1.1)", "flake8-debugger (==3.2.1)", "flake8-imports (==0.1.1)", "freezegun (==0.3.15)", "isort (==5.3.2)", "mock (==2.0.0)", "pretend (==1.0.9)", "pytest (==6.0.1)", "pytest-asyncio", "pytest-cov (==2.8.1)", "pytest-httpx", "requests-mock (>=0.7.0)"]
+test = ["coverage[toml] (==5.2.1)", "flake8 (==3.8.3)", "flake8-blind-except (==0.1.1)", "flake8-debugger (==3.2.1)", "flake8-imports (==0.1.1)", "freezegun (==0.3.15)", "isort (==5.3.2)", "pretend (==1.0.9)", "pytest (==6.2.5)", "pytest-asyncio", "pytest-cov (==2.8.1)", "pytest-httpx", "requests-mock (>=0.7.0)"]
 xmlsec = ["xmlsec (>=0.6.1)"]
 
 [[package]]
@@ -5894,4 +5882,4 @@ test = ["pytest"]
 [metadata]
 lock-version = "2.0"
 python-versions = "^3.11"
-content-hash = "f0a8b33e3a9a9f3451393912fbf118f7fb015bb5d681878d10fa70564f0cbc03"
+content-hash = "49f2c5b18e80031f056de32b61e18d1938f568a30596c9853f4325472d37b317"
