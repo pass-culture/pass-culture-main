@@ -1,4 +1,5 @@
 import datetime
+import re
 
 from flask import url_for
 import pytest
@@ -26,7 +27,7 @@ def _test_autocomplete(authenticated_client, endpoint: str, search_query: str, e
     for item in items:
         assert isinstance(item["id"], int)
         assert isinstance(item["text"], str)
-    assert {item["text"] for item in items} == expected_texts
+    assert {re.sub(r"^\d+ - ", "", item["text"]) for item in items} == expected_texts
 
 
 class AutocompleteOffererTest:
