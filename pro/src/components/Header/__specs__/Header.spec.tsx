@@ -104,7 +104,7 @@ describe('navigation menu', () => {
     it('when clicking on Reimbursement', async () => {
       renderHeader()
 
-      await userEvent.click(screen.getByText('Remboursements'))
+      await userEvent.click(screen.getByText('Gestion financière'))
 
       expect(mockLogEvent).toHaveBeenCalledTimes(1)
       expect(mockLogEvent).toHaveBeenNthCalledWith(

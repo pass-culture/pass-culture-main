@@ -22,9 +22,6 @@ const Header = () => {
   const { logEvent } = useAnalytics()
   const location = useLocation()
   const isOffererStatsActive = useActiveFeature('ENABLE_OFFERER_STATS')
-  const isFinanceIncidentActive = useActiveFeature(
-    'WIP_ENABLE_FINANCE_INCIDENT'
-  )
 
   async function onSignoutClick() {
     logEvent?.(Events.CLICKED_LOGOUT, { from: location.pathname })
@@ -136,9 +133,7 @@ const Header = () => {
                 alt=""
                 width={NAV_ITEM_ICON_SIZE}
               />
-              {isFinanceIncidentActive
-                ? 'Gestion financière'
-                : 'Remboursements'}
+              Gestion financière
             </NavLink>
           </li>
           {isOffererStatsActive && (

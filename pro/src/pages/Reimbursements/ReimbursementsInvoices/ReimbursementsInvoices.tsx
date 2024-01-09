@@ -115,7 +115,8 @@ const ReimbursementsInvoices = (): JSX.Element => {
   }
 
   useEffect(() => {
-    void loadInvoices()
+    // eslint-disable-next-line @typescript-eslint/no-floating-promises
+    loadInvoices()
   }, [])
 
   useEffect(() => {
@@ -176,11 +177,10 @@ const ReimbursementsInvoices = (): JSX.Element => {
           variant={ButtonVariant.PRIMARY}
           className="search-button"
           disabled={shouldDisableButton}
-          onClick={() => {
+          onClick={async () => {
             setHasSearchedOnce(true)
-            loadInvoices()
+            await loadInvoices()
           }}
-          type="button"
         >
           Lancer la recherche
         </Button>
