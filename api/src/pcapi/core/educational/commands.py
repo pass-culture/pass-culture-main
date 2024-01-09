@@ -12,8 +12,8 @@ from pcapi.core.educational import repository as educational_repository
 from pcapi.core.educational.api import booking as educational_api_booking
 from pcapi.core.educational.api.adage import synchronize_adage_ids_on_venues
 from pcapi.core.educational.api.dms import import_dms_applications
-from pcapi.core.educational.api.institution import import_deposit_institution_data
-from pcapi.core.educational.models import Ministry
+import pcapi.core.educational.api.institution as institution_api
+import pcapi.core.educational.models as educational_models
 from pcapi.core.educational.utils import create_adage_jwt_fake_valid_token
 from pcapi.scheduled_tasks.decorators import log_cron_with_transaction
 from pcapi.utils.blueprint import Blueprint
@@ -53,7 +53,7 @@ def generate_fake_adage_token(readonly: bool) -> None:
 )
 @click.option(
     "--ministry",
-    type=click.Choice([m.name for m in Ministry], case_sensitive=False),
+    type=click.Choice([m.name for m in educational_models.Ministry], case_sensitive=False),
     help="Ministry for this deposit.",
     required=True,
 )
@@ -107,8 +107,12 @@ def import_deposit_csv(path: str, year: int, ministry: str, conflict: str, final
             else:
                 data[uai] = amount
 
-        import_deposit_institution_data(
-            data=data, educational_year=educational_year, ministry=Ministry[ministry], conflict=conflict, final=final
+        institution_api.import_deposit_institution_data(
+            data=data,
+            educational_year=educational_year,
+            ministry=educational_models.Ministry[ministry],
+            conflict=conflict,
+            final=final,
         )
 
 
@@ -183,3 +187,9 @@ def notify_reimburse_collective_booking(booking_id: int, reason: str, value: flo
     educational_api_booking.notify_reimburse_collective_booking(
         booking_id=booking_id, reason=reason.upper(), value=value, details=details
     )
+
+
+@blueprint.cli.command("synchronise_rurality_level")
+@log_cron_with_transaction
+def synchronise_rurality_level() -> None:
+    institution_api.synchronise_rurality_level()
