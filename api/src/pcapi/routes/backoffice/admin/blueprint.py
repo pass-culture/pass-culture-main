@@ -12,6 +12,7 @@ from pcapi.core.permissions import models as perm_models
 from pcapi.core.users import models as users_models
 from pcapi.models import feature as feature_models
 from pcapi.notifications.internal.transactional import change_feature_flip as change_feature_flip_internal_message
+from pcapi.repository import atomic
 from pcapi.repository import repository
 
 from . import forms
@@ -21,6 +22,7 @@ from ..forms import empty as empty_forms
 
 
 @blueprint.backoffice_web.route("/admin/roles", methods=["GET"])
+@atomic()
 @utils.permission_required(perm_models.Permissions.MANAGE_PERMISSIONS)
 def get_roles() -> utils.BackofficeResponse:
     roles = perm_api.list_roles()
@@ -58,6 +60,7 @@ def get_roles_history() -> utils.BackofficeResponse:
 
 
 @blueprint.backoffice_web.route("/admin/roles/<int:role_id>", methods=["POST"])
+@atomic()
 @utils.permission_required(perm_models.Permissions.MANAGE_PERMISSIONS)
 def update_role(role_id: int) -> utils.BackofficeResponse:
     permissions = perm_api.list_permissions()
