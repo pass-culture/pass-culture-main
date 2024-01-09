@@ -20,7 +20,7 @@
   &.add-image-venue {
     $height: rem.torem(180px);
 
-    width: math.div($height * 3, 2);
+    width: rem.torem(292px);
     height: $height;
   }
 
@@ -29,6 +29,11 @@
 
     height: math.div($width * 3, 2);
     width: $width;
+
+    .label {
+      // Force the text to wrap
+      max-width: rem.torem(120px);
+    }
   }
 
   &:hover {
