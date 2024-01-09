@@ -3,6 +3,7 @@ import re
 from flask import url_for
 import pytest
 
+from pcapi.core.educational import factories as collective_offers_factories
 from pcapi.core.offerers import api as offerers_api
 from pcapi.core.offerers import factories as offerers_factories
 from pcapi.core.offerers import models as offerers_models
@@ -11,6 +12,7 @@ from pcapi.core.permissions import models as perm_models
 from pcapi.core.providers import factories as providers_factories
 from pcapi.core.providers import models as providers_models
 from pcapi.core.testing import assert_num_queries
+from pcapi.models.offer_mixin import OfferValidationStatus
 from pcapi.models.validation_status_mixin import ValidationStatus
 
 from .helpers import html_parser
@@ -262,6 +264,19 @@ class UpdateProviderTest(PostEndpointHelper):
         offer_2_1 = offers_factories.OfferFactory(venue=venue_provider_2.venue, lastProvider=provider, isActive=True)
         offer_2_2 = offers_factories.OfferFactory(venue=venue_provider_2.venue, lastProvider=provider, isActive=True)
 
+        collective_offer_1_1 = collective_offers_factories.CollectiveOfferFactory(
+            venue=venue_provider_1.venue, provider=provider, isActive=True, validation=OfferValidationStatus.APPROVED
+        )
+        collective_offer_1_2 = collective_offers_factories.CollectiveOfferFactory(
+            venue=venue_provider_1.venue, provider=provider, isActive=True
+        )
+        collective_offer_2_1 = collective_offers_factories.CollectiveOfferFactory(
+            venue=venue_provider_2.venue, provider=provider, isActive=True
+        )
+        collective_offer_template_2_1 = collective_offers_factories.CollectiveOfferTemplateFactory(
+            venue=venue_provider_2.venue, provider=provider, isActive=True
+        )
+
         form_data = {
             "name": "Individual Offer API consumer",
             "enabled_for_pro": False,
@@ -280,3 +295,7 @@ class UpdateProviderTest(PostEndpointHelper):
         assert venue_provider_2.isActive == False
         assert offer_2_1.isActive == False
         assert offer_2_2.isActive == False
+        assert collective_offer_1_1.isActive == False
+        assert collective_offer_1_2.isActive == False
+        assert collective_offer_2_1.isActive == False
+        assert collective_offer_template_2_1.isActive == False
