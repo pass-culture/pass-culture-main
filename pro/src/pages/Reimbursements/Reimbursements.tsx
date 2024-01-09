@@ -15,7 +15,7 @@ export const Reimbursements = (): JSX.Element => {
     <AppLayout pageName="reimbursements">
       <ReimbursementContextProvider>
         <div className={styles['reimbursements-container']}>
-          <h1 className={styles['title']}>Remboursements</h1>
+          <h1 className={styles['title']}>Gestion financière</h1>
 
           <ReimbursementsBanners />
 
