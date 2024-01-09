@@ -1,6 +1,6 @@
-name: "[Deployment] Deploy a release"
+name: "0 [on_dispatch/CD] Deploy release or hotfix"
 
-run-name: "Deploy ${{ github.ref }} to ${{ github.event.inputs.target_environment }}"
+run-name: "Deploy ${{ github.ref }} to ${{ github.event.inputs.target_environment }} by @${{ github.actor }}"
 
 on:
   workflow_dispatch:

@@ -1,4 +1,4 @@
-name: "Update API Client template"
+name: "3 [on_workflow] Update API Client template"
 
 on:
   workflow_call:

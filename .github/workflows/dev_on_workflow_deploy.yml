@@ -1,4 +1,4 @@
-name: "Deploy"
+name: "3 [on_workflow] Deploy"
 on:
   workflow_call:
     inputs:

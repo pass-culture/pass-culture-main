@@ -1,4 +1,4 @@
-name: "[PRO] Deploy specific version on the live channel"
+name: "3 [on_workflow/PRO] Deploy specific version on the live channel"
 
 
 on:  

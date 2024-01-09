@@ -1,4 +1,4 @@
-name: "Initiate workflow"
+name: "1 [on_push] Initiate workflow"
 
 on:
   push:

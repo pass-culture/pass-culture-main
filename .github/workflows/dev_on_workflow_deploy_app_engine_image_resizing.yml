@@ -1,4 +1,4 @@
-name: "Deploy app engine image resizing"
+name: "3 [on_workflow] Deploy app engine image resizing"
 
 on:
   workflow_call:

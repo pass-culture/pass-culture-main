@@ -1,4 +1,4 @@
-name: "[reusable] build and tag"
+name: "3 [on_workflow] Build and tag"
 
 # This reusable workflow should be called by another workflow.
 # It builds then tags the release so it's ready to deploy.

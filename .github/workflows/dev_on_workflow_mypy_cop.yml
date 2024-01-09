@@ -1,4 +1,4 @@
-name: "MyPy cop"
+name: "3 [on_workflow/API] MyPy cop"
 
 on:
   workflow_call
