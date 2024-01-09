@@ -396,8 +396,14 @@ def _book_cinema_external_ticket(booking: Booking, stock: Stock, beneficiary: Us
 def _book_event_external_ticket(booking: Booking, stock: Stock, beneficiary: User) -> int | None:
     if not FeatureToggle.ENABLE_CHARLIE_BOOKINGS_API.is_active():
         raise feature.DisabledFeatureError("ENABLE_CHARLIE_BOOKINGS_API is inactive")
+
+    provider = providers_repository.get_provider_enabled_for_pro_by_id(stock.offer.lastProviderId)
+    if not provider:
+        raise providers_exceptions.InactiveProvider()
+
+    sentry_sdk.set_tag("external-provider", provider.name)
     try:
-        tickets, remaining_quantity = external_bookings_api.book_event_ticket(booking, stock, beneficiary)
+        tickets, remaining_quantity = external_bookings_api.book_event_ticket(booking, stock, beneficiary, provider)
     except external_bookings_exceptions.ExternalBookingException as exc:
         logger.exception("Could not book external ticket: %s", exc)
         raise exc
@@ -532,7 +538,9 @@ def _cancel_external_booking(booking: Booking, stock: Stock) -> None:
 
     if not booking.isExternal:
         return None
+
     if offer.lastProvider and offer.lastProvider.hasProviderEnableCharlie:
+        sentry_sdk.set_tag("external-provider", offer.lastProvider.name)
         barcodes = [external_booking.barcode for external_booking in booking.externalBookings]
         try:
             external_bookings_api.cancel_event_ticket(offer.lastProvider, stock, barcodes, True)
@@ -545,6 +553,7 @@ def _cancel_external_booking(booking: Booking, stock: Stock) -> None:
         return None
 
     venue_provider_name = external_bookings_api.get_active_cinema_venue_provider(offer.venueId).provider.localClass
+    sentry_sdk.set_tag("cinema-venue-provider", venue_provider_name)
     match venue_provider_name:
         case "CDSStocks":
             if not FeatureToggle.ENABLE_CDS_IMPLEMENTATION.is_active():
