@@ -2,6 +2,7 @@ from dataclasses import asdict
 from datetime import datetime
 import decimal
 import logging
+import typing
 from typing import Iterable
 
 from pcapi.core import search
@@ -26,6 +27,7 @@ from pcapi.repository import repository
 from pcapi.routes.serialization.venue_provider_serialize import PostVenueProviderBody
 from pcapi.use_cases.connect_venue_to_allocine import connect_venue_to_allocine
 from pcapi.validation.models.entity_validator import validate
+from pcapi.workers.update_all_offers_active_status_job import update_all_collective_offers_active_status_job
 from pcapi.workers.update_all_offers_active_status_job import update_venue_synchronized_offers_active_status_job
 
 
@@ -480,10 +482,22 @@ def _get_siret(venue_id_at_offer_provider: str | None, siret: str | None) -> str
     raise providers_exceptions.NoSiretSpecified()
 
 
-def disable_offers_linked_to_provider(provider_id: int) -> None:
+def disable_offers_linked_to_provider(provider_id: int, current_user: typing.Any) -> None:
     venue_providers = providers_models.VenueProvider.query.filter_by(providerId=provider_id).all()
     for venue_provider in venue_providers:
-        update_venue_synchronized_offers_active_status_job.delay(
-            venue_provider.venueId, venue_provider.providerId, False
-        )
+        update_venue_synchronized_offers_active_status_job.delay(venue_provider.venueId, provider_id, False)
+        collective_offers_filters = {
+            "user_id": current_user.id,
+            "is_user_admin": current_user.has_admin_role,
+            "offerer_id": None,
+            "status": None,
+            "venue_id": venue_provider.venueId,
+            "provider_id": provider_id,
+            "category_id": None,
+            "name_or_isbn": None,
+            "creation_mode": None,
+            "period_beginning_date": None,
+            "period_ending_date": None,
+        }
+        update_all_collective_offers_active_status_job.delay(collective_offers_filters, False)
         venue_provider.isActive = False
