@@ -1012,9 +1012,11 @@ class BookingFinanceIncident(Base, Model):
     newTotalAmount: int = sqla.Column(sqla.Integer, nullable=False)
 
     __table_args__ = (
+        # - incident is either individual or collective
+        # - partial collective incident is forbidden
         sqla.CheckConstraint(
-            "(bookingId IS NOT NULL AND beneficiaryId IS NOT NULL AND collectiveBookingId IS NULL) "
-            "OR (collectiveBookingId IS NOT NULL AND bookingId IS NULL AND beneficiaryId IS NULL)",
+            '("bookingId" IS NOT NULL AND "beneficiaryId" IS NOT NULL AND "collectiveBookingId" IS NULL) '
+            'OR ("collectiveBookingId" IS NOT NULL AND "bookingId" IS NULL AND "beneficiaryId" IS NULL AND "newTotalAmount" = 0)',
             name="booking_finance_incident_check",
         ),
     )
