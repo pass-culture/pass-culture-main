@@ -2,7 +2,6 @@ from datetime import datetime
 from decimal import Decimal
 
 from pcapi.connectors.big_query.queries import InstitutionRuralLevelQuery
-import pcapi.connectors.big_query.queries.base as queries_base
 from pcapi.core.educational import adage_backends as adage_client
 from pcapi.core.educational import exceptions as educational_exceptions
 from pcapi.core.educational import models as educational_models
@@ -182,18 +181,28 @@ def create_educational_institution_from_adage(institution: AdageEducationalInsti
     return educational_institution
 
 
-def get_institution_rural_level(
-    institution: EducationalInstitution | None,
-) -> str | None:
-    if not institution:
-        return None
+def synchronise_rurality_level() -> None:
+    rows = list(InstitutionRuralLevelQuery().execute())
+    actual_rows = (
+        e._asdict()
+        for e in educational_models.EducationalInstitution.query.with_entities(
+            educational_models.EducationalInstitution.id, educational_models.EducationalInstitution.ruralLevel
+        )
+    )
 
-    try:
-        rows = list(InstitutionRuralLevelQuery().execute(institution_id=str(institution.id)))
-    except queries_base.MalformedRow:
-        return None
+    ids_by_rurality_target: dict[int, set[educational_models.InstitutionRuralLevel]] = {}
+    for row in rows:
+        ids_by_rurality_target.setdefault(row.institution_rural_level, set()).add(row.institution_id)
 
-    try:
-        return rows[0].institution_rural_level
-    except (IndexError, AttributeError):
-        return None
+    ids_by_rurality_actual: dict[int, set[educational_models.InstitutionRuralLevel]] = {}
+    for row in actual_rows:
+        ids_by_rurality_actual.setdefault(row["ruralLevel"], set()).add(row["id"])
+
+    for rural_level, ids in ids_by_rurality_target.items():
+        ids_to_update = ids - ids_by_rurality_actual.get(rural_level, set())
+        if ids_to_update:
+            educational_models.EducationalInstitution.query.filter(
+                educational_models.EducationalInstitution.id.in_(ids_to_update)
+            ).update({"ruralLevel": educational_models.InstitutionRuralLevel(rural_level)})
+
+    db.session.commit()

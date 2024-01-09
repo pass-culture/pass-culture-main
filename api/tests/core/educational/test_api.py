@@ -8,14 +8,14 @@ from freezegun.api import freeze_time
 import pytest
 
 from pcapi.core import search
-from pcapi.core.educational import factories as educational_factories
 from pcapi.core.educational.api import adage as educational_api_adage
 from pcapi.core.educational.api import booking as educational_api_booking
 from pcapi.core.educational.api import stock as educational_api_stock
+import pcapi.core.educational.api.institution as institution_api
 from pcapi.core.educational.api.offer import unindex_expired_collective_offers
 from pcapi.core.educational.api.offer import unindex_expired_collective_offers_template
-from pcapi.core.educational.models import CollectiveBookingStatus
-from pcapi.core.educational.models import CollectiveStock
+import pcapi.core.educational.factories as educational_factories
+import pcapi.core.educational.models as educational_models
 from pcapi.core.offers import exceptions as offers_exceptions
 import pcapi.core.search.testing as search_testing
 from pcapi.core.testing import override_settings
@@ -44,7 +44,7 @@ class CreateCollectiveOfferStocksTest:
         stock_created = educational_api_stock.create_collective_stock(stock_data=new_stock, user=user_pro)
 
         # Then
-        stock = CollectiveStock.query.filter_by(id=stock_created.id).one()
+        stock = educational_models.CollectiveStock.query.filter_by(id=stock_created.id).one()
         assert stock.beginningDatetime == datetime.datetime.fromisoformat("2021-12-15T20:00:00")
         assert stock.bookingLimitDatetime == datetime.datetime.fromisoformat("2021-12-05T00:00:00")
         assert stock.price == 1200
@@ -69,7 +69,7 @@ class CreateCollectiveOfferStocksTest:
         stock_created = educational_api_stock.create_collective_stock(stock_data=new_stock, user=user_pro)
 
         # Then
-        stock = CollectiveStock.query.filter_by(id=stock_created.id).one()
+        stock = educational_models.CollectiveStock.query.filter_by(id=stock_created.id).one()
         assert stock.bookingLimitDatetime == dateutil.parser.parse("2021-12-15T20:00:00")
 
     def test_create_stock_for_non_approved_offer_fails(self) -> None:
@@ -92,7 +92,7 @@ class CreateCollectiveOfferStocksTest:
         assert error.value.errors == {
             "global": ["Les offres refusées ou en attente de validation ne sont pas modifiables"]
         }
-        assert CollectiveStock.query.count() == 0
+        assert educational_models.CollectiveStock.query.count() == 0
 
 
 @freeze_time("2020-01-05 10:00:00")
@@ -508,21 +508,21 @@ class NotifyProUserOneDayTest:
             collectiveStock__collectiveOffer__name="booking1",
             collectiveStock__collectiveOffer__bookingEmails=["booking1@example.com", "booking1-2@example.com"],
             collectiveStock__beginningDatetime=datetime.datetime(2020, 1, 6),
-            status=CollectiveBookingStatus.CONFIRMED,
+            status=educational_models.CollectiveBookingStatus.CONFIRMED,
         )
         # cancelled should not send email
         educational_factories.CollectiveBookingFactory(
             collectiveStock__collectiveOffer__name="booking2",
             collectiveStock__collectiveOffer__bookingEmails=["booking2+1@example.com", "booking2+2@example.com"],
             collectiveStock__beginningDatetime=datetime.datetime(2020, 1, 6),
-            status=CollectiveBookingStatus.CANCELLED,
+            status=educational_models.CollectiveBookingStatus.CANCELLED,
         )
         # sould send email (linked to a cancelled one)
         booking3 = educational_factories.CollectiveBookingFactory(
             collectiveStock__collectiveOffer__name="booking3",
             collectiveStock__collectiveOffer__bookingEmails=["booking3+2@example.com", "booking3+1@example.com"],
             collectiveStock__beginningDatetime=datetime.datetime(2020, 1, 6),
-            status=CollectiveBookingStatus.CONFIRMED,
+            status=educational_models.CollectiveBookingStatus.CONFIRMED,
         )
         # cancelled should not send email (linked to a good one)
         educational_factories.CollectiveBookingFactory(
@@ -530,28 +530,28 @@ class NotifyProUserOneDayTest:
             collectiveStock__collectiveOffer__bookingEmails=["booking4+1@example.com", "booking4+2@example.com"],
             collectiveStock__beginningDatetime=datetime.datetime(2020, 1, 6),
             collectiveStock=booking3.collectiveStock,
-            status=CollectiveBookingStatus.CANCELLED,
+            status=educational_models.CollectiveBookingStatus.CANCELLED,
         )
         # no emails register, should not send email
         educational_factories.CollectiveBookingFactory(
             collectiveStock__collectiveOffer__name="booking5",
             collectiveStock__collectiveOffer__bookingEmails=[],
             collectiveStock__beginningDatetime=datetime.datetime(2020, 1, 6),
-            status=CollectiveBookingStatus.CONFIRMED,
+            status=educational_models.CollectiveBookingStatus.CONFIRMED,
         )
         # old booking should not be selected
         educational_factories.CollectiveBookingFactory(
             collectiveStock__collectiveOffer__name="booking6",
             collectiveStock__collectiveOffer__bookingEmails=["booking6+1@example.com", "booking6+2@example.com"],
             collectiveStock__beginningDatetime=datetime.datetime(2019, 1, 6),
-            status=CollectiveBookingStatus.CONFIRMED,
+            status=educational_models.CollectiveBookingStatus.CONFIRMED,
         )
         # too far in the future to be selected
         educational_factories.CollectiveBookingFactory(
             collectiveStock__collectiveOffer__name="booking7",
             collectiveStock__collectiveOffer__bookingEmails=["booking7+1@example.com", "booking7+2@example.com"],
             collectiveStock__beginningDatetime=datetime.datetime(2021, 1, 6),
-            status=CollectiveBookingStatus.CONFIRMED,
+            status=educational_models.CollectiveBookingStatus.CONFIRMED,
         )
         educational_api_booking.notify_pro_users_one_day()
         assert mock_mail_sender.call_count == 2
@@ -586,3 +586,41 @@ class NotifyProUserOneDayTest:
                 }
                 assert args.kwargs["recipients"] == [booking3.collectiveStock.collectiveOffer.bookingEmails[0]]
                 assert args.kwargs["bcc_recipients"] == booking3.collectiveStock.collectiveOffer.bookingEmails[1:]
+
+
+@pytest.mark.usefixtures("db_session")
+class SynchroniseRuralityLevelTest:
+    def test_should_update_rurality_level(self):
+        et1 = educational_factories.EducationalInstitutionFactory(ruralLevel=None)
+        et2 = educational_factories.EducationalInstitutionFactory(
+            ruralLevel=educational_models.InstitutionRuralLevel.RURAL_AUTONOME_PEU_DENSE
+        )
+        et3 = educational_factories.EducationalInstitutionFactory(
+            ruralLevel=educational_models.InstitutionRuralLevel.RURAL_AUTONOME_PEU_DENSE
+        )
+
+        mock_path = "pcapi.connectors.big_query.TestingBackend.run_query"
+        with mock.patch(mock_path) as mock_run_query:
+            mock_run_query.return_value = [
+                {
+                    "institution_id": str(et1.id),
+                    "institution_rural_level": educational_models.InstitutionRuralLevel.RURAL_AUTONOME_PEU_DENSE.value,
+                },
+                {
+                    "institution_id": str(et2.id),
+                    "institution_rural_level": educational_models.InstitutionRuralLevel.RURAL_AUTONOME_PEU_DENSE.value,
+                },
+                {
+                    "institution_id": str(et3.id),
+                    "institution_rural_level": educational_models.InstitutionRuralLevel.URBAIN_DENSE.value,
+                },
+            ]
+            institution_api.synchronise_rurality_level()
+
+        institutions = educational_models.EducationalInstitution.query.order_by(
+            educational_models.EducationalInstitution.id
+        ).all()
+        assert [i.id for i in institutions] == [et1.id, et2.id, et3.id]
+        assert institutions[0].ruralLevel == educational_models.InstitutionRuralLevel.RURAL_AUTONOME_PEU_DENSE
+        assert institutions[1].ruralLevel == educational_models.InstitutionRuralLevel.RURAL_AUTONOME_PEU_DENSE
+        assert institutions[2].ruralLevel == educational_models.InstitutionRuralLevel.URBAIN_DENSE
