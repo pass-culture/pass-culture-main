@@ -198,15 +198,15 @@ def get_offers_by_filters(
     if status is not None:
         query = _filter_by_status(query, status)
     if period_beginning_date is not None or period_ending_date is not None:
-        subquery = (
-            models.Stock.query.with_entities(models.Stock.offerId)
-            .distinct(models.Stock.offerId)
-            .join(models.Offer)
+        offer_alias = sa.orm.aliased(models.Offer)
+        stock_query = (
+            models.Stock.query.join(offer_alias)
             .join(offerers_models.Venue)
             .filter(models.Stock.isSoftDeleted.is_(False))
+            .filter(models.Stock.offerId == models.Offer.id)
         )
         if period_beginning_date is not None:
-            subquery = subquery.filter(
+            stock_query = stock_query.filter(
                 sa.func.timezone(
                     offerers_models.Venue.timezone,
                     sa.func.timezone("UTC", models.Stock.beginningDatetime),
@@ -214,25 +214,14 @@ def get_offers_by_filters(
                 >= period_beginning_date
             )
         if period_ending_date is not None:
-            subquery = subquery.filter(
+            stock_query = stock_query.filter(
                 sa.func.timezone(
                     offerers_models.Venue.timezone,
                     sa.func.timezone("UTC", models.Stock.beginningDatetime),
                 )
                 <= datetime.datetime.combine(period_ending_date, datetime.time.max),
             )
-        if venue_id is not None:
-            subquery = subquery.filter(models.Offer.venueId == venue_id)
-        elif offerer_id is not None:
-            subquery = subquery.filter(offerers_models.Venue.managingOffererId == offerer_id)
-        elif not user_is_admin:
-            subquery = (
-                subquery.join(offerers_models.Offerer)
-                .join(offerers_models.UserOfferer)
-                .filter(offerers_models.UserOfferer.userId == user_id, offerers_models.UserOfferer.isValidated)
-            )
-        q2 = subquery.subquery()
-        query = query.join(q2, q2.c.offerId == models.Offer.id)
+        query = query.filter(stock_query.exists())
     return query
 
 
