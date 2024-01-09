@@ -40,6 +40,7 @@ class VenueBySiretTest:
             "publicName": requested_venue.publicName,
             "relative": [],
             "departementCode": "75",
+            "adageId": requested_venue.adageId,
         }
 
     def test_return_venue_without_publicName_of_given_siret(self, client):
@@ -62,6 +63,7 @@ class VenueBySiretTest:
             "publicName": None,
             "relative": [],
             "departementCode": "75",
+            "adageId": requested_venue.adageId,
         }
 
     def test_return_relative_venue(self, client):
@@ -84,6 +86,7 @@ class VenueBySiretTest:
             "publicName": requested_venue.publicName,
             "relative": [venue2.id],
             "departementCode": "75",
+            "adageId": requested_venue.adageId,
         }
 
     def test_return_error_if_venue_does_not_exist(self, client):
