@@ -20,14 +20,17 @@ class HandleInactiveApplicationTest:
     @patch.object(api_dms.DMSGraphQLClient, "mark_without_continuation")
     @patch.object(api_dms.DMSGraphQLClient, "make_on_going")
     @patch.object(api_dms.DMSGraphQLClient, "get_applications_with_details")
-    @freezegun.freeze_time("2022-04-27")
     @override_settings(DMS_ENROLLMENT_INSTRUCTOR="SomeInstructorId")
     def test_mark_without_continuation(self, dms_applications_mock, make_on_going_mock, mark_without_continuation_mock):
         active_application = make_parsed_graphql_application(
-            application_number=1, state="en_construction", last_modification_date="2022-04-01T00:00:00+02:00"
+            application_number=1,
+            state="en_construction",
+            last_modification_date=datetime.datetime.today() - datetime.timedelta(days=25),
         )
         inactive_application = make_parsed_graphql_application(
-            application_number=2, state="en_construction", last_modification_date="2021-11-11T00:00:00+02:00"
+            application_number=2,
+            state="en_construction",
+            last_modification_date=datetime.datetime.today() - datetime.timedelta(days=190),
         )
         active_fraud_check = fraud_factories.BeneficiaryFraudCheckFactory(
             type=fraud_models.FraudCheckType.DMS,
