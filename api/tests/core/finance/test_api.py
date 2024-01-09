@@ -16,12 +16,14 @@ import pcapi.core.bookings.api as bookings_api
 import pcapi.core.bookings.factories as bookings_factories
 import pcapi.core.bookings.models as bookings_models
 from pcapi.core.categories import subcategories_v2 as subcategories
+from pcapi.core.educational import exceptions as educational_exceptions
 import pcapi.core.educational.factories as educational_factories
 from pcapi.core.educational.factories import EducationalDepositFactory
 from pcapi.core.educational.factories import EducationalInstitutionFactory
 from pcapi.core.educational.factories import EducationalYearFactory
 import pcapi.core.educational.models as educational_models
 from pcapi.core.educational.models import Ministry
+from pcapi.core.educational.validation import check_institution_fund
 from pcapi.core.finance import api
 from pcapi.core.finance import exceptions
 from pcapi.core.finance import factories
@@ -2927,3 +2929,30 @@ class UserRecreditTest:
             api.recredit_underage_users()
             assert user.deposit.amount == 30
             assert user.recreditAmountToShow is None
+
+
+class ValidateFinanceIncidentTest:
+    def test_educational_institution_is_recredited(self):
+        deposit = educational_factories.EducationalDepositFactory(amount=Decimal(1000.00), isFinal=True)
+        booking = educational_factories.ReimbursedCollectiveBookingFactory(
+            collectiveStock__price=Decimal(500.00),
+            educationalInstitution=deposit.educationalInstitution,
+            educationalYearId=deposit.educationalYearId,
+        )
+
+        collective_booking_finance_incident = factories.CollectiveBookingFinanceIncidentFactory(
+            collectiveBooking=booking
+        )
+
+        # before recredit
+        with pytest.raises(educational_exceptions.InsufficientFund):
+            check_institution_fund(
+                booking.educationalInstitution.id, booking.educationalYearId, Decimal(7800.00), deposit
+            )
+
+        api.validate_finance_incident(collective_booking_finance_incident.incident, force_debit_note=False)
+
+        assert booking.status == educational_models.CollectiveBookingStatus.CANCELLED
+
+        # after recredit, it does not raise InsufficientFund
+        check_institution_fund(booking.educationalInstitution.id, booking.educationalYearId, Decimal(700.00), deposit)
