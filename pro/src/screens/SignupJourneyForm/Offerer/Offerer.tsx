@@ -85,6 +85,7 @@ const Offerer = (): JSX.Element => {
           (venue) => venue.siret == formattedSiret
         ) !== undefined,
       legalCategoryCode: response.payload.values.legalCategoryCode,
+      banId: response.payload.values.banId,
     })
   }
 
