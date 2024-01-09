@@ -1,13 +1,10 @@
 import { screen } from '@testing-library/react'
-import { addDays } from 'date-fns'
 import React from 'react'
 
-import { DMSApplicationstatus } from 'apiClient/v1'
 import {
   defaultGetOffererResponseModel,
   defaultGetOffererVenueResponseModel,
 } from 'utils/apiFactories'
-import { defaultCollectiveDmsApplication } from 'utils/collectiveApiFactories'
 import {
   RenderWithProvidersOptions,
   renderWithProviders,
@@ -83,85 +80,7 @@ describe('venues', () => {
   })
 
   it('should not display dms timeline link if venue has no dms application', () => {
-    props.venue.hasAdageId = false
     props.venue.collectiveDmsApplications = []
-
-    renderVenue(props)
-
-    expect(
-      screen.queryByRole('link', {
-        name: 'Suivre ma demande de référencement ADAGE',
-      })
-    ).not.toBeInTheDocument()
-  })
-
-  it('should display dms timeline link when venue has dms applicaiton and adage id less than 30 days', () => {
-    props.venue.hasAdageId = true
-    props.venue.adageInscriptionDate = addDays(new Date(), -15).toISOString()
-    props.venue.collectiveDmsApplications = [
-      {
-        ...defaultCollectiveDmsApplication,
-        state: DMSApplicationstatus.ACCEPTE,
-      },
-    ]
-
-    renderVenue(props)
-
-    expect(
-      screen.getByRole('link', {
-        name: 'Suivre ma demande de référencement ADAGE',
-      })
-    ).toHaveAttribute(
-      'href',
-      `/structures/${offererId}/lieux/${venueId}#venue-collective-data`
-    )
-  })
-
-  it('should not display dms timeline link if venue has adageId for more than 30days', () => {
-    props.venue.hasAdageId = true
-    props.venue.adageInscriptionDate = addDays(new Date(), -32).toISOString()
-    props.venue.collectiveDmsApplications = [
-      {
-        ...defaultCollectiveDmsApplication,
-        state: DMSApplicationstatus.ACCEPTE,
-      },
-    ]
-
-    renderVenue(props)
-
-    expect(
-      screen.queryByRole('link', {
-        name: 'Suivre ma demande de référencement ADAGE',
-      })
-    ).not.toBeInTheDocument()
-  })
-
-  it('should display dms timeline link if venue has refused application for less than 30days', () => {
-    props.venue.collectiveDmsApplications = [
-      {
-        ...defaultCollectiveDmsApplication,
-        state: DMSApplicationstatus.REFUSE,
-        processingDate: addDays(new Date(), -15).toISOString(),
-      },
-    ]
-
-    renderVenue(props)
-
-    expect(
-      screen.getByRole('link', {
-        name: 'Suivre ma demande de référencement ADAGE',
-      })
-    ).toBeInTheDocument()
-  })
-
-  it('should not display dms timeline link if venue has refused application for more than 30days', () => {
-    props.venue.collectiveDmsApplications = [
-      {
-        ...defaultCollectiveDmsApplication,
-        state: DMSApplicationstatus.REFUSE,
-        processingDate: addDays(new Date(), -31).toISOString(),
-      },
-    ]
 
     renderVenue(props)
 

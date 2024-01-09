@@ -27,9 +27,7 @@ const ButtonImageAdd = ({
     type="button"
   >
     <SvgIcon src={strokeMoreIcon} alt="" className={style['icon']} />
-    <span className={style['label']}>
-      Ajouter <br /> une image
-    </span>
+    <span className={style['label']}>Ajouter une image</span>
   </button>
 )
 
