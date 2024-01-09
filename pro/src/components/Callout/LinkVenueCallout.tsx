@@ -67,8 +67,8 @@ const LinkVenueCallout = ({
       </p>
       <br />
       <p>
-        Rendez-vous dans l’onglet informations bancaires de votre page
-        Remboursements.
+        Rendez-vous dans l’onglet informations bancaires de votre page Gestion
+        financière.
       </p>
     </Callout>
   )

@@ -12,7 +12,7 @@ export const routesReimbursements: RouteConfig[] = [
   {
     element: <ReimbursementsInvoices />,
     path: '/remboursements/justificatifs',
-    title: 'Justificatifs',
+    title: 'Gestion financière',
   },
   {
     element: <ReimbursementsDetails />,

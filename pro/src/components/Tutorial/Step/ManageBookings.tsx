@@ -47,7 +47,7 @@ const ManageBookings = ({ titleId }: StepComponentProps): JSX.Element => (
             src={strokeEuroIcon}
             alt=""
           />
-          Remboursements
+          Gestion financière
         </div>
       </div>
       <div className={styles['ticket-office-informations']}>

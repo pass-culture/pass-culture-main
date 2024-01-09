@@ -45,7 +45,7 @@ const routes: RouteConfig[] = [
   {
     lazy: () => import('pages/CsvTable/CsvTable'),
     path: '/remboursements-details',
-    title: 'Remboursements',
+    title: 'Gestion financière',
   },
   {
     lazy: () => import('pages/Errors/Unavailable/Unavailable'),
@@ -252,7 +252,7 @@ const routes: RouteConfig[] = [
   {
     lazy: () => import('pages/Reimbursements/Reimbursements'),
     path: '/remboursements',
-    title: 'Remboursements',
+    title: 'Gestion financière',
     children: routesReimbursements,
   },
   {
