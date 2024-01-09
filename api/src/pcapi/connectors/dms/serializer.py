@@ -19,6 +19,7 @@ from pcapi.core.fraud import models as fraud_models
 from pcapi.core.users import models as users_models
 from pcapi.domain.demarches_simplifiees import get_status_from_demarches_simplifiees_application_state
 from pcapi.routes.serialization import BaseModel
+from pcapi.serialization.utils import without_timezone
 from pcapi.utils.date import FrenchParserInfo
 
 
@@ -249,6 +250,10 @@ class Annotation(BaseModel):
     updated_at: datetime = Field(alias="updatedAt")
     string_value: str = Field(alias="stringValue")
 
+    @validator("updated_at", pre=False)
+    def strip_timezone(cls, value: datetime) -> datetime:
+        return without_timezone(value)
+
 
 class FieldAnnotation(Annotation):
     """
@@ -288,6 +293,10 @@ class MarkWithoutContinuationApplicationDetail(BaseModel):
     processing_error_pc: ProcessingErrorPassCulture | None
     waiting_for_offerer_validation: WaitingForOffererValidation | None
     waiting_for_adage_validation: WaitingForAdageValidation | None
+
+    @validator("updated_at", pre=False)
+    def strip_timezone(cls, value: datetime) -> datetime:
+        return without_timezone(value)
 
     @root_validator(pre=True)
     def to_representation(cls: "MarkWithoutContinuationApplicationDetail", obj: dict) -> dict:
