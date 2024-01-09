@@ -190,3 +190,11 @@ class BankAccountRulesTest:
                 status=models.BankAccountApplicationStatus.ON_GOING,
                 timespan=(datetime.datetime.utcnow(),),
             )
+
+
+@pytest.mark.usefixtures("db_session")
+class BookingFinanceIncidentTest:
+    def test_no_partial_incident_on_collective_booking(self):
+        with pytest.raises(IntegrityError) as err:
+            factories.CollectiveBookingFinanceIncidentFactory(newTotalAmount=100)
+        assert 'booking_finance_incident" violates check constraint "booking_finance_incident_check"' in str(err.value)

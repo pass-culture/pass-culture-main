@@ -331,4 +331,4 @@ class CollectiveBookingFinanceIncidentFactory(BaseFactory):
 
     collectiveBooking = factory.SubFactory(educational_factories.ReimbursedCollectiveBookingFactory)
     incident = factory.SubFactory(FinanceIncidentFactory)
-    newTotalAmount = factory.LazyAttribute(lambda x: x.collectiveBooking.collectiveStock.price - 100)
+    newTotalAmount = 0
