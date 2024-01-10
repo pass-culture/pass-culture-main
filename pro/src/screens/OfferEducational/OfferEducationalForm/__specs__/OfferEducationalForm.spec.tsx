@@ -69,13 +69,25 @@ describe('OfferEducationalForm', () => {
     ).not.toBeInTheDocument()
   })
 
-  it('should render dates if offer is template and dates for template ff is active', async () => {
-    renderOfferEducationalForm(
-      { ...defaultProps, isTemplate: true },
-      { features: ['WIP_ENABLE_DATES_OFFER_TEMPLATE'] }
-    )
+  it('should show the dates section if the offer is a template', async () => {
+    renderOfferEducationalForm({ ...defaultProps, isTemplate: true })
     expect(
       await screen.findByRole('heading', { name: 'Date et heure' })
     ).toBeInTheDocument()
+  })
+
+  it('should not show the dates section if the offer is not a template', async () => {
+    renderOfferEducationalForm({ ...defaultProps, isTemplate: false })
+    await waitFor(() => {
+      expect(
+        screen.queryByText(
+          /Pour proposer des offres à destination d’un groupe scolaire, vous devez renseigner un lieu pour pouvoir être remboursé./
+        )
+      ).not.toBeInTheDocument()
+    })
+
+    expect(
+      screen.queryByRole('heading', { name: 'Date et heure' })
+    ).not.toBeInTheDocument()
   })
 })
