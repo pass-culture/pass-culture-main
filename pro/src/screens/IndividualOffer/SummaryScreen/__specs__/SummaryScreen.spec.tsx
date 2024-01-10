@@ -98,37 +98,35 @@ describe('Summary', () => {
   let customContext: Partial<IndividualOfferContextValues>
   beforeEach(() => {
     customContext = {
-      offer: individualOfferFactory(
-        {
-          isEvent: false,
-          name: 'mon offre',
-          lastProvider: {
-            name: 'Ciné Office',
-          },
-          lastProviderName: 'Ciné Office',
-          accessibility: {
-            visual: false,
-            audio: false,
-            motor: false,
-            mental: false,
-            none: true,
-          },
-          description: 'ma description',
-          subcategoryId: subCategories[0].id,
-          url: 'https://offer-url.example.com',
-          withdrawalDetails: 'détails de retrait',
-          externalTicketOfficeUrl: 'https://grand-public-url.example.com',
-          bookingEmail: 'booking@example.com',
+      offer: individualOfferFactory({
+        isEvent: false,
+        name: 'mon offre',
+        lastProvider: {
+          name: 'Ciné Office',
         },
-        offerVenueFactory(
+        lastProviderName: 'Ciné Office',
+        accessibility: {
+          visual: false,
+          audio: false,
+          motor: false,
+          mental: false,
+          none: true,
+        },
+        description: 'ma description',
+        subcategoryId: subCategories[0].id,
+        url: 'https://offer-url.example.com',
+        withdrawalDetails: 'détails de retrait',
+        externalTicketOfficeUrl: 'https://grand-public-url.example.com',
+        bookingEmail: 'booking@example.com',
+        venue: offerVenueFactory(
           {
             name: 'ma venue',
             publicName: 'ma venue (nom public)',
             isVirtual: true,
           },
           offererFactory({ name: 'mon offerer' })
-        )
-      ),
+        ),
+      }),
       subCategories,
       categories,
     }

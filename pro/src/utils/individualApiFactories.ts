@@ -2,7 +2,6 @@
 
 import {
   CategoryResponseModel,
-  GetOfferVenueResponseModel,
   GetOfferStockResponseModel,
   GetVenueResponseModel,
   PriceCategoryResponseModel,
@@ -31,12 +30,11 @@ let offerCategoryId = 1
 let offerSubCategoryId = 1
 
 export const individualOfferFactory = (
-  customOffer: Partial<IndividualOffer> = {},
-  customVenue: GetOfferVenueResponseModel = offerVenueFactory()
+  customOffer: Partial<IndividualOffer> = {}
 ): IndividualOffer => {
   return {
     id: offerId++,
-    venue: customVenue,
+    venue: offerVenueFactory(),
     name: "Un sale quart d'heure en 3 minutes",
     description: 'Ça va faire mal',
     author: 'Chuck Norris',
