@@ -118,14 +118,12 @@ describe('Summary', () => {
         withdrawalDetails: 'détails de retrait',
         externalTicketOfficeUrl: 'https://grand-public-url.example.com',
         bookingEmail: 'booking@example.com',
-        venue: offerVenueFactory(
-          {
-            name: 'ma venue',
-            publicName: 'ma venue (nom public)',
-            isVirtual: true,
-          },
-          offererFactory({ name: 'mon offerer' })
-        ),
+        venue: offerVenueFactory({
+          name: 'ma venue',
+          publicName: 'ma venue (nom public)',
+          isVirtual: true,
+          managingOfferer: offererFactory({ name: 'mon offerer' }),
+        }),
       }),
       subCategories,
       categories,
