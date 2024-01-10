@@ -817,6 +817,12 @@ def offer_has_stocks(offer_id: int) -> bool:
     ).scalar()
 
 
+def offer_has_bookable_stocks(offer_id: int) -> bool:
+    return db.session.query(
+        models.Stock.query.filter(models.Stock.offerId == offer_id, models.Stock._bookable).exists()
+    ).scalar()
+
+
 def _order_stocks_by(
     query: flask_sqlalchemy.BaseQuery, order_by: StocksOrderedBy, order_by_desc: bool
 ) -> flask_sqlalchemy.BaseQuery:
