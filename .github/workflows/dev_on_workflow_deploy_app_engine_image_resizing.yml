@@ -45,6 +45,7 @@ jobs:
     with:
       base_sha: ${{ needs.check-image-resizing-deployed-version.outputs.image_resizing_deployed_version }}
       folder: app-engine/image-resizing/**
+      fetch-tags: true
 
   deploy-image-resizing:
     name: "Deploy image resizing"
