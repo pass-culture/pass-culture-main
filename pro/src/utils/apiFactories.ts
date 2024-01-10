@@ -135,8 +135,7 @@ export const offererFactory = (
 }
 
 export const offerVenueFactory = (
-  customVenue: Partial<GetOfferVenueResponseModel> = {},
-  customOfferer: GetOfferManagingOffererResponseModel = offererFactory()
+  customVenue: Partial<GetOfferVenueResponseModel> = {}
 ): GetOfferVenueResponseModel => {
   const currentVenueId = venueId++
 
@@ -153,7 +152,7 @@ export const offerVenueFactory = (
     mentalDisabilityCompliant: true,
     motorDisabilityCompliant: true,
     audioDisabilityCompliant: true,
-    managingOfferer: customOfferer,
+    managingOfferer: offererFactory(),
     ...customVenue,
   }
 }
