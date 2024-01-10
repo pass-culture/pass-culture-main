@@ -16,7 +16,7 @@ import { StocksEvent } from 'components/StocksEventList/StocksEventList'
 import { IndividualOfferContextValues } from 'context/IndividualOfferContext'
 import { REIMBURSEMENT_RULES } from 'core/Finances'
 import { CATEGORY_STATUS } from 'core/Offers/constants'
-import { IndividualOffer, IndividualOfferStock } from 'core/Offers/types'
+import { IndividualOffer } from 'core/Offers/types'
 import { IndividualOfferVenueItem } from 'core/Venue/types'
 
 import { offerVenueFactory } from './apiFactories'
@@ -74,26 +74,6 @@ export const individualOfferFactory = (
     subcategoryId: SubcategoryIdEnum.CINE_PLEIN_AIR,
     priceCategories: [priceCategoryFactory()],
     ...customOffer,
-  }
-}
-
-export const individualStockFactory = (
-  customStock: Partial<IndividualOfferStock> = {}
-): IndividualOfferStock => {
-  const id = stockId++
-  return {
-    id: id,
-    price: 100,
-    beginningDatetime: new Date('2021-10-15T12:00:00Z').toISOString(),
-    bookingLimitDatetime: new Date('2021-09-15T12:00:00Z').toISOString(),
-    bookingsQuantity: 10,
-    remainingQuantity: 8,
-    isEventDeletable: true,
-    hasActivationCode: false,
-    quantity: 18,
-    activationCodesExpirationDatetime: null,
-    activationCodes: [],
-    ...customStock,
   }
 }
 

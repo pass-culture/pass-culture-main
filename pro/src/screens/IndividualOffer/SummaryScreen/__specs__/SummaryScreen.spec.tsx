@@ -33,7 +33,6 @@ import {
   individualOfferFactory,
   individualOfferSubCategoryFactory,
   individualOfferVenueItemFactory,
-  individualStockFactory,
 } from 'utils/individualApiFactories'
 import {
   RenderWithProvidersOptions,
@@ -374,9 +373,7 @@ describe('Summary', () => {
 
     it('should display redirect modal if first non free offer', async () => {
       const context = {
-        offer: individualOfferFactory(
-          individualStockFactory({ price: 2, quantity: null })
-        ),
+        offer: individualOfferFactory(),
         offerOfferer: { name: 'offerOffererName', id: 1 },
         venueList: [individualOfferVenueItemFactory()],
       }
@@ -426,9 +423,7 @@ describe('Summary', () => {
 
     it('should not display redirect modal if hasPendingBankAccount is true', async () => {
       const context = {
-        offer: individualOfferFactory(
-          individualStockFactory({ price: 2, quantity: null })
-        ),
+        offer: individualOfferFactory(),
         offerOfferer: { name: 'offerOffererName', id: 1 },
         venueList: [individualOfferVenueItemFactory()],
       }
