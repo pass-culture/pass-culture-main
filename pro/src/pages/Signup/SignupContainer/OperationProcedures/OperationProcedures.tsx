@@ -1,9 +1,10 @@
 import React from 'react'
 import { useLocation } from 'react-router-dom'
 
+import Callout from 'components/Callout/Callout'
 import { Events } from 'core/FirebaseEvents/constants'
 import useAnalytics from 'hooks/useAnalytics'
-import { Banner } from 'ui-kit'
+import fullLinkIcon from 'icons/full-link.svg'
 
 import styles from './OperationProcedures.module.scss'
 
@@ -12,8 +13,7 @@ const OperatingProcedures = (): JSX.Element => {
   const { logEvent } = useAnalytics()
 
   return (
-    <Banner
-      type="notification-info"
+    <Callout
       links={[
         {
           href: 'https://passculture.zendesk.com/hc/fr/articles/4411999179665',
@@ -21,6 +21,7 @@ const OperatingProcedures = (): JSX.Element => {
           isExternal: true,
           onClick: () =>
             logEvent?.(Events.CLICKED_HELP_CENTER, { from: location.pathname }),
+          icon: fullLinkIcon,
           svgAlt: 'Nouvelle fenêtre',
         },
       ]}
@@ -29,7 +30,7 @@ const OperatingProcedures = (): JSX.Element => {
         Nous vous invitons à prendre connaissance des modalités de
         fonctionnement avant de renseigner les champs suivants.
       </p>
-    </Banner>
+    </Callout>
   )
 }
 
