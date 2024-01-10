@@ -522,3 +522,52 @@ class MarkWithoutApplicationTooOldApplicationsTest:
         mock_make_on_going.assert_not_called()
         mock_mark_without_continuation.assert_not_called()
         mock_archive_application.assert_not_called()
+
+    @patch("pcapi.connectors.dms.api.DMSGraphQLClient.archive_application")
+    @patch("pcapi.connectors.dms.api.DMSGraphQLClient.mark_without_continuation")
+    @patch("pcapi.connectors.dms.api.DMSGraphQLClient.make_on_going")
+    @patch("pcapi.connectors.dms.api.DMSGraphQLClient.execute_query")
+    def test_too_old_dsv5_application_waiting_for_anything_is_mark_without_continuation(
+        self, mock_graphql_client, mock_make_on_going, mock_mark_without_continuation, mock_archive_application
+    ):
+        dead_line_application = (datetime.datetime.utcnow() - datetime.timedelta(days=91)).isoformat()
+        dead_line_annotation = (datetime.datetime.utcnow() - datetime.timedelta(days=6 * 31)).isoformat()
+        application_meta_data = {
+            "state": ds_models.GraphQLApplicationStates.draft.value,
+            "last_modification_date": dead_line_application,
+            "annotations": [
+                {
+                    "id": "Q2hhbXAtOTE1NDg5",
+                    "label": "En attente de validation de structure",
+                    "stringValue": "false",
+                    "checked": False,
+                    "updatedAt": dead_line_annotation,
+                },
+                {
+                    "id": "Q2hhbXAtMjc2NDk5MQ==",
+                    "label": "En attente de validation ADAGE",
+                    "stringValue": "false",
+                    "updatedAt": dead_line_annotation,
+                    "checked": False,
+                },
+            ],
+        }
+        empty_response = {"demarche": {"dossiers": {"pageInfo": {"hasNextPage": False}, "nodes": []}}}
+        response = ds_creators.get_bank_info_response_procedure_v5(**application_meta_data)
+        mock_graphql_client.side_effect = [empty_response, empty_response, response, empty_response]
+
+        mark_without_continuation_applications()
+
+        mock_make_on_going.assert_called_once_with(
+            application_techid="RG9zc2llci0xNDc0MjY1NA==",
+            instructeur_techid=settings.DS_MARK_WITHOUT_CONTINUATION_INSTRUCTOR_ID,
+        )
+        mock_mark_without_continuation.assert_called_once_with(
+            application_techid="RG9zc2llci0xNDc0MjY1NA==",
+            instructeur_techid=settings.DS_MARK_WITHOUT_CONTINUATION_INSTRUCTOR_ID,
+            motivation=MARK_WITHOUT_CONTINUATION_MOTIVATION,
+        )
+        mock_archive_application.assert_called_once_with(
+            application_techid="RG9zc2llci0xNDc0MjY1NA==",
+            instructeur_techid=settings.DS_MARK_WITHOUT_CONTINUATION_INSTRUCTOR_ID,
+        )
