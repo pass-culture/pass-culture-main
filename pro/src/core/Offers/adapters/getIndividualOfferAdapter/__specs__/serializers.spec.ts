@@ -1,106 +1,13 @@
-import {
-  GetIndividualOfferResponseModel,
-  GetOfferStockResponseModel,
-  OfferStatus,
-} from 'apiClient/v1'
-import { IndividualOfferStock } from 'core/Offers/types'
+import { GetIndividualOfferResponseModel, OfferStatus } from 'apiClient/v1'
 import { GetIndividualOfferFactory } from 'utils/apiFactories'
 
 import {
-  serializeStockApi,
   serializeOfferApiImage,
   serializeOfferApiExtraData,
   serializeOfferApi,
 } from '../serializers'
 
 describe('serializer', () => {
-  it('serializeStockApi', () => {
-    const stock: GetOfferStockResponseModel = {
-      beginningDatetime: '01-01-2001',
-      bookingLimitDatetime: '01-10-2001',
-      bookingsQuantity: 10,
-      hasActivationCode: false,
-      id: 1,
-      isEventDeletable: false,
-      price: 150,
-      quantity: 20,
-      remainingQuantity: 10,
-    }
-
-    const stockSerialized: IndividualOfferStock = {
-      beginningDatetime: '01-01-2001',
-      bookingLimitDatetime: '01-10-2001',
-      bookingsQuantity: 10,
-      hasActivationCode: false,
-      isEventDeletable: false,
-      id: 1,
-      price: 150,
-      quantity: 20,
-      remainingQuantity: 10,
-      activationCodesExpirationDatetime: null,
-      activationCodes: [],
-    }
-
-    expect(serializeStockApi(stock)).toEqual(stockSerialized)
-  })
-
-  it('serializeStockApi with 0 remainingQuantity', () => {
-    const stock: GetOfferStockResponseModel = {
-      beginningDatetime: '01-01-2001',
-      bookingLimitDatetime: '01-10-2001',
-      bookingsQuantity: 10,
-      hasActivationCode: false,
-      id: 1,
-      isEventDeletable: false,
-      price: 150,
-      quantity: 20,
-      remainingQuantity: 0,
-    }
-
-    const stockSerialized: IndividualOfferStock = {
-      beginningDatetime: '01-01-2001',
-      bookingLimitDatetime: '01-10-2001',
-      bookingsQuantity: 10,
-      hasActivationCode: false,
-      isEventDeletable: false,
-      id: 1,
-      price: 150,
-      quantity: 20,
-      remainingQuantity: 0,
-      activationCodesExpirationDatetime: null,
-      activationCodes: [],
-    }
-
-    expect(serializeStockApi(stock)).toEqual(stockSerialized)
-  })
-
-  it('serializeStockApi product', () => {
-    const stock: GetOfferStockResponseModel = {
-      bookingsQuantity: 10,
-      hasActivationCode: false,
-      id: 1,
-      isEventDeletable: false,
-      price: 150,
-      quantity: 20,
-    }
-
-    const stockSerialized: IndividualOfferStock = {
-      beginningDatetime: null,
-      bookingLimitDatetime: null,
-      bookingsQuantity: 10,
-      hasActivationCode: false,
-      isEventDeletable: false,
-      id: 1,
-      price: 150,
-      quantity: 20,
-      remainingQuantity: 'unlimited',
-      activationCodesExpirationDatetime: null,
-      activationCodes: [],
-    }
-
-    expect(serializeStockApi(stock)).toEqual(stockSerialized)
-  })
-
   const serializeOfferApiImageDataSet = [
     {
       activeMediation: {

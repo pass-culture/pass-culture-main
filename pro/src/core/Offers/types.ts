@@ -76,21 +76,6 @@ export interface CategorySubtypeItem {
   }[]
 }
 
-export interface IndividualOfferStock {
-  beginningDatetime: string | null
-  bookingLimitDatetime: string | null
-  bookingsQuantity: number
-  hasActivationCode: boolean
-  isEventDeletable: boolean
-  id: number
-  price: number
-  priceCategoryId?: number | null
-  quantity?: number | null
-  remainingQuantity: number | string
-  activationCodesExpirationDatetime: Date | null
-  activationCodes: string[]
-}
-
 // TODO: this should be generated in openapi schema
 export interface OfferExtraData {
   author?: string
