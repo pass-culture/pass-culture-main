@@ -7,7 +7,6 @@ import {
 import { CATEGORY_STATUS } from 'core/Offers/constants'
 import { IndividualOffer } from 'core/Offers/types'
 import { AccessiblityEnum } from 'core/shared'
-import { offerVenueFactory } from 'utils/apiFactories'
 import {
   individualOfferFactory,
   individualOfferSubCategoryFactory,
@@ -21,42 +20,39 @@ describe('routes::Summary::serializers', () => {
   let subCategoryList: SubcategoryResponseModel[]
 
   beforeEach(() => {
-    offer = individualOfferFactory(
-      {
-        id: 12,
-        author: 'Offer author',
-        bookingEmail: 'booking@email.com',
-        bookingContact: 'alfonsoLeBg@exampple.com',
-        description: 'Offer description',
-        durationMinutes: 140,
-        isDuo: false,
-        accessibility: {
-          [AccessiblityEnum.AUDIO]: true,
-          [AccessiblityEnum.MENTAL]: true,
-          [AccessiblityEnum.MOTOR]: true,
-          [AccessiblityEnum.VISUAL]: true,
-          [AccessiblityEnum.NONE]: false,
-        },
-        name: 'Offer name',
-        musicSubType: '',
-        musicType: '',
-        performer: 'Offer performer',
-        ean: '',
-        showSubType: '',
-        showType: '',
-        stageDirector: 'Offer stageDirector',
-        speaker: 'Offer speaker',
-        subcategoryId: 'SCID',
-        url: 'https://offer.example.com',
-        externalTicketOfficeUrl: 'https://external.example.com',
-        visa: '',
-        withdrawalDetails: 'Offer withdrawalDetails',
-        withdrawalDelay: 140,
-        withdrawalType: WithdrawalTypeEnum.ON_SITE,
-        status: OfferStatus.ACTIVE,
+    offer = individualOfferFactory({
+      id: 12,
+      author: 'Offer author',
+      bookingEmail: 'booking@email.com',
+      bookingContact: 'alfonsoLeBg@exampple.com',
+      description: 'Offer description',
+      durationMinutes: 140,
+      isDuo: false,
+      accessibility: {
+        [AccessiblityEnum.AUDIO]: true,
+        [AccessiblityEnum.MENTAL]: true,
+        [AccessiblityEnum.MOTOR]: true,
+        [AccessiblityEnum.VISUAL]: true,
+        [AccessiblityEnum.NONE]: false,
       },
-      offerVenueFactory()
-    )
+      name: 'Offer name',
+      musicSubType: '',
+      musicType: '',
+      performer: 'Offer performer',
+      ean: '',
+      showSubType: '',
+      showType: '',
+      stageDirector: 'Offer stageDirector',
+      speaker: 'Offer speaker',
+      subcategoryId: 'SCID',
+      url: 'https://offer.example.com',
+      externalTicketOfficeUrl: 'https://external.example.com',
+      visa: '',
+      withdrawalDetails: 'Offer withdrawalDetails',
+      withdrawalDelay: 140,
+      withdrawalType: WithdrawalTypeEnum.ON_SITE,
+      status: OfferStatus.ACTIVE,
+    })
     categories = [
       {
         id: 'CID',
