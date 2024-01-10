@@ -1,4 +1,5 @@
 import cn from 'classnames'
+import { NavLink } from 'react-router-dom'
 
 import styles from './DomainsCard.module.scss'
 
@@ -18,14 +19,14 @@ const DomainsCard = ({
   handlePlaylistElementTracking,
 }: DomainsCardProps) => {
   return (
-    <a
+    <NavLink
       className={cn(styles['container'], styles[`container-${color}`])}
-      href={href}
+      to={href}
       onClick={() => handlePlaylistElementTracking()}
     >
       <img src={src} alt="" className={styles['container-img']} />
       <div className={styles['container-title']}>{title}</div>
-    </a>
+    </NavLink>
   )
 }
 
