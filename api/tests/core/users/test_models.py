@@ -10,7 +10,9 @@ import sqlalchemy as sa
 import sqlalchemy.exc as sa_exc
 
 import pcapi.core.bookings.factories as bookings_factories
+import pcapi.core.bookings.models as bookings_models
 import pcapi.core.finance.api as finance_api
+import pcapi.core.finance.factories as finance_factories
 import pcapi.core.finance.models as finance_models
 from pcapi.core.fraud import factories as fraud_factories
 from pcapi.core.fraud import models as fraud_models
@@ -487,12 +489,104 @@ class SQLFunctionsTest:
         assert db.session.query(sa.func.get_deposit_balance(deposit.id, False)).first()[0] == 289
         assert db.session.query(sa.func.get_deposit_balance(deposit.id, True)).first()[0] == 290
 
+    def test_deposit_balance_on_cancelled_bookings(self):
+        deposit = users_factories.DepositGrantFactory()
+
+        bookings_factories.CancelledBookingFactory(deposit=deposit, amount=10)
+        bookings_factories.CancelledBookingFactory(deposit=deposit, amount=20)
+
+        assert db.session.query(sa.func.get_deposit_balance(deposit.id, False)).first()[0] == 300
+        assert db.session.query(sa.func.get_deposit_balance(deposit.id, True)).first()[0] == 300
+
+    def test_deposit_balance_on_only_used_bookings(self):
+        deposit = users_factories.DepositGrantFactory()
+
+        bookings_factories.BookingFactory(deposit=deposit, amount=10)
+        bookings_factories.BookingFactory(deposit=deposit, amount=20)
+
+        assert db.session.query(sa.func.get_deposit_balance(deposit.id, True)).first()[0] == 300
+        assert db.session.query(sa.func.get_deposit_balance(deposit.id, False)).first()[0] == 270  # 300 - 10 - 20
+
     def test_deposit_balance_wrong_id(self):
         with pytest.raises(sa_exc.InternalError) as exc:
             # pylint: disable=expression-not-assigned
             db.session.query(sa.func.get_deposit_balance(None, False)).first()[0]
 
         assert "the deposit was not found" in str(exc)
+
+    def test_deposit_bookings_with_incident(self):
+        deposit = users_factories.DepositGrantFactory()
+
+        bookings_factories.BookingFactory(deposit=deposit, amount=20)
+        bookings_factories.UsedBookingFactory(deposit=deposit, amount=45)
+
+        booking_reimbursed = bookings_factories.ReimbursedBookingFactory(deposit=deposit, amount=35)
+        booking_reimbursed_2 = bookings_factories.ReimbursedBookingFactory(deposit=deposit, amount=40)
+
+        incident = finance_factories.FinanceIncidentFactory()
+
+        finance_factories.IndividualBookingFinanceIncidentFactory(booking=booking_reimbursed, incident=incident)
+
+        # partial booking finance incident
+        finance_factories.IndividualBookingFinanceIncidentFactory(
+            booking=booking_reimbursed_2, incident=incident, newTotalAmount=3000
+        )  # +10 on user's wallet
+
+        finance_api.validate_finance_incident(incident, force_debit_note=False)
+
+        assert incident.status == finance_models.IncidentStatus.VALIDATED
+
+        # All bookings that are not cancelled
+        assert (
+            db.session.query(sa.func.get_deposit_balance(deposit.id, False)).first()[0] == 205
+        )  # 300 - 20 - 45 - 35 - 40 + 35 + 10
+        assert (
+            db.session.query(sa.func.get_deposit_balance(deposit.id, True)).first()[0] == 225
+        )  # 300 - 45 - 35 - 40 + 35 + 10
+
+        assert booking_reimbursed.status == bookings_models.BookingStatus.CANCELLED
+        assert booking_reimbursed_2.status == bookings_models.BookingStatus.REIMBURSED
+
+    def test_deposit_bookings_without_associated_incident(self):
+        # Given
+        deposit = users_factories.DepositGrantFactory()
+        incident = finance_factories.FinanceIncidentFactory()
+
+        bookings_factories.BookingFactory(deposit=deposit, amount=20)
+        bookings_factories.ReimbursedBookingFactory(deposit=deposit, amount=40)
+        bookings_factories.ReimbursedBookingFactory(deposit=deposit, amount=30)
+
+        # When
+        finance_api.validate_finance_incident(incident, force_debit_note=False)
+
+        # Then
+        assert incident.status == finance_models.IncidentStatus.VALIDATED
+        assert db.session.query(sa.func.get_deposit_balance(deposit.id, False)).first()[0] == 210  # 300 - 20 - 40 - 30
+        assert db.session.query(sa.func.get_deposit_balance(deposit.id, True)).first()[0] == 230  # 300 - 40 - 30
+
+    def test_deposit_bookings_when_incident_is_cancelled(self):
+        deposit = users_factories.DepositGrantFactory()
+        incident = finance_factories.FinanceIncidentFactory()
+
+        bookings_factories.BookingFactory(deposit=deposit, amount=20)
+        booking_reimbursed = bookings_factories.ReimbursedBookingFactory(deposit=deposit, amount=35)
+        booking_reimbursed_2 = bookings_factories.ReimbursedBookingFactory(deposit=deposit, amount=40)
+
+        finance_factories.IndividualBookingFinanceIncidentFactory(booking=booking_reimbursed, incident=incident)
+        finance_factories.IndividualBookingFinanceIncidentFactory(
+            booking=booking_reimbursed_2, incident=incident, newTotalAmount=3000
+        )  # +10 on user's wallet
+
+        finance_api.cancel_finance_incident(incident=incident, comment="Cancellation for the purpose of this test")
+
+        assert incident.status == finance_models.IncidentStatus.CANCELLED
+
+        assert (
+            db.session.query(sa.func.get_deposit_balance(deposit.id, False)).first()[0] == 250
+        )  # 300 -20 - 35 - 40  + 35 + 10
+        assert (
+            db.session.query(sa.func.get_deposit_balance(deposit.id, True)).first()[0] == 270
+        )  # 300 - 35 - 40 + 35 + 10
 
 
 @pytest.mark.usefixtures("db_session")
