@@ -1,13 +1,31 @@
-name: "[TEMP] Dummy workflow"
+name: "3 [on_workflow] Check folder changes"
 
 on:
-  push:
-    branches: [fseguin/dummy-workflow]
+  workflow_call:
+    outputs:
+      folder_changed:
+        value: ${{ jobs.check-folder-changes.outputs.folder_changed }}
+    inputs:
+      folder:
+        type: string
+        required: true
+      base_sha:
+        type: string
+        required: false
 
 jobs:
-  dummy:
+  check-folder-changes:
+    name: "Check folder changes"
     runs-on: ubuntu-latest
-
+    outputs:
+      folder_changed: ${{ steps.folder-check-changed-files.outputs.any_changed }}
     steps:
-      - name: "echo"
-        run: echo "Every way the wind goes"
+      - uses: actions/checkout@v4.1.1
+        with:
+          fetch-depth: 0
+      - id: folder-check-changed-files
+        uses: tj-actions/changed-files@v41
+        with:
+          base_sha: ${{ inputs.base_sha }}
+          files: |
+            ${{ inputs.folder }}

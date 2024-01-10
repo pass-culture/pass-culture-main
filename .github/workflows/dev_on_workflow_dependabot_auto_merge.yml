@@ -1,13 +1,27 @@
-name: "[TEMP] Dummy workflow"
+name: "3 [on_workflow] Dependabot auto-merge"
 
 on:
-  push:
-    branches: [fseguin/dummy-workflow]
+  workflow_call:
 
 jobs:
-  dummy:
+  dependabot:
     runs-on: ubuntu-latest
-
+    if: github.actor == 'dependabot[bot]'
     steps:
-      - name: "echo"
-        run: echo "Every way the wind goes"
+      - name: "Dependabot metadata"
+        id: "metadata"
+        uses: dependabot/fetch-metadata@v1
+        with:
+          github-token: "${{ secrets.GITHUB_TOKEN }}"
+      - name: "Approve the PR"
+        if: contains(steps.metadata.outputs.directory, 'pro')
+        run: gh pr review --approve "$PR_URL"
+        env:
+          PR_URL: ${{github.event.pull_request.html_url}}
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      - name: "Merge Dependabot PR"
+        if: contains(steps.metadata.outputs.directory, 'pro')
+        run: gh pr merge --rebase "$PR_URL"
+        env:
+          PR_URL: ${{github.event.pull_request.html_url}}
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

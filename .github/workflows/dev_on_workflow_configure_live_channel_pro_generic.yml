@@ -1,13 +1,50 @@
-name: "[TEMP] Dummy workflow"
+name: "3 [on_workflow/PRO] Deploy specific version on the live channel"
 
-on:
-  push:
-    branches: [fseguin/dummy-workflow]
+
+on:  
+  workflow_call:
+    inputs:
+      ENV:
+        type: string
+        required: true
+      VERSION:
+        type: string
+        required: true
+    secrets:
+      GCP_EHP_SERVICE_ACCOUNT:
+        required: true
+      GCP_EHP_WORKLOAD_IDENTITY_PROVIDER:
+        required: true
+
+defaults:
+  run:
+    working-directory: pro
 
 jobs:
-  dummy:
+  deploy_on_firebase:
+    permissions: write-all
     runs-on: ubuntu-latest
-
+    if: ${{ github.actor != 'dependabot[bot]' }}
     steps:
-      - name: "echo"
-        run: echo "Every way the wind goes"
+      - uses: actions/checkout@v4.1.1
+      - name: "OpenID Connect Authentication"
+        id: "openid-auth"
+        uses: 'google-github-actions/auth@v2'
+        with:
+          workload_identity_provider: ${{ secrets.GCP_EHP_WORKLOAD_IDENTITY_PROVIDER }}
+          service_account: ${{ secrets.GCP_EHP_SERVICE_ACCOUNT }}
+      - name: "Get Secret"
+        id: 'secrets'
+        uses: 'google-github-actions/get-secretmanager-secrets@v2'
+        with:
+          secrets: |-
+            FIREBASE_TOKEN:passculture-metier-ehp/pc_pro_${{ inputs.ENV }}_firebase_json
+      - name: "Clone version to live channel"
+        id: "clone-version"
+        env:
+          CREDENTIALS: ${{ steps.secrets.outputs.FIREBASE_TOKEN }}
+          GOOGLE_APPLICATION_CREDENTIALS: "credentials.json"
+        run: |
+          curl -sL https://firebase.tools | bash
+          echo $CREDENTIALS > credentials.json
+          firebase hosting:clone pc-pro-${{ inputs.ENV }}:${{ inputs.VERSION }} pc-pro-${{ inputs.ENV }}:live

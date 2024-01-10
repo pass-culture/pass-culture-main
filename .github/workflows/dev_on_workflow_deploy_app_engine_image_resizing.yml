@@ -1,13 +1,93 @@
-name: "[TEMP] Dummy workflow"
+name: "3 [on_workflow] Deploy app engine image resizing"
 
 on:
-  push:
-    branches: [fseguin/dummy-workflow]
+  workflow_call:
+    inputs:
+      workload_identity_provider_secret_name:
+        required: true
+        type: string
+      service_account_secret_name:
+        required: true
+        type: string
+      image_resizing_url:
+        required: true
+        type: string
+      base_ref:
+        required: true
+        type: string
+      environment:
+        type: string
+        required: true
+      google_project:
+        type: string
+        required: true
+    secrets:
+      GCP_EHP_WORKLOAD_IDENTITY_PROVIDER:
+        required: true
+      GCP_EHP_SERVICE_ACCOUNT:
+        required: true
 
 jobs:
-  dummy:
+  check-image-resizing-deployed-version:
     runs-on: ubuntu-latest
-
+    outputs:
+      image_resizing_deployed_version: ${{ steps.curl_version.outputs.version }}
     steps:
-      - name: "echo"
-        run: echo "Every way the wind goes"
+      - name: "Check image resizing ${{ inputs.environment }} deployed version"
+        id: "curl_version"
+        # add prefix v to version if contains dot (otherwise it is sha)
+        run: echo "version=$(curl -Ss ${{ inputs.image_resizing_url }}/version | sed 's/.*\./v&/')" | tee -a $GITHUB_OUTPUT
+
+  check-image-resizing-folder-changes:
+    name: "Check if folder changed"
+    uses: ./.github/workflows/dev_on_workflow_check_folder_changes.yml
+    needs: check-image-resizing-deployed-version
+    with:
+      base_sha: ${{ needs.check-image-resizing-deployed-version.outputs.image_resizing_deployed_version }}
+      folder: app-engine/image-resizing/**
+
+  deploy-image-resizing:
+    name: "Deploy image resizing"
+    needs: check-image-resizing-folder-changes
+    if: ${{ needs.check-image-resizing-folder-changes.outputs.folder_changed == 'true' }}
+    environment: ${{ inputs.environment }}
+    runs-on: ubuntu-latest
+    steps:
+      - name: 'Checkout actual repository'
+        uses: actions/checkout@v4.1.1
+        with:
+          ref: ${{ inputs.base_ref }}
+      - name: 'Authenticate to Google Cloud'
+        uses: 'google-github-actions/auth@v2'
+        with:
+          workload_identity_provider: ${{ secrets.GCP_EHP_WORKLOAD_IDENTITY_PROVIDER }}
+          service_account: ${{ secrets.GCP_EHP_SERVICE_ACCOUNT }}
+      - name: 'Set up Cloud SDK'
+        uses: 'google-github-actions/setup-gcloud@v2'
+      - name: "Get Secret"
+        id: 'secrets'
+        uses: 'google-github-actions/get-secretmanager-secrets@v2'
+        with:
+          secrets: |-
+            APP_ENGINE_WORKLOAD_IDENTITY_PROVIDER:${{ inputs.workload_identity_provider_secret_name }}
+            APP_ENGINE_IMAGE_RESIZING_SERVICE_ACCOUNT:${{ inputs.service_account_secret_name }}
+      - name: 'Authenticate to Google Cloud with ${{ inputs.environment }} App Engine service account'
+        uses: 'google-github-actions/auth@v2'
+        with:
+          token_format: 'access_token'
+          workload_identity_provider: ${{ steps.secrets.outputs.APP_ENGINE_WORKLOAD_IDENTITY_PROVIDER }}
+          service_account: ${{ steps.secrets.outputs.APP_ENGINE_IMAGE_RESIZING_SERVICE_ACCOUNT }}
+      - name: 'Set up Cloud SDK ${{ inputs.environment }} App Engine'
+        uses: 'google-github-actions/setup-gcloud@v2'
+      - name: "Add sha to image-resizing"
+        if: inputs.environment == 'testing'
+        working-directory: app-engine/image-resizing
+        run: echo "${{ github.sha }}" > version.txt
+      - name: 'Deploy the image-resizing service to ${{ inputs.environment }} environment'
+        working-directory: app-engine/image-resizing
+        run: |
+          gcloud app deploy --user-output-enabled=false \
+            --quiet \
+            --service-account=${{ steps.secrets.outputs.APP_ENGINE_IMAGE_RESIZING_SERVICE_ACCOUNT }} \
+            --project=${{ inputs.google_project }} \
+            --version=$(echo ${{ inputs.base_ref }}| tr '.' '-'| tr '/' '-'| tr '[:upper:]' '[:lower:]' | cut -c1-25)
