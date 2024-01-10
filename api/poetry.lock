@@ -4193,19 +4193,19 @@ python-dotenv = ">=0.9.1"
 
 [[package]]
 name = "pytest-flask"
-version = "1.2.0"
+version = "1.3.0"
 description = "A set of py.test fixtures to test Flask applications."
 optional = false
-python-versions = ">=3.5"
+python-versions = ">=3.7"
 files = [
-    {file = "pytest-flask-1.2.0.tar.gz", hash = "sha256:46fde652f77777bf02dc91205aec4ce20cdf2acbbbd66a918ab91f5c14693d3d"},
-    {file = "pytest_flask-1.2.0-py3-none-any.whl", hash = "sha256:fe25b39ad0db09c3d1fe728edecf97ced85e774c775db259a6d25f0270a4e7c9"},
+    {file = "pytest-flask-1.3.0.tar.gz", hash = "sha256:58be1c97b21ba3c4d47e0a7691eb41007748506c36bf51004f78df10691fa95e"},
+    {file = "pytest_flask-1.3.0-py3-none-any.whl", hash = "sha256:c0e36e6b0fddc3b91c4362661db83fa694d1feb91fa505475be6732b5bc8c253"},
 ]
 
 [package.dependencies]
 Flask = "*"
 pytest = ">=5.2"
-Werkzeug = ">=0.7"
+Werkzeug = "*"
 
 [package.extras]
 docs = ["Sphinx", "sphinx-rtd-theme"]
@@ -5895,4 +5895,4 @@ test = ["pytest"]
 [metadata]
 lock-version = "2.0"
 python-versions = "^3.11"
-content-hash = "d259e0ac4c66f29fd1e9ade0a2a770b2eef0b3e0d9392f5f441b6531c1c32d3b"
+content-hash = "6877b284dc58907ae8a9d959ab44d6611614be0bfc190b86182a393a75970b4d"
