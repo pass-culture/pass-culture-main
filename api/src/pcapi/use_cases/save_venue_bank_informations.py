@@ -9,6 +9,7 @@ from sqlalchemy import orm as sqla_orm
 from pcapi import settings
 from pcapi.connectors.dms.serializer import ApplicationDetailNewJourney
 from pcapi.connectors.dms.serializer import ApplicationDetailOldJourney
+from pcapi.core.educational import models as educational_models
 from pcapi.core.external.attributes.api import update_external_pro
 from pcapi.core.finance import models as finance_models
 from pcapi.core.finance.models import BankAccountApplicationStatus
@@ -16,6 +17,7 @@ from pcapi.core.history import models as history_models
 from pcapi.core.mails.transactional.pro.bank_account_validation import send_bank_account_validated_email
 from pcapi.core.offerers import api as offerers_api
 from pcapi.core.offerers import models as offerers_models
+from pcapi.core.offers import models as offers_models
 from pcapi.domain.bank_information import CannotRegisterBankInformation
 from pcapi.domain.bank_information import check_new_bank_information_has_a_more_advanced_status
 from pcapi.domain.bank_information import check_new_bank_information_older_than_saved_one
@@ -528,9 +530,46 @@ class ImportBankAccountMixin:
 
         offerer_id = bank_account.offerer.id
         venue_id = new_linked_venue.id if new_linked_venue else None
+
+        has_non_free_offers_subquery = (
+            sqla.select(1)
+            .select_from(offers_models.Stock)
+            .join(
+                offers_models.Offer,
+                sqla.and_(
+                    offers_models.Stock.offerId == offers_models.Offer.id,
+                    offers_models.Stock.price > 0,
+                    offers_models.Stock.isSoftDeleted.is_(False),
+                    offers_models.Offer.isActive.is_(True),
+                    offers_models.Offer.venueId == offerers_models.Venue.id,
+                ),
+            )
+            .correlate(offerers_models.Venue)
+            .exists()
+        )
+
+        has_non_free_collective_offers_subquery = (
+            sqla.select(1)
+            .select_from(educational_models.CollectiveStock)
+            .join(
+                educational_models.CollectiveOffer,
+                sqla.and_(
+                    educational_models.CollectiveStock.collectiveOfferId == educational_models.CollectiveOffer.id,
+                    educational_models.CollectiveStock.price > 0,
+                    educational_models.CollectiveOffer.isActive.is_(True),
+                    educational_models.CollectiveOffer.venueId == offerers_models.Venue.id,
+                ),
+            )
+            .correlate(offerers_models.Venue)
+            .exists()
+        )
+
         venues = (
-            offerers_models.Venue.query.filter(offerers_models.Venue.managingOffererId == offerer_id)
-            .filter(offerers_models.Venue.id != venue_id)
+            offerers_models.Venue.query.filter(
+                offerers_models.Venue.managingOffererId == offerer_id,
+                offerers_models.Venue.id != venue_id,
+                sqla.or_(has_non_free_offers_subquery, has_non_free_collective_offers_subquery),
+            )
             .join(offerers_models.Offerer)
             .outerjoin(
                 offerers_models.VenueBankAccountLink,
