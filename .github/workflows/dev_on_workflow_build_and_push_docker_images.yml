@@ -38,7 +38,6 @@ jobs:
       - uses: actions/checkout@v4.1.1
         with:
           ref: ${{ inputs.ref }}
-      - uses: actions/checkout@v4.1.1
       - name: "Authentification to Google"
         uses: 'google-github-actions/auth@v2'
         with:
