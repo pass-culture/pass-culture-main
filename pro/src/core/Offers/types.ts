@@ -135,8 +135,6 @@ export interface IndividualOffer {
   name: string
   musicSubType: string
   musicType: string
-  offererId: number
-  offererName: string
   performer: string
   priceCategories?: PriceCategoryResponseModel[] | null
   ean: string

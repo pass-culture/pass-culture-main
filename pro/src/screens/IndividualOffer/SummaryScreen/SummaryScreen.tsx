@@ -69,7 +69,7 @@ const SummaryScreen = () => {
 
     setIsDisabled(true)
     const offererResponse = isNewBankDetailsJourneyEnabled
-      ? await api.getOfferer(offer.offererId)
+      ? await api.getOfferer(offer.venue.managingOfferer.id)
       : null
     const publishIndividualOfferResponse = await publishIndividualOffer({
       offerId: offer.id,
