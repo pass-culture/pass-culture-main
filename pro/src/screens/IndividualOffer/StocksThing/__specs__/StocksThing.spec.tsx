@@ -55,7 +55,7 @@ const renderStockThingScreen = async (
   props: StocksThingProps,
   contextValue: IndividualOfferContextValues
 ) => {
-  vi.spyOn(api, 'getStocks').mockResolvedValueOnce({
+  vi.spyOn(api, 'getStocks').mockResolvedValue({
     stocks,
     stockCount: stocks.length,
     hasStocks: true,

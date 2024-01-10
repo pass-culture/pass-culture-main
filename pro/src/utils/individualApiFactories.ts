@@ -45,8 +45,6 @@ export const individualOfferFactory = (
     musicType: 'douleur',
     musicSubType: 'cassage de genoux',
     durationMinutes: 3,
-    offererId: customVenue.managingOfferer.id,
-    offererName: 'Chuck Norris',
     performer: 'Le Poing de Chuck',
     ean: 'Chuck n’est pas identifiable par un EAN',
     showType: 'Cinéma',

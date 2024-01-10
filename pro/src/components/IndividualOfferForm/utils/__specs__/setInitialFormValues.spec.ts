@@ -1,7 +1,7 @@
 import { SubcategoryResponseModel, WithdrawalTypeEnum } from 'apiClient/v1'
 import { IndividualOffer } from 'core/Offers/types'
 import { AccessiblityEnum } from 'core/shared'
-import { offerVenueFactory } from 'utils/apiFactories'
+import { offerVenueFactory, offererFactory } from 'utils/apiFactories'
 import {
   individualOfferFactory,
   individualOfferSubCategoryFactory,
@@ -39,7 +39,6 @@ describe('setFormReadOnlyFields', () => {
         name: 'Offer name',
         musicSubType: '',
         musicType: '',
-        offererId: offererId,
         performer: 'Offer performer',
         ean: '',
         showSubType: '',
@@ -56,6 +55,7 @@ describe('setFormReadOnlyFields', () => {
       },
       offerVenueFactory({
         id: venueId,
+        managingOfferer: offererFactory({ id: offererId }),
       })
     )
     subCategoryList = [
