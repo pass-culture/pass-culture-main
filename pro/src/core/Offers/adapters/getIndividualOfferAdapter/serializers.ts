@@ -82,25 +82,14 @@ export const serializeOfferApi = (
   }
 
   const offer: IndividualOffer = {
-    id: apiOffer.id,
+    ...apiOffer,
     bookingEmail: apiOffer.bookingEmail || '',
     bookingContact: apiOffer.bookingContact || '',
     bookingsCount: apiOffer.bookingsCount || 0,
     description: apiOffer.description || '',
     durationMinutes: apiOffer.durationMinutes || null,
-    hasStocks: apiOffer.hasStocks,
-    isActive: apiOffer.isActive,
-    isActivable: apiOffer.isActivable,
-    isDuo: apiOffer.isDuo,
-    isEvent: apiOffer.isEvent,
-    isDigital: apiOffer.isDigital,
-    isNational: apiOffer.isNational,
-    name: apiOffer.name,
-    priceCategories: apiOffer.priceCategories,
-    subcategoryId: apiOffer.subcategoryId,
     url: apiOffer.url || '',
     externalTicketOfficeUrl: apiOffer.externalTicketOfficeUrl || '',
-    venue: apiOffer.venue,
     withdrawalDetails: apiOffer.withdrawalDetails || '',
     withdrawalDelay:
       apiOffer.withdrawalDelay === undefined ? null : apiOffer.withdrawalDelay,
@@ -111,8 +100,6 @@ export const serializeOfferApi = (
       [AccessiblityEnum.NONE]: !Object.values(baseAccessibility).includes(true),
     },
     lastProviderName: apiOffer.lastProvider?.name || null,
-    lastProvider: apiOffer.lastProvider,
-    status: apiOffer.status,
     ...serializeOfferApiExtraData(apiOffer),
   }
 
