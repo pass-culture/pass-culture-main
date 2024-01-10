@@ -3,6 +3,7 @@ import {
   waitFor,
   waitForElementToBeRemoved,
 } from '@testing-library/react'
+import { userEvent } from '@testing-library/user-event'
 import React from 'react'
 
 import { api } from 'apiClient/api'
@@ -41,11 +42,14 @@ const renderHomePage = (storeOverrides: any) => {
 
 const mockLogEvent = vi.fn()
 
-describe('homepage', () => {
+describe('Homepage', () => {
   const baseOfferers: GetOffererResponseModel[] = [
     {
       ...defaultGetOffererResponseModel,
       id: 1,
+      name: 'Structure 1',
+      isActive: true,
+      hasDigitalVenueAtLeastOneOffer: true,
       managedVenues: [
         {
           ...defaultGetOffererVenueResponseModel,
@@ -68,6 +72,7 @@ describe('homepage', () => {
     {
       ...defaultGetOffererResponseModel,
       id: 2,
+      name: 'Structure 2',
       hasValidBankAccount: true,
     },
   ]
@@ -102,6 +107,15 @@ describe('homepage', () => {
     vi.spyOn(useAnalytics, 'default').mockImplementation(() => ({
       logEvent: mockLogEvent,
     }))
+    vi.spyOn(api, 'getOffererStats').mockResolvedValueOnce({
+      jsonData: {
+        dailyViews: [],
+        topOffers: [],
+        totalViewsLast30Days: 0,
+      },
+      syncDate: null,
+      offererId: 1,
+    })
   })
 
   describe('it should render', () => {
@@ -154,5 +168,37 @@ describe('homepage', () => {
         expect(screen.getAllByRole('link')[10]).toBeInTheDocument()
       })
     })
+  })
+
+  it('should display new offerer venues informations when selected offerer change', async () => {
+    renderHomePage(store)
+    await waitForElementToBeRemoved(() => screen.queryByTestId('spinner'))
+
+    const virtualVenueTitle = screen.getByText('Offres numériques')
+    expect(virtualVenueTitle).toBeInTheDocument()
+
+    const newOfferer = {
+      ...defaultGetOffererResponseModel,
+      isActive: true,
+      managedVenues: [
+        {
+          ...defaultGetOffererVenueResponseModel,
+          id: 1,
+          isVirtual: false,
+          name: 'Autre lieu',
+          publicName: null,
+        },
+      ],
+    }
+    vi.spyOn(api, 'getOfferer').mockResolvedValueOnce(newOfferer)
+
+    await userEvent.selectOptions(
+      screen.getByLabelText('Sélectionner une structure'),
+      'Structure 2'
+    )
+
+    expect(await screen.findByText('Autre lieu')).toBeInTheDocument()
+
+    expect(screen.getByText('Gérer ma page')).toBeInTheDocument()
   })
 })
