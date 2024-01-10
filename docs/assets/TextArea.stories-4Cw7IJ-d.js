@@ -1,0 +1,10 @@
+import{j as t}from"./jsx-runtime-iXOPPpZ7.js";import{b as c}from"./formik.esm-y2tUiI7x.js";import{e as d}from"./Thumb-mB7gQaCP.js";import"./index-7OBYoplD.js";import"./_commonjsHelpers-4gQjN7DL.js";import"./full-next-6FYpialQ.js";import"./Button-DBB44s9R.js";import"./index-XNbs-YUW.js";import"./index-qxkmzToN.js";import"./index-NZh7eYUr.js";import"./SvgIcon-UUSKXfrA.js";import"./Button.module-yhzTO7gk.js";import"./stroke-pass-84wyy11D.js";import"./Tooltip-b2Ucs1Op.js";import"./useTooltipProps-Xf9SOXrU.js";import"./BaseCheckbox-a52_qTLD.js";import"./BaseFileInput-rS4Z-BZc.js";import"./stroke-offer-vqhbfYxZ.js";import"./BaseInput-GGUmafiT.js";import"./BaseRadio-NI7qJIMy.js";import"./FieldError-_oiQB8Lp.js";import"./stroke-error-U5wg3Vd5.js";import"./FieldSuccess-KBPQwpG2.js";import"./stroke-valid-qcZpl8lN.js";import"./full-clear-0L2gsxg_.js";import"./Divider-Bz64tZ7o.js";import"./SubmitButton-xyDJya6o.js";import"./index-VFMbf6KQ.js";import"./SelectInput-cYbfSV7j.js";import"./stroke-down-4xbrRvHV.js";import"./typeof-Q9eVcF_1.js";import"./stroke-close-KQNU-49n.js";import"./Banner-ox0ChLHV.js";import"./shadow-tips-help-vs0tLBP5.js";import"./shadow-tips-warning-og_aO0Ug.js";import"./LinkNodes-bj2pgWCW.js";import"./full-link-GGegv9yK.js";import"./InfoBox-cvKFAY_F.js";const X={title:"ui-kit/forms/TextArea",component:d,decorators:[n=>t.jsx(c,{initialValues:{description:""},onSubmit:()=>{},children:t.jsx(n,{})})]},r={args:{name:"description"}},o={args:{name:"description",label:"Description"}};var i,m,e;r.parameters={...r.parameters,docs:{...(i=r.parameters)==null?void 0:i.docs,source:{originalSource:`{
+  args: {
+    name: 'description'
+  }
+}`,...(e=(m=r.parameters)==null?void 0:m.docs)==null?void 0:e.source}}};var p,s,a;o.parameters={...o.parameters,docs:{...(p=o.parameters)==null?void 0:p.docs,source:{originalSource:`{
+  args: {
+    name: 'description',
+    label: 'Description'
+  }
+}`,...(a=(s=o.parameters)==null?void 0:s.docs)==null?void 0:a.source}}};const Y=["WithoutLabel","WithLabel"];export{o as WithLabel,r as WithoutLabel,Y as __namedExportsOrder,X as default};
