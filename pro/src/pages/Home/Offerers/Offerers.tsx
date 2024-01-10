@@ -23,7 +23,7 @@ import OffererCreationLinks from './OffererCreationLinks'
 import OffererDetails from './OffererDetails'
 import styles from './Offerers.module.scss'
 import { PartnerPages } from './PartnerPages'
-import VenueCreationLinks from './VenueCreationLinks'
+import { VenueCreationLinks } from './VenueCreationLinks'
 
 const CREATE_OFFERER_SELECT_ID = 'creation'
 

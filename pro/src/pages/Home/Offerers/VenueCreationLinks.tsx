@@ -21,7 +21,7 @@ interface VenueCreationLinksProps {
   offerer?: GetOffererResponseModel | null
 }
 
-const VenueCreationLinks = ({ offerer }: VenueCreationLinksProps) => {
+export const VenueCreationLinks = ({ offerer }: VenueCreationLinksProps) => {
   const isVenueCreationAvailable = useActiveFeature('API_SIRENE_AVAILABLE')
   const isStatisticsDashboardEnabled = useActiveFeature('WIP_HOME_STATS')
   const { logEvent } = useAnalytics()
@@ -95,5 +95,3 @@ const VenueCreationLinks = ({ offerer }: VenueCreationLinksProps) => {
     </div>
   )
 }
-
-export default VenueCreationLinks
