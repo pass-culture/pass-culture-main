@@ -20,7 +20,7 @@ import { sortByLabel } from 'utils/strings'
 import { Card } from '../Card'
 
 import OffererCreationLinks from './OffererCreationLinks'
-import OffererDetails from './OffererDetails'
+import { OffererDetails } from './OffererDetails'
 import styles from './Offerers.module.scss'
 import { PartnerPages } from './PartnerPages'
 import { VenueCreationLinks } from './VenueCreationLinks'

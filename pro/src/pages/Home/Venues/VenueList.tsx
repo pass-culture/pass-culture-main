@@ -11,7 +11,7 @@ import {
 import { Venue } from './Venue'
 import styles from './Venue.module.scss'
 
-interface VenueListProps {
+export interface VenueListProps {
   offerer: GetOffererResponseModel
 }
 

@@ -18,14 +18,14 @@ import { hasOffererAtLeastOnePhysicalVenue } from '../venueUtils'
 import { OffererBanners } from './OffererBanners'
 import styles from './OffererDetails.module.scss'
 
-interface OffererDetailsProps {
+export interface OffererDetailsProps {
   handleChangeOfferer: (event: React.ChangeEvent<HTMLSelectElement>) => void
   isUserOffererValidated: boolean
   offererOptions: SelectOption[]
   selectedOfferer: GetOffererResponseModel
 }
 
-const OffererDetails = ({
+export const OffererDetails = ({
   handleChangeOfferer,
   isUserOffererValidated,
   offererOptions,
@@ -139,5 +139,3 @@ const OffererDetails = ({
     </Card>
   )
 }
-
-export default OffererDetails
