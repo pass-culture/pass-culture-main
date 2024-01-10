@@ -130,34 +130,41 @@ def mark_without_continuation_applications() -> None:
     states = [GraphQLApplicationStates.draft, GraphQLApplicationStates.on_going]
     ds_client = ds_api.DMSGraphQLClient()
 
+    # pylint: disable=too-many-nested-blocks
     for procedure in procedures:
         for state in states:
             for raw_node in ds_client.get_pro_bank_nodes_states(procedure_number=int(procedure), state=state):
                 application = MarkWithoutContinuationApplicationDetail(**raw_node)
 
-                if application.should_be_marked_without_continuation:
-                    logger.info(
-                        "[DS] Found one application to mark `without_continuation`",
-                        extra={"application_id": application.number},
-                    )
-                    if application.is_draft:
+                try:
+                    if application.should_be_marked_without_continuation:
                         logger.info(
-                            "[DS] Make the application `on_going` before being able to make it `without_continuation`"
+                            "[DS] Found one application to mark `without_continuation`",
+                            extra={"application_id": application.number},
                         )
-                        ds_client.make_on_going(
+                        if application.is_draft:
+                            logger.info(
+                                "[DS] Make the application `on_going` before being able to make it `without_continuation`"
+                            )
+                            ds_client.make_on_going(
+                                application_techid=application.id,
+                                instructeur_techid=settings.DS_MARK_WITHOUT_CONTINUATION_INSTRUCTOR_ID,
+                            )
+                        ds_client.mark_without_continuation(
+                            application_techid=application.id,
+                            instructeur_techid=settings.DS_MARK_WITHOUT_CONTINUATION_INSTRUCTOR_ID,
+                            motivation=MARK_WITHOUT_CONTINUATION_MOTIVATION,
+                        )
+                        ds_client.archive_application(
                             application_techid=application.id,
                             instructeur_techid=settings.DS_MARK_WITHOUT_CONTINUATION_INSTRUCTOR_ID,
                         )
-                    ds_client.mark_without_continuation(
-                        application_techid=application.id,
-                        instructeur_techid=settings.DS_MARK_WITHOUT_CONTINUATION_INSTRUCTOR_ID,
-                        motivation=MARK_WITHOUT_CONTINUATION_MOTIVATION,
-                    )
-                    ds_client.archive_application(
-                        application_techid=application.id,
-                        instructeur_techid=settings.DS_MARK_WITHOUT_CONTINUATION_INSTRUCTOR_ID,
-                    )
-                    logger.info(
-                        "[DS] Successfully mark `without_continuation` and archived an application",
+                        logger.info(
+                            "[DS] Successfully mark `without_continuation` and archived an application",
+                            extra={"application_id": application.number},
+                        )
+                except Exception:  # pylint: disable=broad-exception-caught
+                    logger.exception(
+                        "Error while trying to mark without continuation an application",
                         extra={"application_id": application.number},
                     )
