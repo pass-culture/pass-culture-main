@@ -66,10 +66,6 @@ const OfferEducational = ({
   const { imageOffer, onImageDelete, onImageUpload, handleImageOnSubmit } =
     useCollectiveOfferImageUpload(offer, isTemplate)
 
-  const templateOfferDatesEnabled = useActiveFeature(
-    'WIP_ENABLE_DATES_OFFER_TEMPLATE'
-  )
-
   const isFormatActive = useActiveFeature('WIP_ENABLE_FORMAT')
   const isMarseilleEnabled = useActiveFeature('WIP_ENABLE_MARSEILLE')
 
@@ -164,10 +160,7 @@ const OfferEducational = ({
   const { resetForm, ...formik } = useFormik({
     initialValues,
     onSubmit,
-    validationSchema: getOfferEducationalValidationSchema(
-      templateOfferDatesEnabled,
-      isFormatActive
-    ),
+    validationSchema: getOfferEducationalValidationSchema(isFormatActive),
   })
 
   return (
