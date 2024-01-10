@@ -24,10 +24,7 @@ const isPhoneValid = (phone: string | undefined): boolean => {
 const isNotEmpty = (description: string | undefined): boolean =>
   description ? Boolean(description.trim().length > 0) : false
 
-export function getOfferEducationalValidationSchema(
-  validateTemplateDates: boolean,
-  isFormatActive: boolean
-) {
+export function getOfferEducationalValidationSchema(isFormatActive: boolean) {
   return yup.object().shape({
     category: isFormatActive
       ? yup.string()
@@ -158,30 +155,26 @@ export function getOfferEducationalValidationSchema(
         then: (schema) => schema.required(),
       }),
     priceDetail: yup.string().max(MAX_DETAILS_LENGTH),
-    beginningDate: validateTemplateDates
-      ? yup.string().when('isTemplate', {
-          is: true,
-          then: (schema) =>
-            schema.required('Veuillez renseigner une date de début'),
-        })
-      : yup.string(),
-    endingDate: validateTemplateDates
-      ? yup.string().when('isTemplate', {
-          is: true,
-          then: (schema) =>
-            schema
-              .required('Veuillez renseigner une date de fin')
-              .test(
-                'endDateNoTooFar',
-                'La date de fin que vous avez choisie est trop éloignée',
-                (endDate) => {
-                  return isBefore(
-                    toDateStrippedOfTimezone(endDate),
-                    threeYearsFromNow
-                  )
-                }
-              ),
-        })
-      : yup.string(),
+    beginningDate: yup.string().when('isTemplate', {
+      is: true,
+      then: (schema) =>
+        schema.required('Veuillez renseigner une date de début'),
+    }),
+    endingDate: yup.string().when('isTemplate', {
+      is: true,
+      then: (schema) =>
+        schema
+          .required('Veuillez renseigner une date de fin')
+          .test(
+            'endDateNoTooFar',
+            'La date de fin que vous avez choisie est trop éloignée',
+            (endDate) => {
+              return isBefore(
+                toDateStrippedOfTimezone(endDate),
+                threeYearsFromNow
+              )
+            }
+          ),
+    }),
   })
 }

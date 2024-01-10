@@ -70,12 +70,7 @@ const OfferSummary = ({ offer }: OfferSummaryProps): JSX.Element => {
 
   let offerVenueLabel = `${venue.postalCode}, ${venue.city}`
 
-  const isTemplateOfferDatesAcrive = useActiveFeature(
-    'WIP_ENABLE_DATES_OFFER_TEMPLATE'
-  )
-
   const formattedDates =
-    isTemplateOfferDatesAcrive &&
     isCollectiveOfferTemplate(offer) &&
     offer.dates?.start &&
     offer.dates?.end &&

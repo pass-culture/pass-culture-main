@@ -119,14 +119,11 @@ describe('CollectiveOfferSummary', () => {
     expect(screen.getAllByText(DEFAULT_RECAP_VALUE)[0]).toBeInTheDocument()
   })
 
-  it('should display the date and time if the FF is enabled', async () => {
+  it('should display the date and time of the offer', async () => {
     const offer = collectiveOfferTemplateFactory({
       dates: { start: '2023-10-24T09:14:00', end: '2023-10-24T09:16:00' },
     })
-    renderCollectiveOfferSummary(
-      { ...props, offer },
-      { features: ['WIP_ENABLE_DATES_OFFER_TEMPLATE'] }
-    )
+    renderCollectiveOfferSummary({ ...props, offer })
 
     await waitForElementToBeRemoved(() => screen.queryAllByTestId('spinner'))
 

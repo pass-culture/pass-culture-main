@@ -18,28 +18,13 @@ const renderOfferSummary = (
 }
 
 describe('offer summary', () => {
-  it('should not show the dates range on template offers if the FF is disabled', () => {
+  it('should show the dates range of a template offers', () => {
     const offer: HydratedCollectiveOfferTemplate = {
       ...defaultCollectiveTemplateOffer,
       dates: { start: '2023-10-24T00:00:00', end: '2023-10-24T23:59:00' },
       isTemplate: true,
     }
     renderOfferSummary({ offer })
-    expect(
-      screen.queryByText('Le mardi 24 octobre 2023')
-    ).not.toBeInTheDocument()
-  })
-
-  it('should show the dates range on template offers if the FF is enabled', () => {
-    const offer: HydratedCollectiveOfferTemplate = {
-      ...defaultCollectiveTemplateOffer,
-      dates: { start: '2023-10-24T00:00:00', end: '2023-10-24T23:59:00' },
-      isTemplate: true,
-    }
-    renderOfferSummary(
-      { offer },
-      { features: ['WIP_ENABLE_DATES_OFFER_TEMPLATE'] }
-    )
     expect(screen.queryByText('Le mardi 24 octobre 2023')).toBeInTheDocument()
   })
 
@@ -49,10 +34,7 @@ describe('offer summary', () => {
       dates: undefined,
       isTemplate: true,
     }
-    renderOfferSummary(
-      { offer },
-      { features: ['WIP_ENABLE_DATES_OFFER_TEMPLATE'] }
-    )
+    renderOfferSummary({ offer })
     expect(
       screen.queryByText('Le mardi 24 octobre 2023')
     ).not.toBeInTheDocument()

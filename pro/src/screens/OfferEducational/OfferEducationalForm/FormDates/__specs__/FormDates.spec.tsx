@@ -22,7 +22,7 @@ const renderFormDates = (
     <Formik
       initialValues={initialValues}
       onSubmit={vi.fn()}
-      validationSchema={getOfferEducationalValidationSchema(true, false)}
+      validationSchema={getOfferEducationalValidationSchema(false)}
     >
       {({ handleSubmit }) => (
         <form onSubmit={handleSubmit}>
