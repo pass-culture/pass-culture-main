@@ -2,7 +2,6 @@
 /* istanbul ignore file */
 /* tslint:disable */
 /* eslint-disable */
-
 export type VenueContactModel = {
   email?: string | null;
   phoneNumber?: string | null;

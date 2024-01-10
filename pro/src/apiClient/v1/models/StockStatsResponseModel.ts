@@ -2,7 +2,6 @@
 /* istanbul ignore file */
 /* tslint:disable */
 /* eslint-disable */
-
 export type StockStatsResponseModel = {
   newestStock?: string | null;
   oldestStock?: string | null;

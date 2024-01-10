@@ -2,10 +2,8 @@
 /* istanbul ignore file */
 /* tslint:disable */
 /* eslint-disable */
-
 import type { GenderEnum } from './GenderEnum';
 import type { UserRole } from './UserRole';
-
 export type SharedLoginUserResponseModel = {
   activity?: string | null;
   address?: string | null;

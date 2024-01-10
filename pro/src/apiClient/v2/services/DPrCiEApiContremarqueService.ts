@@ -3,14 +3,10 @@
 /* tslint:disable */
 /* eslint-disable */
 import type { GetBookingResponse } from '../models/GetBookingResponse';
-
 import type { CancelablePromise } from '../core/CancelablePromise';
 import type { BaseHttpRequest } from '../core/BaseHttpRequest';
-
 export class DPrCiEApiContremarqueService {
-
   constructor(public readonly httpRequest: BaseHttpRequest) {}
-
   /**
    * [Dépréciée] Contactez partenaires.techniques@passculture.app pour plus d'informations.
    * @param token
@@ -35,7 +31,6 @@ export class DPrCiEApiContremarqueService {
       },
     });
   }
-
   /**
    * [Dépréciée] Contactez partenaires.techniques@passculture.app pour plus d'informations.
    * @param token
@@ -60,7 +55,6 @@ export class DPrCiEApiContremarqueService {
       },
     });
   }
-
   /**
    * [Dépréciée] Contactez partenaires.techniques@passculture.app pour plus d'informations.
    * @param token
@@ -86,7 +80,6 @@ export class DPrCiEApiContremarqueService {
       },
     });
   }
-
   /**
    * [Dépréciée] Contactez partenaires.techniques@passculture.app pour plus d'informations.
    * @param token
@@ -112,5 +105,4 @@ export class DPrCiEApiContremarqueService {
       },
     });
   }
-
 }

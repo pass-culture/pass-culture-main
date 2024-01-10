@@ -111,14 +111,10 @@ import type { VenueResponseModel } from '../models/VenueResponseModel';
 import type { VenuesEducationalStatusesResponseModel } from '../models/VenuesEducationalStatusesResponseModel';
 import type { VenueStatsResponseModel } from '../models/VenueStatsResponseModel';
 import type { VenueTypeListResponseModel } from '../models/VenueTypeListResponseModel';
-
 import type { CancelablePromise } from '../core/CancelablePromise';
 import type { BaseHttpRequest } from '../core/BaseHttpRequest';
-
 export class DefaultService {
-
   constructor(public readonly httpRequest: BaseHttpRequest) {}
-
   /**
    * get_bookings_pro <GET>
    * @param page
@@ -167,7 +163,6 @@ export class DefaultService {
       },
     });
   }
-
   /**
    * get_user_has_bookings <GET>
    * @returns UserHasBookingResponse OK
@@ -183,7 +178,6 @@ export class DefaultService {
       },
     });
   }
-
   /**
    * get_collective_bookings_pro <GET>
    * @param page
@@ -223,7 +217,6 @@ export class DefaultService {
       },
     });
   }
-
   /**
    * get_user_has_collective_bookings <GET>
    * @returns UserHasBookingResponse OK
@@ -239,7 +232,6 @@ export class DefaultService {
       },
     });
   }
-
   /**
    * get_collective_booking_by_id <GET>
    * @param bookingId
@@ -261,7 +253,6 @@ export class DefaultService {
       },
     });
   }
-
   /**
    * list_educational_domains <GET>
    * @returns EducationalDomainsResponseModel OK
@@ -277,7 +268,6 @@ export class DefaultService {
       },
     });
   }
-
   /**
    * get_collective_offers <GET>
    * @param nameOrIsbn
@@ -326,7 +316,6 @@ export class DefaultService {
       },
     });
   }
-
   /**
    * create_collective_offer <POST>
    * @param requestBody
@@ -347,7 +336,6 @@ export class DefaultService {
       },
     });
   }
-
   /**
    * create_collective_offer_template <POST>
    * @param requestBody
@@ -368,7 +356,6 @@ export class DefaultService {
       },
     });
   }
-
   /**
    * patch_collective_offers_template_active_status <PATCH>
    * @param requestBody
@@ -389,7 +376,6 @@ export class DefaultService {
       },
     });
   }
-
   /**
    * get_collective_offer_request <GET>
    * @param requestId
@@ -411,7 +397,6 @@ export class DefaultService {
       },
     });
   }
-
   /**
    * get_collective_offer_template <GET>
    * @param offerId
@@ -433,7 +418,6 @@ export class DefaultService {
       },
     });
   }
-
   /**
    * edit_collective_offer_template <PATCH>
    * @param offerId
@@ -459,7 +443,6 @@ export class DefaultService {
       },
     });
   }
-
   /**
    * create_collective_offer_template_from_collective_offer <POST>
    * @param offerId
@@ -487,7 +470,6 @@ export class DefaultService {
       },
     });
   }
-
   /**
    * delete_offer_template_image <DELETE>
    * @param offerId
@@ -509,7 +491,6 @@ export class DefaultService {
       },
     });
   }
-
   /**
    * attach_offer_template_image <POST>
    * @param offerId
@@ -535,7 +516,6 @@ export class DefaultService {
       },
     });
   }
-
   /**
    * patch_collective_offer_template_publication <PATCH>
    * @param offerId
@@ -558,7 +538,6 @@ export class DefaultService {
       },
     });
   }
-
   /**
    * patch_collective_offers_active_status <PATCH>
    * @param requestBody
@@ -579,7 +558,6 @@ export class DefaultService {
       },
     });
   }
-
   /**
    * patch_all_collective_offers_active_status <PATCH>
    * @param requestBody
@@ -600,7 +578,6 @@ export class DefaultService {
       },
     });
   }
-
   /**
    * get_autocomplete_educational_redactors_for_uai <GET>
    * @param uai
@@ -625,7 +602,6 @@ export class DefaultService {
       },
     });
   }
-
   /**
    * get_collective_offer <GET>
    * @param offerId
@@ -647,7 +623,6 @@ export class DefaultService {
       },
     });
   }
-
   /**
    * edit_collective_offer <PATCH>
    * @param offerId
@@ -673,7 +648,6 @@ export class DefaultService {
       },
     });
   }
-
   /**
    * cancel_collective_offer_booking <PATCH>
    * @param offerId
@@ -697,7 +671,6 @@ export class DefaultService {
       },
     });
   }
-
   /**
    * duplicate_collective_offer <POST>
    * @param offerId
@@ -719,7 +692,6 @@ export class DefaultService {
       },
     });
   }
-
   /**
    * patch_collective_offers_educational_institution <PATCH>
    * @param offerId
@@ -746,7 +718,6 @@ export class DefaultService {
       },
     });
   }
-
   /**
    * delete_offer_image <DELETE>
    * @param offerId
@@ -768,7 +739,6 @@ export class DefaultService {
       },
     });
   }
-
   /**
    * attach_offer_image <POST>
    * @param offerId
@@ -794,7 +764,6 @@ export class DefaultService {
       },
     });
   }
-
   /**
    * patch_collective_offer_publication <PATCH>
    * @param offerId
@@ -817,7 +786,6 @@ export class DefaultService {
       },
     });
   }
-
   /**
    * create_collective_stock <POST>
    * @param requestBody
@@ -838,7 +806,6 @@ export class DefaultService {
       },
     });
   }
-
   /**
    * edit_collective_stock <PATCH>
    * @param collectiveStockId
@@ -867,7 +834,6 @@ export class DefaultService {
       },
     });
   }
-
   /**
    * get_educational_partner <GET>
    * @param siret
@@ -891,7 +857,6 @@ export class DefaultService {
       },
     });
   }
-
   /**
    * get_educational_partners <GET>
    * @returns AdageCulturalPartnersResponseModel OK
@@ -908,7 +873,6 @@ export class DefaultService {
       },
     });
   }
-
   /**
    * get_educational_institutions <GET>
    * @param perPageLimit
@@ -934,7 +898,6 @@ export class DefaultService {
       },
     });
   }
-
   /**
    * list_features <GET>
    * @returns ListFeatureResponseModel OK
@@ -950,7 +913,6 @@ export class DefaultService {
       },
     });
   }
-
   /**
    * get_invoices <GET>
    * @param periodBeginningDate
@@ -978,7 +940,6 @@ export class DefaultService {
       },
     });
   }
-
   /**
    * get_reimbursement_points <GET>
    * @returns FinanceReimbursementPointListResponseModel OK
@@ -994,7 +955,6 @@ export class DefaultService {
       },
     });
   }
-
   /**
    * get_national_programs <GET>
    * @returns ListNationalProgramsResponseModel OK
@@ -1010,7 +970,6 @@ export class DefaultService {
       },
     });
   }
-
   /**
    * create_offerer <POST>
    * @param requestBody
@@ -1031,7 +990,6 @@ export class DefaultService {
       },
     });
   }
-
   /**
    * delete_api_key <DELETE>
    * @param apiKeyPrefix
@@ -1053,7 +1011,6 @@ export class DefaultService {
       },
     });
   }
-
   /**
    * list_educational_offerers <GET>
    * @param offererId
@@ -1075,7 +1032,6 @@ export class DefaultService {
       },
     });
   }
-
   /**
    * list_offerers_names <GET>
    * @param validated
@@ -1103,7 +1059,6 @@ export class DefaultService {
       },
     });
   }
-
   /**
    * save_new_onboarding_data <POST>
    * @param requestBody
@@ -1124,7 +1079,6 @@ export class DefaultService {
       },
     });
   }
-
   /**
    * get_offerer <GET>
    * @param offererId
@@ -1146,7 +1100,6 @@ export class DefaultService {
       },
     });
   }
-
   /**
    * generate_api_key_route <POST>
    * @param offererId
@@ -1168,7 +1121,6 @@ export class DefaultService {
       },
     });
   }
-
   /**
    * get_offerer_bank_accounts_and_attached_venues <GET>
    * @param offererId
@@ -1190,7 +1142,6 @@ export class DefaultService {
       },
     });
   }
-
   /**
    * link_venue_to_bank_account <PATCH>
    * @param offererId
@@ -1219,7 +1170,6 @@ export class DefaultService {
       },
     });
   }
-
   /**
    * get_offerer_stats_dashboard_url <GET>
    * @param offererId
@@ -1241,7 +1191,6 @@ export class DefaultService {
       },
     });
   }
-
   /**
    * can_offerer_create_educational_offer <GET>
    * @param offererId
@@ -1263,7 +1212,6 @@ export class DefaultService {
       },
     });
   }
-
   /**
    * invite_member <POST>
    * @param offererId
@@ -1289,7 +1237,6 @@ export class DefaultService {
       },
     });
   }
-
   /**
    * get_offerer_members <GET>
    * @param offererId
@@ -1311,7 +1258,6 @@ export class DefaultService {
       },
     });
   }
-
   /**
    * get_available_reimbursement_points <GET>
    * @param offererId
@@ -1333,7 +1279,6 @@ export class DefaultService {
       },
     });
   }
-
   /**
    * get_offerer_stats <GET>
    * @param offererId
@@ -1355,7 +1300,6 @@ export class DefaultService {
       },
     });
   }
-
   /**
    * get_offerer_v2_stats <GET>
    * @param offererId
@@ -1377,7 +1321,6 @@ export class DefaultService {
       },
     });
   }
-
   /**
    * list_offers <GET>
    * @param nameOrIsbn
@@ -1423,7 +1366,6 @@ export class DefaultService {
       },
     });
   }
-
   /**
    * post_offer <POST>
    * @param requestBody
@@ -1444,7 +1386,6 @@ export class DefaultService {
       },
     });
   }
-
   /**
    * patch_offers_active_status <PATCH>
    * @param requestBody
@@ -1465,7 +1406,6 @@ export class DefaultService {
       },
     });
   }
-
   /**
    * patch_all_offers_active_status <PATCH>
    * @param requestBody
@@ -1486,7 +1426,6 @@ export class DefaultService {
       },
     });
   }
-
   /**
    * get_categories <GET>
    * @returns CategoriesResponseModel OK
@@ -1502,7 +1441,6 @@ export class DefaultService {
       },
     });
   }
-
   /**
    * delete_draft_offers <POST>
    * @param requestBody
@@ -1523,7 +1461,6 @@ export class DefaultService {
       },
     });
   }
-
   /**
    * patch_publish_offer <PATCH>
    * @param requestBody
@@ -1545,7 +1482,6 @@ export class DefaultService {
       },
     });
   }
-
   /**
    * create_thumbnail <POST>
    * @param formData
@@ -1566,7 +1502,6 @@ export class DefaultService {
       },
     });
   }
-
   /**
    * delete_thumbnail <DELETE>
    * @param offerId
@@ -1588,7 +1523,6 @@ export class DefaultService {
       },
     });
   }
-
   /**
    * get_offer <GET>
    * @param offerId
@@ -1610,7 +1544,6 @@ export class DefaultService {
       },
     });
   }
-
   /**
    * patch_offer <PATCH>
    * @param offerId
@@ -1636,7 +1569,6 @@ export class DefaultService {
       },
     });
   }
-
   /**
    * post_price_categories <POST>
    * @param offerId
@@ -1662,7 +1594,6 @@ export class DefaultService {
       },
     });
   }
-
   /**
    * delete_price_category <DELETE>
    * @param offerId
@@ -1687,7 +1618,6 @@ export class DefaultService {
       },
     });
   }
-
   /**
    * get_stocks_stats <GET>
    * @param offerId
@@ -1709,7 +1639,6 @@ export class DefaultService {
       },
     });
   }
-
   /**
    * get_stocks <GET>
    * @param offerId
@@ -1754,7 +1683,6 @@ export class DefaultService {
       },
     });
   }
-
   /**
    * delete_all_filtered_stocks <POST>
    * @param offerId
@@ -1780,7 +1708,6 @@ export class DefaultService {
       },
     });
   }
-
   /**
    * delete_stocks <POST>
    * @param offerId
@@ -1806,7 +1733,6 @@ export class DefaultService {
       },
     });
   }
-
   /**
    * get_reimbursements_csv <GET>
    * @param venueId
@@ -1834,7 +1760,6 @@ export class DefaultService {
       },
     });
   }
-
   /**
    * get_siren_info <GET>
    * @param siren
@@ -1856,7 +1781,6 @@ export class DefaultService {
       },
     });
   }
-
   /**
    * get_siret_info <GET>
    * @param siret
@@ -1878,7 +1802,6 @@ export class DefaultService {
       },
     });
   }
-
   /**
    * upsert_stocks <POST>
    * @param requestBody
@@ -1899,7 +1822,6 @@ export class DefaultService {
       },
     });
   }
-
   /**
    * delete_stock <DELETE>
    * @param stockId
@@ -1921,7 +1843,6 @@ export class DefaultService {
       },
     });
   }
-
   /**
    * cookies_consent <POST>
    * @param requestBody
@@ -1943,7 +1864,6 @@ export class DefaultService {
       },
     });
   }
-
   /**
    * get_profile <GET>
    * @returns SharedCurrentUserResponseModel OK
@@ -1959,7 +1879,6 @@ export class DefaultService {
       },
     });
   }
-
   /**
    * post_user_email <POST>
    * @param requestBody
@@ -1980,7 +1899,6 @@ export class DefaultService {
       },
     });
   }
-
   /**
    * get_user_email_pending_validation <GET>
    * @returns UserEmailValidationResponseModel OK
@@ -1996,7 +1914,6 @@ export class DefaultService {
       },
     });
   }
-
   /**
    * patch_user_identity <PATCH>
    * @param requestBody
@@ -2017,7 +1934,6 @@ export class DefaultService {
       },
     });
   }
-
   /**
    * post_new_password <POST>
    * @param requestBody
@@ -2039,7 +1955,6 @@ export class DefaultService {
       },
     });
   }
-
   /**
    * post_change_password <POST>
    * @param requestBody
@@ -2061,7 +1976,6 @@ export class DefaultService {
       },
     });
   }
-
   /**
    * patch_user_phone <PATCH>
    * @param requestBody
@@ -2082,7 +1996,6 @@ export class DefaultService {
       },
     });
   }
-
   /**
    * post_pro_flags <POST>
    * @param requestBody
@@ -2104,7 +2017,6 @@ export class DefaultService {
       },
     });
   }
-
   /**
    * reset_password <POST>
    * @param requestBody
@@ -2125,7 +2037,6 @@ export class DefaultService {
       },
     });
   }
-
   /**
    * patch_pro_user_rgs_seen <PATCH>
    * @returns void
@@ -2141,7 +2052,6 @@ export class DefaultService {
       },
     });
   }
-
   /**
    * signin <POST>
    * @param requestBody
@@ -2162,7 +2072,6 @@ export class DefaultService {
       },
     });
   }
-
   /**
    * signout <GET>
    * @returns void
@@ -2178,7 +2087,6 @@ export class DefaultService {
       },
     });
   }
-
   /**
    * check_activation_token_exists <GET>
    * @param token
@@ -2201,7 +2109,6 @@ export class DefaultService {
       },
     });
   }
-
   /**
    * patch_user_tuto_seen <PATCH>
    * @returns void
@@ -2217,7 +2124,6 @@ export class DefaultService {
       },
     });
   }
-
   /**
    * patch_validate_email <PATCH>
    * @param requestBody
@@ -2238,7 +2144,6 @@ export class DefaultService {
       },
     });
   }
-
   /**
    * signup_pro_V2 <POST>
    * @param requestBody
@@ -2259,7 +2164,6 @@ export class DefaultService {
       },
     });
   }
-
   /**
    * validate_user <PATCH>
    * @param token
@@ -2281,7 +2185,6 @@ export class DefaultService {
       },
     });
   }
-
   /**
    * fetch_venue_labels <GET>
    * @returns VenueLabelListResponseModel OK
@@ -2297,7 +2200,6 @@ export class DefaultService {
       },
     });
   }
-
   /**
    * get_venue_types <GET>
    * @returns VenueTypeListResponseModel OK
@@ -2313,7 +2215,6 @@ export class DefaultService {
       },
     });
   }
-
   /**
    * list_venue_providers <GET>
    * @param venueId
@@ -2335,7 +2236,6 @@ export class DefaultService {
       },
     });
   }
-
   /**
    * create_venue_provider <POST>
    * @param requestBody
@@ -2356,7 +2256,6 @@ export class DefaultService {
       },
     });
   }
-
   /**
    * update_venue_provider <PUT>
    * @param requestBody
@@ -2377,7 +2276,6 @@ export class DefaultService {
       },
     });
   }
-
   /**
    * delete_venue_provider <DELETE>
    * @param venueProviderId
@@ -2399,7 +2297,6 @@ export class DefaultService {
       },
     });
   }
-
   /**
    * get_venues <GET>
    * @param validated
@@ -2427,7 +2324,6 @@ export class DefaultService {
       },
     });
   }
-
   /**
    * post_create_venue <POST>
    * @param requestBody
@@ -2448,7 +2344,6 @@ export class DefaultService {
       },
     });
   }
-
   /**
    * get_venues_educational_statuses <GET>
    * @returns VenuesEducationalStatusesResponseModel OK
@@ -2464,7 +2359,6 @@ export class DefaultService {
       },
     });
   }
-
   /**
    * get_venues_of_offerer_from_siret <GET>
    * @param siret
@@ -2486,7 +2380,6 @@ export class DefaultService {
       },
     });
   }
-
   /**
    * get_venue <GET>
    * @param venueId
@@ -2508,7 +2401,6 @@ export class DefaultService {
       },
     });
   }
-
   /**
    * edit_venue <PATCH>
    * @param venueId
@@ -2534,7 +2426,6 @@ export class DefaultService {
       },
     });
   }
-
   /**
    * delete_venue_banner <DELETE>
    * @param venueId
@@ -2556,7 +2447,6 @@ export class DefaultService {
       },
     });
   }
-
   /**
    * get_venue_collective_data <GET>
    * @param venueId
@@ -2578,7 +2468,6 @@ export class DefaultService {
       },
     });
   }
-
   /**
    * edit_venue_collective_data <PATCH>
    * @param venueId
@@ -2604,7 +2493,6 @@ export class DefaultService {
       },
     });
   }
-
   /**
    * get_venue_stats_dashboard_url <GET>
    * @param venueId
@@ -2626,7 +2514,6 @@ export class DefaultService {
       },
     });
   }
-
   /**
    * link_venue_to_pricing_point <POST>
    * @param venueId
@@ -2652,7 +2539,6 @@ export class DefaultService {
       },
     });
   }
-
   /**
    * get_venue_stats <GET>
    * @param venueId
@@ -2674,5 +2560,4 @@ export class DefaultService {
       },
     });
   }
-
 }

@@ -2,7 +2,6 @@
 /* istanbul ignore file */
 /* tslint:disable */
 /* eslint-disable */
-
 /**
  * Accessibility for people with disabilities. Fields are null for digital venues.
  */

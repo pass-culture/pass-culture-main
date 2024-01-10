@@ -2,10 +2,8 @@
 /* istanbul ignore file */
 /* tslint:disable */
 /* eslint-disable */
-
 import type { VenueContactModel } from './VenueContactModel';
 import type { VenueTypeCode } from './VenueTypeCode';
-
 export type EditVenueBodyModel = {
   address?: string | null;
   audioDisabilityCompliant?: boolean | null;

@@ -2,7 +2,6 @@
 /* istanbul ignore file */
 /* tslint:disable */
 /* eslint-disable */
-
 export type GetEducationalOffererVenueResponseModel = {
   address?: string | null;
   audioDisabilityCompliant?: boolean | null;

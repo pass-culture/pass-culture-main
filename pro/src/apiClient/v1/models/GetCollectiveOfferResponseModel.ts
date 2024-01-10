@@ -2,7 +2,6 @@
 /* istanbul ignore file */
 /* tslint:disable */
 /* eslint-disable */
-
 import type { CollectiveBookingStatus } from './CollectiveBookingStatus';
 import type { CollectiveOfferOfferVenueResponseModel } from './CollectiveOfferOfferVenueResponseModel';
 import type { EacFormat } from './EacFormat';
@@ -15,7 +14,6 @@ import type { OfferDomain } from './OfferDomain';
 import type { OfferStatus } from './OfferStatus';
 import type { StudentLevels } from './StudentLevels';
 import type { SubcategoryIdEnum } from './SubcategoryIdEnum';
-
 export type GetCollectiveOfferResponseModel = {
   audioDisabilityCompliant?: boolean | null;
   bookingEmails: Array<string>;

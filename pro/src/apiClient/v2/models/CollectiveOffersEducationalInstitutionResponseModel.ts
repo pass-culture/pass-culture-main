@@ -2,7 +2,6 @@
 /* istanbul ignore file */
 /* tslint:disable */
 /* eslint-disable */
-
 export type CollectiveOffersEducationalInstitutionResponseModel = {
   city: string;
   id: number;

@@ -2,7 +2,6 @@
 /* istanbul ignore file */
 /* tslint:disable */
 /* eslint-disable */
-
 export type ManagedVenues = {
   bankAccountId?: number | null;
   commonName: string;

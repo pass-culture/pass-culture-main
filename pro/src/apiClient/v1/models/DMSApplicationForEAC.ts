@@ -2,9 +2,7 @@
 /* istanbul ignore file */
 /* tslint:disable */
 /* eslint-disable */
-
 import type { DMSApplicationstatus } from './DMSApplicationstatus';
-
 export type DMSApplicationForEAC = {
   application: number;
   buildDate?: string | null;
