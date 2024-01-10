@@ -11,12 +11,14 @@ from pcapi.core.finance import factories
 from pcapi.core.finance import models
 import pcapi.core.offerers.factories as offerers_factories
 import pcapi.core.offers.factories as offers_factories
+from pcapi.core.testing import override_features
 from pcapi.models import db
 
 
 pytestmark = pytest.mark.usefixtures("db_session")
 
 
+@override_features(WIP_ENABLE_NEW_BANK_DETAILS_JOURNEY=False)
 def test_integration_full_workflow(css_font_http_request_mock):
     # A booking is manually marked as used. Check the whole workflow
     # until the invoice is generated.
