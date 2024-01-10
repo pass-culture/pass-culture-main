@@ -82,7 +82,7 @@ jobs:
       cancel-in-progress: true
     with:
       TRIGGER_ONLY_ON_API_CHANGE: true
-      TRIGGER_ONLY_ON_DEPENDENCY_CHANGE: false
+      TRIGGER_ONLY_ON_DEPENDENCY_CHANGE: true
       CACHE_BUCKET_NAME: "passculture-infra-prod-github-runner-cache"
     secrets:
       GCP_EHP_SERVICE_ACCOUNT: ${{ secrets.GCP_EHP_SERVICE_ACCOUNT }}
