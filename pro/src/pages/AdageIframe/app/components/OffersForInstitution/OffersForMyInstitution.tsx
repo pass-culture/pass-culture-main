@@ -87,6 +87,11 @@ const OffersForMyInstitution = (): JSX.Element => {
                 votre établissement et rédigées par les acteurs culturels
                 partenaires de l’établissement scolaire.
               </p>
+              <p className={styles['callout-text']}>
+                Le contenu, la date et le montant de chaque offre ont été
+                définis lors d’échanges entre un professeur et la structure
+                culturelle concernée.
+              </p>
               <p>
                 Processus : vous cliquez sur “Préréserver” l’offre qui vous est
                 destinée. L’offre va disparaitre de cette page, mais vous
