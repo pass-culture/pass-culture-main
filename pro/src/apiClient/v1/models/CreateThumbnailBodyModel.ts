@@ -2,7 +2,6 @@
 /* istanbul ignore file */
 /* tslint:disable */
 /* eslint-disable */
-
 export type CreateThumbnailBodyModel = {
   credit?: string | null;
   croppingRectHeight?: number | null;

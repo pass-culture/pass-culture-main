@@ -2,10 +2,8 @@
 /* istanbul ignore file */
 /* tslint:disable */
 /* eslint-disable */
-
 import type { EacFormat } from './EacFormat';
 import type { OfferVenueModel } from './OfferVenueModel';
-
 export type PostCollectiveOfferBodyModel = {
   audioDisabilityCompliant?: boolean;
   beginningDatetime: string;

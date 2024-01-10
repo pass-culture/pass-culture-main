@@ -2,7 +2,6 @@
 /* istanbul ignore file */
 /* tslint:disable */
 /* eslint-disable */
-
 export type GetCollectiveOfferCollectiveStockResponseModel = {
   beginningDatetime?: string | null;
   bookingLimitDatetime?: string | null;

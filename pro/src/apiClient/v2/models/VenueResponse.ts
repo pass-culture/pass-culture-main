@@ -2,12 +2,10 @@
 /* istanbul ignore file */
 /* tslint:disable */
 /* eslint-disable */
-
 import type { PartialAccessibility } from './PartialAccessibility';
 import type { VenueDigitalLocation } from './VenueDigitalLocation';
 import type { VenuePhysicalLocation } from './VenuePhysicalLocation';
 import type { VenueTypeEnum } from './VenueTypeEnum';
-
 export type VenueResponse = {
   accessibility: PartialAccessibility;
   activityDomain: VenueTypeEnum;

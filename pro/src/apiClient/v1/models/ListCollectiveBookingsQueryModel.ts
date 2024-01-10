@@ -2,9 +2,7 @@
 /* istanbul ignore file */
 /* tslint:disable */
 /* eslint-disable */
-
 import type { CollectiveBookingStatusFilter } from './CollectiveBookingStatusFilter';
-
 export type ListCollectiveBookingsQueryModel = {
   bookingPeriodBeginningDate?: string | null;
   bookingPeriodEndingDate?: string | null;

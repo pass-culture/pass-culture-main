@@ -2,9 +2,7 @@
 /* istanbul ignore file */
 /* tslint:disable */
 /* eslint-disable */
-
 import type { SuggestionType } from './SuggestionType';
-
 export type TrackingAutocompleteSuggestionBody = {
   iframeFrom: string;
   isFromNoResult?: boolean | null;

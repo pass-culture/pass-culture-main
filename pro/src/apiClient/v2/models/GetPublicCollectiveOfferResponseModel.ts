@@ -2,12 +2,10 @@
 /* istanbul ignore file */
 /* tslint:disable */
 /* eslint-disable */
-
 import type { CollectiveBookingResponseModel } from './CollectiveBookingResponseModel';
 import type { EacFormat } from './EacFormat';
 import type { NationalProgramModel } from './NationalProgramModel';
 import type { OfferVenueModel } from './OfferVenueModel';
-
 export type GetPublicCollectiveOfferResponseModel = {
   audioDisabilityCompliant?: boolean | null;
   beginningDatetime: string;

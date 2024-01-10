@@ -2,9 +2,7 @@
 /* istanbul ignore file */
 /* tslint:disable */
 /* eslint-disable */
-
 import type { VenueContactModel } from './VenueContactModel';
-
 export type PostVenueBodyModel = {
   address: string;
   audioDisabilityCompliant?: boolean | null;

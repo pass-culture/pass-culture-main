@@ -2,12 +2,10 @@
 /* istanbul ignore file */
 /* tslint:disable */
 /* eslint-disable */
-
 import type { CollectiveOfferVenueBodyModel } from './CollectiveOfferVenueBodyModel';
 import type { EacFormat } from './EacFormat';
 import type { StudentLevels } from './StudentLevels';
 import type { SubcategoryIdEnum } from './SubcategoryIdEnum';
-
 export type PatchCollectiveOfferBodyModel = {
   audioDisabilityCompliant?: boolean | null;
   bookingEmails?: Array<string> | null;

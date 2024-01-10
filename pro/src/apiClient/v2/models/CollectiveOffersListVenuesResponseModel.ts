@@ -2,7 +2,5 @@
 /* istanbul ignore file */
 /* tslint:disable */
 /* eslint-disable */
-
 import type { VenueResponse } from './VenueResponse';
-
 export type CollectiveOffersListVenuesResponseModel = Array<VenueResponse>;

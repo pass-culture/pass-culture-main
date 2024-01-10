@@ -2,9 +2,7 @@
 /* istanbul ignore file */
 /* tslint:disable */
 /* eslint-disable */
-
 import type { OfferAddressType } from './OfferAddressType';
-
 export type CollectiveOfferOfferVenue = {
   address?: string | null;
   addressType: OfferAddressType;

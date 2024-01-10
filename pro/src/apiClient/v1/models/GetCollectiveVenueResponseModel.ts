@@ -2,11 +2,9 @@
 /* istanbul ignore file */
 /* tslint:disable */
 /* eslint-disable */
-
 import type { GetVenueDomainResponseModel } from './GetVenueDomainResponseModel';
 import type { LegalStatusResponseModel } from './LegalStatusResponseModel';
 import type { StudentLevels } from './StudentLevels';
-
 export type GetCollectiveVenueResponseModel = {
   collectiveAccessInformation?: string | null;
   collectiveDescription?: string | null;

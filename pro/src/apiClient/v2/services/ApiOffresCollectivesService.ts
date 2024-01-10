@@ -15,14 +15,10 @@ import type { ListNationalProgramsResponseModel } from '../models/ListNationalPr
 import type { OfferStatus } from '../models/OfferStatus';
 import type { PatchCollectiveOfferBodyModel } from '../models/PatchCollectiveOfferBodyModel';
 import type { PostCollectiveOfferBodyModel } from '../models/PostCollectiveOfferBodyModel';
-
 import type { CancelablePromise } from '../core/CancelablePromise';
 import type { BaseHttpRequest } from '../core/BaseHttpRequest';
-
 export class ApiOffresCollectivesService {
-
   constructor(public readonly httpRequest: BaseHttpRequest) {}
-
   /**
    * Annuler une réservation collective
    * @param bookingId
@@ -44,7 +40,6 @@ export class ApiOffresCollectivesService {
       },
     });
   }
-
   /**
    * Récupération de la liste des catégories d'offres proposées.
    * @returns CollectiveOffersListCategoriesResponseModel La liste des catégories éligibles existantes.
@@ -60,7 +55,6 @@ export class ApiOffresCollectivesService {
       },
     });
   }
-
   /**
    * Récupération de la liste des domaines d'éducation pouvant être associés aux offres collectives.
    * @returns CollectiveOffersListDomainsResponseModel La liste des domaines d'éducation.
@@ -76,7 +70,6 @@ export class ApiOffresCollectivesService {
       },
     });
   }
-
   /**
    * Récupération de la liste établissements scolaires.
    * @param id
@@ -117,7 +110,6 @@ export class ApiOffresCollectivesService {
       },
     });
   }
-
   /**
    * Liste de tous les dispositifs nationaux connus
    * @returns ListNationalProgramsResponseModel Il n'y a pas de dispositifs nationaux
@@ -134,7 +126,6 @@ export class ApiOffresCollectivesService {
       },
     });
   }
-
   /**
    * Récupération des lieux associés au fournisseur authentifié par le jeton d'API; groupés par structures.
    * Tous les lieux enregistrés, sont listés ici avec leurs coordonnées.
@@ -157,7 +148,6 @@ export class ApiOffresCollectivesService {
       },
     });
   }
-
   /**
    * Récuperation des offres collectives Cette api ignore les offre vitrines et les offres commencées sur l'interface web et non finalisées.
    * @param status
@@ -190,7 +180,6 @@ export class ApiOffresCollectivesService {
       },
     });
   }
-
   /**
    * Création d'une offre collective.
    * @param requestBody
@@ -214,7 +203,6 @@ export class ApiOffresCollectivesService {
       },
     });
   }
-
   /**
    * Liste des formats d'offres collectives
    * @returns void
@@ -232,7 +220,6 @@ export class ApiOffresCollectivesService {
       },
     });
   }
-
   /**
    * Récuperation de l'offre collective avec l'identifiant offer_id.
    * @param offerId
@@ -256,7 +243,6 @@ export class ApiOffresCollectivesService {
       },
     });
   }
-
   /**
    * Édition d'une offre collective.
    * @param offerId
@@ -285,7 +271,6 @@ export class ApiOffresCollectivesService {
       },
     });
   }
-
   /**
    * Récupération de la liste des publics cibles pour lesquelles des offres collectives peuvent être proposées.
    * @returns CollectiveOffersListStudentLevelsResponseModel La liste des domaines d'éducation.
@@ -301,7 +286,6 @@ export class ApiOffresCollectivesService {
       },
     });
   }
-
   /**
    * Récupération de la liste des sous-catégories d'offres proposées a un public collectif.
    * @returns CollectiveOffersListSubCategoriesResponseModel La liste des sous-catégories éligibles existantes.
@@ -317,7 +301,6 @@ export class ApiOffresCollectivesService {
       },
     });
   }
-
   /**
    * Récupération de la liste des lieux associés au fournisseur authentifiée par le jeton d'API.
    * Tous les lieux enregistrés, sont listés ici avec leurs coordonnées.
@@ -334,5 +317,4 @@ export class ApiOffresCollectivesService {
       },
     });
   }
-
 }

@@ -2,7 +2,6 @@
 /* istanbul ignore file */
 /* tslint:disable */
 /* eslint-disable */
-
 import type { CollectiveOfferOfferVenue } from './CollectiveOfferOfferVenue';
 import type { EacFormat } from './EacFormat';
 import type { NationalProgramModel } from './NationalProgramModel';
@@ -10,7 +9,6 @@ import type { OfferDomain } from './OfferDomain';
 import type { OfferVenueResponse } from './OfferVenueResponse';
 import type { StudentLevels } from './StudentLevels';
 import type { TemplateDatesModel } from './TemplateDatesModel';
-
 export type CollectiveOfferTemplateResponseModel = {
   audioDisabilityCompliant?: boolean | null;
   contactEmail: string;

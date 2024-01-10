@@ -2,9 +2,7 @@
 /* istanbul ignore file */
 /* tslint:disable */
 /* eslint-disable */
-
 import type { AdagePlaylistType } from './AdagePlaylistType';
-
 export type PlaylistBody = {
   elementId?: number | null;
   iframeFrom: string;

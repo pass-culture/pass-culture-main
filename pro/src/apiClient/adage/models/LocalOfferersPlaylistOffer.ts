@@ -2,7 +2,6 @@
 /* istanbul ignore file */
 /* tslint:disable */
 /* eslint-disable */
-
 export type LocalOfferersPlaylistOffer = {
   city?: string | null;
   distance?: number | null;

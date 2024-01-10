@@ -2,11 +2,9 @@
 /* istanbul ignore file */
 /* tslint:disable */
 /* eslint-disable */
-
 import type { CollectiveOfferDisplayedStatus } from './CollectiveOfferDisplayedStatus';
 import type { CollectiveOfferType } from './CollectiveOfferType';
 import type { OfferStatus } from './OfferStatus';
-
 export type ListOffersQueryModel = {
   categoryId?: string | null;
   collectiveOfferType?: CollectiveOfferType | null;

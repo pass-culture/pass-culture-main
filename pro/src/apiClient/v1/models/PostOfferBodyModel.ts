@@ -2,9 +2,7 @@
 /* istanbul ignore file */
 /* tslint:disable */
 /* eslint-disable */
-
 import type { WithdrawalTypeEnum } from './WithdrawalTypeEnum';
-
 export type PostOfferBodyModel = {
   audioDisabilityCompliant: boolean;
   bookingContact?: string | null;

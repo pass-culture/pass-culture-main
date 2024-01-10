@@ -32,14 +32,10 @@ import type { TrackingAutocompleteSuggestionBody } from '../models/TrackingAutoc
 import type { TrackingFilterBody } from '../models/TrackingFilterBody';
 import type { TrackingShowMoreBody } from '../models/TrackingShowMoreBody';
 import type { VenueResponse } from '../models/VenueResponse';
-
 import type { CancelablePromise } from '../core/CancelablePromise';
 import type { BaseHttpRequest } from '../core/BaseHttpRequest';
-
 export class DefaultService {
-
   constructor(public readonly httpRequest: BaseHttpRequest) {}
-
   /**
    * authenticate <GET>
    * @returns AuthenticatedResponse OK
@@ -55,7 +51,6 @@ export class DefaultService {
       },
     });
   }
-
   /**
    * get_academies <GET>
    * @returns AcademiesResponseModel OK
@@ -71,7 +66,6 @@ export class DefaultService {
       },
     });
   }
-
   /**
    * get_educational_eligible_offers_by_uai <GET>
    * @returns ListCollectiveOffersResponseModel OK
@@ -87,7 +81,6 @@ export class DefaultService {
       },
     });
   }
-
   /**
    * book_collective_offer <POST>
    * @param requestBody
@@ -109,7 +102,6 @@ export class DefaultService {
       },
     });
   }
-
   /**
    * get_collective_favorites <GET>
    * @returns FavoritesResponseModel OK
@@ -125,7 +117,6 @@ export class DefaultService {
       },
     });
   }
-
   /**
    * get_educational_institution_with_budget <GET>
    * @returns EducationalInstitutionWithBudgetResponseModel OK
@@ -141,7 +132,6 @@ export class DefaultService {
       },
     });
   }
-
   /**
    * delete_favorite_for_collective_offer <DELETE>
    * @param offerId
@@ -163,7 +153,6 @@ export class DefaultService {
       },
     });
   }
-
   /**
    * get_collective_offer_template <GET>
    * @param offerId
@@ -186,7 +175,6 @@ export class DefaultService {
       },
     });
   }
-
   /**
    * create_collective_request <POST>
    * @param offerId
@@ -213,7 +201,6 @@ export class DefaultService {
       },
     });
   }
-
   /**
    * get_collective_offer <GET>
    * @param offerId
@@ -236,7 +223,6 @@ export class DefaultService {
       },
     });
   }
-
   /**
    * post_collective_offer_favorites <POST>
    * @param offerId
@@ -258,7 +244,6 @@ export class DefaultService {
       },
     });
   }
-
   /**
    * delete_favorite_for_collective_offer_template <DELETE>
    * @param offerTemplateId
@@ -280,7 +265,6 @@ export class DefaultService {
       },
     });
   }
-
   /**
    * post_collective_template_favorites <POST>
    * @param offerId
@@ -302,7 +286,6 @@ export class DefaultService {
       },
     });
   }
-
   /**
    * list_features <GET>
    * @returns ListFeatureResponseModel OK
@@ -319,7 +302,6 @@ export class DefaultService {
       },
     });
   }
-
   /**
    * log_booking_modal_button_click <POST>
    * @param requestBody
@@ -341,7 +323,6 @@ export class DefaultService {
       },
     });
   }
-
   /**
    * log_catalog_view <POST>
    * @param requestBody
@@ -363,7 +344,6 @@ export class DefaultService {
       },
     });
   }
-
   /**
    * log_consult_playlist_element <POST>
    * @param requestBody
@@ -385,7 +365,6 @@ export class DefaultService {
       },
     });
   }
-
   /**
    * log_contact_modal_button_click <POST>
    * @param requestBody
@@ -407,7 +386,6 @@ export class DefaultService {
       },
     });
   }
-
   /**
    * log_fav_offer_button_click <POST>
    * @param requestBody
@@ -429,7 +407,6 @@ export class DefaultService {
       },
     });
   }
-
   /**
    * log_has_seen_whole_playlist <POST>
    * @param requestBody
@@ -451,7 +428,6 @@ export class DefaultService {
       },
     });
   }
-
   /**
    * log_header_link_click <POST>
    * @param requestBody
@@ -473,7 +449,6 @@ export class DefaultService {
       },
     });
   }
-
   /**
    * log_offer_details_button_click <POST>
    * @param requestBody
@@ -495,7 +470,6 @@ export class DefaultService {
       },
     });
   }
-
   /**
    * log_offer_template_details_button_click <POST>
    * @param requestBody
@@ -517,7 +491,6 @@ export class DefaultService {
       },
     });
   }
-
   /**
    * log_has_seen_all_playlist <POST>
    * @param requestBody
@@ -539,7 +512,6 @@ export class DefaultService {
       },
     });
   }
-
   /**
    * log_request_form_popin_dismiss <POST>
    * @param requestBody
@@ -561,7 +533,6 @@ export class DefaultService {
       },
     });
   }
-
   /**
    * log_open_satisfaction_survey <POST>
    * @param requestBody
@@ -583,7 +554,6 @@ export class DefaultService {
       },
     });
   }
-
   /**
    * log_search_button_click <POST>
    * @param requestBody
@@ -605,7 +575,6 @@ export class DefaultService {
       },
     });
   }
-
   /**
    * log_search_show_more <POST>
    * @param requestBody
@@ -627,7 +596,6 @@ export class DefaultService {
       },
     });
   }
-
   /**
    * log_tracking_autocomplete_suggestion_click <POST>
    * @param requestBody
@@ -649,7 +617,6 @@ export class DefaultService {
       },
     });
   }
-
   /**
    * log_tracking_filter <POST>
    * @param requestBody
@@ -671,7 +638,6 @@ export class DefaultService {
       },
     });
   }
-
   /**
    * log_tracking_map <POST>
    * @param requestBody
@@ -693,7 +659,6 @@ export class DefaultService {
       },
     });
   }
-
   /**
    * get_educational_offers_categories <GET>
    * @returns CategoriesResponseModel OK
@@ -709,7 +674,6 @@ export class DefaultService {
       },
     });
   }
-
   /**
    * get_educational_offers_formats <GET>
    * @returns EacFormatsResponseModel OK
@@ -725,7 +689,6 @@ export class DefaultService {
       },
     });
   }
-
   /**
    * get_classroom_playlist <GET>
    * @returns ListCollectiveOfferTemplateResponseModel OK
@@ -741,7 +704,6 @@ export class DefaultService {
       },
     });
   }
-
   /**
    * get_local_offerers_playlist <GET>
    * @returns LocalOfferersPlaylist OK
@@ -757,7 +719,6 @@ export class DefaultService {
       },
     });
   }
-
   /**
    * new_template_offers_playlist <GET>
    * @returns ListCollectiveOfferTemplateResponseModel OK
@@ -774,7 +735,6 @@ export class DefaultService {
       },
     });
   }
-
   /**
    * save_redactor_preferences <POST>
    * @param requestBody
@@ -795,7 +755,6 @@ export class DefaultService {
       },
     });
   }
-
   /**
    * get_venue_by_siret <GET>
    * @param siret
@@ -822,7 +781,6 @@ export class DefaultService {
       },
     });
   }
-
   /**
    * get_venue_by_id <GET>
    * @param venueId
@@ -849,5 +807,4 @@ export class DefaultService {
       },
     });
   }
-
 }

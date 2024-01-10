@@ -2,9 +2,7 @@
 /* istanbul ignore file */
 /* tslint:disable */
 /* eslint-disable */
-
 import type { GetOfferManagingOffererResponseModel } from './GetOfferManagingOffererResponseModel';
-
 export type GetOfferVenueResponseModel = {
   address?: string | null;
   audioDisabilityCompliant?: boolean | null;

@@ -2,9 +2,7 @@
 /* istanbul ignore file */
 /* tslint:disable */
 /* eslint-disable */
-
 import type { StudentLevels } from './StudentLevels';
-
 export type EditVenueCollectiveDataBodyModel = {
   collectiveAccessInformation?: string | null;
   collectiveDescription?: string | null;

@@ -2,12 +2,10 @@
 /* istanbul ignore file */
 /* tslint:disable */
 /* eslint-disable */
-
 import type { BookingStatusHistoryResponseModel } from './BookingStatusHistoryResponseModel';
 import type { CollectiveBookingCancellationReasons } from './CollectiveBookingCancellationReasons';
 import type { CollectiveBookingCollectiveStockResponseModel } from './CollectiveBookingCollectiveStockResponseModel';
 import type { EducationalInstitutionResponseModel } from './EducationalInstitutionResponseModel';
-
 export type CollectiveBookingResponseModel = {
   bookingAmount: number;
   bookingCancellationLimitDate: string;
