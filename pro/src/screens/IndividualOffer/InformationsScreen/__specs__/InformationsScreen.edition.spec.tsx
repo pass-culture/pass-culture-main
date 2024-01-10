@@ -156,8 +156,6 @@ describe('screens:IndividualOffer::Informations:edition', () => {
       name: 'Offer name',
       musicSubType: '',
       musicType: '',
-      offererId: 12,
-      offererName: '',
       performer: 'Offer performer',
       ean: '',
       showSubType: '',

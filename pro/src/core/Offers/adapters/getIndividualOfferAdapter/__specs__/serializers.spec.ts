@@ -223,8 +223,6 @@ describe('serializer', () => {
       musicType: '',
       name: 'Le nom de l’offre 1',
       id: 1,
-      offererId: offerApi.venue.managingOfferer.id,
-      offererName: 'Le nom de la structure 1',
       performer: '',
       priceCategories: undefined,
       showSubType: '',

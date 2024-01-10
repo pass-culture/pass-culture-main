@@ -40,8 +40,6 @@ describe('routes::Summary::serializers', () => {
         name: 'Offer name',
         musicSubType: '',
         musicType: '',
-        offererId: 12,
-        offererName: '',
         performer: 'Offer performer',
         ean: '',
         showSubType: '',

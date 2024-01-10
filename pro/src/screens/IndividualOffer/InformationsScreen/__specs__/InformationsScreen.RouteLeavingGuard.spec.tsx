@@ -4,11 +4,7 @@ import React from 'react'
 import { generatePath, Route, Routes } from 'react-router-dom'
 
 import { api } from 'apiClient/api'
-import {
-  GetIndividualOfferResponseModel,
-  OfferStatus,
-  WithdrawalTypeEnum,
-} from 'apiClient/v1'
+import { GetIndividualOfferResponseModel } from 'apiClient/v1'
 import { OFFER_WIZARD_STEP_IDS } from 'components/IndividualOfferNavigation/constants'
 import Notification from 'components/Notification/Notification'
 import {
@@ -18,7 +14,6 @@ import {
 import { CATEGORY_STATUS, OFFER_WIZARD_MODE } from 'core/Offers/constants'
 import { IndividualOffer } from 'core/Offers/types'
 import { getIndividualOfferPath } from 'core/Offers/utils/getIndividualOfferUrl'
-import { AccessiblityEnum } from 'core/shared'
 import { IndividualOfferVenueItem } from 'core/Venue/types'
 import * as useAnalytics from 'hooks/useAnalytics'
 import { ButtonLink } from 'ui-kit'
@@ -120,47 +115,7 @@ describe('screens:IndividualOffer::Informations::creation', () => {
 
   beforeEach(() => {
     Element.prototype.scrollIntoView = scrollIntoViewMock
-    offer = individualOfferFactory({
-      id: offerId,
-      author: 'Offer author',
-      bookingEmail: 'booking@email.com',
-      description: 'Offer description',
-      durationMinutes: 140,
-      isActive: true,
-      isDuo: false,
-      isEvent: true,
-      isDigital: false,
-      accessibility: {
-        [AccessiblityEnum.AUDIO]: true,
-        [AccessiblityEnum.MENTAL]: true,
-        [AccessiblityEnum.MOTOR]: true,
-        [AccessiblityEnum.VISUAL]: true,
-        [AccessiblityEnum.NONE]: false,
-      },
-      isNational: false,
-      name: 'Offer name',
-      musicSubType: '',
-      musicType: '',
-      offererId: 12,
-      offererName: '',
-      performer: 'Offer performer',
-      ean: '',
-      showSubType: '',
-      showType: '',
-      stageDirector: 'Offer stageDirector',
-      speaker: 'Offer speaker',
-      subcategoryId: 'physical',
-      image: undefined,
-      url: 'https://offer.example.com',
-      externalTicketOfficeUrl: 'https://external.example.com',
-      visa: '',
-      withdrawalDetails: 'Offer withdrawalDetails',
-      withdrawalDelay: 140,
-      withdrawalType: WithdrawalTypeEnum.ON_SITE,
-      lastProviderName: null,
-      lastProvider: null,
-      status: OfferStatus.DRAFT,
-    })
+    offer = individualOfferFactory()
 
     const categories = [
       individualOfferCategoryFactory({ id: 'A' }),

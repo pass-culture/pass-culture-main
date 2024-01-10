@@ -96,8 +96,6 @@ export const serializeOfferApi = (
     isDigital: apiOffer.isDigital,
     isNational: apiOffer.isNational,
     name: apiOffer.name,
-    offererId: apiOffer.venue.managingOfferer.id,
-    offererName: apiOffer.venue.managingOfferer.name,
     priceCategories: apiOffer.priceCategories,
     subcategoryId: apiOffer.subcategoryId,
     url: apiOffer.url || '',
