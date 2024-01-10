@@ -5,6 +5,10 @@
   margin-top: rem.torem(24px);
 }
 
+.add-venue-button {
+  text-align: center;
+}
+
 .title {
   @include fonts.title4;
 
@@ -13,19 +17,4 @@
 
 .content {
   text-align: center;
-}
-
-// Delete container when WIP_HOME_STATS is removed
-.actions-container {
-  display: flex;
-  flex-wrap: wrap;
-  justify-content: center;
-  gap: rem.torem(16px);
-  margin-top: rem.torem(24px);
-
-  > * {
-    flex: 1;
-    max-width: rem.torem(240px);
-    white-space: nowrap;
-  }
 }

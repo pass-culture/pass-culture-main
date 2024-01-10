@@ -23,7 +23,6 @@ interface VenueCreationLinksProps {
 
 export const VenueCreationLinks = ({ offerer }: VenueCreationLinksProps) => {
   const isVenueCreationAvailable = useActiveFeature('API_SIRENE_AVAILABLE')
-  const isStatisticsDashboardEnabled = useActiveFeature('WIP_HOME_STATS')
   const { logEvent } = useAnalytics()
   const location = useLocation()
 
@@ -42,7 +41,7 @@ export const VenueCreationLinks = ({ offerer }: VenueCreationLinksProps) => {
 
   const renderLinks = (insideCard: boolean) => {
     return (
-      <div className={styles['actions-container']}>
+      <div className={styles['add-venue-button']}>
         <ButtonLink
           variant={insideCard ? ButtonVariant.PRIMARY : ButtonVariant.SECONDARY}
           link={{
@@ -52,24 +51,12 @@ export const VenueCreationLinks = ({ offerer }: VenueCreationLinksProps) => {
           onClick={() => {
             logEvent?.(Events.CLICKED_CREATE_VENUE, {
               from: location.pathname,
-              is_first_venue: !hasPhysicalVenue && !hasVirtualOffers,
+              is_first_venue: !hasVirtualOffers,
             })
           }}
         >
-          {!hasPhysicalVenue ? 'Créer un lieu' : 'Ajouter un lieu'}
+          Ajouter un lieu
         </ButtonLink>
-
-        {!isStatisticsDashboardEnabled && (
-          <ButtonLink
-            variant={ButtonVariant.SECONDARY}
-            link={{
-              to: `/offre/creation?structure=${offerer?.id}`,
-              isExternal: false,
-            }}
-          >
-            Créer une offre
-          </ButtonLink>
-        )}
       </div>
     )
   }

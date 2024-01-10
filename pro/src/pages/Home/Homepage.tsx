@@ -14,7 +14,6 @@ import PendingBankAccountCallout from 'components/Callout/PendingBankAccountCall
 import { Newsletter } from 'components/Newsletter'
 import TutorialDialog from 'components/TutorialDialog'
 import { hasStatusCode } from 'core/OfferEducational'
-import useActiveFeature from 'hooks/useActiveFeature'
 import useRemoteConfig from 'hooks/useRemoteConfig'
 import { HTTP_STATUS } from 'repository/pcapi/pcapiClient'
 
@@ -41,7 +40,6 @@ export const Homepage = (): JSX.Element => {
   const [isLoading, setIsLoading] = useState(true)
   const [isUserOffererValidated, setIsUserOffererValidated] = useState(false)
   const { remoteConfigData } = useRemoteConfig()
-  const isStatisticsDashboardEnabled = useActiveFeature('WIP_HOME_STATS')
 
   const hasNoVenueVisible = useMemo(() => {
     const physicalVenues = getPhysicalVenuesFromOfferer(selectedOfferer)
@@ -123,7 +121,7 @@ export const Homepage = (): JSX.Element => {
         <PendingBankAccountCallout offerer={selectedOfferer} />
       </div>
 
-      {isStatisticsDashboardEnabled && selectedOfferer !== null && (
+      {selectedOfferer !== null && (
         <>
           <OffererBanners
             isUserOffererValidated={isUserOffererValidated}
