@@ -11,7 +11,6 @@
     "build:testing": "VITE_APP_VERSION=$(node -pe 'require(\"./package.json\").version') vite build --mode testing",
     "build:integration": "VITE_APP_VERSION=$(node -pe 'require(\"./package.json\").version') vite build --mode integration",
     "build:production": "VITE_APP_VERSION=$(node -pe 'require(\"./package.json\").version') vite build --mode production",
-    "generate:api:client": "./scripts/generate_api_client.sh",
     "generate:api:client:local": "./scripts/generate_api_client_local.sh",
     "generate:api:client:local:no:docker": "./scripts/generate_api_client_local_without_docker.sh",
     "lint:js": "eslint 'src/**/*.{ts,tsx}'",
