@@ -78,9 +78,7 @@ export const shouldBlockNavigation: BlockerFunction = ({
 
   if (
     from === STEP_RECAP &&
-    nextLocation.pathname.startsWith(
-      '/remboursements/informations-bancaires?structure='
-    )
+    nextLocation.pathname.startsWith('/remboursements/informations-bancaires')
   ) {
     return false
   }
