@@ -29,7 +29,7 @@ def check_incident_bookings(bookings: list[bookings_models.Booking]) -> bool:
     )
 
     if booking_incident_already_created_or_validated:
-        flash("Au moins une des réservations fait déjà l'objet d'un incident qui n'est pas encore validé.", "warning")
+        flash("Au moins une des réservations fait déjà l'objet d'un incident non annulé.", "warning")
         return False
 
     return True

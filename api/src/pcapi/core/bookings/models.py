@@ -359,13 +359,16 @@ Booking.trig_ddl = f"""
         END IF;
 
         SELECT
-            COALESCE(SUM(amount * quantity), 0) INTO sum_bookings
+            COALESCE(SUM(COALESCE(booking_finance_incident."newTotalAmount" / 100,
+                            booking.amount * booking.quantity)), 0) INTO sum_bookings
         FROM
             booking
+            LEFT OUTER JOIN booking_finance_incident ON booking_finance_incident."bookingId" = booking.id
+            LEFT OUTER JOIN finance_incident ON  finance_incident.id = booking_finance_incident."incidentId" AND finance_incident."status" = '{finance_models.IncidentStatus.VALIDATED.value}'
         WHERE
             booking."depositId" = deposit_id
             AND NOT booking.status = '{BookingStatus.CANCELLED.value}'
-            AND (NOT only_used_bookings OR booking.status in ('USED', 'REIMBURSED'));
+            AND (NOT only_used_bookings OR booking.status IN ('{BookingStatus.USED.value}', '{BookingStatus.REIMBURSED.value}'));
         RETURN
             deposit_amount - sum_bookings;
         END;

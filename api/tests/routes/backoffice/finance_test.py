@@ -4,9 +4,11 @@ from unittest import mock
 
 from flask import url_for
 import pytest
+import sqlalchemy as sa
 
 from pcapi.core import testing
 from pcapi.core.bookings import factories as bookings_factories
+from pcapi.core.bookings import models as bookings_models
 from pcapi.core.educational import factories as educational_factories
 from pcapi.core.finance import api
 from pcapi.core.finance import factories as finance_factories
@@ -18,6 +20,8 @@ from pcapi.core.offerers import factories as offerers_factories
 from pcapi.core.offers import factories as offers_factories
 from pcapi.core.permissions import models as perm_models
 from pcapi.core.testing import assert_num_queries
+from pcapi.core.users import factories as users_factories
+from pcapi.models import db
 from pcapi.routes.backoffice import filters
 from pcapi.routes.backoffice.filters import format_booking_status
 from pcapi.routes.backoffice.filters import format_date_time
@@ -229,6 +233,82 @@ class ValidateIncidentTest(PostEndpointHelper):
         finance_events = finance_models.FinanceEvent.query.all()
         assert len(finance_events) == 1
         assert finance_events[0].motive == finance_models.FinanceEventMotive.INCIDENT_REVERSAL_OF_ORIGINAL_EVENT
+
+    @pytest.mark.parametrize("force_debit_note", [True, False])
+    def test_incident_validation_with_several_bookings(self, authenticated_client, force_debit_note):
+        deposit = users_factories.DepositGrantFactory()
+        incident = finance_factories.FinanceIncidentFactory()
+
+        assert incident.status == finance_models.IncidentStatus.CREATED
+
+        booking_reimbursed = bookings_factories.ReimbursedBookingFactory(
+            deposit=deposit,
+            amount=30,
+            user=deposit.user,
+            pricings=[finance_factories.PricingFactory(status=finance_models.PricingStatus.INVOICED, amount=-3000)],
+        )
+        booking_reimbursed_2 = bookings_factories.ReimbursedBookingFactory(
+            deposit=deposit,
+            amount=40,
+            user=deposit.user,
+            pricings=[finance_factories.PricingFactory(status=finance_models.PricingStatus.INVOICED, amount=-4000)],
+        )
+        bookings_factories.BookingFactory(deposit=deposit, amount=20, user=deposit.user)
+
+        finance_factories.IndividualBookingFinanceIncidentFactory(
+            booking=booking_reimbursed,
+            incident=incident,
+            newTotalAmount=finance_utils.to_eurocents(booking_reimbursed.pricings[0].amount),
+        )  # total incident
+
+        finance_factories.IndividualBookingFinanceIncidentFactory(
+            booking=booking_reimbursed_2, incident=incident, newTotalAmount=3000
+        )  # partiel incident : instead of 40, 10 go back to the deposit
+
+        response = self.post_to_endpoint(
+            authenticated_client,
+            finance_incident_id=incident.id,
+            form={
+                "compensation_mode": finance_forms.IncidentCompensationModes.FORCE_DEBIT_NOTE.name
+                if force_debit_note
+                else finance_forms.IncidentCompensationModes.COMPENSATE_ON_BOOKINGS.name
+            },
+        )
+
+        assert response.status_code == 200
+
+        content = html_parser.content_as_text(response.data)
+        assert "L'incident a été validé avec succès." in content
+
+        assert incident.status == finance_models.IncidentStatus.VALIDATED
+        assert incident.forceDebitNote == force_debit_note
+
+        validation_action = history_models.ActionHistory.query.filter(
+            history_models.ActionHistory.financeIncident == incident
+        ).first()
+
+        assert validation_action
+        assert validation_action.actionType == history_models.ActionType.FINANCE_INCIDENT_VALIDATED
+        assert (
+            validation_action.comment == "Génération d'une note de débit à la prochaine échéance."
+            if force_debit_note
+            else "Récupération sur les prochaines réservations."
+        )
+        assert db.session.query(sa.func.get_deposit_balance(deposit.id, False)).first()[0] == 250
+        assert db.session.query(sa.func.get_deposit_balance(deposit.id, True)).first()[0] == 270
+
+        assert booking_reimbursed.status == bookings_models.BookingStatus.CANCELLED
+        assert booking_reimbursed_2.status == bookings_models.BookingStatus.REIMBURSED
+
+        finance_events = finance_models.FinanceEvent.query.all()
+        assert len(finance_events) == 3
+
+        # total finance incident
+        assert finance_events[0].motive == finance_models.FinanceEventMotive.INCIDENT_REVERSAL_OF_ORIGINAL_EVENT
+
+        # partial finaance incident
+        assert finance_events[1].motive == finance_models.FinanceEventMotive.INCIDENT_REVERSAL_OF_ORIGINAL_EVENT
+        assert finance_events[2].motive == finance_models.FinanceEventMotive.INCIDENT_NEW_PRICE
 
     @pytest.mark.parametrize(
         "initial_status", [finance_models.IncidentStatus.CANCELLED, finance_models.IncidentStatus.VALIDATED]
