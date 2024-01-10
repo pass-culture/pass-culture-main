@@ -32,9 +32,9 @@ const institutionRuralLevelToPlaylistTitle: {
 } = {
   'urbain dense': 'À moins de 30 minutes à pied de mon établissement',
   'urbain densité intermédiaire':
-    'À moins de 30 minutes en transport de mon établissement',
+    'À moins de 30 minutes de route de mon établissement',
   "rural sous forte influence d'un pôle":
-    'À environ de 30 minutes de transport de mon établissement',
+    'À environ 30 minutes de route de mon établissement',
   'rural autonome peu dense': 'À environ 1h de route de mon établissement',
   "rural sous faible influence d'un pôle":
     'À environ 1h de route de mon établissement',

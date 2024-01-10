@@ -125,7 +125,7 @@ describe('AdageDiscover classRoomPlaylist', () => {
     },
     {
       level: InstitutionRuralLevel.URBAIN_DENSIT_INTERM_DIAIRE,
-      title: 'À moins de 30 minutes en transport de mon établissement',
+      title: 'À moins de 30 minutes de route de mon établissement',
     },
     { level: null, title: 'À moins de 30 minutes à pied de mon établissement' },
   ])(
