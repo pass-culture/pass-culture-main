@@ -6,4 +6,4 @@ export {
   setInitialFormValues,
   setFormReadOnlyFields,
 } from './utils'
-export { validationSchema } from './validationSchema'
+export { getValidationSchema } from './validationSchema'

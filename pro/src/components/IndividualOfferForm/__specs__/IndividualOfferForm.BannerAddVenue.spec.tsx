@@ -17,7 +17,7 @@ import { renderWithProviders } from 'utils/renderWithProviders'
 import {
   IndividualOfferFormValues,
   setDefaultInitialFormValues,
-  validationSchema,
+  getValidationSchema,
 } from '..'
 import IndividualOfferForm, {
   IndividualOfferFormProps,
@@ -39,7 +39,7 @@ const renderIndividualOfferForm = ({
     <Formik
       initialValues={initialValues}
       onSubmit={onSubmit}
-      validationSchema={validationSchema}
+      validationSchema={getValidationSchema()}
     >
       <IndividualOfferForm {...props} />
     </Formik>,
