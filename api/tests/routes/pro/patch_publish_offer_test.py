@@ -1,3 +1,4 @@
+import datetime
 from unittest.mock import patch
 
 import pytest
@@ -51,3 +52,46 @@ class Returns200Test:
         assert content["isNonFreeOffer"] is True
         mock_async_index_offer_ids.assert_called_once()
         mocked_send_first_venue_approved_offer_email_to_pro.assert_called_once_with(offer)
+
+
+@pytest.mark.usefixtures("db_session")
+class Returns400Test:
+    def test_patch_publish_offer(
+        self,
+        client,
+    ):
+        offer = offers_factories.OfferFactory(isActive=False, validation=OfferValidationStatus.DRAFT)
+        offerers_factories.UserOffererFactory(
+            user__email="user@example.com",
+            offerer=offer.venue.managingOfferer,
+        )
+
+        client = client.with_session_auth("user@example.com")
+        response = client.patch("/offers/publish", json={"id": offer.id})
+
+        assert response.status_code == 400
+        assert response.json["offer"] == "Offer not publishable"
+        offer = offers_models.Offer.query.get(offer.id)
+        assert offer.validation == OfferValidationStatus.DRAFT
+
+    def test_patch_publish_offer_with_non_bookable_stock(
+        self,
+        client,
+    ):
+        stock = offers_factories.StockFactory(
+            offer__isActive=False,
+            offer__validation=OfferValidationStatus.DRAFT,
+            beginningDatetime=datetime.datetime.utcnow() - datetime.timedelta(days=1),
+        )
+        offerers_factories.UserOffererFactory(
+            user__email="user@example.com",
+            offerer=stock.offer.venue.managingOfferer,
+        )
+
+        client = client.with_session_auth("user@example.com")
+        response = client.patch("/offers/publish", json={"id": stock.offerId})
+
+        assert response.status_code == 400
+        assert response.json["offer"] == "Offer not publishable"
+        offer = offers_models.Offer.query.get(stock.offerId)
+        assert offer.validation == OfferValidationStatus.DRAFT

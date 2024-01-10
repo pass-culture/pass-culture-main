@@ -286,6 +286,8 @@ def patch_publish_offer(
             offer = offers_repository.get_offer_and_extradata(body.id)
             if offer is None:
                 raise api_errors.ApiErrors({"offer": ["Cette offre n’existe pas"]}, status_code=404)
+            if not offers_repository.offer_has_bookable_stocks(offer.id):
+                raise api_errors.ApiErrors({"offer": "Offer not publishable"}, 400)
             offers_api.publish_offer(offer, current_user)
             return offers_serialize.GetIndividualOfferResponseModel.from_orm(offer)
 
