@@ -3,7 +3,7 @@ import typing
 from pcapi.utils.clean_accents import clean_accents
 
 
-REGION_DEPARTMENT_CODES = {
+REGION_DEPARTMENT_CODES: dict[str, tuple[str, ...]] = {
     "Auvergne-Rhône-Alpes": ("01", "03", "07", "15", "26", "38", "42", "43", "63", "69", "73", "74"),
     "Bourgogne-Franche-Comté": ("21", "25", "39", "58", "70", "71", "89", "90"),
     "Bretagne": ("22", "29", "35", "56"),
@@ -66,5 +66,9 @@ def get_all_regions() -> list[str]:
     return sorted(REGION_DEPARTMENT_CODES.keys(), key=clean_accents)
 
 
-def get_department_codes_for_region(region: str) -> typing.Iterable[str]:
+def get_department_codes_for_region(region: str) -> tuple[str, ...]:
     return REGION_DEPARTMENT_CODES.get(region, ())
+
+
+def get_department_codes_for_regions(regions: typing.Iterable[str]) -> tuple[str, ...]:
+    return sum((get_department_codes_for_region(region) for region in regions), ())

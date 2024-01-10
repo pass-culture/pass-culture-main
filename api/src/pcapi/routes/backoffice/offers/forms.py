@@ -20,6 +20,7 @@ from pcapi.routes.backoffice.forms import constants
 from pcapi.routes.backoffice.forms import empty as empty_forms
 from pcapi.routes.backoffice.forms import fields
 from pcapi.routes.backoffice.forms import utils
+from pcapi.routes.backoffice.utils import get_regions_choices
 
 
 class SearchOperators(enum.Enum):
@@ -47,6 +48,7 @@ class SearchAttributes(enum.Enum):
     EVENT_DATE = "Date de l'évènement"
     BOOKING_LIMIT_DATE = "Date limite de réservation"
     DEPARTMENT = "Département"
+    REGION = "Région"
     EAN = "EAN-13"
     VALIDATION = "État"
     ID = "ID de l'offre"
@@ -70,6 +72,7 @@ form_field_configuration = {
         ],
     },
     "DEPARTMENT": {"field": "department", "operator": ["IN", "NOT_IN"]},
+    "REGION": {"field": "region", "operator": ["IN", "NOT_IN"]},
     "EAN": {"field": "string", "operator": ["CONTAINS", "NO_CONTAINS", "STR_EQUALS", "STR_NOT_EQUALS"]},
     "EVENT_DATE": {
         "field": "date",
@@ -135,6 +138,7 @@ class OfferAdvancedSearchSubForm(utils.PCForm):
                 "criteria",
                 "date",
                 "department",
+                "region",
                 "integer",
                 "offerer",
                 "string",
@@ -193,6 +197,12 @@ class OfferAdvancedSearchSubForm(utils.PCForm):
     department = fields.PCSelectMultipleField(
         "Départements",
         choices=constants.area_choices,
+        search_inline=True,
+        field_list_compatibility=True,
+    )
+    region = fields.PCSelectMultipleField(
+        "Régions",
+        choices=get_regions_choices(),
         search_inline=True,
         field_list_compatibility=True,
     )
