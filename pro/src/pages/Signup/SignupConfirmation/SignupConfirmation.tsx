@@ -1,7 +1,8 @@
 import React from 'react'
 
+import Callout from 'components/Callout/Callout'
 import fullMailIcon from 'icons/full-mail.svg'
-import { Banner, ButtonLink } from 'ui-kit'
+import { ButtonLink } from 'ui-kit'
 
 import styles from './SignupConfirmation.module.scss'
 
@@ -16,7 +17,7 @@ const SignupConfirmation = () => (
         Vous allez recevoir un lien de confirmation par email. Cliquez sur ce
         lien pour confirmer la création de votre compte.
       </div>
-      <Banner type="notification-info">
+      <Callout>
         <p>
           Si vous ne recevez pas d’email de notre part d’ici 5 minutes, vérifiez
           que le message n’est pas dans le dossier “indésirables” ou “spam” de
@@ -35,9 +36,9 @@ const SignupConfirmation = () => (
           icon={fullMailIcon}
           className={styles['contact-link']}
         >
-          Contacter le support par mail à support-pro@passculture.app
+          Contacter le support
         </ButtonLink>
-      </Banner>
+      </Callout>
     </div>
   </section>
 )
