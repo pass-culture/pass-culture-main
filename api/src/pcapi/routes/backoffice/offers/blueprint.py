@@ -39,6 +39,7 @@ from pcapi.routes.backoffice import search_utils
 from pcapi.routes.backoffice import utils
 from pcapi.routes.backoffice.forms import empty as empty_forms
 from pcapi.utils import date as date_utils
+from pcapi.utils import regions as regions_utils
 from pcapi.utils import string as string_utils
 from pcapi.workers import push_notification_job
 
@@ -73,6 +74,12 @@ SEARCH_FIELD_TO_PYTHON = {
         "field": "department",
         "column": offerers_models.Venue.departementCode,
         "inner_join": "venue",
+    },
+    "REGION": {
+        "field": "region",
+        "column": offerers_models.Venue.departementCode,
+        "inner_join": "venue",
+        "special": regions_utils.get_department_codes_for_regions,
     },
     "EAN": {
         "field": "string",

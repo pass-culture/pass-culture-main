@@ -462,6 +462,19 @@ class ListOffersTest(GetEndpointHelper):
         rows = html_parser.extract_table_rows(response.data)
         assert set(int(row["ID"]) for row in rows) == {offers[0].id, offers[2].id}
 
+    def test_list_offers_advanced_search_by_region(self, authenticated_client, offers):
+        query_args = {
+            "search-0-search_field": "REGION",
+            "search-0-operator": "IN",
+            "search-0-region": ["La Réunion", "Auvergne-Rhône-Alpes"],
+        }
+        with assert_num_queries(self.expected_num_queries):
+            response = authenticated_client.get(url_for(self.endpoint, **query_args))
+            assert response.status_code == 200
+
+        rows = html_parser.extract_table_rows(response.data)
+        assert {int(row["ID"]) for row in rows} == {offers[1].id, offers[2].id}
+
     def test_list_offers_advanced_search_by_venue(self, authenticated_client, offers):
         venue_id = offers[1].venueId
         query_args = {
