@@ -1,8 +1,8 @@
 import * as yup from 'yup'
 
-export const validationSchema = {
+export const getValidationSchema = (lastProvider?: string | null) => ({
   name: yup.string().max(90).required('Veuillez renseigner un titre'),
-  description: yup.string().max(1000),
+  description: lastProvider ? yup.string() : yup.string().max(1000),
   author: yup.string(),
   performer: yup.string(),
   ean: yup
@@ -24,4 +24,4 @@ export const validationSchema = {
         'Veuillez entrer une durée sous la forme HH:MM (ex: 1:30 pour 1h30)'
       ),
   }),
-}
+})

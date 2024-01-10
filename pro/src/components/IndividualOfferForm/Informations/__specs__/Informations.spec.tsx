@@ -6,7 +6,7 @@ import * as yup from 'yup'
 import { IndividualOfferFormValues } from 'components/IndividualOfferForm/types'
 
 import Informations, { InformationsProps } from '../Informations'
-import { validationSchema } from '../validationSchema'
+import { getValidationSchema } from '../validationSchema'
 
 const renderInformations = ({
   props,
@@ -21,7 +21,7 @@ const renderInformations = ({
     <Formik
       initialValues={initialValues}
       onSubmit={onSubmit}
-      validationSchema={yup.object().shape(validationSchema)}
+      validationSchema={yup.object().shape(getValidationSchema())}
     >
       <Informations {...props} />
     </Formik>

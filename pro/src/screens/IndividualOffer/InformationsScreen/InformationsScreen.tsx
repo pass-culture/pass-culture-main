@@ -10,7 +10,7 @@ import {
   setDefaultInitialFormValues,
   setFormReadOnlyFields,
   setInitialFormValues,
-  validationSchema,
+  getValidationSchema,
 } from 'components/IndividualOfferForm'
 import {
   getFilteredVenueListByCategoryStatus,
@@ -222,6 +222,7 @@ const InformationsScreen = ({
   }
 
   const readOnlyFields = setFormReadOnlyFields(offer, currentUser.isAdmin)
+  const validationSchema = getValidationSchema(offer?.lastProvider?.name)
   const formik = useFormik({
     initialValues,
     onSubmit,
