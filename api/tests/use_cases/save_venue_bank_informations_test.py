@@ -17,6 +17,7 @@ from pcapi.core.history import models as history_models
 import pcapi.core.mails.testing as mails_testing
 from pcapi.core.offerers import models as offerers_models
 import pcapi.core.offerers.factories as offerers_factories
+from pcapi.core.offers import factories as offers_factories
 from pcapi.core.testing import override_features
 from pcapi.domain.demarches_simplifiees import parse_raw_bank_info_data
 from pcapi.infrastructure.repository.bank_informations.bank_informations_sql_repository import (
@@ -847,9 +848,14 @@ class NewBankAccountJourneyTest:
         siret = "85331845900049"
         siren = siret[:9]
         venue = offerers_factories.VenueFactory(pricing_point="self", managingOfferer__siren=siren)
+        venue_without_bank_account_but_also_with_only_free_offer = offerers_factories.VenueFactory(
+            pricing_point="self", managingOfferer=venue.managingOfferer
+        )
         venue_with_no_bank_account = offerers_factories.VenueFactory(
             pricing_point="self", managingOfferer=venue.managingOfferer
         )
+        offers_factories.StockFactory(offer__venue=venue_with_no_bank_account)
+        offers_factories.StockFactory(offer__venue=venue_without_bank_account_but_also_with_only_free_offer, price=0)
         offerer = venue.managingOfferer
 
         mock_grapqhl_client.return_value = dms_creators.get_bank_info_response_procedure_v4_as_batch(
@@ -897,7 +903,12 @@ class NewBankAccountJourneyTest:
         venue_with_no_bank_account = offerers_factories.VenueFactory(
             pricing_point="self", managingOfferer=venue.managingOfferer
         )
+        venue_without_non_free_offer = offerers_factories.VenueFactory(
+            pricing_point="self", managingOfferer=venue.managingOfferer
+        )
         offerer = venue.managingOfferer
+        offers_factories.StockFactory(offer__venue=venue_with_no_bank_account)
+        offers_factories.StockFactory(offer__venue=venue_without_non_free_offer, price=0)
 
         mock_grapqhl_client.return_value = dms_creators.get_bank_info_response_procedure_v4_as_batch(
             state=GraphQLApplicationStates.accepted.value, dms_token=venue.dmsToken
@@ -1069,6 +1080,11 @@ class NewBankAccountJourneyTest:
         siren = siret[:9]
         venue = offerers_factories.VenueFactory(pricing_point="self", managingOfferer__siren=siren)
         second_venue = offerers_factories.VenueFactory(pricing_point="self", managingOfferer=venue.managingOfferer)
+        _third_venue_without_non_free_offer = offerers_factories.VenueFactory(
+            pricing_point="self", managingOfferer=venue.managingOfferer
+        )
+        offers_factories.StockFactory(offer__venue=venue)
+        offers_factories.StockFactory(offer__venue=second_venue)
 
         mock_grapqhl_client.return_value = dms_creators.get_bank_info_response_procedure_v5(
             state=GraphQLApplicationStates.accepted.value,
