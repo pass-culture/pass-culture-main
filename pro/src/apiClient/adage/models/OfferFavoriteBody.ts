@@ -2,7 +2,6 @@
 /* istanbul ignore file */
 /* tslint:disable */
 /* eslint-disable */
-
 export type OfferFavoriteBody = {
   iframeFrom: string;
   isFavorite: boolean;

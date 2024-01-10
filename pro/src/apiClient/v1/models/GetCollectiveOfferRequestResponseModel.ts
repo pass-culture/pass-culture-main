@@ -2,10 +2,8 @@
 /* istanbul ignore file */
 /* tslint:disable */
 /* eslint-disable */
-
 import type { CollectiveOfferInstitutionModel } from './CollectiveOfferInstitutionModel';
 import type { CollectiveOfferRedactorModel } from './CollectiveOfferRedactorModel';
-
 export type GetCollectiveOfferRequestResponseModel = {
   comment: string;
   dateCreated?: string | null;

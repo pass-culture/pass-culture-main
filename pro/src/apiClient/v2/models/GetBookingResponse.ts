@@ -2,10 +2,8 @@
 /* istanbul ignore file */
 /* tslint:disable */
 /* eslint-disable */
-
 import type { BookingFormula } from './BookingFormula';
 import type { BookingOfferType } from './BookingOfferType';
-
 export type GetBookingResponse = {
   bookingId: string;
   dateOfBirth?: string | null;

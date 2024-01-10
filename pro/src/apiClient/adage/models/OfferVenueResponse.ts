@@ -2,10 +2,8 @@
 /* istanbul ignore file */
 /* tslint:disable */
 /* eslint-disable */
-
 import type { Coordinates } from './Coordinates';
 import type { OfferManagingOffererResponse } from './OfferManagingOffererResponse';
-
 export type OfferVenueResponse = {
   adageId?: string | null;
   address?: string | null;

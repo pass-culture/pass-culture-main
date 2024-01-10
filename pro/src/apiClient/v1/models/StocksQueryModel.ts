@@ -2,9 +2,7 @@
 /* istanbul ignore file */
 /* tslint:disable */
 /* eslint-disable */
-
 import type { StocksOrderedBy } from './StocksOrderedBy';
-
 export type StocksQueryModel = {
   date?: string | null;
   order_by?: StocksOrderedBy;

@@ -2,9 +2,7 @@
 /* istanbul ignore file */
 /* tslint:disable */
 /* eslint-disable */
-
 import type { CollectiveBookingStatus } from './CollectiveBookingStatus';
-
 export type CollectiveBookingResponseModel = {
   cancellationLimitDate?: string | null;
   confirmationDate?: string | null;

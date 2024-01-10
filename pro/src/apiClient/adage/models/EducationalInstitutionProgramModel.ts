@@ -2,7 +2,6 @@
 /* istanbul ignore file */
 /* tslint:disable */
 /* eslint-disable */
-
 export type EducationalInstitutionProgramModel = {
   description?: string | null;
   label?: string | null;

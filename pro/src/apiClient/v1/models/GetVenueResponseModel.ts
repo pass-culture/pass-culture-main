@@ -2,7 +2,6 @@
 /* istanbul ignore file */
 /* tslint:disable */
 /* eslint-disable */
-
 import type { BannerMetaModel } from './BannerMetaModel';
 import type { DMSApplicationForEAC } from './DMSApplicationForEAC';
 import type { GetVenueDomainResponseModel } from './GetVenueDomainResponseModel';
@@ -12,7 +11,6 @@ import type { LegalStatusResponseModel } from './LegalStatusResponseModel';
 import type { StudentLevels } from './StudentLevels';
 import type { VenueContactModel } from './VenueContactModel';
 import type { VenueTypeCode } from './VenueTypeCode';
-
 export type GetVenueResponseModel = {
   adageInscriptionDate?: string | null;
   address?: string | null;

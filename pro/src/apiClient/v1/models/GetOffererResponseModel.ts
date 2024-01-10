@@ -2,10 +2,8 @@
 /* istanbul ignore file */
 /* tslint:disable */
 /* eslint-disable */
-
 import type { GetOffererVenueResponseModel } from './GetOffererVenueResponseModel';
 import type { OffererApiKey } from './OffererApiKey';
-
 export type GetOffererResponseModel = {
   address?: string | null;
   apiKey: OffererApiKey;

@@ -2,9 +2,7 @@
 /* istanbul ignore file */
 /* tslint:disable */
 /* eslint-disable */
-
 import type { Target } from './Target';
-
 export type SaveNewOnboardingDataQueryModel = {
   address?: string | null;
   banId?: string | null;

@@ -2,11 +2,9 @@
 /* istanbul ignore file */
 /* tslint:disable */
 /* eslint-disable */
-
 import type { CollectiveOfferVenueBodyModel } from './CollectiveOfferVenueBodyModel';
 import type { EacFormat } from './EacFormat';
 import type { StudentLevels } from './StudentLevels';
-
 export type PostCollectiveOfferBodyModel = {
   audioDisabilityCompliant?: boolean;
   bookingEmails: Array<string>;
