@@ -351,5 +351,10 @@ class MarkWithoutContinuationApplicationDetail(BaseModel):
                     and self.waiting_for_offerer_validation.updated_at < dead_line_annotation
                 ) and self.waiting_for_adage_validation.checked is False:
                     return True
+                if (
+                    self.waiting_for_offerer_validation.checked is False
+                    and self.waiting_for_adage_validation.checked is False
+                ):
+                    return True
 
         return False
