@@ -3,7 +3,7 @@ import {
   GetOfferStockResponseModel,
   OfferStatus,
 } from 'apiClient/v1'
-import { IndividualOffer, IndividualOfferStock } from 'core/Offers/types'
+import { IndividualOfferStock } from 'core/Offers/types'
 import { GetIndividualOfferFactory } from 'utils/apiFactories'
 
 import {
@@ -193,7 +193,7 @@ describe('serializer', () => {
     const offerApi: GetIndividualOfferResponseModel = GetIndividualOfferFactory(
       { bookingsCount: 123 }
     )
-    const offerSerialized: IndividualOffer = {
+    const offerSerialized = {
       accessibility: {
         audio: false,
         mental: false,
@@ -205,18 +205,23 @@ describe('serializer', () => {
       bookingEmail: '',
       bookingContact: '',
       bookingsCount: 123,
+      dateCreated: '2020-04-12T19:31:12Z',
       description: '',
       durationMinutes: null,
       ean: '',
       externalTicketOfficeUrl: '',
       image: undefined,
+      hasBookingLimitDatetimesPassed: false,
       hasStocks: true,
       isActive: true,
       isActivable: true,
       isDigital: false,
       isDuo: true,
+      isEditable: true,
       isEvent: false,
       isNational: true,
+      isNonFreeOffer: true,
+      isThing: true,
       lastProvider: null,
       lastProviderName: null,
       musicSubType: '',
