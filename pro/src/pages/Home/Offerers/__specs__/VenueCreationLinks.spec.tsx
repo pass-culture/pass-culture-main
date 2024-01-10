@@ -48,7 +48,7 @@ describe('VenueCrationLinks', () => {
       Events.CLICKED_CREATE_VENUE,
       {
         from: '/',
-        is_first_venue: false,
+        is_first_venue: true,
       }
     )
   })

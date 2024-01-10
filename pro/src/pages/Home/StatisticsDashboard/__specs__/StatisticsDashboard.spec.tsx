@@ -3,10 +3,7 @@ import React from 'react'
 
 import { api } from 'apiClient/api'
 import { defaultGetOffererResponseModel } from 'utils/apiFactories'
-import {
-  RenderWithProvidersOptions,
-  renderWithProviders,
-} from 'utils/renderWithProviders'
+import { renderWithProviders } from 'utils/renderWithProviders'
 
 import {
   StatisticsDashboard,
@@ -21,15 +18,13 @@ vi.mock('apiClient/api', () => ({
 }))
 
 const renderStatisticsDashboard = (
-  props: Partial<StatisticsDashboardProps> = {},
-  options: RenderWithProvidersOptions = { features: ['WIP_HOME_STATS_V2'] }
+  props: Partial<StatisticsDashboardProps> = {}
 ) =>
   renderWithProviders(
     <StatisticsDashboard
       offerer={{ ...defaultGetOffererResponseModel, isValidated: true }}
       {...props}
-    />,
-    options
+    />
   )
 
 describe('StatisticsDashboard', () => {
