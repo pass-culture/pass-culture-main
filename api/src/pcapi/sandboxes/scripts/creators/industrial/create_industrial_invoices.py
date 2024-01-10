@@ -150,7 +150,7 @@ def create_specific_invoice() -> None:
     cashflows = finance_models.Cashflow.query.filter_by(reimbursementPoint=venue).all()
     cashflow_ids = [c.id for c in cashflows]
 
-    finance_api.generate_and_store_invoice(
+    finance_api.generate_and_store_invoice_legacy(
         reimbursement_point_id=venue.id,
         cashflow_ids=cashflow_ids,
     )

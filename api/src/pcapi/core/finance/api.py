@@ -372,6 +372,18 @@ def lock_reimbursement_point(reimbursement_point_id: int) -> None:
     return db_utils.acquire_lock(f"reimbursement-point-{reimbursement_point_id}")
 
 
+def lock_bank_account(bank_account_id: int) -> None:
+    """Lock a bank account while we are doing some
+    work that cannot be done while there are other running operations
+    on the same bank account.
+
+    IMPORTANT: This must only be used within a transaction.
+
+    The lock is automatically released at the end of the transaction.
+    """
+    return db_utils.acquire_lock(f"bank-account-{bank_account_id}")
+
+
 def price_event(event: models.FinanceEvent) -> models.Pricing | None:
     assert event.pricingPointId  # helps mypy
     with transaction():
@@ -1664,7 +1676,7 @@ def _get_cashflows_by_reimbursement_points(batch: models.CashflowBatch) -> list:
     return rows
 
 
-def generate_invoices(batch: models.CashflowBatch) -> None:
+def _generate_invoices_legacy(batch: models.CashflowBatch) -> None:
     """Generate (and store) all invoices."""
 
     rows = _get_cashflows_by_reimbursement_points(batch)
@@ -1674,7 +1686,7 @@ def generate_invoices(batch: models.CashflowBatch) -> None:
             with transaction():
                 extra = {"reimbursement_point_id": row.reimbursement_point_id}
                 with log_elapsed(logger, "Generated and sent invoice", extra):
-                    generate_and_store_invoice(
+                    generate_and_store_invoice_legacy(
                         reimbursement_point_id=row.reimbursement_point_id,
                         cashflow_ids=row.cashflow_ids,
                     )
@@ -1696,8 +1708,67 @@ def generate_invoices(batch: models.CashflowBatch) -> None:
         _upload_files_to_google_drive(drive_folder_name, [path])
 
 
+def _get_cashflows_by_bank_accounts(batch: models.CashflowBatch) -> list:
+    rows = (
+        _filter_invoiceable_cashflows(
+            db.session.query(
+                models.Cashflow.bankAccountId.label("bank_account_id"),
+                sqla_func.array_agg(models.Cashflow.id).label("cashflow_ids"),
+            )
+        )
+        .filter(models.Cashflow.batchId == batch.id)
+        .group_by(models.Cashflow.bankAccountId)
+    ).all()
+
+    if not rows:
+        # Probably a mistake in the batch id input
+        raise exceptions.NoInvoiceToGenerate()
+
+    return rows
+
+
+def generate_invoices(batch: models.CashflowBatch) -> None:
+    """Generate (and store) all invoices."""
+
+    if not FeatureToggle.WIP_ENABLE_NEW_BANK_DETAILS_JOURNEY.is_active():
+        _generate_invoices_legacy(batch)
+        return
+
+    rows = _get_cashflows_by_bank_accounts(batch)
+
+    for row in rows:
+        try:
+            with transaction():
+                extra = {"bank_account_id": row.bank_account_id}
+                with log_elapsed(logger, "Generated and sent invoice", extra):
+                    generate_and_store_invoice(
+                        bank_account_id=row.bank_account_id,
+                        cashflow_ids=row.cashflow_ids,
+                    )
+        except Exception as exc:  # pylint: disable=broad-except
+            if settings.IS_RUNNING_TESTS:
+                raise
+            logger.exception(
+                "Could not generate invoice",
+                extra={
+                    "bank_account_id": row.bank_account_id,
+                    "cashflow_ids": row.cashflow_ids,
+                    "exc": str(exc),
+                },
+            )
+    with log_elapsed(logger, "Generated CSV invoices file"):
+        path = generate_invoice_file(batch)
+    drive_folder_name = _get_drive_folder_name(batch)
+    with log_elapsed(logger, "Uploaded CSV invoices file to Google Drive"):
+        _upload_files_to_google_drive(drive_folder_name, [path])
+
+
 def async_generate_invoices(batch: models.CashflowBatch) -> None:
-    rows = _get_cashflows_by_reimbursement_points(batch)
+    if not FeatureToggle.WIP_ENABLE_NEW_BANK_DETAILS_JOURNEY.is_active():
+        _async_generate_invoices_legacy(batch)
+        return
+
+    rows = _get_cashflows_by_bank_accounts(batch)
 
     app.redis_client.set(
         conf.REDIS_INVOICES_LEFT_TO_GENERATE, len(rows), ex=conf.REDIS_GENERATE_INVOICES_COUNTER_TIMEOUT
@@ -1705,9 +1776,23 @@ def async_generate_invoices(batch: models.CashflowBatch) -> None:
     app.redis_client.set(conf.REDIS_GENERATE_INVOICES_LENGTH, len(rows), ex=conf.REDIS_GENERATE_INVOICES_LENGTH_TIMEOUT)
     for row in rows:
         row_payload = finance_tasks.GenerateInvoicePayload(
-            reimbursement_point_id=row.reimbursement_point_id, cashflow_ids=row.cashflow_ids, batch_id=batch.id
+            bank_account_id=row.bank_account_id, cashflow_ids=row.cashflow_ids, batch_id=batch.id
         )
         finance_tasks.generate_and_store_invoice_task.delay(row_payload)
+
+
+def _async_generate_invoices_legacy(batch: models.CashflowBatch) -> None:
+    rows = _get_cashflows_by_reimbursement_points(batch)
+
+    app.redis_client.set(
+        conf.REDIS_INVOICES_LEFT_TO_GENERATE, len(rows), ex=conf.REDIS_GENERATE_INVOICES_COUNTER_TIMEOUT
+    )
+    app.redis_client.set(conf.REDIS_GENERATE_INVOICES_LENGTH, len(rows), ex=conf.REDIS_GENERATE_INVOICES_LENGTH_TIMEOUT)
+    for row in rows:
+        row_payload = finance_tasks.GenerateInvoicePayloadLegacy(
+            reimbursement_point_id=row.reimbursement_point_id, cashflow_ids=row.cashflow_ids, batch_id=batch.id
+        )
+        finance_tasks.generate_and_store_invoice_task_legacy.delay(row_payload)
 
 
 def generate_invoice_file(batch: models.CashflowBatch) -> pathlib.Path:
@@ -1819,13 +1904,13 @@ def _invoice_row_formatter(sql_row: typing.Any) -> tuple:
     )
 
 
-def generate_and_store_invoice(
+def generate_and_store_invoice_legacy(
     reimbursement_point_id: int,
     cashflow_ids: list[int],
 ) -> None:
     log_extra = {"reimbursement_point": reimbursement_point_id}
     with log_elapsed(logger, "Generated invoice model instance", log_extra):
-        invoice = _generate_invoice(
+        invoice = _generate_invoice_legacy(
             reimbursement_point_id=reimbursement_point_id,
             cashflow_ids=cashflow_ids,
         )
@@ -1848,7 +1933,36 @@ def generate_and_store_invoice(
         transactional_mails.send_invoice_available_to_pro_email(invoice, batch)
 
 
-def _generate_invoice(
+def generate_and_store_invoice(
+    bank_account_id: int,
+    cashflow_ids: list[int],
+) -> None:
+    log_extra = {"bank_account": bank_account_id}
+    with log_elapsed(logger, "Generated invoice model instance", log_extra):
+        invoice = _generate_invoice(
+            bank_account_id=bank_account_id,
+            cashflow_ids=cashflow_ids,
+        )
+        if not invoice:
+            return
+
+    # The cashflows all come from the same cashflow batch,
+    # so batch_id should be the same for every cashflow
+    batch = (
+        models.CashflowBatch.query.join(models.Cashflow.batch)
+        .join(models.Cashflow.invoices)
+        .filter(models.Invoice.id == invoice.id)
+    ).one()
+
+    with log_elapsed(logger, "Generated invoice HTML", log_extra):
+        invoice_html = _generate_invoice_html(invoice, batch)
+    with log_elapsed(logger, "Generated and stored PDF invoice", log_extra):
+        _store_invoice_pdf(invoice_storage_id=invoice.storage_object_id, invoice_html=invoice_html)
+    with log_elapsed(logger, "Sent invoice", log_extra):
+        transactional_mails.send_invoice_available_to_pro_email(invoice, batch)
+
+
+def _generate_invoice_legacy(
     reimbursement_point_id: int,
     cashflow_ids: list[int],
 ) -> models.Invoice | None:
@@ -1874,6 +1988,185 @@ def _generate_invoice(
         # We should not end up here unless another instance of the
         # `generate_invoices` command is being executed simultaneously
         # and it has already processed this reimbursement point.
+        return None
+    pricings_and_rates_by_rule_group = defaultdict(list)
+    pricings_by_custom_rule = defaultdict(list)
+
+    cashflows_pricings = [cf.pricings for cf in cashflows]
+    flat_pricings = list(itertools.chain.from_iterable(cashflows_pricings))
+    for pricing in flat_pricings:
+        rule_reference = pricing.standardRule or pricing.customRuleId
+        rule = find_reimbursement_rule(rule_reference)
+        if isinstance(rule, models.CustomReimbursementRule):
+            pricings_by_custom_rule[rule].append(pricing)
+        else:
+            pricings_and_rates_by_rule_group[rule.group].append((pricing, rule.rate))  # type: ignore [attr-defined]
+
+    invoice_lines = []
+    for rule_group, pricings_and_rates in pricings_and_rates_by_rule_group.items():
+        rates = defaultdict(list)
+        for pricing, rate in pricings_and_rates:
+            rates[rate].append(pricing)
+        for rate, pricings in rates.items():
+            incident_pricings = []
+            other_pricings = []
+            for pricing in pricings:
+                # TODO: remove condition on eventId when it becomes non-nullable
+                if pricing.eventId and pricing.event.bookingFinanceIncidentId:
+                    incident_pricings.append(pricing)
+                else:
+                    other_pricings.append(pricing)
+
+            if other_pricings:
+                invoice_line, reimbursed_amount = _make_invoice_line(rule_group, other_pricings, rate)
+                invoice_lines.append(invoice_line)
+                total_reimbursed_amount += reimbursed_amount
+
+            if incident_pricings:
+                invoice_line, reimbursed_amount = _make_invoice_line(
+                    rule_group, incident_pricings, is_incident_line=True
+                )
+                invoice_lines.append(invoice_line)
+                total_reimbursed_amount += reimbursed_amount
+
+    for custom_rule, pricings in pricings_by_custom_rule.items():
+        incident_pricings = []
+        other_pricings = []
+        for pricing in pricings:
+            if pricing.eventId and pricing.event.bookingFinanceIncidentId:
+                incident_pricings.append(pricing)
+            else:
+                other_pricings.append(pricing)
+        # An InvoiceLine rate will be calculated for a CustomRule with a set reimbursed amount
+        if other_pricings:
+            invoice_line, reimbursed_amount = _make_invoice_line(custom_rule.group, other_pricings, custom_rule.rate)
+            invoice_lines.append(invoice_line)
+            total_reimbursed_amount += reimbursed_amount
+
+        if incident_pricings:
+            invoice_line, reimbursed_amount = _make_invoice_line(
+                custom_rule.group, incident_pricings, is_incident_line=True
+            )
+            invoice_lines.append(invoice_line)
+            total_reimbursed_amount += reimbursed_amount
+
+    invoice.amount = total_reimbursed_amount
+    # As of Python 3.9, DEFAULT_ENTROPY is 32 bytes
+    invoice.token = secrets.token_urlsafe()
+    scheme = reference_models.ReferenceScheme.get_and_lock(name="invoice.reference", year=datetime.date.today().year)
+    invoice.reference = scheme.formatted_reference
+    scheme.increment_after_use()
+    db.session.add(scheme)
+    db.session.add(invoice)
+    db.session.flush()
+    for line in invoice_lines:
+        line.invoiceId = invoice.id
+    db.session.bulk_save_objects(invoice_lines)
+    cf_links = [models.InvoiceCashflow(invoiceId=invoice.id, cashflowId=cashflow.id) for cashflow in cashflows]
+    db.session.bulk_save_objects(cf_links)
+    # Cashflow.status: UNDER_REVIEW -> ACCEPTED
+    models.Cashflow.query.filter(models.Cashflow.id.in_(cashflow_ids)).update(
+        {"status": models.CashflowStatus.ACCEPTED},
+        synchronize_session=False,
+    )
+
+    # Pricing.status: PROCESSED -> INVOICED
+    # SQLAlchemy ORM cannot call `update()` if a query has been JOINed.
+    with log_elapsed(logger, "Updating status of pricings"):
+        db.session.execute(
+            """
+            UPDATE pricing
+            SET status = :status
+            FROM cashflow_pricing
+            WHERE
+              cashflow_pricing."pricingId" = pricing.id
+              AND cashflow_pricing."cashflowId" IN :cashflow_ids
+            """,
+            {"status": models.PricingStatus.INVOICED.value, "cashflow_ids": tuple(cashflow_ids)},
+        )
+
+    # Booking.status: USED -> REIMBURSED (but keep CANCELLED as is)
+    with log_elapsed(logger, "Updating status of individual bookings"):
+        db.session.execute(
+            """
+            UPDATE booking
+            SET
+              status =
+                CASE WHEN booking.status = CAST(:cancelled AS booking_status)
+                THEN CAST(:cancelled AS booking_status)
+                ELSE CAST(:reimbursed AS booking_status)
+                END,
+              "reimbursementDate" = now()
+            FROM pricing, cashflow_pricing
+            WHERE
+              booking.id = pricing."bookingId"
+              AND pricing.id = cashflow_pricing."pricingId"
+              AND cashflow_pricing."cashflowId" IN :cashflow_ids
+            """,
+            {
+                "cancelled": bookings_models.BookingStatus.CANCELLED.value,
+                "reimbursed": bookings_models.BookingStatus.REIMBURSED.value,
+                "cashflow_ids": tuple(cashflow_ids),
+                "reimbursement_date": datetime.datetime.utcnow(),
+            },
+        )
+
+    # CollectiveBooking.status: USED -> REIMBURSED (but keep CANCELLED as is)
+    with log_elapsed(logger, "Updating status of collective bookings"):
+        db.session.execute(
+            """
+            UPDATE collective_booking
+            SET
+            status =
+                CASE WHEN collective_booking.status = CAST(:cancelled AS bookingstatus)
+                THEN CAST(:cancelled AS bookingstatus)
+                ELSE CAST(:reimbursed AS bookingstatus)
+                END,
+            "reimbursementDate" = now()
+            FROM pricing, cashflow_pricing
+            WHERE
+                collective_booking.id = pricing."collectiveBookingId"
+            AND pricing.id = cashflow_pricing."pricingId"
+            AND cashflow_pricing."cashflowId" IN :cashflow_ids
+            """,
+            {
+                "cancelled": bookings_models.BookingStatus.CANCELLED.value,
+                "reimbursed": bookings_models.BookingStatus.REIMBURSED.value,
+                "cashflow_ids": tuple(cashflow_ids),
+                "reimbursement_date": datetime.datetime.utcnow(),
+            },
+        )
+
+    db.session.commit()
+    return invoice
+
+
+def _generate_invoice(
+    bank_account_id: int,
+    cashflow_ids: list[int],
+) -> models.Invoice | None:
+    # Acquire lock to avoid 2 simultaneous calls to this function (on
+    # the same bank account) generating 2 duplicate invoices.
+    # This is also why we call `_filter_invoiceable_cashflows()` again
+    # below : the function will process the requested cashflows only
+    # in the first call
+    lock_bank_account(bank_account_id)
+    invoice = models.Invoice(
+        bankAccountId=bank_account_id,
+    )
+    total_reimbursed_amount = 0
+    cashflows = _filter_invoiceable_cashflows(
+        models.Cashflow.query.filter(models.Cashflow.id.in_(cashflow_ids)).options(
+            sqla_orm.joinedload(models.Cashflow.pricings)
+            .options(sqla_orm.joinedload(models.Pricing.lines))
+            .options(sqla_orm.joinedload(models.Pricing.customRule))
+            .options(sqla_orm.joinedload(models.Pricing.event).joinedload(models.FinanceEvent.bookingFinanceIncident))
+        )
+    ).all()
+    if not cashflows:
+        # We should not end up here unless another instance of the
+        # `generate_invoices` command is being executed simultaneously
+        # and it has already processed this bank account.
         return None
     pricings_and_rates_by_rule_group = defaultdict(list)
     pricings_by_custom_rule = defaultdict(list)
