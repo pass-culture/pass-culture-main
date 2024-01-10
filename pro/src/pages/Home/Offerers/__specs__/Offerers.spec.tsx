@@ -1,4 +1,5 @@
 import { screen } from '@testing-library/react'
+import { userEvent } from '@testing-library/user-event'
 import React from 'react'
 
 import {
@@ -12,9 +13,11 @@ import {
 
 import Offerers, { OfferersProps } from '../Offerers'
 
+const mockNavigate = vi.fn()
 vi.mock('react-router-dom', async () => ({
   ...((await vi.importActual('react-router-dom')) ?? {}),
   useLoaderData: vi.fn(() => ({ venueTypes: [] })),
+  useNavigate: () => mockNavigate,
 }))
 
 const renderOfferers = (
@@ -38,21 +41,6 @@ const renderOfferers = (
 }
 
 describe('Offerers', () => {
-  it('should not display venue soft deleted if user is not validated', () => {
-    renderOfferers({ isUserOffererValidated: false })
-
-    expect(
-      screen.getByText(
-        /Le rattachement à votre structure est en cours de traitement par les équipes du pass Culture/
-      )
-    ).toBeInTheDocument()
-    expect(
-      screen.queryByText(
-        /Votre structure a été désactivée. Pour plus d’informations sur la désactivation veuillez contacter notre support./
-      )
-    ).not.toBeInTheDocument()
-  })
-
   it('should display venue soft deleted', () => {
     renderOfferers()
 
@@ -76,5 +64,16 @@ describe('Offerers', () => {
     )
 
     expect(screen.getByText('Carnet d’adresses')).toBeInTheDocument()
+  })
+
+  it('should redirect to offerer creation page when selecting "add offerer" option"', async () => {
+    renderOfferers()
+
+    await userEvent.selectOptions(
+      screen.getByLabelText('Sélectionner une structure'),
+      '+ Ajouter une structure'
+    )
+
+    expect(mockNavigate).toHaveBeenCalledWith('/structures/creation')
   })
 })

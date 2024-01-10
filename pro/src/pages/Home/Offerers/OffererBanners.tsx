@@ -8,7 +8,7 @@ import { hasOffererAtLeastOnePhysicalVenue } from '../venueUtils'
 
 import styles from './OffererBanners.module.scss'
 
-interface OffererBannersProps {
+export interface OffererBannersProps {
   isUserOffererValidated: boolean
   offerer: GetOffererResponseModel
 }
