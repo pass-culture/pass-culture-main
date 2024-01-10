@@ -18,7 +18,7 @@ import { DEFAULT_INVOICES_FILTERS } from '../_constants'
 import InvoicesFilters from './InvoicesFilters'
 import InvoicesNoResult from './InvoicesNoResult'
 import InvoicesServerError from './InvoicesServerError'
-import { InvoiceTable } from './InvoiceTable'
+import InvoiceTable from './InvoiceTable/InvoiceTable'
 import NoInvoicesYet from './NoInvoicesYet'
 
 const ReimbursementsInvoices = (): JSX.Element => {
