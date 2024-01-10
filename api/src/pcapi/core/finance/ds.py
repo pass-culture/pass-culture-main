@@ -123,8 +123,12 @@ def mark_without_continuation_applications() -> None:
         - All DSv5 that:
             - are in `draft` or `on_going` states
             - haven't been updated since DS_MARK_WITHOUT_CONTINUATION_APPLICATION_DEADLINE days
-            - have the field `En attente de validation de structure` checked since more than DS_MARK_WITHOUT_CONTINUATION_ANNOTATION_DEADLINE days
-            - don't have the field `En attente de validation Adage` checked at all
+                and
+                    - have the field `En attente de validation de structure` checked since more than DS_MARK_WITHOUT_CONTINUATION_ANNOTATION_DEADLINE days
+                    - don't have the field `En attente de validation Adage` checked at all
+                    or
+                    - don't have the field `En attente de validation de structure` checked at all
+                    - don't have the field `En attente de validation Adage` checked at all
     """
     procedures = [settings.DMS_VENUE_PROCEDURE_ID_V4, settings.DS_BANK_ACCOUNT_PROCEDURE_ID]
     states = [GraphQLApplicationStates.draft, GraphQLApplicationStates.on_going]
