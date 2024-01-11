@@ -77,7 +77,7 @@ describe('LinkVenueDialog', () => {
     }))
   })
 
-  it('Should display the dialog', async () => {
+  it('Should display the dialog', () => {
     renderWithProviders(<LinkVenuesDialog {...props} />, {
       storeOverrides,
     })
