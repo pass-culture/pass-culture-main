@@ -17,6 +17,7 @@ import { DEFAULT_INVOICES_FILTERS } from '../_constants'
 
 import InvoicesFilters from './InvoicesFilters'
 import InvoicesNoResult from './InvoicesNoResult'
+import stylesNoResult from './InvoicesNoResult.module.scss'
 import InvoicesServerError from './InvoicesServerError'
 import InvoiceTable from './InvoiceTable/InvoiceTable'
 import NoInvoicesYet from './NoInvoicesYet'
@@ -112,29 +113,28 @@ const ReimbursementsInvoices = (): JSX.Element => {
   }, [])
 
   if (isLoading) {
-    return (
-      <div className="spinner">
-        <Spinner />
-      </div>
-    )
+    return <Spinner />
   }
 
   if (reimbursementPointsOptions.length === 0) {
     return (
-      <div className="no-refunds">
+      <div className={stylesNoResult['no-refunds']}>
         {isNewBankDetailsJourneyEnabled && <BannerReimbursementsInfo />}
 
         <SvgIcon
           src={strokeNoBookingIcon}
           alt=""
           viewBox="0 0 200 156"
-          className="no-refunds-icon"
+          className={stylesNoResult['no-refunds-icon']}
           width="124"
         />
-        <span>Aucun remboursement à afficher</span>
+        <p className={stylesNoResult['no-refunds-title']}>
+          Aucun remboursement à afficher
+        </p>
       </div>
     )
   }
+
   return (
     <>
       {isNewBankDetailsJourneyEnabled && <BannerReimbursementsInfo />}

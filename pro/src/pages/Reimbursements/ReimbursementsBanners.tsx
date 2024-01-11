@@ -1,6 +1,4 @@
-import './Reimbursement.scss'
-
-import React, { useEffect, useState } from 'react'
+import { useEffect, useState } from 'react'
 
 import { api } from 'apiClient/api'
 import { BannerReimbursementsInfo } from 'components/Banner'

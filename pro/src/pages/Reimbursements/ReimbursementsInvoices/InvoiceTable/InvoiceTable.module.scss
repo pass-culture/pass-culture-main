@@ -67,3 +67,44 @@ table.reimbursement-table {
     background-color: #f1f1f4;
   }
 }
+
+.reimbursement-body {
+  td {
+    width: rem.torem(120px);
+  }
+
+  .date {
+    @include fonts.bold;
+
+    padding-left: rem.torem(16px);
+    width: rem.torem(120px);
+  }
+
+  .reimbursement-point {
+    width: rem.torem(240px);
+  }
+
+  .reference {
+    width: rem.torem(140px);
+  }
+
+  .label {
+    width: rem.torem(80px);
+  }
+
+  .amount {
+    padding-right: rem.torem(24px);
+    text-align: right;
+  }
+
+  .invoice {
+    text-align: right;
+    width: unset;
+
+    svg {
+      margin-right: rem.torem(8px);
+      height: unset;
+      width: unset;
+    }
+  }
+}

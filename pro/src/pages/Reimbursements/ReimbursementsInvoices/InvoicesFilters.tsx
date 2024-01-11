@@ -79,15 +79,14 @@ const InvoicesFilters = ({
 
   return (
     <>
-      <div className="header">
-        <h2 className="header-title">
+      <div className={styles['header']}>
+        <h2 className={styles['header-title']}>
           Affichage des justificatifs de remboursement
         </h2>
         <Button
           className={styles['reset-filters']}
           disabled={areFiltersDefault}
           onClick={resetFilters}
-          type="button"
           variant={ButtonVariant.TERNARYPINK}
         >
           Réinitialiser les filtres
@@ -131,8 +130,8 @@ const InvoicesFilters = ({
         </fieldset>
       </FormLayout.Row>
 
-      <div className="button-group">
-        <span className="button-group-separator" />
+      <div className={styles['button-group']}>
+        <div className={styles['button-group-separator']} />
       </div>
     </>
   )

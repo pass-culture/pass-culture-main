@@ -16,6 +16,7 @@ import { FORMAT_ISO_DATE_ONLY, getToday } from 'utils/date'
 import { sortByLabel } from 'utils/strings'
 
 import DetailsFilters from './DetailsFilters'
+import styles from './ReimbursementDetails.module.scss'
 
 type CsvQueryParams = {
   venueId?: string
@@ -98,7 +99,7 @@ const ReimbursementsDetails = (): JSX.Element => {
 
   if (venuesOptions.length === 0) {
     return (
-      <div className="no-refunds">
+      <div className={styles['no-refunds']}>
         <SvgIcon
           src={strokeNoBookingIcon}
           alt=""
@@ -114,13 +115,9 @@ const ReimbursementsDetails = (): JSX.Element => {
   return (
     <>
       <DetailsFilters
-        defaultSelectDisplayName="Tous les lieux"
         defaultSelectId={ALL_VENUES_OPTION_ID}
         filters={filters}
-        headerTitle="Affichage des remboursements"
         initialFilters={INITIAL_FILTERS}
-        selectLabel="Lieu"
-        selectName="lieu"
         selectableOptions={venuesOptions}
         setFilters={setFilters}
       >
@@ -143,7 +140,7 @@ const ReimbursementsDetails = (): JSX.Element => {
           Afficher
         </ButtonLink>
       </DetailsFilters>
-      <p className="format-mention">
+      <p className={styles['format-mention']}>
         Le fichier est au format CSV, compatible avec tous les tableurs et
         éditeurs de texte.
       </p>
