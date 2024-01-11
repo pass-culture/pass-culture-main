@@ -147,14 +147,16 @@ export const Homepage = (): JSX.Element => {
         />
       </section>
 
-      {isUserOffererValidated && hasNoVenueVisible && (
-        <section className={styles['step-section']}>
-          <VenueOfferSteps
-            hasVenue={!hasNoVenueVisible}
-            offerer={selectedOfferer}
-          />
-        </section>
-      )}
+      {isUserOffererValidated &&
+        hasNoVenueVisible &&
+        selectedOfferer !== null && (
+          <section className={styles['step-section']}>
+            <VenueOfferSteps
+              hasVenue={!hasNoVenueVisible}
+              offerer={selectedOfferer}
+            />
+          </section>
+        )}
 
       <section className={styles['section']} ref={profileRef}>
         <ProfileAndSupport />
