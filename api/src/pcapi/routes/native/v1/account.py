@@ -205,10 +205,7 @@ def create_account(body: serializers.AccountRequest) -> None:
     except exceptions.UserAlreadyExistsException:
         user = find_user_by_email(body.email)
         assert user is not None
-        try:
-            api.handle_create_account_with_existing_email(user)
-        except exceptions.EmailNotSent:
-            raise api_errors.ApiErrors({"email": ["L'email n'a pas pu être envoyé"]})
+        api.handle_create_account_with_existing_email(user)
 
     except exceptions.UnderAgeUserException:
         raise api_errors.ApiErrors({"dateOfBirth": "The birthdate is invalid"})
@@ -284,11 +281,6 @@ def resend_email_validation(body: serializers.ResendEmailValidationRequest) -> N
             api.check_email_validation_resends_count(user)
             api.increment_email_validation_resends_count(user)
             api.request_email_confirmation(user)
-    except exceptions.EmailNotSent:
-        raise api_errors.ApiErrors(
-            {"code": "EMAIL_NOT_SENT", "general": ["L'email n'a pas pu être envoyé"]},
-            status_code=400,
-        )
     except exceptions.EmailValidationLimitReached:
         raise api_errors.ApiErrors(
             {"message": "Le nombre de tentatives maximal est dépassé.", "code": "TOO_MANY_EMAIL_VALIDATION_RESENDS"},

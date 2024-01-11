@@ -406,10 +406,10 @@ class UnsuspendAccountTest:
         users_api.unsuspend_account(user, author)
 
         assert len(mails_testing.outbox) == 1
-        assert mails_testing.outbox[0].sent_data["template"] == dataclasses.asdict(
+        assert mails_testing.outbox[0]["template"] == dataclasses.asdict(
             TransactionalEmail.NEW_PASSWORD_REQUEST_FOR_SUSPICIOUS_LOGIN.value
         )
-        assert mails_testing.outbox[0].sent_data["params"]["RESET_PASSWORD_LINK"]
+        assert mails_testing.outbox[0]["params"]["RESET_PASSWORD_LINK"]
 
     @pytest.mark.parametrize(
         "reason",
@@ -1719,8 +1719,8 @@ class NotifyUserBeforeDeletionUponSuspensionTest:
         # then
         user = users_models.User.query.get(suspension_to_be_detected.userId)
         assert len(mails_testing.outbox) == 1
-        assert mails_testing.outbox[0].sent_data["params"]["FIRSTNAME"] == user.firstName
-        assert mails_testing.outbox[0].sent_data["To"] == user.email
+        assert mails_testing.outbox[0]["params"]["FIRSTNAME"] == user.firstName
+        assert mails_testing.outbox[0]["To"] == user.email
 
     def test_multiple_suspensions_different_reason(self):
         exact_time = datetime.datetime.utcnow() - datetime.timedelta(

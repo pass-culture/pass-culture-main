@@ -31,8 +31,8 @@ class ProOffererAttachmentValidationEmailTest:
         send_offerer_attachment_validation_email_to_pro(user_offerer)
         # then
         assert len(mails_testing.outbox) == 1  # test number of emails sent
-        assert mails_testing.outbox[0].sent_data["template"] == dataclasses.asdict(
+        assert mails_testing.outbox[0]["template"] == dataclasses.asdict(
             TransactionalEmail.OFFERER_ATTACHMENT_VALIDATION.value
         )
-        assert mails_testing.outbox[0].sent_data["To"] == user_offerer.user.email
-        assert mails_testing.outbox[0].sent_data["params"]["OFFERER_NAME"] == "Le Théâtre SAS"
+        assert mails_testing.outbox[0]["To"] == user_offerer.user.email
+        assert mails_testing.outbox[0]["params"]["OFFERER_NAME"] == "Le Théâtre SAS"

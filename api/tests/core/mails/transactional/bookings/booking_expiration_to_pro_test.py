@@ -23,10 +23,8 @@ class SendExpiredBookingsRecapEmailToOffererTest:
 
         send_bookings_expiration_to_pro_email(offerer, [expired_today_cd_booking, expired_today_dvd_booking])
         assert len(mails_testing.outbox) == 1
-        assert (
-            mails_testing.outbox[0].sent_data["template"] == TransactionalEmail.BOOKING_EXPIRATION_TO_PRO.value.__dict__
-        )
-        assert mails_testing.outbox[0].sent_data["params"]
+        assert mails_testing.outbox[0]["template"] == TransactionalEmail.BOOKING_EXPIRATION_TO_PRO.value.__dict__
+        assert mails_testing.outbox[0]["params"]
 
     def test_should_send_two_emails_to_offerer_when_expired_books_bookings_and_other_bookings_cancelled(self):
         offerer = offerers_factories.OffererFactory()
@@ -44,15 +42,12 @@ class SendExpiredBookingsRecapEmailToOffererTest:
         send_bookings_expiration_to_pro_email(offerer, [expired_today_dvd_booking, expired_today_book_booking])
 
         assert len(mails_testing.outbox) == 2
-        assert (
-            mails_testing.outbox[0].sent_data["template"] == TransactionalEmail.BOOKING_EXPIRATION_TO_PRO.value.__dict__
-        )
-        assert mails_testing.outbox[0].sent_data["params"]["WITHDRAWAL_PERIOD"] == 10
-        assert mails_testing.outbox[0].sent_data["params"]["BOOKINGS"][0]["offer_name"] == "Les misérables"
-        assert len(mails_testing.outbox[0].sent_data["params"]["BOOKINGS"]) == 1
-        assert (
-            mails_testing.outbox[1].sent_data["template"] == TransactionalEmail.BOOKING_EXPIRATION_TO_PRO.value.__dict__
-        )
-        assert mails_testing.outbox[1].sent_data["params"]["WITHDRAWAL_PERIOD"] == 30
-        assert mails_testing.outbox[1].sent_data["params"]["BOOKINGS"][0]["offer_name"] == "Intouchables"
-        assert len(mails_testing.outbox[1].sent_data["params"]["BOOKINGS"]) == 1
+        email1, email2 = mails_testing.outbox  # pylint: disable=unbalanced-tuple-unpacking
+        assert email1["template"] == TransactionalEmail.BOOKING_EXPIRATION_TO_PRO.value.__dict__
+        assert email1["params"]["WITHDRAWAL_PERIOD"] == 10
+        assert email1["params"]["BOOKINGS"][0]["offer_name"] == "Les misérables"
+        assert len(email1["params"]["BOOKINGS"]) == 1
+        assert email2["template"] == TransactionalEmail.BOOKING_EXPIRATION_TO_PRO.value.__dict__
+        assert email2["params"]["WITHDRAWAL_PERIOD"] == 30
+        assert email2["params"]["BOOKINGS"][0]["offer_name"] == "Intouchables"
+        assert len(email2["params"]["BOOKINGS"]) == 1

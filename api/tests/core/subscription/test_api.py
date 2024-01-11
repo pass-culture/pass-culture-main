@@ -1227,7 +1227,7 @@ class ActivateBeneficiaryIfNoMissingStepTest:
         assert user.firstName == identity_firstname
         assert user.lastName == identity_lastname
         assert user.validatedBirthDate == identity_birth_date
-        assert mails_testing.outbox[0].sent_data["template"] == dataclasses.asdict(
+        assert mails_testing.outbox[0]["template"] == dataclasses.asdict(
             TransactionalEmail.ACCEPTED_AS_BENEFICIARY.value
         )
 
@@ -1442,7 +1442,7 @@ class ActivateBeneficiaryIfNoMissingStepTest:
         assert user.firstName == "Léo"
         assert user.lastName == "Nard"
         assert user.dateOfBirth.date() == self.UNDERAGE_ELIGIBLE_BIRTH_DATE.date()
-        assert mails_testing.outbox[0].sent_data["template"] == dataclasses.asdict(
+        assert mails_testing.outbox[0]["template"] == dataclasses.asdict(
             TransactionalEmail.ACCEPTED_AS_EAC_BENEFICIARY.value
         )
         assert user.deposit.source == f"dossier FraudCheckType.EDUCONNECT [{identity_fraud_check.thirdPartyId}]"
@@ -1522,7 +1522,7 @@ class ActivateBeneficiaryIfNoMissingStepTest:
         assert user.firstName == identity_firstname
         assert user.lastName == identity_lastname
         assert user.validatedBirthDate == identity_birth_date
-        assert mails_testing.outbox[0].sent_data["template"] == dataclasses.asdict(
+        assert mails_testing.outbox[0]["template"] == dataclasses.asdict(
             TransactionalEmail.ACCEPTED_AS_BENEFICIARY.value
         )
 
@@ -1573,7 +1573,7 @@ class ActivateBeneficiaryIfNoMissingStepTest:
         assert user.firstName == identity_firstname
         assert user.lastName == identity_lastname
         assert user.validatedBirthDate == identity_birth_date
-        assert mails_testing.outbox[0].sent_data["template"] == dataclasses.asdict(
+        assert mails_testing.outbox[0]["template"] == dataclasses.asdict(
             TransactionalEmail.ACCEPTED_AS_BENEFICIARY.value
         )
 

@@ -399,9 +399,7 @@ class AccountCreationTest:
 
         mocked_check_recaptcha_token_is_valid.assert_called()
         assert len(mails_testing.outbox) == 1
-        assert mails_testing.outbox[0].sent_data["template"] == dataclasses.asdict(
-            TransactionalEmail.EMAIL_CONFIRMATION.value
-        )
+        assert mails_testing.outbox[0]["template"] == dataclasses.asdict(TransactionalEmail.EMAIL_CONFIRMATION.value)
         assert len(push_testing.requests) == 2
         assert len(users_testing.sendinblue_requests) == 1
 
@@ -515,9 +513,7 @@ class AccountCreationEmailExistsTest:
         assert response.status_code == 204, response.json
 
         assert len(mails_testing.outbox) == 1
-        assert mails_testing.outbox[0].sent_data["template"] == dataclasses.asdict(
-            TransactionalEmail.EMAIL_ALREADY_EXISTS.value
-        )
+        assert mails_testing.outbox[0]["template"] == dataclasses.asdict(TransactionalEmail.EMAIL_ALREADY_EXISTS.value)
 
         assert token_utils.Token.token_exists(token_utils.TokenType.RESET_PASSWORD, user.id)
 
@@ -865,10 +861,10 @@ class ConfirmUpdateUserEmailTest:
 
         assert response.status_code == 204
         assert len(mails_testing.outbox) == 1
-        assert mails_testing.outbox[0].sent_data["params"]["FIRSTNAME"] == user.firstName
+        assert mails_testing.outbox[0]["params"]["FIRSTNAME"] == user.firstName
 
         validation_email = mails_testing.outbox[-1]
-        validation_link = urlparse(validation_email.sent_data["params"]["CONFIRMATION_LINK"])
+        validation_link = urlparse(validation_email["params"]["CONFIRMATION_LINK"])
         base_url = parse_qs(validation_link.query)["link"][0]
         base_url_params = parse_qs(urlparse(base_url).query)
 
@@ -928,7 +924,7 @@ class UpdateUserEmailTest:
         # dynamic link meaning that the real url needs to be extracted
         # from it.
         activation_email = mails_testing.outbox[-1]
-        confirmation_link = urlparse(activation_email.sent_data["params"]["CONFIRMATION_LINK"])
+        confirmation_link = urlparse(activation_email["params"]["CONFIRMATION_LINK"])
         base_url = parse_qs(confirmation_link.query)["link"][0]
         base_url_params = parse_qs(urlparse(base_url).query)
 
@@ -1083,9 +1079,9 @@ class UpdateUserEmailTest:
         # User receives an email to his current email asking to confirm that he wants to change email or to cancel if he is not the one who requested it
         assert mails_testing.outbox
         confirmation_email = mails_testing.outbox[-1]
-        assert confirmation_email.sent_data["To"] == old_email
-        confirmation_link = urlparse(confirmation_email.sent_data["params"]["CONFIRMATION_LINK"])
-        cancellation_link = urlparse(confirmation_email.sent_data["params"]["CANCELLATION_LINK"])
+        assert confirmation_email["To"] == old_email
+        confirmation_link = urlparse(confirmation_email["params"]["CONFIRMATION_LINK"])
+        cancellation_link = urlparse(confirmation_email["params"]["CANCELLATION_LINK"])
         base_url_confirmation = parse_qs(confirmation_link.query)["link"][0]
         base_url_cancellation = parse_qs(cancellation_link.query)["link"][0]
         base_url_params_confirmation = parse_qs(urlparse(base_url_confirmation).query)
@@ -1115,8 +1111,8 @@ class UpdateUserEmailTest:
         # User receives an e-mail on their new e-mail address, asking to follow a link to validate the change.
         # This email is sent to check that the user has access to the new email address.
         validation_email = mails_testing.outbox[-1]
-        assert validation_email.sent_data["To"] == new_email
-        validation_link = urlparse(validation_email.sent_data["params"]["CONFIRMATION_LINK"])
+        assert validation_email["To"] == new_email
+        validation_link = urlparse(validation_email["params"]["CONFIRMATION_LINK"])
         base_url_validation = parse_qs(validation_link.query)["link"][0]
         base_url_params_validation = parse_qs(urlparse(base_url_validation).query)
         assert {"new_email", "token", "expiration_timestamp"} <= base_url_params_validation.keys()
@@ -1155,7 +1151,7 @@ class UpdateUserEmailTest:
 
         # The user receives an email on their new email address informing him of the email change
         assert len(mails_testing.outbox) == 3
-        assert mails_testing.outbox[-1].sent_data["To"] == new_email
+        assert mails_testing.outbox[-1]["To"] == new_email
 
         # We record the email validation in the user's email history
         assert user.email_history[-1].eventType == users_models.EmailHistoryEventTypeEnum.VALIDATION
@@ -1180,9 +1176,9 @@ class UpdateUserEmailTest:
         # User receives an email to his current email asking to confirm that he wants to change email or to cancel if he is not the one who requested it
         assert mails_testing.outbox
         confirmation_email = mails_testing.outbox[-1]
-        assert confirmation_email.sent_data["To"] == old_email
-        confirmation_link = urlparse(confirmation_email.sent_data["params"]["CONFIRMATION_LINK"])
-        cancellation_link = urlparse(confirmation_email.sent_data["params"]["CANCELLATION_LINK"])
+        assert confirmation_email["To"] == old_email
+        confirmation_link = urlparse(confirmation_email["params"]["CONFIRMATION_LINK"])
+        cancellation_link = urlparse(confirmation_email["params"]["CANCELLATION_LINK"])
         base_url_confirmation = parse_qs(confirmation_link.query)["link"][0]
         base_url_cancellation = parse_qs(cancellation_link.query)["link"][0]
         base_url_params_confirmation = parse_qs(urlparse(base_url_confirmation).query)
@@ -1219,7 +1215,7 @@ class UpdateUserEmailTest:
 
         # User receives an e-mail on their current email adress confirming the account suspenssion
         assert len(mails_testing.outbox) == 2
-        assert mails_testing.outbox[-1].sent_data["To"] == old_email
+        assert mails_testing.outbox[-1]["To"] == old_email
 
         # We record the email cancellation in the user's email history
         assert user.email_history[-1].eventType == users_models.EmailHistoryEventTypeEnum.CANCELLATION
@@ -1397,7 +1393,7 @@ class CancelEmailChangeTest:
         response = client.post("/native/v1/profile/email_update/cancel", json={"token": token})
         assert response.status_code == 204
         assert not token_utils.Token.token_exists(token_utils.TokenType.EMAIL_CHANGE_CONFIRMATION, user.id)
-        assert mails_testing.outbox[0].sent_data["params"]["FIRSTNAME"] == user.firstName
+        assert mails_testing.outbox[0]["params"]["FIRSTNAME"] == user.firstName
         assert get_email_update_latest_event(user).eventType == users_models.EmailHistoryEventTypeEnum.CANCELLATION
         assert user.account_state == users_models.AccountState.SUSPENDED
 
@@ -1459,9 +1455,7 @@ class ResendEmailValidationTest:
 
         assert response.status_code == 204
         assert len(mails_testing.outbox) == 1
-        assert mails_testing.outbox[0].sent_data["template"] == dataclasses.asdict(
-            TransactionalEmail.EMAIL_CONFIRMATION.value
-        )
+        assert mails_testing.outbox[0]["template"] == dataclasses.asdict(TransactionalEmail.EMAIL_CONFIRMATION.value)
 
     def test_for_already_validated_email_does_sent_passsword_reset(self, client, app):
         user = users_factories.UserFactory(isEmailValidated=True)
@@ -1470,9 +1464,7 @@ class ResendEmailValidationTest:
 
         assert response.status_code == 204
         assert len(mails_testing.outbox) == 1
-        assert mails_testing.outbox[0].sent_data["template"] == dataclasses.asdict(
-            TransactionalEmail.NEW_PASSWORD_REQUEST.value
-        )
+        assert mails_testing.outbox[0]["template"] == dataclasses.asdict(TransactionalEmail.NEW_PASSWORD_REQUEST.value)
 
     def test_for_unknown_mail_does_nothing(self, client, app):
         response = client.post("/native/v1/resend_email_validation", json={"email": "aijfioern@mlks.com"})
@@ -2449,8 +2441,8 @@ class UnsuspendAccountTest:
         assert len(mails_testing.outbox) == 1
 
         mail = mails_testing.outbox[0]
-        assert mail.sent_data["template"] == dataclasses.asdict(TransactionalEmail.ACCOUNT_UNSUSPENDED.value)
-        assert mail.sent_data["To"] == user.email
+        assert mail["template"] == dataclasses.asdict(TransactionalEmail.ACCOUNT_UNSUSPENDED.value)
+        assert mail["To"] == user.email
 
     def test_error_when_not_suspended(self, client):
         user = users_factories.BeneficiaryGrant18Factory(isActive=True)

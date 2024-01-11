@@ -18,6 +18,6 @@ def get_offer_link_to_ios_user_email_data(user: User, offer: Offer) -> models.Tr
     )
 
 
-def send_offer_link_to_ios_user_email(user: User, offer: Offer) -> bool:
+def send_offer_link_to_ios_user_email(user: User, offer: Offer) -> None:
     data = get_offer_link_to_ios_user_email_data(user, offer)
-    return mails.send(recipients=[user.email], data=data)
+    mails.send(recipients=[user.email], data=data)

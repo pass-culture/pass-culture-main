@@ -22,15 +22,12 @@ class LoggerBackend(BaseBackend):
         recipients: typing.Iterable[str],
         data: models.TransactionalEmailData | models.TransactionalWithoutTemplateEmailData,
         bcc_recipients: typing.Iterable[str] = (),
-    ) -> models.MailResult:
+    ) -> None:
         recipients = ", ".join(recipients)
         if bcc_recipients:
             bcc_recipients = ", ".join(bcc_recipients)
         sent_data = asdict(data)
         logger.info("An email would be sent via Sendinblue to=%s, bcc=%s: %s", recipients, bcc_recipients, sent_data)
-        result = models.MailResult(sent_data=sent_data, successful=True)
-
-        return result
 
     def create_contact(self, payload: sendinblue_tasks.UpdateSendinblueContactRequest) -> None:
         logger.info(

@@ -45,9 +45,9 @@ class SendinblueSendOfferValidationTest:
 
         # Then
         assert len(mails_testing.outbox) == 1  # test number of emails sent
-        assert mails_testing.outbox[0].sent_data["template"] == TransactionalEmail.OFFER_APPROVAL_TO_PRO.value.__dict__
-        assert mails_testing.outbox[0].sent_data["To"] == "jules.verne@example.com"
-        assert mails_testing.outbox[0].sent_data["params"] == {
+        assert mails_testing.outbox[0]["template"] == TransactionalEmail.OFFER_APPROVAL_TO_PRO.value.__dict__
+        assert mails_testing.outbox[0]["To"] == "jules.verne@example.com"
+        assert mails_testing.outbox[0]["params"] == {
             "OFFER_NAME": offer.name,
             "PC_PRO_OFFER_LINK": f"{PRO_URL}/offre/individuelle/{offer.id}/recapitulatif",
             "VENUE_NAME": venue.name,
@@ -108,11 +108,10 @@ class SendinblueSendOfferValidationTest:
         # Then
         assert len(mails_testing.outbox) == 1  # test number of emails sent
         assert (
-            mails_testing.outbox[0].sent_data["template"]
-            == TransactionalEmail.OFFER_VALIDATED_TO_REJECTED_TO_PRO.value.__dict__
+            mails_testing.outbox[0]["template"] == TransactionalEmail.OFFER_VALIDATED_TO_REJECTED_TO_PRO.value.__dict__
         )
-        assert mails_testing.outbox[0].sent_data["To"] == "jules.verne@example.com"
-        assert mails_testing.outbox[0].sent_data["params"] == {
+        assert mails_testing.outbox[0]["To"] == "jules.verne@example.com"
+        assert mails_testing.outbox[0]["params"] == {
             "IS_COLLECTIVE_OFFER": False,
             "OFFER_NAME": offer.name,
             "PC_PRO_OFFER_LINK": f"{PRO_URL}/offre/individuelle/{offer.id}/recapitulatif",
@@ -135,12 +134,9 @@ class SendinblueSendOfferValidationTest:
 
         # Then
         assert len(mails_testing.outbox) == 1  # test number of emails sent
-        assert (
-            mails_testing.outbox[0].sent_data["template"]
-            == TransactionalEmail.OFFER_PENDING_TO_REJECTED_TO_PRO.value.__dict__
-        )
-        assert mails_testing.outbox[0].sent_data["To"] == "jules.verne@example.com"
-        assert mails_testing.outbox[0].sent_data["params"] == {
+        assert mails_testing.outbox[0]["template"] == TransactionalEmail.OFFER_PENDING_TO_REJECTED_TO_PRO.value.__dict__
+        assert mails_testing.outbox[0]["To"] == "jules.verne@example.com"
+        assert mails_testing.outbox[0]["params"] == {
             "IS_COLLECTIVE_OFFER": False,
             "OFFER_NAME": offer.name,
             "PC_PRO_OFFER_LINK": f"{PRO_URL}/offre/individuelle/{offer.id}/recapitulatif",
@@ -163,9 +159,9 @@ class SendinblueSendOfferValidationTest:
 
         # Then
         assert len(mails_testing.outbox) == 1  # test number of emails sent
-        assert mails_testing.outbox[0].sent_data["template"] == TransactionalEmail.OFFER_REJECTION_TO_PRO.value.__dict__
-        assert mails_testing.outbox[0].sent_data["To"] == "jules.verne@example.com"
-        assert mails_testing.outbox[0].sent_data["params"] == {
+        assert mails_testing.outbox[0]["template"] == TransactionalEmail.OFFER_REJECTION_TO_PRO.value.__dict__
+        assert mails_testing.outbox[0]["To"] == "jules.verne@example.com"
+        assert mails_testing.outbox[0]["params"] == {
             "IS_COLLECTIVE_OFFER": False,
             "OFFER_NAME": offer.name,
             "PC_PRO_OFFER_LINK": f"{PRO_URL}/offre/individuelle/{offer.id}/recapitulatif",

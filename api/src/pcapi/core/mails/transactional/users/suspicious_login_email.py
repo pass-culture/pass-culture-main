@@ -62,6 +62,6 @@ def send_suspicious_login_email(
     login_info: users_models.LoginDeviceHistory | None,
     account_suspension_token: token_utils.Token,
     reset_password_token: token_utils.Token,
-) -> bool:
+) -> None:
     data = get_suspicious_login_email_data(user, login_info, account_suspension_token, reset_password_token)
-    return mails.send(recipients=[user.email], data=data)
+    mails.send(recipients=[user.email], data=data)

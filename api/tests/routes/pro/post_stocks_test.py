@@ -472,14 +472,14 @@ class Returns201Test:
         assert stock.bookingLimitDatetime == beginning
 
         assert len(mails_testing.outbox) == 2
-        assert mails_testing.outbox[0].sent_data["template"] == dataclasses.asdict(
+        assert mails_testing.outbox[0]["template"] == dataclasses.asdict(
             sendinblue_template_ids.TransactionalEmail.EVENT_OFFER_POSTPONED_CONFIRMATION_TO_PRO.value
         )
-        assert mails_testing.outbox[0].sent_data["To"] == "venue@postponed.net"
-        assert mails_testing.outbox[1].sent_data["template"] == dataclasses.asdict(
+        assert mails_testing.outbox[0]["To"] == "venue@postponed.net"
+        assert mails_testing.outbox[1]["template"] == dataclasses.asdict(
             sendinblue_template_ids.TransactionalEmail.BOOKING_POSTPONED_BY_PRO_TO_BENEFICIARY.value
         )
-        assert mails_testing.outbox[1].sent_data["To"] == "beneficiary@bookingEmail.fr"
+        assert mails_testing.outbox[1]["To"] == "beneficiary@bookingEmail.fr"
 
     @mock.patch("pcapi.core.bookings.api.update_cancellation_limit_dates")
     def should_update_bookings_cancellation_limit_date_on_delayed_event(

@@ -383,9 +383,9 @@ class SendNewBookingEmailToProTest:
         send_user_new_booking_to_pro_email(booking, first_venue_booking=False)
 
         assert len(mails_testing.outbox) == 1  # test number of emails sent
-        assert mails_testing.outbox[0].sent_data["To"] == "booking.email@example.com"
-        assert mails_testing.outbox[0].sent_data["template"] == asdict(TransactionalEmail.NEW_BOOKING_TO_PRO.value)
-        assert mails_testing.outbox[0].sent_data["reply_to"] == {
+        assert mails_testing.outbox[0]["To"] == "booking.email@example.com"
+        assert mails_testing.outbox[0]["template"] == asdict(TransactionalEmail.NEW_BOOKING_TO_PRO.value)
+        assert mails_testing.outbox[0]["reply_to"] == {
             "email": "user@example.com",
             "name": "Tom P",
         }
@@ -404,11 +404,9 @@ class SendFirstVenueBookingEmailToProTest:
         send_user_new_booking_to_pro_email(booking, first_venue_booking=True)
 
         assert len(mails_testing.outbox) == 1  # test number of emails sent
-        assert mails_testing.outbox[0].sent_data["To"] == "venue@bookingEmail.app"
-        assert mails_testing.outbox[0].sent_data["template"] == asdict(
-            TransactionalEmail.FIRST_VENUE_BOOKING_TO_PRO.value
-        )
-        assert mails_testing.outbox[0].sent_data["reply_to"] == {
+        assert mails_testing.outbox[0]["To"] == "venue@bookingEmail.app"
+        assert mails_testing.outbox[0]["template"] == asdict(TransactionalEmail.FIRST_VENUE_BOOKING_TO_PRO.value)
+        assert mails_testing.outbox[0]["reply_to"] == {
             "email": "user@example.com",
             "name": "Tom P",
         }

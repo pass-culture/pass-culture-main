@@ -22,4 +22,4 @@ class SendOffererDrivenCancellationEmailToOffererTest:
 
         # Then
         assert len(mails_testing.outbox) == 1  # test number of emails sent
-        assert mails_testing.outbox[0].sent_data["To"] == "offer@example.com"
+        assert mails_testing.outbox[0]["To"] == "offer@example.com"

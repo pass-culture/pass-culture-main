@@ -7,14 +7,14 @@ from pcapi.core.mails.transactional.sendinblue_template_ids import Transactional
 from pcapi.utils.mailing import get_event_datetime
 
 
-def send_eac_pending_booking_confirmation_limit_date_in_3_days(booking: educational_models.CollectiveBooking) -> bool:
+def send_eac_pending_booking_confirmation_limit_date_in_3_days(booking: educational_models.CollectiveBooking) -> None:
     if not booking.collectiveStock.collectiveOffer.bookingEmails:
-        return True
+        return
     data = get_data_pending_booking_confirmation_limit_date_in_3_days(booking)
     main_recipient, bcc_recipients = [
         booking.collectiveStock.collectiveOffer.bookingEmails[0]
     ], booking.collectiveStock.collectiveOffer.bookingEmails[1:]
-    return mails.send(recipients=main_recipient, bcc_recipients=bcc_recipients, data=data)
+    mails.send(recipients=main_recipient, bcc_recipients=bcc_recipients, data=data)
 
 
 def get_data_pending_booking_confirmation_limit_date_in_3_days(

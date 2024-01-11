@@ -32,11 +32,11 @@ class SendBeneficiaryUserDrivenCancellationEmailToOffererTest:
 
         # Then
         assert len(mails_testing.outbox) == 1  # test number of emails sent
-        assert mails_testing.outbox[0].sent_data["To"] == "booking@example.com"
-        assert mails_testing.outbox[0].sent_data["template"] == asdict(
+        assert mails_testing.outbox[0]["To"] == "booking@example.com"
+        assert mails_testing.outbox[0]["template"] == asdict(
             TransactionalEmail.BOOKING_CANCELLATION_BY_BENEFICIARY_TO_PRO.value
         )
-        assert mails_testing.outbox[0].sent_data["reply_to"] == {"email": "user@example.com", "name": "Guy G."}
+        assert mails_testing.outbox[0]["reply_to"] == {"email": "user@example.com", "name": "Guy G."}
 
 
 class MakeOffererBookingRecapEmailAfterUserCancellationTest:

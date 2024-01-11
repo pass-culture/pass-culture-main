@@ -34,16 +34,16 @@ class ProUpdateEmailTest:
 
         assert response.status_code == 204
         assert pro.email == self.origin_email
-        assert mails_testing.outbox[0].sent_data["To"] == self.origin_email
-        assert mails_testing.outbox[0].sent_data["params"] == {
+        assert mails_testing.outbox[0]["To"] == self.origin_email
+        assert mails_testing.outbox[0]["params"] == {
             "NEW_EMAIL": self.new_email,
             "OLD_EMAIL": self.origin_email,
         }
-        assert mails_testing.outbox[-1].sent_data["To"] == self.new_email
+        assert mails_testing.outbox[-1]["To"] == self.new_email
         assert len(mails_testing.outbox) == 2
 
         activation_email = mails_testing.outbox[-1]
-        confirmation_link = urlparse(activation_email.sent_data["params"]["CONFIRMATION_LINK"])
+        confirmation_link = urlparse(activation_email["params"]["CONFIRMATION_LINK"])
         base_url_params = parse_qs(confirmation_link.query)
         assert {"token"} == base_url_params.keys()
 

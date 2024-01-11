@@ -27,12 +27,12 @@ class PreSubscriptionDmsErrorEmailSendinblueTest:
         # When
         send_pre_subscription_from_dms_error_email_to_beneficiary(user_mail, field_errors)
         # Then
-        assert mails_testing.outbox[0].sent_data["To"] == user_mail
+        assert mails_testing.outbox[0]["To"] == user_mail
         assert (
-            mails_testing.outbox[0].sent_data["template"]
+            mails_testing.outbox[0]["template"]
             == TransactionalEmail.PRE_SUBSCRIPTION_DMS_ERROR_TO_BENEFICIARY.value.__dict__
         )
-        assert mails_testing.outbox[0].sent_data["params"] == {
+        assert mails_testing.outbox[0]["params"] == {
             "DMS_ERRORS": [
                 {"name": "ton code postal", "value": postal_code},
                 {"name": "ton numéro de pièce d'identité", "value": id_card_number},

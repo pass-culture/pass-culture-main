@@ -101,13 +101,7 @@ def request_password_reset(body: RequestPasswordResetRequest) -> None:
         except api_recaptcha.ReCaptchaException:
             raise ApiErrors({"token": "The given token is not valid"})
     user = find_user_by_email(body.email)
-    try:
-        users_api.request_password_reset(user)
-    except users_exceptions.EmailNotSent:
-        raise ApiErrors(
-            {"email": ["L'email n'a pas pu être envoyé"]},
-            status_code=400,
-        )
+    users_api.request_password_reset(user)
 
 
 @blueprint.native_v1.route("/reset_password", methods=["POST"])

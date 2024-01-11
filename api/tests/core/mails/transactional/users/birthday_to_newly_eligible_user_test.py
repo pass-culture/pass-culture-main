@@ -22,6 +22,6 @@ class SendinblueSendNewlyEligibleUserEmailTest:
         # then
         assert len(mails_testing.outbox) == 1  # test number of emails sent
         assert (
-            mails_testing.outbox[0].sent_data["template"]
+            mails_testing.outbox[0]["template"]
             == TransactionalEmail.BIRTHDAY_AGE_18_TO_NEWLY_ELIGIBLE_USER.value.__dict__
         )

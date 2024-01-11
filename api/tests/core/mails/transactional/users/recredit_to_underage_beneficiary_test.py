@@ -27,10 +27,7 @@ class SendinblueSendNewlyEligibleUserEmailTest:
 
         # then
         assert len(mails_testing.outbox) == 1  # test number of emails sent
-        assert (
-            mails_testing.outbox[0].sent_data["template"]
-            == TransactionalEmail.RECREDIT_TO_UNDERAGE_BENEFICIARY.value.__dict__
-        )
+        assert mails_testing.outbox[0]["template"] == TransactionalEmail.RECREDIT_TO_UNDERAGE_BENEFICIARY.value.__dict__
 
     def test_return_correct_recredit_email_to_underage_beneficiary_email_data(
         self,

@@ -354,11 +354,7 @@ def request_password_reset(user: models.User | None, reason: constants.Suspensio
         return
 
     token = create_reset_password_token(user)
-    is_email_sent = transactional_mails.send_reset_password_email_to_user(token, reason)
-
-    if not is_email_sent:
-        logger.error("Email service failure when user requested password reset for email '%s'", user.email)
-        raise exceptions.EmailNotSent()
+    transactional_mails.send_reset_password_email_to_user(token, reason)
 
 
 def handle_create_account_with_existing_email(user: models.User) -> None:
@@ -366,11 +362,7 @@ def handle_create_account_with_existing_email(user: models.User) -> None:
         return
 
     token = create_reset_password_token(user)
-    is_email_sent = transactional_mails.send_email_already_exists_email(token)
-
-    if not is_email_sent:
-        logger.error("Email service failure when user email already exists in database '%s'", user.email)
-        raise exceptions.EmailNotSent()
+    transactional_mails.send_email_already_exists_email(token)
 
 
 def check_can_unsuspend(user: models.User) -> None:
@@ -838,11 +830,7 @@ def import_pro_user_and_offerer_from_csv(pro_user: ImportUserFromCsvModel) -> mo
 
     db.session.commit()
 
-    if not transactional_mails.send_email_validation_to_pro_email(new_pro_user, token):
-        logger.warning(
-            "Could not send validation email when creating pro user",
-            extra={"user": new_pro_user.id},
-        )
+    transactional_mails.send_email_validation_to_pro_email(new_pro_user, token)
 
     external_attributes_api.update_external_pro(new_pro_user.email)
 
@@ -861,11 +849,7 @@ def create_pro_user_V2(pro_user: ProUserCreationBodyV2Model) -> models.User:
         user_id=new_pro_user.id,
     )
 
-    if not transactional_mails.send_email_validation_to_pro_email(new_pro_user, token):
-        logger.warning(
-            "Could not send validation email when creating pro user",
-            extra={"user": new_pro_user.id},
-        )
+    transactional_mails.send_email_validation_to_pro_email(new_pro_user, token)
 
     external_attributes_api.update_external_pro(new_pro_user.email)
     return new_pro_user
@@ -1527,11 +1511,7 @@ def notify_users_before_deletion_of_suspended_account() -> None:
     expiration_delta_in_days = settings.DELETE_SUSPENDED_ACCOUNTS_SINCE - settings.NOTIFY_X_DAYS_BEFORE_DELETION
     accounts_to_notify = _get_users_with_suspended_account_to_notify(expiration_delta_in_days)
     for account in accounts_to_notify:
-        if not transactional_mails.send_email_before_deletion_of_suspended_account(account):
-            logger.warning(
-                "Could not send email before deletion of suspended account",
-                extra={"user": account.id},
-            )
+        transactional_mails.send_email_before_deletion_of_suspended_account(account)
 
 
 def anonymize_user(user: users_models.User, *, force: bool = False) -> None:

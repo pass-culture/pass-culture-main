@@ -32,10 +32,10 @@ def test_sendinblue_send_email():
     send_individual_booking_confirmation_email_to_beneficiary(booking)
 
     assert len(mails_testing.outbox) == 1
-    assert mails_testing.outbox[0].sent_data["template"] == dataclasses.asdict(
+    assert mails_testing.outbox[0]["template"] == dataclasses.asdict(
         TransactionalEmail.BOOKING_CONFIRMATION_BY_BENEFICIARY.value
     )
-    assert mails_testing.outbox[0].sent_data["params"]["OFFER_PRICE"] == "1.99 €"
+    assert mails_testing.outbox[0]["params"]["OFFER_PRICE"] == "1.99 €"
 
 
 def get_expected_base_sendinblue_email_data(booking, mediation, **overrides):

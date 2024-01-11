@@ -15,6 +15,6 @@ def get_venue_bank_account_link_deprecated_email_data(
     )
 
 
-def send_venue_bank_account_link_deprecated(venue_name: str, bank_account_label: str, email: str) -> bool:
+def send_venue_bank_account_link_deprecated(venue_name: str, bank_account_label: str, email: str) -> None:
     data = get_venue_bank_account_link_deprecated_email_data(venue_name, bank_account_label)
-    return mails.send(recipients=[email], data=data)
+    mails.send(recipients=[email], data=data)

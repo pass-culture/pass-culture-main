@@ -520,7 +520,7 @@ class SendOfferWebAppLinkTest:
         use the redirection domain (not activated by default)
         """
         mail = self.send_request(client)
-        assert mail.sent_data["params"]["OFFER_WEBAPP_LINK"].startswith(settings.WEBAPP_V2_URL)
+        assert mail["params"]["OFFER_WEBAPP_LINK"].startswith(settings.WEBAPP_V2_URL)
 
     @override_features(ENABLE_IOS_OFFERS_LINK_WITH_REDIRECTION=True)
     def test_send_offer_webapp_link_by_email_with_redirection_link(self, client):
@@ -529,7 +529,7 @@ class SendOfferWebAppLinkTest:
         activated.
         """
         mail = self.send_request(client)
-        assert mail.sent_data["params"]["OFFER_WEBAPP_LINK"].startswith(settings.WEBAPP_V2_REDIRECT_URL)
+        assert mail["params"]["OFFER_WEBAPP_LINK"].startswith(settings.WEBAPP_V2_REDIRECT_URL)
 
     def test_send_offer_webapp_link_by_email_not_found(self, client):
         user = users_factories.UserFactory()
@@ -565,7 +565,7 @@ class SendOfferWebAppLinkTest:
         assert len(mails_testing.outbox) == 1
 
         mail = mails_testing.outbox[0]
-        assert mail.sent_data["To"] == user.email
+        assert mail["To"] == user.email
 
         return mail
 
@@ -648,9 +648,9 @@ class ReportOfferTest:
         assert len(mails_testing.outbox) == 1
 
         email = mails_testing.outbox[0]
-        assert email.sent_data["To"] == "report_offer@example.com"
-        assert email.sent_data["params"]["USER_ID"] == user.id
-        assert email.sent_data["params"]["OFFER_ID"] == offer.id
+        assert email["To"] == "report_offer@example.com"
+        assert email["params"]["USER_ID"] == user.id
+        assert email["params"]["OFFER_ID"] == offer.id
 
     def test_report_offer_with_custom_reason(self, client):
         user = users_factories.UserFactory()
@@ -679,11 +679,11 @@ class ReportOfferTest:
         assert len(mails_testing.outbox) == 1
 
         email = mails_testing.outbox[0]
-        assert email.sent_data["To"] == "support@example.com"
-        assert email.sent_data["params"]["USER_ID"] == user.id
-        assert email.sent_data["params"]["OFFER_ID"] == offer.id
-        assert "saynul" in email.sent_data["params"]["REASON"]
-        assert "OFFER_URL" in email.sent_data["params"]
+        assert email["To"] == "support@example.com"
+        assert email["params"]["USER_ID"] == user.id
+        assert email["params"]["OFFER_ID"] == offer.id
+        assert "saynul" in email["params"]["REASON"]
+        assert "OFFER_URL" in email["params"]
 
     def test_report_offer_twice(self, client):
         user = users_factories.UserFactory()

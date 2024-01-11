@@ -847,11 +847,8 @@ def validate_offerer_attachment(
 
     external_attributes_api.update_external_pro(user_offerer.user.email)
 
-    if not transactional_mails.send_offerer_attachment_validation_email_to_pro(user_offerer):
-        logger.warning(
-            "Could not send attachment validation email to offerer",
-            extra={"user_offerer": user_offerer.id},
-        )
+    transactional_mails.send_offerer_attachment_validation_email_to_pro(user_offerer)
+
     offerer_invitation = (
         models.OffererInvitation.query.filter_by(offererId=user_offerer.offererId)
         .filter_by(email=user_offerer.user.email)
@@ -896,11 +893,7 @@ def reject_offerer_attachment(
         comment=comment,
     )
 
-    if not transactional_mails.send_offerer_attachment_rejection_email_to_pro(user_offerer):
-        logger.warning(
-            "Could not send rejection confirmation email to offerer",
-            extra={"offerer": user_offerer.offerer.id},
-        )
+    transactional_mails.send_offerer_attachment_rejection_email_to_pro(user_offerer)
 
     remove_pro_role_and_add_non_attached_pro_role([user_offerer.user])
 
@@ -963,11 +956,7 @@ def validate_offerer(offerer: models.Offerer, author_user: users_models.User) ->
     zendesk_sell.update_offerer(offerer)
 
     if applicants:
-        if not transactional_mails.send_new_offerer_validation_email_to_pro(offerer):
-            logger.warning(
-                "Could not send validation confirmation email to offerer",
-                extra={"offerer": offerer.id},
-            )
+        transactional_mails.send_new_offerer_validation_email_to_pro(offerer)
     for managed_venue in managed_venues:
         if managed_venue.adageId:
             emails = offerers_repository.get_emails_by_venue(managed_venue)
@@ -998,11 +987,7 @@ def reject_offerer(
     )
 
     if applicants:
-        if not transactional_mails.send_new_offerer_rejection_email_to_pro(offerer):
-            logger.warning(
-                "Could not send rejection confirmation email to offerer",
-                extra={"offerer": offerer.id},
-            )
+        transactional_mails.send_new_offerer_rejection_email_to_pro(offerer)
 
     users_offerer = offerers_models.UserOfferer.query.filter_by(offererId=offerer.id).all()
     for user_offerer in users_offerer:
@@ -1761,11 +1746,7 @@ def create_from_onboarding_data(
 
     # Send welcome email only in the case of offerer creation
     if user_offerer.validationStatus == ValidationStatus.VALIDATED:
-        if not transactional_mails.send_welcome_to_pro_email(user, venue):
-            logger.warning(
-                "Could not send welcome to pro email",
-                extra={"user": user.id},
-            )
+        transactional_mails.send_welcome_to_pro_email(user, venue)
 
     return user_offerer
 

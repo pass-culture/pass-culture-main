@@ -11,13 +11,13 @@ from pcapi.utils.date import utc_datetime_to_department_timezone
 from pcapi.utils.urls import booking_app_link
 
 
-def send_individual_booking_event_reminder_email_to_beneficiary(booking: Booking) -> bool:
+def send_individual_booking_event_reminder_email_to_beneficiary(booking: Booking) -> None:
     data = get_booking_event_reminder_to_beneficiary_email_data(booking)
 
     if data is None:
-        return False
+        return
 
-    return mails.send(recipients=[booking.user.email], data=data)
+    mails.send(recipients=[booking.user.email], data=data)
 
 
 def get_booking_event_reminder_to_beneficiary_email_data(

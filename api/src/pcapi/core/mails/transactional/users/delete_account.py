@@ -13,6 +13,6 @@ def get_user_request_to_delete_account_email_data(user: User) -> models.Transact
     )
 
 
-def send_user_request_to_delete_account_reception_email(user: User) -> bool:
+def send_user_request_to_delete_account_reception_email(user: User) -> None:
     data = get_user_request_to_delete_account_email_data(user)
-    return mails.send(recipients=[user.email], data=data)
+    mails.send(recipients=[user.email], data=data)

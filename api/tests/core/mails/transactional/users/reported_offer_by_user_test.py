@@ -26,8 +26,8 @@ class ReportedOfferByUserEmailTest:
         send_email_reported_offer_by_user(user, offer, reason, "blabla")
 
         # Then
-        assert mails_testing.outbox[0].sent_data["To"] == settings.SUPPORT_EMAIL_ADDRESS
-        assert mails_testing.outbox[0].sent_data["template"] == dataclasses.asdict(
+        assert mails_testing.outbox[0]["To"] == settings.SUPPORT_EMAIL_ADDRESS
+        assert mails_testing.outbox[0]["template"] == dataclasses.asdict(
             TransactionalEmail.REPORTED_OFFER_BY_USER.value
         )
 
@@ -41,7 +41,7 @@ class ReportedOfferByUserEmailTest:
         send_email_reported_offer_by_user(user, offer, reason, "blabla")
 
         # Then
-        assert mails_testing.outbox[0].sent_data["To"] == settings.REPORT_OFFER_EMAIL_ADDRESS
+        assert mails_testing.outbox[0]["To"] == settings.REPORT_OFFER_EMAIL_ADDRESS
 
     def test_get_email_metadata(self):
         # Given

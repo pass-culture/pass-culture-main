@@ -338,13 +338,13 @@ class FindDuplicateUserTest:
         assert len(mails_testing.outbox) == 2
         sent_mail2 = mails_testing.outbox[0]
         sent_mail3 = mails_testing.outbox[1]
-        assert sent_mail2.sent_data["To"] == sent_mail3.sent_data["To"] == settings.FRAUD_EMAIL_ADDRESS
+        assert sent_mail2["To"] == sent_mail3["To"] == settings.FRAUD_EMAIL_ADDRESS
 
         link = '<a href="{url}/public-accounts/{id}">{id}</a>'
-        assert link.format(id=user1.id, url=settings.BACKOFFICE_URL) in sent_mail2.sent_data["html_content"]
-        assert link.format(id=user2.id, url=settings.BACKOFFICE_URL) in sent_mail2.sent_data["html_content"]
-        assert link.format(id=user1.id, url=settings.BACKOFFICE_URL) in sent_mail3.sent_data["html_content"]
-        assert link.format(id=user3.id, url=settings.BACKOFFICE_URL) in sent_mail3.sent_data["html_content"]
+        assert link.format(id=user1.id, url=settings.BACKOFFICE_URL) in sent_mail2["html_content"]
+        assert link.format(id=user2.id, url=settings.BACKOFFICE_URL) in sent_mail2["html_content"]
+        assert link.format(id=user1.id, url=settings.BACKOFFICE_URL) in sent_mail3["html_content"]
+        assert link.format(id=user3.id, url=settings.BACKOFFICE_URL) in sent_mail3["html_content"]
 
 
 @pytest.mark.usefixtures("db_session")

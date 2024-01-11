@@ -1162,9 +1162,9 @@ class ResendValidationEmailTest(PostEndpointHelper):
 
         # check that email is sent
         assert len(mails_testing.outbox) == 1
-        assert mails_testing.outbox[0].sent_data["To"] == user.email
-        assert mails_testing.outbox[0].sent_data["template"] == TransactionalEmail.EMAIL_CONFIRMATION.value.__dict__
-        assert "token" in mails_testing.outbox[0].sent_data["params"]["CONFIRMATION_LINK"]
+        assert mails_testing.outbox[0]["To"] == user.email
+        assert mails_testing.outbox[0]["template"] == TransactionalEmail.EMAIL_CONFIRMATION.value.__dict__
+        assert "token" in mails_testing.outbox[0]["params"]["CONFIRMATION_LINK"]
 
     @pytest.mark.parametrize("user_factory", [users_factories.AdminFactory, users_factories.ProFactory])
     def test_no_email_sent_if_admin_pro(self, authenticated_client, user_factory):

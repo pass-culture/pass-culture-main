@@ -7,9 +7,9 @@ from . import constants
 
 def send_subscription_document_error_email(
     email: str, code: fraud_models.FraudReasonCode, is_reminder: bool = False
-) -> bool:
+) -> None:
     data = get_subscription_document_error_email_data(code, is_reminder)
-    return mails.send(recipients=[email], data=data)
+    mails.send(recipients=[email], data=data)
 
 
 def get_subscription_document_error_email_data(

@@ -262,7 +262,7 @@ class OffererPatchBankAccountsTest:
         assert len(mails_testing.outbox) == len(expected_data)
 
         for mail_sent in mails_testing.outbox:
-            assert mail_sent.sent_data["params"] in expected_data
+            assert mail_sent["params"] in expected_data
 
     def test_adding_new_venue_link_doesnt_alter_historic_links(self, db_session, client):
         actions_occured = []

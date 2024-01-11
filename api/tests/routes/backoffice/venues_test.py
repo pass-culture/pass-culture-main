@@ -1006,10 +1006,10 @@ class UpdateVenueTest(PostEndpointHelper):
 
         assert len(mails_testing.outbox) == 1
         # check that email is sent when venue is set to permanent and has no image
-        assert mails_testing.outbox[0].sent_data["To"] == venue.bookingEmail
-        assert mails_testing.outbox[0].sent_data["template"] == TransactionalEmail.VENUE_NEEDS_PICTURE.value.__dict__
-        assert mails_testing.outbox[0].sent_data["params"]["VENUE_NAME"] == venue.common_name
-        assert mails_testing.outbox[0].sent_data["params"]["VENUE_FORM_URL"] == urls.build_pc_pro_venue_link(venue)
+        assert mails_testing.outbox[0]["To"] == venue.bookingEmail
+        assert mails_testing.outbox[0]["template"] == TransactionalEmail.VENUE_NEEDS_PICTURE.value.__dict__
+        assert mails_testing.outbox[0]["params"]["VENUE_NAME"] == venue.common_name
+        assert mails_testing.outbox[0]["params"]["VENUE_FORM_URL"] == urls.build_pc_pro_venue_link(venue)
 
     def test_update_venue_contact_only(self, authenticated_client, offerer):
         contact_email = "contact.venue@example.com"
@@ -1728,12 +1728,10 @@ class BatchEditVenuesTest(PostEndpointHelper):
         assert len(mails_testing.outbox) == expected_mail_number
         if expected_mail_number > 0:
             # check that email is sent when venue is set to permanent and has no image
-            assert mails_testing.outbox[0].sent_data["To"] == venue.bookingEmail
-            assert (
-                mails_testing.outbox[0].sent_data["template"] == TransactionalEmail.VENUE_NEEDS_PICTURE.value.__dict__
-            )
-            assert mails_testing.outbox[0].sent_data["params"]["VENUE_NAME"] == venue.common_name
-            assert mails_testing.outbox[0].sent_data["params"]["VENUE_FORM_URL"] == urls.build_pc_pro_venue_link(venue)
+            assert mails_testing.outbox[0]["To"] == venue.bookingEmail
+            assert mails_testing.outbox[0]["template"] == TransactionalEmail.VENUE_NEEDS_PICTURE.value.__dict__
+            assert mails_testing.outbox[0]["params"]["VENUE_NAME"] == venue.common_name
+            assert mails_testing.outbox[0]["params"]["VENUE_FORM_URL"] == urls.build_pc_pro_venue_link(venue)
 
         mock_async_index_venue_ids.assert_called_once()
 

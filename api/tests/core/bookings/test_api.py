@@ -186,9 +186,9 @@ class BookOfferTest:
         )
 
         assert len(mails_testing.outbox) == 2
-        email_data1 = mails_testing.outbox[0].sent_data
+        email_data1 = mails_testing.outbox[0]
         assert email_data1["template"] == dataclasses.asdict(TransactionalEmail.NEW_BOOKING_TO_PRO.value)  # to offerer
-        email_data2 = mails_testing.outbox[1].sent_data
+        email_data2 = mails_testing.outbox[1]
         assert email_data2["template"] == dataclasses.asdict(
             TransactionalEmail.BOOKING_CONFIRMATION_BY_BENEFICIARY.value
         )  # to beneficiary
@@ -199,11 +199,11 @@ class BookOfferTest:
 
         api.book_offer(beneficiary=beneficiary, stock_id=stock.id, quantity=1)
         assert len(mails_testing.outbox) == 2
-        email_data1 = mails_testing.outbox[0].sent_data
+        email_data1 = mails_testing.outbox[0]
         assert email_data1["template"] == dataclasses.asdict(
             TransactionalEmail.FIRST_VENUE_BOOKING_TO_PRO.value
         )  # to offerer
-        email_data2 = mails_testing.outbox[1].sent_data
+        email_data2 = mails_testing.outbox[1]
         assert email_data2["template"] == dataclasses.asdict(
             TransactionalEmail.BOOKING_CONFIRMATION_BY_BENEFICIARY.value
         )  # to beneficiary
@@ -815,11 +815,11 @@ class CancelByBeneficiaryTest:
         assert booking.status is BookingStatus.CANCELLED
         assert booking.cancellationReason == BookingCancellationReasons.BENEFICIARY
         assert len(mails_testing.outbox) == 2
-        email_data1 = mails_testing.outbox[0].sent_data
+        email_data1 = mails_testing.outbox[0]
         assert email_data1["template"] == dataclasses.asdict(
             TransactionalEmail.BOOKING_CANCELLATION_BY_BENEFICIARY.value
         )  # to beneficiary
-        email_data2 = mails_testing.outbox[1].sent_data
+        email_data2 = mails_testing.outbox[1]
         assert email_data2["template"] == dataclasses.asdict(
             TransactionalEmail.BOOKING_CANCELLATION_BY_BENEFICIARY_TO_PRO.value
         )  # to offerer
@@ -1215,12 +1215,12 @@ class CancelByOffererTest:
 
         # then
         assert len(mails_testing.outbox) == 2
-        assert mails_testing.outbox[0].sent_data["To"] == booking.email
-        assert mails_testing.outbox[0].sent_data["template"] == dataclasses.asdict(
+        assert mails_testing.outbox[0]["To"] == booking.email
+        assert mails_testing.outbox[0]["template"] == dataclasses.asdict(
             TransactionalEmail.BOOKING_CANCELLATION_BY_PRO_TO_BENEFICIARY.value
         )
-        assert mails_testing.outbox[1].sent_data["To"] == "test@sent"
-        assert "Confirmation de votre annulation de réservation " in mails_testing.outbox[1].sent_data["subject"]
+        assert mails_testing.outbox[1]["To"] == "test@sent"
+        assert "Confirmation de votre annulation de réservation " in mails_testing.outbox[1]["subject"]
 
 
 @pytest.mark.usefixtures("db_session")

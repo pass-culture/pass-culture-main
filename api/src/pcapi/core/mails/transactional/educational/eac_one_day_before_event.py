@@ -5,11 +5,11 @@ from pcapi.core.mails.transactional.sendinblue_template_ids import Transactional
 from pcapi.utils.mailing import format_booking_hours_for_email
 
 
-def send_eac_alert_one_day_before_event(booking: educational_models.CollectiveBooking) -> bool:
+def send_eac_alert_one_day_before_event(booking: educational_models.CollectiveBooking) -> None:
     if not booking.collectiveStock.collectiveOffer.bookingEmails:
-        return True
+        return
     data = get_eac_one_day_before_event_data(booking)
-    return mails.send(
+    mails.send(
         recipients=[booking.collectiveStock.collectiveOffer.bookingEmails[0]],
         bcc_recipients=booking.collectiveStock.collectiveOffer.bookingEmails[1:],
         data=data,

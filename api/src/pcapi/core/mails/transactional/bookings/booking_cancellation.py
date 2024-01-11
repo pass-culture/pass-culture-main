@@ -21,27 +21,29 @@ logger = logging.getLogger(__name__)
 def send_booking_cancellation_emails_to_user_and_offerer(
     booking: Booking,
     reason: BookingCancellationReasons | None,
-) -> bool:
+) -> None:
     if reason is None:
-        logger.error("Booking cancellation email sending failed because no reason was given")
-    if reason == BookingCancellationReasons.BENEFICIARY:
+        logger.error(
+            "Booking cancellation email sending failed because no reason was given",
+            extra={"booking_id": booking.id},
+        )
+    elif reason == BookingCancellationReasons.BENEFICIARY:
         send_booking_cancellation_by_beneficiary_email(booking)
-        return send_booking_cancellation_by_beneficiary_to_pro_email(booking)
-    if reason == BookingCancellationReasons.OFFERER:
+        send_booking_cancellation_by_beneficiary_to_pro_email(booking)
+    elif reason == BookingCancellationReasons.OFFERER:
         send_booking_cancellation_by_pro_to_beneficiary_email(booking)
-        return send_booking_cancellation_confirmation_by_pro_to_pro_email(booking)
-    if reason == BookingCancellationReasons.FRAUD:
+        send_booking_cancellation_confirmation_by_pro_to_pro_email(booking)
+    elif reason == BookingCancellationReasons.FRAUD:
         # TODO(PC-23550): SPIKE en cours avec marketing pour communication jeune via https://passculture.atlassian.net/browse/PC-23550
-        return send_booking_cancellation_by_beneficiary_to_pro_email(booking)
-    return True
+        send_booking_cancellation_by_beneficiary_to_pro_email(booking)
 
 
-def send_booking_cancellation_confirmation_by_pro_to_pro_email(booking: Booking) -> bool:
+def send_booking_cancellation_confirmation_by_pro_to_pro_email(booking: Booking) -> None:
     offerer_booking_email = booking.stock.offer.bookingEmail
     if not offerer_booking_email:
-        return True
+        return
     email = get_booking_cancellation_confirmation_by_pro_email_data(booking)
-    return mails.send(recipients=[offerer_booking_email], data=email)
+    mails.send(recipients=[offerer_booking_email], data=email)
 
 
 def get_booking_cancellation_confirmation_by_pro_email_data(

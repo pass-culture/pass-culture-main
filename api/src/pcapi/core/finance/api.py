@@ -2261,10 +2261,7 @@ def recredit_underage_users() -> None:
         for user, recredit_amount in users_and_recredit_amounts:
             external_attributes_api.update_external_user(user)
             domains_credit = users_api.get_domains_credit(user)
-            if not transactional_mails.send_recredit_email_to_underage_beneficiary(
-                user, recredit_amount, domains_credit
-            ):
-                logger.error("Failed to send recredit email to: %s", user.email)
+            transactional_mails.send_recredit_email_to_underage_beneficiary(user, recredit_amount, domains_credit)
 
         start_index += RECREDIT_UNDERAGE_USERS_BATCH_SIZE
     logger.info("Recredited %s users successfully", total_users_recredited)

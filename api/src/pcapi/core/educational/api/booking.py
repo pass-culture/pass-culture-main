@@ -82,11 +82,7 @@ def book_collective_offer(
         },
     )
 
-    if not transactional_mails.send_eac_new_collective_prebooking_email_to_pro(booking):
-        logger.warning(
-            "Could not send new prebooking email to pro",
-            extra={"booking": booking.id},
-        )
+    transactional_mails.send_eac_new_collective_prebooking_email_to_pro(booking)
 
     search.async_index_collective_offer_ids(
         [stock.collectiveOfferId],
@@ -178,11 +174,7 @@ def confirm_collective_booking(educational_booking_id: int) -> educational_model
         },
     )
 
-    if not transactional_mails.send_eac_new_booking_email_to_pro(collective_booking):
-        logger.warning(
-            "Could not send new booking confirmation email to offerer",
-            extra={"booking": collective_booking.id},
-        )
+    transactional_mails.send_eac_new_booking_email_to_pro(collective_booking)
 
     return collective_booking
 
@@ -337,21 +329,13 @@ def cancel_collective_offer_booking(offer_id: int) -> None:
 def notify_pro_users_one_day() -> None:
     bookings = educational_repository.find_bookings_happening_in_x_days(1)
     for booking in bookings:
-        if not transactional_mails.send_eac_alert_one_day_before_event(booking):
-            logger.warning(
-                "Could not notify offerer one day before event",
-                extra={"collectiveBooking": booking.id},
-            )
+        transactional_mails.send_eac_alert_one_day_before_event(booking)
 
 
 def notify_pro_pending_booking_confirmation_limit_in_3_days() -> None:
     bookings = find_pending_booking_confirmation_limit_date_in_3_days()
     for booking in bookings:
-        if not transactional_mails.send_eac_pending_booking_confirmation_limit_date_in_3_days(booking):
-            logger.warning(
-                "Could not notify offerer three days before booking confirmation limit date",
-                extra={"collectiveBooking": booking.id},
-            )
+        transactional_mails.send_eac_pending_booking_confirmation_limit_date_in_3_days(booking)
 
 
 def _cancel_collective_booking(
@@ -537,8 +521,4 @@ def notify_redactor_that_booking_has_been_cancelled(booking: educational_models.
 
 
 def notify_pro_that_booking_has_been_cancelled(booking: educational_models.CollectiveBooking) -> None:
-    if not transactional_mails.send_collective_booking_cancellation_confirmation_by_pro_email(booking):
-        logger.warning(
-            "Could not notify offerer about collective booking cancellation",
-            extra={"collectiveStock": booking.collectiveStockId},
-        )
+    transactional_mails.send_collective_booking_cancellation_confirmation_by_pro_email(booking)

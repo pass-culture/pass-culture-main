@@ -299,7 +299,7 @@ class HandleDmsApplicationTest:
 
         send_dms_message_mock.assert_not_called()
         assert len(mails_testing.outbox) == 1
-        assert mails_testing.outbox[0].sent_data["template"]["id_prod"] == 510
+        assert mails_testing.outbox[0]["template"]["id_prod"] == 510
 
         fraud_check = fraud_models.BeneficiaryFraudCheck.query.filter_by(userId=user.id).one()
         assert fraud_check.status == fraud_models.FraudCheckStatus.ERROR

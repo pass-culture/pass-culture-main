@@ -88,4 +88,5 @@ class ToDevSendinblueBackend(SendinblueBackend):
                 ):
                     mail_recipient = user.email
 
-        return mails.send(recipients=[mail_recipient], data=mail_content)
+        mails.send(recipients=[mail_recipient], data=mail_content)
+        return True

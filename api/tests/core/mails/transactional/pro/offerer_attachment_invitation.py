@@ -54,11 +54,11 @@ class ProOffererAttachmentInvitationTest:
         oai.send_offerer_attachment_invitation(["new.user@example.com"], offerer)
 
         assert len(mails_testing.outbox) == 1
-        assert mails_testing.outbox[0].sent_data["template"] == dataclasses.asdict(
+        assert mails_testing.outbox[0]["template"] == dataclasses.asdict(
             TransactionalEmail.OFFERER_ATTACHMENT_INVITATION_NEW_USER.value
         )
-        assert mails_testing.outbox[0].sent_data["To"] == "new.user@example.com"
-        assert mails_testing.outbox[0].sent_data["params"]["OFFERER_NAME"] == "Le Théâtre SAS"
+        assert mails_testing.outbox[0]["To"] == "new.user@example.com"
+        assert mails_testing.outbox[0]["params"]["OFFERER_NAME"] == "Le Théâtre SAS"
 
     def test_send_email_existing_validated_user(self):
         offerer = offerers_factories.OffererFactory(name="Le Théâtre SAS")
@@ -67,11 +67,11 @@ class ProOffererAttachmentInvitationTest:
         oai.send_offerer_attachment_invitation([user.email], offerer, user)
 
         assert len(mails_testing.outbox) == 1
-        assert mails_testing.outbox[0].sent_data["template"] == dataclasses.asdict(
+        assert mails_testing.outbox[0]["template"] == dataclasses.asdict(
             TransactionalEmail.OFFERER_ATTACHMENT_INVITATION_EXISTING_VALIDATED_USER_EMAIL.value
         )
-        assert mails_testing.outbox[0].sent_data["To"] == user.email
-        assert mails_testing.outbox[0].sent_data["params"]["OFFERER_NAME"] == "Le Théâtre SAS"
+        assert mails_testing.outbox[0]["To"] == user.email
+        assert mails_testing.outbox[0]["params"]["OFFERER_NAME"] == "Le Théâtre SAS"
 
     def test_send_email_existing_not_validated_user(self):
         offerer = offerers_factories.OffererFactory(name="Le Théâtre SAS")
@@ -80,11 +80,11 @@ class ProOffererAttachmentInvitationTest:
         oai.send_offerer_attachment_invitation([user.email], offerer, user)
 
         assert len(mails_testing.outbox) == 1
-        assert mails_testing.outbox[0].sent_data["template"] == dataclasses.asdict(
+        assert mails_testing.outbox[0]["template"] == dataclasses.asdict(
             TransactionalEmail.OFFERER_ATTACHMENT_INVITATION_EXISTING_NOT_VALIDATED_USER_EMAIL.value
         )
-        assert mails_testing.outbox[0].sent_data["To"] == user.email
-        assert mails_testing.outbox[0].sent_data["params"]["OFFERER_NAME"] == "Le Théâtre SAS"
+        assert mails_testing.outbox[0]["To"] == user.email
+        assert mails_testing.outbox[0]["params"]["OFFERER_NAME"] == "Le Théâtre SAS"
 
 
 @pytest.mark.usefixtures("db_session")
@@ -103,8 +103,8 @@ class OffererAttachmentInvitationAcceptedTest:
         oai.send_offerer_attachment_invitation_accepted(user, "pro.user@example.com")
 
         assert len(mails_testing.outbox) == 1
-        assert mails_testing.outbox[0].sent_data["template"] == dataclasses.asdict(
+        assert mails_testing.outbox[0]["template"] == dataclasses.asdict(
             TransactionalEmail.OFFERER_ATTACHMENT_INVITATION_ACCEPTED.value
         )
-        assert mails_testing.outbox[0].sent_data["To"] == "pro.user@example.com"
-        assert mails_testing.outbox[0].sent_data["params"]["USER_NAME"] == "Toto Loulou"
+        assert mails_testing.outbox[0]["To"] == "pro.user@example.com"
+        assert mails_testing.outbox[0]["params"]["USER_NAME"] == "Toto Loulou"

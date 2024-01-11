@@ -100,13 +100,13 @@ def get_new_booking_to_pro_email_data(
     return data
 
 
-def send_user_new_booking_to_pro_email(booking: Booking, first_venue_booking: bool) -> bool:
+def send_user_new_booking_to_pro_email(booking: Booking, first_venue_booking: bool) -> None:
     if first_venue_booking:
         offerer_booking_email = booking.stock.offer.venue.bookingEmail
     else:
         offerer_booking_email = booking.stock.offer.bookingEmail
 
     if not offerer_booking_email:
-        return True
+        return
     data = get_new_booking_to_pro_email_data(booking, first_venue_booking)
-    return mails.send(recipients=[offerer_booking_email], data=data)
+    mails.send(recipients=[offerer_booking_email], data=data)

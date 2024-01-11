@@ -4,10 +4,10 @@ from pcapi.core.mails.transactional.sendinblue_template_ids import Transactional
 import pcapi.core.offerers.models as offerers_models
 
 
-def send_eac_offerer_activation_email(venue: offerers_models.Venue, emails: list[str]) -> bool:
+def send_eac_offerer_activation_email(venue: offerers_models.Venue, emails: list[str]) -> None:
     data = get_data_offerer_activation_email(venue)
     main_recipients, bcc_recipients = [emails[0]], emails[1:]
-    return mails.send(recipients=main_recipients, bcc_recipients=bcc_recipients, data=data)
+    mails.send(recipients=main_recipients, bcc_recipients=bcc_recipients, data=data)
 
 
 def get_data_offerer_activation_email(

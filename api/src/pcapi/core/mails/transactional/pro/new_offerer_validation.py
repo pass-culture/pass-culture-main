@@ -11,10 +11,10 @@ def get_new_offerer_validation_email_data(offerer: Offerer) -> models.Transactio
     )
 
 
-def send_new_offerer_validation_email_to_pro(offerer: Offerer) -> bool:
+def send_new_offerer_validation_email_to_pro(offerer: Offerer) -> None:
     offerer_email = find_new_offerer_user_email(offerer.id)
     data = get_new_offerer_validation_email_data(offerer)
-    return mails.send(recipients=[offerer_email], data=data)
+    mails.send(recipients=[offerer_email], data=data)
 
 
 def get_new_offerer_rejection_email_data(offerer: Offerer) -> models.TransactionalEmailData:
@@ -23,7 +23,7 @@ def get_new_offerer_rejection_email_data(offerer: Offerer) -> models.Transaction
     )
 
 
-def send_new_offerer_rejection_email_to_pro(offerer: Offerer) -> bool:
+def send_new_offerer_rejection_email_to_pro(offerer: Offerer) -> None:
     offerer_email = find_new_offerer_user_email(offerer.id)
     data = get_new_offerer_rejection_email_data(offerer)
-    return mails.send(recipients=[offerer_email], data=data)
+    mails.send(recipients=[offerer_email], data=data)

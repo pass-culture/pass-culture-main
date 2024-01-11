@@ -2385,9 +2385,9 @@ class ValidateOffererAttachmentTest(PostEndpointHelper):
         assert action.venueId is None
 
         assert len(mails_testing.outbox) == 1
-        assert mails_testing.outbox[0].sent_data["To"] == user_offerer.user.email
+        assert mails_testing.outbox[0]["To"] == user_offerer.user.email
         assert (
-            mails_testing.outbox[0].sent_data["template"]
+            mails_testing.outbox[0]["template"]
             == sendinblue_template_ids.TransactionalEmail.OFFERER_ATTACHMENT_VALIDATION.value.__dict__
         )
 
@@ -2449,9 +2449,9 @@ class RejectOffererAttachmentTest(PostEndpointHelper):
         assert action.venueId is None
 
         assert len(mails_testing.outbox) == 1
-        assert mails_testing.outbox[0].sent_data["To"] == user_offerer.user.email
+        assert mails_testing.outbox[0]["To"] == user_offerer.user.email
         assert (
-            mails_testing.outbox[0].sent_data["template"]
+            mails_testing.outbox[0]["template"]
             == sendinblue_template_ids.TransactionalEmail.OFFERER_ATTACHMENT_REJECTION.value.__dict__
         )
 
@@ -2556,9 +2556,9 @@ class AddUserOffererAndValidateTest(PostEndpointHelper):
         assert action.comment == "Le rattachement avait été rejeté par erreur"
 
         assert len(mails_testing.outbox) == 1
-        assert mails_testing.outbox[0].sent_data["To"] == user.email
+        assert mails_testing.outbox[0]["To"] == user.email
         assert (
-            mails_testing.outbox[0].sent_data["template"]
+            mails_testing.outbox[0]["template"]
             == sendinblue_template_ids.TransactionalEmail.OFFERER_ATTACHMENT_VALIDATION.value.__dict__
         )
 
@@ -2782,12 +2782,12 @@ class BatchOffererAttachmentValidateTest(PostEndpointHelper):
         assert len(mails_testing.outbox) == len(user_offerers)
 
         # emails are not sorted by user_offerers
-        assert {mail.sent_data["To"] for mail in mails_testing.outbox} == {
+        assert {mail["To"] for mail in mails_testing.outbox} == {
             user_offerer.user.email for user_offerer in user_offerers
         }
         for mail in mails_testing.outbox:
             assert (
-                mail.sent_data["template"]
+                mail["template"]
                 == sendinblue_template_ids.TransactionalEmail.OFFERER_ATTACHMENT_VALIDATION.value.__dict__
             )
 
@@ -2888,12 +2888,12 @@ class BatchOffererAttachmentRejectTest(PostEndpointHelper):
         assert len(mails_testing.outbox) == len(user_offerers)
 
         # emails are not sorted by user_offerers
-        assert {mail.sent_data["To"] for mail in mails_testing.outbox} == {
+        assert {mail["To"] for mail in mails_testing.outbox} == {
             user_offerer.user.email for user_offerer in user_offerers
         }
         for mail in mails_testing.outbox:
             assert (
-                mail.sent_data["template"]
+                mail["template"]
                 == sendinblue_template_ids.TransactionalEmail.OFFERER_ATTACHMENT_REJECTION.value.__dict__
             )
 

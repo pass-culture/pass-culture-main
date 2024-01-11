@@ -48,7 +48,7 @@ class SendinblueBackendTest:
     @patch("pcapi.core.mails.backends.sendinblue.send_transactional_email_secondary_task.delay")
     def test_send_mail(self, mock_send_transactional_email_secondary_task):
         backend = self._get_backend_for_test()
-        result = backend().send_mail(recipients=self.recipients, bcc_recipients=self.bcc_recipients, data=self.data)
+        backend().send_mail(recipients=self.recipients, bcc_recipients=self.bcc_recipients, data=self.data)
 
         assert mock_send_transactional_email_secondary_task.call_count == 1
         task_param = mock_send_transactional_email_secondary_task.call_args[0][0]
@@ -60,7 +60,6 @@ class SendinblueBackendTest:
         assert task_param.tags == self.expected_sent_data.tags
         assert task_param.sender == self.expected_sent_data.sender
         assert task_param.reply_to == self.expected_sent_data.reply_to
-        assert result.successful
 
     @override_settings(WHITELISTED_EMAIL_RECIPIENTS=["lucy.ellingson@example.com", "avery.kelly@example.com"])
     @patch("pcapi.core.mails.backends.sendinblue.send_transactional_email_secondary_task.delay")
@@ -77,7 +76,7 @@ class SendinblueBackendTest:
         )
 
         backend = self._get_backend_for_test()
-        result = backend().send_mail(recipients=self.recipients, data=self.data)
+        backend().send_mail(recipients=self.recipients, data=self.data)
 
         assert mock_send_transactional_email_secondary_task.call_count == 1
         task_param = mock_send_transactional_email_secondary_task.call_args[0][0]
@@ -87,7 +86,6 @@ class SendinblueBackendTest:
         assert task_param.tags == expected_sent_data_no_reply.tags
         assert task_param.sender == expected_sent_data_no_reply.sender
         assert task_param.reply_to == expected_sent_data_no_reply.reply_to
-        assert result.successful
 
 
 @pytest.mark.usefixtures("db_session")
@@ -109,7 +107,7 @@ class ToDevSendinblueBackendTest(SendinblueBackendTest):
     @patch("pcapi.core.mails.backends.sendinblue.send_transactional_email_secondary_task.delay")
     def test_send_mail_to_dev(self, mock_send_transactional_email_secondary_task):
         backend = self._get_backend_for_test()
-        result = backend().send_mail(recipients=self.recipients, bcc_recipients=["test@example.com"], data=self.data)
+        backend().send_mail(recipients=self.recipients, bcc_recipients=["test@example.com"], data=self.data)
 
         assert mock_send_transactional_email_secondary_task.call_count == 1
         task_param = mock_send_transactional_email_secondary_task.call_args[0][0]
@@ -120,19 +118,17 @@ class ToDevSendinblueBackendTest(SendinblueBackendTest):
         assert task_param.tags == self.expected_sent_data_to_dev.tags
         assert task_param.sender == self.expected_sent_data_to_dev.sender
         assert task_param.reply_to == self.expected_sent_data_to_dev.reply_to
-        assert result.successful
 
     @patch("pcapi.core.mails.backends.sendinblue.send_transactional_email_secondary_task.delay")
     def test_send_mail_test_user(self, mock_send_transactional_email_secondary_task):
         users_factories.UserFactory(email=self.recipients[0], roles=[users_models.UserRole.TEST])
 
         backend = self._get_backend_for_test()
-        result = backend().send_mail(recipients=self.recipients, data=self.data)
+        backend().send_mail(recipients=self.recipients, data=self.data)
 
         assert mock_send_transactional_email_secondary_task.call_count == 1
         task_param = mock_send_transactional_email_secondary_task.call_args[0][0]
         assert list(task_param.recipients) == list(self.recipients[0:1])
-        assert result.successful
 
     @pytest.mark.parametrize(
         "recipient",
@@ -146,12 +142,11 @@ class ToDevSendinblueBackendTest(SendinblueBackendTest):
         users_factories.UserFactory(email=recipient, roles=[users_models.UserRole.TEST])
 
         backend = self._get_backend_for_test()
-        result = backend().send_mail(recipients=[recipient, "lucy.ellingson@example.com"], data=self.data)
+        backend().send_mail(recipients=[recipient, "lucy.ellingson@example.com"], data=self.data)
 
         assert mock_send_transactional_email_secondary_task.call_count == 1
         task_param = mock_send_transactional_email_secondary_task.call_args[0][0]
         assert list(task_param.recipients) == [recipient]
-        assert result.successful
 
     @override_settings(IS_STAGING=True, IS_E2E_TESTS=True, END_TO_END_TESTS_EMAIL_ADDRESS="qa-test@passculture.app")
     @patch("pcapi.core.mails.backends.sendinblue.send_transactional_email_secondary_task.delay")
@@ -160,12 +155,11 @@ class ToDevSendinblueBackendTest(SendinblueBackendTest):
         users_factories.UserFactory(email=recipient)
 
         backend = self._get_backend_for_test()
-        result = backend().send_mail(recipients=[recipient], data=self.data)
+        backend().send_mail(recipients=[recipient], data=self.data)
 
         assert mock_send_transactional_email_secondary_task.call_count == 1
         task_param = mock_send_transactional_email_secondary_task.call_args[0][0]
         assert list(task_param.recipients) == [recipient]
-        assert result.successful
 
     @override_settings(IS_TESTING=True, IS_E2E_TESTS=True, END_TO_END_TESTS_EMAIL_ADDRESS="qa-test@passculture.app")
     @patch("pcapi.core.mails.backends.sendinblue.send_transactional_email_secondary_task.delay")
@@ -175,12 +169,11 @@ class ToDevSendinblueBackendTest(SendinblueBackendTest):
         users_factories.UserFactory(email=recipient)
 
         backend = self._get_backend_for_test()
-        result = backend().send_mail(recipients=[recipient], data=self.data)
+        backend().send_mail(recipients=[recipient], data=self.data)
 
         assert mock_send_transactional_email_secondary_task.call_count == 1
         task_param = mock_send_transactional_email_secondary_task.call_args[0][0]
         assert list(task_param.recipients) == [recipient]
-        assert result.successful
 
 
 class SendTest:
@@ -196,7 +189,7 @@ class SendTest:
         recipients = ["lucy.ellingson@example.com", "avery.kelly@example.com"]
 
         with caplog.at_level(logging.INFO):
-            result_bool = send(recipients=recipients, data=data)
+            send(recipients=recipients, data=data)
 
         assert mock_send_transactional_email_secondary_task.call_count == 0
 
@@ -206,8 +199,6 @@ class SendTest:
             "'sender': <TransactionalSender.SUPPORT: EmailInfo(email='support@example.com', name='pass Culture')>, 'send_to_ehp': False}, "
             "'reply_to': {'email': 'reply_to@example.com', 'name': 'Tom S.'}, 'params': {}}"
         )
-
-        assert result_bool
 
     @override_settings(IS_TESTING=True)
     @override_settings(EMAIL_BACKEND="pcapi.core.mails.backends.sendinblue.ToDevSendinblueBackend")
@@ -221,8 +212,7 @@ class SendTest:
         recipients = ["lucy.ellingson@example.com", "avery.kelly@example.com"]
 
         with caplog.at_level(logging.INFO):
-            result_bool = send(recipients=recipients, data=data)
+            send(recipients=recipients, data=data)
 
         assert mock_send_transactional_email_secondary_task.call_count == 1
         assert caplog.records == []
-        assert result_bool

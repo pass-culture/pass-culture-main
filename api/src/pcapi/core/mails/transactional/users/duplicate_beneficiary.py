@@ -15,14 +15,14 @@ def send_duplicate_beneficiary_email(
     rejected_user: users_models.User,
     identity_content: common_fraud_models.IdentityCheckContent,
     duplicate_reason_code: fraud_models.FraudReasonCode,
-) -> bool:
+) -> None:
     from pcapi.core.fraud import api as fraud_api
 
     anonymized_email = fraud_api.get_duplicate_beneficiary_anonymized_email(
         rejected_user, identity_content, duplicate_reason_code
     )
 
-    return mails.send(
+    mails.send(
         recipients=[rejected_user.email],
         data=models.TransactionalEmailData(
             template=TransactionalEmail.SUBCRIPTION_REJECTED_FOR_DUPLICATE_BENEFICIARY.value,

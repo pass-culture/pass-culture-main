@@ -887,7 +887,7 @@ class NewBankAccountJourneyTest:
         assert finance_models.BankAccountStatusHistory.query.count() == 1  # One status change recorded
 
         assert len(mails_testing.outbox) == 1
-        assert mails_testing.outbox[0].sent_data["To"] == venue_with_no_bank_account.bookingEmail
+        assert mails_testing.outbox[0]["To"] == venue_with_no_bank_account.bookingEmail
 
     @override_features(WIP_ENABLE_DOUBLE_MODEL_WRITING=True)
     def test_creating_DSv4_with_aldready_existing_link_should_deprecate_old_one_and_create_new_one(
@@ -950,7 +950,7 @@ class NewBankAccountJourneyTest:
         assert finance_models.BankAccountStatusHistory.query.count() == 1  # One status change recorded
 
         assert len(mails_testing.outbox) == 1
-        assert mails_testing.outbox[0].sent_data["To"] == venue_with_no_bank_account.bookingEmail
+        assert mails_testing.outbox[0]["To"] == venue_with_no_bank_account.bookingEmail
 
     @override_features(WIP_ENABLE_DOUBLE_MODEL_WRITING=True)
     def test_DSv4_bank_account_get_successfully_updated_on_status_change(
@@ -1114,7 +1114,7 @@ class NewBankAccountJourneyTest:
         assert finance_models.BankAccountStatusHistory.query.count() == 1  # One status change recorded
 
         assert len(mails_testing.outbox) == 2
-        assert {mails_testing.outbox[0].sent_data["To"], mails_testing.outbox[1].sent_data["To"]} == {
+        assert {mails_testing.outbox[0]["To"], mails_testing.outbox[1]["To"]} == {
             venue.bookingEmail,
             second_venue.bookingEmail,
         }

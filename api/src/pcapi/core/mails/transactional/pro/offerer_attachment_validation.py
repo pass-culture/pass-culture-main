@@ -13,9 +13,9 @@ def get_offerer_attachment_validation_email_data(
     )
 
 
-def send_offerer_attachment_validation_email_to_pro(user_offerer: offerers_models.UserOfferer) -> bool:
+def send_offerer_attachment_validation_email_to_pro(user_offerer: offerers_models.UserOfferer) -> None:
     data = get_offerer_attachment_validation_email_data(user_offerer.offerer)
-    return mails.send(recipients=[user_offerer.user.email], data=data)
+    mails.send(recipients=[user_offerer.user.email], data=data)
 
 
 def get_offerer_attachment_rejection_email_data(
@@ -26,6 +26,6 @@ def get_offerer_attachment_rejection_email_data(
     )
 
 
-def send_offerer_attachment_rejection_email_to_pro(user_offerer: offerers_models.UserOfferer) -> bool:
+def send_offerer_attachment_rejection_email_to_pro(user_offerer: offerers_models.UserOfferer) -> None:
     data = get_offerer_attachment_rejection_email_data(user_offerer.offerer)
-    return mails.send(recipients=[user_offerer.user.email], data=data)
+    mails.send(recipients=[user_offerer.user.email], data=data)

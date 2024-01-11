@@ -11,7 +11,7 @@ from pcapi.utils import requests
 logger = logging.getLogger(__name__)
 
 
-def send_transactional_email(payload: SendTransactionalEmailRequest) -> bool:
+def send_transactional_email(payload: SendTransactionalEmailRequest) -> None:
     to = [{"email": email} for email in payload.recipients]
     bcc = [{"email": email} for email in payload.bcc_recipients] if payload.bcc_recipients else None
     sender = payload.sender
@@ -47,7 +47,7 @@ def send_transactional_email(payload: SendTransactionalEmailRequest) -> bool:
             ]
     else:
         logger.exception("Unvalid payload in send_transactional_email", extra=extra)
-        return False
+        return
 
     try:
         configuration = sib_api_v3_sdk.Configuration()
@@ -70,5 +70,3 @@ def send_transactional_email(payload: SendTransactionalEmailRequest) -> bool:
 
     except Exception as exception:
         raise requests.ExternalAPIException(is_retryable=True) from exception
-
-    return True

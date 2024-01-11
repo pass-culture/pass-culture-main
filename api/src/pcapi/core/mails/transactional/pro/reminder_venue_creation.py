@@ -17,10 +17,10 @@ def get_reminder_venue_creation_email_data(offerer: offerers_models.Offerer) -> 
     )
 
 
-def send_reminder_venue_creation_to_pro(offerer: offerers_models.Offerer) -> bool:
+def send_reminder_venue_creation_to_pro(offerer: offerers_models.Offerer) -> None:
     try:
         recipient = offerers_repository.find_new_offerer_user_email(offerer.id)
     except offerers_exceptions.CannotFindOffererUserEmail:
-        return True
+        return
     data = get_reminder_venue_creation_email_data(offerer)
-    return mails.send(recipients=[recipient], data=data)
+    mails.send(recipients=[recipient], data=data)

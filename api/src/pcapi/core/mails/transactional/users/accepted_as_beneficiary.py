@@ -32,15 +32,12 @@ def get_accepted_as_underage_beneficiary_email_data(user: User) -> models.Transa
     )
 
 
-def send_accepted_as_beneficiary_email(user: User) -> bool:
+def send_accepted_as_beneficiary_email(user: User) -> None:
     if UserRole.UNDERAGE_BENEFICIARY in user.roles:
         data = get_accepted_as_underage_beneficiary_email_data(user)
     elif UserRole.BENEFICIARY in user.roles:
         data = get_accepted_as_beneficiary_email_data(user)
     else:
-        data = None
+        return
 
-    if not data:
-        return False
-
-    return mails.send(recipients=[user.email], data=data)
+    mails.send(recipients=[user.email], data=data)

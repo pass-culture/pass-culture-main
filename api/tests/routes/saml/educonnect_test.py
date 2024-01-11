@@ -352,9 +352,7 @@ class EduconnectTest:
         )
 
         assert len(mails_testing.outbox) == 1
-        assert mails_testing.outbox[0].sent_data["params"] == {
-            "DUPLICATE_BENEFICIARY_EMAIL": "tit***@quartier-latin.com"
-        }
+        assert mails_testing.outbox[0]["params"] == {"DUPLICATE_BENEFICIARY_EMAIL": "tit***@quartier-latin.com"}
         fraud_check = fraud_models.BeneficiaryFraudCheck.query.filter_by(userId=duplicate_user.id).one()
         assert fraud_check.reasonCodes == [fraud_models.FraudReasonCode.DUPLICATE_USER]
 

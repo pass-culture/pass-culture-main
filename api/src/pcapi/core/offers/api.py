@@ -504,11 +504,7 @@ def batch_update_collective_offers_template(query: BaseQuery, update_fields: dic
 
 def _notify_pro_upon_stock_edit_for_event_offer(stock: models.Stock, bookings: list[bookings_models.Booking]) -> None:
     if stock.offer.isEvent:
-        if not transactional_mails.send_event_offer_postponement_confirmation_email_to_pro(stock, len(bookings)):
-            logger.warning(
-                "Could not notify pro about update of stock concerning an event offer",
-                extra={"stock": stock.id},
-            )
+        transactional_mails.send_event_offer_postponement_confirmation_email_to_pro(stock, len(bookings))
 
 
 def _notify_beneficiaries_upon_stock_edit(stock: models.Stock, bookings: list[bookings_models.Booking]) -> None:
@@ -524,11 +520,7 @@ def _notify_beneficiaries_upon_stock_edit(stock: models.Stock, bookings: list[bo
         check_event_is_in_more_than_48_hours = stock.beginningDatetime > date_in_two_days
         if check_event_is_in_more_than_48_hours:
             bookings = _invalidate_bookings(bookings)
-        if not transactional_mails.send_batch_booking_postponement_email_to_users(bookings):
-            logger.warning(
-                "Could not notify beneficiaries about update of stock",
-                extra={"stock": stock.id},
-            )
+        transactional_mails.send_batch_booking_postponement_email_to_users(bookings)
 
 
 def create_stock(
@@ -722,8 +714,7 @@ def update_offer_fraud_information(offer: AnyOffer, user: users_models.User | No
         and not venue_already_has_validated_offer
         and isinstance(offer, models.Offer)
     ):
-        if not transactional_mails.send_first_venue_approved_offer_email_to_pro(offer):
-            logger.warning("Could not send first venue approved offer email", extra={"offer_id": offer.id})
+        transactional_mails.send_first_venue_approved_offer_email_to_pro(offer)
 
 
 def _invalidate_bookings(bookings: list[bookings_models.Booking]) -> list[bookings_models.Booking]:
@@ -746,16 +737,8 @@ def _delete_stock(stock: models.Stock) -> None:
     )
     if cancelled_bookings:
         for booking in cancelled_bookings:
-            if not transactional_mails.send_booking_cancellation_by_pro_to_beneficiary_email(booking):
-                logger.warning(
-                    "Could not notify beneficiary about deletion of stock",
-                    extra={"stock": stock.id, "booking": booking.id},
-                )
-        if not transactional_mails.send_booking_cancellation_confirmation_by_pro_email(cancelled_bookings):
-            logger.warning(
-                "Could not notify offerer about deletion of stock",
-                extra={"stock": stock.id},
-            )
+            transactional_mails.send_booking_cancellation_by_pro_to_beneficiary_email(booking)
+        transactional_mails.send_booking_cancellation_confirmation_by_pro_email(cancelled_bookings)
 
         push_notification_job.send_cancel_booking_notification.delay([booking.id for booking in cancelled_bookings])
     search.async_index_offer_ids(
@@ -1148,8 +1131,7 @@ def report_offer(
             raise exceptions.ReportMalformed() from error
         raise
 
-    if not transactional_mails.send_email_reported_offer_by_user(user, offer, reason, custom_reason):
-        logger.warning("Could not send email reported offer by user", extra={"user_id": user.id})
+    transactional_mails.send_email_reported_offer_by_user(user, offer, reason, custom_reason)
 
 
 def update_stock_quantity_to_match_cinema_venue_provider_remaining_places(offer: models.Offer) -> None:

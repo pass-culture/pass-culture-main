@@ -41,26 +41,23 @@ def _extract_bookings_information_from_bookings_list(bookings: list[Booking]) ->
     return bookings_info
 
 
-def send_bookings_expiration_to_pro_email(offerer: Offerer, bookings: list[Booking]) -> bool:
+def send_bookings_expiration_to_pro_email(offerer: Offerer, bookings: list[Booking]) -> None:
     offerer_booking_email = bookings[0].stock.offer.bookingEmail
     if not offerer_booking_email:
-        return True
+        return
 
-    success = True
     books_bookings, other_bookings = _filter_books_bookings(bookings)
     if books_bookings:
         books_bookings_data = get_bookings_expiration_to_pro_email_data(
             offerer, books_bookings, booking_constants.BOOKS_BOOKINGS_AUTO_EXPIRY_DELAY.days
         )
-        success &= mails.send(recipients=[offerer_booking_email], data=books_bookings_data)
+        mails.send(recipients=[offerer_booking_email], data=books_bookings_data)
 
     if other_bookings:
         other_bookings_data = get_bookings_expiration_to_pro_email_data(
             offerer, other_bookings, booking_constants.BOOKINGS_AUTO_EXPIRY_DELAY.days
         )
-        success &= mails.send(recipients=[offerer_booking_email], data=other_bookings_data)
-
-    return success
+        mails.send(recipients=[offerer_booking_email], data=other_bookings_data)
 
 
 def _filter_books_bookings(bookings: list[Booking]) -> tuple[list[Booking], list[Booking]]:

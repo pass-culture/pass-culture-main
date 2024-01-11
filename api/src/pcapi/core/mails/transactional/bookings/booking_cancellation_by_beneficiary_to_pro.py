@@ -31,9 +31,9 @@ def get_booking_cancellation_by_beneficiary_to_pro_email_data(
     )
 
 
-def send_booking_cancellation_by_beneficiary_to_pro_email(booking: Booking) -> bool:
+def send_booking_cancellation_by_beneficiary_to_pro_email(booking: Booking) -> None:
     offerer_booking_email = booking.stock.offer.bookingEmail
     if not offerer_booking_email:
-        return True
+        return
     data = get_booking_cancellation_by_beneficiary_to_pro_email_data(booking)
-    return mails.send(recipients=[offerer_booking_email], data=data)
+    mails.send(recipients=[offerer_booking_email], data=data)

@@ -312,13 +312,8 @@ def book_offer(
     amplitude_events.track_book_offer_event(booking)
     _send_external_booking_notification_if_necessary(booking, BookingAction.BOOK)
 
-    if not transactional_mails.send_user_new_booking_to_pro_email(booking, first_venue_booking):
-        logger.warning(
-            "Could not send booking confirmation email to offerer",
-            extra={"booking": booking.id},
-        )
-    if not transactional_mails.send_individual_booking_confirmation_email_to_beneficiary(booking):
-        logger.warning("Could not send booking=%s confirmation email to beneficiary", booking.id)
+    transactional_mails.send_user_new_booking_to_pro_email(booking, first_venue_booking)
+    transactional_mails.send_individual_booking_confirmation_email_to_beneficiary(booking)
 
     search.async_index_offer_ids(
         [stock.offerId],
@@ -628,13 +623,7 @@ def cancel_booking_for_fraud(booking: Booking) -> None:
     if not cancelled:
         return
     logger.info("Cancelled booking for fraud reason", extra={"booking": booking.id})
-    if not transactional_mails.send_booking_cancellation_emails_to_user_and_offerer(
-        booking, booking.cancellationReason
-    ):
-        logger.warning(
-            "Could not send booking cancellation emails to offerer",
-            extra={"booking": booking.id},
-        )
+    transactional_mails.send_booking_cancellation_emails_to_user_and_offerer(booking, booking.cancellationReason)
 
 
 def cancel_booking_on_user_requested_account_suspension(booking: Booking) -> None:
@@ -644,13 +633,7 @@ def cancel_booking_on_user_requested_account_suspension(booking: Booking) -> Non
         "Cancelled booking on user-requested account suspension",
         extra={"booking": booking.id},
     )
-    if not transactional_mails.send_booking_cancellation_emails_to_user_and_offerer(
-        booking, booking.cancellationReason
-    ):
-        logger.warning(
-            "Could not send booking= cancellation emails to offerer and beneficiary",
-            extra={"booking": booking.id},
-        )
+    transactional_mails.send_booking_cancellation_emails_to_user_and_offerer(booking, booking.cancellationReason)
 
 
 def mark_as_used(booking: Booking) -> None:

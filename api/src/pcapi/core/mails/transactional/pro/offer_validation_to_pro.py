@@ -67,18 +67,16 @@ def send_offer_validation_status_update_email(
     old_status: OfferValidationStatus,
     validation_status: OfferValidationStatus,
     recipient_emails: list[str],
-) -> bool:
+) -> None:
     if validation_status is OfferValidationStatus.APPROVED:
         offer_data = retrieve_data_for_offer_approval_email(offer)
-        return mails.send(recipients=recipient_emails, data=offer_data)
+        mails.send(recipients=recipient_emails, data=offer_data)
 
-    if validation_status is OfferValidationStatus.REJECTED:
+    elif validation_status is OfferValidationStatus.REJECTED:
         if old_status is OfferValidationStatus.PENDING:
             offer_data = retrieve_data_for_pending_offer_rejection_email(offer)
-            return mails.send(recipients=recipient_emails, data=offer_data)
-        if old_status is OfferValidationStatus.APPROVED:
+        elif old_status is OfferValidationStatus.APPROVED:
             offer_data = retrieve_data_for_validated_offer_rejection_email(offer)
-            return mails.send(recipients=recipient_emails, data=offer_data)
-        offer_data = retrieve_data_for_offer_rejection_email(offer)
-        return mails.send(recipients=recipient_emails, data=offer_data)
-    return True
+        else:
+            offer_data = retrieve_data_for_offer_rejection_email(offer)
+        mails.send(recipients=recipient_emails, data=offer_data)

@@ -690,13 +690,13 @@ class TrustedDeviceFeatureTest:
             client.post(f"/native/v1/{signin_route}", json=data, headers=self.headers)
 
             assert len(mails_testing.outbox) == 1
-            assert mails_testing.outbox[0].sent_data["template"] == TransactionalEmail.SUSPICIOUS_LOGIN.value.__dict__
-            assert mails_testing.outbox[0].sent_data["params"]["LOCATION"] == "Paris, France"
-            assert mails_testing.outbox[0].sent_data["params"]["OS"] == "iOS"
-            assert mails_testing.outbox[0].sent_data["params"]["SOURCE"] == "iPhone 13"
-            assert mails_testing.outbox[0].sent_data["params"]["LOGIN_DATE"]
-            assert mails_testing.outbox[0].sent_data["params"]["LOGIN_TIME"]
-            assert mails_testing.outbox[0].sent_data["params"]["ACCOUNT_SECURING_LINK"]
+            assert mails_testing.outbox[0]["template"] == TransactionalEmail.SUSPICIOUS_LOGIN.value.__dict__
+            assert mails_testing.outbox[0]["params"]["LOCATION"] == "Paris, France"
+            assert mails_testing.outbox[0]["params"]["OS"] == "iOS"
+            assert mails_testing.outbox[0]["params"]["SOURCE"] == "iPhone 13"
+            assert mails_testing.outbox[0]["params"]["LOGIN_DATE"]
+            assert mails_testing.outbox[0]["params"]["LOGIN_TIME"]
+            assert mails_testing.outbox[0]["params"]["ACCOUNT_SECURING_LINK"]
 
         @patch("pcapi.core.token.UUIDToken.load_and_check")
         @patch("pcapi.connectors.google_oauth.get_google_user")
@@ -738,7 +738,7 @@ class TrustedDeviceFeatureTest:
             client.post(f"/native/v1/{signin_route}", json=data, headers=self.headers)
 
             assert len(mails_testing.outbox) == 1
-            assert mails_testing.outbox[0].sent_data["template"] == TransactionalEmail.SUSPICIOUS_LOGIN.value.__dict__
+            assert mails_testing.outbox[0]["template"] == TransactionalEmail.SUSPICIOUS_LOGIN.value.__dict__
 
         @patch("pcapi.core.token.UUIDToken.load_and_check")
         @patch("pcapi.connectors.google_oauth.get_google_user")
@@ -961,7 +961,7 @@ class RequestResetPasswordTest:
         assert token_utils.Token.token_exists(token_utils.TokenType.RESET_PASSWORD, user.id)
 
         assert len(mails_testing.outbox) == 1
-        assert mails_testing.outbox[0].sent_data["params"]["RESET_PASSWORD_LINK"]
+        assert mails_testing.outbox[0]["params"]["RESET_PASSWORD_LINK"]
 
     def test_request_reset_password_for_existing_email(self, client):
         email = "existing_user@example.com"
@@ -977,21 +977,7 @@ class RequestResetPasswordTest:
 
         assert token_utils.Token.token_exists(token_utils.TokenType.RESET_PASSWORD, user.id)
         assert len(mails_testing.outbox) == 1
-        assert mails_testing.outbox[0].sent_data["params"]["RESET_PASSWORD_LINK"]
-
-    @patch("pcapi.core.mails.transactional.send_reset_password_email_to_user")
-    def test_request_reset_password_with_mail_service_exception(self, mock_send_reset_password_email_to_user, client):
-        email = "tt_user@example.com"
-        data = {"email": email}
-        users_factories.UserFactory(email=email)
-
-        mock_send_reset_password_email_to_user.return_value = False
-
-        response = client.post("/native/v1/request_password_reset", json=data)
-
-        mock_send_reset_password_email_to_user.assert_called_once()
-        assert response.status_code == 400
-        assert response.json["email"] == ["L'email n'a pas pu être envoyé"]
+        assert mails_testing.outbox[0]["params"]["RESET_PASSWORD_LINK"]
 
     def test_reset_password_with_not_valid_token(self, client):
         data = {"reset_password_token": "unknown_token", "new_password": "new_password"}
@@ -1154,7 +1140,7 @@ class InactiveAccountRequestResetPasswordTest:
 
         assert token_utils.Token.token_exists(token_utils.TokenType.RESET_PASSWORD, user.id)
         assert len(mails_testing.outbox) == 1
-        assert mails_testing.outbox[0].sent_data["params"]["RESET_PASSWORD_LINK"]
+        assert mails_testing.outbox[0]["params"]["RESET_PASSWORD_LINK"]
 
 
 class EmailValidationTest:

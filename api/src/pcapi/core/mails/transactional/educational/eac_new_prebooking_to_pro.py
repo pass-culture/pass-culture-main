@@ -8,11 +8,11 @@ from pcapi.utils.mailing import format_booking_hours_for_email
 from pcapi.utils.mailing import get_event_datetime
 
 
-def send_eac_new_collective_prebooking_email_to_pro(booking: educational_models.CollectiveBooking) -> bool:
+def send_eac_new_collective_prebooking_email_to_pro(booking: educational_models.CollectiveBooking) -> None:
     if not booking.collectiveStock.collectiveOffer.bookingEmails:
-        return True
+        return
     data = get_eac_new_collective_prebooking_email_data(booking)
-    return mails.send(recipients=booking.collectiveStock.collectiveOffer.bookingEmails, data=data)
+    mails.send(recipients=booking.collectiveStock.collectiveOffer.bookingEmails, data=data)
 
 
 def get_eac_new_collective_prebooking_email_data(

@@ -32,8 +32,8 @@ class UserRequestDeleteAccountReceptionEmailTest:
 
         # Then
         assert len(mails_testing.outbox) == 1  # test number of emails sent
-        assert mails_testing.outbox[0].sent_data["template"] == dataclasses.asdict(
+        assert mails_testing.outbox[0]["template"] == dataclasses.asdict(
             TransactionalEmail.USER_REQUEST_DELETE_ACCOUNT_RECEPTION.value
         )
-        assert mails_testing.outbox[0].sent_data["To"] == "fabien+test@example.net"
-        assert mails_testing.outbox[0].sent_data["params"] == {"FIRSTNAME": user.firstName}
+        assert mails_testing.outbox[0]["To"] == "fabien+test@example.net"
+        assert mails_testing.outbox[0]["params"] == {"FIRSTNAME": user.firstName}

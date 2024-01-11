@@ -11,7 +11,7 @@ class BaseBackend:
         recipients: Iterable,
         data: models.TransactionalEmailData | models.TransactionalWithoutTemplateEmailData,
         bcc_recipients: Iterable[str] = (),
-    ) -> models.MailResult:
+    ) -> None:
         raise NotImplementedError()
 
     def create_contact(self, payload: sendinblue_tasks.UpdateSendinblueContactRequest) -> None:

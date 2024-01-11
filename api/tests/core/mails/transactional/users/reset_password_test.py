@@ -28,11 +28,11 @@ class SendinblueSendResetPasswordToUserEmailTest:
         # then
         assert len(mails_testing.outbox) == 1  # test number of emails sent
 
-        reset_password_link = mails_testing.outbox[0].sent_data["params"]["RESET_PASSWORD_LINK"]
+        reset_password_link = mails_testing.outbox[0]["params"]["RESET_PASSWORD_LINK"]
         assert token.encoded_token in reset_password_link
-        assert mails_testing.outbox[0].sent_data["template"] == asdict(TransactionalEmail.NEW_PASSWORD_REQUEST.value)
-        assert mails_testing.outbox[0].sent_data["To"] == user.email
-        assert mails_testing.outbox[0].sent_data["params"]["FIRSTNAME"] == user.firstName
+        assert mails_testing.outbox[0]["template"] == asdict(TransactionalEmail.NEW_PASSWORD_REQUEST.value)
+        assert mails_testing.outbox[0]["To"] == user.email
+        assert mails_testing.outbox[0]["params"]["FIRSTNAME"] == user.firstName
 
     def test_send_email_for_suspicious_login(self) -> None:
         user = users_factories.UserFactory()
@@ -43,12 +43,12 @@ class SendinblueSendResetPasswordToUserEmailTest:
         send_reset_password_email_to_user(token, constants.SuspensionReason.SUSPICIOUS_LOGIN_REPORTED_BY_USER)
 
         assert len(mails_testing.outbox) == 1
-        assert token.encoded_token in mails_testing.outbox[0].sent_data["params"]["RESET_PASSWORD_LINK"]
-        assert mails_testing.outbox[0].sent_data["template"] == asdict(
+        assert token.encoded_token in mails_testing.outbox[0]["params"]["RESET_PASSWORD_LINK"]
+        assert mails_testing.outbox[0]["template"] == asdict(
             TransactionalEmail.NEW_PASSWORD_REQUEST_FOR_SUSPICIOUS_LOGIN.value
         )
-        assert mails_testing.outbox[0].sent_data["To"] == user.email
-        assert mails_testing.outbox[0].sent_data["params"]["FIRSTNAME"] == user.firstName
+        assert mails_testing.outbox[0]["To"] == user.email
+        assert mails_testing.outbox[0]["params"]["FIRSTNAME"] == user.firstName
 
     def test_get_email_metadata(self) -> None:
         # Given
