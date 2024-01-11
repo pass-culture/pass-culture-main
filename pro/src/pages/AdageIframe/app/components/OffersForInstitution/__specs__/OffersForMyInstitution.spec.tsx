@@ -95,7 +95,7 @@ describe('OffersInstitutionList', () => {
     expect(screen.getByText('Pour mon établissement'))
     expect(
       screen.getByRole('link', {
-        name: 'Voir la page “Suivi pass Culture”',
+        name: /Voir la page “Suivi pass Culture”/i,
       })
     ).toHaveAttribute('href', 'adage/passculture/index')
   })
