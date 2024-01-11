@@ -1352,22 +1352,22 @@ Six = "*"
 
 [[package]]
 name = "flask-jwt-extended"
-version = "4.3.1"
+version = "4.6.0"
 description = "Extended JWT integration with Flask"
 optional = false
-python-versions = ">=3.6,<4"
+python-versions = ">=3.7,<4"
 files = [
-    {file = "Flask-JWT-Extended-4.3.1.tar.gz", hash = "sha256:ad6977b07c54e51c13b5981afc246868b9901a46715d9b9827898bfd916aae88"},
-    {file = "Flask_JWT_Extended-4.3.1-py2.py3-none-any.whl", hash = "sha256:c82c9e505bc96f4a5186de31c05262dbcde6fa10581e9aa46df8f99ca04be2c3"},
+    {file = "Flask-JWT-Extended-4.6.0.tar.gz", hash = "sha256:9215d05a9413d3855764bcd67035e75819d23af2fafb6b55197eb5a3313fdfb2"},
+    {file = "Flask_JWT_Extended-4.6.0-py2.py3-none-any.whl", hash = "sha256:63a28fc9731bcc6c4b8815b6f954b5904caa534fc2ae9b93b1d3ef12930dca95"},
 ]
 
 [package.dependencies]
-Flask = ">=1.0,<3.0"
+Flask = ">=2.0,<4.0"
 PyJWT = ">=2.0,<3.0"
 Werkzeug = ">=0.14"
 
 [package.extras]
-asymmetric-crypto = ["cryptography (>=35.0.0)"]
+asymmetric-crypto = ["cryptography (>=3.3.1)"]
 
 [[package]]
 name = "flask-limiter"
@@ -5880,4 +5880,4 @@ test = ["pytest"]
 [metadata]
 lock-version = "2.0"
 python-versions = "^3.11"
-content-hash = "2a3a23b2b128d209a3580296a907debc9661f1b867aff53755e7efa8d0a8565e"
+content-hash = "2cc2b40e55b1baf24ce7c64f07030261d4f828d1c05f9bfda8165c7daf1c907c"
