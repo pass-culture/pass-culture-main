@@ -1,5 +1,4 @@
 import { screen } from '@testing-library/react'
-import { userEvent } from '@testing-library/user-event'
 import React from 'react'
 
 import {
@@ -13,14 +12,12 @@ import {
 
 import Offerers, { OfferersProps } from '../Offerers'
 
-const mockNavigate = vi.fn()
 vi.mock('react-router-dom', async () => ({
   ...((await vi.importActual('react-router-dom')) ?? {}),
   useLoaderData: vi.fn(() => ({
     venueTypes: [],
     offererNames: [{ name: 'name', id: 1 }],
   })),
-  useNavigate: () => mockNavigate,
 }))
 
 const renderOfferers = (
@@ -63,16 +60,5 @@ describe('Offerers', () => {
     )
 
     expect(screen.getByText('Carnet d’adresses')).toBeInTheDocument()
-  })
-
-  it('should redirect to offerer creation page when selecting "add offerer" option"', async () => {
-    renderOfferers()
-
-    await userEvent.selectOptions(
-      screen.getByLabelText('Sélectionner une structure'),
-      '+ Ajouter une structure'
-    )
-
-    expect(mockNavigate).toHaveBeenCalledWith('/structures/creation')
   })
 })

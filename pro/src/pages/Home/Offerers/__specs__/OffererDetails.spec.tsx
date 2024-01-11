@@ -8,10 +8,15 @@ import { renderWithProviders } from 'utils/renderWithProviders'
 
 import { OffererDetails, OffererDetailsProps } from '../OffererDetails'
 
+const mockNavigate = vi.fn()
+vi.mock('react-router-dom', async () => ({
+  ...((await vi.importActual('react-router-dom')) ?? {}),
+  useNavigate: () => mockNavigate,
+}))
+
 const renderOffererDetails = (props: Partial<OffererDetailsProps> = {}) => {
   renderWithProviders(
     <OffererDetails
-      handleChangeOfferer={vi.fn()}
       isUserOffererValidated={true}
       offererOptions={[
         {
@@ -70,5 +75,16 @@ describe('OffererDetails', () => {
     const offererUpdateButton = screen.getByText('Modifier')
     expect(offererUpdateButton).toBeInTheDocument()
     expect(offererUpdateButton).toHaveAttribute('aria-disabled')
+  })
+
+  it('should redirect to offerer creation page when selecting "add offerer" option"', async () => {
+    renderOffererDetails()
+
+    await userEvent.selectOptions(
+      screen.getByLabelText('Sélectionner une structure'),
+      '+ Ajouter une structure'
+    )
+
+    expect(mockNavigate).toHaveBeenCalledWith('/structures/creation')
   })
 })

@@ -1,5 +1,6 @@
 import cn from 'classnames'
 import React from 'react'
+import { useNavigate, useSearchParams } from 'react-router-dom'
 
 import { GetOffererResponseModel } from 'apiClient/v1'
 import { Events, OffererLinkEvents } from 'core/FirebaseEvents/constants'
@@ -14,25 +15,37 @@ import SelectInput from 'ui-kit/form/Select/SelectInput'
 import { Card } from '../Card'
 
 import styles from './OffererDetails.module.scss'
-import { CREATE_OFFERER_SELECT_ID } from './Offerers'
+
+const CREATE_OFFERER_SELECT_ID = 'creation'
 
 export interface OffererDetailsProps {
-  handleChangeOfferer: (event: React.ChangeEvent<HTMLSelectElement>) => void
   isUserOffererValidated: boolean
   offererOptions: SelectOption[]
   selectedOfferer: GetOffererResponseModel
 }
 
 export const OffererDetails = ({
-  handleChangeOfferer,
   isUserOffererValidated,
   offererOptions,
   selectedOfferer,
 }: OffererDetailsProps) => {
   const { logEvent } = useAnalytics()
+  const navigate = useNavigate()
+  const [searchParams, setSearchParams] = useSearchParams()
+
   const addOffererOption: SelectOption = {
     label: '+ Ajouter une structure',
     value: CREATE_OFFERER_SELECT_ID,
+  }
+
+  const handleChangeOfferer = (event: React.ChangeEvent<HTMLSelectElement>) => {
+    const newOffererId = event.target.value
+    if (newOffererId === CREATE_OFFERER_SELECT_ID) {
+      navigate('/structures/creation')
+    } else if (newOffererId !== selectedOfferer?.id.toString()) {
+      searchParams.set('structure', newOffererId)
+      setSearchParams(searchParams)
+    }
   }
 
   return (
