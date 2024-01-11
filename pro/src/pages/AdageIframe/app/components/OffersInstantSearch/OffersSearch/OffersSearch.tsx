@@ -216,6 +216,7 @@ export const OffersSearch = ({
           submitCount={formik.submitCount}
           isBackToTopVisibile={!isOfferFiltersVisible}
           indexId="main_offers_index"
+          venue={formik.values.venue}
         />
         {nbHits === 0 && !isUserAdmin && (
           <OffersSuggestions formValues={formik.values} />
