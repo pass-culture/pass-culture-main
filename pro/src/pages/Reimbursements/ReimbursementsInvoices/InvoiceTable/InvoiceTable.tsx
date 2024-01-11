@@ -27,6 +27,77 @@ enum InvoicesOrderedBy {
   DOCUMENT_TYPE = 'documentType',
 }
 
+function sortByDate(
+  invoiceA: InvoiceResponseModel,
+  invoiceB: InvoiceResponseModel
+) {
+  const invoiceDateA = new Date(invoiceA.date)
+  const invoiceDateB = new Date(invoiceB.date)
+  if (invoiceDateA > invoiceDateB) {
+    return 1
+  } else if (invoiceDateA < invoiceDateB) {
+    return -1
+  }
+  return 0
+}
+
+function sortByAlphabeticalOrder(wordA: string, wordB: string) {
+  if (wordA > wordB) {
+    return 1
+  } else if (wordA < wordB) {
+    return -1
+  }
+  return 0
+}
+
+function sortInvoices(
+  invoices: InvoiceResponseModel[],
+  currentSortingColumn: InvoicesOrderedBy | null,
+  sortingMode: SortingMode
+) {
+  switch (currentSortingColumn) {
+    case InvoicesOrderedBy.DATE:
+      return invoices.sort(
+        (a, b) => sortByDate(a, b) * (sortingMode === SortingMode.ASC ? 1 : -1)
+      )
+
+    case InvoicesOrderedBy.REIMBURSEMENT_POINT_NAME:
+      return invoices.sort(
+        (a, b) =>
+          sortByAlphabeticalOrder(
+            a.reimbursementPointName || '',
+            b.reimbursementPointName || ''
+          ) * (sortingMode === SortingMode.ASC ? 1 : -1)
+      )
+
+    case InvoicesOrderedBy.REFERENCE:
+      return invoices.sort(
+        (a, b) =>
+          sortByAlphabeticalOrder(a.reference, b.reference) *
+          (sortingMode === SortingMode.ASC ? 1 : -1)
+      )
+
+    case InvoicesOrderedBy.CASHFLOW_LABELS:
+      return invoices.sort(
+        (a, b) =>
+          sortByAlphabeticalOrder(a.cashflowLabels[0], b.cashflowLabels[0]) *
+          (sortingMode === SortingMode.ASC ? 1 : -1)
+      )
+
+    case InvoicesOrderedBy.DOCUMENT_TYPE:
+      return invoices.sort(
+        (a, b) =>
+          sortByAlphabeticalOrder(
+            a.amount >= 0 ? 'a (first)' : 'z (last)',
+            b.amount >= 0 ? 'a (first)' : 'z (last)'
+          ) * (sortingMode === SortingMode.ASC ? 1 : -1)
+      )
+
+    default:
+      return invoices.sort((a, b) => sortByDate(a, b) * -1)
+  }
+}
+
 const InvoiceTable = ({ invoices }: InvoiceTableProps) => {
   const isNewBankDetailsJourneyEnabled = useActiveFeature(
     'WIP_ENABLE_NEW_BANK_DETAILS_JOURNEY'
@@ -37,8 +108,14 @@ const InvoiceTable = ({ invoices }: InvoiceTableProps) => {
   const { currentSortingColumn, currentSortingMode, onColumnHeaderClick } =
     useColumnSorting<InvoicesOrderedBy>()
 
+  const sortedInvoices = sortInvoices(
+    invoices,
+    currentSortingColumn,
+    currentSortingMode
+  )
+
   return (
-    <table className={styles['reimbursement-table']}>
+    <table>
       <thead>
         <tr className={styles['row']}>
           <th
@@ -138,7 +215,7 @@ const InvoiceTable = ({ invoices }: InvoiceTableProps) => {
         </tr>
       </thead>
       <tbody className={styles['body']}>
-        {invoices.map((invoice) => {
+        {sortedInvoices.map((invoice) => {
           return (
             <tr key={invoice.reference} className={styles['row']}>
               <td

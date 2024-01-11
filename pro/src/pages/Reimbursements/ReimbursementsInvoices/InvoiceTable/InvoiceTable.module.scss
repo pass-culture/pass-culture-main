@@ -7,44 +7,44 @@
   align-items: center;
   display: flex;
   justify-content: flex-start;
+}
 
-  .header {
-    @include fonts.caption;
+.header {
+  @include fonts.caption;
 
-    text-align: left;
-    cursor: pointer;
-    display: flex;
-    align-items: center;
-    gap: rem.torem(8px);
-  }
+  text-align: left;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: rem.torem(8px);
+}
 
-  .data,
-  .header {
-    padding: rem.torem(20px) rem.torem(8px);
-    width: rem.torem(120px);
-  }
+.data,
+.header {
+  padding: rem.torem(20px) rem.torem(8px);
+  width: rem.torem(120px);
+}
 
-  .date-column {
-    width: rem.torem(120px);
-  }
+.date-column {
+  width: rem.torem(120px);
+}
 
-  .document-type-column {
-    width: rem.torem(230px);
-  }
+.document-type-column {
+  width: rem.torem(230px);
+}
 
-  .reference-column {
-    width: rem.torem(130px);
-  }
+.reference-column {
+  width: rem.torem(130px);
+}
 
-  .label-column {
-    width: rem.torem(70px);
-  }
+.label-column {
+  width: rem.torem(70px);
+}
 
-  .amount-column {
-    cursor: default;
-    text-align: right;
-    width: rem.torem(140px);
-  }
+.amount-column {
+  cursor: default;
+  text-align: right;
+  width: rem.torem(140px);
 }
 
 .body .row:nth-child(n + 1):nth-child(odd) {
