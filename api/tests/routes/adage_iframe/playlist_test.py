@@ -32,26 +32,35 @@ class GetClassroomPlaylistTest(SharedPlaylistsErrorTests):
     endpoint = "adage_iframe.get_classroom_playlist"
 
     def test_get_classroom_playlist(self, client):
-        offers = educational_factories.CollectiveOfferTemplateFactory.create_batch(2)
-
         expected_distance = 10.0
+        expected_distance_prior_rounding = expected_distance + 0.001234
 
-        iframe_client = _get_iframe_client(client)
+        institution = educational_factories.EducationalInstitutionFactory()
+        institution2 = educational_factories.EducationalInstitutionFactory()
 
-        mock_path = "pcapi.connectors.big_query.TestingBackend.run_query"
-        with patch(mock_path) as mock_run_query:
-            # add some decimal digits and ensure that the response removed them
-            mock_run_query.return_value = [
-                {"collective_offer_id": str(offers[0].id), "distance_in_km": expected_distance + 0.001234},
-                {"collective_offer_id": str(offers[1].id), "distance_in_km": expected_distance + 0.001234},
-            ]
+        offers = educational_factories.CollectiveOfferTemplateFactory.create_batch(2)
+        for offer in offers:
+            educational_models.CollectivePlaylist(
+                type=educational_models.PlaylistType.CLASSROOM,
+                distanceInKm=expected_distance_prior_rounding,
+                institution=institution,
+                collective_offer_template=offer,
+            )
+        educational_models.CollectivePlaylist(
+            type=educational_models.PlaylistType.CLASSROOM,
+            distanceInKm=expected_distance_prior_rounding,
+            institution=institution2,
+            collective_offer_template=offers[0],
+        )
 
-            # fetch institution (1 query)
-            # fetch redactor (1 query)
-            # fetch redactor's favorites (1 query)
-            # fetch playlist data (1 query)
-            with assert_num_queries(4):
-                response = iframe_client.get(url_for(self.endpoint))
+        iframe_client = _get_iframe_client(client, uai=institution.institutionId)
+
+        # fetch institution (1 query)
+        # fetch redactor (1 query)
+        # fetch redactor's favorites (1 query)
+        # fetch playlist data (1 query)
+        with assert_num_queries(4):
+            response = iframe_client.get(url_for(self.endpoint))
 
             assert response.status_code == 200
 

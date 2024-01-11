@@ -132,6 +132,12 @@ class InstitutionRuralLevel(enum.Enum):
     RURAL_AUTONOME_PEU_DENSE = "rural autonome peu dense"
 
 
+class PlaylistType(enum.Enum):
+    CLASSROOM = "Dans votre classe"
+    LOCAL_OFFERER = "À proximité de l'établissement"
+    NEW_OFFER = "Nouvelles offres"
+
+
 @sa.orm.declarative_mixin
 class HasImageMixin:
     BASE_URL = f"{settings.OBJECT_STORAGE_URL}/{settings.THUMBS_FOLDER_NAME}"
@@ -688,6 +694,10 @@ class CollectiveOfferTemplate(
         postgresql.ARRAY(sa.Enum(subcategories.EacFormat, create_constraint=False, native_enum=False)), nullable=True
     )
 
+    collective_playlists: list[sa_orm.Mapped["CollectivePlaylist"]] = relationship(
+        "CollectivePlaylist", back_populates="collective_offer_template"
+    )
+
     @declared_attr
     def __table_args__(self):
         parent_args = []
@@ -994,6 +1004,10 @@ class EducationalInstitution(PcObject, Base, Model):
     )
 
     ruralLevel: InstitutionRuralLevel = sa.Column(MagicEnum(InstitutionRuralLevel), nullable=True, default=None)
+
+    collective_playlists: list[sa_orm.Mapped["CollectivePlaylist"]] = relationship(
+        "CollectivePlaylist", back_populates="institution"
+    )
 
     @property
     def full_name(self) -> str:
@@ -1607,3 +1621,25 @@ class EducationalInstitutionProgram(PcObject, Base, Model):
     institutions: list["EducationalInstitution"] = relationship(
         "EducationalInstitution", secondary="educational_institution_program_association", back_populates="programs"
     )
+
+
+class CollectivePlaylist(PcObject, Base, Model):
+    type: str = sa.Column(MagicEnum(PlaylistType), nullable=False)
+    distanceInKm: float = sa.Column(sa.Float, nullable=True)
+
+    institutionId = sa.Column(sa.BigInteger, sa.ForeignKey("educational_institution.id"), index=True, nullable=False)
+    institution: sa_orm.Mapped["EducationalInstitution"] = relationship(
+        "EducationalInstitution", foreign_keys=[institutionId], back_populates="collective_playlists"
+    )
+
+    venueId: int = sa.Column(sa.BigInteger, sa.ForeignKey("venue.id"), index=True, nullable=True)
+    venue: sa_orm.Mapped["Venue"] = relationship("Venue", foreign_keys=[venueId], back_populates="collective_playlists")
+
+    collectiveOfferTemplateId: int = sa.Column(
+        sa.BigInteger, sa.ForeignKey("collective_offer_template.id"), index=True, nullable=True
+    )
+    collective_offer_template: sa_orm.Mapped["CollectiveOfferTemplate"] = relationship(
+        "CollectiveOfferTemplate", foreign_keys=[collectiveOfferTemplateId], back_populates="collective_playlists"
+    )
+
+    Index("ix_collective_playlist_type_institutionId", type, institutionId)

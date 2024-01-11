@@ -394,6 +394,11 @@ class Venue(PcObject, Base, Model, HasThumbMixin, AccessibilityMixin):
     collectiveAccessInformation = Column(Text, nullable=True)
     collectivePhone = Column(Text, nullable=True)
     collectiveEmail = Column(Text, nullable=True)
+
+    collective_playlists: list[educational_models.CollectivePlaylist] = relationship(
+        "CollectivePlaylist", back_populates="venue"
+    )
+
     bankInformation: finance_models.BankInformation | None = relationship(
         "BankInformation", back_populates="venue", uselist=False
     )
