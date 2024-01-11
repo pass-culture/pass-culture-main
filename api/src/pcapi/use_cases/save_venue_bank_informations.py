@@ -14,7 +14,7 @@ from pcapi.core.external.attributes.api import update_external_pro
 from pcapi.core.finance import models as finance_models
 from pcapi.core.finance.models import BankAccountApplicationStatus
 from pcapi.core.history import models as history_models
-from pcapi.core.mails.transactional.pro.bank_account_validation import send_bank_account_validated_email
+import pcapi.core.mails.transactional as transactional_mails
 from pcapi.core.offerers import api as offerers_api
 from pcapi.core.offerers import models as offerers_models
 from pcapi.core.offers import models as offers_models
@@ -588,7 +588,7 @@ class ImportBankAccountMixin:
         )
         for venue in venues:
             if not venue.current_bank_account_link and venue.bookingEmail:
-                send_bank_account_validated_email(venue.bookingEmail)
+                transactional_mails.send_bank_account_validated_email(venue.bookingEmail)
 
 
 class ImportBankAccountV4(AbstractImportBankAccount, ImportBankAccountMixin):

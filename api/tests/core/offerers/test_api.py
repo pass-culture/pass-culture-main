@@ -1609,7 +1609,7 @@ class ValidateOffererTest:
         mails = get_emails_by_venue(venue1)
 
         # When
-        with patch("pcapi.core.offerers.api.send_eac_offerer_activation_email") as mock_activation_mail:
+        with patch("pcapi.core.mails.transactional.send_eac_offerer_activation_email") as mock_activation_mail:
             offerers_api.validate_offerer(user_offerer.offerer, admin)
 
         # Then
