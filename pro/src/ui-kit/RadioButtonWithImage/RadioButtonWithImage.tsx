@@ -76,12 +76,12 @@ const RadioButtonWithImage = ({
       data-testid={dataTestid}
     />
 
-    <div className={styles['button-text']}>
-      <div>{label}</div>
+    <span className={styles['button-text']}>
+      <span>{label}</span>
       {description !== undefined && (
-        <div className={styles['button-description']}>{description}</div>
+        <span className={styles['button-description']}>{description}</span>
       )}
-    </div>
+    </span>
   </label>
 )
 
