@@ -78,10 +78,10 @@ module.exports = {
         'require-await': 'error',
         'import/no-named-as-default': 'error',
         '@typescript-eslint/await-thenable': 'error',
+        'react/prop-types': 'error',
 
         // TODO turn into errors
         '@typescript-eslint/no-floating-promises': 'warn',
-        'react/prop-types': 'warn',
         'react-hooks/exhaustive-deps': 'warn',
       },
     },
