@@ -28,6 +28,7 @@ export const AppLayout = (): JSX.Element => {
   const redirectToMarseilleSearch =
     isMarseilleEnabled && isUserInMarseilleProgram
   const venueId = params.get('venue')
+  const offerId = params.get('offerid')
 
   const redirectToSearch =
     !isDiscoveryActive ||
@@ -46,7 +47,9 @@ export const AppLayout = (): JSX.Element => {
           <Route
             path=""
             element={
-              redirectToSearch ? (
+              offerId ? (
+                <Navigate to={`decouverte/offre/${offerId}${search}`} />
+              ) : redirectToSearch ? (
                 <Navigate
                   to={`recherche${search}${
                     //  To apply marseille student level filters only when redirecting to search from '/'

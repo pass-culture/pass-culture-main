@@ -12,29 +12,25 @@
   justify-content: center;
   align-items: center;
   transition: background-color 100ms ease-in-out;
+  cursor: pointer;
 
-  &:focus {
-    outline: rem.torem(1px) solid colors.$black;
-
+  &:hover, &:active:not(:disabled), &:hover:not(:disabled), &:focus-visible {
     .button-icon {
       height: rem.torem(20px);
       width: rem.torem(20px);
     }
   }
 
+  &:focus-visible {
+    outline: rem.torem(1px) solid colors.$input-text-color;
+  }
+
   &:active {
-    outline: 0;
     background-color: transparent;
   }
 
   &:hover:not(:disabled) {
     background-color: #ede3ff;
-    outline: 0;
-
-    .button-icon {
-      height: rem.torem(20px);
-      width: rem.torem(20px);
-    }
   }
 
   &-icon {

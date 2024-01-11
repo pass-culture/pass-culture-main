@@ -1,0 +1,11 @@
+@use "styles/variables/_colors.scss" as colors;
+
+.share-link {
+    color: colors.$black;
+  
+    svg {
+      margin-right: 0;
+      width: 32px;
+      height: 32px;
+    }
+}
