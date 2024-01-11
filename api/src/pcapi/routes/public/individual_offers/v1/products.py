@@ -691,12 +691,13 @@ def upload_image(offer_id: int, form: serialization.ImageUploadFile) -> None:
         logger.exception("Error while reading image file", extra={"offer_id": offer_id, "err": err})
         raise api_errors.ApiErrors({"file": ["The image is not valid."]}, status_code=400)
     try:
-        offers_api.create_mediation(
-            user=None,
-            offer=offer,
-            credit=form.credit,
-            image_as_bytes=image_as_bytes,
-        )
+        with repository.transaction():
+            offers_api.create_mediation(
+                user=None,
+                offer=offer,
+                credit=form.credit,
+                image_as_bytes=image_as_bytes,
+            )
     except offers_exceptions.ImageValidationError as error:
         if isinstance(error, offers_exceptions.ImageTooSmall):
             message = f"The image is too small. It must be above {constants.MIN_IMAGE_WIDTH}x{constants.MIN_IMAGE_HEIGHT} pixels."
