@@ -7,9 +7,7 @@ import { ButtonLink } from 'ui-kit'
 import { ButtonVariant } from 'ui-kit/Button/types'
 import { formatPrice } from 'utils/formatPrice'
 
-// TO DO: will be cleaned in next commit
-import styles from './ReimbursementsTable.module.scss'
-import stylesTableBody from './ReimbursementsTableBody.module.scss'
+import styles from './InvoiceTable.module.scss'
 
 type InvoiceTableProps = {
   invoices: InvoiceResponseModel[]
@@ -95,25 +93,21 @@ const InvoiceTable = ({ invoices }: InvoiceTableProps) => {
             <th>Montant remboursé</th>
           </tr>
         </thead>
-        <tbody className={stylesTableBody['reimbursement-body']}>
+        <tbody className={styles['reimbursement-body']}>
           {invoices.map((invoice) => {
             return (
               <tr key={invoice.reference}>
-                <td className={stylesTableBody['date']}>{invoice.date}</td>
-                <td className={stylesTableBody['reimbursement-point']}>
+                <td className={styles['date']}>{invoice.date}</td>
+                <td className={styles['reimbursement-point']}>
                   {invoice.reimbursementPointName}
                 </td>
-                <td className={stylesTableBody['reference']}>
-                  {invoice.reference}
-                </td>
+                <td className={styles['reference']}>{invoice.reference}</td>
                 {/* For now only one label is possible by invoice. */}
-                <td className={stylesTableBody['label']}>
-                  {invoice.cashflowLabels[0]}
-                </td>
-                <td className={stylesTableBody['amount']}>
+                <td className={styles['label']}>{invoice.cashflowLabels[0]}</td>
+                <td className={styles['amount']}>
                   {formatPrice(invoice.amount)}
                 </td>
-                <td className={stylesTableBody['invoice']}>
+                <td className={styles['invoice']}>
                   <ButtonLink
                     link={{
                       isExternal: true,

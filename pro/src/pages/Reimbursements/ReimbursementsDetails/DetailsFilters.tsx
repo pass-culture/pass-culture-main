@@ -10,6 +10,7 @@ import { FieldLayout } from 'ui-kit/form/shared'
 import { getToday } from 'utils/date'
 
 import styles from './DetailsFilters.module.scss'
+
 type FiltersType = {
   venue: string
   periodStart: string
@@ -18,25 +19,17 @@ type FiltersType = {
 
 interface ReimbursementsSectionHeaderProps {
   children: React.ReactNode | React.ReactNode[]
-  defaultSelectDisplayName: string
   defaultSelectId: string
   filters: FiltersType
-  headerTitle: string
   initialFilters: FiltersType
-  selectLabel: string
-  selectName: string
   setFilters: Dispatch<SetStateAction<FiltersType>>
   selectableOptions: SelectOption[]
 }
 
 const DetailsFilters = ({
   children,
-  defaultSelectDisplayName,
   defaultSelectId,
-  headerTitle,
   initialFilters,
-  selectLabel,
-  selectName,
   selectableOptions,
   filters,
   setFilters,
@@ -81,13 +74,12 @@ const DetailsFilters = ({
 
   return (
     <>
-      <div className="header">
-        <h2 className="header-title">{headerTitle}</h2>
+      <div className={styles['header']}>
+        <h2 className={styles['header-title']}>Affichage des remboursements</h2>
         <Button
           className={styles['reset-filters']}
           disabled={areFiltersDefault}
           onClick={resetFilters}
-          type="button"
           variant={ButtonVariant.TERNARYPINK}
         >
           Réinitialiser les filtres
@@ -95,14 +87,14 @@ const DetailsFilters = ({
       </div>
 
       <FormLayout.Row inline>
-        <FieldLayout label={selectLabel} name={selectName}>
+        <FieldLayout label="Lieu" name="lieu">
           <SelectInput
             defaultOption={{
-              label: defaultSelectDisplayName,
+              label: 'Tous les lieux',
               value: defaultSelectId,
             }}
             onChange={setVenueFilter}
-            name={selectName}
+            name="lieu"
             options={selectableOptions}
             value={selectedVenue}
           />
@@ -121,9 +113,9 @@ const DetailsFilters = ({
         </fieldset>
       </FormLayout.Row>
 
-      <div className="button-group">
-        <span className="button-group-separator" />
-        <div className="button-group-buttons">{children}</div>
+      <div className={styles['button-group']}>
+        <div className={styles['button-group-separator']} />
+        <div className={styles['button-group-buttons']}>{children}</div>
       </div>
     </>
   )
