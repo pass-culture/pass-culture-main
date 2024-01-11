@@ -2,7 +2,7 @@ import{j as e}from"./jsx-runtime-iXOPPpZ7.js";import{b as w}from"./formik.esm-y2
   withBorder,
   label1,
   label2
-}) => <Formik initialValues={{}} onSubmit={() => {}}>
+}: TemplateProps) => <Formik initialValues={{}} onSubmit={() => {}}>
     {({
     getFieldProps
   }) => {
@@ -15,7 +15,7 @@ import{j as e}from"./jsx-runtime-iXOPPpZ7.js";import{b as w}from"./formik.esm-y2
   withBorder,
   label1,
   label2
-}) => <Formik initialValues={{}} onSubmit={() => {}}>
+}: TemplateProps) => <Formik initialValues={{}} onSubmit={() => {}}>
     {({
     getFieldProps
   }) => {
@@ -28,7 +28,7 @@ import{j as e}from"./jsx-runtime-iXOPPpZ7.js";import{b as w}from"./formik.esm-y2
   withBorder,
   label1,
   label2
-}) => <Formik initialValues={{}} onSubmit={() => {}}>
+}: TemplateProps) => <Formik initialValues={{}} onSubmit={() => {}}>
     {({
     getFieldProps
   }) => {
