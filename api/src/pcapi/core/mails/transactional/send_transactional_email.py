@@ -46,7 +46,7 @@ def send_transactional_email(payload: SendTransactionalEmailRequest) -> None:
                 {"content": attachment.content, "name": attachment.name} for attachment in payload.attachment
             ]
     else:
-        logger.exception("Unvalid payload in send_transactional_email", extra=extra)
+        logger.error("Invalid payload in send_transactional_email", extra=extra)
         return
 
     try:
