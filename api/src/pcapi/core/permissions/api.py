@@ -6,6 +6,7 @@ from pcapi.core.history import api as history_api
 from pcapi.core.history import models as history_models
 from pcapi.core.permissions import models as perm_models
 from pcapi.core.users import models as users_models
+from pcapi.models import db
 
 
 def raise_error_on_empty_role_name(name: str) -> None:
@@ -44,6 +45,7 @@ def update_role(
 
     role.name = name
     role.permissions = permissions
+    db.session.flush()
 
     history_api.add_action(
         action_type=history_models.ActionType.ROLE_PERMISSIONS_CHANGED,
