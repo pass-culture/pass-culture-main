@@ -14,6 +14,7 @@ import SelectInput from 'ui-kit/form/Select/SelectInput'
 import { Card } from '../Card'
 
 import styles from './OffererDetails.module.scss'
+import { CREATE_OFFERER_SELECT_ID } from './Offerers'
 
 export interface OffererDetailsProps {
   handleChangeOfferer: (event: React.ChangeEvent<HTMLSelectElement>) => void
@@ -29,6 +30,10 @@ export const OffererDetails = ({
   selectedOfferer,
 }: OffererDetailsProps) => {
   const { logEvent } = useAnalytics()
+  const addOffererOption: SelectOption = {
+    label: '+ Ajouter une structure',
+    value: CREATE_OFFERER_SELECT_ID,
+  }
 
   return (
     <Card className={styles['card']} data-testid="offerrer-wrapper">
@@ -37,7 +42,7 @@ export const OffererDetails = ({
           <SelectInput
             onChange={handleChangeOfferer}
             name="offererId"
-            options={offererOptions}
+            options={[...offererOptions, addOffererOption]}
             value={selectedOfferer.id.toString()}
             aria-label="Sélectionner une structure"
           />

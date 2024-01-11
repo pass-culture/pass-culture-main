@@ -16,7 +16,10 @@ import Offerers, { OfferersProps } from '../Offerers'
 const mockNavigate = vi.fn()
 vi.mock('react-router-dom', async () => ({
   ...((await vi.importActual('react-router-dom')) ?? {}),
-  useLoaderData: vi.fn(() => ({ venueTypes: [] })),
+  useLoaderData: vi.fn(() => ({
+    venueTypes: [],
+    offererNames: [{ name: 'name', id: 1 }],
+  })),
   useNavigate: () => mockNavigate,
 }))
 
@@ -26,9 +29,6 @@ const renderOfferers = (
 ) => {
   renderWithProviders(
     <Offerers
-      receivedOffererNames={{
-        offerersNames: [{ name: 'name', id: 1 }],
-      }}
       onSelectedOffererChange={() => null}
       cancelLoading={() => null}
       selectedOfferer={defaultGetOffererResponseModel}

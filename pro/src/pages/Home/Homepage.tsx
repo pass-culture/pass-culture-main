@@ -3,9 +3,9 @@ import { RouteObject } from 'react-router-dom'
 
 import { api } from 'apiClient/api'
 import {
+  GetOffererNameResponseModel,
   GetOffererResponseModel,
-  GetOfferersNamesResponseModel,
-  VenueTypeListResponseModel,
+  VenueTypeResponseModel,
 } from 'apiClient/v1'
 import { AppLayout } from 'app/AppLayout'
 import AddBankAccountCallout from 'components/Callout/AddBankAccountCallout'
@@ -32,8 +32,6 @@ export const Homepage = (): JSX.Element => {
   const profileRef = useRef<HTMLElement>(null)
   const offerersRef = useRef<HTMLElement>(null)
 
-  const [receivedOffererNames, setReceivedOffererNames] =
-    useState<GetOfferersNamesResponseModel | null>(null)
   const [selectedOffererId, setSelectedOffererId] = useState<string>('')
   const [selectedOfferer, setSelectedOfferer] =
     useState<GetOffererResponseModel | null>(null)
@@ -90,16 +88,6 @@ export const Homepage = (): JSX.Element => {
   }, [selectedOffererId])
 
   useEffect(() => {
-    const loadOffererNames = async () => {
-      const offererNames = await api.listOfferersNames()
-      setReceivedOffererNames(offererNames)
-    }
-
-    // eslint-disable-next-line @typescript-eslint/no-floating-promises
-    loadOffererNames()
-  }, [])
-
-  useEffect(() => {
     async function logProFlags() {
       if (remoteConfigData !== null) {
         await api.postProFlags({
@@ -139,7 +127,6 @@ export const Homepage = (): JSX.Element => {
           selectedOfferer={selectedOfferer}
           isLoading={isLoading}
           isUserOffererValidated={isUserOffererValidated}
-          receivedOffererNames={receivedOffererNames}
           onSelectedOffererChange={setSelectedOffererId}
           cancelLoading={() => setIsLoading(false)}
         />
@@ -173,15 +160,20 @@ export const Homepage = (): JSX.Element => {
 // ts-unused-exports:disable-next-line
 export const Component = Homepage
 
-export type HomepageLoaderData = { venueTypes: VenueTypeListResponseModel }
+export type HomepageLoaderData = {
+  venueTypes: VenueTypeResponseModel[]
+  offererNames: GetOffererNameResponseModel[]
+}
 
 // ts-unused-exports:disable-next-line
 export const loader: RouteObject['loader'] =
   async (): Promise<HomepageLoaderData> => {
     const venueTypes = await api.getVenueTypes()
+    const offererNamesResponse = await api.listOfferersNames()
 
     return {
       venueTypes,
+      offererNames: offererNamesResponse.offerersNames,
     }
   }
 
