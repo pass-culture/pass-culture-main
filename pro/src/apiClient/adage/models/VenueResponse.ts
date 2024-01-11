@@ -3,6 +3,7 @@
 /* tslint:disable */
 /* eslint-disable */
 export type VenueResponse = {
+  adageId?: string | null;
   departementCode: string;
   id: number;
   name: string;
