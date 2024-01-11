@@ -5,9 +5,16 @@ import typing
 
 from pcapi.core.categories import categories
 from pcapi.domain.book_types import BOOK_MACRO_SECTIONS
-from pcapi.domain.movie_types import MOVIE_TYPES
+from pcapi.domain.book_types import BookType
+from pcapi.domain.book_types import book_types
+from pcapi.domain.movie_types import MovieType
+from pcapi.domain.movie_types import movie_types
 from pcapi.domain.music_types import MUSIC_TYPES_LABEL_BY_CODE
+from pcapi.domain.music_types import MusicType
+from pcapi.domain.music_types import music_types
 from pcapi.domain.show_types import SHOW_TYPES_LABEL_BY_CODE
+from pcapi.domain.show_types import ShowType
+from pcapi.domain.show_types import show_types
 
 
 class OnlineOfflinePlatformChoices(Enum):
@@ -80,7 +87,18 @@ class GenreType(Enum):
             type(self).MUSIC.name: self.music_values(),
             type(self).SHOW.name: self.show_values(),
             type(self).MOVIE.name: self.movie_values(),
-        }[self.value]
+        }[self.name]
+
+    @property
+    def trees(self) -> list[BookType] | list[MovieType] | list[MusicType] | list[ShowType]:
+        return {
+            type(self).BOOK.name: book_types,
+            type(self).MUSIC.name: music_types,
+            type(self).SHOW.name: show_types,
+            type(self).MOVIE.name: movie_types,
+        }[
+            self.name
+        ]  # type: ignore [return-value]
 
     def book_values(self) -> list[GenreTypeContent]:
         return [GenreTypeContent(name=value, value=value) for value in sorted(BOOK_MACRO_SECTIONS)]
@@ -92,7 +110,7 @@ class GenreType(Enum):
         return [GenreTypeContent(name=value, value=value) for value in sorted(SHOW_TYPES_LABEL_BY_CODE.values())]
 
     def movie_values(self) -> list[GenreTypeContent]:
-        values = [GenreTypeContent(name=name, value=value) for name, value in MOVIE_TYPES.items()]
+        values = [GenreTypeContent(name=movie_type.name, value=movie_type.label) for movie_type in movie_types]
         return sorted(values, key=lambda x: x.value)
 
 
