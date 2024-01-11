@@ -45,7 +45,7 @@ jobs:
                 "author_link": "https://github.com/${{ github.actor }}",
                 "author_icon": "https://github.com/${{ github.actor }}.png",
                 "title": "Pull Request base de données",
-                "title_link": "${{ steps.trimmed-pr-url.outputs.url }}",
+                "title_link": "${{ steps.pr-url.outputs.url }}",
                 "text": "Nouvelle PR avec une migration db ou une colonne en cours de suppression"
               }
             ],
