@@ -52,8 +52,8 @@ const AddBankAccountCallout = ({
       titleOnly={titleOnly}
     >
       <div>
-        Rendez-vous dans l’onglet informations bancaires de votre page
-        Remboursements.
+        Rendez-vous dans l’onglet informations bancaires de votre page Gestion
+        financière.
       </div>
     </Callout>
   )

@@ -91,7 +91,7 @@ describe('AddBankAccountCallout', () => {
       ).toBeInTheDocument()
       expect(
         screen.getByText(
-          /Rendez-vous dans l’onglet informations bancaires de votre page Remboursements./
+          /Rendez-vous dans l’onglet informations bancaires de votre page Gestion financière./
         )
       ).toBeInTheDocument()
       expect(
