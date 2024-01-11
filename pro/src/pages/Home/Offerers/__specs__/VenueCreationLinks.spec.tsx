@@ -21,7 +21,7 @@ describe('VenueCrationLinks', () => {
     }))
   })
 
-  it('Should not display creation links when user has no venue created', async () => {
+  it('Should not display creation links when user has no venue created', () => {
     const offerer = {
       ...defaultGetOffererResponseModel,
       hasDigitalVenueAtLeastOneOffer: false,

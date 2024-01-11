@@ -111,7 +111,7 @@ describe('OfferCard component', () => {
     expect(screen.getByText('à 1 km - Paris')).toBeInTheDocument()
   })
 
-  it('should redirect on click in offer card', async () => {
+  it('should redirect on click in offer card', () => {
     vi.spyOn(router, 'useSearchParams').mockReturnValueOnce([
       new URLSearchParams({ token: '123' }),
       vi.fn(),

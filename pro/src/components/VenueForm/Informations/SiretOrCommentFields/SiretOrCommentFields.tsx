@@ -48,7 +48,7 @@ const SiretOrCommentFields = ({
     setIsSiretSelected(!isSiretSelected)
   }
 
-  const formatSiret = async (siret: string): Promise<void> => {
+  const formatSiret = (siret: string) => {
     // remove character when it's not a number
     // this way we're sure that this field only accept number
     if ((siret && /^[0-9]+$/.test(unhumanizeSiret(siret))) || !siret) {
@@ -57,7 +57,7 @@ const SiretOrCommentFields = ({
   }
 
   const onSiretChange = async (siret: string) => {
-    await formatSiret(siret)
+    formatSiret(siret)
     if (
       !valideSiretLength(siret) ||
       !isSiretStartingWithSiren(siret, siren) ||
