@@ -13,7 +13,7 @@ permissions: write-all
 
 concurrency:
   # cancel previous workflow of the same branch except on master
-  group: ${{ github.ref }}
+  group: main-${{ github.ref }}
   cancel-in-progress: ${{ github.ref == 'refs/heads/master' && false || true }}
 
 jobs:
@@ -78,7 +78,7 @@ jobs:
     uses: ./.github/workflows/dev_on_workflow_update_api_client_template.yml
     if: github.base_ref == 'master'
     concurrency:
-      group: tests-main-${{ github.ref }}
+      group: update-api-client-template-${{ github.ref }}
       cancel-in-progress: true
     with:
       TRIGGER_ONLY_ON_API_CHANGE: true
@@ -220,7 +220,7 @@ jobs:
   update-jira-issue:
     name: "Update Jira issue"
     if: ${{ always() && github.ref == 'refs/heads/master' }}
-    concurrency: ${{ github.workflow }}-${{ github.ref }}
+    concurrency: update-jira-issue-${{ github.workflow }}-${{ github.ref }}
     uses: ./.github/workflows/dev_on_workflow_update_jira_issues.yml
     secrets:
       GCP_EHP_WORKLOAD_IDENTITY_PROVIDER: ${{ secrets.GCP_EHP_WORKLOAD_IDENTITY_PROVIDER }}
