@@ -1,5 +1,5 @@
 import React, { useEffect, useMemo, useRef, useState } from 'react'
-import { RouteObject } from 'react-router-dom'
+import { RouteObject, useLoaderData, useSearchParams } from 'react-router-dom'
 
 import { api } from 'apiClient/api'
 import {
@@ -16,6 +16,7 @@ import TutorialDialog from 'components/TutorialDialog'
 import { hasStatusCode } from 'core/OfferEducational'
 import useRemoteConfig from 'hooks/useRemoteConfig'
 import { HTTP_STATUS } from 'repository/pcapi/pcapiClient'
+import { sortByLabel } from 'utils/strings'
 
 import styles from './Homepage.module.scss'
 import { OffererBanners } from './Offerers/OffererBanners'
@@ -31,11 +32,12 @@ import {
 export const Homepage = (): JSX.Element => {
   const profileRef = useRef<HTMLElement>(null)
   const offerersRef = useRef<HTMLElement>(null)
+  const [searchParams] = useSearchParams()
+  const { offererNames } = useLoaderData() as HomepageLoaderData
 
-  const [selectedOffererId, setSelectedOffererId] = useState<string>('')
   const [selectedOfferer, setSelectedOfferer] =
     useState<GetOffererResponseModel | null>(null)
-  const [isLoading, setIsLoading] = useState(true)
+  const [isLoading, setIsLoading] = useState(false)
   const [isUserOffererValidated, setIsUserOffererValidated] = useState(false)
   const { remoteConfigData } = useRemoteConfig()
 
@@ -46,8 +48,19 @@ export const Homepage = (): JSX.Element => {
     return physicalVenues?.length === 0 && !virtualVenue
   }, [selectedOfferer])
 
+  const offererOptions = sortByLabel(
+    offererNames.map((item) => ({
+      value: item['id'].toString(),
+      label: item['name'],
+    }))
+  )
+  const selectedOffererId =
+    searchParams.get('structure') ?? offererOptions[0]?.value ?? ''
+
   useEffect(() => {
     async function loadOfferer(offererId: string) {
+      setIsLoading(true)
+
       try {
         const offerer = await api.getOfferer(Number(offererId))
         setSelectedOfferer(offerer)
@@ -78,6 +91,7 @@ export const Homepage = (): JSX.Element => {
           setIsUserOffererValidated(false)
         }
       }
+
       setIsLoading(false)
     }
 
@@ -126,9 +140,8 @@ export const Homepage = (): JSX.Element => {
         <Offerers
           selectedOfferer={selectedOfferer}
           isLoading={isLoading}
+          offererOptions={offererOptions}
           isUserOffererValidated={isUserOffererValidated}
-          onSelectedOffererChange={setSelectedOffererId}
-          cancelLoading={() => setIsLoading(false)}
         />
       </section>
 
