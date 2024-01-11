@@ -4,7 +4,6 @@ import random
 import typing
 
 from pcapi import settings
-from pcapi.connectors.big_query.queries import ClassroomPlaylistQuery
 from pcapi.connectors.big_query.queries import LocalOfferersQuery
 from pcapi.connectors.big_query.queries.adage_playlists import NewTemplateOffersPlaylist
 import pcapi.connectors.big_query.queries.base as queries_base
@@ -60,34 +59,23 @@ def get_classroom_playlist(
     if not redactor:
         raise ApiErrors(errors={"auth": "unknown redactor"}, status_code=403)
 
-    try:
-        rows = {
-            row.collective_offer_id: row.distance_in_km
-            for row in ClassroomPlaylistQuery().execute(institution_id=str(institution.id))
-        }
-    except queries_base.MalformedRow:
-        return serializers.ListCollectiveOfferTemplateResponseModel(collectiveOffers=[])
-
-    if (settings.IS_TESTING or settings.IS_DEV) and not settings.IS_RUNNING_TESTS:
-        rows = get_random_results(educational_models.CollectiveOfferTemplate)
-
-    offer_ids = typing.cast(set[int], set(rows))
-
-    offers = repository.get_collective_offer_template_by_ids(list(offer_ids))
-    favorite_ids = favorites_api.get_redactors_favorite_templates_subset(redactor, offer_ids)
+    playlist_items = repository.get_collective_offer_templates_for_playlist(institution.id)
+    favorite_ids = favorites_api.get_redactors_favorite_templates_subset(
+        redactor, [item.collective_offer_template.id for item in playlist_items]
+    )
 
     return serializers.ListCollectiveOfferTemplateResponseModel(
         collectiveOffers=[
             typing.cast(
                 serializers.CollectiveOfferTemplateResponseModel,
                 serialize_collective_offer(
-                    offer=offer,
+                    offer=item.collective_offer_template,
                     serializer=serializers.CollectiveOfferTemplateResponseModel,
-                    is_favorite=offer.id in favorite_ids,
-                    venue_distance=rows[str(offer.id)],
+                    is_favorite=item.collective_offer_template.id in favorite_ids,
+                    venue_distance=item.distanceInKm,
                 ),
             )
-            for offer in offers
+            for item in playlist_items
         ]
     )
 
