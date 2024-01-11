@@ -1313,7 +1313,7 @@ class AddCriterionToOffersTest:
 @pytest.mark.usefixtures("db_session")
 class RejectInappropriateProductTest:
     @mock.patch("pcapi.core.search.async_index_offer_ids")
-    @mock.patch("pcapi.core.offers.api.send_booking_cancellation_emails_to_user_and_offerer")
+    @mock.patch("pcapi.core.mails.transactional.send_booking_cancellation_emails_to_user_and_offerer")
     def test_should_reject_product_with_inappropriate_content(
         self, mocked_send_booking_cancellation_emails_to_user_and_offerer, mocked_async_index_offer_ids
     ):
@@ -1366,7 +1366,7 @@ class RejectInappropriateProductTest:
         assert all(booking.isCancelled is True for booking in bookings if booking.stock.offer.product.id == product1)
         mocked_send_booking_cancellation_emails_to_user_and_offerer.assert_not_called()
 
-    @mock.patch("pcapi.core.offers.api.send_booking_cancellation_emails_to_user_and_offerer")
+    @mock.patch("pcapi.core.mails.transactional.send_booking_cancellation_emails_to_user_and_offerer")
     def test_should_reject_product_with_inappropriate_content_and_send_email(
         self, mocked_send_booking_cancellation_emails_to_user_and_offerer
     ):

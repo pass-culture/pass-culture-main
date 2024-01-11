@@ -30,7 +30,6 @@ import pcapi.core.finance.models as finance_models
 import pcapi.core.history.api as history_api
 import pcapi.core.history.models as history_models
 import pcapi.core.mails.transactional as transactional_mails
-from pcapi.core.mails.transactional import send_eac_offerer_activation_email
 from pcapi.core.offerers import models as offerers_models
 import pcapi.core.offers.api as offers_api
 import pcapi.core.offers.models as offers_models
@@ -972,7 +971,7 @@ def validate_offerer(offerer: models.Offerer, author_user: users_models.User) ->
     for managed_venue in managed_venues:
         if managed_venue.adageId:
             emails = offerers_repository.get_emails_by_venue(managed_venue)
-            send_eac_offerer_activation_email(managed_venue, list(emails))
+            transactional_mails.send_eac_offerer_activation_email(managed_venue, list(emails))
             break
 
 

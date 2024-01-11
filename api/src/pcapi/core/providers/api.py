@@ -9,8 +9,7 @@ from pcapi.core import search
 from pcapi.core.history import api as history_api
 from pcapi.core.history import models as history_models
 from pcapi.core.logging import log_elapsed
-from pcapi.core.mails.transactional import send_venue_provider_deleted_email
-from pcapi.core.mails.transactional import send_venue_provider_disabled_email
+import pcapi.core.mails.transactional as transactional_mails
 from pcapi.core.offerers import models as offerers_models
 from pcapi.core.offerers.repository import find_venue_by_id
 import pcapi.core.offers.api as offers_api
@@ -97,7 +96,7 @@ def delete_venue_provider(
 ) -> None:
     update_venue_synchronized_offers_active_status_job.delay(venue_provider.venueId, venue_provider.providerId, False)
     if send_email and venue_provider.venue.bookingEmail:
-        send_venue_provider_deleted_email(venue_provider.venue.bookingEmail)
+        transactional_mails.send_venue_provider_deleted_email(venue_provider.venue.bookingEmail)
 
     if venue_provider.isFromAllocineProvider:
         for price_rule in venue_provider.priceRules:
@@ -129,7 +128,7 @@ def update_venue_provider(
     if venue_provider.isActive != venue_provider_payload.isActive:
         venue_provider.isActive = bool(venue_provider_payload.isActive)
         if not venue_provider.isActive and venue_provider.venue.bookingEmail:
-            send_venue_provider_disabled_email(venue_provider.venue.bookingEmail)
+            transactional_mails.send_venue_provider_disabled_email(venue_provider.venue.bookingEmail)
         update_venue_synchronized_offers_active_status_job.delay(
             venue_provider.venueId, venue_provider.providerId, venue_provider.isActive
         )

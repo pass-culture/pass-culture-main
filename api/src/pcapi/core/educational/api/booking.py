@@ -19,7 +19,6 @@ import pcapi.core.finance.api as finance_api
 import pcapi.core.finance.models as finance_models
 import pcapi.core.finance.repository as finance_repository
 import pcapi.core.mails.transactional as transactional_mails
-from pcapi.core.mails.transactional.educational.eac_booking_cancellation import send_eac_booking_cancellation_email
 from pcapi.core.offerers import models as offerers_models
 from pcapi.core.users.models import User
 from pcapi.models import db
@@ -230,7 +229,7 @@ def refuse_collective_booking(educational_booking_id: int) -> educational_models
         },
     )
 
-    send_eac_booking_cancellation_email(collective_booking)
+    transactional_mails.send_eac_booking_cancellation_email(collective_booking)
 
     search.async_index_collective_offer_ids(
         [collective_booking.collectiveStock.collectiveOfferId],

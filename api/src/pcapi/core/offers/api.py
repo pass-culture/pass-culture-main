@@ -36,7 +36,6 @@ from pcapi.core.finance import api as finance_api
 from pcapi.core.finance import models as finance_models
 import pcapi.core.finance.conf as finance_conf
 import pcapi.core.mails.transactional as transactional_mails
-from pcapi.core.mails.transactional import send_booking_cancellation_emails_to_user_and_offerer
 from pcapi.core.offerers import api as offerers_api
 from pcapi.core.offerers import repository as offerers_repository
 import pcapi.core.offerers.models as offerers_models
@@ -967,7 +966,9 @@ def reject_inappropriate_product(
         bookings = bookings_api.cancel_bookings_from_rejected_offer(offer)
         if send_booking_cancellation_emails:
             for booking in bookings:
-                send_booking_cancellation_emails_to_user_and_offerer(booking, reason=BookingCancellationReasons.FRAUD)
+                transactional_mails.send_booking_cancellation_emails_to_user_and_offerer(
+                    booking, reason=BookingCancellationReasons.FRAUD
+                )
 
     logger.info(
         "Rejected inappropriate products",

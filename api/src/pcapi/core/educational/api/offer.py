@@ -22,9 +22,7 @@ from pcapi.core.educational.exceptions import AdageException
 from pcapi.core.educational.exceptions import StudentsNotOpenedYet
 from pcapi.core.educational.models import HasImageMixin
 from pcapi.core.educational.utils import get_image_from_url
-from pcapi.core.mails.transactional.educational.eac_new_request_made_by_redactor_to_pro import (
-    send_new_request_made_by_redactor_to_pro,
-)
+from pcapi.core.mails import transactional as transactional_mails
 from pcapi.core.object_storage import store_public_object
 from pcapi.core.offerers import api as offerers_api
 from pcapi.core.offerers import exceptions as offerers_exceptions
@@ -821,7 +819,7 @@ def create_offer_request(
     db.session.commit()
     request.email = redactor.email
 
-    send_new_request_made_by_redactor_to_pro(request)
+    transactional_mails.send_new_request_made_by_redactor_to_pro(request)
 
     adage_client.notify_redactor_when_collective_request_is_made(serialize_collective_offer_request(request))
 
