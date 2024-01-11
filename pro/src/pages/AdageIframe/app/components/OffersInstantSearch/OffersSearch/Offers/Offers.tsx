@@ -7,7 +7,7 @@ import {
 } from 'react-instantsearch'
 import { useParams } from 'react-router-dom'
 
-import { AdageFrontRoles } from 'apiClient/adage'
+import { AdageFrontRoles, VenueResponse } from 'apiClient/adage'
 import { apiAdage } from 'apiClient/api'
 import useActiveFeature from 'hooks/useActiveFeature'
 import fullGoTop from 'icons/full-go-top.svg'
@@ -37,6 +37,7 @@ export interface OffersProps {
   submitCount?: number
   isBackToTopVisibile?: boolean
   indexId?: string //  IndexId is necessary if the component is within the scope of a react-instantsearch <Index />
+  venue?: VenueResponse | null
 }
 
 type HydratedOffer = HydratedCollectiveOffer | HydratedCollectiveOfferTemplate
@@ -50,6 +51,7 @@ export const Offers = ({
   submitCount,
   isBackToTopVisibile = false,
   indexId,
+  venue,
 }: OffersProps): JSX.Element | null => {
   const { hits, isLastPage, showMore } = useInfiniteHits()
   const { nbHits } = useStats()
@@ -176,7 +178,9 @@ export const Offers = ({
   }
 
   if (hits?.length === 0 || offers.length === 0 || !results) {
-    return displayNoResult ? <NoResultsPage query={results?.query} /> : null
+    return displayNoResult ? (
+      <NoResultsPage query={results?.query} venue={venue} />
+    ) : null
   }
 
   return (
