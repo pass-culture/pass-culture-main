@@ -29,8 +29,7 @@ const renderOfferers = (
 ) => {
   renderWithProviders(
     <Offerers
-      onSelectedOffererChange={() => null}
-      cancelLoading={() => null}
+      offererOptions={[{ label: 'name', value: 1 }]}
       selectedOfferer={defaultGetOffererResponseModel}
       isLoading={false}
       isUserOffererValidated
