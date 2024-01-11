@@ -106,6 +106,7 @@ class AuthenticateTest:
 
     def test_favorites_count(self, client) -> None:
         redactor = EducationalRedactorFactory(
+            favoriteCollectiveOffers=[CollectiveStockFactory().collectiveOffer],
             favoriteCollectiveOfferTemplates=[CollectiveOfferTemplateFactory()],
         )
 
@@ -113,13 +114,13 @@ class AuthenticateTest:
 
         # fetch the institution
         # fetch the redactor
-        # count the redactor's favorites (templates only)
+        # count the redactor's favorites (2 requests: offers and templates)
         # count the offers linked to institution uai
-        with assert_num_queries(4):
+        with assert_num_queries(5):
             response = client.get(url_for("adage_iframe.authenticate"))
 
         assert response.status_code == 200
-        assert response.json["favoritesCount"] == 1
+        assert response.json["favoritesCount"] == 2
 
     def test_preferences_are_correctly_serialized(self, client) -> None:
         educational_institution = EducationalInstitutionFactory()
