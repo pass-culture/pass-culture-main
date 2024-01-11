@@ -66,3 +66,7 @@ class OffererPointOfInterest(PcObject, Base, Model):
     pointOfInterest: sa.orm.Mapped["PointOfInterest"] = sa.orm.relationship(
         "PointOfInterest", foreign_keys=[pointOfInterestId]
     )
+    offererId = sa.Column(sa.Integer, sa.ForeignKey("offerer.id"))
+    offerer: sa.orm.Mapped["Offerer"] = sa.orm.relationship("Offerer", foreign_keys=[offererId])
+
+    __table_args__ = (sa.Index("ix_unique_poi_usage_per_offerer", "offererId", "pointOfInterestId", unique=True),)
