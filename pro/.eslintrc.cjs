@@ -76,6 +76,7 @@ module.exports = {
           },
         ],
         'require-await': 'error',
+        'import/no-named-as-default': 'error',
 
         // TODO turn into errors
         '@typescript-eslint/no-floating-promises': 'warn',
