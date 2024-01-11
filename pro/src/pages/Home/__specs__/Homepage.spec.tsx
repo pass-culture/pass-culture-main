@@ -5,6 +5,7 @@ import {
 } from '@testing-library/react'
 import { userEvent } from '@testing-library/user-event'
 import React from 'react'
+import * as router from 'react-router-dom'
 
 import { api } from 'apiClient/api'
 import { GetOffererResponseModel } from 'apiClient/v1'
@@ -29,6 +30,10 @@ vi.mock('hooks/useRemoteConfig', () => ({
 
 vi.mock('utils/windowMatchMedia', () => ({
   doesUserPreferReducedMotion: vi.fn().mockReturnValue(false),
+}))
+vi.mock('react-router-dom', async () => ({
+  ...((await vi.importActual('react-router-dom')) ?? {}),
+  useLoaderData: vi.fn(),
 }))
 
 const renderHomePage = (storeOverrides: any) => {
@@ -99,8 +104,9 @@ describe('Homepage', () => {
 
   beforeEach(() => {
     vi.spyOn(api, 'getProfile')
-    vi.spyOn(api, 'listOfferersNames').mockResolvedValue({
-      offerersNames: baseOfferersNames,
+    vi.spyOn(router, 'useLoaderData').mockReturnValue({
+      venueTypes: [],
+      offererNames: baseOfferersNames,
     })
     vi.spyOn(api, 'getOfferer').mockResolvedValue(baseOfferers[0])
     vi.spyOn(api, 'postProFlags').mockResolvedValue()
@@ -131,9 +137,6 @@ describe('Homepage', () => {
     })
 
     it('the user should see the home offer steps if they do not have any venues', async () => {
-      vi.spyOn(api, 'listOfferersNames').mockResolvedValue({
-        offerersNames: [baseOfferersNames[1]],
-      })
       vi.spyOn(api, 'getOfferer').mockResolvedValue(baseOfferers[1])
 
       renderHomePage(store)
