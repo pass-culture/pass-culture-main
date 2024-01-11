@@ -293,4 +293,22 @@ describe('VenueOfferSteps', () => {
 
     expect(screen.getByText('Prochaines étapes :')).toBeInTheDocument()
   })
+
+  it('should render nothing when all steps are not shown', () => {
+    vi.spyOn(
+      venueUtils,
+      'shouldDisplayEACInformationSectionForVenue'
+    ).mockReturnValue(false)
+    props.venue = {
+      ...defaultGetOffererVenueResponseModel,
+      hasCreatedOffer: true,
+      hasPendingBankInformationApplication: true,
+    }
+
+    renderVenueOfferSteps(props, {
+      features: ['WIP_ENABLE_NEW_BANK_DETAILS_JOURNEY'],
+    })
+
+    expect(screen.queryByText('Prochaines étapes :')).not.toBeInTheDocument()
+  })
 })
