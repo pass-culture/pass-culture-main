@@ -10,8 +10,7 @@ import {
   HydratedCollectiveOffer,
   HydratedCollectiveOfferTemplate,
 } from 'pages/AdageIframe/app/types/offers'
-import { Button } from 'ui-kit'
-import { ButtonVariant } from 'ui-kit/Button/types'
+import ListIconButton from 'ui-kit/ListIconButton'
 
 import styles from './OfferFavoriteButton.module.scss'
 
@@ -92,6 +91,10 @@ const OfferFavoriteButton = ({
   }
 
   const handleFavoriteClick = function () {
+    if (isLoading) {
+      return
+    }
+
     setIsLoading(true)
 
     if (isFavorite) {
@@ -108,18 +111,16 @@ const OfferFavoriteButton = ({
   } favoris`
 
   return (
-    <Button
+    <ListIconButton
       icon={isFavorite ? fullStarIcon : strokeStarIcon}
       className={cn(styles['favorite-button'], className, {
+        [styles['favorite-button-loading']]: isLoading,
         [styles['favorite-button-active']]: isFavorite,
       })}
-      variant={ButtonVariant.TERNARY}
       onClick={handleFavoriteClick}
-      hasTooltip
-      disabled={isLoading}
     >
       {buttonText}
-    </Button>
+    </ListIconButton>
   )
 }
 
