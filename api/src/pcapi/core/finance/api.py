@@ -590,6 +590,21 @@ def _get_initial_pricing_status(
     return models.PricingStatus.VALIDATED
 
 
+def force_event_repricing(
+    event: models.FinanceEvent,
+    reason: models.PricingLogReason,
+) -> None:
+    """Cancel the pricing of the event and force it to be priced again.
+
+    This is needed when the finance event is linked to a booking whose
+    price has been changed, or when the date of the booked offer event
+    has changed.
+    """
+    _cancel_event_pricing(event=event, reason=reason)
+    event.status = models.FinanceEventStatus.READY
+    db.session.add(event)
+
+
 def _cancel_event_pricing(
     event: models.FinanceEvent,
     reason: models.PricingLogReason,
@@ -763,9 +778,7 @@ def update_finance_event_pricing_date(stock: offers_models.Stock) -> None:
             .order_by(models.FinanceEvent.pricingOrderingDate, models.FinanceEvent.id)
             .first()
         )
-        _cancel_event_pricing(first_event, models.PricingLogReason.CHANGE_DATE)
-        first_event.status = models.FinanceEventStatus.READY
-        db.session.add(first_event)
+        force_event_repricing(first_event, models.PricingLogReason.CHANGE_DATE)
 
 
 def generate_cashflows_and_payment_files(cutoff: datetime.datetime) -> models.CashflowBatch:

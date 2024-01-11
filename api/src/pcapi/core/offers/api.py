@@ -1703,9 +1703,7 @@ def update_used_stock_price(stock: models.Stock, new_price: float) -> None:
     )
 
     if first_finance_event:
-        finance_api._cancel_event_pricing(
+        finance_api.force_event_repricing(
             event=first_finance_event,
             reason=finance_models.PricingLogReason.CHANGE_AMOUNT,
         )
-        first_finance_event.status = finance_models.FinanceEventStatus.READY
-        db.session.add(first_finance_event)

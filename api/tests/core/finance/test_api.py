@@ -674,6 +674,26 @@ def _generate_finance_event_context(
     return event
 
 
+def test_force_event_repricing():
+    event_before = factories.UsedBookingFinanceEventFactory(booking__stock__offer__venue__pricing_point="self")
+    venue = event_before.venue
+    event = factories.UsedBookingFinanceEventFactory(booking__stock__offer__venue=venue)
+    event_after = factories.UsedBookingFinanceEventFactory(booking__stock__offer__venue=venue)
+    for e in (event_before, event, event_after):
+        api.price_event(e)
+    assert models.Pricing.query.count() == 3
+
+    api.force_event_repricing(event, models.PricingLogReason.CHANGE_AMOUNT)
+    db.session.flush()
+
+    assert event_before.status == models.FinanceEventStatus.PRICED
+    assert len(event_before.pricings) == 1
+    assert event.status == models.FinanceEventStatus.READY
+    assert [e.status for e in event.pricings] == [models.PricingStatus.CANCELLED]
+    assert event_after.status == models.FinanceEventStatus.READY
+    assert event_after.pricings == []
+
+
 class GetPricingPointLinkTest:
     def test_used_before_start_of_only_active_link(self):
         # link:      |----------------------
