@@ -25,6 +25,7 @@ import ContactButton from './ContactButton'
 import style from './Offer.module.scss'
 import OfferDetails from './OfferDetails/OfferDetails'
 import OfferFavoriteButton from './OfferFavoriteButton/OfferFavoriteButton'
+import OfferShareLink from './OfferShareLink/OfferShareLink'
 import OfferSummary from './OfferSummary/OfferSummary'
 import PrebookingButton from './PrebookingButton/PrebookingButton'
 import { formatDescription } from './utils/formatDescription'
@@ -200,20 +201,23 @@ const Offer = ({
                     offer={offer}
                     afterFavoriteChange={afterFavoriteChange}
                     queryId={queryId}
-                  ></OfferFavoriteButton>
+                  />
                 )}
                 {offer.isTemplate ? (
-                  <ContactButton
-                    className={style['offer-prebooking-button']}
-                    contactEmail={offer.contactEmail}
-                    contactPhone={offer.contactPhone}
-                    offerId={offer.id}
-                    position={position}
-                    queryId={queryId}
-                    userEmail={adageUser.email}
-                    userRole={adageUser.role}
-                    isInSuggestions={isInSuggestions}
-                  />
+                  <>
+                    <OfferShareLink offer={offer} />
+                    <ContactButton
+                      className={style['offer-prebooking-button']}
+                      contactEmail={offer.contactEmail}
+                      contactPhone={offer.contactPhone}
+                      offerId={offer.id}
+                      position={position}
+                      queryId={queryId}
+                      userEmail={adageUser.email}
+                      userRole={adageUser.role}
+                      isInSuggestions={isInSuggestions}
+                    />
+                  </>
                 ) : (
                   <PrebookingButton
                     canPrebookOffers={

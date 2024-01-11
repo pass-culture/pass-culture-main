@@ -559,4 +559,20 @@ describe('offer', () => {
 
     expect(apiAdage.logTrackingMap).toHaveBeenCalled()
   })
+
+  it('should not display share link when offer is not template', () => {
+    renderOffer(
+      {
+        ...offerProps,
+        offer: {
+          ...offerInParis,
+        },
+      },
+      { ...user, role: AdageFrontRoles.READONLY }
+    )
+
+    expect(
+      screen.queryByText('Partager l’offre par email')
+    ).not.toBeInTheDocument()
+  })
 })
