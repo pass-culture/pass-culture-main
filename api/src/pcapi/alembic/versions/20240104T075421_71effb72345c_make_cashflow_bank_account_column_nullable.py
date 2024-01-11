@@ -17,4 +17,5 @@ def upgrade() -> None:
 
 
 def downgrade() -> None:
-    op.alter_column("cashflow", "bankAccountId", existing_type=sa.BIGINT(), nullable=False)
+    # Nothing to downgrade, the column is being removed in a post migration
+    pass
