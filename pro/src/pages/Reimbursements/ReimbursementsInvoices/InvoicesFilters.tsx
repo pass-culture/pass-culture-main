@@ -3,6 +3,7 @@ import React, { Dispatch, SetStateAction } from 'react'
 import FormLayout from 'components/FormLayout/FormLayout'
 import { SelectOption } from 'custom_types/form'
 import useActiveFeature from 'hooks/useActiveFeature'
+import fullRefreshIcon from 'icons/full-refresh.svg'
 import { Button } from 'ui-kit'
 import { ButtonVariant } from 'ui-kit/Button/types'
 import PeriodSelector from 'ui-kit/form/PeriodSelector/PeriodSelector'
@@ -80,14 +81,13 @@ const InvoicesFilters = ({
   return (
     <>
       <div className={styles['header']}>
-        <h2 className={styles['header-title']}>
-          Affichage des justificatifs de remboursement
-        </h2>
+        <h2 className={styles['header-title']}>Affichage des justificatifs</h2>
         <Button
           className={styles['reset-filters']}
           disabled={areFiltersDefault}
           onClick={resetFilters}
           variant={ButtonVariant.TERNARYPINK}
+          icon={fullRefreshIcon}
         >
           Réinitialiser les filtres
         </Button>
