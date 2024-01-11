@@ -27,22 +27,20 @@ const Section = ({
   links,
   id,
 }: FormLayoutSectionProps): JSX.Element => (
-  <fieldset>
-    <div className={cn(style['form-layout-section'], className)} id={id}>
-      <div className={style['form-layout-section-header']}>
-        <legend>
-          <Title as="h2" level={3}>
-            {title}
-          </Title>
-        </legend>
-        <FormLayoutDescription
-          description={description}
-          isBanner={descriptionAsBanner}
-          links={links}
-        />
-      </div>
-      {children}
+  <fieldset className={cn(style['form-layout-section'], className)} id={id}>
+    <legend>
+      <Title as="h2" level={3}>
+        {title}
+      </Title>
+    </legend>
+    <div className={style['form-layout-section-header']}>
+      <FormLayoutDescription
+        description={description}
+        isBanner={descriptionAsBanner}
+        links={links}
+      />
     </div>
+    {children}
   </fieldset>
 )
 
