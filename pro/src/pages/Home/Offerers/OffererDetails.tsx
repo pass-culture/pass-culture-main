@@ -11,8 +11,10 @@ import fullEditIcon from 'icons/full-edit.svg'
 import { ButtonLink } from 'ui-kit'
 import { ButtonVariant } from 'ui-kit/Button/types'
 import SelectInput from 'ui-kit/form/Select/SelectInput'
+import { localStorageAvailable } from 'utils/localStorageAvailable'
 
 import { Card } from '../Card'
+import { SAVED_OFFERER_ID_KEY } from '../Homepage'
 
 import styles from './OffererDetails.module.scss'
 
@@ -45,6 +47,10 @@ export const OffererDetails = ({
     } else if (newOffererId !== selectedOfferer?.id.toString()) {
       searchParams.set('structure', newOffererId)
       setSearchParams(searchParams)
+
+      if (localStorageAvailable()) {
+        localStorage.setItem(SAVED_OFFERER_ID_KEY, newOffererId)
+      }
     }
   }
 

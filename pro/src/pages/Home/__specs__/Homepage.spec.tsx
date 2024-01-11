@@ -17,7 +17,7 @@ import {
 } from 'utils/apiFactories'
 import { renderWithProviders } from 'utils/renderWithProviders'
 
-import { Homepage } from '../Homepage'
+import { Homepage, SAVED_OFFERER_ID_KEY } from '../Homepage'
 
 vi.mock('@firebase/remote-config', () => ({
   getValue: () => ({ asString: () => 'GE' }),
@@ -124,53 +124,42 @@ describe('Homepage', () => {
     })
   })
 
-  describe('it should render', () => {
-    it('Pro flags should be sent on page load', async () => {
-      renderHomePage(store)
+  it('pro flags should be sent on page load', async () => {
+    renderHomePage(store)
 
-      await waitFor(() => {
-        expect(api.postProFlags).toHaveBeenCalledWith({
-          firebase: { toto: 'tata' },
-        })
-      })
-      expect(api.postProFlags).toHaveBeenCalledTimes(1)
-    })
-
-    it('the user should see the home offer steps if they do not have any venues', async () => {
-      vi.spyOn(api, 'getOfferer').mockResolvedValue(baseOfferers[1])
-
-      renderHomePage(store)
-      await waitForElementToBeRemoved(() => screen.queryByTestId('spinner'))
-
-      expect(screen.getByTestId('home-offer-steps')).toBeInTheDocument()
-    })
-
-    it('the user should not see the home offer steps if they have some venues', async () => {
-      renderHomePage(store)
-      await waitForElementToBeRemoved(() => screen.queryByTestId('spinner'))
-
-      expect(screen.queryByTestId('home-offer-steps')).not.toBeInTheDocument()
-    })
-
-    describe('profileAndSupport', () => {
-      beforeEach(async () => {
-        renderHomePage(store)
-        await waitForElementToBeRemoved(() => screen.queryByTestId('spinner'))
-      })
-
-      it('should display section and subsection titles', () => {
-        expect(
-          screen.getByText('Profil et aide', { selector: 'h2' })
-        ).toBeInTheDocument()
-        expect(screen.getByText('Profil')).toBeInTheDocument()
-        expect(screen.getByText('Aide et support')).toBeInTheDocument()
-      })
-
-      it('should contains a link to access profile form', () => {
-        // when
-        expect(screen.getAllByRole('link')[10]).toBeInTheDocument()
+    await waitFor(() => {
+      expect(api.postProFlags).toHaveBeenCalledWith({
+        firebase: { toto: 'tata' },
       })
     })
+    expect(api.postProFlags).toHaveBeenCalledTimes(1)
+  })
+
+  it('the user should see the home offer steps if they do not have any venues', async () => {
+    vi.spyOn(api, 'getOfferer').mockResolvedValue(baseOfferers[1])
+
+    renderHomePage(store)
+    await waitForElementToBeRemoved(() => screen.queryByTestId('spinner'))
+
+    expect(screen.getByTestId('home-offer-steps')).toBeInTheDocument()
+  })
+
+  it('the user should not see the home offer steps if they have some venues', async () => {
+    renderHomePage(store)
+    await waitForElementToBeRemoved(() => screen.queryByTestId('spinner'))
+
+    expect(screen.queryByTestId('home-offer-steps')).not.toBeInTheDocument()
+  })
+
+  it('should display profile and support section and subsection titles', async () => {
+    renderHomePage(store)
+    await waitForElementToBeRemoved(() => screen.queryByTestId('spinner'))
+
+    expect(
+      screen.getByText('Profil et aide', { selector: 'h2' })
+    ).toBeInTheDocument()
+    expect(screen.getByText('Profil')).toBeInTheDocument()
+    expect(screen.getByText('Aide et support')).toBeInTheDocument()
   })
 
   describe('render statistics dashboard', () => {
@@ -255,5 +244,24 @@ describe('Homepage', () => {
     expect(await screen.findByText('Autre lieu')).toBeInTheDocument()
 
     expect(screen.getByText('Gérer ma page')).toBeInTheDocument()
+  })
+
+  it('should load saved offerer in localStorage if no get parameter', async () => {
+    const offererId = baseOfferers[1].id
+    localStorage.setItem(SAVED_OFFERER_ID_KEY, offererId.toString())
+
+    renderHomePage(store)
+    await waitForElementToBeRemoved(() => screen.queryByTestId('spinner'))
+
+    expect(api.getOfferer).toHaveBeenCalledWith(offererId)
+  })
+
+  it('should not used saved offerer in localStorage if it is not an option', async () => {
+    localStorage.setItem(SAVED_OFFERER_ID_KEY, '123456')
+
+    renderHomePage(store)
+    await waitForElementToBeRemoved(() => screen.queryByTestId('spinner'))
+
+    expect(api.getOfferer).toHaveBeenCalledWith(baseOfferers[0].id)
   })
 })
