@@ -52,16 +52,6 @@ common_user_attributes = attributes_models.UserAttributes(
     roles=["BENEFICIARY"],
     suspension_date=None,
     suspension_reason=None,
-    amount_spent_2023=20.0,
-    booking_venues_count_2023=3,
-    duo_booking_count_2023=1,
-    event_booking_count_2023=2,
-    first_booked_offer_2023="Première réservation",
-    last_booked_offer_2023="Dernière réservation",
-    most_booked_category_2023="CINEMA",
-    most_booked_movie_genre_2023="DRAMA",
-    most_booked_music_type_2023="1000",
-    most_booked_rayon_2023="Littérature française",
 )
 
 
