@@ -1,8 +1,6 @@
 from collections import Counter
 from collections import defaultdict
 from datetime import datetime
-from operator import attrgetter
-import typing
 
 from sqlalchemy import or_
 from sqlalchemy.orm import joinedload
@@ -119,17 +117,6 @@ def get_anonymized_attributes(user: users_models.User) -> models.UserAttributes 
         most_favorite_offer_subcategories=None,
         suspension_date=None,
         suspension_reason=None,
-        # Specific for December 2023 emailing campaign:
-        amount_spent_2023=0,
-        booking_venues_count_2023=0,
-        duo_booking_count_2023=0,
-        event_booking_count_2023=0,
-        first_booked_offer_2023=None,
-        last_booked_offer_2023=None,
-        most_booked_category_2023=None,
-        most_booked_movie_genre_2023=None,
-        most_booked_music_type_2023=None,
-        most_booked_rayon_2023=None,
     )
 
 
@@ -365,8 +352,6 @@ def get_user_attributes(user: users_models.User) -> models.UserAttributes:
     bookings_attributes = get_bookings_categories_and_subcategories(user_bookings)
     booking_venues_count = len({booking.venueId for booking in user_bookings})
 
-    retro_2023_attributes = get_booking_attributes_2023(user_bookings)
-
     # Call only once to limit to one get_wallet_balance query
     has_remaining_credit = user.has_remaining_credit
 
@@ -421,7 +406,6 @@ def get_user_attributes(user: users_models.User) -> models.UserAttributes:
         roles=[role.value for role in user.roles],
         suspension_date=user.suspension_date,
         suspension_reason=user.suspension_reason,
-        **retro_2023_attributes,
     )
 
 
@@ -490,70 +474,6 @@ def get_bookings_categories_and_subcategories(
         most_booked_movie_genre=most_booked_movie_genre,
         most_booked_music_type=most_booked_music_type,
     )
-
-
-# Specific for "Retro" emailing campaign in December 2023 - will be deprecated in January 2024
-def get_booking_attributes_2023(user_bookings: list[bookings_models.Booking]) -> dict[str, typing.Any]:
-    bookings_2023 = sorted(
-        filter(
-            lambda booking: booking.dateCreated.year == 2023 and not booking.isCancelled,
-            user_bookings,
-        ),
-        key=attrgetter("dateCreated"),
-    )
-
-    # Blocks below look like a raw copy/paste from code above in get_bookings_categories_and_subcategories().
-    # Actually, it is. But the current function will be removed in January 2024, so keep it easier to delete.
-    bookings_by_categories = defaultdict(list)
-    bookings_by_subcategories = defaultdict(list)
-    for booking in bookings_2023:
-        if booking.status != bookings_models.BookingStatus.CANCELLED:
-            bookings_by_categories[booking.stock.offer.subcategory.category.id].append(booking)
-            bookings_by_subcategories[booking.stock.offer.subcategoryId].append(booking)
-
-    most_booked_category = _get_most_booked(bookings_by_categories)
-
-    most_booked_movie_genre = None
-    if most_booked_category == categories.CINEMA.id:
-        cinema_bookings_by_genre = defaultdict(list)
-        for booking in bookings_by_categories[categories.CINEMA.id]:
-            if extra_data := booking.stock.offer.extraData:
-                for genre in extra_data.get("genres") or []:
-                    cinema_bookings_by_genre[genre].append(booking)
-        most_booked_movie_genre = _get_most_booked(cinema_bookings_by_genre)
-
-    most_booked_music_type = None
-    music_categories = (categories.MUSIQUE_ENREGISTREE.id, categories.MUSIQUE_LIVE.id)
-    if most_booked_category in music_categories:
-        music_bookings_by_type = defaultdict(list)
-        for category in music_categories:
-            for booking in bookings_by_categories[category]:
-                if extra_data := booking.stock.offer.extraData:
-                    if music_type := extra_data.get("musicType"):
-                        music_bookings_by_type[music_type].append(booking)
-        most_booked_music_type = _get_most_booked(music_bookings_by_type)
-
-    most_booked_rayon = None
-    if most_booked_category == categories.LIVRE.id:
-        book_bookings_by_rayon = defaultdict(list)
-        for booking in bookings_by_categories[categories.LIVRE.id]:
-            if extra_data := booking.stock.offer.extraData:
-                if music_type := extra_data.get("rayon"):
-                    book_bookings_by_rayon[music_type].append(booking)
-        most_booked_rayon = _get_most_booked(book_bookings_by_rayon)
-
-    return {
-        "amount_spent_2023": sum(booking.total_amount for booking in bookings_2023),
-        "booking_venues_count_2023": len({booking.venueId for booking in bookings_2023}),
-        "duo_booking_count_2023": sum((booking.quantity == 2) for booking in bookings_2023),
-        "event_booking_count_2023": sum(booking.stock.offer.subcategory.is_event for booking in bookings_2023),
-        "first_booked_offer_2023": bookings_2023[0].stock.offer.name if bookings_2023 else None,
-        "last_booked_offer_2023": bookings_2023[-1].stock.offer.name if bookings_2023 else None,
-        "most_booked_category_2023": most_booked_category,
-        "most_booked_movie_genre_2023": most_booked_movie_genre,
-        "most_booked_music_type_2023": most_booked_music_type,
-        "most_booked_rayon_2023": most_booked_rayon,
-    }
 
 
 def get_user_bookings(user: users_models.User) -> list[bookings_models.Booking]:
