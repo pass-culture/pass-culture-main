@@ -1,0 +1,3 @@
+import{j as s}from"./jsx-runtime-iXOPPpZ7.js";import{s as n}from"./stroke-calendar-__bAjbDT.js";import{B as a}from"./BaseInput-GGUmafiT.js";import"./index-7OBYoplD.js";import"./_commonjsHelpers-4gQjN7DL.js";import"./index-XNbs-YUW.js";import"./SvgIcon-UUSKXfrA.js";const I={title:"ui-kit/forms/shared/BaseInput",component:a},p=i=>s.jsx("div",{children:s.jsx(a,{...i})}),r=p.bind({});r.args={hasError:!1,rightIcon:n};var t,e,o;r.parameters={...r.parameters,docs:{...(t=r.parameters)==null?void 0:t.docs,source:{originalSource:`args => <div>
+    <BaseInput {...args} />
+  </div>`,...(o=(e=r.parameters)==null?void 0:e.docs)==null?void 0:o.source}}};const g=["Default"];export{r as Default,g as __namedExportsOrder,I as default};
