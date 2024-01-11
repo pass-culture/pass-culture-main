@@ -1,8 +1,6 @@
-import datetime
 from decimal import Decimal
 from unittest.mock import patch
 
-from freezegun import freeze_time
 import pytest
 
 from pcapi.core.bookings.factories import BookingFactory
@@ -113,10 +111,9 @@ def test_format_batch_user():
 
 
 @pytest.mark.usefixtures("db_session")
-@freeze_time("2023-12-06 10:00:00")  # Keep time frozen in 2023 as long as we send *_2023 attributes
 def test_format_sendinblue_user():
     user = BeneficiaryGrant18Factory(departementCode="75")
-    booking = BookingFactory(user=user, dateCreated=datetime.datetime(2023, 12, 6, 10))
+    booking = BookingFactory(user=user)
     favorite = FavoriteFactory(user=user)
 
     res = format_sendinblue_users([user])
@@ -178,15 +175,4 @@ def test_format_sendinblue_user():
         "VENUE_LABEL": None,
         "VENUE_NAME": None,
         "VENUE_TYPE": None,
-        "AMOUNT_SPENT_2023": Decimal("10.10"),
-        # Specific for December 2023 emailing campaign:
-        "BOOKING_VENUES_COUNT_2023": 1,
-        "DUO_BOOKING_COUNT_2023": 0,
-        "EVENT_BOOKING_COUNT_2023": 0,
-        "FIRST_BOOKED_OFFER_2023": booking.stock.offer.name,
-        "LAST_BOOKED_OFFER_2023": booking.stock.offer.name,
-        "MOST_BOOKED_CATEGORY_2023": "FILM",
-        "MOST_BOOKED_MOVIE_GENRE_2023": None,
-        "MOST_BOOKED_MUSIC_TYPE_2023": None,
-        "MOST_BOOKED_RAYON_2023": None,
     }
