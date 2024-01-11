@@ -55,9 +55,6 @@ def get_educational_offers_categories(
 def get_educational_eligible_offers_by_uai(
     authenticated_information: AuthenticatedInformation,
 ) -> serializers.ListCollectiveOffersResponseModel:
-    # TODO(jeremieb): remove since it should return only indexable
-    # collective offers...and we won't index them anymore.
-    # Keep the route for now to avoid any breaking change.
     if authenticated_information.uai is None:
         raise ApiErrors({"institutionId": "institutionId is required"}, status_code=400)
 
